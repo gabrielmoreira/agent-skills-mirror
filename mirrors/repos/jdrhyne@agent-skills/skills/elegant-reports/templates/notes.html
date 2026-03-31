@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    {{styles}}
+    
+    /* Notes Template - Clean, Quick-Scan */
+    .notes-page {
+      padding: var(--space-8) var(--space-10);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .notes-header {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-6);
+      border-bottom: 2px solid var(--color-text-primary);
+    }
+    
+    .notes-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-3);
+    }
+    
+    .notes-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .notes-meta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    
+    .notes-meta-label {
+      color: var(--color-text-muted);
+    }
+    
+    /* Attendees */
+    .attendees {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+    
+    .attendees-label {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+    
+    .attendees-list {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    /* Section */
+    .notes-section {
+      margin-bottom: var(--space-8);
+    }
+    
+    .notes-section h2 {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+      padding-top: 0;
+      border-top: none;
+    }
+    
+    /* Discussion Points */
+    .discussion {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .discussion li {
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+      line-height: var(--leading-relaxed);
+    }
+    
+    .discussion li:last-child {
+      border-bottom: none;
+    }
+    
+    /* Action Items - Highlighted */
+    .action-items {
+      background: var(--color-accent-light);
+      border: 1px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      margin: var(--space-6) 0;
+    }
+    
+    .action-items-title {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent-dark);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-4);
+    }
+    
+    .action-item {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      font-size: var(--text-sm);
+    }
+    
+    .action-checkbox {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--color-accent);
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .action-content {
+      flex: 1;
+    }
+    
+    .action-text {
+      margin-bottom: var(--space-1);
+    }
+    
+    .action-meta {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    
+    .action-owner {
+      color: var(--color-accent-dark);
+      font-weight: var(--font-medium);
+    }
+    
+    /* Decisions */
+    .decisions {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .decision {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    
+    .decision:last-child {
+      border-bottom: none;
+    }
+    
+    .decision-marker {
+      color: var(--color-positive);
+      font-weight: var(--font-bold);
+      flex-shrink: 0;
+    }
+    
+    /* Next Meeting */
+    .next-meeting {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-top: var(--space-8);
+      font-size: var(--text-sm);
+    }
+    
+    .next-meeting-label {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-1);
+    }
+    
+    /* Quick Notes */
+    .quick-note {
+      background: var(--color-warning-bg);
+      border-left: 3px solid var(--color-warning);
+      padding: var(--space-3) var(--space-4);
+      margin: var(--space-4) 0;
+      font-size: var(--text-sm);
+    }
+    
+    /* Footer */
+    .notes-footer {
+      margin-top: var(--space-10);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border-subtle);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+    
+    @media print {
+      .notes-page {
+        max-width: none;
+        padding: 15mm 20mm;
+      }
+      
+      .action-items {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="notes-page">
+    <header class="notes-header">
+      <h1 class="notes-title">{{title}}</h1>
+      <div class="notes-meta">
+        <span class="notes-meta-item">
+          <span class="notes-meta-label">Date:</span>
+          {{date}}
+        </span>
+        {{#if time}}
+        <span class="notes-meta-item">
+          <span class="notes-meta-label">Time:</span>
+          {{time}}
+        </span>
+        {{/if}}
+        {{#if location}}
+        <span class="notes-meta-item">
+          <span class="notes-meta-label">Location:</span>
+          {{location}}
+        </span>
+        {{/if}}
+      </div>
+    </header>
+    
+    {{#if attendees}}
+    <div class="attendees">
+      <div class="attendees-label">Attendees</div>
+      <div class="attendees-list">{{attendees}}</div>
+    </div>
+    {{/if}}
+    
+    {{#if actionItems}}
+    <div class="action-items">
+      <div class="action-items-title">Action Items</div>
+      {{#each actionItems}}
+      <div class="action-item">
+        <div class="action-checkbox"></div>
+        <div class="action-content">
+          <div class="action-text">{{this.task}}</div>
+          <div class="action-meta">
+            {{#if this.owner}}<span class="action-owner">@{{this.owner}}</span>{{/if}}
+            {{#if this.due}} · Due: {{this.due}}{{/if}}
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+    
+    <div class="content">
+      {{content}}
+    </div>
+    
+    {{#if nextMeeting}}
+    <div class="next-meeting">
+      <div class="next-meeting-label">Next Meeting</div>
+      {{nextMeeting}}
+    </div>
+    {{/if}}
+    
+    <footer class="notes-footer">
+      Notes captured {{date}}{{#if author}} by {{author}}{{/if}}
+    </footer>
+  </div>
+</body>
+</html>

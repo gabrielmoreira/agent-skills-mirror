@@ -1,0 +1,58 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# UI Design Patterns
+
+## Color Usage
+
+- Use the primary blue (`#155EEF`) for main UI elements, CTAs, and active states
+- Use red (`#F04438`) only for errors, warnings, and destructive actions
+- Use green (`#12B76A`) for success states and confirmations
+- Use orange (`#F79009`) for warning states and important notifications
+- Use blue (`#0BA5EC`) for informational elements
+- Maintain consistent color usage across the application
+
+## UI Components
+
+### Button Patterns
+
+- Primary buttons should be solid with the primary color
+- Secondary buttons should have a border with transparent or light background
+- Danger buttons should use the error color
+- Use consistent padding, border radius, and hover states for all buttons
+- Follow fixed button sizes based on their importance and context
+- Include appropriate loading states for async actions
+
+### Card Design
+
+- Use consistent border radius (`rounded-lg`) for all cards
+- Apply light shadows (`shadow-sm`) for elevation
+- Maintain consistent padding inside cards (`p-4` or `p-6`)
+- Use subtle borders for card separation
+- Ensure proper spacing between card elements
+
+### Form Elements
+
+- Apply consistent styling to all form inputs
+- Use clear visual indicators for focus, hover, and error states
+- Group related form elements with appropriate spacing
+- Provide clear validation feedback
+- Ensure proper labeling and accessibility
+
+## Layout Principles
+
+- Use a consistent grid system throughout the application
+- Apply proper spacing between elements (8px, 16px, 24px increments)
+- Ensure proper alignment of elements (left, center, or right)
+- Maintain a clear visual hierarchy with proper sizing and spacing
+- Use responsive layouts that work across different device sizes
+
+## Accessibility Best Practices
+
+- Maintain a minimum contrast ratio of 4.5:1 for text
+- Ensure all interactive elements are keyboard accessible
+- Include appropriate ARIA attributes for complex components
+- Provide alternative text for images and icons
+- Support screen readers with semantic HTML elements

@@ -1,0 +1,569 @@
+/**
+ * Nordic V2 Theme - Bold Modern Design
+ * Inspired by Canva pitch decks and Figma templates
+ * Key: Strong contrast, bold typography, deliberate whitespace
+ */
+
+/* Google Fonts - Using system stack + Poppins for headlines */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Color Palette - High Contrast */
+  --color-bg: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F5F5F5;
+  
+  /* Text - Strong Contrast */
+  --color-text-primary: #0A0A0A;
+  --color-text-secondary: #404040;
+  --color-text-muted: #737373;
+  --color-text-subtle: #A3A3A3;
+  
+  /* Accent - Bold and Intentional */
+  --color-accent: #2563EB;  /* Strong blue */
+  --color-accent-light: #DBEAFE;
+  --color-accent-dark: #1D4ED8;
+  
+  /* Alternative Accents */
+  --color-coral: #F43F5E;
+  --color-emerald: #10B981;
+  --color-amber: #F59E0B;
+  
+  /* Semantic */
+  --color-positive: #10B981;
+  --color-positive-bg: #D1FAE5;
+  --color-negative: #EF4444;
+  --color-negative-bg: #FEE2E2;
+  --color-warning: #F59E0B;
+  --color-warning-bg: #FEF3C7;
+  
+  /* Typography - Bold and Modern */
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* Font Sizes - Much Larger Scale */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 2rem;        /* 32px */
+  --text-4xl: 2.5rem;      /* 40px */
+  --text-5xl: 3.5rem;      /* 56px */
+  --text-6xl: 4.5rem;      /* 72px */
+  --text-7xl: 6rem;        /* 96px */
+  
+  /* Spacing - Generous */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  
+  /* Borders & Shadows */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================
+   Reset & Base
+   ========================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+}
+
+/* ==========================================
+   Typography - Bold & Impactful
+   ========================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: var(--text-5xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-6);
+}
+
+h2 {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-4);
+  margin-top: var(--space-12);
+}
+
+h3 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+h4 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-2);
+}
+
+p {
+  margin-bottom: var(--space-4);
+  line-height: 1.7;
+}
+
+.lead {
+  font-size: var(--text-xl);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ==========================================
+   Links
+   ========================================== */
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   Document Container
+   ========================================== */
+
+.page {
+  max-width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: var(--color-surface);
+  padding: var(--space-12);
+}
+
+@media print {
+  .page {
+    padding: 15mm 18mm;
+    margin: 0;
+    max-width: none;
+  }
+}
+
+/* ==========================================
+   Executive Header - BIG & BOLD
+   ========================================== */
+
+.exec-header {
+  text-align: center;
+  padding: var(--space-16) 0 var(--space-12);
+  margin-bottom: var(--space-10);
+  border-bottom: 3px solid var(--color-text-primary);
+}
+
+.exec-title {
+  font-size: var(--text-6xl);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-primary);
+}
+
+.exec-subtitle {
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+}
+
+.exec-meta {
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+}
+
+/* ==========================================
+   Hero Metric - The Big Number
+   ========================================== */
+
+.hero-metric {
+  background: var(--color-text-primary);
+  color: var(--color-surface);
+  padding: var(--space-12) var(--space-8);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  margin: var(--space-10) 0;
+}
+
+.hero-value {
+  font-family: var(--font-display);
+  font-size: var(--text-7xl);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.hero-label {
+  font-size: var(--text-lg);
+  font-weight: 500;
+  margin-top: var(--space-2);
+  opacity: 0.8;
+}
+
+.hero-change {
+  display: inline-block;
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.hero-change.positive {
+  background: var(--color-positive);
+  color: white;
+}
+
+.hero-change.negative {
+  background: var(--color-negative);
+  color: white;
+}
+
+/* ==========================================
+   Metric Cards Grid
+   ========================================== */
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin: var(--space-8) 0;
+}
+
+.metric-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-surface-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.metric-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-lg);
+}
+
+.metric-value {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
+
+.metric-change {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-top: var(--space-2);
+}
+
+.metric-change.positive { color: var(--color-positive); }
+.metric-change.negative { color: var(--color-negative); }
+
+/* ==========================================
+   Key Points Box
+   ========================================== */
+
+.key-points {
+  background: var(--color-accent-light);
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  padding: var(--space-6) var(--space-8);
+  margin: var(--space-10) 0;
+}
+
+.key-points-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-accent-dark);
+  margin-bottom: var(--space-4);
+}
+
+.key-points ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.key-points li {
+  padding: var(--space-2) 0;
+  padding-left: var(--space-6);
+  position: relative;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.key-points li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* ==========================================
+   Tables - Clean & Modern
+   ========================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-6) 0;
+  font-size: var(--text-sm);
+}
+
+thead {
+  background: var(--color-text-primary);
+  color: var(--color-surface);
+}
+
+th {
+  padding: var(--space-4);
+  text-align: left;
+  font-weight: 600;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-surface-alt);
+  color: var(--color-text-secondary);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: var(--color-surface-alt);
+}
+
+/* Numeric alignment */
+td.num, th.num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================
+   Callouts
+   ========================================== */
+
+.callout {
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin: var(--space-6) 0;
+}
+
+.callout-tip {
+  background: var(--color-positive-bg);
+  border-left: 4px solid var(--color-positive);
+}
+
+.callout-warning {
+  background: var(--color-warning-bg);
+  border-left: 4px solid var(--color-warning);
+}
+
+.callout-danger {
+  background: var(--color-negative-bg);
+  border-left: 4px solid var(--color-negative);
+}
+
+.callout-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+}
+
+/* ==========================================
+   Code Blocks
+   ========================================== */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-surface-alt);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+pre {
+  background: var(--color-text-primary);
+  color: #E5E5E5;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* ==========================================
+   Lists
+   ========================================== */
+
+ul, ol {
+  margin: var(--space-4) 0;
+  padding-left: var(--space-6);
+}
+
+li {
+  margin-bottom: var(--space-2);
+}
+
+/* ==========================================
+   Blockquotes
+   ========================================== */
+
+blockquote {
+  border-left: 4px solid var(--color-text-primary);
+  padding-left: var(--space-6);
+  margin: var(--space-6) 0;
+  font-size: var(--text-lg);
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================
+   Dividers
+   ========================================== */
+
+hr {
+  border: none;
+  height: 2px;
+  background: var(--color-surface-alt);
+  margin: var(--space-10) 0;
+}
+
+/* ==========================================
+   Footer
+   ========================================== */
+
+.exec-footer {
+  margin-top: var(--space-16);
+  padding-top: var(--space-6);
+  border-top: 2px solid var(--color-surface-alt);
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ==========================================
+   Print Styles
+   ========================================== */
+
+@media print {
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .hero-metric {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  thead {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+  }
+  
+  table, .metric-card, .key-points, .callout {
+    page-break-inside: avoid;
+  }
+}
+
+/* ==========================================
+   Utility Classes
+   ========================================== */
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-accent { color: var(--color-accent); }
+.text-positive { color: var(--color-positive); }
+.text-negative { color: var(--color-negative); }
+.font-bold { font-weight: 700; }
+.font-mono { font-family: var(--font-mono); }

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    {{styles}}
+    
+    /* Executive Template Specific Styles */
+    .executive-header {
+      text-align: center;
+      padding: var(--space-12) 0;
+      border-bottom: none;
+      margin-bottom: var(--space-8);
+    }
+    
+    .executive-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin-bottom: var(--space-2);
+      background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .executive-subtitle {
+      font-size: var(--text-lg);
+      color: var(--color-text-tertiary);
+      font-weight: var(--font-normal);
+    }
+    
+    .executive-date {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-4);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .hero-metric {
+      text-align: center;
+      padding: var(--space-10) 0;
+      margin: var(--space-8) 0;
+      background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-subtle);
+    }
+    
+    .hero-value {
+      font-size: 5rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .hero-label {
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-2);
+    }
+    
+    .hero-change {
+      font-size: var(--text-base);
+      margin-top: var(--space-1);
+    }
+    
+    .executive-summary {
+      font-size: var(--text-lg);
+      line-height: var(--leading-loose);
+      color: var(--color-text-secondary);
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto var(--space-10);
+      padding: 0 var(--space-4);
+    }
+    
+    .executive-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+      margin: var(--space-10) 0;
+    }
+    
+    .executive-metric {
+      text-align: center;
+      padding: var(--space-6);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+    
+    .executive-metric-value {
+      font-size: var(--text-3xl);
+      font-weight: 700;
+      color: var(--color-text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .executive-metric-label {
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: var(--space-1);
+    }
+    
+    .executive-metric-change {
+      font-size: var(--text-sm);
+      margin-top: var(--space-2);
+    }
+    
+    .executive-key-points {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8);
+      margin: var(--space-10) 0;
+    }
+    
+    .executive-key-points h3 {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-6);
+      text-align: center;
+    }
+    
+    .executive-key-points ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .executive-key-points li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+      font-size: var(--text-base);
+      color: var(--color-text-secondary);
+    }
+    
+    .executive-key-points li:last-child {
+      border-bottom: none;
+    }
+    
+    .executive-key-points li::before {
+      content: "→";
+      color: var(--color-accent);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    
+    .executive-footer {
+      margin-top: var(--space-16);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-border-subtle);
+      text-align: center;
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    
+    @media print {
+      .executive-title {
+        -webkit-text-fill-color: var(--color-text-primary);
+        background: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="executive-header">
+      <h1 class="executive-title">{{title}}</h1>
+      {{#if subtitle}}
+      <p class="executive-subtitle">{{subtitle}}</p>
+      {{/if}}
+      <p class="executive-date">{{date}}</p>
+    </header>
+    
+    {{#if heroMetric}}
+    <div class="hero-metric">
+      <div class="hero-value">{{heroMetric.value}}</div>
+      <div class="hero-label">{{heroMetric.label}}</div>
+      {{#if heroMetric.change}}
+      <div class="hero-change {{heroMetric.changeType}}">{{heroMetric.change}}</div>
+      {{/if}}
+    </div>
+    {{/if}}
+    
+    {{#if summary}}
+    <p class="executive-summary">{{summary}}</p>
+    {{/if}}
+    
+    {{#if metrics}}
+    <div class="executive-metrics">
+      {{#each metrics}}
+      <div class="executive-metric">
+        <div class="executive-metric-value">{{this.value}}</div>
+        <div class="executive-metric-label">{{this.label}}</div>
+        {{#if this.change}}
+        <div class="executive-metric-change {{this.changeType}}">{{this.change}}</div>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+    
+    {{#if keyPoints}}
+    <div class="executive-key-points">
+      <h3>Key Findings</h3>
+      <ul>
+        {{#each keyPoints}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+    {{/if}}
+    
+    <div class="content">
+      {{content}}
+    </div>
+    
+    <footer class="executive-footer">
+      {{#if author}}Prepared by {{author}} · {{/if}}{{date}}{{#if confidential}} · Confidential{{/if}}
+    </footer>
+  </div>
+</body>
+</html>

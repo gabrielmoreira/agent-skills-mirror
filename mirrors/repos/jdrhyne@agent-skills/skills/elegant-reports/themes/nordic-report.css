@@ -1,0 +1,672 @@
+/**
+ * Nordic Report Theme - Dense but Beautiful
+ * Same design language as presentation, optimized for information density
+ * Smaller type, tighter spacing, more content per page
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ==========================================
+   CSS Variables
+   ========================================== */
+
+:root {
+  /* Colors */
+  --color-bg: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F5F5F5;
+  --color-text-primary: #0A0A0A;
+  --color-text-secondary: #404040;
+  --color-text-muted: #737373;
+  --color-text-subtle: #A3A3A3;
+  --color-accent: #2563EB;
+  --color-accent-light: #DBEAFE;
+  --color-accent-dark: #1D4ED8;
+  --color-positive: #10B981;
+  --color-positive-bg: #D1FAE5;
+  --color-negative: #EF4444;
+  --color-negative-bg: #FEE2E2;
+  --color-warning: #F59E0B;
+  --color-warning-bg: #FEF3C7;
+  
+  /* Typography */
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Scale (smaller for density) */
+  --text-xs: 0.7rem;
+  --text-sm: 0.8rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.25rem;
+  --text-3xl: 1.5rem;
+  --text-4xl: 2rem;
+  
+  /* Spacing */
+  --space-1: 0.125rem;
+  --space-2: 0.25rem;
+  --space-3: 0.5rem;
+  --space-4: 0.75rem;
+  --space-5: 1rem;
+  --space-6: 1.25rem;
+  --space-8: 1.5rem;
+  --space-10: 2rem;
+  --space-12: 2.5rem;
+  
+  /* Borders */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+/* ==========================================
+   Reset & Base
+   ========================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+}
+
+/* ==========================================
+   Page Container
+   ========================================== */
+
+.page {
+  max-width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: var(--color-surface);
+  padding: 12mm 15mm;
+}
+
+@media print {
+  .page {
+    padding: 10mm 12mm;
+    margin: 0;
+    max-width: none;
+  }
+  
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+}
+
+/* ==========================================
+   Report Header
+   ========================================== */
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
+  border-bottom: 2px solid var(--color-text-primary);
+}
+
+.report-title {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.report-subtitle {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
+
+.report-meta {
+  text-align: right;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.report-meta-item {
+  margin-bottom: var(--space-1);
+}
+
+/* ==========================================
+   Report Content - Typography
+   ========================================== */
+
+.report-content h1, 
+.report-content h2, 
+.report-content h3, 
+.report-content h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+.report-content h1 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-4);
+  margin-top: var(--space-8);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-surface-alt);
+}
+
+.report-content h1:first-child {
+  margin-top: 0;
+}
+
+.report-content h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.report-content h3 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.report-content h4 {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-2);
+}
+
+.report-content p {
+  margin-bottom: var(--space-4);
+}
+
+.report-content strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ==========================================
+   Lists
+   ========================================== */
+
+.report-content ul, 
+.report-content ol {
+  margin: var(--space-3) 0;
+  padding-left: var(--space-5);
+}
+
+.report-content li {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+/* ==========================================
+   Tables - Elegant & Compact
+   ========================================== */
+
+.report-content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: var(--space-4) 0;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.report-content thead {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: white;
+}
+
+.report-content th {
+  padding: var(--space-4) var(--space-4);
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.report-content th:first-child {
+  border-radius: var(--radius-md) 0 0 0;
+}
+
+.report-content th:last-child {
+  border-radius: 0 var(--radius-md) 0 0;
+}
+
+.report-content td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid #f1f5f9;
+  background: white;
+}
+
+.report-content tr:last-child td {
+  border-bottom: none;
+}
+
+.report-content tr:last-child td:first-child {
+  border-radius: 0 0 0 var(--radius-md);
+}
+
+.report-content tr:last-child td:last-child {
+  border-radius: 0 0 var(--radius-md) 0;
+}
+
+.report-content tbody tr:nth-child(even) td {
+  background: #fafbfc;
+}
+
+/* Numeric columns */
+.report-content td.num, 
+.report-content th.num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* First column labels */
+.report-content td:first-child {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* ==========================================
+   Inline Code
+   ========================================== */
+
+.report-content code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-accent-light);
+  color: var(--color-accent-dark);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+/* ==========================================
+   Code Blocks
+   ========================================== */
+
+.report-content pre {
+  margin: var(--space-4) 0;
+  overflow-x: auto;
+  page-break-inside: avoid;
+}
+
+.report-content pre code {
+  display: block;
+  background: #1a1a2e;
+  color: #e2e8f0;
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================
+   ASCII Diagrams - Elegant Treatment
+   ========================================== */
+
+.report-content pre code.language-text,
+.report-content pre code.language-diagram,
+.report-content pre code.language-ascii {
+  /* Clean, paper-like background */
+  background: linear-gradient(145deg, #fafbfc 0%, #f4f6f8 100%);
+  color: var(--color-text-primary);
+  
+  /* Subtle container styling */
+  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  
+  /* Typography optimized for box-drawing */
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 0.65rem;
+  line-height: 1.3;
+  font-weight: 500;
+  
+  /* Soft shadow */
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 3px 8px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  
+  /* Disable ligatures for proper box characters */
+  -webkit-font-feature-settings: "liga" 0;
+  font-feature-settings: "liga" 0;
+}
+
+/* ==========================================
+   Blockquotes
+   ========================================== */
+
+.report-content blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding: var(--space-4) var(--space-5);
+  margin: var(--space-4) 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.report-content blockquote p {
+  margin: 0;
+}
+
+/* ==========================================
+   Horizontal Rules
+   ========================================== */
+
+.report-content hr {
+  border: none;
+  height: 1px;
+  background: var(--color-surface-alt);
+  margin: var(--space-6) 0;
+}
+
+/* ==========================================
+   Two Column Layout
+   ========================================== */
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin: var(--space-6) 0;
+}
+
+/* ==========================================
+   KPI Strip - Horizontal Metrics
+   ========================================== */
+
+.kpi-strip {
+  display: flex;
+  gap: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: white;
+  padding: 0;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.kpi-item {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.kpi-item:last-child {
+  border-right: none;
+}
+
+.kpi-item:first-child {
+  background: rgba(255,255,255,0.03);
+}
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.kpi-label {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  margin-top: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+.kpi-change {
+  font-size: var(--text-xs);
+  margin-top: var(--space-2);
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.kpi-change.positive { 
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.kpi-change.negative { 
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* ==========================================
+   Key Findings Box
+   ========================================== */
+
+.key-findings {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  padding: var(--space-5);
+  margin: var(--space-5) 0;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+}
+
+.key-findings-title {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent-dark);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.key-findings-title::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  border-radius: 50%;
+}
+
+.key-findings ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.key-findings li {
+  padding: var(--space-2) 0;
+  padding-left: var(--space-5);
+  position: relative;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+
+.key-findings li + li {
+  border-top: 1px solid rgba(37, 99, 235, 0.1);
+  padding-top: var(--space-3);
+}
+
+.key-findings li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 0.85em;
+}
+
+.key-findings li strong {
+  color: var(--color-accent-dark);
+}
+
+/* ==========================================
+   Callouts
+   ========================================== */
+
+.callout {
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin: var(--space-4) 0;
+  font-size: var(--text-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.callout-tip {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-left: 4px solid var(--color-positive);
+}
+
+.callout-warning {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-left: 4px solid var(--color-warning);
+}
+
+.callout-danger {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-left: 4px solid var(--color-negative);
+}
+
+.callout-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.callout-tip .callout-title { color: #047857; }
+.callout-warning .callout-title { color: #b45309; }
+.callout-danger .callout-title { color: #b91c1c; }
+
+.callout-tip .callout-title::before { content: '✓'; font-weight: 800; }
+.callout-warning .callout-title::before { content: '!'; font-weight: 800; }
+.callout-danger .callout-title::before { content: '✕'; font-weight: 800; }
+
+.callout p:last-child,
+.callout ul:last-child {
+  margin-bottom: 0;
+}
+
+.callout ul {
+  margin: var(--space-2) 0 0 0;
+}
+
+.callout li {
+  margin-bottom: var(--space-1);
+}
+
+/* ==========================================
+   Footer
+   ========================================== */
+
+.report-footer {
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-surface-alt);
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==========================================
+   Page Break Controls
+   ========================================== */
+
+.page-break {
+  page-break-before: always;
+}
+
+.no-break {
+  page-break-inside: avoid;
+}
+
+.report-content h1, 
+.report-content h2, 
+.report-content h3, 
+.report-content h4 {
+  page-break-after: avoid;
+}
+
+.report-content table, 
+.card, 
+.callout, 
+.key-findings, 
+.kpi-strip {
+  page-break-inside: avoid;
+}
+
+/* ==========================================
+   Print Optimization
+   ========================================== */
+
+@media print {
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .kpi-strip, 
+  .report-content thead {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ==========================================
+   Utilities
+   ========================================== */
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-sm { font-size: var(--text-sm); }
+.text-xs { font-size: var(--text-xs); }
+.text-accent { color: var(--color-accent); }
+.text-positive { color: var(--color-positive); }
+.text-negative { color: var(--color-negative); }
+.text-warning { color: var(--color-warning); }
+.font-bold { font-weight: 700; }
+.font-mono { font-family: var(--font-mono); }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }

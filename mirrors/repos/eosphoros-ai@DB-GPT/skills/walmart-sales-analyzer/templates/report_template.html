@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walmart 销售数据深度分析报告</title>
+    <style>
+        :root {
+            --primary-color: #0071ce;
+            --secondary-color: #ffc220;
+            --text-color: #333;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --accent-color: #e7f3ff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Noto Sans CJK SC";
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #004f8b 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            letter-spacing: 1px;
+        }
+        header p {
+            margin: 15px 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .section {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        h2 {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+        .analysis-box {
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .analysis-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.2em;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .insight-list {
+            padding-left: 20px;
+        }
+        .insight-list li {
+            margin-bottom: 12px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 10px;
+            background-color: var(--secondary-color);
+            color: #444;
+        }
+        footer {
+            text-align: center;
+            padding: 50px 0;
+            color: #777;
+            font-size: 0.95em;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Walmart 销售数据深度分析报告</h1>
+            <p>基于宏观经济指标与门店业绩的关联性研究</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Executive Summary -->
+        <section class="section">
+            <h2>执行摘要</h2>
+            <p>本报告旨在通过对 Walmart 历史销售数据的多维度分析，揭示<strong>失业率、CPI、油价</strong>等宏观经济因素对零售业绩的影响。通过数据可视化，我们识别了销售波动的核心驱动力，并为未来的库存管理和市场策略提供参考。</p>
+        </section>
+
+        <!-- 1. Correlation Analysis -->
+        <section class="section">
+            <h2>1. 多维度相关性分析</h2>
+            <div class="chart-container">
+                <img src="correlation_heatmap.png" alt="相关性热力图">
+            </div>
+            <div class="analysis-box">
+                <h3><span class="tag">数据解读</span> 变量间的内在联系</h3>
+                <ul class="insight-list">
+                    <li><strong>销售额与失业率</strong>：呈现微弱的负相关（约 -0.11），表明失业率上升对整体销售有抑制作用，但并非主导因素。</li>
+                    <li><strong>销售额与节假日</strong>：正相关性显著，验证了零售业强烈的季节性特征。</li>
+                    <li><strong>CPI 与失业率</strong>：通常呈现负相关，反映了通货膨胀与就业市场之间的宏观经济博弈。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Sales vs Unemployment -->
+        <section class="section">
+            <h2>2. 销售额与失业率的回归探索</h2>
+            <div class="chart-container">
+                <img src="sales_vs_unemployment_scatter.png" alt="销售额与失业率散点图">
+            </div>
+            <div class="analysis-box">
+                <h3><span class="tag">深度洞察</span> 经济压力下的消费韧性</h3>
+                <p>散点图结合回归线清晰地展示了随着失业率百分比的增加，周销售额的中位数呈现缓慢下降趋势。然而，数据点的离散程度较高，这表明：</p>
+                <ul class="insight-list">
+                    <li><strong>消费刚性</strong>：作为大型零售商，Walmart 销售的许多商品属于生活必需品，受经济波动影响相对较小。</li>
+                    <li><strong>异常值分析</strong>：在失业率较高的区域，仍有部分门店保持极高销售额，这可能与当地缺乏竞争对手或门店规模较大有关。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 3. Time Series Trends -->
+        <section class="section">
+            <h2>3. 动态趋势追踪：销售额 vs 失业率</h2>
+            <div class="chart-container">
+                <img src="time_series_trend.png" alt="时间序列趋势图">
+            </div>
+            <div class="analysis-box">
+                <h3><span class="tag">趋势研判</span> 季节性力量 vs 宏观趋势</h3>
+                <p>通过对比特定门店（Store 1, 4, 20）的长期走势，我们可以观察到：</p>
+                <ul class="insight-list">
+                    <li><strong>周期性主导</strong>：每年的 Q4 季度（11-12月）销售额均会出现爆发式增长，这种季节性力量远超失业率的微小波动。</li>
+                    <li><strong>滞后效应</strong>：失业率的变动通常是缓慢且具有趋势性的，而销售额对短期促销和节假日反应更为敏锐。</li>
+                    <li><strong>门店一致性</strong>：尽管不同门店的销售基数不同，但其波动节奏高度一致，说明全国性的促销活动和节假日是核心驱动力。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 4. Store Comparison -->
+        <section class="section">
+            <h2>4. 门店表现横向对比</h2>
+            <div class="chart-container">
+                <img src="store_avg_comparison.png" alt="门店平均值对比图">
+            </div>
+            <div class="analysis-box">
+                <h3><span class="tag">策略建议</span> 区域化运营策略</h3>
+                <p>各门店平均销售额与平均失业率的分布图揭示了显著的地域差异：</p>
+                <ul class="insight-list">
+                    <li><strong>高潜力区域</strong>：识别那些处于低失业率且高销售额的门店，作为旗舰店进行重点资源投入。</li>
+                    <li><strong>风险预警</strong>：对于处于高失业率区域且销售额持续低迷的门店，需考虑优化商品结构，增加高性价比（Value-for-money）产品的占比。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="section">
+            <h2>最终结论与建议</h2>
+            <p>综合以上分析，我们建议：</p>
+            <ol class="insight-list">
+                <li><strong>强化季节性备货</strong>：鉴于节假日对销售的决定性影响，应提前 3-6 个月完成 Q4 供应链优化。</li>
+                <li><strong>动态定价策略</strong>：在失业率上升较快的区域，适度增加促销频率，以维持客流量。</li>
+                <li><strong>关注 CPI 波动</strong>：虽然失业率影响有限，但 CPI 的变动直接关系到采购成本和利润空间，需密切监控。</li>
+            </ol>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Walmart Sales Analysis Tool | 深度数据驱动决策</p>
+            <p>Generated by DB-GPT AI Professional Suite</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,553 @@
+/**
+ * Nordic Report Dark Theme
+ * Dense information layout with dark mode
+ * High contrast, easy on the eyes
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Dark Color Palette */
+  --color-bg: #09090B;
+  --color-surface: #18181B;
+  --color-surface-alt: #27272A;
+  --color-surface-elevated: #3F3F46;
+  
+  /* Text - High Contrast */
+  --color-text-primary: #FAFAFA;
+  --color-text-secondary: #D4D4D8;
+  --color-text-muted: #A1A1AA;
+  --color-text-subtle: #71717A;
+  
+  /* Accent - Brighter for dark mode */
+  --color-accent: #3B82F6;
+  --color-accent-light: #1E3A5F;
+  --color-accent-dark: #60A5FA;
+  
+  /* Semantic - Adjusted for dark */
+  --color-positive: #4ADE80;
+  --color-positive-bg: #14532D;
+  --color-negative: #F87171;
+  --color-negative-bg: #7F1D1D;
+  --color-warning: #FBBF24;
+  --color-warning-bg: #78350F;
+  
+  /* Typography */
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Compact sizes for report density */
+  --text-xs: 0.7rem;
+  --text-sm: 0.8rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.25rem;
+  --text-3xl: 1.5rem;
+  --text-4xl: 2rem;
+  
+  /* Tight spacing */
+  --space-1: 0.125rem;
+  --space-2: 0.25rem;
+  --space-3: 0.5rem;
+  --space-4: 0.75rem;
+  --space-5: 1rem;
+  --space-6: 1.25rem;
+  --space-8: 1.5rem;
+  --space-10: 2rem;
+  --space-12: 2.5rem;
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+}
+
+/* Page Container */
+.page {
+  max-width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: var(--color-surface);
+  padding: 12mm 15mm;
+}
+
+@media print {
+  .page {
+    padding: 10mm 12mm;
+    margin: 0;
+    max-width: none;
+  }
+  
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+}
+
+/* ==========================================
+   Report Header
+   ========================================== */
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
+  border-bottom: 2px solid var(--color-text-primary);
+}
+
+.report-title {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.report-subtitle {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
+
+.report-meta {
+  text-align: right;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.report-meta-item {
+  margin-bottom: var(--space-1);
+}
+
+/* ==========================================
+   Typography
+   ========================================== */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-4);
+  margin-top: var(--space-8);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-surface-alt);
+}
+
+h2:first-of-type {
+  margin-top: 0;
+}
+
+h3 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+h4 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+}
+
+p {
+  margin-bottom: var(--space-4);
+}
+
+strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+a {
+  color: var(--color-accent-dark);
+  text-decoration: none;
+}
+
+/* ==========================================
+   KPI Strip - Gradient Dark
+   ========================================== */
+
+.kpi-strip {
+  display: flex;
+  gap: var(--space-4);
+  background: linear-gradient(135deg, #1E3A5F 0%, #312E81 100%);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+}
+
+.kpi-item {
+  flex: 1;
+  text-align: center;
+  padding: 0 var(--space-3);
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+
+.kpi-item:last-child {
+  border-right: none;
+}
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  line-height: 1;
+  color: #FFFFFF;
+}
+
+.kpi-label {
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.7);
+  margin-top: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-change {
+  font-size: var(--text-xs);
+  margin-top: var(--space-1);
+  font-weight: 600;
+}
+
+.kpi-change.positive { color: #4ADE80; }
+.kpi-change.negative { color: #F87171; }
+
+/* ==========================================
+   Two Column Layout
+   ========================================== */
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin: var(--space-6) 0;
+}
+
+/* ==========================================
+   Cards
+   ========================================== */
+
+.card {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-surface-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+/* ==========================================
+   Key Findings
+   ========================================== */
+
+.key-findings {
+  background: var(--color-accent-light);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--space-4);
+  margin: var(--space-5) 0;
+}
+
+.key-findings-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent-dark);
+  margin-bottom: var(--space-3);
+}
+
+.key-findings ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.key-findings li {
+  padding: var(--space-2) 0;
+  padding-left: var(--space-5);
+  position: relative;
+  font-size: var(--text-sm);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--color-text-secondary);
+}
+
+.key-findings li:last-child {
+  border-bottom: none;
+}
+
+.key-findings li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent-dark);
+  font-weight: 700;
+}
+
+/* ==========================================
+   Tables
+   ========================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-4) 0;
+  font-size: var(--text-sm);
+}
+
+thead {
+  background: linear-gradient(135deg, #1E3A5F 0%, #312E81 100%);
+}
+
+th {
+  padding: var(--space-3);
+  text-align: left;
+  font-weight: 600;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #FFFFFF;
+}
+
+td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-surface-alt);
+  color: var(--color-text-secondary);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--color-surface-alt);
+}
+
+tbody tr:hover {
+  background: var(--color-surface-elevated);
+}
+
+td.num, th.num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================
+   Callouts
+   ========================================== */
+
+.callout {
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin: var(--space-4) 0;
+  font-size: var(--text-sm);
+}
+
+.callout-tip {
+  background: var(--color-positive-bg);
+  border-left: 3px solid var(--color-positive);
+}
+
+.callout-warning {
+  background: var(--color-warning-bg);
+  border-left: 3px solid var(--color-warning);
+}
+
+.callout-danger {
+  background: var(--color-negative-bg);
+  border-left: 3px solid var(--color-negative);
+}
+
+.callout-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+   Lists
+   ========================================== */
+
+ul, ol {
+  margin: var(--space-3) 0;
+  padding-left: var(--space-5);
+}
+
+li {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+/* ==========================================
+   Code
+   ========================================== */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-surface-elevated);
+  padding: 0.15em 0.35em;
+  border-radius: var(--radius-sm);
+  color: var(--color-accent-dark);
+}
+
+pre {
+  background: #0D0D0D;
+  color: #E5E5E5;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  margin: var(--space-4) 0;
+  border: 1px solid var(--color-surface-alt);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* ==========================================
+   Blockquote
+   ========================================== */
+
+blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-4);
+  margin: var(--space-4) 0;
+  font-style: italic;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* ==========================================
+   Dividers
+   ========================================== */
+
+hr {
+  border: none;
+  height: 1px;
+  background: var(--color-surface-alt);
+  margin: var(--space-6) 0;
+}
+
+/* ==========================================
+   Footer
+   ========================================== */
+
+.report-footer {
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-surface-alt);
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==========================================
+   Page Break Controls
+   ========================================== */
+
+.page-break {
+  page-break-before: always;
+}
+
+.no-break {
+  page-break-inside: avoid;
+}
+
+h2, h3, h4 {
+  page-break-after: avoid;
+}
+
+table, .card, .callout, .key-findings, .kpi-strip {
+  page-break-inside: avoid;
+}
+
+/* ==========================================
+   Print - Force colors
+   ========================================== */
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .page {
+    background: var(--color-surface) !important;
+  }
+  
+  .kpi-strip, thead {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ==========================================
+   Utilities
+   ========================================== */
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-sm { font-size: var(--text-sm); }
+.text-xs { font-size: var(--text-xs); }
+.text-accent { color: var(--color-accent-dark); }
+.text-positive { color: var(--color-positive); }
+.text-negative { color: var(--color-negative); }
+.text-warning { color: var(--color-warning); }
+.font-bold { font-weight: 700; }
+.font-mono { font-family: var(--font-mono); }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }

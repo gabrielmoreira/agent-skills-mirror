@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <style>
+/* Typography: Plus Jakarta Sans for distinctive, modern presentation feel */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* === CSS Reset & Base === */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Color System */
+  --ink: #0d0d0d;
+  --ink-secondary: #404040;
+  --ink-muted: #737373;
+  --surface: #ffffff;
+  --surface-elevated: #fafafa;
+  --accent: #1d4ed8;
+  --accent-soft: #dbeafe;
+  
+  /* Typography Scale */
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  
+  /* Spacing */
+  --page-margin: 0.75in;
+  --section-gap: 48px;
+}
+
+html {
+  font-size: 16px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--surface);
+  font-weight: 400;
+}
+
+/* === Page Container === */
+.document {
+  max-width: 8.5in;
+  margin: 0 auto;
+}
+
+/* === TITLE SLIDE === */
+.title-slide {
+  min-height: 100vh;
+  padding: var(--page-margin);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  page-break-after: always;
+  break-after: page;
+  position: relative;
+  background: linear-gradient(180deg, #fafafa 0%, #ffffff 50%, #f5f5f5 100%);
+}
+
+/* Decorative accent bar */
+.title-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent) 0%, #3b82f6 50%, var(--accent) 100%);
+}
+
+.title-slide h1 {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  max-width: 16ch;
+  margin-bottom: 1.25rem;
+}
+
+.title-slide .subtitle {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 2.5rem;
+  max-width: 32ch;
+}
+
+.title-slide .meta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Decorative bottom element */
+.title-slide::after {
+  content: '';
+  position: absolute;
+  bottom: 2in;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--ink);
+  opacity: 0.15;
+  border-radius: 2px;
+}
+
+/* === CONTENT SLIDES === */
+.content {
+  padding: var(--page-margin);
+}
+
+/* Section Headers - Force Page Break */
+.content h1 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 2rem 0;
+  padding-top: 0.5in;
+  page-break-before: always;
+  break-before: page;
+}
+
+.content h1:first-child {
+  page-break-before: avoid;
+  break-before: avoid;
+  padding-top: 0;
+}
+
+/* Subsection Headers */
+.content h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 2.5rem 0 1rem 0;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+.content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  margin: 2rem 0 0.75rem 0;
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Keep heading + following content together */
+.content h2 + p,
+.content h2 + ul,
+.content h2 + ol,
+.content h2 + table,
+.content h3 + p,
+.content h3 + ul,
+.content h3 + ol,
+.content h3 + table {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+/* Body Text */
+.content p {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  margin: 0 0 1rem 0;
+  color: var(--ink);
+}
+
+/* Lists */
+.content ul, .content ol {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  margin: 1rem 0 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.content li {
+  margin: 0.5rem 0;
+}
+
+.content li strong {
+  color: var(--ink);
+}
+
+/* === TABLES === */
+.content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1.5rem 0 2rem 0;
+  font-size: 0.9375rem;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.content th {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: var(--surface);
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.content td {
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+  background: white;
+}
+
+.content tr:last-child td {
+  border-bottom: none;
+}
+
+.content tbody tr:nth-child(even) td {
+  background: #fafbfc;
+}
+
+/* First column styling */
+.content td:first-child {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* === INLINE CODE === */
+.content code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+/* === CODE BLOCKS (actual code) === */
+.content pre {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.content pre code {
+  display: block;
+  background: #1a1a2e;
+  color: #e5e5e5;
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* === ASCII DIAGRAMS (special treatment for architecture/flow diagrams) === */
+.content pre code.language-text,
+.content pre code.language-diagram,
+.content pre code.language-ascii {
+  /* Light, paper-like background with subtle texture */
+  background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+  color: var(--ink);
+  
+  /* Refined container styling */
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  
+  /* Typography optimized for box-drawing characters */
+  font-family: 'JetBrains Mono', 'SF Mono', 'Monaco', monospace;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+  
+  /* Subtle shadow for depth */
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  
+  /* Ensure box characters align */
+  -webkit-font-feature-settings: "liga" 0;
+  font-feature-settings: "liga" 0;
+}
+
+/* Label styling for diagram boxes */
+.content pre code.language-text strong,
+.content pre code.language-diagram strong,
+.content pre code.language-ascii strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* === BLOCKQUOTES === */
+.content blockquote {
+  border-left: none;
+  padding: 2rem 2.5rem;
+  margin: 2.5rem 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+/* Large quote mark */
+.content blockquote::before {
+  content: '"';
+  position: absolute;
+  top: 0.5rem;
+  left: 1.25rem;
+  font-family: Georgia, serif;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.3;
+}
+
+.content blockquote p {
+  font-size: 1.375rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.5;
+  padding-left: 1rem;
+}
+
+/* === HORIZONTAL RULES === */
+.content hr {
+  border: none;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent) 0%, #60a5fa 50%, var(--accent) 100%);
+  margin: 2.5rem 0;
+  border-radius: 2px;
+  /* Prevent orphaned hr elements */
+  page-break-before: avoid;
+  break-before: avoid;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+/* === FOOTER === */
+.document-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* === PRINT / PDF SPECIFIC === */
+@media print {
+  html, body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .title-slide {
+    min-height: 9.5in;
+    page-break-after: always;
+    break-after: page;
+  }
+  
+  .content h1 {
+    page-break-before: always;
+    break-before: page;
+  }
+  
+  .content h1:first-child {
+    page-break-before: avoid;
+    break-before: avoid;
+  }
+  
+  .content h2, .content h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  
+  .content table,
+  .content pre,
+  .content blockquote {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  .document-footer {
+    page-break-before: avoid;
+  }
+}
+
+/* === PAGE SIZE HINT FOR PDF ENGINES === */
+@page {
+  size: letter;
+  margin: 0.5in;
+}
+  </style>
+</head>
+<body>
+  <div class="document">
+    <!-- Title Slide -->
+    <section class="title-slide">
+      <h1>{{title}}</h1>
+      <p class="subtitle">{{subtitle}}</p>
+      <p class="meta">{{author}} · {{date}}</p>
+    </section>
+    
+    <!-- Content -->
+    <main class="content">
+{{content}}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="document-footer">
+      {{author}} · {{date}} · Confidential
+    </footer>
+  </div>
+</body>
+</html>

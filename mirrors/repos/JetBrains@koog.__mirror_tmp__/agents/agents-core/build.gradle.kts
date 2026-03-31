@@ -1,0 +1,77 @@
+import ai.koog.gradle.publish.maven.Publishing.publishToMaven
+import org.gradle.kotlin.dsl.implementation
+import org.gradle.kotlin.dsl.project
+
+group = rootProject.group
+version = rootProject.version
+
+plugins {
+    id("ai.kotlin.multiplatform")
+    alias(libs.plugins.kotlin.serialization)
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(project(":agents:agents-tools"))
+                api(project(":agents:agents-utils"))
+                api(project(":utils"))
+                api(project(":prompt:prompt-executor:prompt-executor-model"))
+                api(project(":prompt:prompt-llm"))
+                api(project(":prompt:prompt-processor"))
+                api(project(":prompt:prompt-structure"))
+
+                api(project(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-openai-client"))
+                api(project(":prompt:prompt-executor:prompt-executor-model"))
+                api(project(":prompt:prompt-markdown"))
+
+                api(libs.kotlinx.io.core)
+                api(libs.kotlinx.serialization.json)
+                api(libs.ktor.client.content.negotiation)
+                api(libs.ktor.client.logging)
+                api(libs.ktor.serialization.kotlinx.json)
+                api(libs.ktor.server.sse)
+                api(libs.ktor.server.cio)
+
+                implementation(libs.oshai.kotlin.logging)
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(project(":agents:agents-test"))
+                implementation(project(":test-utils"))
+                implementation(libs.kotest.assertions.json)
+            }
+        }
+
+        jvmCommonMain {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.jdk9)
+                implementation(project(":serialization:serialization-jackson"))
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                implementation(project(":integration-tests"))
+                implementation(project(":serialization:serialization-jackson"))
+
+                implementation(libs.ktor.client.cio)
+            }
+        }
+    }
+
+    explicitApi()
+}
+
+publishToMaven()

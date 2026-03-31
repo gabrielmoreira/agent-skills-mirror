@@ -1,0 +1,24 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Project Structure
+
+Refly is an open-source AI-native creation engine with a monorepo structure. Here's an overview of the main directories:
+
+## Apps Directory
+- [apps/api](mdc:apps/api) - Backend API built with NestJS
+- [apps/web](mdc:apps/web) - Frontend web application built with React
+- [apps/extension](mdc:apps/extension) - Browser extension for web clipping
+
+## Packages Directory
+- [packages/ai-workspace-common](mdc:packages/ai-workspace-common) - Shared UI components and utilities
+- [packages/common-types](mdc:packages/common-types) - Shared TypeScript types
+- [packages/i18n](mdc:packages/i18n) - Internationalization resources
+- [packages/skill-template](mdc:packages/skill-template) - Templates for AI skills
+- [packages/utils](mdc:packages/utils) - Shared utility functions
+
+## Configuration Files
+- [package.json](mdc:package.json) - Root package configuration
+- [turbo.json](mdc:turbo.json) - Turborepo configuration

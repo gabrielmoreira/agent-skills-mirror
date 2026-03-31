@@ -1,0 +1,235 @@
+package ai.koog.agents.mcp.server
+
+import ai.koog.agents.core.tools.Tool
+import ai.koog.agents.core.tools.ToolDescriptor
+import ai.koog.agents.core.tools.ToolParameterDescriptor
+import ai.koog.agents.core.tools.ToolParameterType
+import ai.koog.agents.core.tools.ToolRegistry
+import ai.koog.agents.core.tools.annotations.InternalAgentToolsApi
+import ai.koog.serialization.JSONSerializer
+import ai.koog.serialization.kotlinx.KotlinxSerializer
+import ai.koog.serialization.kotlinx.toKoogJSONObject
+import io.ktor.server.engine.ApplicationEngineFactory
+import io.ktor.server.engine.EmbeddedServer
+import io.ktor.server.engine.EngineConnectorConfig
+import io.ktor.server.engine.embeddedServer
+import io.modelcontextprotocol.kotlin.sdk.server.Server
+import io.modelcontextprotocol.kotlin.sdk.server.ServerOptions
+import io.modelcontextprotocol.kotlin.sdk.server.mcp
+import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
+import io.modelcontextprotocol.kotlin.sdk.types.EmptyJsonObject
+import io.modelcontextprotocol.kotlin.sdk.types.Implementation
+import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
+import io.modelcontextprotocol.kotlin.sdk.types.TextContent
+import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonObjectBuilder
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
+import kotlin.coroutines.cancellation.CancellationException
+import io.modelcontextprotocol.kotlin.sdk.types.Tool as SdkTool
+
+/**
+ * Starts a new MCP server with the passed [tools] that listens to and writes
+ * to the specified [port] on the passed [host].
+ * A port can be obtained from the returned list of [EngineConnectorConfig].
+ */
+public suspend fun startSseMcpServer(
+    factory: ApplicationEngineFactory<*, *>,
+    port: Int = 3000,
+    host: String = "localhost",
+    tools: ToolRegistry,
+): Server = doStartSseMcpServer(factory, port, host, tools, true).first
+
+/**
+ * Starts a new MCP server with the passed [tools] that listens to and writes
+ * to the allocated port on the passed [host].
+ * A port can be obtained from the returned list of [EngineConnectorConfig].
+ */
+public suspend fun startSseMcpServer(
+    factory: ApplicationEngineFactory<*, *>,
+    host: String = "localhost",
+    tools: ToolRegistry,
+): Pair<Server, List<EngineConnectorConfig>> = doStartSseMcpServer(factory, 0, host, tools, false)
+
+private suspend fun doStartSseMcpServer(
+    factory: ApplicationEngineFactory<*, *>,
+    port: Int,
+    host: String,
+    tools: ToolRegistry,
+    skipConnectors: Boolean,
+): Pair<Server, List<EngineConnectorConfig>> {
+    val server = configureMcpServer(tools)
+
+    val emb = embeddedServer(factory = factory, host = host, port = port) {
+        mcp { server }
+    }
+        .also { emb -> server.onClose { emb.stop(1000, 1000) } }
+        .startSuspend(wait = false)
+
+    val connectors = if (skipConnectors) {
+        emptyList()
+    } else {
+        emb.connectors()
+    }
+
+    return server to connectors
+}
+
+private suspend fun EmbeddedServer<*, *>.connectors(): List<EngineConnectorConfig> = coroutineScope {
+    val scope = this@coroutineScope
+    val server = this@connectors
+
+    while (scope.isActive) {
+        val connectors = server.engine.resolvedConnectors()
+        if (connectors.isNotEmpty()) {
+            return@coroutineScope connectors
+        }
+    }
+
+    return@coroutineScope emptyList()
+}
+
+/**
+ * Build an MCP server with the given [tools].
+ *
+ * @param tools The tools to add to the server
+ * @param implementation Optional implementation information for the server.
+ * @param serializer Optional serializer to use for encoding and decoding tool arguments and results.
+ * Defaults to [KotlinxSerializer]
+ */
+@OptIn(InternalAgentToolsApi::class)
+public fun configureMcpServer(
+    tools: ToolRegistry,
+    implementation: Implementation = Implementation("MCP Server with Koog-based tools", "dev"),
+    serializer: JSONSerializer = KotlinxSerializer(),
+): Server {
+    val server = Server(
+        serverInfo = implementation,
+        options = ServerOptions(
+            capabilities = ServerCapabilities(
+                tools = ServerCapabilities.Tools(listChanged = true),
+            )
+        )
+    )
+
+    tools.tools.forEach { tool ->
+        server.addTool(tool, serializer)
+    }
+
+    return server
+}
+
+/**
+ * Adds a tool to the MCP server.
+ *
+ * @param tool The tool to add
+ * @param serializer Optional serializer to use for encoding and decoding tool arguments and results
+ * Defaults to [KotlinxSerializer]
+ */
+@OptIn(InternalAgentToolsApi::class)
+public fun Server.addTool(
+    tool: Tool<*, *>,
+    serializer: JSONSerializer = KotlinxSerializer(),
+) {
+    addTool(tool.descriptor.asSdkTool()) { request ->
+        val args = try {
+            tool.decodeArgs(
+                rawArgs = (request.arguments ?: EmptyJsonObject).toKoogJSONObject(),
+                serializer = serializer
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return@addTool CallToolResult(
+                content = listOf(TextContent("Failed to parse arguments for tool '${tool.name}': ${e.message}")),
+                isError = true,
+            )
+        }
+        val result = tool.executeUnsafe(args)
+
+        CallToolResult(
+            content = listOf(
+                TextContent(tool.encodeResultToStringUnsafe(result, serializer))
+            )
+        )
+    }
+}
+
+private fun ToolDescriptor.asSdkTool(): SdkTool {
+    return SdkTool(
+        name = name,
+        description = description,
+        inputSchema = ToolSchema(
+            properties = buildJsonObject {
+                (requiredParameters + optionalParameters).forEach { param ->
+                    put(param.name, param.toJsonSchema())
+                }
+            },
+            required = requiredParameters.map { it.name },
+        ),
+        outputSchema = null,
+        annotations = null,
+        title = null,
+    )
+}
+
+// copied from AbstractOpenAILLMClient.kt
+private fun ToolParameterDescriptor.toJsonSchema(): JsonObject = buildJsonObject {
+    put("description", description)
+    fillJsonSchema(type)
+}
+
+private fun JsonObjectBuilder.fillJsonSchema(type: ToolParameterType) {
+    when (type) {
+        ToolParameterType.Boolean -> put("type", "boolean")
+
+        ToolParameterType.Float -> put("type", "number")
+
+        ToolParameterType.Integer -> put("type", "integer")
+
+        ToolParameterType.String -> put("type", "string")
+
+        ToolParameterType.Null -> put("type", "null")
+
+        is ToolParameterType.Enum -> {
+            put("type", "string")
+            putJsonArray("enum") {
+                type.entries.forEach { entry -> add(entry) }
+            }
+        }
+
+        is ToolParameterType.List -> {
+            put("type", "array")
+            putJsonObject("items") { fillJsonSchema(type.itemsType) }
+        }
+
+        is ToolParameterType.AnyOf -> {
+            putJsonArray("anyOf") {
+                addAll(
+                    type.types.map { propertiesType ->
+                        propertiesType.toJsonSchema()
+                    }
+                )
+            }
+        }
+
+        is ToolParameterType.Object -> {
+            put("type", "object")
+            type.additionalProperties?.let { put("additionalProperties", it) }
+            putJsonObject("properties") {
+                type.properties.forEach { property ->
+                    putJsonObject(property.name) {
+                        fillJsonSchema(property.type)
+                        put("description", property.description)
+                    }
+                }
+            }
+        }
+    }
+}

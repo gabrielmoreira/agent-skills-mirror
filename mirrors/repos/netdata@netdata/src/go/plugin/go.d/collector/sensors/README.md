@@ -1,0 +1,1 @@
+integrations/linux_sensors.md

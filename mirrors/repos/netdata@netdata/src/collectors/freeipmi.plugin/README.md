@@ -1,0 +1,1 @@
+integrations/intelligent_platform_management_interface_ipmi.md

@@ -1,0 +1,27 @@
+{
+  "name": "elegant-reports",
+  "version": "1.0.0",
+  "description": "Generate beautifully designed PDF reports with Nordic/Scandinavian aesthetic",
+  "main": "generate.js",
+  "bin": {
+    "elegant-reports": "./generate.js"
+  },
+  "scripts": {
+    "generate": "node generate.js",
+    "smoke": "node scripts/smoke-test.js",
+    "test": "npm run smoke && node generate.js --list"
+  },
+  "keywords": [
+    "pdf",
+    "reports",
+    "nordic",
+    "design",
+    "nutrient"
+  ],
+  "author": "OpenClaw skill",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "form-data": "^4.0.0"
+  }
+}

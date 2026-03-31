@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    {{styles}}
+    
+    /* Analysis Template Specific Styles */
+    .analysis-cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-16) var(--space-10);
+      page-break-after: always;
+    }
+    
+    .analysis-cover-title {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: var(--space-4);
+    }
+    
+    .analysis-cover-subtitle {
+      font-size: var(--text-xl);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-8);
+    }
+    
+    .analysis-cover-meta {
+      margin-top: auto;
+      padding-top: var(--space-12);
+      border-top: 1px solid var(--color-border-subtle);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-6);
+    }
+    
+    .analysis-meta-item {
+      font-size: var(--text-sm);
+    }
+    
+    .analysis-meta-label {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-1);
+    }
+    
+    .analysis-meta-value {
+      color: var(--color-text-primary);
+    }
+    
+    /* Table of Contents */
+    .toc {
+      page-break-after: always;
+      padding: var(--space-12) var(--space-10);
+    }
+    
+    .toc-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-4);
+      border-bottom: 2px solid var(--color-border);
+    }
+    
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .toc-item {
+      display: flex;
+      align-items: baseline;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+    
+    .toc-number {
+      font-size: var(--text-sm);
+      color: var(--color-accent);
+      font-weight: var(--font-medium);
+      width: 2rem;
+      flex-shrink: 0;
+    }
+    
+    .toc-text {
+      flex: 1;
+      color: var(--color-text-primary);
+    }
+    
+    .toc-page {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    
+    /* Content Pages */
+    .analysis-content {
+      padding: var(--space-10);
+    }
+    
+    .analysis-section {
+      margin-bottom: var(--space-12);
+    }
+    
+    .section-number {
+      font-size: var(--text-sm);
+      color: var(--color-accent);
+      font-weight: var(--font-semibold);
+      display: block;
+      margin-bottom: var(--space-2);
+    }
+    
+    /* Data Table */
+    .data-table {
+      margin: var(--space-6) 0;
+      font-size: var(--text-sm);
+    }
+    
+    .data-table th {
+      background: var(--color-bg);
+      position: sticky;
+      top: 0;
+    }
+    
+    .data-table td {
+      font-variant-numeric: tabular-nums;
+    }
+    
+    /* Figure */
+    figure {
+      margin: var(--space-8) 0;
+      page-break-inside: avoid;
+    }
+    
+    figcaption {
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-3);
+      text-align: center;
+    }
+    
+    /* Footnotes */
+    .footnotes {
+      margin-top: var(--space-12);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .footnotes ol {
+      padding-left: var(--space-5);
+      margin: 0;
+    }
+    
+    .footnotes li {
+      margin-bottom: var(--space-2);
+    }
+    
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: var(--space-4);
+      margin-bottom: var(--space-8);
+      border-bottom: 1px solid var(--color-border-subtle);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    
+    .page-header-title {
+      font-weight: var(--font-medium);
+    }
+    
+    /* Appendix */
+    .appendix {
+      page-break-before: always;
+    }
+    
+    .appendix h2::before {
+      content: "Appendix: ";
+      color: var(--color-text-muted);
+    }
+    
+    @media print {
+      .analysis-cover {
+        min-height: auto;
+        height: 100vh;
+      }
+      
+      .page-header {
+        position: running(header);
+      }
+      
+      @page {
+        @top-center {
+          content: element(header);
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cover Page -->
+  <div class="analysis-cover">
+    <h1 class="analysis-cover-title">{{title}}</h1>
+    {{#if subtitle}}
+    <p class="analysis-cover-subtitle">{{subtitle}}</p>
+    {{/if}}
+    
+    <div class="analysis-cover-meta">
+      <div class="analysis-meta-item">
+        <div class="analysis-meta-label">Date</div>
+        <div class="analysis-meta-value">{{date}}</div>
+      </div>
+      {{#if author}}
+      <div class="analysis-meta-item">
+        <div class="analysis-meta-label">Prepared by</div>
+        <div class="analysis-meta-value">{{author}}</div>
+      </div>
+      {{/if}}
+      {{#if version}}
+      <div class="analysis-meta-item">
+        <div class="analysis-meta-label">Version</div>
+        <div class="analysis-meta-value">{{version}}</div>
+      </div>
+      {{/if}}
+      {{#if status}}
+      <div class="analysis-meta-item">
+        <div class="analysis-meta-label">Status</div>
+        <div class="analysis-meta-value">{{status}}</div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+  
+  <!-- Table of Contents -->
+  {{#if toc}}
+  <div class="toc">
+    <h2 class="toc-title">Contents</h2>
+    <ol class="toc-list">
+      {{#each toc}}
+      <li class="toc-item">
+        <span class="toc-number">{{this.number}}</span>
+        <span class="toc-text">{{this.title}}</span>
+        <span class="toc-page">{{this.page}}</span>
+      </li>
+      {{/each}}
+    </ol>
+  </div>
+  {{/if}}
+  
+  <!-- Main Content -->
+  <div class="analysis-content">
+    {{content}}
+  </div>
+</body>
+</html>

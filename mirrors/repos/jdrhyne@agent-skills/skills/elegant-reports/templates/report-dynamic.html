@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <style>
+{{styles}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="report-header">
+      <div>
+        <h1 class="report-title">{{title}}</h1>
+        <p class="report-subtitle">{{subtitle}}</p>
+      </div>
+      <div class="report-meta">
+        <div class="report-meta-item"><strong>Date:</strong> {{date}}</div>
+        <div class="report-meta-item"><strong>Author:</strong> {{author}}</div>
+      </div>
+    </header>
+    <div class="report-content">
+{{content}}
+    </div>
+    <footer class="report-footer">
+      <span>{{author}}</span>
+      <span>{{date}} · Confidential</span>
+    </footer>
+  </div>
+</body>
+</html>
