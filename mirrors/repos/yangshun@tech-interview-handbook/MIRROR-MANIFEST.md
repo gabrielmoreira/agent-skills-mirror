@@ -1,10 +1,8 @@
 ---
 repo: yangshun/tech-interview-handbook
 repoUrl: https://github.com/yangshun/tech-interview-handbook.git
-commit: 37d533e4de82cf19989fef10336b2aeba48448f4
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:27:25.161Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `yangshun/tech-interview-handbook` — 26 default patterns, 0 followed
 | Repo          | `yangshun/tech-interview-handbook` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `37d533e4de82cf19989fef10336b2aeba48448f4` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T11:27:25.161Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,15 +1,13 @@
 ---
 repo: osaurus-ai/osaurus
 repoUrl: https://github.com/osaurus-ai/osaurus.git
-commit: c014c2ac81c61630080b926dce2cdb9d4ca85c44
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:14:45.914Z
 ---
 
 # Mirror Manifest
 
-Mirror of `osaurus-ai/osaurus` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `osaurus-ai/osaurus` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `osaurus-ai/osaurus` — 26 default patterns, 0 followed patterns, 3 f
 | Repo          | `osaurus-ai/osaurus` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c014c2ac81c61630080b926dce2cdb9d4ca85c44` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
-| Mirrored      | 2026-03-31T23:14:45.914Z |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,8 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.cursor/rules/swift-build.mdc`](.cursor/rules/swift-build.mdc) |
-| 2 | ✓ | [`docs/PLUGIN_AUTHORING.md`](docs/PLUGIN_AUTHORING.md) |
-| 3 | ✓ | [`docs/SKILLS.md`](docs/SKILLS.md) |
 
 ---
 

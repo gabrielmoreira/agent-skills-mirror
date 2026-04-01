@@ -1,10 +1,8 @@
 ---
 repo: harikrishna8121999/antigravity-workflows
 repoUrl: https://github.com/harikrishna8121999/antigravity-workflows.git
-commit: d388af7c10ddb6e28124c51fdccb554a5b0606e8
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:11.370Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `harikrishna8121999/antigravity-workflows` — 26 default patterns, 1 
 | Repo          | `harikrishna8121999/antigravity-workflows` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d388af7c10ddb6e28124c51fdccb554a5b0606e8` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:02:11.370Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

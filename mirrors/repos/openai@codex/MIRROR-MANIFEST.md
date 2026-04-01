@@ -1,10 +1,8 @@
 ---
 repo: openai/codex
 repoUrl: https://github.com/openai/codex.git
-commit: dedd1c386a9bb2b4031d26b0494217a20868fb7a
 refType: branch
 ref: main
-mirroredAt: 2026-04-01T00:39:24.213Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `openai/codex` — 26 default patterns, 0 followed patterns, 11 file(s
 | Repo          | `openai/codex` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `dedd1c386a9bb2b4031d26b0494217a20868fb7a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 11 |
-| Mirrored      | 2026-04-01T00:39:24.213Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

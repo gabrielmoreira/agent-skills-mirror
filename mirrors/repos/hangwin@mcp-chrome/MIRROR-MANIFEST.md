@@ -1,10 +1,8 @@
 ---
 repo: hangwin/mcp-chrome
 repoUrl: https://github.com/hangwin/mcp-chrome.git
-commit: f48e71751e00bc09725c7e173423cff4f2ccd12a
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:58:48.087Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `hangwin/mcp-chrome` — 26 default patterns, 0 followed patterns, 3 f
 | Repo          | `hangwin/mcp-chrome` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `f48e71751e00bc09725c7e173423cff4f2ccd12a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:58:48.087Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

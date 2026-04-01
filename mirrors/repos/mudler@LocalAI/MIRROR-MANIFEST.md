@@ -1,15 +1,13 @@
 ---
 repo: mudler/LocalAI
 repoUrl: https://github.com/mudler/LocalAI.git
-commit: cc5f33ce95d5210f88dc053df48f0f1d5554f661
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T23:11:32.482Z
 ---
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 10 file
 | Repo          | `mudler/LocalAI` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `cc5f33ce95d5210f88dc053df48f0f1d5554f661` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
-| Mirrored      | 2026-03-31T23:11:32.482Z |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,7 +68,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
 | 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`docs/content/features/agents.md`](docs/content/features/agents.md) |
 
 ---
 

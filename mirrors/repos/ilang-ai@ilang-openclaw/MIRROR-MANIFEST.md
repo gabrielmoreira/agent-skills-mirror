@@ -1,10 +1,8 @@
 ---
 repo: ilang-ai/ilang-openclaw
 repoUrl: https://github.com/ilang-ai/ilang-openclaw.git
-commit: f677c4234547dad793b8a42a81ced9be4eadd95d
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:45.285Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns
 | Repo          | `ilang-ai/ilang-openclaw` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `f677c4234547dad793b8a42a81ced9be4eadd95d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T20:04:45.285Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

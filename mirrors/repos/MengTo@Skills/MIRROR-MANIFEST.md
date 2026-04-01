@@ -1,10 +1,8 @@
 ---
 repo: MengTo/Skills
 repoUrl: https://github.com/MengTo/Skills.git
-commit: 7b5e0655c211b3e8ae34a134616123bb28b8f3b0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:18.020Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 19 file(
 | Repo          | `MengTo/Skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7b5e0655c211b3e8ae34a134616123bb28b8f3b0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 19 |
-| Mirrored      | 2026-03-31T20:04:18.020Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

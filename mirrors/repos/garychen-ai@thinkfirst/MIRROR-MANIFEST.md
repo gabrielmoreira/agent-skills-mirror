@@ -1,10 +1,8 @@
 ---
 repo: garychen-ai/thinkfirst
 repoUrl: https://github.com/garychen-ai/thinkfirst.git
-commit: dfe309e3f115d90f7e18c7675598104dff643a45
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:47.721Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `garychen-ai/thinkfirst` — 26 default patterns, 0 followed patterns,
 | Repo          | `garychen-ai/thinkfirst` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `dfe309e3f115d90f7e18c7675598104dff643a45` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:03:47.721Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

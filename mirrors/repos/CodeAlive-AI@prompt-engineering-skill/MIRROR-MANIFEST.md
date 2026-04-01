@@ -1,10 +1,8 @@
 ---
 repo: CodeAlive-AI/prompt-engineering-skill
 repoUrl: https://github.com/CodeAlive-AI/prompt-engineering-skill.git
-commit: 816b4fc92e13adf20e79707052c45b40aaffc09c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:07.520Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `CodeAlive-AI/prompt-engineering-skill` — 26 default patterns, 15 fo
 | Repo          | `CodeAlive-AI/prompt-engineering-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `816b4fc92e13adf20e79707052c45b40aaffc09c` |
 | Default pats  | 26 |
 | Followed pats | 15 |
 | Files         | 16 |
-| Mirrored      | 2026-03-31T20:04:07.520Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

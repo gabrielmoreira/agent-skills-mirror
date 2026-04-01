@@ -1,10 +1,8 @@
 ---
 repo: D4Vinci/Scrapling
 repoUrl: https://github.com/D4Vinci/Scrapling.git
-commit: e173f813da2a7c2d6984042cd5cfbe6d5ec90dce
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:19.627Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `D4Vinci/Scrapling` — 26 default patterns, 0 followed patterns, 1 fi
 | Repo          | `D4Vinci/Scrapling` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e173f813da2a7c2d6984042cd5cfbe6d5ec90dce` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:57:19.627Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

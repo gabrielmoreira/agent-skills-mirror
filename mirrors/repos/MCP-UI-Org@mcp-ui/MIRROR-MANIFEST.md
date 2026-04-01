@@ -1,10 +1,8 @@
 ---
 repo: MCP-UI-Org/mcp-ui
 repoUrl: https://github.com/MCP-UI-Org/mcp-ui.git
-commit: af881f9eff2cb0c394587cbf3bd00ffe5ee973a0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:16.675Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `MCP-UI-Org/mcp-ui` — 26 default patterns, 0 followed patterns, 1 fi
 | Repo          | `MCP-UI-Org/mcp-ui` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `af881f9eff2cb0c394587cbf3bd00ffe5ee973a0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:00:16.675Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

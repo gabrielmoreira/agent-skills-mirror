@@ -1,10 +1,8 @@
 ---
 repo: ryo-ebata/cc-audit
 repoUrl: https://github.com/ryo-ebata/cc-audit.git
-commit: 2d665a3e21d3963689c82ebd6f9936f2aed512cb
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:53.971Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ryo-ebata/cc-audit` — 26 default patterns, 0 followed patterns, 20 
 | Repo          | `ryo-ebata/cc-audit` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2d665a3e21d3963689c82ebd6f9936f2aed512cb` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 20 |
-| Mirrored      | 2026-03-31T20:03:53.971Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

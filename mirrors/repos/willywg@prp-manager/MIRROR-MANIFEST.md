@@ -1,10 +1,8 @@
 ---
 repo: willywg/prp-manager
 repoUrl: https://github.com/willywg/prp-manager.git
-commit: c91c9ca5ab1d0549c0511b08db56b188c35ebe6b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:34.040Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `willywg/prp-manager` — 26 default patterns, 0 followed patterns, 2 
 | Repo          | `willywg/prp-manager` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c91c9ca5ab1d0549c0511b08db56b188c35ebe6b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:04:34.040Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

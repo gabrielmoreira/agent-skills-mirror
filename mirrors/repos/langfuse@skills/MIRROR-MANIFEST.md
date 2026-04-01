@@ -1,15 +1,13 @@
 ---
 repo: langfuse/skills
 repoUrl: https://github.com/langfuse/skills.git
-commit: d045623d8ff299f5b738c0fdd5396e475fbfa075
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:42.342Z
 ---
 
 # Mirror Manifest
 
-Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 15 fil
 | Repo          | `langfuse/skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d045623d8ff299f5b738c0fdd5396e475fbfa075` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
-| Mirrored      | 2026-03-31T20:02:42.342Z |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,14 +66,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.cursor/skills/skill-creator/scripts/package_skill.py`](.cursor/skills/skill-creator/scripts/package_skill.py) |
 | 6 | ✓ | [`.cursor/skills/skill-creator/scripts/quick_validate.py`](.cursor/skills/skill-creator/scripts/quick_validate.py) |
 | 7 | ✓ | [`.cursor/skills/skill-creator/SKILL.md`](.cursor/skills/skill-creator/SKILL.md) |
-| 8 | ✓ | [`agents.md`](agents.md) |
-| 9 | ✓ | [`skills/langfuse/references/cli.md`](skills/langfuse/references/cli.md) |
-| 10 | ✓ | [`skills/langfuse/references/instrumentation.md`](skills/langfuse/references/instrumentation.md) |
-| 11 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
-| 12 | ✓ | [`skills/langfuse/references/sdk-upgrade.md`](skills/langfuse/references/sdk-upgrade.md) |
-| 13 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
-| 14 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
-| 15 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
+| 8 | ✓ | [`skills/langfuse/references/cli.md`](skills/langfuse/references/cli.md) |
+| 9 | ✓ | [`skills/langfuse/references/instrumentation.md`](skills/langfuse/references/instrumentation.md) |
+| 10 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
+| 11 | ✓ | [`skills/langfuse/references/sdk-upgrade.md`](skills/langfuse/references/sdk-upgrade.md) |
+| 12 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
+| 13 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
+| 14 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
 
 ---
 

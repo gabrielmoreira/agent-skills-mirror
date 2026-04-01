@@ -1,10 +1,8 @@
 ---
 repo: chatchat-space/Langchain-Chatchat
 repoUrl: https://github.com/chatchat-space/Langchain-Chatchat.git
-commit: 49165d6af4438aa7e8a1f71ce276db55f4405151
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:49:09.999Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `chatchat-space/Langchain-Chatchat` — 26 default patterns, 0 followe
 | Repo          | `chatchat-space/Langchain-Chatchat` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `49165d6af4438aa7e8a1f71ce276db55f4405151` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:49:09.999Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

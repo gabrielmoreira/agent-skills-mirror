@@ -1,10 +1,8 @@
 ---
 repo: github/github-mcp-server
 repoUrl: https://github.com/github/github-mcp-server.git
-commit: dd239d84430e711cb62de093581ff91816eba62b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:41.435Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `github/github-mcp-server` — 26 default patterns, 0 followed pattern
 | Repo          | `github/github-mcp-server` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `dd239d84430e711cb62de093581ff91816eba62b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:57:41.435Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

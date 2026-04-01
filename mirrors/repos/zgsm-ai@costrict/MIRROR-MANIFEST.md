@@ -1,10 +1,8 @@
 ---
 repo: zgsm-ai/costrict
 repoUrl: https://github.com/zgsm-ai/costrict.git
-commit: 2b87e064458586becb1b49190be77cac1bf4fc5e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:52:10.333Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `zgsm-ai/costrict` — 26 default patterns, 1 followed patterns, 5 fil
 | Repo          | `zgsm-ai/costrict` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2b87e064458586becb1b49190be77cac1bf4fc5e` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T19:52:10.333Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

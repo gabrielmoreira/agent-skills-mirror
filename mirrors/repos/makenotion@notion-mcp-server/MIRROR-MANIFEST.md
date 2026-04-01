@@ -1,10 +1,8 @@
 ---
 repo: makenotion/notion-mcp-server
 repoUrl: https://github.com/makenotion/notion-mcp-server.git
-commit: 3bef7addac59b237da3bb41f36a520babc47fa3c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:40.358Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `makenotion/notion-mcp-server` — 26 default patterns, 0 followed pat
 | Repo          | `makenotion/notion-mcp-server` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3bef7addac59b237da3bb41f36a520babc47fa3c` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:00:40.358Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

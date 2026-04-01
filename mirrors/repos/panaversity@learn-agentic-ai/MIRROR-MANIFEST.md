@@ -1,10 +1,8 @@
 ---
 repo: panaversity/learn-agentic-ai
 repoUrl: https://github.com/panaversity/learn-agentic-ai.git
-commit: dd7426f65b2452062fdb6d27661c018eaf751baa
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:50.585Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `panaversity/learn-agentic-ai` — 26 default patterns, 0 followed pat
 | Repo          | `panaversity/learn-agentic-ai` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `dd7426f65b2452062fdb6d27661c018eaf751baa` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:00:50.585Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

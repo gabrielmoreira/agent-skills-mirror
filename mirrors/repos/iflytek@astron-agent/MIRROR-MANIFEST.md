@@ -1,10 +1,8 @@
 ---
 repo: iflytek/astron-agent
 repoUrl: https://github.com/iflytek/astron-agent.git
-commit: 9e570eb906a07a36c2d7500343349f31b3746d60
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:04.871Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `iflytek/astron-agent` — 26 default patterns, 6 followed patterns, 1
 | Repo          | `iflytek/astron-agent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9e570eb906a07a36c2d7500343349f31b3746d60` |
 | Default pats  | 26 |
 | Followed pats | 6 |
 | Files         | 10 |
-| Mirrored      | 2026-03-31T19:59:04.871Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

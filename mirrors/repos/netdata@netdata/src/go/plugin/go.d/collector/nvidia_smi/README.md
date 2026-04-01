@@ -1,1 +1,0 @@
-integrations/nvidia_gpu.md

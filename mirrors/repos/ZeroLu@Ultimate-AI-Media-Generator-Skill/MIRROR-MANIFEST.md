@@ -1,10 +1,8 @@
 ---
 repo: ZeroLu/Ultimate-AI-Media-Generator-Skill
 repoUrl: https://github.com/ZeroLu/Ultimate-AI-Media-Generator-Skill.git
-commit: 5bfbd98a5c172902b958d361fb367d40079f7588
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:13.556Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ZeroLu/Ultimate-AI-Media-Generator-Skill` — 26 default patterns, 0 
 | Repo          | `ZeroLu/Ultimate-AI-Media-Generator-Skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5bfbd98a5c172902b958d361fb367d40079f7588` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:03:13.556Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

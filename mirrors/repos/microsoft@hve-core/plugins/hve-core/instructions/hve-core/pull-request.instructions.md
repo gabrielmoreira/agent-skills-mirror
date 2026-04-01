@@ -1,1 +1,1 @@
-../../../../.github/instructions/hve-core/pull-request.instructions.md
+cache/repos/github.com/microsoft@hve-core/plugins/hve-core/instructions/hve-core/../../../../.github/instructions/hve-core/pull-request.instructions.md

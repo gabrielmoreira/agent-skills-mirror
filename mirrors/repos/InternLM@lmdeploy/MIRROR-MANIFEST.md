@@ -1,10 +1,8 @@
 ---
 repo: InternLM/lmdeploy
 repoUrl: https://github.com/InternLM/lmdeploy.git
-commit: 4c4fc2bb717300859c9afffdb5ec497f93234b8b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:50:40.525Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `InternLM/lmdeploy` — 26 default patterns, 0 followed patterns, 6 fi
 | Repo          | `InternLM/lmdeploy` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4c4fc2bb717300859c9afffdb5ec497f93234b8b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T19:50:40.525Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

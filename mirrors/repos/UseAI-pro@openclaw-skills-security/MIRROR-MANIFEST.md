@@ -1,10 +1,8 @@
 ---
 repo: UseAI-pro/openclaw-skills-security
 repoUrl: https://github.com/UseAI-pro/openclaw-skills-security.git
-commit: 4645f2d047d63e0682b01745d9fc07720110d386
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:54.336Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `UseAI-pro/openclaw-skills-security` — 26 default patterns, 0 follow
 | Repo          | `UseAI-pro/openclaw-skills-security` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4645f2d047d63e0682b01745d9fc07720110d386` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 14 |
-| Mirrored      | 2026-03-31T20:02:54.336Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

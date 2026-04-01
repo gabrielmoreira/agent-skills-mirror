@@ -1,15 +1,13 @@
 ---
 repo: iOfficeAI/AionUi
 repoUrl: https://github.com/iOfficeAI/AionUi.git
-commit: 5b2c741f927b5043b60006bf850c7b7b1342698c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:43.251Z
 ---
 
 # Mirror Manifest
 
-Mirror of `iOfficeAI/AionUi` — 26 default patterns, 3 followed patterns, 55 file(s) materialized.
+Mirror of `iOfficeAI/AionUi` — 26 default patterns, 3 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 3 followed patterns, 55 fi
 | Repo          | `iOfficeAI/AionUi` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5b2c741f927b5043b60006bf850c7b7b1342698c` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 55 |
-| Mirrored      | 2026-03-31T19:49:43.251Z |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -108,18 +104,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`src/process/resources/skills/officecli-xlsx/editing.md`](src/process/resources/skills/officecli-xlsx/editing.md) |
 | 42 | ✓ | [`src/process/resources/skills/officecli-xlsx/SKILL.md`](src/process/resources/skills/officecli-xlsx/SKILL.md) |
 | 43 | ✓ | [`src/process/resources/skills/openclaw-setup/SKILL.md`](src/process/resources/skills/openclaw-setup/SKILL.md) |
-| 44 | ✓ | [`src/process/resources/skills/pdf/forms.md`](src/process/resources/skills/pdf/forms.md) |
-| 45 | ✓ | [`src/process/resources/skills/pdf/reference.md`](src/process/resources/skills/pdf/reference.md) |
-| 46 | ✓ | [`src/process/resources/skills/pdf/SKILL.md`](src/process/resources/skills/pdf/SKILL.md) |
-| 47 | ✓ | [`src/process/resources/skills/skill-creator/SKILL.md`](src/process/resources/skills/skill-creator/SKILL.md) |
-| 48 | ✓ | [`src/process/resources/skills/star-office-helper/SKILL.md`](src/process/resources/skills/star-office-helper/SKILL.md) |
-| 49 | ✓ | [`src/process/resources/skills/story-roleplay/SKILL.md`](src/process/resources/skills/story-roleplay/SKILL.md) |
-| 50 | ✓ | [`src/process/resources/skills/weixin-file-send/SKILL.md`](src/process/resources/skills/weixin-file-send/SKILL.md) |
-| 51 | ✓ | [`src/process/resources/skills/x-recruiter/SKILL.md`](src/process/resources/skills/x-recruiter/SKILL.md) |
-| 52 | ✓ | [`src/process/resources/skills/xiaohongshu-recruiter/SKILL.md`](src/process/resources/skills/xiaohongshu-recruiter/SKILL.md) |
-| 53 | → | [`docs/conventions/file-structure.md`](docs/conventions/file-structure.md) |
-| 54 | → | [`docs/conventions/pr-automation.md`](docs/conventions/pr-automation.md) |
-| 55 | → | [`docs/tech/architecture.md`](docs/tech/architecture.md) |
+| 44 | ✓ | [`src/process/resources/skills/pdf/SKILL.md`](src/process/resources/skills/pdf/SKILL.md) |
+| 45 | ✓ | [`src/process/resources/skills/skill-creator/SKILL.md`](src/process/resources/skills/skill-creator/SKILL.md) |
+| 46 | ✓ | [`src/process/resources/skills/star-office-helper/SKILL.md`](src/process/resources/skills/star-office-helper/SKILL.md) |
+| 47 | ✓ | [`src/process/resources/skills/story-roleplay/SKILL.md`](src/process/resources/skills/story-roleplay/SKILL.md) |
+| 48 | ✓ | [`src/process/resources/skills/weixin-file-send/SKILL.md`](src/process/resources/skills/weixin-file-send/SKILL.md) |
+| 49 | ✓ | [`src/process/resources/skills/x-recruiter/SKILL.md`](src/process/resources/skills/x-recruiter/SKILL.md) |
+| 50 | ✓ | [`src/process/resources/skills/xiaohongshu-recruiter/SKILL.md`](src/process/resources/skills/xiaohongshu-recruiter/SKILL.md) |
+| 51 | → | [`docs/conventions/file-structure.md`](docs/conventions/file-structure.md) |
+| 52 | → | [`docs/conventions/pr-automation.md`](docs/conventions/pr-automation.md) |
+| 53 | → | [`docs/tech/architecture.md`](docs/tech/architecture.md) |
 
 ---
 

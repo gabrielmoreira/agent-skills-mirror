@@ -1,10 +1,8 @@
 ---
 repo: kochetkov-ma/claude-brewcode
 repoUrl: https://github.com/kochetkov-ma/claude-brewcode.git
-commit: f7daf018f03cdb3670aefda3b615acfbd388430f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:32:47.709Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed pat
 | Repo          | `kochetkov-ma/claude-brewcode` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `f7daf018f03cdb3670aefda3b615acfbd388430f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 28 |
-| Mirrored      | 2026-03-31T20:32:47.709Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

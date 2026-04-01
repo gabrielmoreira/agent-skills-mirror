@@ -1,10 +1,8 @@
 ---
 repo: astral-sh/ruff
 repoUrl: https://github.com/astral-sh/ruff.git
-commit: 39c3636bc9c37db2652a0123848949a459e02988
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:53:15.487Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 2 file(
 | Repo          | `astral-sh/ruff` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `39c3636bc9c37db2652a0123848949a459e02988` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:53:15.487Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

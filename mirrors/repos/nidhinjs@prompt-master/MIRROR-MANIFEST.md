@@ -1,10 +1,8 @@
 ---
 repo: nidhinjs/prompt-master
 repoUrl: https://github.com/nidhinjs/prompt-master.git
-commit: 4b3996117966a3837d9e22ce24cfa744daad3f8b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:01.233Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `nidhinjs/prompt-master` — 26 default patterns, 2 followed patterns,
 | Repo          | `nidhinjs/prompt-master` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4b3996117966a3837d9e22ce24cfa744daad3f8b` |
 | Default pats  | 26 |
 | Followed pats | 2 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T20:01:01.233Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

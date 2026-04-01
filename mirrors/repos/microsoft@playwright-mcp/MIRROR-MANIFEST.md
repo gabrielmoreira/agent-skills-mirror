@@ -1,10 +1,8 @@
 ---
 repo: microsoft/playwright-mcp
 repoUrl: https://github.com/microsoft/playwright-mcp.git
-commit: d21e970b680fe675b0560e128430a76cc6650faf
 refType: branch
 ref: main
-mirroredAt: 2026-04-01T00:40:08.381Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `microsoft/playwright-mcp` — 26 default patterns, 0 followed pattern
 | Repo          | `microsoft/playwright-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d21e970b680fe675b0560e128430a76cc6650faf` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-04-01T00:40:08.381Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

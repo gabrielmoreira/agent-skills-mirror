@@ -1,10 +1,8 @@
 ---
 repo: erweixin/prompt-challenges
 repoUrl: https://github.com/erweixin/prompt-challenges.git
-commit: 6545de51968e09a4d4b22e085dd7d56854d2fba8
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:40.530Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `erweixin/prompt-challenges` — 26 default patterns, 0 followed patte
 | Repo          | `erweixin/prompt-challenges` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6545de51968e09a4d4b22e085dd7d56854d2fba8` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:02:40.530Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

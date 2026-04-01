@@ -1,10 +1,8 @@
 ---
 repo: hiyouga/LlamaFactory
 repoUrl: https://github.com/hiyouga/LlamaFactory.git
-commit: e5e85464937db03eacd7c77ac99c28e2a84ebd05
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:48:47.615Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `hiyouga/LlamaFactory` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `hiyouga/LlamaFactory` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e5e85464937db03eacd7c77ac99c28e2a84ebd05` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:48:47.615Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

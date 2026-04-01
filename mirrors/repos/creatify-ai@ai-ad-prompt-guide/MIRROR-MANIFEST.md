@@ -1,10 +1,8 @@
 ---
 repo: creatify-ai/ai-ad-prompt-guide
 repoUrl: https://github.com/creatify-ai/ai-ad-prompt-guide.git
-commit: 115b3988d89a9d21d1114e59611f82b4612ab660
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:35.733Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `creatify-ai/ai-ad-prompt-guide` — 26 default patterns, 0 followed p
 | Repo          | `creatify-ai/ai-ad-prompt-guide` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `115b3988d89a9d21d1114e59611f82b4612ab660` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:03:35.733Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: ComposioHQ/awesome-claude-skills
 repoUrl: https://github.com/ComposioHQ/awesome-claude-skills.git
-commit: 27904475d1270d8395acf07691966267d5abda2d
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:57:18.809Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ComposioHQ/awesome-claude-skills` — 26 default patterns, 0 followed
 | Repo          | `ComposioHQ/awesome-claude-skills` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `27904475d1270d8395acf07691966267d5abda2d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 868 |
-| Mirrored      | 2026-03-31T19:57:18.809Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

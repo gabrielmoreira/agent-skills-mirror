@@ -1,10 +1,8 @@
 ---
 repo: disler/the-library
 repoUrl: https://github.com/disler/the-library.git
-commit: 47f455cd139b0e8498e13ce0d91de9741ebddf99
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:33.889Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `disler/the-library` — 26 default patterns, 8 followed patterns, 9 f
 | Repo          | `disler/the-library` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `47f455cd139b0e8498e13ce0d91de9741ebddf99` |
 | Default pats  | 26 |
 | Followed pats | 8 |
 | Files         | 9 |
-| Mirrored      | 2026-03-31T20:01:33.889Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

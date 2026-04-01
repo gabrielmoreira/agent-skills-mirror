@@ -1,10 +1,8 @@
 ---
 repo: webpack/webpack
 repoUrl: https://github.com/webpack/webpack.git
-commit: cfc5e36888d7d97517122da34b0e8a57abd5f333
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:52:49.022Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `webpack/webpack` — 26 default patterns, 1 followed patterns, 3 file
 | Repo          | `webpack/webpack` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cfc5e36888d7d97517122da34b0e8a57abd5f333` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:52:49.022Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

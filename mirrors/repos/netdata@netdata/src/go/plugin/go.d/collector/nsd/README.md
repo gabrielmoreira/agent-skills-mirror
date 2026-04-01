@@ -1,1 +1,0 @@
-integrations/nsd.md

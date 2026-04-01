@@ -1,1 +1,0 @@
-integrations/nvme_devices.md

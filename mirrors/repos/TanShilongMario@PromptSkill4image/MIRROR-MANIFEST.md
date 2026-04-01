@@ -1,10 +1,8 @@
 ---
 repo: TanShilongMario/PromptSkill4image
 repoUrl: https://github.com/TanShilongMario/PromptSkill4image.git
-commit: 946edbcf89f17dcf084a52538c4fb95c91fae566
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:54.074Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `TanShilongMario/PromptSkill4image` — 26 default patterns, 2 followe
 | Repo          | `TanShilongMario/PromptSkill4image` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `946edbcf89f17dcf084a52538c4fb95c91fae566` |
 | Default pats  | 26 |
 | Followed pats | 2 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T20:02:54.074Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

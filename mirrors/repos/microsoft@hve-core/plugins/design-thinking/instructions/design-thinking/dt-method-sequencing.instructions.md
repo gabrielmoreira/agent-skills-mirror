@@ -1,1 +1,1 @@
-../../../../.github/instructions/design-thinking/dt-method-sequencing.instructions.md
+cache/repos/github.com/microsoft@hve-core/plugins/design-thinking/instructions/design-thinking/../../../../.github/instructions/design-thinking/dt-method-sequencing.instructions.md

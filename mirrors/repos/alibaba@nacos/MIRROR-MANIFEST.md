@@ -1,10 +1,8 @@
 ---
 repo: alibaba/nacos
 repoUrl: https://github.com/alibaba/nacos.git
-commit: d6cfc47a3cb718925f8908897b2a5590c0401d0c
 refType: branch
 ref: develop
-mirroredAt: 2026-03-31T19:57:40.144Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `alibaba/nacos` — 26 default patterns, 0 followed patterns, 1 file(s
 | Repo          | `alibaba/nacos` |
 | Ref Type      | `branch` |
 | Ref           | `develop` |
-| Commit        | `d6cfc47a3cb718925f8908897b2a5590c0401d0c` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:57:40.144Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

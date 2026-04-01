@@ -1,1 +1,0 @@
-integrations/docker.md

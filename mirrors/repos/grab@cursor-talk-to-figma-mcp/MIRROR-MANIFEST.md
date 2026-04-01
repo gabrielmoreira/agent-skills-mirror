@@ -1,10 +1,8 @@
 ---
 repo: grab/cursor-talk-to-figma-mcp
 repoUrl: https://github.com/grab/cursor-talk-to-figma-mcp.git
-commit: df7673e2ef80b398d368f1d06141c632e23a2df9
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:38.427Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `grab/cursor-talk-to-figma-mcp` — 26 default patterns, 0 followed pa
 | Repo          | `grab/cursor-talk-to-figma-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `df7673e2ef80b398d368f1d06141c632e23a2df9` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:59:38.427Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

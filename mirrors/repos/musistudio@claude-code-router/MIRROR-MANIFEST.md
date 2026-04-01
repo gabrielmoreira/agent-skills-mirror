@@ -1,10 +1,8 @@
 ---
 repo: musistudio/claude-code-router
 repoUrl: https://github.com/musistudio/claude-code-router.git
-commit: e270dea523b8ac025ab9b7b0708dc170efa52d8a
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:53:54.236Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `musistudio/claude-code-router` — 26 default patterns, 0 followed pa
 | Repo          | `musistudio/claude-code-router` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e270dea523b8ac025ab9b7b0708dc170efa52d8a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:53:54.236Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

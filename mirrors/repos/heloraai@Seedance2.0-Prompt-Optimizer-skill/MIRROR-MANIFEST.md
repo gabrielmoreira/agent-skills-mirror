@@ -1,10 +1,8 @@
 ---
 repo: heloraai/Seedance2.0-Prompt-Optimizer-skill
 repoUrl: https://github.com/heloraai/Seedance2.0-Prompt-Optimizer-skill.git
-commit: 3311ecca8c1c303e63a0099c10923a930487bf58
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:43.482Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `heloraai/Seedance2.0-Prompt-Optimizer-skill` — 26 default patterns,
 | Repo          | `heloraai/Seedance2.0-Prompt-Optimizer-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3311ecca8c1c303e63a0099c10923a930487bf58` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:02:43.482Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

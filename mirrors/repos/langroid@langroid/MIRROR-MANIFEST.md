@@ -1,10 +1,8 @@
 ---
 repo: langroid/langroid
 repoUrl: https://github.com/langroid/langroid.git
-commit: 0e5589633ddc5e9a6041b5c2829365c93eab7e14
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:52:01.342Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `langroid/langroid` — 26 default patterns, 0 followed patterns, 5 fi
 | Repo          | `langroid/langroid` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0e5589633ddc5e9a6041b5c2829365c93eab7e14` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T19:52:01.342Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

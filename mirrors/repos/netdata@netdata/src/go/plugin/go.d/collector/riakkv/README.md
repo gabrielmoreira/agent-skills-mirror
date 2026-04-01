@@ -1,1 +1,0 @@
-integrations/riak_kv.md

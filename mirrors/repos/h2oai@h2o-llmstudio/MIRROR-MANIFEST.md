@@ -1,10 +1,8 @@
 ---
 repo: h2oai/h2o-llmstudio
 repoUrl: https://github.com/h2oai/h2o-llmstudio.git
-commit: 3fe5301141458d666e5f50d0f0ff6a2f450b609d
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:51:28.437Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `h2oai/h2o-llmstudio` — 26 default patterns, 0 followed patterns, 5 
 | Repo          | `h2oai/h2o-llmstudio` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3fe5301141458d666e5f50d0f0ff6a2f450b609d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T19:51:28.437Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

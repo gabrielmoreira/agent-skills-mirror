@@ -1,10 +1,8 @@
 ---
 repo: sooperset/mcp-atlassian
 repoUrl: https://github.com/sooperset/mcp-atlassian.git
-commit: 8e84d747cd06355323d86d1ab816043d2d21b706
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:07.969Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `sooperset/mcp-atlassian` — 26 default patterns, 0 followed patterns
 | Repo          | `sooperset/mcp-atlassian` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `8e84d747cd06355323d86d1ab816043d2d21b706` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T20:00:07.969Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

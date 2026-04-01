@@ -1,10 +1,8 @@
 ---
 repo: dexhunter/seedance2-skill
 repoUrl: https://github.com/dexhunter/seedance2-skill.git
-commit: e06c7c63a766d623004a2807881c30685ce517af
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:34.201Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `dexhunter/seedance2-skill` — 26 default patterns, 0 followed patter
 | Repo          | `dexhunter/seedance2-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e06c7c63a766d623004a2807881c30685ce517af` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:01:34.201Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

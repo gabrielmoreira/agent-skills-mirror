@@ -1,1 +1,1 @@
-../../../plugin/skills/make-plan/SKILL.md
+cache/repos/github.com/thedotmack@claude-mem/openclaw/skills/make-plan/../../../plugin/skills/make-plan/SKILL.md

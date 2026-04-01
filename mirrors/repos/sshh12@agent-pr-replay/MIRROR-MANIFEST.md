@@ -1,10 +1,8 @@
 ---
 repo: sshh12/agent-pr-replay
 repoUrl: https://github.com/sshh12/agent-pr-replay.git
-commit: 92c9553b80e0edb4014af0437cb5389754d386d7
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:08.575Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `sshh12/agent-pr-replay` — 26 default patterns, 0 followed patterns,
 | Repo          | `sshh12/agent-pr-replay` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `92c9553b80e0edb4014af0437cb5389754d386d7` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:03:08.575Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

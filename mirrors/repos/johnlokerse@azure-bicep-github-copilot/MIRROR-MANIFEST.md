@@ -1,10 +1,8 @@
 ---
 repo: johnlokerse/azure-bicep-github-copilot
 repoUrl: https://github.com/johnlokerse/azure-bicep-github-copilot.git
-commit: ce2cb395a4f66782c34c91144d289d071f918e3f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:45.257Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `johnlokerse/azure-bicep-github-copilot` — 26 default patterns, 0 fo
 | Repo          | `johnlokerse/azure-bicep-github-copilot` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `ce2cb395a4f66782c34c91144d289d071f918e3f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T20:04:45.257Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: legeling/PromptHub
 repoUrl: https://github.com/legeling/PromptHub.git
-commit: 709d96ef5c443b52ceb0300212b6998b002136a9
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:22.704Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `legeling/PromptHub` — 26 default patterns, 0 followed patterns, 6 f
 | Repo          | `legeling/PromptHub` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `709d96ef5c443b52ceb0300212b6998b002136a9` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T20:01:22.704Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

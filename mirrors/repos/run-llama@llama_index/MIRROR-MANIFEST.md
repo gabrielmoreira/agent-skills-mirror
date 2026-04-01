@@ -1,15 +1,13 @@
 ---
 repo: run-llama/llama_index
 repoUrl: https://github.com/run-llama/llama_index.git
-commit: ce7916fa6004f17e1a7c4143e9a63f6207cc932b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:03.889Z
 ---
 
 # Mirror Manifest
 
-Mirror of `run-llama/llama_index` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `run-llama/llama_index` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `run-llama/llama_index` — 26 default patterns, 0 followed patterns, 
 | Repo          | `run-llama/llama_index` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `ce7916fa6004f17e1a7c4143e9a63f6207cc932b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
-| Mirrored      | 2026-03-31T19:49:03.889Z |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,8 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`docs/src/content/docs/framework/llms.txt`](docs/src/content/docs/framework/llms.txt) |
-| 2 | ✓ | [`docs/src/content/docs/framework/understanding/putting_it_all_together/agents.md`](docs/src/content/docs/framework/understanding/putting_it_all_together/agents.md) |
-| 3 | ✓ | [`docs/src/content/docs/framework/use_cases/agents.md`](docs/src/content/docs/framework/use_cases/agents.md) |
 
 ---
 

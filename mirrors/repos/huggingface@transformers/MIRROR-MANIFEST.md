@@ -1,10 +1,8 @@
 ---
 repo: huggingface/transformers
 repoUrl: https://github.com/huggingface/transformers.git
-commit: 9914a3641f7aaaabb0bcdfcd73a54a1cfa70c3e7
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:48:51.198Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `huggingface/transformers` — 26 default patterns, 1 followed pattern
 | Repo          | `huggingface/transformers` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9914a3641f7aaaabb0bcdfcd73a54a1cfa70c3e7` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T19:48:51.198Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

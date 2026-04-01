@@ -1,10 +1,8 @@
 ---
 repo: OthmanAdi/planning-with-files
 repoUrl: https://github.com/OthmanAdi/planning-with-files.git
-commit: bb3a21ab0d3efbfb3f719124644fc2688a3373e4
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:56:40.395Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `OthmanAdi/planning-with-files` — 26 default patterns, 3 followed pa
 | Repo          | `OthmanAdi/planning-with-files` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `bb3a21ab0d3efbfb3f719124644fc2688a3373e4` |
 | Default pats  | 26 |
 | Followed pats | 3 |
 | Files         | 80 |
-| Mirrored      | 2026-03-31T19:56:40.395Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

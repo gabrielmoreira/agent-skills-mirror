@@ -1,10 +1,8 @@
 ---
 repo: googleapis/genai-toolbox
 repoUrl: https://github.com/googleapis/genai-toolbox.git
-commit: 52146c53033afde1ccf881ac4ab3da6610b76591
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:32.324Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `googleapis/genai-toolbox` — 26 default patterns, 0 followed pattern
 | Repo          | `googleapis/genai-toolbox` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `52146c53033afde1ccf881ac4ab3da6610b76591` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T19:58:32.324Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

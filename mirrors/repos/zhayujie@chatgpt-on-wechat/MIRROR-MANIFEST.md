@@ -1,10 +1,8 @@
 ---
 repo: zhayujie/chatgpt-on-wechat
 repoUrl: https://github.com/zhayujie/chatgpt-on-wechat.git
-commit: 1c336380c0186f688b47c63390c56ebaaa0a7f8e
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:48:59.995Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `zhayujie/chatgpt-on-wechat` — 26 default patterns, 0 followed patte
 | Repo          | `zhayujie/chatgpt-on-wechat` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `1c336380c0186f688b47c63390c56ebaaa0a7f8e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 8 |
-| Mirrored      | 2026-03-31T19:48:59.995Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

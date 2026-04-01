@@ -1,10 +1,8 @@
 ---
 repo: Molunerfinn/PicGo
 repoUrl: https://github.com/Molunerfinn/PicGo.git
-commit: 43a21de38097b4c8d8c1e82f6e4aff8953e00071
 refType: branch
 ref: dev
-mirroredAt: 2026-03-31T19:54:23.815Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Molunerfinn/PicGo` — 26 default patterns, 0 followed patterns, 1 fi
 | Repo          | `Molunerfinn/PicGo` |
 | Ref Type      | `branch` |
 | Ref           | `dev` |
-| Commit        | `43a21de38097b4c8d8c1e82f6e4aff8953e00071` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:54:23.815Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,15 +1,13 @@
 ---
 repo: VoltAgent/voltagent
 repoUrl: https://github.com/VoltAgent/voltagent.git
-commit: 90b655d6d3435ad2aceda08d10a8bf62d0f31ea5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:34.907Z
 ---
 
 # Mirror Manifest
 
-Mirror of `VoltAgent/voltagent` — 26 default patterns, 4 followed patterns, 14 file(s) materialized.
+Mirror of `VoltAgent/voltagent` — 26 default patterns, 4 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `VoltAgent/voltagent` — 26 default patterns, 4 followed patterns, 14
 | Repo          | `VoltAgent/voltagent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `90b655d6d3435ad2aceda08d10a8bf62d0f31ea5` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 14 |
-| Mirrored      | 2026-03-31T19:59:34.907Z |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,15 +67,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`examples/with-workspace/workspace/skills/data-analysis/SKILL.md`](examples/with-workspace/workspace/skills/data-analysis/SKILL.md) |
 | 5 | ✓ | [`examples/with-workspace/workspace/skills/playwright-cli/SKILL.md`](examples/with-workspace/workspace/skills/playwright-cli/SKILL.md) |
-| 6 | ✓ | [`website/docs/api/endpoints/agents.md`](website/docs/api/endpoints/agents.md) |
-| 7 | ✓ | [`website/docs/api/endpoints/workflows.md`](website/docs/api/endpoints/workflows.md) |
-| 8 | ✓ | [`website/docs/workspaces/skills.md`](website/docs/workspaces/skills.md) |
-| 9 | ✓ | [`website/recipes/workflows.md`](website/recipes/workflows.md) |
-| 10 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
-| 11 | → | [`docs/linting.md`](docs/linting.md) |
-| 12 | → | [`docs/structure.md`](docs/structure.md) |
-| 13 | → | [`docs/testing.md`](docs/testing.md) |
-| 14 | → | [`docs/tooling.md`](docs/tooling.md) |
+| 6 | ✓ | [`website/docs/workspaces/skills.md`](website/docs/workspaces/skills.md) |
+| 7 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
+| 8 | → | [`docs/linting.md`](docs/linting.md) |
+| 9 | → | [`docs/structure.md`](docs/structure.md) |
+| 10 | → | [`docs/testing.md`](docs/testing.md) |
+| 11 | → | [`docs/tooling.md`](docs/tooling.md) |
 
 ---
 

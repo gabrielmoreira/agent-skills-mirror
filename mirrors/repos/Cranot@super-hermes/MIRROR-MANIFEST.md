@@ -1,10 +1,8 @@
 ---
 repo: Cranot/super-hermes
 repoUrl: https://github.com/Cranot/super-hermes.git
-commit: ba6b1cd372f761c04d776a1f1a1ab789298b314e
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:04:29.679Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Cranot/super-hermes` — 26 default patterns, 0 followed patterns, 5 
 | Repo          | `Cranot/super-hermes` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `ba6b1cd372f761c04d776a1f1a1ab789298b314e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T20:04:29.679Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: aisa-group/promptinject-agent-skills
 repoUrl: https://github.com/aisa-group/promptinject-agent-skills.git
-commit: 6171ca7a3bb67f5abf38856c38becb86f059f6d5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:57.980Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `aisa-group/promptinject-agent-skills` — 26 default patterns, 0 foll
 | Repo          | `aisa-group/promptinject-agent-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6171ca7a3bb67f5abf38856c38becb86f059f6d5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T20:03:57.980Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

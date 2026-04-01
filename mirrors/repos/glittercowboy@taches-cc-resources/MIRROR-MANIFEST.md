@@ -1,10 +1,8 @@
 ---
 repo: glittercowboy/taches-cc-resources
 repoUrl: https://github.com/glittercowboy/taches-cc-resources.git
-commit: 0d915b80b95f9889673e1dc6a9059ed239764cde
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:05.496Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `glittercowboy/taches-cc-resources` — 26 default patterns, 0 followe
 | Repo          | `glittercowboy/taches-cc-resources` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0d915b80b95f9889673e1dc6a9059ed239764cde` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 190 |
-| Mirrored      | 2026-03-31T20:01:05.496Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

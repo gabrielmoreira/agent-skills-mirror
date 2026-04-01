@@ -1,10 +1,8 @@
 ---
 repo: PrefectHQ/fastmcp
 repoUrl: https://github.com/PrefectHQ/fastmcp.git
-commit: a52ab0e92d345e14648fc4a0198a432632b40737
 refType: branch
 ref: main
-mirroredAt: 2026-04-01T00:40:16.283Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 12 f
 | Repo          | `PrefectHQ/fastmcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a52ab0e92d345e14648fc4a0198a432632b40737` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 12 |
-| Mirrored      | 2026-04-01T00:40:16.283Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: ax128/AegisGate
 repoUrl: https://github.com/ax128/AegisGate.git
-commit: 1bc770bc0a86db058239bac9603d018ca8bbeddc
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:01.829Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ax128/AegisGate` — 26 default patterns, 0 followed patterns, 3 file
 | Repo          | `ax128/AegisGate` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1bc770bc0a86db058239bac9603d018ca8bbeddc` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T20:03:01.829Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

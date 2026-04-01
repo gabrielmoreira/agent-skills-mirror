@@ -1,10 +1,8 @@
 ---
 repo: LigphiDonk/academic-figure-generator
 repoUrl: https://github.com/LigphiDonk/academic-figure-generator.git
-commit: 0a2bec6bb56d6b47143a81909f8d818716bdcbab
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:16.949Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `LigphiDonk/academic-figure-generator` — 26 default patterns, 0 foll
 | Repo          | `LigphiDonk/academic-figure-generator` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0a2bec6bb56d6b47143a81909f8d818716bdcbab` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:01:16.949Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

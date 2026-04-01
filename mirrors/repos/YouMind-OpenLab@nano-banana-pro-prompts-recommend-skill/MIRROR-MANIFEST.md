@@ -1,10 +1,8 @@
 ---
 repo: YouMind-OpenLab/nano-banana-pro-prompts-recommend-skill
 repoUrl: https://github.com/YouMind-OpenLab/nano-banana-pro-prompts-recommend-skill.git
-commit: 55867f1ce701f1225064cc2d3e6694d98f8337a3
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:08.140Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `YouMind-OpenLab/nano-banana-pro-prompts-recommend-skill` — 26 defau
 | Repo          | `YouMind-OpenLab/nano-banana-pro-prompts-recommend-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `55867f1ce701f1225064cc2d3e6694d98f8337a3` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:01:08.140Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

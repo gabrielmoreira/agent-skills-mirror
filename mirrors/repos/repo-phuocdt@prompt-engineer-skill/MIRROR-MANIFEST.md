@@ -1,10 +1,8 @@
 ---
 repo: repo-phuocdt/prompt-engineer-skill
 repoUrl: https://github.com/repo-phuocdt/prompt-engineer-skill.git
-commit: a77187b6faef80f72b89a593c32bfce9a647aec8
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:06.451Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `repo-phuocdt/prompt-engineer-skill` — 26 default patterns, 0 follow
 | Repo          | `repo-phuocdt/prompt-engineer-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a77187b6faef80f72b89a593c32bfce9a647aec8` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:04:06.451Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

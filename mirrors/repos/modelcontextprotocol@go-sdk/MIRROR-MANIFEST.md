@@ -1,10 +1,8 @@
 ---
 repo: modelcontextprotocol/go-sdk
 repoUrl: https://github.com/modelcontextprotocol/go-sdk.git
-commit: e23b75cd3f35eea408777cca1ef2e5e6aa77ea22
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:34.066Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patt
 | Repo          | `modelcontextprotocol/go-sdk` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e23b75cd3f35eea408777cca1ef2e5e6aa77ea22` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 70 |
-| Mirrored      | 2026-03-31T20:00:34.066Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

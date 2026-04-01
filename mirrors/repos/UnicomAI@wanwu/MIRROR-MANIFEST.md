@@ -1,10 +1,8 @@
 ---
 repo: UnicomAI/wanwu
 repoUrl: https://github.com/UnicomAI/wanwu.git
-commit: 53caf56557605225942f278e369410e2e19c484e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:46.725Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `UnicomAI/wanwu` — 26 default patterns, 0 followed patterns, 19 file
 | Repo          | `UnicomAI/wanwu` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `53caf56557605225942f278e369410e2e19c484e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 19 |
-| Mirrored      | 2026-03-31T20:00:46.725Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

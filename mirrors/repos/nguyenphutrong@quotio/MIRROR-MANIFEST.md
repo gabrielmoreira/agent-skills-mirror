@@ -1,10 +1,8 @@
 ---
 repo: nguyenphutrong/quotio
 repoUrl: https://github.com/nguyenphutrong/quotio.git
-commit: b58a148f4f1fa5c14b7af70262bdce5ee2d967cc
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:51:52.299Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `nguyenphutrong/quotio` — 26 default patterns, 0 followed patterns, 
 | Repo          | `nguyenphutrong/quotio` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `b58a148f4f1fa5c14b7af70262bdce5ee2d967cc` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T19:51:52.299Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

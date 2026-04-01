@@ -1,10 +1,8 @@
 ---
 repo: willvelida/code-minions
 repoUrl: https://github.com/willvelida/code-minions.git
-commit: 7890862ebad34a4c351ca84ec812bc8b495dbe63
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:29.946Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `willvelida/code-minions` — 26 default patterns, 0 followed patterns
 | Repo          | `willvelida/code-minions` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7890862ebad34a4c351ca84ec812bc8b495dbe63` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 10 |
-| Mirrored      | 2026-03-31T20:03:29.946Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

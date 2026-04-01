@@ -1,10 +1,8 @@
 ---
 repo: mverab/metaclaw
 repoUrl: https://github.com/mverab/metaclaw.git
-commit: 19f83d300c3c2e95a31045beca6b05f90e22f232
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:17.139Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mverab/metaclaw` — 26 default patterns, 0 followed patterns, 20 fil
 | Repo          | `mverab/metaclaw` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `19f83d300c3c2e95a31045beca6b05f90e22f232` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 20 |
-| Mirrored      | 2026-03-31T20:03:17.139Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: lovasz1/cute-PaperBanana-skill
 repoUrl: https://github.com/lovasz1/cute-PaperBanana-skill.git
-commit: 41e24ab74a2e54ddd7ee58df1d2014aeeff79488
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:44.049Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `lovasz1/cute-PaperBanana-skill` — 26 default patterns, 0 followed p
 | Repo          | `lovasz1/cute-PaperBanana-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `41e24ab74a2e54ddd7ee58df1d2014aeeff79488` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:03:44.049Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

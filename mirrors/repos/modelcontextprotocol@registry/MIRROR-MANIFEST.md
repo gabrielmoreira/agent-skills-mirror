@@ -1,10 +1,8 @@
 ---
 repo: modelcontextprotocol/registry
 repoUrl: https://github.com/modelcontextprotocol/registry.git
-commit: c5c4b9e8890dd5754bee889b2f1417f4fe3b5ce5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:34.751Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `modelcontextprotocol/registry` — 26 default patterns, 0 followed pa
 | Repo          | `modelcontextprotocol/registry` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c5c4b9e8890dd5754bee889b2f1417f4fe3b5ce5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:59:34.751Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

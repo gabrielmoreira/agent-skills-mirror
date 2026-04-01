@@ -1,10 +1,8 @@
 ---
 repo: treylom/prompt-engineering-skills
 repoUrl: https://github.com/treylom/prompt-engineering-skills.git
-commit: 8be8f1b76fd905166f6c77feaf16044cc90eae04
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:02:32.325Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `treylom/prompt-engineering-skills` — 26 default patterns, 0 followe
 | Repo          | `treylom/prompt-engineering-skills` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `8be8f1b76fd905166f6c77feaf16044cc90eae04` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 9 |
-| Mirrored      | 2026-03-31T20:02:32.325Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: Snailclimb/JavaGuide
 repoUrl: https://github.com/Snailclimb/JavaGuide.git
-commit: 721a06f85ea1db51e96333319f420d929bf86483
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:26:37.860Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Snailclimb/JavaGuide` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `Snailclimb/JavaGuide` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `721a06f85ea1db51e96333319f420d929bf86483` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T11:26:37.860Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

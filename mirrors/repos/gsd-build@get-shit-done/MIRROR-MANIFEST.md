@@ -1,15 +1,13 @@
 ---
 repo: gsd-build/get-shit-done
 repoUrl: https://github.com/gsd-build/get-shit-done.git
-commit: 1421dc07bc1033f1b69e49d85cb6d625fd696b4f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:53:09.977Z
 ---
 
 # Mirror Manifest
 
-Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns
 | Repo          | `gsd-build/get-shit-done` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1421dc07bc1033f1b69e49d85cb6d625fd696b4f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
-| Mirrored      | 2026-03-31T19:53:09.977Z |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,10 +85,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`docs/ko-KR/ARCHITECTURE.md`](docs/ko-KR/ARCHITECTURE.md) |
 | 25 | ✓ | [`docs/pt-BR/AGENTS.md`](docs/pt-BR/AGENTS.md) |
 | 26 | ✓ | [`docs/pt-BR/ARCHITECTURE.md`](docs/pt-BR/ARCHITECTURE.md) |
-| 27 | ✓ | [`get-shit-done/templates/codebase/architecture.md`](get-shit-done/templates/codebase/architecture.md) |
-| 28 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
-| 29 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
-| 30 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
+| 27 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
+| 28 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
+| 29 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
 
 ---
 

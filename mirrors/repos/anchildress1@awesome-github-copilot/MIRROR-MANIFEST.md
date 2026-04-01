@@ -1,10 +1,8 @@
 ---
 repo: anchildress1/awesome-github-copilot
 repoUrl: https://github.com/anchildress1/awesome-github-copilot.git
-commit: 0a98cc595ab5916c0378176bd6b3ccf26c817e79
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:42.110Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `anchildress1/awesome-github-copilot` — 26 default patterns, 1 follo
 | Repo          | `anchildress1/awesome-github-copilot` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0a98cc595ab5916c0378176bd6b3ccf26c817e79` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 14 |
-| Mirrored      | 2026-03-31T20:02:42.110Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

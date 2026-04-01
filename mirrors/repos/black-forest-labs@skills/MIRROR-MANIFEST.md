@@ -1,10 +1,8 @@
 ---
 repo: black-forest-labs/skills
 repoUrl: https://github.com/black-forest-labs/skills.git
-commit: d0793c84262183e8220a95fc1faeb5e2560aa6ef
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:02:55.378Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `black-forest-labs/skills` — 26 default patterns, 0 followed pattern
 | Repo          | `black-forest-labs/skills` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `d0793c84262183e8220a95fc1faeb5e2560aa6ef` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 26 |
-| Mirrored      | 2026-03-31T20:02:55.378Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: QwenLM/Qwen3-Coder
 repoUrl: https://github.com/QwenLM/Qwen3-Coder.git
-commit: 33bc6aabd7791ad7b32f7e92104f11f2359ba890
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:53.305Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `QwenLM/Qwen3-Coder` — 26 default patterns, 0 followed patterns, 1 f
 | Repo          | `QwenLM/Qwen3-Coder` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `33bc6aabd7791ad7b32f7e92104f11f2359ba890` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:49:53.305Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: triggerdotdev/trigger.dev
 repoUrl: https://github.com/triggerdotdev/trigger.dev.git
-commit: 2637e47195838a854e9b62eb1bedaf20b644b118
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:14:15.561Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patter
 | Repo          | `triggerdotdev/trigger.dev` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2637e47195838a854e9b62eb1bedaf20b644b118` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 24 |
-| Mirrored      | 2026-03-31T23:14:15.561Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

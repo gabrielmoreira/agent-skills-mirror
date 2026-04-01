@@ -1,10 +1,8 @@
 ---
 repo: dazuck/operator-skills
 repoUrl: https://github.com/dazuck/operator-skills.git
-commit: 6ff5fef1eb13f221c4af6bb310fe881173e73675
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:18.331Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `dazuck/operator-skills` — 26 default patterns, 0 followed patterns,
 | Repo          | `dazuck/operator-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6ff5fef1eb13f221c4af6bb310fe881173e73675` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 37 |
-| Mirrored      | 2026-03-31T20:04:18.331Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: GLips/Figma-Context-MCP
 repoUrl: https://github.com/GLips/Figma-Context-MCP.git
-commit: 354679eab17389c551a435ca7c5224a250446301
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:26.366Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `GLips/Figma-Context-MCP` — 26 default patterns, 0 followed patterns
 | Repo          | `GLips/Figma-Context-MCP` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `354679eab17389c551a435ca7c5224a250446301` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:58:26.366Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

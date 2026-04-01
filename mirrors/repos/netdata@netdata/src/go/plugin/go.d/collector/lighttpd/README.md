@@ -1,1 +1,0 @@
-integrations/lighttpd.md

@@ -1,10 +1,8 @@
 ---
 repo: Tiiny-AI/PowerInfer
 repoUrl: https://github.com/Tiiny-AI/PowerInfer.git
-commit: 59df17505d981e258a50194597501e0bbd5eaf50
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:50:27.202Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Tiiny-AI/PowerInfer` — 26 default patterns, 0 followed patterns, 13
 | Repo          | `Tiiny-AI/PowerInfer` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `59df17505d981e258a50194597501e0bbd5eaf50` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 13 |
-| Mirrored      | 2026-03-31T19:50:27.202Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,15 +1,13 @@
 ---
 repo: teableio/teable
 repoUrl: https://github.com/teableio/teable.git
-commit: 4617d16b2e452be1f2b425d5c80bfac5e54c6b66
 refType: branch
 ref: develop
-mirroredAt: 2026-03-31T19:55:47.959Z
 ---
 
 # Mirror Manifest
 
-Mirror of `teableio/teable` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `teableio/teable` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `teableio/teable` — 26 default patterns, 0 followed patterns, 2 file
 | Repo          | `teableio/teable` |
 | Ref Type      | `branch` |
 | Ref           | `develop` |
-| Commit        | `4617d16b2e452be1f2b425d5c80bfac5e54c6b66` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
-| Mirrored      | 2026-03-31T19:55:47.959Z |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,8 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agents.md`](agents.md) |
-| 2 | ✓ | [`apps/playground/.cursorrules`](apps/playground/.cursorrules) |
+| 1 | ✓ | [`apps/playground/.cursorrules`](apps/playground/.cursorrules) |
 
 ---
 

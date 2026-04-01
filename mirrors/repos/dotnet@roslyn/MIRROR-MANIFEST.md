@@ -1,10 +1,8 @@
 ---
 repo: dotnet/roslyn
 repoUrl: https://github.com/dotnet/roslyn.git
-commit: 83c179c8f3bbff27061c8ee8bdf1614120910552
 refType: branch
 ref: main
-mirroredAt: 2026-04-01T00:40:15.849Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 7 file(s
 | Repo          | `dotnet/roslyn` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `83c179c8f3bbff27061c8ee8bdf1614120910552` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 7 |
-| Mirrored      | 2026-04-01T00:40:15.849Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: Arindam200/awesome-ai-apps
 repoUrl: https://github.com/Arindam200/awesome-ai-apps.git
-commit: cc4a32e7435c3b4daf1bd01606874d20e5d6ba64
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:55.642Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patte
 | Repo          | `Arindam200/awesome-ai-apps` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cc4a32e7435c3b4daf1bd01606874d20e5d6ba64` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:58:55.642Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

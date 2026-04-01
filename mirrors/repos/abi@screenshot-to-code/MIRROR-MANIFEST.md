@@ -1,10 +1,8 @@
 ---
 repo: abi/screenshot-to-code
 repoUrl: https://github.com/abi/screenshot-to-code.git
-commit: aaaa838548c3b545dc59ac501b7081365c613c92
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:52:29.962Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `abi/screenshot-to-code` — 26 default patterns, 0 followed patterns,
 | Repo          | `abi/screenshot-to-code` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `aaaa838548c3b545dc59ac501b7081365c613c92` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:52:29.962Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

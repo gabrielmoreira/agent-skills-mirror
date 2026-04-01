@@ -1,10 +1,8 @@
 ---
 repo: Fosowl/agenticSeek
 repoUrl: https://github.com/Fosowl/agenticSeek.git
-commit: 1036c5fbc1fc989a7725ee5ea7ab8cee3b639f24
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:54:31.232Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Fosowl/agenticSeek` — 26 default patterns, 0 followed patterns, 12 
 | Repo          | `Fosowl/agenticSeek` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1036c5fbc1fc989a7725ee5ea7ab8cee3b639f24` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 12 |
-| Mirrored      | 2026-03-31T19:54:31.232Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: run-llama/llama_cloud_services
 repoUrl: https://github.com/run-llama/llama_cloud_services.git
-commit: f385e96ab82ddb88330277c34394546398c8bed0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:51:44.683Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `run-llama/llama_cloud_services` — 26 default patterns, 0 followed p
 | Repo          | `run-llama/llama_cloud_services` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `f385e96ab82ddb88330277c34394546398c8bed0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:51:44.683Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

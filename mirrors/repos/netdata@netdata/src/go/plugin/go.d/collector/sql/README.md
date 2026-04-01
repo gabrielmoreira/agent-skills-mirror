@@ -1,1 +1,0 @@
-integrations/sql_databases_generic.md

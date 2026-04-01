@@ -1,10 +1,8 @@
 ---
 repo: ifiokjr/oh-pi
 repoUrl: https://github.com/ifiokjr/oh-pi.git
-commit: 581f56db0a001104cf39a5a2f636f22892c31049
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:12.982Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ifiokjr/oh-pi` — 26 default patterns, 3 followed patterns, 22 file(
 | Repo          | `ifiokjr/oh-pi` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `581f56db0a001104cf39a5a2f636f22892c31049` |
 | Default pats  | 26 |
 | Followed pats | 3 |
 | Files         | 22 |
-| Mirrored      | 2026-03-31T20:04:12.982Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

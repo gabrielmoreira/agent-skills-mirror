@@ -1,10 +1,8 @@
 ---
 repo: haolange/RDC-Agent-Frameworks
 repoUrl: https://github.com/haolange/RDC-Agent-Frameworks.git
-commit: 0575ce920dae94726d523df1452043467e8e22eb
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:37.945Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `haolange/RDC-Agent-Frameworks` — 26 default patterns, 0 followed pa
 | Repo          | `haolange/RDC-Agent-Frameworks` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0575ce920dae94726d523df1452043467e8e22eb` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 107 |
-| Mirrored      | 2026-03-31T20:04:37.945Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

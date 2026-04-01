@@ -1,10 +1,8 @@
 ---
 repo: aipotheosis-labs/aci
 repoUrl: https://github.com/aipotheosis-labs/aci.git
-commit: 6e1e651f9ae91292bc2ff2472227ec7f79496045
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:10.699Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `aipotheosis-labs/aci` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `aipotheosis-labs/aci` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6e1e651f9ae91292bc2ff2472227ec7f79496045` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:00:10.699Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

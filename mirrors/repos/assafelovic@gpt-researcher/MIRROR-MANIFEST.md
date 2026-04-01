@@ -1,10 +1,8 @@
 ---
 repo: assafelovic/gpt-researcher
 repoUrl: https://github.com/assafelovic/gpt-researcher.git
-commit: 7c321744ce336949949b1e95b4652e2d455a33f9
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:55.429Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `assafelovic/gpt-researcher` — 26 default patterns, 0 followed patte
 | Repo          | `assafelovic/gpt-researcher` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7c321744ce336949949b1e95b4652e2d455a33f9` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:57:55.429Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

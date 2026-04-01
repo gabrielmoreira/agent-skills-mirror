@@ -1,1 +1,0 @@
-integrations/squid_log_files.md

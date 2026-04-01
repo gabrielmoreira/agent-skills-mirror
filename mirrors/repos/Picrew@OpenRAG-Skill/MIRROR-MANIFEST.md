@@ -1,10 +1,8 @@
 ---
 repo: Picrew/OpenRAG-Skill
 repoUrl: https://github.com/Picrew/OpenRAG-Skill.git
-commit: a06e57f2d42f06414704ce7030cc1f851a351a49
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:15.937Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Picrew/OpenRAG-Skill` — 26 default patterns, 0 followed patterns, 2
 | Repo          | `Picrew/OpenRAG-Skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a06e57f2d42f06414704ce7030cc1f851a351a49` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:03:15.937Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

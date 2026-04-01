@@ -1,10 +1,8 @@
 ---
 repo: n8n-io/n8n
 repoUrl: https://github.com/n8n-io/n8n.git
-commit: 5ee0e842b8becb2f926129e2fbab5047a4ad15e0
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T18:21:33.916Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 0 followed patterns, 30 file(s) 
 | Repo          | `n8n-io/n8n` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `5ee0e842b8becb2f926129e2fbab5047a4ad15e0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 30 |
-| Mirrored      | 2026-03-31T18:21:33.916Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

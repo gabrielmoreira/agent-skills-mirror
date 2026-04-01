@@ -1,10 +1,8 @@
 ---
 repo: ValueCell-ai/valuecell
 repoUrl: https://github.com/ValueCell-ai/valuecell.git
-commit: 9793e9c0563fbf56fc096757d8bb80e209ac7aab
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:54.090Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ValueCell-ai/valuecell` — 26 default patterns, 0 followed patterns,
 | Repo          | `ValueCell-ai/valuecell` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9793e9c0563fbf56fc096757d8bb80e209ac7aab` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:58:54.090Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

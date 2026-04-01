@@ -1,10 +1,8 @@
 ---
 repo: wasp-lang/wasp
 repoUrl: https://github.com/wasp-lang/wasp.git
-commit: b821972c21bbd4dd3a44b0753f819c15d94d3477
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:56:38.318Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 5 file(
 | Repo          | `wasp-lang/wasp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b821972c21bbd4dd3a44b0753f819c15d94d3477` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T19:56:38.318Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

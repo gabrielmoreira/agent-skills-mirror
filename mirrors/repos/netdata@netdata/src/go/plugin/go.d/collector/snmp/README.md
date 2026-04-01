@@ -1,1 +1,0 @@
-integrations/snmp_devices.md

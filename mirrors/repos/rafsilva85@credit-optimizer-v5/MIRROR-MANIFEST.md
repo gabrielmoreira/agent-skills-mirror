@@ -1,10 +1,8 @@
 ---
 repo: rafsilva85/credit-optimizer-v5
 repoUrl: https://github.com/rafsilva85/credit-optimizer-v5.git
-commit: 4b31f52661fabc4e821f384326268734bb2cbdad
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:45.487Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `rafsilva85/credit-optimizer-v5` — 26 default patterns, 0 followed p
 | Repo          | `rafsilva85/credit-optimizer-v5` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4b31f52661fabc4e821f384326268734bb2cbdad` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:03:45.487Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: garrytan/gstack
 repoUrl: https://github.com/garrytan/gstack.git
-commit: db35b8e5bffb596144c4c7f4a3b7eb5c078edaaf
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:12:44.822Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `garrytan/gstack` — 26 default patterns, 0 followed patterns, 36 fil
 | Repo          | `garrytan/gstack` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `db35b8e5bffb596144c4c7f4a3b7eb5c078edaaf` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 36 |
-| Mirrored      | 2026-03-31T23:12:44.822Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

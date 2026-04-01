@@ -1,1 +1,0 @@
-integrations/aws-sm.md

@@ -1,10 +1,8 @@
 ---
 repo: wanshuiyin/Auto-claude-code-research-in-sleep
 repoUrl: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep.git
-commit: cac10dd229b9a65a230b617a014e73ce2ae91ac2
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:04.139Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default pattern
 | Repo          | `wanshuiyin/Auto-claude-code-research-in-sleep` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cac10dd229b9a65a230b617a014e73ce2ae91ac2` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 152 |
-| Mirrored      | 2026-03-31T20:00:04.139Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

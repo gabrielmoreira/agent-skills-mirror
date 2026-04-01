@@ -1,10 +1,8 @@
 ---
 repo: ai-shifu/ChatALL
 repoUrl: https://github.com/ai-shifu/ChatALL.git
-commit: 6d089c2ab72dde2ba1010cc1e910ceb766458546
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:51.319Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ai-shifu/ChatALL` — 26 default patterns, 0 followed patterns, 1 fil
 | Repo          | `ai-shifu/ChatALL` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6d089c2ab72dde2ba1010cc1e910ceb766458546` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:49:51.319Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

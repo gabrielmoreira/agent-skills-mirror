@@ -1,1 +1,0 @@
-integrations/kubernetes_cluster_state.md

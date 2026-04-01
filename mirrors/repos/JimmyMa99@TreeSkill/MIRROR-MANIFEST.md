@@ -1,10 +1,8 @@
 ---
 repo: JimmyMa99/TreeSkill
 repoUrl: https://github.com/JimmyMa99/TreeSkill.git
-commit: c531bea04f65437ee61ba8d5884095694cccef8e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:56.427Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `JimmyMa99/TreeSkill` — 26 default patterns, 0 followed patterns, 5 
 | Repo          | `JimmyMa99/TreeSkill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c531bea04f65437ee61ba8d5884095694cccef8e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T20:03:56.427Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

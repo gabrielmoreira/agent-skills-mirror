@@ -1,15 +1,13 @@
 ---
 repo: transformerlab/transformerlab-app
 repoUrl: https://github.com/transformerlab/transformerlab-app.git
-commit: 9459da6efa66291fea918b3da70b20320089de56
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:12:22.938Z
 ---
 
 # Mirror Manifest
 
-Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 30 file(s) materialized.
+Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followe
 | Repo          | `transformerlab/transformerlab-app` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9459da6efa66291fea918b3da70b20320089de56` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 30 |
-| Mirrored      | 2026-03-31T23:12:22.938Z |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,17 +82,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`.claude/skills/agent-browser/SKILL.md`](.claude/skills/agent-browser/SKILL.md) |
 | 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 20 | ✓ | [`cli/COMMANDS.md`](cli/COMMANDS.md) |
-| 21 | ✓ | [`docs/task-execution/01-task-creation.md`](docs/task-execution/01-task-creation.md) |
-| 22 | ✓ | [`docs/task-execution/02-task-data-model.md`](docs/task-execution/02-task-data-model.md) |
-| 23 | ✓ | [`docs/task-execution/03-job-dispatch.md`](docs/task-execution/03-job-dispatch.md) |
-| 24 | ✓ | [`docs/task-execution/04-compute-providers.md`](docs/task-execution/04-compute-providers.md) |
-| 25 | ✓ | [`docs/task-execution/05-job-lifecycle.md`](docs/task-execution/05-job-lifecycle.md) |
-| 26 | → | [`docs/Auth.md`](docs/Auth.md) |
-| 27 | → | [`docs/backend.md`](docs/backend.md) |
-| 28 | → | [`docs/cli.md`](docs/cli.md) |
-| 29 | → | [`docs/frontend.md`](docs/frontend.md) |
-| 30 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
+| 20 | ✓ | [`docs/task-execution/01-task-creation.md`](docs/task-execution/01-task-creation.md) |
+| 21 | ✓ | [`docs/task-execution/02-task-data-model.md`](docs/task-execution/02-task-data-model.md) |
+| 22 | ✓ | [`docs/task-execution/03-job-dispatch.md`](docs/task-execution/03-job-dispatch.md) |
+| 23 | ✓ | [`docs/task-execution/04-compute-providers.md`](docs/task-execution/04-compute-providers.md) |
+| 24 | ✓ | [`docs/task-execution/05-job-lifecycle.md`](docs/task-execution/05-job-lifecycle.md) |
+| 25 | → | [`docs/Auth.md`](docs/Auth.md) |
+| 26 | → | [`docs/backend.md`](docs/backend.md) |
+| 27 | → | [`docs/cli.md`](docs/cli.md) |
+| 28 | → | [`docs/frontend.md`](docs/frontend.md) |
+| 29 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
 
 ---
 

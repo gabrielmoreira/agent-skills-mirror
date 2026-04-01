@@ -1,1 +1,1 @@
-.ai/AGENTS.md
+cache/repos/github.com/huggingface@transformers/.ai/AGENTS.md

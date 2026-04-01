@@ -1,10 +1,8 @@
 ---
 repo: Dicklesworthstone/jeffreysprompts.com
 repoUrl: https://github.com/Dicklesworthstone/jeffreysprompts.com.git
-commit: 1b81c32a785ba37ce74ea1bb2a8e2240eafdea3b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:08.303Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Dicklesworthstone/jeffreysprompts.com` — 26 default patterns, 0 fol
 | Repo          | `Dicklesworthstone/jeffreysprompts.com` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1b81c32a785ba37ce74ea1bb2a8e2240eafdea3b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:02:08.303Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

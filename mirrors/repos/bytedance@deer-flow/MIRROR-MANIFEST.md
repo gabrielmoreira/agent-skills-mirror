@@ -1,10 +1,8 @@
 ---
 repo: bytedance/deer-flow
 repoUrl: https://github.com/bytedance/deer-flow.git
-commit: a3bfea631c2af0a3ef65e22abf0ed37bdca8123b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:52:53.210Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 84
 | Repo          | `bytedance/deer-flow` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a3bfea631c2af0a3ef65e22abf0ed37bdca8123b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 84 |
-| Mirrored      | 2026-03-31T19:52:53.210Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

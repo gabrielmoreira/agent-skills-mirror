@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/mudler@LocalAI/AGENTS.md

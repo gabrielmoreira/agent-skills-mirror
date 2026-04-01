@@ -1,10 +1,8 @@
 ---
 repo: mozilla-ai/llamafile
 repoUrl: https://github.com/mozilla-ai/llamafile.git
-commit: c0c19fd97a7455b5e0de78dc282039184b696d60
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:23.170Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mozilla-ai/llamafile` — 26 default patterns, 0 followed patterns, 2
 | Repo          | `mozilla-ai/llamafile` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c0c19fd97a7455b5e0de78dc282039184b696d60` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:49:23.170Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

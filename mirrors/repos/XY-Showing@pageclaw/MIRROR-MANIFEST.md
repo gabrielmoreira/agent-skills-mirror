@@ -1,10 +1,8 @@
 ---
 repo: XY-Showing/pageclaw
 repoUrl: https://github.com/XY-Showing/pageclaw.git
-commit: e7cbab8102953699d834c2e02ebdc86f81caadb7
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:47.953Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `XY-Showing/pageclaw` — 26 default patterns, 0 followed patterns, 52
 | Repo          | `XY-Showing/pageclaw` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e7cbab8102953699d834c2e02ebdc86f81caadb7` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 52 |
-| Mirrored      | 2026-03-31T20:03:47.953Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

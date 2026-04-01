@@ -1,10 +1,8 @@
 ---
 repo: bytedance/UI-TARS-desktop
 repoUrl: https://github.com/bytedance/UI-TARS-desktop.git
-commit: 7986f5aea500c4535c0e55dc5c5d0cda73767c45
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:42.808Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `bytedance/UI-TARS-desktop` — 26 default patterns, 0 followed patter
 | Repo          | `bytedance/UI-TARS-desktop` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7986f5aea500c4535c0e55dc5c5d0cda73767c45` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:57:42.808Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

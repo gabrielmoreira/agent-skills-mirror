@@ -1,15 +1,13 @@
 ---
 repo: huggingface/smolagents
 repoUrl: https://github.com/huggingface/smolagents.git
-commit: 8e167b9310a0e9712a8d6437da49f8825808691f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:54:24.668Z
 ---
 
 # Mirror Manifest
 
-Mirror of `huggingface/smolagents` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `huggingface/smolagents` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `huggingface/smolagents` — 26 default patterns, 0 followed patterns,
 | Repo          | `huggingface/smolagents` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `8e167b9310a0e9712a8d6437da49f8825808691f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
-| Mirrored      | 2026-03-31T19:54:24.668Z |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,10 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/source/en/reference/agents.md`](docs/source/en/reference/agents.md) |
-| 3 | ✓ | [`docs/source/hi/reference/agents.md`](docs/source/hi/reference/agents.md) |
-| 4 | ✓ | [`docs/source/ko/reference/agents.md`](docs/source/ko/reference/agents.md) |
-| 5 | ✓ | [`docs/source/zh/reference/agents.md`](docs/source/zh/reference/agents.md) |
 
 ---
 

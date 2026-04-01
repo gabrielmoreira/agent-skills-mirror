@@ -1,10 +1,8 @@
 ---
 repo: flipped-aurora/gin-vue-admin
 repoUrl: https://github.com/flipped-aurora/gin-vue-admin.git
-commit: 61a3f8297cd370bb5b0489d4f5ed99c90819ef2f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:56.591Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `flipped-aurora/gin-vue-admin` — 26 default patterns, 0 followed pat
 | Repo          | `flipped-aurora/gin-vue-admin` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `61a3f8297cd370bb5b0489d4f5ed99c90819ef2f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:57:56.591Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

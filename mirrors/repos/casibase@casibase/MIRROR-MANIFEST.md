@@ -1,10 +1,8 @@
 ---
 repo: casibase/casibase
 repoUrl: https://github.com/casibase/casibase.git
-commit: 0883cebdd37ed2ff54fc92e4c8c0c56e3c4bb94f
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:51:41.685Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `casibase/casibase` — 26 default patterns, 0 followed patterns, 1 fi
 | Repo          | `casibase/casibase` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `0883cebdd37ed2ff54fc92e4c8c0c56e3c4bb94f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:51:41.685Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

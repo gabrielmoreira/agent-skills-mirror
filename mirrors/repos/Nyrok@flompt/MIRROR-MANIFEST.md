@@ -1,10 +1,8 @@
 ---
 repo: Nyrok/flompt
 repoUrl: https://github.com/Nyrok/flompt.git
-commit: 322f22a8ffd92108c1523e65b2dc5377a160c418
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:02:11.215Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Nyrok/flompt` — 26 default patterns, 0 followed patterns, 1 file(s)
 | Repo          | `Nyrok/flompt` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `322f22a8ffd92108c1523e65b2dc5377a160c418` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:02:11.215Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: mukul975/Anthropic-Cybersecurity-Skills
 repoUrl: https://github.com/mukul975/Anthropic-Cybersecurity-Skills.git
-commit: 2c88b96cf758c8a742c5b683e02c01e84497034f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:28.960Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mukul975/Anthropic-Cybersecurity-Skills` — 26 default patterns, 0 f
 | Repo          | `mukul975/Anthropic-Cybersecurity-Skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2c88b96cf758c8a742c5b683e02c01e84497034f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4150 |
-| Mirrored      | 2026-03-31T20:01:28.960Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

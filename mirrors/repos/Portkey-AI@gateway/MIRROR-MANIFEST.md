@@ -1,10 +1,8 @@
 ---
 repo: Portkey-AI/gateway
 repoUrl: https://github.com/Portkey-AI/gateway.git
-commit: 351692fd9236af222168134b416924fae0bdba23
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:48.103Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Portkey-AI/gateway` — 26 default patterns, 0 followed patterns, 1 f
 | Repo          | `Portkey-AI/gateway` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `351692fd9236af222168134b416924fae0bdba23` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:58:48.103Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

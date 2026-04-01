@@ -1,10 +1,8 @@
 ---
 repo: drayline/rootnode-skills
 repoUrl: https://github.com/drayline/rootnode-skills.git
-commit: 59d65cf6a32ab13e19da4cd7035d2925c36b7335
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:36.705Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `drayline/rootnode-skills` — 26 default patterns, 0 followed pattern
 | Repo          | `drayline/rootnode-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `59d65cf6a32ab13e19da4cd7035d2925c36b7335` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 15 |
-| Mirrored      | 2026-03-31T20:04:36.705Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

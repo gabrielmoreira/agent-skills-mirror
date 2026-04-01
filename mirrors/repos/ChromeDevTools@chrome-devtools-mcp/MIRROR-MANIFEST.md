@@ -1,10 +1,8 @@
 ---
 repo: ChromeDevTools/chrome-devtools-mcp
 repoUrl: https://github.com/ChromeDevTools/chrome-devtools-mcp.git
-commit: 4637ab938985f4f4caca542a1d85ebef35560838
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:53:50.173Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ChromeDevTools/chrome-devtools-mcp` — 26 default patterns, 0 follow
 | Repo          | `ChromeDevTools/chrome-devtools-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4637ab938985f4f4caca542a1d85ebef35560838` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 15 |
-| Mirrored      | 2026-03-31T19:53:50.173Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

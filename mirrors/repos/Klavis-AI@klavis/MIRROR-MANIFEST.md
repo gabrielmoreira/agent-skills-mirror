@@ -1,10 +1,8 @@
 ---
 repo: Klavis-AI/klavis
 repoUrl: https://github.com/Klavis-AI/klavis.git
-commit: 340b6cfcf44c554c0f047ce0ff6ace52ecb8c9bc
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:51.181Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Klavis-AI/klavis` — 26 default patterns, 0 followed patterns, 8 fil
 | Repo          | `Klavis-AI/klavis` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `340b6cfcf44c554c0f047ce0ff6ace52ecb8c9bc` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 8 |
-| Mirrored      | 2026-03-31T19:59:51.181Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

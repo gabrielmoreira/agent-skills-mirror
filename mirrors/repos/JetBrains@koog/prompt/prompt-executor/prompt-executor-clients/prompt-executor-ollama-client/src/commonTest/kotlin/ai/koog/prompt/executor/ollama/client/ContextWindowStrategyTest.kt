@@ -1,0 +1,198 @@
+package ai.koog.prompt.executor.ollama.client
+
+import ai.koog.prompt.dsl.Prompt
+import ai.koog.prompt.dsl.prompt
+import ai.koog.prompt.executor.ollama.client.dto.OllamaChatMessageDTO
+import ai.koog.prompt.executor.ollama.client.dto.OllamaChatRequestDTO
+import ai.koog.prompt.executor.ollama.client.dto.OllamaChatResponseDTO
+import ai.koog.prompt.message.Message
+import ai.koog.prompt.message.ResponseMetaInfo
+import ai.koog.prompt.tokenizer.PromptTokenizer
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.time.Clock
+
+class ContextWindowStrategyTest {
+    @Test
+    fun `test None strategy`() = runTest {
+        val mockServer = MockOllamaChatServer { request -> makeDummyResponse(request) }
+
+        val ollamaClient = OllamaClient(
+            baseClient = HttpClient(mockServer.mockEngine),
+            contextWindowStrategy = ContextWindowStrategy.Companion.None,
+        )
+
+        ollamaClient.execute(
+            prompt = prompt("test-prompt") { },
+            model = OllamaModels.Meta.LLAMA_3_2,
+        )
+
+        val requestHistory = mockServer.requestHistory
+        assertEquals(requestHistory.size, 1)
+
+        val response = requestHistory.first()
+        assertNotNull(response.options)
+        assertNull(response.options.numCtx)
+    }
+
+    @Test
+    fun `test Fixed strategy`() = runTest {
+        val mockServer = MockOllamaChatServer { request -> makeDummyResponse(request) }
+
+        val ollamaClient = OllamaClient(
+            baseClient = HttpClient(mockServer.mockEngine),
+            contextWindowStrategy = ContextWindowStrategy.Companion.Fixed(42),
+        )
+
+        ollamaClient.execute(
+            prompt = prompt("test-prompt") { },
+            model = OllamaModels.Meta.LLAMA_3_2,
+        )
+
+        val requestHistory = mockServer.requestHistory
+        assertEquals(requestHistory.size, 1)
+
+        val response = requestHistory.first()
+        assertNotNull(response.options)
+        assertEquals(42, response.options.numCtx)
+    }
+
+    @Test
+    fun `test FitPrompt strategy with tokenizer`() = runTest {
+        val mockServer = MockOllamaChatServer { request -> makeDummyResponse(request) }
+
+        val ollamaClient = OllamaClient(
+            baseClient = HttpClient(mockServer.mockEngine),
+            contextWindowStrategy = ContextWindowStrategy.Companion.FitPrompt(
+                promptTokenizer = object : PromptTokenizer {
+                    override fun tokenCountFor(message: Message): Int = error("Not needed")
+                    override fun tokenCountFor(prompt: Prompt): Int = 3000
+                },
+                contextChunkSize = 1024,
+                minimumChunkCount = 2
+            ),
+        )
+
+        ollamaClient.execute(
+            prompt = prompt("test-prompt") { },
+            model = OllamaModels.Meta.LLAMA_3_2,
+        )
+
+        val requestHistory = mockServer.requestHistory
+        assertEquals(requestHistory.size, 1)
+
+        val response = requestHistory.first()
+        assertNotNull(response.options)
+        assertEquals(3072, response.options.numCtx)
+    }
+
+    @Test
+    fun `test FitPrompt strategy without tokenizer and no previous token usage`() = runTest {
+        val mockServer = MockOllamaChatServer { request -> makeDummyResponse(request) }
+
+        val ollamaClient = OllamaClient(
+            baseClient = HttpClient(mockServer.mockEngine),
+            contextWindowStrategy = ContextWindowStrategy.Companion.FitPrompt(
+                promptTokenizer = null,
+                contextChunkSize = 1024,
+                minimumChunkCount = 2
+            ),
+        )
+
+        ollamaClient.execute(
+            prompt = prompt("test-prompt") { },
+            model = OllamaModels.Meta.LLAMA_3_2,
+        )
+
+        val requestHistory = mockServer.requestHistory
+        assertEquals(requestHistory.size, 1)
+
+        val response = requestHistory.first()
+        assertNotNull(response.options)
+        assertEquals(2048, response.options.numCtx)
+    }
+
+    @Test
+    fun `test FitPrompt strategy without tokenizer and existing token usage`() = runTest {
+        val mockServer = MockOllamaChatServer { request -> makeDummyResponse(request) }
+
+        val ollamaClient = OllamaClient(
+            baseClient = HttpClient(mockServer.mockEngine),
+            contextWindowStrategy = ContextWindowStrategy.Companion.FitPrompt(
+                promptTokenizer = null,
+                contextChunkSize = 1024,
+                minimumChunkCount = 2
+            ),
+        )
+
+        ollamaClient.execute(
+            prompt = prompt("test-prompt") {
+                message(
+                    Message.Assistant(
+                        "Dummy message",
+                        metaInfo = ResponseMetaInfo(
+                            timestamp = Clock.System.now(),
+                            totalTokensCount = 5000,
+                        )
+                    )
+                )
+            },
+            model = OllamaModels.Meta.LLAMA_3_2,
+        )
+
+        val requestHistory = mockServer.requestHistory
+        assertEquals(requestHistory.size, 1)
+
+        val response = requestHistory.first()
+        assertNotNull(response.options)
+        assertEquals(5120, response.options.numCtx)
+    }
+
+    @Test
+    fun `test FitPrompt strategy with tokenizer and too long prompt`() = runTest {
+        val mockServer = MockOllamaChatServer { request -> makeDummyResponse(request) }
+
+        val ollamaClient = OllamaClient(
+            baseClient = HttpClient(mockServer.mockEngine),
+            contextWindowStrategy = ContextWindowStrategy.Companion.FitPrompt(
+                promptTokenizer = object : PromptTokenizer {
+                    override fun tokenCountFor(message: Message): Int = error("Not needed")
+                    override fun tokenCountFor(prompt: Prompt): Int = 9000
+                },
+                contextChunkSize = 1024,
+                minimumChunkCount = 2
+            ),
+        )
+
+        ollamaClient.execute(
+            prompt = prompt("test-prompt") { },
+            model = OllamaModels.Meta.LLAMA_3_2.copy(
+                contextLength = 8192
+            ),
+        )
+
+        val requestHistory = mockServer.requestHistory
+        assertEquals(requestHistory.size, 1)
+
+        val response = requestHistory.first()
+        assertNotNull(response.options)
+        assertEquals(8192, response.options.numCtx)
+    }
+}
+
+private fun makeDummyResponse(
+    request: OllamaChatRequestDTO,
+    content: String = "OK",
+    promptEvalCount: Int = 10,
+    evalCount: Int = 100,
+): OllamaChatResponseDTO = OllamaChatResponseDTO(
+    model = request.model,
+    message = OllamaChatMessageDTO(role = "assistant", content = content),
+    done = true,
+    promptEvalCount = promptEvalCount,
+    evalCount = evalCount,
+)

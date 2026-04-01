@@ -1,15 +1,13 @@
 ---
 repo: refly-ai/refly
 repoUrl: https://github.com/refly-ai/refly.git
-commit: 330c01b123b85c8245d2e093eca4bb71585bbc6f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:01.914Z
 ---
 
 # Mirror Manifest
 
-Mirror of `refly-ai/refly` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `refly-ai/refly` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `refly-ai/refly` — 26 default patterns, 0 followed patterns, 15 file
 | Repo          | `refly-ai/refly` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `330c01b123b85c8245d2e093eca4bb71585bbc6f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
-| Mirrored      | 2026-03-31T20:01:01.914Z |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,8 +72,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.cursor/rules/11-ui-design-patterns.mdc`](.cursor/rules/11-ui-design-patterns.mdc) |
 | 12 | ✓ | [`.cursor/rules/16-language-guidelines.mdc`](.cursor/rules/16-language-guidelines.mdc) |
 | 13 | ✓ | [`.cursorrules`](.cursorrules) |
-| 14 | ✓ | [`packages/cli/skill/references/skill.md`](packages/cli/skill/references/skill.md) |
-| 15 | ✓ | [`packages/cli/skill/SKILL.md`](packages/cli/skill/SKILL.md) |
+| 14 | ✓ | [`packages/cli/skill/SKILL.md`](packages/cli/skill/SKILL.md) |
 
 ---
 

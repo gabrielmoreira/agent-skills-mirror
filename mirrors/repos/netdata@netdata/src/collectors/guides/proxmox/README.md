@@ -1,1 +1,0 @@
-integrations/proxmox_ve_monitoring.md

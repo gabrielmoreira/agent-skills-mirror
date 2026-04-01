@@ -1,10 +1,8 @@
 ---
 repo: jeecgboot/JeecgBoot
 repoUrl: https://github.com/jeecgboot/JeecgBoot.git
-commit: cf7eeac6ab10c9cd8119f9f063b19bb417fe2acf
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:13.424Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `jeecgboot/JeecgBoot` — 26 default patterns, 0 followed patterns, 1 
 | Repo          | `jeecgboot/JeecgBoot` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cf7eeac6ab10c9cd8119f9f063b19bb417fe2acf` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:57:13.424Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

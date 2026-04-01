@@ -1,15 +1,13 @@
 ---
 repo: lobehub/lobehub
 repoUrl: https://github.com/lobehub/lobehub.git
-commit: 3e056ad37a03611afe5b2a5f68ea81ba4bef83c5
 refType: branch
 ref: canary
-mirroredAt: 2026-03-31T19:57:07.757Z
 ---
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 74 fil
 | Repo          | `lobehub/lobehub` |
 | Ref Type      | `branch` |
 | Ref           | `canary` |
-| Commit        | `3e056ad37a03611afe5b2a5f68ea81ba4bef83c5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 74 |
-| Mirrored      | 2026-03-31T19:57:07.757Z |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,15 +124,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`.agents/skills/zustand/references/slice-organization.md`](.agents/skills/zustand/references/slice-organization.md) |
 | 64 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
 | 65 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
-| 66 | ✓ | [`.cursor/skills`](.cursor/skills) |
-| 67 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 68 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 69 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
-| 70 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 71 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
-| 72 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 73 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
-| 74 | ✓ | [`packages/prompts/CLAUDE.md`](packages/prompts/CLAUDE.md) |
+| 66 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 67 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 68 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
+| 69 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 70 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
+| 71 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
+| 72 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 73 | ✓ | [`packages/prompts/CLAUDE.md`](packages/prompts/CLAUDE.md) |
 
 ---
 

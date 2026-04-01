@@ -1,1 +1,0 @@
-integrations/vcenter_server_appliance.md

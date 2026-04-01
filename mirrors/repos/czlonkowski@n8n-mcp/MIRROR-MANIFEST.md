@@ -1,10 +1,8 @@
 ---
 repo: czlonkowski/n8n-mcp
 repoUrl: https://github.com/czlonkowski/n8n-mcp.git
-commit: b800ff0cd9a3eb845753005ea9237a9e0c4a8d20
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:14:08.686Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `czlonkowski/n8n-mcp` — 26 default patterns, 0 followed patterns, 1 
 | Repo          | `czlonkowski/n8n-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b800ff0cd9a3eb845753005ea9237a9e0c4a8d20` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T23:14:08.686Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

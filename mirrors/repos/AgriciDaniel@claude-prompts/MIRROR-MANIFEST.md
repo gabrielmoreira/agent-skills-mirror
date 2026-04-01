@@ -1,10 +1,8 @@
 ---
 repo: AgriciDaniel/claude-prompts
 repoUrl: https://github.com/AgriciDaniel/claude-prompts.git
-commit: b367dfcd9775a848b8c40b42dc4e993bcabe36ea
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:45.286Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `AgriciDaniel/claude-prompts` — 26 default patterns, 0 followed patt
 | Repo          | `AgriciDaniel/claude-prompts` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b367dfcd9775a848b8c40b42dc4e993bcabe36ea` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 27 |
-| Mirrored      | 2026-03-31T20:03:45.286Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

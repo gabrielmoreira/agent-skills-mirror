@@ -1,10 +1,8 @@
 ---
 repo: patchy631/ai-engineering-hub
 repoUrl: https://github.com/patchy631/ai-engineering-hub.git
-commit: 1b26e644476f8dcef6509877d6788a0d88728d9d
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:30.558Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `patchy631/ai-engineering-hub` — 26 default patterns, 0 followed pat
 | Repo          | `patchy631/ai-engineering-hub` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1b26e644476f8dcef6509877d6788a0d88728d9d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 10 |
-| Mirrored      | 2026-03-31T19:57:30.558Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

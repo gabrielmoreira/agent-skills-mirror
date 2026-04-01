@@ -1,10 +1,8 @@
 ---
 repo: kdpa-llc/local-skills-mcp
 repoUrl: https://github.com/kdpa-llc/local-skills-mcp.git
-commit: d7538cebcb594747c11b1a4be92142cc130408a7
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:23.714Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `kdpa-llc/local-skills-mcp` — 26 default patterns, 0 followed patter
 | Repo          | `kdpa-llc/local-skills-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d7538cebcb594747c11b1a4be92142cc130408a7` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T20:03:23.714Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

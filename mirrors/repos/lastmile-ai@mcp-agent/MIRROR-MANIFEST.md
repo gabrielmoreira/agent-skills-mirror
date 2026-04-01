@@ -1,15 +1,13 @@
 ---
 repo: lastmile-ai/mcp-agent
 repoUrl: https://github.com/lastmile-ai/mcp-agent.git
-commit: f62d849350816588b1c6294e7914bbe4d8b84072
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:10.984Z
 ---
 
 # Mirror Manifest
 
-Mirror of `lastmile-ai/mcp-agent` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `lastmile-ai/mcp-agent` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `lastmile-ai/mcp-agent` — 26 default patterns, 0 followed patterns, 
 | Repo          | `lastmile-ai/mcp-agent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `f62d849350816588b1c6294e7914bbe4d8b84072` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
-| Mirrored      | 2026-03-31T19:59:10.984Z |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,7 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`examples/usecases/reliable_conversation/CLAUDE.md`](examples/usecases/reliable_conversation/CLAUDE.md) |
-| 2 | ✓ | [`LLMS.txt`](LLMS.txt) |
 
 ---
 

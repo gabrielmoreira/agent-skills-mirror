@@ -1,10 +1,8 @@
 ---
 repo: iwillig/clojure-skills
 repoUrl: https://github.com/iwillig/clojure-skills.git
-commit: c363e80d1e79092ea0b60c8c4e5b0af1c8da53b2
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:22.381Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `iwillig/clojure-skills` — 26 default patterns, 0 followed patterns,
 | Repo          | `iwillig/clojure-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c363e80d1e79092ea0b60c8c4e5b0af1c8da53b2` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 113 |
-| Mirrored      | 2026-03-31T20:03:22.381Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

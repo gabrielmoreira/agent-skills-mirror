@@ -1,10 +1,8 @@
 ---
 repo: intuitem/ciso-assistant-community
 repoUrl: https://github.com/intuitem/ciso-assistant-community.git
-commit: 75653913ca06309231c2319a5e5cf6c451993801
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:01.325Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `intuitem/ciso-assistant-community` — 26 default patterns, 0 followe
 | Repo          | `intuitem/ciso-assistant-community` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `75653913ca06309231c2319a5e5cf6c451993801` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:01:01.325Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

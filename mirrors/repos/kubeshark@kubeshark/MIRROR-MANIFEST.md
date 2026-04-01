@@ -1,10 +1,8 @@
 ---
 repo: kubeshark/kubeshark
 repoUrl: https://github.com/kubeshark/kubeshark.git
-commit: 4695acb41e4e89ce22ad231af5ba5fc6ebcf64e3
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:58:39.522Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `kubeshark/kubeshark` — 26 default patterns, 0 followed patterns, 7 
 | Repo          | `kubeshark/kubeshark` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `4695acb41e4e89ce22ad231af5ba5fc6ebcf64e3` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 7 |
-| Mirrored      | 2026-03-31T19:58:39.522Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

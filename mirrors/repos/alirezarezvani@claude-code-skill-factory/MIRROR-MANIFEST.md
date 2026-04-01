@@ -1,10 +1,8 @@
 ---
 repo: alirezarezvani/claude-code-skill-factory
 repoUrl: https://github.com/alirezarezvani/claude-code-skill-factory.git
-commit: ba18b31703542d9d7eda5f9ba94f0df65a59dddf
 refType: branch
 ref: dev
-mirroredAt: 2026-03-31T20:01:19.943Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `alirezarezvani/claude-code-skill-factory` — 26 default patterns, 8 
 | Repo          | `alirezarezvani/claude-code-skill-factory` |
 | Ref Type      | `branch` |
 | Ref           | `dev` |
-| Commit        | `ba18b31703542d9d7eda5f9ba94f0df65a59dddf` |
 | Default pats  | 26 |
 | Followed pats | 8 |
 | Files         | 27 |
-| Mirrored      | 2026-03-31T20:01:19.943Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

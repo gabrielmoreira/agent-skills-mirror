@@ -1,10 +1,8 @@
 ---
 repo: disler/mac-mini-agent
 repoUrl: https://github.com/disler/mac-mini-agent.git
-commit: 0d9fa22b7f75177b8cb4d8bd9bd3728c50e54459
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:31.413Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `disler/mac-mini-agent` — 26 default patterns, 0 followed patterns, 
 | Repo          | `disler/mac-mini-agent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0d9fa22b7f75177b8cb4d8bd9bd3728c50e54459` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:01:31.413Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: xerrors/Yuxi
 repoUrl: https://github.com/xerrors/Yuxi.git
-commit: e27a10b5f1e99319ce8177cb3fadbe8b3d0ccb0a
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:32:24.310Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 3 followed patterns, 7 file(s)
 | Repo          | `xerrors/Yuxi` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e27a10b5f1e99319ce8177cb3fadbe8b3d0ccb0a` |
 | Default pats  | 26 |
 | Followed pats | 3 |
 | Files         | 7 |
-| Mirrored      | 2026-03-31T20:32:24.310Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

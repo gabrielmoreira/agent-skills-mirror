@@ -1,10 +1,8 @@
 ---
 repo: strands-agents/sdk-python
 repoUrl: https://github.com/strands-agents/sdk-python.git
-commit: 53917945a137c5e61e0b9b62ed079c90280bf014
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:12:20.331Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 5 followed patter
 | Repo          | `strands-agents/sdk-python` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `53917945a137c5e61e0b9b62ed079c90280bf014` |
 | Default pats  | 26 |
 | Followed pats | 5 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T23:12:20.331Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

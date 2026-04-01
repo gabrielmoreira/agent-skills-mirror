@@ -1,10 +1,8 @@
 ---
 repo: OpenBMB/UltraRAG
 repoUrl: https://github.com/OpenBMB/UltraRAG.git
-commit: 8e7f41199db17f31a50fa7e226a101e44495bb47
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:51:18.249Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `OpenBMB/UltraRAG` — 26 default patterns, 0 followed patterns, 54 fi
 | Repo          | `OpenBMB/UltraRAG` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `8e7f41199db17f31a50fa7e226a101e44495bb47` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 54 |
-| Mirrored      | 2026-03-31T19:51:18.249Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

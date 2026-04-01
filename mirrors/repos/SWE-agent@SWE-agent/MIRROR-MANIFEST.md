@@ -1,10 +1,8 @@
 ---
 repo: SWE-agent/SWE-agent
 repoUrl: https://github.com/SWE-agent/SWE-agent.git
-commit: 0f4f3bba990e01ca8460b9963abdcd89e38042f2
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:56:08.363Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `SWE-agent/SWE-agent` — 26 default patterns, 0 followed patterns, 2 
 | Repo          | `SWE-agent/SWE-agent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0f4f3bba990e01ca8460b9963abdcd89e38042f2` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:56:08.363Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: rscheiwe/open-skills
 repoUrl: https://github.com/rscheiwe/open-skills.git
-commit: 22e844e8415585f93017137418ddada03e6f4b87
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:02.837Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `rscheiwe/open-skills` — 26 default patterns, 0 followed patterns, 2
 | Repo          | `rscheiwe/open-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `22e844e8415585f93017137418ddada03e6f4b87` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:03:02.837Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

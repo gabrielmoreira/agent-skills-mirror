@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/webpack@webpack/AGENTS.md

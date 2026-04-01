@@ -1,10 +1,8 @@
 ---
 repo: Panniantong/Agent-Reach
 repoUrl: https://github.com/Panniantong/Agent-Reach.git
-commit: e178470320a4c61017c961902a84d83441f6acb0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:27.701Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Panniantong/Agent-Reach` — 26 default patterns, 0 followed patterns
 | Repo          | `Panniantong/Agent-Reach` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e178470320a4c61017c961902a84d83441f6acb0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:58:27.701Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

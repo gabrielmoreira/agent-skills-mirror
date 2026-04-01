@@ -1,10 +1,8 @@
 ---
 repo: 0xJacky/nginx-ui
 repoUrl: https://github.com/0xJacky/nginx-ui.git
-commit: f89f8ff8223478988f7ed49bf1d3dbf2de44bf92
 refType: branch
 ref: dev
-mirroredAt: 2026-03-31T19:58:49.872Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 22 fi
 | Repo          | `0xJacky/nginx-ui` |
 | Ref Type      | `branch` |
 | Ref           | `dev` |
-| Commit        | `f89f8ff8223478988f7ed49bf1d3dbf2de44bf92` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 22 |
-| Mirrored      | 2026-03-31T19:58:49.872Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

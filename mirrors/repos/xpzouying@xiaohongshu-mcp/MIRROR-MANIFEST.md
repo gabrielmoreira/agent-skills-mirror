@@ -1,10 +1,8 @@
 ---
 repo: xpzouying/xiaohongshu-mcp
 repoUrl: https://github.com/xpzouying/xiaohongshu-mcp.git
-commit: b3e0efcc1162f8fa1c5597606ba48d6a3be158ac
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:38.002Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `xpzouying/xiaohongshu-mcp` — 26 default patterns, 0 followed patter
 | Repo          | `xpzouying/xiaohongshu-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b3e0efcc1162f8fa1c5597606ba48d6a3be158ac` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 12 |
-| Mirrored      | 2026-03-31T19:58:38.002Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

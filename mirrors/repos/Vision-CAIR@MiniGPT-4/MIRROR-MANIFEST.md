@@ -1,10 +1,8 @@
 ---
 repo: Vision-CAIR/MiniGPT-4
 repoUrl: https://github.com/Vision-CAIR/MiniGPT-4.git
-commit: d94738a7626ec43eba6c2cddf3cd2043f1a9689a
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:54:31.588Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Vision-CAIR/MiniGPT-4` — 26 default patterns, 0 followed patterns, 
 | Repo          | `Vision-CAIR/MiniGPT-4` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d94738a7626ec43eba6c2cddf3cd2043f1a9689a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:54:31.588Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

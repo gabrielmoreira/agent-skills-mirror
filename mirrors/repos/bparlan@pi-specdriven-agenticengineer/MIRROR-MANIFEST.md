@@ -1,15 +1,13 @@
 ---
 repo: bparlan/pi-specdriven-agenticengineer
 repoUrl: https://github.com/bparlan/pi-specdriven-agenticengineer.git
-commit: a63ce81550e9033f72e9cbaa32309e3063a8b5b3
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:01.874Z
 ---
 
 # Mirror Manifest
 
-Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 0 fol
 | Repo          | `bparlan/pi-specdriven-agenticengineer` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a63ce81550e9033f72e9cbaa32309e3063a8b5b3` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
-| Mirrored      | 2026-03-31T20:04:01.874Z |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,18 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`agents/implementer.md`](agents/implementer.md) |
-| 3 | ✓ | [`agents/planner.md`](agents/planner.md) |
-| 4 | ✓ | [`agents/spec-engineer.md`](agents/spec-engineer.md) |
-| 5 | ✓ | [`agents/test-engineer.md`](agents/test-engineer.md) |
-| 6 | ✓ | [`agents/verifier.md`](agents/verifier.md) |
-| 7 | ✓ | [`memory/AGENTS.md`](memory/AGENTS.md) |
-| 8 | ✓ | [`prompts/spec-and-plan.md`](prompts/spec-and-plan.md) |
-| 9 | ✓ | [`prompts/test-and-implement.md`](prompts/test-and-implement.md) |
-| 10 | ✓ | [`prompts/verify-and-commit.md`](prompts/verify-and-commit.md) |
-| 11 | ✓ | [`skills/spec-engineer/README.md`](skills/spec-engineer/README.md) |
-| 12 | ✓ | [`skills/spec-engineer/SKILL.md`](skills/spec-engineer/SKILL.md) |
+| 1 | ✓ | [`agents/implementer.md`](agents/implementer.md) |
+| 2 | ✓ | [`agents/planner.md`](agents/planner.md) |
+| 3 | ✓ | [`agents/spec-engineer.md`](agents/spec-engineer.md) |
+| 4 | ✓ | [`agents/test-engineer.md`](agents/test-engineer.md) |
+| 5 | ✓ | [`agents/verifier.md`](agents/verifier.md) |
+| 6 | ✓ | [`memory/AGENTS.md`](memory/AGENTS.md) |
+| 7 | ✓ | [`prompts/spec-and-plan.md`](prompts/spec-and-plan.md) |
+| 8 | ✓ | [`prompts/test-and-implement.md`](prompts/test-and-implement.md) |
+| 9 | ✓ | [`prompts/verify-and-commit.md`](prompts/verify-and-commit.md) |
+| 10 | ✓ | [`skills/spec-engineer/README.md`](skills/spec-engineer/README.md) |
+| 11 | ✓ | [`skills/spec-engineer/SKILL.md`](skills/spec-engineer/SKILL.md) |
 
 ---
 

@@ -1,10 +1,8 @@
 ---
 repo: seedprod/openclaw-prompts-and-skills
 repoUrl: https://github.com/seedprod/openclaw-prompts-and-skills.git
-commit: 5736d1ab074b372b4468a0c59593562acbe6f357
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:20.941Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `seedprod/openclaw-prompts-and-skills` — 26 default patterns, 0 foll
 | Repo          | `seedprod/openclaw-prompts-and-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5736d1ab074b372b4468a0c59593562acbe6f357` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 53 |
-| Mirrored      | 2026-03-31T20:02:20.941Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: Bria-AI/bria-skill
 repoUrl: https://github.com/Bria-AI/bria-skill.git
-commit: d73954b8fb2c258249b904c6178857f8192b940b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:41.985Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Bria-AI/bria-skill` — 26 default patterns, 0 followed patterns, 8 f
 | Repo          | `Bria-AI/bria-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d73954b8fb2c258249b904c6178857f8192b940b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 8 |
-| Mirrored      | 2026-03-31T20:02:41.985Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

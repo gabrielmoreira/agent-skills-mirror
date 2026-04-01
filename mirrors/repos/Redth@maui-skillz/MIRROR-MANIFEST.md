@@ -1,10 +1,8 @@
 ---
 repo: Redth/maui-skillz
 repoUrl: https://github.com/Redth/maui-skillz.git
-commit: 30dd1368b3a7f7eed903a8c097ffd7e4bb4d381e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:40.878Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Redth/maui-skillz` — 26 default patterns, 0 followed patterns, 8 fi
 | Repo          | `Redth/maui-skillz` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `30dd1368b3a7f7eed903a8c097ffd7e4bb4d381e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 8 |
-| Mirrored      | 2026-03-31T20:04:40.878Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,1 +1,0 @@
-../../subagents/core/docs-writer/agent.md

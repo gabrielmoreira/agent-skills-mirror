@@ -1,10 +1,8 @@
 ---
 repo: yi-john-huang/openclaw-secure-stack
 repoUrl: https://github.com/yi-john-huang/openclaw-secure-stack.git
-commit: 1f35f5756b2dfc887eafe6f0d7245ac99098c461
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:02:35.828Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `yi-john-huang/openclaw-secure-stack` — 26 default patterns, 0 follo
 | Repo          | `yi-john-huang/openclaw-secure-stack` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `1f35f5756b2dfc887eafe6f0d7245ac99098c461` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:02:35.828Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

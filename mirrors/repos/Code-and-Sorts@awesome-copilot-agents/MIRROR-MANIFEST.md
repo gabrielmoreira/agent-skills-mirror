@@ -1,10 +1,8 @@
 ---
 repo: Code-and-Sorts/awesome-copilot-agents
 repoUrl: https://github.com/Code-and-Sorts/awesome-copilot-agents.git
-commit: da3bbb98d2a8e9c3f9c0a1385ee993047c297a16
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:42.951Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Code-and-Sorts/awesome-copilot-agents` — 26 default patterns, 0 fol
 | Repo          | `Code-and-Sorts/awesome-copilot-agents` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `da3bbb98d2a8e9c3f9c0a1385ee993047c297a16` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 404 |
-| Mirrored      | 2026-03-31T20:01:42.951Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

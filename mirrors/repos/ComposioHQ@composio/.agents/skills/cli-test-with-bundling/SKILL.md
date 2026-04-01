@@ -1,1 +1,1 @@
-../../../.claude/skills/cli-test-with-bundling/SKILL.md
+cache/repos/github.com/ComposioHQ@composio/.agents/skills/cli-test-with-bundling/../../../.claude/skills/cli-test-with-bundling/SKILL.md

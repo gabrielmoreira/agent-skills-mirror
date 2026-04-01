@@ -1,10 +1,8 @@
 ---
 repo: i3T4AN/Semantic-skill-space
 repoUrl: https://github.com/i3T4AN/Semantic-skill-space.git
-commit: a635703be1ce4fd6354a32c07acd52b09b57958a
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:30.983Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `i3T4AN/Semantic-skill-space` — 26 default patterns, 0 followed patt
 | Repo          | `i3T4AN/Semantic-skill-space` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a635703be1ce4fd6354a32c07acd52b09b57958a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 100 |
-| Mirrored      | 2026-03-31T20:04:30.983Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

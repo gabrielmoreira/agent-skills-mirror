@@ -1,1 +1,0 @@
-integrations/domain_expiration_date.md

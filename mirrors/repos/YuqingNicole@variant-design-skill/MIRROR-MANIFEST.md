@@ -1,10 +1,8 @@
 ---
 repo: YuqingNicole/variant-design-skill
 repoUrl: https://github.com/YuqingNicole/variant-design-skill.git
-commit: ac5d380647a5c1591aeeb6beb0ab8a0da9fcd6b5
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:04:40.530Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `YuqingNicole/variant-design-skill` — 26 default patterns, 0 followe
 | Repo          | `YuqingNicole/variant-design-skill` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `ac5d380647a5c1591aeeb6beb0ab8a0da9fcd6b5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:04:40.530Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

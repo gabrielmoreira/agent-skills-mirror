@@ -1,1 +1,0 @@
-integrations/dell_powerstore.md

@@ -1,10 +1,8 @@
 ---
 repo: mmlong818/skillforge
 repoUrl: https://github.com/mmlong818/skillforge.git
-commit: 6496322a387b359f3cad2dbfe6e350d48e0ec524
 refType: branch
 ref: skills
-mirroredAt: 2026-03-31T20:02:34.479Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mmlong818/skillforge` — 26 default patterns, 0 followed patterns, 2
 | Repo          | `mmlong818/skillforge` |
 | Ref Type      | `branch` |
 | Ref           | `skills` |
-| Commit        | `6496322a387b359f3cad2dbfe6e350d48e0ec524` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:02:34.479Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

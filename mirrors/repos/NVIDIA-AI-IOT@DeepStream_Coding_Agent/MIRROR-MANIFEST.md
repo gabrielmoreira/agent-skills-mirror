@@ -1,10 +1,8 @@
 ---
 repo: NVIDIA-AI-IOT/DeepStream_Coding_Agent
 repoUrl: https://github.com/NVIDIA-AI-IOT/DeepStream_Coding_Agent.git
-commit: 304a0334aa062e722968b3d3ea7efb6b792ad0c4
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:37.782Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `NVIDIA-AI-IOT/DeepStream_Coding_Agent` — 26 default patterns, 0 fol
 | Repo          | `NVIDIA-AI-IOT/DeepStream_Coding_Agent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `304a0334aa062e722968b3d3ea7efb6b792ad0c4` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 14 |
-| Mirrored      | 2026-03-31T20:03:37.782Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

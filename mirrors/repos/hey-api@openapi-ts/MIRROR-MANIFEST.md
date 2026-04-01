@@ -1,10 +1,8 @@
 ---
 repo: hey-api/openapi-ts
 repoUrl: https://github.com/hey-api/openapi-ts.git
-commit: 9b9ffce7cae767bf45e961369b0dc72942954728
 refType: branch
 ref: main
-mirroredAt: 2026-04-01T00:39:11.202Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `hey-api/openapi-ts` — 26 default patterns, 0 followed patterns, 2 f
 | Repo          | `hey-api/openapi-ts` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9b9ffce7cae767bf45e961369b0dc72942954728` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-04-01T00:39:11.202Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

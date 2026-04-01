@@ -1,10 +1,8 @@
 ---
 repo: zgsm-sangfor/costrict-coding-hub
 repoUrl: https://github.com/zgsm-sangfor/costrict-coding-hub.git
-commit: 4b784d7b274a182186dff1e7828b62c780eb2e15
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:34.149Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `zgsm-sangfor/costrict-coding-hub` — 26 default patterns, 0 followed
 | Repo          | `zgsm-sangfor/costrict-coding-hub` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4b784d7b274a182186dff1e7828b62c780eb2e15` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T20:03:34.149Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

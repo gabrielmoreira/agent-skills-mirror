@@ -1,10 +1,8 @@
 ---
 repo: seaworld008/Commonly-used-high-value-skills
 repoUrl: https://github.com/seaworld008/Commonly-used-high-value-skills.git
-commit: 0b7913fb71f0a20c3ab37dc3e850c5fe7b4b1382
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:05:11.363Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `seaworld008/Commonly-used-high-value-skills` — 26 default patterns,
 | Repo          | `seaworld008/Commonly-used-high-value-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0b7913fb71f0a20c3ab37dc3e850c5fe7b4b1382` |
 | Default pats  | 26 |
 | Followed pats | 2 |
 | Files         | 2135 |
-| Mirrored      | 2026-03-31T20:05:11.363Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

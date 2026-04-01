@@ -1,10 +1,8 @@
 ---
 repo: llamastack/llama-stack
 repoUrl: https://github.com/llamastack/llama-stack.git
-commit: 456febff6cf3d246175e6aa4e8eb6c349c844ef6
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:30:52.995Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `llamastack/llama-stack` — 26 default patterns, 3 followed patterns,
 | Repo          | `llamastack/llama-stack` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `456febff6cf3d246175e6aa4e8eb6c349c844ef6` |
 | Default pats  | 26 |
 | Followed pats | 3 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T20:30:52.995Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

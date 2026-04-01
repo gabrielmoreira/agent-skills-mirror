@@ -1,10 +1,8 @@
 ---
 repo: agentsmd/agents.md
 repoUrl: https://github.com/agentsmd/agents.md.git
-commit: d1ac7f063d20e70015ed6732664049ae4ba9d74e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:55:58.888Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `agentsmd/agents.md` — 26 default patterns, 0 followed patterns, 1 f
 | Repo          | `agentsmd/agents.md` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d1ac7f063d20e70015ed6732664049ae4ba9d74e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:55:58.888Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

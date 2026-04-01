@@ -1,10 +1,8 @@
 ---
 repo: ThamJiaHe/claude-prompt-engineering-guide
 repoUrl: https://github.com/ThamJiaHe/claude-prompt-engineering-guide.git
-commit: 13fe84913754b915b3fede37ce45b18c2cf9cf69
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:31.277Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ThamJiaHe/claude-prompt-engineering-guide` — 26 default patterns, 3
 | Repo          | `ThamJiaHe/claude-prompt-engineering-guide` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `13fe84913754b915b3fede37ce45b18c2cf9cf69` |
 | Default pats  | 26 |
 | Followed pats | 39 |
 | Files         | 75 |
-| Mirrored      | 2026-03-31T20:02:31.277Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

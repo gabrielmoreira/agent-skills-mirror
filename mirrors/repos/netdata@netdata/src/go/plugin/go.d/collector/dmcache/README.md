@@ -1,1 +1,0 @@
-integrations/dmcache_devices.md

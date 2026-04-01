@@ -1,10 +1,8 @@
 ---
 repo: mksglu/context-mode
 repoUrl: https://github.com/mksglu/context-mode.git
-commit: dbbaca24f8ad1cebd25b2928c2fe30e114955289
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:44.883Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 21
 | Repo          | `mksglu/context-mode` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `dbbaca24f8ad1cebd25b2928c2fe30e114955289` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 21 |
-| Mirrored      | 2026-03-31T19:59:44.883Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

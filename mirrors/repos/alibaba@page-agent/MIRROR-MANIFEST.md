@@ -1,10 +1,8 @@
 ---
 repo: alibaba/page-agent
 repoUrl: https://github.com/alibaba/page-agent.git
-commit: 0402a6be030c6c90b1a0e1e9607ed3bc2f90992c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:16.743Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `alibaba/page-agent` — 26 default patterns, 0 followed patterns, 2 f
 | Repo          | `alibaba/page-agent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0402a6be030c6c90b1a0e1e9607ed3bc2f90992c` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:58:16.743Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

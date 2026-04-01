@@ -1,10 +1,8 @@
 ---
 repo: shareAI-lab/learn-claude-code
 repoUrl: https://github.com/shareAI-lab/learn-claude-code.git
-commit: 16b927c8ee7befa07caf8844d22f86ffef0aea05
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:53:09.154Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `shareAI-lab/learn-claude-code` — 26 default patterns, 0 followed pa
 | Repo          | `shareAI-lab/learn-claude-code` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `16b927c8ee7befa07caf8844d22f86ffef0aea05` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 23 |
-| Mirrored      | 2026-03-31T19:53:09.154Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

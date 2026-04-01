@@ -1,10 +1,8 @@
 ---
 repo: creativetimofficial/ui
 repoUrl: https://github.com/creativetimofficial/ui.git
-commit: 20eb87b1f671a2ba778b435c53249522080e8f27
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:39.942Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `creativetimofficial/ui` — 26 default patterns, 0 followed patterns,
 | Repo          | `creativetimofficial/ui` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `20eb87b1f671a2ba778b435c53249522080e8f27` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 11 |
-| Mirrored      | 2026-03-31T19:58:39.942Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

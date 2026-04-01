@@ -1,10 +1,8 @@
 ---
 repo: BloopAI/vibe-kanban
 repoUrl: https://github.com/BloopAI/vibe-kanban.git
-commit: 3ae515839af6d85a18ee5f05f71a43e38d1a0e05
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:54:49.374Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `BloopAI/vibe-kanban` — 26 default patterns, 0 followed patterns, 6 
 | Repo          | `BloopAI/vibe-kanban` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3ae515839af6d85a18ee5f05f71a43e38d1a0e05` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T19:54:49.374Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

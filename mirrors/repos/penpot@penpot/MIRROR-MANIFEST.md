@@ -1,10 +1,8 @@
 ---
 repo: penpot/penpot
 repoUrl: https://github.com/penpot/penpot.git
-commit: 28cefa9cbadf1ac15c1186ba309aadb509238bfe
 refType: branch
 ref: develop
-mirroredAt: 2026-03-31T19:53:16.510Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `penpot/penpot` — 26 default patterns, 0 followed patterns, 83 file(
 | Repo          | `penpot/penpot` |
 | Ref Type      | `branch` |
 | Ref           | `develop` |
-| Commit        | `28cefa9cbadf1ac15c1186ba309aadb509238bfe` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 83 |
-| Mirrored      | 2026-03-31T19:53:16.510Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

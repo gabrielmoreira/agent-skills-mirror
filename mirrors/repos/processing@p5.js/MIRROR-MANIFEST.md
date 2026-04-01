@@ -1,10 +1,8 @@
 ---
 repo: processing/p5.js
 repoUrl: https://github.com/processing/p5.js.git
-commit: 29f2fc8c91926b94b8768a1487edc25cb4e994d1
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:54:54.510Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `processing/p5.js` — 26 default patterns, 5 followed patterns, 21 fi
 | Repo          | `processing/p5.js` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `29f2fc8c91926b94b8768a1487edc25cb4e994d1` |
 | Default pats  | 26 |
 | Followed pats | 5 |
 | Files         | 21 |
-| Mirrored      | 2026-03-31T19:54:54.510Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

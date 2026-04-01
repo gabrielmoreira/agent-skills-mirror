@@ -1,10 +1,8 @@
 ---
 repo: infiniflow/ragflow
 repoUrl: https://github.com/infiniflow/ragflow.git
-commit: 00b62dd587712793762a25f5bbf9b957d8601f9a
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:57:01.196Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 8 f
 | Repo          | `infiniflow/ragflow` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `00b62dd587712793762a25f5bbf9b957d8601f9a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 8 |
-| Mirrored      | 2026-03-31T19:57:01.196Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

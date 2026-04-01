@@ -1,10 +1,8 @@
 ---
 repo: jdrhyne/agent-skills
 repoUrl: https://github.com/jdrhyne/agent-skills.git
-commit: 6768672b15fc81bcee933e311c14ee04b4a97ecd
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:36.884Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `jdrhyne/agent-skills` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `jdrhyne/agent-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6768672b15fc81bcee933e311c14ee04b4a97ecd` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 155 |
-| Mirrored      | 2026-03-31T20:01:36.884Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

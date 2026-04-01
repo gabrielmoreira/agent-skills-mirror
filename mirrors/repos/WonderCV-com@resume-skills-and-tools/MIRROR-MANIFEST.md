@@ -1,10 +1,8 @@
 ---
 repo: WonderCV-com/resume-skills-and-tools
 repoUrl: https://github.com/WonderCV-com/resume-skills-and-tools.git
-commit: b107793fb58a4545e38a5297035480b642e073d5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:50.292Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `WonderCV-com/resume-skills-and-tools` — 26 default patterns, 0 foll
 | Repo          | `WonderCV-com/resume-skills-and-tools` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b107793fb58a4545e38a5297035480b642e073d5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:02:50.292Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

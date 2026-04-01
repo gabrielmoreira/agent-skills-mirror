@@ -1,10 +1,8 @@
 ---
 repo: careerhackeralex/visualize
 repoUrl: https://github.com/careerhackeralex/visualize.git
-commit: 301077038e988088f720e8f6452c8c8e8cbea6f1
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:20.182Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `careerhackeralex/visualize` — 26 default patterns, 0 followed patte
 | Repo          | `careerhackeralex/visualize` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `301077038e988088f720e8f6452c8c8e8cbea6f1` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 12 |
-| Mirrored      | 2026-03-31T20:02:20.182Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

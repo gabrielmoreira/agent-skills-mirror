@@ -1,10 +1,8 @@
 ---
 repo: upstash/context7
 repoUrl: https://github.com/upstash/context7.git
-commit: 2273d528bbf78aaedb6b17e40594de4f61210890
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:53:00.334Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `upstash/context7` — 26 default patterns, 0 followed patterns, 8 fil
 | Repo          | `upstash/context7` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `2273d528bbf78aaedb6b17e40594de4f61210890` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 8 |
-| Mirrored      | 2026-03-31T19:53:00.334Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

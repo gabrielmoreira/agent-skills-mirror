@@ -1,10 +1,8 @@
 ---
 repo: fastapi/fastapi
 repoUrl: https://github.com/fastapi/fastapi.git
-commit: d128a7089a645466b789e32097de125a3b0f8979
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:35:28.738Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `fastapi/fastapi` — 26 default patterns, 0 followed patterns, 1 file
 | Repo          | `fastapi/fastapi` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `d128a7089a645466b789e32097de125a3b0f8979` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T11:35:28.738Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

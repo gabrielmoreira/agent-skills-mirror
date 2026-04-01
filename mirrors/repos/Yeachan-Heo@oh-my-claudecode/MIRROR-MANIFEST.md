@@ -1,10 +1,8 @@
 ---
 repo: Yeachan-Heo/oh-my-claudecode
 repoUrl: https://github.com/Yeachan-Heo/oh-my-claudecode.git
-commit: fae376508355fb03ea6a2477453f37f0a59e707f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:56:19.870Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed pat
 | Repo          | `Yeachan-Heo/oh-my-claudecode` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `fae376508355fb03ea6a2477453f37f0a59e707f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 90 |
-| Mirrored      | 2026-03-31T19:56:19.870Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,1 +1,0 @@
-../../subagents/core/systems-architect/agent.md

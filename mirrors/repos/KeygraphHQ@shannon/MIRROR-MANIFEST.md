@@ -1,10 +1,8 @@
 ---
 repo: KeygraphHQ/shannon
 repoUrl: https://github.com/KeygraphHQ/shannon.git
-commit: 6a0c8ce71039ddd378e14822e04a9d3ec05055ae
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:12:55.716Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `KeygraphHQ/shannon` — 26 default patterns, 0 followed patterns, 1 f
 | Repo          | `KeygraphHQ/shannon` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6a0c8ce71039ddd378e14822e04a9d3ec05055ae` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T23:12:55.716Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

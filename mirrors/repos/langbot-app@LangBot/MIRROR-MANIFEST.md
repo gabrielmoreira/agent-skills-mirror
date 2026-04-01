@@ -1,10 +1,8 @@
 ---
 repo: langbot-app/LangBot
 repoUrl: https://github.com/langbot-app/LangBot.git
-commit: f8aedd02b3439e36172c0e6800515ee74f14c0e9
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:49:54.732Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `langbot-app/LangBot` — 26 default patterns, 0 followed patterns, 2 
 | Repo          | `langbot-app/LangBot` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `f8aedd02b3439e36172c0e6800515ee74f14c0e9` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:49:54.732Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

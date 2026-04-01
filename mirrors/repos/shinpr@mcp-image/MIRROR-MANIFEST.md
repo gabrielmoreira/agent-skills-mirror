@@ -1,10 +1,8 @@
 ---
 repo: shinpr/mcp-image
 repoUrl: https://github.com/shinpr/mcp-image.git
-commit: c5e342283a78b2973d269d32a0016964a82bde71
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:11.587Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `shinpr/mcp-image` — 26 default patterns, 0 followed patterns, 1 fil
 | Repo          | `shinpr/mcp-image` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c5e342283a78b2973d269d32a0016964a82bde71` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:02:11.587Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

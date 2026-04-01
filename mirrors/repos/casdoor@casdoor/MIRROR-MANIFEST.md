@@ -1,10 +1,8 @@
 ---
 repo: casdoor/casdoor
 repoUrl: https://github.com/casdoor/casdoor.git
-commit: 0ff862dbc5c4f2463b47e04bd46b8ecb567fb15f
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:58:32.742Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `casdoor/casdoor` — 26 default patterns, 0 followed patterns, 1 file
 | Repo          | `casdoor/casdoor` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `0ff862dbc5c4f2463b47e04bd46b8ecb567fb15f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:58:32.742Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

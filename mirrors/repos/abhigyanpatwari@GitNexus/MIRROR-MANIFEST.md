@@ -1,10 +1,8 @@
 ---
 repo: abhigyanpatwari/GitNexus
 repoUrl: https://github.com/abhigyanpatwari/GitNexus.git
-commit: c72890d59d41f928c91f4d7b5c94fc2981f80ebe
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:55:49.769Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 6 followed pattern
 | Repo          | `abhigyanpatwari/GitNexus` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c72890d59d41f928c91f4d7b5c94fc2981f80ebe` |
 | Default pats  | 26 |
 | Followed pats | 6 |
 | Files         | 36 |
-| Mirrored      | 2026-03-31T19:55:49.769Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

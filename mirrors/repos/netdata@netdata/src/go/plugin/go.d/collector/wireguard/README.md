@@ -1,1 +1,0 @@
-integrations/wireguard.md

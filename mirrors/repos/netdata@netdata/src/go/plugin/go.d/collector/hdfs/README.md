@@ -1,1 +1,0 @@
-integrations/hadoop_distributed_file_system_hdfs.md

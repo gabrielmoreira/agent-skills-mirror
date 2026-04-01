@@ -1,10 +1,8 @@
 ---
 repo: charmbracelet/crush
 repoUrl: https://github.com/charmbracelet/crush.git
-commit: 6054a93e0a5c31997f9c9ee9b511f6b6a0093a20
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:34:32.278Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 3 
 | Repo          | `charmbracelet/crush` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6054a93e0a5c31997f9c9ee9b511f6b6a0093a20` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T20:34:32.278Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: xming521/WeClone
 repoUrl: https://github.com/xming521/WeClone.git
-commit: 3d618a76ff5f988de076ac6c57f3a3fe201a7b08
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:49:50.016Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `xming521/WeClone` — 26 default patterns, 0 followed patterns, 1 fil
 | Repo          | `xming521/WeClone` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `3d618a76ff5f988de076ac6c57f3a3fe201a7b08` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:49:50.016Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

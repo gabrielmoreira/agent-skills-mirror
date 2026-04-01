@@ -1,10 +1,8 @@
 ---
 repo: u14app/deep-research
 repoUrl: https://github.com/u14app/deep-research.git
-commit: 79e373e2d3392d32f994b6c36d699f85bbd983d0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:17.885Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `u14app/deep-research` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `u14app/deep-research` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `79e373e2d3392d32f994b6c36d699f85bbd983d0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:00:17.885Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

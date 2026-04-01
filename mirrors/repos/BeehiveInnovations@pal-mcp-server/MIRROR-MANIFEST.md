@@ -1,10 +1,8 @@
 ---
 repo: BeehiveInnovations/pal-mcp-server
 repoUrl: https://github.com/BeehiveInnovations/pal-mcp-server.git
-commit: 7afc7c1cc96e23992c8f105f960132c657883bb1
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:46.258Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `BeehiveInnovations/pal-mcp-server` — 26 default patterns, 0 followe
 | Repo          | `BeehiveInnovations/pal-mcp-server` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7afc7c1cc96e23992c8f105f960132c657883bb1` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:58:46.258Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: badlogic/pi-mono
 repoUrl: https://github.com/badlogic/pi-mono.git
-commit: 09e9de5749193beab234f30ed220a77f3d91cfad
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:43:22.464Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `badlogic/pi-mono` — 26 default patterns, 0 followed patterns, 19 fi
 | Repo          | `badlogic/pi-mono` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `09e9de5749193beab234f30ed220a77f3d91cfad` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 19 |
-| Mirrored      | 2026-03-31T20:43:22.464Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

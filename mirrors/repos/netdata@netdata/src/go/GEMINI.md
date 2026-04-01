@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/netdata@netdata/src/go/AGENTS.md

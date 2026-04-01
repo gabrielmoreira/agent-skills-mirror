@@ -1,10 +1,8 @@
 ---
 repo: modelcontextprotocol/inspector
 repoUrl: https://github.com/modelcontextprotocol/inspector.git
-commit: 7c8b031ffac663031ee5a0d0a7dc79735321c2d1
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:01.955Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 3 followed p
 | Repo          | `modelcontextprotocol/inspector` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7c8b031ffac663031ee5a0d0a7dc79735321c2d1` |
 | Default pats  | 26 |
 | Followed pats | 3 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T19:59:01.955Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,1 +1,1 @@
-../../../../.github/instructions/coding-standards/python-script.instructions.md
+cache/repos/github.com/microsoft@hve-core/plugins/coding-standards/instructions/coding-standards/../../../../.github/instructions/coding-standards/python-script.instructions.md

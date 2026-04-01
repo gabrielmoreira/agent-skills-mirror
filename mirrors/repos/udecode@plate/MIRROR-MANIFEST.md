@@ -1,10 +1,8 @@
 ---
 repo: udecode/plate
 repoUrl: https://github.com/udecode/plate.git
-commit: 46cf122540d6bf4ee9922962a41bbb539fb22d52
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:21.724Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `udecode/plate` — 26 default patterns, 0 followed patterns, 197 file
 | Repo          | `udecode/plate` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `46cf122540d6bf4ee9922962a41bbb539fb22d52` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 197 |
-| Mirrored      | 2026-03-31T19:58:21.724Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

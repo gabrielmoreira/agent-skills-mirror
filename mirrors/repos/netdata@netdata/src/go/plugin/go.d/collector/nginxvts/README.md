@@ -1,1 +1,0 @@
-integrations/nginx_vts.md

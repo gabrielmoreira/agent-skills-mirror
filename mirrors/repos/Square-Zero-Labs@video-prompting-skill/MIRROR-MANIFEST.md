@@ -1,10 +1,8 @@
 ---
 repo: Square-Zero-Labs/video-prompting-skill
 repoUrl: https://github.com/Square-Zero-Labs/video-prompting-skill.git
-commit: 985a3b23148855ca9511c6694a63400b0625d1ab
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:19.562Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Square-Zero-Labs/video-prompting-skill` — 26 default patterns, 0 fo
 | Repo          | `Square-Zero-Labs/video-prompting-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `985a3b23148855ca9511c6694a63400b0625d1ab` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:02:19.562Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

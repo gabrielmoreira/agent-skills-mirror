@@ -1,10 +1,8 @@
 ---
 repo: wgpsec/ENScan_GO
 repoUrl: https://github.com/wgpsec/ENScan_GO.git
-commit: 9969d5156c2fec80d5f4724b8d6d6bbb45471933
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:00:31.600Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `wgpsec/ENScan_GO` — 26 default patterns, 0 followed patterns, 1 fil
 | Repo          | `wgpsec/ENScan_GO` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `9969d5156c2fec80d5f4724b8d6d6bbb45471933` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:00:31.600Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

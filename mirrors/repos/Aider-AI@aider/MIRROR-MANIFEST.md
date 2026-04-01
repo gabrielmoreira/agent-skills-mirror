@@ -1,10 +1,8 @@
 ---
 repo: Aider-AI/aider
 repoUrl: https://github.com/Aider-AI/aider.git
-commit: bdb4d9ff8ef88c3015a9845119bff37f49c93d7b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:02.758Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Aider-AI/aider` — 26 default patterns, 0 followed patterns, 1 file(
 | Repo          | `Aider-AI/aider` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `bdb4d9ff8ef88c3015a9845119bff37f49c93d7b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:49:02.758Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

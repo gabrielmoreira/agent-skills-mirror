@@ -1,10 +1,8 @@
 ---
 repo: skyzh/tiny-llm
 repoUrl: https://github.com/skyzh/tiny-llm.git
-commit: ff6c35cc828fdebb07ac28454da5f3334b3d891d
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:51:55.854Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `skyzh/tiny-llm` — 26 default patterns, 0 followed patterns, 1 file(
 | Repo          | `skyzh/tiny-llm` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `ff6c35cc828fdebb07ac28454da5f3334b3d891d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:51:55.854Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

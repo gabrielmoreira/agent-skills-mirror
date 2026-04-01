@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/pulumi@pulumi/AGENTS.md

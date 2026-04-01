@@ -1,1 +1,0 @@
-integrations/ibm_mq.md

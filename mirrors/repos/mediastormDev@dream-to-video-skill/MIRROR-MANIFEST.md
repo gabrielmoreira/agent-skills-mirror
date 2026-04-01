@@ -1,10 +1,8 @@
 ---
 repo: mediastormDev/dream-to-video-skill
 repoUrl: https://github.com/mediastormDev/dream-to-video-skill.git
-commit: b136dc8906c006272e7c031a850c48b2d293d83b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:40.449Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mediastormDev/dream-to-video-skill` — 26 default patterns, 0 follow
 | Repo          | `mediastormDev/dream-to-video-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b136dc8906c006272e7c031a850c48b2d293d83b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:01:40.449Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

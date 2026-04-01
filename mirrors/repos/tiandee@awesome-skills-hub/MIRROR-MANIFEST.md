@@ -1,10 +1,8 @@
 ---
 repo: tiandee/awesome-skills-hub
 repoUrl: https://github.com/tiandee/awesome-skills-hub.git
-commit: 6ebb1ae9d1b936e98775792c9fde738e036cde43
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:59.143Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `tiandee/awesome-skills-hub` — 26 default patterns, 0 followed patte
 | Repo          | `tiandee/awesome-skills-hub` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6ebb1ae9d1b936e98775792c9fde738e036cde43` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 334 |
-| Mirrored      | 2026-03-31T20:03:59.143Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,1 +1,0 @@
-integrations/intel_gpu.md

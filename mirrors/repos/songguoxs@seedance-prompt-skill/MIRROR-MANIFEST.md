@@ -1,10 +1,8 @@
 ---
 repo: songguoxs/seedance-prompt-skill
 repoUrl: https://github.com/songguoxs/seedance-prompt-skill.git
-commit: 57d1e2f273747c238dd892698a05137ab2f10d4a
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:01:01.914Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `songguoxs/seedance-prompt-skill` — 26 default patterns, 0 followed 
 | Repo          | `songguoxs/seedance-prompt-skill` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `57d1e2f273747c238dd892698a05137ab2f10d4a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:01:01.914Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

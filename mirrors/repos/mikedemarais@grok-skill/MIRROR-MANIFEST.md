@@ -1,10 +1,8 @@
 ---
 repo: mikedemarais/grok-skill
 repoUrl: https://github.com/mikedemarais/grok-skill.git
-commit: 525b6a42e61295c3b35d8f5abb82f3e9a1cdf274
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:54.999Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mikedemarais/grok-skill` — 26 default patterns, 0 followed patterns
 | Repo          | `mikedemarais/grok-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `525b6a42e61295c3b35d8f5abb82f3e9a1cdf274` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T20:03:54.999Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

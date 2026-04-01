@@ -1,10 +1,8 @@
 ---
 repo: OmidZamani/dspy-skills
 repoUrl: https://github.com/OmidZamani/dspy-skills.git
-commit: 5970598aac4b9b1c9f00fa6a450f33d56e65d482
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T20:02:31.121Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `OmidZamani/dspy-skills` — 26 default patterns, 0 followed patterns,
 | Repo          | `OmidZamani/dspy-skills` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `5970598aac4b9b1c9f00fa6a450f33d56e65d482` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 20 |
-| Mirrored      | 2026-03-31T20:02:31.121Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

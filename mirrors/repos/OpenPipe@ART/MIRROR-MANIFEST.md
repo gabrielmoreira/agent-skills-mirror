@@ -1,15 +1,13 @@
 ---
 repo: OpenPipe/ART
 repoUrl: https://github.com/OpenPipe/ART.git
-commit: 19056773c2c0e2adfd4c4381566ddc03114869c9
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:50:28.708Z
 ---
 
 # Mirror Manifest
 
-Mirror of `OpenPipe/ART` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `OpenPipe/ART` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `OpenPipe/ART` — 26 default patterns, 0 followed patterns, 4 file(s)
 | Repo          | `OpenPipe/ART` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `19056773c2c0e2adfd4c4381566ddc03114869c9` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
-| Mirrored      | 2026-03-31T19:50:28.708Z |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,7 +62,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/skills/fix-art-issues/SKILL.md`](.agents/skills/fix-art-issues/SKILL.md) |
 | 2 | ✓ | [`.agents/skills/train-rl/SKILL.md`](.agents/skills/train-rl/SKILL.md) |
 | 3 | ✓ | [`.agents/skills/train-sft/SKILL.md`](.agents/skills/train-sft/SKILL.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -1,10 +1,8 @@
 ---
 repo: jiaxiaojunQAQ/SkillJect
 repoUrl: https://github.com/jiaxiaojunQAQ/SkillJect.git
-commit: da54c6b17e36921b1bf26a09c634a2eed722833a
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:55.596Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `jiaxiaojunQAQ/SkillJect` — 26 default patterns, 2 followed patterns
 | Repo          | `jiaxiaojunQAQ/SkillJect` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `da54c6b17e36921b1bf26a09c634a2eed722833a` |
 | Default pats  | 26 |
 | Followed pats | 2 |
 | Files         | 63 |
-| Mirrored      | 2026-03-31T20:02:55.596Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

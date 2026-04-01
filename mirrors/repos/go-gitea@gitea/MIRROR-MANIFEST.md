@@ -1,10 +1,8 @@
 ---
 repo: go-gitea/gitea
 repoUrl: https://github.com/go-gitea/gitea.git
-commit: 0df3213766c3d91a2e59ba401f14059d739ab5a0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:12:47.366Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `go-gitea/gitea` — 26 default patterns, 0 followed patterns, 2 file(
 | Repo          | `go-gitea/gitea` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0df3213766c3d91a2e59ba401f14059d739ab5a0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T23:12:47.366Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

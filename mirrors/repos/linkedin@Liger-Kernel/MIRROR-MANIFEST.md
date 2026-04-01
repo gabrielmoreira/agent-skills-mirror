@@ -1,10 +1,8 @@
 ---
 repo: linkedin/Liger-Kernel
 repoUrl: https://github.com/linkedin/Liger-Kernel.git
-commit: d991472e1e1011265d1ad85abf38ebf4c31fee26
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:51:06.119Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `linkedin/Liger-Kernel` — 26 default patterns, 0 followed patterns, 
 | Repo          | `linkedin/Liger-Kernel` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d991472e1e1011265d1ad85abf38ebf4c31fee26` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 10 |
-| Mirrored      | 2026-03-31T19:51:06.119Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

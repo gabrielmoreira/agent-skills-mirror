@@ -1,10 +1,8 @@
 ---
 repo: RooCodeInc/Roo-Code
 repoUrl: https://github.com/RooCodeInc/Roo-Code.git
-commit: 137d3f4fd8a1195bd2a2f228b00c58683e0e77b8
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:55:06.242Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `RooCodeInc/Roo-Code` — 26 default patterns, 1 followed patterns, 5 
 | Repo          | `RooCodeInc/Roo-Code` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `137d3f4fd8a1195bd2a2f228b00c58683e0e77b8` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T19:55:06.242Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

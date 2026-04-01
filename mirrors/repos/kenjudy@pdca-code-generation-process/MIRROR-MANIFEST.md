@@ -1,10 +1,8 @@
 ---
 repo: kenjudy/pdca-code-generation-process
 repoUrl: https://github.com/kenjudy/pdca-code-generation-process.git
-commit: 2c1ae8234501e9c986bd15bdafd136cf86b25bac
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:32.040Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 0 foll
 | Repo          | `kenjudy/pdca-code-generation-process` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2c1ae8234501e9c986bd15bdafd136cf86b25bac` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T20:03:32.040Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

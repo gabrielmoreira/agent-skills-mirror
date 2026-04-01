@@ -1,10 +1,8 @@
 ---
 repo: kreuzberg-dev/kreuzberg
 repoUrl: https://github.com/kreuzberg-dev/kreuzberg.git
-commit: d7bd7e5f3ff94cd04dc11908da172699c1e58032
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:35.155Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns
 | Repo          | `kreuzberg-dev/kreuzberg` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d7bd7e5f3ff94cd04dc11908da172699c1e58032` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 59 |
-| Mirrored      | 2026-03-31T19:59:35.155Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: cline/cline
 repoUrl: https://github.com/cline/cline.git
-commit: dec10aaec3acfac4377cf6377f752adc830f3eac
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:48:48.701Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `cline/cline` — 26 default patterns, 0 followed patterns, 3 file(s) 
 | Repo          | `cline/cline` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `dec10aaec3acfac4377cf6377f752adc830f3eac` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:48:48.701Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

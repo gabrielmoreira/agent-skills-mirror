@@ -1,10 +1,8 @@
 ---
 repo: cangtianhuang/humanizer-academic-zh
 repoUrl: https://github.com/cangtianhuang/humanizer-academic-zh.git
-commit: 3c309eecdad5aba868396caf9cc7e897c035ab0e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:28.409Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `cangtianhuang/humanizer-academic-zh` — 26 default patterns, 0 follo
 | Repo          | `cangtianhuang/humanizer-academic-zh` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3c309eecdad5aba868396caf9cc7e897c035ab0e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:04:28.409Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

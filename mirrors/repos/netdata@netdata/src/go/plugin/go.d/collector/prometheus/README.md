@@ -1,1 +1,0 @@
-integrations/prometheus_endpoint.md

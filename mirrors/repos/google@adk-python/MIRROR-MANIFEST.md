@@ -1,10 +1,8 @@
 ---
 repo: google/adk-python
 repoUrl: https://github.com/google/adk-python.git
-commit: 6ee036292e9eefabb032e8ebec3580a2243f3a96
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:13:32.935Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 5 fi
 | Repo          | `google/adk-python` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6ee036292e9eefabb032e8ebec3580a2243f3a96` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T23:13:32.935Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

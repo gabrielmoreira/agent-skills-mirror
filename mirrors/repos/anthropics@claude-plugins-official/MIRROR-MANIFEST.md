@@ -1,10 +1,8 @@
 ---
 repo: anthropics/claude-plugins-official
 repoUrl: https://github.com/anthropics/claude-plugins-official.git
-commit: b091cb4179d3b62a6e2a39910461c7ec7165b1ef
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:14:13.777Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 follow
 | Repo          | `anthropics/claude-plugins-official` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b091cb4179d3b62a6e2a39910461c7ec7165b1ef` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 25 |
-| Mirrored      | 2026-03-31T23:14:13.777Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: danny-avila/LibreChat
 repoUrl: https://github.com/danny-avila/LibreChat.git
-commit: 2451bf54cfc44ca54edc9357b916289307f7ac0d
 refType: branch
 ref: main
-mirroredAt: 2026-04-01T00:39:34.194Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `danny-avila/LibreChat` — 26 default patterns, 0 followed patterns, 
 | Repo          | `danny-avila/LibreChat` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2451bf54cfc44ca54edc9357b916289307f7ac0d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-04-01T00:39:34.194Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

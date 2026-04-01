@@ -1,10 +1,8 @@
 ---
 repo: CoplayDev/unity-mcp
 repoUrl: https://github.com/CoplayDev/unity-mcp.git
-commit: 8e3f721f7e2de25144d0c8478e43f08921a20ff8
 refType: branch
 ref: beta
-mirroredAt: 2026-03-31T19:59:21.177Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `CoplayDev/unity-mcp` — 26 default patterns, 0 followed patterns, 4 
 | Repo          | `CoplayDev/unity-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `beta` |
-| Commit        | `8e3f721f7e2de25144d0c8478e43f08921a20ff8` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T19:59:21.177Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: awslabs/mcp
 repoUrl: https://github.com/awslabs/mcp.git
-commit: 29cea0948297505cd5e2d6632058315e9511f76d
 refType: branch
 ref: main
-mirroredAt: 2026-04-01T00:40:32.987Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `awslabs/mcp` — 26 default patterns, 1 followed patterns, 9 file(s) 
 | Repo          | `awslabs/mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `29cea0948297505cd5e2d6632058315e9511f76d` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 9 |
-| Mirrored      | 2026-04-01T00:40:32.987Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

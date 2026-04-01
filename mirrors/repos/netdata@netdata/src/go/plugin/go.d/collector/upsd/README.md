@@ -1,1 +1,0 @@
-integrations/ups_nut.md

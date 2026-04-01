@@ -1,10 +1,8 @@
 ---
 repo: ghuntley/how-to-build-a-coding-agent
 repoUrl: https://github.com/ghuntley/how-to-build-a-coding-agent.git
-commit: 699fbec6e4daf72e611388cd589ef58bea801ce0
 refType: branch
 ref: trunk
-mirroredAt: 2026-03-31T19:51:22.185Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ghuntley/how-to-build-a-coding-agent` — 26 default patterns, 0 foll
 | Repo          | `ghuntley/how-to-build-a-coding-agent` |
 | Ref Type      | `branch` |
 | Ref           | `trunk` |
-| Commit        | `699fbec6e4daf72e611388cd589ef58bea801ce0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T19:51:22.185Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

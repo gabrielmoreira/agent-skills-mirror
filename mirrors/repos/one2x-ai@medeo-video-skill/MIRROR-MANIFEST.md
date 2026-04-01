@@ -1,10 +1,8 @@
 ---
 repo: one2x-ai/medeo-video-skill
 repoUrl: https://github.com/one2x-ai/medeo-video-skill.git
-commit: 37673773029ecc148a3366d795c588e5ccb8e33b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:07.468Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `one2x-ai/medeo-video-skill` — 26 default patterns, 4 followed patte
 | Repo          | `one2x-ai/medeo-video-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `37673773029ecc148a3366d795c588e5ccb8e33b` |
 | Default pats  | 26 |
 | Followed pats | 4 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T20:02:07.468Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: Michael-A-Kuykendall/shimmy
 repoUrl: https://github.com/Michael-A-Kuykendall/shimmy.git
-commit: b98391e1610845dfc56022e8abb7b3bb5b34776b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:52:09.553Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patt
 | Repo          | `Michael-A-Kuykendall/shimmy` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b98391e1610845dfc56022e8abb7b3bb5b34776b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 16 |
-| Mirrored      | 2026-03-31T19:52:09.553Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

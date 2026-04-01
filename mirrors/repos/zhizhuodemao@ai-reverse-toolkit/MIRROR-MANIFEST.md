@@ -1,10 +1,8 @@
 ---
 repo: zhizhuodemao/ai-reverse-toolkit
 repoUrl: https://github.com/zhizhuodemao/ai-reverse-toolkit.git
-commit: 02799de7420ea78c57bf7af8cc0f2d38fef017bd
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:52.173Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `zhizhuodemao/ai-reverse-toolkit` — 26 default patterns, 0 followed 
 | Repo          | `zhizhuodemao/ai-reverse-toolkit` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `02799de7420ea78c57bf7af8cc0f2d38fef017bd` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 29 |
-| Mirrored      | 2026-03-31T20:01:52.173Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

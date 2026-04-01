@@ -1,10 +1,8 @@
 ---
 repo: ansible/ansible
 repoUrl: https://github.com/ansible/ansible.git
-commit: 64d74c975479df6d0d1b67acf7b8686ece97f787
 refType: branch
 ref: devel
-mirroredAt: 2026-03-31T23:12:39.154Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ansible/ansible` — 26 default patterns, 0 followed patterns, 2 file
 | Repo          | `ansible/ansible` |
 | Ref Type      | `branch` |
 | Ref           | `devel` |
-| Commit        | `64d74c975479df6d0d1b67acf7b8686ece97f787` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T23:12:39.154Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

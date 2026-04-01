@@ -1,1 +1,0 @@
-integrations/docker_hub_repository.md

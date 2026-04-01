@@ -1,10 +1,8 @@
 ---
 repo: antinomyhq/forgecode
 repoUrl: https://github.com/antinomyhq/forgecode.git
-commit: 00fe3518b28979fcee5e0ec192774e527d9d372e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:51:28.827Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `antinomyhq/forgecode` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `antinomyhq/forgecode` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `00fe3518b28979fcee5e0ec192774e527d9d372e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 14 |
-| Mirrored      | 2026-03-31T19:51:28.827Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

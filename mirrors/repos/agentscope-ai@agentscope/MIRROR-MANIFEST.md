@@ -1,10 +1,8 @@
 ---
 repo: agentscope-ai/agentscope
 repoUrl: https://github.com/agentscope-ai/agentscope.git
-commit: 928b88a10973250d09624b8b481d053a42e8d4e0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:01.818Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `agentscope-ai/agentscope` — 26 default patterns, 0 followed pattern
 | Repo          | `agentscope-ai/agentscope` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `928b88a10973250d09624b8b481d053a42e8d4e0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:58:01.818Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

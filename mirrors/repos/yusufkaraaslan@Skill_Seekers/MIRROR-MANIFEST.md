@@ -1,10 +1,8 @@
 ---
 repo: yusufkaraaslan/Skill_Seekers
 repoUrl: https://github.com/yusufkaraaslan/Skill_Seekers.git
-commit: 00c72ea4a33abdfbf3fe1c77d8bf988e613ee5b9
 refType: branch
 ref: development
-mirroredAt: 2026-03-31T19:58:43.715Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `yusufkaraaslan/Skill_Seekers` — 26 default patterns, 0 followed pat
 | Repo          | `yusufkaraaslan/Skill_Seekers` |
 | Ref Type      | `branch` |
 | Ref           | `development` |
-| Commit        | `00c72ea4a33abdfbf3fe1c77d8bf988e613ee5b9` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:58:43.715Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: mrexodia/ida-pro-mcp
 repoUrl: https://github.com/mrexodia/ida-pro-mcp.git
-commit: f1aec3b78d66802c4f2de8d01e8268e9e8378d90
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:32.503Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mrexodia/ida-pro-mcp` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `mrexodia/ida-pro-mcp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `f1aec3b78d66802c4f2de8d01e8268e9e8378d90` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 106 |
-| Mirrored      | 2026-03-31T19:59:32.503Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

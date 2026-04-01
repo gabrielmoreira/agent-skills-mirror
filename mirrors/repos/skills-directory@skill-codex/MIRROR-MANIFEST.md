@@ -1,10 +1,8 @@
 ---
 repo: skills-directory/skill-codex
 repoUrl: https://github.com/skills-directory/skill-codex.git
-commit: 5271d1166b3904e15973157fbfabc95e9dfc0bc6
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:08.925Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `skills-directory/skill-codex` — 26 default patterns, 0 followed pat
 | Repo          | `skills-directory/skill-codex` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5271d1166b3904e15973157fbfabc95e9dfc0bc6` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:01:08.925Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

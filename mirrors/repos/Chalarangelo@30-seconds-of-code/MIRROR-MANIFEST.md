@@ -1,10 +1,8 @@
 ---
 repo: Chalarangelo/30-seconds-of-code
 repoUrl: https://github.com/Chalarangelo/30-seconds-of-code.git
-commit: 391777f901abeb83e03d91c14b4ea4210f339921
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:28:30.495Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Chalarangelo/30-seconds-of-code` — 26 default patterns, 0 followed 
 | Repo          | `Chalarangelo/30-seconds-of-code` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `391777f901abeb83e03d91c14b4ea4210f339921` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T11:28:30.495Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

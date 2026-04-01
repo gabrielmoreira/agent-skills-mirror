@@ -1,15 +1,13 @@
 ---
 repo: QwenLM/qwen-code
 repoUrl: https://github.com/QwenLM/qwen-code.git
-commit: 20e51e3d3039687710cb95e63bfaaf24f8686721
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:37.212Z
 ---
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 1 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 1 followed patterns, 12 fi
 | Repo          | `QwenLM/qwen-code` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `20e51e3d3039687710cb95e63bfaaf24f8686721` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 12 |
-| Mirrored      | 2026-03-31T19:49:37.212Z |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,12 +65,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
 | 5 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
 | 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`docs/developers/contributing.md`](docs/developers/contributing.md) |
-| 8 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
-| 9 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
-| 10 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 11 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
-| 12 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 7 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
+| 8 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
+| 9 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 10 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 11 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

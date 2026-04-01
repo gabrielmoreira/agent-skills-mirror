@@ -1,10 +1,8 @@
 ---
 repo: mark3labs/mcp-go
 repoUrl: https://github.com/mark3labs/mcp-go.git
-commit: d52df1ae34f102109da3150d7c70a7c5252fd466
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:59:09.246Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 28 fi
 | Repo          | `mark3labs/mcp-go` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d52df1ae34f102109da3150d7c70a7c5252fd466` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 28 |
-| Mirrored      | 2026-03-31T19:59:09.246Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

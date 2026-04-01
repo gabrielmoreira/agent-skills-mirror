@@ -1,10 +1,8 @@
 ---
 repo: ymcui/Chinese-LLaMA-Alpaca-2
 repoUrl: https://github.com/ymcui/Chinese-LLaMA-Alpaca-2.git
-commit: a1a5203ddb7fdf8ccb96534f77e5e4d3fddf1530
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:50:45.840Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ymcui/Chinese-LLaMA-Alpaca-2` — 26 default patterns, 0 followed pat
 | Repo          | `ymcui/Chinese-LLaMA-Alpaca-2` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a1a5203ddb7fdf8ccb96534f77e5e4d3fddf1530` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-31T19:50:45.840Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

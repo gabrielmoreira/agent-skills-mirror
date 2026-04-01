@@ -1,10 +1,8 @@
 ---
 repo: coreyhaines31/marketingskills
 repoUrl: https://github.com/coreyhaines31/marketingskills.git
-commit: 7c8c087486c29290b982820d719e1c4a556c0053
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:56:34.997Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed pa
 | Repo          | `coreyhaines31/marketingskills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7c8c087486c29290b982820d719e1c4a556c0053` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 126 |
-| Mirrored      | 2026-03-31T19:56:34.997Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: RightNow-AI/openfang
 repoUrl: https://github.com/RightNow-AI/openfang.git
-commit: a78299ed3d59c45f694365334f8d69811c65c522
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:58:12.187Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `RightNow-AI/openfang` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `RightNow-AI/openfang` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a78299ed3d59c45f694365334f8d69811c65c522` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 107 |
-| Mirrored      | 2026-03-31T19:58:12.187Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: jefflester/claude-skills-supercharged
 repoUrl: https://github.com/jefflester/claude-skills-supercharged.git
-commit: a7da84af263ac747af636652bac9f6482d6669d8
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:00.990Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `jefflester/claude-skills-supercharged` — 26 default patterns, 0 fol
 | Repo          | `jefflester/claude-skills-supercharged` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a7da84af263ac747af636652bac9f6482d6669d8` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T20:03:00.990Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

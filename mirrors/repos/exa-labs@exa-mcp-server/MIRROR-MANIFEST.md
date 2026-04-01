@@ -1,10 +1,8 @@
 ---
 repo: exa-labs/exa-mcp-server
 repoUrl: https://github.com/exa-labs/exa-mcp-server.git
-commit: 4c93ef879d16d2fba7908ab3e82041092697b5a7
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:44:09.919Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `exa-labs/exa-mcp-server` — 26 default patterns, 0 followed patterns
 | Repo          | `exa-labs/exa-mcp-server` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4c93ef879d16d2fba7908ab3e82041092697b5a7` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T20:44:09.919Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,15 +1,13 @@
 ---
 repo: huangserva/skill-prompt-generator
 repoUrl: https://github.com/huangserva/skill-prompt-generator.git
-commit: 5e0a54271ebf35a59cc61d9427576dbee1454382
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:08.583Z
 ---
 
 # Mirror Manifest
 
-Mirror of `huangserva/skill-prompt-generator` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `huangserva/skill-prompt-generator` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `huangserva/skill-prompt-generator` — 26 default patterns, 0 followe
 | Repo          | `huangserva/skill-prompt-generator` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5e0a54271ebf35a59cc61d9427576dbee1454382` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
-| Mirrored      | 2026-03-31T20:01:08.583Z |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,18 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/claude.md`](.claude/claude.md) |
-| 2 | ✓ | [`.claude/skills/art-master/skill.md`](.claude/skills/art-master/skill.md) |
-| 3 | ✓ | [`.claude/skills/design-master/skill.md`](.claude/skills/design-master/skill.md) |
-| 4 | ✓ | [`.claude/skills/domain-classifier/skill.md`](.claude/skills/domain-classifier/skill.md) |
-| 5 | ✓ | [`.claude/skills/intelligent-prompt-generator/SKILL.md`](.claude/skills/intelligent-prompt-generator/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/product-master/skill.md`](.claude/skills/product-master/skill.md) |
-| 7 | ✓ | [`.claude/skills/prompt-analyzer/SKILL.md`](.claude/skills/prompt-analyzer/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/prompt-extractor/skill.md`](.claude/skills/prompt-extractor/skill.md) |
-| 9 | ✓ | [`.claude/skills/prompt-generator/skill.md`](.claude/skills/prompt-generator/skill.md) |
-| 10 | ✓ | [`.claude/skills/prompt-master/skill.md`](.claude/skills/prompt-master/skill.md) |
-| 11 | ✓ | [`.claude/skills/prompt-xray/skill.md`](.claude/skills/prompt-xray/skill.md) |
-| 12 | ✓ | [`.claude/skills/universal-learner/SKILL.md`](.claude/skills/universal-learner/SKILL.md) |
-| 13 | ✓ | [`.claude/skills/video-master/skill.md`](.claude/skills/video-master/skill.md) |
+| 2 | ✓ | [`.claude/skills/intelligent-prompt-generator/SKILL.md`](.claude/skills/intelligent-prompt-generator/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/prompt-analyzer/SKILL.md`](.claude/skills/prompt-analyzer/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/universal-learner/SKILL.md`](.claude/skills/universal-learner/SKILL.md) |
 
 ---
 

@@ -1,1 +1,1 @@
-../../../../.github/instructions/design-thinking/dt-quality-constraints.instructions.md
+cache/repos/github.com/microsoft@hve-core/plugins/hve-core-all/instructions/design-thinking/../../../../.github/instructions/design-thinking/dt-quality-constraints.instructions.md

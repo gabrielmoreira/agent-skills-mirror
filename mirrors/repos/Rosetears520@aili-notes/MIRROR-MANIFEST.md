@@ -1,10 +1,8 @@
 ---
 repo: Rosetears520/aili-notes
 repoUrl: https://github.com/Rosetears520/aili-notes.git
-commit: 74e22630913a9735b305d6b359fc7f83d881b8bf
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:29.483Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Rosetears520/aili-notes` — 26 default patterns, 0 followed patterns
 | Repo          | `Rosetears520/aili-notes` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `74e22630913a9735b305d6b359fc7f83d881b8bf` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 18 |
-| Mirrored      | 2026-03-31T20:04:29.483Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

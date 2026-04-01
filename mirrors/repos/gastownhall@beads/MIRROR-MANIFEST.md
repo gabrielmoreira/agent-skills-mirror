@@ -1,15 +1,13 @@
 ---
 repo: gastownhall/beads
 repoUrl: https://github.com/gastownhall/beads.git
-commit: 9d9d0e53c2330bd081bef350883f56c2557eb78b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:13:33.928Z
 ---
 
 # Mirror Manifest
 
-Mirror of `gastownhall/beads` — 26 default patterns, 6 followed patterns, 23 file(s) materialized.
+Mirror of `gastownhall/beads` — 26 default patterns, 6 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `gastownhall/beads` — 26 default patterns, 6 followed patterns, 23 f
 | Repo          | `gastownhall/beads` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9d9d0e53c2330bd081bef350883f56c2557eb78b` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 23 |
-| Mirrored      | 2026-03-31T23:13:33.928Z |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,15 +78,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`docs/DOLT.md`](docs/DOLT.md) |
 | 13 | ✓ | [`docs/FAQ.md`](docs/FAQ.md) |
 | 14 | ✓ | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 15 | ✓ | [`website/docs/reference/faq.md`](website/docs/reference/faq.md) |
-| 16 | ✓ | [`website/docs/reference/troubleshooting.md`](website/docs/reference/troubleshooting.md) |
-| 17 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
-| 18 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
-| 19 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
-| 20 | → | [`docs/LINTING.md`](docs/LINTING.md) |
-| 21 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
-| 22 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
-| 23 | → | [`scripts/README.md`](scripts/README.md) |
+| 15 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
+| 16 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
+| 17 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
+| 18 | → | [`docs/LINTING.md`](docs/LINTING.md) |
+| 19 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
+| 20 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
+| 21 | → | [`scripts/README.md`](scripts/README.md) |
 
 ---
 

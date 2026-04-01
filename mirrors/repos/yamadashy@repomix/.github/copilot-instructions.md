@@ -1,1 +1,1 @@
-../.agents/rules/base.md
+cache/repos/github.com/yamadashy@repomix/.github/../.agents/rules/base.md

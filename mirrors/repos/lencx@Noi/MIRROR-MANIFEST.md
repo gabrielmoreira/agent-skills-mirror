@@ -1,10 +1,8 @@
 ---
 repo: lencx/Noi
 repoUrl: https://github.com/lencx/Noi.git
-commit: 48f641ea8be5f0117e360dbf1f7285e06cdcf1a5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:50:34.601Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `lencx/Noi` — 26 default patterns, 0 followed patterns, 1 file(s) ma
 | Repo          | `lencx/Noi` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `48f641ea8be5f0117e360dbf1f7285e06cdcf1a5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T19:50:34.601Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

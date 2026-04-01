@@ -1,15 +1,13 @@
 ---
 repo: JBurlison/MetaPrompts
 repoUrl: https://github.com/JBurlison/MetaPrompts.git
-commit: 50c14388d4abf138a778cddf058ff5c32157763c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:30.561Z
 ---
 
 # Mirror Manifest
 
-Mirror of `JBurlison/MetaPrompts` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `JBurlison/MetaPrompts` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `JBurlison/MetaPrompts` — 26 default patterns, 0 followed patterns, 
 | Repo          | `JBurlison/MetaPrompts` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `50c14388d4abf138a778cddf058ff5c32157763c` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
-| Mirrored      | 2026-03-31T20:02:30.561Z |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,11 +62,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/instructions/.gitkeep`](.github/instructions/.gitkeep) |
 | 2 | ✓ | [`.github/prompts/.gitkeep`](.github/prompts/.gitkeep) |
 | 3 | ✓ | [`.github/skills/agent-file-specs/references/AGENTS.md`](.github/skills/agent-file-specs/references/AGENTS.md) |
-| 4 | ✓ | [`.github/skills/agent-file-specs/references/SKILLS.md`](.github/skills/agent-file-specs/references/SKILLS.md) |
-| 5 | ✓ | [`.github/skills/agent-file-specs/SKILL.md`](.github/skills/agent-file-specs/SKILL.md) |
-| 6 | ✓ | [`.github/skills/analyze-agent-overlap/SKILL.md`](.github/skills/analyze-agent-overlap/SKILL.md) |
-| 7 | ✓ | [`.github/skills/generate-agent-docs/SKILL.md`](.github/skills/generate-agent-docs/SKILL.md) |
-| 8 | ✓ | [`.github/skills/validate-agent-files/SKILL.md`](.github/skills/validate-agent-files/SKILL.md) |
+| 4 | ✓ | [`.github/skills/agent-file-specs/SKILL.md`](.github/skills/agent-file-specs/SKILL.md) |
+| 5 | ✓ | [`.github/skills/analyze-agent-overlap/SKILL.md`](.github/skills/analyze-agent-overlap/SKILL.md) |
+| 6 | ✓ | [`.github/skills/generate-agent-docs/SKILL.md`](.github/skills/generate-agent-docs/SKILL.md) |
+| 7 | ✓ | [`.github/skills/validate-agent-files/SKILL.md`](.github/skills/validate-agent-files/SKILL.md) |
 
 ---
 

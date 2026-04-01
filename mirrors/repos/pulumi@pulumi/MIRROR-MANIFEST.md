@@ -1,10 +1,8 @@
 ---
 repo: pulumi/pulumi
 repoUrl: https://github.com/pulumi/pulumi.git
-commit: e0c59e5dd6bb3b55d16113be96e338bce3172cf5
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T23:13:52.784Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `pulumi/pulumi` — 26 default patterns, 0 followed patterns, 6 file(s
 | Repo          | `pulumi/pulumi` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `e0c59e5dd6bb3b55d16113be96e338bce3172cf5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-31T23:13:52.784Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

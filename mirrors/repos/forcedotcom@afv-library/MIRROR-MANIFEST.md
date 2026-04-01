@@ -1,10 +1,8 @@
 ---
 repo: forcedotcom/afv-library
 repoUrl: https://github.com/forcedotcom/afv-library.git
-commit: de191fe8b76642a6359c85d38616751f89edcc80
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:15:31.225Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns
 | Repo          | `forcedotcom/afv-library` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `de191fe8b76642a6359c85d38616751f89edcc80` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 155 |
-| Mirrored      | 2026-03-31T23:15:31.225Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

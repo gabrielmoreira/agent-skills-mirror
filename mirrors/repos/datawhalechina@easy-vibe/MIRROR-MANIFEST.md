@@ -1,10 +1,8 @@
 ---
 repo: datawhalechina/easy-vibe
 repoUrl: https://github.com/datawhalechina/easy-vibe.git
-commit: 485bb01291bb0436386d854199025ca5e6b7961d
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:00:08.809Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `datawhalechina/easy-vibe` — 26 default patterns, 0 followed pattern
 | Repo          | `datawhalechina/easy-vibe` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `485bb01291bb0436386d854199025ca5e6b7961d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T20:00:08.809Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

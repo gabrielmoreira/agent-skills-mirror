@@ -1,1 +1,0 @@
-integrations/am2320.md

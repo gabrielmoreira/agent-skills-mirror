@@ -1,10 +1,8 @@
 ---
 repo: cnfjlhj/ai-collab-playbook
 repoUrl: https://github.com/cnfjlhj/ai-collab-playbook.git
-commit: 623d67c92f5bdf9a9542b93c145922a409f11ea5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:54.368Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `cnfjlhj/ai-collab-playbook` — 26 default patterns, 3 followed patte
 | Repo          | `cnfjlhj/ai-collab-playbook` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `623d67c92f5bdf9a9542b93c145922a409f11ea5` |
 | Default pats  | 26 |
 | Followed pats | 3 |
 | Files         | 118 |
-| Mirrored      | 2026-03-31T20:01:54.368Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 8 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,12 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.factory/skills/brand-writer/SKILL.md`](.factory/skills/brand-writer/SKILL.md) |
 | 2 | ✓ | [`.factory/skills/humanizer/SKILL.md`](.factory/skills/humanizer/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`docs/.conventions/brand-voice/SKILL.md`](docs/.conventions/brand-voice/SKILL.md) |
-| 6 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 7 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
-| 8 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 3 | ✓ | [`docs/.conventions/brand-voice/SKILL.md`](docs/.conventions/brand-voice/SKILL.md) |
+| 4 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 5 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
 
 ---
 

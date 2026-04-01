@@ -1,10 +1,8 @@
 ---
 repo: ckelsoe/prompt-architect
 repoUrl: https://github.com/ckelsoe/prompt-architect.git
-commit: 6e12013eb782042595b99878d66ca46f68fc7885
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:02:19.686Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ckelsoe/prompt-architect` — 26 default patterns, 0 followed pattern
 | Repo          | `ckelsoe/prompt-architect` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6e12013eb782042595b99878d66ca46f68fc7885` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 59 |
-| Mirrored      | 2026-03-31T20:02:19.686Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

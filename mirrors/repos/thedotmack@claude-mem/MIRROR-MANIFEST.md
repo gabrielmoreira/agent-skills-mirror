@@ -1,10 +1,8 @@
 ---
 repo: thedotmack/claude-mem
 repoUrl: https://github.com/thedotmack/claude-mem.git
-commit: d06882126fe24f6ebcbe433385daeb8322ba8009
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:53:18.838Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 
 | Repo          | `thedotmack/claude-mem` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d06882126fe24f6ebcbe433385daeb8322ba8009` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 36 |
-| Mirrored      | 2026-03-31T19:53:18.838Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,1 +1,1 @@
-../../../plugin/skills/do/SKILL.md
+cache/repos/github.com/thedotmack@claude-mem/openclaw/skills/do/../../../plugin/skills/do/SKILL.md

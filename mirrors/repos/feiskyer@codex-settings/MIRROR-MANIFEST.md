@@ -1,10 +1,8 @@
 ---
 repo: feiskyer/codex-settings
 repoUrl: https://github.com/feiskyer/codex-settings.git
-commit: 06025f674c7ab6448855f01fd5459adea24b49f5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:01:45.120Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `feiskyer/codex-settings` — 26 default patterns, 0 followed patterns
 | Repo          | `feiskyer/codex-settings` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `06025f674c7ab6448855f01fd5459adea24b49f5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 25 |
-| Mirrored      | 2026-03-31T20:01:45.120Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

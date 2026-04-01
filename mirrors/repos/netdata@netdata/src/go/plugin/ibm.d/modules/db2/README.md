@@ -1,1 +1,0 @@
-integrations/ibm_db2.md

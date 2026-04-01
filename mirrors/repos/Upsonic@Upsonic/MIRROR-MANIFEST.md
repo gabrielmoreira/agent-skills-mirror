@@ -1,10 +1,8 @@
 ---
 repo: Upsonic/Upsonic
 repoUrl: https://github.com/Upsonic/Upsonic.git
-commit: 520418c5a0afa14d4306cb6b5e370ca6e1effc31
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T19:59:18.633Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Upsonic/Upsonic` — 26 default patterns, 0 followed patterns, 4 file
 | Repo          | `Upsonic/Upsonic` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `520418c5a0afa14d4306cb6b5e370ca6e1effc31` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T19:59:18.633Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

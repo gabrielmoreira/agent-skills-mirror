@@ -1,10 +1,8 @@
 ---
 repo: ben-vargas/pi-packages
 repoUrl: https://github.com/ben-vargas/pi-packages.git
-commit: 2e8c9eb60e209fbc959d1489d624fbfcc1645052
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:03:01.846Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ben-vargas/pi-packages` — 26 default patterns, 0 followed patterns,
 | Repo          | `ben-vargas/pi-packages` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2e8c9eb60e209fbc959d1489d624fbfcc1645052` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:03:01.846Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

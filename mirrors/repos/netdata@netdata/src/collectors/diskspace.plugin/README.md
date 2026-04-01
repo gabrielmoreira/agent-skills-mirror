@@ -1,1 +1,0 @@
-integrations/disk_space.md

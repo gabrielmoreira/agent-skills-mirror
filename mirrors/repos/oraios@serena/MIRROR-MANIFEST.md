@@ -1,10 +1,8 @@
 ---
 repo: oraios/serena
 repoUrl: https://github.com/oraios/serena.git
-commit: 1a3b9bf8b43514db06e84b672d036d9e8f518c7e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:55:13.750Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `oraios/serena` — 26 default patterns, 0 followed patterns, 2 file(s
 | Repo          | `oraios/serena` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1a3b9bf8b43514db06e84b672d036d9e8f518c7e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T19:55:13.750Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

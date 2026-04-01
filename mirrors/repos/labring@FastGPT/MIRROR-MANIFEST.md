@@ -1,10 +1,8 @@
 ---
 repo: labring/FastGPT
 repoUrl: https://github.com/labring/FastGPT.git
-commit: d5ea3179a034839354c5369c5b664bceaf7abd6a
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:49:24.987Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 11 fil
 | Repo          | `labring/FastGPT` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d5ea3179a034839354c5369c5b664bceaf7abd6a` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 11 |
-| Mirrored      | 2026-03-31T19:49:24.987Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

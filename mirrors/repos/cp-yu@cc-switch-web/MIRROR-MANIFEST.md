@@ -1,10 +1,8 @@
 ---
 repo: cp-yu/cc-switch-web
 repoUrl: https://github.com/cp-yu/cc-switch-web.git
-commit: 267c7eb86e84933cb3969140c5a3f105e11cf889
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:42.540Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `cp-yu/cc-switch-web` — 26 default patterns, 0 followed patterns, 13
 | Repo          | `cp-yu/cc-switch-web` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `267c7eb86e84933cb3969140c5a3f105e11cf889` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 13 |
-| Mirrored      | 2026-03-31T20:04:42.540Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

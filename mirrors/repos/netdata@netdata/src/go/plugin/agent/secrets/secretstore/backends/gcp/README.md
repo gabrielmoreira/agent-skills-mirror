@@ -1,1 +1,0 @@
-integrations/gcp-sm.md

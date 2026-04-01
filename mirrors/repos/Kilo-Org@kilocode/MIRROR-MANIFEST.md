@@ -1,10 +1,8 @@
 ---
 repo: Kilo-Org/kilocode
 repoUrl: https://github.com/Kilo-Org/kilocode.git
-commit: 1e8e07f9dc9119b66cf61d9c13891970361896c1
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T23:13:50.796Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Kilo-Org/kilocode` — 26 default patterns, 0 followed patterns, 13 f
 | Repo          | `Kilo-Org/kilocode` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1e8e07f9dc9119b66cf61d9c13891970361896c1` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 13 |
-| Mirrored      | 2026-03-31T23:13:50.796Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

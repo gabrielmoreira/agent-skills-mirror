@@ -1,10 +1,8 @@
 ---
 repo: Samarth0211/claude-skills-hub
 repoUrl: https://github.com/Samarth0211/claude-skills-hub.git
-commit: 9bf3a2fbc7498e79bcf2e9dac251b493e68d05d7
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:19.601Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Samarth0211/claude-skills-hub` — 26 default patterns, 0 followed pa
 | Repo          | `Samarth0211/claude-skills-hub` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9bf3a2fbc7498e79bcf2e9dac251b493e68d05d7` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 211 |
-| Mirrored      | 2026-03-31T20:04:19.601Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

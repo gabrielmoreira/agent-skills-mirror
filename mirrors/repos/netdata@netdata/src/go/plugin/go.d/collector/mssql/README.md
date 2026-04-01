@@ -1,1 +1,0 @@
-integrations/microsoft_sql_server.md

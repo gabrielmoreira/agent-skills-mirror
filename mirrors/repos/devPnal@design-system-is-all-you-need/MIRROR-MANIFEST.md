@@ -1,10 +1,8 @@
 ---
 repo: devPnal/design-system-is-all-you-need
 repoUrl: https://github.com/devPnal/design-system-is-all-you-need.git
-commit: b9a425d6ca265071e54f9f97f81cface4ca339bb
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T20:04:19.122Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `devPnal/design-system-is-all-you-need` — 26 default patterns, 0 fol
 | Repo          | `devPnal/design-system-is-all-you-need` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b9a425d6ca265071e54f9f97f81cface4ca339bb` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T20:04:19.122Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

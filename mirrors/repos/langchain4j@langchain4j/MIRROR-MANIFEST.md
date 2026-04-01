@@ -1,15 +1,13 @@
 ---
 repo: langchain4j/langchain4j
 repoUrl: https://github.com/langchain4j/langchain4j.git
-commit: d971fe0df3bfdce07f7ac94dea4c9b9f819956e8
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:50:21.600Z
 ---
 
 # Mirror Manifest
 
-Mirror of `langchain4j/langchain4j` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `langchain4j/langchain4j` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `langchain4j/langchain4j` — 26 default patterns, 0 followed patterns
 | Repo          | `langchain4j/langchain4j` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d971fe0df3bfdce07f7ac94dea4c9b9f819956e8` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
-| Mirrored      | 2026-03-31T19:50:21.600Z |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,12 +60,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`docs/docs/integrations/image-models/gemini.md`](docs/docs/integrations/image-models/gemini.md) |
-| 2 | ✓ | [`docs/docs/tutorials/agents.md`](docs/docs/tutorials/agents.md) |
-| 3 | ✓ | [`docs/docs/tutorials/skills.md`](docs/docs/tutorials/skills.md) |
-| 4 | ✓ | [`experimental/langchain4j-experimental-skills-shell/src/test/resources/skills/greeting-user/SKILL.md`](experimental/langchain4j-experimental-skills-shell/src/test/resources/skills/greeting-user/SKILL.md) |
-| 5 | ✓ | [`langchain4j-skills/src/test/resources/skills/greeting-user/SKILL.md`](langchain4j-skills/src/test/resources/skills/greeting-user/SKILL.md) |
-| 6 | ✓ | [`langchain4j-skills/src/test/resources/skills/test-skill/SKILL.md`](langchain4j-skills/src/test/resources/skills/test-skill/SKILL.md) |
-| 7 | ✓ | [`langchain4j-skills/src/test/resources/skills/using-process-tool/SKILL.md`](langchain4j-skills/src/test/resources/skills/using-process-tool/SKILL.md) |
+| 2 | ✓ | [`docs/docs/tutorials/skills.md`](docs/docs/tutorials/skills.md) |
+| 3 | ✓ | [`experimental/langchain4j-experimental-skills-shell/src/test/resources/skills/greeting-user/SKILL.md`](experimental/langchain4j-experimental-skills-shell/src/test/resources/skills/greeting-user/SKILL.md) |
+| 4 | ✓ | [`langchain4j-skills/src/test/resources/skills/greeting-user/SKILL.md`](langchain4j-skills/src/test/resources/skills/greeting-user/SKILL.md) |
+| 5 | ✓ | [`langchain4j-skills/src/test/resources/skills/test-skill/SKILL.md`](langchain4j-skills/src/test/resources/skills/test-skill/SKILL.md) |
+| 6 | ✓ | [`langchain4j-skills/src/test/resources/skills/using-process-tool/SKILL.md`](langchain4j-skills/src/test/resources/skills/using-process-tool/SKILL.md) |
 
 ---
 
