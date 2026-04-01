@@ -1,10 +1,8 @@
 ---
 repo: ripienaar/free-for-dev
 repoUrl: https://github.com/ripienaar/free-for-dev.git
-commit: 4c5b3a86c6cbadda73edd4f1e752d8f1b8cfd696
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:29:31.607Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `ripienaar/free-for-dev` — 26 default patterns, 0 followed patterns,
 | Repo          | `ripienaar/free-for-dev` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `4c5b3a86c6cbadda73edd4f1e752d8f1b8cfd696` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T11:29:31.607Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

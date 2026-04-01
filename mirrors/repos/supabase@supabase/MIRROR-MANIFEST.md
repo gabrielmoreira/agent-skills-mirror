@@ -1,15 +1,13 @@
 ---
 repo: supabase/supabase
 repoUrl: https://github.com/supabase/supabase.git
-commit: 636dcaa264a79721211e998ff120be529574ce0b
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T18:22:31.716Z
 ---
 
 # Mirror Manifest
 
-Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
+Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 42 f
 | Repo          | `supabase/supabase` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `636dcaa264a79721211e998ff120be529574ce0b` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 42 |
-| Mirrored      | 2026-03-31T18:22:31.716Z |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,16 +91,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`.cursor/rules/docs/docs-embeddings-generation/RULE.md`](.cursor/rules/docs/docs-embeddings-generation/RULE.md) |
 | 31 | ✓ | [`.cursor/rules/docs/docs-graphql/RULE.md`](.cursor/rules/docs/docs-graphql/RULE.md) |
 | 32 | ✓ | [`.cursor/rules/docs/docs-test-requirements/RULE.md`](.cursor/rules/docs/docs-test-requirements/RULE.md) |
-| 33 | ✓ | [`.cursor/skills/vitest`](.cursor/skills/vitest) |
-| 34 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 35 | ✓ | [`.github/instructions/studio-composition-patterns.instructions.md`](.github/instructions/studio-composition-patterns.instructions.md) |
-| 36 | ✓ | [`.github/instructions/studio-e2e-tests.instructions.md`](.github/instructions/studio-e2e-tests.instructions.md) |
-| 37 | ✓ | [`.github/instructions/studio-error-handling.instructions.md`](.github/instructions/studio-error-handling.instructions.md) |
-| 38 | ✓ | [`.github/instructions/studio-shadcn-components.instructions.md`](.github/instructions/studio-shadcn-components.instructions.md) |
-| 39 | ✓ | [`.github/instructions/studio-telemetry.instructions.md`](.github/instructions/studio-telemetry.instructions.md) |
-| 40 | ✓ | [`.github/instructions/studio-testing.instructions.md`](.github/instructions/studio-testing.instructions.md) |
-| 41 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
-| 42 | ✓ | [`apps/ui-library/public/llms.txt`](apps/ui-library/public/llms.txt) |
+| 33 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 34 | ✓ | [`.github/instructions/studio-composition-patterns.instructions.md`](.github/instructions/studio-composition-patterns.instructions.md) |
+| 35 | ✓ | [`.github/instructions/studio-e2e-tests.instructions.md`](.github/instructions/studio-e2e-tests.instructions.md) |
+| 36 | ✓ | [`.github/instructions/studio-error-handling.instructions.md`](.github/instructions/studio-error-handling.instructions.md) |
+| 37 | ✓ | [`.github/instructions/studio-shadcn-components.instructions.md`](.github/instructions/studio-shadcn-components.instructions.md) |
+| 38 | ✓ | [`.github/instructions/studio-telemetry.instructions.md`](.github/instructions/studio-telemetry.instructions.md) |
+| 39 | ✓ | [`.github/instructions/studio-testing.instructions.md`](.github/instructions/studio-testing.instructions.md) |
+| 40 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
+| 41 | ✓ | [`apps/ui-library/public/llms.txt`](apps/ui-library/public/llms.txt) |
 
 ---
 

@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/openclaw@openclaw/test/helpers/channels/AGENTS.md

@@ -1,10 +1,8 @@
 ---
 repo: nvm-sh/nvm
 repoUrl: https://github.com/nvm-sh/nvm.git
-commit: 001ea8cac1eb61c8f0e29889ea05ab0af69546d8
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:36:14.258Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `nvm-sh/nvm` — 26 default patterns, 0 followed patterns, 2 file(s) m
 | Repo          | `nvm-sh/nvm` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `001ea8cac1eb61c8f0e29889ea05ab0af69546d8` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T11:36:14.258Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

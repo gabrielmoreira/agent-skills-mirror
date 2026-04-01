@@ -1,10 +1,8 @@
 ---
 repo: tensorflow/tensorflow
 repoUrl: https://github.com/tensorflow/tensorflow.git
-commit: ffa693742be75957542d19acbfa8e785ad41feac
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T18:21:40.833Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `tensorflow/tensorflow` — 26 default patterns, 0 followed patterns, 
 | Repo          | `tensorflow/tensorflow` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `ffa693742be75957542d19acbfa8e785ad41feac` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T18:21:40.833Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

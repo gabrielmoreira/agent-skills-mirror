@@ -1,10 +1,8 @@
 ---
 repo: freeCodeCamp/freeCodeCamp
 repoUrl: https://github.com/freeCodeCamp/freeCodeCamp.git
-commit: cead3cc698590918a053c48a6418ca9a12759183
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T15:23:43.543Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `freeCodeCamp/freeCodeCamp` — 26 default patterns, 0 followed patter
 | Repo          | `freeCodeCamp/freeCodeCamp` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cead3cc698590918a053c48a6418ca9a12759183` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T15:23:43.543Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

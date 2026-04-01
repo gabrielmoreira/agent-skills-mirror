@@ -1,10 +1,8 @@
 ---
 repo: langflow-ai/langflow
 repoUrl: https://github.com/langflow-ai/langflow.git
-commit: 08bf98404cfd7737fde57a2588785766cdf1b42e
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:26:55.139Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `langflow-ai/langflow` — 26 default patterns, 0 followed patterns, 1
 | Repo          | `langflow-ai/langflow` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `08bf98404cfd7737fde57a2588785766cdf1b42e` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 10 |
-| Mirrored      | 2026-03-31T11:26:55.139Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

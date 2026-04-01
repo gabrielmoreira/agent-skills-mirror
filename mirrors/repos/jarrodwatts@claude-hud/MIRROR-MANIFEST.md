@@ -1,15 +1,13 @@
 ---
 repo: jarrodwatts/claude-hud
 repoUrl: https://github.com/jarrodwatts/claude-hud.git
-commit: 30e1dfe46ad7b9a39ca2a4df7c735aaa33a90fd9
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:48:28.009Z
 ---
 
 # Mirror Manifest
 
-Mirror of `jarrodwatts/claude-hud` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `jarrodwatts/claude-hud` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `jarrodwatts/claude-hud` — 12 default patterns, 0 followed patterns,
 | Repo          | `jarrodwatts/claude-hud` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `30e1dfe46ad7b9a39ca2a4df7c735aaa33a90fd9` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-28T23:48:28.009Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `jarrodwatts/claude-hud` — 12 default patterns, 0 followed patterns,
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

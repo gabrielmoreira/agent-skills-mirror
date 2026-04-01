@@ -1,15 +1,13 @@
 ---
 repo: volcengine/OpenViking
 repoUrl: https://github.com/volcengine/OpenViking.git
-commit: 95c29de4bfaa8dec645de87c85ad47604bf49b04
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:00:40.221Z
 ---
 
 # Mirror Manifest
 
-Mirror of `volcengine/OpenViking` — 12 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `volcengine/OpenViking` — 12 default patterns, 0 followed patterns, 
 | Repo          | `volcengine/OpenViking` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `95c29de4bfaa8dec645de87c85ad47604bf49b04` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 13 |
-| Mirrored      | 2026-03-30T23:00:40.221Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `volcengine/OpenViking` — 12 default patterns, 0 followed patterns, 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

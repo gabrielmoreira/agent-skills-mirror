@@ -1,15 +1,13 @@
 ---
 repo: langchain-ai/deepagents
 repoUrl: https://github.com/langchain-ai/deepagents.git
-commit: 845cdf52d7f15ab2b260de95f8448c04264c1efc
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:02:12.235Z
 ---
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 12 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `langchain-ai/deepagents` — 12 default patterns, 0 followed patterns
 | Repo          | `langchain-ai/deepagents` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `845cdf52d7f15ab2b260de95f8448c04264c1efc` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 18 |
-| Mirrored      | 2026-03-30T23:02:12.235Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `langchain-ai/deepagents` — 12 default patterns, 0 followed patterns
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

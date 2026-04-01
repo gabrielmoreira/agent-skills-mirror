@@ -1,15 +1,13 @@
 ---
 repo: OpenBB-finance/OpenBB
 repoUrl: https://github.com/OpenBB-finance/OpenBB.git
-commit: 8f6cde60ce3cad54e46a92d54e66175444a9eb13
 refType: branch
 ref: develop
-mirroredAt: 2026-03-30T22:48:05.664Z
 ---
 
 # Mirror Manifest
 
-Mirror of `OpenBB-finance/OpenBB` — 12 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `OpenBB-finance/OpenBB` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `OpenBB-finance/OpenBB` — 12 default patterns, 0 followed patterns, 
 | Repo          | `OpenBB-finance/OpenBB` |
 | Ref Type      | `branch` |
 | Ref           | `develop` |
-| Commit        | `8f6cde60ce3cad54e46a92d54e66175444a9eb13` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-30T22:48:05.664Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `OpenBB-finance/OpenBB` — 12 default patterns, 0 followed patterns, 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

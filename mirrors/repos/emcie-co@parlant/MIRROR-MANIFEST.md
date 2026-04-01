@@ -1,15 +1,13 @@
 ---
 repo: emcie-co/parlant
 repoUrl: https://github.com/emcie-co/parlant.git
-commit: 262bcf0dd97f0bac95d521dab53e3866b03925af
 refType: branch
 ref: develop
-mirroredAt: 2026-03-30T23:02:21.258Z
 ---
 
 # Mirror Manifest
 
-Mirror of `emcie-co/parlant` — 12 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `emcie-co/parlant` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `emcie-co/parlant` — 12 default patterns, 0 followed patterns, 3 fil
 | Repo          | `emcie-co/parlant` |
 | Ref Type      | `branch` |
 | Ref           | `develop` |
-| Commit        | `262bcf0dd97f0bac95d521dab53e3866b03925af` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
-| Mirrored      | 2026-03-30T23:02:21.258Z |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `emcie-co/parlant` — 12 default patterns, 0 followed patterns, 3 fil
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -50,8 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`docs/concepts/entities/agents.md`](docs/concepts/entities/agents.md) |
-| 3 | ✓ | [`llms.txt`](llms.txt) |
+| 2 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 

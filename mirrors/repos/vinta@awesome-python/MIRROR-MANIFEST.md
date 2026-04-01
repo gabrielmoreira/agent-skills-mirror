@@ -1,10 +1,8 @@
 ---
 repo: vinta/awesome-python
 repoUrl: https://github.com/vinta/awesome-python.git
-commit: 36d8ca9b886ec4d348fd3ed4eb6e3001f594cdcf
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T15:24:02.858Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `vinta/awesome-python` — 26 default patterns, 1 followed patterns, 2
 | Repo          | `vinta/awesome-python` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `36d8ca9b886ec4d348fd3ed4eb6e3001f594cdcf` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T15:24:02.858Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

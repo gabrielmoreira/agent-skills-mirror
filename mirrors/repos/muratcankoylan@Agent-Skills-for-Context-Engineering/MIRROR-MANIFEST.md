@@ -1,15 +1,13 @@
 ---
 repo: muratcankoylan/Agent-Skills-for-Context-Engineering
 repoUrl: https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering.git
-commit: 3ab8c948898908e4acc083c32f0390f0caafe3e4
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:48:55.455Z
 ---
 
 # Mirror Manifest
 
-Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 12 default patterns, 0 followed patterns, 54 file(s) materialized.
+Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 12 default p
 | Repo          | `muratcankoylan/Agent-Skills-for-Context-Engineering` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3ab8c948898908e4acc083c32f0390f0caafe3e4` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 54 |
-| Mirrored      | 2026-03-28T23:48:55.455Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 12 default p
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

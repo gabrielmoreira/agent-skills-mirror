@@ -1,15 +1,13 @@
 ---
 repo: simstudioai/sim
 repoUrl: https://github.com/simstudioai/sim.git
-commit: 73e00f53e1b7b5a3d68849626f384425a2a68cb7
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:56:29.348Z
 ---
 
 # Mirror Manifest
 
-Mirror of `simstudioai/sim` — 12 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `simstudioai/sim` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `simstudioai/sim` — 12 default patterns, 0 followed patterns, 28 fil
 | Repo          | `simstudioai/sim` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `73e00f53e1b7b5a3d68849626f384425a2a68cb7` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
-| Mirrored      | 2026-03-30T22:56:29.348Z |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `simstudioai/sim` — 12 default patterns, 0 followed patterns, 28 fil
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -63,20 +73,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`.agents/skills/validate-connector/SKILL.md`](.agents/skills/validate-connector/SKILL.md) |
 | 13 | ✓ | [`.agents/skills/validate-integration/agents/openai.yaml`](.agents/skills/validate-integration/agents/openai.yaml) |
 | 14 | ✓ | [`.agents/skills/validate-integration/SKILL.md`](.agents/skills/validate-integration/SKILL.md) |
-| 15 | ✓ | [`.cursor/skills/add-hosted-key/SKILL.md`](.cursor/skills/add-hosted-key/SKILL.md) |
-| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 17 | ✓ | [`apps/docs/app/llms.txt/route.ts`](apps/docs/app/llms.txt/route.ts) |
-| 18 | ✓ | [`apps/docs/public/llms.txt`](apps/docs/public/llms.txt) |
-| 19 | ✓ | [`apps/sim/AGENTS.md`](apps/sim/AGENTS.md) |
-| 20 | ✓ | [`apps/sim/app/llms.txt/route.ts`](apps/sim/app/llms.txt/route.ts) |
-| 21 | ✓ | [`apps/sim/blocks/AGENTS.md`](apps/sim/blocks/AGENTS.md) |
-| 22 | ✓ | [`apps/sim/components/emcn/AGENTS.md`](apps/sim/components/emcn/AGENTS.md) |
-| 23 | ✓ | [`apps/sim/hooks/AGENTS.md`](apps/sim/hooks/AGENTS.md) |
-| 24 | ✓ | [`apps/sim/hooks/queries/AGENTS.md`](apps/sim/hooks/queries/AGENTS.md) |
-| 25 | ✓ | [`apps/sim/stores/AGENTS.md`](apps/sim/stores/AGENTS.md) |
-| 26 | ✓ | [`apps/sim/tools/AGENTS.md`](apps/sim/tools/AGENTS.md) |
-| 27 | ✓ | [`apps/sim/triggers/AGENTS.md`](apps/sim/triggers/AGENTS.md) |
-| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 15 | ✓ | [`.cursor/commands/council.md`](.cursor/commands/council.md) |
+| 16 | ✓ | [`.cursor/rules/emcn-components.mdc`](.cursor/rules/emcn-components.mdc) |
+| 17 | ✓ | [`.cursor/rules/global.mdc`](.cursor/rules/global.mdc) |
+| 18 | ✓ | [`.cursor/rules/landing-seo-geo.mdc`](.cursor/rules/landing-seo-geo.mdc) |
+| 19 | ✓ | [`.cursor/rules/sim-architecture.mdc`](.cursor/rules/sim-architecture.mdc) |
+| 20 | ✓ | [`.cursor/rules/sim-components.mdc`](.cursor/rules/sim-components.mdc) |
+| 21 | ✓ | [`.cursor/rules/sim-hooks.mdc`](.cursor/rules/sim-hooks.mdc) |
+| 22 | ✓ | [`.cursor/rules/sim-imports.mdc`](.cursor/rules/sim-imports.mdc) |
+| 23 | ✓ | [`.cursor/rules/sim-integrations.mdc`](.cursor/rules/sim-integrations.mdc) |
+| 24 | ✓ | [`.cursor/rules/sim-queries.mdc`](.cursor/rules/sim-queries.mdc) |
+| 25 | ✓ | [`.cursor/rules/sim-stores.mdc`](.cursor/rules/sim-stores.mdc) |
+| 26 | ✓ | [`.cursor/rules/sim-styling.mdc`](.cursor/rules/sim-styling.mdc) |
+| 27 | ✓ | [`.cursor/rules/sim-testing.mdc`](.cursor/rules/sim-testing.mdc) |
+| 28 | ✓ | [`.cursor/rules/sim-typescript.mdc`](.cursor/rules/sim-typescript.mdc) |
+| 29 | ✓ | [`.cursor/skills/add-hosted-key/SKILL.md`](.cursor/skills/add-hosted-key/SKILL.md) |
+| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 31 | ✓ | [`apps/docs/app/llms.txt/route.ts`](apps/docs/app/llms.txt/route.ts) |
+| 32 | ✓ | [`apps/docs/public/llms.txt`](apps/docs/public/llms.txt) |
+| 33 | ✓ | [`apps/sim/AGENTS.md`](apps/sim/AGENTS.md) |
+| 34 | ✓ | [`apps/sim/app/llms.txt/route.ts`](apps/sim/app/llms.txt/route.ts) |
+| 35 | ✓ | [`apps/sim/blocks/AGENTS.md`](apps/sim/blocks/AGENTS.md) |
+| 36 | ✓ | [`apps/sim/components/emcn/AGENTS.md`](apps/sim/components/emcn/AGENTS.md) |
+| 37 | ✓ | [`apps/sim/hooks/AGENTS.md`](apps/sim/hooks/AGENTS.md) |
+| 38 | ✓ | [`apps/sim/hooks/queries/AGENTS.md`](apps/sim/hooks/queries/AGENTS.md) |
+| 39 | ✓ | [`apps/sim/stores/AGENTS.md`](apps/sim/stores/AGENTS.md) |
+| 40 | ✓ | [`apps/sim/tools/AGENTS.md`](apps/sim/tools/AGENTS.md) |
+| 41 | ✓ | [`apps/sim/triggers/AGENTS.md`](apps/sim/triggers/AGENTS.md) |
+| 42 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

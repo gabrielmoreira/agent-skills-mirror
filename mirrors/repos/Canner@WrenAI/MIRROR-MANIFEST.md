@@ -1,15 +1,13 @@
 ---
 repo: Canner/WrenAI
 repoUrl: https://github.com/Canner/WrenAI.git
-commit: 5a540817bd6cec616a2eddf75c5b3017a08efeee
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:05:46.022Z
 ---
 
 # Mirror Manifest
 
-Mirror of `Canner/WrenAI` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `Canner/WrenAI` — 12 default patterns, 0 followed patterns, 1 file(s
 | Repo          | `Canner/WrenAI` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5a540817bd6cec616a2eddf75c5b3017a08efeee` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-30T23:05:46.022Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `Canner/WrenAI` — 12 default patterns, 0 followed patterns, 1 file(s
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

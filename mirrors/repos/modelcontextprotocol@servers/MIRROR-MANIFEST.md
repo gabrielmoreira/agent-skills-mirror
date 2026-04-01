@@ -1,10 +1,8 @@
 ---
 repo: modelcontextprotocol/servers
 repoUrl: https://github.com/modelcontextprotocol/servers.git
-commit: f4244583a6af9425633e433a3eec000d23f4e011
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:38:54.943Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `modelcontextprotocol/servers` — 26 default patterns, 0 followed pat
 | Repo          | `modelcontextprotocol/servers` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `f4244583a6af9425633e433a3eec000d23f4e011` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T11:38:54.943Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,1 +1,1 @@
-../.github/copilot-instructions.md
+cache/repos/github.com/microsoft@PowerToys/.claude/../.github/copilot-instructions.md

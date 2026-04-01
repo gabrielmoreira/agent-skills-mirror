@@ -1,1 +1,1 @@
-../../SKILL.md
+cache/repos/github.com/mvanhorn@last30days-skill/skills/last30days/../../SKILL.md

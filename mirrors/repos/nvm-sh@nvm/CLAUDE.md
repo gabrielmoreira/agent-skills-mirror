@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/nvm-sh@nvm/AGENTS.md

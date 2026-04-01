@@ -1,10 +1,8 @@
 ---
 repo: mrdoob/three.js
 repoUrl: https://github.com/mrdoob/three.js.git
-commit: 077dd13c0e869d9f3dbe55875686f920367de457
 refType: branch
 ref: dev
-mirroredAt: 2026-03-31T15:26:41.912Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mrdoob/three.js` — 26 default patterns, 0 followed patterns, 2 file
 | Repo          | `mrdoob/three.js` |
 | Ref Type      | `branch` |
 | Ref           | `dev` |
-| Commit        | `077dd13c0e869d9f3dbe55875686f920367de457` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T15:26:41.912Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

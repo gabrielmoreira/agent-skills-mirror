@@ -1,15 +1,13 @@
 ---
 repo: botpress/botpress
 repoUrl: https://github.com/botpress/botpress.git
-commit: 71113f3e315426b7e99ec696a509bd021853970d
 refType: branch
 ref: master
-mirroredAt: 2026-03-30T23:06:10.819Z
 ---
 
 # Mirror Manifest
 
-Mirror of `botpress/botpress` — 12 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `botpress/botpress` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `botpress/botpress` — 12 default patterns, 0 followed patterns, 3 fi
 | Repo          | `botpress/botpress` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `71113f3e315426b7e99ec696a509bd021853970d` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-30T23:06:10.819Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `botpress/botpress` — 12 default patterns, 0 followed patterns, 3 fi
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

@@ -1,15 +1,13 @@
 ---
 repo: conductor-oss/conductor
 repoUrl: https://github.com/conductor-oss/conductor.git
-commit: 4cb030bf08e18a7639312a7c9a46a02640b5d618
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T21:04:44.541Z
 ---
 
 # Mirror Manifest
 
-Mirror of `conductor-oss/conductor` — 12 default patterns, 1 followed patterns, 2 file(s) materialized.
+Mirror of `conductor-oss/conductor` — 26 default patterns, 1 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `conductor-oss/conductor` — 12 default patterns, 1 followed patterns
 | Repo          | `conductor-oss/conductor` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4cb030bf08e18a7639312a7c9a46a02640b5d618` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 2 |
-| Mirrored      | 2026-03-28T21:04:44.541Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `conductor-oss/conductor` — 12 default patterns, 1 followed patterns
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

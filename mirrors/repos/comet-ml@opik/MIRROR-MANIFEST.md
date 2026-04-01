@@ -1,15 +1,13 @@
 ---
 repo: comet-ml/opik
 repoUrl: https://github.com/comet-ml/opik.git
-commit: 61e1dfbb0433e44ea3d1a55e1c5ba44cd56d4f9a
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:01:43.434Z
 ---
 
 # Mirror Manifest
 
-Mirror of `comet-ml/opik` — 12 default patterns, 0 followed patterns, 70 file(s) materialized.
+Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `comet-ml/opik` — 12 default patterns, 0 followed patterns, 70 file(
 | Repo          | `comet-ml/opik` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `61e1dfbb0433e44ea3d1a55e1c5ba44cd56d4f9a` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 70 |
-| Mirrored      | 2026-03-30T23:01:43.434Z |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `comet-ml/opik` — 12 default patterns, 0 followed patterns, 70 file(
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -116,9 +126,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 65 | ✓ | [`apps/opik-documentation/AGENTS.md`](apps/opik-documentation/AGENTS.md) |
 | 66 | ✓ | [`sdks/opik_optimizer/AGENTS.md`](sdks/opik_optimizer/AGENTS.md) |
 | 67 | ✓ | [`sdks/python/AGENTS.md`](sdks/python/AGENTS.md) |
-| 68 | ✓ | [`sdks/python/design/TESTING.md`](sdks/python/design/TESTING.md) |
-| 69 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
-| 70 | ✓ | [`sdks/typescript/design/TESTING.md`](sdks/typescript/design/TESTING.md) |
+| 68 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
 
 ---
 

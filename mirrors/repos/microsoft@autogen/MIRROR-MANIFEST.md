@@ -1,15 +1,13 @@
 ---
 repo: microsoft/autogen
 repoUrl: https://github.com/microsoft/autogen.git
-commit: 8544314fa6cc9f906c3ec2395927f5404ffbb5eb
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T19:50:48.943Z
 ---
 
 # Mirror Manifest
 
-Mirror of `microsoft/autogen` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `microsoft/autogen` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `microsoft/autogen` — 12 default patterns, 0 followed patterns, 1 fi
 | Repo          | `microsoft/autogen` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `8544314fa6cc9f906c3ec2395927f5404ffbb5eb` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-28T19:50:48.943Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `microsoft/autogen` — 12 default patterns, 0 followed patterns, 1 fi
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

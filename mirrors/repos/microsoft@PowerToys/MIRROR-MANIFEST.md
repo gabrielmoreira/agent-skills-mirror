@@ -1,10 +1,8 @@
 ---
 repo: microsoft/PowerToys
 repoUrl: https://github.com/microsoft/PowerToys.git
-commit: 8c8c99c3820c67434a3d48ad19ea761b04a846d6
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:28:20.091Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `microsoft/PowerToys` — 26 default patterns, 11 followed patterns, 5
 | Repo          | `microsoft/PowerToys` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `8c8c99c3820c67434a3d48ad19ea761b04a846d6` |
 | Default pats  | 26 |
 | Followed pats | 11 |
 | Files         | 52 |
-| Mirrored      | 2026-03-31T11:28:20.091Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

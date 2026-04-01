@@ -1,15 +1,13 @@
 ---
 repo: kepano/obsidian-skills
 repoUrl: https://github.com/kepano/obsidian-skills.git
-commit: bb9ec95e1b59c3471bd6fd77a78a4042430bfac3
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:44:49.442Z
 ---
 
 # Mirror Manifest
 
-Mirror of `kepano/obsidian-skills` — 12 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `kepano/obsidian-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `kepano/obsidian-skills` — 12 default patterns, 0 followed patterns,
 | Repo          | `kepano/obsidian-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `bb9ec95e1b59c3471bd6fd77a78a4042430bfac3` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 10 |
-| Mirrored      | 2026-03-28T23:44:49.442Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `kepano/obsidian-skills` — 12 default patterns, 0 followed patterns,
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

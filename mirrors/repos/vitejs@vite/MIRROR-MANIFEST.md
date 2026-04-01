@@ -1,15 +1,13 @@
 ---
 repo: vitejs/vite
 repoUrl: https://github.com/vitejs/vite.git
-commit: 6daa10ff1e8d15a90f49d8dd909ff208da85d6d8
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:42:02.769Z
 ---
 
 # Mirror Manifest
 
-Mirror of `vitejs/vite` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `vitejs/vite` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `vitejs/vite` — 12 default patterns, 0 followed patterns, 2 file(s) 
 | Repo          | `vitejs/vite` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6daa10ff1e8d15a90f49d8dd909ff208da85d6d8` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-30T22:42:02.769Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `vitejs/vite` — 12 default patterns, 0 followed patterns, 2 file(s) 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

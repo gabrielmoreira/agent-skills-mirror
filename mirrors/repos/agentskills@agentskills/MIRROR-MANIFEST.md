@@ -1,15 +1,13 @@
 ---
 repo: agentskills/agentskills
 repoUrl: https://github.com/agentskills/agentskills.git
-commit: 5e7f3e2c4c9f5464fe342bf2fea72367a914e9b4
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:49:00.638Z
 ---
 
 # Mirror Manifest
 
-Mirror of `agentskills/agentskills` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `agentskills/agentskills` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `agentskills/agentskills` — 12 default patterns, 0 followed patterns
 | Repo          | `agentskills/agentskills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5e7f3e2c4c9f5464fe342bf2fea72367a914e9b4` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-28T23:49:00.638Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `agentskills/agentskills` — 12 default patterns, 0 followed patterns
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

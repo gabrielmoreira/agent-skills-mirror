@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/vercel-labs@agent-skills/AGENTS.md

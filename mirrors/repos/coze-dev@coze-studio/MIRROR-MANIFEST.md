@@ -1,15 +1,13 @@
 ---
 repo: coze-dev/coze-studio
 repoUrl: https://github.com/coze-dev/coze-studio.git
-commit: 4f786d6a9c564adb8cdd56e834f8126f80105e43
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:42:15.214Z
 ---
 
 # Mirror Manifest
 
-Mirror of `coze-dev/coze-studio` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `coze-dev/coze-studio` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `coze-dev/coze-studio` — 12 default patterns, 0 followed patterns, 2
 | Repo          | `coze-dev/coze-studio` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4f786d6a9c564adb8cdd56e834f8126f80105e43` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-28T23:42:15.214Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `coze-dev/coze-studio` — 12 default patterns, 0 followed patterns, 2
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

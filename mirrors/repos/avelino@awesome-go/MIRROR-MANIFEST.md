@@ -1,15 +1,13 @@
 ---
 repo: avelino/awesome-go
 repoUrl: https://github.com/avelino/awesome-go.git
-commit: 432fe11172deeccceee36927578d4288a1de82f2
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:26:05.577Z
 ---
 
 # Mirror Manifest
 
-Mirror of `avelino/awesome-go` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `avelino/awesome-go` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `avelino/awesome-go` — 26 default patterns, 0 followed patterns, 3 f
 | Repo          | `avelino/awesome-go` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `432fe11172deeccceee36927578d4288a1de82f2` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
-| Mirrored      | 2026-03-31T11:26:05.577Z |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,8 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.cursorrules`](.cursorrules) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

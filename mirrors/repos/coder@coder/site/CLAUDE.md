@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/coder@coder/site/AGENTS.md

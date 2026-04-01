@@ -1,15 +1,13 @@
 ---
 repo: crewAIInc/crewAI
 repoUrl: https://github.com/crewAIInc/crewAI.git
-commit: ef79456968fcf597f7f6eeb30a226962e598aa97
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:41:53.419Z
 ---
 
 # Mirror Manifest
 
-Mirror of `crewAIInc/crewAI` — 12 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `crewAIInc/crewAI` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `crewAIInc/crewAI` — 12 default patterns, 0 followed patterns, 4 fil
 | Repo          | `crewAIInc/crewAI` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `ef79456968fcf597f7f6eeb30a226962e598aa97` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-30T23:41:53.419Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `crewAIInc/crewAI` — 12 default patterns, 0 followed patterns, 4 fil
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

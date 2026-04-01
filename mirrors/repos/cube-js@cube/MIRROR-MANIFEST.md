@@ -1,15 +1,13 @@
 ---
 repo: cube-js/cube
 repoUrl: https://github.com/cube-js/cube.git
-commit: defc186c39d447a24914e7b1d924095c8761dabf
 refType: branch
 ref: master
-mirroredAt: 2026-03-30T23:01:04.366Z
 ---
 
 # Mirror Manifest
 
-Mirror of `cube-js/cube` — 12 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `cube-js/cube` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `cube-js/cube` — 12 default patterns, 0 followed patterns, 6 file(s)
 | Repo          | `cube-js/cube` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `defc186c39d447a24914e7b1d924095c8761dabf` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 6 |
-| Mirrored      | 2026-03-30T23:01:04.366Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `cube-js/cube` — 12 default patterns, 0 followed patterns, 6 file(s)
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

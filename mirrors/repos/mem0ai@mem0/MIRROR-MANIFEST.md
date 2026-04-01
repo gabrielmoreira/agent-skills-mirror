@@ -1,15 +1,13 @@
 ---
 repo: mem0ai/mem0
 repoUrl: https://github.com/mem0ai/mem0.git
-commit: 25e25aaa2fce70133e9afe50749418a35b6dd77d
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:41:42.113Z
 ---
 
 # Mirror Manifest
 
-Mirror of `mem0ai/mem0` — 12 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `mem0ai/mem0` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `mem0ai/mem0` — 12 default patterns, 0 followed patterns, 16 file(s)
 | Repo          | `mem0ai/mem0` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `25e25aaa2fce70133e9afe50749418a35b6dd77d` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 16 |
-| Mirrored      | 2026-03-30T23:41:42.113Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `mem0ai/mem0` — 12 default patterns, 0 followed patterns, 16 file(s)
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

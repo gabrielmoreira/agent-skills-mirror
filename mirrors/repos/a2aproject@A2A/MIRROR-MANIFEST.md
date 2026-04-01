@@ -1,15 +1,13 @@
 ---
 repo: a2aproject/A2A
 repoUrl: https://github.com/a2aproject/A2A.git
-commit: 5ac9d2c7d7031f561e6ef7f859b180500c0c888b
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:58:56.911Z
 ---
 
 # Mirror Manifest
 
-Mirror of `a2aproject/A2A` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `a2aproject/A2A` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `a2aproject/A2A` — 12 default patterns, 0 followed patterns, 1 file(
 | Repo          | `a2aproject/A2A` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5ac9d2c7d7031f561e6ef7f859b180500c0c888b` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-30T22:58:56.911Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `a2aproject/A2A` — 12 default patterns, 0 followed patterns, 1 file(
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

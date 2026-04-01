@@ -1,10 +1,8 @@
 ---
 repo: django/django
 repoUrl: https://github.com/django/django.git
-commit: dff1980d61b1129c82757f70117dcea68e69a8c8
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:51.676Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `django/django` — 26 default patterns, 0 followed patterns, 1 file(s
 | Repo          | `django/django` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `dff1980d61b1129c82757f70117dcea68e69a8c8` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T18:22:51.676Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

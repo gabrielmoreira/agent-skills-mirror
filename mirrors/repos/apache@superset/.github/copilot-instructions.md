@@ -1,1 +1,1 @@
-../AGENTS.md
+cache/repos/github.com/apache@superset/.github/../AGENTS.md

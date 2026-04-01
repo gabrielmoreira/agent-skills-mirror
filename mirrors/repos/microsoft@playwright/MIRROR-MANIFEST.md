@@ -1,15 +1,13 @@
 ---
 repo: microsoft/playwright
 repoUrl: https://github.com/microsoft/playwright.git
-commit: 3aba395f2d151d2345de3182b8b3e9564507c9e5
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:59.557Z
 ---
 
 # Mirror Manifest
 
-Mirror of `microsoft/playwright` — 26 default patterns, 4 followed patterns, 9 file(s) materialized.
+Mirror of `microsoft/playwright` — 26 default patterns, 4 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `microsoft/playwright` — 26 default patterns, 4 followed patterns, 9
 | Repo          | `microsoft/playwright` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3aba395f2d151d2345de3182b8b3e9564507c9e5` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 9 |
-| Mirrored      | 2026-03-31T18:22:59.557Z |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,14 +63,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/playwright-dev/SKILL.md`](.claude/skills/playwright-dev/SKILL.md) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`packages/playwright-core/src/tools/cli-client/skill/SKILL.md`](packages/playwright-core/src/tools/cli-client/skill/SKILL.md) |
-| 5 | ✓ | [`packages/playwright-core/src/tools/trace/SKILL.md`](packages/playwright-core/src/tools/trace/SKILL.md) |
-| 6 | → | [`.claude/skills/playwright-dev/api.md`](.claude/skills/playwright-dev/api.md) |
-| 7 | → | [`.claude/skills/playwright-dev/library.md`](.claude/skills/playwright-dev/library.md) |
-| 8 | → | [`.claude/skills/playwright-dev/tools.md`](.claude/skills/playwright-dev/tools.md) |
-| 9 | → | [`.claude/skills/playwright-dev/vendor.md`](.claude/skills/playwright-dev/vendor.md) |
+| 2 | ✓ | [`.claude/skills/playwright-dev/webkit-safari-version.md`](.claude/skills/playwright-dev/webkit-safari-version.md) |
+| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`packages/playwright-core/src/tools/cli-client/skill/SKILL.md`](packages/playwright-core/src/tools/cli-client/skill/SKILL.md) |
+| 6 | ✓ | [`packages/playwright-core/src/tools/trace/SKILL.md`](packages/playwright-core/src/tools/trace/SKILL.md) |
+| 7 | → | [`.claude/skills/playwright-dev/api.md`](.claude/skills/playwright-dev/api.md) |
+| 8 | → | [`.claude/skills/playwright-dev/library.md`](.claude/skills/playwright-dev/library.md) |
+| 9 | → | [`.claude/skills/playwright-dev/tools.md`](.claude/skills/playwright-dev/tools.md) |
+| 10 | → | [`.claude/skills/playwright-dev/vendor.md`](.claude/skills/playwright-dev/vendor.md) |
 
 ---
 

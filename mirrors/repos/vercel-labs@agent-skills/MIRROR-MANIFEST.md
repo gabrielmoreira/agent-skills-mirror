@@ -1,15 +1,13 @@
 ---
 repo: vercel-labs/agent-skills
 repoUrl: https://github.com/vercel-labs/agent-skills.git
-commit: 6f3fa3191d089d7810e332a562ad2a0ff5f7f239
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:58:16.758Z
 ---
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-skills` — 12 default patterns, 0 followed patterns, 141 file(s) materialized.
+Mirror of `vercel-labs/agent-skills` — 26 default patterns, 0 followed patterns, 151 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `vercel-labs/agent-skills` — 12 default patterns, 0 followed pattern
 | Repo          | `vercel-labs/agent-skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `6f3fa3191d089d7810e332a562ad2a0ff5f7f239` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 141 |
-| Mirrored      | 2026-03-30T22:58:16.758Z |
+| Files         | 151 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `vercel-labs/agent-skills` — 12 default patterns, 0 followed pattern
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -140,56 +150,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 89 | ✓ | [`skills/react-best-practices/rules/server-cache-react.md`](skills/react-best-practices/rules/server-cache-react.md) |
 | 90 | ✓ | [`skills/react-best-practices/rules/server-dedup-props.md`](skills/react-best-practices/rules/server-dedup-props.md) |
 | 91 | ✓ | [`skills/react-best-practices/rules/server-hoist-static-io.md`](skills/react-best-practices/rules/server-hoist-static-io.md) |
-| 92 | ✓ | [`skills/react-best-practices/rules/server-parallel-fetching.md`](skills/react-best-practices/rules/server-parallel-fetching.md) |
-| 93 | ✓ | [`skills/react-best-practices/rules/server-parallel-nested-fetching.md`](skills/react-best-practices/rules/server-parallel-nested-fetching.md) |
-| 94 | ✓ | [`skills/react-best-practices/rules/server-serialization.md`](skills/react-best-practices/rules/server-serialization.md) |
-| 95 | ✓ | [`skills/react-best-practices/SKILL.md`](skills/react-best-practices/SKILL.md) |
-| 96 | ✓ | [`skills/react-native-skills/AGENTS.md`](skills/react-native-skills/AGENTS.md) |
-| 97 | ✓ | [`skills/react-native-skills/metadata.json`](skills/react-native-skills/metadata.json) |
-| 98 | ✓ | [`skills/react-native-skills/README.md`](skills/react-native-skills/README.md) |
-| 99 | ✓ | [`skills/react-native-skills/rules/_sections.md`](skills/react-native-skills/rules/_sections.md) |
-| 100 | ✓ | [`skills/react-native-skills/rules/_template.md`](skills/react-native-skills/rules/_template.md) |
-| 101 | ✓ | [`skills/react-native-skills/rules/animation-derived-value.md`](skills/react-native-skills/rules/animation-derived-value.md) |
-| 102 | ✓ | [`skills/react-native-skills/rules/animation-gesture-detector-press.md`](skills/react-native-skills/rules/animation-gesture-detector-press.md) |
-| 103 | ✓ | [`skills/react-native-skills/rules/animation-gpu-properties.md`](skills/react-native-skills/rules/animation-gpu-properties.md) |
-| 104 | ✓ | [`skills/react-native-skills/rules/design-system-compound-components.md`](skills/react-native-skills/rules/design-system-compound-components.md) |
-| 105 | ✓ | [`skills/react-native-skills/rules/fonts-config-plugin.md`](skills/react-native-skills/rules/fonts-config-plugin.md) |
-| 106 | ✓ | [`skills/react-native-skills/rules/imports-design-system-folder.md`](skills/react-native-skills/rules/imports-design-system-folder.md) |
-| 107 | ✓ | [`skills/react-native-skills/rules/js-hoist-intl.md`](skills/react-native-skills/rules/js-hoist-intl.md) |
-| 108 | ✓ | [`skills/react-native-skills/rules/list-performance-callbacks.md`](skills/react-native-skills/rules/list-performance-callbacks.md) |
-| 109 | ✓ | [`skills/react-native-skills/rules/list-performance-function-references.md`](skills/react-native-skills/rules/list-performance-function-references.md) |
-| 110 | ✓ | [`skills/react-native-skills/rules/list-performance-images.md`](skills/react-native-skills/rules/list-performance-images.md) |
-| 111 | ✓ | [`skills/react-native-skills/rules/list-performance-inline-objects.md`](skills/react-native-skills/rules/list-performance-inline-objects.md) |
-| 112 | ✓ | [`skills/react-native-skills/rules/list-performance-item-expensive.md`](skills/react-native-skills/rules/list-performance-item-expensive.md) |
-| 113 | ✓ | [`skills/react-native-skills/rules/list-performance-item-memo.md`](skills/react-native-skills/rules/list-performance-item-memo.md) |
-| 114 | ✓ | [`skills/react-native-skills/rules/list-performance-item-types.md`](skills/react-native-skills/rules/list-performance-item-types.md) |
-| 115 | ✓ | [`skills/react-native-skills/rules/list-performance-virtualize.md`](skills/react-native-skills/rules/list-performance-virtualize.md) |
-| 116 | ✓ | [`skills/react-native-skills/rules/monorepo-native-deps-in-app.md`](skills/react-native-skills/rules/monorepo-native-deps-in-app.md) |
-| 117 | ✓ | [`skills/react-native-skills/rules/monorepo-single-dependency-versions.md`](skills/react-native-skills/rules/monorepo-single-dependency-versions.md) |
-| 118 | ✓ | [`skills/react-native-skills/rules/navigation-native-navigators.md`](skills/react-native-skills/rules/navigation-native-navigators.md) |
-| 119 | ✓ | [`skills/react-native-skills/rules/react-compiler-destructure-functions.md`](skills/react-native-skills/rules/react-compiler-destructure-functions.md) |
-| 120 | ✓ | [`skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md`](skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md) |
-| 121 | ✓ | [`skills/react-native-skills/rules/react-state-dispatcher.md`](skills/react-native-skills/rules/react-state-dispatcher.md) |
-| 122 | ✓ | [`skills/react-native-skills/rules/react-state-fallback.md`](skills/react-native-skills/rules/react-state-fallback.md) |
-| 123 | ✓ | [`skills/react-native-skills/rules/react-state-minimize.md`](skills/react-native-skills/rules/react-state-minimize.md) |
-| 124 | ✓ | [`skills/react-native-skills/rules/rendering-no-falsy-and.md`](skills/react-native-skills/rules/rendering-no-falsy-and.md) |
-| 125 | ✓ | [`skills/react-native-skills/rules/rendering-text-in-text-component.md`](skills/react-native-skills/rules/rendering-text-in-text-component.md) |
-| 126 | ✓ | [`skills/react-native-skills/rules/scroll-position-no-state.md`](skills/react-native-skills/rules/scroll-position-no-state.md) |
-| 127 | ✓ | [`skills/react-native-skills/rules/state-ground-truth.md`](skills/react-native-skills/rules/state-ground-truth.md) |
-| 128 | ✓ | [`skills/react-native-skills/rules/ui-expo-image.md`](skills/react-native-skills/rules/ui-expo-image.md) |
-| 129 | ✓ | [`skills/react-native-skills/rules/ui-image-gallery.md`](skills/react-native-skills/rules/ui-image-gallery.md) |
-| 130 | ✓ | [`skills/react-native-skills/rules/ui-measure-views.md`](skills/react-native-skills/rules/ui-measure-views.md) |
-| 131 | ✓ | [`skills/react-native-skills/rules/ui-menus.md`](skills/react-native-skills/rules/ui-menus.md) |
-| 132 | ✓ | [`skills/react-native-skills/rules/ui-native-modals.md`](skills/react-native-skills/rules/ui-native-modals.md) |
-| 133 | ✓ | [`skills/react-native-skills/rules/ui-pressable.md`](skills/react-native-skills/rules/ui-pressable.md) |
-| 134 | ✓ | [`skills/react-native-skills/rules/ui-safe-area-scroll.md`](skills/react-native-skills/rules/ui-safe-area-scroll.md) |
-| 135 | ✓ | [`skills/react-native-skills/rules/ui-scrollview-content-inset.md`](skills/react-native-skills/rules/ui-scrollview-content-inset.md) |
-| 136 | ✓ | [`skills/react-native-skills/rules/ui-styling.md`](skills/react-native-skills/rules/ui-styling.md) |
-| 137 | ✓ | [`skills/react-native-skills/SKILL.md`](skills/react-native-skills/SKILL.md) |
-| 138 | ✓ | [`skills/vercel-cli-with-tokens.zip`](skills/vercel-cli-with-tokens.zip) |
-| 139 | ✓ | [`skills/vercel-cli-with-tokens/SKILL.md`](skills/vercel-cli-with-tokens/SKILL.md) |
-| 140 | ✓ | [`skills/web-design-guidelines.zip`](skills/web-design-guidelines.zip) |
-| 141 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 92 | ✓ | [`skills/react-best-practices/rules/server-no-shared-module-state.md`](skills/react-best-practices/rules/server-no-shared-module-state.md) |
+| 93 | ✓ | [`skills/react-best-practices/rules/server-parallel-fetching.md`](skills/react-best-practices/rules/server-parallel-fetching.md) |
+| 94 | ✓ | [`skills/react-best-practices/rules/server-parallel-nested-fetching.md`](skills/react-best-practices/rules/server-parallel-nested-fetching.md) |
+| 95 | ✓ | [`skills/react-best-practices/rules/server-serialization.md`](skills/react-best-practices/rules/server-serialization.md) |
+| 96 | ✓ | [`skills/react-best-practices/SKILL.md`](skills/react-best-practices/SKILL.md) |
+| 97 | ✓ | [`skills/react-native-skills/AGENTS.md`](skills/react-native-skills/AGENTS.md) |
+| 98 | ✓ | [`skills/react-native-skills/metadata.json`](skills/react-native-skills/metadata.json) |
+| 99 | ✓ | [`skills/react-native-skills/README.md`](skills/react-native-skills/README.md) |
+| 100 | ✓ | [`skills/react-native-skills/rules/_sections.md`](skills/react-native-skills/rules/_sections.md) |
+| 101 | ✓ | [`skills/react-native-skills/rules/_template.md`](skills/react-native-skills/rules/_template.md) |
+| 102 | ✓ | [`skills/react-native-skills/rules/animation-derived-value.md`](skills/react-native-skills/rules/animation-derived-value.md) |
+| 103 | ✓ | [`skills/react-native-skills/rules/animation-gesture-detector-press.md`](skills/react-native-skills/rules/animation-gesture-detector-press.md) |
+| 104 | ✓ | [`skills/react-native-skills/rules/animation-gpu-properties.md`](skills/react-native-skills/rules/animation-gpu-properties.md) |
+| 105 | ✓ | [`skills/react-native-skills/rules/design-system-compound-components.md`](skills/react-native-skills/rules/design-system-compound-components.md) |
+| 106 | ✓ | [`skills/react-native-skills/rules/fonts-config-plugin.md`](skills/react-native-skills/rules/fonts-config-plugin.md) |
+| 107 | ✓ | [`skills/react-native-skills/rules/imports-design-system-folder.md`](skills/react-native-skills/rules/imports-design-system-folder.md) |
+| 108 | ✓ | [`skills/react-native-skills/rules/js-hoist-intl.md`](skills/react-native-skills/rules/js-hoist-intl.md) |
+| 109 | ✓ | [`skills/react-native-skills/rules/list-performance-callbacks.md`](skills/react-native-skills/rules/list-performance-callbacks.md) |
+| 110 | ✓ | [`skills/react-native-skills/rules/list-performance-function-references.md`](skills/react-native-skills/rules/list-performance-function-references.md) |
+| 111 | ✓ | [`skills/react-native-skills/rules/list-performance-images.md`](skills/react-native-skills/rules/list-performance-images.md) |
+| 112 | ✓ | [`skills/react-native-skills/rules/list-performance-inline-objects.md`](skills/react-native-skills/rules/list-performance-inline-objects.md) |
+| 113 | ✓ | [`skills/react-native-skills/rules/list-performance-item-expensive.md`](skills/react-native-skills/rules/list-performance-item-expensive.md) |
+| 114 | ✓ | [`skills/react-native-skills/rules/list-performance-item-memo.md`](skills/react-native-skills/rules/list-performance-item-memo.md) |
+| 115 | ✓ | [`skills/react-native-skills/rules/list-performance-item-types.md`](skills/react-native-skills/rules/list-performance-item-types.md) |
+| 116 | ✓ | [`skills/react-native-skills/rules/list-performance-virtualize.md`](skills/react-native-skills/rules/list-performance-virtualize.md) |
+| 117 | ✓ | [`skills/react-native-skills/rules/monorepo-native-deps-in-app.md`](skills/react-native-skills/rules/monorepo-native-deps-in-app.md) |
+| 118 | ✓ | [`skills/react-native-skills/rules/monorepo-single-dependency-versions.md`](skills/react-native-skills/rules/monorepo-single-dependency-versions.md) |
+| 119 | ✓ | [`skills/react-native-skills/rules/navigation-native-navigators.md`](skills/react-native-skills/rules/navigation-native-navigators.md) |
+| 120 | ✓ | [`skills/react-native-skills/rules/react-compiler-destructure-functions.md`](skills/react-native-skills/rules/react-compiler-destructure-functions.md) |
+| 121 | ✓ | [`skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md`](skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md) |
+| 122 | ✓ | [`skills/react-native-skills/rules/react-state-dispatcher.md`](skills/react-native-skills/rules/react-state-dispatcher.md) |
+| 123 | ✓ | [`skills/react-native-skills/rules/react-state-fallback.md`](skills/react-native-skills/rules/react-state-fallback.md) |
+| 124 | ✓ | [`skills/react-native-skills/rules/react-state-minimize.md`](skills/react-native-skills/rules/react-state-minimize.md) |
+| 125 | ✓ | [`skills/react-native-skills/rules/rendering-no-falsy-and.md`](skills/react-native-skills/rules/rendering-no-falsy-and.md) |
+| 126 | ✓ | [`skills/react-native-skills/rules/rendering-text-in-text-component.md`](skills/react-native-skills/rules/rendering-text-in-text-component.md) |
+| 127 | ✓ | [`skills/react-native-skills/rules/scroll-position-no-state.md`](skills/react-native-skills/rules/scroll-position-no-state.md) |
+| 128 | ✓ | [`skills/react-native-skills/rules/state-ground-truth.md`](skills/react-native-skills/rules/state-ground-truth.md) |
+| 129 | ✓ | [`skills/react-native-skills/rules/ui-expo-image.md`](skills/react-native-skills/rules/ui-expo-image.md) |
+| 130 | ✓ | [`skills/react-native-skills/rules/ui-image-gallery.md`](skills/react-native-skills/rules/ui-image-gallery.md) |
+| 131 | ✓ | [`skills/react-native-skills/rules/ui-measure-views.md`](skills/react-native-skills/rules/ui-measure-views.md) |
+| 132 | ✓ | [`skills/react-native-skills/rules/ui-menus.md`](skills/react-native-skills/rules/ui-menus.md) |
+| 133 | ✓ | [`skills/react-native-skills/rules/ui-native-modals.md`](skills/react-native-skills/rules/ui-native-modals.md) |
+| 134 | ✓ | [`skills/react-native-skills/rules/ui-pressable.md`](skills/react-native-skills/rules/ui-pressable.md) |
+| 135 | ✓ | [`skills/react-native-skills/rules/ui-safe-area-scroll.md`](skills/react-native-skills/rules/ui-safe-area-scroll.md) |
+| 136 | ✓ | [`skills/react-native-skills/rules/ui-scrollview-content-inset.md`](skills/react-native-skills/rules/ui-scrollview-content-inset.md) |
+| 137 | ✓ | [`skills/react-native-skills/rules/ui-styling.md`](skills/react-native-skills/rules/ui-styling.md) |
+| 138 | ✓ | [`skills/react-native-skills/SKILL.md`](skills/react-native-skills/SKILL.md) |
+| 139 | ✓ | [`skills/react-view-transitions.zip`](skills/react-view-transitions.zip) |
+| 140 | ✓ | [`skills/react-view-transitions/AGENTS.md`](skills/react-view-transitions/AGENTS.md) |
+| 141 | ✓ | [`skills/react-view-transitions/metadata.json`](skills/react-view-transitions/metadata.json) |
+| 142 | ✓ | [`skills/react-view-transitions/README.md`](skills/react-view-transitions/README.md) |
+| 143 | ✓ | [`skills/react-view-transitions/references/css-recipes.md`](skills/react-view-transitions/references/css-recipes.md) |
+| 144 | ✓ | [`skills/react-view-transitions/references/implementation.md`](skills/react-view-transitions/references/implementation.md) |
+| 145 | ✓ | [`skills/react-view-transitions/references/nextjs.md`](skills/react-view-transitions/references/nextjs.md) |
+| 146 | ✓ | [`skills/react-view-transitions/references/patterns.md`](skills/react-view-transitions/references/patterns.md) |
+| 147 | ✓ | [`skills/react-view-transitions/SKILL.md`](skills/react-view-transitions/SKILL.md) |
+| 148 | ✓ | [`skills/vercel-cli-with-tokens.zip`](skills/vercel-cli-with-tokens.zip) |
+| 149 | ✓ | [`skills/vercel-cli-with-tokens/SKILL.md`](skills/vercel-cli-with-tokens/SKILL.md) |
+| 150 | ✓ | [`skills/web-design-guidelines.zip`](skills/web-design-guidelines.zip) |
+| 151 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
 
 ---
 

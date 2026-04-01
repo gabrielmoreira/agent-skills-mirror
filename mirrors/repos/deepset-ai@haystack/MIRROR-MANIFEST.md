@@ -1,15 +1,13 @@
 ---
 repo: deepset-ai/haystack
 repoUrl: https://github.com/deepset-ai/haystack.git
-commit: 01b11aa5a6cf969f91d246352a783193632667c0
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:57:46.166Z
 ---
 
 # Mirror Manifest
 
-Mirror of `deepset-ai/haystack` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `deepset-ai/haystack` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `deepset-ai/haystack` — 12 default patterns, 0 followed patterns, 2 
 | Repo          | `deepset-ai/haystack` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `01b11aa5a6cf969f91d246352a783193632667c0` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-30T22:57:46.166Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `deepset-ai/haystack` — 12 default patterns, 0 followed patterns, 2 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

@@ -1,15 +1,13 @@
 ---
 repo: ag-ui-protocol/ag-ui
 repoUrl: https://github.com/ag-ui-protocol/ag-ui.git
-commit: a027eac9449f4f7c97e1e4f048c97f61c60dd96a
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:08:14.568Z
 ---
 
 # Mirror Manifest
 
-Mirror of `ag-ui-protocol/ag-ui` — 12 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `ag-ui-protocol/ag-ui` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `ag-ui-protocol/ag-ui` — 12 default patterns, 0 followed patterns, 4
 | Repo          | `ag-ui-protocol/ag-ui` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a027eac9449f4f7c97e1e4f048c97f61c60dd96a` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
-| Mirrored      | 2026-03-30T23:08:14.568Z |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `ag-ui-protocol/ag-ui` — 12 default patterns, 0 followed patterns, 4
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -53,6 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`integrations/adk-middleware/python/CLAUDE.md`](integrations/adk-middleware/python/CLAUDE.md) |
 | 4 | ✓ | [`sdks/community/java/CLAUDE.md`](sdks/community/java/CLAUDE.md) |
+| 5 | ✓ | [`sdks/typescript/.cursor/rules/project-rules.mdc`](sdks/typescript/.cursor/rules/project-rules.mdc) |
 
 ---
 

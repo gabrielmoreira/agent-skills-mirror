@@ -1,10 +1,8 @@
 ---
 repo: firecrawl/firecrawl
 repoUrl: https://github.com/firecrawl/firecrawl.git
-commit: 8e455890247ac1abd3fb667548a5bf380df9764c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T15:27:34.217Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `firecrawl/firecrawl` — 26 default patterns, 0 followed patterns, 1 
 | Repo          | `firecrawl/firecrawl` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `8e455890247ac1abd3fb667548a5bf380df9764c` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T15:27:34.217Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

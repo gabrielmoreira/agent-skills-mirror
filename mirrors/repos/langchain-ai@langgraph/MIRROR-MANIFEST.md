@@ -1,15 +1,13 @@
 ---
 repo: langchain-ai/langgraph
 repoUrl: https://github.com/langchain-ai/langgraph.git
-commit: 13fa88279ba685f6bd02b0b4914e2f2bc0d0a876
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:55:27.994Z
 ---
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/langgraph` — 12 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `langchain-ai/langgraph` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `langchain-ai/langgraph` — 12 default patterns, 0 followed patterns,
 | Repo          | `langchain-ai/langgraph` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `13fa88279ba685f6bd02b0b4914e2f2bc0d0a876` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 3 |
-| Mirrored      | 2026-03-30T22:55:27.994Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `langchain-ai/langgraph` — 12 default patterns, 0 followed patterns,
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

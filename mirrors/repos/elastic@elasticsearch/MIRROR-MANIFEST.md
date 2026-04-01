@@ -1,15 +1,13 @@
 ---
 repo: elastic/elasticsearch
 repoUrl: https://github.com/elastic/elasticsearch.git
-commit: 0ad43a9178616038647b54f930ff5d2fcd7b6695
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:40:13.737Z
 ---
 
 # Mirror Manifest
 
-Mirror of `elastic/elasticsearch` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `elastic/elasticsearch` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `elastic/elasticsearch` — 12 default patterns, 0 followed patterns, 
 | Repo          | `elastic/elasticsearch` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0ad43a9178616038647b54f930ff5d2fcd7b6695` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-30T23:40:13.737Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `elastic/elasticsearch` — 12 default patterns, 0 followed patterns, 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

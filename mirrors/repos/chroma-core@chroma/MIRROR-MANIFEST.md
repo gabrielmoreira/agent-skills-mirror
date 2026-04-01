@@ -1,15 +1,13 @@
 ---
 repo: chroma-core/chroma
 repoUrl: https://github.com/chroma-core/chroma.git
-commit: e92cd203c4343bf422271146c42042dd6fa5caed
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:42:57.367Z
 ---
 
 # Mirror Manifest
 
-Mirror of `chroma-core/chroma` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `chroma-core/chroma` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `chroma-core/chroma` — 12 default patterns, 0 followed patterns, 2 f
 | Repo          | `chroma-core/chroma` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e92cd203c4343bf422271146c42042dd6fa5caed` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-30T23:42:57.367Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `chroma-core/chroma` — 12 default patterns, 0 followed patterns, 2 f
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

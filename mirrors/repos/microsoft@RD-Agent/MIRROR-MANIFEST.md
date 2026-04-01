@@ -1,15 +1,13 @@
 ---
 repo: microsoft/RD-Agent
 repoUrl: https://github.com/microsoft/RD-Agent.git
-commit: 471eb30d1ec03f35631c532c58a52ce75d684037
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:52:03.834Z
 ---
 
 # Mirror Manifest
 
-Mirror of `microsoft/RD-Agent` — 12 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `microsoft/RD-Agent` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `microsoft/RD-Agent` — 12 default patterns, 0 followed patterns, 4 f
 | Repo          | `microsoft/RD-Agent` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `471eb30d1ec03f35631c532c58a52ce75d684037` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
-| Mirrored      | 2026-03-28T23:52:03.834Z |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `microsoft/RD-Agent` — 12 default patterns, 0 followed patterns, 4 f
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -52,7 +62,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`rdagent/scenarios/rl/autorl_bench/agents/claude/AGENTS.md`](rdagent/scenarios/rl/autorl_bench/agents/claude/AGENTS.md) |
 | 2 | ✓ | [`rdagent/scenarios/rl/autorl_bench/agents/codex/AGENTS.md`](rdagent/scenarios/rl/autorl_bench/agents/codex/AGENTS.md) |
 | 3 | ✓ | [`rdagent/scenarios/rl/autorl_bench/agents/gemini/AGENTS.md`](rdagent/scenarios/rl/autorl_bench/agents/gemini/AGENTS.md) |
-| 4 | ✓ | [`rdagent/scenarios/rl/autorl_bench/core/skill.md`](rdagent/scenarios/rl/autorl_bench/core/skill.md) |
 
 ---
 

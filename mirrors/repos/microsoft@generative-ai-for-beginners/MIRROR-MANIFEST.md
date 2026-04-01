@@ -1,10 +1,8 @@
 ---
 repo: microsoft/generative-ai-for-beginners
 repoUrl: https://github.com/microsoft/generative-ai-for-beginners.git
-commit: a283d6ab3c2361d6451deec39ae7ee2f97e36e4b
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:31:27.199Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `microsoft/generative-ai-for-beginners` — 26 default patterns, 3 fol
 | Repo          | `microsoft/generative-ai-for-beginners` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a283d6ab3c2361d6451deec39ae7ee2f97e36e4b` |
 | Default pats  | 26 |
 | Followed pats | 3 |
 | Files         | 220 |
-| Mirrored      | 2026-03-31T11:31:27.199Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

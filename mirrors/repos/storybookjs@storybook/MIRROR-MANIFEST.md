@@ -1,10 +1,8 @@
 ---
 repo: storybookjs/storybook
 repoUrl: https://github.com/storybookjs/storybook.git
-commit: 2b4ef8b687463fb3da89e2888620357afa31dadf
 refType: branch
 ref: next
-mirroredAt: 2026-03-31T15:29:15.626Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `storybookjs/storybook` — 26 default patterns, 0 followed patterns, 
 | Repo          | `storybookjs/storybook` |
 | Ref Type      | `branch` |
 | Ref           | `next` |
-| Commit        | `2b4ef8b687463fb3da89e2888620357afa31dadf` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 15 |
-| Mirrored      | 2026-03-31T15:29:15.626Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

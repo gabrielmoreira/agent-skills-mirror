@@ -1,10 +1,8 @@
 ---
 repo: microsoft/TypeScript
 repoUrl: https://github.com/microsoft/TypeScript.git
-commit: 0844c43d06801dfcb23888734474d81537e83834
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:44.279Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `microsoft/TypeScript` — 26 default patterns, 0 followed patterns, 2
 | Repo          | `microsoft/TypeScript` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0844c43d06801dfcb23888734474d81537e83834` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T18:22:44.279Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

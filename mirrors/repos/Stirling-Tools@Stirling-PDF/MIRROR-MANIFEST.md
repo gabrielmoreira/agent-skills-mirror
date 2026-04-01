@@ -1,15 +1,13 @@
 ---
 repo: Stirling-Tools/Stirling-PDF
 repoUrl: https://github.com/Stirling-Tools/Stirling-PDF.git
-commit: a96b95e198c1e861bb511659d373baf8b23d8fc7
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:44:49.836Z
 ---
 
 # Mirror Manifest
 
-Mirror of `Stirling-Tools/Stirling-PDF` — 12 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `Stirling-Tools/Stirling-PDF` — 12 default patterns, 1 followed patt
 | Repo          | `Stirling-Tools/Stirling-PDF` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a96b95e198c1e861bb511659d373baf8b23d8fc7` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 4 |
-| Mirrored      | 2026-03-30T22:44:49.836Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `Stirling-Tools/Stirling-PDF` — 12 default patterns, 1 followed patt
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

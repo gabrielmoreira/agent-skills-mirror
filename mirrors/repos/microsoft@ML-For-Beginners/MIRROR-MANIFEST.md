@@ -1,10 +1,8 @@
 ---
 repo: microsoft/ML-For-Beginners
 repoUrl: https://github.com/microsoft/ML-For-Beginners.git
-commit: 8a5ed141658c01ef91192926f63fc5a6108a1fc0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:38:23.546Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `microsoft/ML-For-Beginners` — 26 default patterns, 1 followed patte
 | Repo          | `microsoft/ML-For-Beginners` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `8a5ed141658c01ef91192926f63fc5a6108a1fc0` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 110 |
-| Mirrored      | 2026-03-31T11:38:23.546Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

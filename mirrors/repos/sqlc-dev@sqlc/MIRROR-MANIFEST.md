@@ -1,10 +1,8 @@
 ---
 repo: sqlc-dev/sqlc
 repoUrl: https://github.com/sqlc-dev/sqlc.git
-commit: 4bf215923e05c4f7c3fc585fc1c145dbaa444c3c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T19:56:53.586Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `sqlc-dev/sqlc` — 26 default patterns, 0 followed patterns, 7 file(s
 | Repo          | `sqlc-dev/sqlc` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4bf215923e05c4f7c3fc585fc1c145dbaa444c3c` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 7 |
-| Mirrored      | 2026-03-31T19:56:53.586Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

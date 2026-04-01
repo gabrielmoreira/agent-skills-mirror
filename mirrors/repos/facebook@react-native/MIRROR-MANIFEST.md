@@ -1,10 +1,8 @@
 ---
 repo: facebook/react-native
 repoUrl: https://github.com/facebook/react-native.git
-commit: 3b634bc52073c8870eebb53cadb6a8771157070d
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:21:50.669Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `facebook/react-native` — 26 default patterns, 0 followed patterns, 
 | Repo          | `facebook/react-native` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3b634bc52073c8870eebb53cadb6a8771157070d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T18:21:50.669Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

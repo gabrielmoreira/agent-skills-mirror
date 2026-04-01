@@ -1,15 +1,13 @@
 ---
 repo: langchain-ai/langchainjs
 repoUrl: https://github.com/langchain-ai/langchainjs.git
-commit: cd86fea8de2130d0df60805baada81958d47c747
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:03:43.262Z
 ---
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/langchainjs` — 12 default patterns, 2 followed patterns, 3 file(s) materialized.
+Mirror of `langchain-ai/langchainjs` — 26 default patterns, 2 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `langchain-ai/langchainjs` — 12 default patterns, 2 followed pattern
 | Repo          | `langchain-ai/langchainjs` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cd86fea8de2130d0df60805baada81958d47c747` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 2 |
 | Files         | 3 |
-| Mirrored      | 2026-03-30T23:03:43.262Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `langchain-ai/langchainjs` — 12 default patterns, 2 followed pattern
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

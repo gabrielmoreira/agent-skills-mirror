@@ -1,15 +1,13 @@
 ---
 repo: tesseract-ocr/tesseract
 repoUrl: https://github.com/tesseract-ocr/tesseract.git
-commit: 2f750f70df01a682db6bc82bd6083278ee8d4507
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T19:11:15.312Z
 ---
 
 # Mirror Manifest
 
-Mirror of `tesseract-ocr/tesseract` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `tesseract-ocr/tesseract` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `tesseract-ocr/tesseract` — 12 default patterns, 0 followed patterns
 | Repo          | `tesseract-ocr/tesseract` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2f750f70df01a682db6bc82bd6083278ee8d4507` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-28T19:11:15.312Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `tesseract-ocr/tesseract` — 12 default patterns, 0 followed patterns
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

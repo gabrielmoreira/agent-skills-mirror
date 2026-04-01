@@ -1,10 +1,8 @@
 ---
 repo: oven-sh/bun
 repoUrl: https://github.com/oven-sh/bun.git
-commit: 5c59842f78880a8b5d9c2eb99c8928fc2ec50a2d
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:36:49.030Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 21 file(s)
 | Repo          | `oven-sh/bun` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5c59842f78880a8b5d9c2eb99c8928fc2ec50a2d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 21 |
-| Mirrored      | 2026-03-31T11:36:49.030Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

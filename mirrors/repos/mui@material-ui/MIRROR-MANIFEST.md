@@ -1,10 +1,8 @@
 ---
 repo: mui/material-ui
 repoUrl: https://github.com/mui/material-ui.git
-commit: d65dcfefe3756cd0dbf94e1df33cda356a4bce19
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T18:22:50.467Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `mui/material-ui` — 26 default patterns, 0 followed patterns, 2 file
 | Repo          | `mui/material-ui` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `d65dcfefe3756cd0dbf94e1df33cda356a4bce19` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T18:22:50.467Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

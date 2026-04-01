@@ -1,15 +1,13 @@
 ---
 repo: elizaOS/eliza
 repoUrl: https://github.com/elizaOS/eliza.git
-commit: 2b86f725f9bcc4ee07e83ef5e44a5dda8a5dd359
 refType: branch
 ref: develop
-mirroredAt: 2026-03-28T23:44:33.856Z
 ---
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 12 default patterns, 0 followed patterns, 103 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 0 followed patterns, 103 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `elizaOS/eliza` — 12 default patterns, 0 followed patterns, 103 file
 | Repo          | `elizaOS/eliza` |
 | Ref Type      | `branch` |
 | Ref           | `develop` |
-| Commit        | `2b86f725f9bcc4ee07e83ef5e44a5dda8a5dd359` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 103 |
-| Mirrored      | 2026-03-28T23:44:33.856Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `elizaOS/eliza` — 12 default patterns, 0 followed patterns, 103 file
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

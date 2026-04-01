@@ -1,15 +1,13 @@
 ---
 repo: OpenBMB/ChatDev
 repoUrl: https://github.com/OpenBMB/ChatDev.git
-commit: 3c72d860d2553f05129b7dff0fd4efdde5b01d2f
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T19:54:19.005Z
 ---
 
 # Mirror Manifest
 
-Mirror of `OpenBMB/ChatDev` — 12 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `OpenBMB/ChatDev` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `OpenBMB/ChatDev` — 12 default patterns, 0 followed patterns, 5 file
 | Repo          | `OpenBMB/ChatDev` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3c72d860d2553f05129b7dff0fd4efdde5b01d2f` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-28T19:54:19.005Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `OpenBMB/ChatDev` — 12 default patterns, 0 followed patterns, 5 file
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

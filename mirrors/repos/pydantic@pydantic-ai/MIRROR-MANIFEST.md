@@ -1,15 +1,13 @@
 ---
 repo: pydantic/pydantic-ai
 repoUrl: https://github.com/pydantic/pydantic-ai.git
-commit: a7f38e586cd6bd83a349c665a7c6604d666ccd49
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:04:33.522Z
 ---
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 12 default patterns, 16 followed patterns, 44 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 16 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `pydantic/pydantic-ai` — 12 default patterns, 16 followed patterns, 
 | Repo          | `pydantic/pydantic-ai` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `a7f38e586cd6bd83a349c665a7c6604d666ccd49` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 16 |
 | Files         | 44 |
-| Mirrored      | 2026-03-30T23:04:33.522Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `pydantic/pydantic-ai` — 12 default patterns, 16 followed patterns, 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

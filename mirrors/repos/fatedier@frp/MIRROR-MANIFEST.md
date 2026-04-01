@@ -1,10 +1,8 @@
 ---
 repo: fatedier/frp
 repoUrl: https://github.com/fatedier/frp.git
-commit: d667be7a0a4c6fb62185461f5ebeeac3ede1cb30
 refType: branch
 ref: dev
-mirroredAt: 2026-03-31T11:32:53.739Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `fatedier/frp` — 26 default patterns, 0 followed patterns, 2 file(s)
 | Repo          | `fatedier/frp` |
 | Ref Type      | `branch` |
 | Ref           | `dev` |
-| Commit        | `d667be7a0a4c6fb62185461f5ebeeac3ede1cb30` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T11:32:53.739Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

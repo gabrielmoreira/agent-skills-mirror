@@ -1,15 +1,13 @@
 ---
 repo: coder/coder
 repoUrl: https://github.com/coder/coder.git
-commit: 75f1503b41825b310ff73f8e3c289e10099a4e1f
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:46:56.821Z
 ---
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 12 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `coder/coder` — 12 default patterns, 0 followed patterns, 27 file(s)
 | Repo          | `coder/coder` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `75f1503b41825b310ff73f8e3c289e10099a4e1f` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
-| Mirrored      | 2026-03-30T23:46:56.821Z |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `coder/coder` — 12 default patterns, 0 followed patterns, 27 file(s)
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -70,12 +80,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.agents/skills/refine-plan/SKILL.md`](.agents/skills/refine-plan/SKILL.md) |
 | 20 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
 | 21 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
-| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 24 | ✓ | [`docs/reference/api/agents.md`](docs/reference/api/agents.md) |
-| 25 | ✓ | [`docs/reference/api/authentication.md`](docs/reference/api/authentication.md) |
-| 26 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 27 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 22 | ✓ | [`.cursorrules`](.cursorrules) |
+| 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 25 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 26 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
 
 ---
 

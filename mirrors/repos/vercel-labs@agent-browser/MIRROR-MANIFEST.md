@@ -1,15 +1,13 @@
 ---
 repo: vercel-labs/agent-browser
 repoUrl: https://github.com/vercel-labs/agent-browser.git
-commit: 3c942e2874f8e4da1430de45ffaac10fb5704d6c
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:43:12.862Z
 ---
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-browser` — 12 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `vercel-labs/agent-browser` — 12 default patterns, 0 followed patter
 | Repo          | `vercel-labs/agent-browser` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3c942e2874f8e4da1430de45ffaac10fb5704d6c` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 20 |
-| Mirrored      | 2026-03-30T23:43:12.862Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `vercel-labs/agent-browser` — 12 default patterns, 0 followed patter
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

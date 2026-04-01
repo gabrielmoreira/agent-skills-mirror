@@ -1,15 +1,13 @@
 ---
 repo: vxcontrol/pentagi
 repoUrl: https://github.com/vxcontrol/pentagi.git
-commit: e8d49de9af223439dd53e17e5cf888c0c9dc5fbf
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:06:38.350Z
 ---
 
 # Mirror Manifest
 
-Mirror of `vxcontrol/pentagi` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `vxcontrol/pentagi` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `vxcontrol/pentagi` — 12 default patterns, 0 followed patterns, 2 fi
 | Repo          | `vxcontrol/pentagi` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `e8d49de9af223439dd53e17e5cf888c0c9dc5fbf` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-30T23:06:38.350Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `vxcontrol/pentagi` — 12 default patterns, 0 followed patterns, 2 fi
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

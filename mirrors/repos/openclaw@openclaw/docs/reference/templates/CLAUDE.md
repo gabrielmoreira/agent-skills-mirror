@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/openclaw@openclaw/docs/reference/templates/AGENTS.md

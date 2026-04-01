@@ -1,15 +1,13 @@
 ---
 repo: mvanhorn/last30days-skill
 repoUrl: https://github.com/mvanhorn/last30days-skill.git
-commit: 61904b31e3ec16ce5bee77710196ecbd1129c5df
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:04:17.161Z
 ---
 
 # Mirror Manifest
 
-Mirror of `mvanhorn/last30days-skill` — 12 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `mvanhorn/last30days-skill` — 12 default patterns, 0 followed patter
 | Repo          | `mvanhorn/last30days-skill` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `61904b31e3ec16ce5bee77710196ecbd1129c5df` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
-| Mirrored      | 2026-03-30T23:04:17.161Z |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `mvanhorn/last30days-skill` — 12 default patterns, 0 followed patter
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -49,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
-| 4 | ✓ | [`variants/open/SKILL.md`](variants/open/SKILL.md) |
+| 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
+| 4 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
+| 5 | ✓ | [`variants/open/SKILL.md`](variants/open/SKILL.md) |
 
 ---
 

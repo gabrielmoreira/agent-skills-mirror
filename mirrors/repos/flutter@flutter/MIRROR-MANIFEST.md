@@ -1,10 +1,8 @@
 ---
 repo: flutter/flutter
 repoUrl: https://github.com/flutter/flutter.git
-commit: aaa24c388b43b5504b21747684923eaae4356dbc
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:25:50.392Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 5 file
 | Repo          | `flutter/flutter` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `aaa24c388b43b5504b21747684923eaae4356dbc` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-31T11:25:50.392Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

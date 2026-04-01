@@ -1,10 +1,8 @@
 ---
 repo: rust-lang/rust
 repoUrl: https://github.com/rust-lang/rust.git
-commit: ba11b1e3f09829428844b74829146fcf7c38d3d0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:33.933Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `rust-lang/rust` — 26 default patterns, 0 followed patterns, 2 file(
 | Repo          | `rust-lang/rust` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `ba11b1e3f09829428844b74829146fcf7c38d3d0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T18:22:33.933Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

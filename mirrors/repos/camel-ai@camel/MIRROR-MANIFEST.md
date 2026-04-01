@@ -1,15 +1,13 @@
 ---
 repo: camel-ai/camel
 repoUrl: https://github.com/camel-ai/camel.git
-commit: b547bc49f5cc1a9b742ae34d953e72fc100b9ad1
 refType: branch
 ref: master
-mirroredAt: 2026-03-28T23:46:18.927Z
 ---
 
 # Mirror Manifest
 
-Mirror of `camel-ai/camel` — 12 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `camel-ai/camel` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `camel-ai/camel` — 12 default patterns, 0 followed patterns, 6 file(
 | Repo          | `camel-ai/camel` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `b547bc49f5cc1a9b742ae34d953e72fc100b9ad1` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
-| Mirrored      | 2026-03-28T23:46:18.927Z |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `camel-ai/camel` — 12 default patterns, 0 followed patterns, 6 file(
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -51,10 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.camel/skills/docs-incremental-update/SKILL.md`](.camel/skills/docs-incremental-update/SKILL.md) |
 | 2 | ✓ | [`.camel/skills/skill-creator/SKILL.md`](.camel/skills/skill-creator/SKILL.md) |
-| 3 | ✓ | [`docs/key_modules/agents.md`](docs/key_modules/agents.md) |
-| 4 | ✓ | [`examples/toolkits/skill_toolkit_example/.camel/skills/code-reviewer/SKILL.md`](examples/toolkits/skill_toolkit_example/.camel/skills/code-reviewer/SKILL.md) |
-| 5 | ✓ | [`examples/toolkits/skill_toolkit_example/.camel/skills/data-analyzer/SKILL.md`](examples/toolkits/skill_toolkit_example/.camel/skills/data-analyzer/SKILL.md) |
-| 6 | ✓ | [`examples/toolkits/skill_toolkit_example/.camel/skills/report-writer/SKILL.md`](examples/toolkits/skill_toolkit_example/.camel/skills/report-writer/SKILL.md) |
+| 3 | ✓ | [`examples/toolkits/skill_toolkit_example/.camel/skills/code-reviewer/SKILL.md`](examples/toolkits/skill_toolkit_example/.camel/skills/code-reviewer/SKILL.md) |
+| 4 | ✓ | [`examples/toolkits/skill_toolkit_example/.camel/skills/data-analyzer/SKILL.md`](examples/toolkits/skill_toolkit_example/.camel/skills/data-analyzer/SKILL.md) |
+| 5 | ✓ | [`examples/toolkits/skill_toolkit_example/.camel/skills/report-writer/SKILL.md`](examples/toolkits/skill_toolkit_example/.camel/skills/report-writer/SKILL.md) |
 
 ---
 

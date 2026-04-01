@@ -1,15 +1,13 @@
 ---
 repo: PaddlePaddle/PaddleOCR
 repoUrl: https://github.com/PaddlePaddle/PaddleOCR.git
-commit: 004e6031c72802c61b1c11b9154f5f9348d6b7f0
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:45:57.770Z
 ---
 
 # Mirror Manifest
 
-Mirror of `PaddlePaddle/PaddleOCR` — 12 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `PaddlePaddle/PaddleOCR` — 12 default patterns, 0 followed patterns,
 | Repo          | `PaddlePaddle/PaddleOCR` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `004e6031c72802c61b1c11b9154f5f9348d6b7f0` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 17 |
-| Mirrored      | 2026-03-30T22:45:57.770Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `PaddlePaddle/PaddleOCR` — 12 default patterns, 0 followed patterns,
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/pydantic@pydantic-ai/AGENTS.md

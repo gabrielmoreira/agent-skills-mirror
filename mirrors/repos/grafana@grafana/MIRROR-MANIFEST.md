@@ -1,15 +1,13 @@
 ---
 repo: grafana/grafana
 repoUrl: https://github.com/grafana/grafana.git
-commit: 194db12d9e9934189787a68bfe042ee1b403e47e
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:41:04.244Z
 ---
 
 # Mirror Manifest
 
-Mirror of `grafana/grafana` — 12 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `grafana/grafana` — 12 default patterns, 0 followed patterns, 7 file
 | Repo          | `grafana/grafana` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `194db12d9e9934189787a68bfe042ee1b403e47e` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
-| Mirrored      | 2026-03-30T23:41:04.244Z |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `grafana/grafana` — 12 default patterns, 0 followed patterns, 7 file
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -51,11 +61,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`contribute/style-guides/testing.md`](contribute/style-guides/testing.md) |
-| 4 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 5 | ✓ | [`e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md`](e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md) |
-| 6 | ✓ | [`public/app/features/alerting/unified/AGENTS.md`](public/app/features/alerting/unified/AGENTS.md) |
-| 7 | ✓ | [`public/app/features/alerting/unified/TESTING.md`](public/app/features/alerting/unified/TESTING.md) |
+| 3 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 4 | ✓ | [`e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md`](e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md) |
+| 5 | ✓ | [`public/app/features/alerting/unified/AGENTS.md`](public/app/features/alerting/unified/AGENTS.md) |
+| 6 | ✓ | [`public/app/features/alerting/unified/TESTING.md`](public/app/features/alerting/unified/TESTING.md) |
 
 ---
 

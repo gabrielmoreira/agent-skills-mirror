@@ -1,15 +1,13 @@
 ---
 repo: tanweai/pua
 repoUrl: https://github.com/tanweai/pua.git
-commit: 5789b84767195d3eecbb52d32f06d175163ca001
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:50:49.949Z
 ---
 
 # Mirror Manifest
 
-Mirror of `tanweai/pua` — 12 default patterns, 0 followed patterns, 41 file(s) materialized.
+Mirror of `tanweai/pua` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `tanweai/pua` — 12 default patterns, 0 followed patterns, 41 file(s)
 | Repo          | `tanweai/pua` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `5789b84767195d3eecbb52d32f06d175163ca001` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 41 |
-| Mirrored      | 2026-03-28T23:50:49.949Z |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `tanweai/pua` — 12 default patterns, 0 followed patterns, 41 file(s)
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -49,47 +59,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`codebuddy/pua-en/SKILL.md`](codebuddy/pua-en/SKILL.md) |
-| 2 | ✓ | [`codebuddy/pua-ja/SKILL.md`](codebuddy/pua-ja/SKILL.md) |
-| 3 | ✓ | [`codebuddy/pua/SKILL.md`](codebuddy/pua/SKILL.md) |
-| 4 | ✓ | [`codex/pua-en/SKILL.md`](codex/pua-en/SKILL.md) |
-| 5 | ✓ | [`codex/pua-ja/SKILL.md`](codex/pua-ja/SKILL.md) |
-| 6 | ✓ | [`codex/pua/SKILL.md`](codex/pua/SKILL.md) |
-| 7 | ✓ | [`skills/mama/SKILL.md`](skills/mama/SKILL.md) |
-| 8 | ✓ | [`skills/p10/SKILL.md`](skills/p10/SKILL.md) |
-| 9 | ✓ | [`skills/p7/SKILL.md`](skills/p7/SKILL.md) |
-| 10 | ✓ | [`skills/p9/SKILL.md`](skills/p9/SKILL.md) |
-| 11 | ✓ | [`skills/pro/SKILL.md`](skills/pro/SKILL.md) |
-| 12 | ✓ | [`skills/pua-en/SKILL.md`](skills/pua-en/SKILL.md) |
-| 13 | ✓ | [`skills/pua-ja/SKILL.md`](skills/pua-ja/SKILL.md) |
-| 14 | ✓ | [`skills/pua-loop/SKILL.md`](skills/pua-loop/SKILL.md) |
-| 15 | ✓ | [`skills/pua/references/agent-team.md`](skills/pua/references/agent-team.md) |
-| 16 | ✓ | [`skills/pua/references/display-protocol.md`](skills/pua/references/display-protocol.md) |
-| 17 | ✓ | [`skills/pua/references/evolution-protocol.md`](skills/pua/references/evolution-protocol.md) |
-| 18 | ✓ | [`skills/pua/references/flavors.md`](skills/pua/references/flavors.md) |
-| 19 | ✓ | [`skills/pua/references/methodology-alibaba.md`](skills/pua/references/methodology-alibaba.md) |
-| 20 | ✓ | [`skills/pua/references/methodology-amazon.md`](skills/pua/references/methodology-amazon.md) |
-| 21 | ✓ | [`skills/pua/references/methodology-apple.md`](skills/pua/references/methodology-apple.md) |
-| 22 | ✓ | [`skills/pua/references/methodology-baidu.md`](skills/pua/references/methodology-baidu.md) |
-| 23 | ✓ | [`skills/pua/references/methodology-bytedance.md`](skills/pua/references/methodology-bytedance.md) |
-| 24 | ✓ | [`skills/pua/references/methodology-huawei.md`](skills/pua/references/methodology-huawei.md) |
-| 25 | ✓ | [`skills/pua/references/methodology-jd.md`](skills/pua/references/methodology-jd.md) |
-| 26 | ✓ | [`skills/pua/references/methodology-meituan.md`](skills/pua/references/methodology-meituan.md) |
-| 27 | ✓ | [`skills/pua/references/methodology-netflix.md`](skills/pua/references/methodology-netflix.md) |
-| 28 | ✓ | [`skills/pua/references/methodology-pinduoduo.md`](skills/pua/references/methodology-pinduoduo.md) |
-| 29 | ✓ | [`skills/pua/references/methodology-router.md`](skills/pua/references/methodology-router.md) |
-| 30 | ✓ | [`skills/pua/references/methodology-tencent.md`](skills/pua/references/methodology-tencent.md) |
-| 31 | ✓ | [`skills/pua/references/methodology-tesla.md`](skills/pua/references/methodology-tesla.md) |
-| 32 | ✓ | [`skills/pua/references/methodology-xiaomi.md`](skills/pua/references/methodology-xiaomi.md) |
-| 33 | ✓ | [`skills/pua/references/p10-protocol.md`](skills/pua/references/p10-protocol.md) |
-| 34 | ✓ | [`skills/pua/references/p7-protocol.md`](skills/pua/references/p7-protocol.md) |
-| 35 | ✓ | [`skills/pua/references/p9-protocol.md`](skills/pua/references/p9-protocol.md) |
-| 36 | ✓ | [`skills/pua/references/platform.md`](skills/pua/references/platform.md) |
-| 37 | ✓ | [`skills/pua/references/survey.md`](skills/pua/references/survey.md) |
-| 38 | ✓ | [`skills/pua/SKILL.md`](skills/pua/SKILL.md) |
-| 39 | ✓ | [`skills/shot/SKILL.md`](skills/shot/SKILL.md) |
-| 40 | ✓ | [`skills/yes/SKILL.md`](skills/yes/SKILL.md) |
-| 41 | ✓ | [`vscode/copilot-instructions.md`](vscode/copilot-instructions.md) |
+| 1 | ✓ | [`agents/cto-p10.md`](agents/cto-p10.md) |
+| 2 | ✓ | [`agents/senior-engineer-p7.md`](agents/senior-engineer-p7.md) |
+| 3 | ✓ | [`agents/tech-lead-p9.md`](agents/tech-lead-p9.md) |
+| 4 | ✓ | [`codebuddy/pua-en/SKILL.md`](codebuddy/pua-en/SKILL.md) |
+| 5 | ✓ | [`codebuddy/pua-ja/SKILL.md`](codebuddy/pua-ja/SKILL.md) |
+| 6 | ✓ | [`codebuddy/pua/SKILL.md`](codebuddy/pua/SKILL.md) |
+| 7 | ✓ | [`codex/pua-en/SKILL.md`](codex/pua-en/SKILL.md) |
+| 8 | ✓ | [`codex/pua-ja/SKILL.md`](codex/pua-ja/SKILL.md) |
+| 9 | ✓ | [`codex/pua/SKILL.md`](codex/pua/SKILL.md) |
+| 10 | ✓ | [`skills/mama/SKILL.md`](skills/mama/SKILL.md) |
+| 11 | ✓ | [`skills/p10/SKILL.md`](skills/p10/SKILL.md) |
+| 12 | ✓ | [`skills/p7/SKILL.md`](skills/p7/SKILL.md) |
+| 13 | ✓ | [`skills/p9/SKILL.md`](skills/p9/SKILL.md) |
+| 14 | ✓ | [`skills/pro/SKILL.md`](skills/pro/SKILL.md) |
+| 15 | ✓ | [`skills/pua-en/SKILL.md`](skills/pua-en/SKILL.md) |
+| 16 | ✓ | [`skills/pua-ja/SKILL.md`](skills/pua-ja/SKILL.md) |
+| 17 | ✓ | [`skills/pua-loop/SKILL.md`](skills/pua-loop/SKILL.md) |
+| 18 | ✓ | [`skills/pua/references/agent-team.md`](skills/pua/references/agent-team.md) |
+| 19 | ✓ | [`skills/pua/references/display-protocol.md`](skills/pua/references/display-protocol.md) |
+| 20 | ✓ | [`skills/pua/references/evolution-protocol.md`](skills/pua/references/evolution-protocol.md) |
+| 21 | ✓ | [`skills/pua/references/flavors.md`](skills/pua/references/flavors.md) |
+| 22 | ✓ | [`skills/pua/references/methodology-alibaba.md`](skills/pua/references/methodology-alibaba.md) |
+| 23 | ✓ | [`skills/pua/references/methodology-amazon.md`](skills/pua/references/methodology-amazon.md) |
+| 24 | ✓ | [`skills/pua/references/methodology-apple.md`](skills/pua/references/methodology-apple.md) |
+| 25 | ✓ | [`skills/pua/references/methodology-baidu.md`](skills/pua/references/methodology-baidu.md) |
+| 26 | ✓ | [`skills/pua/references/methodology-bytedance.md`](skills/pua/references/methodology-bytedance.md) |
+| 27 | ✓ | [`skills/pua/references/methodology-huawei.md`](skills/pua/references/methodology-huawei.md) |
+| 28 | ✓ | [`skills/pua/references/methodology-jd.md`](skills/pua/references/methodology-jd.md) |
+| 29 | ✓ | [`skills/pua/references/methodology-meituan.md`](skills/pua/references/methodology-meituan.md) |
+| 30 | ✓ | [`skills/pua/references/methodology-netflix.md`](skills/pua/references/methodology-netflix.md) |
+| 31 | ✓ | [`skills/pua/references/methodology-pinduoduo.md`](skills/pua/references/methodology-pinduoduo.md) |
+| 32 | ✓ | [`skills/pua/references/methodology-router.md`](skills/pua/references/methodology-router.md) |
+| 33 | ✓ | [`skills/pua/references/methodology-tencent.md`](skills/pua/references/methodology-tencent.md) |
+| 34 | ✓ | [`skills/pua/references/methodology-tesla.md`](skills/pua/references/methodology-tesla.md) |
+| 35 | ✓ | [`skills/pua/references/methodology-xiaomi.md`](skills/pua/references/methodology-xiaomi.md) |
+| 36 | ✓ | [`skills/pua/references/p10-protocol.md`](skills/pua/references/p10-protocol.md) |
+| 37 | ✓ | [`skills/pua/references/p7-protocol.md`](skills/pua/references/p7-protocol.md) |
+| 38 | ✓ | [`skills/pua/references/p9-protocol.md`](skills/pua/references/p9-protocol.md) |
+| 39 | ✓ | [`skills/pua/references/platform.md`](skills/pua/references/platform.md) |
+| 40 | ✓ | [`skills/pua/references/survey.md`](skills/pua/references/survey.md) |
+| 41 | ✓ | [`skills/pua/SKILL.md`](skills/pua/SKILL.md) |
+| 42 | ✓ | [`skills/shot/SKILL.md`](skills/shot/SKILL.md) |
+| 43 | ✓ | [`skills/yes/SKILL.md`](skills/yes/SKILL.md) |
+| 44 | ✓ | [`vscode/copilot-instructions.md`](vscode/copilot-instructions.md) |
 
 ---
 

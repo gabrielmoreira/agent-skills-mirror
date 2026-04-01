@@ -1,15 +1,13 @@
 ---
 repo: HKUDS/DeepCode
 repoUrl: https://github.com/HKUDS/DeepCode.git
-commit: b5c741ab572ab53814dc40d2d84f0da8f015e66d
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:48:11.143Z
 ---
 
 # Mirror Manifest
 
-Mirror of `HKUDS/DeepCode` — 12 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `HKUDS/DeepCode` — 12 default patterns, 0 followed patterns, 9 file(
 | Repo          | `HKUDS/DeepCode` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `b5c741ab572ab53814dc40d2d84f0da8f015e66d` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 9 |
-| Mirrored      | 2026-03-28T23:48:11.143Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `HKUDS/DeepCode` — 12 default patterns, 0 followed patterns, 9 file(
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

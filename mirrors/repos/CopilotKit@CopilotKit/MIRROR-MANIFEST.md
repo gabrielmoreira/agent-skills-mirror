@@ -1,15 +1,13 @@
 ---
 repo: CopilotKit/CopilotKit
 repoUrl: https://github.com/CopilotKit/CopilotKit.git
-commit: ecf67473ad08c47af89a5289839b518c422dc15f
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:51:42.669Z
 ---
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 12 default patterns, 4 followed patterns, 16 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 4 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `CopilotKit/CopilotKit` — 12 default patterns, 4 followed patterns, 
 | Repo          | `CopilotKit/CopilotKit` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `ecf67473ad08c47af89a5289839b518c422dc15f` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 16 |
-| Mirrored      | 2026-03-30T22:51:42.669Z |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `CopilotKit/CopilotKit` — 12 default patterns, 4 followed patterns, 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -53,21 +63,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/git-hooks/SKILL.md`](.claude/skills/git-hooks/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
-| 5 | ✓ | [`examples/e2e/AGENTS.md`](examples/e2e/AGENTS.md) |
-| 6 | ✓ | [`examples/integrations/langgraph-python/CLAUDE.md`](examples/integrations/langgraph-python/CLAUDE.md) |
-| 7 | ✓ | [`examples/showcases/adk-dashboard/AGENTS.md`](examples/showcases/adk-dashboard/AGENTS.md) |
-| 8 | ✓ | [`examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md`](examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md) |
-| 9 | ✓ | [`examples/showcases/generative-ui-playground/CLAUDE.md`](examples/showcases/generative-ui-playground/CLAUDE.md) |
-| 10 | ✓ | [`examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md`](examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md) |
-| 11 | ✓ | [`examples/showcases/mcp-apps/CLAUDE.md`](examples/showcases/mcp-apps/CLAUDE.md) |
-| 12 | ✓ | [`src/v2.x/CLAUDE.md`](src/v2.x/CLAUDE.md) |
-| 13 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 14 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 15 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 16 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 2 | ✓ | [`.cursor/rules/agent-development.mdc`](.cursor/rules/agent-development.mdc) |
+| 3 | ✓ | [`.cursor/rules/copilotkit-architecture.mdc`](.cursor/rules/copilotkit-architecture.mdc) |
+| 4 | ✓ | [`.cursor/rules/development-workflow.mdc`](.cursor/rules/development-workflow.mdc) |
+| 5 | ✓ | [`.cursor/rules/examples-and-demos.mdc`](.cursor/rules/examples-and-demos.mdc) |
+| 6 | ✓ | [`.cursor/rules/frontend-development.mdc`](.cursor/rules/frontend-development.mdc) |
+| 7 | ✓ | [`.cursor/rules/quick-reference.mdc`](.cursor/rules/quick-reference.mdc) |
+| 8 | ✓ | [`.cursor/rules/suggestions-development.mdc`](.cursor/rules/suggestions-development.mdc) |
+| 9 | ✓ | [`.cursor/rules/working-with-rules.mdc`](.cursor/rules/working-with-rules.mdc) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 13 | ✓ | [`examples/e2e/AGENTS.md`](examples/e2e/AGENTS.md) |
+| 14 | ✓ | [`examples/integrations/langgraph-python/CLAUDE.md`](examples/integrations/langgraph-python/CLAUDE.md) |
+| 15 | ✓ | [`examples/showcases/adk-dashboard/AGENTS.md`](examples/showcases/adk-dashboard/AGENTS.md) |
+| 16 | ✓ | [`examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md`](examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md) |
+| 17 | ✓ | [`examples/showcases/generative-ui-playground/CLAUDE.md`](examples/showcases/generative-ui-playground/CLAUDE.md) |
+| 18 | ✓ | [`examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md`](examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md) |
+| 19 | ✓ | [`examples/showcases/mcp-apps/CLAUDE.md`](examples/showcases/mcp-apps/CLAUDE.md) |
+| 20 | ✓ | [`examples/showcases/mcp-demo/.cursorrules`](examples/showcases/mcp-demo/.cursorrules) |
+| 21 | ✓ | [`examples/showcases/multi-agent-canvas/frontend/.cursorrules`](examples/showcases/multi-agent-canvas/frontend/.cursorrules) |
+| 22 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 23 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 24 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 25 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
 
 ---
 

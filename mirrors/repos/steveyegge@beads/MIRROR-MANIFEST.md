@@ -1,15 +1,13 @@
 ---
 repo: steveyegge/beads
 repoUrl: https://github.com/steveyegge/beads.git
-commit: 3fc9443f3cc05b7eac0eba5ab1983f63aec42382
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:00:54.638Z
 ---
 
 # Mirror Manifest
 
-Mirror of `steveyegge/beads` — 12 default patterns, 6 followed patterns, 23 file(s) materialized.
+Mirror of `steveyegge/beads` — 26 default patterns, 6 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `steveyegge/beads` — 12 default patterns, 6 followed patterns, 23 fi
 | Repo          | `steveyegge/beads` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `3fc9443f3cc05b7eac0eba5ab1983f63aec42382` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 23 |
-| Mirrored      | 2026-03-30T23:00:54.638Z |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `steveyegge/beads` — 12 default patterns, 6 followed patterns, 23 fi
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -68,15 +78,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`docs/DOLT.md`](docs/DOLT.md) |
 | 13 | ✓ | [`docs/FAQ.md`](docs/FAQ.md) |
 | 14 | ✓ | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 15 | ✓ | [`website/docs/reference/faq.md`](website/docs/reference/faq.md) |
-| 16 | ✓ | [`website/docs/reference/troubleshooting.md`](website/docs/reference/troubleshooting.md) |
-| 17 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
-| 18 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
-| 19 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
-| 20 | → | [`docs/LINTING.md`](docs/LINTING.md) |
-| 21 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
-| 22 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
-| 23 | → | [`scripts/README.md`](scripts/README.md) |
+| 15 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
+| 16 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
+| 17 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
+| 18 | → | [`docs/LINTING.md`](docs/LINTING.md) |
+| 19 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
+| 20 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
+| 21 | → | [`scripts/README.md`](scripts/README.md) |
 
 ---
 

@@ -1,15 +1,13 @@
 ---
 repo: ant-design/ant-design
 repoUrl: https://github.com/ant-design/ant-design.git
-commit: 30e1df5f8d35714b12652ea17caf84b6f4598ca5
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T15:28:59.936Z
 ---
 
 # Mirror Manifest
 
-Mirror of `ant-design/ant-design` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `ant-design/ant-design` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `ant-design/ant-design` — 26 default patterns, 0 followed patterns, 
 | Repo          | `ant-design/ant-design` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `30e1df5f8d35714b12652ea17caf84b6f4598ca5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
-| Mirrored      | 2026-03-31T15:28:59.936Z |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,10 +66,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
 | 6 | ✓ | [`.agents/skills/issue-reply/references/labels-and-resources.md`](.agents/skills/issue-reply/references/labels-and-resources.md) |
 | 7 | ✓ | [`.agents/skills/issue-reply/SKILL.md`](.agents/skills/issue-reply/SKILL.md) |
-| 8 | ✓ | [`.cursor/skills`](.cursor/skills) |
-| 9 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

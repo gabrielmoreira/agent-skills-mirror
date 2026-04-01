@@ -1,15 +1,13 @@
 ---
 repo: arc53/DocsGPT
 repoUrl: https://github.com/arc53/DocsGPT.git
-commit: 81532ada2a95c866c43ca2a6a1167cb961db4e69
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:02:28.005Z
 ---
 
 # Mirror Manifest
 
-Mirror of `arc53/DocsGPT` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `arc53/DocsGPT` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `arc53/DocsGPT` — 12 default patterns, 0 followed patterns, 2 file(s
 | Repo          | `arc53/DocsGPT` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `81532ada2a95c866c43ca2a6a1167cb961db4e69` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-30T23:02:28.005Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `arc53/DocsGPT` — 12 default patterns, 0 followed patterns, 2 file(s
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

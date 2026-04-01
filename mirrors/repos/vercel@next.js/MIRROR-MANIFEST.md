@@ -1,10 +1,8 @@
 ---
 repo: vercel/next.js
 repoUrl: https://github.com/vercel/next.js.git
-commit: 373d2c448a1370e653e10ff6e42ee3038201fc20
 refType: branch
 ref: canary
-mirroredAt: 2026-03-31T18:21:55.231Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 24 file
 | Repo          | `vercel/next.js` |
 | Ref Type      | `branch` |
 | Ref           | `canary` |
-| Commit        | `373d2c448a1370e653e10ff6e42ee3038201fc20` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 24 |
-| Mirrored      | 2026-03-31T18:21:55.231Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

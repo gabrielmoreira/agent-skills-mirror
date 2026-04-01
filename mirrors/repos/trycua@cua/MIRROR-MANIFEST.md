@@ -1,15 +1,13 @@
 ---
 repo: trycua/cua
 repoUrl: https://github.com/trycua/cua.git
-commit: 2129db4eb7a76e6cccf9ac55b412db7434ac44b8
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:46:36.825Z
 ---
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 12 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `trycua/cua` — 12 default patterns, 0 followed patterns, 19 file(s) 
 | Repo          | `trycua/cua` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `2129db4eb7a76e6cccf9ac55b412db7434ac44b8` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 19 |
-| Mirrored      | 2026-03-30T23:46:36.825Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `trycua/cua` — 12 default patterns, 0 followed patterns, 19 file(s) 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

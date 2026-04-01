@@ -1,15 +1,13 @@
 ---
 repo: enescingoz/awesome-n8n-templates
 repoUrl: https://github.com/enescingoz/awesome-n8n-templates.git
-commit: 7aa7d005e617072a06a9867e2055e3322e2d478a
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:41:34.531Z
 ---
 
 # Mirror Manifest
 
-Mirror of `enescingoz/awesome-n8n-templates` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `enescingoz/awesome-n8n-templates` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `enescingoz/awesome-n8n-templates` — 12 default patterns, 0 followed
 | Repo          | `enescingoz/awesome-n8n-templates` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7aa7d005e617072a06a9867e2055e3322e2d478a` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-28T23:41:34.531Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `enescingoz/awesome-n8n-templates` — 12 default patterns, 0 followed
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

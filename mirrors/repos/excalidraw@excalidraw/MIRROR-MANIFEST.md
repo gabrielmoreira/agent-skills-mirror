@@ -1,10 +1,8 @@
 ---
 repo: excalidraw/excalidraw
 repoUrl: https://github.com/excalidraw/excalidraw.git
-commit: 4be4cc0ed03e8bd3af23bb07b7f4a04debdb7bdf
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:29:35.788Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `excalidraw/excalidraw` — 26 default patterns, 0 followed patterns, 
 | Repo          | `excalidraw/excalidraw` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `4be4cc0ed03e8bd3af23bb07b7f4a04debdb7bdf` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T11:29:35.788Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

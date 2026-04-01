@@ -1,15 +1,13 @@
 ---
 repo: openai/symphony
 repoUrl: https://github.com/openai/symphony.git
-commit: 9e89dd9ff0a3eddb8813c77f633ca4534d6e14b2
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:49:20.916Z
 ---
 
 # Mirror Manifest
 
-Mirror of `openai/symphony` — 12 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `openai/symphony` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `openai/symphony` — 12 default patterns, 0 followed patterns, 7 file
 | Repo          | `openai/symphony` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `9e89dd9ff0a3eddb8813c77f633ca4534d6e14b2` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 7 |
-| Mirrored      | 2026-03-28T23:49:20.916Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `openai/symphony` — 12 default patterns, 0 followed patterns, 7 file
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

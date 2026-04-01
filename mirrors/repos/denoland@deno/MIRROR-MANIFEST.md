@@ -1,10 +1,8 @@
 ---
 repo: denoland/deno
 repoUrl: https://github.com/denoland/deno.git
-commit: 094f8bf0c096f309190d87449e856d84990772ed
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:13.862Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `denoland/deno` — 26 default patterns, 0 followed patterns, 2 file(s
 | Repo          | `denoland/deno` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `094f8bf0c096f309190d87449e856d84990772ed` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T18:22:13.862Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

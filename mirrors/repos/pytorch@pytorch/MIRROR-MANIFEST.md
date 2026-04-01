@@ -1,10 +1,8 @@
 ---
 repo: pytorch/pytorch
 repoUrl: https://github.com/pytorch/pytorch.git
-commit: 684f506acc809da806ec839d05656808456a738f
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:43.255Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 19 fil
 | Repo          | `pytorch/pytorch` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `684f506acc809da806ec839d05656808456a738f` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 19 |
-| Mirrored      | 2026-03-31T18:22:43.255Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

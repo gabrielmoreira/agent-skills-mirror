@@ -1,10 +1,8 @@
 ---
 repo: nodejs/node
 repoUrl: https://github.com/nodejs/node.git
-commit: cd391b5f11954dc6d62061a6152d855d09b7ba01
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:16.979Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `nodejs/node` — 26 default patterns, 0 followed patterns, 1 file(s) 
 | Repo          | `nodejs/node` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cd391b5f11954dc6d62061a6152d855d09b7ba01` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T18:22:16.979Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

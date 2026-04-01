@@ -1,10 +1,8 @@
 ---
 repo: kamranahmedse/developer-roadmap
 repoUrl: https://github.com/kamranahmedse/developer-roadmap.git
-commit: e762acc1c4a95d6fdd319a93b273127bed4bde31
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T18:21:22.731Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `kamranahmedse/developer-roadmap` — 26 default patterns, 0 followed 
 | Repo          | `kamranahmedse/developer-roadmap` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `e762acc1c4a95d6fdd319a93b273127bed4bde31` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T18:21:22.731Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

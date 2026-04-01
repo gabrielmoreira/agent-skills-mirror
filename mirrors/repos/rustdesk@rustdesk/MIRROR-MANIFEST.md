@@ -1,10 +1,8 @@
 ---
 repo: rustdesk/rustdesk
 repoUrl: https://github.com/rustdesk/rustdesk.git
-commit: 9e4b7fca4dde241c83cfbc3da94f4c8c3c12feb5
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T15:27:17.924Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `rustdesk/rustdesk` — 26 default patterns, 0 followed patterns, 1 fi
 | Repo          | `rustdesk/rustdesk` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `9e4b7fca4dde241c83cfbc3da94f4c8c3c12feb5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T15:27:17.924Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

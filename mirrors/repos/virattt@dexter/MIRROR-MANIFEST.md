@@ -1,15 +1,13 @@
 ---
 repo: virattt/dexter
 repoUrl: https://github.com/virattt/dexter.git
-commit: 4958510fcb1a4f624aa9b3f806d006fb65cccd24
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:00:27.547Z
 ---
 
 # Mirror Manifest
 
-Mirror of `virattt/dexter` — 12 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `virattt/dexter` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `virattt/dexter` — 12 default patterns, 0 followed patterns, 4 file(
 | Repo          | `virattt/dexter` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4958510fcb1a4f624aa9b3f806d006fb65cccd24` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-30T23:00:27.547Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `virattt/dexter` — 12 default patterns, 0 followed patterns, 4 file(
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

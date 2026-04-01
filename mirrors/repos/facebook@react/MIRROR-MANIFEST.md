@@ -1,10 +1,8 @@
 ---
 repo: facebook/react
 repoUrl: https://github.com/facebook/react.git
-commit: 044d56f3906809b749056059362396fb6b2872ec
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:23:23.673Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `facebook/react` — 26 default patterns, 0 followed patterns, 9 file(
 | Repo          | `facebook/react` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `044d56f3906809b749056059362396fb6b2872ec` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 9 |
-| Mirrored      | 2026-03-31T11:23:23.673Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: langchain-ai/langchain
 repoUrl: https://github.com/langchain-ai/langchain.git
-commit: 453c4d878b80d77eac1979ced543092fe6a83763
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T18:21:42.712Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `langchain-ai/langchain` — 26 default patterns, 0 followed patterns,
 | Repo          | `langchain-ai/langchain` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `453c4d878b80d77eac1979ced543092fe6a83763` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T18:21:42.712Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

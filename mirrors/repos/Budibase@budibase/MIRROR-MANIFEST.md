@@ -1,15 +1,13 @@
 ---
 repo: Budibase/budibase
 repoUrl: https://github.com/Budibase/budibase.git
-commit: a616cd736ac812749ccb877fb8250b8cddbb8be8
 refType: branch
 ref: master
-mirroredAt: 2026-03-30T22:55:37.352Z
 ---
 
 # Mirror Manifest
 
-Mirror of `Budibase/budibase` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Budibase/budibase` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `Budibase/budibase` — 12 default patterns, 0 followed patterns, 2 fi
 | Repo          | `Budibase/budibase` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `a616cd736ac812749ccb877fb8250b8cddbb8be8` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-30T22:55:37.352Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `Budibase/budibase` — 12 default patterns, 0 followed patterns, 2 fi
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

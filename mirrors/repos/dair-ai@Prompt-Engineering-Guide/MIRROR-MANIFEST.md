@@ -1,15 +1,13 @@
 ---
 repo: dair-ai/Prompt-Engineering-Guide
 repoUrl: https://github.com/dair-ai/Prompt-Engineering-Guide.git
-commit: 57673726396dd94acb23bdb1e67f27c78ee85a8e
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T19:48:25.087Z
 ---
 
 # Mirror Manifest
 
-Mirror of `dair-ai/Prompt-Engineering-Guide` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `dair-ai/Prompt-Engineering-Guide` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `dair-ai/Prompt-Engineering-Guide` — 12 default patterns, 0 followed
 | Repo          | `dair-ai/Prompt-Engineering-Guide` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `57673726396dd94acb23bdb1e67f27c78ee85a8e` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-28T19:48:25.087Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `dair-ai/Prompt-Engineering-Guide` — 12 default patterns, 0 followed
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

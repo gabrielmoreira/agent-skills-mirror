@@ -1,15 +1,13 @@
 ---
 repo: mlflow/mlflow
 repoUrl: https://github.com/mlflow/mlflow.git
-commit: b00dba311992b0fa81f023cfc71375ca31303ea4
 refType: branch
 ref: master
-mirroredAt: 2026-03-30T22:57:34.736Z
 ---
 
 # Mirror Manifest
 
-Mirror of `mlflow/mlflow` — 12 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `mlflow/mlflow` — 12 default patterns, 1 followed patterns, 12 file(
 | Repo          | `mlflow/mlflow` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `b00dba311992b0fa81f023cfc71375ca31303ea4` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 12 |
-| Mirrored      | 2026-03-30T22:57:34.736Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `mlflow/mlflow` — 12 default patterns, 1 followed patterns, 12 file(
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

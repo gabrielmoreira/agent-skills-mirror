@@ -1,10 +1,8 @@
 ---
 repo: louislam/uptime-kuma
 repoUrl: https://github.com/louislam/uptime-kuma.git
-commit: a5f30d4cc8edd5da76964a41e8148f2f45c53b15
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:38:27.636Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `louislam/uptime-kuma` — 26 default patterns, 0 followed patterns, 2
 | Repo          | `louislam/uptime-kuma` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `a5f30d4cc8edd5da76964a41e8148f2f45c53b15` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-31T11:38:27.636Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

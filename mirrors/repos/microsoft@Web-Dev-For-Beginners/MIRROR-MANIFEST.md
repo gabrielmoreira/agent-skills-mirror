@@ -1,10 +1,8 @@
 ---
 repo: microsoft/Web-Dev-For-Beginners
 repoUrl: https://github.com/microsoft/Web-Dev-For-Beginners.git
-commit: 1db4ae0120decb1783950e3d3f18d8e0fb37ee46
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:35:48.930Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `microsoft/Web-Dev-For-Beginners` — 26 default patterns, 1 followed 
 | Repo          | `microsoft/Web-Dev-For-Beginners` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1db4ae0120decb1783950e3d3f18d8e0fb37ee46` |
 | Default pats  | 26 |
 | Followed pats | 1 |
 | Files         | 110 |
-| Mirrored      | 2026-03-31T11:35:48.930Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

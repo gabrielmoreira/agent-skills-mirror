@@ -1,10 +1,8 @@
 ---
 repo: github/spec-kit
 repoUrl: https://github.com/github/spec-kit.git
-commit: cb16412f880daee3129194513b63112ca9bad7e1
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:22:56.983Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `github/spec-kit` — 26 default patterns, 0 followed patterns, 1 file
 | Repo          | `github/spec-kit` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `cb16412f880daee3129194513b63112ca9bad7e1` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T18:22:56.983Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

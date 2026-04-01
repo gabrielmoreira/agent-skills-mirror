@@ -1,15 +1,13 @@
 ---
 repo: xszyou/Fay
 repoUrl: https://github.com/xszyou/Fay.git
-commit: c79ea62f0e9408419fa346b20d65d69c4ab54ea1
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:51:27.308Z
 ---
 
 # Mirror Manifest
 
-Mirror of `xszyou/Fay` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `xszyou/Fay` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `xszyou/Fay` — 12 default patterns, 0 followed patterns, 1 file(s) m
 | Repo          | `xszyou/Fay` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c79ea62f0e9408419fa346b20d65d69c4ab54ea1` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-28T23:51:27.308Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `xszyou/Fay` — 12 default patterns, 0 followed patterns, 1 file(s) m
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

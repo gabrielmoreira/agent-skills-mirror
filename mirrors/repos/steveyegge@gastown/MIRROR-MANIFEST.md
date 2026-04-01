@@ -1,15 +1,13 @@
 ---
 repo: steveyegge/gastown
 repoUrl: https://github.com/steveyegge/gastown.git
-commit: 1fe2ab7723edc473ca23bc53f1674d348beb33f4
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:07:51.609Z
 ---
 
 # Mirror Manifest
 
-Mirror of `steveyegge/gastown` — 12 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `steveyegge/gastown` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `steveyegge/gastown` — 12 default patterns, 0 followed patterns, 7 f
 | Repo          | `steveyegge/gastown` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1fe2ab7723edc473ca23bc53f1674d348beb33f4` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 7 |
-| Mirrored      | 2026-03-30T23:07:51.609Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `steveyegge/gastown` — 12 default patterns, 0 followed patterns, 7 f
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -49,9 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/ghi-list/SKILL.md`](.claude/skills/ghi-list/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/pr-list/SKILL.md`](.claude/skills/pr-list/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/pr-sheriff/skill.md`](.claude/skills/pr-sheriff/skill.md) |
+| 1 | ✓ | [`.claude/skills/crew-commit/SKILL.md`](.claude/skills/crew-commit/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/ghi-list/SKILL.md`](.claude/skills/ghi-list/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/pr-list/SKILL.md`](.claude/skills/pr-list/SKILL.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`docs/skills/convoy/SKILL.md`](docs/skills/convoy/SKILL.md) |
 | 6 | ✓ | [`internal/hooks/templates/copilot/copilot-instructions.md`](internal/hooks/templates/copilot/copilot-instructions.md) |

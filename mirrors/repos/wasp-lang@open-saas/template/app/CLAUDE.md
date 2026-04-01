@@ -1,1 +1,1 @@
-AGENTS.md
+cache/repos/github.com/wasp-lang@open-saas/template/app/AGENTS.md

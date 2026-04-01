@@ -1,15 +1,13 @@
 ---
 repo: screenpipe/screenpipe
 repoUrl: https://github.com/screenpipe/screenpipe.git
-commit: 1df03c78bd2cdcfb42610489be4ba7aa9c39fb59
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:02:38.467Z
 ---
 
 # Mirror Manifest
 
-Mirror of `screenpipe/screenpipe` — 12 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `screenpipe/screenpipe` — 12 default patterns, 0 followed patterns, 
 | Repo          | `screenpipe/screenpipe` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `1df03c78bd2cdcfb42610489be4ba7aa9c39fb59` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
-| Mirrored      | 2026-03-30T23:02:38.467Z |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `screenpipe/screenpipe` — 12 default patterns, 0 followed patterns, 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -52,9 +62,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/screenpipe-health/SKILL.md`](.claude/skills/screenpipe-health/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/screenpipe-logs/SKILL.md`](.claude/skills/screenpipe-logs/SKILL.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md) |
-| 6 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/user-feedback/SKILL.md`](.claude/skills/user-feedback/SKILL.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md) |
+| 7 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md) |
 
 ---
 

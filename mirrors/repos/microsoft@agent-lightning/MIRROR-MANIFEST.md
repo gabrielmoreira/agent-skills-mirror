@@ -1,15 +1,13 @@
 ---
 repo: microsoft/agent-lightning
 repoUrl: https://github.com/microsoft/agent-lightning.git
-commit: c746af2f76bebcae56007a59c223cdace411c89b
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:47:29.637Z
 ---
 
 # Mirror Manifest
 
-Mirror of `microsoft/agent-lightning` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `microsoft/agent-lightning` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `microsoft/agent-lightning` — 12 default patterns, 0 followed patter
 | Repo          | `microsoft/agent-lightning` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `c746af2f76bebcae56007a59c223cdace411c89b` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-28T23:47:29.637Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `microsoft/agent-lightning` — 12 default patterns, 0 followed patter
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

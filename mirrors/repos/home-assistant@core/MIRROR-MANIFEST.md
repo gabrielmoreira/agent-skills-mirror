@@ -1,10 +1,8 @@
 ---
 repo: home-assistant/core
 repoUrl: https://github.com/home-assistant/core.git
-commit: d6cd1dffa477a969941331c2a7bb20cd8e54c139
 refType: branch
 ref: dev
-mirroredAt: 2026-03-31T18:23:02.890Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 7 
 | Repo          | `home-assistant/core` |
 | Ref Type      | `branch` |
 | Ref           | `dev` |
-| Commit        | `d6cd1dffa477a969941331c2a7bb20cd8e54c139` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 7 |
-| Mirrored      | 2026-03-31T18:23:02.890Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

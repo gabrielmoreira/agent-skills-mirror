@@ -1,10 +1,8 @@
 ---
 repo: f/prompts.chat
 repoUrl: https://github.com/f/prompts.chat.git
-commit: 571587ceac4749cea8f512e6e5230ae5b2c311b9
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T15:25:04.342Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `f/prompts.chat` — 26 default patterns, 0 followed patterns, 7 file(
 | Repo          | `f/prompts.chat` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `571587ceac4749cea8f512e6e5230ae5b2c311b9` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 7 |
-| Mirrored      | 2026-03-31T15:25:04.342Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

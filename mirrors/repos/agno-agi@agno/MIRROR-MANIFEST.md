@@ -1,15 +1,13 @@
 ---
 repo: agno-agi/agno
 repoUrl: https://github.com/agno-agi/agno.git
-commit: 4a53201a575b6fc6ae6d3340dd61bba18a5ee3ec
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T22:50:13.640Z
 ---
 
 # Mirror Manifest
 
-Mirror of `agno-agi/agno` — 12 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `agno-agi/agno` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `agno-agi/agno` — 12 default patterns, 0 followed patterns, 7 file(s
 | Repo          | `agno-agi/agno` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4a53201a575b6fc6ae6d3340dd61bba18a5ee3ec` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
-| Mirrored      | 2026-03-30T22:50:13.640Z |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `agno-agi/agno` — 12 default patterns, 0 followed patterns, 7 file(s
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -49,13 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`cookbook/02_agents/16_skills/sample_skills/code-review/SKILL.md`](cookbook/02_agents/16_skills/sample_skills/code-review/SKILL.md) |
-| 4 | ✓ | [`cookbook/02_agents/16_skills/sample_skills/git-workflow/SKILL.md`](cookbook/02_agents/16_skills/sample_skills/git-workflow/SKILL.md) |
-| 5 | ✓ | [`cookbook/03_teams/20_human_in_the_loop/CLAUDE.md`](cookbook/03_teams/20_human_in_the_loop/CLAUDE.md) |
-| 6 | ✓ | [`cookbook/05_agent_os/scheduler/CLAUDE.md`](cookbook/05_agent_os/scheduler/CLAUDE.md) |
-| 7 | ✓ | [`cookbook/05_agent_os/skills/sample_skills/system-info/SKILL.md`](cookbook/05_agent_os/skills/sample_skills/system-info/SKILL.md) |
+| 1 | ✓ | [`.cursorrules`](.cursorrules) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`cookbook/02_agents/16_skills/sample_skills/code-review/SKILL.md`](cookbook/02_agents/16_skills/sample_skills/code-review/SKILL.md) |
+| 5 | ✓ | [`cookbook/02_agents/16_skills/sample_skills/git-workflow/SKILL.md`](cookbook/02_agents/16_skills/sample_skills/git-workflow/SKILL.md) |
+| 6 | ✓ | [`cookbook/03_teams/20_human_in_the_loop/CLAUDE.md`](cookbook/03_teams/20_human_in_the_loop/CLAUDE.md) |
+| 7 | ✓ | [`cookbook/05_agent_os/scheduler/CLAUDE.md`](cookbook/05_agent_os/scheduler/CLAUDE.md) |
+| 8 | ✓ | [`cookbook/05_agent_os/skills/sample_skills/system-info/SKILL.md`](cookbook/05_agent_os/skills/sample_skills/system-info/SKILL.md) |
 
 ---
 

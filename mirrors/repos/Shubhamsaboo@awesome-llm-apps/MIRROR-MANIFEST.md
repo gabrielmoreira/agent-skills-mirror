@@ -1,10 +1,8 @@
 ---
 repo: Shubhamsaboo/awesome-llm-apps
 repoUrl: https://github.com/Shubhamsaboo/awesome-llm-apps.git
-commit: d97685ef4f3772ace86dbe2ae0aa7d44c8bf83e0
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:33:13.091Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed pa
 | Repo          | `Shubhamsaboo/awesome-llm-apps` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `d97685ef4f3772ace86dbe2ae0aa7d44c8bf83e0` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 24 |
-| Mirrored      | 2026-03-31T11:33:13.091Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

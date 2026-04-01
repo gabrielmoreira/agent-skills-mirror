@@ -1,10 +1,8 @@
 ---
 repo: astral-sh/uv
 repoUrl: https://github.com/astral-sh/uv.git
-commit: 0c1d0f7c80a621d71df5ed82c2aa562f2d8d70ae
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T15:30:06.846Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 1 file(s)
 | Repo          | `astral-sh/uv` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `0c1d0f7c80a621d71df5ed82c2aa562f2d8d70ae` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T15:30:06.846Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

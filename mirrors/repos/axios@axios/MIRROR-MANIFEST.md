@@ -1,10 +1,8 @@
 ---
 repo: axios/axios
 repoUrl: https://github.com/axios/axios.git
-commit: e2bed7f84d86e87d0641bc5910e96607092d9934
 refType: branch
 ref: v1.x
-mirroredAt: 2026-03-31T11:31:31.311Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `axios/axios` — 26 default patterns, 0 followed patterns, 1 file(s) 
 | Repo          | `axios/axios` |
 | Ref Type      | `branch` |
 | Ref           | `v1.x` |
-| Commit        | `e2bed7f84d86e87d0641bc5910e96607092d9934` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-31T11:31:31.311Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

@@ -1,10 +1,8 @@
 ---
 repo: gohugoio/hugo
 repoUrl: https://github.com/gohugoio/hugo.git
-commit: df520e315087210e069050a873fb5e208659af91
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:37:01.062Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `gohugoio/hugo` — 26 default patterns, 0 followed patterns, 4 file(s
 | Repo          | `gohugoio/hugo` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `df520e315087210e069050a873fb5e208659af91` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T11:37:01.062Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

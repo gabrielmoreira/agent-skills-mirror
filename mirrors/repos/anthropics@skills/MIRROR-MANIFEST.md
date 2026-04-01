@@ -1,10 +1,8 @@
 ---
 repo: anthropics/skills
 repoUrl: https://github.com/anthropics/skills.git
-commit: 98669c11ca63e9c81c11501e1437e5c47b556621
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:32:33.862Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `anthropics/skills` — 26 default patterns, 0 followed patterns, 371 
 | Repo          | `anthropics/skills` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `98669c11ca63e9c81c11501e1437e5c47b556621` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 371 |
-| Mirrored      | 2026-03-31T11:32:33.862Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

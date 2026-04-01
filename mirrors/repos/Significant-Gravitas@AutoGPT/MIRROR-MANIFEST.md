@@ -1,15 +1,13 @@
 ---
 repo: Significant-Gravitas/AutoGPT
 repoUrl: https://github.com/Significant-Gravitas/AutoGPT.git
-commit: 1750c833ee0cd85ca1db3e45f28163a63a57cf6d
 refType: branch
 ref: master
-mirroredAt: 2026-03-31T11:25:22.006Z
 ---
 
 # Mirror Manifest
 
-Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed pat
 | Repo          | `Significant-Gravitas/AutoGPT` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `1750c833ee0cd85ca1db3e45f28163a63a57cf6d` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
-| Mirrored      | 2026-03-31T11:25:22.006Z |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,8 +72,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`autogpt_platform/frontend/CLAUDE.md`](autogpt_platform/frontend/CLAUDE.md) |
 | 12 | ✓ | [`autogpt_platform/frontend/src/tests/CLAUDE.md`](autogpt_platform/frontend/src/tests/CLAUDE.md) |
 | 13 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 14 | ✓ | [`docs/content/forge/components/agents.md`](docs/content/forge/components/agents.md) |
-| 15 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
+| 14 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
 
 ---
 

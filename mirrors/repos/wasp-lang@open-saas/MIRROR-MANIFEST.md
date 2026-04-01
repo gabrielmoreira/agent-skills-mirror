@@ -1,15 +1,13 @@
 ---
 repo: wasp-lang/open-saas
 repoUrl: https://github.com/wasp-lang/open-saas.git
-commit: 017d60e4c70d930c5082133bc3af58f511926f38
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:06:48.160Z
 ---
 
 # Mirror Manifest
 
-Mirror of `wasp-lang/open-saas` — 12 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `wasp-lang/open-saas` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `wasp-lang/open-saas` — 12 default patterns, 0 followed patterns, 5 
 | Repo          | `wasp-lang/open-saas` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `017d60e4c70d930c5082133bc3af58f511926f38` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 5 |
-| Mirrored      | 2026-03-30T23:06:48.160Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `wasp-lang/open-saas` — 12 default patterns, 0 followed patterns, 5 
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

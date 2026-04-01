@@ -1,10 +1,8 @@
 ---
 repo: browser-use/browser-use
 repoUrl: https://github.com/browser-use/browser-use.git
-commit: eee98ff2725739b56fdd7ebf71ac04a5eab54cf7
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T11:38:10.556Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns
 | Repo          | `browser-use/browser-use` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `eee98ff2725739b56fdd7ebf71ac04a5eab54cf7` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 25 |
-| Mirrored      | 2026-03-31T11:38:10.556Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

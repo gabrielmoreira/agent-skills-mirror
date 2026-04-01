@@ -1,10 +1,8 @@
 ---
 repo: electron/electron
 repoUrl: https://github.com/electron/electron.git
-commit: 97773bf50c9c09c791ea407b3757e767921a572c
 refType: branch
 ref: main
-mirroredAt: 2026-03-31T18:21:50.514Z
 ---
 
 # Mirror Manifest
@@ -18,11 +16,9 @@ Mirror of `electron/electron` — 26 default patterns, 0 followed patterns, 4 fi
 | Repo          | `electron/electron` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `97773bf50c9c09c791ea407b3757e767921a572c` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 4 |
-| Mirrored      | 2026-03-31T18:21:50.514Z |
 
 ## Default Sparse Patterns  *(included from config)*
 

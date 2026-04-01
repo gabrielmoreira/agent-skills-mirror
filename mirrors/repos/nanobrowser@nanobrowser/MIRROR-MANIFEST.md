@@ -1,15 +1,13 @@
 ---
 repo: nanobrowser/nanobrowser
 repoUrl: https://github.com/nanobrowser/nanobrowser.git
-commit: 322384f8b4d48d8614343e51efca68c85e64f90b
 refType: branch
 ref: master
-mirroredAt: 2026-03-28T23:51:32.906Z
 ---
 
 # Mirror Manifest
 
-Mirror of `nanobrowser/nanobrowser` — 12 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `nanobrowser/nanobrowser` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `nanobrowser/nanobrowser` — 12 default patterns, 0 followed patterns
 | Repo          | `nanobrowser/nanobrowser` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `322384f8b4d48d8614343e51efca68c85e64f90b` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |
-| Mirrored      | 2026-03-28T23:51:32.906Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `nanobrowser/nanobrowser` — 12 default patterns, 0 followed patterns
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

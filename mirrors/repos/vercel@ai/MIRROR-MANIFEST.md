@@ -1,15 +1,13 @@
 ---
 repo: vercel/ai
 repoUrl: https://github.com/vercel/ai.git
-commit: 4a7dd4447e561f5c8252aaa45e702ce63e234940
 refType: branch
 ref: main
-mirroredAt: 2026-03-30T23:43:39.332Z
 ---
 
 # Mirror Manifest
 
-Mirror of `vercel/ai` — 12 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `vercel/ai` — 12 default patterns, 0 followed patterns, 27 file(s) m
 | Repo          | `vercel/ai` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `4a7dd4447e561f5c8252aaa45e702ce63e234940` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 27 |
-| Mirrored      | 2026-03-30T23:43:39.332Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `vercel/ai` — 12 default patterns, 0 followed patterns, 27 file(s) m
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

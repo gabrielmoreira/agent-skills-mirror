@@ -1,15 +1,13 @@
 ---
 repo: apache/superset
 repoUrl: https://github.com/apache/superset.git
-commit: 2c9cf0bd558449805e458e02374c565f6c8270da
 refType: branch
 ref: master
-mirroredAt: 2026-03-30T22:47:05.651Z
 ---
 
 # Mirror Manifest
 
-Mirror of `apache/superset` — 12 default patterns, 1 followed patterns, 7 file(s) materialized.
+Mirror of `apache/superset` — 26 default patterns, 1 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `apache/superset` — 12 default patterns, 1 followed patterns, 7 file
 | Repo          | `apache/superset` |
 | Ref Type      | `branch` |
 | Ref           | `master` |
-| Commit        | `2c9cf0bd558449805e458e02374c565f6c8270da` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 7 |
-| Mirrored      | 2026-03-30T22:47:05.651Z |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `apache/superset` — 12 default patterns, 1 followed patterns, 7 file
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
@@ -49,13 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
-| 5 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 6 | ✓ | [`superset/mcp_service/CLAUDE.md`](superset/mcp_service/CLAUDE.md) |
-| 7 | → | [`GPT.md`](GPT.md) |
+| 1 | ✓ | [`.cursor/rules/dev-standard.mdc`](.cursor/rules/dev-standard.mdc) |
+| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
+| 6 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 7 | ✓ | [`superset/mcp_service/CLAUDE.md`](superset/mcp_service/CLAUDE.md) |
+| 8 | → | [`GPT.md`](GPT.md) |
 
 ---
 

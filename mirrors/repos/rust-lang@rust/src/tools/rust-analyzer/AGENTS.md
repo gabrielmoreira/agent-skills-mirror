@@ -1,1 +1,1 @@
-CLAUDE.md
+cache/repos/github.com/rust-lang@rust/src/tools/rust-analyzer/CLAUDE.md

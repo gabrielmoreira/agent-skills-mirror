@@ -1,15 +1,13 @@
 ---
 repo: memvid/memvid
 repoUrl: https://github.com/memvid/memvid.git
-commit: 7460a797666fcb3dc00297b0d555d0d8a11f1f1b
 refType: branch
 ref: main
-mirroredAt: 2026-03-28T23:49:59.135Z
 ---
 
 # Mirror Manifest
 
-Mirror of `memvid/memvid` — 12 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `memvid/memvid` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,11 +16,9 @@ Mirror of `memvid/memvid` — 12 default patterns, 0 followed patterns, 1 file(s
 | Repo          | `memvid/memvid` |
 | Ref Type      | `branch` |
 | Ref           | `main` |
-| Commit        | `7460a797666fcb3dc00297b0d555d0d8a11f1f1b` |
-| Default pats  | 12 |
+| Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |
-| Mirrored      | 2026-03-28T23:49:59.135Z |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -32,12 +28,26 @@ Mirror of `memvid/memvid` — 12 default patterns, 0 followed patterns, 1 file(s
 - `**/gemini.md`
 - `**/GEMINI.md`
 - `**/SKILL.md`
+- `**/skills.md`
 - `**/LLMs.txt`
+- `**/llms.txt`
 - `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
 - `.github/instructions/**`
+- `.github/prompts/**`
 - `.agents/**`
+- `agents/**`
 - `skills/**`
+- `skill/**`
 - `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 

@@ -1,1 +1,1 @@
-CLAUDE.md
+cache/repos/github.com/nanobrowser@nanobrowser/CLAUDE.md
