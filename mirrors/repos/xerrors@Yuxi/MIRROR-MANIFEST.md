@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 3 followed patterns, 7 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 3 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 3 followed patterns, 7 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`backend/package/yuxi/agents/skills/buildin/deep-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/deep-reporter/SKILL.md) |
 | 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 6 | → | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
-| 7 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 5 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 6 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
+| 7 | → | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 8 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---
 

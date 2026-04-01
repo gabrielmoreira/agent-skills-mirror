@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `zhayujie/chatgpt-on-wechat` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `zhayujie/chatgpt-on-wechat` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhayujie/chatgpt-on-wechat` — 26 default patterns, 0 followed patte
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/linkai-agent/config.json.template`](skills/linkai-agent/config.json.template) |
-| 2 | ✓ | [`skills/linkai-agent/README.md`](skills/linkai-agent/README.md) |
-| 3 | ✓ | [`skills/linkai-agent/SKILL.md`](skills/linkai-agent/SKILL.md) |
-| 4 | ✓ | [`skills/README.md`](skills/README.md) |
-| 5 | ✓ | [`skills/skill-creator/scripts/init_skill.py`](skills/skill-creator/scripts/init_skill.py) |
-| 6 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
-| 7 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
-| 8 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 1 | ✓ | [`skills/README.md`](skills/README.md) |
+| 2 | ✓ | [`skills/skill-creator/scripts/init_skill.py`](skills/skill-creator/scripts/init_skill.py) |
+| 3 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
+| 4 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
+| 5 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
 
 ---
 

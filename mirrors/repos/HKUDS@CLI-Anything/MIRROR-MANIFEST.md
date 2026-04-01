@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 32 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,8 +89,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md`](renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md) |
 | 29 | ✓ | [`rms/agent-harness/cli_anything/rms/skills/SKILL.md`](rms/agent-harness/cli_anything/rms/skills/SKILL.md) |
 | 30 | ✓ | [`shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md`](shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md) |
-| 31 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
-| 32 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
+| 31 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
+| 32 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
+| 33 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
+| 34 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
 
 ---
 
