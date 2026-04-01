@@ -23,6 +23,8 @@ export type Bootstrap = {
   getEnv: (key: string, defaultValue?: string) => string | undefined;
 };
 
+const DEFAULT_REPO_CONCURRENCY = 8;
+
 export function bootstrap(opts: BootstrapOptions = {}): Bootstrap {
   const runtime = createDefaultRuntimeAdapter();
   const cachedRuntime = makeCachedRuntime(
@@ -33,12 +35,15 @@ export function bootstrap(opts: BootstrapOptions = {}): Bootstrap {
 
   const reporter = makeReporter(cachedRuntime, makeGlobalSink(cachedRuntime));
   const tasks = makeTasks(cachedRuntime, reporter);
-  const rawConcurrency = cachedRuntime.getEnv("MIRROR_CONCURRENCY", "6");
+  const rawConcurrency = cachedRuntime.getEnv(
+    "MIRROR_CONCURRENCY",
+    String(DEFAULT_REPO_CONCURRENCY),
+  );
   const parsedConcurrency = Number.parseInt(rawConcurrency, 10);
   const repoConcurrency =
     Number.isFinite(parsedConcurrency) && parsedConcurrency > 0
       ? parsedConcurrency
-      : 6;
+      : DEFAULT_REPO_CONCURRENCY;
   const start = makeStartMirror({
     runtime: cachedRuntime,
     globalReporter: reporter,

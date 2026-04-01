@@ -64,10 +64,10 @@ const COMMON_SKILL_FOLDERS_PATTERNS = [
 
 const REAL_SEARCH_QUERIES = [
   // 1) broad/high-signal AI tooling baseline
-  "(opencode OR cline OR qwen OR llama OR chatglm OR minimax) stars:>40 pushed:>2024-01-01 fork:false archived:false",
+  "(opencode OR omp OR qwen OR llama OR chatglm OR minimax) stars:>40 pushed:>2024-01-01 fork:false archived:false",
 
   // 2) agent frameworks / agent runtimes
-  "(coding agent OR agent framework OR opencode OR cline) stars:>25 pushed:>2024-01-01 fork:false archived:false",
+  "(coding agent OR agent framework OR opencode OR pi-agent) stars:>25 pushed:>2024-01-01 fork:false archived:false",
 
   // 3) coding assistants / developer-focused AI tools
   "(coding assistant OR copilot OR codex OR claude OR gemini) stars:>20 pushed:>2024-01-01 fork:false archived:false",
@@ -77,6 +77,9 @@ const REAL_SEARCH_QUERIES = [
 
   // 5) prompt / skills / instruction-oriented repos
   "skills prompts stars:>10 pushed:>2024-01-01 fork:false archived:false",
+
+  // 6) claw
+  "claw stars:>10 pushed:>2024-01-01 fork:false archived:false",
 ];
 
 const config = {
