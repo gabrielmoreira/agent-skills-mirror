@@ -1,0 +1,8 @@
+{
+  "tasks": {
+    "mirror": "GH_TOKEN=$(gh auth token) deno run -A src/main.ts"
+  },
+  "imports": {
+    "debug": "npm:debug@^4"
+  }
+}
