@@ -36,11 +36,7 @@ jobs:
           MIRROR_CONCURRENCY: "5"
         run: >-
           deno run
-          --allow-env
-          --allow-net=api.github.com
-          --allow-read=.
-          --allow-write=mirrors/,cache/
-          --allow-run=git,/bin/bash,/usr/bin/bash
+          -A
           src/main.ts
 
       - name: Commit and push changes
