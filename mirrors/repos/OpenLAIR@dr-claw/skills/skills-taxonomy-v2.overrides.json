@@ -1,0 +1,182 @@
+{
+  "academic-researcher": {
+    "primaryIntent": "research",
+    "intents": ["research", "writing"],
+    "capabilities": ["search-retrieval"],
+    "domains": ["cs-ai"]
+  },
+  "brainstorming-research-ideas": {
+    "primaryIntent": "ideation",
+    "intents": ["ideation", "research"],
+    "capabilities": ["research-planning"],
+    "domains": ["cs-ai"]
+  },
+  "biorxiv-database": {
+    "primaryIntent": "research",
+    "intents": ["research", "data"],
+    "capabilities": ["search-retrieval", "data-processing"],
+    "domains": ["bioinformatics"]
+  },
+  "gemini-deep-research": {
+    "primaryIntent": "research",
+    "intents": ["research"],
+    "capabilities": ["search-retrieval", "agent-workflow"],
+    "domains": ["general"]
+  },
+  "constitutional-ai": {
+    "primaryIntent": "evaluation",
+    "intents": ["evaluation", "deployment"],
+    "capabilities": ["safety-alignment", "evaluation-benchmarking"],
+    "domains": ["cs-ai"]
+  },
+  "creative-thinking-for-research": {
+    "primaryIntent": "ideation",
+    "intents": ["ideation", "research"],
+    "capabilities": ["research-planning"],
+    "domains": ["cs-ai"]
+  },
+  "dataset-discovery": {
+    "primaryIntent": "data",
+    "intents": ["data", "research"],
+    "capabilities": ["search-retrieval", "data-processing"],
+    "domains": ["data-engineering"]
+  },
+  "init-analysis": {
+    "primaryIntent": "data",
+    "intents": ["data", "evaluation"],
+    "capabilities": ["data-processing", "visualization-reporting"],
+    "domains": ["bioinformatics"]
+  },
+  "inno-code-survey": {
+    "primaryIntent": "research",
+    "intents": ["research"],
+    "capabilities": ["search-retrieval"],
+    "domains": ["general"]
+  },
+  "inno-deep-research": {
+    "primaryIntent": "research",
+    "intents": ["research"],
+    "capabilities": ["search-retrieval"],
+    "domains": ["general"]
+  },
+  "inno-experiment-analysis": {
+    "primaryIntent": "evaluation",
+    "intents": ["evaluation", "experiment"],
+    "capabilities": ["evaluation-benchmarking"],
+    "domains": ["general"]
+  },
+  "inno-experiment-dev": {
+    "primaryIntent": "experiment",
+    "intents": ["experiment"],
+    "capabilities": ["research-planning"],
+    "domains": ["general"]
+  },
+  "inno-figure-gen": {
+    "primaryIntent": "writing",
+    "intents": ["writing"],
+    "capabilities": ["visualization-reporting"],
+    "domains": ["general"]
+  },
+  "inno-grant-proposal": {
+    "primaryIntent": "writing",
+    "intents": ["writing", "research"],
+    "capabilities": ["visualization-reporting", "research-planning"],
+    "domains": ["general"]
+  },
+  "inno-humanizer": {
+    "primaryIntent": "writing",
+    "intents": ["writing"],
+    "capabilities": ["visualization-reporting"],
+    "domains": ["general"]
+  },
+  "inno-idea-eval": {
+    "primaryIntent": "ideation",
+    "intents": ["ideation", "evaluation"],
+    "capabilities": ["research-planning"],
+    "domains": ["general"]
+  },
+  "inno-idea-generation": {
+    "primaryIntent": "ideation",
+    "intents": ["ideation", "research"],
+    "capabilities": ["research-planning"],
+    "domains": ["general"]
+  },
+  "inno-paper-reviewer": {
+    "primaryIntent": "evaluation",
+    "intents": ["evaluation", "writing"],
+    "capabilities": ["evaluation-benchmarking"],
+    "domains": ["general"]
+  },
+  "inno-rebuttal": {
+    "primaryIntent": "evaluation",
+    "intents": ["evaluation", "writing"],
+    "capabilities": ["evaluation-benchmarking"],
+    "domains": ["cs-ai", "vision"]
+  },
+  "inno-paper-writing": {
+    "primaryIntent": "writing",
+    "intents": ["writing", "research"],
+    "capabilities": ["visualization-reporting"],
+    "domains": ["general"]
+  },
+  "inno-pipeline-planner": {
+    "primaryIntent": "research",
+    "intents": ["research", "experiment"],
+    "capabilities": ["research-planning", "agent-workflow"],
+    "domains": ["general"]
+  },
+  "inno-prepare-resources": {
+    "primaryIntent": "data",
+    "intents": ["data", "research"],
+    "capabilities": ["research-planning", "data-processing"],
+    "domains": ["general"]
+  },
+  "inno-rclone-to-overleaf": {
+    "primaryIntent": "writing",
+    "intents": ["writing", "deployment"],
+    "capabilities": ["infrastructure-ops", "visualization-reporting"],
+    "domains": ["general"]
+  },
+  "inno-reference-audit": {
+    "primaryIntent": "evaluation",
+    "intents": ["evaluation", "writing"],
+    "capabilities": ["evaluation-benchmarking", "search-retrieval"],
+    "domains": ["general"]
+  },
+  "llamaguard": {
+    "primaryIntent": "deployment",
+    "intents": ["deployment", "evaluation"],
+    "capabilities": ["safety-alignment"],
+    "domains": ["cs-ai"]
+  },
+  "making-academic-presentations": {
+    "primaryIntent": "writing",
+    "intents": ["writing"],
+    "capabilities": ["visualization-reporting"],
+    "domains": ["general"]
+  },
+  "ml-paper-writing": {
+    "primaryIntent": "writing",
+    "intents": ["writing", "research"],
+    "capabilities": ["visualization-reporting"],
+    "domains": ["cs-ai"]
+  },
+  "nemo-guardrails": {
+    "primaryIntent": "deployment",
+    "intents": ["deployment", "evaluation"],
+    "capabilities": ["safety-alignment"],
+    "domains": ["cs-ai"]
+  },
+  "prompt-guard": {
+    "primaryIntent": "deployment",
+    "intents": ["deployment", "evaluation"],
+    "capabilities": ["safety-alignment"],
+    "domains": ["cs-ai"]
+  },
+  "scientific-writing": {
+    "primaryIntent": "writing",
+    "intents": ["writing", "research"],
+    "capabilities": ["visualization-reporting"],
+    "domains": ["general"]
+  }
+}

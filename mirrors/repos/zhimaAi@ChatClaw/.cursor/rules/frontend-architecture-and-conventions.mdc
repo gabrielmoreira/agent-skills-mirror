@@ -1,0 +1,138 @@
+---
+description: ChatClaw 前端（Vue 3/shadcn-vue）架构约束
+alwaysApply: false
+---
+
+# Vue 3 前端编码约束
+
+## 技术栈
+
+Vue 3 + TypeScript + Vite + TailwindCSS v4 + shadcn-vue + Pinia + vue-i18n
+
+## 目录职责
+
+当你需要创建或修改前端代码时，遵循以下目录约定：
+
+- `src/components/ui/` — shadcn-vue 组件（只能通过 CLI 添加，不要手写）
+- `src/components/layout/` — 布局组件
+- `src/components/` — 其他业务组件
+- `src/composables/` — 组合式函数 `useXxx`
+- `src/stores/` — Pinia stores，命名 `useXxxStore`
+- `src/locales/` — 语言包 `zh-CN.ts` / `en-US.ts`
+- `src/lib/` — 工具函数
+- `src/assets/` — 静态资源、全局样式
+- `src/pages/assistant/` — **ChatClaw 主助手**（Eino 等），与 OpenClaw 隔离
+- `src/pages/openclaw/` — **OpenClaw Gateway** 相关页面与组件；入口页 `OpenClawPage.vue`；Pinia 导航模块名为 `openclaw`（不要使用 `openclaw-assistant`）
+- `src/pages/*`（其他）— 共享业务页（如知识库、设置）等
+
+## 必须遵守
+
+1. **所有组件**：使用 `<script setup lang="ts">`，不用 Options API
+2. **导入路径**：始终用 `@/` 别名，如 `import { Button } from '@/components/ui/button'`
+3. **样式**：用 Tailwind 类名，颜色用 shadcn 语义变量（`bg-background`、`text-foreground`、`text-muted-foreground` 等）
+4. **条件类名**：用 `cn()` 函数合并，如 `cn('text-sm', disabled && 'opacity-50')`
+5. **添加 UI 组件**：运行 `npx shadcn-vue@latest add [组件名]`
+6. **翻译文本**：用 `const { t } = useI18n()`，key 格式 `模块.功能`
+7. **调用后端**：从 `@bindings/...` 导入，必须处理错误
+8. **ref 在模板中的使用**：在 `<template>` 中，ref 会自动解包，**不要**使用 `.value`
+
+## shadcn-vue 组件用法规范
+
+shadcn-vue 组件基于 Radix Vue 封装，必须使用 Vue 标准的 `v-model` / `:model-value` + `@update:model-value` 来绑定值，**不要**使用 Radix 底层的原始 prop 名（如 `:checked`、`@update:checked`、`:pressed`、`@update:pressed` 等）。
+
+```vue
+<!-- ❌ BAD — 使用了 Radix 底层的 :checked / @update:checked -->
+<Switch :checked="value" @update:checked="value = $event" />
+
+<!-- ✅ GOOD — 使用 v-model -->
+<Switch v-model="value" />
+
+<!-- ✅ GOOD — 使用 :model-value + @update:model-value（需要自定义处理逻辑时） -->
+<Switch :model-value="value" @update:model-value="handleChange" />
+```
+
+此规则适用于所有 shadcn-vue 双向绑定组件（Switch、Checkbox、Select、Slider 等）。
+
+## ref 在模板中的使用规则
+
+在 Vue 3 的 `<template>` 中，ref 会自动解包，**不需要**使用 `.value`。`.value` 只在 `<script setup>` 中使用。
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const scale = ref(1)
+const count = ref(0)
+
+// ✅ 在 script 中必须使用 .value
+const zoomIn = () => {
+  scale.value += 0.1
+}
+
+const increment = () => {
+  count.value++
+}
+</script>
+
+<template>
+  <!-- ❌ BAD — 在模板中使用了 .value -->
+  <Button :disabled="scale.value <= 0.5" @click="zoomIn">
+    Zoom In
+  </Button>
+  <div>{{ count.value }}</div>
+
+  <!-- ✅ GOOD — 在模板中直接使用 ref，自动解包 -->
+  <Button :disabled="scale <= 0.5" @click="zoomIn">
+    Zoom In
+  </Button>
+  <div>{{ count }}</div>
+</template>
+```
+
+**关键规则**：
+- `<script setup>` 中：必须使用 `ref.value` 访问或修改值
+- `<template>` 中：直接使用 `ref`，Vue 会自动解包
+
+## 禁止
+
+- 不要手动在 `src/components/ui/` 创建文件，必须用 shadcn CLI
+- 不要写内联 style，用 Tailwind 类名
+- 不要用相对路径 `../../`，用 `@/` 别名
+- 不要硬编码用户可见文本，必须走 i18n
+- 不要直接写颜色值如 `text-gray-500`，用语义变量 `text-muted-foreground`
+- 不要使用 Radix 底层 prop（如 `:checked`、`:pressed`），必须用 `v-model` 或 `:model-value`
+- **不要在模板中使用 `ref.value`**：Vue 3 模板中 ref 会自动解包，直接使用 `ref` 即可
+
+## 代码模式
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { useAppStore } from '@/stores'
+
+const { t } = useI18n()
+const appStore = useAppStore()
+
+defineProps<{
+  title: string
+  disabled?: boolean
+}>()
+</script>
+
+<template>
+  <div class="flex items-center gap-2 bg-background text-foreground">
+    <Button :class="cn('w-full', disabled && 'opacity-50')">
+      {{ t('button.submit') }}
+    </Button>
+  </div>
+</template>
+```
+
+## 多窗口
+
+- 主窗口入口：`src/main.ts` + `index.html`
+- 子窗口入口：`src/winsnap/main.ts` + `winsnap.html`
+- 新窗口需要在 `vite.config.ts` 的 `rollupOptions.input` 添加入口

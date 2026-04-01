@@ -1,0 +1,31 @@
+{
+  "arxiv_id": "1910.03193",
+  "title": "Learning Nonlinear Operators via DeepONet Based on the Universal Approximation Theorem of Operators",
+  "short_title": "DeepONet",
+  "authors": [
+    "Lu Lu",
+    "Pengzhan Jin",
+    "George Em Karniadakis"
+  ],
+  "venue": "Nature Machine Intelligence",
+  "publication_date": "2019-10-08",
+  "citations": 3144,
+  "evaluated_date": "2026-03-01",
+  "scores": {
+    "engineering_value": 9.0,
+    "architecture_innovation": 10.0,
+    "theoretical_contribution": 9.0,
+    "result_reliability": 9.0,
+    "impact": 10.0,
+    "final_score": 9.33
+  },
+  "keywords": [
+    "operator learning",
+    "DeepONet",
+    "neural operators",
+    "universal approximation theorem"
+  ],
+  "relevance": "very_high",
+  "summary": "DeepONet是算子学习领域的开创性工作，首次将算子通用近似定理转化为实用的深度学习架构，分支网络+主干网络设计显著降低泛化误差，3144次引用证明其巨大影响力。",
+  "last_updated": "2026-03-01T11:47:43.560831"
+}

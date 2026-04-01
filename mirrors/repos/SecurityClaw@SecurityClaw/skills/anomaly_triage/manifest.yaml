@@ -1,0 +1,35 @@
+name: anomaly_triage
+description: >
+  Anomaly triage specialist. Monitors and enriches anomaly detection findings in real-time.
+  Monitors and enriches anomaly detection findings in real-time.
+  Flags deviations from baseline behavior patterns.
+
+can_answer:
+  - "anomaly detection results"
+  - "deviation from normal"
+  - "suspicious pattern identification"
+  - "enriched anomaly context"
+
+cannot_answer:
+  - "incident timeline"
+  - "IP reputation"
+  - "why is this normal?"
+  - "historical baseline definition"
+  - "log searching"
+
+priority_keywords:
+  - "anomal"
+  - "suspicious"
+  - "unusual"
+  - "deviation"
+  - "deviation from normal"
+
+min_prior_context: 1
+  # Works best with other results as context for enrichment
+  # Less valuable standalone
+
+returns:
+  - anomalies (list)
+  - enriched_findings
+  - baseline_comparison
+  - anomaly_scores

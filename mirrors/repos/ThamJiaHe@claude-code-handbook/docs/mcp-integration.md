@@ -1,0 +1,649 @@
+# MCP Integration Guide
+
+Learn how to integrate Model Context Protocol (MCP) with Claude for extended capabilities.
+
+> **Last Updated: 25 March 2026** | Includes MCP as Linux Foundation standard, 2026 roadmap, MCP Apps, 1,864+ FastMCP servers, Tool Search GA, OAuth 2.1, MCP Elicitation, and Skills integration
+
+---
+
+## What is MCP?
+
+**Model Context Protocol (MCP)** is Anthropic's standardized protocol that allows Claude to interact with external tools, data sources, and services beyond its built-in capabilities.
+
+### Key Benefits
+
+- ✅ **Real-time Data** — Access current information beyond knowledge cutoff
+- ✅ **Custom Tools** — Connect to your own systems and APIs
+- ✅ **Local Files** — Read and write files on your machine
+- ✅ **External Services** — Integrate with databases, APIs, and platforms
+
+### January–March 2026 Updates
+
+- **Linux Foundation Standard** — MCP is now an open standard under the Linux Foundation with Working Groups, Spec Enhancement Proposals (SEPs), and contributor ladder
+- **2026 Roadmap** — 4 priority areas: Transport evolution (stateless Streamable HTTP), Agent communication (Tasks primitive), Governance maturation, Enterprise readiness
+- **MCP Apps** — UI rendering within Claude's chat window (charts, forms, dashboards) from third-party apps (Jan 26, 2026). Uses `ui://` scheme with sandboxed iframes
+- **MCP Tool Search (GA)** — Now enabled by default. Reduces context overhead from 77K to ~8.7K tokens (95% reduction). Activates automatically when tool descriptions exceed 10% of context window
+- **MCP Elicitation** — MCP servers can request user input mid-tool-call (Claude Code v2.1.76)
+- **OAuth 2.1** — Dynamic Client Registration (DCR), SSO via Cross-App Access (XAA). Roadmap: DPoP (SEP-1932), Workload Identity Federation (SEP-1933)
+- **FastMCP Registry** — 1,864+ servers tracked. Context7 is #1 (11K views, 690 installs). Playwright #2 (~6K views)
+- **Context7 MCP** — Up-to-date, version-specific library docs injected at query time. Eliminates stale training data
+- **Firecrawl MCP** — 12+ tools: scrape, crawl, search, structured extraction, autonomous research, cloud browser
+- **Dynamic loading** — Load/unload MCP servers during sessions
+- **SSE deprecated** — Migrate to Streamable HTTP transport
+- **Beta header updated** — Use `mcp-client-2025-11-20` (previous `2025-04-04` is deprecated)
+- **On the Horizon** — Triggers & event-driven updates (webhooks), streamed results, security hardening, extensions ecosystem
+
+### MCP vs Skills: Token Comparison
+
+| Aspect | MCP Servers | Skills |
+|--------|-------------|--------|
+| **Base Context Cost** | ~42,600 tokens (7 servers) | ~5 tokens until activated |
+| **Loading Model** | All tools loaded at startup | Progressive disclosure |
+| **Context Impact** | 33.7% of 200K consumed immediately | Near-zero until invoked |
+| **Community Consensus** | Essential for real-time data | "Bigger than MCP" for workflows |
+
+> **Key Insight**: Skills consume only ~5 tokens until activated, compared to MCP's 42.6K base overhead. This makes Skills ideal for complex workflows where you need capability without constant context cost.
+>
+> **February 2026 Update**: Claude Code's new **MCP Tool Search** feature dynamically loads MCP tools into context on demand, reducing MCP token overhead by up to 95%. This significantly narrows the gap between MCP and Skills for Claude Code users.
+
+---
+
+## MCP in Different Environments
+
+### Claude.ai Web Interface
+- **MCP Support**: Full ✅ (as of February 2026)
+- **Available**: 8,610+ servers via registries, 350+ managed connectors, plus built-in tools (web search, file upload)
+- **Custom MCP**: Yes, via remote MCP servers (OAuth-authenticated)
+- **MCP Apps**: UI rendering within chat window (charts, forms, dashboards) from Asana, Figma, Slack, and more (Jan 26, 2026)
+
+### Claude Desktop App
+- **MCP Support**: Full ✅
+- **Custom MCP**: Yes, via configuration
+- **Configuration File**: `claude_desktop_config.json`
+
+**Location:**
+- **macOS**: `~/Library/Application Support/Claude/`
+- **Windows**: `%APPDATA%\Claude\`
+- **Linux**: `~/.config/Claude/`
+
+### Claude Code (CLI)
+- **MCP Support**: Full ✅
+- **Custom MCP**: Yes, via `--mcp-config` flag
+- **Configuration**: File or inline
+
+### Claude API
+- **MCP Support**: Full ✅
+- **Custom MCP**: Yes, in message requests
+- **Requires**: Beta header `anthropic-beta: mcp-client-2025-11-20` (previous `2025-04-04` is deprecated)
+
+---
+
+## MCP Filesystem Server
+
+### What It Does
+
+Gives Claude access to your local filesystem:
+- Read files and directories
+- Write and edit files
+- Create directories
+- Search files by pattern
+- Get file information
+
+### Setup (Claude Desktop)
+
+1. **Open configuration file**
+   ```json
+   // macOS/Linux: ~/Library/Application Support/Claude/claude_desktop_config.json
+   // Windows: %APPDATA%\Claude\claude_desktop_config.json
+   ```
+
+2. **Add filesystem MCP**
+   ```json
+   {
+     "mcpServers": {
+       "filesystem": {
+         "command": "npx",
+         "args": [
+           "-y",
+           "@modelcontextprotocol/server-filesystem",
+           "/path/to/your/directory"
+         ]
+       }
+     }
+   }
+   ```
+
+3. **Restart Claude Desktop**
+
+4. **Grant permissions** when Claude asks
+
+### Example: Working with Projects
+
+```json
+{
+  "mcpServers": {
+    "projects": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/yourname/projects"
+      ]
+    }
+  }
+}
+```
+
+Now Claude can:
+```
+"Read the README.md file from my projects"
+"Create a new Python script in my projects"
+"Search for all TODO comments in my code"
+```
+
+---
+
+## MCP via Claude Code CLI
+
+### Basic Usage
+
+```bash
+# With default config
+claude -p "Your prompt here"
+
+# With custom MCP config
+claude --mcp-config ./mcp-config.json -p "Your prompt"
+
+# With system prompt
+claude --system-prompt "You are a senior engineer" -p "Your prompt"
+```
+
+### MCP Config File
+
+Create `mcp-config.json`:
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "."
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github",
+        "YOUR_GITHUB_TOKEN"
+      ]
+    }
+  }
+}
+```
+
+### Example Workflow
+
+```bash
+# Start Claude Code with MCP enabled
+claude --mcp-config ./mcp-config.json -p "Analyze the codebase for security issues"
+
+# Claude can now:
+# 1. Read files from the filesystem
+# 2. Access GitHub API
+# 3. Perform searches across the repo
+```
+
+---
+
+## MCP via Claude API
+
+### Setup
+
+```python
+import anthropic
+
+client = anthropic.Anthropic(api_key="your-api-key")
+
+# Include beta header for MCP support
+response = client.messages.create(
+    model="claude-opus-4-6-20250205",
+    max_tokens=2048,
+    system="You are a helpful assistant with access to local files and web search.",
+    messages=[
+        {
+            "role": "user",
+            "content": "Read the configuration file and summarize it"
+        }
+    ],
+    # Beta feature for MCP
+    headers={
+        "anthropic-beta": "mcp-client-2025-11-20"
+    },
+    # MCP configuration
+    mcp_config={
+        "mcpServers": {
+            "filesystem": {
+                "command": "npx",
+                "args": [
+                    "-y",
+                    "@modelcontextprotocol/server-filesystem",
+                    "/path/to/files"
+                ]
+            }
+        }
+    }
+)
+```
+
+---
+
+## Context Window Problem (CRITICAL)
+
+**Warning**: Multiple MCP servers can consume massive context before any conversation starts.
+
+### Real-World Example
+- 7 MCP servers active
+- **67,300 tokens consumed** (33.7% of 200K context budget)
+- **Before any conversation starts**
+
+### Why This Matters
+Each MCP server registers its tools with Claude. Tool definitions consume context tokens. More servers = more token consumption = less room for actual conversation.
+
+### Solutions
+
+#### 1. Keep MCP Servers Disabled When Not Using
+```
+Best Practice (Jan 2026):
+- Keep most MCP servers installed but TURNED OFF
+- Only enable servers you're actively using
+- Claude Code knows what MCPs you have, will ask to enable if needed
+```
+
+#### 2. Lazy-Load MCP Tools
+Only load tool definitions when needed, not at startup.
+
+#### 3. Dynamic MCP Loading
+Load during session as needed, unload when done:
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "autoStart": false,
+      "loadOnDemand": true
+    }
+  }
+}
+```
+
+#### 4. MCP Tool Whitelisting
+Explicitly allow only specific tools:
+```json
+{
+  "mcpServers": {
+    "perplexity": {
+      "toolConfiguration": {
+        "enabled": true,
+        "allowedTools": ["search", "research"]
+      }
+    }
+  }
+}
+```
+
+---
+
+## Context7 MCP Configuration
+
+Context7 provides **up-to-date, version-specific library documentation**. Ranked #2 in "Top 10 MCP Servers 2026".
+
+### Why Use Context7?
+- Get latest React 19 docs (not outdated React 18)
+- Fetch version-specific API changes
+- Pull examples from official sources
+- Avoid LLM knowledge cutoff issues
+
+### Remote HTTP Configuration (Recommended)
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "url": "https://mcp.context7.com/mcp",
+      "type": "streamableHttp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+### Local stdio Configuration
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp", "--api-key", "YOUR_API_KEY"]
+    }
+  }
+}
+```
+
+### OAuth 2.0 + Step-up Authorization (Jan 15, 2026)
+
+MCP now supports OAuth 2.0 with step-up authorization for enhanced security:
+
+**Basic OAuth 2.0**:
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "url": "https://mcp.context7.com/mcp/oauth",
+      "type": "streamableHttp"
+    }
+  }
+}
+```
+
+**Step-up Authorization** (for sensitive operations):
+```json
+{
+  "mcpServers": {
+    "enterprise-server": {
+      "url": "https://api.example.com/mcp",
+      "type": "streamableHttp",
+      "auth": {
+        "type": "oauth2",
+        "clientId": "YOUR_CLIENT_ID",
+        "scopes": ["read", "write"],
+        "stepUp": {
+          "enabled": true,
+          "sensitiveScopes": ["admin", "delete"],
+          "reauthTimeout": 300
+        }
+      }
+    }
+  }
+}
+```
+
+**Step-up Authorization Benefits**:
+- Requires re-authentication for sensitive operations
+- Configurable timeout for elevated permissions
+- Granular scope management
+- Enterprise-grade security compliance
+
+### Usage Example
+```
+User: "Show me the latest Next.js 15 App Router documentation"
+
+Claude will use Context7 to fetch current Next.js 15 docs,
+not outdated training data from 2024.
+```
+
+---
+
+## Popular MCP Servers
+
+### First-Party (Anthropic)
+
+| Server | Purpose | Usage |
+|--------|---------|-------|
+| **Filesystem** | Read/write local files | File operations |
+| **GitHub** | GitHub API access | Repository queries |
+| **Slack** | Slack workspace access | Team communication |
+
+### Community (50+ Pre-built Servers - Jan 2026)
+
+| Server | Purpose | Ranking |
+|--------|---------|---------|
+| **Context7** | Up-to-date library docs | #2 |
+| **Perplexity** | Web research | Top 10 |
+| **Web Search** | Real-time search | Popular |
+| **Database** | SQL queries | Popular |
+| **AWS** | Amazon Web Services | Popular |
+| **Docker** | Container management | Popular |
+| **Notion** | Workspace integration | Popular |
+| **Linear** | Issue tracking | Popular |
+| **Stripe** | Payment processing | Popular |
+| **Twilio** | Communications API | Popular |
+
+> **Note**: As of February 2026, the MCP ecosystem has grown to **8,610+ servers** (PulseMCP) and **17,837+ servers** (mcp.so), with 9 official SDKs and **97M+ monthly SDK downloads** (npm + PyPI combined).
+
+---
+
+## Real-World Example: Code Analysis
+
+### Setup
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "."
+      ]
+    }
+  }
+}
+```
+
+### Usage
+
+```xml
+<system_prompt>
+You are a senior security engineer. You have access to the filesystem.
+</system_prompt>
+
+<task>
+Analyze the authentication system for security vulnerabilities.
+</task>
+
+<rules>
+- Read all files in the auth/ directory
+- Identify security issues
+- Check for OWASP vulnerabilities
+- Provide specific fixes
+</rules>
+
+<format>
+Structure your response as:
+1. Overview of authentication system
+2. Security vulnerabilities found
+3. Specific fixes for each vulnerability
+4. Severity assessment (CRITICAL, HIGH, MEDIUM, LOW)
+</format>
+```
+
+Claude can now:
+1. Read all files in the auth/ directory
+2. Analyze the code
+3. Find vulnerabilities
+4. Provide specific fixes
+
+---
+
+## Troubleshooting
+
+### Issue: MCP Server Not Found
+
+**Solution:**
+```bash
+# Make sure npx is available
+npx --version
+
+# Update npx
+npm install -g npm@latest
+```
+
+### Issue: Permission Denied
+
+**Solution:**
+```bash
+# Grant permissions in Claude Desktop settings
+# Restart Claude Desktop
+# Re-authorize when prompted
+```
+
+### Issue: Config File Not Recognized
+
+**Solution:**
+```bash
+# Verify the config file path
+# Use absolute paths
+# Restart Claude
+
+# For Claude Code:
+claude --mcp-config /full/path/to/mcp-config.json -p "Your prompt"
+```
+
+---
+
+## Best Practices
+
+1. **Start with Filesystem** — Easiest to set up and use
+2. **Test Permissions** — Verify Claude can access required files
+3. **Use Specific Paths** — Don't give access to entire home directory
+4. **Limit Scope** — Only enable servers you actually need
+5. **Error Handling** — Be prepared for server unavailability
+
+---
+
+## Next Steps
+
+1. **Set up Filesystem MCP** — Follow the Claude Desktop instructions above
+2. **Test with a simple prompt** — "What files are in my current directory?"
+3. **Explore additional servers** — GitHub, web search, etc.
+4. **Integrate into workflows** — Use in Claude Code for development tasks
+
+---
+
+---
+
+## SSE Transport Migration (Deprecated)
+
+**Status**: SSE transport is deprecated as of November 2025.
+
+### Migration: SSE → streamableHttp
+
+**OLD (Deprecated)**:
+```json
+{
+  "mcpServers": {
+    "server": {
+      "transport": "sse",
+      "url": "https://example.com/sse"
+    }
+  }
+}
+```
+
+**NEW (Recommended)**:
+```json
+{
+  "mcpServers": {
+    "server": {
+      "type": "streamableHttp",
+      "url": "https://example.com/mcp"
+    }
+  }
+}
+```
+
+### Why Migrate?
+- SSE has connection stability issues
+- streamableHttp supports async operations
+- Better error handling and recovery
+- Future MCP features require streamableHttp
+
+---
+
+## MCP Wildcard Permissions
+
+For trusted MCP servers, you can grant wildcard permissions:
+
+```json
+{
+  "mcpServers": {
+    "perplexity": {
+      "permissions": ["mcpserver:*"]
+    }
+  }
+}
+```
+
+**Warning**: Only use wildcards for servers you fully trust.
+
+---
+
+## MCP Apps (January 26, 2026)
+
+**MCP Apps** extends MCP beyond data fetching to enable **UI rendering within Claude's chat window**. Third-party applications can now present interactive interfaces — charts, forms, dashboards — directly inside Claude.
+
+### Supported Apps (Launch Partners)
+
+| App | Capabilities |
+|-----|-------------|
+| **Asana** | Task management, project views |
+| **Box** | File browsing, document preview |
+| **Canva** | Design editing, template selection |
+| **Figma** | Design review, component inspection |
+| **Hex** | Data dashboards, SQL results |
+| **monday.com** | Board views, status updates |
+| **Slack** | Channel browsing, message composition |
+
+### How MCP Apps Work
+
+1. Claude connects to a remote MCP server via the existing connector infrastructure
+2. The MCP server returns structured UI templates (based on MCP-UI specification)
+3. Claude renders the UI within an iframe sandbox in the chat window
+4. User interactions (clicks, form inputs) are routed back through the MCP server
+
+### Security Model
+
+- **Iframe sandboxing** — apps cannot access the parent page
+- **Pre-declared templates** — HTML content must be declared before rendering
+- **Auditable messages** — all MCP App interactions are logged
+- **Host-managed approvals** — UI-initiated tool calls require user confirmation
+
+### Cross-Platform Availability
+
+MCP Apps work across: Claude.ai, Goose, Visual Studio Code, and ChatGPT (rolling out).
+
+---
+
+## Learn More
+
+- [MCP Official Documentation](https://modelcontextprotocol.io)
+- [Anthropic MCP Guide](https://docs.anthropic.com)
+- [Community MCP Servers](https://github.com/modelcontextprotocol)
+- [Context7 MCP](https://github.com/upstash/context7)
+- [MCP Apps Announcement](https://www.anthropic.com/news)
+
+---
+
+---
+
+## MCP + Skills Integration
+
+MCP and Skills are increasingly working together as complementary systems:
+
+| Capability | MCP | Skills | Combined |
+|------------|-----|--------|----------|
+| **Real-time data** | ✅ Primary | ❌ | MCP fetches, Skills process |
+| **Complex workflows** | ❌ | ✅ Primary | Skills orchestrate MCP calls |
+| **Token efficiency** | ❌ High overhead | ✅ 5 tokens | Skills invoke MCP on-demand |
+| **External APIs** | ✅ Direct access | ❌ | MCP handles, Skills coordinate |
+
+**Best Practice**: Use Skills as the orchestration layer that invokes MCP servers when external data or APIs are needed. This combines the token efficiency of Skills with the real-time capabilities of MCP.
+
+---
+
+*Last Updated: February 24, 2026*
+

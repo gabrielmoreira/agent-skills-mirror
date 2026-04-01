@@ -1,0 +1,175 @@
+---
+description: ChatClaw 后端（Go/Wails）架构约束
+alwaysApply: false
+---
+
+# Go/Wails 后端编码约束
+
+## 目录职责
+
+当你需要创建或修改后端代码时，遵循以下目录约定：
+
+- `main.go` — 只写启动逻辑，不写业务代码
+- `internal/bootstrap/` — 应用组装、窗口创建、服务注册
+- `internal/services/*/` — 业务服务，每个服务一个目录
+- `internal/services/i18n/` — 多语言服务，翻译文件在 `locales/*.json`
+- `internal/services/windows/` — 窗口管理服务
+- `internal/errs/` — 业务错误类型
+- `internal/sqlite/` — 数据库连接和迁移
+- `internal/define/` — 环境配置、内置常量、**数据目录布局**（见下）
+- `internal/native/` — **ChatClaw 原生**边界：包 `native` 提供 `DataRootDir()`，对应当前活跃的原生数据根 `define.NativeDataRootDir()`（`$HOME/.chatclaw/native`）。与 OpenClaw 无关的业务逻辑仍主要在 `internal/services/*`；新增「仅原生、且适合单独成包」的辅助代码可放在此目录下，避免与 OpenClaw 混放。
+- `internal/openclaw/` — **OpenClaw 集成**边界：与本地 OpenClaw Gateway 通讯、Agent 同步、运行时进程等代码放在此处，例如：
+  - `internal/openclaw/agents/` — 包 `openclawagents`，OpenClaw 侧 Agent 的 DB 与 Wails 暴露
+  - `internal/openclaw/runtime/` — 包 `openclawruntime`，Gateway 生命周期、RPC/WebSocket、bundle 解析、配置片段同步  
+  包 `openclaw` 根下的 `paths.go` 提供 `DataRootDir()`，对应 `define.OpenClawDataRootDir()`（`$HOME/.chatclaw/openclaw`）。**不要**再把新的 OpenClaw 专用服务放到 `internal/services/openclaw*`（历史路径已迁入 `internal/openclaw/`）。
+
+**用户数据目录（与前端 native/openclaw 划分一致）**
+
+- `define.LegacyDataRootDir()` — `$HOME/.chatclaw`：旧版布局，**仅迁移与兼容读取**；启动时由 `define.EnsureDataLayout()` 将文件迁往子目录。
+- `define.NativeDataRootDir()` — `$HOME/.chatclaw/native`：原生 SQLite、应用日志、`skills/`、`mcp/` 等。
+- `define.OpenClawDataRootDir()` — `$HOME/.chatclaw/openclaw`：`openclaw.json`、Gateway 日志、`OPENCLAW_STATE_DIR` 内容、`workspace-*`、`agents/` 等与 Gateway 强相关的落盘数据。
+- `define.AppDataDir()` — 等同于 **原生数据根**（`NativeDataRootDir`）；新代码若语义是「OpenClaw 落盘」应显式使用 `OpenClawDataRootDir()`。
+
+## 必须遵守
+
+1. **新建业务服务时**：默认放在 `internal/services/[服务名]/`，用 `NewXxxService()` 构造函数。**若服务仅服务于 OpenClaw Gateway 集成**，应放在 `internal/openclaw/` 下合适子包，而不是 `internal/services/`。
+2. **返回错误给前端时**：必须用 `errs.New()` / `errs.Newf()` / `errs.Wrap()`，不要直接返回 `error`
+3. **需要翻译的文本**：用 `i18n.T("key")` 或 `i18n.Tf("key", data)`，翻译 key 加到 `internal/services/i18n/locales/*.json`
+4. **新建数据库迁移**：放在 `internal/sqlite/migrations/`，文件名格式 `YYYYMMDDHHMM_描述.go`
+5. **错误处理**：用 `fmt.Errorf("context: %w", err)` 包装，不要吞掉错误
+
+## 禁止
+
+- 不要在 `main.go` 写业务逻辑
+- 不要创建循环依赖（services 之间不要互相 import）
+- 不要直接 `log.Fatal`，除非是 `main.go` 中的启动失败
+- 不要硬编码用户可见的文本，必须走 i18n
+- **不要在函数体内裸调 `syscall.NewCallback` / `windows.NewCallback`**——Go 在 Windows 上只有约 2000 个回调槽位且永不释放，必须用 `sync.Once` 保证只创建一次（详见 `docs/windows-syscall-callback-limit.md`）
+
+## 更新内置供应商 / 模型
+
+当需要新增、修改或移除内置 AI 供应商或模型时，**必须**按以下两步操作：
+
+1. **修改配置**：编辑 `internal/define/builtin_providers.go`，在 `BuiltinProviders` / `BuiltinModels` 切片中增删改条目。
+2. **新建迁移文件**：在 `internal/sqlite/migrations/` 中创建迁移文件，调用已有的通用同步函数：
+
+```go
+package migrations
+
+import (
+    "context"
+    "github.com/uptrace/bun"
+)
+
+func init() {
+    Migrations.MustRegister(
+        func(ctx context.Context, db *bun.DB) error {
+            return SyncBuiltinProvidersAndModels(ctx, db)
+        },
+        func(ctx context.Context, db *bun.DB) error {
+            return nil
+        },
+    )
+}
+```
+
+`SyncBuiltinProvidersAndModels`（定义在 `sync_builtin.go`）会自动：
+
+- 新增不存在的供应商/模型
+- 更新已存在的内置供应商/模型的元数据（保留用户的 api_key、enabled 等设置）
+- 如果用户已手动添加了同名 model_id，会将其标记为内置并更新元数据
+- 将已从配置中移除的旧内置模型标记为非内置（不删除）
+
+**禁止**在迁移文件中手写 INSERT/UPDATE SQL 来逐条添加模型。
+
+## 数据库模型时间戳
+
+所有 bun 模型的 `created_at` / `updated_at` **必须**通过 `bun.BeforeInsertHook` 钩子自动设置，使用 `sqlite.NowUTC()` 生成 UTC 时间字符串。**禁止**依赖 bun tag 的 `default:current_timestamp` 或 `nullzero`——SQLite 建表 DDL 不一定有 DEFAULT，且 bun 的 nullzero 会跳过零值导致字段缺失。
+
+```go
+// ✅ 正确——每个模型都要加 BeforeInsertHook
+var _ bun.BeforeInsertHook = (*myModel)(nil)
+
+func (*myModel) BeforeInsert(ctx context.Context, query *bun.InsertQuery) error {
+    now := sqlite.NowUTC()
+    query.Value("created_at", "?", now)
+    query.Value("updated_at", "?", now)
+    return nil
+}
+
+// ❌ 错误——仅靠 bun tag，实际插入时 created_at 为零值会触发 NOT NULL 约束
+type myModel struct {
+    CreatedAt time.Time `bun:"created_at,nullzero,notnull,default:current_timestamp"`
+}
+```
+
+## 代码模式
+
+```go
+// 创建服务
+func NewXxxService(app *application.App) *XxxService {
+    return &XxxService{app: app}
+}
+
+// 返回业务错误
+return errs.Newf("error.xxx_failed", map[string]any{"Name": name})
+
+// 包装底层错误
+return errs.Wrap("error.xxx_failed", err)
+
+// 使用翻译
+title := i18n.T("window.settings_title")
+```
+
+## Windows 回调模式
+
+在 Windows 平台调用 `syscall.NewCallback` / `windows.NewCallback` 时，**必须**用 `sync.Once` 包裹，确保回调只创建一次。回调函数不能是闭包，需通过包级变量传参。
+
+```go
+// ✅ 正确
+var (
+    myCBOnce sync.Once
+    myCB     uintptr
+    myMu     sync.Mutex
+    myParam  string
+    myResult uintptr
+)
+
+func myEnumProc(hwnd uintptr, _ uintptr) uintptr {
+    // use myParam / myResult ...
+    return 1
+}
+
+func myFunc(param string) uintptr {
+    myMu.Lock()
+    defer myMu.Unlock()
+    myParam = param
+    myResult = 0
+    myCBOnce.Do(func() { myCB = syscall.NewCallback(myEnumProc) })
+    procEnumWindows.Call(myCB, 0)
+    return myResult
+}
+
+// ❌ 错误 — 每次调用都分配新槽位
+func myFunc(param string) uintptr {
+    var result uintptr
+    cb := syscall.NewCallback(func(hwnd uintptr, _ uintptr) uintptr { ... })
+    procEnumWindows.Call(cb, 0)
+    return result
+}
+```
+
+## Windows 隐藏控制台窗口
+
+在 Windows 上执行外部命令时（如 MCP stdio 模式），**必须**隐藏控制台窗口以避免弹窗闪烁。使用 `syscall.SysProcAttr` 设置 `HideWindow: true`。
+
+```go
+import "syscall"
+
+// 在 exec.CommandContext 后添加
+if runtime.GOOS == "windows" {
+    cmd.SysProcAttr = &syscall.SysProcAttr{
+        HideWindow: true,
+    }
+}
+```

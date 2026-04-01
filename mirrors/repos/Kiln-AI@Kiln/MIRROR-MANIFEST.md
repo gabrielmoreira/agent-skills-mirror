@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 28 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,34 +59,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/card_style.md`](.agents/card_style.md) |
-| 2 | ✓ | [`.agents/code_review_guidelines.md`](.agents/code_review_guidelines.md) |
-| 3 | ✓ | [`.agents/frontend_controls.md`](.agents/frontend_controls.md) |
-| 4 | ✓ | [`.agents/frontend_design_guide.md`](.agents/frontend_design_guide.md) |
-| 5 | ✓ | [`.agents/python_test_guide.md`](.agents/python_test_guide.md) |
-| 6 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
-| 7 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 8 | ✓ | [`.cursor/rules/.gitignore`](.cursor/rules/.gitignore) |
-| 9 | ✓ | [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) |
-| 10 | ✓ | [`.cursor/skills/kiln-add-model/SKILL.md`](.cursor/skills/kiln-add-model/SKILL.md) |
-| 11 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/check_provider.py`](.cursor/skills/kiln-check-deprecation/scripts/check_provider.py) |
-| 12 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/extract_models.py`](.cursor/skills/kiln-check-deprecation/scripts/extract_models.py) |
-| 13 | ✓ | [`.cursor/skills/kiln-check-deprecation/SKILL.md`](.cursor/skills/kiln-check-deprecation/SKILL.md) |
-| 14 | ✓ | [`.cursor/skills/specs/references/cmd_code_review.md`](.cursor/skills/specs/references/cmd_code_review.md) |
-| 15 | ✓ | [`.cursor/skills/specs/references/cmd_continue.md`](.cursor/skills/specs/references/cmd_continue.md) |
-| 16 | ✓ | [`.cursor/skills/specs/references/cmd_implement.md`](.cursor/skills/specs/references/cmd_implement.md) |
-| 17 | ✓ | [`.cursor/skills/specs/references/cmd_new_project.md`](.cursor/skills/specs/references/cmd_new_project.md) |
-| 18 | ✓ | [`.cursor/skills/specs/references/cmd_setup.md`](.cursor/skills/specs/references/cmd_setup.md) |
-| 19 | ✓ | [`.cursor/skills/specs/references/coding_phase_prompt.md`](.cursor/skills/specs/references/coding_phase_prompt.md) |
-| 20 | ✓ | [`.cursor/skills/specs/references/cr_agent_prompt.md`](.cursor/skills/specs/references/cr_agent_prompt.md) |
-| 21 | ✓ | [`.cursor/skills/specs/references/pushback.md`](.cursor/skills/specs/references/pushback.md) |
-| 22 | ✓ | [`.cursor/skills/specs/references/spawning_subagents.md`](.cursor/skills/specs/references/spawning_subagents.md) |
-| 23 | ✓ | [`.cursor/skills/specs/references/step_architecture.md`](.cursor/skills/specs/references/step_architecture.md) |
-| 24 | ✓ | [`.cursor/skills/specs/references/step_component_designs.md`](.cursor/skills/specs/references/step_component_designs.md) |
-| 25 | ✓ | [`.cursor/skills/specs/references/step_functional_spec.md`](.cursor/skills/specs/references/step_functional_spec.md) |
-| 26 | ✓ | [`.cursor/skills/specs/references/step_ui_design.md`](.cursor/skills/specs/references/step_ui_design.md) |
-| 27 | ✓ | [`.cursor/skills/specs/SKILL.md`](.cursor/skills/specs/SKILL.md) |
-| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 1 | ✓ | [`.agents/api_code_review.md`](.agents/api_code_review.md) |
+| 2 | ✓ | [`.agents/card_style.md`](.agents/card_style.md) |
+| 3 | ✓ | [`.agents/code_review_guidelines.md`](.agents/code_review_guidelines.md) |
+| 4 | ✓ | [`.agents/frontend_controls.md`](.agents/frontend_controls.md) |
+| 5 | ✓ | [`.agents/frontend_design_guide.md`](.agents/frontend_design_guide.md) |
+| 6 | ✓ | [`.agents/python_test_guide.md`](.agents/python_test_guide.md) |
+| 7 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
+| 8 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 9 | ✓ | [`.cursor/rules/.gitignore`](.cursor/rules/.gitignore) |
+| 10 | ✓ | [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) |
+| 11 | ✓ | [`.cursor/skills/kiln-add-model/SKILL.md`](.cursor/skills/kiln-add-model/SKILL.md) |
+| 12 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/check_provider.py`](.cursor/skills/kiln-check-deprecation/scripts/check_provider.py) |
+| 13 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/extract_models.py`](.cursor/skills/kiln-check-deprecation/scripts/extract_models.py) |
+| 14 | ✓ | [`.cursor/skills/kiln-check-deprecation/SKILL.md`](.cursor/skills/kiln-check-deprecation/SKILL.md) |
+| 15 | ✓ | [`.cursor/skills/specs/references/cmd_code_review.md`](.cursor/skills/specs/references/cmd_code_review.md) |
+| 16 | ✓ | [`.cursor/skills/specs/references/cmd_continue.md`](.cursor/skills/specs/references/cmd_continue.md) |
+| 17 | ✓ | [`.cursor/skills/specs/references/cmd_implement.md`](.cursor/skills/specs/references/cmd_implement.md) |
+| 18 | ✓ | [`.cursor/skills/specs/references/cmd_new_project.md`](.cursor/skills/specs/references/cmd_new_project.md) |
+| 19 | ✓ | [`.cursor/skills/specs/references/cmd_setup.md`](.cursor/skills/specs/references/cmd_setup.md) |
+| 20 | ✓ | [`.cursor/skills/specs/references/coding_phase_prompt.md`](.cursor/skills/specs/references/coding_phase_prompt.md) |
+| 21 | ✓ | [`.cursor/skills/specs/references/cr_agent_prompt.md`](.cursor/skills/specs/references/cr_agent_prompt.md) |
+| 22 | ✓ | [`.cursor/skills/specs/references/pushback.md`](.cursor/skills/specs/references/pushback.md) |
+| 23 | ✓ | [`.cursor/skills/specs/references/spawning_subagents.md`](.cursor/skills/specs/references/spawning_subagents.md) |
+| 24 | ✓ | [`.cursor/skills/specs/references/step_architecture.md`](.cursor/skills/specs/references/step_architecture.md) |
+| 25 | ✓ | [`.cursor/skills/specs/references/step_component_designs.md`](.cursor/skills/specs/references/step_component_designs.md) |
+| 26 | ✓ | [`.cursor/skills/specs/references/step_functional_spec.md`](.cursor/skills/specs/references/step_functional_spec.md) |
+| 27 | ✓ | [`.cursor/skills/specs/references/step_ui_design.md`](.cursor/skills/specs/references/step_ui_design.md) |
+| 28 | ✓ | [`.cursor/skills/specs/SKILL.md`](.cursor/skills/specs/SKILL.md) |
+| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

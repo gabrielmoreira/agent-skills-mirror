@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `glittercowboy/taches-cc-resources` — 26 default patterns, 0 followed patterns, 190 file(s) materialized.
+Mirror of `glittercowboy/taches-cc-resources` — 26 default patterns, 0 followed patterns, 200 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `glittercowboy/taches-cc-resources` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 190 |
+| Files         | 200 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -249,6 +249,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 188 | ✓ | [`skills/setup-ralph/workflows/setup-new-loop.md`](skills/setup-ralph/workflows/setup-new-loop.md) |
 | 189 | ✓ | [`skills/setup-ralph/workflows/troubleshoot-loop.md`](skills/setup-ralph/workflows/troubleshoot-loop.md) |
 | 190 | ✓ | [`skills/setup-ralph/workflows/understand-ralph.md`](skills/setup-ralph/workflows/understand-ralph.md) |
+| 191 | ✓ | [`skills/the-pirate-bay/references/api-reference.md`](skills/the-pirate-bay/references/api-reference.md) |
+| 192 | ✓ | [`skills/the-pirate-bay/references/categories.md`](skills/the-pirate-bay/references/categories.md) |
+| 193 | ✓ | [`skills/the-pirate-bay/references/search-intelligence.md`](skills/the-pirate-bay/references/search-intelligence.md) |
+| 194 | ✓ | [`skills/the-pirate-bay/scripts/tpb.ts`](skills/the-pirate-bay/scripts/tpb.ts) |
+| 195 | ✓ | [`skills/the-pirate-bay/SKILL.md`](skills/the-pirate-bay/SKILL.md) |
+| 196 | ✓ | [`skills/the-pirate-bay/workflows/browse.md`](skills/the-pirate-bay/workflows/browse.md) |
+| 197 | ✓ | [`skills/the-pirate-bay/workflows/get-magnet.md`](skills/the-pirate-bay/workflows/get-magnet.md) |
+| 198 | ✓ | [`skills/the-pirate-bay/workflows/search.md`](skills/the-pirate-bay/workflows/search.md) |
+| 199 | ✓ | [`skills/the-pirate-bay/workflows/season.md`](skills/the-pirate-bay/workflows/season.md) |
+| 200 | ✓ | [`skills/the-pirate-bay/workflows/smart-search.md`](skills/the-pirate-bay/workflows/smart-search.md) |
 
 ---
 

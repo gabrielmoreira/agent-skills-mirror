@@ -1,0 +1,30 @@
+{
+  "providers": {
+    "glm": {
+      "baseUrl": "http://oneapi-comate.baidu-int.com/v1",
+      "apiKey": "YOUR_API_KEY_HERE",
+      "api": "openai-completions",
+      "headers": {
+        "comate_custom_header": "{\"username\":\"YOUR_USERNAME\",\"source\":\"openclaw\"}"
+      },
+      "models": [
+        {
+          "id": "glm-4.7-internal",
+          "name": "glm Coding",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  }
+}

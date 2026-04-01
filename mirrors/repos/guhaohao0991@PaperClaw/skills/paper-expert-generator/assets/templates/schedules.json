@@ -1,0 +1,30 @@
+{
+  "schedules": [
+    {
+      "name": "Daily Paper Search",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 20 * * *",
+        "tz": "Asia/Singapore"
+      },
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行每日论文检索任务：\n1. 运行 daily_paper_search.py --top 3\n2. 查看 workspace/pending_evaluation_$(date +%Y-%m-%d).json 待评估清单\n3. 对每篇论文执行任务1（检索总结）+ 任务2（深度评估），评估时必须使用 <think>...</think> 推理标签\n4. 将评分写入 metadata.json 的 scores 字段\n5. 使用 update_registry.py 更新 evaluated_papers.json"
+      },
+      "sessionTarget": "isolated"
+    },
+    {
+      "name": "Weekly Report Generation",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * 0",
+        "tz": "Asia/Singapore"
+      },
+      "payload": {
+        "kind": "agentTurn",
+        "message": "生成本周论文研究周报：运行 generate_weekly_report_v2.py，确认知识库文档已创建，确认如流消息已发送"
+      },
+      "sessionTarget": "isolated"
+    }
+  ]
+}

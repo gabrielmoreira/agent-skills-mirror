@@ -1,0 +1,54 @@
+name: network_baseliner
+description: >
+  Analyzes recent network logs and stores BEHAVIORAL baselines in the
+  OpenSearch vector index: traffic patterns, IP relationships,
+  port/protocol distributions, DNS activity, GeoIP data.
+  Supports force_refresh=true to wipe and rebuild from scratch.
+  Keeps a maximum of 100 docs (evicts oldest on overflow).
+  Field-schema documentation is handled by fields_baseliner.
+
+run_on_first_startup: true
+
+can_answer:
+  - "behavioral baseline creation"
+  - "normal traffic pattern definition"
+  - "IP communication baseline modeling"
+  - "protocol and port distribution baselines"
+  - "DNS activity baselines"
+  - "baseline model updates"
+  - "generating behavioral profiles"
+
+cannot_answer:
+  - "answering questions about existing data"
+  - "log searching"
+  - "incident analysis"
+  - "threat assessment"
+  - "field schema documentation" # use fields_baseliner for this
+
+priority_keywords:
+  - (none - explicit only)
+
+explicit_only: true
+  # Only invoke if user explicitly mentions "baseliner", "network_baseliner",
+  # "create/generate/build baseline", "refresh baseline", or "force_refresh"
+
+explicit_keywords:
+  - "network_baseliner"
+  - "baseliner"
+  - "create baseline"
+  - "generate baseline"
+  - "build baseline"
+  - "refresh baseline"
+  - "force_refresh"
+
+fallback_on_block: "opensearch_querier"
+  # If user didn't explicitly request network_baseliner, use opensearch_querier instead
+
+min_prior_context: 0
+
+returns:
+  - baseline_summary
+  - behavioral_profile
+  - normal_patterns
+  - networks_analyzed
+  - documents_stored

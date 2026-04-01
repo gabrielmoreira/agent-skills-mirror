@@ -1,0 +1,41 @@
+name: fields_baseliner
+description: >
+  Samples log records and builds a comprehensive field-schema catalog stored in
+  data/fields_rag.json. Runs automatically every 10,000 new records; can also
+  be triggered explicitly with force_refresh=true.
+
+run_on_first_startup: true
+
+can_answer:
+  - "field schema discovery"
+  - "building field catalog"
+  - "refreshing field documentation"
+  - "documenting available fields and types"
+
+cannot_answer:
+  - "answering questions about existing data"
+  - "log searching"
+  - "incident analysis"
+  - "threat assessment"
+  - "network behavior baseline"
+
+explicit_only: true
+  # Triggered automatically by record threshold; user can also say:
+  # "run fields baseliner", "refresh field schema", "document fields", "force_refresh fields"
+
+explicit_keywords:
+  - "fields_baseliner"
+  - "scan fields"
+  - "catalog fields"
+  - "index fields"
+  - "refresh field schema"
+  - "update field schema"
+  - "rebuild field catalog"
+
+min_prior_context: 0
+
+returns:
+  - fields_documented (count)
+  - records_sampled (count)
+  - documents_written (count)
+  - output_file (path to data/fields_rag.json)

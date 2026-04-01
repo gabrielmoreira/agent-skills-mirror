@@ -16,8 +16,9 @@ An agent skill for implementing smooth, native-feeling animations using React's 
 ## Skill Structure
 
 ```
-react-view-transition-skill/
+react-view-transitions/
 ├── SKILL.md                      # Core skill (always loaded)
+├── AGENTS.md                     # Full compiled document (all references expanded)
 └── references/
     ├── implementation.md         # Step-by-step implementation workflow
     ├── patterns.md               # Real-world patterns, events API, troubleshooting

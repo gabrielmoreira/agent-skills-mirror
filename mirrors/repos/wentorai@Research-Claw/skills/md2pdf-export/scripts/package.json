@@ -1,0 +1,24 @@
+{
+  "name": "md2pdf-export",
+  "version": "1.0.0",
+  "description": "Markdown to PDF/PNG/JPEG converter using Puppeteer (same methodology as Markdown Preview Enhanced)",
+  "private": true,
+  "main": "md2pdf.js",
+  "bin": {
+    "md2pdf": "./md2pdf.js"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "katex": "^0.16.0",
+    "markdown-it": "^14.0.0",
+    "markdown-it-anchor": "^9.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-highlightjs": "^4.1.0",
+    "markdown-it-texmath": "^1.0.0",
+    "markdown-it-toc-done-right": "^4.2.0",
+    "puppeteer": ">=21.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

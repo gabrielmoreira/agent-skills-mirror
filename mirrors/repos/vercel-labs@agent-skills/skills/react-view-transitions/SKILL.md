@@ -146,6 +146,10 @@ Pass an object to map types to CSS classes:
 
 **TypeScript:** `ViewTransitionClassPerType` requires a `default` key in the object.
 
+### `router.back()` and Browser Back Button
+
+`router.back()` does **not** trigger view transitions — the browser's `popstate` event is synchronous and incompatible with `document.startViewTransition`. Use `router.push()` with an explicit URL instead. The browser's native back/forward buttons also skip animations (a browser/router limitation, not fixable in app code).
+
 ### Types and Suspense
 
 Types are available during navigation but **not** during subsequent Suspense reveals (separate transitions, no type). Use type maps for page-level enter/exit; use simple string props for Suspense reveals.
@@ -167,7 +171,7 @@ Same `name` on two VTs — one unmounting, one mounting — creates a shared ele
 </ViewTransition>
 ```
 
-- Only one VT with a given `name` can be mounted at a time — use unique names (`photo-${id}`).
+- Only one VT with a given `name` can be mounted at a time — use unique names (`photo-${id}`). Watch for reusable components: if a component with a named VT is rendered in both a modal/popover *and* a page, both mount simultaneously and break the morph. Either make the name conditional (via a prop) or move the named VT out of the shared component into the specific consumer.
 - `share` takes precedence over `enter`/`exit`. Think through each navigation path: when no matching pair forms (e.g., the target page doesn't have the same name), `enter`/`exit` fires instead. Consider whether the element needs a fallback animation for those paths.
 - Never use a fade-out exit on pages with shared morphs — use a directional slide instead.
 
@@ -192,6 +196,25 @@ Same `name` on two VTs — one unmounting, one mounting — creates a shared ele
 ```
 
 Trigger inside `startTransition`. Avoid wrapper `<div>`s between list and VT.
+
+### Composing Shared Elements with List Identity
+
+Shared elements and list identity are independent concerns — don't confuse one for the other. When a list item contains a shared element (e.g., an image that morphs into a detail view), use two nested `<ViewTransition>` boundaries:
+
+```jsx
+{items.map(item => (
+  <ViewTransition key={item.id}>                                      {/* list identity */}
+    <Link href={`/items/${item.id}`}>
+      <ViewTransition name={`item-image-${item.id}`} share="morph">   {/* shared element */}
+        <Image src={item.image} />
+      </ViewTransition>
+      <p>{item.name}</p>
+    </Link>
+  </ViewTransition>
+))}
+```
+
+The outer VT handles list reorder/enter animations. The inner VT handles the cross-route shared element morph. Missing either layer means that animation silently doesn't happen.
 
 ### Force Re-Enter with `key`
 
@@ -242,21 +265,7 @@ They coexist because they fire at different moments. `default="none"` on both pr
 
 ## Next.js Integration
 
-`<ViewTransition>` works out of the box for `startTransition`/`Suspense` updates. To also animate `<Link>` navigations:
-
-```js
-// next.config.js
-experimental: { viewTransition: true }
-```
-
-This wraps every `<Link>` navigation in `document.startViewTransition`. Use `default="none"` to prevent competing animations.
-
-`next/link` supports a native `transitionTypes` prop:
-```tsx
-<Link href="/products/1" transitionTypes={['nav-forward']}>View</Link>
-```
-
-For App Router patterns and Server Component details, see `references/nextjs.md`.
+For Next.js setup (`experimental.viewTransition` flag, `transitionTypes` prop on `next/link`, App Router patterns, Server Components), see `references/nextjs.md`.
 
 ---
 
@@ -272,3 +281,7 @@ Always add the reduced motion CSS from `references/css-recipes.md` to your globa
 - **`references/patterns.md`** — Patterns, animation timing, events API, troubleshooting.
 - **`references/css-recipes.md`** — Ready-to-use CSS animation recipes.
 - **`references/nextjs.md`** — Next.js App Router patterns and Server Component details.
+
+## Full Compiled Document
+
+For the complete guide with all reference files expanded: `AGENTS.md`

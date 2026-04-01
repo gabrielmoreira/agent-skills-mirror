@@ -1,0 +1,123 @@
+name: threat_analyst
+routing_group: threat_enrichment
+orchestration_role: direct
+capability_groups:
+  - threat_enrichment
+  - direct_entity_lookup
+required_entities:
+  - ip
+  - domain
+answer_types:
+  - threat reputation lookup
+  - risk and maliciousness assessment
+  - threat intelligence enrichment for known entities
+artifact_outputs:
+  - verdicts
+  - confidence_scores
+  - source_apis
+description: >
+  Analyzes security findings using RAG context to determine threat level.
+  Queries external threat intelligence APIs for IP/domain reputation.
+
+can_answer:
+  - "IP reputation"
+  - "domain reputation"
+  - "threat level assessment"
+  - "maliciousness indicators"
+  - "risk score"
+  - "abuse history"
+  - "vulnerability assessment"
+
+cannot_answer:
+  - "timeline reconstruction"
+  - "log/baseline searching"
+  - "alert type searching"
+  - "event type searching"
+  - "log message searching"
+  - "signature matching"
+  - "field schema discovery"
+  - "historical pattern analysis"
+
+priority_keywords:
+  - "reputation"
+  - "malicious"
+  - "threat"
+  - "risk"
+  - "vulnerability"
+  - "abuse"
+  - "blacklist"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Routing Guard: Auto-Route Block Conditions
+# ──────────────────────────────────────────────────────────────────────────────
+# threat_analyst requires explicit user intent and is blocked from auto-routing
+# unless the user explicitly asks about reputation/threat/malicious analysis.
+# This prevents unnecessary API calls and expense for questions that don't need threat intel.
+requires_explicit_keywords:
+  - "reputation"
+  - "threat"
+  - "threat analysis"
+  - "threat intel"
+  - "threat intelligence"
+  - "malicious"
+  - "abuse"
+  - "blacklist"
+  - "ip reputation"
+  - "domain reputation"
+  - "risk score"
+  - "vulnerability"
+
+min_prior_context: 1
+  # Expects at least 1 prior result (entity to evaluate) to work well
+  # Can work without, but context makes it more valuable
+
+question_enrichment_hook: skills.threat_analyst.hooks:enrich_question_for_followup
+
+returns:
+  - verdicts
+  - confidence_scores
+  - source_apis
+
+response_formatter: skills.threat_analyst.hooks:format_response
+
+conditional_recovery:
+  - position: back
+    when_any_question_patterns:
+      - regex: '\b(?:reputation|threat\s+intel(?:ligence)?|risk|malicious|verdict|score)\b'
+    skip_if_result_exists_for_skills:
+      - threat_analyst
+    requires_result_predicates:
+      - skill: opensearch_querier
+        path: results_count
+        min: 1
+
+required_env_vars:
+  - name: ABUSEIPDB_API_KEY
+    description: "AbuseIPDB API Key (optional—for IP reputation)"
+    env_key: ABUSEIPDB_API_KEY
+    optional: true
+    is_secret: true
+  
+  - name: ALIENVAULT_API_KEY
+    description: "AlienVault OTX API Key (optional—for threat pulses)"
+    env_key: ALIENVAULT_API_KEY
+    optional: true
+    is_secret: true
+  
+  - name: VIRUSTOTAL_API_KEY
+    description: "VirusTotal API Key (optional—for malware detection)"
+    env_key: VIRUSTOTAL_API_KEY
+    optional: true
+    is_secret: true
+  
+  - name: TALOS_CLIENT_ID
+    description: "Cisco Talos Client ID (optional—for enterprise intelligence)"
+    env_key: TALOS_CLIENT_ID
+    optional: true
+    is_secret: true
+  
+  - name: TALOS_CLIENT_SECRET
+    description: "Cisco Talos Client Secret (optional—for enterprise intelligence)"
+    env_key: TALOS_CLIENT_SECRET
+    optional: true
+    is_secret: true

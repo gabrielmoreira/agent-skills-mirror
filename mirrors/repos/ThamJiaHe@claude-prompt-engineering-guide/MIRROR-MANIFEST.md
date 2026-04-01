@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ThamJiaHe/claude-prompt-engineering-guide` — 26 default patterns, 39 followed patterns, 75 file(s) materialized.
+Mirror of `ThamJiaHe/claude-prompt-engineering-guide` — 26 default patterns, 53 followed patterns, 89 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ThamJiaHe/claude-prompt-engineering-guide` — 26 default patterns, 3
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 39 |
-| Files         | 75 |
+| Followed pats | 53 |
+| Files         | 89 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Mirror of `ThamJiaHe/claude-prompt-engineering-guide` — 26 default patterns, 3
 - `docs/claude-code-tips-and-tricks.md`
 - `docs/skills-catalog.md`
 - `docs/api-guide.md`
+- `docs/deep-research-index.md`
 - `docs/claude-md-guide.md`
 - `docs/hooks-guide.md`
 - `docs/agent-teams-guide.md`
@@ -78,6 +79,19 @@ Mirror of `ThamJiaHe/claude-prompt-engineering-guide` — 26 default patterns, 3
 - `docs/ecosystem-market-analysis.md`
 - `docs/pricing-comparison-jan-2026.md`
 - `docs/research-opencode-clawbot-jan-2026.md`
+- `docs/plugin-framework/README.md`
+- `docs/everything-plugin/README.md`
+- `docs/production-skill-library/README.md`
+- `docs/fullstack-skill-packs/README.md`
+- `docs/subagent-catalog/README.md`
+- `docs/multi-agent-orchestration/README.md`
+- `docs/agent-harness-fundamentals/README.md`
+- `docs/command-and-config-reference/README.md`
+- `docs/system-prompt-anatomy/README.md`
+- `docs/model-routing/README.md`
+- `docs/ecosystem-directory/README.md`
+- `docs/core-claude-code-runtime/README.md`
+- `docs/claurst-integration/README.md`
 - `templates/minimal-prompt-template.md`
 - `templates/comprehensive-prompt-template.md`
 - `templates/example-clauderules.md`
@@ -138,40 +152,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 40 | → | [`Claude-Prompt-Guide.md`](Claude-Prompt-Guide.md) |
 | 41 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 42 | → | [`docs/agent-teams-guide.md`](docs/agent-teams-guide.md) |
-| 43 | → | [`docs/antigravity-comparison.md`](docs/antigravity-comparison.md) |
-| 44 | → | [`docs/api-guide.md`](docs/api-guide.md) |
-| 45 | → | [`docs/claude-code-guide.md`](docs/claude-code-guide.md) |
-| 46 | → | [`docs/claude-code-tips-and-tricks.md`](docs/claude-code-tips-and-tricks.md) |
-| 47 | → | [`docs/claude-md-guide.md`](docs/claude-md-guide.md) |
-| 48 | → | [`docs/cowork-guide.md`](docs/cowork-guide.md) |
-| 49 | → | [`docs/ecosystem-market-analysis.md`](docs/ecosystem-market-analysis.md) |
-| 50 | → | [`docs/examples/business-analysis.md`](docs/examples/business-analysis.md) |
-| 51 | → | [`docs/examples/coding-tasks.md`](docs/examples/coding-tasks.md) |
-| 52 | → | [`docs/examples/document-creation.md`](docs/examples/document-creation.md) |
-| 53 | → | [`docs/examples/research-tasks.md`](docs/examples/research-tasks.md) |
-| 54 | → | [`docs/hooks-guide.md`](docs/hooks-guide.md) |
-| 55 | → | [`docs/mcp-ecosystem-overview.md`](docs/mcp-ecosystem-overview.md) |
-| 56 | → | [`docs/mcp-integration.md`](docs/mcp-integration.md) |
-| 57 | → | [`docs/messenger-integrations.md`](docs/messenger-integrations.md) |
-| 58 | → | [`docs/motion-graphics-claude-remotion-guide.md`](docs/motion-graphics-claude-remotion-guide.md) |
-| 59 | → | [`docs/plugins-guide.md`](docs/plugins-guide.md) |
-| 60 | → | [`docs/pricing-comparison-jan-2026.md`](docs/pricing-comparison-jan-2026.md) |
-| 61 | → | [`docs/quick-start.md`](docs/quick-start.md) |
-| 62 | → | [`docs/research-opencode-clawbot-jan-2026.md`](docs/research-opencode-clawbot-jan-2026.md) |
-| 63 | → | [`docs/research-report-jan-2026.md`](docs/research-report-jan-2026.md) |
-| 64 | → | [`docs/skills-catalog.md`](docs/skills-catalog.md) |
-| 65 | → | [`docs/skills-guide.md`](docs/skills-guide.md) |
-| 66 | → | [`docs/subagents-guide.md`](docs/subagents-guide.md) |
-| 67 | → | [`docs/superpowers-guide.md`](docs/superpowers-guide.md) |
-| 68 | → | [`docs/ultrathink-thinking-modes.md`](docs/ultrathink-thinking-modes.md) |
-| 69 | → | [`MIGRATION-NOV2025-JAN2026.md`](MIGRATION-NOV2025-JAN2026.md) |
-| 70 | → | [`README.ja.md`](README.ja.md) |
-| 71 | → | [`README.md`](README.md) |
-| 72 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 73 | → | [`templates/comprehensive-prompt-template.md`](templates/comprehensive-prompt-template.md) |
-| 74 | → | [`templates/example-clauderules.md`](templates/example-clauderules.md) |
-| 75 | → | [`templates/minimal-prompt-template.md`](templates/minimal-prompt-template.md) |
+| 42 | → | [`docs/agent-harness-fundamentals/README.md`](docs/agent-harness-fundamentals/README.md) |
+| 43 | → | [`docs/agent-teams-guide.md`](docs/agent-teams-guide.md) |
+| 44 | → | [`docs/antigravity-comparison.md`](docs/antigravity-comparison.md) |
+| 45 | → | [`docs/api-guide.md`](docs/api-guide.md) |
+| 46 | → | [`docs/claude-code-guide.md`](docs/claude-code-guide.md) |
+| 47 | → | [`docs/claude-code-tips-and-tricks.md`](docs/claude-code-tips-and-tricks.md) |
+| 48 | → | [`docs/claude-md-guide.md`](docs/claude-md-guide.md) |
+| 49 | → | [`docs/claurst-integration/README.md`](docs/claurst-integration/README.md) |
+| 50 | → | [`docs/command-and-config-reference/README.md`](docs/command-and-config-reference/README.md) |
+| 51 | → | [`docs/core-claude-code-runtime/README.md`](docs/core-claude-code-runtime/README.md) |
+| 52 | → | [`docs/cowork-guide.md`](docs/cowork-guide.md) |
+| 53 | → | [`docs/deep-research-index.md`](docs/deep-research-index.md) |
+| 54 | → | [`docs/ecosystem-directory/README.md`](docs/ecosystem-directory/README.md) |
+| 55 | → | [`docs/ecosystem-market-analysis.md`](docs/ecosystem-market-analysis.md) |
+| 56 | → | [`docs/everything-plugin/README.md`](docs/everything-plugin/README.md) |
+| 57 | → | [`docs/examples/business-analysis.md`](docs/examples/business-analysis.md) |
+| 58 | → | [`docs/examples/coding-tasks.md`](docs/examples/coding-tasks.md) |
+| 59 | → | [`docs/examples/document-creation.md`](docs/examples/document-creation.md) |
+| 60 | → | [`docs/examples/research-tasks.md`](docs/examples/research-tasks.md) |
+| 61 | → | [`docs/fullstack-skill-packs/README.md`](docs/fullstack-skill-packs/README.md) |
+| 62 | → | [`docs/hooks-guide.md`](docs/hooks-guide.md) |
+| 63 | → | [`docs/mcp-ecosystem-overview.md`](docs/mcp-ecosystem-overview.md) |
+| 64 | → | [`docs/mcp-integration.md`](docs/mcp-integration.md) |
+| 65 | → | [`docs/messenger-integrations.md`](docs/messenger-integrations.md) |
+| 66 | → | [`docs/model-routing/README.md`](docs/model-routing/README.md) |
+| 67 | → | [`docs/motion-graphics-claude-remotion-guide.md`](docs/motion-graphics-claude-remotion-guide.md) |
+| 68 | → | [`docs/multi-agent-orchestration/README.md`](docs/multi-agent-orchestration/README.md) |
+| 69 | → | [`docs/plugin-framework/README.md`](docs/plugin-framework/README.md) |
+| 70 | → | [`docs/plugins-guide.md`](docs/plugins-guide.md) |
+| 71 | → | [`docs/pricing-comparison-jan-2026.md`](docs/pricing-comparison-jan-2026.md) |
+| 72 | → | [`docs/production-skill-library/README.md`](docs/production-skill-library/README.md) |
+| 73 | → | [`docs/quick-start.md`](docs/quick-start.md) |
+| 74 | → | [`docs/research-opencode-clawbot-jan-2026.md`](docs/research-opencode-clawbot-jan-2026.md) |
+| 75 | → | [`docs/research-report-jan-2026.md`](docs/research-report-jan-2026.md) |
+| 76 | → | [`docs/skills-catalog.md`](docs/skills-catalog.md) |
+| 77 | → | [`docs/skills-guide.md`](docs/skills-guide.md) |
+| 78 | → | [`docs/subagent-catalog/README.md`](docs/subagent-catalog/README.md) |
+| 79 | → | [`docs/subagents-guide.md`](docs/subagents-guide.md) |
+| 80 | → | [`docs/superpowers-guide.md`](docs/superpowers-guide.md) |
+| 81 | → | [`docs/system-prompt-anatomy/README.md`](docs/system-prompt-anatomy/README.md) |
+| 82 | → | [`docs/ultrathink-thinking-modes.md`](docs/ultrathink-thinking-modes.md) |
+| 83 | → | [`MIGRATION-NOV2025-JAN2026.md`](MIGRATION-NOV2025-JAN2026.md) |
+| 84 | → | [`README.ja.md`](README.ja.md) |
+| 85 | → | [`README.md`](README.md) |
+| 86 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 87 | → | [`templates/comprehensive-prompt-template.md`](templates/comprehensive-prompt-template.md) |
+| 88 | → | [`templates/example-clauderules.md`](templates/example-clauderules.md) |
+| 89 | → | [`templates/minimal-prompt-template.md`](templates/minimal-prompt-template.md) |
 
 ---
 
