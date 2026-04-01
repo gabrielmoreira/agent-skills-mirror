@@ -36,7 +36,7 @@ jobs:
           MIRROR_CONCURRENCY: "5"
         run: >-
           deno run
-          --allow-env=GH_TOKEN,TERM,MIRROR_CONCURRENCY
+          --allow-env
           --allow-net=api.github.com
           --allow-read=.
           --allow-write=mirrors/,cache/
