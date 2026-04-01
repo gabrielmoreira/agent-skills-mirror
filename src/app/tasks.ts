@@ -597,11 +597,25 @@ export function makeTasks(
     const path = rt.join(cacheRoot, "state", owner, `${name}.json`);
     await rt.writeTextFile(path, JSON.stringify(state, null, 2));
   }
+  async function listKnownRepos(targetRoot: string): Promise<string[]> {
+    const repos = new Set<string>();
+
+    for (const entry of await rt.listDir(targetRoot)) {
+      const match = /^([^@]+)@([^@]+)$/.exec(entry);
+      if (!match) continue;
+
+      const manifestPath = rt.join(targetRoot, entry, "MIRROR-MANIFEST.md");
+      if (!(await rt.exists(manifestPath))) continue;
+
+      repos.add(`${match[1]}/${match[2]}`);
+    }
+
+    return [...repos].sort((a, b) => a.localeCompare(b));
+  }
 
   // ============================================================
   // Manifest
   // ============================================================
-
   /**
    * Write the mirror manifest as a readable markdown file.
    */
@@ -796,6 +810,7 @@ export function makeTasks(
     buildGithubHeaders,
     readRepoState,
     writeRepoState,
+    listKnownRepos,
     writeManifest,
     readLocalMarkdownFiles,
     filterToDiskFiles,

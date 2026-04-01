@@ -24,6 +24,7 @@ export type RuntimeAdapter = {
   ): Promise<void>;
   move(from: string, to: string): Promise<void>;
   copy(from: string, to: string): Promise<void>;
+  listDir(path: string): Promise<string[]>;
   readTextFile(path: string): Promise<string>;
   writeTextFile(path: string, content: string): Promise<void>;
   fetchText(url: string | URL | Request, init?: RequestInit): Promise<string>;
@@ -484,10 +485,21 @@ export function createDefaultRuntimeAdapter(): RuntimeAdapter {
     async remove(targetPath, options) {
       await removePath(targetPath, options);
     },
+    async listDir(targetPath) {
+      try {
+        const entries = await fs.readdir(targetPath, { withFileTypes: true });
+        return entries.map((entry) => entry.name);
+      } catch (err: unknown) {
+        if (
+          typeof err === "object" && err !== null && "code" in err &&
+          (err as NodeJS.ErrnoException).code === "ENOENT"
+        ) return [];
+        throw err;
+      }
+    },
     async readTextFile(targetPath) {
       return await fs.readFile(targetPath, "utf8");
     },
-
     async writeTextFile(targetPath, content) {
       await fs.writeFile(targetPath, content, "utf8");
     },

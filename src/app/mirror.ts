@@ -211,9 +211,7 @@ async function expandSources(
     if (isStaticSource(source)) {
       const repoList = source.repo ? [source.repo] : (source.repos ?? []);
       for (const repo of repoList) {
-        if (seen.has(repo)) continue;
-        seen.add(repo);
-        jobs.push(resolveRepoJob(repo, mergedVars, source.mirror, si));
+        addRepoJobIfNew(jobs, seen, repo, mergedVars, source.mirror, si);
       }
     } else if (isDynamicSource(source)) {
       const queries = source.query ? [source.query] : (source.queries ?? []);
@@ -229,12 +227,30 @@ async function expandSources(
             order: source.order ?? "desc",
           });
           for (const repoInfo of repos) {
-            const key = `${repoInfo.owner.login}/${repoInfo.name}`;
-            if (seen.has(key)) continue;
-            seen.add(key);
-            jobs.push(resolveRepoJob(key, mergedVars, source.mirror, si));
+            addRepoJobIfNew(
+              jobs,
+              seen,
+              `${repoInfo.owner.login}/${repoInfo.name}`,
+              mergedVars,
+              source.mirror,
+              si,
+            );
           }
         }
+
+        const knownRepos = await tasks.listKnownRepos(
+          mergedVars.targetRoot ?? config.vars.targetRoot,
+        );
+        let retained = 0;
+        for (const repo of knownRepos) {
+          if (addRepoJobIfNew(jobs, seen, repo, mergedVars, source.mirror, si)) {
+            retained += 1;
+          }
+        }
+        if (retained > 0) {
+          reporter.info(`retained ${retained} previously mirrored repo(s)`);
+        }
+
         reporter.finishStage({ ok: true, elapsed: Date.now() - startedAt });
       } catch (err) {
         reporter.finishStage({
@@ -297,6 +313,20 @@ function resolveRepoJob(
     mirror,
     sourceIndex,
   };
+}
+
+function addRepoJobIfNew(
+  jobs: ResolvedRepoJob[],
+  seen: Set<string>,
+  repo: string,
+  vars: MirrorVars,
+  mirror: MirrorSpec,
+  sourceIndex: number,
+ ): boolean {
+  if (seen.has(repo)) return false;
+  seen.add(repo);
+  jobs.push(resolveRepoJob(repo, vars, mirror, sourceIndex));
+  return true;
 }
 
 function extractRepoHost(repoUrl: string): string {
