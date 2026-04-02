@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `n8n-io/n8n` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `n8n-io/n8n` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 0 followed patterns, 30 file(s) 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,16 +79,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`packages/@n8n/ai-workflow-builder.ee/CLAUDE.md`](packages/@n8n/ai-workflow-builder.ee/CLAUDE.md) |
 | 19 | ✓ | [`packages/@n8n/cli/skills/n8n-cli/SKILL.md`](packages/@n8n/cli/skills/n8n-cli/SKILL.md) |
 | 20 | ✓ | [`packages/@n8n/db/AGENTS.md`](packages/@n8n/db/AGENTS.md) |
-| 21 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md`](packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md) |
-| 22 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md`](packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md) |
-| 23 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
-| 24 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
-| 25 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
-| 26 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
-| 27 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
-| 28 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
-| 29 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
-| 30 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
+| 21 | ✓ | [`packages/@n8n/instance-ai/CLAUDE.md`](packages/@n8n/instance-ai/CLAUDE.md) |
+| 22 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md`](packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md) |
+| 23 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md`](packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md) |
+| 24 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
+| 25 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
+| 26 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
+| 27 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
+| 28 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
+| 29 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
+| 30 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
+| 31 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `alibaba/nacos` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `alibaba/nacos` — 26 default patterns, 5 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `alibaba/nacos` — 26 default patterns, 0 followed patterns, 1 file(s
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 5 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,11 @@ Mirror of `alibaba/nacos` — 26 default patterns, 0 followed patterns, 1 file(s
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
+- `CONTRIBUTING_zh.md`
+- `CODE_OF_CONDUCT.md`
+- `style/codeStyle.md`
 
 ## File Index
 
@@ -59,7 +63,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/nacos-skill-registry/SKILL.md`](skills/nacos-skill-registry/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`skills/nacos-skill-registry/SKILL.md`](skills/nacos-skill-registry/SKILL.md) |
+| 4 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 5 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 6 | → | [`CONTRIBUTING_zh.md`](CONTRIBUTING_zh.md) |
+| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 8 | → | [`style/codeStyle.md`](style/codeStyle.md) |
 
 ---
 

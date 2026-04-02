@@ -14,7 +14,7 @@ module.exports = nextConfig;
 
 This wraps every `<Link>` navigation in `document.startViewTransition`. Any VT with `default="auto"` fires on **every** link click — use `default="none"` to prevent competing animations.
 
-Requires `react@canary`: `npm install react@canary react-dom@canary`
+The Next.js App Router internally uses React canary, so `ViewTransition` works without manually installing `react@canary`. `npm ls react` may show a stable-looking version — this is expected. Only run `npm install react@canary react-dom@canary` for standalone React projects (without Next.js).
 
 ---
 
@@ -62,7 +62,7 @@ No wrapper component needed, works in Server Components:
 
 Replaces the manual pattern of `onNavigate` + `startTransition` + `addTransitionType` + `router.push()`. Reserve manual `startTransition` for non-link interactions (buttons, forms).
 
-**Availability:** `transitionTypes` may not be available in all Next.js versions. If unavailable, create a wrapper using `startTransition` + `addTransitionType` + `router.push()` (see Programmatic Navigation below).
+**Availability:** `transitionTypes` requires `experimental.viewTransition: true` and is available in Next.js 15+ canary builds and Next.js 16+. If unavailable, use `startTransition` + `addTransitionType` + `router.push()` (see Programmatic Navigation below). To check: `grep -r "transitionTypes" node_modules/next/dist/` — if no results, fall back to programmatic navigation.
 
 ---
 
@@ -102,6 +102,22 @@ Directional slides + Suspense reveals coexist because they fire at different mom
   </div>
 </ViewTransition>
 ```
+
+---
+
+## `loading.tsx` as Suspense Boundary
+
+Next.js `loading.tsx` is an implicit `<Suspense>` boundary. Wrap the skeleton in `<ViewTransition exit="...">` in `loading.tsx`, and the content in `<ViewTransition enter="..." default="none">` in the page:
+
+```tsx
+// loading.tsx
+<ViewTransition exit="slide-down"><PhotoGridSkeleton /></ViewTransition>
+
+// page.tsx
+<ViewTransition enter="slide-up" default="none"><PhotoGrid photos={photos} /></ViewTransition>
+```
+
+Same rules as explicit `<Suspense>`: use simple string props (not type maps) since Suspense reveals fire without transition types.
 
 ---
 

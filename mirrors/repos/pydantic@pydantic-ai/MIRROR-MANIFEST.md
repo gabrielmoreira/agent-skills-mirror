@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 26 default patterns, 16 followed patterns, 44 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 16 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 16 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 16 |
-| Files         | 44 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,32 +92,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`docs/common-tools.md`](docs/common-tools.md) |
 | 17 | ✓ | [`docs/deferred-tools.md`](docs/deferred-tools.md) |
 | 18 | ✓ | [`docs/embeddings.md`](docs/embeddings.md) |
-| 19 | ✓ | [`docs/multi-agent-applications.md`](docs/multi-agent-applications.md) |
-| 20 | ✓ | [`docs/third-party-tools.md`](docs/third-party-tools.md) |
-| 21 | ✓ | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
-| 22 | ✓ | [`docs/toolsets.md`](docs/toolsets.md) |
-| 23 | ✓ | [`pydantic_ai_slim/pydantic_ai/AGENTS.md`](pydantic_ai_slim/pydantic_ai/AGENTS.md) |
-| 24 | ✓ | [`pydantic_ai_slim/pydantic_ai/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/CLAUDE.md) |
-| 25 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/AGENTS.md) |
-| 26 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/models/CLAUDE.md) |
-| 27 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 28 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
-| 29 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 30 | → | [`agent_docs/api-design.md`](agent_docs/api-design.md) |
-| 31 | → | [`agent_docs/code-simplification.md`](agent_docs/code-simplification.md) |
-| 32 | → | [`agent_docs/documentation.md`](agent_docs/documentation.md) |
-| 33 | → | [`agent_docs/index.md`](agent_docs/index.md) |
-| 34 | → | [`docs/agent.md`](docs/agent.md) |
-| 35 | → | [`docs/cli.md`](docs/cli.md) |
-| 36 | → | [`docs/dependencies.md`](docs/dependencies.md) |
-| 37 | → | [`docs/evals.md`](docs/evals.md) |
-| 38 | → | [`docs/graph.md`](docs/graph.md) |
-| 39 | → | [`docs/logfire.md`](docs/logfire.md) |
-| 40 | → | [`docs/message-history.md`](docs/message-history.md) |
-| 41 | → | [`docs/output.md`](docs/output.md) |
-| 42 | → | [`docs/tools.md`](docs/tools.md) |
-| 43 | → | [`docs/version-policy.md`](docs/version-policy.md) |
-| 44 | → | [`docs/web.md`](docs/web.md) |
+| 19 | ✓ | [`docs/hooks.md`](docs/hooks.md) |
+| 20 | ✓ | [`docs/multi-agent-applications.md`](docs/multi-agent-applications.md) |
+| 21 | ✓ | [`docs/third-party-tools.md`](docs/third-party-tools.md) |
+| 22 | ✓ | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
+| 23 | ✓ | [`docs/toolsets.md`](docs/toolsets.md) |
+| 24 | ✓ | [`pydantic_ai_slim/pydantic_ai/AGENTS.md`](pydantic_ai_slim/pydantic_ai/AGENTS.md) |
+| 25 | ✓ | [`pydantic_ai_slim/pydantic_ai/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/CLAUDE.md) |
+| 26 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/AGENTS.md) |
+| 27 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/models/CLAUDE.md) |
+| 28 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 29 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 30 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 31 | → | [`agent_docs/api-design.md`](agent_docs/api-design.md) |
+| 32 | → | [`agent_docs/code-simplification.md`](agent_docs/code-simplification.md) |
+| 33 | → | [`agent_docs/documentation.md`](agent_docs/documentation.md) |
+| 34 | → | [`agent_docs/index.md`](agent_docs/index.md) |
+| 35 | → | [`docs/agent.md`](docs/agent.md) |
+| 36 | → | [`docs/cli.md`](docs/cli.md) |
+| 37 | → | [`docs/dependencies.md`](docs/dependencies.md) |
+| 38 | → | [`docs/evals.md`](docs/evals.md) |
+| 39 | → | [`docs/graph.md`](docs/graph.md) |
+| 40 | → | [`docs/logfire.md`](docs/logfire.md) |
+| 41 | → | [`docs/message-history.md`](docs/message-history.md) |
+| 42 | → | [`docs/output.md`](docs/output.md) |
+| 43 | → | [`docs/tools.md`](docs/tools.md) |
+| 44 | → | [`docs/version-policy.md`](docs/version-policy.md) |
+| 45 | → | [`docs/web.md`](docs/web.md) |
 
 ---
 

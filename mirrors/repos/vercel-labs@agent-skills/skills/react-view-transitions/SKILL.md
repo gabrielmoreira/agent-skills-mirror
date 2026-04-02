@@ -42,7 +42,7 @@ Reserve directional slides for hierarchical navigation only. Directional slides 
 
 ## Availability
 
-- Requires `react@canary` or `react@experimental` — **not** in stable React (including 19.x). Verify with `npm ls react`.
+- `ViewTransition` is in `react@canary` / `react@experimental` — not in stable React. However, **Next.js App Router internally uses React canary**, so `ViewTransition` works in Next.js without manually installing canary. `npm ls react` may show a stable-looking version — this is expected; do **not** reinstall or downgrade React based on that output.
 - Browser support: Chromium 111+, Firefox 144+, Safari 18.2+. Graceful degradation on unsupported browsers.
 
 ---
@@ -123,21 +123,23 @@ See `references/css-recipes.md` for ready-to-use animation recipes.
 
 ## Transition Types
 
-Tag transitions with `addTransitionType` so VTs can pick different animations based on context:
+Tag transitions with `addTransitionType` so VTs can pick different animations based on context. Call it multiple times to stack types — different VTs in the tree react to different types:
 
 ```jsx
 startTransition(() => {
   addTransitionType('nav-forward');
+  addTransitionType('select-item');
   router.push('/detail/1');
 });
 ```
 
-Pass an object to map types to CSS classes:
+Pass an object to map types to CSS classes. Works on `enter`, `exit`, **and** `share`:
 
 ```jsx
 <ViewTransition
   enter={{ 'nav-forward': 'slide-from-right', 'nav-back': 'slide-from-left', default: 'none' }}
   exit={{ 'nav-forward': 'slide-to-left', 'nav-back': 'slide-to-right', default: 'none' }}
+  share={{ 'nav-forward': 'morph-forward', 'nav-back': 'morph-back', default: 'morph' }}
   default="none"
 >
   <Page />
@@ -148,7 +150,7 @@ Pass an object to map types to CSS classes:
 
 ### `router.back()` and Browser Back Button
 
-`router.back()` does **not** trigger view transitions — the browser's `popstate` event is synchronous and incompatible with `document.startViewTransition`. Use `router.push()` with an explicit URL instead. The browser's native back/forward buttons also skip animations (a browser/router limitation, not fixable in app code).
+`router.back()` and the browser's back/forward buttons do **not** trigger view transitions (`popstate` is synchronous, incompatible with `startViewTransition`). Use `router.push()` with an explicit URL instead.
 
 ### Types and Suspense
 
@@ -260,6 +262,10 @@ Without it, every VT fires the browser cross-fade on **every** transition — Su
 **Pattern B — Suspense reveals:** Simple string props, fires when data loads (no type).
 
 They coexist because they fire at different moments. `default="none"` on both prevents cross-interference. Always pair `enter` with `exit`. Place directional VTs in page components, not layouts.
+
+### Nested VT Limitation
+
+When a parent VT exits, nested VTs inside it do **not** fire their own enter/exit — only the outermost VT animates. Per-item staggered animations during page navigation are not possible today. See [react#36135](https://github.com/facebook/react/pull/36135) for an experimental opt-in fix.
 
 ---
 

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 7 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/github-pr-reviewer/SKILL.md`](.claude/skills/github-pr-reviewer/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/integrations/platform-diagnostics.md`](.claude/skills/integrations/platform-diagnostics.md) |
-| 3 | ✓ | [`.claude/skills/integrations/platform-repairs.md`](.claude/skills/integrations/platform-repairs.md) |
-| 4 | ✓ | [`.claude/skills/integrations/SKILL.md`](.claude/skills/integrations/SKILL.md) |
-| 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/integrations/platform-diagnostics.md`](.claude/skills/integrations/platform-diagnostics.md) |
+| 2 | ✓ | [`.claude/skills/integrations/platform-repairs.md`](.claude/skills/integrations/platform-repairs.md) |
+| 3 | ✓ | [`.claude/skills/integrations/SKILL.md`](.claude/skills/integrations/SKILL.md) |
+| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aiming-lab/AutoResearchClaw` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `aiming-lab/AutoResearchClaw` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aiming-lab/AutoResearchClaw` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,11 +79,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`researchclaw/skills/builtin/experiment/hypothesis-formulation/SKILL.md`](researchclaw/skills/builtin/experiment/hypothesis-formulation/SKILL.md) |
 | 19 | ✓ | [`researchclaw/skills/builtin/experiment/literature-search/SKILL.md`](researchclaw/skills/builtin/experiment/literature-search/SKILL.md) |
 | 20 | ✓ | [`researchclaw/skills/builtin/experiment/meta-analysis/SKILL.md`](researchclaw/skills/builtin/experiment/meta-analysis/SKILL.md) |
-| 21 | ✓ | [`researchclaw/skills/builtin/experiment/systematic-review/SKILL.md`](researchclaw/skills/builtin/experiment/systematic-review/SKILL.md) |
-| 22 | ✓ | [`researchclaw/skills/builtin/tooling/data-loading/SKILL.md`](researchclaw/skills/builtin/tooling/data-loading/SKILL.md) |
-| 23 | ✓ | [`researchclaw/skills/builtin/tooling/distributed-training/SKILL.md`](researchclaw/skills/builtin/tooling/distributed-training/SKILL.md) |
-| 24 | ✓ | [`researchclaw/skills/builtin/tooling/mixed-precision/SKILL.md`](researchclaw/skills/builtin/tooling/mixed-precision/SKILL.md) |
-| 25 | ✓ | [`researchclaw/skills/builtin/tooling/pytorch-training/SKILL.md`](researchclaw/skills/builtin/tooling/pytorch-training/SKILL.md) |
+| 21 | ✓ | [`researchclaw/skills/builtin/experiment/scientific-visualization/SKILL.md`](researchclaw/skills/builtin/experiment/scientific-visualization/SKILL.md) |
+| 22 | ✓ | [`researchclaw/skills/builtin/experiment/scientific-writing/SKILL.md`](researchclaw/skills/builtin/experiment/scientific-writing/SKILL.md) |
+| 23 | ✓ | [`researchclaw/skills/builtin/experiment/statistical-reporting/SKILL.md`](researchclaw/skills/builtin/experiment/statistical-reporting/SKILL.md) |
+| 24 | ✓ | [`researchclaw/skills/builtin/experiment/systematic-review/SKILL.md`](researchclaw/skills/builtin/experiment/systematic-review/SKILL.md) |
+| 25 | ✓ | [`researchclaw/skills/builtin/tooling/data-loading/SKILL.md`](researchclaw/skills/builtin/tooling/data-loading/SKILL.md) |
+| 26 | ✓ | [`researchclaw/skills/builtin/tooling/distributed-training/SKILL.md`](researchclaw/skills/builtin/tooling/distributed-training/SKILL.md) |
+| 27 | ✓ | [`researchclaw/skills/builtin/tooling/mixed-precision/SKILL.md`](researchclaw/skills/builtin/tooling/mixed-precision/SKILL.md) |
+| 28 | ✓ | [`researchclaw/skills/builtin/tooling/pytorch-training/SKILL.md`](researchclaw/skills/builtin/tooling/pytorch-training/SKILL.md) |
 
 ---
 

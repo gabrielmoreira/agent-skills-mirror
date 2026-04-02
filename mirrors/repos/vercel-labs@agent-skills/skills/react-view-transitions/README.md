@@ -39,5 +39,4 @@ npx skills install https://github.com/vercel-labs/react-view-transitions-skill
 - [React `<ViewTransition>` docs](https://react.dev/reference/react/ViewTransition)
 - [React `addTransitionType` docs](https://react.dev/reference/react/addTransitionType)
 - [Next.js `viewTransition` config](https://nextjs.org/docs/app/api-reference/config/next-config-js/viewTransition)
-- [next16-conferences](https://github.com/aurorascharff/next16-conferences) — real-world example app
 - [Next.js App Router Playground (view transitions)](https://github.com/vercel/next-app-router-playground/tree/main/app/view-transitions) — Vercel's reference implementation

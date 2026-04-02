@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,24 +71,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.agents/skills/agent-browser/templates/authenticated-session.sh`](.agents/skills/agent-browser/templates/authenticated-session.sh) |
 | 11 | ✓ | [`.agents/skills/agent-browser/templates/capture-workflow.sh`](.agents/skills/agent-browser/templates/capture-workflow.sh) |
 | 12 | ✓ | [`.agents/skills/agent-browser/templates/form-automation.sh`](.agents/skills/agent-browser/templates/form-automation.sh) |
-| 13 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
-| 14 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
-| 15 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
-| 16 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
-| 17 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
-| 18 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
-| 19 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
-| 20 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
-| 22 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
-| 23 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
-| 24 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
-| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 27 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 28 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 29 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 30 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 13 | ✓ | [`.agents/skills/db-migration/SKILL.md`](.agents/skills/db-migration/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
+| 15 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
+| 16 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
+| 17 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
+| 18 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
+| 19 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
+| 20 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
+| 21 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
+| 23 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
+| 24 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
+| 25 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
+| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 28 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 29 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 30 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 31 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 
