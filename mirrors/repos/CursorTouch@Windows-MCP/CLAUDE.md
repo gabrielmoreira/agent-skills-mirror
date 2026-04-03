@@ -63,6 +63,7 @@ The codebase follows a layered service architecture under `src/windows_mcp/`:
 | `WINDOWS_MCP_SCREENSHOT_BACKEND` | `auto` | Screenshot backend: `auto`, `dxcam`, `mss`, `pillow`. Resolved in `desktop/screenshot.py`. |
 | `WINDOWS_MCP_PROFILE_SNAPSHOT` | _(off)_ | Set to `1`/`true`/`yes`/`on` to log per-stage timing for Screenshot/Snapshot. Checked in `tools/_snapshot_helpers.py` and `desktop/service.py`. |
 | `ANONYMIZED_TELEMETRY` | `true` | Set to `false` to disable PostHog telemetry. Checked in `__main__.py` and `analytics.py`. |
+| `WINDOWS_MCP_DEBUG` | `false` | Set to `1`/`true`/`yes`/`on` to enable debug mode. Checked in `config.py`. Also available as `--debug` CLI flag. |
 | `MODE` | `local` | `local` or `remote`. Remote mode proxies to windowsmcp.io. |
 | `SANDBOX_ID` | _(none)_ | Required in remote mode — VM identifier from dashboard. |
 | `API_KEY` | _(none)_ | Required in remote mode — Windows-MCP API key. |

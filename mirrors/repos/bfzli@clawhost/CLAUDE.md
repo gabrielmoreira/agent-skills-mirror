@@ -25,7 +25,7 @@ openclaw.anywhere/
 - **Authentication**: Firebase Admin SDK + OTP (email-based) + OAuth (Google, GitHub)
 - **Email**: Resend + React Email
 - **Payments**: Polar SDK
-- **Cloud Providers**: Hetzner Cloud, DigitalOcean, Vultr
+- **Cloud Provider**: Hetzner Cloud
 - **DNS**: Cloudflare
 - **SSH/Terminal**: SSH2 + WebSocket (ws) for remote terminal access
 - **Text-to-Speech**: Piper TTS engine
@@ -48,7 +48,7 @@ openclaw.anywhere/
 
 ### Shared Packages
 
-- **@openclaw/shared**: HTTP RequestClient, cloud provider/status constants, input validation, user roles, API envelope types
+- **@openclaw/shared**: HTTP RequestClient, status constants, input validation, user roles, API envelope types
 - **@openclaw/i18n**: Internationalization framework with `t()` function, parameter interpolation, 4 languages
 
 ## Code Conventions
@@ -243,8 +243,6 @@ function create(data: CreateUserParams): void {} // USE THIS
 - API Response: `ApiResponse<T>`
 - Cloud Provider Interface: `CloudProvider`, `CreateServerResult`, `ServerStatus`, `ServerTypeInfo`, `LocationInfo`
 - Hetzner Types: `HetznerServer`, `HetznerServerType`, `HetznerLocation`, `HetznerDatacenter`, `HetznerVolume`, `HetznerSSHKey`, etc.
-- DigitalOcean Types: `DigitalOceanDroplet`, `DigitalOceanSize`, `DigitalOceanRegion`, `DigitalOceanSSHKey`, `DigitalOceanVolume`, etc.
-- Vultr Types: `VultrInstance`, `VultrPlan`, `VultrRegion`, `VultrSSHKey`, `VultrVolume`, etc.
 - Polar/Payment Types: `CheckoutSession`, `PolarSubscription`, `PolarOrder`, `PolarProduct`, `PolarCustomer`, webhook data types
 - Claw Operation Types: `CreateClawBody`, `InitiateClawPurchase`, `ProvisionClawParams`
 - Agent Types: `ClawAgent`, `ClawChannelsResponse`, `ClawSkillsResponse`, `ClawBindingsResponse`
@@ -315,6 +313,34 @@ const MyComponent = () => { ... }
 5. Use `export { ComponentName }` for named exports
 6. Internal/helper components within a file should also follow this pattern
 
+### Fragment Syntax Rule
+
+**CRITICAL: Never use the shorthand `<>...</>` fragment syntax. Always use the explicit `<Fragment>...</Fragment>` from React. This ensures fragments can always accept a `key` prop when needed and keeps the codebase consistent.**
+
+```typescript
+// CORRECT - Always use explicit Fragment
+import { Fragment } from 'react'
+
+<Fragment>
+    <ChildA />
+    <ChildB />
+</Fragment>
+
+// CORRECT - Fragment with key in .map()
+{items.map((item) => (
+    <Fragment key={item.id}>
+        <ChildA />
+        <ChildB />
+    </Fragment>
+))}
+
+// INCORRECT - Never use shorthand fragment syntax
+<>
+    <ChildA />
+    <ChildB />
+</>
+```
+
 ### File Organization
 
 **API Controllers** (`apps/api/src/controllers/`):
@@ -355,9 +381,9 @@ const MyComponent = () => { ... }
 **Tables**:
 
 - `users` - Firebase authenticated users (with authMethods array, polarCustomerId, role)
-- `claws` - Cloud server instances (multi-provider: Hetzner, DigitalOcean, Vultr) with gateway tokens, Polar subscription tracking, deletion scheduling
+- `claws` - Cloud server instances (Hetzner) with gateway tokens, Polar subscription tracking, deletion scheduling
 - `pendingClaws` - Claws awaiting payment confirmation (with expiry)
-- `sshKeys` - SSH key management (with per-provider key IDs: Hetzner, DigitalOcean, Vultr)
+- `sshKeys` - SSH key management (with Hetzner key IDs)
 - `volumes` - Persistent storage volumes
 - `clawExports` - Exported claw configurations
 - `otpCodes` - OTP authentication codes (hashed, with attempt tracking)
@@ -471,16 +497,16 @@ pnpm --filter api db:migrate   # Run migrations
 
 - `POST /polar` - Polar payment webhook (handles checkout, subscription lifecycle)
 
-### Cloud Provider Abstraction
+### Cloud Provider
 
-All three providers (Hetzner, DigitalOcean, Vultr) implement the `CloudProvider` interface with a unified API:
+The Hetzner service implements the `CloudProvider` interface:
 
 - `createServer`, `getServer`, `getServers`, `startServer`, `stopServer`, `restartServer`, `deleteServer`
 - `createSSHKey`, `deleteSSHKey`
 - `getServerTypes`, `getLocations`, `getDatacenters`
 - `createVolume`, `attachVolume`, `detachVolume`, `deleteVolume`, `getVolume`
 
-Use `getProvider(providerType)` from `@/services/provider` to resolve the correct service. The provider resolver includes in-memory caching with TTL (5 min for server types/locations/pricing, 10 sec for individual servers).
+The provider resolver includes in-memory caching with TTL (5 min for server types/locations/pricing, 10 sec for individual servers).
 
 ### External Services Setup
 
@@ -519,15 +545,13 @@ pnpm install                           # Install all dependencies
 pnpm --filter api db:migrate           # Run database migrations
 ```
 
-To set up Polar payment products for a provider:
+To set up Polar payment products:
 
 ```bash
 pnpm --filter api exec tsx scripts/create-polar-products.ts hetzner
-pnpm --filter api exec tsx scripts/create-polar-products.ts digitalocean
-pnpm --filter api exec tsx scripts/create-polar-products.ts vultr
 ```
 
-Each command outputs `POLAR_PRODUCT_*` env vars to add to `apps/api/.env`.
+The command outputs `POLAR_PRODUCT_*` env vars to add to `apps/api/.env`.
 
 ### Commands
 
@@ -570,10 +594,8 @@ FIREBASE_PROJECT_ID=...
 FIREBASE_PRIVATE_KEY=...
 FIREBASE_CLIENT_EMAIL=...
 
-# Cloud Providers (at least one required)
+# Cloud Provider
 HETZNER_API_TOKEN=...
-DIGITALOCEAN_API_TOKEN=...
-VULTR_API_TOKEN=...
 
 # Cloudflare DNS
 CLOUDFLARE_API_TOKEN=...
@@ -588,9 +610,7 @@ POLAR_ACCESS_TOKEN=...
 POLAR_ORGANIZATION_ID=...
 POLAR_WEBHOOK_SECRET=...
 POLAR_PRODUCT_HETZNER_CX23=...
-POLAR_PRODUCT_DIGITALOCEAN_S_1VCPU_1GB=...
-POLAR_PRODUCT_VULTR_VC2_1C_1GB=...
-# ... (one POLAR_PRODUCT_* per provider/plan, generated by create-polar-products script)
+# ... (one POLAR_PRODUCT_* per plan, generated by create-polar-products script)
 
 # Piper TTS (optional)
 PIPER_BINARY=piper
@@ -611,43 +631,41 @@ VITE_FIREBASE_APP_ID=...
 
 ## Key Files
 
-| Purpose              | Path                                            |
-| -------------------- | ----------------------------------------------- |
-| API Entry            | `apps/api/src/index.ts`                         |
-| API App Setup        | `apps/api/src/app.ts`                           |
-| DB Schema            | `apps/api/src/db/schema.ts`                     |
-| API Routes           | `apps/api/src/routes/index.ts`                  |
-| Admin Middleware     | `apps/api/src/middleware/adminOnly.ts`          |
-| Provider Resolver    | `apps/api/src/services/provider/getProvider.ts` |
-| Hetzner Service      | `apps/api/src/services/hetzner.ts`              |
-| DigitalOcean Service | `apps/api/src/services/digitalocean.ts`         |
-| Vultr Service        | `apps/api/src/services/vultr.ts`                |
-| Cloudflare Service   | `apps/api/src/services/cloudflare.ts`           |
-| SSH Service          | `apps/api/src/services/ssh.ts`                  |
-| Terminal WebSocket   | `apps/api/src/services/terminalSocket.ts`       |
-| Piper TTS Service    | `apps/api/src/services/piper.ts`                |
-| Polar Services       | `apps/api/src/services/polar/`                  |
-| ClawHub Service      | `apps/api/src/services/clawhub/`                |
-| Claw Helpers         | `apps/api/src/controllers/claws/helpers/`       |
-| Web Entry            | `apps/web/src/main.tsx`                         |
-| Web Routes           | `apps/web/src/App.tsx`                          |
-| Auth Context         | `apps/web/src/lib/auth/`                        |
-| API Client (Web)     | `apps/web/src/lib/api.ts`                       |
-| URL Paths            | `apps/web/src/lib/paths.ts`                     |
-| Web Routes           | `apps/web/src/lib/routes.ts`                    |
-| Stores               | `apps/web/src/lib/store/`                       |
-| Gateway Client       | `apps/web/src/lib/gateway/`                     |
-| Dashboard Tabs       | `apps/web/src/lib/dashboardTabs.ts`             |
-| Claw Detail Tabs     | `apps/web/src/lib/clawDetailTabs.ts`            |
-| Agent Detail Tabs    | `apps/web/src/lib/agentDetailTabs.ts`           |
-| Blog Utilities       | `apps/web/src/lib/blog/`                        |
-| Claw Utilities       | `apps/web/src/lib/claw-utils/`                  |
-| Types (Web)          | `apps/web/src/ts/Types.ts`                      |
-| Interfaces (Web)     | `apps/web/src/ts/Interfaces.ts`                 |
-| Types (API)          | `apps/api/src/ts/Types.ts`                      |
-| Interfaces (API)     | `apps/api/src/ts/Interfaces.ts`                 |
-| Input Validation     | `packages/shared/src/inputValidation.ts`        |
-| OpenClaw Version     | `packages/shared/src/openclawVersion.ts`        |
+| Purpose            | Path                                            |
+| ------------------ | ----------------------------------------------- |
+| API Entry          | `apps/api/src/index.ts`                         |
+| API App Setup      | `apps/api/src/app.ts`                           |
+| DB Schema          | `apps/api/src/db/schema.ts`                     |
+| API Routes         | `apps/api/src/routes/index.ts`                  |
+| Admin Middleware   | `apps/api/src/middleware/adminOnly.ts`          |
+| Provider Resolver  | `apps/api/src/services/provider/getProvider.ts` |
+| Hetzner Service    | `apps/api/src/services/hetzner.ts`              |
+| Cloudflare Service | `apps/api/src/services/cloudflare.ts`           |
+| SSH Service        | `apps/api/src/services/ssh.ts`                  |
+| Terminal WebSocket | `apps/api/src/services/terminalSocket.ts`       |
+| Piper TTS Service  | `apps/api/src/services/piper.ts`                |
+| Polar Services     | `apps/api/src/services/polar/`                  |
+| ClawHub Service    | `apps/api/src/services/clawhub/`                |
+| Claw Helpers       | `apps/api/src/controllers/claws/helpers/`       |
+| Web Entry          | `apps/web/src/main.tsx`                         |
+| Web Routes         | `apps/web/src/App.tsx`                          |
+| Auth Context       | `apps/web/src/lib/auth/`                        |
+| API Client (Web)   | `apps/web/src/lib/api.ts`                       |
+| URL Paths          | `apps/web/src/lib/paths.ts`                     |
+| Web Routes         | `apps/web/src/lib/routes.ts`                    |
+| Stores             | `apps/web/src/lib/store/`                       |
+| Gateway Client     | `apps/web/src/lib/gateway/`                     |
+| Dashboard Tabs     | `apps/web/src/lib/dashboardTabs.ts`             |
+| Claw Detail Tabs   | `apps/web/src/lib/clawDetailTabs.ts`            |
+| Agent Detail Tabs  | `apps/web/src/lib/agentDetailTabs.ts`           |
+| Blog Utilities     | `apps/web/src/lib/blog/`                        |
+| Claw Utilities     | `apps/web/src/lib/claw-utils/`                  |
+| Types (Web)        | `apps/web/src/ts/Types.ts`                      |
+| Interfaces (Web)   | `apps/web/src/ts/Interfaces.ts`                 |
+| Types (API)        | `apps/api/src/ts/Types.ts`                      |
+| Interfaces (API)   | `apps/api/src/ts/Interfaces.ts`                 |
+| Input Validation   | `packages/shared/src/inputValidation.ts`        |
+| OpenClaw Version   | `packages/shared/src/openclawVersion.ts`        |
 
 ### Internationalization (i18n)
 

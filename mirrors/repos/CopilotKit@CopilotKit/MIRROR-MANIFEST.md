@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 4 followed patterns, 25 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 4 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 4 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 25 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,10 +83,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`examples/showcases/mcp-apps/CLAUDE.md`](examples/showcases/mcp-apps/CLAUDE.md) |
 | 20 | ✓ | [`examples/showcases/mcp-demo/.cursorrules`](examples/showcases/mcp-demo/.cursorrules) |
 | 21 | ✓ | [`examples/showcases/multi-agent-canvas/frontend/.cursorrules`](examples/showcases/multi-agent-canvas/frontend/.cursorrules) |
-| 22 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 23 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 24 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 25 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 22 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
+| 23 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
+| 24 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
+| 25 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 26 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 27 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 28 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,14 +71,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/agent-browser/templates/authenticated-session.sh`](skills/agent-browser/templates/authenticated-session.sh) |
 | 11 | ✓ | [`skills/agent-browser/templates/capture-workflow.sh`](skills/agent-browser/templates/capture-workflow.sh) |
 | 12 | ✓ | [`skills/agent-browser/templates/form-automation.sh`](skills/agent-browser/templates/form-automation.sh) |
-| 13 | ✓ | [`skills/dogfood/references/issue-taxonomy.md`](skills/dogfood/references/issue-taxonomy.md) |
-| 14 | ✓ | [`skills/dogfood/SKILL.md`](skills/dogfood/SKILL.md) |
-| 15 | ✓ | [`skills/dogfood/templates/dogfood-report-template.md`](skills/dogfood/templates/dogfood-report-template.md) |
-| 16 | ✓ | [`skills/electron/SKILL.md`](skills/electron/SKILL.md) |
-| 17 | ✓ | [`skills/slack/references/slack-tasks.md`](skills/slack/references/slack-tasks.md) |
-| 18 | ✓ | [`skills/slack/SKILL.md`](skills/slack/SKILL.md) |
-| 19 | ✓ | [`skills/slack/templates/slack-report-template.md`](skills/slack/templates/slack-report-template.md) |
-| 20 | ✓ | [`skills/vercel-sandbox/SKILL.md`](skills/vercel-sandbox/SKILL.md) |
+| 13 | ✓ | [`skills/agentcore/SKILL.md`](skills/agentcore/SKILL.md) |
+| 14 | ✓ | [`skills/dogfood/references/issue-taxonomy.md`](skills/dogfood/references/issue-taxonomy.md) |
+| 15 | ✓ | [`skills/dogfood/SKILL.md`](skills/dogfood/SKILL.md) |
+| 16 | ✓ | [`skills/dogfood/templates/dogfood-report-template.md`](skills/dogfood/templates/dogfood-report-template.md) |
+| 17 | ✓ | [`skills/electron/SKILL.md`](skills/electron/SKILL.md) |
+| 18 | ✓ | [`skills/slack/references/slack-tasks.md`](skills/slack/references/slack-tasks.md) |
+| 19 | ✓ | [`skills/slack/SKILL.md`](skills/slack/SKILL.md) |
+| 20 | ✓ | [`skills/slack/templates/slack-report-template.md`](skills/slack/templates/slack-report-template.md) |
+| 21 | ✓ | [`skills/vercel-sandbox/SKILL.md`](skills/vercel-sandbox/SKILL.md) |
 
 ---
 

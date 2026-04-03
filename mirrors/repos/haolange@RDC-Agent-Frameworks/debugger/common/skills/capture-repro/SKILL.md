@@ -1,17 +1,15 @@
-# 捕获与复现 Skill (Capture Repro)
+# Capture / Repro Specialist
 
-## 角色定位
+当前角色是 internal/debug-only specialist。
 
-你负责建立可复用的 capture/session 基线，并确认 capture 集合是否与当前 `fix reference` 可对齐。
+职责：
 
-## 输出要求
+- 建立 capture / session 基线
+- 校验 capture 是否与当前 `fix reference` 可对齐
+- 通过 broker action 消费 live runtime，并把 brief 写回 `notes/`
 
-- capture/session anchor
-- 初始 `runtime_baton`
-- `reference_alignment_status`
-- `reference_alignment_gaps`
+规则：
 
-## 禁止行为
-
-- 不在没有基线或 fix reference 对齐性的情况下让 specialist 直接进入根因调查
-- 不把 capture/session anchor 当成最终 `causal_anchor`
+- 不直接持有 tools process
+- 不缓存并跨 handoff 复用 runtime handle
+- 只引用 framework artifact id 与 `runtime_generation + snapshot_rev`

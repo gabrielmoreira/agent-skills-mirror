@@ -4,7 +4,7 @@ description: >
   This skill should be used when the user asks to "create a team", "spawn agents",
   "assign tasks", "coordinate multiple agents", "check team status", "view kanban board",
   "send messages between agents", "manage team tasks", "monitor team progress",
-  or mentions "clawteam", "multi-agent coordination", "team collaboration",
+  or mentions "oh", "multi-agent coordination", "team collaboration",
   "agent inbox", "task board", "spawn worker". This skill should also be triggered
   when the current task is complex enough to benefit from splitting into subtasks
   and delegating to multiple agents — for example when the user asks to "build a
@@ -22,15 +22,15 @@ ClawTeam is a framework-agnostic CLI tool for coordinating multiple AI agents as
 It provides team/task management, inter-agent messaging, git worktree isolation, provider-aware
 runtime profiles, git context injection, snapshots, and terminal-based monitoring dashboards.
 
-All operations are performed via the `clawteam` CLI. Data is stored in `~/.clawteam/` by default.
+All operations are performed via the `oh` CLI. Data is stored in `~/.oh/` by default.
 
 ## Installation
 
 ```bash
-pip install clawteam
+pip install oh
 ```
 
-Requires Python 3.10+. For P2P transport support: `pip install clawteam[p2p]`.
+Requires Python 3.10+. For P2P transport support: `pip install oh[p2p]`.
 
 ## Prerequisites
 

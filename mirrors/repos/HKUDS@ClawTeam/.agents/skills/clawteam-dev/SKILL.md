@@ -1,7 +1,7 @@
 ---
-name: clawteam-dev
+name: oh-dev
 description: >
-  This skill should be used when the user asks to "run e2e test", "test clawteam",
+  This skill should be used when the user asks to "run e2e test", "test oh",
   "end-to-end test", "test agent team", "verify clawteam works", "dev test", or wants
   to validate the full ClawTeam lifecycle. Runs a complete end-to-end test: cleanup →
   create team → create tasks with dependencies → spawn agents → wait for completion →
@@ -34,37 +34,37 @@ This ensures a clean slate regardless of what team names were used before or if 
 
 ```bash
 # 1. Kill ALL clawteam tmux sessions
-for sess in $(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^clawteam-'); do
+for sess in $(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^oh-'); do
   tmux kill-session -t "$sess" 2>/dev/null
 done
 echo "tmux sessions cleaned"
 
 # 2. Remove ALL clawteam worktrees
-for wt in $(git worktree list --porcelain | grep 'worktree.*/\.clawteam/' | awk '{print $2}'); do
+for wt in $(git worktree list --porcelain | grep 'worktree.*/\.oh/' | awk '{print $2}'); do
   git worktree remove --force "$wt" 2>/dev/null
 done
 echo "worktrees cleaned"
 
 # 3. Delete ALL clawteam branches
-for br in $(git branch --list 'clawteam/*' | tr -d ' +'); do
+for br in $(git branch --list 'oh/*' | tr -d ' +'); do
   git branch -D "$br" 2>/dev/null
 done
 echo "branches cleaned"
 
 # 4. Remove all team/task/workspace data (preserve config.json)
-rm -rf ~/.clawteam/teams/ ~/.clawteam/tasks/ ~/.clawteam/workspaces/ ~/.clawteam/inboxes/ ~/.clawteam/events/ ~/.clawteam/plans/
+rm -rf ~/.oh/teams/ ~/.oh/tasks/ ~/.oh/workspaces/ ~/.oh/inboxes/ ~/.oh/events/ ~/.oh/plans/
 echo "data cleaned"
 
 # 5. Verify clean state
 echo "=== Verification ==="
 git worktree list
-git branch --list 'clawteam/*' | grep . || echo "OK: no clawteam branches"
-tmux list-sessions 2>&1 | grep '^clawteam-' || echo "OK: no clawteam tmux sessions"
-ls ~/.clawteam/ 2>/dev/null
+git branch --list 'oh/*' | grep . || echo "OK: no clawteam branches"
+tmux list-sessions 2>&1 | grep '^oh-' || echo "OK: no clawteam tmux sessions"
+ls ~/.oh/ 2>/dev/null
 ```
 
 **Expected**: Only the main worktree remains, no clawteam branches, no clawteam tmux sessions,
-`~/.clawteam/` contains only `config.json`.
+`~/.oh/` contains only `config.json`.
 
 ### Step 2: Set Leader Identity
 
@@ -118,7 +118,7 @@ clawteam spawn --team e2e-test --agent-name worker3 \
   --task "Write pytest tests in test_all.py for hello.py (hello function) and goodbye.py (goodbye function). When done, mark your task as completed and send a summary to leader."
 ```
 
-**Expected**: Each prints `OK Agent '<name>' spawned in tmux (clawteam-e2e-test:<name>)` with a workspace path.
+**Expected**: Each prints `OK Agent '<name>' spawned in tmux (oh-e2e-test:<name>)` with a workspace path.
 
 ### Step 6: Verify Team State
 
@@ -126,13 +126,13 @@ clawteam spawn --team e2e-test --agent-name worker3 \
 clawteam team status e2e-test
 clawteam board show e2e-test
 git worktree list
-tmux list-windows -t clawteam-e2e-test
+tmux list-windows -t oh-e2e-test
 ```
 
 **Expected**:
 - 4 members (leader + 3 workers)
 - Board shows 2 pending, 1 blocked tasks
-- 3 worktrees under `~/.clawteam/workspaces/e2e-test/`
+- 3 worktrees under `~/.oh/workspaces/e2e-test/`
 - 3 tmux windows
 
 ### Step 7: Wait for All Tasks to Complete
@@ -173,22 +173,22 @@ Reuse the same full cleanup from Step 1 to remove everything created during this
 
 ```bash
 # Kill ALL clawteam tmux sessions
-for sess in $(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^clawteam-'); do
+for sess in $(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^oh-'); do
   tmux kill-session -t "$sess" 2>/dev/null
 done
 
 # Remove ALL clawteam worktrees
-for wt in $(git worktree list --porcelain | grep 'worktree.*/\.clawteam/' | awk '{print $2}'); do
+for wt in $(git worktree list --porcelain | grep 'worktree.*/\.oh/' | awk '{print $2}'); do
   git worktree remove --force "$wt" 2>/dev/null
 done
 
 # Delete ALL clawteam branches
-for br in $(git branch --list 'clawteam/*' | tr -d ' +'); do
+for br in $(git branch --list 'oh/*' | tr -d ' +'); do
   git branch -D "$br" 2>/dev/null
 done
 
 # Remove all team/task/workspace data (preserve config.json)
-rm -rf ~/.clawteam/teams/ ~/.clawteam/tasks/ ~/.clawteam/workspaces/ ~/.clawteam/inboxes/ ~/.clawteam/events/ ~/.clawteam/plans/
+rm -rf ~/.oh/teams/ ~/.oh/tasks/ ~/.oh/workspaces/ ~/.oh/inboxes/ ~/.oh/events/ ~/.oh/plans/
 
 echo "E2E test cleanup complete"
 ```
@@ -199,11 +199,11 @@ echo "E2E test cleanup complete"
 
 ```bash
 git worktree list | grep -v '^\/' | head -1  # should show only main
-git branch --list 'clawteam/*' | grep . || echo "OK: no clawteam branches"
-tmux list-sessions 2>&1 | grep '^clawteam-' || echo "OK: no clawteam tmux sessions"
-ls ~/.clawteam/teams/ 2>&1 | grep -q "No such file" && echo "OK: no team data"
-ls ~/.clawteam/tasks/ 2>&1 | grep -q "No such file" && echo "OK: no task data"
-ls ~/.clawteam/workspaces/ 2>&1 | grep -q "No such file" && echo "OK: no workspace data"
+git branch --list 'oh/*' | grep . || echo "OK: no clawteam branches"
+tmux list-sessions 2>&1 | grep '^oh-' || echo "OK: no clawteam tmux sessions"
+ls ~/.oh/teams/ 2>&1 | grep -q "No such file" && echo "OK: no team data"
+ls ~/.oh/tasks/ 2>&1 | grep -q "No such file" && echo "OK: no task data"
+ls ~/.oh/workspaces/ 2>&1 | grep -q "No such file" && echo "OK: no workspace data"
 ```
 
 **Expected**: All lines start with `OK:`.

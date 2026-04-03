@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,29 +61,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/browser-use/SKILL.md`](skills/browser-use/SKILL.md) |
-| 4 | ✓ | [`skills/cloud/references/api-v2.md`](skills/cloud/references/api-v2.md) |
-| 5 | ✓ | [`skills/cloud/references/api-v3.md`](skills/cloud/references/api-v3.md) |
-| 6 | ✓ | [`skills/cloud/references/browser-api.md`](skills/cloud/references/browser-api.md) |
-| 7 | ✓ | [`skills/cloud/references/features.md`](skills/cloud/references/features.md) |
-| 8 | ✓ | [`skills/cloud/references/guides/chat-ui.md`](skills/cloud/references/guides/chat-ui.md) |
-| 9 | ✓ | [`skills/cloud/references/guides/subagent.md`](skills/cloud/references/guides/subagent.md) |
-| 10 | ✓ | [`skills/cloud/references/guides/tools-integration.md`](skills/cloud/references/guides/tools-integration.md) |
-| 11 | ✓ | [`skills/cloud/references/patterns.md`](skills/cloud/references/patterns.md) |
-| 12 | ✓ | [`skills/cloud/references/quickstart.md`](skills/cloud/references/quickstart.md) |
-| 13 | ✓ | [`skills/cloud/references/sessions.md`](skills/cloud/references/sessions.md) |
-| 14 | ✓ | [`skills/cloud/SKILL.md`](skills/cloud/SKILL.md) |
-| 15 | ✓ | [`skills/open-source/references/actor.md`](skills/open-source/references/actor.md) |
-| 16 | ✓ | [`skills/open-source/references/agent.md`](skills/open-source/references/agent.md) |
-| 17 | ✓ | [`skills/open-source/references/browser.md`](skills/open-source/references/browser.md) |
-| 18 | ✓ | [`skills/open-source/references/examples.md`](skills/open-source/references/examples.md) |
-| 19 | ✓ | [`skills/open-source/references/integrations.md`](skills/open-source/references/integrations.md) |
-| 20 | ✓ | [`skills/open-source/references/models.md`](skills/open-source/references/models.md) |
-| 21 | ✓ | [`skills/open-source/references/monitoring.md`](skills/open-source/references/monitoring.md) |
-| 22 | ✓ | [`skills/open-source/references/quickstart.md`](skills/open-source/references/quickstart.md) |
-| 23 | ✓ | [`skills/open-source/references/tools.md`](skills/open-source/references/tools.md) |
-| 24 | ✓ | [`skills/open-source/SKILL.md`](skills/open-source/SKILL.md) |
-| 25 | ✓ | [`skills/remote-browser/SKILL.md`](skills/remote-browser/SKILL.md) |
+| 3 | ✓ | [`skills/browser-use/references/cdp-python.md`](skills/browser-use/references/cdp-python.md) |
+| 4 | ✓ | [`skills/browser-use/references/multi-session.md`](skills/browser-use/references/multi-session.md) |
+| 5 | ✓ | [`skills/browser-use/SKILL.md`](skills/browser-use/SKILL.md) |
+| 6 | ✓ | [`skills/cloud/references/api-v2.md`](skills/cloud/references/api-v2.md) |
+| 7 | ✓ | [`skills/cloud/references/api-v3.md`](skills/cloud/references/api-v3.md) |
+| 8 | ✓ | [`skills/cloud/references/browser-api.md`](skills/cloud/references/browser-api.md) |
+| 9 | ✓ | [`skills/cloud/references/features.md`](skills/cloud/references/features.md) |
+| 10 | ✓ | [`skills/cloud/references/guides/chat-ui.md`](skills/cloud/references/guides/chat-ui.md) |
+| 11 | ✓ | [`skills/cloud/references/guides/subagent.md`](skills/cloud/references/guides/subagent.md) |
+| 12 | ✓ | [`skills/cloud/references/guides/tools-integration.md`](skills/cloud/references/guides/tools-integration.md) |
+| 13 | ✓ | [`skills/cloud/references/patterns.md`](skills/cloud/references/patterns.md) |
+| 14 | ✓ | [`skills/cloud/references/quickstart.md`](skills/cloud/references/quickstart.md) |
+| 15 | ✓ | [`skills/cloud/references/sessions.md`](skills/cloud/references/sessions.md) |
+| 16 | ✓ | [`skills/cloud/SKILL.md`](skills/cloud/SKILL.md) |
+| 17 | ✓ | [`skills/open-source/references/actor.md`](skills/open-source/references/actor.md) |
+| 18 | ✓ | [`skills/open-source/references/agent.md`](skills/open-source/references/agent.md) |
+| 19 | ✓ | [`skills/open-source/references/browser.md`](skills/open-source/references/browser.md) |
+| 20 | ✓ | [`skills/open-source/references/examples.md`](skills/open-source/references/examples.md) |
+| 21 | ✓ | [`skills/open-source/references/integrations.md`](skills/open-source/references/integrations.md) |
+| 22 | ✓ | [`skills/open-source/references/models.md`](skills/open-source/references/models.md) |
+| 23 | ✓ | [`skills/open-source/references/monitoring.md`](skills/open-source/references/monitoring.md) |
+| 24 | ✓ | [`skills/open-source/references/quickstart.md`](skills/open-source/references/quickstart.md) |
+| 25 | ✓ | [`skills/open-source/references/tools.md`](skills/open-source/references/tools.md) |
+| 26 | ✓ | [`skills/open-source/SKILL.md`](skills/open-source/SKILL.md) |
+| 27 | ✓ | [`skills/remote-browser/SKILL.md`](skills/remote-browser/SKILL.md) |
 
 ---
 

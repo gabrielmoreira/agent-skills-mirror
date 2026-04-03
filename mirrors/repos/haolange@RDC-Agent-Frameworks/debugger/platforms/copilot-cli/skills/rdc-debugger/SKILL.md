@@ -19,40 +19,44 @@ metadata:
 - 缺失输入补料
 - intake 规范化
 - capture 导入 + case/run 初始化
-- `artifacts/intake_gate.yaml`
-- `artifacts/runtime_topology.yaml`
+- broker startup
 - specialist 分派、阶段推进与质量门裁决
 
 固定顺序：
 
 1. `intent_gate`
 2. `entry_gate`
-3. binding/preflight + capture import + case/run bootstrap
-4. `artifacts/intake_gate.yaml` pass
-5. `artifacts/runtime_topology.yaml`
-6. `staged_handoff`
-7. `artifacts/run_compliance.yaml` pass
+3. `accept_intake`，内部完成 capture import、case/run bootstrap、`intake_gate` 与 broker startup
+4. `triage`
+5. `dispatch/specialist loop`
+6. `skeptic`
+7. `curator`
+8. `final_audit`
 
-在 `artifacts/intake_gate.yaml` 通过前，不得进入 specialist dispatch 或 live `rd.*` 分析。
+在 `artifacts/intake_gate.yaml` 通过，且 `artifacts/runtime_session.yaml`、`artifacts/runtime_snapshot.yaml`、`artifacts/ownership_lease.yaml`、`artifacts/runtime_failure.yaml` 产出前，不得进入 specialist dispatch 或 live `rd.*` 分析。
 
 本 skill 只引用当前平台根目录的 `common/`：
 
-- common/skills/rdc-debugger/SKILL.md
-- 进入任何平台真相相关工作前，必须先校验 common/config/platform_adapter.json
-- local_support / remote_support / enforcement_layer / coordination_mode 统一以 common/config/platform_capabilities.json 的当前平台定义为准。
-- 当前平台的 `sub_agent_mode = puppet_sub_agents`，`peer_communication = via_main_agent`，`agent_description_mode = independent_files`。
-- 当前平台的 `specialist_dispatch_requirement = required`，`host_delegation_policy = platform_managed`，`host_delegation_fallback = none`。
-- local live policy = `multi_context_orchestrated`；remote live policy = `single_runtime_owner`。
-- 当前平台的执行约束补充：
-- 当前平台的 local `staged_handoff` 允许 specialist 各持独立 context，但所有协调、brief 重组与裁决都必须经 `rdc-debugger`。
-- 跨 context live transfer / resume 只能通过 `runtime_baton`，不得直接跨 specialist 借用 live runtime。
-- remote 一律服从 `single_runtime_owner`，不能把 local 的多 context 语义抬到 remote。
-- 默认 `orchestration_mode = multi_agent`；当前平台要求先走 specialist dispatch。
-- 只有用户显式要求不要 multi-agent context 时，才允许 `single_agent_by_user`，并且必须把 `single_agent_reason = user_requested` 落盘到 `entry_gate.yaml` 与 `runtime_topology.yaml`。
+- `common/skills/rdc-debugger/SKILL.md`
+- 进入任何平台真相相关工作前，必须先校验 `common/config/platform_adapter.json`
+- local_support / remote_support / enforcement_layer / coordination_mode 统一以 `common/config/platform_capabilities.json` 的当前平台定义为准
+
+当前平台固定 contract：
+
+- `coordination_mode = staged_handoff`
+- `orchestration_mode = multi_agent`
+- `live_runtime_policy = single_runtime_single_context`
+- `hook_ssot = shared_harness`
+
+执行约束：
+
+- live tools process 始终由 broker / coordinator 直接持有。
+- specialist 只能在有效 `ownership_lease` 下通过 broker action 请求访问 live runtime。
+- 不得直接持有 live CLI / process，不得缓存并跨 handoff 复用 runtime handle。
+- 不得临时写 Python、PowerShell 或 shell wrapper 批处理 live CLI。
 - specialist dispatch 后，主 agent 必须进入 `waiting_for_specialist_brief` 并持续汇总阶段回报；短时 silence 不得触发 orchestrator 抢活。
 - 超过框架预算仍未收到阶段回报时，必须进入 `BLOCKED_SPECIALIST_FEEDBACK_TIMEOUT` 或等价阻断状态，而不是让 orchestrator 抢做 specialist live investigation。
 
-
 未先将顶层 `debugger/common/` 拷入当前平台根目录的 `common/` 之前，不允许在宿主中使用当前平台模板。
 
-运行时 case/run 现场与第二层报告统一写入平台根目录下的 `workspace/`
+运行时 case/run 现场与第二层报告统一写入平台根目录下的 `workspace/`。

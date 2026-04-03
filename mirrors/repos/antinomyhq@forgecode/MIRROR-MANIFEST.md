@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `antinomyhq/forgecode` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `antinomyhq/forgecode` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `antinomyhq/forgecode` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,15 +64,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.forge/skills/create-github-issue/SKILL.md`](.forge/skills/create-github-issue/SKILL.md) |
 | 4 | ✓ | [`.forge/skills/create-plan/SKILL.md`](.forge/skills/create-plan/SKILL.md) |
 | 5 | ✓ | [`.forge/skills/debug-cli/SKILL.md`](.forge/skills/debug-cli/SKILL.md) |
-| 6 | ✓ | [`.forge/skills/post-forge-feature/SKILL.md`](.forge/skills/post-forge-feature/SKILL.md) |
-| 7 | ✓ | [`.forge/skills/resolve-conflicts/SKILL.md`](.forge/skills/resolve-conflicts/SKILL.md) |
-| 8 | ✓ | [`.forge/skills/write-release-notes/SKILL.md`](.forge/skills/write-release-notes/SKILL.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`crates/forge_repo/src/fixtures/skills_with_resources/minimal-skill/SKILL.md`](crates/forge_repo/src/fixtures/skills_with_resources/minimal-skill/SKILL.md) |
-| 11 | ✓ | [`crates/forge_repo/src/fixtures/skills_with_resources/test-skill/SKILL.md`](crates/forge_repo/src/fixtures/skills_with_resources/test-skill/SKILL.md) |
-| 12 | ✓ | [`crates/forge_repo/src/skills/create-skill/SKILL.md`](crates/forge_repo/src/skills/create-skill/SKILL.md) |
-| 13 | ✓ | [`crates/forge_repo/src/skills/execute-plan/SKILL.md`](crates/forge_repo/src/skills/execute-plan/SKILL.md) |
-| 14 | ✓ | [`crates/forge_repo/src/skills/github-pr-description/SKILL.md`](crates/forge_repo/src/skills/github-pr-description/SKILL.md) |
+| 6 | ✓ | [`.forge/skills/github-pr-comments/SKILL.md`](.forge/skills/github-pr-comments/SKILL.md) |
+| 7 | ✓ | [`.forge/skills/post-forge-feature/SKILL.md`](.forge/skills/post-forge-feature/SKILL.md) |
+| 8 | ✓ | [`.forge/skills/resolve-conflicts/SKILL.md`](.forge/skills/resolve-conflicts/SKILL.md) |
+| 9 | ✓ | [`.forge/skills/test-reasoning/SKILL.md`](.forge/skills/test-reasoning/SKILL.md) |
+| 10 | ✓ | [`.forge/skills/write-release-notes/SKILL.md`](.forge/skills/write-release-notes/SKILL.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`crates/forge_repo/src/fixtures/skills_with_resources/minimal-skill/SKILL.md`](crates/forge_repo/src/fixtures/skills_with_resources/minimal-skill/SKILL.md) |
+| 13 | ✓ | [`crates/forge_repo/src/fixtures/skills_with_resources/test-skill/SKILL.md`](crates/forge_repo/src/fixtures/skills_with_resources/test-skill/SKILL.md) |
+| 14 | ✓ | [`crates/forge_repo/src/skills/create-skill/SKILL.md`](crates/forge_repo/src/skills/create-skill/SKILL.md) |
+| 15 | ✓ | [`crates/forge_repo/src/skills/execute-plan/SKILL.md`](crates/forge_repo/src/skills/execute-plan/SKILL.md) |
+| 16 | ✓ | [`crates/forge_repo/src/skills/github-pr-description/SKILL.md`](crates/forge_repo/src/skills/github-pr-description/SKILL.md) |
 
 ---
 

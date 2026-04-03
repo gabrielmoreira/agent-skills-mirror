@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns, 157 file(s) materialized.
+Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns, 152 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 157 |
+| Files         | 152 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -209,13 +209,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 148 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md`](skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md) |
 | 149 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md`](skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md) |
 | 150 | ✓ | [`skills/uplifting-components-to-slds2/SKILL.md`](skills/uplifting-components-to-slds2/SKILL.md) |
-| 151 | ✓ | [`skills/using-ui-bundle-salesforce-data/references/mutation-query-generation.md`](skills/using-ui-bundle-salesforce-data/references/mutation-query-generation.md) |
-| 152 | ✓ | [`skills/using-ui-bundle-salesforce-data/references/query-testing.md`](skills/using-ui-bundle-salesforce-data/references/query-testing.md) |
-| 153 | ✓ | [`skills/using-ui-bundle-salesforce-data/references/read-query-generation.md`](skills/using-ui-bundle-salesforce-data/references/read-query-generation.md) |
-| 154 | ✓ | [`skills/using-ui-bundle-salesforce-data/references/schema-introspection.md`](skills/using-ui-bundle-salesforce-data/references/schema-introspection.md) |
-| 155 | ✓ | [`skills/using-ui-bundle-salesforce-data/references/ui-bundle-integration.md`](skills/using-ui-bundle-salesforce-data/references/ui-bundle-integration.md) |
-| 156 | ✓ | [`skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh`](skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh) |
-| 157 | ✓ | [`skills/using-ui-bundle-salesforce-data/SKILL.md`](skills/using-ui-bundle-salesforce-data/SKILL.md) |
+| 151 | ✓ | [`skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh`](skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh) |
+| 152 | ✓ | [`skills/using-ui-bundle-salesforce-data/SKILL.md`](skills/using-ui-bundle-salesforce-data/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 3 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`internal/cmd/stats/AGENTS.md`](internal/cmd/stats/AGENTS.md) |
-| 3 | ✓ | [`internal/ui/AGENTS.md`](internal/ui/AGENTS.md) |
+| 3 | ✓ | [`internal/skills/builtin/crush-config/SKILL.md`](internal/skills/builtin/crush-config/SKILL.md) |
+| 4 | ✓ | [`internal/ui/AGENTS.md`](internal/ui/AGENTS.md) |
 
 ---
 

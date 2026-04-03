@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `clawwork-ai/ClawWork` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `clawwork-ai/ClawWork` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `clawwork-ai/ClawWork` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/sync-gateway-docs/SKILL.md`](.claude/skills/sync-gateway-docs/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/team-creator/SKILL.md`](.claude/skills/team-creator/SKILL.md) |
+| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

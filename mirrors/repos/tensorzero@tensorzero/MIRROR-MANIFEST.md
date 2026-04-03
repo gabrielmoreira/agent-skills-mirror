@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tensorzero/tensorzero` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `tensorzero/tensorzero` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tensorzero/tensorzero` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,11 +75,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`crates/tensorzero-core/tests/e2e/endpoints/AGENTS.md`](crates/tensorzero-core/tests/e2e/endpoints/AGENTS.md) |
 | 15 | ✓ | [`crates/tensorzero-core/tests/e2e/provider_tools/AGENTS.md`](crates/tensorzero-core/tests/e2e/provider_tools/AGENTS.md) |
 | 16 | ✓ | [`crates/tensorzero-core/tests/e2e/provider_tools/CLAUDE.md`](crates/tensorzero-core/tests/e2e/provider_tools/CLAUDE.md) |
-| 17 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 18 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 19 | ✓ | [`for-agents/plugins/tensorzero/skills/deploy/SKILL.md`](for-agents/plugins/tensorzero/skills/deploy/SKILL.md) |
-| 20 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 21 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 17 | ✓ | [`crates/tensorzero-stored-config/AGENTS.md`](crates/tensorzero-stored-config/AGENTS.md) |
+| 18 | ✓ | [`crates/tensorzero-stored-config/CLAUDE.md`](crates/tensorzero-stored-config/CLAUDE.md) |
+| 19 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 20 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 21 | ✓ | [`for-agents/plugins/tensorzero/skills/deploy/SKILL.md`](for-agents/plugins/tensorzero/skills/deploy/SKILL.md) |
+| 22 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 23 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
 
 ---
 

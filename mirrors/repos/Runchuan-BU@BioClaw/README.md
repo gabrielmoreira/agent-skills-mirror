@@ -86,6 +86,7 @@ Recent updates make BioClaw feel much closer to a real multi-chat research works
 
 - **Multiple web chats, each with its own memory** — the local web UI now lets you open separate threads like ChatGPT, so one chat can stay on literature search while another focuses on QC or plotting.
 - **A built-in control layer in chat** — you can now manage the current thread directly in chat with commands like `/status`, `/doctor`, `/threads`, `/new`, `/use`, `/rename`, `/archive`, `/workspace`, `/provider`, and `/model`.
+- **Host-side SSH straight from chat** — you can type `ssh <host-alias>` or `ssh <host-alias> -- <command>` in the chat box and BioClaw will run it from the host using your configured SSH aliases.
 - **Per-thread working directory** — `/dir` lets each thread remember its own default folder inside the workspace, so different chats can work in different subdirectories without stepping on each other.
 - **Reusable shortcuts for recurring workflows** — `/commands` and `/alias` let you save common prompts as short commands, so repeated lab routines do not need to be typed from scratch every time.
 - **Skill visibility and preference control** — `/skills` shows the installed BioClaw skill modules and lets you mark preferred ones for the current thread or agent.
@@ -235,6 +236,31 @@ Supported platforms include **WhatsApp** (default), **Feishu (Lark)**, **WeCom**
 <img src="docs/images/dashboard/UI-bioclaw.jpg" width="1000" />
 
 **Lab trace** (SSE timeline, workspace tree) is built into the local web UI — no extra config needed. See **[docs/DASHBOARD.md](docs/DASHBOARD.md)**.
+
+### SSH From Chat
+
+BioClaw can execute host-side SSH commands directly from the chat control plane. This is designed for cases like checking a remote login node, tailing a result file, or running a short diagnostic command on another server without leaving the conversation.
+
+Configure host aliases in `~/.ssh/config`, for example:
+
+```sshconfig
+Host lambda-cloud-54-140
+  HostName 192.222.54.140
+  User ubuntu
+  IdentityFile ~/.ssh/zaixi_lambda.pem
+  IdentitiesOnly yes
+```
+
+Then use these commands in chat:
+
+```text
+/ssh list
+ssh lambda-cloud-54-140
+ssh lambda-cloud-54-140 -- hostname
+/ssh run lambda-cloud-54-140 -- ls -la ~
+```
+
+By default BioClaw reads simple aliases from `~/.ssh/config`. To restrict it further, set `BIOCLAW_SSH_ALLOWED_HOSTS` in `.env`.
 
 ## Second Quick Start
 

@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-03-28
+Auto-generated from all feature plans. Last updated: 2026-04-02
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -20,6 +20,8 @@ Auto-generated from all feature plans. Last updated: 2026-03-28
 - N/A (stateless proxy to Atlassian REST APIs) (009-atlassian-mcp-server)
 - Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), asyncio (UDP receivers), pysnmp (SNMP trap decoding), python-syslog-rfc5424 (syslog parsing), xflow (IPFIX/NetFlow decoding) (010-telemetry-receivers)
 - In-memory only (data lost on restart, acceptable for demo/testing scope) (010-telemetry-receivers)
+- Markdown (documentation reorganization) + N/A (pure markdown files, OpenClaw read tool) (011-soul-optimization)
+- Filesystem (`~/.openclaw/workspace/`) (011-soul-optimization)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -39,9 +41,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 011-soul-optimization: Added Markdown (documentation reorganization) + N/A (pure markdown files, OpenClaw read tool)
 - 010-telemetry-receivers: Added Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), asyncio (UDP receivers), pysnmp (SNMP trap decoding), python-syslog-rfc5424 (syslog parsing), xflow (IPFIX/NetFlow decoding)
 - 010-telemetry-receivers: Added Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), asyncio (UDP receivers), pysnmp (SNMP trap decoding), python-syslog-rfc5424 (syslog parsing), xflow (IPFIX/NetFlow decoding)
-- 009-atlassian-mcp-server: Added Python 3.10+ (community MCP server). No netclaw-authored server code — configuration and skill documentation only. + mcp-atlassian (pip package), Python 3.10+
 
 
 <!-- MANUAL ADDITIONS START -->

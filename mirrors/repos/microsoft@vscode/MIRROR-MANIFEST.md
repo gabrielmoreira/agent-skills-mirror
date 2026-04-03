@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 68 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,11 +122,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 61 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
 | 62 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
 | 63 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
-| 64 | ✓ | [`src/vs/sessions/skills/merge-changes/SKILL.md`](src/vs/sessions/skills/merge-changes/SKILL.md) |
+| 64 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
 | 65 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
-| 66 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
-| 67 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
-| 68 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
+| 66 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
+| 67 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
+| 68 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
+| 69 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
 
 ---
 

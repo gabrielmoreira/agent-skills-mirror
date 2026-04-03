@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
+Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed patterns, 106 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 90 |
+| Files         | 106 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,65 +90,81 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/cancel/SKILL.md`](skills/cancel/SKILL.md) |
 | 30 | ✓ | [`skills/ccg/SKILL.md`](skills/ccg/SKILL.md) |
 | 31 | ✓ | [`skills/configure-notifications/SKILL.md`](skills/configure-notifications/SKILL.md) |
-| 32 | ✓ | [`skills/deep-dive/SKILL.md`](skills/deep-dive/SKILL.md) |
-| 33 | ✓ | [`skills/deep-interview/SKILL.md`](skills/deep-interview/SKILL.md) |
-| 34 | ✓ | [`skills/deepinit/SKILL.md`](skills/deepinit/SKILL.md) |
-| 35 | ✓ | [`skills/external-context/SKILL.md`](skills/external-context/SKILL.md) |
-| 36 | ✓ | [`skills/hud/SKILL.md`](skills/hud/SKILL.md) |
-| 37 | ✓ | [`skills/learner/SKILL.md`](skills/learner/SKILL.md) |
-| 38 | ✓ | [`skills/mcp-setup/SKILL.md`](skills/mcp-setup/SKILL.md) |
-| 39 | ✓ | [`skills/omc-doctor/SKILL.md`](skills/omc-doctor/SKILL.md) |
-| 40 | ✓ | [`skills/omc-reference/SKILL.md`](skills/omc-reference/SKILL.md) |
-| 41 | ✓ | [`skills/omc-setup/phases/01-install-claude-md.md`](skills/omc-setup/phases/01-install-claude-md.md) |
-| 42 | ✓ | [`skills/omc-setup/phases/02-configure.md`](skills/omc-setup/phases/02-configure.md) |
-| 43 | ✓ | [`skills/omc-setup/phases/03-integrations.md`](skills/omc-setup/phases/03-integrations.md) |
-| 44 | ✓ | [`skills/omc-setup/phases/04-welcome.md`](skills/omc-setup/phases/04-welcome.md) |
-| 45 | ✓ | [`skills/omc-setup/SKILL.md`](skills/omc-setup/SKILL.md) |
-| 46 | ✓ | [`skills/omc-teams/SKILL.md`](skills/omc-teams/SKILL.md) |
-| 47 | ✓ | [`skills/plan/SKILL.md`](skills/plan/SKILL.md) |
-| 48 | ✓ | [`skills/project-session-manager/lib/config.sh`](skills/project-session-manager/lib/config.sh) |
-| 49 | ✓ | [`skills/project-session-manager/lib/parse.sh`](skills/project-session-manager/lib/parse.sh) |
-| 50 | ✓ | [`skills/project-session-manager/lib/providers/azure-devops.sh`](skills/project-session-manager/lib/providers/azure-devops.sh) |
-| 51 | ✓ | [`skills/project-session-manager/lib/providers/bitbucket.sh`](skills/project-session-manager/lib/providers/bitbucket.sh) |
-| 52 | ✓ | [`skills/project-session-manager/lib/providers/gitea.sh`](skills/project-session-manager/lib/providers/gitea.sh) |
-| 53 | ✓ | [`skills/project-session-manager/lib/providers/github.sh`](skills/project-session-manager/lib/providers/github.sh) |
-| 54 | ✓ | [`skills/project-session-manager/lib/providers/gitlab.sh`](skills/project-session-manager/lib/providers/gitlab.sh) |
-| 55 | ✓ | [`skills/project-session-manager/lib/providers/interface.sh`](skills/project-session-manager/lib/providers/interface.sh) |
-| 56 | ✓ | [`skills/project-session-manager/lib/providers/jira.sh`](skills/project-session-manager/lib/providers/jira.sh) |
-| 57 | ✓ | [`skills/project-session-manager/lib/session.sh`](skills/project-session-manager/lib/session.sh) |
-| 58 | ✓ | [`skills/project-session-manager/lib/tmux.sh`](skills/project-session-manager/lib/tmux.sh) |
-| 59 | ✓ | [`skills/project-session-manager/lib/worktree.sh`](skills/project-session-manager/lib/worktree.sh) |
-| 60 | ✓ | [`skills/project-session-manager/psm.sh`](skills/project-session-manager/psm.sh) |
-| 61 | ✓ | [`skills/project-session-manager/SKILL.md`](skills/project-session-manager/SKILL.md) |
-| 62 | ✓ | [`skills/project-session-manager/templates/feature.md`](skills/project-session-manager/templates/feature.md) |
-| 63 | ✓ | [`skills/project-session-manager/templates/issue-fix.md`](skills/project-session-manager/templates/issue-fix.md) |
-| 64 | ✓ | [`skills/project-session-manager/templates/pr-review.md`](skills/project-session-manager/templates/pr-review.md) |
-| 65 | ✓ | [`skills/project-session-manager/templates/projects.json`](skills/project-session-manager/templates/projects.json) |
-| 66 | ✓ | [`skills/ralph/SKILL.md`](skills/ralph/SKILL.md) |
-| 67 | ✓ | [`skills/ralplan/SKILL.md`](skills/ralplan/SKILL.md) |
-| 68 | ✓ | [`skills/release/SKILL.md`](skills/release/SKILL.md) |
-| 69 | ✓ | [`skills/sciomc/SKILL.md`](skills/sciomc/SKILL.md) |
-| 70 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
-| 71 | ✓ | [`skills/skill/SKILL.md`](skills/skill/SKILL.md) |
-| 72 | ✓ | [`skills/team/SKILL.md`](skills/team/SKILL.md) |
-| 73 | ✓ | [`skills/trace/SKILL.md`](skills/trace/SKILL.md) |
-| 74 | ✓ | [`skills/ultraqa/SKILL.md`](skills/ultraqa/SKILL.md) |
-| 75 | ✓ | [`skills/ultrawork/SKILL.md`](skills/ultrawork/SKILL.md) |
-| 76 | ✓ | [`skills/visual-verdict/SKILL.md`](skills/visual-verdict/SKILL.md) |
-| 77 | ✓ | [`skills/writer-memory/lib/character-tracker.ts`](skills/writer-memory/lib/character-tracker.ts) |
-| 78 | ✓ | [`skills/writer-memory/lib/memory-manager.ts`](skills/writer-memory/lib/memory-manager.ts) |
-| 79 | ✓ | [`skills/writer-memory/lib/relationship-graph.ts`](skills/writer-memory/lib/relationship-graph.ts) |
-| 80 | ✓ | [`skills/writer-memory/lib/scene-organizer.ts`](skills/writer-memory/lib/scene-organizer.ts) |
-| 81 | ✓ | [`skills/writer-memory/lib/synopsis-builder.ts`](skills/writer-memory/lib/synopsis-builder.ts) |
-| 82 | ✓ | [`skills/writer-memory/SKILL.md`](skills/writer-memory/SKILL.md) |
-| 83 | ✓ | [`skills/writer-memory/templates/synopsis-template.md`](skills/writer-memory/templates/synopsis-template.md) |
-| 84 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 85 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
-| 86 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
-| 87 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
-| 88 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
-| 89 | ✓ | [`src/tools/diagnostics/AGENTS.md`](src/tools/diagnostics/AGENTS.md) |
-| 90 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
+| 32 | ✓ | [`skills/debug/SKILL.md`](skills/debug/SKILL.md) |
+| 33 | ✓ | [`skills/deep-dive/SKILL.md`](skills/deep-dive/SKILL.md) |
+| 34 | ✓ | [`skills/deep-interview/SKILL.md`](skills/deep-interview/SKILL.md) |
+| 35 | ✓ | [`skills/deepinit/SKILL.md`](skills/deepinit/SKILL.md) |
+| 36 | ✓ | [`skills/external-context/SKILL.md`](skills/external-context/SKILL.md) |
+| 37 | ✓ | [`skills/hud/SKILL.md`](skills/hud/SKILL.md) |
+| 38 | ✓ | [`skills/learner/SKILL.md`](skills/learner/SKILL.md) |
+| 39 | ✓ | [`skills/mcp-setup/SKILL.md`](skills/mcp-setup/SKILL.md) |
+| 40 | ✓ | [`skills/omc-doctor/SKILL.md`](skills/omc-doctor/SKILL.md) |
+| 41 | ✓ | [`skills/omc-reference/SKILL.md`](skills/omc-reference/SKILL.md) |
+| 42 | ✓ | [`skills/omc-setup/phases/01-install-claude-md.md`](skills/omc-setup/phases/01-install-claude-md.md) |
+| 43 | ✓ | [`skills/omc-setup/phases/02-configure.md`](skills/omc-setup/phases/02-configure.md) |
+| 44 | ✓ | [`skills/omc-setup/phases/03-integrations.md`](skills/omc-setup/phases/03-integrations.md) |
+| 45 | ✓ | [`skills/omc-setup/phases/04-welcome.md`](skills/omc-setup/phases/04-welcome.md) |
+| 46 | ✓ | [`skills/omc-setup/SKILL.md`](skills/omc-setup/SKILL.md) |
+| 47 | ✓ | [`skills/omc-teams/SKILL.md`](skills/omc-teams/SKILL.md) |
+| 48 | ✓ | [`skills/plan/SKILL.md`](skills/plan/SKILL.md) |
+| 49 | ✓ | [`skills/project-session-manager/lib/config.sh`](skills/project-session-manager/lib/config.sh) |
+| 50 | ✓ | [`skills/project-session-manager/lib/parse.sh`](skills/project-session-manager/lib/parse.sh) |
+| 51 | ✓ | [`skills/project-session-manager/lib/providers/azure-devops.sh`](skills/project-session-manager/lib/providers/azure-devops.sh) |
+| 52 | ✓ | [`skills/project-session-manager/lib/providers/bitbucket.sh`](skills/project-session-manager/lib/providers/bitbucket.sh) |
+| 53 | ✓ | [`skills/project-session-manager/lib/providers/gitea.sh`](skills/project-session-manager/lib/providers/gitea.sh) |
+| 54 | ✓ | [`skills/project-session-manager/lib/providers/github.sh`](skills/project-session-manager/lib/providers/github.sh) |
+| 55 | ✓ | [`skills/project-session-manager/lib/providers/gitlab.sh`](skills/project-session-manager/lib/providers/gitlab.sh) |
+| 56 | ✓ | [`skills/project-session-manager/lib/providers/interface.sh`](skills/project-session-manager/lib/providers/interface.sh) |
+| 57 | ✓ | [`skills/project-session-manager/lib/providers/jira.sh`](skills/project-session-manager/lib/providers/jira.sh) |
+| 58 | ✓ | [`skills/project-session-manager/lib/session.sh`](skills/project-session-manager/lib/session.sh) |
+| 59 | ✓ | [`skills/project-session-manager/lib/tmux.sh`](skills/project-session-manager/lib/tmux.sh) |
+| 60 | ✓ | [`skills/project-session-manager/lib/worktree.sh`](skills/project-session-manager/lib/worktree.sh) |
+| 61 | ✓ | [`skills/project-session-manager/psm.sh`](skills/project-session-manager/psm.sh) |
+| 62 | ✓ | [`skills/project-session-manager/SKILL.md`](skills/project-session-manager/SKILL.md) |
+| 63 | ✓ | [`skills/project-session-manager/templates/feature.md`](skills/project-session-manager/templates/feature.md) |
+| 64 | ✓ | [`skills/project-session-manager/templates/issue-fix.md`](skills/project-session-manager/templates/issue-fix.md) |
+| 65 | ✓ | [`skills/project-session-manager/templates/pr-review.md`](skills/project-session-manager/templates/pr-review.md) |
+| 66 | ✓ | [`skills/project-session-manager/templates/projects.json`](skills/project-session-manager/templates/projects.json) |
+| 67 | ✓ | [`skills/ralph/SKILL.md`](skills/ralph/SKILL.md) |
+| 68 | ✓ | [`skills/ralplan/SKILL.md`](skills/ralplan/SKILL.md) |
+| 69 | ✓ | [`skills/release/SKILL.md`](skills/release/SKILL.md) |
+| 70 | ✓ | [`skills/remember/SKILL.md`](skills/remember/SKILL.md) |
+| 71 | ✓ | [`skills/sciomc/SKILL.md`](skills/sciomc/SKILL.md) |
+| 72 | ✓ | [`skills/self-improve/data_contracts.md`](skills/self-improve/data_contracts.md) |
+| 73 | ✓ | [`skills/self-improve/scripts/plot_progress.py`](skills/self-improve/scripts/plot_progress.py) |
+| 74 | ✓ | [`skills/self-improve/scripts/validate.sh`](skills/self-improve/scripts/validate.sh) |
+| 75 | ✓ | [`skills/self-improve/si-benchmark-builder.md`](skills/self-improve/si-benchmark-builder.md) |
+| 76 | ✓ | [`skills/self-improve/si-goal-clarifier.md`](skills/self-improve/si-goal-clarifier.md) |
+| 77 | ✓ | [`skills/self-improve/si-researcher.md`](skills/self-improve/si-researcher.md) |
+| 78 | ✓ | [`skills/self-improve/SKILL.md`](skills/self-improve/SKILL.md) |
+| 79 | ✓ | [`skills/self-improve/templates/agent-settings.json`](skills/self-improve/templates/agent-settings.json) |
+| 80 | ✓ | [`skills/self-improve/templates/goal.md`](skills/self-improve/templates/goal.md) |
+| 81 | ✓ | [`skills/self-improve/templates/harness.md`](skills/self-improve/templates/harness.md) |
+| 82 | ✓ | [`skills/self-improve/templates/idea.md`](skills/self-improve/templates/idea.md) |
+| 83 | ✓ | [`skills/self-improve/templates/settings.json`](skills/self-improve/templates/settings.json) |
+| 84 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
+| 85 | ✓ | [`skills/skill/SKILL.md`](skills/skill/SKILL.md) |
+| 86 | ✓ | [`skills/skillify/SKILL.md`](skills/skillify/SKILL.md) |
+| 87 | ✓ | [`skills/team/SKILL.md`](skills/team/SKILL.md) |
+| 88 | ✓ | [`skills/trace/SKILL.md`](skills/trace/SKILL.md) |
+| 89 | ✓ | [`skills/ultraqa/SKILL.md`](skills/ultraqa/SKILL.md) |
+| 90 | ✓ | [`skills/ultrawork/SKILL.md`](skills/ultrawork/SKILL.md) |
+| 91 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
+| 92 | ✓ | [`skills/visual-verdict/SKILL.md`](skills/visual-verdict/SKILL.md) |
+| 93 | ✓ | [`skills/writer-memory/lib/character-tracker.ts`](skills/writer-memory/lib/character-tracker.ts) |
+| 94 | ✓ | [`skills/writer-memory/lib/memory-manager.ts`](skills/writer-memory/lib/memory-manager.ts) |
+| 95 | ✓ | [`skills/writer-memory/lib/relationship-graph.ts`](skills/writer-memory/lib/relationship-graph.ts) |
+| 96 | ✓ | [`skills/writer-memory/lib/scene-organizer.ts`](skills/writer-memory/lib/scene-organizer.ts) |
+| 97 | ✓ | [`skills/writer-memory/lib/synopsis-builder.ts`](skills/writer-memory/lib/synopsis-builder.ts) |
+| 98 | ✓ | [`skills/writer-memory/SKILL.md`](skills/writer-memory/SKILL.md) |
+| 99 | ✓ | [`skills/writer-memory/templates/synopsis-template.md`](skills/writer-memory/templates/synopsis-template.md) |
+| 100 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 101 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 102 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
+| 103 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
+| 104 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
+| 105 | ✓ | [`src/tools/diagnostics/AGENTS.md`](src/tools/diagnostics/AGENTS.md) |
+| 106 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
 
 ---
 

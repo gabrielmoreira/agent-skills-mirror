@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 354 file(s) materialized.
+Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 356 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 354 |
+| Files         | 356 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -347,72 +347,74 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 286 | ✓ | [`skills/research/arxiv/SKILL.md`](skills/research/arxiv/SKILL.md) |
 | 287 | ✓ | [`skills/research/blogwatcher/SKILL.md`](skills/research/blogwatcher/SKILL.md) |
 | 288 | ✓ | [`skills/research/DESCRIPTION.md`](skills/research/DESCRIPTION.md) |
-| 289 | ✓ | [`skills/research/ml-paper-writing/references/checklists.md`](skills/research/ml-paper-writing/references/checklists.md) |
-| 290 | ✓ | [`skills/research/ml-paper-writing/references/citation-workflow.md`](skills/research/ml-paper-writing/references/citation-workflow.md) |
-| 291 | ✓ | [`skills/research/ml-paper-writing/references/reviewer-guidelines.md`](skills/research/ml-paper-writing/references/reviewer-guidelines.md) |
-| 292 | ✓ | [`skills/research/ml-paper-writing/references/sources.md`](skills/research/ml-paper-writing/references/sources.md) |
-| 293 | ✓ | [`skills/research/ml-paper-writing/references/writing-guide.md`](skills/research/ml-paper-writing/references/writing-guide.md) |
-| 294 | ✓ | [`skills/research/ml-paper-writing/SKILL.md`](skills/research/ml-paper-writing/SKILL.md) |
-| 295 | ✓ | [`skills/research/ml-paper-writing/templates/aaai2026/aaai2026-unified-supp.tex`](skills/research/ml-paper-writing/templates/aaai2026/aaai2026-unified-supp.tex) |
-| 296 | ✓ | [`skills/research/ml-paper-writing/templates/aaai2026/aaai2026-unified-template.tex`](skills/research/ml-paper-writing/templates/aaai2026/aaai2026-unified-template.tex) |
-| 297 | ✓ | [`skills/research/ml-paper-writing/templates/aaai2026/aaai2026.bib`](skills/research/ml-paper-writing/templates/aaai2026/aaai2026.bib) |
-| 298 | ✓ | [`skills/research/ml-paper-writing/templates/aaai2026/aaai2026.bst`](skills/research/ml-paper-writing/templates/aaai2026/aaai2026.bst) |
-| 299 | ✓ | [`skills/research/ml-paper-writing/templates/aaai2026/aaai2026.sty`](skills/research/ml-paper-writing/templates/aaai2026/aaai2026.sty) |
-| 300 | ✓ | [`skills/research/ml-paper-writing/templates/aaai2026/README.md`](skills/research/ml-paper-writing/templates/aaai2026/README.md) |
-| 301 | ✓ | [`skills/research/ml-paper-writing/templates/acl/acl_latex.tex`](skills/research/ml-paper-writing/templates/acl/acl_latex.tex) |
-| 302 | ✓ | [`skills/research/ml-paper-writing/templates/acl/acl_lualatex.tex`](skills/research/ml-paper-writing/templates/acl/acl_lualatex.tex) |
-| 303 | ✓ | [`skills/research/ml-paper-writing/templates/acl/acl_natbib.bst`](skills/research/ml-paper-writing/templates/acl/acl_natbib.bst) |
-| 304 | ✓ | [`skills/research/ml-paper-writing/templates/acl/acl.sty`](skills/research/ml-paper-writing/templates/acl/acl.sty) |
-| 305 | ✓ | [`skills/research/ml-paper-writing/templates/acl/anthology.bib.txt`](skills/research/ml-paper-writing/templates/acl/anthology.bib.txt) |
-| 306 | ✓ | [`skills/research/ml-paper-writing/templates/acl/custom.bib`](skills/research/ml-paper-writing/templates/acl/custom.bib) |
-| 307 | ✓ | [`skills/research/ml-paper-writing/templates/acl/formatting.md`](skills/research/ml-paper-writing/templates/acl/formatting.md) |
-| 308 | ✓ | [`skills/research/ml-paper-writing/templates/acl/README.md`](skills/research/ml-paper-writing/templates/acl/README.md) |
-| 309 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.bib`](skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.bib) |
-| 310 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.bst`](skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.bst) |
-| 311 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.pdf`](skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.pdf) |
-| 312 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.sty`](skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.sty) |
-| 313 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.tex`](skills/research/ml-paper-writing/templates/colm2025/colm2025_conference.tex) |
-| 314 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/fancyhdr.sty`](skills/research/ml-paper-writing/templates/colm2025/fancyhdr.sty) |
-| 315 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/math_commands.tex`](skills/research/ml-paper-writing/templates/colm2025/math_commands.tex) |
-| 316 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/natbib.sty`](skills/research/ml-paper-writing/templates/colm2025/natbib.sty) |
-| 317 | ✓ | [`skills/research/ml-paper-writing/templates/colm2025/README.md`](skills/research/ml-paper-writing/templates/colm2025/README.md) |
-| 318 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/fancyhdr.sty`](skills/research/ml-paper-writing/templates/iclr2026/fancyhdr.sty) |
-| 319 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.bib`](skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.bib) |
-| 320 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.bst`](skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.bst) |
-| 321 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.pdf`](skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.pdf) |
-| 322 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.sty`](skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.sty) |
-| 323 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.tex`](skills/research/ml-paper-writing/templates/iclr2026/iclr2026_conference.tex) |
-| 324 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/math_commands.tex`](skills/research/ml-paper-writing/templates/iclr2026/math_commands.tex) |
-| 325 | ✓ | [`skills/research/ml-paper-writing/templates/iclr2026/natbib.sty`](skills/research/ml-paper-writing/templates/iclr2026/natbib.sty) |
-| 326 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/algorithm.sty`](skills/research/ml-paper-writing/templates/icml2026/algorithm.sty) |
-| 327 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/algorithmic.sty`](skills/research/ml-paper-writing/templates/icml2026/algorithmic.sty) |
-| 328 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/example_paper.bib`](skills/research/ml-paper-writing/templates/icml2026/example_paper.bib) |
-| 329 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/example_paper.pdf`](skills/research/ml-paper-writing/templates/icml2026/example_paper.pdf) |
-| 330 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/example_paper.tex`](skills/research/ml-paper-writing/templates/icml2026/example_paper.tex) |
-| 331 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/fancyhdr.sty`](skills/research/ml-paper-writing/templates/icml2026/fancyhdr.sty) |
-| 332 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/icml_numpapers.pdf`](skills/research/ml-paper-writing/templates/icml2026/icml_numpapers.pdf) |
-| 333 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/icml2026.bst`](skills/research/ml-paper-writing/templates/icml2026/icml2026.bst) |
-| 334 | ✓ | [`skills/research/ml-paper-writing/templates/icml2026/icml2026.sty`](skills/research/ml-paper-writing/templates/icml2026/icml2026.sty) |
-| 335 | ✓ | [`skills/research/ml-paper-writing/templates/neurips2025/extra_pkgs.tex`](skills/research/ml-paper-writing/templates/neurips2025/extra_pkgs.tex) |
-| 336 | ✓ | [`skills/research/ml-paper-writing/templates/neurips2025/main.tex`](skills/research/ml-paper-writing/templates/neurips2025/main.tex) |
-| 337 | ✓ | [`skills/research/ml-paper-writing/templates/neurips2025/Makefile`](skills/research/ml-paper-writing/templates/neurips2025/Makefile) |
-| 338 | ✓ | [`skills/research/ml-paper-writing/templates/neurips2025/neurips.sty`](skills/research/ml-paper-writing/templates/neurips2025/neurips.sty) |
-| 339 | ✓ | [`skills/research/ml-paper-writing/templates/README.md`](skills/research/ml-paper-writing/templates/README.md) |
-| 340 | ✓ | [`skills/research/polymarket/references/api-endpoints.md`](skills/research/polymarket/references/api-endpoints.md) |
-| 341 | ✓ | [`skills/research/polymarket/scripts/polymarket.py`](skills/research/polymarket/scripts/polymarket.py) |
-| 342 | ✓ | [`skills/research/polymarket/SKILL.md`](skills/research/polymarket/SKILL.md) |
-| 343 | ✓ | [`skills/smart-home/DESCRIPTION.md`](skills/smart-home/DESCRIPTION.md) |
-| 344 | ✓ | [`skills/smart-home/openhue/SKILL.md`](skills/smart-home/openhue/SKILL.md) |
-| 345 | ✓ | [`skills/social-media/DESCRIPTION.md`](skills/social-media/DESCRIPTION.md) |
-| 346 | ✓ | [`skills/social-media/xitter/SKILL.md`](skills/social-media/xitter/SKILL.md) |
-| 347 | ✓ | [`skills/software-development/code-review/SKILL.md`](skills/software-development/code-review/SKILL.md) |
-| 348 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
-| 349 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
-| 350 | ✓ | [`skills/software-development/subagent-driven-development/SKILL.md`](skills/software-development/subagent-driven-development/SKILL.md) |
-| 351 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
-| 352 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
-| 353 | ✓ | [`skills/software-development/writing-plans/SKILL.md`](skills/software-development/writing-plans/SKILL.md) |
-| 354 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
+| 289 | ✓ | [`skills/research/polymarket/references/api-endpoints.md`](skills/research/polymarket/references/api-endpoints.md) |
+| 290 | ✓ | [`skills/research/polymarket/scripts/polymarket.py`](skills/research/polymarket/scripts/polymarket.py) |
+| 291 | ✓ | [`skills/research/polymarket/SKILL.md`](skills/research/polymarket/SKILL.md) |
+| 292 | ✓ | [`skills/research/research-paper-writing/references/autoreason-methodology.md`](skills/research/research-paper-writing/references/autoreason-methodology.md) |
+| 293 | ✓ | [`skills/research/research-paper-writing/references/checklists.md`](skills/research/research-paper-writing/references/checklists.md) |
+| 294 | ✓ | [`skills/research/research-paper-writing/references/citation-workflow.md`](skills/research/research-paper-writing/references/citation-workflow.md) |
+| 295 | ✓ | [`skills/research/research-paper-writing/references/experiment-patterns.md`](skills/research/research-paper-writing/references/experiment-patterns.md) |
+| 296 | ✓ | [`skills/research/research-paper-writing/references/reviewer-guidelines.md`](skills/research/research-paper-writing/references/reviewer-guidelines.md) |
+| 297 | ✓ | [`skills/research/research-paper-writing/references/sources.md`](skills/research/research-paper-writing/references/sources.md) |
+| 298 | ✓ | [`skills/research/research-paper-writing/references/writing-guide.md`](skills/research/research-paper-writing/references/writing-guide.md) |
+| 299 | ✓ | [`skills/research/research-paper-writing/SKILL.md`](skills/research/research-paper-writing/SKILL.md) |
+| 300 | ✓ | [`skills/research/research-paper-writing/templates/aaai2026/aaai2026-unified-supp.tex`](skills/research/research-paper-writing/templates/aaai2026/aaai2026-unified-supp.tex) |
+| 301 | ✓ | [`skills/research/research-paper-writing/templates/aaai2026/aaai2026-unified-template.tex`](skills/research/research-paper-writing/templates/aaai2026/aaai2026-unified-template.tex) |
+| 302 | ✓ | [`skills/research/research-paper-writing/templates/aaai2026/aaai2026.bib`](skills/research/research-paper-writing/templates/aaai2026/aaai2026.bib) |
+| 303 | ✓ | [`skills/research/research-paper-writing/templates/aaai2026/aaai2026.bst`](skills/research/research-paper-writing/templates/aaai2026/aaai2026.bst) |
+| 304 | ✓ | [`skills/research/research-paper-writing/templates/aaai2026/aaai2026.sty`](skills/research/research-paper-writing/templates/aaai2026/aaai2026.sty) |
+| 305 | ✓ | [`skills/research/research-paper-writing/templates/aaai2026/README.md`](skills/research/research-paper-writing/templates/aaai2026/README.md) |
+| 306 | ✓ | [`skills/research/research-paper-writing/templates/acl/acl_latex.tex`](skills/research/research-paper-writing/templates/acl/acl_latex.tex) |
+| 307 | ✓ | [`skills/research/research-paper-writing/templates/acl/acl_lualatex.tex`](skills/research/research-paper-writing/templates/acl/acl_lualatex.tex) |
+| 308 | ✓ | [`skills/research/research-paper-writing/templates/acl/acl_natbib.bst`](skills/research/research-paper-writing/templates/acl/acl_natbib.bst) |
+| 309 | ✓ | [`skills/research/research-paper-writing/templates/acl/acl.sty`](skills/research/research-paper-writing/templates/acl/acl.sty) |
+| 310 | ✓ | [`skills/research/research-paper-writing/templates/acl/anthology.bib.txt`](skills/research/research-paper-writing/templates/acl/anthology.bib.txt) |
+| 311 | ✓ | [`skills/research/research-paper-writing/templates/acl/custom.bib`](skills/research/research-paper-writing/templates/acl/custom.bib) |
+| 312 | ✓ | [`skills/research/research-paper-writing/templates/acl/formatting.md`](skills/research/research-paper-writing/templates/acl/formatting.md) |
+| 313 | ✓ | [`skills/research/research-paper-writing/templates/acl/README.md`](skills/research/research-paper-writing/templates/acl/README.md) |
+| 314 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/colm2025_conference.bib`](skills/research/research-paper-writing/templates/colm2025/colm2025_conference.bib) |
+| 315 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/colm2025_conference.bst`](skills/research/research-paper-writing/templates/colm2025/colm2025_conference.bst) |
+| 316 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/colm2025_conference.pdf`](skills/research/research-paper-writing/templates/colm2025/colm2025_conference.pdf) |
+| 317 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/colm2025_conference.sty`](skills/research/research-paper-writing/templates/colm2025/colm2025_conference.sty) |
+| 318 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/colm2025_conference.tex`](skills/research/research-paper-writing/templates/colm2025/colm2025_conference.tex) |
+| 319 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/fancyhdr.sty`](skills/research/research-paper-writing/templates/colm2025/fancyhdr.sty) |
+| 320 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/math_commands.tex`](skills/research/research-paper-writing/templates/colm2025/math_commands.tex) |
+| 321 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/natbib.sty`](skills/research/research-paper-writing/templates/colm2025/natbib.sty) |
+| 322 | ✓ | [`skills/research/research-paper-writing/templates/colm2025/README.md`](skills/research/research-paper-writing/templates/colm2025/README.md) |
+| 323 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/fancyhdr.sty`](skills/research/research-paper-writing/templates/iclr2026/fancyhdr.sty) |
+| 324 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.bib`](skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.bib) |
+| 325 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.bst`](skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.bst) |
+| 326 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.pdf`](skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.pdf) |
+| 327 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.sty`](skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.sty) |
+| 328 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.tex`](skills/research/research-paper-writing/templates/iclr2026/iclr2026_conference.tex) |
+| 329 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/math_commands.tex`](skills/research/research-paper-writing/templates/iclr2026/math_commands.tex) |
+| 330 | ✓ | [`skills/research/research-paper-writing/templates/iclr2026/natbib.sty`](skills/research/research-paper-writing/templates/iclr2026/natbib.sty) |
+| 331 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/algorithm.sty`](skills/research/research-paper-writing/templates/icml2026/algorithm.sty) |
+| 332 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/algorithmic.sty`](skills/research/research-paper-writing/templates/icml2026/algorithmic.sty) |
+| 333 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/example_paper.bib`](skills/research/research-paper-writing/templates/icml2026/example_paper.bib) |
+| 334 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/example_paper.pdf`](skills/research/research-paper-writing/templates/icml2026/example_paper.pdf) |
+| 335 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/example_paper.tex`](skills/research/research-paper-writing/templates/icml2026/example_paper.tex) |
+| 336 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/fancyhdr.sty`](skills/research/research-paper-writing/templates/icml2026/fancyhdr.sty) |
+| 337 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/icml_numpapers.pdf`](skills/research/research-paper-writing/templates/icml2026/icml_numpapers.pdf) |
+| 338 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/icml2026.bst`](skills/research/research-paper-writing/templates/icml2026/icml2026.bst) |
+| 339 | ✓ | [`skills/research/research-paper-writing/templates/icml2026/icml2026.sty`](skills/research/research-paper-writing/templates/icml2026/icml2026.sty) |
+| 340 | ✓ | [`skills/research/research-paper-writing/templates/neurips2025/extra_pkgs.tex`](skills/research/research-paper-writing/templates/neurips2025/extra_pkgs.tex) |
+| 341 | ✓ | [`skills/research/research-paper-writing/templates/neurips2025/main.tex`](skills/research/research-paper-writing/templates/neurips2025/main.tex) |
+| 342 | ✓ | [`skills/research/research-paper-writing/templates/neurips2025/Makefile`](skills/research/research-paper-writing/templates/neurips2025/Makefile) |
+| 343 | ✓ | [`skills/research/research-paper-writing/templates/neurips2025/neurips.sty`](skills/research/research-paper-writing/templates/neurips2025/neurips.sty) |
+| 344 | ✓ | [`skills/research/research-paper-writing/templates/README.md`](skills/research/research-paper-writing/templates/README.md) |
+| 345 | ✓ | [`skills/smart-home/DESCRIPTION.md`](skills/smart-home/DESCRIPTION.md) |
+| 346 | ✓ | [`skills/smart-home/openhue/SKILL.md`](skills/smart-home/openhue/SKILL.md) |
+| 347 | ✓ | [`skills/social-media/DESCRIPTION.md`](skills/social-media/DESCRIPTION.md) |
+| 348 | ✓ | [`skills/social-media/xitter/SKILL.md`](skills/social-media/xitter/SKILL.md) |
+| 349 | ✓ | [`skills/software-development/code-review/SKILL.md`](skills/software-development/code-review/SKILL.md) |
+| 350 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
+| 351 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
+| 352 | ✓ | [`skills/software-development/subagent-driven-development/SKILL.md`](skills/software-development/subagent-driven-development/SKILL.md) |
+| 353 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
+| 354 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
+| 355 | ✓ | [`skills/software-development/writing-plans/SKILL.md`](skills/software-development/writing-plans/SKILL.md) |
+| 356 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
 
 ---
 

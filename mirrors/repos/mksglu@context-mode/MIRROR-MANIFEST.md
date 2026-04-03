@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 29
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,20 +74,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`llms.txt`](llms.txt) |
 | 14 | ✓ | [`skills/context-mode-ops/agent-teams.md`](skills/context-mode-ops/agent-teams.md) |
 | 15 | ✓ | [`skills/context-mode-ops/communication.md`](skills/context-mode-ops/communication.md) |
-| 16 | ✓ | [`skills/context-mode-ops/release.md`](skills/context-mode-ops/release.md) |
-| 17 | ✓ | [`skills/context-mode-ops/review-pr.md`](skills/context-mode-ops/review-pr.md) |
-| 18 | ✓ | [`skills/context-mode-ops/SKILL.md`](skills/context-mode-ops/SKILL.md) |
-| 19 | ✓ | [`skills/context-mode-ops/tdd.md`](skills/context-mode-ops/tdd.md) |
-| 20 | ✓ | [`skills/context-mode-ops/triage-issue.md`](skills/context-mode-ops/triage-issue.md) |
-| 21 | ✓ | [`skills/context-mode-ops/validation.md`](skills/context-mode-ops/validation.md) |
-| 22 | ✓ | [`skills/context-mode/references/anti-patterns.md`](skills/context-mode/references/anti-patterns.md) |
-| 23 | ✓ | [`skills/context-mode/references/patterns-javascript.md`](skills/context-mode/references/patterns-javascript.md) |
-| 24 | ✓ | [`skills/context-mode/references/patterns-python.md`](skills/context-mode/references/patterns-python.md) |
-| 25 | ✓ | [`skills/context-mode/references/patterns-shell.md`](skills/context-mode/references/patterns-shell.md) |
-| 26 | ✓ | [`skills/context-mode/SKILL.md`](skills/context-mode/SKILL.md) |
-| 27 | ✓ | [`skills/ctx-doctor/SKILL.md`](skills/ctx-doctor/SKILL.md) |
-| 28 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
-| 29 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
+| 16 | ✓ | [`skills/context-mode-ops/marketing.md`](skills/context-mode-ops/marketing.md) |
+| 17 | ✓ | [`skills/context-mode-ops/release.md`](skills/context-mode-ops/release.md) |
+| 18 | ✓ | [`skills/context-mode-ops/review-pr.md`](skills/context-mode-ops/review-pr.md) |
+| 19 | ✓ | [`skills/context-mode-ops/SKILL.md`](skills/context-mode-ops/SKILL.md) |
+| 20 | ✓ | [`skills/context-mode-ops/tdd.md`](skills/context-mode-ops/tdd.md) |
+| 21 | ✓ | [`skills/context-mode-ops/triage-issue.md`](skills/context-mode-ops/triage-issue.md) |
+| 22 | ✓ | [`skills/context-mode-ops/validation.md`](skills/context-mode-ops/validation.md) |
+| 23 | ✓ | [`skills/context-mode/references/anti-patterns.md`](skills/context-mode/references/anti-patterns.md) |
+| 24 | ✓ | [`skills/context-mode/references/patterns-javascript.md`](skills/context-mode/references/patterns-javascript.md) |
+| 25 | ✓ | [`skills/context-mode/references/patterns-python.md`](skills/context-mode/references/patterns-python.md) |
+| 26 | ✓ | [`skills/context-mode/references/patterns-shell.md`](skills/context-mode/references/patterns-shell.md) |
+| 27 | ✓ | [`skills/context-mode/SKILL.md`](skills/context-mode/SKILL.md) |
+| 28 | ✓ | [`skills/ctx-doctor/SKILL.md`](skills/ctx-doctor/SKILL.md) |
+| 29 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
+| 30 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
 
 ---
 

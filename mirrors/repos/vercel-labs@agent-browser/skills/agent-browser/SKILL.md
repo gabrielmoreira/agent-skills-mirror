@@ -693,6 +693,25 @@ Priority (lowest to highest): `~/.agent-browser/config.json` < `./agent-browser.
 | [references/profiling.md](references/profiling.md)                   | Chrome DevTools profiling for performance analysis        |
 | [references/proxy-support.md](references/proxy-support.md)           | Proxy configuration, geo-testing, rotating proxies        |
 
+## Cloud Providers
+
+Use `-p <provider>` (or `AGENT_BROWSER_PROVIDER`) to run against a cloud browser instead of launching a local Chrome instance. Supported providers: `agentcore`, `browserbase`, `browserless`, `browseruse`, `kernel`.
+
+### AgentCore (AWS Bedrock)
+
+```bash
+# Credentials auto-resolved from env vars or AWS CLI (SSO, IAM roles, etc.)
+agent-browser -p agentcore open https://example.com
+
+# With persistent browser profile
+AGENTCORE_PROFILE_ID=my-profile agent-browser -p agentcore open https://example.com
+
+# With explicit region
+AGENTCORE_REGION=eu-west-1 agent-browser -p agentcore open https://example.com
+```
+
+Set `AWS_PROFILE` to select a named AWS profile.
+
 ## Browser Engine Selection
 
 Use `--engine` to choose a local browser engine. The default is `chrome`.
