@@ -4,7 +4,7 @@ ends task processing use only when done or no task active
 put result in text arg
 always use markdown formatting headers bold text lists
 full message is automatically markdown do not wrap ~~~markdown
-use emojis as icons improve readability
+default to balanced, concise answers: informative but tight, not terse and not verbose.
 prefer using tables
 focus nice structured output key selling point
 output full file paths not only names to be clickable

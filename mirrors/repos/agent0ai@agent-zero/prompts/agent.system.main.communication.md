@@ -1,6 +1,8 @@
 
 ## Communication
-respond valid json with fields
+- Output must be valid JSON with double quotes for all keys and string values
+- No JSON in markdown fences
+- Do not invent unavailable tool names and args
 
 ### Response format (json fields names)
 - thoughts: array thoughts before execution in natural language
@@ -8,7 +10,7 @@ respond valid json with fields
 - tool_name: use tool name
 - tool_args: key value pairs tool arguments
 
-no text allowed before or after json
+- No text output before or after the JSON object
 
 ### Response example
 ~~~json

@@ -1,15 +1,17 @@
 # clawhip × OMC (oh-my-claudecode)
 
-Launch [OMC](https://github.com/Yeachan-Heo/oh-my-claudecode) coding sessions with automatic Discord notifications via clawhip.
+Launch [OMC](https://github.com/Yeachan-Heo/oh-my-claudecode) coding sessions with clawhip monitoring.
 
-## What you get
+## Source of truth
 
-- Legacy-compatible `agent.started`, `agent.finished`, and `agent.failed` wrapper emits via `clawhip emit`
-- clawhip-side normalization of richer native OMC/OMX events into the canonical `session.*` routing contract
-- Session keyword alerts (error, PR created, complete, etc.)
-- Stale session detection (no output for N minutes)
-- All notifications routed to the correct Discord channel
-- Direct Slack/Discord notifications inside OMC/OMX should be treated as deprecated in clawhip-integrated setups
+clawhip owns the OMC/OMX integration doctrine.
+
+Use these docs for setup, routing policy, and troubleshooting:
+- quick operator flow: [`README.md`](../../README.md)
+- shared operator runbook: [`integrations/omx/README.md`](../../integrations/omx/README.md)
+- native routing/reference contract: [`docs/native-event-contract.md`](../../docs/native-event-contract.md)
+
+This skill should stay focused on OMC session-launch mechanics and local defaults.
 
 ## Prerequisites
 
@@ -36,7 +38,7 @@ Launch [OMC](https://github.com/Yeachan-Heo/oh-my-claudecode) coding sessions wi
 ./create.sh issue-123 ~/my-project/worktrees/issue-123 "Fix the bug in src/main.rs and create a PR to dev" 1234567890 "<@user-id>"
 ```
 
-`create.sh` now emits lifecycle notifications directly from the OMC shell session, so you no longer need a separate lifecycle watcher command. If you pass a prompt, the script waits 10 seconds for the TUI to initialize, then sends the prompt via `tmux send-keys -l` before pressing Enter.
+`create.sh` emits lifecycle notifications directly from the OMC shell session. If you pass a prompt, the script waits 10 seconds for the TUI to initialize, then sends the prompt via `tmux send-keys -l` before pressing Enter.
 
 ### Send a prompt
 

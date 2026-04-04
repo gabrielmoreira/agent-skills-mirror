@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ant-design/ant-design` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `ant-design/ant-design` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ant-design/ant-design` — 26 default patterns, 0 followed patterns, 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,9 +66,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
 | 6 | ✓ | [`.agents/skills/issue-reply/references/labels-and-resources.md`](.agents/skills/issue-reply/references/labels-and-resources.md) |
 | 7 | ✓ | [`.agents/skills/issue-reply/SKILL.md`](.agents/skills/issue-reply/SKILL.md) |
-| 8 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
+| 9 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

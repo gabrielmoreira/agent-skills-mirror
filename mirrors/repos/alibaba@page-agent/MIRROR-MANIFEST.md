@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alibaba/page-agent` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `alibaba/page-agent` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alibaba/page-agent` — 26 default patterns, 0 followed patterns, 2 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`packages/website/AGENTS.md`](packages/website/AGENTS.md) |
+| 1 | ✓ | [`.github/skills/update-changelog/SKILL.md`](.github/skills/update-changelog/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`packages/website/AGENTS.md`](packages/website/AGENTS.md) |
 
 ---
 

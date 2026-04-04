@@ -1,20 +1,13 @@
-# Secret Placeholders
-- user secrets are masked and used as aliases
-- use aliases in tool calls they will be automatically replaced with actual values
-
-You have access to the following secrets:
-<secrets>
+{{if secrets}}
+## secret aliases
+use exact alias form `§§secret(name)`; real values are injected automatically
+only use provided aliases; do not expose or invent secret values
+values may contain special characters, so quote or escape them correctly in shell or code
+comments help explain each secret's purpose
 {{secrets}}
-</secrets>
-
-## Important Guidelines:
-- use exact alias format `§§secret(key_name)`
-- values may contain special characters needing escaping in code, sanitize in your code if errors occur
-- comments help understand purpose
-
-# Additional variables
-- use these non-sensitive variables as they are when needed
-- use plain text values without placeholder format
-<variables>
+{{endif}}
+{{if vars}}
+## variables
+these are plain non-sensitive values; use them directly without `§§secret(...)`
 {{vars}}
-</variables>
+{{endif}}

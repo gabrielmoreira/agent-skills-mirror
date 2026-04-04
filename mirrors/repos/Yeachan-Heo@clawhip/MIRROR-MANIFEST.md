@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Yeachan-Heo/clawhip` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `Yeachan-Heo/clawhip` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Yeachan-Heo/clawhip` — 26 default patterns, 0 followed patterns, 12
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,18 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.omx/state/sessions/omx-1772965833622-69uz5f/AGENTS.md`](.omx/state/sessions/omx-1772965833622-69uz5f/AGENTS.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`SKILL.md`](SKILL.md) |
-| 4 | ✓ | [`skills/memory-offload/SKILL.md`](skills/memory-offload/SKILL.md) |
-| 5 | ✓ | [`skills/omc/create.sh`](skills/omc/create.sh) |
-| 6 | ✓ | [`skills/omc/prompt.sh`](skills/omc/prompt.sh) |
-| 7 | ✓ | [`skills/omc/SKILL.md`](skills/omc/SKILL.md) |
-| 8 | ✓ | [`skills/omc/tail.sh`](skills/omc/tail.sh) |
-| 9 | ✓ | [`skills/omx/create.sh`](skills/omx/create.sh) |
-| 10 | ✓ | [`skills/omx/prompt.sh`](skills/omx/prompt.sh) |
-| 11 | ✓ | [`skills/omx/SKILL.md`](skills/omx/SKILL.md) |
-| 12 | ✓ | [`skills/omx/tail.sh`](skills/omx/tail.sh) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 3 | ✓ | [`skills/memory-offload/SKILL.md`](skills/memory-offload/SKILL.md) |
+| 4 | ✓ | [`skills/omc/create.sh`](skills/omc/create.sh) |
+| 5 | ✓ | [`skills/omc/prompt.sh`](skills/omc/prompt.sh) |
+| 6 | ✓ | [`skills/omc/SKILL.md`](skills/omc/SKILL.md) |
+| 7 | ✓ | [`skills/omc/tail.sh`](skills/omc/tail.sh) |
+| 8 | ✓ | [`skills/omx/create.sh`](skills/omx/create.sh) |
+| 9 | ✓ | [`skills/omx/prompt.sh`](skills/omx/prompt.sh) |
+| 10 | ✓ | [`skills/omx/SKILL.md`](skills/omx/SKILL.md) |
+| 11 | ✓ | [`skills/omx/tail.sh`](skills/omx/tail.sh) |
 
 ---
 

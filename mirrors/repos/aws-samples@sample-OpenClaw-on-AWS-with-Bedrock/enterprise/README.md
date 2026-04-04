@@ -83,6 +83,7 @@ Additional controls: no public ports (SSM only) · IAM roles throughout, no hard
 | **Position → Runtime Routing** | 3-tier routing chain: employee override → position rule → default. Assign positions to runtimes from Security Center UI, propagates to all members automatically |
 | **Per-Employee Model Config** | Override model, context window, compaction settings, and response language at position OR employee level from Agent Factory → Configuration tab |
 | **IM Channel Management** | Admin sees every employee's IM connections grouped by channel — when they paired, session count, last active, one-click disconnect |
+| **Org CRUD** | Full create/edit/delete for Departments, Positions, and Employees from Admin Console. Delete is guarded: blocks if employees or bindings exist, prompts force-cascade delete |
 | **Security Center** | Live AWS resource browser — ECR images, IAM roles, VPC security groups with console links. Configure runtime images and IAM roles from the UI |
 | **Three-Layer Memory Guarantee** | Per-turn S3 checkpoint (1-message sessions), SIGTERM flush (idle timeout), Gateway compaction (long sessions). Same memory across Discord, Telegram, Feishu, and Portal |
 | **Dynamic Config, Zero Redeploy** | Change model, tool permissions, SOUL content, or KB assignments → takes effect on next cold start. No container rebuild, no runtime update |
@@ -139,17 +140,33 @@ We don't fork, patch, or modify a single line of OpenClaw source code. Instead, 
 
 ```
 workspace/
-├── SOUL.md      ← Agent identity & rules (assembled from 3 layers)
-├── AGENTS.md    ← Workflow definitions
-├── TOOLS.md     ← Tool permissions
-├── USER.md      ← Employee preferences
-├── MEMORY.md    ← Persistent memory
-├── memory/      ← Daily memory files (per-turn checkpoint)
-├── knowledge/   ← Position-scoped + global documents (KB-injected)
-└── skills/      ← Role-filtered skill packages
+├── SOUL.md            ← Agent identity & rules (assembled from 3 layers)
+├── AGENTS.md          ← Workflow definitions
+├── TOOLS.md           ← Tool permissions
+├── USER.md            ← Employee preferences
+├── MEMORY.md          ← Persistent memory
+├── memory/            ← Daily memory files (per-turn checkpoint)
+├── knowledge/         ← Position-scoped + global documents (KB-injected)
+├── skills/            ← Role-filtered skill packages
+├── IDENTITY.md        ← Employee name + position (generated, not editable)
+├── CHANNELS.md        ← Employee's bound IM channels (for outbound notifications)
+└── SESSION_CONTEXT.md ← Access path + caller identity (written once at cold start)
 ```
 
 The `workspace_assembler` merges Global + Position + Personal layers into these files before OpenClaw reads them. OpenClaw doesn't know it's running in an enterprise context — it just reads its workspace as usual.
+
+`SESSION_CONTEXT.md` is the access path identity file. It is written **once per cold start** by `workspace_assembler` and encodes exactly which access path triggered this session, verified by the `session_id` prefix the Tenant Router assigns:
+
+| Session Prefix | Access Path | Content Written |
+|----------------|-------------|-----------------|
+| `emp__emp-id__` | Employee Portal + all bound IM channels (shared session) | Authenticated user name, "Verification: Confirmed" |
+| `pt__emp-id__` | Portal (legacy alias, same behavior as `emp__`) | Same as above |
+| `pgnd__emp-id__` | Playground — IT admin testing as this employee | "Admin Test Session, read-only memory" |
+| `twin__emp-id__` | Digital Twin — external caller, no auth required | "Caller unverified, conversations visible to employee in Portal" |
+| `admin__...` | IT Admin Assistant | "Authorized IT Administrator" |
+| `tg__`, `dc__`, etc. | Raw IM fallback (unresolved user, before pairing) | "Standard Session" |
+
+**Why this matters:** Without SESSION_CONTEXT.md, the agent cannot distinguish Portal from Playground from Digital Twin — all three would access the same workspace and respond identically. With it, Playground explicitly tells the agent not to write back to employee memory, and Digital Twin tells the agent the caller is unverified and the conversation is visible to the represented employee.
 
 #### 2. Serverless-First + Always-on Hybrid
 
@@ -264,28 +281,48 @@ The org directory KB (seeded via `seed_knowledge_docs.py`, refreshed by re-runni
 │  └── IT Admin Assistant (Claude API, 10 whitelisted tools)       │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  PATH A: Personal Employee Agents                                │
+│  PATH 1: IT Admin Assistant                                      │
 │  ┌────────────────────────────────────────────────────────┐      │
-│  │  IM Message (Discord/Telegram/Feishu/Slack/Portal)     │      │
-│  │    ↓ OpenClaw Gateway (port 18789)                     │      │
-│  │    ↓ H2 Proxy (port 8091) — extracts sender_id        │      │
-│  │    ↓ Tenant Router — 3-tier routing                    │      │
-│  │      1. always-on agent? → Docker container (no wait) │      │
-│  │      2. position rule?   → Assigned AgentCore Runtime  │      │
-│  │      3. default          → Standard AgentCore Runtime  │      │
-│  │    ↓ AgentCore (Firecracker microVM per tenant)        │      │
-│  │    ↓ workspace_assembler: SOUL merge + KB inject       │      │
-│  │    ↓ OpenClaw + Bedrock → Response                     │      │
+│  │  Admin Console floating chat bubble (admin role only)  │      │
+│  │    session_id prefix: admin__                          │      │
+│  │    SESSION_CONTEXT.md → "IT Admin Assistant"           │      │
+│  │    Claude API direct (not AgentCore), 10 whitelisted   │      │
+│  │    tools, no shell, no subprocess                      │      │
 │  └────────────────────────────────────────────────────────┘      │
 │                                                                  │
-│  PATH B: Digital Twin (no auth required)                         │
+│  PATH 2: Playground (IT admin testing as employee)               │
+│  ┌────────────────────────────────────────────────────────┐      │
+│  │  Admin Console → Agents → Playground tab               │      │
+│  │    session_id prefix: pgnd__emp-id__                   │      │
+│  │    SESSION_CONTEXT.md → "Playground (Admin Test),      │      │
+│  │      read-only with respect to memory"                 │      │
+│  │    Reads employee's workspace; no write-back           │      │
+│  └────────────────────────────────────────────────────────┘      │
+│                                                                  │
+│  PATH 3: Employee Portal (webchat, authenticated)                │
+│  PATH 4: IM Channels (Telegram/Feishu/Discord/Slack — bound)    │
+│  ┌────────────────────────────────────────────────────────┐      │
+│  │  Paths 3 and 4 share the SAME AgentCore session        │      │
+│  │    H2 Proxy enforces binding: unbound IM → rejected    │      │
+│  │    Tenant Router resolves channel user_id → emp_id     │      │
+│  │    session_id prefix: emp__emp-id__  (both paths)      │      │
+│  │    SESSION_CONTEXT.md → "Employee Session, Verified"   │      │
+│  │    Full read/write to employee workspace               │      │
+│  │    → 3-tier routing: always-on? → position? → default  │      │
+│  │    → AgentCore (Firecracker microVM per emp-id)        │      │
+│  │    → workspace_assembler: SOUL + IDENTITY + channels   │      │
+│  │    → OpenClaw + Bedrock → Response                     │      │
+│  └────────────────────────────────────────────────────────┘      │
+│                                                                  │
+│  PATH 5: Digital Twin (public URL, no auth)                      │
 │  ┌────────────────────────────────────────────────────────┐      │
 │  │  GET /twin/{token} → public HTML chat page             │      │
 │  │  POST /public/twin/{token}/chat                        │      │
-│  │    ↓ Lookup token → employee_id                        │      │
-│  │    ↓ Tenant Router (channel=twin)                      │      │
-│  │    ↓ Agent gets "DIGITAL TWIN MODE" injected in SOUL   │      │
-│  │    ↓ Responds as employee's AI representative          │      │
+│  │    Lookup token → employee_id                          │      │
+│  │    session_id prefix: twin__emp-id__                   │      │
+│  │    SESSION_CONTEXT.md → "Digital Twin, caller          │      │
+│  │      unverified, visible to employee in Portal"        │      │
+│  │    Separate twin_workspace (not employee's main)       │      │
 │  └────────────────────────────────────────────────────────┘      │
 │                                                                  │
 │  PATH C: Always-on Shared Agents                                 │
@@ -389,19 +426,19 @@ Zero IT friction. Employees self-service in 30 seconds. Admins see all connectio
 
 **Critical — these will silently break deployment if missed:**
 
-1. **The `openclaw` npm package (the core AI agent runtime, installed via `npm install -g openclaw@2026.3.24`) is pinned to version `2026.3.24` in both `agent-container/Dockerfile` and `exec-agent/Dockerfile`** — do not upgrade. This is the last version with stable support for Chinese mainstream IM platforms (Feishu / DingTalk). Newer versions changed the Gateway response delivery mechanism in a way that breaks IM channel integration.
-2. **Build both Docker images** — `agent-container/` (standard) and `exec-agent/` (executive). Step 1.5 covers exec; don't skip it even if the user only needs standard agents initially.
-3. **Export two env vars before seed scripts** — run `export AWS_REGION=$REGION && export S3_BUCKET=$S3_BUCKET` before `seed_skills_final.py` and `seed_workspaces.py` (they read env vars, not CLI args).
-4. **Docker build takes 10–15 min** — `clawhub install` installs skills one by one. This is normal.
-5. **After `update-agent-runtime`**, poll until `status: READY` before testing.
+1. **The `openclaw` npm package is pinned to `2026.3.24`** in both `agent-container/Dockerfile` and `exec-agent/Dockerfile` — do not upgrade. Newer versions changed the Gateway response delivery mechanism and break IM channel integration.
+2. **Build both Docker images** — `agent-container/` (standard) and `exec-agent/` (executive). Don't skip exec even if only standard agents are needed initially.
+3. **Docker build takes 10–15 min** — `clawhub install` installs skills one by one. This is normal.
+4. **After `update-agent-runtime`**, poll until `status: READY` before testing.
+5. **DynamoDB is in `us-east-2` by default** (AgentCore is `us-east-1`). This is intentional — DynamoDB cross-region access is free and `us-east-2` avoids hitting AgentCore's region during heavy load.
 
-**Verify it works** (after Step 6):
-- Playground → Carol (Finance) → "run git status" → refused ✓
-- Playground → Wang Wu (SDE) → "run git status" → executes ✓
-- Playground → Sharon (Legal) → "有什么新的token要上线吗" → Guardrail blocks ✓
+**Verify it works** (after deployment):
+- Playground → Carol Zhang (Finance) → "run git status" → refused ✓
+- Playground → Ryan Park (SDE) → "run git status" → executes ✓
+- Playground → Rachel Li (Legal) → "what new tokens are going live?" → Guardrail blocks ✓
 - Playground → WJD (Executive) → same question → answers freely ✓
 
-**If AgentCore returns 500:** check CloudWatch group `/aws/bedrock-agentcore/runtimes/<runtime-id>-DEFAULT` for `openclaw returned empty output` — wrong openclaw version.
+**If AgentCore returns 500:** check CloudWatch group `/aws/bedrock-agentcore/runtimes/<runtime-id>-DEFAULT` for `openclaw returned empty output` — wrong openclaw version. Rebuild with `openclaw@2026.3.24`.
 
 ---
 
@@ -418,39 +455,76 @@ Zero IT friction. Employees self-service in 30 seconds. Admins see all connectio
 | SSM Plugin | Latest | [Install guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) |
 
 **AWS requirements:**
-- Bedrock model access for Nova models (default) + Anthropic Claude (for Admin Assistant and exec tier)
-- Bedrock AgentCore available in `us-east-1` and `us-west-2`
-- IAM: `cloudformation:*`, `ec2:*`, `iam:*`, `ecr:*`, `s3:*`, `ssm:*`, `bedrock:*`, `dynamodb:*`
+- Bedrock model access: Nova 2 Lite (default) + Anthropic Claude (exec tier + Admin Assistant)
+- Bedrock AgentCore available in: `us-east-1`, `us-west-2`
+- IAM permissions: `cloudformation:*`, `ec2:*`, `iam:*`, `ecr:*`, `s3:*`, `ssm:*`, `bedrock:*`, `dynamodb:*`
 
-### Step 1: Deploy Infrastructure + AgentCore Runtime
+### Step 1: Configure and Deploy
 
 ```bash
-cd enterprise   # from repo root
-bash deploy-multitenancy.sh openclaw-multitenancy us-east-1
-# Takes ~15 minutes
+cd enterprise           # from repo root
+cp .env.example .env    # copy config template
 ```
 
-Creates: EC2 (gateway) · ECR (agent image) · S3 (workspaces) · IAM roles · AgentCore Runtime · SSM config
+Open `.env` and fill in the required values:
 
 ```bash
-STACK_NAME="openclaw-multitenancy"
+STACK_NAME=openclaw-enterprise   # your stack name
+REGION=us-east-1                 # us-east-1 or us-west-2 (AgentCore regions)
+ADMIN_PASSWORD=your-password     # admin console login password
+
+# Optional: use existing VPC instead of creating a new one
+# EXISTING_VPC_ID=vpc-0abc123
+# EXISTING_SUBNET_ID=subnet-0abc123
+
+# Optional: custom S3 bucket name — required when deploying multiple stacks in the same account
+# (e.g. staging + production in the same AWS account)
+# WORKSPACE_BUCKET_NAME=openclaw-tenants-123456789-staging
+```
+
+Then run the deploy script — it handles everything, **including the Docker build on the gateway EC2 (no local Docker required)**:
+
+```bash
+bash deploy.sh
+# ~15 minutes total: CloudFormation → EC2 Docker build → AgentCore Runtime → DynamoDB seed
+```
+
+To re-deploy after code changes without rebuilding the Docker image or re-seeding:
+
+```bash
+bash deploy.sh --skip-build   # update infra only, skip Docker build
+bash deploy.sh --skip-seed    # update infra + image, skip DynamoDB
+```
+
+**What `deploy.sh` does automatically:**
+1. Deploys CloudFormation (EC2, ECR, S3, IAM — creates or updates)
+2. Packages source code → uploads to S3 → **triggers Docker build on the gateway EC2 via SSM** (ARM64 Graviton, no local Docker needed)
+3. Creates or updates AgentCore Runtime
+4. Creates DynamoDB table if it doesn't exist
+5. Seeds org data (employees, positions, departments, SOUL templates, knowledge docs)
+6. Stores `ADMIN_PASSWORD` and `JWT_SECRET` in SSM SecureString
+7. Configures the EC2 gateway via SSM
+
+After deployment, get the instance ID and S3 bucket:
+
+```bash
+STACK_NAME="openclaw-enterprise"   # match your .env
 REGION="us-east-1"
-DYNAMODB_REGION="us-east-2"
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 INSTANCE_ID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION \
   --query 'Stacks[0].Outputs[?OutputKey==`InstanceId`].OutputValue' --output text)
 S3_BUCKET=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION \
   --query 'Stacks[0].Outputs[?OutputKey==`TenantWorkspaceBucketName`].OutputValue' --output text)
+echo "EC2: $INSTANCE_ID  |  S3: $S3_BUCKET"
 ```
 
 ### Step 1.5: Build and Push Exec-Agent Image (Executive Tier)
 
-The Executive Runtime uses a separate Docker image with all skills pre-installed and Claude Sonnet 4.6 as the default model. Build and push it from the repo root:
+The Executive Runtime uses a separate Docker image (`exec-agent/`) with all skills pre-installed and Claude Sonnet 4.6. `deploy.sh` builds the standard image automatically; the exec image must be pushed separately:
 
 ```bash
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-ECR_EXEC="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/openclaw-multitenancy-exec-agent"
+ECR_EXEC="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${STACK_NAME}-exec-agent"
 
 aws ecr get-login-password --region $REGION | \
   docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
@@ -483,52 +557,49 @@ aws bedrock-agentcore-control update-agent-runtime \
 
 > The standard agent image (`openclaw-multitenancy-multitenancy-agent`) is built automatically by `deploy-multitenancy.sh`. You only need this step for the executive tier.
 
-### Step 2: Create DynamoDB Table
+### Step 2: DynamoDB Table
+
+> **`deploy.sh` handles this automatically.** The table is created if it doesn't exist, then seeded with org data in one step.
+
+To create or re-seed manually:
 
 ```bash
+# Create table (idempotent — safe to run if it already exists)
 aws dynamodb create-table \
   --table-name openclaw-enterprise \
   --attribute-definitions \
-    AttributeName=PK,AttributeType=S \
-    AttributeName=SK,AttributeType=S \
-    AttributeName=GSI1PK,AttributeType=S \
-    AttributeName=GSI1SK,AttributeType=S \
-  --key-schema \
-    AttributeName=PK,KeyType=HASH \
-    AttributeName=SK,KeyType=RANGE \
-  --global-secondary-indexes '[{
-    "IndexName":"GSI1",
-    "KeySchema":[
-      {"AttributeName":"GSI1PK","KeyType":"HASH"},
-      {"AttributeName":"GSI1SK","KeyType":"RANGE"}
-    ],
-    "Projection":{"ProjectionType":"ALL"}
-  }]' \
+    AttributeName=PK,AttributeType=S AttributeName=SK,AttributeType=S \
+    AttributeName=GSI1PK,AttributeType=S AttributeName=GSI1SK,AttributeType=S \
+  --key-schema AttributeName=PK,KeyType=HASH AttributeName=SK,KeyType=RANGE \
+  --global-secondary-indexes '[{"IndexName":"GSI1","KeySchema":[
+    {"AttributeName":"GSI1PK","KeyType":"HASH"},{"AttributeName":"GSI1SK","KeyType":"RANGE"}
+  ],"Projection":{"ProjectionType":"ALL"}}]' \
   --billing-mode PAY_PER_REQUEST \
   --region $DYNAMODB_REGION
 ```
 
 ### Step 3: Seed Sample Organization
 
+> **`deploy.sh` handles this automatically.** To re-seed manually (e.g. after org changes):
+
 ```bash
 cd enterprise/admin-console/server
 pip install boto3 requests
 
-python3 seed_dynamodb.py         --region $DYNAMODB_REGION
-python3 seed_roles.py            --region $DYNAMODB_REGION
-python3 seed_settings.py         --region $DYNAMODB_REGION
-python3 seed_audit_approvals.py  --region $DYNAMODB_REGION
-python3 seed_usage.py            --region $DYNAMODB_REGION
-python3 seed_routing_conversations.py --region $DYNAMODB_REGION
-python3 seed_knowledge.py        --region $DYNAMODB_REGION
-python3 seed_ssm_tenants.py --region $REGION --stack $STACK_NAME
+DYNAMODB_REGION=us-east-2
 
-export S3_BUCKET=$S3_BUCKET
-export AWS_REGION=$REGION        # seed_skills_final.py and seed_workspaces.py read this
+python3 seed_dynamodb.py              --region $DYNAMODB_REGION
+python3 seed_roles.py                 --region $DYNAMODB_REGION
+python3 seed_settings.py              --region $DYNAMODB_REGION
+python3 seed_audit_approvals.py       --region $DYNAMODB_REGION
+python3 seed_usage.py                 --region $DYNAMODB_REGION
+python3 seed_routing_conversations.py --region $DYNAMODB_REGION
+python3 seed_ssm_tenants.py           --region $REGION --stack $STACK_NAME
+
+export S3_BUCKET AWS_REGION=$REGION
 python3 seed_skills_final.py
-python3 seed_workspaces.py
-python3 seed_all_workspaces.py   --bucket $S3_BUCKET
-python3 seed_knowledge_docs.py   --bucket $S3_BUCKET
+python3 seed_all_workspaces.py        --bucket $S3_BUCKET --region $REGION
+python3 seed_knowledge_docs.py        --bucket $S3_BUCKET --region $REGION
 ```
 
 ### Step 4: Deploy Admin Console
@@ -618,7 +689,7 @@ aws ssm start-session --target $INSTANCE_ID --region $REGION \
   --parameters '{"portNumber":["8099"],"localPortNumber":["8199"]}'
 ```
 
-Open **http://localhost:8199** → login with `emp-z3` (admin) and the password from Step 4.
+Open **http://localhost:8199** → login with Employee ID `emp-jiade` (admin) and `ADMIN_PASSWORD` from your `.env`.
 
 > **Public access:** Use CloudFront with an Elastic IP on the EC2. Set `PUBLIC_URL` in `/etc/openclaw/env` (e.g. `PUBLIC_URL=https://your-domain.com`) for correct Digital Twin URLs — the admin console reads this file via `EnvironmentFile` in the systemd service.
 
@@ -643,8 +714,8 @@ Employees self-service pair via Portal → Connect IM (QR code). No admin approv
 ## What to Test
 
 ### 1. SOUL Injection (core differentiator)
-Login as Carol (Finance) → Chat → "Who are you?" → **"ACME Corp Finance Analyst"**
-Login as Wang Wu (SDE) → Chat → "Who are you?" → **"ACME Corp Software Engineer"**
+Login as **Carol Zhang** (Finance) → Chat → "Who are you?" → **"ACME Corp Finance Analyst"**
+Login as **Ryan Park** (SDE) → Chat → "Who are you?" → **"ACME Corp Software Engineer"**
 Same LLM. Completely different identities.
 
 ### 2. Digital Twin
@@ -653,13 +724,13 @@ Turn ON → copy the URL → open in incognito → chat with the AI version of t
 Turn OFF → incognito tab gets 404 immediately
 
 ### 3. Org Directory (Knowledge Base)
-Ask any agent: *"认识 Peter 吗？他负责什么？"* or *"I need a code review — who should I contact?"*
+Ask any agent: *"Who should I contact for a code review?"* or *"What does Marcus Bell do?"*
 → Agent reads `kb-org-directory` (seeded into every position) and answers with the right person's name, role, IM channel, and agent capabilities
 → Works out-of-box after running `seed_knowledge_docs.py` — no manual KB assignment needed
 
 ### 4. Permission Boundaries
-Carol: "Run git status" → **Refused** (Finance, no shell)
-Wang Wu: "Run git status" → **Executed** (SDE, has shell)
+Carol Zhang: "Run git status" → **Refused** (Finance, no shell)
+Ryan Park: "Run git status" → **Executed** (SDE, has shell)
 WJD / Ada: Any command → **Executed** (Executive tier, zero restrictions, Sonnet 4.6)
 
 ### 5. Multi-Runtime
@@ -669,7 +740,7 @@ Login as **Ada** or **WJD** → these route to the Executive AgentCore Runtime:
 - IAM: full S3, all Bedrock models, cross-dept DynamoDB
 
 ### 6. Memory Persistence
-Chat as Peter Wu (Discord) → come back after 15 min → **agent recalls previous conversation**
+Chat as **JiaDe Wang** (Discord) → come back after 15 min → **agent recalls previous conversation**
 Same memory shared across Discord, Telegram, and Portal.
 
 > **How it works:** Each turn is synced to S3 immediately after the response (not just on session end). The next microVM downloads the workspace at session start and has full context. If memory doesn't appear, re-run `seed_all_workspaces.py` to reset S3 workspace state.
@@ -718,13 +789,14 @@ To add a new KB: Admin Console → Knowledge Base → upload Markdown → Assign
 |-------------|------|------|---------|---------------------|
 | **emp-ada** | **Ada** | **Executive** | **exec-agent · Sonnet 4.6** | **All tools · Full IAM · Feishu + Telegram 🔓** |
 | **emp-wjd** | **WJD** | **Executive** | **exec-agent · Sonnet 4.6** | **All tools · Full IAM · Feishu + Telegram 🔓** |
-| emp-z3 | Zhang San | Admin | standard | Full Admin Console |
 | emp-jiade | JiaDe Wang | Admin | standard | Discord → SA Agent ✨ |
+| emp-chris | Chris Morgan | Admin | standard | DevOps Agent (shell + infra tools) |
 | emp-peter | Peter Wu | Manager | standard | Portal/Discord → Executive Agent ✨ |
-| emp-lin | Lin Xiaoyu | Manager | standard | Product dept view only |
-| emp-david | David Park | Employee | standard | Portal/Discord → Finance Agent ✨ |
-| emp-w5 | Wang Wu | Employee | standard | Telegram → SDE Agent (shell/code) |
+| emp-alex | Alex Rivera | Manager | standard | Product dept manager view |
+| emp-mike | Mike Johnson | Manager | standard | Sales dept manager · CRM tools |
+| emp-ryan | Ryan Park | Employee | standard | Slack/Discord → SDE Agent (shell/code) |
 | emp-carol | Carol Zhang | Employee | standard | Telegram → Finance Agent |
+| emp-david | David Park | Employee | standard | Slack → Finance Agent ✨ |
 | **emp-admin** | **Demo Admin** | **Employee** | **exec-agent** | **Unrestricted test account · All tools · install_skill** |
 
 > 🔓 = No tool restrictions · ✨ = Cross-session memory via S3
@@ -915,6 +987,60 @@ sudo systemctl daemon-reload
 sudo systemctl enable bedrock-proxy-h2 tenant-router
 sudo systemctl start bedrock-proxy-h2 tenant-router
 ```
+
+## Troubleshooting
+
+### CloudFormation stack deletion fails on PrivateSubnet
+
+**Symptom:** `aws cloudformation delete-stack` gets stuck, then reports `DELETE_FAILED` with:
+```
+The subnet 'subnet-xxx' has dependencies and cannot be deleted.
+```
+
+**Cause:** AWS GuardDuty automatically creates managed VPC endpoints in every subnet it monitors. These endpoints block subnet deletion.
+
+**Fix:** Find and delete the GuardDuty-managed endpoints before retrying:
+
+```bash
+# Find GuardDuty endpoints in the stack's VPC
+VPC_ID=$(aws ec2 describe-vpcs \
+  --filters "Name=tag:aws:cloudformation:stack-name,Values=${STACK_NAME}" \
+  --region $REGION --query 'Vpcs[0].VpcId' --output text)
+
+ENDPOINTS=$(aws ec2 describe-vpc-endpoints \
+  --filters "Name=vpc-id,Values=$VPC_ID" \
+  --region $REGION \
+  --query 'VpcEndpoints[?State!=`deleted`].VpcEndpointId' --output text)
+
+aws ec2 delete-vpc-endpoints --vpc-endpoint-ids $ENDPOINTS --region $REGION
+
+# Retry stack deletion
+aws cloudformation delete-stack --stack-name $STACK_NAME --region $REGION
+```
+
+> **Note:** This does not disable GuardDuty — it only removes the endpoint ENIs that were blocking deletion. GuardDuty will recreate them in any new subnets automatically.
+
+> **Prevention:** Deploying with `CreateVPCEndpoints=false` (default) avoids creating a PrivateSubnet, which is the only subnet GuardDuty consistently attaches to in this template. The CloudFormation template has been updated to skip PrivateSubnet creation when VPC endpoints are disabled.
+
+### `deploy.sh` fails: ECR repo is empty after `--skip-build`
+
+**Symptom:** AgentCore runtime creation fails with "specified image identifier does not exist."
+
+**Cause:** `--skip-build` skips the Docker build, but if this is the first deploy of a new stack, the ECR repo will be empty.
+
+**Fix:** Run without `--skip-build` on first deploy. The script builds on the gateway EC2 via SSM — no local Docker needed.
+
+### AgentCore returns HTTP 500 on every message
+
+**Cause:** Almost always a wrong `openclaw` npm package version inside the container.
+
+**Check:**
+```bash
+aws logs tail /aws/bedrock-agentcore/runtimes/<runtime-id>-DEFAULT --follow
+# Look for: "openclaw returned empty output"
+```
+
+**Fix:** Rebuild the Docker image. Both `agent-container/Dockerfile` and `exec-agent/Dockerfile` must install `openclaw@2026.3.24` exactly — do not upgrade.
 
 ---
 

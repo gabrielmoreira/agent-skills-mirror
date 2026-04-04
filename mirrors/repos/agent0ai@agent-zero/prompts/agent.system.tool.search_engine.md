@@ -1,16 +1,15 @@
-### search_engine:
-provide query arg get search results
-returns list urls titles descriptions
-**Example usage**:
+### search_engine
+find live news, prices, and other real-time web data
+arg: `query` (text search query)
+returns urls, titles, and descriptions
+example:
 ~~~json
 {
-    "thoughts": [
-        "...",
-    ],
-    "headline": "Searching web for video content",
-    "tool_name": "search_engine",
-    "tool_args": {
-        "query": "Video of...",
-    }
+  "thoughts": ["I need current information rather than relying on memory."],
+  "headline": "Searching the web",
+  "tool_name": "search_engine",
+  "tool_args": {
+    "query": "latest LiteLLM release notes"
+  }
 }
 ~~~

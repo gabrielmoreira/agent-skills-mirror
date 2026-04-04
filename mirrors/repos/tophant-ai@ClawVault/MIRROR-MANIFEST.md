@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/tophant-clawvault/clawvault_manager.py`](skills/tophant-clawvault/clawvault_manager.py) |
-| 2 | ✓ | [`skills/tophant-clawvault/README.md`](skills/tophant-clawvault/README.md) |
-| 3 | ✓ | [`skills/tophant-clawvault/SECURITY.md`](skills/tophant-clawvault/SECURITY.md) |
-| 4 | ✓ | [`skills/tophant-clawvault/skill.json`](skills/tophant-clawvault/skill.json) |
-| 5 | ✓ | [`skills/tophant-clawvault/SKILL.md`](skills/tophant-clawvault/SKILL.md) |
+| 1 | ✓ | [`skills/openclaw-clawvault/clawvault_ops.py`](skills/openclaw-clawvault/clawvault_ops.py) |
+| 2 | ✓ | [`skills/openclaw-clawvault/skill.json`](skills/openclaw-clawvault/skill.json) |
+| 3 | ✓ | [`skills/openclaw-clawvault/SKILL.md`](skills/openclaw-clawvault/SKILL.md) |
+| 4 | ✓ | [`skills/tophant-clawvault/clawvault_manager.py`](skills/tophant-clawvault/clawvault_manager.py) |
+| 5 | ✓ | [`skills/tophant-clawvault/README.md`](skills/tophant-clawvault/README.md) |
+| 6 | ✓ | [`skills/tophant-clawvault/SECURITY.md`](skills/tophant-clawvault/SECURITY.md) |
+| 7 | ✓ | [`skills/tophant-clawvault/skill.json`](skills/tophant-clawvault/skill.json) |
+| 8 | ✓ | [`skills/tophant-clawvault/SKILL.md`](skills/tophant-clawvault/SKILL.md) |
 
 ---
 

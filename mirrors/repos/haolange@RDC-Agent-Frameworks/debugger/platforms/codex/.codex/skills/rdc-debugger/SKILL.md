@@ -25,6 +25,17 @@ metadata:
 - `reference_contract` 生成与 readiness 判定
 - `debug_plan` 编译
 
+当前阶段对外只允许要求用户补充自然语言事实、目标、现象、环境和可访问材料。
+
+不得把以下内部对象直接当成用户输入要求：
+
+- `reference_contract`
+- `strict_ready`
+- `missing_inputs`
+- `debug_plan`
+
+如果 execution 仍被 `BLOCKED_MISSING_FIX_REFERENCE` 阻断，必须明确说明缺的是哪类参考事实或基线材料，而不是让用户按内部字段名补 YAML。
+
 当前阶段默认通过轻量 sub-agent 收敛输入：
 
 - `clarification_agent`

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 13 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,6 +72,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`src-tauri/resources/default-skills/typesetting/SKILL.md`](src-tauri/resources/default-skills/typesetting/SKILL.md) |
 | 12 | ✓ | [`src-tauri/resources/default-skills/url_parse/SKILL.md`](src-tauri/resources/default-skills/url_parse/SKILL.md) |
 | 13 | ✓ | [`src-tauri/resources/default-skills/video_generate/SKILL.md`](src-tauri/resources/default-skills/video_generate/SKILL.md) |
+| 14 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
+| 15 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
+| 16 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
+| 17 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
+| 18 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
 
 ---
 

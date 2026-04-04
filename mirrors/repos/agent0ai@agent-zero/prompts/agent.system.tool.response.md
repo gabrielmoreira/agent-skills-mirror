@@ -2,6 +2,7 @@
 final answer to user
 ends task processing use only when done or no task active
 put result in text arg
+default to balanced, concise answers: informative but tight, not terse and not verbose.
 usage:
 ~~~json
 {

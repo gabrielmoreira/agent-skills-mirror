@@ -7,7 +7,7 @@ Tech Stack: Python 3.12+ | Flask | Alpine.js | LiteLLM | WebSocket (Socket.io)
 Dev Server: python run_ui.py (runs on http://localhost:50001 by default)
 Run Tests: pytest (standard) or pytest tests/test_name.py (file-scoped)
 Documentation: README.md | docs/
-Frontend Deep Dives: [Component System](docs/agents/AGENTS.components.md) | [Modal System](docs/agents/AGENTS.modals.md) | [Plugin Architecture](docs/agents/AGENTS.plugins.md)
+Frontend Deep Dives: [Component System](docs/agents/AGENTS.components.md) | [Modal System](docs/agents/AGENTS.modals.md) | [Plugin Architecture](docs/agents/AGENTS.plugins.md) | [Banners & Discovery](docs/agents/AGENTS.banners.md)
 
 ---
 

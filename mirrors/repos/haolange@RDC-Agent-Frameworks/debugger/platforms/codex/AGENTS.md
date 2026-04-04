@@ -8,7 +8,8 @@
 - `rdc-debugger` 是唯一 public entrypoint，但内部必须先经过 `Plan / Intake Phase` 再进入 `Audited Execution Phase`
 - 宿主若处于 Plan Mode，应优先把输入收敛为 `debug_plan`
 - 用户未提供 `.rdc` 时，必须以 `BLOCKED_MISSING_CAPTURE` 停止
-- Plan 阶段若无法生成 `strict_ready reference_contract`，必须以 `BLOCKED_MISSING_FIX_REFERENCE` 停止 execution
+- Plan 阶段必须通过最少必要追问自行整理内部 `reference_contract` / `debug_plan`，不得要求用户直接填写 schema 字段
+- Plan 阶段若在最小追问后仍无法生成 `strict_ready reference_contract`，必须以 `BLOCKED_MISSING_FIX_REFERENCE` 停止 execution
 - 当前平台通过 `shared_harness + runtime_broker + ownership_lease + audit artifacts` 执行强门禁
 - `.codex/runtime_guard.py` 必须先后裁决 `artifacts/entry_gate.yaml`、`artifacts/intake_gate.yaml`、`artifacts/runtime_session.yaml`、`artifacts/runtime_snapshot.yaml`、`artifacts/ownership_lease.yaml`、`artifacts/runtime_failure.yaml`
 - capture import 与 case/run bootstrap 只能发生在 accepted intake 内

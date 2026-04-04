@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 27 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,28 +64,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`examples/ai-e2e-next/data/island-rescue/SKILL.md`](examples/ai-e2e-next/data/island-rescue/SKILL.md) |
 | 4 | ✓ | [`examples/ai-functions/data/island-rescue/SKILL.md`](examples/ai-functions/data/island-rescue/SKILL.md) |
 | 5 | ✓ | [`packages/ai/AGENTS.md`](packages/ai/AGENTS.md) |
-| 6 | ✓ | [`skills/add-provider-package/SKILL.md`](skills/add-provider-package/SKILL.md) |
-| 7 | ✓ | [`skills/adr-skill/assets/templates/adr-madr.md`](skills/adr-skill/assets/templates/adr-madr.md) |
-| 8 | ✓ | [`skills/adr-skill/assets/templates/adr-readme.md`](skills/adr-skill/assets/templates/adr-readme.md) |
-| 9 | ✓ | [`skills/adr-skill/assets/templates/adr-simple.md`](skills/adr-skill/assets/templates/adr-simple.md) |
-| 10 | ✓ | [`skills/adr-skill/references/adr-conventions.md`](skills/adr-skill/references/adr-conventions.md) |
-| 11 | ✓ | [`skills/adr-skill/references/examples.md`](skills/adr-skill/references/examples.md) |
-| 12 | ✓ | [`skills/adr-skill/references/review-checklist.md`](skills/adr-skill/references/review-checklist.md) |
-| 13 | ✓ | [`skills/adr-skill/references/template-variants.md`](skills/adr-skill/references/template-variants.md) |
-| 14 | ✓ | [`skills/adr-skill/scripts/bootstrap_adr.js`](skills/adr-skill/scripts/bootstrap_adr.js) |
-| 15 | ✓ | [`skills/adr-skill/scripts/new_adr.js`](skills/adr-skill/scripts/new_adr.js) |
-| 16 | ✓ | [`skills/adr-skill/scripts/set_adr_status.js`](skills/adr-skill/scripts/set_adr_status.js) |
-| 17 | ✓ | [`skills/adr-skill/SKILL.md`](skills/adr-skill/SKILL.md) |
-| 18 | ✓ | [`skills/capture-api-response-test-fixture/SKILL.md`](skills/capture-api-response-test-fixture/SKILL.md) |
-| 19 | ✓ | [`skills/develop-ai-functions-example/SKILL.md`](skills/develop-ai-functions-example/SKILL.md) |
-| 20 | ✓ | [`skills/list-npm-package-content/scripts/list-package-files.sh`](skills/list-npm-package-content/scripts/list-package-files.sh) |
-| 21 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
-| 22 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
-| 23 | ✓ | [`skills/use-ai-sdk/references/ai-gateway.md`](skills/use-ai-sdk/references/ai-gateway.md) |
-| 24 | ✓ | [`skills/use-ai-sdk/references/common-errors.md`](skills/use-ai-sdk/references/common-errors.md) |
-| 25 | ✓ | [`skills/use-ai-sdk/references/devtools.md`](skills/use-ai-sdk/references/devtools.md) |
-| 26 | ✓ | [`skills/use-ai-sdk/references/type-safe-agents.md`](skills/use-ai-sdk/references/type-safe-agents.md) |
-| 27 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
+| 6 | ✓ | [`skills/add-function-examples/SKILL.md`](skills/add-function-examples/SKILL.md) |
+| 7 | ✓ | [`skills/add-provider-package/SKILL.md`](skills/add-provider-package/SKILL.md) |
+| 8 | ✓ | [`skills/adr-skill/assets/templates/adr-madr.md`](skills/adr-skill/assets/templates/adr-madr.md) |
+| 9 | ✓ | [`skills/adr-skill/assets/templates/adr-readme.md`](skills/adr-skill/assets/templates/adr-readme.md) |
+| 10 | ✓ | [`skills/adr-skill/assets/templates/adr-simple.md`](skills/adr-skill/assets/templates/adr-simple.md) |
+| 11 | ✓ | [`skills/adr-skill/references/adr-conventions.md`](skills/adr-skill/references/adr-conventions.md) |
+| 12 | ✓ | [`skills/adr-skill/references/examples.md`](skills/adr-skill/references/examples.md) |
+| 13 | ✓ | [`skills/adr-skill/references/review-checklist.md`](skills/adr-skill/references/review-checklist.md) |
+| 14 | ✓ | [`skills/adr-skill/references/template-variants.md`](skills/adr-skill/references/template-variants.md) |
+| 15 | ✓ | [`skills/adr-skill/scripts/bootstrap_adr.js`](skills/adr-skill/scripts/bootstrap_adr.js) |
+| 16 | ✓ | [`skills/adr-skill/scripts/new_adr.js`](skills/adr-skill/scripts/new_adr.js) |
+| 17 | ✓ | [`skills/adr-skill/scripts/set_adr_status.js`](skills/adr-skill/scripts/set_adr_status.js) |
+| 18 | ✓ | [`skills/adr-skill/SKILL.md`](skills/adr-skill/SKILL.md) |
+| 19 | ✓ | [`skills/capture-api-response-test-fixture/SKILL.md`](skills/capture-api-response-test-fixture/SKILL.md) |
+| 20 | ✓ | [`skills/develop-ai-functions-example/SKILL.md`](skills/develop-ai-functions-example/SKILL.md) |
+| 21 | ✓ | [`skills/list-npm-package-content/scripts/list-package-files.sh`](skills/list-npm-package-content/scripts/list-package-files.sh) |
+| 22 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
+| 23 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
+| 24 | ✓ | [`skills/use-ai-sdk/references/ai-gateway.md`](skills/use-ai-sdk/references/ai-gateway.md) |
+| 25 | ✓ | [`skills/use-ai-sdk/references/common-errors.md`](skills/use-ai-sdk/references/common-errors.md) |
+| 26 | ✓ | [`skills/use-ai-sdk/references/devtools.md`](skills/use-ai-sdk/references/devtools.md) |
+| 27 | ✓ | [`skills/use-ai-sdk/references/type-safe-agents.md`](skills/use-ai-sdk/references/type-safe-agents.md) |
+| 28 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
 
 ---
 

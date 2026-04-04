@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 356 file(s) materialized.
+Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 355 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 356 |
+| Files         | 355 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -407,14 +407,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 346 | ✓ | [`skills/smart-home/openhue/SKILL.md`](skills/smart-home/openhue/SKILL.md) |
 | 347 | ✓ | [`skills/social-media/DESCRIPTION.md`](skills/social-media/DESCRIPTION.md) |
 | 348 | ✓ | [`skills/social-media/xitter/SKILL.md`](skills/social-media/xitter/SKILL.md) |
-| 349 | ✓ | [`skills/software-development/code-review/SKILL.md`](skills/software-development/code-review/SKILL.md) |
-| 350 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
-| 351 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
-| 352 | ✓ | [`skills/software-development/subagent-driven-development/SKILL.md`](skills/software-development/subagent-driven-development/SKILL.md) |
-| 353 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
-| 354 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
-| 355 | ✓ | [`skills/software-development/writing-plans/SKILL.md`](skills/software-development/writing-plans/SKILL.md) |
-| 356 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
+| 349 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
+| 350 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
+| 351 | ✓ | [`skills/software-development/subagent-driven-development/SKILL.md`](skills/software-development/subagent-driven-development/SKILL.md) |
+| 352 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
+| 353 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
+| 354 | ✓ | [`skills/software-development/writing-plans/SKILL.md`](skills/software-development/writing-plans/SKILL.md) |
+| 355 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
 
 ---
 

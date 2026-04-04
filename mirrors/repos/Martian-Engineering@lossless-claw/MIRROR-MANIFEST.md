@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Martian-Engineering/lossless-claw` — 26 default patterns, 1 followed patterns, 2 file(s) materialized.
+Mirror of `Martian-Engineering/lossless-claw` — 26 default patterns, 1 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Martian-Engineering/lossless-claw` — 26 default patterns, 1 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 2 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | → | [`RELEASING.md`](RELEASING.md) |
+| 2 | ✓ | [`skills/lossless-claw/references/architecture.md`](skills/lossless-claw/references/architecture.md) |
+| 3 | ✓ | [`skills/lossless-claw/references/config.md`](skills/lossless-claw/references/config.md) |
+| 4 | ✓ | [`skills/lossless-claw/references/diagnostics.md`](skills/lossless-claw/references/diagnostics.md) |
+| 5 | ✓ | [`skills/lossless-claw/references/recall-tools.md`](skills/lossless-claw/references/recall-tools.md) |
+| 6 | ✓ | [`skills/lossless-claw/references/session-lifecycle.md`](skills/lossless-claw/references/session-lifecycle.md) |
+| 7 | ✓ | [`skills/lossless-claw/SKILL.md`](skills/lossless-claw/SKILL.md) |
+| 8 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

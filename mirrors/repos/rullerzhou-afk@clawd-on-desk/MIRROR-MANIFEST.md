@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,13 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`agents/claude-code.js`](agents/claude-code.js) |
-| 2 | ✓ | [`agents/codex-log-monitor.js`](agents/codex-log-monitor.js) |
-| 3 | ✓ | [`agents/codex.js`](agents/codex.js) |
-| 4 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
-| 5 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
-| 6 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
-| 7 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`agents/codebuddy.js`](agents/codebuddy.js) |
+| 3 | ✓ | [`agents/codex-log-monitor.js`](agents/codex-log-monitor.js) |
+| 4 | ✓ | [`agents/codex.js`](agents/codex.js) |
+| 5 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
+| 6 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
+| 7 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
+| 8 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

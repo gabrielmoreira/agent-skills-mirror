@@ -20,6 +20,13 @@ Plan 阶段负责：
 - 判定 `strict_ready / fallback_only / missing`
 - 汇总为 `debug_plan`
 
+Plan 阶段对外口径固定为：
+
+- 用户只需要提供自然语言事实、目标、现象、环境信息和宿主可访问材料
+- agent 必须通过最少必要问题自行整理 `missing_inputs`、`reference_contract` 与 `debug_plan`
+- 不得要求用户直接提交内部 YAML / schema / 字段名
+- 即使 execution 被 `BLOCKED_MISSING_FIX_REFERENCE` 阻断，也只能说明“还缺什么事实或参考基线”，不能把 `strict_ready reference_contract` 原样当作用户待补字段
+
 Plan 阶段默认通过轻量 sub-agent 收敛输入：
 
 - `clarification_agent`

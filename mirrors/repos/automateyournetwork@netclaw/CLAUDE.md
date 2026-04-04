@@ -22,6 +22,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-02
 - In-memory only (data lost on restart, acceptable for demo/testing scope) (010-telemetry-receivers)
 - Markdown (documentation reorganization) + N/A (pure markdown files, OpenClaw read tool) (011-soul-optimization)
 - Filesystem (`~/.openclaw/workspace/`) (011-soul-optimization)
+- Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), httpx (async HTTP client), python-dotenv (environment variables) (012-gns3-mcp-server)
+- N/A (stateless proxy to GNS3 REST API) (012-gns3-mcp-server)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -41,8 +43,8 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 012-gns3-mcp-server: Added Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), httpx (async HTTP client), python-dotenv (environment variables)
 - 011-soul-optimization: Added Markdown (documentation reorganization) + N/A (pure markdown files, OpenClaw read tool)
-- 010-telemetry-receivers: Added Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), asyncio (UDP receivers), pysnmp (SNMP trap decoding), python-syslog-rfc5424 (syslog parsing), xflow (IPFIX/NetFlow decoding)
 - 010-telemetry-receivers: Added Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), asyncio (UDP receivers), pysnmp (SNMP trap decoding), python-syslog-rfc5424 (syslog parsing), xflow (IPFIX/NetFlow decoding)
 
 

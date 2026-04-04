@@ -1,36 +1,24 @@
-{{if agent_profiles}}
 ### call_subordinate
-
-you can use subordinates for subtasks
-subordinates can be scientist coder engineer etc
-message field: always describe role, task details goal overview for new subordinate
-delegate specific subtasks not entire task
-reset arg usage:
-  "true": spawn new subordinate
-  "false": continue existing subordinate
-if superior, orchestrate
-respond to existing subordinates using call_subordinate tool with reset false
-profile arg usage: select from available profiles for specialized subordinates, leave empty for default
-
-example usage
+delegate research or complex subtasks to a specialized agent.
+args: `message`, optional `profile`, `reset`
+- `profile`: optional prompt profile name for the subordinate; leave empty for the default profile
+- `reset`: use json boolean `true` for the first message or when changing profile; use `false` to continue
+- `message`: define role, goal, and the concrete task
+example:
 ~~~json
 {
-    "thoughts": [
-        "The result seems to be ok but...",
-        "I will ask a coder subordinate to fix...",
-    ],
-    "tool_name": "call_subordinate",
-    "tool_args": {
-        "profile": "",
-        "message": "...",
-        "reset": "true"
-    }
+  "thoughts": ["Need focused external research before I continue."],
+  "headline": "Delegating research subtask",
+  "tool_name": "call_subordinate",
+  "tool_args": {
+    "profile": "researcher",
+    "message": "Research Italy AI trends and return key findings.",
+    "reset": true
+  }
 }
 ~~~
-
-**response handling**
-- you might be part of long chain of subordinates, avoid slow and expensive rewriting subordinate responses, instead use `§§include(<path>)` alias to include the response as is
-
-**available profiles:**
+reuse long subordinate output with `§§include(path)` instead of rewriting it
+{{if agent_profiles}}
+available profiles:
 {{agent_profiles}}
 {{endif}}

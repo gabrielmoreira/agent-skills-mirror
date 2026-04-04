@@ -1,21 +1,22 @@
-## "Multimodal (Vision) Agent Tools" available:
+## multimodal vision tools
 
-### vision_load:
-load image data to LLM
-use paths arg for attachments
-multiple images if needed
-only bitmaps supported convert first if needed
-
-**Example usage**:
+### vision_load
+load images into the model for visual reasoning
+args: `paths` list of absolute image paths
+rules:
+- load all relevant images in one call when comparing screenshots or pages
+- use when the task depends on screenshots, diagrams, scanned documents, charts, or photos
+- only bitmaps are supported; convert other formats first if needed
+example:
 ```json
 {
-    "thoughts": [
-        "I need to see the image...",
-    ],
-    "headline": "Loading image for visual analysis",
-    "tool_name": "vision_load",
-    "tool_args": {
-        "paths": ["/path/to/image.png"],
-    }
+  "thoughts": [
+    "I need to inspect the screenshot before answering."
+  ],
+  "headline": "Loading screenshot for visual analysis",
+  "tool_name": "vision_load",
+  "tool_args": {
+    "paths": ["/path/to/screenshot.png"]
+  }
 }
 ```

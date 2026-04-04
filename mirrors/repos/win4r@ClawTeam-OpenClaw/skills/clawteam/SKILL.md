@@ -13,7 +13,7 @@ description: >
   single agent can efficiently handle alone. Provides comprehensive guidance for
   using the ClawTeam CLI to orchestrate multi-agent teams with task management,
   messaging, and monitoring.
-version: 0.2.0
+version: 0.3.0
 ---
 
 # ClawTeam Multi-Agent Coordination

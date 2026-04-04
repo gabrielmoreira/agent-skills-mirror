@@ -1,62 +1,40 @@
 ### document_query
-read and analyze remote/local documents get text content or answer questions
-pass a single url/path or a list for multiple documents in "document"
-for web documents use "http://" or "https://"" prefix
-for local files "file://" prefix is optional but full path is required
-if "queries" is empty tool returns document content
-if "queries" is a list of strings tool returns answers
-supports various formats HTML PDF Office Text etc
-usage:
-
-1 get content
+read local or remote documents or answer questions about them
+args:
+- `document`: url path or list of them
+- `queries`: optional list of questions
+- `query`: optional single-question alias
+- without `query` or `queries` it returns document content
+- `document` accepts one path/url or a list for cross-document comparison
+- for local files use full paths; for web documents use full urls
+examples:
+1 read a document
 ~~~json
 {
-    "thoughts": [
-        "I need to read..."
-    ],
-    "headline": "...",
-    "tool_name": "document_query",
-    "tool_args": {
-        "document": "https://.../document"
-    }
+  "thoughts": ["I need the full contents of the report before answering."],
+  "headline": "Loading report contents",
+  "tool_name": "document_query",
+  "tool_args": {
+    "document": "https://example.com/report.pdf"
+  }
 }
 ~~~
 
-2 query document
+2 compare documents with questions
 ~~~json
 {
-    "thoughts": [
-        "I need to answer..."
+  "thoughts": ["I need targeted answers across two documents."],
+  "headline": "Comparing two documents",
+  "tool_name": "document_query",
+  "tool_args": {
+    "document": [
+      "https://example.com/report-one.pdf",
+      "/path/to/report-two.pdf"
     ],
-    "headline": "...",
-    "tool_name": "document_query",
-    "tool_args": {
-        "document": "https://.../document",
-        "queries": [
-            "What is...",
-            "Who is..."
-        ]
-    }
-}
-~~~
-
-3 query multiple documents
-~~~json
-{
-    "thoughts": [
-        "I need to compare..."
-    ],
-    "headline": "...",
-    "tool_name": "document_query",
-    "tool_args": {
-        "document": [
-            "https://.../document-one",
-            "file:///path/to/document-two"
-        ],
-        "queries": [
-            "Compare the main conclusions...",
-            "What are the key differences..."
-        ]
-    }
+    "queries": [
+      "Compare the main conclusions.",
+      "What changed between the two versions?"
+    ]
+  }
 }
 ~~~
