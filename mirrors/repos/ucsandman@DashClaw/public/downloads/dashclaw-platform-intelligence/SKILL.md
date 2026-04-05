@@ -14,7 +14,7 @@ description: >
   "track learning", "approve from terminal", "govern Claude Code".
 ---
 
-# DashClaw Platform Intelligence (v2.5)
+# DashClaw Platform Intelligence (v2.8)
 
 You are a DashClaw platform expert. You know every API route, both SDKs, the security model,
 compliance frameworks, evaluation engine, prompt registry, feedback loop, drift detection,
@@ -44,6 +44,8 @@ Determine which workflow to follow:
 **Defining quality scoring or risk templates?** --> "Configure Scoring" below
 **Approving agent actions from the terminal?** --> "CLI Approval Channel" below
 **Governing Claude Code tool calls with DashClaw?** --> "Claude Code Hooks" below
+**Monitoring agent session health?** --> "Monitor Session Health" below
+**Configuring guard policy types?** --> "Configure Guard Policy Types" below
 **General question about the platform?** --> Read [references/platform-knowledge.md](references/platform-knowledge.md)
 **Need the full API surface?** --> Read [references/api-surface.md](references/api-surface.md)
 
@@ -450,6 +452,30 @@ for (const lesson of lessons) {
 drift_warnings.forEach(w => console.log(`[DRIFT] ${w.metric}: z=${w.z_score} (${w.severity})`));
 ```
 
+## Action Context (v2.7.0)
+
+The SDK now provides `actionContext()` (Node.js) / `action_context()` (Python) for automatic message-action correlation:
+
+### Node.js
+```javascript
+const action = await claw.createAction({ action_type: 'deploy', declared_goal: 'Deploy v2' });
+const ctx = claw.actionContext(action.action_id);
+await ctx.sendMessage({ to: 'ops-agent', type: 'status', body: 'Deploying...' });
+await ctx.recordAssumption({ assumption: 'Tests passed' });
+await ctx.updateOutcome({ status: 'completed' });
+```
+
+### Python
+```python
+action = claw.create_action(action_type="deploy", declared_goal="Deploy v2")
+with claw.action_context(action["action_id"]) as ctx:
+    ctx.send_message("Deploying...", to="ops-agent")
+    ctx.record_assumption({"assumption": "Tests passed"})
+    ctx.update_outcome(status="completed")
+```
+
+Messages and assumptions sent through the context are automatically tagged with `action_id`, appearing in the decision timeline at `/decisions/{actionId}`.
+
 ## Add a DashClaw Capability
 
 Full-stack scaffold when adding a new API route to the DashClaw platform.
@@ -791,6 +817,8 @@ This URL is printed in the terminal approval block, in the `dashclaw approve` ou
 
 The DashClaw hooks for Claude Code intercept tool calls before and after execution, enforcing guard policies without any SDK instrumentation in your agent code. Drop two Python scripts into `.claude/hooks/` and every Bash, Edit, Write, and MultiEdit call Claude makes is governed by your DashClaw policies.
 
+> **v2 hooks (dashclaw_agent_intel):** The v2 hook layer governs 40+ tools via the `dashclaw_agent_intel` MCP surface, adding session-aware policy evaluation, branch freshness checks, and permission escalation guards alongside the original file/command governance.
+
 ### Files
 
 ```
@@ -872,6 +900,130 @@ The hook polling loop detects the approval within 3 seconds and unblocks Claude 
 ### Evidence trail
 
 After every governed tool execution, `dashclaw_posttool.py` records the outcome as a DashClaw action. This means every file edit and bash command Claude runs in your project becomes a replayable evidence record at `<DASHCLAW_BASE_URL>/replay/<actionId>`.
+
+## Monitor Session Health
+
+Track agent session lifecycle: create sessions, detect stalls, and trigger recovery.
+
+### Create a session
+
+```javascript
+const session = await dc.createSession({
+  agent_id: 'deploy-bot',
+  workspace: '/home/user/project',
+  branch: 'feat/new-feature',
+});
+// session.session_id = 'sess_01j9z...'
+```
+
+```python
+session = dc.create_session(
+    agent_id="deploy-bot",
+    workspace="/home/user/project",
+    branch="feat/new-feature",
+)
+```
+
+### Update session status
+
+```javascript
+await dc.updateSession(session.session_id, {
+  status: 'active',
+  green_level: 'full',
+  branch_freshness: 'fresh',
+  commits_behind: 0,
+});
+```
+
+### Detect stalls
+
+List sessions that have gone idle or stalled:
+
+```javascript
+const { sessions } = await dc.listSessions({ status: 'stalled' });
+for (const s of sessions) {
+  console.log(`${s.agent_id} stalled in ${s.workspace} (${s.blocked_reason})`);
+}
+```
+
+### Recovery
+
+When a session stalls, update its status to trigger recovery workflows:
+
+```javascript
+await dc.updateSession(session.session_id, {
+  status: 'recovering',
+  blocked_reason: null,
+});
+// Agent resumes work...
+await dc.updateSession(session.session_id, { status: 'active' });
+```
+
+Session events are available at `GET /api/sessions/{sessionId}/events` for full lifecycle audit trails.
+
+## Configure Guard Policy Types
+
+Guard policies use a `policy_type` field to determine evaluation behavior. DashClaw ships with
+several built-in types plus three new types added in v2.8.
+
+### Built-in policy types
+
+| Policy Type | Purpose |
+|---|---|
+| `risk_threshold` | Block or require approval when risk exceeds a limit |
+| `cost_limit` | Cap per-action and daily spend |
+| `action_allowlist` | Only allow specific action types |
+| `content_filter` | Guard against sensitive data in outputs |
+| `permission_escalation` | Block when an agent requests a higher permission level than allowed |
+| `green_contract` | Require green (passing) test status before certain actions proceed |
+| `branch_freshness` | Block actions when the working branch is stale (N+ commits behind) |
+
+### New types in detail
+
+**permission_escalation** -- prevents agents from self-elevating permissions:
+
+```json
+{
+  "name": "no-self-escalation",
+  "policy_type": "permission_escalation",
+  "rules": {
+    "max_permission_level": "workspace_write",
+    "blocked_transitions": ["readonly->danger", "workspace_write->danger"],
+    "require_approval_for": ["prompt", "allow"]
+  }
+}
+```
+
+**green_contract** -- enforces passing tests before high-risk operations:
+
+```json
+{
+  "name": "green-before-deploy",
+  "policy_type": "green_contract",
+  "rules": {
+    "required_green_level": "full",
+    "applies_to_action_types": ["deploy", "infrastructure_change"],
+    "allow_partial_green_for": ["staging"]
+  }
+}
+```
+
+**branch_freshness** -- blocks actions on stale branches:
+
+```json
+{
+  "name": "fresh-branch-required",
+  "policy_type": "branch_freshness",
+  "rules": {
+    "max_commits_behind": 5,
+    "applies_to_action_types": ["deploy", "merge"],
+    "block_message": "Rebase before deploying -- branch is behind main"
+  }
+}
+```
+
+These policy types integrate with the session lifecycle. The guard evaluator reads `green_level`,
+`branch_freshness`, and `commits_behind` from the active session when evaluating policies.
 
 ## Bootstrap Agent
 

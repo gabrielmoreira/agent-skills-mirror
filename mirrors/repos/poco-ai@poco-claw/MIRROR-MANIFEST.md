@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `poco-ai/poco-claw` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `poco-ai/poco-claw` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `poco-ai/poco-claw` — 26 default patterns, 0 followed patterns, 3 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`backend/assets/skills/skill-creator/SKILL.md`](backend/assets/skills/skill-creator/SKILL.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`backend/assets/skills/gif-sticker-maker/SKILL.md`](backend/assets/skills/gif-sticker-maker/SKILL.md) |
+| 3 | ✓ | [`backend/assets/skills/minimax-docx/SKILL.md`](backend/assets/skills/minimax-docx/SKILL.md) |
+| 4 | ✓ | [`backend/assets/skills/minimax-multimodal-toolkit/SKILL.md`](backend/assets/skills/minimax-multimodal-toolkit/SKILL.md) |
+| 5 | ✓ | [`backend/assets/skills/minimax-pdf/SKILL.md`](backend/assets/skills/minimax-pdf/SKILL.md) |
+| 6 | ✓ | [`backend/assets/skills/minimax-xlsx/SKILL.md`](backend/assets/skills/minimax-xlsx/SKILL.md) |
+| 7 | ✓ | [`backend/assets/skills/pptx-generator/SKILL.md`](backend/assets/skills/pptx-generator/SKILL.md) |
+| 8 | ✓ | [`backend/assets/skills/skill-creator/SKILL.md`](backend/assets/skills/skill-creator/SKILL.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

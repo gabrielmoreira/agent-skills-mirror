@@ -1,50 +1,61 @@
 # Task file format
 
-Use this structure for `~/.openclaw/workspace/tasks/current.md`.
+Use this structure for `clawchief/tasks.md`.
 
 ```md
 # Current Tasks
 
 Last updated: YYYY-MM-DD HH:MM TZ
-Owner: {{OWNER_NAME}}
 Canonical file: use this file as the source of truth across sessions
 
 ## Today
 
-### Open
-- [ ] Task 1
-- [ ] Task 2
+### Principal
+#### Program or person name
+- [ ] Principal task
 
-### Done
-- [x] Task 3 — completed YYYY-MM-DD HH:MM TZ
-
-## Next up after today
-- Next action to take once all open items in `## Today` are done
+### Assistant
+#### Program or person name
+- [ ] Assistant task
 
 ## Every weekday
+#### Program or person name
 - Recurring weekday operating task
 
 ## Backlog with due date
-- Due-soon one-off task — due 2026-04-07
+- Important task — due YYYY-MM-DD
 
 ## Recurring reminders
-- [ ] Reminder task — due 2026-04-03 15:00 EDT — recurs weekly every 1
+- [ ] Reminder task — due YYYY-MM-DD HH:MM TZ — recurs weekly every 1
 
 ## Backlog
 - Someday / undated task
 
 ## Rules
-- Update this file when {{OWNER_NAME}} adds, completes, defers, blocks, or cancels a task.
+- Update this file when task state changes.
 - Heartbeats should read from this file instead of repeating stale task text.
-- Keep wording short and operational.
+- Prior-day completed tasks should be moved to `clawchief/tasks-completed.md` during daily prep.
+```
+
+Use this structure for `clawchief/tasks-completed.md`.
+
+```md
+# Completed Tasks
+
+Last updated: YYYY-MM-DD HH:MM TZ
+Archive file: completed tasks moved out of `tasks.md`
+
+## YYYY-MM-DD
+
+### Principal
+- [x] Completed task — completed YYYY-MM-DD HH:MM TZ
+
+### Assistant
+- [x] Completed task — completed YYYY-MM-DD HH:MM TZ
 ```
 
 Guidelines:
-- Prefer one line per task.
-- Use `YYYY-MM-DD` for all-day due dates and `YYYY-MM-DD HH:MM TZ` for timed due dates.
-- Use `— completed ...` for known completion timestamps.
-- Reorder open tasks when {{OWNER_NAME}} changes priority.
-- Remove canceled tasks instead of leaving them as clutter unless the cancellation matters for context.
-- If a task is deferred to another day, move it out of `## Today` and reflect the new timing in plain English.
-- `## Recurring reminders` is for reminders that stay parked in the file with recurrence metadata until a prep flow promotes the due instance into `## Today`.
-- Overlap between `## Today` and source sections like `## Every weekday` or `## Recurring reminders` is acceptable when today's explicit plan has been prepared.
+- prefer one line per task
+- use `YYYY-MM-DD` for all-day due dates and `YYYY-MM-DD HH:MM TZ` for timed due dates
+- keep `tasks.md` focused on live/open work plus same-day completions that have not yet been archived
+- use active-task grouping headers that match your priority map when there is a clear fit

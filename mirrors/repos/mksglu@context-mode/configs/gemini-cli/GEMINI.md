@@ -60,3 +60,6 @@ Search results can flood context. Use `mcp__context-mode__ctx_execute(language: 
 | `ctx stats` | Call the `stats` MCP tool and display the full output verbatim |
 | `ctx doctor` | Call the `doctor` MCP tool, run the returned shell command, display as checklist |
 | `ctx upgrade` | Call the `upgrade` MCP tool, run the returned shell command, display as checklist |
+| `ctx purge` | Call the `purge` MCP tool with confirm: true. Warns before wiping the knowledge base. |
+
+After /clear or /compact: knowledge base and session stats are preserved. Use `ctx purge` if you want to start fresh.

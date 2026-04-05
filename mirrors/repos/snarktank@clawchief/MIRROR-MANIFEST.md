@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `snarktank/clawchief` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `snarktank/clawchief` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `snarktank/clawchief` — 26 default patterns, 0 followed patterns, 11
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/business-development/references/linkedin-browser.md`](skills/business-development/references/linkedin-browser.md) |
-| 2 | ✓ | [`skills/business-development/resources/partners.md`](skills/business-development/resources/partners.md) |
-| 3 | ✓ | [`skills/business-development/SKILL.md`](skills/business-development/SKILL.md) |
-| 4 | ✓ | [`skills/daily-task-manager/references/task-file-format.md`](skills/daily-task-manager/references/task-file-format.md) |
-| 5 | ✓ | [`skills/daily-task-manager/SKILL.md`](skills/daily-task-manager/SKILL.md) |
-| 6 | ✓ | [`skills/daily-task-prep/SKILL.md`](skills/daily-task-prep/SKILL.md) |
-| 7 | ✓ | [`skills/executive-assistant/references/access-and-defaults.md`](skills/executive-assistant/references/access-and-defaults.md) |
-| 8 | ✓ | [`skills/executive-assistant/references/inbox-clearing.md`](skills/executive-assistant/references/inbox-clearing.md) |
-| 9 | ✓ | [`skills/executive-assistant/references/outreach-tracking.md`](skills/executive-assistant/references/outreach-tracking.md) |
-| 10 | ✓ | [`skills/executive-assistant/references/templates.md`](skills/executive-assistant/references/templates.md) |
-| 11 | ✓ | [`skills/executive-assistant/SKILL.md`](skills/executive-assistant/SKILL.md) |
+| 1 | ✓ | [`skills/business-development/resources/partners.md`](skills/business-development/resources/partners.md) |
+| 2 | ✓ | [`skills/business-development/SKILL.md`](skills/business-development/SKILL.md) |
+| 3 | ✓ | [`skills/daily-task-manager/references/task-file-format.md`](skills/daily-task-manager/references/task-file-format.md) |
+| 4 | ✓ | [`skills/daily-task-manager/SKILL.md`](skills/daily-task-manager/SKILL.md) |
+| 5 | ✓ | [`skills/daily-task-prep/SKILL.md`](skills/daily-task-prep/SKILL.md) |
+| 6 | ✓ | [`skills/executive-assistant/references/access-and-defaults.md`](skills/executive-assistant/references/access-and-defaults.md) |
+| 7 | ✓ | [`skills/executive-assistant/references/inbox-clearing.md`](skills/executive-assistant/references/inbox-clearing.md) |
+| 8 | ✓ | [`skills/executive-assistant/references/outreach-tracking.md`](skills/executive-assistant/references/outreach-tracking.md) |
+| 9 | ✓ | [`skills/executive-assistant/references/templates.md`](skills/executive-assistant/references/templates.md) |
+| 10 | ✓ | [`skills/executive-assistant/SKILL.md`](skills/executive-assistant/SKILL.md) |
 
 ---
 

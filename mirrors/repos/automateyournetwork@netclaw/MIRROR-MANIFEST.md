@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `automateyournetwork/netclaw` — 26 default patterns, 0 followed patterns, 122 file(s) materialized.
+Mirror of `automateyournetwork/netclaw` — 26 default patterns, 0 followed patterns, 126 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `automateyournetwork/netclaw` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 122 |
+| Files         | 126 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,50 +137,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 76 | ✓ | [`workspace/skills/nvd-cve/SKILL.md`](workspace/skills/nvd-cve/SKILL.md) |
 | 77 | ✓ | [`workspace/skills/packet-analysis/SKILL.md`](workspace/skills/packet-analysis/SKILL.md) |
 | 78 | ✓ | [`workspace/skills/paloalto-panorama/SKILL.md`](workspace/skills/paloalto-panorama/SKILL.md) |
-| 79 | ✓ | [`workspace/skills/prometheus-monitoring/SKILL.md`](workspace/skills/prometheus-monitoring/SKILL.md) |
-| 80 | ✓ | [`workspace/skills/protocol-participation/SKILL.md`](workspace/skills/protocol-participation/SKILL.md) |
-| 81 | ✓ | [`workspace/skills/pyats-asa-firewall/SKILL.md`](workspace/skills/pyats-asa-firewall/SKILL.md) |
-| 82 | ✓ | [`workspace/skills/pyats-config-mgmt/SKILL.md`](workspace/skills/pyats-config-mgmt/SKILL.md) |
-| 83 | ✓ | [`workspace/skills/pyats-dynamic-test/SKILL.md`](workspace/skills/pyats-dynamic-test/SKILL.md) |
-| 84 | ✓ | [`workspace/skills/pyats-f5-ltm/SKILL.md`](workspace/skills/pyats-f5-ltm/SKILL.md) |
-| 85 | ✓ | [`workspace/skills/pyats-f5-platform/SKILL.md`](workspace/skills/pyats-f5-platform/SKILL.md) |
-| 86 | ✓ | [`workspace/skills/pyats-health-check/SKILL.md`](workspace/skills/pyats-health-check/SKILL.md) |
-| 87 | ✓ | [`workspace/skills/pyats-junos-interfaces/SKILL.md`](workspace/skills/pyats-junos-interfaces/SKILL.md) |
-| 88 | ✓ | [`workspace/skills/pyats-junos-routing/SKILL.md`](workspace/skills/pyats-junos-routing/SKILL.md) |
-| 89 | ✓ | [`workspace/skills/pyats-junos-system/SKILL.md`](workspace/skills/pyats-junos-system/SKILL.md) |
-| 90 | ✓ | [`workspace/skills/pyats-linux-network/SKILL.md`](workspace/skills/pyats-linux-network/SKILL.md) |
-| 91 | ✓ | [`workspace/skills/pyats-linux-system/SKILL.md`](workspace/skills/pyats-linux-system/SKILL.md) |
-| 92 | ✓ | [`workspace/skills/pyats-linux-vmware/SKILL.md`](workspace/skills/pyats-linux-vmware/SKILL.md) |
-| 93 | ✓ | [`workspace/skills/pyats-network/SKILL.md`](workspace/skills/pyats-network/SKILL.md) |
-| 94 | ✓ | [`workspace/skills/pyats-parallel-ops/SKILL.md`](workspace/skills/pyats-parallel-ops/SKILL.md) |
-| 95 | ✓ | [`workspace/skills/pyats-routing/SKILL.md`](workspace/skills/pyats-routing/SKILL.md) |
-| 96 | ✓ | [`workspace/skills/pyats-security/SKILL.md`](workspace/skills/pyats-security/SKILL.md) |
-| 97 | ✓ | [`workspace/skills/pyats-topology/SKILL.md`](workspace/skills/pyats-topology/SKILL.md) |
-| 98 | ✓ | [`workspace/skills/pyats-troubleshoot/SKILL.md`](workspace/skills/pyats-troubleshoot/SKILL.md) |
-| 99 | ✓ | [`workspace/skills/radkit-remote-access/SKILL.md`](workspace/skills/radkit-remote-access/SKILL.md) |
-| 100 | ✓ | [`workspace/skills/rfc-lookup/SKILL.md`](workspace/skills/rfc-lookup/SKILL.md) |
-| 101 | ✓ | [`workspace/skills/sdwan-ops/SKILL.md`](workspace/skills/sdwan-ops/SKILL.md) |
-| 102 | ✓ | [`workspace/skills/servicenow-change-workflow/SKILL.md`](workspace/skills/servicenow-change-workflow/SKILL.md) |
-| 103 | ✓ | [`workspace/skills/slack-incident-workflow/SKILL.md`](workspace/skills/slack-incident-workflow/SKILL.md) |
-| 104 | ✓ | [`workspace/skills/slack-network-alerts/SKILL.md`](workspace/skills/slack-network-alerts/SKILL.md) |
-| 105 | ✓ | [`workspace/skills/slack-report-delivery/SKILL.md`](workspace/skills/slack-report-delivery/SKILL.md) |
-| 106 | ✓ | [`workspace/skills/slack-user-context/SKILL.md`](workspace/skills/slack-user-context/SKILL.md) |
-| 107 | ✓ | [`workspace/skills/slack-voice-interface/SKILL.md`](workspace/skills/slack-voice-interface/SKILL.md) |
-| 108 | ✓ | [`workspace/skills/snmptrap-receiver/SKILL.md`](workspace/skills/snmptrap-receiver/SKILL.md) |
-| 109 | ✓ | [`workspace/skills/subnet-calculator/SKILL.md`](workspace/skills/subnet-calculator/SKILL.md) |
-| 110 | ✓ | [`workspace/skills/suzieq-observability/SKILL.md`](workspace/skills/suzieq-observability/SKILL.md) |
-| 111 | ✓ | [`workspace/skills/syslog-receiver/SKILL.md`](workspace/skills/syslog-receiver/SKILL.md) |
-| 112 | ✓ | [`workspace/skills/te-network-monitoring/SKILL.md`](workspace/skills/te-network-monitoring/SKILL.md) |
-| 113 | ✓ | [`workspace/skills/te-path-analysis/SKILL.md`](workspace/skills/te-path-analysis/SKILL.md) |
-| 114 | ✓ | [`workspace/skills/telemetry-ops/SKILL.md`](workspace/skills/telemetry-ops/SKILL.md) |
-| 115 | ✓ | [`workspace/skills/token-tracker/SKILL.md`](workspace/skills/token-tracker/SKILL.md) |
-| 116 | ✓ | [`workspace/skills/uml-diagram/SKILL.md`](workspace/skills/uml-diagram/SKILL.md) |
-| 117 | ✓ | [`workspace/skills/webex-incident-workflow/SKILL.md`](workspace/skills/webex-incident-workflow/SKILL.md) |
-| 118 | ✓ | [`workspace/skills/webex-network-alerts/SKILL.md`](workspace/skills/webex-network-alerts/SKILL.md) |
-| 119 | ✓ | [`workspace/skills/webex-report-delivery/SKILL.md`](workspace/skills/webex-report-delivery/SKILL.md) |
-| 120 | ✓ | [`workspace/skills/webex-user-context/SKILL.md`](workspace/skills/webex-user-context/SKILL.md) |
-| 121 | ✓ | [`workspace/skills/webex-voice-interface/SKILL.md`](workspace/skills/webex-voice-interface/SKILL.md) |
-| 122 | ✓ | [`workspace/skills/wikipedia-research/SKILL.md`](workspace/skills/wikipedia-research/SKILL.md) |
+| 79 | ✓ | [`workspace/skills/prisma-sdwan-apps/SKILL.md`](workspace/skills/prisma-sdwan-apps/SKILL.md) |
+| 80 | ✓ | [`workspace/skills/prisma-sdwan-config/SKILL.md`](workspace/skills/prisma-sdwan-config/SKILL.md) |
+| 81 | ✓ | [`workspace/skills/prisma-sdwan-status/SKILL.md`](workspace/skills/prisma-sdwan-status/SKILL.md) |
+| 82 | ✓ | [`workspace/skills/prisma-sdwan-topology/SKILL.md`](workspace/skills/prisma-sdwan-topology/SKILL.md) |
+| 83 | ✓ | [`workspace/skills/prometheus-monitoring/SKILL.md`](workspace/skills/prometheus-monitoring/SKILL.md) |
+| 84 | ✓ | [`workspace/skills/protocol-participation/SKILL.md`](workspace/skills/protocol-participation/SKILL.md) |
+| 85 | ✓ | [`workspace/skills/pyats-asa-firewall/SKILL.md`](workspace/skills/pyats-asa-firewall/SKILL.md) |
+| 86 | ✓ | [`workspace/skills/pyats-config-mgmt/SKILL.md`](workspace/skills/pyats-config-mgmt/SKILL.md) |
+| 87 | ✓ | [`workspace/skills/pyats-dynamic-test/SKILL.md`](workspace/skills/pyats-dynamic-test/SKILL.md) |
+| 88 | ✓ | [`workspace/skills/pyats-f5-ltm/SKILL.md`](workspace/skills/pyats-f5-ltm/SKILL.md) |
+| 89 | ✓ | [`workspace/skills/pyats-f5-platform/SKILL.md`](workspace/skills/pyats-f5-platform/SKILL.md) |
+| 90 | ✓ | [`workspace/skills/pyats-health-check/SKILL.md`](workspace/skills/pyats-health-check/SKILL.md) |
+| 91 | ✓ | [`workspace/skills/pyats-junos-interfaces/SKILL.md`](workspace/skills/pyats-junos-interfaces/SKILL.md) |
+| 92 | ✓ | [`workspace/skills/pyats-junos-routing/SKILL.md`](workspace/skills/pyats-junos-routing/SKILL.md) |
+| 93 | ✓ | [`workspace/skills/pyats-junos-system/SKILL.md`](workspace/skills/pyats-junos-system/SKILL.md) |
+| 94 | ✓ | [`workspace/skills/pyats-linux-network/SKILL.md`](workspace/skills/pyats-linux-network/SKILL.md) |
+| 95 | ✓ | [`workspace/skills/pyats-linux-system/SKILL.md`](workspace/skills/pyats-linux-system/SKILL.md) |
+| 96 | ✓ | [`workspace/skills/pyats-linux-vmware/SKILL.md`](workspace/skills/pyats-linux-vmware/SKILL.md) |
+| 97 | ✓ | [`workspace/skills/pyats-network/SKILL.md`](workspace/skills/pyats-network/SKILL.md) |
+| 98 | ✓ | [`workspace/skills/pyats-parallel-ops/SKILL.md`](workspace/skills/pyats-parallel-ops/SKILL.md) |
+| 99 | ✓ | [`workspace/skills/pyats-routing/SKILL.md`](workspace/skills/pyats-routing/SKILL.md) |
+| 100 | ✓ | [`workspace/skills/pyats-security/SKILL.md`](workspace/skills/pyats-security/SKILL.md) |
+| 101 | ✓ | [`workspace/skills/pyats-topology/SKILL.md`](workspace/skills/pyats-topology/SKILL.md) |
+| 102 | ✓ | [`workspace/skills/pyats-troubleshoot/SKILL.md`](workspace/skills/pyats-troubleshoot/SKILL.md) |
+| 103 | ✓ | [`workspace/skills/radkit-remote-access/SKILL.md`](workspace/skills/radkit-remote-access/SKILL.md) |
+| 104 | ✓ | [`workspace/skills/rfc-lookup/SKILL.md`](workspace/skills/rfc-lookup/SKILL.md) |
+| 105 | ✓ | [`workspace/skills/sdwan-ops/SKILL.md`](workspace/skills/sdwan-ops/SKILL.md) |
+| 106 | ✓ | [`workspace/skills/servicenow-change-workflow/SKILL.md`](workspace/skills/servicenow-change-workflow/SKILL.md) |
+| 107 | ✓ | [`workspace/skills/slack-incident-workflow/SKILL.md`](workspace/skills/slack-incident-workflow/SKILL.md) |
+| 108 | ✓ | [`workspace/skills/slack-network-alerts/SKILL.md`](workspace/skills/slack-network-alerts/SKILL.md) |
+| 109 | ✓ | [`workspace/skills/slack-report-delivery/SKILL.md`](workspace/skills/slack-report-delivery/SKILL.md) |
+| 110 | ✓ | [`workspace/skills/slack-user-context/SKILL.md`](workspace/skills/slack-user-context/SKILL.md) |
+| 111 | ✓ | [`workspace/skills/slack-voice-interface/SKILL.md`](workspace/skills/slack-voice-interface/SKILL.md) |
+| 112 | ✓ | [`workspace/skills/snmptrap-receiver/SKILL.md`](workspace/skills/snmptrap-receiver/SKILL.md) |
+| 113 | ✓ | [`workspace/skills/subnet-calculator/SKILL.md`](workspace/skills/subnet-calculator/SKILL.md) |
+| 114 | ✓ | [`workspace/skills/suzieq-observability/SKILL.md`](workspace/skills/suzieq-observability/SKILL.md) |
+| 115 | ✓ | [`workspace/skills/syslog-receiver/SKILL.md`](workspace/skills/syslog-receiver/SKILL.md) |
+| 116 | ✓ | [`workspace/skills/te-network-monitoring/SKILL.md`](workspace/skills/te-network-monitoring/SKILL.md) |
+| 117 | ✓ | [`workspace/skills/te-path-analysis/SKILL.md`](workspace/skills/te-path-analysis/SKILL.md) |
+| 118 | ✓ | [`workspace/skills/telemetry-ops/SKILL.md`](workspace/skills/telemetry-ops/SKILL.md) |
+| 119 | ✓ | [`workspace/skills/token-tracker/SKILL.md`](workspace/skills/token-tracker/SKILL.md) |
+| 120 | ✓ | [`workspace/skills/uml-diagram/SKILL.md`](workspace/skills/uml-diagram/SKILL.md) |
+| 121 | ✓ | [`workspace/skills/webex-incident-workflow/SKILL.md`](workspace/skills/webex-incident-workflow/SKILL.md) |
+| 122 | ✓ | [`workspace/skills/webex-network-alerts/SKILL.md`](workspace/skills/webex-network-alerts/SKILL.md) |
+| 123 | ✓ | [`workspace/skills/webex-report-delivery/SKILL.md`](workspace/skills/webex-report-delivery/SKILL.md) |
+| 124 | ✓ | [`workspace/skills/webex-user-context/SKILL.md`](workspace/skills/webex-user-context/SKILL.md) |
+| 125 | ✓ | [`workspace/skills/webex-voice-interface/SKILL.md`](workspace/skills/webex-voice-interface/SKILL.md) |
+| 126 | ✓ | [`workspace/skills/wikipedia-research/SKILL.md`](workspace/skills/wikipedia-research/SKILL.md) |
 
 ---
 

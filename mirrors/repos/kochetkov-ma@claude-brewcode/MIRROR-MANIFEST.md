@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,12 +84,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`brewtools/skills/text-optimize/SKILL.md`](brewtools/skills/text-optimize/SKILL.md) |
 | 24 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
 | 25 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
-| 26 | ✓ | [`skills/memory-optimize/README.md`](skills/memory-optimize/README.md) |
-| 27 | ✓ | [`skills/memory-optimize/references/memory-guide.md`](skills/memory-optimize/references/memory-guide.md) |
-| 28 | ✓ | [`skills/memory-optimize/SKILL.md`](skills/memory-optimize/SKILL.md) |
-| 29 | ✓ | [`skills/text-optimizer/README.md`](skills/text-optimizer/README.md) |
-| 30 | ✓ | [`skills/text-optimizer/references/rules-review.md`](skills/text-optimizer/references/rules-review.md) |
-| 31 | ✓ | [`skills/text-optimizer/SKILL.md`](skills/text-optimizer/SKILL.md) |
+| 26 | ✓ | [`skills/glm-design-to-code-trial/README.md`](skills/glm-design-to-code-trial/README.md) |
+| 27 | ✓ | [`skills/glm-design-to-code-trial/SKILL.md`](skills/glm-design-to-code-trial/SKILL.md) |
+| 28 | ✓ | [`skills/memory-optimize/README.md`](skills/memory-optimize/README.md) |
+| 29 | ✓ | [`skills/memory-optimize/references/memory-guide.md`](skills/memory-optimize/references/memory-guide.md) |
+| 30 | ✓ | [`skills/memory-optimize/SKILL.md`](skills/memory-optimize/SKILL.md) |
+| 31 | ✓ | [`skills/text-optimizer/README.md`](skills/text-optimizer/README.md) |
+| 32 | ✓ | [`skills/text-optimizer/references/rules-review.md`](skills/text-optimizer/references/rules-review.md) |
+| 33 | ✓ | [`skills/text-optimizer/SKILL.md`](skills/text-optimizer/SKILL.md) |
 
 ---
 

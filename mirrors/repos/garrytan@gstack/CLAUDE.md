@@ -63,8 +63,16 @@ gstack/
 │   │   └── snapshot.ts  # SNAPSHOT_FLAGS metadata array
 │   ├── test/        # Integration tests + fixtures
 │   └── dist/        # Compiled binary
+├── hosts/           # Typed host configs (one per AI agent)
+│   ├── claude.ts    # Primary host config
+│   ├── codex.ts, factory.ts, kiro.ts  # Existing hosts
+│   ├── opencode.ts, slate.ts, cursor.ts, openclaw.ts  # New hosts
+│   └── index.ts     # Registry: exports all, derives Host type
 ├── scripts/         # Build + DX tooling
-│   ├── gen-skill-docs.ts  # Template → SKILL.md generator
+│   ├── gen-skill-docs.ts  # Template → SKILL.md generator (config-driven)
+│   ├── host-config.ts     # HostConfig interface + validator
+│   ├── host-config-export.ts  # Shell bridge for setup script
+│   ├── host-adapters/     # Host-specific adapters (OpenClaw tool mapping)
 │   ├── resolvers/   # Template resolver modules (preamble, design, review, etc.)
 │   ├── skill-check.ts     # Health dashboard
 │   └── dev-skill.ts       # Watch mode
@@ -95,7 +103,8 @@ gstack/
 ├── cso/             # /cso skill (OWASP Top 10 + STRIDE security audit)
 ├── design-consultation/ # /design-consultation skill (design system from scratch)
 ├── design-shotgun/  # /design-shotgun skill (visual design exploration)
-├── connect-chrome/  # /connect-chrome skill (headed Chrome with side panel)
+├── open-gstack-browser/  # /open-gstack-browser skill (launch GStack Browser)
+├── connect-chrome/  # symlink → open-gstack-browser (backwards compat)
 ├── design/          # Design binary CLI (GPT Image API)
 │   ├── src/         # CLI + commands (generate, variants, compare, serve, etc.)
 │   ├── test/        # Integration tests
@@ -107,6 +116,8 @@ gstack/
 ├── .github/         # CI workflows + Docker image
 │   ├── workflows/   # evals.yml (E2E on Ubicloud), skill-docs.yml, actionlint.yml
 │   └── docker/      # Dockerfile.ci (pre-baked toolchain + Playwright/Chromium)
+├── contrib/         # Contributor-only tools (never installed for users)
+│   └── add-host/    # /gstack-contrib-add-host skill
 ├── setup            # One-time setup: build binary + symlink skills
 ├── SKILL.md         # Generated from SKILL.md.tmpl (don't edit directly)
 ├── SKILL.md.tmpl    # Template: edit this, run gen:skill-docs
@@ -166,6 +177,14 @@ When you need to interact with a browser (QA, dogfooding, cookie setup), use the
 `/browse` skill or run the browse binary directly via `$B <command>`. NEVER use
 `mcp__claude-in-chrome__*` tools — they are slow, unreliable, and not what this
 project uses.
+
+**Sidebar architecture:** Before modifying `sidepanel.js`, `background.js`,
+`content.js`, `sidebar-agent.ts`, or sidebar-related server endpoints, read
+`docs/designs/SIDEBAR_MESSAGE_FLOW.md`. It documents the full initialization
+timeline, message flow, auth token chain, tab concurrency model, and known
+failure modes. The sidebar spans 5 files across 2 codebases (extension + server)
+with non-obvious ordering dependencies. The doc exists to prevent the kind of
+silent failures that come from not understanding the cross-component flow.
 
 ## Vendored symlink awareness
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Runchuan-BU/BioClaw` — 26 default patterns, 8 followed patterns, 68 file(s) materialized.
+Mirror of `Runchuan-BU/BioClaw` — 26 default patterns, 8 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Runchuan-BU/BioClaw` — 26 default patterns, 8 followed patterns, 68
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 68 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,57 +83,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`container/skills/atac-seq/commands_and_thresholds.md`](container/skills/atac-seq/commands_and_thresholds.md) |
 | 16 | ✓ | [`container/skills/atac-seq/SKILL.md`](container/skills/atac-seq/SKILL.md) |
 | 17 | ✓ | [`container/skills/atac-seq/technical_reference.md`](container/skills/atac-seq/technical_reference.md) |
-| 18 | ✓ | [`container/skills/bio-tools/SKILL.md`](container/skills/bio-tools/SKILL.md) |
-| 19 | ✓ | [`container/skills/blast-search/SKILL.md`](container/skills/blast-search/SKILL.md) |
-| 20 | ✓ | [`container/skills/cell-annotation/commands_and_thresholds.md`](container/skills/cell-annotation/commands_and_thresholds.md) |
-| 21 | ✓ | [`container/skills/cell-annotation/SKILL.md`](container/skills/cell-annotation/SKILL.md) |
-| 22 | ✓ | [`container/skills/cell-annotation/technical_reference.md`](container/skills/cell-annotation/technical_reference.md) |
-| 23 | ✓ | [`container/skills/chip-seq/commands_and_thresholds.md`](container/skills/chip-seq/commands_and_thresholds.md) |
-| 24 | ✓ | [`container/skills/chip-seq/SKILL.md`](container/skills/chip-seq/SKILL.md) |
-| 25 | ✓ | [`container/skills/chip-seq/technical_reference.md`](container/skills/chip-seq/technical_reference.md) |
-| 26 | ✓ | [`container/skills/differential-expression/commands_and_thresholds.md`](container/skills/differential-expression/commands_and_thresholds.md) |
-| 27 | ✓ | [`container/skills/differential-expression/SKILL.md`](container/skills/differential-expression/SKILL.md) |
-| 28 | ✓ | [`container/skills/differential-expression/technical_reference.md`](container/skills/differential-expression/technical_reference.md) |
-| 29 | ✓ | [`container/skills/metagenomics/commands_and_thresholds.md`](container/skills/metagenomics/commands_and_thresholds.md) |
-| 30 | ✓ | [`container/skills/metagenomics/SKILL.md`](container/skills/metagenomics/SKILL.md) |
-| 31 | ✓ | [`container/skills/metagenomics/technical_reference.md`](container/skills/metagenomics/technical_reference.md) |
-| 32 | ✓ | [`container/skills/proteomics/commands_and_thresholds.md`](container/skills/proteomics/commands_and_thresholds.md) |
-| 33 | ✓ | [`container/skills/proteomics/SKILL.md`](container/skills/proteomics/SKILL.md) |
-| 34 | ✓ | [`container/skills/proteomics/technical_reference.md`](container/skills/proteomics/technical_reference.md) |
-| 35 | ✓ | [`container/skills/pubmed-search/SKILL.md`](container/skills/pubmed-search/SKILL.md) |
-| 36 | ✓ | [`container/skills/query-alphafold/SKILL.md`](container/skills/query-alphafold/SKILL.md) |
-| 37 | ✓ | [`container/skills/query-clinvar/SKILL.md`](container/skills/query-clinvar/SKILL.md) |
-| 38 | ✓ | [`container/skills/query-ensembl/SKILL.md`](container/skills/query-ensembl/SKILL.md) |
-| 39 | ✓ | [`container/skills/query-geo/SKILL.md`](container/skills/query-geo/SKILL.md) |
-| 40 | ✓ | [`container/skills/query-interpro/SKILL.md`](container/skills/query-interpro/SKILL.md) |
-| 41 | ✓ | [`container/skills/query-kegg/SKILL.md`](container/skills/query-kegg/SKILL.md) |
-| 42 | ✓ | [`container/skills/query-opentarget/SKILL.md`](container/skills/query-opentarget/SKILL.md) |
-| 43 | ✓ | [`container/skills/query-pdb/SKILL.md`](container/skills/query-pdb/SKILL.md) |
-| 44 | ✓ | [`container/skills/query-reactome/SKILL.md`](container/skills/query-reactome/SKILL.md) |
-| 45 | ✓ | [`container/skills/query-stringdb/SKILL.md`](container/skills/query-stringdb/SKILL.md) |
-| 46 | ✓ | [`container/skills/query-uniprot/SKILL.md`](container/skills/query-uniprot/SKILL.md) |
-| 47 | ✓ | [`container/skills/README.md`](container/skills/README.md) |
-| 48 | ✓ | [`container/skills/scrna-preprocessing-clustering/commands_and_thresholds.md`](container/skills/scrna-preprocessing-clustering/commands_and_thresholds.md) |
-| 49 | ✓ | [`container/skills/scrna-preprocessing-clustering/SKILL.md`](container/skills/scrna-preprocessing-clustering/SKILL.md) |
-| 50 | ✓ | [`container/skills/scrna-preprocessing-clustering/technical_reference.md`](container/skills/scrna-preprocessing-clustering/technical_reference.md) |
-| 51 | ✓ | [`container/skills/sds-gel-review/SKILL.md`](container/skills/sds-gel-review/SKILL.md) |
-| 52 | ✓ | [`container/skills/sequence-analysis/SKILL.md`](container/skills/sequence-analysis/SKILL.md) |
-| 53 | ✓ | [`container/skills/skills-hub/SKILL.md`](container/skills/skills-hub/SKILL.md) |
-| 54 | ✓ | [`container/skills/structural-biology/commands_and_thresholds.md`](container/skills/structural-biology/commands_and_thresholds.md) |
-| 55 | ✓ | [`container/skills/structural-biology/SKILL.md`](container/skills/structural-biology/SKILL.md) |
-| 56 | ✓ | [`container/skills/structural-biology/technical_reference.md`](container/skills/structural-biology/technical_reference.md) |
-| 57 | ✓ | [`docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md`](docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md) |
-| 58 | ✓ | [`docs/QQ_SETUP.zh-CN.md`](docs/QQ_SETUP.zh-CN.md) |
-| 59 | ✓ | [`groups/global/CLAUDE.md`](groups/global/CLAUDE.md) |
-| 60 | ✓ | [`groups/main/CLAUDE.md`](groups/main/CLAUDE.md) |
-| 61 | → | [`docs/CHANNELS.md`](docs/CHANNELS.md) |
-| 62 | → | [`docs/CHANNELS.zh-CN.md`](docs/CHANNELS.zh-CN.md) |
-| 63 | → | [`docs/DASHBOARD.md`](docs/DASHBOARD.md) |
-| 64 | → | [`docs/FEISHU_SETUP.zh-CN.md`](docs/FEISHU_SETUP.zh-CN.md) |
-| 65 | → | [`docs/WINDOWS.zh-CN.md`](docs/WINDOWS.zh-CN.md) |
-| 66 | → | [`ExampleTask/ExampleTask.md`](ExampleTask/ExampleTask.md) |
-| 67 | → | [`README.md`](README.md) |
-| 68 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 18 | ✓ | [`container/skills/bio-analysis-system/SKILL.md`](container/skills/bio-analysis-system/SKILL.md) |
+| 19 | ✓ | [`container/skills/bio-dataset-search/SKILL.md`](container/skills/bio-dataset-search/SKILL.md) |
+| 20 | ✓ | [`container/skills/bio-figure-design/SKILL.md`](container/skills/bio-figure-design/SKILL.md) |
+| 21 | ✓ | [`container/skills/bio-human-feedback/SKILL.md`](container/skills/bio-human-feedback/SKILL.md) |
+| 22 | ✓ | [`container/skills/bio-innovation-check/SKILL.md`](container/skills/bio-innovation-check/SKILL.md) |
+| 23 | ✓ | [`container/skills/bio-manuscript-common/README.md`](container/skills/bio-manuscript-common/README.md) |
+| 24 | ✓ | [`container/skills/bio-manuscript-pipeline/SKILL.md`](container/skills/bio-manuscript-pipeline/SKILL.md) |
+| 25 | ✓ | [`container/skills/bio-manuscript-refine/SKILL.md`](container/skills/bio-manuscript-refine/SKILL.md) |
+| 26 | ✓ | [`container/skills/bio-manuscript-text/SKILL.md`](container/skills/bio-manuscript-text/SKILL.md) |
+| 27 | ✓ | [`container/skills/bio-metric-system/SKILL.md`](container/skills/bio-metric-system/SKILL.md) |
+| 28 | ✓ | [`container/skills/bio-ppt-generate/SKILL.md`](container/skills/bio-ppt-generate/SKILL.md) |
+| 29 | ✓ | [`container/skills/bio-task-system/SKILL.md`](container/skills/bio-task-system/SKILL.md) |
+| 30 | ✓ | [`container/skills/bio-tools/SKILL.md`](container/skills/bio-tools/SKILL.md) |
+| 31 | ✓ | [`container/skills/blast-search/SKILL.md`](container/skills/blast-search/SKILL.md) |
+| 32 | ✓ | [`container/skills/cell-annotation/commands_and_thresholds.md`](container/skills/cell-annotation/commands_and_thresholds.md) |
+| 33 | ✓ | [`container/skills/cell-annotation/SKILL.md`](container/skills/cell-annotation/SKILL.md) |
+| 34 | ✓ | [`container/skills/cell-annotation/technical_reference.md`](container/skills/cell-annotation/technical_reference.md) |
+| 35 | ✓ | [`container/skills/chip-seq/commands_and_thresholds.md`](container/skills/chip-seq/commands_and_thresholds.md) |
+| 36 | ✓ | [`container/skills/chip-seq/SKILL.md`](container/skills/chip-seq/SKILL.md) |
+| 37 | ✓ | [`container/skills/chip-seq/technical_reference.md`](container/skills/chip-seq/technical_reference.md) |
+| 38 | ✓ | [`container/skills/differential-expression/commands_and_thresholds.md`](container/skills/differential-expression/commands_and_thresholds.md) |
+| 39 | ✓ | [`container/skills/differential-expression/SKILL.md`](container/skills/differential-expression/SKILL.md) |
+| 40 | ✓ | [`container/skills/differential-expression/technical_reference.md`](container/skills/differential-expression/technical_reference.md) |
+| 41 | ✓ | [`container/skills/metagenomics/commands_and_thresholds.md`](container/skills/metagenomics/commands_and_thresholds.md) |
+| 42 | ✓ | [`container/skills/metagenomics/SKILL.md`](container/skills/metagenomics/SKILL.md) |
+| 43 | ✓ | [`container/skills/metagenomics/technical_reference.md`](container/skills/metagenomics/technical_reference.md) |
+| 44 | ✓ | [`container/skills/proteomics/commands_and_thresholds.md`](container/skills/proteomics/commands_and_thresholds.md) |
+| 45 | ✓ | [`container/skills/proteomics/SKILL.md`](container/skills/proteomics/SKILL.md) |
+| 46 | ✓ | [`container/skills/proteomics/technical_reference.md`](container/skills/proteomics/technical_reference.md) |
+| 47 | ✓ | [`container/skills/pubmed-search/SKILL.md`](container/skills/pubmed-search/SKILL.md) |
+| 48 | ✓ | [`container/skills/query-alphafold/SKILL.md`](container/skills/query-alphafold/SKILL.md) |
+| 49 | ✓ | [`container/skills/query-clinvar/SKILL.md`](container/skills/query-clinvar/SKILL.md) |
+| 50 | ✓ | [`container/skills/query-ensembl/SKILL.md`](container/skills/query-ensembl/SKILL.md) |
+| 51 | ✓ | [`container/skills/query-geo/SKILL.md`](container/skills/query-geo/SKILL.md) |
+| 52 | ✓ | [`container/skills/query-interpro/SKILL.md`](container/skills/query-interpro/SKILL.md) |
+| 53 | ✓ | [`container/skills/query-kegg/SKILL.md`](container/skills/query-kegg/SKILL.md) |
+| 54 | ✓ | [`container/skills/query-opentarget/SKILL.md`](container/skills/query-opentarget/SKILL.md) |
+| 55 | ✓ | [`container/skills/query-pdb/SKILL.md`](container/skills/query-pdb/SKILL.md) |
+| 56 | ✓ | [`container/skills/query-reactome/SKILL.md`](container/skills/query-reactome/SKILL.md) |
+| 57 | ✓ | [`container/skills/query-stringdb/SKILL.md`](container/skills/query-stringdb/SKILL.md) |
+| 58 | ✓ | [`container/skills/query-uniprot/SKILL.md`](container/skills/query-uniprot/SKILL.md) |
+| 59 | ✓ | [`container/skills/README.md`](container/skills/README.md) |
+| 60 | ✓ | [`container/skills/scrna-preprocessing-clustering/commands_and_thresholds.md`](container/skills/scrna-preprocessing-clustering/commands_and_thresholds.md) |
+| 61 | ✓ | [`container/skills/scrna-preprocessing-clustering/SKILL.md`](container/skills/scrna-preprocessing-clustering/SKILL.md) |
+| 62 | ✓ | [`container/skills/scrna-preprocessing-clustering/technical_reference.md`](container/skills/scrna-preprocessing-clustering/technical_reference.md) |
+| 63 | ✓ | [`container/skills/sds-gel-review/SKILL.md`](container/skills/sds-gel-review/SKILL.md) |
+| 64 | ✓ | [`container/skills/sequence-analysis/SKILL.md`](container/skills/sequence-analysis/SKILL.md) |
+| 65 | ✓ | [`container/skills/skills-hub/SKILL.md`](container/skills/skills-hub/SKILL.md) |
+| 66 | ✓ | [`container/skills/structural-biology/commands_and_thresholds.md`](container/skills/structural-biology/commands_and_thresholds.md) |
+| 67 | ✓ | [`container/skills/structural-biology/SKILL.md`](container/skills/structural-biology/SKILL.md) |
+| 68 | ✓ | [`container/skills/structural-biology/technical_reference.md`](container/skills/structural-biology/technical_reference.md) |
+| 69 | ✓ | [`docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md`](docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md) |
+| 70 | ✓ | [`docs/QQ_SETUP.zh-CN.md`](docs/QQ_SETUP.zh-CN.md) |
+| 71 | ✓ | [`groups/global/CLAUDE.md`](groups/global/CLAUDE.md) |
+| 72 | ✓ | [`groups/main/CLAUDE.md`](groups/main/CLAUDE.md) |
+| 73 | → | [`docs/CHANNELS.md`](docs/CHANNELS.md) |
+| 74 | → | [`docs/CHANNELS.zh-CN.md`](docs/CHANNELS.zh-CN.md) |
+| 75 | → | [`docs/DASHBOARD.md`](docs/DASHBOARD.md) |
+| 76 | → | [`docs/FEISHU_SETUP.zh-CN.md`](docs/FEISHU_SETUP.zh-CN.md) |
+| 77 | → | [`docs/WINDOWS.zh-CN.md`](docs/WINDOWS.zh-CN.md) |
+| 78 | → | [`ExampleTask/ExampleTask.md`](ExampleTask/ExampleTask.md) |
+| 79 | → | [`README.md`](README.md) |
+| 80 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

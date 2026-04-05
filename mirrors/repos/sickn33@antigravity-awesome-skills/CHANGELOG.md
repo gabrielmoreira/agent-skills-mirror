@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.6.0] - 2026-04-04 - "Psychology and SEO Growth Packs"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release folds the full open PR batch into `main` and centers on two major content expansions for growth teams. It adds an SEO/AEO content engine and a large psychology-driven marketing pack, while also tightening the web-app skill card hover state and pulling in the latest `yaml` patch release so the repository and installer surface stay current.
+
+## New Skills
+
+- **SEO-AEO Engine bundle** - merges PR #446 with 8 skills for keyword research, content clustering, landing pages, long-form blog structure, internal linking, metadata, schema, and SEO/AEO auditing.
+- **Psychology skills pack** - merges PR #451 with 20 research-backed skills for profiling, persuasion, pricing psychology, onboarding, pitch strategy, UX persuasion, copywriting, and visual-emotion design.
+
+## Improvements
+
+- **Web app hover stability** - merges PR #449 to keep the home-page `SkillCard` readable on hover with a lighter lift/shadow treatment instead of palette inversion.
+- **Dependency refresh** - merges PR #450 to bump `yaml` from `2.8.2` to `2.8.3`.
+- **README credit sync** - refreshes contributor and community-source credits on `main` immediately after the merged PR batch, including the upstream `mrprewsh/seo-aeo-engine` source.
+
+## Who should care
+
+- **Growth, SEO, and content teams** get a full pipeline for keyword discovery, cluster planning, structured landing pages, schema, internal linking, and publish-time audits.
+- **Marketing and UX teams** get a larger psychology-oriented pack for messaging, pricing, onboarding, social proof, objections, and conversion design.
+- **Web-app users** get a cleaner hover treatment on the skill cards in the homepage UI.
+
+## Credits
+
+- **[@prewsh](https://github.com/prewsh)** and **[mrprewsh/seo-aeo-engine](https://github.com/mrprewsh/seo-aeo-engine)** for the SEO/AEO skill bundle merged in PR #446
+- **[@MMEHDI0606](https://github.com/MMEHDI0606)** for the psychology skills pack merged in PR #451
+- **[@hazemezz123](https://github.com/hazemezz123)** for the skill card hover-state fix merged in PR #449
+- **[@dependabot[bot]](https://github.com/apps/dependabot)** for the `yaml` dependency update merged in PR #450
+
 ## [9.5.1] - 2026-04-03 - "npm Runtime Dependency Fix"
 
 > **Patch release to restore `npx antigravity-awesome-skills` installs after the published CLI started failing to resolve `yaml` at runtime**

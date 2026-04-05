@@ -34,6 +34,21 @@ Spawn these agents simultaneously:
 
 All must report PASS before proceeding.
 
+### 1b. Grill-Me Review — MANDATORY BLOCKING GATE
+
+**Before ANY version bump, the EM MUST run a grill-me interview on all changes in this release.**
+
+This is not optional. This is not skippable. Every release gets grilled.
+
+Interview the user relentlessly about every aspect of the changes until reaching shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer. Ask questions one at a time. If a question can be answered by exploring the codebase, explore the codebase instead of asking.
+
+**The release is BLOCKED until:**
+- [ ] All branches of the design tree are resolved
+- [ ] Zero unresolved questions remain
+- [ ] User explicitly approves the grill results
+
+Only after grill-me approval: proceed to version bump.
+
 ### 2. Version Bump — MANDATORY
 
 <version_bump_enforcement>

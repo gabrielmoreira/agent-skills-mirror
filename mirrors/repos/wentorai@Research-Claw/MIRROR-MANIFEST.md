@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,14 +82,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`skills/nano-pdf/SKILL.md`](skills/nano-pdf/SKILL.md) |
 | 22 | ✓ | [`skills/opencode-cli/SKILL.md`](skills/opencode-cli/SKILL.md) |
 | 23 | ✓ | [`skills/output-cards/SKILL.md`](skills/output-cards/SKILL.md) |
-| 24 | ✓ | [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) |
-| 25 | ✓ | [`skills/search-sop/SKILL.md`](skills/search-sop/SKILL.md) |
-| 26 | ✓ | [`skills/survey-sop/SKILL.md`](skills/survey-sop/SKILL.md) |
-| 27 | ✓ | [`skills/wentor-api/SKILL.md`](skills/wentor-api/SKILL.md) |
-| 28 | ✓ | [`skills/workspace-sop/SKILL.md`](skills/workspace-sop/SKILL.md) |
-| 29 | ✓ | [`skills/writing-sop/SKILL.md`](skills/writing-sop/SKILL.md) |
-| 30 | ✓ | [`workspace/.ResearchClaw/AGENTS.md`](workspace/.ResearchClaw/AGENTS.md) |
-| 31 | ✓ | [`workspace/AGENTS.md`](workspace/AGENTS.md) |
+| 24 | ✓ | [`skills/plotting-sop/SKILL.md`](skills/plotting-sop/SKILL.md) |
+| 25 | ✓ | [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) |
+| 26 | ✓ | [`skills/search-sop/SKILL.md`](skills/search-sop/SKILL.md) |
+| 27 | ✓ | [`skills/survey-sop/SKILL.md`](skills/survey-sop/SKILL.md) |
+| 28 | ✓ | [`skills/wentor-api/SKILL.md`](skills/wentor-api/SKILL.md) |
+| 29 | ✓ | [`skills/workspace-sop/SKILL.md`](skills/workspace-sop/SKILL.md) |
+| 30 | ✓ | [`skills/writing-sop/SKILL.md`](skills/writing-sop/SKILL.md) |
+| 31 | ✓ | [`workspace/.ResearchClaw/AGENTS.md`](workspace/.ResearchClaw/AGENTS.md) |
+| 32 | ✓ | [`workspace/AGENTS.md`](workspace/AGENTS.md) |
 
 ---
 

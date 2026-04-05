@@ -1,7 +1,7 @@
 ---
 name: scrapling-official
 description: Scrape web pages using Scrapling with anti-bot bypass (like Cloudflare Turnstile), stealth headless browsing, spiders framework, adaptive scraping, and JavaScript rendering. Use when asked to scrape, crawl, or extract data from websites; web_fetch fails; the site has anti-bot protections; write Python code to scrape/crawl; or write spiders.
-version: "0.4.3"
+version: "0.4.4"
 license: Complete terms in LICENSE.txt
 metadata:
   homepage: "https://scrapling.readthedocs.io/en/latest/index.html"
@@ -40,7 +40,7 @@ Blazing fast crawls with real-time stats and streaming. Built by Web Scrapers fo
 
 Create a virtual Python environment through any way available, like `venv`, then inside the environment do:
 
-`pip install "scrapling[all]>=0.4.3"`
+`pip install "scrapling[all]>=0.4.4"`
 
 Then do this to download all the browsers' dependencies:
 
@@ -258,6 +258,7 @@ class QuotesSpider(Spider):
     name = "quotes"
     start_urls = ["https://quotes.toscrape.com/"]
     concurrent_requests = 10
+    robots_txt_obey = True  # Respect robots.txt rules
     
     async def parse(self, response: Response):
         for quote in response.css('.quote'):
@@ -379,7 +380,7 @@ This skill encapsulates almost all the published documentation in Markdown, so d
 
 ## Guardrails (Always)
 - Only scrape content you're authorized to access.
-- Respect robots.txt and ToS.
-- Add delays (download_delay) for large crawls.
+- Respect robots.txt and ToS. Use `robots_txt_obey = True` on spiders to enforce this automatically.
+- Add delays (`download_delay`) for large crawls.
 - Don't bypass paywalls or authentication without permission.
 - Never scrape personal/sensitive data.

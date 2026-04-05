@@ -10,7 +10,7 @@ PROMPT="${3:-}"
 CHANNEL="${4:-}"
 MENTION="${5:-}"
 
-KEYWORDS="${CLAWHIP_OMX_KEYWORDS:-error,Error,FAILED,PR created,panic,complete}"
+KEYWORDS="${CLAWHIP_OMX_KEYWORDS:-panic,PR created,Requesting review,Merged PR #,CI failed,Traceback,AssertionError,timed out,segmentation fault,test failed,tests failed}"
 STALE_MIN="${CLAWHIP_OMX_STALE_MIN:-30}"
 OMX_FLAGS="${CLAWHIP_OMX_FLAGS:---madmax}"
 OMX_ENV="${CLAWHIP_OMX_ENV:-}"
@@ -32,7 +32,6 @@ detect_project() {
 
 PROJECT="${CLAWHIP_OMX_PROJECT:-$(detect_project)}"
 
-# Build clawhip tmux new args
 ARGS=(
   tmux new
   -s "$SESSION"
@@ -48,7 +47,6 @@ quote() {
   printf '%q' "$1"
 }
 
-# Build the OMX command with native clawhip hook-envelope lifecycle emits.
 OMX_CMD=$(cat <<EOF
 source ~/.zshrc
 START_TS=\$(date +%s)
@@ -57,24 +55,26 @@ BRANCH=\$(git -C $(quote "$WORKDIR") rev-parse --abbrev-ref HEAD 2>/dev/null || 
 emit_omx_event() {
   local raw_event="\$1"
   local normalized_event="\$2"
-  local status="\$3"
+  local lifecycle_status="\$3"
   local summary="\${4:-}"
   local error_summary="\${5:-}"
   local elapsed="\${6:-}"
-  CLAWHIP_EVENT="\$raw_event" \\
-  CLAWHIP_NORMALIZED_EVENT="\$normalized_event" \\
-  CLAWHIP_STATUS="\$status" \\
-  CLAWHIP_SUMMARY="\$summary" \\
-  CLAWHIP_ERROR_SUMMARY="\$error_summary" \\
-  CLAWHIP_ELAPSED="\$elapsed" \\
-  CLAWHIP_SESSION=$(quote "$SESSION") \\
-  CLAWHIP_PROJECT=$(quote "$PROJECT") \\
-  CLAWHIP_REPO_PATH="\$REPO_ROOT" \\
-  CLAWHIP_WORKTREE_PATH=$(quote "$WORKDIR") \\
-  CLAWHIP_BRANCH="\$BRANCH" \\
-  CLAWHIP_CHANNEL=$(quote "$CHANNEL") \\
-  CLAWHIP_MENTION=$(quote "$MENTION") \\
-  node <<'NODE' | clawhip omx hook || true
+  local payload_file
+  payload_file=\$(mktemp)
+  CLAWHIP_EVENT="\$raw_event" \
+  CLAWHIP_NORMALIZED_EVENT="\$normalized_event" \
+  CLAWHIP_STATUS="\$lifecycle_status" \
+  CLAWHIP_SUMMARY="\$summary" \
+  CLAWHIP_ERROR_SUMMARY="\$error_summary" \
+  CLAWHIP_ELAPSED="\$elapsed" \
+  CLAWHIP_SESSION=$(quote "$SESSION") \
+  CLAWHIP_PROJECT=$(quote "$PROJECT") \
+  CLAWHIP_REPO_PATH="\$REPO_ROOT" \
+  CLAWHIP_WORKTREE_PATH=$(quote "$WORKDIR") \
+  CLAWHIP_BRANCH="\$BRANCH" \
+  CLAWHIP_CHANNEL=$(quote "$CHANNEL") \
+  CLAWHIP_MENTION=$(quote "$MENTION") \
+  node <<'NODE' > "\$payload_file"
 const clean = (value) => (typeof value === 'string' ? value.trim() : '');
 const number = (value) => {
   const parsed = Number.parseInt(clean(value), 10);
@@ -111,6 +111,8 @@ const mention = clean(process.env.CLAWHIP_MENTION);
 if (mention) payload.mention = mention;
 process.stdout.write(JSON.stringify(payload));
 NODE
+  clawhip omx hook --file "\$payload_file" || true
+  rm -f "\$payload_file"
 }
 cleanup() {
   local exit_code=\$?
@@ -130,7 +132,6 @@ EOF
 
 ARGS+=(-- "$OMX_CMD")
 
-# Launch
 nohup clawhip "${ARGS[@]}" &>/dev/null &
 
 echo "✓ Created session: $SESSION in $WORKDIR (clawhip monitored)"

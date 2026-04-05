@@ -10,7 +10,7 @@ It gives you persistent context about this project so you don't have to repeat y
 A self-hosted AI agent system built on:
 - **n8n** (workflow automation) — the execution engine for all agent logic
 - **PostgreSQL + PostgREST** — memory, configuration, conversation history
-- **Claude** (Anthropic) — the LLM powering the agent
+- **LLM** (default: Claude/Anthropic, configurable: OpenAI, OpenRouter, Ollama, DeepSeek, Gemini, Mistral, OpenAI-compatible)
 - **Telegram** — messaging interface
 
 The agent lives in n8n workflows. There is no custom application code — everything runs as n8n nodes connected in workflows.
@@ -100,7 +100,7 @@ Scheduled Task Trigger ──→ Format Task Input ─────────�
   → Load User Profile (postgres, uses qualifiedUserId)
   → Load Conversation History (postgres, uses sessionId)
   → Build System Prompt (code node)
-  → AI Agent (Claude Sonnet)
+  → AI Agent (LLM — auto-configured per provider)
       ├── Memory Search (toolCode)
       ├── Memory Save (toolCode)
       ├── Memory Update (toolCode)
@@ -180,10 +180,10 @@ The agent can install pre-built capabilities ("Skills") from a catalog. The syst
 
 #### Templates Repo (local clone)
 
-The templates repo is cloned alongside this repo:
+The templates repo is embedded as a subdirectory (separate Git repo):
 
 ```
-../n8n-claw-templates/        # sibling directory (same parent as n8n-claw)
+n8n-claw-templates/           # subdirectory (own Git remote)
 ├── templates/
 │   ├── index.json             # central catalog — must list every template
 │   ├── TEMPLATE_EXAMPLE.md    # reference for creating new templates
@@ -233,19 +233,19 @@ The agent can delegate specialized tasks to expert sub-agents. The main agent's 
 
 ## Embedded Repos (n8n-claw-agents, n8n-claw-templates)
 
-`n8n-claw-agents/` and `../n8n-claw-templates/` are **separate Git repositories** with their own remotes, NOT part of the n8n-claw repo. They are embedded as subdirectories (n8n-claw-agents inside n8n-claw, n8n-claw-templates as sibling).
+`n8n-claw-agents/` and `n8n-claw-templates/` are **separate Git repositories** with their own remotes, NOT part of the n8n-claw repo. Both live as subdirectories inside n8n-claw.
 
 **How to commit and push changes:**
 
 ```bash
-# n8n-claw-agents — lives INSIDE n8n-claw as subdirectory
+# n8n-claw-agents
 cd n8n-claw/n8n-claw-agents/
 git add <files>
 git commit -m "message"
 git push origin master          # default branch: master
 
-# n8n-claw-templates — lives as SIBLING directory
-cd ../n8n-claw-templates/
+# n8n-claw-templates
+cd n8n-claw/n8n-claw-templates/
 git add <files>
 git commit -m "message"
 git push origin master          # default branch: master
@@ -307,9 +307,11 @@ Hardcoded workflow IDs in the agent use `REPLACE_*` placeholders:
 ### Credential names (must be exact)
 
 n8n matches credentials by name. These names are hardcoded in the workflows:
-- `Anthropic API`
 - `Telegram Bot`
 - `Supabase Postgres`
+- LLM credential — name depends on chosen provider (e.g. `Anthropic API`, `OpenAI API`, `Ollama`, etc.)
+
+**LLM Provider Support:** setup.sh automatically patches ALL LLM nodes in every workflow to match the chosen provider before importing. No manual node swapping needed. Supported providers: Anthropic, OpenAI, OpenRouter, DeepSeek, Google Gemini, Mistral, Ollama, OpenAI-compatible. Provider switching via `./setup.sh --force`. Memory Consolidation reads provider config from `tools_config.llm_provider` at runtime.
 
 ---
 
@@ -320,20 +322,21 @@ The setup script runs in this order:
 1. `apt update && apt upgrade`
 2. Install Docker + psql if missing
 3. Start n8n (so user can generate API key)
-4. Interactive prompts: API keys, domain, personality
+4. Interactive prompts: n8n API key, Telegram bot token + chat ID, LLM provider + API key, domain, personality
 5. Generate Supabase JWT keys
 6. Configure Kong (`supabase/kong.yml`)
 7. Start all Docker services
 8. Wait for n8n API to return 200
 9. Apply DB schema (`001_schema.sql`)
-10. Create Telegram Bot credential via n8n API
-11. Try Postgres credential via n8n CLI / API fallback
-12. Prepare workflows (replace placeholders in `workflows/deployed/`)
-13. Import workflows in dependency order
-14. Patch workflow IDs in agent
-15. Activate agent workflow
-16. Write personality to DB via Python (safe string escaping)
-17. Print URLs, credentials, next steps
+10. Create credentials via n8n API: Telegram Bot, LLM provider, Webhook Auth, Postgres (CLI + API fallback)
+11. Prepare workflows: replace `{{PLACEHOLDER}}`s, **patch all LLM nodes** to match chosen provider
+12. Import workflows in dependency order
+13. Patch workflow IDs in agent (REPLACE_*_ID → actual IDs)
+14. Activate workflows (agent gets retry logic + double activate/deactivate for Telegram webhook)
+15. Write personality + LLM provider config to DB
+16. Print URLs, credentials, next steps
+
+**Re-run / Provider switching:** `./setup.sh --force` re-imports all workflows with new provider nodes. Existing credentials are updated via PATCH (not stale reuse).
 
 ---
 

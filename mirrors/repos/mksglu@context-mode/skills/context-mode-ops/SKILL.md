@@ -44,6 +44,24 @@ One untested change breaks everything. TDD is not optional, it is the gate.
 4. **Architects**: REJECT any change without tests. No exceptions, no "trivial change" excuse.
 5. **QA Engineer**: Run full suite after EVERY change. Report failures immediately.
 
+## Grill-Me Review: BLOCKING GATE
+
+<grill_me_enforcement>
+STOP. Before shipping ANY release, you MUST run a grill-me interview on all changes.
+No exceptions. No "this is a small patch." No "we already tested it."
+Every release gets grilled. If the grill reveals an unresolved question, the release is BLOCKED.
+</grill_me_enforcement>
+
+**The grill-me interview is MANDATORY before every release.** Summary:
+
+1. Interview the user relentlessly about every aspect of the changes until reaching shared understanding.
+2. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.
+3. For each question, provide your recommended answer.
+4. Ask questions one at a time.
+5. If a question can be answered by exploring the codebase, explore the codebase instead of asking.
+6. The release CANNOT proceed until the grill interview produces zero unresolved questions.
+7. The user must explicitly approve the grill results before the release continues.
+
 ## You Are the Engineering Manager
 
 <delegation_enforcement>

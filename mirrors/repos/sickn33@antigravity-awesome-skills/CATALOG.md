@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1344
+Total skills: 1372
 
 ## architecture (88)
 
@@ -97,7 +97,7 @@ Total skills: 1344
 | `workflow-orchestration-patterns` | Master workflow orchestration architecture with Temporal, covering fundamental design decisions, resilience patterns, and best practices for building reliabl... |  | orchestration, architecture, temporal, covering, fundamental, decisions, resilience, building, reliable, distributed |
 | `workflow-patterns` | Use this skill when implementing tasks according to Conductor's TDD workflow, handling phase checkpoints, managing git commits for tasks, or understanding th... |  | skill, implementing, tasks, according, conductor, tdd, handling, phase, checkpoints, managing, git, commits |
 
-## business (69)
+## business (75)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -115,6 +115,7 @@ Total skills: 1344
 | `content-creator` | Professional-grade brand voice analysis, SEO optimization, and platform-specific content frameworks. | content, creator | content, creator, professional, grade, brand, voice, analysis, seo, optimization, platform, specific, frameworks |
 | `copy-editing` | You are an expert copy editor specializing in marketing and conversion copy. Your goal is to systematically improve existing copy through focused editing pas... | copy, editing | copy, editing, editor, specializing, marketing, conversion, goal, systematically, improve, existing, through, passes |
 | `copywriting` | Write rigorous, conversion-focused marketing copy for landing pages and emails. Enforces brief confirmation and strict no-fabrication rules. | copywriting | copywriting, write, rigorous, conversion, marketing, copy, landing, pages, emails, enforces, brief, confirmation |
+| `customer-psychographic-profiler` | One sentence - what this skill does and when to invoke it | customer, psychographic, profiler | customer, psychographic, profiler, one, sentence, what, skill, does, invoke |
 | `defi-protocol-templates` | Implement DeFi protocols with production-ready templates for staking, AMMs, governance, and lending systems. Use when building decentralized finance applicat... | defi, protocol | defi, protocol, protocols, staking, amms, governance, lending, building, decentralized, finance, applications, smart |
 | `email-sequence` | You are an expert in email marketing and automation. Your goal is to create email sequences that nurture relationships, drive action, and move people toward ... | email, sequence | email, sequence, marketing, automation, goal, sequences, nurture, relationships, drive, action, move, people |
 | `framework-migration-legacy-modernize` | Orchestrate a comprehensive legacy system modernization using the strangler fig pattern, enabling gradual replacement of outdated components while maintainin... | framework, migration, legacy, modernize | framework, migration, legacy, modernize, orchestrate, modernization, strangler, fig, enabling, gradual, replacement, outdated |
@@ -143,6 +144,11 @@ Total skills: 1344
 | `sales-automator` | Draft cold emails, follow-ups, and proposal templates. Creates pricing pages, case studies, and sales scripts. Use PROACTIVELY for sales outreach or lead nur... | sales, automator | sales, automator, draft, cold, emails, follow, ups, proposal, creates, pricing, pages, case |
 | `sales-enablement` | Create sales collateral such as decks, one-pagers, objection docs, demo scripts, playbooks, and proposal templates. Use when a sales team needs assets that h... | sales, enablement | sales, enablement, collateral, such, decks, one, pagers, objection, docs, demo, scripts, playbooks |
 | `screenshots` | Generate marketing screenshots of your app using Playwright. Use when the user wants to create screenshots for Product Hunt, social media, landing pages, or ... | screenshots | screenshots, generate, marketing, app, playwright, user, wants, product, hunt, social, media, landing |
+| `seo-aeo-blog-writer` | Writes long-form blog posts with TL;DR block, definition sentence, comparison table, and 5-question FAQ for SEO ranking and AEO citation. Activate when the u... | seo, aeo, blog, writer | seo, aeo, blog, writer, writes, long, form, posts, tl, dr, block, definition |
+| `seo-aeo-content-cluster` | Builds a topical authority map with a pillar page, prioritised cluster articles, content types, internal link map, and content gap analysis. Activate when th... | seo, aeo, content, cluster | seo, aeo, content, cluster, topical, authority, map, pillar, page, prioritised, articles, types |
+| `seo-aeo-internal-linking` | Maps internal link opportunities between pages with anchor text, placement instructions, orphan page detection, and cannibalization checks. Activate when the... | seo, aeo, internal, linking | seo, aeo, internal, linking, maps, link, opportunities, between, pages, anchor, text, placement |
+| `seo-aeo-keyword-research` | Researches and prioritises SEO keywords with AEO question queries, difficulty tiers, cannibalization checks, and a content map. Activate when the user wants ... | seo, aeo, keyword, research | seo, aeo, keyword, research, researches, prioritises, keywords, question, queries, difficulty, tiers, cannibalization |
+| `seo-aeo-meta-description-generator` | Writes 3 title tag variants and 3 meta description variants per page with SERP preview, OG tags, and Twitter Card tags. Activate when the user wants to write... | seo, aeo, meta, description, generator | seo, aeo, meta, description, generator, writes, title, tag, variants, per, page, serp |
 | `seo-audit` | Diagnose and audit SEO issues affecting crawlability, indexation, rankings, and organic performance. | seo, audit | seo, audit, diagnose, issues, affecting, crawlability, indexation, rankings, organic, performance |
 | `seo-cannibalization-detector` | Analyzes multiple provided pages to identify keyword overlap and potential cannibalization issues. Suggests differentiation strategies. Use PROACTIVELY when ... | seo, cannibalization, detector | seo, cannibalization, detector, analyzes, multiple, provided, pages, identify, keyword, overlap, potential, issues |
 | `seo-competitor-pages` | Generate SEO-optimized competitor comparison and alternatives pages. Covers "X vs Y" layouts, "alternatives to X" pages, feature matrices, schema markup, and... | seo, competitor, pages | seo, competitor, pages, generate, optimized, comparison, alternatives, covers, vs, layouts, feature, matrices |
@@ -171,7 +177,7 @@ Total skills: 1344
 | `warren-buffett` | Agente que simula Warren Buffett — o maior investidor do seculo XX e XXI, CEO da Berkshire Hathaway, discipulo de Benjamin Graham e socio intelectual de Char... | persona, investing, value-investing, business | persona, investing, value-investing, business, warren, buffett, agente, que, simula, maior, investidor, do |
 | `whatsapp-automation` | Automate WhatsApp Business tasks via Rube MCP (Composio): send messages, manage templates, upload media, and handle contacts. Always search tools first for c... | whatsapp | whatsapp, automation, automate, business, tasks, via, rube, mcp, composio, send, messages, upload |
 
-## data-ai (255)
+## data-ai (256)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -389,6 +395,7 @@ Total skills: 1344
 | `segment-cdp` | Client-side tracking with Analytics.js. Include track, identify, page, and group calls. Anonymous ID persists until identify merges with user. | segment, cdp | segment, cdp, client, side, tracking, analytics, js, include, track, identify, page, group |
 | `sendgrid-automation` | Automate SendGrid email delivery workflows including marketing campaigns (Single Sends), contact and list management, sender identity setup, and email analyt... | sendgrid | sendgrid, automation, automate, email, delivery, including, marketing, campaigns, single, sends, contact, list |
 | `seo` | Run a broad SEO audit across technical SEO, on-page SEO, schema, sitemaps, content quality, AI search readiness, and GEO. Use as the umbrella skill when the ... | seo | seo, run, broad, audit, technical, page, schema, sitemaps, content, quality, ai, search |
+| `seo-aeo-schema-generator` | Generates valid JSON-LD structured data for 10 schema types with rich result eligibility validation and implementation-ready script blocks. Activate when the... | seo, aeo, schema, generator | seo, aeo, schema, generator, generates, valid, json, ld, structured, data, 10, types |
 | `seo-content` | Content quality and E-E-A-T analysis with AI citation readiness assessment. Use when user says "content quality", "E-E-A-T", "content analysis", "readability... | seo, content | seo, content, quality, analysis, ai, citation, readiness, assessment, user, says, readability, check |
 | `seo-dataforseo` | Use DataForSEO for live SERPs, keyword metrics, backlinks, competitor analysis, on-page checks, and AI visibility data. Trigger when the user needs real SEO ... | seo, dataforseo | seo, dataforseo, live, serps, keyword, metrics, backlinks, competitor, analysis, page, checks, ai |
 | `seo-geo` | Optimize content for AI Overviews, ChatGPT, Perplexity, and other AI search systems. Use when improving GEO, AI citations, llms.txt readiness, crawler access... | seo, geo | seo, geo, optimize, content, ai, overviews, chatgpt, perplexity, other, search, improving, citations |
@@ -621,7 +628,7 @@ Total skills: 1344
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
-## general (327)
+## general (345)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -649,6 +656,7 @@ Total skills: 1344
 | `ask-questions-if-underspecified` | Clarify requirements before implementing. Use when serious doubts arise. | ask, questions, if, underspecified | ask, questions, if, underspecified, clarify, requirements, before, implementing, serious, doubts, arise |
 | `avalonia-layout-zafiro` | Guidelines for modern Avalonia UI layout using Zafiro.Avalonia, emphasizing shared styles, generic components, and avoiding XAML redundancy. | avalonia, layout, zafiro | avalonia, layout, zafiro, guidelines, ui, emphasizing, shared, styles, generic, components, avoiding, xaml |
 | `avalonia-zafiro-development` | Mandatory skills, conventions, and behavioral rules for Avalonia UI development using the Zafiro toolkit. | avalonia, zafiro | avalonia, zafiro, development, mandatory, skills, conventions, behavioral, rules, ui, toolkit |
+| `awareness-stage-mapper` | One sentence - what this skill does and when to invoke it | awareness, stage, mapper | awareness, stage, mapper, one, sentence, what, skill, does, invoke |
 | `aws-cost-cleanup` | Automated cleanup of unused AWS resources to reduce costs | aws, cost, cleanup | aws, cost, cleanup, automated, unused, resources, reduce, costs |
 | `aws-cost-optimizer` | Comprehensive AWS cost analysis and optimization recommendations using AWS CLI and Cost Explorer | aws, cost, optimizer | aws, cost, optimizer, analysis, optimization, recommendations, cli, explorer |
 | `aws-serverless` | Proper Lambda function structure with error handling | aws, serverless | aws, serverless, proper, lambda, function, structure, error, handling |
@@ -663,6 +671,7 @@ Total skills: 1344
 | `blueprint` | Turn a one-line objective into a step-by-step construction plan any coding agent can execute cold. Each step has a self-contained context brief — a fresh age... | blueprint | blueprint, turn, one, line, objective, step, construction, plan, any, coding, agent, execute |
 | `brand-guidelines-anthropic` | To access Anthropic's official brand identity and style resources, use this skill. | brand, guidelines, anthropic | brand, guidelines, anthropic, access, official, identity, style, resources, skill |
 | `brand-guidelines-community` | To access Anthropic's official brand identity and style resources, use this skill. | brand, guidelines, community | brand, guidelines, community, access, anthropic, official, identity, style, resources, skill |
+| `brand-perception-psychologist` | One sentence - what this skill does and when to invoke it | brand, perception, psychologist | brand, perception, psychologist, one, sentence, what, skill, does, invoke |
 | `bug-hunter` | Systematically finds and fixes bugs using proven debugging techniques. Traces from symptoms to root cause, implements fixes, and prevents regression. | bug, hunter | bug, hunter, systematically, finds, fixes, bugs, proven, debugging, techniques, traces, symptoms, root |
 | `build` | build | build | build |
 | `busybox-on-windows` | How to use a Win32 build of BusyBox to run many of the standard UNIX command line tools on Windows. | busybox, on, windows | busybox, on, windows, how, win32, run, many, standard, unix, command, line |
@@ -700,6 +709,7 @@ Total skills: 1344
 | `context-management-context-restore` | Use when working with context management context restore | restore | restore, context, working |
 | `context-management-context-save` | Use when working with context management context save | save | save, context, working |
 | `context-optimization` | Context optimization extends the effective capacity of limited context windows through strategic compression, masking, caching, and partitioning. The goal is... | optimization | optimization, context, extends, effective, capacity, limited, windows, through, strategic, compression, masking, caching |
+| `copywriting-psychologist` | One sentence - what this skill does and when to invoke it | copywriting, psychologist | copywriting, psychologist, one, sentence, what, skill, does, invoke |
 | `cpp-pro` | Write idiomatic C++ code with modern features, RAII, smart pointers, and STL algorithms. Handles templates, move semantics, and performance optimization. | cpp | cpp, pro, write, idiomatic, code, features, raii, smart, pointers, stl, algorithms, move |
 | `create-branch` | Create a git branch following Sentry naming conventions. Use when asked to "create a branch", "new branch", "start a branch", "make a branch", "switch to a n... | create, branch | create, branch, git, following, sentry, naming, conventions, asked, new, start, switch, starting |
 | `create-issue-gate` | Use when starting a new implementation task and an issue must be created with strict acceptance criteria gating before execution. | create, issue, gate | create, issue, gate, starting, new, task, must, created, strict, acceptance, criteria, gating |
@@ -719,6 +729,7 @@ Total skills: 1344
 | `elon-musk` | Agente que simula Elon Musk com profundidade psicologica e comunicacional de alta fidelidade. Ativado para: "fale como Elon", "simule Elon Musk", "o que Elon... | persona, first-principles, innovation, strategy | persona, first-principles, innovation, strategy, elon, musk, agente, que, simula, com, profundidade, psicologica |
 | `email-systems` | You are an email systems engineer who has maintained 99.9% deliverability across millions of emails. You've debugged SPF/DKIM/DMARC, dealt with blacklists, a... | email | email, engineer, who, maintained, 99, deliverability, millions, emails, ve, debugged, spf, dkim |
 | `emergency-card` | 生成紧急情况下快速访问的医疗信息摘要卡片。当用户需要旅行、就诊准备、紧急情况或询问"紧急信息"、"医疗卡片"、"急救信息"时使用此技能。提取关键信息（过敏、用药、急症、植入物），支持多格式输出（JSON、文本、二维码），用于急救或快速就医。 | emergency, card | emergency, card, json |
+| `emotional-arc-designer` | One sentence - what this skill does and when to invoke it | emotional, arc, designer | emotional, arc, designer, one, sentence, what, skill, does, invoke |
 | `energy-procurement` | Codified expertise for electricity and gas procurement, tariff optimisation, demand charge management, renewable PPA evaluation, and multi-facility energy co... | energy, procurement | energy, procurement, codified, expertise, electricity, gas, tariff, optimisation, demand, charge, renewable, ppa |
 | `enhance-prompt` | Transforms vague UI ideas into polished, Stitch-optimized prompts. Enhances specificity, adds UI/UX keywords, injects design system context, and structures o... | enhance, prompt | enhance, prompt, transforms, vague, ui, ideas, polished, stitch, optimized, prompts, enhances, specificity |
 | `environment-setup-guide` | Guide developers through setting up development environments with proper tools, dependencies, and configurations | environment, setup | environment, setup, developers, through, setting, up, development, environments, proper, dependencies, configurations |
@@ -763,6 +774,7 @@ Total skills: 1344
 | `godot-4-migration` | Specialized guide for migrating Godot 3.x projects to Godot 4 (GDScript 2.0), covering syntax changes, Tweens, and exports. | godot, 4, migration | godot, 4, migration, specialized, migrating, gdscript, covering, syntax, changes, tweens, exports |
 | `graphql` | You're a developer who has built GraphQL APIs at scale. You've seen the N+1 query problem bring down production servers. You've watched clients craft deeply ... | graphql | graphql, re, developer, who, built, apis, scale, ve, seen, query, problem, bring |
 | `haskell-pro` | Expert Haskell engineer specializing in advanced type systems, pure | haskell | haskell, pro, engineer, specializing, type, pure |
+| `headline-psychologist` | One sentence - what this skill does and when to invoke it | headline, psychologist | headline, psychologist, one, sentence, what, skill, does, invoke |
 | `health-trend-analyzer` | 分析一段时间内健康数据的趋势和模式。关联药物、症状、生命体征、化验结果和其他健康指标的变化。识别令人担忧的趋势、改善情况，并提供数据驱动的洞察。当用户询问健康趋势、模式、随时间的变化或"我的健康状况有什么变化？"时使用。支持多维度分析（体重/BMI、症状、药物依从性、化验结果、情绪睡眠），相关性分析，变化检测，以... | health, trend, analyzer | health, trend, analyzer, bmi, html, echarts |
 | `hierarchical-agent-memory` | Scoped CLAUDE.md memory system that reduces context token spend. Creates directory-level context files, tracks savings via dashboard, and routes agents to th... | hierarchical, agent, memory | hierarchical, agent, memory, scoped, claude, md, reduces, context, token, spend, creates, directory |
 | `hig-components-content` | Apple Human Interface Guidelines for content display components. | hig, components, content | hig, components, content, apple, human, interface, guidelines, display |
@@ -784,6 +796,7 @@ Total skills: 1344
 | `hugging-face-model-trainer` | Train or fine-tune TRL language models on Hugging Face Jobs, including SFT, DPO, GRPO, and GGUF export. | hugging, face, model, trainer | hugging, face, model, trainer, train, fine, tune, trl, language, models, jobs, including |
 | `hugging-face-paper-publisher` | Publish and manage research papers on Hugging Face Hub. Supports creating paper pages, linking papers to models/datasets, claiming authorship, and generating... | hugging, face, paper, publisher | hugging, face, paper, publisher, publish, research, papers, hub, supports, creating, pages, linking |
 | `hugging-face-vision-trainer` | Train or fine-tune vision models on Hugging Face Jobs for detection, classification, and SAM or SAM2 segmentation. | hugging, face, vision, trainer | hugging, face, vision, trainer, train, fine, tune, models, jobs, detection, classification, sam |
+| `identity-mirror` | One sentence - what this skill does and when to invoke it | identity, mirror | identity, mirror, one, sentence, what, skill, does, invoke |
 | `ilya-sutskever` | Agente que simula Ilya Sutskever — co-fundador da OpenAI, ex-Chief Scientist, fundador da SSI. Use quando quiser perspectivas sobre: AGI safety-first, consci... | persona, agi, safety, scaling-laws, openai | persona, agi, safety, scaling-laws, openai, ilya, sutskever, agente, que, simula, co, fundador |
 | `infinite-gratitude` | Multi-agent research skill for parallel research execution (10 agents, battle-tested with real case studies). | infinite, gratitude | infinite, gratitude, multi, agent, research, skill, parallel, execution, 10, agents, battle, tested |
 | `inngest` | You are an Inngest expert who builds reliable background processing without managing infrastructure. You understand that serverless doesn't mean you can't ha... | inngest | inngest, who, reliable, background, processing, without, managing, infrastructure, understand, serverless, doesn, mean |
@@ -793,6 +806,7 @@ Total skills: 1344
 | `interview-coach` | Full job search coaching system — JD decoding, resume, storybank, mock interviews, transcript analysis, comp negotiation. 23 commands, persistent state. | interview, job-search, coaching, career, storybank, negotiation | interview, job-search, coaching, career, storybank, negotiation, coach, full, job, search, jd, decoding |
 | `inventory-demand-planning` | Codified expertise for demand forecasting, safety stock optimisation, replenishment planning, and promotional lift estimation at multi-location retailers. | inventory, demand, planning | inventory, demand, planning, codified, expertise, forecasting, safety, stock, optimisation, replenishment, promotional, lift |
 | `issues` | Interact with GitHub issues - create, list, and view issues. | issues | issues, interact, github, list, view |
+| `jobs-to-be-done-analyst` | One sentence - what this skill does and when to invoke it | jobs, to, be, done, analyst | jobs, to, be, done, analyst, one, sentence, what, skill, does, invoke |
 | `json-canvas` | Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. Use when working with .canvas files, creating visual canvases, mind m... | json, canvas | json, canvas, edit, files, nodes, edges, groups, connections, working, creating, visual, canvases |
 | `julia-pro` | Master Julia 1.10+ with modern features, performance optimization, multiple dispatch, and production-ready practices. | julia | julia, pro, 10, features, performance, optimization, multiple, dispatch |
 | `last30days` | Research a topic from the last 30 days on Reddit + X + Web, become an expert, and write copy-paste-ready prompts for the user's target tool. | last30days | last30days, research, topic, last, 30, days, reddit, web, become, write, copy, paste |
@@ -806,6 +820,7 @@ Total skills: 1344
 | `linear-claude-skill` | Manage Linear issues, projects, and teams | linear, claude, skill | linear, claude, skill, issues, teams |
 | `lint-and-validate` | MANDATORY: Run appropriate validation tools after EVERY code change. Do not finish a task until the code is error-free. | lint, and, validate | lint, and, validate, mandatory, run, appropriate, validation, after, every, code, change, do |
 | `logistics-exception-management` | Codified expertise for handling freight exceptions, shipment delays, damages, losses, and carrier disputes. Informed by logistics professionals with 15+ year... | logistics, exception | logistics, exception, codified, expertise, handling, freight, exceptions, shipment, delays, damages, losses, carrier |
+| `loss-aversion-designer` | One sentence - what this skill does and when to invoke it | loss, aversion, designer | loss, aversion, designer, one, sentence, what, skill, does, invoke |
 | `macos-menubar-tuist-app` | Build, refactor, or review SwiftUI macOS menubar apps that use Tuist. | macos, menubar, tuist, app | macos, menubar, tuist, app, refactor, review, swiftui, apps |
 | `macos-spm-app-packaging` | Scaffold, build, sign, and package SwiftPM macOS apps without Xcode projects. | macos, spm, app, packaging | macos, spm, app, packaging, scaffold, sign, package, swiftpm, apps, without, xcode |
 | `magic-ui-generator` | Utilizes Magic by 21st.dev to generate, compare, and integrate multiple production-ready UI component variations. | magic, ui, generator | magic, ui, generator, utilizes, 21st, dev, generate, compare, integrate, multiple, component, variations |
@@ -831,6 +846,7 @@ Total skills: 1344
 | `nosql-expert` | Expert guidance for distributed NoSQL databases (Cassandra, DynamoDB). Focuses on mental models, query-first modeling, single-table design, and avoiding hot ... | nosql | nosql, guidance, distributed, databases, cassandra, dynamodb, mental, models, query, first, modeling, single |
 | `notebooklm` | Interact with Google NotebookLM to query documentation with Gemini's source-grounded answers. Each question opens a fresh browser session, retrieves the answ... | notebooklm | notebooklm, interact, google, query, documentation, gemini, source, grounded, answers, each, question, opens |
 | `nutrition-analyzer` | 分析营养数据、识别营养模式、评估营养状况，并提供个性化营养建议。支持与运动、睡眠、慢性病数据的关联分析。 | nutrition, analyzer | nutrition, analyzer |
+| `objection-preemptor` | One sentence - what this skill does and when to invoke it | objection, preemptor | objection, preemptor, one, sentence, what, skill, does, invoke |
 | `obsidian-cli` | Use the Obsidian CLI to read, create, search, and manage vault content, or to develop and debug Obsidian plugins and themes from the command line. | obsidian, cli | obsidian, cli, read, search, vault, content, develop, debug, plugins, themes, command, line |
 | `obsidian-clipper-template-creator` | Guide for creating templates for the Obsidian Web Clipper. Use when you want to create a new clipping template, understand available variables, or format cli... | obsidian, clipper, creator | obsidian, clipper, creator, creating, web, want, new, clipping, understand, available, variables, format |
 | `obsidian-markdown` | Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files ... | obsidian, markdown | obsidian, markdown, edit, flavored, wikilinks, embeds, callouts, properties, other, specific, syntax, working |
@@ -843,6 +859,7 @@ Total skills: 1344
 | `odoo-upgrade-advisor` | Step-by-step Odoo version upgrade advisor: pre-upgrade checklist, community vs enterprise upgrade path, OCA module compatibility, and post-upgrade validation. | odoo, upgrade, advisor | odoo, upgrade, advisor, step, version, pre, checklist, community, vs, enterprise, path, oca |
 | `odoo-xml-views-builder` | Expert at building Odoo XML views: Form, List, Kanban, Search, Calendar, and Graph. Generates correct XML for Odoo 14-17 with proper visibility syntax. | odoo, xml, views, builder | odoo, xml, views, builder, building, form, list, kanban, search, calendar, graph, generates |
 | `onboarding-cro` | You are an expert in user onboarding and activation. Your goal is to help users reach their "aha moment" as quickly as possible and establish habits that lea... | onboarding, cro | onboarding, cro, user, activation, goal, users, reach, aha, moment, quickly, possible, establish |
+| `onboarding-psychologist` | One sentence - what this skill does and when to invoke it | onboarding, psychologist | onboarding, psychologist, one, sentence, what, skill, does, invoke |
 | `oral-health-analyzer` | 分析口腔健康数据、识别口腔问题模式、评估口腔健康状况、提供个性化口腔健康建议。支持与营养、慢性病、用药等其他健康数据的关联分析。 | oral, health, analyzer | oral, health, analyzer |
 | `orchestrate-batch-refactor` | Plan and execute large refactors with dependency-aware work packets and parallel analysis. | orchestrate, batch, refactor | orchestrate, batch, refactor, plan, execute, large, refactors, dependency, aware, work, packets, parallel |
 | `oss-hunter` | Automatically hunt for high-impact OSS contribution opportunities in trending repositories. | oss, hunter | oss, hunter, automatically, hunt, high, impact, contribution, opportunities, trending, repositories |
@@ -853,6 +870,7 @@ Total skills: 1344
 | `performance-optimizer` | Identifies and fixes performance bottlenecks in code, databases, and APIs. Measures before and after to prove improvements. | performance, optimizer | performance, optimizer, identifies, fixes, bottlenecks, code, databases, apis, measures, before, after, prove |
 | `performance-profiling` | Performance profiling principles. Measurement, analysis, and optimization techniques. | performance, profiling | performance, profiling, principles, measurement, analysis, optimization, techniques |
 | `phase-gated-debugging` | Use when debugging any bug. Enforces a 5-phase protocol where code edits are blocked until root cause is confirmed. Prevents premature fix attempts. | phase, gated, debugging | phase, gated, debugging, any, bug, enforces, protocol, where, code, edits, blocked, until |
+| `pitch-psychologist` | One sentence - what this skill does and when to invoke it | pitch, psychologist | pitch, psychologist, one, sentence, what, skill, does, invoke |
 | `plaid-fintech` | Create a linktoken for Plaid Link, exchange publictoken for accesstoken. Link tokens are short-lived, one-time use. Access tokens don't expire but may need u... | plaid, fintech | plaid, fintech, linktoken, link, exchange, publictoken, accesstoken, tokens, short, lived, one, time |
 | `plan-writing` | Structured task planning with clear breakdowns, dependencies, and verification criteria. Use when implementing features, refactoring, or any multi-step work. | plan, writing | plan, writing, structured, task, planning, clear, breakdowns, dependencies, verification, criteria, implementing, features |
 | `planning-with-files` | Work like Manus: Use persistent markdown files as your "working memory on disk." | planning, with, files | planning, with, files, work, like, manus, persistent, markdown, working, memory, disk |
@@ -861,6 +879,7 @@ Total skills: 1344
 | `posix-shell-pro` | Expert in strict POSIX sh scripting for maximum portability across Unix-like systems. Specializes in shell scripts that run on any POSIX-compliant shell (das... | posix, shell | posix, shell, pro, strict, sh, scripting, maximum, portability, unix, like, specializes, scripts |
 | `pptx-official` | A user may ask you to create, edit, or analyze the contents of a .pptx file. A .pptx file is essentially a ZIP archive containing XML files and other resourc... | pptx, official | pptx, official, user, may, ask, edit, analyze, contents, file, essentially, zip, archive |
 | `pr-writer` | Create pull requests following Sentry's engineering practices. | pr, writer | pr, writer, pull, requests, following, sentry, engineering |
+| `price-psychology-strategist` | One sentence - what this skill does and when to invoke it | price, psychology, strategist | price, psychology, strategist, one, sentence, what, skill, does, invoke |
 | `production-scheduling` | Codified expertise for production scheduling, job sequencing, line balancing, changeover optimisation, and bottleneck resolution in discrete and batch manufa... | production, scheduling | production, scheduling, codified, expertise, job, sequencing, line, balancing, changeover, optimisation, bottleneck, resolution |
 | `professional-proofreader` | Use when a user asks to "proofread", "review and correct", "fix grammar", "improve readability while keeping my voice", and to proofread a document file and ... | professional, proofreader | professional, proofreader, user, asks, proofread, review, correct, fix, grammar, improve, readability, while |
 | `project-skill-audit` | Audit a project and recommend the highest-value skills to add or update. | skill, audit | skill, audit, recommend, highest, value, skills, add, update |
@@ -877,9 +896,11 @@ Total skills: 1344
 | `reverse-engineer` | Expert reverse engineer specializing in binary analysis, disassembly, decompilation, and software analysis. Masters IDA Pro, Ghidra, radare2, x64dbg, and mod... | reverse | reverse, engineer, specializing, binary, analysis, disassembly, decompilation, software, masters, ida, pro, ghidra |
 | `robius-matrix-integration` | CRITICAL: Use for Matrix SDK integration with Makepad. Triggers on: Matrix SDK, sliding sync, MatrixRequest, timeline, matrix-sdk, matrix client, robrix, mat... | robius, matrix, integration | robius, matrix, integration, critical, sdk, makepad, triggers, sliding, sync, matrixrequest, timeline, client |
 | `sam-altman` | Agente que simula Sam Altman — CEO da OpenAI, ex-presidente da Y Combinator, arquiteto da era AGI. | persona, startups, agi, yc, fundraising | persona, startups, agi, yc, fundraising, sam, altman, agente, que, simula, ceo, da |
+| `scarcity-urgency-psychologist` | One sentence - what this skill does and when to invoke it | scarcity, urgency, psychologist | scarcity, urgency, psychologist, one, sentence, what, skill, does, invoke |
 | `search-specialist` | Expert web researcher using advanced search techniques and | search | search, web, researcher, techniques |
 | `senior-architect` | Complete toolkit for senior architect with modern tools and best practices. | senior | senior, architect, complete, toolkit |
 | `senior-fullstack` | Complete toolkit for senior fullstack with modern tools and best practices. | senior, fullstack | senior, fullstack, complete, toolkit |
+| `sequence-psychologist` | One sentence - what this skill does and when to invoke it | sequence, psychologist | sequence, psychologist, one, sentence, what, skill, does, invoke |
 | `sexual-health-analyzer` | Sexual Health Analyzer | sexual, health, analyzer | sexual, health, analyzer |
 | `shader-programming-glsl` | Expert guide for writing efficient GLSL shaders (Vertex/Fragment) for web and game engines, covering syntax, uniforms, and common effects. | shader, programming, glsl | shader, programming, glsl, writing, efficient, shaders, vertex, fragment, web, game, engines, covering |
 | `sharp-edges` | sharp-edges | sharp, edges | sharp, edges |
@@ -895,11 +916,13 @@ Total skills: 1344
 | `slack-gif-creator` | A toolkit providing utilities and knowledge for creating animated GIFs optimized for Slack. | slack, gif, creator | slack, gif, creator, toolkit, providing, utilities, knowledge, creating, animated, gifs, optimized |
 | `sleep-analyzer` | 分析睡眠数据、识别睡眠模式、评估睡眠质量，并提供个性化睡眠改善建议。支持与其他健康数据的关联分析。 | sleep, analyzer | sleep, analyzer |
 | `social-orchestrator` | Orquestrador unificado de canais sociais — coordena Instagram, Telegram e WhatsApp em um unico fluxo de trabalho. Publicacao cross-channel, metricas unificad... | social-media, cross-channel, scheduling, campaigns | social-media, cross-channel, scheduling, campaigns, social, orchestrator, orquestrador, unificado, de, canais, sociais, coordena |
+| `social-proof-architect` | One sentence - what this skill does and when to invoke it | social, proof | social, proof, architect, one, sentence, what, skill, does, invoke |
 | `speckit-updater` | SpecKit Safe Update | speckit, updater | speckit, updater, safe, update |
 | `speed` | Launch RSVP speed reader for text | speed | speed, launch, rsvp, reader, text |
 | `sred-project-organizer` | Take a list of projects and their related documentation, and organize them into the SRED format for submission. | sred, organizer | sred, organizer, take, list, related, documentation, organize, them, format, submission |
 | `stitch-loop` | Teaches agents to iteratively build websites using Stitch with an autonomous baton-passing loop pattern | stitch, loop | stitch, loop, teaches, agents, iteratively, websites, autonomous, baton, passing |
 | `subagent-driven-development` | Use when executing implementation plans with independent tasks in the current session | subagent, driven | subagent, driven, development, executing, plans, independent, tasks, current, session |
+| `subject-line-psychologist` | One sentence - what this skill does and when to invoke it | subject, line, psychologist | subject, line, psychologist, one, sentence, what, skill, does, invoke |
 | `superpowers-lab` | Lab environment for Claude superpowers | superpowers, lab | superpowers, lab, environment, claude |
 | `swift-concurrency-expert` | Review and fix Swift concurrency issues such as actor isolation and Sendable violations. | swift, concurrency | swift, concurrency, review, fix, issues, such, actor, isolation, sendable, violations |
 | `swiftui-liquid-glass` | Implement or review SwiftUI Liquid Glass APIs with correct fallbacks and modifier order. | swiftui, liquid, glass | swiftui, liquid, glass, review, apis, correct, fallbacks, modifier, order |
@@ -930,11 +953,13 @@ Total skills: 1344
 | `upstash-qstash` | You are an Upstash QStash expert who builds reliable serverless messaging without infrastructure management. You understand that QStash's simplicity is its p... | upstash, qstash | upstash, qstash, who, reliable, serverless, messaging, without, infrastructure, understand, simplicity, power, http |
 | `using-git-worktrees` | Git worktrees create isolated workspaces sharing the same repository, allowing work on multiple branches simultaneously without switching. | using, git, worktrees | using, git, worktrees, isolated, workspaces, sharing, same, repository, allowing, work, multiple, branches |
 | `using-superpowers` | Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions | using, superpowers | using, superpowers, starting, any, conversation, establishes, how, find, skills, requiring, skill, invocation |
+| `ux-persuasion-engineer` | One sentence - what this skill does and when to invoke it | ux, persuasion | ux, persuasion, engineer, one, sentence, what, skill, does, invoke |
 | `varlock` | Secure-by-default environment variable management for Claude Code sessions. | varlock | varlock, secure, default, environment, variable, claude, code, sessions |
 | `verification-before-completion` | Claiming work is complete without verification is dishonesty, not efficiency. Use when ANY variation of success/completion claims, ANY expression of satisfac... | verification, before, completion | verification, before, completion, claiming, work, complete, without, dishonesty, efficiency, any, variation, success |
 | `vexor-cli` | Semantic file discovery via `vexor`. Use whenever locating where something is implemented/loaded/defined in a medium or large repo, or when the file location... | vexor, cli | vexor, cli, semantic, file, discovery, via, whenever, locating, where, something, implemented, loaded |
 | `videodb` | Video and audio perception, indexing, and editing. Ingest files/URLs/live streams, build visual/spoken indexes, search with timestamps, edit timelines, add o... | video, editing, transcription, subtitles, search, streaming, ai-generation, media, live-streams, desktop-capture | video, editing, transcription, subtitles, search, streaming, ai-generation, media, live-streams, desktop-capture, videodb, audio |
 | `viral-generator-builder` | You understand why people share things. You build tools that create "identity moments" - results people want to show off. You know the difference between a t... | viral, generator, builder | viral, generator, builder, understand, why, people, share, things, identity, moments, results, want |
+| `visual-emotion-engineer` | One sentence - what this skill does and when to invoke it | visual, emotion | visual, emotion, engineer, one, sentence, what, skill, does, invoke |
 | `web-performance-optimization` | Optimize website and web application performance including loading speed, Core Web Vitals, bundle size, caching strategies, and runtime performance | web, performance, optimization | web, performance, optimization, optimize, website, application, including, loading, speed, core, vitals, bundle |
 | `weightloss-analyzer` | 分析减肥数据、计算代谢率、追踪能量缺口、管理减肥阶段 | weightloss, analyzer | weightloss, analyzer |
 | `wiki-architect` | You are a documentation architect that produces structured wiki catalogues and onboarding guides from codebases. | wiki | wiki, architect, documentation, produces, structured, catalogues, onboarding, guides, codebases |
@@ -953,7 +978,7 @@ Total skills: 1344
 | `yann-lecun-tecnico` | Sub-skill técnica de Yann LeCun. Cobre CNNs, LeNet, backpropagation, JEPA (I-JEPA, V-JEPA, MC-JEPA), AMI (Advanced Machinery of Intelligence), Self-Supervise... | persona, cnn, jepa, self-supervised, pytorch | persona, cnn, jepa, self-supervised, pytorch, yann, lecun, tecnico, sub, skill, cnica, de |
 | `youtube-summarizer` | Extract transcripts from YouTube videos and generate comprehensive, detailed summaries using intelligent analysis frameworks | video, summarization, transcription, youtube, content-analysis | video, summarization, transcription, youtube, content-analysis, summarizer, extract, transcripts, videos, generate, detailed, summaries |
 
-## infrastructure (120)
+## infrastructure (121)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1061,6 +1086,7 @@ Total skills: 1344
 | `prometheus-configuration` | Complete guide to Prometheus setup, metric collection, scrape configuration, and recording rules. | prometheus, configuration | prometheus, configuration, complete, setup, metric, collection, scrape, recording, rules |
 | `pubmed-database` | Direct REST API access to PubMed. Advanced Boolean/MeSH queries, E-utilities API, batch processing, citation management. For Python workflows, prefer biopyth... | pubmed, database | pubmed, database, direct, rest, api, access, boolean, mesh, queries, utilities, batch, processing |
 | `salesforce-development` | Use @wire decorator for reactive data binding with Lightning Data Service or Apex methods. @wire fits LWC's reactive architecture and enables Salesforce perf... | salesforce | salesforce, development, wire, decorator, reactive, data, binding, lightning, apex, methods, fits, lwc |
+| `seo-aeo-landing-page-writer` | Writes complete, structured landing pages optimized for SEO ranking, AEO citation, and visitor conversion. Activate when the user wants to write or generate ... | seo, aeo, landing, page, writer | seo, aeo, landing, page, writer, writes, complete, structured, pages, optimized, ranking, citation |
 | `server-management` | Server management principles and decision-making. Process management, monitoring strategy, and scaling decisions. Teaches thinking, not commands. | server | server, principles, decision, making, process, monitoring, scaling, decisions, teaches, thinking, commands |
 | `service-mesh-observability` | Complete guide to observability patterns for Istio, Linkerd, and service mesh deployments. | service, mesh, observability | service, mesh, observability, complete, istio, linkerd, deployments |
 | `skill-installer` | Instala, valida, registra e verifica novas skills no ecossistema. 10 checks de seguranca, copia, registro no orchestrator e verificacao pos-instalacao. | skill-management, deployment, validation, installation | skill-management, deployment, validation, installation, skill, installer, instala, valida, registra, verifica, novas, skills |
@@ -1078,7 +1104,7 @@ Total skills: 1344
 | `whatsapp-cloud-api` | Integracao com WhatsApp Business Cloud API (Meta). Mensagens, templates, webhooks HMAC-SHA256, automacao de atendimento. Boilerplates Node.js e Python. | messaging, whatsapp, meta, webhooks | messaging, whatsapp, meta, webhooks, cloud, api, integracao, com, business, mensagens, hmac, sha256 |
 | `x-twitter-scraper` | X (Twitter) data platform skill — tweet search, user lookup, follower extraction, engagement metrics, giveaway draws, monitoring, webhooks, 19 extraction too... | twitter, x-api, scraping, mcp, social-media, data-extraction, giveaway, monitoring, webhooks | twitter, x-api, scraping, mcp, social-media, data-extraction, giveaway, monitoring, webhooks, scraper, data, platform |
 
-## security (167)
+## security (169)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1215,6 +1241,7 @@ Total skills: 1344
 | `security/aws-secrets-rotation` | Automate AWS secrets rotation for RDS, API keys, and credentials | aws, secrets-manager, security, automation, kiro-cli, credentials | aws, secrets-manager, security, automation, kiro-cli, credentials, secrets, rotation, automate, rds, api, keys |
 | `security/aws-security-audit` | Comprehensive AWS security posture assessment using AWS CLI and security best practices | aws, security, audit, compliance, kiro-cli, security-assessment | aws, security, audit, compliance, kiro-cli, security-assessment, posture, assessment, cli |
 | `semgrep-rule-creator` | Creates custom Semgrep rules for detecting security vulnerabilities, bug patterns, and code patterns. Use when writing Semgrep rules or building custom stati... | semgrep, rule, creator | semgrep, rule, creator, creates, custom, rules, detecting, security, vulnerabilities, bug, code, writing |
+| `seo-aeo-content-quality-auditor` | Audits content for SEO and AEO performance with scored reports, severity-ranked fix lists, and projected scores after fixes. Activate when the user wants to ... | seo, aeo, content, quality, auditor | seo, aeo, content, quality, auditor, audits, performance, scored, reports, severity, ranked, fix |
 | `seo-authority-builder` | Analyzes content for E-E-A-T signals and suggests improvements to build authority and trust. Identifies missing credibility elements. Use PROACTIVELY for YMY... | seo, authority, builder | seo, authority, builder, analyzes, content, signals, suggests, improvements, trust, identifies, missing, credibility |
 | `seo-forensic-incident-response` | Investigate sudden drops in organic traffic or rankings and run a structured forensic SEO incident response with triage, root-cause analysis and recovery plan. | seo, forensic, incident, response | seo, forensic, incident, response, investigate, sudden, drops, organic, traffic, rankings, run, structured |
 | `seo-technical` | Audit technical SEO across crawlability, indexability, security, URLs, mobile, Core Web Vitals, structured data, JavaScript rendering, and related platform s... | seo, technical | seo, technical, audit, crawlability, indexability, security, urls, mobile, core, web, vitals, structured |
@@ -1235,6 +1262,7 @@ Total skills: 1344
 | `threat-mitigation-mapping` | Map identified threats to appropriate security controls and mitigations. Use when prioritizing security investments, creating remediation plans, or validatin... | threat, mitigation, mapping | threat, mitigation, mapping, map, identified, threats, appropriate, security, controls, mitigations, prioritizing, investments |
 | `threat-modeling-expert` | Expert in threat modeling methodologies, security architecture review, and risk assessment. Masters STRIDE, PASTA, attack trees, and security requirement ext... | threat, modeling | threat, modeling, methodologies, security, architecture, review, risk, assessment, masters, stride, pasta, attack |
 | `top-web-vulnerabilities` | Provide a comprehensive, structured reference for the 100 most critical web application vulnerabilities organized by category. This skill enables systematic ... | top, web, vulnerabilities | top, web, vulnerabilities, provide, structured, reference, 100, most, critical, application, organized, category |
+| `trust-calibrator` | One sentence - what this skill does and when to invoke it | trust, calibrator | trust, calibrator, one, sentence, what, skill, does, invoke |
 | `ui-visual-validator` | Rigorous visual validation expert specializing in UI testing, design system compliance, and accessibility verification. | ui, visual, validator | ui, visual, validator, rigorous, validation, specializing, testing, compliance, accessibility, verification |
 | `using-neon` | Neon is a serverless Postgres platform that separates compute and storage to offer autoscaling, branching, instant restore, and scale-to-zero. It's fully com... | using, neon | using, neon, serverless, postgres, platform, separates, compute, storage, offer, autoscaling, branching, instant |
 | `variant-analysis` | Find similar vulnerabilities and bugs across codebases using pattern-based analysis. Use when hunting bug variants, building CodeQL/Semgrep queries, analyzin... | variant | variant, analysis, find, similar, vulnerabilities, bugs, codebases, hunting, bug, variants, building, codeql |

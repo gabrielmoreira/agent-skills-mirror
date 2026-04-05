@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,8 +66,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
 | 6 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
 | 7 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
-| 8 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
+| 9 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

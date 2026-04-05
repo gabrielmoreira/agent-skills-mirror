@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,40 +61,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude-plugin/CLAUDE.md`](.claude-plugin/CLAUDE.md) |
 | 2 | ✓ | [`.claude/skills/CLAUDE.md`](.claude/skills/CLAUDE.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 5 | ✓ | [`docs/public/CLAUDE.md`](docs/public/CLAUDE.md) |
-| 6 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
-| 7 | ✓ | [`openclaw/skills/do/SKILL.md`](openclaw/skills/do/SKILL.md) |
-| 8 | ✓ | [`openclaw/skills/make-plan/SKILL.md`](openclaw/skills/make-plan/SKILL.md) |
-| 9 | ✓ | [`plugin/.claude-plugin/CLAUDE.md`](plugin/.claude-plugin/CLAUDE.md) |
-| 10 | ✓ | [`plugin/CLAUDE.md`](plugin/CLAUDE.md) |
-| 11 | ✓ | [`plugin/hooks/CLAUDE.md`](plugin/hooks/CLAUDE.md) |
-| 12 | ✓ | [`plugin/scripts/CLAUDE.md`](plugin/scripts/CLAUDE.md) |
-| 13 | ✓ | [`plugin/skills/do/SKILL.md`](plugin/skills/do/SKILL.md) |
-| 14 | ✓ | [`plugin/skills/make-plan/SKILL.md`](plugin/skills/make-plan/SKILL.md) |
-| 15 | ✓ | [`plugin/skills/mem-search/SKILL.md`](plugin/skills/mem-search/SKILL.md) |
-| 16 | ✓ | [`plugin/skills/smart-explore/SKILL.md`](plugin/skills/smart-explore/SKILL.md) |
-| 17 | ✓ | [`plugin/skills/timeline-report/SKILL.md`](plugin/skills/timeline-report/SKILL.md) |
-| 18 | ✓ | [`plugin/ui/CLAUDE.md`](plugin/ui/CLAUDE.md) |
-| 19 | ✓ | [`ragtime/CLAUDE.md`](ragtime/CLAUDE.md) |
-| 20 | ✓ | [`scripts/anti-pattern-test/CLAUDE.md`](scripts/anti-pattern-test/CLAUDE.md) |
-| 21 | ✓ | [`scripts/CLAUDE.md`](scripts/CLAUDE.md) |
-| 22 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
-| 23 | ✓ | [`src/cli/adapters/CLAUDE.md`](src/cli/adapters/CLAUDE.md) |
-| 24 | ✓ | [`src/cli/CLAUDE.md`](src/cli/CLAUDE.md) |
-| 25 | ✓ | [`src/cli/handlers/CLAUDE.md`](src/cli/handlers/CLAUDE.md) |
-| 26 | ✓ | [`src/services/CLAUDE.md`](src/services/CLAUDE.md) |
-| 27 | ✓ | [`src/services/domain/CLAUDE.md`](src/services/domain/CLAUDE.md) |
-| 28 | ✓ | [`src/services/infrastructure/CLAUDE.md`](src/services/infrastructure/CLAUDE.md) |
-| 29 | ✓ | [`src/services/sqlite/CLAUDE.md`](src/services/sqlite/CLAUDE.md) |
-| 30 | ✓ | [`src/services/worker/CLAUDE.md`](src/services/worker/CLAUDE.md) |
-| 31 | ✓ | [`src/shared/CLAUDE.md`](src/shared/CLAUDE.md) |
-| 32 | ✓ | [`src/ui/viewer/constants/CLAUDE.md`](src/ui/viewer/constants/CLAUDE.md) |
-| 33 | ✓ | [`src/utils/CLAUDE.md`](src/utils/CLAUDE.md) |
-| 34 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
-| 35 | ✓ | [`tests/infrastructure/CLAUDE.md`](tests/infrastructure/CLAUDE.md) |
-| 36 | ✓ | [`tests/utils/CLAUDE.md`](tests/utils/CLAUDE.md) |
+| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 6 | ✓ | [`docs/public/CLAUDE.md`](docs/public/CLAUDE.md) |
+| 7 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
+| 8 | ✓ | [`openclaw/skills/do/SKILL.md`](openclaw/skills/do/SKILL.md) |
+| 9 | ✓ | [`openclaw/skills/make-plan/SKILL.md`](openclaw/skills/make-plan/SKILL.md) |
+| 10 | ✓ | [`plugin/.claude-plugin/CLAUDE.md`](plugin/.claude-plugin/CLAUDE.md) |
+| 11 | ✓ | [`plugin/CLAUDE.md`](plugin/CLAUDE.md) |
+| 12 | ✓ | [`plugin/hooks/CLAUDE.md`](plugin/hooks/CLAUDE.md) |
+| 13 | ✓ | [`plugin/scripts/CLAUDE.md`](plugin/scripts/CLAUDE.md) |
+| 14 | ✓ | [`plugin/skills/do/SKILL.md`](plugin/skills/do/SKILL.md) |
+| 15 | ✓ | [`plugin/skills/make-plan/SKILL.md`](plugin/skills/make-plan/SKILL.md) |
+| 16 | ✓ | [`plugin/skills/mem-search/SKILL.md`](plugin/skills/mem-search/SKILL.md) |
+| 17 | ✓ | [`plugin/skills/smart-explore/SKILL.md`](plugin/skills/smart-explore/SKILL.md) |
+| 18 | ✓ | [`plugin/skills/timeline-report/SKILL.md`](plugin/skills/timeline-report/SKILL.md) |
+| 19 | ✓ | [`plugin/skills/version-bump/SKILL.md`](plugin/skills/version-bump/SKILL.md) |
+| 20 | ✓ | [`plugin/ui/CLAUDE.md`](plugin/ui/CLAUDE.md) |
+| 21 | ✓ | [`ragtime/CLAUDE.md`](ragtime/CLAUDE.md) |
+| 22 | ✓ | [`scripts/anti-pattern-test/CLAUDE.md`](scripts/anti-pattern-test/CLAUDE.md) |
+| 23 | ✓ | [`scripts/CLAUDE.md`](scripts/CLAUDE.md) |
+| 24 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 25 | ✓ | [`src/cli/adapters/CLAUDE.md`](src/cli/adapters/CLAUDE.md) |
+| 26 | ✓ | [`src/cli/CLAUDE.md`](src/cli/CLAUDE.md) |
+| 27 | ✓ | [`src/cli/handlers/CLAUDE.md`](src/cli/handlers/CLAUDE.md) |
+| 28 | ✓ | [`src/services/CLAUDE.md`](src/services/CLAUDE.md) |
+| 29 | ✓ | [`src/services/domain/CLAUDE.md`](src/services/domain/CLAUDE.md) |
+| 30 | ✓ | [`src/services/infrastructure/CLAUDE.md`](src/services/infrastructure/CLAUDE.md) |
+| 31 | ✓ | [`src/services/sqlite/CLAUDE.md`](src/services/sqlite/CLAUDE.md) |
+| 32 | ✓ | [`src/services/worker/CLAUDE.md`](src/services/worker/CLAUDE.md) |
+| 33 | ✓ | [`src/shared/CLAUDE.md`](src/shared/CLAUDE.md) |
+| 34 | ✓ | [`src/ui/viewer/constants/CLAUDE.md`](src/ui/viewer/constants/CLAUDE.md) |
+| 35 | ✓ | [`src/utils/CLAUDE.md`](src/utils/CLAUDE.md) |
+| 36 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 37 | ✓ | [`tests/infrastructure/CLAUDE.md`](tests/infrastructure/CLAUDE.md) |
+| 38 | ✓ | [`tests/utils/CLAUDE.md`](tests/utils/CLAUDE.md) |
 
 ---
 
