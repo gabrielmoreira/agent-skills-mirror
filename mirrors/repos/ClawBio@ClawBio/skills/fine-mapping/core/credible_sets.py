@@ -4,7 +4,7 @@ credible_sets.py — Credible set construction from PIPs or SuSiE alpha vectors.
 Implements:
   - Per-signal credible sets from SuSiE alpha rows (greedy top-down)
   - Single credible set from ABF PIPs
-  - Purity filter: min average pairwise |r| within set
+  - Purity filter: minimum pairwise |r| within set (Wang et al. 2020 section 3.2)
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ def build_credible_sets_susie(
     df    : variants DataFrame (columns: rsid, chr, pos, z, pip)
     R     : (p, p) LD matrix (optional; used for purity filter)
     coverage : credible set coverage threshold (default 0.95)
-    min_purity : minimum mean pairwise |r| (default 0.5); sets below
+    min_purity : minimum pairwise |r| threshold (default 0.5); sets below
                  threshold are flagged as "impure" rather than dropped
 
     Returns a list of credible set dicts, one per SuSiE signal l.
@@ -111,13 +111,19 @@ def _greedy_credible_set(weights: np.ndarray, coverage: float) -> list[int]:
 
 
 def _purity(cs: list[int], R: np.ndarray) -> float:
-    """Mean absolute pairwise LD r within the credible set."""
+    """Minimum absolute pairwise LD r within the credible set.
+
+    Per Wang et al. 2020 section 3.2, purity is the minimum (not mean)
+    pairwise |r| across all pairs of variants in the credible set.
+    Using mean instead of min can promote credible sets that span
+    independent LD blocks.
+    """
     if len(cs) < 2:
         return 1.0
     sub = R[np.ix_(cs, cs)]
     # Upper triangle (excluding diagonal)
     idx = np.triu_indices(len(cs), k=1)
-    return float(np.mean(np.abs(sub[idx])))
+    return float(np.min(np.abs(sub[idx])))
 
 
 def _collect_variants(cs: list[int], df: pd.DataFrame, weights: np.ndarray) -> list[dict]:

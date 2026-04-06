@@ -1,18 +1,37 @@
 ---
 name: performing-purple-team-atomic-testing
-description: >
-  Executes Atomic Red Team tests mapped to MITRE ATT&CK techniques, performs coverage
-  gap analysis across the ATT&CK matrix, and runs detection validation loops to measure
-  blue team visibility. Covers Invoke-AtomicRedTeam PowerShell execution, ATT&CK Navigator
-  layer generation for heatmaps, Sigma rule correlation, and continuous atomic testing
-  pipelines. Activates for requests involving purple team exercises, atomic test execution,
-  ATT&CK coverage assessment, detection engineering validation, or adversary emulation testing.
+description: 'Executes Atomic Red Team tests mapped to MITRE ATT&CK techniques, performs coverage gap analysis across the
+  ATT&CK matrix, and runs detection validation loops to measure blue team visibility. Covers Invoke-AtomicRedTeam PowerShell
+  execution, ATT&CK Navigator layer generation for heatmaps, Sigma rule correlation, and continuous atomic testing pipelines.
+  Activates for requests involving purple team exercises, atomic test execution, ATT&CK coverage assessment, detection engineering
+  validation, or adversary emulation testing.
+
+  '
 domain: cybersecurity
 subdomain: purple-team
-tags: [purple-team, atomic-red-team, mitre-attack, detection-engineering, adversary-emulation]
+tags:
+- purple-team
+- atomic-red-team
+- mitre-attack
+- detection-engineering
+- adversary-emulation
 version: 1.0.0
 author: mukul975
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Performing Purple Team Atomic Testing

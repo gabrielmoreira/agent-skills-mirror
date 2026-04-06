@@ -1,26 +1,39 @@
 ---
 name: performing-ai-driven-osint-correlation
-description: >-
-  Use AI and LLM-based reasoning to correlate findings across multiple OSINT
-  sources—username enumeration, email lookups, social media profiles, domain
-  records, breach databases, and dark-web mentions—into unified intelligence
-  profiles with confidence scoring and link analysis.
+description: Use AI and LLM-based reasoning to correlate findings across multiple OSINT sources—username enumeration, email
+  lookups, social media profiles, domain records, breach databases, and dark-web mentions—into unified intelligence profiles
+  with confidence scoring and link analysis.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:
-  - osint
-  - ai-correlation
-  - threat-intelligence
-  - reconnaissance
-  - link-analysis
-  - target-profiling
-  - sherlock
-  - theharvester
-  - spiderfoot
-  - maltego
-version: "1.0"
+- osint
+- ai-correlation
+- threat-intelligence
+- reconnaissance
+- link-analysis
+- target-profiling
+- sherlock
+- theharvester
+- spiderfoot
+- maltego
+version: '1.0'
 author: juliosuas
 license: Apache-2.0
+atlas_techniques:
+- AML.T0051
+- AML.T0054
+- AML.T0056
+nist_ai_rmf:
+- MEASURE-2.7
+- MEASURE-2.5
+- GOVERN-6.1
+- MAP-5.1
+d3fend_techniques:
+- Identifier Analysis
+- URL Analysis
+- Identifier Reputation Analysis
+- User Behavior Analysis
+- Content Validation
 ---
 
 # Performing AI-Driven OSINT Correlation

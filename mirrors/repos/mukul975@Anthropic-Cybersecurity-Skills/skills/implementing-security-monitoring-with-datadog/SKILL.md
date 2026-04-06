@@ -1,19 +1,37 @@
 ---
 name: implementing-security-monitoring-with-datadog
-description: >
-  Implements security monitoring using Datadog Cloud SIEM, Cloud Security
-  Management (CSM), and Workload Protection to detect threats, enforce
-  compliance, and respond to security events across cloud and hybrid
-  infrastructure. Covers Agent deployment, log source ingestion, detection
-  rule creation, security dashboards, and automated notification workflows.
-  Activates for requests involving Datadog security setup, Cloud SIEM
-  configuration, CSM threat detection, or security monitoring dashboards.
+description: 'Implements security monitoring using Datadog Cloud SIEM, Cloud Security Management (CSM), and Workload Protection
+  to detect threats, enforce compliance, and respond to security events across cloud and hybrid infrastructure. Covers Agent
+  deployment, log source ingestion, detection rule creation, security dashboards, and automated notification workflows. Activates
+  for requests involving Datadog security setup, Cloud SIEM configuration, CSM threat detection, or security monitoring dashboards.
+
+  '
 domain: cybersecurity
 subdomain: security-operations
-tags: [siem, monitoring, datadog, cloud-security, log-analysis, detection-rules, CSM, workload-protection]
+tags:
+- siem
+- monitoring
+- datadog
+- cloud-security
+- log-analysis
+- detection-rules
+- CSM
+- workload-protection
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- GOVERN-1.1
+- MEASURE-2.7
+- MANAGE-3.1
+- GOVERN-4.2
+- MAP-2.3
+d3fend_techniques:
+- Restore Access
+- Password Authentication
+- Biometric Authentication
+- Strong Password Policy
+- Restore User Account Access
 ---
 
 # Implementing Security Monitoring with Datadog

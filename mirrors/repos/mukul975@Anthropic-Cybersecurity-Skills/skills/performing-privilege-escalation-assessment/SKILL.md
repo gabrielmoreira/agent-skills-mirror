@@ -1,18 +1,29 @@
 ---
 name: performing-privilege-escalation-assessment
-description: >
-  Performs privilege escalation assessments on compromised Linux and Windows systems to identify
-  paths from low-privilege access to root or SYSTEM-level control. The tester enumerates
-  misconfigurations, vulnerable services, kernel exploits, SUID binaries, unquoted service
-  paths, and credential stores to demonstrate the full impact of an initial compromise.
-  Activates for requests involving privilege escalation testing, local exploitation, post-compromise
-  escalation, or OS-level security assessment.
+description: 'Performs privilege escalation assessments on compromised Linux and Windows systems to identify paths from low-privilege
+  access to root or SYSTEM-level control. The tester enumerates misconfigurations, vulnerable services, kernel exploits, SUID
+  binaries, unquoted service paths, and credential stores to demonstrate the full impact of an initial compromise. Activates
+  for requests involving privilege escalation testing, local exploitation, post-compromise escalation, or OS-level security
+  assessment.
+
+  '
 domain: cybersecurity
 subdomain: penetration-testing
-tags: [privilege-escalation, post-exploitation, Linux-privesc, Windows-privesc, local-exploitation]
+tags:
+- privilege-escalation
+- post-exploitation
+- Linux-privesc
+- Windows-privesc
+- local-exploitation
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Restore Access
+- Password Authentication
 ---
 # Performing Privilege Escalation Assessment
 

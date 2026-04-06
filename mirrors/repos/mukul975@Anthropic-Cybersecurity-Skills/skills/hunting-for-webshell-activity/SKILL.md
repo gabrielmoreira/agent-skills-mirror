@@ -1,12 +1,26 @@
 ---
 name: hunting-for-webshell-activity
-description: Hunt for web shell deployments on internet-facing servers by analyzing file creation in web directories, suspicious process spawning from web servers, and anomalous HTTP patterns.
+description: Hunt for web shell deployments on internet-facing servers by analyzing file creation in web directories, suspicious
+  process spawning from web servers, and anomalous HTTP patterns.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, webshell, persistence, web-server, t1505, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- webshell
+- persistence
+- web-server
+- t1505
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Restore Access
+- Process Termination
 ---
 
 # Hunting For Webshell Activity

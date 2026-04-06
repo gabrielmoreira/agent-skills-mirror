@@ -1,12 +1,23 @@
 ---
 name: analyzing-certificate-transparency-for-phishing
-description: Monitor Certificate Transparency logs using crt.sh and Certstream to detect phishing domains, lookalike certificates, and unauthorized certificate issuance targeting your organization.
+description: Monitor Certificate Transparency logs using crt.sh and Certstream to detect phishing domains, lookalike certificates,
+  and unauthorized certificate issuance targeting your organization.
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [certificate-transparency, ct-logs, phishing, crt-sh, certstream, ssl, domain-monitoring, threat-intelligence]
-version: "1.0"
+tags:
+- certificate-transparency
+- ct-logs
+- phishing
+- crt-sh
+- certstream
+- ssl
+- domain-monitoring
+- threat-intelligence
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0052
 ---
 # Analyzing Certificate Transparency for Phishing
 

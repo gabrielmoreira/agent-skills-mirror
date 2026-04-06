@@ -1,12 +1,25 @@
 ---
 name: detecting-insider-threat-behaviors
-description: Detect insider threat behavioral indicators including unusual data access, off-hours activity, mass file downloads, privilege abuse, and resignation-correlated data theft.
+description: Detect insider threat behavioral indicators including unusual data access, off-hours activity, mass file downloads,
+  privilege abuse, and resignation-correlated data theft.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, insider-threat, data-theft, ueba, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- insider-threat
+- data-theft
+- ueba
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Restore Access
+- Password Authentication
+- Biometric Authentication
+- Strong Password Policy
+- Restore User Account Access
 ---
 
 # Detecting Insider Threat Behaviors

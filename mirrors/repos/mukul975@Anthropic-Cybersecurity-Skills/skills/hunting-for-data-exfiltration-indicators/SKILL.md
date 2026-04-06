@@ -1,12 +1,32 @@
 ---
 name: hunting-for-data-exfiltration-indicators
-description: Hunt for data exfiltration through network traffic analysis, detecting unusual data flows, DNS tunneling, cloud storage uploads, and encrypted channel abuse.
+description: Hunt for data exfiltration through network traffic analysis, detecting unusual data flows, DNS tunneling, cloud
+  storage uploads, and encrypted channel abuse.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, data-exfiltration, dlp, network-analysis, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- data-exfiltration
+- dlp
+- network-analysis
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0024
+- AML.T0056
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Certificate Analysis
+- Application Protocol Command Analysis
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Hunting for Data Exfiltration Indicators

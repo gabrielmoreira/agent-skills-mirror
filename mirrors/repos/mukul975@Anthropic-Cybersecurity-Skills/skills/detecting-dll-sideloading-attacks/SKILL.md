@@ -1,12 +1,26 @@
 ---
 name: detecting-dll-sideloading-attacks
-description: Detect DLL side-loading attacks where adversaries place malicious DLLs alongside legitimate applications to hijack execution flow for defense evasion.
+description: Detect DLL side-loading attacks where adversaries place malicious DLLs alongside legitimate applications to hijack
+  execution flow for defense evasion.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, dll-sideloading, defense-evasion, t1574, edr, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- dll-sideloading
+- defense-evasion
+- t1574
+- edr
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
+- Platform Hardening
+- File Format Verification
 ---
 
 # Detecting DLL Sideloading Attacks

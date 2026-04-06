@@ -1,18 +1,31 @@
 ---
 name: analyzing-ios-app-security-with-objection
-description: >
-  Performs runtime mobile security exploration of iOS applications using Objection, a Frida-powered
-  toolkit that enables security testers to interact with app internals without jailbreaking. Use when
-  assessing iOS app security posture, bypassing client-side protections, dumping keychain items,
-  inspecting filesystem storage, and evaluating runtime behavior. Activates for requests involving
-  iOS security testing, Objection runtime analysis, Frida-based iOS assessment, or mobile runtime
-  exploration.
+description: 'Performs runtime mobile security exploration of iOS applications using Objection, a Frida-powered toolkit that
+  enables security testers to interact with app internals without jailbreaking. Use when assessing iOS app security posture,
+  bypassing client-side protections, dumping keychain items, inspecting filesystem storage, and evaluating runtime behavior.
+  Activates for requests involving iOS security testing, Objection runtime analysis, Frida-based iOS assessment, or mobile
+  runtime exploration.
+
+  '
 domain: cybersecurity
 subdomain: mobile-security
 author: mahipal
-tags: [mobile-security, ios, objection, frida, owasp-mobile, penetration-testing]
+tags:
+- mobile-security
+- ios
+- objection
+- frida
+- owasp-mobile
+- penetration-testing
 version: 1.0.0
 license: Apache-2.0
+atlas_techniques:
+- AML.T0054
+nist_ai_rmf:
+- MEASURE-2.7
+- MANAGE-2.4
+- GOVERN-6.2
+- MAP-5.1
 ---
 # Analyzing iOS App Security with Objection
 

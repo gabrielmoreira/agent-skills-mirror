@@ -1,15 +1,31 @@
 ---
 name: performing-lateral-movement-detection
-description: >
-  Detects lateral movement techniques including Pass-the-Hash, PsExec, WMI execution, RDP pivoting,
-  and SMB-based spreading using SIEM correlation of Windows event logs, network flow data, and
-  endpoint telemetry mapped to MITRE ATT&CK Lateral Movement (TA0008) techniques.
+description: 'Detects lateral movement techniques including Pass-the-Hash, PsExec, WMI execution, RDP pivoting, and SMB-based
+  spreading using SIEM correlation of Windows event logs, network flow data, and endpoint telemetry mapped to MITRE ATT&CK
+  Lateral Movement (TA0008) techniques.
+
+  '
 domain: cybersecurity
 subdomain: soc-operations
-tags: [soc, lateral-movement, mitre-attack, pass-the-hash, psexec, wmi, rdp, smb, detection]
-version: "1.0"
+tags:
+- soc
+- lateral-movement
+- mitre-attack
+- pass-the-hash
+- psexec
+- wmi
+- rdp
+- smb
+- detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Token Binding
+- Execution Isolation
+- Restore Access
+- Application Protocol Command Analysis
+- Process Termination
 ---
 # Performing Lateral Movement Detection
 

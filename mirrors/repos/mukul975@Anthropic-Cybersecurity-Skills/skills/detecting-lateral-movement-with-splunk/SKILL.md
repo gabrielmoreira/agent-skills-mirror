@@ -1,12 +1,26 @@
 ---
 name: detecting-lateral-movement-with-splunk
-description: Detect adversary lateral movement across networks using Splunk SPL queries against Windows authentication logs, SMB traffic, and remote service abuse.
+description: Detect adversary lateral movement across networks using Splunk SPL queries against Windows authentication logs,
+  SMB traffic, and remote service abuse.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, lateral-movement, splunk, siem, proactive-detection, ta0008]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- lateral-movement
+- splunk
+- siem
+- proactive-detection
+- ta0008
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Network Traffic Community Deviation
 ---
 
 # Detecting Lateral Movement with Splunk

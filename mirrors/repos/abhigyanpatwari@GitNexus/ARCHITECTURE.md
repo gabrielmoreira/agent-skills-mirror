@@ -67,11 +67,36 @@ disambiguate overloaded methods. Two overloads with different parameter counts
 produce distinct graph nodes: `Method:file:Class.method#1` vs
 `Method:file:Class.method#2`.
 
-**Remaining limitation — same-arity overloads:** When two overloads share the
-same parameter count but differ only in types (e.g. `save(int)` vs
-`save(String)`), they still share a node ID. This is rare in practice; a future
-enhancement may add type-hash disambiguation for languages with reliable type
-extraction (see issue #574).
+**Same-arity overload disambiguation:** When two overloads share the same
+parameter count but differ in types (e.g. `save(int)` vs `save(String)`), a
+type-hash suffix `~type1,type2` is appended to produce distinct node IDs:
+`Method:file:Class.save#1~int` vs `Method:file:Class.save#1~String`. The suffix
+is only added when a same-arity collision is detected within a class and all
+parameters have non-null type annotations. Languages without type info (Python,
+Ruby, JS) fall back to arity-only IDs. TypeScript/JavaScript overload signatures
+are intentionally excluded from type-hashing because they are declaration-only
+contracts that should collapse to the implementation body's node ID. See issue
+\#651.
+
+**C++ const-qualified overload disambiguation:** Methods overloaded by const
+qualification (e.g. `begin()` vs `begin() const`) are disambiguated via an
+`isConst` property and a `$const` ID suffix appended to the const-qualified
+variant when a non-const collision exists. The `$const` suffix appears after the
+type-hash suffix: e.g. `Method:file:Container.begin#0$const`.
+
+**Generic/template type preservation in type-hash:** The type-hash suffix uses
+`rawType` (full AST text including generic/template args) rather than the
+simplified `type` from `extractSimpleTypeName`. This means C++ template overloads
+like `process(vector<int>)` vs `process(vector<string>)` produce distinct IDs:
+`~vector<int>` vs `~vector<std::string>`. Java generic overloads like
+`process(List<String>)` vs `process(List<Integer>)` are a compile error due to
+type erasure, so this gap is theoretical for Java.
+
+**ID stability on first overload:** Type and const tags are collision-only. When
+a class has `save(int)` as its only `save` method, the ID is `save#1` (no tag).
+Adding `save(String)` changes the original to `save#1~int`. This is correct for
+fresh analysis but means IDs are not stable across overload additions. Future
+incremental re-analysis should account for this.
 
 **Variadic method matching:** When one side is variadic (`parameterCount`
 undefined) and the other has a fixed count, `METHOD_IMPLEMENTS` edges are

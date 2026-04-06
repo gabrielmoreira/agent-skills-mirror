@@ -74,8 +74,21 @@ def main():
         print(f"[ERROR] Input file not found: {input_path}", file=sys.stderr)
         sys.exit(1)
 
+    # Check for empty file before parsing
+    if input_path.stat().st_size == 0:
+        print(
+            f"[ERROR] Input file is empty: {input_path}. "
+            f"Provide a file containing genotype data.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     print(f"[NutriGx] Parsing input: {input_path}")
-    records = parse_genetic_file(str(input_path), fmt=args.format)
+    try:
+        records = parse_genetic_file(str(input_path), fmt=args.format)
+    except ValueError as e:
+        print(f"[ERROR] {e}", file=sys.stderr)
+        sys.exit(1)
     genotype_table = genotypes_to_simple(records)
     print(f"[NutriGx] Loaded {len(genotype_table):,} variants")
 

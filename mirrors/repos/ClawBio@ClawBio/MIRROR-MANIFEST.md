@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 508 file(s) materialized.
+Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 516 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 508 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 508 |
+| Files         | 516 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -567,6 +567,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 506 | ✓ | [`skills/variant-annotation/tests/test_variant_annotation.py`](skills/variant-annotation/tests/test_variant_annotation.py) |
 | 507 | ✓ | [`skills/variant-annotation/variant_annotation.py`](skills/variant-annotation/variant_annotation.py) |
 | 508 | ✓ | [`skills/vcf-annotator/SKILL.md`](skills/vcf-annotator/SKILL.md) |
+| 509 | ✓ | [`skills/wes-clinical-report-en/examples/demo_WES_Report.md`](skills/wes-clinical-report-en/examples/demo_WES_Report.md) |
+| 510 | ✓ | [`skills/wes-clinical-report-en/SKILL.md`](skills/wes-clinical-report-en/SKILL.md) |
+| 511 | ✓ | [`skills/wes-clinical-report-en/tests/test_wes_clinical_report_en.py`](skills/wes-clinical-report-en/tests/test_wes_clinical_report_en.py) |
+| 512 | ✓ | [`skills/wes-clinical-report-en/wes_clinical_report_en.py`](skills/wes-clinical-report-en/wes_clinical_report_en.py) |
+| 513 | ✓ | [`skills/wes-clinical-report-es/examples/demo_WES_Report.md`](skills/wes-clinical-report-es/examples/demo_WES_Report.md) |
+| 514 | ✓ | [`skills/wes-clinical-report-es/SKILL.md`](skills/wes-clinical-report-es/SKILL.md) |
+| 515 | ✓ | [`skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py`](skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py) |
+| 516 | ✓ | [`skills/wes-clinical-report-es/wes_clinical_report_es.py`](skills/wes-clinical-report-es/wes_clinical_report_es.py) |
 
 ---
 

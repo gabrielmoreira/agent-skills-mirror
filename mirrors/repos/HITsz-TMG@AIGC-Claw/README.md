@@ -244,5 +244,5 @@ AIGC-Claw 的想法和设计受到了 [AutoResearchClaw](https://github.com/aimi
 
 
 <p align="center">
-  <sub>Built with 🦞 by the HITsz-TMG team</sub>
+  <sub>Built with 🦞 by the Lychee Agent team</sub>
 </p>

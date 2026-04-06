@@ -4,31 +4,52 @@ Turn [OpenClaw](https://github.com/openclaw/openclaw) from a personal AI assista
 
 ---
 
-## Serverless Economics: ~97% Cheaper Than Dedicated EC2
+## Serverless Economics: Pay Only When Agents Think
 
-Most enterprise AI deployments either charge per seat or run dedicated compute per employee. AgentCore Firecracker microVMs change the economics entirely — agents **scale to zero between conversations**, so you only pay for the seconds an agent is actually responding.
+Most enterprise AI deployments either charge per seat or run dedicated compute per employee. AgentCore Firecracker microVMs change the economics entirely — **you don't pre-allocate CPU or memory. You don't pick instance sizes. AgentCore provisions exactly what each invocation needs and bills per second.**
+
+**AgentCore pricing (us-west-2):**
+- CPU: $0.0895 / vCPU-hour — **$0 when idle** (no CPU charge between invocations)
+- Memory: $0.00945 / GB-hour — the only idle cost, and it's tiny
+
+**50 employees, 8-hour workday sessions (us-west-2):**
 
 | | Dedicated EC2 per Employee | ChatGPT Team | **OpenClaw on AgentCore** |
 |---|---|---|---|
-| 50 employees | 50 × $52 = $2,600/mo | 50 × $25 = $1,250/mo | **~$65/mo** |
-| Per person / month | $52 | $25 | **~$1.30** |
-| Savings | — | — | **~97% vs EC2 · ~95% vs ChatGPT** |
+| 50 employees | 50 × $52 = **$2,600/mo** | 50 × $25 = **$1,250/mo** | **~$100-150/mo** |
+| What you pay for | 24/7, whether anyone's chatting or not | Per seat, fixed | Only invocation CPU + idle session memory |
+| Idle cost per employee | $52/mo (full EC2 running) | $25/mo (subscription) | **~$0.08/day** (1 GB memory × 8 hr) |
 
-One gateway EC2 ($52/mo) serves your entire organization. Every other agent is serverless — no idle cost.
+**The math:** 50 employees × 22 workdays × $0.08 idle/day = ~$88/mo in memory. Add CPU during actual conversations (~$20-50/mo) = **$100-150/mo total AgentCore cost.** Add gateway infrastructure (see [Cost Estimate](#cost-estimate) below) for the complete picture.
 
 ---
 
-## Elastic Capacity: ~6s Activation, Scales to Zero
+## Two Deployment Modes: Serverless + Always-on
+
+Every agent uses the same Docker image. Admin chooses the deployment mode per agent based on the use case — no code changes, no separate builds.
+
+### Serverless (AgentCore) — Default
 
 | | Behavior |
 |-|---------|
-| **Cold start** | ~6s — Firecracker microVM spins up, SOUL assembled, Bedrock responds |
-| **Warm session** | Near-instant — session stays active during a conversation |
-| **Idle cost** | Zero — microVM terminates between conversations, nothing to pay |
-| **Always-on agents** | 0ms cold start — assign high-traffic agents (help desk, HR bot) to persistent Docker mode |
-| **Per-agent standby** | Configure from Agent Factory → Shared Agents tab. No infrastructure change needed |
+| **Cold start** | ~6s first message — Firecracker microVM + SOUL assembly + Bedrock |
+| **Session resume** | ~2-3s — Session Storage restores workspace, skips S3 download |
+| **Warm session** | Near-instant — microVM stays active during a conversation |
+| **Idle cost** | Memory only ($0.00945/GB-hour). CPU = $0 when idle |
+| **Session Storage** | Workspace files persist across microVM stop/resume (1 GB per session). No S3 sync needed for agent-side persistence |
+| **Best for** | Individual employee agents — scales to zero, pay-per-use |
 
-Personal employee agents spin up on demand. Shared team agents pin as always-on Docker containers. Your infrastructure matches actual usage — not the worst-case headroom you'd provision for EC2.
+### Always-on (ECS Fargate) — Admin Toggle
+
+| | Behavior |
+|-|---------|
+| **Cold start** | None — container is always running |
+| **Scheduled tasks** | HEARTBEAT fires on schedule (email check every 3 min, daily reports) |
+| **Direct IM** | Container connects directly to Telegram/Discord (dedicated bot token) |
+| **Persistence** | EFS-backed workspace — durable across container restarts |
+| **Best for** | Customer service bots, executive assistants with frequent cron tasks, high-traffic Digital Twins |
+
+Admin toggles deployment mode from **Agent Factory → agent detail**. Any agent can be always-on — personal or team. A personal agent with always-on = dedicated container for that employee. A team agent with always-on = one container serving multiple assigned employees.
 
 ---
 
@@ -73,8 +94,9 @@ Additional controls: no public ports (SSM only) · IAM roles throughout, no hard
 
 | Feature | What It Does |
 |---------|-------------|
-| **Digital Twin** | Employee turns on a public link. Anyone with the URL can chat with their AI agent while they're away — agent responds using their SOUL, memory, and expertise |
-| **Always-on Team Agents** | Shared agents run as persistent Docker containers on EC2. No cold start for help desks, HR bots, or onboarding assistants — instant response, shared memory |
+| **Digital Twin** | Employee turns on a public link. Anyone with the URL can chat with their AI agent while they're away — agent responds using their SOUL, memory, and expertise. Twin sessions are isolated from the employee's main session |
+| **Always-on Agents** | Admin toggles any agent to persistent ECS Fargate mode. Enables scheduled tasks (email every 3 min), direct IM bot connections, instant response. Same image, same SOUL — just a deployment mode switch |
+| **Session Storage** | AgentCore persists workspace files across microVM stop/resume cycles. No S3 re-download on session resume. Combined with `StopRuntimeSession` API for admin-triggered config refresh |
 | **Three-Layer SOUL** | Global (IT) → Position (dept admin) → Personal (employee). 3 stakeholders, 3 layers, one merged identity. Same LLM — Finance Analyst vs SDE have completely different personalities and permissions |
 | **Self-Service IM Pairing** | Employee scans QR code from Portal → connects Telegram / Feishu / Discord in 30 seconds. No IT ticket, no admin approval |
 | **Multi-Runtime Architecture** | Standard tier (Nova 2 Lite, scoped IAM) vs Executive tier (Claude Sonnet 4.6, full access). Different Docker images, different models, different IAM roles — infrastructure-level isolation |
@@ -85,8 +107,8 @@ Additional controls: no public ports (SSM only) · IAM roles throughout, no hard
 | **IM Channel Management** | Admin sees every employee's IM connections grouped by channel — when they paired, session count, last active, one-click disconnect |
 | **Org CRUD** | Full create/edit/delete for Departments, Positions, and Employees from Admin Console. Delete is guarded: blocks if employees or bindings exist, prompts force-cascade delete |
 | **Security Center** | Live AWS resource browser — ECR images, IAM roles, VPC security groups with console links. Configure runtime images and IAM roles from the UI |
-| **Three-Layer Memory Guarantee** | Per-turn S3 checkpoint (1-message sessions), SIGTERM flush (idle timeout), Gateway compaction (long sessions). Same memory across Discord, Telegram, Feishu, and Portal |
-| **Dynamic Config, Zero Redeploy** | Change model, tool permissions, SOUL content, or KB assignments → takes effect on next cold start. No container rebuild, no runtime update |
+| **Session Storage + Memory** | Serverless: Session Storage persists workspace across microVM cycles + S3 writeback for admin visibility. Always-on: EFS workspace + Gateway compaction. Same memory across Discord, Telegram, Feishu, and Portal |
+| **Dynamic Config, Zero Redeploy** | Change model, tool permissions, SOUL content, or KB assignments → propagates via config version poll (5 min) or instant via `StopRuntimeSession`. No container rebuild, no runtime update |
 
 ---
 
@@ -94,7 +116,7 @@ Additional controls: no public ports (SSM only) · IAM roles throughout, no hard
 
 > **https://openclaw.awspsa.com**
 >
-> A real running instance with 15 departments, 12 positions, 27 employees, 29 AI agents, 5 IM channels (Telegram, Feishu, Discord + Portal), multi-runtime architecture, and 2 live always-on shared agents — all backed by DynamoDB + S3 on AWS.
+> A real running instance with 15 departments, 12 positions, 27 employees, 29 AI agents, 5 IM channels (Telegram, Feishu, Discord + Portal), multi-runtime architecture, and always-on ECS Fargate agents — all backed by DynamoDB + S3 on AWS.
 >
 > **Everything here is real.** Every button works. Every chart reads from real data. Every agent runs on Bedrock AgentCore in isolated Firecracker microVMs.
 >
@@ -170,27 +192,31 @@ The `workspace_assembler` merges Global + Position + Personal layers into these 
 
 #### 2. Serverless-First + Always-on Hybrid
 
-**Personal agents** run in isolated Firecracker microVMs via Bedrock AgentCore. Stateless, disposable, auto-scaling to zero.
+**Default: Serverless.** Every agent runs in isolated Firecracker microVMs via Bedrock AgentCore. Session Storage persists workspace files across stop/resume — no S3 re-download on session resume.
 
-**Team / Shared agents** run as persistent Docker containers on the gateway EC2 — same image, always-on, no cold starts. Tenant Router automatically routes employees to their correct tier.
+**Admin toggle: Always-on.** Any agent can be switched to a persistent ECS Fargate container — same Docker image, same SOUL, same code path. The difference is infrastructure: the container stays alive, enabling scheduled tasks, direct IM connections, and instant response.
 
 ```
 Request
   ↓
 Tenant Router — 3-tier routing:
-  1. Employee override (SSM /tenants/{emp_id}/always-on-agent)
-     → routes to localhost:PORT (Docker container)
-  2. Position rule (SSM /positions/{pos_id}/runtime-id)
+  1. Always-on check (SSM /tenants/{emp_id}/always-on-agent)
+     → routes to ECS Fargate container (private VPC IP)
+  2. Position rule (DynamoDB CONFIG#routing or SSM /positions/{pos_id}/runtime-id)
      → routes to AgentCore Runtime for that position
   3. Default AgentCore Runtime
 ```
 
-| | Personal Agent (AgentCore) | Team Agent (Docker) |
-|-|---------------------------|---------------------|
-| Cold start | ~10-25s first message | None — always running |
-| Memory | Per-employee, private | Shared across team |
-| Scaling | Auto to zero | Fixed container |
-| Best for | Individual employees | Help desks, HR bots |
+| | Serverless (AgentCore) | Always-on (ECS Fargate) |
+|-|----------------------|------------------------|
+| Cold start | ~6s first message, ~2-3s session resume | None — container always running |
+| Scheduled tasks | Deferred to next invocation | Fires on schedule (HEARTBEAT) |
+| Direct IM bot | No — routes through Gateway EC2 | Yes — dedicated bot token in container |
+| Idle cost | Memory only ($0.08/day per 1 GB session) | ~$0.55/day (0.5 vCPU + 1 GB Fargate) |
+| Persistence | Session Storage (1 GB, auto-managed) | EFS (unlimited, durable) |
+| Best for | Individual employees (majority) | Customer service, exec assistants, high-frequency cron |
+
+**Every agent is "shared" by nature** — an employee's agent serves the employee themselves, their Digital Twin visitors, and potentially other assigned employees. "Shared vs personal" is just how many employees the admin assigns, not a separate infrastructure type.
 
 #### 2.1 Multi-Runtime Architecture (Defense in Depth)
 
@@ -209,15 +235,7 @@ Runtime: Executive (C-Suite / Senior Leadership)
   └── IAM:     Full S3 access · Cross-department DynamoDB read · All Bedrock models
 ```
 
-**Security layers:**
-
-| Layer | Mechanism | Can LLM bypass? |
-|-------|-----------|----------------|
-| L1 — Prompt | SOUL.md rules ("don't access finance data") | ⚠️ Possible via injection |
-| L2 — Application | Skills manifest `allowedRoles`/`blockedRoles` | ⚠️ Code bug risk |
-| **L3 — IAM** | **Runtime role has no permission on target resource** | **✅ Impossible** |
-| L4 — Network | VPC isolation between Runtimes | ✅ Infrastructure-level |
-| **L5 — Guardrail** | **Bedrock Guardrail per Runtime: topic denial, PII, compliance. Wraps ALL inputs + outputs.** | **✅ Impossible — AWS-managed semantic AI filter** |
+Each runtime tier has its own Docker image, IAM role, and optional Bedrock Guardrail — see [Security](#security-hardware-level-isolation-at-every-layer) above for the full 5-layer model.
 
 #### 3. Digital Twin — AI Availability Beyond Office Hours
 
@@ -325,13 +343,16 @@ The org directory KB (seeded via `seed_knowledge_docs.py`, refreshed by re-runni
 │  │    Separate twin_workspace (not employee's main)       │      │
 │  └────────────────────────────────────────────────────────┘      │
 │                                                                  │
-│  PATH C: Always-on Shared Agents                                 │
+│  PATH C: Always-on Agents (ECS Fargate)                          │
 │  ┌────────────────────────────────────────────────────────┐      │
-│  │  Same Docker image, `docker run` on EC2 with:          │      │
-│  │    SESSION_ID=shared__{agent_id}                       │      │
+│  │  Same Docker image, ECS Fargate task with:             │      │
 │  │    SHARED_AGENT_ID={agent_id}                          │      │
-│  │  Container registers endpoint in SSM                   │      │
-│  │  Tenant Router detects → routes to localhost:PORT      │      │
+│  │    EFS mount at /mnt/efs (per-employee workspace)      │      │
+│  │    Optional: TELEGRAM_BOT_TOKEN for direct IM          │      │
+│  │  Container self-registers VPC IP in SSM on startup     │      │
+│  │  Tenant Router routes assigned employees to task IP    │      │
+│  │  Supports scheduled tasks (HEARTBEAT), direct IM,      │      │
+│  │    customer service bots, exec assistants               │      │
 │  └────────────────────────────────────────────────────────┘      │
 │                                                                  │
 ├─────────────────────────────────────────────────────────────────┤
@@ -339,18 +360,20 @@ The org directory KB (seeded via `seed_knowledge_docs.py`, refreshed by re-runni
 │  ├── DynamoDB — org, agents, bindings, audit, usage, config,     │
 │  │              Digital Twin tokens, KB assignments              │
 │  ├── S3 — SOUL templates, skills, workspaces, knowledge,        │
-│  │         org directory, per-employee memory                    │
+│  │         org directory, per-employee memory, admin visibility  │
 │  ├── SSM — tenant→position, position→runtime, user-mappings,    │
 │  │          permissions, always-on endpoints                     │
 │  ├── Bedrock — LLM inference (Nova 2 Lite default, Sonnet 4.6  │
 │  │              for exec tier, per-position overrides supported) │
+│  ├── AgentCore — Session Storage (1 GB/session, auto-managed)   │
+│  ├── ECS Fargate — Always-on containers + EFS workspace         │
 │  └── CloudWatch — agent invocation logs, runtime events         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Gateway Architecture: One Bot, All Employees
 
-A single OpenClaw Gateway on EC2 serves as the unified IM connection layer for the entire organization.
+The OpenClaw Gateway serves as the unified IM connection layer for the entire organization. In the reference deployment, it runs on a single EC2 instance; production environments can scale horizontally behind a load balancer.
 
 ```
 IT Admin (one-time setup):
@@ -384,7 +407,7 @@ Zero IT friction. Employees self-service in 30 seconds. Admins see all connectio
 | Feature | How It Works |
 |---------|-------------|
 | **Digital Twin** | Employee toggles ON → gets a public URL. Anyone chats with their AI agent, no login required. Agent uses employee's SOUL + memory. Toggle OFF revokes instantly |
-| **Always-on Team Agents** | `docker run` same image on EC2 with `SHARED_AGENT_ID`. Container registered in SSM. Tenant Router routes matched employees to `localhost:PORT` directly |
+| **Always-on Agents** | Admin toggles any agent to ECS Fargate mode. Same Docker image, persistent container with EFS workspace. Enables scheduled tasks, direct IM bot, instant response. Tenant Router routes assigned employees to Fargate task VPC IP via SSM |
 | **SOUL Injection** | 3-layer merge (Global + Position + Personal) at session start. Position SOUL warnings in editor when edits affect N agents |
 | **Permission Control** | SOUL.md defines allowed/blocked tools per role. Plan A (pre-execution) + Plan E (post-audit). Exec profile bypasses Plan A entirely |
 | **Multi-Runtime** | Standard (Nova 2 Lite, scoped IAM) and Executive (Sonnet 4.6, full IAM) runtimes. Assign positions to runtimes from Security Center UI |
@@ -392,7 +415,7 @@ Zero IT friction. Employees self-service in 30 seconds. Admins see all connectio
 | **Org Directory KB** | Seeded from org data via `seed_knowledge_docs.py`. Injected into every agent's workspace. Agents know who to contact for what |
 | **Per-employee Config** | Override model, `recentTurnsPreserve`, `maxTokens`, response language at position OR employee level. Zero redeploy |
 | **Position → Runtime Routing** | 3-tier: employee SSM override → position SSM rule → default. UI in Security Center assigns positions |
-| **Memory Persistence** | Three-layer: per-turn S3 checkpoint + SIGTERM flush + Gateway compaction. Cross-channel (IM + Portal share same S3 path) |
+| **Memory Persistence** | Serverless: Session Storage persists workspace across microVM cycles + S3 writeback for admin visibility. Always-on: EFS + Gateway compaction. Cross-channel memory shared (IM + Portal = same session) |
 | **IM Channel Management** | Per-channel employee table: paired date, session count, last active, disconnect button |
 | **Knowledge Base** | Markdown files in S3. Assign KBs to positions from Knowledge Base → Assignments tab. Injected at session start |
 | **Skill Filtering** | 26 skills with `allowedRoles`/`blockedRoles`. Finance gets excel-gen, SDE gets github-pr, DevOps gets aws-cli |
@@ -406,7 +429,7 @@ Zero IT friction. Employees self-service in 30 seconds. Admins see all connectio
 |-------|-----------|--------|
 | **Network** | No open ports | SSM port forwarding or CloudFront (origin restricted) |
 | **Credentials** | AWS SSM SecureString | `ADMIN_PASSWORD`, `JWT_SECRET`, Digital Twin tokens encrypted in SSM |
-| **Compute** | Firecracker microVM isolation | Each personal agent in its own microVM. Always-on agents in separate Docker containers |
+| **Compute** | Firecracker microVM + ECS Fargate | Each serverless agent in its own microVM. Always-on agents in isolated ECS Fargate tasks with EFS |
 | **IAM** | Least privilege + runtime tiers | Standard role: own S3/DynamoDB only. Executive role: cross-department. Can't escalate via prompt |
 | **Data** | Role-based scoping | Admin: all. Manager: own dept (BFS rollup). Employee: own only. API-enforced |
 | **Agent** | SOUL permission control | Plan A pre-execution allowlist. Plan E post-response audit. Exec profile opts out |
@@ -420,7 +443,7 @@ Zero IT friction. Employees self-service in 30 seconds. Admins see all connectio
 
 ---
 
-**What you're deploying:** A multi-tenant enterprise AI platform — one EC2 gateway serves the whole org, each employee gets an isolated Firecracker microVM agent via AWS Bedrock AgentCore. Two Docker images, two Runtimes (Standard + Executive), one DynamoDB table, one S3 bucket.
+**What you're deploying:** A multi-tenant enterprise AI platform — a gateway layer (Tenant Router + Admin Console) routes requests to isolated Firecracker microVMs via AWS Bedrock AgentCore. Two Docker images, two Runtimes (Standard + Executive), one DynamoDB table, one S3 bucket. Optional ECS Fargate always-on agents for scheduled tasks and direct IM.
 
 **Run Docker builds on the gateway EC2, not the user's local machine.** After Step 1 creates the EC2, use SSM to build on it — the EC2 is ARM64 Graviton, has Docker pre-installed, and has fast internal network to ECR. Building ARM64 images locally via QEMU emulation is slow and error-prone. Use `enterprise/agent-container/build-on-ec2.sh` for the standard image; adapt the same pattern for exec-agent (Step 1.5).
 
@@ -832,32 +855,50 @@ To add a new KB: Admin Console → Knowledge Base → upload Markdown → Assign
 
 ## Cost Estimate
 
+### AgentCore Cost (50 employees, serverless)
+
 | Component | Monthly Cost | Notes |
 |-----------|-------------|-------|
-| EC2 (c7g.large) | ~$52 | Gateway + Tenant Router + Admin Console + always-on containers |
+| AgentCore sessions | ~$100-150 | Session memory idle ($88) + invocation CPU (~$20-50) |
 | DynamoDB | ~$1 | Pay-per-request |
 | S3 | < $1 | Workspaces, KBs, org directory |
 | Bedrock (Nova 2 Lite) | ~$5-15 | ~100 conversations/day |
-| AgentCore | Included | Firecracker microVMs, pay per invocation |
-| **Total** | **~$60-70/mo** | For 27 agents, ~100 conversations/day |
 
-vs ChatGPT Team ($25/user × 27 = $675/month) → **90% cheaper** with full enterprise controls.
+### Always-on Agents (ECS Fargate, optional)
+
+| Component | Monthly Cost | Notes |
+|-----------|-------------|-------|
+| Fargate per agent | ~$17 | 0.5 vCPU + 1 GB, ARM64 Graviton, 24/7 |
+| EFS | ~$7 | Elastic throughput + storage |
+
+### Gateway Infrastructure
+
+The gateway layer (Tenant Router, H2 Proxy, Admin Console) runs on EC2 or equivalent compute. A single `c7g.large` (~$52/mo) is sufficient for development and small deployments. Production environments should use HA architecture (ALB + Auto Scaling Group or ECS) based on the customer's availability requirements.
+
+### Total Estimate
+
+| Scenario | AgentCore | Always-on | Gateway | Bedrock | **Total** |
+|----------|-----------|-----------|---------|---------|-----------|
+| 50 employees, serverless only | $100-150 | — | ~$52+ | ~$10 | **~$160-220/mo** |
+| + 2 always-on agents | $100-150 | $48 | ~$52+ | ~$10 | **~$210-260/mo** |
+
+vs ChatGPT Team ($25 × 50 = $1,250/mo) or Copilot ($30 × 50 = $1,500/mo).
+
+**AgentCore pricing advantage:** you don't pre-allocate CPU or memory — no instance sizing decisions. Idle sessions cost only memory ($0.00945/GB-hour). CPU is $0 when no one is chatting.
 
 ## How It Compares
 
 | Capability | ChatGPT Team | Microsoft Copilot | OpenClaw Enterprise |
 |-----------|-------------|-------------------|-------------------|
 | Per-employee identity | ❌ Same for all | ❌ Same for all | ✅ 3-layer SOUL per role |
-| Tool permissions per role | ❌ | ❌ | ✅ Plan A + Plan E |
-| Department data scoping | ❌ | Partial | ✅ API-level BFS rollup |
-| Memory persistence | ❌ Session only | ❌ | ✅ S3 writeback, cross-session |
-| **Digital Twin (public agent URL)** | ❌ | ❌ | ✅ Shareable, revocable |
-| **Always-on team agents** | ❌ | ❌ | ✅ Docker on EC2, 0ms cold start |
-| **Self-service IM pairing** | ❌ | ❌ | ✅ QR code, 30-second setup |
-| **Org directory KB** | ❌ | ❌ | ✅ Seeded from org data, injected into every agent |
+| Tool permissions per role | ❌ | ❌ | ✅ Plan A + Plan E + L3 IAM |
+| Scheduled tasks / cron | ❌ | ❌ | ✅ Always-on agents (ECS Fargate) |
+| Direct IM bot connection | ❌ | ❌ | ✅ Per-agent Telegram/Discord bot |
+| Digital Twin (public agent URL) | ❌ | ❌ | ✅ Shareable, revocable, isolated session |
+| Session persistence | ❌ Session only | ❌ | ✅ Session Storage + S3 cross-session |
+| Self-service IM pairing | ❌ | ❌ | ✅ QR code, 30 seconds |
 | Self-hosted, data in your VPC | ❌ | ❌ | ✅ Bedrock in your account |
 | Open source | ❌ | ❌ | ✅ OpenClaw + AWS native |
-| Cost for 27 users | $675/mo | $810/mo | ~$65/mo |
 
 ## Project Structure
 
@@ -897,9 +938,9 @@ enterprise/
 
 ### Always-on Agent Management (ECS Fargate)
 
-Always-on shared agents run as **ECS Fargate tasks** — not Docker containers on EC2. Each task self-registers its private VPC IP in SSM on startup; the Tenant Router reads that SSM entry to route requests. No port mapping required.
+Always-on agents run as **ECS Fargate tasks** with EFS-backed persistent workspace. Each task self-registers its private VPC IP in SSM on startup; the Tenant Router reads that SSM entry to route requests. Any agent can be toggled to always-on — personal (1 employee) or team (N employees assigned).
 
-Start/stop from **Agent Factory → Shared / Team Agents tab**, or manually:
+Start/stop from **Agent Factory → agent detail → deployment mode toggle**, or manually:
 
 ```bash
 # Read ECS config from CloudFormation outputs (one-time setup)
@@ -965,16 +1006,18 @@ aws bedrock-agentcore-control update-agent-runtime \
 
 **Always pass `--environment-variables`** — AgentCore clears env vars if the field is omitted.
 
+**Session Storage warning:** `update-agent-runtime` wipes all Session Storage for that runtime. All employees' sessions will bootstrap from S3 on their next invocation (~6s cold start instead of ~2-3s session resume). This is expected and handled automatically — S3 is always the source of truth for admin-managed files.
+
 ### Reminders and Scheduled Tasks
 
 OpenClaw's reminder system writes a `HEARTBEAT.md` to the agent's workspace and sends the notification through the active channel at the scheduled time.
 
-| Agent Type | Reminder Behavior |
-|-----------|-----------------|
-| **Always-on (Docker)** | Fully supported — container is persistent, heartbeat fires on schedule. Delivery channel is read from `CHANNELS.md` in the workspace (auto-injected at session start from IM pairings). |
-| **Personal (AgentCore microVM)** | Heartbeat is set, `HEARTBEAT.md` synced to S3 immediately after the response. Fires on the **next session start** when the microVM loads the workspace. If no new message arrives before the scheduled time, the reminder is deferred to the next interaction. |
+| Deployment Mode | Reminder Behavior |
+|----------------|-----------------|
+| **Always-on (ECS Fargate)** | Fully supported — container is persistent, heartbeat fires on schedule. Delivery channel is read from `CHANNELS.md` in the workspace (auto-injected at session start from IM pairings). **This is the primary use case for always-on mode** — customer service polling, email checks every 3 minutes, daily report generation. |
+| **Serverless (AgentCore)** | Heartbeat is set, `HEARTBEAT.md` persisted in Session Storage and synced to S3. Fires on the **next session start** when the microVM resumes. If no new message arrives before the scheduled time, the reminder is deferred to the next interaction. |
 
-**For reliable reminders:** use an always-on agent, or connect via an IM channel (Discord/Telegram) where sessions are more continuous. Portal (webchat) users should configure a preferred IM channel so reminders can fall back to Discord/Telegram delivery.
+**For reliable scheduled tasks:** toggle the agent to always-on mode from Agent Factory. This is the recommended approach for any agent that needs to run background tasks (email monitoring, ticket scanning, periodic reports).
 
 `CHANNELS.md` is automatically written to each employee's workspace during session assembly (reverse-lookup of their SSM IM pairings). No manual configuration needed once the user has paired an IM channel.
 

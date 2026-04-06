@@ -18,8 +18,9 @@ from extract_genotypes import extract_snp_genotypes
 from score_variants import compute_nutrient_risk_scores
 
 
+SKILL_DIR = Path(__file__).parent.parent
 SYNTHETIC = Path(__file__).parent / "synthetic_patient.csv"
-PANEL     = Path(__file__).parent.parent / "data" / "snp_panel.json"
+PANEL     = SKILL_DIR / "data" / "snp_panel.json"
 
 
 def load_panel():
@@ -121,3 +122,38 @@ def test_folate_not_low():
     calls = extract_snp_genotypes(table, panel)
     scores = compute_nutrient_risk_scores(calls, panel)
     assert scores["folate"]["category"] in ("Moderate", "Elevated")
+
+
+# ── Hom-ref and empty input (clawbio_bench ng_07, ng_09) ─────────────────────
+
+def test_homref_scores_zero():
+    """ng_09: Hom-ref genotype (all ref alleles) should score 0, not allele_mismatch."""
+    panel = [
+        {"rsid": "rs1801133", "gene": "MTHFR", "risk_allele": "T",
+         "ref_allele": "C", "nutrient_domain": "folate", "weight": 1.0},
+    ]
+    # Genotype CC = homozygous reference (no risk allele T)
+    genotype_table = {"rs1801133": "CC"}
+    calls = extract_snp_genotypes(genotype_table, panel)
+    assert calls["rs1801133"]["status"] == "found", (
+        f"Hom-ref should be 'found', got '{calls['rs1801133']['status']}'"
+    )
+    assert calls["rs1801133"]["risk_count"] == 0, (
+        f"Hom-ref should have risk_count=0, got {calls['rs1801133']['risk_count']}"
+    )
+
+
+def test_empty_input_exits_cleanly(tmp_path):
+    """ng_07: Empty input file should produce a clean error, not a traceback."""
+    import subprocess
+    empty_file = tmp_path / "empty.txt"
+    empty_file.write_text("")
+    result = subprocess.run(
+        ["/usr/local/bin/python3.11", str(SKILL_DIR / "nutrigx_advisor.py"),
+         "--input", str(empty_file), "--output", str(tmp_path / "out")],
+        capture_output=True, text=True,
+    )
+    assert result.returncode != 0, "Empty input should fail"
+    assert "ERROR" in result.stderr, (
+        f"Should print ERROR message, got stderr: {result.stderr}"
+    )

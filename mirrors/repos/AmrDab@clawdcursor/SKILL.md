@@ -1,407 +1,435 @@
 ---
 name: clawdcursor
-version: 0.6.3
+version: 0.7.5
 description: >
-  AI desktop agent — control any app on Windows/macOS from your OpenClaw agent.
-  Send natural language tasks to the Clawd Cursor API and it handles everything:
-  opening apps, clicking buttons, typing text, navigating browsers, filling forms.
-  If you can click it, your agent can too.
+  OS-level desktop automation tool server. 42 tools for controlling any application
+  on Windows, macOS, and Linux. Model-agnostic — works with any AI that can do
+  function calling via REST or MCP (Claude, GPT, Gemini, Llama, Mistral, or plain HTTP).
+  No built-in LLM in serve/mcp mode. You are the brain. ClawdCursor is the hands.
 homepage: https://clawdcursor.com
-source: https://github.com/AmrDab/clawd-cursor
+source: https://github.com/AmrDab/clawdcursor
 privacy: >
-  Screenshots and UI data stay on the user's machine. If using Ollama (local), zero data leaves the host.
-  If using a cloud provider (Anthropic, OpenAI, Kimi), screenshots/text are sent to that provider's API
-  only — never to third-party servers or skill authors. The user controls which provider is used.
-  The REST API binds to 127.0.0.1 only and is not network-accessible.
+  All processing runs locally. Server binds to 127.0.0.1 only — not network-accessible.
+  No telemetry, no analytics. Screenshots stay in memory. In agent mode (start),
+  screenshots/text are sent only to the user's configured AI provider.
 metadata:
   openclaw:
-    # Note: bins check removed — OpenClaw's hasBinary() doesn't handle Windows
-    # PATHEXT (.exe/.cmd), causing false "missing" on Windows even when node is
-    # installed. Since install requires npm (which implies node), the check is
-    # redundant. See: https://github.com/openclaw/openclaw/issues/TBD
     requires: {}
     install:
-      - git clone https://github.com/AmrDab/clawd-cursor.git
-      - cd clawd-cursor && npm install && npm run setup
-      - cd clawd-cursor && clawdcursor doctor
-      - cd clawd-cursor && clawdcursor start
-    privacy:
-      - Screenshots processed by user's own configured AI provider only
-      - With Ollama, fully offline — no external API calls
-      - With cloud providers, data goes only to user's chosen API endpoint
-      - REST API binds to 127.0.0.1 only — not network accessible
-notes:
-  - In OpenClaw, this skill inherits the active agent's AI provider + API key.
-  - Standalone CLI mode can still use AI_API_KEY / provider-specific env vars or Ollama.
+      - npm install -g clawdcursor
+      - clawdcursor consent --accept
+      - clawdcursor serve
+    skill_dir: ~/.openclaw/workspace/skills/clawdcursor
 ---
-
-# Clawd Cursor
 
 **If a human can do it on a screen, you can too.** No API? No integration? No problem.
-Every app already has a UI — Clawd Cursor gives you eyes and hands to use all of them.
 
-No task is impossible. If it's on the screen, it's within reach.
-
-> **IMPORTANT — READ THIS BEFORE ANYTHING ELSE**
+> **USE AS A FALLBACK — NOT FIRST CHOICE**
 >
-> You have a desktop AI agent over GUI running on the user's machine. This means:
-> 1. You **CAN** open apps, click buttons, type text, fill forms
-> 2. You **CAN** see what's on screen (via Clawd Cursor's screenshot pipeline)
-> 3. You **CAN** interact with applications — browser, desktop apps, settings
-> 4. You **MUST** respect safety tiers — 🟢 Auto actions run freely, 🔴 Confirm actions require user approval
-> 5. You **MUST** ask before accessing sensitive apps (email, banking, private messages, password managers)
-> 6. You **SHOULD** prefer direct tools (file read, web_fetch, CLI) over desktop automation when available
+> Before reaching for any ClawdCursor tool, ask:
+> 1. Is there a native API? (Gmail API, GitHub API, Slack API) → **use the API**
+> 2. Is there a CLI? (`git`, `npm`, `curl`) → **use the CLI**
+> 3. Can you edit the file directly? → **do that**
+> 4. Is there a browser automation layer? (Playwright, Puppeteer) → **use that**
 >
-> Think of Clawd Cursor as your hands and eyes on the user's computer — used with their permission.
+> **None of the above work? Now use ClawdCursor.** It's for the last mile.
 
 ---
 
-## When to Use This (AGENTS: READ THIS)
+## Modes at a Glance
 
-You have a desktop UI agent available. Use it when the user asks you to interact with their desktop, or when no other tool can accomplish the task.
+| Mode | Command | Brain | Tools available |
+|------|---------|-------|----------------|
+| `serve` | `clawdcursor serve` | **You** (REST client) | All 42 tools via HTTP |
+| `mcp` | `clawdcursor mcp` | **You** (MCP client) | All 42 tools via MCP stdio |
+| `start` | `clawdcursor start` | Built-in LLM pipeline | All 42 tools + autonomous agent |
 
-### Tool vs Skill (OpenClaw terminology)
-- **Tool** = direct capability (API call, filesystem, shell, web fetch, browser command).
-- **Skill** = packaged workflow/domain logic that may call one or more tools.
-- **This skill (Clawd Cursor)** = GUI execution skill. Use it after OpenClaw tools/skills that can complete the same work without GUI.
-
-### Use Clawd Cursor for (examples, not limits):
-Clawd Cursor can perform **any action that is visible and interactable in the GUI** (subject to safety policy).
-
-- **User-requested desktop tasks** — "open Gmail and send an email", "check my calendar"
-- **Read a webpage** — when web_fetch or browser tools aren't available
-- **Interact with desktop apps** — click buttons, fill forms, read results
-- **Browser tasks** — search, navigate, fill forms (when browser tool unavailable)
-- **Visual verification** — did the page load? what does the UI show?
-- **Cross-app workflows** — copy from one app, paste in another
-- **Settings changes** — when the user explicitly asks
-
-### ⚠️ Sensitive App Policy
-**Always ask the user before** accessing:
-- Email clients (Gmail, Outlook)
-- Banking or financial apps
-- Private messaging (WhatsApp, Signal, Telegram)
-- Password managers
-- Admin panels or cloud consoles
-
-### Don't use Clawd Cursor when:
-- You can do it with a direct API call or CLI command (faster)
-- The task is purely computational (math, text generation, code writing)
-- You can already read/write the file directly
-- The browser tool or web_fetch can handle it
-
-## OpenClaw + Clawd Cursor Routing Contract (Avoid Overlap)
-
-Clawd Cursor should be treated as **OpenClaw's GUI execution layer**, not a competing planner.
-
-### Route tasks in this order:
-1. **OpenClaw native tools first** (filesystem, API, shell, provider-native skills)
-2. **Browser-native automation next** (Playwright/CDP direct) for browser-only reads/clicks
-3. **Clawd Cursor API task (`POST /task`)** only when desktop/UI-level interaction is required
-
-### Practical rule
-- If OpenClaw already has a reliable skill/tool for the domain, use it.
-- Use Clawd Cursor to bridge gaps where no API/tool exists or when the user explicitly asks for GUI interaction.
-
-This keeps behavior predictable, lowers latency/cost, and avoids duplicated logic between the main OpenClaw agent and this skill.
-
-### Universal task pattern
-For broad "get it done" requests, split into three phases:
-1. **Plan in OpenClaw**: break work into API/CLI/browser/GUI subtasks.
-2. **Execute cheap paths first**: API + CLI + browser direct.
-3. **Escalate only residual UI steps** to Clawd Cursor.
-
-Think: **"OpenClaw decides, Clawd Cursor acts on GUI when needed."**
-
-### Direct Browser Access (Fast Path)
-For quick page reads without a full task, connect to Chrome via Playwright CDP:
-```js
-const pw = require('playwright');
-const browser = await pw.chromium.connectOverCDP('http://127.0.0.1:9222');
-const pages = browser.contexts()[0].pages();
-const text = await pages[0].innerText('body');
-```
-
-Use this when you just need page content — faster than sending a task.
-
-| Scenario | Use | Why |
-|----------|-----|-----|
-| Read page content/text | CDP Direct | Instant, free |
-| Fill a web form | API task (`POST /task`) | Clawd handles multi-step planning |
-| Check if a page loaded | CDP Direct | Just read the title/URL |
-| Click through a complex UI flow | API task (`POST /task`) | Clawd handles planning |
-| Get a list of elements on page | CDP Direct | Fast DOM query |
-| Interact with a desktop app | API task (`POST /task`) | CDP is browser-only |
+In `serve` and `mcp` modes: **you reason, ClawdCursor acts.** There is no built-in LLM. You call tools, interpret results, decide next steps.
 
 ---
 
-## REST API Reference
+## Connecting
 
-Base URL: `http://127.0.0.1:3847`
-
-> **Note:** On Windows PowerShell, use `curl.exe` (with .exe) or `Invoke-RestMethod`. Bare `curl` is aliased to `Invoke-WebRequest` which behaves differently.
-
-### Pre-flight Check
-
-Before your first task, verify Clawd Cursor is running:
+### Option A — REST (`clawdcursor serve`)
 
 ```bash
-curl.exe -s http://127.0.0.1:3847/health
+clawdcursor serve        # starts on http://127.0.0.1:3847
 ```
 
-Expected: `{"status":"ok","version":"0.6.0"}`
+All POST endpoints require: `Authorization: Bearer <token>` (token saved to `~/.clawdcursor/token`)
 
-If connection refused — **start it yourself** (don't ask the user):
-```powershell
-# Find the skill directory and start the server
-Start-Process -FilePath "node" -ArgumentList "dist/index.js","start" -WorkingDirectory "<clawd-cursor-directory>" -WindowStyle Hidden
-Start-Sleep 3
-# Verify it's running
-curl.exe -s http://127.0.0.1:3847/health
 ```
-The skill directory is wherever SKILL.md lives (the parent of this file). Use that path as the working directory.
+GET  /tools              → all tool schemas (OpenAI function-calling format)
+POST /execute/{name}     → run a tool: {"param": "value"}
+GET  /health             → {"status":"ok","version":"0.7.5"}
+GET  /docs               → full documentation
+```
 
-### Sending a Task (Async — Returns Immediately)
+Example:
+```
+POST /execute/get_windows     {}
+POST /execute/mouse_click     {"x": 640, "y": 400}
+POST /execute/type_text       {"text": "hello world"}
+```
 
-`POST /task` accepts the task and returns immediately. The task runs in the background. **You must poll `/status` to know when it's done.**
-
+If the server isn't running, start it yourself — don't ask the user:
 ```bash
-curl.exe -s -X POST http://127.0.0.1:3847/task -H "Content-Type: application/json" -d "{\"task\": \"YOUR_TASK_HERE\"}"
+clawdcursor serve
+# wait 2 seconds, then verify: GET /health
 ```
 
-PowerShell:
-```powershell
-Invoke-RestMethod -Uri http://127.0.0.1:3847/task -Method POST -ContentType "application/json" -Body '{"task": "YOUR_TASK_HERE"}'
+### Option B — MCP (`clawdcursor mcp`)
+
+```json
+{
+  "mcpServers": {
+    "clawdcursor": {
+      "command": "clawdcursor",
+      "args": ["mcp"]
+    }
+  }
+}
 ```
 
-### Polling Pattern (Follow This)
+Works with Claude Code, Cursor, Windsurf, Zed, or any MCP-compatible client. All 42 tools are exposed identically.
+
+### Option C — Autonomous agent (`clawdcursor start`)
 
 ```
-1. POST /task → get accepted
-2. Wait 2 seconds
-3. GET /status
-4. If status is "idle" → done
-5. If status is "waiting_confirm" → ASK THE USER, then POST /confirm based on their answer
-6. If still running → wait 2 more seconds, go to step 3
-7. If 60+ seconds → POST /abort and retry with clearer instructions
+POST /task    {"task": "Open Notepad and write Hello"}   → submit task
+GET  /status  → {"status": "acting"} | "idle" | "waiting_confirm"
+POST /confirm {"approved": true}                         → approve safety-gated action
+POST /abort                                              → stop current task
 ```
 
-### Checking Status
+Use `delegate_to_agent` tool to submit tasks from within MCP/REST sessions. Requires `clawdcursor start` running on port 3847.
 
-```bash
-curl.exe -s http://127.0.0.1:3847/status
+**Polling pattern:**
+```
+POST /task  {"task": "...", "returnPartial": true}
+→ poll GET /status every 2s:
+    "acting"           → still running, keep polling
+    "waiting_confirm"  → STOP. Ask user → POST /confirm {"approved": true}
+    "idle"             → done, check GET /task-logs for result
+→ if 60s+ with no progress: POST /abort, retry with simpler phrasing
 ```
 
-### Confirming Safety-Gated Actions
-
-Some actions (sending messages, deleting) require approval. **🔴 NEVER self-approve these.** Always ask the user for confirmation before POST /confirm. These exist to protect the user — do not bypass them.
-```bash
-curl.exe -s -X POST http://127.0.0.1:3847/confirm -H "Content-Type: application/json" -d "{\"approved\": true}"
+**returnPartial mode** — send `{"returnPartial": true}` with POST /task:
+ClawdCursor skips Stage 3 (expensive vision) and returns control to you if Stage 2 fails:
+```json
+{"partial": true, "stepsCompleted": [...], "context": "got stuck on dialog"}
 ```
+You finish the task with MCP tools, then call POST /learn to save what worked.
 
-### Aborting a Task
-
-```bash
-curl.exe -s -X POST http://127.0.0.1:3847/abort
+**POST /learn — adaptive learning:**
+After completing a task with your own tool calls, teach ClawdCursor for next time:
+```json
+POST /learn
+{
+  "processName": "EXCEL",
+  "task": "create table with headers",
+  "actions": [
+    {"action": "key", "description": "Ctrl+Home to go to A1"},
+    {"action": "type", "description": "Type header name"},
+    {"action": "key", "description": "Tab to next column"}
+  ],
+  "shortcuts": {"next_cell": "Tab", "next_row": "Enter"},
+  "tips": ["Use Tab between columns, Enter between rows"]
+}
 ```
-
-### Reading Logs (Debugging)
-
-```bash
-curl.exe -s http://127.0.0.1:3847/logs
-```
-
-Returns last 200 log entries. Check for `error` or `warn` entries when tasks fail.
-
-### Response States
-
-| State | Response | What to do |
-|-------|----------|------------|
-| **Accepted** | `{"accepted": true, "task": "..."}` | Start polling |
-| **Running** | `{"status": "acting", "currentTask": "...", "stepsCompleted": 2}` | Keep polling |
-| **Waiting confirm** | `{"status": "waiting_confirm", "currentStep": "..."}` | POST /confirm |
-| **Done** | `{"status": "idle"}` | Task complete |
-| **Busy** | `{"error": "Agent is busy", "state": {...}}` | Wait or POST /abort first |
+This enriches the app's guide JSON. Stage 2 reads it on the next run — no vision fallback needed.
 
 ---
 
-## CDP Direct Reference
+## The Universal Loop
 
-Chrome must be running with `--remote-debugging-port=9222`.
+Every GUI task follows the same pattern regardless of transport:
 
-### Quick check:
-```bash
-curl.exe -s http://127.0.0.1:9222/json/version
+```
+1. ORIENT  →  read_screen() or get_windows()          see what's open and focused
+2. ACT     →  smart_click() / smart_type() / key_press()   do the thing
+3. VERIFY  →  check return value → window state → text check → screenshot
+4. REPEAT  →  until done
 ```
 
-If this returns JSON, Chrome is ready.
+### Verification (cheapest to most expensive)
 
-### Connecting via Playwright:
+1. **Tool return value** — every tool reports success/failure. Check it first.
+2. **Window state** — `get_active_window()`, `get_windows()` — did a dialog appear? Did the title change?
+3. **Text check** — `read_screen()` or `smart_read()` — is the expected text visible?
+4. **Screenshot** — `desktop_screenshot()` — only when text methods fail. Costs the most.
+5. **Negative check** — look for error dialogs, wrong window, unchanged screen.
 
-```javascript
-const { chromium } = require('playwright');
-const browser = await chromium.connectOverCDP('http://127.0.0.1:9222');
-const context = browser.contexts()[0];
-const page = context.pages()[0];
+**Always verify** after: sends, saves, deletes, form submissions.
+**Skip verification** for: mid-sequence keystrokes, scrolling.
 
-// Read page content
-const title = await page.title();
-const url = page.url();
-const text = await page.textContent('body');
+---
 
-// Click by role
-await page.getByRole('button', { name: 'Submit' }).click();
+## Tool Decision Trees
 
-// Fill a field
-await page.getByLabel('Email').fill('user@example.com');
+### Perception — always start here
 
-// Read specific elements
-const buttons = await page.$$eval('button', els => els.map(e => e.textContent));
+```
+read_screen()          → FIRST. Accessibility tree: buttons, inputs, text, with coords.
+                          Fast, structured, works on native apps.
+ocr_read_screen()      → When a11y tree is empty (canvas UIs, image-based apps).
+smart_read()           → Combines OCR + a11y. Good first call when unsure.
+desktop_screenshot()   → LAST RESORT. Only when you need pixel-level visual detail.
+desktop_screenshot_region(x,y,w,h) → Zoomed crop when you need detail in one area.
+```
+
+### Clicking
+
+```
+smart_click("Save")              → FIRST. Finds by label/text via OCR + a11y, clicks.
+                                   Pass processId to target the right window.
+invoke_element(name="Save")      → When you know the exact automation ID from read_screen.
+cdp_click(text="Submit")         → Browser elements. Requires cdp_connect() first.
+mouse_click(x, y)                → LAST RESORT. Raw coordinates from a screenshot.
+```
+
+### Typing
+
+```
+smart_type("Email", "user@x.com")  → FIRST. Finds field by label, focuses, types.
+cdp_type(label="Email", text="…")  → Browser inputs. Requires cdp_connect() first.
+type_text("hello")                 → Clipboard paste into whatever is focused.
+                                     Use after manually focusing with smart_click.
+```
+
+### Browser / CDP
+
+```
+1. navigate_browser(url)     → opens URL, auto-enables CDP
+2. cdp_connect()             → connect to browser DevTools Protocol
+3. cdp_page_context()        → list interactive elements on page
+4. cdp_read_text()           → extract DOM text (returns empty on canvas apps → use OCR)
+5. cdp_click(text="…")       → click by visible text
+6. cdp_type(label, text)     → fill input by label
+7. cdp_evaluate(script)      → run JavaScript in page context
+8. cdp_scroll(direction, px) → scroll page via DOM (not mouse wheel)
+9. cdp_list_tabs()           → list all open tabs
+10. cdp_switch_tab(target)   → switch to a specific tab
+```
+
+If CDP isn't connected, switch tabs with keyboard:
+```
+key_press("ctrl+1")          → tab 1
+key_press("ctrl+tab")        → next tab
+key_press("ctrl+shift+tab")  → previous tab
+```
+
+### Window Management
+
+```
+get_windows()                         → list all open windows (use to find PIDs)
+get_active_window()                   → what's in the foreground right now
+focus_window(processName="Discord")   → bring to front (auto-minimizes phantom off-screen windows)
+minimize_window(processName="calc")   → minimize a window — 1 call, cross-platform
+                                        also accepts: processId, title
+```
+
+**Rule:** Always `focus_window()` before `key_press()` or `type_text()`. Keystrokes go to whatever has focus — if that's your terminal, not the target app.
+
+### Canvas apps (Google Docs, Figma, Notion)
+
+DOM has no readable text. Pattern:
+```
+ocr_read_screen()          → read content (DOM extraction fails)
+mouse_click(x, y)          → click into the canvas area
+type_text("your text")     → clipboard paste works even on canvas
 ```
 
 ---
 
-## Task Writing Guidelines
+## Quick Patterns
 
-1. **Be specific** — include app names, URLs, exact text to type, button names
-2. **One task at a time** — wait for completion before sending the next
-3. **Describe the goal, not the clicks** — say "Send an email to john@example.com about the meeting" not "click compose, click to field..."
-4. **Check status** if a task seems to hang
-5. **Don't include credentials in task text** — tasks are logged
+**Open app and type:**
+```
+open_app("notepad") → wait(2) → smart_read() → type_text("Hello") → smart_read()
+```
 
-## Task Examples
+**Read a webpage:**
+```
+navigate_browser(url) → wait(3) → cdp_connect() → cdp_read_text()
+```
 
-| Goal | Task to send |
-|------|-------------|
-| **Simple navigation** | `Open Chrome and go to github.com` |
-| **Read screen content** | `What text is currently displayed in Notepad?` |
-| **Cross-app workflow** | `Copy the email address from the Chrome tab and paste it into the To field in Outlook` |
-| **Form filling** | `In the open Chrome tab, fill the contact form: name "John Doe", email "john@example.com"` |
-| **App interaction** | `Open Spotify and play the Discover Weekly playlist` |
-| **Settings change** | `Open Windows Settings and turn on Dark Mode` |
-| **Data extraction** | `Read the stock price shown in the Bloomberg tab in Chrome` |
-| **Complex browser** | `Open YouTube, search for "Adele Hello", and play the first video result` |
-| **Verification** | `Check if the deployment succeeded — look at the Vercel dashboard in Chrome` |
-| **Send email** | `Open Gmail, compose email to john@example.com, subject: Meeting Tomorrow, body: Confirming 2pm. Best regards.` |
-| **Take screenshot** | `Take a screenshot` |
+**Fill a web form:**
+```
+cdp_connect() → cdp_type("Email", "x@x.com") → cdp_type("Password", "…") → cdp_click("Submit")
+```
 
-## Error Recovery
+**Cross-app copy/paste:**
+```
+focus_window("Chrome") → key_press("ctrl+a") → key_press("ctrl+c")
+→ read_clipboard() → focus_window("Notepad") → type_text(clipboard)
+```
 
-| Problem | Solution |
-|---------|----------|
-| Connection refused on :3847 | Start Clawd Cursor: `cd clawd-cursor && npm start` |
-| Connection refused on :9222 | Start Chrome with CDP: `Start-Process chrome -ArgumentList "--remote-debugging-port=9222"` |
-| Agent returns "busy" | Poll `/status` — wait for idle, or POST `/abort` |
-| Task fails with no details | Check `/logs` for error entries |
-| Task completes but wrong result | Rephrase with more specifics: exact app name, button text, field labels |
-| Same task fails repeatedly | Break into smaller tasks (one action per task) |
-| Safety confirmation pending | POST `/confirm` with `{"approved": true}` or `{"approved": false}` |
-| Task hangs > 60 seconds | POST `/abort`, then retry with simpler phrasing |
+**Send email via Outlook:**
+```
+open_app("outlook") → wait(2) → smart_click("New Email")
+→ mouse_click(to_field_x, to_field_y) → type_text("recipient@x.com") → key_press("Tab")
+→ mouse_click(subject_x, subject_y) → type_text("Subject") → key_press("Tab")
+→ mouse_click(body_x, body_y) → type_text("Body text")
+→ mouse_click(send_x, send_y)
+```
+
+**Autonomous complex task (requires `clawdcursor start`):**
+```
+delegate_to_agent("Open Gmail, find latest email from Stripe, forward to billing@x.com")
+→ poll GET /status every 2s
+→ if waiting_confirm: ask user → POST /confirm {"approved": true}
+→ if idle: task done
+```
 
 ---
 
-## How It Works — 5-Layer Pipeline
+## Full Tool Reference (42 tools)
 
-| Layer | What | Speed | Cost |
-|-------|------|-------|------|
-| **0: Browser Layer** | URL detection → direct navigation | Instant | Free |
-| **1: Action Router + Shortcuts** | Regex + UI Automation + keyboard shortcuts | Instant | Free |
-| **1.5: Smart Interaction** | 1 LLM plan → CDP/UIDriver executes | ~2-5s | 1 LLM call |
-| **2: Accessibility Reasoner** | UI tree → text LLM decides | ~1s | Cheap |
-| **3: Computer Use** | Screenshot → vision LLM | ~5-8s | Expensive |
+Speed: ⚡ Free/instant · 🔵 Cheap · 🟡 Moderate · 🔴 Vision (expensive)
 
-Layer 1 includes keyboard shortcuts — common actions execute as direct keystrokes (0 LLM calls).
+### Perception (6)
+| Tool | What it does | When |
+|------|-------------|------|
+| `read_screen` | A11y tree — buttons, inputs, text, coords | ⚡ Default first read |
+| `smart_read` | OCR + a11y combined | 🔵 When unsure which to use |
+| `ocr_read_screen` | Raw OCR text with bounding boxes | 🔵 Canvas UIs, empty a11y trees |
+| `desktop_screenshot` | Full screen image (1280px wide) | ⚡ Last resort visual check |
+| `desktop_screenshot_region` | Zoomed crop of specific area | ⚡ Fine-grained visual detail |
+| `get_screen_size` | Screen dimensions and DPI | ⚡ Coordinate calculations |
 
-80%+ of tasks handled by Layer 0-1 (free, instant). Vision model is last resort only.
+### Mouse (7)
+| Tool | What it does | When |
+|------|-------------|------|
+| `smart_click` | Find element by text/label, click | 🔵 First choice for clicking |
+| `mouse_click` | Left click at (x, y) | ⚡ Last resort |
+| `mouse_double_click` | Double click at (x, y) | ⚡ Open files, select words |
+| `mouse_right_click` | Right click at (x, y) | ⚡ Context menus |
+| `mouse_hover` | Move cursor without clicking | ⚡ Hover menus |
+| `mouse_scroll` | Scroll at position (physical mouse wheel) | ⚡ Scroll content |
+| `mouse_drag` | Drag from start to end — accepts `startX/startY/endX/endY` or `x1/y1/x2/y2` | ⚡ Resize, select ranges |
 
-## Safety Tiers
+### Keyboard (5)
+| Tool | What it does | When |
+|------|-------------|------|
+| `smart_type` | Find input by label, focus it, type | 🔵 First choice for form fields |
+| `type_text` | Clipboard paste into focused element | ⚡ After manually focusing |
+| `key_press` | Send key combo (`ctrl+s`, `Return`, `alt+tab`) | ⚡ After focus_window |
+| `shortcuts_list` | List keyboard shortcuts for current app | ⚡ Before reaching for mouse |
+| `shortcuts_execute` | Run a named shortcut (fuzzy match) | ⚡ Save, copy, paste, undo |
+
+### Window Management (5)
+| Tool | What it does | When |
+|------|-------------|------|
+| `get_windows` | List all open windows with PIDs and bounds | ⚡ Situational awareness |
+| `get_active_window` | Current foreground window | ⚡ Check current focus |
+| `get_focused_element` | Element with keyboard focus | ⚡ Debug wrong-field typing |
+| `focus_window` | Bring window to front (auto-clears off-screen phantoms) | ⚡ Always before key_press |
+| `minimize_window` | Minimize by processName, processId, or title | ⚡ Clear focus stealers |
+
+### UI Elements (2)
+| Tool | What it does | When |
+|------|-------------|------|
+| `find_element` | Search UI tree by name or type | ⚡ Find automation IDs |
+| `invoke_element` | Invoke element by automation ID or name | ⚡ When ID known from read_screen |
+
+### Clipboard (2)
+| Tool | What it does | When |
+|------|-------------|------|
+| `read_clipboard` | Read clipboard text | ⚡ After copy operations |
+| `write_clipboard` | Write text to clipboard | ⚡ Before paste operations |
+
+### Browser / CDP (11)
+| Tool | What it does | When |
+|------|-------------|------|
+| `cdp_connect` | Connect to browser DevTools Protocol | ⚡ First step for any browser task |
+| `cdp_page_context` | List interactive elements on page | ⚡ After connect |
+| `cdp_read_text` | Extract DOM text | ⚡ Read page content |
+| `cdp_click` | Click by CSS selector or visible text | ⚡ Browser clicks |
+| `cdp_type` | Type into input by label or selector | ⚡ Browser form filling |
+| `cdp_select_option` | Select dropdown option | ⚡ Select elements |
+| `cdp_evaluate` | Run JavaScript in page context | ⚡ Custom queries |
+| `cdp_scroll` | Scroll page via DOM (`direction`, `amount` px) | ⚡ DOM-level scroll |
+| `cdp_wait_for_selector` | Wait for element to appear | ⚡ After navigation/AJAX |
+| `cdp_list_tabs` | List all browser tabs | ⚡ When on wrong tab |
+| `cdp_switch_tab` | Switch to a tab by title or index | ⚡ After cdp_list_tabs |
+
+### Orchestration (4)
+| Tool | What it does | When |
+|------|-------------|------|
+| `open_app` | Launch application by name | ⚡ First step for desktop tasks |
+| `navigate_browser` | Open URL (auto-enables CDP) | ⚡ First step for browser tasks |
+| `wait` | Pause N seconds | ⚡ After opening apps, let UI render |
+| `delegate_to_agent` | Send task to built-in autonomous agent | 🟡 Complex multi-step tasks (requires `clawdcursor start`) |
+
+---
+
+## Provider Setup (agent mode only)
+
+| Provider | Setup | Cost |
+|----------|-------|------|
+| **Ollama** (local) | `ollama pull qwen2.5:7b && ollama serve` | $0 — fully offline, no data leaves machine |
+| **Any cloud** | Set env var: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `MOONSHOT_API_KEY`, etc. | Varies |
+| **OpenClaw users** | Auto-detected from `~/.openclaw/agents/main/auth-profiles.json` | No extra setup |
+
+Run `clawdcursor doctor` to auto-detect and validate providers.
+
+---
+
+## Security
+
+- **Network isolation:** Binds to `127.0.0.1` only. Verify: `netstat -an | findstr 3847` — should show `127.0.0.1:3847`, never `0.0.0.0:3847`
+- **Ollama:** 100% offline. Screenshots stay in RAM, never leave the machine.
+- **Cloud providers:** Screenshots/text sent only to your configured provider. No telemetry, no analytics, no third-party logging.
+- **Token auth:** All mutating POST endpoints require `Authorization: Bearer <token>`. Token at `~/.clawdcursor/token`.
+- **Safety tiers:** Auto / Preview / Confirm. Agents must **never self-approve Confirm actions**.
+
+---
+
+## Coordinate System
+
+All mouse tools use **image-space coordinates** from a 1280px-wide viewport — matching screenshots from `desktop_screenshot`. DPI scaling is handled automatically. Do not pre-scale coordinates.
+
+---
+
+## Safety
 
 | Tier | Actions | Behavior |
 |------|---------|----------|
 | 🟢 Auto | Navigation, reading, opening apps | Runs immediately |
-| 🟡 Preview | Typing, form filling | Logs before executing |
-| 🔴 Confirm | Sending messages, deleting | Pauses — **ask the user** before POST `/confirm`. Never self-approve. |
+| 🟡 Preview | Typing, form filling | Logged |
+| 🔴 Confirm | Send, delete, purchase | Pauses — **always ask user first** |
 
-## Security & Privacy
-
-### Network Isolation
-- API binds to `127.0.0.1` only — **not network accessible**. Verify: `netstat -an | findstr 3847` should show `127.0.0.1:3847`
-- Screenshots stay in memory, never saved to disk (unless `--debug`)
-- No telemetry, no analytics, no phone-home calls
-
-### Data Flow
-- **With Ollama (local)**: 100% offline — zero external network calls. No data leaves the machine.
-- **With cloud providers**: screenshots/text are sent to the user's chosen provider API **only**. No data goes to skill authors, ClawHub, or third parties.
-- **OpenClaw users**: credentials auto-discovered from local config files — no keys stored in skill directory.
-- The user controls data flow by choosing their provider. Ollama = fully private.
-
-### Agent Autonomy Controls
-- **🟢 Auto** actions (navigation, reading, opening apps) run without prompting
-- **🟡 Preview** actions (typing, form filling) are logged before executing
-- **🔴 Confirm** actions (sending messages, deleting, purchases) **always pause for user approval**
-- Agents **must ask the user** before accessing sensitive apps (email, banking, messaging, passwords)
-- Agents **must never self-approve** 🔴 Confirm actions
+- **Never self-approve Confirm actions.**
+- `Alt+F4` and `Ctrl+Alt+Delete` are blocked.
+- Server binds to `127.0.0.1` only.
+- First run requires explicit user consent for desktop control.
 
 ---
 
-## Setup (User Reference)
+## Error Recovery
 
-Setup is handled by the user. If Clawd Cursor isn't running, **start it yourself** using the exec tool:
-```powershell
-Start-Process -FilePath "node" -ArgumentList "dist/index.js","start" -WorkingDirectory "<skill-directory>" -WindowStyle Hidden
-```
-Only ask the user if you cannot start it (e.g., node not installed, build missing).
-
-```bash
-git clone https://github.com/AmrDab/clawd-cursor.git
-cd clawd-cursor
-npm install && npm run build
-npx clawd-cursor doctor    # auto-detects and configures everything
-npm start                  # starts on port 3847
-```
-
-**macOS:** Grant Accessibility permission to terminal: System Settings → Privacy & Security → Accessibility
-
-| Provider | Setup | Cost |
-|----------|-------|------|
-| **Ollama (free)** | `ollama pull <model>` | $0 (fully offline) |
-| **Any cloud provider** | Set `AI_API_KEY=your-key` | Varies by provider |
-| **OpenClaw users** | Automatic — no setup needed | Uses configured provider |
+| Problem | Fix |
+|---------|-----|
+| Port 3847 not responding | `clawdcursor serve` — wait 2s — `GET /health` |
+| 401 Unauthorized | Token changed — read `~/.clawdcursor/token` and use fresh value |
+| CDP not available | Chrome must be open. `navigate_browser(url)` auto-enables it. |
+| CDP on wrong tab | `cdp_list_tabs()` → `cdp_switch_tab(target)` |
+| `focus_window` fails | `get_windows()` to confirm title/processName, then retry |
+| `smart_click` can't find element | `read_screen()` for coords → `mouse_click(x, y)` |
+| `key_press` goes to wrong window | You skipped `focus_window` — always focus first |
+| `cdp_read_text` returns empty | Canvas app — use `ocr_read_screen()` instead |
+| Same action fails 3+ times | Try a completely different approach |
 
 ---
 
-## Performance Optimization
+## Platform Support
 
-Proven optimizations applied to reduce task execution latency and LLM API costs. Reference files in `perf/references/patches/`.
+| Platform | A11y | OCR | CDP |
+|----------|------|-----|-----|
+| Windows (x64/ARM64) | PowerShell + .NET UIA | Windows.Media.Ocr | Chrome/Edge |
+| macOS (Intel/Apple Silicon) | JXA + System Events | Apple Vision | Chrome/Edge |
+| Linux (x64/ARM64) | AT-SPI | Tesseract | Chrome/Edge |
 
-### Applied Optimizations
-
-| # | Name | Impact |
-|---|------|--------|
-| 1 | Screenshot hash cache | 90% fewer LLM calls on static screens |
-| 2 | Parallel screenshot+a11y | 30-40% per-step latency cut |
-| 3 | A11y context cache (2s TTL) | Eliminates redundant PS spawns |
-| 4 | Screenshot compression | 52% smaller payload (58KB vs 120KB) |
-| 5 | Async debug writes | 94% less event loop blocking |
-| 6 | Streaming LLM responses | 1-3s faster per LLM call |
-| 7 | Trimmed system prompts | ~60% fewer prompt tokens |
-| 8 | A11y tree filtering | Interactive elements only, 3000 char cap |
-| 9 | Combined PS script | 1 spawn instead of 3 |
-| 10 | Taskbar cache (30s TTL) | Skip expensive taskbar query |
-| 11 | Delay reduction | 50-150ms vs 200-1500ms |
-
-### Benchmarks (2560x1440)
-
-| Metric | v0.3 (VNC) | v0.4 (Native) | v0.4.1+ (Optimized) |
-|--------|------------|---------------|----------------------|
-| Screenshot capture | ~850ms | ~50ms | ~57ms |
-| Screenshot size | ~200KB | ~120KB | ~58KB |
-| A11y context (uncached) | N/A | ~600ms | ~462ms |
-| A11y context (cached) | N/A | 0ms | 0ms (2s TTL) |
-| Delays (per step) | N/A | 200-1500ms | 50-600ms |
-| System prompt tokens | N/A | ~800 | ~300 |
-
-### Perf Tools
-
-- `perf/apply-optimizations.ps1` — apply all patches
-- `perf/perf-test.ts` — benchmark harness (`npx ts-node perf/perf-test.ts`)
+**macOS:** Grant Accessibility in System Settings → Privacy → Accessibility.
+**Linux:** `sudo apt install tesseract-ocr` for OCR support.

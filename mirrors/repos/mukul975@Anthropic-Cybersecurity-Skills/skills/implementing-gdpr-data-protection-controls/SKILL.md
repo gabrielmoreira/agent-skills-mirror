@@ -1,13 +1,38 @@
 ---
 name: implementing-gdpr-data-protection-controls
-description: The General Data Protection Regulation (EU) 2016/679 (GDPR) is the EU's comprehensive data protection law governing the collection, processing, storage, and transfer of personal data. This skill cover
+description: The General Data Protection Regulation (EU) 2016/679 (GDPR) is the EU's comprehensive data protection law governing
+  the collection, processing, storage, and transfer of personal data. This skill cover
 domain: cybersecurity
 subdomain: compliance-governance
-tags: [compliance, governance, gdpr, privacy, data-protection, eu-regulation]
-nist_csf: [GV.OC, GV.PO, GV.RR, ID.AM, PR.AA, PR.DS, RS.CO, RS.MA]
-version: "1.0"
+tags:
+- compliance
+- governance
+- gdpr
+- privacy
+- data-protection
+- eu-regulation
+nist_csf:
+- GV.OC
+- GV.PO
+- GV.RR
+- ID.AM
+- PR.AA
+- PR.DS
+- RS.CO
+- RS.MA
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+- MEASURE-2.8
+- MEASURE-2.9
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 # Implementing GDPR Data Protection Controls
 

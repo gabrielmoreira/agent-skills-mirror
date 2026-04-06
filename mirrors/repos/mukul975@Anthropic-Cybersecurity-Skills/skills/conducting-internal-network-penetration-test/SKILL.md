@@ -1,12 +1,26 @@
 ---
 name: conducting-internal-network-penetration-test
-description: Execute an internal network penetration test simulating an insider threat or post-breach attacker to identify lateral movement paths, privilege escalation vectors, and sensitive data exposure within the corporate network.
+description: Execute an internal network penetration test simulating an insider threat or post-breach attacker to identify
+  lateral movement paths, privilege escalation vectors, and sensitive data exposure within the corporate network.
 domain: cybersecurity
 subdomain: penetration-testing
-tags: [internal-pentest, lateral-movement, privilege-escalation, Responder, Impacket, assumed-breach, network-security]
-version: "1.0"
+tags:
+- internal-pentest
+- lateral-movement
+- privilege-escalation
+- Responder
+- Impacket
+- assumed-breach
+- network-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Network Traffic Community Deviation
 ---
 
 # Conducting Internal Network Penetration Test

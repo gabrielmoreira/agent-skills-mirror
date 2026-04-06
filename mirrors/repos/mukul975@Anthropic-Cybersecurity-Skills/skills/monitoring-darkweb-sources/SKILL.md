@@ -1,18 +1,33 @@
 ---
 name: monitoring-darkweb-sources
-description: >
-  Monitors dark web forums, marketplaces, paste sites, and ransomware leak sites for mentions
-  of organizational assets, leaked credentials, threatened attacks, and threat actor communications
-  to provide early warning intelligence. Use when establishing dark web monitoring coverage,
-  investigating specific data breach claims, or enriching incident investigations with dark web
-  context. Activates for requests involving dark web OSINT, leak site monitoring, credential
-  exposure, Recorded Future dark web, or Tor hidden service intelligence.
+description: 'Monitors dark web forums, marketplaces, paste sites, and ransomware leak sites for mentions of organizational
+  assets, leaked credentials, threatened attacks, and threat actor communications to provide early warning intelligence. Use
+  when establishing dark web monitoring coverage, investigating specific data breach claims, or enriching incident investigations
+  with dark web context. Activates for requests involving dark web OSINT, leak site monitoring, credential exposure, Recorded
+  Future dark web, or Tor hidden service intelligence.
+
+  '
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [dark-web, OSINT, credential-monitoring, ransomware-leaks, Recorded-Future, SpiderFoot, CTI]
+tags:
+- dark-web
+- OSINT
+- credential-monitoring
+- ransomware-leaks
+- Recorded-Future
+- SpiderFoot
+- CTI
 version: 1.0.0
 author: team-cybersecurity
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 # Monitoring Dark Web Sources
 

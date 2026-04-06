@@ -1,12 +1,26 @@
 ---
 name: performing-lateral-movement-with-wmiexec
-description: Perform lateral movement across Windows networks using WMI-based remote execution techniques including Impacket wmiexec.py, CrackMapExec, and native WMI commands for stealthy post-exploitation during red team engagements.
+description: Perform lateral movement across Windows networks using WMI-based remote execution techniques including Impacket
+  wmiexec.py, CrackMapExec, and native WMI commands for stealthy post-exploitation during red team engagements.
 domain: cybersecurity
 subdomain: red-teaming
-tags: [red-team, lateral-movement, wmiexec, wmi, post-exploitation, impacket, windows]
-version: "1.0"
+tags:
+- red-team
+- lateral-movement
+- wmiexec
+- wmi
+- post-exploitation
+- impacket
+- windows
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
 ---
 # Performing Lateral Movement with WMIExec
 

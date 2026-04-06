@@ -235,3 +235,37 @@ class TestAppendAuditLog:
         text = (tmp_path / "analysis_log.md").read_text()
         assert "action1" in text
         assert "action2" in text
+
+
+# ── Stub detection and keyword disambiguation ─────────────────────────────────
+
+class TestStubDetection:
+    def test_stub_skill_detected(self):
+        """Stub skills (SKILL.md only, no .py) should be flagged."""
+        from orchestrator import skill_has_executable
+        # repro-enforcer and lit-synthesizer are stubs (no Python executable)
+        assert not skill_has_executable("repro-enforcer")
+        assert not skill_has_executable("lit-synthesizer")
+
+    def test_executable_skill_detected(self):
+        """Skills with Python files should not be flagged as stubs."""
+        from orchestrator import skill_has_executable
+        assert skill_has_executable("equity-scorer")
+        assert skill_has_executable("pharmgx-reporter")
+
+
+class TestKeywordDisambiguation:
+    def test_variant_routes_to_vcf_annotator(self):
+        """kw_14: 'variant' alone should route to vcf-annotator."""
+        from orchestrator import detect_skill_from_query
+        assert detect_skill_from_query("annotate my variants") == "vcf-annotator"
+
+    def test_variant_annotation_routes_to_vcf_annotator(self):
+        """Longer phrase 'variant annotation' should beat single keyword matches."""
+        from orchestrator import detect_skill_from_query
+        assert detect_skill_from_query("variant annotation for diversity panel") == "vcf-annotator"
+
+    def test_diversity_alone_routes_to_equity(self):
+        """'diversity' without 'variant' should still route to equity-scorer."""
+        from orchestrator import detect_skill_from_query
+        assert detect_skill_from_query("compute diversity metrics") == "equity-scorer"

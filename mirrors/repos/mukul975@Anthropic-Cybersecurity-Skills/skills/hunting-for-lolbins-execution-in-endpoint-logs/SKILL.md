@@ -1,12 +1,26 @@
 ---
 name: hunting-for-lolbins-execution-in-endpoint-logs
-description: Hunt for adversary abuse of Living Off the Land Binaries (LOLBins) by analyzing endpoint process creation logs for suspicious execution patterns of legitimate Windows system binaries used for malicious purposes.
+description: Hunt for adversary abuse of Living Off the Land Binaries (LOLBins) by analyzing endpoint process creation logs
+  for suspicious execution patterns of legitimate Windows system binaries used for malicious purposes.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, lolbins, living-off-the-land, endpoint-detection, process-monitoring, mitre-t1218, defense-evasion]
-version: "1.0"
+tags:
+- threat-hunting
+- lolbins
+- living-off-the-land
+- endpoint-detection
+- process-monitoring
+- mitre-t1218
+- defense-evasion
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Application Protocol Command Analysis
+- Content Format Conversion
 ---
 
 # Hunting for LOLBins Execution in Endpoint Logs

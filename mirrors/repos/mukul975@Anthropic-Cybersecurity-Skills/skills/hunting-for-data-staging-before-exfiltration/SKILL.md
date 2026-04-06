@@ -1,12 +1,26 @@
 ---
 name: hunting-for-data-staging-before-exfiltration
-description: Detect data staging activity before exfiltration by monitoring for archive creation with 7-Zip/RAR, unusual temp folder access, large file consolidation, and staging directory patterns via EDR and process telemetry
+description: Detect data staging activity before exfiltration by monitoring for archive creation with 7-Zip/RAR, unusual temp
+  folder access, large file consolidation, and staging directory patterns via EDR and process telemetry
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [data-staging, exfiltration, t1074, archive-detection, edr, threat-hunting, dlp]
-version: "1.0"
+tags:
+- data-staging
+- exfiltration
+- t1074
+- archive-detection
+- edr
+- threat-hunting
+- dlp
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
+- Platform Hardening
+- File Format Verification
 ---
 
 # Hunting for Data Staging Before Exfiltration

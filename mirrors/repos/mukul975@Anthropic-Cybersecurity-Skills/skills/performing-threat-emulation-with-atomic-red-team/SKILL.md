@@ -1,16 +1,34 @@
 ---
 name: performing-threat-emulation-with-atomic-red-team
-description: >
-  Executes Atomic Red Team tests for MITRE ATT&CK technique validation using the
-  atomic-operator Python framework. Loads test definitions from YAML atomics, runs
-  attack simulations, and validates detection coverage. Use when testing SIEM detection
-  rules, validating EDR coverage, or conducting purple team exercises.
+description: 'Executes Atomic Red Team tests for MITRE ATT&CK technique validation using the atomic-operator Python framework.
+  Loads test definitions from YAML atomics, runs attack simulations, and validates detection coverage. Use when testing SIEM
+  detection rules, validating EDR coverage, or conducting purple team exercises.
+
+  '
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [performing, threat, emulation, with]
-version: "1.0"
+tags:
+- performing
+- threat
+- emulation
+- with
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Performing Threat Emulation with Atomic Red Team

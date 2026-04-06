@@ -109,7 +109,8 @@ GENE_DEFS = {
             "rs28399504": {"allele": "*4",  "alt": "G", "effect": "no_function"},
         },
         "phenotypes": {
-            "Ultrarapid Metabolizer":  ["*17/*17", "*1/*17"],
+            "Ultrarapid Metabolizer":  ["*17/*17"],
+            "Rapid Metabolizer":       ["*1/*17"],
             "Normal Metabolizer":      ["*1/*1"],
             "Intermediate Metabolizer": ["*1/*2", "*1/*3", "*2/*17", "*1/*4"],
             "Poor Metabolizer":        ["*2/*2", "*2/*3", "*3/*3", "*2/*4", "*3/*4", "*4/*4"],
@@ -172,7 +173,7 @@ GENE_DEFS = {
         },
         "phenotypes": {
             "Normal Function":       ["TT"],
-            "Intermediate Function": ["TC", "CT"],
+            "Decreased Function":    ["TC", "CT"],
             "Poor Function":         ["CC"],
         },
     },
@@ -204,7 +205,8 @@ GENE_DEFS = {
         "phenotypes": {
             "Normal Metabolizer":       ["*1/*1"],
             "Intermediate Metabolizer": ["*1/*2", "*1/*3A", "*1/*3B", "*1/*3C"],
-            "Poor Metabolizer":         ["*2/*2", "*2/*3A", "*3A/*3A", "*3B/*3B", "*3C/*3C"],
+            "Poor Metabolizer":         ["*2/*2", "*2/*3A", "*3A/*3A", "*3B/*3B", "*3C/*3C",
+                                         "*3B/*3C", "*2/*3B", "*2/*3C"],
         },
     },
     "UGT1A1": {
@@ -1055,14 +1057,24 @@ def call_diplotype(gene, pgx_snps):
 
 
 def call_phenotype(gene, diplotype):
+    import re as _re
+
     if diplotype == "NOT_TESTED":
         return "Indeterminate (not genotyped)"
 
     gdef = GENE_DEFS[gene]
     norm = diplotype.upper()
 
-    # Strip partial-coverage annotations for matching (e.g. "*1/*1 (2/4 SNPs tested)")
+    # Check for partial-coverage annotations (e.g. "*1/*1 (1/3 SNPs tested)")
+    has_partial = "(" in norm and "SNPS TESTED" in norm
     match_str = norm.split("(")[0].strip()
+
+    if has_partial:
+        cov_match = _re.search(r"\((\d+)/(\d+)\s+SNPS", norm)
+        if cov_match:
+            tested, total = int(cov_match.group(1)), int(cov_match.group(2))
+            if tested < total:
+                return f"Indeterminate (incomplete coverage: {tested}/{total} SNPs tested)"
 
     for desc, conditions in gdef["phenotypes"].items():
         for cond in conditions:
@@ -1489,6 +1501,40 @@ def generate_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_result
                 lines.append("")
         lines.append("---")
         lines.append("")
+
+    # Panel limitations disclosure
+    lines.append("## Panel Limitations")
+    lines.append("")
+    lines.append("This report uses **SNP-based genotyping only** from a panel of "
+                 f"{len(PGX_SNPS)} pharmacogenomic variants. The following cannot be detected:")
+    lines.append("")
+    lines.append("- **Copy number variants (CNVs)**: Gene deletions (e.g. CYP2D6\\*5) "
+                 "and duplications (e.g. CYP2D6\\*1xN, \\*2xN)")
+    lines.append("- **Structural variants**: CYP2D6-CYP2D7 hybrid alleles (e.g. \\*13, \\*36)")
+    lines.append("- **Repeat polymorphisms**: UGT1A1\\*28 (TA7 repeat in rs8175347)")
+    lines.append("- **HLA typing**: HLA-B\\*57:01 (abacavir hypersensitivity)")
+    lines.append("- **Mitochondrial variants**: MT-RNR1 m.1555A>G (aminoglycoside ototoxicity)")
+    lines.append("- **G6PD deficiency**: G6PD A- and Mediterranean variants")
+    lines.append("")
+    lines.append("For CYP2D6, a result of 'Normal Metabolizer' does NOT rule out "
+                 "gene deletions or duplications that alter metabolizer status. "
+                 "Clinical-grade CYP2D6 testing includes CNV analysis.")
+    lines.append("")
+    lines.append("## Genes Not Assessed by This Panel")
+    lines.append("")
+    lines.append("The following clinically relevant pharmacogenomic genes are **not included** "
+                 "in this panel. Consider targeted testing if indicated:")
+    lines.append("")
+    lines.append("| Gene | Clinical Relevance | CPIC Guideline |")
+    lines.append("|------|-------------------|----------------|")
+    lines.append("| HLA-B\\*57:01 | Abacavir hypersensitivity | CPIC Abacavir (2014, updated 2020) |")
+    lines.append("| G6PD | Rasburicase, chloroquine contraindication | CPIC G6PD (2014) |")
+    lines.append("| MT-RNR1 | Aminoglycoside ototoxicity | FDA label |")
+    lines.append("| HLA-A\\*31:01 | Carbamazepine hypersensitivity | CPIC Carbamazepine (2017) |")
+    lines.append("| CYP2B6 | Efavirenz metabolism | CPIC Efavirenz (2019) |")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
 
     # Summary counts
     n_std = len(drug_results["standard"])

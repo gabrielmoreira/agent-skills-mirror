@@ -1,12 +1,25 @@
 ---
 name: implementing-endpoint-detection-with-wazuh
-description: Deploy and configure Wazuh SIEM/XDR for endpoint detection including agent management, custom decoder and rule XML creation, alert querying via the Wazuh REST API, and automated response actions.
+description: Deploy and configure Wazuh SIEM/XDR for endpoint detection including agent management, custom decoder and rule
+  XML creation, alert querying via the Wazuh REST API, and automated response actions.
 domain: cybersecurity
 subdomain: security-operations
-tags: [siem, xdr, wazuh, endpoint-detection, custom-rules, incident-response]
-version: "1.0"
+tags:
+- siem
+- xdr
+- wazuh
+- endpoint-detection
+- custom-rules
+- incident-response
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- GOVERN-1.1
+- MEASURE-2.7
+- MANAGE-3.1
+- MANAGE-2.4
+- MEASURE-3.1
 ---
 # Implementing Endpoint Detection with Wazuh
 

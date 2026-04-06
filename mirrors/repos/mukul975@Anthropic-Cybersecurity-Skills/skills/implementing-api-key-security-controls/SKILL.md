@@ -1,18 +1,31 @@
 ---
 name: implementing-api-key-security-controls
-description: >
-  Implements secure API key generation, storage, rotation, and revocation controls to protect
-  API authentication credentials from leakage, brute force, and abuse. The engineer designs
-  API key formats with sufficient entropy, implements secure hashing for storage, enforces
-  per-key scoping and rate limiting, monitors for leaked keys in public repositories, and
-  builds key rotation workflows. Activates for requests involving API key management, API
-  key security, key rotation policy, or API credential protection.
+description: 'Implements secure API key generation, storage, rotation, and revocation controls to protect API authentication
+  credentials from leakage, brute force, and abuse. The engineer designs API key formats with sufficient entropy, implements
+  secure hashing for storage, enforces per-key scoping and rate limiting, monitors for leaked keys in public repositories,
+  and builds key rotation workflows. Activates for requests involving API key management, API key security, key rotation policy,
+  or API credential protection.
+
+  '
 domain: cybersecurity
 subdomain: api-security
-tags: [api-security, api-keys, credential-management, key-rotation, secret-management]
+tags:
+- api-security
+- api-keys
+- credential-management
+- key-rotation
+- secret-management
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 # Implementing API Key Security Controls
 

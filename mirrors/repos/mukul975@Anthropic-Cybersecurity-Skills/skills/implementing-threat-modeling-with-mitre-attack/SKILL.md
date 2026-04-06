@@ -1,16 +1,37 @@
 ---
 name: implementing-threat-modeling-with-mitre-attack
-description: >
-  Implements threat modeling using the MITRE ATT&CK framework to map adversary TTPs against
-  organizational assets, assess detection coverage gaps, and prioritize defensive investments.
-  Use when SOC teams need to align detection engineering with threat landscape, conduct threat
-  assessments for new environments, or justify security tool procurement.
+description: 'Implements threat modeling using the MITRE ATT&CK framework to map adversary TTPs against organizational assets,
+  assess detection coverage gaps, and prioritize defensive investments. Use when SOC teams need to align detection engineering
+  with threat landscape, conduct threat assessments for new environments, or justify security tool procurement.
+
+  '
 domain: cybersecurity
 subdomain: soc-operations
-tags: [soc, mitre-attack, threat-modeling, ttp, detection-coverage, attack-navigator, risk-assessment]
-version: "1.0"
+tags:
+- soc
+- mitre-attack
+- threat-modeling
+- ttp
+- detection-coverage
+- attack-navigator
+- risk-assessment
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Application Protocol Command Analysis
+- Identifier Analysis
+- Content Format Conversion
+- Message Analysis
 ---
 # Implementing Threat Modeling with MITRE ATT&CK
 

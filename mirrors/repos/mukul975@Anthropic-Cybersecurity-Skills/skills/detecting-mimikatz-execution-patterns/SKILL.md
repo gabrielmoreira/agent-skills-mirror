@@ -1,12 +1,26 @@
 ---
 name: detecting-mimikatz-execution-patterns
-description: Detect Mimikatz execution through command-line patterns, LSASS access signatures, binary indicators, and in-memory detection of known modules.
+description: Detect Mimikatz execution through command-line patterns, LSASS access signatures, binary indicators, and in-memory
+  detection of known modules.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, mimikatz, credential-dumping, edr, t1003, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- mimikatz
+- credential-dumping
+- edr
+- t1003
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Execution Isolation
+- Process Termination
+- Hardware-based Process Isolation
+- Web Session Access Mediation
+- Process Suspension
 ---
 
 # Detecting Mimikatz Execution Patterns

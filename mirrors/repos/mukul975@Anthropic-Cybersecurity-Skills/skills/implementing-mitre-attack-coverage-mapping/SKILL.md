@@ -1,12 +1,33 @@
 ---
 name: implementing-mitre-attack-coverage-mapping
-description: Implement MITRE ATT&CK coverage mapping to identify detection gaps, prioritize rule development, and measure SOC detection maturity against adversary techniques.
+description: Implement MITRE ATT&CK coverage mapping to identify detection gaps, prioritize rule development, and measure
+  SOC detection maturity against adversary techniques.
 domain: cybersecurity
 subdomain: soc-operations
-tags: [mitre-attack, detection-coverage, gap-analysis, attack-navigator, soc, detection-engineering]
-version: "1.0"
+tags:
+- mitre-attack
+- detection-coverage
+- gap-analysis
+- attack-navigator
+- soc
+- detection-engineering
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
+d3fend_techniques:
+- Token Binding
+- Restore Access
+- Application Protocol Command Analysis
+- Password Authentication
+- Reissue Credential
 ---
 
 # Implementing MITRE ATT&CK Coverage Mapping

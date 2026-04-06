@@ -1,15 +1,25 @@
 ---
 name: performing-threat-hunting-with-yara-rules
-description: >
-  Use YARA pattern-matching rules to hunt for malware, suspicious files, and
-  indicators of compromise across filesystems and memory dumps. Covers rule
-  authoring, yara-python scanning, and integration with threat intel feeds.
+description: 'Use YARA pattern-matching rules to hunt for malware, suspicious files, and indicators of compromise across filesystems
+  and memory dumps. Covers rule authoring, yara-python scanning, and integration with threat intel feeds.
+
+  '
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [yara, malware-detection, threat-hunting, pattern-matching]
-version: "1.0"
+tags:
+- yara
+- malware-detection
+- threat-hunting
+- pattern-matching
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Performing Threat Hunting with YARA Rules

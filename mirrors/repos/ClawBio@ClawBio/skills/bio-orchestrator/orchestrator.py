@@ -80,6 +80,8 @@ KEYWORD_MAP: dict[str, str] = {
     "heim": "equity-scorer",
     "heterozygosity": "equity-scorer",
     "fst": "equity-scorer",
+    "variant annotation": "vcf-annotator",
+    "annotate variant": "vcf-annotator",
     "variant": "vcf-annotator",
     "annotate": "vcf-annotator",
     "vep": "vcf-annotator",
@@ -328,9 +330,16 @@ def detect_skill_with_hint_from_query(query: str) -> tuple[str | None, str]:
             "produce `integrated.h5ad`, then run `scrna-orchestrator` with "
             "`--use-rep X_scvi` for downstream clustering, annotation, and contrastive markers.",
         )
+    # Prefer longest keyword match to avoid ambiguity (e.g. "variant annotation"
+    # should match vcf-annotator, not equity-scorer via "variant" substring)
+    best_skill = None
+    best_len = 0
     for keyword, skill in KEYWORD_MAP.items():
-        if keyword in query_lower:
-            return skill, ""
+        if keyword in query_lower and len(keyword) > best_len:
+            best_skill = skill
+            best_len = len(keyword)
+    if best_skill:
+        return best_skill, ""
     return None, ""
 
 
@@ -381,6 +390,15 @@ def list_available_skills() -> list[str]:
         if d.is_dir() and (d / "SKILL.md").exists():
             skills.append(d.name)
     return skills
+
+
+def skill_has_executable(skill_name: str) -> bool:
+    """Check if a skill has a Python executable (not just SKILL.md)."""
+    skill_dir = SKILLS_DIR / skill_name
+    if not skill_dir.is_dir():
+        return False
+    return any(f.suffix == ".py" and f.name != "__init__.py"
+               for f in skill_dir.iterdir() if f.is_file())
 
 
 def generate_report_header(
@@ -629,12 +647,22 @@ def main() -> None:
         print(f"Skill '{skill}' not found")
         sys.exit(1)
 
+    # Warn if skill is a stub (SKILL.md only, no Python executable)
+    is_stub = not skill_has_executable(skill)
+    if is_stub:
+        print(
+            f"WARNING: '{skill}' is a SKILL.md-only stub with no Python executable. "
+            f"The agent can apply the methodology from SKILL.md but cannot run automated analysis.",
+            file=sys.stderr,
+        )
+
     # Output routing decision
     result = {
         "input": args.input,
         "detected_skill": skill,
         "detection_method": method,
         "skill_dir": str(skill_dir),
+        "is_stub": is_stub,
         "available_skills": list_available_skills(),
     }
     if routing_hint:

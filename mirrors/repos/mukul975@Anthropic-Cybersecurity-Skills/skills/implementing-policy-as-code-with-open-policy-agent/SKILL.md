@@ -1,16 +1,27 @@
 ---
 name: implementing-policy-as-code-with-open-policy-agent
-description: >
-  This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code
-  enforcement in Kubernetes and CI/CD pipelines. It addresses writing Rego policies, deploying
-  OPA Gatekeeper as a Kubernetes admission controller, testing policies in development, and
-  integrating policy evaluation into deployment pipelines.
+description: 'This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code enforcement in Kubernetes
+  and CI/CD pipelines. It addresses writing Rego policies, deploying OPA Gatekeeper as a Kubernetes admission controller,
+  testing policies in development, and integrating policy evaluation into deployment pipelines.
+
+  '
 domain: cybersecurity
 subdomain: devsecops
-tags: [devsecops, cicd, opa, gatekeeper, policy-as-code, kubernetes, secure-sdlc]
+tags:
+- devsecops
+- cicd
+- opa
+- gatekeeper
+- policy-as-code
+- kubernetes
+- secure-sdlc
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- GOVERN-1.1
+- MEASURE-2.7
+- MANAGE-3.1
 ---
 
 # Implementing Policy as Code with Open Policy Agent

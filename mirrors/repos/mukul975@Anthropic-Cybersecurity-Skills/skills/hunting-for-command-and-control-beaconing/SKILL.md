@@ -1,12 +1,25 @@
 ---
 name: hunting-for-command-and-control-beaconing
-description: Detect C2 beaconing patterns in network traffic using frequency analysis, jitter detection, and domain reputation to identify compromised endpoints communicating with adversary infrastructure.
+description: Detect C2 beaconing patterns in network traffic using frequency analysis, jitter detection, and domain reputation
+  to identify compromised endpoints communicating with adversary infrastructure.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, c2, beaconing, network-analysis, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- c2
+- beaconing
+- network-analysis
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Certificate Analysis
+- Application Protocol Command Analysis
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Hunting for Command and Control Beaconing

@@ -1,18 +1,31 @@
 ---
 name: detecting-anomalies-in-industrial-control-systems
-description: >
-  This skill covers deploying anomaly detection systems for industrial control
-  environments using machine learning models trained on OT network baselines,
-  physics-based process models, and behavioral analysis of industrial protocol
-  communications. It addresses building normal behavior profiles for SCADA polling
-  patterns, detecting deviations in Modbus/DNP3/OPC UA traffic, identifying rogue
-  devices, and correlating network anomalies with physical process data from historians.
+description: 'This skill covers deploying anomaly detection systems for industrial control environments using machine learning
+  models trained on OT network baselines, physics-based process models, and behavioral analysis of industrial protocol communications.
+  It addresses building normal behavior profiles for SCADA polling patterns, detecting deviations in Modbus/DNP3/OPC UA traffic,
+  identifying rogue devices, and correlating network anomalies with physical process data from historians.
+
+  '
 domain: cybersecurity
 subdomain: ot-ics-security
-tags: [ot-security, ics, scada, industrial-control, iec62443, anomaly-detection, machine-learning]
+tags:
+- ot-security
+- ics
+- scada
+- industrial-control
+- iec62443
+- anomaly-detection
+- machine-learning
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0043
+- AML.T0018
+nist_ai_rmf:
+- MEASURE-2.7
+- MEASURE-2.5
+- MAP-5.1
 ---
 
 # Detecting Anomalies in Industrial Control Systems

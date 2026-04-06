@@ -36,7 +36,7 @@ def run_susie(
     w : prior variance on each single effect (Wakefield W)
     max_iter : maximum IBSS iterations
     tol : ELBO convergence tolerance
-    min_purity : minimum average pairwise |r| within a credible set
+    min_purity : minimum pairwise |r| within a credible set (Wang 2020 section 3.2)
 
     Returns
     -------
@@ -48,7 +48,18 @@ def run_susie(
         elbo    : list of ELBO values per iteration
         converged : bool
         n_iter  : int
+
+    Raises
+    ------
+    ValueError : if n <= 0, w <= 0, or z contains NaN
     """
+    if n <= 0:
+        raise ValueError("Sample size n must be positive, got %d" % n)
+    if w <= 0:
+        raise ValueError("Prior variance w must be positive, got %s" % w)
+    if np.any(np.isnan(z)):
+        raise ValueError("z-score vector contains NaN values")
+
     p = len(z)
     z = z.astype(float)
     R = R.astype(float)

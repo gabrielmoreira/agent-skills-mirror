@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-03
+Auto-generated from all feature plans. Last updated: 2026-04-05
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -26,6 +26,10 @@ Auto-generated from all feature plans. Last updated: 2026-04-03
 - N/A (stateless proxy to GNS3 REST API) (012-gns3-mcp-server)
 - Python 3.10+ (community MCP server uses prisma_sase SDK) + prisma-sdwan-mcp (community), prisma_sase SDK (OAuth2 client) (013-prisma-sdwan-mcp-server)
 - N/A (stateless proxy to Prisma SASE REST API) (013-prisma-sdwan-mcp-server)
+- N/A (Remote MCP managed service) + Datadog MCP remote endpoint, DD_API_KEY, DD_APP_KEY (016-datadog-mcp-server)
+- N/A (stateless proxy to Datadog APIs) (016-datadog-mcp-server)
+- Python 3.10+ (consistent with NetClaw MCP servers) + blender-mcp (community, via uvx), Blender 3.0+ (user-installed) (024-blender-3d-viz)
+- N/A (stateless - visualization is ephemeral in Blender) (024-blender-3d-viz)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -45,9 +49,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 024-blender-3d-viz: Added Python 3.10+ (consistent with NetClaw MCP servers) + blender-mcp (community, via uvx), Blender 3.0+ (user-installed)
+- 016-datadog-mcp-server: Added N/A (Remote MCP managed service) + Datadog MCP remote endpoint, DD_API_KEY, DD_APP_KEY
 - 013-prisma-sdwan-mcp-server: Added Python 3.10+ (community MCP server uses prisma_sase SDK) + prisma-sdwan-mcp (community), prisma_sase SDK (OAuth2 client)
-- 012-gns3-mcp-server: Added Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), httpx (async HTTP client), python-dotenv (environment variables)
-- 011-soul-optimization: Added Markdown (documentation reorganization) + N/A (pure markdown files, OpenClaw read tool)
 
 
 <!-- MANUAL ADDITIONS START -->

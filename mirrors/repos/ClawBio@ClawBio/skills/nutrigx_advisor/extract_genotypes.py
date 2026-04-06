@@ -90,25 +90,58 @@ def extract_snp_genotypes(genotype_table: dict, snp_panel: list) -> dict:
                 "nutrient_domain": snp["nutrient_domain"],
             }
         else:
-            # Neither raw nor flipped genotype contains the risk allele
-            print(
-                f"[WARNING] {rsid} ({snp['gene']}): genotype '{raw_geno}' "
-                f"does not contain risk allele '{risk_allele}' (even after strand flip). "
-                f"Setting allele_mismatch."
-            )
-            results[rsid] = {
-                "rsid": rsid,
-                "gene": snp["gene"],
-                "status": "allele_mismatch",
-                "genotype": raw_geno,
-                "normalised": norm,
-                "risk_allele": risk_allele,
-                "risk_count": None,
-                "nutrient_domain": snp["nutrient_domain"],
-                "warning": (
-                    f"Genotype '{raw_geno}' does not contain risk allele "
-                    f"'{risk_allele}' on either strand"
-                ),
-            }
+            # Genotype does not contain the risk allele on either strand.
+            # Check if this is homozygous reference (0 copies of risk allele).
+            # A true allele_mismatch is when the genotype contains alleles
+            # that are neither ref nor risk (e.g. tri-allelic or data error).
+            geno_alleles = set(norm)
+            known_alleles = {risk_allele, ref_allele} if ref_allele else {risk_allele}
+            flipped_known = {COMPLEMENT.get(a, a) for a in known_alleles}
+
+            if ref_allele and geno_alleles <= {ref_allele}:
+                # Homozygous reference: 0 copies of risk allele
+                results[rsid] = {
+                    "rsid": rsid,
+                    "gene": snp["gene"],
+                    "status": "found",
+                    "genotype": raw_geno,
+                    "normalised": norm,
+                    "risk_allele": risk_allele,
+                    "risk_count": 0,
+                    "nutrient_domain": snp["nutrient_domain"],
+                }
+            elif ref_allele and geno_alleles <= {COMPLEMENT.get(ref_allele, ref_allele)}:
+                # Homozygous reference on complement strand
+                results[rsid] = {
+                    "rsid": rsid,
+                    "gene": snp["gene"],
+                    "status": "found",
+                    "genotype": raw_geno,
+                    "normalised": flip_genotype(raw_geno),
+                    "risk_allele": risk_allele,
+                    "risk_count": 0,
+                    "nutrient_domain": snp["nutrient_domain"],
+                }
+            else:
+                # True allele mismatch: genotype contains unknown alleles
+                print(
+                    f"[WARNING] {rsid} ({snp['gene']}): genotype '{raw_geno}' "
+                    f"does not contain risk allele '{risk_allele}' (even after strand flip). "
+                    f"Setting allele_mismatch."
+                )
+                results[rsid] = {
+                    "rsid": rsid,
+                    "gene": snp["gene"],
+                    "status": "allele_mismatch",
+                    "genotype": raw_geno,
+                    "normalised": norm,
+                    "risk_allele": risk_allele,
+                    "risk_count": None,
+                    "nutrient_domain": snp["nutrient_domain"],
+                    "warning": (
+                        f"Genotype '{raw_geno}' does not contain risk allele "
+                        f"'{risk_allele}' on either strand"
+                    ),
+                }
 
     return results

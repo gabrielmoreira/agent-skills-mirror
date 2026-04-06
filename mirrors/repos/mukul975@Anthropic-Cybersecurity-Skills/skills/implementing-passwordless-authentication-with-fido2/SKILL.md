@@ -1,12 +1,29 @@
 ---
 name: implementing-passwordless-authentication-with-fido2
-description: Deploy FIDO2/WebAuthn passwordless authentication using security keys and platform authenticators. Covers WebAuthn API integration, FIDO2 server configuration, passkey enrollment, biometric authentica
+description: Deploy FIDO2/WebAuthn passwordless authentication using security keys and platform authenticators. Covers WebAuthn
+  API integration, FIDO2 server configuration, passkey enrollment, biometric authentica
 domain: cybersecurity
 subdomain: identity-access-management
-tags: [iam, identity, access-control, authentication, fido2, webauthn, passwordless]
-version: "1.0"
+tags:
+- iam
+- identity
+- access-control
+- authentication
+- fido2
+- webauthn
+- passwordless
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0051
+- AML.T0054
+- AML.T0056
+nist_ai_rmf:
+- MEASURE-2.7
+- MEASURE-2.5
+- GOVERN-6.1
+- MAP-5.1
 ---
 # Implementing Passwordless Authentication with FIDO2
 

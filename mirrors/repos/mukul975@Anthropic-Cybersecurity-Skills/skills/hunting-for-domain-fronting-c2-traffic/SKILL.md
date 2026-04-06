@@ -1,19 +1,26 @@
 ---
 name: hunting-for-domain-fronting-c2-traffic
-description: Detect domain fronting C2 traffic by analyzing SNI vs HTTP Host header mismatches in proxy logs and TLS certificate discrepancies using pyOpenSSL for certificate inspection
+description: Detect domain fronting C2 traffic by analyzing SNI vs HTTP Host header mismatches in proxy logs and TLS certificate
+  discrepancies using pyOpenSSL for certificate inspection
 domain: cybersecurity
 subdomain: threat-hunting
 tags:
-  - domain-fronting
-  - c2-detection
-  - tls-inspection
-  - proxy-logs
-  - pyopenssl
-  - threat-hunting
-  - network-security
-version: "1.0"
+- domain-fronting
+- c2-detection
+- tls-inspection
+- proxy-logs
+- pyopenssl
+- threat-hunting
+- network-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Network Traffic Community Deviation
 ---
 
 # Hunting for Domain Fronting C2 Traffic

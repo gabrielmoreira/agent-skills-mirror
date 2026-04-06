@@ -1,12 +1,26 @@
 ---
 name: performing-credential-access-with-lazagne
-description: Extract stored credentials from compromised endpoints using the LaZagne post-exploitation tool to recover passwords from browsers, databases, system vaults, and applications during authorized red team operations.
+description: Extract stored credentials from compromised endpoints using the LaZagne post-exploitation tool to recover passwords
+  from browsers, databases, system vaults, and applications during authorized red team operations.
 domain: cybersecurity
 subdomain: red-teaming
-tags: [red-team, credential-access, lazagne, post-exploitation, password-recovery, credential-dumping, lateral-movement]
-version: "1.0"
+tags:
+- red-team
+- credential-access
+- lazagne
+- post-exploitation
+- password-recovery
+- credential-dumping
+- lateral-movement
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
+- Platform Hardening
+- File Format Verification
 ---
 # Performing Credential Access with LaZagne
 

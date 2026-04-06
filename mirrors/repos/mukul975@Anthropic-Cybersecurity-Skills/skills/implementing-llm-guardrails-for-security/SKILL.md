@@ -1,21 +1,43 @@
 ---
 name: implementing-llm-guardrails-for-security
-description: >
-  Implements input and output validation guardrails for LLM-powered applications to prevent
-  prompt injection, data leakage, toxic content generation, and hallucinated outputs. Builds
-  a security validation pipeline using NVIDIA NeMo Guardrails Colang definitions, custom Python
-  validators for PII detection and content policy enforcement, and the Guardrails AI framework
-  for structured output validation. The guardrails system intercepts both user inputs (blocking
-  injection attempts, stripping PII, enforcing topic boundaries) and model outputs (detecting
-  hallucinations, filtering toxic content, validating JSON schema compliance). Activates for
-  requests involving LLM output validation, AI content filtering, guardrail implementation,
+description: 'Implements input and output validation guardrails for LLM-powered applications to prevent prompt injection,
+  data leakage, toxic content generation, and hallucinated outputs. Builds a security validation pipeline using NVIDIA NeMo
+  Guardrails Colang definitions, custom Python validators for PII detection and content policy enforcement, and the Guardrails
+  AI framework for structured output validation. The guardrails system intercepts both user inputs (blocking injection attempts,
+  stripping PII, enforcing topic boundaries) and model outputs (detecting hallucinations, filtering toxic content, validating
+  JSON schema compliance). Activates for requests involving LLM output validation, AI content filtering, guardrail implementation,
   or LLM safety enforcement.
+
+  '
 domain: cybersecurity
 subdomain: ai-security
-tags: [LLM-guardrails, NeMo-Guardrails, input-validation, output-filtering, AI-safety]
+tags:
+- LLM-guardrails
+- NeMo-Guardrails
+- input-validation
+- output-filtering
+- AI-safety
 version: 1.0.0
 author: mukul975
 license: Apache-2.0
+atlas_techniques:
+- AML.T0051
+- AML.T0054
+- AML.T0056
+- AML.T0057
+- AML.T0062
+nist_ai_rmf:
+- GOVERN-1.1
+- GOVERN-6.1
+- MEASURE-2.7
+- MEASURE-2.5
+- MANAGE-2.4
+d3fend_techniques:
+- Content Validation
+- Content Filtering
+- Content Excision
+- Application Hardening
+- Execution Isolation
 ---
 # Implementing LLM Guardrails for Security
 

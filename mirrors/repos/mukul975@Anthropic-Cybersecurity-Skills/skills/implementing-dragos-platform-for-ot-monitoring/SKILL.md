@@ -1,16 +1,32 @@
 ---
 name: implementing-dragos-platform-for-ot-monitoring
-description: >
-  Deploy and configure the Dragos Platform for OT network monitoring, leveraging
-  its 600+ industrial protocol parsers, intelligence-driven threat detection
-  analytics, and asset visibility capabilities to protect ICS environments against
+description: 'Deploy and configure the Dragos Platform for OT network monitoring, leveraging its 600+ industrial protocol
+  parsers, intelligence-driven threat detection analytics, and asset visibility capabilities to protect ICS environments against
   threat groups like VOLTZITE, GRAPHITE, and BAUXITE.
+
+  '
 domain: cybersecurity
 subdomain: ot-ics-security
-tags: [ot-security, ics, dragos, threat-detection, ot-monitoring, scada, threat-intelligence, ndr]
-version: "1.0"
+tags:
+- ot-security
+- ics
+- dragos
+- threat-detection
+- ot-monitoring
+- scada
+- threat-intelligence
+- ndr
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 
 # Implementing Dragos Platform for OT Monitoring

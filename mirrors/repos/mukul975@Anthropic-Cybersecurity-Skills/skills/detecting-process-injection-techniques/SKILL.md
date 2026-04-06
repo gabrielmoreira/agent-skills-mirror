@@ -1,17 +1,28 @@
 ---
 name: detecting-process-injection-techniques
-description: >
-  Detects and analyzes process injection techniques used by malware including classic DLL
-  injection, process hollowing, APC injection, thread hijacking, and reflective loading.
-  Uses memory forensics, API monitoring, and behavioral analysis to identify injection
-  artifacts. Activates for requests involving process injection detection, code injection
-  analysis, hollowed process investigation, or in-memory threat detection.
+description: 'Detects and analyzes process injection techniques used by malware including classic DLL injection, process hollowing,
+  APC injection, thread hijacking, and reflective loading. Uses memory forensics, API monitoring, and behavioral analysis
+  to identify injection artifacts. Activates for requests involving process injection detection, code injection analysis,
+  hollowed process investigation, or in-memory threat detection.
+
+  '
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [malware, process-injection, detection, memory-forensics, defense-evasion]
+tags:
+- malware
+- process-injection
+- detection
+- memory-forensics
+- defense-evasion
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Detecting Process Injection Techniques

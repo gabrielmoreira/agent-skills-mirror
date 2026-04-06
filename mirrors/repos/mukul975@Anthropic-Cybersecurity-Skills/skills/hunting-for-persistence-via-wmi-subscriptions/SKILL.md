@@ -1,12 +1,25 @@
 ---
 name: hunting-for-persistence-via-wmi-subscriptions
-description: Hunt for adversary persistence through Windows Management Instrumentation event subscriptions by monitoring WMI consumer, filter, and binding creation events that execute malicious code triggered by system events.
+description: Hunt for adversary persistence through Windows Management Instrumentation event subscriptions by monitoring WMI
+  consumer, filter, and binding creation events that execute malicious code triggered by system events.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, wmi-persistence, mitre-t1546-003, event-subscription, windows, endpoint-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- wmi-persistence
+- mitre-t1546-003
+- event-subscription
+- windows
+- endpoint-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Platform Monitoring
 ---
 
 # Hunting for Persistence via WMI Subscriptions

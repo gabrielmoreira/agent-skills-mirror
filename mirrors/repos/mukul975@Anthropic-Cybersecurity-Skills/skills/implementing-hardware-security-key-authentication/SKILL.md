@@ -1,18 +1,34 @@
 ---
 name: implementing-hardware-security-key-authentication
-description: >
-  Implements FIDO2/WebAuthn hardware security key authentication including registration ceremonies,
-  authentication flows, YubiKey enrollment, and passkey migration strategies. Builds a complete
-  relying party server using the python-fido2 library that supports cross-platform authenticators,
-  resident key (discoverable credential) workflows, and user verification policies. Activates for
-  requests involving FIDO2 implementation, WebAuthn registration, hardware security key enrollment,
+description: 'Implements FIDO2/WebAuthn hardware security key authentication including registration ceremonies, authentication
+  flows, YubiKey enrollment, and passkey migration strategies. Builds a complete relying party server using the python-fido2
+  library that supports cross-platform authenticators, resident key (discoverable credential) workflows, and user verification
+  policies. Activates for requests involving FIDO2 implementation, WebAuthn registration, hardware security key enrollment,
   YubiKey integration, or passkey migration from password-based authentication.
+
+  '
 domain: cybersecurity
 subdomain: identity-and-access-management
-tags: [FIDO2, WebAuthn, hardware-security-key, YubiKey, passkeys, passwordless-authentication, CTAP2]
+tags:
+- FIDO2
+- WebAuthn
+- hardware-security-key
+- YubiKey
+- passkeys
+- passwordless-authentication
+- CTAP2
 version: 1.0.0
 author: mukul975
 license: Apache-2.0
+atlas_techniques:
+- AML.T0051
+- AML.T0054
+- AML.T0056
+nist_ai_rmf:
+- MEASURE-2.7
+- MEASURE-2.5
+- GOVERN-6.1
+- MAP-5.1
 ---
 # Implementing Hardware Security Key Authentication
 

@@ -1,12 +1,27 @@
 ---
 name: detecting-wmi-persistence
-description: Detect WMI event subscription persistence by analyzing Sysmon Event IDs 19, 20, and 21 for malicious EventFilter, EventConsumer, and FilterToConsumerBinding creation.
+description: Detect WMI event subscription persistence by analyzing Sysmon Event IDs 19, 20, and 21 for malicious EventFilter,
+  EventConsumer, and FilterToConsumerBinding creation.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, wmi, persistence, sysmon, t1546.003, mitre-attack, windows, dfir]
-version: "1.0"
+tags:
+- threat-hunting
+- wmi
+- persistence
+- sysmon
+- t1546.003
+- mitre-attack
+- windows
+- dfir
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Platform Monitoring
 ---
 
 # Detecting WMI Persistence

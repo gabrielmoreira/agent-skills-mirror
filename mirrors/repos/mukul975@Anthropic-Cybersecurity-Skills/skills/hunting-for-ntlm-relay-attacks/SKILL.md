@@ -1,12 +1,29 @@
 ---
 name: hunting-for-ntlm-relay-attacks
-description: Detect NTLM relay attacks by analyzing Windows Event 4624 logon type 3 with NTLMSSP authentication, identifying IP-to-hostname mismatches, Responder traffic signatures, SMB signing status, and suspicious authentication patterns across the domain.
+description: Detect NTLM relay attacks by analyzing Windows Event 4624 logon type 3 with NTLMSSP authentication, identifying
+  IP-to-hostname mismatches, Responder traffic signatures, SMB signing status, and suspicious authentication patterns across
+  the domain.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [NTLM-relay, Windows-events, Event-4624, NTLMSSP, Responder, SMB-signing, credential-access, T1557.001, Active-Directory]
-version: "1.0"
+tags:
+- NTLM-relay
+- Windows-events
+- Event-4624
+- NTLMSSP
+- Responder
+- SMB-signing
+- credential-access
+- T1557.001
+- Active-Directory
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Network Traffic Community Deviation
 ---
 
 # Hunting for NTLM Relay Attacks

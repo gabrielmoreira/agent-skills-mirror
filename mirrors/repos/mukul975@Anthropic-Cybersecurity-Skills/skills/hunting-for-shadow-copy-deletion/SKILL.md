@@ -1,12 +1,26 @@
 ---
 name: hunting-for-shadow-copy-deletion
-description: Hunt for Volume Shadow Copy deletion activity that indicates ransomware preparation or anti-forensics by monitoring vssadmin, wmic, and PowerShell shadow copy commands.
+description: Hunt for Volume Shadow Copy deletion activity that indicates ransomware preparation or anti-forensics by monitoring
+  vssadmin, wmic, and PowerShell shadow copy commands.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, shadow-copy, ransomware, anti-forensics, t1490, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- shadow-copy
+- ransomware
+- anti-forensics
+- t1490
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Platform Hardening
+- Restore Object
+- Restore Configuration
+- Restore Software
+- Software Update
 ---
 
 # Hunting For Shadow Copy Deletion

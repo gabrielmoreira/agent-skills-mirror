@@ -1,21 +1,43 @@
 ---
 name: detecting-ai-model-prompt-injection-attacks
-description: >
-  Detects prompt injection attacks targeting LLM-based applications using a multi-layered
-  defense combining regex pattern matching for known attack signatures, heuristic scoring
-  for structural anomalies, and transformer-based classification with DeBERTa models. The
-  detector analyzes user inputs before they reach the LLM, flagging direct injections
-  (system prompt overrides, role-play escapes, instruction hijacking) and indirect injections
-  (encoded payloads, multi-language obfuscation, delimiter-based escapes). Based on the
-  OWASP LLM Top 10 (LLM01:2025 Prompt Injection) and Simon Willison's prompt injection
-  taxonomy. Activates for requests involving prompt injection detection, LLM input
-  sanitization, AI security scanning, or prompt attack classification.
+description: 'Detects prompt injection attacks targeting LLM-based applications using a multi-layered defense combining regex
+  pattern matching for known attack signatures, heuristic scoring for structural anomalies, and transformer-based classification
+  with DeBERTa models. The detector analyzes user inputs before they reach the LLM, flagging direct injections (system prompt
+  overrides, role-play escapes, instruction hijacking) and indirect injections (encoded payloads, multi-language obfuscation,
+  delimiter-based escapes). Based on the OWASP LLM Top 10 (LLM01:2025 Prompt Injection) and Simon Willison''s prompt injection
+  taxonomy. Activates for requests involving prompt injection detection, LLM input sanitization, AI security scanning, or
+  prompt attack classification.
+
+  '
 domain: cybersecurity
 subdomain: ai-security
-tags: [prompt-injection, LLM-security, OWASP-LLM-Top10, NLP-classification, input-validation]
+tags:
+- prompt-injection
+- LLM-security
+- OWASP-LLM-Top10
+- NLP-classification
+- input-validation
 version: 1.0.0
 author: mukul975
 license: Apache-2.0
+atlas_techniques:
+- AML.T0051
+- AML.T0054
+- AML.T0056
+- AML.T0068
+- AML.T0067
+nist_ai_rmf:
+- GOVERN-1.1
+- GOVERN-6.1
+- MEASURE-2.7
+- MEASURE-2.5
+- MANAGE-2.4
+d3fend_techniques:
+- Content Validation
+- Content Filtering
+- Application Hardening
+- Inbound Traffic Filtering
+- User Behavior Analysis
 ---
 # Detecting AI Model Prompt Injection Attacks
 

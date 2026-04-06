@@ -1,12 +1,26 @@
 ---
 name: performing-threat-landscape-assessment-for-sector
-description: Conduct a sector-specific threat landscape assessment by analyzing threat actor targeting patterns, common attack vectors, and industry-specific vulnerabilities to inform organizational risk management.
+description: Conduct a sector-specific threat landscape assessment by analyzing threat actor targeting patterns, common attack
+  vectors, and industry-specific vulnerabilities to inform organizational risk management.
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [threat-landscape, sector-analysis, risk-assessment, threat-intelligence, industry-targeting, cti, strategic-intelligence]
-version: "1.0"
+tags:
+- threat-landscape
+- sector-analysis
+- risk-assessment
+- threat-intelligence
+- industry-targeting
+- cti
+- strategic-intelligence
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Application Protocol Command Analysis
+- Identifier Analysis
+- Content Format Conversion
+- Message Analysis
 ---
 # Performing Threat Landscape Assessment for Sector
 

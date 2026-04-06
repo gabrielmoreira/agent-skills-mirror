@@ -1,12 +1,25 @@
 ---
 name: performing-clickjacking-attack-test
-description: Testing web applications for clickjacking vulnerabilities by assessing frame embedding controls and crafting proof-of-concept overlay attacks during authorized security assessments.
+description: Testing web applications for clickjacking vulnerabilities by assessing frame embedding controls and crafting
+  proof-of-concept overlay attacks during authorized security assessments.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, clickjacking, ui-redressing, web-security, owasp, x-frame-options]
-version: "1.0"
+tags:
+- penetration-testing
+- clickjacking
+- ui-redressing
+- web-security
+- owasp
+- x-frame-options
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0024
+- AML.T0035
+nist_ai_rmf:
+- MEASURE-2.8
+- MAP-5.1
 ---
 
 # Performing Clickjacking Attack Test

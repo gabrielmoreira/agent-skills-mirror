@@ -1,12 +1,27 @@
 ---
 name: hunting-for-beaconing-with-frequency-analysis
-description: Identify command-and-control beaconing patterns in network traffic by applying statistical frequency analysis, jitter calculation, and coefficient of variation scoring to detect periodic callbacks from compromised endpoints.
+description: Identify command-and-control beaconing patterns in network traffic by applying statistical frequency analysis,
+  jitter calculation, and coefficient of variation scoring to detect periodic callbacks from compromised endpoints.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, beaconing, c2-detection, frequency-analysis, network-traffic, RITA, jitter-detection, mitre-t1071]
-version: "1.0"
+tags:
+- threat-hunting
+- beaconing
+- c2-detection
+- frequency-analysis
+- network-traffic
+- RITA
+- jitter-detection
+- mitre-t1071
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Certificate Analysis
+- Application Protocol Command Analysis
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Hunting for Beaconing with Frequency Analysis

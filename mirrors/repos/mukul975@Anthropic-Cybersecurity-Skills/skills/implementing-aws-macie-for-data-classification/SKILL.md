@@ -1,12 +1,30 @@
 ---
 name: implementing-aws-macie-for-data-classification
-description: Implement Amazon Macie to automatically discover, classify, and protect sensitive data in S3 buckets using machine learning and pattern matching for PII, financial data, and credentials detection.
+description: Implement Amazon Macie to automatically discover, classify, and protect sensitive data in S3 buckets using machine
+  learning and pattern matching for PII, financial data, and credentials detection.
 domain: cybersecurity
 subdomain: cloud-security
-tags: [aws, macie, data-classification, s3, pii, sensitive-data, dlp, compliance]
-version: "1.0"
+tags:
+- aws
+- macie
+- data-classification
+- s3
+- pii
+- sensitive-data
+- dlp
+- compliance
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0043
+- AML.T0018
+nist_ai_rmf:
+- GOVERN-1.1
+- GOVERN-4.2
+- MAP-2.3
+- MEASURE-2.7
+- MEASURE-2.5
 ---
 
 # Implementing AWS Macie for Data Classification

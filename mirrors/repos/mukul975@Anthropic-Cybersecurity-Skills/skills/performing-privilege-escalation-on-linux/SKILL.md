@@ -1,12 +1,26 @@
 ---
 name: performing-privilege-escalation-on-linux
-description: Linux privilege escalation involves elevating from a low-privilege user account to root access on a compromised system. Red teams exploit misconfigurations, vulnerable services, kernel exploits, and w
+description: Linux privilege escalation involves elevating from a low-privilege user account to root access on a compromised
+  system. Red teams exploit misconfigurations, vulnerable services, kernel exploits, and w
 domain: cybersecurity
 subdomain: red-teaming
-tags: [red-team, adversary-simulation, mitre-attack, exploitation, post-exploitation, privilege-escalation, linux]
-version: "1.0"
+tags:
+- red-team
+- adversary-simulation
+- mitre-attack
+- exploitation
+- post-exploitation
+- privilege-escalation
+- linux
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Restore Object
+- Network Traffic Policy Mapping
+- Restore Configuration
+- Access Modeling
+- Operational Activity Mapping
 ---
 # Performing Privilege Escalation on Linux
 

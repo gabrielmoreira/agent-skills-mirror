@@ -1,12 +1,26 @@
 ---
 name: building-c2-infrastructure-with-sliver-framework
-description: Build and configure a resilient command-and-control infrastructure using BishopFox's Sliver C2 framework with redirectors, HTTPS listeners, and multi-operator support for authorized red team engagements.
+description: Build and configure a resilient command-and-control infrastructure using BishopFox's Sliver C2 framework with
+  redirectors, HTTPS listeners, and multi-operator support for authorized red team engagements.
 domain: cybersecurity
 subdomain: red-teaming
-tags: [red-team, c2-framework, sliver, command-and-control, adversary-simulation, infrastructure, post-exploitation]
-version: "1.0"
+tags:
+- red-team
+- c2-framework
+- sliver
+- command-and-control
+- adversary-simulation
+- infrastructure
+- post-exploitation
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Certificate Analysis
+- Application Protocol Command Analysis
+- Content Format Conversion
+- File Content Analysis
 ---
 # Building C2 Infrastructure with Sliver Framework
 

@@ -1,12 +1,27 @@
 ---
 name: performing-alert-triage-with-elastic-siem
-description: Perform systematic alert triage in Elastic Security SIEM to rapidly classify, prioritize, and investigate security alerts for SOC operations.
+description: Perform systematic alert triage in Elastic Security SIEM to rapidly classify, prioritize, and investigate security
+  alerts for SOC operations.
 domain: cybersecurity
 subdomain: soc-operations
-tags: [elastic, siem, alert-triage, soc, elastic-security, detection, esql, kibana]
-version: "1.0"
+tags:
+- elastic
+- siem
+- alert-triage
+- soc
+- elastic-security
+- detection
+- esql
+- kibana
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Token Binding
+- Restore Access
+- Application Protocol Command Analysis
+- Password Authentication
+- Reissue Credential
 ---
 
 # Performing Alert Triage with Elastic SIEM

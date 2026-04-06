@@ -1,17 +1,27 @@
 ---
 name: analyzing-indicators-of-compromise
-description: >
-  Analyzes indicators of compromise (IOCs) including IP addresses, domains, file hashes, URLs,
-  and email artifacts to determine maliciousness confidence, campaign attribution, and blocking
-  priority. Use when triaging IOCs from phishing emails, security alerts, or external threat feeds;
-  enriching raw IOCs with multi-source intelligence; or making block/monitor/whitelist decisions.
-  Activates for requests involving VirusTotal, AbuseIPDB, MalwareBazaar, MISP, or IOC enrichment pipelines.
+description: 'Analyzes indicators of compromise (IOCs) including IP addresses, domains, file hashes, URLs, and email artifacts
+  to determine maliciousness confidence, campaign attribution, and blocking priority. Use when triaging IOCs from phishing
+  emails, security alerts, or external threat feeds; enriching raw IOCs with multi-source intelligence; or making block/monitor/whitelist
+  decisions. Activates for requests involving VirusTotal, AbuseIPDB, MalwareBazaar, MISP, or IOC enrichment pipelines.
+
+  '
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [IOC, VirusTotal, AbuseIPDB, MalwareBazaar, MISP, threat-intelligence, STIX, NIST-CSF]
+tags:
+- IOC
+- VirusTotal
+- AbuseIPDB
+- MalwareBazaar
+- MISP
+- threat-intelligence
+- STIX
+- NIST-CSF
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0052
 ---
 # Analyzing Indicators of Compromise
 

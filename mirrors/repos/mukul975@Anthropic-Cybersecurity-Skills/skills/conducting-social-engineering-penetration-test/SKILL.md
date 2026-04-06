@@ -1,12 +1,28 @@
 ---
 name: conducting-social-engineering-penetration-test
-description: Design and execute a social engineering penetration test including phishing, vishing, smishing, and physical pretexting campaigns to measure human security resilience and identify training gaps.
+description: Design and execute a social engineering penetration test including phishing, vishing, smishing, and physical
+  pretexting campaigns to measure human security resilience and identify training gaps.
 domain: cybersecurity
 subdomain: penetration-testing
-tags: [social-engineering, phishing, vishing, pretexting, GoPhish, SET, OSINT, security-awareness, red-team]
-version: "1.0"
+tags:
+- social-engineering
+- phishing
+- vishing
+- pretexting
+- GoPhish
+- SET
+- OSINT
+- security-awareness
+- red-team
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0088
+- AML.T0052
+nist_ai_rmf:
+- GOVERN-6.2
+- MAP-5.2
 ---
 
 # Conducting Social Engineering Penetration Test

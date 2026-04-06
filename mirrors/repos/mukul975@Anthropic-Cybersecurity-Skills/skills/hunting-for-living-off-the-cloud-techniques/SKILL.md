@@ -1,12 +1,26 @@
 ---
 name: hunting-for-living-off-the-cloud-techniques
-description: Hunt for adversary abuse of legitimate cloud services for C2, data staging, and exfiltration including abuse of Azure, AWS, GCP services, and SaaS platforms.
+description: Hunt for adversary abuse of legitimate cloud services for C2, data staging, and exfiltration including abuse
+  of Azure, AWS, GCP services, and SaaS platforms.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, mitre-attack, cloud-abuse, c2, lotc, saas, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- mitre-attack
+- cloud-abuse
+- c2
+- lotc
+- saas
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Network Traffic Community Deviation
 ---
 
 # Hunting For Living Off The Cloud Techniques

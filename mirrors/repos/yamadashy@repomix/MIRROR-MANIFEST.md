@@ -73,9 +73,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`.agents/commands/code/review-loop.md`](.agents/commands/code/review-loop.md) |
 | 13 | ✓ | [`.agents/commands/git/git-commit-push.md`](.agents/commands/git/git-commit-push.md) |
 | 14 | ✓ | [`.agents/commands/git/git-commit.md`](.agents/commands/git/git-commit.md) |
-| 15 | ✓ | [`.agents/commands/git/pr-create.md`](.agents/commands/git/pr-create.md) |
-| 16 | ✓ | [`.agents/commands/git/pr-prepare.md`](.agents/commands/git/pr-prepare.md) |
-| 17 | ✓ | [`.agents/commands/git/pr-resolve-outdated.md`](.agents/commands/git/pr-resolve-outdated.md) |
+| 15 | ✓ | [`.agents/commands/git/pr-address-feedback.md`](.agents/commands/git/pr-address-feedback.md) |
+| 16 | ✓ | [`.agents/commands/git/pr-create.md`](.agents/commands/git/pr-create.md) |
+| 17 | ✓ | [`.agents/commands/git/pr-prepare.md`](.agents/commands/git/pr-prepare.md) |
 | 18 | ✓ | [`.agents/commands/git/pr-review.md`](.agents/commands/git/pr-review.md) |
 | 19 | ✓ | [`.agents/commands/git/release-note-generate.md`](.agents/commands/git/release-note-generate.md) |
 | 20 | ✓ | [`.agents/rules/base.md`](.agents/rules/base.md) |

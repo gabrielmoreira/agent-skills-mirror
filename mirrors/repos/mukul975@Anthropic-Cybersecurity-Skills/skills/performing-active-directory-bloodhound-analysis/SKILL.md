@@ -1,12 +1,26 @@
 ---
 name: performing-active-directory-bloodhound-analysis
-description: Use BloodHound and SharpHound to enumerate Active Directory relationships and identify attack paths from compromised users to Domain Admin.
+description: Use BloodHound and SharpHound to enumerate Active Directory relationships and identify attack paths from compromised
+  users to Domain Admin.
 domain: cybersecurity
 subdomain: red-teaming
-tags: [bloodhound, active-directory, sharphound, attack-path, ad-enumeration, graph-theory, privilege-escalation]
-version: "1.0"
+tags:
+- bloodhound
+- active-directory
+- sharphound
+- attack-path
+- ad-enumeration
+- graph-theory
+- privilege-escalation
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Restore Access
+- Password Authentication
+- Biometric Authentication
+- Strong Password Policy
+- Restore User Account Access
 ---
 
 # Performing Active Directory BloodHound Analysis

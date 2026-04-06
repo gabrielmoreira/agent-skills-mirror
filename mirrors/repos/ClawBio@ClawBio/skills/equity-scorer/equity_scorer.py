@@ -6,7 +6,7 @@ Usage:
 
 Computes from real genotype data:
   - Observed and expected heterozygosity per population
-  - Pairwise Hudson FST between all population pairs
+  - Pairwise Nei's GST between all population pairs
   - PCA of genotype matrix (PC1 vs PC2)
   - Population representation statistics
   - Composite HEIM Equity Score (0-100)
@@ -417,7 +417,15 @@ def compute_heim_score(
     gs = compute_geographic_spread(set(pop_counts.keys()))
 
     w1, w2, w3, w4 = weights
+    if any(w < 0 for w in weights):
+        raise ValueError("HEIM weights must be non-negative, got: %s" % (weights,))
+    w_sum = w1 + w2 + w3 + w4
+    if w_sum == 0:
+        raise ValueError("HEIM weights must not all be zero")
+    # Normalize weights so score stays in [0, 100]
+    w1, w2, w3, w4 = w1 / w_sum, w2 / w_sum, w3 / w_sum, w4 / w_sum
     score = (w1 * ri_for_score + w2 * hb + w3 * fc + w4 * gs) * 100
+    score = max(0.0, min(100.0, score))
 
     rating = (
         "Excellent" if score >= 80 else
@@ -698,7 +706,7 @@ def generate_report(
         fst_table = "\n".join(fst_rows)
         fst_section = """## Pairwise FST
 
-| Comparison | Hudson FST |
+| Comparison | Nei's GST |
 |------------|-----------|
 %s
 
@@ -811,6 +819,7 @@ python equity_scorer.py --input %(input_name)s --output %(output_name)s
 ## References
 
 - Corpas, M. (2026). ClawBio. https://github.com/ClawBio/ClawBio
+- Nei, M. (1973). Analysis of Gene Diversity in Subdivided Populations. PNAS, 70(12), 3321-3323.
 - Hudson, R.R., Slatkin, M. & Maddison, W.P. (1992). Estimation of levels of gene flow from DNA sequence data. Genetics, 132(2), 583-589.
 - The 1000 Genomes Project Consortium (2015). A global reference for human genetic variation. Nature, 526, 68-74.
 

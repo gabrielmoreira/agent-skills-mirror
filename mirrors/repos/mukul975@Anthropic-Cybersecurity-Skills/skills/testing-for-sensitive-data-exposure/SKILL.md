@@ -1,12 +1,28 @@
 ---
 name: testing-for-sensitive-data-exposure
-description: Identifying sensitive data exposure vulnerabilities including API key leakage, PII in responses, insecure storage, and unprotected data transmission during security assessments.
+description: Identifying sensitive data exposure vulnerabilities including API key leakage, PII in responses, insecure storage,
+  and unprotected data transmission during security assessments.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, data-exposure, pii, owasp, web-security, api-keys, secrets]
-version: "1.0"
+tags:
+- penetration-testing
+- data-exposure
+- pii
+- owasp
+- web-security
+- api-keys
+- secrets
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 
 # Testing for Sensitive Data Exposure

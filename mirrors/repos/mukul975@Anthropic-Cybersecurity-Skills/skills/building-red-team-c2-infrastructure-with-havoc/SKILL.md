@@ -1,12 +1,29 @@
 ---
 name: building-red-team-c2-infrastructure-with-havoc
-description: Deploy and configure the Havoc C2 framework with teamserver, HTTPS listeners, redirectors, and Demon agents for authorized red team operations.
+description: Deploy and configure the Havoc C2 framework with teamserver, HTTPS listeners, redirectors, and Demon agents for
+  authorized red team operations.
 domain: cybersecurity
 subdomain: red-teaming
-tags: [havoc-c2, command-and-control, red-team-infrastructure, post-exploitation, adversary-emulation, demon-agent]
-version: "1.0"
+tags:
+- havoc-c2
+- command-and-control
+- red-team-infrastructure
+- post-exploitation
+- adversary-emulation
+- demon-agent
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- GOVERN-1.1
+- MEASURE-2.7
+- MANAGE-3.1
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Certificate Analysis
+- Application Protocol Command Analysis
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Building Red Team C2 Infrastructure with Havoc

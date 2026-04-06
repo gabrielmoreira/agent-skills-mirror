@@ -1,18 +1,41 @@
 ---
 name: detecting-deepfake-audio-in-vishing-attacks
-description: >
-  Detects AI-generated deepfake audio used in voice phishing (vishing) attacks by
-  extracting spectral features (MFCC, spectral centroid, spectral contrast, zero-crossing
-  rate) and classifying samples with machine learning models. Supports batch analysis of
-  audio files, generates confidence scores, and produces forensic reports. Activates for
-  requests involving deepfake voice detection, vishing investigation, AI-generated speech
-  analysis, voice cloning detection, or audio authenticity verification.
+description: 'Detects AI-generated deepfake audio used in voice phishing (vishing) attacks by extracting spectral features
+  (MFCC, spectral centroid, spectral contrast, zero-crossing rate) and classifying samples with machine learning models. Supports
+  batch analysis of audio files, generates confidence scores, and produces forensic reports. Activates for requests involving
+  deepfake voice detection, vishing investigation, AI-generated speech analysis, voice cloning detection, or audio authenticity
+  verification.
+
+  '
 domain: cybersecurity
 subdomain: social-engineering-defense
-tags: [deepfake-detection, vishing, audio-forensics, MFCC, spectral-analysis, voice-cloning]
+tags:
+- deepfake-detection
+- vishing
+- audio-forensics
+- MFCC
+- spectral-analysis
+- voice-cloning
 version: 1.0.0
 author: mukul975
 license: Apache-2.0
+atlas_techniques:
+- AML.T0088
+- AML.T0043
+- AML.T0018
+- AML.T0052
+nist_ai_rmf:
+- MEASURE-2.7
+- GOVERN-6.2
+- MAP-5.2
+- MEASURE-2.5
+- MAP-5.1
+d3fend_techniques:
+- Sender Reputation Analysis
+- Content Validation
+- Message Analysis
+- User Behavior Analysis
+- Identifier Analysis
 ---
 
 # Detecting Deepfake Audio in Vishing Attacks

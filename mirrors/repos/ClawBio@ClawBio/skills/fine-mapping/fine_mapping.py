@@ -176,6 +176,11 @@ def run_finemapping(
 
     Returns a results dict with keys: method, pip, credible_sets, params.
     """
+    if coverage <= 0 or coverage > 1:
+        raise ValueError("Coverage must be in (0, 1], got %s" % coverage)
+    if min_purity < 0 or min_purity > 1:
+        raise ValueError("min_purity must be in [0, 1], got %s" % min_purity)
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # --- Step 1: Load data ---

@@ -1,12 +1,27 @@
 ---
 name: building-detection-rule-with-splunk-spl
-description: Build effective detection rules using Splunk Search Processing Language (SPL) correlation searches to identify security threats in SOC environments.
+description: Build effective detection rules using Splunk Search Processing Language (SPL) correlation searches to identify
+  security threats in SOC environments.
 domain: cybersecurity
 subdomain: soc-operations
-tags: [splunk, spl, detection-engineering, correlation-search, siem, soc, threat-detection, enterprise-security]
-version: "1.0"
+tags:
+- splunk
+- spl
+- detection-engineering
+- correlation-search
+- siem
+- soc
+- threat-detection
+- enterprise-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Executable Denylisting
+- Execution Isolation
+- File Metadata Consistency Validation
+- Content Format Conversion
+- File Content Analysis
 ---
 
 # Building Detection Rules with Splunk SPL

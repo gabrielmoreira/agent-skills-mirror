@@ -1,12 +1,26 @@
 ---
 name: detecting-dcsync-attack-in-active-directory
-description: Detect DCSync attacks where adversaries abuse Active Directory replication privileges to extract password hashes by monitoring for non-domain-controller accounts requesting directory replication via DsGetNCChanges.
+description: Detect DCSync attacks where adversaries abuse Active Directory replication privileges to extract password hashes
+  by monitoring for non-domain-controller accounts requesting directory replication via DsGetNCChanges.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, active-directory, dcsync, credential-theft, mitre-t1003-006, mimikatz, kerberos]
-version: "1.0"
+tags:
+- threat-hunting
+- active-directory
+- dcsync
+- credential-theft
+- mitre-t1003-006
+- mimikatz
+- kerberos
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+d3fend_techniques:
+- Application Protocol Command Analysis
+- Network Isolation
+- Network Traffic Analysis
+- Client-server Payload Profiling
+- Platform Monitoring
 ---
 
 # Detecting DCSync Attack in Active Directory

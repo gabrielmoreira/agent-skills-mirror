@@ -1,16 +1,28 @@
 ---
 name: implementing-security-chaos-engineering
-description: >
-  Implements security chaos engineering experiments that deliberately disable or degrade
-  security controls to verify detection and response capabilities. Tests WAF bypass,
-  firewall rule removal, log pipeline disruption, and EDR disablement scenarios using
-  boto3 and subprocess. Use when validating SOC detection coverage and resilience.
+description: 'Implements security chaos engineering experiments that deliberately disable or degrade security controls to
+  verify detection and response capabilities. Tests WAF bypass, firewall rule removal, log pipeline disruption, and EDR disablement
+  scenarios using boto3 and subprocess. Use when validating SOC detection coverage and resilience.
+
+  '
 domain: cybersecurity
 subdomain: security-operations
-tags: [implementing, security, chaos, engineering]
-version: "1.0"
+tags:
+- implementing
+- security
+- chaos
+- engineering
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 
 # Implementing Security Chaos Engineering

@@ -1,17 +1,30 @@
 ---
 name: detecting-anomalous-authentication-patterns
-description: >
-  Detects anomalous authentication patterns using UEBA analytics, statistical baselines,
-  and machine learning models to identify impossible travel, credential stuffing, brute force,
-  password spraying, and compromised account behaviors across authentication logs.
-  Activates for requests involving authentication anomaly detection, login behavior analysis,
+description: 'Detects anomalous authentication patterns using UEBA analytics, statistical baselines, and machine learning
+  models to identify impossible travel, credential stuffing, brute force, password spraying, and compromised account behaviors
+  across authentication logs. Activates for requests involving authentication anomaly detection, login behavior analysis,
   UEBA implementation, or suspicious sign-in investigation.
+
+  '
 domain: cybersecurity
 subdomain: identity-access-management
-tags: [UEBA, authentication-anomaly, impossible-travel, brute-force, credential-stuffing, behavioral-analytics]
-version: "1.0"
+tags:
+- UEBA
+- authentication-anomaly
+- impossible-travel
+- brute-force
+- credential-stuffing
+- behavioral-analytics
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+atlas_techniques:
+- AML.T0043
+- AML.T0018
+nist_ai_rmf:
+- MEASURE-2.7
+- MEASURE-2.5
+- MAP-5.1
 ---
 
 # Detecting Anomalous Authentication Patterns

@@ -1,19 +1,34 @@
 ---
 name: implementing-ransomware-backup-strategy
-description: >
-  Designs and implements a ransomware-resilient backup strategy following the 3-2-1-1-0
-  methodology (3 copies, 2 media types, 1 offsite, 1 immutable/air-gapped, 0 errors on
-  restore verification). Configures backup schedules aligned to RPO/RTO requirements,
-  implements backup credential isolation to prevent ransomware from compromising backup
-  infrastructure, and establishes automated restore testing. Activates for requests involving
-  ransomware backup planning, backup resilience, air-gapped backup design, or backup
-  recovery point objective configuration.
+description: 'Designs and implements a ransomware-resilient backup strategy following the 3-2-1-1-0 methodology (3 copies,
+  2 media types, 1 offsite, 1 immutable/air-gapped, 0 errors on restore verification). Configures backup schedules aligned
+  to RPO/RTO requirements, implements backup credential isolation to prevent ransomware from compromising backup infrastructure,
+  and establishes automated restore testing. Activates for requests involving ransomware backup planning, backup resilience,
+  air-gapped backup design, or backup recovery point objective configuration.
+
+  '
 domain: cybersecurity
 subdomain: ransomware-defense
-tags: [ransomware, backup, incident-response, defense, recovery, immutable-storage]
+tags:
+- ransomware
+- backup
+- incident-response
+- defense
+- recovery
+- immutable-storage
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+- MANAGE-3.1
+- MEASURE-3.1
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 # Implementing Ransomware Backup Strategy
 

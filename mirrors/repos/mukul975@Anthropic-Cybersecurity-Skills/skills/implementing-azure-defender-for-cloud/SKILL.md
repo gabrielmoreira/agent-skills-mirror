@@ -1,15 +1,30 @@
 ---
 name: implementing-azure-defender-for-cloud
-description: >
-  Implementing Microsoft Defender for Cloud to enable cloud security posture management,
-  workload protection across VMs, containers, databases, and storage, configure security
-  recommendations, and set up adaptive security controls with automated remediation.
+description: 'Implementing Microsoft Defender for Cloud to enable cloud security posture management, workload protection across
+  VMs, containers, databases, and storage, configure security recommendations, and set up adaptive security controls with
+  automated remediation.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [cloud-security, azure, defender-for-cloud, cspm, cwpp, security-recommendations]
-version: "1.0"
+tags:
+- cloud-security
+- azure
+- defender-for-cloud
+- cspm
+- cwpp
+- security-recommendations
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 
 # Implementing Azure Defender for Cloud

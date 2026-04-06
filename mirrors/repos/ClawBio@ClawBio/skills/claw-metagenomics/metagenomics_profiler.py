@@ -202,7 +202,7 @@ def run_command(
     description: str,
     cwd: Optional[Path] = None,
     env: Optional[dict] = None,
-    critical: bool = False,
+    critical: bool = True,
 ) -> subprocess.CompletedProcess:
     """Run a subprocess command with proper error handling.
 
@@ -211,8 +211,8 @@ def run_command(
         description: Human-readable description for log output.
         cwd: Working directory for the subprocess.
         env: Environment variables for the subprocess.
-        critical: If True, raise RuntimeError on non-zero exit code
-                  instead of logging a warning.
+        critical: If True (default), raise RuntimeError on non-zero exit code.
+                  If False, log a warning and continue.
     """
     print(f"  [{description}] {' '.join(cmd[:4])}...")
     try:

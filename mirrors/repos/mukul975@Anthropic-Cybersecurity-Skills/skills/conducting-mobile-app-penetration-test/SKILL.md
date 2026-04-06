@@ -1,19 +1,31 @@
 ---
 name: conducting-mobile-app-penetration-test
-description: >
-  Conducts penetration testing of iOS and Android mobile applications following the OWASP
-  Mobile Application Security Testing Guide (MASTG) to identify vulnerabilities in data storage,
-  network communication, authentication, cryptography, and platform-specific security controls.
-  The tester performs static analysis of application binaries, dynamic analysis at runtime, and
-  API security testing to evaluate the complete mobile attack surface. Activates for requests
-  involving mobile app pentest, iOS security assessment, Android security testing, or OWASP
-  MASTG assessment.
+description: 'Conducts penetration testing of iOS and Android mobile applications following the OWASP Mobile Application Security
+  Testing Guide (MASTG) to identify vulnerabilities in data storage, network communication, authentication, cryptography,
+  and platform-specific security controls. The tester performs static analysis of application binaries, dynamic analysis at
+  runtime, and API security testing to evaluate the complete mobile attack surface. Activates for requests involving mobile
+  app pentest, iOS security assessment, Android security testing, or OWASP MASTG assessment.
+
+  '
 domain: cybersecurity
 subdomain: penetration-testing
-tags: [mobile-pentest, OWASP-MASTG, Android-security, iOS-security, mobile-application-security]
+tags:
+- mobile-pentest
+- OWASP-MASTG
+- Android-security
+- iOS-security
+- mobile-application-security
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_ai_rmf:
+- MEASURE-2.7
+- MAP-5.1
+- MANAGE-2.4
+atlas_techniques:
+- AML.T0070
+- AML.T0066
+- AML.T0082
 ---
 # Conducting Mobile App Penetration Test
 

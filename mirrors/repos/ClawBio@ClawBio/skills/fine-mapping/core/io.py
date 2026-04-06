@@ -55,6 +55,12 @@ def load_sumstats(path: Path, chr_: str | None = None, start: int | None = None,
         )
 
     if not has_z:
+        # Validate SE before computing z = beta / se
+        invalid_se = (raw["se"] <= 0) | raw["se"].isna()
+        if invalid_se.any():
+            n_bad = int(invalid_se.sum())
+            print(f"  [io] WARNING: {n_bad} rows have zero, negative, or missing SE. "
+                  "These will produce invalid z-scores and be dropped.")
         raw["z"] = raw["beta"] / raw["se"]
 
     if "rsid" not in raw.columns:
