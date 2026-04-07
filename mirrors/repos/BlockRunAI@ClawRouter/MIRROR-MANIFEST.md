@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `BlockRunAI/ClawRouter` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `BlockRunAI/ClawRouter` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `BlockRunAI/ClawRouter` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/clawrouter/SKILL.md`](skills/clawrouter/SKILL.md) |
-| 2 | ✓ | [`skills/imagegen/SKILL.md`](skills/imagegen/SKILL.md) |
-| 3 | ✓ | [`skills/predexon/SKILL.md`](skills/predexon/SKILL.md) |
-| 4 | ✓ | [`skills/release/SKILL.md`](skills/release/SKILL.md) |
-| 5 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`skills/clawrouter/SKILL.md`](skills/clawrouter/SKILL.md) |
+| 3 | ✓ | [`skills/imagegen/SKILL.md`](skills/imagegen/SKILL.md) |
+| 4 | ✓ | [`skills/predexon/SKILL.md`](skills/predexon/SKILL.md) |
+| 5 | ✓ | [`skills/release/SKILL.md`](skills/release/SKILL.md) |
+| 6 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
 
 ---
 

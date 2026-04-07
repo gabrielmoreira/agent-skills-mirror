@@ -1,12 +1,22 @@
 ---
 name: performing-cryptographic-audit-of-application
-description: A cryptographic audit systematically reviews an application's use of cryptographic primitives, protocols, and key management to identify vulnerabilities such as weak algorithms, insecure modes, hardco
+description: A cryptographic audit systematically reviews an application's use of cryptographic primitives, protocols, and
+  key management to identify vulnerabilities such as weak algorithms, insecure modes, hardco
 domain: cybersecurity
 subdomain: cryptography
-tags: [cryptography, audit, security-review, compliance, vulnerability-assessment]
-version: "1.0"
+tags:
+- cryptography
+- audit
+- security-review
+- compliance
+- vulnerability-assessment
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.DS-01
+- PR.DS-02
+- PR.DS-10
 ---
 # Performing Cryptographic Audit of Application
 

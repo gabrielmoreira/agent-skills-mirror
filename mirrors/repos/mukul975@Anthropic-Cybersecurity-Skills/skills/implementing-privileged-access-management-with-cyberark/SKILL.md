@@ -1,12 +1,24 @@
 ---
 name: implementing-privileged-access-management-with-cyberark
-description: Deploy CyberArk Privileged Access Management to discover, vault, rotate, and monitor privileged credentials across enterprise infrastructure. This skill covers vault architecture, session isolation, c
+description: Deploy CyberArk Privileged Access Management to discover, vault, rotate, and monitor privileged credentials across
+  enterprise infrastructure. This skill covers vault architecture, session isolation, c
 domain: cybersecurity
 subdomain: identity-access-management
-tags: [iam, identity, access-control, privileged-access, pam, cyberark]
-version: "1.0"
+tags:
+- iam
+- identity
+- access-control
+- privileged-access
+- pam
+- cyberark
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.AA-01
+- PR.AA-02
+- PR.AA-05
+- PR.AA-06
 ---
 # Implementing Privileged Access Management with CyberArk
 

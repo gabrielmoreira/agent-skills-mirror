@@ -21,6 +21,10 @@ d3fend_techniques:
 - Network Traffic Analysis
 - Client-server Payload Profiling
 - Platform Monitoring
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Conducting Domain Persistence with DCSync
 

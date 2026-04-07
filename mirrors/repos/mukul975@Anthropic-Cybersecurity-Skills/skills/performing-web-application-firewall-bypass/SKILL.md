@@ -1,12 +1,25 @@
 ---
 name: performing-web-application-firewall-bypass
-description: Bypass Web Application Firewall protections using encoding techniques, HTTP method manipulation, parameter pollution, and payload obfuscation to deliver SQL injection, XSS, and other attack payloads past WAF detection rules.
+description: Bypass Web Application Firewall protections using encoding techniques, HTTP method manipulation, parameter pollution,
+  and payload obfuscation to deliver SQL injection, XSS, and other attack payloads past WAF detection rules.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [waf-bypass, waf-evasion, sql-injection, xss, payload-obfuscation, encoding-bypass, web-security]
-version: "1.0"
+tags:
+- waf-bypass
+- waf-evasion
+- sql-injection
+- xss
+- payload-obfuscation
+- encoding-bypass
+- web-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Performing Web Application Firewall Bypass

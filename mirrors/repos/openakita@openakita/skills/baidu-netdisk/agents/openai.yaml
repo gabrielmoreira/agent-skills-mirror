@@ -1,0 +1,8 @@
+interface:
+  display_name: "Baidu Netdisk"
+  short_description: "Manage files on Baidu Cloud: upload, download, share"
+  default_prompt: "Use $baidu-netdisk to manage Baidu Netdisk files"
+i18n:
+  zh:
+    name: "百度网盘"
+    description: "百度网盘云端数字助手，支持文件上传下载、备份、分享和管理。"

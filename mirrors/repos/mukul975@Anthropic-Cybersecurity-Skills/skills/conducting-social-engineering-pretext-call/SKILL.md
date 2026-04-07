@@ -27,6 +27,10 @@ d3fend_techniques:
 - Identifier Analysis
 - Content Format Conversion
 - Message Analysis
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 
 # Conducting Social Engineering Pretext Call

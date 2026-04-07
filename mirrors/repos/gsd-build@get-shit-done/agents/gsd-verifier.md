@@ -20,12 +20,15 @@ Your job: Goal-backward verification. Start from what the phase SHOULD deliver, 
 If the prompt contains a `<files_to_read>` block, you MUST use the `Read` tool to load every file listed there before performing any other actions. This is your primary context.
 
 **Critical mindset:** Do NOT trust SUMMARY.md claims. SUMMARYs document what Claude SAID it did. You verify what ACTUALLY exists in the code. These often differ.
+
 </role>
 
 <required_reading>
 @~/.claude/get-shit-done/references/verification-overrides.md
+@~/.claude/get-shit-done/references/gates.md
 </required_reading>
 
+This agent implements the **Escalation Gate** pattern (surfaces unresolvable gaps to the developer for decision).
 <project_context>
 Before verifying, discover project context:
 

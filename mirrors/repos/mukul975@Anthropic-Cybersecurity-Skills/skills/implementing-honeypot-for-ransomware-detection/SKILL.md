@@ -25,6 +25,11 @@ d3fend_techniques:
 - File Content Analysis
 - Platform Hardening
 - File Format Verification
+nist_csf:
+- PR.DS-11
+- RS.MA-01
+- RC.RP-01
+- PR.IR-01
 ---
 # Implementing Honeypot for Ransomware Detection
 

@@ -22,6 +22,11 @@ nist_ai_rmf:
 - GOVERN-1.1
 - GOVERN-1.7
 - MAP-1.1
+nist_csf:
+- PR.AA-01
+- PR.AA-02
+- PR.AA-05
+- PR.AA-06
 ---
 
 # Building Identity Governance Lifecycle Process

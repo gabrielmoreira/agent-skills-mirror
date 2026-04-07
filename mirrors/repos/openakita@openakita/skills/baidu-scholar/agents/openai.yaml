@@ -1,0 +1,8 @@
+interface:
+  display_name: "Baidu Scholar"
+  short_description: "Academic paper and literature search via Baidu Scholar"
+  default_prompt: "Use $baidu-scholar to search academic papers"
+i18n:
+  zh:
+    name: "百度学术检索"
+    description: "专业学术文献与知识检索，助力科研、教育等垂直领域。"

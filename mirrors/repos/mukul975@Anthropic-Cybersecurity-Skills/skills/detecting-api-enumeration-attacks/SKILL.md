@@ -1,12 +1,26 @@
 ---
 name: detecting-api-enumeration-attacks
-description: Detect and prevent API enumeration attacks including BOLA and IDOR exploitation by monitoring sequential identifier access patterns and authorization failures.
+description: Detect and prevent API enumeration attacks including BOLA and IDOR exploitation by monitoring sequential identifier
+  access patterns and authorization failures.
 domain: cybersecurity
 subdomain: api-security
-tags: [api-security, enumeration, bola, idor, broken-object-level-authorization, owasp-api-top-10, access-control, rate-limiting]
-version: "1.0"
+tags:
+- api-security
+- enumeration
+- bola
+- idor
+- broken-object-level-authorization
+- owasp-api-top-10
+- access-control
+- rate-limiting
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Detecting API Enumeration Attacks

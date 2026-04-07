@@ -32,6 +32,11 @@ d3fend_techniques:
 - Biometric Authentication
 - Strong Password Policy
 - Restore User Account Access
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 ---
 
 # Implementing Security Monitoring with Datadog

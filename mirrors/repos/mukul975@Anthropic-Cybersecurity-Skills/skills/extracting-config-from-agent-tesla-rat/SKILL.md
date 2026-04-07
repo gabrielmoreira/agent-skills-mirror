@@ -23,6 +23,11 @@ nist_ai_rmf:
 - GOVERN-1.1
 - MEASURE-2.7
 - MANAGE-3.1
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 # Extracting Config from Agent Tesla RAT
 

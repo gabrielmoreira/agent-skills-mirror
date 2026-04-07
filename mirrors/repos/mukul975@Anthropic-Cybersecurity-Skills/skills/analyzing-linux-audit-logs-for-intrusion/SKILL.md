@@ -1,18 +1,29 @@
 ---
 name: analyzing-linux-audit-logs-for-intrusion
-description: >
-  Uses the Linux Audit framework (auditd) with ausearch and aureport utilities
-  to detect intrusion attempts, unauthorized access, privilege escalation, and
-  suspicious system activity. Covers audit rule configuration, log querying,
-  timeline reconstruction, and integration with SIEM platforms. Activates for
-  requests involving auditd analysis, Linux audit log investigation, ausearch
+description: 'Uses the Linux Audit framework (auditd) with ausearch and aureport utilities to detect intrusion attempts, unauthorized
+  access, privilege escalation, and suspicious system activity. Covers audit rule configuration, log querying, timeline reconstruction,
+  and integration with SIEM platforms. Activates for requests involving auditd analysis, Linux audit log investigation, ausearch
   queries, aureport summaries, or host-based intrusion detection on Linux.
+
+  '
 domain: cybersecurity
 subdomain: incident-response
-tags: [auditd, ausearch, aureport, linux-security, intrusion-detection, HIDS, forensics]
+tags:
+- auditd
+- ausearch
+- aureport
+- linux-security
+- intrusion-detection
+- HIDS
+- forensics
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.MA-01
+- RS.MA-02
+- RS.AN-03
+- RC.RP-01
 ---
 
 # Analyzing Linux Audit Logs for Intrusion

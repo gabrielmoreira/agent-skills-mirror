@@ -21,6 +21,11 @@ nist_ai_rmf:
 - GOVERN-1.1
 - MEASURE-2.7
 - MANAGE-3.1
+nist_csf:
+- PR.AA-01
+- PR.AA-05
+- PR.IR-01
+- GV.PO-01
 ---
 
 # Deploying Palo Alto Prisma Access Zero Trust

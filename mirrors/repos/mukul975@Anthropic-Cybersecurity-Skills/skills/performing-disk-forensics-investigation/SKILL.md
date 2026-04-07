@@ -1,19 +1,32 @@
 ---
 name: performing-disk-forensics-investigation
-description: >
-  Conducts disk forensics investigations using forensic imaging, file system analysis,
-  artifact recovery, and timeline reconstruction to support incident response cases.
-  Utilizes tools such as FTK Imager, Autopsy, and The Sleuth Kit for evidence acquisition,
-  deleted file recovery, and artifact examination. Activates for requests involving disk
-  forensics, hard drive analysis, forensic imaging, file recovery, evidence acquisition,
-  or digital forensic investigation.
+description: 'Conducts disk forensics investigations using forensic imaging, file system analysis, artifact recovery, and
+  timeline reconstruction to support incident response cases. Utilizes tools such as FTK Imager, Autopsy, and The Sleuth Kit
+  for evidence acquisition, deleted file recovery, and artifact examination. Activates for requests involving disk forensics,
+  hard drive analysis, forensic imaging, file recovery, evidence acquisition, or digital forensic investigation.
+
+  '
 domain: cybersecurity
 subdomain: incident-response
-tags: [disk-forensics, forensic-imaging, evidence-acquisition, file-recovery, chain-of-custody]
-mitre_attack: ["T1070", "T1027", "T1036", "T1564"]
+tags:
+- disk-forensics
+- forensic-imaging
+- evidence-acquisition
+- file-recovery
+- chain-of-custody
+mitre_attack:
+- T1070
+- T1027
+- T1036
+- T1564
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.MA-01
+- RS.MA-02
+- RS.AN-03
+- RC.RP-01
 ---
 
 # Performing Disk Forensics Investigation

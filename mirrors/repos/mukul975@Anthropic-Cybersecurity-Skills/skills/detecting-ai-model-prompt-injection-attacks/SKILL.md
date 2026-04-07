@@ -38,6 +38,11 @@ d3fend_techniques:
 - Application Hardening
 - Inbound Traffic Filtering
 - User Behavior Analysis
+nist_csf:
+- GV.OC-03
+- ID.RA-01
+- PR.PS-01
+- DE.AE-02
 ---
 # Detecting AI Model Prompt Injection Attacks
 

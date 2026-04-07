@@ -1,12 +1,31 @@
 ---
 name: performing-windows-artifact-analysis-with-eric-zimmerman-tools
-description: Perform comprehensive Windows forensic artifact analysis using Eric Zimmerman's open-source EZ Tools suite including KAPE, MFTECmd, PECmd, LECmd, JLECmd, and Timeline Explorer for parsing registry hives, prefetch files, event logs, and file system metadata.
+description: Perform comprehensive Windows forensic artifact analysis using Eric Zimmerman's open-source EZ Tools suite including
+  KAPE, MFTECmd, PECmd, LECmd, JLECmd, and Timeline Explorer for parsing registry hives, prefetch files, event logs, and file
+  system metadata.
 domain: cybersecurity
 subdomain: digital-forensics
-tags: [eric-zimmerman, ez-tools, kape, mftecmd, pecmd, lecmd, jlecmd, registry-forensics, windows-forensics, timeline-explorer, dfir, artifact-analysis]
-version: "1.0"
+tags:
+- eric-zimmerman
+- ez-tools
+- kape
+- mftecmd
+- pecmd
+- lecmd
+- jlecmd
+- registry-forensics
+- windows-forensics
+- timeline-explorer
+- dfir
+- artifact-analysis
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Performing Windows Artifact Analysis with Eric Zimmerman Tools

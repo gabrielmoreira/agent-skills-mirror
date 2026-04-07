@@ -1,12 +1,24 @@
 ---
 name: analyzing-docker-container-forensics
-description: Investigate compromised Docker containers by analyzing images, layers, volumes, logs, and runtime artifacts to identify malicious activity and evidence.
+description: Investigate compromised Docker containers by analyzing images, layers, volumes, logs, and runtime artifacts to
+  identify malicious activity and evidence.
 domain: cybersecurity
 subdomain: digital-forensics
-tags: [forensics, docker, container-forensics, container-security, image-analysis, runtime-investigation]
-version: "1.0"
+tags:
+- forensics
+- docker
+- container-forensics
+- container-security
+- image-analysis
+- runtime-investigation
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Analyzing Docker Container Forensics

@@ -21,6 +21,11 @@ d3fend_techniques:
 - Reissue Credential
 - Decoy User Credential
 - Authentication Cache Invalidation
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-06
+- ID.RA-05
 ---
 
 # Detecting Golden Ticket Forgery

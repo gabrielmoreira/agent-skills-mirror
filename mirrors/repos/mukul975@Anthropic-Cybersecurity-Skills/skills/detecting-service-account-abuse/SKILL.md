@@ -20,6 +20,11 @@ d3fend_techniques:
 - Biometric Authentication
 - Strong Password Policy
 - Restore User Account Access
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting Service Account Abuse

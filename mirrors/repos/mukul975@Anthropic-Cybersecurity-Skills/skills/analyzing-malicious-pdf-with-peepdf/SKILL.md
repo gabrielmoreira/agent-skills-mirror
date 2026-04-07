@@ -1,12 +1,26 @@
 ---
 name: analyzing-malicious-pdf-with-peepdf
-description: Perform static analysis of malicious PDF documents using peepdf, pdfid, and pdf-parser to extract embedded JavaScript, shellcode, and suspicious objects.
+description: Perform static analysis of malicious PDF documents using peepdf, pdfid, and pdf-parser to extract embedded JavaScript,
+  shellcode, and suspicious objects.
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [malware-analysis, pdf, peepdf, pdfid, pdf-parser, static-analysis, reverse-engineering, dfir]
-version: "1.0"
+tags:
+- malware-analysis
+- pdf
+- peepdf
+- pdfid
+- pdf-parser
+- static-analysis
+- reverse-engineering
+- dfir
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 
 # Analyzing Malicious PDF with peepdf

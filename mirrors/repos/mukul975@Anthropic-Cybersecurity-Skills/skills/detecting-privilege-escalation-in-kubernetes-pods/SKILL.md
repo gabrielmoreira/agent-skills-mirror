@@ -20,6 +20,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Restore Access
 - Password Authentication
+nist_csf:
+- PR.PS-01
+- PR.IR-01
+- ID.AM-08
+- DE.CM-01
 ---
 
 # Detecting Privilege Escalation in Kubernetes Pods

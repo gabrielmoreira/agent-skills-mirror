@@ -1,19 +1,25 @@
 ---
 name: implementing-network-traffic-baselining
-description: Build network traffic baselines from NetFlow/IPFIX data using Python pandas for statistical analysis, z-score anomaly detection, and hourly/daily traffic pattern profiling
+description: Build network traffic baselines from NetFlow/IPFIX data using Python pandas for statistical analysis, z-score
+  anomaly detection, and hourly/daily traffic pattern profiling
 domain: cybersecurity
 subdomain: network-security
 tags:
-  - netflow
-  - ipfix
-  - traffic-analysis
-  - baselining
-  - anomaly-detection
-  - pandas
-  - network-monitoring
-version: "1.0"
+- netflow
+- ipfix
+- traffic-analysis
+- baselining
+- anomaly-detection
+- pandas
+- network-monitoring
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-03
+- PR.DS-02
 ---
 
 # Implementing Network Traffic Baselining

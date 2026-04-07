@@ -1,12 +1,25 @@
 ---
 name: testing-for-host-header-injection
-description: Test web applications for HTTP Host header injection vulnerabilities to identify password reset poisoning, web cache poisoning, SSRF, and virtual host routing manipulation risks.
+description: Test web applications for HTTP Host header injection vulnerabilities to identify password reset poisoning, web
+  cache poisoning, SSRF, and virtual host routing manipulation risks.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [host-header-injection, password-reset-poisoning, cache-poisoning, virtual-host, web-security, header-manipulation, ssrf]
-version: "1.0"
+tags:
+- host-header-injection
+- password-reset-poisoning
+- cache-poisoning
+- virtual-host
+- web-security
+- header-manipulation
+- ssrf
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Testing for Host Header Injection

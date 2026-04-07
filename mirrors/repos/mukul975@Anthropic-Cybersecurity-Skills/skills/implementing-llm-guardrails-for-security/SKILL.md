@@ -38,6 +38,11 @@ d3fend_techniques:
 - Content Excision
 - Application Hardening
 - Execution Isolation
+nist_csf:
+- GV.OC-03
+- ID.RA-01
+- PR.PS-01
+- DE.AE-02
 ---
 # Implementing LLM Guardrails for Security
 

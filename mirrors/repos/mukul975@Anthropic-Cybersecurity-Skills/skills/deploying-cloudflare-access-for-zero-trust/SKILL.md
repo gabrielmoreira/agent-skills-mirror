@@ -26,6 +26,11 @@ nist_ai_rmf:
 - MEASURE-2.5
 - GOVERN-6.1
 - MAP-5.1
+nist_csf:
+- PR.AA-01
+- PR.AA-05
+- PR.IR-01
+- GV.PO-01
 ---
 
 # Deploying Cloudflare Access for Zero Trust

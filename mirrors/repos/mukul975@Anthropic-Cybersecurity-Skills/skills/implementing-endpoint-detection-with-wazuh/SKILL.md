@@ -20,6 +20,11 @@ nist_ai_rmf:
 - MANAGE-3.1
 - MANAGE-2.4
 - MEASURE-3.1
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 ---
 # Implementing Endpoint Detection with Wazuh
 

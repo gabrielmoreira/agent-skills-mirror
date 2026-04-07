@@ -21,6 +21,10 @@ d3fend_techniques:
 - Application Protocol Command Analysis
 - Content Format Conversion
 - File Content Analysis
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Building C2 Infrastructure with Sliver Framework
 

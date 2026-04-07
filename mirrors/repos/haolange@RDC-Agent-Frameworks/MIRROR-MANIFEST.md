@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `haolange/RDC-Agent-Frameworks` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `haolange/RDC-Agent-Frameworks` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `haolange/RDC-Agent-Frameworks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 81 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -126,7 +126,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 65 | ✓ | [`debugger/platforms/copilot-cli/skills/shader-ir/SKILL.md`](debugger/platforms/copilot-cli/skills/shader-ir/SKILL.md) |
 | 66 | ✓ | [`debugger/platforms/copilot-cli/skills/skeptic/SKILL.md`](debugger/platforms/copilot-cli/skills/skeptic/SKILL.md) |
 | 67 | ✓ | [`debugger/platforms/copilot-cli/skills/triage-taxonomy/SKILL.md`](debugger/platforms/copilot-cli/skills/triage-taxonomy/SKILL.md) |
-| 68 | ✓ | [`optimizer/common/skills/rdc-optimizer/SKILL.md`](optimizer/common/skills/rdc-optimizer/SKILL.md) |
+| 68 | ✓ | [`debugger/platforms/copilot-ide/AGENTS.md`](debugger/platforms/copilot-ide/AGENTS.md) |
+| 69 | ✓ | [`debugger/platforms/copilot-ide/skills/capture-repro/SKILL.md`](debugger/platforms/copilot-ide/skills/capture-repro/SKILL.md) |
+| 70 | ✓ | [`debugger/platforms/copilot-ide/skills/clarification/SKILL.md`](debugger/platforms/copilot-ide/skills/clarification/SKILL.md) |
+| 71 | ✓ | [`debugger/platforms/copilot-ide/skills/driver-device/SKILL.md`](debugger/platforms/copilot-ide/skills/driver-device/SKILL.md) |
+| 72 | ✓ | [`debugger/platforms/copilot-ide/skills/pass-graph-pipeline/SKILL.md`](debugger/platforms/copilot-ide/skills/pass-graph-pipeline/SKILL.md) |
+| 73 | ✓ | [`debugger/platforms/copilot-ide/skills/pixel-value-forensics/SKILL.md`](debugger/platforms/copilot-ide/skills/pixel-value-forensics/SKILL.md) |
+| 74 | ✓ | [`debugger/platforms/copilot-ide/skills/plan-compiler/SKILL.md`](debugger/platforms/copilot-ide/skills/plan-compiler/SKILL.md) |
+| 75 | ✓ | [`debugger/platforms/copilot-ide/skills/rdc-debugger/SKILL.md`](debugger/platforms/copilot-ide/skills/rdc-debugger/SKILL.md) |
+| 76 | ✓ | [`debugger/platforms/copilot-ide/skills/reference-contract/SKILL.md`](debugger/platforms/copilot-ide/skills/reference-contract/SKILL.md) |
+| 77 | ✓ | [`debugger/platforms/copilot-ide/skills/report-knowledge-curator/SKILL.md`](debugger/platforms/copilot-ide/skills/report-knowledge-curator/SKILL.md) |
+| 78 | ✓ | [`debugger/platforms/copilot-ide/skills/shader-ir/SKILL.md`](debugger/platforms/copilot-ide/skills/shader-ir/SKILL.md) |
+| 79 | ✓ | [`debugger/platforms/copilot-ide/skills/skeptic/SKILL.md`](debugger/platforms/copilot-ide/skills/skeptic/SKILL.md) |
+| 80 | ✓ | [`debugger/platforms/copilot-ide/skills/triage-taxonomy/SKILL.md`](debugger/platforms/copilot-ide/skills/triage-taxonomy/SKILL.md) |
+| 81 | ✓ | [`optimizer/common/skills/rdc-optimizer/SKILL.md`](optimizer/common/skills/rdc-optimizer/SKILL.md) |
 
 ---
 

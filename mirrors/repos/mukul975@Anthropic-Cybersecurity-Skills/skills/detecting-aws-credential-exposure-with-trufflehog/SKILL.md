@@ -1,15 +1,26 @@
 ---
 name: detecting-aws-credential-exposure-with-trufflehog
-description: >
-  Detecting exposed AWS credentials in source code repositories, CI/CD pipelines, and
-  configuration files using TruffleHog, git-secrets, and AWS-native detection mechanisms
-  to prevent credential theft and unauthorized account access.
+description: 'Detecting exposed AWS credentials in source code repositories, CI/CD pipelines, and configuration files using
+  TruffleHog, git-secrets, and AWS-native detection mechanisms to prevent credential theft and unauthorized account access.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [cloud-security, aws, credential-exposure, trufflehog, secrets-detection, devsecops]
-version: "1.0"
+tags:
+- cloud-security
+- aws
+- credential-exposure
+- trufflehog
+- secrets-detection
+- devsecops
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Detecting AWS Credential Exposure with TruffleHog

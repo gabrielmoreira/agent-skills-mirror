@@ -1,12 +1,26 @@
 ---
 name: implementing-container-image-minimal-base-with-distroless
-description: Reduce container attack surface by building application images on Google distroless base images that contain only the application runtime with no shell, package manager, or unnecessary OS utilities.
+description: Reduce container attack surface by building application images on Google distroless base images that contain
+  only the application runtime with no shell, package manager, or unnecessary OS utilities.
 domain: cybersecurity
 subdomain: container-security
-tags: [distroless, container-images, minimal-base, attack-surface, docker, security-hardening, supply-chain, kubernetes]
-version: "1.0"
+tags:
+- distroless
+- container-images
+- minimal-base
+- attack-surface
+- docker
+- security-hardening
+- supply-chain
+- kubernetes
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- PR.IR-01
+- ID.AM-08
+- DE.CM-01
 ---
 
 # Implementing Container Image Minimal Base with Distroless

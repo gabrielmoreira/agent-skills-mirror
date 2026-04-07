@@ -21,6 +21,11 @@ d3fend_techniques:
 - Restore Object
 - Restore Database
 - Asset Inventory
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting for Unusual Service Installations

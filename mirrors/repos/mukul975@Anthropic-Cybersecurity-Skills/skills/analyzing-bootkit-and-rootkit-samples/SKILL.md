@@ -1,17 +1,27 @@
 ---
 name: analyzing-bootkit-and-rootkit-samples
-description: >
-  Analyzes bootkit and advanced rootkit malware that infects the Master Boot Record (MBR),
-  Volume Boot Record (VBR), or UEFI firmware to gain persistence below the operating system.
-  Covers boot sector analysis, UEFI module inspection, and anti-rootkit detection techniques.
-  Activates for requests involving bootkit analysis, MBR malware investigation, UEFI
+description: 'Analyzes bootkit and advanced rootkit malware that infects the Master Boot Record (MBR), Volume Boot Record
+  (VBR), or UEFI firmware to gain persistence below the operating system. Covers boot sector analysis, UEFI module inspection,
+  and anti-rootkit detection techniques. Activates for requests involving bootkit analysis, MBR malware investigation, UEFI
   persistence analysis, or pre-OS malware detection.
+
+  '
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [malware, bootkit, rootkit, UEFI, MBR-analysis]
+tags:
+- malware
+- bootkit
+- rootkit
+- UEFI
+- MBR-analysis
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 
 # Analyzing Bootkit and Rootkit Samples

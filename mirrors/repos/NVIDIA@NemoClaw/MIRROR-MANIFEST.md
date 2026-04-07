@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 26 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,31 +60,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/cut-release-tag/SKILL.md`](.agents/skills/cut-release-tag/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/nemoclaw-configure-inference/references/inference-options.md`](.agents/skills/nemoclaw-configure-inference/references/inference-options.md) |
-| 3 | ✓ | [`.agents/skills/nemoclaw-configure-inference/SKILL.md`](.agents/skills/nemoclaw-configure-inference/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/nemoclaw-deploy-remote/references/sandbox-hardening.md`](.agents/skills/nemoclaw-deploy-remote/references/sandbox-hardening.md) |
-| 5 | ✓ | [`.agents/skills/nemoclaw-deploy-remote/SKILL.md`](.agents/skills/nemoclaw-deploy-remote/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/nemoclaw-get-started/SKILL.md`](.agents/skills/nemoclaw-get-started/SKILL.md) |
-| 7 | ✓ | [`.agents/skills/nemoclaw-manage-policy/SKILL.md`](.agents/skills/nemoclaw-manage-policy/SKILL.md) |
-| 8 | ✓ | [`.agents/skills/nemoclaw-monitor-sandbox/SKILL.md`](.agents/skills/nemoclaw-monitor-sandbox/SKILL.md) |
-| 9 | ✓ | [`.agents/skills/nemoclaw-overview/references/how-it-works.md`](.agents/skills/nemoclaw-overview/references/how-it-works.md) |
-| 10 | ✓ | [`.agents/skills/nemoclaw-overview/references/overview.md`](.agents/skills/nemoclaw-overview/references/overview.md) |
-| 11 | ✓ | [`.agents/skills/nemoclaw-overview/references/release-notes.md`](.agents/skills/nemoclaw-overview/references/release-notes.md) |
-| 12 | ✓ | [`.agents/skills/nemoclaw-overview/SKILL.md`](.agents/skills/nemoclaw-overview/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/nemoclaw-reference/references/architecture.md`](.agents/skills/nemoclaw-reference/references/architecture.md) |
-| 14 | ✓ | [`.agents/skills/nemoclaw-reference/references/commands.md`](.agents/skills/nemoclaw-reference/references/commands.md) |
-| 15 | ✓ | [`.agents/skills/nemoclaw-reference/references/inference-profiles.md`](.agents/skills/nemoclaw-reference/references/inference-profiles.md) |
-| 16 | ✓ | [`.agents/skills/nemoclaw-reference/references/network-policies.md`](.agents/skills/nemoclaw-reference/references/network-policies.md) |
-| 17 | ✓ | [`.agents/skills/nemoclaw-reference/references/troubleshooting.md`](.agents/skills/nemoclaw-reference/references/troubleshooting.md) |
-| 18 | ✓ | [`.agents/skills/nemoclaw-reference/SKILL.md`](.agents/skills/nemoclaw-reference/SKILL.md) |
-| 19 | ✓ | [`.agents/skills/nemoclaw-security-best/references/best-practices.md`](.agents/skills/nemoclaw-security-best/references/best-practices.md) |
-| 20 | ✓ | [`.agents/skills/nemoclaw-security-best/SKILL.md`](.agents/skills/nemoclaw-security-best/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/nemoclaw-workspace/references/workspace-files.md`](.agents/skills/nemoclaw-workspace/references/workspace-files.md) |
-| 22 | ✓ | [`.agents/skills/nemoclaw-workspace/SKILL.md`](.agents/skills/nemoclaw-workspace/SKILL.md) |
-| 23 | ✓ | [`.agents/skills/security-code-review/SKILL.md`](.agents/skills/security-code-review/SKILL.md) |
-| 24 | ✓ | [`.agents/skills/update-docs/SKILL.md`](.agents/skills/update-docs/SKILL.md) |
-| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`.agents/skills/find-review-pr/SKILL.md`](.agents/skills/find-review-pr/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/nemoclaw-configure-inference/references/inference-options.md`](.agents/skills/nemoclaw-configure-inference/references/inference-options.md) |
+| 4 | ✓ | [`.agents/skills/nemoclaw-configure-inference/SKILL.md`](.agents/skills/nemoclaw-configure-inference/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/nemoclaw-deploy-remote/references/sandbox-hardening.md`](.agents/skills/nemoclaw-deploy-remote/references/sandbox-hardening.md) |
+| 6 | ✓ | [`.agents/skills/nemoclaw-deploy-remote/SKILL.md`](.agents/skills/nemoclaw-deploy-remote/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/nemoclaw-get-started/SKILL.md`](.agents/skills/nemoclaw-get-started/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/nemoclaw-manage-policy/SKILL.md`](.agents/skills/nemoclaw-manage-policy/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/nemoclaw-monitor-sandbox/SKILL.md`](.agents/skills/nemoclaw-monitor-sandbox/SKILL.md) |
+| 10 | ✓ | [`.agents/skills/nemoclaw-overview/references/ecosystem.md`](.agents/skills/nemoclaw-overview/references/ecosystem.md) |
+| 11 | ✓ | [`.agents/skills/nemoclaw-overview/references/how-it-works.md`](.agents/skills/nemoclaw-overview/references/how-it-works.md) |
+| 12 | ✓ | [`.agents/skills/nemoclaw-overview/references/overview.md`](.agents/skills/nemoclaw-overview/references/overview.md) |
+| 13 | ✓ | [`.agents/skills/nemoclaw-overview/references/release-notes.md`](.agents/skills/nemoclaw-overview/references/release-notes.md) |
+| 14 | ✓ | [`.agents/skills/nemoclaw-overview/SKILL.md`](.agents/skills/nemoclaw-overview/SKILL.md) |
+| 15 | ✓ | [`.agents/skills/nemoclaw-reference/references/architecture.md`](.agents/skills/nemoclaw-reference/references/architecture.md) |
+| 16 | ✓ | [`.agents/skills/nemoclaw-reference/references/commands.md`](.agents/skills/nemoclaw-reference/references/commands.md) |
+| 17 | ✓ | [`.agents/skills/nemoclaw-reference/references/inference-profiles.md`](.agents/skills/nemoclaw-reference/references/inference-profiles.md) |
+| 18 | ✓ | [`.agents/skills/nemoclaw-reference/references/network-policies.md`](.agents/skills/nemoclaw-reference/references/network-policies.md) |
+| 19 | ✓ | [`.agents/skills/nemoclaw-reference/references/troubleshooting.md`](.agents/skills/nemoclaw-reference/references/troubleshooting.md) |
+| 20 | ✓ | [`.agents/skills/nemoclaw-reference/SKILL.md`](.agents/skills/nemoclaw-reference/SKILL.md) |
+| 21 | ✓ | [`.agents/skills/nemoclaw-security-best/references/best-practices.md`](.agents/skills/nemoclaw-security-best/references/best-practices.md) |
+| 22 | ✓ | [`.agents/skills/nemoclaw-security-best/SKILL.md`](.agents/skills/nemoclaw-security-best/SKILL.md) |
+| 23 | ✓ | [`.agents/skills/nemoclaw-workspace/references/workspace-files.md`](.agents/skills/nemoclaw-workspace/references/workspace-files.md) |
+| 24 | ✓ | [`.agents/skills/nemoclaw-workspace/SKILL.md`](.agents/skills/nemoclaw-workspace/SKILL.md) |
+| 25 | ✓ | [`.agents/skills/security-code-review/SKILL.md`](.agents/skills/security-code-review/SKILL.md) |
+| 26 | ✓ | [`.agents/skills/update-docs/SKILL.md`](.agents/skills/update-docs/SKILL.md) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

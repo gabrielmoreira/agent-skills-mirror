@@ -23,6 +23,10 @@ atlas_techniques:
 - AML.T0070
 - AML.T0066
 - AML.T0082
+nist_csf:
+- PR.DS-01
+- PR.DS-02
+- PR.DS-10
 ---
 
 # Performing Hardware Security Module Integration

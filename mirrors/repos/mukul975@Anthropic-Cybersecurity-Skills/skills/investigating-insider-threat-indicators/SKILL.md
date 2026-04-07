@@ -1,16 +1,29 @@
 ---
 name: investigating-insider-threat-indicators
-description: >
-  Investigates insider threat indicators including data exfiltration attempts, unauthorized access
-  patterns, policy violations, and pre-departure behaviors using SIEM analytics, DLP alerts, and
-  HR data correlation. Use when SOC teams receive insider threat referrals from HR, detect anomalous
-  data movement by employees, or need to build investigation timelines for potential insider threats.
+description: 'Investigates insider threat indicators including data exfiltration attempts, unauthorized access patterns, policy
+  violations, and pre-departure behaviors using SIEM analytics, DLP alerts, and HR data correlation. Use when SOC teams receive
+  insider threat referrals from HR, detect anomalous data movement by employees, or need to build investigation timelines
+  for potential insider threats.
+
+  '
 domain: cybersecurity
 subdomain: soc-operations
-tags: [soc, insider-threat, data-exfiltration, dlp, ueba, investigation, hr-correlation]
-version: "1.0"
+tags:
+- soc
+- insider-threat
+- data-exfiltration
+- dlp
+- ueba
+- investigation
+- hr-correlation
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 # Investigating Insider Threat Indicators
 

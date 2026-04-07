@@ -1,12 +1,24 @@
 ---
 name: performing-web-cache-poisoning-attack
-description: Exploiting web cache mechanisms to serve malicious content to other users by poisoning cached responses through unkeyed headers and parameters during authorized security tests.
+description: Exploiting web cache mechanisms to serve malicious content to other users by poisoning cached responses through
+  unkeyed headers and parameters during authorized security tests.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, cache-poisoning, web-security, cdn, burpsuite, owasp]
-version: "1.0"
+tags:
+- penetration-testing
+- cache-poisoning
+- web-security
+- cdn
+- burpsuite
+- owasp
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Performing Web Cache Poisoning Attack

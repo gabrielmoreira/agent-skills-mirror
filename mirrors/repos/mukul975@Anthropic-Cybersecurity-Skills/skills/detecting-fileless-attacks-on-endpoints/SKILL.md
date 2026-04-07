@@ -1,17 +1,27 @@
 ---
 name: detecting-fileless-attacks-on-endpoints
-description: >
-  Detects fileless malware and in-memory attacks that execute entirely in RAM without writing
-  persistent files to disk, evading traditional antivirus. Use when building detections for
-  PowerShell-based attacks, reflective DLL injection, WMI persistence, and registry-resident
-  malware. Activates for requests involving fileless malware detection, in-memory attacks,
+description: 'Detects fileless malware and in-memory attacks that execute entirely in RAM without writing persistent files
+  to disk, evading traditional antivirus. Use when building detections for PowerShell-based attacks, reflective DLL injection,
+  WMI persistence, and registry-resident malware. Activates for requests involving fileless malware detection, in-memory attacks,
   PowerShell exploitation, or living-off-the-land techniques.
+
+  '
 domain: cybersecurity
 subdomain: endpoint-security
-tags: [endpoint, fileless-malware, memory-attacks, PowerShell, detection-engineering]
+tags:
+- endpoint
+- fileless-malware
+- memory-attacks
+- PowerShell
+- detection-engineering
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- PR.PS-02
+- DE.CM-01
+- PR.IR-01
 ---
 # Detecting Fileless Attacks on Endpoints
 

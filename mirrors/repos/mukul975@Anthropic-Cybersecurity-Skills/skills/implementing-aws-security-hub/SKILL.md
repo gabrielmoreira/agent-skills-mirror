@@ -1,17 +1,27 @@
 ---
 name: implementing-aws-security-hub
-description: >
-  This skill covers deploying AWS Security Hub as a centralized cloud security posture
-  management platform that aggregates findings from GuardDuty, Inspector, Macie, and
-  third-party tools. It details enabling security standards like CIS AWS Foundations
-  Benchmark, configuring automated remediation, and building executive dashboards for
-  compliance tracking across multi-account AWS organizations.
+description: 'This skill covers deploying AWS Security Hub as a centralized cloud security posture management platform that
+  aggregates findings from GuardDuty, Inspector, Macie, and third-party tools. It details enabling security standards like
+  CIS AWS Foundations Benchmark, configuring automated remediation, and building executive dashboards for compliance tracking
+  across multi-account AWS organizations.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [aws-security-hub, cspm, compliance-automation, security-standards, finding-aggregation]
+tags:
+- aws-security-hub
+- cspm
+- compliance-automation
+- security-standards
+- finding-aggregation
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Implementing AWS Security Hub

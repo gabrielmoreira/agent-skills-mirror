@@ -20,6 +20,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Restore Access
 - Password Authentication
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting T1548 Abuse Elevation Control Mechanism

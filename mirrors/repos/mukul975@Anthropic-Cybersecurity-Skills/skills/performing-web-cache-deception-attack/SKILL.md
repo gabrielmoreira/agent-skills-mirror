@@ -1,12 +1,25 @@
 ---
 name: performing-web-cache-deception-attack
-description: Execute web cache deception attacks by exploiting path normalization discrepancies between CDN caching layers and origin servers to cache and retrieve sensitive authenticated content.
+description: Execute web cache deception attacks by exploiting path normalization discrepancies between CDN caching layers
+  and origin servers to cache and retrieve sensitive authenticated content.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [web-cache-deception, cdn-attack, cache-poisoning, path-normalization, cloudflare, cache-key, static-resource]
-version: "1.0"
+tags:
+- web-cache-deception
+- cdn-attack
+- cache-poisoning
+- path-normalization
+- cloudflare
+- cache-key
+- static-resource
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Performing Web Cache Deception Attack

@@ -1,0 +1,9 @@
+interface:
+  display_name: "DingTalk CLI"
+  short_description: "Operate DingTalk via CLI: calendar, chat, todos, attendance, and more"
+  default_prompt: "Use $dingtalk-cli to operate DingTalk Workspace resources"
+
+i18n:
+  zh:
+    name: "钉钉命令行工具"
+    description: "通过 dws 操作钉钉工作台，覆盖 AI 表格、考勤、日历、聊天、通讯录、审批、待办等 10 大产品。"

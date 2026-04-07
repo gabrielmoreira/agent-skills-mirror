@@ -1,17 +1,27 @@
 ---
 name: analyzing-command-and-control-communication
-description: >
-  Analyzes malware command-and-control (C2) communication protocols to understand beacon
-  patterns, command structures, data encoding, and infrastructure. Covers HTTP, HTTPS, DNS,
-  and custom protocol C2 analysis for detection development and threat intelligence.
-  Activates for requests involving C2 analysis, beacon detection, C2 protocol reverse
-  engineering, or command-and-control infrastructure mapping.
+description: 'Analyzes malware command-and-control (C2) communication protocols to understand beacon patterns, command structures,
+  data encoding, and infrastructure. Covers HTTP, HTTPS, DNS, and custom protocol C2 analysis for detection development and
+  threat intelligence. Activates for requests involving C2 analysis, beacon detection, C2 protocol reverse engineering, or
+  command-and-control infrastructure mapping.
+
+  '
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [malware, C2, command-and-control, beacon, protocol-analysis]
+tags:
+- malware
+- C2
+- command-and-control
+- beacon
+- protocol-analysis
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 
 # Analyzing Command-and-Control Communication

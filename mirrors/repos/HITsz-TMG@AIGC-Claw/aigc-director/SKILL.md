@@ -30,7 +30,6 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 ├── aigc-claw/                    ← 前后端项目代码
 │   ├── backend/                  ← FastAPI 后端（端口 8000）
 │   │   └── code/result/          ← 模型生成产物存放目录
-│   │            ├── script/      ← 剧本产物
 │   │            ├── image/       ← 图片产物（角色、场景、参考图）
 │   │            └── video/       ← 视频产物
 │   └── frontend/                 ← Next.js 前端（端口 3000）
@@ -50,21 +49,18 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 
 ---
 
-## 阶段与停点（共9个）
+## 阶段与停点（共6个）
 
 | 停点 | 阶段 | phase 值 | 描述 | 操作 |
 |------|------|----------|------|------|
-| 1 | 项目配置 | - | 确认配置选项 | 展示配置 → 用户确认 |
-| 2 | 剧本生成 | suggest_expand | 建议扩写 | 等待用户确认 |
-| 3 | 剧本生成 | logline_selection | 选择情节 | 从3个候选中选择 |
-| 4 | 剧本生成 | mode_selection | 选择模式 | 电影(4幕) / 微电影(1幕) |
-| 5 | 剧本生成 | script_generation | 确认剧本 | 确认后继续 |
-| 6 | 角色/场景设计 | - | 确认角色/场景图片 | 确认后继续 |
-| 7 | 分镜设计 | - | 确认分镜列表 | 确认后继续 |
-| 8 | 参考图生成 | - | 确认参考图 | 确认后继续 |
-| 9 | 视频生成 | - | 确认视频片段 | 确认后继续 |
+| 1 | 项目配置 | - | 确认配置选项，包括集数（默认4集，1-10） | 展示配置 → 用户确认 |
+| 2 | 剧本生成 | script_generation | 确认全集剧本 | 确认后继续 |
+| 3 | 角色/场景设计 | - | 确认角色/场景图片 | 确认后继续 |
+| 4 | 分镜设计 | - | 确认分镜列表 | 确认后继续 |
+| 5 | 参考图生成 | - | 确认参考图 | 确认后继续 |
+| 6 | 视频生成 | - | 确认视频片段 | 确认后继续 |
 
-> **注意**：`suggest_expand` 和 `logline_selection` 可能根据输入质量被跳过。
+> **注意**：原有的部分复杂剧本流程（扩写、模式选择等）由于系统优化已简化，目前直接输出最终的剧本列表，以分集（`episode_number`）为单位。
 
 ---
 
@@ -98,12 +94,12 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 1. 检查后端运行状态 → 未运行则参考 start_backend.md 启动 → 等待3秒 → 再次检查
 2. 检查前端运行状态 → 未运行则参考 start_frontend.md 启动 → 等待5秒 → 再次检查
 3. 检查 API Key 配置 → 读取 .env 文件，确认所需 API Key 已配置
-4. 参考 create_project.md 询问用户项目配置 → 停点1（配置确认）→ 创建项目
-5. 参考 create_script.md 执行剧本生成 → 停点2-5
-6. 参考 create_character.md 执行角色设计 → 停点6
-7. 参考 create_storyboard.md 执行分镜设计 → 停点7
-8. 参考 create_reference.md 执行参考图生成 → 停点8
-9. 参考 create_video.md 执行视频生成 → 停点9
+4. 参考 create_project.md 询问用户项目配置（集数等） → 停点1（配置确认）→ 创建项目
+5. 参考 create_script.md 执行剧本生成 → 停点2
+6. 参考 create_character.md 执行角色设计 → 停点3
+7. 参考 create_storyboard.md 执行分镜设计 → 停点4
+8. 参考 create_reference.md 执行参考图生成 → 停点5
+9. 参考 create_video.md 执行视频生成 → 停点6
 10. 参考 create_post.md 执行后期剪辑
 11. 完成 → 发送最终视频给用户
 ```
@@ -167,22 +163,22 @@ curl "http://localhost:8000/api/project/{session_id}/artifact/{stage}"
 
 ### ❌ 错误示例（我刚才犯的错）
 ```
-收到 suggest_expand 停点 → 直接调用 intervene → 跳过用户确认
+收到确认剧情停点 → 直接调用 intervene → 跳过用户确认
 ```
 
 ### ✅ 正确示例
 ```
-1. 阶段内部停点触发（如 suggest_expand）
-收到 suggest_expand 停点 
+1. 阶段中间遇到不确定内容
+收到 waiting_in_stage 停点
 → 获取 artifact 查看内容
-→ 展示给用户："系统建议启用创意扩写模式..."
-→ 询问："是否同意？"
+→ 展示给用户选项
+→ 询问："是否同意修改？"
 → 用户回复"同意" → 调用 intervene
 
 2. 阶段完成停点触发
 收到 stage_completed 停点
 → 获取 artifact 查看产物内容
-→ 展示给用户："第一阶段已完成，生成了剧本内容..."
+→ 展示给用户："第一阶段已完成，生成了剧本内容（x集）..."
 → 询问："是否继续下一阶段？"
 → 用户回复"继续" → 调用 continue
 ```

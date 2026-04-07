@@ -1,12 +1,25 @@
 ---
 name: implementing-rapid7-insightvm-for-scanning
-description: Deploy and configure Rapid7 InsightVM Security Console and Scan Engines for authenticated and unauthenticated vulnerability scanning across enterprise environments.
+description: Deploy and configure Rapid7 InsightVM Security Console and Scan Engines for authenticated and unauthenticated
+  vulnerability scanning across enterprise environments.
 domain: cybersecurity
 subdomain: vulnerability-management
-tags: [rapid7, insightvm, vulnerability-scanning, nexpose, scan-engine, asset-discovery, authenticated-scanning]
-version: "1.0"
+tags:
+- rapid7
+- insightvm
+- vulnerability-scanning
+- nexpose
+- scan-engine
+- asset-discovery
+- authenticated-scanning
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 ---
 # Implementing Rapid7 InsightVM for Scanning
 

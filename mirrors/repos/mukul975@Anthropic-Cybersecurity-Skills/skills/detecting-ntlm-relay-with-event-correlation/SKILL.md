@@ -38,6 +38,11 @@ nist_ai_rmf:
 - MEASURE-2.5
 - GOVERN-6.1
 - MAP-5.1
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting NTLM Relay with Event Correlation

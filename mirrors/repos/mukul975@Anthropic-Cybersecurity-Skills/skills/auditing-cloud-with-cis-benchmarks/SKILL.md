@@ -21,6 +21,11 @@ nist_ai_rmf:
 - GOVERN-1.1
 - GOVERN-4.2
 - MAP-2.3
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Auditing Cloud with CIS Benchmarks

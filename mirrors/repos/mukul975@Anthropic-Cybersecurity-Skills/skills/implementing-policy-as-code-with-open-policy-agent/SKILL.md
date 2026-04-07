@@ -22,6 +22,11 @@ nist_ai_rmf:
 - GOVERN-1.1
 - MEASURE-2.7
 - MANAGE-3.1
+nist_csf:
+- PR.PS-01
+- GV.SC-07
+- ID.IM-04
+- PR.PS-04
 ---
 
 # Implementing Policy as Code with Open Policy Agent

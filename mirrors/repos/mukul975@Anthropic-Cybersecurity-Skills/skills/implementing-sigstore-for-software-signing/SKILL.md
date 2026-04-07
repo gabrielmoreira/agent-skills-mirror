@@ -1,19 +1,32 @@
 ---
 name: implementing-sigstore-for-software-signing
-description: >
-  Implements Sigstore-based software signing and verification using Cosign keyless signing,
-  Rekor transparency log verification, and Fulcio certificate authority integration to establish
-  cryptographic provenance for container images, binaries, and software artifacts. The practitioner
-  configures OIDC-based identity binding, verifies signing events against the Rekor transparency
-  log, and integrates signing workflows into CI/CD pipelines. Activates for requests involving
-  software supply chain signing, keyless container signing, Sigstore deployment, or artifact
-  provenance verification.
+description: 'Implements Sigstore-based software signing and verification using Cosign keyless signing, Rekor transparency
+  log verification, and Fulcio certificate authority integration to establish cryptographic provenance for container images,
+  binaries, and software artifacts. The practitioner configures OIDC-based identity binding, verifies signing events against
+  the Rekor transparency log, and integrates signing workflows into CI/CD pipelines. Activates for requests involving software
+  supply chain signing, keyless container signing, Sigstore deployment, or artifact provenance verification.
+
+  '
 domain: cybersecurity
 subdomain: supply-chain-security
-tags: [sigstore, cosign, rekor, fulcio, software-signing, supply-chain, keyless-signing, OIDC, transparency-log]
+tags:
+- sigstore
+- cosign
+- rekor
+- fulcio
+- software-signing
+- supply-chain
+- keyless-signing
+- OIDC
+- transparency-log
 version: 1.0.0
 author: mukul975
 license: Apache-2.0
+nist_csf:
+- GV.SC-01
+- GV.SC-03
+- GV.SC-06
+- GV.SC-07
 ---
 # Implementing Sigstore for Software Signing
 

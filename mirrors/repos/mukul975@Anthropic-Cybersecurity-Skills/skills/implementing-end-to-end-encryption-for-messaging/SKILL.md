@@ -1,12 +1,22 @@
 ---
 name: implementing-end-to-end-encryption-for-messaging
-description: End-to-end encryption (E2EE) ensures that only the communicating parties can read messages, with no intermediary (including the server) able to decrypt them. This skill implements a simplified version
+description: End-to-end encryption (E2EE) ensures that only the communicating parties can read messages, with no intermediary
+  (including the server) able to decrypt them. This skill implements a simplified version
 domain: cybersecurity
 subdomain: cryptography
-tags: [cryptography, encryption, e2e, messaging, signal-protocol]
-version: "1.0"
+tags:
+- cryptography
+- encryption
+- e2e
+- messaging
+- signal-protocol
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.DS-01
+- PR.DS-02
+- PR.DS-10
 ---
 # Implementing End-to-End Encryption for Messaging
 

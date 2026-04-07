@@ -21,6 +21,10 @@ d3fend_techniques:
 - Restore Configuration
 - Access Modeling
 - Operational Activity Mapping
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Performing Privilege Escalation on Linux
 

@@ -19,6 +19,11 @@ nist_ai_rmf:
 - GOVERN-1.1
 - GOVERN-1.7
 - MAP-1.1
+nist_csf:
+- PR.AA-01
+- PR.AA-05
+- PR.IR-01
+- GV.PO-01
 ---
 
 # Implementing Identity Verification for Zero Trust

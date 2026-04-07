@@ -1,12 +1,22 @@
 ---
 name: implementing-rsa-key-pair-management
-description: RSA (Rivest-Shamir-Adleman) is the most widely deployed asymmetric cryptographic algorithm, used for digital signatures, key exchange, and encryption. This skill covers generating, storing, rotating, 
+description: RSA (Rivest-Shamir-Adleman) is the most widely deployed asymmetric cryptographic algorithm, used for digital
+  signatures, key exchange, and encryption. This skill covers generating, storing, rotating,
 domain: cybersecurity
 subdomain: cryptography
-tags: [cryptography, rsa, key-management, pki, asymmetric-encryption]
-version: "1.0"
+tags:
+- cryptography
+- rsa
+- key-management
+- pki
+- asymmetric-encryption
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.DS-01
+- PR.DS-02
+- PR.DS-10
 ---
 # Implementing RSA Key Pair Management
 

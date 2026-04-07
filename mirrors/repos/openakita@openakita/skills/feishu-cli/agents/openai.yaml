@@ -1,0 +1,9 @@
+interface:
+  display_name: "Feishu CLI"
+  short_description: "Operate Feishu/Lark via CLI: messages, docs, calendar, tasks, and more"
+  default_prompt: "Use $feishu-cli to operate Feishu/Lark resources"
+
+i18n:
+  zh:
+    name: "飞书命令行工具"
+    description: "通过 lark-cli 操作飞书资源，覆盖消息、文档、多维表格、日历、邮件、任务、云空间、知识库等 11 大业务域。"

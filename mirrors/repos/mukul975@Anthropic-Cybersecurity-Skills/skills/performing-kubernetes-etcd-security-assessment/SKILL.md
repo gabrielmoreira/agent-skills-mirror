@@ -1,12 +1,26 @@
 ---
 name: performing-kubernetes-etcd-security-assessment
-description: Assess the security posture of Kubernetes etcd clusters by evaluating encryption at rest, TLS configuration, access controls, backup encryption, and network isolation.
+description: Assess the security posture of Kubernetes etcd clusters by evaluating encryption at rest, TLS configuration,
+  access controls, backup encryption, and network isolation.
 domain: cybersecurity
 subdomain: container-security
-tags: [kubernetes, etcd, encryption, tls, security-assessment, backup, secrets, control-plane]
-version: "1.0"
+tags:
+- kubernetes
+- etcd
+- encryption
+- tls
+- security-assessment
+- backup
+- secrets
+- control-plane
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- PR.IR-01
+- ID.AM-08
+- DE.CM-01
 ---
 
 # Performing Kubernetes etcd Security Assessment

@@ -26,6 +26,11 @@ nist_ai_rmf:
 - MEASURE-2.7
 - MEASURE-2.5
 - MAP-5.1
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-05
+- GV.OC-02
 ---
 
 # Detecting DNP3 Protocol Anomalies

@@ -1,15 +1,25 @@
 ---
 name: detecting-network-anomalies-with-zeek
-description: >
-  Deploys and configures Zeek (formerly Bro) network security monitor to passively
-  analyze network traffic, generate structured logs, detect anomalous behavior,
-  and create custom detection scripts for threat hunting and incident response.
+description: 'Deploys and configures Zeek (formerly Bro) network security monitor to passively analyze network traffic, generate
+  structured logs, detect anomalous behavior, and create custom detection scripts for threat hunting and incident response.
+
+  '
 domain: cybersecurity
 subdomain: network-security
-tags: [network-security, zeek, network-monitoring, anomaly-detection, threat-hunting]
-version: "1.0"
+tags:
+- network-security
+- zeek
+- network-monitoring
+- anomaly-detection
+- threat-hunting
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-03
+- PR.DS-02
 ---
 # Detecting Network Anomalies with Zeek
 

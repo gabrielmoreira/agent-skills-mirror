@@ -22,6 +22,11 @@ atlas_techniques:
 nist_ai_rmf:
 - MEASURE-2.8
 - MAP-5.1
+nist_csf:
+- PR.AT-01
+- DE.CM-09
+- RS.CO-02
+- DE.AE-02
 ---
 # Detecting QR Code Phishing with Email Security
 

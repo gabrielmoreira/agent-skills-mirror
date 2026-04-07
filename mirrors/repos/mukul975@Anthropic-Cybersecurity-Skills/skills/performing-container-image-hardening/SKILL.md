@@ -1,15 +1,27 @@
 ---
 name: performing-container-image-hardening
-description: >
-  This skill covers hardening container images by minimizing attack surface, removing
-  unnecessary packages, implementing multi-stage builds, configuring non-root users,
-  and applying CIS Docker Benchmark recommendations to produce secure production-ready images.
+description: 'This skill covers hardening container images by minimizing attack surface, removing unnecessary packages, implementing
+  multi-stage builds, configuring non-root users, and applying CIS Docker Benchmark recommendations to produce secure production-ready
+  images.
+
+  '
 domain: cybersecurity
 subdomain: devsecops
-tags: [devsecops, cicd, container-hardening, docker, cis-benchmark, secure-sdlc]
+tags:
+- devsecops
+- cicd
+- container-hardening
+- docker
+- cis-benchmark
+- secure-sdlc
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- GV.SC-07
+- ID.IM-04
+- PR.PS-04
 ---
 
 # Performing Container Image Hardening

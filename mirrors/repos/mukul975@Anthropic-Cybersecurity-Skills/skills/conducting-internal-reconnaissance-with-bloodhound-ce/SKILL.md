@@ -21,6 +21,10 @@ d3fend_techniques:
 - Biometric Authentication
 - Strong Password Policy
 - Restore User Account Access
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Conducting Internal Reconnaissance with BloodHound CE
 

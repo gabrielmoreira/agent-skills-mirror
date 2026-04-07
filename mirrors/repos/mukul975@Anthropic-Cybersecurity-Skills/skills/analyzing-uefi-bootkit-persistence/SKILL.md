@@ -26,6 +26,10 @@ d3fend_techniques:
 - Platform Monitoring
 - Firmware Verification
 - Firmware Embedded Monitoring Code
+nist_csf:
+- ID.RA-01
+- PR.PS-01
+- PR.PS-02
 ---
 
 # Analyzing UEFI Bootkit Persistence

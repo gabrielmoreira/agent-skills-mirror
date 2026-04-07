@@ -1,12 +1,26 @@
 ---
 name: implementing-threat-intelligence-lifecycle-management
-description: Implement a structured threat intelligence lifecycle encompassing planning, collection, processing, analysis, dissemination, and feedback stages to produce actionable intelligence for organizational decision-making.
+description: Implement a structured threat intelligence lifecycle encompassing planning, collection, processing, analysis,
+  dissemination, and feedback stages to produce actionable intelligence for organizational decision-making.
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [threat-intelligence, lifecycle, intelligence-cycle, collection, analysis, dissemination, strategic-intelligence, cti-program]
-version: "1.0"
+tags:
+- threat-intelligence
+- lifecycle
+- intelligence-cycle
+- collection
+- analysis
+- dissemination
+- strategic-intelligence
+- cti-program
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Implementing Threat Intelligence Lifecycle Management
 

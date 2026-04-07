@@ -1,19 +1,29 @@
 ---
 name: performing-api-rate-limiting-bypass
-description: >
-  Tests API rate limiting implementations for bypass vulnerabilities by manipulating request
-  headers, IP addresses, HTTP methods, API versions, and encoding schemes to circumvent
-  request throttling controls. The tester identifies rate limit headers, determines enforcement
-  mechanisms, and attempts bypasses including X-Forwarded-For spoofing, parameter pollution,
-  case variation, and endpoint path manipulation. Maps to OWASP API4:2023 Unrestricted Resource
-  Consumption. Activates for requests involving rate limit bypass, API throttling evasion,
-  brute force protection testing, or API abuse prevention assessment.
+description: 'Tests API rate limiting implementations for bypass vulnerabilities by manipulating request headers, IP addresses,
+  HTTP methods, API versions, and encoding schemes to circumvent request throttling controls. The tester identifies rate limit
+  headers, determines enforcement mechanisms, and attempts bypasses including X-Forwarded-For spoofing, parameter pollution,
+  case variation, and endpoint path manipulation. Maps to OWASP API4:2023 Unrestricted Resource Consumption. Activates for
+  requests involving rate limit bypass, API throttling evasion, brute force protection testing, or API abuse prevention assessment.
+
+  '
 domain: cybersecurity
 subdomain: api-security
-tags: [api-security, owasp, rate-limiting, throttling, brute-force, dos-prevention]
+tags:
+- api-security
+- owasp
+- rate-limiting
+- throttling
+- brute-force
+- dos-prevention
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 # Performing API Rate Limiting Bypass
 

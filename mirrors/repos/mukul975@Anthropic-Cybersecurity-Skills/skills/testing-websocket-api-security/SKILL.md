@@ -1,19 +1,30 @@
 ---
 name: testing-websocket-api-security
-description: >
-  Tests WebSocket API implementations for security vulnerabilities including missing
-  authentication on WebSocket upgrade, Cross-Site WebSocket Hijacking (CSWSH), injection
-  attacks through WebSocket messages, insufficient input validation, denial-of-service via
-  message flooding, and information leakage through WebSocket frames. The tester intercepts
-  WebSocket handshakes and messages using Burp Suite, crafts malicious payloads, and tests
-  for authorization bypass on WebSocket channels. Activates for requests involving WebSocket
-  security testing, WS penetration testing, CSWSH attack, or real-time API security assessment.
+description: 'Tests WebSocket API implementations for security vulnerabilities including missing authentication on WebSocket
+  upgrade, Cross-Site WebSocket Hijacking (CSWSH), injection attacks through WebSocket messages, insufficient input validation,
+  denial-of-service via message flooding, and information leakage through WebSocket frames. The tester intercepts WebSocket
+  handshakes and messages using Burp Suite, crafts malicious payloads, and tests for authorization bypass on WebSocket channels.
+  Activates for requests involving WebSocket security testing, WS penetration testing, CSWSH attack, or real-time API security
+  assessment.
+
+  '
 domain: cybersecurity
 subdomain: api-security
-tags: [api-security, websocket, cswsh, real-time, injection, authentication]
+tags:
+- api-security
+- websocket
+- cswsh
+- real-time
+- injection
+- authentication
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 # Testing WebSocket API Security
 

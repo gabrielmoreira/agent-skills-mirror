@@ -32,6 +32,11 @@ d3fend_techniques:
 - Sender Reputation Analysis
 - Homoglyph Detection
 - Message Analysis
+nist_csf:
+- PR.AT-01
+- DE.CM-09
+- RS.CO-02
+- DE.AE-02
 ---
 # Detecting Business Email Compromise with AI
 

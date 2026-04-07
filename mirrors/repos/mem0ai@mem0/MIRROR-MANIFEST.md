@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mem0ai/mem0` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `mem0ai/mem0` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mem0ai/mem0` — 26 default patterns, 0 followed patterns, 20 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,25 +60,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 3 | ✓ | [`mem0-plugin/skills/mem0-codex/SKILL.md`](mem0-plugin/skills/mem0-codex/SKILL.md) |
-| 4 | ✓ | [`mem0-plugin/skills/mem0/references/api-reference.md`](mem0-plugin/skills/mem0/references/api-reference.md) |
-| 5 | ✓ | [`mem0-plugin/skills/mem0/references/integration-patterns.md`](mem0-plugin/skills/mem0/references/integration-patterns.md) |
-| 6 | ✓ | [`mem0-plugin/skills/mem0/references/sdk-guide.md`](mem0-plugin/skills/mem0/references/sdk-guide.md) |
-| 7 | ✓ | [`mem0-plugin/skills/mem0/SKILL.md`](mem0-plugin/skills/mem0/SKILL.md) |
-| 8 | ✓ | [`openclaw/skills/memory-dream/SKILL.md`](openclaw/skills/memory-dream/SKILL.md) |
-| 9 | ✓ | [`openclaw/skills/memory-triage/SKILL.md`](openclaw/skills/memory-triage/SKILL.md) |
-| 10 | ✓ | [`skills/mem0/LICENSE`](skills/mem0/LICENSE) |
-| 11 | ✓ | [`skills/mem0/README.md`](skills/mem0/README.md) |
-| 12 | ✓ | [`skills/mem0/references/api-reference.md`](skills/mem0/references/api-reference.md) |
-| 13 | ✓ | [`skills/mem0/references/architecture.md`](skills/mem0/references/architecture.md) |
-| 14 | ✓ | [`skills/mem0/references/features.md`](skills/mem0/references/features.md) |
-| 15 | ✓ | [`skills/mem0/references/integration-patterns.md`](skills/mem0/references/integration-patterns.md) |
-| 16 | ✓ | [`skills/mem0/references/quickstart.md`](skills/mem0/references/quickstart.md) |
-| 17 | ✓ | [`skills/mem0/references/sdk-guide.md`](skills/mem0/references/sdk-guide.md) |
-| 18 | ✓ | [`skills/mem0/references/use-cases.md`](skills/mem0/references/use-cases.md) |
-| 19 | ✓ | [`skills/mem0/scripts/mem0_doc_search.py`](skills/mem0/scripts/mem0_doc_search.py) |
-| 20 | ✓ | [`skills/mem0/SKILL.md`](skills/mem0/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 5 | ✓ | [`mem0-plugin/skills/mem0-codex/SKILL.md`](mem0-plugin/skills/mem0-codex/SKILL.md) |
+| 6 | ✓ | [`mem0-plugin/skills/mem0/references/api-reference.md`](mem0-plugin/skills/mem0/references/api-reference.md) |
+| 7 | ✓ | [`mem0-plugin/skills/mem0/references/integration-patterns.md`](mem0-plugin/skills/mem0/references/integration-patterns.md) |
+| 8 | ✓ | [`mem0-plugin/skills/mem0/references/sdk-guide.md`](mem0-plugin/skills/mem0/references/sdk-guide.md) |
+| 9 | ✓ | [`mem0-plugin/skills/mem0/SKILL.md`](mem0-plugin/skills/mem0/SKILL.md) |
+| 10 | ✓ | [`openclaw/skills/memory-dream/SKILL.md`](openclaw/skills/memory-dream/SKILL.md) |
+| 11 | ✓ | [`openclaw/skills/memory-triage/SKILL.md`](openclaw/skills/memory-triage/SKILL.md) |
+| 12 | ✓ | [`skills/mem0-cli/LICENSE`](skills/mem0-cli/LICENSE) |
+| 13 | ✓ | [`skills/mem0-cli/README.md`](skills/mem0-cli/README.md) |
+| 14 | ✓ | [`skills/mem0-cli/references/command-reference.md`](skills/mem0-cli/references/command-reference.md) |
+| 15 | ✓ | [`skills/mem0-cli/references/configuration.md`](skills/mem0-cli/references/configuration.md) |
+| 16 | ✓ | [`skills/mem0-cli/references/workflows.md`](skills/mem0-cli/references/workflows.md) |
+| 17 | ✓ | [`skills/mem0-cli/SKILL.md`](skills/mem0-cli/SKILL.md) |
+| 18 | ✓ | [`skills/mem0-vercel-ai-sdk/LICENSE`](skills/mem0-vercel-ai-sdk/LICENSE) |
+| 19 | ✓ | [`skills/mem0-vercel-ai-sdk/README.md`](skills/mem0-vercel-ai-sdk/README.md) |
+| 20 | ✓ | [`skills/mem0-vercel-ai-sdk/references/memory-utilities.md`](skills/mem0-vercel-ai-sdk/references/memory-utilities.md) |
+| 21 | ✓ | [`skills/mem0-vercel-ai-sdk/references/provider-api.md`](skills/mem0-vercel-ai-sdk/references/provider-api.md) |
+| 22 | ✓ | [`skills/mem0-vercel-ai-sdk/references/usage-patterns.md`](skills/mem0-vercel-ai-sdk/references/usage-patterns.md) |
+| 23 | ✓ | [`skills/mem0-vercel-ai-sdk/SKILL.md`](skills/mem0-vercel-ai-sdk/SKILL.md) |
+| 24 | ✓ | [`skills/mem0/client/differences.md`](skills/mem0/client/differences.md) |
+| 25 | ✓ | [`skills/mem0/client/node.md`](skills/mem0/client/node.md) |
+| 26 | ✓ | [`skills/mem0/client/python.md`](skills/mem0/client/python.md) |
+| 27 | ✓ | [`skills/mem0/LICENSE`](skills/mem0/LICENSE) |
+| 28 | ✓ | [`skills/mem0/README.md`](skills/mem0/README.md) |
+| 29 | ✓ | [`skills/mem0/references/api-reference.md`](skills/mem0/references/api-reference.md) |
+| 30 | ✓ | [`skills/mem0/references/architecture.md`](skills/mem0/references/architecture.md) |
+| 31 | ✓ | [`skills/mem0/references/features.md`](skills/mem0/references/features.md) |
+| 32 | ✓ | [`skills/mem0/references/integration-patterns.md`](skills/mem0/references/integration-patterns.md) |
+| 33 | ✓ | [`skills/mem0/references/quickstart.md`](skills/mem0/references/quickstart.md) |
+| 34 | ✓ | [`skills/mem0/references/sdk-guide.md`](skills/mem0/references/sdk-guide.md) |
+| 35 | ✓ | [`skills/mem0/references/use-cases.md`](skills/mem0/references/use-cases.md) |
+| 36 | ✓ | [`skills/mem0/scripts/mem0_doc_search.py`](skills/mem0/scripts/mem0_doc_search.py) |
+| 37 | ✓ | [`skills/mem0/SKILL.md`](skills/mem0/SKILL.md) |
 
 ---
 

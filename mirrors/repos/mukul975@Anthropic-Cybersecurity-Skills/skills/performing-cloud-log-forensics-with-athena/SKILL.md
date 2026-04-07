@@ -1,17 +1,30 @@
 ---
 name: performing-cloud-log-forensics-with-athena
-description: >
-  Uses AWS Athena to query CloudTrail, VPC Flow Logs, S3 access logs, and ALB logs
-  for forensic investigation. Covers CREATE TABLE DDL with partition projection,
-  forensic SQL queries for detecting unauthorized access, data exfiltration, lateral
-  movement, and privilege escalation. Use when investigating AWS security incidents
-  or building cloud-native forensic workflows at scale.
+description: 'Uses AWS Athena to query CloudTrail, VPC Flow Logs, S3 access logs, and ALB logs for forensic investigation.
+  Covers CREATE TABLE DDL with partition projection, forensic SQL queries for detecting unauthorized access, data exfiltration,
+  lateral movement, and privilege escalation. Use when investigating AWS security incidents or building cloud-native forensic
+  workflows at scale.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [cloud, forensics, athena, aws, cloudtrail, vpc-flow-logs, s3, alb]
-version: "1.0"
+tags:
+- cloud
+- forensics
+- athena
+- aws
+- cloudtrail
+- vpc-flow-logs
+- s3
+- alb
+version: '1.0'
 author: mukul975
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Performing Cloud Log Forensics with AWS Athena

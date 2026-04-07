@@ -17,6 +17,11 @@ author: mahipal
 license: Apache-2.0
 atlas_techniques:
 - AML.T0052
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Analyzing Email Headers for Phishing Investigation

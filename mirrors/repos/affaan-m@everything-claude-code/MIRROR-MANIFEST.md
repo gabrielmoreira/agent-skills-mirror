@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `affaan-m/everything-claude-code` — 26 default patterns, 2 followed patterns, 727 file(s) materialized.
+Mirror of `affaan-m/everything-claude-code` — 26 default patterns, 3 followed patterns, 728 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `affaan-m/everything-claude-code` — 26 default patterns, 2 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 727 |
+| Followed pats | 3 |
+| Files         | 728 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `affaan-m/everything-claude-code` — 26 default patterns, 2 followed 
 
 - `CONTRIBUTING.md`
 - `docs/SKILL-DEVELOPMENT-GUIDE.md`
+- `docs/skill-adaptation-policy.md`
 
 ## File Index
 
@@ -786,7 +787,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 724 | ✓ | [`skills/workspace-surface-audit/SKILL.md`](skills/workspace-surface-audit/SKILL.md) |
 | 725 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
 | 726 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 727 | → | [`docs/SKILL-DEVELOPMENT-GUIDE.md`](docs/SKILL-DEVELOPMENT-GUIDE.md) |
+| 727 | → | [`docs/skill-adaptation-policy.md`](docs/skill-adaptation-policy.md) |
+| 728 | → | [`docs/SKILL-DEVELOPMENT-GUIDE.md`](docs/SKILL-DEVELOPMENT-GUIDE.md) |
 
 ---
 

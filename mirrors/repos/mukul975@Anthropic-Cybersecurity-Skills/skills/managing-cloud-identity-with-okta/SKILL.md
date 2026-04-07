@@ -1,17 +1,26 @@
 ---
 name: managing-cloud-identity-with-okta
-description: >
-  This skill covers implementing Okta as a centralized identity provider for cloud
-  environments, configuring SSO integration with AWS, Azure, and GCP, deploying phishing-
-  resistant MFA with Okta FastPass, managing lifecycle automation for user provisioning
-  and deprovisioning, and enforcing adaptive access policies based on device posture
-  and risk signals.
+description: 'This skill covers implementing Okta as a centralized identity provider for cloud environments, configuring SSO
+  integration with AWS, Azure, and GCP, deploying phishing- resistant MFA with Okta FastPass, managing lifecycle automation
+  for user provisioning and deprovisioning, and enforcing adaptive access policies based on device posture and risk signals.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [okta, cloud-identity, single-sign-on, phishing-resistant-mfa, identity-lifecycle]
+tags:
+- okta
+- cloud-identity
+- single-sign-on
+- phishing-resistant-mfa
+- identity-lifecycle
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Managing Cloud Identity with Okta

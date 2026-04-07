@@ -1,12 +1,24 @@
 ---
 name: hunting-for-suspicious-scheduled-tasks
-description: Hunt for adversary persistence and execution via Windows scheduled tasks by analyzing task creation events, suspicious task properties, and unusual execution patterns that indicate T1053.005 abuse.
+description: Hunt for adversary persistence and execution via Windows scheduled tasks by analyzing task creation events, suspicious
+  task properties, and unusual execution patterns that indicate T1053.005 abuse.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, scheduled-tasks, persistence, mitre-t1053-005, windows, endpoint-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- scheduled-tasks
+- persistence
+- mitre-t1053-005
+- windows
+- endpoint-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting for Suspicious Scheduled Tasks

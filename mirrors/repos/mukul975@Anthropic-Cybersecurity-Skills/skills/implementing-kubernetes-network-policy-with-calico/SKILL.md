@@ -1,12 +1,24 @@
 ---
 name: implementing-kubernetes-network-policy-with-calico
-description: Implement Kubernetes network segmentation using Calico NetworkPolicy and GlobalNetworkPolicy for zero-trust pod-to-pod communication.
+description: Implement Kubernetes network segmentation using Calico NetworkPolicy and GlobalNetworkPolicy for zero-trust pod-to-pod
+  communication.
 domain: cybersecurity
 subdomain: container-security
-tags: [calico, kubernetes, network-policy, network-segmentation, zero-trust, cni]
-version: "1.0"
+tags:
+- calico
+- kubernetes
+- network-policy
+- network-segmentation
+- zero-trust
+- cni
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- PR.IR-01
+- ID.AM-08
+- DE.CM-01
 ---
 
 # Implementing Kubernetes Network Policy with Calico

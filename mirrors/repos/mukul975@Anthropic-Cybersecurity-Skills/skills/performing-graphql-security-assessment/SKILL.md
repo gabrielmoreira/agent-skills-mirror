@@ -1,12 +1,24 @@
 ---
 name: performing-graphql-security-assessment
-description: Assessing GraphQL API endpoints for introspection leaks, injection attacks, authorization flaws, and denial-of-service vulnerabilities during authorized security tests.
+description: Assessing GraphQL API endpoints for introspection leaks, injection attacks, authorization flaws, and denial-of-service
+  vulnerabilities during authorized security tests.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, graphql, api-security, owasp, web-security, introspection]
-version: "1.0"
+tags:
+- penetration-testing
+- graphql
+- api-security
+- owasp
+- web-security
+- introspection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Performing GraphQL Security Assessment

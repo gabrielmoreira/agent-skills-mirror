@@ -27,6 +27,11 @@ d3fend_techniques:
 - Application Configuration Hardening
 - Application Hardening
 - Disable Remote Access
+nist_csf:
+- PR.AT-01
+- DE.CM-09
+- RS.CO-02
+- DE.AE-02
 ---
 # Detecting Business Email Compromise
 

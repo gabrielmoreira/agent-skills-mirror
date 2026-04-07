@@ -26,6 +26,11 @@ d3fend_techniques:
 - Restore Access
 - Application Protocol Command Analysis
 - Process Termination
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 # Performing Lateral Movement Detection
 

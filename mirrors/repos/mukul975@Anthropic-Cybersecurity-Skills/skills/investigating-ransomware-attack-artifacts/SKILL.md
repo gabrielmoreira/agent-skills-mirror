@@ -1,12 +1,24 @@
 ---
 name: investigating-ransomware-attack-artifacts
-description: Identify, collect, and analyze ransomware attack artifacts to determine the variant, initial access vector, encryption scope, and recovery options.
+description: Identify, collect, and analyze ransomware attack artifacts to determine the variant, initial access vector, encryption
+  scope, and recovery options.
 domain: cybersecurity
 subdomain: digital-forensics
-tags: [forensics, ransomware, malware-analysis, incident-response, encryption-recovery, evidence-collection]
-version: "1.0"
+tags:
+- forensics
+- ransomware
+- malware-analysis
+- incident-response
+- encryption-recovery
+- evidence-collection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Investigating Ransomware Attack Artifacts

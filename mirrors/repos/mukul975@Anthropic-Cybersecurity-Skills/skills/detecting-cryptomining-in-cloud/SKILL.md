@@ -1,17 +1,27 @@
 ---
 name: detecting-cryptomining-in-cloud
-description: >
-  This skill teaches security teams how to detect and respond to unauthorized cryptocurrency
-  mining operations in cloud environments. It covers identifying cryptomining indicators
-  through compute usage anomalies, network traffic patterns to mining pools, GuardDuty
-  CryptoCurrency findings, and runtime process monitoring on EC2, ECS, EKS, and Azure
-  Automation workloads.
+description: 'This skill teaches security teams how to detect and respond to unauthorized cryptocurrency mining operations
+  in cloud environments. It covers identifying cryptomining indicators through compute usage anomalies, network traffic patterns
+  to mining pools, GuardDuty CryptoCurrency findings, and runtime process monitoring on EC2, ECS, EKS, and Azure Automation
+  workloads.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [cryptomining-detection, cloud-abuse, resource-hijacking, guardduty-crypto, cost-anomaly]
+tags:
+- cryptomining-detection
+- cloud-abuse
+- resource-hijacking
+- guardduty-crypto
+- cost-anomaly
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Detecting Cryptomining in Cloud

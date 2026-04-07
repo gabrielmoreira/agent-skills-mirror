@@ -31,6 +31,11 @@ d3fend_techniques:
 - Application Protocol Command Analysis
 - Reissue Credential
 - Network Isolation
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Conducting Cloud Penetration Testing

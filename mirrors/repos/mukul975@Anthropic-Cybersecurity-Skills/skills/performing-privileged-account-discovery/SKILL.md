@@ -1,12 +1,24 @@
 ---
 name: performing-privileged-account-discovery
-description: Discover and inventory all privileged accounts across enterprise infrastructure including domain admins, local admins, service accounts, database admins, cloud IAM roles, and application admin account
+description: Discover and inventory all privileged accounts across enterprise infrastructure including domain admins, local
+  admins, service accounts, database admins, cloud IAM roles, and application admin account
 domain: cybersecurity
 subdomain: identity-access-management
-tags: [iam, identity, access-control, privileged-access, discovery, inventory]
-version: "1.0"
+tags:
+- iam
+- identity
+- access-control
+- privileged-access
+- discovery
+- inventory
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.AA-01
+- PR.AA-02
+- PR.AA-05
+- PR.AA-06
 ---
 # Performing Privileged Account Discovery
 

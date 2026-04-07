@@ -1,0 +1,8 @@
+interface:
+  display_name: "Baidu Maps"
+  short_description: "Location search, geocoding, route planning via Baidu Maps"
+  default_prompt: "Use $baidu-maps for map search and route planning"
+i18n:
+  zh:
+    name: "百度地图"
+    description: "百度地图服务，支持地址搜索、附近搜索、地理编码、路径规划和天气查询。"

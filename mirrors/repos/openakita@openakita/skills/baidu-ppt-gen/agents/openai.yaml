@@ -1,0 +1,8 @@
+interface:
+  display_name: "AI PPT Generator"
+  short_description: "Generate professional presentations from topics and outlines"
+  default_prompt: "Use $baidu-ppt-gen to create presentation slides"
+i18n:
+  zh:
+    name: "智能 PPT 生成"
+    description: "根据主题与大纲快速生成结构清晰、排版专业的演示文稿草稿。"

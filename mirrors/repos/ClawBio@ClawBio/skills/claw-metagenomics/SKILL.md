@@ -78,11 +78,17 @@ Comprehensive shotgun metagenomics analysis combining taxonomic classification, 
 4. Detects antimicrobial resistance genes with **RGI** against the **CARD** database
 5. Classifies detected ARGs by **WHO critical priority pathogen** association
 6. Optionally runs **HUMAnN3** for functional pathway profiling (MetaCyc + UniRef)
-7. Generates three publication-quality figures:
-   - **Figure 1**: Taxonomy bar chart — top 20 species by relative abundance
-   - **Figure 2**: Resistome heatmap — ARG families by drug class with abundance
-   - **Figure 3**: WHO-critical ARG summary — priority-tier breakdown of detected resistance genes
-8. Produces a full reproducibility bundle (commands.sh, environment.yml, checksums.sha256)
+7. Calculates **alpha diversity metrics** from Bracken-adjusted species abundances:
+   - **Shannon diversity index**: H = -sum(p_i * ln(p_i)), where p_i is the proportion of classified reads assigned to species i
+   - **Simpson diversity index**: D = 1 - sum(p_i^2)
+   - **Pielou evenness**: J = H / ln(S), where S is the number of species detected
+   - **Species richness**: S = number of distinct species with at least 1 assigned read
+8. Generates four publication-quality figures:
+   - **Figure 1**: Taxonomy bar chart, top 20 species by relative abundance
+   - **Figure 2**: Resistome heatmap, ARG families by drug class with abundance
+   - **Figure 3**: WHO-critical ARG summary, priority-tier breakdown of detected resistance genes
+   - **Figure 4**: Alpha diversity summary (Shannon, Simpson, Pielou in a panel)
+9. Produces a full reproducibility bundle (commands.sh, environment.yml, checksums.sha256)
 
 ## Why this exists
 
@@ -92,6 +98,7 @@ If you ask a general AI to "analyse a metagenome," it will:
 - Miss the connection between detected ARGs and WHO priority pathogen lists
 - Skip HUMAnN3 entirely (or misconfigure its database paths)
 - Produce a single bar chart with no resistance context
+- Skip diversity metric calculations (Shannon, Simpson, Pielou)
 - Not provide a reproducibility bundle
 
 This skill encodes the correct methodological decisions:
@@ -179,6 +186,12 @@ Taxonomy (Kraken2 + Bracken):
   Total classified: 94.2%
   Top species: Escherichia coli (12.3%), Klebsiella pneumoniae (8.7%),
                Pseudomonas aeruginosa (5.1%), Acinetobacter baumannii (3.9%)
+
+Alpha Diversity:
+  Shannon index: 2.847
+  Simpson index: 0.912
+  Pielou evenness: 0.734
+  Species richness: 48
 
 Resistome (RGI/CARD):
   Total ARG hits: 247 (Perfect: 89, Strict: 158)

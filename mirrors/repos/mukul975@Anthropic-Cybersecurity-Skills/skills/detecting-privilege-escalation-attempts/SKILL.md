@@ -20,6 +20,11 @@ d3fend_techniques:
 - Execution Isolation
 - Restore Access
 - Reissue Credential
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting Privilege Escalation Attempts

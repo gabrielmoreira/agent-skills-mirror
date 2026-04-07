@@ -1,16 +1,29 @@
 ---
 name: performing-s7comm-protocol-security-analysis
-description: >
-  Perform security analysis of Siemens S7comm and S7CommPlus protocols used by
-  SIMATIC S7 PLCs to identify vulnerabilities including replay attacks, integrity
-  bypass, unauthorized CPU stop commands, and program download manipulation
-  exploiting weaknesses in S7-300, S7-400, S7-1200, and S7-1500 controllers.
+description: 'Perform security analysis of Siemens S7comm and S7CommPlus protocols used by SIMATIC S7 PLCs to identify vulnerabilities
+  including replay attacks, integrity bypass, unauthorized CPU stop commands, and program download manipulation exploiting
+  weaknesses in S7-300, S7-400, S7-1200, and S7-1500 controllers.
+
+  '
 domain: cybersecurity
 subdomain: ot-ics-security
-tags: [ot-security, ics, s7comm, siemens, plc-security, protocol-analysis, scada, vulnerability-assessment]
-version: "1.0"
+tags:
+- ot-security
+- ics
+- s7comm
+- siemens
+- plc-security
+- protocol-analysis
+- scada
+- vulnerability-assessment
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-05
+- GV.OC-02
 ---
 
 # Performing S7comm Protocol Security Analysis

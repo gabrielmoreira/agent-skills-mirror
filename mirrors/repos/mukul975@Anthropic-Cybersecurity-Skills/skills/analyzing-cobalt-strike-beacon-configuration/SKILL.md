@@ -1,12 +1,25 @@
 ---
 name: analyzing-cobalt-strike-beacon-configuration
-description: Extract and analyze Cobalt Strike beacon configuration from PE files and memory dumps to identify C2 infrastructure, malleable profiles, and operator tradecraft.
+description: Extract and analyze Cobalt Strike beacon configuration from PE files and memory dumps to identify C2 infrastructure,
+  malleable profiles, and operator tradecraft.
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [cobalt-strike, beacon, c2, malware-analysis, config-extraction, threat-hunting, red-team-tools]
-version: "1.0"
+tags:
+- cobalt-strike
+- beacon
+- c2
+- malware-analysis
+- config-extraction
+- threat-hunting
+- red-team-tools
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 # Analyzing Cobalt Strike Beacon Configuration
 

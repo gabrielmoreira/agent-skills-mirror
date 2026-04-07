@@ -25,6 +25,11 @@ nist_ai_rmf:
 - MAP-1.1
 - GOVERN-4.2
 - MAP-2.3
+nist_csf:
+- PR.AA-01
+- PR.AA-05
+- PR.IR-01
+- GV.PO-01
 ---
 
 # Implementing CISA Zero Trust Maturity Model

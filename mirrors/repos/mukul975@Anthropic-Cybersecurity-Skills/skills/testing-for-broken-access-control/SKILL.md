@@ -1,12 +1,24 @@
 ---
 name: testing-for-broken-access-control
-description: Systematically testing web applications for broken access control vulnerabilities including privilege escalation, missing function-level checks, and insecure direct object references.
+description: Systematically testing web applications for broken access control vulnerabilities including privilege escalation,
+  missing function-level checks, and insecure direct object references.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, access-control, authorization, owasp, privilege-escalation, web-security]
-version: "1.0"
+tags:
+- penetration-testing
+- access-control
+- authorization
+- owasp
+- privilege-escalation
+- web-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Testing for Broken Access Control

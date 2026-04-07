@@ -25,6 +25,11 @@ d3fend_techniques:
 - Hardware-based Process Isolation
 - Platform Monitoring
 - Process Suspension
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 # Detecting Malicious Scheduled Tasks with Sysmon
 

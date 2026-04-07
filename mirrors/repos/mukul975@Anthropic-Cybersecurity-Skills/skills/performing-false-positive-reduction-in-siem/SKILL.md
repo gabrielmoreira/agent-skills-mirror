@@ -21,6 +21,11 @@ d3fend_techniques:
 - Password Authentication
 - Reissue Credential
 - Strong Password Policy
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 
 # Performing False Positive Reduction in SIEM

@@ -1,16 +1,23 @@
 ---
 name: performing-red-team-phishing-with-gophish
-description: >-
-  Automate GoPhish phishing simulation campaigns using the Python gophish library. Creates email
-  templates with tracking pixels, configures SMTP sending profiles, builds target groups from
-  CSV, launches campaigns, and analyzes results including open rates, click rates, and credential
-  submission statistics for security awareness assessment.
+description: Automate GoPhish phishing simulation campaigns using the Python gophish library. Creates email templates with
+  tracking pixels, configures SMTP sending profiles, builds target groups from CSV, launches campaigns, and analyzes results
+  including open rates, click rates, and credential submission statistics for security awareness assessment.
 domain: cybersecurity
 subdomain: security-operations
-tags: [performing, red, team, phishing]
-version: "1.0"
+tags:
+- performing
+- red
+- team
+- phishing
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 ---
 
 

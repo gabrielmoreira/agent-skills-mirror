@@ -20,6 +20,11 @@ d3fend_techniques:
 - Restore Access
 - Application Protocol Command Analysis
 - Process Termination
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting Pass The Hash Attacks

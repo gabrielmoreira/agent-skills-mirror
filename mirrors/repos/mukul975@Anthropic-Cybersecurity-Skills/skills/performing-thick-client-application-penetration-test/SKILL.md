@@ -24,6 +24,11 @@ atlas_techniques:
 - AML.T0070
 - AML.T0066
 - AML.T0082
+nist_csf:
+- ID.RA-01
+- ID.RA-06
+- GV.OV-02
+- DE.AE-07
 ---
 
 # Performing Thick Client Application Penetration Test

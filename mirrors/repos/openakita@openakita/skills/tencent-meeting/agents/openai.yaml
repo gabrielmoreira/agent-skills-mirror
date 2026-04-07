@@ -1,0 +1,9 @@
+interface:
+  display_name: "Tencent Meeting MCP"
+  short_description: "Full MCP integration for meeting lifecycle, recordings, transcripts, and smart minutes"
+  default_prompt: "Use $tencent-meeting to manage Tencent Meeting via MCP"
+
+i18n:
+  zh:
+    name: "腾讯会议"
+    description: "腾讯会议官方 MCP 技能，支持创会/改会/取消、参会统计、云录制、转写检索、智能纪要等全生命周期管理。"

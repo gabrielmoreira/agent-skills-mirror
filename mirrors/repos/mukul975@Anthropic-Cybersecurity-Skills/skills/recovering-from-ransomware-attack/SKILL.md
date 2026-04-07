@@ -1,19 +1,28 @@
 ---
 name: recovering-from-ransomware-attack
-description: >
-  Executes structured recovery from a ransomware incident following NIST and CISA
-  frameworks, including environment isolation, forensic evidence preservation, clean
-  infrastructure rebuild, prioritized system restoration from verified backups,
-  credential reset, and validation against re-infection. Covers Active Directory
-  recovery, database restoration, and application stack rebuild in dependency order.
-  Activates for requests involving ransomware recovery, post-encryption restoration,
-  or disaster recovery from ransomware.
+description: 'Executes structured recovery from a ransomware incident following NIST and CISA frameworks, including environment
+  isolation, forensic evidence preservation, clean infrastructure rebuild, prioritized system restoration from verified backups,
+  credential reset, and validation against re-infection. Covers Active Directory recovery, database restoration, and application
+  stack rebuild in dependency order. Activates for requests involving ransomware recovery, post-encryption restoration, or
+  disaster recovery from ransomware.
+
+  '
 domain: cybersecurity
 subdomain: ransomware-defense
-tags: [ransomware, recovery, incident-response, backup, defense]
+tags:
+- ransomware
+- recovery
+- incident-response
+- backup
+- defense
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.DS-11
+- RS.MA-01
+- RC.RP-01
+- PR.IR-01
 ---
 # Recovering from Ransomware Attack
 

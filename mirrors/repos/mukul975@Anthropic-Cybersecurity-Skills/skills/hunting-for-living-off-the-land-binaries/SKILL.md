@@ -21,6 +21,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Application Protocol Command Analysis
 - Content Format Conversion
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting for Living-off-the-Land Binaries (LOLBins)

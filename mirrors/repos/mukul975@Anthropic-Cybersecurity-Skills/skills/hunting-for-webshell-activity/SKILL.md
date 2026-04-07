@@ -21,6 +21,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Restore Access
 - Process Termination
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting For Webshell Activity

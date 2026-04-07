@@ -26,6 +26,11 @@ d3fend_techniques:
 - Hardware-based Process Isolation
 - Web Session Access Mediation
 - Process Suspension
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 # Building Detection Rules with Sigma
 

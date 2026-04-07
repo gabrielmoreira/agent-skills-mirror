@@ -1,0 +1,8 @@
+interface:
+  display_name: "Baidu E-commerce"
+  short_description: "Cross-platform price comparison and purchase assistance"
+  default_prompt: "Use $baidu-ecommerce to compare prices and find products"
+i18n:
+  zh:
+    name: "百度电商"
+    description: "跨平台比价、口碑分析、选购知识，一站式完成从找货到决策的全流程电商任务。"

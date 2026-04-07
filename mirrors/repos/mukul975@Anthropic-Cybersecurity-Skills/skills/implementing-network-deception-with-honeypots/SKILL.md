@@ -1,12 +1,25 @@
 ---
 name: implementing-network-deception-with-honeypots
-description: Deploy and manage network honeypots using OpenCanary, T-Pot, or Cowrie to detect unauthorized access, lateral movement, and attacker reconnaissance.
+description: Deploy and manage network honeypots using OpenCanary, T-Pot, or Cowrie to detect unauthorized access, lateral
+  movement, and attacker reconnaissance.
 domain: cybersecurity
 subdomain: deception-technology
-tags: [deception, honeypot, opencanary, cowrie, t-pot, detection, lateral-movement, network-security]
-version: "1.0"
+tags:
+- deception
+- honeypot
+- opencanary
+- cowrie
+- t-pot
+- detection
+- lateral-movement
+- network-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- DE.AE-06
+- PR.IR-01
 ---
 
 # Implementing Network Deception with Honeypots

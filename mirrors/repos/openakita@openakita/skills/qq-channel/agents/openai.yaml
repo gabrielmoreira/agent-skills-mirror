@@ -1,0 +1,9 @@
+interface:
+  display_name: "QQ Channel"
+  short_description: "Manage QQ/Tencent channels: messages, members, announcements"
+  default_prompt: "Use $qq-channel to manage QQ channels and send messages"
+
+i18n:
+  zh:
+    name: "QQ 频道管理"
+    description: "通过 QQ 机器人 API 管理腾讯频道，支持消息发送、成员管理、子频道管理、公告和日程。"

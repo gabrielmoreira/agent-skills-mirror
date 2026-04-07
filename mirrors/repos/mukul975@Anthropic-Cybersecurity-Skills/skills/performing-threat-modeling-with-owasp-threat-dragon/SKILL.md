@@ -24,6 +24,11 @@ atlas_techniques:
 - AML.T0070
 - AML.T0066
 - AML.T0082
+nist_csf:
+- PR.PS-01
+- GV.SC-07
+- ID.IM-04
+- PR.PS-04
 ---
 
 # Performing Threat Modeling with OWASP Threat Dragon

@@ -22,6 +22,10 @@ d3fend_techniques:
 - Network Traffic Analysis
 - Client-server Payload Profiling
 - Network Traffic Community Deviation
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Performing Kerberoasting Attack
 

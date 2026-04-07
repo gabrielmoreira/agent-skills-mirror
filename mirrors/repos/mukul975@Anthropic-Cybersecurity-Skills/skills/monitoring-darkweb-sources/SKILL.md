@@ -28,6 +28,11 @@ atlas_techniques:
 - AML.T0070
 - AML.T0066
 - AML.T0082
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Monitoring Dark Web Sources
 

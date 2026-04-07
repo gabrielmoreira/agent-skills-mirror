@@ -1,17 +1,28 @@
 ---
 name: deploying-active-directory-honeytokens
-description: >
-  Deploys deception-based honeytokens in Active Directory including fake privileged accounts
-  with AdminCount=1, fake SPNs for Kerberoasting detection (honeyroasting), decoy GPOs with
-  cpassword traps, and fake BloodHound paths. Monitors Windows Security Event IDs 4769, 4625,
-  4662, 5136 for honeytoken interaction. Use when implementing AD deception defenses for
-  detecting lateral movement, credential theft, and reconnaissance.
+description: 'Deploys deception-based honeytokens in Active Directory including fake privileged accounts with AdminCount=1,
+  fake SPNs for Kerberoasting detection (honeyroasting), decoy GPOs with cpassword traps, and fake BloodHound paths. Monitors
+  Windows Security Event IDs 4769, 4625, 4662, 5136 for honeytoken interaction. Use when implementing AD deception defenses
+  for detecting lateral movement, credential theft, and reconnaissance.
+
+  '
 domain: cybersecurity
 subdomain: deception-technology
-tags: [active-directory, honeytokens, kerberoasting, deception, detection, bloodhound, gpo]
-version: "1.0"
+tags:
+- active-directory
+- honeytokens
+- kerberoasting
+- deception
+- detection
+- bloodhound
+- gpo
+version: '1.0'
 author: mukul975
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- DE.AE-06
+- PR.IR-01
 ---
 
 # Deploying Active Directory Honeytokens

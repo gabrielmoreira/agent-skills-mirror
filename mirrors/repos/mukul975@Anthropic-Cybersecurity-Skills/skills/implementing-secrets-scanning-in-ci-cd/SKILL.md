@@ -3,10 +3,19 @@ name: implementing-secrets-scanning-in-ci-cd
 description: Integrate gitleaks and trufflehog into CI/CD pipelines to detect leaked secrets before deployment
 domain: cybersecurity
 subdomain: devsecops
-tags: [secrets-scanning, gitleaks, trufflehog, ci-cd]
-version: "1.0"
+tags:
+- secrets-scanning
+- gitleaks
+- trufflehog
+- ci-cd
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- GV.SC-07
+- ID.IM-04
+- PR.PS-04
 ---
 
 

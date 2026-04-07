@@ -1,12 +1,26 @@
 ---
 name: collecting-threat-intelligence-with-misp
-description: MISP (Malware Information Sharing Platform) is an open-source threat intelligence platform for gathering, sharing, storing, and correlating Indicators of Compromise (IOCs) of targeted attacks, threat 
+description: MISP (Malware Information Sharing Platform) is an open-source threat intelligence platform for gathering, sharing,
+  storing, and correlating Indicators of Compromise (IOCs) of targeted attacks, threat
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [threat-intelligence, cti, ioc, mitre-attack, stix, misp, taxii, threat-sharing]
-version: "1.0"
+tags:
+- threat-intelligence
+- cti
+- ioc
+- mitre-attack
+- stix
+- misp
+- taxii
+- threat-sharing
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Collecting Threat Intelligence with MISP
 

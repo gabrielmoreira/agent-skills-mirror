@@ -9,6 +9,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.8.0] - 2026-04-06 - "Governance, Tracking, and Discovery Skills"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges five community contributions that expand the library across MCP governance, change tracking, multi-agent orchestration, agent discovery, and scripted slide generation. It also ships the corresponding README source-credit updates and maintainer follow-up syncs required by the current PR quality bar.
+
+## New Skills
+
+- **protect-mcp-governance** - merges PR #458 to add MCP governance guidance with Cedar policies, shadow-to-enforce rollout, and signed receipt verification.
+- **technical-change-tracker** - merges PR #459 to add structured JSON change tracking, session handoff, and accessible dashboard guidance for coding continuity.
+- **multi-agent-task-orchestrator** - merges PR #462 to add production-tested multi-agent delegation, anti-duplication, and verification-gate patterns.
+- **global-chat-agent-discovery** - merges PR #463 to add cross-protocol discovery guidance for MCP servers and AI agents across multiple registries.
+- **python-pptx-generator** - merges PR #465 to add a compliant skill for generating runnable `python-pptx` slide-deck scripts from a topic brief.
+
+## Improvements
+
+- **README source-credit coverage** - adds the upstream community and official repo credits required for the merged skills so `check:readme-credits` now passes on these contributions.
+- **Maintainer merge hygiene** - resolves contributor-branch README conflicts on the PR branches and keeps the GitHub-only squash merge flow intact so each contribution lands as a proper merged PR.
+
+## Who should care
+
+- **Teams governing AI tool use** get a concrete skill for MCP policy authoring and receipt verification.
+- **Developers handing work across sessions or agents** get dedicated skills for change tracking and orchestrated multi-agent execution.
+- **Builders comparing agent ecosystems** get a new discovery skill covering MCP, A2A, and agents.txt registries.
+- **Users generating presentations from code** get a focused `python-pptx` skill for slide-deck scripting.
+
+## Credits
+
+- **[@tomjwxf](https://github.com/tomjwxf)** for `protect-mcp-governance` in PR #458
+- **[@Elkidogz](https://github.com/Elkidogz)** for `technical-change-tracker` in PR #459
+- **[@milkomida77](https://github.com/milkomida77)** for `multi-agent-task-orchestrator` in PR #462
+- **[@globalchatapp](https://github.com/globalchatapp)** for `global-chat-agent-discovery` in PR #463
+- **[@spideyashith](https://github.com/spideyashith)** for `python-pptx-generator` in PR #465
+
 ## [9.7.0] - 2026-04-05 - "Windows Reliability and Guidance Cleanup"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

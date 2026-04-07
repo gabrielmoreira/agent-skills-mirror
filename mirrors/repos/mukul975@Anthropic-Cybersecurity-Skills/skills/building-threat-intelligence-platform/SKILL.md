@@ -1,12 +1,26 @@
 ---
 name: building-threat-intelligence-platform
-description: Building a Threat Intelligence Platform (TIP) involves deploying and integrating multiple CTI tools into a unified system for collecting, analyzing, enriching, and disseminating threat intelligence. T
+description: Building a Threat Intelligence Platform (TIP) involves deploying and integrating multiple CTI tools into a unified
+  system for collecting, analyzing, enriching, and disseminating threat intelligence. T
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [threat-intelligence, cti, ioc, mitre-attack, stix, platform-building, misp, opencti]
-version: "1.0"
+tags:
+- threat-intelligence
+- cti
+- ioc
+- mitre-attack
+- stix
+- platform-building
+- misp
+- opencti
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Building Threat Intelligence Platform
 

@@ -20,6 +20,11 @@ d3fend_techniques:
 - Application Protocol Command Analysis
 - Content Format Conversion
 - File Content Analysis
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting For Unusual Network Connections

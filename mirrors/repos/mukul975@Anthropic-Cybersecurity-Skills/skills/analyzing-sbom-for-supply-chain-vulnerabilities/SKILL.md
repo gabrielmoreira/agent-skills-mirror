@@ -31,6 +31,11 @@ nist_ai_rmf:
 - MANAGE-2.2
 - GOVERN-1.1
 - GOVERN-4.2
+nist_csf:
+- GV.SC-01
+- GV.SC-03
+- GV.SC-06
+- GV.SC-07
 ---
 
 # Analyzing SBOM for Supply Chain Vulnerabilities

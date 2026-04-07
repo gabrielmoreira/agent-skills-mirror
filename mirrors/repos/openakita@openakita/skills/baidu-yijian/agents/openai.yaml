@@ -1,0 +1,8 @@
+interface:
+  display_name: "Baidu Yijian"
+  short_description: "Industrial visual management across 20+ industries"
+  default_prompt: "Use $baidu-yijian for industrial visual inspection"
+i18n:
+  zh:
+    name: "百度一见"
+    description: "视觉管理能力，覆盖零售餐饮、能源电力、矿山、港口等 20+ 行业场景。"

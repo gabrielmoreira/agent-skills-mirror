@@ -28,6 +28,11 @@ atlas_techniques:
 - AML.T0070
 - AML.T0066
 - AML.T0082
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 ---
 
 # Implementing eBPF Security Monitoring

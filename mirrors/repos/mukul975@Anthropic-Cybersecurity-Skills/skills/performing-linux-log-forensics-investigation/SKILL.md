@@ -1,12 +1,29 @@
 ---
 name: performing-linux-log-forensics-investigation
-description: Perform forensic investigation of Linux system logs including syslog, auth.log, systemd journal, kern.log, and application logs to reconstruct user activity, detect unauthorized access, and establish event timelines on compromised Linux systems.
+description: Perform forensic investigation of Linux system logs including syslog, auth.log, systemd journal, kern.log, and
+  application logs to reconstruct user activity, detect unauthorized access, and establish event timelines on compromised
+  Linux systems.
 domain: cybersecurity
 subdomain: digital-forensics
-tags: [linux-forensics, syslog, auth-log, systemd-journal, journalctl, linux-logs, ssh-forensics, cron, audit-log, log-analysis]
-version: "1.0"
+tags:
+- linux-forensics
+- syslog
+- auth-log
+- systemd-journal
+- journalctl
+- linux-logs
+- ssh-forensics
+- cron
+- audit-log
+- log-analysis
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Performing Linux Log Forensics Investigation

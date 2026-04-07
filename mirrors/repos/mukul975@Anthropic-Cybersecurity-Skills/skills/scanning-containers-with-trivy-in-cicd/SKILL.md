@@ -1,17 +1,28 @@
 ---
 name: scanning-containers-with-trivy-in-cicd
-description: >
-  This skill covers integrating Aqua Security's Trivy scanner into CI/CD pipelines for
-  comprehensive container image vulnerability detection. It addresses scanning Docker images
-  for OS package and application dependency CVEs, detecting misconfigurations in Dockerfiles,
-  scanning filesystem and git repositories, and establishing severity-based quality gates
+description: 'This skill covers integrating Aqua Security''s Trivy scanner into CI/CD pipelines for comprehensive container
+  image vulnerability detection. It addresses scanning Docker images for OS package and application dependency CVEs, detecting
+  misconfigurations in Dockerfiles, scanning filesystem and git repositories, and establishing severity-based quality gates
   that block deployment of vulnerable images.
+
+  '
 domain: cybersecurity
 subdomain: devsecops
-tags: [devsecops, cicd, trivy, container-security, vulnerability-scanning, secure-sdlc]
+tags:
+- devsecops
+- cicd
+- trivy
+- container-security
+- vulnerability-scanning
+- secure-sdlc
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- GV.SC-07
+- ID.IM-04
+- PR.PS-04
 ---
 
 # Scanning Containers with Trivy in CI/CD

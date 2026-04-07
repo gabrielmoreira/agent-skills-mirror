@@ -21,6 +21,11 @@ d3fend_techniques:
 - Network Traffic Analysis
 - Client-server Payload Profiling
 - Platform Monitoring
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting DCSync Attack in Active Directory

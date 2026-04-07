@@ -23,6 +23,11 @@ atlas_techniques:
 nist_ai_rmf:
 - GOVERN-6.2
 - MAP-5.2
+nist_csf:
+- ID.RA-01
+- ID.RA-06
+- GV.OV-02
+- DE.AE-07
 ---
 
 # Conducting Social Engineering Penetration Test

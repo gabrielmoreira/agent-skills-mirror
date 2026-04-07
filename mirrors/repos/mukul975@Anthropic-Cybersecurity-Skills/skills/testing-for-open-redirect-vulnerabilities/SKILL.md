@@ -1,12 +1,25 @@
 ---
 name: testing-for-open-redirect-vulnerabilities
-description: Identify and test open redirect vulnerabilities in web applications by analyzing URL redirection parameters, bypass techniques, and exploitation chains for phishing and token theft.
+description: Identify and test open redirect vulnerabilities in web applications by analyzing URL redirection parameters,
+  bypass techniques, and exploitation chains for phishing and token theft.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [open-redirect, url-redirect, phishing, owasp, url-validation, redirect-bypass, unvalidated-redirect]
-version: "1.0"
+tags:
+- open-redirect
+- url-redirect
+- phishing
+- owasp
+- url-validation
+- redirect-bypass
+- unvalidated-redirect
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Testing for Open Redirect Vulnerabilities

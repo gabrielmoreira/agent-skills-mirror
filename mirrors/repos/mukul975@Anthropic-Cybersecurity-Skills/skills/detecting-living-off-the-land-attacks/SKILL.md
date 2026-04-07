@@ -20,6 +20,11 @@ d3fend_techniques:
 - Network Traffic Analysis
 - Client-server Payload Profiling
 - Network Traffic Community Deviation
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-06
+- ID.RA-05
 ---
 
 # Detecting Living Off the Land Attacks

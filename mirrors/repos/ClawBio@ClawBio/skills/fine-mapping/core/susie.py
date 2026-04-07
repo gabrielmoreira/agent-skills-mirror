@@ -24,6 +24,7 @@ def run_susie(
     max_iter: int = 100,
     tol: float = 1e-3,
     min_purity: float = 0.5,
+    null_weight: float | None = None,
 ) -> dict:
     """Run SuSiE fine-mapping.
 
@@ -37,6 +38,12 @@ def run_susie(
     max_iter : maximum IBSS iterations
     tol : ELBO convergence tolerance
     min_purity : minimum pairwise |r| within a credible set (Wang 2020 section 3.2)
+    null_weight : prior weight on the null hypothesis (no effect) for each
+        single-effect regression. When > 0, the model can assign posterior mass
+        to "no effect at this locus", preventing phantom PIPs on null loci.
+        The susieR reference implementation uses null_weight to mitigate
+        forced signal assignment. Default: 1/(L+1), giving equal prior to
+        "no effect" as to each of L possible effects. Set to 0 to disable.
 
     Returns
     -------
@@ -45,6 +52,7 @@ def run_susie(
         mu      : (L, p) posterior mean effect sizes
         mu2     : (L, p) posterior second moments
         pip     : (p,) posterior inclusion probabilities
+        null_weight_used : float, the null_weight that was applied
         elbo    : list of ELBO values per iteration
         converged : bool
         n_iter  : int
@@ -60,6 +68,11 @@ def run_susie(
     if np.any(np.isnan(z)):
         raise ValueError("z-score vector contains NaN values")
 
+    # Default null_weight: 1/(L+1) gives equal prior to "no effect" as to
+    # each of L possible effects. Prevents forced signal on null loci.
+    if null_weight is None:
+        null_weight = 1.0 / (L + 1)
+
     p = len(z)
     z = z.astype(float)
     R = R.astype(float)
@@ -67,10 +80,22 @@ def run_susie(
     # Variance of z-scores ≈ 1/n (used to derive V_i = 1/n for all variants)
     V = np.full(p, 1.0 / n)
 
+    # Null component: log prior odds of "no effect" vs uniform prior on variants
+    # When null_weight > 0, each single-effect regression includes a null
+    # hypothesis that competes with the p variant hypotheses.
+    use_null = null_weight > 0
+    if use_null:
+        # log prior: log(null_weight) for null, log((1 - null_weight)/p) for each variant
+        log_prior_null = np.log(null_weight)
+        log_prior_variant = np.log((1.0 - null_weight) / p)
+    else:
+        log_prior_variant = -np.log(p)  # uniform 1/p
+
     # Initialise
     alpha = np.ones((L, p)) / p       # posterior weights (uniform init)
-    mu    = np.zeros((L, p))           # posterior means
-    mu2   = np.zeros((L, p))           # posterior second moments
+    mu    = np.zeros((L, p))           # alpha-weighted posterior means (for IBSS updates)
+    mu2   = np.zeros((L, p))           # alpha-weighted posterior second moments
+    cond_mu = np.zeros((L, p))        # conditional posterior means (pure, not alpha-weighted)
 
     elbo_history = []
     converged = False
@@ -91,17 +116,35 @@ def run_susie(
             # treating r_l as observed z-score with variance V
             log_bf = _log_abf(r_l, V, w)
 
-            # Posterior weights for this effect
-            log_bf_shifted = log_bf - np.max(log_bf)
-            alpha[l] = np.exp(log_bf_shifted) / np.exp(log_bf_shifted).sum()
+            # Add prior: log_bf + log_prior_variant for each variant
+            log_posterior = log_bf + log_prior_variant
+
+            if use_null:
+                # Null component: BF = 1 (log BF = 0), prior = null_weight
+                log_null_posterior = log_prior_null  # log(null_weight) + 0
+
+                # Normalise across p variants + 1 null
+                all_log_posts = np.append(log_posterior, log_null_posterior)
+                max_lp = np.max(all_log_posts)
+                all_log_posts_shifted = all_log_posts - max_lp
+                all_weights = np.exp(all_log_posts_shifted)
+                total = all_weights.sum()
+
+                # alpha[l] gets the variant weights (excluding null)
+                alpha[l] = all_weights[:p] / total
+                # null_alpha is all_weights[p] / total (not stored, just absorbed)
+            else:
+                # Original behaviour: normalise across variants only
+                log_bf_shifted = log_bf - np.max(log_bf)
+                alpha[l] = np.exp(log_bf_shifted) / np.exp(log_bf_shifted).sum()
 
             # Posterior mean and second moment (Gaussian single-effect)
             # mu_l_j  = w / (V_j + w) * r_l_j    (scalar approximation per variant)
-            # For the mixture: mu[l] = sum_j alpha[l,j] * mu_j^posterior
-            post_mean_j = (w / (V + w)) * r_l          # posterior mean per variant
-            post_var_j  = w * V / (V + w)              # posterior variance per variant
+            post_mean_j = (w / (V + w)) * r_l          # conditional posterior mean per variant
+            post_var_j  = w * V / (V + w)              # conditional posterior variance per variant
 
-            mu[l]  = alpha[l] * post_mean_j            # weighted by alpha
+            cond_mu[l] = post_mean_j                   # pure conditional posterior mean
+            mu[l]  = alpha[l] * post_mean_j            # alpha-weighted (for IBSS fitted values)
             mu2[l] = alpha[l] * (post_mean_j**2 + post_var_j)
 
             # Keep fitted_all in sync for the next effect's residual
@@ -115,15 +158,36 @@ def run_susie(
             converged = True
             break
 
-    # Compute PIPs: PIP_i = 1 - prod_l (1 - alpha_{l,i})
-    pip = 1.0 - np.prod(1.0 - alpha, axis=0)
+    # When null component is active, prune null effects: if an effect row's
+    # maximum alpha is below the uniform prior (1/p), the null hypothesis
+    # dominates and the effect should not contribute to PIPs. This prevents
+    # phantom PIP accumulation from multiple null effects on a null locus.
+    if use_null:
+        uniform_prior = 1.0 / p
+        active_mask = alpha.max(axis=1) > uniform_prior
+        alpha_active = alpha[active_mask] if active_mask.any() else np.zeros((0, p))
+    else:
+        alpha_active = alpha
+
+    # Compute PIPs: PIP_i = 1 - prod_l (1 - alpha_{l,i})  [active effects only]
+    if alpha_active.shape[0] > 0:
+        pip = 1.0 - np.prod(1.0 - alpha_active, axis=0)
+    else:
+        pip = np.zeros(p)
     pip = np.clip(pip, 0.0, 1.0)
+
+    # Non-convergent results: suppress PIPs to prevent downstream use of
+    # unreliable estimates. Return zeros with a warning.
+    if not converged:
+        pip = np.zeros_like(pip)
 
     return {
         "alpha": alpha,
-        "mu": mu,
+        "mu": cond_mu,          # conditional posterior mean (pure, per Wang et al. eq. 4)
+        "mu_weighted": mu,      # alpha-weighted posterior mean (used in IBSS fitted values)
         "mu2": mu2,
         "pip": pip,
+        "null_weight_used": null_weight,
         "elbo": elbo_history,
         "converged": converged,
         "n_iter": iteration + 1,

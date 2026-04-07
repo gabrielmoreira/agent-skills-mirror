@@ -1,19 +1,32 @@
 ---
 name: containing-active-breach
-description: >
-  Executes containment strategies to stop active adversary operations and prevent
-  lateral movement during a confirmed security breach. Implements short-term and
-  long-term containment using network segmentation, endpoint isolation, credential
-  revocation, and access control modifications. Activates for requests involving
-  breach containment, lateral movement prevention, network isolation, active
-  threat containment, or live incident response.
+description: 'Executes containment strategies to stop active adversary operations and prevent lateral movement during a confirmed
+  security breach. Implements short-term and long-term containment using network segmentation, endpoint isolation, credential
+  revocation, and access control modifications. Activates for requests involving breach containment, lateral movement prevention,
+  network isolation, active threat containment, or live incident response.
+
+  '
 domain: cybersecurity
 subdomain: incident-response
-tags: [breach-containment, lateral-movement, network-isolation, credential-revocation, live-response]
-mitre_attack: ["T1021", "T1570", "T1210", "T1072"]
+tags:
+- breach-containment
+- lateral-movement
+- network-isolation
+- credential-revocation
+- live-response
+mitre_attack:
+- T1021
+- T1570
+- T1210
+- T1072
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.MA-01
+- RS.MA-02
+- RS.AN-03
+- RC.RP-01
 ---
 
 # Containing Active Breaches

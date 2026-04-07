@@ -1,18 +1,31 @@
 ---
 name: profiling-threat-actor-groups
-description: >
-  Develops comprehensive threat actor profiles for APT groups, criminal organizations, and
-  hacktivist collectives by aggregating TTP documentation, historical campaign data, tooling
-  fingerprints, and attribution indicators from multiple intelligence sources. Use when briefing
-  executives on sector-specific threats, updating threat model assumptions, or prioritizing
-  defensive controls against specific adversaries. Activates for requests involving MITRE ATT&CK
-  Groups, Mandiant APT profiles, CrowdStrike adversary naming, or sector-specific threat briefings.
+description: 'Develops comprehensive threat actor profiles for APT groups, criminal organizations, and hacktivist collectives
+  by aggregating TTP documentation, historical campaign data, tooling fingerprints, and attribution indicators from multiple
+  intelligence sources. Use when briefing executives on sector-specific threats, updating threat model assumptions, or prioritizing
+  defensive controls against specific adversaries. Activates for requests involving MITRE ATT&CK Groups, Mandiant APT profiles,
+  CrowdStrike adversary naming, or sector-specific threat briefings.
+
+  '
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [MITRE-ATT&CK, threat-actor, APT, CrowdStrike, Mandiant, attribution, kill-chain, NIST-CSF]
+tags:
+- MITRE-ATT&CK
+- threat-actor
+- APT
+- CrowdStrike
+- Mandiant
+- attribution
+- kill-chain
+- NIST-CSF
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Profiling Threat Actor Groups
 

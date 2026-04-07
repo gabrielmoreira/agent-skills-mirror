@@ -1,12 +1,24 @@
 ---
 name: performing-log-analysis-for-forensic-investigation
-description: Collect, parse, and correlate system, application, and security logs to reconstruct events and establish timelines during forensic investigations.
+description: Collect, parse, and correlate system, application, and security logs to reconstruct events and establish timelines
+  during forensic investigations.
 domain: cybersecurity
 subdomain: digital-forensics
-tags: [forensics, log-analysis, siem, event-correlation, timeline-analysis, evidence-collection]
-version: "1.0"
+tags:
+- forensics
+- log-analysis
+- siem
+- event-correlation
+- timeline-analysis
+- evidence-collection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Performing Log Analysis for Forensic Investigation

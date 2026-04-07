@@ -21,6 +21,10 @@ d3fend_techniques:
 - Electromagnetic Radiation Hardening
 - RF Shielding
 - Asset Inventory
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 
 # Performing Physical Intrusion Assessment

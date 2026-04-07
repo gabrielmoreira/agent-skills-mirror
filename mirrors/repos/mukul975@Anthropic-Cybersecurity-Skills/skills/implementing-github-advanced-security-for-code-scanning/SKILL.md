@@ -1,12 +1,25 @@
 ---
 name: implementing-github-advanced-security-for-code-scanning
-description: Configure GitHub Advanced Security with CodeQL to perform automated static analysis and vulnerability detection across repositories at enterprise scale.
+description: Configure GitHub Advanced Security with CodeQL to perform automated static analysis and vulnerability detection
+  across repositories at enterprise scale.
 domain: cybersecurity
 subdomain: devsecops
-tags: [github-advanced-security, codeql, sast, code-scanning, supply-chain-security, devops-security, shift-left]
-version: "1.0"
+tags:
+- github-advanced-security
+- codeql
+- sast
+- code-scanning
+- supply-chain-security
+- devops-security
+- shift-left
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- GV.SC-07
+- ID.IM-04
+- PR.PS-04
 ---
 
 # Implementing GitHub Advanced Security for Code Scanning

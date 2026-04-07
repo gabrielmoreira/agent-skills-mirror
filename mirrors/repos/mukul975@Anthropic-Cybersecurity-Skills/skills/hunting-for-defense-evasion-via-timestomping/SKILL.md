@@ -21,6 +21,11 @@ d3fend_techniques:
 - File Content Analysis
 - Platform Hardening
 - File Format Verification
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting for Defense Evasion via Timestomping

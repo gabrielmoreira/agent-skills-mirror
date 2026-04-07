@@ -1,12 +1,26 @@
 ---
 name: performing-active-directory-penetration-test
-description: Conduct a focused Active Directory penetration test to enumerate domain objects, discover attack paths with BloodHound, exploit Kerberos weaknesses, escalate privileges via ADCS/DCSync, and demonstrate domain compromise.
+description: Conduct a focused Active Directory penetration test to enumerate domain objects, discover attack paths with BloodHound,
+  exploit Kerberos weaknesses, escalate privileges via ADCS/DCSync, and demonstrate domain compromise.
 domain: cybersecurity
 subdomain: penetration-testing
-tags: [active-directory, BloodHound, Kerberoasting, Impacket, DCSync, ADCS, domain-compromise, privilege-escalation]
-version: "1.0"
+tags:
+- active-directory
+- BloodHound
+- Kerberoasting
+- Impacket
+- DCSync
+- ADCS
+- domain-compromise
+- privilege-escalation
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-06
+- GV.OV-02
+- DE.AE-07
 ---
 
 # Performing Active Directory Penetration Test

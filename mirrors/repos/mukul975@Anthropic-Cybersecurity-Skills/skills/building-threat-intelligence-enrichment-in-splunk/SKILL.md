@@ -1,12 +1,26 @@
 ---
 name: building-threat-intelligence-enrichment-in-splunk
-description: Build automated threat intelligence enrichment pipelines in Splunk Enterprise Security using lookup tables, modular inputs, and the Threat Intelligence Framework.
+description: Build automated threat intelligence enrichment pipelines in Splunk Enterprise Security using lookup tables, modular
+  inputs, and the Threat Intelligence Framework.
 domain: cybersecurity
 subdomain: soc-operations
-tags: [splunk, threat-intelligence, enrichment, ioc, lookup, siem, soc, enterprise-security]
-version: "1.0"
+tags:
+- splunk
+- threat-intelligence
+- enrichment
+- ioc
+- lookup
+- siem
+- soc
+- enterprise-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 
 # Building Threat Intelligence Enrichment in Splunk

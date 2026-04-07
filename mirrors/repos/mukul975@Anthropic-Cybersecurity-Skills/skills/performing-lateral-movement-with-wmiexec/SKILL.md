@@ -21,6 +21,10 @@ d3fend_techniques:
 - Application Protocol Command Analysis
 - Network Isolation
 - Network Traffic Analysis
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Performing Lateral Movement with WMIExec
 

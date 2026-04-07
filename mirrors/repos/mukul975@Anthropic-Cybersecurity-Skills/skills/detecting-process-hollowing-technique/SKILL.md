@@ -21,6 +21,11 @@ d3fend_techniques:
 - Segment Address Offset Randomization
 - Process Analysis
 - Application Hardening
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting Process Hollowing Technique

@@ -1,18 +1,28 @@
 ---
 name: implementing-attack-surface-management
-description: >
-  Implements external attack surface management (EASM) using Shodan, Censys, and
-  ProjectDiscovery tools (subfinder, httpx, nuclei) for asset discovery, subdomain
-  enumeration, service fingerprinting, and exposure scoring. Includes a weighted
-  risk scoring algorithm based on OWASP attack surface analysis methodology and
-  the Relative Attack Surface Quotient (RSQ). Use when building continuous ASM
-  programs or performing external reconnaissance for security assessments.
+description: 'Implements external attack surface management (EASM) using Shodan, Censys, and ProjectDiscovery tools (subfinder,
+  httpx, nuclei) for asset discovery, subdomain enumeration, service fingerprinting, and exposure scoring. Includes a weighted
+  risk scoring algorithm based on OWASP attack surface analysis methodology and the Relative Attack Surface Quotient (RSQ).
+  Use when building continuous ASM programs or performing external reconnaissance for security assessments.
+
+  '
 domain: cybersecurity
 subdomain: offensive-security
-tags: [attack-surface, reconnaissance, shodan, censys, subfinder, nuclei, asset-discovery]
-version: "1.0"
+tags:
+- attack-surface
+- reconnaissance
+- shodan
+- censys
+- subfinder
+- nuclei
+- asset-discovery
+version: '1.0'
 author: mukul975
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 
 # Implementing Attack Surface Management

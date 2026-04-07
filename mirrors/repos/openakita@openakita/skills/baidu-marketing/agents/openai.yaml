@@ -1,0 +1,8 @@
+interface:
+  display_name: "Baidu Marketing"
+  short_description: "Marketing content generation: notes, videos, copywriting"
+  default_prompt: "Use $baidu-marketing to generate marketing content"
+i18n:
+  zh:
+    name: "百度客悦营销"
+    description: "智能营销工具，支持营销笔记生成、视频生成、文案优化等场景。"

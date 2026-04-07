@@ -7,7 +7,7 @@ ref: development
 
 # Mirror Manifest
 
-Mirror of `yusufkaraaslan/Skill_Seekers` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `yusufkaraaslan/Skill_Seekers` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yusufkaraaslan/Skill_Seekers` — 26 default patterns, 0 followed pat
 | Ref           | `development` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`distribution/claude-plugin/skills/skill-builder/SKILL.md`](distribution/claude-plugin/skills/skill-builder/SKILL.md) |
+| 4 | ✓ | [`skills/skill-seekers/SKILL.md`](skills/skill-seekers/SKILL.md) |
 
 ---
 

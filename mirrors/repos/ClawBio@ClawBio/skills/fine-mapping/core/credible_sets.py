@@ -37,6 +37,13 @@ def build_credible_sets_susie(
     L = alpha.shape[0]
     credible_sets = []
 
+    # Compute true PIPs from full alpha matrix: PIP_i = 1 - prod_l(1 - alpha[l,i])
+    true_pip = 1.0 - np.prod(1.0 - alpha, axis=0)
+    true_pip = np.clip(true_pip, 0.0, 1.0)
+    # Inject into dataframe so _collect_variants uses true PIP
+    df = df.copy()
+    df["pip"] = true_pip
+
     for l in range(L):
         a_l = alpha[l]
         cs = _greedy_credible_set(a_l, coverage)
@@ -59,7 +66,7 @@ def build_credible_sets_susie(
             "lead_rsid": lead["rsid"],
             "lead_alpha": lead["alpha"],
             "purity": purity,
-            "pure": purity is None or purity >= min_purity,
+            "pure": purity >= min_purity if purity is not None else None,
             "variants": variants,
         })
 
@@ -99,6 +106,10 @@ def build_credible_set_abf(
 
 def _greedy_credible_set(weights: np.ndarray, coverage: float) -> list[int]:
     """Greedily add highest-weight variants until cumulative weight >= coverage."""
+    if coverage <= 0 or coverage > 1:
+        raise ValueError(
+            f"Credible set coverage must be in (0, 1], got {coverage}."
+        )
     order = np.argsort(-weights)
     cumsum = 0.0
     cs = []
@@ -127,16 +138,24 @@ def _purity(cs: list[int], R: np.ndarray) -> float:
 
 
 def _collect_variants(cs: list[int], df: pd.DataFrame, weights: np.ndarray) -> list[dict]:
-    """Build variant dicts for credible set members."""
+    """Build variant dicts for credible set members.
+
+    The 'pip' field uses the true PIP from df["pip"] (computed as
+    1 - prod_l(1 - alpha[l]) across all L effects), not the single-effect
+    alpha weight. The 'alpha' field stores the per-signal weight.
+    """
     variants = []
     for idx in cs:
         row = df.iloc[idx]
+        # Use true PIP from dataframe; fall back to single-effect alpha only
+        # if PIP column is missing (e.g. ABF mode where weights ARE the PIPs)
+        pip_val = float(row["pip"]) if "pip" in df.columns and pd.notna(row.get("pip")) else float(weights[idx])
         v = {
             "rsid": str(row.get("rsid", f"var_{idx}")),
             "chr": str(row.get("chr", "?")),
             "pos": int(row["pos"]) if "pos" in df.columns and pd.notna(row.get("pos")) else None,
             "z": float(row["z"]),
-            "pip": float(row.get("pip", weights[idx])),
+            "pip": pip_val,
             "alpha": float(weights[idx]),
         }
         if "p" in df.columns and pd.notna(row.get("p")):

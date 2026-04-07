@@ -1,12 +1,25 @@
 ---
 name: performing-indicator-lifecycle-management
-description: Indicator lifecycle management tracks IOCs from initial discovery through validation, enrichment, deployment, monitoring, and eventual retirement. This skill covers implementing systematic processes f
+description: Indicator lifecycle management tracks IOCs from initial discovery through validation, enrichment, deployment,
+  monitoring, and eventual retirement. This skill covers implementing systematic processes f
 domain: cybersecurity
 subdomain: threat-intelligence
-tags: [threat-intelligence, cti, ioc, mitre-attack, stix, indicator-lifecycle, ioc-management]
-version: "1.0"
+tags:
+- threat-intelligence
+- cti
+- ioc
+- mitre-attack
+- stix
+- indicator-lifecycle
+- ioc-management
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Performing Indicator Lifecycle Management
 

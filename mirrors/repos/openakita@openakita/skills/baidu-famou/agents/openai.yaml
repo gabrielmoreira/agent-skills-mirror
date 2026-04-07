@@ -1,0 +1,8 @@
+interface:
+  display_name: "Baidu FaMou"
+  short_description: "Algorithm optimization with experiment management and visualization"
+  default_prompt: "Use $baidu-famou for algorithm optimization experiments"
+i18n:
+  zh:
+    name: "百度伏谋"
+    description: "算法自演化能力，提供实验管理和可视化，帮助极致调优复杂算法。"

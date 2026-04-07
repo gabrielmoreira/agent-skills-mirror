@@ -1,17 +1,28 @@
 ---
 name: building-ransomware-playbook-with-cisa-framework
-description: >
-  Builds a structured ransomware incident response playbook aligned with the CISA
-  StopRansomware Guide and NIST Cybersecurity Framework. Covers preparation, detection,
-  containment, eradication, recovery, and post-incident phases with actionable
-  checklists. Activates for requests involving ransomware response planning, CISA
-  compliance, incident response playbook creation, or ransomware preparedness assessment.
+description: 'Builds a structured ransomware incident response playbook aligned with the CISA StopRansomware Guide and NIST
+  Cybersecurity Framework. Covers preparation, detection, containment, eradication, recovery, and post-incident phases with
+  actionable checklists. Activates for requests involving ransomware response planning, CISA compliance, incident response
+  playbook creation, or ransomware preparedness assessment.
+
+  '
 domain: cybersecurity
 subdomain: ransomware-defense
-tags: [ransomware, incident-response, CISA, playbook, compliance, NIST]
+tags:
+- ransomware
+- incident-response
+- CISA
+- playbook
+- compliance
+- NIST
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.DS-11
+- RS.MA-01
+- RC.RP-01
+- PR.IR-01
 ---
 
 # Building Ransomware Playbook with CISA Framework

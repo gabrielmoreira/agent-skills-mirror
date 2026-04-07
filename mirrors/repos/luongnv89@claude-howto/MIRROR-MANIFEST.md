@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `luongnv89/claude-howto` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `luongnv89/claude-howto` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `luongnv89/claude-howto` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,7 +67,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`03-skills/code-review/SKILL.md`](03-skills/code-review/SKILL.md) |
 | 7 | ✓ | [`03-skills/doc-generator/SKILL.md`](03-skills/doc-generator/SKILL.md) |
 | 8 | ✓ | [`03-skills/refactor/SKILL.md`](03-skills/refactor/SKILL.md) |
-| 9 | ✓ | [`prompts/remotion-video.md`](prompts/remotion-video.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`prompts/remotion-video.md`](prompts/remotion-video.md) |
+| 11 | ✓ | [`vi/03-skills/blog-draft/SKILL.md`](vi/03-skills/blog-draft/SKILL.md) |
+| 12 | ✓ | [`vi/03-skills/brand-voice/SKILL.md`](vi/03-skills/brand-voice/SKILL.md) |
+| 13 | ✓ | [`vi/03-skills/claude-md/SKILL.md`](vi/03-skills/claude-md/SKILL.md) |
+| 14 | ✓ | [`vi/03-skills/code-review/SKILL.md`](vi/03-skills/code-review/SKILL.md) |
+| 15 | ✓ | [`vi/03-skills/refactor/SKILL.md`](vi/03-skills/refactor/SKILL.md) |
+| 16 | ✓ | [`zh/03-skills/blog-draft/SKILL.md`](zh/03-skills/blog-draft/SKILL.md) |
+| 17 | ✓ | [`zh/03-skills/brand-voice/SKILL.md`](zh/03-skills/brand-voice/SKILL.md) |
+| 18 | ✓ | [`zh/03-skills/claude-md/SKILL.md`](zh/03-skills/claude-md/SKILL.md) |
+| 19 | ✓ | [`zh/03-skills/code-review/SKILL.md`](zh/03-skills/code-review/SKILL.md) |
+| 20 | ✓ | [`zh/03-skills/doc-generator/SKILL.md`](zh/03-skills/doc-generator/SKILL.md) |
+| 21 | ✓ | [`zh/03-skills/refactor/SKILL.md`](zh/03-skills/refactor/SKILL.md) |
 
 ---
 

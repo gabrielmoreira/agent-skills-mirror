@@ -22,6 +22,11 @@ d3fend_techniques:
 - File Content Analysis
 - Platform Hardening
 - File Format Verification
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 # Reverse Engineering Ransomware Encryption Routine
 

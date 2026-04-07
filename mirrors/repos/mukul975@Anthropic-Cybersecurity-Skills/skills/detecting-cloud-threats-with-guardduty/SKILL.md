@@ -1,16 +1,26 @@
 ---
 name: detecting-cloud-threats-with-guardduty
-description: >
-  This skill teaches security teams how to deploy and operationalize Amazon GuardDuty
-  for continuous threat detection across AWS accounts and workloads. It covers enabling
-  protection plans for S3, EKS, EC2 runtime monitoring, and Lambda, interpreting finding
-  severity levels, and building automated response workflows using EventBridge and Lambda.
+description: 'This skill teaches security teams how to deploy and operationalize Amazon GuardDuty for continuous threat detection
+  across AWS accounts and workloads. It covers enabling protection plans for S3, EKS, EC2 runtime monitoring, and Lambda,
+  interpreting finding severity levels, and building automated response workflows using EventBridge and Lambda.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [amazon-guardduty, threat-detection, aws-security, runtime-monitoring, cloud-soc]
+tags:
+- amazon-guardduty
+- threat-detection
+- aws-security
+- runtime-monitoring
+- cloud-soc
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Detecting Cloud Threats with GuardDuty

@@ -1000,27 +1000,42 @@ def call_diplotype(gene, pgx_snps):
             return pgx_snps[rsid]["genotype"]
         return "NOT_TESTED"
 
-    # Count how many of this gene's SNPs were actually present in the file
-    gene_rsids = list(gdef["variants"].keys())
+    # Exclude structural variant SNPs (DEL, INS, TA7) from both the total
+    # panel count and tested count: they are inherently untestable from DTC data.
+    sv_rsids = {r for r, v in gdef["variants"].items() if v["alt"].upper() in ("DEL", "INS", "TA7")}
+    gene_rsids = [r for r in gdef["variants"].keys() if r not in sv_rsids]
     tested = [r for r in gene_rsids if r in pgx_snps]
 
     if not tested:
+        # Check if the only SNPs present are SV SNPs
+        sv_in_data = [r for r in sv_rsids if r in pgx_snps]
+        if sv_in_data:
+            # Gene has data but only at untestable SV positions
+            return "NOT_TESTED"
         return "NOT_TESTED"
 
     detected = []
+    sv_untestable = []  # SV SNPs where patient carries a het call
     for rsid, vdef in gdef["variants"].items():
         if rsid in pgx_snps:
             gt = pgx_snps[rsid]["genotype"]
             alt = vdef["alt"].upper()
             if alt in ("DEL", "INS", "TA7"):
-                print(f"  WARNING: {gene} {rsid} has structural variant "
-                      f"alt={alt}, cannot interpret from DTC data",
-                      file=sys.stderr)
+                # Only flag if patient has a heterozygous call (possible carrier)
+                is_het = len(set(gt)) > 1
+                if is_het:
+                    sv_untestable.append({"rsid": rsid, "allele": vdef["allele"], "alt": alt})
                 continue
             alt_count = gt.count(alt)
             if alt_count > 0:
                 detected.append({"rsid": rsid, "allele": vdef["allele"],
                                  "copies": alt_count, "effect": vdef["effect"]})
+
+    # If patient carries a het call at an SV SNP, the gene result is unreliable.
+    # Report as Indeterminate rather than falsely claiming Normal.
+    if sv_untestable:
+        sv_desc = ", ".join(f"{s['allele']}({s['rsid']})" for s in sv_untestable)
+        return f"Indeterminate (structural variant not assessed: {sv_desc})"
 
     if gdef.get("type") == "dpyd":
         if not detected:
@@ -1061,6 +1076,10 @@ def call_phenotype(gene, diplotype):
 
     if diplotype == "NOT_TESTED":
         return "Indeterminate (not genotyped)"
+
+    # Structural variant limitations: diplotype already flagged as indeterminate
+    if diplotype.startswith("Indeterminate"):
+        return diplotype
 
     gdef = GENE_DEFS[gene]
     norm = diplotype.upper()
@@ -1454,7 +1473,7 @@ def _evidence_cell_html(enrichment_entry, classification=""):
 # 7. Report generator
 # ---------------------------------------------------------------------------
 
-ICON = {"standard": "OK", "caution": "CAUTION", "avoid": "AVOID", "indeterminate": "INSUFFICIENT DATA"}
+ICON = {"standard": "OK", "caution": "CAUTION", "avoid": "AVOID", "indeterminate": "INDETERMINATE — INSUFFICIENT DATA"}
 
 
 def generate_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_results):
@@ -1489,7 +1508,7 @@ def generate_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_result
                          "relevant SNPs were not found in the input file: "
                          f"{', '.join(not_tested)}")
             lines.append("")
-            lines.append("Drugs depending on these genes are marked INSUFFICIENT DATA below. "
+            lines.append("Drugs depending on these genes are marked INDETERMINATE below. "
                          "Do not assume normal metabolism for untested genes.")
             lines.append("")
         if unknown_pheno:
@@ -1581,6 +1600,20 @@ def generate_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_result
         if gene in profiles:
             p = profiles[gene]
             lines.append(f"| {gene} | {GENE_DEFS[gene]['name']} | {p['diplotype']} | {p['phenotype']} |")
+    # CPIC Level 1A genes not in this panel: explicit "not assessed" disclosure
+    # These must appear in the gene profiles table, not just a separate section.
+    # HLA-B*57:01: abacavir hypersensitivity (~48% risk in carriers)
+    # MT-RNR1: aminoglycoside ototoxicity (permanent deafness, single dose)
+    # G6PD: rasburicase/chloroquine contraindication
+    _out_of_panel = [
+        ("HLA-B", "HLA-B*57:01", "Not assessed", "Indeterminate (not in panel)"),
+        ("MT-RNR1", "MT-RNR1 (mitochondrial)", "Not assessed", "Indeterminate (not in panel)"),
+        ("G6PD", "Glucose-6-Phosphate Dehydrogenase", "Not assessed", "Indeterminate (not in panel)"),
+        ("HLA-A", "HLA-A*31:01", "Not assessed", "Indeterminate (not in panel)"),
+        # CYP2B6 removed: it IS in the SNP panel (rs3745274, rs28399499)
+    ]
+    for gene_sym, full_name, dip, pheno in _out_of_panel:
+        lines.append(f"| {gene_sym} | {full_name} | {dip} | {pheno} |")
     lines.append("")
 
     # Detected variants

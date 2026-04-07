@@ -22,6 +22,11 @@ d3fend_techniques:
 - Identifier Analysis
 - Content Format Conversion
 - Message Analysis
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 ---
 # Implementing Continuous Security Validation with BAS
 

@@ -28,6 +28,11 @@ atlas_techniques:
 - AML.T0070
 - AML.T0066
 - AML.T0082
+nist_csf:
+- PR.PS-01
+- PR.PS-02
+- DE.CM-01
+- PR.IR-01
 ---
 # Deploying EDR Agent with CrowdStrike
 

@@ -240,7 +240,7 @@ WhatsApp 和 Telegram 支持语音消息 — OpenClaw 会转录并回复。
 
 适合大多数用户。固定成本，完全控制，24/7 可用。
 
-### 多租户平台（AgentCore Runtime）— [README_AGENTCORE.md](README_AGENTCORE.md)
+### 多租户平台（AgentCore Runtime）— [README_ENTERPRISE.md](README_ENTERPRISE.md)
 
 > ⚠️ 开发中 — 目标 2026 年 6 月 v1.0。[路线图 →](ROADMAP.md)
 
@@ -258,7 +258,7 @@ WhatsApp 和 Telegram 支持语音消息 — OpenClaw 会转录并回复。
 
 **本地 Demo**：`python3 demo/console.py` → 打开 http://localhost:8099 查看管理控制台
 
-**[→ 多租户完整文档](README_AGENTCORE.md)** · **[→ 路线图](ROADMAP.md)**
+**[→ 多租户完整文档](README_ENTERPRISE.md)** · **[→ 路线图](ROADMAP.md)**
 
 ### macOS（Apple Silicon）— iOS/macOS 开发
 

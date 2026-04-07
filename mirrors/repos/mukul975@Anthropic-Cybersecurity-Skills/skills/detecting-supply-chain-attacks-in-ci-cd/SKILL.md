@@ -22,6 +22,11 @@ nist_ai_rmf:
 - GOVERN-5.2
 - MAP-1.6
 - MANAGE-2.2
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 ---
 
 # Detecting Supply Chain Attacks in CI/CD

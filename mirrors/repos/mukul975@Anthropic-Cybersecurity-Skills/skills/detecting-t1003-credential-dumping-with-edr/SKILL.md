@@ -22,6 +22,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Restore Access
 - Application Protocol Command Analysis
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Detecting T1003 Credential Dumping with EDR

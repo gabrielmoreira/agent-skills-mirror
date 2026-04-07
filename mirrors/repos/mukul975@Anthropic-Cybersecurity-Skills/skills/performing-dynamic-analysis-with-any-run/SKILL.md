@@ -22,6 +22,11 @@ d3fend_techniques:
 - Identifier Analysis
 - Content Format Conversion
 - Message Analysis
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 
 # Performing Dynamic Analysis with ANY.RUN

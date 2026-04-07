@@ -21,6 +21,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Content Format Conversion
 - File Content Analysis
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting for Persistence Mechanisms in Windows

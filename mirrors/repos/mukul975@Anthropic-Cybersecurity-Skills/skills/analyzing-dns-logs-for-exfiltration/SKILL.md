@@ -23,6 +23,11 @@ atlas_techniques:
 - AML.T0024
 - AML.T0056
 - AML.T0086
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 # Analyzing DNS Logs for Exfiltration
 

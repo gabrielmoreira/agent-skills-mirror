@@ -21,6 +21,11 @@ d3fend_techniques:
 - Network Traffic Analysis
 - Client-server Payload Profiling
 - DNS Traffic Analysis
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting for DNS Tunneling with Zeek

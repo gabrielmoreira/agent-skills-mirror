@@ -27,6 +27,11 @@ atlas_techniques:
 - AML.T0070
 - AML.T0066
 - AML.T0082
+nist_csf:
+- PR.PS-01
+- PR.PS-04
+- ID.RA-01
+- PR.DS-10
 ---
 # Performing Fuzzing with AFL++
 

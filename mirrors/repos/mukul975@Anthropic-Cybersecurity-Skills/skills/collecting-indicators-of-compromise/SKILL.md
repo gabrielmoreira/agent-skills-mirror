@@ -1,19 +1,32 @@
 ---
 name: collecting-indicators-of-compromise
-description: >
-  Systematically collects, categorizes, and distributes indicators of compromise (IOCs)
-  during and after security incidents to enable detection, blocking, and threat intelligence
-  sharing. Covers network, host, email, and behavioral indicators using STIX/TAXII
-  formats and threat intelligence platforms. Activates for requests involving IOC collection,
-  indicator extraction, threat indicator sharing, compromise indicators, STIX export,
-  or IOC enrichment.
+description: 'Systematically collects, categorizes, and distributes indicators of compromise (IOCs) during and after security
+  incidents to enable detection, blocking, and threat intelligence sharing. Covers network, host, email, and behavioral indicators
+  using STIX/TAXII formats and threat intelligence platforms. Activates for requests involving IOC collection, indicator extraction,
+  threat indicator sharing, compromise indicators, STIX export, or IOC enrichment.
+
+  '
 domain: cybersecurity
 subdomain: incident-response
-tags: [IOC-collection, threat-indicators, STIX-TAXII, MISP, threat-intelligence-sharing]
-mitre_attack: ["T1071", "T1059", "T1547", "T1053"]
+tags:
+- IOC-collection
+- threat-indicators
+- STIX-TAXII
+- MISP
+- threat-intelligence-sharing
+mitre_attack:
+- T1071
+- T1059
+- T1547
+- T1053
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.MA-01
+- RS.MA-02
+- RS.AN-03
+- RC.RP-01
 ---
 
 # Collecting Indicators of Compromise

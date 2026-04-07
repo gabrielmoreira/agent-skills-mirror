@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 6 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
-| 2 | ✓ | [`dev/a11y_assessments/GEMINI.md`](dev/a11y_assessments/GEMINI.md) |
-| 3 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
-| 4 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
-| 5 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
-| 6 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
+| 1 | ✓ | [`.agents/skills/find-release/SKILL.md`](.agents/skills/find-release/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 3 | ✓ | [`dev/a11y_assessments/GEMINI.md`](dev/a11y_assessments/GEMINI.md) |
+| 4 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
+| 5 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
+| 6 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
+| 7 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
 
 ---
 

@@ -17,6 +17,11 @@ author: mahipal
 license: Apache-2.0
 atlas_techniques:
 - AML.T0052
+nist_csf:
+- PR.AT-01
+- DE.CM-09
+- RS.CO-02
+- DE.AE-02
 ---
 # Analyzing Malicious URL with URLScan
 

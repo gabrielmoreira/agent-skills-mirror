@@ -9,7 +9,7 @@ description: >-
 domain: cybersecurity
 subdomain: compliance-governance
 tags: [compliance, governance, nist, csf, maturity-assessment, risk-management]
-nist_csf: [GV.OC, GV.RM, GV.RR, GV.PO, GV.OV, GV.SC, ID.AM, ID.RA, ID.IM, PR.AA, PR.AT, PR.DS, PR.PS, PR.IR, DE.CM, DE.AE, RS.MA, RS.CO, RS.AN, RS.MI, RC.RP, RC.CO]
+nist_csf: [GV.OC-01, GV.RM-01, GV.PO-01, ID.RA-01, GV.OV-01]
 version: "1.0"
 author: mahipal
 license: Apache-2.0

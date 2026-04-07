@@ -1,8 +1,8 @@
 # Claude Code Configuration - Ruflo v3.5
 
-> **Ruflo v3.5** (2026-02-27) — First major stable release. Formerly "Claude Flow".
-> 5,900+ commits, 55 alpha iterations, 259 MCP tools, 60+ agents, 8 AgentDB controllers.
-> Packages: `@claude-flow/cli@3.5.0`, `claude-flow@3.5.0`, `ruflo@3.5.0`
+> **Ruflo v3.5** (2026-04-07) — Stable release with verified capabilities.
+> 6,000+ commits, 314 MCP tools, 16 agent roles + custom types, 19 AgentDB controllers.
+> Packages: `@claude-flow/cli@3.5.65`, `claude-flow@3.5.65`, `ruflo@3.5.65`
 
 ## Behavioral Rules (Always Enforced)
 
@@ -825,6 +825,50 @@ npx claude-flow@v3alpha doctor --fix
 - Performance tracking
 
 - Keep MCP for coordination strategy only — use Claude Code's Task tool for real execution
+
+## Claude Code ↔ AgentDB Memory Bridge
+
+Claude Code's auto-memory (`~/.claude/projects/*/memory/*.md`) is bridged to AgentDB with ONNX vector embeddings for semantic search.
+
+### MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `memory_import_claude` | Import Claude Code memories into AgentDB with 384-dim ONNX embeddings. Use `allProjects: true` to import from ALL projects. |
+| `memory_bridge_status` | Show bridge health — Claude files, AgentDB entries, SONA state, connection status |
+| `memory_search_unified` | Semantic search across ALL namespaces (claude-memories, auto-memory, patterns, tasks, feedback) |
+
+### Auto-Import on Session Start
+
+The `SessionStart` hook automatically imports current project's memories into AgentDB. For manual import of all projects:
+
+```bash
+# Via MCP tool (from Claude Code)
+memory_import_claude({ allProjects: true })
+
+# Via helper hook (from terminal)
+node .claude/helpers/auto-memory-hook.mjs import-all
+```
+
+### Unified Search
+
+Search across both Claude Code memories and AgentDB entries:
+
+```bash
+# Via MCP tool
+memory_search_unified({ query: "authentication security", limit: 5 })
+
+# Results include source attribution: claude-code, auto-memory, or agentdb
+```
+
+### Intelligence Pipeline
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| ONNX Embeddings | Active | all-MiniLM-L6-v2, 384 dimensions |
+| SONA Learning | Active | Pattern matching + trajectory recording |
+| ReasoningBank | Active | Pattern storage with file persistence |
+| AgentDB sql.js | Active | SQLite with vector_indexes table |
 
 ## Publishing to npm
 

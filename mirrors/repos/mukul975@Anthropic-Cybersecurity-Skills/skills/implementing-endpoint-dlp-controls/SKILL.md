@@ -26,6 +26,11 @@ nist_ai_rmf:
 - MANAGE-3.1
 - MAP-5.1
 - MANAGE-2.4
+nist_csf:
+- PR.PS-01
+- PR.PS-02
+- DE.CM-01
+- PR.IR-01
 ---
 # Implementing Endpoint DLP Controls
 

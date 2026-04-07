@@ -1,18 +1,32 @@
 ---
 name: analyzing-memory-dumps-with-volatility
-description: >
-  Analyzes RAM memory dumps from compromised systems using the Volatility framework to
-  identify malicious processes, injected code, network connections, loaded modules, and
-  extracted credentials. Supports Windows, Linux, and macOS memory forensics. Activates
-  for requests involving memory forensics, RAM analysis, volatile data examination,
-  process injection detection, or memory-resident malware investigation.
+description: 'Analyzes RAM memory dumps from compromised systems using the Volatility framework to identify malicious processes,
+  injected code, network connections, loaded modules, and extracted credentials. Supports Windows, Linux, and macOS memory
+  forensics. Activates for requests involving memory forensics, RAM analysis, volatile data examination, process injection
+  detection, or memory-resident malware investigation.
+
+  '
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [malware, memory-forensics, Volatility, RAM-analysis, incident-response]
-mitre_attack: ["T1055", "T1003", "T1059", "T1620"]
+tags:
+- malware
+- memory-forensics
+- Volatility
+- RAM-analysis
+- incident-response
+mitre_attack:
+- T1055
+- T1003
+- T1059
+- T1620
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 
 # Analyzing Memory Dumps with Volatility

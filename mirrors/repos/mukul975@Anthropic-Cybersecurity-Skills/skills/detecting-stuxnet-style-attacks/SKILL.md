@@ -1,18 +1,30 @@
 ---
 name: detecting-stuxnet-style-attacks
-description: >
-  This skill covers detecting sophisticated cyber-physical attacks that follow the
-  Stuxnet attack pattern of modifying PLC logic while spoofing sensor readings to
-  hide the manipulation from operators. It addresses PLC logic integrity monitoring,
-  physics-based process anomaly detection, engineering workstation compromise indicators,
-  USB-borne attack vectors, and multi-stage attack chain detection spanning IT-to-OT
-  lateral movement through to process manipulation.
+description: 'This skill covers detecting sophisticated cyber-physical attacks that follow the Stuxnet attack pattern of modifying
+  PLC logic while spoofing sensor readings to hide the manipulation from operators. It addresses PLC logic integrity monitoring,
+  physics-based process anomaly detection, engineering workstation compromise indicators, USB-borne attack vectors, and multi-stage
+  attack chain detection spanning IT-to-OT lateral movement through to process manipulation.
+
+  '
 domain: cybersecurity
 subdomain: ot-ics-security
-tags: [ot-security, ics, scada, industrial-control, iec62443, stuxnet, plc-integrity, apt]
+tags:
+- ot-security
+- ics
+- scada
+- industrial-control
+- iec62443
+- stuxnet
+- plc-integrity
+- apt
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-05
+- GV.OC-02
 ---
 
 # Detecting Stuxnet-Style Attacks

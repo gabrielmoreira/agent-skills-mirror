@@ -1,15 +1,25 @@
 ---
 name: performing-dns-enumeration-and-zone-transfer
-description: >
-  Enumerates DNS records, attempts zone transfers, brute-forces subdomains, and
-  maps DNS infrastructure during authorized reconnaissance to identify attack surface,
-  misconfigurations, and information disclosure in target domains.
+description: 'Enumerates DNS records, attempts zone transfers, brute-forces subdomains, and maps DNS infrastructure during
+  authorized reconnaissance to identify attack surface, misconfigurations, and information disclosure in target domains.
+
+  '
 domain: cybersecurity
 subdomain: network-security
-tags: [network-security, dns, enumeration, zone-transfer, reconnaissance]
-version: "1.0"
+tags:
+- network-security
+- dns
+- enumeration
+- zone-transfer
+- reconnaissance
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-03
+- PR.DS-02
 ---
 # Performing DNS Enumeration and Zone Transfer
 

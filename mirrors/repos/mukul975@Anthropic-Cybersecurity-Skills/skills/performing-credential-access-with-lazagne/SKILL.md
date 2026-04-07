@@ -21,6 +21,10 @@ d3fend_techniques:
 - File Content Analysis
 - Platform Hardening
 - File Format Verification
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Performing Credential Access with LaZagne
 

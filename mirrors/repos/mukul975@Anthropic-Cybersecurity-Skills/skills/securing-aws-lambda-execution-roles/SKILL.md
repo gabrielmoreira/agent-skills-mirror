@@ -1,15 +1,27 @@
 ---
 name: securing-aws-lambda-execution-roles
-description: >
-  Securing AWS Lambda execution roles by implementing least-privilege IAM policies,
-  applying permission boundaries, restricting resource-based policies, using IAM Access
-  Analyzer to validate permissions, and enforcing role scoping through SCPs.
+description: 'Securing AWS Lambda execution roles by implementing least-privilege IAM policies, applying permission boundaries,
+  restricting resource-based policies, using IAM Access Analyzer to validate permissions, and enforcing role scoping through
+  SCPs.
+
+  '
 domain: cybersecurity
 subdomain: cloud-security
-tags: [cloud-security, aws, lambda, iam, least-privilege, execution-roles]
-version: "1.0"
+tags:
+- cloud-security
+- aws
+- lambda
+- iam
+- least-privilege
+- execution-roles
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 # Securing AWS Lambda Execution Roles

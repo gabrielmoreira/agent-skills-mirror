@@ -36,6 +36,10 @@ d3fend_techniques:
 - Message Analysis
 - User Behavior Analysis
 - Identifier Analysis
+nist_csf:
+- PR.AT-01
+- DE.CM-09
+- RS.CO-02
 ---
 
 # Detecting Deepfake Audio in Vishing Attacks

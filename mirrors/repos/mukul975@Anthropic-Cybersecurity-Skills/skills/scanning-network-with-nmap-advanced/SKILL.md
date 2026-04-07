@@ -1,15 +1,26 @@
 ---
 name: scanning-network-with-nmap-advanced
-description: >
-  Performs advanced network reconnaissance using Nmap's scripting engine, timing controls,
-  evasion techniques, and output parsing to discover hosts, enumerate services, detect
-  vulnerabilities, and fingerprint operating systems across authorized target networks.
+description: 'Performs advanced network reconnaissance using Nmap''s scripting engine, timing controls, evasion techniques,
+  and output parsing to discover hosts, enumerate services, detect vulnerabilities, and fingerprint operating systems across
+  authorized target networks.
+
+  '
 domain: cybersecurity
 subdomain: network-security
-tags: [network-security, nmap, port-scanning, service-enumeration, reconnaissance]
-version: "1.0"
+tags:
+- network-security
+- nmap
+- port-scanning
+- service-enumeration
+- reconnaissance
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-03
+- PR.DS-02
 ---
 # Scanning Network with Nmap Advanced Techniques
 

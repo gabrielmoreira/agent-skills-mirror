@@ -1,12 +1,25 @@
 ---
 name: performing-authenticated-scan-with-openvas
-description: Configure and execute authenticated vulnerability scans using OpenVAS/Greenbone Vulnerability Management with SSH and SMB credentials for comprehensive host-level assessment.
+description: Configure and execute authenticated vulnerability scans using OpenVAS/Greenbone Vulnerability Management with
+  SSH and SMB credentials for comprehensive host-level assessment.
 domain: cybersecurity
 subdomain: vulnerability-management
-tags: [openvas, gvm, authenticated-scan, vulnerability-scanning, greenbone, network-security, credentialed-scan]
-version: "1.0"
+tags:
+- openvas
+- gvm
+- authenticated-scan
+- vulnerability-scanning
+- greenbone
+- network-security
+- credentialed-scan
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 ---
 
 # Performing Authenticated Scan with OpenVAS

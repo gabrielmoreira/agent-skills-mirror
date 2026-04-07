@@ -1,0 +1,8 @@
+interface:
+  display_name: "Qianfan Deep Research"
+  short_description: "Deep research agent for complex analysis and report generation"
+  default_prompt: "Use $baidu-deep-research for in-depth research and analysis"
+i18n:
+  zh:
+    name: "千帆深度研究"
+    description: "深度融合信息检索、多源分析、内容综合与报告生成的复杂研究智能体。"

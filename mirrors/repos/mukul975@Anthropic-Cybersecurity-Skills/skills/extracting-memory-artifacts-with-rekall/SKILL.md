@@ -1,16 +1,25 @@
 ---
 name: extracting-memory-artifacts-with-rekall
-description: >
-  Uses Rekall memory forensics framework to analyze memory dumps for process hollowing,
-  injected code via VAD anomalies, hidden processes, and rootkit detection. Applies
-  plugins like pslist, psscan, vadinfo, malfind, and dlllist to extract forensic
-  artifacts from Windows memory images. Use during incident response memory analysis.
+description: 'Uses Rekall memory forensics framework to analyze memory dumps for process hollowing, injected code via VAD
+  anomalies, hidden processes, and rootkit detection. Applies plugins like pslist, psscan, vadinfo, malfind, and dlllist to
+  extract forensic artifacts from Windows memory images. Use during incident response memory analysis.
+
+  '
 domain: cybersecurity
 subdomain: security-operations
-tags: [extracting, memory, artifacts, with]
-version: "1.0"
+tags:
+- extracting
+- memory
+- artifacts
+- with
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 ---
 
 # Extracting Memory Artifacts with Rekall

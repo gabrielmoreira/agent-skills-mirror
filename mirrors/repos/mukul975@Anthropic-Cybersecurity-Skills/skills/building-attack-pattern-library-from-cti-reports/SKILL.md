@@ -22,6 +22,11 @@ d3fend_techniques:
 - Identifier Analysis
 - Content Format Conversion
 - Message Analysis
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Building Attack Pattern Library from CTI Reports
 

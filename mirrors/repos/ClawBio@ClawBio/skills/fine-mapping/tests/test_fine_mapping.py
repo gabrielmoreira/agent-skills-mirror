@@ -172,13 +172,19 @@ class TestSuSiE:
         result = run_susie(z=df["z"].values, R=R, n=5000, L=5)
         assert result["pip"].argmax() == 10
 
-    def test_alpha_rows_sum_to_one(self):
-        """Each row of alpha (posterior weights per signal) sums to 1."""
+    def test_alpha_rows_sum_to_at_most_one(self):
+        """With null component (default), alpha rows sum to <= 1.
+        Without null component, rows sum to exactly 1."""
         df = _small_locus(n=20)
         R = _identity_ld(20)
+        # With null component: rows sum to <= 1
         result = run_susie(z=df["z"].values, R=R, n=5000, L=3)
         row_sums = result["alpha"].sum(axis=1)
-        np.testing.assert_allclose(row_sums, 1.0, atol=1e-6)
+        assert np.all(row_sums <= 1.0 + 1e-6)
+        # Without null component: rows sum to exactly 1
+        result_nn = run_susie(z=df["z"].values, R=R, n=5000, L=3, null_weight=0.0)
+        row_sums_nn = result_nn["alpha"].sum(axis=1)
+        np.testing.assert_allclose(row_sums_nn, 1.0, atol=1e-6)
 
     def test_converges_on_clean_signal(self):
         """SuSiE converges within 100 iterations for a clean single signal."""
@@ -203,6 +209,41 @@ class TestSuSiE:
         top5 = set(np.argsort(-result["pip"])[:5])
         # Causal variants are at indices 60 and 140
         assert 60 in top5 or 140 in top5
+
+    def test_null_locus_no_phantom_pip(self):
+        """Null locus (z=0 everywhere) should produce near-zero PIPs with null_weight."""
+        p = 50
+        z = np.zeros(p)
+        R = np.eye(p)
+        result = run_susie(z=z, R=R, n=10000, L=5, null_weight=1.0 / 6)
+        # On a null locus, all PIPs should be very low (< 0.1)
+        assert result["pip"].max() < 0.1, (
+            f"Null locus phantom PIP: max PIP = {result['pip'].max():.3f}, "
+            f"expected < 0.1 with null_weight"
+        )
+
+    def test_null_locus_without_null_weight_has_phantom(self):
+        """Without null_weight, a null locus produces phantom PIPs (baseline check)."""
+        p = 10  # small p amplifies the phantom effect: PIP ~ 1-(1-1/p)^L
+        z = np.zeros(p)
+        R = np.eye(p)
+        result = run_susie(z=z, R=R, n=10000, L=5, null_weight=0.0)
+        # Without null component, PIPs are spread uniformly: ~1-(9/10)^5 ≈ 0.41
+        assert result["pip"].max() > 0.3, (
+            f"Expected phantom PIP > 0.3 without null_weight, got {result['pip'].max():.3f}"
+        )
+
+    def test_single_signal_with_null_weight_still_recovered(self):
+        """A real signal should still be recovered even with null_weight active."""
+        p = 50
+        z = np.zeros(p)
+        z[25] = 5.0  # strong signal at index 25
+        R = np.eye(p)
+        result = run_susie(z=z, R=R, n=10000, L=5, null_weight=1.0 / 6)
+        assert result["pip"].argmax() == 25
+        assert result["pip"][25] > 0.8, (
+            f"Signal PIP = {result['pip'][25]:.3f}, expected > 0.8"
+        )
 
 
 # ---------------------------------------------------------------------------

@@ -1,21 +1,31 @@
 ---
 name: implementing-data-loss-prevention-with-microsoft-purview
-description: >
-  Implements data loss prevention policies using Microsoft Purview to protect sensitive information
-  across Exchange Online, SharePoint, OneDrive, Teams, endpoint devices, and Power BI. The analyst
-  configures sensitivity labels with encryption and content marking, creates DLP policies using
-  built-in and custom sensitive information types with regex patterns, deploys endpoint DLP rules
-  to control file operations on Windows and macOS devices, and monitors policy effectiveness through
-  Activity Explorer and DLP alert management. Uses PowerShell cmdlets and the Microsoft Graph API
-  for programmatic policy management. Activates for requests involving DLP policy creation,
-  sensitivity label configuration, data classification, endpoint data protection, or Microsoft
-  Purview compliance administration.
+description: 'Implements data loss prevention policies using Microsoft Purview to protect sensitive information across Exchange
+  Online, SharePoint, OneDrive, Teams, endpoint devices, and Power BI. The analyst configures sensitivity labels with encryption
+  and content marking, creates DLP policies using built-in and custom sensitive information types with regex patterns, deploys
+  endpoint DLP rules to control file operations on Windows and macOS devices, and monitors policy effectiveness through Activity
+  Explorer and DLP alert management. Uses PowerShell cmdlets and the Microsoft Graph API for programmatic policy management.
+  Activates for requests involving DLP policy creation, sensitivity label configuration, data classification, endpoint data
+  protection, or Microsoft Purview compliance administration.
+
+  '
 domain: cybersecurity
 subdomain: data-protection
-tags: [DLP, Microsoft-Purview, sensitivity-labels, endpoint-DLP, data-classification, compliance]
+tags:
+- DLP
+- Microsoft-Purview
+- sensitivity-labels
+- endpoint-DLP
+- data-classification
+- compliance
 version: 1.0.0
 author: mukul975
 license: Apache-2.0
+nist_csf:
+- PR.DS-01
+- PR.DS-02
+- PR.DS-10
+- GV.PO-01
 ---
 # Implementing Data Loss Prevention with Microsoft Purview
 

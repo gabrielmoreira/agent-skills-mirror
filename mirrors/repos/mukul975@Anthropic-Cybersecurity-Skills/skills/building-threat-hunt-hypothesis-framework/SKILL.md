@@ -1,12 +1,24 @@
 ---
 name: building-threat-hunt-hypothesis-framework
-description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and environmental data into testable hunting hypotheses.
+description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and
+  environmental data into testable hunting hypotheses.
 domain: cybersecurity
 subdomain: threat-hunting
-tags: [threat-hunting, methodology, hypothesis, threat-intelligence, hunting-framework, proactive-detection]
-version: "1.0"
+tags:
+- threat-hunting
+- methodology
+- hypothesis
+- threat-intelligence
+- hunting-framework
+- proactive-detection
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Building Threat Hunt Hypothesis Framework

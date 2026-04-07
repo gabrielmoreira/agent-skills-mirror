@@ -1,0 +1,9 @@
+interface:
+  display_name: "Seedance Video"
+  short_description: "Generate AI videos from text or images via Volcengine Ark API"
+  default_prompt: "Use $seedance-video to generate AI videos"
+
+i18n:
+  zh:
+    name: "Seedance 视频生成"
+    description: "通过火山方舟 API 使用 Seedance 模型生成 AI 视频，支持文生视频、图生视频、音视频协同生成。"

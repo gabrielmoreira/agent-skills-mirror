@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 29 file(s) materialized.
+Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,23 +75,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.agents/skills/agent-browser/templates/capture-workflow.sh`](.agents/skills/agent-browser/templates/capture-workflow.sh) |
 | 11 | ✓ | [`.agents/skills/agent-browser/templates/form-automation.sh`](.agents/skills/agent-browser/templates/form-automation.sh) |
 | 12 | ✓ | [`.agents/skills/transformerlab-cli/references/commands.md`](.agents/skills/transformerlab-cli/references/commands.md) |
-| 13 | ✓ | [`.agents/skills/transformerlab-cli/SKILL.md`](.agents/skills/transformerlab-cli/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/agent-browser/references/authentication.md`](.claude/skills/agent-browser/references/authentication.md) |
-| 15 | ✓ | [`.claude/skills/agent-browser/references/commands.md`](.claude/skills/agent-browser/references/commands.md) |
-| 16 | ✓ | [`.claude/skills/agent-browser/references/session-management.md`](.claude/skills/agent-browser/references/session-management.md) |
-| 17 | ✓ | [`.claude/skills/agent-browser/SKILL.md`](.claude/skills/agent-browser/SKILL.md) |
-| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 20 | ✓ | [`docs/task-execution/01-task-creation.md`](docs/task-execution/01-task-creation.md) |
-| 21 | ✓ | [`docs/task-execution/02-task-data-model.md`](docs/task-execution/02-task-data-model.md) |
-| 22 | ✓ | [`docs/task-execution/03-job-dispatch.md`](docs/task-execution/03-job-dispatch.md) |
-| 23 | ✓ | [`docs/task-execution/04-compute-providers.md`](docs/task-execution/04-compute-providers.md) |
-| 24 | ✓ | [`docs/task-execution/05-job-lifecycle.md`](docs/task-execution/05-job-lifecycle.md) |
-| 25 | → | [`docs/Auth.md`](docs/Auth.md) |
-| 26 | → | [`docs/backend.md`](docs/backend.md) |
-| 27 | → | [`docs/cli.md`](docs/cli.md) |
-| 28 | → | [`docs/frontend.md`](docs/frontend.md) |
-| 29 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
+| 13 | ✓ | [`.agents/skills/transformerlab-cli/references/troubleshooting.md`](.agents/skills/transformerlab-cli/references/troubleshooting.md) |
+| 14 | ✓ | [`.agents/skills/transformerlab-cli/references/workflows.md`](.agents/skills/transformerlab-cli/references/workflows.md) |
+| 15 | ✓ | [`.agents/skills/transformerlab-cli/SKILL.md`](.agents/skills/transformerlab-cli/SKILL.md) |
+| 16 | ✓ | [`.agents/skills/transformerlab-cli/templates/provider-health-check.sh`](.agents/skills/transformerlab-cli/templates/provider-health-check.sh) |
+| 17 | ✓ | [`.agents/skills/transformerlab-cli/templates/queue-and-monitor.sh`](.agents/skills/transformerlab-cli/templates/queue-and-monitor.sh) |
+| 18 | ✓ | [`.agents/skills/transformerlab-cli/templates/setup-and-login.sh`](.agents/skills/transformerlab-cli/templates/setup-and-login.sh) |
+| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | ✓ | [`docs/task-execution/01-task-creation.md`](docs/task-execution/01-task-creation.md) |
+| 22 | ✓ | [`docs/task-execution/02-task-data-model.md`](docs/task-execution/02-task-data-model.md) |
+| 23 | ✓ | [`docs/task-execution/03-job-dispatch.md`](docs/task-execution/03-job-dispatch.md) |
+| 24 | ✓ | [`docs/task-execution/04-compute-providers.md`](docs/task-execution/04-compute-providers.md) |
+| 25 | ✓ | [`docs/task-execution/05-job-lifecycle.md`](docs/task-execution/05-job-lifecycle.md) |
+| 26 | → | [`docs/Auth.md`](docs/Auth.md) |
+| 27 | → | [`docs/backend.md`](docs/backend.md) |
+| 28 | → | [`docs/cli.md`](docs/cli.md) |
+| 29 | → | [`docs/frontend.md`](docs/frontend.md) |
+| 30 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
 
 ---
 

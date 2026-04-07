@@ -1,12 +1,24 @@
 ---
 name: performing-csrf-attack-simulation
-description: Testing web applications for Cross-Site Request Forgery vulnerabilities by crafting forged requests that exploit authenticated user sessions during authorized security assessments.
+description: Testing web applications for Cross-Site Request Forgery vulnerabilities by crafting forged requests that exploit
+  authenticated user sessions during authorized security assessments.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, csrf, owasp, web-security, session-management, burpsuite]
-version: "1.0"
+tags:
+- penetration-testing
+- csrf
+- owasp
+- web-security
+- session-management
+- burpsuite
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Performing CSRF Attack Simulation

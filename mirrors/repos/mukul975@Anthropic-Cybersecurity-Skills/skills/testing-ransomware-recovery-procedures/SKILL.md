@@ -1,15 +1,25 @@
 ---
 name: testing-ransomware-recovery-procedures
-description: >-
-  Test and validate ransomware recovery procedures including backup restore operations,
-  RTO/RPO target verification, recovery sequencing, and clean restore validation to ensure
-  organizational resilience against destructive ransomware attacks.
+description: Test and validate ransomware recovery procedures including backup restore operations, RTO/RPO target verification,
+  recovery sequencing, and clean restore validation to ensure organizational resilience against destructive ransomware attacks.
 domain: cybersecurity
 subdomain: incident-response
-tags: [incident-response, ransomware, disaster-recovery, backup, rto, rpo, resilience]
-version: "1.0"
+tags:
+- incident-response
+- ransomware
+- disaster-recovery
+- backup
+- rto
+- rpo
+- resilience
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.MA-01
+- RS.MA-02
+- RS.AN-03
+- RC.RP-01
 ---
 # Testing Ransomware Recovery Procedures
 

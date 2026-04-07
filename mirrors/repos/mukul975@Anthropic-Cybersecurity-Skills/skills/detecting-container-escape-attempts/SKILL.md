@@ -20,6 +20,11 @@ d3fend_techniques:
 - Stack Frame Canary Validation
 - Segment Address Offset Randomization
 - Process Analysis
+nist_csf:
+- PR.PS-01
+- PR.IR-01
+- ID.AM-08
+- DE.CM-01
 ---
 # Detecting Container Escape Attempts
 

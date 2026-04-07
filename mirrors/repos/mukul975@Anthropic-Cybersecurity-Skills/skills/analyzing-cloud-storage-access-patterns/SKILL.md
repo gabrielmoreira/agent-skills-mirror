@@ -20,6 +20,11 @@ nist_ai_rmf:
 - MEASURE-2.7
 - MAP-5.1
 - MANAGE-2.4
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 ---
 
 

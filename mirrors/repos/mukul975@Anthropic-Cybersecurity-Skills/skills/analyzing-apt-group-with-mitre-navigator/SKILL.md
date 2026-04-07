@@ -22,6 +22,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Content Format Conversion
 - File Content Analysis
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Analyzing APT Group with MITRE ATT&CK Navigator
 

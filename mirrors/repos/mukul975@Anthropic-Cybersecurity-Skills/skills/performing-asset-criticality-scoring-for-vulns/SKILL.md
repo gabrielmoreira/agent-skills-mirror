@@ -1,12 +1,25 @@
 ---
 name: performing-asset-criticality-scoring-for-vulns
-description: Develop and apply a multi-factor asset criticality scoring model to weight vulnerability prioritization based on business impact, data sensitivity, and operational importance.
+description: Develop and apply a multi-factor asset criticality scoring model to weight vulnerability prioritization based
+  on business impact, data sensitivity, and operational importance.
 domain: cybersecurity
 subdomain: vulnerability-management
-tags: [asset-criticality, vulnerability-prioritization, risk-management, cmdb, business-impact, crown-jewels, asset-classification]
-version: "1.0"
+tags:
+- asset-criticality
+- vulnerability-prioritization
+- risk-management
+- cmdb
+- business-impact
+- crown-jewels
+- asset-classification
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 ---
 # Performing Asset Criticality Scoring for Vulns
 

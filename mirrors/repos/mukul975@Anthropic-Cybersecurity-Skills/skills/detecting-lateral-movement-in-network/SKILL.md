@@ -21,6 +21,11 @@ d3fend_techniques:
 - Network Traffic Analysis
 - Client-server Payload Profiling
 - Network Traffic Community Deviation
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-03
+- PR.DS-02
 ---
 # Detecting Lateral Movement in Network
 

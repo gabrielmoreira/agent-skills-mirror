@@ -21,6 +21,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Content Format Conversion
 - File Content Analysis
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 # Performing Memory Forensics with Volatility3 Plugins
 

@@ -12,14 +12,11 @@ tags:
 - data-protection
 - eu-regulation
 nist_csf:
-- GV.OC
-- GV.PO
-- GV.RR
-- ID.AM
-- PR.AA
-- PR.DS
-- RS.CO
-- RS.MA
+- GV.OC-02
+- GV.PO-01
+- PR.DS-01
+- PR.AA-01
+- ID.AM-02
 version: '1.0'
 author: mahipal
 license: Apache-2.0

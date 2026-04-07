@@ -25,6 +25,11 @@ d3fend_techniques:
 - Biometric Authentication
 - Strong Password Policy
 - Restore User Account Access
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 # Analyzing Windows Event Logs in Splunk
 

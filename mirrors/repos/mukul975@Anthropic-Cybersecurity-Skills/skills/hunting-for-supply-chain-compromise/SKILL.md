@@ -20,6 +20,11 @@ d3fend_techniques:
 - Restore Software
 - Software Update
 - Asset Inventory
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- DE.AE-07
+- ID.RA-05
 ---
 
 # Hunting For Supply Chain Compromise

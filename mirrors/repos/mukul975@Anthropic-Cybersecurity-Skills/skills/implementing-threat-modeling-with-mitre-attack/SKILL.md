@@ -32,6 +32,11 @@ d3fend_techniques:
 - Identifier Analysis
 - Content Format Conversion
 - Message Analysis
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 # Implementing Threat Modeling with MITRE ATT&CK
 

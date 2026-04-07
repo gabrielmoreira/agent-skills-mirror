@@ -34,6 +34,11 @@ d3fend_techniques:
 - Identifier Reputation Analysis
 - User Behavior Analysis
 - Content Validation
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 
 # Performing AI-Driven OSINT Correlation

@@ -417,6 +417,7 @@ def _write_markdown_report(
             lines.append(f"- **Classification**: {cv.classification}")
             lines.append(f"- **Position**: {ev.chrom}:{ev.pos}")
             lines.append(f"- **rsID**: {ev.rsid or 'N/A'}")
+            lines.append(f"- **Transcript**: {ev.transcript or 'N/A'}")
             lines.append(f"- **Consequence**: {ev.consequence}")
             lines.append(f"- **ClinVar**: {ev.clinvar_significance or 'N/A'} (stars: {ev.clinvar_review_stars})")
             lines.append(f"- **gnomAD AF**: {ev.gnomad_af if ev.gnomad_af is not None else 'N/A'}")
@@ -433,13 +434,13 @@ def _write_markdown_report(
     if vus_list:
         lines.append("## Variants of Uncertain Significance (VUS)")
         lines.append("")
-        lines.append("| Gene | Variant | Position | gnomAD AF | Evidence Codes | SF Gene |")
-        lines.append("|------|---------|----------|-----------|----------------|---------|")
+        lines.append("| Gene | Variant | Transcript | Position | gnomAD AF | Evidence Codes | SF Gene |")
+        lines.append("|------|---------|------------|----------|-----------|----------------|---------|")
         for cv in vus_list:
             ev = cv.evidence
             af = f"{ev.gnomad_af:.6f}" if ev.gnomad_af is not None else "N/A"
             sf = "Yes" if cv.is_secondary_finding else "No"
-            lines.append(f"| {ev.gene} | {ev.hgvsp or ev.hgvsc or f'{ev.ref}>{ev.alt}'} | {ev.chrom}:{ev.pos} | {af} | {cv.evidence_summary} | {sf} |")
+            lines.append(f"| {ev.gene} | {ev.hgvsp or ev.hgvsc or f'{ev.ref}>{ev.alt}'} | {ev.transcript or 'N/A'} | {ev.chrom}:{ev.pos} | {af} | {cv.evidence_summary} | {sf} |")
         lines.append("")
 
     benign_list = [cv for cv in classified if cv.classification in ("Likely Benign", "Benign")]

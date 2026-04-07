@@ -1,0 +1,8 @@
+interface:
+  display_name: "AI Picture Book"
+  short_description: "Generate illustrated picture book stories from text"
+  default_prompt: "Use $baidu-picture-book to create picture book stories"
+i18n:
+  zh:
+    name: "AI 绘本生成"
+    description: "将文字描述转化为连贯的绘本故事与画面构思，激发创意与视觉化表达。"

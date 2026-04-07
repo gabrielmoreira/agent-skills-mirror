@@ -1,12 +1,26 @@
 ---
 name: detecting-shadow-api-endpoints
-description: Discover and inventory shadow API endpoints that operate outside documented specifications using traffic analysis, code scanning, and API discovery platforms.
+description: Discover and inventory shadow API endpoints that operate outside documented specifications using traffic analysis,
+  code scanning, and API discovery platforms.
 domain: cybersecurity
 subdomain: api-security
-tags: [api-security, shadow-apis, api-discovery, undocumented-apis, zombie-apis, api-inventory, attack-surface-management, api-governance]
-version: "1.0"
+tags:
+- api-security
+- shadow-apis
+- api-discovery
+- undocumented-apis
+- zombie-apis
+- api-inventory
+- attack-surface-management
+- api-governance
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Detecting Shadow API Endpoints

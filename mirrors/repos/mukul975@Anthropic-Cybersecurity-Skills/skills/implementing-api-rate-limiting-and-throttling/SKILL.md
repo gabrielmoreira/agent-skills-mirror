@@ -1,19 +1,29 @@
 ---
 name: implementing-api-rate-limiting-and-throttling
-description: >
-  Implements API rate limiting and throttling controls using token bucket, sliding window,
-  and fixed window algorithms to protect against brute force attacks, credential stuffing,
-  resource exhaustion, and API abuse. The engineer configures per-user, per-IP, and per-endpoint
-  rate limits using Redis-backed counters, API gateway plugins, or application middleware,
-  and implements proper HTTP 429 responses with Retry-After headers. Activates for requests
-  involving rate limiting implementation, API throttling setup, request quota management,
-  or API abuse prevention.
+description: 'Implements API rate limiting and throttling controls using token bucket, sliding window, and fixed window algorithms
+  to protect against brute force attacks, credential stuffing, resource exhaustion, and API abuse. The engineer configures
+  per-user, per-IP, and per-endpoint rate limits using Redis-backed counters, API gateway plugins, or application middleware,
+  and implements proper HTTP 429 responses with Retry-After headers. Activates for requests involving rate limiting implementation,
+  API throttling setup, request quota management, or API abuse prevention.
+
+  '
 domain: cybersecurity
 subdomain: api-security
-tags: [api-security, rate-limiting, throttling, redis, token-bucket, abuse-prevention]
+tags:
+- api-security
+- rate-limiting
+- throttling
+- redis
+- token-bucket
+- abuse-prevention
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 # Implementing API Rate Limiting and Throttling
 

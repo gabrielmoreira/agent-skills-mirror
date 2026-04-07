@@ -1,13 +1,29 @@
 ---
 name: extracting-credentials-from-memory-dump
-description: Extract cached credentials, password hashes, Kerberos tickets, and authentication tokens from memory dumps using Volatility and Mimikatz for forensic investigation.
+description: Extract cached credentials, password hashes, Kerberos tickets, and authentication tokens from memory dumps using
+  Volatility and Mimikatz for forensic investigation.
 domain: cybersecurity
 subdomain: digital-forensics
-tags: [forensics, credential-extraction, memory-forensics, volatility, mimikatz, password-hashes, incident-response]
-mitre_attack: ["T1003", "T1558", "T1552"]
-version: "1.0"
+tags:
+- forensics
+- credential-extraction
+- memory-forensics
+- volatility
+- mimikatz
+- password-hashes
+- incident-response
+mitre_attack:
+- T1003
+- T1558
+- T1552
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Extracting Credentials from Memory Dump

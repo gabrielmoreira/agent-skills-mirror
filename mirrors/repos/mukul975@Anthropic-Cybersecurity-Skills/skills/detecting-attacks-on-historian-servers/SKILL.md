@@ -1,17 +1,29 @@
 ---
 name: detecting-attacks-on-historian-servers
-description: >
-  Detect cyber attacks targeting OT historian servers (OSIsoft PI, Ignition,
-  Wonderware) that sit at the IT/OT boundary and serve as pivot points for
-  lateral movement between enterprise and control networks, including data
-  manipulation, unauthorized queries, and exploitation of historian-specific
-  vulnerabilities.
+description: 'Detect cyber attacks targeting OT historian servers (OSIsoft PI, Ignition, Wonderware) that sit at the IT/OT
+  boundary and serve as pivot points for lateral movement between enterprise and control networks, including data manipulation,
+  unauthorized queries, and exploitation of historian-specific vulnerabilities.
+
+  '
 domain: cybersecurity
 subdomain: ot-ics-security
-tags: [ot-security, ics, historian, osisoft-pi, ignition, pivot-point, data-integrity, lateral-movement]
-version: "1.0"
+tags:
+- ot-security
+- ics
+- historian
+- osisoft-pi
+- ignition
+- pivot-point
+- data-integrity
+- lateral-movement
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-05
+- GV.OC-02
 ---
 
 # Detecting Attacks on Historian Servers

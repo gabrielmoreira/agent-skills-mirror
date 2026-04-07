@@ -1,17 +1,28 @@
 ---
 name: performing-oauth-scope-minimization-review
-description: >
-  Performs OAuth 2.0 scope minimization review to identify over-permissioned third-party
-  application integrations, excessive API scopes, unused token grants, and risky OAuth
-  consent patterns across identity providers and SaaS platforms.
-  Activates for requests involving OAuth scope audit, API permission review, third-party
-  app risk assessment, or consent grant minimization.
+description: 'Performs OAuth 2.0 scope minimization review to identify over-permissioned third-party application integrations,
+  excessive API scopes, unused token grants, and risky OAuth consent patterns across identity providers and SaaS platforms.
+  Activates for requests involving OAuth scope audit, API permission review, third-party app risk assessment, or consent grant
+  minimization.
+
+  '
 domain: cybersecurity
 subdomain: identity-access-management
-tags: [OAuth, scope-minimization, API-security, consent-review, third-party-risk, token-audit]
-version: "1.0"
+tags:
+- OAuth
+- scope-minimization
+- API-security
+- consent-review
+- third-party-risk
+- token-audit
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.AA-01
+- PR.AA-02
+- PR.AA-05
+- PR.AA-06
 ---
 
 # Performing OAuth Scope Minimization Review

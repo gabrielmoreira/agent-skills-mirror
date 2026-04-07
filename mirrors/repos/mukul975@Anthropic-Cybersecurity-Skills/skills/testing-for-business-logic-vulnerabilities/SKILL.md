@@ -1,12 +1,24 @@
 ---
 name: testing-for-business-logic-vulnerabilities
-description: Identifying flaws in application business logic that allow price manipulation, workflow bypass, and privilege escalation beyond what technical vulnerability scanners can detect.
+description: Identifying flaws in application business logic that allow price manipulation, workflow bypass, and privilege
+  escalation beyond what technical vulnerability scanners can detect.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, business-logic, owasp, web-security, burpsuite, manual-testing]
-version: "1.0"
+tags:
+- penetration-testing
+- business-logic
+- owasp
+- web-security
+- burpsuite
+- manual-testing
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Testing for Business Logic Vulnerabilities

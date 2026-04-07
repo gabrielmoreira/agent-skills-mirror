@@ -28,6 +28,11 @@ d3fend_techniques:
 - Application Protocol Command Analysis
 - Password Authentication
 - Reissue Credential
+nist_csf:
+- DE.CM-01
+- DE.AE-02
+- RS.MA-01
+- DE.AE-06
 ---
 
 # Implementing MITRE ATT&CK Coverage Mapping

@@ -1,12 +1,25 @@
 ---
 name: implementing-image-provenance-verification-with-cosign
-description: Sign and verify container image provenance using Sigstore Cosign with keyless OIDC-based signing, attestations, and Kubernetes admission enforcement.
+description: Sign and verify container image provenance using Sigstore Cosign with keyless OIDC-based signing, attestations,
+  and Kubernetes admission enforcement.
 domain: cybersecurity
 subdomain: container-security
-tags: [cosign, sigstore, image-signing, supply-chain, provenance, keyless, slsa]
-version: "1.0"
+tags:
+- cosign
+- sigstore
+- image-signing
+- supply-chain
+- provenance
+- keyless
+- slsa
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- PR.IR-01
+- ID.AM-08
+- DE.CM-01
 ---
 
 # Implementing Image Provenance Verification with Cosign

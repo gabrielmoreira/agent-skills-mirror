@@ -1,0 +1,8 @@
+interface:
+  display_name: "Miaoda App Builder"
+  short_description: "Build web apps, mini-programs, and SaaS via natural language"
+  default_prompt: "Use $miaoda-app-builder to create applications"
+i18n:
+  zh:
+    name: "秒哒应用构建"
+    description: "通过自然语言创建网页、微信小程序、游戏、AI工具等应用，全流程从代码生成到发布上线。"

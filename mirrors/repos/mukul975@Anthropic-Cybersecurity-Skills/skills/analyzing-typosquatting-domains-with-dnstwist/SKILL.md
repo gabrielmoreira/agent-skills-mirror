@@ -19,6 +19,11 @@ license: Apache-2.0
 atlas_techniques:
 - AML.T0073
 - AML.T0052
+nist_csf:
+- ID.RA-01
+- ID.RA-05
+- DE.CM-01
+- DE.AE-02
 ---
 # Analyzing Typosquatting Domains with DNSTwist
 

@@ -24,6 +24,11 @@ d3fend_techniques:
 - File Content Analysis
 - Platform Hardening
 - File Format Verification
+nist_csf:
+- PR.PS-01
+- PR.PS-02
+- DE.CM-01
+- PR.IR-01
 ---
 # Detecting Evasion Techniques in Endpoint Logs
 

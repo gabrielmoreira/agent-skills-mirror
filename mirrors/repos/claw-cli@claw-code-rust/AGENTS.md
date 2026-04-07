@@ -23,6 +23,7 @@ This repository is a Rust-based coding agent, currently called `claw-code-rust`.
   - Aim to keep modules under 500 lines of code, excluding tests.
   - If a file grows beyond ~800 lines, place new functionality in a separate module unless there is a strong, documented justification not to.
 - When running Rust-related commands (e.g., `just fix` or `cargo test`), allow them to complete without interruption, do not try to kill them using the PID. Slow execution due to Rust’s locking behavior is expected.
+- Agent can not apply patch to a file more than 800 lines, cause windows patch length limit, agent would failed to apply patch.
 
 ## Tests
 

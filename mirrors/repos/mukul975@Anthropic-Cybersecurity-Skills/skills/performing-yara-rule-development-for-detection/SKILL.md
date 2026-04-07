@@ -1,12 +1,25 @@
 ---
 name: performing-yara-rule-development-for-detection
-description: Develop precise YARA rules for malware detection by identifying unique byte patterns, strings, and behavioral indicators in executable files while minimizing false positives.
+description: Develop precise YARA rules for malware detection by identifying unique byte patterns, strings, and behavioral
+  indicators in executable files while minimizing false positives.
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [yara, malware-detection, signature-development, threat-hunting, pattern-matching, yara-x, indicator-development]
-version: "1.0"
+tags:
+- yara
+- malware-detection
+- signature-development
+- threat-hunting
+- pattern-matching
+- yara-x
+- indicator-development
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 # Performing YARA Rule Development for Detection
 

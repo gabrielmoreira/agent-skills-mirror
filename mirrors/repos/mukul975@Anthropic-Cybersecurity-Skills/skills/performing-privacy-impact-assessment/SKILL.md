@@ -1,19 +1,30 @@
 ---
 name: performing-privacy-impact-assessment
-description: >
-  Automates the Privacy Impact Assessment (PIA) workflow including data flow mapping,
-  privacy risk scoring matrices, GDPR Article 35 DPIA and CCPA/CPRA alignment checks,
-  data inventory cataloging, and remediation tracking. Implements the NIST Privacy
-  Framework PRAM methodology and ICO DPIA guidance for systematic identification and
-  mitigation of privacy risks across processing activities. Use when conducting privacy
-  assessments for new systems, evaluating regulatory compliance posture, or building
-  automated privacy governance programs.
+description: 'Automates the Privacy Impact Assessment (PIA) workflow including data flow mapping, privacy risk scoring matrices,
+  GDPR Article 35 DPIA and CCPA/CPRA alignment checks, data inventory cataloging, and remediation tracking. Implements the
+  NIST Privacy Framework PRAM methodology and ICO DPIA guidance for systematic identification and mitigation of privacy risks
+  across processing activities. Use when conducting privacy assessments for new systems, evaluating regulatory compliance
+  posture, or building automated privacy governance programs.
+
+  '
 domain: cybersecurity
 subdomain: privacy-compliance
-tags: [privacy, impact-assessment, GDPR, CCPA, NIST, DPIA, data-flow-mapping, risk-scoring]
-version: "1.0"
+tags:
+- privacy
+- impact-assessment
+- GDPR
+- CCPA
+- NIST
+- DPIA
+- data-flow-mapping
+- risk-scoring
+version: '1.0'
 author: mukul975
 license: Apache-2.0
+nist_csf:
+- GV.PO-01
+- PR.DS-01
+- GV.OC-05
 ---
 
 # Performing Privacy Impact Assessment

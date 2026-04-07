@@ -33,15 +33,38 @@ kreuzberg extract <path> [FLAGS]
 - `--config-json-base64 <base64>` — Base64-encoded JSON configuration.
 - `-m, --mime-type <type>` — MIME type hint (auto-detected if not provided).
 - `-f, --format <text|json>` — CLI output format (default: `text`). Controls how results display, not extraction content format.
-- `--output-format <plain|markdown|djot|html>` — Extraction content format (default: `plain`). Controls format of extracted content.
+- `--content-format <plain|markdown|djot|html>` — Extraction content format (default: `plain`). Controls format of extracted content. (Note: `--output-format` is a deprecated alias.)
 - `--ocr <bool>` — Enable OCR processing.
+- `--ocr-backend <BACKEND>` — OCR backend: `tesseract`, `paddle-ocr`, `easyocr`.
+- `--ocr-language <LANG>` — OCR language code.
+- `--ocr-auto-rotate <bool>` — Auto-rotate images before OCR.
 - `--force-ocr <bool>` — Force OCR even if text extraction succeeds.
+- `--disable-ocr <bool>` — Disable OCR entirely (even for images).
 - `--no-cache <bool>` — Disable caching.
 - `--chunk <bool>` — Enable text chunking.
 - `--chunk-size <n>` — Chunk size in characters.
 - `--chunk-overlap <n>` — Chunk overlap in characters.
+- `--chunking-tokenizer <model>` — Tokenizer model for token-based sizing.
+- `--include-structure <bool>` — Include hierarchical document structure.
 - `--quality <bool>` — Enable quality processing.
 - `--detect-language <bool>` — Enable language detection.
+- `--layout` — Enable layout detection (RT-DETR v2). Use `--layout false` to disable.
+- `--layout-confidence <float>` — Layout confidence threshold (0.0-1.0).
+- `--layout-table-model <model>` — Table structure model: `tatr`, `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled`.
+- `--acceleration <provider>` — ONNX execution provider: `auto`, `cpu`, `coreml`, `cuda`, `tensorrt`.
+- `--extract-pages <bool>` — Extract pages as separate array.
+- `--page-markers <bool>` — Insert page marker comments.
+- `--extract-images <bool>` — Enable image extraction.
+- `--target-dpi <n>` — Target DPI for images (36-2400).
+- `--pdf-password <pass>` — Password for encrypted PDFs (repeatable).
+- `--pdf-extract-images <bool>` — Extract images from PDF pages.
+- `--pdf-extract-metadata <bool>` — Extract PDF metadata.
+- `--token-reduction <level>` — Token reduction: `off`, `light`, `moderate`, `aggressive`, `maximum`.
+- `--msg-codepage <n>` — Windows codepage fallback for MSG files.
+- `--max-concurrent <n>` — Max parallel extractions in batch mode.
+- `--max-threads <n>` — Cap all internal thread pools.
+- `--cache-namespace <name>` — Cache namespace for tenant isolation.
+- `--cache-ttl-secs <n>` — Per-request cache TTL in seconds.
 
 **Examples**
 
@@ -66,6 +89,12 @@ kreuzberg extract doc.pdf --format json
 
 # Extract with chunking
 kreuzberg extract large-doc.pdf --chunk true --chunk-size 2000 --chunk-overlap 200
+
+# Layout-aware markdown extraction
+kreuzberg extract document.pdf --layout --content-format markdown
+
+# With custom confidence threshold
+kreuzberg extract document.pdf --layout-confidence 0.7 --content-format markdown
 ```
 
 ### batch
@@ -86,16 +115,11 @@ kreuzberg batch <paths...> [FLAGS]
 - `--config-json <json>` — Inline JSON configuration (merged after config file, before CLI flags).
 - `--config-json-base64 <base64>` — Base64-encoded JSON configuration.
 - `-f, --format <text|json>` — CLI output format (default: `json`). Controls how results display, not extraction content format.
-- `--output-format <plain|markdown|djot|html>` — Extraction content format (default: `plain`). Controls format of extracted content.
-- `--ocr <bool>` — Enable OCR processing.
-- `--force-ocr <bool>` — Force OCR even if text extraction succeeds.
-- `--no-cache <bool>` — Disable caching.
-- `--quality <bool>` — Enable quality processing.
+- All extraction override flags from `extract` are also supported (e.g., `--content-format`, `--ocr`, `--layout`, `--force-ocr`, `--no-cache`, `--quality`, `--acceleration`, etc.). See the `extract` command flags for the full list.
 
 **Notes**
 
 - Batch command defaults to JSON output format (unlike `extract` which defaults to text).
-- Does not support chunking parameters (`--chunk`, `--chunk-size`, `--chunk-overlap`).
 - Does not support `--mime-type` or `--detect-language` flags.
 
 **Examples**
@@ -370,7 +394,7 @@ The CLI validates input and provides clear error messages:
 
 ```bash
 kreuzberg extract document.pdf \
-  --output-format markdown \
+  --content-format markdown \
   --ocr true \
   --quality true
 ```

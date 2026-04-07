@@ -12,7 +12,7 @@
 - [x] SOUL Editor — three-layer editor with live preview (Global locked, Position/Personal editable)
 - [x] Workspace Manager — three-layer file tree with S3 read/write, role-filtered skills
 - [x] Skill Platform — 26 skills (6 global + 20 department-scoped), API Key Vault, role permissions matrix
-- [x] Bindings & Routing — create binding, bulk provision modal, routing rules table, source (Auto/Manual) column
+- [x] Agent Assignments — employee-agent overview, bulk provision, routing rules, IM user mappings
 - [x] Knowledge Base — document management, scope-based access, retrieval test
 - [x] Monitor Center — 3 tabs (Live Sessions, Agent Health from API, Alert Rules from API), system health bar, real-time chart
 - [x] Session Detail — conversation stream from API (role-specific), takeover mode, quality metrics, Plan E scan, response time chart
@@ -34,7 +34,7 @@
 - [x] DynamoDB single-table design with 7 entity types (org, agents, bindings, audit, approvals, config, knowledge)
 - [x] DynamoDB usage metrics — per-agent daily usage, sessions, employee activity, cost trend (seeded by seed_usage.py)
 - [x] S3 operations — SOUL layers, skills, workspace files, memory, versioning
-- [x] Auto-provision on employee creation — `_auto_provision_employee()` creates agent + binding + shared agent bindings + audit trail
+- [x] Auto-provision on employee creation — `_auto_provision_employee()` creates agent + assignment + SSM mappings + audit trail
 - [x] Bulk provision by position — delegates to auto-provision, updates position default channel
 - [x] AI Security Scanner — `/api/v1/audit/insights` analyzes audit patterns, memory files, usage anomalies, SOUL version drift
 - [x] Alert rules engine — `/api/v1/monitor/alerts` evaluates conditions against real DynamoDB data (budget, idle agents, unbound employees)

@@ -1,15 +1,24 @@
 ---
 name: validating-backup-integrity-for-recovery
-description: >-
-  Validate backup integrity through cryptographic hash verification, automated restore testing,
-  corruption detection, and recoverability checks to ensure backups are reliable for disaster
-  recovery and ransomware response scenarios.
+description: Validate backup integrity through cryptographic hash verification, automated restore testing, corruption detection,
+  and recoverability checks to ensure backups are reliable for disaster recovery and ransomware response scenarios.
 domain: cybersecurity
 subdomain: incident-response
-tags: [incident-response, backup, integrity, hash-verification, restore-testing, disaster-recovery]
-version: "1.0"
+tags:
+- incident-response
+- backup
+- integrity
+- hash-verification
+- restore-testing
+- disaster-recovery
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- RS.MA-01
+- RS.MA-02
+- RS.AN-03
+- RC.RP-01
 ---
 # Validating Backup Integrity for Recovery
 

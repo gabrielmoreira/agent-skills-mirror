@@ -22,6 +22,10 @@ d3fend_techniques:
 - Restore Access
 - Application Protocol Command Analysis
 - Process Termination
+nist_csf:
+- ID.RA-01
+- GV.OV-02
+- DE.AE-07
 ---
 # Conducting Pass-the-Ticket Attack
 

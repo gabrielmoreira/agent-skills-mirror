@@ -24,6 +24,11 @@ d3fend_techniques:
 - File Metadata Consistency Validation
 - Restore Access
 - Password Authentication
+nist_csf:
+- ID.RA-01
+- ID.RA-06
+- GV.OV-02
+- DE.AE-07
 ---
 # Performing Privilege Escalation Assessment
 

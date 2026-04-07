@@ -23,6 +23,11 @@ nist_ai_rmf:
 - MANAGE-2.4
 - MANAGE-3.1
 - MEASURE-3.1
+nist_csf:
+- RS.AN-01
+- RS.AN-03
+- DE.AE-02
+- RS.MA-01
 ---
 
 # Analyzing Outlook PST for Email Forensics

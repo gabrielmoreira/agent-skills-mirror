@@ -24,6 +24,11 @@ nist_ai_rmf:
 - MEASURE-2.5
 - GOVERN-6.1
 - MAP-5.1
+nist_csf:
+- PR.AA-01
+- PR.AA-02
+- PR.AA-05
+- PR.AA-06
 ---
 # Implementing Passwordless Authentication with FIDO2
 

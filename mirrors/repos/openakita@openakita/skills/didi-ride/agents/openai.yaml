@@ -1,0 +1,9 @@
+interface:
+  display_name: "DiDi Ride"
+  short_description: "Ride-hailing, route planning, and trip management via DiDi"
+  default_prompt: "Use $didi-ride for taxi booking and route planning"
+
+i18n:
+  zh:
+    name: "滴滴出行"
+    description: "通过滴滴 MCP 提供打车、查价、路线规划、订单管理、预约出行等出行服务。"

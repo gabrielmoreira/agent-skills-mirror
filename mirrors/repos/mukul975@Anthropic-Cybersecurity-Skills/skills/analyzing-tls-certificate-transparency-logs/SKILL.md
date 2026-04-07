@@ -18,6 +18,11 @@ license: Apache-2.0
 atlas_techniques:
 - AML.T0073
 - AML.T0052
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 ---
 
 # Analyzing TLS Certificate Transparency Logs

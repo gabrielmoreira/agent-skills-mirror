@@ -26,6 +26,11 @@ nist_ai_rmf:
 - MANAGE-2.4
 - GOVERN-6.2
 - MAP-5.1
+nist_csf:
+- PR.PS-01
+- PR.AA-05
+- ID.RA-01
+- DE.CM-09
 ---
 # Analyzing iOS App Security with Objection
 

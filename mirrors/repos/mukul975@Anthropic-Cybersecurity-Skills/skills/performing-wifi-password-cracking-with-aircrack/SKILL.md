@@ -1,15 +1,25 @@
 ---
 name: performing-wifi-password-cracking-with-aircrack
-description: >
-  Captures WPA/WPA2 handshakes and performs offline password cracking using aircrack-ng,
-  hashcat, and dictionary attacks during authorized wireless security assessments to
-  evaluate passphrase strength and wireless network security posture.
+description: 'Captures WPA/WPA2 handshakes and performs offline password cracking using aircrack-ng, hashcat, and dictionary
+  attacks during authorized wireless security assessments to evaluate passphrase strength and wireless network security posture.
+
+  '
 domain: cybersecurity
 subdomain: network-security
-tags: [network-security, wifi, aircrack-ng, wpa2, wireless-security]
-version: "1.0"
+tags:
+- network-security
+- wifi
+- aircrack-ng
+- wpa2
+- wireless-security
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-03
+- PR.DS-02
 ---
 # Performing WiFi Password Cracking with Aircrack-ng
 

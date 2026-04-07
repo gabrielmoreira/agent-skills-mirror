@@ -1,12 +1,26 @@
 ---
 name: implementing-api-abuse-detection-with-rate-limiting
-description: Implement API abuse detection using token bucket, sliding window, and adaptive rate limiting algorithms to prevent DDoS, brute force, and credential stuffing attacks.
+description: Implement API abuse detection using token bucket, sliding window, and adaptive rate limiting algorithms to prevent
+  DDoS, brute force, and credential stuffing attacks.
 domain: cybersecurity
 subdomain: api-security
-tags: [api-security, rate-limiting, token-bucket, sliding-window, ddos-protection, brute-force-prevention, api-abuse, api-gateway]
-version: "1.0"
+tags:
+- api-security
+- rate-limiting
+- token-bucket
+- sliding-window
+- ddos-protection
+- brute-force-prevention
+- api-abuse
+- api-gateway
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Implementing API Abuse Detection with Rate Limiting

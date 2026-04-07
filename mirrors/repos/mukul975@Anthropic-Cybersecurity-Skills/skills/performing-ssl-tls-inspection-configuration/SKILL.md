@@ -1,12 +1,26 @@
 ---
 name: performing-ssl-tls-inspection-configuration
-description: Configure SSL/TLS inspection on network security devices to decrypt, inspect, and re-encrypt HTTPS traffic for threat detection while managing certificates, exemptions, and privacy compliance.
+description: Configure SSL/TLS inspection on network security devices to decrypt, inspect, and re-encrypt HTTPS traffic for
+  threat detection while managing certificates, exemptions, and privacy compliance.
 domain: cybersecurity
 subdomain: network-security
-tags: [ssl-inspection, tls-decryption, https-inspection, certificate-management, proxy, man-in-the-middle, network-security, forward-proxy]
-version: "1.0"
+tags:
+- ssl-inspection
+- tls-decryption
+- https-inspection
+- certificate-management
+- proxy
+- man-in-the-middle
+- network-security
+- forward-proxy
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.IR-01
+- DE.CM-01
+- ID.AM-03
+- PR.DS-02
 ---
 
 # Performing SSL/TLS Inspection Configuration

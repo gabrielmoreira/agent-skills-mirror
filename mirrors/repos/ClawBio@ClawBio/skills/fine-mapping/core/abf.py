@@ -31,16 +31,27 @@ def compute_abf(df: pd.DataFrame, w: float = DEFAULT_W) -> np.ndarray:
         Posterior inclusion probabilities assuming at most one causal variant.
     """
     z = df["z"].values.astype(float)
-    n = len(z)
+    n_variants = len(z)
 
     if "se" in df.columns and df["se"].notna().all():
-        V = df["se"].values.astype(float) ** 2
+        se_vals = df["se"].values.astype(float)
+        if np.any(se_vals <= 0):
+            raise ValueError(
+                "Standard errors must be positive. Got zero or negative values: "
+                "se=0 produces V=0 which makes log ABF undefined."
+            )
+        V = se_vals ** 2
     elif "n" in df.columns and df["n"].notna().any():
-        n_eff = np.nanmedian(df["n"].values.astype(float))
-        V = np.full(n, 1.0 / n_eff)
+        n_vals = df["n"].values.astype(float)
+        if np.any(n_vals <= 0):
+            raise ValueError(
+                "Sample sizes must be positive. Got zero or negative values."
+            )
+        # Per-variant V_i = 1/n_i (not median-collapsed)
+        V = 1.0 / n_vals
     else:
         # Default: assume n_eff = 10 000
-        V = np.full(n, 1.0 / 10_000.0)
+        V = np.full(n_variants, 1.0 / 10_000.0)
 
     log_abf = _log_abf(z, V, w)
 

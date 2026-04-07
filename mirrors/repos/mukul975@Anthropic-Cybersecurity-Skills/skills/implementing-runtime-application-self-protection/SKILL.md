@@ -21,6 +21,11 @@ nist_ai_rmf:
 - GOVERN-1.1
 - MEASURE-2.7
 - MANAGE-3.1
+nist_csf:
+- PR.PS-01
+- PR.PS-04
+- ID.RA-01
+- PR.DS-10
 ---
 
 # Implementing Runtime Application Self-Protection

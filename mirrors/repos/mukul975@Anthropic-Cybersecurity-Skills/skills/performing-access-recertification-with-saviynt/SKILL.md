@@ -1,12 +1,24 @@
 ---
 name: performing-access-recertification-with-saviynt
-description: Configure and execute access recertification campaigns in Saviynt Enterprise Identity Cloud to validate user entitlements, revoke excessive access, and maintain compliance with SOX, SOC2, and HIPAA.
+description: Configure and execute access recertification campaigns in Saviynt Enterprise Identity Cloud to validate user
+  entitlements, revoke excessive access, and maintain compliance with SOX, SOC2, and HIPAA.
 domain: cybersecurity
 subdomain: identity-access-management
-tags: [saviynt, access-recertification, identity-governance, compliance, certification-campaign, iga]
-version: "1.0"
+tags:
+- saviynt
+- access-recertification
+- identity-governance
+- compliance
+- certification-campaign
+- iga
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.AA-01
+- PR.AA-02
+- PR.AA-05
+- PR.AA-06
 ---
 
 # Performing Access Recertification with Saviynt

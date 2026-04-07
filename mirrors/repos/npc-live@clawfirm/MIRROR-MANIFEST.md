@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `npc-live/clawfirm` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `npc-live/clawfirm` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `npc-live/clawfirm` — 26 default patterns, 0 followed patterns, 21 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,11 +75,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`app/assets/skills/video-skills/video-stitcher/SKILL.md`](app/assets/skills/video-skills/video-stitcher/SKILL.md) |
 | 15 | ✓ | [`app/assets/skills/video-skills/voice-clone-tts/SKILL.md`](app/assets/skills/video-skills/voice-clone-tts/SKILL.md) |
 | 16 | ✓ | [`app/assets/skills/whipflow/SKILL.md`](app/assets/skills/whipflow/SKILL.md) |
-| 17 | ✓ | [`cmd/clawfirm/SKILL.md`](cmd/clawfirm/SKILL.md) |
-| 18 | ✓ | [`cmd/whip/SKILL.md`](cmd/whip/SKILL.md) |
-| 19 | ✓ | [`skill/format_test.go`](skill/format_test.go) |
-| 20 | ✓ | [`skill/format.go`](skill/format.go) |
-| 21 | ✓ | [`skill/skill.go`](skill/skill.go) |
+| 17 | ✓ | [`claw-code/CLAUDE.md`](claw-code/CLAUDE.md) |
+| 18 | ✓ | [`cmd/clawfirm/SKILL.md`](cmd/clawfirm/SKILL.md) |
+| 19 | ✓ | [`cmd/whip/SKILL.md`](cmd/whip/SKILL.md) |
+| 20 | ✓ | [`skill/format_test.go`](skill/format_test.go) |
+| 21 | ✓ | [`skill/format.go`](skill/format.go) |
+| 22 | ✓ | [`skill/skill.go`](skill/skill.go) |
 
 ---
 

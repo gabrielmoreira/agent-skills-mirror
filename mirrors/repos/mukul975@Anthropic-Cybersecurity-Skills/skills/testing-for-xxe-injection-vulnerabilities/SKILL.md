@@ -1,12 +1,24 @@
 ---
 name: testing-for-xxe-injection-vulnerabilities
-description: Discovering and exploiting XML External Entity injection vulnerabilities to read server files, perform SSRF, and exfiltrate data during authorized penetration tests.
+description: Discovering and exploiting XML External Entity injection vulnerabilities to read server files, perform SSRF,
+  and exfiltrate data during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
-tags: [penetration-testing, xxe, xml-injection, owasp, web-security, burpsuite]
-version: "1.0"
+tags:
+- penetration-testing
+- xxe
+- xml-injection
+- owasp
+- web-security
+- burpsuite
+version: '1.0'
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- PR.PS-01
+- ID.RA-01
+- PR.DS-10
+- DE.CM-01
 ---
 
 # Testing for XXE Injection Vulnerabilities

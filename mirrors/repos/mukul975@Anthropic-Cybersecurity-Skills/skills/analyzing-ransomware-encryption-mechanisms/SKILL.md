@@ -1,17 +1,27 @@
 ---
 name: analyzing-ransomware-encryption-mechanisms
-description: >
-  Analyzes encryption algorithms, key management, and file encryption routines used by
-  ransomware families to assess decryption feasibility, identify implementation weaknesses,
-  and support recovery efforts. Covers AES, RSA, ChaCha20, and hybrid encryption schemes.
-  Activates for requests involving ransomware cryptanalysis, encryption analysis, key
-  recovery assessment, or ransomware decryption feasibility.
+description: 'Analyzes encryption algorithms, key management, and file encryption routines used by ransomware families to
+  assess decryption feasibility, identify implementation weaknesses, and support recovery efforts. Covers AES, RSA, ChaCha20,
+  and hybrid encryption schemes. Activates for requests involving ransomware cryptanalysis, encryption analysis, key recovery
+  assessment, or ransomware decryption feasibility.
+
+  '
 domain: cybersecurity
 subdomain: malware-analysis
-tags: [malware, ransomware, encryption, cryptanalysis, reverse-engineering]
+tags:
+- malware
+- ransomware
+- encryption
+- cryptanalysis
+- reverse-engineering
 version: 1.0.0
 author: mahipal
 license: Apache-2.0
+nist_csf:
+- DE.AE-02
+- RS.AN-03
+- ID.RA-01
+- DE.CM-01
 ---
 
 # Analyzing Ransomware Encryption Mechanisms
