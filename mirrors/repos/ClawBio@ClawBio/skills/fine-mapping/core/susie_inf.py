@@ -52,10 +52,12 @@ def run_susie_inf(
     ssq_range: tuple[float, float] = (0.0, 1.0),
     est_ssq: bool = True,
     est_sigmasq: bool = True,
+    est_tausq: bool = False,
     sigmasq: float = 1.0,
     tausq: float = 0.0,
     max_iter: int = 100,
     tol: float = 1e-3,
+    null_weight: float | None = None,
 ) -> dict:
     """Run SuSiE-inf fine-mapping.
 
@@ -70,6 +72,7 @@ def run_susie_inf(
     ssq_range : (lower, upper) bounds for per-effect s² optimisation
     est_ssq : estimate per-effect prior variances s² by MLE
     est_sigmasq : estimate residual variance σ² by method-of-moments
+    est_tausq : estimate infinitesimal variance τ² by method-of-moments
     sigmasq : initial residual variance σ²
     tausq : initial infinitesimal variance τ² (0 = no infinitesimal term)
     max_iter : maximum IBSS iterations
@@ -113,7 +116,18 @@ def run_susie_inf(
     omega = diag_XtOX[:, None] + 1.0 / ssq       # (p, L)
     lbf_variable = np.zeros((p, L))
 
-    logpi0 = np.full(p, -np.log(p))              # log uniform prior
+    # Null weight: prior probability that each single effect is absent.
+    # Default 1/(L+1) gives equal prior to "no effect" as to each of L
+    # possible effects, consistent with standard SuSiE null handling.
+    if null_weight is None:
+        null_weight = 1.0 / (L + 1)
+    use_null = null_weight > 0
+    if use_null:
+        log_prior_null = np.log(null_weight)
+        log_prior_variant = np.log((1.0 - null_weight) / p)
+        logpi0 = np.full(p, log_prior_variant)
+    else:
+        logpi0 = np.full(p, -np.log(p))              # log uniform prior
 
     converged = False
     n_iter = 0
@@ -148,16 +162,27 @@ def run_susie_inf(
                 - 0.5 * np.log(omega[:, l] * ssq[l])
             )
             log_alpha_l = lbf_variable[:, l] + logpi0
-            alpha[:, l] = np.exp(log_alpha_l - scipy.special.logsumexp(log_alpha_l))
+            if use_null:
+                # Include null hypothesis in normalisation
+                all_log = np.append(log_alpha_l, log_prior_null)
+                log_norm = scipy.special.logsumexp(all_log)
+                alpha[:, l] = np.exp(log_alpha_l - log_norm)
+            else:
+                alpha[:, l] = np.exp(log_alpha_l - scipy.special.logsumexp(log_alpha_l))
 
         # Method-of-moments update for σ² (and optionally τ²)
-        if est_sigmasq:
+        if est_sigmasq or est_tausq:
             sigmasq, tausq = _mom_update(
                 alpha, mu, omega, sigmasq, tausq,
                 n, V, Dsq, VtXty, Xty, yty,
-                est_sigmasq=True, est_tausq=False,
+                est_sigmasq=est_sigmasq, est_tausq=est_tausq,
             )
-            var = tausq * Dsq + sigmasq
+            # Only apply tausq to the variance structure if it exceeds a
+            # minimum threshold. Tiny tausq estimates (< 1e-3) spread
+            # posterior weight across eigenvectors without meaningfully
+            # modelling a polygenic background, degrading SER quality.
+            effective_tausq = tausq if tausq >= 1e-3 else 0.0
+            var = effective_tausq * Dsq + sigmasq
             diag_XtOX = np.sum(V ** 2 * (Dsq / var), axis=1)
             XtOy = V @ (VtXty / var)
 
@@ -166,8 +191,32 @@ def run_susie_inf(
             converged = True
             break
 
-    # Collapse per-effect alpha into marginal PIPs
-    pip = 1.0 - np.prod(1.0 - alpha, axis=1)
+    # Prune inactive effects: exclude effects with near-zero ssq AND
+    # near-uniform alpha from PIP computation. When null_weight is active,
+    # the null component in alpha normalization already down-weights
+    # inactive effects, so pruning is less critical. When est_tausq is
+    # active, use aggressive pruning to prevent background inflation.
+    active_mask = np.ones(L, dtype=bool)
+    if est_tausq:
+        # With infinitesimal component, aggressively prune effects whose
+        # ssq has been shrunk below threshold by the optimizer.
+        uniform_alpha = 1.0 / p
+        ssq_threshold = max(ssq_init * 0.01, 1e-6)
+        for l in range(L):
+            alpha_max = alpha[:, l].max()
+            is_uniform = alpha_max < uniform_alpha * 3.0
+            is_tiny_ssq = ssq[l] < ssq_threshold
+            if is_uniform and is_tiny_ssq:
+                active_mask[l] = False
+
+    # Collapse per-effect alpha into marginal PIPs (active effects only).
+    # When no effects are active (all pruned), assign uniform PIPs (1/p)
+    # representing maximum uncertainty, consistent with the prior.
+    if active_mask.any():
+        alpha_active = alpha[:, active_mask]
+        pip = 1.0 - np.prod(1.0 - alpha_active, axis=1)
+    else:
+        pip = np.full(p, 1.0 / p)
     pip = np.clip(pip, 0.0, 1.0)
 
     return {
@@ -225,10 +274,11 @@ def _mom_update(
     # Add posterior variance contribution
     diag_VtMV += np.sum((V.T) ** 2 * tmpD, axis=1)
 
-    # Moment vector x
+    # Moment vector x: use Dsq-weighted formulation for correct
+    # polygenic background subtraction (Cui et al. 2024, Supplementary eq. 12)
     x = np.zeros(2)
     x[0] = yty - 2.0 * float(b @ Xty) + float(Dsq @ diag_VtMV)
-    x[1] = float(Xty ** 2 @ np.ones(p)) - 2.0 * float(Vtb * VtXty @ Dsq) + float((Dsq ** 2) @ diag_VtMV)
+    x[1] = float(VtXty ** 2 @ np.ones(p)) - 2.0 * float(Vtb * Dsq @ VtXty) + float((Dsq ** 2) @ diag_VtMV)
 
     if est_tausq:
         try:

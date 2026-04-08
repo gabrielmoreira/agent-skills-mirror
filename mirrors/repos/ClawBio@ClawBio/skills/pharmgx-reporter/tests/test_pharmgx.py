@@ -44,7 +44,7 @@ def test_detect_format_23andme():
 
 
 def test_parse_file_finds_all_pgx_snps():
-    fmt, total_snps, pgx_snps = parse_file(str(DEMO))
+    fmt, total_snps, pgx_snps, _ref = parse_file(str(DEMO))
     assert fmt == "23andme"
     assert total_snps == 23  # 23 PGx SNPs present on the 23andMe v5 chip (Corpasome, incl. MTHFR)
     assert len(pgx_snps) == 23, (
@@ -53,7 +53,7 @@ def test_parse_file_finds_all_pgx_snps():
 
 
 def test_parse_file_genotype_values():
-    _, _, pgx = parse_file(str(DEMO))
+    _, _, pgx, _ = parse_file(str(DEMO))
     # CYP2C19 *2 het
     assert pgx["rs4244285"]["genotype"] == "AG"
     # CYP2D6 *4 ref (Corpasome: no *4 variant)
@@ -66,7 +66,7 @@ def test_parse_file_genotype_values():
 
 def _profiles():
     """Build profiles from demo patient for reuse across tests."""
-    _, _, pgx = parse_file(str(DEMO))
+    _, _, pgx, _ = parse_file(str(DEMO))
     profiles = {}
     for gene in GENE_DEFS:
         diplotype = call_diplotype(gene, pgx)
@@ -76,9 +76,9 @@ def _profiles():
 
 
 def test_cyp2c19_diplotype():
-    """Demo patient: rs4244285 AG (*2 het) + rs12248560 CT (*17 het) → *17/*2."""
+    """Demo patient: rs4244285 AG (*2 het) + rs12248560 CT (*17 het) → phase ambiguity."""
     p = _profiles()
-    assert p["CYP2C19"]["diplotype"] == "*17/*2"
+    assert "Indeterminate (phase ambiguity" in p["CYP2C19"]["diplotype"]
 
 
 def test_cyp2d6_diplotype():
@@ -108,8 +108,9 @@ def test_cyp3a5_diplotype():
 # ── Phenotype Assignment ──────────────────────────────────────────────────────
 
 def test_cyp2c19_intermediate():
+    """CYP2C19 *2 het + *17 het: phase ambiguity flagged as Indeterminate."""
     p = _profiles()
-    assert p["CYP2C19"]["phenotype"] == "Intermediate Metabolizer"
+    assert "Indeterminate" in p["CYP2C19"]["phenotype"]
 
 
 def test_cyp2d6_intermediate():
@@ -153,17 +154,17 @@ def test_mthfr_forward_strand_conversion_corpas():
     }
     diplotype = call_diplotype("MTHFR", pgx)
     assert diplotype == "677CC/1298AC", f"Expected 677CC/1298AC, got {diplotype}"
-    assert call_phenotype("MTHFR", diplotype) == "Intermediate Activity"
+    assert call_phenotype("MTHFR", diplotype) == "Reduced MTHFR enzyme activity (677CT)"
 
 
 def test_mthfr_level2_reduced():
-    """MTHFR 677TT/1298AA: Level 2 CPIC guideline → Reduced Activity."""
-    assert call_phenotype("MTHFR", "677TT/1298AA") == "Reduced Activity"
+    """MTHFR 677TT/1298AA: DPWG guideline: Strongly reduced MTHFR enzyme activity."""
+    assert call_phenotype("MTHFR", "677TT/1298AA") == "Strongly reduced MTHFR enzyme activity (677TT)"
 
 
 def test_mthfr_level2_intermediate():
-    """MTHFR 677CT/1298AA: Level 2 CPIC guideline → Intermediate Activity."""
-    assert call_phenotype("MTHFR", "677CT/1298AA") == "Intermediate Activity"
+    """MTHFR 677CT/1298AA: DPWG guideline: Reduced MTHFR enzyme activity."""
+    assert call_phenotype("MTHFR", "677CT/1298AA") == "Reduced MTHFR enzyme activity (677CT)"
 
 
 def test_dpyd_normal_or_indeterminate():
@@ -192,12 +193,12 @@ def test_drug_lookup_returns_all_categories():
     assert total > 0
 
 
-def test_clopidogrel_caution_for_intermediate():
-    """CYP2C19 *1/*2 → Intermediate → Clopidogrel should be caution."""
+def test_clopidogrel_indeterminate_for_phase_ambiguous():
+    """CYP2C19 *2+*17 phase ambiguity -> Clopidogrel should be indeterminate."""
     p = _profiles()
     results = lookup_drugs(p)
-    clop = [d for d in results["caution"] if d["drug"] == "Clopidogrel"]
-    assert len(clop) == 1, "Clopidogrel should be in caution list"
+    clop = [d for d in results["indeterminate"] if d["drug"] == "Clopidogrel"]
+    assert len(clop) == 1, "Clopidogrel should be in indeterminate list when CYP2C19 is phase-ambiguous"
 
 
 def test_codeine_caution_for_intermediate_cyp2d6():
@@ -347,7 +348,7 @@ def test_phenotype_key_mapping():
 # ── Report Generation ─────────────────────────────────────────────────────────
 
 def test_report_contains_key_sections():
-    _, _, pgx = parse_file(str(DEMO))
+    _, _, pgx, _ = parse_file(str(DEMO))
     p = _profiles()
     results = lookup_drugs(p)
     report = generate_report(str(DEMO), "23andme", 31, pgx, p, results)
@@ -361,7 +362,7 @@ def test_report_contains_key_sections():
 
 
 def test_report_contains_disclaimer():
-    _, _, pgx = parse_file(str(DEMO))
+    _, _, pgx, _ = parse_file(str(DEMO))
     p = _profiles()
     results = lookup_drugs(p)
     report = generate_report(str(DEMO), "23andme", 31, pgx, p, results)
@@ -384,6 +385,65 @@ def test_all_guideline_drugs_reference_valid_genes():
             continue
         gene = info["gene"]
         assert gene in GENE_DEFS, f"{drug} references unknown gene {gene}"
+
+
+# ── CPIC Compliance (clawbio_bench v0.1.4 findings) ─────────────────────────
+
+def test_cyp2c19_rapid_metabolizer_clopidogrel_standard():
+    """CYP2C19 Rapid Metabolizer (*1/*17) should map to standard for Clopidogrel."""
+    profiles = _profiles()
+    profiles["CYP2C19"] = {"diplotype": "*1/*17", "phenotype": "Rapid Metabolizer"}
+    results = lookup_drugs(profiles)
+    clop = [d for cat in results.values() for d in cat if d["drug"] == "Clopidogrel"]
+    assert clop[0]["classification"] == "standard", (
+        "CYP2C19 Rapid Metabolizer should get standard for Clopidogrel per CPIC"
+    )
+
+
+def test_cyp2c19_rapid_metabolizer_voriconazole_caution():
+    """CYP2C19 Rapid Metabolizer (*1/*17) should map to caution for Voriconazole."""
+    profiles = _profiles()
+    profiles["CYP2C19"] = {"diplotype": "*1/*17", "phenotype": "Rapid Metabolizer"}
+    results = lookup_drugs(profiles)
+    vori = [d for cat in results.values() for d in cat if d["drug"] == "Voriconazole"]
+    assert vori[0]["classification"] == "caution", (
+        "CYP2C19 Rapid Metabolizer should get caution for Voriconazole per CPIC"
+    )
+
+
+def test_diclofenac_no_avoid_for_cyp2c9_pm():
+    """Diclofenac should NOT be 'avoid' for CYP2C9 PM (CPIC Theken 2020: no recommendation)."""
+    profiles = _profiles()
+    profiles["CYP2C9"] = {"diplotype": "*3/*3", "phenotype": "Poor Metabolizer"}
+    results = lookup_drugs(profiles)
+    diclo = [d for cat in results.values() for d in cat if d["drug"] == "Diclofenac"]
+    assert diclo[0]["classification"] != "avoid", (
+        "Diclofenac should not be avoid for CYP2C9 PM per CPIC Table S9 (Theken 2020)"
+    )
+
+
+def test_slco1b1_decreased_function_simvastatin_caution():
+    """SLCO1B1 Decreased Function (TC) should map to caution for Simvastatin."""
+    profiles = _profiles()
+    profiles["SLCO1B1"] = {"diplotype": "TC", "phenotype": "Decreased Function"}
+    results = lookup_drugs(profiles)
+    simva = [d for cat in results.values() for d in cat if d["drug"] == "Simvastatin"]
+    assert simva[0]["classification"] == "caution", (
+        "SLCO1B1 Decreased Function should get caution for Simvastatin per CPIC 2022"
+    )
+
+
+def test_phenotype_to_key_decreased_function():
+    """Decreased Function (CPIC 2022 SLCO1B1 term) must map correctly."""
+    assert phenotype_to_key("Decreased Function") == "decreased_function"
+
+
+def test_cyp2d6_star1_star10_is_normal_metabolizer():
+    """CYP2D6 *1/*10 should be Normal Metabolizer per CPIC 2020 (AS >= 1.25)."""
+    pheno = call_phenotype("CYP2D6", "*1/*10")
+    assert pheno == "Normal Metabolizer", (
+        f"CYP2D6 *1/*10 should be NM per CPIC 2020 (Caudle, PMID 31647186), got {pheno}"
+    )
 
 
 # ── ClinPGx Evidence Enrichment ──────────────────────────────────────────────
@@ -493,7 +553,7 @@ def test_evidence_badge_class_mapping():
 
 def test_html_report_with_enrichment():
     """Evidence data renders when enrichment is provided."""
-    _, _, pgx = parse_file(str(DEMO))
+    _, _, pgx, _ = parse_file(str(DEMO))
     p = _profiles()
     results = lookup_drugs(p)
     enrichment = {
@@ -521,7 +581,7 @@ def test_html_report_with_enrichment():
 
 def test_html_report_without_enrichment():
     """No evidence data when enrichment is None — still renders fine."""
-    _, _, pgx = parse_file(str(DEMO))
+    _, _, pgx, _ = parse_file(str(DEMO))
     p = _profiles()
     results = lookup_drugs(p)
     html = generate_html_report(str(DEMO), "23andme", 21, pgx, p, results,

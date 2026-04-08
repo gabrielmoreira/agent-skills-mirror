@@ -156,7 +156,7 @@ NemoClaw keeps its operator-facing state on the host rather than inside the sand
 
 | Path | Purpose |
 |---|---|
-| `~/.nemoclaw/credentials.json` | Provider credentials saved during onboarding. |
+| `~/.nemoclaw/credentials.json` | Provider credentials saved during onboarding. Stored as plaintext JSON protected by local filesystem permissions; see Credential Storage (see the `nemoclaw-configure-security` skill). |
 | `~/.nemoclaw/sandboxes.json` | Registered sandbox metadata, including the default sandbox selection. |
 | `~/.openclaw/openclaw.json` | Host OpenClaw configuration that NemoClaw snapshots or restores during migration flows. |
 

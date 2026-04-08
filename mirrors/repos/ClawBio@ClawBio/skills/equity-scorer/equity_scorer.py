@@ -706,8 +706,8 @@ def generate_report(
         fst_table = "\n".join(fst_rows)
         fst_section = """## Pairwise FST
 
-| Comparison | Nei's GST |
-|------------|-----------|
+| Comparison | Nei's GST (FST) |
+|------------|-----------------|
 %s
 
 %s
@@ -933,6 +933,7 @@ def run_vcf_pipeline(
     print("Computing HEIM Equity Score...")
     heim_result = compute_heim_score(pop_counts, obs_het, len(fst_dict), weights)
     heim_result["het_source"] = "computed"
+    heim_result["fst_estimator"] = "Nei_GST"
     print("  Score: %s/100 (%s)" % (heim_result["heim_score"], heim_result["rating"]))
 
     # Save tables

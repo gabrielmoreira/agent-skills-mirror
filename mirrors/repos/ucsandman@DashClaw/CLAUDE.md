@@ -9,15 +9,13 @@ doc-type: handoff
 
 DashClaw is AI agent decision infrastructure. It provides a focused control plane for policy enforcement, decision recording, assumption tracking, and risk signals.
 
-## Governance Boundary (CRITICAL)
+## Governance Boundary
 
 DashClaw is a **minimal governance runtime**, not an agent platform. We do not provide tools for agents to achieve goals (Calendar, Messaging, CRM). We provide the infrastructure to **govern** those goals.
 
-- **Core Runtime**: `app/api/` (Only 7 canonical routes allowed).
+- **Core Runtime**: `app/api/` (Governance routes).
 - **Extensions**: `app/(extensions)/` (Modular operational intelligence).
 - **Archived**: `app/api/_archive/` (Legacy platform features).
-
-**CI Check**: `npm run governance:boundary:check` enforces this boundary. Never add non-governance routes to the root `/api` directory.
 
 ## Essential Surfaces
 
@@ -38,7 +36,6 @@ DashClaw is a **minimal governance runtime**, not an agent platform. We do not p
 ```bash
 npm run dev
 npm run lint
-npm run governance:boundary:check  # Enforce runtime boundary
 npm run openapi:check              # Detect API contract drift
 ```
 
@@ -127,3 +124,12 @@ Before completing any code modification task, verify:
 - Generate docs: `npx gitnexus wiki`
 
 <!-- gitnexus:end -->
+
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current

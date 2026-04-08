@@ -61,7 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/e2e-tests-studio/SKILL.md`](.claude/skills/e2e-tests-studio/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/mastra-docs/SKILL.md`](.claude/skills/mastra-docs/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/mastracode-smoke-test/SKILL.md`](.claude/skills/mastracode-smoke-test/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/mastra-smoke-test/SKILL.md`](.claude/skills/mastra-smoke-test/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/ralph-plan/SKILL.md`](.claude/skills/ralph-plan/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/react-best-practices/SKILL.md`](.claude/skills/react-best-practices/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/smoke-test/SKILL.md`](.claude/skills/smoke-test/SKILL.md) |

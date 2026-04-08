@@ -171,7 +171,10 @@ Switch models with one CloudFormation parameter — no code changes:
 |-------|---------------------------|----------|
 | **Nova 2 Lite** (default) | $0.30 / $2.50 | Everyday tasks, 90% cheaper than Claude |
 | Nova Pro | $0.80 / $3.20 | Balanced performance, multimodal |
+| Claude Opus 4.6 | $15.00 / $75.00 | Most capable, complex agentic tasks |
+| Claude Opus 4.5 | $15.00 / $75.00 | Deep analysis, extended thinking |
 | Claude Sonnet 4.5 | $3.00 / $15.00 | Complex reasoning, coding |
+| Claude Sonnet 4 | $3.00 / $15.00 | Reliable coding and analysis |
 | Claude Haiku 4.5 | $1.00 / $5.00 | Fast and efficient |
 | DeepSeek R1 | $0.55 / $2.19 | Open-source reasoning |
 | Llama 3.3 70B | — | Open-source alternative |
@@ -347,7 +350,7 @@ Uses SiliconFlow (DeepSeek, Qwen, GLM) instead of Bedrock. Requires a SiliconFlo
 | **cn-north-1 (Beijing)** | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://cn-north-1.console.amazonaws.cn/cloudformation/home?region=cn-north-1#/stacks/create/review?stackName=openclaw-china&templateURL=https://sharefile-jiade.s3.cn-northwest-1.amazonaws.com.cn/clawdbot-china.yaml) |
 | **cn-northwest-1 (Ningxia)** | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://cn-northwest-1.console.amazonaws.cn/cloudformation/home?region=cn-northwest-1#/stacks/create/review?stackName=openclaw-china&templateURL=https://sharefile-jiade.s3.cn-northwest-1.amazonaws.com.cn/clawdbot-china.yaml) |
 
-**[→ China Deployment Guide (中国区部署指南)](DEPLOYMENT_CN.md)**
+**[→ China Deployment Guide (中国区部署指南)](docs/DEPLOYMENT_CHINA_REGION.md)**
 
 ---
 

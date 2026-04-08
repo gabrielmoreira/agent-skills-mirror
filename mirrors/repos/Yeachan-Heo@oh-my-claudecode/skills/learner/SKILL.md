@@ -109,7 +109,7 @@ This classification ensures expertise can be updated independently without desta
 
 ### Step 4: Save Location
 
-- **User-level**: ~/.claude/skills/omc-learned/ - Rare. Only for truly portable insights.
+- **User-level**: ${CLAUDE_CONFIG_DIR:-~/.claude}/skills/omc-learned/ - Rare. Only for truly portable insights.
 - **Project-level**: .omc/skills/ - Default. Version-controlled with repo.
 
 ### Skill Body Template

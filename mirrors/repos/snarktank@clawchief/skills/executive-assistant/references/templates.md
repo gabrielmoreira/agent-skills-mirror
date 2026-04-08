@@ -1,11 +1,11 @@
-# Reply templates
+# Templates
 
 ## Offer times
 
 ```text
 Hi NAME,
 
-Here are a few times that work for {{OWNER_NAME}}:
+Here are a few times that work for Ryan:
 - OPTION 1
 - OPTION 2
 - OPTION 3
@@ -13,7 +13,7 @@ Here are a few times that work for {{OWNER_NAME}}:
 If one of those works, reply with your preference and I’ll send the invite.
 If not, send a couple of windows that do work for you.
 
-— {{ASSISTANT_NAME}}
+— R2
 ```
 
 ## Acknowledge and schedule now
@@ -22,22 +22,16 @@ If not, send a couple of windows that do work for you.
 Thanks, NAME — I’ll go ahead and schedule it for OPTION and send the calendar invite now.
 ```
 
-## Short follow-up
+## Confirm after creating the invite
 
 ```text
-Hi NAME,
-
-Following up on the note below in case it got buried.
-
-If you'd like to move this forward, just reply here and I’ll take care of the next step.
-
-— {{ASSISTANT_NAME}}
+Done — I’ve sent the calendar invite.
 ```
 
-## Holding reply
+## Short holding reply
 
 ```text
-Thanks — got it. I’m checking this and will get back to you shortly.
+Thanks — got it. I’m checking with Ryan and will get back to you shortly.
 ```
 
 ## Cancellation
@@ -47,10 +41,10 @@ Hi NAME,
 
 We need to cancel this meeting. I’ve canceled the calendar invite.
 
-— {{ASSISTANT_NAME}}
+— R2
 ```
 
-## Principal update
+## Ryan Slack update
 
 ```text
 You have a message from NAME about TOPIC. My take: RECOMMENDATION. Deadline / urgency: TIMEFRAME.

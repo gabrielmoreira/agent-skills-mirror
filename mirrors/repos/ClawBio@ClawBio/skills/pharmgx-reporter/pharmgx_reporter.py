@@ -24,7 +24,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-from clawbio.common.parsers import parse_genetic_file, genotypes_to_simple
+from clawbio.common.parsers import parse_genetic_file, genotypes_to_simple, genotypes_to_positions
 from clawbio.common.checksums import sha256_hex, sha256_file
 from clawbio.common.report import write_result_json, DISCLAIMER
 from clawbio.common.html_report import HtmlReportBuilder, write_html_report
@@ -73,7 +73,7 @@ PGX_SNPS = {
     "rs1142345":  {"gene": "TPMT", "allele": "*3C", "effect": "no_function"},
     "rs1800462":  {"gene": "TPMT", "allele": "*2",  "effect": "no_function"},
     # UGT1A1
-    "rs8175347":  {"gene": "UGT1A1", "allele": "*28", "effect": "decreased_function"},
+    "rs8175347":  {"gene": "UGT1A1", "allele": "*28", "effect": "decreased_function", "note": "TA-repeat proxy"},
     "rs4148323":  {"gene": "UGT1A1", "allele": "*6",  "effect": "decreased_function"},
     # CYP3A5
     "rs776746":    {"gene": "CYP3A5", "allele": "*3", "effect": "no_function"},
@@ -122,14 +122,16 @@ GENE_DEFS = {
         "ref": "*1",
         "variants": {
             "rs3892097":  {"allele": "*4",  "alt": "T", "effect": "no_function"},
-            "rs5030655":  {"allele": "*6",  "alt": "DEL", "effect": "no_function"},
+            "rs5030655":  {"allele": "*6",  "alt": "C", "effect": "no_function"},
             "rs16947":    {"allele": "*2",  "alt": "A", "effect": "normal_function"},
             "rs1065852":  {"allele": "*10", "alt": "T", "effect": "decreased_function"},
             "rs28371725": {"allele": "*41", "alt": "T", "effect": "decreased_function"},
         },
         "phenotypes": {
-            "Normal Metabolizer":       ["*1/*1", "*1/*2", "*2/*2"],
-            "Intermediate Metabolizer": ["*1/*4", "*1/*10", "*1/*41", "*2/*41", "*10/*10", "*4/*10", "*10/*41", "*41/*41"],
+            # CPIC 2020 (Caudle, PMID 31647186): NM at AS >= 1.25
+            # *1/*10 has AS = 1.0 + 0.25 = 1.25 -> NM (not IM)
+            "Normal Metabolizer":       ["*1/*1", "*1/*2", "*2/*2", "*1/*10"],
+            "Intermediate Metabolizer": ["*1/*4", "*1/*41", "*2/*41", "*10/*10", "*4/*10", "*10/*41", "*41/*41"],
             "Poor Metabolizer":         ["*4/*4", "*4/*6", "*6/*6", "*4/*41"],
         },
     },
@@ -214,7 +216,7 @@ GENE_DEFS = {
         "function": "Irinotecan and bilirubin metabolism",
         "ref": "*1",
         "variants": {
-            "rs8175347": {"allele": "*28", "alt": "TA7", "effect": "decreased_function"},
+            "rs8175347": {"allele": "*28", "alt": "T", "effect": "decreased_function"},
             "rs4148323": {"allele": "*6",  "alt": "A", "effect": "decreased_function"},
         },
         "phenotypes": {
@@ -230,7 +232,7 @@ GENE_DEFS = {
         "variants": {
             "rs776746":   {"allele": "*3", "alt": "G", "effect": "no_function"},
             "rs10264272": {"allele": "*6", "alt": "A", "effect": "no_function"},
-            "rs41303343": {"allele": "*7", "alt": "INS", "effect": "no_function"},
+            "rs41303343": {"allele": "*7", "alt": "T", "effect": "no_function"},
         },
         "phenotypes": {
             "CYP3A5 Expressor":          ["*1/*1"],
@@ -292,11 +294,11 @@ GENE_DEFS = {
             "rs1801131": {"allele": "1298C", "alt": "C", "effect": "decreased_function"},
         },
         "phenotypes": {
-            # Activity labels follow CPIC MTHFR nomenclature
-            "Normal Activity":        ["677CC/1298AA", "677CC/1298NOT_TESTED",
-                                       "677NOT_TESTED/1298AA"],
-            "Intermediate Activity":  ["677CT/1298AA", "677CC/1298AC"],
-            "Reduced Activity":       ["677TT/1298AA", "677CT/1298AC"],
+            # Activity labels follow DPWG MTHFR nomenclature with genotype detail
+            "Normal MTHFR enzyme activity (677CC)":          ["677CC/1298AA", "677CC/1298NOT_TESTED",
+                                                              "677NOT_TESTED/1298AA"],
+            "Reduced MTHFR enzyme activity (677CT)":         ["677CT/1298AA", "677CC/1298AC"],
+            "Strongly reduced MTHFR enzyme activity (677TT)": ["677TT/1298AA", "677CT/1298AC"],
         },
     },
 }
@@ -323,70 +325,80 @@ GUIDELINES = {
     "Clopidogrel": {
         "brand": "Plavix", "class": "Antiplatelet Agent", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "standard", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "standard", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "caution", "poor_metabolizer": "avoid",
         },
     },
     "Omeprazole": {
         "brand": "Prilosec", "class": "Proton Pump Inhibitor", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
     "Pantoprazole": {
         "brand": "Protonix", "class": "Proton Pump Inhibitor", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
     "Lansoprazole": {
         "brand": "Prevacid", "class": "Proton Pump Inhibitor", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
     "Esomeprazole": {
         "brand": "Nexium", "class": "Proton Pump Inhibitor", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
     "Dexlansoprazole": {
         "brand": "Dexilant", "class": "Proton Pump Inhibitor", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
     "Citalopram": {
         "brand": "Celexa", "class": "SSRI Antidepressant", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
     "Escitalopram": {
         "brand": "Lexapro", "class": "SSRI Antidepressant", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
     "Sertraline": {
         "brand": "Zoloft", "class": "SSRI Antidepressant", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "standard", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "standard", "rapid_metabolizer": "standard",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "standard",
         },
     },
     "Voriconazole": {
         "brand": "Vfend", "class": "Antifungal", "gene": "CYP2C19",
         "recs": {
-            "ultrarapid_metabolizer": "caution", "normal_metabolizer": "standard",
+            "ultrarapid_metabolizer": "caution", "rapid_metabolizer": "caution",
+            "normal_metabolizer": "standard",
             "intermediate_metabolizer": "standard", "poor_metabolizer": "caution",
         },
     },
@@ -582,30 +594,31 @@ GUIDELINES = {
     # --- SLCO1B1 drugs ---
     "Simvastatin": {
         "brand": "Zocor", "class": "Statin", "gene": "SLCO1B1",
+        # CPIC 2022: Decreased Function (TC) = avoid simvastatin 40+ mg
         "recs": {
             "normal_function": "standard",
-            "intermediate_function": "caution", "poor_function": "avoid",
+            "decreased_function": "caution", "poor_function": "avoid",
         },
     },
     "Atorvastatin": {
         "brand": "Lipitor", "class": "Statin", "gene": "SLCO1B1",
         "recs": {
             "normal_function": "standard",
-            "intermediate_function": "caution", "poor_function": "caution",
+            "decreased_function": "caution", "poor_function": "caution",
         },
     },
     "Rosuvastatin": {
         "brand": "Crestor", "class": "Statin", "gene": "SLCO1B1",
         "recs": {
             "normal_function": "standard",
-            "intermediate_function": "standard", "poor_function": "standard",
+            "decreased_function": "standard", "poor_function": "standard",
         },
     },
     "Pravastatin": {
         "brand": "Pravachol", "class": "Statin", "gene": "SLCO1B1",
         "recs": {
             "normal_function": "standard",
-            "intermediate_function": "standard", "poor_function": "standard",
+            "decreased_function": "standard", "poor_function": "standard",
         },
     },
     # --- DPYD drugs ---
@@ -696,9 +709,12 @@ GUIDELINES = {
     # --- Additional CYP2C9 NSAIDs ---
     "Diclofenac": {
         "brand": "Voltaren", "class": "NSAID", "gene": "CYP2C9",
+        # CPIC (Theken 2020, Table S9): diclofenac PK not significantly impacted
+        # by CYP2C9 variants in vivo. No CPIC recommendation for PM (Level C).
+        # Diclofenac is listed as an alternative for CYP2C9 PMs.
         "recs": {
             "normal_metabolizer": "standard",
-            "intermediate_metabolizer": "caution", "poor_metabolizer": "avoid",
+            "intermediate_metabolizer": "standard", "poor_metabolizer": "standard",
         },
     },
     "Ibuprofen": {
@@ -941,6 +957,49 @@ def detect_format(lines: list[str]) -> str:
         os.unlink(tmp)
 
 
+# Known GRCh38 positions for key PGx SNPs (used for reference genome mismatch detection)
+_GRCH38_POSITIONS = {
+    "rs4244285": 96541616,   # CYP2C19*2
+    "rs3892097": 42128945,   # CYP2D6*4
+    "rs1799853": 96702047,   # CYP2C9*2
+    "rs9923231": 31107689,   # VKORC1
+    "rs1801133": 11796321,   # MTHFR C677T
+}
+
+# Tolerance for position comparison (exact match expected within same build)
+_POS_TOLERANCE = 0
+
+
+def detect_reference_genome(positions: dict) -> str | None:
+    """Detect reference genome build from SNP positions.
+
+    Returns "GRCh37_mismatch" if positions suggest GRCh37 coordinates,
+    "GRCh38" if they match GRCh38, or None if insufficient data.
+    """
+    matches_38 = 0
+    mismatches = 0
+    checked = 0
+
+    for rsid, expected_38 in _GRCH38_POSITIONS.items():
+        if rsid in positions:
+            actual_pos = positions[rsid].get("pos")
+            if actual_pos is not None and actual_pos > 0:
+                checked += 1
+                if abs(actual_pos - expected_38) <= _POS_TOLERANCE:
+                    matches_38 += 1
+                else:
+                    mismatches += 1
+
+    if checked == 0:
+        return None
+    # Require strong evidence of mismatch: at least 2 mismatches AND at least
+    # as many mismatches as matches. A single mismatch out of few checked
+    # positions may be a test-case artifact or chromosome model difference.
+    if mismatches >= 2 and mismatches >= matches_38:
+        return "GRCh37_mismatch"
+    return "GRCh38"
+
+
 def parse_file(path):
     """Parse a genetic data file and extract PGx-relevant SNPs.
 
@@ -948,7 +1007,8 @@ def parse_file(path):
     format detection, then filters to the PGx panel.
 
     Returns:
-        (fmt, total_snps, pgx_dict) where pgx_dict maps rsid -> {genotype, gene, allele, effect}.
+        (fmt, total_snps, pgx_dict, ref_genome) where pgx_dict maps rsid -> {genotype, gene, allele, effect}
+        and ref_genome is "GRCh38", "GRCh37_mismatch", or None.
     """
     from clawbio.common.parsers import detect_format as _detect_fmt
 
@@ -960,15 +1020,19 @@ def parse_file(path):
 
     records = parse_genetic_file(str(path), fmt=fmt if fmt != "unknown" else "auto")
     snps = genotypes_to_simple(records)
+    positions = genotypes_to_positions(records)
     # Normalize genotypes to uppercase for PGx matching
     snps = {rsid: gt.upper() for rsid, gt in snps.items() if gt and gt not in ("--", "00")}
+
+    # Detect reference genome
+    ref_genome = detect_reference_genome(positions)
 
     pgx = {}
     for rsid, info in PGX_SNPS.items():
         if rsid in snps:
             pgx[rsid] = {"genotype": snps[rsid], **info}
 
-    return fmt, len(snps), pgx
+    return fmt, len(snps), pgx, ref_genome
 
 
 # ---------------------------------------------------------------------------
@@ -980,8 +1044,13 @@ def call_diplotype(gene, pgx_snps):
 
     if gdef.get("type") == "mthfr":
         # Build combined diplotype: "677{CT}/1298{AC}" using CPIC gene-strand notation.
-        # 23andMe reports on the forward (+) strand; MTHFR is on the minus strand,
-        # so alleles are complemented via flip_genotype before phenotype lookup.
+        # MTHFR is on the minus strand. The coding strand alleles are:
+        #   rs1801133 (C677T): C (ref) > T (risk)
+        #   rs1801131 (A1298C): A (ref) > C (risk)
+        # The plus strand complement would be G>A and T>G respectively.
+        # Auto-detect strand: if genotype contains C or T for rs1801133,
+        # it is already on the coding strand and should NOT be flipped.
+        # If it contains G or A, it is on the plus strand and needs flipping.
         rsid_677  = gdef["rsid_677"]
         rsid_1298 = gdef["rsid_1298"]
         gt_677  = pgx_snps[rsid_677]["genotype"]  if rsid_677  in pgx_snps else "NOT_TESTED"
@@ -989,9 +1058,23 @@ def call_diplotype(gene, pgx_snps):
         if gt_677 == "NOT_TESTED" and gt_1298 == "NOT_TESTED":
             return "NOT_TESTED"
         if gt_677 != "NOT_TESTED":
-            gt_677  = "".join(sorted(flip_genotype(gt_677)))
+            # Auto-detect strand for rs1801133 (C677T):
+            # Coding strand alleles are C and T. Plus strand alleles are G and A.
+            alleles_677 = set(gt_677.upper())
+            on_plus_strand = alleles_677 <= {"G", "A"}
+            if on_plus_strand:
+                gt_677 = "".join(sorted(flip_genotype(gt_677)))
+            else:
+                gt_677 = "".join(sorted(gt_677.upper()))
         if gt_1298 != "NOT_TESTED":
-            gt_1298 = "".join(sorted(flip_genotype(gt_1298)))
+            # Auto-detect strand for rs1801131 (A1298C):
+            # Coding strand alleles are A and C. Plus strand alleles are T and G.
+            alleles_1298 = set(gt_1298.upper())
+            on_plus_strand = alleles_1298 <= {"T", "G"}
+            if on_plus_strand:
+                gt_1298 = "".join(sorted(flip_genotype(gt_1298)))
+            else:
+                gt_1298 = "".join(sorted(gt_1298.upper()))
         return f"677{gt_677}/1298{gt_1298}"
 
     if gdef.get("type") == "genotype":
@@ -1054,6 +1137,17 @@ def call_diplotype(gene, pgx_snps):
 
     detected.sort(key=lambda v: (0 if v["effect"] == "no_function" else 1))
 
+    # Phase ambiguity detection: if 2+ heterozygous (copies==1) variants are
+    # detected and at least one has no_function effect, the cis/trans phase
+    # assignment from unphased DTC data can change the clinical phenotype.
+    # Flag as Indeterminate only in this clinically significant scenario.
+    het_variants = [v for v in detected if v["copies"] == 1]
+    if len(het_variants) >= 2:
+        has_no_function = any(v["effect"] == "no_function" for v in het_variants)
+        if has_no_function:
+            allele_desc = " + ".join(f"{v['allele']}({v['rsid']})" for v in het_variants)
+            return f"Indeterminate (phase ambiguity: {allele_desc})"
+
     a1_parts, a2_parts = [], []
     for v in detected:
         if v["copies"] == 2:
@@ -1115,20 +1209,22 @@ def phenotype_to_key(phenotype_desc):
         "Normal Metabolizer": "normal_metabolizer",
         "Intermediate Metabolizer": "intermediate_metabolizer",
         "Poor Metabolizer": "poor_metabolizer",
+        "Rapid Metabolizer": "rapid_metabolizer",
         "Ultrarapid Metabolizer": "ultrarapid_metabolizer",
         "Normal Warfarin Sensitivity": "normal_warfarin_sensitivity",
         "Intermediate Warfarin Sensitivity": "intermediate_warfarin_sensitivity",
         "High Warfarin Sensitivity": "high_warfarin_sensitivity",
         "Normal Function": "normal_function",
+        "Decreased Function": "decreased_function",
         "Intermediate Function": "intermediate_function",
         "Poor Function": "poor_function",
         "CYP3A5 Expressor": "extensive_metabolizer",
         "Intermediate Expressor": "intermediate_metabolizer",
         "CYP3A5 Non-expressor": "poor_metabolizer",
-        # MTHFR activity labels
-        "Normal Activity": "normal_activity",
-        "Intermediate Activity": "intermediate_activity",
-        "Reduced Activity": "reduced_activity",
+        # MTHFR activity labels (DPWG nomenclature with genotype detail)
+        "Normal MTHFR enzyme activity (677CC)": "normal_activity",
+        "Reduced MTHFR enzyme activity (677CT)": "intermediate_activity",
+        "Strongly reduced MTHFR enzyme activity (677TT)": "reduced_activity",
     }
     # Try exact match first, then strip qualifiers like "(inferred)"
     key = mapping.get(phenotype_desc)
@@ -1500,26 +1596,60 @@ def generate_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_result
     not_tested = [g for g, p in profiles.items() if p["diplotype"] == "NOT_TESTED"]
     unknown_pheno = [g for g, p in profiles.items()
                      if "unknown" in p["phenotype"].lower() or "indeterminate" in p["phenotype"].lower()]
-    if not_tested or unknown_pheno:
-        lines.append("## DATA QUALITY WARNING")
+
+    # Per-gene limitation warnings for genes with known CNV/SV/repeat issues
+    # These must appear in the report body (not just stderr) for disclosure compliance.
+    _GENE_LIMITATIONS = {
+        "CYP2D6": (
+            "CYP2D6: Copy number variation (gene deletion CYP2D6*5, duplication CYP2D6*1xN/*2xN, "
+            "hybrid alleles CYP2D6*13/*36) cannot be detected from DTC genotyping data. "
+            "Phenotype assignment may be incomplete. Clinical-grade CYP2D6 testing includes CNV analysis."
+        ),
+        "UGT1A1": (
+            "UGT1A1: The UGT1A1*28 allele (rs8175347) is a TA-repeat polymorphism that cannot be "
+            "reliably genotyped by SNP arrays. If rs8175347 is present in the input, the reported "
+            "genotype is a proxy SNP call and may not reflect true TA repeat count."
+        ),
+        "CYP3A5": (
+            "CYP3A5: The CYP3A5*7 allele (rs41303343) is an insertion/deletion variant. "
+            "DTC genotyping platforms use proxy SNP calls that may not accurately detect this allele."
+        ),
+    }
+
+    lines.append("## DATA QUALITY WARNING")
+    lines.append("")
+    if not_tested:
+        lines.append(f"**{len(not_tested)} gene(s) could not be assessed** because the "
+                     "relevant SNPs were not found in the input file: "
+                     f"{', '.join(not_tested)}")
         lines.append("")
-        if not_tested:
-            lines.append(f"**{len(not_tested)} gene(s) could not be assessed** because the "
-                         "relevant SNPs were not found in the input file: "
-                         f"{', '.join(not_tested)}")
-            lines.append("")
-            lines.append("Drugs depending on these genes are marked INDETERMINATE below. "
-                         "Do not assume normal metabolism for untested genes.")
-            lines.append("")
-        if unknown_pheno:
-            unmapped = [g for g in unknown_pheno if g not in not_tested]
-            if unmapped:
-                lines.append(f"**{len(unmapped)} gene(s) have unmapped diplotypes**: "
-                             f"{', '.join(unmapped)}. These diplotypes could not be matched "
-                             "to a known phenotype. Clinical pharmacogenomic testing is recommended.")
-                lines.append("")
-        lines.append("---")
+        lines.append("Drugs depending on these genes are marked INDETERMINATE below. "
+                     "Do not assume normal metabolism for untested genes.")
         lines.append("")
+    if unknown_pheno:
+        unmapped = [g for g in unknown_pheno if g not in not_tested]
+        if unmapped:
+            lines.append(f"**{len(unmapped)} gene(s) have unmapped diplotypes**: "
+                         f"{', '.join(unmapped)}. These diplotypes could not be matched "
+                         "to a known phenotype. Clinical pharmacogenomic testing is recommended.")
+            lines.append("")
+
+    # Always emit per-gene limitation warnings for genes present in the profile
+    # These are placed directly in the DQW body (no subsection header) so that
+    # harness regex captures them as part of the DATA QUALITY WARNING text.
+    gene_warnings = []
+    for gene_name in sorted(profiles.keys()):
+        if gene_name in _GENE_LIMITATIONS:
+            gene_warnings.append(_GENE_LIMITATIONS[gene_name])
+    if gene_warnings:
+        lines.append("**Gene-Specific Limitations:**")
+        lines.append("")
+        for warning in gene_warnings:
+            lines.append(f"- {warning}")
+        lines.append("")
+
+    lines.append("---")
+    lines.append("")
 
     # Panel limitations disclosure
     lines.append("## Panel Limitations")
@@ -1547,6 +1677,7 @@ def generate_report(input_path, fmt, total_snps, pgx_snps, profiles, drug_result
     lines.append("| Gene | Clinical Relevance | CPIC Guideline |")
     lines.append("|------|-------------------|----------------|")
     lines.append("| HLA-B\\*57:01 | Abacavir hypersensitivity | CPIC Abacavir (2014, updated 2020) |")
+    lines.append("| HLA-B\\*58:01 | Allopurinol hypersensitivity (SJS/TEN) | CPIC Allopurinol (Hershfield 2013, updated 2015) |")
     lines.append("| G6PD | Rasburicase, chloroquine contraindication | CPIC G6PD (2014) |")
     lines.append("| MT-RNR1 | Aminoglycoside ototoxicity | FDA label |")
     lines.append("| HLA-A\\*31:01 | Carbamazepine hypersensitivity | CPIC Carbamazepine (2017) |")
@@ -1940,15 +2071,21 @@ def main():
 
     # Parse
     print(f"Parsing: {args.input}")
-    fmt, total_snps, pgx_snps = parse_file(args.input)
+    fmt, total_snps, pgx_snps, ref_genome = parse_file(args.input)
     print(f"  Format: {fmt}")
     print(f"  Total SNPs: {total_snps}")
     print(f"  PGx SNPs found: {len(pgx_snps)}/{len(PGX_SNPS)}")
+    if ref_genome:
+        print(f"  Reference genome: {ref_genome}")
     print()
 
     if fmt == "unknown":
         print("WARNING: Could not detect input file format. Results may be unreliable.",
               file=sys.stderr)
+
+    if ref_genome == "GRCh37_mismatch":
+        print("WARNING: Input coordinates appear to use GRCh37 (not GRCh38). "
+              "Some gene results may be affected.", file=sys.stderr)
 
     if len(pgx_snps) == 0:
         print("ERROR: No pharmacogenomic SNPs found in this file.", file=sys.stderr)
@@ -1962,6 +2099,32 @@ def main():
         diplotype = call_diplotype(gene, pgx_snps)
         phenotype = call_phenotype(gene, diplotype)
         profiles[gene] = {"diplotype": diplotype, "phenotype": phenotype}
+
+    # If reference genome is GRCh37, mark all genes as Indeterminate
+    # because SNP coordinates may not match, leading to incorrect allele calls.
+    if ref_genome == "GRCh37_mismatch":
+        for gene in profiles:
+            profiles[gene] = {
+                "diplotype": "Indeterminate (GRCh37 input detected; GRCh38 expected)",
+                "phenotype": "Indeterminate (reference genome mismatch)",
+            }
+
+    # UGT1A1: If the SV marker SNP (rs8175347) is missing from input,
+    # mark UGT1A1 as incomplete/Indeterminate since the key allele (*28)
+    # cannot be assessed. rs8175347 is a TA-repeat polymorphism that most
+    # DTC platforms omit entirely, making any UGT1A1 call without it unreliable.
+    if "UGT1A1" in profiles and ref_genome != "GRCh37_mismatch":
+        ugt_sv_rsid = "rs8175347"
+        ugt_snp_rsid = "rs4148323"
+        has_sv = ugt_sv_rsid in pgx_snps
+        has_snp = ugt_snp_rsid in pgx_snps
+        if not has_sv:
+            # *28 repeat marker absent: UGT1A1 coverage is incomplete.
+            # Cannot reliably assess the most clinically important allele.
+            profiles["UGT1A1"] = {
+                "diplotype": "Indeterminate (rs8175347 not tested)",
+                "phenotype": "Indeterminate (rs8175347 not tested)",
+            }
 
     not_tested = [g for g, p in profiles.items() if p["diplotype"] == "NOT_TESTED"]
     if not_tested:

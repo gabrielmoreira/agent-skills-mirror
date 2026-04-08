@@ -73,6 +73,7 @@ packages/
   plan/                   → @ifi/pi-plan (raw .ts planning mode extension)
   spec/                   → @ifi/pi-spec (raw .ts spec-driven workflow package)
   cursor/                 → @ifi/pi-provider-cursor (raw .ts experimental Cursor provider package)
+  ollama/                 → @ifi/pi-provider-ollama-cloud (raw .ts experimental Ollama Cloud provider package)
   oh-pi/                  → @ifi/oh-pi (installer CLI: `npx @ifi/oh-pi`)
 ```
 

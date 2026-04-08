@@ -85,6 +85,7 @@ MODE="ralplan"  # <-- replace with the target mode
 if [ -n "$SESSION_ID" ] && [ -d "$OMC_STATE/sessions/$SESSION_ID" ]; then
   rm -f "$OMC_STATE/sessions/$SESSION_ID/${MODE}-state.json"
   rm -f "$OMC_STATE/sessions/$SESSION_ID/${MODE}-stop-breaker.json"
+  rm -f "$OMC_STATE/sessions/$SESSION_ID/skill-active-state.json"
   # Write cancel signal so stop hook detects cancellation in progress
   NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   EXPIRES_ISO="$(date -u -d "+30 seconds" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || python3 - <<'PY'\nfrom datetime import datetime, timedelta, timezone\nprint((datetime.now(timezone.utc) + timedelta(seconds=30)).strftime('%Y-%m-%dT%H:%M:%SZ'))\nPY\n)"
@@ -197,18 +198,18 @@ Use force mode to clear every session plus legacy artifacts via `state_clear`. D
 
 #### If Team Active (Claude Code native)
 
-Teams are detected by checking for config files in `~/.claude/teams/`:
+Teams are detected by checking for config files in `${CLAUDE_CONFIG_DIR:-~/.claude}/teams/`:
 
 ```bash
 # Check for active teams
-TEAM_CONFIGS=$(find ~/.claude/teams -name config.json -maxdepth 2 2>/dev/null)
+TEAM_CONFIGS=$(find "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/teams -name config.json -maxdepth 2 2>/dev/null)
 ```
 
 **Two-pass cancellation protocol:**
 
 **Pass 1: Graceful Shutdown**
 ```
-For each team found in ~/.claude/teams/:
+For each team found in ${CLAUDE_CONFIG_DIR:-~/.claude}/teams/:
   1. Read config.json to get team_name and members list
   2. For each non-lead member:
      a. Send shutdown_request via SendMessage
@@ -267,7 +268,7 @@ Team "{team_name}" cancelled:
 ```
 
 **Implementation note:** The cancel skill is executed by the LLM, not as a bash script. When you detect an active team:
-1. Read `~/.claude/teams/*/config.json` to find active teams
+1. Read `${CLAUDE_CONFIG_DIR:-~/.claude}/teams/*/config.json` to find active teams
 2. If multiple teams exist, cancel oldest first (by `createdAt`)
 3. For each non-lead member, call `SendMessage(type: "shutdown_request", recipient: member-name, content: "Cancelling")`
 4. Wait briefly for shutdown responses (15s per member timeout)

@@ -528,14 +528,18 @@ bash deploy.sh --skip-build   # update infra only, skip Docker build
 bash deploy.sh --skip-seed    # update infra + image, skip DynamoDB
 ```
 
-**What `deploy.sh` does automatically:**
+**What `deploy.sh` does automatically (end-to-end):**
 1. Deploys CloudFormation (EC2, ECR, S3, IAM — creates or updates)
 2. Packages source code → uploads to S3 → **triggers Docker build on the gateway EC2 via SSM** (ARM64 Graviton, no local Docker needed)
 3. Creates or updates AgentCore Runtime
 4. Creates DynamoDB table if it doesn't exist
 5. Seeds org data (employees, positions, departments, SOUL templates, knowledge docs)
 6. Stores `ADMIN_PASSWORD` and `JWT_SECRET` in SSM SecureString
-7. Configures the EC2 gateway via SSM
+7. Builds Admin Console frontend → packages → deploys to EC2 via SSM
+8. Deploys Gateway services (Tenant Router, Bedrock H2 Proxy) to EC2
+9. Writes `/etc/openclaw/env` with all required variables (`STACK_NAME`, `DYNAMODB_TABLE`, `DYNAMODB_REGION`, ECS config, etc.)
+10. Configures systemd services and starts all components
+11. Adds ECS→SSM VPC endpoint security group rule (if VPC endpoints exist)
 
 After deployment, get the instance ID and S3 bucket:
 
@@ -587,13 +591,13 @@ aws bedrock-agentcore-control update-agent-runtime \
   --region $REGION
 ```
 
-> The standard agent image (`openclaw-multitenancy-multitenancy-agent`) is built automatically by `deploy-multitenancy.sh`. You only need this step for the executive tier.
+> The standard agent image (`openclaw-multitenancy-multitenancy-agent`) is built automatically by `deploy.sh`. You only need this step for the executive tier.
 
 ### Step 2: DynamoDB Table
 
-> **`deploy.sh` handles this automatically.** The table is created if it doesn't exist, then seeded with org data in one step.
+> **`deploy.sh` handles this automatically.** No manual steps needed.
 
-To create or re-seed manually:
+<details><summary>Manual steps (only if not using deploy.sh)</summary>
 
 ```bash
 # Create table (idempotent — safe to run if it already exists)
@@ -610,9 +614,14 @@ aws dynamodb create-table \
   --region $DYNAMODB_REGION
 ```
 
+
+</details>
+
 ### Step 3: Seed Sample Organization
 
 > **`deploy.sh` handles this automatically.** To re-seed manually (e.g. after org changes):
+
+<details><summary>Manual seed commands</summary>
 
 ```bash
 cd enterprise/admin-console/server
@@ -634,7 +643,16 @@ python3 seed_all_workspaces.py        --bucket $S3_BUCKET --region $REGION
 python3 seed_knowledge_docs.py        --bucket $S3_BUCKET --region $REGION
 ```
 
-### Step 4: Deploy Admin Console
+
+</details>
+
+### Steps 4-5: Admin Console + Gateway Services
+
+> **`deploy.sh` handles Steps 4, 4.5, and 5 automatically.** It builds the Admin Console, deploys Gateway services, writes `/etc/openclaw/env`, and starts all systemd services.
+
+<details><summary>Manual steps (only if not using deploy.sh)</summary>
+
+**Step 4: Deploy Admin Console**
 
 ```bash
 cd enterprise/admin-console
@@ -653,7 +671,6 @@ aws ssm send-command --instance-ids $INSTANCE_ID --region $REGION \
     \"mkdir -p /opt/admin-console && tar xzf /tmp/admin-deploy.tar.gz -C /opt/admin-console\",
     \"chown -R ubuntu:ubuntu /opt/admin-console /opt/admin-venv\",
     \"chmod +x /opt/admin-console/start.sh\",
-    \"printf '[Unit]\\\\nDescription=OpenClaw Admin Console\\\\nAfter=network.target\\\\n[Service]\\\\nType=simple\\\\nUser=ubuntu\\\\nExecStart=/opt/admin-console/start.sh\\\\nRestart=always\\\\nRestartSec=5\\\\n[Install]\\\\nWantedBy=multi-user.target' > /etc/systemd/system/openclaw-admin.service\",
     \"systemctl daemon-reload && systemctl enable openclaw-admin && systemctl start openclaw-admin\"
   ]}"
 ```
@@ -662,57 +679,31 @@ Store secrets in SSM:
 ```bash
 aws ssm put-parameter --name "/openclaw/${STACK_NAME}/admin-password" \
   --value "<YOUR_PASSWORD>" --type SecureString --overwrite --region $REGION
-
 aws ssm put-parameter --name "/openclaw/${STACK_NAME}/jwt-secret" \
   --value "$(openssl rand -hex 32)" --type SecureString --overwrite --region $REGION
 ```
 
-### Step 4.5: Allow ECS Tasks to Reach SSM VPC Endpoint
-
-If your stack has SSM VPC endpoints (created when `CreateVPCEndpoints=true`), the always-on ECS Fargate tasks need permission to reach them. This is a one-time manual step because the SSM endpoint security group is not managed by this stack's CloudFormation template.
+**Step 5: Deploy Gateway Services**
 
 ```bash
-# Get the SSM endpoint security group
-SSM_ENDPOINT_SG=$(aws ec2 describe-vpc-endpoints --region $REGION \
-  --filters "Name=service-name,Values=com.amazonaws.${REGION}.ssm" \
-  --query 'VpcEndpoints[0].Groups[0].GroupId' --output text)
-
-ECS_TASK_SG=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION \
-  --query 'Stacks[0].Outputs[?OutputKey==`AlwaysOnTaskSecurityGroupId`].OutputValue' --output text)
-
-# Allow HTTPS from ECS tasks to SSM endpoint
-aws ec2 authorize-security-group-ingress \
-  --group-id $SSM_ENDPOINT_SG \
-  --protocol tcp --port 443 \
-  --source-group $ECS_TASK_SG \
-  --region $REGION
-```
-
-> Skip this step if you deployed with `CreateVPCEndpoints=false` (ECS tasks reach SSM over the internet directly).
-
-### Step 5: Deploy and Start Gateway Services
-
-```bash
-# Upload gateway files to S3 (run from repo root)
 aws s3 cp enterprise/gateway/tenant_router.py       "s3://${S3_BUCKET}/_deploy/tenant_router.py"
 aws s3 cp enterprise/gateway/bedrock_proxy_h2.js    "s3://${S3_BUCKET}/_deploy/bedrock_proxy_h2.js"
 aws s3 cp enterprise/gateway/bedrock-proxy-h2.service "s3://${S3_BUCKET}/_deploy/bedrock-proxy-h2.service"
 aws s3 cp enterprise/gateway/tenant-router.service  "s3://${S3_BUCKET}/_deploy/tenant-router.service"
 
-# Install gateway files on EC2 and start services
 aws ssm send-command --instance-ids $INSTANCE_ID --region $REGION \
   --document-name AWS-RunShellScript \
   --parameters "{\"commands\":[
-    \"mkdir -p /etc/openclaw && printf 'STACK_NAME=${STACK_NAME}\\nAWS_REGION=${REGION}\\nGATEWAY_INSTANCE_ID=${INSTANCE_ID}\\nECS_CLUSTER_NAME=${STACK_NAME}-always-on\\nECS_SUBNET_ID=$(aws cloudformation describe-stacks --stack-name ${STACK_NAME} --region ${REGION} --query Stacks[0].Outputs[?OutputKey==\\'AlwaysOnSubnetId\\'].OutputValue --output text)\\nECS_TASK_SG_ID=$(aws cloudformation describe-stacks --stack-name ${STACK_NAME} --region ${REGION} --query Stacks[0].Outputs[?OutputKey==\\'AlwaysOnTaskSecurityGroupId\\'].OutputValue --output text)\\n' > /etc/openclaw/env\",
     \"pip3 install boto3 requests\",
     \"aws s3 cp s3://${S3_BUCKET}/_deploy/tenant_router.py /home/ubuntu/tenant_router.py --region $REGION\",
     \"aws s3 cp s3://${S3_BUCKET}/_deploy/bedrock_proxy_h2.js /home/ubuntu/bedrock_proxy_h2.js --region $REGION\",
     \"aws s3 cp s3://${S3_BUCKET}/_deploy/bedrock-proxy-h2.service /etc/systemd/system/bedrock-proxy-h2.service --region $REGION\",
     \"aws s3 cp s3://${S3_BUCKET}/_deploy/tenant-router.service /etc/systemd/system/tenant-router.service --region $REGION\",
-    \"chown ubuntu:ubuntu /home/ubuntu/tenant_router.py /home/ubuntu/bedrock_proxy_h2.js\",
     \"systemctl daemon-reload && systemctl enable bedrock-proxy-h2 tenant-router && systemctl start bedrock-proxy-h2 tenant-router\"
   ]}"
 ```
+
+</details>
 
 ### Step 6: Access Admin Console
 

@@ -11,6 +11,8 @@ package. It matches the core algorithm but omits some advanced features
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 from .abf import _log_abf, DEFAULT_W
 
@@ -176,10 +178,15 @@ def run_susie(
         pip = np.zeros(p)
     pip = np.clip(pip, 0.0, 1.0)
 
-    # Non-convergent results: suppress PIPs to prevent downstream use of
-    # unreliable estimates. Return zeros with a warning.
+    # Non-convergent results: raise ValueError to prevent downstream use of
+    # unreliable estimates. This matches susieR behavior of warning AND
+    # setting $converged=FALSE. Raising ensures callers cannot silently
+    # consume non-converged PIPs.
     if not converged:
-        pip = np.zeros_like(pip)
+        raise ValueError(
+            f"SuSiE IBSS did not converge after {iteration + 1} iterations "
+            f"(tol={tol}). Increase max_iter or check input data quality."
+        )
 
     return {
         "alpha": alpha,

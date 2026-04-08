@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 44,
+  "skill_count": 46,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -283,6 +283,27 @@
       "chaining_partners": []
     },
     {
+      "name": "de-summary",
+      "cli_alias": null,
+      "description": "Summarise pre-computed differential expression results with ranked gene lists, biological themes, and publication-ready interpretation.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": false,
+      "has_tests": false,
+      "has_demo": false,
+      "demo_command": null,
+      "dependencies": [],
+      "tags": [
+        "transcriptomics",
+        "differential-expression",
+        "summary",
+        "interpretation",
+        "bulk-rna-seq"
+      ],
+      "trigger_keywords": [],
+      "chaining_partners": []
+    },
+    {
       "name": "diff-visualizer",
       "cli_alias": "diffviz",
       "description": "Rich downstream visualisation and reporting for bulk RNA-seq differential expression and scRNA marker/contrast outputs.",
@@ -522,6 +543,27 @@
         "profile-report",
         "gwas-lookup"
       ]
+    },
+    {
+      "name": "hla-typing",
+      "cli_alias": null,
+      "description": "HLA allele typing from WGS/WES VCF data",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/hla-typing/hla_typing.py --demo",
+      "dependencies": [
+        "pandas>=2.0"
+      ],
+      "tags": [
+        "allele",
+        "typing",
+        "from"
+      ],
+      "trigger_keywords": [],
+      "chaining_partners": []
     },
     {
       "name": "illumina-bridge",

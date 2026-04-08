@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 11 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,16 +60,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
-| 2 | ✓ | [`.claude/skills/api-development/SKILL.md`](.claude/skills/api-development/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/design/SKILL.md`](.claude/skills/design/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/doc-i18n/SKILL.md`](.claude/skills/doc-i18n/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/server-common-api_development/SKILL.md`](.claude/skills/server-common-api_development/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/system-pr_review/code-quality-standards.md`](.claude/skills/system-pr_review/code-quality-standards.md) |
-| 7 | ✓ | [`.claude/skills/system-pr_review/common-issues-checklist.md`](.claude/skills/system-pr_review/common-issues-checklist.md) |
-| 8 | ✓ | [`.claude/skills/system-pr_review/SKILL.md`](.claude/skills/system-pr_review/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/system-prompt_optimize/SKILL.md`](.claude/skills/system-prompt_optimize/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/system-test/SKILL.md`](.claude/skills/system-test/SKILL.md) |
-| 11 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 2 | ✓ | [`.claude/skills/add-permission/checklist.md`](.claude/skills/add-permission/checklist.md) |
+| 3 | ✓ | [`.claude/skills/add-permission/SKILL.md`](.claude/skills/add-permission/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/api-development/SKILL.md`](.claude/skills/api-development/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/design/SKILL.md`](.claude/skills/design/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/doc-i18n/SKILL.md`](.claude/skills/doc-i18n/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/server-common-api_development/SKILL.md`](.claude/skills/server-common-api_development/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/system-pr_review/code-quality-standards.md`](.claude/skills/system-pr_review/code-quality-standards.md) |
+| 9 | ✓ | [`.claude/skills/system-pr_review/common-issues-checklist.md`](.claude/skills/system-pr_review/common-issues-checklist.md) |
+| 10 | ✓ | [`.claude/skills/system-pr_review/SKILL.md`](.claude/skills/system-pr_review/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/system-prompt_optimize/SKILL.md`](.claude/skills/system-prompt_optimize/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/system-test/SKILL.md`](.claude/skills/system-test/SKILL.md) |
+| 13 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
 
 ---
 

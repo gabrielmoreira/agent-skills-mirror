@@ -1,20 +1,26 @@
+Use this file only when Ryan explicitly asks for alternate outreach copy. The default initial outreach automation now lives in `python3 ~/.openclaw/workspace/clawchief/scripts/bd_outreach.py`.
+
 ## Initial outreach email subject
 
-the founder asked me to reach out
+Ryan asked me to reach out
 
-## Initial outreach email to potential partners
+## Initial outreach email draft for Ryan to send manually to potential partners
 
 Hi {first-name},
 
-I’m the assistant to {{OWNER_NAME}}, the founder of {{BUSINESS_NAME}}. I was researching professionals in {{TARGET_MARKET}} in {{TARGET_GEOGRAPHY}}, came across your work, and passed your information along. {{OWNER_NAME}} asked me to reach out to see if you might be open to a brief introductory conversation.
+I came across your work while researching professionals in this space and wanted to reach out.
 
-{{BUSINESS_NAME}} helps people navigate a difficult process with clearer guidance and practical support. In some cases, our customers also want help from an experienced human professional, and we may be able to refer people your way when there’s a fit.
+Untangle uses AI built specifically for Connecticut divorce to help people understand the process, get questions answered, and complete forms correctly. In some cases, our customers want support from an experienced human professional to go deeper on certain issues, and we may be able to refer people your way when there’s a fit.
 
-If you’d be open to a 20-30 minute video call or coffee, I’d be happy to help set it up. No sales pitch — {{OWNER_NAME}} would simply love to connect, learn more about your work, and see whether there could be a mutual fit.
+I built Untangle after watching my two sisters go through very difficult divorces that were emotionally and financially exhausting. I wanted to create something that makes the process more accessible, affordable, and less overwhelming.
 
-All the best,
-{{ASSISTANT_NAME}}
+If you’d be open to a 20–30 minute video call or coffee, I’d love to connect, learn more about your work, and see whether there could be a mutual fit. No sales pitch.
 
-Assistant to {{OWNER_NAME}}
-{{BUSINESS_NAME}}
-{{BUSINESS_URL}}
+All the best,  
+Ryan Carson  
+CEO & Founder, Untangle  
+untangle.us
+
+## LinkedIn connection request note to potential partners
+
+Hi {first-name} - I think we might be able to send customers your way, so I wanted to connect. We guide our customers through Divorce in CT. Looking forward to chatting!

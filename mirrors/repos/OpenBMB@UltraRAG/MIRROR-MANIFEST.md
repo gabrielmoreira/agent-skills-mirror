@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OpenBMB/UltraRAG` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
+Mirror of `OpenBMB/UltraRAG` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OpenBMB/UltraRAG` — 26 default patterns, 0 followed patterns, 54 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 54 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,28 +91,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`prompt/qa_rag_boxed_wow.jinja`](prompt/qa_rag_boxed_wow.jinja) |
 | 31 | ✓ | [`prompt/qa_rag_boxed.jinja`](prompt/qa_rag_boxed.jinja) |
 | 32 | ✓ | [`prompt/qa_rag_citation.jinja`](prompt/qa_rag_citation.jinja) |
-| 33 | ✓ | [`prompt/qa_simple.jinja`](prompt/qa_simple.jinja) |
-| 34 | ✓ | [`prompt/r1_searcher_append.jinja`](prompt/r1_searcher_append.jinja) |
-| 35 | ✓ | [`prompt/r1_searcher_init.jinja`](prompt/r1_searcher_init.jinja) |
-| 36 | ✓ | [`prompt/RankCoT_knowledge_refinement.jinja`](prompt/RankCoT_knowledge_refinement.jinja) |
-| 37 | ✓ | [`prompt/RankCoT_question_answering.jinja`](prompt/RankCoT_question_answering.jinja) |
-| 38 | ✓ | [`prompt/search_o1_reasoning.jinja`](prompt/search_o1_reasoning.jinja) |
-| 39 | ✓ | [`prompt/search_o1_refinement.jinja`](prompt/search_o1_refinement.jinja) |
-| 40 | ✓ | [`prompt/search_r1_append.jinja`](prompt/search_r1_append.jinja) |
-| 41 | ✓ | [`prompt/search_r1_init.jinja`](prompt/search_r1_init.jinja) |
-| 42 | ✓ | [`prompt/surveycpm_extend_plan.jinja`](prompt/surveycpm_extend_plan.jinja) |
-| 43 | ✓ | [`prompt/surveycpm_init_plan.jinja`](prompt/surveycpm_init_plan.jinja) |
-| 44 | ✓ | [`prompt/surveycpm_search.jinja`](prompt/surveycpm_search.jinja) |
-| 45 | ✓ | [`prompt/surveycpm_write_citation.jinja`](prompt/surveycpm_write_citation.jinja) |
-| 46 | ✓ | [`prompt/surveycpm_write.jinja`](prompt/surveycpm_write.jinja) |
-| 47 | ✓ | [`prompt/visrag.jinja`](prompt/visrag.jinja) |
-| 48 | ✓ | [`prompt/webnote_fill_page_citation.jinja`](prompt/webnote_fill_page_citation.jinja) |
-| 49 | ✓ | [`prompt/webnote_fill_page.jinja`](prompt/webnote_fill_page.jinja) |
-| 50 | ✓ | [`prompt/webnote_gen_answer.jinja`](prompt/webnote_gen_answer.jinja) |
-| 51 | ✓ | [`prompt/webnote_gen_plan.jinja`](prompt/webnote_gen_plan.jinja) |
-| 52 | ✓ | [`prompt/webnote_gen_report.jinja`](prompt/webnote_gen_report.jinja) |
-| 53 | ✓ | [`prompt/webnote_gen_subq.jinja`](prompt/webnote_gen_subq.jinja) |
-| 54 | ✓ | [`prompt/webnote_init_page.jinja`](prompt/webnote_init_page.jinja) |
+| 33 | ✓ | [`prompt/qa_rag_with_memory.jinja`](prompt/qa_rag_with_memory.jinja) |
+| 34 | ✓ | [`prompt/qa_simple.jinja`](prompt/qa_simple.jinja) |
+| 35 | ✓ | [`prompt/qa_with_memory.jinja`](prompt/qa_with_memory.jinja) |
+| 36 | ✓ | [`prompt/r1_searcher_append.jinja`](prompt/r1_searcher_append.jinja) |
+| 37 | ✓ | [`prompt/r1_searcher_init.jinja`](prompt/r1_searcher_init.jinja) |
+| 38 | ✓ | [`prompt/RankCoT_knowledge_refinement.jinja`](prompt/RankCoT_knowledge_refinement.jinja) |
+| 39 | ✓ | [`prompt/RankCoT_question_answering.jinja`](prompt/RankCoT_question_answering.jinja) |
+| 40 | ✓ | [`prompt/search_o1_reasoning.jinja`](prompt/search_o1_reasoning.jinja) |
+| 41 | ✓ | [`prompt/search_o1_refinement.jinja`](prompt/search_o1_refinement.jinja) |
+| 42 | ✓ | [`prompt/search_r1_append.jinja`](prompt/search_r1_append.jinja) |
+| 43 | ✓ | [`prompt/search_r1_init.jinja`](prompt/search_r1_init.jinja) |
+| 44 | ✓ | [`prompt/surveycpm_extend_plan.jinja`](prompt/surveycpm_extend_plan.jinja) |
+| 45 | ✓ | [`prompt/surveycpm_init_plan.jinja`](prompt/surveycpm_init_plan.jinja) |
+| 46 | ✓ | [`prompt/surveycpm_search.jinja`](prompt/surveycpm_search.jinja) |
+| 47 | ✓ | [`prompt/surveycpm_write_citation.jinja`](prompt/surveycpm_write_citation.jinja) |
+| 48 | ✓ | [`prompt/surveycpm_write.jinja`](prompt/surveycpm_write.jinja) |
+| 49 | ✓ | [`prompt/visrag.jinja`](prompt/visrag.jinja) |
+| 50 | ✓ | [`prompt/webnote_fill_page_citation.jinja`](prompt/webnote_fill_page_citation.jinja) |
+| 51 | ✓ | [`prompt/webnote_fill_page.jinja`](prompt/webnote_fill_page.jinja) |
+| 52 | ✓ | [`prompt/webnote_gen_answer.jinja`](prompt/webnote_gen_answer.jinja) |
+| 53 | ✓ | [`prompt/webnote_gen_plan.jinja`](prompt/webnote_gen_plan.jinja) |
+| 54 | ✓ | [`prompt/webnote_gen_report.jinja`](prompt/webnote_gen_report.jinja) |
+| 55 | ✓ | [`prompt/webnote_gen_subq.jinja`](prompt/webnote_gen_subq.jinja) |
+| 56 | ✓ | [`prompt/webnote_init_page.jinja`](prompt/webnote_init_page.jinja) |
 
 ---
 

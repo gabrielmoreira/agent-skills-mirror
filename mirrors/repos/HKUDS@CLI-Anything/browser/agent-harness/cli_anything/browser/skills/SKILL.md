@@ -176,3 +176,38 @@ This avoids the 1-3 second cold start overhead for each command.
 - [DOMShell GitHub](https://github.com/apireno/DOMShell)
 - [CLI-Anything](https://github.com/HKUDS/CLI-Anything)
 - [Issue #90](https://github.com/HKUDS/CLI-Anything/issues/90)
+
+## Security Considerations
+
+**IMPORTANT**: When using this CLI with AI agents, be aware of the following security considerations:
+
+### URL Restrictions
+The browser harness validates all URLs before navigation:
+- **Explicit scheme required**: URLs must include `http://` or `https://` scheme (scheme-less URLs like `example.com` are rejected)
+- **Blocked schemes**: `file://`, `javascript://`, `data://`, `vbscript://`, `about://`, `chrome://`, and browser-internal schemes
+- **Allowed schemes**: `http://` and `https://` only (configurable via `CLI_ANYTHING_BROWSER_ALLOWED_SCHEMES`)
+- **Private network blocking**: Optional via `CLI_ANYTHING_BROWSER_BLOCK_PRIVATE=true` (disabled by default)
+
+### DOM Content Risks
+The Accessibility Tree includes all visible and hidden elements on a page. Malicious websites could:
+- Craft ARIA labels with manipulative text (e.g., "Ignore previous instructions")
+- Use aria-hidden elements to inject content not visible to users
+- Create confusing DOM structures that mislead navigation
+
+**Mitigation**: When interacting with untrusted websites, consider:
+1. Using the `--json` flag for structured output that's easier to parse safely
+2. Sanitizing or filtering DOM content before including it in prompts
+3. Limiting navigation to trusted domains
+
+### Private Network Access
+By default, the browser can access localhost and private networks (192.168.x.x, 10.x.x.x, etc.). To block:
+```bash
+export CLI_ANYTHING_BROWSER_BLOCK_PRIVATE=true
+cli-anything-browser page open http://localhost:8080  # Will be blocked
+```
+
+### Session Isolation
+Multiple browser sessions share the same Chrome instance. Cookies and authentication state may persist across sessions. For sensitive operations, consider:
+1. Using Chrome's guest mode or incognito
+2. Clearing cookies between sessions
+3. Using separate Chrome profiles for different security contexts

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `PostHog/posthog` — 26 default patterns, 8 followed patterns, 60 file(s) materialized.
+Mirror of `PostHog/posthog` — 26 default patterns, 8 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PostHog/posthog` — 26 default patterns, 8 followed patterns, 60 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 60 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,27 +105,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`.cursorrules`](.cursorrules) |
 | 38 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 39 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 40 | ✓ | [`posthog/clickhouse/migrations/AGENTS.md`](posthog/clickhouse/migrations/AGENTS.md) |
-| 41 | ✓ | [`posthog/temporal/data_imports/signals/AGENTS.md`](posthog/temporal/data_imports/signals/AGENTS.md) |
-| 42 | ✓ | [`products/experiments/skills/analyzing-experiment-session-replays/SKILL.md`](products/experiments/skills/analyzing-experiment-session-replays/SKILL.md) |
-| 43 | ✓ | [`products/feature_flags/skills/cleaning-up-stale-feature-flags/SKILL.md`](products/feature_flags/skills/cleaning-up-stale-feature-flags/SKILL.md) |
-| 44 | ✓ | [`products/llm_analytics/skills/exploring-llm-clusters/SKILL.md`](products/llm_analytics/skills/exploring-llm-clusters/SKILL.md) |
-| 45 | ✓ | [`products/llm_analytics/skills/exploring-llm-traces/SKILL.md`](products/llm_analytics/skills/exploring-llm-traces/SKILL.md) |
-| 46 | ✓ | [`products/llm_analytics/skills/skills-store/SKILL.md`](products/llm_analytics/skills/skills-store/SKILL.md) |
-| 47 | ✓ | [`products/posthog_ai/skills/auditing-experiments-flags/SKILL.md`](products/posthog_ai/skills/auditing-experiments-flags/SKILL.md) |
-| 48 | ✓ | [`products/posthog_ai/skills/query-examples/SKILL.md`](products/posthog_ai/skills/query-examples/SKILL.md) |
-| 49 | ✓ | [`products/signals/backend/management/AGENTS.md`](products/signals/backend/management/AGENTS.md) |
-| 50 | ✓ | [`products/signals/backend/report_generation/AGENTS.md`](products/signals/backend/report_generation/AGENTS.md) |
-| 51 | ✓ | [`products/signals/eval/AGENTS.md`](products/signals/eval/AGENTS.md) |
-| 52 | ✓ | [`products/signals/skills/signals/SKILL.md`](products/signals/skills/signals/SKILL.md) |
-| 53 | → | [`docs/internal/monorepo-layout.md`](docs/internal/monorepo-layout.md) |
-| 54 | → | [`docs/published/handbook/engineering/ai/implementing-mcp-tools.md`](docs/published/handbook/engineering/ai/implementing-mcp-tools.md) |
-| 55 | → | [`docs/published/handbook/engineering/ai/writing-skills.md`](docs/published/handbook/engineering/ai/writing-skills.md) |
-| 56 | → | [`docs/published/handbook/engineering/type-system.md`](docs/published/handbook/engineering/type-system.md) |
-| 57 | → | [`posthog/models/team/README.md`](posthog/models/team/README.md) |
-| 58 | → | [`products/architecture.md`](products/architecture.md) |
-| 59 | → | [`products/README.md`](products/README.md) |
-| 60 | → | [`services/mcp/CONTRIBUTING.md`](services/mcp/CONTRIBUTING.md) |
+| 40 | ✓ | [`packages/quill/AGENTS.md`](packages/quill/AGENTS.md) |
+| 41 | ✓ | [`packages/quill/packages/blocks/AGENTS.md`](packages/quill/packages/blocks/AGENTS.md) |
+| 42 | ✓ | [`packages/quill/packages/primitives/AGENTS.md`](packages/quill/packages/primitives/AGENTS.md) |
+| 43 | ✓ | [`packages/quill/packages/tokens/AGENTS.md`](packages/quill/packages/tokens/AGENTS.md) |
+| 44 | ✓ | [`posthog/clickhouse/migrations/AGENTS.md`](posthog/clickhouse/migrations/AGENTS.md) |
+| 45 | ✓ | [`posthog/temporal/data_imports/signals/AGENTS.md`](posthog/temporal/data_imports/signals/AGENTS.md) |
+| 46 | ✓ | [`products/experiments/skills/analyzing-experiment-session-replays/SKILL.md`](products/experiments/skills/analyzing-experiment-session-replays/SKILL.md) |
+| 47 | ✓ | [`products/feature_flags/skills/cleaning-up-stale-feature-flags/SKILL.md`](products/feature_flags/skills/cleaning-up-stale-feature-flags/SKILL.md) |
+| 48 | ✓ | [`products/llm_analytics/skills/exploring-llm-clusters/SKILL.md`](products/llm_analytics/skills/exploring-llm-clusters/SKILL.md) |
+| 49 | ✓ | [`products/llm_analytics/skills/exploring-llm-traces/SKILL.md`](products/llm_analytics/skills/exploring-llm-traces/SKILL.md) |
+| 50 | ✓ | [`products/llm_analytics/skills/skills-store/SKILL.md`](products/llm_analytics/skills/skills-store/SKILL.md) |
+| 51 | ✓ | [`products/posthog_ai/skills/auditing-experiments-flags/SKILL.md`](products/posthog_ai/skills/auditing-experiments-flags/SKILL.md) |
+| 52 | ✓ | [`products/posthog_ai/skills/query-examples/SKILL.md`](products/posthog_ai/skills/query-examples/SKILL.md) |
+| 53 | ✓ | [`products/signals/backend/management/AGENTS.md`](products/signals/backend/management/AGENTS.md) |
+| 54 | ✓ | [`products/signals/backend/report_generation/AGENTS.md`](products/signals/backend/report_generation/AGENTS.md) |
+| 55 | ✓ | [`products/signals/eval/AGENTS.md`](products/signals/eval/AGENTS.md) |
+| 56 | ✓ | [`products/signals/skills/signals/SKILL.md`](products/signals/skills/signals/SKILL.md) |
+| 57 | → | [`docs/internal/monorepo-layout.md`](docs/internal/monorepo-layout.md) |
+| 58 | → | [`docs/published/handbook/engineering/ai/implementing-mcp-tools.md`](docs/published/handbook/engineering/ai/implementing-mcp-tools.md) |
+| 59 | → | [`docs/published/handbook/engineering/ai/writing-skills.md`](docs/published/handbook/engineering/ai/writing-skills.md) |
+| 60 | → | [`docs/published/handbook/engineering/type-system.md`](docs/published/handbook/engineering/type-system.md) |
+| 61 | → | [`posthog/models/team/README.md`](posthog/models/team/README.md) |
+| 62 | → | [`products/architecture.md`](products/architecture.md) |
+| 63 | → | [`products/README.md`](products/README.md) |
+| 64 | → | [`services/mcp/CONTRIBUTING.md`](services/mcp/CONTRIBUTING.md) |
 
 ---
 

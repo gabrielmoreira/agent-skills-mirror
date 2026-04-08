@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed patterns, 106 file(s) materialized.
+Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed patterns, 107 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 106 |
+| Files         | 107 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -151,20 +151,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 90 | ✓ | [`skills/ultrawork/SKILL.md`](skills/ultrawork/SKILL.md) |
 | 91 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
 | 92 | ✓ | [`skills/visual-verdict/SKILL.md`](skills/visual-verdict/SKILL.md) |
-| 93 | ✓ | [`skills/writer-memory/lib/character-tracker.ts`](skills/writer-memory/lib/character-tracker.ts) |
-| 94 | ✓ | [`skills/writer-memory/lib/memory-manager.ts`](skills/writer-memory/lib/memory-manager.ts) |
-| 95 | ✓ | [`skills/writer-memory/lib/relationship-graph.ts`](skills/writer-memory/lib/relationship-graph.ts) |
-| 96 | ✓ | [`skills/writer-memory/lib/scene-organizer.ts`](skills/writer-memory/lib/scene-organizer.ts) |
-| 97 | ✓ | [`skills/writer-memory/lib/synopsis-builder.ts`](skills/writer-memory/lib/synopsis-builder.ts) |
-| 98 | ✓ | [`skills/writer-memory/SKILL.md`](skills/writer-memory/SKILL.md) |
-| 99 | ✓ | [`skills/writer-memory/templates/synopsis-template.md`](skills/writer-memory/templates/synopsis-template.md) |
-| 100 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 101 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
-| 102 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
-| 103 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
-| 104 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
-| 105 | ✓ | [`src/tools/diagnostics/AGENTS.md`](src/tools/diagnostics/AGENTS.md) |
-| 106 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
+| 93 | ✓ | [`skills/wiki/SKILL.md`](skills/wiki/SKILL.md) |
+| 94 | ✓ | [`skills/writer-memory/lib/character-tracker.ts`](skills/writer-memory/lib/character-tracker.ts) |
+| 95 | ✓ | [`skills/writer-memory/lib/memory-manager.ts`](skills/writer-memory/lib/memory-manager.ts) |
+| 96 | ✓ | [`skills/writer-memory/lib/relationship-graph.ts`](skills/writer-memory/lib/relationship-graph.ts) |
+| 97 | ✓ | [`skills/writer-memory/lib/scene-organizer.ts`](skills/writer-memory/lib/scene-organizer.ts) |
+| 98 | ✓ | [`skills/writer-memory/lib/synopsis-builder.ts`](skills/writer-memory/lib/synopsis-builder.ts) |
+| 99 | ✓ | [`skills/writer-memory/SKILL.md`](skills/writer-memory/SKILL.md) |
+| 100 | ✓ | [`skills/writer-memory/templates/synopsis-template.md`](skills/writer-memory/templates/synopsis-template.md) |
+| 101 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 102 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 103 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
+| 104 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
+| 105 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
+| 106 | ✓ | [`src/tools/diagnostics/AGENTS.md`](src/tools/diagnostics/AGENTS.md) |
+| 107 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
 
 ---
 

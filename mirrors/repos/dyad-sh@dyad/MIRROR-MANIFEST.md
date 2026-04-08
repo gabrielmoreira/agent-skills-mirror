@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 12 followed patterns, 38 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 13 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 12 followed patterns, 38 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 38 |
+| Followed pats | 13 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 12 followed patterns, 38 file(
 - `rules/adding-settings.md`
 - `rules/chat-message-indicators.md`
 - `rules/product-principles.md`
+- `rules/jotai-testing.md`
 
 ## File Index
 
@@ -104,10 +105,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
 | 33 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
 | 34 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
-| 35 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
-| 36 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
-| 37 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 38 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 35 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
+| 36 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
+| 37 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
+| 38 | → | [`rules/product-principles.md`](rules/product-principles.md) |
+| 39 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
 
 ---
 

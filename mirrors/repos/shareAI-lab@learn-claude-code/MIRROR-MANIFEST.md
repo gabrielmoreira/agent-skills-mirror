@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shareAI-lab/learn-claude-code` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `shareAI-lab/learn-claude-code` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shareAI-lab/learn-claude-code` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,21 +67,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`agents/s04_subagent.py`](agents/s04_subagent.py) |
 | 7 | ✓ | [`agents/s05_skill_loading.py`](agents/s05_skill_loading.py) |
 | 8 | ✓ | [`agents/s06_context_compact.py`](agents/s06_context_compact.py) |
-| 9 | ✓ | [`agents/s07_task_system.py`](agents/s07_task_system.py) |
-| 10 | ✓ | [`agents/s08_background_tasks.py`](agents/s08_background_tasks.py) |
-| 11 | ✓ | [`agents/s09_agent_teams.py`](agents/s09_agent_teams.py) |
-| 12 | ✓ | [`agents/s10_team_protocols.py`](agents/s10_team_protocols.py) |
-| 13 | ✓ | [`agents/s11_autonomous_agents.py`](agents/s11_autonomous_agents.py) |
-| 14 | ✓ | [`agents/s12_worktree_task_isolation.py`](agents/s12_worktree_task_isolation.py) |
-| 15 | ✓ | [`skills/agent-builder/references/agent-philosophy.md`](skills/agent-builder/references/agent-philosophy.md) |
-| 16 | ✓ | [`skills/agent-builder/references/minimal-agent.py`](skills/agent-builder/references/minimal-agent.py) |
-| 17 | ✓ | [`skills/agent-builder/references/subagent-pattern.py`](skills/agent-builder/references/subagent-pattern.py) |
-| 18 | ✓ | [`skills/agent-builder/references/tool-templates.py`](skills/agent-builder/references/tool-templates.py) |
-| 19 | ✓ | [`skills/agent-builder/scripts/init_agent.py`](skills/agent-builder/scripts/init_agent.py) |
-| 20 | ✓ | [`skills/agent-builder/SKILL.md`](skills/agent-builder/SKILL.md) |
-| 21 | ✓ | [`skills/code-review/SKILL.md`](skills/code-review/SKILL.md) |
-| 22 | ✓ | [`skills/mcp-builder/SKILL.md`](skills/mcp-builder/SKILL.md) |
-| 23 | ✓ | [`skills/pdf/SKILL.md`](skills/pdf/SKILL.md) |
+| 9 | ✓ | [`agents/s07_permission_system.py`](agents/s07_permission_system.py) |
+| 10 | ✓ | [`agents/s08_hook_system.py`](agents/s08_hook_system.py) |
+| 11 | ✓ | [`agents/s09_memory_system.py`](agents/s09_memory_system.py) |
+| 12 | ✓ | [`agents/s10_system_prompt.py`](agents/s10_system_prompt.py) |
+| 13 | ✓ | [`agents/s11_error_recovery.py`](agents/s11_error_recovery.py) |
+| 14 | ✓ | [`agents/s12_task_system.py`](agents/s12_task_system.py) |
+| 15 | ✓ | [`agents/s13_background_tasks.py`](agents/s13_background_tasks.py) |
+| 16 | ✓ | [`agents/s14_cron_scheduler.py`](agents/s14_cron_scheduler.py) |
+| 17 | ✓ | [`agents/s15_agent_teams.py`](agents/s15_agent_teams.py) |
+| 18 | ✓ | [`agents/s16_team_protocols.py`](agents/s16_team_protocols.py) |
+| 19 | ✓ | [`agents/s17_autonomous_agents.py`](agents/s17_autonomous_agents.py) |
+| 20 | ✓ | [`agents/s18_worktree_task_isolation.py`](agents/s18_worktree_task_isolation.py) |
+| 21 | ✓ | [`agents/s19_mcp_plugin.py`](agents/s19_mcp_plugin.py) |
+| 22 | ✓ | [`skills/agent-builder/references/agent-philosophy.md`](skills/agent-builder/references/agent-philosophy.md) |
+| 23 | ✓ | [`skills/agent-builder/references/minimal-agent.py`](skills/agent-builder/references/minimal-agent.py) |
+| 24 | ✓ | [`skills/agent-builder/references/subagent-pattern.py`](skills/agent-builder/references/subagent-pattern.py) |
+| 25 | ✓ | [`skills/agent-builder/references/tool-templates.py`](skills/agent-builder/references/tool-templates.py) |
+| 26 | ✓ | [`skills/agent-builder/scripts/init_agent.py`](skills/agent-builder/scripts/init_agent.py) |
+| 27 | ✓ | [`skills/agent-builder/SKILL.md`](skills/agent-builder/SKILL.md) |
+| 28 | ✓ | [`skills/code-review/SKILL.md`](skills/code-review/SKILL.md) |
+| 29 | ✓ | [`skills/mcp-builder/SKILL.md`](skills/mcp-builder/SKILL.md) |
+| 30 | ✓ | [`skills/pdf/SKILL.md`](skills/pdf/SKILL.md) |
 
 ---
 

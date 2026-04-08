@@ -27,10 +27,10 @@ npm view oh-my-claudecode version 2>/dev/null || echo "Latest: (unavailable)"
 
 ### Step 2: Check for Legacy Hooks in settings.json
 
-Read both `~/.claude/settings.json` (profile-level) and `./.claude/settings.json` (project-level) and check if there's a `"hooks"` key with entries like:
-- `bash $HOME/.claude/hooks/keyword-detector.sh`
-- `bash $HOME/.claude/hooks/persistent-mode.sh`
-- `bash $HOME/.claude/hooks/session-start.sh`
+Read both `${CLAUDE_CONFIG_DIR:-~/.claude}/settings.json` (profile-level) and `./.claude/settings.json` (project-level) and check if there's a `"hooks"` key with entries like:
+- `bash ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hooks/keyword-detector.sh`
+- `bash ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hooks/persistent-mode.sh`
+- `bash ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hooks/session-start.sh`
 
 **Diagnosis**:
 - If found: CRITICAL - legacy hooks causing duplicates
@@ -38,7 +38,7 @@ Read both `~/.claude/settings.json` (profile-level) and `./.claude/settings.json
 ### Step 3: Check for Legacy Bash Hook Scripts
 
 ```bash
-ls -la ~/.claude/hooks/*.sh 2>/dev/null
+ls -la "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/hooks/*.sh 2>/dev/null
 ```
 
 **Diagnosis**:
@@ -48,19 +48,19 @@ ls -la ~/.claude/hooks/*.sh 2>/dev/null
 
 ```bash
 # Check if CLAUDE.md exists
-ls -la ~/.claude/CLAUDE.md 2>/dev/null
+ls -la "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/CLAUDE.md 2>/dev/null
 
 # Check for OMC markers (<!-- OMC:START --> is the canonical marker)
-grep -q "<!-- OMC:START -->" ~/.claude/CLAUDE.md 2>/dev/null && echo "Has OMC config" || echo "Missing OMC config in CLAUDE.md"
+grep -q "<!-- OMC:START -->" "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/CLAUDE.md" 2>/dev/null && echo "Has OMC config" || echo "Missing OMC config in CLAUDE.md"
 
 # Check companion files for file-split pattern (e.g. CLAUDE-omc.md)
-find "$HOME/.claude" -maxdepth 1 -type f -name 'CLAUDE-*.md' -print 2>/dev/null
+find "${CLAUDE_CONFIG_DIR:-$HOME/.claude}" -maxdepth 1 -type f -name 'CLAUDE-*.md' -print 2>/dev/null
 while IFS= read -r f; do
   grep -q "<!-- OMC:START -->" "$f" 2>/dev/null && echo "Has OMC config in companion: $f"
-done < <(find "$HOME/.claude" -maxdepth 1 -type f -name 'CLAUDE-*.md' -print 2>/dev/null)
+done < <(find "${CLAUDE_CONFIG_DIR:-$HOME/.claude}" -maxdepth 1 -type f -name 'CLAUDE-*.md' -print 2>/dev/null)
 
 # Check if CLAUDE.md references a companion file
-grep -o "CLAUDE-[^ )]*\.md" ~/.claude/CLAUDE.md 2>/dev/null
+grep -o "CLAUDE-[^ )]*\.md" "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/CLAUDE.md" 2>/dev/null
 ```
 
 **Diagnosis**:
@@ -86,13 +86,13 @@ Check for legacy agents, commands, and skills installed via curl (before plugin 
 
 ```bash
 # Check for legacy agents directory
-ls -la ~/.claude/agents/ 2>/dev/null
+ls -la "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/agents/ 2>/dev/null
 
 # Check for legacy commands directory
-ls -la ~/.claude/commands/ 2>/dev/null
+ls -la "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/commands/ 2>/dev/null
 
 # Check for legacy skills directory
-ls -la ~/.claude/skills/ 2>/dev/null
+ls -la "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/skills/ 2>/dev/null
 ```
 
 **Diagnosis**:
@@ -152,14 +152,14 @@ If issues found, ask user: "Would you like me to fix these issues automatically?
 If yes, apply fixes:
 
 ### Fix: Legacy Hooks in settings.json
-Remove the `"hooks"` section from `~/.claude/settings.json` (keep other settings intact)
+Remove the `"hooks"` section from `${CLAUDE_CONFIG_DIR:-~/.claude}/settings.json` (keep other settings intact)
 
 ### Fix: Legacy Bash Scripts
 ```bash
-rm -f ~/.claude/hooks/keyword-detector.sh
-rm -f ~/.claude/hooks/persistent-mode.sh
-rm -f ~/.claude/hooks/session-start.sh
-rm -f ~/.claude/hooks/stop-continuation.sh
+rm -f "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/hooks/keyword-detector.sh
+rm -f "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/hooks/persistent-mode.sh
+rm -f "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/hooks/session-start.sh
+rm -f "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/hooks/stop-continuation.sh
 ```
 
 ### Fix: Outdated Plugin
@@ -175,7 +175,7 @@ node -e "const p=require('path'),f=require('fs'),h=require('os').homedir(),d=pro
 ```
 
 ### Fix: Missing/Outdated CLAUDE.md
-Fetch latest from GitHub and write to `~/.claude/CLAUDE.md`:
+Fetch latest from GitHub and write to `${CLAUDE_CONFIG_DIR:-~/.claude}/CLAUDE.md`:
 ```
 WebFetch(url: "https://raw.githubusercontent.com/Yeachan-Heo/oh-my-claudecode/main/docs/CLAUDE.md", prompt: "Return the complete raw markdown content exactly as-is")
 ```
@@ -186,14 +186,14 @@ Remove legacy agents, commands, and skills directories (now provided by plugin):
 
 ```bash
 # Backup first (optional - ask user)
-# mv ~/.claude/agents ~/.claude/agents.bak
-# mv ~/.claude/commands ~/.claude/commands.bak
-# mv ~/.claude/skills ~/.claude/skills.bak
+# mv "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/agents "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/agents.bak
+# mv "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/commands "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/commands.bak
+# mv "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/skills "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/skills.bak
 
 # Or remove directly
-rm -rf ~/.claude/agents
-rm -rf ~/.claude/commands
-rm -rf ~/.claude/skills
+rm -rf "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/agents
+rm -rf "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/commands
+rm -rf "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/skills
 ```
 
 **Note**: Only remove if these contain oh-my-claudecode-related files. If user has custom agents/commands/skills, warn them and ask before removing.

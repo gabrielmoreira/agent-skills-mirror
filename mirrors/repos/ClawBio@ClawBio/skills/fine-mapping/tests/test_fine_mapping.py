@@ -638,14 +638,15 @@ class TestSuSiEInf:
         result = run_susie_inf(z=df["z"].values, R=R, n=5000, L=3)
         assert result["alpha"].shape == (20, 3)
 
-    def test_alpha_columns_sum_to_one(self):
-        """Each column of alpha (per-effect posterior weights) sums to 1."""
+    def test_alpha_columns_sum_to_at_most_one(self):
+        """Each column of alpha sums to <= 1 (remainder goes to null component)."""
         from core.susie_inf import run_susie_inf
         df = _small_locus(n=20)
         R = _identity_ld(20)
         result = run_susie_inf(z=df["z"].values, R=R, n=5000, L=3)
         col_sums = result["alpha"].sum(axis=0)
-        np.testing.assert_allclose(col_sums, 1.0, atol=1e-5)
+        assert np.all(col_sums <= 1.0 + 1e-5), f"alpha columns exceed 1: {col_sums}"
+        assert np.all(col_sums > 0.0), f"alpha columns are zero: {col_sums}"
 
     def test_signal_recovers_high_pip(self):
         """The injected signal at index 10 receives the highest PIP."""

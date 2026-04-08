@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 53
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 53 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,7 +111,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`ts/packages/cli/.cursor/rules/effect-source-reference.mdc`](ts/packages/cli/.cursor/rules/effect-source-reference.mdc) |
 | 51 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
 | 52 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
-| 53 | ✓ | [`ts/packages/cli/skills/composio-cli/SKILL.md`](ts/packages/cli/skills/composio-cli/SKILL.md) |
 
 ---
 

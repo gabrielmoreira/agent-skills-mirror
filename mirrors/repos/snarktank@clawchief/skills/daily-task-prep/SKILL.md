@@ -1,70 +1,105 @@
 ---
 name: daily-task-prep
-description: "Prepare {{OWNER_NAME}}'s task list for the day using `clawchief/tasks.md` plus their calendars. Use when a cron or direct request asks to prepare today's tasks before the day starts; when recurring weekday tasks, due-today backlog items, and principal-owned meetings / calls should be added to `## Today`; or when the task list needs a safe early-morning refresh without overwriting manual priorities."
+description: "Prepare Ryan Carson's due-soon Todoist work using program sections plus due dates and his calendars. Use when a cron or direct request asks to prepare today's work before Ryan starts, when due-today and overdue items need to be surfaced, or when follow-up timing should be cleaned up without rebuilding a markdown task file."
 ---
 
 # Daily Task Prep
 
-Use `clawchief/tasks.md` as the canonical live task file and `clawchief/tasks-completed.md` as the completed-task archive.
+Use Todoist as the canonical task system.
+
+Command surface:
+- `python3 ~/.openclaw/workspace/clawchief/scripts/todoist_cli.py ...`
+- `~/.openclaw/workspace/clawchief/location-awareness.md`
+- `~/.openclaw/workspace/clawchief/priority-map.md`
+
+## Goal
+
+Quietly prepare Todoist so due dates and follow-up timing reflect the real day.
 
 ## Core rules
 
-- read `clawchief/priority-map.md` before regrouping or inserting active tasks
-- preserve existing manually added open tasks in `## Today` unless they are obviously stale past meetings
-- on weekdays, treat `## Every weekday` as the recurring seed list
-- on weekends, do not auto-add `## Every weekday` items unless explicitly asked
-- promote items due today from `## Backlog with due date` into `## Today`, and remove the backlog copy in the same edit
-- scan `## Recurring reminders` and add any reminder that is due today into `## Today` without deleting the recurring source item
-- add principal-owned meetings and calls for today to `## Today`
-- exclude personal or family calendar blocks that are only conflict sources, not principal-owned tasks
-- keep assistant tasks clearly separate from principal tasks
-- archive tasks completed yesterday out of `clawchief/tasks.md` into `clawchief/tasks-completed.md`
-- keep tasks completed today in `clawchief/tasks.md` until the next morning's prep run unless the user explicitly wants earlier cleanup
-- update the file's `Last updated` timestamp
-- stay silent unless something needs human attention
+- Read `~/.openclaw/skills/task-system-contract/SKILL.md` at the start of every run. Treat it as the shared Todoist contract for follow-ups, blockers, and no-legacy-markdown behavior.
+- If `TODOIST_API_TOKEN` is missing, stop and ask Ryan for it.
+- Bootstrap the Todoist schema before the first live prep run in a new account.
+- Read `~/.openclaw/workspace/clawchief/location-awareness.md` before pulling place-dependent tasks forward.
+- Keep due-soon work small and actually actionable.
+- Prefer adjusting due dates or completing/recreating follow-up tasks over using workflow-state sections.
+- Do not rebuild or recreate a live `clawchief/tasks.md` markdown task file as part of prep.
+- Use recurring tasks natively in Todoist rather than cloning markdown reminders.
+- Add Ryan-owned meetings/calls only when they are useful to track as tasks because they need prep, follow-up, or active attention.
+- Exclude personal/family calendar blocks unless Ryan explicitly asks for them in Todoist.
+- Review Business development partnerships and Executive assistant sections for reply-dependent follow-ups that should surface today.
 
 ## Preparation workflow
 
-1. read `clawchief/tasks.md`
-2. read `clawchief/priority-map.md`
-3. read `clawchief/tasks-completed.md` if it exists
-4. determine whether today is a weekday
-5. archive tasks completed yesterday from `clawchief/tasks.md` into `clawchief/tasks-completed.md`
-6. build the candidate `## Today` list from:
-   - current open `## Today` tasks worth carrying forward
-   - weekday recurring items from `## Every weekday` if today is Monday-Friday
-   - items in `## Backlog with due date` that are due today
-   - items in `## Recurring reminders` whose recurrence makes them due today
-   - today's principal-owned meetings / calls from calendar
-7. remove duplicates by normalized task text while keeping the most specific wording already present in the file
-8. preserve or assign each active task to the best matching owner section plus program / person grouping header
-9. reorder the open tasks in priority-first order within each owner section
-10. write back only the minimal necessary edits
+1. Run `doctor` or `bootstrap` if the account/project state is uncertain.
+2. Read Todoist for overdue tasks, due-today tasks, and the current program sections.
+3. Make sure genuinely active work has the right due date or deadline.
+4. Push out tasks that are blocked, waiting on others, or future-only.
+5. Review each major program section for tasks that should surface now because of urgency or date.
+6. Add meeting prep or follow-up tasks when the calendar implies real work, not merely presence.
+7. Leave quiet days quiet. If nothing needs to move, do nothing.
+8. If a partner or EA follow-up is due today or overdue, do not leave it buried only in inbox or CRM state.
 
-## Calendar workflow
+## Useful commands
 
-Use `gog` via shell to inspect the principal's visible calendars before adding meeting tasks.
-
-Useful pattern:
+Overdue work:
 
 ```bash
-gog calendar events --all -a {{ASSISTANT_EMAIL}} --days=1 --max=100 --json --results-only
+python3 ~/.openclaw/workspace/clawchief/scripts/todoist_cli.py list-tasks --overdue
 ```
 
-Only add calendar items that the principal is actually expected to attend.
+Ryan work due today:
 
-## Task text rules
+```bash
+python3 ~/.openclaw/workspace/clawchief/scripts/todoist_cli.py list-tasks --owner ryan --due-today
+```
 
-- use concise one-line tasks
-- keep existing wording when it is already good
-- use `YYYY-MM-DD` for all-day due dates and `YYYY-MM-DD HH:MM TZ` for timed due dates
-- if a backlog due-date item is promoted into `## Today`, remove the backlog copy immediately
-- for recurring reminders, keep the recurring source entry in place and only add the due instance into `## Today`
+Current customer-program tasks:
+
+```bash
+python3 ~/.openclaw/workspace/clawchief/scripts/todoist_cli.py list-tasks --section "First 10 paying customers"
+```
+
+Promote or retune a task:
+
+```bash
+python3 ~/.openclaw/workspace/clawchief/scripts/todoist_cli.py update-task \
+  --metadata-key some-stable-key \
+  --section "Business development partnerships" \
+  --due-date 2026-04-08 \
+  --priority 2
+```
+
+Create a meeting-prep task:
+
+```bash
+python3 ~/.openclaw/workspace/clawchief/scripts/todoist_cli.py upsert-task \
+  --content "Prepare for Colleen ONeil intro" \
+  --owner ryan \
+  --section "Business development partnerships" \
+  --priority 2 \
+  --due-datetime 2026-04-08T14:30:00 \
+  --due-timezone America/New_York \
+  --metadata-key meeting-prep-colleen-oneil \
+  --meta program="Business development partnerships" \
+  --meta source=clawchief \
+  --meta kind=meeting_prep
+```
+
+## Cron vs heartbeat boundary
+
+Use this prep flow as the precise scheduled morning reset.
+
+Heartbeat should:
+- read Todoist as already prepared
+- handle changed reality
+- surface blockers or needed decisions
+- avoid redoing morning prep unless Ryan explicitly asks
 
 ## Safety
 
-- do not wipe `## Today` just to rebuild it
-- do not archive recurring source items from `## Recurring reminders`
-- do not archive tasks completed today during the same day's prep run
-- if calendar access fails, still do file-based prep and only notify the user if the failure matters
-- if nothing needs to change, do nothing
+- Do not flood due-today work with backlog or every recurring task.
+- Do not create a Todoist task for every harmless calendar event.
+- If calendar access fails, still do Todoist-only prep and notify Ryan only if the miss matters.
+- If nothing needs to change, do nothing.

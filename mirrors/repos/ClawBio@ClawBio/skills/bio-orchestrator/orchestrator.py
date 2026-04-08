@@ -393,12 +393,46 @@ def list_available_skills() -> list[str]:
 
 
 def skill_has_executable(skill_name: str) -> bool:
-    """Check if a skill has a Python executable (not just SKILL.md)."""
+    """Check if a skill has a runnable Python executable.
+
+    Returns False (stub) if:
+      - No .py files exist (SKILL.md only), OR
+      - SKILL.md YAML frontmatter declares required bins (``anyBins``) that
+        are not found on PATH (e.g. ``boltz`` for struct-predictor).
+    """
+    import shutil
     skill_dir = SKILLS_DIR / skill_name
     if not skill_dir.is_dir():
         return False
-    return any(f.suffix == ".py" and f.name != "__init__.py"
-               for f in skill_dir.iterdir() if f.is_file())
+    has_py = any(f.suffix == ".py" and f.name != "__init__.py"
+                 for f in skill_dir.iterdir() if f.is_file())
+    if not has_py:
+        return False
+
+    # Check SKILL.md YAML frontmatter for required external binaries
+    skill_md = skill_dir / "SKILL.md"
+    if skill_md.exists():
+        try:
+            text = skill_md.read_text(encoding="utf-8")
+            # Quick YAML frontmatter parse (between --- fences)
+            if text.startswith("---"):
+                end = text.index("---", 3)
+                front = text[3:end]
+                # Look for anyBins list in openclaw.requires
+                import re
+                any_bins_match = re.search(r"anyBins:\s*\n((?:\s+-\s+\S+\n?)+)", front)
+                if any_bins_match:
+                    bins_block = any_bins_match.group(1)
+                    bins = [line.strip().lstrip("- ").strip()
+                            for line in bins_block.strip().splitlines()
+                            if line.strip().startswith("-")]
+                    # If any required bin is not on PATH, treat as stub
+                    if bins and not any(shutil.which(b) for b in bins):
+                        return False
+        except Exception:
+            pass  # If parsing fails, assume executable
+
+    return True
 
 
 def generate_report_header(
@@ -622,12 +656,36 @@ def main() -> None:
     # Fallback: if keyword matching failed, try FLock LLM routing
     if not skill and args.provider == "flock" and args.input:
         print("Keyword matching failed. Trying FLock LLM routing (open-source model)...")
-        skill, reasoning = detect_skill_with_flock(args.input)
-        method = "flock-llm"
-        if skill:
-            print(f"FLock routed to: {skill} — {reasoning}")
-        else:
-            print(f"FLock routing: {reasoning}")
+        try:
+            skill, reasoning = detect_skill_with_flock(args.input)
+            method = "flock-llm"
+            if skill:
+                print(f"FLock routed to: {skill} — {reasoning}")
+            else:
+                print(f"FLock routing: {reasoning}")
+        except Exception as exc:
+            method = "flock-llm"
+            reasoning = f"FLock routing failed: {exc}"
+            print(reasoning, file=sys.stderr)
+            # Return structured JSON error instead of crashing
+            error_result = {
+                "input": args.input,
+                "detected_skill": None,
+                "detection_method": method,
+                "error": str(exc),
+                "available_skills": list_available_skills(),
+            }
+            output_dir = Path(args.output)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            write_result_json(
+                output_dir=output_dir,
+                skill="bio-orchestrator",
+                version="0.2.0",
+                summary={"detected_skill": None, "method": method, "error": str(exc)},
+                data=error_result,
+            )
+            print(json.dumps(error_result, indent=2))
+            sys.exit(1)
 
     # FLock fallback removed: keyword mode must not silently send queries
     # to an external API. Use --provider flock explicitly to opt in.
@@ -635,6 +693,26 @@ def main() -> None:
     if not skill:
         print(f"Could not determine skill for input: {args.input}")
         print("Available skills:", ", ".join(list_available_skills()))
+        # Emit structured JSON result for harness consumption and exit 0.
+        # A no-match is a valid outcome (not a crash), especially when the
+        # requested provider (e.g. flock) is unavailable.
+        no_match_result = {
+            "input": args.input,
+            "detected_skill": None,
+            "detection_method": method,
+            "confidence": 0.0,
+            "available_skills": list_available_skills(),
+        }
+        output_dir = Path(args.output)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        write_result_json(
+            output_dir=output_dir,
+            skill="bio-orchestrator",
+            version="0.2.0",
+            summary={"detected_skill": None, "method": method},
+            data=no_match_result,
+        )
+        print(json.dumps(no_match_result, indent=2))
         sys.exit(1)
 
     # Check skill exists

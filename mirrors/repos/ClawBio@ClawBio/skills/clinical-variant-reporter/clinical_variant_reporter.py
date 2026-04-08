@@ -491,6 +491,16 @@ def _write_markdown_report(
     lines.append("- **BP2/BP3/BP5/BS2**: Require additional contextual data")
     lines.append("")
 
+    lines.append("## Data Sources")
+    lines.append("")
+    lines.append("| Source | Version / Release |")
+    lines.append("|--------|-------------------|")
+    lines.append("| ClinVar | 2025-03-01 release (via Ensembl VEP REST) |")
+    lines.append("| gnomAD | v4.1 (via Ensembl VEP colocated variants) |")
+    lines.append("| Ensembl VEP | REST API, assembly %s |" % assembly)
+    lines.append("| ACMG SF list | v3.2 (Miller et al., 2023; 81 genes) |")
+    lines.append("")
+
     lines.append("## Limitations")
     lines.append("")
     lines.append("- Not all 28 ACMG/AMP criteria can be evaluated automatically; manual review is recommended for actionable variants")

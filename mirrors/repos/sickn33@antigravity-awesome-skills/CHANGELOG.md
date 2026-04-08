@@ -9,6 +9,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.9.0] - 2026-04-07 - "Vibeship Restore and Community Merge Batch"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release restores the full imported content for the affected `vibeship-spawner-skills` set after the truncation reported in issue `#473`, then folds in the current approved community PR batch. It also refreshes contributor syncing and README source credits so the repository state, plugin mirrors, and public credit surfaces stay aligned on `main`.
+
+## New Skills
+
+- **Satori skill pack** - merges PR #466 with the contributor-provided skills sourced from `MetcalfSolutions/Satori`.
+- **idea-darwin** - merges PR #469 to add the Darwin-style ideation workflow sourced from `warmskull/idea-darwin`.
+- **faf-skills contribution** - merges PR #477 as the maintained FAF contribution path sourced from `Wolfe-Jam/faf-skills`.
+
+## Improvements
+
+- **Issue #473 content restoration** - fully re-syncs the affected `vibeship-spawner-skills` imports on `main`, restoring the upstream body content instead of patching only a single truncated file.
+- **Canonical artifact refresh** - rebuilds the generated catalog, skill index, plugin mirrors, and compatibility data from the restored canonical `skills/` state.
+- **Post-merge maintainer sync** - refreshes contributor listings and README external-source credits as part of the mandatory after-merge maintainer flow for this batch.
+- **PR supersession cleanup** - closes PR #470 as superseded by PR #477 so the FAF change lands once, through the corrected contribution.
+
+## Who should care
+
+- **Users of restored vibeship-derived skills** get the full guidance back across the affected imported skill set instead of the previously truncated bodies.
+- **Contributors and maintainers** get a clean GitHub-only squash merge batch with the required contributor and source-credit follow-up recorded in the release.
+- **Anyone installing bundle or plugin variants** gets regenerated mirrors and catalog artifacts that match the restored canonical skills.
+
+## Credits
+
+- **Issue #473 reporter** for isolating the truncated `vibeship-spawner-skills` import problem.
+- **[@alecmetcalf](https://github.com/alecmetcalf)** for the Satori contribution merged in PR #466.
+- **[@warmskull](https://github.com/warmskull)** for `idea-darwin` merged in PR #469.
+- **[@Wolfe-Jam](https://github.com/Wolfe-Jam)** for the FAF skill contribution merged in PR #477.
+
 ## [9.8.0] - 2026-04-06 - "Governance, Tracking, and Discovery Skills"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
