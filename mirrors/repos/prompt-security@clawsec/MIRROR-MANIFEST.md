@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `prompt-security/clawsec` — 26 default patterns, 5 followed patterns, 147 file(s) materialized.
+Mirror of `prompt-security/clawsec` — 26 default patterns, 5 followed patterns, 143 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `prompt-security/clawsec` — 26 default patterns, 5 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 147 |
+| Files         | 143 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -161,55 +161,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 96 | ✓ | [`skills/clawsec-suite/test/fuzz_properties.test.mjs`](skills/clawsec-suite/test/fuzz_properties.test.mjs) |
 | 97 | ✓ | [`skills/clawsec-suite/test/fuzz_semver_scope_suppression.test.mjs`](skills/clawsec-suite/test/fuzz_semver_scope_suppression.test.mjs) |
 | 98 | ✓ | [`skills/clawsec-suite/test/guarded_install.test.mjs`](skills/clawsec-suite/test/guarded_install.test.mjs) |
-| 99 | ✓ | [`skills/clawsec-suite/test/lib/.gitkeep`](skills/clawsec-suite/test/lib/.gitkeep) |
-| 100 | ✓ | [`skills/clawsec-suite/test/lib/test_harness.mjs`](skills/clawsec-suite/test/lib/test_harness.mjs) |
-| 101 | ✓ | [`skills/clawsec-suite/test/path_resolution.test.mjs`](skills/clawsec-suite/test/path_resolution.test.mjs) |
-| 102 | ✓ | [`skills/clawsec-suite/test/skill_catalog_discovery.test.mjs`](skills/clawsec-suite/test/skill_catalog_discovery.test.mjs) |
-| 103 | ✓ | [`skills/clawtributor/.clawhubignore`](skills/clawtributor/.clawhubignore) |
-| 104 | ✓ | [`skills/clawtributor/README.md`](skills/clawtributor/README.md) |
-| 105 | ✓ | [`skills/clawtributor/reporting.md`](skills/clawtributor/reporting.md) |
-| 106 | ✓ | [`skills/clawtributor/skill.json`](skills/clawtributor/skill.json) |
-| 107 | ✓ | [`skills/clawtributor/SKILL.md`](skills/clawtributor/SKILL.md) |
-| 108 | ✓ | [`skills/openclaw-audit-watchdog/.clawhubignore`](skills/openclaw-audit-watchdog/.clawhubignore) |
-| 109 | ✓ | [`skills/openclaw-audit-watchdog/CHANGELOG.md`](skills/openclaw-audit-watchdog/CHANGELOG.md) |
-| 110 | ✓ | [`skills/openclaw-audit-watchdog/examples/README.md`](skills/openclaw-audit-watchdog/examples/README.md) |
-| 111 | ✓ | [`skills/openclaw-audit-watchdog/examples/security-audit-config.example.json`](skills/openclaw-audit-watchdog/examples/security-audit-config.example.json) |
-| 112 | ✓ | [`skills/openclaw-audit-watchdog/README.md`](skills/openclaw-audit-watchdog/README.md) |
-| 113 | ✓ | [`skills/openclaw-audit-watchdog/scripts/codex_review.sh`](skills/openclaw-audit-watchdog/scripts/codex_review.sh) |
-| 114 | ✓ | [`skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs`](skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs) |
-| 115 | ✓ | [`skills/openclaw-audit-watchdog/scripts/render_report.mjs`](skills/openclaw-audit-watchdog/scripts/render_report.mjs) |
-| 116 | ✓ | [`skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh`](skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh) |
-| 117 | ✓ | [`skills/openclaw-audit-watchdog/scripts/runner.sh`](skills/openclaw-audit-watchdog/scripts/runner.sh) |
-| 118 | ✓ | [`skills/openclaw-audit-watchdog/scripts/send_smtp.mjs`](skills/openclaw-audit-watchdog/scripts/send_smtp.mjs) |
-| 119 | ✓ | [`skills/openclaw-audit-watchdog/scripts/sendmail_report.sh`](skills/openclaw-audit-watchdog/scripts/sendmail_report.sh) |
-| 120 | ✓ | [`skills/openclaw-audit-watchdog/scripts/setup_cron.mjs`](skills/openclaw-audit-watchdog/scripts/setup_cron.mjs) |
-| 121 | ✓ | [`skills/openclaw-audit-watchdog/skill.json`](skills/openclaw-audit-watchdog/skill.json) |
-| 122 | ✓ | [`skills/openclaw-audit-watchdog/SKILL.md`](skills/openclaw-audit-watchdog/SKILL.md) |
-| 123 | ✓ | [`skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md`](skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md) |
-| 124 | ✓ | [`skills/openclaw-audit-watchdog/test/empty-suppressions.json`](skills/openclaw-audit-watchdog/test/empty-suppressions.json) |
-| 125 | ✓ | [`skills/openclaw-audit-watchdog/test/invalid-json.json`](skills/openclaw-audit-watchdog/test/invalid-json.json) |
-| 126 | ✓ | [`skills/openclaw-audit-watchdog/test/malformed-config.json`](skills/openclaw-audit-watchdog/test/malformed-config.json) |
-| 127 | ✓ | [`skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs`](skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs) |
-| 128 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs) |
-| 129 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config.test.mjs) |
-| 130 | ✓ | [`skills/prompt-agent/.clawhubignore`](skills/prompt-agent/.clawhubignore) |
-| 131 | ✓ | [`skills/prompt-agent/HEARTBEAT.md`](skills/prompt-agent/HEARTBEAT.md) |
-| 132 | ✓ | [`skills/prompt-agent/README.md`](skills/prompt-agent/README.md) |
-| 133 | ✓ | [`skills/prompt-agent/skill.json`](skills/prompt-agent/skill.json) |
-| 134 | ✓ | [`skills/prompt-agent/SKILL.md`](skills/prompt-agent/SKILL.md) |
-| 135 | ✓ | [`skills/soul-guardian/.clawhubignore`](skills/soul-guardian/.clawhubignore) |
-| 136 | ✓ | [`skills/soul-guardian/README.md`](skills/soul-guardian/README.md) |
-| 137 | ✓ | [`skills/soul-guardian/scripts/install_launchd_plist.py`](skills/soul-guardian/scripts/install_launchd_plist.py) |
-| 138 | ✓ | [`skills/soul-guardian/scripts/onboard_state_dir.py`](skills/soul-guardian/scripts/onboard_state_dir.py) |
-| 139 | ✓ | [`skills/soul-guardian/scripts/soul_guardian.py`](skills/soul-guardian/scripts/soul_guardian.py) |
-| 140 | ✓ | [`skills/soul-guardian/scripts/test_soul_guardian.py`](skills/soul-guardian/scripts/test_soul_guardian.py) |
-| 141 | ✓ | [`skills/soul-guardian/skill.json`](skills/soul-guardian/skill.json) |
-| 142 | ✓ | [`skills/soul-guardian/SKILL.md`](skills/soul-guardian/SKILL.md) |
-| 143 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 144 | → | [`font/README.md`](font/README.md) |
-| 145 | → | [`README.md`](README.md) |
-| 146 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
-| 147 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
+| 99 | ✓ | [`skills/clawsec-suite/test/heartbeat_version_check.test.mjs`](skills/clawsec-suite/test/heartbeat_version_check.test.mjs) |
+| 100 | ✓ | [`skills/clawsec-suite/test/lib/.gitkeep`](skills/clawsec-suite/test/lib/.gitkeep) |
+| 101 | ✓ | [`skills/clawsec-suite/test/lib/test_harness.mjs`](skills/clawsec-suite/test/lib/test_harness.mjs) |
+| 102 | ✓ | [`skills/clawsec-suite/test/path_resolution.test.mjs`](skills/clawsec-suite/test/path_resolution.test.mjs) |
+| 103 | ✓ | [`skills/clawsec-suite/test/skill_catalog_discovery.test.mjs`](skills/clawsec-suite/test/skill_catalog_discovery.test.mjs) |
+| 104 | ✓ | [`skills/clawtributor/.clawhubignore`](skills/clawtributor/.clawhubignore) |
+| 105 | ✓ | [`skills/clawtributor/README.md`](skills/clawtributor/README.md) |
+| 106 | ✓ | [`skills/clawtributor/reporting.md`](skills/clawtributor/reporting.md) |
+| 107 | ✓ | [`skills/clawtributor/skill.json`](skills/clawtributor/skill.json) |
+| 108 | ✓ | [`skills/clawtributor/SKILL.md`](skills/clawtributor/SKILL.md) |
+| 109 | ✓ | [`skills/openclaw-audit-watchdog/.clawhubignore`](skills/openclaw-audit-watchdog/.clawhubignore) |
+| 110 | ✓ | [`skills/openclaw-audit-watchdog/CHANGELOG.md`](skills/openclaw-audit-watchdog/CHANGELOG.md) |
+| 111 | ✓ | [`skills/openclaw-audit-watchdog/examples/README.md`](skills/openclaw-audit-watchdog/examples/README.md) |
+| 112 | ✓ | [`skills/openclaw-audit-watchdog/examples/security-audit-config.example.json`](skills/openclaw-audit-watchdog/examples/security-audit-config.example.json) |
+| 113 | ✓ | [`skills/openclaw-audit-watchdog/README.md`](skills/openclaw-audit-watchdog/README.md) |
+| 114 | ✓ | [`skills/openclaw-audit-watchdog/scripts/codex_review.sh`](skills/openclaw-audit-watchdog/scripts/codex_review.sh) |
+| 115 | ✓ | [`skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs`](skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs) |
+| 116 | ✓ | [`skills/openclaw-audit-watchdog/scripts/render_report.mjs`](skills/openclaw-audit-watchdog/scripts/render_report.mjs) |
+| 117 | ✓ | [`skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh`](skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh) |
+| 118 | ✓ | [`skills/openclaw-audit-watchdog/scripts/runner.sh`](skills/openclaw-audit-watchdog/scripts/runner.sh) |
+| 119 | ✓ | [`skills/openclaw-audit-watchdog/scripts/send_smtp.mjs`](skills/openclaw-audit-watchdog/scripts/send_smtp.mjs) |
+| 120 | ✓ | [`skills/openclaw-audit-watchdog/scripts/sendmail_report.sh`](skills/openclaw-audit-watchdog/scripts/sendmail_report.sh) |
+| 121 | ✓ | [`skills/openclaw-audit-watchdog/scripts/setup_cron.mjs`](skills/openclaw-audit-watchdog/scripts/setup_cron.mjs) |
+| 122 | ✓ | [`skills/openclaw-audit-watchdog/skill.json`](skills/openclaw-audit-watchdog/skill.json) |
+| 123 | ✓ | [`skills/openclaw-audit-watchdog/SKILL.md`](skills/openclaw-audit-watchdog/SKILL.md) |
+| 124 | ✓ | [`skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md`](skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md) |
+| 125 | ✓ | [`skills/openclaw-audit-watchdog/test/empty-suppressions.json`](skills/openclaw-audit-watchdog/test/empty-suppressions.json) |
+| 126 | ✓ | [`skills/openclaw-audit-watchdog/test/invalid-json.json`](skills/openclaw-audit-watchdog/test/invalid-json.json) |
+| 127 | ✓ | [`skills/openclaw-audit-watchdog/test/malformed-config.json`](skills/openclaw-audit-watchdog/test/malformed-config.json) |
+| 128 | ✓ | [`skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs`](skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs) |
+| 129 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs) |
+| 130 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config.test.mjs) |
+| 131 | ✓ | [`skills/soul-guardian/.clawhubignore`](skills/soul-guardian/.clawhubignore) |
+| 132 | ✓ | [`skills/soul-guardian/README.md`](skills/soul-guardian/README.md) |
+| 133 | ✓ | [`skills/soul-guardian/scripts/install_launchd_plist.py`](skills/soul-guardian/scripts/install_launchd_plist.py) |
+| 134 | ✓ | [`skills/soul-guardian/scripts/onboard_state_dir.py`](skills/soul-guardian/scripts/onboard_state_dir.py) |
+| 135 | ✓ | [`skills/soul-guardian/scripts/soul_guardian.py`](skills/soul-guardian/scripts/soul_guardian.py) |
+| 136 | ✓ | [`skills/soul-guardian/scripts/test_soul_guardian.py`](skills/soul-guardian/scripts/test_soul_guardian.py) |
+| 137 | ✓ | [`skills/soul-guardian/skill.json`](skills/soul-guardian/skill.json) |
+| 138 | ✓ | [`skills/soul-guardian/SKILL.md`](skills/soul-guardian/SKILL.md) |
+| 139 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 140 | → | [`font/README.md`](font/README.md) |
+| 141 | → | [`README.md`](README.md) |
+| 142 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
+| 143 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
 
 ---
 

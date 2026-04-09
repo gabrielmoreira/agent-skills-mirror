@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 19 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,12 +72,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`prompts/session-2026-03-29-tools-settings-overview.md`](prompts/session-2026-03-29-tools-settings-overview.md) |
 | 12 | ✓ | [`prompts/session-2026-04-05-e2e-ci-hardening.md`](prompts/session-2026-04-05-e2e-ci-hardening.md) |
 | 13 | ✓ | [`prompts/session-2026-04-06-swift-bridge-httpd-ci.md`](prompts/session-2026-04-06-swift-bridge-httpd-ci.md) |
-| 14 | ✓ | [`prompts/sessions/2026-01-30-1737-21a36fc6.jsonl`](prompts/sessions/2026-01-30-1737-21a36fc6.jsonl) |
-| 15 | ✓ | [`prompts/sessions/2026-01-30-1745-90ab5b9d.jsonl`](prompts/sessions/2026-01-30-1745-90ab5b9d.jsonl) |
-| 16 | ✓ | [`prompts/sessions/2026-01-30-1813-b74eb977.jsonl`](prompts/sessions/2026-01-30-1813-b74eb977.jsonl) |
-| 17 | ✓ | [`prompts/sessions/2026-01-30-1816-612287e3.jsonl`](prompts/sessions/2026-01-30-1816-612287e3.jsonl) |
-| 18 | ✓ | [`prompts/sessions/2026-01-30-1818-90ab5b9d.jsonl`](prompts/sessions/2026-01-30-1818-90ab5b9d.jsonl) |
-| 19 | ✓ | [`website/llms.txt`](website/llms.txt) |
+| 14 | ✓ | [`prompts/session-2026-04-08-minimax-compatibility.md`](prompts/session-2026-04-08-minimax-compatibility.md) |
+| 15 | ✓ | [`prompts/sessions/2026-01-30-1737-21a36fc6.jsonl`](prompts/sessions/2026-01-30-1737-21a36fc6.jsonl) |
+| 16 | ✓ | [`prompts/sessions/2026-01-30-1745-90ab5b9d.jsonl`](prompts/sessions/2026-01-30-1745-90ab5b9d.jsonl) |
+| 17 | ✓ | [`prompts/sessions/2026-01-30-1813-b74eb977.jsonl`](prompts/sessions/2026-01-30-1813-b74eb977.jsonl) |
+| 18 | ✓ | [`prompts/sessions/2026-01-30-1816-612287e3.jsonl`](prompts/sessions/2026-01-30-1816-612287e3.jsonl) |
+| 19 | ✓ | [`prompts/sessions/2026-01-30-1818-90ab5b9d.jsonl`](prompts/sessions/2026-01-30-1818-90ab5b9d.jsonl) |
+| 20 | ✓ | [`website/llms.txt`](website/llms.txt) |
 
 ---
 

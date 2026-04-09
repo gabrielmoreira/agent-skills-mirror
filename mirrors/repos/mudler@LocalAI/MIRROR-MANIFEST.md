@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 9 file(
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,14 +60,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/adding-backends.md`](.agents/adding-backends.md) |
-| 2 | ✓ | [`.agents/api-endpoints-and-auth.md`](.agents/api-endpoints-and-auth.md) |
-| 3 | ✓ | [`.agents/building-and-testing.md`](.agents/building-and-testing.md) |
-| 4 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
-| 5 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
-| 6 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
-| 7 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`.agents/adding-gallery-models.md`](.agents/adding-gallery-models.md) |
+| 3 | ✓ | [`.agents/api-endpoints-and-auth.md`](.agents/api-endpoints-and-auth.md) |
+| 4 | ✓ | [`.agents/building-and-testing.md`](.agents/building-and-testing.md) |
+| 5 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
+| 6 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
+| 7 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
+| 8 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

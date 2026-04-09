@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 66 file(s) materialized.
+Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 66 fi
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 66 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,25 +106,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`skills/user-skills/generated/api/file-manager/SKILL.md`](skills/user-skills/generated/api/file-manager/SKILL.md) |
 | 46 | ✓ | [`skills/user-skills/generated/api/graphql/SKILL.md`](skills/user-skills/generated/api/graphql/SKILL.md) |
 | 47 | ✓ | [`skills/user-skills/generated/api/key-value-store/SKILL.md`](skills/user-skills/generated/api/key-value-store/SKILL.md) |
-| 48 | ✓ | [`skills/user-skills/generated/api/logger/SKILL.md`](skills/user-skills/generated/api/logger/SKILL.md) |
-| 49 | ✓ | [`skills/user-skills/generated/api/opensearch/SKILL.md`](skills/user-skills/generated/api/opensearch/SKILL.md) |
-| 50 | ✓ | [`skills/user-skills/generated/api/scheduler/SKILL.md`](skills/user-skills/generated/api/scheduler/SKILL.md) |
-| 51 | ✓ | [`skills/user-skills/generated/api/security/SKILL.md`](skills/user-skills/generated/api/security/SKILL.md) |
-| 52 | ✓ | [`skills/user-skills/generated/api/SKILL.md`](skills/user-skills/generated/api/SKILL.md) |
-| 53 | ✓ | [`skills/user-skills/generated/api/system/SKILL.md`](skills/user-skills/generated/api/system/SKILL.md) |
-| 54 | ✓ | [`skills/user-skills/generated/api/tasks/SKILL.md`](skills/user-skills/generated/api/tasks/SKILL.md) |
-| 55 | ✓ | [`skills/user-skills/generated/api/tenancy/SKILL.md`](skills/user-skills/generated/api/tenancy/SKILL.md) |
-| 56 | ✓ | [`skills/user-skills/generated/api/tenant-manager/SKILL.md`](skills/user-skills/generated/api/tenant-manager/SKILL.md) |
-| 57 | ✓ | [`skills/user-skills/generated/api/website-builder/SKILL.md`](skills/user-skills/generated/api/website-builder/SKILL.md) |
-| 58 | ✓ | [`skills/user-skills/generated/cli/command/SKILL.md`](skills/user-skills/generated/cli/command/SKILL.md) |
-| 59 | ✓ | [`skills/user-skills/generated/cli/SKILL.md`](skills/user-skills/generated/cli/SKILL.md) |
-| 60 | ✓ | [`skills/user-skills/generated/extensions/SKILL.md`](skills/user-skills/generated/extensions/SKILL.md) |
-| 61 | ✓ | [`skills/user-skills/generated/infra/SKILL.md`](skills/user-skills/generated/infra/SKILL.md) |
-| 62 | ✓ | [`skills/user-skills/infrastructure-extensions/SKILL.md`](skills/user-skills/infrastructure-extensions/SKILL.md) |
-| 63 | ✓ | [`skills/user-skills/local-development/SKILL.md`](skills/user-skills/local-development/SKILL.md) |
-| 64 | ✓ | [`skills/user-skills/project-structure/SKILL.md`](skills/user-skills/project-structure/SKILL.md) |
-| 65 | ✓ | [`skills/user-skills/webiny-sdk/SKILL.md`](skills/user-skills/webiny-sdk/SKILL.md) |
-| 66 | ✓ | [`skills/user-skills/website-builder/SKILL.md`](skills/user-skills/website-builder/SKILL.md) |
+| 48 | ✓ | [`skills/user-skills/generated/api/languages/SKILL.md`](skills/user-skills/generated/api/languages/SKILL.md) |
+| 49 | ✓ | [`skills/user-skills/generated/api/logger/SKILL.md`](skills/user-skills/generated/api/logger/SKILL.md) |
+| 50 | ✓ | [`skills/user-skills/generated/api/opensearch/SKILL.md`](skills/user-skills/generated/api/opensearch/SKILL.md) |
+| 51 | ✓ | [`skills/user-skills/generated/api/scheduler/SKILL.md`](skills/user-skills/generated/api/scheduler/SKILL.md) |
+| 52 | ✓ | [`skills/user-skills/generated/api/security/SKILL.md`](skills/user-skills/generated/api/security/SKILL.md) |
+| 53 | ✓ | [`skills/user-skills/generated/api/SKILL.md`](skills/user-skills/generated/api/SKILL.md) |
+| 54 | ✓ | [`skills/user-skills/generated/api/system/SKILL.md`](skills/user-skills/generated/api/system/SKILL.md) |
+| 55 | ✓ | [`skills/user-skills/generated/api/tasks/SKILL.md`](skills/user-skills/generated/api/tasks/SKILL.md) |
+| 56 | ✓ | [`skills/user-skills/generated/api/tenancy/SKILL.md`](skills/user-skills/generated/api/tenancy/SKILL.md) |
+| 57 | ✓ | [`skills/user-skills/generated/api/tenant-manager/SKILL.md`](skills/user-skills/generated/api/tenant-manager/SKILL.md) |
+| 58 | ✓ | [`skills/user-skills/generated/api/website-builder/SKILL.md`](skills/user-skills/generated/api/website-builder/SKILL.md) |
+| 59 | ✓ | [`skills/user-skills/generated/cli/command/SKILL.md`](skills/user-skills/generated/cli/command/SKILL.md) |
+| 60 | ✓ | [`skills/user-skills/generated/cli/SKILL.md`](skills/user-skills/generated/cli/SKILL.md) |
+| 61 | ✓ | [`skills/user-skills/generated/extensions/SKILL.md`](skills/user-skills/generated/extensions/SKILL.md) |
+| 62 | ✓ | [`skills/user-skills/generated/infra/SKILL.md`](skills/user-skills/generated/infra/SKILL.md) |
+| 63 | ✓ | [`skills/user-skills/infrastructure-extensions/SKILL.md`](skills/user-skills/infrastructure-extensions/SKILL.md) |
+| 64 | ✓ | [`skills/user-skills/local-development/SKILL.md`](skills/user-skills/local-development/SKILL.md) |
+| 65 | ✓ | [`skills/user-skills/project-structure/SKILL.md`](skills/user-skills/project-structure/SKILL.md) |
+| 66 | ✓ | [`skills/user-skills/webiny-sdk/SKILL.md`](skills/user-skills/webiny-sdk/SKILL.md) |
+| 67 | ✓ | [`skills/user-skills/website-builder/SKILL.md`](skills/user-skills/website-builder/SKILL.md) |
 
 ---
 

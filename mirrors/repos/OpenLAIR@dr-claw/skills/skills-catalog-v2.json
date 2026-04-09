@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-03-24T17:51:17.721Z",
   "schema": "skills-taxonomy-v2",
-  "totalSkills": 112,
+  "totalSkills": 170,
   "skills": [
     {
       "name": "academic-researcher",
@@ -5143,6 +5143,2318 @@
         "nemo-curator",
         "ray-data",
         "slime-rl-training"
+      ]
+    },
+    {
+      "name": "aris-infra",
+      "primaryIntent": "deployment",
+      "intents": [
+        "deployment"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "infrastructure",
+        "setup",
+        "config",
+        "mcp",
+        "server",
+        "registration",
+        "env",
+        "python",
+        "tool",
+        "installation",
+        "adversarial",
+        "review",
+        "pipeline"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "ARIS infrastructure setup: MCP server registration, env config, Python tool installation for cross-model adversarial review pipeline.",
+      "legacy": {
+        "dirPath": "aris-infra",
+        "skillFile": "skills/aris-infra/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-pipeline",
+        "aris-auto-review-loop",
+        "aris-run-experiment",
+        "aris-system-profile"
+      ]
+    },
+    {
+      "name": "aris-idea-discovery",
+      "primaryIntent": "ideation",
+      "intents": [
+        "ideation",
+        "research",
+        "evaluation"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "idea",
+        "discovery",
+        "literature",
+        "survey",
+        "novelty",
+        "verification",
+        "cross-model",
+        "review",
+        "method",
+        "refinement",
+        "brainstorming"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "Full idea discovery pipeline: literature survey, idea generation, novelty verification, cross-model review, and method refinement.",
+      "legacy": {
+        "dirPath": "aris-idea-discovery",
+        "skillFile": "skills/aris-idea-discovery/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-lit",
+        "aris-idea-creator",
+        "aris-novelty-check",
+        "aris-research-review",
+        "aris-research-refine"
+      ]
+    },
+    {
+      "name": "aris-experiment-bridge",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment",
+        "deployment"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "experiment",
+        "bridge",
+        "deployment",
+        "gpu",
+        "ssh",
+        "vast.ai",
+        "modal",
+        "results",
+        "implementation"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "Bridges idea discovery and review: implements experiments from plan, deploys to GPU (local/SSH/vast.ai/Modal), collects results.",
+      "legacy": {
+        "dirPath": "aris-experiment-bridge",
+        "skillFile": "skills/aris-experiment-bridge/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-run-experiment",
+        "aris-experiment-plan",
+        "aris-vast-gpu",
+        "aris-serverless-modal",
+        "aris-analyze-results"
+      ]
+    },
+    {
+      "name": "aris-auto-review-loop",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "auto",
+        "review",
+        "loop",
+        "cross-model",
+        "adversarial",
+        "external",
+        "llm",
+        "difficulty",
+        "debate",
+        "protocol",
+        "multi-round"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "Autonomous multi-round cross-model adversarial review. External LLM critically reviews Claude's work with medium/hard/nightmare difficulty levels and debate protocol.",
+      "legacy": {
+        "dirPath": "aris-auto-review-loop",
+        "skillFile": "skills/aris-auto-review-loop/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-review",
+        "aris-auto-paper-improvement-loop",
+        "aris-meta-optimize",
+        "aris-rebuttal"
+      ]
+    },
+    {
+      "name": "aris-paper-writing",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing",
+        "evaluation"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "writing",
+        "outline",
+        "figure",
+        "generation",
+        "latex",
+        "compilation",
+        "improvement",
+        "loop",
+        "section"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "Full paper writing pipeline: outline planning, figure generation, section-by-section LaTeX writing, compilation, and multi-round improvement loop.",
+      "legacy": {
+        "dirPath": "aris-paper-writing",
+        "skillFile": "skills/aris-paper-writing/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-plan",
+        "aris-paper-write",
+        "aris-paper-figure",
+        "aris-paper-compile",
+        "aris-auto-paper-improvement-loop"
+      ]
+    },
+    {
+      "name": "aris-rebuttal",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing",
+        "evaluation"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "rebuttal",
+        "submission",
+        "reviews",
+        "concerns",
+        "strategy",
+        "safety",
+        "gates",
+        "stress",
+        "testing",
+        "post-submission"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "Post-submission rebuttal pipeline: parses reviews, atomizes concerns, builds strategy, drafts rebuttal with safety gates and stress testing.",
+      "legacy": {
+        "dirPath": "aris-rebuttal",
+        "skillFile": "skills/aris-rebuttal/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-auto-review-loop",
+        "aris-paper-writing",
+        "aris-result-to-claim",
+        "aris-ablation-planner"
+      ]
+    },
+    {
+      "name": "aris-research-pipeline",
+      "primaryIntent": "research",
+      "intents": [
+        "research",
+        "ideation",
+        "experiment",
+        "writing",
+        "evaluation"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "research",
+        "pipeline",
+        "end-to-end",
+        "autonomous",
+        "idea",
+        "discovery",
+        "experiment",
+        "cross-model",
+        "review",
+        "paper",
+        "submission"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "End-to-end autonomous research pipeline: idea discovery through experiment implementation to cross-model review and paper submission.",
+      "legacy": {
+        "dirPath": "aris-research-pipeline",
+        "skillFile": "skills/aris-research-pipeline/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-idea-discovery",
+        "aris-experiment-bridge",
+        "aris-auto-review-loop",
+        "aris-paper-writing",
+        "aris-rebuttal"
+      ]
+    },
+    {
+      "name": "aris-research-lit",
+      "primaryIntent": "research",
+      "intents": [
+        "research"
+      ],
+      "capabilities": [
+        "search-retrieval"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "literature",
+        "search",
+        "zotero",
+        "obsidian",
+        "pdf",
+        "web",
+        "arxiv",
+        "semantic-scholar",
+        "landscape",
+        "mapping"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Literature search across Zotero, Obsidian, local PDFs, web, arXiv, and Semantic Scholar with structured landscape mapping.",
+      "legacy": {
+        "dirPath": "aris-research-lit",
+        "skillFile": "skills/aris-research-lit/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-idea-discovery",
+        "aris-arxiv",
+        "aris-semantic-scholar",
+        "aris-research-wiki"
+      ]
+    },
+    {
+      "name": "aris-idea-creator",
+      "primaryIntent": "ideation",
+      "intents": [
+        "ideation"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "idea",
+        "creator",
+        "brainstorm",
+        "cross-model",
+        "generation",
+        "pilot",
+        "experiments",
+        "ranked",
+        "report"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Brainstorms 8-12 research ideas via cross-model generation, filters, runs pilot experiments, produces ranked IDEA_REPORT.md.",
+      "legacy": {
+        "dirPath": "aris-idea-creator",
+        "skillFile": "skills/aris-idea-creator/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-idea-discovery",
+        "aris-novelty-check",
+        "aris-research-refine",
+        "aris-research-review"
+      ]
+    },
+    {
+      "name": "aris-novelty-check",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation",
+        "research"
+      ],
+      "capabilities": [
+        "search-retrieval",
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "novelty",
+        "check",
+        "verification",
+        "cross-model",
+        "gpt",
+        "literature",
+        "comparison"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Multi-source novelty verification with cross-model (GPT-5.4) verification against existing literature.",
+      "legacy": {
+        "dirPath": "aris-novelty-check",
+        "skillFile": "skills/aris-novelty-check/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-idea-discovery",
+        "aris-idea-creator",
+        "aris-research-lit",
+        "aris-semantic-scholar"
+      ]
+    },
+    {
+      "name": "aris-research-review",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation"
+      ],
+      "capabilities": [
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "research",
+        "review",
+        "critical",
+        "external",
+        "llm",
+        "mcp",
+        "iterative",
+        "dialogue",
+        "scoring"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Deep critical review via external LLM MCP with iterative dialogue and structured scoring.",
+      "legacy": {
+        "dirPath": "aris-research-review",
+        "skillFile": "skills/aris-research-review/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-auto-review-loop",
+        "aris-idea-discovery",
+        "aris-novelty-check",
+        "aris-research-refine"
+      ]
+    },
+    {
+      "name": "aris-research-refine",
+      "primaryIntent": "ideation",
+      "intents": [
+        "ideation"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "research",
+        "refine",
+        "method",
+        "refinement",
+        "problem-anchored",
+        "iterative",
+        "scoring",
+        "7-dimension"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Problem-anchored iterative method refinement with 7-dimension scoring, up to 5 rounds targeting score >= 9.",
+      "legacy": {
+        "dirPath": "aris-research-refine",
+        "skillFile": "skills/aris-research-refine/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-idea-discovery",
+        "aris-research-refine-pipeline",
+        "aris-research-review",
+        "aris-experiment-plan"
+      ]
+    },
+    {
+      "name": "aris-research-refine-pipeline",
+      "primaryIntent": "ideation",
+      "intents": [
+        "ideation",
+        "experiment"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "research",
+        "refine",
+        "pipeline",
+        "end-to-end",
+        "experiment-plan",
+        "chained"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Chains research-refine and experiment-plan into a single end-to-end refinement flow.",
+      "legacy": {
+        "dirPath": "aris-research-refine-pipeline",
+        "skillFile": "skills/aris-research-refine-pipeline/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-refine",
+        "aris-experiment-plan",
+        "aris-idea-discovery"
+      ]
+    },
+    {
+      "name": "aris-analyze-results",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment",
+        "evaluation"
+      ],
+      "capabilities": [
+        "data-processing",
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "analyze",
+        "results",
+        "statistical",
+        "testing",
+        "insights",
+        "experiment",
+        "analysis"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Experiment result analysis with statistical testing and structured insights generation.",
+      "legacy": {
+        "dirPath": "aris-analyze-results",
+        "skillFile": "skills/aris-analyze-results/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-experiment-bridge",
+        "aris-run-experiment",
+        "aris-result-to-claim",
+        "aris-paper-figure"
+      ]
+    },
+    {
+      "name": "aris-run-experiment",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment",
+        "deployment"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "run",
+        "experiment",
+        "deploy",
+        "local",
+        "ssh",
+        "vast.ai",
+        "modal",
+        "gpu",
+        "auto-retry"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Deploys experiments to local, remote SSH, Vast.ai, or Modal GPU environments with auto-retry.",
+      "legacy": {
+        "dirPath": "aris-run-experiment",
+        "skillFile": "skills/aris-run-experiment/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-experiment-bridge",
+        "aris-vast-gpu",
+        "aris-serverless-modal",
+        "aris-monitor-experiment"
+      ]
+    },
+    {
+      "name": "aris-experiment-plan",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "experiment",
+        "plan",
+        "claim-driven",
+        "roadmap",
+        "milestone",
+        "run",
+        "ordering",
+        "compute",
+        "budget"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Claim-driven experiment roadmap with milestone structure, run ordering, and compute budget.",
+      "legacy": {
+        "dirPath": "aris-experiment-plan",
+        "skillFile": "skills/aris-experiment-plan/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-experiment-bridge",
+        "aris-research-refine",
+        "aris-ablation-planner",
+        "aris-run-experiment"
+      ]
+    },
+    {
+      "name": "aris-result-to-claim",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing",
+        "evaluation"
+      ],
+      "capabilities": [
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "result",
+        "claim",
+        "validated",
+        "paper",
+        "claims",
+        "cross-model",
+        "judgment",
+        "conversion"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Converts experiment results into validated paper claims via cross-model judgment.",
+      "legacy": {
+        "dirPath": "aris-result-to-claim",
+        "skillFile": "skills/aris-result-to-claim/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-analyze-results",
+        "aris-paper-plan",
+        "aris-paper-writing",
+        "aris-auto-review-loop"
+      ]
+    },
+    {
+      "name": "aris-paper-plan",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "plan",
+        "claims-evidence",
+        "matrix",
+        "section",
+        "structure",
+        "figure",
+        "citation",
+        "scaffolding",
+        "review"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Claims-evidence matrix, section structure, figure plan, and citation scaffolding with external LLM review.",
+      "legacy": {
+        "dirPath": "aris-paper-plan",
+        "skillFile": "skills/aris-paper-plan/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-result-to-claim",
+        "aris-paper-write",
+        "aris-paper-figure"
+      ]
+    },
+    {
+      "name": "aris-paper-write",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "write",
+        "latex",
+        "section",
+        "generation",
+        "bibtex",
+        "dblp",
+        "crossref",
+        "de-ai",
+        "polish"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Section-by-section LaTeX generation with DBLP/CrossRef BibTeX fetching and de-AI polish.",
+      "legacy": {
+        "dirPath": "aris-paper-write",
+        "skillFile": "skills/aris-paper-write/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-paper-plan",
+        "aris-paper-compile",
+        "aris-paper-figure"
+      ]
+    },
+    {
+      "name": "aris-paper-figure",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "figure",
+        "matplotlib",
+        "seaborn",
+        "plots",
+        "latex",
+        "tables",
+        "publication-quality"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Publication-quality matplotlib/seaborn plots and LaTeX tables from experiment data.",
+      "legacy": {
+        "dirPath": "aris-paper-figure",
+        "skillFile": "skills/aris-paper-figure/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-paper-write",
+        "aris-paper-illustration",
+        "aris-analyze-results"
+      ]
+    },
+    {
+      "name": "aris-paper-compile",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "compile",
+        "latex",
+        "compilation",
+        "auto-fix",
+        "page-count",
+        "submission",
+        "readiness"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "LaTeX compilation with auto-fix, page count verification, and submission readiness checks.",
+      "legacy": {
+        "dirPath": "aris-paper-compile",
+        "skillFile": "skills/aris-paper-compile/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-paper-write",
+        "aris-auto-paper-improvement-loop"
+      ]
+    },
+    {
+      "name": "aris-auto-paper-improvement-loop",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation",
+        "writing"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "auto",
+        "paper",
+        "improvement",
+        "loop",
+        "external",
+        "llm",
+        "review",
+        "fix",
+        "recompile",
+        "polishing"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "2-round external LLM review/fix/recompile cycle for paper polishing.",
+      "legacy": {
+        "dirPath": "aris-auto-paper-improvement-loop",
+        "skillFile": "skills/aris-auto-paper-improvement-loop/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-paper-compile",
+        "aris-auto-review-loop"
+      ]
+    },
+    {
+      "name": "aris-paper-illustration",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "multimodal"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "illustration",
+        "figure",
+        "gemini",
+        "generation",
+        "multi-stage",
+        "supervisor",
+        "reviewer"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Multi-stage figure generation using Gemini with Claude as strict supervisor/reviewer.",
+      "legacy": {
+        "dirPath": "aris-paper-illustration",
+        "skillFile": "skills/aris-paper-illustration/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-figure",
+        "aris-paper-writing",
+        "aris-mermaid-diagram",
+        "aris-pixel-art"
+      ]
+    },
+    {
+      "name": "aris-paper-poster",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "poster",
+        "conference",
+        "venue-specific",
+        "styling",
+        "generation"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Conference poster generation from compiled papers with venue-specific styling.",
+      "legacy": {
+        "dirPath": "aris-paper-poster",
+        "skillFile": "skills/aris-paper-poster/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-paper-slides",
+        "aris-paper-compile"
+      ]
+    },
+    {
+      "name": "aris-paper-slides",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "paper",
+        "slides",
+        "conference",
+        "presentation",
+        "beamer",
+        "latex",
+        "speaker",
+        "notes"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Conference presentation slide generation using beamer LaTeX with speaker notes.",
+      "legacy": {
+        "dirPath": "aris-paper-slides",
+        "skillFile": "skills/aris-paper-slides/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-paper-poster",
+        "aris-paper-figure"
+      ]
+    },
+    {
+      "name": "aris-arxiv",
+      "primaryIntent": "research",
+      "intents": [
+        "research"
+      ],
+      "capabilities": [
+        "search-retrieval"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "arxiv",
+        "search",
+        "pdf",
+        "download",
+        "json",
+        "preprint"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "arXiv search and PDF download with structured JSON output.",
+      "legacy": {
+        "dirPath": "aris-arxiv",
+        "skillFile": "skills/aris-arxiv/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-lit",
+        "aris-semantic-scholar",
+        "aris-novelty-check"
+      ]
+    },
+    {
+      "name": "aris-semantic-scholar",
+      "primaryIntent": "research",
+      "intents": [
+        "research"
+      ],
+      "capabilities": [
+        "search-retrieval"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "semantic-scholar",
+        "paper",
+        "search",
+        "api",
+        "filters",
+        "de-duplication",
+        "published",
+        "venue"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Published venue paper search via Semantic Scholar API with filters and de-duplication.",
+      "legacy": {
+        "dirPath": "aris-semantic-scholar",
+        "skillFile": "skills/aris-semantic-scholar/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-lit",
+        "aris-arxiv",
+        "aris-novelty-check"
+      ]
+    },
+    {
+      "name": "aris-research-wiki",
+      "primaryIntent": "data",
+      "intents": [
+        "data"
+      ],
+      "capabilities": [
+        "data-processing"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "research",
+        "wiki",
+        "knowledge",
+        "base",
+        "papers",
+        "ideas",
+        "experiments",
+        "claims",
+        "relationships",
+        "persistent"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Persistent research knowledge base: papers, ideas, experiments, claims with typed relationships.",
+      "legacy": {
+        "dirPath": "aris-research-wiki",
+        "skillFile": "skills/aris-research-wiki/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-lit",
+        "aris-idea-discovery",
+        "aris-analyze-results"
+      ]
+    },
+    {
+      "name": "aris-monitor-experiment",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "monitor",
+        "experiment",
+        "ssh",
+        "training",
+        "screen",
+        "wandb",
+        "metrics",
+        "gpu",
+        "utilization"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "SSH monitoring of remote training: screen output, W&B metrics, GPU utilization.",
+      "legacy": {
+        "dirPath": "aris-monitor-experiment",
+        "skillFile": "skills/aris-monitor-experiment/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-run-experiment",
+        "aris-training-check",
+        "aris-system-profile"
+      ]
+    },
+    {
+      "name": "aris-meta-optimize",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "meta",
+        "optimize",
+        "outer-loop",
+        "harness",
+        "usage",
+        "logs",
+        "skill",
+        "patches",
+        "cross-model",
+        "review"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Outer-loop harness optimization: analyzes usage logs, proposes SKILL.md patches via cross-model review.",
+      "legacy": {
+        "dirPath": "aris-meta-optimize",
+        "skillFile": "skills/aris-meta-optimize/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-auto-review-loop",
+        "aris-research-pipeline",
+        "aris-infra"
+      ]
+    },
+    {
+      "name": "aris-feishu-notify",
+      "primaryIntent": "deployment",
+      "intents": [
+        "deployment"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "feishu",
+        "lark",
+        "notification",
+        "mobile",
+        "human-in-the-loop",
+        "overnight",
+        "runs"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Feishu/Lark mobile notifications for human-in-the-loop during overnight runs.",
+      "legacy": {
+        "dirPath": "aris-feishu-notify",
+        "skillFile": "skills/aris-feishu-notify/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-infra",
+        "aris-monitor-experiment",
+        "aris-run-experiment"
+      ]
+    },
+    {
+      "name": "aris-system-profile",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "system",
+        "profile",
+        "performance",
+        "cpu",
+        "memory",
+        "gpu",
+        "interconnect",
+        "analysis",
+        "profiling"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Performance profiling: CPU, memory, GPU, interconnect analysis with structured reports.",
+      "legacy": {
+        "dirPath": "aris-system-profile",
+        "skillFile": "skills/aris-system-profile/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-infra",
+        "aris-run-experiment",
+        "aris-monitor-experiment"
+      ]
+    },
+    {
+      "name": "aris-training-check",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment",
+        "evaluation"
+      ],
+      "capabilities": [
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "training",
+        "check",
+        "wandb",
+        "metrics",
+        "monitoring",
+        "nan",
+        "divergence",
+        "idle",
+        "gpu"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Periodic W&B metric monitoring during training. Catches NaN, divergence, idle GPUs.",
+      "legacy": {
+        "dirPath": "aris-training-check",
+        "skillFile": "skills/aris-training-check/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-monitor-experiment",
+        "aris-run-experiment",
+        "aris-system-profile"
+      ]
+    },
+    {
+      "name": "aris-vast-gpu",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment",
+        "deployment"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "vast",
+        "gpu",
+        "lifecycle",
+        "task-driven",
+        "selection",
+        "cost",
+        "optimization",
+        "rent",
+        "setup",
+        "destroy"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Full vast.ai GPU lifecycle: task-driven selection, cost optimization, rent, setup, destroy.",
+      "legacy": {
+        "dirPath": "aris-vast-gpu",
+        "skillFile": "skills/aris-vast-gpu/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-run-experiment",
+        "aris-serverless-modal",
+        "aris-experiment-bridge"
+      ]
+    },
+    {
+      "name": "aris-serverless-modal",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment",
+        "deployment"
+      ],
+      "capabilities": [
+        "infrastructure-ops"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "serverless",
+        "modal",
+        "gpu",
+        "cost",
+        "estimation",
+        "launcher",
+        "patterns",
+        "per-second",
+        "billing"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Modal serverless GPU skill: cost estimation, launcher patterns, per-second billing.",
+      "legacy": {
+        "dirPath": "aris-serverless-modal",
+        "skillFile": "skills/aris-serverless-modal/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-run-experiment",
+        "aris-vast-gpu",
+        "aris-experiment-bridge"
+      ]
+    },
+    {
+      "name": "aris-ablation-planner",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "ablation",
+        "planner",
+        "study",
+        "design",
+        "reviewer",
+        "perspective",
+        "cross-model",
+        "feasibility"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Designs ablation studies from reviewer perspective using cross-model feasibility review.",
+      "legacy": {
+        "dirPath": "aris-ablation-planner",
+        "skillFile": "skills/aris-ablation-planner/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-experiment-plan",
+        "aris-rebuttal",
+        "aris-auto-review-loop"
+      ]
+    },
+    {
+      "name": "aris-comm-lit-review",
+      "primaryIntent": "research",
+      "intents": [
+        "research"
+      ],
+      "capabilities": [
+        "search-retrieval"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "communications",
+        "literature",
+        "review",
+        "venue",
+        "priority",
+        "tiers",
+        "wireless",
+        "networking"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Communications-domain literature review with venue priority tiers for wireless/networking.",
+      "legacy": {
+        "dirPath": "aris-comm-lit-review",
+        "skillFile": "skills/aris-comm-lit-review/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-research-lit",
+        "aris-arxiv",
+        "aris-semantic-scholar"
+      ]
+    },
+    {
+      "name": "aris-dse-loop",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "dse",
+        "design",
+        "space",
+        "exploration",
+        "computer",
+        "architecture",
+        "eda",
+        "pareto",
+        "frontier",
+        "autonomous"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Autonomous design space exploration for computer architecture/EDA with Pareto frontier.",
+      "legacy": {
+        "dirPath": "aris-dse-loop",
+        "skillFile": "skills/aris-dse-loop/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-experiment-bridge",
+        "aris-experiment-plan",
+        "aris-analyze-results"
+      ]
+    },
+    {
+      "name": "aris-formula-derivation",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "formula",
+        "derivation",
+        "invariant",
+        "assumption",
+        "normalization",
+        "step",
+        "classification",
+        "mathematical"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Structures formula derivations: invariant selection, assumption normalization, step classification.",
+      "legacy": {
+        "dirPath": "aris-formula-derivation",
+        "skillFile": "skills/aris-formula-derivation/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-proof-writer",
+        "aris-paper-write",
+        "aris-paper-writing"
+      ]
+    },
+    {
+      "name": "aris-grant-proposal",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "grant",
+        "proposal",
+        "kakenhi",
+        "nsf",
+        "nsfc",
+        "erc",
+        "dfg",
+        "funding",
+        "generic"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Full grant proposal pipeline supporting KAKENHI, NSF, NSFC, ERC, DFG, and generic formats.",
+      "legacy": {
+        "dirPath": "aris-grant-proposal",
+        "skillFile": "skills/aris-grant-proposal/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-writing",
+        "aris-research-pipeline",
+        "aris-paper-plan"
+      ]
+    },
+    {
+      "name": "aris-mermaid-diagram",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "mermaid",
+        "diagram",
+        "katex",
+        "math",
+        "syntax",
+        "verification",
+        "academic",
+        "style",
+        "guidelines"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Mermaid diagram generation with KaTeX math, syntax verification, and academic style guidelines.",
+      "legacy": {
+        "dirPath": "aris-mermaid-diagram",
+        "skillFile": "skills/aris-mermaid-diagram/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-illustration",
+        "aris-paper-figure",
+        "aris-pixel-art"
+      ]
+    },
+    {
+      "name": "aris-proof-writer",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "proof",
+        "writer",
+        "mathematical",
+        "rigorous",
+        "claim",
+        "classification",
+        "dependency",
+        "maps"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Rigorous mathematical proof writing with claim classification and dependency maps.",
+      "legacy": {
+        "dirPath": "aris-proof-writer",
+        "skillFile": "skills/aris-proof-writer/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-formula-derivation",
+        "aris-paper-write",
+        "aris-paper-writing"
+      ]
+    },
+    {
+      "name": "aris-pixel-art",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "multimodal"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "aris",
+        "pixel",
+        "art",
+        "svg",
+        "illustrations",
+        "readme",
+        "documentation"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "Pixel art SVG illustrations for READMEs and documentation.",
+      "legacy": {
+        "dirPath": "aris-pixel-art",
+        "skillFile": "skills/aris-pixel-art/SKILL.md",
+        "topLevelGroup": "ARIS",
+        "collection": "ARIS Research Pipeline"
+      },
+      "owner": "wanshuiyin/ARIS",
+      "relatedSkills": [
+        "aris-paper-illustration",
+        "aris-mermaid-diagram",
+        "aris-paper-figure"
+      ]
+    },
+    {
+      "name": "autoresearch",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment",
+        "evaluation",
+        "deployment"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "general"
+      ],
+      "keywords": [
+        "autoresearch",
+        "karpathy",
+        "autonomous",
+        "iteration",
+        "loop",
+        "debug",
+        "fix",
+        "ship",
+        "security",
+        "predict",
+        "scenario",
+        "learn"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "Autonomous goal-directed iteration engine with 9 subcommands: main loop, plan, debug, fix, security audit, ship, scenario generation, multi-persona prediction, and documentation. Zero dependencies.",
+      "legacy": {
+        "dirPath": "autoresearch",
+        "skillFile": "skills/autoresearch/SKILL.md",
+        "topLevelGroup": "Autoresearch",
+        "collection": "Autoresearch"
+      },
+      "owner": "uditgoenka/autoresearch",
+      "relatedSkills": []
+    },
+    {
+      "name": "ds-scout",
+      "primaryIntent": "research",
+      "intents": [
+        "research"
+      ],
+      "capabilities": [
+        "search-retrieval",
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "scout",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "DeepScientist: Literature scouting, problem framing, dataset/metric clarification, and baseline discovery.",
+      "legacy": {
+        "dirPath": "ds-scout",
+        "skillFile": "skills/ds-scout/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign",
+        "ds-optimize"
+      ]
+    },
+    {
+      "name": "ds-baseline",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "baseline",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Reproduce, repair, verify, and compare baselines for a research quest.",
+      "legacy": {
+        "dirPath": "ds-baseline",
+        "skillFile": "skills/ds-baseline/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign",
+        "ds-optimize"
+      ]
+    },
+    {
+      "name": "ds-idea",
+      "primaryIntent": "ideation",
+      "intents": [
+        "ideation"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "idea",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Generate concrete hypotheses, analyze limitations, propose candidate research directions.",
+      "legacy": {
+        "dirPath": "ds-idea",
+        "skillFile": "skills/ds-idea/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-experiment",
+        "ds-analysis-campaign",
+        "ds-optimize"
+      ]
+    },
+    {
+      "name": "ds-experiment",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "training-tuning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "experiment",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "DeepScientist: Implementation pass or main experiment run tied to a selected idea and baseline.",
+      "legacy": {
+        "dirPath": "ds-experiment",
+        "skillFile": "skills/ds-experiment/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-analysis-campaign",
+        "ds-optimize"
+      ]
+    },
+    {
+      "name": "ds-analysis-campaign",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation",
+        "experiment"
+      ],
+      "capabilities": [
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "analysis-campaign",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Follow-up ablations, robustness checks, error analysis, and failure analysis.",
+      "legacy": {
+        "dirPath": "ds-analysis-campaign",
+        "skillFile": "skills/ds-analysis-campaign/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-optimize"
+      ]
+    },
+    {
+      "name": "ds-optimize",
+      "primaryIntent": "experiment",
+      "intents": [
+        "experiment"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "optimize",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Algorithm-first iterative improvement with optimization frontier and branch promotion.",
+      "legacy": {
+        "dirPath": "ds-optimize",
+        "skillFile": "skills/ds-optimize/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-write",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "write",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "DeepScientist: Draft or refine a paper, report, or research summary from accepted evidence.",
+      "legacy": {
+        "dirPath": "ds-write",
+        "skillFile": "skills/ds-write/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-review",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation"
+      ],
+      "capabilities": [
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "review",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Independent skeptical audit of a draft/paper before finalization.",
+      "legacy": {
+        "dirPath": "ds-review",
+        "skillFile": "skills/ds-review/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-rebuttal",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing",
+        "evaluation"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "rebuttal",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Map reviewer feedback into experiments, manuscript deltas, and rebuttal response.",
+      "legacy": {
+        "dirPath": "ds-rebuttal",
+        "skillFile": "skills/ds-rebuttal/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-figure-polish",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "visualization-reporting"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "figure-polish",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Publication-quality figure refinement with render-inspect-revise workflow.",
+      "legacy": {
+        "dirPath": "ds-figure-polish",
+        "skillFile": "skills/ds-figure-polish/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-finalize",
+      "primaryIntent": "writing",
+      "intents": [
+        "writing"
+      ],
+      "capabilities": [
+        "agent-workflow"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "finalize",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Consolidate final claims, limitations, recommendations, and summary state.",
+      "legacy": {
+        "dirPath": "ds-finalize",
+        "skillFile": "skills/ds-finalize/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-decision",
+      "primaryIntent": "research",
+      "intents": [
+        "research"
+      ],
+      "capabilities": [
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "decision",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Explicit go/stop/branch/reuse/write/finalize/reset transitions with evidence.",
+      "legacy": {
+        "dirPath": "ds-decision",
+        "skillFile": "skills/ds-decision/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-intake-audit",
+      "primaryIntent": "evaluation",
+      "intents": [
+        "evaluation"
+      ],
+      "capabilities": [
+        "evaluation-benchmarking"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "intake-audit",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "candidate",
+      "summary": "DeepScientist: Audit, trust-rank, and reconcile existing baselines/results/drafts.",
+      "legacy": {
+        "dirPath": "ds-intake-audit",
+        "skillFile": "skills/ds-intake-audit/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-baseline",
+        "ds-idea",
+        "ds-experiment",
+        "ds-analysis-campaign"
+      ]
+    },
+    {
+      "name": "ds-full-pipeline",
+      "primaryIntent": "research",
+      "intents": [
+        "research",
+        "experiment",
+        "writing"
+      ],
+      "capabilities": [
+        "agent-workflow",
+        "research-planning"
+      ],
+      "domains": [
+        "cs-ai"
+      ],
+      "keywords": [
+        "deepscientist",
+        "full-pipeline",
+        "end-to-end",
+        "autonomous",
+        "research"
+      ],
+      "source": "imported",
+      "status": "verified",
+      "summary": "DeepScientist full pipeline: scout → baseline → idea → experiment → analysis → optimize → write → review → finalize.",
+      "legacy": {
+        "dirPath": "ds-full-pipeline",
+        "skillFile": "skills/ds-full-pipeline/SKILL.md",
+        "topLevelGroup": "DeepScientist",
+        "collection": "DeepScientist"
+      },
+      "owner": "ResearAI/DeepScientist",
+      "relatedSkills": [
+        "ds-scout",
+        "ds-experiment",
+        "ds-write",
+        "ds-review"
       ]
     }
   ]

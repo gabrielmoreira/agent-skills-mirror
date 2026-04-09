@@ -1,63 +1,104 @@
+---
+name: blender-3d-viz
+description: "Create 3D network topology visualizations in Blender from CDP/LLDP neighbor data"
+user-invocable: true
+metadata:
+  openclaw:
+    requires:
+      bins: ["python3", "uvx"]
+      env: ["BLENDER_HOST"]
+---
+
 # Blender 3D Network Visualization
 
-**MCP Server**: blender-mcp (community)
-**Category**: Visualization
-**Status**: Active
+Create stunning 3D network topology visualizations in Blender from CDP/LLDP neighbor data. Network engineers can request topology drawings via natural language, and NetClaw translates neighbor discovery data into 3D rendering commands.
 
-## Overview
+## When to Use
 
-Enables 3D network topology visualization in Blender. Network engineers can request topology drawings via natural language, and NetClaw translates CDP/LLDP neighbor data into 3D rendering commands sent to a locally-running Blender instance.
+- Visualizing network topology in 3D for presentations
+- Creating topology diagrams from CDP/LLDP neighbor data
+- Exporting network diagrams as PNG images
+- Customizing device colors and adding labels
+- Demonstrating network architecture to stakeholders
 
-## Prerequisites
+## MCP Server
 
-1. **Blender** installed on Windows (v3.0+)
-2. **BlenderMCP addon** installed and connected (port 9876)
-3. **WSL connectivity** to Windows host (BLENDER_HOST environment variable)
+- **Server**: `blender-mcp` (community MCP via uvx)
+- **Command**: `uvx blender-mcp` (stdio transport)
+- **Host**: Windows running Blender with BlenderMCP addon (port 9876)
+- **Requirements**: Blender 3.0+, BlenderMCP addon installed and connected
 
-See `quickstart.md` in this directory for detailed setup instructions.
+## Available Tools
 
-## Available MCP Tools
+| Tool | Parameters | What It Does |
+|------|------------|--------------|
+| `get_scene_info` | None | Returns current Blender scene objects |
+| `create_object` | type, name, location, scale | Creates primitives (cube, sphere, cylinder) |
+| `modify_object` | name, position?, rotation?, scale? | Transform position/rotation/scale |
+| `set_material` | object_name, color, metallic?, roughness? | Apply colors and materials |
+| `execute_blender_code` | code | Run arbitrary Python in Blender |
 
-| Tool | Description |
-|------|-------------|
-| `get_scene_info` | Returns current Blender scene objects |
-| `create_object` | Creates primitives (cube, sphere, cylinder) |
-| `modify_object` | Transform position/rotation/scale |
-| `set_material` | Apply colors and materials |
-| `execute_blender_code` | Run arbitrary Python in Blender |
+## Workflow Examples
 
-## User Story 1: Draw Network Topology (P1 - MVP)
+### Draw Network Topology
 
-**Goal**: Draw the network topology using CDP data in 3D
-
-### Example Queries
-
-```
+```bash
+# Draw topology from CDP/LLDP data
 "Draw the network topology in Blender using CDP data"
+
+# Visualize neighbors for a specific device
 "Visualize the CDP neighbors for core-rtr-01 in 3D"
+
+# Create diagram from LLDP data
 "Create a 3D network diagram from the LLDP data"
+
+# Quick topology request
 "Show me the network topology in Blender"
 ```
 
-### Workflow
+### Export Visualization
 
-1. User requests topology visualization
-2. NetClaw queries CDP/LLDP neighbor data (pyATS or SuzieQ)
-3. Extract device hostnames and neighbor relationships
-4. Infer device types from hostnames:
-   - Contains "rtr" or "router" = Router (blue)
-   - Contains "sw" or "switch" = Switch (green)
-   - Contains "fw" or "firewall" or "asa" = Firewall (red)
-   - Contains "ap" or "wap" or "wireless" = Access Point (yellow)
-   - Otherwise = Unknown (gray)
-5. Calculate layout positions (force-directed)
-6. Clear Blender scene
-7. Create cubes for each device at calculated positions
-8. Apply colors based on device type
-9. Create cylinders between connected devices
-10. Report completion with device count
+```bash
+# Export as PNG
+"Export the Blender scene as topology.png"
 
-### Device Color Mapping
+# Save the diagram
+"Save the network diagram as a PNG file"
+
+# Render to image
+"Render the topology to an image"
+```
+
+### Customize Visualization
+
+```bash
+# Color customization
+"Color router-1 red"
+"Make all switches purple"
+"Change the color of the firewalls to orange"
+
+# Add labels
+"Add labels to all devices"
+"Label each device with its hostname"
+
+# Highlighting
+"Highlight router-1"
+"Make core-rtr-01 stand out"
+```
+
+### Scene Management
+
+```bash
+# Clear scene
+"Clear the Blender scene"
+"Reset the 3D view"
+
+# Query scene
+"What objects are in the Blender scene?"
+"List the devices in Blender"
+```
+
+## Device Color Mapping
 
 | Device Type | Color | RGB |
 |-------------|-------|-----|
@@ -67,215 +108,32 @@ See `quickstart.md` in this directory for detailed setup instructions.
 | Access Point | Yellow | (0.9, 0.8, 0.2) |
 | Unknown | Gray | (0.5, 0.5, 0.5) |
 
-### Device Limit
+Device types are inferred from hostnames:
+- Contains "rtr" or "router" → Router
+- Contains "sw" or "switch" → Switch
+- Contains "fw" or "firewall" or "asa" → Firewall
+- Contains "ap" or "wap" or "wireless" → Access Point
 
-Maximum 25 devices rendered. If topology exceeds limit:
-- Sort devices by neighbor count (most connected first)
-- Render first 25 devices
-- Display warning: "Topology truncated: showing 25 of N devices"
+## Integration with Other Skills
 
-### Error Handling
+- **pyats-run**: Query CDP/LLDP neighbor data from live devices
+- **suzieq-show**: Query network state from SuzieQ observability platform
+- **canvas-a2ui**: Alternative 2D visualization in chat
 
-| Condition | User Message |
-|-----------|--------------|
-| Blender not running | "Blender connection unavailable. Please start Blender and click 'Connect to Claude' in the BlenderMCP panel." |
-| Addon not connected | "Blender addon not connected. Press 'N' in Blender to show the sidebar, find the BlenderMCP tab, and click 'Connect to Claude'." |
-| No CDP data | "No CDP/LLDP neighbor data available. Query network devices first (e.g., 'show CDP neighbors for core-rtr-01')." |
-| Connection timeout | "First command may timeout - this is normal. Please retry the same command." |
+## Error Handling
 
-## User Story 2: Export Visualization (P2)
+| Error Code | Meaning | Resolution |
+|------------|---------|------------|
+| CONNECTION_FAILED | Blender not running or addon not connected | Start Blender, click 'Connect to Claude' in BlenderMCP panel |
+| ADDON_NOT_READY | Addon not connected | Press 'N' in Blender, find BlenderMCP tab, click 'Connect' |
+| NO_CDP_DATA | No neighbor data available | Query network devices first via pyats-run or suzieq-show |
+| TIMEOUT | First command may timeout | This is normal - retry the same command |
+| EXPORT_FAILED | Export failed (window minimized) | Ensure Blender window is visible |
 
-**Goal**: Export the 3D topology as PNG or video
+## Notes
 
-### Example Queries
-
-```
-"Export the Blender scene as topology.png"
-"Save the network diagram as a PNG file"
-"Render the topology to an image"
-"Export the 3D view as network-topology.png"
-```
-
-### PNG Export Workflow
-
-Uses `execute_blender_code` to run:
-
-```python
-import bpy
-# Set render settings
-bpy.context.scene.render.resolution_x = 1920
-bpy.context.scene.render.resolution_y = 1080
-bpy.context.scene.render.filepath = "/tmp/topology.png"
-bpy.context.scene.render.image_settings.file_format = 'PNG'
-# Render
-bpy.ops.render.render(write_still=True)
-```
-
-### Video Export Workflow (If Supported)
-
-```python
-import bpy
-bpy.context.scene.render.filepath = "/tmp/topology.mp4"
-bpy.context.scene.render.image_settings.file_format = 'FFMPEG'
-bpy.context.scene.render.ffmpeg.format = 'MPEG4'
-bpy.context.scene.render.ffmpeg.codec = 'H264'
-bpy.context.scene.frame_start = 1
-bpy.context.scene.frame_end = 120
-bpy.ops.render.render(animation=True)
-```
-
-### Export Error Handling
-
-| Condition | User Message |
-|-----------|--------------|
-| Blender minimized | "Export failed. Ensure Blender window is visible (not minimized)." |
-| Invalid path | "Export failed: Invalid file path. Use a simple filename like 'topology.png'." |
-| Render timeout | "Export taking longer than expected. Check Blender for progress." |
-
-## User Story 3: Customize Visualization (P3)
-
-**Goal**: Customize colors, add labels, highlight devices
-
-### Example Queries - Color Customization
-
-```
-"Color router-1 red"
-"Make all switches purple"
-"Change the color of the firewalls to orange"
-"Set router-core to bright blue"
-```
-
-### Example Queries - Labels
-
-```
-"Add labels to all devices"
-"Label each device with its hostname"
-"Add text labels showing device names"
-```
-
-### Example Queries - Highlighting
-
-```
-"Highlight router-1"
-"Make core-rtr-01 stand out"
-"Emphasize the firewalls"
-```
-
-### Color Customization Workflow
-
-Uses `set_material` tool:
-
-```json
-{
-  "object_name": "router-1",
-  "color": [0.8, 0.2, 0.2],
-  "metallic": 0.3,
-  "roughness": 0.7
-}
-```
-
-### Add Labels Workflow
-
-Uses `execute_blender_code`:
-
-```python
-import bpy
-
-# For each device object
-for obj in bpy.data.objects:
-    if obj.type == 'MESH':
-        # Add text above the device
-        bpy.ops.object.text_add(location=(obj.location.x, obj.location.y, obj.location.z + 1))
-        text_obj = bpy.context.active_object
-        text_obj.data.body = obj.name
-        text_obj.scale = (0.3, 0.3, 0.3)
-        # Face the camera
-        text_obj.rotation_euler = (1.5708, 0, 0)
-```
-
-### Highlighting Workflow
-
-Uses combination of `set_material` (bright color) and `modify_object` (scale up):
-
-```json
-{
-  "object_name": "router-1",
-  "color": [1.0, 0.8, 0.0],
-  "metallic": 0.8,
-  "roughness": 0.2
-}
-```
-
-```json
-{
-  "name": "router-1",
-  "scale": [0.7, 0.7, 0.7]
-}
-```
-
-## Scene Management
-
-### Clear Scene
-
-```
-"Clear the Blender scene"
-"Reset the 3D view"
-"Remove all objects from Blender"
-```
-
-Uses `execute_blender_code`:
-
-```python
-import bpy
-bpy.ops.object.select_all(action='SELECT')
-bpy.ops.object.delete()
-```
-
-### Query Scene
-
-```
-"What objects are in the Blender scene?"
-"List the devices in Blender"
-"Show the current 3D scene contents"
-```
-
-Uses `get_scene_info` tool.
-
-## Natural Language to MCP Tool Mapping
-
-| Natural Language | MCP Tool(s) |
-|------------------|-------------|
-| "Draw the topology" | execute_blender_code (clear) + create_object (N times) + set_material (N times) |
-| "Color device-X red" | set_material |
-| "Add labels" | execute_blender_code |
-| "Export as PNG" | execute_blender_code |
-| "What's in the scene?" | get_scene_info |
-| "Clear the scene" | execute_blender_code |
-| "Highlight device-X" | set_material + modify_object |
-
-## Troubleshooting
-
-### Connection Issues
-
-1. **Verify Blender is running** on Windows
-2. **Check addon is connected**: Press 'N' in Blender, find BlenderMCP tab, verify "Server running on port 9876"
-3. **Get Windows IP from WSL**:
-   ```bash
-   cat /etc/resolv.conf | grep nameserver | awk '{print $2}'
-   ```
-4. **Test connectivity**:
-   ```bash
-   ping -c 1 $WIN_IP
-   ```
-
-### Performance Issues
-
-- **Large topologies**: Only 25 devices rendered (by design)
-- **Slow rendering**: Normal for first command; subsequent commands faster
-- **Blender freezes**: Save work, restart Blender, reconnect addon
-
-## Related Skills
-
-- `pyats-run` - Query CDP/LLDP neighbor data from live devices
-- `suzieq-show` - Query network state from SuzieQ observability platform
-- `canvas-a2ui` - Alternative 2D visualization in chat
+- Read-only operations - no ServiceNow CR gating required
+- Maximum 25 devices rendered per topology (performance limit)
+- First command may timeout - subsequent commands are faster
+- Requires Windows running Blender (WSL connectivity to Windows host)
+- All operations logged to GAIT audit trail

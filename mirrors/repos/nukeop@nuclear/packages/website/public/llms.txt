@@ -1,0 +1,10 @@
+# Nuclear
+
+> Nuclear is a free, open-source music player without ads or tracking. Search for any song or artist, build playlists, and start listening. Cross-platform (Windows, macOS, Linux), privacy-respecting, and AGPL licensed.
+
+## Links
+
+- [Home](https://nuclearplayer.com): Website
+- [GitHub Repository](https://github.com/nukeop/nuclear): Source code
+- [Discord](https://discord.gg/JqPjKxE): Community chat
+- [Documentation](https://docs.nuclearplayer.com): Docs

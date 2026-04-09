@@ -14,7 +14,7 @@
 [![Homepage](https://img.shields.io/badge/Homepage-BioClaw-blue.svg)](https://ivegotmagicbean.github.io/BioClaw-Page/)
 [![Paper](https://img.shields.io/badge/bioRxiv-STELLA-b31b1b.svg)](https://www.biorxiv.org/content/10.1101/2025.07.01.662467v2)
 [![arXiv](https://img.shields.io/badge/arXiv-2507.02004-b31b1b.svg)](https://arxiv.org/abs/2507.02004)
-
+[![🦞 Claw4Science - Biomedicine](https://img.shields.io/badge/🦞_Claw4Science-Biomedicine-10b981)](https://claw4science.org/#project-runchuan-bu-bioclaw)
 </div>
 
 <br/><br/>

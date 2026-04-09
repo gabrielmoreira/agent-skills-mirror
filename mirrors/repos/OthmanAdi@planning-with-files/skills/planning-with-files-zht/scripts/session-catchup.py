@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-planning-with-files 會話恢復腳本
+planning-with-files 的工作階段接續腳本
 
-分析上一個會話，找出最後一次規劃檔案更新後未同步的上下文。
-設計用於 SessionStart 時執行。
+分析前一工作階段，找出上次規劃檔案更新後尚未同步的上下文。
+設計於 SessionStart 時執行。
 
 用法：python3 session-catchup.py [專案路徑]
 """
@@ -12,64 +12,220 @@ import json
 import sys
 import os
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+
+try:
+    import orjson
+except ImportError:
+    orjson = None
 
 PLANNING_FILES = ['task_plan.md', 'progress.md', 'findings.md']
+MIN_SESSION_BYTES = 5000
 
 
-def get_project_dir(project_path: str) -> Tuple[Optional[Path], Optional[str]]:
-    """解析目前執行環境的會話儲存路徑。"""
-    sanitized = project_path.replace('/', '-')
-    if not sanitized.startswith('-'):
-        sanitized = '-' + sanitized
+def json_loads(line: str) -> Optional[Dict[str, Any]]:
+    """Prefer optional orjson while keeping the hook dependency-free."""
+    try:
+        if orjson is not None:
+            data = orjson.loads(line)
+        else:
+            data = json.loads(line)
+    except (ValueError, TypeError, UnicodeDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def normalize_for_compare(path_value: str) -> str:
+    expanded = os.path.expanduser(path_value)
+    try:
+        return str(Path(expanded).resolve())
+    except (OSError, ValueError):
+        return os.path.abspath(expanded)
+
+
+def normalize_path(project_path: str) -> str:
+    """Normalize project path to match Claude Code's internal representation.
+
+    Claude Code stores session directories using the Windows-native path
+    (e.g., C:\\Users\\...) sanitized with separators replaced by dashes.
+    Git Bash passes /c/Users/... which produces a DIFFERENT sanitized
+    string. This function converts Git Bash paths to Windows paths first.
+    """
+    p = project_path
+
+    # Git Bash / MSYS2: /c/Users/... -> C:/Users/...
+    if len(p) >= 3 and p[0] == '/' and p[2] == '/':
+        p = p[1].upper() + ':' + p[2:]
+
+    # Resolve to absolute path to handle relative paths and symlinks
+    try:
+        resolved = str(Path(p).resolve())
+        # On Windows, resolve() returns C:\Users\... which is what we want
+        if os.name == 'nt' or '\\' in resolved:
+            p = resolved
+    except (OSError, ValueError):
+        pass
+
+    return p
+
+
+def get_claude_project_dir(project_path: str) -> Path:
+    """Resolve Claude Code's project-specific session storage path."""
+    normalized = normalize_path(project_path)
+
+    # Claude Code's sanitization: replace path separators and : with -
+    sanitized = normalized.replace('\\', '-').replace('/', '-').replace(':', '-')
     sanitized = sanitized.replace('_', '-')
+    # Strip leading dash if present (Unix absolute paths start with /)
+    if sanitized.startswith('-'):
+        sanitized = sanitized[1:]
 
-    claude_path = Path.home() / '.claude' / 'projects' / sanitized
-
-    # Codex 將會話存放在 ~/.codex/sessions，格式不同。
-    # 從 Codex 技能資料夾執行時，避免靜默掃描 Claude 路徑。
-    script_path = Path(__file__).as_posix().lower()
-    is_codex_variant = '/.codex/' in script_path
-    codex_sessions_dir = Path.home() / '.codex' / 'sessions'
-    if is_codex_variant and codex_sessions_dir.exists() and not claude_path.exists():
-        return None, (
-            "[planning-with-files] 會話恢復已跳過：Codex 將會話存放在 "
-            "~/.codex/sessions，原生 Codex 解析尚未實作。"
-        )
-
-    return claude_path, None
+    return Path.home() / '.claude' / 'projects' / sanitized
 
 
 def get_sessions_sorted(project_dir: Path) -> List[Path]:
-    """取得所有會話檔案，按修改時間排序（最新優先）。"""
+    """Get all session files sorted by modification time (newest first)."""
     sessions = list(project_dir.glob('*.jsonl'))
     main_sessions = [s for s in sessions if not s.name.startswith('agent-')]
-    return sorted(main_sessions, key=lambda p: p.stat().st_mtime, reverse=True)
+    return sorted(main_sessions, key=safe_stat_mtime, reverse=True)
 
 
-def parse_session_messages(session_file: Path) -> List[Dict]:
-    """解析會話檔案中的所有訊息，保持順序。"""
+def safe_stat_mtime(path: Path) -> float:
+    try:
+        return path.stat().st_mtime
+    except OSError:
+        return 0.0
+
+
+def is_substantial_session(session: Path) -> bool:
+    try:
+        return session.stat().st_size > MIN_SESSION_BYTES
+    except OSError:
+        return False
+
+
+def read_codex_meta(session_file: Path) -> Optional[Dict[str, Any]]:
+    """Read the first session_meta; later meta records may be copied parent context."""
+    try:
+        with open(session_file, 'r', encoding='utf-8', errors='replace') as f:
+            for line in f:
+                data = json_loads(line)
+                if not data or data.get('type') != 'session_meta':
+                    continue
+                payload = data.get('payload')
+                return payload if isinstance(payload, dict) else None
+    except OSError:
+        return None
+    return None
+
+
+def codex_meta_cwd(meta: Dict[str, Any]) -> Optional[str]:
+    cwd = meta.get('cwd')
+    return cwd if isinstance(cwd, str) else None
+
+
+def find_current_codex_session(sessions: List[Path]) -> Optional[Path]:
+    thread_id = os.getenv('CODEX_THREAD_ID', '').strip()
+    if not thread_id:
+        return None
+
+    for session in sessions:
+        if thread_id in session.name:
+            return session
+    return None
+
+
+def is_codex_project_session(session: Path, project_cmp: str) -> bool:
+    if not is_substantial_session(session):
+        return False
+
+    meta = read_codex_meta(session)
+    if not meta:
+        return False
+    source = meta.get('source')
+    if isinstance(source, dict) and 'subagent' in source:
+        return False
+    cwd = codex_meta_cwd(meta)
+    return bool(cwd and normalize_for_compare(cwd) == project_cmp)
+
+
+def get_codex_sessions(project_path: str) -> Iterable[Path]:
+    sessions_dir = Path(os.path.expanduser(os.getenv('CODEX_SESSIONS_DIR', '~/.codex/sessions')))
+    if not sessions_dir.exists():
+        return
+
+    project_cmp = normalize_for_compare(project_path)
+    sessions = sorted(sessions_dir.rglob('rollout-*.jsonl'), key=safe_stat_mtime, reverse=True)
+    current = find_current_codex_session(sessions)
+    if current and is_codex_project_session(current, project_cmp):
+        yield current
+
+    for session in sessions:
+        if session == current:
+            continue
+        if is_codex_project_session(session, project_cmp):
+            yield session
+
+
+def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
+    if '/.codex/' in Path(__file__).resolve().as_posix().lower():
+        return 'codex', get_codex_sessions(project_path)
+
+    claude_project_dir = get_claude_project_dir(project_path)
+    if claude_project_dir.exists():
+        return 'claude', get_sessions_sorted(claude_project_dir)
+    return 'claude', []
+
+
+def parse_session_messages(session_file: Path) -> List[Dict[str, Any]]:
+    """Parse all messages from a session file, preserving order."""
     messages = []
-    with open(session_file, 'r') as f:
+    with open(session_file, 'r', encoding='utf-8', errors='replace') as f:
         for line_num, line in enumerate(f):
-            try:
-                data = json.loads(line)
+            data = json_loads(line)
+            if data is not None:
                 data['_line_num'] = line_num
                 messages.append(data)
-            except json.JSONDecodeError:
-                pass
     return messages
 
 
-def find_last_planning_update(messages: List[Dict]) -> Tuple[int, Optional[str]]:
+def planning_file_from_path(path_value: Any) -> Optional[str]:
+    if not isinstance(path_value, str):
+        return None
+    for pf in PLANNING_FILES:
+        if path_value.endswith(pf):
+            return pf
+    return None
+
+
+def planning_file_from_paths(paths: Iterable[Any]) -> Optional[str]:
+    matches = {pf for path in paths if (pf := planning_file_from_path(path))}
+    for pf in PLANNING_FILES:
+        if pf in matches:
+            return pf
+    return None
+
+
+def codex_planning_update(payload: Dict[str, Any]) -> Optional[str]:
+    """Use Codex's structured apply_patch result instead of parsing tool text."""
+    if payload.get('type') != 'patch_apply_end' or payload.get('success') is not True:
+        return None
+    changes = payload.get('changes')
+    return planning_file_from_paths(changes.keys()) if isinstance(changes, dict) else None
+
+
+def find_last_planning_update(messages: List[Dict[str, Any]]) -> Tuple[int, Optional[str]]:
     """
-    找出最後一次寫入/編輯規劃檔案的時間點。
-    回傳 (行號, 檔案名稱) 或 (-1, None)（如果未找到）。
+    Find the last time a planning file was written/edited.
+    Returns (line_number, filename) or (-1, None) if not found.
     """
     last_update_line = -1
     last_update_file = None
 
     for msg in messages:
+        line_num = msg.get('_line_num')
+        if not isinstance(line_num, int):
+            continue
         msg_type = msg.get('type')
 
         if msg_type == 'assistant':
@@ -79,57 +235,90 @@ def find_last_planning_update(messages: List[Dict]) -> Tuple[int, Optional[str]]
                     if item.get('type') == 'tool_use':
                         tool_name = item.get('name', '')
                         tool_input = item.get('input', {})
+                        if not isinstance(tool_input, dict):
+                            tool_input = {}
 
                         if tool_name in ('Write', 'Edit'):
-                            file_path = tool_input.get('file_path', '')
-                            for pf in PLANNING_FILES:
-                                if file_path.endswith(pf):
-                                    last_update_line = msg['_line_num']
-                                    last_update_file = pf
+                            planning_file = planning_file_from_path(tool_input.get('file_path', ''))
+                            if planning_file:
+                                last_update_line = line_num
+                                last_update_file = planning_file
+
+        elif msg_type == 'event_msg':
+            payload = msg.get('payload')
+            if isinstance(payload, dict):
+                planning_file = codex_planning_update(payload)
+                if planning_file:
+                    last_update_line = line_num
+                    last_update_file = planning_file
 
     return last_update_line, last_update_file
 
 
-def extract_messages_after(messages: List[Dict], after_line: int) -> List[Dict]:
-    """擷取特定行號之後的對話訊息。"""
+def text_content(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    if not isinstance(content, list):
+        return ''
+    return '\n'.join(
+        item.get('text', '')
+        for item in content
+        if isinstance(item, dict) and isinstance(item.get('text'), str)
+    )
+
+
+def parse_codex_tool_args(payload: Dict[str, Any]) -> Tuple[Dict[str, Any], str]:
+    raw_args = payload.get('arguments', payload.get('input', ''))
+    if isinstance(raw_args, dict):
+        return raw_args, json.dumps(raw_args, ensure_ascii=True)
+    if not isinstance(raw_args, str):
+        return {}, ''
+    decoded = json_loads(raw_args)
+    return (decoded, raw_args) if isinstance(decoded, dict) else ({}, raw_args)
+
+
+def summarize_codex_tool(payload: Dict[str, Any]) -> str:
+    tool_name = payload.get('name', 'tool')
+    tool_args, raw_args = parse_codex_tool_args(payload)
+    if tool_name == 'exec_command':
+        command = tool_args.get('cmd', raw_args)
+        if isinstance(command, str):
+            return f"exec_command: {command[:80]}"
+    return str(tool_name)
+
+
+def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> List[Dict[str, Any]]:
+    """Extract conversation messages after a certain line number."""
     result = []
     for msg in messages:
-        if msg['_line_num'] <= after_line:
+        line_num = msg.get('_line_num')
+        if not isinstance(line_num, int) or line_num <= after_line:
             continue
 
         msg_type = msg.get('type')
         is_meta = msg.get('isMeta', False)
 
         if msg_type == 'user' and not is_meta:
-            content = msg.get('message', {}).get('content', '')
-            if isinstance(content, list):
-                for item in content:
-                    if isinstance(item, dict) and item.get('type') == 'text':
-                        content = item.get('text', '')
-                        break
-                else:
-                    content = ''
+            content = text_content(msg.get('message', {}).get('content', ''))
 
-            if content and isinstance(content, str):
+            if content:
                 if content.startswith(('<local-command', '<command-', '<task-notification')):
                     continue
                 if len(content) > 20:
-                    result.append({'role': 'user', 'content': content, 'line': msg['_line_num']})
+                    result.append({'role': 'user', 'content': content, 'line': line_num})
 
         elif msg_type == 'assistant':
             msg_content = msg.get('message', {}).get('content', '')
-            text_content = ''
+            text = text_content(msg_content)
             tool_uses = []
 
-            if isinstance(msg_content, str):
-                text_content = msg_content
-            elif isinstance(msg_content, list):
+            if isinstance(msg_content, list):
                 for item in msg_content:
-                    if item.get('type') == 'text':
-                        text_content = item.get('text', '')
-                    elif item.get('type') == 'tool_use':
+                    if isinstance(item, dict) and item.get('type') == 'tool_use':
                         tool_name = item.get('name', '')
                         tool_input = item.get('input', {})
+                        if not isinstance(tool_input, dict):
+                            tool_input = {}
                         if tool_name == 'Edit':
                             tool_uses.append(f"Edit: {tool_input.get('file_path', 'unknown')}")
                         elif tool_name == 'Write':
@@ -140,12 +329,43 @@ def extract_messages_after(messages: List[Dict], after_line: int) -> List[Dict]:
                         else:
                             tool_uses.append(f"{tool_name}")
 
-            if text_content or tool_uses:
+            if text or tool_uses:
                 result.append({
                     'role': 'assistant',
-                    'content': text_content[:600] if text_content else '',
+                    'content': text[:600] if text else '',
                     'tools': tool_uses,
-                    'line': msg['_line_num']
+                    'line': line_num
+                })
+
+        elif msg_type == 'response_item':
+            payload = msg.get('payload')
+            if not isinstance(payload, dict):
+                continue
+
+            payload_type = payload.get('type')
+            if payload_type == 'message':
+                role = payload.get('role')
+                if role not in ('user', 'assistant'):
+                    continue
+                content = text_content(payload.get('content'))
+                if role == 'user':
+                    if content.startswith(('<local-command', '<command-', '<task-notification')):
+                        continue
+                    if len(content) > 20:
+                        result.append({'role': 'user', 'content': content, 'line': line_num})
+                elif content:
+                    result.append({
+                        'role': 'assistant',
+                        'content': content[:600],
+                        'tools': [],
+                        'line': line_num
+                    })
+            elif payload_type in ('function_call', 'custom_tool_call'):
+                result.append({
+                    'role': 'assistant',
+                    'content': '',
+                    'tools': [summarize_codex_tool(payload)],
+                    'line': line_num
                 })
 
     return result
@@ -154,33 +374,23 @@ def extract_messages_after(messages: List[Dict], after_line: int) -> List[Dict]:
 def main():
     project_path = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
 
-    # 檢查規劃檔案是否存在（表示有進行中的任務）
+    # Check if planning files exist (indicates active task)
     has_planning_files = any(
         Path(project_path, f).exists() for f in PLANNING_FILES
     )
     if not has_planning_files:
-        # 此專案中沒有規劃檔案；跳過恢復以避免干擾。
+        # No planning files in this project; skip catchup to avoid noise.
         return
 
-    project_dir, skip_reason = get_project_dir(project_path)
-    if skip_reason:
-        print(skip_reason)
-        return
+    runtime_name, sessions = get_session_candidates(project_path)
 
-    if not project_dir.exists():
-        # 沒有先前的會話，無需恢復
-        return
-
-    sessions = get_sessions_sorted(project_dir)
-    if len(sessions) < 1:
-        return
-
-    # 找到一個有實質內容的先前會話
+    # Find a substantial previous session
     target_session = None
     for session in sessions:
-        if session.stat().st_size > 5000:
-            target_session = session
-            break
+        if runtime_name == 'claude' and not is_substantial_session(session):
+            continue
+        target_session = session
+        break
 
     if not target_session:
         return
@@ -188,38 +398,40 @@ def main():
     messages = parse_session_messages(target_session)
     last_update_line, last_update_file = find_last_planning_update(messages)
 
-    # 目標會話中沒有規劃更新；跳過恢復輸出。
+    # No planning updates in the target session; skip catchup output.
     if last_update_line < 0:
         return
 
-    # 僅在有未同步內容時輸出
+    # Only output if there's unsynced content
     messages_after = extract_messages_after(messages, last_update_line)
 
     if not messages_after:
         return
 
-    # 輸出恢復報告
-    print("\n[planning-with-files] 偵測到會話恢復需求")
-    print(f"先前會話：{target_session.stem}")
+    # Output catchup report
+    print("\n[planning-with-files] 偵測到工作階段接續")
+    print(f"前一工作階段：{target_session.stem}")
+    print(f"執行環境：{runtime_name}")
 
-    print(f"最後規劃更新：{last_update_file}（訊息 #{last_update_line}）")
-    print(f"未同步訊息：{len(messages_after)} 則")
+    print(f"最近規劃更新：{last_update_file} at message #{last_update_line}")
+    print(f"未同步訊息：{len(messages_after)}")
 
     print("\n--- 未同步的上下文 ---")
-    for msg in messages_after[-15:]:  # 最後 15 則訊息
+    assistant_label = 'CODEX' if runtime_name == 'codex' else 'CLAUDE'
+    for msg in messages_after[-15:]:  # Last 15 messages
         if msg['role'] == 'user':
             print(f"使用者：{msg['content'][:300]}")
         else:
             if msg.get('content'):
-                print(f"CLAUDE：{msg['content'][:300]}")
+                print(f"{assistant_label}: {msg['content'][:300]}")
             if msg.get('tools'):
                 print(f"  工具：{', '.join(msg['tools'][:4])}")
 
-    print("\n--- 建議操作 ---")
+    print("\n--- 建議 ---")
     print("1. 執行：git diff --stat")
     print("2. 讀取：task_plan.md、progress.md、findings.md")
     print("3. 根據上述上下文更新規劃檔案")
-    print("4. 繼續任務")
+    print("4. 繼續執行任務")
 
 
 if __name__ == '__main__':

@@ -1,0 +1,1 @@
+cache/repos/github.com/pydantic@pydantic-ai/pydantic_ai_slim/pydantic_ai/ui/AGENTS.md

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `linkedin/Liger-Kernel` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `linkedin/Liger-Kernel` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `linkedin/Liger-Kernel` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,6 +69,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`.claude/skills/liger-kernel-dev/kernel-profile-format.md`](.claude/skills/liger-kernel-dev/kernel-profile-format.md) |
 | 9 | ✓ | [`.claude/skills/liger-kernel-dev/SKILL.md`](.claude/skills/liger-kernel-dev/SKILL.md) |
 | 10 | ✓ | [`.claude/skills/liger-kernel-dev/validator.md`](.claude/skills/liger-kernel-dev/validator.md) |
+| 11 | ✓ | [`.claude/skills/liger-kernel-perf/finalizer.md`](.claude/skills/liger-kernel-perf/finalizer.md) |
+| 12 | ✓ | [`.claude/skills/liger-kernel-perf/optimization-strategies.md`](.claude/skills/liger-kernel-perf/optimization-strategies.md) |
+| 13 | ✓ | [`.claude/skills/liger-kernel-perf/optimizer.md`](.claude/skills/liger-kernel-perf/optimizer.md) |
+| 14 | ✓ | [`.claude/skills/liger-kernel-perf/profiler.md`](.claude/skills/liger-kernel-perf/profiler.md) |
+| 15 | ✓ | [`.claude/skills/liger-kernel-perf/SKILL.md`](.claude/skills/liger-kernel-perf/SKILL.md) |
 
 ---
 

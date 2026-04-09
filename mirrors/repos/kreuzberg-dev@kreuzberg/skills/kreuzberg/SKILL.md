@@ -6,7 +6,7 @@ description: >-
   Use when writing code that calls Kreuzberg APIs in Python, Node.js/TypeScript,
   Rust, or CLI. Covers installation, extraction (sync/async), configuration
   (OCR, chunking, output format), batch processing, error handling, and plugins.
-license: MIT
+license: Elastic-2.0
 metadata:
   author: kreuzberg-dev
   version: "1.0"

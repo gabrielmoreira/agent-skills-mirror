@@ -55,7 +55,7 @@ pi install npm:@ifi/pi-extension-subagents
 pi install npm:@ifi/pi-plan
 pi install npm:@ifi/pi-spec
 pi install npm:@ifi/pi-provider-cursor
-pi install npm:@ifi/pi-provider-ollama-cloud
+pi install npm:@ifi/pi-provider-ollama
 ```
 
 Do not use `bundledDependencies` in `@ifi/oh-pi`.

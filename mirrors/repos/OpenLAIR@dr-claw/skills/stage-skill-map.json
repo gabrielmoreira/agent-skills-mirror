@@ -5,20 +5,29 @@
       "gemini-deep-research",
       "academic-researcher",
       "dataset-discovery",
-      "biorxiv-database"
+      "biorxiv-database",
+      "aris-idea-discovery",
+      "aris-research-lit",
+      "ds-scout"
     ],
     "byTaskType": {
       "analysis": [
         "inno-deep-research",
         "gemini-deep-research",
-        "academic-researcher"
+        "academic-researcher",
+        "aris-research-lit"
       ],
       "exploration": [
         "inno-deep-research",
         "gemini-deep-research",
         "dataset-discovery",
         "biorxiv-database",
-        "academic-researcher"
+        "academic-researcher",
+        "aris-research-lit",
+        "aris-comm-lit-review",
+        "aris-arxiv",
+        "aris-semantic-scholar",
+        "ds-scout"
       ]
     }
   },
@@ -31,14 +40,20 @@
       "inno-idea-generation",
       "inno-idea-eval",
       "biorxiv-database",
-      "academic-researcher"
+      "academic-researcher",
+      "aris-idea-discovery",
+      "aris-idea-creator",
+      "ds-idea"
     ],
     "byTaskType": {
       "analysis": [
         "inno-idea-generation",
         "inno-idea-eval",
         "inno-deep-research",
-        "academic-researcher"
+        "academic-researcher",
+        "aris-novelty-check",
+        "aris-research-review",
+        "ds-idea"
       ],
       "exploration": [
         "inno-idea-generation",
@@ -46,7 +61,9 @@
         "inno-deep-research",
         "dataset-discovery",
         "biorxiv-database",
-        "academic-researcher"
+        "academic-researcher",
+        "aris-idea-creator",
+        "aris-novelty-check"
       ],
       "implementation": [
         "inno-prepare-resources"
@@ -59,16 +76,30 @@
       "dataset-discovery",
       "inno-experiment-dev",
       "inno-experiment-analysis",
-      "bioinformatics-init-analysis"
+      "bioinformatics-init-analysis",
+      "aris-experiment-bridge",
+      "aris-run-experiment",
+      "autoresearch",
+      "ds-experiment",
+      "ds-baseline"
     ],
     "byTaskType": {
       "implementation": [
         "inno-experiment-dev",
-        "bioinformatics-init-analysis"
+        "bioinformatics-init-analysis",
+        "aris-experiment-bridge",
+        "aris-experiment-plan",
+        "autoresearch",
+        "ds-experiment",
+        "ds-baseline"
       ],
       "analysis": [
         "inno-experiment-analysis",
-        "bioinformatics-init-analysis"
+        "bioinformatics-init-analysis",
+        "aris-analyze-results",
+        "aris-result-to-claim",
+        "ds-analysis-campaign",
+        "ds-optimize"
       ],
       "exploration": [
         "inno-code-survey",
@@ -89,7 +120,13 @@
       "inno-rclone-to-overleaf",
       "scientific-writing",
       "ml-paper-writing",
-      "inno-grant-proposal"
+      "inno-grant-proposal",
+      "aris-paper-writing",
+      "aris-auto-review-loop",
+      "aris-rebuttal",
+      "ds-write",
+      "ds-review",
+      "ds-rebuttal"
     ],
     "byTaskType": {
       "writing": [
@@ -99,13 +136,24 @@
         "inno-humanizer",
         "scientific-writing",
         "ml-paper-writing",
-        "inno-grant-proposal"
+        "inno-grant-proposal",
+        "aris-paper-writing",
+        "aris-paper-write",
+        "aris-paper-figure",
+        "aris-paper-compile",
+        "ds-write",
+        "ds-figure-polish",
+        "ds-finalize"
       ],
       "analysis": [
         "inno-paper-reviewer",
         "inno-rebuttal",
         "inno-reference-audit",
-        "inno-deep-research"
+        "inno-deep-research",
+        "aris-auto-review-loop",
+        "aris-rebuttal",
+        "ds-review",
+        "ds-rebuttal"
       ],
       "delivery": [
         "inno-rclone-to-overleaf"
@@ -114,14 +162,18 @@
   },
   "promotion": {
     "base": [
-      "making-academic-presentations"
+      "making-academic-presentations",
+      "aris-paper-poster",
+      "aris-paper-slides"
     ],
     "byTaskType": {
       "scripting": [
-        "making-academic-presentations"
+        "making-academic-presentations",
+        "aris-paper-slides"
       ],
       "rendering": [
-        "making-academic-presentations"
+        "making-academic-presentations",
+        "aris-paper-poster"
       ],
       "narration": [
         "making-academic-presentations"

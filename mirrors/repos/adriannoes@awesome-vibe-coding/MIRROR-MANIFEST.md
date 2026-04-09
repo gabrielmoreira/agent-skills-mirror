@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `adriannoes/awesome-vibe-coding` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `adriannoes/awesome-vibe-coding` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `adriannoes/awesome-vibe-coding` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,13 +64,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`cursor/skills/executing-plans/SKILL.md`](cursor/skills/executing-plans/SKILL.md) |
 | 4 | ✓ | [`cursor/skills/finishing-a-development-branch/SKILL.md`](cursor/skills/finishing-a-development-branch/SKILL.md) |
 | 5 | ✓ | [`cursor/skills/frontend-design/SKILL.md`](cursor/skills/frontend-design/SKILL.md) |
-| 6 | ✓ | [`cursor/skills/receiving-code-review/SKILL.md`](cursor/skills/receiving-code-review/SKILL.md) |
-| 7 | ✓ | [`cursor/skills/systematic-debugging/SKILL.md`](cursor/skills/systematic-debugging/SKILL.md) |
-| 8 | ✓ | [`cursor/skills/test-driven-development/SKILL.md`](cursor/skills/test-driven-development/SKILL.md) |
-| 9 | ✓ | [`cursor/skills/update-changelog/SKILL.md`](cursor/skills/update-changelog/SKILL.md) |
-| 10 | ✓ | [`cursor/skills/using-git-worktrees/SKILL.md`](cursor/skills/using-git-worktrees/SKILL.md) |
-| 11 | ✓ | [`cursor/skills/verification-before-completion/SKILL.md`](cursor/skills/verification-before-completion/SKILL.md) |
-| 12 | ✓ | [`cursor/skills/writing-plans/SKILL.md`](cursor/skills/writing-plans/SKILL.md) |
+| 6 | ✓ | [`cursor/skills/react-best-practices/SKILL.md`](cursor/skills/react-best-practices/SKILL.md) |
+| 7 | ✓ | [`cursor/skills/receiving-code-review/SKILL.md`](cursor/skills/receiving-code-review/SKILL.md) |
+| 8 | ✓ | [`cursor/skills/systematic-debugging/SKILL.md`](cursor/skills/systematic-debugging/SKILL.md) |
+| 9 | ✓ | [`cursor/skills/test-driven-development/SKILL.md`](cursor/skills/test-driven-development/SKILL.md) |
+| 10 | ✓ | [`cursor/skills/update-changelog/SKILL.md`](cursor/skills/update-changelog/SKILL.md) |
+| 11 | ✓ | [`cursor/skills/using-git-worktrees/SKILL.md`](cursor/skills/using-git-worktrees/SKILL.md) |
+| 12 | ✓ | [`cursor/skills/verification-before-completion/SKILL.md`](cursor/skills/verification-before-completion/SKILL.md) |
+| 13 | ✓ | [`cursor/skills/web-design-guidelines/SKILL.md`](cursor/skills/web-design-guidelines/SKILL.md) |
+| 14 | ✓ | [`cursor/skills/writing-plans/SKILL.md`](cursor/skills/writing-plans/SKILL.md) |
 
 ---
 

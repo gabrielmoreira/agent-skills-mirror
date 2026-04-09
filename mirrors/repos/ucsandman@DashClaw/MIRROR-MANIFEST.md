@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 5 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/dashclaw-platform-intelligence/SKILL.md`](.claude/skills/dashclaw-platform-intelligence/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 5 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
+| 3 | ✓ | [`agents/ceo/AGENTS.md`](agents/ceo/AGENTS.md) |
+| 4 | ✓ | [`agents/ceo/HEARTBEAT.md`](agents/ceo/HEARTBEAT.md) |
+| 5 | ✓ | [`agents/ceo/SOUL.md`](agents/ceo/SOUL.md) |
+| 6 | ✓ | [`agents/ceo/TOOLS.md`](agents/ceo/TOOLS.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 9 | ✓ | [`graphify-pilot/CLAUDE.md`](graphify-pilot/CLAUDE.md) |
+| 10 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
 
 ---
 

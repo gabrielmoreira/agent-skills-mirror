@@ -7,6 +7,7 @@ rules:
 - load all relevant images in one call when comparing screenshots or pages
 - use when the task depends on screenshots, diagrams, scanned documents, charts, or photos
 - only bitmaps are supported; convert other formats first if needed
+- the tool result includes loaded/skipped image totals and the corresponding path lists
 example:
 ```json
 {
