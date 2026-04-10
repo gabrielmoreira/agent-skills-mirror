@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kellyvv/PhoneClaw` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `kellyvv/PhoneClaw` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kellyvv/PhoneClaw` — 26 default patterns, 0 followed patterns, 8 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,10 +63,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`Skills/Library/calendar/SKILL.md`](Skills/Library/calendar/SKILL.md) |
 | 3 | ✓ | [`Skills/Library/clipboard/SKILL.md`](Skills/Library/clipboard/SKILL.md) |
 | 4 | ✓ | [`Skills/Library/contacts/SKILL.md`](Skills/Library/contacts/SKILL.md) |
-| 5 | ✓ | [`Skills/Library/device/SKILL.md`](Skills/Library/device/SKILL.md) |
+| 5 | ✓ | [`Skills/Library/health/SKILL.md`](Skills/Library/health/SKILL.md) |
 | 6 | ✓ | [`Skills/Library/reminders/SKILL.md`](Skills/Library/reminders/SKILL.md) |
-| 7 | ✓ | [`Skills/Library/text/SKILL.md`](Skills/Library/text/SKILL.md) |
-| 8 | ✓ | [`Skills/Library/translate/SKILL.md`](Skills/Library/translate/SKILL.md) |
+| 7 | ✓ | [`Skills/Library/translate/SKILL.md`](Skills/Library/translate/SKILL.md) |
 
 ---
 

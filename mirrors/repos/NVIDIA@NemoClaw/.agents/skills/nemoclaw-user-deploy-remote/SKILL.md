@@ -3,6 +3,9 @@ name: "nemoclaw-user-deploy-remote"
 description: "Explains how to run NemoClaw on a remote GPU instance, including the deprecated Brev compatibility path and the preferred installer plus onboard flow. Describes security hardening measures applied to the NemoClaw sandbox container image. Use when reviewing container security, Docker capabilities, process limits, or sandbox hardening controls. Explains how Telegram reaches the sandboxed OpenClaw agent through OpenShell-managed processes and onboarding-time channel configuration. Use when setting up Telegram, a chat interface, or messaging integration without relying on nemoclaw start for bridges."
 ---
 
+<!-- SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved. -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # NemoClaw User Deploy Remote
 
 Explains how to run NemoClaw on a remote GPU instance, including the deprecated Brev compatibility path and the preferred installer plus onboard flow.
@@ -165,6 +168,8 @@ When the wizard reaches **Messaging channels**, it lists Telegram, Discord, and 
 Press **1** to toggle Telegram on or off, then **Enter** when done.
 If the token is not already in the environment or credential store, the wizard prompts for it and saves it to the store.
 If `TELEGRAM_ALLOWED_IDS` is not set, the wizard can prompt for allowed sender IDs for Telegram DMs (you can leave this blank and rely on OpenClaw pairing instead).
+NemoClaw applies that allowlist to Telegram DMs only.
+Group chats stay open by default so rebuilt sandboxes do not silently drop Telegram group messages because of an empty group allowlist.
 
 ## Step 11: Run `nemoclaw onboard`
 

@@ -361,8 +361,8 @@ The org directory KB (seeded via `seed_knowledge_docs.py`, refreshed by re-runni
 │  │              Digital Twin tokens, KB assignments              │
 │  ├── S3 — SOUL templates, skills, workspaces, knowledge,        │
 │  │         org directory, per-employee memory, admin visibility  │
-│  ├── SSM — tenant→position, position→runtime, user-mappings,    │
-│  │          permissions, always-on endpoints                     │
+│  ├── SSM — secrets (admin-password, jwt-secret, gateway-token),  │
+│  │          runtime-id, always-on endpoints                      │
 │  ├── Bedrock — LLM inference (Nova 2 Lite default, Sonnet 4.6  │
 │  │              for exec tier, per-position overrides supported) │
 │  ├── AgentCore — Session Storage (1 GB/session, auto-managed)   │
@@ -635,8 +635,6 @@ python3 seed_settings.py              --region $DYNAMODB_REGION
 python3 seed_audit_approvals.py       --region $DYNAMODB_REGION
 python3 seed_usage.py                 --region $DYNAMODB_REGION
 python3 seed_routing_conversations.py --region $DYNAMODB_REGION
-python3 seed_ssm_tenants.py           --region $REGION --stack $STACK_NAME
-
 export S3_BUCKET AWS_REGION=$REGION
 python3 seed_skills_final.py
 python3 seed_all_workspaces.py        --bucket $S3_BUCKET --region $REGION

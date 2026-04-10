@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -38,9 +38,9 @@ curl http://localhost:8000/api/health
 ## Architecture
 
 ### Backend Core
-- **[orchestrator.py](aigc-claw/backend/core/orchestrator.py)**: Workflow engine managing the 6-stage state machine. Controls session state (idle/running/waiting_in_stage/stage_completed/session_completed), persists to `aigc-claw/backend/code/data/sessions/`, and coordinates agent execution.
+- **[orchestrator.py](aigc-claw/backend/core/orchestrator.py)**: Workflow engine managing the 6-stage state machine. Controls session state (pending/running/waiting/completed/completed), persists to `aigc-claw/backend/code/data/sessions/`, and coordinates agent execution.
 
-- **[base_agent.py](aigc-claw/backend/core/agents/base_agent.py)**: Abstract base class for all stage agents. Defines `process(input_data, intervention)` interface that returns `{"payload": ..., "requires_intervention": bool, "stage_completed": bool}`.
+- **[base_agent.py](aigc-claw/backend/core/agents/base_agent.py)**: Abstract base class for all stage agents. Defines `process(input_data, intervention)` interface that returns `{"payload": ..., "requires_intervention": bool, "completed": bool}`.
 
 ### 6 Stage Agents
 Each agent handles one workflow stage:

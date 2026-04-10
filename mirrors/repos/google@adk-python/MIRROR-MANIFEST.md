@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 4 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`contributing/samples/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/skills_agent/skills/weather-skill/SKILL.md) |
-| 3 | ✓ | [`llms.txt`](llms.txt) |
-| 4 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
+| 2 | ✓ | [`contributing/samples/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/local_environment_skill/skills/weather-skill/SKILL.md) |
+| 3 | ✓ | [`contributing/samples/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/skills_agent/skills/weather-skill/SKILL.md) |
+| 4 | ✓ | [`llms.txt`](llms.txt) |
+| 5 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
 
 ---
 

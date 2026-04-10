@@ -74,6 +74,28 @@ If you just want to contribute directly you can choose the issues below:
 
 **Please note that any PR must be associated with a valid issue. Otherwise, the PR will be rejected.**
 
+### Issue Assignment
+
+To avoid duplicate work and ensure efficient collaboration, please follow this process when claiming an issue:
+
+#### How to claim an issue
+
+1. Comment `/assign` on the issue to claim it — you will be automatically assigned
+2. If the issue is already assigned, please wait or discuss in the comments
+3. To give up a claimed issue, comment `/unassign`
+
+#### Expectations after claiming
+
+- Submit a PR within **14 days** of being assigned
+- If you need more time, comment on the issue to let others know
+- If no PR or update is provided within 14 days, you will be **automatically unassigned** and the issue will be made available for other contributors
+
+#### Tips
+
+- Check if an issue already has an assignee before claiming
+- For complex issues, consider discussing your approach in the issue before starting
+- It's okay to unassign yourself if you can't continue — comment `/unassign`
+
 ### Contribution Notice
 
 Before submitting a change, please ensure:

@@ -11,10 +11,18 @@
 
 ## 记忆系统
 
-- **日记:** `memory/YYYY-MM-DD.md` — 每天的开发记录
-- **长期记忆:** `MEMORY.md` — 经过整理的重要技术决策和项目上下文
+记忆文件存储在 `/root/.openclaw/memory/`，所有 Agent 共享。
 
-记住重要的事情：技术栈选择、架构决策、遇到的坑和解决方案、项目进度。
+### 🔍 记忆检索
+
+当你需要回忆用户偏好或过去的事件时：
+1. `/root/.openclaw/qmd-runner.sh query "<问题>"` — 混合搜索
+2. `/root/.openclaw/qmd-runner.sh get <file>:<line> -l 20` — 只拉取需要的片段
+3. 只有在 qmd 没有返回结果时，才直接读取文件
+
+### ✍️ 记忆写入
+
+当你做出重要决策或完成关键任务时 → 立即追加到 `/root/.openclaw/memory/YYYY-MM-DD.md`。
 
 ## 安全守则
 

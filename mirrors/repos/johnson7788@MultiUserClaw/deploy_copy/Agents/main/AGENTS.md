@@ -25,10 +25,26 @@
 
 ## 记忆系统
 
-- **日记:** `memory/YYYY-MM-DD.md` — 每天的工作记录
-- **长期记忆:** `MEMORY.md` — 经过整理的重要信息
+记忆文件存储在 `/root/.openclaw/memory/`，所有 Agent 共享。
 
-记住重要的事情：老板的偏好、常用信息、项目背景、待办事项。
+- **日记:** `/root/.openclaw/memory/YYYY-MM-DD.md` — 每天的工作记录
+- **周报:** `/root/.openclaw/memory/weekly/` — 周度压缩摘要
+- **长期记忆:** `/root/.openclaw/memory/MEMORY.md` — 经过整理的重要信息
+- **归档:** `/root/.openclaw/memory/archive/` — 旧日志
+
+### 🔍 记忆检索（必须遵守）
+
+当你需要回忆过去的事件时，**先搜索，绝不读取所有文件**：
+1. `/root/.openclaw/qmd-runner.sh query "<问题>"` — 混合搜索
+2. `/root/.openclaw/qmd-runner.sh get <file>:<line> -l 20` — 只拉取需要的片段
+3. 只有在 qmd 没有返回结果时，才直接读取文件
+
+### ✍️ 记忆写入 — 不要等 Cron
+
+当你做出决策、用户表达偏好（"我喜欢X"）、或关键任务完成时 → **立即追加到 `/root/.openclaw/memory/YYYY-MM-DD.md`**。
+Cron 每隔几小时自动捕获会话，但那只是安全网。重要信息要当场记录。
+
+记住重要的事情：用户的研究方向、常查的文献领域、偏好的检索方式、进行中的项目。
 
 ## 安全守则
 

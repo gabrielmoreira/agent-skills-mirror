@@ -38,7 +38,9 @@
 
 ## 💥 News
 
-- `2026/3/27`: 🚀 AIGC-Claw is officially released, supporting the full workflow from idea to finished video.
+- `2026/3/27`: 🎬 AIGC-Claw is officially released, supporting the full workflow from idea to finished video.
+- `2026/4/6`: 🎭 AIGC-Claw v2 is launched, optimized for short dramas.
+- `2026/4/9`: ♾️ AIGC-Claw v3 is launched, featuring infinite script continuation and customizable plots.
 
 
 ## 📖 Overview

@@ -4,8 +4,8 @@ version: "3.0.0"
 description: "Multi-query social search with intelligent planning. Agent plans queries when possible, falls back to Gemini/OpenAI when not. Research any topic across Reddit, X, YouTube, TikTok, Instagram, Hacker News, Polymarket, and the web."
 argument-hint: 'last30days-3 AI video tools, last30days-3 best noise cancelling headphones'
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
-homepage: https://github.com/mvanhorn/last30days-skill-private
-repository: https://github.com/mvanhorn/last30days-skill-private
+homepage: https://github.com/mvanhorn/last30days-skill
+repository: https://github.com/mvanhorn/last30days-skill
 author: mvanhorn
 license: MIT
 user-invocable: true

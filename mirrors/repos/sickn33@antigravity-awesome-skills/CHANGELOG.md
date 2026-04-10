@@ -9,6 +9,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.11.0] - 2026-04-09 - "Monte Carlo Skills and Cross-Tool Skill Management"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PR #481 and PR #482 to expand the library in two directions: data observability workflows for Monte Carlo users and cross-tool skill maintenance guidance for teams operating across multiple agent coding environments. It also carries the required maintainer follow-up on `main`, including contributor syncing, README source-credit coverage, and canonical post-merge repository hygiene before the release cut.
+
+## New Skills
+
+- **monte-carlo-prevent** - checks table health, alerts, lineage, and blast radius before SQL or dbt edits.
+- **monte-carlo-monitor-creation** - guides monitor creation through the Monte Carlo MCP server and outputs monitors-as-code YAML.
+- **monte-carlo-push-ingestion** - documents metadata, lineage, and query-log ingestion into Monte Carlo across multiple warehouse patterns.
+- **monte-carlo-validation-notebook** - generates SQL validation notebook workflows for dbt pull request changes with before/after comparisons.
+- **manage-skills** - teaches agents how to discover, create, edit, toggle, copy, move, and delete skills across 11 major coding-agent tools.
+
+## Improvements
+
+- **README source-credit coverage** - keeps `monte-carlo-data/mc-agent-toolkit` and `umutbozdag/agent-skills-manager` reflected in community-source credits on `main`.
+- **Maintainer merge hygiene** - records the GitHub-only squash merge path, contributor sync, PR metadata refresh, and post-merge repository-state follow-up used for these community contributions.
+
+## Who should care
+
+- **Monte Carlo and dbt users** get a focused set of observability skills for impact analysis, monitor setup, ingestion pipelines, and validation-notebook workflows.
+- **Claude Code, Cursor, Codex CLI, Gemini CLI, and other agent-tool users** get one portable skill for managing skill inventories across mixed toolchains instead of maintaining separate ad hoc instructions per tool.
+- **Maintainers and source curators** get the merged upstream attribution and contributor credit trail captured cleanly in both the README and release notes.
+
+## Credits
+
+- **[@cryptoque](https://github.com/cryptoque)** for the Monte Carlo contribution merged in PR #481.
+- **[@umutbozdag](https://github.com/umutbozdag)** for the `manage-skills` contribution merged in PR #482.
+- **[monte-carlo-data/mc-agent-toolkit](https://github.com/monte-carlo-data/mc-agent-toolkit)** for the upstream Monte Carlo skill source material.
+- **[umutbozdag/agent-skills-manager](https://github.com/umutbozdag/agent-skills-manager)** for the upstream cross-tool skill-management source material.
+
 ## [9.10.0] - 2026-04-08 - "StyleSeed UI and UX Pack"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

@@ -39,6 +39,26 @@
 
 <br/><br/>
 
+<h2 align="center">📄 技术文档</h2>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center">
+      <a href="docs/BioClaw_Technical_Document.pdf">
+        <img src="docs/images/tech_doc_card.png" width="650" alt="BioClaw 技术文档"/>
+        <br/><br/>
+        <img src="https://img.shields.io/badge/下载-技术文档_PDF-2b6cb0?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" height="50" alt="下载 PDF"/>
+      </a>
+      <br/><br/>
+      <h3>👆 点击上方查看完整技术文档</h3>
+    </td>
+  </tr>
+</table>
+</div>
+
+<br/><br/>
+
 <div align="center">
 
 <p align="center">

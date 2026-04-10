@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `johnson7788/MultiUserClaw` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
+Mirror of `johnson7788/MultiUserClaw` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `johnson7788/MultiUserClaw` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 78 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,49 +94,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`openclaw/extensions/qqbot/skills/qqbot-media/SKILL.md`](openclaw/extensions/qqbot/skills/qqbot-media/SKILL.md) |
 | 34 | ✓ | [`openclaw/extensions/qqbot/skills/qqbot-remind/SKILL.md`](openclaw/extensions/qqbot/skills/qqbot-remind/SKILL.md) |
 | 35 | ✓ | [`openclaw/extensions/tavily/skills/tavily/SKILL.md`](openclaw/extensions/tavily/skills/tavily/SKILL.md) |
-| 36 | ✓ | [`openclaw/skills/1password/SKILL.md`](openclaw/skills/1password/SKILL.md) |
-| 37 | ✓ | [`openclaw/skills/canvas/SKILL.md`](openclaw/skills/canvas/SKILL.md) |
-| 38 | ✓ | [`openclaw/skills/coding-agent/SKILL.md`](openclaw/skills/coding-agent/SKILL.md) |
-| 39 | ✓ | [`openclaw/skills/discord/SKILL.md`](openclaw/skills/discord/SKILL.md) |
-| 40 | ✓ | [`openclaw/skills/gemini/SKILL.md`](openclaw/skills/gemini/SKILL.md) |
-| 41 | ✓ | [`openclaw/skills/gh-issues/SKILL.md`](openclaw/skills/gh-issues/SKILL.md) |
-| 42 | ✓ | [`openclaw/skills/gifgrep/SKILL.md`](openclaw/skills/gifgrep/SKILL.md) |
-| 43 | ✓ | [`openclaw/skills/github/SKILL.md`](openclaw/skills/github/SKILL.md) |
-| 44 | ✓ | [`openclaw/skills/gog/SKILL.md`](openclaw/skills/gog/SKILL.md) |
-| 45 | ✓ | [`openclaw/skills/healthcheck/SKILL.md`](openclaw/skills/healthcheck/SKILL.md) |
-| 46 | ✓ | [`openclaw/skills/himalaya/SKILL.md`](openclaw/skills/himalaya/SKILL.md) |
-| 47 | ✓ | [`openclaw/skills/mcporter/SKILL.md`](openclaw/skills/mcporter/SKILL.md) |
-| 48 | ✓ | [`openclaw/skills/nano-pdf/SKILL.md`](openclaw/skills/nano-pdf/SKILL.md) |
-| 49 | ✓ | [`openclaw/skills/node-connect/SKILL.md`](openclaw/skills/node-connect/SKILL.md) |
-| 50 | ✓ | [`openclaw/skills/obsidian/SKILL.md`](openclaw/skills/obsidian/SKILL.md) |
-| 51 | ✓ | [`openclaw/skills/openai-whisper/SKILL.md`](openclaw/skills/openai-whisper/SKILL.md) |
-| 52 | ✓ | [`openclaw/skills/oracle/SKILL.md`](openclaw/skills/oracle/SKILL.md) |
-| 53 | ✓ | [`openclaw/skills/sag/SKILL.md`](openclaw/skills/sag/SKILL.md) |
-| 54 | ✓ | [`openclaw/skills/session-logs/SKILL.md`](openclaw/skills/session-logs/SKILL.md) |
-| 55 | ✓ | [`openclaw/skills/sherpa-onnx-tts/SKILL.md`](openclaw/skills/sherpa-onnx-tts/SKILL.md) |
-| 56 | ✓ | [`openclaw/skills/skill-creator/SKILL.md`](openclaw/skills/skill-creator/SKILL.md) |
-| 57 | ✓ | [`openclaw/skills/slack/SKILL.md`](openclaw/skills/slack/SKILL.md) |
-| 58 | ✓ | [`openclaw/skills/songsee/SKILL.md`](openclaw/skills/songsee/SKILL.md) |
-| 59 | ✓ | [`openclaw/skills/summarize/SKILL.md`](openclaw/skills/summarize/SKILL.md) |
-| 60 | ✓ | [`openclaw/skills/taskflow-inbox-triage/SKILL.md`](openclaw/skills/taskflow-inbox-triage/SKILL.md) |
-| 61 | ✓ | [`openclaw/skills/taskflow/SKILL.md`](openclaw/skills/taskflow/SKILL.md) |
-| 62 | ✓ | [`openclaw/skills/tmux/SKILL.md`](openclaw/skills/tmux/SKILL.md) |
-| 63 | ✓ | [`openclaw/skills/trello/SKILL.md`](openclaw/skills/trello/SKILL.md) |
-| 64 | ✓ | [`openclaw/skills/video-frames/SKILL.md`](openclaw/skills/video-frames/SKILL.md) |
-| 65 | ✓ | [`openclaw/skills/wacli/SKILL.md`](openclaw/skills/wacli/SKILL.md) |
-| 66 | ✓ | [`openclaw/skills/weather/SKILL.md`](openclaw/skills/weather/SKILL.md) |
-| 67 | ✓ | [`openclaw/src/channels/AGENTS.md`](openclaw/src/channels/AGENTS.md) |
-| 68 | ✓ | [`openclaw/src/channels/CLAUDE.md`](openclaw/src/channels/CLAUDE.md) |
-| 69 | ✓ | [`openclaw/src/gateway/protocol/AGENTS.md`](openclaw/src/gateway/protocol/AGENTS.md) |
-| 70 | ✓ | [`openclaw/src/gateway/protocol/CLAUDE.md`](openclaw/src/gateway/protocol/CLAUDE.md) |
-| 71 | ✓ | [`openclaw/src/gateway/server-methods/AGENTS.md`](openclaw/src/gateway/server-methods/AGENTS.md) |
-| 72 | ✓ | [`openclaw/src/gateway/server-methods/CLAUDE.md`](openclaw/src/gateway/server-methods/CLAUDE.md) |
-| 73 | ✓ | [`openclaw/src/plugin-sdk/AGENTS.md`](openclaw/src/plugin-sdk/AGENTS.md) |
-| 74 | ✓ | [`openclaw/src/plugin-sdk/CLAUDE.md`](openclaw/src/plugin-sdk/CLAUDE.md) |
-| 75 | ✓ | [`openclaw/src/plugins/AGENTS.md`](openclaw/src/plugins/AGENTS.md) |
-| 76 | ✓ | [`openclaw/src/plugins/CLAUDE.md`](openclaw/src/plugins/CLAUDE.md) |
-| 77 | ✓ | [`openclaw/test/helpers/channels/AGENTS.md`](openclaw/test/helpers/channels/AGENTS.md) |
-| 78 | ✓ | [`openclaw/test/helpers/channels/CLAUDE.md`](openclaw/test/helpers/channels/CLAUDE.md) |
+| 36 | ✓ | [`openclaw/skills/coding-agent/SKILL.md`](openclaw/skills/coding-agent/SKILL.md) |
+| 37 | ✓ | [`openclaw/skills/gh-issues/SKILL.md`](openclaw/skills/gh-issues/SKILL.md) |
+| 38 | ✓ | [`openclaw/skills/github/SKILL.md`](openclaw/skills/github/SKILL.md) |
+| 39 | ✓ | [`openclaw/skills/healthcheck/SKILL.md`](openclaw/skills/healthcheck/SKILL.md) |
+| 40 | ✓ | [`openclaw/skills/mcporter/SKILL.md`](openclaw/skills/mcporter/SKILL.md) |
+| 41 | ✓ | [`openclaw/skills/nano-pdf/SKILL.md`](openclaw/skills/nano-pdf/SKILL.md) |
+| 42 | ✓ | [`openclaw/skills/openai-whisper/SKILL.md`](openclaw/skills/openai-whisper/SKILL.md) |
+| 43 | ✓ | [`openclaw/skills/oracle/SKILL.md`](openclaw/skills/oracle/SKILL.md) |
+| 44 | ✓ | [`openclaw/skills/session-logs/SKILL.md`](openclaw/skills/session-logs/SKILL.md) |
+| 45 | ✓ | [`openclaw/skills/sherpa-onnx-tts/SKILL.md`](openclaw/skills/sherpa-onnx-tts/SKILL.md) |
+| 46 | ✓ | [`openclaw/skills/skill-creator/SKILL.md`](openclaw/skills/skill-creator/SKILL.md) |
+| 47 | ✓ | [`openclaw/skills/slack/SKILL.md`](openclaw/skills/slack/SKILL.md) |
+| 48 | ✓ | [`openclaw/skills/taskflow-inbox-triage/SKILL.md`](openclaw/skills/taskflow-inbox-triage/SKILL.md) |
+| 49 | ✓ | [`openclaw/skills/taskflow/SKILL.md`](openclaw/skills/taskflow/SKILL.md) |
+| 50 | ✓ | [`openclaw/src/channels/AGENTS.md`](openclaw/src/channels/AGENTS.md) |
+| 51 | ✓ | [`openclaw/src/channels/CLAUDE.md`](openclaw/src/channels/CLAUDE.md) |
+| 52 | ✓ | [`openclaw/src/gateway/protocol/AGENTS.md`](openclaw/src/gateway/protocol/AGENTS.md) |
+| 53 | ✓ | [`openclaw/src/gateway/protocol/CLAUDE.md`](openclaw/src/gateway/protocol/CLAUDE.md) |
+| 54 | ✓ | [`openclaw/src/gateway/server-methods/AGENTS.md`](openclaw/src/gateway/server-methods/AGENTS.md) |
+| 55 | ✓ | [`openclaw/src/gateway/server-methods/CLAUDE.md`](openclaw/src/gateway/server-methods/CLAUDE.md) |
+| 56 | ✓ | [`openclaw/src/plugin-sdk/AGENTS.md`](openclaw/src/plugin-sdk/AGENTS.md) |
+| 57 | ✓ | [`openclaw/src/plugin-sdk/CLAUDE.md`](openclaw/src/plugin-sdk/CLAUDE.md) |
+| 58 | ✓ | [`openclaw/src/plugins/AGENTS.md`](openclaw/src/plugins/AGENTS.md) |
+| 59 | ✓ | [`openclaw/src/plugins/CLAUDE.md`](openclaw/src/plugins/CLAUDE.md) |
+| 60 | ✓ | [`openclaw/test/helpers/channels/AGENTS.md`](openclaw/test/helpers/channels/AGENTS.md) |
+| 61 | ✓ | [`openclaw/test/helpers/channels/CLAUDE.md`](openclaw/test/helpers/channels/CLAUDE.md) |
 
 ---
 

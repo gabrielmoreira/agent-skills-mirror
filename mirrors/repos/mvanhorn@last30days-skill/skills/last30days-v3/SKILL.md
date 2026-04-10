@@ -1,7 +1,7 @@
 ---
 name: last30days
-version: "3.0.0-alpha"
-description: "[V3 DEV] Research any topic from the last 30 days. Side-by-side test version of the v3 pipeline."
+version: "3.0.0"
+description: "Multi-query social search with intelligent planning. Agent plans queries when possible, falls back to Gemini/OpenAI when not. Research any topic across Reddit, X, YouTube, TikTok, Instagram, Hacker News, Polymarket, and the web."
 argument-hint: "last30days-v3 codex vs claude code"
 allowed-tools: Bash, Read, Write, WebSearch
 homepage: https://github.com/mvanhorn/last30days-skill

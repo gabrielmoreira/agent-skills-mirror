@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 52 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 52 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -110,7 +110,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 49 | ✓ | [`.agents/skills/nemoclaw-user-workspace/references/workspace-files.md`](.agents/skills/nemoclaw-user-workspace/references/workspace-files.md) |
 | 50 | ✓ | [`.agents/skills/nemoclaw-user-workspace/SKILL.md`](.agents/skills/nemoclaw-user-workspace/SKILL.md) |
 | 51 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 52 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 52 | ✓ | [`agents/hermes/decode-proxy.py`](agents/hermes/decode-proxy.py) |
+| 53 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
+| 54 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
+| 55 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
+| 56 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |
+| 57 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
+| 58 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
+| 59 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
+| 60 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
+| 61 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
+| 62 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 63 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
+| 64 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

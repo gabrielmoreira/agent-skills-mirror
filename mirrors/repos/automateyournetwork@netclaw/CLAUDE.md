@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-08
+Auto-generated from all feature plans. Last updated: 2026-04-09
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -32,6 +32,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-08
 - N/A (stateless - visualization is ephemeral in Blender) (024-blender-3d-viz)
 - Python 3.10+ (community MCP server with Aruba CX REST API client) + aruba-cx-mcp-server (community), httpx or requests (REST client) (025-aruba-cx-mcp-server)
 - N/A (stateless proxy to Aruba CX REST API) (025-aruba-cx-mcp-server)
+- N/A (Remote MCP server - no code required) + N/A (Remote MCP managed service) (026-devnet-content-search-mcp)
+- N/A (stateless - all data from remote API) (026-devnet-content-search-mcp)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -51,9 +53,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 026-devnet-content-search-mcp: Added N/A (Remote MCP server - no code required) + N/A (Remote MCP managed service)
 - 025-aruba-cx-mcp-server: Added Python 3.10+ (community MCP server with Aruba CX REST API client) + aruba-cx-mcp-server (community), httpx or requests (REST client)
 - 024-blender-3d-viz: Added Python 3.10+ (consistent with NetClaw MCP servers) + blender-mcp (community, via uvx), Blender 3.0+ (user-installed)
-- 016-datadog-mcp-server: Added N/A (Remote MCP managed service) + Datadog MCP remote endpoint, DD_API_KEY, DD_APP_KEY
 
 
 <!-- MANUAL ADDITIONS START -->

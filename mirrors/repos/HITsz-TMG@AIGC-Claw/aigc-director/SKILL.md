@@ -1,4 +1,4 @@
----
+﻿---
 name: aigc-director
 description: AI 视频生成全流程：通过 6 个阶段（剧本→角色/场景设计→分镜→参考图→视频生成→后期剪辑）将用户想法转化为完整视频。支持临时工作台（单独调用 LLM、VLM、文生图、图生图、视频生成）。触发词：视频生成、AI视频、AIGC、创作视频、制作视频、AI画图。
 license: MIT License
@@ -137,7 +137,7 @@ cat aigc-claw/backend/.env | grep -E "API_KEY|KEY"
 
 ## 🚨 停点处理（强制规则）
 
-**当查询状态为 `stage_completed` 或 `waiting_in_stage` 时，必须按以下步骤执行：**
+**当查询状态为 `completed` 或 `waiting` 时，必须按以下步骤执行：**
 
 ### 步骤1：获取产物
 ```bash
@@ -169,14 +169,14 @@ curl "http://localhost:8000/api/project/{session_id}/artifact/{stage}"
 ### ✅ 正确示例
 ```
 1. 阶段中间遇到不确定内容
-收到 waiting_in_stage 停点
+收到 waiting 停点
 → 获取 artifact 查看内容
 → 展示给用户选项
 → 询问："是否同意修改？"
 → 用户回复"同意" → 调用 intervene
 
 2. 阶段完成停点触发
-收到 stage_completed 停点
+收到 completed 停点
 → 获取 artifact 查看产物内容
 → 展示给用户："第一阶段已完成，生成了剧本内容（x集）..."
 → 询问："是否继续下一阶段？"
@@ -194,11 +194,11 @@ curl "http://localhost:8000/api/project/{session_id}/artifact/{stage}"
 
 | status | 含义 | 操作 |
 |--------|------|------|
-| idle | 新建会话 | 启动项目 |
+| pending | 新建会话 | 启动项目 |
 | running | 执行中 | 轮询等待 |
-| waiting_in_stage | 等待用户介入 | 调用 `intervene` |
-| stage_completed | 阶段完成 | 调用 `continue` |
-| session_completed | 全部完成 | 结束 |
+| waiting | 等待用户介入 | 调用 `intervene` |
+| completed | 阶段完成 | 调用 `continue` |
+| completed | 全部完成 | 结束 |
 
 > **注意**：只有 status 变化时才需要干预，不要反复调用 artifact API 去"确认"！
 

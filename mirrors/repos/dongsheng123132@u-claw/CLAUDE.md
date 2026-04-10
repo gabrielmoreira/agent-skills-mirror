@@ -87,7 +87,7 @@ Both portable and desktop versions auto-find a free port in range 18789–18799 
 - **China mirrors**: All downloads use `npmmirror.com` — Node.js binaries from `npmmirror.com/mirrors/node`, npm packages from `registry.npmmirror.com`
 - **Environment variables**: `OPENCLAW_HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH` control where OpenClaw reads config
 - **macOS quarantine**: Mac scripts run `xattr -rd com.apple.quarantine` to remove Gatekeeper blocks
-- **Config format**: `{"gateway":{"mode":"local","auth":{"token":"uclaw"}},"agent":{"model":"...","apiKey":"..."}}`
+- **Config format**: `{"gateway":{"mode":"local","auth":{"token":"uclaw"}},"models":{"mode":"merge","providers":{"xxx":{...}}},"agents":{"defaults":{"model":{"primary":"provider/model"}}}}`
 - **Config hot-reload**: OpenClaw watches `openclaw.json` and applies changes without restart
 
 ## What NOT to Commit

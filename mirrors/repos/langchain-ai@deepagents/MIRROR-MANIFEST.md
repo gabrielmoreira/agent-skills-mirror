@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,20 +63,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`examples/content-builder-agent/AGENTS.md`](examples/content-builder-agent/AGENTS.md) |
 | 3 | ✓ | [`examples/content-builder-agent/skills/blog-post/SKILL.md`](examples/content-builder-agent/skills/blog-post/SKILL.md) |
 | 4 | ✓ | [`examples/content-builder-agent/skills/social-media/SKILL.md`](examples/content-builder-agent/skills/social-media/SKILL.md) |
-| 5 | ✓ | [`examples/nvidia_deep_agent/skills/cudf-analytics/SKILL.md`](examples/nvidia_deep_agent/skills/cudf-analytics/SKILL.md) |
-| 6 | ✓ | [`examples/nvidia_deep_agent/skills/cuml-machine-learning/SKILL.md`](examples/nvidia_deep_agent/skills/cuml-machine-learning/SKILL.md) |
-| 7 | ✓ | [`examples/nvidia_deep_agent/skills/data-visualization/SKILL.md`](examples/nvidia_deep_agent/skills/data-visualization/SKILL.md) |
-| 8 | ✓ | [`examples/nvidia_deep_agent/skills/gpu-document-processing/SKILL.md`](examples/nvidia_deep_agent/skills/gpu-document-processing/SKILL.md) |
-| 9 | ✓ | [`examples/nvidia_deep_agent/src/AGENTS.md`](examples/nvidia_deep_agent/src/AGENTS.md) |
-| 10 | ✓ | [`examples/text-to-sql-agent/AGENTS.md`](examples/text-to-sql-agent/AGENTS.md) |
-| 11 | ✓ | [`examples/text-to-sql-agent/skills/query-writing/SKILL.md`](examples/text-to-sql-agent/skills/query-writing/SKILL.md) |
-| 12 | ✓ | [`examples/text-to-sql-agent/skills/schema-exploration/SKILL.md`](examples/text-to-sql-agent/skills/schema-exploration/SKILL.md) |
-| 13 | ✓ | [`libs/cli/deepagents_cli/built_in_skills/remember/SKILL.md`](libs/cli/deepagents_cli/built_in_skills/remember/SKILL.md) |
-| 14 | ✓ | [`libs/cli/deepagents_cli/built_in_skills/skill-creator/SKILL.md`](libs/cli/deepagents_cli/built_in_skills/skill-creator/SKILL.md) |
-| 15 | ✓ | [`libs/cli/examples/skills/arxiv-search/SKILL.md`](libs/cli/examples/skills/arxiv-search/SKILL.md) |
-| 16 | ✓ | [`libs/cli/examples/skills/langgraph-docs/SKILL.md`](libs/cli/examples/skills/langgraph-docs/SKILL.md) |
-| 17 | ✓ | [`libs/cli/examples/skills/skill-creator/SKILL.md`](libs/cli/examples/skills/skill-creator/SKILL.md) |
-| 18 | ✓ | [`libs/cli/examples/skills/web-research/SKILL.md`](libs/cli/examples/skills/web-research/SKILL.md) |
+| 5 | ✓ | [`examples/deploy-coding-agent/AGENTS.md`](examples/deploy-coding-agent/AGENTS.md) |
+| 6 | ✓ | [`examples/deploy-coding-agent/skills/code-review/SKILL.md`](examples/deploy-coding-agent/skills/code-review/SKILL.md) |
+| 7 | ✓ | [`examples/deploy-coding-agent/skills/coding-prefs/SKILL.md`](examples/deploy-coding-agent/skills/coding-prefs/SKILL.md) |
+| 8 | ✓ | [`examples/deploy-coding-agent/skills/planning/SKILL.md`](examples/deploy-coding-agent/skills/planning/SKILL.md) |
+| 9 | ✓ | [`examples/deploy-content-writer/AGENTS.md`](examples/deploy-content-writer/AGENTS.md) |
+| 10 | ✓ | [`examples/deploy-content-writer/skills/blog-post/SKILL.md`](examples/deploy-content-writer/skills/blog-post/SKILL.md) |
+| 11 | ✓ | [`examples/deploy-content-writer/skills/social-media/SKILL.md`](examples/deploy-content-writer/skills/social-media/SKILL.md) |
+| 12 | ✓ | [`examples/deploy-mcp-docs-agent/AGENTS.md`](examples/deploy-mcp-docs-agent/AGENTS.md) |
+| 13 | ✓ | [`examples/nvidia_deep_agent/skills/cudf-analytics/SKILL.md`](examples/nvidia_deep_agent/skills/cudf-analytics/SKILL.md) |
+| 14 | ✓ | [`examples/nvidia_deep_agent/skills/cuml-machine-learning/SKILL.md`](examples/nvidia_deep_agent/skills/cuml-machine-learning/SKILL.md) |
+| 15 | ✓ | [`examples/nvidia_deep_agent/skills/data-visualization/SKILL.md`](examples/nvidia_deep_agent/skills/data-visualization/SKILL.md) |
+| 16 | ✓ | [`examples/nvidia_deep_agent/skills/gpu-document-processing/SKILL.md`](examples/nvidia_deep_agent/skills/gpu-document-processing/SKILL.md) |
+| 17 | ✓ | [`examples/nvidia_deep_agent/src/AGENTS.md`](examples/nvidia_deep_agent/src/AGENTS.md) |
+| 18 | ✓ | [`examples/text-to-sql-agent/AGENTS.md`](examples/text-to-sql-agent/AGENTS.md) |
+| 19 | ✓ | [`examples/text-to-sql-agent/skills/query-writing/SKILL.md`](examples/text-to-sql-agent/skills/query-writing/SKILL.md) |
+| 20 | ✓ | [`examples/text-to-sql-agent/skills/schema-exploration/SKILL.md`](examples/text-to-sql-agent/skills/schema-exploration/SKILL.md) |
+| 21 | ✓ | [`libs/cli/deepagents_cli/built_in_skills/remember/SKILL.md`](libs/cli/deepagents_cli/built_in_skills/remember/SKILL.md) |
+| 22 | ✓ | [`libs/cli/deepagents_cli/built_in_skills/skill-creator/SKILL.md`](libs/cli/deepagents_cli/built_in_skills/skill-creator/SKILL.md) |
+| 23 | ✓ | [`libs/cli/examples/skills/arxiv-search/SKILL.md`](libs/cli/examples/skills/arxiv-search/SKILL.md) |
+| 24 | ✓ | [`libs/cli/examples/skills/langgraph-docs/SKILL.md`](libs/cli/examples/skills/langgraph-docs/SKILL.md) |
+| 25 | ✓ | [`libs/cli/examples/skills/skill-creator/SKILL.md`](libs/cli/examples/skills/skill-creator/SKILL.md) |
+| 26 | ✓ | [`libs/cli/examples/skills/web-research/SKILL.md`](libs/cli/examples/skills/web-research/SKILL.md) |
 
 ---
 

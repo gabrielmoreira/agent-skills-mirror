@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CursorTouch/Windows-MCP` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `CursorTouch/Windows-MCP` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CursorTouch/Windows-MCP` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/windows-mcp-tool-tester/SKILL.md`](.claude/skills/windows-mcp-tool-tester/SKILL.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -6,6 +6,7 @@ version: "1.1.0"
 icon: character.bubble
 disabled: false
 type: content
+chip_prompt: "帮我翻译一段话"
 
 triggers:
   - 翻译
@@ -16,6 +17,14 @@ triggers:
   - 中译英
   - 英译中
   - 译为
+  # "用X语说Y" 的自然说法也归翻译
+  - 用英语
+  - 用日语
+  - 用韩语
+  - 用法语
+  - 用德语
+  - 用西语
+  - 用中文说
 
 allowed-tools: []
 
