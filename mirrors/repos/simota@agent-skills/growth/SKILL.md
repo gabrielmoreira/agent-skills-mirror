@@ -10,7 +10,7 @@ CAPABILITIES_SUMMARY:
 - json_ld_structured_data: Schema.org structured data (Article, Product, FAQ, Organization) with stacked schema for AI citation
 - heading_hierarchy_audit: H1-H6 structure validation and fix
 - core_web_vitals: LCP ≤2.5s, INP <200ms, CLS <0.1 identification and improvement at p75; VSI tracking for session-long stability when available
-- geo_optimization: Generative Engine Optimization for AI Overviews/ChatGPT/Perplexity/Copilot citation with four-signal framework (retrievability, extractability, credibility, entity clarity) and platform-specific tactics
+- geo_optimization: Generative Engine Optimization for AI Overviews/ChatGPT/Perplexity/Copilot citation with four-signal framework (retrievability, extractability, credibility, entity clarity), platform-specific tactics, and GEO KPI measurement (Mention Rate, Citation Rate, Share of Voice)
 - eeat_signals: Experience, Expertise, Authoritativeness, Trustworthiness markup and content structure
 - cro_cta_optimization: CTA copy, placement, color, urgency improvements with hypothesis-driven testing
 - form_optimization: Field reduction, inline validation, progress indication
@@ -48,6 +48,7 @@ Data-driven growth hacker: implement ONE high-impact change for SEO ranking, Soc
 6. **Structured for machines AND humans** — In 2026, JSON-LD's primary value is AI visibility, not rich snippets; ChatGPT, Perplexity, Gemini, and AI agents parse structured data directly when browsing, citing, or evaluating pages. Triple schema stack (Article + ItemList + FAQPage) achieves 1.8× more AI citations than Article alone (Princeton GEO research). Schema must match visible page content — AI engines verify consistency and penalize mismatches. Always use the most specific schema type available (BlogPosting over Article, LocalBusiness over Organization) — specific types give search engines and AI systems clearer signals
 7. **Answer first, elaborate second** — 44.2% of all LLM citations come from the first 30% of text; the first 200 words of any page should directly and completely answer the primary query. Use 120–180 words between headings for optimal AI citation (+70% more ChatGPT citations vs sections under 50 words). AI engines extract from the opening, not the conclusion
 8. **AI Overviews reshape CTR** — Organic CTR drops 61% on searches triggering AI Overviews (1.76% → 0.61%), but cited pages earn 35% more organic clicks; structured data markup alone gives +73% AI Overview selection rate — GEO is not optional, it is survival
+9. **AI search converts harder** — AI search visitors convert at 4.4× the rate of traditional organic search; GEO investment has direct revenue impact, not just visibility
 
 ## Trigger Guidance
 
@@ -85,8 +86,9 @@ Route elsewhere when the task is primarily:
 - Target Core Web Vitals thresholds at 75th percentile: LCP ≤2.5s, INP <200ms, CLS <0.1 (Google official); track VSI for session-long visual stability when available. INP is the most commonly failed CWV (43% of sites fail the 200ms threshold) — prioritize INP diagnosis first.
 - Implement stacked JSON-LD schema (minimum: Organization + BreadcrumbList + WebSite; for GEO: Article + ItemList + FAQPage triple stack) for AI search eligibility.
 - Validate structured data with Google Rich Results Test before delivery; verify schema-content consistency (every JSON-LD claim must match visible page content).
-- GEO content requires 3–5 inline citations from authoritative sources per article; pages not updated quarterly are 3× more likely to lose AI citations. Use `@id` references to connect entities into a coherent knowledge graph that AI systems can traverse.
+- GEO content requires 3–5 inline citations from authoritative sources per article; AI citation decay occurs within 7–14 days of content staleness — schedule bi-weekly content refreshes for GEO-critical pages. Use `@id` references to connect entities into a coherent knowledge graph that AI systems can traverse.
 - GEO optimization targets four signals: **retrievability** (can AI find and fetch your content), **extractability** (can AI parse structured answers from it), **credibility** (does it cite authoritative sources with exact metrics), **entity clarity** (are entities disambiguated via schema and consistent naming). Visibility uplift of up to 40% when all four signals are addressed.
+- Track three GEO-specific KPIs: **Mention Rate** (% of AI answers naming your brand — below 5% = invisible, 15–30% = strong), **Citation Rate** (% including a clickable URL to your domain), **Share of Voice** (brand mentions vs competitors across tracked prompts). These replace traditional rank tracking for AI search.
 - Use the most specific JSON-LD schema type available (e.g., BlogPosting over Article, LocalBusiness over Organization); specific types yield clearer signals for both search engines and AI systems.
 - CRO changes require a documented hypothesis — never test without one.
 - CRO personalization is expected: showing identical static content to all visitor segments (first-time vs returning, ad-referred vs organic) is a missed conversion opportunity — segment-aware content or dynamic CTAs should be the default recommendation.
@@ -123,6 +125,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Deploy JSON-LD schema that contradicts visible page content — AI engines verify schema-content consistency and ignore or penalize mismatches.
 - Use generic (non-specific) schema types when a more specific one exists (e.g., Article when BlogPosting applies, Organization when LocalBusiness applies) — specificity is a ranking and AI-citation signal.
 - Optimize GEO exclusively for one AI platform (e.g., ChatGPT only) while ignoring Perplexity, Gemini, Claude, and Copilot — each platform has different source sets, citation patterns, and retrieval mechanisms; single-platform optimization creates blind spots that competitors exploit.
+- Rely on llms.txt for AI crawler guidance — as of 2026, no major AI crawler (GPTBot, ClaudeBot, PerplexityBot) requests or honors llms.txt files; use robots.txt directives and structured data instead.
 - Break accessibility.
 - Modify backend logic.
 
@@ -173,6 +176,7 @@ Every deliverable must include:
 - Structured data validation (Google Rich Results Test pass).
 - GDPR/CCPA compliance notes when tracking is involved.
 - AI search readiness assessment (triple schema stack, 3–5 inline citations, direct-answer format, E-E-A-T signals, platform-specific checks).
+- GEO measurement plan when applicable (Mention Rate, Citation Rate, Share of Voice baselines and targets).
 - Recommended next agent for handoff.
 
 ## Collaboration

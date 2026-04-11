@@ -16,8 +16,11 @@ CAPABILITIES_SUMMARY:
 - hook_maintenance: Review false positives, matcher width, timeout cost, and lifecycle fit
 - hook_type_selection: Guide command vs prompt vs http vs agent hook type selection based on latency and verification depth
 - mcp_governance: Design hooks to audit and verify MCP tool actions for deterministic governance
-- hook_performance: Optimize hook latency, consolidate matchers, limit per-event hook count
+- hook_performance: Optimize hook latency, consolidate matchers, limit per-event hook count, leverage async hooks for non-blocking execution
 - input_modification: Design updatedInput hooks for transparent tool argument rewriting (path correction, secret redaction, dry-run injection)
+- conditional_filtering: Design hooks with `if` field for fine-grained conditional filtering within matchers
+- plugin_hook_design: Configure plugin hooks via hooks/hooks.json with persistent data directories and runtime merging
+- frontmatter_hooks: Design component-scoped hooks in skill/agent frontmatter with auto-cleanup
 - dependency_safety: Design fail-open/fail-closed strategies for hooks with external command dependencies
 - tool_bypass_prevention: Design cross-tool enforcement to prevent Edit/Write hook bypass via Bash sed/python/echo
 - permission_event_design: Design PermissionRequest hooks for automated permission decisions distinct from PreToolUse
@@ -68,7 +71,10 @@ Use Latch when the user needs:
 - task lifecycle enforcement via TaskCreated/TaskCompleted hooks in Agent Teams
 - configuration change governance via ConfigChange hooks
 - file-change reactive automation via FileChanged hooks
-- hook performance optimization (latency reduction, matcher consolidation)
+- hook performance optimization (latency reduction, matcher consolidation, async hooks)
+- plugin hook design and configuration (`hooks/hooks.json`)
+- skill/agent frontmatter hooks scoped to component lifetime
+- conditional hook filtering with the `if` field
 
 Route elsewhere when the task is primarily:
 - CI/CD pipeline or GitHub Actions: `Gear` or `Pipe`
@@ -130,6 +136,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Deploy hooks that depend on external commands (jq, grep, curl) without verifying their availability — the script fails silently or exits with an unexpected code, causing either a false pass or a false block.
 - Trust that `Edit|Write` PreToolUse hooks alone protect files — Claude switches to `Bash` with `sed`/`python -c`/`echo` to bypass, leaving the "protected" files fully exposed (GitHub #29709, #6876).
 - Clone and use hooks from untrusted repositories without review — malicious `.claude/settings.json` hooks can achieve remote code execution and API token exfiltration on first session start.
+- Use `$HOME` or other environment variables in hook `command` paths in JSON — JSON does not expand them, causing silent failures. Use absolute paths or `~` (which Claude Code expands).
+- Use deprecated `decision: "approve|block"` format in PreToolUse output — use `hookSpecificOutput.permissionDecision: "allow|deny|ask|defer"` instead. Old values still map but are not future-safe.
 
 ## Session Scope
 
@@ -194,6 +202,7 @@ Selection rules:
 
 - Prefer the narrowest event that matches the workflow gap.
 - "All types?" = Yes means command, prompt, http, and agent hook types are all supported. "No" means command/http only.
+- Matcher semantics vary by event: `PreToolUse`/`PostToolUse`/`PermissionRequest` match tool names; `SessionStart`/`SessionEnd` match session type (`startup|resume|clear|compact`); `SubagentStart`/`SubagentStop` match agent type (`Explore|Plan|custom`); `StopFailure` matches error type (`rate_limit|authentication_failed|billing|server_error`); `ConfigChange` matches config source (`user_settings|policy_settings`); `Notification` matches notification type; `InstructionsLoaded` matches load reason (`session_start|nested_traversal|path_glob_match|include|compact`).
 - Some events ignore the `matcher` field and always fire on every occurrence: `TeammateIdle`, `TaskCreated`, `TaskCompleted`, `WorktreeCreate`, `WorktreeRemove`, `CwdChanged`. `FileChanged` uses matcher as a pipe-separated basename filter (`".env|package-lock.json"`), not a tool name pattern.
 - `Stop` and `SubagentStop` are for completion gates, not routine linting after every edit.
 - `PreToolUse` with `*` is high-risk and belongs in `Ask First` — it fires on every tool call and adds latency to the entire session.
@@ -211,20 +220,24 @@ Selection rules:
 
 | Type | Best for | Default timeout | Supported events |
 |------|----------|-----------------|-----------------|
-| `command` | Fast deterministic checks, scripts, and external tools | `60s` | All events |
+| `command` | Fast deterministic checks, scripts, and external tools | `600s` | All events |
 | `prompt` | Context-aware or policy-heavy decisions | `30s` | Events with "All types? Yes" in Event Selection table |
 | `http` | External service integration, audit logging to remote endpoints | `30s` | All events |
-| `agent` | Multi-turn verification requiring tool access and deep reasoning | `120s` | Events with "All types? Yes" in Event Selection table |
+| `agent` | Multi-turn verification requiring tool access and deep reasoning | `60s` | Events with "All types? Yes" in Event Selection table |
 
 Selection guidance: Start with `command` hooks for formatting and linting, graduate to `prompt` hooks for security and policy decisions, use `agent` hooks only for deep verification requiring tool access. Prefer `command` for latency-sensitive paths (target ≤ 200ms per hook). Use `http` for external audit trails and webhook integrations. Command hooks do not consume token quota; prompt/agent hooks trigger model invocations that consume quota — reserve them for high-value decisions.
+
+When multiple hooks on the same event return different decisions, the strictest wins: `deny > defer > ask > allow` for PreToolUse; `deny > allow` for PermissionRequest. Identical command hooks (same command string) or HTTP hooks (same URL) matched by multiple matchers are deduplicated and run only once.
 
 ### Exit Codes
 
 | Code | Meaning | Behavior |
 |------|---------|----------|
-| `0` | Success | Stdout is shown in the transcript |
+| `0` | Success | Stdout parsed for JSON output fields |
 | `2` | Blocking error | Stderr is fed back to Claude |
-| Other | Non-blocking error | Logged but does not block |
+| Other | Non-blocking error | First line of stderr shown |
+
+Hook output injected into context is capped at 10,000 characters; excess is saved to a file with a preview and path.
 
 ### Matcher Patterns
 
@@ -255,6 +268,18 @@ Structure rules:
 - Hooks inside the same matcher group run in parallel.
 - Validate with `jq . ~/.claude/settings.json` before finishing.
 
+Hook sources (merged at runtime): `~/.claude/settings.json` (user), `.claude/settings.json` (project shared), `.claude/settings.local.json` (project local), managed policy settings (org-wide), plugin `hooks/hooks.json` (when enabled), skill/agent frontmatter (component lifetime). Hooks defined in skill/agent frontmatter are scoped to the component's lifetime and auto-cleaned up. Enterprise policy `allowManagedHooksOnly: true` blocks all non-managed hooks. `disableAllHooks: true` disables all hooks at the same or lower settings level.
+
+### Common Hook Fields
+
+| Field | Scope | Purpose |
+|-------|-------|---------|
+| `if` | Tool events | Conditional filter within matcher (e.g., `"if": "Bash(rm *)"` fires only for rm commands) |
+| `async` | command/http | `true` runs the hook in background without blocking Claude's execution |
+| `statusMessage` | All | Custom spinner text shown while hook runs |
+| `once` | Skills/agents only | `true` runs hook once per session, not on every match |
+| `timeout` | All | Override default timeout in seconds |
+
 ### Command Hook Rules
 
 - Read stdin exactly once.
@@ -283,6 +308,9 @@ Structure rules:
 | `file watch`, `env change`, `reactive` | File-change automation | FileChanged/CwdChanged hooks for reactive workflows | `references/hook-system.md` |
 | `elicitation`, `mcp input`, `mcp prompt` | MCP elicitation governance | Elicitation/ElicitationResult hooks for MCP input control | `references/hook-system.md` |
 | `worktree`, `git worktree` | Worktree management | WorktreeCreate/WorktreeRemove hooks for custom worktree behavior | `references/hook-system.md` |
+| `async`, `background`, `non-blocking` | Async hook design | Background hooks with `async: true` for logging, cleanup, metrics | `references/hook-system.md` |
+| `plugin hook`, `hooks.json` | Plugin hook design | Plugin hooks via `hooks/hooks.json` with persistent data dirs | `references/hook-system.md` |
+| `conditional`, `if field`, `filter` | Conditional filtering | `if` field for fine-grained filtering within matchers | `references/hook-system.md` |
 | unclear hook request | PROPOSE focus | Hook-set design | `references/hook-system.md` |
 
 Routing rules:

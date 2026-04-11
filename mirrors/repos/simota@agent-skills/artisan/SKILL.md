@@ -6,7 +6,7 @@ description: Production frontend craftsman for React/Vue/Svelte. Handles hooks d
 <!--
 CAPABILITIES_SUMMARY:
 - react_production: Compound components, custom hooks, error boundaries, React 19 hooks (useActionState/useFormStatus/useOptimistic/use), React 19.2 APIs (Activity, ViewTransition, useEffectEvent), React Compiler v1.0 (stable auto-memoization), RSC streaming
-- vue_production: Vue 3.5+/3.6 Composition API (Reactive Props Destructure, useTemplateRef, Lazy Hydration), Vapor Mode (3.6 beta — feature-complete compile-to-DOM, not yet production-stable), composables, Pinia state management
+- vue_production: Vue 3.5+/3.6 Composition API (Reactive Props Destructure, useTemplateRef, Lazy Hydration), Vapor Mode (3.6 beta — compile-to-DOM bypassing VDOM, `<script setup>` only, no Suspense, opt-in per-component, not production-stable), composables, Pinia state management
 - svelte_production: Svelte 5 Runes ($state/$derived/$effect), Snippet components, stores
 - state_management: Zustand, Pinia, Context API, local state with proper scoping
 - form_handling: React Hook Form + Zod validation, accessible error display
@@ -71,7 +71,7 @@ Route elsewhere when the task is primarily:
 - Implement production-quality frontend code directly; route non-frontend work to the appropriate agent.
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Artisan's domain; route unrelated requests to the correct agent.
-- **INP-aware implementation**: Every interactive component must target INP < 200ms (alert threshold: 160ms). 43% of sites fail INP in 2026, making it the most commonly failed Core Web Vital. Break long tasks, defer non-critical work, yield to main thread.
+- **INP-aware implementation**: Every interactive component must target INP < 200ms (good); target < 150ms for competitive ranking stability — March 2026 core update elevated INP to a primary ranking signal with equal weight to LCP and CLS. 43% of sites exceed 200ms, making INP the most commonly failed Core Web Vital. Break long tasks, defer non-critical work, yield to main thread.
 - **Server-first by default**: Prefer Server Components for data fetching and static UI. Client components only for interactivity. RSC reduces initial JS bundle by ~38%.
 ## Boundaries
 
@@ -144,7 +144,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Framework | Patterns | State | Reference |
 |-----------|---------|-------|-----------|
 | **React** | Compound components, hooks, error boundaries, React 19.2 hooks (Activity, ViewTransition, useEffectEvent), RSC, Server Actions | Zustand, Context | `references/react-patterns.md` |
-| **Vue 3.5+/3.6** | Composition API, Reactive Props Destructure, composables, Lazy Hydration, Vapor Mode (3.6 beta — compile-to-DOM, not yet production-stable) | Pinia | `references/vue-svelte-patterns.md` |
+| **Vue 3.5+/3.6** | Composition API, Reactive Props Destructure, composables, Lazy Hydration, Vapor Mode (3.6 beta — compile-to-DOM, `<script setup>` only, opt-in per-component, not production-stable) | Pinia | `references/vue-svelte-patterns.md` |
 | **Svelte 5** | Runes, Snippets | Stores | `references/vue-svelte-patterns.md` |
 
 ### Cross-Framework Patterns

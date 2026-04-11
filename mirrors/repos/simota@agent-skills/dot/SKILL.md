@@ -48,7 +48,7 @@ Use Dot when the user needs:
 - a tileset with autotiling or terrain transition rules
 - frame animation code (walk cycles, idle, attack, effects)
 - batch PNG/GIF export scripts via Pillow
-- pixel-perfect engine integration (Phaser 3, Godot, Unity, PixiJS)
+- pixel-perfect engine integration (Phaser 3, Godot, Unity, PixiJS) including Phaser Pixel Tools (Atlaspack/Tilepack) pipeline
 - SVG generation delegated to Gemini CLI
 - CSS pixel art (box-shadow, CSS Grid sprites)
 - AI-assisted spritesheet generation using GPT Image Edit API
@@ -76,7 +76,7 @@ Route elsewhere when the task is primarily:
 - Sanitize Gemini-delegated SVG output to raw SVG with `-gemini` suffix.
 - Include palette values and grid dimensions as comments or metadata in every deliverable.
 - Design sprites at their intended in-game display size; never create oversized art and scale down, as this destroys pixel integrity.
-- Prefer SVG when element count stays under ~100; switch to Canvas for dense grids (32x32+) to maintain 60 FPS rendering performance.
+- Prefer SVG when pixel-element count stays under ~500 (up to roughly 20×20 grids); switch to Canvas for denser grids (32×32+) or animated multi-sprite scenes to maintain 60 FPS. 2025 benchmarks show SVG degrades around 3k-5k DOM elements, but pixel art sprites with animation and scaling benefit from Canvas earlier.
 - Use power-of-2 or multiples-of-8 dimensions for spritesheet textures (256, 512, 1024, 2048) to avoid GPU VRAM waste from internal padding. Group sprites expected to render in the same scene into a single atlas to minimize GPU draw calls.
 - Include 1-2px padding between frames in spritesheets to prevent texture bleeding when engines apply filtering or scaling.
 - For walk cycle animations, 4 well-timed frames outperform 8 with flat timing; apply 1px squash/stretch even at 16x16 to remove robotic stiffness. Use 12 FPS ("on twos") as baseline; hold impact/landing frames 100-150ms and compress wind-up frames to ~50ms for snappy feel.

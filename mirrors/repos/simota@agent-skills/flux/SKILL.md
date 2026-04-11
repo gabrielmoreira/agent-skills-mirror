@@ -16,7 +16,7 @@ CAPABILITIES_SUMMARY:
 - anti_pattern_guard: Detect superficial reframing, framework abuse, false insights, and assumption padding
 - collaboration_bridging: Package thinking breakthroughs for Magi/Spark/Helm/Atlas/Oracle handoff
 - cognitive_bias_audit: Dedicated mode to detect and surface cognitive biases in decision-making processes — anchoring, sunk cost, confirmation bias, groupthink, IKEA effect, and 15+ patterns with debiasing recommendations
-- contradiction_resolution: Apply TRIZ contradiction matrix to systematically resolve technical and physical contradictions — classical Altshuller matrix (39 parameters × 40 principles), updated Matrix 2003 (48 parameters, 150K+ patents 1985-2003), or Matrix 2022; leverage LLM-assisted TRIZ tools (AutoTRIZ 4-module pipeline, TRIZ Contradiction Solver) for automated contradiction detection and inventive principle retrieval when available
+- contradiction_resolution: Apply TRIZ contradiction matrix to systematically resolve technical and physical contradictions — classical Altshuller matrix (39 parameters × 40 principles), updated Matrix 2003 (48 parameters, 150K+ patents 1985-2003), or Matrix 2022; leverage LLM-assisted TRIZ tools (AutoTRIZ 4-module pipeline, AICON RAG-enhanced contradiction navigator for cross-domain principle discovery, TRIZ Contradiction Solver) for automated contradiction detection and inventive principle retrieval when available
 
 COLLABORATION_PATTERNS:
 - Pattern A: Thinking Breakthrough (User/Magi → Flux → Magi) — break deadlocked decisions
@@ -84,7 +84,7 @@ Route elsewhere when the task is primarily:
 - Never output a single framework mechanically — compose dynamically based on Cynefin classification. Use Snowden's five domains: Clear, Complicated, Complex, Chaotic, Disorder. When the domain is Disorder (unclear which domain applies), apply the **aporetic turn** — create enough structure to categorize the problem into Complex or an ordered domain before selecting frameworks.
 - Quality gate: every reframing must pass the ASN test — **A**ctionability (suggests concrete next step), **S**pecificity (applies to THIS problem, not any problem), **N**ovelty (not a synonym of the original framing).
 - As an AI agent, vertical reasoning reinforces existing thought structures rather than breaking them (de Bono's core insight). Serendipity Injection is not optional decoration — it is the primary mechanism to escape pattern-reinforcing loops.
-- When TRIZ is applied, identify the specific contradiction before selecting inventive principles. Use the matrix version appropriate to the domain: classical Altshuller (39 params), Matrix 2003 (48 params — validated against 150K+ modern patents, confirmed more effective in multiple comparison studies), or Matrix 2022. LLM-assisted tools — AutoTRIZ (4-module pipeline: Problem Identification → Contradiction Detection → Principle Retrieval → Solution Generation) and TRIZ Contradiction Solver — can automate contradiction detection and principle retrieval while preventing hallucination by querying the matrix deterministically in the retrieval step.
+- When TRIZ is applied, identify the specific contradiction before selecting inventive principles. Use the matrix version appropriate to the domain: classical Altshuller (39 params), Matrix 2003 (48 params — validated against 150K+ modern patents, confirmed more effective in multiple comparison studies), or Matrix 2022. LLM-assisted tools — AutoTRIZ (4-module pipeline: Problem Identification → Contradiction Detection → Principle Retrieval → Solution Generation), AICON (AI-Driven Contradiction Navigator using RAG to dynamically access cross-domain knowledge and identify inventive principles for previously unaddressed matrix areas), and TRIZ Contradiction Solver — can automate contradiction detection and principle retrieval while preventing hallucination by querying the matrix deterministically in the retrieval step.
 
 ## Boundaries
 
@@ -221,7 +221,7 @@ Dedicated mode for detecting cognitive biases in decision-making processes, inde
 | Availability | Recent/vivid events overweighted | Last incident dominates risk assessment |
 | Dunning-Kruger | Confidence-competence mismatch | High confidence in unfamiliar domain |
 
-**Workflow:** CLASSIFY (problem domain) → BIAS_SCAN (systematic checklist against decision/plan) → DEBIASING (specific countermeasures per detected bias) → CRYSTALLIZE (Bias Audit Report + debiased decision framing)
+**Workflow:** CLASSIFY (problem domain) → BIAS_SCAN (systematic checklist against decision/plan) → DEBIASING (specific countermeasures per detected bias, applying three evidence-based strategy categories: group composition/structure, information design, and procedural debiasing) → CRYSTALLIZE (Bias Audit Report + debiased decision framing)
 
 **Output:** Bias Audit Report — detected biases with evidence, confidence level, debiasing recommendations, and alternative decision framings.
 

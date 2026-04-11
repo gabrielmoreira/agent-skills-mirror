@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 127 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 125 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 125 |
+| Files         | 127 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -180,10 +180,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 119 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
 | 120 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
 | 121 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
-| 122 | ✓ | [`test/helpers/channels/AGENTS.md`](test/helpers/channels/AGENTS.md) |
-| 123 | ✓ | [`test/helpers/channels/CLAUDE.md`](test/helpers/channels/CLAUDE.md) |
-| 124 | ✓ | [`vendor/a2ui/.gemini/GEMINI.md`](vendor/a2ui/.gemini/GEMINI.md) |
-| 125 | ✓ | [`vendor/a2ui/specification/0.8/eval/GEMINI.md`](vendor/a2ui/specification/0.8/eval/GEMINI.md) |
+| 122 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 123 | ✓ | [`test/helpers/channels/AGENTS.md`](test/helpers/channels/AGENTS.md) |
+| 124 | ✓ | [`test/helpers/channels/CLAUDE.md`](test/helpers/channels/CLAUDE.md) |
+| 125 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
+| 126 | ✓ | [`vendor/a2ui/.gemini/GEMINI.md`](vendor/a2ui/.gemini/GEMINI.md) |
+| 127 | ✓ | [`vendor/a2ui/specification/0.8/eval/GEMINI.md`](vendor/a2ui/specification/0.8/eval/GEMINI.md) |
 
 ---
 

@@ -102,6 +102,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Generate BDD scenarios as post-implementation test scripts. BDD is a collaboration tool for building shared understanding before code, not a QA-only automation layer. Scenarios written after code become brittle regression scripts that miss specification intent (Source: cucumber.io, thoughtworks.com).
 - Embed implementation details (CSS selectors, API endpoints, DB queries) in scenario steps. Gherkin must read as a business specification, not a test script. Implementation coupling causes false failures on every UI or API refactor (Source: cucumber.io, johnfergusonsmart.com).
 - Test multiple outcomes in a single scenario. Each scenario must assert one behavior; multi-outcome scenarios obscure which behavior failed and resist maintenance (Source: cucumber.io).
+- Write abstract scenarios without concrete data values. Scenarios that express only the business rule (e.g., "Given a valid user") without specific test data (e.g., "Given a user 'alice' with role 'admin'") cannot be executed reliably and hide edge cases (Source: cucumber.io anti-patterns).
 
 ## INTERACTION_TRIGGERS
 
@@ -200,6 +201,7 @@ Before extraction is complete, validate each criterion against these attributes:
 | Unambiguous | Single interpretation only; no subjective adjectives ("fast", "user-friendly") |
 | Consistent | Does not contradict other criteria in the same spec |
 | Singular | Addresses one requirement (no conjunctions splitting behavior) |
+| Complete | Fully stated without requiring external references to understand; self-contained so verification can proceed without chasing cross-references (Source: ISO/IEC/IEEE 29148:2018 individual requirement characteristics) |
 | Feasible | Achievable within known technical and resource constraints; flags unrealistic requirements early |
 | Traceable | Links to a source requirement and can link forward to implementation |
 | Implementation-free | Describes what, not how |
@@ -232,6 +234,7 @@ Before finalizing generated scenarios, validate each against these attributes (S
 | Completeness | Given establishes all preconditions; When has a single action; Then asserts observable outcomes |
 | Precondition-action separation | Given states only preconditions (context); When states only the trigger action. Mixing them (e.g., a form submission in Given) obscures what is being tested (Source: cucumber.io, thoughtworks.com) |
 | Uniqueness | No duplicate coverage with other scenarios for the same criterion |
+| Declarative | Describes behavior and outcomes, not procedural UI steps. Imperative scenarios ("click X, type Y, press Z") couple to implementation and break on every UI change (Source: cucumber.io, johnfergusonsmart.com) |
 | Independence | Executable in any order — no shared mutable state between scenarios |
 
 Flag violations as `SCENARIO_DEFECT:{attribute}`. Rewrite before including in deliverable.

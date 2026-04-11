@@ -244,9 +244,10 @@ When someone clones a repository that uses Dolt backend:
 - Clones the Dolt database from the remote (instead of creating a fresh one)
 - Configures the Dolt remote for future `bd dolt push`/`pull`
 
-If `sync.git-remote` is set in `.beads/config.yaml`, that takes precedence
-over auto-detection. `bd init` will warn if it detects `refs/dolt/data` on
-origin and suggest using `bd bootstrap` instead.
+If `sync.remote` is set in `.beads/config.yaml`, that takes precedence
+over auto-detection. Any Dolt-compatible remote URL is supported (DoltHub,
+S3, GCS, file, or git). `bd init` will warn if it detects `refs/dolt/data`
+on origin and suggest using `bd bootstrap` instead.
 
 ### Verifying Bootstrap Worked
 

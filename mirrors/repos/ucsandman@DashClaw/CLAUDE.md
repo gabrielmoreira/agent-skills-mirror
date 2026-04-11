@@ -46,6 +46,12 @@ npm run openapi:check              # Detect API contract drift
 - `docs/architecture/runtime-api.md` - The 4-step Governance Loop.
 - `sdk/README.md` - v2 SDK implementation and error handling.
 
+## Design Context
+
+Before any UI, design, copy, or marketing/visual change, **read `.impeccable.md` at the repo root first**. It is the canonical design context: users, brand personality, aesthetic direction, 4 anti-references, and the 7 tiebreaker principles (evidence over decoration; brand orange as signal not noise; calm under pressure; token-first; developer-reader first; WCAG 2.1 AA floor; four anti-references guardrail). Never hardcode hex values — use the CSS tokens in `app/globals.css` and the Tailwind theme extension.
+
+A `UserPromptSubmit` hook (`.claude/hooks/impeccable-reminder.py`) will inject a reminder when design keywords are detected, but the rule applies whether or not the hook fires.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 

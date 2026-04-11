@@ -89,8 +89,9 @@ Route elsewhere when the task is primarily:
 - Document each step of the execution for reproducibility.
 - Respect rate limits: insert jittered delays (base + random 20-50%) between requests; pure exponential backoff is detectable by sophisticated anti-bot systems.
 - Check for public API availability before resorting to scraping — API access is always more reliable and maintainable.
-- Respect robots.txt and machine-readable opt-out signals — EU AI Act (full enforcement August 2026) requires respecting content owner signals for AI data usage.
+- Respect robots.txt and all opt-out signals (machine-readable and plain-text ToS) — EU AI Act (full enforcement August 2026) requires respecting content owner signals for AI data usage; German courts have ruled that plain-text ToS opt-out constitutes valid reservation of rights, not only machine-readable signals.
 - Choose MCP vs CLI by agent capability: use Playwright CLI (4–10x fewer tokens — ~27K vs ~114K per session, scaling with step count) when the agent has filesystem access (Claude Code, Copilot, Cursor); for multi-step tasks (>10 sequential interactions), strongly prefer CLI — token accumulation compounds per step causing progressive slowdown; use MCP when the agent lacks filesystem access or needs iterative reasoning with persistent browser state.
+- When using MCP, focus on the core 8 tools that handle ~80% of tasks (navigate, snapshot, click, fill, select_option, press_key, wait, screenshot) — exposing all 26+ MCP tools inflates context and slows agent reasoning; load additional tools only when the core set is insufficient.
 
 ---
 
@@ -112,7 +113,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Validate data against expected schema before extraction.
 - Insert jittered delays between repeated requests (not fixed intervals).
 - Fall back to vision mode when accessibility snapshots miss elements (shadow DOM, canvas).
-- Check robots.txt and machine-readable opt-out signals before scraping.
+- Check robots.txt and all opt-out signals (machine-readable and plain-text ToS) before scraping.
 - Use a separate browser profile for AI automation when the target session involves sensitive data (banking, admin panels, internal tools) — never allow AI agents to interact with production credentials in a shared profile.
 
 ### Ask First
@@ -135,9 +136,10 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Collect PII without authorization — GDPR Art. 83 fines up to €20M or 4% of global turnover.
 - Store secrets in plain text.
 - Ignore rate limiting — aggressive scraping triggers IP bans, legal notices, and service degradation for other users.
-- Ignore robots.txt or machine-readable opt-out signals — EU AI Act (full enforcement August 2026) mandates compliance; GPAI-related violations face penalties up to €15M or 3% of global revenue (Art. 101).
+- Ignore robots.txt or opt-out signals (machine-readable or plain-text ToS) — EU AI Act (full enforcement August 2026) mandates compliance; GPAI-related violations face penalties up to €15M or 3% of global revenue (Art. 101); German courts have ruled plain-text ToS opt-out is legally valid.
 - Navigate outside authorized domains.
 - Use deeply chained CSS selectors (e.g., `div > div > span.class`) — these break instantly when component libraries add wrapper nodes for spacing or accessibility.
+- Use deprecated selector engines (`_react`, `_vue`, `:light` suffix) — removed in Playwright 1.57+; use role-based or `data-testid` selectors instead.
 - Use fixed-interval delays for repeated requests — deterministic patterns are fingerprinted by Cloudflare, Akamai, and AWS Shield anti-bot systems via TLS fingerprinting, behavioral analysis, and bot reputation scoring.
 - Assume snapshot mode works for all elements — shadow DOM-heavy apps (Shoelace, Lit, Web Components) hide elements inside shadow roots invisible to accessibility tree snapshots.
 

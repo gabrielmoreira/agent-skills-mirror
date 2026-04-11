@@ -15,7 +15,7 @@ CAPABILITIES_SUMMARY:
 - realtime_communication: SSE, WebSocket, WebTransport (~75% browser coverage as of 2026, production-ready ~2027), long polling selection and implementation
 - message_queue_integration: Redis Pub/Sub, BullMQ, RabbitMQ, Kafka/Redpanda for reliable delivery and event streaming
 - circuit_breaker_design: Failure rate threshold (≥50% over 1 min or 5/10 failures), auto-open with DLQ routing, non-retriable 4xx (except 429) immediate DLQ, Retry-After header honoring
-- platform_rate_limit_awareness: Slack non-Marketplace restrictions (1 req/min conversations.history/replies, max 15 objects), Discord 50 req/s global + per-route X-RateLimit-Bucket, platform-specific caching strategies
+- platform_rate_limit_awareness: Slack commercially-distributed non-Marketplace restrictions (1 req/min conversations.history/replies, max 15 objects; custom/internal apps unaffected at 50+ req/min), Discord 50 req/s global + per-route X-RateLimit-Bucket, classic app deprecation (May 2026), platform-specific caching strategies
 
 COLLABORATION_PATTERNS:
 - Pattern A: API-to-Messaging (Gateway → Relay) — webhook API spec to handler design
@@ -94,7 +94,8 @@ Route elsewhere when the task is primarily:
 - For WebSocket scaling, require externalized session state (Redis/equivalent) — never rely on in-process sticky sessions alone. Monitor: active connections, message latency, error rates, pub/sub lag.
 - For modern WebSocket implementations, prefer WebSocketStream API (Streams-based, Promise-based) when available — provides automatic backpressure handling that prevents slow consumers from causing memory pressure.
 - For transport selection: WebSocket over HTTP/3 (RFC 9220) has zero production browser implementations as of 2026 despite RFC publication in 2022. Recommend standard WebSocket over HTTP/1.1 or HTTP/2 (RFC 8441) for production deployments. Do not recommend HTTP/3 WebSocket upgrades until browser/server support materializes.
-- Monitor platform-specific rate limit tiers and design accordingly. Slack (May 2025+) restricts non-Marketplace apps to 1 req/min for `conversations.history`/`conversations.replies` with max 15 objects per response — design bots to cache aggressively or pursue Marketplace approval. Discord enforces 50 req/s global with per-route limits via `X-RateLimit-Bucket` headers.
+- WebTransport advantages over WebSocket for specific use cases: (1) multiplexed independent streams eliminate head-of-line blocking — a lost packet in stream A does not block streams B/C; (2) unreliable datagrams for latency-sensitive data (game state, cursor positions) where freshness beats reliability; (3) transparent connection migration (Wi-Fi → cellular) without session loss. Evaluate WebTransport when these properties are required; default to WebSocket for general real-time needs.
+- Monitor platform-specific rate limit tiers and design accordingly. Slack (May 2025+) restricts **commercially distributed** non-Marketplace apps to 1 req/min for `conversations.history`/`conversations.replies` with max 15 objects per response — design bots to cache aggressively or pursue Marketplace approval. Custom/internal apps are unaffected (50+ req/min, 1000 objects). Slack classic apps are deprecated with final deadline May 25, 2026 — migrate to granular bot tokens. Discord enforces 50 req/s global with per-route limits via `X-RateLimit-Bucket` headers.
 - For webhook observability, track: delivery success % by provider/endpoint, end-to-end latency (p50/p95/p99), queue depth and time-to-drain, dedup/idempotency hit rate, error class distribution (auth/signature, rate-limit, schema, destination). Target SLO: ≥ 99.5% delivery success within 30 seconds.
 
 ## Boundaries

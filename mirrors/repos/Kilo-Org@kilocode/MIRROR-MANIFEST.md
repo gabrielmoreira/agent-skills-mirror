@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kilo-Org/kilocode` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `Kilo-Org/kilocode` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kilo-Org/kilocode` — 26 default patterns, 0 followed patterns, 13 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,11 +67,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`packages/kilo-docs/AGENTS.md`](packages/kilo-docs/AGENTS.md) |
 | 7 | ✓ | [`packages/kilo-docs/pages/ai-providers/gemini.md`](packages/kilo-docs/pages/ai-providers/gemini.md) |
 | 8 | ✓ | [`packages/kilo-docs/pages/customize/skills.md`](packages/kilo-docs/pages/customize/skills.md) |
-| 9 | ✓ | [`packages/kilo-vscode/AGENTS.md`](packages/kilo-vscode/AGENTS.md) |
-| 10 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
-| 11 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
-| 12 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
-| 13 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 9 | ✓ | [`packages/kilo-jetbrains/AGENTS.md`](packages/kilo-jetbrains/AGENTS.md) |
+| 10 | ✓ | [`packages/kilo-vscode/AGENTS.md`](packages/kilo-vscode/AGENTS.md) |
+| 11 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
+| 12 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
+| 13 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
+| 14 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
 
 ---
 

@@ -1,0 +1,43 @@
+---
+description: 前端 i18n locale 文本统一使用单引号
+globs: frontend/src/locales/*.ts
+alwaysApply: false
+---
+
+## frontend i18n 文本统一使用单引号
+
+- **适用范围**: `frontend/src/locales/*.ts` 中的 i18n 语言包文件。
+- **约束内容**: 所有字符串字面量统一使用单引号 `'`，不要使用双引号 `"`。
+
+### 具体要求
+
+- **键名**：按项目既有风格处理（一般为无引号或双引号），本规则不强制。
+- **值（翻译文本）**：
+  - **必须使用单引号**：`'some text'`。
+  - **禁止使用双引号**：`"some text"`。
+  - 当文案中需要双引号时，直接写在字符串内部：`'Don\'t forget "Save"'`。
+  - 当文案中需要单引号时，用转义或改写表达：`'Tap "Generate QR code" to install'`
+
+### 示例
+
+```ts
+// ❌ BAD：值使用了双引号
+export default {
+  common: {
+    ok: "OK",
+    cancel: "Cancel",
+  },
+};
+
+// ✅ GOOD：值统一使用单引号
+export default {
+  common: {
+    ok: 'OK',
+    cancel: 'Cancel',
+  },
+};
+```
+
+### AI 编写时的注意事项
+
+AI 在编写 i18n 时容易自动使用双引号。编写完成后应将所有 `key: "value"` 替换为 `key: 'value'`，若值中包含单引号则替换为双引号。

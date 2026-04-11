@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,7 +90,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/workspace-sop/SKILL.md`](skills/workspace-sop/SKILL.md) |
 | 30 | ✓ | [`skills/writing-sop/SKILL.md`](skills/writing-sop/SKILL.md) |
 | 31 | ✓ | [`workspace/.ResearchClaw/AGENTS.md`](workspace/.ResearchClaw/AGENTS.md) |
-| 32 | ✓ | [`workspace/AGENTS.md`](workspace/AGENTS.md) |
 
 ---
 

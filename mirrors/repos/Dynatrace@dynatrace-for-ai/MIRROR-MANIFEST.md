@@ -60,12 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`llms.txt`](llms.txt) |
-| 2 | ✓ | [`prompts/daily-standup.prompt.md`](prompts/daily-standup.prompt.md) |
-| 3 | ✓ | [`prompts/health-check.prompt.md`](prompts/health-check.prompt.md) |
-| 4 | ✓ | [`prompts/incident-response.prompt.md`](prompts/incident-response.prompt.md) |
-| 5 | ✓ | [`prompts/investigate-error.prompt.md`](prompts/investigate-error.prompt.md) |
-| 6 | ✓ | [`prompts/performance-regression.prompt.md`](prompts/performance-regression.prompt.md) |
-| 7 | ✓ | [`prompts/troubleshoot-problem.prompt.md`](prompts/troubleshoot-problem.prompt.md) |
+| 2 | ✓ | [`prompts/dt-daily-standup.prompt.md`](prompts/dt-daily-standup.prompt.md) |
+| 3 | ✓ | [`prompts/dt-health-check.prompt.md`](prompts/dt-health-check.prompt.md) |
+| 4 | ✓ | [`prompts/dt-incident-response.prompt.md`](prompts/dt-incident-response.prompt.md) |
+| 5 | ✓ | [`prompts/dt-investigate-error.prompt.md`](prompts/dt-investigate-error.prompt.md) |
+| 6 | ✓ | [`prompts/dt-performance-regression.prompt.md`](prompts/dt-performance-regression.prompt.md) |
+| 7 | ✓ | [`prompts/dt-troubleshoot-problem.prompt.md`](prompts/dt-troubleshoot-problem.prompt.md) |
 | 8 | ✓ | [`skills/dt-app-dashboards/references/analyzing.md`](skills/dt-app-dashboards/references/analyzing.md) |
 | 9 | ✓ | [`skills/dt-app-dashboards/references/create-update.md`](skills/dt-app-dashboards/references/create-update.md) |
 | 10 | ✓ | [`skills/dt-app-dashboards/references/layouts.md`](skills/dt-app-dashboards/references/layouts.md) |

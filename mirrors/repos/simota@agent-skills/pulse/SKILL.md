@@ -10,10 +10,10 @@ CAPABILITIES_SUMMARY:
 - funnel_analysis: Design conversion funnels with step definitions, expected rates (visitor-to-lead 1.5-2.5% avg, MQL→SQL 30-50%), and segment analysis
 - cohort_analysis: Design retention cohorts with SQL queries for BigQuery/Snowflake; B2B SaaS month-1 retention benchmark 46.9%
 - dashboard_specification: Specify dashboard sections, chart types, filters, and refresh rates
-- analytics_platform_integration: GA4, Amplitude, Mixpanel, PostHog implementation with React hooks; server-side tracking and Consent Mode v2; auto-capture vs manual instrumentation tradeoff
+- analytics_platform_integration: GA4 (incl. Analytics Advisor AI, cross-channel budgeting), Amplitude (session replay, heatmaps), Mixpanel (AI replay summaries, experimentation), PostHog implementation with React hooks; server-side tracking and Consent Mode v2; auto-capture vs manual instrumentation tradeoff
 - privacy_consent_management: Consent-aware tracking, PII removal, GDPR/Consent Mode v2, server-side first-party tracking
 - data_quality_monitoring: Schema validation, schema drift detection, freshness monitoring, volume tracking, completeness checks
-- revenue_analytics: MRR/ARR/ARPU/LTV/CAC/NRR tracking and movement analysis; CAC:LTV ≥ 1:3 health / ≥ 1:5 top-tier; NRR >100% healthy / >110% top-tier (2025 median: 101%); monthly churn 3-7% SMB / <1% enterprise; CAC payback 12-15mo excellent
+- revenue_analytics: MRR/ARR/ARPU/LTV/CAC/NRR tracking and movement analysis; CAC:LTV ≥ 1:3 health / ≥ 1:5 top-tier; NRR >100% healthy / >110% strong / >120% top-tier; B2B SaaS avg churn 3.5% (top performers <3%, B2C 6.5-8%); enterprise <1%; CAC payback <12mo good / <80 days elite
 - alerts_anomaly_detection: Z-score anomaly detection, threshold alerts (≥20% conversion drop, ≥30% velocity spike), trend monitoring
 - activation_rate_design: Define activation milestones, measure time-to-value, self-serve target 50-70%; segment by acquisition channel
 
@@ -49,6 +49,7 @@ Use Pulse when the user needs:
 - cohort analysis design (retention cohorts, SQL queries)
 - dashboard specification (sections, chart types, filters, refresh rates)
 - analytics platform integration (GA4, Amplitude, Mixpanel, PostHog, React hooks)
+- GA4 Analytics Advisor natural language queries and cross-channel budgeting (2026)
 - auto-capture vs manual instrumentation selection (Heap/PostHog auto-capture for speed; Amplitude/Mixpanel manual for cleaner data)
 - server-side tracking setup and Consent Mode v2 configuration
 - privacy and consent management for tracking (GDPR, consent banners)
@@ -110,7 +111,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Break analytics by changing event structures without migration — schema drift (e.g., renaming `productID` to `product_id`) silently breaks all downstream reports, funnels, and alerts.
 - Deploy client-side-only tracking without Consent Mode v2 — loses 40-70% of data in GDPR markets (90-95% after Google's July 2025 EEA/UK enforcement); Advanced Mode recovers ~70% of lost conversions via cookieless pings and behavioral modeling (requires ≥1,000 daily denied events for 7 days to activate).
 - Fire events on page load instead of user action — inflates metrics and triggers duplicate events; common GA4 anti-pattern.
-- Exceed GA4 hard limits without a migration plan — GA4 caps at 500 custom event names, 25 parameters per event, 24-character user property names, 100-character parameter values (standard; silently truncated — breaks long URLs and product names in reports), and 14-month maximum data retention for explorations (free tier defaults to 2 months; data is silently deleted if not manually extended); exceeding these silently drops data with no warning.
+- Exceed GA4 hard limits without a migration plan — GA4 caps at 500 custom event names, 25 parameters per event, 50 custom dimensions + 50 custom metrics per property, 24-character user property names, 100-character parameter values (standard; silently truncated — breaks long URLs and product names in reports), 50M hits/month for standard properties, and 14-month maximum data retention for explorations (free tier defaults to 2 months; data is silently deleted if not manually extended); Large/XL properties are force-capped at 2-month retention regardless of settings; exceeding these silently drops data with no warning.
 - Double-tag GA4 via CMS plugin and GTM simultaneously — dual injection inflates sessions and event counts silently; audit all GA4 tag sources before adding new ones.
 - Skip cross-domain tracking configuration for multi-domain funnels — splits user journeys into separate sessions and misattributes conversions to payment gateways (PayPal, Stripe) or subdomain referrals instead of the original campaign.
 - Mix GA4 dimension and metric scopes in reports — combining event-scoped metrics with session-scoped dimensions produces misleading aggregations; always verify scope alignment before building custom reports.
@@ -164,7 +165,7 @@ Every deliverable must include:
 - Privacy review (consent requirements, PII check, Consent Mode v2 plan, server-side tracking recommendation).
 - Implementation guidance (platform-specific code or configuration).
 - Data quality plan (schema validation, schema drift detection, freshness monitoring, completeness).
-- Industry benchmarks where applicable (e.g., visitor-to-lead 1.5-2.5%, free-to-paid 2-5%, self-serve activation 50-70%, B2B SaaS month-1 retention 46.9%, monthly churn 3-7% SMB / <1% enterprise, NRR >100% healthy / >110% top-tier, CAC:LTV ≥ 1:3, CAC payback 12-15 months excellent).
+- Industry benchmarks where applicable (e.g., visitor-to-lead 1.5-2.5%, free-to-paid 2-5%, self-serve activation 50-70%, B2B SaaS month-1 retention 46.9%, B2B SaaS avg churn 3.5% / enterprise <1%, NRR >100% healthy / >110% strong / >120% top-tier, CAC:LTV ≥ 1:3, CAC payback <12mo good / <80 days elite).
 - Alert thresholds (conversion drop ≥20% from baseline, velocity spike ≥30%).
 - Dashboard or visualization specification where applicable.
 - Next steps (A/B test, growth optimization, monitoring).

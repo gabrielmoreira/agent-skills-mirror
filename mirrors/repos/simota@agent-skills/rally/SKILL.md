@@ -51,7 +51,8 @@ Route elsewhere when:
 - Only one task or all writable work hits the same files → Nexus or single specialist
 - Work is investigation-only with no implementation output → Lens, Scout, or Researcher
 - Under 10 changed lines total → direct specialist (Builder, Artisan, etc.)
-- Sequential dependency chain with no parallelizable segments → Sherpa
+- Sequential dependency chain with no parallelizable segments → Sherpa — multi-agent variants degrade sequential reasoning performance by `39-70%` (Google Research, 180-configuration scaling study)
+- Single-agent baseline already exceeds `~45%` task completion → coordination overhead yields diminishing or negative returns at this threshold
 - High-risk security work needing tight checkpoints → sequential via Nexus
 - Quick, focused workers that only report back (no peer coordination needed) → subagents via Nexus
 
@@ -84,7 +85,7 @@ No behavioral changes are needed — Rally operates identically whether invoked 
 - **Convergence detection**: when all teammates hit the same blocker (e.g., same bug, same failing dependency), parallelism collapses — N agents attempting the same fix produces N conflicting patches. Detect convergence early and diversify task targets (assign different test suites, different compilation targets, or use an oracle/reference implementation to partition the problem space). Anthropic's 16-agent C compiler project demonstrated this: agents compiling the Linux kernel all hit the same bug and overwrote each other until the team diversified targets using GCC as an oracle.
 - **Specialization over duplication**: assign teammates distinct specialist roles (e.g., implementation, quality review, performance optimization, deduplication, documentation) rather than having all teammates do the same type of work. Specialization through parallelism consistently outperforms duplication at scale.
 - **Fan-in timeout**: set explicit deadlines per teammate task. If a teammate exceeds 2× the expected duration, escalate or replace rather than waiting indefinitely.
-- **Budget guardrails**: set a maximum API cost per session. Agent Teams cost `3-4×` the tokens of a single session; subagents cost `1.5-2×`. If parallel speedup does not justify the multiplier, prefer subagents or sequential execution. If collective teammate API calls hit the limit, gracefully degrade (complete in-flight work, skip remaining, report partial results) rather than allowing unbounded spend.
+- **Budget guardrails**: set a maximum API cost per session. Agent Teams cost `3-4×` the tokens of a single session; subagents cost `1.5-2×`. Multi-agent frameworks commonly exhibit `1.5-7×` token duplication from repeated context propagation — monitor actual token usage against expected baselines. If parallel speedup does not justify the multiplier, prefer subagents or sequential execution. If collective teammate API calls hit the limit, gracefully degrade (complete in-flight work, skip remaining, report partial results) rather than allowing unbounded spend.
 - **Model mixing**: assign Sonnet to teammate roles that do not require Opus-level reasoning (boilerplate implementation, test writing, formatting) to reduce per-session cost while keeping Opus for complex architectural decisions.
 
 ## Boundaries
@@ -210,7 +211,7 @@ Routing rules:
 - If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
 - Always read relevant `references/` files before producing output.
 - When estimated parallel speedup is < 1.5× over serial, prefer sequential execution.
-- If coordination overhead exceeds 40% of total execution time, reduce team size or simplify task decomposition.
+- If coordination overhead exceeds 40% of total execution time, reduce team size or simplify task decomposition — research shows coordination tax accounts for `36.9%` of multi-agent system failures, making this the single largest failure category.
 - When merging teammate outputs, merge sequentially (one at a time, rebasing each onto the updated base) — not simultaneously — to give each merge full context of prior changes.
 
 ## Output Requirements

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `badhope/skill` — 26 default patterns, 1 followed patterns, 133 file(s) materialized.
+Mirror of `badhope/skill` — 26 default patterns, 1 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `badhope/skill` — 26 default patterns, 1 followed patterns, 133 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 133 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,124 +74,71 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`.trae/skills/actions/test/test-generator/SKILL.md`](.trae/skills/actions/test/test-generator/SKILL.md) |
 | 14 | ✓ | [`.trae/skills/actions/tools/git-operations/SKILL.md`](.trae/skills/actions/tools/git-operations/SKILL.md) |
 | 15 | ✓ | [`.trae/skills/actions/tools/tool-use/SKILL.md`](.trae/skills/actions/tools/tool-use/SKILL.md) |
-| 16 | ✓ | [`.trae/skills/dispatcher/concurrency-manager/SKILL.md`](.trae/skills/dispatcher/concurrency-manager/SKILL.md) |
-| 17 | ✓ | [`.trae/skills/dispatcher/model-router/SKILL.md`](.trae/skills/dispatcher/model-router/SKILL.md) |
-| 18 | ✓ | [`.trae/skills/domains/ai/agent-development/SKILL.md`](.trae/skills/domains/ai/agent-development/SKILL.md) |
-| 19 | ✓ | [`.trae/skills/domains/ai/claude-api/SKILL.md`](.trae/skills/domains/ai/claude-api/SKILL.md) |
-| 20 | ✓ | [`.trae/skills/domains/ai/langchain/SKILL.md`](.trae/skills/domains/ai/langchain/SKILL.md) |
-| 21 | ✓ | [`.trae/skills/domains/ai/llm-evaluation/SKILL.md`](.trae/skills/domains/ai/llm-evaluation/SKILL.md) |
-| 22 | ✓ | [`.trae/skills/domains/ai/openai/SKILL.md`](.trae/skills/domains/ai/openai/SKILL.md) |
-| 23 | ✓ | [`.trae/skills/domains/ai/prompt-engineering/SKILL.md`](.trae/skills/domains/ai/prompt-engineering/SKILL.md) |
-| 24 | ✓ | [`.trae/skills/domains/ai/rag-system/SKILL.md`](.trae/skills/domains/ai/rag-system/SKILL.md) |
-| 25 | ✓ | [`.trae/skills/domains/backend/go/SKILL.md`](.trae/skills/domains/backend/go/SKILL.md) |
-| 26 | ✓ | [`.trae/skills/domains/backend/graphql/SKILL.md`](.trae/skills/domains/backend/graphql/SKILL.md) |
-| 27 | ✓ | [`.trae/skills/domains/backend/nodejs/SKILL.md`](.trae/skills/domains/backend/nodejs/SKILL.md) |
-| 28 | ✓ | [`.trae/skills/domains/backend/python/SKILL.md`](.trae/skills/domains/backend/python/SKILL.md) |
-| 29 | ✓ | [`.trae/skills/domains/backend/rust/SKILL.md`](.trae/skills/domains/backend/rust/SKILL.md) |
-| 30 | ✓ | [`.trae/skills/domains/backend/typescript/SKILL.md`](.trae/skills/domains/backend/typescript/SKILL.md) |
-| 31 | ✓ | [`.trae/skills/domains/content/content-writing/SKILL.md`](.trae/skills/domains/content/content-writing/SKILL.md) |
-| 32 | ✓ | [`.trae/skills/domains/content/copywriting/SKILL.md`](.trae/skills/domains/content/copywriting/SKILL.md) |
-| 33 | ✓ | [`.trae/skills/domains/content/seo-content/SKILL.md`](.trae/skills/domains/content/seo-content/SKILL.md) |
-| 34 | ✓ | [`.trae/skills/domains/content/technical-writing/SKILL.md`](.trae/skills/domains/content/technical-writing/SKILL.md) |
-| 35 | ✓ | [`.trae/skills/domains/content/translation/SKILL.md`](.trae/skills/domains/content/translation/SKILL.md) |
-| 36 | ✓ | [`.trae/skills/domains/data/data-validation/SKILL.md`](.trae/skills/domains/data/data-validation/SKILL.md) |
-| 37 | ✓ | [`.trae/skills/domains/data/etl/SKILL.md`](.trae/skills/domains/data/etl/SKILL.md) |
-| 38 | ✓ | [`.trae/skills/domains/database/database-migration/SKILL.md`](.trae/skills/domains/database/database-migration/SKILL.md) |
-| 39 | ✓ | [`.trae/skills/domains/database/mongodb/SKILL.md`](.trae/skills/domains/database/mongodb/SKILL.md) |
-| 40 | ✓ | [`.trae/skills/domains/database/redis-caching/SKILL.md`](.trae/skills/domains/database/redis-caching/SKILL.md) |
-| 41 | ✓ | [`.trae/skills/domains/database/sql-optimization/SKILL.md`](.trae/skills/domains/database/sql-optimization/SKILL.md) |
-| 42 | ✓ | [`.trae/skills/domains/design/3d-design/SKILL.md`](.trae/skills/domains/design/3d-design/SKILL.md) |
-| 43 | ✓ | [`.trae/skills/domains/design/design-system/SKILL.md`](.trae/skills/domains/design/design-system/SKILL.md) |
-| 44 | ✓ | [`.trae/skills/domains/design/graphic-design/SKILL.md`](.trae/skills/domains/design/graphic-design/SKILL.md) |
-| 45 | ✓ | [`.trae/skills/domains/design/ui-design/SKILL.md`](.trae/skills/domains/design/ui-design/SKILL.md) |
-| 46 | ✓ | [`.trae/skills/domains/design/ux-design/SKILL.md`](.trae/skills/domains/design/ux-design/SKILL.md) |
-| 47 | ✓ | [`.trae/skills/domains/devops/ci-cd-pipeline/SKILL.md`](.trae/skills/domains/devops/ci-cd-pipeline/SKILL.md) |
-| 48 | ✓ | [`.trae/skills/domains/devops/docker/SKILL.md`](.trae/skills/domains/devops/docker/SKILL.md) |
-| 49 | ✓ | [`.trae/skills/domains/devops/kubernetes/SKILL.md`](.trae/skills/domains/devops/kubernetes/SKILL.md) |
-| 50 | ✓ | [`.trae/skills/domains/devops/monitoring/SKILL.md`](.trae/skills/domains/devops/monitoring/SKILL.md) |
-| 51 | ✓ | [`.trae/skills/domains/frontend/accessibility/SKILL.md`](.trae/skills/domains/frontend/accessibility/SKILL.md) |
-| 52 | ✓ | [`.trae/skills/domains/frontend/css-tailwind/SKILL.md`](.trae/skills/domains/frontend/css-tailwind/SKILL.md) |
-| 53 | ✓ | [`.trae/skills/domains/frontend/i18n/SKILL.md`](.trae/skills/domains/frontend/i18n/SKILL.md) |
-| 54 | ✓ | [`.trae/skills/domains/frontend/nextjs/SKILL.md`](.trae/skills/domains/frontend/nextjs/SKILL.md) |
-| 55 | ✓ | [`.trae/skills/domains/frontend/react/SKILL.md`](.trae/skills/domains/frontend/react/SKILL.md) |
-| 56 | ✓ | [`.trae/skills/domains/frontend/vue/SKILL.md`](.trae/skills/domains/frontend/vue/SKILL.md) |
-| 57 | ✓ | [`.trae/skills/domains/mcp/server-development/SKILL.md`](.trae/skills/domains/mcp/server-development/SKILL.md) |
-| 58 | ✓ | [`.trae/skills/domains/mcp/tools/SKILL.md`](.trae/skills/domains/mcp/tools/SKILL.md) |
-| 59 | ✓ | [`.trae/skills/domains/media/audio-processing/SKILL.md`](.trae/skills/domains/media/audio-processing/SKILL.md) |
-| 60 | ✓ | [`.trae/skills/domains/media/image-generation/SKILL.md`](.trae/skills/domains/media/image-generation/SKILL.md) |
-| 61 | ✓ | [`.trae/skills/domains/media/image-processing/SKILL.md`](.trae/skills/domains/media/image-processing/SKILL.md) |
-| 62 | ✓ | [`.trae/skills/domains/media/video-generation/SKILL.md`](.trae/skills/domains/media/video-generation/SKILL.md) |
-| 63 | ✓ | [`.trae/skills/domains/media/video-processing/SKILL.md`](.trae/skills/domains/media/video-processing/SKILL.md) |
-| 64 | ✓ | [`.trae/skills/domains/mobile/flutter/SKILL.md`](.trae/skills/domains/mobile/flutter/SKILL.md) |
-| 65 | ✓ | [`.trae/skills/domains/mobile/react-native/SKILL.md`](.trae/skills/domains/mobile/react-native/SKILL.md) |
-| 66 | ✓ | [`.trae/skills/domains/nlp/chatbot-development/SKILL.md`](.trae/skills/domains/nlp/chatbot-development/SKILL.md) |
-| 67 | ✓ | [`.trae/skills/domains/nlp/nlp-processing/SKILL.md`](.trae/skills/domains/nlp/nlp-processing/SKILL.md) |
-| 68 | ✓ | [`.trae/skills/domains/nlp/speech-recognition/SKILL.md`](.trae/skills/domains/nlp/speech-recognition/SKILL.md) |
-| 69 | ✓ | [`.trae/skills/domains/nlp/speech-synthesis/SKILL.md`](.trae/skills/domains/nlp/speech-synthesis/SKILL.md) |
-| 70 | ✓ | [`.trae/skills/domains/nlp/text-analysis/SKILL.md`](.trae/skills/domains/nlp/text-analysis/SKILL.md) |
-| 71 | ✓ | [`.trae/skills/domains/office/email-automation/SKILL.md`](.trae/skills/domains/office/email-automation/SKILL.md) |
-| 72 | ✓ | [`.trae/skills/domains/office/excel-automation/SKILL.md`](.trae/skills/domains/office/excel-automation/SKILL.md) |
-| 73 | ✓ | [`.trae/skills/domains/office/pdf-processing/SKILL.md`](.trae/skills/domains/office/pdf-processing/SKILL.md) |
-| 74 | ✓ | [`.trae/skills/domains/office/ppt-automation/SKILL.md`](.trae/skills/domains/office/ppt-automation/SKILL.md) |
-| 75 | ✓ | [`.trae/skills/domains/office/word-automation/SKILL.md`](.trae/skills/domains/office/word-automation/SKILL.md) |
-| 76 | ✓ | [`.trae/skills/domains/performance/performance-optimizer/SKILL.md`](.trae/skills/domains/performance/performance-optimizer/SKILL.md) |
-| 77 | ✓ | [`.trae/skills/domains/security/prompt-injection-defense/SKILL.md`](.trae/skills/domains/security/prompt-injection-defense/SKILL.md) |
-| 78 | ✓ | [`.trae/skills/domains/security/security-auditor/SKILL.md`](.trae/skills/domains/security/security-auditor/SKILL.md) |
-| 79 | ✓ | [`.trae/skills/domains/testing/e2e-test/SKILL.md`](.trae/skills/domains/testing/e2e-test/SKILL.md) |
-| 80 | ✓ | [`.trae/skills/domains/testing/integration-test/SKILL.md`](.trae/skills/domains/testing/integration-test/SKILL.md) |
-| 81 | ✓ | [`.trae/skills/domains/testing/unit-test/SKILL.md`](.trae/skills/domains/testing/unit-test/SKILL.md) |
-| 82 | ✓ | [`.trae/skills/learning/knowledge-base/SKILL.md`](.trae/skills/learning/knowledge-base/SKILL.md) |
-| 83 | ✓ | [`.trae/skills/learning/reflector/SKILL.md`](.trae/skills/learning/reflector/SKILL.md) |
-| 84 | ✓ | [`.trae/skills/learning/self-enhancer/SKILL.md`](.trae/skills/learning/self-enhancer/SKILL.md) |
-| 85 | ✓ | [`.trae/skills/learning/strategy-learner/SKILL.md`](.trae/skills/learning/strategy-learner/SKILL.md) |
-| 86 | ✓ | [`.trae/skills/meta/decomposition-planner/SKILL.md`](.trae/skills/meta/decomposition-planner/SKILL.md) |
-| 87 | ✓ | [`.trae/skills/meta/orchestrator/SKILL.md`](.trae/skills/meta/orchestrator/SKILL.md) |
-| 88 | ✓ | [`.trae/skills/meta/reflector/SKILL.md`](.trae/skills/meta/reflector/SKILL.md) |
-| 89 | ✓ | [`.trae/skills/meta/task-planner/SKILL.md`](.trae/skills/meta/task-planner/SKILL.md) |
-| 90 | ✓ | [`.trae/skills/meta/task-registry/SKILL.md`](.trae/skills/meta/task-registry/SKILL.md) |
-| 91 | ✓ | [`.trae/skills/workflows/ab-testing/SKILL.md`](.trae/skills/workflows/ab-testing/SKILL.md) |
-| 92 | ✓ | [`.trae/skills/workflows/aggregation-processor/SKILL.md`](.trae/skills/workflows/aggregation-processor/SKILL.md) |
-| 93 | ✓ | [`.trae/skills/workflows/ai-research-assistant/SKILL.md`](.trae/skills/workflows/ai-research-assistant/SKILL.md) |
-| 94 | ✓ | [`.trae/skills/workflows/code-modularizer/SKILL.md`](.trae/skills/workflows/code-modularizer/SKILL.md) |
-| 95 | ✓ | [`.trae/skills/workflows/coding-workflow/SKILL.md`](.trae/skills/workflows/coding-workflow/SKILL.md) |
-| 96 | ✓ | [`.trae/skills/workflows/content-generator/SKILL.md`](.trae/skills/workflows/content-generator/SKILL.md) |
-| 97 | ✓ | [`.trae/skills/workflows/conversation-design/SKILL.md`](.trae/skills/workflows/conversation-design/SKILL.md) |
-| 98 | ✓ | [`.trae/skills/workflows/data-augmentation/SKILL.md`](.trae/skills/workflows/data-augmentation/SKILL.md) |
-| 99 | ✓ | [`.trae/skills/workflows/data-visualizer/SKILL.md`](.trae/skills/workflows/data-visualizer/SKILL.md) |
-| 100 | ✓ | [`.trae/skills/workflows/database-design/SKILL.md`](.trae/skills/workflows/database-design/SKILL.md) |
-| 101 | ✓ | [`.trae/skills/workflows/debugging-workflow/SKILL.md`](.trae/skills/workflows/debugging-workflow/SKILL.md) |
-| 102 | ✓ | [`.trae/skills/workflows/delta-debugger/SKILL.md`](.trae/skills/workflows/delta-debugger/SKILL.md) |
-| 103 | ✓ | [`.trae/skills/workflows/design-to-code/SKILL.md`](.trae/skills/workflows/design-to-code/SKILL.md) |
-| 104 | ✓ | [`.trae/skills/workflows/enterprise-project/SKILL.md`](.trae/skills/workflows/enterprise-project/SKILL.md) |
-| 105 | ✓ | [`.trae/skills/workflows/fallback-manager/SKILL.md`](.trae/skills/workflows/fallback-manager/SKILL.md) |
-| 106 | ✓ | [`.trae/skills/workflows/full-stack-development/SKILL.md`](.trae/skills/workflows/full-stack-development/SKILL.md) |
-| 107 | ✓ | [`.trae/skills/workflows/game-developer/SKILL.md`](.trae/skills/workflows/game-developer/SKILL.md) |
-| 108 | ✓ | [`.trae/skills/workflows/git-bisect-debugger/SKILL.md`](.trae/skills/workflows/git-bisect-debugger/SKILL.md) |
-| 109 | ✓ | [`.trae/skills/workflows/hierarchical-debugger/SKILL.md`](.trae/skills/workflows/hierarchical-debugger/SKILL.md) |
-| 110 | ✓ | [`.trae/skills/workflows/human-in-the-loop/SKILL.md`](.trae/skills/workflows/human-in-the-loop/SKILL.md) |
-| 111 | ✓ | [`.trae/skills/workflows/iteration-controller/SKILL.md`](.trae/skills/workflows/iteration-controller/SKILL.md) |
-| 112 | ✓ | [`.trae/skills/workflows/launch-checklist/SKILL.md`](.trae/skills/workflows/launch-checklist/SKILL.md) |
-| 113 | ✓ | [`.trae/skills/workflows/mcp-orchestrator/SKILL.md`](.trae/skills/workflows/mcp-orchestrator/SKILL.md) |
-| 114 | ✓ | [`.trae/skills/workflows/model-evaluator/SKILL.md`](.trae/skills/workflows/model-evaluator/SKILL.md) |
-| 115 | ✓ | [`.trae/skills/workflows/model-finetuning/SKILL.md`](.trae/skills/workflows/model-finetuning/SKILL.md) |
-| 116 | ✓ | [`.trae/skills/workflows/one-click-project/SKILL.md`](.trae/skills/workflows/one-click-project/SKILL.md) |
-| 117 | ✓ | [`.trae/skills/workflows/performance-testing/SKILL.md`](.trae/skills/workflows/performance-testing/SKILL.md) |
-| 118 | ✓ | [`.trae/skills/workflows/problem-decomposer/SKILL.md`](.trae/skills/workflows/problem-decomposer/SKILL.md) |
-| 119 | ✓ | [`.trae/skills/workflows/progress-reporter/SKILL.md`](.trae/skills/workflows/progress-reporter/SKILL.md) |
-| 120 | ✓ | [`.trae/skills/workflows/project-scaffold/SKILL.md`](.trae/skills/workflows/project-scaffold/SKILL.md) |
-| 121 | ✓ | [`.trae/skills/workflows/refactoring-workflow/SKILL.md`](.trae/skills/workflows/refactoring-workflow/SKILL.md) |
-| 122 | ✓ | [`.trae/skills/workflows/requirements-collector/SKILL.md`](.trae/skills/workflows/requirements-collector/SKILL.md) |
-| 123 | ✓ | [`.trae/skills/workflows/research-paper-writing/SKILL.md`](.trae/skills/workflows/research-paper-writing/SKILL.md) |
-| 124 | ✓ | [`.trae/skills/workflows/research-workflow/SKILL.md`](.trae/skills/workflows/research-workflow/SKILL.md) |
-| 125 | ✓ | [`.trae/skills/workflows/security-design/SKILL.md`](.trae/skills/workflows/security-design/SKILL.md) |
-| 126 | ✓ | [`.trae/skills/workflows/seo-optimizer/SKILL.md`](.trae/skills/workflows/seo-optimizer/SKILL.md) |
-| 127 | ✓ | [`.trae/skills/workflows/skill-showcase-website/SKILL.md`](.trae/skills/workflows/skill-showcase-website/SKILL.md) |
-| 128 | ✓ | [`.trae/skills/workflows/solution-merger/SKILL.md`](.trae/skills/workflows/solution-merger/SKILL.md) |
-| 129 | ✓ | [`.trae/skills/workflows/system-architecture/SKILL.md`](.trae/skills/workflows/system-architecture/SKILL.md) |
-| 130 | ✓ | [`.trae/skills/workflows/technical-design-doc/SKILL.md`](.trae/skills/workflows/technical-design-doc/SKILL.md) |
-| 131 | ✓ | [`.trae/skills/workflows/user-experience-test/SKILL.md`](.trae/skills/workflows/user-experience-test/SKILL.md) |
-| 132 | ✓ | [`.trae/skills/workflows/web-automation/SKILL.md`](.trae/skills/workflows/web-automation/SKILL.md) |
-| 133 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 16 | ✓ | [`.trae/skills/domains/ai/agent-development/SKILL.md`](.trae/skills/domains/ai/agent-development/SKILL.md) |
+| 17 | ✓ | [`.trae/skills/domains/ai/langchain/SKILL.md`](.trae/skills/domains/ai/langchain/SKILL.md) |
+| 18 | ✓ | [`.trae/skills/domains/ai/prompt-engineering/SKILL.md`](.trae/skills/domains/ai/prompt-engineering/SKILL.md) |
+| 19 | ✓ | [`.trae/skills/domains/ai/rag-system/SKILL.md`](.trae/skills/domains/ai/rag-system/SKILL.md) |
+| 20 | ✓ | [`.trae/skills/domains/backend/go/SKILL.md`](.trae/skills/domains/backend/go/SKILL.md) |
+| 21 | ✓ | [`.trae/skills/domains/backend/graphql/SKILL.md`](.trae/skills/domains/backend/graphql/SKILL.md) |
+| 22 | ✓ | [`.trae/skills/domains/backend/nodejs/SKILL.md`](.trae/skills/domains/backend/nodejs/SKILL.md) |
+| 23 | ✓ | [`.trae/skills/domains/backend/python/SKILL.md`](.trae/skills/domains/backend/python/SKILL.md) |
+| 24 | ✓ | [`.trae/skills/domains/backend/rust/SKILL.md`](.trae/skills/domains/backend/rust/SKILL.md) |
+| 25 | ✓ | [`.trae/skills/domains/backend/typescript/SKILL.md`](.trae/skills/domains/backend/typescript/SKILL.md) |
+| 26 | ✓ | [`.trae/skills/domains/content/content-writing/SKILL.md`](.trae/skills/domains/content/content-writing/SKILL.md) |
+| 27 | ✓ | [`.trae/skills/domains/content/technical-writing/SKILL.md`](.trae/skills/domains/content/technical-writing/SKILL.md) |
+| 28 | ✓ | [`.trae/skills/domains/data/data-validation/SKILL.md`](.trae/skills/domains/data/data-validation/SKILL.md) |
+| 29 | ✓ | [`.trae/skills/domains/data/etl/SKILL.md`](.trae/skills/domains/data/etl/SKILL.md) |
+| 30 | ✓ | [`.trae/skills/domains/database/database-migration/SKILL.md`](.trae/skills/domains/database/database-migration/SKILL.md) |
+| 31 | ✓ | [`.trae/skills/domains/database/mongodb/SKILL.md`](.trae/skills/domains/database/mongodb/SKILL.md) |
+| 32 | ✓ | [`.trae/skills/domains/database/redis-caching/SKILL.md`](.trae/skills/domains/database/redis-caching/SKILL.md) |
+| 33 | ✓ | [`.trae/skills/domains/database/sql-optimization/SKILL.md`](.trae/skills/domains/database/sql-optimization/SKILL.md) |
+| 34 | ✓ | [`.trae/skills/domains/design/design-system/SKILL.md`](.trae/skills/domains/design/design-system/SKILL.md) |
+| 35 | ✓ | [`.trae/skills/domains/design/ui-design/SKILL.md`](.trae/skills/domains/design/ui-design/SKILL.md) |
+| 36 | ✓ | [`.trae/skills/domains/devops/ci-cd-pipeline/SKILL.md`](.trae/skills/domains/devops/ci-cd-pipeline/SKILL.md) |
+| 37 | ✓ | [`.trae/skills/domains/devops/docker/SKILL.md`](.trae/skills/domains/devops/docker/SKILL.md) |
+| 38 | ✓ | [`.trae/skills/domains/devops/kubernetes/SKILL.md`](.trae/skills/domains/devops/kubernetes/SKILL.md) |
+| 39 | ✓ | [`.trae/skills/domains/devops/monitoring/SKILL.md`](.trae/skills/domains/devops/monitoring/SKILL.md) |
+| 40 | ✓ | [`.trae/skills/domains/frontend/accessibility/SKILL.md`](.trae/skills/domains/frontend/accessibility/SKILL.md) |
+| 41 | ✓ | [`.trae/skills/domains/frontend/css-tailwind/SKILL.md`](.trae/skills/domains/frontend/css-tailwind/SKILL.md) |
+| 42 | ✓ | [`.trae/skills/domains/frontend/i18n/SKILL.md`](.trae/skills/domains/frontend/i18n/SKILL.md) |
+| 43 | ✓ | [`.trae/skills/domains/frontend/nextjs/SKILL.md`](.trae/skills/domains/frontend/nextjs/SKILL.md) |
+| 44 | ✓ | [`.trae/skills/domains/frontend/react/SKILL.md`](.trae/skills/domains/frontend/react/SKILL.md) |
+| 45 | ✓ | [`.trae/skills/domains/frontend/vue/SKILL.md`](.trae/skills/domains/frontend/vue/SKILL.md) |
+| 46 | ✓ | [`.trae/skills/domains/mcp/server-development/SKILL.md`](.trae/skills/domains/mcp/server-development/SKILL.md) |
+| 47 | ✓ | [`.trae/skills/domains/mcp/tools/SKILL.md`](.trae/skills/domains/mcp/tools/SKILL.md) |
+| 48 | ✓ | [`.trae/skills/domains/mobile/react-native/SKILL.md`](.trae/skills/domains/mobile/react-native/SKILL.md) |
+| 49 | ✓ | [`.trae/skills/domains/performance/performance-optimizer/SKILL.md`](.trae/skills/domains/performance/performance-optimizer/SKILL.md) |
+| 50 | ✓ | [`.trae/skills/domains/security/prompt-injection-defense/SKILL.md`](.trae/skills/domains/security/prompt-injection-defense/SKILL.md) |
+| 51 | ✓ | [`.trae/skills/domains/security/security-auditor/SKILL.md`](.trae/skills/domains/security/security-auditor/SKILL.md) |
+| 52 | ✓ | [`.trae/skills/domains/testing/e2e-test/SKILL.md`](.trae/skills/domains/testing/e2e-test/SKILL.md) |
+| 53 | ✓ | [`.trae/skills/domains/testing/integration-test/SKILL.md`](.trae/skills/domains/testing/integration-test/SKILL.md) |
+| 54 | ✓ | [`.trae/skills/domains/testing/unit-test/SKILL.md`](.trae/skills/domains/testing/unit-test/SKILL.md) |
+| 55 | ✓ | [`.trae/skills/meta/task-planner/SKILL.md`](.trae/skills/meta/task-planner/SKILL.md) |
+| 56 | ✓ | [`.trae/skills/workflows/coding-workflow/SKILL.md`](.trae/skills/workflows/coding-workflow/SKILL.md) |
+| 57 | ✓ | [`.trae/skills/workflows/debugging-workflow/SKILL.md`](.trae/skills/workflows/debugging-workflow/SKILL.md) |
+| 58 | ✓ | [`.trae/skills/workflows/full-stack-development/SKILL.md`](.trae/skills/workflows/full-stack-development/SKILL.md) |
+| 59 | ✓ | [`.trae/skills/workflows/refactoring-workflow/SKILL.md`](.trae/skills/workflows/refactoring-workflow/SKILL.md) |
+| 60 | ✓ | [`.trae/skills/workflows/system-architecture/SKILL.md`](.trae/skills/workflows/system-architecture/SKILL.md) |
+| 61 | ✓ | [`.trae/skills/workflows/technical-design-doc/SKILL.md`](.trae/skills/workflows/technical-design-doc/SKILL.md) |
+| 62 | ✓ | [`mcp/code-generator/index.ts`](mcp/code-generator/index.ts) |
+| 63 | ✓ | [`mcp/code-review/index.ts`](mcp/code-review/index.ts) |
+| 64 | ✓ | [`mcp/coding-workflow/index.ts`](mcp/coding-workflow/index.ts) |
+| 65 | ✓ | [`mcp/debugging-workflow/index.ts`](mcp/debugging-workflow/index.ts) |
+| 66 | ✓ | [`mcp/dependency-analyzer/index.ts`](mcp/dependency-analyzer/index.ts) |
+| 67 | ✓ | [`mcp/docker/index.ts`](mcp/docker/index.ts) |
+| 68 | ✓ | [`mcp/documentation/index.ts`](mcp/documentation/index.ts) |
+| 69 | ✓ | [`mcp/git/index.ts`](mcp/git/index.ts) |
+| 70 | ✓ | [`mcp/performance-optimizer/index.ts`](mcp/performance-optimizer/index.ts) |
+| 71 | ✓ | [`mcp/react/index.ts`](mcp/react/index.ts) |
+| 72 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 73 | ✓ | [`mcp/refactoring-workflow/index.ts`](mcp/refactoring-workflow/index.ts) |
+| 74 | ✓ | [`mcp/search/index.ts`](mcp/search/index.ts) |
+| 75 | ✓ | [`mcp/security-auditor/index.ts`](mcp/security-auditor/index.ts) |
+| 76 | ✓ | [`mcp/template/index.ts`](mcp/template/index.ts) |
+| 77 | ✓ | [`mcp/terminal/index.ts`](mcp/terminal/index.ts) |
+| 78 | ✓ | [`mcp/test-generator/index.ts`](mcp/test-generator/index.ts) |
+| 79 | ✓ | [`mcp/typescript/index.ts`](mcp/typescript/index.ts) |
+| 80 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

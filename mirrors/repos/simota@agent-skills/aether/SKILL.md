@@ -7,13 +7,13 @@ description: Full-stack AITuber (AI VTuber) orchestrator covering planning, impl
 CAPABILITIES_SUMMARY:
 - Real-time streaming pipeline orchestration (Chat → LLM → TTS → Avatar → OBS)
 - Live chat integration design (YouTube Live Chat API, Twitch IRC/EventSub, Bilibili Danmaku WebSocket)
-- TTS engine integration and pipeline (VOICEVOX, Style-Bert-VITS2, COEIROINK, NIJIVOICE, Fish Speech, CosyVoice2, Piper, Cartesia Sonic)
+- TTS engine integration and pipeline (VOICEVOX, Style-Bert-VITS2, COEIROINK, NIJIVOICE, Fish Audio S2, CosyVoice2, Piper, Cartesia Sonic)
 - Avatar control design (Live2D Cubism SDK, VRM/@pixiv/three-vrm)
 - Lip sync and emotion-to-expression mapping (Japanese phoneme → Viseme)
 - OBS WebSocket automation and scene management
 - RTMP/SRT streaming configuration and optimization
 - Latency budget management (end-to-end < 3000ms)
-- Long-term memory integration for persona persistence (Letta, MCP)
+- Long-term memory integration for persona persistence (Letta Context Repositories, MCP)
 - AITuber persona integration with Cast ecosystem
 - Stream monitoring and quality metrics (dropped frames, latency, chat health)
 - Viewer interaction design (command recognition, superchat handling, poll triggers)
@@ -55,7 +55,7 @@ Use Aether when the user needs:
 - launch readiness review, dry-run protocol, or go-live gating
 - streaming TTS latency optimization (sentence-level streaming, speculative decoding)
 - real-time multilingual voice cloning or translation for streaming
-- long-term memory integration for persistent persona context across streams (Letta, MCP)
+- long-term memory integration for persistent persona context across streams (Letta Context Repositories with git-based versioning, MCP)
 
 Route elsewhere when the task is primarily:
 - persona creation without streaming context: `Cast`
@@ -76,9 +76,10 @@ Route elsewhere when the task is primarily:
 - Keep fallback paths for TTS, avatar rendering, OBS connection, and chat ingestion.
 - Implement WebSocket reconnection with exponential backoff; WebSocket failures disrupt all interactive features. [Source: Open-LLM-VTuber]
 - Distinguish inference latency from production latency: a model benchmarking 100ms on dedicated GPU can deliver 800ms+ on shared cloud with network, queueing, and encoding overhead. Always measure end-to-end. [Source: inworld.ai 2026 benchmarks]
-- Use TTFA (Time to First Audio) as the primary TTS latency metric — it measures when the user hears the first syllable, not when synthesis completes. Open-source target: < 200ms (best-in-class: Fish Speech S2 Pro ~100ms). Commercial API target: < 100ms (best-in-class: Cartesia Sonic 3 40ms TTFA via SSM architecture). [Source: camb.ai, neosophie.com, cartesia.ai, inworld.ai 2026 benchmarks, Fish Audio]
+- Use TTFA (Time to First Audio) as the primary TTS latency metric — it measures when the user hears the first syllable, not when synthesis completes. Open-source target: < 200ms (best-in-class: Fish Audio S2 Pro ~100ms on H200 with SGLang OMNI serving). Commercial API target: < 100ms (best-in-class: Cartesia Sonic 3 40ms TTFA via SSM architecture). [Source: camb.ai, cartesia.ai, inworld.ai 2026 benchmarks, Fish Audio S2 Technical Report (arxiv)]
+- Prefer TTS engines with explicit emotion control tags (e.g., Fish Audio S2's emotion tagging) for AITuber pipelines; emotion-controllable TTS enables direct mapping from chat sentiment analysis to vocal expression without a separate emotion-to-prosody layer. [Source: Fish Audio S2 Technical Report (arxiv), marktechpost.com]
 - Generate multiple TTS audio segments concurrently and send them sequentially — prioritize the first sentence fragment for synthesis and playback to minimize perceived latency. [Source: Open-LLM-VTuber concurrent audio generation]
-- For GPU-constrained or CPU-only deployments, consider lightweight TTS models (e.g., Piper ONNX for CPU real-time, Kyutai Pocket TTS 100M params). [Source: Open-LLM-VTuber docs, kyutai.org]
+- For GPU-constrained or CPU-only deployments, consider lightweight TTS models (e.g., Piper ONNX for CPU real-time, Kyutai Pocket TTS 100M params, CosyVoice2-0.5B 150ms streaming latency). [Source: Open-LLM-VTuber docs, kyutai.org, siliconflow.com]
 - Define metrics, alert thresholds, and recovery behavior for every live pipeline.
 - Treat Cast as the canonical persona owner. Use `Cast[EVOLVE]` for persona changes; never edit Cast files directly.
 - Unify the text→LLM→TTS→play→history pipeline to prevent stale audio playback. [Source: github.com/Scikous/Vtuber-AI]
@@ -100,7 +101,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 ### Ask First
 
 - TTS engine selection when multiple engines fit with materially different tradeoffs.
-- Avatar framework choice (`Live2D` vs `VRM`). Note: VSeeFace supports VRM0 only, not VRM 1.0; confirm export format compatibility. Live2D Cubism 5 SDK R5 is current; Cubism 2.1 models are no longer supported by major frameworks (e.g., Open-LLM-VTuber). [Source: docs.live2d.com, Open-LLM-VTuber v1.x]
+- Avatar framework choice (`Live2D` vs `VRM`). Note: VSeeFace supports VRM0 only, not VRM 1.0; confirm export format compatibility. Live2D Cubism 5 SDK R5 is current (released 2026-04-02); Cocos2d-x support ended with R5 — use Native, Web, Unity, or Java SDK instead. Cubism 2.1 models are no longer supported by major frameworks (e.g., Open-LLM-VTuber). [Source: docs.live2d.com, github.com/Live2D, Open-LLM-VTuber v1.x]
 - Streaming-platform priority (`YouTube`, `Twitch`, `Bilibili`, or multi-platform).
 - GPU allocation when avatar rendering, TTS, or OBS encoding compete for the same machine.
 
@@ -207,7 +208,7 @@ Every deliverable must include:
 | Metric | Target | Alert threshold | Default action |
 |--------|--------|-----------------|----------------|
 | Chat → Speech latency | `< 3000ms` | `> 4000ms` | Log and reduce LLM token budget |
-| TTS TTFA (Time to First Audio) | `< 200ms` (self-hosted) / `< 100ms` (commercial API) | `> 500ms` | Switch to lower-latency TTS engine or reduce quality; open-source best: Fish Speech S2 Pro ~100ms, CosyVoice2 150ms; commercial best: Cartesia Sonic 3 40ms [Source: neosophie.com, siliconflow.com, cartesia.ai, Fish Audio] |
+| TTS TTFA (Time to First Audio) | `< 200ms` (self-hosted) / `< 100ms` (commercial API) | `> 500ms` | Switch to lower-latency TTS engine or reduce quality; open-source best: Fish Audio S2 Pro ~100ms (H200+SGLang), CosyVoice2-0.5B 150ms; commercial best: Cartesia Sonic 3 40ms [Source: Fish Audio S2 Technical Report (arxiv), siliconflow.com, cartesia.ai] |
 | TTS queue depth | `< 5` | `> 10` | Skip or defer low-priority messages |
 | Dropped frames | `0%` | `> 1%` | Reduce OBS encoding load |
 | Avatar FPS | `30fps` | `< 20fps` | Simplify expression and rendering load |

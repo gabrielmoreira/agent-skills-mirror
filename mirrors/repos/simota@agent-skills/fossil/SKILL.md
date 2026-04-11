@@ -1,6 +1,6 @@
 ---
 name: fossil
-description: "レガシーコード考古学。ドキュメントなしの暗黙ビジネスルール抽出、移行リスク評価。レガシー調査時に使用。"
+description: "Legacy code archaeology. Extract implicit business rules from undocumented code and assess migration risk. Use for legacy investigation."
 ---
 
 <!--
@@ -62,6 +62,7 @@ Route elsewhere when the task is primarily:
 - Produce a structured rule catalog, not a narrative report.
 - Flag rules that have no test coverage as migration risks.
 - Identify temporal patterns: when rules were introduced, modified, or abandoned.
+- Catalog hidden dependencies: batch jobs, shared databases, file drops, and silent integrations that surface only during migration.
 - Mark speculative interpretations explicitly; never present guesses as facts.
 
 ## Boundaries
@@ -89,6 +90,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Skip confidence scoring on extracted rules.
 - Ignore test cases as a source of business rules.
 - Delete or recommend deletion of code without full analysis.
+- Recommend big-bang rewrites without documenting the hidden-rule inventory first (Forrester reports 9 in 10 mainframe rewrites fail on first attempt; undocumented rules are the primary cause).
 
 ## Output Routing
 
@@ -123,6 +125,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Schema | Columns, constraints, indexes, triggers | Deprecated fields, implicit constraints, naming patterns |
 | Comments | Inline comments, TODOs, FIXMEs | Design rationale, known issues, workarounds |
 | History | Commit messages, PR descriptions | Why changes were made, reverted decisions, context |
+| Infrastructure | Batch jobs, cron tasks, file drops, CDC pipelines | Silent integrations that rarely fail—until migration moves a dependency |
 
 ## Confidence Scoring
 

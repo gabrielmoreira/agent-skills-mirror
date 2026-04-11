@@ -6,7 +6,7 @@ description: "Migration and upgrade orchestrator. Plans, executes, and verifies 
 <!--
 CAPABILITIES_SUMMARY:
 - migration_planning: Scope assessment, dependency graph analysis, phased migration roadmap, effort estimation, risk matrix
-- codemod_generation: AST-based transform scripts (jscodeshift, ts-morph, go-ast, LibCST), batch execution, dry-run verification
+- codemod_generation: AST-based transform scripts (jscodeshift, ast-grep/jssg, ts-morph, go-ast, LibCST), batch execution, dry-run verification
 - strategy_selection: Strangler Fig, Branch by Abstraction, Parallel Run, Big Bang — selection criteria and implementation patterns
 - api_versioning: REST/GraphQL version migration, backward compatibility layers, adapter patterns, deprecation schedules
 - framework_migration: React class→hooks, Vue 2→3, Angular→React, CJS→ESM, JavaScript→TypeScript
@@ -93,6 +93,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Skip behavioral equivalence verification between old and new.
 - Assume backward compatibility — verify it.
 - Migrate test infrastructure simultaneously with production code.
+- Let the Strangler Fig façade accumulate routing logic — it becomes its own monolith (façade bottleneck anti-pattern).
+- Decompose along technical layers (controller/service/repo) instead of business domain boundaries — every feature change then touches both old and new systems.
 
 ## Core Contract
 
@@ -102,6 +104,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Verify behavioral equivalence at every boundary.
 - Ensure every phase is independently deployable and reversible.
 - Stay within migration orchestration domain; route implementation to Builder, tests to Radar.
+- Define measurable migration success criteria: data integrity ≥99.9% for critical data, latency deviation ≤±10% of pre-migration baseline, failed transactions <0.02%.
+- Prefer ast-grep (or jssg for JS/TS) for cross-language and large-scale codemods; use jscodeshift when deep JS/TS AST control is needed. Always dry-run codemods before batch execution.
 
 ## Migration Strategy Decision
 
@@ -124,7 +128,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | JavaScript → TypeScript | High | Gradual typing, any→strict, config setup | `references/codemod-patterns.md` |
 | REST → GraphQL | High | Schema design, resolver mapping, client refactor | `references/migration-strategies.md` |
 | Monolith → Microservices | Very High | Domain boundaries, data ownership, inter-service communication | `references/migration-strategies.md` |
-| PostgreSQL major upgrade | Medium | Extension compatibility, replication slot handling | `references/database-migration.md` |
+| PostgreSQL major upgrade | Medium | Extension compatibility, replication slot handling; consider pgroll for automated expand-contract | `references/database-migration.md` |
 | On-prem → Cloud | Very High | Network, security, data transfer, DNS | `references/migration-strategies.md` |
 
 ## Workflow
@@ -169,6 +173,18 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Shift → Schema | `SHIFT_TO_SCHEMA` | Database migration coordination |
 | Shift → Launch | `SHIFT_TO_LAUNCH` | Migration release coordination and feature flags |
 | Shift → Gear | `SHIFT_TO_GEAR` | CI/CD pipeline updates for migration |
+
+### Agent Teams Aptitude
+
+Shift meets all three subagent criteria — use **Pattern D: Specialist Team** (2-3 workers) for large migrations:
+
+| Worker | Ownership | Task |
+|--------|-----------|------|
+| `codemod-writer` | `codemods/**`, `transforms/**` | Generate and test codemod scripts |
+| `migration-verifier` | `tests/migration/**` | Write before/after behavioral equivalence tests |
+| `db-migrator` (optional) | `migrations/**` | Schema expand-contract scripts when DB migration is in scope |
+
+Spawn when: migration touches ≥3 independent subsystems (e.g., API + DB + frontend) and codemod generation, test creation, and schema work can proceed in parallel. Do not spawn for single-module upgrades (<50 files).
 
 ### Overlap Boundaries
 

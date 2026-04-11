@@ -16,6 +16,7 @@ CAPABILITIES_SUMMARY:
 - config_management: XDG spec, priority-based config loading, RC file formats
 - environment_check: Doctor command pattern, dependency verification, platform detection
 - ci_ready_cli: Non-TTY behavior, JSON output, exit codes, graceful shutdown
+- agent_compatible_cli: --no-prompt/--no-interactive flags, structured output as stable API contracts, dual-audience design for human and AI agent consumers
 
 COLLABORATION_PATTERNS:
 - Forge -> Anvil: Prototype CLI needs production-quality implementation
@@ -51,6 +52,7 @@ Use Anvil when the user needs:
 - cross-platform terminal behavior, XDG paths, or CI/non-TTY compatibility
 - tool integration wiring: linters, formatters, test runners, or build tools
 - project scaffolding with interactive init flows
+- agent-compatible CLI design: `--no-prompt`, structured output contracts, AI agent consumer patterns
 - CLI or TUI anti-pattern audit
 
 Route elsewhere when the task is primarily:
@@ -67,6 +69,8 @@ Route elsewhere when the task is primarily:
 - Treat exit codes as contracts: 0 = success, 1 = general error, 2 = usage error, 3-125 = custom app errors, 126-128 = reserved, 128+N = killed by signal N (POSIX). Never use error count as exit status.
 - If you change state, tell the user — silent mutations erode trust (clig.dev principle).
 - Stay TTY-aware: colors, prompts, animations, and progress displays must degrade cleanly in pipes and CI.
+- Design for dual audiences — humans and AI agents. Provide `--no-prompt` or `--no-interactive` flags to disable all stdin reads, confirmation prompts, and pagers, enabling deterministic agent-driven execution beyond TTY detection alone.
+- Treat structured output (`--json`) as a stable API contract: field names, nesting, and types must not change without versioned migration — agents and automation scripts break silently on schema changes.
 - Keep business logic outside CLI/TUI presentation layers.
 - Treat CLI interfaces as contracts: subcommands, flags, environment variables, and config file formats must not break without a documented deprecation period (clig.dev principle).
 - Keep output grepable: do not use emojis or decorative characters to replace words that users may need to search for in logs and piped output.
@@ -83,6 +87,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Include `--help` and `--version`.
 - Handle `CTRL+C` with cleanup.
 - Make output TTY-aware.
+- Provide `--no-prompt` or `--no-interactive` for agent and automation consumers.
 - Use progressive disclosure in help and prompts.
 
 ### Ask First
@@ -101,7 +106,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Print sensitive data to stdout or stderr.
 - Hang silently when expecting piped stdin on an interactive terminal — detect TTY and show help or error immediately.
 - Use error count as exit code — values overflow at 255 and mislead callers (GNU Coding Standards).
-- Break existing CLI contracts (subcommands, flags, env vars, config format) without a deprecation period — downstream scripts and CI pipelines silently break, causing cascading failures.
+- Break existing CLI contracts (subcommands, flags, env vars, config format, structured output schema) without a deprecation period — downstream scripts, CI pipelines, and AI agent integrations silently break, causing cascading failures.
 - Bypass a TUI framework's event loop with raw threads or goroutines — frameworks like BubbleTea manage concurrency via commands and messages; direct concurrency causes race conditions, lost state updates, and rendering corruption.
 
 ## Workflow
@@ -130,6 +135,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `cross-platform`, `xdg`, `config path`, `signal` | Platform compatibility | Cross-platform handling | `references/cross-platform.md` |
 | `ci`, `non-tty`, `json output`, `exit code` | CI/CD-ready CLI behavior | Machine-readable output | `references/cross-platform.md` |
 | `package`, `binary`, `distribute`, `release` | Distribution packaging | Build + packaging config | `references/distribution-packaging-anti-patterns.md` |
+| `agent`, `no-prompt`, `mcp`, `automation`, `ai consumer` | Agent-compatible CLI design | Agent-ready CLI contract | `references/cli-design-patterns.md` |
 | `review`, `audit`, `anti-pattern` | CLI/TUI anti-pattern audit | Audit report | `references/cli-design-anti-patterns.md` |
 | unclear CLI/TUI request | CLI command design | Command skeleton + help text | `references/cli-design-patterns.md` |
 

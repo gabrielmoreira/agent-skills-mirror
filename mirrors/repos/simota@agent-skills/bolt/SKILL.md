@@ -5,8 +5,8 @@ description: Frontend (re-render reduction, memoization, lazy loading) and backe
 
 <!--
 CAPABILITIES_SUMMARY:
-- frontend_optimization: Re-render reduction (React Compiler v1.0 auto-memo / manual memo for non-Compiler projects), lazy loading, virtualization, debounce/throttle, INP optimization (task breaking, main thread yield, third-party script audit)
-- backend_optimization: N+1 fix (eager loading/DataLoader), connection pooling, async processing, compression
+- frontend_optimization: Re-render reduction (React Compiler v1.0 auto-memo / manual memo for non-Compiler projects), lazy loading, virtualization, debounce/throttle, INP optimization (task breaking, main thread yield, third-party script audit), async waterfall detection and parallelization
+- backend_optimization: N+1 fix (eager loading/DataLoader), connection pooling, async processing, compression, async waterfall elimination (sequential-to-parallel refactor)
 - bundle_optimization: Route/component/library/feature-based code splitting, tree shaking, library replacement
 - database_query_optimization: EXPLAIN ANALYZE metrics, index suggestion (B-tree/Partial/Covering/GIN/Expression), N+1 detection
 - caching_strategy: In-memory LRU / Redis / HTTP Cache-Control, cache-aside / write-through / write-behind patterns, stampede prevention (lock/lease, stale-while-revalidate), TTL enforcement
@@ -41,6 +41,7 @@ Use Bolt when the task needs:
 - frontend performance optimization (re-renders, bundle size, lazy loading, virtualization)
 - React Server Components streaming optimization (PPR, Suspense boundaries, "use client" leaf placement)
 - backend performance optimization (N+1 queries, caching, connection pooling, async)
+- async waterfall detection and elimination (sequential awaits that could run in parallel — the #1 root cause of production performance issues per Vercel's analysis of 10+ years of React/Next.js apps)
 - database query optimization (EXPLAIN ANALYZE, index design)
 - Core Web Vitals improvement (LCP, INP, CLS)
 - bundle size reduction (code splitting, tree shaking, library replacement)
@@ -64,7 +65,8 @@ Route elsewhere when the task is primarily:
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Bolt's domain; route unrelated requests to the correct agent.
 - **Measure → Identify → Optimize → Verify**: Never optimize without a baseline metric. Profile first, then target the single largest bottleneck.
-- **React Compiler awareness**: React Compiler v1.0 (stable Oct 2025; opt-in React 19+, default Next.js 16+) auto-memoizes components and hooks at build time. 95% of Meta's production React surfaces run with the compiler enabled. Measured impact: 12% faster initial loads, interactions up to 2.5× faster, 40–60% reduction in unnecessary re-renders. **Limitation**: the compiler optimizes *how* components render (memoization), not *whether* they render — architectural issues (wrong state placement, unnecessary prop drilling, oversized component trees) still require manual optimization. Do not add manual `memo`/`useMemo`/`useCallback` unless: (1) expensive synchronous computation, (2) stable reference for non-React consumer (e.g., `useEffect` dep, third-party lib), or (3) project does not use React Compiler. Verify compiler status (`react-compiler` babel plugin or Next.js config) before recommending manual memoization.
+- **React Compiler awareness**: React Compiler v1.0 (stable Oct 2025; opt-in React 19+, default Next.js 16+) auto-memoizes components and hooks at build time. 95% of Meta's production React surfaces run with the compiler enabled. Measured impact: 12% faster initial loads, interactions up to 2.5× faster, 40–60% reduction in unnecessary re-renders. **Limitation**: the compiler optimizes *how* components render (memoization), not *whether* they render — architectural issues (wrong state placement, unnecessary prop drilling, oversized component trees) still require manual optimization. Do not add manual `memo`/`useMemo`/`useCallback` unless: (1) expensive synchronous computation, (2) stable reference for non-React consumer (e.g., `useEffect` dep, third-party lib), or (3) project does not use React Compiler. Verify compiler status (`react-compiler` babel/SWC plugin or Next.js config) before recommending manual memoization.
+- **Async waterfalls are the #1 performance root cause** in production web apps. Sequential `await a(); await b();` where `a` and `b` are independent adds unnecessary latency equal to the sum of both operations. Detect with: sequential awaits in the same scope, chained `.then()` on independent promises, React component trees with nested `use()` / `Suspense` fetching parent-then-child. Fix: `Promise.all([a(), b()])`, parallel route loaders, or `Promise.allSettled` when partial failure is acceptable. A request waterfall adding 600ms of wait time dwarfs any micro-optimization — always check for waterfalls before re-render or memo work.
 - **INP is the #1 failed CWV** (43% of sites fail 200ms threshold). Post-March 2026 core update, INP ≤150ms is the practical baseline for SEO ranking stability (sites 200–500ms saw ~0.8 position drops; >500ms saw 2–4 position drops). For any frontend optimization, check INP impact: break long tasks > 50ms, yield to main thread via `scheduler.yield()` or `setTimeout(0)`, minimize DOM size (< 1,400 nodes recommended), audit third-party scripts (analytics, chat widgets, ads) as the leading real-world INP degrader. **Highest-leverage INP fix**: removing 5–10 unnecessary third-party scripts often outperforms any advanced optimization. SPA re-renders of large component trees cause high presentation delay — split or virtualize.
 ## Boundaries
 
@@ -113,6 +115,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 |--------|----------|----------------|-----------|
 | `re-render`, `memo`, `useMemo`, `useCallback`, `context` | React render optimization | Optimized component code | `references/react-performance.md` |
 | `bundle`, `code splitting`, `lazy`, `tree shaking` | Bundle optimization | Split/optimized bundle | `references/bundle-optimization.md` |
+| `waterfall`, `sequential await`, `Promise.all`, `parallel fetch` | Async waterfall elimination | Parallelized async code | `references/optimization-anti-patterns.md` |
 | `N+1`, `eager loading`, `DataLoader`, `query` | Database query optimization | Optimized queries | `references/database-optimization.md` |
 | `cache`, `redis`, `LRU`, `Cache-Control` | Caching strategy | Cache implementation | `references/caching-patterns.md` |
 | `LCP`, `INP`, `CLS`, `Core Web Vitals` | Core Web Vitals optimization | CWV improvement | `references/core-web-vitals.md` |
@@ -125,12 +128,12 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Layer | Focus Areas |
 |-------|-------------|
 | **Frontend** | Re-renders · Bundle size · Lazy loading · Virtualization |
-| **Backend** | N+1 queries · Caching · Connection pooling · Async processing · Event loop lag (≤100ms) |
+| **Backend** | Async waterfalls · N+1 queries · Caching · Connection pooling · Async processing · Event loop lag (≤100ms) |
 | **Network** | Compression · CDN · HTTP/3 · Edge computing · HTTP caching · Payload reduction |
 | **Infrastructure** | Resource utilization · Scaling bottlenecks |
 
 **React patterns** (memo/useMemo/useCallback/context splitting/lazy/virtualization/debounce) → `references/react-performance.md`
-**React Compiler note**: React Compiler v1.0 (stable Oct 2025; opt-in React 19+, default Next.js 16+) auto-applies memoization at build time (12% faster loads, up to 2.5× faster interactions, 40–60% fewer re-renders; 95% of Meta production enabled). Does not fix architectural issues (state placement, prop drilling, tree structure). Manual `memo`/`useMemo`/`useCallback` still needed for: expensive sync computations, stable refs for non-React consumers, projects without Compiler. Check `react-compiler` babel plugin or framework config before recommending manual memoization.
+**React Compiler note**: React Compiler v1.0 (stable Oct 2025; opt-in React 19+, default Next.js 16+) auto-applies memoization at build time (12% faster loads, up to 2.5× faster interactions, 40–60% fewer re-renders; 95% of Meta production enabled). Does not fix architectural issues (state placement, prop drilling, tree structure). Manual `memo`/`useMemo`/`useCallback` still needed for: expensive sync computations, stable refs for non-React consumers, projects without Compiler. Check `react-compiler` babel/SWC plugin or framework config before recommending manual memoization.
 
 ## Database Query Optimization
 

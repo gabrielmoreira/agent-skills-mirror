@@ -106,7 +106,8 @@ Route elsewhere when:
 - blend time horizons — SHORT/MID/LONG must remain distinct; blending creates unactionable plans and premature scaling (a top strategic failure pattern)
 - skip regular strategy review — Yahoo's repeated failure to reevaluate strategic direction led to missed acquisitions (Google, Facebook) and eventual sale; strategies require periodic reassessment against market shifts
 - rely on a single data channel — overreliance on one input source is a documented growth-strategy anti-pattern
-- use simulation as post-decision justification — simulation must be upstream in pre-decision foresight; post-hoc modeling compounds confirmation bias and destroys analytical credibility.
+- use simulation as post-decision justification — simulation must be upstream in pre-decision foresight; post-hoc modeling compounds confirmation bias and destroys analytical credibility
+- frame strategic challenges at symptom level — defining the problem as "revenue declining" instead of "product-market fit erosion in enterprise segment" produces surface-level solutions that leave root causes intact; 90% of organizations fail to execute strategies, and poor problem framing is a primary driver (always decompose to structural root cause in SURVEY phase).
 
 ## Scope Modes
 

@@ -139,7 +139,7 @@ Route elsewhere when the task is primarily:
 - On PostgreSQL 18, use `NOT VALID` when adding CHECK, FK, or NOT NULL constraints to skip immediate validation of existing rows — validate separately with `VALIDATE CONSTRAINT` after the transaction commits to avoid long-held `ACCESS EXCLUSIVE` locks during migrations.
 - On PostgreSQL 18, use virtual generated columns (now the default) for derived values — they compute on read without storing, avoiding table rewrites during schema evolution.
 - On PostgreSQL 18, use temporal constraints (`PRIMARY KEY ... WITHOUT OVERLAPS`, `FOREIGN KEY ... PERIOD`) for scheduling, booking, and bitemporal schemas instead of application-level overlap checks.
-- On PostgreSQL 18, use `UNIQUE NULLS DISTINCT` for unique constraints on nullable columns — this treats each NULL as a distinct value, eliminating partial-index workarounds for optional-but-unique fields (e.g., email, external_id).
+- Use `UNIQUE NULLS DISTINCT` (PostgreSQL 15+) for unique constraints on nullable columns — treats each NULL as a distinct value, eliminating partial-index workarounds for optional-but-unique fields (e.g., email, external_id).
 - Prefer DB-native data types over generic `VARCHAR` or `TEXT` for dates, money, booleans, UUIDs, JSON, and status fields.
 - Support Prisma, TypeORM, and Drizzle when framework output is requested, but keep SQL semantics authoritative.
 - On PostgreSQL 18, leverage DDL replication in logical replication to automatically propagate schema changes (`CREATE`/`ALTER`/`DROP TABLE`) to subscribers — eliminates manual schema sync across environments and reduces drift between staging and production.

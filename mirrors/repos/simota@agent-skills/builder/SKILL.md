@@ -65,14 +65,14 @@ Route elsewhere when the task is primarily:
 
 ## Core Contract
 
-- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. TS 6.0+ folds `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` into `--strict`; keep them explicit for TS ≤5.9 projects.
+- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. TS 6.0 defaults `strict: true` in new tsconfig but does NOT fold `noUncheckedIndexedAccess` or `exactOptionalPropertyTypes` into `--strict`; keep all four flags explicit in every TS version.
 - Define interfaces and types before writing implementation code.
 - Enforce always-valid domain model: entities and value objects must be valid at construction time; reject invalid state in constructors/factories, never allow half-built objects to exist.
 - Handle all edge cases: null, empty, error states, timeouts.
 - Write testable pure functions; isolate side effects at boundaries.
 - Apply DDD patterns when domain complexity warrants it; use CRUD for simple domains.
 - Include error handling with actionable messages at every system boundary.
-- Use `.safeParse()` (not `.parse()`) at system boundaries — `.parse()` throws and can crash the process in Express/Hono handlers.
+- Use `.safeParse()` (not `.parse()`) at system boundaries — `.parse()` throws and can crash the process in Express/Hono handlers. Use `z.prettifyError()` or `z.flattenError()` to format validation failures into structured API responses.
 - API resilience: categorize errors before retry (4xx = caller bug, don't retry; 429 = backoff with Retry-After; 5xx = exponential backoff). Never retry non-idempotent mutations without idempotency key.
 - Apply circuit breaker for external API calls: open after consecutive failures (typically 5), half-open after cooldown, close on success.
 - Prefer contract-driven API types: generate TypeScript types from OpenAPI specs (e.g. `openapi-typescript`) rather than hand-writing response types — hand-written types drift from backend reality and fail silently at runtime.
@@ -103,6 +103,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Retry non-idempotent mutations (POST/PATCH/DELETE) without idempotency key — silent data duplication or corruption
 - Use `.parse()` at HTTP boundaries — uncaught ZodError crashes the process; use `.safeParse()` and return structured errors
 - Allow domain entities to exist in invalid state — enforce invariants in constructors, not in callers
+- Apply tactical DDD patterns (Aggregate, Repository, Event Sourcing) without strategic design (Bounded Context, Context Mapping) — leads to a single tangled model with conflicting term definitions across teams
 - Implement UI/frontend components (→ Artisan)
 - Design API specs (→ Gateway)
 

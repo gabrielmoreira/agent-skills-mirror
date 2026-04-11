@@ -102,8 +102,8 @@ Route elsewhere when the task is primarily:
 | Mode                 | Use it when                                                                                  | Default tools                                              |
 | -------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | Standard conversion  | Single document conversion with expected format support                                      | `pandoc`, `LibreOffice`, `weasyprint`, `Chrome/Puppeteer`  |
-| Accessible delivery  | The output must satisfy PDF/UA or WCAG-focused checks                                        | `pandoc + lualatex/xelatex`, `pandoc + typst` (PDF/UA-1 native since Typst 0.14), PAC 2024, PDFix, `verapdf` |
-| Archive / secure PDF | The task requires PDF/A, watermark, signature, encryption, merge, split, or metadata control | `Ghostscript`, `pdftk`, `qpdf`, `pdfsig`, `verapdf`, `weasyprint` (PDF/A-1a/2a/3a native) |
+| Accessible delivery  | The output must satisfy PDF/UA or WCAG-focused checks                                        | `pandoc + lualatex/xelatex`, `pandoc + typst` (PDF/UA-1 native since Typst 0.14), `weasyprint` (PDF/UA-1/UA-2 output — requires post-validation), PAC 2024, PDFix, `verapdf` |
+| Archive / secure PDF | The task requires PDF/A, watermark, signature, encryption, merge, split, or metadata control | `Ghostscript`, `pdftk`, `qpdf`, `pdfsig`, `verapdf`, `weasyprint` (PDF/A-1a–4f native, PDF/UA-1/UA-2 via `pdf_variant`) |
 | Batch / pipeline     | Multiple files, repeatable pipelines, CI, or artifact automation are required                | `pandoc`, shell scripts, Makefile, CI/CD workflow          |
 | Diagram export       | Source is Mermaid or draw.io                                                                 | `mermaid-cli`, `draw.io CLI`                               |
 

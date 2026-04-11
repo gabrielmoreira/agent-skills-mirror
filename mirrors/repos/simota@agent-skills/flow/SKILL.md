@@ -9,7 +9,7 @@ CAPABILITIES_SUMMARY:
 - page_transition: Route changes, modal/panel transitions, staged content entry
 - gesture_animation: Drag, swipe, snap, long press, touch feedback
 - motion_system_design: Motion tokens, scale design, cataloging, audits
-- modern_css_animation: View Transitions API (same-doc Baseline Oct 2025 — Chrome 111+/Edge 111+/Safari 18+/Firefox 144+, cross-doc Chrome 126+/Edge 126+/Safari 18.2+ — Firefox not yet supported), @starting-style, scroll-driven animations (animation-timeline scroll()/view()), @property
+- modern_css_animation: View Transitions API (same-doc Baseline Oct 2025 — Chrome 111+/Edge 111+/Safari 18+/Firefox 144+, cross-doc Chrome 126+/Edge 126+/Safari 18.2+/Firefox 146+ partial), @starting-style (Baseline Newly Available — Chrome 117+/Edge 117+/Safari 17.5+/Firefox 129+), scroll-driven animations (animation-timeline scroll()/view()), @property, interpolate-size/calc-size() for intrinsic size animation (Chrome 129+/Edge 129+ only)
 - reduced_motion: prefers-reduced-motion support and accessible motion paths
 - performance_optimization: 60fps targeting, GPU-safe properties (transform/opacity/filter/clip-path), will-change budget (≤2 elements/page), CWV guard (CLS < 0.1, INP < 200ms)
 - library_guidance: Motion v12 (React/Vue/vanilla JS, MIT, hardware-accelerated scroll, oklch/oklab color animation, axis-locked layout="x"|"y"), GSAP (framework-agnostic, timeline, all plugins free since Webflow acquisition 2024 — license only restricts Webflow-competing visual animation builders), Tailwind CSS Motion (5KB CSS-only)
@@ -42,7 +42,7 @@ Use Flow when work needs:
 - Motion token design or motion cleanup
 - `prefers-reduced-motion` support
 - Performance-safe motion implementation
-- Modern CSS animation APIs: View Transitions API (same-document Baseline Oct 2025 — Chrome 111+/Edge 111+/Safari 18+/Firefox 144+; cross-document Chrome 126+/Edge 126+/Safari 18.2+ — Firefox not yet supported), scroll-driven animations (`animation-timeline: scroll()`/`view()` — cross-browser Baseline 2025), `@starting-style` for entry animations
+- Modern CSS animation APIs: View Transitions API (same-document Baseline Oct 2025 — Chrome 111+/Edge 111+/Safari 18+/Firefox 144+; cross-document Chrome 126+/Edge 126+/Safari 18.2+/Firefox 146+ partial), scroll-driven animations (`animation-timeline: scroll()`/`view()` — cross-browser Baseline 2025), `@starting-style` for entry animations (Baseline Newly Available — Chrome 117+/Edge 117+/Safari 17.5+/Firefox 129+), `interpolate-size`/`calc-size()` for animating to intrinsic sizes like `height: auto` (Chrome 129+/Edge 129+ only)
 - Framework-specific motion patterns (Motion v12/React, GSAP/vanilla, Tailwind CSS Motion)
 - Core Web Vitals remediation for animation-induced CLS or INP failures
 
@@ -65,6 +65,7 @@ Route elsewhere when:
 - Auto-detect the active framework and follow local idioms. For React/Vue/vanilla JS, prefer Motion v12 (formerly Framer Motion, MIT, hardware-accelerated scroll animations, oklch/oklab color support, axis-locked layout animations via `layout="x"|"y"`, multi-framework via `motion/react` and vanilla APIs). For complex timeline work or projects needing premium plugins (SplitText, MorphSVG, ScrollTrigger), prefer GSAP (all plugins free since Webflow acquisition 2024; license only restricts tools competing with Webflow's visual animation builder).
 - **Scroll-driven animations:** use `linear` easing (the scroll gesture itself provides natural easing). Set `animation-duration: 1ms` (not `0`) for Firefox compatibility. Animate only compositor-safe properties — custom properties and `font-size` force main-thread execution.
 - **`will-change` budget:** limit to ≤2 elements per page. Overuse creates excessive GPU memory consumption and can degrade rather than improve performance.
+- **Intrinsic size animation:** For animating to `height: auto` or other intrinsic sizes, use `interpolate-size: allow-keywords` on the ancestor (or `calc-size()` for calculations). One end of the animation must be a `<length-percentage>` — animating between two intrinsic values is not supported. Chrome 129+/Edge 129+ only; use progressive enhancement with a fallback that skips the animation.
 - Keep scope explicit:
   - Single interaction: `<50` lines
   - Page transition: `<150` lines
@@ -126,6 +127,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `performance`, `jank`, `60fps` | Performance fix | Optimized animation code | `references/animation-performance-anti-patterns.md` |
 | `CLS`, `INP`, `Core Web Vitals`, `layout shift` | CWV remediation | Compositor-only animation refactor | `references/animation-performance-anti-patterns.md` |
 | `Motion`, `Framer Motion`, `GSAP`, `library` | Library selection | Library recommendation + implementation | `references/framework-patterns.md` |
+| `height auto`, `intrinsic size`, `accordion`, `expand collapse` | Intrinsic size animation | `interpolate-size`/`calc-size()` progressive enhancement | `references/modern-css-animations.md` |
 
 Routing rules:
 

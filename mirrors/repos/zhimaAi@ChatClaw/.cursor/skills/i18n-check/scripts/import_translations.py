@@ -158,8 +158,8 @@ def to_nested_format(flat_obj):
             current[parts[-1]] = value
 
     def escape_ts_string(value: str) -> str:
-        # Only escape double quotes; keep backslashes as-is to avoid over-escaping
-        return str(value).replace('"', '\\"')
+        # 单引号转为双引号（单引号内不能直接放单引号）
+        return str(value).replace("'", '"')
 
     def print_object(obj, indent=1):
         indent_str = '  ' * indent
@@ -169,14 +169,14 @@ def to_nested_format(flat_obj):
             if isinstance(value, dict):
                 if '_value' in value and len(value) == 1:
                     escaped_value = escape_ts_string(value['_value'])
-                    lines.append(f'{indent_str}{key}: "{escaped_value}",')
+                    lines.append(f"{indent_str}{key}: '{escaped_value}',")
                 else:
-                    lines.append(f'{indent_str}{key}: {{')
+                    lines.append(f"{indent_str}{key}: {{")
                     print_object(value, indent + 1)
-                    lines.append(f'{indent_str}}},')
+                    lines.append(f"{indent_str}}},")
             else:
                 escaped_value = escape_ts_string(value)
-                lines.append(f'{indent_str}{key}: "{escaped_value}",')
+                lines.append(f"{indent_str}{key}: '{escaped_value}',")
 
     print_object(nested)
     lines.append('}')

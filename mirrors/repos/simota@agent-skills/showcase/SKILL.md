@@ -18,7 +18,9 @@ CAPABILITIES_SUMMARY:
 - Storybook 10.3+ features (status-based filtering, component metadata extraction via Volar LanguageService, Reset story button in docs; latest stable: 10.3.x, next: 10.4.0-alpha)
 - Storybook 9.x features (CSF factories experimental, Test Codegen, Story Generation from UI, Testing Widget, 48% leaner deps)
 - Design system metrics tracking (component reuse rate, design-code alignment, a11y pass rate)
-- AI-assisted development (stories as AI context per storybook.js.org/docs/ai/best-practices)
+- AI-assisted development (stories as AI context per storybook.js.org/docs/ai/best-practices; addon-mcp for MCP server integration with AI agents — manifest optimization, tag exclusion for context control)
+- React Server Components (RSC) story creation (experimental module-mocking approach, compatible with Storybook addons ecosystem)
+- Git change detection (10.3+, status-value filtering for new/modified/affected stories in sidebar)
 
 COLLABORATION_PATTERNS: Prototype→Docs(Forge→Showcase→Quill) · Design→Catalog(Vision→Showcase→Vision) · Story→Test(Showcase→Radar+Voyager) · TokenAudit(Showcase→Muse→Showcase) · Animation(Flow→Showcase→Flow) · UXReview(Palette→Showcase→Vision) · Demo→Story(Director→Showcase→Radar) · ProductionPolish(Artisan→Showcase→Muse) · PortableStory→UnitTest(Showcase→Radar via composeStories) · A11yGate(Showcase→Canon for WCAG compliance)
 
@@ -56,6 +58,8 @@ Use Showcase when the user needs:
 - Test Codegen (record interactions in Storybook UI → save as play functions, no code required)
 - module mocking with `sb.mock` Automocking API (register in `.storybook/preview.ts` only; build-time resolution, no factory functions)
 - Story Generation from Storybook UI (create/edit stories without writing code)
+- addon-mcp setup and component manifest optimization for AI agent integration
+- React Server Components (RSC) story creation (experimental mock-based approach, Storybook 9+)
 
 Route elsewhere when the task is primarily:
 - UI component implementation: `Artisan` or `Builder`
@@ -86,6 +90,9 @@ Route elsewhere when the task is primarily:
 - For Storybook 10 projects: enforce ESM-only (no CommonJS); require Node 20.16+, 22.19+, or 24+. CSF Factories are Preview-tier for React; Vue/Angular/Web Components support expected in 10.x. CSF Factories are expected to become the default format in Storybook 11.
 - With CSF Factories, stories can be reused directly in test files without `composeStories` — prefer direct import over `composeStories` when the project uses CSF Factories.
 - Use the CSF Factories `.test` method to attach interaction/assertion tests inline with stories; combine with tag exclusion filtering to keep test-only stories out of the sidebar for non-technical collaborators.
+- In play functions, prefer accessible queries (`getByRole`, `getByLabelText`, `getByText`) over `data-testid` — accessible queries validate the component's accessibility contract simultaneously and align with Testing Library best practices; fall back to `data-testid` only when no semantic query is viable.
+- For AI agent integration, recommend @storybook/addon-mcp to expose component manifests via MCP server; guide manifest optimization by excluding irrelevant stories/docs via tag removal to reduce token overhead and improve agent accuracy.
+- RSC stories require module mocking (`sb.mock`) to replace async server-side data fetching with controlled client-side mocks; treat RSC story support as experimental and document mock boundaries clearly.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -97,7 +104,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Include `tags: ['autodocs']` for documentation.
 - Add play functions for user interaction flows.
 - Include a11y addon configuration.
-- Use `data-testid` for element selection.
+- Prefer accessible queries (`getByRole`, `getByLabelText`, `getByText`) in play functions; use `data-testid` only as a last resort when no accessible query is viable.
 - Follow Atoms/Molecules/Organisms hierarchy.
 - Detect project tool and match format (Storybook/Cosmos/Histoire).
 
@@ -132,7 +139,7 @@ See `references/storybook-patterns.md` for CSF 3.0 templates, Storybook 8.5+ fea
 
 ## Tool Support
 
-Storybook 10.x (ESM-only, CSF Factories Preview for React, 29% lighter, Node 20.16+ required, un-minified dist, `.test` method, tag exclusion filtering, QR code sharing; latest stable: 10.3.x with status-based filtering and Volar LanguageService metadata extraction) · Storybook 9.x (CSF 3.0 + CSF factories experimental, addon-vitest, sb.mock, Test Codegen, Testing Widget, built-in visual testing + coverage reports) · Storybook 8.x (legacy, migration recommended) · React Cosmos 6+ (React, Fixtures) · Histoire (Vue/Svelte) · Ladle (React, CSF-like). Auto-detect: `.storybook/` → Storybook · `cosmos.config.json` → Cosmos · `histoire.config.ts` → Histoire · `.ladle/` → Ladle · `package.json` deps → Infer version (8.x vs 9.x vs 10+) · None → ON_TOOL_SELECTION.
+Storybook 10.x (ESM-only, CSF Factories Preview for React, 29% lighter, Node 20.16+ required, un-minified dist, `.test` method, tag exclusion filtering, QR code sharing; latest stable: 10.3.3 with status-based filtering, git change detection via ChangeDetectionService, Volar LanguageService metadata extraction, addon-mcp for AI agent integration) · Storybook 9.x (CSF 3.0 + CSF factories experimental, addon-vitest, sb.mock, Test Codegen, Testing Widget, built-in visual testing + coverage reports) · Storybook 8.x (legacy, migration recommended) · React Cosmos 6+ (React, Fixtures) · Histoire (Vue/Svelte) · Ladle (React, CSF-like). Auto-detect: `.storybook/` → Storybook · `cosmos.config.json` → Cosmos · `histoire.config.ts` → Histoire · `.ladle/` → Ladle · `package.json` deps → Infer version (8.x vs 9.x vs 10+) · None → ON_TOOL_SELECTION.
 See `references/framework-alternatives.md` for full comparison and setup guides.
 
 ## React Cosmos 6+
@@ -178,6 +185,9 @@ See `references/visual-regression.md` for setup, test runner config, and CI work
 | `CSF factories`, `type-safe stories` | CSF factories migration (9.1+) | Updated story files with factories API | `references/storybook-patterns.md` |
 | `.test method`, `inline test`, `story test` | CSF Factories `.test` attachment | Stories with `.test` + tag exclusion config | `references/storybook-patterns.md` |
 | `tag filter`, `hide stories`, `sidebar filter` | Tag exclusion filtering | Storybook config with tag-based inclusion/exclusion | `references/storybook-patterns.md` |
+| `mcp`, `addon-mcp`, `AI manifest`, `agent context` | MCP addon setup for AI agent integration | addon-mcp config + manifest optimization | `references/storybook-patterns.md` |
+| `RSC`, `server component`, `react server` | RSC story creation (experimental) | Story files with module mocking for async server components | `references/storybook-patterns.md` |
+| `git change`, `change detection`, `modified stories` | Git change detection filtering (10.3+) | Storybook config with status-value filtering | `references/storybook-patterns.md` |
 | unclear story request | Story creation (default) | Story files + autodocs | `references/storybook-patterns.md` |
 
 Routing rules:

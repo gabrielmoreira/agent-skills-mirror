@@ -121,7 +121,7 @@ Beyond direct dependency tracing, detect second-order effects that emerge from c
 
 **Blast radius thresholds** (derived from industry benchmarks):
 - **Files affected ≥ 15:** Recommend PR splitting via Guardian
-- **PR size tiers** (LinearB 2026 benchmarks + Google research): elite < 105 LOC, median 197 LOC, soft limit 400 LOC, hard limit 600 LOC (must split). Review quality drops sharply above 200 LOC; cognitive load on reviewers increases exponentially with diff size. Flag any single PR > 400 LOC as high-volatility change
+- **PR size tiers** (LinearB 2026 benchmarks — 8.1M+ PRs across 4,800 teams + Google research): elite < 105 LOC, target ≤ 200 LOC, hard limit 400 LOC (must split). Review quality drops sharply above 200 LOC; cognitive load on reviewers increases exponentially with diff size. Flag any single PR > 400 LOC for mandatory splitting via Guardian
 - **Highly churned files (≥ 3 changes in last 30 days):** Elevate risk — high-churn files correlate with higher defect density (Springer: PR-based CIA file metrics)
 - **Test coverage < 80% in changed files:** Flag mandatory test additions via Radar
 - **Depth L3+ dependencies found:** Reduce confidence rating, recommend manual verification

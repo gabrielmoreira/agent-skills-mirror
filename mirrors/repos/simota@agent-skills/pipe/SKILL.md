@@ -8,7 +8,7 @@ CAPABILITIES_SUMMARY:
 - gha_workflow_design: Design GitHub Actions workflows with advanced patterns
 - trigger_strategy: Configure push/PR/schedule/dispatch trigger combinations
 - security_hardening: Implement OIDC, token scoping, SHA pinning, egress policy, supply chain defense
-- performance_optimization: Optimize workflow speed with caching (up to 80% reduction), parallelism, matrices, ARM runners (37% cheaper than x64)
+- performance_optimization: Optimize workflow speed with caching (up to 80% reduction), parallelism, matrices, ARM runners (37% cheaper than x64). Jan 2026 pricing restructure: Linux default 4 vCPU/16 GB, up to 39% reduction across all runner types
 - reusable_workflows: Design reusable workflow libraries and composite actions with versioned interfaces
 - pr_automation: Automate PR labeling, assignment, checks, and merge policies
 - supply_chain_defense: Deterministic dependency locking (roadmap), action allowlisting, artifact attestations, scoped secrets, org-level SHA pinning enforcement
@@ -63,7 +63,7 @@ Route elsewhere when:
 
 - Treat workflows as production code — every change is reviewed, tested, and versioned.
 - Default to least privilege: set org-level `GITHUB_TOKEN` to read-only; grant job-level scopes explicitly.
-- Pin all third-party actions to full commit SHA. Mutable references (tags, branches) are non-deterministic and the #1 supply-chain attack vector (CVE-2025-30066 impacted 23K+ repos; trivy-action March 2026 compromised 75 version tags).
+- Pin all third-party actions to full commit SHA. Mutable references (tags, branches) are non-deterministic and the #1 supply-chain attack vector (CVE-2025-30066 impacted 23K+ repos; TeamPCP campaign March 2026 compromised trivy-action via 75 force-pushed tags and propagated across 40+ npm packages in a coordinated multi-ecosystem supply-chain attack).
 - Adopt `dependencies` section for deterministic locking when available (2026 roadmap — go.mod-style lockfile for workflows).
 - Use artifact attestations for build provenance: sign with Sigstore (public repos → public good instance, private repos → GitHub private store) and verify with `gh attestation verify`.
 - Reuse only after the rule of three: `<3` copies stay inline; `≥3` copies justify extraction to reusable workflow (multi-job) or composite action (multi-step).
@@ -82,6 +82,7 @@ Shared agent boundaries -> `_common/BOUNDARIES.md`
 - SHA-pin every third-party action to full commit hash (tags are mutable — trivy-action attack force-pushed 75 tags in one incident).
 - Specify minimal `permissions` per job; top-level `permissions: {}` as baseline.
 - Set `concurrency` groups with `cancel-in-progress: true` for PR workflows to avoid stale runs.
+- Mask non-secret sensitive values (internal URLs, service names, resource IDs) with `::add-mask::VALUE` to prevent accidental exposure in logs.
 - Keep workflow edits under `50` lines when possible; large changes need separate review.
 - Validate with `actionlint` before committing workflow changes. Enable GitHub code scanning for Actions workflows to detect vulnerable patterns (injection, privilege escalation) automatically.
 - Use lock file-based cache keys (`hashFiles('**/package-lock.json')`) — never timestamp-based.
@@ -103,7 +104,7 @@ Shared agent boundaries -> `_common/BOUNDARIES.md`
 - Log, echo, or expose secrets in workflow output (secrets in logs are the primary exfiltration vector — CVE-2025-30066).
 - Checkout untrusted fork code in `pull_request_target` context (enables arbitrary code execution with base repo secrets — HackerBot-CLAW used this to steal PATs via AI-crafted PRs).
 - Reference third-party actions by tag or branch only (mutable references are the root cause of supply-chain compromises).
-- Use implicit secret inheritance in reusable workflows without explicit scoping (2026: use scoped secrets instead).
+- Use implicit secret inheritance in reusable workflows without explicit scoping (2026: use scoped secrets instead). Upcoming breaking change: write access to a repository will no longer grant secret management permissions — this capability moves to a dedicated custom role.
 - Skip SHA verification when `dependencies` section is available.
 - Publish artifacts without attestations when Sigstore signing is available (unattested artifacts cannot prove provenance).
 - Deploy agentic workflows for build/deploy/release pipelines — these require deterministic, auditable execution that AI-driven agents cannot guarantee.
@@ -135,7 +136,7 @@ Shared agent boundaries -> `_common/BOUNDARIES.md`
 | CI/CD observability | Enable Actions Data Stream for security-critical pipelines. Telemetry correlates to workflow/job/step/command. Route to S3 or Azure Event Hub. Use Actions Performance Metrics (GA since March 2025) for workflow/job-level queue times, failure rates, and trend analysis in the GitHub UI — complement Data Stream for operational dashboards. Use centralized rulesets to enforce workflow execution policies at org level. |
 | Cache strategy | Use built-in `setup-*` caches first. Use `actions/cache` for custom data with OS + lockfile-hash keys and restore keys. Avoid duplicate caches. |
 | Job graph | Minimize `needs:`. Prefer a diamond graph over full serialization. Use `fail-fast: false` for useful matrix independence. Avoid `100+` job matrices unless the value is proven. |
-| Runner cost | Default to Ubuntu. Consider ARM when compatible (37% cheaper than x64, free for public repos). Use Windows or macOS only for platform-specific validation. |
+| Runner cost | Default to Ubuntu (4 vCPU/16 GB since Jan 2026 restructure, up to 39% price reduction across all types). Consider ARM when compatible (37% cheaper than x64, free for public repos). Use Windows or macOS only for platform-specific validation. Self-hosted runner platform charge shelved indefinitely. |
 | Reuse threshold | Extract a reusable workflow after `3+` copies of the same pipeline (multi-job). Extract a composite action after `3+` copies of the same setup steps (multi-step within a job). Keep `1-2` copies inline. Don't put job orchestration logic into composite actions. Start with local `./.github/actions/`, graduate to shared repos when patterns prove cross-project value. |
 | Monorepo routing | Use `dorny/paths-filter`, `nx affected`, or `turbo --filter` to limit scope. Required checks and selective execution must be reconciled with an always-run gate job. |
 | Deployment safety | Protect deploy jobs with environments, reviewers, and concurrency. Use `deployment: false` (GA March 2026) on environments that gate non-deploy jobs (e.g., approval-only, secret-scoping) to avoid polluting deployment history. Keep deploy rollback available via `workflow_dispatch` or an equivalent controlled entry point. |

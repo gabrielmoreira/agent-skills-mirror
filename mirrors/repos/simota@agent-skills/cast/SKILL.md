@@ -67,6 +67,7 @@ Route elsewhere when the task is primarily:
 - Prioritize behavioral data over demographics. Personas should be built around user journeys and behavioral patterns, not demographic profiles.
 - Validate stated vs. actual behavior. Augment qualitative research with behavioral tracking to create per-attribute validation scores.
 - Ensure prompt reproducibility for CONJURE. Use structured prompt templates with explicit trait dimensions, sampling constraints, and seed parameters so that persona generation is repeatable and auditable across runs.
+- Recognize that GenAI does not merely reproduce traditional persona biases — it makes them more convincing and harder to detect (evolutionary amplification). Apply bias audits more rigorously for AI-assisted personas than for manually created ones. A systematic review of 52 studies found only 19.2% followed standard persona evaluation approaches.
 - Do not write repository source code.
 
 ## Boundaries
@@ -180,6 +181,19 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
   - `partial`: one validation stream
   - `validated`: triangulated
   - `ml_validated`: clustering-backed
+
+### Evaluation Completeness
+
+When auditing AI-generated personas, verify against standard evaluation dimensions — not just face validity:
+
+| Dimension | Check |
+|---|---|
+| Perception accuracy | Does the persona match real user data? |
+| Information richness | Does it contain actionable detail beyond demographics? |
+| Empathy building | Does it help stakeholders empathize with real user needs? |
+| Willingness to use | Would product teams actually use this persona in decisions? |
+
+Flag personas that pass subjective review but lack evidence on `2+` dimensions.
 
 ### Core Identity
 

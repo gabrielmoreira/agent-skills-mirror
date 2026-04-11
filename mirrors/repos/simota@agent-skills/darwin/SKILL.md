@@ -14,7 +14,7 @@ CAPABILITIES_SUMMARY:
 - Staleness detection and sunset candidate identification
 - Lifecycle drift cascade detection across dependent agent chains (model drift = ~40% of production failures)
 - Sequential reasoning misassignment detection (39–70% penalty)
-- Orchestration anti-pattern detection (leaky pipeline, unbalanced fan-out, criteria-less synthesis)
+- Orchestration anti-pattern detection (leaky pipeline, unbalanced fan-out, criteria-less synthesis, passive supervisor, micromanaging supervisor, directive misalignment loop)
 - Multi-agent trap detection (single-agent sufficiency check before delegation)
 - Evolution trigger evaluation (8 trigger types)
 
@@ -75,7 +75,7 @@ Route elsewhere when the task is primarily:
 - Detect multi-agent trap: before proposing multi-agent delegation, verify the task genuinely benefits from decomposition. Single-agent solutions with tool use often outperform multi-agent setups for tasks lacking true parallelism or domain separation — unnecessary agent proliferation adds latency (~2s per LLM-call hierarchy level) and coordination tax without proportional gains.
 - Detect sequential reasoning misassignment: tasks requiring strict sequential reasoning degrade 39–70% when distributed across multiple agents, because communication overhead fragments the cognitive budget needed for chain-of-thought. Flag multi-agent delegation of inherently sequential tasks (complex debugging, multi-step proofs, stateful migrations).
 - Detect lifecycle drift cascade: when underlying models, prompts, or dependencies shift, unmanaged drift propagates through dependent agent chains. Model drift alone accounts for ~40% of production agent failures. Flag agents whose dependency signatures have changed since last assessment.
-- Detect orchestration anti-patterns: flag leaky pipelines (stages passing all accumulated context instead of scoped output, causing context window bloat), unbalanced fan-out (parallel agents with >6× latency spread, where slowest agent negates parallelism gains), and synthesis without criteria (aggregation steps lacking explicit merge rules, producing bloated or arbitrary output).
+- Detect orchestration anti-patterns: flag leaky pipelines (stages passing all accumulated context instead of scoped output, causing context window bloat), unbalanced fan-out (parallel agents with >6× latency spread, where slowest agent negates parallelism gains), synthesis without criteria (aggregation steps lacking explicit merge rules, producing bloated or arbitrary output), passive supervisors (forwarding requests without decomposition — adds latency without value), micromanaging supervisors (over-decomposing tasks into excessively fine-grained steps — multiplies latency and cost with diminishing returns), and directive misalignment loops (agents with conflicting instructions bouncing tasks indefinitely without resolution).
 - Respect existing agent boundaries — propose improvements, never redesign directly.
 
 ## Boundaries
@@ -111,7 +111,7 @@ Agent role boundaries → `_common/BOUNDARIES.md` (Meta-Orchestration section)
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
 | `SENSE` | Collect signals from git, files, activity logs, journals, existing scores. Detect agent sprawl (agent count growing without proportional task complexity increase) and coordination overhead symptoms (duplicate processing, handoff failures). | Confidence ≥0.60 for single phase; below → report as mixed | `references/signal-collection.md` |
-| `ASSESS` | Calculate EFS across 5 dimensions; evaluate RS per agent; calculate OSC | Grade: S(95+) A(85+) B(70+) C(55+) D(40+) F(<40) | `references/assessment-models.md`, `references/official-fitness-criteria.md` |
+| `ASSESS` | Calculate EFS across 5 dimensions; evaluate RS per agent; calculate OSC. Distinguish trajectory metrics (reasoning path quality, tool selection, handoff execution) from outcome metrics (task completion, business goal achievement) — trajectory metrics enable debugging, outcome metrics validate value | Grade: S(95+) A(85+) B(70+) C(55+) D(40+) F(<40) | `references/assessment-models.md`, `references/official-fitness-criteria.md` |
 | `EVOLVE` | Execute actions on triggers (8 trigger types) | Propose, never force; small mutations over big rewrites | `references/evolution-actions.md` |
 | `VERIFY` | Confirm EFS does not decrease; RS changes correlate with usage | If EFS drops >5 points within 7 days → flag for review. Coordination quality plateaus at ~7 evolution iterations and degrades sharply at 10+ — cap remediation cycles accordingly | `references/verification-metrics.md` |
 | `PERSIST` | Write lifecycle phase, EFS, RS table, discoveries, evolution history to `.agents/ECOSYSTEM.md` | Always persist after every check | `references/subsystems.md` |

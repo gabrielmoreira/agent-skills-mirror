@@ -6,8 +6,8 @@ description: Generate, optimize, and audit personal development environment conf
 <!--
 CAPABILITIES_SUMMARY:
 - shell_configuration: zsh/fish/bash modular config generation with startup optimization
-- terminal_configuration: ghostty 1.3+/alacritty/kitty/wezterm theme, font, keybinding, and key tables setup
-- editor_configuration: neovim 0.12+ builtin LSP config, auto-completion, and vim.pack plugin manager; vim/Zed plugin layout, treesitter, and DAP setup
+- terminal_configuration: ghostty 1.3+/alacritty/kitty/wezterm theme, font, keybinding, key tables, native scrollbars, and click-events setup
+- editor_configuration: neovim 0.12+ builtin LSP config, native auto-completion via autocomplete option, vim.pack plugin manager, builtin :Undotree/:Diff plugins; vim/Zed plugin layout, treesitter, and DAP setup
 - multiplexer_prompt: tmux and starship/powerlevel10k configuration
 - dotfile_management: stow/chezmoi/yadm/bare Git dotfile strategy and migration
 - package_management: Homebrew/mise/asdf reproducible version management, environment variables, and task running
@@ -42,7 +42,7 @@ Personal environment craftsman for developer dotfiles and local tooling. Configu
 Use Hearth when the user needs:
 - shell configuration (zsh, fish, bash) setup or optimization
 - terminal emulator configuration (ghostty 1.3+, alacritty, kitty, wezterm)
-- editor configuration (neovim 0.12+, vim, Zed) with plugins, builtin LSP/auto-completion, and vim.pack plugin management
+- editor configuration (neovim 0.12+, vim, Zed) with plugins, builtin LSP/auto-completion via `autocomplete` option, vim.pack plugin management, and builtin `:Undotree`/`:Diff`
 - tmux or starship/powerlevel10k configuration
 - dotfile management strategy (stow, chezmoi, yadm, bare Git)
 - shell startup time optimization (target: < 150ms for Standard profile)
@@ -81,8 +81,8 @@ Route elsewhere when the task is primarily:
 |----------|-----------------|-------------------|-------|
 | Shell | `zsh`, `fish`, `bash` | `zsh` | Prefer modular layouts and tool-specific idioms |
 | Shell plugins | `zinit` (turbo mode), `antidote`, `sheldon` | `zinit` | Turbo mode achieves 50-80% startup reduction; avoid oh-my-zsh for performance |
-| Terminal | `ghostty 1.3+`, `alacritty`, `kitty`, `wezterm` | `ghostty 1.3+` | Zig-based, GPU-accelerated (Metal on macOS), Kitty graphics protocol, scrollback search, key tables for modal keybindings, command completion notifications, chained keybindings, AppleScript automation (macOS) |
-| Editor | `neovim 0.12+`, `vim`, `Zed` | `neovim 0.12+` | 0.12 adds vim.pack (builtin plugin manager), expanded native LSP (inlineCompletion, selectionRange, linkedEditingRange, documentLink, document colors, code lens), builtin insert-mode auto-completion with `nearest` completeopt, and `:lsp` command; lazy.nvim + Mason + Tree-sitter still recommended for advanced setups |
+| Terminal | `ghostty 1.3+`, `alacritty`, `kitty`, `wezterm` | `ghostty 1.3+` | Zig-based, GPU-accelerated (Metal on macOS), Kitty graphics protocol, scrollback search (dedicated thread — no I/O impact), native scrollbars, key tables for modal keybindings, command completion notifications, chained keybindings, click-events (shell-integrated cursor positioning), rich copy (plain + HTML clipboard), AppleScript automation (macOS) |
+| Editor | `neovim 0.12+`, `vim`, `Zed` | `neovim 0.12+` | 0.12 (released March 2026) adds vim.pack (builtin plugin manager), expanded native LSP (inlineCompletion, selectionRange, linkedEditingRange, documentLink, document colors, code lens refresh, workspace diagnostics, dynamic registration), native insert-mode auto-completion via `autocomplete` option, `:lsp` command, builtin `:Undotree` and `:Diff` plugins, `:restart`/`:connect` commands, and `vim.net.request()` API; lazy.nvim + Mason + Tree-sitter still recommended for advanced setups |
 | Multiplexer / Prompt | `tmux`, `starship`, `powerlevel10k` | `tmux` + `starship` | Keep prompt cost proportional to startup targets |
 | Dotfile management | `stow`, `chezmoi`, `yadm`, bare Git | `stow` (single machine), `chezmoi` (multi-machine) | chezmoi has native templates + secret manager integration; stow harder to migrate away from |
 | Package / versions / tasks | `Homebrew`, `mise`, `asdf` | `mise` | mise covers version management, environment variables (direnv replacement), and task running; prefer it as unified dev tool manager |
@@ -108,7 +108,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 ### Ask First
 
 - Overwriting, heavily merging, or replacing an existing config file.
-- Installing a plugin manager such as `sheldon`, `zinit`, `tpm`, or `lazy.nvim`, or migrating to Neovim's builtin `vim.pack` (released in 0.12 but ecosystem adoption is still early — some plugins may not yet support it).
+- Installing a plugin manager such as `sheldon`, `zinit`, `tpm`, or `lazy.nvim`, or migrating to Neovim's builtin `vim.pack` (shipped in 0.12, March 2026 — stable for daily use but ecosystem adoption is still growing; some plugins may not yet provide vim.pack metadata).
 - Changing macOS settings such as `defaults write` or `Karabiner`.
 - Changing the default shell with `chsh`.
 - Installing large frameworks or opinionated distros such as `oh-my-zsh`, `SpaceVim`, `NvChad`, or `LunarVim`.
@@ -151,7 +151,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `neovim` | `nvim --headless +qa 2>&1` | `nvim --headless "+checkhealth" +qa`; `:lsp` command for LSP status (0.12+) |
 | `tmux` | `tmux source-file ~/.config/tmux/tmux.conf` | `tmux new-session -d -s test && tmux kill-session -t test` |
 | `starship` | `starship config` | `starship prompt` |
-| `ghostty` | `ghostty +show-config` for config validation | Visual confirmation of font, theme, keybinding, and key tables behavior |
+| `ghostty` | `ghostty +show-config` for config validation | Visual confirmation of font, theme, keybinding, key tables, scrollbars, and click-events behavior |
 
 ### Shell Startup Targets
 

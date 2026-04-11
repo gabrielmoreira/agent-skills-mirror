@@ -8,7 +8,7 @@ CAPABILITIES_SUMMARY:
 - hypothesis_document_creation: Structure hypotheses with PICOT framework (Population, Intervention, Control, Outcome, Time)
 - ab_test_design: Define variants, sample size, duration, randomization, and targeting
 - sample_size_calculation: Power analysis with baseline rate, MDE, significance level, power
-- feature_flag_implementation: LaunchDarkly, Unleash, Statsig, GrowthBook, Datadog Experiments (Eppo-powered, GA April 2026), custom flag patterns for gradual rollout
+- feature_flag_implementation: LaunchDarkly, Unleash, Statsig, GrowthBook, Datadog Experiments (Eppo-powered, GA April 2026; warehouse-native + observability guardrails), custom flag patterns for gradual rollout
 - statistical_significance_analysis: Z-test, chi-square, Bayesian analysis for experiment results
 - experiment_report_generation: Results summary with confidence intervals, recommendations, learnings
 - sequential_testing: Anytime-valid sequential testing (confidence sequences / mSPRT preferred over classical alpha spending) for valid early stopping
@@ -17,6 +17,7 @@ CAPABILITIES_SUMMARY:
 - srm_detection: Sample Ratio Mismatch diagnosis via chi-squared test with segment-level root cause analysis
 - switchback_experimentation: Time-based treatment alternation for marketplace/network-effect scenarios
 - warehouse_native_guidance: Platform architecture guidance (warehouse-native vs hosted) for experimentation infrastructure selection; covers Statsig (dual-mode cloud/warehouse-native), Datadog Experiments (Eppo-powered, observability-native with statistical canary testing, GA April 2026), GrowthBook (open-source warehouse-native first)
+- cookieless_experimentation: Server-side or 1st-party cookie assignment strategies for cookieless environments (~50% of web traffic blocks 3P cookies via Safari/Firefox)
 
 COLLABORATION_PATTERNS:
 - Pattern A: Metrics-to-Test (Pulse → Experiment)
@@ -87,6 +88,7 @@ Route elsewhere when the task is primarily:
 - Apply multiple comparison correction when testing multiple variants or metrics: use Benjamini-Hochberg FDR for exploratory analysis with many metrics (controls false discovery proportion); use Bonferroni/Holm-Bonferroni for confirmatory tests with few primary metrics (controls family-wise error rate).
 - Deliver experiment reports with confidence intervals, effect sizes, and actionable recommendations.
 - Filter bot and invalid traffic before analysis; unfiltered bot traffic (5–30% of web traffic) creates phantom wins and distorts metric calculations.
+- Use server-side or 1st-party cookie assignment for experiment user identification; ~50% of web traffic (Safari/Firefox) blocks 3rd-party cookies, causing assignment drift and inflated unique-user counts in client-side-only implementations.
 - Flag guardrail violations immediately.
 
 ## Boundaries
@@ -127,6 +129,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Analyze results without filtering bot/invalid traffic — bot contamination produces phantom lifts and irreproducible results.
 - Use treatment-influenced covariates in CUPED — covariates must be measured strictly before experiment exposure to avoid bias.
 - Rely on proxy metrics without validating correlation to business outcomes — Etsy's infinite scroll increased page views but decreased search engagement and conversions; always verify proxy-to-outcome alignment before using proxy as primary metric.
+- Interpret results at aggregate level only without segment-level verification — Simpson's paradox can reverse conclusions when subgroups (device, geography, user tenure) have different treatment effects and unequal sizes.
+- Use client-side-only 3rd-party cookie assignment as sole experiment identifier — Safari/Firefox block 3P cookies by default (~50% of traffic), causing users to be re-randomized across sessions and inflating sample counts.
 
 ## Workflow
 

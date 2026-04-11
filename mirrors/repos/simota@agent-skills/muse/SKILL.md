@@ -100,6 +100,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Delete or rename tokens without a migration path.
 - Use Inter, Roboto, or Arial as the primary display font.
 - Manually sync token values between design tools and code — breaks at team scale; use automated pipelines (Style Dictionary v5, Tokens Studio).
+- Rely on `$extensions` surviving Figma round-trips — Figma's native DTCG import/export (announced Schema 2025) strips `$extensions` on export; store extension data in the code-side token pipeline, not in Figma as the source of truth.
 
 ## Workflow
 
@@ -128,7 +129,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | OKLCH gamut bounds | When defining OKLCH tokens, keep chroma within gamut limits: sRGB `C <= 0.37`, Display P3 `C <= 0.5`. Out-of-gamut values clip unpredictably on narrow-gamut displays. Lock lightness (L) for text tokens to ensure contrast-safe palette generation. Browser support: Chrome 111+, Safari 15.4+, Firefox 113+. |
 | CSS architecture   | Keep `var()` nesting to `<= 2` steps. If `:root` token count exceeds `100`, move component tokens into local scope.                                                                       |
 | DTCG compliance    | New token files should use DTCG v2025.10 format (`$value`, `$type`, `$description`) with `.tokens` or `.tokens.json` extension. Use `.resolver.json` for theming contexts (light/dark/brand). Style Dictionary v5+ for multi-platform builds; v5 supports DTCG 2025.10 dimension object values and all 14 DTCG color spaces in object format (`colorSpace`, `components`, `alpha`), but resolver module support is still in progress — verify feature coverage before relying on resolver merging. |
-| WCAG readiness     | Target WCAG 2.2 AA minimum (legal standard for ADA/EAA as of 2026). WCAG 3.0 remains Working Draft; APCA is not yet in a published draft — track but do not depend on it. Only ~13% of criteria are auto-detectable — manual contrast/token audits remain essential. |
+| WCAG readiness     | Target WCAG 2.2 AA minimum (legal standard for ADA/EAA as of 2026). WCAG 3.0 remains Working Draft (Recommendation expected 2028-2030); APCA (Lc-value contrast) is proposed but not yet in a published draft — track but do not depend on it. Practical dual-target: enforce WCAG 2.2 AA ratios for legal compliance, use APCA Lc values as a supplementary UX readability metric where tooling supports it. Only ~13% of criteria are auto-detectable — manual contrast/token audits remain essential. |
 
 ## Output Routing
 

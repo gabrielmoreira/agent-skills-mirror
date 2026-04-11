@@ -1,6 +1,6 @@
 ---
 name: cue
-description: "動画脚本・ストーリーボード・ナレーション原稿の設計。プロダクト動画やExplainer Videoの企画時に使用。"
+description: "Video script, storyboard, and narration design. Used for product videos, explainer videos, and onboarding content planning."
 ---
 
 <!--
@@ -42,6 +42,7 @@ Use Cue when the user needs:
 - video pacing planned for a target duration
 - CTA placement designed within video flow
 - a script adapted for different platforms (YouTube, Twitter/X, Product Hunt)
+- a script formatted for AI video tools (Synthesia, HeyGen, Veed)
 
 Route elsewhere when the task is primarily:
 - recording a demo with Playwright: `Director`
@@ -87,6 +88,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Write narration without timing cues.
 - Design a video without a defined CTA.
 - Omit visual direction from any scene.
+- Pack multiple messages into a single video; one clear message per video ("X solves Y"), save other points for follow-up content.
 
 ## Output Routing
 
@@ -98,6 +100,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `onboarding`, `welcome` | Onboarding video script | Progressive disclosure flow | `references/patterns.md` |
 | `social`, `Twitter`, `short` | Short-form script (15-60s) | Hook-first compact structure | `references/patterns.md` |
 | `comparison`, `vs` | Comparison video script | Side-by-side scene layout | `references/patterns.md` |
+| `Synthesia`, `HeyGen`, `AI avatar` | AI avatar video script | Single-speaker narration, no camera cues | `references/patterns.md` |
 | unclear request | Product demo (most common) | Scene breakdown + narration | `references/patterns.md` |
 
 ## Workflow
@@ -109,7 +112,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `BRIEF` | Define audience, goal, platform, duration | One clear message per video | — |
 | `STRUCTURE` | Choose narrative template and plan CTA | Match template to goal | `references/patterns.md` |
 | `SCENE` | Design scene-by-scene breakdown with visuals | Every scene needs visual direction + timing | `references/patterns.md` |
-| `NARRATE` | Write narration with tone and pacing | Natural speech pace: ~150 words/minute | — |
+| `NARRATE` | Write narration with tone and pacing | Speech pace by type: educational 120-130 wpm, standard 130-145 wpm, energetic 140-160 wpm | — |
 | `REVIEW` | Verify timing budget and flow coherence | Total durations must match target | — |
 
 ## Duration Templates
@@ -117,10 +120,11 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Format | Duration | Scenes | Words (narration) | Best for |
 |--------|----------|--------|--------------------|----------|
 | Social Clip | 15-30s | 3-5 | 40-75 | Twitter/X, Instagram, ads |
-| Short | 60s | 5-8 | 120-150 | Product Hunt, landing page |
+| Short | 60-90s | 5-8 | 120-200 | Product Hunt, landing page, explainers |
 | Standard | 2-3 min | 8-15 | 300-450 | YouTube, product demos |
 | Tutorial | 3-5 min | 10-20 | 450-750 | Walkthroughs, onboarding |
 | Deep Dive | 5-10 min | 15-30 | 750-1500 | Technical tutorials |
+| AI Avatar | 60-180s | 5-12 | 120-400 | Synthesia, HeyGen, Veed (script-to-avatar) |
 
 ## Script Structure Templates
 

@@ -13,7 +13,7 @@ CAPABILITIES_SUMMARY:
 - error_response_standardization: RFC 9457 Problem Details (type/title/status/detail/instance), multiple-problem support, consistent error catalog
 - api_security_design: OWASP API Security Top 10 2023 compliance, OAuth 2.0 (≤60min tokens), BOLA/BFLA checks, tiered rate limiting
 - api_review_checklist: Consistency, naming, pagination, filtering, sorting, latency SLA (P95 ≤ 500ms)
-- ai_llm_api_design: SSE streaming (OpenAPI 3.2 itemSchema), tool use/function calling schemas, agent-ready API discoverability (llms.txt + /openapi.json), token-based rate limiting, LLM gateway patterns, OWASP Agentic Top 10 2026 compliance
+- ai_llm_api_design: SSE streaming (OpenAPI 3.2 itemSchema), tool use/function calling schemas, agent-ready API discoverability (llms.txt + llms-full.txt + /openapi.json), token-based rate limiting, LLM gateway patterns, OWASP Agentic Top 10 2026 compliance, principle of least agency
 - api_gateway_architecture: Governance at scale, routing, adaptive rate limiting (Token Bucket/Sliding Window)
 
 COLLABORATION_PATTERNS:
@@ -53,7 +53,7 @@ API design specialist — designs, reviews, and documents ONE API or endpoint at
 
 Use Gateway when the user needs:
 - REST API resource and endpoint design (89% of enterprise APIs use REST as primary format)
-- OpenAPI 3.0/3.1/3.2 specification generation (design-first, not implementation-first; 3.2 adds first-class streaming and hierarchical tags)
+- OpenAPI 3.0/3.1/3.2 specification generation (design-first, not implementation-first; 3.2 adds first-class streaming, hierarchical tags, improved multipart/form-data definitions for mixed file+JSON uploads)
 - GraphQL schema design (Query/Mutation/Type/Federation)
 - API versioning strategy or deprecation planning (URL path versioning recommended for enterprise)
 - Breaking change detection in API schemas
@@ -75,7 +75,7 @@ Route elsewhere when the task is primarily:
 
 ## Core Contract
 
-- Follow API design patterns and generate OpenAPI 3.1/3.2 specs (JSON Schema Draft 2020-12 compatible) for every endpoint; treat the spec as a contract — clear inputs, constraints, output shape, and validation criteria. Prefer 3.2 for new projects (first-class streaming via itemSchema, hierarchical tags, HTTP QUERY method for complex search payloads, additionalOperations for non-standard HTTP methods, OAuth 2.0 Device Flow + oauth2MetadataUrl discovery).
+- Follow API design patterns and generate OpenAPI 3.1/3.2 specs (JSON Schema Draft 2020-12 compatible) for every endpoint; treat the spec as a contract — clear inputs, constraints, output shape, and validation criteria. Prefer 3.2 for new projects (first-class streaming via itemSchema, hierarchical tags, HTTP QUERY method for complex search payloads, additionalOperations for non-standard HTTP methods, OAuth 2.0 Device Flow + oauth2MetadataUrl discovery, improved multipart/form-data definitions for mixed file+JSON uploads).
 - Document request/response examples for all operations with realistic payloads.
 - Identify breaking changes (field removal, type change, required field addition) and propose versioned migration paths with deprecation timelines; use OpenAPI `deprecated` keyword to signal planned removals.
 - Provide versioning strategy: URL path versioning (`/v1/`, `/v2/`) for enterprise APIs; never mix URL, header, and query param versioning in the same API.
@@ -84,7 +84,7 @@ Route elsewhere when the task is primarily:
 - Enforce OWASP API Security Top 10 2023 compliance: BOLA checks at object level, BFLA at function level, input validation, and unrestricted resource consumption prevention.
 - Define latency SLAs: P95 ≤ 500 ms for user-facing endpoints; P99 ≤ 1000 ms; document in OpenAPI extensions.
 - Require idempotency keys for non-safe operations (POST, PATCH) to prevent duplicate processing — missing idempotency caused real-world financial losses (e.g., Uber Eats payment API incident).
-- For AI/agent-consumed APIs: provide consistent JSON schemas, machine-readable operation descriptions, and predictable response structures to enable autonomous agent discovery and invocation. Serve an llms.txt file at the site root for AI discoverability — markdown is ~6x more token-efficient than HTML documentation, reducing agent context consumption by over 90%. Expose /openapi.json for programmatic spec access. Apply OWASP Top 10 for Agentic Applications 2026 — treat agents as principals with goals, tools, and memory; guard against Agent Goal Hijacking (ASI01) via input validation on agent-facing endpoints.
+- For AI/agent-consumed APIs: provide consistent JSON schemas, machine-readable operation descriptions, and predictable response structures to enable autonomous agent discovery and invocation. Serve llms.txt and llms-full.txt at the site root for AI discoverability — markdown is ~6x more token-efficient than HTML documentation, reducing agent context consumption by over 90%; AI agents visit llms-full.txt over 2x more than llms.txt, so provide both the summary index and full documentation content. Expose /openapi.json for programmatic spec access. Apply OWASP Top 10 for Agentic Applications 2026 — treat agents as principals with goals, tools, and memory; guard against Agent Goal Hijacking (ASI01) via input validation on agent-facing endpoints. Enforce the principle of least agency: grant AI agents the minimum autonomy, tool access, and credential scope required for their intended task.
 - Prefer cursor-based pagination over offset-based for list endpoints — cursor pagination scales to large datasets without performance degradation and prevents skipped/duplicated items during concurrent writes.
 - Log all API design decisions to `.agents/PROJECT.md`.
 
@@ -122,7 +122,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Use POST for everything — forces developers to guess API behavior; use correct HTTP methods (GET/POST/PUT/PATCH/DELETE) per REST semantics.
 - Change response structure without versioning — mobile apps on App Store/Play Store may stay on old versions for weeks; sudden changes cause broken screens.
 - Design rate limiting without adaptive mechanisms — static limits alone fail under peak load; adaptive rate limiting reduces server load by up to 40%.
-- Expose agent-facing endpoints without input sanitization — AI agents amplify latent vulnerabilities; OWASP Agentic Top 10 2026 ranks Agent Goal Hijacking (ASI01) as the #1 risk for autonomous API consumers.
+- Expose agent-facing endpoints without input sanitization and least-agency scoping — AI agents amplify latent vulnerabilities; OWASP Agentic Top 10 2026 ranks Agent Goal Hijacking (ASI01) as the #1 risk for autonomous API consumers; CVE-2025-12420 (BodySnatcher) in ServiceNow's Virtual Agent API demonstrated catastrophic identity bypass when agent access logic was weak.
 
 ## Workflow
 
@@ -148,7 +148,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `error`, `status code`, `RFC 9457`, `RFC 7807` | Error standardization | Error format + catalog | `references/error-pagination-ratelimit.md` |
 | `auth`, `OAuth`, `JWT`, `rate limit`, `CORS` | API security design | Security configuration | `references/api-security-patterns.md` |
 | `review`, `audit`, `checklist` | API review | Review report | `references/api-review-checklist.md` |
-| `AI`, `LLM`, `streaming`, `function calling`, `tool use`, `agent-ready`, `llms.txt` | AI/LLM API design | SSE spec + tool schema + agent discoverability | `references/ai-api-patterns.md` |
+| `AI`, `LLM`, `streaming`, `function calling`, `tool use`, `agent-ready`, `llms.txt`, `llms-full.txt` | AI/LLM API design | SSE spec + tool schema + agent discoverability | `references/ai-api-patterns.md` |
 | `OWASP`, `BOLA`, `BFLA`, `API security audit` | OWASP API Top 10 compliance | Security compliance report | `references/api-security-anti-patterns.md` |
 | `idempotency`, `retry`, `duplicate` | Idempotency design | Idempotency key spec | `references/api-design-principles.md` |
 | `gateway`, `API gateway`, `governance` | API gateway architecture | Gateway config + routing rules | `references/api-design-principles.md` |

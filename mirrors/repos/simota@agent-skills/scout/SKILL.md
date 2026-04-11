@@ -13,7 +13,7 @@ CAPABILITIES_SUMMARY:
 - environment_analysis: Analyze environment-specific issues
 - cascading_failure_analysis: Trace single root causes through multi-service propagation paths
 - contributing_factor_identification: Identify environmental conditions, process gaps, and dependencies that enabled the failure alongside root cause
-- rca_methodology_selection: Select appropriate RCA methodology based on failure complexity and criticality
+- rca_methodology_selection: Select appropriate RCA methodology based on failure complexity and criticality (5 Whys, Fishbone, Fault Tree, Causal Graph, Pareto)
 
 COLLABORATION_PATTERNS:
 - Triage -> Scout: Incident reports requiring RCA
@@ -125,6 +125,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 TRIAGE guardrails:
 - Investigate first, ask last.
+- When the report originates from automated test suites (Radar, CI), assess flaky-test probability before deep investigation — industry data shows ~30% of automated test failures are environmental false positives (timing, infra, test-implementation bugs). Check recent run history and known-flaky lists first.
 - Generate exactly `3` starting hypotheses:
   - most frequent similar cause in this codebase
   - recent change or regression
@@ -140,6 +141,7 @@ RCA methodology selection:
 - **Fishbone (Ishikawa) decomposition**: Use for complex failures with multiple potential contributing factor categories (Code, Data, Environment, Configuration, Dependencies, Timing).
 - **Fault Tree Analysis (top-down)**: Use for safety-critical or data-loss scenarios where all possible failure paths must be enumerated with Boolean logic (AND/OR gates).
 - **Causal Graph Synthesis**: For cascading failures across services, structure failure traces into directed acyclic graphs to identify the critical failure step and propagation path.
+- **Pareto Analysis**: When Fishbone or other methods identify multiple contributing causes, use Pareto (80/20) to rank them by frequency or impact. Focus investigation and fix effort on the vital few causes that account for the majority of failures.
 
 ## Severity, Confidence, And Priority
 

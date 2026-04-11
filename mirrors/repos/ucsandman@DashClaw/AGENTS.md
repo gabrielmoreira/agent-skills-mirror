@@ -7,6 +7,10 @@ Reason:
 - the external tool is currently unstable in this environment,
 - it should not block normal development or commits until it is repaired and reintroduced intentionally.
 
+## Design Context
+
+Before any UI, design, copy, or marketing/visual change, **read `.impeccable.md` at the repo root first**. It is the canonical design context: users, brand personality, aesthetic direction, 4 anti-references, and the 7 tiebreaker principles (evidence over decoration; brand orange as signal not noise; calm under pressure; token-first; developer-reader first; WCAG 2.1 AA floor; four anti-references guardrail). Never hardcode hex values — use the CSS tokens in `app/globals.css` and the Tailwind theme extension.
+
 <!-- gitnexus:start -->
 # GitNexus - Code Intelligence
 

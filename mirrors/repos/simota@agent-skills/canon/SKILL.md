@@ -100,7 +100,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Assess against unversioned standards — always pin version (e.g., "WCAG 2.2 SC 1.4.11", not "WCAG"). Unversioned assessment applies wrong criteria.
 - Rely on point-in-time audits alone — recommend continuous compliance monitoring with compliance-as-code tooling (OPA, Checkov, native cloud policies).
 - Reference superseded standards without noting replacement — IEEE 830→29148, RFC 7231→9110, ISO 25010:2011→2023 (8→9 chars), OWASP Top 10:2021→2025, ISO/IEC 40500:2012→2025 (WCAG 2.0→2.2).
-- Rate accessibility as "Compliant" based solely on automated scan results — automated tools detect ~40% of WCAG 2.2 issues; always require manual expert audit for compliance determination.
+- Rate accessibility as "Compliant" based solely on automated scan results — W3C-approved automated rules cover only 31% of WCAG 2.2 Level A/AA Success Criteria (17/55 SC); actual issue detection rates vary by tool (30–57%). Always require manual expert audit for compliance determination.
 
 ## Workflow
 
@@ -119,7 +119,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Category | Standards | Reference |
 |----------|----------|-----------|
 | Security | OWASP Top 10:2025, OWASP ASVS 4.x, NIST CSF 2.0, CIS Controls v8 | references/security-standards.md |
-| Accessibility | WCAG 2.2 (ISO/IEC 40500:2025), WAI-ARIA 1.2, JIS X 8341-3, WCAG 3.0 (Working Draft — track only) | references/accessibility-standards.md |
+| Accessibility | WCAG 2.2 (ISO/IEC 40500:2025), WAI-ARIA 1.2, JIS X 8341-3, European Accessibility Act (EAA, enforceable June 2025), WCAG 3.0 (Working Draft — track only) | references/accessibility-standards.md |
 | API / Data | OpenAPI 3.1, JSON Schema, RFC 9110 (supersedes 7231), GraphQL Spec | references/api-standards.md |
 | Quality | ISO/IEC 25010:2023 (9 chars incl. Safety), IEEE 29148 (supersedes 830), Clean Code, SOLID | references/quality-standards.md |
 | Infrastructure | 12-Factor App, CNCF Best Practices, SRE Principles | references/quality-standards.md |
@@ -130,13 +130,13 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 **ISO/IEC 25010:2023 key changes from 2011:** 8→9 characteristics (Safety added); Usability→Interaction Capability; Portability→Flexibility; new sub-chars: Inclusivity, Self-descriptiveness, Resistance, Scalability; Maturity→Faultlessness; User Interface Aesthetics→User Engagement.
 
-**OWASP Top 10:2025 key changes from 2021:** Security Misconfiguration rose #5→#2; SSRF absorbed into A01 Broken Access Control; A03 Software Supply Chain Failures replaces "Vulnerable and Outdated Components" (scope expanded to entire supply chain); new A10 Mishandling of Exceptional Conditions; A07 renamed Authentication Failures; A09 renamed Security Logging and Alerting Failures. Data set doubled to 500k+ apps from 40+ orgs.
+**OWASP Top 10:2025 key changes from 2021:** Methodology shift from symptoms to root causes. Security Misconfiguration rose #5→#2; SSRF absorbed into A01 Broken Access Control; A03 Software Supply Chain Failures replaces "Vulnerable and Outdated Components" (scope expanded to entire supply chain); new A10 Mishandling of Exceptional Conditions; A07 renamed Authentication Failures; A09 renamed Security Logging and Alerting Failures. Data set doubled to 500k+ apps from 40+ orgs.
 
 **OWASP Top 10 for Agentic Applications (2026) — full list:** ASI01 Agent Goal Hijack, ASI02 Tool Misuse & Exploitation, ASI03 Identity & Privilege Abuse, ASI04 Agentic Supply Chain Vulnerabilities, ASI05 Unexpected Code Execution (RCE), ASI06 Memory & Context Poisoning, ASI07 Insecure Inter-Agent Communication, ASI08 Cascading Failures, ASI09 Human-Agent Trust Exploitation, ASI10 Rogue Agents. Peer-reviewed by 100+ security researchers (released Dec 2025).
 
 **WCAG 3.0 awareness (Working Draft, CR targeted Q4 2027):** WCAG 3.0 shifts from binary pass/fail to outcome-based scoring (0–4) with Bronze/Silver/Gold conformance tiers. It does NOT replace WCAG 2.2 — assess against WCAG 2.2 for current compliance, but note WCAG 3.0 trajectory when advising long-term accessibility strategy.
 
-**Automated accessibility tool ceiling:** Automated scanners detect ~40% of WCAG 2.2 issues. Always recommend manual expert audit alongside automated checks for any compliance assessment rated Partial or higher.
+**Automated accessibility tool ceiling:** W3C-approved automated testing rules provide full or partial coverage for only 31% of WCAG 2.2 Level A/AA Success Criteria (17/55 SC, as of March 2026). Actual issue detection rates vary by tool (axe-core ~57%, general range 30–57%). Always recommend manual expert audit alongside automated checks for any compliance assessment rated Partial or higher.
 
 **ISO/IEC 42001:2023 (AI Management System):** First international AIMS standard. Voluntary but increasingly expected — EU AI Act high-risk obligations effective Aug 2, 2026; GPAI providers must comply from Aug 2, 2025. Recommend ISO 42001 alignment when assessing AI systems, especially those targeting EU markets.
 

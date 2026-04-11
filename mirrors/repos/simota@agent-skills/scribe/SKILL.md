@@ -67,7 +67,8 @@ Route elsewhere when the task is primarily:
 
 - Use standardized templates matching the document type (PRD/SRS/HLD/LLD/Checklist/Test Spec). Choosing the wrong format causes stakeholder misalignment across 6+ document types (BRD, FRD, URS, SRS, PRD, MRD).
 - Assign requirement IDs: `REQ-001`, `FR-001`, `NFR-001`, `AC-001`, `IMPL-001`. Every ID must be unique and traceable per ISO/IEC/IEEE 29148:2018.
-- Make every requirement testable — reject any requirement that cannot produce a binary pass/fail test. Unclear SRS accounts for ~39% of project failures. Replace vague language ("fast", "secure", "user-friendly") with measurable thresholds (e.g., "P95 response ≤ 200ms", "OWASP Top 10 compliant").
+- Make every requirement testable — reject any requirement that cannot produce a binary pass/fail test. IIBA's 2024 industry poll found 54% of project failures stem from requirements misinterpretation due to ambiguous language. Replace vague language ("fast", "secure", "user-friendly") with measurable thresholds (e.g., "P95 response ≤ 200ms", "OWASP Top 10 compliant").
+- Include a glossary for domain-specific and multi-meaning terms. Without a shared glossary, different engineers reading the same requirement reach different design conclusions — a silent source of defects that surfaces late in integration.
 - Use Given-When-Then for acceptance criteria. Each scenario must specify preconditions, actions, and expected outcomes.
 - Include scope, non-goals, success metrics, dependencies, and change history in every document.
 - Validate against ISO/IEC/IEEE 29148:2018 quality attributes: completeness, consistency, unambiguity, verifiability, traceability, stability.
@@ -76,7 +77,7 @@ Route elsewhere when the task is primarily:
 - Keep docs in `docs/` with predictable names. Include compliance requirements (GDPR/HIPAA/SOC 2) when the domain warrants it.
 - Target 8-12 pages for MVP-scope SRS; scale proportionally for larger scopes. Keep sentences ≤ 20 words to minimize misinterpretation.
 - Treat specs as living documents under version control (docs-as-code). Tie documentation versions to code releases so consumers always find the matching version. Use pull request reviews for spec changes to ensure multi-stakeholder accuracy.
-- When the spec will be consumed by AI agents, follow the AGENTS.md convention (now stewarded by the Agentic AI Foundation under the Linux Foundation): structure around Commands (full executable commands with flags), Testing (framework, file locations, coverage expectations), Project Structure (explicit directory mapping), Architecture, Security, and Conventions. GitHub's analysis of 2,500+ agent configs confirms these six areas as highest-signal for agent effectiveness. Target ≤ 150 lines — long specs bury signal and exceed agent context budgets. Treat agent specs as executable artifacts (spec-driven development): the spec defines the contract, the agent generates code that honors it, and the spec evolves as decisions are made.
+- When the spec will be consumed by AI agents, follow the AGENTS.md convention (stewarded by the Agentic AI Foundation under the Linux Foundation, founded by Anthropic, OpenAI, and Block): structure around Commands (full executable commands with flags), Testing (framework, file locations, coverage expectations), Project Structure (explicit directory mapping), Architecture, Security, and Conventions. Adopted by 60,000+ open-source projects since August 2025, these six areas are confirmed as highest-signal for agent effectiveness. Target ≤ 150 lines — long specs bury signal and exceed agent context budgets. Treat agent specs as executable artifacts (spec-driven development): the spec defines the contract, the agent generates code that honors it, and the spec evolves as decisions are made.
 - Record outputs for INSCRIBE calibration.
 
 ## Boundaries
@@ -103,6 +104,7 @@ Route elsewhere when the task is primarily:
 - Invent requirements without evidence. Fabricated requirements caused the UK NPfIT $12B+ failure through unmanageable scope creep.
 - Use vague language ("easy to use", "fast", "secure") — every requirement must have measurable acceptance criteria with concrete thresholds.
 - Replace Spark (ideation), Atlas (architecture), Gateway (API design), Builder (code), or Quill (code docs) responsibilities.
+- Mix design decisions into requirements — a requirement that prescribes an implementation (e.g., "use PostgreSQL", "provide a REST API") states a technology choice, not a need. Separate the "what" (requirement) from the "how" (design).
 - Create docs without ownership (author + reviewer) or intended audience declaration.
 - Exceed 12 pages for MVP-scope SRS without explicit justification — clarity over verbosity.
 - Omit NFRs or leave them unmeasurable — ~48% of ICT ventures fail on performance issues from neglected non-functional parameters.

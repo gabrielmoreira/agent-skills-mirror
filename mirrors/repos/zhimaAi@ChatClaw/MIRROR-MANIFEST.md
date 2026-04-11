@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhimaAi/ChatClaw` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `zhimaAi/ChatClaw` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhimaAi/ChatClaw` — 26 default patterns, 0 followed patterns, 26 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,7 +66,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.cursor/rules/backend-architecture-and-conventions.mdc`](.cursor/rules/backend-architecture-and-conventions.mdc) |
 | 6 | ✓ | [`.cursor/rules/Chinese-reply.mdc`](.cursor/rules/Chinese-reply.mdc) |
 | 7 | ✓ | [`.cursor/rules/frontend-architecture-and-conventions.mdc`](.cursor/rules/frontend-architecture-and-conventions.mdc) |
-| 8 | ✓ | [`.cursor/rules/frontend-locales-double-quotes.mdc`](.cursor/rules/frontend-locales-double-quotes.mdc) |
+| 8 | ✓ | [`.cursor/rules/frontend-locales-single-quotes.mdc`](.cursor/rules/frontend-locales-single-quotes.mdc) |
 | 9 | ✓ | [`.cursor/rules/think-docs-convention.mdc`](.cursor/rules/think-docs-convention.mdc) |
 | 10 | ✓ | [`.cursor/rules/ui-icons-and-toast-theme.mdc`](.cursor/rules/ui-icons-and-toast-theme.mdc) |
 | 11 | ✓ | [`.cursor/rules/windows-focus-api.mdc`](.cursor/rules/windows-focus-api.mdc) |
@@ -81,10 +81,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`.cursor/skills/i18n-check/scripts/format_frontend.py`](.cursor/skills/i18n-check/scripts/format_frontend.py) |
 | 21 | ✓ | [`.cursor/skills/i18n-check/scripts/import_translations.py`](.cursor/skills/i18n-check/scripts/import_translations.py) |
 | 22 | ✓ | [`.cursor/skills/i18n-check/scripts/translate_with_ai.py`](.cursor/skills/i18n-check/scripts/translate_with_ai.py) |
-| 23 | ✓ | [`.cursor/skills/i18n-check/scripts/translation_needed.json`](.cursor/skills/i18n-check/scripts/translation_needed.json) |
-| 24 | ✓ | [`.cursor/skills/i18n-check/SKILL.md`](.cursor/skills/i18n-check/SKILL.md) |
-| 25 | ✓ | [`.cursor/skills/readme-from-docx/reference.md`](.cursor/skills/readme-from-docx/reference.md) |
-| 26 | ✓ | [`.cursor/skills/readme-from-docx/SKILL.md`](.cursor/skills/readme-from-docx/SKILL.md) |
+| 23 | ✓ | [`.cursor/skills/i18n-check/SKILL.md`](.cursor/skills/i18n-check/SKILL.md) |
+| 24 | ✓ | [`.cursor/skills/readme-from-docx/reference.md`](.cursor/skills/readme-from-docx/reference.md) |
+| 25 | ✓ | [`.cursor/skills/readme-from-docx/SKILL.md`](.cursor/skills/readme-from-docx/SKILL.md) |
 
 ---
 

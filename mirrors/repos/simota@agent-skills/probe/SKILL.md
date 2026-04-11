@@ -38,9 +38,9 @@ Probe is the dynamic security testing specialist. Use it to prove exploitability
 
 Use Probe when the task involves:
 
-- ZAP (maintained by Checkmarx, Apache 2.0), Burp Suite, Nuclei, DAST, penetration testing, or runtime exploit verification — ZAP PTK add-on (v0.3.0+) enables combined DAST+IAST+SCA in a single authenticated browser session with 142 client-side alert types
+- ZAP (maintained by Checkmarx, Apache 2.0), Burp Suite, Nuclei, DAST, penetration testing, or runtime exploit verification — ZAP PTK add-on enables combined DAST+IAST+SAST+SCA in a single authenticated browser session (Chrome, Edge, Firefox) with client-side alert coverage
 - Validating whether a static finding is actually exploitable in a running environment
-- Testing authentication, authorization, session handling, rate limiting, GraphQL, OAuth, or SSRF in a running app
+- Testing authentication, authorization, session handling, rate limiting, GraphQL, OAuth, or SSRF in a running app — ZAP now supports TOTP fields, multi-screen login flows, and Client Script Authentication via Zest scripts for complex auth scenarios
 - Designing scan strategy, security gates, SARIF export, or CI-integrated security testing
 - Building scan cadence (PR baseline 2-5 min, staging targeted 1-5 min, nightly full active scan)
 - OWASP Top 10 2025 or API Security Top 10 runtime validation
@@ -66,7 +66,7 @@ Route elsewhere when the task is primarily:
 - Always include BOLA/BFLA checks when API scope exists — BOLA accounts for ~40% of all API attacks (Wallarm Q2 2025). Note: traditional DAST tools cannot dynamically substitute user credentials, so BOLA testing requires multi-identity session configuration or dedicated API security tooling.
 - Remediation SLAs by CVSS: Critical (9.0-10.0) → 24h, High (7.0-8.9) → 7 days, Medium (4.0-6.9) → 30 days, Low (0.1-3.9) → 90 days.
 - Reference OWASP Top 10 2025 (8th edition, 589 CWEs): Broken Access Control (#1), Security Misconfiguration (#2), Software Supply Chain Failures (#3, expanded from Vulnerable Components), Injection (#5), Mishandling of Exceptional Conditions (#10, new).
-- Use CVSS v4.0 when tooling supports it — Scope metric removed, Threat replaces Temporal, Supplemental metrics (Automatable, Safety) aid non-technical stakeholder communication. Fall back to CVSS v3.1 when v4.0 is unavailable.
+- Use CVSS v4.0 when tooling supports it — Scope metric removed, Threat replaces Temporal, Supplemental metrics (Automatable, Safety) aid non-technical stakeholder communication. NVD officially supports v4.0 scoring. Fall back to CVSS v3.1 when v4.0 is unavailable. Caution: v4.0 vectors are incompatible with v3.x parsers — mixing versions produces incorrect scores.
 
 ## Boundaries
 
@@ -75,7 +75,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 ### Always
 
 - Define scope and authorization before testing
-- Use CVSS v4.0 scoring (preferred) or v3.1 for every confirmed finding
+- Use CVSS v4.0 scoring (preferred; NVD-supported) or v3.1 for every confirmed finding — never mix v4.0 and v3.x vectors in the same report
 - Document scenarios and results with reproducible evidence
 - Verify findings before reporting — no safe proof means "Unconfirmed", not "Confirmed"
 - Provide actionable remediation with SLA timelines

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `iOfficeAI/AionUi` — 26 default patterns, 3 followed patterns, 47 file(s) materialized.
+Mirror of `iOfficeAI/AionUi` — 26 default patterns, 6 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 3 followed patterns, 47 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 47 |
+| Followed pats | 6 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,9 +51,12 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 3 followed patterns, 47 fi
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `CONTRIBUTING.md`
+- `CONTRIBUTING.zh.md`
 - `docs/conventions/file-structure.md`
 - `docs/tech/architecture.md`
 - `docs/conventions/pr-automation.md`
+- `docs/development.md`
 
 ## File Index
 
@@ -105,9 +108,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`src/process/resources/skills/weixin-file-send/SKILL.md`](src/process/resources/skills/weixin-file-send/SKILL.md) |
 | 43 | ✓ | [`src/process/resources/skills/x-recruiter/SKILL.md`](src/process/resources/skills/x-recruiter/SKILL.md) |
 | 44 | ✓ | [`src/process/resources/skills/xiaohongshu-recruiter/SKILL.md`](src/process/resources/skills/xiaohongshu-recruiter/SKILL.md) |
-| 45 | → | [`docs/conventions/file-structure.md`](docs/conventions/file-structure.md) |
-| 46 | → | [`docs/conventions/pr-automation.md`](docs/conventions/pr-automation.md) |
-| 47 | → | [`docs/tech/architecture.md`](docs/tech/architecture.md) |
+| 45 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 46 | → | [`CONTRIBUTING.zh.md`](CONTRIBUTING.zh.md) |
+| 47 | → | [`docs/conventions/file-structure.md`](docs/conventions/file-structure.md) |
+| 48 | → | [`docs/conventions/pr-automation.md`](docs/conventions/pr-automation.md) |
+| 49 | → | [`docs/development.md`](docs/development.md) |
+| 50 | → | [`docs/tech/architecture.md`](docs/tech/architecture.md) |
 
 ---
 

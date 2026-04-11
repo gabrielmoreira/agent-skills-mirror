@@ -15,6 +15,7 @@ CAPABILITIES_SUMMARY:
 - remediation_rate_limiting: Cap remediation attempts at 3 per pattern per incident with exponential backoff to prevent retry storms
 - runbook_freshness_validation: Validate runbook last-reviewed timestamp (< 90 days) and infrastructure drift (platform upgrades, permission changes, deprecated APIs) before automated execution
 - pattern_learning: Convert postmortem outcomes into catalog entries via learning loop with human curation gate
+- mttr_measurement: Track remediation effectiveness by severity (SEV-1 < 1h, SEV-2 < 4h, SEV-3 < 24h) with context-gathering optimization as primary MTTR reduction lever
 - circuit_breaker_management: Activate, monitor, and reset circuit breakers for cascading failure containment
 - k8s_self_healing: Kubernetes pod restart, CrashLoopBackOff recovery, liveness/readiness probe failure remediation
 
@@ -76,6 +77,7 @@ Route elsewhere when the task is primarily:
 - Log all actions with timestamps to the incident timeline; every automated action must be auditable and explainable.
 - Learn from postmortems to update the remediation pattern catalog. Note: general-purpose LLMs struggle with emerging failure patterns in proprietary systems — human curation remains essential for pattern accuracy (Source: engineering.zalando.com — AI Postmortem Analysis).
 - Validate runbook freshness before automated execution: runbooks unreviewed for > 90 days must trigger a freshness warning. A single outdated command can destroy trust and cause secondary incidents (Source: incident.io — Automated Runbook Guide). Beyond time-based freshness, detect infrastructure drift — platform upgrades, permission changes, deprecated APIs, or schema migrations since last review invalidate runbooks even within the 90-day window (Source: ilert.com — Runbooks Are History; incident.io — Automated Runbook Guide).
+- Measure remediation effectiveness by severity: target MTTR < 1 hour for SEV-1, < 4 hours for SEV-2, < 24 hours for SEV-3. Context gathering (topology, recent deploys, change history) typically consumes 50%+ of remediation time and is the largest MTTR improvement opportunity; automate it in the CLASSIFY phase (Source: rootly.com — Incident Response Metrics; getdx.com — Incident Response Automation 2025).
 
 ## Boundaries
 
@@ -113,6 +115,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Retry remediation indefinitely without backoff or attempt cap — retry storms amplify incidents, turning minor degradation into major outages by overwhelming already-stressed systems (Source: incident.io — SRE Tools & Reliability Practices 2026).
 - Execute runbooks unreviewed for > 90 days or invalidated by infrastructure drift (platform upgrades, permission changes, deprecated APIs, schema migrations) without freshness validation — stale commands cause secondary incidents (Source: incident.io — Automated Runbook Guide; ilert.com — Runbooks Are History).
 - Re-run a failed remediation without checking for partial state — a failed run can leave duplicate resources, orphaned firewall rules, or double-billed infrastructure; always check current state and apply only the delta before retrying (Source: sreschool.com — Runbook Automation 2026).
+- Execute runbooks that encode only procedures without decision rationale — when unexpected conditions arise (schema drift, partial failures, changed dependencies), procedure-only steps fail silently or cause cascading harm; effective runbooks include conditional branches and reasoning for each step so the agent can adapt to unexpected state (Source: incident.io — Automated Runbook Guide; devops.com — AI Agents Replacing Traditional Runbooks 2026).
 
 ## Workflow
 

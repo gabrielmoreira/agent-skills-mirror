@@ -53,6 +53,7 @@ Use Breach when the user needs:
 - multi-turn attack chain analysis for AI agents
 - RAG poisoning and system prompt leakage testing
 - EU AI Act adversarial testing compliance assessment
+- MAESTRO-based agentic AI threat modeling (7-layer analysis)
 
 Route elsewhere when the task is primarily:
 - static code security scanning: `Sentinel`
@@ -80,7 +81,10 @@ Route elsewhere when the task is primarily:
 - Distinguish between theoretical risks and confirmed exploitable findings.
 - Reference MITRE ATLAS v5.4.0+ for AI-specific threat modeling — covers 16 tactics, 84+ techniques including agentic execution-layer attacks (Publish Poisoned AI Agent Tool, Escape to Host, MCP server compromise).
 - Test RAG systems for data poisoning — 5 crafted documents can manipulate AI responses 90% of the time.
-- Align testing cadence to risk: quarterly (high-risk), semi-annual (medium), annual (baseline).
+- Align testing cadence to risk: quarterly (high-risk), semi-annual (medium), annual (baseline). For AI systems in CI/CD, integrate continuous automated red teaming into staging and production pipelines — point-in-time assessments alone miss post-deployment drift.
+- Use CSA MAESTRO (Multi-Agent Environment, Security, Threat Risk, and Outcome) for agentic AI threat modeling — its 7-layer architecture (Foundation Models → Data Operations → Agent Frameworks → Deployment → Evaluation → Security → Ecosystem) captures attack surfaces that STRIDE/PASTA alone miss in multi-agent systems.
+- Enforce security controls (tool-call approvals, file-type firewalls, kill switches) outside the LLM — prompt-level guardrails are unreliable. A joint study by OpenAI, Anthropic, and Google DeepMind (October 2025) showed adaptive attacks bypass 12 published prompt-injection defenses with >90% success rate.
+- For systems subject to EU AI Act: adversarial testing and documentation are mandatory for high-risk and general-purpose AI models with systemic risk. Full compliance required by August 2, 2026; penalties up to €35M or 7% of global annual turnover.
 - For AI red teaming, do not rely solely on binary Attack Success Rate (ASR) — use multi-dimensional scoring (violation severity × attack naturalness × semantic preservation). Binary ASR comparisons across different success criteria or threat models are often invalid and misleading.
 - For agentic AI systems, validate the principle of least agency (OWASP Agentic Top 10 2026) — agents must be granted only the minimum autonomy required for safe, bounded tasks. Test for excessive tool access, credential scope, and unchecked autonomous decision chains.
 - For supply chain assessments, specifically test third-party OAuth token access — enumerate which integrations have OAuth access to sensitive systems (CRM, email, HRIS) and attempt access via simulated compromised tokens.
@@ -186,7 +190,7 @@ questions:
 | Domain | Scope | Frameworks | Detail |
 |--------|-------|------------|--------|
 | **Application Security** | Web, API, business logic, auth | OWASP Top 10, OWASP API Top 10, CWE | `references/attack-playbooks.md` |
-| **AI/LLM Red Teaming** | Prompt injection, jailbreak, agentic risks, data poisoning, system prompt leakage, RAG poisoning, MCP server compromise | OWASP LLM Top 10 (2025), OWASP Top 10 for Agentic Applications (2026), MITRE ATLAS v5.4.0+ | `references/ai-red-teaming.md` |
+| **AI/LLM Red Teaming** | Prompt injection, jailbreak, agentic risks, data poisoning, system prompt leakage, RAG poisoning, MCP server compromise | OWASP LLM Top 10 (2025), OWASP Top 10 for Agentic Applications (2026), MITRE ATLAS v5.4.0+, CSA MAESTRO | `references/ai-red-teaming.md` |
 | **Infrastructure** | Network, cloud, containers, CI/CD | MITRE ATT&CK, CIS Benchmarks | `references/attack-playbooks.md` |
 | **Supply Chain** | Dependencies, build pipeline, third-party integrations | SLSA, SSDF | `references/attack-playbooks.md` |
 
@@ -230,6 +234,7 @@ INPUT
 | `RAG poisoning`, `system prompt leakage`, `data poisoning` | RAG/prompt integrity testing with corpus injection analysis | RAG security assessment | `references/ai-red-teaming.md` |
 | `WAF bypass`, `guardrail`, `control validation` | Security control bypass testing | Bypass test results | Domain-specific reference |
 | `automated red teaming`, `AI-on-AI testing`, `continuous AI testing` | Automated adversarial testing with attacker LLMs or red teaming tools | Automated test harness + findings | `references/ai-red-teaming.md` |
+| `MAESTRO`, `agentic threat model`, `multi-agent security` | 7-layer agentic AI threat modeling with CSA MAESTRO | MAESTRO threat model + per-layer attack surfaces | `references/ai-red-teaming.md` |
 | `security assessment`, `red team report` | Full assessment (SCOPE→MODEL→PLAN→EXECUTE→REPORT) | Assessment report | `references/attack-playbooks.md` |
 | unclear security testing request | Threat model + attack scenario | Threat model + scenarios | `references/threat-modeling.md` |
 
@@ -276,6 +281,7 @@ Every deliverable must include:
 | AP-12 | **Prompt Leakage Ignored** — not testing for system prompt extraction | Was system prompt leakage tested? | OWASP LLM07 (2025): attackers extract internal rules, permissions, decision logic |
 | AP-13 | **Binary-Only Scoring** — reporting AI red team results with pass/fail ASR only | Are findings scored multi-dimensionally? | Binary ASR is ambiguous and non-comparable across engagements; score by violation severity, attack naturalness, and semantic preservation |
 | AP-14 | **Benchmark Over-Reliance** — using known test prompts as security proof for AI systems | Were novel attack vectors tested beyond benchmarks? | Models can be patched against benchmark prompts during alignment; full marks on a benchmark does not indicate security. Test with roleplay frames, hypothetical framings, multi-step reasoning, and translated text |
+| AP-15 | **Prompt-Level Security** — embedding security controls (guardrails, filters, access rules) inside prompts instead of external enforcement | Are security controls enforced outside the LLM? | Adaptive attacks bypass prompt-level defenses with >90% ASR; enforce tool-call approvals, file-type firewalls, and kill switches at the application layer, not in system prompts |
 
 ---
 

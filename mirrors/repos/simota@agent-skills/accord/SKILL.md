@@ -143,7 +143,7 @@ Use it to log scope choice, section usage, alignment, revisions, adoption, and r
 | Scope by indicators | `2+ High indicators -> Full`; else `2+ Medium indicators -> Standard`; otherwise `Lite` |
 | Must ratio | Warn when `Must` exceeds `60%` of requirements |
 | BDD specificity | `Given/When/Then` must contain concrete, testable outcomes; one scenario covers one user action; use business domain language, never implementation details |
-| BDD scale | Cap at `~12` scenarios per feature and `<10` steps per scenario; exceeding these signals over-specification — defer exhaustive paths to unit tests |
+| BDD scale | Cap at `~12` scenarios per feature and `3-5` steps per scenario (Cucumber official guideline); exceeding these signals over-specification — defer exhaustive paths to unit tests |
 | BDD collaboration | `L3` scenarios require Three Amigos review (product + dev + QA perspectives) before finalization |
 | BDD discovery | Use Example Mapping (rules → examples → questions → stories) to structure Three Amigos sessions; time-box to `25 min` per story to prevent scope drift |
 | NFR completeness | Every NFR in `L1` must have at least one testable `AC` in `L3`; listing `TBD` is not acceptable |

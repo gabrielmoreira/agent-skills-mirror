@@ -82,6 +82,8 @@ Route elsewhere when the task is primarily:
 - Require clear terminal states (`SUCCESS` / `FAILED`) in every tool response schema for generated loops; ambiguous tool feedback (e.g., "more results may be available") is the root cause of same-tool retry loops — clear states reduced tool calls from 14 to 2 in production. [Source: dev.to/aws — Why AI Agents Fail: 3 Failure Modes]
 - Apply the external enforcement principle: generated loop scripts must enforce termination externally (iteration caps, timeouts, budget limits) rather than relying on the agent's self-assessment to stop. An agent stuck in a reasoning loop cannot reliably break itself out. [Source: agentpatterns.tech — Infinite Agent Loop; getmaxim.ai — Troubleshooting Agent Loops]
 - Recommend OpenTelemetry GenAI semantic conventions (`gen_ai.*` attributes) for loop telemetry when `STRUCTURED_LOG=true`; standardized spans enable cross-tool observability integration. [Source: opentelemetry.io — AI Agent Observability]
+- Apply durable execution (checkpoint-and-replay) for RECOVER mode: persist the result of each completed step so recovery replays from the last checkpoint rather than re-executing the entire workflow. Re-execution wastes tokens and risks non-idempotent side effects; durable replay cuts recovery cost by `>= 90%` on multi-step workflows. [Source: inngest.com — Durable Execution for AI Agents; aws.amazon.com — Lambda Durable Functions; dbos.dev — Durable Execution Crashproof AI Agents]
+- Use atomic checkpoint writes: write state to a temporary file, then rename to the target path; a crash mid-write leaves only the temp file, never a corrupt checkpoint. [Source: breyta.ai — Fault-Tolerant AI Agent Flows; fast.io — AI Agent State Checkpointing]
 
 ## Boundaries
 
@@ -96,6 +98,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Preserve dirty-baseline isolation and path-scoped staging when `AUTOCOMMIT=true`.
 - Keep summaries deterministic and evidence-first.
 - Enforce clear terminal states (`SUCCESS` / `FAILED`) in all tool response schemas within generated loop scripts.
+- Use atomic writes (write-to-temp, then rename) for all checkpoint and state file updates.
 - Record loop outcomes after completion (`RF-01`) and journal manual interventions or user overrides.
 
 ### Ask First

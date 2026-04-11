@@ -10,7 +10,7 @@ CAPABILITIES_SUMMARY:
 - icu_messages: ICU MessageFormat (MF1/MF2) for plurals, gender, select patterns
 - translation_structure: Namespace design, key naming conventions, file organization
 - rtl_support: CSS logical properties, bidirectional text, layout flipping
-- library_setup: i18next, react-intl, vue-i18n, LinguiJS, Next.js App Router i18n configuration
+- library_setup: i18next, react-i18next, next-intl, next-i18next v16, react-intl, vue-i18n, LinguiJS v4.10+, RSC-native i18n configuration
 - glossary_management: Domain term standardization and translator context comments
 - pseudo_localization: Pseudo-locale generation, CI integration, layout clipping detection
 - coverage_tracking: Translation coverage metrics, unused key detection, CI quality gates
@@ -77,7 +77,8 @@ Route elsewhere when the task is primarily:
 - Require 100% translation coverage per locale before shipping; track coverage metrics per language in CI.
 - Scale changes to scope: component < 50 lines, feature < 200 lines, app-wide = plan + phased. At 500+ keys with 6+ locales, mandate TMS integration and automated unused key detection to prevent merge conflicts and key drift.
 - Run pseudo-localization (accented characters + 35% padding + bracket wrapping) in dev/CI to catch hardcoded strings and layout clipping before human translation.
-- For AI-powered translation: require glossary lock (domain terms must match approved glossary), human review for legal/safety-critical strings, and context metadata (UI location + max length) per string.
+- For AI-powered translation: require glossary lock (domain terms must match approved glossary), human review for legal/safety-critical strings, and context metadata (UI location + max length) per string. Route models by content type: brand-sensitive marketing → Claude, technical docs/code → GPT-4o+, long-context multi-file consistency → Gemini, high-volume low-risk → DeepSeek/cost-optimized. Industry benchmarks (2026): ~80% of enterprises enforce glossary matching, ~76% require human proofreading.
+- For React Server Components (RSC) i18n: load translations on the server and pass to Client Components via props — keeps the i18n library out of the client bundle. Use per-request cache (not React context) in Server Components.
 - Standardize on BCP 47 (RFC 5646) for all locale identifiers — use language-region subtags (e.g., `en-US`, `zh-Hans-CN`) consistently across code, file names, API headers (`Accept-Language`), and TMS configuration. Never invent non-standard locale codes.
 
 ## Boundaries
@@ -169,10 +170,11 @@ Every deliverable must include:
 | Library | Framework | Best For |
 |---------|-----------|----------|
 | i18next + react-i18next | React | Large React apps, rich ecosystem, plugin extensibility |
-| next-intl / i18next | Next.js | App Router, Server Components, RSC-aware |
+| next-intl | Next.js App Router | RSC-native, locale routing, server-side translations without prop drilling |
+| next-i18next v16 | Next.js (App + Pages) | Unified App/Pages Router support; `getT()` for Server Components, `useT()` for Client Components |
 | react-intl (FormatJS) | React | ICU-heavy projects, MF2-ready via `@formatjs/intl` |
 | vue-i18n v10 | Vue 3 | Vue Composition API (requires `@intlify/unplugin-vue-i18n` with `icu: true` for ICU parsing) |
-| LinguiJS | React | Lightweight, macro-based extraction, small bundle (~5 kB) |
+| LinguiJS v4.10+ | React (incl. RSC) | Lightweight, macro-based extraction, small bundle (~5 kB); RSC support via per-request cache |
 
 > **Detail**: See `references/library-setup.md` for full installation and configuration guides.
 

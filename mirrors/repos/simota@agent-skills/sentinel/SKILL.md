@@ -50,8 +50,8 @@ Use Sentinel when the user needs:
 - security header auditing (CSP, CORS, HSTS, Permissions-Policy)
 - dependency CVE scanning and supply-chain risk assessment (dependency confusion, typosquatting, slopsquatting)
 - API security flaw detection (BOLA, BFLA, SSRF)
-- AI-generated code risk assessment (vibe coding audit — AI code contains 2.74× more vulnerabilities per Veracode 2025)
-- supply-chain hardening (lockfile integrity, provenance verification, SBOM validation with SPDX/CycloneDX + VEX, slopsquatting detection — 20% of LLMs hallucinate non-existent packages, 43% of hallucinations are repeatable across queries)
+- AI-generated code risk assessment (vibe coding audit — AI code contains 2.74× more vulnerabilities per Veracode 2025; AI-assisted developers introduce security findings at 10× the rate of peers in Fortune 50 enterprises per Veracode Spring 2026)
+- supply-chain hardening (lockfile integrity, provenance verification, operational SBOM workflows with SPDX/CycloneDX + VEX, slopsquatting detection — 20% of LLMs hallucinate non-existent packages, 43% of hallucinations are repeatable across queries; supply chain attacks more than doubled in 2025 with 75% of entry points via dependencies, build pipelines, and container images)
 - MCP configuration secret scanning (24,008 unique secrets found in MCP configs — GitGuardian 2026)
 - OWASP Top 10:2025 compliance auditing (including new A03 Supply Chain Failures, A10 Exceptional Conditions)
 
@@ -72,7 +72,7 @@ Route elsewhere when the task is primarily:
 - Fix CRITICAL before HIGH, HIGH before MEDIUM, MEDIUM before LOW.
 - Do not bundle unrelated security changes into one invocation.
 - Apply OWASP Top 10:2025 mapping (not 2021). Key 2025 changes: Security Misconfiguration rose to #2; XSS extracted from Injection as standalone A07:2025; new A03 Software Supply Chain Failures; new A10 Mishandling of Exceptional Conditions; Cryptographic Failures dropped to #4; Injection dropped to #5. 2025 edition covers 589 CWEs (vs 400 in 2021).
-- For AI-generated code, apply heightened scrutiny: CWE-80 (XSS) 86% failure rate, CWE-117 (Log Injection) 88% failure rate, Java 72% overall failure rate (Veracode Spring 2026). XSS and log injection are worsening over time despite AI model improvements in SQL injection and crypto — prioritize these CWEs in AI code reviews. Also prioritize CWE-918 (SSRF), CWE-798 (hardcoded credentials), CWE-22 (path traversal). Check integration points — AI generates correct components but frequently fails to wire auth middleware into subsequent components.
+- For AI-generated code, apply heightened scrutiny: CWE-80 (XSS) 86% failure rate, CWE-117 (Log Injection) 88% failure rate, Java 72% overall failure rate (Veracode Spring 2026). Security pass rates remain flat at 45-55% across model generations despite syntax improvements reaching 95% — do not trust newer models as inherently safer. AI-assisted developers introduce security findings at 10× the rate of peers (Veracode Spring 2026 Fortune 50 study). XSS and log injection are worsening over time despite AI model improvements in SQL injection and crypto — prioritize these CWEs in AI code reviews. Also prioritize CWE-918 (SSRF), CWE-798 (hardcoded credentials), CWE-22 (path traversal). Check integration points — AI generates correct components but frequently fails to wire auth middleware into subsequent components.
 - Run multi-scanner when feasible: 78% of confirmed vulnerabilities are caught by only one tool (Veracode 2026).
 - For secret detection, use hybrid approach: regex patterns + entropy-based analysis + context-aware validation. Scan at pre-commit hooks and CI/CD pipeline as dual checkpoints. Include MCP configuration files (`.cursor/mcp.json`, `claude_desktop_config.json`, `.env` for MCP servers) and Docker images/Dockerfiles as explicit scan targets — 18% of scanned Docker images contain secrets (Sourcegraph 2026).
 - Verify secret remediation status: 64% of valid secrets from 2022 remain unrevoked in 2026 (GitGuardian 2026). After detection, confirm revocation — not just file deletion — since secrets persist in git history.
@@ -105,7 +105,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Fix LOW before CRITICAL/HIGH.
 - Disable security controls for build convenience.
 - Ignore framework-provided protections without evidence.
-- Accept AI-generated code suggestions without scanning — AI-assisted commits leak secrets at 3.2% rate (2× baseline); AI code creates 322% more privilege escalation paths than human-written code (Apiiro 2025). 35 CVEs disclosed in March 2026 alone were directly from AI-generated code.
+- Accept AI-generated code suggestions without scanning — AI-assisted commits leak secrets at 3.2% rate (2× baseline); AI code creates 322% more privilege escalation paths than human-written code (Apiiro 2025). AI-assisted developers introduce security findings at 10× the rate of peers despite 3-4× higher commit velocity (Veracode Spring 2026). 35 CVEs disclosed in March 2026 alone were directly from AI-generated code.
 - Trust a single SAST tool as authoritative — 78% of confirmed vulnerabilities are detected by only one scanner; use multi-engine consensus for high-assurance targets.
 - Ignore multi-line secret patterns (SSH private keys, PEM certificates) — most regex-based scanners miss multi-line secrets; use entropy-based detection as complement.
 - Trust AI-generated integration code without verifying auth wiring — AI correctly generates individual components but frequently fails to connect auth middleware to downstream handlers, creating unprotected endpoints (Veracode Spring 2026).
@@ -149,7 +149,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 |--------|----------|----------------|-----------|
 | `secret`, `credential`, `API key`, `hardcoded` | Secret detection scan | Finding report with severity + remediation | `references/vulnerability-patterns.md` |
 | `injection`, `SQL`, `XSS`, `CSRF`, `command injection` | Injection vulnerability scan | OWASP-mapped finding + fix | `references/vulnerability-patterns.md` |
-| `CVE`, `dependency`, `SBOM`, `supply chain` | Dependency / supply-chain scan | CVE report + upgrade path | `references/supply-chain-security.md` |
+| `CVE`, `dependency`, `SBOM`, `supply chain` | Dependency / supply-chain scan — demand operational SBOM workflows (not static compliance snapshots) | CVE report + upgrade path | `references/supply-chain-security.md` |
 | `header`, `CSP`, `CORS`, `HSTS` | Security header audit | Header gap report + config snippet | `references/defensive-controls.md` |
 | `auth`, `JWT`, `OAuth`, `rate limit` | Auth and access control review | Auth gap finding + remediation | `references/api-security.md` |
 | `AI-generated`, `LLM`, `MCP`, `prompt injection`, `vibe coding`, `Copilot` | AI code security review — heightened scrutiny for CWE-918/798/22/78; 45% flaw rate baseline. For MCP: scan config files for leaked secrets, validate tool descriptions for injection payloads | AI risk finding + mitigation | `references/ai-code-security.md` |

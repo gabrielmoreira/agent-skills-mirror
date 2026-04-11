@@ -152,7 +152,7 @@ Beads uses `dolt-native` sync mode exclusively. Dolt remotes handle sync directl
 
 #### Federation Configuration
 
-- `federation.remote`: Dolt remote URL (e.g., `dolthub://org/beads`, `gs://bucket/beads`, `s3://bucket/beads`)
+- `federation.remote`: Dolt remote URL (e.g., `dolthub://org/beads`, `gs://bucket/beads`, `s3://bucket/beads`, `az://account.blob.core.windows.net/container/beads`)
 - `federation.sovereignty`: Data sovereignty tier:
   - `T1`: Full sovereignty - data never leaves controlled infrastructure
   - `T2`: Regional sovereignty - data stays within region/jurisdiction

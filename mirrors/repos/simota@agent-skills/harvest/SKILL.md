@@ -13,7 +13,7 @@ CAPABILITIES_SUMMARY:
 - quality_trends: Merge Judge feedback into PR activity trend reports with DORA+SPACE dimensions
 - retrospective_voice: Add narrative commentary to sprint or release reports
 - pr_size_analysis: Classify PRs by size thresholds (200/400/1000 LOC) and flag review efficiency risks
-- dora_metrics: Collect 5 DORA key metrics — throughput (deployment frequency, lead time, rework rate) and instability (change failure rate, failed deployment recovery time) — from PR/release data per DORA 2024/2025. Support 7-archetype team profiling (replacing deprecated 4-tier clusters per DORA 2025)
+- dora_metrics: Collect 5 DORA key metrics — throughput (deployment frequency, lead time) and stability (change failure rate, failed deployment recovery time, rework rate) — plus reliability as quasi-metric, from PR/release data per DORA 2024/2025. Support 7-archetype team profiling (replacing deprecated 4-tier clusters per DORA 2025)
 - review_cycle_analysis: Track first-response time, review cycle time (from ready-for-review, not PR creation) with 4-phase breakdown (Coding→Pickup→Review→Merge), comment resolution rate, and rubber-stamping detection
 
 COLLABORATION_PATTERNS:
@@ -49,7 +49,7 @@ Use Harvest when you need any of the following:
 - Quality trend reports that merge `Judge` feedback into PR activity
 - Narrative retrospectives or release commentary based on PR history
 - PR size distribution analysis (200 LOC target, 400 LOC ceiling benchmarks)
-- DORA metric collection: 5 key metrics — throughput (deployment frequency, lead time, rework rate) and instability (change failure rate, failed deployment recovery time) per DORA 2024/2025. Team profiling via 7 archetypes (replacing deprecated low/medium/high/elite clusters per DORA 2025)
+- DORA metric collection: 5 key metrics — throughput (deployment frequency, lead time) and stability (change failure rate, failed deployment recovery time, rework rate) — plus reliability as quasi-metric, per DORA 2024/2025. Team profiling via 7 archetypes (replacing deprecated low/medium/high/elite clusters per DORA 2025)
 - Review cycle time reporting — measure from "ready for review" timestamp, not PR creation (draft PRs inflate cycle time otherwise). Break down into 4 phases: Coding (before PR), Pickup (PR created → first reviewer assigned), Review (first review action → approval), Merge (approval → merge). Phase-level breakdown pinpoints bottlenecks that aggregate cycle time hides
 - Rubber-stamping detection: flag when review lead time is low and uncorrelated with PR size
 
@@ -74,8 +74,8 @@ Route elsewhere when the task is primarily:
 - First-response-time benchmark: flag when median first review response exceeds 1 business day (Google's standard).
 - Cycle time accuracy: measure review cycle time from the "ready for review" timestamp (not PR creation), because draft PRs inflate the metric.
 - Rubber-stamping detection: when median review lead time is low and uncorrelated with PR size, flag potential rubber-stamping — reviewers may not be actually reviewing code.
-- AI-inflated metrics caveat: AI coding assistants can inflate individual PR counts (+98% more PRs merged per DORA 2025) while organizational delivery metrics stay flat. AI also tempts developers to abandon small-batch principles — generating larger, riskier PRs that take longer to review and have higher failure rates. Reports must note this context when comparing pre/post-AI periods and flag batch-size regression. Key insight: AI amplifies existing team dynamics — strong teams accelerate further, struggling teams see problems intensified. Without robust automated testing, mature version control, and fast feedback loops, AI-driven change volume increases instability ("accelerating into a bottleneck" rather than through it, per DORA 2025).
-- DORA 2025 team archetypes: when profiling team delivery performance, use the 7-archetype model (e.g., "Legacy Bottleneck," "Harmonious High Achiever") instead of deprecated 4-tier clusters (low/medium/high/elite). Archetypes blend delivery metrics with human factors (burnout, friction, perceived value), yielding more actionable team reports.
+- AI-inflated metrics caveat: AI coding assistants can inflate individual PR counts (+98% more PRs merged, +21% more tasks completed per DORA 2025) while organizational delivery metrics stay flat. Quantified impact: AI adoption correlates with 7.2% reduction in delivery stability and 1.5% reduction in delivery throughput (DORA 2025). AI also tempts developers to abandon small-batch principles — generating larger, riskier PRs that take longer to review and have higher failure rates. Reports must note this context when comparing pre/post-AI periods and flag batch-size regression. Key insight: AI amplifies existing team dynamics — strong teams accelerate further, struggling teams see problems intensified. Without robust automated testing, mature version control, and fast feedback loops, AI-driven change volume increases instability ("accelerating into a bottleneck" rather than through it, per DORA 2025).
+- DORA 2025 team archetypes: when profiling team delivery performance, use the 7-archetype model instead of deprecated 4-tier clusters (low/medium/high/elite). The 7 archetypes: (1) Foundational Challenges — survival mode with process gaps, (2) Legacy Bottleneck — reactive to unstable systems, (3) Constrained by Process — consumed by inefficient workflows, (4) High Impact Low Cadence — quality work delivered slowly, (5) Stable and Methodical — deliberate delivery with high quality, (6) Pragmatic Performers — impressive speed with functional environments, (7) Harmonious High-Achievers — sustainable excellence in a virtuous cycle. Archetypes blend delivery metrics with human factors (burnout, friction, perceived value), yielding more actionable team reports.
 
 ## Boundaries
 
@@ -103,7 +103,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Present LOC, commits, or PR count as direct productivity rankings — Goodhart's Law: when a measure becomes a target, it ceases to be a good measure. Teams will game PR count by splitting trivially, inflating lines with formatting, or cherry-picking easy fixes
 - Report individual developer "scores" or stack-rank contributors — causes mass-gaming and attrition (McKinsey developer productivity controversy, 2023)
 - Use DORA metrics in isolation without SPACE context — leads to the "Velocity Trap" where teams optimize delivery speed at the cost of burnout and collaboration quality
-- Compare pre-AI and post-AI period metrics without noting AI tooling adoption — AI inflates individual output metrics while organizational throughput stays flat (DORA 2025), making direct comparison misleading. AI also erodes small-batch discipline by enabling larger PRs, compounding the distortion
+- Compare pre-AI and post-AI period metrics without noting AI tooling adoption — AI inflates individual output metrics while organizational throughput stays flat (DORA 2025): 7.2% stability reduction and 1.5% throughput reduction correlated with AI adoption, making direct comparison misleading. AI also erodes small-batch discipline by enabling larger PRs, compounding the distortion
 - Classify teams into deprecated 4-tier performance clusters (low/medium/high/elite) — DORA 2025 replaced these with 7 team archetypes that incorporate human factors alongside delivery metrics, making tier-based classification misleading
 
 ## Report Modes
@@ -144,7 +144,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Pickup time benchmark | Elite teams: <6h pickup; strong teams: <13h. Flag when median pickup exceeds 1 business day |
 | Rubber-stamping | Flag when median review lead time is low and uncorrelated with PR size — indicates reviewers may not be reading code |
 | Release notes | Use Keep a Changelog categories and highlight breaking or deprecated changes. Automate via conventional commit type mapping (feat→Added, fix→Fixed, etc.). User-focused: explain what users gain, not raw commit messages |
-| Quality metrics | Include context and actions; avoid vanity metrics and rankings. Combine 5 DORA key metrics (throughput + instability) with SPACE satisfaction/well-being signals. Use 7 team archetypes (not deprecated 4-tier clusters) for performance profiling |
+| Quality metrics | Include context and actions; avoid vanity metrics and rankings. Combine 5 DORA key metrics (throughput + stability) plus reliability quasi-metric with SPACE satisfaction/well-being signals. Use 7 team archetypes (not deprecated 4-tier clusters) for performance profiling |
 | AI-period comparison | When comparing metrics across periods with different AI adoption levels, note that AI inflates individual PR counts while org delivery stays flat (DORA 2025) |
 | PDF export | Prefer repo scripts and ASCII fallback over brittle ad-hoc export commands |
 | Pagination strategy | Always use `per_page=100` with `gh api --paginate` for automatic multi-page fetches. For GraphQL, use cursor-based pagination with `first` ≤100. Store ETags per page, not per collection |

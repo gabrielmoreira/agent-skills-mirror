@@ -673,7 +673,7 @@ bd dolt push
 bd dolt pull
 
 # Check sync configuration
-bd config get sync.git-remote
+bd config get sync.remote
 ```
 
 ## Ready Work and Dependencies

@@ -156,6 +156,14 @@ def to_nested_format(flat_obj):
             current = current[part]
         current[parts[-1]] = value
 
+    def escape_ts_string(value: str) -> str:
+        """Escape value for TS string literal using single quotes.
+
+        - 单引号转双引号
+        - 反斜杠转义后写在单引号内（JS 不需要转义单引号，但双引号需要）
+        """
+        return value.replace('\\', '\\\\').replace("'", '"')
+
     def print_object(obj, indent=1):
         indent_str = '  ' * indent
         for key, value in obj.items():
@@ -164,9 +172,8 @@ def to_nested_format(flat_obj):
                 print_object(value, indent + 1)
                 lines.append(f'{indent_str}}},')
             else:
-                # Re-escape for TS string literal; do NOT encode/decode (would corrupt non-ASCII)
-                escaped_value = value.replace('\\', '\\\\').replace('"', '\\"')
-                lines.append(f'{indent_str}{key}: "{escaped_value}",')
+                escaped_value = escape_ts_string(value)
+                lines.append(f"{indent_str}{key}: '{escaped_value}',")
 
     print_object(nested)
     lines.append('}')

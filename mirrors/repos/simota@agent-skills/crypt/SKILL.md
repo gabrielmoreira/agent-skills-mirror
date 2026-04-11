@@ -1,6 +1,6 @@
 ---
 name: crypt
-description: "暗号設計・鍵管理・E2EE設計。暗号アルゴリズム選定、KMS統合、署名検証、TLS構成が必要な時に使用。"
+description: "Cryptographic architecture design: algorithm selection, key management, E2EE, KMS integration, signature verification, and TLS configuration."
 ---
 
 <!--
@@ -12,7 +12,7 @@ CAPABILITIES_SUMMARY:
 - password_storage: Design password hashing strategy (Argon2/bcrypt/scrypt selection and tuning)
 - tls_configuration: Design TLS/mTLS configurations with cipher suite selection
 - anti_pattern_detection: Detect cryptographic anti-patterns (ECB mode, fixed IV, weak RNG, custom crypto)
-- pqc_guidance: Provide post-quantum cryptography migration guidance (NIST PQC standards)
+- pqc_guidance: Provide post-quantum cryptography migration guidance (NIST FIPS 203/204/205, hybrid schemes, IR 8547 timeline)
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Crypt: Vulnerability reports trigger crypto design review
@@ -64,7 +64,8 @@ Route elsewhere when the task is primarily:
 - Detect and flag anti-patterns before proposing new designs.
 - Include threat model context: what attacks the design defends against.
 - Provide migration paths from deprecated algorithms (SHA-1, RSA-1024, 3DES).
-- Mark quantum-vulnerable components and suggest PQC alternatives where available.
+- Mark quantum-vulnerable components and recommend NIST PQC standards: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205).
+- Design for crypto-agility: systems must support algorithm substitution without architectural redesign (NIST IR 8547 mandate).
 
 ## Boundaries
 
@@ -88,10 +89,12 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 - Recommend implementing custom cryptographic primitives.
 - Suggest deprecated algorithms (MD5 for security, SHA-1 for signatures, DES/3DES, RC4).
+- Recommend RSA-2048 for new systems (NIST IR 8547: deprecated by 2030; use RSA-3072+ or PQC).
 - Design systems without key rotation capability.
 - Omit IV/nonce management from symmetric encryption designs.
 - Recommend ECB mode for any block cipher.
 - Store or log cryptographic keys in plaintext.
+- Use timing-vulnerable comparison (`===` / `==`) for hash or MAC verification; require constant-time comparison.
 
 ## Output Routing
 
@@ -135,8 +138,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 | Algorithm | Use case | Status |
 |-----------|----------|--------|
-| Argon2id | Password hashing (preferred) | Recommended |
-| bcrypt | Password hashing (established) | Acceptable |
+| Argon2id | Password hashing (preferred) | Recommended — OWASP minimum: m=19MiB, t=2, p=1 |
+| bcrypt | Password hashing (established) | Acceptable — cost factor 10+ |
 | scrypt | Password hashing (memory-hard) | Acceptable |
 | SHA-256/SHA-3 | Data integrity, HMAC | Recommended |
 | HKDF | Key derivation | Recommended |
@@ -149,10 +152,22 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 |-----------|----------|----------|--------|
 | Ed25519 | 256-bit | Digital signatures | Recommended |
 | ECDSA (P-256) | 256-bit | Digital signatures, TLS | Recommended |
-| RSA-PSS | 2048+ bit | Signatures (legacy compat) | Acceptable |
+| RSA-PSS | 3072+ bit | Signatures (legacy compat) | Acceptable (RSA-2048 deprecated by 2030 per IR 8547) |
 | X25519 | 256-bit | Key exchange | Recommended |
 | ECDH (P-256) | 256-bit | Key exchange | Recommended |
-| RSA-OAEP | 2048+ bit | Key wrapping | Acceptable |
+| RSA-OAEP | 3072+ bit | Key wrapping | Acceptable |
+
+### Post-Quantum Cryptography (NIST PQC Standards)
+
+| Standard | Algorithm | Use case | Status |
+|----------|-----------|----------|--------|
+| FIPS 203 (ML-KEM) | CRYSTALS-Kyber | Key encapsulation | Recommended — finalized Aug 2024 |
+| FIPS 204 (ML-DSA) | CRYSTALS-Dilithium | Digital signatures (general) | Recommended — finalized Aug 2024 |
+| FIPS 205 (SLH-DSA) | SPHINCS+ | Digital signatures (conservative, hash-based) | Recommended — finalized Aug 2024 |
+| FIPS 206 (FN-DSA) | FALCON | Digital signatures (compact) | In development |
+| HQC | HQC | Key encapsulation (code-based) | Selected March 2025, standardization pending |
+
+**Migration timeline (NIST IR 8547):** Deprecate quantum-vulnerable algorithms by 2030; disallow by 2035. High-risk systems should transition now. Use hybrid schemes (classical + PQC) during transition.
 
 ## Anti-Pattern Checklist
 
@@ -166,6 +181,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | No key rotation | Extended exposure window | Design rotation from day one |
 | PKCS#1 v1.5 padding | Bleichenbacher attack | Use OAEP or PSS |
 | JWT with `alg: none` | Authentication bypass | Validate algorithm server-side |
+| Timing-vulnerable comparison | MAC/hash forgery via side channel | Use constant-time comparison (`crypto.timingSafeEqual`, `hmac.compare_digest`) |
+| No crypto-agility | Locked to deprecated algorithms | Abstract algorithm behind config; support runtime substitution |
 
 ## Output Requirements
 

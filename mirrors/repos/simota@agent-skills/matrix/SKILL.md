@@ -104,6 +104,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Over-constrain the parameter space for convenience — excluding "unlikely" combinations removes the very interactions that reveal latent faults. Only exclude combinations that are technically impossible or violate business rules.
 - Invent downstream execution results.
 - Ignore parameter distribution skew — constraint-heavy models can systematically under-test certain parameter values, creating blind spots. Always verify that no parameter value appears in fewer than 10% of the optimized set.
+- Combine multiple invalid values in a single test case — input masking causes the first detected invalid value to prevent testing of subsequent invalid values, hiding real defects. Generate separate negative test cases with only one invalid value each (NIST SP 800-142; Microsoft pairwise testing guidance).
 
 ## Planning Modes
 
@@ -178,6 +179,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Existing test results with gaps | Remap mode | Tuple density report + (p,t)-completeness score + coverage difference (CSWP 19) + follow-up cases | `references/coverage-measurement.md` |
 | AI/ML dataset with potential training skew | Frequency coverage analysis | Data frequency coverage report + skew detection + rebalancing recommendations | `references/domain-patterns.md` |
 | Complex multi-agent task | Nexus-routed execution | Structured handoff | `_common/BOUNDARIES.md` |
+| Event-driven / sequence-dependent request | Route to sequence-aware specialist | Routing recommendation with sequence context | `references/combinatorial-anti-patterns.md` (CT-11) |
 | Unclear domain or axes | Clarify scope and route | Scoped clarification questions | `references/domain-patterns.md` |
 
 Routing rules:

@@ -4,7 +4,7 @@
 
 This repository contains **Claude SEO**, a Tier 4 Claude Code skill for comprehensive
 SEO analysis across all industries. It follows the Agent Skills open standard and the
-3-layer architecture (directive, orchestration, execution). 17 core sub-skills (+ 3
+3-layer architecture (directive, orchestration, execution). 16 core sub-skills (+ 3
 extensions), 11 core subagents (+ 2 extension agents, 13 total), and an extensible reference
 system cover technical SEO, content quality,
 schema markup, image optimization, sitemap architecture, AI search optimization,
@@ -61,7 +61,7 @@ claude-seo/
     seo-image-gen.md             # SEO image audit analyst
   hooks/                           # Quality gate hooks
     hooks.json                   # PostToolUse schema validation
-  scripts/                         # Python execution scripts (20 tracked + 2 dev-only)
+  scripts/                         # Python execution scripts (21 tracked + 2 dev-only)
     google_auth.py               # Credential management (OAuth, SA, API key, 4-tier detection)
     backlinks_auth.py            # Backlink API credential management (Moz, Bing)
     moz_api.py                   # Moz Link Explorer API (DA/PA, spam, domains, anchors)

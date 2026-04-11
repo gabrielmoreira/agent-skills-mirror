@@ -217,30 +217,32 @@ bd version
 
 ## Build Dependencies (Contributors Only)
 
-> **Note:** These dependencies are only needed if you install via `go install` or build from source. If you installed via Homebrew, npm, or the install script, skip this section entirely.
+> **Note:** These dependencies are only needed if you build from source. If you installed via Homebrew, npm, or the install script, skip this section entirely.
 
-If you install via `go install` or build from source, you need system dependencies for CGO:
+Building from source requires a C compiler (for CGO / embedded Dolt). **ICU is
+not required** -- all builds use the `gms_pure_go` tag which selects Go's
+stdlib `regexp` instead of ICU regex. See [ICU-POLICY.md](ICU-POLICY.md) for
+details.
 
 macOS (Homebrew):
 ```bash
-brew install icu4c zstd
+brew install zstd
 ```
 
 Linux (Debian/Ubuntu):
 ```bash
-sudo apt-get install -y libicu-dev libzstd-dev
+sudo apt-get install -y libzstd-dev
 ```
 
 Linux (Fedora/RHEL):
 ```bash
-sudo dnf install -y libicu-devel libzstd-devel
+sudo dnf install -y libzstd-devel
 ```
 
-If you see `unicode/uregex.h` missing on macOS, `icu4c` is keg-only. Use:
-```bash
-ICU_PREFIX="$(brew --prefix icu4c)"
-CGO_CFLAGS="-I${ICU_PREFIX}/include" CGO_CPPFLAGS="-I${ICU_PREFIX}/include" CGO_LDFLAGS="-L${ICU_PREFIX}/lib" go install github.com/steveyegge/beads/cmd/bd@latest
-```
+> **For CI / test contributors only:** If you need to run `scripts/test-cgo.sh`
+> (which exercises the ICU code path), install ICU headers:
+> `brew install icu4c` (macOS) or `sudo apt-get install -y libicu-dev` (Linux).
+> This is not needed for normal development.
 
 ## IDE and Editor Integrations
 

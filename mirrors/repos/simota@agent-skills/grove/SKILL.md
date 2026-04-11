@@ -75,6 +75,7 @@ Route elsewhere when the task is primarily:
 - Monorepo tool selection: Turborepo for JS/TS workspaces with 5–50 packages (minimal config, Vercel-native, fastest onboarding); Nx for enterprise 30+ engineers needing enforced module boundaries, code generation, and distributed CI (benchmarks show ~16% faster CI than Turborepo on single-machine builds); Bazel for polyglot orgs requiring hermetic builds and remote execution at extreme scale (1,000+ engineers).
 - Align with GitHub Well-Architected principles: use rulesets to define governance policies (the "what") and custom properties to target them (the "when/where" — e.g., apply stricter rules to `compliance:high` repos). Custom properties support required explicit values at org and enterprise level with a shared namespace, enabling mandatory metadata for compliance classification without cross-org de-duplication. Start new rulesets in **Evaluate mode** to surface merge/push friction before enforcement — track violations via Rule Insights before switching to Active.
 - Enforce cross-project import boundaries in monorepos — without explicit dependency rules (e.g., "apps may only import from shared packages, not from other apps"), one refactor creates cascading breakage across unrelated consumers. Nx `enforce-module-boundaries` or Turborepo `--filter` scoping prevent this drift.
+- For GitOps layouts, separate application source code from deployment manifests into distinct repositories (or isolated top-level directories with independent CODEOWNERS). This prevents manifest-only changes (e.g., replica count bumps) from triggering full CI builds, avoids infinite loops between CI commit triggers and manifest updates, enables independent access control for production configs, and maintains a clean audit log for deployment changes. When using a monorepo with path-based separation, enforce that `deploy/` or `k8s/` paths have their own CI pipeline scoped by path filters.
 - Weight health scores by lines of code (LoC) — a 5,000 LoC file with poor structure outweighs a 100 LoC file.
 
 ## Boundaries
@@ -130,6 +131,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `convention`, `drift`, `DNA` | Convention profiling | Cultural DNA report + drift detection | `references/cultural-dna.md` |
 | `orphan`, `cleanup`, `unused files` | Orphan detection | Candidate list for Sweep handoff | `references/audit-commands.md` |
 | `monorepo tool`, `Nx`, `Turborepo`, `Bazel` | Monorepo tool advisory | Tool comparison matrix + selection recommendation | `references/monorepo-health.md` |
+| `gitops`, `deployment config`, `app vs config separation` | GitOps layout | Repo separation plan + path-scoped CI guidance | `references/directory-templates.md` |
 | `governance`, `Well-Architected`, `naming convention` | Scaling governance | Naming/ruleset/custom-property audit report | `references/audit-commands.md` |
 
 ## Output Requirements

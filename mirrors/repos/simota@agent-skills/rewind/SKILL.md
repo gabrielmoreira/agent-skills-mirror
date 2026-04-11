@@ -69,6 +69,7 @@ Route elsewhere when the task is primarily:
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Rewind's domain; route unrelated requests to the correct agent.
 - Use pickaxe search strategy: try `git log -S` (exact match, counts occurrences) first, fall back to `git log -G` (regex, matches changed lines) for broader results, then `-L :function:file` for function-level tracing. Add `--pickaxe-regex` to enable regex with `-S`; add `--pickaxe-all` to show the full changeset (not just matching files) for broader context.
+- Use path limiting (`git bisect start [bad [good]] -- <path>`) to restrict bisect to commits touching specified paths. Critical for monorepos — reduces the commit range dramatically when the affected subsystem is known.
 - Set bisect iteration budget based on log₂(n): ~7 steps for 100 commits, ~10 for 1,000, ~14 for 16,000. Abort or re-scope if exceeding 2× expected iterations.
 - Mitigate blame noise: always use `-w` (ignore whitespace), `-M` (detect moves), `-C` (detect cross-file copies). Honor `.git-blame-ignore-revs` when present.
 - For automated `bisect run` scripts, enforce exit codes: 0 = good, 1-124 = bad, **125 = skip** (untestable commit). Never use 126-127 (POSIX reserved: 126 = command not executable, 127 = command not found) — git aborts bisect on these. For flaky tests, run the test 3× per commit and exit 125 on mixed results.
@@ -86,12 +87,13 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 - Use git commands safely (read-only by default).
 - Explain findings in timelines with SHA + date + commit message.
-- Preserve working directory state: prefer `git worktree add ../bisect-worktree` for isolated bisect sessions over stash; fall back to stash when worktree is impractical (shallow clones, submodule-heavy repos).
+- Preserve working directory state: prefer `git worktree add ../bisect-worktree` for isolated bisect sessions over stash; fall back to stash when worktree is impractical (shallow clones, submodule-heavy repos). Bisect refs (`refs/bisect/`) are per-worktree, so concurrent bisect sessions in separate worktrees do not interfere.
+- Always run `git bisect reset` after completing or aborting a bisect session to restore HEAD. Forgotten resets leave the repo in detached HEAD state and confuse subsequent operations.
 - Validate test commands before bisect (dry-run first).
 - Include rollback options in every report.
 - Warn about credential exposure when AI-assisted commits are in the history (2× baseline leak rate per GitGuardian 2026).
 - Flag non-bisectable history segments (e.g., split test + fix across commits, non-building intermediates) that degrade bisect reliability; recommend `--first-parent` or manual range restriction. Specifically flag the "failing test in commit A, fix in commit B" anti-pattern — intermediate commits have guaranteed test failures that poison bisect; recommend wrapping such tests in SKIP/TODO blocks until the fix commit.
-- When investigating GitHub-hosted repos, check for `.git-blame-ignore-revs` at repo root — GitHub auto-detects this file and filters blame views accordingly. Recommend creating/updating it when bulk formatting commits are found polluting blame results.
+- When investigating GitHub-hosted repos, check for `.git-blame-ignore-revs` at repo root — GitHub and GitLab auto-detect this file and filter blame views accordingly. For local CLI use, recommend setting `git config blame.ignoreRevsFile .git-blame-ignore-revs` so `git blame` always applies the filter. Recommend creating/updating this file when bulk formatting commits are found polluting blame results.
 
 ### Ask First
 
@@ -129,7 +131,7 @@ Templates (SCOPE YAML, LOCATE commands, CHANGE_STORY, REPORT markdown, bisect sc
 
 | Pattern | Trigger | Key Technique |
 |---------|---------|---------------|
-| **Regression Hunt** | Test that used to pass now fails | `git bisect run` + deterministic test script (exit 0=good, 1-124=bad, 125=skip). For flaky tests: run 3×, exit 125 on mixed results. For merge-heavy repos: `--first-parent` to stay on mainline. Pre-skip known-broken ranges with `bisect skip <a>..<b>` |
+| **Regression Hunt** | Test that used to pass now fails | `git bisect run` + deterministic test script (exit 0=good, 1-124=bad, 125=skip). For flaky tests: run 3×, exit 125 on mixed results. For merge-heavy repos: `--first-parent` to stay on mainline. Pre-skip known-broken ranges with `bisect skip <a>..<b>`. Use `-- <path>` to limit to affected subsystem |
 | **Archaeology** | Confusing code that seems intentional | `git blame -w -M -C` → `git log -S` (add `--pickaxe-regex` for patterns) → `git log -L :func:file` → `--follow` for renames. Use `--pickaxe-all` for full changeset context |
 | **Impact Analysis** | Need to understand change ripple effects | `diff --stat` + `shortlog` + coverage check. Trace transitive dependencies |
 | **Blame Analysis** | Need accountability/context for changes | `git blame` aggregation with `.git-blame-ignore-revs` filtering (focus on commits, not individuals) |

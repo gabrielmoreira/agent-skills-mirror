@@ -74,6 +74,7 @@ Route elsewhere when the task is primarily:
 - State evidence strength, confidence, and limitations explicitly. Report quantitative benchmarks with 90% confidence intervals.
 - Inclusive by default — recruit diverse participants across physical, cognitive, and situational dimensions from the start, not as a final checklist. Biased samples produce biased products (e.g., speech-to-text tools misunderstand Black speakers nearly 2× as often when training data lacks diversity).
 - Synthetic users supplement, never substitute — AI-generated participants cannot replace real people for nuanced understanding, emotional reactions, or context-specific behavior. Apply the BEST framework (Behavioural, Ethical, Social, Technological) before using synthetic participants. Follow the 80/20 split: synthetic for rapid iterations, screening, and hypothesis building; human interviews for emotional depth, edge cases, and cultural nuance.
+- AI moderation suitability — use AI-moderated interviews for structured problem spaces with well-defined question frameworks and known topic boundaries. Reserve human moderation for exploratory research in uncharted territory where unexpected directions require real-time pivoting and creative follow-up that AI cannot replicate.
 - Research only. Do not write implementation code.
 
 ## Boundaries
@@ -90,6 +91,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Protect privacy and consent.
 - Run bias checks in design, execution, and analysis.
 - Record method effectiveness for calibration.
+- Require minimum data governance for AI research platforms: SOC 2 Type II compliance, GDPR readiness with DPA, encryption at rest and in transit, participant consent management, PII anonymization, and confirmation that interview data is not used to train vendor models.
 
 ### Ask First
 
@@ -109,7 +111,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Ignore contradictory evidence.
 - Treat synthetic user output as equivalent to real-user research — synthetic participants lack emotional nuance, cultural context, and genuine surprise reactions.
 - Deploy AI-moderated interviews without human review — AI achieves 80–85% agreement with expert human coders on theme extraction; the remaining 15–20% gap requires researcher judgment for nuance, context, and cultural sensitivity.
-- Democratize research without guardrails — unstructured self-service research without training, templates, and oversight leads to inconsistent methods, weak data, and poor decisions. PMs (39%), market researchers (35%), and marketers (23%) now run their own studies (Maze 2026), while systems and standards lag behind. Minimum governance: researcher review of study design (adopted by 73% of orgs), standardized templates (65%), and data governance/privacy protocols (42%).
+- Democratize research without guardrails — unstructured self-service research without training, templates, and oversight leads to inconsistent methods, weak data, and poor decisions. PMs (39%), market researchers (35%), and marketers (23%) now run their own studies (Maze 2026), while systems and standards lag behind. Minimum governance: researcher review of study design (adopted by 73% of orgs), standardized templates (65%), access and permission controls for research tooling (56%), data governance/privacy protocols (42%), and regular researcher office hours (34%).
 - Use homogeneous participant pools — excluding diverse users embeds bias into products (e.g., real-name policies discriminating against transgender and non-European-name users; voice interfaces failing non-native speakers).
 - Write production implementation code.
 
@@ -148,6 +150,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | AI theme extraction agreement | `80–85%` vs expert coders | First-pass coding reliability | Always human-review the 15–20% gap; AI misses context-dependent nuance |
 | AI researcher adoption | `80%` of researchers | AI is baseline in research workflows (Maze 2026) | Design for AI-augmented workflows; ensure human judgment on interpretation |
 | AI synthesis time reduction | `up to 80%` | Qualitative coding acceleration | AI handles transcription/initial coding; researcher owns interpretation and synthesis |
+| AI moderation pilot | `2-3` self-runs + `5-10` participant sessions | Pre-scale validation | Pilot yourself 2-3 times, then review 5-10 real sessions before launching AI-moderated interviews at scale |
 | UEQ (User Experience Questionnaire) | 26 items, −3 to +3 scale | Pragmatic + hedonic UX quality with public benchmarks | Use alongside SUS for richer quality assessment; compare against UEQ benchmark dataset |
 | Research strategic adoption | `22%` of orgs (up from 8% in 2025) | Research essential to all business strategy levels (Maze 2026) | Frame research as strategic asset; design for org-wide research integration |
 | Synthetic-real split | `80/20` | Rapid hypothesis via synthetic, deep insight via human | Use synthetic for iterations/screening/hypothesis; reserve human interviews for emotional depth, edge cases, cultural nuance |

@@ -76,7 +76,7 @@ Route elsewhere when the task is primarily:
 - Leverage the Three-Panel Workflow (Sources Panel → Chat Panel → Studio Panel) when guiding users through prompt design and output generation.
 - Chat-to-output conversion: users can transform chat conversations directly into Audio/Video Overviews, Reports, and other outputs — design prompts with this workflow in mind.
 - Chat persistence: conversations are auto-saved and persist across sessions (private in shared notebooks). Design iterative prompt refinement workflows that span multiple sessions — users can resume, refine, and convert past chat threads into outputs without re-establishing context.
-- Custom Goals: NotebookLM's built-in persona system (up to 10,000 characters) persists across sessions. Treat Goals as the primary steering mechanism for chat behavior; use steering prompts for per-output customization. Design Goals to define role, expertise level, and response style.
+- Custom Goals: NotebookLM's built-in persona system (up to 10,000 characters) persists across sessions. Treat Goals as the primary steering mechanism for chat behavior; use steering prompts for per-output customization. Design Goals to define role, expertise level, and response style. Users can type a rough description (e.g., "Be a punchy editor") and click the Magic Wand icon to auto-expand it into detailed instructions — recommend this as a starting point for persona design.
 
 Supported output families:
 
@@ -167,11 +167,12 @@ Full calibration rules live in [prompt-effectiveness.md](~/.claude/skills/prism/
 | Notebooks per user (Plus)        | `200`                               | Maximum notebooks on Plus tier                                   |
 | Notebooks per user (Pro/Ultra)   | `500`                               | Maximum notebooks on Pro/Ultra tier                              |
 | Per-source hard limit            | `500K words` / `200MB`              | Whichever comes first                                            |
-| Context window                   | `1M tokens` (~1,500 pages)          | Available on all tiers                                           |
+| Context window                   | `1M tokens` (~1,500 pages)          | Gemini 3 engine; available on all tiers                          |
 | Large Google Doc warning         | `100+ pages`                        | Split or trim when possible                                      |
 | Preferred YouTube length         | `5-30 min`                          | Best transcript reliability and focus                            |
 | Free tier daily limits           | `50 chats` / `3 Audio+Video Overviews` / `10 Reports+Flashcards+Quizzes` | Plan prompt iterations within budget              |
-| Ultra tier daily limits          | `1,000 Reports+Flashcards+Quizzes`  | Significantly higher generation budget                           |
+| Ultra tier daily limits (generation) | `200 Audio` / `200 Video` / `20 Cinematic` / `200 Deep Research` / `1,000 Reports+Flashcards+Quizzes` | Significantly higher generation budget |
+| Ultra tier daily limits (chat)   | `5,000 chats`                       | 100x Free tier chat budget                                       |
 | Free tier monthly limits         | `10 Deep Research` sessions         | Reserve for high-value research tasks                            |
 | Quality trend                    | `> 4.2 / 3.5-4.2 / 2.5-3.5 / < 2.5` | Excellent / Good / Moderate / Low                                |
 | Format-audience fit              | `> 0.85 / 0.70-0.85 / < 0.70`       | Highly effective / Good / Underperforming                        |

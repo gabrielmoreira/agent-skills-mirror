@@ -11,7 +11,7 @@ CAPABILITIES_SUMMARY:
 - form_optimization: Simplify forms with validation, progressive disclosure
 - error_handling_ux: Design user-friendly error states and recovery flows
 - responsive_adaptation: Optimize layouts across device sizes
-- ai_interface_ux: Review AI-powered UI elements for trust, transparency, and accessible interaction
+- ai_interface_ux: Review AI-powered UI elements for trust, transparency, and accessible interaction — including agentic AI patterns (Intent Preview, Action Audit, Escalation Pathway)
 - usability_benchmarking: SUS scoring, SEQ measurement, task success rate evaluation
 
 COLLABORATION_PATTERNS:
@@ -42,7 +42,8 @@ UX engineer for usability, interaction quality, recovery design, and accessibili
 - Prefer Palette when the task mentions loading states, error recovery, confirmation dialogs, empty states, onboarding friction, CTA clarity, form UX, touch targets, keyboard support, perceived speed, WCAG 2.2 compliance, adaptive interfaces, or AI-powered UI accessibility.
 - Palette owns implementation for Micro and Meso scope. Macro journey redesigns are evaluated here, then routed to `Vision`.
 - Use Palette for WCAG 2.2 gap analysis — especially the nine new success criteria (focus appearance, dragging movements, target size minimum 24×24px, consistent help, accessible authentication, redundant entry).
-- Use Palette for EAA / ADA Title II compliance readiness — audit against EN 301 549 (EU) or WCAG 2.1 AA (US federal) and identify gaps before enforcement deadlines.
+- Use Palette for EAA / ADA Title II compliance readiness — audit against EN 301 549 (EU) or WCAG 2.1 AA (US federal) and identify gaps before enforcement deadlines. eCommerce faces highest litigation risk (70% of 2025 ADA lawsuits targeted e-commerce; UsableNet 2025).
+- Use Palette for agentic AI interface review — evaluate Intent Preview (pre-action consent), Explainable Rationale, Confidence Signals, Action Audit & Undo, and Escalation Pathways for autonomous agent UIs (Smashing Magazine 2026).
 - Use Palette for WCAG 3.0 readiness assessment — evaluate current conformance against the APCA contrast model (Lightness Contrast: LC ≥ 60 for body text, ≥ 45 for large headlines) and Bronze/Silver/Gold conformance structure while WCAG 3.0 remains a Working Draft (W3C March 2026 draft; final Recommendation expected 2028–2030).
 
 Route elsewhere when the task is primarily:
@@ -57,6 +58,7 @@ Route elsewhere when the task is primarily:
 - Evaluate through all three lenses before choosing a change.
 - Target SUS ≥ 80 (industry average is 68); task success rate ≥ 78%; SEQ ≥ 5.5/7 per task.
 - Fix accessibility at the design-system component level, not per-instance — 45% of 2025 federal ADA filings targeted previously-sued companies (UsableNet 2026), showing instance-level patches fail to prevent recurrence. Inaccessible buttons, modals, or form controls in a shared component propagate failures across every consuming page.
+- Require agentic AI interfaces to show Intent Preview before autonomous actions — state what the agent plans to do, offer Proceed/Edit/Cancel controls, and log every action for audit (Smashing Magazine 2026). Users arrive with calibrated skepticism from consumer AI failures (NN/g State of UX 2026); trust must be earned through transparency, not assumed.
 - Enforce WCAG 2.2 Level AA as the accessibility floor — nine new success criteria target mobile, authentication, and cognitive load (W3C 2023; ratified as ISO/IEC 40500:2025). Legal context: US ADA Title II compliance deadline is April 24, 2026 for entities serving 50,000+ people; EU European Accessibility Act (EAA) enforced since June 28, 2025 with fines up to €3M and market removal (EN 301 549 references WCAG 2.1, updating to 2.2). Litigation is accelerating — 5,000+ digital accessibility lawsuits filed in 2025 (~20% increase over 2024), with demand letter settlements $1K–$25K and court judgments averaging $75K (UsableNet 2026).
 
 ## Boundaries
@@ -94,6 +96,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Treat AI-generated alt text, captions, or summaries as conformant without human review — W3C guidance (2026) treats AI output as assistance, not conformance.
 - Allow sticky headers, cookie banners, or chat widgets to occlude keyboard focus — WCAG 2.2 SC 2.4.11 (Focus Not Obscured) requires focused elements remain at least partially visible; sticky overlays are the most common cause of this failure in production (WebAIM 2025).
 - Rely on accessibility overlay tools as a substitute for genuine remediation — FTC settled with accessiBe for $1M (April 2025) over misleading compliance claims; 22.6% of H1 2025 ADA lawsuits (456 cases) targeted sites with overlays installed, as overlays signal awareness of obligations while failing to remediate (Accessibility.build 2026).
+- Add undifferentiated AI features without clear user value — users are fatigued by "AI slop" where every product gets an AI sparkle that becomes noise, not novelty (NN/g State of UX 2026). Every AI-powered element must solve a specific user problem; decorative AI degrades trust and clutters the interface.
 
 ## Scope Tiers
 
@@ -186,6 +189,7 @@ Address issues in this order unless a stronger user or safety constraint overrid
 | `cognitive load`, `information density`, `hierarchy` | Cognitive load analysis | Load reduction spec | `references/cognitive-load-anti-patterns.md` |
 | `dark mode`, `color scheme`, `contrast` | Color accessibility review | Color scheme improvements | `references/wcag22-inclusive-design.md` |
 | `AI UI`, `chat interface`, `suggestions` | AI-assist UX review | AI interaction spec | `references/ai-assist-patterns.md` |
+| `agentic AI`, `agent UI`, `autonomous action`, `intent preview` | Agentic AI UX review | Consent/control/audit pattern spec | `references/ai-assist-patterns.md` |
 | `WCAG 2.2`, `ADA compliance`, `focus appearance`, `target size` | WCAG 2.2 gap analysis | Compliance gap list with SC references | `references/wcag22-inclusive-design.md` |
 | `SUS`, `usability score`, `benchmark`, `metrics` | Usability benchmarking | SUS/SEQ score report with industry comparison | `references/ux-evaluation.md` |
 | unclear request | Clarify scope tier (Micro/Meso/Macro) | Scoped analysis | `references/ux-evaluation.md` |

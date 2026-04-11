@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.codex-plugin/skills/mine/SKILL.md`](.codex-plugin/skills/mine/SKILL.md) |
 | 6 | ✓ | [`.codex-plugin/skills/search/SKILL.md`](.codex-plugin/skills/search/SKILL.md) |
 | 7 | ✓ | [`.codex-plugin/skills/status/SKILL.md`](.codex-plugin/skills/status/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`integrations/openclaw/SKILL.md`](integrations/openclaw/SKILL.md) |
 
 ---
 

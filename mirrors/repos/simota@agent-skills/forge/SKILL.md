@@ -60,9 +60,10 @@ Route elsewhere when:
 - Use mock data to bypass blockers, but document every fake assumption. Prefer MSW v2 handler reuse (single source of truth across dev/test) over ad-hoc fetch stubs.
 - Keep the build runnable and the concept demoable. Self-check at least every 30 minutes during STRIKE phase.
 - Default to Throwaway when requirements are still hypotheses; only choose Evolutionary when the domain model and API contract are stable.
-- AI-assisted prototyping (Cursor, v0, Bolt.new, Lovable, Google Stitch) accelerates scaffolding but AI-generated code contains 2.74× more vulnerabilities than human-written code (Veracode 2025, 100+ LLMs tested) and 45% of AI-generated code introduces security flaws — always review auth, input validation, and data exposure before handoff.
+- AI-assisted prototyping (Cursor, v0, Bolt.new, Lovable, Google Stitch) accelerates scaffolding but AI-generated code contains 2.74× more vulnerabilities than human-written code (Veracode 2025, 100+ LLMs tested) and 45% of AI-generated code introduces security flaws — always review auth, input validation, and data exposure before handoff. AI-assisted developers introduce security findings at 10× the rate of unassisted peers (Aikido Security 2026).
 - Hand-code security-sensitive features (authentication, payment processing, encryption) — never delegate these to AI scaffolding tools. 1 in 5 organizations using vibe-coding platforms face systemic security risks including client-side auth bypasses and exposed secrets (Wiz Research 2026).
 - Injection flaws (SQL, command, code injection) account for 33.1% of confirmed AI code vulnerabilities — prioritize injection review during COOL phase.
+- AI-assisted commits leak secrets at 2× the baseline rate (3.2% vs 1.5% across public GitHub — CSA 2026). During COOL phase, scan for hardcoded API keys, tokens, and credentials in AI-generated files before committing.
 - Record reusable friction in `.agents/forge.md` under `BUILDER FRICTION`.
 
 ## Boundaries
@@ -90,7 +91,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Pretend mock behavior is equivalent to the real system.
 - Become attached to a throwaway prototype and attempt to convert it into a final system — this creates architecture debt that compounds exponentially (the "prototype-to-production trap"). A successful prototype becomes the hammer that makes every problem look like a nail ("Successful Prototype Syndrome").
 - Ship AI-generated prototype code to production without security review — AI-generated code has 2.74× more vulnerabilities than human-written code; 35 CVEs were disclosed in March 2026 alone from vibe-coded apps. Security scans of 5,600 vibe-coded apps found 2,000+ vulnerabilities and 400+ exposed secrets (API keys, tokens, credentials hardcoded in client bundles).
-- Install AI-suggested dependencies without verification — commercial LLMs hallucinate non-existent packages 5.2% of the time (open-source models: 21.7%), and 43% of these hallucinations recur predictably. Attackers register these phantom package names with malicious payloads ("slopsquatting"). Always verify packages exist in the official registry and pin versions in lockfiles before installing.
+- Install AI-suggested dependencies without verification — commercial LLMs hallucinate non-existent packages 5.2% of the time (open-source models: 21.7%), and 43% of these hallucinations recur predictably. Attackers register these phantom package names with malicious payloads ("slopsquatting"); a confirmed malicious slopsquatted package ("unused-imports") executed post-install credential theft in 2026. Always verify packages exist in the official registry and pin versions in lockfiles before installing.
+- Use AI coding tool extensions (Cursor, Copilot, Amazon Q) without keeping them updated — these tools themselves have disclosed CVEs (rule-file injection, prompt injection via context) and are active supply-chain attack targets. Keep AI tool versions current and review extension permissions.
 
 ## Workflow
 
@@ -100,7 +102,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 |-------|-----------------|----------|------|
 | `SCAFFOLD` | Define hypothesis, isolate slice, pick Throwaway vs Evolutionary, choose mock strategy, set time-box (≤ 4h total) | Default to Throwaway when requirement is still a hypothesis | `references/prototype-to-production.md` |
 | `STRIKE` | Build minimum structure, wire events, connect mock data, make happy path demoable. Leverage AI scaffolding tools (Cursor, v0, Bolt.new, Lovable, Google Stitch) where appropriate but review generated code for OWASP Top 10 vulnerabilities (2.74× higher rate than human code). Hand-code auth/payment/encryption — never delegate these to AI scaffolding | Keep scope to one slice; prefer shadcn/ui copy-paste components for rapid customization | `references/ui-templates.md`, `references/api-mocking.md` |
-| `COOL` | Run compile/render/interaction checks, verify concept clarity, note blockers and debt. Security spot-check AI-generated auth/input handling. Verify all AI-suggested dependencies exist in the official registry (slopsquatting check) | Self-check at least every 30 minutes; if not demoable at 75% of time-box, re-scope | `references/prototyping-anti-patterns.md` |
+| `COOL` | Run compile/render/interaction checks, verify concept clarity, note blockers and debt. Security spot-check AI-generated auth/input handling. Verify all AI-suggested dependencies exist in the official registry (slopsquatting check). Scan AI-generated files for hardcoded secrets/API keys/tokens (3.2% leak rate) | Self-check at least every 30 minutes; if not demoable at 75% of time-box, re-scope | `references/prototyping-anti-patterns.md` |
 | `PRESENT` | Demo result, decide ADOPT/ITERATE/DISCARD, prepare next handoff. Include explicit risk assessment for production conversion | Mandatory before expanding scope | `references/builder-integration.md` |
 
 ## Output Routing

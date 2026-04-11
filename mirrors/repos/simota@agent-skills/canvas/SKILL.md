@@ -143,6 +143,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `ASCII`, `plain text`, `terminal` | ASCII art | Plain-text diagram | `references/ascii-templates.md` |
 | `hand-drawn`, `sketch`, `whiteboard`, `neo` | Rendering look | Mermaid with look config | `references/mermaid-v11-advanced.md` |
 | `save`, `library`, `reuse` | Diagram library | Stored diagram artifact | `references/diagram-library.md` |
+| `layers`, `scenarios`, `multi-perspective`, `abstraction levels` | D2 multi-board | D2 with layers/scenarios | `references/diagram-tools-comparison.md` |
 | `CI`, `validate`, `architecture-as-code` | Architecture-as-Code | .mmd/.d2 in docs/diagrams/ | `references/diagram-tools-comparison.md` |
 | unclear diagram request | Standard Mermaid | Mermaid diagram | `references/diagram-templates.md` |
 
@@ -160,7 +161,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Fallback | Offer ASCII when rendering support or accessibility requires it |
 | Mermaid v11 | Use v11-only features only when the target renderer supports them |
 | ELK layout | Consider ELK for `100+` nodes or overlap-heavy Mermaid layouts |
-| D2 escalation | Prefer D2 when Mermaid auto-layout produces unreadable overlaps at scale |
+| D2 escalation | Prefer D2 when Mermaid auto-layout produces unreadable overlaps at scale. Use TALA engine for architecture diagrams; ELK for port-heavy node-link diagrams |
+| D2 multi-board | Use D2 layers for abstraction-level separation (e.g., Context → Container → Code) and scenarios for behavioral variants (e.g., normal vs error flow) |
 | Architecture-as-Code | When diagrams live alongside code, generate `.mmd`/`.d2` in `docs/diagrams/` |
 | draw.io MCP | When `@drawio/mcp` is available, prefer MCP over raw XML generation |
 

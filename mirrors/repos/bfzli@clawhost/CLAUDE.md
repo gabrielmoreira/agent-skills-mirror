@@ -442,7 +442,7 @@ pnpm --filter api db:migrate   # Run migrations
 - `POST /:id/diagnostics/status` - Service diagnostics
 - `POST /:id/diagnostics/logs` - Retrieve logs
 - `POST /:id/diagnostics/repair` - Attempt repair (admin-only)
-- `POST /:id/reinstall` - Reinstall OpenClaw (admin-only)
+- `POST /:id/reinstall` - Reinstall OpenClaw (rate-limited to once per 24h for non-admins)
 - `GET /:id/export` - Export claw configuration
 - `POST /:id/agents` - List agents
 - `POST /:id/agents/create` - Create agent
@@ -604,6 +604,9 @@ CLOUDFLARE_ZONE_ID=...
 # Resend (email)
 RESEND_API_KEY=...
 FROM_EMAIL=OpenClaw <noreply@yourdomain.com>
+
+# Encryption (AES-256-GCM for secrets at rest)
+ENCRYPTION_KEY=...  # 32-byte hex string (64 chars), generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 # Polar (payments)
 POLAR_ACCESS_TOKEN=...

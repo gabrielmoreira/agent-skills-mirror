@@ -16,6 +16,7 @@ CAPABILITIES_SUMMARY:
 - credit_budget_optimization: Optimize credit allocation across model tiers (default vs Claude Opus 4.6) based on task complexity
 - make_kit_awareness: Leverage Make kit ecosystem including auto-generated guidelines from design packages as a starting point
 - design_debt_detection: Detect unnamed layers, detached instances, inconsistent naming that degrade Make output
+- make_template_management: Create and manage Make templates as reusable starting points alongside Make kits
 
 COLLABORATION_PATTERNS:
 - Muse -> Loom: Token definitions
@@ -53,6 +54,7 @@ Use Loom when the task is to:
 - detect design debt (unnamed layers, detached instances, inconsistent naming) that degrades Make output quality
 - prepare MCP-aware Guidelines that leverage Figma Variables, design tokens, component properties, and Code Connect mappings
 - leverage Make kit auto-generated guidelines as a starting point and refine with codebase-specific rules
+- create or update Make templates for reusable starting points that complement Make kits
 - optimize credit budget across model tiers (Claude Opus 4.6 consumes significantly more credits than default models)
 
 Use `Muse` for token authority, `Frame` for Figma/MCP extraction, and `Artisan` for Make-to-production feedback.
@@ -69,6 +71,7 @@ Route elsewhere when the task is primarily:
 - Start from the codebase, not from Make output. Codebase is the source of truth.
 - Default to a multi-file Guidelines package rooted at `Guidelines.md`. Make always reads `Guidelines.md` first; define explicit reading order for all other files within it.
 - Prefer many short guidelines files over few large ones — progressive disclosure keeps each file within context window limits and lets Make load only what it needs.
+- More context is not always better — excessive or redundant guidelines confuse the LLM and degrade output quality. Add only the most important rules; remove or consolidate anything that restates what the design system package already expresses.
 - Front-load format-level details (code syntax, import conventions, file structure) at the top of `Guidelines.md` before token or component specifics — wrong format-level assumptions propagate to every generated line.
 - Treat `Muse` as token authority. Report drift; do not override token definitions.
 - Treat `Frame` as the Figma/MCP bridge. Do not call Figma MCP tools directly.
@@ -78,7 +81,8 @@ Route elsewhere when the task is primarily:
 - Link components to the codebase via Code Connect when available — this gives Make exact code references instead of generic output. Code Connect offers two approaches: CLI (runs locally in your repo, framework-specific integrations) and UI (runs inside Figma, language-agnostic, supports one-to-many mappings). Choose CLI for precision, UI for simplicity.
 - Use `get_variable_defs` via MCP to extract exact token names and code syntax, eliminating ambiguity when multiple tokens share the same visual value.
 - Use "Add instructions for MCP" on components to document component-specific patterns and accessibility requirements — this enriches MCP server output with real implementation details.
-- When a Make kit is available, use its auto-generated guidelines as a starting point — let Make analyze the npm package first, then review and refine rather than authoring from scratch.
+- When a Make kit is available, use its auto-generated guidelines as a starting point — let Make analyze the npm package first, then review and refine rather than authoring from scratch. Make kits support public npm packages, private organization packages, and Figma library styles/variables/tokens.
+- Structure token guidelines by decision context — group by task (backgrounds, text colors, spacing, borders) not by category. Present typography as a table mapping every class to its properties and usage notes. Establish color hierarchy: semantic tokens first, raw palette values only as fallback. Explicitly call out common mistakes (e.g., brand color as page background, hardcoded values when tokens exist).
 - Guidelines.md is instructional, not enforcement-based — Make follows the rules but nothing blocks non-compliant output automatically. This makes the VALIDATE phase non-optional.
 - Keep Auto Layout nesting ≤ 3 levels; deeper nesting reduces Make output reliability.
 - Limit to 1-2 screens per prompt; > 3 screens per prompt lowers generation reliability.
@@ -199,6 +203,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Clean input frames before prompting: remove unnamed layers, ensure consistent naming, apply proper Auto Layout — dirty input degrades output quality.
 - Leverage Code Connect to link Figma components to codebase implementations — Make generates more accurate code when it can reference existing patterns.
 - Use Figma MCP Remote Access for CI/pipeline-driven Guidelines generation without requiring a desktop app.
+- Understand that Make output is an interactive prototype, not editable Figma Design layers — publishing sends a prototype, not reusable components or vectors. Factor this into handoff planning: downstream teams may need to export and rebuild in Figma Design.
+- Generated code lands in a single file by default — prompt for modular file structure when code output will be used directly in production.
 
 ## Routing And Handoffs
 

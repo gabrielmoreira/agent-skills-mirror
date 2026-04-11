@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 27 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,31 +61,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`src-tauri/resources/default-skills/analysis/SKILL.md`](src-tauri/resources/default-skills/analysis/SKILL.md) |
-| 4 | ✓ | [`src-tauri/resources/default-skills/broadcast_generate/SKILL.md`](src-tauri/resources/default-skills/broadcast_generate/SKILL.md) |
-| 5 | ✓ | [`src-tauri/resources/default-skills/content_post_with_cover/SKILL.md`](src-tauri/resources/default-skills/content_post_with_cover/SKILL.md) |
-| 6 | ✓ | [`src-tauri/resources/default-skills/cover_generate/SKILL.md`](src-tauri/resources/default-skills/cover_generate/SKILL.md) |
-| 7 | ✓ | [`src-tauri/resources/default-skills/form_generate/SKILL.md`](src-tauri/resources/default-skills/form_generate/SKILL.md) |
-| 8 | ✓ | [`src-tauri/resources/default-skills/image_generate/SKILL.md`](src-tauri/resources/default-skills/image_generate/SKILL.md) |
-| 9 | ✓ | [`src-tauri/resources/default-skills/library/SKILL.md`](src-tauri/resources/default-skills/library/SKILL.md) |
-| 10 | ✓ | [`src-tauri/resources/default-skills/modal_resource_search/SKILL.md`](src-tauri/resources/default-skills/modal_resource_search/SKILL.md) |
-| 11 | ✓ | [`src-tauri/resources/default-skills/pdf_read/SKILL.md`](src-tauri/resources/default-skills/pdf_read/SKILL.md) |
-| 12 | ✓ | [`src-tauri/resources/default-skills/presentation_generate/SKILL.md`](src-tauri/resources/default-skills/presentation_generate/SKILL.md) |
-| 13 | ✓ | [`src-tauri/resources/default-skills/report_generate/SKILL.md`](src-tauri/resources/default-skills/report_generate/SKILL.md) |
-| 14 | ✓ | [`src-tauri/resources/default-skills/research/SKILL.md`](src-tauri/resources/default-skills/research/SKILL.md) |
-| 15 | ✓ | [`src-tauri/resources/default-skills/site_search/SKILL.md`](src-tauri/resources/default-skills/site_search/SKILL.md) |
-| 16 | ✓ | [`src-tauri/resources/default-skills/summary/SKILL.md`](src-tauri/resources/default-skills/summary/SKILL.md) |
-| 17 | ✓ | [`src-tauri/resources/default-skills/transcription_generate/SKILL.md`](src-tauri/resources/default-skills/transcription_generate/SKILL.md) |
-| 18 | ✓ | [`src-tauri/resources/default-skills/translation/SKILL.md`](src-tauri/resources/default-skills/translation/SKILL.md) |
-| 19 | ✓ | [`src-tauri/resources/default-skills/typesetting/SKILL.md`](src-tauri/resources/default-skills/typesetting/SKILL.md) |
-| 20 | ✓ | [`src-tauri/resources/default-skills/url_parse/SKILL.md`](src-tauri/resources/default-skills/url_parse/SKILL.md) |
-| 21 | ✓ | [`src-tauri/resources/default-skills/video_generate/SKILL.md`](src-tauri/resources/default-skills/video_generate/SKILL.md) |
-| 22 | ✓ | [`src-tauri/resources/default-skills/webpage_generate/SKILL.md`](src-tauri/resources/default-skills/webpage_generate/SKILL.md) |
-| 23 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
-| 24 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
-| 25 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
-| 26 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
-| 27 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
+| 3 | ✓ | [`src-tauri/.agents/skills/markdown-0fbd21/SKILL.md`](src-tauri/.agents/skills/markdown-0fbd21/SKILL.md) |
+| 4 | ✓ | [`src-tauri/resources/default-skills/analysis/SKILL.md`](src-tauri/resources/default-skills/analysis/SKILL.md) |
+| 5 | ✓ | [`src-tauri/resources/default-skills/broadcast_generate/SKILL.md`](src-tauri/resources/default-skills/broadcast_generate/SKILL.md) |
+| 6 | ✓ | [`src-tauri/resources/default-skills/content_post_with_cover/SKILL.md`](src-tauri/resources/default-skills/content_post_with_cover/SKILL.md) |
+| 7 | ✓ | [`src-tauri/resources/default-skills/cover_generate/SKILL.md`](src-tauri/resources/default-skills/cover_generate/SKILL.md) |
+| 8 | ✓ | [`src-tauri/resources/default-skills/form_generate/SKILL.md`](src-tauri/resources/default-skills/form_generate/SKILL.md) |
+| 9 | ✓ | [`src-tauri/resources/default-skills/image_generate/SKILL.md`](src-tauri/resources/default-skills/image_generate/SKILL.md) |
+| 10 | ✓ | [`src-tauri/resources/default-skills/library/SKILL.md`](src-tauri/resources/default-skills/library/SKILL.md) |
+| 11 | ✓ | [`src-tauri/resources/default-skills/modal_resource_search/SKILL.md`](src-tauri/resources/default-skills/modal_resource_search/SKILL.md) |
+| 12 | ✓ | [`src-tauri/resources/default-skills/pdf_read/SKILL.md`](src-tauri/resources/default-skills/pdf_read/SKILL.md) |
+| 13 | ✓ | [`src-tauri/resources/default-skills/presentation_generate/SKILL.md`](src-tauri/resources/default-skills/presentation_generate/SKILL.md) |
+| 14 | ✓ | [`src-tauri/resources/default-skills/report_generate/SKILL.md`](src-tauri/resources/default-skills/report_generate/SKILL.md) |
+| 15 | ✓ | [`src-tauri/resources/default-skills/research/SKILL.md`](src-tauri/resources/default-skills/research/SKILL.md) |
+| 16 | ✓ | [`src-tauri/resources/default-skills/site_search/SKILL.md`](src-tauri/resources/default-skills/site_search/SKILL.md) |
+| 17 | ✓ | [`src-tauri/resources/default-skills/summary/SKILL.md`](src-tauri/resources/default-skills/summary/SKILL.md) |
+| 18 | ✓ | [`src-tauri/resources/default-skills/transcription_generate/SKILL.md`](src-tauri/resources/default-skills/transcription_generate/SKILL.md) |
+| 19 | ✓ | [`src-tauri/resources/default-skills/translation/SKILL.md`](src-tauri/resources/default-skills/translation/SKILL.md) |
+| 20 | ✓ | [`src-tauri/resources/default-skills/typesetting/SKILL.md`](src-tauri/resources/default-skills/typesetting/SKILL.md) |
+| 21 | ✓ | [`src-tauri/resources/default-skills/url_parse/SKILL.md`](src-tauri/resources/default-skills/url_parse/SKILL.md) |
+| 22 | ✓ | [`src-tauri/resources/default-skills/video_generate/SKILL.md`](src-tauri/resources/default-skills/video_generate/SKILL.md) |
+| 23 | ✓ | [`src-tauri/resources/default-skills/webpage_generate/SKILL.md`](src-tauri/resources/default-skills/webpage_generate/SKILL.md) |
+| 24 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
+| 25 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
+| 26 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
+| 27 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
+| 28 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
 
 ---
 

@@ -64,7 +64,8 @@ Route elsewhere when:
 - Write chorus text in full every time — never use `repeat chorus` or shorthand. Keep chorus ≤ 4 lines for melodic consistency — longer choruses cause Suno to vary melody across repetitions.
 - Optimize structure, rhyme, and vocabulary per genre-specific conventions.
 - Style prompts support two modes on V4.5+: (a) tag-based (comma-separated, 5-8 tags, Top-Loaded Palette ordering) or (b) conversational prose (natural language description). Both front-load genre/mood first — Suno weighs earlier content more heavily. Structured tags produce more consistent and predictable results than prose; use prose for nuanced descriptions but tags for repeatable output.
-- V5 Studio-aware formatting: structure tags double as edit anchors — clean `[Verse 1]`, `[Chorus]` boundaries enable precise Replace/Extend operations. Replace small sections for better AI accuracy; large replacements require trial and error. Use `[Callback: <reference>]` (e.g., `[Callback: Chorus melody]`) in Extend chains to instruct Suno to maintain feel or reference a prior section.
+- V5 Studio-aware formatting: structure tags double as edit anchors — clean `[Verse 1]`, `[Chorus]` boundaries enable precise editing. Studio supports five section operations: Remake (regenerate in place), Rewrite (new prompt for section), Extend (continue from endpoint), Reorder (rearrange sections), and Delete. Replace small sections for better AI accuracy; large replacements require trial and error.
+- Extend drift mitigation: extended tracks frequently deviate from the original style. Re-inject genre/mood keywords every 1-2 Extends and use `[Callback: <reference>]` (e.g., `[Callback: Chorus melody]`) to anchor feel. Raising Style Influence slider during Extend reduces drift.
 - Target 5-8 style tags for tag-based prompts; ≤ 4 is too vague (Suno fills defaults producing generic output), > 10 introduces conflicting signals that muddy the result. Text beyond the character limit is silently truncated without warning — always front-load the most important genre/mood tags.
 
 ## Core Rules
@@ -101,7 +102,7 @@ Route elsewhere when:
 - Use `[Intro]` alone — use `[Short Instrumental Intro]` instead; bare `[Intro]` often triggers unwanted vocals.
 - Write plain-text style directions inside lyrics — Suno may vocalize them literally.
 - Overuse exclamation marks — aggressiveness propagates to subsequent lines, distorting vocal delivery.
-- Use negative direction ("no drums", "not sad") — describe what you want, not what you don't want; Suno handles positive direction far better.
+- Use negative direction in lyrics ("no drums", "not sad") — describe what you want, not what you don't want; Suno vocalizes or ignores negative phrasing in lyrics. For instrument/element exclusion, use V5+ Advanced Options > Exclude field instead.
 - Default to AABB rhyme scheme — couplet rhymes are Suno's default fallback and the primary signal of AI-generated lyrics; vary with ABAB, ABCB, or unrhymed sections.
 - Write chorus longer than 4 lines — long or structurally unpredictable choruses cause Suno to vary melody on each repetition, breaking hook consistency.
 - Write overly literary, archaic, or rare vocabulary — complex syntax and unusual words cause garbled, mispronounced, or rushed vocals; write conversationally for clean AI vocal rendering.
@@ -174,7 +175,7 @@ Write natural language descriptions: "Create a melodic, emotional deep house son
 - V4.5+: up to 1,000 chars — use the extra space for nuanced vocal/production detail, not more contradictory tags
 - V4.5+ Prompt Enhancement: Suno's "Enhance" button auto-expands a rough tag set into a rich style prompt — useful as a starting point, but always review and reorder to front-load genre/mood
 - V5.5 Voices: when a Voice is selected, style prompt should complement (not fight) the trained vocal character
-- V5.5 Sliders: recommend starting points — Weirdness ~30% for mainstream genres (raise for experimental), Style Influence ~70% for prompt-faithful output, Audio Influence depends on reference track intent (10% for loose inspiration, 80%+ for close adaptation)
+- V5.5 Sliders: recommend starting points — Weirdness ~30% for mainstream genres (raise for experimental), Style Influence ~70% for prompt-faithful output, Audio Influence depends on reference track intent (10% for loose inspiration, 80%+ for close adaptation). Section-specific tuning: Chorus — lower Weirdness + raise Style Influence for hook consistency; Verses — keep both conservative to prioritize lyric clarity and phrasing
 
 ## Output Requirements
 

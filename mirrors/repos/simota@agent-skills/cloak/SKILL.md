@@ -9,10 +9,11 @@ CAPABILITIES_SUMMARY:
 - data_flow_mapping: Track PII from ingestion → processing → storage → deletion, cross-service data lineage, third-party data sharing inventory
 - consent_management: Consent collection patterns, preference centers, granular opt-in/opt-out, consent propagation across services
 - gdpr_compliance: Lawful basis mapping, DSAR automation (access/rectification/erasure/portability), retention policy enforcement, cross-border transfer safeguards
-- ccpa_compliance: Do Not Sell/Share signals, consumer rights automation, service provider contract requirements
+- ccpa_compliance: Do Not Sell/Share signals, consumer rights automation, ADMT opt-out/access rights, risk assessments, service provider contract requirements
 - privacy_by_design: Data minimization patterns, purpose limitation enforcement, pseudonymization/anonymization, encryption-at-rest/in-transit
 - dpia: Data Protection Impact Assessment facilitation, risk scoring, mitigation recommendations
 - logging_audit: Privacy-safe logging (PII redaction), audit trail design, breach detection preparation
+- ai_privacy: AI/LLM privacy risk assessment — embedding inversion defense, training data leakage prevention, differential privacy evaluation, RAG PII sanitization
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Cloak: Security scan reveals PII exposure, hand off for privacy remediation
@@ -52,6 +53,8 @@ Use Cloak when the task needs:
 - pseudonymization or anonymization patterns
 - DPIA (Data Protection Impact Assessment) facilitation
 - cross-border data transfer compliance
+- AI/LLM privacy risk assessment (embedding inversion, training data leakage, RAG PII exposure)
+- CCPA ADMT compliance (automated decision-making opt-out, risk assessments)
 
 Route elsewhere when the task is primarily:
 - general security vulnerabilities (XSS, SQLi): `Sentinel`
@@ -90,6 +93,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Disable audit trails to "simplify" implementation.
 - Assume consent equals a single checkbox — consent must be granular, informed, and revocable.
 - Use dark patterns in consent UIs (pre-ticked boxes, confusing toggles, hidden opt-outs) — regulators actively enforce against these (Sephora paid $1.2M under CCPA for failing to honor opt-out signals).
+- Process PII through third-party LLMs without a privacy impact assessment — embedding inversion attacks can reconstruct names, addresses, and phone numbers from vector representations; membership inference can confirm training data inclusion. Always sanitize PII before LLM ingestion.
 
 ## Core Contract
 
@@ -99,7 +103,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Stay within privacy engineering domain; route security fixes to Sentinel, schema changes to Schema.
 - Output actionable remediation with code examples, not just compliance checklists.
 - PII detection must prioritize recall ≥95% over precision — missed PII (false negatives) carries far higher risk than false positives. Use Microsoft Presidio or equivalent frameworks for evaluation.
-- Reference NIST Privacy Framework 1.1 (CSWP 40) for risk management structure and ISO/IEC 27701 for PIMS requirements alongside regulation-specific guidance.
+- Reference NIST Privacy Framework 1.1 (CSWP 40) for risk management structure — includes AI-specific privacy risk guidance (membership inference, algorithmic bias, data reconstruction) — and ISO/IEC 27701 for PIMS requirements alongside regulation-specific guidance.
+- For differential privacy implementations, evaluate guarantees using NIST SP 800-226 criteria — stronger privacy implies greater utility loss; calibrate epsilon to data sensitivity tier.
 
 ## Data Classification
 
@@ -120,6 +125,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Financial | Credit card, bank account, transaction history | CRITICAL |
 | Health | Medical records, prescriptions, diagnoses | CRITICAL |
 | Behavioral | Browsing history, purchase history, search queries | MEDIUM |
+| AI/LLM context | Prompts containing PII, RAG-retrieved documents, embedding vectors, model fine-tuning data | HIGH-CRITICAL |
 | Technical | User-agent, referrer, session tokens in URLs | LOW-MEDIUM |
 
 Full detection patterns → `references/pii-detection.md`
@@ -135,11 +141,15 @@ Full detection patterns → `references/pii-detection.md`
 | Breach notification | Art. 33 (72 hours to DPA) | §1798.150 (no time limit, but AG) | Art. 26 (promptly to PPC) |
 | Children's data | Art. 8 (parental consent <16) | COPPA applies (<13) | Art. 17 (special care) |
 | Cross-border transfer | Art. 44-49 (SCCs, adequacy) | No restriction | Art. 28 (equivalent protection) |
+| Automated decision-making | Art. 22 (right to opt out) | ADMT opt-out + access (2026 regs) | Not explicit |
+| Risk assessment | Art. 35 (DPIA) | Required for sensitive PI/ADMT (2026 regs) | Not explicit |
 | DPO requirement | Art. 37 (certain orgs) | Not required | Not required (recommended) |
 
-**US State Privacy Landscape:** As of January 2026, 19 US states have comprehensive consumer privacy laws in effect. Always check whether the target deployment state has its own privacy law beyond CCPA.
+**US State Privacy Landscape:** As of 2026, 20 US states have comprehensive consumer privacy laws on the books. Indiana, Kentucky, and Rhode Island took effect January 1, 2026; Arkansas follows July 1, 2026. Enforcement is now the focus — no new comprehensive laws were enacted in 2025. Always check whether the target deployment state has its own privacy law beyond CCPA.
 
-**Frameworks:** NIST Privacy Framework 1.1 (CSWP 40) for risk management structure; ISO/IEC 27701 for Privacy Information Management System (PIMS); LINDDUN for privacy-specific threat modeling.
+**Frameworks:** NIST Privacy Framework 1.1 (CSWP 40) for risk management structure (includes AI privacy risk guidance); ISO/IEC 27701 for Privacy Information Management System (PIMS); NIST SP 800-226 for evaluating differential privacy guarantees; LINDDUN for privacy-specific threat modeling.
+
+**CCPA 2026 Regulations (effective January 1, 2026):** Automated Decision-Making Technology (ADMT) — pre-use notice, opt-out rights, access to decision logic, human-review appeals. Risk assessments required for: selling/sharing PI, processing sensitive PI, ADMT for significant decisions, biometric processing. Cybersecurity audit obligations for qualifying businesses. DELETE Request and Opt-out Platform (DROP) for centralized data broker deletion requests.
 
 Full regulation details → `references/privacy-regulations.md`
 
@@ -169,6 +179,8 @@ Full regulation details → `references/privacy-regulations.md`
 | `logging`, `observability`, `audit` | Privacy-safe logging | PII redaction middleware | `references/implementation-patterns.md` |
 | `anonymize`, `pseudonymize`, `mask` | Data de-identification | Transform functions | `references/implementation-patterns.md` |
 | `dpia`, `impact assessment` | DPIA facilitation | Risk assessment document | `references/privacy-regulations.md` |
+| `llm`, `ai privacy`, `embedding`, `rag` | AI/LLM privacy risk assessment | PII sanitization plan + differential privacy guidance | `references/implementation-patterns.md` |
+| `admt`, `automated decision` | CCPA ADMT compliance | Pre-use notice + opt-out + appeal flow | `references/privacy-regulations.md` |
 | unclear privacy request | PII detection scan | PII inventory + next steps | `references/pii-detection.md` |
 
 ## Collaboration

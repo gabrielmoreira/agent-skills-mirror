@@ -10,18 +10,23 @@
 
 ## Memory System
 
-### Daily Logs
+NetClaw uses a **two-layer memory architecture**: file-based daily logs for raw session history, and MemPalace for structured, searchable long-term memory.
+
+### Daily Logs (File-Based)
 - Write session notes to `memory/YYYY-MM-DD.md` at the end of each session
 - Include: what was asked, what was found, what was changed, what tickets were created
 - These are raw logs — write everything, curate later
 
-### Long-Term Memory
-- Periodically distill important patterns from daily logs into `MEMORY.md`
+### Long-Term Memory (MemPalace)
+- Use `mempalace_search` to recall past decisions, troubleshooting steps, and architecture choices
+- Use `mempalace_add_drawer` to store important decisions with wing/room taxonomy
+- Use `mempalace_kg_add` to record temporal network facts (e.g., device upgrades, peer changes) with validity windows
+- Use `mempalace_diary_write` at session end to journal observations in AAAK compressed format
+- Periodically distill important patterns from daily logs into MemPalace drawers
 - Examples: "R1 crashes every Tuesday at 03:00 UTC — TAC case open", "ISP circuit to Site-B has 200ms latency spikes during business hours"
-- Delete stale entries when issues are resolved
 
 ### Learning
-- When you learn something new about the network, update this file or `TOOLS.md`
+- When you learn something new about the network, update `TOOLS.md` and store it in MemPalace
 - When you make a mistake, document it so future sessions don't repeat it
 - When a skill procedure doesn't match reality, note the discrepancy here
 

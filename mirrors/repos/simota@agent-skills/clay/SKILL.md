@@ -16,6 +16,7 @@ CAPABILITIES_SUMMARY:
 - ai_retopology: Neural wrapping and autoregressive retopology pipeline scripts
 - auto_rigging: Auto-rigging and character animation preparation pipeline scripts
 - two_stage_pipeline: Orchestrate text→image→3D generation for complex assets
+- structured_generation: PartCrafter-based image-to-parts 3D generation (2–16 semantic meshes)
 - material_interchange: USD/MaterialX/OpenPBR material pipeline code
 
 COLLABORATION_PATTERNS:
@@ -54,6 +55,7 @@ Use Clay when the user needs:
 - USD / MaterialX / OpenPBR material interchange pipeline code
 - two-stage generation pipeline (text→image→3D) orchestration code
 - video-to-3D or Gaussian Splatting viewer code
+- structured/part-based 3D generation code (PartCrafter — per-part meshes from single image)
 
 Route elsewhere when the task is primarily:
 - 2D pixel art or sprite generation: `Dot`
@@ -71,7 +73,7 @@ Route elsewhere when the task is primarily:
 - Estimate API costs before generation runs.
 - Include QC validation in every generation workflow.
 - Specify target format, engine, and poly budget explicitly.
-- Recommend multi-provider approach — Tripo P1 Smart Mesh for native clean low-poly topology (game-ready in ~2 s, native 3D diffusion architecture), Tripo H3.1 for high-fidelity image-to-3D with improved geometry precision and texture quality, Rodin Gen-2 for photorealistic textures (10B params, 4K), Meshy 6 for rapid iteration with built-in remesh/retexture/rigging and 3MF 3D-print export, Hunyuan3D 3.5 Pro for maximum fidelity (8K PBR textures at 8192×8192, up to 2M faces, subsurface scattering and transparency support), Hunyuan3D 3.5 Rapid for fast production (<60 s), open-source models (Hunyuan/Trellis) for stylized content. Note: Sloyd is parametric template-based (slider customization of pre-made models), not true generative AI — recommend only for constrained parametric asset libraries, not creative generation. Note: CSM was acquired by Google (Jan 2026) — evaluate API continuity before depending on CSM endpoints.
+- Recommend multi-provider approach — Tripo P1 Smart Mesh for native clean low-poly topology with quad-dominant mesh output (game-ready in ~2 s, native 3D diffusion architecture, 48–20K faces, consistent edge loops suitable for rigging/animation), Tripo H3.1 for high-fidelity image-to-3D with improved geometry precision and texture quality, Rodin Gen-2 for photorealistic textures (10B params, 4K), Meshy 6 for rapid iteration with built-in remesh/retexture/rigging and 3MF 3D-print export, Hunyuan3D 3.5 Pro for maximum fidelity (8K PBR textures at 8192×8192, up to 2M faces, subsurface scattering and transparency support), Hunyuan3D 3.5 Rapid for fast production (<60 s), open-source models (Hunyuan/Trellis/PartCrafter) for stylized content and structured generation. PartCrafter (NeurIPS 2025, open-source): first structured image-to-3D model producing 2–16 semantically distinct part meshes from a single image (~34 s on H20 GPU) — ideal for assets requiring per-part editing, animation, or 3D printing with separate components. Note: Sloyd is parametric template-based (slider customization of pre-made models), not true generative AI — recommend only for constrained parametric asset libraries, not creative generation. Note: CSM was acquired by Google (Jan 2026) — evaluate API continuity before depending on CSM endpoints.
 - Generation speed reference: Tripo Smart Mesh P1 ~2 s (low-poly), Tripo H3.1 ~20–30 s, Meshy ~40–60 s, Hunyuan3D 3.5 Rapid <60 s, Rodin ~60–180 s for maximum quality. Factor speed into provider selection for batch vs hero workflows.
 - Guide prompt specificity: include subject, style, colors, topology hints, and scale in every generation prompt. Current text-to-3D tools are optimized for single isolated objects — split multi-object scenes into per-object prompts and composite in-engine.
 - For complex assets, recommend two-stage pipeline (text→image→3D) when direct text-to-3D is insufficient.
@@ -143,6 +145,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `auto-retopo`, `neural retopo`, `smart retopo` | AI retopology pipeline | `.py` | `references/game-pipeline.md` |
 | `materialx`, `openpbr`, `material interchange` | USD/MaterialX material code | `.py` / `.xml` | `references/code-patterns.md`, `references/game-pipeline.md` |
 | `text-to-image-to-3d`, `two-stage`, `staged pipeline` | Two-stage generation pipeline | `.py` | `references/api-integration.md`, `references/prompt-engineering.md` |
+| `partcrafter`, `structured 3d`, `part-based`, `semantic parts` | PartCrafter structured generation | `.py` | `references/api-integration.md`, `references/code-patterns.md` |
 | unclear request | Provider API call (Meshy) | `.py` | `references/api-integration.md` |
 
 Routing rules:

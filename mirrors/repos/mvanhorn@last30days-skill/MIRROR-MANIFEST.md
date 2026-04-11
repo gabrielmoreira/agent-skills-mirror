@@ -63,7 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`SKILL.md`](SKILL.md) |
 | 4 | ✓ | [`skills/last30days-nux/SKILL.md`](skills/last30days-nux/SKILL.md) |
-| 5 | ✓ | [`skills/last30days-v3/SKILL.md`](skills/last30days-v3/SKILL.md) |
+| 5 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
 
 ---
 

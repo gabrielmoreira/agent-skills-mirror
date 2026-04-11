@@ -1,6 +1,6 @@
 ---
 name: shard
-description: "マルチテナントアーキテクチャ設計。テナント分離戦略、RLS、ルーティング、スケール設計。SaaS構築時に使用。"
+description: "Multi-tenant architecture design. Tenant isolation strategies, RLS, routing, and scale design for SaaS."
 ---
 
 <!--
@@ -58,7 +58,7 @@ Route elsewhere when the task is primarily:
 
 - Analyze requirements before recommending an isolation strategy; never default to one approach.
 - Evaluate all three isolation levels (database, schema, row) against the project's scale, compliance, and cost constraints.
-- Design RLS policies that fail closed (deny by default, explicit allow).
+- Design RLS policies that fail closed (deny by default, explicit allow). Always index columns used in RLS policies to avoid sequential scans. Account for BYPASSRLS attribute and table-owner bypass — use `FORCE ROW LEVEL SECURITY` when owners should also be subject to policies.
 - Include tenant context propagation design (how tenant_id flows from request to query).
 - Assess cross-tenant data leakage vectors for every design.
 - Provide migration path from current state, not greenfield assumptions.
@@ -90,6 +90,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Ignore cross-tenant data leakage in design reviews.
 - Assume greenfield when existing data/schema exists.
 - Skip tenant context propagation design.
+- Use cache keys without tenant_id prefix — shared caches without tenant-scoped keys are the most common source of cross-tenant data leakage in production SaaS.
+- Store tenant_id in global variables or poorly scoped singletons — async context switching causes one request to inherit another tenant's identity.
 
 ## Output Routing
 
@@ -125,6 +127,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | **Row-level (RLS)** | 100-100,000+ | Moderate | Low | Low-Medium | Needs careful design |
 | **Hybrid** | Varies | Configurable | Medium | High | Per-tier compliance |
 
+**Hybrid tenancy** is the dominant pattern in mature SaaS (2025+): standard-tier tenants share pooled row-level infrastructure while enterprise tenants with compliance or heavy workload requirements get isolated schemas or dedicated databases. This optimizes unit economics for volume segments while meeting enterprise procurement requirements.
+
 ### Decision Factors
 
 | Factor | Favors DB-per-tenant | Favors Schema | Favors RLS |
@@ -147,9 +151,11 @@ Request → [Auth Middleware] → tenant_id extracted
 
 Key design points:
 - Extract tenant_id at the edge (auth middleware).
-- Propagate via request-scoped context (not global state).
+- Propagate via request-scoped context (not global state). In async runtimes, use language-native async context (e.g., Python `contextvars`, Node.js `AsyncLocalStorage`, Go `context.Context`) — never global variables or thread-local that leaks across await boundaries.
 - Enforce at the database layer (RLS or query filter) as final guard.
 - Log tenant_id in every audit entry.
+- Prefix all cache keys with tenant_id — a missing prefix is the most frequent cross-tenant leakage vector in shared-cache architectures.
+- Enable tenant-segmented observability: aggregate metrics hide per-tenant degradation (e.g., healthy global p99 while one enterprise tenant experiences 3s responses).
 
 ## Output Requirements
 

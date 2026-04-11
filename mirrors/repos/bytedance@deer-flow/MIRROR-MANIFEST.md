@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 93
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 93 |
+| Files         | 95 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -142,16 +142,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 81 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
 | 82 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
 | 83 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
-| 84 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
-| 85 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
-| 86 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
-| 87 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
-| 88 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
-| 89 | ✓ | [`skills/public/vercel-deploy-claimable/scripts/deploy.sh`](skills/public/vercel-deploy-claimable/scripts/deploy.sh) |
-| 90 | ✓ | [`skills/public/vercel-deploy-claimable/SKILL.md`](skills/public/vercel-deploy-claimable/SKILL.md) |
-| 91 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
-| 92 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
-| 93 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
+| 84 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
+| 85 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
+| 86 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
+| 87 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
+| 88 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
+| 89 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
+| 90 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
+| 91 | ✓ | [`skills/public/vercel-deploy-claimable/scripts/deploy.sh`](skills/public/vercel-deploy-claimable/scripts/deploy.sh) |
+| 92 | ✓ | [`skills/public/vercel-deploy-claimable/SKILL.md`](skills/public/vercel-deploy-claimable/SKILL.md) |
+| 93 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
+| 94 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
+| 95 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
 
 ---
 

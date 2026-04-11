@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default patterns, 0 followed patterns, 157 file(s) materialized.
+Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default patterns, 0 followed patterns, 158 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 157 |
+| Files         | 158 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -216,6 +216,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 155 | ✓ | [`skills/system-profile/SKILL.md`](skills/system-profile/SKILL.md) |
 | 156 | ✓ | [`skills/training-check/SKILL.md`](skills/training-check/SKILL.md) |
 | 157 | ✓ | [`skills/vast-gpu/SKILL.md`](skills/vast-gpu/SKILL.md) |
+| 158 | ✓ | [`skills/writing-systems-papers/SKILL.md`](skills/writing-systems-papers/SKILL.md) |
 
 ---
 

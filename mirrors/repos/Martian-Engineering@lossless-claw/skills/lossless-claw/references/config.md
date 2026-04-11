@@ -43,6 +43,20 @@ Good starting range:
 
 - `32` to `64`
 
+### `freshTailMaxTokens`
+
+Optional token cap for the protected fresh tail.
+
+Why it matters:
+
+- Prevents a few huge tool results from making the "fresh" suffix effectively uncompactable.
+- Still preserves the newest message even if that single message exceeds the cap.
+
+Good starting range:
+
+- Leave unset unless large tool outputs are forcing avoidable cost or overflow.
+- Start around `12000` to `32000` when you want a softer, size-aware fresh tail.
+
 ### `leafChunkTokens`
 
 Caps how much raw material gets summarized into one leaf summary.
@@ -154,6 +168,7 @@ Why it matters:
 
 - useful for custom deployments, testing, or isolating environments
 - wrong path selection is a common reason operators think LCM is empty or not growing
+- the default resolves to `${OPENCLAW_STATE_DIR}/lcm.db` (falls back to `~/.openclaw/lcm.db`)
 
 ### `databasePath`
 
@@ -164,6 +179,15 @@ Why it matters:
 - this is the documented key new config should use
 - `dbPath` is still accepted for compatibility
 
+### `largeFilesDir`
+
+Directory for persisting large-file text payloads externalised from the transcript.
+
+Why it matters:
+
+- defaults to `${OPENCLAW_STATE_DIR}/lcm-files`; on multi-profile hosts each profile stores files in its own state directory automatically
+- override with `LCM_LARGE_FILES_DIR` or set `largeFilesDir` in plugin config when you want an explicit path
+
 ### `largeFileThresholdTokens`
 
 Threshold for externalizing oversized tool/file payloads out of the main transcript into large-file storage.
@@ -173,6 +197,15 @@ Why it matters:
 - lower values externalize more aggressively
 - higher values keep more payload inline but can bloat storage and compaction inputs
 
+### `transcriptGcEnabled`
+
+Controls whether `maintain()` rewrites transcript entries for already-externalized tool results.
+
+Why it matters:
+
+- keep this off unless you want transcript GC to mutate the live session file during maintenance
+- the default is `false`
+
 ## Compaction timing and shape
 
 ### `contextThreshold`
@@ -180,6 +213,10 @@ Why it matters:
 See high-impact settings above.
 
 ### `freshTailCount`
+
+See high-impact settings above.
+
+### `freshTailMaxTokens`
 
 See high-impact settings above.
 

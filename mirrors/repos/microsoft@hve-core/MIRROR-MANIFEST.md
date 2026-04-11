@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/hve-core` — 26 default patterns, 0 followed patterns, 214 file(s) materialized.
+Mirror of `microsoft/hve-core` — 26 default patterns, 0 followed patterns, 215 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/hve-core` — 26 default patterns, 0 followed patterns, 214
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 214 |
+| Files         | 215 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -242,37 +242,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 181 | ✓ | [`.github/skills/installer/hve-core-installer/SKILL.md`](.github/skills/installer/hve-core-installer/SKILL.md) |
 | 182 | ✓ | [`.github/skills/jira/jira/SKILL.md`](.github/skills/jira/jira/SKILL.md) |
 | 183 | ✓ | [`.github/skills/security/owasp-agentic/SKILL.md`](.github/skills/security/owasp-agentic/SKILL.md) |
-| 184 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
-| 185 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
-| 186 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
-| 187 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
-| 188 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
-| 189 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
-| 190 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
-| 191 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
-| 192 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
-| 193 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
-| 194 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
-| 195 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
-| 196 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
-| 197 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
-| 198 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
-| 199 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
-| 200 | ✓ | [`plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md) |
-| 201 | ✓ | [`plugins/coding-standards/instructions/coding-standards/python-script.instructions.md`](plugins/coding-standards/instructions/coding-standards/python-script.instructions.md) |
-| 202 | ✓ | [`plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md`](plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md) |
-| 203 | ✓ | [`plugins/data-science/instructions/coding-standards/python-script.instructions.md`](plugins/data-science/instructions/coding-standards/python-script.instructions.md) |
-| 204 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md) |
-| 205 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md) |
-| 206 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md) |
-| 207 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md) |
-| 208 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md`](plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md) |
-| 209 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md`](plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md) |
-| 210 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md) |
-| 211 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md) |
-| 212 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md) |
-| 213 | ✓ | [`plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md) |
-| 214 | ✓ | [`plugins/hve-core/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core/instructions/hve-core/pull-request.instructions.md) |
+| 184 | ✓ | [`.github/skills/security/owasp-cicd/SKILL.md`](.github/skills/security/owasp-cicd/SKILL.md) |
+| 185 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
+| 186 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
+| 187 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
+| 188 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
+| 189 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
+| 190 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
+| 191 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
+| 192 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
+| 193 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
+| 194 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
+| 195 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
+| 196 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
+| 197 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
+| 198 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
+| 199 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
+| 200 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
+| 201 | ✓ | [`plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md) |
+| 202 | ✓ | [`plugins/coding-standards/instructions/coding-standards/python-script.instructions.md`](plugins/coding-standards/instructions/coding-standards/python-script.instructions.md) |
+| 203 | ✓ | [`plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md`](plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md) |
+| 204 | ✓ | [`plugins/data-science/instructions/coding-standards/python-script.instructions.md`](plugins/data-science/instructions/coding-standards/python-script.instructions.md) |
+| 205 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md) |
+| 206 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md) |
+| 207 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md) |
+| 208 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md) |
+| 209 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md`](plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md) |
+| 210 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md`](plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md) |
+| 211 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md) |
+| 212 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md) |
+| 213 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md) |
+| 214 | ✓ | [`plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md) |
+| 215 | ✓ | [`plugins/hve-core/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core/instructions/hve-core/pull-request.instructions.md) |
 
 ---
 

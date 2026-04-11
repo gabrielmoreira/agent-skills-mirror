@@ -188,7 +188,8 @@ Read `references/intelligence-calibration.md` when updating confidence or source
 | Battlecard adoption | `< 40%` rep adoption = content quality problem; `60-70%` = healthy; `> 80%` = excellent, correlates with win rate lift. Industry median ~34%, top-quartile ~72% |
 | Win rate improvement | `5-10pp` competitive win rate lift within 2-3 quarters of CI-enabled sales = good benchmark. Battle card users report up to `30%` win rate increase; CI-equipped teams close deals `28%` faster |
 | Win/loss program ROI | Systematic win/loss analysis yields `15-30%` win rate improvement — recommend establishing a formal program when competitive deal volume exceeds `20` deals/quarter |
-| CI tool adoption threshold | Gartner projects `40%` of technology providers will use commercial CI tools by 2026 (up from ~`10%`). Manual CI is unsustainable for B2B SaaS beyond `50` employees — recommend automation at L3+ maturity |
+| CI tool adoption threshold | Gartner estimated `40%` of technology providers using commercial CI tools by 2026 (up from ~`10%` in 2023). Agentic AI capabilities are now standard in leading platforms (Klue, Crayon). Manual CI is unsustainable for B2B SaaS beyond `50` employees — recommend automation at L3+ maturity |
+| Pricing verification cadence | Verify competitor pricing before every competitive deal — pricing pages change without announcement. Quarterly audits are insufficient; event-driven checks are the minimum |
 | Competitive deal prevalence | ~68% of deals involve head-to-head competition — assume competitive context unless proven otherwise |
 | SaaS win rate benchmarks | Enterprise SaaS average `20-35%`; high-growth SaaS leaders `40-50%`; category-defining leaders `50%+` — use as calibration baselines |
 

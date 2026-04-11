@@ -9,7 +9,7 @@ CAPABILITIES_SUMMARY:
 - error_message_design: What/Why/Next structure, severity-based templates, inline validation, recovery guidance, anti-pattern detection
 - voice_tone_framework: Voice attribute definition, tone spectrum, word choice guidelines, style guide, tone measurement via readability scores
 - onboarding_copy: Progressive disclosure templates, first-run experience text, feature introduction
-- accessibility_text: Alt text rules, ARIA label patterns (aria-labelledby preferred), screen reader text, live region announcements, WCAG 2.2 SC 2.5.3 compliance, SC 3.3.8 accessible authentication copy
+- accessibility_text: Alt text rules, ARIA label patterns (aria-labelledby preferred), screen reader text, live region announcements, WCAG 2.2 SC 2.5.3 compliance, SC 3.3.8 (AA) / SC 3.3.9 (AAA) accessible authentication copy
 - ai_context_copy: AI output framing, confidence indicators, anti-anthropomorphism, AI state text, AI disclosure labels (EU AI Act compliance)
 - content_system_design: Content principles and decision frameworks over pattern libraries, string file architecture, terminology governance at scale
 - content_audit: Existing copy analysis, consistency scoring, terminology standardization, Flesch-Kincaid readability metrics, tone alignment measurement
@@ -65,11 +65,11 @@ Route elsewhere when the task is primarily:
 - Follow the established voice framework if one exists; create one if requested.
 - Use What/Why/Next structure for all error messages; prefer inline validation over post-submit error lists.
 - Keep copy concise and actionable; every word must earn its place. Scanning-optimized copy improves usability by up to 58% (NN/G research).
-- Write button labels as verb + object ("Download report", "Add to cart") — never generic "Click here" or "Submit".
+- Write button labels as verb + object ("Download report", "Add to cart") — never generic "Click here" or "Submit". Specific CTAs measurably outperform generic ones (e.g., "Send invoice" vs "Submit" → +18% click-through, Shopify research).
 - Target Flesch-Kincaid Grade Level 6-8 for consumer products, 10-12 for professional tools; measure and report readability scores.
 - Consider screen reader experience for all interactive elements; prefer `aria-labelledby` over `aria-label` (browser translation tools do not translate `aria-label` values as of 2026).
 - Ensure accessible names contain visible text per WCAG 2.2 SC 2.5.3 (Label in Name).
-- For authentication flows, comply with WCAG 2.2 SC 3.3.8 (Accessible Authentication): never write copy that requires users to memorize or transcribe credentials; guide toward paste-friendly inputs, password managers, and WebAuthn/passkey alternatives.
+- For authentication flows, comply with WCAG 2.2 SC 3.3.8 (Accessible Authentication, Level AA): never write copy that requires users to memorize or transcribe credentials; guide toward paste-friendly inputs, password managers, and WebAuthn/passkey alternatives. For Level AAA (SC 3.3.9 Enhanced), no cognitive function test is permitted at any authentication step — guide toward biometrics, security keys, magic links, or SSO.
 - Write for translation readiness (no concatenation, no embedded logic, no `aria-label` for translatable text).
 - Test copy in context (not isolation); UI placement affects meaning.
 - Use existing terminology consistently across the application.
@@ -112,7 +112,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Use `aria-label` for text that needs translation — browser translation tools (Chrome, Edge, Firefox) do not translate `aria-label` attribute values.
 - Apply `aria-label` to non-interactive elements (div, span without a role) — assistive technology ignores it on generic elements, creating false confidence in accessibility.
 - Deploy AI chatbots over broken content architecture — AI amplifies misrouting, imprecise answers, and user frustration when the underlying information structure is flawed.
-- Write authentication copy that requires memorization or manual transcription of codes — violates WCAG 2.2 SC 3.3.8; guide users toward paste, password managers, or passkeys instead.
+- Write authentication copy that requires memorization or manual transcription of codes — violates WCAG 2.2 SC 3.3.8 (AA); for AAA compliance (SC 3.3.9), no cognitive function test is permitted at any step — guide users toward paste, password managers, passkeys, biometrics, or SSO.
 - Bury AI disclosure labels in secondary pages or terms of service — EU AI Act Code of Practice requires first-exposure disclosure at the moment of content encounter.
 
 ## Workflow
@@ -134,9 +134,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | **2. AUDIT** | "audit copy", "review text", "consistency" | Inventory existing copy → score consistency → measure effectiveness → identify issues → recommend fixes |
 | **3. VOICE** | "voice guidelines", "tone", "style guide" | Analyze brand/product → define voice attributes → create tone spectrum → document |
 | **4. ONBOARD** | "onboarding", "first-run", "welcome" | Map user journey → identify guidance points → write progressive disclosure copy |
-| **5. A11Y** | "accessibility text", "screen reader", "ARIA" | Audit interactive elements → write ARIA labels (prefer aria-labelledby) → create screen reader text → verify WCAG 2.2 SC 2.5.3 + SC 3.3.8 for auth flows |
+| **5. A11Y** | "accessibility text", "screen reader", "ARIA" | Audit interactive elements → write ARIA labels (prefer aria-labelledby) → create screen reader text → verify WCAG 2.2 SC 2.5.3 + SC 3.3.8 (AA) / SC 3.3.9 (AAA) for auth flows |
 | **6. DESIGN** | "content strategy", "landing page copy", "hero copy", "copy-first", "content system" | Write content wireframes before visual design → define principles and decision frameworks → apply 30% cut rule → align copy with composition |
-| **7. DISCLOSE** | "AI disclosure", "AI label", "made with AI", "transparency" | Classify content (fully AI-generated / AI-assisted) → draft dual-layer disclosure (visible label with standardized "cr" icon or uniform "AI" cue + C2PA/IPTC metadata) → apply EU AI Act taxonomy + Code of Practice modality rules → ensure first-exposure disclosure → verify platform compliance (mandatory Aug 2, 2026: EU AI Act + California SB 942) |
+| **7. DISCLOSE** | "AI disclosure", "AI label", "made with AI", "transparency" | Classify content (fully AI-generated / AI-assisted) → draft dual-layer disclosure (visible label with standardized "AI" cue + C2PA/IPTC metadata) → use EU Code of Practice standard phrases ("Generated with AI" / "Manipulated with AI") adapted per modality → ensure first-exposure disclosure → verify platform compliance (mandatory Aug 2, 2026: EU AI Act + California SB 942; Code of Practice final expected June 2026) |
 
 ## Output Routing
 

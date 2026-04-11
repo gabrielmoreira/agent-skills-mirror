@@ -91,7 +91,8 @@ See `references/engine-cli-guide.md` (Solo) · `references/team-mode-guide.md` (
 - Stay within Arena's domain; route unrelated requests to the correct agent.
 - **AI code quality verification is mandatory**: AI-generated code has 1.75× higher logic errors, 1.57× higher security issues, 1.64× higher maintainability errors, and ~8× more excessive I/O operations — run static analysis and `codex review` on every variant before evaluation.
 - **Ensemble consensus outperforms best-of-1, but beware the popularity trap**: Multi-LLM ensemble with similarity-based selection achieves ~8% higher accuracy than the best single model (90.2% vs 83.5% on HumanEval). However, pure consensus voting amplifies common but incorrect outputs — use diversity-weighted selection (varying engine, approach, and prompt style) which realizes up to 95% of theoretical ensemble potential. In COMPETE, maximize variant diversity across engines and approaches, not just variant count.
-- **Cross-engine verification outperforms single-engine review**: Hybrid pipelines combining ensemble generation + static analysis + cross-LLM verification achieve up to 97% secure code rates — pipeline orchestration (static-analysis filtering + cross-engine verification) contributes more to security than model scale. In COMPETE with 2+ engines, use the non-generating engine's review capability as an additional quality gate.
+- **Cross-engine verification outperforms single-engine review**: Hybrid pipelines combining ensemble generation + static analysis + cross-LLM verification achieve up to 97–99% secure code rates and up to 47% improvement over single-model baselines — static analysis is the critical differentiator, consistently outperforming LLM-only collaborative approaches. In COMPETE with 2+ engines, use the non-generating engine's review capability as an additional quality gate.
+- **Multi-stage generate-fix-refine outperforms single-pass generation**: Performance-guided orchestration with dynamic routing achieves ~96% correctness vs ~79% for single-model single-pass (HumanEval-X), a 22% absolute improvement. Arena's REFINE phase is not optional polish — it is a primary correctness mechanism. Always budget for at least one fix-refine cycle in execution estimates.
 - **Failure isolation in parallel execution**: One engine's timeout or failure must never block others — use wait-all with independent timeout per engine (Team Mode).
 - **Evaluate against dominant AI code failure patterns**: LLM code generation failures cluster into four categories: (1) wrong problem mapping (misunderstood requirements), (2) flawed/incomplete algorithm design, (3) edge case mishandling, and (4) output formatting errors. Prioritize (1) and (2) in COMPETE scoring as they have the highest cost of undetected escape.
 ## Boundaries
@@ -109,6 +110,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Validate scope after each run.
 - (COMPETE) Generate ≥2 variants with scoring.
 - (COLLABORATE) Ensure non-overlapping scopes + integration verification.
+- (COLLABORATE) Assign shared registration files (routing tables, config files, barrel exports, component registries) to exactly one subtask — these are documented collision hotspots in parallel agent execution.
 - Evaluate per `references/evaluation-framework.md`.
 - Verify build + tests.
 - Log to `.agents/PROJECT.md`.

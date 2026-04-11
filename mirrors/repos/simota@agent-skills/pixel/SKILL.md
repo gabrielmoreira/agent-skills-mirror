@@ -69,11 +69,11 @@ Route elsewhere when the task is primarily:
 - Stay within Pixel's domain; route unrelated requests to the correct agent.
 - Generate semantic HTML5 that passes W3C validation; prefer CSS Grid for page layout, Flexbox for inline/nav, `gap` over margin hacks.
 - Use `rem` units for scalable spacing; snap to 4px/8px grid. Zero magic numbers — all values via CSS custom properties.
-- For responsive components that appear in multiple layout contexts (cards, widgets, sidebars), prefer CSS container queries (`@container`) over media queries — container queries respond to parent size, not viewport. Use `container-type: inline-size` on wrapper; keep `@media` for page-level layout and user preferences. Browser support: >95% (Chrome 105+, Firefox 110+, Safari 16+). Avoid deeply nested containment contexts (>3 levels) as each creates browser evaluation overhead.
+- For responsive components that appear in multiple layout contexts (cards, widgets, sidebars), prefer CSS container queries (`@container`) over media queries — container queries respond to parent size, not viewport. Use `container-type: inline-size` on wrapper; keep `@media` for page-level layout and user preferences. Browser support: >95% (Chrome 105+, Firefox 110+, Safari 16+). Always assign `container-name` when nesting containers — unnamed queries match the nearest ancestor, causing subtle bugs in multi-level layouts. Avoid deeply nested containment contexts (>3 levels) as each creates browser evaluation overhead.
 - Structure-first reproduction order: semantic HTML structure → CSS variables & layout → asset polish & micro-details.
 - Target fidelity score ≥90% overall; flag any section below 80% for manual review. Note: AI design-to-code tools typically achieve 75-80% fidelity; ≥90% requires iterative refinement.
 - Require high-resolution source images (≥2x) when available; warn when input is lossy-compressed or sub-720p as fidelity ceiling drops to ~70-80%.
-- VERIFY phase prerequisites: use Playwright's built-in `animations: 'disabled'` option in `toHaveScreenshot()` instead of manual CSS injection; mask dynamic content (timestamps, ads, live data) with `mask: [locator]`; run in a consistent environment (same OS, browser version, viewport) to avoid false diffs. Two key tolerance parameters: `maxDiffPixelRatio` (0.01-0.02 recommended; ratio of differing pixels) and `threshold` (0-1, default 0.2; perceived color difference per pixel in YIQ color space — lower is stricter). For component-level fidelity checks, prefer element-level screenshots (`locator.screenshot()`) over full-page captures — they are more stable and isolate the comparison scope.
+- VERIFY phase prerequisites: use Playwright's built-in `animations: 'disabled'` option in `toHaveScreenshot()` instead of manual CSS injection; mask dynamic content (timestamps, ads, live data) with `mask: [locator]`; for elements that cannot be masked by locator (e.g., randomized backgrounds, third-party widgets), use `stylePath` to inject a custom CSS file that hides or normalizes them during capture; run in a consistent environment (same OS, browser version, viewport) to avoid false diffs. Two key tolerance parameters: `maxDiffPixelRatio` (0.01-0.02 recommended; ratio of differing pixels) and `threshold` (0-1, default 0.2; perceived color difference per pixel in YIQ color space — lower is stricter). For component-level fidelity checks, prefer element-level screenshots (`locator.screenshot()`) over full-page captures — they are more stable and isolate the comparison scope.
 
 ## Boundaries
 
@@ -88,7 +88,7 @@ Interaction triggers → `_common/INTERACTION.md`
 - Use semantic HTML and accessibility attributes.
 - Generate responsive code (mobile-first).
 - Verify output with Playwright screenshot comparison; use `animations: 'disabled'` option in `toHaveScreenshot()` rather than manual CSS injection.
-- Mask dynamic content (timestamps, ads, counters) with Playwright's `mask` option to prevent false positive diffs.
+- Mask dynamic content (timestamps, ads, counters) with Playwright's `mask` option to prevent false positive diffs; use `stylePath` for elements that cannot be targeted by locator.
 - Use a sensible `maxDiffPixelRatio` threshold (0.01-0.02) to avoid false failures from sub-pixel rendering; 0 tolerance is too brittle for production use.
 - Keep changes <50 lines per modification pass.
 - Check/log to `.agents/PROJECT.md`.
@@ -181,7 +181,7 @@ questions:
 | `SCAN` | Read mockup image; identify sections, layout patterns, visual hierarchy | Understand the whole before parts | `references/lp-section-patterns.md` |
 | `EXTRACT` | Build Design Spec Sheet: element-by-element extraction of 7 properties (font-size, font-weight, color, line-height, margin, padding, background) | Every value gets a confidence level; all values become CSS variables | `references/precision-spec.md`, `references/design-extraction.md` |
 | `COMPOSE` | Generate CSS variables from Spec Sheet → HTML/CSS code with zero magic numbers | No hardcoded values; all values reference CSS custom properties | `references/lp-section-patterns.md` |
-| `VERIFY` | Playwright screenshot with `animations: 'disabled'` + `mask` for dynamic content + per-property verification against Spec Sheet; prefer element-level screenshots for component comparison | Check every property individually; use `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2` (color tolerance); ensure consistent capture environment | `references/visual-verification.md`, `references/precision-spec.md` |
+| `VERIFY` | Playwright screenshot with `animations: 'disabled'` + `mask` / `stylePath` for dynamic content + per-property verification against Spec Sheet; prefer element-level screenshots for component comparison | Check every property individually; use `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2` (color tolerance); ensure consistent capture environment | `references/visual-verification.md`, `references/precision-spec.md` |
 | `REFINE` | Fix CSS variable values only (not inline styles) → re-verify (max 3 iterations) | Modify `:root` variables; one change fixes all references | `references/precision-spec.md` |
 
 ## Output Routing

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kocoro-lab/ShanClaw` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `Kocoro-lab/ShanClaw` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kocoro-lab/ShanClaw` — 26 default patterns, 0 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,11 +69,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`internal/skills/bundled/skills/frontend-design/SKILL.md`](internal/skills/bundled/skills/frontend-design/SKILL.md) |
 | 9 | ✓ | [`internal/skills/bundled/skills/internal-comms/SKILL.md`](internal/skills/bundled/skills/internal-comms/SKILL.md) |
 | 10 | ✓ | [`internal/skills/bundled/skills/mcp-builder/SKILL.md`](internal/skills/bundled/skills/mcp-builder/SKILL.md) |
-| 11 | ✓ | [`internal/skills/bundled/skills/skill-creator/SKILL.md`](internal/skills/bundled/skills/skill-creator/SKILL.md) |
-| 12 | ✓ | [`internal/skills/bundled/skills/slack-gif-creator/SKILL.md`](internal/skills/bundled/skills/slack-gif-creator/SKILL.md) |
-| 13 | ✓ | [`internal/skills/bundled/skills/theme-factory/SKILL.md`](internal/skills/bundled/skills/theme-factory/SKILL.md) |
-| 14 | ✓ | [`internal/skills/bundled/skills/web-artifacts-builder/SKILL.md`](internal/skills/bundled/skills/web-artifacts-builder/SKILL.md) |
-| 15 | ✓ | [`internal/skills/bundled/skills/webapp-testing/SKILL.md`](internal/skills/bundled/skills/webapp-testing/SKILL.md) |
+| 11 | ✓ | [`internal/skills/bundled/skills/pdf-reader/SKILL.md`](internal/skills/bundled/skills/pdf-reader/SKILL.md) |
+| 12 | ✓ | [`internal/skills/bundled/skills/skill-creator/SKILL.md`](internal/skills/bundled/skills/skill-creator/SKILL.md) |
+| 13 | ✓ | [`internal/skills/bundled/skills/slack-gif-creator/SKILL.md`](internal/skills/bundled/skills/slack-gif-creator/SKILL.md) |
+| 14 | ✓ | [`internal/skills/bundled/skills/theme-factory/SKILL.md`](internal/skills/bundled/skills/theme-factory/SKILL.md) |
+| 15 | ✓ | [`internal/skills/bundled/skills/web-artifacts-builder/SKILL.md`](internal/skills/bundled/skills/web-artifacts-builder/SKILL.md) |
+| 16 | ✓ | [`internal/skills/bundled/skills/webapp-testing/SKILL.md`](internal/skills/bundled/skills/webapp-testing/SKILL.md) |
 
 ---
 

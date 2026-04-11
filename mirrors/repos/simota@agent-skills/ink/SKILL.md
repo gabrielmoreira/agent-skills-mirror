@@ -1,6 +1,6 @@
 ---
 name: ink
-description: "SVGアイコン・イラスト生成、アイコンシステム設計、スプライトシンボル構築。ベクター資産が必要な時に使用。"
+description: "SVG icon/illustration generation, icon system design, and sprite symbol construction. Use when vector assets are needed."
 ---
 
 <!--
@@ -58,10 +58,10 @@ Route elsewhere when the task is primarily:
 - Deliver clean SVG code, never raster images or binary files.
 - Establish a grid system (16x16, 20x20, or 24x24) before drawing any icon.
 - Maintain consistent stroke width, corner radius, and visual weight across an icon set.
-- Include accessibility attributes (`aria-label`, `role="img"`, `<title>`) on every icon.
+- Include accessibility attributes on every icon: decorative icons get `aria-hidden="true"`; meaningful standalone icons get `role="img"` with `<title>` and `aria-labelledby`; icon-only buttons label the control (`aria-label` on button), not the icon.
 - Use `currentColor` for fill/stroke by default to support theming.
-- Optimize SVG output: remove editor metadata, normalize viewBox, minimize path data.
-- Provide icons as both inline SVG and symbol-reference formats.
+- Optimize SVG output: remove editor metadata, normalize viewBox, minimize path data. Target ≤4KB per icon after SVGO (inline-safe threshold).
+- Provide icons as both inline SVG and symbol-reference formats. Prefer sprites for icon sets of 10+ icons to reduce bundle size.
 - When designing a system, define the icon grid, stroke rules, and naming convention first.
 
 ## Boundaries
@@ -72,8 +72,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 - Define grid size and stroke width before drawing icons.
 - Use `currentColor` as default fill/stroke for theme compatibility.
-- Include accessibility attributes on every SVG icon.
-- Optimize SVG output (remove metadata, normalize viewBox).
+- Include accessibility attributes on every SVG icon: differentiate decorative (`aria-hidden="true"`) from meaningful (`role="img"` + `<title>` + `aria-labelledby`). For icon-only buttons, label the control, not the icon.
+- Optimize SVG output (remove metadata, normalize viewBox). Visually verify SVGO output for complex SVGs with masks, clipping paths, or animations.
 - Maintain consistent visual weight across icon sets.
 
 ### Ask First
@@ -89,6 +89,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Create inconsistent stroke widths within an icon set.
 - Omit viewBox attribute from any SVG.
 - Use absolute dimensions (width/height in px) without viewBox.
+- Run SVGO with default config on animated or scripted SVGs — it breaks document structure, animations, and scripts. Use safe-only plugins and visually verify.
+- Strip license/attribution metadata from third-party SVGs via SVGO — this can violate licensing terms.
 
 ## Output Routing
 
@@ -130,9 +132,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Deliver clean, optimized SVG code.
 - Include viewBox and use relative units.
 - Default to `currentColor` for fill/stroke.
-- Include accessibility attributes on all icons.
+- Include accessibility attributes on all icons (decorative: `aria-hidden="true"`; meaningful: `role="img"` + `aria-labelledby`).
 - For icon systems, include a design spec document (grid, stroke, naming).
-- For sprite sheets, use `<symbol>` + `<use>` pattern.
+- For sprite sheets, use `<symbol>` + `<use>` pattern. Prefer sprites over inline SVG components when the set exceeds 10 icons to reduce JS bundle size.
 
 ## Collaboration
 

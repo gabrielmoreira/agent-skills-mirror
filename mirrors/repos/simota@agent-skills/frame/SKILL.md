@@ -15,7 +15,8 @@ CAPABILITIES_SUMMARY:
 - figjam_extraction: Extract FigJam content preserving relationships, sections, and connectors
 - design_system_search: Discover reusable components, variables, and styles across connected libraries via search_design_system (rate-exempt, broad synonym search recommended)
 - design_generation: Generate new Figma designs via generate_figma_design (ask-first, rate-exempt)
-- canvas_write: Create and modify native Figma content (frames, components, variables, auto layout) via use_figma — write tools are rate-exempt but require explicit user request
+- canvas_write: Create and modify native Figma content (frames, components, variables, auto layout) via use_figma — write tools are rate-exempt but require explicit user request. Work incrementally; return all created/mutated node IDs; failed scripts are atomic (no partial changes)
+- file_creation: Create new blank Figma Design or FigJam files via create_new_file
 - rate_limit_budget: Track per-plan rate budgets (Starter 6/mo, Pro 200/day, Org 200/day, Enterprise 600/day) with 10% reserve
 - handoff_packaging: Assemble consumer-specific handoff packages with source URL, version, timestamp, gaps, and next-agent recommendation
 - w3c_dtcg_alignment: Align token exports with W3C DTCG 2025.10 stable specification (theming, multi-brand, Display P3/Oklch) for cross-tool interoperability
@@ -76,6 +77,7 @@ Route elsewhere when the task is primarily:
 - Include source URL, file version, and extraction timestamp in every handoff.
 - Prefer Figma Variables over raw color/spacing values; align token exports with W3C DTCG 2025.10 stable specification for cross-tool interoperability. DTCG 2025.10 adds theming/multi-brand support and Display P3/Oklch/CSS Color Module 4 color spaces.
 - Use `use_figma` for write-to-canvas workflows (creating/modifying frames, components, variables, auto layout); all write tools are rate-exempt but require explicit user confirmation. Write-to-canvas is currently free during beta; plan for usage-based pricing.
+- `use_figma` operational rules: work incrementally in small steps — break large operations into multiple calls and validate after each one. Always return all created/mutated node IDs (e.g., `return { createdNodeIds: [...], mutatedNodeIds: [...] }`). Failed scripts are atomic — on error, stop, read the error, fix the script, then retry. Page context resets between calls — use `await figma.setCurrentPageAsync(page)` when targeting non-first pages. Set variable scopes explicitly (e.g., `["FRAME_FILL", "SHAPE_FILL"]`) — never use ALL_SCOPES.
 - Capture screenshots only when visual context supplements structural data — `get_design_context` is the primary structural source.
 - Check existing Code Connect mappings before handing off reusable components — Code Connect elevates MCP output from useful to essential by providing actual component imports and prop interfaces.
 - Flag incomplete extractions explicitly — never present partial data as complete; downstream agents generate incorrect code from partial context.
@@ -117,6 +119,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Present incomplete extraction packages as complete — downstream agents will generate wrong code from partial data.
 - Run multiple MCP server instances simultaneously — concurrent access produces inconsistent outputs and confuses AI agents.
 - Hardcode raw color/spacing values when Figma Variable bindings exist — this breaks theme support and design token consistency.
+- Retry `use_figma` immediately after an error — failed scripts are atomic (no partial changes applied), so read the error, fix the script logic, then retry. Blind retry repeats the same failure.
+- Use `ALL_SCOPES` when creating Figma Variables via `use_figma` — it pollutes every property picker. Always set explicit scopes (e.g., `["FRAME_FILL"]` for backgrounds, `["TEXT_FILL"]` for text colors, `["GAP"]` for spacing).
+- Attempt too much in a single `use_figma` call — this is the most common cause of bugs. Break large operations into small incremental steps.
 
 ## Delivery Modes
 
@@ -153,6 +158,7 @@ Execution loop: `SURVEY -> PLAN -> VERIFY -> PRESENT`
 | `figjam`, `diagram`, `whiteboard` | FigJam extraction or diagram packaging | FigJam/diagram package | `references/handoff-formats.md` |
 | `generate design`, `create design` | Figma design generation | Generated design confirmation | `references/figma-mcp-server-ga.md` |
 | `write to Figma`, `push to canvas`, `code to Figma` | Canvas write via `use_figma` | Write confirmation with layer references | `references/figma-mcp-server-ga.md` |
+| `new file`, `create Figma file`, `new FigJam` | New file creation via `create_new_file` | File URL and metadata | `references/figma-mcp-server-ga.md` |
 | `handoff`, `implement`, `build this` | Full handoff package for implementation | Consumer-specific handoff | `references/handoff-formats.md` |
 | unclear Figma-related request | Component/frame extraction | Design context handoff | `references/execution-templates.md` |
 
@@ -190,7 +196,8 @@ Every deliverable must include:
 | Design system rules | `create_design_system_rules` | validate results against file evidence | `references/prompt-strategy.md`, `references/figma-mcp-server-ga.md` |
 | FigJam extraction or diagram packaging | `get_figjam`, `generate_diagram` | preserve relationships, sections, and connectors | `references/handoff-formats.md` |
 | Design generation | `generate_figma_design` | ask first; generation is rate-exempt but still explicit-change work | `references/figma-mcp-server-ga.md` |
-| Canvas write (code-to-Figma) | `use_figma` | ask first; reads design system first, builds with existing components and variables; rate-exempt | `references/figma-mcp-server-ga.md` |
+| Canvas write (code-to-Figma) | `use_figma` | ask first; work incrementally in small steps; return all node IDs; reads design system first, builds with existing components and variables; rate-exempt | `references/figma-mcp-server-ga.md` |
+| New file creation | `create_new_file` | creates blank Figma Design or FigJam file; rate-exempt | `references/figma-mcp-server-ga.md` |
 
 ## Critical Limits and Exceptions
 
@@ -226,7 +233,8 @@ Rules:
 - Run `search_design_system` early in the workflow to discover reusable library components and variables — search with synonyms and partial terms, as naming varies across libraries.
 - Check existing Code Connect mappings before handing off reusable components.
 - Prefer Figma Variables over raw values.
-- For Code Connect CLI, co-locate mapping files alongside components (e.g., `Button.connect.ts` next to `Button.tsx`) to prevent drift. Use Code Connect UI for language-agnostic quick setup without repo changes — UI supports one-to-many connections (single design component → multiple framework implementations: React, SwiftUI, Compose, Vue).
+- For Code Connect CLI, co-locate mapping files alongside components (e.g., `Button.connect.ts` next to `Button.tsx`) to prevent drift. Use Code Connect UI for language-agnostic quick setup without repo changes — UI supports one-to-many connections (single design component → multiple framework implementations: React, SwiftUI, Compose, Vue). Code Connect UI is GA on Organization and Enterprise plans with GitHub integration (component mapping suggestions, AI-generated snippets).
+- For `use_figma` canvas writes: always inspect the target file first to match existing naming conventions and variable structures. Page context resets between calls — explicitly set the page. Return all created/mutated node IDs for validation and cleanup.
 - Scope extraction to the named page, frame, or component set.
 - Document the design-to-code gap instead of implying pixel-perfect implementation completeness.
 - Validate naming consistency, token coverage, completeness, Code Connect inclusion, and rate reporting before delivery.
