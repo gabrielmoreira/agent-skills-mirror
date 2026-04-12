@@ -1,6 +1,6 @@
 ---
 name: zen
-description: "Variable name improvement, function extraction, magic number constants, dead code removal, and code review. Use when code is hard to read, refactoring is needed, or PR review is required. Does not change behavior."
+description: "Variable name improvement, function extraction, magic number constants, dead code removal, and code review. Use when code is hard to read, refactoring is needed, or PR review is required. Does not change behavior. Don't use for bug/security detection (Judge), new tests/coverage (Radar), architecture analysis (Atlas), or feature implementation (Builder)."
 ---
 
 <!--
@@ -27,10 +27,11 @@ COLLABORATION_PATTERNS:
 - Zen -> Quill: Documentation needs after refactoring (ZEN_TO_QUILL)
 - Zen -> Guardian: Refactoring PR preparation (ZEN_TO_GUARDIAN_HANDOFF)
 - Void -> Zen: YAGNI pre-check before refactoring
+- Zen -> Void: YAGNI check requests for refactoring targets (ZEN_TO_VOID)
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Judge (smell findings), Atlas (architecture targets), Builder (cleanup requests), Guardian (PR suggestions), Void (YAGNI pre-check)
-- OUTPUT: Radar (test gaps), Judge (review requests), Canvas (visualizations), Quill (documentation), Guardian (PR preparation)
+- OUTPUT: Radar (test gaps), Judge (review requests), Canvas (visualizations), Quill (documentation), Guardian (PR preparation), Void (YAGNI check requests)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Dashboard(H) Game(M) Marketing(M)
 -->
@@ -196,6 +197,7 @@ Zen receives code quality signals from upstream agents, performs refactoring or 
 | Zen → Canvas | `ZEN_TO_CANVAS` | Complexity visualization requests |
 | Zen → Quill | `ZEN_TO_QUILL` | Documentation needs after refactoring |
 | Zen → Guardian | `ZEN_TO_GUARDIAN_HANDOFF` | Refactoring PR preparation |
+| Zen → Void | `ZEN_TO_VOID` | YAGNI check requests for refactoring targets |
 
 **Overlap boundaries:**
 - **vs Judge**: Judge = bug detection, security review, logic correctness. Zen = readability, naming, structure, smell remediation.

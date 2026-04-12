@@ -26,4 +26,10 @@ Copy this directory into your Codex skills path:
 cp -a skills/skills-codex/* ~/.codex/skills/
 ```
 
+Optional companion dependency for the `deepxiv` skill:
+
+```bash
+pip install deepxiv-sdk
+```
+
 If you also use reviewer overlay packages, install this base package first, then apply the overlay on top.

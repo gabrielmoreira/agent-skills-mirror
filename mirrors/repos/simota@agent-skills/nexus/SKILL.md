@@ -266,6 +266,7 @@ Detailed execution flows: `references/execution-phases.md`, `references/orchestr
 | `refactor`, `clean up`, `code smell` | Refactoring chain | Improved code + tests | `references/routing-matrix.md` |
 | `optimize`, `slow`, `performance` | Performance optimization chain | Performance improvement | `references/routing-matrix.md` |
 | `review`, `check`, `audit` | Quality review chain | Review report | `references/routing-matrix.md` |
+| `design system docs`, `token docs`, `component catalog` | Design system documentation chain | Token + catalog + diagrams + API docs | `references/routing-matrix.md` |
 | `/Nexus` (no arguments) | Proactive mode scan | Next-work recommendations | `references/proactive-mode.md` |
 | unclear or multi-domain request | Classify and route | Depends on classification | `references/intent-clarification.md` |
 
@@ -294,6 +295,7 @@ Use the table below for common cases. Canonical matrix: `references/routing-matr
 | `SECURITY` | Sentinel → Builder → Radar | `+Probe` for dynamic testing, `+Specter` for concurrency risk |
 | `REFACTOR` | Zen → Radar | `+Atlas` for architecture, `+Grove` for structure |
 | `OPTIMIZE` | Bolt/Tuner → Radar | `+Schema` for DB-heavy work |
+| `DESIGN_SYSTEM_DOCS` | Muse → Showcase + Canvas → Quill | `+Vision` for direction, `+Artisan` for live examples |
 
 **Adjustment rules:**
 - `3+` test failures → add Sherpa.
@@ -357,6 +359,7 @@ Read only the files that match the current decision point.
 | `references/error-handling.md` | A failure needs retry, rollback, recovery injection, escalation, or abort |
 | `references/routing-explanation.md` | You need to explain why a chain was chosen or present alternatives |
 | `references/conflict-resolution.md` | Parallel branches touch overlapping files or logic |
+| `_common/PARALLEL.md` | You need parallel branch definitions, file ownership, merge strategies, or rollback protocols |
 | `references/handoff-validation.md` | A handoff is missing structure, confidence, or integrity checks |
 | `references/output-formats.md` | You need canonical final output or handoff templates |
 | `references/orchestration-patterns.md` | You need a concrete execution pattern such as sequential, parallel, evaluator-loop, or verification-gated flow |

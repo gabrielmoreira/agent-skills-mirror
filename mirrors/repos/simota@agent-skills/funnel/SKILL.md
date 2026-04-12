@@ -15,6 +15,10 @@ CAPABILITIES_SUMMARY:
 - variant_design: A/B test variant structure design (delegate execution to Experiment)
 - lead_form_design: Lead form design, progressive disclosure, form abandonment prevention
 - lp_seo_strategy: LP-specific SEO (canonical for A/B, noindex strategy, JSON-LD)
+- calm_ui_lp: Calm UI landing page design — cognitive clarity over urgency, trust-building over pressure, clean typography and whitespace
+- view_transitions_lp: View Transitions API for multi-step form transitions and section navigation in SPA LPs
+- scroll_driven_effects: CSS-only scroll-driven parallax, fade-in, progress bars (animation-timeline, no JS scroll listeners, INP improvement)
+- modern_css_lp: text-wrap: balance for headline optimization, color-mix() for hover states, Popover API for FAQ/tooltips
 
 COLLABORATION_PATTERNS:
 - Pattern A: Vision → Funnel: design direction and brand guidelines

@@ -46,110 +46,23 @@ node -e "const p=require('path'),f=require('fs'),d=process.env.CLAUDE_CONFIG_DIR
 node -e "const p=require('path'),f=require('fs'),d=process.env.CLAUDE_CONFIG_DIR||p.join(require('os').homedir(),'.claude'),b=p.join(d,'plugins','cache','omc','oh-my-claudecode');try{const v=f.readdirSync(b).filter(x=>/^\d/.test(x)).sort((a,c)=>a.localeCompare(c,void 0,{numeric:true}));if(v.length===0){console.log('Plugin not installed - run: /plugin install oh-my-claudecode');process.exit()}const l=v[v.length-1],h=p.join(b,l,'dist','hud','index.js');console.log('Version:',l);console.log(f.existsSync(h)?'READY':'NOT_FOUND - try reinstalling: /plugin install oh-my-claudecode')}catch{console.log('Plugin not installed - run: /plugin install oh-my-claudecode')}"
 ```
 
-**Step 3:** If omc-hud.mjs is MISSING or argument is `setup`, create the HUD directory and script:
+**Step 3:** If omc-hud.mjs is MISSING or argument is `setup`, install the HUD wrapper and its dependency from the canonical template:
 
-First, create the directory:
 ```bash
-node -e "require('fs').mkdirSync(require('path').join(process.env.CLAUDE_CONFIG_DIR||require('path').join(require('os').homedir(),'.claude'),'hud'),{recursive:true})"
+HUD_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hud"
+mkdir -p "$HUD_DIR/lib"
+cp "${CLAUDE_PLUGIN_ROOT}/scripts/lib/hud-wrapper-template.txt" "$HUD_DIR/omc-hud.mjs"
+cp "${CLAUDE_PLUGIN_ROOT}/scripts/lib/config-dir.mjs" "$HUD_DIR/lib/config-dir.mjs"
 ```
 
-Then, use the Write tool to create `${CLAUDE_CONFIG_DIR:-~/.claude}/hud/omc-hud.mjs` with this exact content:
+**IMPORTANT:** Always copy from the canonical template at `scripts/lib/hud-wrapper-template.txt`. Do NOT write the wrapper content inline — the template is the single source of truth and is guarded by drift tests (`src/__tests__/hud-wrapper-template-sync.test.ts`, `src/__tests__/paths-consistency.test.ts`).
 
-```javascript
-#!/usr/bin/env node
-/**
- * OMC HUD - Statusline Script
- * Wrapper that imports from dev paths, plugin cache, or npm package
- */
-
-import { existsSync, readdirSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
-
-async function main() {
-  const home = homedir();
-  let pluginCacheVersion = null;
-  let pluginCacheDir = null;
-
-  // 1. Development paths (only when OMC_DEV=1)
-  if (process.env.OMC_DEV === "1") {
-    const devPaths = [
-      join(home, "Workspace/oh-my-claudecode/dist/hud/index.js"),
-      join(home, "workspace/oh-my-claudecode/dist/hud/index.js"),
-      join(home, "projects/oh-my-claudecode/dist/hud/index.js"),
-    ];
-
-    for (const devPath of devPaths) {
-      if (existsSync(devPath)) {
-        try {
-          await import(pathToFileURL(devPath).href);
-          return;
-        } catch { /* continue */ }
-      }
-    }
-  }
-
-  // 2. Plugin cache (for production installs)
-  // Respect CLAUDE_CONFIG_DIR so installs under a custom config dir are found
-  const configDir = process.env.CLAUDE_CONFIG_DIR || join(home, ".claude");
-  const pluginCacheBase = join(configDir, "plugins", "cache", "omc", "oh-my-claudecode");
-  if (existsSync(pluginCacheBase)) {
-    try {
-      const versions = readdirSync(pluginCacheBase);
-      if (versions.length > 0) {
-        // Filter to only versions with built dist/hud/index.js
-        // This prevents picking an unbuilt new version after plugin update
-        const builtVersions = versions.filter(version => {
-          const pluginPath = join(pluginCacheBase, version, "dist/hud/index.js");
-          return existsSync(pluginPath);
-        });
-
-        if (builtVersions.length > 0) {
-          const latestVersion = builtVersions.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).reverse()[0];
-          pluginCacheVersion = latestVersion;
-          pluginCacheDir = join(pluginCacheBase, latestVersion);
-          const pluginPath = join(pluginCacheDir, "dist/hud/index.js");
-          await import(pathToFileURL(pluginPath).href);
-          return;
-        }
-      }
-    } catch { /* continue */ }
-  }
-
-  // 3. npm package (global or local install)
-  try {
-    await import("oh-my-claudecode/dist/hud/index.js");
-    return;
-  } catch { /* continue */ }
-
-  // 4. Fallback: provide detailed error message with fix instructions
-  if (pluginCacheDir && existsSync(pluginCacheDir)) {
-    // Plugin exists but dist/ folder is missing - needs build
-    const distDir = join(pluginCacheDir, "dist");
-    if (!existsSync(distDir)) {
-      console.log(`[OMC HUD] Plugin installed but not built. Run: cd "${pluginCacheDir}" && npm install && npm run build`);
-    } else {
-      console.log(`[OMC HUD] Plugin dist/ exists but HUD not found. Run: cd "${pluginCacheDir}" && npm run build`);
-    }
-  } else if (existsSync(pluginCacheBase)) {
-    // Plugin cache directory exists but no built versions found
-    console.log("[OMC HUD] Plugin cache found but no built versions. Run: /oh-my-claudecode:omc-setup");
-  } else {
-    // No plugin installation found at all
-    console.log("[OMC HUD] Plugin not installed. Run: /oh-my-claudecode:omc-setup");
-  }
-}
-
-main();
-```
-
-**Step 3:** Make it executable (Unix only, skip on Windows):
+**Step 4:** Make it executable (Unix only, skip on Windows):
 ```bash
 node -e "if(process.platform==='win32'){console.log('Skipped (Windows)')}else{require('fs').chmodSync(require('path').join(process.env.CLAUDE_CONFIG_DIR||require('path').join(require('os').homedir(),'.claude'),'hud','omc-hud.mjs'),0o755);console.log('Done')}"
 ```
 
-**Step 4:** Update settings.json to use the HUD:
+**Step 5:** Update settings.json to use the HUD:
 
 Read `${CLAUDE_CONFIG_DIR:-~/.claude}/settings.json`, then update/add the `statusLine` field.
 
@@ -184,12 +97,12 @@ On Windows the path uses forward slashes (not backslashes):
 
 Use the Edit tool to add/update this field while preserving other settings.
 
-**Step 5:** Clean up old HUD scripts (if any):
+**Step 6:** Clean up old HUD scripts (if any):
 ```bash
-node -e "const p=require('path'),f=require('fs'),d=process.env.CLAUDE_CONFIG_DIR||p.join(require('os').homedir(),'.claude'),t=p.join(d,'hud','omc-hud.mjs');try{if(f.existsSync(t)){f.unlinkSync(t);console.log('Removed legacy script')}else{console.log('No legacy script found')}}catch{}"
+node -e "const p=require('path'),f=require('fs'),d=process.env.CLAUDE_CONFIG_DIR||p.join(require('os').homedir(),'.claude'),t=p.join(d,'hud','omc-hud.js');try{if(f.existsSync(t)){f.unlinkSync(t);console.log('Removed legacy omc-hud.js')}else{console.log('No legacy script found')}}catch{}"
 ```
 
-**Step 6:** Tell the user to restart Claude Code for changes to take effect.
+**Step 7:** Tell the user to restart Claude Code for changes to take effect.
 
 ## Display Presets
 

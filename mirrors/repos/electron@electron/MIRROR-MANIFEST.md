@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `electron/electron` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `electron/electron` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `electron/electron` — 26 default patterns, 0 followed patterns, 4 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/electron-chromium-upgrade/SKILL.md`](.claude/skills/electron-chromium-upgrade/SKILL.md) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 2 | ✓ | [`.claude/skills/electron-node-upgrade/SKILL.md`](.claude/skills/electron-node-upgrade/SKILL.md) |
+| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 
 ---
 

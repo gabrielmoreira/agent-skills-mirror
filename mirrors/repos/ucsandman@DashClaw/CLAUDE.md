@@ -1,7 +1,7 @@
 ---
 source-of-truth: false
 owner: maintainers
-last-verified: 2026-03-14
+last-verified: 2026-04-11
 doc-type: handoff
 ---
 
@@ -27,9 +27,13 @@ DashClaw is a **minimal governance runtime**, not an agent platform. We do not p
 ## Tech Stack
 
 - Runtime: Node.js 20+
-- Framework: Next.js 15 (App Router)
+- Framework: Next.js 16 (App Router)
 - Database: Postgres (Neon recommended)
-- SDK: v2 (5-method core surface)
+- SDK: Platform **2.13.1**, `dashclaw` npm package **2.11.1** (80 methods
+  across Core Governance, Scoring, Execution Studio, Messaging, Sessions,
+  and Capability Runtime; see `sdk/README.md` for the full surface).
+  A separate `dashclaw/legacy` subpath export exists for older integrations
+  — see `docs/sdk-parity.md`.
 
 ## Essential Commands
 

@@ -562,6 +562,10 @@ cat > ~/.clawdbot/clawdbot.json << EOF
 }
 EOF
 
+# Restore .env for Bedrock IAM auth (required for OpenClaw 2026.4.5+)
+# See: https://docs.openclaw.ai/providers/bedrock (EC2 Instance Roles)
+printf 'AWS_PROFILE=default\nAWS_REGION=%s\nAWS_DEFAULT_REGION=%s\n' "$REGION" "$REGION" > ~/.openclaw/.env
+
 # Restart service
 XDG_RUNTIME_DIR=/run/user/1000 systemctl --user restart clawdbot-gateway
 

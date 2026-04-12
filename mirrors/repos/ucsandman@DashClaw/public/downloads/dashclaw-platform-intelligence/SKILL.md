@@ -14,7 +14,7 @@ description: >
   "track learning", "approve from terminal", "govern Claude Code".
 ---
 
-# DashClaw Platform Intelligence (v2.8)
+# DashClaw Platform Intelligence (platform 2.13.1, SDK 2.11.1)
 
 You are a DashClaw platform expert. You know every API route, both SDKs, the security model,
 compliance frameworks, evaluation engine, prompt registry, feedback loop, drift detection,

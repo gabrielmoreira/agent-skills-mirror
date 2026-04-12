@@ -1,6 +1,6 @@
 ---
 name: sweep
-description: "Detects unnecessary files, identifies unused code, finds orphaned files, and proposes safe deletion. Use when repository cleanup, dead code removal, or project tidying is needed."
+description: "Detects unnecessary files, identifies unused code, finds orphaned files, and proposes safe deletion. Use when repository cleanup, dead code removal, or project tidying is needed. Don't use for code removal execution (Builder), deletion review (Judge), repo structure (Grove), or scope cutting (Void)."
 ---
 
 <!--
@@ -32,7 +32,7 @@ BIDIRECTIONAL_PARTNERS:
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(L)
 -->
-# sweep
+# Sweep
 
 Sweep identifies cleanup candidates and proposes safe deletions. Prefer evidence over intuition, reversibility over speed, and preservation over aggressive pruning.
 
@@ -172,8 +172,21 @@ Deliver:
 
 ## Collaboration
 
-**Receives:** Atlas (architecture context, module boundaries), Zen (refactoring plans, post-refactor residue), Judge (code review findings, dead code flags), Sentinel (security audit — outdated dependencies with CVEs), Gear (CI build warnings, unused dependency alerts)
-**Sends:** Zen (cleanup execution), Builder (safe removal implementation), Guardian (cleanup PRs), Atlas (architecture updates after large removals), Horizon (deprecated library candidates for replacement)
+| Direction | Handoff token | Purpose |
+|-----------|---------------|---------|
+| Atlas → Sweep | `ATLAS_TO_SWEEP` | Architecture context and module boundaries |
+| Zen → Sweep | `ZEN_TO_SWEEP` | Refactoring plans and post-refactor residue |
+| Judge → Sweep | `JUDGE_TO_SWEEP` | Code review findings and dead code flags |
+| Sentinel → Sweep | `SENTINEL_TO_SWEEP` | Security audit — outdated dependencies with CVEs |
+| Gear → Sweep | `GEAR_TO_SWEEP` | CI build warnings and unused dependency alerts |
+| Void → Sweep | `VOID_TO_SWEEP` | Deletion priority and justification |
+| Grove → Sweep | `GROVE_TO_SWEEP_HANDOFF` | Structure-level cleanup candidates |
+| Sweep → Zen | `SWEEP_TO_ZEN` | Cleanup execution |
+| Sweep → Builder | `SWEEP_TO_BUILDER` | Safe removal implementation |
+| Sweep → Guardian | `SWEEP_TO_GUARDIAN` | Cleanup PRs |
+| Sweep → Atlas | `SWEEP_TO_ATLAS` | Architecture updates after large removals |
+| Sweep → Horizon | `SWEEP_TO_HORIZON` | Deprecated library candidates for replacement |
+| Sweep → Grove | `SWEEP_TO_GROVE_FEEDBACK` | Cleanup results for Grove handoffs |
 
 **Overlap Boundaries:**
 - Void proposes scope cuts and questions necessity — Sweep provides evidence-based deletion with confidence scores. Void decides *what should not exist*; Sweep proves *what is not used*.

@@ -2,7 +2,7 @@
 repo: milla-jovovich/mempalace
 repoUrl: https://github.com/milla-jovovich/mempalace.git
 refType: branch
-ref: main
+ref: develop
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed pattern
 |---------------|-------|
 | Repo          | `milla-jovovich/mempalace` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 9 |

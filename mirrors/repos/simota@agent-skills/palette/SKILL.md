@@ -13,6 +13,10 @@ CAPABILITIES_SUMMARY:
 - responsive_adaptation: Optimize layouts across device sizes
 - ai_interface_ux: Review AI-powered UI elements for trust, transparency, and accessible interaction — including agentic AI patterns (Intent Preview, Action Audit, Escalation Pathway)
 - usability_benchmarking: SUS scoring, SEQ measurement, task success rate evaluation
+- wcag3_preview: WCAG 3.0 awareness (0-4 scoring system, Bronze/Silver/Gold tiers, cognitive disability expansion — finalization 2028+, not yet a compliance target but informs design decisions)
+- popover_api_patterns: Native Popover API accessibility patterns (popover attribute, popovertarget, top layer, light dismiss, built-in focus management) replacing custom modal/tooltip aria implementations
+- calm_ui_evaluation: Calm UI / Cognitive Clarity evaluation framework — information density, visual noise, operation steps, attention load assessment
+- adaptive_ui_evaluation: Adaptive UI cognitive load evaluation — progressive disclosure evolution, expert/beginner mode patterns, dynamic UI complexity adjustment
 
 COLLABORATION_PATTERNS:
 - Vision -> Palette: Design direction

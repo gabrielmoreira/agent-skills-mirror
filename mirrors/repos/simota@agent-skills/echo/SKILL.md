@@ -15,6 +15,10 @@ CAPABILITIES_SUMMARY:
 - Predictive friction: Pattern-based pre-analysis using 8 risk signals before walkthrough
 - A/B hypothesis: Test hypothesis generation from friction findings
 - Synthetic persona validation: AI synthetic persona rapid testing paired with real user research confirmation
+- wcag3_simulation: WCAG 3.0 Bronze/Silver/Gold tier evaluation simulation — score-based (0-4) assessment alongside pass/fail, cognitive disability coverage expansion
+- multimodal_input_evaluation: Multi-modal input UX evaluation — touch/voice/keyboard/gesture seamlessness, invisible interaction (voice, gesture, presence detection) walkthrough
+- ai_generated_ui_evaluation: AI-generated UI cognitive walkthrough — pattern detection for excessive symmetry, emotional resonance gaps, context-awareness deficits, dark pattern risk in AI output
+- adaptive_ui_walkthrough: Adaptive UI persona branching — complexity-level-specific walkthrough, beginner→expert progression evaluation, personalization bias detection
 
 COLLABORATION_PATTERNS:
 - Pattern A: Echo ↔ Palette — Validation Loop: friction discovery → fix → re-validation

@@ -2,7 +2,7 @@
 
 This helper directory is no longer the recommended public workflow.
 
-Use provider-native Codex or Claude hooks, keep project metadata in `.clawhip/project.json`,
+Use provider-native Codex or Claude hooks, rely on git repo/worktree context for routing identity,
 and send local verification payloads through:
 
 ```bash
@@ -18,3 +18,5 @@ If you need to re-submit a prompt into an already-running tmux-backed provider s
 ```bash
 clawhip deliver --session <tmux-session> --prompt "..." --max-enters 4
 ```
+
+Legacy `clawhip hooks install --scope project` flows are migration-only shims; rerun the default global install path for supported setups.

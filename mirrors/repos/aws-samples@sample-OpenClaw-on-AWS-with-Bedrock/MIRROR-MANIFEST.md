@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aws-samples/sample-OpenClaw-on-AWS-with-Bedrock` — 26 default patterns, 11 followed patterns, 30 file(s) materialized.
+Mirror of `aws-samples/sample-OpenClaw-on-AWS-with-Bedrock` — 26 default patterns, 14 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aws-samples/sample-OpenClaw-on-AWS-with-Bedrock` — 26 default patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 30 |
+| Followed pats | 14 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,11 +57,14 @@ Mirror of `aws-samples/sample-OpenClaw-on-AWS-with-Bedrock` — 26 default patte
 - `README_ENTERPRISE.md`
 - `ROADMAP.md`
 - `enterprise/ROADMAP.md`
+- `docs/DEPLOYMENT_EKS.md`
+- `docs/DEPLOYMENT_EKS_CN.md`
 - `docs/DEPLOYMENT_CHINA_REGION.md`
 - `SECURITY.md`
 - `TROUBLESHOOTING.md`
 - `DEPLOYMENT.md`
 - `CONTRIBUTING.md`
+- `README_ENTERPRISE_CN.md`
 
 ## File Index
 
@@ -70,11 +73,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`enterprise/admin-console/server/soul-templates/global/AGENTS.md`](enterprise/admin-console/server/soul-templates/global/AGENTS.md) |
-| 3 | ✓ | [`enterprise/admin-console/server/soul-templates/positions/pos-sa/AGENTS.md`](enterprise/admin-console/server/soul-templates/positions/pos-sa/AGENTS.md) |
-| 4 | ✓ | [`enterprise/demo/README.md`](enterprise/demo/README.md) |
-| 5 | ✓ | [`enterprise/README.md`](enterprise/README.md) |
-| 6 | ✓ | [`openclaw-on-eks/README.md`](openclaw-on-eks/README.md) |
+| 2 | ✓ | [`eks/README.md`](eks/README.md) |
+| 3 | ✓ | [`enterprise/admin-console/server/soul-templates/global/AGENTS.md`](enterprise/admin-console/server/soul-templates/global/AGENTS.md) |
+| 4 | ✓ | [`enterprise/admin-console/server/soul-templates/positions/pos-sa/AGENTS.md`](enterprise/admin-console/server/soul-templates/positions/pos-sa/AGENTS.md) |
+| 5 | ✓ | [`enterprise/demo/README.md`](enterprise/demo/README.md) |
+| 6 | ✓ | [`enterprise/README.md`](enterprise/README.md) |
 | 7 | ✓ | [`skills/Community Skills`](skills/Community%20Skills) |
 | 8 | ✓ | [`skills/openclaw-kirocli-skill/README.md`](skills/openclaw-kirocli-skill/README.md) |
 | 9 | ✓ | [`skills/openclaw-kirocli-skill/README.zh-CN.md`](skills/openclaw-kirocli-skill/README.zh-CN.md) |
@@ -91,14 +94,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 21 | → | [`DEPLOYMENT.md`](DEPLOYMENT.md) |
 | 22 | → | [`docs/DEPLOYMENT_CHINA_REGION.md`](docs/DEPLOYMENT_CHINA_REGION.md) |
-| 23 | → | [`enterprise/ROADMAP.md`](enterprise/ROADMAP.md) |
-| 24 | → | [`QUICK_START_KIRO.md`](QUICK_START_KIRO.md) |
-| 25 | → | [`README_CN.md`](README_CN.md) |
-| 26 | → | [`README_ENTERPRISE.md`](README_ENTERPRISE.md) |
-| 27 | → | [`README.md`](README.md) |
-| 28 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 29 | → | [`SECURITY.md`](SECURITY.md) |
-| 30 | → | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) |
+| 23 | → | [`docs/DEPLOYMENT_EKS_CN.md`](docs/DEPLOYMENT_EKS_CN.md) |
+| 24 | → | [`docs/DEPLOYMENT_EKS.md`](docs/DEPLOYMENT_EKS.md) |
+| 25 | → | [`enterprise/ROADMAP.md`](enterprise/ROADMAP.md) |
+| 26 | → | [`QUICK_START_KIRO.md`](QUICK_START_KIRO.md) |
+| 27 | → | [`README_CN.md`](README_CN.md) |
+| 28 | → | [`README_ENTERPRISE_CN.md`](README_ENTERPRISE_CN.md) |
+| 29 | → | [`README_ENTERPRISE.md`](README_ENTERPRISE.md) |
+| 30 | → | [`README.md`](README.md) |
+| 31 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 32 | → | [`SECURITY.md`](SECURITY.md) |
+| 33 | → | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) |
 
 ---
 

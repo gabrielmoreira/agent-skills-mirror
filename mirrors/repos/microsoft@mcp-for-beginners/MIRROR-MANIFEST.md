@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/mcp-for-beginners` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `microsoft/mcp-for-beginners` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/mcp-for-beginners` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,40 +80,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`translations/id/AGENTS.md`](translations/id/AGENTS.md) |
 | 20 | ✓ | [`translations/it/AGENTS.md`](translations/it/AGENTS.md) |
 | 21 | ✓ | [`translations/ja/AGENTS.md`](translations/ja/AGENTS.md) |
-| 22 | ✓ | [`translations/kn/AGENTS.md`](translations/kn/AGENTS.md) |
-| 23 | ✓ | [`translations/ko/AGENTS.md`](translations/ko/AGENTS.md) |
-| 24 | ✓ | [`translations/lt/AGENTS.md`](translations/lt/AGENTS.md) |
-| 25 | ✓ | [`translations/ml/AGENTS.md`](translations/ml/AGENTS.md) |
-| 26 | ✓ | [`translations/mr/AGENTS.md`](translations/mr/AGENTS.md) |
-| 27 | ✓ | [`translations/ms/AGENTS.md`](translations/ms/AGENTS.md) |
-| 28 | ✓ | [`translations/my/AGENTS.md`](translations/my/AGENTS.md) |
-| 29 | ✓ | [`translations/ne/AGENTS.md`](translations/ne/AGENTS.md) |
-| 30 | ✓ | [`translations/nl/AGENTS.md`](translations/nl/AGENTS.md) |
-| 31 | ✓ | [`translations/no/AGENTS.md`](translations/no/AGENTS.md) |
-| 32 | ✓ | [`translations/pa/AGENTS.md`](translations/pa/AGENTS.md) |
-| 33 | ✓ | [`translations/pcm/AGENTS.md`](translations/pcm/AGENTS.md) |
-| 34 | ✓ | [`translations/pl/AGENTS.md`](translations/pl/AGENTS.md) |
-| 35 | ✓ | [`translations/pt-BR/AGENTS.md`](translations/pt-BR/AGENTS.md) |
-| 36 | ✓ | [`translations/pt-PT/AGENTS.md`](translations/pt-PT/AGENTS.md) |
-| 37 | ✓ | [`translations/ro/AGENTS.md`](translations/ro/AGENTS.md) |
-| 38 | ✓ | [`translations/ru/AGENTS.md`](translations/ru/AGENTS.md) |
-| 39 | ✓ | [`translations/sk/AGENTS.md`](translations/sk/AGENTS.md) |
-| 40 | ✓ | [`translations/sl/AGENTS.md`](translations/sl/AGENTS.md) |
-| 41 | ✓ | [`translations/sr/AGENTS.md`](translations/sr/AGENTS.md) |
-| 42 | ✓ | [`translations/sv/AGENTS.md`](translations/sv/AGENTS.md) |
-| 43 | ✓ | [`translations/sw/AGENTS.md`](translations/sw/AGENTS.md) |
-| 44 | ✓ | [`translations/ta/AGENTS.md`](translations/ta/AGENTS.md) |
-| 45 | ✓ | [`translations/te/AGENTS.md`](translations/te/AGENTS.md) |
-| 46 | ✓ | [`translations/th/AGENTS.md`](translations/th/AGENTS.md) |
-| 47 | ✓ | [`translations/tl/AGENTS.md`](translations/tl/AGENTS.md) |
-| 48 | ✓ | [`translations/tr/AGENTS.md`](translations/tr/AGENTS.md) |
-| 49 | ✓ | [`translations/uk/AGENTS.md`](translations/uk/AGENTS.md) |
-| 50 | ✓ | [`translations/ur/AGENTS.md`](translations/ur/AGENTS.md) |
-| 51 | ✓ | [`translations/vi/AGENTS.md`](translations/vi/AGENTS.md) |
-| 52 | ✓ | [`translations/zh-CN/AGENTS.md`](translations/zh-CN/AGENTS.md) |
-| 53 | ✓ | [`translations/zh-HK/AGENTS.md`](translations/zh-HK/AGENTS.md) |
-| 54 | ✓ | [`translations/zh-MO/AGENTS.md`](translations/zh-MO/AGENTS.md) |
-| 55 | ✓ | [`translations/zh-TW/AGENTS.md`](translations/zh-TW/AGENTS.md) |
+| 22 | ✓ | [`translations/km/AGENTS.md`](translations/km/AGENTS.md) |
+| 23 | ✓ | [`translations/kn/AGENTS.md`](translations/kn/AGENTS.md) |
+| 24 | ✓ | [`translations/ko/AGENTS.md`](translations/ko/AGENTS.md) |
+| 25 | ✓ | [`translations/lt/AGENTS.md`](translations/lt/AGENTS.md) |
+| 26 | ✓ | [`translations/ml/AGENTS.md`](translations/ml/AGENTS.md) |
+| 27 | ✓ | [`translations/mr/AGENTS.md`](translations/mr/AGENTS.md) |
+| 28 | ✓ | [`translations/ms/AGENTS.md`](translations/ms/AGENTS.md) |
+| 29 | ✓ | [`translations/my/AGENTS.md`](translations/my/AGENTS.md) |
+| 30 | ✓ | [`translations/ne/AGENTS.md`](translations/ne/AGENTS.md) |
+| 31 | ✓ | [`translations/nl/AGENTS.md`](translations/nl/AGENTS.md) |
+| 32 | ✓ | [`translations/no/AGENTS.md`](translations/no/AGENTS.md) |
+| 33 | ✓ | [`translations/pa/AGENTS.md`](translations/pa/AGENTS.md) |
+| 34 | ✓ | [`translations/pcm/AGENTS.md`](translations/pcm/AGENTS.md) |
+| 35 | ✓ | [`translations/pl/AGENTS.md`](translations/pl/AGENTS.md) |
+| 36 | ✓ | [`translations/pt-BR/AGENTS.md`](translations/pt-BR/AGENTS.md) |
+| 37 | ✓ | [`translations/pt-PT/AGENTS.md`](translations/pt-PT/AGENTS.md) |
+| 38 | ✓ | [`translations/ro/AGENTS.md`](translations/ro/AGENTS.md) |
+| 39 | ✓ | [`translations/ru/AGENTS.md`](translations/ru/AGENTS.md) |
+| 40 | ✓ | [`translations/sk/AGENTS.md`](translations/sk/AGENTS.md) |
+| 41 | ✓ | [`translations/sl/AGENTS.md`](translations/sl/AGENTS.md) |
+| 42 | ✓ | [`translations/sr/AGENTS.md`](translations/sr/AGENTS.md) |
+| 43 | ✓ | [`translations/sv/AGENTS.md`](translations/sv/AGENTS.md) |
+| 44 | ✓ | [`translations/sw/AGENTS.md`](translations/sw/AGENTS.md) |
+| 45 | ✓ | [`translations/ta/AGENTS.md`](translations/ta/AGENTS.md) |
+| 46 | ✓ | [`translations/te/AGENTS.md`](translations/te/AGENTS.md) |
+| 47 | ✓ | [`translations/th/AGENTS.md`](translations/th/AGENTS.md) |
+| 48 | ✓ | [`translations/tl/AGENTS.md`](translations/tl/AGENTS.md) |
+| 49 | ✓ | [`translations/tr/AGENTS.md`](translations/tr/AGENTS.md) |
+| 50 | ✓ | [`translations/uk/AGENTS.md`](translations/uk/AGENTS.md) |
+| 51 | ✓ | [`translations/ur/AGENTS.md`](translations/ur/AGENTS.md) |
+| 52 | ✓ | [`translations/vi/AGENTS.md`](translations/vi/AGENTS.md) |
+| 53 | ✓ | [`translations/zh-CN/AGENTS.md`](translations/zh-CN/AGENTS.md) |
+| 54 | ✓ | [`translations/zh-HK/AGENTS.md`](translations/zh-HK/AGENTS.md) |
+| 55 | ✓ | [`translations/zh-MO/AGENTS.md`](translations/zh-MO/AGENTS.md) |
+| 56 | ✓ | [`translations/zh-TW/AGENTS.md`](translations/zh-TW/AGENTS.md) |
 
 ---
 

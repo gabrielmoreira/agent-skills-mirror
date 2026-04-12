@@ -8,7 +8,7 @@ CAPABILITIES_SUMMARY:
 - creative_direction: Define UI/UX creative direction and design strategy with measurable outcome targets
 - design_system_strategy: Plan design system architecture, token governance, and multi-brand coordination
 - redesign_planning: Plan and direct complete redesign efforts with ROI-driven success criteria
-- trend_analysis: Analyze and apply 2026 trends (AI-driven UI, spatial design, glassmorphism, hyper-personalization)
+- trend_analysis: Analyze and apply 2026 trends (AI-driven UI, spatial design, glassmorphism, hyper-personalization, Calm UI/Cognitive Clarity, Adaptive Design Systems, Figma Make AI workflow, multi-modal input direction, dynamic typography with Variable Fonts)
 - agent_orchestration: Coordinate Muse, Palette, Flow, Forge, Frame, and Loom for design work
 - brand_alignment: Ensure design decisions align with brand identity and business outcomes
 - figma_mcp_strategy: Direct Figma MCP-driven design-to-code pipelines via Frame agent

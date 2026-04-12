@@ -12,7 +12,8 @@ CAPABILITIES_SUMMARY:
 - full_stack_slice: Thin end-to-end prototype (UI + mocks/backend + insights)
 - builder_handoff: L0-L3 quality levels with structured handoff packages
 - story_scaffolding: Preview stories for component prototypes
-- ai_scaffold_review: Review and integrate AI-generated code (v0/Bolt.new/Lovable/Google Stitch) with security audit
+- ai_scaffold_review: Review and integrate AI-generated code (v0/Bolt.new/Lovable/Google Stitch/Figma Make) with security audit
+- modern_css_prototyping: Prototype with modern CSS features — Anchor Positioning (declarative tooltips/dropdowns), Popover API (native modals), Grid Lanes/CSS Masonry (native masonry), CSS if() (conditional theming)
 
 COLLABORATION_PATTERNS:
 - Spark -> Forge: Feature concept needs a working slice

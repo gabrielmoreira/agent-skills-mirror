@@ -1,6 +1,6 @@
 ---
 name: sentinel
-description: "Static security analysis agent. Handles hardcoded secret detection, SQL injection prevention, input validation, security header configuration, and dependency CVE scanning. Use when security auditing or vulnerability fixing is needed."
+description: "Static security analysis agent. Handles hardcoded secret detection, SQL injection prevention, input validation, security header configuration, and dependency CVE scanning. Use when security auditing or vulnerability fixing is needed. Don't use for runtime exploit verification (Probe), general code review (Judge), CI/CD pipeline management (Gear), or detection rule authoring (Vigil)."
 ---
 
 <!--
@@ -179,19 +179,19 @@ Sentinel receives security-flagged artifacts from upstream agents, performs stat
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
-| Guardian → Sentinel | Security-classified change | Validate that classified changes meet security policy |
-| Builder → Sentinel | Code for review | Static security analysis before merge |
-| Gear → Sentinel | Dependency update | CVE and supply-chain risk assessment |
-| Sentinel → Builder | Fix specification | Provide remediation instructions for identified vulnerabilities |
-| Sentinel → Probe | Dynamic testing escalation | Runtime exploit verification when static analysis is inconclusive |
-| Sentinel → Triage | Critical vulnerability alert | Immediate escalation for CRITICAL findings |
-| Sentinel → Guardian | Security clearance | Confirm change meets security policy |
-| Sentinel → Radar | Regression coverage request | Ensure security fix has test coverage |
-| Judge → Sentinel | Security smell escalation | Deep security analysis when Judge detects security-adjacent patterns |
-| Gauge → Sentinel | Supply chain security review | Security-layer review for untrusted/community skills before adoption |
-| Matrix → Sentinel | Security combination plans | Combinatorial security testing plans for input validation, auth bypass, injection vectors |
-| Sentinel → Vigil | Detection rule creation | Convert vulnerability findings into Sigma/YARA detection rules |
-| Sentinel → Canon | OWASP compliance mapping | Validate findings against OWASP Top 10:2025 standard |
+| Guardian → Sentinel | `GUARDIAN_TO_SENTINEL` | Validate that classified changes meet security policy |
+| Builder → Sentinel | `BUILDER_TO_SENTINEL` | Static security analysis before merge |
+| Gear → Sentinel | `GEAR_TO_SENTINEL` | CVE and supply-chain risk assessment |
+| Judge → Sentinel | `JUDGE_TO_SENTINEL` | Deep security analysis when Judge detects security-adjacent patterns |
+| Gauge → Sentinel | `GAUGE_TO_SENTINEL` | Security-layer review for untrusted/community skills before adoption |
+| Matrix → Sentinel | `MATRIX_TO_SENTINEL` | Combinatorial security testing plans for input validation, auth bypass, injection vectors |
+| Sentinel → Builder | `SENTINEL_TO_BUILDER` | Provide remediation instructions for identified vulnerabilities |
+| Sentinel → Probe | `SENTINEL_TO_PROBE` | Runtime exploit verification when static analysis is inconclusive |
+| Sentinel → Triage | `SENTINEL_TO_TRIAGE` | Immediate escalation for CRITICAL findings |
+| Sentinel → Guardian | `SENTINEL_TO_GUARDIAN` | Confirm change meets security policy |
+| Sentinel → Radar | `SENTINEL_TO_RADAR` | Ensure security fix has test coverage |
+| Sentinel → Vigil | `SENTINEL_TO_VIGIL` | Convert vulnerability findings into Sigma/YARA detection rules |
+| Sentinel → Canon | `SENTINEL_TO_CANON` | Validate findings against OWASP Top 10:2025 standard |
 
 **Overlap boundaries:**
 - **vs Probe**: Probe = dynamic exploit verification and runtime behavior (DAST). Sentinel = static source-level analysis (SAST). Escalate to Probe when static analysis is inconclusive and runtime verification is needed.
@@ -275,7 +275,7 @@ When input contains `## NEXUS_ROUTING`, do not call other agents directly. Retur
   - Finding: [vulnerability type or "none found"]
   - Severity: [CRITICAL | HIGH | MEDIUM | LOW | ENHANCEMENT | none]
   - Confidence: [HIGH | MEDIUM | LOW]
-  - OWASP category: [e.g., A03:2021 – Injection | none]
+  - OWASP category: [e.g., A05:2025 – Injection | none]
   - Fix applied: [true | false | partial]
   - False positive note: [reason if suppressed | none]
 - Artifacts: [file paths or "none"]

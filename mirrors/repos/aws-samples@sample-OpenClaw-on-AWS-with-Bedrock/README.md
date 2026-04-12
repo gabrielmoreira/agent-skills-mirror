@@ -326,6 +326,12 @@ Built on top of the Multi-Tenant AgentCore Runtime, the Enterprise platform adds
 
 **[→ Enterprise Platform Guide](README_ENTERPRISE.md)** · **[→ Enterprise Roadmap](enterprise/ROADMAP.md)**
 
+### EKS (Kubernetes) — For Container-Native Deployments
+
+Run OpenClaw agents on Amazon EKS with Terraform. Supports AWS Global and China regions.
+
+**[→ EKS Deployment Guide (EN)](docs/DEPLOYMENT_EKS.md)** · **[→ EKS 部署指南 (中文)](docs/DEPLOYMENT_EKS_CN.md)**
+
 ### macOS (Apple Silicon) — For iOS/macOS Development
 
 | Type | Chip | RAM | Monthly |

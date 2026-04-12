@@ -13,6 +13,7 @@ CAPABILITIES_SUMMARY:
 - data_fetching: TanStack Query, SWR, server-side fetching with caching strategies
 - accessibility: ARIA attributes, keyboard navigation, focus management, WCAG AA compliance
 - styling: Tailwind CSS, CSS Modules, CSS-in-JS with cn() utility patterns
+- modern_css: CSS @scope (native scoping), Anchor Positioning (declarative tooltip/dropdown placement with position-try-fallbacks), Popover API (popover attribute + popovertarget, top layer, light dismiss), text-wrap: balance/pretty (Baseline 2024), CSS if() (conditional custom property resolution, Chrome Canary), sibling-index()/sibling-count() (CSS sibling position reference), Grid Lanes/CSS Masonry (native masonry layout, WebKit implementation)
 - server_components: Server-first architecture, selective hydration, RSC boundaries
 - type_safety: TypeScript strict mode, Zod schemas, discriminated unions
 

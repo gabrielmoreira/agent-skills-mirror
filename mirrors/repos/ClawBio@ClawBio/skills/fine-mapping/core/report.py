@@ -88,7 +88,7 @@ def generate_markdown(
                 f"- **Size**: {cs['size']} variants",
                 f"- **Coverage**: {cs['coverage']*100:.1f}%",
                 f"- **Lead variant**: {cs['lead_rsid']} (α = {cs['lead_alpha']:.4f})",
-                f"- **Purity** (mean |r|): {purity_str}",
+                f"- **Purity** (min |r|): {purity_str}",
                 "",
                 "| rsID | Chr | Pos | Z | PIP | α |",
                 "|------|-----|-----|---|-----|---|",

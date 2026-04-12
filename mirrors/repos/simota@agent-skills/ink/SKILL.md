@@ -13,6 +13,9 @@ CAPABILITIES_SUMMARY:
 - animated_svg: Generate CSS/SMIL animated SVG icons and micro-interactions
 - accessibility: Ensure aria-label, role, title attributes for all SVG assets
 - optimization: Optimize SVG output (SVGO rules, path simplification, viewBox normalization)
+- variable_font_icons: Variable Font icon systems (weight/optical-size axes, Google Material Symbols, responsive icons that scale with text)
+- color_mix_theming: Icon theming with currentColor + color-mix() for automatic hover/disabled state derivation from semantic tokens
+- modern_css_svg_animation: SVG integration with View Transitions API, Scroll-Driven Animations, and @starting-style for enter animations
 
 COLLABORATION_PATTERNS:
 - Vision -> Ink: Design direction for icon style and illustration mood

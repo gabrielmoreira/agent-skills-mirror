@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/ML-For-Beginners` — 26 default patterns, 1 followed patterns, 110 file(s) materialized.
+Mirror of `microsoft/ML-For-Beginners` — 26 default patterns, 1 followed patterns, 112 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/ML-For-Beginners` — 26 default patterns, 1 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 110 |
+| Files         | 112 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -100,75 +100,77 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`translations/it/CODE_OF_CONDUCT.md`](translations/it/CODE_OF_CONDUCT.md) |
 | 40 | ✓ | [`translations/ja/AGENTS.md`](translations/ja/AGENTS.md) |
 | 41 | ✓ | [`translations/ja/CODE_OF_CONDUCT.md`](translations/ja/CODE_OF_CONDUCT.md) |
-| 42 | ✓ | [`translations/kn/AGENTS.md`](translations/kn/AGENTS.md) |
-| 43 | ✓ | [`translations/kn/CODE_OF_CONDUCT.md`](translations/kn/CODE_OF_CONDUCT.md) |
-| 44 | ✓ | [`translations/ko/AGENTS.md`](translations/ko/AGENTS.md) |
-| 45 | ✓ | [`translations/ko/CODE_OF_CONDUCT.md`](translations/ko/CODE_OF_CONDUCT.md) |
-| 46 | ✓ | [`translations/lt/AGENTS.md`](translations/lt/AGENTS.md) |
-| 47 | ✓ | [`translations/lt/CODE_OF_CONDUCT.md`](translations/lt/CODE_OF_CONDUCT.md) |
-| 48 | ✓ | [`translations/ml/AGENTS.md`](translations/ml/AGENTS.md) |
-| 49 | ✓ | [`translations/ml/CODE_OF_CONDUCT.md`](translations/ml/CODE_OF_CONDUCT.md) |
-| 50 | ✓ | [`translations/mr/AGENTS.md`](translations/mr/AGENTS.md) |
-| 51 | ✓ | [`translations/mr/CODE_OF_CONDUCT.md`](translations/mr/CODE_OF_CONDUCT.md) |
-| 52 | ✓ | [`translations/ms/AGENTS.md`](translations/ms/AGENTS.md) |
-| 53 | ✓ | [`translations/ms/CODE_OF_CONDUCT.md`](translations/ms/CODE_OF_CONDUCT.md) |
-| 54 | ✓ | [`translations/my/AGENTS.md`](translations/my/AGENTS.md) |
-| 55 | ✓ | [`translations/my/CODE_OF_CONDUCT.md`](translations/my/CODE_OF_CONDUCT.md) |
-| 56 | ✓ | [`translations/ne/AGENTS.md`](translations/ne/AGENTS.md) |
-| 57 | ✓ | [`translations/ne/CODE_OF_CONDUCT.md`](translations/ne/CODE_OF_CONDUCT.md) |
-| 58 | ✓ | [`translations/nl/AGENTS.md`](translations/nl/AGENTS.md) |
-| 59 | ✓ | [`translations/nl/CODE_OF_CONDUCT.md`](translations/nl/CODE_OF_CONDUCT.md) |
-| 60 | ✓ | [`translations/no/AGENTS.md`](translations/no/AGENTS.md) |
-| 61 | ✓ | [`translations/no/CODE_OF_CONDUCT.md`](translations/no/CODE_OF_CONDUCT.md) |
-| 62 | ✓ | [`translations/pa/AGENTS.md`](translations/pa/AGENTS.md) |
-| 63 | ✓ | [`translations/pa/CODE_OF_CONDUCT.md`](translations/pa/CODE_OF_CONDUCT.md) |
-| 64 | ✓ | [`translations/pcm/AGENTS.md`](translations/pcm/AGENTS.md) |
-| 65 | ✓ | [`translations/pcm/CODE_OF_CONDUCT.md`](translations/pcm/CODE_OF_CONDUCT.md) |
-| 66 | ✓ | [`translations/pl/AGENTS.md`](translations/pl/AGENTS.md) |
-| 67 | ✓ | [`translations/pl/CODE_OF_CONDUCT.md`](translations/pl/CODE_OF_CONDUCT.md) |
-| 68 | ✓ | [`translations/pt-BR/AGENTS.md`](translations/pt-BR/AGENTS.md) |
-| 69 | ✓ | [`translations/pt-BR/CODE_OF_CONDUCT.md`](translations/pt-BR/CODE_OF_CONDUCT.md) |
-| 70 | ✓ | [`translations/pt-PT/AGENTS.md`](translations/pt-PT/AGENTS.md) |
-| 71 | ✓ | [`translations/pt-PT/CODE_OF_CONDUCT.md`](translations/pt-PT/CODE_OF_CONDUCT.md) |
-| 72 | ✓ | [`translations/ro/AGENTS.md`](translations/ro/AGENTS.md) |
-| 73 | ✓ | [`translations/ro/CODE_OF_CONDUCT.md`](translations/ro/CODE_OF_CONDUCT.md) |
-| 74 | ✓ | [`translations/ru/AGENTS.md`](translations/ru/AGENTS.md) |
-| 75 | ✓ | [`translations/ru/CODE_OF_CONDUCT.md`](translations/ru/CODE_OF_CONDUCT.md) |
-| 76 | ✓ | [`translations/sk/AGENTS.md`](translations/sk/AGENTS.md) |
-| 77 | ✓ | [`translations/sk/CODE_OF_CONDUCT.md`](translations/sk/CODE_OF_CONDUCT.md) |
-| 78 | ✓ | [`translations/sl/AGENTS.md`](translations/sl/AGENTS.md) |
-| 79 | ✓ | [`translations/sl/CODE_OF_CONDUCT.md`](translations/sl/CODE_OF_CONDUCT.md) |
-| 80 | ✓ | [`translations/sr/AGENTS.md`](translations/sr/AGENTS.md) |
-| 81 | ✓ | [`translations/sr/CODE_OF_CONDUCT.md`](translations/sr/CODE_OF_CONDUCT.md) |
-| 82 | ✓ | [`translations/sv/AGENTS.md`](translations/sv/AGENTS.md) |
-| 83 | ✓ | [`translations/sv/CODE_OF_CONDUCT.md`](translations/sv/CODE_OF_CONDUCT.md) |
-| 84 | ✓ | [`translations/sw/AGENTS.md`](translations/sw/AGENTS.md) |
-| 85 | ✓ | [`translations/sw/CODE_OF_CONDUCT.md`](translations/sw/CODE_OF_CONDUCT.md) |
-| 86 | ✓ | [`translations/ta/AGENTS.md`](translations/ta/AGENTS.md) |
-| 87 | ✓ | [`translations/ta/CODE_OF_CONDUCT.md`](translations/ta/CODE_OF_CONDUCT.md) |
-| 88 | ✓ | [`translations/te/AGENTS.md`](translations/te/AGENTS.md) |
-| 89 | ✓ | [`translations/te/CODE_OF_CONDUCT.md`](translations/te/CODE_OF_CONDUCT.md) |
-| 90 | ✓ | [`translations/th/AGENTS.md`](translations/th/AGENTS.md) |
-| 91 | ✓ | [`translations/th/CODE_OF_CONDUCT.md`](translations/th/CODE_OF_CONDUCT.md) |
-| 92 | ✓ | [`translations/tl/AGENTS.md`](translations/tl/AGENTS.md) |
-| 93 | ✓ | [`translations/tl/CODE_OF_CONDUCT.md`](translations/tl/CODE_OF_CONDUCT.md) |
-| 94 | ✓ | [`translations/tr/AGENTS.md`](translations/tr/AGENTS.md) |
-| 95 | ✓ | [`translations/tr/CODE_OF_CONDUCT.md`](translations/tr/CODE_OF_CONDUCT.md) |
-| 96 | ✓ | [`translations/uk/AGENTS.md`](translations/uk/AGENTS.md) |
-| 97 | ✓ | [`translations/uk/CODE_OF_CONDUCT.md`](translations/uk/CODE_OF_CONDUCT.md) |
-| 98 | ✓ | [`translations/ur/AGENTS.md`](translations/ur/AGENTS.md) |
-| 99 | ✓ | [`translations/ur/CODE_OF_CONDUCT.md`](translations/ur/CODE_OF_CONDUCT.md) |
-| 100 | ✓ | [`translations/vi/AGENTS.md`](translations/vi/AGENTS.md) |
-| 101 | ✓ | [`translations/vi/CODE_OF_CONDUCT.md`](translations/vi/CODE_OF_CONDUCT.md) |
-| 102 | ✓ | [`translations/zh-CN/AGENTS.md`](translations/zh-CN/AGENTS.md) |
-| 103 | ✓ | [`translations/zh-CN/CODE_OF_CONDUCT.md`](translations/zh-CN/CODE_OF_CONDUCT.md) |
-| 104 | ✓ | [`translations/zh-HK/AGENTS.md`](translations/zh-HK/AGENTS.md) |
-| 105 | ✓ | [`translations/zh-HK/CODE_OF_CONDUCT.md`](translations/zh-HK/CODE_OF_CONDUCT.md) |
-| 106 | ✓ | [`translations/zh-MO/AGENTS.md`](translations/zh-MO/AGENTS.md) |
-| 107 | ✓ | [`translations/zh-MO/CODE_OF_CONDUCT.md`](translations/zh-MO/CODE_OF_CONDUCT.md) |
-| 108 | ✓ | [`translations/zh-TW/AGENTS.md`](translations/zh-TW/AGENTS.md) |
-| 109 | ✓ | [`translations/zh-TW/CODE_OF_CONDUCT.md`](translations/zh-TW/CODE_OF_CONDUCT.md) |
-| 110 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 42 | ✓ | [`translations/km/AGENTS.md`](translations/km/AGENTS.md) |
+| 43 | ✓ | [`translations/km/CODE_OF_CONDUCT.md`](translations/km/CODE_OF_CONDUCT.md) |
+| 44 | ✓ | [`translations/kn/AGENTS.md`](translations/kn/AGENTS.md) |
+| 45 | ✓ | [`translations/kn/CODE_OF_CONDUCT.md`](translations/kn/CODE_OF_CONDUCT.md) |
+| 46 | ✓ | [`translations/ko/AGENTS.md`](translations/ko/AGENTS.md) |
+| 47 | ✓ | [`translations/ko/CODE_OF_CONDUCT.md`](translations/ko/CODE_OF_CONDUCT.md) |
+| 48 | ✓ | [`translations/lt/AGENTS.md`](translations/lt/AGENTS.md) |
+| 49 | ✓ | [`translations/lt/CODE_OF_CONDUCT.md`](translations/lt/CODE_OF_CONDUCT.md) |
+| 50 | ✓ | [`translations/ml/AGENTS.md`](translations/ml/AGENTS.md) |
+| 51 | ✓ | [`translations/ml/CODE_OF_CONDUCT.md`](translations/ml/CODE_OF_CONDUCT.md) |
+| 52 | ✓ | [`translations/mr/AGENTS.md`](translations/mr/AGENTS.md) |
+| 53 | ✓ | [`translations/mr/CODE_OF_CONDUCT.md`](translations/mr/CODE_OF_CONDUCT.md) |
+| 54 | ✓ | [`translations/ms/AGENTS.md`](translations/ms/AGENTS.md) |
+| 55 | ✓ | [`translations/ms/CODE_OF_CONDUCT.md`](translations/ms/CODE_OF_CONDUCT.md) |
+| 56 | ✓ | [`translations/my/AGENTS.md`](translations/my/AGENTS.md) |
+| 57 | ✓ | [`translations/my/CODE_OF_CONDUCT.md`](translations/my/CODE_OF_CONDUCT.md) |
+| 58 | ✓ | [`translations/ne/AGENTS.md`](translations/ne/AGENTS.md) |
+| 59 | ✓ | [`translations/ne/CODE_OF_CONDUCT.md`](translations/ne/CODE_OF_CONDUCT.md) |
+| 60 | ✓ | [`translations/nl/AGENTS.md`](translations/nl/AGENTS.md) |
+| 61 | ✓ | [`translations/nl/CODE_OF_CONDUCT.md`](translations/nl/CODE_OF_CONDUCT.md) |
+| 62 | ✓ | [`translations/no/AGENTS.md`](translations/no/AGENTS.md) |
+| 63 | ✓ | [`translations/no/CODE_OF_CONDUCT.md`](translations/no/CODE_OF_CONDUCT.md) |
+| 64 | ✓ | [`translations/pa/AGENTS.md`](translations/pa/AGENTS.md) |
+| 65 | ✓ | [`translations/pa/CODE_OF_CONDUCT.md`](translations/pa/CODE_OF_CONDUCT.md) |
+| 66 | ✓ | [`translations/pcm/AGENTS.md`](translations/pcm/AGENTS.md) |
+| 67 | ✓ | [`translations/pcm/CODE_OF_CONDUCT.md`](translations/pcm/CODE_OF_CONDUCT.md) |
+| 68 | ✓ | [`translations/pl/AGENTS.md`](translations/pl/AGENTS.md) |
+| 69 | ✓ | [`translations/pl/CODE_OF_CONDUCT.md`](translations/pl/CODE_OF_CONDUCT.md) |
+| 70 | ✓ | [`translations/pt-BR/AGENTS.md`](translations/pt-BR/AGENTS.md) |
+| 71 | ✓ | [`translations/pt-BR/CODE_OF_CONDUCT.md`](translations/pt-BR/CODE_OF_CONDUCT.md) |
+| 72 | ✓ | [`translations/pt-PT/AGENTS.md`](translations/pt-PT/AGENTS.md) |
+| 73 | ✓ | [`translations/pt-PT/CODE_OF_CONDUCT.md`](translations/pt-PT/CODE_OF_CONDUCT.md) |
+| 74 | ✓ | [`translations/ro/AGENTS.md`](translations/ro/AGENTS.md) |
+| 75 | ✓ | [`translations/ro/CODE_OF_CONDUCT.md`](translations/ro/CODE_OF_CONDUCT.md) |
+| 76 | ✓ | [`translations/ru/AGENTS.md`](translations/ru/AGENTS.md) |
+| 77 | ✓ | [`translations/ru/CODE_OF_CONDUCT.md`](translations/ru/CODE_OF_CONDUCT.md) |
+| 78 | ✓ | [`translations/sk/AGENTS.md`](translations/sk/AGENTS.md) |
+| 79 | ✓ | [`translations/sk/CODE_OF_CONDUCT.md`](translations/sk/CODE_OF_CONDUCT.md) |
+| 80 | ✓ | [`translations/sl/AGENTS.md`](translations/sl/AGENTS.md) |
+| 81 | ✓ | [`translations/sl/CODE_OF_CONDUCT.md`](translations/sl/CODE_OF_CONDUCT.md) |
+| 82 | ✓ | [`translations/sr/AGENTS.md`](translations/sr/AGENTS.md) |
+| 83 | ✓ | [`translations/sr/CODE_OF_CONDUCT.md`](translations/sr/CODE_OF_CONDUCT.md) |
+| 84 | ✓ | [`translations/sv/AGENTS.md`](translations/sv/AGENTS.md) |
+| 85 | ✓ | [`translations/sv/CODE_OF_CONDUCT.md`](translations/sv/CODE_OF_CONDUCT.md) |
+| 86 | ✓ | [`translations/sw/AGENTS.md`](translations/sw/AGENTS.md) |
+| 87 | ✓ | [`translations/sw/CODE_OF_CONDUCT.md`](translations/sw/CODE_OF_CONDUCT.md) |
+| 88 | ✓ | [`translations/ta/AGENTS.md`](translations/ta/AGENTS.md) |
+| 89 | ✓ | [`translations/ta/CODE_OF_CONDUCT.md`](translations/ta/CODE_OF_CONDUCT.md) |
+| 90 | ✓ | [`translations/te/AGENTS.md`](translations/te/AGENTS.md) |
+| 91 | ✓ | [`translations/te/CODE_OF_CONDUCT.md`](translations/te/CODE_OF_CONDUCT.md) |
+| 92 | ✓ | [`translations/th/AGENTS.md`](translations/th/AGENTS.md) |
+| 93 | ✓ | [`translations/th/CODE_OF_CONDUCT.md`](translations/th/CODE_OF_CONDUCT.md) |
+| 94 | ✓ | [`translations/tl/AGENTS.md`](translations/tl/AGENTS.md) |
+| 95 | ✓ | [`translations/tl/CODE_OF_CONDUCT.md`](translations/tl/CODE_OF_CONDUCT.md) |
+| 96 | ✓ | [`translations/tr/AGENTS.md`](translations/tr/AGENTS.md) |
+| 97 | ✓ | [`translations/tr/CODE_OF_CONDUCT.md`](translations/tr/CODE_OF_CONDUCT.md) |
+| 98 | ✓ | [`translations/uk/AGENTS.md`](translations/uk/AGENTS.md) |
+| 99 | ✓ | [`translations/uk/CODE_OF_CONDUCT.md`](translations/uk/CODE_OF_CONDUCT.md) |
+| 100 | ✓ | [`translations/ur/AGENTS.md`](translations/ur/AGENTS.md) |
+| 101 | ✓ | [`translations/ur/CODE_OF_CONDUCT.md`](translations/ur/CODE_OF_CONDUCT.md) |
+| 102 | ✓ | [`translations/vi/AGENTS.md`](translations/vi/AGENTS.md) |
+| 103 | ✓ | [`translations/vi/CODE_OF_CONDUCT.md`](translations/vi/CODE_OF_CONDUCT.md) |
+| 104 | ✓ | [`translations/zh-CN/AGENTS.md`](translations/zh-CN/AGENTS.md) |
+| 105 | ✓ | [`translations/zh-CN/CODE_OF_CONDUCT.md`](translations/zh-CN/CODE_OF_CONDUCT.md) |
+| 106 | ✓ | [`translations/zh-HK/AGENTS.md`](translations/zh-HK/AGENTS.md) |
+| 107 | ✓ | [`translations/zh-HK/CODE_OF_CONDUCT.md`](translations/zh-HK/CODE_OF_CONDUCT.md) |
+| 108 | ✓ | [`translations/zh-MO/AGENTS.md`](translations/zh-MO/AGENTS.md) |
+| 109 | ✓ | [`translations/zh-MO/CODE_OF_CONDUCT.md`](translations/zh-MO/CODE_OF_CONDUCT.md) |
+| 110 | ✓ | [`translations/zh-TW/AGENTS.md`](translations/zh-TW/AGENTS.md) |
+| 111 | ✓ | [`translations/zh-TW/CODE_OF_CONDUCT.md`](translations/zh-TW/CODE_OF_CONDUCT.md) |
+| 112 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
 
 ---
 

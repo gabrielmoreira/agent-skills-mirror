@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `promptfoo/promptfoo` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `promptfoo/promptfoo` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `promptfoo/promptfoo` — 26 default patterns, 0 followed patterns, 31
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,17 +79,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`src/app/CLAUDE.md`](src/app/CLAUDE.md) |
 | 19 | ✓ | [`src/commands/AGENTS.md`](src/commands/AGENTS.md) |
 | 20 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
-| 21 | ✓ | [`src/providers/AGENTS.md`](src/providers/AGENTS.md) |
-| 22 | ✓ | [`src/providers/CLAUDE.md`](src/providers/CLAUDE.md) |
-| 23 | ✓ | [`src/redteam/AGENTS.md`](src/redteam/AGENTS.md) |
-| 24 | ✓ | [`src/redteam/CLAUDE.md`](src/redteam/CLAUDE.md) |
-| 25 | ✓ | [`src/redteam/plugins/AGENTS.md`](src/redteam/plugins/AGENTS.md) |
-| 26 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
-| 27 | ✓ | [`src/server/CLAUDE.md`](src/server/CLAUDE.md) |
-| 28 | ✓ | [`src/ui/AGENTS.md`](src/ui/AGENTS.md) |
-| 29 | ✓ | [`src/ui/CLAUDE.md`](src/ui/CLAUDE.md) |
-| 30 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 31 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 21 | ✓ | [`src/matchers/AGENTS.md`](src/matchers/AGENTS.md) |
+| 22 | ✓ | [`src/matchers/CLAUDE.md`](src/matchers/CLAUDE.md) |
+| 23 | ✓ | [`src/providers/AGENTS.md`](src/providers/AGENTS.md) |
+| 24 | ✓ | [`src/providers/CLAUDE.md`](src/providers/CLAUDE.md) |
+| 25 | ✓ | [`src/redteam/AGENTS.md`](src/redteam/AGENTS.md) |
+| 26 | ✓ | [`src/redteam/CLAUDE.md`](src/redteam/CLAUDE.md) |
+| 27 | ✓ | [`src/redteam/plugins/AGENTS.md`](src/redteam/plugins/AGENTS.md) |
+| 28 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
+| 29 | ✓ | [`src/server/CLAUDE.md`](src/server/CLAUDE.md) |
+| 30 | ✓ | [`src/ui/AGENTS.md`](src/ui/AGENTS.md) |
+| 31 | ✓ | [`src/ui/CLAUDE.md`](src/ui/CLAUDE.md) |
+| 32 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 33 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
 
 ---
 

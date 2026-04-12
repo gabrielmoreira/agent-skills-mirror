@@ -1,6 +1,6 @@
 # DashClaw — GitHub Copilot Instructions
 
-DashClaw is a production Next.js 15 governance runtime for AI agents. Copilot should treat the repo's own `CLAUDE.md`, `PROJECT_DETAILS.md`, and `docs/architecture/runtime-api.md` as the source of truth for architecture and API shape. The section below is the canonical design tone — apply it to any UI, marketing, or copy change.
+DashClaw is a production Next.js 16 governance runtime for AI agents. Copilot should treat the repo's own `CLAUDE.md`, `PROJECT_DETAILS.md`, and `docs/architecture/runtime-api.md` as the source of truth for architecture and API shape. The section below is the canonical design tone — apply it to any UI, marketing, or copy change.
 
 ## Design Context
 

@@ -12,6 +12,7 @@ CAPABILITIES_SUMMARY:
 - iterative_refinement: 差分特定→自動修正イテレーション（最大3回）で忠実度を向上
 - lp_section_recognition: Hero/Features/Pricing/FAQ/CTA/Footer等のLPセクションパターン識別
 - responsive_conversion: モバイルファースト変換、ブレークポイント推定、CSS Container Queries活用
+- modern_css_reproduction: CSS Subgrid (card content alignment via parent track inheritance), Anchor Positioning (declarative tooltip/dropdown placement), @scope (component-boundary style isolation), Grid Lanes/CSS Masonry (native Pinterest-style layout without JS)
 - design_value_estimation: 色・余白・タイポグラフィの推定値に信頼度レベル(HIGH/MEDIUM/LOW)を付与
 - input_quality_assessment: 入力画像の解像度・圧縮品質を評価し忠実度上限を事前警告
 - wireframe_scaffolding: 手描きワイヤーフレーム・スケッチからHTML/CSSスキャフォールドを生成

@@ -261,7 +261,13 @@ WhatsApp 和 Telegram 支持语音消息 — OpenClaw 会转录并回复。
 
 **本地 Demo**：`python3 demo/console.py` → 打开 http://localhost:8099 查看管理控制台
 
-**[→ 多租户完整文档](README_ENTERPRISE.md)** · **[→ 路线图](ROADMAP.md)**
+**[→ 多租户完整文档 (EN)](README_ENTERPRISE.md)** · **[→ 多租户完整文档 (中文)](README_ENTERPRISE_CN.md)** · **[→ 路线图](ROADMAP.md)**
+
+### EKS (Kubernetes) — 容器原生部署
+
+在 Amazon EKS 上通过 Terraform 部署 OpenClaw 智能体。支持 AWS 全球区域和中国区域。
+
+**[→ EKS 部署指南 (EN)](docs/DEPLOYMENT_EKS.md)** · **[→ EKS 部署指南 (中文)](docs/DEPLOYMENT_EKS_CN.md)**
 
 ### macOS（Apple Silicon）— iOS/macOS 开发
 

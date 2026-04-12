@@ -14,6 +14,9 @@ CAPABILITIES_SUMMARY:
 - dtcg_compliance: Validate and convert tokens to W3C DTCG spec v2025.10 (first stable release) format
 - wide_gamut_color: Define tokens in modern color spaces (Display P3, OKLab, OKLCH) for wide-gamut displays
 - accessibility_tokens: Define accessibility-focused tokens (touch targets, focus rings, contrast)
+- css_color_functions: CSS color-mix() (Baseline 2023), light-dark() (Baseline 2024), relative color syntax for runtime token derivation and theme switching
+- css_conditional_tokens: CSS if() for conditional token resolution based on custom properties (progressive enhancement, Chrome Canary)
+- figma_git_integration: Figma Native Git Integration (branch/commit/merge), AI-generated token workflows, Variables Engine enhanced modes/scopes/cross-file references
 
 COLLABORATION_PATTERNS:
 - Vision -> Muse: Design direction

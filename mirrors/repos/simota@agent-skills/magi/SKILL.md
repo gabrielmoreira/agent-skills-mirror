@@ -1,6 +1,6 @@
 ---
 name: magi
-description: Multi-perspective deliberation agent (Logos/Pathos/Sophia) for architecture arbitration, trade-off resolution, Go/No-Go verdicts, and strategic decisions. Does not write code.
+description: "Multi-perspective deliberation agent (Logos/Pathos/Sophia) for architecture arbitration, trade-off resolution, Go/No-Go verdicts, and strategic decisions. Does not write code. Don't use for architecture design (Atlas), requirement gathering (Accord), code comparison (Arena), or implementation (Builder)."
 ---
 
 <!--
@@ -187,8 +187,30 @@ Every deliverable must include:
 
 ## Collaboration
 
-**Receives:** User (decision requests, mode selection), Nexus (complex decisions), Accord (stakeholder alignment), Atlas (architecture options), Arena (variant comparisons), Warden (quality assessments), Flux (reframed problem perspectives when deliberation is stuck)
-**Sends:** Builder/Forge/Artisan (implementation decisions), Atlas/Scaffold (architecture decisions), Launch (release decisions), Nexus (decision results), Sherpa (prioritized task lists), Void (YAGNI validation when "do nothing" is a candidate option)
+| Direction | Handoff token | Purpose |
+|-----------|---------------|---------|
+| User → Magi | — | Decision requests, mode selection |
+| Nexus → Magi | `NEXUS_TO_MAGI` | Complex decisions requiring arbitration |
+| Accord → Magi | `ACCORD_TO_MAGI` | Stakeholder alignment for strategy resolution |
+| Atlas → Magi | `ATLAS_TO_MAGI` | Architecture options for arbitration |
+| Arena → Magi | `ARENA_TO_MAGI` | Variant comparisons with suggested deliberation mode |
+| Warden → Magi | `WARDEN_TO_MAGI` | Quality assessments for Go/No-Go |
+| Flux → Magi | `FLUX_TO_MAGI` | Reframed perspectives for re-deliberation |
+| Schema → Magi | `SCHEMA_TO_MAGI` | DB design options for normalization verdicts |
+| Gateway → Magi | `GATEWAY_TO_MAGI` | API design options for versioning verdicts |
+| Shift → Magi | `SHIFT_TO_MAGI` | Migration strategy options |
+| Experiment → Magi | `EXPERIMENT_TO_MAGI` | A/B test results for interpretation |
+| Void → Magi | `VOID_TO_MAGI` | YAGNI analysis results for incorporation |
+| Magi → Builder/Forge/Artisan | `MAGI_TO_BUILDER` | Implementation decisions |
+| Magi → Atlas/Scaffold | `MAGI_TO_ATLAS` | Architecture decisions |
+| Magi → Launch | `MAGI_TO_LAUNCH` | Release decisions |
+| Magi → Nexus | `MAGI_TO_NEXUS` | Decision results |
+| Magi → Sherpa | `MAGI_TO_SHERPA` | Prioritized task lists |
+| Magi → Void | `MAGI_TO_VOID` | YAGNI validation when "do nothing" is a candidate |
+| Magi → Schema | `MAGI_TO_SCHEMA` | Normalization verdicts |
+| Magi → Gateway | `MAGI_TO_GATEWAY` | API design verdicts |
+| Magi → Shift | `MAGI_TO_SHIFT` | Migration verdicts |
+| Magi → Experiment | `MAGI_TO_EXPERIMENT` | Result interpretation |
 
 **Overlap boundaries:**
 - **vs Atlas**: Atlas = architecture design and documentation; Magi = architecture decision arbitration.

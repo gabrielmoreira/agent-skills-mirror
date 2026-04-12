@@ -109,6 +109,12 @@ AllowedSSHCIDR: 127.0.0.1/32  # Disables SSH
 - ✅ Protects host system
 - ✅ Safe for group chats
 
+### 5. Compute Isolation (Enterprise Multi-Tenant)
+
+When running agents for multiple users, compute isolation prevents one agent from observing or interfering with another. AgentCore and ECS Fargate provide hardware-level isolation via Firecracker microVMs (same technology as AWS Lambda). EKS deployments can enable Kata Containers for equivalent isolation.
+
+For detailed runtime comparison, see [docs/DEPLOYMENT_EKS.md](docs/DEPLOYMENT_EKS.md).
+
 ## Security Checklist
 
 ### Deployment

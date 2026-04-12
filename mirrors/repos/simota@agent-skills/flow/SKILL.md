@@ -12,7 +12,11 @@ CAPABILITIES_SUMMARY:
 - modern_css_animation: View Transitions API (same-doc Baseline Oct 2025 — Chrome 111+/Edge 111+/Safari 18+/Firefox 144+, cross-doc Chrome 126+/Edge 126+/Safari 18.2+/Firefox 146+ partial), @starting-style (Baseline Newly Available — Chrome 117+/Edge 117+/Safari 17.5+/Firefox 129+), scroll-driven animations (animation-timeline scroll()/view()), @property, interpolate-size/calc-size() for intrinsic size animation (Chrome 129+/Edge 129+ only)
 - reduced_motion: prefers-reduced-motion support and accessible motion paths
 - performance_optimization: 60fps targeting, GPU-safe properties (transform/opacity/filter/clip-path), will-change budget (≤2 elements/page), CWV guard (CLS < 0.1, INP < 200ms)
-- library_guidance: Motion v12 (React/Vue/vanilla JS, MIT, hardware-accelerated scroll, oklch/oklab color animation, axis-locked layout="x"|"y"), GSAP (framework-agnostic, timeline, all plugins free since Webflow acquisition 2024 — license only restricts Webflow-competing visual animation builders), Tailwind CSS Motion (5KB CSS-only)
+- container_scroll_state: Container Scroll-State Queries — scroll-state(stuck/snapped/scrolled) for sticky header shadows, carousel indicators, CSS-only state detection (Chrome 133+)
+- intrinsic_size_animation: interpolate-size: allow-keywords and calc-size() for native height:auto animation — accordion/dropdown without JS (Chrome 129+)
+- spring_physics: Spring-based physics animations via linear() easing approximation, Motion spring presets, natural responsive motion as UX standard
+- css_linear_easing: CSS linear() easing function for bounce/elastic/spring curves CSS-only (Baseline 2024)
+- library_guidance: Motion v12 (React/Vue/vanilla JS, MIT, hardware-accelerated scroll, oklch/oklab color animation, axis-locked layout="x"|"y"), GSAP (framework-agnostic, timeline, all plugins free since Webflow acquisition 2024 — license only restricts Webflow-competing visual animation builders), Motion One (WAAPI-based lightweight alternative), Tailwind CSS Motion (5KB CSS-only)
 
 COLLABORATION_PATTERNS:
 - Pattern A: Palette -> Flow — UX friction needs motion implementation

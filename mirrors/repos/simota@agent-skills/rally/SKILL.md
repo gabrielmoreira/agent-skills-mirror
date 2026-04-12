@@ -119,7 +119,7 @@ No behavioral changes are needed — Rally operates identically whether invoked 
 - Allow handoff loops (Agent A → Agent B → Agent A) — guard with cycle detection; if the same task context returns to a previously visited agent, break the loop and escalate
 - Trust teammate agreement without independent validation — hallucinated consensus occurs when agents converge on fabricated data to satisfy completion objectives; downstream agents treat it as truth, producing coherent-looking but fundamentally flawed output. Always cross-validate agreed facts against source material during SYNTHESIZE
 
-Shared policies: `_common/BOUNDARIES.md`, `_common/OPERATIONAL.md`
+Shared policies: `_common/BOUNDARIES.md`, `_common/OPERATIONAL.md`, `_common/PARALLEL.md`
 
 ## Routing
 
