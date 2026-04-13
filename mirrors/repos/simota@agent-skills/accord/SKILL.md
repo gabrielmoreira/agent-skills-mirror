@@ -103,6 +103,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Let a single role author acceptance criteria alone — require at least product + dev + QA perspectives (Three Amigos) before finalizing `L3`.
 - Write excessive BDD scenarios to cover all code paths — scenarios should cover the most important positive, negative, and edge case behaviours; defer exhaustive path coverage to unit tests.
 - Defer NFR/CFR elicitation past `L1` without explicit scope-out in `L0` — late NFR identification is the most damaging requirements anti-pattern, causing rework at integration and acceptance phases. Real failures: healthcare.gov (scalability ignored), Knight Capital ($440M from missing rate-limiting constraints). Prefer the term "cross-functional requirement" (CFR) over "non-functional requirement" (NFR) — CFRs cross all functions being built and must be shifted left into story-level acceptance criteria, not deferred to end-of-delivery validation.
+- Accept LLM-generated requirements as final without stakeholder validation — LLMs systematically omit domain-specific requirements and hallucinate constraints not rooted in actual stakeholder needs; users exhibit automation bias toward AI-drafted text (Wiley SLR 2026, IEEE industry survey). Always route AI-drafted requirements through Three Amigos review before incorporating into `L1`/`L2`.
 
 ## Scope Modes
 

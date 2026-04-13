@@ -9,6 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.13.0] - 2026-04-12 - "WordPress Builders, VS Code Extensions, and Security Review"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #492, #494, #495, and #496 to expand the library with WordPress-focused writing and migration workflows, a VS Code extension development guide, and stronger `security-auditor` instructions for IDOR and data-flow tracing. It also includes the required maintainer follow-up on `main`: contributor syncing, README source-credit coverage for the new community-sourced VS Code skill, and the canonical post-merge state before tagging `v9.13.0`.
+
+## New Skills
+
+- **wordpress-centric-high-seo-optimized-blogwriting-skill** - writes WordPress-ready SEO blog posts with schema, truth boxes, image metadata, and anti-hallucination rules.
+- **codebase-to-wordpress-converter** - converts React, HTML, or Next.js frontends into pixel-locked WordPress themes with phased audit and ACF mapping guidance.
+- **vscode-extension-guide-en** - covers the VS Code extension lifecycle from scaffolding and packaging to TreeView, webview, testing, and Marketplace publication.
+
+## Improvements
+
+- **security-auditor hardening** - adds explicit IDOR analysis, data-flow tracing, middleware choke-point validation, and SSRF/DNS-rebinding reminders to the existing security audit workflow.
+- **README source-credit alignment** - keeps `lewiswigmore/agent-skills` reflected in community-source credits so `check:readme-credits` passes for the merged VS Code guide contribution.
+- **Maintainer merge hygiene** - records the fork-run approval, PR-body normalization, contributor sync, and post-merge follow-up required to land this four-PR batch cleanly on `main`.
+
+## Who should care
+
+- **WordPress builders and content teams** get one skill for publishing SEO-focused articles and another for migrating production frontends into editable WordPress themes without layout drift.
+- **VS Code extension authors** get a dedicated English-language guide for packaging, testing, TreeView/webview work, and Marketplace release prep.
+- **Security reviewers and maintainers** get a sharper `security-auditor` skill plus a release trail that preserves contributor credit and README source attribution.
+
+## Credits
+
+- **[@derricke](https://github.com/derricke)** for the `security-auditor` update merged in PR #492.
+- **[@WHOISABHISHEKADHIKARI](https://github.com/WHOISABHISHEKADHIKARI)** for the two WordPress skills merged in PRs #494 and #495.
+- **[@sebastiondev](https://github.com/sebastiondev)** for the `vscode-extension-guide-en` contribution merged in PR #496.
+- **[lewiswigmore/agent-skills](https://github.com/lewiswigmore/agent-skills)** for the upstream VS Code extension guide source material.
+
 ## [9.12.0] - 2026-04-11 - "Rayden UI, Puzzle Planning, and Skill Diagnostics"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

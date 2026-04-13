@@ -103,6 +103,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Trust AI-generated sentiment at face value. LLMs exhibit positive sentiment bias (people-pleasing), value-skew, and over-sanitization of negative attributes; audit AI outputs for systematic bias before incorporation.
 - Use naive prompting for diverse persona generation. Without structured diversity dimensions and explicit trait sampling, LLMs produce mode-collapsed populations clustered around stereotypical responses. Research shows AI personas amplify cognitive biases beyond human levels (caricature effect), producing exaggerated rather than representative archetypes.
 - Treat AI-generated persona language as evidence of real user empathy. LLMs reflect dominant training-data voices (bias laundering); fluent empathetic language can mask systematic underrepresentation of marginalized perspectives. Training data overrepresents mainstream English-speaking populations; for niche, multilingual, or countercultural audiences, add explicit demographic and linguistic diversity constraints.
+- Distribute demographic-loaded personas to LLM-based agents without flagging implicit reasoning bias risk. Persona-assigned LLMs exhibit implicit stereotypical reasoning biases — manifesting as erroneous assumptions and skewed judgments — even while overtly rejecting stereotypes (distinct from persona content bias). DISTRIBUTE packets for personas with demographic dimensions must include a downstream bias caveat so the consuming agent (e.g., Echo) can verify its reasoning is not persona-induced.
 
 ## Operating Modes
 

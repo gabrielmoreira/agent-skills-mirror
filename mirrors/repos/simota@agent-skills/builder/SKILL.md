@@ -65,7 +65,7 @@ Route elsewhere when the task is primarily:
 
 ## Core Contract
 
-- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. TS 6.0 defaults `strict: true` in new tsconfig but does NOT fold `noUncheckedIndexedAccess` or `exactOptionalPropertyTypes` into `--strict`; keep all four flags explicit in every TS version.
+- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. TS 6.0 (bridge to Go-based TS 7.0) defaults `strict: true` and includes `noUncheckedIndexedAccess` / `exactOptionalPropertyTypes` in `tsc --init` output, but does NOT fold them into the `--strict` umbrella flag; keep all four flags explicit.
 - Define interfaces and types before writing implementation code.
 - Enforce always-valid domain model: entities and value objects must be valid at construction time; reject invalid state in constructors/factories, never allow half-built objects to exist.
 - Handle all edge cases: null, empty, error states, timeouts.
@@ -73,9 +73,9 @@ Route elsewhere when the task is primarily:
 - Apply DDD patterns when domain complexity warrants it; use CRUD for simple domains.
 - Include error handling with actionable messages at every system boundary.
 - Use `.safeParse()` (not `.parse()`) at system boundaries — `.parse()` throws and can crash the process in Express/Hono handlers. Use `z.prettifyError()` or `z.flattenError()` to format validation failures into structured API responses.
-- API resilience: categorize errors before retry (4xx = caller bug, don't retry; 429 = backoff with Retry-After; 5xx = exponential backoff). Never retry non-idempotent mutations without idempotency key.
-- Apply circuit breaker for external API calls: open after consecutive failures (typically 5), half-open after cooldown, close on success.
-- Prefer contract-driven API types: generate TypeScript types from OpenAPI specs (e.g. `openapi-typescript`) rather than hand-writing response types — hand-written types drift from backend reality and fail silently at runtime.
+- API resilience: categorize errors before retry (4xx = caller bug, don't retry; 429 = backoff with Retry-After; 5xx = exponential backoff, 3–5 max attempts). Track retry count per request — unbounded retries create infinite loops that exhaust processing capacity. Never retry non-idempotent mutations without idempotency key.
+- Apply circuit breaker for external API calls: scope per endpoint, not per host. Open after consecutive failures (default 5 in 60 s; tune by criticality — payment ≤ 3, search ≤ 10), half-open after cooldown (30 s–2 min), close on success.
+- Prefer contract-driven API types: generate TypeScript types from OpenAPI specs (e.g. `openapi-typescript`) rather than hand-writing response types — hand-written types drift from backend reality and fail silently at runtime. Use Zod v4 `.toJSONSchema()` to export boundary schemas as JSON Schema for OpenAPI sync, closing the loop between runtime validation and API documentation.
 - Use `using` / `await using` declarations for disposable resources (DB connections, file handles, HTTP clients) — guarantees deterministic cleanup on early return or exception, eliminating resource-leak classes of bugs.
 - Always type `catch` parameters as `unknown` and narrow with `instanceof` — untyped catch allows accessing non-existent properties and hides real error shapes.
 - Generate test skeletons for Radar handoff on every deliverable.
@@ -101,6 +101,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Use `any` type, `as Type` assertions at system boundaries, or other TypeScript safety bypasses — `as` silences the compiler but allows malformed external data through
 - Hand-write API response types that duplicate backend schemas — types drift silently; generate from OpenAPI specs or validate at boundary with Zod
 - Retry non-idempotent mutations (POST/PATCH/DELETE) without idempotency key — silent data duplication or corruption
+- Retry without a bounded attempt count — unbounded retries exhaust queue/thread capacity and cascade into full outage
 - Use `.parse()` at HTTP boundaries — uncaught ZodError crashes the process; use `.safeParse()` and return structured errors
 - Allow domain entities to exist in invalid state — enforce invariants in constructors, not in callers
 - Apply tactical DDD patterns (Aggregate, Repository, Event Sourcing) without strategic design (Bounded Context, Context Mapping) — leads to a single tangled model with conflicting term definitions across teams
@@ -135,6 +136,18 @@ Builder receives prototypes, investigation results, and optimization plans from 
 | Schema | Domain model code (Entity, VO, Repository) | Database schema DDL, migrations, ER design | Schema change → Schema; domain code → Builder |
 | Gateway | API client/server implementation code | API specification design, OpenAPI docs | API spec → Gateway; API code → Builder |
 
+### Agent Teams Aptitude
+
+Builder's post-BUILD handoffs to Radar, Sentinel, and Tuner are independent verification tasks with no shared file writes. Use **VERIFICATION_PARALLEL** (`_common/SUBAGENT.md`) or Rally **Pattern D: Specialist Team** (2–3 members) when wall-clock time matters:
+
+| Member | Role | Ownership | Model |
+|--------|------|-----------|-------|
+| `test-writer` | Radar handoff — generate test skeletons | `tests/**`, `__tests__/**` | `sonnet` |
+| `security-scanner` | Sentinel handoff — static security scan | read-only | `sonnet` |
+| `perf-analyzer` | Tuner handoff — performance hotspot analysis | read-only | `haiku` |
+
+Spawn only when the deliverable touches 4+ files and post-BUILD verification would otherwise block. For single-file fixes, sequential handoff is sufficient.
+
 ## Pattern Catalog
 
 | Domain | Key Patterns | Reference |
@@ -144,20 +157,6 @@ Builder receives prototypes, investigation results, and optimization plans from 
 | **Frontend** | RSC · TanStack Query v5 + Zustand · State Selection Matrix · RHF + Zod · Optimistic | `references/frontend-patterns.md` |
 | **Architecture** | Clean/Hexagonal · SOLID/CUPID · Domain Complexity Assessment · DDD vs CRUD | `references/architecture-patterns.md` |
 | **Language Idioms** | TypeScript 5.8+ · Go 1.22+ · Python 3.12+ · Per-language testing | `references/language-idioms.md` |
-
-## Standardized Handoff Formats
-
-| Direction | Partner | Format | Purpose |
-|-----------|---------|--------|---------|
-| **← Input** | Forge | FORGE_TO_BUILDER | Prototype conversion |
-| **← Input** | Scout | SCOUT_TO_BUILDER | Bug fix implementation |
-| **← Input** | Guardian | GUARDIAN_TO_BUILDER | Commit structure |
-| **← Input** | Tuner | TUNER_TO_BUILDER | Apply optimizations |
-| **← Input** | Sentinel | SENTINEL_TO_BUILDER | Security fixes |
-| **→ Output** | Radar | BUILDER_TO_RADAR | Test requests |
-| **→ Output** | Guardian | BUILDER_TO_GUARDIAN | PR preparation |
-| **→ Output** | Tuner | BUILDER_TO_TUNER | Performance analysis |
-| **→ Output** | Sentinel | BUILDER_TO_SENTINEL | Security review |
 
 ## Workflow
 

@@ -102,12 +102,13 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Produce channel-specific content optimized for each platform's algorithm and audience. LinkedIn's 360Brew model (150B-parameter unified AI, 2026) assigns each profile a "Topic DNA" based on headline, About section, and posting history; off-topic content is suppressed. Keep 80%+ of content within three core topic pillars. Consistent posting on a topic for 90+ days triggers expertise categorization. Profile completion at 100% yields ~71% more content reach; mobile About section truncates at ~275 characters — lead with your strongest value proposition. Expert interactions and deep reading sessions carry 7–9× more algorithmic weight than generic reactions; saves and sends are now top-tier ranking signals alongside comments. Document posts (PDF carousels) achieve ~6.6% engagement rate, the highest among LinkedIn formats; recommend for frameworks, case studies, and technical breakdowns.
 - Maintain positioning consistency across all channels (unified niche, tone, messaging).
 - Quantify achievements with impact metrics; reject vanity metrics as standalone evidence.
-- Preserve the engineer's authentic voice; AI assists but never replaces personality. Audience preference for AI-generated content collapsed from 60% to 26% (2025–2026); imperfection signals truth. Deep-dive case studies (including failures) outperform surface-level advice.
+- Preserve the engineer's authentic voice; AI assists but never replaces personality. Audience preference for AI-generated content collapsed from 60% to 26% (2023–2026); 77% of creators believe AI crafts resonant content but only 33% of consumers agree — the perception gap makes AI-polish a branding liability. "Augmented authenticity" (human as primary author, AI for support only) is the 2026 standard. Deep-dive case studies (including failures) outperform surface-level advice.
 - Include verification steps (anti-pattern audit, channel consistency check) in every deliverable.
 - Prioritize one strong community hub over scattered multi-platform presence.
 - Ensure all content passes the "sounds like you" test — lived experience over generic polish.
 - Maintain minimum weekly posting cadence on primary channel; sporadic posting signals abandonment to algorithms and audiences alike.
-- LinkedIn 360Brew Depth Score (2026): algorithm measures actual engagement duration via dwell time, not surface interactions. Expert interactions (thoughtful comments, saves, sends) carry 7–9× more algorithmic weight than passive likes — optimize content for depth and comment-triggering hooks rather than reaction bait. 360Brew's Topic DNA cross-references post topics against profile expertise; content outside your demonstrated domain receives suppressed distribution. Off-topic deviation dilutes the semantic signal — maintain 80%+ content within established pillars.
+- LinkedIn engagement hierarchy (360Brew, 2026): saves drive 5× more reach than likes; comments carry 15× more weight than likes. Late engagement (saves/comments 24–72 hours post-publish) signals lasting value and yields 4–6× boost. 360Brew's NLP detects and penalizes engagement-bait phrasing ("comment below," "tag a friend") — never use formulaic interaction hooks.
+- LinkedIn short-form video (<60 s) achieves 53% more engagement than long-form; vertical format yields 34% higher engagement and dwell time; subtitles add 29% retention lift. Recommend video for quick technical tips, project demos, and opinionated takes.
 
 ---
 
@@ -120,7 +121,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `GitHub README`, `LinkedIn`, `profile` | **PROFILE** — Channel-specific optimization → Channel-optimized content (LinkedIn: align 360Brew Topic DNA + 80% content pillar rule, 100% profile completion, mobile-first About ≤275 chars, pin top 3 skills; GitHub: pin 4–6 strongest repos) | `references/channel-templates.md` |
 | `実績まとめ`, `自己紹介`, `achievement` | **NARRATIVE** — Contribution data → Achievement narrative | `references/channel-templates.md` |
 | `ブランド戦略`, `brand strategy` | **STRATEGY** — Annual roadmap → Branding roadmap | `references/amplification-playbook.md` |
-| `ブログネタ`, `登壇テーマ`, `content ideas` | **CONTENT** — Content planning → Content plan + repurpose map (LinkedIn: prioritize document/carousel posts for highest engagement; optimize for depth and comment-triggering hooks; maintain 80%+ within Topic DNA pillars) | `references/amplification-playbook.md` |
+| `ブログネタ`, `登壇テーマ`, `content ideas` | **CONTENT** — Content planning → Content plan + repurpose map (LinkedIn: prioritize document/carousel posts and short-form video <60 s; optimize for depth, saves, and late engagement; maintain 80%+ within Topic DNA pillars) | `references/amplification-playbook.md` |
 | `build in public`, `発信戦略` | **VISIBILITY** — Build-in-public → Visibility plan with community hub | `references/amplification-playbook.md` |
 | `AI時代`, `AI branding` | **AI-ERA** — AI-era positioning → Authenticity-first AI strategy | `references/ai-era-strategy.md` |
 
@@ -145,10 +146,10 @@ DISCOVER → POSITION → CRAFT → AMPLIFY → MEASURE
 | # | Anti-Pattern | Detection | Fix |
 |---|-------------|-----------|-----|
 | AP-1 | **Resume Dump** — listing skills without narrative | Raw list without context? | Add story arc and impact framing |
-| AP-2 | **Vanity Metrics** — stars/followers/likes without substance | Metrics without meaning? LinkedIn 360Brew weights expert interactions 7–9× over passive likes (2026 Depth Score) | Replace with impact-driven metrics: comment depth, reply chains, saves, sends, dwell time, conversion |
+| AP-2 | **Vanity Metrics** — stars/followers/likes without substance | Metrics without meaning? LinkedIn saves drive 5× more reach than likes; comments carry 15× more weight (360Brew 2026) | Replace with impact-driven metrics: comment depth, reply chains, saves, sends, dwell time, conversion |
 | AP-3 | **Niche Absence** — "full-stack everything" positioning | No clear specialization? | Apply Tech×Domain×Perspective framework |
 | AP-4 | **Channel Scatter** — inconsistent across platforms | Messaging mismatch? | Unify core positioning statement |
-| AP-5 | **AI Ghost** — content that sounds generated, not human | Generic/robotic tone? "Sea of sameness" with other AI-polished profiles? Audience AI-content preference dropped 60%→26% (2025–2026) — detection bar is lower than ever | Inject personal anecdotes, opinions, and rough edges; differentiate from the flood of AI-generated content |
+| AP-5 | **AI Ghost** — content that sounds generated, not human | Generic/robotic tone? "Sea of sameness" with other AI-polished profiles? AI-content preference dropped 60%→26% (2023–2026); 77% of creators think AI resonates but only 33% of consumers agree | Inject personal anecdotes, opinions, and rough edges; adopt "augmented authenticity" (human-primary, AI-support) to differentiate |
 | AP-6 | **Employer Leak** — confidential info in public content | NDA/proprietary content? | Generalize or remove; flag for review |
 | AP-7 | **Stagnation Mask** — hiding lack of growth behind past wins | Only old achievements? | Add learning journey and current goals |
 | AP-8 | **Productivity Theater** — unverified AI speed claims | "AIで10倍速" without data? | Show concrete before/after metrics |

@@ -258,6 +258,24 @@ Every deliverable must include:
 | `Aether → Beacon` | `AETHER_TO_BEACON` | Monitoring-design handoff |
 | `Aether → Cast[EVOLVE]` | `AETHER_TO_CAST_EVOLVE` | Persona-evolution feedback handoff |
 
+### Agent Teams Aptitude
+
+Aether qualifies for Agent Teams / subagent parallel execution in **BUILD mode** when multiple pipeline components need simultaneous specification:
+
+**Pattern: Specialist Team (3 workers)**
+
+| Role | Ownership | Output |
+|------|-----------|--------|
+| `tts-spec` | `references/tts-engines.md`, TTS integration spec | TTS adapter design, engine config, latency verification |
+| `avatar-spec` | `references/avatar-control.md`, `references/lip-sync-expression.md`, avatar control spec | Live2D/VRM contract, expression map, lip sync rules |
+| `infra-spec` | `references/obs-streaming.md`, `references/pipeline-architecture.md`, OBS/streaming spec | OBS scenes, audio routing, RTMP/SRT config, monitoring hooks |
+
+**Shared read:** `references/persona-extension.md`, `references/response-generation.md`, `references/chat-platforms.md`
+
+**Coordination:** Types-first — define shared interfaces (TTSAdapter, AvatarController, StreamConfig) before parallel spec generation. Merge via concat (no file overlap).
+
+**When NOT to use:** DESIGN mode (sequential PERSONA → PIPELINE dependencies), single-component TUNE tasks, LAUNCH gate reviews (need holistic assessment).
+
 ## Operational
 
 **Journal** (`.agents/aether.md`): AITuber pipeline insights only — latency patterns, TTS tradeoffs, persona integration learnings, OBS automation patterns. Do not store credentials, stream keys, or viewer personal data.

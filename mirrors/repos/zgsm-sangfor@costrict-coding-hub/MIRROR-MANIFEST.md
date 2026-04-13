@@ -59,10 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`platforms/claude-code/skills/coding-hub/SKILL.md`](platforms/claude-code/skills/coding-hub/SKILL.md) |
-| 2 | ✓ | [`platforms/costrict/skills/coding-hub/SKILL.md`](platforms/costrict/skills/coding-hub/SKILL.md) |
-| 3 | ✓ | [`platforms/opencode/skills/coding-hub/SKILL.md`](platforms/opencode/skills/coding-hub/SKILL.md) |
-| 4 | ✓ | [`platforms/vscode-costrict/skills/coding-hub/SKILL.md`](platforms/vscode-costrict/skills/coding-hub/SKILL.md) |
+| 1 | ✓ | [`platforms/claude-code/skills/everything-ai-coding/SKILL.md`](platforms/claude-code/skills/everything-ai-coding/SKILL.md) |
+| 2 | ✓ | [`platforms/costrict/skills/everything-ai-coding/SKILL.md`](platforms/costrict/skills/everything-ai-coding/SKILL.md) |
+| 3 | ✓ | [`platforms/opencode/skills/everything-ai-coding/SKILL.md`](platforms/opencode/skills/everything-ai-coding/SKILL.md) |
+| 4 | ✓ | [`platforms/vscode-costrict/skills/everything-ai-coding/SKILL.md`](platforms/vscode-costrict/skills/everything-ai-coding/SKILL.md) |
 
 ---
 

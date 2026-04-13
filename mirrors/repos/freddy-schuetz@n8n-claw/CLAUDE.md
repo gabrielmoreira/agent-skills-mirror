@@ -37,6 +37,7 @@ n8n-claw/
 │   ├── agent-library-manager.json  # Install/remove expert agents from catalog
 │   ├── heartbeat.json              # Recurring actions + proactive reminders (every 5 min)
 │   ├── background-checker.json     # Silent monitoring, notifies only on new findings
+│   ├── error-notification.json     # Global error handler: Telegram alert + logs failures to memory_long via PostgREST
 │   └── adapters/
 │       └── webhook-adapter.json    # Unified adapter: Slack + Teams + Paperclip + Generic
 │

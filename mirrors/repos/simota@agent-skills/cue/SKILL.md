@@ -75,6 +75,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Specify visual direction (what appears on screen) per scene.
 - Include narration text with tone guidance.
 - Total scene durations must match the target video length.
+- For short-form (≤60s): deliver the hook within the first 3 seconds; videos below 60% 3-second retention receive minimal algorithmic promotion, above 70% is the viability threshold.
 
 ### Ask First
 
@@ -89,6 +90,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Design a video without a defined CTA.
 - Omit visual direction from any scene.
 - Pack multiple messages into a single video; one clear message per video ("X solves Y"), save other points for follow-up content.
+- Start short-form scripts with a slow build-up; 50-60% of viewers who drop off leave within the first 3 seconds. Use layered hooks (visual + auditory + textual) for 3x higher retention than single-element intros.
 
 ## Output Routing
 
@@ -100,7 +102,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `onboarding`, `welcome` | Onboarding video script | Progressive disclosure flow | `references/patterns.md` |
 | `social`, `Twitter`, `short` | Short-form script (15-60s) | Hook-first compact structure | `references/patterns.md` |
 | `comparison`, `vs` | Comparison video script | Side-by-side scene layout | `references/patterns.md` |
-| `Synthesia`, `HeyGen`, `AI avatar` | AI avatar video script | Single-speaker narration, no camera cues | `references/patterns.md` |
+| `Synthesia`, `HeyGen`, `AI avatar` | AI avatar video script | Single-speaker narration, no camera cues. Max 5 min/scene (Synthesia). Use punctuation for pacing (commas=short pause, periods=long pause). Add gesture cues where supported (HeyGen: Nod, Head Yes/No, Eyebrows Up) | `references/patterns.md` |
 | unclear request | Product demo (most common) | Scene breakdown + narration | `references/patterns.md` |
 
 ## Workflow
@@ -112,7 +114,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `BRIEF` | Define audience, goal, platform, duration | One clear message per video | — |
 | `STRUCTURE` | Choose narrative template and plan CTA | Match template to goal | `references/patterns.md` |
 | `SCENE` | Design scene-by-scene breakdown with visuals | Every scene needs visual direction + timing | `references/patterns.md` |
-| `NARRATE` | Write narration with tone and pacing | Speech pace by type: educational 120-130 wpm, standard 130-145 wpm, energetic 140-160 wpm | — |
+| `NARRATE` | Write narration with tone and pacing | Speech pace by type: educational 120-130 wpm, standard 130-145 wpm, energetic 140-160 wpm. Platform pacing: TikTok/Reels 170-200 wpm, LinkedIn/corporate 130-150 wpm, long-form narration ~140 wpm | — |
 | `REVIEW` | Verify timing budget and flow coherence | Total durations must match target | — |
 
 ## Duration Templates

@@ -102,7 +102,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Skip capacity planning for production services.
 - Allow unbounded metric cardinality — high-cardinality labels (user IDs, request IDs) in metrics cause storage explosion and query timeouts. Use traces for high-cardinality data, metrics for low-cardinality aggregates.
 - Use threshold-only alerting for AI/LLM systems — probabilistic systems exhibit gradual degradation, not discrete failures. Combine burn-rate alerts with statistical drift detection for AI workloads.
-- Tolerate non-actionable alert rates above 50% in any 30-day window — if more than half of fired alerts require no human response, redesign the alert strategy. Teams ignoring 60-80% of alerts due to poor signal-to-noise ratios suffer measurably longer outages. Persistent noise erodes on-call trust and masks real incidents; track alert quality metrics (actionability ratio, MTTA, escalation rate) continuously.
+- Tolerate non-actionable alert rates above 50% in any 30-day window — if more than half of fired alerts require no human response, redesign the alert strategy. 44% of organizations experienced outages directly linked to suppressed or ignored alerts; 83% of engineers admit to dismissing alerts at least occasionally (2026 State of Production Reliability Report, n=1,039). Persistent noise erodes on-call trust and masks real incidents; track alert quality metrics (actionability ratio, MTTA, escalation rate) continuously.
+- Finalize an alert strategy without SLI coverage mapping — 78% of organizations experienced at least one incident where no alert fired at all. Every critical SLI must have a corresponding burn-rate or threshold alert; flag uncovered SLIs as blocking gaps in the VERIFY phase.
 
 ## Workflow
 
@@ -196,6 +197,11 @@ Beacon receives reliability and performance context from upstream agents, and se
 | Beacon → Triage | `BEACON_TO_TRIAGE` | Monitoring improvements and alert design |
 | Beacon → Scaffold | `BEACON_TO_SCAFFOLD` | Capacity recommendations |
 | Beacon → Mend | `BEACON_TO_MEND` | Auto-remediation monitoring hooks |
+
+### Agent Teams Pattern
+
+**RESEARCH_FAN_OUT** (MEASURE/DESIGN phases, multi-service environments):
+When auditing observability for 4+ services, spawn 2–3 Explore subagents to scan existing instrumentation, SLO definitions, and alert configurations across service clusters in parallel. Beacon synthesizes findings into a unified observability strategy. Single-service tasks remain sequential (no subagent overhead).
 
 ### Overlap Boundaries
 

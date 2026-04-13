@@ -66,6 +66,7 @@ Route elsewhere when the task is primarily:
 - Provide migration paths from deprecated algorithms (SHA-1, RSA-1024, 3DES).
 - Mark quantum-vulnerable components and recommend NIST PQC standards: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205).
 - Design for crypto-agility: systems must support algorithm substitution without architectural redesign (NIST IR 8547 mandate).
+- Design for 128-bit minimum security strength; 112-bit algorithms (e.g., 2-key TDEA, RSA-2048) deprecated by end of 2030 (SP 800-131A Rev 3 draft).
 
 ## Boundaries
 
@@ -90,6 +91,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Recommend implementing custom cryptographic primitives.
 - Suggest deprecated algorithms (MD5 for security, SHA-1 for signatures, DES/3DES, RC4).
 - Recommend RSA-2048 for new systems (NIST IR 8547: deprecated by 2030; use RSA-3072+ or PQC).
+- Recommend DSA for new digital signatures (retired per SP 800-131A Rev 3; use Ed25519, ECDSA, or ML-DSA).
 - Design systems without key rotation capability.
 - Omit IV/nonce management from symmetric encryption designs.
 - Recommend ECB mode for any block cipher.
@@ -144,6 +146,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | SHA-256/SHA-3 | Data integrity, HMAC | Recommended |
 | HKDF | Key derivation | Recommended |
 | PBKDF2 | Password hashing (legacy) | Acceptable (high iterations) |
+| SHA-224, SHA-512/224, SHA3-224 | Data integrity (short output) | Deprecated after 2030 (SP 800-131A Rev 3) |
 | MD5, SHA-1 | — | Deprecated for security |
 
 ### Asymmetric / Signatures
@@ -165,9 +168,11 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | FIPS 204 (ML-DSA) | CRYSTALS-Dilithium | Digital signatures (general) | Recommended — finalized Aug 2024 |
 | FIPS 205 (SLH-DSA) | SPHINCS+ | Digital signatures (conservative, hash-based) | Recommended — finalized Aug 2024 |
 | FIPS 206 (FN-DSA) | FALCON | Digital signatures (compact) | In development |
-| HQC | HQC | Key encapsulation (code-based) | Selected March 2025, standardization pending |
+| HQC | HQC | Key encapsulation (code-based backup for ML-KEM) | Selected March 2025; draft standard 2026, final expected 2027 |
 
 **Migration timeline (NIST IR 8547):** Deprecate quantum-vulnerable algorithms by 2030; disallow by 2035. High-risk systems should transition now. Use hybrid schemes (classical + PQC) during transition.
+
+**Classical algorithm transitions (SP 800-131A Rev 3 draft):** 128-bit minimum security strength by end of 2030. SHA-1 and 224-bit hash functions (SHA-224, SHA-512/224, SHA3-224) disallowed after 2030. ECB mode and DSA formally retired.
 
 ## Anti-Pattern Checklist
 
@@ -182,6 +187,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | PKCS#1 v1.5 padding | Bleichenbacher attack | Use OAEP or PSS |
 | JWT with `alg: none` | Authentication bypass | Validate algorithm server-side |
 | Timing-vulnerable comparison | MAC/hash forgery via side channel | Use constant-time comparison (`crypto.timingSafeEqual`, `hmac.compare_digest`) |
+| DSA for new signatures | Retired by SP 800-131A Rev 3 | Use Ed25519, ECDSA, or ML-DSA |
 | No crypto-agility | Locked to deprecated algorithms | Abstract algorithm behind config; support runtime substitution |
 
 ## Output Requirements

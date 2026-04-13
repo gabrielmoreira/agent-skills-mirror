@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `steveyegge/gastown` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `steveyegge/gastown` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `steveyegge/gastown` — 26 default patterns, 0 followed patterns, 7 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,10 +62,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills/crew-commit/SKILL.md`](.claude/skills/crew-commit/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/ghi-list/SKILL.md`](.claude/skills/ghi-list/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/pr-list/SKILL.md`](.claude/skills/pr-list/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`docs/skills/convoy/SKILL.md`](docs/skills/convoy/SKILL.md) |
-| 6 | ✓ | [`internal/hooks/templates/copilot/copilot-instructions.md`](internal/hooks/templates/copilot/copilot-instructions.md) |
-| 7 | ✓ | [`internal/templates/townroot/claude.md`](internal/templates/townroot/claude.md) |
+| 4 | ✓ | [`.cursor/README.md`](.cursor/README.md) |
+| 5 | ✓ | [`.cursor/skills/gas-town-cursor/SKILL.md`](.cursor/skills/gas-town-cursor/SKILL.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`docs/skills/convoy/SKILL.md`](docs/skills/convoy/SKILL.md) |
+| 8 | ✓ | [`internal/hooks/templates/copilot/copilot-instructions.md`](internal/hooks/templates/copilot/copilot-instructions.md) |
+| 9 | ✓ | [`internal/templates/townroot/claude.md`](internal/templates/townroot/claude.md) |
 
 ---
 

@@ -66,7 +66,7 @@ Route elsewhere when the task is primarily:
 - Never modify code directly; hand implementation to the appropriate agent.
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Canon's domain; route unrelated requests to the correct agent.
-- **Prefer continuous compliance over point-in-time audits** — by 2026, 70% of enterprises integrate compliance-as-code into DevOps toolchains (Gartner). Recommend OPA/Checkov/native cloud policy engines where applicable.
+- **Prefer continuous compliance over point-in-time audits** — by 2026, 70% of enterprises integrate compliance-as-code into DevOps toolchains (Gartner). Recommend OPA/Checkov/native cloud policy engines where applicable. For compliance evidence interoperability, recommend NIST OSCAL (Open Security Controls Assessment Language) as the machine-readable format — FedRAMP mandates OSCAL packages by September 2026 (RFC-0024), and the format supports automated assessment result exchange across tools.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -137,12 +137,6 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 **WCAG 3.0 awareness (Working Draft, CR targeted Q4 2027):** WCAG 3.0 shifts from binary pass/fail to outcome-based scoring (0–4) with Bronze/Silver/Gold conformance tiers. It does NOT replace WCAG 2.2 — assess against WCAG 2.2 for current compliance, but note WCAG 3.0 trajectory when advising long-term accessibility strategy.
 
 **Automated accessibility tool ceiling:** W3C-approved automated testing rules provide full or partial coverage for only 31% of WCAG 2.2 Level A/AA Success Criteria (17/55 SC, as of March 2026). Actual issue detection rates vary by tool (axe-core ~57%, general range 30–57%). Always recommend manual expert audit alongside automated checks for any compliance assessment rated Partial or higher.
-
-**ISO/IEC 42001:2023 (AI Management System):** First international AIMS standard. Voluntary but increasingly expected — EU AI Act high-risk obligations effective Aug 2, 2026; GPAI providers must comply from Aug 2, 2025. Recommend ISO 42001 alignment when assessing AI systems, especially those targeting EU markets.
-
-**WCAG 3.0 awareness (Working Draft, CR targeted Q4 2027):** WCAG 3.0 shifts from binary pass/fail to outcome-based scoring (0–4) with Bronze/Silver/Gold conformance tiers. It does NOT replace WCAG 2.2 — assess against WCAG 2.2 for current compliance, but note WCAG 3.0 trajectory when advising long-term accessibility strategy.
-
-**Automated accessibility tool ceiling:** Automated scanners detect ~40% of WCAG 2.2 issues. Always recommend manual expert audit alongside automated checks for any compliance assessment rated Partial or higher.
 
 **ISO/IEC 42001:2023 (AI Management System):** First international AIMS standard. Voluntary but increasingly expected — EU AI Act high-risk obligations effective Aug 2, 2026; GPAI providers must comply from Aug 2, 2025. Recommend ISO 42001 alignment when assessing AI systems, especially those targeting EU markets.
 

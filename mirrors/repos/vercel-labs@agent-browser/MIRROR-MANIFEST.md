@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,26 +60,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/agent-browser/references/authentication.md`](skills/agent-browser/references/authentication.md) |
-| 3 | ✓ | [`skills/agent-browser/references/commands.md`](skills/agent-browser/references/commands.md) |
-| 4 | ✓ | [`skills/agent-browser/references/profiling.md`](skills/agent-browser/references/profiling.md) |
-| 5 | ✓ | [`skills/agent-browser/references/proxy-support.md`](skills/agent-browser/references/proxy-support.md) |
-| 6 | ✓ | [`skills/agent-browser/references/session-management.md`](skills/agent-browser/references/session-management.md) |
-| 7 | ✓ | [`skills/agent-browser/references/snapshot-refs.md`](skills/agent-browser/references/snapshot-refs.md) |
-| 8 | ✓ | [`skills/agent-browser/references/video-recording.md`](skills/agent-browser/references/video-recording.md) |
-| 9 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
-| 10 | ✓ | [`skills/agent-browser/templates/authenticated-session.sh`](skills/agent-browser/templates/authenticated-session.sh) |
-| 11 | ✓ | [`skills/agent-browser/templates/capture-workflow.sh`](skills/agent-browser/templates/capture-workflow.sh) |
-| 12 | ✓ | [`skills/agent-browser/templates/form-automation.sh`](skills/agent-browser/templates/form-automation.sh) |
-| 13 | ✓ | [`skills/agentcore/SKILL.md`](skills/agentcore/SKILL.md) |
-| 14 | ✓ | [`skills/dogfood/references/issue-taxonomy.md`](skills/dogfood/references/issue-taxonomy.md) |
-| 15 | ✓ | [`skills/dogfood/SKILL.md`](skills/dogfood/SKILL.md) |
-| 16 | ✓ | [`skills/dogfood/templates/dogfood-report-template.md`](skills/dogfood/templates/dogfood-report-template.md) |
-| 17 | ✓ | [`skills/electron/SKILL.md`](skills/electron/SKILL.md) |
-| 18 | ✓ | [`skills/slack/references/slack-tasks.md`](skills/slack/references/slack-tasks.md) |
-| 19 | ✓ | [`skills/slack/SKILL.md`](skills/slack/SKILL.md) |
-| 20 | ✓ | [`skills/slack/templates/slack-report-template.md`](skills/slack/templates/slack-report-template.md) |
-| 21 | ✓ | [`skills/vercel-sandbox/SKILL.md`](skills/vercel-sandbox/SKILL.md) |
+| 2 | ✓ | [`skill-data/agentcore/SKILL.md`](skill-data/agentcore/SKILL.md) |
+| 3 | ✓ | [`skill-data/dogfood/SKILL.md`](skill-data/dogfood/SKILL.md) |
+| 4 | ✓ | [`skill-data/electron/SKILL.md`](skill-data/electron/SKILL.md) |
+| 5 | ✓ | [`skill-data/slack/SKILL.md`](skill-data/slack/SKILL.md) |
+| 6 | ✓ | [`skill-data/vercel-sandbox/SKILL.md`](skill-data/vercel-sandbox/SKILL.md) |
+| 7 | ✓ | [`skills/agent-browser/references/authentication.md`](skills/agent-browser/references/authentication.md) |
+| 8 | ✓ | [`skills/agent-browser/references/commands.md`](skills/agent-browser/references/commands.md) |
+| 9 | ✓ | [`skills/agent-browser/references/profiling.md`](skills/agent-browser/references/profiling.md) |
+| 10 | ✓ | [`skills/agent-browser/references/proxy-support.md`](skills/agent-browser/references/proxy-support.md) |
+| 11 | ✓ | [`skills/agent-browser/references/session-management.md`](skills/agent-browser/references/session-management.md) |
+| 12 | ✓ | [`skills/agent-browser/references/snapshot-refs.md`](skills/agent-browser/references/snapshot-refs.md) |
+| 13 | ✓ | [`skills/agent-browser/references/video-recording.md`](skills/agent-browser/references/video-recording.md) |
+| 14 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
+| 15 | ✓ | [`skills/agent-browser/templates/authenticated-session.sh`](skills/agent-browser/templates/authenticated-session.sh) |
+| 16 | ✓ | [`skills/agent-browser/templates/capture-workflow.sh`](skills/agent-browser/templates/capture-workflow.sh) |
+| 17 | ✓ | [`skills/agent-browser/templates/form-automation.sh`](skills/agent-browser/templates/form-automation.sh) |
 
 ---
 

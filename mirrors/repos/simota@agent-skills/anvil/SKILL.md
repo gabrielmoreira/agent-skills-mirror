@@ -16,7 +16,7 @@ CAPABILITIES_SUMMARY:
 - config_management: XDG spec, priority-based config loading, RC file formats
 - environment_check: Doctor command pattern, dependency verification, platform detection
 - ci_ready_cli: Non-TTY behavior, JSON output, exit codes, graceful shutdown
-- agent_compatible_cli: --no-prompt/--no-interactive flags, structured output as stable API contracts, dual-audience design for human and AI agent consumers
+- agent_compatible_cli: --no-prompt/--no-interactive flags, structured output as stable API contracts, dual-audience design for human and AI agent consumers, MCP server exposure for agent-to-tool integration
 
 COLLABORATION_PATTERNS:
 - Forge -> Anvil: Prototype CLI needs production-quality implementation
@@ -71,6 +71,7 @@ Route elsewhere when the task is primarily:
 - Stay TTY-aware: colors, prompts, animations, and progress displays must degrade cleanly in pipes and CI.
 - Design for dual audiences — humans and AI agents. Provide `--no-prompt` or `--no-interactive` flags to disable all stdin reads, confirmation prompts, and pagers, enabling deterministic agent-driven execution beyond TTY detection alone.
 - Treat structured output (`--json`) as a stable API contract: field names, nesting, and types must not change without versioned migration — agents and automation scripts break silently on schema changes.
+- When a CLI is a candidate for AI agent consumption, evaluate MCP (Model Context Protocol) server exposure (e.g., `<tool> mcp serve` subcommand). MCP provides typed parameter schemas, tool discovery, and structured error responses — benefits that compound when agents invoke multiple commands in sequence. Reserve `--json` for human-driven pipelines; prefer MCP for agent-to-tool integration.
 - Keep business logic outside CLI/TUI presentation layers.
 - Treat CLI interfaces as contracts: subcommands, flags, environment variables, and config file formats must not break without a documented deprecation period (clig.dev principle).
 - Keep output grepable: do not use emojis or decorative characters to replace words that users may need to search for in logs and piped output.

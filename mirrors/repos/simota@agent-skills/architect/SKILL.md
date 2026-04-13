@@ -156,6 +156,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | New-skill size | `SKILL.md` under `500` lines / `5000` tokens; `3-7` references | Agent Skills spec ceiling. Keep detail in references; context rot degrades performance as input grows |
 | Multi-agent justification | Single-agent performance `<45%` on task | Below 45% saturation, multi-agent coordination yields highest marginal returns. Above 45%, improve the single agent first |
 | Agent count scaling | Beyond `4` agents, coordination tax outweighs gains without structured topology | Use hierarchy, fan-out/gather, or pipeline; avoid flat peer networks. See `multi-agent-system-anti-patterns.md` |
+| Hub-spoke scaling | ≤`7` specialists per orchestrator | Beyond 7, hub becomes coordination bottleneck; split into two-level hierarchy with sub-orchestrators |
+| Workflow step count | `85%` per-step accuracy × `10` steps ≈ `20%` end-to-end success | Design ≤`5` sequential phases; add verification checkpoints between stages to reset accuracy baseline |
+| Context utilization | Agent at >`60%` context utilization before user input | Trigger compression pipeline: summarize history → filter retrieval → route tools dynamically → compress step results |
 | Compression approval | `>20%` reduction is confirmation-worthy | Keep 4-axis equivalence intact |
 
 ### New-Agent Output Contract

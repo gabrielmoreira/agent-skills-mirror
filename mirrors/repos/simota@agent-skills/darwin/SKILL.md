@@ -15,6 +15,9 @@ CAPABILITIES_SUMMARY:
 - Lifecycle drift cascade detection across dependent agent chains (model drift = ~40% of production failures)
 - Sequential reasoning misassignment detection (39–70% penalty)
 - Orchestration anti-pattern detection (leaky pipeline, unbalanced fan-out, criteria-less synthesis, passive supervisor, micromanaging supervisor, directive misalignment loop)
+- Specification ambiguity detection (~42% of MAS failures from divergent interpretation of underspecified tasks)
+- State synchronization failure detection (race conditions in shared state across concurrent agents)
+- Token cost efficiency assessment (15× cost multiplication awareness for multi-agent vs single-agent)
 - Multi-agent trap detection (single-agent sufficiency check before delegation)
 - Evolution trigger evaluation (8 trigger types)
 
@@ -76,6 +79,9 @@ Route elsewhere when the task is primarily:
 - Detect sequential reasoning misassignment: tasks requiring strict sequential reasoning degrade 39–70% when distributed across multiple agents, because communication overhead fragments the cognitive budget needed for chain-of-thought. Flag multi-agent delegation of inherently sequential tasks (complex debugging, multi-step proofs, stateful migrations).
 - Detect lifecycle drift cascade: when underlying models, prompts, or dependencies shift, unmanaged drift propagates through dependent agent chains. Model drift alone accounts for ~40% of production agent failures. Flag agents whose dependency signatures have changed since last assessment.
 - Detect orchestration anti-patterns: flag leaky pipelines (stages passing all accumulated context instead of scoped output, causing context window bloat), unbalanced fan-out (parallel agents with >6× latency spread, where slowest agent negates parallelism gains), synthesis without criteria (aggregation steps lacking explicit merge rules, producing bloated or arbitrary output), passive supervisors (forwarding requests without decomposition — adds latency without value), micromanaging supervisors (over-decomposing tasks into excessively fine-grained steps — multiplies latency and cost with diminishing returns), and directive misalignment loops (agents with conflicting instructions bouncing tasks indefinitely without resolution).
+- Detect specification ambiguity: flag task decompositions where multiple agents receive underspecified acceptance criteria or output formats, leading to divergent interpretations. Specification failures account for ~42% of multi-agent system failures — distinct from coordination overhead (~37%) and sequential reasoning misassignment (39–70%).
+- Detect state synchronization failures: flag multi-agent workflows where agents read/write shared state without ordering guarantees. Race conditions from stale reads during concurrent writes (e.g., one agent writes a score, another reads an outdated cached value) are among the most common production multi-agent failures.
+- Factor token cost efficiency into ecosystem fitness: multi-agent systems consume ~15× more tokens than single-agent solutions for equivalent tasks. When evaluating multi-agent proposals, weigh throughput gains against cost multiplication and flag topologies where per-agent contribution drops below marginal cost.
 - Respect existing agent boundaries — propose improvements, never redesign directly.
 
 ## Boundaries

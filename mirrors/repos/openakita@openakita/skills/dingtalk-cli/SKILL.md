@@ -4,7 +4,7 @@ description: "DingTalk Workspace CLI (dws) - officially open-sourced cross-platf
 license: Apache-2.0
 metadata:
   author: DingTalk-Real-AI
-  version: "1.0.7"
+  version: "1.0.8"
 ---
 
 # 钉钉 Workspace CLI (dws)

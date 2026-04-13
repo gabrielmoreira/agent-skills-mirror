@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 22 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,24 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`apps/ios/CLAUDE.md`](apps/ios/CLAUDE.md) |
 | 3 | ✓ | [`apps/macos/CLAUDE.md`](apps/macos/CLAUDE.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`prompts/2026-01-30-plan-multi-page-ui-with-cron-management.md`](prompts/2026-01-30-plan-multi-page-ui-with-cron-management.md) |
-| 6 | ✓ | [`prompts/2026-01-30-plan-projects-feature-for-moltis.md`](prompts/2026-01-30-plan-projects-feature-for-moltis.md) |
-| 7 | ✓ | [`prompts/session-2026-03-11-docker-in-docker-host-data-dir.md`](prompts/session-2026-03-11-docker-in-docker-host-data-dir.md) |
-| 8 | ✓ | [`prompts/session-2026-03-28-managed-ssh.md`](prompts/session-2026-03-28-managed-ssh.md) |
-| 9 | ✓ | [`prompts/session-2026-03-28-remote-exec-doctor.md`](prompts/session-2026-03-28-remote-exec-doctor.md) |
-| 10 | ✓ | [`prompts/session-2026-03-28-skills-bundles-and-ssh-ux.md`](prompts/session-2026-03-28-skills-bundles-and-ssh-ux.md) |
-| 11 | ✓ | [`prompts/session-2026-03-29-tools-settings-overview.md`](prompts/session-2026-03-29-tools-settings-overview.md) |
-| 12 | ✓ | [`prompts/session-2026-04-05-e2e-ci-hardening.md`](prompts/session-2026-04-05-e2e-ci-hardening.md) |
-| 13 | ✓ | [`prompts/session-2026-04-06-swift-bridge-httpd-ci.md`](prompts/session-2026-04-06-swift-bridge-httpd-ci.md) |
-| 14 | ✓ | [`prompts/session-2026-04-08-minimax-compatibility.md`](prompts/session-2026-04-08-minimax-compatibility.md) |
-| 15 | ✓ | [`prompts/session-2026-04-10-hook-channel-provenance.md`](prompts/session-2026-04-10-hook-channel-provenance.md) |
-| 16 | ✓ | [`prompts/session-2026-04-10-telegram-voice-fallback.md`](prompts/session-2026-04-10-telegram-voice-fallback.md) |
-| 17 | ✓ | [`prompts/sessions/2026-01-30-1737-21a36fc6.jsonl`](prompts/sessions/2026-01-30-1737-21a36fc6.jsonl) |
-| 18 | ✓ | [`prompts/sessions/2026-01-30-1745-90ab5b9d.jsonl`](prompts/sessions/2026-01-30-1745-90ab5b9d.jsonl) |
-| 19 | ✓ | [`prompts/sessions/2026-01-30-1813-b74eb977.jsonl`](prompts/sessions/2026-01-30-1813-b74eb977.jsonl) |
-| 20 | ✓ | [`prompts/sessions/2026-01-30-1816-612287e3.jsonl`](prompts/sessions/2026-01-30-1816-612287e3.jsonl) |
-| 21 | ✓ | [`prompts/sessions/2026-01-30-1818-90ab5b9d.jsonl`](prompts/sessions/2026-01-30-1818-90ab5b9d.jsonl) |
-| 22 | ✓ | [`website/llms.txt`](website/llms.txt) |
+| 5 | ✓ | [`website/llms.txt`](website/llms.txt) |
 
 ---
 

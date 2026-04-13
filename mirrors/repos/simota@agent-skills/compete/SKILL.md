@@ -186,12 +186,14 @@ Read `references/intelligence-calibration.md` when updating confidence or source
 | Battle card freshness | Dynamic and continuously updated; stale battle cards destroy sales team trust. Manual update cycle averages `14-21 days`; AI-enabled systems target `< 24 hours`. Weekly updates correlate with `15%` higher competitive win rate vs monthly cycles |
 | CI manual effort baseline | Manual battlecard maintenance averages `8-15` hours/week; use as ROI baseline when recommending CI automation at L3+ maturity |
 | Battlecard adoption | `< 40%` rep adoption = content quality problem; `60-70%` = healthy; `> 80%` = excellent, correlates with win rate lift. Industry median ~34%, top-quartile ~72% |
+| CI activation rate | Contextual, workflow-embedded intelligence achieves `85%+` stakeholder adoption vs `~30%` for standalone documents — structure deliverables for the consumption context (CRM-integrated, pre-call briefing, deal room), not as filing-cabinet reports |
 | Win rate improvement | `5-10pp` competitive win rate lift within 2-3 quarters of CI-enabled sales = good benchmark. Battle card users report up to `30%` win rate increase; CI-equipped teams close deals `28%` faster |
 | Win/loss program ROI | Systematic win/loss analysis yields `15-30%` win rate improvement — recommend establishing a formal program when competitive deal volume exceeds `20` deals/quarter |
-| CI tool adoption threshold | Gartner estimated `40%` of technology providers using commercial CI tools by 2026 (up from ~`10%` in 2023). Agentic AI capabilities are now standard in leading platforms (Klue, Crayon). Manual CI is unsustainable for B2B SaaS beyond `50` employees — recommend automation at L3+ maturity |
+| CI tool adoption threshold | ~`40%` of technology providers now use commercial CI tools (Gartner 2026 estimate realized, up from ~`10%` in 2023). Agentic AI capabilities are standard in leading platforms (Klue, Crayon). Manual CI is unsustainable for B2B SaaS beyond `50` employees — recommend automation at L3+ maturity |
 | Pricing verification cadence | Verify competitor pricing before every competitive deal — pricing pages change without announcement. Quarterly audits are insufficient; event-driven checks are the minimum |
 | Competitive deal prevalence | ~68% of deals involve head-to-head competition — assume competitive context unless proven otherwise |
 | SaaS win rate benchmarks | Enterprise SaaS average `20-35%`; high-growth SaaS leaders `40-50%`; category-defining leaders `50%+` — use as calibration baselines |
+| GEO monitoring cadence | Review AI-generated brand positioning quarterly minimum — LLM retraining cycles change brand mentions without warning. Measure citations (linked sources) and mentions (text references) as separate signals. AI-referred traffic grew `527%` YoY (2024-2025); treat this channel as material for competitive positioning |
 
 ## Output Requirements
 
@@ -217,6 +219,12 @@ Source citation format: `[N]` inline reference → `## Sources` section at the e
 - **vs Helm**: Helm = business strategy simulation; Compete = competitive intelligence and analysis.
 - **vs Pulse**: Pulse = product metrics and KPIs; Compete = competitive benchmarking of those metrics.
 - **vs Spark**: Spark = general feature ideation; Compete = competition-driven gap analysis that feeds into Spark.
+
+**Agent Teams pattern (RESEARCH_FAN_OUT):**
+When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore subagents in parallel:
+- Each subagent researches a distinct competitor subset (e.g., direct competitors vs indirect vs substitutes)
+- Coordinator synthesizes findings via Union merge (deduplicate → cross-reference → rank by strategic impact)
+- Team size: `2-3` (Explore, model: haiku). Escalate to Rally if `4+` parallel research streams needed
 
 ## Routing And Handoffs
 

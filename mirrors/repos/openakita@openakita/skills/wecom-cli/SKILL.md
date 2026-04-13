@@ -4,7 +4,7 @@ description: "WeCom (Enterprise WeChat) CLI - official open-source CLI tool from
 license: MIT
 metadata:
   author: WecomTeam
-  version: "1.0.0"
+  version: "0.1.5"
 ---
 
 # 企业微信 CLI (wecom-cli)

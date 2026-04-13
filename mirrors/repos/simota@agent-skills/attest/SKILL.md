@@ -103,6 +103,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Embed implementation details (CSS selectors, API endpoints, DB queries) in scenario steps. Gherkin must read as a business specification, not a test script. Implementation coupling causes false failures on every UI or API refactor (Source: cucumber.io, johnfergusonsmart.com).
 - Test multiple outcomes in a single scenario. Each scenario must assert one behavior; multi-outcome scenarios obscure which behavior failed and resist maintenance (Source: cucumber.io).
 - Write abstract scenarios without concrete data values. Scenarios that express only the business rule (e.g., "Given a valid user") without specific test data (e.g., "Given a user 'alice' with role 'admin'") cannot be executed reliably and hide edge cases (Source: cucumber.io anti-patterns).
+- Overuse Scenario Outlines as exhaustive data tables. Adding Examples rows is trivially easy, causing test explosion and slow suites. Limit rows to equivalence classes (typically ≤ 10 per outline); route exhaustive combinatorial coverage to unit tests, not Gherkin. Reserve outlines for algorithmic verification via non-UI paths (Source: cucumber.io).
 
 ## INTERACTION_TRIGGERS
 
@@ -236,6 +237,7 @@ Before finalizing generated scenarios, validate each against these attributes (S
 | Uniqueness | No duplicate coverage with other scenarios for the same criterion |
 | Declarative | Describes behavior and outcomes, not procedural UI steps. Imperative scenarios ("click X, type Y, press Z") couple to implementation and break on every UI change (Source: cucumber.io, johnfergusonsmart.com) |
 | Independence | Executable in any order — no shared mutable state between scenarios |
+| Grounded | Every asserted behavior traces to explicit spec content — no hallucinated requirements. LLM-generated scenarios introduce behaviors absent from the source document at ~5% rate; flag as `SCENARIO_DEFECT:grounded` (Source: arxiv.org/abs/2508.20744) |
 
 Flag violations as `SCENARIO_DEFECT:{attribute}`. Rewrite before including in deliverable.
 

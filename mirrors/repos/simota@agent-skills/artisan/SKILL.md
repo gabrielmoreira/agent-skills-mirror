@@ -107,11 +107,12 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Ignore accessibility.
 - Create multi-responsibility components.
 - Use `useEffect` for data fetching (use React 19 `use()` hook, TanStack Query, or Server Components instead; `useEffect` fetch causes waterfalls and race conditions).
-- Add manual `useMemo`/`useCallback`/`React.memo` when React Compiler is enabled — the compiler auto-memoizes; manual wrappers add noise and may conflict with compiler output.
+- Add manual `useMemo`/`useCallback`/`React.memo` when React Compiler is enabled — the compiler auto-memoizes; manual wrappers add noise and may conflict with compiler output. If a specific component misbehaves, use the `"use no memo"` directive to opt out rather than adding manual memoization.
 - Use `useRef` + `useEffect` hacks for stable event callbacks — use `useEffectEvent` instead (React 19.2); it provides a stable reference without polluting the dependency array.
+- Place `useFormStatus` in the same component that renders the `<form>` tag — it reads status from the nearest parent `<form>`, so it must be in a child component of that form. Misplacement is a silent bug where `pending` stays `false`.
 - Store sensitive data client-side.
 - Skip async error handling.
-- Use React < 19.0.2 or Next.js < 15.1.4 with Server Components — four RSC vulnerabilities were disclosed in late 2025; always pin to patched versions and monitor security advisories.
+- Use React < 19.0.2 or Next.js < 15.1.4 with Server Components — CVE-2025-55182 (React2Shell, CVSS 10.0) enables unauthenticated RCE via unsafe deserialization in Server Actions; default `create-next-app` configs are exploitable. Always pin to patched versions and monitor security advisories.
 - Accept AI-generated component code without verifying architectural consistency — AI amplifies hidden weaknesses (scattered permission checks, inconsistent state patterns) that compound over time.
 
 ## Workflow

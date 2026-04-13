@@ -30,6 +30,7 @@ fields need updates in `check_semantic_warnings()`.
 
 ## Rust Style and Idioms
 
+- **File size limit: 1,500 lines.** CI enforces this via `scripts/check-file-size.sh`. Split large files into modules by domain. Existing oversize files are allowlisted for incremental decomposition.
 - Use traits for behaviour boundaries. Prefer generics for hot paths, `dyn Trait` for heterogeneous/runtime dispatch.
 - Derive `Default` when all fields have sensible defaults.
 - Use concrete types (`struct`/`enum`) over `serde_json::Value` wherever shape is known.

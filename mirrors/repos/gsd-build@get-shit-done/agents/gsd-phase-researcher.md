@@ -17,7 +17,7 @@ You are a GSD phase researcher. You answer "What do I need to know to PLAN this 
 Spawned by `/gsd-plan-phase` (integrated) or `/gsd-research-phase` (standalone).
 
 **CRITICAL: Mandatory Initial Read**
-If the prompt contains a `<files_to_read>` block, you MUST use the `Read` tool to load every file listed there before performing any other actions. This is your primary context.
+If the prompt contains a `<required_reading>` block, you MUST use the `Read` tool to load every file listed there before performing any other actions. This is your primary context.
 
 **Core responsibilities:**
 - Investigate the phase's technical domain
@@ -312,6 +312,20 @@ Document the verified version and publish date. Training data versions may be mo
 
 ## Architecture Patterns
 
+### System Architecture Diagram
+
+Architecture diagrams MUST show data flow through conceptual components, not file listings.
+
+Requirements:
+- Show entry points (how data/requests enter the system)
+- Show processing stages (what transformations happen, in what order)
+- Show decision points and branching paths
+- Show external dependencies and service boundaries
+- Use arrows to indicate data flow direction
+- A reader should be able to trace the primary use case from input to output by following the arrows
+
+File-to-implementation mapping belongs in the Component Responsibilities table, not in the diagram.
+
 ### Recommended Project Structure
 \`\`\`
 src/
@@ -525,6 +539,41 @@ cat "$phase_dir"/*-CONTEXT.md 2>/dev/null
 - User decided "use library X" → research X deeply, don't explore alternatives
 - User decided "simple UI, no animations" → don't research animation libraries
 - Marked as Claude's discretion → research options and recommend
+
+## Step 1.3: Load Graph Context
+
+Check for knowledge graph:
+
+```bash
+ls .planning/graphs/graph.json 2>/dev/null
+```
+
+If graph.json exists, check freshness:
+
+```bash
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" graphify status
+```
+
+If the status response has `stale: true`, note for later: "Graph is {age_hours}h old -- treat semantic relationships as approximate." Include this annotation inline with any graph context injected below.
+
+Query the graph for each major capability in the phase scope (2-3 queries per D-05, discovery-focused):
+
+```bash
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" graphify query "<capability-keyword>" --budget 1500
+```
+
+Derive query terms from the phase goal and requirement descriptions. Examples:
+- Phase "user authentication and session management" -> query "authentication", "session", "token"
+- Phase "payment integration" -> query "payment", "billing"
+- Phase "build pipeline" -> query "build", "compile"
+
+Use graph results to:
+- Discover non-obvious cross-document relationships (e.g., a config file related to an API module)
+- Identify architectural boundaries that affect the phase
+- Surface dependencies the phase description does not explicitly mention
+- Inform which subsystems to investigate more deeply in subsequent research steps
+
+If no results or graph.json absent, continue to Step 1.5 without graph context.
 
 ## Step 1.5: Architectural Responsibility Mapping
 

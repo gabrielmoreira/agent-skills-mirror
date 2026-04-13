@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `cube-js/cube` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `cube-js/cube` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cube-js/cube` — 26 default patterns, 0 followed patterns, 7 file(s)
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,12 +60,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.cursor/rules/namings-rule.mdc`](.cursor/rules/namings-rule.mdc) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 4 | ✓ | [`packages/cubejs-backend-shared/CLAUDE.md`](packages/cubejs-backend-shared/CLAUDE.md) |
-| 5 | ✓ | [`packages/cubejs-query-orchestrator/CLAUDE.md`](packages/cubejs-query-orchestrator/CLAUDE.md) |
-| 6 | ✓ | [`rust/cubesql/CLAUDE.md`](rust/cubesql/CLAUDE.md) |
-| 7 | ✓ | [`rust/cubestore/CLAUDE.md`](rust/cubestore/CLAUDE.md) |
+| 2 | ✓ | [`.cursor/rules/writing-documentation.mdc`](.cursor/rules/writing-documentation.mdc) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 5 | ✓ | [`packages/cubejs-backend-shared/CLAUDE.md`](packages/cubejs-backend-shared/CLAUDE.md) |
+| 6 | ✓ | [`packages/cubejs-query-orchestrator/CLAUDE.md`](packages/cubejs-query-orchestrator/CLAUDE.md) |
+| 7 | ✓ | [`rust/cubesql/CLAUDE.md`](rust/cubesql/CLAUDE.md) |
+| 8 | ✓ | [`rust/cubestore/CLAUDE.md`](rust/cubestore/CLAUDE.md) |
 
 ---
 

@@ -15,6 +15,7 @@ CAPABILITIES_SUMMARY:
 - gemini_delegation: Delegate single-SVG generation to Gemini CLI in text mode
 - ai_spritesheet: Generate AI-assisted spritesheets via GPT Image Edit API (canvas prep, prompt, normalization)
 - sd_spritesheet: Generate SDXL + Pixel-Art-XL LoRA / Retro Diffusion pixel art pipeline code (ComfyUI workflow, 4-angle sheets, AI+manual refinement)
+- pixellab_pipeline: Generate PixelLab AI-assisted pixel art with skeleton animation, directional views, and inpainting via API
 - accessibility_palette: Generate colorblind-friendly palette variants (deuteranopia/protanopia/tritanopia) and shape-based differentiation
 
 COLLABORATION_PATTERNS:
@@ -48,11 +49,12 @@ Use Dot when the user needs:
 - a tileset with autotiling or terrain transition rules
 - frame animation code (walk cycles, idle, attack, effects)
 - batch PNG/GIF export scripts via Pillow
-- pixel-perfect engine integration (Phaser 3, Godot, Unity, PixiJS) including Phaser Pixel Tools (Atlaspack/Tilepack) pipeline
+- pixel-perfect engine integration (Phaser 3/4, Godot, Unity, PixiJS) including Phaser Pixel Tools (Atlaspack/Fontpack/Tilepack) pipeline and Phaser 4 PixUI for pixel art UI components
 - SVG generation delegated to Gemini CLI
 - CSS pixel art (box-shadow, CSS Grid sprites)
 - AI-assisted spritesheet generation using GPT Image Edit API
 - Stable Diffusion pixel art pipeline setup (SDXL + Pixel-Art-XL LoRA via ComfyUI, Retro Diffusion Aseprite extension, SD SpriteSheet Generator)
+- AI-assisted pixel art with skeleton-based animation, directional views, and context-aware inpainting (PixelLab API/Aseprite extension)
 - colorblind-friendly palette variants or accessibility-tested pixel art
 - HD-2D style assets (pixel sprites designed for 3D environment compositing)
 
@@ -126,6 +128,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `gemini`, `delegate`, external SVG generation | Gemini CLI delegation | sanitized `.svg` | `references/gemini-delegation.md` |
 | `ai spritesheet`, `GPT Image edit`, AI-assisted animation | Python (canvas prep + normalize) | `.py` → PNG | `references/gpt-image-edit.md`, `references/sprite-animation.md` |
 | `stable diffusion`, `SDXL LoRA`, `retro diffusion`, AI pixel generation pipeline | Python (SDXL + Pixel-Art-XL LoRA / Replicate API + post-process) | `.py` -> PNG | `references/code-patterns.md`, `references/gpt-image-edit.md` |
+| `pixellab`, skeleton animation, AI directional views, inpainting | Python (PixelLab API + post-process) | `.py` -> PNG | `references/gpt-image-edit.md`, `references/sprite-animation.md` |
 | `accessible`, `colorblind`, a11y palette | Base route + colorblind variant palettes | base format + palette JSON | `references/pixel-craft.md` |
 | `HD-2D`, pixel sprite for 3D compositing | SVG or Canvas with alpha channel, no background | `.svg` / `.html` | `references/code-patterns.md`, `references/engine-integration.md` |
 | unclear request | SVG (lowest dependency) | `.svg` | `references/code-patterns.md` |

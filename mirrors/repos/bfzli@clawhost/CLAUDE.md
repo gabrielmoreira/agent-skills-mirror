@@ -621,7 +621,6 @@ VITE_FIREBASE_APP_ID=...
 | Types (API)        | `apps/api/src/ts/Types.ts`                      |
 | Interfaces (API)   | `apps/api/src/ts/Interfaces.ts`                 |
 | Input Validation   | `packages/shared/src/inputValidation.ts`        |
-| OpenClaw Version   | `packages/shared/src/openclawVersion.ts`        |
 
 ### Internationalization (i18n)
 

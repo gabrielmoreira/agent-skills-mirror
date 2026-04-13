@@ -39,11 +39,10 @@ For `clawteam spawn` (manual mode):
 
 ## Launch a Template (Recommended Path)
 
-```bash
-# Stock analysis (Hermes-native template using gbrain for output — RECOMMENDED for Hermes users)
-clawteam launch hedge-fund-hermes --team-name tesla --goal "Analyze TSLA" --force
+All built-in templates default to `command = ["openclaw"]`. Hermes users MUST pass `--command hermes`:
 
-# Stock analysis (original OpenClaw-style template — relies on clawteam inbox send which Hermes workers often skip)
+```bash
+# Stock analysis (7 specialist analysts: portfolio-manager, buffett, growth, technical, fundamentals, sentiment, risk-manager)
 clawteam launch hedge-fund --team-name tesla --goal "Analyze TSLA" --command hermes --force
 
 # Research paper summary
@@ -55,31 +54,6 @@ clawteam launch code-review --team-name review1 --goal "Review PR #42" --command
 # Business strategy
 clawteam launch strategy-room --team-name strat --goal "Q2 planning" --command hermes --force
 ```
-
-## Reading Output from `hedge-fund-hermes` (Preferred Path)
-
-The Hermes-native template stores each analyst's findings as a gbrain page with a predictable slug. After launch + ~2 minutes wait:
-
-```bash
-# Query all findings at once
-mcp_gbrain_query("<team-name> analyst")
-
-# Or read each analyst's page directly
-for analyst in buffett growth technical fundamentals sentiment risk; do
-  mcp_gbrain_get_page("<team-name>-$analyst")
-done
-
-# Portfolio manager stores the final synthesis here
-mcp_gbrain_get_page("<team-name>-final-report")
-```
-
-**Why this works better than `hedge-fund`**: Hermes workers reliably call `mcp_gbrain_put_page` because gbrain is their native MCP surface. They often skip the `clawteam inbox send` step in the OpenClaw-style template.
-
-Benefits:
-- Findings persist in Postgres across sessions
-- No tmux scrollback fragility
-- Next week's analysis can query prior reports
-- Cross-agent memory works natively
 
 ## CRITICAL: Timing Expectations (DO NOT cleanup early)
 
@@ -169,17 +143,13 @@ Notes on each flag:
 - No `--continue` — Hermes auto-generates a fresh session ID per spawn
 - `-m <model>` added if `--model` was passed to clawteam
 
-## Brain-Aware Teams
+## MCP Inheritance
 
-Spawned Hermes workers inherit MCP servers from `~/.hermes/config.yaml`. If you have gbrain configured, every worker automatically has knowledge brain access. Use this for:
+Spawned Hermes workers inherit any MCP servers configured in `~/.hermes/config.yaml`. If you have a knowledge base, memory store, or other MCP tool wired into Hermes, every worker gets that capability automatically.
 
-- Shared context: workers read/write brain pages to share findings
-- Knowledge accumulation: discoveries get stored in gbrain
-- Cross-agent memory: worker B queries what worker A stored
-
-Include brain instructions in task prompts:
+Include MCP-related instructions in task prompts if you want workers to use them:
 ```bash
-clawteam spawn -t research -n analyst --task "Research topic X. Query gbrain for prior work first. Store findings as brain pages." --no-workspace hermes
+clawteam spawn -t research -n analyst --task "Research topic X. Use available MCP tools to check prior work and store findings." --no-workspace hermes
 ```
 
 ## Command Reference
@@ -241,7 +211,7 @@ clawteam spawn -t research -n analyst --task "Research topic X. Query gbrain for
 
 2. **Inbox empty despite COMPLETED tasks**: Hermes workers write to tmux scrollback, not to the inbox system. The kanban board reflects task state but not content. Always capture tmux panes to read actual output.
 
-3. **Workers do not persist findings**: Unless explicitly instructed to use gbrain, agent outputs exist only in tmux scrollback and are lost when the session is cleaned up. Always include brain-instructions in analysis goals.
+3. **Workers do not persist findings**: Agent outputs live in tmux scrollback and are lost when the session is cleaned up. Capture the panes before running `team cleanup`, or instruct agents (via the task prompt) to write to any MCP-backed persistence store configured in `~/.hermes/config.yaml`.
 
 ## CRITICAL: Inbox Peek Is Unreliable — Use Tmux Capture
 
@@ -260,11 +230,7 @@ for win in $(tmux list-windows -t clawteam-<team-name> -F '#{window_index}' 2>/d
 done
 ```
 
-**Also:** When launching a team for analysis work, include brain-instructions in the goal so agents store findings in gbrain — this provides a persistent fallback when tmux sessions are lost:
-
-```bash
-clawteam launch hedge-fund --team-name <name> --goal "Analyze AAPL. IMPORTANT: After completing your analysis, store key findings as brain pages using mcp_gbrain_put_page so findings persist even if the tmux session is lost." --command hermes --force
-```
+**Also:** If you have an MCP-backed persistence store (knowledge base, memory system) wired into `~/.hermes/config.yaml`, include instructions in the goal so agents write findings there. This gives you a persistent fallback when tmux sessions are lost. Exact tool names depend on which MCP server you use.
 
 ## Anti-Patterns (Do Not Do)
 
