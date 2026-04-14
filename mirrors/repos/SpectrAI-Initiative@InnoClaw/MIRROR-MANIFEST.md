@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SpectrAI-Initiative/InnoClaw` — 26 default patterns, 0 followed patterns, 221 file(s) materialized.
+Mirror of `SpectrAI-Initiative/InnoClaw` — 26 default patterns, 0 followed patterns, 222 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SpectrAI-Initiative/InnoClaw` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 221 |
+| Files         | 222 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -279,7 +279,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 218 | ✓ | [`.claude/skills/virus_genomics/SKILL.md`](.claude/skills/virus_genomics/SKILL.md) |
 | 219 | ✓ | [`.claude/skills/web_literature_mining/SKILL.md`](.claude/skills/web_literature_mining/SKILL.md) |
 | 220 | ✓ | [`.claude/skills/wind-site-assessment/SKILL.md`](.claude/skills/wind-site-assessment/SKILL.md) |
-| 221 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 221 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 222 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

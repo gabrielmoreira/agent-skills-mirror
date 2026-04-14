@@ -1,1042 +1,544 @@
 ---
 name: dashclaw-platform-intelligence
-description: >
-  DashClaw platform expert for integration, troubleshooting, and governance. Use when working
-  with DashClaw APIs/SDKs: instrumenting agents, action recording, guard/policy checks, SSE
-  real-time events, org/workspace context, auth headers (x-api-key), errors (401/403/429/503),
-  building API routes, generating SDK/client methods, bootstrapping agent data, configuring
-  evaluations/scorers, prompt templates/versioning, feedback capture, compliance exports, drift
-  monitoring, learning analytics/velocity, scoring profiles, risk templates, CLI approval
-  channel, terminal approvals, dashclaw approve, dashclaw approvals, dashclaw deny, Claude Code
-  hooks, PreToolUse, PostToolUse, governed tool calls, DASHCLAW_HOOK_MODE, terminal governance.
-  Trigger on: "instrument my agent", "connect my agent", "403 error", "set up monitoring",
-  "evaluate outputs", "manage prompts", "collect feedback", "export compliance", "detect drift",
-  "track learning", "approve from terminal", "govern Claude Code".
+description: DashClaw platform expert for integration, troubleshooting, and governance. Snapshot-based — always prefer live queries via `python -m livingcode query`.
 ---
 
-# DashClaw Platform Intelligence (platform 2.13.1, SDK 2.11.1)
+# DashClaw Platform Intelligence
 
-You are a DashClaw platform expert. You know every API route, both SDKs, the security model,
-compliance frameworks, evaluation engine, prompt registry, feedback loop, drift detection,
-learning analytics, and architectural patterns. You generate code, diagnose issues, design
-architectures, and orchestrate complex workflows.
-
-**Zero-dependency philosophy**: All features work without any LLM API key by default. The only
-optional LLM feature is the `llm_judge` scorer type in the Evaluation Framework, which degrades
-gracefully when no provider is configured.
-
-## Workflow Decision Tree
-
-Determine which workflow to follow:
-
-**Integrating an agent with DashClaw?** --> "Instrument My Agent" below
-**Error or unexpected behavior?** --> Read [references/troubleshooting.md](references/troubleshooting.md)
-**Adding a new feature to DashClaw itself?** --> "Add a DashClaw Capability" below
-**Generating a client in a new language?** --> "Generate Client Code" below
-**Setting up policies or guard rules?** --> "Design Policies" below
-**Importing an existing agent's data?** --> "Bootstrap Agent" below
-**Setting up evaluations or scoring?** --> "Configure Evaluations" below
-**Managing prompt templates?** --> "Manage Prompts" below
-**Collecting user feedback?** --> "Collect Feedback" below
-**Exporting compliance reports?** --> "Export Compliance" below
-**Monitoring for behavioral drift?** --> "Monitor Drift" below
-**Tracking learning progress?** --> "Track Learning" below
-**Defining quality scoring or risk templates?** --> "Configure Scoring" below
-**Approving agent actions from the terminal?** --> "CLI Approval Channel" below
-**Governing Claude Code tool calls with DashClaw?** --> "Claude Code Hooks" below
-**Monitoring agent session health?** --> "Monitor Session Health" below
-**Configuring guard policy types?** --> "Configure Guard Policy Types" below
-**General question about the platform?** --> Read [references/platform-knowledge.md](references/platform-knowledge.md)
-**Need the full API surface?** --> Read [references/api-surface.md](references/api-surface.md)
-
-## Instrument My Agent
-
-Full integration of DashClaw into an existing agent codebase.
-
-### 1. Detect language, install SDK
-
-**Node.js (v2 SDK):**
-```javascript
-import { DashClaw } from 'dashclaw';
-const dc = new DashClaw({
-  baseUrl: process.env.DASHCLAW_BASE_URL || 'http://localhost:3000',
-  apiKey: process.env.DASHCLAW_API_KEY,
-  agentId: 'my-agent',
-});
-```
-
-**Python:**
-```python
-from dashclaw import DashClaw
-dc = DashClaw(
-    base_url=os.environ.get("DASHCLAW_BASE_URL", "http://localhost:3000"),
-    api_key=os.environ["DASHCLAW_API_KEY"],
-    agent_id="my-agent",
-)
-```
-
-> **v1 Legacy SDK:** For the full 177+ method surface (SSE events, wrapClient, pairing, full policy
-> CRUD, full compliance exports, etc.), import from `dashclaw/legacy` instead. See `sdk/legacy/dashclaw-v1.js`.
-
-### 2. Identify decision points in the agent's code
-
-Scan for: tool/API calls (actions), conditional behavior logic (policy-relevant), risk-bearing
-operations (guard-worthy).
-
-### 3. Instrument each decision point
-
-**Guard check** (before risky operations):
-```javascript
-const decision = await dc.guard({
-  action_type: 'file_write', content: fileContent, risk_score: 60
-});
-if (decision.decision === 'block') return; // blocked by policy
-
-// The guard response includes learning context when DashClaw has relevant data:
-if (decision.learning) {
-  console.log(`Recent score avg: ${decision.learning.recent_score_avg}`);
-  console.log(`Drift status: ${decision.learning.drift_status}`);
-  decision.learning.patterns.forEach(p => console.log(`Pattern: ${p}`));
-}
-```
-
-**Action recording** (wrap every significant operation):
-```javascript
-const { action } = await dc.createAction({
-  action_type: 'api_call',
-  declared_goal: 'Fetch user profile',
-  risk_score: 25,
-  metadata: { endpoint: '/users/123' }
-});
-// ... do the work ...
-await dc.updateOutcome(action.action_id, {
-  status: 'completed',
-  output_summary: 'Profile fetched'
-});
-```
-
-**Assumption tracking:**
-```javascript
-await dc.recordAssumption({
-  action_id: action.action_id,
-  assumption: 'User timezone is UTC',
-  basis: 'Derived from user profile settings'
-});
-```
-
-**HITL approval** (for high-risk actions):
-```javascript
-const { action } = await dc.createAction({
-  action_type: 'infrastructure', declared_goal: 'Resize DB cluster', risk_score: 95
-});
-// waitForApproval polls until approved_by metadata is present
-const approved = await dc.waitForApproval(action.action_id);
-```
-
-**Open loops** (track ongoing background work):
-```javascript
-const { loop_id } = await dc.registerOpenLoop(action.action_id, 'background_indexing', 'Indexing docs');
-// ... later ...
-await dc.resolveOpenLoop(loop_id, 'resolved', 'Indexed 42 files.');
-```
-
-**Prompt injection scanning** (on user/tool input before processing):
-```javascript
-const scan = await dc.scanPromptInjection(userInput, { source: 'user_input' });
-if (scan.recommendation === 'block') throw new Error('Prompt injection detected');
-```
-
-**Agent messaging** (inter-agent communication):
-```javascript
-await dc.sendMessage({
-  to: 'deploy-bot', type: 'status',
-  subject: 'Tests passed', body: 'All 847 tests green. Safe to deploy.',
-});
-const { messages } = await dc.getInbox({ unread: true });
-```
-
-**Session handoffs** (continuity across restarts):
-```javascript
-await dc.createHandoff({
-  sessionDate: new Date().toISOString().slice(0, 10),
-  summary: 'Completed migration. 3 tables updated.',
-  openTasks: ['Verify row counts'],
-  decisions: ['Used batch inserts'],
-});
-// On next startup:
-const { handoff } = await dc.getLatestHandoff();
-```
-
-**User feedback** (capture end-user ratings):
-```javascript
-await dc.submitFeedback({
-  action_id: action.action_id,
-  rating: 4,
-  comment: 'Fast and accurate response',
-});
-```
-
-**Context threads** (reasoning trails):
-```javascript
-const { thread } = await dc.createThread({ name: 'Deploy analysis', summary: 'Evaluating deploy safety' });
-await dc.addThreadEntry(thread.thread_id, 'Checked staging health: all green', 'observation');
-await dc.addThreadEntry(thread.thread_id, 'Production deploy is safe', 'conclusion');
-await dc.closeThread(thread.thread_id, 'Deploy approved after staging check');
-```
-
-### 4. Add quality scoring (recommended)
-
-After instrumenting actions, add evaluation scoring to track output quality:
-
-```javascript
-// Create a scorer (one-time setup) — positional args: name, scorer_type, config, description
-const scorer = await dc.createScorer(
-  'output-quality',
-  'contains',
-  { keywords: ['success', 'completed'], case_sensitive: false },
-  'Checks for success keywords in output'
-);
-```
-
-### 5. Add env vars, validate
+**Shape snapshot:** `sha1:40fb7b99f05950aa7a358b8bfa7e32c1c99119d7`
+**This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
-# .env
-DASHCLAW_BASE_URL=http://localhost:3000
-DASHCLAW_API_KEY=oc_live_...
+python -m livingcode emit skill --output <path-to-SKILL.md>
 ```
 
-Validate the integration:
-```bash
-node .claude/skills/dashclaw-platform-intelligence/scripts/validate-integration.mjs \
-  --base-url http://localhost:3000 --api-key $DASHCLAW_API_KEY --full
-```
+## Prefer Live Queries
 
-## Configure Evaluations
-
-Set up the evaluation framework to score agent outputs.
-
-### Scorer Types
-
-5 built-in scorer types. All work without an LLM except `llm_judge`:
-
-| Type | Config | LLM Required |
-|------|--------|-------------|
-| `regex` | `{ pattern, flags }` | No |
-| `contains` | `{ keywords, case_sensitive }` | No |
-| `numeric_range` | `{ field, min, max }` | No |
-| `custom_function` | `{ function_body }` | No |
-| `llm_judge` | `{ prompt, model }` | Yes (optional) |
-
-```javascript
-// Regex scorer — positional args: (name, scorer_type, config, description)
-const regex = await dc.createScorer(
-  'json-format', 'regex',
-  { pattern: '^\\{.*\\}$', flags: 's' },
-  'Validates JSON format'
-);
-
-// Numeric range (scores metadata fields)
-const range = await dc.createScorer(
-  'confidence-check', 'numeric_range',
-  { field: 'confidence', min: 70, max: 100 },
-  'Checks confidence is in range'
-);
-
-// Custom function (full JS logic)
-const custom = await dc.createScorer(
-  'length-and-format', 'custom_function',
-  { function_body: 'return output.length > 50 && output.includes("##") ? 1 : 0;' },
-  'Checks length and markdown headers'
-);
-```
-
-### Batch Evaluation Runs
-
-> **Requires v1 SDK:** `createEvalRun` is available via `import { DashClaw } from 'dashclaw/legacy'`.
-
-```javascript
-const run = await dc.createEvalRun({
-  name: 'weekly-quality-audit',
-  scorer_ids: [regex.id, range.id],
-  dataset: outputs.map(o => ({ output: o.text, metadata: o.meta })),
-});
-console.log(`Avg score: ${run.avg_score}`);
-```
-
-## Manage Prompts
-
-Version-controlled prompt templates with mustache variable rendering.
-
-> **Requires v1 SDK:** Template CRUD (`createTemplate`, `createVersion`, `activateVersion`, `getPromptStats`)
-> is available via `import { DashClaw } from 'dashclaw/legacy'`. The v2 SDK has `renderPrompt()` for consuming templates.
-
-```javascript
-// Create template
-const tmpl = await dc.createTemplate({
-  name: 'deploy-check',
-  content: 'Verify {{service}} deployment to {{environment}} is healthy. Check {{metric}}.',
-  variables: ['service', 'environment', 'metric'],
-});
-
-// Render with variables (server-side, no LLM)
-const { rendered } = await dc.renderTemplate(tmpl.id, {
-  service: 'auth-api', environment: 'production', metric: 'p99 latency',
-});
-// "Verify auth-api deployment to production is healthy. Check p99 latency."
-
-// Create new version
-await dc.createVersion(tmpl.id, {
-  content: 'Verify {{service}} on {{environment}}. Check {{metric}} and {{threshold}}.',
-  change_note: 'Added threshold variable',
-});
-
-// Rollback to previous version
-await dc.activateVersion(tmpl.id, 'pv_version001');
-
-// Usage analytics
-const stats = await dc.getPromptStats({ template_id: tmpl.id });
-```
-
-## Collect Feedback
-
-Structured user feedback with auto-sentiment detection and auto-tagging.
-`submitFeedback()` is in the v2 SDK. Querying and managing feedback requires v1.
-
-> **v1 SDK methods:** `listFeedback`, `resolveFeedback`, `getFeedbackStats` require `import { DashClaw } from 'dashclaw/legacy'`.
-
-```javascript
-// Submit feedback linked to an action (v2 SDK)
-const fb = await dc.submitFeedback({
-  rating: 2,
-  comment: 'Response was slow and inaccurate',
-  action_id: 'act_xyz789',
-  agent_id: 'research-bot',
-});
-console.log(fb.sentiment); // 'negative' (auto-detected, rule-based)
-console.log(fb.tags);      // ['performance', 'accuracy'] (auto-tagged)
-
-// Query unresolved negative feedback
-const { feedback } = await dc.listFeedback({
-  sentiment: 'negative', resolved: false,
-});
-
-// Resolve with note
-await dc.resolveFeedback(fb.id, 'Fixed latency issue in v2.3');
-
-// Analytics
-const stats = await dc.getFeedbackStats();
-// { avg_rating, sentiment_breakdown, top_tags, rating_distribution }
-```
-
-**Auto-tag categories**: performance, accuracy, cost, security, reliability, ux
-
-## Export Compliance
-
-> **Requires v1 SDK:** All compliance export methods require `import { DashClaw } from 'dashclaw/legacy'`.
-
-Generate multi-framework compliance bundles with evidence packaging.
-
-```javascript
-// Generate export bundle
-const exp = await dc.createComplianceExport({
-  frameworks: ['soc2', 'nist-ai-rmf'],
-  name: 'Q1 2026 Audit',
-  window_days: 90,
-  include_evidence: true, // includes guard decisions + action records
-});
-
-// Schedule recurring exports
-await dc.createComplianceSchedule({
-  frameworks: ['soc2'],
-  cron: '0 6 1 * *', // Monthly on 1st at 6am
-  name: 'Monthly SOC 2 Report',
-});
-
-// Track coverage trends
-const { trends } = await dc.getComplianceTrends({ framework: 'soc2' });
-trends.forEach(t => console.log(`${t.created_at}: ${t.coverage_percentage}%`));
-
-// Download export (browser-native)
-await dc.downloadComplianceExport(exp.id);
-```
-
-## Monitor Drift
-
-> **Requires v1 SDK:** All drift detection methods require `import { DashClaw } from 'dashclaw/legacy'`.
-
-Statistical behavioral drift detection using z-score analysis. Pure math, no LLM.
-
-**6 tracked metrics**: risk_score, confidence, duration_ms, cost_estimate, tokens_total, learning_score
-
-```javascript
-// Step 1: Compute baselines from historical data
-await dc.computeDriftBaselines({ lookback_days: 30 });
-
-// Step 2: Detect drift (compare recent window to baselines)
-const { alerts } = await dc.detectDrift({ window_days: 7 });
-for (const a of alerts) {
-  console.log(`[${a.severity}] ${a.metric} for ${a.agent_id}: z=${a.z_score}`);
-}
-// [warning] risk_score for deploy-bot: z=2.3
-// [critical] cost_estimate for research-bot: z=3.8
-
-// Severity thresholds:
-// z >= 1.5 = info
-// z >= 2.0 = warning
-// z >= 3.0 = critical
-
-// List unacknowledged critical alerts
-const critical = await dc.listDriftAlerts({ severity: 'critical', acknowledged: false });
-
-// Acknowledge after investigation
-await dc.acknowledgeDriftAlert(alert.id);
-
-// Stats overview
-const stats = await dc.getDriftStats();
-console.log(`${stats.overall.critical_count} critical, ${stats.overall.warning_count} warnings`);
-```
-
-## Track Learning
-
-Learning analytics with velocity tracking, maturity classification, and per-skill learning curves.
-**This is DashClaw's unique moat -- no other platform tracks agent learning velocity.**
-
-> **v2 SDK:** `getLearningVelocity(lookbackDays)` and `getLearningCurves(lookbackDays)` are in v2 for read access.
-> Compute methods (`computeLearningVelocity`, `computeLearningCurves`, `getLearningAnalyticsSummary`) require v1.
-
-### Maturity Model
-
-6 levels based on episode count, success rate, and average score:
-
-| Level | Episodes | Success Rate | Avg Score |
-|-------|----------|-------------|-----------|
-| Novice | 0+ | any | any |
-| Developing | 10+ | 40%+ | 40+ |
-| Competent | 50+ | 60%+ | 55+ |
-| Proficient | 150+ | 75%+ | 65+ |
-| Expert | 500+ | 85%+ | 75+ |
-| Master | 1000+ | 92%+ | 85+ |
-
-```javascript
-// Compute learning velocity (linear regression slope of scores over time)
-const { results } = await dc.computeLearningVelocity({ lookback_days: 30 });
-for (const r of results) {
-  console.log(`${r.agent_id}: velocity=${r.velocity} pts/day, maturity=${r.maturity.level}`);
-}
-// deploy-bot: velocity=0.8 pts/day, maturity=proficient
-// research-bot: velocity=-0.2 pts/day, maturity=competent  <-- degrading!
-
-// Compute per-skill learning curves
-await dc.computeLearningCurves({ lookback_days: 60 });
-const { curves } = await dc.getLearningCurves({
-  agent_id: 'deploy-bot', action_type: 'deploy',
-});
-curves.forEach(c => console.log(`Week of ${c.window_start}: avg=${c.avg_score}`));
-
-// Comprehensive summary (the dashboard API — requires v1)
-const summary = await dc.getLearningAnalyticsSummary();
-console.log(`${summary.overall.total_episodes} episodes`);
-console.log(`Top agent: ${summary.by_agent[0].agent_id} (${summary.by_agent[0].maturity_level})`);
-console.log(`Velocity: ${summary.by_agent[0].velocity} pts/day`);
-```
-
-**Fetch consolidated lessons (v2 SDK):**
-```javascript
-// What has DashClaw learned from this agent's scored outcomes?
-const { lessons, drift_warnings } = await dc.getLessons({ actionType: 'deploy' });
-for (const lesson of lessons) {
-  console.log(`[${lesson.action_type}] ${lesson.guidance} (confidence: ${lesson.confidence})`);
-  console.log(`  Hints: risk_cap=${lesson.hints.risk_cap}, prefer_reversible=${lesson.hints.prefer_reversible}`);
-}
-drift_warnings.forEach(w => console.log(`[DRIFT] ${w.metric}: z=${w.z_score} (${w.severity})`));
-```
-
-## Action Context (v2.7.0)
-
-The SDK now provides `actionContext()` (Node.js) / `action_context()` (Python) for automatic message-action correlation:
-
-### Node.js
-```javascript
-const action = await claw.createAction({ action_type: 'deploy', declared_goal: 'Deploy v2' });
-const ctx = claw.actionContext(action.action_id);
-await ctx.sendMessage({ to: 'ops-agent', type: 'status', body: 'Deploying...' });
-await ctx.recordAssumption({ assumption: 'Tests passed' });
-await ctx.updateOutcome({ status: 'completed' });
-```
-
-### Python
-```python
-action = claw.create_action(action_type="deploy", declared_goal="Deploy v2")
-with claw.action_context(action["action_id"]) as ctx:
-    ctx.send_message("Deploying...", to="ops-agent")
-    ctx.record_assumption({"assumption": "Tests passed"})
-    ctx.update_outcome(status="completed")
-```
-
-Messages and assumptions sent through the context are automatically tagged with `action_id`, appearing in the decision timeline at `/decisions/{actionId}`.
-
-## Add a DashClaw Capability
-
-Full-stack scaffold when adding a new API route to the DashClaw platform.
-
-### Files to create/modify (in order)
-
-1. **Migration** `scripts/migrate-<domain>.mjs` -- create tables with TEXT PKs, crypto-random IDs
-2. **Repository** `app/lib/repositories/<domain>.repository.js` -- all SQL here
-3. **Lib module** `app/lib/<domain>.js` -- business logic (pure functions where possible)
-4. **Route handler** `app/api/<domain>/route.js` -- imports from repository, never inline SQL
-5. **Demo fixtures** `app/lib/demo/demoFixtures.js` (if route needs demo mode)
-6. **Demo middleware** handler in `middleware.js` (if route needs demo mode)
-7. **Node SDK** method in `sdk/dashclaw.js` (camelCase)
-8. **Python SDK** method in `sdk-python/dashclaw/client.py` (snake_case)
-9. **Docs page** navItems entry + MethodEntry in `app/docs/page.js`
-10. **Node README** section in `sdk/README.md`
-11. **Python README** section in `sdk-python/README.md`
-12. **Parity matrix** counts in `docs/sdk-parity.md`
-
-### Route handler pattern
-```javascript
-import { getSql } from '../../lib/db.js';
-import { getOrgId } from '../../lib/org.js';
-import { listThings } from '../../lib/repositories/<domain>.repository.js';
-
-export async function GET(request) {
-  try {
-    const sql = getSql();
-    const orgId = getOrgId(request);
-    const result = await listThings(sql, orgId, {});
-    return Response.json(result);
-  } catch (err) {
-    console.error('[DOMAIN] GET error:', err.message);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
-```
-
-### Post-scaffold commands (mandatory)
-```bash
-npm run openapi:generate && npm run api:inventory:generate
-npm run docs:check && npm run route-sql:check
-npm run openapi:check && npm run api:inventory:check
-npm run lint && npm run build
-```
-
-## Generate Client Code
-
-Generate a DashClaw client in any language from the API contracts.
-
-1. Read OpenAPI spec: `docs/openapi/critical-stable.openapi.json`
-2. Read both SDKs for patterns: `sdk/dashclaw.js` (v2, 45 methods), `sdk-python/dashclaw/client.py`
-3. Constructor (v2): `baseUrl`, `apiKey`, `agentId`
-4. Auth: `x-api-key` header on every request
-5. Error types: `GuardBlockedError`, `ApprovalDeniedError`
-6. Minimum viable methods (v2): `guard`, `createAction`, `updateOutcome`, `recordAssumption`, `waitForApproval`, `sendMessage`, `createHandoff`, `scanPromptInjection`, `submitFeedback`
-
-For the full 130+ route API surface with method mappings, read [references/api-surface.md](references/api-surface.md).
-
-## Configure Scoring
-
-Set up user-defined quality profiles and risk templates:
-
-### Step 1: Auto-calibrate from your real data
-
-```javascript
-// Analyze your historical actions to get suggested thresholds
-const calibration = await dc.autoCalibrate({
-  action_type: 'deploy',
-  lookback_days: 30,
-});
-// Returns percentile-based suggestions for each metric
-// calibration.suggestions[0] = {
-//   metric: 'duration_ms', distribution: { p25: 3000, p50: 8000, p75: 20000 },
-//   suggested_scale: [{ label: 'excellent', operator: 'lte', value: 3000, score: 100 }, ...]
-// }
-```
-
-```python
-calibration = dc.auto_calibrate(action_type="deploy", lookback_days=30)
-```
-
-### Step 2: Create a scoring profile with weighted dimensions
-
-```javascript
-const profile = await dc.createScoringProfile({
-  name: 'deploy-quality',
-  action_type: 'deploy',
-  composite_method: 'weighted_average', // or 'minimum', 'geometric_mean'
-  dimensions: [
-    {
-      name: 'Speed', data_source: 'duration_ms', weight: 0.3,
-      scale: [
-        { label: 'excellent', operator: 'lt', value: 30000, score: 100 },
-        { label: 'good', operator: 'lt', value: 60000, score: 75 },
-        { label: 'acceptable', operator: 'lt', value: 120000, score: 50 },
-        { label: 'poor', operator: 'gte', value: 120000, score: 20 },
-      ],
-    },
-    {
-      name: 'Reliability', data_source: 'confidence', weight: 0.4,
-      scale: [
-        { label: 'excellent', operator: 'gte', value: 0.9, score: 100 },
-        { label: 'good', operator: 'gte', value: 0.7, score: 75 },
-        { label: 'poor', operator: 'lt', value: 0.7, score: 25 },
-      ],
-    },
-    {
-      name: 'Cost', data_source: 'cost_estimate', weight: 0.3,
-      scale: [
-        { label: 'excellent', operator: 'lt', value: 0.01, score: 100 },
-        { label: 'good', operator: 'lt', value: 0.05, score: 75 },
-        { label: 'poor', operator: 'gte', value: 0.05, score: 30 },
-      ],
-    },
-  ],
-});
-```
-
-```python
-profile = dc.create_scoring_profile(
-    name="deploy-quality",
-    action_type="deploy",
-    composite_method="weighted_average",
-    dimensions=[
-        {"name": "Speed", "data_source": "duration_ms", "weight": 0.3,
-         "scale": [
-             {"label": "excellent", "operator": "lt", "value": 30000, "score": 100},
-             {"label": "good", "operator": "lt", "value": 60000, "score": 75},
-             {"label": "poor", "operator": "gte", "value": 60000, "score": 20},
-         ]},
-        {"name": "Reliability", "data_source": "confidence", "weight": 0.4,
-         "scale": [
-             {"label": "excellent", "operator": "gte", "value": 0.9, "score": 100},
-             {"label": "poor", "operator": "lt", "value": 0.7, "score": 25},
-         ]},
-        {"name": "Cost", "data_source": "cost_estimate", "weight": 0.3,
-         "scale": [
-             {"label": "excellent", "operator": "lt", "value": 0.01, "score": 100},
-             {"label": "poor", "operator": "gte", "value": 0.05, "score": 30},
-         ]},
-    ],
-)
-```
-
-**Data sources**: `duration_ms`, `cost_estimate`, `tokens_total`, `risk_score`, `confidence`, `eval_score`, `metadata_field` (dot-path), `custom_function` (arbitrary JS).
-
-**Composite methods**: `weighted_average` (default -- sum of score x weight), `minimum` (strictest -- one bad dimension tanks the whole score), `geometric_mean` (balanced -- heavily penalizes zeros).
-
-### Step 3: Score actions against your profile
-
-```javascript
-// Single action
-const result = await dc.scoreWithProfile(profile.id, {
-  duration_ms: 25000,
-  confidence: 0.95,
-  cost_estimate: 0.008,
-});
-// result.composite_score = 92.5
-// result.dimensions = [{ dimension_name: 'Speed', score: 100, label: 'excellent' }, ...]
-
-// Batch scoring
-const batch = await dc.batchScoreWithProfile(profile.id, [
-  { duration_ms: 500, confidence: 0.98 },
-  { duration_ms: 10000, confidence: 0.5 },
-]);
-// batch.summary = { total: 2, scored: 2, avg_score: 72.3 }
-```
-
-```python
-result = dc.score_with_profile(profile["id"], {
-    "duration_ms": 25000, "confidence": 0.95, "cost_estimate": 0.008,
-})
-
-batch = dc.batch_score_with_profile(profile["id"], [
-    {"duration_ms": 500, "confidence": 0.98},
-    {"duration_ms": 10000, "confidence": 0.5},
-])
-```
-
-### Step 4: Set up risk templates (replaces hardcoded risk numbers)
-
-```javascript
-// Instead of agents guessing riskScore: 40, DashClaw computes it:
-const template = await dc.createRiskTemplate({
-  name: 'Production Safety',
-  base_risk: 20,
-  rules: [
-    { condition: "metadata.environment == 'production'", add: 25 },
-    { condition: "metadata.modifies_data == true", add: 15 },
-    { condition: "metadata.irreversible == true", add: 30 },
-  ],
-});
-// Production data-modifying deploy: 20 + 25 + 15 = 60 risk
-// Staging read-only query: 20 + 0 + 0 = 20 risk
-```
-
-```python
-template = dc.create_risk_template(
-    name="Production Safety",
-    base_risk=20,
-    rules=[
-        {"condition": "metadata.environment == 'production'", "add": 25},
-        {"condition": "metadata.modifies_data == true", "add": 15},
-        {"condition": "metadata.irreversible == true", "add": 30},
-    ],
-)
-```
-
-**Condition operators**: `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`. Supports nested paths like `metadata.deploy.target`.
-
-**ID prefixes**: `sp_` (profiles), `sd_` (dimensions), `ps_` (profile scores), `rt_` (risk templates).
-
-## Design Policies
-
-> **Requires v1 SDK:** Policy CRUD (`importPolicies`, `createPolicy`, `testPolicies`) requires
-> `import { DashClaw } from 'dashclaw/legacy'`. The v2 SDK has `guard()` for runtime policy checks.
-
-Set up behavior guard policies for agent governance.
-
-**Guard modes:** `off` (no checks), `warn` (log but allow), `enforce` (block on policy match)
-
-**Common patterns:**
-- Cost ceiling: block when `cost_estimate > threshold`
-- Risk threshold: require approval when `risk_score >= 70`
-- Action type allowlist: block unknown action types
-- Content filter: guard against sensitive data in outputs
-
-**YAML policy example:**
-```yaml
-name: production-safety
-policy_type: risk_threshold
-rules:
-  max_risk_without_approval: 60
-  blocked_action_types: [delete_database, modify_production]
-  require_approval_for: [deploy, infrastructure_change]
-```
-
-```javascript
-// Import a policy pack
-await dc.importPolicies({ pack: 'production' });
-
-// Custom policy
-await dc.createPolicy({
-  name: 'cost-ceiling',
-  policy_type: 'cost_limit',
-  rules: { max_cost_per_action: 5.00, max_daily_spend: 100.00 },
-});
-
-// Test policies without enforcing
-const results = await dc.testPolicies();
-console.log(`${results.passed} passed, ${results.failed} failed`);
-
-// Generate compliance proof report
-const proof = await dc.getProofReport({ format: 'json' });
-```
-
-## CLI Approval Channel
-
-The DashClaw CLI lets operators approve, deny, and monitor agent actions from the terminal without opening a browser. This is the primary interface for developers using Claude Code, Codex, Gemini CLI, or any terminal-first workflow.
-
-### Package
-
-The CLI is published as `@dashclaw/cli` and installed globally:
+The facts below are a snapshot. Before answering any question about DashClaw's current
+structure, routes, env vars, or schema — run a live query:
 
 ```bash
-npm install -g @dashclaw/cli
+python -m livingcode query summary     # High-level shape
+python -m livingcode query routes      # Current API surface
+python -m livingcode query env         # Current env vars
+python -m livingcode query tables      # Current schema
+python -m livingcode query all --json  # Full machine-readable shape
 ```
 
-### Required environment variables
+If the snapshot below disagrees with a live query, **trust the live query**.
+
+## At a Glance
+
+- **173** active API routes across **44** categories
+- **4** required + **101** optional environment variables
+- **73** database tables
+
+## API Surface
+
+### `actions`
+
+- `DELETE, GET, POST` `/api/actions`
+- `GET, PATCH` `/api/actions/[actionId]`
+- `GET` `/api/actions/[actionId]/artifacts`
+- `GET` `/api/actions/[actionId]/graph`
+- `GET` `/api/actions/[actionId]/messages`
+- `GET` `/api/actions/[actionId]/trace`
+- `GET` `/api/actions/costs`
+- `GET, POST` `/api/actions/loops`
+- `GET, PATCH` `/api/actions/loops/[loopId]`
+- `GET` `/api/actions/stats`
+
+### `activity`
+
+- `GET` `/api/activity`
+
+### `agents`
+
+- `GET` `/api/agents`
+- `GET` `/api/agents/[agentId]`
+- `GET` `/api/agents/[agentId]/profile`
+- `GET, POST` `/api/agents/connections`
+- `POST` `/api/agents/heartbeat`
+
+### `analytics`
+
+- `GET` `/api/analytics`
+
+### `approvals`
+
+- `POST` `/api/approvals/[actionId]`
+
+### `artifacts`
+
+- `GET, POST` `/api/artifacts`
+- `DELETE, GET` `/api/artifacts/[artifactId]`
+- `POST` `/api/artifacts/evidence-bundle`
+
+### `assumptions`
+
+- `GET, POST` `/api/assumptions`
+- `GET, PATCH` `/api/assumptions/[assumptionId]`
+
+### `auth`
+
+- `-` `/api/auth/[...nextauth]`
+- `GET` `/api/auth/config`
+- `DELETE, POST` `/api/auth/local`
+
+### `billing`
+
+- `POST` `/api/billing/checkout`
+- `GET` `/api/billing/portal`
+
+### `capabilities`
+
+- `GET, POST` `/api/capabilities`
+- `DELETE, GET, PATCH` `/api/capabilities/[capabilityId]`
+- `GET, POST` `/api/capabilities/[capabilityId]/access`
+- `DELETE` `/api/capabilities/[capabilityId]/access/[ruleId]`
+- `GET` `/api/capabilities/[capabilityId]/access/check`
+- `GET` `/api/capabilities/[capabilityId]/health`
+- `GET` `/api/capabilities/[capabilityId]/history`
+- `POST` `/api/capabilities/[capabilityId]/invoke`
+- `POST` `/api/capabilities/[capabilityId]/test`
+- `GET` `/api/capabilities/health`
+
+### `compliance`
+
+- `GET` `/api/compliance/evidence`
+- `GET, POST` `/api/compliance/exports`
+- `DELETE, GET` `/api/compliance/exports/[exportId]`
+- `GET` `/api/compliance/exports/[exportId]/download`
+- `GET` `/api/compliance/frameworks`
+- `GET` `/api/compliance/gaps`
+- `GET` `/api/compliance/map`
+- `GET` `/api/compliance/report`
+- `GET, POST` `/api/compliance/schedules`
+- `DELETE, PATCH` `/api/compliance/schedules/[scheduleId]`
+- `GET` `/api/compliance/trends`
+
+### `cron`
+
+- `GET` `/api/cron/integration-health`
+- `GET` `/api/cron/learning-episodes-backfill`
+- `GET` `/api/cron/learning-recommendations`
+- `GET` `/api/cron/memory-maintenance`
+- `GET` `/api/cron/policy-suggestions`
+- `GET` `/api/cron/reset-meters`
+- `POST` `/api/cron/routing-maintenance`
+- `GET` `/api/cron/signals`
+
+### `docs`
+
+- `GET` `/api/docs/raw`
+
+### `doctor`
+
+- `GET` `/api/doctor`
+- `POST` `/api/doctor/fix`
+
+### `drift`
+
+- `GET, POST` `/api/drift/alerts`
+- `DELETE, PATCH` `/api/drift/alerts/[alertId]`
+- `GET` `/api/drift/metrics`
+- `GET` `/api/drift/snapshots`
+- `GET` `/api/drift/stats`
+
+### `evaluations`
+
+- `GET, POST` `/api/evaluations`
+- `GET, POST` `/api/evaluations/runs`
+- `GET, PATCH` `/api/evaluations/runs/[runId]`
+- `GET, POST` `/api/evaluations/scorers`
+- `DELETE, PATCH` `/api/evaluations/scorers/[scorerId]`
+- `GET` `/api/evaluations/stats`
+
+### `guard`
+
+- `GET, POST` `/api/guard`
+- `GET` `/api/guard/decisions`
+
+### `health`
+
+- `GET` `/api/health`
+
+### `identities`
+
+- `GET, POST` `/api/identities`
+- `DELETE` `/api/identities/[agentId]`
+
+### `integrations`
+
+- `GET` `/api/integrations/health`
+
+### `keys`
+
+- `DELETE, GET, POST` `/api/keys`
+- `GET` `/api/keys/reveal`
+
+### `knowledge`
+
+- `GET, POST` `/api/knowledge/collections`
+- `DELETE, GET, PATCH` `/api/knowledge/collections/[collectionId]`
+- `GET, POST` `/api/knowledge/collections/[collectionId]/items`
+- `POST` `/api/knowledge/collections/[collectionId]/search`
+- `POST` `/api/knowledge/collections/[collectionId]/sync`
+
+### `learning`
+
+- `GET, POST` `/api/learning`
+- `GET, POST` `/api/learning/analytics/curves`
+- `GET` `/api/learning/analytics/maturity`
+- `GET` `/api/learning/analytics/summary`
+- `GET, POST` `/api/learning/analytics/velocity`
+- `GET` `/api/learning/lessons`
+- `GET, POST` `/api/learning/recommendations`
+- `PATCH` `/api/learning/recommendations/[recommendationId]`
+- `POST` `/api/learning/recommendations/events`
+- `GET` `/api/learning/recommendations/metrics`
+- `GET, POST` `/api/learning/suggestions`
+
+### `mcp`
+
+- `POST` `/api/mcp`
+
+### `messages`
+
+- `GET, PATCH, POST` `/api/messages`
+- `GET` `/api/messages/attachments`
+- `GET, PATCH, POST` `/api/messages/threads`
+
+### `model-strategies`
+
+- `GET, POST` `/api/model-strategies`
+- `DELETE, GET, PATCH` `/api/model-strategies/[strategyId]`
+- `POST` `/api/model-strategies/[strategyId]/complete`
+
+### `operations`
+
+- `GET` `/api/operations/feed`
+- `GET` `/api/operations/summary`
+
+### `orgs`
+
+- `GET, POST` `/api/orgs`
+- `GET, PATCH` `/api/orgs/[orgId]`
+- `DELETE, GET, POST` `/api/orgs/[orgId]/keys`
+
+### `pairings`
+
+- `GET, POST` `/api/pairings`
+- `GET, PATCH` `/api/pairings/[pairingId]`
+- `POST` `/api/pairings/[pairingId]/approve`
+
+### `policies`
+
+- `DELETE, GET, PATCH, POST` `/api/policies`
+- `POST` `/api/policies/generate`
+- `POST` `/api/policies/import`
+- `GET` `/api/policies/proof`
+- `POST` `/api/policies/simulate`
+- `GET` `/api/policies/templates`
+- `POST` `/api/policies/test`
+
+### `prompts`
+
+- `GET` `/api/prompts/agent-connect/raw`
+- `POST` `/api/prompts/render`
+- `GET` `/api/prompts/runs`
+- `GET` `/api/prompts/sdk-coverage/raw`
+- `GET` `/api/prompts/server-setup/raw`
+- `GET` `/api/prompts/stats`
+- `GET, POST` `/api/prompts/templates`
+- `DELETE, GET, PATCH` `/api/prompts/templates/[templateId]`
+- `GET, POST` `/api/prompts/templates/[templateId]/versions`
+- `GET, POST` `/api/prompts/templates/[templateId]/versions/[versionId]`
+
+### `scoring`
+
+- `POST` `/api/scoring/calibrate`
+- `GET, POST` `/api/scoring/profiles`
+- `DELETE, GET, PATCH` `/api/scoring/profiles/[profileId]`
+- `POST` `/api/scoring/profiles/[profileId]/dimensions`
+- `DELETE, PATCH` `/api/scoring/profiles/[profileId]/dimensions/[dimensionId]`
+- `GET, POST` `/api/scoring/risk-templates`
+- `DELETE, PATCH` `/api/scoring/risk-templates/[templateId]`
+- `GET, POST` `/api/scoring/score`
+
+### `security`
+
+- `GET, POST` `/api/security/prompt-injection`
+- `POST` `/api/security/scan`
+- `GET` `/api/security/status`
+
+### `sessions`
+
+- `GET, POST` `/api/sessions`
+- `GET, PATCH` `/api/sessions/[sessionId]`
+- `GET` `/api/sessions/[sessionId]/events`
+
+### `settings`
+
+- `DELETE, GET, POST` `/api/settings`
+- `GET` `/api/settings/llm-status`
+- `POST` `/api/settings/test`
+
+### `setup`
+
+- `POST` `/api/setup/live-proof`
+- `POST` `/api/setup/migrate`
+- `POST` `/api/setup/ping`
+- `GET` `/api/setup/proof`
+- `GET` `/api/setup/status`
+
+### `signals`
+
+- `GET` `/api/signals`
+
+### `stream`
+
+- `GET` `/api/stream`
+
+### `swarm`
+
+- `GET` `/api/swarm/graph`
+- `GET` `/api/swarm/link`
+
+### `team`
+
+- `GET` `/api/team`
+- `DELETE, PATCH` `/api/team/[userId]`
+- `DELETE, GET, POST` `/api/team/invite`
+
+### `telegram`
+
+- `POST` `/api/telegram/webhook`
+
+### `usage`
+
+- `GET` `/api/usage`
+- `GET` `/api/usage/costs`
+
+### `webhooks`
+
+- `DELETE, GET, POST` `/api/webhooks`
+- `GET` `/api/webhooks/[webhookId]/deliveries`
+- `POST` `/api/webhooks/[webhookId]/test`
+- `POST` `/api/webhooks/stripe`
+
+### `workflows`
+
+- `POST` `/api/workflows/draft`
+- `GET, POST` `/api/workflows/templates`
+- `DELETE, GET, PATCH` `/api/workflows/templates/[templateId]`
+- `POST` `/api/workflows/templates/[templateId]/duplicate`
+- `POST` `/api/workflows/templates/[templateId]/execute`
+- `POST` `/api/workflows/templates/[templateId]/launch`
+- `GET` `/api/workflows/templates/[templateId]/runs`
+- `GET` `/api/workflows/templates/[templateId]/runs/[runActionId]`
+- `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/cancel`
+- `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/resume`
+
+## Required Environment Variables
+
+These must be set — DashClaw will fail to start without them.
+
+- **`DASHCLAW_API_KEY`** - referenced in 65 file(s)
+- **`DATABASE_URL`** - referenced in 76 file(s)
+- **`ENCRYPTION_KEY`** - referenced in 8 file(s)
+- **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
+
+## Optional Environment Variables
+
+These have fallbacks or only activate specific features.
+
+- `AGENT_ONLINE_WINDOW_MS` *(undocumented)*
+- `AGENT_PRIVATE_KEY` *(undocumented)*
+- `AGENT_PRIVATE_KEY_JWK` *(undocumented)*
+- `ALERT_FROM_EMAIL` *(undocumented)*
+- `ALLOWED_ORIGIN` *(undocumented)*
+- `ANTHROPIC_API_KEY` *(undocumented)*
+- `API_SECRET` *(undocumented)*
+- `BASE_URL` *(undocumented)*
+- `CI` *(undocumented)*
+- `CONVERGENCE_BENCH_CONCURRENCY` *(undocumented)*
+- `CONVERGENCE_BENCH_ITERATIONS` *(undocumented)*
+- `CONVERGENCE_REPLAY_CONNECT_TIMEOUT_MS` *(undocumented)*
+- `CONVERGENCE_RETRY_429_MAX` *(undocumented)*
+- `CONVERGENCE_RETRY_429_WAIT_MS` *(undocumented)*
+- `CONVERGENCE_SSE_SEND_COUNT` *(undocumented)*
+- `CONVERGENCE_VERBOSE` *(undocumented)*
+- `CRON_SECRET` *(undocumented)*
+- `DASHCLAW_AGENT_ID` *(undocumented)*
+- `DASHCLAW_ALERTS_TELEGRAM` *(undocumented)*
+- `DASHCLAW_API_KEY_ORG` *(undocumented)*
+- `DASHCLAW_BASE_URL` *(undocumented)*
+- `DASHCLAW_CLOSED_ENROLLMENT` *(undocumented)*
+- `DASHCLAW_DB_DRIVER` *(undocumented)*
+- `DASHCLAW_DB_POOL_MAX` *(undocumented)*
+- `DASHCLAW_DISABLE_RATE_LIMIT` *(undocumented)*
+- `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
+- `DASHCLAW_LOCAL_ADMIN_PASSWORD` *(undocumented)*
+- `DASHCLAW_MODE` *(undocumented)*
+- `DASHCLAW_RATE_LIMIT_MAX` *(undocumented)*
+- `DASHCLAW_RATE_LIMIT_WINDOW_MS` *(undocumented)*
+- `DASHCLAW_URL` *(undocumented)*
+- `DISABLE_PROMPT_INJECTION_SCAN` *(undocumented)*
+- `ENFORCE_AGENT_SIGNATURES` *(undocumented)*
+- `GITHUB_CLIENT_ID` *(undocumented)*
+- `GITHUB_CLIENT_SECRET` *(undocumented)*
+- `GITHUB_ID` *(undocumented)*
+- `GITHUB_REPO_NAME` *(undocumented)*
+- `GITHUB_REPO_OWNER` *(undocumented)*
+- `GITHUB_SECRET` *(undocumented)*
+- `GITHUB_TOKEN` *(undocumented)*
+- `GOOGLE_AI_API_KEY` *(undocumented)*
+- `GOOGLE_CLIENT_ID` *(undocumented)*
+- `GOOGLE_CLIENT_SECRET` *(undocumented)*
+- `GOOGLE_ID` *(undocumented)*
+- `GOOGLE_SECRET` *(undocumented)*
+- `GUARD_LLM_BASE_URL` *(undocumented)*
+- `GUARD_LLM_KEY` *(undocumented)*
+- `GUARD_LLM_MODEL` *(undocumented)*
+- `GUARD_WEBHOOK_SECRET` *(undocumented)*
+- `MEMORY_DIR` *(undocumented)*
+- `MOONSHOT_API_KEY` *(undocumented)*
+- `NEXTAUTH_URL`
+- `NEXT_PUBLIC_APP_URL` *(undocumented)*
+- `NEXT_PUBLIC_DASHCLAW_MODE` *(undocumented)*
+- `NEXT_PUBLIC_DASHCLAW_VERSION` *(undocumented)*
+- `NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS` *(undocumented)*
+- `NODE_ENV` *(undocumented)*
+- `OIDC_AUTHORIZATION_URL` *(undocumented)*
+- `OIDC_CLIENT_ID` *(undocumented)*
+- `OIDC_CLIENT_SECRET` *(undocumented)*
+- `OIDC_DISPLAY_NAME` *(undocumented)*
+- `OIDC_ISSUER_URL` *(undocumented)*
+- `OIDC_TOKEN_URL` *(undocumented)*
+- `OIDC_USERINFO_URL` *(undocumented)*
+- `OPENAI_API_KEY` *(undocumented)*
+- `ORG_ID` *(undocumented)*
+- `PORT` *(undocumented)*
+- `PW_BASE_URL` *(undocumented)*
+- `PW_SMOKE_PORT` *(undocumented)*
+- `PYTHON` *(undocumented)*
+- `PYTHONPATH` *(undocumented)*
+- `REALTIME_BACKEND` *(undocumented)*
+- `REALTIME_ENFORCE_REDIS` *(undocumented)*
+- `REALTIME_MAX_LISTENERS` *(undocumented)*
+- `REALTIME_MEMORY_MAX_LISTENERS` *(undocumented)*
+- `REALTIME_REDIS_URL` *(undocumented)*
+- `REALTIME_REPLAY_MAX_EVENTS` *(undocumented)*
+- `REALTIME_REPLAY_WINDOW_SECONDS` *(undocumented)*
+- `REDIS_URL` *(undocumented)*
+- `RESEARCH_API_KEY` *(undocumented)*
+- `RESEARCH_API_URL` *(undocumented)*
+- `RESEND_API_KEY` *(undocumented)*
+- `SERVICE_NAME` *(undocumented)*
+- `STARTUP_SMOKE_BASE_URL` *(undocumented)*
+- `STARTUP_SMOKE_INTERVAL_MS` *(undocumented)*
+- `STARTUP_SMOKE_TIMEOUT_MS` *(undocumented)*
+- `STRIPE_PRICE_BUSINESS` *(undocumented)*
+- `STRIPE_PRICE_PRO` *(undocumented)*
+- `STRIPE_SECRET_KEY` *(undocumented)*
+- `STRIPE_WEBHOOK_SECRET` *(undocumented)*
+- `TARGET_ENV` *(undocumented)*
+- `TELEGRAM_ADMIN_CHAT_ID`
+- `TELEGRAM_APPROVER_ORG_ID`
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_WEBHOOK_SECRET`
+- `TRUST_PROXY` *(undocumented)*
+- `UPSTASH_REDIS_REST_TOKEN` *(undocumented)*
+- `UPSTASH_REDIS_REST_URL` *(undocumented)*
+- `VERCEL` *(undocumented)*
+- `VERCEL_URL` *(undocumented)*
+- `WEBHOOK_ALLOWED_DOMAINS` *(undocumented)*
+
+## Database Tables
+
+All 73 tables defined in `schema/schema.js` (Drizzle ORM):
+
+- `action_embeddings`
+- `action_records`
+- `activity_logs`
+- `agent_connections`
+- `agent_identities`
+- `agent_messages`
+- `agent_pairings`
+- `agent_presence`
+- `agent_schedules`
+- `agent_sessions`
+- `api_keys`
+- `assumptions`
+- `calendar_events`
+- `compliance_snapshots`
+- `contacts`
+- `content`
+- `context_entries`
+- `context_points`
+- `daily_totals`
+- `decisions`
+- `drift_alerts`
+- `drift_baselines`
+- `drift_snapshots`
+- `entities`
+- `eval_runs`
+- `eval_scores`
+- `executions`
+- `feedback`
+- `goals`
+- `guard_decisions`
+- `guard_policies`
+- `guardrails_test_runs`
+- `health_snapshots`
+- `ideas`
+- `interactions`
+- `learning_curves`
+- `learning_episodes`
+- `learning_recommendation_events`
+- `learning_recommendations`
+- `learning_velocity`
+- `message_threads`
+- `milestones`
+- `notification_preferences`
+- `open_loops`
+- `organizations`
+- `profile_scores`
+- `prompt_runs`
+- `prompt_templates`
+- `prompt_versions`
+- `risk_templates`
+- `routing_agent_metrics`
+- `routing_agents`
+- `routing_decisions`
+- `routing_tasks`
+- `scheduled_jobs`
+- `scoring_dimensions`
+- `scoring_profiles`
+- `session_events`
+- `shared_docs`
+- `snippets`
+- `token_budgets`
+- `token_snapshots`
+- `topics`
+- `usage_meters`
+- `user_approaches`
+- `user_moods`
+- `user_observations`
+- `user_preferences`
+- `users`
+- `waitlist`
+- `webhook_deliveries`
+- `webhooks`
+- `workflows`
+
+## Detecting Drift
+
+To check whether this snapshot matches the current codebase:
 
 ```bash
-export DASHCLAW_BASE_URL=https://your-dashclaw-instance.com
-export DASHCLAW_API_KEY=your_operator_api_key
-export DASHCLAW_AGENT_ID=cli-operator  # optional, default is "cli-operator"
+python -m livingcode diff
 ```
 
-### Commands
-
-**Interactive approval inbox:**
-```bash
-dashclaw approvals
-```
-Opens a live terminal inbox showing all pending actions. Navigate with arrow keys. Press A to approve, D to deny, R to open the replay URL in a browser, Q to quit. The browser dashboard updates in real time via SSE when you approve or deny from the terminal.
-
-**Non-interactive single approval:**
-```bash
-dashclaw approve <actionId> [--reason "Reviewed and safe to proceed"]
-```
-Approves a specific action and prints the replay URL to stdout.
-
-**Non-interactive denial:**
-```bash
-dashclaw deny <actionId> [--reason "Outside approved change window"]
-```
-
-### Terminal approval output block
-
-When an agent calls `waitForApproval()`, the Node SDK prints a structured block to stdout immediately before blocking:
-
-```
-+== DashClaw Approval Required =====================+
-  Action ID:   act_01j9z7k2m8n3p4q5r6s7t8u9v0
-  Agent:       deploy-bot
-  Action:      deploy
-  Policy:      require_approval
-  Risk Score:  85
-  Goal:        Deploy auth service v2 to production
-
-  Replay:      https://your-instance.com/replay/act_01j9z...
-
-  Waiting for approval... (Ctrl+C to abort)
-+===================================================+
-```
-
-The agent process blocks until an operator approves or denies from any channel (terminal or browser). The SSE stream syncs the decision instantly across all connected clients.
-
-### How approval sync works
-
-The approval flows through a single path regardless of channel:
-
-1. Agent calls `waitForApproval(actionId)` and blocks
-2. Operator approves via `dashclaw approve <id>` or the /approvals dashboard
-3. `POST /api/actions/:id/approve` commits the decision to Postgres
-4. An `action.updated` event is published to the Redis SSE stream
-5. The SDK's SSE listener unblocks the agent within milliseconds
-6. The browser dashboard reflects the change on the next SSE heartbeat
-
-### Replay links
-
-Every governed action has a permanent replay URL:
-```
-<DASHCLAW_BASE_URL>/replay/<actionId>
-```
-
-This URL is printed in the terminal approval block, in the `dashclaw approve` output, and in the `dashclaw approvals` inbox. It opens a full decision evidence page showing the policy that triggered the gate, the agent's declared goal, assumptions, risk score, and outcome.
-
-## Claude Code Hooks
-
-The DashClaw hooks for Claude Code intercept tool calls before and after execution, enforcing guard policies without any SDK instrumentation in your agent code. Drop two Python scripts into `.claude/hooks/` and every Bash, Edit, Write, and MultiEdit call Claude makes is governed by your DashClaw policies.
-
-> **v2 hooks (dashclaw_agent_intel):** The v2 hook layer governs 40+ tools via the `dashclaw_agent_intel` MCP surface, adding session-aware policy evaluation, branch freshness checks, and permission escalation guards alongside the original file/command governance.
-
-### Files
-
-```
-hooks/
-  dashclaw_pretool.py    # PreToolUse hook: guard check + block/approve
-  dashclaw_posttool.py   # PostToolUse hook: record outcome as evidence
-  settings.json          # Snippet to merge into .claude/settings.json
-  README.md
-```
-
-Download from the DashClaw repo at `hooks/` in the root directory.
-
-### Installation
-
-1. Copy `dashclaw_pretool.py` and `dashclaw_posttool.py` to `.claude/hooks/` in your project
-2. Merge the `hooks` block from `hooks/settings.json` into your `.claude/settings.json`
-3. Set the three required environment variables:
-   ```bash
-   export DASHCLAW_BASE_URL=https://your-dashclaw-instance.com
-   export DASHCLAW_API_KEY=your_operator_api_key
-   export DASHCLAW_HOOK_MODE=enforce  # or "observe" to log only
-   ```
-
-### Environment variables
-
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| DASHCLAW_BASE_URL | Yes | none | Your DashClaw instance URL |
-| DASHCLAW_API_KEY | Yes | none | Operator API key |
-| DASHCLAW_AGENT_ID | No | claude-code | Agent ID recorded in decisions |
-| DASHCLAW_HOOK_MODE | No | enforce | enforce blocks on policy violations; observe logs only |
-| DASHCLAW_RISK_THRESHOLD | No | 60 | Base risk threshold for elevated scoring |
-
-### Governed tools
-
-The hooks intercept: `Bash`, `Edit`, `Write`, `MultiEdit`. All other tools pass through ungoverned.
-
-### Decision behavior
-
-| Guard Decision | enforce mode | observe mode |
-|---|---|---|
-| allow | Tool proceeds silently | Tool proceeds silently |
-| warn | Warning printed to stderr, tool proceeds | Same |
-| block | Tool blocked (exit 2), reason shown | Warning only, tool proceeds |
-| require_approval | Action created as pending, polls for 30s, blocks if not approved | Warning only |
-
-### Action type mapping
-
-The hooks map tool calls to DashClaw action types automatically:
-
-**Bash commands:**
-- `git push`, `git merge`, `git rebase` -> `deploy`, risk 80, irreversible
-- `npm run deploy`, `vercel`, `kubectl`, `terraform` -> `deploy`, risk 75-85, irreversible
-- `rm -rf`, `DROP TABLE`, `DELETE FROM` -> `security`, risk 90, irreversible
-- `curl`, `wget` -> `api`, risk 40
-- default -> `other`, risk 20
-
-**File edits (Edit/Write/MultiEdit):**
-- Path matches `.env`, `secret`, `credential`, `private_key` -> `security`, risk 85
-- Path matches `migration`, `schema` -> `migrate`, risk 70, irreversible
-- Path matches `deploy`, `terraform`, `kubernetes` -> `deploy`, risk 75
-- Path matches `auth`, `jwt`, `token`, `password` -> `security`, risk 75
-- default -> `other`, risk 15
-
-### Failure safety
-
-If `DASHCLAW_BASE_URL` or `DASHCLAW_API_KEY` are not set, both scripts exit 0 silently. If the DashClaw API is unreachable (timeout, network error), the hooks exit 0 and print `[DashClaw] Guard unavailable, proceeding` to stderr. Claude Code is never blocked because DashClaw is down.
-
-### Approving from the terminal
-
-When a hook enters approval-required state, it prints the action ID and replay URL. Approve from a second terminal:
-
-```bash
-dashclaw approve act_01j9z7k2m8n3p4q5r6s7t8u9v0 --reason "Reviewed, safe to proceed"
-```
-
-The hook polling loop detects the approval within 3 seconds and unblocks Claude Code.
-
-### Evidence trail
-
-After every governed tool execution, `dashclaw_posttool.py` records the outcome as a DashClaw action. This means every file edit and bash command Claude runs in your project becomes a replayable evidence record at `<DASHCLAW_BASE_URL>/replay/<actionId>`.
-
-## Monitor Session Health
-
-Track agent session lifecycle: create sessions, detect stalls, and trigger recovery.
-
-### Create a session
-
-```javascript
-const session = await dc.createSession({
-  agent_id: 'deploy-bot',
-  workspace: '/home/user/project',
-  branch: 'feat/new-feature',
-});
-// session.session_id = 'sess_01j9z...'
-```
-
-```python
-session = dc.create_session(
-    agent_id="deploy-bot",
-    workspace="/home/user/project",
-    branch="feat/new-feature",
-)
-```
-
-### Update session status
-
-```javascript
-await dc.updateSession(session.session_id, {
-  status: 'active',
-  green_level: 'full',
-  branch_freshness: 'fresh',
-  commits_behind: 0,
-});
-```
-
-### Detect stalls
-
-List sessions that have gone idle or stalled:
-
-```javascript
-const { sessions } = await dc.listSessions({ status: 'stalled' });
-for (const s of sessions) {
-  console.log(`${s.agent_id} stalled in ${s.workspace} (${s.blocked_reason})`);
-}
-```
-
-### Recovery
-
-When a session stalls, update its status to trigger recovery workflows:
-
-```javascript
-await dc.updateSession(session.session_id, {
-  status: 'recovering',
-  blocked_reason: null,
-});
-// Agent resumes work...
-await dc.updateSession(session.session_id, { status: 'active' });
-```
-
-Session events are available at `GET /api/sessions/{sessionId}/events` for full lifecycle audit trails.
-
-## Configure Guard Policy Types
-
-Guard policies use a `policy_type` field to determine evaluation behavior. DashClaw ships with
-several built-in types plus three new types added in v2.8.
-
-### Built-in policy types
-
-| Policy Type | Purpose |
-|---|---|
-| `risk_threshold` | Block or require approval when risk exceeds a limit |
-| `cost_limit` | Cap per-action and daily spend |
-| `action_allowlist` | Only allow specific action types |
-| `content_filter` | Guard against sensitive data in outputs |
-| `permission_escalation` | Block when an agent requests a higher permission level than allowed |
-| `green_contract` | Require green (passing) test status before certain actions proceed |
-| `branch_freshness` | Block actions when the working branch is stale (N+ commits behind) |
-
-### New types in detail
-
-**permission_escalation** -- prevents agents from self-elevating permissions:
-
-```json
-{
-  "name": "no-self-escalation",
-  "policy_type": "permission_escalation",
-  "rules": {
-    "max_permission_level": "workspace_write",
-    "blocked_transitions": ["readonly->danger", "workspace_write->danger"],
-    "require_approval_for": ["prompt", "allow"]
-  }
-}
-```
-
-**green_contract** -- enforces passing tests before high-risk operations:
-
-```json
-{
-  "name": "green-before-deploy",
-  "policy_type": "green_contract",
-  "rules": {
-    "required_green_level": "full",
-    "applies_to_action_types": ["deploy", "infrastructure_change"],
-    "allow_partial_green_for": ["staging"]
-  }
-}
-```
-
-**branch_freshness** -- blocks actions on stale branches:
-
-```json
-{
-  "name": "fresh-branch-required",
-  "policy_type": "branch_freshness",
-  "rules": {
-    "max_commits_behind": 5,
-    "applies_to_action_types": ["deploy", "merge"],
-    "block_message": "Rebase before deploying -- branch is behind main"
-  }
-}
-```
-
-These policy types integrate with the session lifecycle. The guard evaluator reads `green_level`,
-`branch_freshness`, and `commits_behind` from the active session when evaluating policies.
-
-## Bootstrap Agent
-
-Import an existing agent's workspace data into DashClaw:
-
-```bash
-node .claude/skills/dashclaw-platform-intelligence/scripts/bootstrap-agent-quick.mjs \
-  --dir "/path/to/agent/workspace" \
-  --agent-id "my-agent" \
-  --validate
-```
-
-The bootstrap scanner auto-discovers: decisions, lessons, goals, context threads, relationships,
-memory files, and preferences from common agent directory structures.
-
-For full options: `node scripts/bootstrap-agent-quick.mjs --help`
+If the diff shows changes, this skill is stale — regenerate it.

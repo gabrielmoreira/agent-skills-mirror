@@ -8,6 +8,17 @@ from pathlib import Path
 
 import numpy as np
 
+# Add project root so clawbio.common is importable when running as a script.
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+from clawbio.common.reproducibility import (
+    write_checksums,
+    write_commands_sh,
+    write_environment_yml,
+)
+
 
 DISCLAIMER = (
     "*ClawBio is a research and educational tool. "
@@ -346,7 +357,6 @@ def main() -> None:
 
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "reproducibility").mkdir(exist_ok=True)
 
     # Build input image
     if args.demo:
@@ -417,7 +427,25 @@ def main() -> None:
     write_report(metrics, meta, output_dir, outlines_filename=outlines_filename, masks_filename=masks_filename, seg_filename=seg_filename, csv_filename=f"{stem}_measurements.csv", histogram_filename=f"{stem}_histogram.png")
 
     # Reproducibility
-    (output_dir / "reproducibility" / "commands.sh").write_text(f"#!/bin/bash\n{cmd}\n")
+    write_commands_sh(output_dir, cmd)
+    write_environment_yml(
+        output_dir,
+        env_name="clawbio-cell-detection",
+        pip_deps=["cellpose>=4.0", "tifffile", "Pillow", "numpy", "matplotlib", "scikit-image", "scipy"],
+        python_version="3.10",
+    )
+    write_checksums(
+        [
+            output_dir / "report.md",
+            output_dir / masks_filename,
+            output_dir / seg_filename,
+            csv_path,
+            output_dir / "figures" / outlines_filename,
+            output_dir / "figures" / f"{stem}_histogram.png",
+        ],
+        output_dir,
+        anchor=output_dir,
+    )
 
     print(f"[cell-detection] Done — {len(metrics)} cells detected.")
     print(f"[cell-detection] Report: {output_dir / 'report.md'}")

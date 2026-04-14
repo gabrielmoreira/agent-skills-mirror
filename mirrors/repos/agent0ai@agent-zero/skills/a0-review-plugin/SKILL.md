@@ -52,7 +52,7 @@ Inspect the plugin directory layout:
 - [ ] If `agents/` exists: agent profiles with `<profile>/agent.yaml` (standard directory)
 - [ ] If `conf/` exists: configuration files such as `model_providers.yaml` (standard directory)
 - [ ] If `webui/config.html` exists: plugin must declare at least one `settings_sections` entry
-- [ ] If `hooks.py` exists: review whether it defines the lifecycle hook functions the plugin appears to rely on, especially `install` and `pre_update` when the plugin needs install-time or update-time behavior
+- [ ] If `hooks.py` exists: review whether it defines the lifecycle hook functions the plugin appears to rely on, especially `install`, `pre_update`, and `uninstall` when the plugin needs install-time, update-time, or cleanup behavior — if `install()` adds dependencies, flag a missing `uninstall()` as WARN
 - [ ] If `execute.py` exists: check it has a `main()` function and `if __name__ == "__main__": sys.exit(main())`
 - [ ] `LICENSE` at plugin root: Agent Zero does not require it for local plugins, but it is **required** at the repo root before submitting to the Plugin Index. If missing → **WARN** — `LICENSE absent — required for community contribution (Plugin Index); optional for local-only use`
 - [ ] `default_config.yaml` (if present): valid YAML

@@ -2,9 +2,9 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1404
+Total skills: 1409
 
-## architecture (94)
+## architecture (95)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -56,6 +56,7 @@ Total skills: 1404
 | `godot-gdscript-patterns` | Master Godot 4 GDScript patterns including signals, scenes, state machines, and optimization. Use when building Godot games, implementing game systems, or le... | godot, gdscript | godot, gdscript, including, signals, scenes, state, machines, optimization, building, games, implementing, game |
 | `hig-patterns` | Apple Human Interface Guidelines interaction and UX patterns. | hig | hig, apple, human, interface, guidelines, interaction, ux |
 | `i18n-localization` | Internationalization and localization patterns. Detecting hardcoded strings, managing translations, locale files, RTL support. | i18n, localization | i18n, localization, internationalization, detecting, hardcoded, strings, managing, translations, locale, files, rtl |
+| `indexing-issue-auditor` | High-level technical SEO and site architecture auditor. Invoke to scan local or live environments for indexing, crawl budget, and structural errors. | seo, architecture, indexing, crawler, sitemap | seo, architecture, indexing, crawler, sitemap, issue, auditor, high, level, technical, site, invoke |
 | `inngest` | Inngest expert for serverless-first background jobs, event-driven workflows, and durable execution without managing queues or workers. | inngest | inngest, serverless, first, background, jobs, event, driven, durable, execution, without, managing, queues |
 | `kotlin-coroutines-expert` | Expert patterns for Kotlin Coroutines and Flow, covering structured concurrency, error handling, and testing. | kotlin, coroutines | kotlin, coroutines, flow, covering, structured, concurrency, error, handling, testing |
 | `kpi-dashboard-design` | Comprehensive patterns for designing effective Key Performance Indicator (KPI) dashboards that drive business decisions. | kpi, dashboard | kpi, dashboard, designing, effective, key, performance, indicator, dashboards, drive, business, decisions |
@@ -103,7 +104,7 @@ Total skills: 1404
 | `workflow-patterns` | Use this skill when implementing tasks according to Conductor's TDD workflow, handling phase checkpoints, managing git commits for tasks, or understanding th... |  | skill, implementing, tasks, according, conductor, tdd, handling, phase, checkpoints, managing, git, commits |
 | `zapier-make-patterns` | No-code automation democratizes workflow building. Zapier and Make (formerly Integromat) let non-developers automate business processes without writing code.... | zapier, make | zapier, make, no, code, automation, democratizes, building, formerly, integromat, let, non, developers |
 
-## business (77)
+## business (78)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -133,6 +134,7 @@ Total skills: 1404
 | `launch-strategy` | You are an expert in SaaS product launches and feature announcements. Your goal is to help users plan launches that build momentum, capture attention, and co... | launch | launch, saas, product, launches, feature, announcements, goal, users, plan, momentum, capture, attention |
 | `leiloeiro-juridico` | Analise juridica de leiloes: nulidades, bem de familia, alienacao fiduciaria, CPC arts 829-903, Lei 9514/97, onus reais, embargos e jurisprudencia. | legal, auction-law, brazilian, judicial | legal, auction-law, brazilian, judicial, leiloeiro, juridico, analise, juridica, de, leiloes, nulidades, bem |
 | `linkedin-cli` | Use when automating LinkedIn via CLI: fetch profiles, search people/companies, send messages, manage connections, create posts, and Sales Navigator. | linkedin, cli | linkedin, cli, automating, via, fetch, profiles, search, people, companies, send, messages, connections |
+| `linkedin-profile-optimizer` | High-intent expert for LinkedIn profile checks, authority building, and SEO optimization. Invoke to audit, rewrite, and enhance profiles for top 1% positioning. | linkedin, branding, career, growth, personal-brand | linkedin, branding, career, growth, personal-brand, profile, optimizer, high, intent, checks, authority, building |
 | `local-legal-seo-audit` | Audit and improve local SEO for law firms, attorneys, forensic experts and legal/professional services sites with local presence, focusing on GBP, directorie... | local, legal, seo, audit | local, legal, seo, audit, improve, law, firms, attorneys, forensic, experts, professional, sites |
 | `market-sizing-analysis` | Comprehensive market sizing methodologies for calculating Total Addressable Market (TAM), Serviceable Available Market (SAM), and Serviceable Obtainable Mark... | market, sizing | market, sizing, analysis, methodologies, calculating, total, addressable, tam, serviceable, available, sam, obtainable |
 | `marketing-ideas` | Provide proven marketing strategies and growth ideas for SaaS and software products, prioritized using a marketing feasibility scoring system. | marketing, ideas | marketing, ideas, provide, proven, growth, saas, software, products, prioritized, feasibility, scoring |
@@ -185,7 +187,7 @@ Total skills: 1404
 | `whatsapp-automation` | Automate WhatsApp Business tasks via Rube MCP (Composio): send messages, manage templates, upload media, and handle contacts. Always search tools first for c... | whatsapp | whatsapp, automation, automate, business, tasks, via, rube, mcp, composio, send, messages, upload |
 | `wordpress-centric-high-seo-optimized-blogwriting-skill` | Use this skill when the user asks to write a blog post, article, or SEO content. This applies a professional structure, truth boxes, click-bait-free accurate... | writing, blog, seo, content, wordpress | writing, blog, seo, content, wordpress, centric, high, optimized, blogwriting, skill, user, asks |
 
-## data-ai (266)
+## data-ai (268)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -340,6 +342,7 @@ Total skills: 1404
 | `google-analytics-automation` | Automate Google Analytics tasks via Rube MCP (Composio): run reports, list accounts/properties, funnels, pivots, key events. Always search tools first for cu... | google, analytics | google, analytics, automation, automate, tasks, via, rube, mcp, composio, run, reports, list |
 | `googlesheets-automation` | Automate Google Sheets operations (read, write, format, filter, manage spreadsheets) via Rube MCP (Composio). Read/write data, manage tabs, apply formatting,... | googlesheets | googlesheets, automation, automate, google, sheets, operations, read, write, format, filter, spreadsheets, via |
 | `graphql` | GraphQL gives clients exactly the data they need - no more, no less. One endpoint, typed schema, introspection. But the flexibility that makes it powerful al... | graphql | graphql, gives, clients, exactly, data, no, less, one, endpoint, typed, schema, introspection |
+| `helium-mcp` | Connect to Helium's MCP server for news research, media bias analysis, balanced perspectives, stock/options data, and semantic meme search across 3.2M+ artic... | mcp, news, media-bias, stocks, options, finance, research | mcp, news, media-bias, stocks, options, finance, research, helium, connect, server, media, bias |
 | `hosted-agents-v2-py` | Build hosted agents using Azure AI Projects SDK with ImageBasedHostedAgentDefinition. Use when creating container-based agents in Azure AI Foundry. | hosted, agents, v2, py | hosted, agents, v2, py, azure, ai, sdk, imagebasedhostedagentdefinition, creating, container, foundry |
 | `hugging-face-community-evals` | Run local evaluations for Hugging Face Hub models with inspect-ai or lighteval. | hugging, face, community, evals | hugging, face, community, evals, run, local, evaluations, hub, models, inspect, ai, lighteval |
 | `hugging-face-datasets` | Create and manage datasets on Hugging Face Hub. Supports initializing repos, defining configs/system prompts, streaming row updates, and SQL-based dataset qu... | hugging, face, datasets | hugging, face, datasets, hub, supports, initializing, repos, defining, configs, prompts, streaming, row |
@@ -455,6 +458,7 @@ Total skills: 1404
 | `yann-lecun` | Agente que simula Yann LeCun — inventor das Convolutional Neural Networks, Chief AI Scientist da Meta, Prêmio Turing 2018. | persona, cnn, meta, ai-safety-critic, open-source | persona, cnn, meta, ai-safety-critic, open-source, yann, lecun, agente, que, simula, inventor, das |
 | `yes-md` | 6-layer AI governance: safety gates, evidence-based debugging, anti-slack detection, and machine-enforced hooks. Makes AI safe, thorough, and honest. | yes, md | yes, md, layer, ai, governance, safety, gates, evidence, debugging, anti, slack, detection |
 | `youtube-automation` | Automate YouTube tasks via Rube MCP (Composio): upload videos, manage playlists, search content, get analytics, and handle comments. Always search tools firs... | youtube | youtube, automation, automate, tasks, via, rube, mcp, composio, upload, videos, playlists, search |
+| `zipai-optimizer` | Behavioral protocol engineered for extreme AI agent token optimization, eliminating I/O noise via context-aware truncation and strict conciseness. | zipai, optimizer | zipai, optimizer, behavioral, protocol, engineered, extreme, ai, agent, token, optimization, eliminating, noise |
 
 ## development (199)
 
@@ -660,7 +664,7 @@ Total skills: 1404
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
-## general (341)
+## general (342)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -688,6 +692,7 @@ Total skills: 1404
 | `awareness-stage-mapper` | One sentence - what this skill does and when to invoke it | awareness, stage, mapper | awareness, stage, mapper, one, sentence, what, skill, does, invoke |
 | `aws-cost-cleanup` | Automated cleanup of unused AWS resources to reduce costs | aws, cost, cleanup | aws, cost, cleanup, automated, unused, resources, reduce, costs |
 | `aws-cost-optimizer` | Comprehensive AWS cost analysis and optimization recommendations using AWS CLI and Cost Explorer | aws, cost, optimizer | aws, cost, optimizer, analysis, optimization, recommendations, cli, explorer |
+| `axiom` | First-principles assumption auditor. Classifies each hidden assumption (fact / convention / belief / interest-driven), ranks by fragility × impact, and rebui... | axiom | axiom, first, principles, assumption, auditor, classifies, each, hidden, fact, convention, belief, interest |
 | `azure-appconfiguration-ts` | Centralized configuration management with feature flags and dynamic refresh. | azure, appconfiguration, ts | azure, appconfiguration, ts, centralized, configuration, feature, flags, dynamic, refresh |
 | `azure-identity-ts` | Authenticate to Azure services with various credential types. | azure, identity, ts | azure, identity, ts, authenticate, various, credential, types |
 | `azure-servicebus-ts` | Enterprise messaging with queues, topics, and subscriptions. | azure, servicebus, ts | azure, servicebus, ts, enterprise, messaging, queues, topics, subscriptions |

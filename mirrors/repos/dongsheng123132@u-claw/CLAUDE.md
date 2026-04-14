@@ -74,10 +74,9 @@ install/            一键在线安装模块（curl | bash / irm | iex）
                     7 步流程: 系统检测 → Node.js → OpenClaw → QQ插件 → 技能 → 模型配置 → 启动脚本
                     安装到 ~/.uclaw/，与 Mac-Install.command 结果相同
 
-website/            Static HTML deployed to u-claw.org via Vercel
-                    vercel.json sets outputDirectory: "website"
-                    install.sh / install.ps1 — 复制自 install/，供 curl 下载
 ```
+
+> **Note**: 官网 (u-claw.org) 已拆分到独立私有仓库 [u-claw.org](https://github.com/dongsheng123132/u-claw.org)，本仓库不再包含 website/ 和 vercel.json。
 
 Both portable and desktop versions auto-find a free port in range 18789–18799 and start the OpenClaw gateway. On first run, they detect whether a model is configured — if not, they open Config.html; otherwise, they open the dashboard.
 
@@ -121,5 +120,5 @@ Release artifacts go to GitHub Releases, not the repo.
 - **技术栈**: Ventoy 1.0.99 引导 → Ubuntu 24.04 ISO → casper-rw 持久化 → OpenClaw 安装到 /opt/u-claw/
 - **国内镜像**: ISO 下载走清华/阿里/中科大，Node.js 和 npm 走 npmmirror.com
 - **Linux 环境变量**: `OPENCLAW_HOME=/opt/u-claw/data/.openclaw`
-- **bootable/ 完全独立**: 不引用 portable/、u-claw-app/、website/ 的任何文件，修改互不影响
+- **bootable/ 完全独立**: 不引用 portable/、u-claw-app/ 的任何文件，修改互不影响
 - **同步**: bootable/ 内容与 u-claw-linux 仓库保持一致，改一边要记得同步另一边

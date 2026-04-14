@@ -81,7 +81,7 @@ Manual cell counting and segmentation are slow, inconsistent, and hard to reprod
 3. **Segment** with `CellposeModel()` — no `channels` argument needed
 4. **Metrics** via `skimage.measure.regionprops`
 5. **Figures** — overlay + size distribution histogram
-6. **Report** — `report.md` + `{stem}_measurements.csv` + `commands.sh`
+6. **Report** — `report.md` + `{stem}_measurements.csv` + reproducibility bundle (`commands.sh`, `environment.yml`, `checksums.sha256`)
 
 ## CLI Reference
 
@@ -133,10 +133,15 @@ Expected output: report.md with ~67 cells detected from a synthetic 512×512 blo
 output_dir/
 ├── report.md
 ├── {stem}_measurements.csv
+├── {stem}_cp_masks.tif
+├── {stem}_seg.npy
 ├── figures/
+│   ├── {stem}_cp_outlines.png
 │   └── {stem}_histogram.png
 └── reproducibility/
-    └── commands.sh
+    ├── checksums.sha256
+    ├── commands.sh
+    └── environment.yml
 ```
 
 ## Dependencies
@@ -152,7 +157,7 @@ output_dir/
 
 - Local-first: no image data leaves the machine
 - Every report includes the ClawBio medical disclaimer
-- `commands.sh` records the exact invocation for reproducibility
+- Reproducibility bundle (`commands.sh`, `environment.yml`, `checksums.sha256`) records the exact invocation, dependencies, and output integrity
 
 ## Integration with Bio Orchestrator
 

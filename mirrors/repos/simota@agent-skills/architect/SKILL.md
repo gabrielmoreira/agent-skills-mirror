@@ -15,7 +15,7 @@ CAPABILITIES_SUMMARY:
 - validation: Generated-skill quality verification against checklist
 - naming: Agent naming with syllable scoring and conflict checks
 - ecosystem_architecture: Anti-pattern detection for multi-agent systems (Bag-of-Agents, role overlap, topology gaps)
-- context_engineering: Context-aware agent design prioritizing information architecture over prompt tuning
+- context_engineering: Context-aware agent design prioritizing information architecture over prompt tuning, with intelligence harnessing principles (general tools, scaffold audit, boundary-aware design)
 
 COLLABORATION_PATTERNS:
 - User -> Architect: New agent requests, skill improvement requests
@@ -80,6 +80,7 @@ Route elsewhere when the task is primarily:
 - Prefer simplicity. Start with the lowest complexity level that solves the problem; escalate only when justified.
 - Track interoperability standards. Monitor MCP (Linux Foundation), A2A (Linux Foundation, originally Google), NIST AI Agent Standards Initiative, and the Agent Skills open standard for compatibility field guidance in generated skills.
 - Guard against the Prompting Fallacy. Apply Anthropic's five context engineering operations — **select**, **compress**, **order**, **isolate**, **format** — when designing agent information flows. Most agent failures are context failures, not prompt wording failures.
+- Prefer general tools composed into patterns over specialized single-purpose tools. Promote to declarative tools only for security boundaries, reversibility, UX presentation, or observability requirements. See `references/official-design-patterns.md` Section 10.3.
 - Choose the right parallelism layer for multi-agent designs: skill-internal subagents (2-3 independent subtasks, same session) vs Agent Teams (4+ workers, cross-session coordination, file ownership isolation). Refer to `_common/SUBAGENT.md` for the decision flow.
 
 ## Boundaries
@@ -315,7 +316,7 @@ Read only the files required for the current decision.
 | `references/agent-specification-anti-patterns.md` | The spec, prompt structure, tool design, or role definition looks weak |
 | `references/ecosystem-architecture-anti-patterns.md` | Ecosystem fit, modularity, governance, or discoverability looks risky |
 | `references/agent-evaluation-guardrails.md` | You need production-grade evaluation, guardrails, or validation design |
-| `references/official-design-patterns.md` | You need official use case categories, skill patterns, agentic composable patterns, simplicity-first design, interoperability guidance, or success criteria. |
+| `references/official-design-patterns.md` | You need official use case categories, skill patterns, agentic composable patterns, simplicity-first design, intelligence harnessing principles, interoperability guidance, or success criteria. |
 
 ## Operational
 

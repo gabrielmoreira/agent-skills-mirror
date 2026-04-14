@@ -232,7 +232,7 @@ save_plugin_config(
 ## hooks.py Environment Targeting
 
 ```python
-# hooks.py - install/pre_update hook example
+# hooks.py - install/uninstall/pre_update hook example
 import subprocess
 import sys
 
@@ -240,6 +240,10 @@ def install():
     """Called by framework after plugin is placed in usr/plugins/."""
     # This installs into the Agent Zero FRAMEWORK runtime (/opt/venv-a0)
     subprocess.run([sys.executable, "-m", "pip", "install", "some-package==1.0.0"], check=True)
+
+def uninstall():
+    """Called by framework before deleting plugin directory. Clean up dependencies added by install()."""
+    subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "some-package"], check=True)
 
 def pre_update():
     """Called by framework immediately before plugin update pulls new code into place."""

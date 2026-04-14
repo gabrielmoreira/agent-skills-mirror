@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,7 +80,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`usb-release/skills/weibo-poster/SKILL.md`](usb-release/skills/weibo-poster/SKILL.md) |
 | 20 | ✓ | [`usb-release/skills/xiaohongshu-writer/SKILL.md`](usb-release/skills/xiaohongshu-writer/SKILL.md) |
 | 21 | ✓ | [`usb-release/skills/zhihu-writer/SKILL.md`](usb-release/skills/zhihu-writer/SKILL.md) |
-| 22 | ✓ | [`website/llms.txt`](website/llms.txt) |
 
 ---
 

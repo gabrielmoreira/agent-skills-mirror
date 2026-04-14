@@ -76,7 +76,7 @@ always_enabled: false        # forces ON, disables toggle (framework use only)
 | `extensions/webui/<point>/` | HTML/JS injected into UI breakpoints |
 | `webui/config.html` | Plugin settings UI |
 | `webui/*.html`, `webui/*.js` | Full plugin pages and Alpine stores |
-| `hooks.py` | Framework runtime hooks (install, pre_update, cache, registration) |
+| `hooks.py` | Framework runtime hooks (install, uninstall, pre_update, cache, registration) |
 | `execute.py` | User-triggered script (setup, maintenance, repair) |
 | `default_config.yaml` | Settings defaults |
 | `README.md` | Optional locally; strongly recommended for community plugins so Plugin Hub users can inspect the plugin |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `simota/agent-skills` — 26 default patterns, 0 followed patterns, 123 file(s) materialized.
+Mirror of `simota/agent-skills` — 26 default patterns, 0 followed patterns, 124 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `simota/agent-skills` — 26 default patterns, 0 followed patterns, 12
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 123 |
+| Files         | 124 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -123,65 +123,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`muse/SKILL.md`](muse/SKILL.md) |
 | 63 | ✓ | [`native/SKILL.md`](native/SKILL.md) |
 | 64 | ✓ | [`navigator/SKILL.md`](navigator/SKILL.md) |
-| 65 | ✓ | [`nexus/SKILL.md`](nexus/SKILL.md) |
-| 66 | ✓ | [`omen/SKILL.md`](omen/SKILL.md) |
-| 67 | ✓ | [`oracle/SKILL.md`](oracle/SKILL.md) |
-| 68 | ✓ | [`orbit/SKILL.md`](orbit/SKILL.md) |
-| 69 | ✓ | [`palette/SKILL.md`](palette/SKILL.md) |
-| 70 | ✓ | [`pipe/SKILL.md`](pipe/SKILL.md) |
-| 71 | ✓ | [`pixel/SKILL.md`](pixel/SKILL.md) |
-| 72 | ✓ | [`polyglot/SKILL.md`](polyglot/SKILL.md) |
-| 73 | ✓ | [`prism/SKILL.md`](prism/SKILL.md) |
-| 74 | ✓ | [`probe/SKILL.md`](probe/SKILL.md) |
-| 75 | ✓ | [`prose/SKILL.md`](prose/SKILL.md) |
-| 76 | ✓ | [`pulse/SKILL.md`](pulse/SKILL.md) |
-| 77 | ✓ | [`quest/SKILL.md`](quest/SKILL.md) |
-| 78 | ✓ | [`quill/SKILL.md`](quill/SKILL.md) |
-| 79 | ✓ | [`radar/SKILL.md`](radar/SKILL.md) |
-| 80 | ✓ | [`rally/SKILL.md`](rally/SKILL.md) |
-| 81 | ✓ | [`rank/SKILL.md`](rank/SKILL.md) |
-| 82 | ✓ | [`realm/SKILL.md`](realm/SKILL.md) |
-| 83 | ✓ | [`reel/SKILL.md`](reel/SKILL.md) |
-| 84 | ✓ | [`relay/SKILL.md`](relay/SKILL.md) |
-| 85 | ✓ | [`researcher/SKILL.md`](researcher/SKILL.md) |
-| 86 | ✓ | [`retain/SKILL.md`](retain/SKILL.md) |
-| 87 | ✓ | [`rewind/SKILL.md`](rewind/SKILL.md) |
-| 88 | ✓ | [`ripple/SKILL.md`](ripple/SKILL.md) |
-| 89 | ✓ | [`saga/SKILL.md`](saga/SKILL.md) |
-| 90 | ✓ | [`scaffold/SKILL.md`](scaffold/SKILL.md) |
-| 91 | ✓ | [`schema/SKILL.md`](schema/SKILL.md) |
-| 92 | ✓ | [`scout/SKILL.md`](scout/SKILL.md) |
-| 93 | ✓ | [`scribe/SKILL.md`](scribe/SKILL.md) |
-| 94 | ✓ | [`seek/SKILL.md`](seek/SKILL.md) |
-| 95 | ✓ | [`sentinel/SKILL.md`](sentinel/SKILL.md) |
-| 96 | ✓ | [`shard/SKILL.md`](shard/SKILL.md) |
-| 97 | ✓ | [`sherpa/SKILL.md`](sherpa/SKILL.md) |
-| 98 | ✓ | [`shift/SKILL.md`](shift/SKILL.md) |
-| 99 | ✓ | [`showcase/SKILL.md`](showcase/SKILL.md) |
-| 100 | ✓ | [`siege/SKILL.md`](siege/SKILL.md) |
-| 101 | ✓ | [`sigil/SKILL.md`](sigil/SKILL.md) |
-| 102 | ✓ | [`sketch/SKILL.md`](sketch/SKILL.md) |
-| 103 | ✓ | [`spark/SKILL.md`](spark/SKILL.md) |
-| 104 | ✓ | [`specter/SKILL.md`](specter/SKILL.md) |
-| 105 | ✓ | [`spider/SKILL.md`](spider/SKILL.md) |
-| 106 | ✓ | [`stage/SKILL.md`](stage/SKILL.md) |
-| 107 | ✓ | [`stratum/SKILL.md`](stratum/SKILL.md) |
-| 108 | ✓ | [`stream/SKILL.md`](stream/SKILL.md) |
-| 109 | ✓ | [`sweep/SKILL.md`](sweep/SKILL.md) |
-| 110 | ✓ | [`titan/SKILL.md`](titan/SKILL.md) |
-| 111 | ✓ | [`tome/SKILL.md`](tome/SKILL.md) |
-| 112 | ✓ | [`tone/SKILL.md`](tone/SKILL.md) |
-| 113 | ✓ | [`trace/SKILL.md`](trace/SKILL.md) |
-| 114 | ✓ | [`triage/SKILL.md`](triage/SKILL.md) |
-| 115 | ✓ | [`tuner/SKILL.md`](tuner/SKILL.md) |
-| 116 | ✓ | [`vigil/SKILL.md`](vigil/SKILL.md) |
-| 117 | ✓ | [`vision/SKILL.md`](vision/SKILL.md) |
-| 118 | ✓ | [`voice/SKILL.md`](voice/SKILL.md) |
-| 119 | ✓ | [`void/SKILL.md`](void/SKILL.md) |
-| 120 | ✓ | [`voyager/SKILL.md`](voyager/SKILL.md) |
-| 121 | ✓ | [`warden/SKILL.md`](warden/SKILL.md) |
-| 122 | ✓ | [`weave/SKILL.md`](weave/SKILL.md) |
-| 123 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
+| 65 | ✓ | [`nest/SKILL.md`](nest/SKILL.md) |
+| 66 | ✓ | [`nexus/SKILL.md`](nexus/SKILL.md) |
+| 67 | ✓ | [`omen/SKILL.md`](omen/SKILL.md) |
+| 68 | ✓ | [`oracle/SKILL.md`](oracle/SKILL.md) |
+| 69 | ✓ | [`orbit/SKILL.md`](orbit/SKILL.md) |
+| 70 | ✓ | [`palette/SKILL.md`](palette/SKILL.md) |
+| 71 | ✓ | [`pipe/SKILL.md`](pipe/SKILL.md) |
+| 72 | ✓ | [`pixel/SKILL.md`](pixel/SKILL.md) |
+| 73 | ✓ | [`polyglot/SKILL.md`](polyglot/SKILL.md) |
+| 74 | ✓ | [`prism/SKILL.md`](prism/SKILL.md) |
+| 75 | ✓ | [`probe/SKILL.md`](probe/SKILL.md) |
+| 76 | ✓ | [`prose/SKILL.md`](prose/SKILL.md) |
+| 77 | ✓ | [`pulse/SKILL.md`](pulse/SKILL.md) |
+| 78 | ✓ | [`quest/SKILL.md`](quest/SKILL.md) |
+| 79 | ✓ | [`quill/SKILL.md`](quill/SKILL.md) |
+| 80 | ✓ | [`radar/SKILL.md`](radar/SKILL.md) |
+| 81 | ✓ | [`rally/SKILL.md`](rally/SKILL.md) |
+| 82 | ✓ | [`rank/SKILL.md`](rank/SKILL.md) |
+| 83 | ✓ | [`realm/SKILL.md`](realm/SKILL.md) |
+| 84 | ✓ | [`reel/SKILL.md`](reel/SKILL.md) |
+| 85 | ✓ | [`relay/SKILL.md`](relay/SKILL.md) |
+| 86 | ✓ | [`researcher/SKILL.md`](researcher/SKILL.md) |
+| 87 | ✓ | [`retain/SKILL.md`](retain/SKILL.md) |
+| 88 | ✓ | [`rewind/SKILL.md`](rewind/SKILL.md) |
+| 89 | ✓ | [`ripple/SKILL.md`](ripple/SKILL.md) |
+| 90 | ✓ | [`saga/SKILL.md`](saga/SKILL.md) |
+| 91 | ✓ | [`scaffold/SKILL.md`](scaffold/SKILL.md) |
+| 92 | ✓ | [`schema/SKILL.md`](schema/SKILL.md) |
+| 93 | ✓ | [`scout/SKILL.md`](scout/SKILL.md) |
+| 94 | ✓ | [`scribe/SKILL.md`](scribe/SKILL.md) |
+| 95 | ✓ | [`seek/SKILL.md`](seek/SKILL.md) |
+| 96 | ✓ | [`sentinel/SKILL.md`](sentinel/SKILL.md) |
+| 97 | ✓ | [`shard/SKILL.md`](shard/SKILL.md) |
+| 98 | ✓ | [`sherpa/SKILL.md`](sherpa/SKILL.md) |
+| 99 | ✓ | [`shift/SKILL.md`](shift/SKILL.md) |
+| 100 | ✓ | [`showcase/SKILL.md`](showcase/SKILL.md) |
+| 101 | ✓ | [`siege/SKILL.md`](siege/SKILL.md) |
+| 102 | ✓ | [`sigil/SKILL.md`](sigil/SKILL.md) |
+| 103 | ✓ | [`sketch/SKILL.md`](sketch/SKILL.md) |
+| 104 | ✓ | [`spark/SKILL.md`](spark/SKILL.md) |
+| 105 | ✓ | [`specter/SKILL.md`](specter/SKILL.md) |
+| 106 | ✓ | [`spider/SKILL.md`](spider/SKILL.md) |
+| 107 | ✓ | [`stage/SKILL.md`](stage/SKILL.md) |
+| 108 | ✓ | [`stratum/SKILL.md`](stratum/SKILL.md) |
+| 109 | ✓ | [`stream/SKILL.md`](stream/SKILL.md) |
+| 110 | ✓ | [`sweep/SKILL.md`](sweep/SKILL.md) |
+| 111 | ✓ | [`titan/SKILL.md`](titan/SKILL.md) |
+| 112 | ✓ | [`tome/SKILL.md`](tome/SKILL.md) |
+| 113 | ✓ | [`tone/SKILL.md`](tone/SKILL.md) |
+| 114 | ✓ | [`trace/SKILL.md`](trace/SKILL.md) |
+| 115 | ✓ | [`triage/SKILL.md`](triage/SKILL.md) |
+| 116 | ✓ | [`tuner/SKILL.md`](tuner/SKILL.md) |
+| 117 | ✓ | [`vigil/SKILL.md`](vigil/SKILL.md) |
+| 118 | ✓ | [`vision/SKILL.md`](vision/SKILL.md) |
+| 119 | ✓ | [`voice/SKILL.md`](voice/SKILL.md) |
+| 120 | ✓ | [`void/SKILL.md`](void/SKILL.md) |
+| 121 | ✓ | [`voyager/SKILL.md`](voyager/SKILL.md) |
+| 122 | ✓ | [`warden/SKILL.md`](warden/SKILL.md) |
+| 123 | ✓ | [`weave/SKILL.md`](weave/SKILL.md) |
+| 124 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
 
 ---
 

@@ -513,7 +513,7 @@ Open `.env` and fill in the required values:
 ```bash
 STACK_NAME=openclaw-enterprise   # your stack name
 REGION=us-east-1                 # us-east-1 or us-west-2 (AgentCore regions)
-ADMIN_PASSWORD=your-password     # admin console login password
+ADMIN_PASSWORD=your-password     # initial password (employees must change on first login)
 
 # Optional: use existing VPC instead of creating a new one
 # EXISTING_VPC_ID=vpc-0abc123
@@ -723,7 +723,7 @@ aws ssm start-session --target $INSTANCE_ID --region $REGION \
   --parameters '{"portNumber":["8099"],"localPortNumber":["8199"]}'
 ```
 
-Open **http://localhost:8199** → login with Employee ID `emp-jiade` (admin) and `ADMIN_PASSWORD` from your `.env`.
+Open **http://localhost:8199** → login with Employee ID `emp-jiade` (admin) and `ADMIN_PASSWORD` from your `.env`. First login requires setting a personal password.
 
 > **Public access:** Use CloudFront with an Elastic IP on the EC2. Set `PUBLIC_URL` in `/etc/openclaw/env` (e.g. `PUBLIC_URL=https://your-domain.com`) for correct Digital Twin URLs — the admin console reads this file via `EnvironmentFile` in the systemd service.
 
@@ -839,7 +839,7 @@ To add a new KB: Admin Console → Knowledge Base → upload Markdown → Assign
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ADMIN_PASSWORD` | Yes | Login password. Production: store in SSM SecureString |
+| `ADMIN_PASSWORD` | Yes | Initial password for all accounts. Employees must set a personal password on first login. Stored in SSM SecureString. |
 | `JWT_SECRET` | Yes | JWT signing key. Generate: `openssl rand -hex 32` |
 | `AWS_REGION` | Yes | Deployment region for EC2, SSM, ECR, AgentCore (default: `us-east-1`) |
 | `GATEWAY_INSTANCE_ID` | Yes | EC2 instance ID — required for always-on container start/stop via SSM. Set in `/etc/openclaw/env`. Falls back to IMDSv2 if not set. |

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 10 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,8 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
 | 7 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
 | 8 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

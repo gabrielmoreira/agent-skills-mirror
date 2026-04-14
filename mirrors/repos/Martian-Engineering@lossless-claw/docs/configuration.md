@@ -51,6 +51,7 @@ Most installations only need to override a handful of keys. If you want a comple
   "circuitBreakerThreshold": 5,
   "circuitBreakerCooldownMs": 1800000,
   "fallbackProviders": [],
+  "proactiveThresholdCompactionMode": "deferred",
   "cacheAwareCompaction": {
     "enabled": true,
     "maxColdCacheCatchupPasses": 2,
@@ -111,6 +112,7 @@ openclaw plugins install --link /path/to/lossless-claw
 | `timezone` | `string` | `TZ` or system timezone | `TZ` | IANA timezone used for timestamp rendering in summaries. |
 | `pruneHeartbeatOk` | `boolean` | `false` | `LCM_PRUNE_HEARTBEAT_OK` | Retroactively removes `HEARTBEAT_OK` turn cycles from persisted storage. |
 | `transcriptGcEnabled` | `boolean` | `false` | `LCM_TRANSCRIPT_GC_ENABLED` | Enables transcript rewrite GC during `maintain()`; disabled by default so transcript rewrites stay opt-in. |
+| `proactiveThresholdCompactionMode` | `"deferred" \| "inline"` | `"deferred"` | `LCM_PROACTIVE_THRESHOLD_COMPACTION_MODE` | Controls whether proactive threshold compaction is deferred into maintenance debt by default or run inline for legacy behavior. |
 
 > **Multi-profile note:** `OPENCLAW_STATE_DIR` (set by the host OpenClaw gateway) controls where state is stored. When two gateways run on the same host (e.g. separate bot personas), each gateway sets its own `OPENCLAW_STATE_DIR` and lossless-claw automatically uses that directory for the database, large-file payloads, auth-profile lookups, and legacy secrets — no per-profile plugin config is needed.
 
@@ -164,9 +166,11 @@ openclaw plugins install --link /path/to/lossless-claw
 | Key | Type | Default | Env override | Purpose |
 | --- | --- | --- | --- | --- |
 | `cacheAwareCompaction.enabled` | `boolean` | `true` | `LCM_CACHE_AWARE_COMPACTION_ENABLED` | Defers incremental leaf compaction more aggressively when prompt-cache telemetry indicates a hot cache. |
+| `cacheAwareCompaction.cacheTTLSeconds` | `integer` | `300` | `LCM_CACHE_TTL_SECONDS` | Fallback cache TTL used when deferred Anthropic compaction has provider/model telemetry but no explicit runtime cache-retention window. |
 | `cacheAwareCompaction.maxColdCacheCatchupPasses` | `integer` | `2` | `LCM_MAX_COLD_CACHE_CATCHUP_PASSES` | Maximum bounded catch-up passes allowed in one maintenance cycle when cache telemetry is cold. |
 | `cacheAwareCompaction.hotCachePressureFactor` | `number` | `4` | `LCM_HOT_CACHE_PRESSURE_FACTOR` | Multiplier applied to the hot-cache leaf trigger before raw-history pressure overrides cache preservation. |
 | `cacheAwareCompaction.hotCacheBudgetHeadroomRatio` | `number` | `0.2` | `LCM_HOT_CACHE_BUDGET_HEADROOM_RATIO` | Minimum fraction of the real token budget that must remain free before hot-cache incremental compaction is skipped entirely. |
+| `cacheAwareCompaction.coldCacheObservationThreshold` | `integer` | `3` | `LCM_COLD_CACHE_OBSERVATION_THRESHOLD` | Consecutive cold observations required before non-explicit cache misses are treated as truly cold. This dampens one-off routing noise and provider failover blips. |
 
 #### `dynamicLeafChunkTokens`
 
@@ -240,6 +244,28 @@ Lossless-claw treats OpenClaw reset commands differently:
 
 This keeps long-term history available while still giving users a real clean-slate reset.
 
+### Deferred proactive compaction
+
+Lossless-claw now defaults `proactiveThresholdCompactionMode` to `deferred`.
+
+- deferred mode records a single coalesced maintenance debt row per conversation
+- deferred mode persists provider/model/cache telemetry so Anthropic-family sessions can avoid rewriting a still-hot prompt cache
+- `maintain()` can still process non-prompt-mutating work when the host explicitly opts in to deferred execution, but it leaves prompt-mutating debt pending while Anthropic cache is still hot
+- `assemble()` consumes deferred prompt-mutating debt pre-assembly once the cache is cold or the next turn is already approaching overflow
+- `/lcm status` / `/lossless status` shows the current maintenance state, including pending/running/last-failure details
+- status output also surfaces the latest API/cache telemetry so operators can see whether a deferred debt item is being preserved for cache-safety reasons
+- set `proactiveThresholdCompactionMode` to `inline` only if you need the legacy inline proactive compaction behavior for compatibility
+
+### `/lcm rotate`
+
+`/lcm rotate` exists for a different use case than `/new` or `/reset`:
+
+- `/new` keeps the same active LCM conversation row and only prunes context.
+- `/reset` changes OpenClaw session flow, which is sometimes more disruptive than users want.
+- `/lcm rotate` keeps the live OpenClaw session identity and the same active LCM conversation row, but rewrites the backing transcript into a compact preserved-tail form.
+
+Before rotating, Lossless-claw replaces one rolling `rotate-latest` SQLite backup. It then rewrites the current session transcript and checkpoints the same conversation at the new transcript frontier so bootstrap does not replay the dropped transcript history. Existing summaries, context items, and conversation identity stay in place. If you want additional timestamped snapshots, run `/lcm backup` explicitly before `/lcm rotate`.
+
 ## Environment-only knobs outside plugin config
 
 These settings are not part of `plugins.entries.lossless-claw.config`, but they still affect the system:
@@ -269,6 +295,12 @@ Back it up with:
 ```bash
 cp "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/lcm.db" "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/lcm.db.backup"
 sqlite3 "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/lcm.db" ".backup ${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/lcm.db.backup"
+```
+
+Or from a supported OpenClaw chat/native command surface:
+
+```text
+/lcm backup
 ```
 
 ## Disabling lossless-claw

@@ -15,6 +15,7 @@ Systematically verify a mathematical proof via cross-model adversarial review, f
 
 - MAX_REVIEW_ROUNDS = 3
 - REVIEWER_MODEL = `gpt-5.4` via Codex MCP, reasoning effort always `xhigh`
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See `shared-references/reviewer-routing.md`.
 - AUDIT_DOC: `PROOF_AUDIT.md` in project root (cumulative log)
 - REPORT_TEX: `proof_audit_report.tex` (formal before/after PDF)
 - STATE_FILE: `PROOF_CHECK_STATE.json` (for recovery)

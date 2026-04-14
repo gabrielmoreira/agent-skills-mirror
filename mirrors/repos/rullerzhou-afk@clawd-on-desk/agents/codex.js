@@ -26,6 +26,9 @@ module.exports = {
   capabilities: {
     httpHook: false,
     permissionApproval: false,
+    // Read-only "Got it" notification, not an approval prompt — kept
+    // separate from permissionApproval so UI doesn't mislabel it.
+    interactiveBubble: true,
     sessionEnd: false, // no SessionEnd event, rely on task_complete + timeout
     subagent: false,
   },

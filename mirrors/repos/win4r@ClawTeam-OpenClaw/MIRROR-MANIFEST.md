@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `win4r/ClawTeam-OpenClaw` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `win4r/ClawTeam-OpenClaw` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `win4r/ClawTeam-OpenClaw` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,11 +63,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/clawteam/references/cli-reference.md`](.agents/skills/clawteam/references/cli-reference.md) |
 | 3 | ✓ | [`.agents/skills/clawteam/references/workflows.md`](.agents/skills/clawteam/references/workflows.md) |
 | 4 | ✓ | [`.agents/skills/clawteam/SKILL.md`](.agents/skills/clawteam/SKILL.md) |
-| 5 | ✓ | [`skills/clawteam/references/cli-reference.md`](skills/clawteam/references/cli-reference.md) |
-| 6 | ✓ | [`skills/clawteam/references/workflows.md`](skills/clawteam/references/workflows.md) |
-| 7 | ✓ | [`skills/clawteam/SKILL.md`](skills/clawteam/SKILL.md) |
-| 8 | ✓ | [`skills/hermes/SKILL.md`](skills/hermes/SKILL.md) |
-| 9 | ✓ | [`skills/openclaw/SKILL.md`](skills/openclaw/SKILL.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`skills/clawteam/references/cli-reference.md`](skills/clawteam/references/cli-reference.md) |
+| 7 | ✓ | [`skills/clawteam/references/workflows.md`](skills/clawteam/references/workflows.md) |
+| 8 | ✓ | [`skills/clawteam/SKILL.md`](skills/clawteam/SKILL.md) |
+| 9 | ✓ | [`skills/hermes/SKILL.md`](skills/hermes/SKILL.md) |
+| 10 | ✓ | [`skills/openclaw/SKILL.md`](skills/openclaw/SKILL.md) |
 
 ---
 

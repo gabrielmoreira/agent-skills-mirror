@@ -92,7 +92,10 @@
 ### RBAC & Employee Portal
 - [x] Three-role system: Admin (full access), Manager (department-scoped), Employee (portal only)
 - [x] JWT authentication with role/department claims
-- [x] Login page with 8 demo accounts (2 admin, 3 manager, 3+ employee)
+- [x] Per-employee passwords with bcrypt hashing (stored in DynamoDB)
+- [x] Mandatory password change on first login with complexity validation
+- [x] Server-side enforcement — `mustChangePassword` users blocked from all APIs except `/auth/change-password`
+- [x] Login page with 10 demo accounts (2 admin, 3 manager, 5 employee)
 - [x] Manager data scoping — all list APIs filter by department (BFS sub-department rollup)
 - [x] Employee Self-Service Portal — 5 pages (Chat, Profile, Usage, Skills, Requests)
 - [x] Portal Chat with real AgentCore integration (Tenant Router → microVM → OpenClaw → Bedrock)

@@ -138,6 +138,21 @@ print('Done')
 "
 ```
 
+If the `uninstall()` hook is not running when the plugin is removed:
+- Check the function is named exactly `uninstall` (not `on_uninstall` or similar)
+- Check for exceptions in the function
+- The `uninstall()` hook is called by `uninstall_plugin()` in `helpers/plugins.py` before the plugin directory is deleted. If the user removed the plugin manually (`rm -rf`), the hook was bypassed — always use the API or UI to uninstall.
+- Manually trigger it in the **framework runtime** the same way:
+
+```bash
+cd /a0 && /opt/venv-a0/bin/python -c "
+import asyncio
+from helpers.plugins import call_plugin_hook
+asyncio.run(call_plugin_hook('<plugin_name>', 'uninstall'))
+print('Done')
+"
+```
+
 ---
 
 ## 8. Check Agent Zero logs

@@ -250,7 +250,15 @@ Parse `{{ARGUMENTS}}` to determine:
 
 8. **Launch Claude Code** (unless --no-claude):
    ```bash
-   tmux send-keys -t "psm:$project_alias:pr-$pr_number" "claude" Enter
+   # --dangerously-skip-permissions prevents the "Do you trust this directory?" prompt
+   # and repeated tool-approval prompts from stalling the session (issue #2508).
+   tmux send-keys -t "psm:$project_alias:pr-$pr_number" "claude --dangerously-skip-permissions" Enter
+
+   # After claude boots (PSM_CLAUDE_STARTUP_DELAY, default 5s), deliver the task.
+   # Use -l (literal) so special characters are not misinterpreted by tmux.
+   sleep "${PSM_CLAUDE_STARTUP_DELAY:-5}"
+   tmux send-keys -t "psm:$project_alias:pr-$pr_number" -l \
+     "Review PR #$pr_number: \"$pr_title\" by @$pr_author ($head_branch → $base_branch). URL: $pr_url." Enter
    ```
 
 9. **Output session info**:
@@ -293,7 +301,14 @@ Parse `{{ARGUMENTS}}` to determine:
 
 5. **Create session metadata** (similar to review, type="fix")
 
-6. **Update registry, create tmux, launch claude** (same as review)
+6. **Update registry, create tmux, launch claude**:
+   Same as review, but pass issue context as the initial task prompt:
+   ```bash
+   tmux send-keys -t "psm:$project_alias:issue-$issue_number" "claude --dangerously-skip-permissions" Enter
+   # After claude boots, deliver the task (see PSM_CLAUDE_STARTUP_DELAY):
+   tmux send-keys -t "psm:$project_alias:issue-$issue_number" -l \
+     "Fix issue #$issue_number: \"$issue_title\". URL: $issue_url. Branch: $branch_name." Enter
+   ```
 
 ### Subcommand: `feature <project> <name>`
 
@@ -317,7 +332,12 @@ Parse `{{ARGUMENTS}}` to determine:
    git worktree add "$worktree_path" "$branch_name"
    ```
 
-4. **Create session, tmux, launch claude** (same pattern)
+4. **Create session, tmux, launch claude** with feature context as initial prompt:
+   ```bash
+   tmux send-keys -t "psm:$project_alias:feat-$feature_name" "claude --dangerously-skip-permissions" Enter
+   tmux send-keys -t "psm:$project_alias:feat-$feature_name" -l \
+     "Implement feature \"$feature_name\" for project $project. Branch: $branch_name." Enter
+   ```
 
 ### Subcommand: `list [project]`
 

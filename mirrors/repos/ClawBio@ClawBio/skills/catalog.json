@@ -613,15 +613,23 @@
     {
       "name": "lit-synthesizer",
       "cli_alias": null,
-      "description": "Search PubMed and bioRxiv, summarise papers with LLM, build citation graphs, and generate literature review sections.",
+      "description": "Search PubMed and bioRxiv for bioinformatics literature, synthesise results into a structured report, and build a citation graph — all locally, with a reproducibility bundle.",
       "version": "0.1.0",
       "status": "planned",
-      "has_script": false,
-      "has_tests": false,
-      "has_demo": false,
-      "demo_command": null,
-      "dependencies": [],
-      "tags": [],
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/lit-synthesizer/lit_synthesizer.py --demo",
+      "dependencies": [
+        "biopython>=1.83"
+      ],
+      "tags": [
+        "literature",
+        "pubmed",
+        "biorxiv",
+        "citation",
+        "synthesis"
+      ],
       "trigger_keywords": [],
       "chaining_partners": []
     },

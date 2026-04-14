@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microwind/ai-prompt` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `microwind/ai-prompt` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microwind/ai-prompt` — 26 default patterns, 0 followed patterns, 3 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`Prompt-Examples/05-Project-Pratice/03-daodejing-short-content/SKILL.md`](Prompt-Examples/05-Project-Pratice/03-daodejing-short-content/SKILL.md) |
-| 3 | ✓ | [`Prompt-Examples/05-Project-Pratice/04-stock-market-commentary-skill/a-share-market-commentary/SKILL.md`](Prompt-Examples/05-Project-Pratice/04-stock-market-commentary-skill/a-share-market-commentary/SKILL.md) |
+| 2 | ✓ | [`Prompt-Practice/04-stock-market-commentary-skill/a-share-market-commentary/SKILL.md`](Prompt-Practice/04-stock-market-commentary-skill/a-share-market-commentary/SKILL.md) |
 
 ---
 

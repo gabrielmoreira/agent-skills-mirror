@@ -9,6 +9,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Backfilled missing `## Limitations` sections across canonical skills and generated plugin mirrors, eliminating the repo-wide `missing_limitations` audit finding tracked by issue `#499`.
+- Added regression coverage for repo-wide limitations auditing and extended the section repair script plus contributor templates so future skill additions include explicit constraints.
+
+## [10.0.0] - 2026-04-13 - "Audit Skills, Protocols, and Web App Branding"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release folds in the current seven-PR maintenance batch: PR #500 refreshes the web app branding with a favicon bundle and header logo, PRs #503, #508, #509, #512, and #513 add new skills for LinkedIn authority building, first-principles assumption audits, indexing diagnosis, Helium MCP research workflows, and ZipAI protocol design, and PR #501 corrects author attribution on the WordPress SEO writing skill. It also includes the required maintainer follow-up on `main`: contributor syncing, canonical generated-file refresh, plugin mirror updates, and release-state cleanup before tagging `v10.0.0`.
+
+## New Skills
+
+- **linkedin-profile-optimizer** - improves LinkedIn positioning, profile structure, and SEO-oriented authority signals.
+- **axiom** - audits assumptions with a first-principles workflow to surface weak premises and stronger reframes.
+- **indexing-issue-auditor** - diagnoses crawlability and indexation blockers with a structured SEO debugging flow.
+- **helium-mcp** - uses the Helium MCP stack for news intelligence, media bias review, market data, options pricing, and semantic meme search.
+- **zipai-optimizer** - documents the ZipAI Protocol for calibrating agent behavior, orchestration, and optimization loops.
+
+## Improvements
+
+- **web-app branding refresh** - adds the favicon bundle and updated header logo shipped in PR #500.
+- **author metadata correction** - normalizes the author name for `wordpress-centric-high-seo-optimized-blogwriting-skill` as merged in PR #501.
+- **canonical release-state sync** - regenerates catalog, plugin compatibility, mirrored plugin skill copies, docs counts, sitemap assets, and backup artifacts on `main` before the release cut.
+
+## Who should care
+
+- **SEO and growth operators** get two new audit-oriented skills for LinkedIn authority building and indexing diagnostics instead of piecing together generic marketing prompts.
+- **Agent designers and evaluators** get new workflows for first-principles assumption review and ZipAI-style protocol optimization.
+- **Researchers and market-intelligence users** get a Helium MCP skill that packages news, bias, pricing, and semantic search workflows into one installable unit.
+- **Maintainers and plugin users** get refreshed web branding plus regenerated plugin mirrors and catalog artifacts aligned with the merged source state.
+
+## Credits
+
+- **[@hazemezz123](https://github.com/hazemezz123)** for the web app branding contribution merged in PR #500.
+- **[@WHOISABHISHEKADHIKARI](https://github.com/WHOISABHISHEKADHIKARI)** for the author metadata correction in PR #501 and the `linkedin-profile-optimizer` and `indexing-issue-auditor` contributions merged in PRs #503 and #509.
+- **[@zhangyanxs](https://github.com/zhangyanxs)** for the `axiom` contribution merged in PR #508.
+- **[@connerlambden](https://github.com/connerlambden)** for the `helium-mcp` contribution merged in PR #512.
+- **[@nickdesi](https://github.com/nickdesi)** for the `zipai-optimizer` contribution merged in PR #513.
+
 ## [9.13.0] - 2026-04-12 - "WordPress Builders, VS Code Extensions, and Security Review"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

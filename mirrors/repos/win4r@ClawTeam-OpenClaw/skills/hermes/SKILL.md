@@ -138,10 +138,29 @@ hermes chat --yolo --source tool -q "<task prompt>"
 Notes on each flag:
 - `chat` subcommand inserted only if user passed bare `hermes`
 - `--yolo` when `skip_permissions=True` (default for clawteam)
-- `--source tool` tags the session so clawteam spawns don't pollute your user session list
+- `--source tool` is intended to tag the session so clawteam spawns don't clutter `hermes sessions list`. **Known limitation on Hermes ≤ 0.8.0:** the flag is accepted but not propagated to the SQLite store — sessions still record as `source=cli`. ClawTeam passes the flag correctly; the fix belongs upstream (`run_agent.py:1057` and `:6600` short-circuit on `self.platform="cli"` before reading `HERMES_SESSION_SOURCE`). See [Known upstream issues](#known-upstream-issues) below for the one-line patch.
 - `-q "<prompt>"` passes the task as a one-shot query
 - No `--continue` — Hermes auto-generates a fresh session ID per spawn
 - `-m <model>` added if `--model` was passed to clawteam
+
+## Known upstream issues
+
+### `--source tool` ignored by Hermes ≤ 0.8.0
+
+Hermes's `cmd_chat` correctly sets `HERMES_SESSION_SOURCE` from the flag, but the agent constructor's session-create call reads `self.platform` first:
+
+```python
+# hermes-agent/run_agent.py:1057 and :6600 (pre-fix)
+source=self.platform or os.environ.get("HERMES_SESSION_SOURCE", "cli"),
+```
+
+`cli.py` hardcodes `platform="cli"`, which is truthy, so the env var never wins. One-line fix (swap the precedence):
+
+```python
+source=os.environ.get("HERMES_SESSION_SOURCE") or self.platform or "cli",
+```
+
+Verify post-fix with: `hermes chat --yolo --source tool -q "ping" && hermes sessions list --source tool`. Until this lands upstream, ClawTeam-spawned Hermes workers appear interleaved with your interactive sessions — annoying, not broken.
 
 ## MCP Inheritance
 

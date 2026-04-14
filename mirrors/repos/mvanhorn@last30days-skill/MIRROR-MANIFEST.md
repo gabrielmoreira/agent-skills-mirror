@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,11 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/last30days/SKILL.md`](.agents/skills/last30days/SKILL.md) |
-| 2 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`SKILL.md`](SKILL.md) |
-| 5 | ✓ | [`skills/last30days-nux/SKILL.md`](skills/last30days-nux/SKILL.md) |
-| 6 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
+| 2 | ✓ | [`.hermes-plugin/SKILL.md`](.hermes-plugin/SKILL.md) |
+| 3 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`SKILL.md`](SKILL.md) |
+| 6 | ✓ | [`skills/last30days-nux/SKILL.md`](skills/last30days-nux/SKILL.md) |
+| 7 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
 
 ---
 

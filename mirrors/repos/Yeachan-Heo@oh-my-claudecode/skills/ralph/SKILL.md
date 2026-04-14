@@ -1,7 +1,7 @@
 ---
 name: ralph
 description: Self-referential loop until task completion with configurable verification reviewer
-argument-hint: "[--no-prd] [--no-deslop] [--critic=architect|critic|codex] <task description>"
+argument-hint: "[--no-deslop] [--critic=architect|critic|codex] <task description>"
 level: 4
 ---
 
@@ -38,7 +38,7 @@ Complex tasks often fail silently: partial implementations get declared "done", 
 <PRD_Mode>
 By default, ralph operates in PRD mode. A scaffold `prd.json` is auto-generated when ralph starts if none exists.
 
-**Opt-out:** If `{{PROMPT}}` contains `--no-prd`, skip PRD generation and work in legacy mode (no story tracking, generic verification). Use this for trivial quick fixes.
+**Startup gate:** Ralph always initializes and validates `prd.json` at startup. Legacy `--no-prd` text is sanitized from the prompt for backward compatibility, but it no longer bypasses PRD creation or validation.
 
 **Deslop opt-out:** If `{{PROMPT}}` contains `--no-deslop`, skip the mandatory post-review deslop pass entirely. Use this only when the cleanup pass is intentionally out of scope for the run.
 
@@ -140,9 +140,8 @@ Auto-generated scaffold has:
 
 After refinement:
   acceptanceCriteria: [
-    "detectNoPrdFlag('ralph --no-prd fix') returns true",
-    "detectNoPrdFlag('ralph fix this') returns false",
-    "stripNoPrdFlag removes --no-prd and trims whitespace",
+    "Legacy --no-prd text is stripped from the Ralph working prompt",
+    "Ralph startup still creates or validates prd.json when legacy --no-prd text is present",
     "TypeScript compiles with no errors (npm run build)"
   ]
 ```
@@ -163,7 +162,7 @@ Why good: Three independent tasks fired simultaneously at appropriate tiers.
 Story-by-story verification:
 ```
 1. Story US-001: "Add flag detection helpers"
-   - Criterion: "detectNoPrdFlag returns true for --no-prd" → Run test → PASS
+   - Criterion: "Legacy --no-prd is stripped from the working prompt" → Run test → PASS
    - Criterion: "TypeScript compiles" → Run build → PASS
    - Mark US-001 passes: true
 2. Story US-002: "Wire PRD into bridge.ts"

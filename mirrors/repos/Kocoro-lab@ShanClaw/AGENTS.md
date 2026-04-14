@@ -32,13 +32,16 @@ internal/
     client.go          # WebSocket client with reconnect, bounded concurrency
     router.go          # SessionCache, route locking
     approval.go        # interactive tool approval over WS
-    types.go           # daemon request/response types
+    types.go           # daemon request/response types, disconnect, approval messages
+    events.go          # EventBus ring buffer for daemon/SSE subscribers
   agent/
     loop.go            # AgentLoop.Run() — core agentic loop
     tools.go           # Tool interface, ToolRegistry, filtering, schemas
     partition.go       # read-only batching, executeBatches
     spill.go           # large tool result spill-to-disk
     deferred.go        # deferred tool loading (tool_search)
+    statecache.go      # state-aware tool result cache keyed by read/write state
+    resultshape.go     # tree result shaping and stable change summaries
     microcompact.go    # Tier 2 semantic compaction for large native tool results
     delta.go           # DeltaProvider interface, TemporalDelta (date rollover)
     loopdetect.go      # stuck-loop detectors
@@ -54,6 +57,7 @@ internal/
   client/
     gateway.go         # GatewayClient: Complete, CompleteStream, ListTools
     sse.go             # SSE event parsing
+    ollama.go          # Ollama provider via OpenAI-compatible chat/tool APIs
   config/
     config.go          # multi-level config loading and merge
     settings.go        # UI settings
@@ -86,18 +90,23 @@ internal/
   mcp/
     client.go          # MCP client manager
     server.go          # MCP server
+    chrome.go          # Playwright Chrome profile/CDP lifecycle management
+  runstatus/
+    runstatus.go       # user-facing run state/error classification
   schedule/
     schedule.go        # schedule CRUD, atomic writes, validation
     launchd_darwin.go  # plist generation, launchctl
     launchd_stub.go    # non-darwin stub
   permissions/
-    permissions.go     # hard-block > denied > AST > allowed > ask
+    permissions.go     # hard-block > denied > split compounds > allowed > default safe > ask
   audit/
     audit.go           # JSON-lines logger, redaction
   hooks/
     hooks.go           # PreToolUse/PostToolUse/SessionStart/Stop
   tui/
     app.go             # Bubbletea app
+    doctor.go          # TUI diagnostic checks
+    compact.go         # TUI /compact command
   update/
     selfupdate.go      # GitHub release auto-update
 ```
@@ -115,7 +124,7 @@ Local tools > MCP tools > Gateway tools. Deduplicate by name in the registry.
 ### Permission Model
 
 ```
-hard-block constants → denied_commands → shell AST parsing → allowed_commands → RequiresApproval + SafeChecker
+hard-block constants → denied_commands → compound-command splitting → allowed_commands → default safe → RequiresApproval + SafeChecker
 ```
 
 Unknown tools are denied by default.
@@ -146,7 +155,7 @@ Scalars override, lists merge+dedup, structs merge field-by-field. MCP server en
 
 ### File Paths
 
-- Agent definitions: `~/.shannon/agents/<name>/AGENT.md`, `MEMORY.md`, `config.yaml`, `commands/*.md`, `skills/<skill-name>/SKILL.md`
+- Agent definitions: `~/.shannon/agents/<name>/AGENT.md`, `MEMORY.md`, `config.yaml`, `commands/*.md`, `_attached.yaml`
 - Global skills: `~/.shannon/skills/<skill-name>/SKILL.md`
 - Sessions: `~/.shannon/sessions/` or `~/.shannon/agents/<name>/sessions/`
 - Session index: `<sessions-dir>/sessions.db`

@@ -32,13 +32,17 @@ internal/
     client.go          # WebSocket client with reconnect, bounded concurrency
     router.go          # SessionKey, SessionCache, route locking
     approval.go        # ApprovalBroker: interactive tool approval over WS
-    types.go           # Shared daemon types (incl. approval_request/response)
+    types.go           # Shared daemon types (disconnect, approval_request/response/resolved)
+    events.go          # EventBus ring buffer for daemon/SSE subscribers
+    attachment.go      # Download remote file attachments (Slack/Feishu) → file_ref pipeline
   agent/
     loop.go            # AgentLoop.Run() — core agentic loop, SwitchAgent()
     tools.go           # Tool interface, ToolRegistry, FilterByAllow/Deny, Schemas()
     partition.go       # partitionToolCalls (read-only batching), executeBatches
     spill.go           # Disk spill for large tool results (>50K → temp file + preview)
     deferred.go        # Deferred tool loading (tool_search schema merging)
+    statecache.go      # state-aware tool result cache keyed by read/write state
+    resultshape.go     # tree result shaping and stable change summaries
     microcompact.go    # Tier 2 semantic compaction for large native tool results
     delta.go           # DeltaProvider interface, TemporalDelta (date rollover detection)
     loopdetect.go      # 9 stuck-loop detectors
@@ -46,7 +50,7 @@ internal/
     approval_cache.go  # per-turn approval caching
     normalize.go       # response normalization
   agents/
-    loader.go          # LoadAgent (config.yaml, commands/, skills/), ListAgents, ParseAgentMention
+    loader.go          # LoadAgent (config.yaml, commands/, _attached.yaml), ListAgents, ParseAgentMention
     api.go             # Agent CRUD operations for daemon API
     validate.go        # Agent name/field validation, BuiltinCommands
     embed.go           # EnsureBuiltins, MaterializeBuiltin, embed.FS bundled agents
@@ -54,6 +58,7 @@ internal/
   client/
     gateway.go         # GatewayClient: Complete, CompleteStream, ListTools
     sse.go             # SSE event parsing
+    ollama.go          # Ollama provider via OpenAI-compatible chat/tool APIs
   config/
     config.go          # Config struct, Load(), multi-level merge (global/project/local)
     settings.go        # UI settings
@@ -69,7 +74,7 @@ internal/
     launchd_darwin.go  # plist generation, launchctl (darwin only)
     launchd_stub.go    # no-op stub for non-darwin
   permissions/
-    permissions.go     # 5-layer: hard-block > denied > shell AST > allowed > ask
+    permissions.go     # 6-step bash resolution: hard-block > denied > split compounds > allowed > default safe > ask
   audit/
     audit.go           # JSON-lines logger, RedactSecrets
   hooks/
@@ -86,9 +91,12 @@ internal/
   mcp/
     client.go          # MCP client manager (stdio + HTTP transports)
     server.go          # MCP server (JSON-RPC 2.0 over stdio)
+    chrome.go          # Playwright Chrome profile/CDP lifecycle management
+  runstatus/
+    runstatus.go       # user-facing run state/error classification
   skills/
     registry.go        # Skill struct (Anthropic spec), SkillMeta DTO
-    loader.go          # LoadSkills from SKILL.md dirs (agent > global > bundled)
+    loader.go          # LoadSkills from SKILL.md dirs (source-order merge; usually global > bundled)
     validate.go        # ValidateSkillName (Anthropic spec regex)
   tools/
     register.go        # RegisterLocalTools, RegisterAll, CompleteRegistration, ApplyToolFilter
@@ -103,21 +111,32 @@ internal/
     server.go          # ServerTool adapter (gateway remote tools)
   tui/
     app.go             # Bubbletea Model — Init/Update/View, slash commands
+    doctor.go          # TUI diagnostic checks
+    compact.go         # TUI /compact command flow
   update/
     selfupdate.go      # GitHub release auto-update
 ```
 
 ## Key Conventions
 
+### Doc Co-Maintenance
+When a feature is added, refactored, or significantly changed, check and update all three doc files in the same change:
+- **README.md** — user-facing: tool descriptions, TUI command tables, config options, daemon capabilities, setup instructions, permission engine
+- **CLAUDE.md** — developer-facing: project structure tree, conventions, file paths, architecture notes
+- **AGENTS.md** — external-agent-facing: overlaps with CLAUDE.md (structure tree, conventions, tool inventory). Keep in sync.
+
 ### Agent Names
 Must match `^[a-z0-9][a-z0-9_-]{0,63}$`. Validated before any path concatenation to prevent traversal.
+
+### Provider Architecture
+`provider` config key selects the LLM backend: default (empty) uses `GatewayClient` via Shannon Cloud/Gateway; `ollama` uses `OllamaClient` via Ollama's OpenAI-compatible `/v1/chat/completions`. OllamaClient strips native Anthropic tool types (computer use) and handles thinking-model edge cases (Qwen3). Both implement the same `Complete`/`CompleteStream` interface.
 
 ### Tool Priority
 Local tools > MCP tools > Gateway tools. Deduplication by name in registry.
 
 ### Permission Model
 ```
-hard-block constants → denied_commands → shell AST parsing → allowed_commands → RequiresApproval + SafeChecker
+hard-block constants → denied_commands → compound-command splitting → allowed_commands → default safe → RequiresApproval + SafeChecker
 ```
 Unknown tools → denied by default (fail-safe).
 
@@ -143,11 +162,12 @@ Unknown tools → denied by default (fail-safe).
 Scalars override, lists merge+dedup, structs field-level merge. MCP server env var casing preserved via direct YAML re-read.
 
 ### File Paths
-- Agent definitions: `~/.shannon/agents/<name>/AGENT.md` + `MEMORY.md` + `config.yaml` + `commands/*.md` + `skills/<skill-name>/SKILL.md`
+- Agent definitions: `~/.shannon/agents/<name>/AGENT.md` + `MEMORY.md` + `config.yaml` + `commands/*.md` + `_attached.yaml`
 - Global skills: `~/.shannon/skills/<skill-name>/SKILL.md` (shared across agents)
 - Sessions: `~/.shannon/sessions/` (default) or `~/.shannon/agents/<name>/sessions/` (per-agent)
 - Session index: `<sessions-dir>/sessions.db` (SQLite FTS5, auto-rebuilt from JSON if deleted)
 - Spill files: `~/.shannon/tmp/tool_result_<session>_<call_id>.txt` (cleaned up per-run in daemon/TUI, on manager close in one-shot)
+- Attachments: `~/.shannon/tmp/attachments/<nonce>/` (downloaded Slack/Feishu files, cleaned up on session close)
 - Schedule index: `~/.shannon/schedules.json`
 - Schedule plists: `~/Library/LaunchAgents/com.shannon.schedule.<id>.plist`
 - Audit log: `~/.shannon/logs/audit.log`
@@ -196,15 +216,16 @@ E2E tests in `test/e2e/` are split into offline (no API, runs in CI) and live (n
 - Release: `git tag -a vX.Y.Z` → `git push origin vX.Y.Z` → CI builds + publishes
 - `docs/` is gitignored — documentation lives locally only
 
-## 28 Local Tools
+## Local Tools (26 base + conditional)
 
 **File ops:** file_read, file_write, file_edit, glob, grep, directory_list
 **Shell/system:** bash, system_info, process, http, think
 **macOS GUI:** accessibility (primary), applescript, screenshot, computer, clipboard, notify, browser, wait_for, ghostty
 **Schedule:** schedule_create, schedule_list, schedule_update, schedule_remove
-**Session:** session_search
 **Memory:** memory_append (flock-protected append to MEMORY.md)
 **Skills:** use_skill
-**Cloud:** cloud_delegate
 
-**Conditional:** tool_search (added in deferred mode when tool count > 30 — loads full schemas for MCP/gateway tools on demand. Lives in `internal/agent/deferred.go`, not `tools/`.)
+**Conditional (registered outside `RegisterLocalTools`):**
+- session_search — added when a session manager is available
+- cloud_delegate — added when `cloud.enabled: true`
+- tool_search — added in deferred mode when tool count > 30 (lives in `internal/agent/deferred.go`, not `tools/`)

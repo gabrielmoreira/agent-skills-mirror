@@ -495,3 +495,68 @@ class TestFlowCellprobThresholds:
         args = parser.parse_args([])
         assert args.flow_threshold == 0.4
         assert args.cellprob_threshold == 0.0
+
+
+# ---------------------------------------------------------------------------
+# TestReproducibility
+# ---------------------------------------------------------------------------
+
+
+class TestReproducibility:
+    """Reproducibility artefacts written by main()."""
+
+    @pytest.fixture
+    def demo_output(self, tmp_path):
+        """Run main() --demo with segmentation and outline-saving mocked."""
+        masks = np.zeros((64, 64), dtype=np.uint16)
+        masks[10:20, 10:20] = 1
+        fake_flows = [np.zeros((64, 64))]
+
+        def _fake_seg(img, diameter, use_gpu, **kwargs):
+            return masks, fake_flows
+
+        def _fake_outlines(img, masks, flows, output_dir, stem="image"):
+            fig_dir = Path(output_dir) / "figures"
+            fig_dir.mkdir(parents=True, exist_ok=True)
+            fname = f"{stem}_cp_outlines.png"
+            (fig_dir / fname).write_bytes(b"\x89PNG\r\n")
+            return fname
+
+        with patch.object(cell_detection, "run_segmentation", side_effect=_fake_seg), \
+             patch.object(cell_detection, "save_outlines", side_effect=_fake_outlines):
+            with patch("sys.argv", ["cell_detection.py", "--demo", "--output", str(tmp_path)]):
+                cell_detection.main()
+        return tmp_path
+
+    def test_checksums_file_created(self, demo_output):
+        assert (demo_output / "reproducibility" / "checksums.sha256").exists()
+
+    def test_checksums_lists_report(self, demo_output):
+        content = (demo_output / "reproducibility" / "checksums.sha256").read_text()
+        assert "report.md" in content
+
+    def test_checksums_lists_csv(self, demo_output):
+        content = (demo_output / "reproducibility" / "checksums.sha256").read_text()
+        assert ".csv" in content
+
+    def test_environment_yml_created(self, demo_output):
+        assert (demo_output / "reproducibility" / "environment.yml").exists()
+
+    def test_environment_yml_has_cellpose(self, demo_output):
+        text = (demo_output / "reproducibility" / "environment.yml").read_text()
+        assert "cellpose" in text
+
+    def test_environment_yml_has_env_name(self, demo_output):
+        text = (demo_output / "reproducibility" / "environment.yml").read_text()
+        assert "clawbio-cell-detection" in text
+
+    def test_commands_sh_created(self, demo_output):
+        assert (demo_output / "reproducibility" / "commands.sh").exists()
+
+    def test_commands_sh_is_executable(self, demo_output):
+        path = demo_output / "reproducibility" / "commands.sh"
+        assert path.stat().st_mode & 0o111
+
+    def test_commands_sh_contains_cell_detection(self, demo_output):
+        text = (demo_output / "reproducibility" / "commands.sh").read_text()
+        assert "cell_detection" in text

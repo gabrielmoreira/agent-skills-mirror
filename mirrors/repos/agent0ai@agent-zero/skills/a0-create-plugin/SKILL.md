@@ -282,6 +282,7 @@ If your plugin needs framework-internal hook points, add a `hooks.py` file at th
 - Current built-in usage:
   - the plugin installer calls `install()` in `hooks.py` after placing a plugin in `usr/plugins/`
   - the plugin updater calls `pre_update()` in `hooks.py` immediately before pulling new plugin code into place
+  - the plugin uninstaller calls `uninstall()` in `hooks.py` before deleting the plugin directory — use this to clean up any dependencies or state created by `install()`
 - Hook functions may be sync or async.
 - Hooks should be reversible and cleanup-safe. Prefer framework-managed state and plugin-owned paths over permanent system modifications.
 
