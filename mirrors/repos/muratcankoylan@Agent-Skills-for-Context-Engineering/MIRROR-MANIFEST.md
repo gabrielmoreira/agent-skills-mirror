@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,21 +99,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`skills/hosted-agents/references/infrastructure-patterns.md`](skills/hosted-agents/references/infrastructure-patterns.md) |
 | 39 | ✓ | [`skills/hosted-agents/scripts/sandbox_manager.py`](skills/hosted-agents/scripts/sandbox_manager.py) |
 | 40 | ✓ | [`skills/hosted-agents/SKILL.md`](skills/hosted-agents/SKILL.md) |
-| 41 | ✓ | [`skills/memory-systems/references/implementation.md`](skills/memory-systems/references/implementation.md) |
-| 42 | ✓ | [`skills/memory-systems/scripts/memory_store.py`](skills/memory-systems/scripts/memory_store.py) |
-| 43 | ✓ | [`skills/memory-systems/SKILL.md`](skills/memory-systems/SKILL.md) |
-| 44 | ✓ | [`skills/multi-agent-patterns/references/frameworks.md`](skills/multi-agent-patterns/references/frameworks.md) |
-| 45 | ✓ | [`skills/multi-agent-patterns/scripts/coordination.py`](skills/multi-agent-patterns/scripts/coordination.py) |
-| 46 | ✓ | [`skills/multi-agent-patterns/SKILL.md`](skills/multi-agent-patterns/SKILL.md) |
-| 47 | ✓ | [`skills/project-development/references/case-studies.md`](skills/project-development/references/case-studies.md) |
-| 48 | ✓ | [`skills/project-development/references/pipeline-patterns.md`](skills/project-development/references/pipeline-patterns.md) |
-| 49 | ✓ | [`skills/project-development/scripts/pipeline_template.py`](skills/project-development/scripts/pipeline_template.py) |
-| 50 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
-| 51 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
-| 52 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
-| 53 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
-| 54 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
-| 55 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 41 | ✓ | [`skills/latent-briefing/references/attention-matching-formulation.md`](skills/latent-briefing/references/attention-matching-formulation.md) |
+| 42 | ✓ | [`skills/latent-briefing/SKILL.md`](skills/latent-briefing/SKILL.md) |
+| 43 | ✓ | [`skills/memory-systems/references/implementation.md`](skills/memory-systems/references/implementation.md) |
+| 44 | ✓ | [`skills/memory-systems/scripts/memory_store.py`](skills/memory-systems/scripts/memory_store.py) |
+| 45 | ✓ | [`skills/memory-systems/SKILL.md`](skills/memory-systems/SKILL.md) |
+| 46 | ✓ | [`skills/multi-agent-patterns/references/frameworks.md`](skills/multi-agent-patterns/references/frameworks.md) |
+| 47 | ✓ | [`skills/multi-agent-patterns/scripts/coordination.py`](skills/multi-agent-patterns/scripts/coordination.py) |
+| 48 | ✓ | [`skills/multi-agent-patterns/SKILL.md`](skills/multi-agent-patterns/SKILL.md) |
+| 49 | ✓ | [`skills/project-development/references/case-studies.md`](skills/project-development/references/case-studies.md) |
+| 50 | ✓ | [`skills/project-development/references/pipeline-patterns.md`](skills/project-development/references/pipeline-patterns.md) |
+| 51 | ✓ | [`skills/project-development/scripts/pipeline_template.py`](skills/project-development/scripts/pipeline_template.py) |
+| 52 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
+| 53 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
+| 54 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
+| 55 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
+| 56 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
+| 57 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
 
 ---
 

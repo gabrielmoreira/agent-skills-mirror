@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:40fb7b99f05950aa7a358b8bfa7e32c1c99119d7`
+**Shape snapshot:** `sha1:090d2e11f6a088493894729c69c128229678dcbc`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -29,7 +29,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 ## At a Glance
 
-- **173** active API routes across **44** categories
+- **174** active API routes across **44** categories
 - **4** required + **101** optional environment variables
 - **73** database tables
 
@@ -208,6 +208,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `GET, PATCH, POST` `/api/messages`
 - `GET` `/api/messages/attachments`
 - `GET, PATCH, POST` `/api/messages/threads`
+- `GET` `/api/messages/threads/[threadId]`
 
 ### `model-strategies`
 
@@ -344,8 +345,8 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 65 file(s)
-- **`DATABASE_URL`** - referenced in 76 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 66 file(s)
+- **`DATABASE_URL`** - referenced in 77 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
 
@@ -444,10 +445,10 @@ These have fallbacks or only activate specific features.
 - `STRIPE_SECRET_KEY` *(undocumented)*
 - `STRIPE_WEBHOOK_SECRET` *(undocumented)*
 - `TARGET_ENV` *(undocumented)*
-- `TELEGRAM_ADMIN_CHAT_ID`
-- `TELEGRAM_APPROVER_ORG_ID`
-- `TELEGRAM_BOT_TOKEN`
-- `TELEGRAM_WEBHOOK_SECRET`
+- `TELEGRAM_ADMIN_CHAT_ID` *(undocumented)*
+- `TELEGRAM_APPROVER_ORG_ID` *(undocumented)*
+- `TELEGRAM_BOT_TOKEN` *(undocumented)*
+- `TELEGRAM_WEBHOOK_SECRET` *(undocumented)*
 - `TRUST_PROXY` *(undocumented)*
 - `UPSTASH_REDIS_REST_TOKEN` *(undocumented)*
 - `UPSTASH_REDIS_REST_URL` *(undocumented)*

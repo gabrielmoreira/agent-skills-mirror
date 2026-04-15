@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 28 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,12 +81,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`skills/develop-ai-functions-example/SKILL.md`](skills/develop-ai-functions-example/SKILL.md) |
 | 21 | ✓ | [`skills/list-npm-package-content/scripts/list-package-files.sh`](skills/list-npm-package-content/scripts/list-package-files.sh) |
 | 22 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
-| 23 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
-| 24 | ✓ | [`skills/use-ai-sdk/references/ai-gateway.md`](skills/use-ai-sdk/references/ai-gateway.md) |
-| 25 | ✓ | [`skills/use-ai-sdk/references/common-errors.md`](skills/use-ai-sdk/references/common-errors.md) |
-| 26 | ✓ | [`skills/use-ai-sdk/references/devtools.md`](skills/use-ai-sdk/references/devtools.md) |
-| 27 | ✓ | [`skills/use-ai-sdk/references/type-safe-agents.md`](skills/use-ai-sdk/references/type-safe-agents.md) |
-| 28 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
+| 23 | ✓ | [`skills/major-version-mode/SKILL.md`](skills/major-version-mode/SKILL.md) |
+| 24 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
+| 25 | ✓ | [`skills/use-ai-sdk/references/ai-gateway.md`](skills/use-ai-sdk/references/ai-gateway.md) |
+| 26 | ✓ | [`skills/use-ai-sdk/references/common-errors.md`](skills/use-ai-sdk/references/common-errors.md) |
+| 27 | ✓ | [`skills/use-ai-sdk/references/devtools.md`](skills/use-ai-sdk/references/devtools.md) |
+| 28 | ✓ | [`skills/use-ai-sdk/references/type-safe-agents.md`](skills/use-ai-sdk/references/type-safe-agents.md) |
+| 29 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
 
 ---
 

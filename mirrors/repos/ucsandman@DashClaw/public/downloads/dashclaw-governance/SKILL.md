@@ -63,8 +63,10 @@ a reason.
 1. Record the pending action: `dashclaw_record` with `status: 'pending_approval'`
 2. Inform the user: "This action requires human approval in Mission Control."
 3. Wait: call `dashclaw_wait_for_approval` with the action ID
-4. If approved: proceed and record the outcome
-5. If denied: stop and inform the user of the denial reason
+4. Inspect the response — `approved` is true only when the action reaches `status: 'completed'` AND has an `approved_by` operator. Anything else (denied, cancelled, failed, or `timed_out: true`) means do not proceed:
+   - `approved: true` → proceed and PATCH the outcome.
+   - `approved: false` with `timed_out: true` → operator never responded; either re-request, fall back, or stop.
+   - `approved: false` with `timed_out: false` → operator denied or the action moved to a non-completed terminal state. Stop and report `error_message` from the action record.
 
 ### External API Calls
 
@@ -81,9 +83,10 @@ Record all significant actions with `dashclaw_record`. This powers the audit tra
 in Mission Control and the Decisions ledger.
 
 **Always record:**
+- Long-running actions (status: `running`) when you record up front; PATCH later with the final outcome
 - Completed actions (status: `completed`)
 - Failed actions (status: `failed`) — include error details in `output_summary`
-- Blocked actions (status: `failed`) — include the guard block reason
+- Blocked actions (status: `failed`) — include the guard block reason (the server has no separate `blocked` status on records you create)
 
 **Write meaningful fields:**
 - `declared_goal` — Write as if explaining to an auditor. Bad: "Deploy the app".
@@ -92,10 +95,12 @@ in Mission Control and the Decisions ledger.
 - `output_summary` — What was produced or what went wrong.
 - `risk_score` — Your honest assessment. Don't lowball to avoid guards.
 
-**When available, include:**
-- `tokens_in` / `tokens_out` — Token usage for LLM operations
-- `model` — Model used
-- `cost_estimate` — Estimated cost in USD
+**For LLM-driven actions, include token usage (cost is auto-derived):**
+- `tokens_in` / `tokens_out` — Total input and output tokens for the LLM call(s) attributed to this action.
+- `model` — Model identifier (e.g. `claude-opus-4-6`, `gpt-5-codex`). The server uses this to look up pricing.
+- `cost_estimate` — Optional. **Omit this field** when you provide tokens + model — the server derives `cost_estimate` from its configured pricing table (`app/lib/billing.js`) so cost stays consistent across all agents. Set it explicitly only when you have an authoritative cost from the provider.
+
+**Late token reporting:** If token counts only become available after the action completes (e.g. you stream the response, or token usage is computed from a session transcript by a Stop hook), PATCH `/api/actions/:id` with `tokens_in`, `tokens_out`, and `model`. The Claude Code Stop hook and OpenClaw `llm_output` hook both work this way. Cost is still derived server-side.
 
 ## Session Lifecycle
 

@@ -59,9 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
-| 3 | ✓ | [`packages/app/e2e/AGENTS.md`](packages/app/e2e/AGENTS.md) |
+| 1 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
 | 4 | ✓ | [`packages/desktop-electron/AGENTS.md`](packages/desktop-electron/AGENTS.md) |
 | 5 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
 | 6 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |

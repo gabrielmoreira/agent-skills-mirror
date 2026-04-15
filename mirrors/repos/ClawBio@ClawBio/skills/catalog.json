@@ -1,9 +1,24 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 46,
+  "skill_count": 48,
   "galaxy_tool_count": 8182,
   "skills": [
+    {
+      "name": "archaic-introgression",
+      "cli_alias": null,
+      "description": "Detect Neanderthal and Denisovan introgression segments from modern human genomes",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [],
+      "chaining_partners": []
+    },
     {
       "name": "bigquery-public",
       "cli_alias": "bigquery",
@@ -207,7 +222,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/clinical_trial_finder.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
       "dependencies": [],
       "tags": [
         "clinical-trials",
@@ -629,6 +644,34 @@
         "biorxiv",
         "citation",
         "synthesis"
+      ],
+      "trigger_keywords": [],
+      "chaining_partners": []
+    },
+    {
+      "name": "mendelian-randomisation",
+      "cli_alias": null,
+      "description": "Two-sample Mendelian Randomisation from GWAS summary statistics with IVW, MR-Egger, weighted median/mode, and full sensitivity analysis (Cochran Q, Egger intercept, Steiger, F-statistic, leave-one-out).",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/mendelian-randomisation/mendelian_randomisation.py --demo",
+      "dependencies": [
+        "numpy>=1.24",
+        "scipy>=1.10",
+        "matplotlib>=3.7"
+      ],
+      "tags": [
+        "mendelian-randomisation",
+        "causal-inference",
+        "two-sample-mr",
+        "ivw",
+        "mr-egger",
+        "gwas",
+        "genetic-epidemiology",
+        "drug-target-validation"
       ],
       "trigger_keywords": [],
       "chaining_partners": []

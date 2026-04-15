@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 4 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`documentation/AGENTS.md`](documentation/AGENTS.md) |
-| 4 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
+| 1 | ✓ | [`.agents/skills/code-review/SKILL.md`](.agents/skills/code-review/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/create-app-e2e-test/SKILL.md`](.agents/skills/create-app-e2e-test/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/edge-case-finder/references/edge-case-categories.md`](.agents/skills/edge-case-finder/references/edge-case-categories.md) |
+| 5 | ✓ | [`.agents/skills/edge-case-finder/SKILL.md`](.agents/skills/edge-case-finder/SKILL.md) |
+| 6 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`documentation/AGENTS.md`](documentation/AGENTS.md) |
+| 9 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
+| 10 | ✓ | [`ui/goose2/AGENTS.md`](ui/goose2/AGENTS.md) |
+| 11 | ✓ | [`ui/goose2/src/shared/ui/AGENTS.md`](ui/goose2/src/shared/ui/AGENTS.md) |
+| 12 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
 
 ---
 

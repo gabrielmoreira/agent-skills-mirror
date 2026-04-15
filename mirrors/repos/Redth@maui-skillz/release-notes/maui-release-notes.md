@@ -1,12 +1,35 @@
 # .NET MAUI Workload Release Notes
 
-> **Last Updated:** March 10, 2026
+> **Last Updated:** April 14, 2026
 
 This page lists all .NET MAUI workload release notes. Each entry links to detailed release notes with full dependency information and installation instructions.
 
 ---
 
 ## Releases
+
+### April 14, 2026
+
+📄 [Full Release Notes](maui-release-notes-20260414.md)
+
+#### .NET 11 (Preview 3)
+
+**Workload Set:** `11.100.0-preview.3.26213.1` (CLI: `11.0.100-preview.3.26213.1`)
+
+| Workload | Version | Requirements |
+|----------|---------|--------------|
+| MAUI | 11.0.0-preview.3.26203.7 | |
+| iOS | 26.2.11588-net11-p3 | Xcode ≥ 26.3 |
+| Mac Catalyst | 26.2.11588-net11-p3 | Xcode ≥ 26.3 |
+| tvOS | 26.2.11588-net11-p3 | Xcode ≥ 26.3 |
+| macOS | 26.2.11588-net11-p3 | Xcode ≥ 26.3 |
+| Android | 36.99.0-preview.3.10 | API 36, JDK 21 |
+
+| MAUI NuGet Packages | Implicit | Latest |
+|---------------------|----------|--------|
+| Microsoft.Maui.Controls | 11.0.0-preview.3.26203.7 | 11.0.0-preview.3.26203.7 |
+
+---
 
 ### March 10, 2026
 

@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-04-14
+
+### Added
+
+- Registry/runtime metadata now declares the actual required runtimes (`openclaw`, `node`) plus the DM/email environment variables and operator review notes.
+- `scripts/setup_cron.mjs` now prints a preflight review summarizing recipients, persistence, and required runtime before creating or updating the cron job.
+- Coverage for cron setup disclosure behavior (`test/setup_cron.test.mjs`) and case-insensitive suppression matching regression.
+
+### Changed
+
+- Email delivery is now explicit and opt-in: `scripts/runner.sh` only attempts email delivery when `PROMPTSEC_EMAIL_TO` is configured.
+- `scripts/setup_cron.mjs` now carries configured runtime/delivery environment variables into the cron payload so the scheduled job is more self-describing and less dependent on ambient host state.
+- Suppression matching in `scripts/render_report.mjs` is now case-insensitive for skill names, matching the documented behavior and normalized config loader.
+- Documentation now consistently refers to the current OpenClaw product name.
+
+### Security
+
+- Removed the placeholder email recipient from the default cron payload to avoid implicitly sending audit output to an unreviewed address.
+- Cron setup now surfaces the unattended delivery model before enabling persistence, making external recipients and runtime assumptions explicit to the operator.
+
 ## [0.1.1]
 
 ### Added

@@ -52,6 +52,9 @@ When agent sessions exhaust memory, compression becomes mandatory. The correct o
 **Context Optimization**
 Techniques include compaction (summarizing context near limits), observation masking (replacing verbose tool outputs with references), prefix caching (reusing KV blocks across requests), and strategic context partitioning (splitting work across sub-agents with isolated contexts).
 
+**Latent Briefing (KV Memory Sharing)**
+Orchestrator-worker systems can compound tokens when supervisors accumulate long trajectories but workers see only narrow text slices. Latent Briefing compacts the orchestrator trajectory in the worker model's KV cache using task-guided attention (Attention Matching-style compaction) so workers receive relevant latent state without full-text replay when the stack exposes worker KV state and the models are compatible.
+
 **Evaluation Frameworks**
 Production agent evaluation requires multi-dimensional rubrics covering factual accuracy, completeness, tool efficiency, and process quality. Effective patterns include LLM-as-judge for scalability, human evaluation for edge cases, and end-state evaluation for agents that mutate persistent state.
 
@@ -86,8 +89,11 @@ Internal skills in this collection:
 - [filesystem-context](skills/filesystem-context/SKILL.md)
 - [hosted-agents](skills/hosted-agents/SKILL.md)
 - [context-optimization](skills/context-optimization/SKILL.md)
+- [latent-briefing](skills/latent-briefing/SKILL.md)
 - [evaluation](skills/evaluation/SKILL.md)
+- [advanced-evaluation](skills/advanced-evaluation/SKILL.md)
 - [project-development](skills/project-development/SKILL.md)
+- [bdi-mental-states](skills/bdi-mental-states/SKILL.md)
 
 External resources on context engineering:
 - Research on attention mechanisms and context window limitations
@@ -99,6 +105,6 @@ External resources on context engineering:
 ## Skill Metadata
 
 **Created**: 2025-12-20
-**Last Updated**: 2025-12-25
+**Last Updated**: 2026-04-14
 **Author**: Agent Skills for Context Engineering Contributors
-**Version**: 1.2.0
+**Version**: 1.3.0

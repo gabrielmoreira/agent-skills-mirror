@@ -65,11 +65,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.agents/frontend_controls.md`](.agents/frontend_controls.md) |
 | 5 | ✓ | [`.agents/frontend_design_guide.md`](.agents/frontend_design_guide.md) |
 | 6 | ✓ | [`.agents/python_test_guide.md`](.agents/python_test_guide.md) |
-| 7 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
-| 8 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 9 | ✓ | [`.cursor/rules/.gitignore`](.cursor/rules/.gitignore) |
-| 10 | ✓ | [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) |
-| 11 | ✓ | [`.cursor/skills/kiln-add-model/SKILL.md`](.cursor/skills/kiln-add-model/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/claude-maintain-models/SKILL.md`](.agents/skills/claude-maintain-models/SKILL.md) |
+| 8 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
+| 9 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 10 | ✓ | [`.cursor/rules/.gitignore`](.cursor/rules/.gitignore) |
+| 11 | ✓ | [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) |
 | 12 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/check_provider.py`](.cursor/skills/kiln-check-deprecation/scripts/check_provider.py) |
 | 13 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/extract_models.py`](.cursor/skills/kiln-check-deprecation/scripts/extract_models.py) |
 | 14 | ✓ | [`.cursor/skills/kiln-check-deprecation/SKILL.md`](.cursor/skills/kiln-check-deprecation/SKILL.md) |

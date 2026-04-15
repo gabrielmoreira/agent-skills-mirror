@@ -13,7 +13,7 @@ Instead it:
 - writes logs to the state dir (so drift output is preserved)
 - relies on you to wire notifications however you prefer
 
-If you want Clawdbot-side delivery, use Clawdbot Gateway Cron.
+If you want OpenClaw-side delivery, use OpenClaw cron.
 """
 
 from __future__ import annotations
@@ -26,16 +26,82 @@ import subprocess
 import sys
 
 
+LEGACY_STATE_ROOT = Path("~/.clawdbot/soul-guardian").expanduser()
+DEFAULT_STATE_ROOT = Path("~/.openclaw/soul-guardian").expanduser()
+LEGACY_LABEL_PREFIX = "com.clawdbot.soul-guardian."
+DEFAULT_LABEL_PREFIX = "com.openclaw.soul-guardian."
+
+
 def agent_id_default(workspace_root: Path) -> str:
     return workspace_root.name
 
 
-def default_external_state_dir(agent_id: str) -> Path:
-    return Path("~/.clawdbot/soul-guardian").expanduser() / agent_id
+def legacy_label(agent_id: str) -> str:
+    return f"{LEGACY_LABEL_PREFIX}{agent_id}"
 
 
-def run_launchctl(args: list[str]) -> None:
-    subprocess.run(["/bin/launchctl", *args], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+def default_label(agent_id: str) -> str:
+    return f"{DEFAULT_LABEL_PREFIX}{agent_id}"
+
+
+def legacy_plist_path(agent_id: str) -> Path:
+    return Path("~/Library/LaunchAgents").expanduser() / f"{legacy_label(agent_id)}.plist"
+
+
+def default_external_state_dir(agent_id: str) -> tuple[Path, bool]:
+    legacy_state_dir = LEGACY_STATE_ROOT / agent_id
+    if legacy_state_dir.exists():
+        return legacy_state_dir, True
+    return DEFAULT_STATE_ROOT / agent_id, False
+
+
+def run_launchctl(args: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(["/bin/launchctl", *args], check=False, text=True, capture_output=True)
+
+
+def cleanup_legacy_launchd(uid: int, active_label: str, agent_id: str) -> list[str]:
+    legacy_job_label = legacy_label(agent_id)
+    legacy_job_plist = legacy_plist_path(agent_id).expanduser().resolve()
+    if active_label == legacy_job_label:
+        return []
+
+    cleanup_commands: list[tuple[list[str], str]] = [
+        (
+            ["disable", f"gui/{uid}/{legacy_job_label}"],
+            f"launchctl disable gui/{uid}/{legacy_job_label}",
+        ),
+        (
+            ["bootout", f"gui/{uid}/{legacy_job_label}"],
+            f"launchctl bootout gui/{uid}/{legacy_job_label}",
+        ),
+    ]
+
+    if legacy_job_plist.exists():
+        cleanup_commands.append(
+            (
+                ["bootout", f"gui/{uid}", str(legacy_job_plist)],
+                f"launchctl bootout gui/{uid} {legacy_job_plist}",
+            )
+        )
+
+    failed_commands: list[str] = []
+    for args, display_cmd in cleanup_commands:
+        cp = run_launchctl(args)
+        if cp.returncode != 0 and legacy_job_plist.exists():
+            failed_commands.append(display_cmd)
+
+    if not failed_commands:
+        return []
+
+    warning_lines = [
+        "WARNING: Failed to fully clean up the legacy soul-guardian launchd job "
+        f"{legacy_job_label}.",
+        f"Manually run: launchctl bootout gui/{uid} {legacy_job_label}",
+    ]
+    if legacy_job_plist.exists():
+        warning_lines.append(f"If needed, also remove the legacy plist: {legacy_job_plist}")
+    warning_lines.append("You can rerun this installer after the legacy job is removed.")
+    return warning_lines
 
 
 def main(argv: list[str]) -> int:
@@ -53,12 +119,12 @@ def main(argv: list[str]) -> int:
     ap.add_argument(
         "--state-dir",
         default=None,
-        help="External state directory (recommended). Default: ~/.clawdbot/soul-guardian/<agentId>/",
+        help="External state directory (recommended). Default: ~/.openclaw/soul-guardian/<agentId>/; reuses ~/.clawdbot/soul-guardian/<agentId>/ if that legacy state dir already exists.",
     )
     ap.add_argument(
         "--label",
         default=None,
-        help="launchd label (default: com.clawdbot.soul-guardian.<agentId>)",
+        help="launchd label (default: com.openclaw.soul-guardian.<agentId>). When using a non-legacy label, --install attempts to disable/boot out the previous com.clawdbot.soul-guardian.<agentId> job first.",
     )
     ap.add_argument(
         "--interval-seconds",
@@ -84,9 +150,24 @@ def main(argv: list[str]) -> int:
 
     workspace_root = Path(args.workspace_root).expanduser().resolve()
     agent_id = args.agent_id or agent_id_default(workspace_root)
-    state_dir = Path(args.state_dir).expanduser().resolve() if args.state_dir else default_external_state_dir(agent_id)
+    if args.state_dir:
+        state_dir = Path(args.state_dir).expanduser().resolve()
+    else:
+        state_dir, using_legacy_state_dir = default_external_state_dir(agent_id)
+        state_dir = state_dir.resolve()
+        if using_legacy_state_dir:
+            migration_target = (DEFAULT_STATE_ROOT / agent_id).resolve()
+            print(
+                "WARNING: Detected legacy soul-guardian state dir at "
+                f"{state_dir}. Using it for backward compatibility. "
+                "To switch to the new default location, rerun this script with "
+                f"--state-dir {migration_target}",
+                file=sys.stderr,
+            )
 
-    label = args.label or f"com.clawdbot.soul-guardian.{agent_id}"
+    label = args.label or default_label(agent_id)
+    legacy_job_label = legacy_label(agent_id)
+    legacy_job_plist = legacy_plist_path(agent_id).expanduser().resolve()
     plist_path = Path(args.out).expanduser().resolve() if args.out else (Path("~/Library/LaunchAgents").expanduser() / f"{label}.plist")
 
     script_path = workspace_root / "skills" / "soul-guardian" / "scripts" / "soul_guardian.py"
@@ -134,10 +215,22 @@ def main(argv: list[str]) -> int:
     print(f"Wrote plist: {plist_path}")
     print(f"State dir:  {state_dir}")
     print(f"Label:      {label}")
+    if label == legacy_job_label:
+        print("Legacy label mode: cleanup is skipped because the selected label matches the previous Clawdbot-era default.")
+    else:
+        print(f"Legacy label:      {legacy_job_label}")
+        print(f"Legacy plist:      {legacy_job_plist}")
+        if args.install:
+            print("Migration: install mode will try to disable/boot out the legacy launchd job before starting the new label.")
+        else:
+            print("Dry run: --install will try to disable/boot out the legacy launchd job before starting the new label.")
 
     uid = os.getuid()
 
     if args.install:
+        for warning_line in cleanup_legacy_launchd(uid, label, agent_id):
+            print(warning_line, file=sys.stderr)
+
         # Best-effort: remove any existing job with same label, then bootstrap.
         run_launchctl(["bootout", f"gui/{uid}", label])
         run_launchctl(["bootout", f"gui/{uid}", str(plist_path)])

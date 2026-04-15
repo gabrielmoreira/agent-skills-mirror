@@ -1,6 +1,6 @@
 ---
 name: last30days-v3-spec
-version: "3.0.0"
+version: "3.0.1"
 description: "Internal architecture spec for the v3 last30days runtime pipeline. Not user-invocable."
 argument-hint: "last30days codex vs claude code"
 allowed-tools: Bash, Read, Write, WebSearch

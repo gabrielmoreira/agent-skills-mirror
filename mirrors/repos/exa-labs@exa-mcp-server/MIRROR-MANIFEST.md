@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `exa-labs/exa-mcp-server` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `exa-labs/exa-mcp-server` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `exa-labs/exa-mcp-server` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/code-search/SKILL.md`](skills/code-search/SKILL.md) |
-| 2 | ✓ | [`skills/company-search/SKILL.md`](skills/company-search/SKILL.md) |
-| 3 | ✓ | [`skills/financial-report-search/SKILL.md`](skills/financial-report-search/SKILL.md) |
-| 4 | ✓ | [`skills/people-search/SKILL.md`](skills/people-search/SKILL.md) |
-| 5 | ✓ | [`skills/personal-site-search/SKILL.md`](skills/personal-site-search/SKILL.md) |
-| 6 | ✓ | [`skills/research-paper-search/SKILL.md`](skills/research-paper-search/SKILL.md) |
+| 1 | ✓ | [`skills/search/references/extraction.md`](skills/search/references/extraction.md) |
+| 2 | ✓ | [`skills/search/references/filtering.md`](skills/search/references/filtering.md) |
+| 3 | ✓ | [`skills/search/references/patterns-code.md`](skills/search/references/patterns-code.md) |
+| 4 | ✓ | [`skills/search/references/patterns-companies.md`](skills/search/references/patterns-companies.md) |
+| 5 | ✓ | [`skills/search/references/patterns-news.md`](skills/search/references/patterns-news.md) |
+| 6 | ✓ | [`skills/search/references/patterns-papers.md`](skills/search/references/patterns-papers.md) |
+| 7 | ✓ | [`skills/search/references/patterns-people.md`](skills/search/references/patterns-people.md) |
+| 8 | ✓ | [`skills/search/references/patterns-relationships.md`](skills/search/references/patterns-relationships.md) |
+| 9 | ✓ | [`skills/search/references/searching.md`](skills/search/references/searching.md) |
+| 10 | ✓ | [`skills/search/references/source-quality.md`](skills/search/references/source-quality.md) |
+| 11 | ✓ | [`skills/search/references/synthesis.md`](skills/search/references/synthesis.md) |
+| 12 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
 
 ---
 

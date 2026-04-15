@@ -43,6 +43,8 @@ This page lists all .NET MAUI workload release notes. Each entry links to detail
 - Only include .NET version sections that had updates
 - Link to full notes at top for quick access
 - Requirements column: Xcode for Apple platforms, API + JDK for Android, empty for MAUI
+- If a dated note came from a custom/private feed, mention that source in the
+  dated note header even if the index entry stays concise
 
 ---
 
@@ -56,7 +58,7 @@ File: `release-notes/maui-release-notes-{YYYYMMDD}.md`
 # .NET MAUI Workload Release Notes - {Month Day, Year}
 
 > **Date:** {current_date}  
-> **Source:** NuGet.org workload manifests (live data)
+> **Source:** NuGet feeds queried at generation time ({source_summary})
 
 This document provides version information for .NET MAUI and related platform workloads across the two most recent major .NET versions.
 
@@ -72,9 +74,9 @@ This document provides version information for .NET MAUI and related platform wo
 
 ## Workloads
 
-**Workload Set:** [Microsoft.NET.Workloads.{major}.0.{band}](https://www.nuget.org/packages/Microsoft.NET.Workloads.{major}.0.{band}/{nuget_version})
+**Workload Set:** [Microsoft.NET.Workloads.{package-id-sdk-band}]  @  {cli_version}](https://www.nuget.org/packages/Microsoft.NET.Workloads.{package-id-sdk-band}/{nuget_version})
 
-## Installation
+### Installation
 
 \`\`\`bash
 dotnet workload update --version {cli_version}
@@ -82,7 +84,13 @@ dotnet workload update --version {cli_version}
 dotnet workload install maui ios maccatalyst android --version {cli_version}
 \`\`\`
 
-## Workload Versions
+### Recommended Tools:
+ - Xcode: {recommended_xcode_version}
+ - Java JDK: recommended_java_jdk_version
+ - Android API-{android_api}
+
+<details>
+<summary><h3>Workload Versions</h3></summary>
 
 | Workload | Full ID | Version | SDK Band | Links |
 |----------|---------|---------|----------|-------|
@@ -93,55 +101,60 @@ dotnet workload install maui ios maccatalyst android --version {cli_version}
 | **tvOS** | Microsoft.NET.Sdk.tvOS | {version} | {band} | [NuGet]({manifest_link}) · [Release]({dotnet_macios_release_link}) |
 | **macOS** | Microsoft.NET.Sdk.macOS | {version} | {band} | [NuGet]({manifest_link}) · [Release]({dotnet_macios_release_link}) |
 
+<!-- NOTE: If the selected workload set or manifest version was discovered from a
+private/internal feed, keep the package link pointed at the equivalent
+NuGet.org URL and note the discovery source in the document header. -->
 
-
-## MAUI NuGet Packages
+</details>
+<details>
+<summary><h3>MAUI NuGet Packages</h3></summary>
 
 The following NuGet packages are the core .NET MAUI libraries. The **Implicit Version** is bundled with the workload, while **Latest Version** may be newer due to out-of-band releases.
 
 | Package | Implicit Version | Latest Version |
 |---------|------------------|----------------|
-| Microsoft.Maui.Controls | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
-| Microsoft.Maui.Controls.Compatibility | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
-| Microsoft.Maui.Essentials | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
-| Microsoft.Maui.Graphics | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
-| Microsoft.Maui.Maps | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
+| **Microsoft.Maui.Controls** | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
+| **Microsoft.Maui.Controls.Compatibility** | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
+| **Microsoft.Maui.Essentials** | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
+| **Microsoft.Maui.Graphics** | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
+| **Microsoft.Maui.Maps** | [{workload_version}]({nuget_link}) | [{latest_version}]({nuget_link}) |
+</details>
+<details>
+<summary><h3>Native Tool & SDK Compatibility</h3></summary>
+
+#### Apple (iOS, Mac Catalyst, tvOS, macOS)
+
+|  Tool     | Min Version.          | Recommended Version         |
+|-----------|-----------------------|-----------------------------|
+| **Xcode** | ≥ {min_xcode_version} | {recommended_xcode_version} |
 
 
-## Apple Platform Dependencies (iOS, Mac Catalyst, tvOS, macOS)
+#### Java JDK (Android)
 
-| Workload | Xcode Requirement | Recommended Xcode |
-|----------|-------------------|-------------------|
-| iOS | ≥ {min_version} | {recommended} |
-| Mac Catalyst | ≥ {min_version} | {recommended} |
-| tvOS | ≥ {min_version} | {recommended} |
-| macOS | ≥ {min_version} | {recommended} |
+|  Tool        | Min / Required Version                                | Recommended Version            |
+|--------------|-------------------------------------------------------|--------------------------------|
+| **Java JDK** | ≥ {min_java_jdk_version} and < {max_java_jdk_version} | {recommended_java_jdk_version} |
 
-## Android Dependencies
 
-| Dependency | Requirement | Recommended |
-|------------|-------------|-------------|
-| **JDK** | ≥ {min} and < {max} | {recommended} |
+#### Android SDK Packages (Required)
 
-### Required Android SDK Packages
+| SDK Package                           | Description                                         |
+|---------------------------------------|-----------------------------------------------------|
+| **`build-tools;{version}`**           | Android SDK Build-Tools {major}                     |
+| **`cmdline-tools;{version}`**         | Android SDK Command-line Tools {major}              |
+| **`platforms;android-{android_api}`** | Android SDK Platform {android_api}                  |
+| **`platform-tools`**                  | Android SDK Platform-Tools {platform_tools_version} |
 
-| Package | Description |
-|---------|-------------|
-| `build-tools;{version}` | Android SDK Build-Tools {major} |
-| `cmdline-tools;{version}` | Android SDK Command-line Tools |
-| `platforms;android-{api}` | Android SDK Platform {api} |
-| `platform-tools` | Android SDK Platform-Tools |
+#### Android SDK Packages (Optional)
 
-### Optional Android SDK Packages
+| Package                           | Description                     |
+|-----------------------------------|---------------------------------|
+| `emulator`                        | Android Emulator                |
+| `ndk-bundle`                      | NDK                             |
+| `platforms;android-{preview_api}` | Android SDK Platform (Preview)  |
+| System Images                     | Google APIs ARM 64 v8a / x86_64 |
 
-| Package | Description |
-|---------|-------------|
-| `emulator` | Android Emulator |
-| `ndk-bundle` | NDK |
-| `platforms;android-{preview_api}` | Android SDK Platform (Preview) |
-| System Images | Google APIs ARM 64 v8a / x86_64 |
-
-## MAUI Windows Dependencies
+#### MAUI Windows Dependencies
 
 | Dependency | Minimum Version | Recommended |
 |------------|-----------------|-------------|
@@ -149,6 +162,8 @@ The following NuGet packages are the core .NET MAUI libraries. The **Implicit Ve
 | **Windows SDK Build Tools** | ≥ {version} | {version} |
 | **Win2D** | ≥ {version} | {version} |
 | **WebView2** | ≥ {version} | {version} |
+</details>
+
 ```
 
 ### Reference Section (End of Document)

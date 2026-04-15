@@ -2,6 +2,11 @@
 
 ## NuGet Package Links
 
+Use these NuGet.org URL patterns even when the package version was discovered
+from a custom or private feed. For pre-publication builds, mention the source
+feed in the document header, but keep the package links pointing at the eventual
+NuGet.org location so they resolve correctly once published.
+
 ### Workload Set Package
 ```
 https://www.nuget.org/packages/Microsoft.NET.Workloads.{major}.0.{band}/{nuget_version}

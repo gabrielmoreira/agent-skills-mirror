@@ -5,18 +5,23 @@ This reference provides comprehensive documentation for the NuGet APIs and data 
 ## Table of Contents
 
 1. [NuGet API Reference](#nuget-api-reference)
-2. [Package Naming Conventions](#package-naming-conventions)
-3. [Version Format Conversions](#version-format-conversions)
-4. [Package File Structures](#package-file-structures)
-5. [Complete Discovery Example](#complete-discovery-example)
+2. [Source Discovery and Custom Feeds](#source-discovery-and-custom-feeds)
+3. [Package Naming Conventions](#package-naming-conventions)
+4. [Version Format Conversions](#version-format-conversions)
+5. [Package File Structures](#package-file-structures)
+6. [Complete Discovery Example](#complete-discovery-example)
 
 ---
 
 ## NuGet API Reference
 
+NuGet lookups should be driven from the source's V3 service index whenever
+possible. Do not assume NuGet.org endpoints when the user provided custom feeds.
+
 ### Search API
 
-**Endpoint**: `https://azuresearch-usnc.nuget.org/query`
+**Endpoint**: Source-specific `SearchQueryService` URL from the feed's
+service index.
 
 | Parameter | Description | Example |
 |-----------|-------------|---------|
@@ -43,15 +48,18 @@ This reference provides comprehensive documentation for the NuGet APIs and data 
 
 **Download package**: 
 ```
-https://api.nuget.org/v3-flatcontainer/{id}/{version}/{id}.{version}.nupkg
+{packageBaseAddress}/{id}/{version}/{id}.{version}.nupkg
 ```
 
 **List versions**:
 ```
-https://api.nuget.org/v3-flatcontainer/{id}/index.json
+{packageBaseAddress}/{id}/index.json
 ```
 
-**Important**: Package IDs must be lowercase in URLs.
+**Important**:
+- Package IDs must be lowercase in flat-container URLs
+- The base address comes from the source's `PackageBaseAddress/3.0.0` resource
+- Some private feeds may require exact version lookup rather than fuzzy search
 
 ### .NET Releases API
 
@@ -73,6 +81,44 @@ https://builds.dotnet.microsoft.com/dotnet/release-metadata/{major}.0/releases.j
 | `latest-release` | Current runtime version |
 | `support-phase` | "active", "maintenance", "eol" |
 | `release-type` | "lts" or "sts" |
+
+---
+
+## Source Discovery and Custom Feeds
+
+### Feed resolution order
+
+1. Use the `nugetSources` the user supplied, in the exact order given
+2. If a source is a name, resolve it from `NuGet.config` / `dotnet nuget list source`
+3. Use NuGet.org only as a fallback when no custom source was provided or the
+   user did not pin an exact package/version
+
+### Resolve endpoints from a V3 service index
+
+```bash
+curl -s "{SOURCE_INDEX}" | jq -r '
+  .resources[] |
+  select(
+    (."@type" | tostring | contains("PackageBaseAddress")) or
+    (."@type" | tostring | contains("SearchQueryService")) or
+    (."@type" | tostring | contains("RegistrationsBaseUrl"))
+  ) | { type: ."@type", url: ."@id" }'
+```
+
+Use the discovered `PackageBaseAddress` for exact package download/version-list
+operations. Use `SearchQueryService` only when you need to find the latest
+compatible version.
+
+### Exact version behavior
+
+If the user provides a specific workload set or manifest version:
+
+- try that exact version on the custom sources first
+- do not substitute a newer or different version
+- if it is missing, report the failure and the feeds checked
+
+This is especially important when release notes are being generated before the
+packages are published publicly.
 
 ---
 
@@ -220,21 +266,21 @@ curl -s "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/release
 
 **Step 3**: Find workload set
 ```bash
-curl -s "https://azuresearch-usnc.nuget.org/query?q=Microsoft.NET.Workloads.10.0&prerelease=false" | \
+curl -s "{SEARCH_QUERY_SERVICE}?q=Microsoft.NET.Workloads.10.0&prerelease=false" | \
   jq '.data[] | select(.id=="Microsoft.NET.Workloads.10.0.100") | {id, version}'
 # Result: { "id": "Microsoft.NET.Workloads.10.0.100", "version": "10.102.0" }
 ```
 
 **Step 4**: Download and extract workload set
 ```bash
-curl -so workloadset.nupkg "https://api.nuget.org/v3-flatcontainer/microsoft.net.workloads.10.0.100/10.102.0/microsoft.net.workloads.10.0.100.10.102.0.nupkg"
+curl -so workloadset.nupkg "{PACKAGE_BASE}/microsoft.net.workloads.10.0.100/10.102.0/microsoft.net.workloads.10.0.100.10.102.0.nupkg"
 unzip -p workloadset.nupkg data/microsoft.net.workloads.workloadset.json | jq '."microsoft.net.sdk.ios"'
 # Result: "26.2.10191/10.0.100"
 ```
 
 **Step 5**: Download iOS manifest
 ```bash
-curl -so ios.nupkg "https://api.nuget.org/v3-flatcontainer/microsoft.net.sdk.ios.manifest-10.0.100/26.2.10191/microsoft.net.sdk.ios.manifest-10.0.100.26.2.10191.nupkg"
+curl -so ios.nupkg "{PACKAGE_BASE}/microsoft.net.sdk.ios.manifest-10.0.100/26.2.10191/microsoft.net.sdk.ios.manifest-10.0.100.26.2.10191.nupkg"
 unzip -p ios.nupkg data/WorkloadDependencies.json | jq '.["microsoft.net.sdk.ios"].xcode'
 # Result: { "version": "[26.2,)", "recommendedVersion": "26.2" }
 ```

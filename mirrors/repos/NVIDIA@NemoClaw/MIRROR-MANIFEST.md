@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 66 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 66 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 66 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,47 +84,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`.agents/skills/nemoclaw-maintainer-find-review-pr/SKILL.md`](.agents/skills/nemoclaw-maintainer-find-review-pr/SKILL.md) |
 | 24 | ✓ | [`.agents/skills/nemoclaw-maintainer-morning/SKILL.md`](.agents/skills/nemoclaw-maintainer-morning/SKILL.md) |
 | 25 | ✓ | [`.agents/skills/nemoclaw-maintainer-security-code-review/SKILL.md`](.agents/skills/nemoclaw-maintainer-security-code-review/SKILL.md) |
-| 26 | ✓ | [`.agents/skills/nemoclaw-skills-guide/SKILL.md`](.agents/skills/nemoclaw-skills-guide/SKILL.md) |
-| 27 | ✓ | [`.agents/skills/nemoclaw-user-configure-inference/references/inference-options.md`](.agents/skills/nemoclaw-user-configure-inference/references/inference-options.md) |
-| 28 | ✓ | [`.agents/skills/nemoclaw-user-configure-inference/SKILL.md`](.agents/skills/nemoclaw-user-configure-inference/SKILL.md) |
-| 29 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/references/best-practices.md`](.agents/skills/nemoclaw-user-configure-security/references/best-practices.md) |
-| 30 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/references/credential-storage.md`](.agents/skills/nemoclaw-user-configure-security/references/credential-storage.md) |
-| 31 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/references/openclaw-controls.md`](.agents/skills/nemoclaw-user-configure-security/references/openclaw-controls.md) |
-| 32 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/SKILL.md`](.agents/skills/nemoclaw-user-configure-security/SKILL.md) |
-| 33 | ✓ | [`.agents/skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md`](.agents/skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md) |
-| 34 | ✓ | [`.agents/skills/nemoclaw-user-deploy-remote/SKILL.md`](.agents/skills/nemoclaw-user-deploy-remote/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/nemoclaw-user-get-started/references/windows-setup.md`](.agents/skills/nemoclaw-user-get-started/references/windows-setup.md) |
-| 36 | ✓ | [`.agents/skills/nemoclaw-user-get-started/SKILL.md`](.agents/skills/nemoclaw-user-get-started/SKILL.md) |
-| 37 | ✓ | [`.agents/skills/nemoclaw-user-manage-policy/SKILL.md`](.agents/skills/nemoclaw-user-manage-policy/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md`](.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md) |
-| 39 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/ecosystem.md`](.agents/skills/nemoclaw-user-overview/references/ecosystem.md) |
-| 40 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/how-it-works.md`](.agents/skills/nemoclaw-user-overview/references/how-it-works.md) |
-| 41 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/overview.md`](.agents/skills/nemoclaw-user-overview/references/overview.md) |
-| 42 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/release-notes.md`](.agents/skills/nemoclaw-user-overview/references/release-notes.md) |
-| 43 | ✓ | [`.agents/skills/nemoclaw-user-overview/SKILL.md`](.agents/skills/nemoclaw-user-overview/SKILL.md) |
-| 44 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/architecture.md`](.agents/skills/nemoclaw-user-reference/references/architecture.md) |
-| 45 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/commands.md`](.agents/skills/nemoclaw-user-reference/references/commands.md) |
-| 46 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/network-policies.md`](.agents/skills/nemoclaw-user-reference/references/network-policies.md) |
-| 47 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/troubleshooting.md`](.agents/skills/nemoclaw-user-reference/references/troubleshooting.md) |
-| 48 | ✓ | [`.agents/skills/nemoclaw-user-reference/SKILL.md`](.agents/skills/nemoclaw-user-reference/SKILL.md) |
-| 49 | ✓ | [`.agents/skills/nemoclaw-user-skills-coding/references/agent-skills.md`](.agents/skills/nemoclaw-user-skills-coding/references/agent-skills.md) |
-| 50 | ✓ | [`.agents/skills/nemoclaw-user-skills-coding/SKILL.md`](.agents/skills/nemoclaw-user-skills-coding/SKILL.md) |
-| 51 | ✓ | [`.agents/skills/nemoclaw-user-workspace/references/workspace-files.md`](.agents/skills/nemoclaw-user-workspace/references/workspace-files.md) |
-| 52 | ✓ | [`.agents/skills/nemoclaw-user-workspace/SKILL.md`](.agents/skills/nemoclaw-user-workspace/SKILL.md) |
-| 53 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 54 | ✓ | [`agents/hermes/decode-proxy.py`](agents/hermes/decode-proxy.py) |
-| 55 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
-| 56 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
-| 57 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
-| 58 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |
-| 59 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
-| 60 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
-| 61 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
-| 62 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
-| 63 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
-| 64 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
-| 65 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
-| 66 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 26 | ✓ | [`.agents/skills/nemoclaw-maintainer-triage/SKILL.md`](.agents/skills/nemoclaw-maintainer-triage/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/nemoclaw-skills-guide/SKILL.md`](.agents/skills/nemoclaw-skills-guide/SKILL.md) |
+| 28 | ✓ | [`.agents/skills/nemoclaw-user-configure-inference/references/inference-options.md`](.agents/skills/nemoclaw-user-configure-inference/references/inference-options.md) |
+| 29 | ✓ | [`.agents/skills/nemoclaw-user-configure-inference/SKILL.md`](.agents/skills/nemoclaw-user-configure-inference/SKILL.md) |
+| 30 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/references/best-practices.md`](.agents/skills/nemoclaw-user-configure-security/references/best-practices.md) |
+| 31 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/references/credential-storage.md`](.agents/skills/nemoclaw-user-configure-security/references/credential-storage.md) |
+| 32 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/references/openclaw-controls.md`](.agents/skills/nemoclaw-user-configure-security/references/openclaw-controls.md) |
+| 33 | ✓ | [`.agents/skills/nemoclaw-user-configure-security/SKILL.md`](.agents/skills/nemoclaw-user-configure-security/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md`](.agents/skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md) |
+| 35 | ✓ | [`.agents/skills/nemoclaw-user-deploy-remote/SKILL.md`](.agents/skills/nemoclaw-user-deploy-remote/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/nemoclaw-user-get-started/references/windows-setup.md`](.agents/skills/nemoclaw-user-get-started/references/windows-setup.md) |
+| 37 | ✓ | [`.agents/skills/nemoclaw-user-get-started/SKILL.md`](.agents/skills/nemoclaw-user-get-started/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/nemoclaw-user-manage-policy/SKILL.md`](.agents/skills/nemoclaw-user-manage-policy/SKILL.md) |
+| 39 | ✓ | [`.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md`](.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/ecosystem.md`](.agents/skills/nemoclaw-user-overview/references/ecosystem.md) |
+| 41 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/how-it-works.md`](.agents/skills/nemoclaw-user-overview/references/how-it-works.md) |
+| 42 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/overview.md`](.agents/skills/nemoclaw-user-overview/references/overview.md) |
+| 43 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/release-notes.md`](.agents/skills/nemoclaw-user-overview/references/release-notes.md) |
+| 44 | ✓ | [`.agents/skills/nemoclaw-user-overview/SKILL.md`](.agents/skills/nemoclaw-user-overview/SKILL.md) |
+| 45 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/architecture.md`](.agents/skills/nemoclaw-user-reference/references/architecture.md) |
+| 46 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/commands.md`](.agents/skills/nemoclaw-user-reference/references/commands.md) |
+| 47 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/network-policies.md`](.agents/skills/nemoclaw-user-reference/references/network-policies.md) |
+| 48 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/troubleshooting.md`](.agents/skills/nemoclaw-user-reference/references/troubleshooting.md) |
+| 49 | ✓ | [`.agents/skills/nemoclaw-user-reference/SKILL.md`](.agents/skills/nemoclaw-user-reference/SKILL.md) |
+| 50 | ✓ | [`.agents/skills/nemoclaw-user-skills-coding/references/agent-skills.md`](.agents/skills/nemoclaw-user-skills-coding/references/agent-skills.md) |
+| 51 | ✓ | [`.agents/skills/nemoclaw-user-skills-coding/SKILL.md`](.agents/skills/nemoclaw-user-skills-coding/SKILL.md) |
+| 52 | ✓ | [`.agents/skills/nemoclaw-user-workspace/references/workspace-files.md`](.agents/skills/nemoclaw-user-workspace/references/workspace-files.md) |
+| 53 | ✓ | [`.agents/skills/nemoclaw-user-workspace/SKILL.md`](.agents/skills/nemoclaw-user-workspace/SKILL.md) |
+| 54 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 55 | ✓ | [`agents/hermes/decode-proxy.py`](agents/hermes/decode-proxy.py) |
+| 56 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
+| 57 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
+| 58 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
+| 59 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |
+| 60 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
+| 61 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
+| 62 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
+| 63 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
+| 64 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
+| 65 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 66 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
+| 67 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 
