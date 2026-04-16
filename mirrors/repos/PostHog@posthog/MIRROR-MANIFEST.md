@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `PostHog/posthog` — 26 default patterns, 8 followed patterns, 73 file(s) materialized.
+Mirror of `PostHog/posthog` — 26 default patterns, 8 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PostHog/posthog` — 26 default patterns, 8 followed patterns, 73 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 73 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,23 +122,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 54 | ✓ | [`products/llm_analytics/skills/exploring-llm-traces/SKILL.md`](products/llm_analytics/skills/exploring-llm-traces/SKILL.md) |
 | 55 | ✓ | [`products/llm_analytics/skills/skills-store/SKILL.md`](products/llm_analytics/skills/skills-store/SKILL.md) |
 | 56 | ✓ | [`products/posthog_ai/skills/auditing-experiments-flags/SKILL.md`](products/posthog_ai/skills/auditing-experiments-flags/SKILL.md) |
-| 57 | ✓ | [`products/posthog_ai/skills/query-examples/SKILL.md`](products/posthog_ai/skills/query-examples/SKILL.md) |
-| 58 | ✓ | [`products/product_analytics/skills/exploring-autocapture-events/SKILL.md`](products/product_analytics/skills/exploring-autocapture-events/SKILL.md) |
-| 59 | ✓ | [`products/signals/backend/management/AGENTS.md`](products/signals/backend/management/AGENTS.md) |
-| 60 | ✓ | [`products/signals/backend/report_generation/AGENTS.md`](products/signals/backend/report_generation/AGENTS.md) |
-| 61 | ✓ | [`products/signals/eval/AGENTS.md`](products/signals/eval/AGENTS.md) |
-| 62 | ✓ | [`products/signals/skills/signals/SKILL.md`](products/signals/skills/signals/SKILL.md) |
-| 63 | ✓ | [`proto/AGENTS.md`](proto/AGENTS.md) |
-| 64 | ✓ | [`rust/personhog-replica/AGENTS.md`](rust/personhog-replica/AGENTS.md) |
-| 65 | ✓ | [`rust/personhog-router/AGENTS.md`](rust/personhog-router/AGENTS.md) |
-| 66 | → | [`docs/internal/monorepo-layout.md`](docs/internal/monorepo-layout.md) |
-| 67 | → | [`docs/published/handbook/engineering/ai/implementing-mcp-tools.md`](docs/published/handbook/engineering/ai/implementing-mcp-tools.md) |
-| 68 | → | [`docs/published/handbook/engineering/ai/writing-skills.md`](docs/published/handbook/engineering/ai/writing-skills.md) |
-| 69 | → | [`docs/published/handbook/engineering/type-system.md`](docs/published/handbook/engineering/type-system.md) |
-| 70 | → | [`posthog/models/team/README.md`](posthog/models/team/README.md) |
-| 71 | → | [`products/architecture.md`](products/architecture.md) |
-| 72 | → | [`products/README.md`](products/README.md) |
-| 73 | → | [`services/mcp/CONTRIBUTING.md`](services/mcp/CONTRIBUTING.md) |
+| 57 | ✓ | [`products/posthog_ai/skills/managing-subscriptions/SKILL.md`](products/posthog_ai/skills/managing-subscriptions/SKILL.md) |
+| 58 | ✓ | [`products/posthog_ai/skills/query-examples/SKILL.md`](products/posthog_ai/skills/query-examples/SKILL.md) |
+| 59 | ✓ | [`products/product_analytics/skills/exploring-autocapture-events/SKILL.md`](products/product_analytics/skills/exploring-autocapture-events/SKILL.md) |
+| 60 | ✓ | [`products/signals/backend/management/AGENTS.md`](products/signals/backend/management/AGENTS.md) |
+| 61 | ✓ | [`products/signals/backend/report_generation/AGENTS.md`](products/signals/backend/report_generation/AGENTS.md) |
+| 62 | ✓ | [`products/signals/eval/AGENTS.md`](products/signals/eval/AGENTS.md) |
+| 63 | ✓ | [`products/signals/skills/signals/SKILL.md`](products/signals/skills/signals/SKILL.md) |
+| 64 | ✓ | [`proto/AGENTS.md`](proto/AGENTS.md) |
+| 65 | ✓ | [`rust/personhog-replica/AGENTS.md`](rust/personhog-replica/AGENTS.md) |
+| 66 | ✓ | [`rust/personhog-router/AGENTS.md`](rust/personhog-router/AGENTS.md) |
+| 67 | → | [`docs/internal/monorepo-layout.md`](docs/internal/monorepo-layout.md) |
+| 68 | → | [`docs/published/handbook/engineering/ai/implementing-mcp-tools.md`](docs/published/handbook/engineering/ai/implementing-mcp-tools.md) |
+| 69 | → | [`docs/published/handbook/engineering/ai/writing-skills.md`](docs/published/handbook/engineering/ai/writing-skills.md) |
+| 70 | → | [`docs/published/handbook/engineering/type-system.md`](docs/published/handbook/engineering/type-system.md) |
+| 71 | → | [`posthog/models/team/README.md`](posthog/models/team/README.md) |
+| 72 | → | [`products/architecture.md`](products/architecture.md) |
+| 73 | → | [`products/README.md`](products/README.md) |
+| 74 | → | [`services/mcp/CONTRIBUTING.md`](services/mcp/CONTRIBUTING.md) |
 
 ---
 

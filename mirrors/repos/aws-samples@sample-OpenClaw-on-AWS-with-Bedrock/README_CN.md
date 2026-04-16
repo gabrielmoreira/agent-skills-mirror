@@ -40,7 +40,7 @@
 | **欧洲（爱尔兰）** | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/create/review?stackName=openclaw-bedrock&templateURL=https://sharefile-jiade.s3.cn-northwest-1.amazonaws.com.cn/clawdbot-bedrock.yaml) |
 | **亚太（东京）** | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/create/review?stackName=openclaw-bedrock&templateURL=https://sharefile-jiade.s3.cn-northwest-1.amazonaws.com.cn/clawdbot-bedrock.yaml) |
 
-> **前提条件**：在 [Bedrock 控制台](https://console.aws.amazon.com/bedrock/) 启用所需模型，并在目标区域创建 EC2 密钥对。
+> **前提条件**：在目标区域创建 EC2 密钥对。Bedrock 模型访问已自动开通，无需手动启用。
 
 ### 部署后操作
 

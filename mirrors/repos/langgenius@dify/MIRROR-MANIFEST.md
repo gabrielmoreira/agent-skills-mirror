@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 37 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,8 +94,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
 | 34 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 35 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
-| 36 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 37 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 36 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
+| 37 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 38 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

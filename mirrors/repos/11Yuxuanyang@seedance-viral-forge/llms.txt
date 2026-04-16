@@ -11,9 +11,9 @@ Documentation:
 Best entry points:
 - https://github.com/11Yuxuanyang/seedance-viral-forge
 - https://github.com/11Yuxuanyang/seedance-viral-forge/blob/main/shared/SEEDANCE_BASELINE.md
-- https://github.com/11Yuxuanyang/seedance-viral-forge/blob/main/通用场景/SKILL.md
-- https://github.com/11Yuxuanyang/seedance-viral-forge/blob/main/跳舞/SKILL.md
-- https://github.com/11Yuxuanyang/seedance-viral-forge/blob/main/热梗/SKILL.md
+- https://github.com/11Yuxuanyang/seedance-viral-forge/blob/main/skills/通用场景/SKILL.md
+- https://github.com/11Yuxuanyang/seedance-viral-forge/blob/main/skills/跳舞/SKILL.md
+- https://github.com/11Yuxuanyang/seedance-viral-forge/blob/main/skills/热梗/SKILL.md
 - https://11yuxuanyang.github.io/seedance-viral-forge/seedance-product-video-prompts.html
 - https://11yuxuanyang.github.io/seedance-viral-forge/jimeng-merchant-dance-video-scripts.html
 - https://11yuxuanyang.github.io/seedance-viral-forge/ai-trend-video-prompts.html

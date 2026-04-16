@@ -1,0 +1,11 @@
+{
+  "name": "Felo Slides",
+  "tagline": "一句話自動產生完整簡報投影片，回傳可分享的投影片連結",
+  "description": "Felo Slides 透過 Felo PPT Task API，將自然語言描述自動轉換為完整的簡報投影片。支援主題、大綱或筆記作為輸入，產生完成後回傳可直接分享的投影片網址，適合快速製作報告、提案或教學簡報。",
+  "category": "content",
+  "tags": ["felo", "slides", "ppt", "presentation", "content-generation"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": ["FELO_API_KEY"]
+}

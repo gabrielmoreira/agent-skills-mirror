@@ -1,0 +1,11 @@
+{
+  "name": "Gemini Image Describer",
+  "tagline": "圖片內容描述與文字辨識，輸出繁體中文分析",
+  "description": "Gemini Image Describer 使用 Gemini Interactions API 分析圖片並產生繁體中文 Markdown 描述，包含場景描述、文字辨識（OCR）與關鍵物件列表。支援 JPEG、PNG、GIF、WebP 等多種格式，可接受本機檔案、遠端 URL 與 data URI。",
+  "category": "content",
+  "tags": ["gemini", "image", "ocr", "description", "vision"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": ["GEMINI_API_KEY"]
+}

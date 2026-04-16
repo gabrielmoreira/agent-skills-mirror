@@ -1,0 +1,1 @@
+Same character as the reference: compact pixel-art proportions, same costume palette, same silhouette. Create a four-facing isometric cardinal sheet from this southwest-facing anchor: north, east, south, west only. Keep the costume and silhouette consistent, and make east and west true opposites. No props, no weapons, no text, no UI, no scenery.

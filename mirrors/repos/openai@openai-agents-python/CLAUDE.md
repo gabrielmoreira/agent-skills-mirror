@@ -1,1 +1,1 @@
-Read the AGENTS.md file for instructions.
+cache/repos/github.com/openai@openai-agents-python/AGENTS.md

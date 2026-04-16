@@ -2,7 +2,7 @@
 
 ## Project
 
-AI Video Skills is a repository of reusable prompt skills for Seedance 2.0 / 即梦. It helps operators generate Chinese short-video scripts for product selling, merchant lead generation, and trend-based traffic without rewriting prompts from scratch each time.
+Seedance Viral Forge is a repository of reusable prompt skills for Seedance 2.0 / 即梦. It helps operators generate Chinese short-video scripts for product selling, merchant lead generation, and trend-based traffic without rewriting prompts from scratch each time.
 
 ## Best Entry Points
 
@@ -10,9 +10,9 @@ AI Video Skills is a repository of reusable prompt skills for Seedance 2.0 / 即
 - `llms.txt`
 - `CITATION.cff`
 - `shared/SEEDANCE_BASELINE.md`
-- `通用场景/SKILL.md`
-- `跳舞/SKILL.md`
-- `热梗/SKILL.md`
+- `skills/通用场景/SKILL.md`
+- `skills/跳舞/SKILL.md`
+- `skills/热梗/SKILL.md`
 - `docs/index.html`
 - `docs/seedance-product-video-prompts.html`
 - `docs/jimeng-merchant-dance-video-scripts.html`

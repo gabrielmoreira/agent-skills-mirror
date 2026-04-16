@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,7 +91,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 32 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 33 | ✓ | [`examples/tools/skills/csv-workbench/SKILL.md`](examples/tools/skills/csv-workbench/SKILL.md) |
+| 33 | ✓ | [`docs/ref/sandbox/capabilities/skills.md`](docs/ref/sandbox/capabilities/skills.md) |
+| 34 | ✓ | [`examples/sandbox/docs/skills/credit-note-fixer/SKILL.md`](examples/sandbox/docs/skills/credit-note-fixer/SKILL.md) |
+| 35 | ✓ | [`examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md`](examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md) |
+| 36 | ✓ | [`examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md`](examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md) |
+| 37 | ✓ | [`examples/tools/skills/csv-workbench/SKILL.md`](examples/tools/skills/csv-workbench/SKILL.md) |
 
 ---
 

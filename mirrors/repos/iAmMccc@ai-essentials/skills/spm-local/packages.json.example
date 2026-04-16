@@ -1,0 +1,6 @@
+[
+  { "url": "https://github.com/SnapKit/SnapKit" },
+  { "url": "https://github.com/onevcat/Kingfisher" },
+  { "url": "https://github.com/ccgus/fmdb.git", "version": "2.7.12" },
+  { "url": "https://github.com/iAmMccc/SmartCodable.git", "version": "4.3.7" }
+]

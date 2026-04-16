@@ -35,6 +35,7 @@ internal/
     types.go           # Shared daemon types (disconnect, approval_request/response/resolved)
     events.go          # EventBus ring buffer for daemon/SSE subscribers
     attachment.go      # Download remote file attachments (Slack/Feishu) → file_ref pipeline
+    session_cwd.go     # Cloud-source scratch CWD allocator (ephemeral, per-session tmp dir)
   agent/
     loop.go            # AgentLoop.Run() — core agentic loop, SwitchAgent()
     tools.go           # Tool interface, ToolRegistry, FilterByAllow/Deny, Schemas()
@@ -146,6 +147,10 @@ Unknown tools → denied by default (fail-safe).
 - **Output format profiles**: `outputFormatForSource()` maps `req.Source` to `"markdown"` (default) or `"plain"` (cloud-distributed channels: slack, line, feishu, lark, telegram, webhook). Cloud owns final channel rendering — ShanClaw outputs neutral text for those paths.
 - **Tool status events**: `OnToolCall("running")` fires at actual execution start (inside `executeBatches`, after semaphore acquire), not during permission checks.
 - **Disk spill**: Tool results >50K chars written to `~/.shannon/tmp/`, replaced with 2K preview + file path in context. Cleaned up per-run (daemon/TUI) or on manager close (one-shot).
+- **Turn phase tracker** (`internal/agent/phase.go`): explicit state machine for `AgentLoop.Run`. Every blocking boundary calls `tracker.Enter(phase)` or `tracker.EnterTransient(phase)()`. Only `PhaseAwaitingLLM` and `PhaseForceStop` are idle-counted (watched by the watchdog). Fail-closed: forgotten transient restore and `Enter`-inside-transient mark the tracker `invalid`; observers self-disable. Panics under `testing.Testing()` or `SHANNON_PHASE_STRICT=1`, logs otherwise.
+- **Idle watchdog** (`internal/agent/watchdog.go`): observer goroutine. Fires `OnRunStatus("idle_soft", …)` after `agent.idle_soft_timeout_secs` (default 90) in an idle-counted phase. Cancels ctx with `ErrHardIdleTimeout` via `context.WithCancelCause` after `agent.idle_hard_timeout_secs` (default 0 = disabled; flip to 540 after dogfood). Dedups soft fire by tracker `seq`, re-arms on every phase transition. `completeWithRetry` prefers `context.Cause(ctx)` over `ctx.Err()`. `isSoftRunError` in the runner includes `ErrHardIdleTimeout` so the partial transcript is persisted (not replaced by a friendly error stub). Daemon emits `EventRunStatus` to SSE/Desktop subscribers via `daemonEventHandler.OnRunStatus`.
+- **Mid-turn checkpoint**: `AgentLoop.SetCheckpointFunc(func(ctx) error)` fires at three phase-exit boundaries (after each `executeBatches`, after successful reactive compaction, before `runForceStopTurn`), gated by `tracker.TakeDirty()`. Agent-side `SetCheckpointMinInterval(2s)` debounce; failed save (callback returns error) leaves dirty set and skips the time stamp so the next fire retries. Runner uses `captureTurnBaseline` + `applyTurnMessages` + `applyTurnUsage` — the SAME helpers run from the normal final save AND the hard-error save so a turn is never persisted twice via different paths. `session.Session.InProgress` is set mid-turn, cleared on final save; a non-zero flag on reload indicates a crash-recovered session with a partial transcript.
+- **Playwright `file://` preview bridge** (`internal/tools/filepreview.go`): loopback HTTP server rewrites `browser_navigate(file://…)` → `http://127.0.0.1/<token>/<name>`. Fail-closed allowlist via `AllowRoot(dir)` / `AllowFile(path)`, both symlink-resolved via `filepath.EvalSymlinks`. Daemon populates per-run from effective CWD + user-attached paths so browser reach never exceeds `permissions.CheckFilePath`. Uses `http.ServeContent` (not `http.ServeFile`) to avoid the `index.html` internal redirect. Defense-in-depth: `r.RemoteAddr` loopback check in the handler.
 
 ### Daemon Approval Protocol
 - **Interactive mode** (default): Tools requiring approval send `approval_request` over WS → Cloud relays to Ptfrog → user responds → `approval_response` relayed back. Agent loop blocks until response.
@@ -178,6 +183,12 @@ Scalars override, lists merge+dedup, structs field-level merge. MCP server env v
 
 ### Build Tags
 `internal/schedule/launchd_darwin.go` uses `//go:build darwin`. `launchd_stub.go` provides no-op stubs for non-darwin. Tests that touch launchctl go in `_darwin_test.go`.
+
+### Prompt Cache
+See `docs/cache-strategy.md` for the authoritative design (4-breakpoint allocation, source→TTL routing, byte stability, session_id propagation, env-var overrides). One-line invariants:
+- `cache_source` tags every LLM call; `_ttl_block(request)` routes 1h for channel/TUI, 5m for one-shot/subagent (fail cheap).
+- `SHANNON_FORCE_TTL=off|5m|1h` overrides for operator debug / A-B.
+- `normalizeToolInput` in `gateway.go` canonicalizes nested JSON key ordering so cross-turn `system_h` / tool_use-input stays byte-stable.
 
 ### Context Management
 - **Proactive compaction**: `PersistLearnings` → `GenerateSummary` (two-phase: `<analysis>` scratchpad → `<summary>`) → `ShapeHistory` at 85% context window.

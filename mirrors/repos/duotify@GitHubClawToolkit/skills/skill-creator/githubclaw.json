@@ -1,0 +1,11 @@
+{
+  "name": "Skill Creator",
+  "tagline": "技能建立工具箱，從建立、測試到評估與改進一站完成",
+  "description": "Skill Creator 提供完整的技能開發工作流程，包含建立新技能、產生測試案例、執行評估（eval）、benchmark 比較與觸發描述優化。支援迭代改進流程，根據定量指標與定性回饋持續提升技能品質與觸發準確度。",
+  "category": "meta",
+  "tags": ["skill-creation", "evaluation", "benchmark", "testing", "optimization"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": []
+}

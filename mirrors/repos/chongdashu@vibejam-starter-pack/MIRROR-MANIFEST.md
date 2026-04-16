@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chongdashu/vibejam-starter-pack` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
+Mirror of `chongdashu/vibejam-starter-pack` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chongdashu/vibejam-starter-pack` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 53 |
+| Files         | 71 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,32 +86,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`.agents/skills/playwright-testing/scripts/imgdiff.py`](.agents/skills/playwright-testing/scripts/imgdiff.py) |
 | 26 | ✓ | [`.agents/skills/playwright-testing/scripts/with_server.py`](.agents/skills/playwright-testing/scripts/with_server.py) |
 | 27 | ✓ | [`.agents/skills/playwright-testing/SKILL.md`](.agents/skills/playwright-testing/SKILL.md) |
-| 28 | ✓ | [`.agents/skills/threejs-builder/references/advanced-topics.md`](.agents/skills/threejs-builder/references/advanced-topics.md) |
-| 29 | ✓ | [`.agents/skills/threejs-builder/references/game-patterns.md`](.agents/skills/threejs-builder/references/game-patterns.md) |
-| 30 | ✓ | [`.agents/skills/threejs-builder/references/gltf-loading-guide.md`](.agents/skills/threejs-builder/references/gltf-loading-guide.md) |
-| 31 | ✓ | [`.agents/skills/threejs-builder/references/reference-frame-contract.md`](.agents/skills/threejs-builder/references/reference-frame-contract.md) |
-| 32 | ✓ | [`.agents/skills/threejs-builder/scripts/gltf-calibration-helpers.mjs`](.agents/skills/threejs-builder/scripts/gltf-calibration-helpers.mjs) |
-| 33 | ✓ | [`.agents/skills/threejs-builder/scripts/install-gltf-calibration-helpers.py`](.agents/skills/threejs-builder/scripts/install-gltf-calibration-helpers.py) |
-| 34 | ✓ | [`.agents/skills/threejs-builder/scripts/README.md`](.agents/skills/threejs-builder/scripts/README.md) |
-| 35 | ✓ | [`.agents/skills/threejs-builder/SKILL.md`](.agents/skills/threejs-builder/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/threejs-capacitor-ios/references/capacitor-ios-spm-workflow.md`](.agents/skills/threejs-capacitor-ios/references/capacitor-ios-spm-workflow.md) |
-| 37 | ✓ | [`.agents/skills/threejs-capacitor-ios/references/gotchas.md`](.agents/skills/threejs-capacitor-ios/references/gotchas.md) |
-| 38 | ✓ | [`.agents/skills/threejs-capacitor-ios/references/threejs-animation-index-pattern.md`](.agents/skills/threejs-capacitor-ios/references/threejs-animation-index-pattern.md) |
-| 39 | ✓ | [`.agents/skills/threejs-capacitor-ios/SKILL.md`](.agents/skills/threejs-capacitor-ios/SKILL.md) |
-| 40 | ✓ | [`.agents/skills/tinyswords-tilemap/references/asset-paths.md`](.agents/skills/tinyswords-tilemap/references/asset-paths.md) |
-| 41 | ✓ | [`.agents/skills/tinyswords-tilemap/references/layer-system.md`](.agents/skills/tinyswords-tilemap/references/layer-system.md) |
-| 42 | ✓ | [`.agents/skills/tinyswords-tilemap/references/tile-specifications.md`](.agents/skills/tinyswords-tilemap/references/tile-specifications.md) |
-| 43 | ✓ | [`.agents/skills/tinyswords-tilemap/SKILL.md`](.agents/skills/tinyswords-tilemap/SKILL.md) |
-| 44 | ✓ | [`.claude/skills/fal-ai-image/SKILL.md`](.claude/skills/fal-ai-image/SKILL.md) |
-| 45 | ✓ | [`.claude/skills/phaser-gamedev/SKILL.md`](.claude/skills/phaser-gamedev/SKILL.md) |
-| 46 | ✓ | [`.claude/skills/phaser4-gamedev/SKILL.md`](.claude/skills/phaser4-gamedev/SKILL.md) |
-| 47 | ✓ | [`.claude/skills/playwright-testing/SKILL.md`](.claude/skills/playwright-testing/SKILL.md) |
-| 48 | ✓ | [`.claude/skills/threejs-builder/references/game-patterns.md`](.claude/skills/threejs-builder/references/game-patterns.md) |
-| 49 | ✓ | [`.claude/skills/threejs-builder/references/gltf-loading-guide.md`](.claude/skills/threejs-builder/references/gltf-loading-guide.md) |
-| 50 | ✓ | [`.claude/skills/threejs-builder/SKILL.md`](.claude/skills/threejs-builder/SKILL.md) |
-| 51 | ✓ | [`.claude/skills/threejs-capacitor-ios/SKILL.md`](.claude/skills/threejs-capacitor-ios/SKILL.md) |
-| 52 | ✓ | [`.claude/skills/tinyswords-tilemap/SKILL.md`](.claude/skills/tinyswords-tilemap/SKILL.md) |
-| 53 | ✓ | [`projects/oakwoods/CLAUDE.md`](projects/oakwoods/CLAUDE.md) |
+| 28 | ✓ | [`.agents/skills/retro-diffusion/assets/model-presets.json`](.agents/skills/retro-diffusion/assets/model-presets.json) |
+| 29 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-8turn-from-sw-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-8turn-from-sw-v1.txt) |
+| 30 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-cardinals-from-sw-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-cardinals-from-sw-v1.txt) |
+| 31 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-diagonals-from-cardinals-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-diagonals-from-cardinals-v1.txt) |
+| 32 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-sw-walk-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-isometric-sw-walk-v1.txt) |
+| 33 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-battle-sprites-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-battle-sprites-v1.txt) |
+| 34 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-punch-any-animation-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-punch-any-animation-v1.txt) |
+| 35 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-running-any-animation-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-running-any-animation-v1.txt) |
+| 36 | ✓ | [`.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-walk-v1.txt`](.agents/skills/retro-diffusion/assets/prompt-profiles/character-side-walk-v1.txt) |
+| 37 | ✓ | [`.agents/skills/retro-diffusion/references/animation-workflows.md`](.agents/skills/retro-diffusion/references/animation-workflows.md) |
+| 38 | ✓ | [`.agents/skills/retro-diffusion/references/api-and-styles.md`](.agents/skills/retro-diffusion/references/api-and-styles.md) |
+| 39 | ✓ | [`.agents/skills/retro-diffusion/scripts/_retro_common.py`](.agents/skills/retro-diffusion/scripts/_retro_common.py) |
+| 40 | ✓ | [`.agents/skills/retro-diffusion/scripts/extract_rd_sheet_frames.py`](.agents/skills/retro-diffusion/scripts/extract_rd_sheet_frames.py) |
+| 41 | ✓ | [`.agents/skills/retro-diffusion/scripts/prepare_reference_image.py`](.agents/skills/retro-diffusion/scripts/prepare_reference_image.py) |
+| 42 | ✓ | [`.agents/skills/retro-diffusion/scripts/retro_experiment_matrix.py`](.agents/skills/retro-diffusion/scripts/retro_experiment_matrix.py) |
+| 43 | ✓ | [`.agents/skills/retro-diffusion/scripts/retro_inference_run.py`](.agents/skills/retro-diffusion/scripts/retro_inference_run.py) |
+| 44 | ✓ | [`.agents/skills/retro-diffusion/SKILL.md`](.agents/skills/retro-diffusion/SKILL.md) |
+| 45 | ✓ | [`.agents/skills/threejs-builder/references/advanced-topics.md`](.agents/skills/threejs-builder/references/advanced-topics.md) |
+| 46 | ✓ | [`.agents/skills/threejs-builder/references/game-patterns.md`](.agents/skills/threejs-builder/references/game-patterns.md) |
+| 47 | ✓ | [`.agents/skills/threejs-builder/references/gltf-loading-guide.md`](.agents/skills/threejs-builder/references/gltf-loading-guide.md) |
+| 48 | ✓ | [`.agents/skills/threejs-builder/references/reference-frame-contract.md`](.agents/skills/threejs-builder/references/reference-frame-contract.md) |
+| 49 | ✓ | [`.agents/skills/threejs-builder/scripts/gltf-calibration-helpers.mjs`](.agents/skills/threejs-builder/scripts/gltf-calibration-helpers.mjs) |
+| 50 | ✓ | [`.agents/skills/threejs-builder/scripts/install-gltf-calibration-helpers.py`](.agents/skills/threejs-builder/scripts/install-gltf-calibration-helpers.py) |
+| 51 | ✓ | [`.agents/skills/threejs-builder/scripts/README.md`](.agents/skills/threejs-builder/scripts/README.md) |
+| 52 | ✓ | [`.agents/skills/threejs-builder/SKILL.md`](.agents/skills/threejs-builder/SKILL.md) |
+| 53 | ✓ | [`.agents/skills/threejs-capacitor-ios/references/capacitor-ios-spm-workflow.md`](.agents/skills/threejs-capacitor-ios/references/capacitor-ios-spm-workflow.md) |
+| 54 | ✓ | [`.agents/skills/threejs-capacitor-ios/references/gotchas.md`](.agents/skills/threejs-capacitor-ios/references/gotchas.md) |
+| 55 | ✓ | [`.agents/skills/threejs-capacitor-ios/references/threejs-animation-index-pattern.md`](.agents/skills/threejs-capacitor-ios/references/threejs-animation-index-pattern.md) |
+| 56 | ✓ | [`.agents/skills/threejs-capacitor-ios/SKILL.md`](.agents/skills/threejs-capacitor-ios/SKILL.md) |
+| 57 | ✓ | [`.agents/skills/tinyswords-tilemap/references/asset-paths.md`](.agents/skills/tinyswords-tilemap/references/asset-paths.md) |
+| 58 | ✓ | [`.agents/skills/tinyswords-tilemap/references/layer-system.md`](.agents/skills/tinyswords-tilemap/references/layer-system.md) |
+| 59 | ✓ | [`.agents/skills/tinyswords-tilemap/references/tile-specifications.md`](.agents/skills/tinyswords-tilemap/references/tile-specifications.md) |
+| 60 | ✓ | [`.agents/skills/tinyswords-tilemap/SKILL.md`](.agents/skills/tinyswords-tilemap/SKILL.md) |
+| 61 | ✓ | [`.claude/skills/fal-ai-image/SKILL.md`](.claude/skills/fal-ai-image/SKILL.md) |
+| 62 | ✓ | [`.claude/skills/phaser-gamedev/SKILL.md`](.claude/skills/phaser-gamedev/SKILL.md) |
+| 63 | ✓ | [`.claude/skills/phaser4-gamedev/SKILL.md`](.claude/skills/phaser4-gamedev/SKILL.md) |
+| 64 | ✓ | [`.claude/skills/playwright-testing/SKILL.md`](.claude/skills/playwright-testing/SKILL.md) |
+| 65 | ✓ | [`.claude/skills/retro-diffusion/SKILL.md`](.claude/skills/retro-diffusion/SKILL.md) |
+| 66 | ✓ | [`.claude/skills/threejs-builder/references/game-patterns.md`](.claude/skills/threejs-builder/references/game-patterns.md) |
+| 67 | ✓ | [`.claude/skills/threejs-builder/references/gltf-loading-guide.md`](.claude/skills/threejs-builder/references/gltf-loading-guide.md) |
+| 68 | ✓ | [`.claude/skills/threejs-builder/SKILL.md`](.claude/skills/threejs-builder/SKILL.md) |
+| 69 | ✓ | [`.claude/skills/threejs-capacitor-ios/SKILL.md`](.claude/skills/threejs-capacitor-ios/SKILL.md) |
+| 70 | ✓ | [`.claude/skills/tinyswords-tilemap/SKILL.md`](.claude/skills/tinyswords-tilemap/SKILL.md) |
+| 71 | ✓ | [`projects/oakwoods/CLAUDE.md`](projects/oakwoods/CLAUDE.md) |
 
 ---
 

@@ -1,0 +1,1 @@
+Same character as the reference: compact pixel-art proportions, same costume palette, same silhouette. Create an eight-direction isometric turnaround from this southwest-facing tactics-style anchor. Keep all eight directions distinct and evenly stepped, with a readable raised-map angle. No props, no weapons, no text, no UI, no scenery.

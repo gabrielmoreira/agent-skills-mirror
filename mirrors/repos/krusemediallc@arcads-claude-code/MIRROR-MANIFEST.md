@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,6 +84,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/veo-3-1.md`](skills/arcads-external-api/prompting/prompt-library/veo-3-1.md) |
 | 24 | ✓ | [`skills/arcads-external-api/reference.md`](skills/arcads-external-api/reference.md) |
 | 25 | ✓ | [`skills/arcads-external-api/SKILL.md`](skills/arcads-external-api/SKILL.md) |
+| 26 | ✓ | [`skills/generate-youtube-thumbnail/prompting/formulas.md`](skills/generate-youtube-thumbnail/prompting/formulas.md) |
+| 27 | ✓ | [`skills/generate-youtube-thumbnail/prompting/guide.md`](skills/generate-youtube-thumbnail/prompting/guide.md) |
+| 28 | ✓ | [`skills/generate-youtube-thumbnail/scripts/generate-batch.sh`](skills/generate-youtube-thumbnail/scripts/generate-batch.sh) |
+| 29 | ✓ | [`skills/generate-youtube-thumbnail/SKILL.md`](skills/generate-youtube-thumbnail/SKILL.md) |
 
 ---
 

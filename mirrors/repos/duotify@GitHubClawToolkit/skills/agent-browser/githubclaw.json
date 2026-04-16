@@ -1,0 +1,11 @@
+{
+  "name": "Agent Browser",
+  "tagline": "AI 驅動的瀏覽器自動化工具，操作網頁、填表單、截圖、抓資料",
+  "description": "Agent Browser 透過 agent-browser CLI 進行瀏覽器自動化操作，支援開啟網站、填寫表單、點擊按鈕、擷取截圖與抓取頁面資料。採用 snapshot → interact → re-snapshot 工作流程，適合網頁測試、資料擷取與自動化操作情境。",
+  "category": "automation",
+  "tags": ["browser", "automation", "scraping", "screenshot", "web-testing"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": []
+}

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
+Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 69 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 69 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,50 +84,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`.agents/rules/code-style.mdc`](.agents/rules/code-style.mdc) |
 | 24 | ✓ | [`.agents/rules/git-workflow.mdc`](.agents/rules/git-workflow.mdc) |
 | 25 | ✓ | [`.agents/rules/security.mdc`](.agents/rules/security.mdc) |
-| 26 | ✓ | [`.agents/skills/diagram-generation/SKILL.md`](.agents/skills/diagram-generation/SKILL.md) |
-| 27 | ✓ | [`.agents/skills/diagram-generation/style-guide.md`](.agents/skills/diagram-generation/style-guide.md) |
-| 28 | ✓ | [`.agents/skills/diagram-generation/template.md`](.agents/skills/diagram-generation/template.md) |
-| 29 | ✓ | [`.agents/skills/documentation/SKILL.md`](.agents/skills/documentation/SKILL.md) |
-| 30 | ✓ | [`.agents/skills/local-dev/SKILL.md`](.agents/skills/local-dev/SKILL.md) |
-| 31 | ✓ | [`.agents/skills/opik-backend/clickhouse.md`](.agents/skills/opik-backend/clickhouse.md) |
-| 32 | ✓ | [`.agents/skills/opik-backend/migrations.md`](.agents/skills/opik-backend/migrations.md) |
-| 33 | ✓ | [`.agents/skills/opik-backend/mysql.md`](.agents/skills/opik-backend/mysql.md) |
-| 34 | ✓ | [`.agents/skills/opik-backend/permissions.md`](.agents/skills/opik-backend/permissions.md) |
-| 35 | ✓ | [`.agents/skills/opik-backend/SKILL.md`](.agents/skills/opik-backend/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/opik-backend/testing.md`](.agents/skills/opik-backend/testing.md) |
-| 37 | ✓ | [`.agents/skills/opik-frontend/code-quality.md`](.agents/skills/opik-frontend/code-quality.md) |
-| 38 | ✓ | [`.agents/skills/opik-frontend/forms.md`](.agents/skills/opik-frontend/forms.md) |
-| 39 | ✓ | [`.agents/skills/opik-frontend/performance.md`](.agents/skills/opik-frontend/performance.md) |
-| 40 | ✓ | [`.agents/skills/opik-frontend/permissions.md`](.agents/skills/opik-frontend/permissions.md) |
-| 41 | ✓ | [`.agents/skills/opik-frontend/responsive-design.md`](.agents/skills/opik-frontend/responsive-design.md) |
-| 42 | ✓ | [`.agents/skills/opik-frontend/SKILL.md`](.agents/skills/opik-frontend/SKILL.md) |
-| 43 | ✓ | [`.agents/skills/opik-frontend/testing.md`](.agents/skills/opik-frontend/testing.md) |
-| 44 | ✓ | [`.agents/skills/opik-frontend/ui-components.md`](.agents/skills/opik-frontend/ui-components.md) |
-| 45 | ✓ | [`.agents/skills/playwright-e2e/agents/playwright-test-generator.md`](.agents/skills/playwright-e2e/agents/playwright-test-generator.md) |
-| 46 | ✓ | [`.agents/skills/playwright-e2e/agents/playwright-test-healer.md`](.agents/skills/playwright-e2e/agents/playwright-test-healer.md) |
-| 47 | ✓ | [`.agents/skills/playwright-e2e/agents/playwright-test-planner.md`](.agents/skills/playwright-e2e/agents/playwright-test-planner.md) |
-| 48 | ✓ | [`.agents/skills/playwright-e2e/fixture-catalog.md`](.agents/skills/playwright-e2e/fixture-catalog.md) |
-| 49 | ✓ | [`.agents/skills/playwright-e2e/opik-app-context.md`](.agents/skills/playwright-e2e/opik-app-context.md) |
-| 50 | ✓ | [`.agents/skills/playwright-e2e/page-object-catalog.md`](.agents/skills/playwright-e2e/page-object-catalog.md) |
-| 51 | ✓ | [`.agents/skills/playwright-e2e/SKILL.md`](.agents/skills/playwright-e2e/SKILL.md) |
-| 52 | ✓ | [`.agents/skills/playwright-e2e/test-conventions.md`](.agents/skills/playwright-e2e/test-conventions.md) |
-| 53 | ✓ | [`.agents/skills/python-sdk/agents/refactor-helper.md`](.agents/skills/python-sdk/agents/refactor-helper.md) |
-| 54 | ✓ | [`.agents/skills/python-sdk/error-handling.md`](.agents/skills/python-sdk/error-handling.md) |
-| 55 | ✓ | [`.agents/skills/python-sdk/good-code.md`](.agents/skills/python-sdk/good-code.md) |
-| 56 | ✓ | [`.agents/skills/python-sdk/SKILL.md`](.agents/skills/python-sdk/SKILL.md) |
-| 57 | ✓ | [`.agents/skills/python-sdk/testing.md`](.agents/skills/python-sdk/testing.md) |
-| 58 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
-| 59 | ✓ | [`.agents/skills/typescript-sdk/SKILL.md`](.agents/skills/typescript-sdk/SKILL.md) |
-| 60 | ✓ | [`.agents/skills/typescript-sdk/testing.md`](.agents/skills/typescript-sdk/testing.md) |
-| 61 | ✓ | [`.claude/rules/sdks/python/testing.md`](.claude/rules/sdks/python/testing.md) |
-| 62 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 63 | ✓ | [`.github/instructions/python_sdk.instructions.md`](.github/instructions/python_sdk.instructions.md) |
-| 64 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 65 | ✓ | [`apps/opik-backend/AGENTS.md`](apps/opik-backend/AGENTS.md) |
-| 66 | ✓ | [`apps/opik-documentation/AGENTS.md`](apps/opik-documentation/AGENTS.md) |
-| 67 | ✓ | [`sdks/opik_optimizer/AGENTS.md`](sdks/opik_optimizer/AGENTS.md) |
-| 68 | ✓ | [`sdks/python/AGENTS.md`](sdks/python/AGENTS.md) |
-| 69 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
+| 26 | ✓ | [`.agents/skills/analytics-instrumentation/SKILL.md`](.agents/skills/analytics-instrumentation/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/diagram-generation/SKILL.md`](.agents/skills/diagram-generation/SKILL.md) |
+| 28 | ✓ | [`.agents/skills/diagram-generation/style-guide.md`](.agents/skills/diagram-generation/style-guide.md) |
+| 29 | ✓ | [`.agents/skills/diagram-generation/template.md`](.agents/skills/diagram-generation/template.md) |
+| 30 | ✓ | [`.agents/skills/documentation/SKILL.md`](.agents/skills/documentation/SKILL.md) |
+| 31 | ✓ | [`.agents/skills/local-dev/SKILL.md`](.agents/skills/local-dev/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/opik-backend/clickhouse.md`](.agents/skills/opik-backend/clickhouse.md) |
+| 33 | ✓ | [`.agents/skills/opik-backend/migrations.md`](.agents/skills/opik-backend/migrations.md) |
+| 34 | ✓ | [`.agents/skills/opik-backend/mysql.md`](.agents/skills/opik-backend/mysql.md) |
+| 35 | ✓ | [`.agents/skills/opik-backend/permissions.md`](.agents/skills/opik-backend/permissions.md) |
+| 36 | ✓ | [`.agents/skills/opik-backend/SKILL.md`](.agents/skills/opik-backend/SKILL.md) |
+| 37 | ✓ | [`.agents/skills/opik-backend/testing.md`](.agents/skills/opik-backend/testing.md) |
+| 38 | ✓ | [`.agents/skills/opik-frontend/code-quality.md`](.agents/skills/opik-frontend/code-quality.md) |
+| 39 | ✓ | [`.agents/skills/opik-frontend/forms.md`](.agents/skills/opik-frontend/forms.md) |
+| 40 | ✓ | [`.agents/skills/opik-frontend/performance.md`](.agents/skills/opik-frontend/performance.md) |
+| 41 | ✓ | [`.agents/skills/opik-frontend/permissions.md`](.agents/skills/opik-frontend/permissions.md) |
+| 42 | ✓ | [`.agents/skills/opik-frontend/responsive-design.md`](.agents/skills/opik-frontend/responsive-design.md) |
+| 43 | ✓ | [`.agents/skills/opik-frontend/SKILL.md`](.agents/skills/opik-frontend/SKILL.md) |
+| 44 | ✓ | [`.agents/skills/opik-frontend/testing.md`](.agents/skills/opik-frontend/testing.md) |
+| 45 | ✓ | [`.agents/skills/opik-frontend/ui-components.md`](.agents/skills/opik-frontend/ui-components.md) |
+| 46 | ✓ | [`.agents/skills/playwright-e2e/agents/playwright-test-generator.md`](.agents/skills/playwright-e2e/agents/playwright-test-generator.md) |
+| 47 | ✓ | [`.agents/skills/playwright-e2e/agents/playwright-test-healer.md`](.agents/skills/playwright-e2e/agents/playwright-test-healer.md) |
+| 48 | ✓ | [`.agents/skills/playwright-e2e/agents/playwright-test-planner.md`](.agents/skills/playwright-e2e/agents/playwright-test-planner.md) |
+| 49 | ✓ | [`.agents/skills/playwright-e2e/fixture-catalog.md`](.agents/skills/playwright-e2e/fixture-catalog.md) |
+| 50 | ✓ | [`.agents/skills/playwright-e2e/opik-app-context.md`](.agents/skills/playwright-e2e/opik-app-context.md) |
+| 51 | ✓ | [`.agents/skills/playwright-e2e/page-object-catalog.md`](.agents/skills/playwright-e2e/page-object-catalog.md) |
+| 52 | ✓ | [`.agents/skills/playwright-e2e/SKILL.md`](.agents/skills/playwright-e2e/SKILL.md) |
+| 53 | ✓ | [`.agents/skills/playwright-e2e/test-conventions.md`](.agents/skills/playwright-e2e/test-conventions.md) |
+| 54 | ✓ | [`.agents/skills/python-sdk/agents/refactor-helper.md`](.agents/skills/python-sdk/agents/refactor-helper.md) |
+| 55 | ✓ | [`.agents/skills/python-sdk/error-handling.md`](.agents/skills/python-sdk/error-handling.md) |
+| 56 | ✓ | [`.agents/skills/python-sdk/good-code.md`](.agents/skills/python-sdk/good-code.md) |
+| 57 | ✓ | [`.agents/skills/python-sdk/SKILL.md`](.agents/skills/python-sdk/SKILL.md) |
+| 58 | ✓ | [`.agents/skills/python-sdk/testing.md`](.agents/skills/python-sdk/testing.md) |
+| 59 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 60 | ✓ | [`.agents/skills/typescript-sdk/SKILL.md`](.agents/skills/typescript-sdk/SKILL.md) |
+| 61 | ✓ | [`.agents/skills/typescript-sdk/testing.md`](.agents/skills/typescript-sdk/testing.md) |
+| 62 | ✓ | [`.claude/rules/sdks/python/testing.md`](.claude/rules/sdks/python/testing.md) |
+| 63 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 64 | ✓ | [`.github/instructions/python_sdk.instructions.md`](.github/instructions/python_sdk.instructions.md) |
+| 65 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 66 | ✓ | [`apps/opik-backend/AGENTS.md`](apps/opik-backend/AGENTS.md) |
+| 67 | ✓ | [`apps/opik-documentation/AGENTS.md`](apps/opik-documentation/AGENTS.md) |
+| 68 | ✓ | [`sdks/opik_optimizer/AGENTS.md`](sdks/opik_optimizer/AGENTS.md) |
+| 69 | ✓ | [`sdks/python/AGENTS.md`](sdks/python/AGENTS.md) |
+| 70 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
 
 ---
 

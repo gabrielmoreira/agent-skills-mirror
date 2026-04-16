@@ -34,6 +34,7 @@ internal/
     approval.go        # interactive tool approval over WS
     types.go           # daemon request/response types, disconnect, approval messages
     events.go          # EventBus ring buffer for daemon/SSE subscribers
+    session_cwd.go     # cloud-source scratch CWD allocator (ephemeral per-session tmp dir)
   agent/
     loop.go            # AgentLoop.Run() — core agentic loop
     tools.go           # Tool interface, ToolRegistry, filtering, schemas
@@ -145,6 +146,22 @@ Unknown tools are denied by default.
   - per-run in daemon and TUI
   - on manager close in one-shot mode
 
+### Turn Lifecycle
+
+The agent loop declares an explicit phase state machine (`internal/agent/phase.go`) that external observers can reason about:
+
+- **Phases**: `PhaseAwaitingLLM`, `PhaseExecutingTools`, `PhaseCompacting`, `PhaseAwaitingApproval`, `PhaseRetryingLLM`, `PhaseForceStop`, `PhaseInjectingMessage`, etc. Only `PhaseAwaitingLLM` and `PhaseForceStop` count as idle for the watchdog.
+- **Idle watchdog**: with `agent.idle_soft_timeout_secs` > 0 the daemon fires an `EventRunStatus` event (code `idle_soft`) after that long in an idle-counted phase. With `agent.idle_hard_timeout_secs` > 0 the run is cancelled with `ErrHardIdleTimeout` — the partial transcript is still persisted (soft error). Defaults: soft=90, hard=0 (visibility-only).
+- **Mid-turn checkpoint**: after each tool batch, after successful reactive compaction, and before a force-stop, the daemon rebuilds the on-disk session from a baseline + current loop snapshot. The same rebuild runs at final save so a turn is never persisted twice. `session.Session.InProgress=true` on reload indicates a crash-recovered session with a partial transcript.
+- **Event types**: `EventRunStatus` (watchdog soft/hard, LLM retries) joins the existing `EventAgentReply`, `EventToolStatus`, `EventApprovalRequest` stream.
+
+### Browser Preview Bridge
+
+For daemon runs with Playwright, `browser_navigate(file://…)` is transparently rewritten to a short-lived `http://127.0.0.1/<token>/<name>` URL served by a loopback HTTP server bound per-session:
+- Fail-closed allowlist populated from the effective session CWD + user-attached paths. Browser reach never exceeds `permissions.CheckFilePath`.
+- Symlinks resolved on both sides of the allowlist check; escapes rejected.
+- Random 16-byte hex token per file; no directory listing; teardown on session close.
+
 ### Config Merge Order
 
 1. `~/.shannon/config.yaml` (global)
@@ -164,6 +181,10 @@ Scalars override, lists merge+dedup, structs merge field-by-field. MCP server en
 - Schedule plists: `~/Library/LaunchAgents/com.shannon.schedule.<id>.plist`
 - Audit log: `~/.shannon/logs/audit.log`
 - Schedule logs: `~/.shannon/logs/schedule-<id>.log`
+
+### Prompt Cache
+
+Source-routed TTL: channels/TUI get 1h, one-shot/subagent paths get 5m (fail-cheap default). `cache_source` tags every LLM call and propagates on the wire. `normalizeToolInput` canonicalizes nested JSON for byte stability. See `docs/cache-strategy.md` for breakpoint layout, source table, env-var overrides, and maintenance playbook.
 
 ### Context Management
 

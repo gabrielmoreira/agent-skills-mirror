@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,15 +68,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`caveman-compress/SKILL.md`](caveman-compress/SKILL.md) |
 | 8 | ✓ | [`caveman/SKILL.md`](caveman/SKILL.md) |
 | 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`compress/SKILL.md`](compress/SKILL.md) |
-| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 12 | ✓ | [`plugins/caveman/skills/caveman/SKILL.md`](plugins/caveman/skills/caveman/SKILL.md) |
-| 13 | ✓ | [`plugins/caveman/skills/compress/SKILL.md`](plugins/caveman/skills/compress/SKILL.md) |
-| 14 | ✓ | [`skills/caveman-commit/SKILL.md`](skills/caveman-commit/SKILL.md) |
-| 15 | ✓ | [`skills/caveman-help/SKILL.md`](skills/caveman-help/SKILL.md) |
-| 16 | ✓ | [`skills/caveman-review/SKILL.md`](skills/caveman-review/SKILL.md) |
-| 17 | ✓ | [`skills/caveman/SKILL.md`](skills/caveman/SKILL.md) |
-| 18 | ✓ | [`skills/compress/SKILL.md`](skills/compress/SKILL.md) |
+| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 11 | ✓ | [`plugins/caveman/skills/caveman/SKILL.md`](plugins/caveman/skills/caveman/SKILL.md) |
+| 12 | ✓ | [`plugins/caveman/skills/compress/SKILL.md`](plugins/caveman/skills/compress/SKILL.md) |
+| 13 | ✓ | [`skills/caveman-commit/SKILL.md`](skills/caveman-commit/SKILL.md) |
+| 14 | ✓ | [`skills/caveman-help/SKILL.md`](skills/caveman-help/SKILL.md) |
+| 15 | ✓ | [`skills/caveman-review/SKILL.md`](skills/caveman-review/SKILL.md) |
+| 16 | ✓ | [`skills/caveman/SKILL.md`](skills/caveman/SKILL.md) |
+| 17 | ✓ | [`skills/compress/scripts/__init__.py`](skills/compress/scripts/__init__.py) |
+| 18 | ✓ | [`skills/compress/scripts/__main__.py`](skills/compress/scripts/__main__.py) |
+| 19 | ✓ | [`skills/compress/scripts/benchmark.py`](skills/compress/scripts/benchmark.py) |
+| 20 | ✓ | [`skills/compress/scripts/cli.py`](skills/compress/scripts/cli.py) |
+| 21 | ✓ | [`skills/compress/scripts/compress.py`](skills/compress/scripts/compress.py) |
+| 22 | ✓ | [`skills/compress/scripts/detect.py`](skills/compress/scripts/detect.py) |
+| 23 | ✓ | [`skills/compress/scripts/validate.py`](skills/compress/scripts/validate.py) |
+| 24 | ✓ | [`skills/compress/SKILL.md`](skills/compress/SKILL.md) |
 
 ---
 

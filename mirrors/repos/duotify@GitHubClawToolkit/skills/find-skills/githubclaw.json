@@ -1,0 +1,11 @@
+{
+  "name": "Find Skills",
+  "tagline": "技能探索工具，根據需求推薦最適合的技能組合",
+  "description": "Find Skills 能根據任務目標分析所需能力，搜尋所有可用技能並篩選出最佳選項。當任務需要多個技能搭配時，會建議使用順序並提供設定說明，幫助快速找到並啟用正確的技能。",
+  "category": "meta",
+  "tags": ["skills", "discovery", "recommendation", "meta-tool"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": []
+}

@@ -4,22 +4,25 @@
 
 This repository contains **Claude SEO**, a Tier 4 Claude Code skill for comprehensive
 SEO analysis across all industries. It follows the Agent Skills open standard and the
-3-layer architecture (directive, orchestration, execution). 16 core sub-skills (+ 3
-extensions), 11 core subagents (+ 2 extension agents, 13 total), and an extensible reference
+3-layer architecture (directive, orchestration, execution). 20 core sub-skills (+ 3
+extensions), 15 core subagents (+ 2 extension agents, 17 total), and an extensible reference
 system cover technical SEO, content quality,
 schema markup, image optimization, sitemap architecture, AI search optimization,
-local SEO (GBP, citations, reviews, map pack), and maps intelligence (geo-grid
-rank tracking, GBP auditing, review intelligence, competitor radius mapping).
+local SEO (GBP, citations, reviews, map pack), maps intelligence, semantic topic
+clustering, search experience optimization (SXO), SEO drift monitoring, e-commerce
+SEO, and international SEO with cultural adaptation profiles.
 
 ## Architecture
 
 ```
 claude-seo/
   CLAUDE.md                          # Project instructions (this file)
+  CONTRIBUTORS.md                    # Community credits (Pro Hub Challenge)
+  AGENTS.md                          # Multi-platform agent instructions (Cursor, Antigravity)
   .claude-plugin/
-    plugin.json                    # Plugin manifest (v1.8.1)
+    plugin.json                    # Plugin manifest (v1.9.0)
     marketplace.json               # Marketplace catalog for distribution
-  skills/                            # 19 skills (auto-discovered)
+  skills/                            # 23 skills (auto-discovered)
     seo/                           # Main orchestrator skill
       SKILL.md                     # Entry point, routing table, core rules
       references/                  # On-demand knowledge files (12 files)
@@ -41,11 +44,24 @@ claude-seo/
       SKILL.md
       references/                # API reference files (10 files)
     seo-backlinks/SKILL.md      # Backlink profile analysis
+    seo-cluster/                 # Semantic topic clustering (v1.9.0, by Lutfiya Miller)
+      SKILL.md
+      references/                # Clustering methodology, architecture, workflow
+      templates/                 # cluster-map.html interactive visualization
+    seo-sxo/                     # Search Experience Optimization (v1.9.0, by Florian Schmitz)
+      SKILL.md
+      references/                # Page-type taxonomy, user stories, personas, wireframes
+    seo-drift/                   # SEO drift monitoring (v1.9.0, by Dan Colta)
+      SKILL.md
+      references/                # Comparison rules (17 rules, 3 severity levels)
+    seo-ecommerce/               # E-commerce SEO (v1.9.0, by Matej Marjanovic)
+      SKILL.md
+      references/                # Marketplace API endpoints
     seo-dataforseo/SKILL.md     # Live SEO data via DataForSEO MCP (extension mirror)
     seo-image-gen/              # AI image generation for SEO assets (extension mirror)
       SKILL.md
       references/                # Image gen reference files (7 files)
-  agents/                          # 13 subagents (auto-discovered)
+  agents/                          # 17 subagents (auto-discovered)
     seo-technical.md             # Crawlability, indexability, security
     seo-content.md               # E-E-A-T, readability, thin content
     seo-schema.md                # Structured data validation
@@ -59,9 +75,13 @@ claude-seo/
     seo-backlinks.md             # Backlink profile analyst (Moz, Bing, CC, verify)
     seo-dataforseo.md            # DataForSEO data analyst
     seo-image-gen.md             # SEO image audit analyst
+    seo-cluster.md               # Semantic clustering analysis
+    seo-sxo.md                   # Search experience optimization
+    seo-drift.md                 # SEO drift monitoring
+    seo-ecommerce.md             # E-commerce SEO analysis
   hooks/                           # Quality gate hooks
     hooks.json                   # PostToolUse schema validation
-  scripts/                         # Python execution scripts (21 tracked + 2 dev-only)
+  scripts/                         # Python execution scripts (28 tracked + 2 dev-only)
     google_auth.py               # Credential management (OAuth, SA, API key, 4-tier detection)
     backlinks_auth.py            # Backlink API credential management (Moz, Bing)
     moz_api.py                   # Moz Link Explorer API (DA/PA, spam, domains, anchors)
@@ -82,6 +102,13 @@ claude-seo/
     parse_html.py                # HTML parser for SEO elements
     capture_screenshot.py        # Playwright screenshots
     analyze_visual.py            # Visual analysis helper
+    drift_baseline.py            # SEO drift baseline capture (SQLite)
+    drift_compare.py             # SEO drift comparison engine (17 rules)
+    drift_report.py              # SEO drift HTML report generator
+    drift_history.py             # SEO drift history query
+    dataforseo_costs.py          # DataForSEO cost estimation and budget tracking
+    dataforseo_merchant.py       # Google Shopping / Amazon data fetching
+    dataforseo_normalize.py      # DataForSEO response normalization utility
     mobile_analysis.py           # Mobile rendering analysis (gitignored, dev-only)
   schema/                          # Schema.org JSON-LD templates
   extensions/                      # Optional add-on install helpers
@@ -95,7 +122,7 @@ claude-seo/
 
 | Command | Purpose |
 |---------|---------|
-| `/seo audit <url>` | Full site audit with 12 parallel subagents |
+| `/seo audit <url>` | Full site audit with up to 15 parallel subagents |
 | `/seo page <url>` | Deep single-page analysis |
 | `/seo technical <url>` | Technical SEO audit (9 categories) |
 | `/seo content <url>` | E-E-A-T and content quality analysis |
@@ -113,6 +140,12 @@ claude-seo/
 | `/seo backlinks <url>` | Backlink profile analysis (free: Moz, Bing, CC; premium: DataForSEO) |
 | `/seo backlinks setup` | Setup instructions for free backlink APIs |
 | `/seo backlinks verify <url>` | Verify known backlinks still exist |
+| `/seo cluster <seed-keyword>` | SERP-based semantic clustering and content architecture |
+| `/seo sxo <url>` | Search Experience Optimization: page-type analysis, personas |
+| `/seo drift baseline <url>` | Capture SEO baseline for change monitoring |
+| `/seo drift compare <url>` | Compare current state to stored baseline |
+| `/seo drift history <url>` | Show drift history over time |
+| `/seo ecommerce <url>` | E-commerce SEO: product schema, marketplace intelligence |
 | `/seo firecrawl [command] <url>` | Full-site crawling and site mapping (extension) |
 | `/seo dataforseo [command]` | Live SEO data via DataForSEO MCP (extension) |
 | `/seo image-gen [use-case] <desc>` | AI image generation for SEO assets (extension) |
@@ -161,5 +194,15 @@ Part of the Claude Code skill family:
 
 1. **Progressive Disclosure**: Metadata always loaded, instructions on activation, resources on demand
 2. **Industry Detection**: Auto-detect SaaS, e-commerce, local, publisher, agency
-3. **Parallel Execution**: Full audits spawn up to 12 subagents simultaneously
+3. **Parallel Execution**: Full audits spawn up to 15 subagents simultaneously
 4. **Extension System**: DataForSEO MCP for live data, Firecrawl MCP for site crawling, Banana MCP for AI image generation
+
+## Release Blog Post
+
+After cutting a new release (git tag + `gh release create`), run:
+
+```
+/release-blog
+```
+
+This generates a blog post on https://claude-seo.md/blog/, handles cover image generation, SEO metadata, FAQ schema, internal linking, sitemap/llms.txt updates, Vercel deployment, and Google indexing.

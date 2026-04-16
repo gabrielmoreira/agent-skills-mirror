@@ -1,0 +1,1 @@
+Same character as the reference images: compact pixel-art proportions, same costume palette, same silhouette. Using the southwest anchor and the cardinal reference sheet, create the four isometric diagonals only: southwest, northwest, northeast, southeast. Keep each diagonal distinct and evenly stepped. No props, no weapons, no text, no UI, no scenery.

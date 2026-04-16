@@ -1,0 +1,11 @@
+{
+  "name": "Gemini Nanobanana",
+  "tagline": "AI 圖片生成與編輯，支援文字生圖、多圖合成",
+  "description": "Gemini Nanobanana 使用 Gemini Nano Banana 2 模型進行 AI 圖片生成與編輯。支援文字生圖、圖片編輯、多圖合成（最多 14 張參考圖）、Google Search grounding，並可自訂長寬比與解析度，適合設計、創作與視覺內容產出。",
+  "category": "content",
+  "tags": ["gemini", "image-generation", "nanobanana", "editing", "ai-art"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": ["GEMINI_API_KEY"]
+}

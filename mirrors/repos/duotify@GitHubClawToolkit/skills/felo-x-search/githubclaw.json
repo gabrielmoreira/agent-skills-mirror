@@ -1,0 +1,11 @@
+{
+  "name": "Felo X Search",
+  "tagline": "搜尋 X（Twitter）使用者、推文與回覆，掌握社群動態",
+  "description": "Felo X Search 透過 Felo X Search API 搜尋 X（Twitter）平台資料，支援使用者查詢、推文搜尋、使用者時間軸與推文回覆。結果以 Markdown 格式呈現並附帶互動數據，適合社群媒體監控與資料分析。",
+  "category": "data",
+  "tags": ["felo", "twitter", "x-search", "social-media", "search"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": ["FELO_API_KEY"]
+}

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agentscope-ai/QwenPaw` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `agentscope-ai/QwenPaw` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agentscope-ai/QwenPaw` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,14 +75,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`src/qwenpaw/agents/skills/file_reader/SKILL.md`](src/qwenpaw/agents/skills/file_reader/SKILL.md) |
 | 15 | ✓ | [`src/qwenpaw/agents/skills/guidance/SKILL.md`](src/qwenpaw/agents/skills/guidance/SKILL.md) |
 | 16 | ✓ | [`src/qwenpaw/agents/skills/himalaya/SKILL.md`](src/qwenpaw/agents/skills/himalaya/SKILL.md) |
-| 17 | ✓ | [`src/qwenpaw/agents/skills/multi_agent_collaboration/SKILL.md`](src/qwenpaw/agents/skills/multi_agent_collaboration/SKILL.md) |
-| 18 | ✓ | [`src/qwenpaw/agents/skills/news/SKILL.md`](src/qwenpaw/agents/skills/news/SKILL.md) |
-| 19 | ✓ | [`src/qwenpaw/agents/skills/pdf/SKILL.md`](src/qwenpaw/agents/skills/pdf/SKILL.md) |
-| 20 | ✓ | [`src/qwenpaw/agents/skills/pptx/editing.md`](src/qwenpaw/agents/skills/pptx/editing.md) |
-| 21 | ✓ | [`src/qwenpaw/agents/skills/pptx/pptxgenjs.md`](src/qwenpaw/agents/skills/pptx/pptxgenjs.md) |
-| 22 | ✓ | [`src/qwenpaw/agents/skills/pptx/SKILL.md`](src/qwenpaw/agents/skills/pptx/SKILL.md) |
-| 23 | ✓ | [`src/qwenpaw/agents/skills/QA_source_index/SKILL.md`](src/qwenpaw/agents/skills/QA_source_index/SKILL.md) |
-| 24 | ✓ | [`src/qwenpaw/agents/skills/xlsx/SKILL.md`](src/qwenpaw/agents/skills/xlsx/SKILL.md) |
+| 17 | ✓ | [`src/qwenpaw/agents/skills/make_plan/SKILL.md`](src/qwenpaw/agents/skills/make_plan/SKILL.md) |
+| 18 | ✓ | [`src/qwenpaw/agents/skills/multi_agent_collaboration/SKILL.md`](src/qwenpaw/agents/skills/multi_agent_collaboration/SKILL.md) |
+| 19 | ✓ | [`src/qwenpaw/agents/skills/news/SKILL.md`](src/qwenpaw/agents/skills/news/SKILL.md) |
+| 20 | ✓ | [`src/qwenpaw/agents/skills/pdf/SKILL.md`](src/qwenpaw/agents/skills/pdf/SKILL.md) |
+| 21 | ✓ | [`src/qwenpaw/agents/skills/pptx/editing.md`](src/qwenpaw/agents/skills/pptx/editing.md) |
+| 22 | ✓ | [`src/qwenpaw/agents/skills/pptx/pptxgenjs.md`](src/qwenpaw/agents/skills/pptx/pptxgenjs.md) |
+| 23 | ✓ | [`src/qwenpaw/agents/skills/pptx/SKILL.md`](src/qwenpaw/agents/skills/pptx/SKILL.md) |
+| 24 | ✓ | [`src/qwenpaw/agents/skills/QA_source_index/SKILL.md`](src/qwenpaw/agents/skills/QA_source_index/SKILL.md) |
+| 25 | ✓ | [`src/qwenpaw/agents/skills/xlsx/SKILL.md`](src/qwenpaw/agents/skills/xlsx/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `iflytek/astron-agent` — 26 default patterns, 6 followed patterns, 10 file(s) materialized.
+Mirror of `iflytek/astron-agent` — 26 default patterns, 2 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `iflytek/astron-agent` — 26 default patterns, 6 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 10 |
+| Followed pats | 2 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,10 +53,6 @@ Mirror of `iflytek/astron-agent` — 26 default patterns, 6 followed patterns, 1
 
 - `docs/PROJECT_MODULES_zh.md`
 - `docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md`
-- `docs/CONFIGURATION_zh.md`
-- `docs/Makefile-readme-zh.md`
-- `.github/quality-requirements/code-requirements-zh.md`
-- `.github/quality-requirements/branch-commit-standards-zh.md`
 
 ## File Index
 
@@ -67,13 +63,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`console/frontend/CLAUDE.md`](console/frontend/CLAUDE.md) |
-| 4 | ✓ | [`docs/DEPLOYMENT_GUIDE_zh.md`](docs/DEPLOYMENT_GUIDE_zh.md) |
-| 5 | → | [`.github/quality-requirements/branch-commit-standards-zh.md`](.github/quality-requirements/branch-commit-standards-zh.md) |
-| 6 | → | [`.github/quality-requirements/code-requirements-zh.md`](.github/quality-requirements/code-requirements-zh.md) |
-| 7 | → | [`docs/CONFIGURATION_zh.md`](docs/CONFIGURATION_zh.md) |
-| 8 | → | [`docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md`](docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md) |
-| 9 | → | [`docs/Makefile-readme-zh.md`](docs/Makefile-readme-zh.md) |
-| 10 | → | [`docs/PROJECT_MODULES_zh.md`](docs/PROJECT_MODULES_zh.md) |
+| 4 | ✓ | [`docs/CONFIGURATION_zh.md`](docs/CONFIGURATION_zh.md) |
+| 5 | ✓ | [`docs/DEPLOYMENT_GUIDE_zh.md`](docs/DEPLOYMENT_GUIDE_zh.md) |
+| 6 | → | [`docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md`](docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md) |
+| 7 | → | [`docs/PROJECT_MODULES_zh.md`](docs/PROJECT_MODULES_zh.md) |
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "name": "Google Stitch",
+  "tagline": "UI 設計圖產生器，一句話生出設計圖加 HTML 程式碼",
+  "description": "Google Stitch 使用 Gemini 模型從文字描述一次產出 UI 設計圖與對應 HTML 程式碼。支援自訂長寬比與解析度，設計圖與 HTML 自動存檔，適合快速製作 UI 原型、Landing Page 草稿與設計概念驗證。",
+  "category": "content",
+  "tags": ["gemini", "ui-design", "html", "mockup", "prototyping"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": ["GEMINI_API_KEY"]
+}

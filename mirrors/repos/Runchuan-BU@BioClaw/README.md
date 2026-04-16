@@ -41,12 +41,11 @@
 <br/><br/>
 
 <h2 align="center">📄 Technical Document</h2>
-
 <div align="center">
 <table>
   <tr>
     <td align="center">
-      <a href="docs/BioClaw_Technical_Document.pdf">
+      <a href="https://www.biorxiv.org/content/10.64898/2026.04.11.716807v1">
         <img src="docs/images/tech_doc_card.png" width="650" alt="BioClaw Technical Document"/>
         <br/><br/>
         <img src="https://img.shields.io/badge/Download-Technical_Document_PDF-2b6cb0?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" height="50" alt="Download PDF"/>

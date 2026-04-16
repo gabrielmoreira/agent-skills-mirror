@@ -1,1 +1,0 @@
-cache/repos/github.com/mvanhorn@last30days-skill/skills/last30days-nux/../../SKILL.md

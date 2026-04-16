@@ -1,0 +1,41 @@
+# style-matrix.schema.yaml
+# Reference schema for pageclaw-batch style matrix files.
+# This is documentation, not a machine-enforced JSON Schema.
+# Each entry in `styles[]` defines one template variant that
+# pageclaw-batch will generate from a page-story file.
+
+version: "1.0"
+
+metadata:
+  author: string        # Who created this matrix
+  created: string       # ISO 8601 date (e.g. "2026-04-16")
+  description: string   # One-line purpose of this matrix
+
+styles:
+  - id: string
+    # Unique identifier used as output filename stem.
+    # Examples: "01-sidebar-brutalist", "42-col-editorial-01"
+    # Output: output/html/42-col-editorial-01.html
+
+    intent: string
+    # Design intent in 2-5 sentences. Describes the aesthetic
+    # character, key design moves, and visual rhythm of the
+    # template. Should name concrete design actions (e.g.
+    # "drop caps", "pull quotes", "frosted glass panels")
+    # that give ui-ux-pro-max enough signal to generate a
+    # full design system. Do NOT specify exact colors, fonts,
+    # or CSS values — those are derived by the pipeline.
+    #
+    # Good: "Mixed serif/sans pairing with strong typographic
+    #        hierarchy. Drop caps, pull quotes, baseline grid."
+    # Bad:  "Use Playfair Display 800, Lora 400, #fdf8f3 bg"
+
+    layout: string
+    # One-line layout skeleton description.
+    # Examples:
+    #   - "Single scrolling column, one section per content type"
+    #   - "Sticky sidebar left, scrollable main right"
+    #   - "Card grid, 2-3 columns responsive"
+    #   - "Split hero left, content right"
+    #   - "Top nav, single centered column"
+    #   - "Asymmetric two-column grid"

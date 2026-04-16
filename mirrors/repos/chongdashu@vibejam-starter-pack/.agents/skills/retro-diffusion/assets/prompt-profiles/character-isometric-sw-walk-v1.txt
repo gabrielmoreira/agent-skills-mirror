@@ -1,0 +1,1 @@
+Character isometric southwest walk in place. Keep the same costume palette, silhouette, and stable tactical-map angle. No rotation, no camera move, no background.

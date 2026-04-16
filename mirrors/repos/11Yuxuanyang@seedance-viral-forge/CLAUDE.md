@@ -4,14 +4,14 @@
 
 ## Canonical Paths
 
-- `通用场景/SKILL.md`
-- `跳舞/SKILL.md`
-- `热梗/SKILL.md`
+- `skills/通用场景/SKILL.md`
+- `skills/跳舞/SKILL.md`
+- `skills/热梗/SKILL.md`
 - `shared/SEEDANCE_BASELINE.md`
 
 ## Repo Rules
 
-- 生产版 skill 只放根目录三个文件夹
+- 生产版 skill 只放 `skills/` 目录下三个文件夹
 - 历史草稿、旧快照、实验版统一放 `archive/`
 - 默认行为是“先在对话输出”，不是“自动写文件”
 - 只有用户明确要求保存时，才落 `.md`

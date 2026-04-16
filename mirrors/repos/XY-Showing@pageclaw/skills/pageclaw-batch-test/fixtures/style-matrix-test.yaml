@@ -1,0 +1,35 @@
+version: "1.0"
+
+metadata:
+  author: pageclaw-batch-test
+  created: "2026-04-16"
+  description: Minimal test matrix for validating pageclaw-batch pipeline
+
+styles:
+  - id: "01-sidebar-brutalist"
+    intent: >
+      Raw, undecorated academic reading machine. Monospace headings,
+      stark black-on-white contrast, visible grid structure. No
+      rounded corners, no shadows, no gradients. Content organized
+      by hard borders and full-width rules. Uppercase section
+      headings with tight letter-spacing.
+    layout: "Sticky sidebar left with navigation, scrollable main content right."
+
+  - id: "02-col-whitespace"
+    intent: >
+      Extreme negative space as the primary design element. Content
+      floats on the page like artifacts in a gallery. Serif headings
+      with generous size contrast against small body text. Thin
+      hairline dividers between major sections. No cards, no
+      backgrounds, no containers — just type and space.
+    layout: "Single narrow centered column, wide margins on both sides."
+
+  - id: "03-topnav-editorial"
+    intent: >
+      Mixed serif/sans pairing with strong typographic hierarchy.
+      Drop caps on section openers. Pull quotes with accent border.
+      Figure captions as small-caps with typographic rules. Baseline
+      grid alignment. Signature color (need not be neutral).
+      Magazine-heritage rhythm — opener treatment differs from body
+      sections.
+    layout: "Top navigation bar, single scrolling column, one section per content type."

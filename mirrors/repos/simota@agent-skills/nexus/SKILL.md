@@ -89,7 +89,7 @@ Agent disambiguation → `references/agent-disambiguation.md`
 - Document goal and acceptance criteria in 1-3 lines before chain selection.
 - Choose the minimum agents needed — each added agent multiplies error surface.
 - Log an immutable decision record for each routing decision (input summary, selected chain, confidence, rationale) to enable post-hoc debugging and routing adaptation. [Source: hatchworks.com]
-- Decompose large tasks with Sherpa when complexity ≥ MEDIUM.
+- Decompose tasks with Sherpa when they touch 3+ files, span multiple components, or have implicit intermediate steps. Default to decomposition; skip only when the task is a single atomic operation.
 - Use `NEXUS_HANDOFF` format from `_common/HANDOFF.md`.
 - Collect and validate execution results after each chain step — check schema, required fields, and confidence thresholds to catch semantic failures (e.g., billing agent reporting "no charges found" on ambiguous API response). [Source: codebridge.tech]
 - Record routing corrections and user overrides in the journal.
@@ -267,6 +267,7 @@ Detailed execution flows: `references/execution-phases.md`, `references/orchestr
 | `optimize`, `slow`, `performance` | Performance optimization chain | Performance improvement | `references/routing-matrix.md` |
 | `review`, `check`, `audit` | Quality review chain | Review report | `references/routing-matrix.md` |
 | `design system docs`, `token docs`, `component catalog` | Design system documentation chain | Token + catalog + diagrams + API docs | `references/routing-matrix.md` |
+| `brainstorm`, `bounce ideas`, `riff`, `壁打ち`, `アイデア` | Interactive brainstorming session | Session summary with insights | `references/routing-matrix.md` |
 | `/Nexus` (no arguments) | Proactive mode scan | Next-work recommendations | `references/proactive-mode.md` |
 | unclear or multi-domain request | Classify and route | Depends on classification | `references/intent-clarification.md` |
 
@@ -290,15 +291,22 @@ Use the table below for common cases. Canonical matrix: `references/routing-matr
 
 | Task Type | Default Chain | Add When |
 |-----------|---------------|----------|
-| `BUG` | Scout → Builder → Radar | `+Sentinel` for security, `+Sherpa` when complex |
-| `FEATURE` | Forge → Builder → Radar | `+Sherpa` for complex scope, `+Muse` for UI, `+Artisan` for frontend implementation |
+| `BUG` | Scout → **Sherpa** → Builder → Radar | `+Sentinel` for security |
+| `FEATURE` | **Sherpa** → Forge → Builder → Radar | `+Muse` for UI, `+Artisan` for frontend implementation |
 | `SECURITY` | Sentinel → Builder → Radar | `+Probe` for dynamic testing, `+Specter` for concurrency risk |
-| `REFACTOR` | Zen → Radar | `+Atlas` for architecture, `+Grove` for structure |
+| `REFACTOR` | Zen → Radar | `+Sherpa` for multi-file refactors, `+Atlas` for architecture, `+Grove` for structure |
 | `OPTIMIZE` | Bolt/Tuner → Radar | `+Schema` for DB-heavy work |
 | `DESIGN_SYSTEM_DOCS` | Muse → Showcase + Canvas → Quill | `+Vision` for direction, `+Artisan` for live examples |
 
+**Sherpa skip conditions** (skip Sherpa from default chain only when ALL apply):
+- Task touches ≤ 2 files
+- No implicit intermediate steps
+- Single atomic operation completable in one focused step
+
 **Adjustment rules:**
-- `3+` test failures → add Sherpa.
+- `3+` files touched → add Sherpa (if not already in chain).
+- Ambiguous or multi-step requirements → add Sherpa.
+- `3+` test failures → add Sherpa for re-decomposition.
 - Security-sensitive changes → add Sentinel or Probe.
 - UI changes → add Muse or Palette.
 - Slow database path → add Tuner.

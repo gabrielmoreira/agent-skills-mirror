@@ -1,0 +1,11 @@
+{
+  "name": "Felo Search",
+  "tagline": "AI 即時網路搜尋，查詢最新消息並回傳整理過的答案",
+  "description": "Felo Search 透過 Felo AI API 進行即時網路搜尋，可查詢新聞、天氣、價格、旅遊資訊等時效性內容。回傳的不是連結清單，而是 AI 整理過的自然語言答案，支援中文、英文、日文等多語言查詢。",
+  "category": "data",
+  "tags": ["search", "real-time", "news", "felo", "multilingual"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": ["FELO_API_KEY"]
+}

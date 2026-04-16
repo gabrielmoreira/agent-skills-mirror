@@ -1,0 +1,11 @@
+{
+  "name": "Felo Web Fetch",
+  "tagline": "網頁內容擷取工具，將網址轉換為乾淨的文字或 Markdown",
+  "description": "Felo Web Fetch 透過 Felo Web Extract API 擷取網頁內容，支援輸出為 HTML、Markdown 或純文字格式。可使用 CSS 選擇器精準擷取特定區塊，並提供閱讀模式自動過濾廣告雜訊，適合資料蒐集、文章整理與網頁備份。",
+  "category": "data",
+  "tags": ["felo", "web-fetch", "scraping", "markdown", "content-extraction"],
+  "version": "1.0.0",
+  "support_url": "https://github.com/duotify/GitHubClawToolkit/issues",
+  "homepage": "https://learn.duotify.com/courses/githubclaw",
+  "requireEnv": ["FELO_API_KEY"]
+}
