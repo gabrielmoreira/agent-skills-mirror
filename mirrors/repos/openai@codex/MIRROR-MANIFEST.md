@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/codex` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `openai/codex` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openai/codex` — 26 default patterns, 0 followed patterns, 13 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,8 +70,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`codex-rs/skills/src/assets/samples/plugin-creator/SKILL.md`](codex-rs/skills/src/assets/samples/plugin-creator/SKILL.md) |
 | 10 | ✓ | [`codex-rs/skills/src/assets/samples/skill-creator/SKILL.md`](codex-rs/skills/src/assets/samples/skill-creator/SKILL.md) |
 | 11 | ✓ | [`codex-rs/skills/src/assets/samples/skill-installer/SKILL.md`](codex-rs/skills/src/assets/samples/skill-installer/SKILL.md) |
-| 12 | ✓ | [`codex-rs/tui/src/bottom_pane/AGENTS.md`](codex-rs/tui/src/bottom_pane/AGENTS.md) |
-| 13 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 12 | ✓ | [`codex-rs/thread-store/src/remote/AGENTS.md`](codex-rs/thread-store/src/remote/AGENTS.md) |
+| 13 | ✓ | [`codex-rs/tui/src/bottom_pane/AGENTS.md`](codex-rs/tui/src/bottom_pane/AGENTS.md) |
+| 14 | ✓ | [`docs/skills.md`](docs/skills.md) |
 
 ---
 

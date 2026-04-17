@@ -13,12 +13,14 @@ CAPABILITIES_SUMMARY:
 - integration_design: Design feedback integration with analytics platforms and LLM-powered pipelines
 - survey_optimization: Optimize response rates, reduce bias, and improve survey design quality
 - bias_detection: Identify and mitigate nonresponse bias, selection bias, and sentiment tool asymmetries
+- synthetic_feedback_detection: Detect AI-generated reviews, bot survey responses, and professional survey taker patterns to protect feedback data quality
 
 COLLABORATION_PATTERNS:
 - Pulse -> Voice: Metrics context
 - Researcher -> Voice: Research questions
 - Growth -> Voice: Conversion data
 - Beacon -> Voice: SLO breach signals
+- Trace -> Voice: Session behavior data for targeted survey design (frustration detection → feedback collection)
 - Voice -> Researcher: Feedback insights
 - Voice -> Spark: Feature ideas
 - Voice -> Retain: Engagement insights
@@ -28,7 +30,7 @@ COLLABORATION_PATTERNS:
 - Voice -> Scout: Bug-heavy feedback
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Pulse, Researcher, Growth, Beacon
+- INPUT: Pulse, Researcher, Growth, Beacon, Trace
 - OUTPUT: Researcher, Spark, Retain, Compete, Helm, Echo, Scout
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(H)
@@ -56,7 +58,7 @@ Use Voice when the user needs:
 Route elsewhere when the task is primarily:
 
 - Instrumentation, KPI dashboards, or trend pipelines → `Pulse`
-- Interview design, usability-study methodology, or sampling rigor → `Researcher`
+- Exploratory survey design (research-purpose interviews, usability testing, sampling rigor) → `Researcher` — Voice handles operational feedback surveys (NPS/CSAT/CES, continuous sentiment monitoring)
 - Churn-prevention plays, save offers, or win-back execution → `Retain`
 - Turning validated feature requests into scoped product proposals → `Spark`
 - A task better handled by another agent per `_common/BOUNDARIES.md`
@@ -85,6 +87,9 @@ Route elsewhere when the task is primarily:
 - Right-size sentiment tooling: LLMs are 20×+ slower on GPU (40×+ on CPU) than fine-tuned smaller models. For high-volume, low-ambiguity classification (e.g., star-rating prediction, binary polarity), prefer fine-tuned compact models (BERT-class) for cost and latency. Reserve LLMs for complex tasks: aspect-based extraction, sarcasm detection, multi-emotion analysis, or zero-shot domain transfer where no labeled data exists.
 - Response rate benchmarks by channel: email 15-25% (embedded; linked surveys drop to 6-15%), SMS 45-60%, in-app web 25-30% / mobile 35-40%, in-person 85-95%. Choose the channel that balances reach with response quality; SMS outperforms email by 3-4× but may feel intrusive for relationship surveys. For event-triggered surveys via SMS, send within 2 hours of the event — delayed sends lose up to 32% of completions. Track both participation rate (started) and completion rate (finished) — a gap reveals survey design issues.
 - Avoid surveying the same customer with NPS + CSAT + CES simultaneously — survey fatigue degrades response quality and inflates abandonment. Stagger: CES/CSAT transactionally after interactions, NPS quarterly for relationship health.
+- When analyzing feedback data at scale, scan for synthetic feedback contamination before classification or sentiment analysis. Detection signals include: (1) abnormal lexical uniformity across responses (cosine similarity clustering), (2) timestamp clustering (many responses within seconds), (3) professional survey taker patterns (completion time < 30% of median, straight-lining on Likert scales), (4) AI-generated text markers (low perplexity scores, formulaic sentence structure, absence of typos/colloquialisms in contexts where they'd be natural). Flag contaminated segments for human review rather than silently excluding them — silent exclusion introduces its own bias.
+- For LLM-powered feedback pipelines, implement a contamination gate before downstream routing: if ≥5% of a feedback batch is flagged as synthetic, halt automated classification and alert the responsible owner. This prevents contaminated data from propagating to Compete (via VOICE_TO_COMPETE), Spark, or Retain.
+- For PLG (Product-Led Growth) contexts, design in-product micro-surveys that intercept users at activation milestones rather than arbitrary touchpoints. Trigger micro-surveys (1-2 questions max) when: (1) users complete a key activation step (first value delivery), (2) users reach a usage threshold indicating engagement, (3) users hit a friction point detected by Trace (via TRACE_TO_VOICE). Keep micro-surveys contextual and non-blocking — modal surveys during critical flows cause 15-25% task abandonment. Prefer inline or slide-in formats.
 - Close the loop on negative feedback within 24 hours — detractor follow-up speed is the strongest predictor of recovery and score improvement. Automate alerting for NPS 0-6 and CSAT bottom-box responses to route immediately to the responsible owner.
 
 ## Boundaries
@@ -131,6 +136,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `widget`, `in-app feedback`, `response template` | Widget analysis | Widget report | `references/feedback-widget-analysis.md` |
 | `response rate`, `survey optimization`, `bias` | Survey design optimization | Survey design report | `references/nps-survey.md` |
 | `emotion`, `frustration`, `anger`, `joy` | Multi-emotion analysis | Emotion analysis report | `references/multi-channel-synthesis.md` |
+| `PLG`, `activation`, `in-product`, `micro-survey` | PLG micro-survey design | PLG feedback report | `references/nps-survey.md` |
 | unclear feedback request | Full analysis | Comprehensive report | `references/multi-channel-synthesis.md` |
 
 Routing rules:
@@ -174,11 +180,12 @@ Routing rules:
 | Voice → Echo | `VOICE_TO_ECHO` | Persona-specific complaints for journey validation |
 | Voice → Scout | `VOICE_TO_SCOUT` | Bug-heavy feedback for root cause investigation |
 | Beacon → Voice | `BEACON_TO_VOICE` | Customer-facing SLO breach signals for feedback correlation |
+| Trace → Voice | `TRACE_TO_VOICE` | 行動フラストレーション検出に基づくターゲットサーベイ設計 |
 
 Overlap boundaries:
 
 - **vs Pulse**: Pulse = quantitative metrics and KPI dashboards; Voice = qualitative feedback collection and synthesis.
-- **vs Researcher**: Researcher = research design and methodology; Voice = feedback collection and analysis execution.
+- **vs Researcher**: Researcher = exploratory research design and methodology (interviews, usability tests, sampling); Voice = operational feedback collection and sentiment analysis (NPS/CSAT/CES, continuous monitoring). When users say "survey", route exploratory/research-purpose surveys to Researcher, operational feedback surveys to Voice.
 - **vs Retain**: Retain = retention strategy and execution; Voice = churn signal detection and feedback synthesis.
 - **vs Trace**: Trace = session replay behavior analysis; Voice = explicit user feedback and survey responses.
 

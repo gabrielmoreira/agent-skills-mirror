@@ -10,7 +10,7 @@ CAPABILITIES_SUMMARY:
 - json_ld_structured_data: Schema.org structured data (Article, Product, FAQ, Organization) with stacked schema for AI citation
 - heading_hierarchy_audit: H1-H6 structure validation and fix
 - core_web_vitals: LCP ≤2.5s, INP <200ms, CLS <0.1 identification and improvement at p75; VSI tracking for session-long stability when available
-- geo_optimization: Generative Engine Optimization for AI Overviews/ChatGPT/Perplexity/Copilot citation with four-signal framework (retrievability, extractability, credibility, entity clarity), platform-specific tactics, and GEO KPI measurement (Mention Rate, Citation Rate, Share of Voice)
+- geo_optimization: Generative Engine Optimization for AI Overviews/ChatGPT/Perplexity/Copilot citation with four-signal framework (retrievability, extractability, credibility, entity clarity), AI crawler bot taxonomy (training vs search/retrieval), platform-specific tactics, and GEO KPI measurement (Mention Rate, Citation Rate, Share of Voice)
 - eeat_signals: Experience, Expertise, Authoritativeness, Trustworthiness markup and content structure
 - cro_cta_optimization: CTA copy, placement, color, urgency improvements with hypothesis-driven testing
 - form_optimization: Field reduction, inline validation, progress indication
@@ -84,11 +84,12 @@ Route elsewhere when the task is primarily:
 - Avoid black hat SEO and dark patterns.
 - Include verification steps (Lighthouse, social preview debugger, CLS check).
 - Target Core Web Vitals thresholds at 75th percentile: LCP ≤2.5s, INP <200ms, CLS <0.1 (Google official); track VSI for session-long visual stability when available. INP is the most commonly failed CWV (43% of sites fail the 200ms threshold) — prioritize INP diagnosis first.
-- Implement stacked JSON-LD schema (minimum: Organization + BreadcrumbList + WebSite; for GEO: Article + ItemList + FAQPage triple stack) for AI search eligibility.
+- Implement stacked JSON-LD schema (minimum: Organization + BreadcrumbList + WebSite; for GEO: Article + ItemList + FAQPage triple stack) for AI search eligibility. Post-March 2026, schema's primary value shifted from rich result triggering to AI entity verification — sites with comprehensive structured data are 2.4× more likely to be cited in AI-generated summaries; FAQ rich results dropped ~50% on non-primary pages, but FAQPage schema remains effective for AI citation.
 - Validate structured data with Google Rich Results Test before delivery; verify schema-content consistency (every JSON-LD claim must match visible page content).
-- GEO content requires 3–5 inline citations from authoritative sources per article; AI citation decay occurs within 7–14 days of content staleness — schedule bi-weekly content refreshes for GEO-critical pages. Use `@id` references to connect entities into a coherent knowledge graph that AI systems can traverse.
+- GEO content requires 3–5 inline citations from authoritative sources per article; AI citation decay occurs within 7–14 days of content staleness — schedule bi-weekly content refreshes for GEO-critical pages. Use `@graph` array to nest related entities in a single JSON-LD block with `@id` cross-references, forming a coherent knowledge graph that AI systems can traverse.
 - GEO optimization targets four signals: **retrievability** (can AI find and fetch your content), **extractability** (can AI parse structured answers from it), **credibility** (does it cite authoritative sources with exact metrics), **entity clarity** (are entities disambiguated via schema and consistent naming). Visibility uplift of up to 40% when all four signals are addressed.
 - Track three GEO-specific KPIs: **Mention Rate** (% of AI answers naming your brand — below 5% = invisible, 15–30% = strong), **Citation Rate** (% including a clickable URL to your domain), **Share of Voice** (brand mentions vs competitors across tracked prompts). These replace traditional rank tracking for AI search.
+- GEO requires distinguishing AI **training bots** (GPTBot, ClaudeBot) from **search/retrieval bots** (OAI-SearchBot, Claude-SearchBot, ChatGPT-User, Claude-User) in robots.txt — blocking training bots does not affect AI search citation; blocking search/retrieval bots eliminates citation visibility entirely. 73% of sites have unintentional technical barriers (overly broad robots.txt, CDN blocks, JS rendering) preventing AI crawler access — audit AI crawlability as part of GEO readiness.
 - Use the most specific JSON-LD schema type available (e.g., BlogPosting over Article, LocalBusiness over Organization); specific types yield clearer signals for both search engines and AI systems.
 - CRO changes require a documented hypothesis — never test without one.
 - CRO personalization is expected: showing identical static content to all visitor segments (first-time vs returning, ad-referred vs organic) is a missed conversion opportunity — segment-aware content or dynamic CTAs should be the default recommendation.
@@ -126,6 +127,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Use generic (non-specific) schema types when a more specific one exists (e.g., Article when BlogPosting applies, Organization when LocalBusiness applies) — specificity is a ranking and AI-citation signal.
 - Optimize GEO exclusively for one AI platform (e.g., ChatGPT only) while ignoring Perplexity, Gemini, Claude, and Copilot — each platform has different source sets, citation patterns, and retrieval mechanisms; single-platform optimization creates blind spots that competitors exploit.
 - Rely on llms.txt for AI crawler guidance — as of 2026, no major AI crawler (GPTBot, ClaudeBot, PerplexityBot) requests or honors llms.txt files; use robots.txt directives and structured data instead.
+- Block AI search/retrieval bots (OAI-SearchBot, Claude-SearchBot, ChatGPT-User, Claude-User) via robots.txt while expecting AI citation visibility — these bots power AI search answers; blocking them removes your content from AI search results entirely. Training bot blocks (GPTBot, ClaudeBot) are safe for citation preservation.
 - Break accessibility.
 - Modify backend logic.
 

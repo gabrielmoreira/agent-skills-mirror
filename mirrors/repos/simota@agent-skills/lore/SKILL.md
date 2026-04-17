@@ -13,7 +13,7 @@ CAPABILITIES_SUMMARY:
 - best_practice_curation: Harvest and validate reusable practices from cross-agent evidence
 - contradiction_detection: Identify and resolve conflicting learnings between agents
 - postmortem_mining: Extract reusable incident patterns from blameless postmortems
-- knowledge_graph_enrichment: Structure extracted patterns as entity-relation triples for graph-based retrieval
+- knowledge_graph_enrichment: Structure extracted patterns as entity-relation triples with bi-temporal validity tracking for graph-based retrieval
 - organizational_forgetting_prevention: Detect and mitigate four forms of knowledge loss (failure to capture, failure to maintain, unintentional/accidental loss)
 - strategic_knowledge_pruning: Intentionally archive invalidated patterns to prevent outdated knowledge from blocking new pattern absorption
 
@@ -138,7 +138,7 @@ Core synthesis rules:
 
 Postmortem mining rules:
 - Process postmortems within 48 hours of availability — delayed analysis loses contextual accuracy.
-- Extract entity-relation triples (root cause → impact → remediation) with temporal markers (discovery date, validity period, recurrence interval) for graph-based retrieval and automated freshness scheduling. Limit knowledge graph schemas to 3-7 node types and 5-15 relationship types per domain — exceeding these ranges degrades extraction precision and query accuracy.
+- Extract entity-relation triples (root cause → impact → remediation) using a bi-temporal model: record both observation time (when the event occurred) and ingestion time (when it was captured), with explicit validity intervals (t_valid, t_invalid) per relationship. When new evidence contradicts an existing relationship, invalidate the prior interval rather than overwriting — preserving full history for trend analysis and recurrence detection. Limit knowledge graph schemas to 3-7 node types and 5-15 relationship types per domain — exceeding these ranges degrades extraction precision and query accuracy.
 - Cross-reference with existing FAILURE/ANTI patterns to detect recurring incident classes.
 - Postmortems varying in depth require normalization: extract structured fields (severity, blast radius, time-to-resolve, root cause category) before pattern matching.
 - Blameless framing: record system/process failures, not individual attribution.
@@ -205,6 +205,10 @@ Freshness score thresholds:
 - `70-84%`: warning — schedule review cycle, notify Darwin for evolution input.
 - `< 70%`: degraded — flag to consumers that retrieved patterns may be outdated.
 
+Operational freshness metrics (track alongside the catalog score):
+- **Stale retrieval rate**: fraction of consumer queries that return AGING or STALE patterns — measures actual consumer impact of decay. Alert threshold: > 15%.
+- **Propagation lag**: average delay between pattern update in METAPATTERNS.md and consumer notification — tracks knowledge distribution timeliness. Alert threshold: > 24 hours.
+
 Domain-specific knowledge half-life (apply as TTL multipliers):
 - Technical documentation / architecture patterns: ~18 months (multiplier 1.5x).
 - Operational / incident patterns: ~6 months (multiplier 1.0x).
@@ -234,6 +238,9 @@ Exceptions:
 - **vs Sigil**: Sigil = project-specific skill generation; Lore = cross-project pattern catalog.
 - **vs Oracle**: Oracle = RAG pipeline and retrieval architecture design; Lore = knowledge graph enrichment and pattern structuring that feeds into RAG systems.
 - **vs Gauge**: Gauge = SKILL.md compliance auditing; Lore = signals about knowledge decay that may indicate skill staleness.
+
+**Agent Teams aptitude — RESEARCH_FAN_OUT (HARVEST phase):**
+When HARVEST scope includes 3+ independent source categories (e.g., agent journals, Triage postmortems, Mend remediation logs), spawn 2-3 Explore subagents in parallel — each scanning one category. Merge strategy: Union (collect all → deduplicate → consolidate). Ownership split: each subagent reads a disjoint set of source files. Do not parallelize SYNTHESIZE or later phases — they require cross-source correlation that must happen in a single context.
 
 ## Reference Map
 

@@ -16,6 +16,7 @@ CAPABILITIES_SUMMARY:
 - persona_validation: Validate persona hypotheses against real behavioral data with statistical significance
 - ab_behavior_analysis: Analyze A/B test variant behavior beyond quantitative metrics
 - ai_session_summarization: Leverage AI-powered session summaries (Contentsquare AI Summaries, FullStory frustration signals, Quantum Metric) for scalable analysis, including group summaries (up to 100 sessions) for cross-session pattern detection
+- plg_activation_analysis: Segment new user sessions by activation milestone (pre/post "Aha Moment"), extract activation behavior patterns, and identify drop-off points in PLG onboarding funnels
 
 COLLABORATION_PATTERNS:
 - Researcher -> Trace: Persona definitions for session filtering
@@ -25,12 +26,16 @@ COLLABORATION_PATTERNS:
 - Pulse -> Trace: Quantitative anomaly triggers qualitative analysis
 - Trace -> Canvas: Behavior data to journey diagrams
 - Trace -> Palette: UX fix recommendations based on behavior analysis
-- Trace -> Experiment: Behavioral insights inform A/B test hypothesis design
+- Trace -> Experiment: Behavioral insights inform A/B test hypothesis design (Hypothesis Readiness Score ≥7 triggers handoff)
 - Voice -> Trace: Qualitative feedback mapped to behavioral session evidence
+- Trace -> Cast: TRACE_TO_CAST_DRIFT — 行動クラスター乖離（≥15%）に基づくペルソナ更新トリガー
+- Trace -> Voice: TRACE_TO_VOICE — フラストレーション検出に基づくターゲットサーベイ設計示唆
+- Trace -> Saga: TRACE_TO_SAGA — 高影響度 UX セッション分析のナラティブ化
+- Trace -> Pulse: PLG activation evidence for activation rate metrics (plg_activation_evidence)
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Researcher (persona definitions), Pulse (metric anomalies), Echo (predicted friction points), Voice (qualitative feedback)
-- OUTPUT: Researcher (persona validation), Echo (real problems), Canvas (visualization), Palette (UX fixes), Experiment (behavior hypotheses)
+- OUTPUT: Researcher (persona validation), Echo (real problems), Canvas (visualization), Palette (UX fixes), Experiment (behavior hypotheses), Cast (persona drift signals), Voice (frustration-driven survey triggers), Saga (high-impact session narratives), Pulse (PLG activation evidence)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Mobile(H) Dashboard(M) Media(M)
 -->
@@ -55,6 +60,7 @@ Use Trace when the user needs:
 - A/B test behavior analysis beyond quantitative metrics (how variants change user flow)
 - AI-powered session summarization at scale (Contentsquare AI Summaries, FullStory frustration signals, Quantum Metric patterns), including group summaries across up to 100 sessions for recurring friction detection
 - mapping qualitative feedback (Voice) to behavioral session evidence
+- PLG activation behavior analysis (new user onboarding patterns, "Aha Moment" identification, activation funnel drop-off analysis)
 
 Route elsewhere when the task is primarily:
 - quantitative metric anomaly detection without behavior analysis: `Pulse`
@@ -79,6 +85,7 @@ Route elsewhere when the task is primarily:
 - Separate behavioral data from identity data — analyze actions, not individuals.
 - Cite anonymized evidence for every recommendation.
 - Provide actionable recommendations with clear handoff targets and business impact estimates.
+- For PLG (Product-Led Growth) activation analysis, segment new user sessions into pre-activation and post-activation cohorts based on defined activation milestones (e.g., first value delivery, key feature usage). Extract the behavioral patterns that differentiate users who reach the "Aha Moment" from those who drop off. Key analysis dimensions: (1) Time-to-activation (median and distribution), (2) Navigation paths of activated vs. churned users, (3) Feature discovery sequence leading to activation, (4) Friction points in the activation funnel (frustration signals concentrated in specific steps). When activation milestones are not pre-defined, propose candidate milestones based on behavioral clustering (usage frequency inflection points, session depth increases). Coordinate with Pulse (via TRACE_TO_PULSE) for activation rate metrics and with Voice (via TRACE_TO_VOICE) for targeted micro-survey placement at detected friction points.
 
 ## Boundaries
 
@@ -142,6 +149,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `journey`, `flow`, `funnel`, `path` | Journey reconstruction | Journey narrative report | `references/session-analysis.md` |
 | `validate persona`, `real data`, `hypothesis` | Persona validation | Validation report | `references/persona-integration.md` |
 | `A/B`, `experiment`, `variant behavior` | A/B behavior analysis | Behavior comparison report | `references/session-analysis.md` |
+| `PLG`, `activation`, `onboarding`, `aha moment`, `funnel` | PLG activation analysis | Activation behavior report | `references/session-analysis.md` |
 | unclear behavior analysis request | Full session analysis | Comprehensive behavior report | `references/session-analysis.md` |
 
 Routing rules:
@@ -176,13 +184,35 @@ Every deliverable must include:
 | Trace → Canvas | `TRACE_TO_CANVAS` | Behavior data to journey diagrams |
 | Trace → Palette | `TRACE_TO_PALETTE` | UX fix recommendations based on behavior analysis |
 | Voice → Trace | `VOICE_TO_TRACE` | Qualitative feedback mapped to behavioral session evidence |
-| Trace → Experiment | `TRACE_TO_EXPERIMENT` | Behavioral insights inform A/B test hypothesis design |
+| Trace → Experiment | `TRACE_TO_EXPERIMENT` | Behavioral insights inform A/B test hypothesis design (Hypothesis Readiness Score ≥7 required) |
+| Trace → Cast | `TRACE_TO_CAST_DRIFT` | 行動乖離≥15%でペルソナ更新をトリガー |
+| Trace → Voice | `TRACE_TO_VOICE` | フラストレーション検出 → ターゲットサーベイ設計 |
+| Trace → Saga | `TRACE_TO_SAGA` | 高影響度セッション分析のナラティブ化 |
+| Trace → Pulse | `TRACE_TO_PULSE` | PLG アクティベーション証拠をメトリクス設計に反映 |
+
+### Hypothesis Readiness Score (Trace → Experiment)
+
+Before issuing a `TRACE_TO_EXPERIMENT` handoff, score the behavior pattern:
+
+| Criterion | Description | Score |
+|-----------|-------------|-------|
+| **Reproducibility** | Pattern observed across multiple sessions/cohorts | 1–3 |
+| **Impact Scale** | Proportion of users affected by the pattern | 1–3 |
+| **Testability** | Pattern can be implemented as an A/B test variant | 1–3 |
+
+- **Score ≥7**: Recommend handoff. Include score breakdown in payload.
+- **Score 5–6**: Flag as candidate; gather more evidence.
+- **Score ≤4**: Document as observation only.
+
+### Persona Drift Routing (Trace → Cast)
+
+During **ANALYZE** phase, when actual behavior deviates from expected persona patterns by **≥15%** across a behavior cluster (navigation path, feature usage frequency, funnel completion rate), automatically issue `TRACE_TO_CAST_DRIFT`. Include: affected persona ID, behavior cluster, deviation magnitude, session count (minimum n≥50).
 
 **Overlap boundaries:**
 - **vs Pulse**: Pulse = quantitative metrics (WHAT happened); Trace = qualitative behavior analysis (WHY it happened).
 - **vs Echo**: Echo = persona-based UI simulation (predictions); Trace = real session data analysis (evidence).
 - **vs Researcher**: Researcher = research design and persona creation; Trace = persona validation with real data.
-- **vs Cast**: Cast = persona generation and lifecycle management; Trace = real data validation of persona behaviors.
+- **vs Cast**: Cast = persona generation and lifecycle management; Trace = real data validation of persona behaviors; emits `TRACE_TO_CAST_DRIFT` when behavior deviates ≥15% from expected persona.
 - **vs Canvas**: Canvas = diagram creation and visualization; Trace = behavior data analysis handed off to Canvas.
 
 ## Reference Map

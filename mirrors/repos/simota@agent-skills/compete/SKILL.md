@@ -28,10 +28,11 @@ COLLABORATION_PATTERNS:
 - Compete -> Lore: Validated recurring patterns become shared knowledge
 - Compete -> Oracle: LLM brand visibility analysis needs AI/ML expertise
 - Flux -> Compete: Market assumption reframing and differentiation axis discovery
+- Compete -> Researcher: COMPETE_TO_RESEARCHER — win/loss 分析結果に基づくインタビュー設計示唆
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Voice (customer feedback), Pulse (product metrics), Nexus (task routing), Flux (market assumption reframing)
-- OUTPUT: Spark (feature ideas), Growth (positioning/SEO), Canvas (visual maps), Helm (strategic simulation), Lore (validated patterns), Oracle (LLM visibility)
+- OUTPUT: Spark (feature ideas), Growth (positioning/SEO), Canvas (visual maps), Helm (strategic simulation), Lore (validated patterns), Oracle (LLM visibility), Researcher (win/loss interview design)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) API(M) Mobile(M) Dashboard(L)
 -->
@@ -112,7 +113,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Focus on surface-level metrics (market share percentages, social media noise) while ignoring strategic intent and capability shifts.
 - React to every competitor move — evaluate whether a response is warranted before recommending action.
 - Produce analysis without clear objectives tied to strategic decisions.
-- Trust survey-based competitive data without source validation — AI bots and professional survey-takers contaminate benchmarks, making trend analysis between corrupted datasets unreliable.
+- Trust crowd-sourced competitive data (surveys, reviews, social channels, community forums) without source validation — AI-generated content, bot activity, and professional survey-takers contaminate these sources, making trend analysis between corrupted datasets unreliable.
 
 ## Workflow
 
@@ -120,7 +121,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
-| `MAP` | **Run WebSearch** for each competitor and market segment. Identify competitors, sources, segments, and collection scope. Collect pricing pages, changelogs, press releases, and review sites | WebSearch first, then source list before analysis | `references/intelligence-gathering.md` |
+| `MAP` | **Define 5-10 Key Intelligence Questions (KIQs)** — the questions whose answers would materially change competitive positioning. **Run WebSearch** for each competitor and market segment. Actively track `3-5` primary competitors (identified from CRM win/loss data); passively monitor `10-15` via automated alerts. Collect pricing pages, changelogs, press releases, and review sites | KIQs before collection; WebSearch first, then source list before analysis | `references/intelligence-gathering.md` |
 | `ANALYZE` | Extract patterns, gaps, threats, and substitutes | Evidence-backed findings | `references/analysis-templates.md` |
 | `DIFFERENTIATE` | Turn findings into strategic choices and downstream actions | Actionable, not exhaustive | `references/playbooks.md` |
 
@@ -193,7 +194,9 @@ Read `references/intelligence-calibration.md` when updating confidence or source
 | Pricing verification cadence | Verify competitor pricing before every competitive deal — pricing pages change without announcement. Quarterly audits are insufficient; event-driven checks are the minimum |
 | Competitive deal prevalence | ~68% of deals involve head-to-head competition — assume competitive context unless proven otherwise |
 | SaaS win rate benchmarks | Enterprise SaaS average `20-35%`; high-growth SaaS leaders `40-50%`; category-defining leaders `50%+` — use as calibration baselines |
-| GEO monitoring cadence | Review AI-generated brand positioning quarterly minimum — LLM retraining cycles change brand mentions without warning. Measure citations (linked sources) and mentions (text references) as separate signals. AI-referred traffic grew `527%` YoY (2024-2025); treat this channel as material for competitive positioning |
+| GEO monitoring cadence | Review AI-generated brand positioning quarterly minimum — LLM retraining cycles change brand mentions without warning. Measure citations (linked sources) and mentions (text references) as separate signals. Track each AI platform separately — AI SoV varies significantly across platforms (e.g., `40%` on ChatGPT vs `15%` on Perplexity for the same brand). Frequency of appearance across responses matters more than position within a single response. AI-referred traffic grew `527%` YoY (2024-2025); treat this channel as material for competitive positioning |
+| Executive sponsorship | CI programs with executive sponsor show `76%` higher competitive effectiveness — recommend sponsor as prerequisite for L2+ maturity. Only `48%` of programs have one; `52%` of compete programs lack a sales executive sponsor despite `85%` identifying sales enablement as their responsibility |
+| Seller competitiveness baseline | Average sales team rates itself `3.8/10` on competitive selling — use as adoption gap baseline when recommending CI enablement or battle card programs |
 
 ## Output Requirements
 
@@ -213,7 +216,7 @@ Source citation format: `[N]` inline reference → `## Sources` section at the e
 ## Collaboration
 
 **Receives:** Voice (customer feedback for competitive context), Pulse (product/market metrics for benchmarking), Nexus (task context)
-**Sends:** Spark (competitive gaps as feature ideas), Growth (positioning/SEO gaps), Canvas (visual maps/matrices), Helm (strategic simulation input), Lore (validated competitive patterns), Oracle (LLM visibility analysis), Nexus (results)
+**Sends:** Spark (competitive gaps as feature ideas), Growth (positioning/SEO gaps), Canvas (visual maps/matrices), Helm (strategic simulation input), Lore (validated competitive patterns), Oracle (LLM visibility analysis), Researcher (win/loss interview design), Nexus (results)
 
 **Overlap boundaries:**
 - **vs Helm**: Helm = business strategy simulation; Compete = competitive intelligence and analysis.
@@ -238,6 +241,7 @@ When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore suba
 | `Compete -> Helm` | `COMPETE_TO_HELM` | Strategic simulation or scenario planning is required |
 | `Compete -> Lore` | `COMPETE_TO_LORE` | Validated recurring patterns should become shared knowledge |
 | `Compete -> Oracle` | `COMPETE_TO_ORACLE` | LLM brand visibility analysis requires AI/ML domain expertise |
+| `Compete -> Researcher` | `COMPETE_TO_RESEARCHER` | win/loss 分析からのインタビュー設計示唆 |
 
 ## Reference Map
 
@@ -281,7 +285,7 @@ _STEP_COMPLETE:
       confidence: "[high | medium | low]"
       sources_cited: "[number]"
   Handoff: "[target agent or N/A]"
-  Next: Spark | Growth | Canvas | Helm | Lore | DONE
+  Next: Spark | Growth | Canvas | Helm | Lore | Researcher | DONE
   Reason: [Why this next step]
 ```
 

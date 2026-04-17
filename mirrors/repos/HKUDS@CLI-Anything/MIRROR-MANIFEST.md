@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 46 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,16 +95,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`openclaw-skill/SKILL.md`](openclaw-skill/SKILL.md) |
 | 35 | ✓ | [`openscreen/agent-harness/cli_anything/openscreen/skills/SKILL.md`](openscreen/agent-harness/cli_anything/openscreen/skills/SKILL.md) |
 | 36 | ✓ | [`pm2/agent-harness/cli_anything/pm2/skills/SKILL.md`](pm2/agent-harness/cli_anything/pm2/skills/SKILL.md) |
-| 37 | ✓ | [`renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md`](renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md) |
-| 38 | ✓ | [`rms/agent-harness/cli_anything/rms/skills/SKILL.md`](rms/agent-harness/cli_anything/rms/skills/SKILL.md) |
-| 39 | ✓ | [`safari/agent-harness/cli_anything/safari/skills/SKILL.md`](safari/agent-harness/cli_anything/safari/skills/SKILL.md) |
-| 40 | ✓ | [`seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md`](seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md) |
-| 41 | ✓ | [`shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md`](shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md) |
-| 42 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
-| 43 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
-| 44 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
-| 45 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
-| 46 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
+| 37 | ✓ | [`QGIS/agent-harness/cli_anything/qgis/skills/SKILL.md`](QGIS/agent-harness/cli_anything/qgis/skills/SKILL.md) |
+| 38 | ✓ | [`renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md`](renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md) |
+| 39 | ✓ | [`rms/agent-harness/cli_anything/rms/skills/SKILL.md`](rms/agent-harness/cli_anything/rms/skills/SKILL.md) |
+| 40 | ✓ | [`safari/agent-harness/cli_anything/safari/skills/SKILL.md`](safari/agent-harness/cli_anything/safari/skills/SKILL.md) |
+| 41 | ✓ | [`seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md`](seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md) |
+| 42 | ✓ | [`shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md`](shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md) |
+| 43 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
+| 44 | ✓ | [`unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md`](unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md) |
+| 45 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
+| 46 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
+| 47 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
+| 48 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
 
 ---
 

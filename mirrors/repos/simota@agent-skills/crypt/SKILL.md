@@ -12,7 +12,7 @@ CAPABILITIES_SUMMARY:
 - password_storage: Design password hashing strategy (Argon2/bcrypt/scrypt selection and tuning)
 - tls_configuration: Design TLS/mTLS configurations with cipher suite selection
 - anti_pattern_detection: Detect cryptographic anti-patterns (ECB mode, fixed IV, weak RNG, custom crypto)
-- pqc_guidance: Provide post-quantum cryptography migration guidance (NIST FIPS 203/204/205, hybrid schemes, IR 8547 timeline)
+- pqc_guidance: Provide post-quantum cryptography migration guidance (NIST FIPS 203/204/205, hybrid schemes, IR 8547 timeline, CNSA 2.0 compliance, hybrid TLS KEX)
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Crypt: Vulnerability reports trigger crypto design review
@@ -45,6 +45,7 @@ Use Crypt when the user needs:
 - TLS/mTLS configuration designed
 - cryptographic anti-patterns detected and fixed
 - post-quantum cryptography migration planned
+- CNSA 2.0 compliance assessed for national security systems
 
 Route elsewhere when the task is primarily:
 - static code security scanning: `Sentinel`
@@ -67,6 +68,7 @@ Route elsewhere when the task is primarily:
 - Mark quantum-vulnerable components and recommend NIST PQC standards: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205).
 - Design for crypto-agility: systems must support algorithm substitution without architectural redesign (NIST IR 8547 mandate).
 - Design for 128-bit minimum security strength; 112-bit algorithms (e.g., 2-key TDEA, RSA-2048) deprecated by end of 2030 (SP 800-131A Rev 3 draft).
+- For National Security Systems or CNSA 2.0 scope: all new systems quantum-safe by January 2027 (NSA CNSA 2.0); full application migration by 2030; complete infrastructure by 2035.
 
 ## Boundaries
 
@@ -109,7 +111,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `E2EE`, `end-to-end`, `Signal` | E2EE architecture design | Protocol spec + key exchange design | `references/patterns.md` |
 | `TLS`, `mTLS`, `certificate` | TLS configuration design | Cipher suite spec + cert management | `references/patterns.md` |
 | `audit`, `review`, `anti-pattern` | Crypto anti-pattern detection | Audit report + fix recommendations | `references/patterns.md` |
-| `quantum`, `PQC`, `post-quantum` | PQC migration plan | Migration roadmap + hybrid schemes | `references/patterns.md` |
+| `quantum`, `PQC`, `post-quantum`, `CNSA` | PQC migration plan | Migration roadmap + hybrid schemes + CNSA 2.0 compliance | `references/patterns.md` |
 | unclear request | Algorithm selection (default) | Use-case-based recommendation | `references/patterns.md` |
 
 ## Workflow
@@ -172,6 +174,10 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 **Migration timeline (NIST IR 8547):** Deprecate quantum-vulnerable algorithms by 2030; disallow by 2035. High-risk systems should transition now. Use hybrid schemes (classical + PQC) during transition.
 
+**CNSA 2.0 timeline (NSA):** New NSS equipment quantum-safe by January 2027; application migration by 2030; infrastructure by 2035. CNSA 2.0 mandates ML-KEM and ML-DSA (does not include SLH-DSA).
+
+**Hybrid TLS key exchange (active deployment):** X25519MLKEM768 (X25519 + ML-KEM-768) is the preferred hybrid group for TLS 1.3; supported by major browsers and CDNs as of 2025-2026. SecP256r1MLKEM768 and SecP384r1MLKEM1024 are additional IETF-defined options.
+
 **Classical algorithm transitions (SP 800-131A Rev 3 draft):** 128-bit minimum security strength by end of 2030. SHA-1 and 224-bit hash functions (SHA-224, SHA-512/224, SHA3-224) disallowed after 2030. ECB mode and DSA formally retired.
 
 ## Anti-Pattern Checklist
@@ -182,7 +188,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Fixed/reused IV/nonce | Plaintext recovery | Generate random IV per encryption |
 | Weak RNG (`Math.random`) | Predictable keys | Use `crypto.getRandomValues` / `os.urandom` |
 | Custom crypto primitives | Unknown vulnerabilities | Use libsodium, OpenSSL, or platform crypto |
-| Key in source code | Key compromise | Use KMS or env-injected secrets |
+| Key in source code | Key compromise (23.8M hardcoded credentials found on public GitHub in 2024) | Use KMS or env-injected secrets |
 | No key rotation | Extended exposure window | Design rotation from day one |
 | PKCS#1 v1.5 padding | Bleichenbacher attack | Use OAEP or PSS |
 | JWT with `alg: none` | Authentication bypass | Validate algorithm server-side |

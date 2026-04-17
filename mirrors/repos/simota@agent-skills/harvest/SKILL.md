@@ -12,7 +12,7 @@ CAPABILITIES_SUMMARY:
 - client_reports: Produce client-facing progress reports with effort estimates and quality context
 - quality_trends: Merge Judge feedback into PR activity trend reports with DORA+SPACE dimensions
 - retrospective_voice: Add narrative commentary to sprint or release reports
-- pr_size_analysis: Classify PRs by size thresholds (200/400/1000 LOC) and flag review efficiency risks
+- pr_size_analysis: Classify PRs by size thresholds (200/400/1000 LOC), flag review efficiency risks, and recommend stacked PRs when >30% exceed 400 LOC
 - dora_metrics: Collect 5 DORA key metrics — throughput (deployment frequency, lead time) and stability (change failure rate, failed deployment recovery time, rework rate) — plus reliability as quasi-metric, from PR/release data per DORA 2024/2025. Support 7-archetype team profiling (replacing deprecated 4-tier clusters per DORA 2025)
 - review_cycle_analysis: Track first-response time, review cycle time (from ready-for-review, not PR creation) with 4-phase breakdown (Coding→Pickup→Review→Merge), comment resolution rate, and rubber-stamping detection
 
@@ -48,7 +48,7 @@ Use Harvest when you need any of the following:
 - Client-facing progress reports with estimated effort and charts
 - Quality trend reports that merge `Judge` feedback into PR activity
 - Narrative retrospectives or release commentary based on PR history
-- PR size distribution analysis (200 LOC target, 400 LOC ceiling benchmarks)
+- PR size distribution analysis (200 LOC target, 400 LOC ceiling benchmarks) with stacked PR recommendation when large PRs are persistent
 - DORA metric collection: 5 key metrics — throughput (deployment frequency, lead time) and stability (change failure rate, failed deployment recovery time, rework rate) — plus reliability as quasi-metric, per DORA 2024/2025. Team profiling via 7 archetypes (replacing deprecated low/medium/high/elite clusters per DORA 2025)
 - Review cycle time reporting — measure from "ready for review" timestamp, not PR creation (draft PRs inflate cycle time otherwise). Break down into 4 phases: Coding (before PR), Pickup (PR created → first reviewer assigned), Review (first review action → approval), Merge (approval → merge). Phase-level breakdown pinpoints bottlenecks that aggregate cycle time hides
 - Rubber-stamping detection: flag when review lead time is low and uncorrelated with PR size
@@ -142,12 +142,14 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | First response time | Flag when median exceeds 1 business day. Google benchmark: max 1 business day for first review response |
 | Cycle time measurement | Use "ready for review" timestamp as start, not PR creation. Draft PRs distort cycle time if measured from creation. Report 4-phase breakdown (Coding→Pickup→Review→Merge) to expose where time is lost |
 | Pickup time benchmark | Elite teams: <6h pickup; strong teams: <13h. Flag when median pickup exceeds 1 business day |
+| Total cycle time benchmark | Elite teams: <26h total cycle time (LinearB 2025). Good: <48h. Flag when team median exceeds 48h — total cycle time is the single most predictive metric for delivery throughput |
+| Stacked PRs recommendation | When >30% of PRs exceed 400 LOC consistently, recommend stacked PRs as mitigation — teams using stacked PRs show ~20% more throughput with ~8% smaller median PR size, reducing review burden and merge queue wait |
 | Rubber-stamping | Flag when median review lead time is low and uncorrelated with PR size — indicates reviewers may not be reading code |
 | Release notes | Use Keep a Changelog categories and highlight breaking or deprecated changes. Automate via conventional commit type mapping (feat→Added, fix→Fixed, etc.). User-focused: explain what users gain, not raw commit messages |
 | Quality metrics | Include context and actions; avoid vanity metrics and rankings. Combine 5 DORA key metrics (throughput + stability) plus reliability quasi-metric with SPACE satisfaction/well-being signals. Use 7 team archetypes (not deprecated 4-tier clusters) for performance profiling |
 | AI-period comparison | When comparing metrics across periods with different AI adoption levels, note that AI inflates individual PR counts while org delivery stays flat (DORA 2025) |
 | PDF export | Prefer repo scripts and ASCII fallback over brittle ad-hoc export commands |
-| Pagination strategy | Always use `per_page=100` with `gh api --paginate` for automatic multi-page fetches. For GraphQL, use cursor-based pagination with `first` ≤100. Store ETags per page, not per collection |
+| Pagination strategy | Always use `per_page=100` with `gh api --paginate` for automatic multi-page fetches. For GraphQL, use cursor-based pagination with `first` ≤100. GraphQL is more point-efficient for complex multi-field queries (2,000 pts/min vs 900 pts/min for REST per GitHub secondary rate limits). Store ETags per page, not per collection |
 
 ## Routing And Handoffs
 

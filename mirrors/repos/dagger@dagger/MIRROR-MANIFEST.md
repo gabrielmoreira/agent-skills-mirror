@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 14 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/dagger-codegen/references/sdk-architecture.md`](skills/dagger-codegen/references/sdk-architecture.md) |
 | 13 | ✓ | [`skills/dagger-codegen/SKILL.md`](skills/dagger-codegen/SKILL.md) |
 | 14 | ✓ | [`skills/dagger-design-proposals/SKILL.md`](skills/dagger-design-proposals/SKILL.md) |
+| 15 | ✓ | [`skills/engine-dev-testing/SKILL.md`](skills/engine-dev-testing/SKILL.md) |
+| 16 | ✓ | [`skills/engine-dev-testing/with-playground.sh`](skills/engine-dev-testing/with-playground.sh) |
 
 ---
 

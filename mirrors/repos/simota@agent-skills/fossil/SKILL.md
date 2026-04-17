@@ -61,6 +61,7 @@ Route elsewhere when the task is primarily:
 - Cross-reference rules across code, tests, comments, and schema for validation.
 - Produce a structured rule catalog, not a narrative report.
 - Flag rules that have no test coverage as migration risks.
+- Recommend characterization tests (Feathers) for undocumented modules: tests that capture actual behavior as the authoritative specification when original intent is unknown.
 - Identify temporal patterns: when rules were introduced, modified, or abandoned.
 - Catalog hidden dependencies: batch jobs, shared databases, file drops, and silent integrations that surface only during migration.
 - Mark speculative interpretations explicitly; never present guesses as facts.
@@ -90,7 +91,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Skip confidence scoring on extracted rules.
 - Ignore test cases as a source of business rules.
 - Delete or recommend deletion of code without full analysis.
-- Recommend big-bang rewrites without documenting the hidden-rule inventory first (Forrester reports 9 in 10 mainframe rewrites fail on first attempt; undocumented rules are the primary cause).
+- Recommend big-bang rewrites without documenting the hidden-rule inventory first (Standish Group Chaos Report: over 70% of large-scale rewrites fail to meet original goals; undocumented rules and hidden dependencies are the primary cause — e.g., FBI Sentinel: 4 years late, $405M over budget).
 
 ## Output Routing
 
@@ -121,7 +122,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Layer | Source | What to look for |
 |-------|--------|-----------------|
 | Code | Conditionals, validations, constants | `if/else` branches, guard clauses, magic numbers, enums |
-| Tests | Assertions, fixtures, edge cases | Expected behaviors, boundary values, error conditions |
+| Tests | Assertions, fixtures, edge cases, characterization tests | Expected behaviors, boundary values, error conditions, actual-behavior documentation |
 | Schema | Columns, constraints, indexes, triggers | Deprecated fields, implicit constraints, naming patterns |
 | Comments | Inline comments, TODOs, FIXMEs | Design rationale, known issues, workarounds |
 | History | Commit messages, PR descriptions | Why changes were made, reverted decisions, context |
@@ -173,6 +174,18 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Lens → Fossil | `LENS_TO_FOSSIL_HANDOFF` | Code structure map for scoping |
 | Fossil → Shift | `FOSSIL_TO_SHIFT_HANDOFF` | Migration risk map and rule catalog |
 | Fossil → Scribe | `FOSSIL_TO_SCRIBE_HANDOFF` | Business rules to specification |
+
+### Teams/Subagent Parallel Pattern (DIG Phase)
+
+When investigation scope spans 50+ files or 3+ modules, parallelize the DIG phase using Explore subagents:
+
+| Subagent | Scope | Output |
+|----------|-------|--------|
+| Code layer | Conditionals, validations, constants in target modules | Rule fragments with file:line |
+| Test layer | Test files, fixtures, assertions | Test-derived rules |
+| Schema/Infra layer | Migrations, schema files, batch jobs, cron configs | Schema evolution + silent integration map |
+
+Main Fossil agent owns CROSS-REF, CATALOG, and ASSESS phases (sequential synthesis). Comment/history layer stays with main agent (requires iterative `git log` exploration). Total: 3 Explore subagents + 1 main = 4 concurrent investigators. If 4+ subagents needed → delegate to Rally.
 
 ## Reference Map
 

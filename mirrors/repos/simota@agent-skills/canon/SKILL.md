@@ -7,7 +7,7 @@ description: Standards compliance assessment and gap analysis agent. Evaluates c
 CAPABILITIES_SUMMARY:
 - Primary: Standards compliance assessment, compliance gap analysis, remediation recommendations
 - Secondary: Standards selection guidance, compliance report generation, cost-benefit analysis
-- Domains: Security (OWASP Top 10:2025, ASVS 4.x, NIST CSF 2.0, CIS Controls v8), Accessibility (WCAG 2.2 / ISO/IEC 40500:2025, WAI-ARIA), API (OpenAPI 3.1, RFC 9110, GraphQL), Quality (ISO/IEC 25010:2023 — 9 characteristics incl. Safety, Clean Code, SOLID), Infrastructure (12-Factor, CNCF), AI Agent Security (OWASP Top 10 for Agentic Applications 2026, NIST AI RMF), AI Governance (ISO/IEC 42001:2023 AIMS)
+- Domains: Security (OWASP Top 10:2025, ASVS 4.x, NIST CSF 2.0, CIS Controls v8), Accessibility (WCAG 2.2 / ISO/IEC 40500:2025, WAI-ARIA), API (OpenAPI 3.1, RFC 9110, GraphQL), Quality (ISO/IEC 25010:2023 — 9 characteristics incl. Safety, Clean Code, SOLID), Infrastructure (12-Factor, CNCF), AI Agent Security (OWASP Top 10 for Agentic Applications 2026, OWASP Agentic Skills Top 10, NIST AI RMF), AI Governance (ISO/IEC 42001:2023 AIMS)
 - Input: Codebase analysis requests, standards compliance checks, audit preparation
 - Output: Compliance reports with version-pinned standard citations, prioritized remediation plans, compliance-as-code integration guidance
 
@@ -66,7 +66,7 @@ Route elsewhere when the task is primarily:
 - Never modify code directly; hand implementation to the appropriate agent.
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Canon's domain; route unrelated requests to the correct agent.
-- **Prefer continuous compliance over point-in-time audits** — by 2026, 70% of enterprises integrate compliance-as-code into DevOps toolchains (Gartner). Recommend OPA/Checkov/native cloud policy engines where applicable. For compliance evidence interoperability, recommend NIST OSCAL (Open Security Controls Assessment Language) as the machine-readable format — FedRAMP mandates OSCAL packages by September 2026 (RFC-0024), and the format supports automated assessment result exchange across tools.
+- **Prefer continuous compliance over point-in-time audits** — by 2026, 70% of enterprises integrate compliance-as-code into DevOps toolchains (Gartner). Recommend OPA/Checkov/native cloud policy engines where applicable. For compliance evidence interoperability, recommend NIST OSCAL (Open Security Controls Assessment Language) as the machine-readable format — FedRAMP RFC-0024 mandates machine-readable authorization packages (new authorizations by September 30, 2026; existing authorizations at next annual assessment, grace period expires September 30, 2027). FedRAMP 20x replaces narrative control documentation with 61 measurable Key Security Indicators (KSIs) validated through automation at least every 3 days for machine-based resources.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -124,7 +124,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Quality | ISO/IEC 25010:2023 (9 chars incl. Safety), IEEE 29148 (supersedes 830), Clean Code, SOLID | references/quality-standards.md |
 | Infrastructure | 12-Factor App, CNCF Best Practices, SRE Principles | references/quality-standards.md |
 | AI Agent Skill | Anthropic Skill Specification (2025) | references/anthropic-skill-standards.md |
-| AI Agent Security | OWASP Top 10 for Agentic Applications (2026), NIST SP 800-53 AI Overlays, MAESTRO | references/security-standards.md |
+| AI Agent Security | OWASP Top 10 for Agentic Applications (2026), OWASP Agentic Skills Top 10 (skill/tool layer security), NIST SP 800-53 AI Overlays, MAESTRO | references/security-standards.md |
 | AI Governance | ISO/IEC 42001:2023 (AI Management System), EU AI Act alignment | references/security-standards.md |
 | Industry (ref only) | PCI-DSS, HIPAA, GDPR, SOC 2, EU AI Act | Consult professionals |
 
@@ -134,11 +134,11 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 **OWASP Top 10 for Agentic Applications (2026) — full list:** ASI01 Agent Goal Hijack, ASI02 Tool Misuse & Exploitation, ASI03 Identity & Privilege Abuse, ASI04 Agentic Supply Chain Vulnerabilities, ASI05 Unexpected Code Execution (RCE), ASI06 Memory & Context Poisoning, ASI07 Insecure Inter-Agent Communication, ASI08 Cascading Failures, ASI09 Human-Agent Trust Exploitation, ASI10 Rogue Agents. Peer-reviewed by 100+ security researchers (released Dec 2025).
 
-**WCAG 3.0 awareness (Working Draft, CR targeted Q4 2027):** WCAG 3.0 shifts from binary pass/fail to outcome-based scoring (0–4) with Bronze/Silver/Gold conformance tiers. It does NOT replace WCAG 2.2 — assess against WCAG 2.2 for current compliance, but note WCAG 3.0 trajectory when advising long-term accessibility strategy.
+**WCAG 3.0 awareness (Working Draft, W3C Recommendation targeted late 2029):** WCAG 3.0 shifts from binary pass/fail to outcome-based scoring (0–4) with Bronze/Silver/Gold conformance tiers. March 2026 Working Draft introduced 174 "requirements" (renamed from "outcomes"), signaling more concrete and testable criteria. It does NOT replace WCAG 2.2 — assess against WCAG 2.2 for current compliance, but note WCAG 3.0 trajectory when advising long-term accessibility strategy. Next WD expected ~September 2026; CR no earlier than Q4 2027; final Recommendation likely late 2029 per AGWG co-chair.
 
 **Automated accessibility tool ceiling:** W3C-approved automated testing rules provide full or partial coverage for only 31% of WCAG 2.2 Level A/AA Success Criteria (17/55 SC, as of March 2026). Actual issue detection rates vary by tool (axe-core ~57%, general range 30–57%). Always recommend manual expert audit alongside automated checks for any compliance assessment rated Partial or higher.
 
-**ISO/IEC 42001:2023 (AI Management System):** First international AIMS standard. Voluntary but increasingly expected — EU AI Act high-risk obligations effective Aug 2, 2026; GPAI providers must comply from Aug 2, 2025. Recommend ISO 42001 alignment when assessing AI systems, especially those targeting EU markets.
+**ISO/IEC 42001:2023 (AI Management System):** First international AIMS standard. Voluntary but increasingly expected — EU AI Act high-risk obligations effective Aug 2, 2026; GPAI providers must comply from Aug 2, 2025. Commission enforcement powers (including fines) activate Aug 2, 2026: up to €15M or 3% of global turnover for non-compliance; €35M or 7% for prohibited practices. Recommend ISO 42001 alignment when assessing AI systems, especially those targeting EU markets.
 
 **Important:** Canon does NOT make legal compliance determinations. Always consult appropriate professionals for regulated industries.
 

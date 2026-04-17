@@ -7,7 +7,7 @@ description: Full-stack AITuber (AI VTuber) orchestrator covering planning, impl
 CAPABILITIES_SUMMARY:
 - Real-time streaming pipeline orchestration (Chat → LLM → TTS → Avatar → OBS)
 - Live chat integration design (YouTube Live Chat API, Twitch IRC/EventSub, Bilibili Danmaku WebSocket)
-- TTS engine integration and pipeline (VOICEVOX, Style-Bert-VITS2, COEIROINK, NIJIVOICE, Fish Audio S2, CosyVoice2, Piper, Cartesia Sonic)
+- TTS engine integration and pipeline (VOICEVOX, Style-Bert-VITS2, COEIROINK, NIJIVOICE, Fish Audio S2, CosyVoice2, Piper, Cartesia Sonic, Orpheus TTS)
 - Avatar control design (Live2D Cubism SDK, VRM/@pixiv/three-vrm)
 - Lip sync and emotion-to-expression mapping (Japanese phoneme → Viseme)
 - OBS WebSocket automation and scene management
@@ -77,9 +77,9 @@ Route elsewhere when the task is primarily:
 - Implement WebSocket reconnection with exponential backoff; WebSocket failures disrupt all interactive features. [Source: Open-LLM-VTuber]
 - Distinguish inference latency from production latency: a model benchmarking 100ms on dedicated GPU can deliver 800ms+ on shared cloud with network, queueing, and encoding overhead. Always measure end-to-end. [Source: inworld.ai 2026 benchmarks]
 - Use TTFA (Time to First Audio) as the primary TTS latency metric — it measures when the user hears the first syllable, not when synthesis completes. Open-source target: < 200ms (best-in-class: Fish Audio S2 Pro ~100ms on H200 with SGLang OMNI serving). Commercial API target: < 100ms (best-in-class: Cartesia Sonic 3 40ms TTFA via SSM architecture). [Source: camb.ai, cartesia.ai, inworld.ai 2026 benchmarks, Fish Audio S2 Technical Report (arxiv)]
-- Prefer TTS engines with explicit emotion control tags (e.g., Fish Audio S2's emotion tagging) for AITuber pipelines; emotion-controllable TTS enables direct mapping from chat sentiment analysis to vocal expression without a separate emotion-to-prosody layer. [Source: Fish Audio S2 Technical Report (arxiv), marktechpost.com]
+- Prefer TTS engines with explicit emotion control tags (e.g., Fish Audio S2's emotion tagging, Orpheus TTS inline tags: `<laugh>`, `<sigh>`, `<gasp>`) for AITuber pipelines; emotion-controllable TTS enables direct mapping from chat sentiment analysis to vocal expression without a separate emotion-to-prosody layer. [Source: Fish Audio S2 Technical Report (arxiv), marktechpost.com, canopyai/Orpheus-TTS]
 - Generate multiple TTS audio segments concurrently and send them sequentially — prioritize the first sentence fragment for synthesis and playback to minimize perceived latency. [Source: Open-LLM-VTuber concurrent audio generation]
-- For GPU-constrained or CPU-only deployments, consider lightweight TTS models (e.g., Piper ONNX for CPU real-time, Kyutai Pocket TTS 100M params, CosyVoice2-0.5B 150ms streaming latency). [Source: Open-LLM-VTuber docs, kyutai.org, siliconflow.com]
+- For GPU-constrained or CPU-only deployments, consider lightweight TTS models (e.g., Piper ONNX for CPU real-time, Kyutai Pocket TTS 100M params, CosyVoice2-0.5B 150ms streaming latency, Orpheus-150M/400M Apache 2.0 with emotion tags). [Source: Open-LLM-VTuber docs, kyutai.org, siliconflow.com, canopyai/Orpheus-TTS]
 - Define metrics, alert thresholds, and recovery behavior for every live pipeline.
 - Treat Cast as the canonical persona owner. Use `Cast[EVOLVE]` for persona changes; never edit Cast files directly.
 - Unify the text→LLM→TTS→play→history pipeline to prevent stale audio playback. [Source: github.com/Scikous/Vtuber-AI]

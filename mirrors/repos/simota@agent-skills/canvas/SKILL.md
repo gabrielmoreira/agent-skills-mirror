@@ -5,7 +5,7 @@ description: Visualization agent that converts code, designs, and context into M
 
 <!--
 CAPABILITIES_SUMMARY:
-- standard_diagrams: Flowchart, sequence, state, class, ER, Gantt, mind map, journey, git graph, pie chart, architecture, block, kanban, sankey, xy chart, radar, treemap, wardley map, packet
+- standard_diagrams: Flowchart, sequence, state, class, ER, Gantt, mind map, journey, git graph, pie chart, architecture, block, kanban, sankey, xy chart, radar, treemap, wardley map, packet, venn, ishikawa, treeview
 - reverse_engineering: Code-to-diagram from app, API, schema, tests, auth flow, dependency structure
 - c4_model: Context, Container, Component, Code views for architecture
 - diff_visualization: Before/after, schema change, architecture delta
@@ -43,7 +43,7 @@ Visualization specialist: turn code, specifications, or context into one clear d
 
 Use Canvas when the task needs any of the following:
 
-- Architecture, flow, state, class, ER, Gantt, mind map, journey, git graph, pie chart, wardley map, packet, or ASCII diagrams
+- Architecture, flow, state, class, ER, Gantt, mind map, journey, git graph, pie chart, wardley map, packet, venn, ishikawa (fishbone), treeview, or ASCII diagrams
 - Reverse engineering from code, routes, schema, tests, auth flow, or dependency structure
 - C4 model diagrams
 - Before/after, schema, or architecture diff visualization
@@ -135,7 +135,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
 | `flowchart`, `sequence`, `class`, `ER`, `state`, `gantt` | Standard diagram | Mermaid diagram | `references/diagram-templates.md` |
-| `architecture`, `block`, `kanban`, `sankey`, `xy chart`, `radar`, `treemap`, `wardley map`, `packet` | v11 diagram | Mermaid v11 diagram | `references/diagram-templates.md`, `references/mermaid-v11-advanced.md` |
+| `architecture`, `block`, `kanban`, `sankey`, `xy chart`, `radar`, `treemap`, `wardley map`, `packet`, `venn`, `ishikawa`, `treeview` | v11 diagram | Mermaid v11 diagram | `references/diagram-templates.md`, `references/mermaid-v11-advanced.md` |
 | `code to diagram`, `reverse`, `from code` | Reverse engineering | Mermaid from code | `references/reverse-engineering.md` |
 | `C4`, `context`, `container`, `component` | C4 model | C4 diagram | `references/c4-model.md` |
 | `diff`, `before/after`, `delta`, `migration` | Diff visualization | Before/after diagram | `references/diff-visualization.md` |
@@ -160,9 +160,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Tree branching | Keep parallel branches at `<=8` per level |
 | Accessibility | Use accessible colors and do not rely on color alone |
 | Fallback | Offer ASCII when rendering support or accessibility requires it |
-| Mermaid v11 | Use v11-only features only when the target renderer supports them |
+| Mermaid v11 | Use v11-only features only when the target renderer supports them. Beta diagram types (venn-beta, ishikawa-beta, treeview-beta, wardley-beta) require explicit syntax prefix and may change across releases |
 | ELK layout | Consider ELK for `100+` nodes or overlap-heavy Mermaid layouts |
-| D2 escalation | Prefer D2 when Mermaid auto-layout produces unreadable overlaps at scale. Use TALA engine for architecture diagrams; ELK for port-heavy node-link diagrams |
+| D2 escalation | Prefer D2 when Mermaid auto-layout produces unreadable overlaps at scale. Use TALA engine for architecture diagrams; ELK for port-heavy node-link diagrams. D2 is the only diagram-as-code language supporting animated diagrams from text — prefer D2 when step-by-step animation is required |
 | D2 multi-board | Use D2 layers for abstraction-level separation (e.g., Context → Container → Code) and scenarios for behavioral variants (e.g., normal vs error flow) |
 | Architecture-as-Code | When diagrams live alongside code, generate `.mmd`/`.d2` in `docs/diagrams/` |
 | draw.io MCP | When `@drawio/mcp` is available, prefer MCP over raw XML generation |

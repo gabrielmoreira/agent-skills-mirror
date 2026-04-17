@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 4 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`internal/cmd/stats/AGENTS.md`](internal/cmd/stats/AGENTS.md) |
-| 3 | ✓ | [`internal/skills/builtin/crush-config/SKILL.md`](internal/skills/builtin/crush-config/SKILL.md) |
-| 4 | ✓ | [`internal/ui/AGENTS.md`](internal/ui/AGENTS.md) |
+| 1 | ✓ | [`.agents/skills/builtin-skills/SKILL.md`](.agents/skills/builtin-skills/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/shell-builtins/SKILL.md`](.agents/skills/shell-builtins/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`internal/cmd/stats/AGENTS.md`](internal/cmd/stats/AGENTS.md) |
+| 5 | ✓ | [`internal/skills/builtin/crush-config/SKILL.md`](internal/skills/builtin/crush-config/SKILL.md) |
+| 6 | ✓ | [`internal/skills/builtin/jq/SKILL.md`](internal/skills/builtin/jq/SKILL.md) |
+| 7 | ✓ | [`internal/ui/AGENTS.md`](internal/ui/AGENTS.md) |
 
 ---
 

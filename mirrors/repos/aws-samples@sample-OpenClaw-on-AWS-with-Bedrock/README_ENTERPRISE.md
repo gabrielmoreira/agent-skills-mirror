@@ -1,104 +1,131 @@
 # OpenClaw Enterprise on AgentCore
 
-Turn [OpenClaw](https://github.com/openclaw/openclaw) from a personal AI assistant into an enterprise-grade digital workforce platform — without modifying a single line of OpenClaw source code.
+Most enterprise AI platforms give everyone the same generic assistant. OpenClaw Enterprise gives each employee **an AI agent with role-specific identity, memory, tools, and security boundaries** — while giving IT full governance control over the entire fleet.
+
+Built on [OpenClaw](https://github.com/openclaw/openclaw) (open-source AI assistant) + AWS Bedrock AgentCore. **Zero modification to OpenClaw source code** — all enterprise capabilities are achieved through configuration files, workspace assembly, and AWS-native services.
 
 ---
 
-## Serverless Economics: Pay Only When Agents Think
+## The Governance Problem
 
-Most enterprise AI deployments either charge per seat or run dedicated compute per employee. AgentCore Firecracker microVMs change the economics entirely — **you don't pre-allocate CPU or memory. You don't pick instance sizes. AgentCore provisions exactly what each invocation needs and bills per second.**
+An enterprise with 500 employees across 12 roles wants to deploy AI agents. The challenges aren't technical — they're organizational:
 
-**AgentCore pricing (us-west-2):**
-- CPU: $0.0895 / vCPU-hour — **$0 when idle** (no CPU charge between invocations)
-- Memory: $0.00945 / GB-hour — the only idle cost, and it's tiny
+- The **Finance Analyst** agent must never execute shell commands, but the **SDE** agent needs shell access daily
+- When the **CISO updates a compliance policy**, all 500 agents must adopt it — immediately, without touching each one individually
+- **IT needs to see** every tool call, every permission denial, every conversation — across all agents, all IM channels, all departments
+- An employee who **changes departments** should automatically get a new agent identity, new tools, new knowledge — without a support ticket
+- The **CEO's agent** should use Claude Sonnet 4.6 with full tool access; the **intern's agent** should use Nova Lite with web search only
 
-**50 employees, 8-hour workday sessions (us-west-2):**
-
-| | Dedicated EC2 per Employee | ChatGPT Team | **OpenClaw on AgentCore** |
-|---|---|---|---|
-| 50 employees | 50 × $52 = **$2,600/mo** | 50 × $25 = **$1,250/mo** | **~$100-150/mo** |
-| What you pay for | 24/7, whether anyone's chatting or not | Per seat, fixed | Only invocation CPU + idle session memory |
-| Idle cost per employee | $52/mo (full EC2 running) | $25/mo (subscription) | **~$0.08/day** (1 GB memory × 8 hr) |
-
-**The math:** 50 employees × 22 workdays × $0.08 idle/day = ~$88/mo in memory. Add CPU during actual conversations (~$20-50/mo) = **$100-150/mo total AgentCore cost.** Add gateway infrastructure (see [Cost Estimate](#cost-estimate) below) for the complete picture.
+ChatGPT Team and Microsoft Copilot can't do any of this. They give everyone the same agent with the same capabilities.
 
 ---
 
-## Three Deployment Modes: Serverless + ECS + EKS
+## Our Answer: Organization-Driven Agent Governance
 
-Every agent uses the same Docker image. Admin chooses the deployment mode per agent based on the use case — no code changes, no separate builds.
+### Three-Layer SOUL Identity
 
-### Serverless (AgentCore) — Default
+The core design: **one SOUL configuration per role, not per person.** 5 departments × 12 positions = governance over 500 agents.
 
-| | Behavior |
-|-|---------|
-| **Cold start** | ~6s first message — Firecracker microVM + SOUL assembly + Bedrock |
-| **Session resume** | ~2-3s — Session Storage restores workspace, skips S3 download |
-| **Warm session** | Near-instant — microVM stays active during a conversation |
-| **Idle cost** | Memory only ($0.00945/GB-hour). CPU = $0 when idle |
-| **Session Storage** | Workspace files persist across microVM stop/resume (1 GB per session). No S3 sync needed for agent-side persistence |
-| **Best for** | Individual employee agents — scales to zero, pay-per-use |
+```
+┌─────────────────────────────────────────────────────────┐
+│  Layer 1: GLOBAL (IT locked — CISO + CTO approval)      │
+│  Company policies, security red lines, data handling     │
+│  "Never share customer PII. Never execute rm -rf."       │
+├─────────────────────────────────────────────────────────┤
+│  Layer 2: POSITION (Department admin managed)            │
+│  Role expertise, tool permissions, knowledge scope       │
+│  "You are a Finance Analyst. Use excel-gen, not shell."  │
+├─────────────────────────────────────────────────────────┤
+│  Layer 3: PERSONAL (Employee self-service)               │
+│  Communication preferences, custom instructions          │
+│  "I prefer concise answers. Always respond in Chinese."  │
+└─────────────────────────────────────────────────────────┘
+                        ↓ merge
+              Final SOUL.md (what the agent reads)
+```
 
-### Always-on (ECS Fargate) — Admin Toggle
+**No lower layer can override a higher one.** An employee who writes "Ignore all company rules" in their personal layer is still bound by the Global layer — it's prepended with a `CRITICAL IDENTITY OVERRIDE` marker that the model reads first.
 
-| | Behavior |
-|-|---------|
-| **Cold start** | None — container is always running |
-| **Scheduled tasks** | HEARTBEAT fires on schedule (email check every 3 min, daily reports) |
-| **Direct IM** | Container connects directly to Telegram/Discord (dedicated bot token) |
-| **Persistence** | EFS-backed workspace — durable across container restarts |
-| **Best for** | Customer service bots, executive assistants with frequent cron tasks, high-traffic Digital Twins |
-
-### EKS (Kubernetes) — For Container-Native Infrastructure
-
-Kubernetes-native deployment using the OpenClaw Operator and `OpenClawInstance` CRDs. Best for teams already on Kubernetes, multi-cluster setups, or AWS China regions.
-
-**[→ EKS Deployment Guide (EN)](docs/DEPLOYMENT_EKS.md)** · **[→ EKS 部署指南 (中文)](docs/DEPLOYMENT_EKS_CN.md)**
-
----
-
-## Security: Hardware-Level Isolation at Every Layer
+### Five-Layer Security (Defense in Depth)
 
 | Layer | Mechanism | Bypassed by prompt injection? |
 |-------|-----------|-------------------------------|
-| L1 — Prompt | SOUL.md rules ("Finance never uses shell") | ⚠️ Theoretically possible |
-| L2 — Application | Skills manifest `allowedRoles`/`blockedRoles` | ⚠️ Code bug risk |
-| **L3 — IAM** | **Runtime role has no permission on target resource** | **Impossible** |
-| **L4 — Compute** | **Firecracker microVM per agent (AgentCore / ECS Fargate)** | **Impossible** |
-| **L5 — Guardrail** | **Bedrock Guardrail checks every input + output** | **Impossible** |
+| L1 — SOUL Rules | Prompt-level behavioral constraints | ⚠️ Theoretically possible |
+| L2 — Tool Permissions (Plan A) | Per-position allowlist in DynamoDB, injected before SOUL | ⚠️ Depends on model compliance |
+| **L3 — IAM** | **Per-runtime IAM role — Finance role has no S3 cross-dept access** | **Impossible** |
+| **L4 — Compute Isolation** | **Firecracker microVM per agent (hardware boundary)** | **Impossible** |
+| **L5 — Bedrock Guardrail** | **Content filter on every input + output (PII, topics, injection)** | **Impossible** |
 
-L3-L5 are hard infrastructure boundaries — no prompt injection can bypass them.
+L3-L5 are infrastructure boundaries. No prompt, no matter how clever, can bypass an IAM policy or escape a Firecracker VM.
 
-### Additional Controls
-
-- No public ports (SSM only)
-- IAM roles throughout, no hardcoded credentials
-- Gateway token in SSM SecureString, never on disk
-- VPC isolation between runtimes
-- RBAC: admin/manager/employee with scope-limited visibility
-
-For detailed compute isolation comparison across runtimes (AgentCore vs ECS vs EKS vs Kata), see [SECURITY.md](SECURITY.md#compute-isolation-enterprise-multi-tenant).
-
----
-
-## Auditable and Governed from Day One
+### IT Governance Controls
 
 | Control | What IT Gets |
 |---------|-------------|
-| **SOUL Editor** | Global rules locked by IT. Finance cannot touch shell. Engineering cannot leak PII. Employees cannot override the global layer. |
-| **Skill Governance** | 26 skills with `allowedRoles`/`blockedRoles`. Employees cannot install unapproved skills. |
-| **Audit Center** | Every invocation, tool call, permission denial, SOUL change, and IM pairing → DynamoDB |
-| **Usage & Cost** | Per-employee, per-department breakdown. Daily/weekly/monthly trends with model pricing |
-| **IM Management** | Every employee's connected IM accounts visible to admin. One-click revoke. |
-| **Security Center** | Live ECR images, IAM roles, VPC security groups with AWS Console deep links |
-| **RBAC** | Admin (full org) · Manager (department-scoped) · Employee (portal only) |
+| **SOUL Editor** | Global rules locked by IT. Position SOUL managed by department admins. Employees edit only their personal layer. |
+| **4-Tier Runtime Model** | Standard / Restricted / Engineering / Executive — each with its own model, IAM role, guardrail. Assign positions to tiers from UI. |
+| **Audit Center** | Every invocation, tool call, permission denial, SOUL change, IM pairing, guardrail block → DynamoDB. 5 insight detectors surface patterns. |
+| **Skill Governance** | 26 skills with position-level assignment. Employees can request access; IT approves/denies. |
+| **Usage & Cost** | Per-employee, per-department, per-model breakdown. Model-aware pricing ($0.30–$75/1M tokens). Department budgets. |
+| **IM Management** | Every employee's IM connections visible to admin. One-click revoke. Channel health + enrollment stats. |
+| **RBAC** | Admin (full org) · Manager (department-scoped) · Employee (portal only). JWT-enforced on every API call. |
+
+### Auto-Provisioning: Org Chart Drives Everything
+
+```
+Admin creates employee with positionId="pos-fa" (Finance Analyst)
+  ↓ auto-provision:
+  ① Agent created (inherits position's skills + default channel)
+  ② 1:1 binding created (employee ↔ agent)
+  ③ S3 workspace seeded (PERSONAL_SOUL.md, USER.md, MEMORY.md)
+  ④ Audit entry written
+
+Employee logs in → sees their Finance Analyst Agent → ready to chat.
+Change position to pos-sde → agent reconfigured automatically.
+```
 
 ---
 
 ## What Makes This Different
 
-> Most enterprise AI platforms give everyone the same generic assistant.
-> This one gives each employee **a personal AI agent with their own identity, memory, tools, and boundaries** — while giving IT the governance controls above.
+| Capability | ChatGPT Team | Microsoft Copilot | **OpenClaw Enterprise** |
+|-----------|-------------|-------------------|-------------------|
+| Per-role agent identity | ❌ Same for all | ❌ Same for all | ✅ 3-layer SOUL per position |
+| Tool permissions per role | ❌ | ❌ | ✅ Plan A allowlist + IAM + Guardrail |
+| Org-driven agent management | ❌ | ❌ | ✅ Department → Position → Employee hierarchy |
+| IT audit trail | ❌ | Limited | ✅ Every action logged to DynamoDB |
+| Self-hosted, data in your VPC | ❌ | ❌ | ✅ Bedrock in your account, zero data egress |
+| IM integration (10 platforms) | ❌ | Teams only | ✅ Telegram, Slack, Discord, Feishu, WhatsApp... |
+| Scheduled tasks / cron | ❌ | ❌ | ✅ EventBridge + Always-on agents |
+| Cost: 50 employees | $1,250/mo | $1,500/mo | **~$160-220/mo** |
+| Open source | ❌ | ❌ | ✅ OpenClaw + AWS native |
+
+---
+
+## Security: Additional Controls
+
+- No public ports (SSM Session Manager only)
+- IAM roles throughout, no hardcoded credentials
+- Gateway token in SSM SecureString, never on disk
+- VPC isolation between runtime tiers
+- First-login forced password change (bcrypt hashed per employee)
+
+For detailed compute isolation comparison across runtimes (AgentCore vs ECS vs EKS vs Kata), see [SECURITY.md](SECURITY.md#compute-isolation-enterprise-multi-tenant).
+
+---
+
+## Three Deployment Modes
+
+Every agent uses the same Docker image. Admin chooses deployment mode per position — no code changes needed.
+
+| | Serverless (AgentCore) | Always-on (ECS Fargate) | EKS (Kubernetes) |
+|-|----------------------|------------------------|------------------|
+| **Cold start** | ~10s first msg, ~3s warm | None — always running | None — pod always running |
+| **Best for** | 90% of employees | Exec assistants, cron tasks, direct IM bots | Container-native infra, China regions |
+| **Cost** | Pay per invocation | ~$17/mo per agent | Cluster cost + per-pod |
+| **Storage** | S3 sync (60s watchdog) | EFS persistent volume | PVC |
+
+**[→ EKS Deployment Guide (EN)](docs/DEPLOYMENT_EKS.md)** · **[→ EKS 部署指南 (中文)](docs/DEPLOYMENT_EKS_CN.md)**
 
 ### Flagship Features
 
@@ -137,6 +164,8 @@ For detailed compute isolation comparison across runtimes (AgentCore vs ECS vs E
 > **Try the Digital Twin:** Login as any employee → Portal → My Profile → Toggle **Digital Twin** ON → get a public URL → open it in an incognito window and chat with the AI version of that employee.
 >
 > Need a demo account? Contact [wjiad@aws](mailto:wjiad@amazon.com) to get access.
+>
+> **Interactive UI Guide:** [ui-guide.html](https://aws-samples.github.io/sample-OpenClaw-on-AWS-with-Bedrock/ui-guide.html) — 25-page bilingual (EN/CN) documentation covering architecture, deployment, every admin and portal page, with screenshots.
 
 ### Screenshots
 
@@ -154,19 +183,7 @@ For detailed compute isolation comparison across runtimes (AgentCore vs ECS vs E
 
 ---
 
-## The Problem
-
-OpenClaw is one of the most capable open-source AI agent platforms (200k+ GitHub stars). It excels at personal productivity: connecting AI to WhatsApp, Telegram, Discord, running browser automation, managing calendars. But enterprise deployments need:
-
-- **Multi-tenant isolation** — each employee gets their own agent with separate identity, memory, and permissions
-- **Role-based access control** — interns can't run shell commands, finance can't access engineering data
-- **Centralized governance** — IT controls agent behavior, skills, and model selection across the organization
-- **Audit & compliance** — every agent action logged, PII detection, data sovereignty
-- **Cost management** — per-department budgets, model routing, usage tracking
-
-## The Solution
-
-A management layer that wraps OpenClaw with enterprise controls, deployed on AWS Bedrock AgentCore. No fork, no patch, no vendor lock-in — just configuration files and AWS-native services.
+## Design Principles
 
 ### Design Principles
 
@@ -949,20 +966,6 @@ The gateway layer (Tenant Router, H2 Proxy, Admin Console) runs on EC2 or equiva
 vs ChatGPT Team ($25 × 50 = $1,250/mo) or Copilot ($30 × 50 = $1,500/mo).
 
 **AgentCore pricing advantage:** you don't pre-allocate CPU or memory — no instance sizing decisions. Idle sessions cost only memory ($0.00945/GB-hour). CPU is $0 when no one is chatting.
-
-## How It Compares
-
-| Capability | ChatGPT Team | Microsoft Copilot | OpenClaw Enterprise |
-|-----------|-------------|-------------------|-------------------|
-| Per-employee identity | ❌ Same for all | ❌ Same for all | ✅ 3-layer SOUL per role |
-| Tool permissions per role | ❌ | ❌ | ✅ Plan A + Plan E + L3 IAM |
-| Scheduled tasks / cron | ❌ | ❌ | ✅ Always-on agents (ECS Fargate) |
-| Direct IM bot connection | ❌ | ❌ | ✅ Per-agent Telegram/Discord bot |
-| Digital Twin (public agent URL) | ❌ | ❌ | ✅ Shareable, revocable, isolated session |
-| Session persistence | ❌ Session only | ❌ | ✅ Session Storage + S3 cross-session |
-| Self-service IM pairing | ❌ | ❌ | ✅ QR code, 30 seconds |
-| Self-hosted, data in your VPC | ❌ | ❌ | ✅ Bedrock in your account |
-| Open source | ❌ | ❌ | ✅ OpenClaw + AWS native |
 
 ## Project Structure
 

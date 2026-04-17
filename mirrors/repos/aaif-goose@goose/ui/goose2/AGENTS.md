@@ -134,9 +134,8 @@ ThemeProvider manages three axes:
 ## Backend Architecture
 
 All AI communication goes through **ACP (Agent Client Protocol)**:
-- The Rust backend spawns ACP agent binaries as child processes and communicates via **stdin/stdout JSON-RPC**.
-- Responses stream back to the frontend through **Tauri events** (`acp:text`, `acp:tool_call`, `acp:tool_result`, `acp:done`, etc.).
-- The frontend listens to these events via `@tauri-apps/api/event` (see `useAcpStream` hook).
+- The Tauri app starts a long-lived `goose serve` process and exposes its WebSocket URL.
+- The frontend connects directly to `goose serve` over WebSocket and handles ACP notifications in TypeScript.
 
 For non AI communication, such as configuration:
 - Use **Tauri commands** (`invoke()` from `@tauri-apps/api/core`) for request/response operations (sessions, personas, skills, projects, etc.).

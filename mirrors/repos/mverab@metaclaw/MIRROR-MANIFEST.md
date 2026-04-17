@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mverab/metaclaw` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `mverab/metaclaw` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mverab/metaclaw` — 26 default patterns, 0 followed patterns, 20 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,26 +59,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/metaclaw-setup-architect/examples/community-assistant.md`](skills/metaclaw-setup-architect/examples/community-assistant.md) |
-| 2 | ✓ | [`skills/metaclaw-setup-architect/examples/youtube-clipper.md`](skills/metaclaw-setup-architect/examples/youtube-clipper.md) |
-| 3 | ✓ | [`skills/metaclaw-setup-architect/knowledge/agent-patterns.md`](skills/metaclaw-setup-architect/knowledge/agent-patterns.md) |
-| 4 | ✓ | [`skills/metaclaw-setup-architect/knowledge/file-system.md`](skills/metaclaw-setup-architect/knowledge/file-system.md) |
-| 5 | ✓ | [`skills/metaclaw-setup-architect/knowledge/skill-templates.md`](skills/metaclaw-setup-architect/knowledge/skill-templates.md) |
-| 6 | ✓ | [`skills/metaclaw-setup-architect/knowledge/tool-catalog.md`](skills/metaclaw-setup-architect/knowledge/tool-catalog.md) |
-| 7 | ✓ | [`skills/metaclaw-setup-architect/SKILL.md`](skills/metaclaw-setup-architect/SKILL.md) |
-| 8 | ✓ | [`skills/metaclaw-setup-architect/templates/AGENTS.md.tmpl`](skills/metaclaw-setup-architect/templates/AGENTS.md.tmpl) |
-| 9 | ✓ | [`skills/metaclaw-setup-architect/templates/BOOTSTRAP.md.tmpl`](skills/metaclaw-setup-architect/templates/BOOTSTRAP.md.tmpl) |
-| 10 | ✓ | [`skills/metaclaw-setup-architect/templates/HEARTBEAT.md.tmpl`](skills/metaclaw-setup-architect/templates/HEARTBEAT.md.tmpl) |
-| 11 | ✓ | [`skills/metaclaw-setup-architect/templates/IDENTITY.md.tmpl`](skills/metaclaw-setup-architect/templates/IDENTITY.md.tmpl) |
-| 12 | ✓ | [`skills/metaclaw-setup-architect/templates/MEMORY.md.tmpl`](skills/metaclaw-setup-architect/templates/MEMORY.md.tmpl) |
-| 13 | ✓ | [`skills/metaclaw-setup-architect/templates/MOC.md.tmpl`](skills/metaclaw-setup-architect/templates/MOC.md.tmpl) |
-| 14 | ✓ | [`skills/metaclaw-setup-architect/templates/openclaw.json.tmpl`](skills/metaclaw-setup-architect/templates/openclaw.json.tmpl) |
-| 15 | ✓ | [`skills/metaclaw-setup-architect/templates/SKILL.md.tmpl`](skills/metaclaw-setup-architect/templates/SKILL.md.tmpl) |
-| 16 | ✓ | [`skills/metaclaw-setup-architect/templates/SOUL.md.tmpl`](skills/metaclaw-setup-architect/templates/SOUL.md.tmpl) |
-| 17 | ✓ | [`skills/metaclaw-setup-architect/templates/TOOLS.md.tmpl`](skills/metaclaw-setup-architect/templates/TOOLS.md.tmpl) |
-| 18 | ✓ | [`skills/metaclaw-setup-architect/templates/USER.md.tmpl`](skills/metaclaw-setup-architect/templates/USER.md.tmpl) |
-| 19 | ✓ | [`skills/metaclaw-setup-architect/templates/workflow-AGENT.md.tmpl`](skills/metaclaw-setup-architect/templates/workflow-AGENT.md.tmpl) |
-| 20 | ✓ | [`test/workspace/AGENTS.md`](test/workspace/AGENTS.md) |
+| 1 | ✓ | [`.agents/skills/metaclaw-setup-architect/examples/community-assistant.md`](.agents/skills/metaclaw-setup-architect/examples/community-assistant.md) |
+| 2 | ✓ | [`.agents/skills/metaclaw-setup-architect/examples/obsidian-llm-wiki.md`](.agents/skills/metaclaw-setup-architect/examples/obsidian-llm-wiki.md) |
+| 3 | ✓ | [`.agents/skills/metaclaw-setup-architect/examples/youtube-clipper.md`](.agents/skills/metaclaw-setup-architect/examples/youtube-clipper.md) |
+| 4 | ✓ | [`.agents/skills/metaclaw-setup-architect/knowledge/agent-patterns.md`](.agents/skills/metaclaw-setup-architect/knowledge/agent-patterns.md) |
+| 5 | ✓ | [`.agents/skills/metaclaw-setup-architect/knowledge/file-system.md`](.agents/skills/metaclaw-setup-architect/knowledge/file-system.md) |
+| 6 | ✓ | [`.agents/skills/metaclaw-setup-architect/knowledge/skill-templates.md`](.agents/skills/metaclaw-setup-architect/knowledge/skill-templates.md) |
+| 7 | ✓ | [`.agents/skills/metaclaw-setup-architect/knowledge/tool-catalog.md`](.agents/skills/metaclaw-setup-architect/knowledge/tool-catalog.md) |
+| 8 | ✓ | [`.agents/skills/metaclaw-setup-architect/SKILL.md`](.agents/skills/metaclaw-setup-architect/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/AGENTS.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/AGENTS.md.tmpl) |
+| 10 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/BOOTSTRAP.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/BOOTSTRAP.md.tmpl) |
+| 11 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/HEARTBEAT.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/HEARTBEAT.md.tmpl) |
+| 12 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/IDENTITY.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/IDENTITY.md.tmpl) |
+| 13 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/MEMORY.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/MEMORY.md.tmpl) |
+| 14 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/MOC.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/MOC.md.tmpl) |
+| 15 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/openclaw.json.tmpl`](.agents/skills/metaclaw-setup-architect/templates/openclaw.json.tmpl) |
+| 16 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/SKILL.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/SKILL.md.tmpl) |
+| 17 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/SOUL.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/SOUL.md.tmpl) |
+| 18 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/TOOLS.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/TOOLS.md.tmpl) |
+| 19 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/USER.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/USER.md.tmpl) |
+| 20 | ✓ | [`.agents/skills/metaclaw-setup-architect/templates/workflow-AGENT.md.tmpl`](.agents/skills/metaclaw-setup-architect/templates/workflow-AGENT.md.tmpl) |
+| 21 | ✓ | [`test/workspace/AGENTS.md`](test/workspace/AGENTS.md) |
 
 ---
 

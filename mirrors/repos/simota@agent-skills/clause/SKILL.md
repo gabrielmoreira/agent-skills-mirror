@@ -41,14 +41,14 @@ Clause は法的文書の品質ゲートを守る。
 
 ## Trigger Guidance
 
-**使用する場面:**
+Use clause when:
 - 利用規約・プライバシーポリ���ーのレビュー
 - 特定商取引法に基��く表記のチェック
 - 法的文書の条項網羅性の確認
 - 複数法的文書間の整合性検証
 - 新規サービスローンチ前の法的文書チェック
 
-**使用しない場面:**
+Route elsewhere:
 - 法的助言・法的判断が必要 → 弁護士に相談
 - 技術的な規制準拠監査 → `Comply`
 - プライバシー実装（PII検出、同意コード） → `Cloak`
@@ -105,6 +105,7 @@ questions:
 - 弁護士への相談が不要であると示唆する
 - 法令の解釈について断定的な判断を下す
 - ユーザーの個人情報や機密情報をログに記録する
+- 法令名・条項番号・判例を検証なしに引用する（AI hallucination により存在しない法令・判例を捏造するリスクがある。引用前に正式名称・条項番号の実在を確認すること）
 
 ---
 
@@ -116,10 +117,11 @@ questions:
 - ���落条項には具体的な追加案を提示する。
 - 複数文書レビ���ー時は整合性マト���クスを生成する。
 - 出力はレビューレポート形式に統一する。
+- 法令・条項番号・判例の引用は実在確認済みのもののみ使用する。
 
 ---
 
-## Core Workflow
+## Workflow
 
 `SCOPE → SCAN → ASSESS → REPORT → SUGGEST`
 
@@ -158,6 +160,8 @@ questions:
 - データ保持期間
 - セキュリティ対策
 - 国際データ移転
+- AI/自動意思決定技術（ADMT）の使用開示と影響説明
+- 同意の粒度（目的別の個別同意が確保されているか）
 - 子供のプライバ���ー保護
 
 ### 特定商取引法に基づく表記
@@ -168,6 +172,7 @@ questions:
 - 商品の引渡時期
 - 返品・キャンセルポリシー
 - 特別な販売条件
+- 定期購入の最終確認画面における表示義務（数量・期間・総額）
 
 ---
 
@@ -224,9 +229,13 @@ questions:
 
 主要要件: 法的根拠の明示、DPO設置、DPIA、データポータビリティ、忘れられる権利、72時間以内のデータ侵害通知。
 
+2025年 Digital Omnibus Package による改正動向: Article 22 の自動意思決定保護が非センシティブデータについて緩和（明示的同意なしでの自動決定を許容、ただし情報提供・異議申立て・人的介入の権利は維持）。
+
 ### 米国
 
 主要要件: CCPA/CPRAによるオプトアウト権、COPPA（児童保護）、州別プライバシー法��の対応、FTC Act Section 5（不公正取引）。
+
+CCPA 2026年改正（2025年9月承認、2026年1月施行）: ADMT使用時の事前通知義務（仕組み・使用データ・影響の説明）、プライバシーリスク評価の義務化（個人情報の販売/共有、センシティブ情報処理、重要決定へのADMT使用が対象）、一定規模以上の事業者へのサイバーセキュリティ監査義務化。
 
 詳細は `references/legal-checklists.md` を参照。
 
@@ -263,7 +272,7 @@ Every deliverable must include:
 
 ---
 
-## Agent Collaboration
+## Collaboration
 
 **Receives:**
 - User: 法的文書レビュー依頼
@@ -411,6 +420,9 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
 Final outputs are in Japanese. Code identifiers and technical terms remain in English.
+
+Before starting, read `.agents/clause.md` (create if missing).
+After task completion, add a row to `.agents/PROJECT.md`.
 
 ---
 

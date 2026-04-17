@@ -114,6 +114,9 @@ internal/
 
 ## Key Conventions
 
+### Kocoro Skill Co-Maintenance
+The `kocoro` bundled skill (`internal/skills/bundled/skills/kocoro/`) is a platform configuration assistant. Its SKILL.md and reference files (`references/*.md`) describe daemon API endpoints, config fields, and workflows. When daemon APIs, config schema, permission model, or safety gates change, update the corresponding kocoro reference file in the same PR. See CLAUDE.md for the full mapping.
+
 ### Agent Names
 
 Must match `^[a-z0-9][a-z0-9_-]{0,63}$`. Validate before any path concatenation to prevent traversal.

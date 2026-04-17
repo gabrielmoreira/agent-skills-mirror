@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `storybookjs/storybook` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `storybookjs/storybook` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `storybookjs/storybook` — 26 default patterns, 0 followed patterns, 
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,20 +60,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/canary/SKILL.md`](.agents/skills/canary/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/fix-linting-types-on-pr/SKILL.md`](.agents/skills/fix-linting-types-on-pr/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/github-qa-labels/SKILL.md`](.agents/skills/github-qa-labels/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/pr/SKILL.md`](.agents/skills/pr/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/storybook-upgrade/SKILL.md`](.agents/skills/storybook-upgrade/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/canary/SKILL.md`](.claude/skills/canary/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/github-qa-labels/SKILL.md`](.claude/skills/github-qa-labels/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/pr/SKILL.md`](.claude/skills/pr/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/storybook-upgrade/SKILL.md`](.claude/skills/storybook-upgrade/SKILL.md) |
-| 10 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
-| 11 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 12 | ✓ | [`.cursor/rules/spy-mocking.mdc`](.cursor/rules/spy-mocking.mdc) |
-| 13 | ✓ | [`.cursorrules`](.cursorrules) |
-| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`.agents/skills/docs-review/references/docs-antipatterns.md`](.agents/skills/docs-review/references/docs-antipatterns.md) |
+| 3 | ✓ | [`.agents/skills/docs-review/references/docs-principles.md`](.agents/skills/docs-review/references/docs-principles.md) |
+| 4 | ✓ | [`.agents/skills/docs-review/references/docs-strategy.md`](.agents/skills/docs-review/references/docs-strategy.md) |
+| 5 | ✓ | [`.agents/skills/docs-review/references/storybook-style.md`](.agents/skills/docs-review/references/storybook-style.md) |
+| 6 | ✓ | [`.agents/skills/docs-review/SKILL.md`](.agents/skills/docs-review/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/fix-linting-types-on-pr/SKILL.md`](.agents/skills/fix-linting-types-on-pr/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/github-qa-labels/SKILL.md`](.agents/skills/github-qa-labels/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/pr/SKILL.md`](.agents/skills/pr/SKILL.md) |
+| 10 | ✓ | [`.agents/skills/storybook-upgrade/SKILL.md`](.agents/skills/storybook-upgrade/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/canary/SKILL.md`](.claude/skills/canary/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/github-qa-labels/SKILL.md`](.claude/skills/github-qa-labels/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/pr/SKILL.md`](.claude/skills/pr/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/storybook-upgrade/SKILL.md`](.claude/skills/storybook-upgrade/SKILL.md) |
+| 15 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
+| 16 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 17 | ✓ | [`.cursor/rules/spy-mocking.mdc`](.cursor/rules/spy-mocking.mdc) |
+| 18 | ✓ | [`.cursorrules`](.cursorrules) |
+| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

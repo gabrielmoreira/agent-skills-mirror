@@ -9,6 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.2.0] - 2026-04-16 - "Daily Gifts and LambdaTest Automation"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #520 and #521 to add a relationship-aware creative gift workflow and a broad LambdaTest test-automation skill index. It also includes the maintainer follow-up required after the merges: README source-credit coverage, contributor syncing, generated registry refresh, plugin mirror updates, and release-state verification before tagging `v10.2.0`.
+
+## New Skills
+
+- **daily-gift** - decides whether a personalized gift should be sent, develops the creative concept before choosing a medium, and renders H5, image, or video gift artifacts with local history and taste-profile safeguards.
+- **lambdatest-agent-skills** - curates 46 production-grade LambdaTest automation workflows for E2E, unit, mobile, BDD, visual, and cloud testing across major frameworks.
+
+## Improvements
+
+- **README source-credit alignment** - adds the `openclaw/skills` source credit needed for `daily-gift` and keeps `LambdaTest/agent-skills` credited for the LambdaTest automation contribution.
+- **canonical registry refresh** - updates generated catalogs, skill indexes, sitemap assets, package descriptions, and plugin mirrors so the repository reflects 1,412 installable skills.
+- **maintainer merge hygiene** - records fork-run approvals, PR body normalization, contributor sync, and post-merge release-state cleanup for the two-PR batch.
+
+## Who should care
+
+- **Claude Code users** get two new installable workflows for personal creative automation and cross-framework test automation.
+- **Cursor and Codex CLI users** get a larger testing skill surface that can be installed into tool-specific skill directories.
+- **Gemini CLI and Antigravity users** get refreshed registry counts, plugin mirrors, and catalog metadata aligned with the latest merged source state.
+- **Maintainers and downstream indexers** get complete source-credit coverage for the new community-sourced skills.
+
+## Credits
+
+- **[@jiawei248](https://github.com/jiawei248)** for the `daily-gift` contribution merged in PR #520.
+- **[@tanveer-farooq](https://github.com/tanveer-farooq)** for the `lambdatest-agent-skills` contribution merged in PR #521.
+- **[openclaw/skills](https://github.com/openclaw/skills)** for the upstream `daily-gift` source material.
+- **[LambdaTest/agent-skills](https://github.com/LambdaTest/agent-skills)** for the upstream LambdaTest automation skill material.
+
 ## [10.1.0] - 2026-04-14 - "License Provenance, MiniMax CLI, and ZipAI Refresh"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

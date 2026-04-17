@@ -17,6 +17,10 @@ CAPABILITIES_SUMMARY:
 - distributed_race_detection: Cross-service shared-resource conflicts where single-process mutexes are insufficient
 - ai_code_scrutiny: Elevated concurrency audit for AI-coauthored code sections (2x higher concurrency mistake rate)
 - tooling_guidance: Per-language detection tool recommendations with overhead awareness (TSan 2-20x slowdown depending on workload, Fray for JVM controlled concurrency testing, RacerD/Infer for Java static race detection, MemLab for JS memory leak testing)
+- distributed_concurrency_detection: Detection of distributed lock issues, eventual consistency conflicts, saga failures, and microservice race conditions
+- container_resource_analysis: Kubernetes OOMKill, CPU throttling, and ephemeral storage exhaustion analysis
+- cross_cluster_escalation: Handoff to Rewind for onset identification via SPECTER_TO_REWIND_HANDOFF
+- deterministic_testing_guidance: Recommendations for Fray, Antithesis, and other deterministic concurrency testing tools
 
 COLLABORATION_PATTERNS:
 - Scout -> Specter: Investigation context for ghost hunting (TRIAGE_TO_SPECTER)
@@ -29,6 +33,8 @@ COLLABORATION_PATTERNS:
 - Specter -> Sentinel: Security overlap checks
 - Specter -> Bolt: Performance correlation analysis
 - Specter -> Siege: Stress/chaos test specs for concurrency validation
+- Specter -> Rewind: Onset identification requests (SPECTER_TO_REWIND_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
+- Rewind -> Specter: Resource-related bisect findings (REWIND_TO_SPECTER_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Scout (investigation context), Ripple (change impact), Triage (incident context), Beacon (observability alerts)
@@ -251,6 +257,8 @@ Rules:
 | `references/memory-leak-diagnosis.md` | You need heap diagnosis workflow, tooling, or memory monitoring thresholds. |
 | `references/resource-management.md` | You need resource-leak categories, pool thresholds, cleanup review checklists, or resource anti-patterns. |
 | `references/static-analysis-tools.md` | You need lint/tool recommendations, runtime detection tools, or stress/soak/chaos testing guidance. |
+| `references/distributed-concurrency.md` | Distributed system race conditions, lock issues, eventual consistency conflicts, or container resource issues are suspected. |
+| `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Rewind, unified confidence scale, or stall protocol is needed. |
 
 ## AUTORUN Support
 

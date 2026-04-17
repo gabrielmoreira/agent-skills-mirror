@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `legeling/PromptHub` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `legeling/PromptHub` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `legeling/PromptHub` — 26 default patterns, 0 followed patterns, 6 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,7 +64,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/release-sync/SKILL.md`](.agents/skills/release-sync/SKILL.md) |
 | 4 | ✓ | [`.agents/workflows/release-sync.md`](.agents/workflows/release-sync.md) |
 | 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

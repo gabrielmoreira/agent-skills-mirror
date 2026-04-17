@@ -5,7 +5,7 @@ description: Build rapid prototypes for both frontend (UI components/pages) and 
 
 <!--
 CAPABILITIES_SUMMARY:
-- ui_component_prototype: Isolated component or state pattern with mock data (shadcn/ui, Radix primitives)
+- ui_component_prototype: Isolated component or state pattern with mock data (shadcn/ui with Radix or Base UI primitives)
 - page_flow_prototype: User journey or screen-level prototype with minimal states
 - api_mock: MSW v2 handler reuse (single source of truth across dev/test), json-server, inline mocks
 - backend_poc: Minimal Express/Fastify CRUD, webhook, or socket proof
@@ -102,8 +102,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
 | `SCAFFOLD` | Define hypothesis, isolate slice, pick Throwaway vs Evolutionary, choose mock strategy, set time-box (≤ 4h total) | Default to Throwaway when requirement is still a hypothesis | `references/prototype-to-production.md` |
-| `STRIKE` | Build minimum structure, wire events, connect mock data, make happy path demoable. Leverage AI scaffolding tools (Cursor, v0, Bolt.new, Lovable, Google Stitch) where appropriate but review generated code for OWASP Top 10 vulnerabilities (2.74× higher rate than human code). Hand-code auth/payment/encryption — never delegate these to AI scaffolding | Keep scope to one slice; prefer shadcn/ui copy-paste components for rapid customization | `references/ui-templates.md`, `references/api-mocking.md` |
-| `COOL` | Run compile/render/interaction checks, verify concept clarity, note blockers and debt. Security spot-check AI-generated auth/input handling. Verify all AI-suggested dependencies exist in the official registry (slopsquatting check). Scan AI-generated files for hardcoded secrets/API keys/tokens (3.2% leak rate) | Self-check at least every 30 minutes; if not demoable at 75% of time-box, re-scope | `references/prototyping-anti-patterns.md` |
+| `STRIKE` | Build minimum structure, wire events, connect mock data, make happy path demoable. Leverage AI scaffolding tools (Cursor, v0, Bolt.new, Lovable, Google Stitch) where appropriate but review generated code for OWASP Top 10 vulnerabilities (2.74× higher rate than human code). Hand-code auth/payment/encryption — never delegate these to AI scaffolding | Keep scope to one slice; prefer shadcn/ui CLI (`npx shadcn add`) for rapid component scaffolding — supports both Radix and Base UI primitives | `references/ui-templates.md`, `references/api-mocking.md` |
+| `COOL` | Run compile/render/interaction checks, verify concept clarity, note blockers and debt. Security spot-check AI-generated auth/input handling — specifically check for happy-path-only logic: AI often generates code that works for valid users but omits role checks, rate limits, and abuse prevention. Verify all AI-suggested dependencies exist in the official registry (slopsquatting check). Scan AI-generated files for hardcoded secrets/API keys/tokens (3.2% leak rate) | Self-check at least every 30 minutes; if not demoable at 75% of time-box, re-scope | `references/prototyping-anti-patterns.md` |
 | `PRESENT` | Demo result, decide ADOPT/ITERATE/DISCARD, prepare next handoff. Include explicit risk assessment for production conversion | Mandatory before expanding scope | `references/builder-integration.md` |
 
 ## Output Routing

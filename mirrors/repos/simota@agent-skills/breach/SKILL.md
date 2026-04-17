@@ -7,7 +7,7 @@ description: Red team engineering agent. Designs attack scenarios, builds threat
 CAPABILITIES_SUMMARY:
 - threat_modeling: Design threat models using STRIDE, PASTA, Attack Trees, and MITRE ATT&CK mapping
 - attack_scenario_design: Create structured attack scenarios with kill chains and exploitation paths
-- ai_red_teaming: Test AI/LLM systems for prompt injection, jailbreak, data poisoning, RAG poisoning, system prompt leakage, MCP server compromise, and agentic risks (OWASP LLM Top 10 2025 + Top 10 for Agentic Applications 2026 [ASI01-ASI10])
+- ai_red_teaming: Test AI/LLM systems for prompt injection, jailbreak, data poisoning, RAG poisoning, system prompt leakage, MCP server compromise, agent skill supply chain poisoning, and agentic risks (OWASP LLM Top 10 2025 + Top 10 for Agentic Applications 2026 [ASI01-ASI10] + Agentic Skills Top 10 [AST01-AST10])
 - purple_team_exercise: Design collaborative Red/Blue team exercises with detection validation
 - attack_surface_analysis: Map and prioritize attack surfaces across application, infrastructure, and AI layers
 - security_control_validation: Verify WAF/IDS/EDR/guardrail effectiveness through simulated bypass attempts
@@ -52,6 +52,7 @@ Use Breach when the user needs:
 - adversarial assessment report generation
 - multi-turn attack chain analysis for AI agents
 - RAG poisoning and system prompt leakage testing
+- agent skill/tool supply chain security (registry poisoning, manifest integrity)
 - EU AI Act adversarial testing compliance assessment
 - MAESTRO-based agentic AI threat modeling (7-layer analysis)
 
@@ -88,6 +89,8 @@ Route elsewhere when the task is primarily:
 - For AI red teaming, do not rely solely on binary Attack Success Rate (ASR) — use multi-dimensional scoring (violation severity × attack naturalness × semantic preservation). Binary ASR comparisons across different success criteria or threat models are often invalid and misleading.
 - For agentic AI systems, validate the principle of least agency (OWASP Agentic Top 10 2026) — agents must be granted only the minimum autonomy required for safe, bounded tasks. Test for excessive tool access, credential scope, and unchecked autonomous decision chains.
 - For supply chain assessments, specifically test third-party OAuth token access — enumerate which integrations have OAuth access to sensitive systems (CRM, email, HRIS) and attempt access via simulated compromised tokens.
+- For agent skill/tool ecosystems, test supply chain integrity per OWASP Agentic Skills Top 10 (AST01-AST10) — skill registry poisoning, manifest signing verification (ed25519), permission scope minimization. The ClawHub registry incident (Q1 2026) confirmed 5 of 7 top-downloaded skills as malware; treat agent skill registries as untrusted by default.
+- For agentic AI, prioritize contextual red teaming over generic jailbreak testing — standard jailbreaks measure response risk, but agentic systems require testing of operational risks: tool misuse, unauthorized actions, and data exfiltration via conversational redirection. A red team demonstrated a financial assistant executing a $440K portfolio rebalancing through a movie roleplay frame without re-authorization.
 - Structure AI red teaming engagements around four assessment areas: model evaluation, implementation testing, infrastructure assessment, and runtime behavior analysis (per OWASP GenAI Red Teaming Guide).
 - Produce deliverables in Japanese as final output language.
 
@@ -190,7 +193,7 @@ questions:
 | Domain | Scope | Frameworks | Detail |
 |--------|-------|------------|--------|
 | **Application Security** | Web, API, business logic, auth | OWASP Top 10, OWASP API Top 10, CWE | `references/attack-playbooks.md` |
-| **AI/LLM Red Teaming** | Prompt injection, jailbreak, agentic risks, data poisoning, system prompt leakage, RAG poisoning, MCP server compromise | OWASP LLM Top 10 (2025), OWASP Top 10 for Agentic Applications (2026), MITRE ATLAS v5.4.0+, CSA MAESTRO | `references/ai-red-teaming.md` |
+| **AI/LLM Red Teaming** | Prompt injection, jailbreak, agentic risks, data poisoning, system prompt leakage, RAG poisoning, MCP server compromise, agent skill supply chain | OWASP LLM Top 10 (2025), OWASP Top 10 for Agentic Applications (2026), OWASP Agentic Skills Top 10, MITRE ATLAS v5.4.0+, CSA MAESTRO | `references/ai-red-teaming.md` |
 | **Infrastructure** | Network, cloud, containers, CI/CD | MITRE ATT&CK, CIS Benchmarks | `references/attack-playbooks.md` |
 | **Supply Chain** | Dependencies, build pipeline, third-party integrations | SLSA, SSDF | `references/attack-playbooks.md` |
 
@@ -201,6 +204,7 @@ INPUT
   │
   ├─ Web app / API endpoints?             → Application Security
   ├─ LLM / AI agent / RAG system?         → AI/LLM Red Teaming
+  ├─ Agent skill / tool registry?          → AI/LLM Red Teaming (supply chain focus)
   ├─ Cloud / containers / network?         → Infrastructure
   ├─ Dependencies / build pipeline?        → Supply Chain
   └─ Full system with multiple layers?     → Multi-domain (prioritize by risk)
@@ -235,12 +239,13 @@ INPUT
 | `WAF bypass`, `guardrail`, `control validation` | Security control bypass testing | Bypass test results | Domain-specific reference |
 | `automated red teaming`, `AI-on-AI testing`, `continuous AI testing` | Automated adversarial testing with attacker LLMs or red teaming tools | Automated test harness + findings | `references/ai-red-teaming.md` |
 | `MAESTRO`, `agentic threat model`, `multi-agent security` | 7-layer agentic AI threat modeling with CSA MAESTRO | MAESTRO threat model + per-layer attack surfaces | `references/ai-red-teaming.md` |
+| `agent skill`, `tool registry`, `skill supply chain` | Agent skill/tool supply chain integrity testing (OWASP Agentic Skills Top 10) | Registry audit + manifest verification report | `references/ai-red-teaming.md` |
 | `security assessment`, `red team report` | Full assessment (SCOPE→MODEL→PLAN→EXECUTE→REPORT) | Assessment report | `references/attack-playbooks.md` |
 | unclear security testing request | Threat model + attack scenario | Threat model + scenarios | `references/threat-modeling.md` |
 
 Routing rules:
 
-- If the request mentions AI/LLM/agent, read `references/ai-red-teaming.md`.
+- If the request mentions AI/LLM/agent or skill/tool registry, read `references/ai-red-teaming.md`.
 - If the request involves infrastructure or network, read `references/attack-playbooks.md`.
 - If the request involves threat modeling specifically, read `references/threat-modeling.md`.
 - Always start with SCOPE phase regardless of signal.
@@ -283,6 +288,8 @@ Every deliverable must include:
 | AP-14 | **Benchmark Over-Reliance** — using known test prompts as security proof for AI systems | Were novel attack vectors tested beyond benchmarks? | Models can be patched against benchmark prompts during alignment; full marks on a benchmark does not indicate security. Test with roleplay frames, hypothetical framings, multi-step reasoning, and translated text |
 | AP-15 | **Prompt-Level Security** — embedding security controls (guardrails, filters, access rules) inside prompts instead of external enforcement | Are security controls enforced outside the LLM? | Adaptive attacks bypass prompt-level defenses with >90% ASR; enforce tool-call approvals, file-type firewalls, and kill switches at the application layer, not in system prompts |
 | AP-16 | **Context Manipulation Blindspot** — testing only technical exploits while ignoring narrative/social deception of AI agents | Were agents tested with compelling fictional scenarios designed to override their constraints? | Real-world agentic red teaming shows agents fail to contextual manipulation — adversaries provide fictional authority contexts where agents agree their own rules don't apply; test with role-play scenarios, simulated emergencies, and multi-turn trust-building chains |
+| AP-17 | **Jailbreak-Only Agent Testing** — applying generic jailbreak libraries to agentic systems instead of testing operational risks | Were tool misuse, unauthorized actions, and data exfiltration tested? | Generic jailbreaks measure response risk; agentic AI's dangerous vulnerabilities are the actions it executes — test authorization bypass on tool calls, cross-account data access via conversational redirection, and privilege escalation through delegated trust |
+| AP-18 | **Skill Registry Trust** — treating agent skill/tool registries as trusted without supply chain verification | Were agent skills verified for integrity before deployment? | ClawHub registry (Q1 2026): 5 of 7 top-downloaded skills confirmed malware; verify manifest signatures, audit permission scopes, and treat all registries as untrusted by default |
 
 ---
 

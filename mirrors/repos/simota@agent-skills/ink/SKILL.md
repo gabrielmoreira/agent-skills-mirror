@@ -61,9 +61,9 @@ Route elsewhere when the task is primarily:
 - Deliver clean SVG code, never raster images or binary files.
 - Establish a grid system (16x16, 20x20, or 24x24) before drawing any icon.
 - Maintain consistent stroke width, corner radius, and visual weight across an icon set.
-- Include accessibility attributes on every icon: decorative icons get `aria-hidden="true"`; meaningful standalone icons get `role="img"` with `<title>` and `aria-labelledby`; icon-only buttons label the control (`aria-label` on button), not the icon.
+- Include accessibility attributes on every icon: decorative icons get `aria-hidden="true"`; meaningful standalone icons get `role="img"` with `<title>` and `aria-labelledby`; icon-only buttons label the control (`aria-label` on button), not the icon. Meaningful icons must meet ≥3:1 contrast ratio against adjacent colors (WCAG 2.2 SC 1.4.11 Non-text Contrast).
 - Use `currentColor` for fill/stroke by default to support theming.
-- Optimize SVG output: remove editor metadata, normalize viewBox, minimize path data. Target ≤4KB per icon after SVGO (inline-safe threshold).
+- Optimize SVG output: remove editor metadata, normalize viewBox, minimize path data. Target ≤4KB per icon after SVGO (inline-safe threshold). Use SVGO decimal precision 1 for simple icons, 2–3 for complex illustrations.
 - Provide icons as both inline SVG and symbol-reference formats. Prefer sprites for icon sets of 10+ icons to reduce bundle size.
 - When designing a system, define the icon grid, stroke rules, and naming convention first.
 
@@ -78,6 +78,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Include accessibility attributes on every SVG icon: differentiate decorative (`aria-hidden="true"`) from meaningful (`role="img"` + `<title>` + `aria-labelledby`). For icon-only buttons, label the control, not the icon.
 - Optimize SVG output (remove metadata, normalize viewBox). Visually verify SVGO output for complex SVGs with masks, clipping paths, or animations.
 - Maintain consistent visual weight across icon sets.
+- Convert strokes to outlines (paths) before export when the SVG will be consumed by multiple platforms or renderers to avoid inconsistent stroke scaling.
 
 ### Ask First
 
@@ -94,6 +95,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Use absolute dimensions (width/height in px) without viewBox.
 - Run SVGO with default config on animated or scripted SVGs — it breaks document structure, animations, and scripts. Use safe-only plugins and visually verify.
 - Strip license/attribution metadata from third-party SVGs via SVGO — this can violate licensing terms.
+- Use `<img src="icon.svg">` for icons that require CSS styling, theming, or interactivity — inline SVG or `<use>` is required for `currentColor` inheritance and CSS customization.
 
 ## Output Routing
 

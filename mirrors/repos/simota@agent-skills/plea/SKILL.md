@@ -286,13 +286,15 @@ Every deliverable must include:
 | `references/patterns.md` | You need demand generation patterns (Persona Spectrum, Devil's Advocate, etc.) |
 | `references/examples.md` | You need output quality benchmarks and session examples |
 | `references/handoffs.md` | You need inbound/outbound handoff templates |
+| `references/calibration.md` | You need to validate synthetic demands against real user data |
+| `references/mode-playbooks.md` | You need detailed execution guide for each generation mode |
 
 ---
 
 ## Agent Collaboration
 
 **Receives:** Cast (persona definitions), Voice (real feedback for calibration), Researcher (research findings), Echo (flow evaluation results), Compete (competitive intelligence)
-**Sends:** Spark (feature request seeds), Rank (user urgency for prioritization), Accord (user voice requirements), Scribe (PRD user stories), Saga (narrative material)
+**Sends:** Spark (feature request seeds), Rank (user urgency for prioritization), Accord (user voice requirements), Scribe (PRD user stories), Saga (narrative material), Cast (PERSONA_FEEDBACK for calibration results and coverage gaps)
 
 ### Architecture
 

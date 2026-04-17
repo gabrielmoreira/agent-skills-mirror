@@ -109,6 +109,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Deliver LP without Social Proof.
 - Deliver desktop-only design.
 - Use dark patterns (fake urgency, hidden conditions, manipulative UI).
+- Design LP with multiple conversion goals — a second goal drops conversions by up to 266%. One page = one goal.
 - Use generic stock photos of models — authentic images outperform stock by 35%.
 - Allow page load > 3s (53% of mobile users abandon at this threshold).
 
@@ -170,7 +171,7 @@ First view is the most critical section. Answer "What is this?" and "Is it relev
 - Optimal H1 length: under 8 words (≤ 44 characters) — forces clarity, eliminates jargon.
 - Must answer "What's in it for me?" within 5 seconds of viewing.
 - Generate 5+ headline options, select the strongest (numbers add specificity).
-- Message match: headline must align with the ad/referral source that brought the visitor — misalignment creates cognitive dissonance and immediate bounce.
+- Message match: headline must align with the ad/referral source — misalignment causes immediate bounce. Strong message match lifts conversions up to 212%.
 
 ### Hero Layout Patterns
 
@@ -209,6 +210,7 @@ Note: Video background hero (formerly Pattern C) is not recommended — conflict
 
 - Replace generic labels ("Submit", "Click here") with value propositions.
 - Include specificity: time ("in 30 seconds"), quantity ("1,200 companies"), or benefit.
+- Personalize CTAs to visitor context (referral source, segment, location) when dynamic content is available — personalized CTAs convert 202% better than generic.
 - Button constraints: min-height 48px, min-width 200px, font-size ≥ 16px, contrast ≥ 4.5:1.
 
 ## Social Proof
@@ -249,7 +251,7 @@ Benefit-driven copy is mandatory. Detailed copywriting → delegate to Prose.
 
 Detailed form optimization → delegate to Growth. LP-specific constraints:
 
-- 3–5 fields maximum (≤5 fields convert 120% better than longer forms; 81% of users abandon forms after starting).
+- Minimize fields: single-field (email only) averages ~23% conversion — nearly 3× four-field equivalents. 3–5 fields for qualified leads; each additional field beyond 5 incurs 20–30% penalty. 81% of users abandon forms after starting.
 - 2-step progressive disclosure: Step 1 (email only) → Step 2 (details).
 - `autocomplete`, `inputmode`, `aria-invalid` required on all fields.
 - Submit button text = value proposition, not "Submit".
@@ -266,7 +268,8 @@ Detailed performance optimization → delegate to Growth / Bolt. LP-specific pri
 - Critical CSS: inline above-fold styles; defer non-critical.
 - Third-party scripts: defer or load after `onload`; `preconnect` for external origins.
 - INP: debounce event handlers, lazy-load third-party widgets.
-- Targets: LCP ≤ 2.5s, INP < 200ms, CLS < 0.1, TTFB < 800ms.
+- Targets: LCP ≤ 2.5s, INP < 200ms, CLS < 0.1, TTFB < 800ms. Top-quartile aspirations: LCP ≤ 1.5s, INP < 100ms, CLS < 0.05, TTFB < 300ms.
+- Each 1-second delay beyond 2.5s LCP reduces conversions by ~7%.
 
 ## Workflow
 

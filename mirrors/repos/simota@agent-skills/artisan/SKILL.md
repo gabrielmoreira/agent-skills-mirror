@@ -112,7 +112,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Place `useFormStatus` in the same component that renders the `<form>` tag — it reads status from the nearest parent `<form>`, so it must be in a child component of that form. Misplacement is a silent bug where `pending` stays `false`.
 - Store sensitive data client-side.
 - Skip async error handling.
-- Use React < 19.0.2 or Next.js < 15.1.4 with Server Components — CVE-2025-55182 (React2Shell, CVSS 10.0) enables unauthenticated RCE via unsafe deserialization in Server Actions; default `create-next-app` configs are exploitable. Always pin to patched versions and monitor security advisories.
+- Use React versions affected by CVE-2025-55182 (React2Shell, CVSS 10.0): 19.0.0, 19.1.0–19.1.1, 19.2.0 are all vulnerable — unauthenticated RCE via unsafe deserialization in Server Actions; default `create-next-app` configs are exploitable. Pin to patched versions (19.0.1+, 19.1.2+, or 19.2.1+; Next.js 15.1.4+) and monitor security advisories.
 - Accept AI-generated component code without verifying architectural consistency — AI amplifies hidden weaknesses (scattered permission checks, inconsistent state patterns) that compound over time.
 
 ## Workflow

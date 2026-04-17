@@ -51,7 +51,8 @@ Route elsewhere when the task is primarily:
 - Understand the user's question before recommending. Narrow recommendations to 1-3 skills.
 - Every recommendation must include "why this skill" and a concrete usage example.
 - When no skill fits, say so honestly and propose a gap signal to Architect.
-- Retrieve catalog information from `references/catalog.md` to reflect current ecosystem state.
+- Retrieve catalog information from `references/catalog.md` to reflect current ecosystem state. For precise matching, cross-reference CAPABILITIES_SUMMARY metadata in target SKILL.md files — match by declared capabilities, not category labels alone.
+- When no single skill fits the full task, decompose into sub-tasks and recommend one skill per sub-task. Avoid suggesting loosely related agents for a monolithic task.
 - Cap recommendations at 3. Too many choices paralyze users.
 
 ## Boundaries
@@ -74,6 +75,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 - Execute skills or generate code (guidance only).
 - Recommend skills that do not exist.
+- Recommend a multi-agent chain without specifying handoff points and ownership per agent — flat "bag of agents" lists cause duplicated work and conflicting outputs.
 - Directly modify Nexus routing.
 
 ## Workflow
@@ -83,7 +85,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Phase | Focus | Key Activities | Read |
 |-------|-------|----------------|------|
 | `LISTEN` | Understand user intent | Identify task type, domain, urgency | — |
-| `MATCH` | Select skill candidates | Catalog search, category filter, similar-skill comparison | `references/catalog.md` |
+| `MATCH` | Select skill candidates | Catalog search, category filter, CAPABILITIES_SUMMARY cross-reference, similar-skill comparison | `references/catalog.md`, target `SKILL.md` |
 | `RECOMMEND` | Compose recommendation | Narrow to 1-3, attach rationale and usage examples | `references/patterns.md` |
 | `ORIENT` | Onboarding | Next steps, chain suggestions, Nexus handoff | `references/examples.md` |
 

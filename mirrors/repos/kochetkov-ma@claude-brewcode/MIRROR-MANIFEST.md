@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,30 +78,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`brewdoc/skills/memory/SKILL.md`](brewdoc/skills/memory/SKILL.md) |
 | 18 | ✓ | [`brewdoc/skills/my-claude/SKILL.md`](brewdoc/skills/my-claude/SKILL.md) |
 | 19 | ✓ | [`brewdoc/skills/publish/SKILL.md`](brewdoc/skills/publish/SKILL.md) |
-| 20 | ✓ | [`brewtools/skills/debate/SKILL.md`](brewtools/skills/debate/SKILL.md) |
-| 21 | ✓ | [`brewtools/skills/deploy/SKILL.md`](brewtools/skills/deploy/SKILL.md) |
-| 22 | ✓ | [`brewtools/skills/plugin-update/SKILL.md`](brewtools/skills/plugin-update/SKILL.md) |
-| 23 | ✓ | [`brewtools/skills/provider-switch/SKILL.md`](brewtools/skills/provider-switch/SKILL.md) |
-| 24 | ✓ | [`brewtools/skills/secrets-scan/SKILL.md`](brewtools/skills/secrets-scan/SKILL.md) |
-| 25 | ✓ | [`brewtools/skills/ssh/SKILL.md`](brewtools/skills/ssh/SKILL.md) |
-| 26 | ✓ | [`brewtools/skills/text-human/SKILL.md`](brewtools/skills/text-human/SKILL.md) |
-| 27 | ✓ | [`brewtools/skills/text-optimize/SKILL.md`](brewtools/skills/text-optimize/SKILL.md) |
-| 28 | ✓ | [`brewui/skills/glm-design-to-code/SKILL.md`](brewui/skills/glm-design-to-code/SKILL.md) |
-| 29 | ✓ | [`brewui/skills/image-gen/SKILL.md`](brewui/skills/image-gen/SKILL.md) |
-| 30 | ✓ | [`skills/brewpage-publish/LICENSE`](skills/brewpage-publish/LICENSE) |
-| 31 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
-| 32 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
-| 33 | ✓ | [`skills/glm-design-to-code-trial/LICENSE`](skills/glm-design-to-code-trial/LICENSE) |
-| 34 | ✓ | [`skills/glm-design-to-code-trial/README.md`](skills/glm-design-to-code-trial/README.md) |
-| 35 | ✓ | [`skills/glm-design-to-code-trial/SKILL.md`](skills/glm-design-to-code-trial/SKILL.md) |
-| 36 | ✓ | [`skills/memory-optimize/LICENSE`](skills/memory-optimize/LICENSE) |
-| 37 | ✓ | [`skills/memory-optimize/README.md`](skills/memory-optimize/README.md) |
-| 38 | ✓ | [`skills/memory-optimize/references/memory-guide.md`](skills/memory-optimize/references/memory-guide.md) |
-| 39 | ✓ | [`skills/memory-optimize/SKILL.md`](skills/memory-optimize/SKILL.md) |
-| 40 | ✓ | [`skills/text-optimizer/LICENSE`](skills/text-optimizer/LICENSE) |
-| 41 | ✓ | [`skills/text-optimizer/README.md`](skills/text-optimizer/README.md) |
-| 42 | ✓ | [`skills/text-optimizer/references/rules-review.md`](skills/text-optimizer/references/rules-review.md) |
-| 43 | ✓ | [`skills/text-optimizer/SKILL.md`](skills/text-optimizer/SKILL.md) |
+| 20 | ✓ | [`brewtools/skills/agent-toggle/SKILL.md`](brewtools/skills/agent-toggle/SKILL.md) |
+| 21 | ✓ | [`brewtools/skills/debate/SKILL.md`](brewtools/skills/debate/SKILL.md) |
+| 22 | ✓ | [`brewtools/skills/deploy/SKILL.md`](brewtools/skills/deploy/SKILL.md) |
+| 23 | ✓ | [`brewtools/skills/plugin-update/SKILL.md`](brewtools/skills/plugin-update/SKILL.md) |
+| 24 | ✓ | [`brewtools/skills/provider-switch/SKILL.md`](brewtools/skills/provider-switch/SKILL.md) |
+| 25 | ✓ | [`brewtools/skills/secrets-scan/SKILL.md`](brewtools/skills/secrets-scan/SKILL.md) |
+| 26 | ✓ | [`brewtools/skills/skill-toggle/SKILL.md`](brewtools/skills/skill-toggle/SKILL.md) |
+| 27 | ✓ | [`brewtools/skills/ssh/SKILL.md`](brewtools/skills/ssh/SKILL.md) |
+| 28 | ✓ | [`brewtools/skills/text-human/SKILL.md`](brewtools/skills/text-human/SKILL.md) |
+| 29 | ✓ | [`brewtools/skills/text-optimize/SKILL.md`](brewtools/skills/text-optimize/SKILL.md) |
+| 30 | ✓ | [`brewui/skills/glm-design-to-code/SKILL.md`](brewui/skills/glm-design-to-code/SKILL.md) |
+| 31 | ✓ | [`brewui/skills/image-gen/SKILL.md`](brewui/skills/image-gen/SKILL.md) |
+| 32 | ✓ | [`skills/brewpage-publish/LICENSE`](skills/brewpage-publish/LICENSE) |
+| 33 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
+| 34 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
+| 35 | ✓ | [`skills/glm-design-to-code-trial/LICENSE`](skills/glm-design-to-code-trial/LICENSE) |
+| 36 | ✓ | [`skills/glm-design-to-code-trial/README.md`](skills/glm-design-to-code-trial/README.md) |
+| 37 | ✓ | [`skills/glm-design-to-code-trial/SKILL.md`](skills/glm-design-to-code-trial/SKILL.md) |
+| 38 | ✓ | [`skills/memory-optimize/LICENSE`](skills/memory-optimize/LICENSE) |
+| 39 | ✓ | [`skills/memory-optimize/README.md`](skills/memory-optimize/README.md) |
+| 40 | ✓ | [`skills/memory-optimize/references/memory-guide.md`](skills/memory-optimize/references/memory-guide.md) |
+| 41 | ✓ | [`skills/memory-optimize/SKILL.md`](skills/memory-optimize/SKILL.md) |
+| 42 | ✓ | [`skills/text-optimizer/LICENSE`](skills/text-optimizer/LICENSE) |
+| 43 | ✓ | [`skills/text-optimizer/README.md`](skills/text-optimizer/README.md) |
+| 44 | ✓ | [`skills/text-optimizer/references/rules-review.md`](skills/text-optimizer/references/rules-review.md) |
+| 45 | ✓ | [`skills/text-optimizer/SKILL.md`](skills/text-optimizer/SKILL.md) |
 
 ---
 

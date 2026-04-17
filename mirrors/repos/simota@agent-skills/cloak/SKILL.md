@@ -9,9 +9,9 @@ CAPABILITIES_SUMMARY:
 - data_flow_mapping: Track PII from ingestion → processing → storage → deletion, cross-service data lineage, third-party data sharing inventory
 - consent_management: Consent collection patterns, preference centers, granular opt-in/opt-out, consent propagation across services
 - gdpr_compliance: Lawful basis mapping, DSAR automation (access/rectification/erasure/portability), retention policy enforcement, cross-border transfer safeguards
-- ccpa_compliance: Do Not Sell/Share signals, consumer rights automation, ADMT opt-out/access rights, risk assessments, service provider contract requirements
+- ccpa_compliance: Do Not Sell/Share signals, consumer rights automation, ADMT opt-out/access rights, risk assessments, service provider contract requirements, GPC/universal opt-out signal compliance
 - privacy_by_design: Data minimization patterns, purpose limitation enforcement, pseudonymization/anonymization, encryption-at-rest/in-transit
-- dpia: Data Protection Impact Assessment facilitation, risk scoring, mitigation recommendations
+- dpia: Data Protection Impact Assessment facilitation, risk scoring, mitigation recommendations, EU AI Act FRIA + GDPR DPIA dual assessment for high-risk AI
 - logging_audit: Privacy-safe logging (PII redaction), audit trail design, breach detection preparation
 - ai_privacy: AI/LLM privacy risk assessment — embedding inversion defense, training data leakage prevention, differential privacy evaluation, RAG PII sanitization
 
@@ -55,6 +55,8 @@ Use Cloak when the task needs:
 - cross-border data transfer compliance
 - AI/LLM privacy risk assessment (embedding inversion, training data leakage, RAG PII exposure)
 - CCPA ADMT compliance (automated decision-making opt-out, risk assessments)
+- EU AI Act FRIA + GDPR DPIA dual assessment for high-risk AI systems
+- GPC / universal opt-out signal implementation and compliance
 
 Route elsewhere when the task is primarily:
 - general security vulnerabilities (XSS, SQLi): `Sentinel`
@@ -92,7 +94,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Log, display, or output actual PII during analysis — use redacted examples only.
 - Disable audit trails to "simplify" implementation.
 - Assume consent equals a single checkbox — consent must be granular, informed, and revocable.
-- Use dark patterns in consent UIs (pre-ticked boxes, confusing toggles, hidden opt-outs) — regulators actively enforce against these (Sephora paid $1.2M under CCPA for failing to honor opt-out signals).
+- Use dark patterns in consent UIs (pre-ticked boxes, confusing toggles, hidden opt-outs) — regulators actively enforce against these (Sephora $1.2M, Tractor Supply $1.35M under CCPA for failing to honor opt-out signals and GPC).
 - Process PII through third-party LLMs without a privacy impact assessment — embedding inversion attacks can reconstruct names, addresses, and phone numbers from vector representations; membership inference can confirm training data inclusion. Always sanitize PII before LLM ingestion.
 
 ## Core Contract
@@ -105,6 +107,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - PII detection must prioritize recall ≥95% over precision — missed PII (false negatives) carries far higher risk than false positives. Use Microsoft Presidio or equivalent frameworks for evaluation.
 - Reference NIST Privacy Framework 1.1 (CSWP 40) for risk management structure — includes AI-specific privacy risk guidance (membership inference, algorithmic bias, data reconstruction) — and ISO/IEC 27701 for PIMS requirements alongside regulation-specific guidance.
 - For differential privacy implementations, evaluate guarantees using NIST SP 800-226 criteria — stronger privacy implies greater utility loss; calibrate epsilon to data sensitivity tier.
+- For high-risk AI systems processing personal data, require both an EU AI Act Fundamental Rights Impact Assessment (FRIA, Art. 27) and a GDPR DPIA (Art. 35). EU AI Act penalties reach €35M / 7% of global turnover — exceeding GDPR.
 
 ## Data Classification
 
@@ -132,24 +135,29 @@ Full detection patterns → `references/pii-detection.md`
 
 ## Regulation Quick Reference
 
-| Requirement | GDPR | CCPA | APPI (Japan) |
-|-------------|------|------|--------------|
-| Lawful basis for processing | Art. 6 (6 bases) | Not required (opt-out model) | Art. 17 (consent or exception) |
-| Right to access | Art. 15 (30 days) | §1798.100 (45 days) | Art. 33 (without delay) |
-| Right to deletion | Art. 17 (30 days) | §1798.105 (45 days) | Art. 33 (without delay) |
-| Data portability | Art. 20 (machine-readable) | §1798.100 (machine-readable) | Not explicit |
-| Breach notification | Art. 33 (72 hours to DPA) | §1798.150 (no time limit, but AG) | Art. 26 (promptly to PPC) |
-| Children's data | Art. 8 (parental consent <16) | COPPA applies (<13) | Art. 17 (special care) |
-| Cross-border transfer | Art. 44-49 (SCCs, adequacy) | No restriction | Art. 28 (equivalent protection) |
-| Automated decision-making | Art. 22 (right to opt out) | ADMT opt-out + access (2026 regs) | Not explicit |
-| Risk assessment | Art. 35 (DPIA) | Required for sensitive PI/ADMT (2026 regs) | Not explicit |
-| DPO requirement | Art. 37 (certain orgs) | Not required | Not required (recommended) |
+| Requirement | GDPR | CCPA | APPI (Japan) | EU AI Act |
+|-------------|------|------|--------------|-----------|
+| Lawful basis for processing | Art. 6 (6 bases) | Not required (opt-out model) | Art. 17 (consent or exception) | N/A (AI-specific) |
+| Right to access | Art. 15 (30 days) | §1798.100 (45 days) | Art. 33 (without delay) | Art. 86 (explainability) |
+| Right to deletion | Art. 17 (30 days) | §1798.105 (45 days) | Art. 33 (without delay) | N/A |
+| Data portability | Art. 20 (machine-readable) | §1798.100 (machine-readable) | Not explicit | N/A |
+| Breach notification | Art. 33 (72 hours to DPA) | §1798.150 (no time limit, but AG) | Art. 26 (promptly to PPC) | Art. 62 (serious incidents) |
+| Children's data | Art. 8 (parental consent <16) | COPPA applies (<13) | Art. 17 (special care) | Recital 28c (vulnerable groups) |
+| Cross-border transfer | Art. 44-49 (SCCs, adequacy) | No restriction | Art. 28 (equivalent protection) | N/A |
+| Automated decision-making | Art. 22 (right to opt out) | ADMT opt-out + access (2026 regs) | Not explicit | Art. 14/27 (FRIA required) |
+| Risk assessment | Art. 35 (DPIA) | Required for sensitive PI/ADMT (2026 regs) | Not explicit | Art. 9 (risk management system) |
+| DPO requirement | Art. 37 (certain orgs) | Not required | Not required (recommended) | N/A |
+| Max penalty | €20M / 4% turnover | $2,663–$7,988 per violation | Up to ¥100M | €35M / 7% turnover |
 
-**US State Privacy Landscape:** As of 2026, 20 US states have comprehensive consumer privacy laws on the books. Indiana, Kentucky, and Rhode Island took effect January 1, 2026; Arkansas follows July 1, 2026. Enforcement is now the focus — no new comprehensive laws were enacted in 2025. Always check whether the target deployment state has its own privacy law beyond CCPA.
+**EU AI Act (full enforcement August 2026):** High-risk AI systems processing personal data trigger both a Fundamental Rights Impact Assessment (FRIA, Art. 27) and a GDPR DPIA (Art. 35). Data governance requirements (Art. 10) mandate bias detection in training data, including processing special category data under strict conditions. Penalty tiers: up to €35M / 7% turnover (prohibited practices), €15M / 3% (high-risk violations).
+
+**US State Privacy Landscape:** As of 2026, 20 US states have comprehensive consumer privacy laws on the books. Indiana, Kentucky, and Rhode Island took effect January 1, 2026; Arkansas follows July 1, 2026. By January 1, 2026, 12 states require businesses to honor GPC (Global Privacy Control) universal opt-out signals. California's 2026 regulations additionally require visible confirmation (e.g., "Opt-Out Request Honored") when a GPC signal is processed. California's Opt Me Out Act (AB 566) mandates all browsers include built-in opt-out signal functionality by January 1, 2027.
+
+**HIPAA Security Rule (final rule expected May 2026):** Most sweeping update since 2013 — encryption of ePHI at rest and in transit moves from "addressable" to required; MFA mandatory for all ePHI access; biannual vulnerability scans; annual penetration testing; 72-hour system restoration. Critical for HealthTech projects.
 
 **Frameworks:** NIST Privacy Framework 1.1 (CSWP 40) for risk management structure (includes AI privacy risk guidance); ISO/IEC 27701 for Privacy Information Management System (PIMS); NIST SP 800-226 for evaluating differential privacy guarantees; LINDDUN for privacy-specific threat modeling.
 
-**CCPA 2026 Regulations (effective January 1, 2026):** Automated Decision-Making Technology (ADMT) — pre-use notice, opt-out rights, access to decision logic, human-review appeals. Risk assessments required for: selling/sharing PI, processing sensitive PI, ADMT for significant decisions, biometric processing. Cybersecurity audit obligations for qualifying businesses. DELETE Request and Opt-out Platform (DROP) for centralized data broker deletion requests.
+**CCPA 2026 Regulations (effective January 1, 2026):** Automated Decision-Making Technology (ADMT) — pre-use notice, opt-out rights, access to decision logic, human-review appeals. Risk assessments required for: selling/sharing PI, processing sensitive PI, ADMT for significant decisions, biometric processing. Cybersecurity audit obligations for qualifying businesses. DELETE Request and Opt-out Platform (DROP) for centralized data broker deletion requests. Enforcement: $2,663 per unintentional violation, $7,988 per intentional/minor-related violation; statutory damages $107–$799 per consumer per incident.
 
 Full regulation details → `references/privacy-regulations.md`
 
@@ -181,6 +189,9 @@ Full regulation details → `references/privacy-regulations.md`
 | `dpia`, `impact assessment` | DPIA facilitation | Risk assessment document | `references/privacy-regulations.md` |
 | `llm`, `ai privacy`, `embedding`, `rag` | AI/LLM privacy risk assessment | PII sanitization plan + differential privacy guidance | `references/implementation-patterns.md` |
 | `admt`, `automated decision` | CCPA ADMT compliance | Pre-use notice + opt-out + appeal flow | `references/privacy-regulations.md` |
+| `eu ai act`, `fria`, `high-risk ai` | EU AI Act FRIA + GDPR DPIA dual assessment | FRIA report + DPIA + data governance plan | `references/privacy-regulations.md` |
+| `gpc`, `opt-out signal`, `universal opt-out` | GPC / universal opt-out signal compliance | Signal detection + visible acknowledgment + honor flow | `references/implementation-patterns.md` |
+| `hipaa`, `ephi`, `health data` | HIPAA Security Rule compliance | Encryption + MFA + audit controls | `references/privacy-regulations.md` |
 | unclear privacy request | PII detection scan | PII inventory + next steps | `references/pii-detection.md` |
 
 ## Collaboration

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,8 +89,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 29 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
 | 30 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 31 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 32 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 31 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 32 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 33 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

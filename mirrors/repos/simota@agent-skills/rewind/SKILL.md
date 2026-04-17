@@ -12,6 +12,10 @@ CAPABILITIES_SUMMARY:
 - blame_analysis: Understand who changed what and why (focus on commits, not individuals)
 - historical_pattern_detection: Find recurring issues and failure patterns in git history
 - commit_relationship_mapping: Understand change dependencies and causal chains
+- non_functional_regression_investigation: Benchmark-driven bisect for performance, memory, bundle size, and startup time regressions
+- ai_commit_archaeology: Detection and interpretation of AI-coauthored commits in blame/log/archaeology workflows
+- cross_cluster_escalation: Handoff to Specter for resource-related bisect findings via REWIND_TO_SPECTER_HANDOFF
+- benchmark_driven_bisect: Custom bisect terms and automated scripts for non-binary pass/fail regression detection
 
 COLLABORATION_PATTERNS:
 - Scout -> Rewind: Bug location for history investigation
@@ -24,6 +28,8 @@ COLLABORATION_PATTERNS:
 - Rewind -> Guardian: Commit recommendations based on history
 - Rewind -> Radar: Missing test identification from regression analysis
 - Rewind -> Sentinel: Security regression findings
+- Rewind -> Specter: Resource-related bisect findings escalation (REWIND_TO_SPECTER_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
+- Specter -> Rewind: Onset identification requests for detected issues (SPECTER_TO_REWIND_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Scout (bug location), Triage (incident report), Atlas (dependency map), Judge (code review findings)
@@ -230,6 +236,8 @@ Follow `_common/GIT_GUIDELINES.md`. Conventional Commits, no agent names, <50 ch
 | `references/git-commands.md` | You need the full git command reference with safety classification. |
 | `references/best-practices.md` | You need investigation best practices or anti-pattern avoidance. |
 | `references/examples.md` | You need complete investigation examples for pattern matching. |
+| `references/non-functional-regression.md` | Performance, memory, bundle size, or startup time regression bisect is needed. |
+| `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Specter, unified confidence scale, or stall protocol is needed. |
 
 ---
 

@@ -129,6 +129,7 @@ Once selected, commit fully. Do not silently drift.
 **Anti-skip rule:** Never condense, abbreviate, or skip any review section regardless of plan type. If a section genuinely has zero findings, say "No issues found" and move on, but you must evaluate it.
 
 Ask the user about each issue ONE AT A TIME. Do NOT batch.
+**Reminder: Do NOT make any code changes. Review only.**
 
 ### Section 1: Architecture Review
 Evaluate system design, component boundaries, data flow (all four paths), state machines, coupling, scaling, security architecture, production failure scenarios, rollback posture. Draw dependency graphs.

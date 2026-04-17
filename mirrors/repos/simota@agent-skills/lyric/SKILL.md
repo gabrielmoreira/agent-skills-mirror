@@ -59,7 +59,7 @@ Route elsewhere when:
 - Enforce Suno technical constraints per model version:
   - Legacy/V4: lyrics ≤ 3,000 chars, style prompt ≤ 200 chars, 30-40 lines recommended.
   - V4.5/V4.5 Plus: style prompt ≤ 1,000 chars (tag-based or conversational prose), tracks up to 8 minutes, 44.1 kHz output.
-  - V5/V5.5: same prompt limits as V4.5; V5.5 adds Voices (record or upload singing, verified via random phrase match, private by default), Custom Models (upload min 6 original songs, up to 3 models per account), and My Taste (adaptive preference learning, available to all tiers). Voices/Custom Models are Pro/Premier only. V5.5 also introduces three control sliders — Weirdness (creative divergence), Style Influence (how closely output follows the style prompt), and Audio Influence (how much a reference track shapes the result) — enabling surgical control over generation behavior.
+  - V5/V5.5: same prompt limits as V4.5; V5.5 adds Voices (record or upload singing, verified via random phrase match, private by default), Custom Models (upload min 6 original songs, up to 3 models per account), and My Taste (adaptive preference learning, available to all tiers). Voices/Custom Models are Pro/Premier only. V5.5 also introduces three control sliders — Weirdness (creative divergence), Style Influence (how closely output follows the style prompt), and Audio Influence (how much a reference track shapes the result) — enabling surgical control over generation behavior. V5.5 core model delivers improved prompt adherence, natural vibrato, better instrument separation, and wider dynamic range compared to V5.
 - Use only recognized standard metatags — never invent custom tags.
 - Write chorus text in full every time — never use `repeat chorus` or shorthand. Keep chorus ≤ 4 lines for melodic consistency — longer choruses cause Suno to vary melody across repetitions.
 - Optimize structure, rhyme, and vocabulary per genre-specific conventions.
@@ -151,6 +151,7 @@ Route elsewhere when:
 - Parentheses for ad-libs: `(yeah)`, `(oh)`, `(uh-huh)`
 - Hyphens for elongation: `lo-ove`, `sooo-long`
 - Punctuation for phrasing control: comma = micro-pause, `...` = vocal drift/wavering
+- Section-level delivery direction: append to structure tags, e.g., `[Verse 1] (whispered, intimate)` or `[Bridge] (belted, powerful)` — more effective than style prompt alone for section-specific vocal shifts
 
 ## Style Prompt Design
 
@@ -162,10 +163,10 @@ Priority-weighted ordering — Suno weighs earlier tags more heavily:
 2. **Mood/Energy** (e.g., melancholic, uplifting, high-energy)
 3. **Vocal direction** — be specific: character + delivery + recording (e.g., "raspy male tenor, emotional delivery, dry close-mic" not just "male vocals")
 4. **Instruments 1-2** (e.g., acoustic guitar, piano)
-5. **Tempo** (e.g., mid-tempo, 120 BPM)
+5. **Tempo** — use specific BPM (e.g., `120 BPM`) over vague descriptors (`mid-tempo`); precise BPM yields more consistent pacing and energy
 6. **Production** (e.g., lo-fi, polished, reverb-heavy)
 
-Drop articles, comma-separated descriptors. Sweet spot: 5-8 tags.
+Drop articles, comma-separated descriptors. Sweet spot: 5-8 tags. Allocation guide: 1-2 genre, 1-2 mood, 1 vocal, 1-2 instrument, 1 tempo/production — over-stacking any one category (especially instruments > 3) muddies the result.
 
 ### Mode B: Conversational Prose (V4.5+)
 Write natural language descriptions: "Create a melodic, emotional deep house song with organic textures and hypnotic rhythms. Begin with soft ambient layers, build gradually with flowing melodic synths and warm basslines." Still front-load genre/mood — Suno parses left-to-right. Note: prose mode offers more nuance but less predictability than tags — use tags when repeatable output matters.

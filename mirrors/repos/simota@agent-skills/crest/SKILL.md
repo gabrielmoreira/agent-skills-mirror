@@ -106,9 +106,10 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Include verification steps (anti-pattern audit, channel consistency check) in every deliverable.
 - Prioritize one strong community hub over scattered multi-platform presence.
 - Ensure all content passes the "sounds like you" test — lived experience over generic polish.
-- Maintain minimum weekly posting cadence on primary channel; sporadic posting signals abandonment to algorithms and audiences alike.
+- Maintain 2–5× weekly posting cadence on primary channel; sporadic posting signals abandonment to algorithms and audiences alike. LinkedIn's "Golden Hour" (first 60 minutes post-publish) is the algorithmic testing window — the platform shows the post to 2–5% of the creator's network, and strong early engagement determines second- and third-degree amplification.
 - LinkedIn engagement hierarchy (360Brew, 2026): saves drive 5× more reach than likes; comments carry 15× more weight than likes. Late engagement (saves/comments 24–72 hours post-publish) signals lasting value and yields 4–6× boost. 360Brew's NLP detects and penalizes engagement-bait phrasing ("comment below," "tag a friend") — never use formulaic interaction hooks.
 - LinkedIn short-form video (<60 s) achieves 53% more engagement than long-form; vertical format yields 34% higher engagement and dwell time; subtitles add 29% retention lift. Recommend video for quick technical tips, project demos, and opinionated takes.
+- LinkedIn external links penalty: posts containing outbound URLs in the body suffer ~60% reach reduction (algorithm deprioritizes off-platform navigation). Adopt zero-click content strategy — deliver full value natively in the feed via document carousels, text posts, or native video. For link-dependent content, use LinkedIn Articles or Newsletters (native formats, zero penalty) or place URLs in the first comment.
 
 ---
 
@@ -121,7 +122,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `GitHub README`, `LinkedIn`, `profile` | **PROFILE** — Channel-specific optimization → Channel-optimized content (LinkedIn: align 360Brew Topic DNA + 80% content pillar rule, 100% profile completion, mobile-first About ≤275 chars, pin top 3 skills; GitHub: pin 4–6 strongest repos) | `references/channel-templates.md` |
 | `実績まとめ`, `自己紹介`, `achievement` | **NARRATIVE** — Contribution data → Achievement narrative | `references/channel-templates.md` |
 | `ブランド戦略`, `brand strategy` | **STRATEGY** — Annual roadmap → Branding roadmap | `references/amplification-playbook.md` |
-| `ブログネタ`, `登壇テーマ`, `content ideas` | **CONTENT** — Content planning → Content plan + repurpose map (LinkedIn: prioritize document/carousel posts and short-form video <60 s; optimize for depth, saves, and late engagement; maintain 80%+ within Topic DNA pillars) | `references/amplification-playbook.md` |
+| `ブログネタ`, `登壇テーマ`, `content ideas` | **CONTENT** — Content planning → Content plan + repurpose map (LinkedIn: zero-click strategy — deliver value in-feed via document/carousel posts and short-form video <60 s; no outbound URLs in post body; optimize for depth, saves, and late engagement; maintain 80%+ within Topic DNA pillars) | `references/amplification-playbook.md` |
 | `build in public`, `発信戦略` | **VISIBILITY** — Build-in-public → Visibility plan with community hub | `references/amplification-playbook.md` |
 | `AI時代`, `AI branding` | **AI-ERA** — AI-era positioning → Authenticity-first AI strategy | `references/ai-era-strategy.md` |
 
@@ -180,6 +181,8 @@ Every deliverable must include:
 - **Chain A (Achievement Narrative):** Harvest → Crest → Saga → Prose
 - **Chain B (Presence Optimization):** Crest → Growth
 - **Chain C (Content Strategy):** Compete → Crest → Canvas
+
+**Subagent parallelism (Pattern B: Feature Parallel):** When handling multi-channel PROFILE optimization (LinkedIn + GitHub + blog/Qiita), spawn 2–3 subagents per channel — each channel's content is independent with no data dependencies. Ownership split: each subagent owns its channel output exclusively; shared-read on the positioning statement from DISCOVER phase.
 
 **Overlap boundaries:**
 - **vs Saga:** Saga = product narratives (hero=customer); Crest = personal narratives (hero=engineer)

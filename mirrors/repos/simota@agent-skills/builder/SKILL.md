@@ -65,7 +65,7 @@ Route elsewhere when the task is primarily:
 
 ## Core Contract
 
-- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. TS 6.0 (bridge to Go-based TS 7.0) defaults `strict: true` and includes `noUncheckedIndexedAccess` / `exactOptionalPropertyTypes` in `tsc --init` output, but does NOT fold them into the `--strict` umbrella flag; keep all four flags explicit.
+- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. Both TS 6.0 (final JS-based release, March 2026) and tsgo (Go-native TS 7.0) default `strict: true` in `tsc --init` but do NOT fold these additional flags into the `--strict` umbrella; keep all four explicit. For new projects, ensure zero TS 6.0 deprecation warnings — tsgo hard-removes deprecated options (`target: es5`, `moduleResolution: "node"`, `baseUrl` without `paths`, `esModuleInterop: false`).
 - Define interfaces and types before writing implementation code.
 - Enforce always-valid domain model: entities and value objects must be valid at construction time; reject invalid state in constructors/factories, never allow half-built objects to exist.
 - Handle all edge cases: null, empty, error states, timeouts.
@@ -73,6 +73,7 @@ Route elsewhere when the task is primarily:
 - Apply DDD patterns when domain complexity warrants it; use CRUD for simple domains.
 - Include error handling with actionable messages at every system boundary.
 - Use `.safeParse()` (not `.parse()`) at system boundaries — `.parse()` throws and can crash the process in Express/Hono handlers. Use `z.prettifyError()` or `z.flattenError()` to format validation failures into structured API responses.
+- Define Zod schemas at module level as constants, not inside functions — recreating schemas per call wastes CPU; module-level constants are 2–5× faster for repeated validations.
 - API resilience: categorize errors before retry (4xx = caller bug, don't retry; 429 = backoff with Retry-After; 5xx = exponential backoff, 3–5 max attempts). Track retry count per request — unbounded retries create infinite loops that exhaust processing capacity. Never retry non-idempotent mutations without idempotency key.
 - Apply circuit breaker for external API calls: scope per endpoint, not per host. Open after consecutive failures (default 5 in 60 s; tune by criticality — payment ≤ 3, search ≤ 10), half-open after cooldown (30 s–2 min), close on success.
 - Prefer contract-driven API types: generate TypeScript types from OpenAPI specs (e.g. `openapi-typescript`) rather than hand-writing response types — hand-written types drift from backend reality and fail silently at runtime. Use Zod v4 `.toJSONSchema()` to export boundary schemas as JSON Schema for OpenAPI sync, closing the loop between runtime validation and API documentation.
@@ -156,7 +157,7 @@ Spawn only when the deliverable touches 4+ files and post-BUILD verification wou
 | **Implementation** | Result/Railway · Zod v4 Validation · API Integration (REST/GraphQL/WS) · Performance | `references/implementation-patterns.md` |
 | **Frontend** | RSC · TanStack Query v5 + Zustand · State Selection Matrix · RHF + Zod · Optimistic | `references/frontend-patterns.md` |
 | **Architecture** | Clean/Hexagonal · SOLID/CUPID · Domain Complexity Assessment · DDD vs CRUD | `references/architecture-patterns.md` |
-| **Language Idioms** | TypeScript 5.8+ · Go 1.22+ · Python 3.12+ · Per-language testing | `references/language-idioms.md` |
+| **Language Idioms** | TypeScript 6.0+ / tsgo · Go 1.22+ · Python 3.12+ · Per-language testing | `references/language-idioms.md` |
 
 ## Workflow
 

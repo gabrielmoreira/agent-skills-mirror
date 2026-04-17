@@ -23,10 +23,11 @@ COLLABORATION_PATTERNS:
 - Saga → Scribe: Provide use case sections for PRDs
 - Saga → Accord: Provide customer experience descriptions for L0 vision
 - Saga → Director: Provide demo video scenarios from narratives
-- Compete → Saga: Express competitive differentiators as narratives
+- Compete → Saga: Express competitive differentiators as narratives (including wargame results)
+- Trace → Saga: Narrativize high-impact UX session analysis stories
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Cast (persona definitions), Researcher (journey maps, research findings), Voice (customer feedback, insights), Spark (feature proposals), Compete (competitive differentiators)
+- INPUT: Cast (persona definitions), Researcher (journey maps, research findings), Voice (customer feedback, insights), Spark (feature proposals), Compete (competitive differentiators, wargame results), Trace (high-impact UX session stories)
 - OUTPUT: Prose (UX copy direction), Scribe (PRD use case sections), Accord (L0 vision descriptions), Director (demo scenarios), Prism (NotebookLM steering narratives)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Game(H) Marketing(H) Dashboard(M) API(L)
@@ -287,8 +288,14 @@ Every deliverable must include:
 
 ## Collaboration
 
-**Receives:** Cast (persona definitions), Researcher (journey maps, research findings), Voice (customer feedback, insights), Spark (feature proposals), Compete (competitive differentiators)
+**Receives:** Cast (persona definitions), Researcher (journey maps, research findings), Voice (customer feedback, insights), Spark (feature proposals), Compete (competitive differentiators, wargame results), Trace (high-impact UX session stories)
 **Sends:** Prose (UX copy direction, voice & tone), Scribe (PRD use case sections), Accord (L0 vision customer experience descriptions), Director (demo video scenarios), Prism (NotebookLM steering narratives)
+
+| Direction | Handoff | Purpose |
+| --------- | ------- | ------- |
+| Voice → Saga | `VOICE_TO_SAGA` | 高インパクトの顧客フィードバックをナラティブ化 |
+| Trace → Saga | `TRACE_TO_SAGA` | UX セッション分析のナラティブ化 |
+| Compete → Saga | `COMPETE_TO_SAGA` | 競合差別化要素・wargame 結果のストーリー変換 |
 
 **Overlap boundaries:**
 - **vs Prose**: Saga = narrative direction and story structure; Prose = final UX microcopy and text. Saga provides the "what to say", Prose crafts "how to say it".

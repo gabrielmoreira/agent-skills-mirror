@@ -16,6 +16,7 @@ CAPABILITIES_SUMMARY:
 - intrinsic_size_animation: interpolate-size: allow-keywords and calc-size() for native height:auto animation — accordion/dropdown without JS (Chrome 129+)
 - spring_physics: Spring-based physics animations via linear() easing approximation, Motion spring presets, natural responsive motion as UX standard
 - css_linear_easing: CSS linear() easing function for bounce/elastic/spring curves CSS-only (Baseline 2024)
+- scroll_triggered_animation: CSS scroll-triggered animations — animation-trigger/timeline-trigger for time-based animations activated at scroll offsets, distinct from scroll-driven animations (Chrome 145+)
 - library_guidance: Motion v12 (React/Vue/vanilla JS, MIT, hardware-accelerated scroll, oklch/oklab color animation, axis-locked layout="x"|"y"), GSAP (framework-agnostic, timeline, all plugins free since Webflow acquisition 2024 — license only restricts Webflow-competing visual animation builders), Motion One (WAAPI-based lightweight alternative), Tailwind CSS Motion (5KB CSS-only)
 
 COLLABORATION_PATTERNS:
@@ -46,7 +47,8 @@ Use Flow when work needs:
 - Motion token design or motion cleanup
 - `prefers-reduced-motion` support
 - Performance-safe motion implementation
-- Modern CSS animation APIs: View Transitions API (same-document Baseline Oct 2025 — Chrome 111+/Edge 111+/Safari 18+/Firefox 144+; cross-document Chrome 126+/Edge 126+/Safari 18.2+/Firefox 146+ partial), scroll-driven animations (`animation-timeline: scroll()`/`view()` — cross-browser Baseline 2025), `@starting-style` for entry animations (Baseline Newly Available — Chrome 117+/Edge 117+/Safari 17.5+/Firefox 129+), `interpolate-size`/`calc-size()` for animating to intrinsic sizes like `height: auto` (Chrome 129+/Edge 129+ only)
+- Modern CSS animation APIs: View Transitions API (same-document Baseline Oct 2025 — Chrome 111+/Edge 111+/Safari 18+/Firefox 144+; cross-document Chrome 126+/Edge 126+/Safari 18.2+/Firefox 146+ partial), scroll-driven animations (`animation-timeline: scroll()`/`view()` — Chrome 115+/Safari 26+; Firefox behind flag, Interop 2026 focus area), `@starting-style` for entry animations (Baseline Newly Available — Chrome 117+/Edge 117+/Safari 17.5+/Firefox 129+), `interpolate-size`/`calc-size()` for animating to intrinsic sizes like `height: auto` (Chrome 129+/Edge 129+ only)
+- CSS scroll-triggered animations: `animation-trigger`/`timeline-trigger` for time-based animations that fire at scroll offsets (Chrome 145+, distinct from scroll-driven scrubbing)
 - Framework-specific motion patterns (Motion v12/React, GSAP/vanilla, Tailwind CSS Motion)
 - Core Web Vitals remediation for animation-induced CLS or INP failures
 
@@ -68,6 +70,7 @@ Route elsewhere when:
 - **Guard Core Web Vitals:** animations must not degrade CLS (< 0.1) or INP (< 200ms). Non-composited animations cause CLS on 39% of mobile pages. For animation-induced INP issues, use the rAF → setTimeout pattern: defer heavy post-animation logic via `requestAnimationFrame(() => setTimeout(heavyWork, 0))` to guarantee a paint between interaction and computation.
 - Auto-detect the active framework and follow local idioms. For React/Vue/vanilla JS, prefer Motion v12 (formerly Framer Motion, MIT, hardware-accelerated scroll animations, oklch/oklab color support, axis-locked layout animations via `layout="x"|"y"`, multi-framework via `motion/react` and vanilla APIs). For complex timeline work or projects needing premium plugins (SplitText, MorphSVG, ScrollTrigger), prefer GSAP (all plugins free since Webflow acquisition 2024; license only restricts tools competing with Webflow's visual animation builder).
 - **Scroll-driven animations:** use `linear` easing (the scroll gesture itself provides natural easing). Set `animation-duration: 1ms` (not `0`) for Firefox compatibility. Animate only compositor-safe properties — custom properties and `font-size` force main-thread execution.
+- **Scroll-triggered vs scroll-driven:** Scroll-driven animations scrub with scroll position (progress-based). Scroll-triggered animations (Chrome 145+) are time-based animations that start/stop when crossing a scroll offset — use `animation-trigger` and `timeline-trigger`. Choose scroll-driven for progress indicators and parallax; scroll-triggered for entrance animations and reveals that should play at their own pace.
 - **`will-change` budget:** limit to ≤2 elements per page. Overuse creates excessive GPU memory consumption and can degrade rather than improve performance.
 - **Intrinsic size animation:** For animating to `height: auto` or other intrinsic sizes, use `interpolate-size: allow-keywords` on the ancestor (or `calc-size()` for calculations). One end of the animation must be a `<length-percentage>` — animating between two intrinsic values is not supported. Chrome 129+/Edge 129+ only; use progressive enhancement with a fallback that skips the animation.
 - Keep scope explicit:
@@ -105,6 +108,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Animate layout-triggering properties (`top`, `left`, `width`, `height`) on scroll — use `transform: translateY()` instead; layout-triggering scroll animations are a top CLS contributor
 - Use `setInterval`/`setTimeout` for animation loops — causes frame drift and jank; always use `requestAnimationFrame`
 - Animate `font-size` or custom properties in scroll-driven animations — these force the entire animation to run on the main thread, negating the compositor advantage of scroll-driven animations
+- Fire multiple simultaneous animations from rapid-fire events (API errors, toast notifications) without batching — debounce or coalesce competing motion into a single animated notification to prevent visual chaos
 
 ## Workflow
 
@@ -132,6 +136,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `CLS`, `INP`, `Core Web Vitals`, `layout shift` | CWV remediation | Compositor-only animation refactor | `references/animation-performance-anti-patterns.md` |
 | `Motion`, `Framer Motion`, `GSAP`, `library` | Library selection | Library recommendation + implementation | `references/framework-patterns.md` |
 | `height auto`, `intrinsic size`, `accordion`, `expand collapse` | Intrinsic size animation | `interpolate-size`/`calc-size()` progressive enhancement | `references/modern-css-animations.md` |
+| `scroll-triggered`, `animation-trigger`, `entrance on scroll` | Scroll-triggered animation | Time-based animation with scroll offset trigger | `references/modern-css-animations.md` |
 
 Routing rules:
 

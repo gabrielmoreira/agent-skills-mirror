@@ -17,6 +17,7 @@ CAPABILITIES_SUMMARY:
 - make_kit_awareness: Leverage Make kit ecosystem including auto-generated guidelines from design packages as a starting point
 - design_debt_detection: Detect unnamed layers, detached instances, inconsistent naming that degrade Make output
 - make_template_management: Create and manage Make templates as reusable starting points alongside Make kits
+- attachment_strategy: Recommend Make Attachments (PRDs, brand guidelines, code, images, data) for one-off prompt context vs persistent Guidelines for design system rules
 
 COLLABORATION_PATTERNS:
 - Muse -> Loom: Token definitions
@@ -52,6 +53,7 @@ Use Loom when the task is to:
 - refine Guidelines or prompts from reverse feedback or code regression signals
 - analyze Figma file structure for Auto Layout, naming, component hierarchy, or page organization
 - detect design debt (unnamed layers, detached instances, inconsistent naming) that degrades Make output quality
+- recommend Make Attachments (PRDs, brand guidelines, code, images, CSV, JSON, SVGs, videos) for one-off prompt context that does not belong in persistent Guidelines
 - prepare MCP-aware Guidelines that leverage Figma Variables, design tokens, component properties, and Code Connect mappings
 - leverage Make kit auto-generated guidelines as a starting point and refine with codebase-specific rules
 - create or update Make templates for reusable starting points that complement Make kits
@@ -82,6 +84,7 @@ Route elsewhere when the task is primarily:
 - Use `get_variable_defs` via MCP to extract exact token names and code syntax, eliminating ambiguity when multiple tokens share the same visual value.
 - Use "Add instructions for MCP" on components to document component-specific patterns and accessibility requirements — this enriches MCP server output with real implementation details.
 - When a Make kit is available, use its auto-generated guidelines as a starting point — let Make analyze the npm package first, then review and refine rather than authoring from scratch. Make kits support public npm packages, private organization packages, and Figma library styles/variables/tokens.
+- Use Make Attachments for one-off context (PRDs, brand guidelines, reference images, data files) that applies to a single generation session. Reserve Guidelines.md for persistent design system rules reused across sessions. Supported attachment types: PDF, markdown, code (TSX/JS/CSS), CSV, JSON, media (JPEG/PNG/GIF/MP4/MP3), SVG.
 - Structure token guidelines by decision context — group by task (backgrounds, text colors, spacing, borders) not by category. Present typography as a table mapping every class to its properties and usage notes. Establish color hierarchy: semantic tokens first, raw palette values only as fallback. Explicitly call out common mistakes (e.g., brand color as page background, hardcoded values when tokens exist).
 - Guidelines.md is instructional, not enforcement-based — Make follows the rules but nothing blocks non-compliant output automatically. This makes the VALIDATE phase non-optional.
 - Keep Auto Layout nesting ≤ 3 levels; deeper nesting reduces Make output reliability.
@@ -125,6 +128,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Ignore design debt signals (unnamed layers, detached instances) — these degrade Make output quality.
 - Omit platform context from prompts — Make defaults to web patterns, producing unusable layouts for mobile or tablet targets.
 - Use hedged language in Guidelines constraints — "Use X sparingly" is unreliable; prefer explicit prohibitions like "Do not use X except for Y".
+- Prompt for brand-sensitive screens without explicit brand identity constraints — Make may generate layouts resembling well-known apps (e.g., weather, music) due to training data, leading to unintentional design plagiarism.
 - Keep iterating endlessly on a failing Make file — if adjustments exceed `5` rounds without convergence, start a new Make file with a refined initial prompt.
 
 ## Interaction Triggers
@@ -199,7 +203,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Expect "vanilla" output from Make — explicitly prompt for brand identity, custom typography, and unique visual style to avoid the watered-down LLM-average look.
 - Guard against code regression: when enough functionality exists, each new feature prompt risks overwriting previous behaviors. Use explicit "preserve existing" constraints.
 - When a prompt fails, rephrase with spatial instructions — "move this element down 20 pixels" is more effective than "vertically align these two elements".
-- Budget prompts carefully — Professional ≈ 3,000, Organization ≈ 3,500, Enterprise ≈ 4,250 credits/seat/month (enforced since March 2026). Add-on packs: 5,000/$120, 7,500/$180, 10,000/$240/month. Pay-as-you-go ($0.03/credit) available from May 2026. Claude Opus 4.6 consumes significantly more credits than default models; select model tier based on task complexity.
+- Budget prompts carefully — Professional ≈ 3,000, Organization ≈ 3,500, Enterprise ≈ 4,250 credits/seat/month (enforced since March 2026). Add-on packs: 5,000/$120, 7,500/$180, 10,000/$240/month. Pay-as-you-go: $0.03/credit with configurable spending limit. Claude Opus 4.6 consumes significantly more credits than default models; select model tier based on task complexity.
 - Clean input frames before prompting: remove unnamed layers, ensure consistent naming, apply proper Auto Layout — dirty input degrades output quality.
 - Leverage Code Connect to link Figma components to codebase implementations — Make generates more accurate code when it can reference existing patterns.
 - Use Figma MCP Remote Access for CI/pipeline-driven Guidelines generation without requiring a desktop app.
@@ -232,6 +236,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | code regression signal | Regression guard analysis | preservation constraints for prompts | `references/prompt-patterns.md` |
 | MCP-aware generation | Figma Variables + token integration via `get_variable_defs` | MCP-optimized Guidelines package | `references/token-alignment-guide.md` |
 | Code Connect available | Link components to codebase via Code Connect mappings | Code Connect-enhanced Guidelines | `references/guidelines-templates.md` |
+| one-off context (PRD, brand guide, data) | Attachment strategy recommendation | attachment plan + Guidelines separation | `references/figma-make-constraints.md` |
 | unclear request | Clarify scope and route | scoped analysis | `references/` |
 
 Routing rules:

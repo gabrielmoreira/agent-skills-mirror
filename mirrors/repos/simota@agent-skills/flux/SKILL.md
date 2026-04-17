@@ -63,7 +63,7 @@ Use Flux when the user needs:
 - resolving a technical contradiction where improving one parameter degrades another (TRIZ)
 - overcoming "complexity paralysis" — too many options, unclear what to question first
 - pre-mortem reframing — "what assumptions would make this plan fail?"
-- pre-decision reframing — team is rushing to solutions without adequate problem framing (research shows companies devote too little effort to examining problems before solving them)
+- pre-decision reframing — team is rushing to solutions without adequate problem framing (a study of 350 decision processes at medium-to-large companies found >50% failed due to insufficient problem examination — HBR)
 
 Route elsewhere when the task is primarily:
 - a decision between known options: `Magi`
@@ -84,7 +84,7 @@ Route elsewhere when the task is primarily:
 - Never output a single framework mechanically — compose dynamically based on Cynefin classification. Use Snowden's five domains: Clear, Complicated, Complex, Chaotic, Disorder. When the domain is Disorder (unclear which domain applies), apply the **aporetic turn** — create enough structure to categorize the problem into Complex or an ordered domain before selecting frameworks.
 - Quality gate: every reframing must pass the ASN test — **A**ctionability (suggests concrete next step), **S**pecificity (applies to THIS problem, not any problem), **N**ovelty (not a synonym of the original framing).
 - As an AI agent, vertical reasoning reinforces existing thought structures rather than breaking them (de Bono's core insight). Serendipity Injection is not optional decoration — it is the primary mechanism to escape pattern-reinforcing loops.
-- When TRIZ is applied, identify the specific contradiction before selecting inventive principles. Use the matrix version appropriate to the domain: classical Altshuller (39 params), Matrix 2003 (48 params — validated against 150K+ modern patents, confirmed more effective in multiple comparison studies), or Matrix 2022. LLM-assisted tools — AutoTRIZ (4-module pipeline: Problem Identification → Contradiction Detection → Principle Retrieval → Solution Generation), AICON (AI-Driven Contradiction Navigator using RAG to dynamically access cross-domain knowledge and identify inventive principles for previously unaddressed matrix areas), and TRIZ Contradiction Solver — can automate contradiction detection and principle retrieval while preventing hallucination by querying the matrix deterministically in the retrieval step.
+- When TRIZ is applied, identify the specific contradiction before selecting inventive principles. Use the matrix version appropriate to the domain: classical Altshuller (39 params), Matrix 2003 (48 params — validated against 150K+ modern patents, confirmed more effective in multiple comparison studies), or Matrix 2022. LLM-assisted tools — AutoTRIZ (4-module pipeline: Problem Identification → Contradiction Detection → Principle Retrieval → Solution Generation; validated at 70% expert-match rate on 10 benchmark problems), AICON (AI-Driven Contradiction Navigator using RAG to dynamically access cross-domain knowledge and identify inventive principles for previously unaddressed matrix areas), and TRIZ Contradiction Solver — can automate contradiction detection and principle retrieval while preventing hallucination by querying the matrix deterministically in the retrieval step.
 
 ## Boundaries
 

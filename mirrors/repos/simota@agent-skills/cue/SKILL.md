@@ -12,7 +12,7 @@ CAPABILITIES_SUMMARY:
 - cta_design: Design in-video call-to-action placement and messaging
 - template_library: Provide video structure templates (AIDA, Problem-Solution, Before-After)
 - visual_direction: Specify camera angles, transitions, text overlays, and motion graphics cues
-- multi_format: Adapt scripts for different platforms (YouTube, Twitter/X, Product Hunt, landing page)
+- multi_format: Adapt scripts for different platforms (YouTube, YouTube Shorts, Twitter/X, Instagram Reels, LinkedIn, TikTok, Product Hunt, landing page)
 
 COLLABORATION_PATTERNS:
 - Saga -> Cue: Narrative materials adapted into video scripts
@@ -41,7 +41,7 @@ Use Cue when the user needs:
 - narration copy with timing cues
 - video pacing planned for a target duration
 - CTA placement designed within video flow
-- a script adapted for different platforms (YouTube, Twitter/X, Product Hunt)
+- a script adapted for different platforms (YouTube, YouTube Shorts, Twitter/X, TikTok, Instagram Reels, LinkedIn, Product Hunt)
 - a script formatted for AI video tools (Synthesia, HeyGen, Veed)
 
 Route elsewhere when the task is primarily:
@@ -91,6 +91,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Omit visual direction from any scene.
 - Pack multiple messages into a single video; one clear message per video ("X solves Y"), save other points for follow-up content.
 - Start short-form scripts with a slow build-up; 50-60% of viewers who drop off leave within the first 3 seconds. Use layered hooks (visual + auditory + textual) for 3x higher retention than single-element intros.
+- Ignore platform-specific completion rate thresholds; TikTok viral distribution requires 70%+ completion rate — plan duration and pacing accordingly.
 
 ## Output Routing
 
@@ -102,7 +103,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `onboarding`, `welcome` | Onboarding video script | Progressive disclosure flow | `references/patterns.md` |
 | `social`, `Twitter`, `short` | Short-form script (15-60s) | Hook-first compact structure | `references/patterns.md` |
 | `comparison`, `vs` | Comparison video script | Side-by-side scene layout | `references/patterns.md` |
-| `Synthesia`, `HeyGen`, `AI avatar` | AI avatar video script | Single-speaker narration, no camera cues. Max 5 min/scene (Synthesia). Use punctuation for pacing (commas=short pause, periods=long pause). Add gesture cues where supported (HeyGen: Nod, Head Yes/No, Eyebrows Up) | `references/patterns.md` |
+| `Synthesia`, `HeyGen`, `AI avatar` | AI avatar video script | Single-speaker narration, no camera cues. Max 5 min/scene (Synthesia). Synthesia: 240+ avatars, 160+ languages, voice cloning available. HeyGen: Dynamic Body Language (predictive motion — lean-in, shrug, hand gestures), custom avatar from 30s phone clip, URL-to-localized-video in 40+ languages. Use punctuation for pacing (commas=short pause, periods=long pause). Add gesture cues where supported (HeyGen: Nod, Head Yes/No, Eyebrows Up, dynamic body language) | `references/patterns.md` |
 | unclear request | Product demo (most common) | Scene breakdown + narration | `references/patterns.md` |
 
 ## Workflow
@@ -121,7 +122,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 | Format | Duration | Scenes | Words (narration) | Best for |
 |--------|----------|--------|--------------------|----------|
-| Social Clip | 15-30s | 3-5 | 40-75 | Twitter/X, Instagram, ads |
+| Social Clip | 15-30s | 3-5 | 40-75 | Twitter/X, Instagram, TikTok, YouTube Shorts, ads. Sweet spot 21-34s for highest completion rates (~62%); sub-15s achieves ~92% completion but limits narrative depth |
 | Short | 60-90s | 5-8 | 120-200 | Product Hunt, landing page, explainers |
 | Standard | 2-3 min | 8-15 | 300-450 | YouTube, product demos |
 | Tutorial | 3-5 min | 10-20 | 450-750 | Walkthroughs, onboarding |

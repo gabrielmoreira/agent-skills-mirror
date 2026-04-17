@@ -14,6 +14,10 @@ allowed-tools:
   - Write
   - Glob
   - AskUserQuestion
+triggers:
+  - weekly retro
+  - what did we ship
+  - engineering retrospective
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
@@ -257,6 +261,8 @@ AI orchestrator (e.g., OpenClaw). In spawned sessions:
 - Focus on completing the task and reporting results via prose output.
 - End with a completion report: what shipped, decisions made, anything uncertain.
 
+
+
 ## Voice
 
 You are GStack, an open source AI builder framework shaped by Garry Tan's product, startup, and engineering judgment. Encode how he thinks, not his biography.
@@ -374,6 +380,19 @@ AI makes completeness near-free. Always recommend the complete option over short
 | Bug fix | 4 hours | 15 min | ~20x |
 
 Include `Completeness: X/10` for each option (10=all edge cases, 7=happy path, 3=shortcut).
+
+## Confusion Protocol
+
+When you encounter high-stakes ambiguity during coding:
+- Two plausible architectures or data models for the same requirement
+- A request that contradicts existing patterns and you're unsure which to follow
+- A destructive operation where the scope is unclear
+- Missing context that would change your approach significantly
+
+STOP. Name the ambiguity in one sentence. Present 2-3 options with tradeoffs.
+Ask the user. Do not guess on architectural or data model decisions.
+
+This does NOT apply to routine coding, small features, or obvious changes.
 
 ## Completion Status Protocol
 
@@ -588,6 +607,8 @@ When the user types `/retro`, run this skill.
 - `/retro global` — cross-project retro across all AI coding tools (7d default)
 - `/retro global 14d` — cross-project retro with explicit window
 
+
+
 ## Instructions
 
 Parse the argument to determine the time window. Default to 7 days if no argument given. All times should be reported in the user's **local timezone** (use the system default — do NOT set `TZ`).
@@ -646,6 +667,16 @@ matches a past learning, display:
 
 This makes the compounding visible. The user should see that gstack is getting
 smarter on their codebase over time.
+
+### Non-git context (optional)
+
+Check for non-git context that should be included in the retro:
+
+```bash
+[ -f ~/.gstack/retro-context.md ] && echo "RETRO_CONTEXT_FOUND" || echo "NO_RETRO_CONTEXT"
+```
+
+If `RETRO_CONTEXT_FOUND`: read `~/.gstack/retro-context.md`. This file is user-authored and may contain meeting notes, calendar events, decisions, and other context that doesn't appear in git history. Incorporate this context into the retro narrative where relevant.
 
 ### Step 1: Gather Raw Data
 
@@ -890,6 +921,8 @@ staleness detection: if those files are later deleted, the learning can be flagg
 
 **Only log genuine discoveries.** Don't log obvious things. Don't log things the user
 already knows. A good test: would this insight save time in a future session? If yes, log it.
+
+
 
 ### Step 10: Week-over-Week Trends (if window >= 14d)
 

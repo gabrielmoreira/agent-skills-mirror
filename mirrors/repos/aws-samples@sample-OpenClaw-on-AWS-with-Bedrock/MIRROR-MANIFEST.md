@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aws-samples/sample-OpenClaw-on-AWS-with-Bedrock` — 26 default patterns, 14 followed patterns, 33 file(s) materialized.
+Mirror of `aws-samples/sample-OpenClaw-on-AWS-with-Bedrock` — 26 default patterns, 14 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aws-samples/sample-OpenClaw-on-AWS-with-Bedrock` — 26 default patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 14 |
-| Files         | 33 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,35 +76,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`eks/README.md`](eks/README.md) |
 | 3 | ✓ | [`enterprise/admin-console/server/soul-templates/global/AGENTS.md`](enterprise/admin-console/server/soul-templates/global/AGENTS.md) |
 | 4 | ✓ | [`enterprise/admin-console/server/soul-templates/positions/pos-sa/AGENTS.md`](enterprise/admin-console/server/soul-templates/positions/pos-sa/AGENTS.md) |
-| 5 | ✓ | [`enterprise/demo/README.md`](enterprise/demo/README.md) |
-| 6 | ✓ | [`enterprise/README.md`](enterprise/README.md) |
-| 7 | ✓ | [`skills/Community Skills`](skills/Community%20Skills) |
-| 8 | ✓ | [`skills/openclaw-kirocli-skill/README.md`](skills/openclaw-kirocli-skill/README.md) |
-| 9 | ✓ | [`skills/openclaw-kirocli-skill/README.zh-CN.md`](skills/openclaw-kirocli-skill/README.zh-CN.md) |
-| 10 | ✓ | [`skills/openclaw-kirocli-skill/skills/kiro-cli/references/advanced.md`](skills/openclaw-kirocli-skill/skills/kiro-cli/references/advanced.md) |
-| 11 | ✓ | [`skills/openclaw-kirocli-skill/skills/kiro-cli/SKILL.md`](skills/openclaw-kirocli-skill/skills/kiro-cli/SKILL.md) |
-| 12 | ✓ | [`skills/s3-files-skill/README.md`](skills/s3-files-skill/README.md) |
-| 13 | ✓ | [`skills/s3-files-skill/skills/s3-files/config.example.json`](skills/s3-files-skill/skills/s3-files/config.example.json) |
-| 14 | ✓ | [`skills/s3-files-skill/skills/s3-files/download-url.js`](skills/s3-files-skill/skills/s3-files/download-url.js) |
-| 15 | ✓ | [`skills/s3-files-skill/skills/s3-files/generate-upload-page.js`](skills/s3-files-skill/skills/s3-files/generate-upload-page.js) |
-| 16 | ✓ | [`skills/s3-files-skill/skills/s3-files/package.json`](skills/s3-files-skill/skills/s3-files/package.json) |
-| 17 | ✓ | [`skills/s3-files-skill/skills/s3-files/SKILL.md`](skills/s3-files-skill/skills/s3-files/SKILL.md) |
-| 18 | ✓ | [`skills/s3-files-skill/skills/s3-files/upload.js`](skills/s3-files-skill/skills/s3-files/upload.js) |
-| 19 | ✓ | [`traffic/README.md`](traffic/README.md) |
-| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 21 | → | [`DEPLOYMENT.md`](DEPLOYMENT.md) |
-| 22 | → | [`docs/DEPLOYMENT_CHINA_REGION.md`](docs/DEPLOYMENT_CHINA_REGION.md) |
-| 23 | → | [`docs/DEPLOYMENT_EKS_CN.md`](docs/DEPLOYMENT_EKS_CN.md) |
-| 24 | → | [`docs/DEPLOYMENT_EKS.md`](docs/DEPLOYMENT_EKS.md) |
-| 25 | → | [`enterprise/ROADMAP.md`](enterprise/ROADMAP.md) |
-| 26 | → | [`QUICK_START_KIRO.md`](QUICK_START_KIRO.md) |
-| 27 | → | [`README_CN.md`](README_CN.md) |
-| 28 | → | [`README_ENTERPRISE_CN.md`](README_ENTERPRISE_CN.md) |
-| 29 | → | [`README_ENTERPRISE.md`](README_ENTERPRISE.md) |
-| 30 | → | [`README.md`](README.md) |
-| 31 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 32 | → | [`SECURITY.md`](SECURITY.md) |
-| 33 | → | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) |
+| 5 | ✓ | [`enterprise/agent-container/skills/eventbridge-cron/SKILL.md`](enterprise/agent-container/skills/eventbridge-cron/SKILL.md) |
+| 6 | ✓ | [`enterprise/demo/README.md`](enterprise/demo/README.md) |
+| 7 | ✓ | [`enterprise/README.md`](enterprise/README.md) |
+| 8 | ✓ | [`skills/Community Skills`](skills/Community%20Skills) |
+| 9 | ✓ | [`skills/openclaw-kirocli-skill/README.md`](skills/openclaw-kirocli-skill/README.md) |
+| 10 | ✓ | [`skills/openclaw-kirocli-skill/README.zh-CN.md`](skills/openclaw-kirocli-skill/README.zh-CN.md) |
+| 11 | ✓ | [`skills/openclaw-kirocli-skill/skills/kiro-cli/references/advanced.md`](skills/openclaw-kirocli-skill/skills/kiro-cli/references/advanced.md) |
+| 12 | ✓ | [`skills/openclaw-kirocli-skill/skills/kiro-cli/SKILL.md`](skills/openclaw-kirocli-skill/skills/kiro-cli/SKILL.md) |
+| 13 | ✓ | [`skills/s3-files-skill/README.md`](skills/s3-files-skill/README.md) |
+| 14 | ✓ | [`skills/s3-files-skill/skills/s3-files/config.example.json`](skills/s3-files-skill/skills/s3-files/config.example.json) |
+| 15 | ✓ | [`skills/s3-files-skill/skills/s3-files/download-url.js`](skills/s3-files-skill/skills/s3-files/download-url.js) |
+| 16 | ✓ | [`skills/s3-files-skill/skills/s3-files/generate-upload-page.js`](skills/s3-files-skill/skills/s3-files/generate-upload-page.js) |
+| 17 | ✓ | [`skills/s3-files-skill/skills/s3-files/package.json`](skills/s3-files-skill/skills/s3-files/package.json) |
+| 18 | ✓ | [`skills/s3-files-skill/skills/s3-files/SKILL.md`](skills/s3-files-skill/skills/s3-files/SKILL.md) |
+| 19 | ✓ | [`skills/s3-files-skill/skills/s3-files/upload.js`](skills/s3-files-skill/skills/s3-files/upload.js) |
+| 20 | ✓ | [`traffic/README.md`](traffic/README.md) |
+| 21 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 22 | → | [`DEPLOYMENT.md`](DEPLOYMENT.md) |
+| 23 | → | [`docs/DEPLOYMENT_CHINA_REGION.md`](docs/DEPLOYMENT_CHINA_REGION.md) |
+| 24 | → | [`docs/DEPLOYMENT_EKS_CN.md`](docs/DEPLOYMENT_EKS_CN.md) |
+| 25 | → | [`docs/DEPLOYMENT_EKS.md`](docs/DEPLOYMENT_EKS.md) |
+| 26 | → | [`enterprise/ROADMAP.md`](enterprise/ROADMAP.md) |
+| 27 | → | [`QUICK_START_KIRO.md`](QUICK_START_KIRO.md) |
+| 28 | → | [`README_CN.md`](README_CN.md) |
+| 29 | → | [`README_ENTERPRISE_CN.md`](README_ENTERPRISE_CN.md) |
+| 30 | → | [`README_ENTERPRISE.md`](README_ENTERPRISE.md) |
+| 31 | → | [`README.md`](README.md) |
+| 32 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 33 | → | [`SECURITY.md`](SECURITY.md) |
+| 34 | → | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) |
 
 ---
 

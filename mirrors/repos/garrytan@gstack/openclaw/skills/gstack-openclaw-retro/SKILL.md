@@ -25,6 +25,11 @@ Parse the argument to determine the time window. Default to 7 days. All times sh
 
 ---
 
+### Non-git context (optional)
+
+Check memory for non-git context: meeting notes, calendar events, decisions, and other
+context that doesn't appear in git history. If found, incorporate into the retro narrative.
+
 ### Step 1: Gather Raw Data
 
 First, fetch origin and identify the current user:
