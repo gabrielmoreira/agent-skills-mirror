@@ -78,10 +78,11 @@ Route elsewhere when the task is primarily:
 - Anchor every direction to measurable success criteria: target task-success rate, time-on-task reduction, or conversion lift.
 - UX ROI benchmark: every $1 invested in UX should target $2–$100 return (Forrester/NN/g); state expected ROI range for major redesigns.
 - Require WCAG 2.2 AA as minimum; recommend AAA for text-heavy surfaces.
-- For AI-driven interfaces: mandate explainability indicators so users understand why the system acts — require inline explanation affordances (e.g., "Why am I seeing this?") for every AI-generated recommendation or action. Trust is the #1 design challenge for AI experiences in 2026 — every AI surface must address user trust through transparency, control, and graceful fallback (NN/g State of UX 2026). 78% of managers now view explainability as a core requirement for responsible AI (Grazitti, 2026).
+- For AI-driven interfaces: mandate explainability indicators so users understand why the system acts — require inline explanation affordances (e.g., "Why am I seeing this?") for every AI-generated recommendation or action. Trust is the #1 design challenge for AI experiences in 2026 — every AI surface must address user trust through transparency, control, and graceful fallback (NN/g State of UX 2026). 63% of users are more likely to rely on AI that displays confidence levels or reasoning than on black-box output (2026 AI-UX research); 78% of managers now view explainability as a core requirement for responsible AI (Grazitti, 2026).
 - For AI-driven interfaces: prohibit prediction-driven UI without user override — auto-fill, auto-sort, and auto-decide actions must always provide visible undo, explanation of what changed, and manual override. Silent automation that surprises users is the top AI-interface failure pattern (IxDF/UX Collective 2026).
-- Token governance: prevent design drift by enforcing single-source-of-truth token architecture — no duplicated tokens across teams. For new design systems, align token format with the Design Tokens Community Group (DTCG) specification v2025.10 (first stable release October 2025; Community Group Report, not a W3C Standard).
-- WCAG 3.0 forward-readiness: for major design system refreshes, test contrast against APCA (Accessible Perceptual Contrast Algorithm) alongside WCAG 2.2 AA — APCA will replace the current contrast model when WCAG 3.0 reaches Recommendation (expected 2028–2030; still Working Draft as of 2026).
+- Token governance: prevent design drift by enforcing single-source-of-truth token architecture — no duplicated tokens across teams. For multi-brand products, use the Core → Brand → Product orchestrated inheritance model (semantic tokens only at Core; brand overrides at Brand; product-specific exceptions at Product) — shared-library flat models produce "Frankenstein systems" where tokens are shared but behavior diverges. For new design systems, align token format with the Design Tokens Community Group (DTCG) specification v2025.10 (first stable release October 2025; Community Group Report, not a W3C Standard).
+- WCAG 3.0 forward-readiness: keep WCAG 2.2 AA as the legal baseline (DOJ ADA Title II / EU EAA reference it). Do not plan around APCA as a standards-track replacement — APCA was removed from the WCAG 3 working draft in July 2023 and is not present in the August 2025 draft. Treat APCA as an optional perceptual overlay for brand/marketing surfaces only if it does not fail WCAG 2.2 AA; document any WCAG 2.2 failures as a legal risk. WCAG 3.0 is still Working Draft; Candidate Recommendation expected 2026–2027, Proposed/final Recommendation 2027–2028 at earliest.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read brand assets, competitor references, and existing tokens at SURVEY — visual coherence depends on grounding), P5 (think step-by-step at DIRECT/CRITIQUE — visual judgment errors propagate to brand drift)** as critical for Vision. P2 recommended: calibrated direction/critique reports preserving rationale and token refs. P1 recommended: front-load mode/brand/scope at SURVEY.
 ## Boundaries
 
 Agent role boundaries -> `_common/BOUNDARIES.md`
@@ -151,10 +152,10 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Page load time | ≤ 3 seconds (perceived) | Google/Hotjar |
 | Bounce rate | flag if > 55% | Hotjar 2026 |
 | WCAG conformance | AA minimum, AAA for text-heavy | WCAG 2.2 |
-| WCAG 3.0 readiness | Test APCA contrast on major refreshes | W3C Working Draft (APCA not yet in draft text per AG WG; Rec. expected 2028–2030) |
+| WCAG 3.0 readiness | Hold WCAG 2.2 AA as baseline; APCA optional (removed from WCAG 3 draft July 2023, absent in Aug 2025 draft) | W3C WCAG 3 Working Draft; Adrian Roselli (Apr 2026) |
 | Contrast ratio (text) | ≥ 4.5:1 | WCAG 2.2 AA |
 | Contrast ratio (UI components) | ≥ 3:1 | WCAG 2.2 AA |
-| ADA Title II compliance | WCAG 2.1 AA for US public entities | DOJ final rule, April 2026 |
+| ADA Title II compliance | WCAG 2.1 AA by 2026-04-24 (pop. ≥ 50K) or 2027-04-26 (pop. < 50K); federal penalties up to $150K/violation | DOJ final rule |
 | Design options presented | ≥ 3 per direction decision | Vision policy |
 | Task success rate | ≥ 78% (typical baseline); target 85–90% | NN/g, DesignRush 2026 |
 | Token duplication | 0 cross-team duplicates | Design system health |
@@ -240,6 +241,7 @@ Vision receives research and analysis from upstream agents. Vision sends design 
 | `references/composition-principles.md` | you need first-viewport rules, hero contract, layout restraint, image strategy, or page structure |
 | `references/linear-restraint-mode.md` | you need Linear-style restraint: calm surfaces, minimal chrome, card usage rules, or app vs marketing guidance |
 | `_common/OPERATIONAL.md` | you need journal, activity log, AUTORUN, Nexus, or shared operational defaults |
+| `_common/OPUS_47_AUTHORING.md` | you are sizing the direction/critique report, deciding adaptive thinking depth at DIRECT/CRITIQUE, or front-loading brand/scope at SURVEY. Critical for Vision: P3, P5 |
 
 ## Operational
 

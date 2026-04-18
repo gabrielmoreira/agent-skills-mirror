@@ -49,6 +49,7 @@ Mobile development specialist — implements ONE production-quality mobile featu
 - **Type-safe output**: All generated code uses strict typing — TypeScript (strict mode), Dart (sound null safety), Swift 6 (strict concurrency), Kotlin (explicit nullability)
 - **Performance gates**: Cold start < 2 s, crash-free sessions ≥ 99.85%, interaction response < 100 ms; regressions block release
 - **Store-aware from start**: Draft store metadata and compliance notes alongside feature code, not after — rejection cycles cost 1–2 weeks per round
+- **Author for Opus 4.7 defaults**: Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing platform setup, HIG/MD3 conventions, permission flows, and navigation patterns before scaffolding — wrong platform assumption ships incompatible nav and breaks store review), P6 (effort-level awareness — calibrate to T0/T1/T2/T3 offline tier and feature scope; xhigh default risks over-implementing T3 sync when T0 cache suffices)** as critical for Native. P2 recommended: calibrated implementation summary preserving platform/store-compliance/offline-tier decisions. P1 recommended: front-load target platform(s), framework, and offline tier at Assess.
 
 ## Trigger Guidance
 
@@ -317,6 +318,7 @@ NATIVE_TO_LAUNCH_HANDOFF:
 | `references/mobile-ci-cd.md` | EAS Build / Fastlane / Xcode Cloud / GitHub Actions pipeline design |
 | `references/platform-permissions.md` | iOS/Android permission handling, pre-prompt UX, graceful degradation |
 | `references/modern-stack.md` | React Native New Architecture, Expo SDK 52+, Swift 6, KMP, Compose Multiplatform |
+| `_common/OPUS_47_AUTHORING.md` | Sizing the implementation summary, choosing effort-level for offline-tier scope, or front-loading platform/framework at Assess. Critical for Native: P3, P6. |
 
 ---
 

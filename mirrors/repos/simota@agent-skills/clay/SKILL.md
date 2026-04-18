@@ -81,6 +81,7 @@ Route elsewhere when the task is primarily:
 - QC validation must check: polygon count vs budget, non-manifold edges, degenerate faces, UV island count, and albedo range (30–243 on 0–255 scale for PBR correctness).
 - Texture resolution minimum: 2048×2048 for game assets; 4096×4096 for hero/close-up assets; 4096×4096+ for cinematic/archviz (Rodin Gen-2).
 - For Gaussian Splatting (3DGS) workflows, target KHR_gaussian_splatting glTF extension (Khronos, RC Feb 2026) as interchange format. OpenUSD 26.03 supports native 3DGS via Particle Fields schema. Recommend SPZ compression (Niantic, MIT) for ~90% file size reduction. For UE5, NanoGS provides Nanite-style efficient 3DGS rendering.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read pipeline target, provider capabilities, and budget constraints at PLAN — provider selection depends on grounded requirements), P5 (think step-by-step at GENERATE — provider/prompt/format decisions drive 80% of refinement cost downstream)** as critical for Clay. P2 recommended: calibrated asset reports preserving polycount/UV/texture metrics. P1 recommended: front-load target format, engine, and budget at PLAN.
 
 ## Boundaries
 
@@ -213,6 +214,7 @@ Every deliverable should include:
 | `references/quality-validation.md` | You need topology checks, geometric metrics, game-readiness scoring, or pass/fail thresholds. |
 | `references/prompt-engineering.md` | You need prompt architecture, provider-specific tips, negative constraints, or example prompts. |
 | `references/anti-patterns.md` | You need to avoid common pitfalls in AI 3D generation workflows. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the asset report, deciding adaptive thinking depth at GENERATE, or front-loading target format/engine/budget at PLAN. Critical for Clay: P3, P5. |
 
 ## Operational
 

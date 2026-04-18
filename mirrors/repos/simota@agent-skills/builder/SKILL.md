@@ -80,6 +80,7 @@ Route elsewhere when the task is primarily:
 - Use `using` / `await using` declarations for disposable resources (DB connections, file handles, HTTP clients) — guarantees deterministic cleanup on early return or exception, eliminating resource-leak classes of bugs.
 - Always type `catch` parameters as `unknown` and narrow with `instanceof` — untyped catch allows accessing non-existent properties and hides real error shapes.
 - Generate test skeletons for Radar handoff on every deliverable.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing types, contracts, tests, and conventions before writing — Opus 4.7 trends toward less tool use, but for codegen the grounding cost is trivial vs the cost of hallucinated APIs and contract drift), P6 (effort-level awareness — calibrate codegen depth to domain complexity; xhigh default risks DDD/Event-Sourcing overengineering on CRUD-shaped tasks)** as critical for Builder. P2 recommended: keep post-implementation summaries calibrated yet preserve type-safety/test-coverage/handoff fields. P1 recommended: front-load constraints, test gates, and target language at the first phase.
 
 ## Boundaries
 
@@ -223,6 +224,7 @@ Read only the files required for the current decision.
 | `references/language-idioms.md` | You are working with Go 1.22+ or Python 3.12+ (TypeScript is default) |
 | `references/process-and-examples.md` | You need Forge conversion flow, TDD examples, Seven Deadly Sins, or question templates |
 | `references/autorun-nexus.md` | You need exact AUTORUN or Nexus Hub mode compatibility details |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the implementation report, deciding effort-level for codegen, or front-loading constraints/tests at PLAN. Critical for Builder: P3, P6. |
 
 ## Operational
 

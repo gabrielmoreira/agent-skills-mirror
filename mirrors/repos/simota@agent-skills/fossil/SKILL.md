@@ -65,6 +65,7 @@ Route elsewhere when the task is primarily:
 - Identify temporal patterns: when rules were introduced, modified, or abandoned.
 - Catalog hidden dependencies: batch jobs, shared databases, file drops, and silent integrations that surface only during migration.
 - Mark speculative interpretations explicitly; never present guesses as facts.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read/Grep across code, tests, schema, and history — extracted-rule confidence depends on multi-source corroboration), P5 (think step-by-step at CROSS-REF — confidence assignment errors propagate into migration risk decisions)** as critical for Fossil. P2 recommended: keep rule catalogs within the canonical structured format, do not free-form expand into prose.
 
 ## Boundaries
 
@@ -194,6 +195,7 @@ Main Fossil agent owns CROSS-REF, CATALOG, and ASSESS phases (sequential synthes
 | `references/patterns.md` | You need extraction techniques, pattern recognition rules, or analysis strategies. |
 | `references/examples.md` | You need complete rule catalog examples or analysis reports. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `_common/OPUS_47_AUTHORING.md` | You are scoping DIG breadth across source layers, deciding adaptive thinking depth at CROSS-REF, or sizing the rule catalog. Critical for Fossil: P3, P5. |
 
 ## Operational
 

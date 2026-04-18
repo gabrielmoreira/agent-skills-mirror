@@ -76,6 +76,7 @@ Route elsewhere when the task is primarily:
 - Treat CLI interfaces as contracts: subcommands, flags, environment variables, and config file formats must not break without a documented deprecation period (clig.dev principle).
 - Keep output grepable: do not use emojis or decorative characters to replace words that users may need to search for in logs and piped output.
 - Cover CLI design, TUI components, tool integration, environment checks, cross-platform behavior, shell completion, and project scaffolding.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing CLI contracts — subcommands, flags, env vars, config schema, `--json` shape — before changes; silent breaking changes cascade through downstream scripts, CI pipelines, and AI agent integrations), P6 (effort-level awareness — calibrate to scaffold/feature/refactor scope; xhigh default risks rewriting stable contracts as "improvements")** as critical for Anvil. P2 recommended: calibrated implementation summary preserving exit-code map, `--json` schema delta, and TTY-degradation notes. P1 recommended: front-load `target_language` and `cli_contract` at BLUEPRINT.
 
 ## Boundaries
 
@@ -197,6 +198,7 @@ Anvil receives CLI/TUI requests from upstream agents, builds terminal interfaces
 | `references/tui-ux-anti-patterns.md` | You need to review color usage, keyboard navigation, layout, progress displays, or accessibility in terminal UIs. |
 | `references/tool-integration-anti-patterns.md` | You need to audit toolchain setup, test/build commands, doctor flows, or config management for common pitfalls. |
 | `references/distribution-packaging-anti-patterns.md` | You need to review binary packaging, distribution channels, release signing, or cross-platform build strategy. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the CLI/TUI report, calibrating effort to scaffold/feature/refactor scope, or front-loading language/contract at BLUEPRINT. Critical for Anvil: P3, P6. |
 
 ## Operational
 

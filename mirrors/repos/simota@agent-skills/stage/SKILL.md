@@ -1,6 +1,6 @@
 ---
 name: stage
-description: "Marp/reveal.js/Slidevによるスライド生成、ストーリー構成設計、カンファレンストーク最適化。プレゼン作成時に使用。"
+description: "Slide generation via Marp, reveal.js, or Slidev, narrative arc design, and conference talk optimization with WPM-calibrated timing. Use when creating or pacing presentations."
 ---
 
 <!--
@@ -60,9 +60,11 @@ Route elsewhere when the task is primarily:
 - Include speaker notes for every content slide.
 - Add timing estimates per slide and total presentation duration.
 - Choose the slide framework based on request signals before writing code.
-- Keep slide text concise: max 6 lines per slide, max 6 words per bullet (6x6 rule).
-- Include visual cues (diagram placeholders, image suggestions) for non-text content.
+- Keep slide text concise: max 6 lines per slide, max 6 words per bullet (6x6 rule). Reading and verbal processing compete for the same cognitive channel — audience either reads or listens, never both well.
+- Include visual cues (diagram placeholders, image suggestions) for non-text content; a single well-designed visual replaces paragraphs.
 - Generate a self-contained slide deck that can be previewed with a single command.
+- Calibrate timing with speaker pace (120-150 WPM; 125 WPM default for conversational tone). Total word budget = duration × WPM; flag decks that exceed the budget at DRAFT.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read story outline, audience profile, and talk duration at OUTLINE — slide resonance depends on grounding in actual audience and story arc), P5 (think step-by-step at framework selection (Marp/reveal.js/Slidev), 6x6 rule enforcement, and visual-cue placement)** as critical for Stage. P2 recommended: calibrated slide deck preserving 6x6 discipline, visual cues, and single-command preview. P1 recommended: front-load talk type, audience, and duration at OUTLINE.
 
 ## Boundaries
 
@@ -84,7 +86,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ### Never
 
-- Create text-wall slides (>8 lines of body text per slide).
+- Create text-wall slides (>8 lines of body text per slide). Text-heavy decks collapse audience retention from ~35-40% (clean visuals) to ~10-15% (Duarte research).
+- Put full sentences on slides — reading and listening share one cognitive channel, so the audience absorbs neither well.
 - Omit speaker notes from content slides.
 - Generate binary presentation files (PPTX/PDF) directly; output code that produces them.
 - Mix multiple slide frameworks in one deck.
@@ -93,13 +96,15 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
-| `marp`, `PDF`, simple slides | Marp Markdown | `.md` with Marp directives | `references/patterns.md` |
-| `reveal`, `interactive`, web presentation | reveal.js HTML | `.html` | `references/patterns.md` |
-| `slidev`, `Vue`, developer talk | Slidev Markdown | `.md` with Slidev syntax | `references/patterns.md` |
-| `LT`, `lightning talk`, 5 min | Compact format (8-12 slides) | framework-appropriate | `references/patterns.md` |
-| `keynote`, long talk, 30+ min | Extended format (40-60 slides) | framework-appropriate | `references/patterns.md` |
+| `PPTX`, `corporate`, `.ppt` deliverable | Marp (native PPTX export with speaker notes) | `.md` with Marp directives | `references/patterns.md` |
+| `PDF`, `print`, handout | Marp (PDF export with outlines/notes) | `.md` with Marp directives | `references/patterns.md` |
+| live code demo, `Monaco`, `Shiki`, animated code walkthrough | Slidev (Monaco editor + Shiki line animations) | `.md` with Slidev syntax | `references/patterns.md` |
+| `Vue`, developer talk, built-in recording/camera | Slidev (RecordRTC integration) | `.md` with Slidev syntax | `references/patterns.md` |
+| `reveal`, heavy customization, plugin ecosystem, multiplexing | reveal.js HTML | `.html` | `references/patterns.md` |
+| `LT`, `lightning talk`, 5 min | Compact format (8-12 slides; ~600-750 words) | framework-appropriate | `references/patterns.md` |
+| `keynote`, long talk, 30+ min | Extended format (30-60 slides; 1 slide/min pacing) | framework-appropriate | `references/patterns.md` |
 | `code`, technical, programming | Code-focused layout | framework with syntax highlighting | `references/patterns.md` |
-| unclear framework | Marp (lowest barrier) | `.md` | `references/patterns.md` |
+| unclear framework | Marp (lowest barrier, widest export) | `.md` | `references/patterns.md` |
 
 ## Workflow
 
@@ -111,8 +116,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `ARC` | Design narrative structure | Choose arc pattern (Problem-Solution, AIDA, Before-After, Hero's Journey) | `references/patterns.md` |
 | `DRAFT` | Write slide content with visual cues | 6x6 rule; one idea per slide | `references/patterns.md` |
 | `THEME` | Apply or create theme | Match audience and venue context | `references/patterns.md` |
-| `NOTES` | Add speaker notes and timing | Every content slide gets notes; total time must match target | — |
-| `REVIEW` | Check flow, pacing, and slide count | Verify arc coherence and timing budget | — |
+| `NOTES` | Add speaker notes and timing | Every content slide gets notes; note word count ≤ (slide seconds × WPM ÷ 60) | — |
+| `REVIEW` | Check flow, pacing, and slide count | Verify arc coherence; total notes word count ≤ duration × 125 WPM | — |
 
 ## Narrative Patterns
 
@@ -126,12 +131,14 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ## Duration Templates
 
-| Format | Duration | Slides | Pace |
-|--------|----------|--------|------|
-| Lightning Talk | 5 min | 8-12 | 25-35 sec/slide |
-| Short Talk | 15 min | 15-25 | 35-50 sec/slide |
-| Regular Talk | 30 min | 30-45 | 40-60 sec/slide |
-| Keynote | 45-60 min | 45-70 | 50-70 sec/slide |
+Pace baseline: 120-150 WPM (125 WPM default). Word budget = duration × WPM. 1 slide/min is the common rule of thumb; adjust for slide style (prompt-style vs content-heavy). Dense academic / equation slides: 60-180s/slide.
+
+| Format | Duration | Slides | Pace | Word budget (125 WPM) |
+|--------|----------|--------|------|----------------------|
+| Lightning Talk | 5 min | 8-12 | 25-35 sec/slide | ~625 words |
+| Short Talk | 15 min | 15-25 | 35-50 sec/slide | ~1,875 words |
+| Regular Talk | 30 min | 30-45 | 40-60 sec/slide | ~3,750 words |
+| Keynote | 45-60 min | 45-70 | 50-70 sec/slide | ~5,625-7,500 words |
 
 ## Output Requirements
 
@@ -160,6 +167,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `references/patterns.md` | You need slide framework syntax, theme templates, or layout patterns. |
 | `references/examples.md` | You need complete slide deck examples for different formats. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the slide deck, deciding adaptive thinking depth at framework/6x6, or front-loading talk-type/audience/duration at OUTLINE. Critical for Stage: P3, P5. |
 
 ## Operational
 

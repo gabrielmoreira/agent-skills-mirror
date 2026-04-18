@@ -72,6 +72,7 @@ Route elsewhere when:
 - Enable Actions Data Stream for CI/CD observability — near real-time telemetry to S3 or Azure Event Hub, correlating every request to workflow/job/step. Use Actions Performance Metrics (GA) for workflow queue time and failure rate dashboards in the GitHub UI.
 - Never trust fork code in privileged context: `pull_request_target` must never checkout untrusted code (Shai Hulud attacks Sept-Nov 2025; HackerBot-CLAW AI agent exploit 2026).
 - For agentic workflows (technical preview): use only for AI-suited tasks (triage, review, maintenance). Default to traditional YAML for build/deploy/release pipelines where determinism and auditability are critical. Agentic workflows run read-only by default; write operations require explicit safe-output declarations.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing workflows, action pins, OIDC trust policies, and repo structure at AUDIT — GHA recommendations depend on grounding in current trigger design and permission surface), P5 (think step-by-step at least-privilege token scoping, SHA pinning vs tag, reusable-vs-composite decomposition, and agentic vs YAML trigger selection)** as critical for Pipe. P2 recommended: calibrated workflow spec preserving permissions, SHA pins, cache strategy, and attestation. P1 recommended: front-load repo visibility, trigger scope, and deploy target at AUDIT.
 
 ## Boundaries
 
@@ -199,6 +200,7 @@ Routing rules:
 | `references/security-anti-patterns.md` | you are checking for action pinning, permission leaks, runner hardening, or 2025-era supply-chain failures. |
 | `references/performance-cost-anti-patterns.md` | you are triaging slow CI, cache misses, runner overspend, or artifact bottlenecks. |
 | `references/reusable-maintenance-anti-patterns.md` | you are auditing duplication, reuse mistakes, monorepo CI maintenance, deployment hygiene, or org governance. |
+| `_common/OPUS_47_AUTHORING.md` | you are sizing the workflow spec, deciding adaptive thinking depth at security hardening, or front-loading visibility/trigger/target at AUDIT. Critical for Pipe: P3, P5. |
 
 ## Operational
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Upsonic/Upsonic` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `Upsonic/Upsonic` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Upsonic/Upsonic` — 26 default patterns, 0 followed patterns, 4 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`src/upsonic/skills/builtins/code-review/SKILL.md`](src/upsonic/skills/builtins/code-review/SKILL.md) |
-| 3 | ✓ | [`src/upsonic/skills/builtins/data-analysis/SKILL.md`](src/upsonic/skills/builtins/data-analysis/SKILL.md) |
-| 4 | ✓ | [`src/upsonic/skills/builtins/summarization/SKILL.md`](src/upsonic/skills/builtins/summarization/SKILL.md) |
+| 2 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/analyze_current/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/analyze_current/SKILL.md) |
+| 3 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/benchmark/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/benchmark/SKILL.md) |
+| 4 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/evaluate/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/evaluate/SKILL.md) |
+| 5 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/experiment_management/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/experiment_management/SKILL.md) |
+| 6 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/implement/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/implement/SKILL.md) |
+| 7 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/progress/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/progress/SKILL.md) |
+| 8 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/research/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/research/SKILL.md) |
+| 9 | ✓ | [`src/upsonic/skills/builtins/code-review/SKILL.md`](src/upsonic/skills/builtins/code-review/SKILL.md) |
+| 10 | ✓ | [`src/upsonic/skills/builtins/data-analysis/SKILL.md`](src/upsonic/skills/builtins/data-analysis/SKILL.md) |
+| 11 | ✓ | [`src/upsonic/skills/builtins/summarization/SKILL.md`](src/upsonic/skills/builtins/summarization/SKILL.md) |
 
 ---
 

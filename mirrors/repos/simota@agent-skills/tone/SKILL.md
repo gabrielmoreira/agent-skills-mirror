@@ -72,9 +72,12 @@ Route elsewhere when the task is primarily:
 - Estimate API costs before generation runs (ElevenLabs TTS ~$0.12/1K chars, ElevenLabs Music ~$0.80/min, MiniMax Music ~$0.035/generation).
 - Include LUFS normalization in every workflow: -24 LUFS for home console (ASWG-R001), -18 LUFS for portable/handheld (ASWG-R001), -16 LUFS for mobile, -24 LUFS as general game default (ASWG-R001 rev.). Allow ±2 LU tolerance. Nintendo Switch: docked follows home spec (-24), handheld follows portable spec (-18).
 - Keep true peak below -1.0 dBTP to prevent clipping when multiple sources stack.
-- Flag licensing status of every audio source.
+- Flag licensing status of every audio source. Mark Udio output as walled-garden (post-UMG 2026 deal: streaming only, no external download/distribution) — unusable for commercial game builds that ship audio files.
 - Enforce platform audio budgets: mobile audio ≤ 10% of build size (~20 MB for a 200 MB build), max 32 simultaneous voices.
 - Prefer OGG Vorbis at 64 kbps for SFX, MP3/OGG at 128 kbps for BGM; reduce sample rate to 22 kHz for SFX (retains ~90% perceived quality).
+- ElevenLabs SFX V2 single-clip cap is ~30 s; for longer BGM/ambient routes use Stable Audio (longer-form) or loop shorter SFX clips.
+- For EU distribution, emit EU AI Act Article 50 compliance metadata alongside AI-generated audio (machine-readable AI-origin marker; audible disclaimer for deepfake voice/dialogue). Article 50 transparency obligations become legally binding 2026-08-02.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read audio system, LUFS targets, platform budgets, and middleware target at PLAN — codec/format choices depend on grounded constraints), P5 (think step-by-step at PRODUCE — format/codec/loudness decisions cascade into runtime memory and licensing risk)** as critical for Tone. P2 recommended: calibrated audio reports preserving LUFS/peak/license metadata. P1 recommended: front-load platform, category (SFX/BGM/VO), and budget at PLAN.
 
 ## Boundaries
 
@@ -105,17 +108,19 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Ship unprocessed AI-generated audio without trim + normalize — stacking unprocessed sources causes peak clipping above -1 dBTP, producing audible distortion on consumer speakers.
 - Guarantee subjective audio quality of AI-generated output.
 - Exceed platform simultaneous voice limits (32 voices max on mobile) without explicit streaming/priority system.
+- Recommend Udio as the primary BGM provider for a shipping commercial game — since the UMG settlement (Oct 2025), Udio operates as a walled-garden streaming platform; paid subscribers cannot download or redistribute tracks, so output cannot legally be packaged into a game build. Use only for prototyping or inspiration, never as a delivery pipeline.
+- Ship AI-generated voice/dialogue in the EU without the Article 50 disclosure layer (machine-readable AI-origin marker on all AI audio; audible disclaimer at the start of deepfake voice clips) once obligations activate 2026-08-02. Missing markers expose publishers to AI Act enforcement.
 
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
-| `sfx`, `sound effect`, `explosion`, `footstep` | ElevenLabs SFX V2 API | `.py` | `references/api-integration.md` |
+| `sfx`, `sound effect`, `explosion`, `footstep` | ElevenLabs SFX V2 API (≤ 30 s per clip) | `.py` | `references/api-integration.md` |
 | `retro sfx`, `8-bit`, `chiptune`, `pixel` | JSFXR procedural | `.js` / `.ts` | `references/api-integration.md` |
 | `ui sound`, `click`, `hover`, `notification` | JSFXR procedural | `.js` / `.ts` | `references/api-integration.md` |
 | `bgm`, `music`, `soundtrack`, `theme` | Stable Audio 2.5 | `.py` | `references/api-integration.md` |
-| `suno`, `suno bgm`, `suno prompt` | Suno AI v5.5 (prompt craft + API) | `.py` | `references/suno-prompt-guide.md`, `references/api-integration.md` |
-| `udio`, `udio bgm` | Udio (granular control, stem downloads) | `.py` | `references/api-integration.md` |
+| `suno`, `suno bgm`, `suno prompt` | Suno AI v5.5 (prompt craft + API; WMG-licensed outputs from 2026; UMG/Sony litigation still open) | `.py` | `references/suno-prompt-guide.md`, `references/api-integration.md` |
+| `udio`, `udio bgm` | Udio (walled-garden since UMG deal — prototype/reference only; output cannot be shipped) | `.py` | `references/api-integration.md` |
 | `minimax`, `minimax music` | MiniMax Music 2.5 via FAL.AI | `.py` | `references/api-integration.md` |
 | `wondera` | Wondera (high aesthetic quality) | `.py` | `references/api-integration.md` |
 | `adaptive`, `dynamic music`, `intensity` | Gameplay-responsive audio layers | `.js` / `.cs` | `references/middleware-integration.md`, `references/game-audio-practices.md` |
@@ -152,7 +157,7 @@ Routing rules:
 | Category | Default Provider | Fallback | Duration | LUFS | Mix Level | Key Processing |
 |----------|-----------------|----------|----------|------|-----------|----------------|
 | SFX | ElevenLabs SFX V2 | JSFXR, Freesound, MiniMax | 0.1-30s | -24 | -6 dB | Trim, 3+ variations, 22 kHz OK, loop param for ambient |
-| BGM | Stable Audio 2.5 | MusicGen, Suno AI v5.5, Udio, Wondera | 30-300s | -24 | -12 dB | Loop points, crossfade, 128 kbps+ |
+| BGM | Stable Audio 2.5 | MusicGen, Suno AI v5.5 (check Suno-UMG/Sony litigation), Udio (prototype only — walled-garden, non-shippable), Wondera | 30-300s | -24 | -12 dB | Loop points, crossfade, 128 kbps+ |
 | Voice | ElevenLabs TTS | OpenAI TTS | 1-30s | -24 | 0 dB | De-essing, dynamics, 48 kHz |
 | Ambient | AudioCraft | Bark, Freesound | 10-60s | -24 | -18 dB | Seamless loop, layers |
 | UI | JSFXR | ElevenLabs SFX | 0.05-0.2s | -24 | -9 dB | Consistent set, <200ms, 22 kHz OK |
@@ -212,6 +217,7 @@ Every deliverable should include:
 | `references/middleware-integration.md` | You need FMOD, Wwise, Unity, UE5, Godot, or Web Audio integration patterns. |
 | `references/model-setup.md` | You need local model installation, GPU requirements, or Docker setup for AudioCraft/Bark. |
 | `references/suno-prompt-guide.md` | You need Suno AI prompt crafting for game BGM: style prompts, metatags, genre templates, game-specific patterns. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the audio report, deciding adaptive thinking depth at PRODUCE, or front-loading platform/category/budget at PLAN. Critical for Tone: P3, P5. |
 
 ## Operational
 

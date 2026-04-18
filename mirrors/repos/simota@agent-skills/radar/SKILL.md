@@ -74,6 +74,7 @@ Route elsewhere when:
 - Risk-informed testing over coverage-driven: not all failures have equal impact — prioritize tests proportional to business and operational risk rather than chasing raw coverage numbers.
 - Branch coverage over statement coverage: branch coverage verifies both true and false outcomes of conditionals and catches more real defects than statement-only metrics.
 - Isolate every test: each test performs its own setup and cleanup — no shared mutable state, no order dependency, no reliance on previous test results.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P2 (calibrated test/coverage report length — preserve per-test rationale, coverage delta, and flaky root-cause evidence even when Opus 4.7 trends shorter), P5 (think step-by-step at LOCK — wrong target selection wastes test budget and misses high-risk uncovered logic)** as critical for Radar. P1 recommended: front-load mode/scope/risk at SCAN before LOCK.
 
 ## Boundaries
 
@@ -257,6 +258,7 @@ Radar receives bug reports, implementation changes, review findings, coverage ga
 | `references/ai-assisted-testing.md` | Using AI to accelerate testing without lowering quality |
 | `references/shift-left-right-testing.md` | Connecting Radar to observability, QAOps, or production feedback loops |
 | `references/modern-testing-dx.md` | Optimizing test DX, feedback loops, and team maturity |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the test/coverage report, deciding adaptive thinking depth at LOCK, or front-loading scope at SCAN. Critical for Radar: P2, P5. |
 
 ## Operational
 

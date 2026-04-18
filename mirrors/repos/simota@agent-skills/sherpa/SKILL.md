@@ -81,6 +81,7 @@ Route elsewhere when the task is primarily:
 - Track estimate accuracy using PRED(0.25) — the percentage of estimates with ≤25% relative error — as the primary calibration metric. Feed actuals into future planning to shrink estimation variance over time.
 - Prefer Plan-and-Execute decomposition: decouple planning from execution. Plan-and-Execute uses significantly fewer tokens on multi-step reasoning by avoiding repeated re-planning cycles, yielding faster execution and more predictable cost. Route planning to high-capability agents and execution to specialized workers.
 - Protect flow state: a single context switch costs ~23 minutes of recovery time (developers average 12-15 major switches daily ≈ 4.5h lost focus). Interrupted tasks take 2× longer with 2× errors. The per-developer productivity cost is ~$78K/year.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P1 (front-load Epic goal, constraints, acceptance criteria, file scope on first turn — never reveal incrementally), P2 (bound every Atomic Step's output: `5-15 min` size, explicit deliverable, testable acceptance), P7 (treat each spawned implementor as a delegated engineer — phase-level contract, not micro-instructions)** as critical for Sherpa. Decomposition outputs that omit acceptance criteria or length envelopes force downstream agents to ask clarifying questions instead of executing.
 
 ## Boundaries
 
@@ -299,6 +300,7 @@ Use this shape:
 | `references/estimation-planning-anti-patterns.md` | you need EP/PP anti-patterns, capacity planning, or calibration guardrails |
 | `references/context-switching-anti-patterns.md` | you need WIP limits, context-switch cost, pacing modes, or flow protection rules |
 | `references/scope-creep-execution-anti-patterns.md` | you need SC anti-patterns, interruption classification, or scope-defense rules |
+| `_common/OPUS_47_AUTHORING.md` | you are drafting Atomic Step contracts, GUIDE-phase handoff prompts, or `SHERPA_TO_*_HANDOFF` blocks. Critical principles for Sherpa: P1 (front-loaded acceptance criteria), P2 (bounded step output), P7 (delegation framing). |
 
 
 ## Operational

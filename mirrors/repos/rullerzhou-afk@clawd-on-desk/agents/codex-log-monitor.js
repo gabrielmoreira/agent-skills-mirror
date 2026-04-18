@@ -191,6 +191,7 @@ class CodexLogMonitor {
         sessionId: "codex:" + sessionId,
         filePath,
         cwd: "",
+        sessionTitle: null,
         lastEventTime: Date.now(),
         lastState: null,
         partial: "",
@@ -260,6 +261,15 @@ class CodexLogMonitor {
       tracked.cwd = payload.cwd || "";
     }
 
+    // Extract Codex-authored session summary (turn_context.summary).
+    // Updates tracked.sessionTitle in place; gets picked up by the next
+    // _onStateChange call. Intentionally no metaOnly side-channel —
+    // accepts brief staleness until the next state emit.
+    const extractedTitle = this._extractSessionTitle(obj);
+    if (extractedTitle && extractedTitle !== tracked.sessionTitle) {
+      tracked.sessionTitle = extractedTitle;
+    }
+
     // Approval heuristic: exec_command_end or function_call_output means command finished —
     // clear pending approval timer (these events are not in logEventMap)
     if (key === "event_msg:exec_command_end" || key === "response_item:function_call_output") {
@@ -298,6 +308,7 @@ class CodexLogMonitor {
         cwd: tracked.cwd,
         sourcePid: agentPid,
         agentPid,
+        sessionTitle: tracked.sessionTitle,
       });
       return;
     }
@@ -316,6 +327,7 @@ class CodexLogMonitor {
             cwd: tracked.cwd,
             sourcePid: agentPid,
             agentPid,
+            sessionTitle: tracked.sessionTitle,
             permissionDetail: { command: cmd, rawPayload: payload },
           });
           return;
@@ -328,6 +340,7 @@ class CodexLogMonitor {
             cwd: tracked.cwd,
             sourcePid: agentPid,
             agentPid,
+            sessionTitle: tracked.sessionTitle,
             permissionDetail: { command: cmd, rawPayload: payload },
           });
         }, APPROVAL_HEURISTIC_MS);
@@ -344,7 +357,22 @@ class CodexLogMonitor {
       cwd: tracked.cwd,
       sourcePid: agentPid,
       agentPid,
+      sessionTitle: tracked.sessionTitle,
     });
+  }
+
+  // Codex-authored session summary, extracted from turn_context.summary.
+  // Filters "none" / "auto" placeholder values that Codex writes when
+  // the model hasn't produced a real summary yet.
+  _extractSessionTitle(obj) {
+    if (!obj || typeof obj !== "object") return null;
+    const payload = obj.payload && typeof obj.payload === "object" ? obj.payload : null;
+    if (!payload) return null;
+    if (obj.type === "turn_context" && typeof payload.summary === "string") {
+      const summary = payload.summary.trim();
+      if (summary && summary !== "none" && summary !== "auto") return summary;
+    }
+    return null;
   }
 
   // Extract shell command from function_call payload
@@ -448,6 +476,7 @@ class CodexLogMonitor {
           cwd: tracked.cwd,
           sourcePid: tracked.agentPid,
           agentPid: tracked.agentPid,
+          sessionTitle: tracked.sessionTitle,
         });
         this._tracked.delete(filePath);
       }

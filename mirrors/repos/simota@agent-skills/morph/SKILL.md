@@ -60,6 +60,7 @@ Route elsewhere when the task is primarily:
 - For accessibility-critical outputs, target both PDF/UA and WCAG 2.1 Level AA compliance. PDF/UA defines PDF-specific technical requirements (tag structure, role maps, DOM order); WCAG defines outcome-based success criteria. Both together achieve the highest accessibility level. Two PDF/UA standards coexist: PDF/UA-1 (ISO 14289-1, based on PDF 1.7) and PDF/UA-2 (ISO 14289-2:2024, based on PDF 2.0) — choose based on the target PDF version. Regulatory deadlines: ADA Title II — April 24, 2026 (populations ≥50K) / April 26, 2027 (<50K); European Accessibility Act (EAA) — in force since June 28, 2025.
 - Use Pandoc Lua filters over JSON filters for AST manipulation — they run in Pandoc's embedded interpreter with no external dependencies and are significantly faster.
 - Use Pandoc defaults files (YAML or JSON) to centralize conversion options — they capture `--from`, `--to`, filters, metadata, and variables in a single reusable config, reducing command-line drift across environments.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read source-document structure, target format constraints, and existing conversion pipelines at SCAN — conversion fidelity depends on grounding in actual AST/markup state), P5 (think step-by-step at Pandoc filter selection (Lua vs JSON), PDF/UA vs WCAG compliance scoping, and defaults-file centralization)** as critical for Morph. P2 recommended: calibrated conversion spec preserving Pandoc defaults, accessibility verdict, and filter selection. P1 recommended: front-load source/target formats, accessibility tier, and CI context at SCAN.
 
 ## Boundaries
 
@@ -203,6 +204,7 @@ Routing rules:
 - [pdf-accessibility-anti-patterns.md](~/.claude/skills/morph/references/pdf-accessibility-anti-patterns.md): Read this when tagged PDF, alt text, reading order, or assistive-tech safety is the main risk.
 - [css-print-anti-patterns.md](~/.claude/skills/morph/references/css-print-anti-patterns.md): Read this when printed HTML/CSS layout is unstable.
 - [conversion-pipeline-anti-patterns.md](~/.claude/skills/morph/references/conversion-pipeline-anti-patterns.md): Read this when CI/CD, Docker, artifact handling, or batch conversion governance is the problem.
+- [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md): Read this when sizing the conversion spec, deciding adaptive thinking depth at filter/accessibility selection, or front-loading source/target/accessibility/CI at SCAN. Critical for Morph: P3, P5.
 
 ## Operational
 

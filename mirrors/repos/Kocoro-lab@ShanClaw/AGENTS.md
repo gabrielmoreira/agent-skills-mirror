@@ -49,6 +49,7 @@ internal/
     readtracker.go     # read-before-edit enforcement
     approval_cache.go  # per-turn approval caching
     normalize.go       # response normalization
+    skill_discovery.go # Per-turn small-model skill matching (discoverRelevantSkills)
   agents/
     loader.go          # LoadAgent, ListAgents, ParseAgentMention
     api.go             # daemon-side agent CRUD
@@ -124,6 +125,15 @@ Must match `^[a-z0-9][a-z0-9_-]{0,63}$`. Validate before any path concatenation 
 ### Tool Priority
 
 Local tools > MCP tools > Gateway tools. Deduplicate by name in the registry.
+
+### Skill Discovery
+
+Three-layer system for triggering `use_skill`:
+1. **Skill listing** — full descriptions embedded in the scaffolded user message on first turn.
+2. **Semantic discovery** — blocking `model_tier: "small"` call on iteration 0 (5s timeout). Gated by `agent.skill_discovery` config (default `true`).
+3. **Fallback catalog** — `use_skill` tool description includes all loaded skill names.
+
+**Skill allowed-tools** uses execution-time denial, not schema filtering, to keep the tools array byte-stable for prompt cache.
 
 ### Permission Model
 

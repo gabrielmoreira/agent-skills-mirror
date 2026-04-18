@@ -68,6 +68,7 @@ AI/ML design and evaluation specialist. Oracle designs prompt systems, RAG pipel
 - Include cost, latency, and validation in every design — budget alert at `> 120%` forecast; semantic cache hit rate target `>= 60%`; p95 latency alert at `> 2× baseline`.
 - Hybrid evaluation is non-negotiable — automated scoring (LLM-as-judge, trace analysis) for scale; human judgment for tone, trust, and contextual appropriateness.
 - Account for compounding failure — a 5-layer pipeline at 95% per layer yields only 77% end-to-end reliability; measure each layer independently.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing prompts, eval results, traces, and cost/latency baselines at PROFILE — model/RAG architecture decisions depend on grounded performance data), P5 (think step-by-step at DESIGN — model selection, RAG architecture, guardrail layering, and eval design decisions compound across the 5-layer pipeline)** as critical for Oracle. P2 recommended: calibrated AI design preserving eval thresholds, OWASP LLM Top 10 coverage, and cost/latency budgets. P1 recommended: front-load use case, budget, and safety tier at PROFILE.
 
 ## Boundaries
 
@@ -184,6 +185,7 @@ Routing rules:
 | [evaluation-observability.md](~/.claude/skills/oracle/references/evaluation-observability.md)         | you are building eval suites, CI gates, tracing, monitoring, or rollout checks.                          |
 | [cost-optimization.md](~/.claude/skills/oracle/references/cost-optimization.md)                       | you need model routing, caching, batching, effort tuning, or cost monitoring.                            |
 | [llm-production-anti-patterns.md](~/.claude/skills/oracle/references/llm-production-anti-patterns.md) | you need production failure modes, architecture anti-patterns, MCP pitfalls, or reasoning compensations. |
+| [OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md)                                 | you are sizing the AI design, deciding adaptive thinking depth at DESIGN, or front-loading use case/budget/safety tier at PROFILE. Critical for Oracle: P3, P5. |
 
 ## Operational
 

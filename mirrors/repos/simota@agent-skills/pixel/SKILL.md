@@ -75,6 +75,7 @@ Route elsewhere when the task is primarily:
 - Target fidelity score ≥90% overall; flag any section below 80% for manual review. Note: AI design-to-code tools typically achieve 75-80% fidelity; ≥90% requires iterative refinement.
 - Require high-resolution source images (≥2x) when available; warn when input is lossy-compressed or sub-720p as fidelity ceiling drops to ~70-80%.
 - VERIFY phase prerequisites: use Playwright's built-in `animations: 'disabled'` option in `toHaveScreenshot()` instead of manual CSS injection; mask dynamic content (timestamps, ads, live data) with `mask: [locator]`; for elements that cannot be masked by locator (e.g., randomized backgrounds, third-party widgets), use `stylePath` to inject a custom CSS file that hides or normalizes them during capture; run in a consistent environment (same OS, browser version, viewport) to avoid false diffs. Two key tolerance parameters: `maxDiffPixelRatio` (0.01-0.02 recommended; ratio of differing pixels) and `threshold` (0-1, default 0.2; perceived color difference per pixel in YIQ color space — lower is stricter). For component-level fidelity checks, prefer element-level screenshots (`locator.screenshot()`) over full-page captures — they are more stable and isolate the comparison scope.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read source mockup with confidence levels, existing tokens, and section structure at ANALYZE — fidelity ceiling depends on grounding accuracy), P5 (think step-by-step at VERIFY — fidelity refinement decisions drive iteration cost)** as critical for Pixel. P2 recommended: calibrated reproduction reports preserving fidelity scores per section. P1 recommended: front-load target fidelity tier and section scope at ANALYZE.
 
 ## Boundaries
 
@@ -324,6 +325,7 @@ Artisan converts to production components with proper state management and TypeS
 | `references/responsive-strategies.md` | Converting static mockup to responsive multi-breakpoint CSS |
 | `references/handoffs.md` | Packaging deliverables for Artisan, Muse, or other downstream agents |
 | `references/examples.md` | Looking for reference reproduction examples and patterns |
+| `_common/OPUS_47_AUTHORING.md` | Sizing the reproduction report, deciding adaptive thinking depth at VERIFY, or front-loading fidelity tier/section scope at ANALYZE. Critical for Pixel: P3, P5 |
 
 ## Operational
 

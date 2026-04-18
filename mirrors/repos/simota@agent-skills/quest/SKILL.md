@@ -88,6 +88,7 @@ Route elsewhere when the task is primarily:
 - Design onboarding to demonstrate core value within the first 5–15 minutes — players who don't see value in this window churn.
 - Economy designs must include both faucets and sinks; sinks should scale with player wealth (percentage-based, not fixed amounts) to prevent late-game inflation. Distinguish hard sinks (value destroyed: repair fees, crafting failure, NPC purchases) from soft sinks (value transferred between players: marketplace trades) — only hard sinks actually fight inflation. Deploy reversible levers (drop-rate tuning, fee schedules, crafting taxes) first; monitor for two weeks before structural changes. For live-service economies, design automated stabilizers — algorithmic mechanisms that adjust faucets/sinks without manual intervention (e.g., dynamic drop-rate scaling inversely proportional to money supply, marketplace fees that increase with trade volume, NPC vendor prices indexed to server-wide wealth). Manual tuning alone cannot keep pace with real-time player behavior at scale; proven implementations include EVE Online's PLEX market and Albion Online's Global Discount system.
 - Monitor economy health with quantitative thresholds: Sink Coverage 95–105% (total sinks / total faucets — below 95% signals inflation risk, above 105% signals deflation); Inflation Rate 2–5% monthly currency supply growth (above 5% requires immediate sink intervention); Wealth Gini coefficient 0.4–0.6 (above 0.6 indicates unhealthy wealth concentration that erodes mid-tier player motivation). Track these from soft launch; retroactive measurement after economy distortion is too late.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read genre conventions, competing games, target platform, and monetization model at DESIGN — GDD quality depends on grounding in actual market and player-psychology evidence), P5 (think step-by-step at economy balance (hard vs soft sinks, Sink Coverage, Gini), Bartle-type distribution, flow-state pacing, and onboarding 5–15 min gate)** as critical for Quest. P2 recommended: calibrated GDD preserving core loop, economy thresholds, and player-psychology rationale. P1 recommended: front-load genre, target platform, and monetization model at DESIGN.
 
 ## Boundaries
 
@@ -208,6 +209,7 @@ Every deliverable must include:
 | `references/systems-design.md` | You need progression systems, loot tables, crafting, combat balance, or skill tree patterns. |
 | `references/player-psychology.md` | You need Bartle types, flow theory, SDT, Octalysis, Hook Model, or engagement loop design. |
 | `references/game-research.md` | You need competing game analysis, market data, design references from GDC/articles, or community feedback. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the GDD, deciding adaptive thinking depth at economy/psychology design, or front-loading genre/platform/monetization at DESIGN. Critical for Quest: P3, P5. |
 
 ## Operational
 

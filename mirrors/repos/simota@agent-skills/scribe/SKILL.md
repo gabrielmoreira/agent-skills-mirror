@@ -79,6 +79,7 @@ Route elsewhere when the task is primarily:
 - Treat specs as living documents under version control (docs-as-code). Tie documentation versions to code releases so consumers always find the matching version. Use pull request reviews for spec changes to ensure multi-stakeholder accuracy.
 - When the spec will be consumed by AI agents, follow the AGENTS.md convention (stewarded by the Agentic AI Foundation under the Linux Foundation, founded by Anthropic, OpenAI, and Block): structure around Commands (full executable commands with flags), Testing (framework, file locations, coverage expectations), Project Structure (explicit directory mapping), Architecture, Security, and Conventions. Adopted by 60,000+ open-source projects since August 2025, these six areas are confirmed as highest-signal for agent effectiveness. Target ≤ 150 lines — long specs bury signal and exceed agent context budgets. Treat agent specs as executable artifacts (spec-driven development): the spec defines the contract, the agent generates code that honors it, and the spec evolves as decisions are made.
 - Record outputs for INSCRIBE calibration.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing PRD/SRS/ADR, code surface, and stakeholder context at SCAN — template selection and ID assignment depend on grounded baseline), P5 (think step-by-step at PLAN — document type (PRD/SRS/HLD/LLD/Test Spec) selection and AGENTS.md adoption decisions drive long-term doc usability across humans and AI agents)** as critical for Scribe. P2 recommended: calibrated spec preserving REQ/FR/NFR IDs, Given-When-Then ACs, and ISO/IEC/IEEE 29148 attributes. P1 recommended: front-load doc type, audience, and scope at SCAN.
 
 ## Boundaries
 
@@ -245,6 +246,7 @@ Response shape:
 | [test-spec-template.md](~/.claude/skills/scribe/references/test-spec-template.md)               | You need test plans, traceability, or Gherkin structure.                     |
 | [anti-patterns.md](~/.claude/skills/scribe/references/anti-patterns.md)                         | A draft is weak, vague, bloated, untestable, or has AI-generation artifacts. |
 | [documentation-calibration.md](~/.claude/skills/scribe/references/documentation-calibration.md) | You need INSCRIBE tracking, thresholds, or EVOLUTION_SIGNAL rules.           |
+| [OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md)                           | You are sizing the spec, deciding adaptive thinking depth at PLAN, or front-loading doc type/audience/scope at SCAN. Critical for Scribe: P3, P5. |
 
 
 ## Operational

@@ -65,6 +65,7 @@ Route elsewhere when the task is primarily:
 - Select `Full`, `Standard`, or `Lite` scope deliberately and state the reason.
 - Record post-task calibration data through `UNIFY`.
 - Final outputs are in Japanese. IDs, YAML, BDD keywords, and technical terms remain in English.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing requirements, glossary, audiences, and traceability matrix at INTAKE — L0/L1/L2/L3 staging depends on grounded baseline), P5 (think step-by-step at PLAN — Full/Standard/Lite scope selection and BDD scenario design drive 50-80% of downstream defect prevention)** as critical for Accord. P2 recommended: calibrated unified package preserving traceability links and audience views. P1 recommended: front-load audience and scope at INTAKE.
 
 ## Boundaries
 
@@ -230,6 +231,7 @@ Unified Specification Package: [Feature Name]
 | `references/traceability-pitfalls.md` | The traceability matrix is incomplete or noisy. |
 | `references/specification-anti-patterns.md` | The package shows scope, audience, or collaboration failures. |
 | `references/specification-calibration.md` | Running `UNIFY` or tuning scope heuristics. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the unified package, deciding adaptive thinking depth at PLAN, or front-loading audience/scope at INTAKE. Critical for Accord: P3, P5. |
 
 ## Operational
 

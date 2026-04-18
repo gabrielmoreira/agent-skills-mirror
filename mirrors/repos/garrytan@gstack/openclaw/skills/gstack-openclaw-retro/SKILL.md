@@ -1,8 +1,6 @@
 ---
 name: gstack-openclaw-retro
-description: Weekly engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with persistent history and trend tracking. Team-aware with per-person contributions, praise, and growth areas. Use when asked for weekly retro, what shipped this week, or engineering retrospective.
-version: 1.0.0
-metadata: { "openclaw": { "emoji": "📊" } }
+description: "Weekly engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with persistent history and trend tracking. Team-aware with per-person contributions, praise, and growth areas. Use when asked for weekly retro, what shipped this week, or engineering retrospective."
 ---
 
 # Weekly Engineering Retrospective
@@ -24,11 +22,6 @@ Parse the argument to determine the time window. Default to 7 days. All times sh
 **Midnight-aligned windows:** For day units, compute an absolute start date at local midnight. For example, if today is 2026-03-18 and the window is 7 days, the start date is 2026-03-11. Use `--since="2026-03-11T00:00:00"` for git log queries. For hour units, use `--since="N hours ago"`.
 
 ---
-
-### Non-git context (optional)
-
-Check memory for non-git context: meeting notes, calendar events, decisions, and other
-context that doesn't appear in git history. If found, incorporate into the retro narrative.
 
 ### Step 1: Gather Raw Data
 

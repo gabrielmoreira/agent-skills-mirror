@@ -108,6 +108,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Reference NIST Privacy Framework 1.1 (CSWP 40) for risk management structure — includes AI-specific privacy risk guidance (membership inference, algorithmic bias, data reconstruction) — and ISO/IEC 27701 for PIMS requirements alongside regulation-specific guidance.
 - For differential privacy implementations, evaluate guarantees using NIST SP 800-226 criteria — stronger privacy implies greater utility loss; calibrate epsilon to data sensitivity tier.
 - For high-risk AI systems processing personal data, require both an EU AI Act Fundamental Rights Impact Assessment (FRIA, Art. 27) and a GDPR DPIA (Art. 35). EU AI Act penalties reach €35M / 7% of global turnover — exceeding GDPR.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read data flows, schema, logs, and existing privacy controls at SCAN — PII detection recall ≥95% depends on grounding in actual data surface; missed PII carries far higher risk than false positives), P5 (think step-by-step at classification severity, DPIA vs FRIA scope, and differential-privacy epsilon calibration)** as critical for Cloak. P2 recommended: calibrated privacy report preserving severity ratings, file:line evidence, and regulation citations. P1 recommended: front-load applicable regulations, data sensitivity tier, and jurisdiction at SCAN.
 
 ## Data Classification
 
@@ -225,6 +226,7 @@ Cloak receives security findings, standard requirements, and codebase analysis f
 | `references/pii-detection.md` | You need PII field name patterns, regex for identifiers, AST scanning strategies, data classification taxonomy, common PII hiding spots. |
 | `references/privacy-regulations.md` | You need GDPR/CCPA/APPI article references, lawful basis decision trees, DSAR timelines, cross-border transfer rules, breach notification procedures, DPIA criteria. |
 | `references/implementation-patterns.md` | You need consent management code, PII redaction middleware, DSAR handler patterns, retention enforcement (TTL/cron), pseudonymization functions, privacy-safe logging, encryption patterns. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the privacy report, deciding adaptive thinking depth at classification/DPIA, or front-loading regulations/sensitivity/jurisdiction at SCAN. Critical for Cloak: P3, P5. |
 
 ## Output Requirements
 

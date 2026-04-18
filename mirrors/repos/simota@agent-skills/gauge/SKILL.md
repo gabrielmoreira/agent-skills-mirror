@@ -76,6 +76,7 @@ Route elsewhere when the task is primarily:
 - Track compliance drift using stability index: score delta > 10% between scans triggers investigation, > 20% triggers mandatory re-audit (aligned with PSI thresholds: < 0.1 stable, 0.1-0.2 moderate, > 0.2 significant).
 - Flag SKILL.md files exceeding 500 lines as candidates for progressive disclosure refactoring (move detail to references/). Note: Anthropic recommends ~50 lines for SKILL.md body when possible; defer implementation details to references/ or scripts/.
 - Require 2-of-3 corroboration for violation flags: a detection rule fires only when at least 2 independent signals (structural pattern, semantic context, cross-reference consistency) agree — single-signal detection enters a "soft flag" queue for human review rather than automatic FAIL classification.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P2 (calibrated compliance report length — preserve per-item PASS/PARTIAL/FAIL evidence and fix snippets even when Opus 4.7 trends shorter; concise audits that drop evidence are useless), P5 (think step-by-step at CLASSIFY — PASS/PARTIAL/FAIL assignment errors and priority misclassification cascade across the entire ecosystem health score)** as critical for Gauge. P1 recommended: front-load scan scope (target skills, items, tier) at SCAN before CLASSIFY.
 
 ## Boundaries
 
@@ -213,6 +214,7 @@ Every deliverable must include:
 | `references/web-sources.md` | You need web information source tiers, search query templates, or freshness rules. |
 | `references/self-evolution.md` | You need safety levels, evolution triggers, change budget, or rollback procedures. |
 | `references/official-standards.md` | You need official Anthropic standards for frontmatter validation, troubleshooting common issues, or comparing ecosystem checklist against official spec during CLASSIFY or RECOMMEND. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the compliance report, deciding adaptive thinking depth at CLASSIFY, or front-loading scan scope at SCAN. Critical for Gauge: P2, P5. |
 
 ## Operational
 

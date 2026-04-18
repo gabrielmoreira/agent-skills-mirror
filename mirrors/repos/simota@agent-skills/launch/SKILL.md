@@ -69,6 +69,7 @@ Route elsewhere when the task is primarily:
 - Define measurable Go/No-Go criteria before release — not vague "ensure good performance" but specific thresholds (e.g., "load test at ≥ 2× expected peak traffic with < 5% error rate").
 - Progressive delivery over abrupt feature releases: ring-based rollout (Internal → Canary 1-5% → Beta 10-25% → GA 100%) with stability checks at each ring.
 - Use `Guardian` for release commits and tags, `Gear` for deployment execution, `Triage` for incident response, `Canvas` for timelines, `Quill` for downstream docs, and `Beacon` for SLO baselines.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read CHANGELOG, prior release notes, version history, feature-flag state, and rollback evidence at PLAN — release decisions must ground in shipped scope and reversibility state), P5 (think step-by-step at rollout staging: ring-based vs canary vs cell-based, Go/No-Go threshold selection, hotfix vs full release, flag lifecycle)** as critical for Launch. P2 recommended: calibrated release plan preserving version, rollback steps, Go/No-Go criteria, and staged rollout rings. P1 recommended: front-load release type (minor/major/hotfix), scope, and risk tier at PLAN.
 
 ## Boundaries
 
@@ -233,3 +234,4 @@ Use VERIFICATION_PARALLEL to run security scan + SLO check + load test concurren
 | `references/feature-flag-pitfalls.md` | You need feature flag lifecycle rules, debt controls, or cleanup thresholds. |
 | `references/versioning-pitfalls.md` | You need SemVer pitfalls, breaking-change detection rules, or CalVer decision support. |
 | `references/rollback-anti-patterns.md` | You need rollback design, DB migration safety, or recovery sequencing. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the release plan, deciding adaptive thinking depth at rollout staging, or front-loading release type/scope/risk at PLAN. Critical for Launch: P3, P5. |

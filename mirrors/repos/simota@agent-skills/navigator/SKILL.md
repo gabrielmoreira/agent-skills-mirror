@@ -92,6 +92,7 @@ Route elsewhere when the task is primarily:
 - Respect robots.txt and all opt-out signals (machine-readable and plain-text ToS) — EU AI Act (full enforcement August 2026) requires respecting content owner signals for AI data usage; German courts have ruled that plain-text ToS opt-out constitutes valid reservation of rights, not only machine-readable signals.
 - Choose MCP vs CLI by agent capability: use Playwright CLI (4–10x fewer tokens — ~27K vs ~114K per session, scaling with step count) when the agent has filesystem access (Claude Code, Copilot, Cursor); for multi-step tasks (>10 sequential interactions), strongly prefer CLI — token accumulation compounds per step causing progressive slowdown; use MCP when the agent lacks filesystem access or needs iterative reasoning with persistent browser state.
 - When using MCP, focus on the core 8 tools that handle ~80% of tasks (navigate, snapshot, click, fill, select_option, press_key, wait, screenshot) — exposing all 26+ MCP tools inflates context and slows agent reasoning; load additional tools only when the core set is insufficient.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly snapshot the accessibility tree and read site structure/selectors/auth at RECON — hallucinated selectors break instantly and Opus 4.7's tool-use restraint must be explicitly overridden here), P6 (effort-level awareness — match approach to step count: CLI for >10 sequential interactions, MCP for filesystem-less or iterative reasoning; xhigh default risks token bloat across long flows)** as critical for Navigator. P2 recommended: calibrated execution report preserving snapshot evidence, network/console errors, and step-by-step reproducibility. P1 recommended: front-load target_url, selectors, auth mode, and authorization scope at RECON.
 
 ---
 
@@ -257,6 +258,7 @@ Console monitoring, network interception, performance metrics, coverage analysis
 | `references/playwright-cdp.md` | You need connection patterns, CDP methods, fallback implementation, or code examples. |
 | `references/video-recording.md` | You need recording code examples, configuration, or best practices. |
 | `references/data-extraction.md` | You need full extraction/form code patterns, validation, or authentication examples. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the execution report, choosing CLI vs MCP by step count, or front-loading target/auth/scope at RECON. Critical for Navigator: P3, P6. |
 
 ---
 

@@ -66,6 +66,7 @@ Route elsewhere when the task is primarily:
 - Optimize SVG output: remove editor metadata, normalize viewBox, minimize path data. Target ≤4KB per icon after SVGO (inline-safe threshold). Use SVGO decimal precision 1 for simple icons, 2–3 for complex illustrations.
 - Provide icons as both inline SVG and symbol-reference formats. Prefer sprites for icon sets of 10+ icons to reduce bundle size.
 - When designing a system, define the icon grid, stroke rules, and naming convention first.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing icon set, grid, stroke rules, and naming convention at AUDIT — system consistency depends on grounded baseline), P5 (think step-by-step at DESIGN — grid/stroke/corner decisions cascade across every future icon)** as critical for Ink. P2 recommended: calibrated icon spec preserving grid/stroke/aria attributes. P1 recommended: front-load grid size, stroke width, and naming scheme at AUDIT.
 
 ## Boundaries
 
@@ -160,6 +161,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `references/patterns.md` | You need SVG construction patterns, grid templates, or optimization rules. |
 | `references/examples.md` | You need complete icon or illustration examples. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the icon spec, deciding adaptive thinking depth at DESIGN, or front-loading grid/stroke/naming at AUDIT. Critical for Ink: P3, P5. |
 
 ## Operational
 

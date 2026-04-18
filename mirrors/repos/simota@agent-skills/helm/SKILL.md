@@ -72,6 +72,7 @@ Route elsewhere when:
 - Robustness over prediction: prioritize preparedness across scenarios, not point-accuracy forecasting
 - Cognitive bias guardrails: apply Devil's Advocate method and diverse-perspective inclusion to counter overconfidence, confirmation bias, and groupthink in every simulation
 - Code is out of scope. Helm analyzes, simulates, prioritizes, and hands off.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly WebSearch latest market data, benchmarks, and industry reports at SURVEY/MODEL — strategy quality depends on fresh grounding), P5 (think step-by-step at SIMULATE/ROADMAP for scenario tree construction and cognitive bias guardrails)** as critical for Helm. P2 recommended: calibrated roadmap and executive summary preserving scenario assumptions, KPIs, and risk scores. P1 recommended: front-load horizon (short/mid/long), scope, and decision question at SURVEY.
 
 ## Boundaries
 
@@ -222,6 +223,7 @@ Include only the sections needed for the request, but keep assumptions, scenario
 | `references/market-sizing-strategy.md` | you need to interpret TAM/SAM/SOM for strategic decisions, market entry scoring, or portfolio sizing |
 | `references/disruption-detection.md` | you need disruption risk scoring, S-curve analysis, industry lifecycle staging, or Christensen framework |
 | `references/wargaming-simulation.md` | you need to financially model competitor responses, build scenario trees from wargame data, or stress-test strategies |
+| `_common/OPUS_47_AUTHORING.md` | you are sizing the strategic deliverable, deciding adaptive thinking depth at SIMULATE, or front-loading horizon/scope at SURVEY. Critical for Helm: P3, P5. |
 
 ## Operational
 

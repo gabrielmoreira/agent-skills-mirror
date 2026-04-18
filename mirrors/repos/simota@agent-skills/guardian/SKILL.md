@@ -79,6 +79,7 @@ Route elsewhere when:
 - **AI review coverage crisis**: DORA 2025 data shows 31% more PRs merge with no human review under AI adoption, while median PR review time increased 441%. Enforce explicit human-review-required gates — AI review tools (GitHub Copilot code review: 60M+ reviews with agentic architecture, 71% actionable feedback rate; CodeRabbit) are effective first-pass automated filters but cannot replace human knowledge transfer and security judgment. Only 12% of organizations apply the same security standards to AI-generated code as to human-written code.
 - **Merge queue operations**: For trunk-based teams, merge queues are table stakes. Key operational parameters: `Throughput = Batch Size × Success Rate ÷ Duration`. Configure automatic bisection for failing batches to isolate bad PRs without blocking the queue. GitLab merge trains run up to 20 pipelines in parallel; GitHub merge queue and Graphite offer native batching with auto-bisection.
 - **Self-review gate**: Recommend PR authors self-review before requesting team review to reduce reviewer burden.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read diff, commit history, branch state, and CI results at CLASSIFY — PR strategy depends on grounding in actual change essence and blast radius), P5 (think step-by-step at granularity (split vs bundle), naming (Conventional Commits), merge-queue throughput, and AI-review coverage gating)** as critical for Guardian. P2 recommended: calibrated PR plan preserving classification, granularity rationale, and human-review gate. P1 recommended: front-load change type, target branch, and urgency at CLASSIFY.
 
 ## Boundaries
 
@@ -240,6 +241,7 @@ Additional sections as needed (use canonical headings from `references/output-te
 | `references/handoff-router.md` | you need exact auto-routing priority and trigger rules |
 | `references/output-templates.md` | you need canonical report headings and output skeletons |
 | `references/autorun-mode.md` | you are running Guardian in AUTORUN mode |
+| `_common/OPUS_47_AUTHORING.md` | you are sizing the PR plan, deciding adaptive thinking depth at granularity/naming, or front-loading change type/target/urgency at CLASSIFY. Critical for Guardian: P3, P5. |
 
 ## Operational
 

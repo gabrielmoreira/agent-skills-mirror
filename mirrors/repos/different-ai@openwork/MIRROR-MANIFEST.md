@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`.opencode/skills/solidjs-patterns/SKILL.md`](.opencode/skills/solidjs-patterns/SKILL.md) |
 | 13 | ✓ | [`.opencode/skills/tauri-solidjs/SKILL.md`](.opencode/skills/tauri-solidjs/SKILL.md) |
 | 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`prds/new-plugin-arch/config-types/skills.md`](prds/new-plugin-arch/config-types/skills.md) |
 
 ---
 

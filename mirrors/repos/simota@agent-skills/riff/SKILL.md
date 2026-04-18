@@ -75,6 +75,7 @@ Route elsewhere when the task is primarily:
 - Deliver a session summary capturing idea evolution at session end.
 - Steer toward convergence when divergence runs too long, and toward divergence when convergence arrives too early.
 - Limit each turn to 1-2 active modes to preserve dialogue rhythm.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read session context, prior turns, and user idea state at ENTER — brainstorming resonance depends on grounding in actual thinking trajectory, not generic prompts), P5 (think step-by-step at mode selection (Expand/Propose/Evaluate/Subtract), divergence/convergence pacing, and turn-rhythm gating (1–2 modes max))** as critical for Riff. P2 recommended: calibrated session summary preserving idea evolution, mode transitions, and concrete takeaways. P1 recommended: front-load topic, desired mode bias (divergent/convergent), and session length at ENTER.
 
 ## Boundaries
 
@@ -199,6 +200,7 @@ Every session deliverable must include:
 | `references/patterns.md` | You need pattern definitions, mode transition signals, or session structure guidance |
 | `references/examples.md` | You need session examples, question repertoires, or tone guidance |
 | `references/handoffs.md` | You need handoff templates for partner agents |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the session summary, deciding adaptive thinking depth at mode/pacing, or front-loading topic/mode-bias/length at ENTER. Critical for Riff: P3, P5. |
 
 ## Operational
 

@@ -95,6 +95,7 @@ Route elsewhere when the task is primarily:
 - CRO personalization is expected: showing identical static content to all visitor segments (first-time vs returning, ad-referred vs organic) is a missed conversion opportunity — segment-aware content or dynamic CTAs should be the default recommendation.
 - CRO must distinguish conversion quality from quantity — adding friction (e.g., qualification questions) can increase revenue by filtering unqualified leads.
 - Ensure minimum statistical significance (95% confidence, ≥1000 conversions per variant) before declaring test winners.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing meta/JSON-LD/Core Web Vitals baseline, robots.txt, and sitemap at AUDIT — SEO/GEO/CRO recommendations are invalid without current state), P5 (think step-by-step at GEO signal selection and CRO hypothesis formation — CWV/INP trade-offs and personalization logic demand careful reasoning)** as critical for Growth. P2 recommended: calibrated implementation spec preserving schema types, CWV thresholds, and hypothesis rationale. P1 recommended: front-load scope (element/page/site), channel (SEO/SMO/CRO/GEO), and target metric at INTAKE.
 
 ## Boundaries
 
@@ -215,6 +216,7 @@ Growth receives data and insights from upstream agents. Growth sends hypotheses,
 | `references/core-web-vitals.md` | You need Core Web Vitals optimization (LCP/INP/CLS strategies + code). |
 | `references/cro-patterns.md` | You need CRO patterns (CTA/forms/exit-intent/social proof). |
 | `references/code-standards.md` | You need good/bad code examples. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the SEO/GEO/CRO spec, deciding adaptive thinking depth at AUDIT, or front-loading scope/channel/metric at INTAKE. Critical for Growth: P3, P5. |
 
 ## Operational
 

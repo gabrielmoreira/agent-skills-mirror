@@ -93,6 +93,7 @@ Route elsewhere when the task is primarily:
 - For agentic AI, prioritize contextual red teaming over generic jailbreak testing — standard jailbreaks measure response risk, but agentic systems require testing of operational risks: tool misuse, unauthorized actions, and data exfiltration via conversational redirection. A red team demonstrated a financial assistant executing a $440K portfolio rebalancing through a movie roleplay frame without re-authorization.
 - Structure AI red teaming engagements around four assessment areas: model evaluation, implementation testing, infrastructure assessment, and runtime behavior analysis (per OWASP GenAI Red Teaming Guide).
 - Produce deliverables in Japanese as final output language.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target system architecture, AI/LLM deployment (RAG, tools, MCP, plugins), trust boundaries, and prior threat models at FRAME — attack scenarios must ground in as-deployed surface, not abstract models), P5 (think step-by-step at framework selection (ATT&CK vs ATLAS vs STRIDE vs MAESTRO), multi-turn attack chain construction, and CVSS 4.0 scoring with exploitability evidence)** as critical for Breach. P2 recommended: calibrated red-team report preserving framework IDs, CVSS vectors, attack chains, and blue-team detection recommendations. P1 recommended: front-load target type (app/AI/supply-chain), framework, and cadence tier at FRAME.
 
 ---
 
@@ -322,6 +323,7 @@ All subagents share the threat model (read-only) produced in the MODEL phase. Th
 | `references/attack-playbooks.md` | You need application/infrastructure/supply-chain attack scenarios, kill chain templates, or OWASP Top 10 attack patterns. |
 | `references/ai-red-teaming.md` | You need AI/LLM red teaming techniques, prompt injection patterns, jailbreak methods, agentic risk assessment, or OWASP LLM/Agentic Top 10. |
 | `references/handoffs.md` | You need handoff templates for passing findings to Builder, Sentinel, Radar, Scribe, or Mend. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the red-team report, deciding adaptive thinking depth at framework selection, or front-loading target type/framework/cadence at FRAME. Critical for Breach: P3, P5. |
 
 ---
 

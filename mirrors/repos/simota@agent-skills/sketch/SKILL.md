@@ -79,6 +79,7 @@ Model routing within Sketch:
 - Estimate cost and rate impact before large runs; recommend Batch API (50% discount, 24h delivery) for ≥50 images.
 - Document SynthID in the deliverable — SynthID is embedded during generation (Tournament Sampling), not a removable overlay; disclose this to users.
 - Include seed parameter for reproducibility; document how to regenerate identical outputs.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read model capabilities, cost guards, and prior prompt history at PLAN — prompt architecture depends on knowing the provider's strengths), P5 (think step-by-step at GENERATE — prompt construction errors compound into wasted API spend)** as critical for Sketch. P2 recommended: calibrated generation reports preserving seed/prompt/cost metadata. P1 recommended: front-load model, budget, and style at PLAN.
 
 ## Boundaries
 
@@ -120,16 +121,19 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Copy-paste model names from tutorials or blog posts without verifying against official docs — Google's naming convention is inconsistent across documentation (e.g., `gemini-flash-image`, `gemini-3.1-flash-preview-image` are wrong); always use the exact IDs from the Model Rules table.
 - Use Files API (`fileData`) for image-to-image editing — the model silently returns text-only output; always use `inlineData` (Base64-encoded) for reference/source images.
 - Combine analysis, summarization, or comparison with image generation in a single turn — the model favors a text-only response; separate analytical and generative requests into distinct API calls.
+- Access `response.finish_reason` / `candidate.finish_reason` directly in `google-genai` Python SDK without a timeout — the SDK hangs indefinitely on `futex_wait_queue` when the status is `IMAGE_SAFETY` or `NO_IMAGE` (tracked in googleapis/python-genai issue #2024). Inspect `candidate.content.parts` and safety ratings first, or wrap property access with a timeout guard.
 
 ## Critical Constraints
 
 | Topic | Rule |
 | --- | --- |
 | Default model | Use `gemini-2.5-flash-image` (~$0.039/image) unless the user explicitly requires another supported path |
-| Model landscape 2026 | Nano Banana (`gemini-2.5-flash-image`), Nano Banana 2 (`gemini-3.1-flash-image-preview`, 0.5K-4K, $0.045), Nano Banana Pro (`gemini-3-pro-image-preview`, $0.134), Imagen 4 Fast/Standard/Ultra ($0.02-$0.06, text-to-image only, max 2K) |
+| Model landscape 2026 | Nano Banana (`gemini-2.5-flash-image`, $0.039), Nano Banana 2 (`gemini-3.1-flash-image-preview`, 0.5K-4K, $0.045 @1K), Nano Banana Pro (`gemini-3-pro-image-preview`, $0.134 @1K-2K / $0.24 @4K), Imagen 4 Fast/Standard/Ultra ($0.02-$0.06, text-to-image only, max 2K) |
 | Imagen 4 constraints | Text-to-image only — cannot edit existing images; max native resolution 2K (2048×2048); improved text rendering over Gemini-native models |
 | Google AI vs Vertex AI | `imagen-3.0-*` is Vertex AI only; on Google AI API it returns `404` |
 | SDK compatibility | `v1.38+` supports `GenerateContentConfig(response_modalities=["TEXT", "IMAGE"])`; `v1.50+` additionally supports `ImageGenerationConfig` and `person_generation` param |
+| Resolution parameter | Gemini 3 image models accept `resolution: "1K" \| "2K" \| "4K"` (Nano Banana 2 also accepts `"0.5K"`). Default is `1K`. Set explicitly for ≥2K work — do not rely on aspect_ratio alone to control output size |
+| 4K latency | Nano Banana Pro 4K takes ~60-65s per image vs <10s at 1K. Factor into batch timeouts and Batch API preference; avoid 4K for interactive UX unless streaming is acceptable |
 | responseModalities | Must be `["TEXT", "IMAGE"]` — using `["IMAGE"]` alone returns HTTP 200 with empty `parts` (silent failure) |
 | Endpoint | Must use `/v1beta/` — image generation is not available on `/v1` |
 | Prompt architecture | Use `Subject + Style + Composition + Technical`; use photographic/cinematic language (lens type, camera angle, lighting setup) for realism |
@@ -239,6 +243,7 @@ Overlap boundaries:
 | `references/prompt-patterns.md` | you need prompt architecture, style presets, domain templates, JP -> EN mappings, negative-pattern rules, or `v1.50+` prompt-control guidance |
 | `references/api-integration.md` | you need SDK compatibility, auth setup, request patterns, response handling, rate or cost guidance, error recovery, or SynthID documentation |
 | `references/examples.md` | you need mode-specific examples, collaboration handoffs, or reusable script packaging patterns |
+| `_common/OPUS_47_AUTHORING.md` | you are sizing the generation report, deciding adaptive thinking depth at GENERATE, or front-loading model/budget/style at PLAN. Critical for Sketch: P3, P5 |
 
 ## Operational
 

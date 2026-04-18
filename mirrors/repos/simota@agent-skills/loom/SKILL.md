@@ -91,6 +91,7 @@ Route elsewhere when the task is primarily:
 - Limit to 1-2 screens per prompt; > 3 screens per prompt lowers generation reliability.
 - Generate ≤ 4 variants per generation step to maintain consistency.
 - Validate before delivery. Track detach rate — if > 20%, the Guidelines package is not meeting real needs.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read codebase structure, existing components, and design tokens at EXTRACT — Figma Make Guidelines package quality depends on grounding in actual code conventions), P5 (think step-by-step at screen-count limits (1–2 per prompt), variant caps (≤4), and detach-rate feedback integration)** as critical for Loom. P2 recommended: calibrated Guidelines package preserving conventions, constraints, and detach-rate telemetry. P1 recommended: front-load codebase stack, target screens, and variant scope at EXTRACT.
 
 ## Boundaries
 
@@ -277,6 +278,8 @@ Read `references/token-alignment-guide.md` when you need token diff categories, 
 Read `references/collaboration-handoffs.md` when you need exact handoff anchors or minimum payload fields.
 
 Read `references/figma-make-constraints.md` when you need platform constraints, reliability limits, or package-aware generation rules.
+
+Read `_common/OPUS_47_AUTHORING.md` when you are sizing the Guidelines package, deciding adaptive thinking depth at screen/variant limits, or front-loading stack/screens/scope at EXTRACT. Critical for Loom: P3, P5.
 
 ## Operational
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 16 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,18 +63,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/control-flow/SKILL.md`](.agents/skills/control-flow/SKILL.md) |
 | 3 | ✓ | [`.agents/skills/maintain/checkpoint.md`](.agents/skills/maintain/checkpoint.md) |
 | 4 | ✓ | [`.agents/skills/maintain/SKILL.md`](.agents/skills/maintain/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/office-hours/SKILL.md`](.agents/skills/office-hours/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/agent-browser/SKILL.md`](.claude/skills/agent-browser/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/terminal-emulator/SKILL.md`](.claude/skills/terminal-emulator/SKILL.md) |
-| 9 | ✓ | [`docs/competition/AGENTS.md`](docs/competition/AGENTS.md) |
-| 10 | ✓ | [`environments/lab-rat-todo-project/CLAUDE.md`](environments/lab-rat-todo-project/CLAUDE.md) |
-| 11 | ✓ | [`packages/happy-app/CLAUDE.md`](packages/happy-app/CLAUDE.md) |
-| 12 | ✓ | [`packages/happy-cli/.cursorrules`](packages/happy-cli/.cursorrules) |
-| 13 | ✓ | [`packages/happy-cli/CLAUDE.md`](packages/happy-cli/CLAUDE.md) |
-| 14 | ✓ | [`packages/happy-cli/src/daemon/CLAUDE.md`](packages/happy-cli/src/daemon/CLAUDE.md) |
-| 15 | ✓ | [`packages/happy-server/.cursorrules`](packages/happy-server/.cursorrules) |
-| 16 | ✓ | [`packages/happy-server/CLAUDE.md`](packages/happy-server/CLAUDE.md) |
+| 5 | ✓ | [`.agents/skills/metrics-graphana/SKILL.md`](.agents/skills/metrics-graphana/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/office-hours/SKILL.md`](.agents/skills/office-hours/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/agent-browser/SKILL.md`](.claude/skills/agent-browser/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/terminal-emulator/SKILL.md`](.claude/skills/terminal-emulator/SKILL.md) |
+| 10 | ✓ | [`docs/competition/AGENTS.md`](docs/competition/AGENTS.md) |
+| 11 | ✓ | [`environments/lab-rat-todo-project/CLAUDE.md`](environments/lab-rat-todo-project/CLAUDE.md) |
+| 12 | ✓ | [`packages/happy-app/CLAUDE.md`](packages/happy-app/CLAUDE.md) |
+| 13 | ✓ | [`packages/happy-cli/.cursorrules`](packages/happy-cli/.cursorrules) |
+| 14 | ✓ | [`packages/happy-cli/CLAUDE.md`](packages/happy-cli/CLAUDE.md) |
+| 15 | ✓ | [`packages/happy-cli/src/daemon/CLAUDE.md`](packages/happy-cli/src/daemon/CLAUDE.md) |
+| 16 | ✓ | [`packages/happy-server/.cursorrules`](packages/happy-server/.cursorrules) |
+| 17 | ✓ | [`packages/happy-server/CLAUDE.md`](packages/happy-server/CLAUDE.md) |
 
 ---
 

@@ -11,7 +11,7 @@ CAPABILITIES_SUMMARY:
 - safe_deletion: Generate safe deletion plans with confidence scoring, impact analysis, and rollback preparation
 - configuration_cleanup: Find unused configuration entries and stale environment variables
 - ai_assisted_detection: Leverage LLM-based dead code analysis (DCE-LLM pattern) for sophisticated patterns that bypass traditional static analysis
-- stale_flag_detection: Detect flag-controlled dead code (syntactically reachable but practically dead behind stale feature flags >30 days at 100% rollout) using Piranha (batch) or FlagShark (continuous PR monitoring, 11 languages)
+- stale_flag_detection: Detect flag-controlled dead code (syntactically reachable but practically dead behind stale feature flags >30 days at 100% rollout) by pairing an identifier with a removal engine — Piranha (batch refactorer; requires externally supplied stale list) + `ld-find-code-refs` (LaunchDarkly OSS code scanner, alias-aware, CI/CD integrable), or FlagShark (continuous PR monitoring across 11 languages, end-to-end)
 
 COLLABORATION_PATTERNS:
 - Atlas -> Sweep: Architecture context and module boundaries
@@ -61,6 +61,7 @@ Route elsewhere when:
 - Target 0% dead code rate as the ideal benchmark; track dead-code percentage per scan to measure cleanup progress over time.
 - Require ≥80% test pass rate post-cleanup before marking any batch as verified; abort and rollback if tests drop below baseline.
 - Never recycle or repurpose old flags/feature toggles — remove them entirely. Reuse of dead flags caused the Knight Capital $440M loss (2012).
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read file tree, git history, framework conventions, and dynamic-loading patterns at SCAN — cross-verify with ≥2 independent signals before deletion; tool output is evidence, not authority), P5 (think step-by-step at confidence gating, false-positive screening (dynamic loading, framework conventions, string references), and feature-flag lifecycle)** as critical for Sweep. P2 recommended: calibrated cleanup report preserving evidence per candidate, test-pass verdict, and rollback branch reference. P1 recommended: front-load scope (incremental/full), language ecosystem, and risk tier at SCAN.
 ## Boundaries
 ### Always
 - Create a backup branch before deletions.
@@ -133,7 +134,8 @@ Critical rules:
 - `3+ refs` usually means active usage; files modified within `30 days` or larger than `100 KB` require explicit confirmation.
 - `pages/`, `app/`, route files, config files, stories, and tests are high-risk false positives.
 - Dead code can still affect global state — removal may change program behavior if the "dead" computation raises exceptions or mutates shared state. Always verify side-effect freedom before deletion.
-- Feature flags and old toggles must be fully removed, never repurposed. A flag at 100% rollout for >30 days with no incidents is stale, not stable — enforce cleanup. For automated cleanup, use Piranha (Uber OSS, tree-sitter-based batch refactoring; you provide a list of stale flags) or FlagShark (continuous PR-level monitoring across 11 languages with auto-cleanup PRs). One flag per cleanup PR for easier review and rollback. Healthy SaaS codebases maintain ≤20-30 active flags per service; enforce a hard cap requiring removal before adding new flags.
+- Classify each candidate as **Boat Anchor** (isolated, unused — low-risk removal) or **Lava Flow** (entangled with active code via shared state, side effects, reflection, or indirect call sites — hard to remove without regressions). Lava Flow candidates require individual review and explicit confirmation **even at confidence ≥90**; never batch-delete them regardless of reference count.
+- Feature flags and old toggles must be fully removed, never repurposed. A flag at 100% rollout for >30 days with no incidents is stale, not stable — enforce cleanup. For automated cleanup, pair a stale-flag identifier with a removal engine: Piranha (Uber OSS, tree-sitter-based batch refactoring; requires an externally supplied stale list) + `ld-find-code-refs` (LaunchDarkly OSS utility that scans code, resolves flag aliases/wrappers, and pushes usage/context into the LD dashboard via CI/CD), or FlagShark (continuous PR-level monitoring across 11 languages with auto-cleanup PRs, end-to-end in one tool). One flag per cleanup PR for easier review and rollback. Healthy SaaS codebases maintain ≤20-30 active flags per service; enforce a hard cap requiring removal before adding new flags.
 
 ## Maintenance Mode
 | Frequency | Scope | Trigger |
@@ -214,6 +216,7 @@ When scanning a polyglot monorepo, spawn language-specific scanner subagents in 
 | `references/large-scale-cleanup.md` | you are handling monorepos, AI-assisted detection, or enterprise-scale cleanup |
 | `references/dependency-cleanup.md` | you are auditing dependencies or lockfile-sensitive removals |
 | `references/cleanup-anti-patterns.md` | you need safety guardrails against risky cleanup behavior |
+| `_common/OPUS_47_AUTHORING.md` | you are sizing the cleanup report, deciding adaptive thinking depth at confidence gating, or front-loading scope/ecosystem/risk at SCAN. Critical for Sweep: P3, P5. |
 
 ## Operational
 Journal recurring false positives, dynamic-loading patterns, and project-specific exclusions in `.agents/sweep.md`. Log scan results, cleanup decisions, and dead-code percentage trends in `PROJECT.md` for cross-agent visibility. Standard protocols live in `_common/OPERATIONAL.md`.

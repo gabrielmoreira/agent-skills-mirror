@@ -103,6 +103,7 @@ Route elsewhere when the task is primarily:
 - Flag dynamic dispatch boundaries (event emitters, middleware chains, DI containers, plugin systems) explicitly in reports. These create gaps between static analysis and runtime behavior that keyword/reference search cannot bridge. [Source: arxiv.org/html/2504.04553v3 — Human-AI Collaboration for Code Comprehension 2025]
 - When semantic code search tools are available (MCP servers, IDE integrations), use them for meaning-based queries ("where is authentication handled?") where keyword search requires guessing exact identifiers. Benchmarks show semantic search achieves 12.5% higher accuracy than grep alone (range 6.5–23.5%), with the hybrid approach (grep + semantic + LSP) performing best. Do not replace grep — combine approaches for each query type. [Source: cursor.com/blog/semsearch — Cursor semantic search benchmarks 2026; augmentcode.com — Augment Context Engine semantic indexing]
 - Assess comprehension debt risk in AI-heavy codebases: ~41% of new code is now AI-generated, and an Anthropic controlled trial (N=52 engineers) found AI-assisted developers scored significantly lower on post-task comprehension. Flag modules with high code churn, low review depth, and no authorship continuity as comprehension debt hotspots. [Source: addyosmani.com/blog/comprehension-debt — Mar 2026; Anthropic engineering study 2026]
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly use LSP/Grep/Read across cross-references — confabulated relationships are the #1 Lens failure mode), P5 (think step-by-step at SCOPE — investigation type selection determines whether SURVEY/TRACE/CONNECT can be skipped)** as critical for Lens. P2 recommended: keep reports within Quick Answer / Investigation Report templates in `references/output-formats.md`.
 
 ## Boundaries
 
@@ -241,6 +242,7 @@ Every deliverable must include:
 | `references/output-formats.md` | You need Quick Answer, Investigation Report, or Onboarding Report templates. |
 | `references/complexity-assessment.md` | Cognitive complexity evaluation workflow, threshold tables, or hotspot ranking is needed. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Scout, unified confidence scale, or stall protocol is needed. |
+| `_common/OPUS_47_AUTHORING.md` | You are choosing tool-use eagerness during SURVEY/TRACE, deciding adaptive thinking depth at SCOPE, or sizing the report. Critical for Lens: P3, P5. |
 
 ---
 

@@ -10,6 +10,15 @@ An MCP app is a standard MCP server that **also serves UI resources** — intera
 
 The UI layer is **additive**. Under the hood it's still tools, resources, and the same wire protocol. If you haven't built a plain MCP server before, the `build-mcp-server` skill covers the base layer. This skill adds widgets on top.
 
+> **Testing in Claude:** Add the server as a custom connector in claude.ai (via a Cloudflare tunnel for local dev) — this exercises the real iframe sandbox and `hostContext`. See https://claude.com/docs/connectors/building/testing.
+
+## Claude host specifics
+
+- `_meta.ui.prefersBorder: false` on a `ui://` resource removes the outer card border (mobile).
+- `hostContext.safeAreaInsets: {top, right, bottom, left}` (px) — honor these for notches and the composer overlay.
+- `_meta.ui.csp.{connectDomains, resourceDomains, baseUriDomains}` — declare external origins per resource; default is block-all. `frameDomains` is currently restricted in Claude.
+- Directory submission for MCP Apps requires 3–5 PNG screenshots, ≥1000px wide, cropped to the app response only (no prompt in the image). See https://claude.com/docs/connectors/building/submission#asset-specifications.
+
 ---
 
 ## When a widget beats plain text

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kilo-Org/kilocode` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `Kilo-Org/kilocode` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Kilo-Org/kilocode` — 26 default patterns, 0 followed patterns, 14 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 14 |
+| Followed pats | 1 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `Kilo-Org/kilocode` — 26 default patterns, 0 followed patterns, 14 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `packages/kilo-docs/pages/contributing/architecture/config-schema.md`
 
 ## File Index
 
@@ -73,6 +73,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
 | 13 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
 | 14 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 15 | → | [`packages/kilo-docs/pages/contributing/architecture/config-schema.md`](packages/kilo-docs/pages/contributing/architecture/config-schema.md) |
 
 ---
 

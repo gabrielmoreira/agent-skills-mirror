@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
+Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 42 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,40 +67,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`agents/gsd-codebase-mapper.md`](agents/gsd-codebase-mapper.md) |
 | 7 | ✓ | [`agents/gsd-debug-session-manager.md`](agents/gsd-debug-session-manager.md) |
 | 8 | ✓ | [`agents/gsd-debugger.md`](agents/gsd-debugger.md) |
-| 9 | ✓ | [`agents/gsd-doc-verifier.md`](agents/gsd-doc-verifier.md) |
-| 10 | ✓ | [`agents/gsd-doc-writer.md`](agents/gsd-doc-writer.md) |
-| 11 | ✓ | [`agents/gsd-domain-researcher.md`](agents/gsd-domain-researcher.md) |
-| 12 | ✓ | [`agents/gsd-eval-auditor.md`](agents/gsd-eval-auditor.md) |
-| 13 | ✓ | [`agents/gsd-eval-planner.md`](agents/gsd-eval-planner.md) |
-| 14 | ✓ | [`agents/gsd-executor.md`](agents/gsd-executor.md) |
-| 15 | ✓ | [`agents/gsd-framework-selector.md`](agents/gsd-framework-selector.md) |
-| 16 | ✓ | [`agents/gsd-integration-checker.md`](agents/gsd-integration-checker.md) |
-| 17 | ✓ | [`agents/gsd-intel-updater.md`](agents/gsd-intel-updater.md) |
-| 18 | ✓ | [`agents/gsd-nyquist-auditor.md`](agents/gsd-nyquist-auditor.md) |
-| 19 | ✓ | [`agents/gsd-pattern-mapper.md`](agents/gsd-pattern-mapper.md) |
-| 20 | ✓ | [`agents/gsd-phase-researcher.md`](agents/gsd-phase-researcher.md) |
-| 21 | ✓ | [`agents/gsd-plan-checker.md`](agents/gsd-plan-checker.md) |
-| 22 | ✓ | [`agents/gsd-planner.md`](agents/gsd-planner.md) |
-| 23 | ✓ | [`agents/gsd-project-researcher.md`](agents/gsd-project-researcher.md) |
-| 24 | ✓ | [`agents/gsd-research-synthesizer.md`](agents/gsd-research-synthesizer.md) |
-| 25 | ✓ | [`agents/gsd-roadmapper.md`](agents/gsd-roadmapper.md) |
-| 26 | ✓ | [`agents/gsd-security-auditor.md`](agents/gsd-security-auditor.md) |
-| 27 | ✓ | [`agents/gsd-ui-auditor.md`](agents/gsd-ui-auditor.md) |
-| 28 | ✓ | [`agents/gsd-ui-checker.md`](agents/gsd-ui-checker.md) |
-| 29 | ✓ | [`agents/gsd-ui-researcher.md`](agents/gsd-ui-researcher.md) |
-| 30 | ✓ | [`agents/gsd-user-profiler.md`](agents/gsd-user-profiler.md) |
-| 31 | ✓ | [`agents/gsd-verifier.md`](agents/gsd-verifier.md) |
-| 32 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 33 | ✓ | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 34 | ✓ | [`docs/ja-JP/AGENTS.md`](docs/ja-JP/AGENTS.md) |
-| 35 | ✓ | [`docs/ja-JP/ARCHITECTURE.md`](docs/ja-JP/ARCHITECTURE.md) |
-| 36 | ✓ | [`docs/ko-KR/AGENTS.md`](docs/ko-KR/AGENTS.md) |
-| 37 | ✓ | [`docs/ko-KR/ARCHITECTURE.md`](docs/ko-KR/ARCHITECTURE.md) |
-| 38 | ✓ | [`docs/pt-BR/AGENTS.md`](docs/pt-BR/AGENTS.md) |
-| 39 | ✓ | [`docs/pt-BR/ARCHITECTURE.md`](docs/pt-BR/ARCHITECTURE.md) |
-| 40 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
-| 41 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
-| 42 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
+| 9 | ✓ | [`agents/gsd-doc-classifier.md`](agents/gsd-doc-classifier.md) |
+| 10 | ✓ | [`agents/gsd-doc-synthesizer.md`](agents/gsd-doc-synthesizer.md) |
+| 11 | ✓ | [`agents/gsd-doc-verifier.md`](agents/gsd-doc-verifier.md) |
+| 12 | ✓ | [`agents/gsd-doc-writer.md`](agents/gsd-doc-writer.md) |
+| 13 | ✓ | [`agents/gsd-domain-researcher.md`](agents/gsd-domain-researcher.md) |
+| 14 | ✓ | [`agents/gsd-eval-auditor.md`](agents/gsd-eval-auditor.md) |
+| 15 | ✓ | [`agents/gsd-eval-planner.md`](agents/gsd-eval-planner.md) |
+| 16 | ✓ | [`agents/gsd-executor.md`](agents/gsd-executor.md) |
+| 17 | ✓ | [`agents/gsd-framework-selector.md`](agents/gsd-framework-selector.md) |
+| 18 | ✓ | [`agents/gsd-integration-checker.md`](agents/gsd-integration-checker.md) |
+| 19 | ✓ | [`agents/gsd-intel-updater.md`](agents/gsd-intel-updater.md) |
+| 20 | ✓ | [`agents/gsd-nyquist-auditor.md`](agents/gsd-nyquist-auditor.md) |
+| 21 | ✓ | [`agents/gsd-pattern-mapper.md`](agents/gsd-pattern-mapper.md) |
+| 22 | ✓ | [`agents/gsd-phase-researcher.md`](agents/gsd-phase-researcher.md) |
+| 23 | ✓ | [`agents/gsd-plan-checker.md`](agents/gsd-plan-checker.md) |
+| 24 | ✓ | [`agents/gsd-planner.md`](agents/gsd-planner.md) |
+| 25 | ✓ | [`agents/gsd-project-researcher.md`](agents/gsd-project-researcher.md) |
+| 26 | ✓ | [`agents/gsd-research-synthesizer.md`](agents/gsd-research-synthesizer.md) |
+| 27 | ✓ | [`agents/gsd-roadmapper.md`](agents/gsd-roadmapper.md) |
+| 28 | ✓ | [`agents/gsd-security-auditor.md`](agents/gsd-security-auditor.md) |
+| 29 | ✓ | [`agents/gsd-ui-auditor.md`](agents/gsd-ui-auditor.md) |
+| 30 | ✓ | [`agents/gsd-ui-checker.md`](agents/gsd-ui-checker.md) |
+| 31 | ✓ | [`agents/gsd-ui-researcher.md`](agents/gsd-ui-researcher.md) |
+| 32 | ✓ | [`agents/gsd-user-profiler.md`](agents/gsd-user-profiler.md) |
+| 33 | ✓ | [`agents/gsd-verifier.md`](agents/gsd-verifier.md) |
+| 34 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 35 | ✓ | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 36 | ✓ | [`docs/ja-JP/AGENTS.md`](docs/ja-JP/AGENTS.md) |
+| 37 | ✓ | [`docs/ja-JP/ARCHITECTURE.md`](docs/ja-JP/ARCHITECTURE.md) |
+| 38 | ✓ | [`docs/ko-KR/AGENTS.md`](docs/ko-KR/AGENTS.md) |
+| 39 | ✓ | [`docs/ko-KR/ARCHITECTURE.md`](docs/ko-KR/ARCHITECTURE.md) |
+| 40 | ✓ | [`docs/pt-BR/AGENTS.md`](docs/pt-BR/AGENTS.md) |
+| 41 | ✓ | [`docs/pt-BR/ARCHITECTURE.md`](docs/pt-BR/ARCHITECTURE.md) |
+| 42 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
+| 43 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
+| 44 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
 
 ---
 

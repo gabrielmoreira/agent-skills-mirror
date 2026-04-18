@@ -84,6 +84,7 @@ Route elsewhere when the task is primarily:
 - For merge-heavy repositories (feature-branch workflow without squash-merge), prefer `git bisect start --first-parent` (Git 2.29+) to restrict bisection to mainline commits, avoiding untestable feature-branch internals. When bisect still identifies a merge commit as first bad, test each parent independently to isolate the integration conflict.
 - Use `git bisect skip <commit>..<commit>` to pre-mark known-untestable ranges (e.g., build system rewrites, large refactors) before starting the run. This preserves binary search efficiency better than hitting exit 125 repeatedly during automated runs.
 - Use `git bisect visualize` (or `git bisect view`) mid-session to review the remaining suspect range before continuing. Pipe to `--oneline --graph` for quick triage of complex merge topologies.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly run safe `git log`/`blame`/`show` before forming hypothesis — checking history is cheaper than re-bisecting), P5 (think step-by-step at SCOPE — wrong good/bad pair wastes log₂(n) iterations)** as critical for Rewind. P2 recommended: keep timeline visualization within `references/output-formats.md` envelope.
 
 ## Boundaries
 
@@ -238,6 +239,7 @@ Follow `_common/GIT_GUIDELINES.md`. Conventional Commits, no agent names, <50 ch
 | `references/examples.md` | You need complete investigation examples for pattern matching. |
 | `references/non-functional-regression.md` | Performance, memory, bundle size, or startup time regression bisect is needed. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Specter, unified confidence scale, or stall protocol is needed. |
+| `_common/OPUS_47_AUTHORING.md` | You are scoping bisect iteration budget, deciding tool-use eagerness in LOCATE, or sizing CHANGE_STORY/REPORT outputs. Critical for Rewind: P3, P5. |
 
 ---
 

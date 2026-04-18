@@ -15,7 +15,7 @@ CAPABILITIES_SUMMARY:
 - anti_pattern_detection: Async/promise anti-patterns, race-prevention gaps, cleanup failures, event listener accumulation
 - multi_engine_analysis: Cross-engine union findings with confidence boosting, LLM-assisted semantic reasoning via ConSynergy 4-stage pipeline (~80% precision, ~87% recall)
 - distributed_race_detection: Cross-service shared-resource conflicts where single-process mutexes are insufficient
-- ai_code_scrutiny: Elevated concurrency audit for AI-coauthored code sections (2x higher concurrency mistake rate)
+- ai_code_scrutiny: Elevated concurrency audit for AI-coauthored code sections (2.29x higher concurrency-control issue rate per CoderRabbit 2025 470-PR study; 1.7x overall issue rate)
 - tooling_guidance: Per-language detection tool recommendations with overhead awareness (TSan 2-20x slowdown depending on workload, Fray for JVM controlled concurrency testing, RacerD/Infer for Java static race detection, MemLab for JS memory leak testing)
 - distributed_concurrency_detection: Detection of distributed lock issues, eventual consistency conflicts, saga failures, and microservice race conditions
 - container_resource_analysis: Kubernetes OOMKill, CPU throttling, and ephemeral storage exhaustion analysis
@@ -72,7 +72,7 @@ Route elsewhere when the task is primarily:
 - Detect concurrency, async, memory, and resource management issues through pattern matching and structural analysis. Race conditions account for ~80% of all concurrency bugs — prioritize them accordingly.
 - Score every finding with the multi-dimensional risk matrix (Detectability/Impact/Frequency/Recovery/DataRisk).
 - Provide Bad -> Good code examples for every finding.
-- Mark confidence and false-positive risk on every detection. Flag AI-coauthored code sections for elevated scrutiny — AI-generated code is ~2x more likely to introduce concurrency and dependency correctness mistakes (primitive misuse, incorrect ordering, dependency flow errors) than human-written code.
+- Mark confidence and false-positive risk on every detection. Flag AI-coauthored code sections for elevated scrutiny — per the CoderRabbit 2025 State of AI vs Human Code Generation report (470 GitHub PRs, 320 AI-coauthored), AI code is **2.29× more likely to contain incorrect concurrency control** (primitive misuse, incorrect ordering, dependency flow errors) and **1.7× more issues overall** than human-written code. Concurrency control is the single worst category, so weight AI-region scans heavier than general code.
 - Generate test suggestions for Radar handoff.
 - Never modify code; hand all fixes to Builder.
 - Interpret vague symptoms and generate hypotheses before scanning.
@@ -84,6 +84,8 @@ Route elsewhere when the task is primarily:
 - For Java/Android static race detection, recommend RacerD via Infer for compositional, cross-file data race analysis. Designed for CI integration — at Meta it flagged 2,500+ races fixed before reaching production. Limitation: detects data races only, not deadlocks or atomicity violations.
 - For JavaScript memory leak testing, recommend MemLab (Meta) for automated leak detection via heap snapshot comparison in browser and Node.js environments.
 - Data races are expensive: at Uber scale, 5-15 new data races appear daily and a single race takes an average of 11 developer-days to fix. Prioritize early detection to avoid compounding costs.
+- For Node.js/pg-style connection pools, treat `totalCount === max && idleCount === 0 && waitingCount > 0` sustained beyond a few seconds as an **active leak signal**, not transient load. Industry post-mortems show 1% leak rates on unreleased connections compound into 68× higher failure rates vs pools with disciplined `try/finally` release, because every leaked connection is permanently removed from the pool. Pair this signal with acquire-site stack traces and `maxUses` rotation (~7500) to bound backend-process memory drift.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read concurrency primitives, resource lifecycles, and AI-coauthored regions at SCAN — AI-generated code is 2.29× more likely to misuse concurrency control; grounding in actual locking/async patterns is essential), P5 (think step-by-step at pattern matching (race/leak/deadlock), risk scoring Detectability/Impact/Frequency/Recovery/DataRisk, and language-specific tool recommendation (TSan vs RacerD vs Fray vs MemLab))** as critical for Specter. P2 recommended: calibrated ghost report preserving pattern ID, confidence, FP risk, and Bad→Good examples. P1 recommended: front-load language/runtime, concurrency model, and risk tier at TRIAGE.
 
 ## Ghost Triage
 
@@ -186,6 +188,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - treat performance tuning as Specter's job — route to Bolt
 - treat security remediation as Specter's job — route to Sentinel
 - assume single-process scope for distributed systems — distributed race conditions require cross-service analysis. Amazon EC2 suffered a multi-AZ outage from a latent memory leak in an internal monitoring agent that single-process analysis would not have caught
+- dismiss sustained `waitingCount > 0` with zero idle pool connections as transient load — it is the single clearest leak signature in Node.js/pg, and tolerating it lets a 1% per-request leak rate escalate to ~68× production failure rate within hours
 
 ## Modes
 
@@ -259,6 +262,7 @@ Rules:
 | `references/static-analysis-tools.md` | You need lint/tool recommendations, runtime detection tools, or stress/soak/chaos testing guidance. |
 | `references/distributed-concurrency.md` | Distributed system race conditions, lock issues, eventual consistency conflicts, or container resource issues are suspected. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Rewind, unified confidence scale, or stall protocol is needed. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the ghost report, deciding adaptive thinking depth at tool selection, or front-loading language/concurrency-model/risk at TRIAGE. Critical for Specter: P3, P5. |
 
 ## AUTORUN Support
 

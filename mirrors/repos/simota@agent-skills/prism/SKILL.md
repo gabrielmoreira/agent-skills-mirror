@@ -88,6 +88,7 @@ Supported output families:
 - Study formats: `Flashcards`, `Quizzes` (progress saved across sessions)
 - Document format: `Reports` (tailored reports generated from sources)
 - Data format: `Data Tables` (structured tables exportable to Google Sheets; Pro/Ultra)
+- Author for Opus 4.7 defaults. Apply [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) principles **P3 (eagerly Read source set, format constraints, and audience profile at CURATE — steering prompt quality depends on grounding in actual source structure), P5 (think step-by-step at format selection (Audio/Video/Slide/Infographic), Custom Goals persona design, and hallucination/consistency gates)** as critical for Prism. P2 recommended: calibrated steering prompt preserving source curation, format constraints, and persona voice. P1 recommended: front-load target format, audience, and source scope at CURATE.
 
 ## Boundaries
 
@@ -248,6 +249,7 @@ Minimum content:
 | [source-curation-anti-patterns.md](~/.claude/skills/prism/references/source-curation-anti-patterns.md) | The source set is noisy, oversized, low-quality, or structured poorly                         |
 | [format-audience-anti-patterns.md](~/.claude/skills/prism/references/format-audience-anti-patterns.md) | Format, duration, or audience fit looks wrong                                                 |
 | [content-quality-anti-patterns.md](~/.claude/skills/prism/references/content-quality-anti-patterns.md) | You need hallucination checks, consistency checks, or content quality failure patterns        |
+| [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md)                          | You are sizing the steering prompt, deciding adaptive thinking depth at format/persona, or front-loading format/audience/sources at CURATE. Critical for Prism: P3, P5. |
 
 ## Operational
 

@@ -83,6 +83,7 @@ Route elsewhere when the task is primarily:
 - Detect state synchronization failures: flag multi-agent workflows where agents read/write shared state without ordering guarantees. Race conditions from stale reads during concurrent writes (e.g., one agent writes a score, another reads an outdated cached value) are among the most common production multi-agent failures.
 - Factor token cost efficiency into ecosystem fitness: multi-agent systems consume ~15× more tokens than single-agent solutions for equivalent tasks. When evaluating multi-agent proposals, weigh throughput gains against cost multiplication and flag topologies where per-agent contribution drops below marginal cost.
 - Respect existing agent boundaries — propose improvements, never redesign directly.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read agent journals, METAPATTERNS, and lifecycle-phase signals at ASSESS — ecosystem fitness requires grounding in actual usage history, not snapshot assumption), P5 (think step-by-step at fitness scoring, evolution action ranking, and multi-agent token-cost justification (15× baseline threshold))** as critical for Darwin. P2 recommended: calibrated evolution proposal preserving fitness deltas, phase evidence, and token-cost rationale. P1 recommended: front-load ecosystem scope, lifecycle phase, and evolution goal at ASSESS.
 
 ## Boundaries
 
@@ -176,6 +177,7 @@ Ownership: all workers are read-only (`Explore` subagent_type); Darwin aggregate
 | `references/verification-metrics.md` | You need evolution effect measurement or VERIFY criteria. |
 | `references/subsystems.md` | You need detail on the 7 internal subsystems. |
 | `references/official-fitness-criteria.md` | You need Official Spec Conformance (OSC) scoring, lifecycle-phase minimum thresholds, RS enhancement from official metrics, or use-case coverage analysis during ASSESS or EVOLVE. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the evolution proposal, deciding adaptive thinking depth at fitness/action ranking, or front-loading scope/phase/goal at ASSESS. Critical for Darwin: P3, P5. |
 
 ## Operational
 

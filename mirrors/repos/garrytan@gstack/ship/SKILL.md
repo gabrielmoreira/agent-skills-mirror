@@ -624,17 +624,17 @@ You are running the `/ship` workflow. This is a **non-interactive, fully automat
 - Merge conflicts that can't be auto-resolved (stop, show conflicts)
 - In-branch test failures (pre-existing failures are triaged, not auto-blocking)
 - Pre-landing review finds ASK items that need user judgment
-- MINOR or MAJOR version bump needed (ask — see Step 4)
+- MINOR or MAJOR version bump needed (ask — see Step 12)
 - Greptile review comments that need user decision (complex fixes, false positives)
-- AI-assessed coverage below minimum threshold (hard gate with user override — see Step 3.4)
-- Plan items NOT DONE with no user override (see Step 3.45)
-- Plan verification failures (see Step 3.47)
-- TODOS.md missing and user wants to create one (ask — see Step 5.5)
-- TODOS.md disorganized and user wants to reorganize (ask — see Step 5.5)
+- AI-assessed coverage below minimum threshold (hard gate with user override — see Step 7)
+- Plan items NOT DONE with no user override (see Step 8)
+- Plan verification failures (see Step 8.1)
+- TODOS.md missing and user wants to create one (ask — see Step 14)
+- TODOS.md disorganized and user wants to reorganize (ask — see Step 14)
 
 **Never stop for:**
 - Uncommitted changes (always include them)
-- Version bump choice (auto-pick MICRO or PATCH — see Step 4)
+- Version bump choice (auto-pick MICRO or PATCH — see Step 12)
 - CHANGELOG content (auto-generate from diff)
 - Commit message approval (auto-commit)
 - Multi-file changesets (auto-split into bisectable commits)
@@ -647,9 +647,9 @@ Re-running `/ship` means "run the whole checklist again." Every verification ste
 (tests, coverage audit, plan completion, pre-landing review, adversarial review,
 VERSION/CHANGELOG check, TODOS, document-release) runs on every invocation.
 Only *actions* are idempotent:
-- Step 4: If VERSION already bumped, skip the bump but still read the version
-- Step 7: If already pushed, skip the push command
-- Step 8: If PR exists, update the body instead of creating a new PR
+- Step 12: If VERSION already bumped, skip the bump but still read the version
+- Step 17: If already pushed, skip the push command
+- Step 19: If PR exists, update the body instead of creating a new PR
 Never skip a verification step because a prior `/ship` run already performed it.
 
 ---
@@ -717,19 +717,19 @@ Display:
 
 If the Eng Review is NOT "CLEAR":
 
-Print: "No prior eng review found — ship will run its own pre-landing review in Step 3.5."
+Print: "No prior eng review found — ship will run its own pre-landing review in Step 9."
 
 Check diff size: `git diff <base>...HEAD --stat | tail -1`. If the diff is >200 lines, add: "Note: This is a large diff. Consider running `/plan-eng-review` or `/autoplan` for architecture-level review before shipping."
 
 If CEO Review is missing, mention as informational ("CEO Review not run — recommended for product changes") but do NOT block.
 
-For Design Review: run `source <(~/.claude/skills/gstack/bin/gstack-diff-scope <base> 2>/dev/null)`. If `SCOPE_FRONTEND=true` and no design review (plan-design-review or design-review-lite) exists in the dashboard, mention: "Design Review not run — this PR changes frontend code. The lite design check will run automatically in Step 3.5, but consider running /design-review for a full visual audit post-implementation." Still never block.
+For Design Review: run `source <(~/.claude/skills/gstack/bin/gstack-diff-scope <base> 2>/dev/null)`. If `SCOPE_FRONTEND=true` and no design review (plan-design-review or design-review-lite) exists in the dashboard, mention: "Design Review not run — this PR changes frontend code. The lite design check will run automatically in Step 9, but consider running /design-review for a full visual audit post-implementation." Still never block.
 
-Continue to Step 1.5 — do NOT block or ask. Ship runs its own review in Step 3.5.
+Continue to Step 2 — do NOT block or ask. Ship runs its own review in Step 9.
 
 ---
 
-## Step 1.5: Distribution Pipeline Check
+## Step 2: Distribution Pipeline Check
 
 If the diff introduces a new standalone artifact (CLI binary, library package, tool) — not a web
 service with existing deployment — verify that a distribution pipeline exists.
@@ -757,7 +757,7 @@ service with existing deployment — verify that a distribution pipeline exists.
 
 ---
 
-## Step 2: Merge the base branch (BEFORE tests)
+## Step 3: Merge the base branch (BEFORE tests)
 
 Fetch and merge the base branch into the feature branch so tests run against the merged state:
 
@@ -771,7 +771,7 @@ git fetch origin <base> && git merge origin/<base> --no-edit
 
 ---
 
-## Step 2.5: Test Framework Bootstrap
+## Step 4: Test Framework Bootstrap
 
 ## Test Framework Bootstrap
 
@@ -800,7 +800,7 @@ ls -d test/ tests/ spec/ __tests__/ cypress/ e2e/ 2>/dev/null
 **If test framework detected** (config files or test directories found):
 Print "Test framework detected: {name} ({N} existing tests). Skipping bootstrap."
 Read 2-3 existing test files to learn conventions (naming, imports, assertion style, setup patterns).
-Store conventions as prose context for use in Phase 8e.5 or Step 3.4. **Skip the rest of bootstrap.**
+Store conventions as prose context for use in Phase 8e.5 or Step 7. **Skip the rest of bootstrap.**
 
 **If BOOTSTRAP_DECLINED** appears: Print "Test bootstrap previously declined — skipping." **Skip the rest of bootstrap.**
 
@@ -929,7 +929,7 @@ Only commit if there are changes. Stage all bootstrap files (config, test direct
 
 ---
 
-## Step 3: Run tests (on merged code)
+## Step 5: Run tests (on merged code)
 
 **Do NOT run `RAILS_ENV=test bin/rails db:migrate`** — `bin/test-lane` already calls
 `db:test:prepare` internally, which loads the schema into the correct lane database.
@@ -1051,13 +1051,13 @@ Use AskUserQuestion:
 - Continue with the workflow.
 - Note in output: "Pre-existing test failure skipped: <test-name>"
 
-**After triage:** If any in-branch failures remain unfixed, **STOP**. Do not proceed. If all failures were pre-existing and handled (fixed, TODOed, assigned, or skipped), continue to Step 3.25.
+**After triage:** If any in-branch failures remain unfixed, **STOP**. Do not proceed. If all failures were pre-existing and handled (fixed, TODOed, assigned, or skipped), continue to Step 6.
 
 **If all pass:** Continue silently — just note the counts briefly.
 
 ---
 
-## Step 3.25: Eval Suites (conditional)
+## Step 6: Eval Suites (conditional)
 
 Evals are mandatory when prompt-related files change. Skip this step entirely if no prompt files are in the diff.
 
@@ -1076,7 +1076,7 @@ Match against these patterns (from CLAUDE.md):
 - `config/system_prompts/*.txt`
 - `test/evals/**/*` (eval infrastructure changes affect all suites)
 
-**If no matches:** Print "No prompt-related files changed — skipping evals." and continue to Step 3.5.
+**If no matches:** Print "No prompt-related files changed — skipping evals." and continue to Step 9.
 
 **2. Identify affected eval suites:**
 
@@ -1106,9 +1106,9 @@ If multiple suites need to run, run them sequentially (each needs a test lane). 
 **4. Check results:**
 
 - **If any eval fails:** Show the failures, the cost dashboard, and **STOP**. Do not proceed.
-- **If all pass:** Note pass counts and cost. Continue to Step 3.5.
+- **If all pass:** Note pass counts and cost. Continue to Step 9.
 
-**5. Save eval output** — include eval results and cost dashboard in the PR body (Step 8).
+**5. Save eval output** — include eval results and cost dashboard in the PR body (Step 19).
 
 **Tier reference (for context — /ship always uses `full`):**
 | Tier | When | Speed (cached) | Cost |
@@ -1119,9 +1119,15 @@ If multiple suites need to run, run them sequentially (each needs a test lane). 
 
 ---
 
-## Step 3.4: Test Coverage Audit
+## Step 7: Test Coverage Audit
 
-100% coverage is the goal — every untested path is a path where bugs hide and vibe coding becomes yolo coding. Evaluate what was ACTUALLY coded (from the diff), not what was planned.
+**Dispatch this step as a subagent** using the Agent tool with `subagent_type: "general-purpose"`. The subagent runs the coverage audit in a fresh context window — the parent only sees the conclusion, not intermediate file reads. This is context-rot defense.
+
+**Subagent prompt:** Pass the following instructions to the subagent, with `<base>` substituted with the base branch:
+
+> You are running a ship-workflow test coverage audit. Run `git diff <base>...HEAD` as needed. Do not commit or push — report only.
+>
+> 100% coverage is the goal — every untested path is a path where bugs hide and vibe coding becomes yolo coding. Evaluate what was ACTUALLY coded (from the diff), not what was planned.
 
 ### Test Framework Detection
 
@@ -1143,7 +1149,7 @@ ls jest.config.* vitest.config.* playwright.config.* cypress.config.* .rspec pyt
 ls -d test/ tests/ spec/ __tests__/ cypress/ e2e/ 2>/dev/null
 ```
 
-3. **If no framework detected:** falls through to the Test Framework Bootstrap step (Step 2.5) which handles full setup.
+3. **If no framework detected:** falls through to the Test Framework Bootstrap step (Step 4) which handles full setup.
 
 **0. Before/after test count:**
 
@@ -1285,11 +1291,11 @@ GAPS: 8 paths need tests (2 need E2E, 1 needs eval)
 ─────────────────────────────────
 ```
 
-**Fast path:** All paths covered → "Step 3.4: All new code paths have test coverage ✓" Continue.
+**Fast path:** All paths covered → "Step 7: All new code paths have test coverage ✓" Continue.
 
 **5. Generate tests for uncovered paths:**
 
-If test framework detected (or bootstrapped in Step 2.5):
+If test framework detected (or bootstrapped in Step 4):
 - Prioritize error handlers and edge cases first (happy paths are more likely already tested)
 - Read 2-3 existing test files to match conventions exactly
 - Generate unit tests. Mock all external dependencies (DB, API, Redis).
@@ -1303,7 +1309,7 @@ Caps: 30 code paths max, 20 tests generated max (code + user flow combined), 2-m
 
 If no test framework AND user declined bootstrap → diagram only, no generation. Note: "Test generation skipped — no test framework configured."
 
-**Diff is test-only changes:** Skip Step 3.4 entirely: "No new application code paths to audit."
+**Diff is test-only changes:** Skip Step 7 entirely: "No new application code paths to audit."
 
 **6. After-count and coverage summary:**
 
@@ -1378,12 +1384,30 @@ Repo: {owner/repo}
 ## Critical Paths
 - {end-to-end flow that must work}
 ```
+>
+> After your analysis, output a single JSON object on the LAST LINE of your response (no other text after it):
+> `{"coverage_pct":N,"gaps":N,"diagram":"<full markdown coverage diagram for PR body>","tests_added":["path",...]}`
+
+**Parent processing:**
+
+1. Read the subagent's final output. Parse the LAST line as JSON.
+2. Store `coverage_pct` (for Step 20 metrics), `gaps` (user summary), `tests_added` (for the commit).
+3. Embed `diagram` verbatim in the PR body's `## Test Coverage` section (Step 19).
+4. Print a one-line summary: `Coverage: {coverage_pct}%, {gaps} gaps. {tests_added.length} tests added.`
+
+**If the subagent fails, times out, or returns invalid JSON:** Fall back to running the audit inline in the parent. Do not block /ship on subagent failure — partial results are better than none.
 
 ---
 
-## Step 3.45: Plan Completion Audit
+## Step 8: Plan Completion Audit
 
-### Plan File Discovery
+**Dispatch this step as a subagent** using the Agent tool with `subagent_type: "general-purpose"`. The subagent reads the plan file and every referenced code file in its own fresh context. Parent gets only the conclusion.
+
+**Subagent prompt:** Pass these instructions to the subagent:
+
+> You are running a ship-workflow plan completion audit. The base branch is `<base>`. Use `git diff <base>...HEAD` to see what shipped. Do not commit or push — report only.
+>
+> ### Plan File Discovery
 
 1. **Conversation context (primary):** Check if there is an active plan file in this conversation. The host agent's system messages include plan file paths when in plan mode. If found, use it directly — this is the most reliable signal.
 
@@ -1499,19 +1523,31 @@ After producing the completion checklist:
 **No plan file found:** Skip entirely. "No plan file detected — skipping plan completion audit."
 
 **Include in PR body (Step 8):** Add a `## Plan Completion` section with the checklist summary.
+>
+> After your analysis, output a single JSON object on the LAST LINE of your response (no other text after it):
+> `{"total_items":N,"done":N,"changed":N,"deferred":N,"summary":"<markdown checklist for PR body>"}`
+
+**Parent processing:**
+
+1. Parse the LAST line of the subagent's output as JSON.
+2. Store `done`, `deferred` for Step 20 metrics; use `summary` in PR body.
+3. If `deferred > 0` and no user override, present the deferred items via AskUserQuestion before continuing.
+4. Embed `summary` in PR body's `## Plan Completion` section (Step 19).
+
+**If the subagent fails or returns invalid JSON:** Fall back to running the audit inline. Never block /ship on subagent failure.
 
 ---
 
-## Step 3.47: Plan Verification
+## Step 8.1: Plan Verification
 
 Automatically verify the plan's testing/verification steps using the `/qa-only` skill.
 
 ### 1. Check for verification section
 
-Using the plan file already discovered in Step 3.45, look for a verification section. Match any of these headings: `## Verification`, `## Test plan`, `## Testing`, `## How to test`, `## Manual testing`, or any section with verification-flavored items (URLs to visit, things to check visually, interactions to test).
+Using the plan file already discovered in Step 8, look for a verification section. Match any of these headings: `## Verification`, `## Test plan`, `## Testing`, `## How to test`, `## Manual testing`, or any section with verification-flavored items (URLs to visit, things to check visually, interactions to test).
 
 **If no verification section found:** Skip with "No verification steps found in plan — skipping auto-verification."
-**If no plan file was found in Step 3.45:** Skip (already handled).
+**If no plan file was found in Step 8:** Skip (already handled).
 
 ### 2. Check for running dev server
 
@@ -1556,7 +1592,7 @@ Follow the /qa-only workflow with these modifications:
 
 ### 5. Include in PR body
 
-Add a `## Verification Results` section to the PR body (Step 8):
+Add a `## Verification Results` section to the PR body (Step 19):
 - If verification ran: summary of results (N PASS, M FAIL, K SKIPPED)
 - If skipped: reason for skipping (no plan, no server, no verification section)
 
@@ -1598,7 +1634,7 @@ matches a past learning, display:
 This makes the compounding visible. The user should see that gstack is getting
 smarter on their codebase over time.
 
-## Step 3.48: Scope Drift Detection
+## Step 8.2: Scope Drift Detection
 
 Before reviewing code quality, check: **did they build what was requested — nothing more, nothing less?**
 
@@ -1635,7 +1671,7 @@ Before reviewing code quality, check: **did they build what was requested — no
 
 ---
 
-## Step 3.5: Pre-Landing Review
+## Step 9: Pre-Landing Review
 
 Review the diff for structural issues that tests don't catch.
 
@@ -1730,7 +1766,7 @@ Present Codex output under a `CODEX (design):` header, merged with the checklist
 
    Include any design findings alongside the code review findings. They follow the same Fix-First flow below.
 
-## Step 3.55: Review Army — Specialist Dispatch
+## Step 9.1: Review Army — Specialist Dispatch
 
 ### Detect stack and scope
 
@@ -1847,7 +1883,7 @@ CHECKLIST:
 
 ---
 
-### Step 3.56: Collect and merge findings
+### Step 9.2: Collect and merge findings
 
 After all specialist subagents complete, collect their outputs.
 
@@ -1893,7 +1929,7 @@ SPECIALIST REVIEW: N findings (X critical, Y informational) from Z specialists
 PR Quality Score: X/10
 ```
 
-These findings flow into the Fix-First flow (item 4) alongside the checklist pass (Step 3.5).
+These findings flow into the Fix-First flow (item 4) alongside the checklist pass (Step 9).
 The Fix-First heuristic applies identically — specialist findings follow the same AUTO-FIX vs ASK classification.
 
 **Compile per-specialist stats:**
@@ -1917,7 +1953,7 @@ If activated, dispatch one more subagent via the Agent tool (foreground, not bac
 
 The Red Team subagent receives:
 1. The red-team checklist from `~/.claude/skills/gstack/review/specialists/red-team.md`
-2. The merged specialist findings from Step 3.56 (so it knows what was already caught)
+2. The merged specialist findings from Step 9.2 (so it knows what was already caught)
 3. The git diff command
 
 Prompt: "You are a red team reviewer. The code has already been reviewed by N specialists
@@ -1933,7 +1969,7 @@ the Fix-First flow (item 4). Red Team findings are tagged with `"specialist":"re
 If the Red Team returns NO FINDINGS, note: "Red Team review: no additional issues found."
 If the Red Team subagent fails or times out, skip silently and continue.
 
-### Step 3.57: Cross-review finding dedup
+### Step 9.3: Cross-review finding dedup
 
 Before classifying findings, check if any were previously skipped by the user in a prior review on this branch.
 
@@ -1953,7 +1989,7 @@ If skipped fingerprints exist, get the list of files changed since that review:
 git diff --name-only <prior-review-commit> HEAD
 ```
 
-For each current finding (from both the checklist pass (Step 3.5) and specialist review (Step 3.55-3.56)), check:
+For each current finding (from both the checklist pass (Step 9) and specialist review (Step 9.1-9.2)), check:
 - Does its fingerprint match a previously skipped finding?
 - Is the finding's file path NOT in the changed-files set?
 
@@ -1967,7 +2003,7 @@ If no prior reviews exist or none have a `findings` array, skip this step silent
 
 Output a summary header: `Pre-Landing Review: N issues (X critical, Y informational)`
 
-4. **Classify each finding from both the checklist pass and specialist review (Step 3.55-3.56) as AUTO-FIX or ASK** per the Fix-First Heuristic in
+4. **Classify each finding from both the checklist pass and specialist review (Step 9.1-Step 9.2) as AUTO-FIX or ASK** per the Fix-First Heuristic in
    checklist.md. Critical findings lean toward ASK; informational lean toward AUTO-FIX.
 
 5. **Auto-fix all AUTO-FIX items.** Apply each fix. Output one line per fix:
@@ -1981,7 +2017,7 @@ Output a summary header: `Pre-Landing Review: N issues (X critical, Y informatio
 
 7. **After all fixes (auto + user-approved):**
    - If ANY fixes were applied: commit fixed files by name (`git add <fixed-files> && git commit -m "fix: pre-landing review fixes"`), then **STOP** and tell the user to run `/ship` again to re-test.
-   - If no fixes applied (all ASK items skipped, or no issues found): continue to Step 4.
+   - If no fixes applied (all ASK items skipped, or no issues found): continue to Step 12.
 
 8. Output summary: `Pre-Landing Review: N issues — M auto-fixed, K asked (J fixed, L skipped)`
 
@@ -1993,27 +2029,38 @@ Output a summary header: `Pre-Landing Review: N issues (X critical, Y informatio
 ```
 Substitute TIMESTAMP (ISO 8601), STATUS ("clean" if no issues, "issues_found" otherwise),
 and N values from the summary counts above. The `via:"ship"` distinguishes from standalone `/review` runs.
-- `quality_score` = the PR Quality Score computed in Step 3.56 (e.g., 7.5). If specialists were skipped (small diff), use `10.0`
-- `specialists` = the per-specialist stats object compiled in Step 3.56. Each specialist that was considered gets an entry: `{"dispatched":true/false,"findings":N,"critical":N,"informational":N}` if dispatched, or `{"dispatched":false,"reason":"scope|gated"}` if skipped. Example: `{"testing":{"dispatched":true,"findings":2,"critical":0,"informational":2},"security":{"dispatched":false,"reason":"scope"}}`
+- `quality_score` = the PR Quality Score computed in Step 9.2 (e.g., 7.5). If specialists were skipped (small diff), use `10.0`
+- `specialists` = the per-specialist stats object compiled in Step 9.2. Each specialist that was considered gets an entry: `{"dispatched":true/false,"findings":N,"critical":N,"informational":N}` if dispatched, or `{"dispatched":false,"reason":"scope|gated"}` if skipped. Example: `{"testing":{"dispatched":true,"findings":2,"critical":0,"informational":2},"security":{"dispatched":false,"reason":"scope"}}`
 - `findings` = array of per-finding records. For each finding (from checklist pass and specialists), include: `{"fingerprint":"path:line:category","severity":"CRITICAL|INFORMATIONAL","action":"ACTION"}`. ACTION is `"auto-fixed"`, `"fixed"` (user approved), or `"skipped"` (user chose Skip).
 
-Save the review output — it goes into the PR body in Step 8.
+Save the review output — it goes into the PR body in Step 19.
 
 ---
 
-## Step 3.75: Address Greptile review comments (if PR exists)
+## Step 10: Address Greptile review comments (if PR exists)
 
-Read `.claude/skills/review/greptile-triage.md` and follow the fetch, filter, classify, and **escalation detection** steps.
+**Dispatch the fetch + classification as a subagent** using the Agent tool with `subagent_type: "general-purpose"`. The subagent pulls every Greptile comment, runs the escalation detection algorithm, and classifies each comment. Parent receives a structured list and handles user interaction + file edits.
 
-**If no PR exists, `gh` fails, API returns an error, or there are zero Greptile comments:** Skip this step silently. Continue to Step 4.
+**Subagent prompt:**
 
-**If Greptile comments are found:**
+> You are classifying Greptile review comments for a /ship workflow. Read `.claude/skills/review/greptile-triage.md` and follow the fetch, filter, classify, and **escalation detection** steps. Do NOT fix code, do NOT reply to comments, do NOT commit — report only.
+>
+> For each comment, assign: `classification` (`valid_actionable`, `already_fixed`, `false_positive`, `suppressed`), `escalation_tier` (1 or 2), the file:line or [top-level] tag, body summary, and permalink URL.
+>
+> If no PR exists, `gh` fails, the API errors, or there are zero comments, output: `{"total":0,"comments":[]}` and stop.
+>
+> Otherwise, output a single JSON object on the LAST LINE of your response:
+> `{"total":N,"comments":[{"classification":"...","escalation_tier":N,"ref":"file:line","summary":"...","permalink":"url"},...]}`
 
-Include a Greptile summary in your output: `+ N Greptile comments (X valid, Y fixed, Z FP)`
+**Parent processing:**
 
-Before replying to any comment, run the **Escalation Detection** algorithm from greptile-triage.md to determine whether to use Tier 1 (friendly) or Tier 2 (firm) reply templates.
+Parse the LAST line as JSON.
 
-For each classified comment:
+If `total` is 0, skip this step silently. Continue to Step 12.
+
+Otherwise, print: `+ {total} Greptile comments ({valid_actionable} valid, {already_fixed} already fixed, {false_positive} FP)`.
+
+For each comment in `comments`:
 
 **VALID & ACTIONABLE:** Use AskUserQuestion with:
 - The comment (file:line or [top-level] + body summary + permalink URL)
@@ -2036,11 +2083,11 @@ For each classified comment:
 
 **SUPPRESSED:** Skip silently — these are known false positives from previous triage.
 
-**After all comments are resolved:** If any fixes were applied, the tests from Step 3 are now stale. **Re-run tests** (Step 3) before continuing to Step 4. If no fixes were applied, continue to Step 4.
+**After all comments are resolved:** If any fixes were applied, the tests from Step 5 are now stale. **Re-run tests** (Step 5) before continuing to Step 12. If no fixes were applied, continue to Step 12.
 
 ---
 
-## Step 3.8: Adversarial review (always-on)
+## Step 11: Adversarial review (always-on)
 
 Every diff gets adversarial review from both Claude and Codex. LOC is not a proxy for risk — a 5-line auth change can be critical.
 
@@ -2126,7 +2173,7 @@ A) Investigate and fix now (recommended)
 B) Continue — review will still complete
 ```
 
-If A: address the findings. After fixing, re-run tests (Step 3) since code has changed. Re-run `codex review` to verify.
+If A: address the findings. After fixing, re-run tests (Step 5) since code has changed. Re-run `codex review` to verify.
 
 Read stderr for errors (same error handling as Codex adversarial above).
 
@@ -2192,7 +2239,7 @@ already knows. A good test: would this insight save time in a future session? If
 
 
 
-## Step 4: Version bump (auto-decide)
+## Step 12: Version bump (auto-decide)
 
 **Idempotency check:** Before bumping, compare VERSION against the base branch.
 
@@ -2223,7 +2270,7 @@ If output shows `ALREADY_BUMPED`, VERSION was already bumped on this branch (pri
 
 ---
 
-## CHANGELOG (auto-generate)
+## Step 13: CHANGELOG (auto-generate)
 
 1. Read `CHANGELOG.md` header to know the format.
 
@@ -2267,7 +2314,7 @@ If output shows `ALREADY_BUMPED`, VERSION was already bumped on this branch (pri
 
 ---
 
-## Step 5.5: TODOS.md (auto-update)
+## Step 14: TODOS.md (auto-update)
 
 Cross-reference the project's TODOS.md against the changes being shipped. Mark completed items automatically; prompt only if the file is missing or disorganized.
 
@@ -2279,7 +2326,7 @@ Read `.claude/skills/review/TODOS-format.md` for the canonical format reference.
 - Message: "GStack recommends maintaining a TODOS.md organized by skill/component, then priority (P0 at top through P4, then Completed at bottom). See TODOS-format.md for the full format. Would you like to create one?"
 - Options: A) Create it now, B) Skip for now
 - If A: Create `TODOS.md` with a skeleton (# TODOS heading + ## Completed section). Continue to step 3.
-- If B: Skip the rest of Step 5.5. Continue to Step 6.
+- If B: Skip the rest of Step 14. Continue to Step 15.
 
 **2. Check structure and organization:**
 
@@ -2318,11 +2365,11 @@ For each TODO item, check if the changes in this PR complete it by:
 
 **6. Defensive:** If TODOS.md cannot be written (permission error, disk full), warn the user and continue. Never stop the ship workflow for a TODOS failure.
 
-Save this summary — it goes into the PR body in Step 8.
+Save this summary — it goes into the PR body in Step 19.
 
 ---
 
-## Step 6: Commit (bisectable chunks)
+## Step 15: Commit (bisectable chunks)
 
 **Goal:** Create small, logical commits that work well with `git bisect` and help LLMs understand what changed.
 
@@ -2360,13 +2407,13 @@ EOF
 
 ---
 
-## Step 6.5: Verification Gate
+## Step 16: Verification Gate
 
 **IRON LAW: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.**
 
 Before pushing, re-verify if code changed during Steps 4-6:
 
-1. **Test verification:** If ANY code changed after Step 3's test run (fixes from review findings, CHANGELOG edits don't count), re-run the test suite. Paste fresh output. Stale output from Step 3 is NOT acceptable.
+1. **Test verification:** If ANY code changed after Step 5's test run (fixes from review findings, CHANGELOG edits don't count), re-run the test suite. Paste fresh output. Stale output from Step 5 is NOT acceptable.
 
 2. **Build verification:** If the project has a build step, run it. Paste output.
 
@@ -2376,13 +2423,13 @@ Before pushing, re-verify if code changed during Steps 4-6:
    - "I already tested earlier" → Code changed since then. Test again.
    - "It's a trivial change" → Trivial changes break production.
 
-**If tests fail here:** STOP. Do not push. Fix the issue and return to Step 3.
+**If tests fail here:** STOP. Do not push. Fix the issue and return to Step 5.
 
 Claiming work is complete without verification is dishonesty, not efficiency.
 
 ---
 
-## Step 7: Push
+## Step 17: Push
 
 **Idempotency check:** Check if the branch is already pushed and up to date.
 
@@ -2394,15 +2441,44 @@ echo "LOCAL: $LOCAL  REMOTE: $REMOTE"
 [ "$LOCAL" = "$REMOTE" ] && echo "ALREADY_PUSHED" || echo "PUSH_NEEDED"
 ```
 
-If `ALREADY_PUSHED`, skip the push but continue to Step 8. Otherwise push with upstream tracking:
+If `ALREADY_PUSHED`, skip the push but continue to Step 18. Otherwise push with upstream tracking:
 
 ```bash
 git push -u origin <branch-name>
 ```
 
+**You are NOT done.** The code is pushed but documentation sync and PR creation are mandatory final steps. Continue to Step 18.
+
 ---
 
-## Step 8: Create PR/MR
+## Step 18: Documentation sync (via subagent, before PR creation)
+
+**Dispatch /document-release as a subagent** using the Agent tool with `subagent_type: "general-purpose"`. The subagent gets a fresh context window — zero rot from the preceding 17 steps. It also runs the **full** `/document-release` workflow (with CHANGELOG clobber protection, doc exclusions, risky-change gates, named staging, race-safe PR body editing) rather than a weaker reimplementation.
+
+**Sequencing:** This step runs AFTER Step 17 (Push) and BEFORE Step 19 (Create PR). The PR is created once from final HEAD with the `## Documentation` section baked into the initial body. No create-then-re-edit dance.
+
+**Subagent prompt:**
+
+> You are executing the /document-release workflow after a code push. Read the full skill file `${HOME}/.claude/skills/gstack/document-release/SKILL.md` and execute its complete workflow end-to-end, including CHANGELOG clobber protection, doc exclusions, risky-change gates, and named staging. Do NOT attempt to edit the PR body — no PR exists yet. Branch: `<branch>`, base: `<base>`.
+>
+> After completing the workflow, output a single JSON object on the LAST LINE of your response (no other text after it):
+> `{"files_updated":["README.md","CLAUDE.md",...],"commit_sha":"abc1234","pushed":true,"documentation_section":"<markdown block for PR body's ## Documentation section>"}`
+>
+> If no documentation files needed updating, output:
+> `{"files_updated":[],"commit_sha":null,"pushed":false,"documentation_section":null}`
+
+**Parent processing:**
+
+1. Parse the LAST line of the subagent's output as JSON.
+2. Store `documentation_section` — Step 19 embeds it in the PR body (or omits the section if null).
+3. If `files_updated` is non-empty, print: `Documentation synced: {files_updated.length} files updated, committed as {commit_sha}`.
+4. If `files_updated` is empty, print: `Documentation is current — no updates needed.`
+
+**If the subagent fails or returns invalid JSON:** Print a warning and proceed to Step 19 without a `## Documentation` section. Do not block /ship on subagent failure. The user can run `/document-release` manually after the PR lands.
+
+---
+
+## Step 19: Create PR/MR
 
 **Idempotency check:** Check if a PR/MR already exists for this branch.
 
@@ -2416,7 +2492,7 @@ gh pr view --json url,number,state -q 'if .state == "OPEN" then "PR #\(.number):
 glab mr view -F json 2>/dev/null | jq -r 'if .state == "opened" then "MR_EXISTS" else "NO_MR" end' 2>/dev/null || echo "NO_MR"
 ```
 
-If an **open** PR/MR already exists: **update** the PR body using `gh pr edit --body "..."` (GitHub) or `glab mr update -d "..."` (GitLab). Always regenerate the PR body from scratch using this run's fresh results (test output, coverage audit, review findings, adversarial review, TODOS summary). Never reuse stale PR body content from a prior run. Print the existing URL and continue to Step 8.5.
+If an **open** PR/MR already exists: **update** the PR body using `gh pr edit --body "..."` (GitHub) or `glab mr update -d "..."` (GitLab). Always regenerate the PR body from scratch using this run's fresh results (test output, coverage audit, review findings, adversarial review, TODOS summary, documentation_section from Step 18). Never reuse stale PR body content from a prior run. Print the existing URL and continue to Step 20.
 
 If no PR/MR exists: create a pull request (GitHub) or merge request (GitLab) using the platform detected in Step 0.
 
@@ -2432,11 +2508,11 @@ must appear in at least one section. If a commit's work isn't reflected in the s
 you missed it.>
 
 ## Test Coverage
-<coverage diagram from Step 3.4, or "All new code paths have test coverage.">
-<If Step 3.4 ran: "Tests: {before} → {after} (+{delta} new)">
+<coverage diagram from Step 7, or "All new code paths have test coverage.">
+<If Step 7 ran: "Tests: {before} → {after} (+{delta} new)">
 
 ## Pre-Landing Review
-<findings from Step 3.5 code review, or "No issues found.">
+<findings from Step 9 code review, or "No issues found.">
 
 ## Design Review
 <If design review ran: "Design Review (lite): N findings — M auto-fixed, K skipped. AI Slop: clean/N issues.">
@@ -2448,19 +2524,19 @@ you missed it.>
 ## Greptile Review
 <If Greptile comments were found: bullet list with [FIXED] / [FALSE POSITIVE] / [ALREADY FIXED] tag + one-line summary per comment>
 <If no Greptile comments found: "No Greptile comments.">
-<If no PR existed during Step 3.75: omit this section entirely>
+<If no PR existed during Step 10: omit this section entirely>
 
 ## Scope Drift
 <If scope drift ran: "Scope Check: CLEAN" or list of drift/creep findings>
 <If no scope drift: omit this section>
 
 ## Plan Completion
-<If plan file found: completion checklist summary from Step 3.45>
+<If plan file found: completion checklist summary from Step 8>
 <If no plan file: "No plan file detected.">
 <If plan items deferred: list deferred items>
 
 ## Verification Results
-<If verification ran: summary from Step 3.47 (N PASS, M FAIL, K SKIPPED)>
+<If verification ran: summary from Step 8.1 (N PASS, M FAIL, K SKIPPED)>
 <If skipped: reason (no plan, no server, no verification section)>
 <If not applicable: omit this section>
 
@@ -2469,6 +2545,10 @@ you missed it.>
 <If no items completed: "No TODO items completed in this PR.">
 <If TODOS.md created or reorganized: note that>
 <If TODOS.md doesn't exist and user skipped: omit this section>
+
+## Documentation
+<Embed the `documentation_section` string returned by Step 18's subagent here, verbatim.>
+<If Step 18 returned `documentation_section: null` (no docs updated), omit this section entirely.>
 
 ## Test plan
 - [x] All Rails tests pass (N runs, 0 failures)
@@ -2498,34 +2578,11 @@ EOF
 **If neither CLI is available:**
 Print the branch name, remote URL, and instruct the user to create the PR/MR manually via the web UI. Do not stop — the code is pushed and ready.
 
-**Output the PR/MR URL** — then proceed to Step 8.5.
+**Output the PR/MR URL** — then proceed to Step 20.
 
 ---
 
-## Step 8.5: Auto-invoke /document-release
-
-After the PR is created, automatically sync project documentation. Read the
-`document-release/SKILL.md` skill file (adjacent to this skill's directory) and
-execute its full workflow:
-
-1. Read the `/document-release` skill: `cat ${CLAUDE_SKILL_DIR}/../document-release/SKILL.md`
-2. Follow its instructions — it reads all .md files in the project, cross-references
-   the diff, and updates anything that drifted (README, ARCHITECTURE, CONTRIBUTING,
-   CLAUDE.md, TODOS, etc.)
-3. If any docs were updated, commit the changes and push to the same branch:
-   ```bash
-   git add -A && git commit -m "docs: sync documentation with shipped changes" && git push
-   ```
-4. If no docs needed updating, say "Documentation is current — no updates needed."
-
-This step is automatic. Do not ask the user for confirmation. The goal is zero-friction
-doc updates — the user runs `/ship` and documentation stays current without a separate command.
-
-If Step 8.5 created a docs commit, re-edit the PR/MR body to include the latest commit SHA in the summary. This ensures the PR body reflects the truly final state after document-release.
-
----
-
-## Step 8.75: Persist ship metrics
+## Step 20: Persist ship metrics
 
 Log coverage and plan completion data so `/retro` can track trends:
 
@@ -2540,10 +2597,10 @@ echo '{"skill":"ship","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","coverage
 ```
 
 Substitute from earlier steps:
-- **COVERAGE_PCT**: coverage percentage from Step 3.4 diagram (integer, or -1 if undetermined)
-- **PLAN_TOTAL**: total plan items extracted in Step 3.45 (0 if no plan file)
-- **PLAN_DONE**: count of DONE + CHANGED items from Step 3.45 (0 if no plan file)
-- **VERIFY_RESULT**: "pass", "fail", or "skipped" from Step 3.47
+- **COVERAGE_PCT**: coverage percentage from Step 7 diagram (integer, or -1 if undetermined)
+- **PLAN_TOTAL**: total plan items extracted in Step 8 (0 if no plan file)
+- **PLAN_DONE**: count of DONE + CHANGED items from Step 8 (0 if no plan file)
+- **VERIFY_RESULT**: "pass", "fail", or "skipped" from Step 8.1
 - **VERSION**: from the VERSION file
 - **BRANCH**: current branch name
 
@@ -2562,6 +2619,6 @@ This step is automatic — never skip it, never ask for confirmation.
 - **Split commits for bisectability** — each commit = one logical change.
 - **TODOS.md completion detection must be conservative.** Only mark items as completed when the diff clearly shows the work is done.
 - **Use Greptile reply templates from greptile-triage.md.** Every reply includes evidence (inline diff, code references, re-rank suggestion). Never post vague replies.
-- **Never push without fresh verification evidence.** If code changed after Step 3 tests, re-run before pushing.
-- **Step 3.4 generates coverage tests.** They must pass before committing. Never commit failing tests.
+- **Never push without fresh verification evidence.** If code changed after Step 5 tests, re-run before pushing.
+- **Step 7 generates coverage tests.** They must pass before committing. Never commit failing tests.
 - **The goal is: user says `/ship`, next thing they see is the review + PR URL + auto-synced docs.**

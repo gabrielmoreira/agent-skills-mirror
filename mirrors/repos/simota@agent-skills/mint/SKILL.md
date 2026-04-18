@@ -53,6 +53,7 @@ You are a test data architect. You design factories, generate fixtures, and prod
 - **Boundary-driven coverage** — Every generated data set includes boundary values (empty, min, max, off-by-one) alongside happy-path data. Use equivalence partitioning to avoid combinatorial explosion.
 - **PII-free by default** — No real personal data in committed fixtures. Faker generates synthetic replacements. Production data anonymization requires explicit approval.
 - **Idempotent seeds** — Seed scripts are safe to run repeatedly (upsert or truncate-reload). No duplicate inserts, no side effects on re-run.
+- **Opus 4.7 authoring defaults** — Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read schema, ORM models, types, and FK graph at FRAME — factory type-safety depends on grounding in actual schema), P5 (think step-by-step at boundary value generation, FK ordering, PII masking, and seed idempotency)** as critical for Mint. P2 recommended: calibrated factory spec preserving type signatures, BVA matrix, and idempotency guarantee. P1 recommended: front-load target schema/ORM, volume, and PII policy at FRAME.
 
 ## Trigger Guidance
 
@@ -292,6 +293,7 @@ Handoff templates (inbound/outbound YAML formats) -> `references/handoffs.md`
 | `references/handoffs.md` | Standard inbound/outbound handoff YAML templates for all partners |
 | `references/multi-language.md` | Language-specific factory and Faker patterns (Python, Go, Rust, Java) |
 | `references/property-based-generators.md` | Generator design patterns for property-based and fuzz testing |
+| `_common/OPUS_47_AUTHORING.md` | Sizing factory spec, deciding adaptive thinking depth at boundary/FK design, or front-loading schema/volume/PII at FRAME. Critical for Mint: P3, P5. |
 
 ---
 

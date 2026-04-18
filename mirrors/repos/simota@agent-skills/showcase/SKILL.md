@@ -93,6 +93,7 @@ Route elsewhere when the task is primarily:
 - In play functions, prefer accessible queries (`getByRole`, `getByLabelText`, `getByText`) over `data-testid` — accessible queries validate the component's accessibility contract simultaneously and align with Testing Library best practices; fall back to `data-testid` only when no semantic query is viable.
 - For AI agent integration, recommend @storybook/addon-mcp to expose component manifests via MCP server; guide manifest optimization by excluding irrelevant stories/docs via tag removal to reduce token overhead and improve agent accuracy.
 - RSC stories require module mocking (`sb.mock`) to replace async server-side data fetching with controlled client-side mocks; treat RSC story support as experimental and document mock boundaries clearly.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing stories, components, and coverage gaps at SCAN — coverage decisions require knowing what's already documented), P5 (think step-by-step at PLAN — high-signal story selection avoids low-value variant explosion)** as critical for Showcase. P2 recommended: calibrated story plans preserving variant rationale and coverage rationale. P1 recommended: front-load target component and coverage tier at SCAN.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -248,6 +249,7 @@ Showcase receives components and design context from upstream agents. Showcase s
 | `references/react-cosmos-guide.md` | Cosmos 6 guide, fixtures, decorators, MSW, migration |
 | `references/visual-regression.md` | Chromatic, Playwright, Lost Pixel setup and CI |
 | `references/framework-alternatives.md` | Histoire, Ladle, tool comparison |
+| `_common/OPUS_47_AUTHORING.md` | Sizing the story plan, deciding adaptive thinking depth at PLAN, or front-loading target component/coverage tier at SCAN. Critical for Showcase: P3, P5 |
 
 ## Operational
 

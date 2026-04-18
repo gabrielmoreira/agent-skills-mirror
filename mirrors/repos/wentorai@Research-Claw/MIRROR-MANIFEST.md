@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,30 +66,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/claude-code/SKILL.md`](skills/claude-code/SKILL.md) |
 | 6 | ✓ | [`skills/codex-cli/SKILL.md`](skills/codex-cli/SKILL.md) |
 | 7 | ✓ | [`skills/coding-sop/SKILL.md`](skills/coding-sop/SKILL.md) |
-| 8 | ✓ | [`skills/file-search/SKILL.md`](skills/file-search/SKILL.md) |
-| 9 | ✓ | [`skills/image/SKILL.md`](skills/image/SKILL.md) |
-| 10 | ✓ | [`skills/imap-smtp-email/SKILL.md`](skills/imap-smtp-email/SKILL.md) |
-| 11 | ✓ | [`skills/iyeque-pdf-reader/SKILL.md`](skills/iyeque-pdf-reader/SKILL.md) |
-| 12 | ✓ | [`skills/kai-slide-creator/SKILL.md`](skills/kai-slide-creator/SKILL.md) |
-| 13 | ✓ | [`skills/md2pdf-export/references/puppeteer-config.md`](skills/md2pdf-export/references/puppeteer-config.md) |
-| 14 | ✓ | [`skills/md2pdf-export/references/themes.md`](skills/md2pdf-export/references/themes.md) |
-| 15 | ✓ | [`skills/md2pdf-export/scripts/md2pdf.js`](skills/md2pdf-export/scripts/md2pdf.js) |
-| 16 | ✓ | [`skills/md2pdf-export/scripts/package-lock.json`](skills/md2pdf-export/scripts/package-lock.json) |
-| 17 | ✓ | [`skills/md2pdf-export/scripts/package.json`](skills/md2pdf-export/scripts/package.json) |
-| 18 | ✓ | [`skills/md2pdf-export/scripts/setup-env.sh`](skills/md2pdf-export/scripts/setup-env.sh) |
-| 19 | ✓ | [`skills/md2pdf-export/SKILL.md`](skills/md2pdf-export/SKILL.md) |
-| 20 | ✓ | [`skills/multi-search-engine/SKILL.md`](skills/multi-search-engine/SKILL.md) |
-| 21 | ✓ | [`skills/nano-pdf/SKILL.md`](skills/nano-pdf/SKILL.md) |
-| 22 | ✓ | [`skills/opencode-cli/SKILL.md`](skills/opencode-cli/SKILL.md) |
-| 23 | ✓ | [`skills/output-cards/SKILL.md`](skills/output-cards/SKILL.md) |
-| 24 | ✓ | [`skills/plotting-sop/SKILL.md`](skills/plotting-sop/SKILL.md) |
-| 25 | ✓ | [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) |
-| 26 | ✓ | [`skills/search-sop/SKILL.md`](skills/search-sop/SKILL.md) |
-| 27 | ✓ | [`skills/survey-sop/SKILL.md`](skills/survey-sop/SKILL.md) |
-| 28 | ✓ | [`skills/wentor-api/SKILL.md`](skills/wentor-api/SKILL.md) |
-| 29 | ✓ | [`skills/workspace-sop/SKILL.md`](skills/workspace-sop/SKILL.md) |
-| 30 | ✓ | [`skills/writing-sop/SKILL.md`](skills/writing-sop/SKILL.md) |
-| 31 | ✓ | [`workspace/.ResearchClaw/AGENTS.md`](workspace/.ResearchClaw/AGENTS.md) |
+| 8 | ✓ | [`skills/document-converter/SKILL.md`](skills/document-converter/SKILL.md) |
+| 9 | ✓ | [`skills/file-search/SKILL.md`](skills/file-search/SKILL.md) |
+| 10 | ✓ | [`skills/image/SKILL.md`](skills/image/SKILL.md) |
+| 11 | ✓ | [`skills/imap-smtp-email/SKILL.md`](skills/imap-smtp-email/SKILL.md) |
+| 12 | ✓ | [`skills/iyeque-pdf-reader/SKILL.md`](skills/iyeque-pdf-reader/SKILL.md) |
+| 13 | ✓ | [`skills/kai-slide-creator/SKILL.md`](skills/kai-slide-creator/SKILL.md) |
+| 14 | ✓ | [`skills/md2pdf-export/references/puppeteer-config.md`](skills/md2pdf-export/references/puppeteer-config.md) |
+| 15 | ✓ | [`skills/md2pdf-export/references/themes.md`](skills/md2pdf-export/references/themes.md) |
+| 16 | ✓ | [`skills/md2pdf-export/scripts/md2pdf.js`](skills/md2pdf-export/scripts/md2pdf.js) |
+| 17 | ✓ | [`skills/md2pdf-export/scripts/package-lock.json`](skills/md2pdf-export/scripts/package-lock.json) |
+| 18 | ✓ | [`skills/md2pdf-export/scripts/package.json`](skills/md2pdf-export/scripts/package.json) |
+| 19 | ✓ | [`skills/md2pdf-export/scripts/setup-env.sh`](skills/md2pdf-export/scripts/setup-env.sh) |
+| 20 | ✓ | [`skills/md2pdf-export/SKILL.md`](skills/md2pdf-export/SKILL.md) |
+| 21 | ✓ | [`skills/multi-search-engine/SKILL.md`](skills/multi-search-engine/SKILL.md) |
+| 22 | ✓ | [`skills/nano-pdf/SKILL.md`](skills/nano-pdf/SKILL.md) |
+| 23 | ✓ | [`skills/opencode-cli/SKILL.md`](skills/opencode-cli/SKILL.md) |
+| 24 | ✓ | [`skills/output-cards/SKILL.md`](skills/output-cards/SKILL.md) |
+| 25 | ✓ | [`skills/plotting-sop/SKILL.md`](skills/plotting-sop/SKILL.md) |
+| 26 | ✓ | [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) |
+| 27 | ✓ | [`skills/search-sop/SKILL.md`](skills/search-sop/SKILL.md) |
+| 28 | ✓ | [`skills/survey-sop/SKILL.md`](skills/survey-sop/SKILL.md) |
+| 29 | ✓ | [`skills/wentor-api/SKILL.md`](skills/wentor-api/SKILL.md) |
+| 30 | ✓ | [`skills/workspace-sop/SKILL.md`](skills/workspace-sop/SKILL.md) |
+| 31 | ✓ | [`skills/writing-sop/SKILL.md`](skills/writing-sop/SKILL.md) |
+| 32 | ✓ | [`workspace/.ResearchClaw/AGENTS.md`](workspace/.ResearchClaw/AGENTS.md) |
 
 ---
 

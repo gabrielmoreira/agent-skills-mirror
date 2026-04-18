@@ -51,7 +51,8 @@ Browser-based E2E specialist for critical user journeys, cross-browser validatio
 - Default to Playwright (v1.59+). Choose Cypress, WebdriverIO, or TestCafe only when the existing stack or platform requirement makes that choice safer.
 - Prefer the smallest suite that proves the business-critical path — target the testing pyramid ratio: ~70% unit, ~20% integration, ~10% E2E.
 - Treat flake as a defect. A healthy flake rate is under 3%; above 10% is an active shipping-velocity blocker. Retries diagnose instability; they do not normalize it.
-- Use Playwright MCP and built-in AI agents (Planner, Generator, Healer) when AI-assisted test creation, self-healing locators, or adaptive flows are in scope. Prefer `@playwright/cli` over the MCP server when token cost matters — CLI uses ~4× fewer tokens (27 K vs 114 K per typical task) with equivalent browser access.
+- Use Playwright MCP and built-in AI agents (Planner, Generator, Healer) when AI-assisted test creation, self-healing locators, or adaptive flows are in scope. Per Playwright's official guidance: use `@playwright/cli` for coding agents authoring/running tests (saves tokens to disk; agent reads selectively — ~27 K vs ~114 K per task, ~4× reduction, up to 10× on longer sessions); use MCP only for autonomous agent workflows that need the MCP protocol standard with live context streaming.
+- Migration trigger: a legacy Selenium suite with flake rate > 20% or 500+ tests is the highest-ROI Playwright migration candidate — 2026 benchmarks report ~42% faster execution and ~60% fewer flakes post-migration. Below those thresholds, stabilize-in-place first.
 - Use descriptive locator annotations (1.58+) to label elements in traces and reports, improving debugging readability alongside `getByRole`/`getByTestId`.
 - Use `page.screencast` (1.59+) for agentic video receipts — start/stop recordings with action annotations that highlight interacted elements, enabling visual proof of automated work.
 - Use `npx playwright trace` (1.59+) for CLI-based trace analysis without a browser — enables programmatic parsing of traces in agentic and CI workflows. Use `--debug=cli` to attach and debug tests over playwright-cli in agentic workflows.
@@ -79,6 +80,7 @@ Route elsewhere when the task is primarily:
 - 85% of flaky tests stem from race conditions and environment issues — prioritize auto-wait patterns and test isolation over retry-based workarounds.
 - Stub third-party APIs (the #1 flakiness source) with WireMock, Hoverfly, or Playwright route interception for deterministic results.
 - Quarantine tests flaking above 10% over a 30-day window — remove from the blocking gate but keep visible. Quarantine is triage, not acceptance; each quarantined test needs a root-cause ticket.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing POM, fixtures, storageState, and tag taxonomy before adding tests — duplicate fixtures cause flaky maintenance debt and POM bloat), P6 (effort-level awareness — match test depth to risk tier `@critical`/`@smoke`/`@regression`; xhigh default risks bloated suites that violate the 70/20/10 pyramid)** as critical for Voyager. P2 recommended: calibrated test plan preserving flake-rate, selector strategy, and quarantine rationale. P1 recommended: front-load critical user journey scope and tag at PLAN.
 
 ## Boundaries
 
@@ -112,6 +114,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - E2E coverage for logic that should stay at unit, integration, or contract level — violating the test pyramid (70/20/10) creates bloated, slow, fragile suites.
 - "God object" Page Objects with 50+ methods covering every interaction — split by user intent or component area to keep each POM focused and maintainable.
 - Screenshot-based AI testing that bypasses the accessibility tree — Playwright's MCP architecture uses the accessibility tree, not screenshots, for reliable AI integration.
+- Raising visual-regression pixel thresholds until diffs stop firing — once reviewers learn to click-through noisy false positives, real regressions slip through silently. Neutralize noise at its source instead: mask dynamic regions (timestamps, prices, IDs), pick percent thresholds for responsive layouts versus pixel thresholds for high-precision components (buttons, logos), and apply a 1–2 px blur to absorb anti-aliasing and font-smoothing variance before touching the numeric threshold. Prefer Visual-AI match modes (strict / layout / content) over raw pixel thresholds when the tool supports them.
 
 - If fixed-delay polling or CSS/XPath fallback is unavoidable, read [environment-management.md](references/environment-management.md) or [selector-accessibility-first.md](references/selector-accessibility-first.md) first and document the exception.
 
@@ -226,6 +229,7 @@ Routing rules:
 | [ai-powered-e2e-testing.md](references/ai-powered-e2e-testing.md) | AI-assisted planning, generation, healing, or cost/risk tradeoffs are in scope |
 | [container-testing.md](references/container-testing.md) | Container-based test environments, Testcontainers, or Docker-integrated E2E are required |
 | [web-component-testing.md](references/web-component-testing.md) | Shadow DOM, Lit, Stencil, or Web Component testing is required |
+| [OPUS_47_AUTHORING.md](../_common/OPUS_47_AUTHORING.md) | You are sizing the test plan, calibrating effort to risk-tier, or front-loading critical journey scope at PLAN. Critical for Voyager: P3, P6. |
 
 ## Operational
 

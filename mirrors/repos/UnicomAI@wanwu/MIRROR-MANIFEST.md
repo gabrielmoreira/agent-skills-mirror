@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `UnicomAI/wanwu` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `UnicomAI/wanwu` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `UnicomAI/wanwu` — 26 default patterns, 0 followed patterns, 31 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,17 +79,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/anthropics/web-artifacts-builder/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/anthropics/web-artifacts-builder/SKILL.md) |
 | 19 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/anthropics/webapp-testing/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/anthropics/webapp-testing/SKILL.md) |
 | 20 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/anthropics/xlsx/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/anthropics/xlsx/SKILL.md) |
-| 21 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/kimi/kimi-pdf/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/kimi/kimi-pdf/SKILL.md) |
-| 22 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/kimi/kimi-xlsx/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/kimi/kimi-xlsx/SKILL.md) |
-| 23 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/frontend-dev/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/frontend-dev/SKILL.md) |
-| 24 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/fullstack-dev/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/fullstack-dev/SKILL.md) |
-| 25 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/minimax-docx/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/minimax-docx/SKILL.md) |
-| 26 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/minimax-xlsx/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/minimax-xlsx/SKILL.md) |
-| 27 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/editing.md`](configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/editing.md) |
-| 28 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/pptxgenjs.md`](configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/pptxgenjs.md) |
-| 29 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/SKILL.md) |
-| 30 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md) |
-| 31 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md) |
+| 21 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/frontend-dev/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/frontend-dev/SKILL.md) |
+| 22 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/fullstack-dev/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/fullstack-dev/SKILL.md) |
+| 23 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/minimax-docx/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/minimax-docx/SKILL.md) |
+| 24 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/minimax-xlsx/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/minimax-xlsx/SKILL.md) |
+| 25 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/editing.md`](configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/editing.md) |
+| 26 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/pptxgenjs.md`](configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/references/pptxgenjs.md) |
+| 27 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/minimax/pptx-generator/SKILL.md) |
+| 28 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md) |
+| 29 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/SKILL.md) |
 
 ---
 

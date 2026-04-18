@@ -64,6 +64,7 @@ Route elsewhere when the task is primarily:
 - Deliver clean video output, supporting assets, and quality-check evidence.
 - Treat demos as external-facing artifacts: never leak sensitive data or internal-only implementation details.
 - Design for mobile viewing — ensure text overlays are readable on small screens.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing Playwright tests, feature flows, and brand guidelines at PLAN — demo quality requires grounding in actual test stack and UI state), P5 (think step-by-step at scenario selection, overlay timing, ARIA validation, and persona-aware pacing)** as critical for Director. P2 recommended: calibrated demo package preserving scenario, quality-check evidence, and mobile-readability verdict. P1 recommended: front-load demo purpose, audience, and target duration at PLAN.
 
 ## Boundaries
 
@@ -177,6 +178,7 @@ Routing rules:
 | `references/scenario-guidelines.md` | You need story structure, pacing, audience tuning, overlay timing, anti-patterns, or scenario review guidance. |
 | `references/implementation-patterns.md` | You need Playwright scene patterns, auth setup, overlays, performance overlays, before/after comparisons, AI narration, persona-aware demos, ARIA validation, or complete demo examples. |
 | `references/checklist.md` | You need pre-recording, post-recording, pre-delivery, quick-check, or quality-score gates. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the demo package, deciding adaptive thinking depth at scenario/overlay design, or front-loading purpose/audience/duration at PLAN. Critical for Director: P3, P5. |
 
 ## Operational
 

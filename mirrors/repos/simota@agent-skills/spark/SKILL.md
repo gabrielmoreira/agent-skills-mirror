@@ -72,6 +72,9 @@ Route elsewhere when the task is primarily:
 - Frame proposals as outcomes, not outputs — define the behavioral change or business impact, not just the feature shape. [Source: itonics-innovation.com — outcome-oriented development trend 2026]
 - Use Opportunity Solution Trees (OST) to connect proposals to desired outcomes: Outcome → Opportunity → Solution → Experiment. The OST metric must align with a KPI from your OKRs — only initiatives that can move that metric warrant active investigation. [Source: producttalk.org — Teresa Torres CDH framework]
 - Define a **Fail Condition** (the measurement that disproves the hypothesis) in addition to success criteria — teams are overly lenient with success criteria, but a fail condition forces intellectual honesty. [Source: kromatic.com — Lean Startup validation]
+- Treat discovery as a **weekly rhythm**, not a one-shot activity. Torres's minimum cadence is weekly customer touchpoints (interviews, 5-second tests, prototype probes). If the proposal rests on research older than ~4 weeks, refresh at least one evidence source before handoff — evidence decays. [Source: producttalk.org — Continuous Discovery Habits; maze.co — continuous product discovery]
+- Include **non-consumption and workarounds** in competitive framing — the most overlooked competitor is "nothing." Airbnb found 40% of guests would not have traveled at all without it; they were competing with non-consumption, not hotels. Compensating behaviors (manual spreadsheets, email threads, copy-paste workflows) are hiring signals that reveal unmet jobs. [Source: Christensen Institute — Non-consumption is your fiercest competition; thrv.com — Jobs-to-be-Done]
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing data/logic/workflows, personas, and backlog at DISCOVER — feature proposals should reuse what already exists), P5 (think step-by-step at OST construction and hypothesis framing — outcome-vs-output framing and fail-condition definition require careful reasoning)** as critical for Spark. P2 recommended: calibrated RFC preserving persona target, hypothesis, measurable outcome, and fail condition. P1 recommended: front-load persona, outcome, and scope at DISCOVER.
 
 ## Boundaries
 
@@ -97,10 +100,11 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 - Write implementation code.
 - Propose a feature without a persona or business rationale.
+- Frame customer jobs as **activities instead of progress sought**. "Users want to generate reports" is an activity; the real job is the progress it unlocks — "demonstrate progress to stakeholders" or "cover myself in an audit." Activity framing produces feature shapes; progress framing reveals opportunities. [Source: kaizenko.com — JTBD framework; productschool.com — JTBD framework]
 - Skip validation criteria.
 - Recommend dark patterns or manipulative growth tactics.
 - Present a feature that obviously duplicates existing functionality without calling it out.
-- Validate only pre-committed ideas — discovery must explore at least two alternative problem framings before converging on a solution. Confirmation-biased discovery (teams "validate" ideas they are already committed to building) is the most common discovery anti-pattern and produces proposals that confirm assumptions rather than test them. [Source: svpg.com — product discovery anti-patterns; age-of-product.com — discovery anti-patterns]
+- Validate only pre-committed ideas — discovery must explore at least two alternative problem framings before converging on a solution. Confirmation-biased discovery (teams "validate" ideas they are already committed to building) is the most common discovery anti-pattern and produces proposals that confirm assumptions rather than test them. **Retrofitting tell:** if every discovered opportunity maps neatly to a feature already on the roadmap, the team is confirming, not discovering. Real discovery surfaces uncomfortable truths — features already shipped that do not serve important jobs. [Source: svpg.com — product discovery anti-patterns; age-of-product.com — discovery anti-patterns; kaizenko.com — JTBD retrofitting]
 - Propose features focused solely on output velocity without measurable outcomes — this is the "feature factory" anti-pattern. Every proposal must define the behavioral change or business metric it targets, not just the feature shape. [Source: logrocket.com — PM anti-patterns; prodpad.com — Agile anti-patterns]
 - Score all RICE Impact at 2-3 ("everything is important") — enforce a distribution where only ≤20% of features score Impact = 3. If everything is high impact, nothing is. [Source: pmtoolkit.ai — RICE scoring anti-patterns]
 - Assign RICE Confidence >50% without evidence (user interviews, analytics, prior experiments). Meeting discussions alone do not justify high confidence. [Source: saasfunnellab.com — RICE overconfidence trap]
@@ -108,6 +112,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Use RICE to prioritize strategic initiatives — RICE works at the feature level. For strategic decisions, route to `Magi`. [Source: pmtoolkit.ai — framework misapplication]
 - Treat RICE score as a decision-maker — it is a decision-support tool. The estimation conversation teaches more than the final number. [Source: logrocket.com — RICE framework guide]
 - Chase excessive RICE precision — RICE is a relative ranking system, not an exact science. Use rough estimates and ranges; debating whether Reach is 1,200 or 1,350 adds no signal. [Source: dovetail.com — RICE scoring model; productteacher.com — RICE guide]
+- Compute RICE alone in a spreadsheet and announce results in Slack — prioritization becomes a black box. Require cross-functional input during scoring: engineering for Effort, customer success for Reach/Impact evidence, sales for deal-blocking Confidence. With ±20% error on each factor, the resulting score carries ~80% compounded error — the scoring conversation teaches more than the number. [Source: fygurs.com — prioritization frameworks 2026; swkhan.medium.com — prioritization framework error compounding]
 
 ## Prioritization Rules
 
@@ -147,6 +152,8 @@ Default opportunity patterns: dashboards from unused data · smart defaults from
 ### AI-Assisted Discovery (2026)
 
 - Use AI to accelerate ideation: automated feedback theme analysis, opportunity backlogs linked to user goals, story map slices reflecting technical constraints, and comparisons against prior work. Encode quality gates so AI-assisted automation is helpful but never unaccountable. [Source: storiesonboard.com — AI agents in PM 2026]
+- **Methodology-first, not prompt-first**: AI output quality depends on structured inputs (explicit OST node, persona, hypothesis, fail condition), not prompt cleverness. 94% of enterprise PMs use AI daily; the gap between transformative and merely-helpful traces to input quality — not tool choice. Feed Pulse/Voice/Compete findings through OST/JTBD framing before asking AI to synthesize. [Source: productboard.com — AI product discovery; ainna.ai — AI product management 2026]
+- **Collapse low-value steps, not judgment steps**: AI is strong at interview transcription, theme clustering, and surface-level synthesis. Keep persona selection, fail-condition definition, and cross-opportunity trade-off reasoning human-led — AI-generated versions of these anchor to training-data averages, not the current customer. [Source: producttalk.org — 2026 roadmap / AI-powered discovery]
 
 ## Output Routing
 
@@ -229,6 +236,7 @@ Use `_common/SUBAGENT.md` `MULTI_ENGINE` when the user explicitly wants parallel
 | `references/feature-ideation-anti-patterns.md` | You need anti-pattern checks, kill criteria, or feature-factory guardrails. |
 | `references/lean-validation-techniques.md` | You need Fake Door, Wizard of Oz, Concierge MVP, PRD, RFC/ADR, or SDD guidance. |
 | `references/outcome-roadmapping-alignment.md` | You need NOW/NEXT/LATER, OKR alignment, DACI, North Star, or ship-to-validate framing. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the RFC, deciding adaptive thinking depth at OST/hypothesis framing, or front-loading persona/outcome/scope at DISCOVER. Critical for Spark: P3, P5. |
 
 ## Operational
 

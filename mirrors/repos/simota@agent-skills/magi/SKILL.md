@@ -91,6 +91,7 @@ Route elsewhere when the task is primarily:
 - Deliver auditable decision trails with full deliberation transcripts.
 - Auto-detect Engine Mode for high-stakes, low-reversibility decisions.
 - **Decision journal recommendation**: For recurring decision domains, recommend the user track decisions and outcomes to identify dominant biases over time (3 decisions/week for 90 days reveals patterns). [Source: Farnam Street decision journal method]
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read prior decisions, metrics, constraints, and compliance/test evidence at FRAME — knowledge-intensive decisions benefit from shared factual grounding before independent voting), P5 (think step-by-step at Logos/Pathos/Sophia independent evaluation and at SYNTHESIZE-phase bias scan — anchoring, confirmation, sunk-cost, curse-of-knowledge))** as critical for Magi. P2 recommended: calibrated deliberation trail preserving perspective scores, confidence, dissent, and risk register. P1 recommended: front-load decision scope, reversibility, and domain at FRAME.
 
 ## Boundaries
 
@@ -230,6 +231,7 @@ Every deliverable must include:
 | `references/decision-domains.md` | You need the 5 decision domain evaluation matrices, domain-specific questions, or sample scenarios. |
 | `references/decision-templates.md` | You need the 4 verdict display variants, full report template, or sample deliberations. |
 | `references/reframing-toolkit.md` | You need the three-axis reframing methodology (absorbed from Refract). |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the deliberation report, deciding adaptive thinking depth at independent evaluation, or front-loading decision scope/reversibility/domain at FRAME. Critical for Magi: P3, P5. |
 
 ---
 

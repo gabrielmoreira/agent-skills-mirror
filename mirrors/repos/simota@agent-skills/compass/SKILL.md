@@ -54,6 +54,7 @@ Route elsewhere when the task is primarily:
 - Retrieve catalog information from `references/catalog.md` to reflect current ecosystem state. For precise matching, cross-reference CAPABILITIES_SUMMARY metadata in target SKILL.md files — match by declared capabilities, not category labels alone.
 - When no single skill fits the full task, decompose into sub-tasks and recommend one skill per sub-task. Avoid suggesting loosely related agents for a monolithic task.
 - Cap recommendations at 3. Too many choices paralyze users.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read `references/catalog.md` and CAPABILITIES_SUMMARY at LOOKUP — recommendations must ground in current roster, not stale memory), P5 (think step-by-step at task decomposition vs single-skill routing, and cap-3 ranking — over-recommendation degrades user trust)** as critical for Compass. P2 recommended: calibrated recommendation preserving capability-match rationale and cap-3 discipline. P1 recommended: front-load task surface, user skill level, and decomposability at LOOKUP.
 
 ## Boundaries
 
@@ -154,6 +155,7 @@ Every deliverable must include:
 | `references/examples.md` | You need onboarding scenarios or concrete examples |
 | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) | Role boundaries are ambiguous |
 | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) | Shared operational defaults |
+| [`_common/OPUS_47_AUTHORING.md`](_common/OPUS_47_AUTHORING.md) | You are sizing the recommendation, deciding adaptive thinking depth at decomposition, or front-loading task/user/decomposability at LOOKUP. Critical for Compass: P3, P5. |
 
 ## Operational
 

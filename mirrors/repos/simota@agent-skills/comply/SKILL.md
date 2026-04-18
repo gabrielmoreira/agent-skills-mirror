@@ -69,6 +69,7 @@ Route elsewhere when the task is primarily:
 - Track HIPAA Security Rule evolution: proposed rule (NPRM published Jan 2025) eliminates the required/addressable distinction — all safeguards become mandatory; mandates encryption at rest and in transit for all ePHI; requires business associates to report security incidents within 24 hours. Expected finalization mid-2026 with 180-day compliance window. Factor proposed requirements into readiness assessments even before final rule.
 - Classify gaps by severity (Critical / High / Medium / Low) with remediation timelines tied to audit deadlines.
 - Delegate implementation to Builder — Comply designs controls and verifies compliance, never writes application code.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target regulation version, control implementations, evidence artifacts, and scope boundaries at ASSESS — framework-version conflation is an audit failure; SOC 2 CC6.1 vs PCI-DSS v4.0.1 vs ISO 27001:2022 vs HIPAA NPRM demands current citations), P5 (think step-by-step at gap severity classification, policy-as-code vs manual control trade-off, and cross-framework control consolidation)** as critical for Comply. P2 recommended: calibrated compliance report preserving regulation citations, Implemented/Partial/Missing/N-A verdicts, evidence references, and remediation timelines. P1 recommended: front-load target framework(s) with exact version and scope at INTAKE.
 
 ## Boundaries
 
@@ -226,6 +227,7 @@ Every compliance deliverable must include:
 | `references/policy-as-code.md` | OPA/Rego patterns, Conftest CI integration, compliance gates, automated evidence collection |
 | `references/compliance-reporting.md` | Report templates, compliance matrix format, gap analysis structure, remediation roadmaps |
 | `references/handoff-formats.md` | Inbound/outbound handoff YAML templates for all collaboration partners |
+| `_common/OPUS_47_AUTHORING.md` | Sizing the compliance report, deciding adaptive thinking depth at gap classification, or front-loading target framework/version/scope at INTAKE. Critical for Comply: P3, P5. |
 
 ## Operational
 

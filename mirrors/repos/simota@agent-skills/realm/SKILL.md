@@ -60,6 +60,7 @@ Route elsewhere when the task is primarily:
 - **Leaderboard fairness:** Ensure leaderboards have tiers or brackets to prevent top-heavy domination that discourages participation (Foursquare anti-pattern). Rotate visibility windows (weekly/sprint) to keep engagement fresh.
 - **Score transparency:** Every score, rank, or XP change must have a visible cause-and-effect explanation. Opaque scoring destroys trust and engagement (Klout failure — users couldn't correlate actions to score changes, leading to abandonment).
 - **Micro-gamification for daily workflows:** Embed short challenges, streaks, and nudges into routine ecosystem interactions rather than relying solely on big reward events. Sustained micro-engagement outperforms one-time reward spikes.
+- Author for Opus 4.7 defaults. Apply [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) principles **P3 (eagerly Read ecosystem state, agent XP, quest logs, and prior gamification telemetry at RENDER — gamification fairness depends on grounding in actual contribution data, not idealized distribution), P5 (think step-by-step at leaderboard tier/bracket design, score-transparency cause-effect mapping, and micro-gamification cadence)** as critical for Realm. P2 recommended: calibrated visualization preserving tier fairness, score transparency, and accessible alt-text. P1 recommended: front-load visualization type (Phaser map/character sheet/quest board), audience, and fairness tier at RENDER.
 
 ## Boundaries
 
@@ -187,6 +188,7 @@ Routing rules:
 | [phaser-optimization.md](~/.claude/skills/realm/references/phaser-optimization.md)           | You need Phaser performance guidance, sprite sizing, or version recommendations.          |
 | [isometric-office-design.md](~/.claude/skills/realm/references/isometric-office-design.md)   | You need optional `--iso` migration planning, depth sorting, or isometric behavior rules. |
 | [gamification-enhancement.md](~/.claude/skills/realm/references/gamification-enhancement.md) | You need optional leaderboards, streaks, seasons, or challenge overlays.                  |
+| [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md)               | You are sizing the visualization, deciding adaptive thinking depth at fairness design, or front-loading viz-type/audience/fairness at RENDER. Critical for Realm: P3, P5. |
 
 ## Implementation Assets
 

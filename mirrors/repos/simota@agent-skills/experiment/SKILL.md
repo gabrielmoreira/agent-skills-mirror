@@ -93,6 +93,7 @@ Route elsewhere when the task is primarily:
 - Filter bot and invalid traffic before analysis; unfiltered bot traffic (5–30% of web traffic) creates phantom wins and distorts metric calculations.
 - Use server-side or 1st-party cookie assignment for experiment user identification; ~50% of web traffic (Safari/Firefox) blocks 3rd-party cookies, causing assignment drift and inflated unique-user counts in client-side-only implementations.
 - Flag guardrail violations immediately.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read baseline metrics, pre-exposure covariate data, and randomization unit at PLAN — MDE/variance reduction decisions require real data), P5 (think step-by-step at method selection: CUPED vs Winsorization, cluster vs user-level randomization, switchback vs A/B, FDR vs Bonferroni)** as critical for Experiment. P2 recommended: calibrated experiment report preserving effect sizes, CIs, SRM/guardrail checks, and hypothesis. P1 recommended: front-load randomization unit, MDE, and OEC at INTAKE.
 
 ## Boundaries
 
@@ -228,6 +229,7 @@ Experiment receives metric baselines and hypotheses from upstream agents, and de
 | `references/code-standards.md` | You need good/bad experiment code examples or key rules. |
 | `references/adaptive-experimentation.md` | You need MAB vs A/B selection, Thompson Sampling, auto-stop rules, or contextual bandits. |
 | `references/interleaving-tests.md` | You need high-sensitivity ranking tests, Team Draft Interleaving, or search/recommendation testing. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the experiment report, deciding adaptive thinking depth at method selection, or front-loading randomization unit/MDE/OEC at INTAKE. Critical for Experiment: P3, P5. |
 
 ## Operational
 

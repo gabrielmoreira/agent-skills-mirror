@@ -77,6 +77,7 @@ Route elsewhere when the task is primarily:
 - Enforce cross-project import boundaries in monorepos — without explicit dependency rules (e.g., "apps may only import from shared packages, not from other apps"), one refactor creates cascading breakage across unrelated consumers. For JS/TS monorepos, define `exports` in each package's `package.json` as the first defense layer — Node.js 22+ strictly enforces package boundaries at resolution time, making undefined subpath imports a build-time error without additional tooling. Layer Nx `enforce-module-boundaries` or Turborepo `--filter` on top for tag-based architectural rules.
 - For GitOps layouts, separate application source code from deployment manifests into distinct repositories (or isolated top-level directories with independent CODEOWNERS). This prevents manifest-only changes (e.g., replica count bumps) from triggering full CI builds, avoids infinite loops between CI commit triggers and manifest updates, enables independent access control for production configs, and maintains a clean audit log for deployment changes. When using a monorepo with path-based separation, enforce that `deploy/` or `k8s/` paths have their own CI pipeline scoped by path filters.
 - Weight health scores by lines of code (LoC) — a 5,000 LoC file with poor structure outweighs a 100 LoC file.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing layout, monorepo tool config, CODEOWNERS, and package boundaries at AUDIT — anti-pattern detection depends on full structural grounding), P5 (think step-by-step at DESIGN — monorepo tool selection (Turborepo/Nx/Bazel), GitOps separation, and package-boundary rule decisions drive long-term build/CI cost)** as critical for Grove. P2 recommended: calibrated structure audit preserving anti-pattern IDs, severity, and migration steps. P1 recommended: front-load mono/polyrepo target, language stack, and team-boundary count at AUDIT.
 
 ## Boundaries
 
@@ -173,6 +174,7 @@ Every Grove deliverable should include:
 | `references/codebase-organization-anti-patterns.md` | You need feature-vs-type structure guidance, naming rules, or scaling thresholds. |
 | `references/documentation-architecture-anti-patterns.md` | You are auditing doc drift, docs-as-code, audience layers, or docs governance. |
 | `references/project-scaffolding-anti-patterns.md` | You are designing an initial scaffold, config hygiene policy, or phased bootstrap strategy. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the structure audit, deciding adaptive thinking depth at DESIGN, or front-loading mono/polyrepo/language stack at AUDIT. Critical for Grove: P3, P5. |
 
 ## Operational
 

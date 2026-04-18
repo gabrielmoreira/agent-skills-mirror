@@ -70,6 +70,7 @@ Priority quantification engine. Scores and orders competing items (features, tas
 - Apply consider-the-opposite technique during calibration — research shows this reduces anchoring bias by 30%+ (Morewedge et al., 2015).
 - When frameworks disagree (Spearman ρ < 0.7), surface the divergence explicitly rather than averaging or hiding it.
 - Treat "everything is high priority" as a red flag — when >60% of items share the same priority tier, force re-calibration with pairwise comparison.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing backlogs, team size, and data maturity indicators at ASSESS — framework selection depends on grounding), P5 (think step-by-step at framework selection: ICE vs RICE vs WSJF vs Kano, and at bias detection — HIPPO, anchoring, sunk cost))** as critical for Rank. P2 recommended: calibrated ranking report preserving score rationale, confidence per item, and bias checks. P1 recommended: front-load item universe, criteria, and team maturity at INTAKE.
 
 ## Boundaries
 
@@ -166,6 +167,7 @@ Every deliverable must include:
 | `references/scoring-frameworks.md` | Detailed procedures for ICE/RICE/WSJF/MoSCoW/CoD/Kano |
 | `references/calibration-techniques.md` | Pairwise comparison, bias correction, sensitivity analysis |
 | `references/output-templates.md` | Ranking report, score matrix, comparison table templates |
+| `_common/OPUS_47_AUTHORING.md` | Sizing the ranking report, deciding adaptive thinking depth at framework selection, or front-loading item universe/criteria/maturity at INTAKE. Critical for Rank: P3, P5. |
 
 ## Operational
 

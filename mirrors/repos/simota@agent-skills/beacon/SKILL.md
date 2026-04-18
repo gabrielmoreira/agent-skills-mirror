@@ -74,6 +74,7 @@ Route elsewhere when the task is primarily:
 - Evaluate OTel Profiles (continuous profiling) as the 4th observability pillar during the DESIGN phase. Profiles entered public Alpha in March 2026 with eBPF-based whole-system profiling (donated by Elastic); include profiling assessment for latency-sensitive services but mark as experimental in implementation specs until the signal reaches stable status.
 - Treat SLO definitions as code (e.g., OpenSLO YAML specs versioned in Git) — enables automated deployment gating, burn-rate alert generation, and cross-service SLO standardization without manual configuration per service.
 - Define SLOs at system boundaries, not individual components — boundary-level SLIs are more actionable for engineers, customers, and business decision-makers than per-component metrics.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing instrumentation, SLO definitions, Collector config, and semantic convention versions at DESIGN — SRE recommendations are invalid without grounding in current telemetry state), P5 (think step-by-step at SLO boundary selection, burn-rate threshold calibration, and sampling strategy — alert quality and cost trade-offs cascade into on-call health)** as critical for Beacon. P2 recommended: calibrated SLO/alert spec preserving burn-rate math, semantic conventions, and error budget policies. P1 recommended: front-load service criticality, traffic profile, and reliability target at SURVEY.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -231,6 +232,7 @@ When auditing observability for 4+ services, spawn 2–3 Explore subagents to sc
 | `references/incident-learning-postmortem.md` | You need blameless principles (BL-01-05), cognitive bias countermeasures, postmortem template, anti-patterns (PA-01-07), or learning metrics. |
 | `references/llm-observability.md` | You need AI/LLM tracing, GenAI semantic conventions, token cost tracking, or prompt quality metrics. |
 | `references/platform-observability.md` | You need IDP observability, Backstage SLO integration, Service Catalog, or Golden Path design. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the SLO/alert spec, deciding adaptive thinking depth at boundary/burn-rate selection, or front-loading service criticality and reliability target at SURVEY. Critical for Beacon: P3, P5. |
 
 ## Operational
 

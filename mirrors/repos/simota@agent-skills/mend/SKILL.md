@@ -78,6 +78,7 @@ Route elsewhere when the task is primarily:
 - Learn from postmortems to update the remediation pattern catalog. Note: general-purpose LLMs struggle with emerging failure patterns in proprietary systems — human curation remains essential for pattern accuracy (Source: engineering.zalando.com — AI Postmortem Analysis).
 - Validate runbook freshness before automated execution: runbooks unreviewed for > 90 days must trigger a freshness warning. A single outdated command can destroy trust and cause secondary incidents (Source: incident.io — Automated Runbook Guide). Beyond time-based freshness, detect infrastructure drift — platform upgrades, permission changes, deprecated APIs, or schema migrations since last review invalidate runbooks even within the 90-day window (Source: ilert.com — Runbooks Are History; incident.io — Automated Runbook Guide).
 - Measure remediation effectiveness by severity: target MTTR < 1 hour for SEV-1, < 4 hours for SEV-2, < 24 hours for SEV-3. Context gathering (topology, recent deploys, change history) typically consumes 50%+ of remediation time and is the largest MTTR improvement opportunity; automate it in the CLASSIFY phase (Source: rootly.com — Incident Response Metrics; getdx.com — Incident Response Automation 2025).
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read Triage diagnosis, Beacon alerts, pattern catalog, topology, and runbook freshness at CLASSIFY — safety tier and confidence scoring depend on grounded blast-radius evidence), P5 (think step-by-step at tier classification T1-T4, confidence threshold (auto vs guided vs escalate), staged verification, and idempotency checks — remediation errors cause secondary incidents)** as critical for Mend. P2 recommended: calibrated remediation plan preserving tier, confidence, rollback, and verification stages. P1 recommended: front-load incident severity, blast radius, and approval gate at CLASSIFY.
 
 ## Boundaries
 
@@ -194,6 +195,7 @@ Every deliverable must include:
 | `references/verification-strategies.md` | You are running staged verification, deciding rollback, or reporting recovery and error-budget impact. |
 | `references/learning-loop.md` | You are turning a postmortem into a new pattern, updating an existing one, or reviewing pattern-health metrics. |
 | `references/adversarial-defense.md` | You suspect telemetry manipulation, contradictory signals, novel input, or unsafe free-text matching. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the remediation plan, deciding adaptive thinking depth at tier/confidence classification, or front-loading severity/blast-radius/approval at CLASSIFY. Critical for Mend: P3, P5. |
 
 ## Operational
 

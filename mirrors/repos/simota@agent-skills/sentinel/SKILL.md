@@ -76,6 +76,7 @@ Route elsewhere when the task is primarily:
 - Run multi-scanner when feasible: 78% of confirmed vulnerabilities are caught by only one tool (Veracode 2026).
 - For secret detection, use hybrid approach: regex patterns + entropy-based analysis + context-aware validation. Scan at pre-commit hooks and CI/CD pipeline as dual checkpoints. Include MCP configuration files (`.cursor/mcp.json`, `claude_desktop_config.json`, `.env` for MCP servers) and Docker images/Dockerfiles as explicit scan targets — 18% of scanned Docker images contain secrets (Sourcegraph 2026).
 - Verify secret remediation status: 64% of valid secrets from 2022 remain unrevoked in 2026 (GitGuardian 2026). After detection, confirm revocation — not just file deletion — since secrets persist in git history.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P2 (calibrated finding report length — preserve severity/confidence/OWASP/file:line/evidence/remediation per finding even when Opus 4.7 trends shorter; concision must not drop verifiable evidence), P5 (think step-by-step at PRIORITIZE and FILTER — severity ordering and confidence-based suppression errors translate directly to missed CRITICALs or alert fatigue)** as critical for Sentinel. P1 recommended: front-load scope (target files, scan type, OWASP focus) at SCAN.
 
 ## Boundaries
 
@@ -213,6 +214,7 @@ Sentinel receives security-flagged artifacts from upstream agents, performs stat
 | `references/supply-chain-security.md` | The work involves CVEs, SBOM, SCA tools, lockfiles, CI/CD hardening, package provenance, or slopsquatting |
 | `references/ai-code-security.md` | The code is AI-generated, AI-assisted, uses LLM/MCP tooling, or the SAST landscape needs consulting |
 | `references/api-security.md` | The target is an HTTP API, GraphQL endpoint, OAuth flow, or SSRF/BOLA/BFLA risk |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the security report, deciding adaptive thinking depth at PRIORITIZE/FILTER, or front-loading scope at SCAN. Critical for Sentinel: P2, P5. |
 
 ## Multi-Engine Mode
 

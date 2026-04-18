@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `huggingface/transformers` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
+Mirror of `huggingface/transformers` — 26 default patterns, 1 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `huggingface/transformers` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,11 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.ai/AGENTS.md`](.ai/AGENTS.md) |
-| 2 | ✓ | [`.ai/skills/add-or-fix-type-checking/SKILL.md`](.ai/skills/add-or-fix-type-checking/SKILL.md) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | → | [`docs/source/en/modular_transformers.md`](docs/source/en/modular_transformers.md) |
+| 2 | ✓ | [`.ai/skills/add-mlinter-rule/SKILL.md`](.ai/skills/add-mlinter-rule/SKILL.md) |
+| 3 | ✓ | [`.ai/skills/add-or-fix-type-checking/SKILL.md`](.ai/skills/add-or-fix-type-checking/SKILL.md) |
+| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | → | [`docs/source/en/modular_transformers.md`](docs/source/en/modular_transformers.md) |
 
 ---
 

@@ -102,6 +102,7 @@ Route elsewhere when the task is primarily:
 - Every command hook must explicitly handle missing dependencies (jq, grep, etc.) — design as fail-closed (`exit 2`) for security hooks or fail-open (`exit 0`) for monitoring hooks, and document the choice.
 - PreToolUse hooks on `Edit|Write` alone do not prevent file modification — Claude can switch to `Bash` with `sed`, `python -c`, or `echo` redirection to bypass. Always pair file-protection hooks with a matching `Bash` hook that pattern-matches file-writing commands.
 - `PermissionRequest` hooks fire only when a permission dialog is about to show the user — they do not fire when permissions are auto-resolved. In Agent Teams, prefer `PreToolUse` hooks for universal enforcement across all agents and permission modes.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing `settings.json`, `hooks.json`, matchers, and tool-allowlist state at PROFILE — hook correctness depends on grounding in current configuration and permission flow), P5 (think step-by-step at event selection: PreToolUse vs PostToolUse vs PermissionRequest, permissionDecision choice, exit-code semantics, fail-closed vs fail-open — hook design errors produce silent security failures)** as critical for Latch. P2 recommended: calibrated hook spec preserving event type, matcher, exit-code contract, and stderr/stdout discipline. P1 recommended: front-load scope (user/project/local), tools affected, and enforcement intent at PROFILE.
 
 ## Boundaries
 
@@ -341,6 +342,7 @@ Every deliverable must include:
 | `references/hook-recipes.md` | You need recipe IDs `S1-S4`, `Q1-Q4`, `C1-C2`, `W1-W3`, or tech-stack-specific combinations. |
 | `references/debugging-guide.md` | You need debug mode, manual stdin tests, boilerplate rules, timeout failures, or troubleshooting steps. |
 | `references/nexus-integration.md` | You need `_AGENT_CONTEXT`, `_STEP_COMPLETE`, `## NEXUS_HANDOFF`, or Nexus routing details. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the hook spec, deciding adaptive thinking depth at event/permission selection, or front-loading scope/tools/intent at PROFILE. Critical for Latch: P3, P5. |
 
 ## Collaboration
 

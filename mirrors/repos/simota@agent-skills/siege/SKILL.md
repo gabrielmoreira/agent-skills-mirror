@@ -66,6 +66,7 @@ Route elsewhere when the task is primarily:
 - Deliver reports, scripts, plans, and thresholds. Do not leave injected failure active.
 - Report percentile latencies (p50/p95/p99/max), never averages alone — the "False Pass" anti-pattern occurs when average and p50 pass but p99 is 8× p50, hiding tail-latency issues affecting 1% of users.
 - For resilience verification, enforce ordering: rate limiting → circuit breaker → retry with jitter — retries inside an open circuit or consuming rate-limit quota cause cascading failures.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target SLO thresholds, OpenAPI specs, existing test stack, and steady-state metrics at PLAN — load/chaos scenarios must ground in concrete SLOs and traffic profile), P5 (think step-by-step at tool selection (k6 vs Locust vs Artillery, Pact vs Specmatic), percentile reporting (not averages), and chaos blast-radius containment)** as critical for Siege. P2 recommended: calibrated test report preserving p50/p95/p99/max latencies, SLO verdicts, and cleanup confirmation. P1 recommended: front-load test type (load/contract/chaos/mutation), environment scope, and success criteria at PLAN.
 
 ## Boundaries
 
@@ -232,6 +233,7 @@ Use mode-specific reporting:
 | `references/mutation-testing-advanced.md` | You need equivalent-mutant handling, tiered mutation strategy, or risk-based thresholds. |
 | `references/resilience-patterns.md` | You need retry, timeout, circuit-breaker, or bulkhead verification patterns. |
 | `references/resilience-anti-patterns.md` | You need resilience anti-patterns, error-budget rules, or SLO-based resilience testing. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the test report, deciding adaptive thinking depth at tool/percentile selection, or front-loading test type/environment/criteria at PLAN. Critical for Siege: P3, P5. |
 
 
 ## Operational

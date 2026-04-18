@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 10 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,10 +65,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/api-development/SKILL.md`](.claude/skills/api-development/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/doc-i18n/SKILL.md`](.claude/skills/doc-i18n/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/server-common-api_development/SKILL.md`](.claude/skills/server-common-api_development/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/system-pr_review/SKILL.md`](.claude/skills/system-pr_review/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/system-prompt_optimize/SKILL.md`](.claude/skills/system-prompt_optimize/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/system-test/SKILL.md`](.claude/skills/system-test/SKILL.md) |
-| 10 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 7 | ✓ | [`.claude/skills/system-local_review/code-quality-standards.md`](.claude/skills/system-local_review/code-quality-standards.md) |
+| 8 | ✓ | [`.claude/skills/system-local_review/common-issues-checklist.md`](.claude/skills/system-local_review/common-issues-checklist.md) |
+| 9 | ✓ | [`.claude/skills/system-local_review/SKILL.md`](.claude/skills/system-local_review/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/system-pr_review/SKILL.md`](.claude/skills/system-pr_review/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/system-prompt_optimize/SKILL.md`](.claude/skills/system-prompt_optimize/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/system-test/SKILL.md`](.claude/skills/system-test/SKILL.md) |
+| 13 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
 
 ---
 

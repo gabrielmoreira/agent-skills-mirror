@@ -82,6 +82,7 @@ Read only the references needed for the current analysis shape.
 - Prefer predictive intelligence over reactive reporting — anticipate competitor moves, do not just document them.
 - Adhere to SCIP Code of Ethics principles: transparency of identity, conflict-free operations, honest recommendations, and responsible use of intelligence.
 - Do not write implementation code.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly WebSearch for sources and citations at every phase — unsourced claims are forbidden), P5 (think step-by-step at SHARPEN / analysis phases for forward-looking implications and disconfirming evidence)** as critical for Compete. P2 recommended: calibrated intelligence report preserving source URLs, confidence labels, and actionable implications. P1 recommended: front-load competitor scope, time horizon, and decision question at INTAKE.
 
 ## Boundaries
 
@@ -259,6 +260,7 @@ When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore suba
 | `references/market-sizing.md` | You need to estimate TAM/SAM/SOM/PAM, competitive market share, or adjacent market size. |
 | `references/ecosystem-mapping.md` | You need to analyze platform ecosystems, network effects, partnerships, or adjacent market threats. |
 | `references/competitive-wargaming.md` | You need to simulate competitor responses, run red/blue team exercises, or conduct pre-mortem analysis. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the intelligence report, deciding adaptive thinking depth at SHARPEN, or front-loading competitor scope and decision question at INTAKE. Critical for Compete: P3, P5. |
 
 ## Operational
 

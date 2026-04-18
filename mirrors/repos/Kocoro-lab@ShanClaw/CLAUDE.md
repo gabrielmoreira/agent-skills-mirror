@@ -50,6 +50,7 @@ internal/
     readtracker.go     # read-before-edit enforcement
     approval_cache.go  # per-turn approval caching
     normalize.go       # response normalization
+    skill_discovery.go # Per-turn small-model skill matching (discoverRelevantSkills)
   agents/
     loader.go          # LoadAgent (config.yaml, commands/, _attached.yaml), ListAgents, ParseAgentMention
     api.go             # Agent CRUD operations for daemon API
@@ -96,8 +97,10 @@ internal/
   runstatus/
     runstatus.go       # user-facing run state/error classification
   skills/
-    registry.go        # Skill struct (Anthropic spec), SkillMeta DTO
+    registry.go        # Skill struct (Anthropic spec), SkillMeta DTO, SecretSpec, RequiredSecrets()
     loader.go          # LoadSkills from SKILL.md dirs (source-order merge; usually global > bundled)
+    secrets.go         # SecretsStore: per-skill API key CRUD (Keychain via zalando/go-keyring) + plaintext index file
+    activated.go       # ActivatedSet + context helpers for scoping secret injection per-run
     validate.go        # ValidateSkillName (Anthropic spec regex)
   tools/
     register.go        # RegisterLocalTools, RegisterAll, CompleteRegistration, ApplyToolFilter
@@ -145,6 +148,14 @@ Must match `^[a-z0-9][a-z0-9_-]{0,63}$`. Validated before any path concatenation
 ### Tool Priority
 Local tools > MCP tools > Gateway tools. Deduplication by name in registry.
 
+### Skill Discovery
+Three-layer system for triggering `use_skill`:
+1. **Skill listing** — full descriptions (rune-safe truncated, 4000 char total budget) embedded in the scaffolded user message on first turn. Not in the system prompt (moved out for cache stability).
+2. **Semantic discovery** — blocking `model_tier: "small"` call on iteration 0 (5s timeout). Matches user intent against loaded skill descriptions, injects `<system-reminder>` hint into the scaffolded user message. Gated by `agent.skill_discovery` config (default `true`).
+3. **Fallback catalog** — `use_skill` tool description dynamically includes all loaded skill names.
+
+**Skill allowed-tools enforcement** uses execution-time denial (`loop.go`), NOT schema filtering. The tools array stays full for the entire `Run()` to preserve Anthropic prompt cache stability. Blocked tools receive an error `ToolResult` with `[skill restriction]` message. A `<system-reminder>` hint is also appended to the `use_skill` result for soft guidance.
+
 ### Permission Model
 ```
 hard-block constants → denied_commands → compound-command splitting → allowed_commands → default safe → RequiresApproval + SafeChecker
@@ -157,6 +168,7 @@ Unknown tools → denied by default (fail-safe).
 - **Output format profiles**: `outputFormatForSource()` maps `req.Source` to `"markdown"` (default) or `"plain"` (cloud-distributed channels: slack, line, feishu, lark, telegram, webhook). Cloud owns final channel rendering — ShanClaw outputs neutral text for those paths.
 - **Tool status events**: `OnToolCall("running")` fires at actual execution start (inside `executeBatches`, after semaphore acquire), not during permission checks.
 - **Disk spill**: Tool results >50K chars written to `~/.shannon/tmp/`, replaced with 2K preview + file path in context. Cleaned up per-run (daemon/TUI) or on manager close (one-shot).
+- **Skill secrets**: `SecretsStore` (`internal/skills/secrets.go`) manages per-skill API keys. Values stored in **macOS Keychain** (encrypted; service = `com.shannon.skill.<name>`, account = env var name) via `zalando/go-keyring` (pure Go, no CGo; passes password via stdin not argv so `ps` cannot observe values). A plaintext index file `~/.shannon/secrets-index.json` tracks which key names are configured per skill so `ConfiguredKeys()` can answer without triggering Keychain access prompts. Skills declare required env vars via ClawHub metadata (`metadata.openclaw.requires.env` / `metadata.clawdbot.requires.env`). Daemon exposes `PUT/DELETE /skills/{name}/secrets` for CRUD (all three write handlers call `auditHTTPOp` with key names only, never values); `GET /skills` returns `required_secrets` + `configured_secrets` (values never exposed). **Runtime injection is env-var-only, scoped to active skills**: secrets never enter the prompt body or session transcript. `AgentLoop.Run` initializes a per-run `skills.ActivatedSet` in context; `use_skill` registers the skill name when invoked; `BashTool.Run` reads the set via context and fetches only those skills' secrets from `SecretsStore` on each invocation, injecting as child-process env vars. A skill loaded but never activated contributes no env vars to bash. Secrets cleaned up on skill deletion.
 - **Turn phase tracker** (`internal/agent/phase.go`): explicit state machine for `AgentLoop.Run`. Every blocking boundary calls `tracker.Enter(phase)` or `tracker.EnterTransient(phase)()`. Only `PhaseAwaitingLLM` and `PhaseForceStop` are idle-counted (watched by the watchdog). Fail-closed: forgotten transient restore and `Enter`-inside-transient mark the tracker `invalid`; observers self-disable. Panics under `testing.Testing()` or `SHANNON_PHASE_STRICT=1`, logs otherwise.
 - **Idle watchdog** (`internal/agent/watchdog.go`): observer goroutine. Fires `OnRunStatus("idle_soft", …)` after `agent.idle_soft_timeout_secs` (default 90) in an idle-counted phase. Cancels ctx with `ErrHardIdleTimeout` via `context.WithCancelCause` after `agent.idle_hard_timeout_secs` (default 0 = disabled; flip to 540 after dogfood). Dedups soft fire by tracker `seq`, re-arms on every phase transition. `completeWithRetry` prefers `context.Cause(ctx)` over `ctx.Err()`. `isSoftRunError` in the runner includes `ErrHardIdleTimeout` so the partial transcript is persisted (not replaced by a friendly error stub). Daemon emits `EventRunStatus` to SSE/Desktop subscribers via `daemonEventHandler.OnRunStatus`.
 - **Mid-turn checkpoint**: `AgentLoop.SetCheckpointFunc(func(ctx) error)` fires at three phase-exit boundaries (after each `executeBatches`, after successful reactive compaction, before `runForceStopTurn`), gated by `tracker.TakeDirty()`. Agent-side `SetCheckpointMinInterval(2s)` debounce; failed save (callback returns error) leaves dirty set and skips the time stamp so the next fire retries. Runner uses `captureTurnBaseline` + `applyTurnMessages` + `applyTurnUsage` — the SAME helpers run from the normal final save AND the hard-error save so a turn is never persisted twice via different paths. `session.Session.InProgress` is set mid-turn, cleared on final save; a non-zero flag on reload indicates a crash-recovered session with a partial transcript.
@@ -185,11 +197,13 @@ Scalars override, lists merge+dedup, structs field-level merge. MCP server env v
 - Attachments: `~/.shannon/tmp/attachments/<nonce>/` (downloaded Slack/Feishu files, cleaned up on session close)
 - Schedule index: `~/.shannon/schedules.json`
 - Schedule plists: `~/Library/LaunchAgents/com.shannon.schedule.<id>.plist`
+- Skill secrets index: `~/.shannon/secrets-index.json` (key names only, no values, chmod 600, flock-protected)
+- Skill secret values: macOS Keychain (service `com.shannon.skill.<skill-name>`, account = env var name)
 - Audit log: `~/.shannon/logs/audit.log`
 - Schedule logs: `~/.shannon/logs/schedule-<id>.log`
 
 ### Atomic Writes
-`schedules.json` uses write-to-temp + `os.Rename` + `syscall.Flock` on a persistent `.lock` file. Never delete the lock file (causes flock race on different inodes).
+`schedules.json` and `secrets-index.json` use write-to-temp + `os.Rename` + `syscall.Flock` on a persistent `.lock` file. Never delete the lock file (causes flock race on different inodes).
 
 ### Build Tags
 `internal/schedule/launchd_darwin.go` uses `//go:build darwin`. `launchd_stub.go` provides no-op stubs for non-darwin. Tests that touch launchctl go in `_darwin_test.go`.
@@ -199,6 +213,8 @@ See `docs/cache-strategy.md` for the authoritative design (4-breakpoint allocati
 - `cache_source` tags every LLM call; `_ttl_block(request)` routes 1h for channel/TUI, 5m for one-shot/subagent (fail cheap).
 - `SHANNON_FORCE_TTL=off|5m|1h` overrides for operator debug / A-B.
 - `normalizeToolInput` in `gateway.go` canonicalizes nested JSON key ordering so cross-turn `system_h` / tool_use-input stays byte-stable.
+- **Skill allowed-tools** uses execution-time denial (not schema filtering) to keep `toolSchemas` byte-stable. Previous `applySkillFilter` shrank the tools array after `use_skill`, causing ~$0.10 cache rebuild per activation; now tools stay full ($0.02).
+- **Skill listing** is embedded in the scaffolded user message (not system prompt) so different skill sets don't invalidate the system prefix cache.
 
 ### Context Management
 - **Proactive compaction**: `PersistLearnings` → `GenerateSummary` (two-phase: `<analysis>` scratchpad → `<summary>`) → `ShapeHistory` at 85% context window.

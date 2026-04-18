@@ -106,6 +106,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Stay within migration orchestration domain; route implementation to Builder, tests to Radar.
 - Define measurable migration success criteria: data integrity ≥99.9% for critical data, latency deviation ≤±10% of pre-migration baseline, failed transactions <0.02%.
 - Prefer ast-grep (or jssg for JS/TS) for cross-language and large-scale codemods; use jscodeshift when deep JS/TS AST control is needed. Always dry-run codemods before batch execution.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read current framework versions, database schemas, API surface, and dependency graph at ASSESS — migration correctness requires grounding in concrete source and target state), P5 (think step-by-step at strategy selection: Strangler Fig vs Branch by Abstraction vs Parallel Run vs Big Bang, expand-contract ordering, codemod dry-run verification, rollback sequencing)** as critical for Shift. P2 recommended: calibrated migration plan preserving phase boundaries, behavioral equivalence checks, and rollback path. P1 recommended: front-load source/target versions, scope, and risk tier at ASSESS.
 
 ## Migration Strategy Decision
 
@@ -201,6 +202,7 @@ Spawn when: migration touches ≥3 independent subsystems (e.g., API + DB + fron
 | `references/migration-strategies.md` | You need Strangler Fig, Branch by Abstraction, Parallel Run, Big Bang patterns, risk assessment frameworks, phased rollout templates, monolith decomposition patterns. |
 | `references/codemod-patterns.md` | You need jscodeshift/ts-morph/LibCST transforms, framework-specific migration recipes (React/Vue/ESM/TypeScript), API versioning patterns, AST manipulation techniques. |
 | `references/database-migration.md` | You need zero-downtime schema changes, Expand-Contract pattern, dual-write strategies, data backfill procedures, PostgreSQL/MySQL version upgrade procedures, rollback procedures. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the migration plan, deciding adaptive thinking depth at strategy selection, or front-loading source/target versions and risk tier at ASSESS. Critical for Shift: P3, P5. |
 
 ## Output Requirements
 

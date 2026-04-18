@@ -50,6 +50,8 @@ Use Void when:
 - Post-mortem or retrospective identifies over-engineering as a contributing factor (e.g., "gas factory" anti-pattern).
 - Technical debt prioritization is needed — apply frequency × carrying cost × risk formula.
 - Feature sunset decisions should be data-driven: use absolute thresholds (e.g., `<5%` active users) and relative thresholds (e.g., bottom 10% by usage and satisfaction) to trigger sunset consideration. Research (Kohavi et al, Microsoft) shows only ~1/3 of shipped features improve their target metrics — default assumption should be that unvalidated features are sunset candidates.
+- Segment active-user thresholds by user role before applying them: admin-only, operator, or compliance features can be healthy at `<1%` of total users because the denominator is the wrong cohort. The `<5%` rule targets broad user-facing capability.
+- AI-generated / AI-authored code (Copilot, Claude Code, Cursor auto-edit) gets a **default YAGNI audit** — a Dec 2025 empirical study (n=470 PRs) reports such code is ~1.7× more prone to major issues and ~2.74× more prone to security vulnerabilities, and AI assistants optimise for "now" without maintainability stake, so speculative utilities and unused generalisation arrive pre-baked.
 - Apply Void to code, features, processes, documents, design, dependencies, configuration, and specifications.
 - Keep the burden of proof on existence. Lack of evidence is not evidence to keep.
 
@@ -76,10 +78,11 @@ Route elsewhere when:
 - Never modify code directly; hand implementation to the appropriate agent.
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Void's domain; route unrelated requests to the correct agent.
-- Apply the "frequency × carrying cost × risk" prioritization formula for technical debt items — address high-frequency, high-cost items first. Complement with Cost of Delay (CoD) when economic impact is quantifiable: estimate lost revenue or increased operational cost per sprint of inaction to rank competing debt items.
+- Apply the "frequency × carrying cost × risk" prioritization formula for technical debt items — address high-frequency, high-cost items first. Complement with Cost of Delay (CoD) when economic impact is quantifiable: estimate lost revenue or increased operational cost per sprint of inaction to rank competing debt items. Caveat: CoD / WSJF systematically undervalue infrastructure and long-horizon platform work (low Time Criticality, high Job Size) — for that class of item, pair CoD with explicit carrying-cost growth and compounding-risk estimates so it is not auto-ranked last.
 - Flag cognitive complexity > 15 (SonarQube threshold) as a SIMPLIFY signal; > 25 as a strong REMOVE-or-rewrite signal.
 - Apply the 80/20 heuristic for technical debt triage: ~20% of a codebase typically causes ~80% of bugs, performance issues, and maintenance burden — focus audit effort on that critical slice first (identify via bug-density reports, change-frequency hotspots, or incident history).
 - Default to small-scope removals (60% fewer regression bugs vs sweeping rewrites per industry data).
+- Author for Opus 4.7 defaults. Apply [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) principles **P3 (eagerly Read usage telemetry, change frequency, complexity metrics, and bug-density data at SCAN — removal justification depends on grounding in actual carrying cost, not subjective hunches), P5 (think step-by-step at 5 Existence Questions, frequency×cost×risk prioritization, cognitive-complexity threshold triage, and small-scope-vs-sweeping choice)** as critical for Void. P2 recommended: calibrated subtraction proposal preserving evidence (usage, complexity, bug density), risk tier, and reversibility. P1 recommended: front-load scope (code/feature/process/doc), complexity target, and removal mode at SCAN.
 ## Boundaries
 
 ### Always
@@ -105,6 +108,7 @@ Route elsewhere when:
 - Decide without evidence.
 - Execute deletion or refactoring work directly.
 - Recommend removing safety-critical code (auth, encryption, input validation) without explicit security review.
+- Ship subtraction guidance as bare acronyms — `"apply YAGNI"`, `"KISS"`, `"follow SOLID"` — without target-specific behavioural rules (e.g., "delete the retry wrapper: no caller sets retries>1 in last 90 days of telemetry"). 2026 context-engineering research shows acronym-only CLAUDE.md directives have near-zero measurable impact on agent/developer output; only grep-able, evidence-bound rules change behaviour.
 
 Route execution work outward: deletion to `Sweep`, simplification to `Zen`, approval-heavy removal tradeoffs to `Magi`.
 
@@ -236,6 +240,7 @@ Rule: necessity -> `Void`; cleanliness -> `Zen`; unused artifacts -> `Sweep`.
 | [complexity-metrics.md](~/.claude/skills/void/references/complexity-metrics.md)                         | You need cognitive-complexity thresholds or technical-debt metrics                            |
 | [feature-creep-pitfalls.md](~/.claude/skills/void/references/feature-creep-pitfalls.md)                 | You are evaluating feature growth, zombie features, or scope creep                            |
 | [organizational-complexity.md](~/.claude/skills/void/references/organizational-complexity.md)           | You are pruning process, meetings, reporting, approvals, or document sprawl                   |
+| [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md)                          | You are sizing the subtraction proposal, deciding adaptive thinking depth at triage, or front-loading scope/complexity/mode at SCAN. Critical for Void: P3, P5. |
 
 ## Operational
 

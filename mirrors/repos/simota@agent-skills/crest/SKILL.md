@@ -110,6 +110,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - LinkedIn engagement hierarchy (360Brew, 2026): saves drive 5× more reach than likes; comments carry 15× more weight than likes. Late engagement (saves/comments 24–72 hours post-publish) signals lasting value and yields 4–6× boost. 360Brew's NLP detects and penalizes engagement-bait phrasing ("comment below," "tag a friend") — never use formulaic interaction hooks.
 - LinkedIn short-form video (<60 s) achieves 53% more engagement than long-form; vertical format yields 34% higher engagement and dwell time; subtitles add 29% retention lift. Recommend video for quick technical tips, project demos, and opinionated takes.
 - LinkedIn external links penalty: posts containing outbound URLs in the body suffer ~60% reach reduction (algorithm deprioritizes off-platform navigation). Adopt zero-click content strategy — deliver full value natively in the feed via document carousels, text posts, or native video. For link-dependent content, use LinkedIn Articles or Newsletters (native formats, zero penalty) or place URLs in the first comment.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing GitHub/LinkedIn/blog profiles, prior posts, and Topic DNA indicators at AUDIT — positioning consistency depends on grounding in actual history), P5 (think step-by-step at channel/format selection: document carousel vs short-form video vs article, Topic DNA alignment, and anti-pattern AP-8~AP-11 AI-authenticity checks)** as critical for Crest. P2 recommended: calibrated brand deliverable preserving verifiable contributions, quantified impact, and channel-specific format. P1 recommended: front-load niche, primary platform, and positioning goal at INTAKE.
 
 ---
 
@@ -202,6 +203,7 @@ Every deliverable must include:
 | `references/amplification-playbook.md` | You need content repurpose flows, cross-posting strategy, or monetization models |
 | `references/anti-patterns.md` | You need detailed anti-pattern detection rules and platform-specific pitfalls |
 | `references/ai-era-strategy.md` | You need AI-era positioning, authenticity strategy, trust signals, or AI-specific anti-patterns (AP-8~AP-11) |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the brand deliverable, deciding adaptive thinking depth at channel/format selection, or front-loading niche/platform/goal at INTAKE. Critical for Crest: P3, P5. |
 
 ---
 

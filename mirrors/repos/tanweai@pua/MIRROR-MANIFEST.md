@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tanweai/pua` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
+Mirror of `tanweai/pua` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tanweai/pua` — 26 default patterns, 0 followed patterns, 44 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 44 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,10 +99,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`skills/pua/references/p9-protocol.md`](skills/pua/references/p9-protocol.md) |
 | 39 | ✓ | [`skills/pua/references/platform.md`](skills/pua/references/platform.md) |
 | 40 | ✓ | [`skills/pua/references/survey.md`](skills/pua/references/survey.md) |
-| 41 | ✓ | [`skills/pua/SKILL.md`](skills/pua/SKILL.md) |
-| 42 | ✓ | [`skills/shot/SKILL.md`](skills/shot/SKILL.md) |
-| 43 | ✓ | [`skills/yes/SKILL.md`](skills/yes/SKILL.md) |
-| 44 | ✓ | [`vscode/copilot-instructions.md`](vscode/copilot-instructions.md) |
+| 41 | ✓ | [`skills/pua/references/teardown-protocol.md`](skills/pua/references/teardown-protocol.md) |
+| 42 | ✓ | [`skills/pua/SKILL.md`](skills/pua/SKILL.md) |
+| 43 | ✓ | [`skills/shot/SKILL.md`](skills/shot/SKILL.md) |
+| 44 | ✓ | [`skills/yes/SKILL.md`](skills/yes/SKILL.md) |
+| 45 | ✓ | [`vscode/copilot-instructions.md`](vscode/copilot-instructions.md) |
 
 ---
 

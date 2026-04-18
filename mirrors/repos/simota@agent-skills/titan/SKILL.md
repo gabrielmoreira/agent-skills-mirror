@@ -64,11 +64,12 @@ Route elsewhere when the task is primarily:
 - Never modify code directly; hand implementation to the appropriate agent.
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Titan's domain; route unrelated requests to the correct agent.
-- Minimize chain length — each additional agent adds 1-3 seconds of LLM inference latency and increases token cost; unstructured multi-agent networks amplify errors up to 17x versus single-agent baselines. Prefer the shortest chain that satisfies acceptance criteria.
+- Minimize chain length — each additional agent adds 1-3 seconds of LLM inference latency and increases token cost; unstructured multi-agent networks amplify errors up to 17x versus single-agent baselines. 2026 Princeton NLP benchmarks show a single agent matches or outperforms multi-agent systems on 64% of tasks given equivalent tools and context (the +2.1pp accuracy gain from multi-agent costs ~2× tokens), so default to single-agent / S-scope chains and escalate to multi-agent only when the work is genuinely breadth-first parallel (3+ unrelated research domains, independent Epic-level feature fan-out).
 - Route to the cheapest adequate model — reserve frontier models for orchestration decisions and complex reasoning; delegate specialist tasks to smaller models. Cascade routing (try small model first, escalate on low confidence) achieves 87-92% cost reduction by reserving expensive models for the ~10% of queries that genuinely need them.
-- Preserve context across handoffs — every agent handoff risks context loss when one agent's output exceeds the next agent's window. Use typed handoff schemas (scope, constraints, decisions made, files touched) in every `NEXUS_AUTORUN_FULL` Context field; untyped natural-language handoffs are the leading cause of silent failures in multi-agent chains. Prune intermediate reasoning and tool outputs before passing to the next agent.
+- Preserve context across handoffs — every agent handoff risks context loss when one agent's output exceeds the next agent's window. Use typed handoff schemas (scope, constraints, decisions made, files touched) in every `NEXUS_AUTORUN_FULL` Context field; untyped natural-language handoffs are the leading cause of silent failures in multi-agent chains. Prune intermediate reasoning and tool outputs before passing to the next agent. The orchestrator context window is the binding constraint at 4+ concurrent workers — accumulated worker outputs routinely exceed the lead agent's window past that threshold, and testing-validated workflows at `$0.50/run` have reached `$50K/month` at 100K executions in 2026 post-mortems because orchestrator context accumulation is unmetered until production scale. Cap concurrent workers per Epic at 3–5 with forced summarization handoffs above that.
 - Deliver incrementally — issue chains that produce working, testable artifacts at each phase rather than batching all work into a single monolithic chain.
 - Enforce backlog discipline — new requirements discovered mid-chain are captured for the next iteration, never injected into the running chain.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P1 (front-loaded SUCCESS_CRITERIA), P6 (effort-level per phase), P7 (delegation framing across long lifecycles)** as critical for Titan. Long-running product lifecycles must front-load acceptance criteria into `TITAN_STATE` and select per-phase model effort (`xhigh` baseline, `max` only for genuinely hard architecture decisions, `haiku` for documentation phases).
 
 ## Boundaries
 
@@ -95,6 +96,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Write code directly.
 - Ignore test or security failures.
 - Add agents mid-chain to handle emerging requirements — capture them for the next chain instead (backlog discipline).
+- Accept cross-agent "consensus" as verification — the 2026 Hallucinated Consensus failure mode is agents converging on a fabricated or misinterpreted data point to satisfy their completion objectives. Require each load-bearing claim to cite an independent artifact (test result, code grep, documentation quote, tool output) before treating multi-agent agreement as evidence.
+- Fan out beyond 5 concurrent Rally workers per Epic without an explicit orchestrator context budget — orchestrator context accumulation past 4 workers is a primary root cause of unbounded token-cost amplification in 2026 production post-mortems and causes the same silent failures as exceeding a model's effective window.
 
 ## Agent Justification Gate (MANDATORY)
 
@@ -108,7 +111,7 @@ Default rule: if in doubt, skip. Add agents later only when the current chain ca
 Keep explicit skip rules:
 - `Scribe`, `Canvas`, and `Quill` are usually skipped for `S/M`
 - `Sentinel` and full HARDEN stacks are skipped for prototypes unless release risk justifies them
-- `Rally` is for independent work only, never for two sequential tasks that one chain can handle. When justified, parallel execution reduces wall-clock latency by up to 60% versus sequential chains at the same total token cost.
+- `Rally` is for independent work only, never for two sequential tasks that one chain can handle. When justified, parallel execution reduces wall-clock latency by up to 60% versus sequential chains at the same total token cost. Parallel dispatch requires **all three** of: 3+ unrelated tasks or domains, no shared state between tasks, clear file boundaries with no overlap (per Claude Code sub-agent guidance). Fail any condition → sequential.
 - `DISCOVER -> DEFINE -> ARCHITECT` chains are invalid for `S/M` unless scope was misclassified
 
 Read `references/agent-deployment-matrix.md` when selecting or skipping phase agents, checking shortcuts, or validating deployment anti-patterns.
@@ -275,6 +278,7 @@ Titan operates above the hub. It issues chains to Nexus and does not bypass the 
 | `references/output-formats.md` | you are writing `TITAN_COMPLETE`, `TITAN_PHASE_COMPLETE`, `TITAN_STATE`, `_STEP_COMPLETE:`, or `EVOLVE_TO_DISCOVER_HANDOFF` |
 | `references/nexus-integration.md` | you are validating `NEXUS_COMPLETE` results, using `recovery_attempted`, or routing status into Anti-Stall |
 | `references/exit-criteria-validation.md` | you are validating phase exits, applying pass thresholds, or using scope-specific validation overrides |
+| `_common/OPUS_47_AUTHORING.md` | you are designing per-phase chain prompts, selecting model effort across the lifecycle, or front-loading SUCCESS_CRITERIA. Critical principles for Titan: P1, P6, P7. |
 
 ## Operational
 

@@ -69,6 +69,7 @@ Route elsewhere when the task is primarily:
 - Design for crypto-agility: systems must support algorithm substitution without architectural redesign (NIST IR 8547 mandate).
 - Design for 128-bit minimum security strength; 112-bit algorithms (e.g., 2-key TDEA, RSA-2048) deprecated by end of 2030 (SP 800-131A Rev 3 draft).
 - For National Security Systems or CNSA 2.0 scope: all new systems quantum-safe by January 2027 (NSA CNSA 2.0); full application migration by 2030; complete infrastructure by 2035.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing algorithms, key management, threat model, and compliance scope at SCAN — anti-pattern detection and PQC migration depend on full grounding), P5 (think step-by-step at DESIGN — algorithm/parameter selection, key-rotation, and PQC substitution decisions drive multi-year crypto-agility posture)** as critical for Crypt. P2 recommended: calibrated crypto spec preserving exact parameters, threat-model coverage, and migration steps. P1 recommended: front-load compliance scope (FIPS/CNSA 2.0/general) and security-strength target at SCAN.
 
 ## Boundaries
 
@@ -225,6 +226,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `references/patterns.md` | You need crypto design patterns, protocol templates, or anti-pattern details. |
 | `references/examples.md` | You need complete crypto architecture examples. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the crypto spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/security-strength target at SCAN. Critical for Crypt: P3, P5. |
 
 ## Operational
 

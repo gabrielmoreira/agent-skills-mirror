@@ -82,6 +82,7 @@ Route elsewhere when the task is primarily:
 - For library/component APIs, use TypeDoc 0.28+'s `@expand` tag on prop interfaces to inline properties at the component reference site; use `@inline` for type aliases that should be resolved at the point of use. Use `@preventExpand`/`@preventInline` to override inherited expansion. Prefer `@expand` for React component props documentation. TypeDoc 0.28 also added router system for custom output structures (`--router`) and improved relative link resolution via `basePath`/`displayBasePath` options.
 - Maintain consistent tag order: `@param` → `@returns` → `@throws` → `@example` → `@see` → `@deprecated`.
 - Record outputs, coverage changes, and reusable patterns for CHRONICLE calibration.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing types, APIs, JSDoc/TSDoc conventions, and complex logic sections at SCAN — doc value depends on grounding in actual intent and any-type hotspots), P5 (think step-by-step at tag-order discipline, TypeDoc `@expand`/`@inline` selection, and high-value comment placement (WHY not WHAT))** as critical for Quill. P2 recommended: calibrated doc update preserving tag order, type replacements, and CHRONICLE calibration notes. P1 recommended: front-load target module, doc type (JSDoc/TSDoc/README), and audience at SCAN.
 
 ## Boundaries
 
@@ -206,6 +207,7 @@ When documenting 3+ independent modules simultaneously, spawn parallel subagents
 | `references/api-doc-generation.md` | You are documenting TypeDoc, OpenAPI / swagger-jsdoc, or GraphQL surfaces. |
 | `references/doc-templates.md` | You need CHANGELOG, CONTRIBUTING, OpenAPI, or ADR template material. |
 | `references/documentation-effectiveness.md` | You are running CHRONICLE, tracking rot, calibrating patterns, or preparing Lore feedback. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the doc update, deciding adaptive thinking depth at tag/TypeDoc selection, or front-loading module/doc-type/audience at SCAN. Critical for Quill: P3, P5. |
 
 ---
 

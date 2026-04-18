@@ -71,6 +71,7 @@ Route elsewhere when the task is primarily:
 - Verify row estimate accuracy: planner estimate vs. actual ratio > 10× indicates stale statistics or predicate issues; > 100× makes the plan unreliable.
 - Prefer composite indexes over multiple single-column indexes when queries filter on 2+ columns together.
 - On PostgreSQL 18+, recommend `uuidv7()` over `gen_random_uuid()` for indexed primary keys — UUIDv7's time-ordering eliminates B-tree page splits and reduces buffer hits by ~30× compared to random UUIDv4.
+- Author for Opus 4.7 defaults. Apply [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) principles **P3 (eagerly Read `EXPLAIN (ANALYZE, BUFFERS)` output, schema, indexes, and statistics at PROFILE — optimization recommendations without plan evidence are speculation; distinguish cache hits from disk I/O), P5 (think step-by-step at index read/write trade-offs, row-estimate-ratio diagnosis (>10× stale stats, >100× unreliable), and PostgreSQL version-specific tuning (17 vs 18+, UUIDv7, skip scan))** as critical for Tuner. P2 recommended: calibrated performance report preserving before/after P50/P95/P99, buffer hits/reads, and row-estimate ratios. P1 recommended: front-load DB engine+version, workload class, and latency target at PROFILE.
 
 ## Boundaries
 
@@ -103,6 +104,7 @@ Agent role boundaries: [\_common/BOUNDARIES.md](~/.claude/skills/_common/BOUNDAR
 - Wrap indexed columns in functions (e.g., `WHERE YEAR(created_at) = 2026`) — this prevents index usage and forces full table scans; rewrite as range conditions.
 - Use random UUIDv4 as primary key on high-write tables without considering the index fragmentation cost — random inserts scatter across B-tree pages, causing ~30× more buffer hits than time-ordered UUIDv7 or bigserial; on PostgreSQL 18+ recommend `uuidv7()` instead.
 - Use `OFFSET` pagination on tables exceeding a few thousand rows — PostgreSQL reads, sorts, and discards all rows up to the offset, causing linear degradation (benchmarks show 17× slower at deep pages); recommend keyset/cursor pagination (`WHERE (sort_col, id) > (last_val, last_id) ORDER BY sort_col, id LIMIT N`) with a composite index instead.
+- Use `NOT IN (SELECT ...)` on subqueries returning many rows — the plain subplan is **O(N²)** per outer row; small-scale tests look fine, then performance collapses by 5+ orders of magnitude once a size threshold is crossed. `NOT IN` also returns unexpected empty results when the subquery contains any NULL row. Rewrite as `NOT EXISTS (SELECT 1 ... WHERE ...)` or a LEFT JOIN / `IS NULL` anti-join.
 
 ## Critical Thresholds
 
@@ -123,12 +125,15 @@ Agent role boundaries: [\_common/BOUNDARIES.md](~/.claude/skills/_common/BOUNDAR
 | Connection pool exhaustion risk               | `> 80%` pool utilization sustained         | scale pool or optimize query duration — PgBouncer for <50 clients, PgCat for >50 clients or read/write splitting, Supavisor for serverless |
 | Statistics staleness                          | `n_dead_tup > 10%` of `n_live_tup`        | run ANALYZE or check autovacuum       |
 | Index bloat concern                           | index size `> 2×` expected for row count   | consider REINDEX CONCURRENTLY         |
+| pgvector index selection                      | dataset `> 500K vectors`                   | HNSW as production default (~15× higher QPS than IVFFlat at 1M/50d benchmarks); fall back to IVFFlat only when build time or memory (HNSW ≈3× memory, ~30× build time) dominate |
 
 Production-safety rules:
 
 - PostgreSQL production index creation should use `CREATE INDEX CONCURRENTLY`.
 - Materialized views are good for repeated aggregates and dashboards, not for truly real-time data.
-- PostgreSQL 18+: leverage AIO for up to 3× I/O throughput on sequential scans and bitmap heap scans; use skip scan for multicolumn B-tree indexes where the leading column has low cardinality (~40% speedup over seq scan); use parallel GIN index builds for full-text and JSONB indexes; prefer `uuidv7()` for primary keys (time-ordered writes eliminate B-tree fragmentation); leverage improved merge joins with incremental sort and faster hash joins; prefer virtual generated columns over stored for read-only derived values to reduce write overhead.
+- PostgreSQL 18+: leverage AIO for up to 3× I/O throughput on sequential scans and bitmap heap scans; use skip scan for multicolumn B-tree indexes where the leading column has low cardinality (~40% speedup over seq scan); use parallel GIN index builds for full-text and JSONB indexes; prefer `uuidv7()` for primary keys (time-ordered writes eliminate B-tree fragmentation); leverage improved merge joins with incremental sort and faster hash joins; prefer virtual generated columns over stored for read-only derived values to reduce write overhead. Additional planner wins: Self-Join Elimination (drops redundant self-joins; `enable_self_join_elimination`), OR-clause to array transform for index-friendly OR predicates, `IN (VALUES ...)` → `= ANY (...)` for better selectivity estimates, expanded partitionwise joins with reduced memory, and `DISTINCT` key reordering to skip sorts.
+- PostgreSQL 18+ `pg_upgrade` preserves planner statistics from PG14+ source clusters **by default**, eliminating the historical post-upgrade performance cliff. **Extended statistics created with `CREATE STATISTICS` are NOT preserved** — always rebuild them and run `vacuumdb --all --analyze-in-stages --missing-stats-only` followed by `vacuumdb --all --analyze-only` after the upgrade. Do not blame "missing stats" for post-upgrade regressions on PG18+ unless extended/multivariate stats are involved.
+- On PostgreSQL 18+, `EXPLAIN ANALYZE` reports **index lookup counts per index scan node** — essential for diagnosing skip-scan efficiency and verifying that a multicolumn B-tree actually skips rather than degenerating into repeated scans.
 - Always verify `@Transactional(readOnly = true)` on read-only queries in ORM frameworks — omitting it causes unnecessary write locks and reduces concurrent read throughput.
 - Enable `auto_explain` module (`auto_explain.log_min_duration`) in staging and production to automatically capture execution plans for slow queries — post-hoc EXPLAIN on a previously slow query may produce a different plan due to caching or statistics changes.
 - On PostgreSQL 18+, prefer virtual generated columns over stored generated columns for derived values used only in reads — virtual columns compute at query time, eliminating write overhead and storage bloat while remaining indexable.
@@ -213,6 +218,7 @@ Routing rules:
 | [cloud-db-optimization-patterns.md](references/cloud-db-optimization-patterns.md) | You need Aurora QPM, Neon cold-start tuning, or cloud DB selection guidance |
 | [\_common/BOUNDARIES.md](~/.claude/skills/_common/BOUNDARIES.md) | Role boundaries are ambiguous |
 | [\_common/OPERATIONAL.md](~/.claude/skills/_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
+| [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) | You are sizing the performance report, deciding adaptive thinking depth at index trade-offs, or front-loading DB engine/version/workload/latency target at PROFILE. Critical for Tuner: P3, P5. |
 
 ## Operational
 

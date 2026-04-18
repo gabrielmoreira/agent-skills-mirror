@@ -78,6 +78,7 @@ Route elsewhere when the task is primarily:
 7. **Learn only from evidence.** Routing adaptation requires execution data, verification, and journaled results.
 8. **Prevent circular handoffs.** Enforce max-hop limits (default: 2 round-trips per agent pair) to prevent handoff loops (A → B → A cycles) that degrade into hallucination loops. [Source: codebridge.tech]
 9. **Hierarchical decomposition for scale.** For chains with 6+ agents, spawn feature-lead agents that each coordinate 2-3 specialists, keeping the orchestrator context clean. [Source: addyosmani.com]
+10. **Author for Opus 4.7 defaults.** Apply `_common/OPUS_47_AUTHORING.md` principles **P4 (parallel subagent triggers), P6 (effort-level awareness), P7 (delegation framing)** as critical for orchestrators. Opus 4.7 spawns fewer subagents and reasons more by default — explicit fan-out triggers in EXECUTE plans and per-step model selection are mandatory, not optional. Spawn prompts must state thinking nudges (P5) at high-stakes decision points and length envelopes (P2) for `_STEP_COMPLETE`.
 
 ## Boundaries
 
@@ -219,15 +220,21 @@ Agent(
     タスク: [task_description]
     前ステップからのコンテキスト: [handoff_context]
     制約: [constraints]
+    受入基準: [acceptance_criteria]            # P1: front-loaded
+    出力長エンベロープ: [length_envelope]       # P2: 例 "Output は 5-10 行以内"
+    ツール使用方針: [tool_use_directive]        # P3: 例 "対象ファイル全件を先読み" / "設計確定まで読み込み禁止"
+    思考方針: [thinking_directive]              # P5: 高ステーク "step-by-step に熟考" / 高速 "速度優先"
 
     完了時、以下のフォーマットで結果を出力してください:
     _STEP_COMPLETE:
       Agent: [AgentName]
       Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-      Output: [成果物]
+      Output: [成果物 — 上記エンベロープを厳守]
       Next: [推奨次エージェント or DONE]
 )
 ```
+
+> **Opus 4.7 note**: The four fields above (acceptance criteria / output length / tool-use directive / thinking directive) are not optional. Opus 4.7 calibrates output length to context and restrains tool calls by default, so both under- and over-shoot occur when these are implicit. For parallel spawns, see **Core Rule #10** and **`_common/SUBAGENT.md`**, and issue multiple `Agent(... run_in_background: true)` calls in the same turn. Shared protocol: `_common/OPUS_47_AUTHORING.md`.
 
 Detailed execution flows: `references/execution-phases.md`, `references/orchestration-patterns.md`
 
@@ -382,6 +389,7 @@ Read only the files that match the current decision point.
 | `references/production-reliability-anti-patterns.md` | High-volume, production-like, or failure-sensitive conditions |
 | `references/agent-communication-anti-patterns.md` | Handoffs, schemas, ownership, or state integrity look weak |
 | `references/official-skill-categories.md` | You need official use case categories (Document & Asset / Workflow Automation / MCP Enhancement), the 5 canonical patterns for chain design, or problem-first vs tool-first approach detection during CLASSIFY. |
+| `_common/OPUS_47_AUTHORING.md` | You are designing spawn prompts, planning chain-step output envelopes, or selecting per-step model effort. Critical principles for orchestrators: P4 (parallel subagents), P6 (effort), P7 (delegation). |
 
 ## Operational Notes
 

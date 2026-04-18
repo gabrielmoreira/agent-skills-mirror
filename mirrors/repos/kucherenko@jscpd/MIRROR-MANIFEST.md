@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kucherenko/jscpd` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `kucherenko/jscpd` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kucherenko/jscpd` — 26 default patterns, 0 followed patterns, 1 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`SKILL.md`](SKILL.md) |
+| 1 | ✓ | [`.agents/skills/agent-browser/references/authentication.md`](.agents/skills/agent-browser/references/authentication.md) |
+| 2 | ✓ | [`.agents/skills/agent-browser/references/commands.md`](.agents/skills/agent-browser/references/commands.md) |
+| 3 | ✓ | [`.agents/skills/agent-browser/references/profiling.md`](.agents/skills/agent-browser/references/profiling.md) |
+| 4 | ✓ | [`.agents/skills/agent-browser/references/proxy-support.md`](.agents/skills/agent-browser/references/proxy-support.md) |
+| 5 | ✓ | [`.agents/skills/agent-browser/references/session-management.md`](.agents/skills/agent-browser/references/session-management.md) |
+| 6 | ✓ | [`.agents/skills/agent-browser/references/snapshot-refs.md`](.agents/skills/agent-browser/references/snapshot-refs.md) |
+| 7 | ✓ | [`.agents/skills/agent-browser/references/video-recording.md`](.agents/skills/agent-browser/references/video-recording.md) |
+| 8 | ✓ | [`.agents/skills/agent-browser/SKILL.md`](.agents/skills/agent-browser/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/agent-browser/templates/authenticated-session.sh`](.agents/skills/agent-browser/templates/authenticated-session.sh) |
+| 10 | ✓ | [`.agents/skills/agent-browser/templates/capture-workflow.sh`](.agents/skills/agent-browser/templates/capture-workflow.sh) |
+| 11 | ✓ | [`.agents/skills/agent-browser/templates/form-automation.sh`](.agents/skills/agent-browser/templates/form-automation.sh) |
+| 12 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

@@ -63,6 +63,7 @@ Route elsewhere when:
 - Keep per-file token budgets explicit. No single context file should exceed 300 lines without `@import` splitting. For CLAUDE.md density management, hand off to Hone.
 - Design cache-friendly topology. Group files by change frequency so prompt cache prefixes remain stable across turns.
 - Use `git mv` for all file moves during APPLY phase. Verify build passes after each batch of moves before proceeding.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing layout, CLAUDE.md, file token sizes, and grep-discoverability of names at AUDIT — LLM-friendly topology depends on grounded baseline), P5 (think step-by-step at DESIGN — cache-friendly grouping by change frequency and progressive-disclosure ordering decisions drive context-cost across every future call)** as critical for Nest. P2 recommended: calibrated structure proposal preserving naming/token-budget rationale. P1 recommended: front-load LLM target and per-file token budget at AUDIT.
 
 ## Boundaries
 
@@ -263,6 +264,7 @@ When input contains `## NEXUS_ROUTING`, return results via:
 | `references/audit-checklist.md` | Running AUDIT or VERIFY phase, need scoring criteria and test patterns |
 | `references/layout-patterns.md` | Designing new structure, need standard LLM-optimized templates |
 | `references/naming-guide.md` | Evaluating or fixing file/folder naming for LLM discoverability |
+| `_common/OPUS_47_AUTHORING.md` | Sizing the structure proposal, deciding adaptive thinking depth at DESIGN, or front-loading LLM target/token budget at AUDIT. Critical for Nest: P3, P5 |
 
 ## Operational
 

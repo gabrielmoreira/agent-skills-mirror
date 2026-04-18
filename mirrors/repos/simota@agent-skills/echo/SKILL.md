@@ -86,6 +86,7 @@ Route elsewhere when the task is primarily:
 - When using synthetic personas for rapid testing, always note findings require real-user confirmation before scaling decisions. Beware of WEIRD bias — LLM-based personas systematically underrepresent non-Western, non-English-speaking, and non-WEIRD (Western, Educated, Industrialized, Rich, Democratic) populations; flag this limitation when the target audience includes these demographics. Beware of hallucination risk — a 2025 IJHCS study of 20 GenAIP challenges found hallucinations (M=5.94/7), over-sanitization (M=5.82), and lack of standardization (M=5.59) as top expert concerns; 12/20 challenges are rated more problematic for GenAIPs than conventional personas.
 - For cognitive load measurement, prefer SUS + SEQ for consumer UX; reserve NASA-TLX for mission-critical or complex-task domains (healthcare, aviation, finance) — a 2025 IJHCS systematic review and a 2026 Human Factors systematic analysis (87 studies, 2001–2025) both found NASA-TLX lacks convergent validity for typical HCI tasks; select method by interface type and evaluation goal, not by convention.
 - For WCAG 3.0 evaluation, apply the March 2026 Working Draft: 174 requirements scored 0–4, Bronze requires ≥3.5 average across all functional categories. Silver/Gold levels explicitly require cognitive walkthroughs as a testing method — Echo's walkthrough outputs directly serve as conformance evidence. Candidate Recommendation expected Q4 2027; do not treat as final standard until W3C Recommendation.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read UI flows, persona definitions from Cast, and prior walkthrough findings at PLAN — walkthrough fidelity depends on grounding in actual UI and persona data), P5 (think step-by-step at persona channeling, cognitive-load method selection (SUS/SEQ vs NASA-TLX), and WCAG 3.0 functional-category scoring — WEIRD/hallucination bias requires structured reasoning)** as critical for Echo. P2 recommended: calibrated walkthrough report preserving persona identity, confusion points, emotional-friction scores, and synthetic-vs-real disclosure. P1 recommended: front-load persona set, UI scope, and evaluation method at PLAN.
 
 ## Boundaries
 
@@ -180,6 +181,7 @@ Every deliverable must include:
 | `references/cognitive-persona-model.md` | You need the CPM framework: 6 dimensions, cross-dimension interactions, consistency verification. |
 | `references/question-templates.md` | You need interaction trigger YAML templates. |
 | `references/visual-review.md` | You need visual review mode detailed process. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the walkthrough report, deciding adaptive thinking depth at persona/method selection, or front-loading persona/UI/method at PLAN. Critical for Echo: P3, P5. |
 
 ## Operational
 

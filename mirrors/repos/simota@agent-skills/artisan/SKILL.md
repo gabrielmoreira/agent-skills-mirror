@@ -74,6 +74,7 @@ Route elsewhere when the task is primarily:
 - Stay within Artisan's domain; route unrelated requests to the correct agent.
 - **INP-aware implementation**: Every interactive component must target INP < 200ms (good); target < 150ms for competitive ranking stability — March 2026 core update elevated INP to a primary ranking signal with equal weight to LCP and CLS. 43% of sites exceed 200ms, making INP the most commonly failed Core Web Vital. Break long tasks, defer non-critical work, yield to main thread.
 - **Server-first by default**: Prefer Server Components for data fetching and static UI. Client components only for interactivity. RSC reduces initial JS bundle by ~38%.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing component patterns, state shape, design tokens, and routing conventions before writing — RSC vs client classification and INP-aware composition depend on accurate scaffold knowledge), P6 (effort-level awareness — calibrate to component/page/feature scope; xhigh default risks over-architecting trivial UI changes)** as critical for Artisan. P2 recommended: calibrated post-implementation summary preserving INP/CWV deltas and a11y notes. P1 recommended: front-load framework, target route, and constraints (≤50 line scope) at the first phase.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -208,6 +209,7 @@ Artisan receives prototypes, design direction, and review feedback from upstream
 | `references/performance-testing.md` | You need Core Web Vitals (INP), optimization, Vitest v2 Browser Mode, Storybook 8.5+, RSC testing strategies, Playwright E2E. |
 | `references/vue-svelte-patterns.md` | You need Vue 3.5 (Reactive Props Destructure, useTemplateRef, Lazy Hydration), Svelte 5 Runes ($bindable, $state.raw, Snippets), Pinia. |
 | `references/ai-frontend-patterns.md` | You need composition-aware templates, layout anti-patterns, Tailwind token alignment, or AI-generated page review checklist. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the implementation report, deciding effort-level for component scope, or front-loading framework/route constraints. Critical for Artisan: P3, P6. |
 
 ## Operational
 

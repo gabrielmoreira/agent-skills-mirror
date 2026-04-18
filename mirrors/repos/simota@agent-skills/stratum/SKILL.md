@@ -80,6 +80,8 @@ Route elsewhere when:
 - Use the `group` keyword to visually cluster related elements within the same abstraction level (e.g., grouping containers by bounded context); groups can be nested via `structurizr.groupSeparator`. Groups are for visual organization only — they do not create new C4 abstraction levels. [Source: docs.structurizr.com/dsl/cookbook/groups]
 - Use `archetypes` to define reusable custom types (e.g., `application = container`, `datastore = container`) with preset defaults for technology, tags, and properties — reduces duplication, enforces consistency, and lets teams build domain-specific vocabulary on top of C4 abstractions. Archetypes can extend other archetypes. [Source: docs.structurizr.com/dsl/archetypes]
 - Use `!adrs` to embed Architecture Decision Records (supports adrtools, MADR, log4brains importers) and `!docs` to attach Markdown/AsciiDoc documentation directly in the workspace — keeps diagrams, decisions, and prose in a single navigable artifact. [Source: docs.structurizr.com/dsl/adrs]
+- Set workspace `scope` (`softwaresystem` | `landscape`) inside the `configuration` block — this triggers built-in validation that a software-system-scoped workspace defines containers/docs/decisions for exactly one system, and that a landscape-scoped workspace defines no containers. Strict validation mode rejects unscoped workspaces. Unscoped (`none`) is legacy and loses this safety net. [Source: docs.structurizr.com/workspaces/scope]
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing landscape, identifiers, archetypes, and team workspaces at MODEL — DSL composition depends on grounded structure), P5 (think step-by-step at MODEL — workspace extension, grouping, and identifier decisions cascade across every consuming view)** as critical for Stratum. P2 recommended: calibrated DSL + ADR/RFC outputs preserving rationale. P1 recommended: front-load target abstraction level (C1/C2/C3/C4) and audience at the first phase.
 
 ## Boundaries
 
@@ -114,6 +116,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Use generic labels like "business logic" or unexplained acronyms — ambiguity defeats the purpose of C4 modeling. [Source: infoq.com C4 model article]
 - Use forward references in Structurizr DSL — elements must be defined before being referenced in relationships; the DSL processes statements imperatively (top-to-bottom). Violating this produces cryptic parse errors. [Source: docs.structurizr.com/dsl]
 - Duplicate relationships at multiple C4 levels — define at the most specific level and rely on implied relationships to propagate upward; manual duplication causes drift when one level is updated but not the other. [Source: docs.structurizr.com/dsl]
+- Recommend the Structurizr cloud service for new deployments — the hosted service reaches End-of-Life on **30 September 2026** and becomes read-only on **30 June 2026**. Direct users to Structurizr Lite / on-premises / the CLI (static site export) instead, and note that the Structurizr Lite repo was archived **4 February 2026** in favor of the consolidated vNext tooling. [Source: docs.structurizr.com/eol, structurizr.com vNext announcement]
+- Assume Graphviz auto-layout is available in the Structurizr vNext UI — vNext removed Graphviz from the integrated renderer and uses Dagre exclusively; Graphviz remains callable via the standalone CLI/JSON pipeline but is no longer wired into the workspace UI, so `autolayout` directives resolve to Dagre. Do not ship DSL that depends on Graphviz-only behavior (e.g., subgraph-aware edge routing). [Source: structurizr.com vNext announcement]
 
 ## Workflow
 
@@ -254,6 +258,12 @@ workspace "[System Name]" "[Description]" {
     !identifiers hierarchical  // Use for multi-system models; enables dot-notation (e.g., system.api)
     !adrs adrs                 // Embed ADRs from ./adrs directory (adrtools/MADR/log4brains)
     !docs docs                 // Attach Markdown/AsciiDoc documentation from ./docs
+
+    configuration {
+        scope softwaresystem   // Enable strict validation: containers/docs bound to exactly one system.
+                               // Use `landscape` for multi-system overviews (containers forbidden).
+                               // Omit or use `none` only for legacy workspaces.
+    }
 
     // Define reusable custom types to reduce duplication and enforce consistency
     archetypes {
@@ -411,6 +421,7 @@ Stratum has no `references/` directory. All C4 methodology guidance is embedded 
 | `_common/BOUNDARIES.md` | You need agent role boundary definitions. |
 | `_common/OPERATIONAL.md` | You need standard operational protocols. |
 | `_common/HANDOFF.md` | You need handoff format specifications. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the DSL/ADR output, deciding adaptive thinking depth at MODEL, or front-loading target abstraction level/audience. Critical for Stratum: P3, P5. |
 
 ## Operational
 

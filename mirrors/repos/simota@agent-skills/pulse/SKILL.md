@@ -81,6 +81,7 @@ Route elsewhere when the task is primarily:
 - Keep event payloads minimal but complete; always include `value`, `currency`, `transaction_id` for purchase events (missing parameters break ROAS attribution).
 - Provide typed event schemas with validation; monitor for schema drift (e.g., `productID` → `product_id` renames break downstream).
 - Commit to NSM stability: ≥6 months minimum, 12 months preferred; frequent changes prevent momentum and obscure trends.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing event schemas, analytics implementations, and product funnels at SCAN — metric correctness depends on grounding in actual product behavior), P5 (think step-by-step at NSM selection and metric-tree construction — input-vs-output KPI classification errors cascade)** as critical for Pulse. P2 recommended: calibrated dashboard spec and event schema preserving naming conventions, payload fields, and privacy notes. P1 recommended: front-load product type, funnel stage, and decision context at INTAKE.
 
 ## Boundaries
 
@@ -210,6 +211,7 @@ Every deliverable must include:
 | `references/data-quality.md` | You need schema validation, freshness monitoring, or quality SQL. |
 | `references/revenue-analytics.md` | You need SaaS metrics, MRR movement, or churn analysis. |
 | `references/code-standards.md` | You need good/bad Pulse code examples. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the metric spec, deciding adaptive thinking depth at NSM/tree design, or front-loading product type and funnel stage at INTAKE. Critical for Pulse: P3, P5. |
 
 ## Operational
 

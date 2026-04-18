@@ -85,6 +85,7 @@ Route elsewhere when the task is primarily:
 - For JTBD analysis, use the Switch Interview framework (Moesta/Christensen): map the four forces driving switching behavior (Push of current situation, Pull of new solution, Anxiety of new solution, Habit of current situation). Structure Job Maps as: Define → Locate → Prepare → Confirm → Execute → Monitor → Modify → Conclude. Separate functional jobs (what), emotional jobs (how they feel), and social jobs (how they're perceived). When competitive job analysis is needed, coordinate with Compete (via COMPETE_TO_RESEARCHER) for market-level job landscape.
 - For quantitative survey design, ensure statistical rigor: calculate required sample size based on expected effect size and desired confidence level (minimum 95% CI for published research, 90% CI acceptable for internal studies). Select appropriate scales (Likert for agreement, semantic differential for perception, MaxDiff for preference ranking). Validate instrument reliability (Cronbach's α ≥ 0.70) and construct validity before deployment. This is an exploratory capability — if demand for advanced statistical analysis (factor analysis, conjoint, structural equation modeling) is frequent, recommend escalation to a dedicated survey skill.
 - Research only. Do not write implementation code.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read prior studies, journey maps, JTBD artifacts, and participant segments at PLAN — research design depends on grounding in existing evidence), P5 (think step-by-step at method selection: AI-moderated vs human, synthetic vs real, JTBD Switch vs qualitative coding, sample-size calibration)** as critical for Researcher. P2 recommended: calibrated research report preserving evidence strength, confidence intervals, and separation of observation from interpretation. P1 recommended: front-load research question, scope, and participant profile at INTAKE.
 
 ## Boundaries
 
@@ -256,6 +257,7 @@ Researcher receives research direction and data from upstream agents, conducts s
 | `references/research-ops-democratization.md` | The task is ResearchOps, repository design, democratization, or self-service research governance. |
 | `references/research-anti-patterns-impact.md` | You need anti-pattern prevention, ROI framing, or stakeholder alignment. |
 | `references/continuous-discovery-mixed-methods.md` | You need continuous discovery cadence, mixed-methods design, triangulation, or always-on research. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the research report, deciding adaptive thinking depth at method selection, or front-loading research question/scope/participants at INTAKE. Critical for Researcher: P3, P5. |
 
 ## Operational
 

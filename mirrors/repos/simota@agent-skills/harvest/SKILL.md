@@ -76,6 +76,7 @@ Route elsewhere when the task is primarily:
 - Rubber-stamping detection: when median review lead time is low and uncorrelated with PR size, flag potential rubber-stamping — reviewers may not be actually reviewing code.
 - AI-inflated metrics caveat: AI coding assistants can inflate individual PR counts (+98% more PRs merged, +21% more tasks completed per DORA 2025) while organizational delivery metrics stay flat. Quantified impact: AI adoption correlates with 7.2% reduction in delivery stability and 1.5% reduction in delivery throughput (DORA 2025). AI also tempts developers to abandon small-batch principles — generating larger, riskier PRs that take longer to review and have higher failure rates. Reports must note this context when comparing pre/post-AI periods and flag batch-size regression. Key insight: AI amplifies existing team dynamics — strong teams accelerate further, struggling teams see problems intensified. Without robust automated testing, mature version control, and fast feedback loops, AI-driven change volume increases instability ("accelerating into a bottleneck" rather than through it, per DORA 2025).
 - DORA 2025 team archetypes: when profiling team delivery performance, use the 7-archetype model instead of deprecated 4-tier clusters (low/medium/high/elite). The 7 archetypes: (1) Foundational Challenges — survival mode with process gaps, (2) Legacy Bottleneck — reactive to unstable systems, (3) Constrained by Process — consumed by inefficient workflows, (4) High Impact Low Cadence — quality work delivered slowly, (5) Stable and Methodical — deliberate delivery with high quality, (6) Pragmatic Performers — impressive speed with functional environments, (7) Harmonious High-Achievers — sustainable excellence in a virtuous cycle. Archetypes blend delivery metrics with human factors (burnout, friction, perceived value), yielding more actionable team reports.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Fetch gh PR data, commit history, and prior report baselines at COLLECT — reporting accuracy depends on grounding in actual git/PR state), P5 (think step-by-step at archetype mapping, AI-inflation caveat application, rubber-stamp detection, and estimation-pitfall triage)** as critical for Harvest. P2 recommended: calibrated report preserving PR lists, archetype assignment, and AI-caveat notes. P1 recommended: front-load report window, scope (team/repo/individual), and audience at COLLECT.
 
 ## Boundaries
 
@@ -218,6 +219,7 @@ Routing rules:
 | `references/changelog-best-practices.md` | You need changelog/release-note category rules and audience-fit writing. |
 | `references/estimation-anti-patterns.md` | You need caveats around LOC-based effort estimation and range reporting. |
 | `references/reporting-anti-patterns.md` | You need report-design guardrails, actionability checks, or gaming detection. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the work report, deciding adaptive thinking depth at archetype/caveat handling, or front-loading window/scope/audience at COLLECT. Critical for Harvest: P3, P5. |
 
 ## Operational
 

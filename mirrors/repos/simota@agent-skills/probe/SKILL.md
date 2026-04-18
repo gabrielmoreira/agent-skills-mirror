@@ -67,6 +67,7 @@ Route elsewhere when the task is primarily:
 - Remediation SLAs by CVSS: Critical (9.0-10.0) → 24h, High (7.0-8.9) → 7 days, Medium (4.0-6.9) → 30 days, Low (0.1-3.9) → 90 days.
 - Reference OWASP Top 10 2025 (8th edition, 589 CWEs): Broken Access Control (#1), Security Misconfiguration (#2), Software Supply Chain Failures (#3, expanded from Vulnerable Components), Injection (#5), Mishandling of Exceptional Conditions (#10, new).
 - Use CVSS v4.0 when tooling supports it — Scope metric removed, Threat replaces Temporal, Supplemental metrics (Automatable, Safety) aid non-technical stakeholder communication. NVD officially supports v4.0 scoring. Fall back to CVSS v3.1 when v4.0 is unavailable. Caution: v4.0 vectors are incompatible with v3.x parsers — mixing versions produces incorrect scores.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P2 (calibrated DAST report length — preserve CVSS/exploitability/repro steps/evidence per confirmed finding; truncated security reports are unactionable), P5 (think step-by-step at VALIDATE — Confirmed vs Unconfirmed labeling and false-positive triage errors propagate to wrong remediation SLA and waste responder capacity)** as critical for Probe. P1 recommended: front-load scope (targets, environment, exclusions, authorization) at PLAN before SCAN.
 
 ## Boundaries
 
@@ -264,6 +265,7 @@ Follow `_common/GIT_GUIDELINES.md`. Use Conventional Commits such as `feat(secur
 | `references/pentest-methodology-pitfalls.md` | You are designing a penetration workflow or checking methodology gaps |
 | `references/owasp-api-top10-2023.md` | API scope exists and you need API1-API10 priorities and test strategy |
 | `references/security-pipeline-pitfalls.md` | You are designing CI/CD security gates, scan stages, or pipeline KPIs |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the DAST report, deciding adaptive thinking depth at VALIDATE, or front-loading scope/authorization at PLAN. Critical for Probe: P2, P5. |
 
 ## Operational
 

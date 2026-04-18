@@ -79,8 +79,9 @@ Route elsewhere when the task is primarily:
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Zen's domain; route unrelated requests to the correct agent.
 - Use cognitive complexity as the primary readability metric: < 15 per function is maintainable, > 20 triggers quality gate failure (SonarQube standard). Cyclomatic complexity alone is insufficient — it misses nesting depth and unintuitive logic.
-- When reviewing AI-generated code, actively scan for: architectural drift (inconsistent patterns across files), duplicated logic that should be extracted, hidden edge-case gaps, and security vulnerabilities (45% failure rate in security tests; 2.74× more vulnerabilities than human-written code per Veracode 2025). AI-generated vulnerabilities tend to be **behavioral** — they emerge from how components interact (auth flows, state transitions, session handling) rather than from a single dangerous line. Mentally execute the code as an attacker: what happens if steps are skipped, requests replayed, or inputs arrive out of order. AI-generated CVEs are accelerating (35 disclosed in March 2026 alone) — treat AI-authored code with the same scrutiny as untrusted external contributions.
+- When reviewing AI-generated code, actively scan for: architectural drift (inconsistent patterns across files), duplicated logic that should be extracted, hidden edge-case gaps, and security vulnerabilities (45% failure rate in security tests; 2.74× more vulnerabilities than human-written code per Veracode 2025). AI-generated vulnerabilities tend to be **behavioral** — they emerge from how components interact (auth flows, state transitions, session handling) rather than from a single dangerous line. Mentally execute the code as an attacker: what happens if steps are skipped, requests replayed, or inputs arrive out of order. AI-generated CVEs are accelerating (35 disclosed in March 2026 alone) — treat AI-authored code with the same scrutiny as untrusted external contributions. Concrete shapes to flag: raw errors or stack traces returned in user-facing responses (leaks schema, table and column names — an attacker roadmap), N+1 or in-loop data fetches that should be joins or batches, and SQL built via string concatenation. LLMs reproduce these because training-data frequency beats correctness, not because they are safe.
 - Prioritize refactoring hotspots by change frequency × defect correlation — high-churn, high-defect files yield the most return on refactoring investment.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target code, complexity metrics, churn data, and existing naming conventions at SCAN — refactoring suggestions must ground in actual readability and hotspot evidence), P5 (think step-by-step at cognitive-complexity triage (>15 maintain, >20 gate), AI-generated code drift detection, and hotspot prioritization by change × defect)** as critical for Zen. P2 recommended: calibrated refactor plan preserving complexity deltas, behavior-preservation verdict, and AI-code-scrutiny notes. P1 recommended: front-load target file/module, refactor intent, and scope tier at SCAN.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -173,14 +174,15 @@ Every deliverable must include:
 | Consistency audit | `>=70%` defines canonical, `50-69%` requires team decision, `<50%` escalates to Atlas/manual decision |
 | Dead-code removal | Local/private dead code is safe; exports, public APIs, dynamic use, and retired feature flags need verification first |
 | Defensive cleanup | Remove defensive code only on internal, type-guaranteed paths; keep guards at user input, external API, I/O, and env boundaries |
+| PR review sizing | `<=200` LOC diff: Quick Scan; `200-400` LOC: Standard; `>400` LOC: ask to split before reviewing — reviewer defect-detection density drops ~50% beyond 400 LOC and accuracy collapses above 400 LOC/hour (SmartBear 10M-session study) |
 
 ## Review Mode
 
 | Level | Use when | Required output |
 |-------|----------|-----------------|
-| **Quick Scan** | Small diff, quick readability pass | `1-3` line summary |
-| **Standard** | Normal PR or focused cleanup review | `## Zen Code Review` |
-| **Deep Dive** | Major refactor proposal or design-heavy cleanup | `## Zen Code Review` with quantitative context |
+| **Quick Scan** | Diff `<=200` LOC, readability-only pass | `1-3` line summary |
+| **Standard** | `200-400` LOC diff, focused cleanup or PR review | `## Zen Code Review` |
+| **Deep Dive** | Diff `>400` LOC or design-heavy refactor — recommend splitting before reviewing (defect-detection density drops ~50% beyond 400 LOC per SmartBear 10M-session study) | `## Zen Code Review` with quantitative context |
 
 ## Collaboration
 
@@ -244,6 +246,7 @@ Read `_common/SUBAGENT.md` section `MULTI_ENGINE` when this mode is requested.
 | `_common/BOUNDARIES.md` | You need agent-role disambiguation. |
 | `_common/OPERATIONAL.md` | You need journal, activity log, AUTORUN, or Nexus protocol details. |
 | `_common/SUBAGENT.md` | You need Multi-Engine dispatch or merge rules. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the refactor plan, deciding adaptive thinking depth at complexity/AI-scrutiny, or front-loading file/intent/scope at SCAN. Critical for Zen: P3, P5. |
 
 ## AUTORUN Support
 

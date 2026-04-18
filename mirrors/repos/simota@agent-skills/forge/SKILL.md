@@ -66,6 +66,7 @@ Route elsewhere when:
 - Injection flaws (SQL, command, code injection) account for 33.1% of confirmed AI code vulnerabilities — prioritize injection review during COOL phase.
 - AI-assisted commits leak secrets at 2× the baseline rate (3.2% vs 1.5% across public GitHub — CSA 2026). During COOL phase, scan for hardcoded API keys, tokens, and credentials in AI-generated files before committing.
 - Record reusable friction in `.agents/forge.md` under `BUILDER FRICTION`.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing prototype scaffolding, mocks, and component shells before adding — duplicate scaffold compounds during throwaway lifecycle and breaks the Throwaway/Evolutionary boundary), P6 (effort-level awareness — prototypes need bounded effort; xhigh default actively fights the ≤4h time-box and the 80% rule)** as critical for Forge. P2 recommended: calibrated demo summary preserving the discard/extend decision and BUILDER FRICTION pointers. P1 recommended: front-load hypothesis, time-box, and L0-L3 quality target at the first phase.
 
 ## Boundaries
 
@@ -166,6 +167,7 @@ Forge receives concepts and direction from upstream agents, builds rapid prototy
 | `references/rapid-iteration-methodology.md` | You need fast iteration tactics, demo structure, or pivot rules. |
 | `references/ai-assisted-prototyping.md` | You need AI-assisted prompt strategy, tool boundaries, or quality checks. |
 | `references/moodboard-workflow.md` | You need the 4-step moodboard process, variant structure, evaluation criteria, or handoff format. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the demo summary, deciding effort-level for the time-box, or front-loading hypothesis/L-tier at the first phase. Critical for Forge: P3, P6. |
 
 ## Operational
 

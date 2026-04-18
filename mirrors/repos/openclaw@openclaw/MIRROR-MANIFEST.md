@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 135 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 143 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 135 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 135 |
+| Files         | 143 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -176,24 +176,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 115 | ✓ | [`skills/wacli/SKILL.md`](skills/wacli/SKILL.md) |
 | 116 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
 | 117 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
-| 118 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
-| 119 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
-| 120 | ✓ | [`src/gateway/protocol/AGENTS.md`](src/gateway/protocol/AGENTS.md) |
-| 121 | ✓ | [`src/gateway/protocol/CLAUDE.md`](src/gateway/protocol/CLAUDE.md) |
-| 122 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
-| 123 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
-| 124 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
-| 125 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
-| 126 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
-| 127 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
-| 128 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
-| 129 | ✓ | [`test/helpers/channels/AGENTS.md`](test/helpers/channels/AGENTS.md) |
-| 130 | ✓ | [`test/helpers/channels/CLAUDE.md`](test/helpers/channels/CLAUDE.md) |
-| 131 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
-| 132 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 133 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
-| 134 | ✓ | [`vendor/a2ui/.gemini/GEMINI.md`](vendor/a2ui/.gemini/GEMINI.md) |
-| 135 | ✓ | [`vendor/a2ui/specification/0.8/eval/GEMINI.md`](vendor/a2ui/specification/0.8/eval/GEMINI.md) |
+| 118 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 119 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
+| 120 | ✓ | [`src/agents/pi-embedded-runner/run/AGENTS.md`](src/agents/pi-embedded-runner/run/AGENTS.md) |
+| 121 | ✓ | [`src/agents/pi-embedded-runner/run/CLAUDE.md`](src/agents/pi-embedded-runner/run/CLAUDE.md) |
+| 122 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
+| 123 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
+| 124 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
+| 125 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
+| 126 | ✓ | [`src/gateway/AGENTS.md`](src/gateway/AGENTS.md) |
+| 127 | ✓ | [`src/gateway/CLAUDE.md`](src/gateway/CLAUDE.md) |
+| 128 | ✓ | [`src/gateway/protocol/AGENTS.md`](src/gateway/protocol/AGENTS.md) |
+| 129 | ✓ | [`src/gateway/protocol/CLAUDE.md`](src/gateway/protocol/CLAUDE.md) |
+| 130 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
+| 131 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
+| 132 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
+| 133 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
+| 134 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
+| 135 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
+| 136 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 137 | ✓ | [`test/helpers/channels/AGENTS.md`](test/helpers/channels/AGENTS.md) |
+| 138 | ✓ | [`test/helpers/channels/CLAUDE.md`](test/helpers/channels/CLAUDE.md) |
+| 139 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
+| 140 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 141 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 142 | ✓ | [`vendor/a2ui/.gemini/GEMINI.md`](vendor/a2ui/.gemini/GEMINI.md) |
+| 143 | ✓ | [`vendor/a2ui/specification/0.8/eval/GEMINI.md`](vendor/a2ui/specification/0.8/eval/GEMINI.md) |
 
 ---
 

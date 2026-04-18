@@ -85,6 +85,7 @@ Route elsewhere when the task is primarily:
 - Quality gate: every reframing must pass the ASN test — **A**ctionability (suggests concrete next step), **S**pecificity (applies to THIS problem, not any problem), **N**ovelty (not a synonym of the original framing).
 - As an AI agent, vertical reasoning reinforces existing thought structures rather than breaking them (de Bono's core insight). Serendipity Injection is not optional decoration — it is the primary mechanism to escape pattern-reinforcing loops.
 - When TRIZ is applied, identify the specific contradiction before selecting inventive principles. Use the matrix version appropriate to the domain: classical Altshuller (39 params), Matrix 2003 (48 params — validated against 150K+ modern patents, confirmed more effective in multiple comparison studies), or Matrix 2022. LLM-assisted tools — AutoTRIZ (4-module pipeline: Problem Identification → Contradiction Detection → Principle Retrieval → Solution Generation; validated at 70% expert-match rate on 10 benchmark problems), AICON (AI-Driven Contradiction Navigator using RAG to dynamically access cross-domain knowledge and identify inventive principles for previously unaddressed matrix areas), and TRIZ Contradiction Solver — can automate contradiction detection and principle retrieval while preventing hallucination by querying the matrix deterministically in the retrieval step.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read problem framing, prior attempts, and stuck-point evidence at ENTER — reframing value depends on grounding in actual constraint structure, not abstract restatement), P5 (think step-by-step at Serendipity Injection, TRIZ contradiction identification, and ASN-test gating (Actionability/Specificity/Novelty) — vertical reasoning reinforces rather than breaks patterns)** as critical for Flux. P2 recommended: calibrated reframing preserving ASN-test verdicts, specific contradiction, and concrete next step. P1 recommended: front-load problem statement, stuck-point evidence, and desired reframe axis at ENTER.
 
 ## Boundaries
 
@@ -296,6 +297,7 @@ Every deliverable must include:
 | `references/anti-patterns.md` | You need to guard against superficial reframing, framework abuse, or false insights. |
 | `references/collaboration-packets.md` | You need handoff formats for partner agents. |
 | `references/bias-catalog.md` | You need the full bias taxonomy, detection signals, and debiasing techniques for AUDIT mode. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the reframing output, deciding adaptive thinking depth at contradiction/ASN gating, or front-loading problem/stuck-point/axis at ENTER. Critical for Flux: P3, P5. |
 
 ---
 

@@ -70,6 +70,7 @@ Route elsewhere when the task is primarily:
 - Recognize that GenAI does not merely reproduce traditional persona biases — it makes them more convincing and harder to detect (evolutionary amplification). Apply bias audits more rigorously for AI-assisted personas than for manually created ones. A systematic review of 52 studies found only 19.2% followed standard persona evaluation approaches.
 - Include persona refresh anchors in multi-turn delivery packets. LLM persona consistency degrades `30%+` after `8–12` dialogue turns due to transformer attention decay; DISTRIBUTE packets for multi-turn consuming agents (e.g., Echo walkthroughs) must specify recommended refresh intervals.
 - Do not write repository source code.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing personas, registry, and evidence sources at SCAN — persona quality depends on triangulated grounding), P5 (think step-by-step at SYNTH — confidence scoring and identity-preservation decisions drive bias amplification risk)** as critical for Cast. P2 recommended: calibrated persona packets preserving evidence trails and confidence scores. P1 recommended: front-load mode (CONJURE/REFRESH/AUDIT) and scope at the first phase.
 
 ## Boundaries
 
@@ -282,6 +283,7 @@ Do not parallelize EVOLVE or FUSE — these require sequential confidence recalc
 | `references/persona-validation.md` | You are evaluating evidence quality, triangulation, clustering, validation status, or auditing persona quality (includes anti-patterns). |
 | `references/persona-governance.md` | You are deciding update cadence, retirement, or organizational rollout. |
 | `_common/AI_PERSONA_RISKS.md` | AI generation, human review, or bias/ethics risk is involved. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the persona packet, deciding adaptive thinking depth at SYNTH, or front-loading mode/scope at the first phase. Critical for Cast: P3, P5. |
 
 ## Operational
 

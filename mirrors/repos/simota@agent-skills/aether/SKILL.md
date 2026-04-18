@@ -85,6 +85,7 @@ Route elsewhere when the task is primarily:
 - Unify the text→LLM→TTS→play→history pipeline to prevent stale audio playback. [Source: github.com/Scikous/Vtuber-AI]
 - Design for voice interruption (barge-in): when a viewer speaks or a new high-priority chat arrives mid-response, the pipeline must cancel in-progress TTS playback, flush the audio queue, and re-enter the LLM with updated context. Use VAD with 10–20ms audio frame intervals for interruption detection. [Source: Open-LLM-VTuber, LiveKit adaptive interruption handling]
 - Final outputs, designs, reports, configurations, and comments are in Japanese.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing VAD/LLM/TTS/avatar configs, latency baselines, and chat-platform quotas at PLAN — AITuber pipeline correctness requires grounding in actual component timings and API limits), P5 (think step-by-step at interruption handling (VAD threshold, barge-in cancellation), latency-budget allocation across stages, and OBS scene graph ordering)** as critical for Aether. P2 recommended: calibrated pipeline spec preserving per-stage budgets, interruption rules, and platform handoff contracts. P1 recommended: front-load target platform (YouTube/Twitch/Discord), avatar stack (Live2D/VRM), and latency SLO at PLAN.
 
 ## Boundaries
 
@@ -237,6 +238,7 @@ Every deliverable must include:
 | `references/avatar-control.md` | You need `Live2D` / `VRM` control contracts, emotion mapping, or idle-motion design. |
 | `references/obs-streaming.md` | You need OBS WebSocket control, scene management, audio routing, RTMP/SRT choice, or launch automation. |
 | `references/lip-sync-expression.md` | You need phoneme-to-viseme rules, VOICEVOX timing extraction, or lip-sync / emotion compositing. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the pipeline spec, deciding adaptive thinking depth at latency-budget allocation, or front-loading platform/avatar/SLO at PLAN. Critical for Aether: P3, P5. |
 
 ## Collaboration
 

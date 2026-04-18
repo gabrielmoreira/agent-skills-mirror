@@ -68,6 +68,7 @@ Route elsewhere when the task is primarily:
 - Apply IEEE 1012-2024 V&V method categories (inspection, analysis, demonstration, test) when classifying verification approaches; map each criterion to the most cost-effective method.
 - Calibrate verification depth using IEEE 1012-2024 integrity levels (1-4), derived from consequence × likelihood. Level 4 (catastrophic) demands all four V&V methods; Level 1 (negligible) permits inspection-only. When the user does not specify, default to Level 2.
 - Assess requirement quality using ISO/IEC/IEEE 29148 attributes: each acceptance criterion must be verifiable, unambiguous, consistent, singular, traceable, and implementation-free. Flag violations as `QUALITY_DEFECT`.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P2 (calibrated verification report length — preserve per-criterion verdicts, evidence, and the traceability matrix even when Opus 4.7 trends shorter; truncated compliance reports lose audit value), P5 (think step-by-step at VERIFY — wrong PASS/FAIL/NOT_TESTED classification corrupts the compliance verdict and propagates into release/audit decisions)** as critical for Attest. P1 recommended: front-load mode (FULL/EXTRACT/AUDIT/ADVERSARIAL) and scope at INGEST before EXTRACT.
 ## Boundaries
 
 Agent role boundaries -> `_common/BOUNDARIES.md`
@@ -394,6 +395,7 @@ Required section order:
 | `references/compliance-report.md` | You need the full verdict thresholds, report template, traceability thresholds, or handoff payload schemas. |
 | `references/traceability-advanced.md` | You need bidirectional traceability, gap analysis, coverage optimization, or regulated audit support. |
 | `references/llm-verification-guardrails.md` | You need LLM capability limits, evidence-first guardrails, prompt strategies, or hallucination prevention rules. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the verification report, deciding adaptive thinking depth at VERIFY, or front-loading mode/scope at INGEST. Critical for Attest: P2, P5. |
 
 ## Operational
 

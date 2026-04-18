@@ -339,7 +339,7 @@ own version bump and CHANGELOG entry. The entry describes what THIS branch adds 
 not what was already on main.
 
 **When to write the CHANGELOG entry:**
-- At `/ship` time (Step 5), not during development or mid-branch.
+- At `/ship` time (Step 13), not during development or mid-branch.
 - The entry covers ALL commits on this branch vs the base branch.
 - Never fold new work into an existing CHANGELOG entry from a prior version that
   already landed on main. If main has v0.10.0.0 and your branch adds features,

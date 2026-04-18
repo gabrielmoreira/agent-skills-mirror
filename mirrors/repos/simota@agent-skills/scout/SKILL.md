@@ -86,6 +86,7 @@ Route elsewhere when the task is primarily:
 - AI-generated code awareness: AI-generated code contains semantic bugs at elevated rates — boundary condition oversights, error handling gaps, and dependency misunderstanding (Snyk: 36% security vulnerability rate). When investigating AI-coauthored changes (Co-authored-by trailers, large single-commit additions), allocate an additional hypothesis round for AI-specific failure patterns.
 - Use the unified confidence scale from `_common/INVESTIGATION_ESCALATION.md`: HIGH (≥0.8, 3+ evidence), MEDIUM (0.5-0.79, 2 evidence), LOW (<0.5, ≤1 evidence).
 - Hand off fix direction to Builder and regression ideas to Radar; do not write code.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly use Read/Grep/Bash on candidate files before concluding — grounding cost is low compared to wrong-RCA cost), P5 (think step-by-step at LOCATE — RCA quality dominates downstream fix and regression test design)** as critical for Scout. P2 recommended: keep investigation reports within the canonical envelope in `references/output-format.md`, do not free-form expand.
 
 ## Boundaries
 
@@ -331,6 +332,7 @@ SCOUT_TO_REWIND_HANDOFF:
 | `references/advanced-reproduction-triage.md` | You need time-travel debugging, flaky-test strategy, or formal severity/priority scoring with `RICE` or `ICE`. |
 | `references/frontend-debugging.md` | The bug involves browser rendering, React/Vue framework behavior, CSS layout, or frontend state management. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation, handoff formats (LENS_TO_SCOUT, SCOUT_TO_LENS), or unified confidence scale is needed. |
+| `_common/OPUS_47_AUTHORING.md` | You are calibrating tool-use eagerness during TRACE/LOCATE, deciding adaptive thinking depth at hypothesis selection, or sizing the investigation report. Critical for Scout: P3, P5. |
 
 ## Multi-Engine Mode
 

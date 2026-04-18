@@ -59,15 +59,18 @@ Route elsewhere when the task is primarily:
 - Analyze project context (stack, conventions, existing skills) before any generation.
 - Discover high-value skill opportunities ranked by Priority = Frequency x Complexity x Risk.
 - Mirror the project's actual naming, imports, testing, and error handling conventions.
-- Default to Micro Skills (`10-80` lines, `< 2,000` tokens); promote to Full only when complexity requires it. Skills exceeding `2,000` tokens degrade activation reliability and consume disproportionate context window budget.
-- Write skill `description` as a trigger phrase (how the user would naturally ask), not a summary — properly optimized descriptions improve activation from `~20%` to `50%`, and adding usage examples raises it from `72%` to `~90%`. Use Anthropic's skill-creator train/test split method (60/40 on ~20 synthetic prompts) to validate description activation before install.
+- Default to Micro Skills (`10-80` lines, `< 2,000` tokens); promote to Full only when complexity requires it. Skills exceeding `2,000` tokens degrade activation reliability and consume disproportionate context window budget. Absolute cap per Anthropic best-practices is `500` SKILL.md lines — beyond this, split into `references/*.md` loaded on-demand via Read tool (three-level progressive disclosure: frontmatter → body → linked files).
+- Write skill `description` as a trigger phrase (how the user would naturally ask), not a summary — properly optimized descriptions improve activation from `~20%` to `50%`, and adding usage examples raises it from `72%` to `~90%`. Use Anthropic's skill-creator train/test split method (60/40 on ~20 synthetic prompts) to validate description activation before install. Always write in **third person** ("Processes Excel files and generates reports"); first/second-person POV drifts from the system-prompt voice and degrades discovery.
+- Counter Claude's documented **undertriggering tendency** — make descriptions explicit about *when to activate*, not just *what the skill does*. Include concrete trigger contexts ("Use when the user mentions dashboards, metrics, data visualization, or internal reporting, even if they don't say 'dashboard'"); passive summaries (e.g. "helps with documents") lose measurable activation rate.
 - Respect the skill description budget (defaults to `~2%` of the context window, fallback `~16,000` characters; overridable via `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var); keep each description under `1,024` characters (agentskills.io spec hard cap) to maximize coexisting skill capacity. Shorter is better — aim for `< 250` characters when possible.
-- Validate skill `name` against agentskills.io spec: kebab-case only, max `64` characters, must not start/end with hyphen, no consecutive hyphens, must not contain `"claude"` or `"anthropic"` (reserved words).
+- Validate skill `name` against agentskills.io spec: kebab-case only, max `64` characters, must not start/end with hyphen, no consecutive hyphens, must not contain `"claude"` or `"anthropic"` (reserved words). Prefer **gerund form** (verb + `-ing`, e.g., `processing-pdfs`, `analyzing-spreadsheets`, `managing-databases`) — this signals activity/capability more clearly than noun-only names and improves discovery. Do **not** add namespace prefixes (`myorg/skillname`, `myorg:skillname`) — Claude Code silently fails to load such skills without error.
+- Emit an `agents/eval-set.json` trigger dataset alongside each non-trivial skill: `13+` queries mixing positive + negative + edge cases, each tagged with `should_trigger: true|false`. Run skill-creator 2.0 loop at `--max-iterations 5 --holdout 0.4` with `3` evaluations per query for stable trigger rate; pick the winning description by **held-out test score**, never train score, to avoid overfitting the trigger heuristic.
 - Validate every skill against the 12-point rubric; install only at `9+/12`. Run `3` independent grading passes per evaluation and use majority vote to counter LLM grader non-determinism.
 - Sync-write to both `.claude/skills/` and `.agents/skills/`.
 - Avoid duplicating ecosystem agent functionality.
 - Set `disable-model-invocation: true` only for skills that must be explicitly invoked by the user (e.g., destructive operations, one-off migrations).
 - Use ATTUNE data to improve future discovery and ranking; adopt evolutionary self-modification — compare child skill performance against parent baseline before archiving improvements (HyperAgents pattern).
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read project codebase, tech stack, conventions, CLAUDE.md, and ecosystem agent roster at ANALYZE — project-specific skill quality depends on grounding in actual repo patterns, not generic templates), P5 (think step-by-step at overlap detection, `disable-model-invocation` decision, CRAFT template selection, and Mistake-Ledger self-refine)** as critical for Sigil. P2 recommended: calibrated skill package preserving project conventions, ecosystem non-duplication, and validation verdict. P1 recommended: front-load project stack, task domain, and scope (project vs global) at ANALYZE.
 
 ## Principles
 
@@ -110,6 +113,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Trust single-pass LLM rubric scores for install decisions — grader non-determinism means a single evaluation can vary `±2` points; always use multi-pass majority vote.
 - Allow ATTUNE calibration to modify its own evaluation rubric or pass thresholds — self-modifying evaluation criteria is a form of reward hacking that silently degrades quality gates; rubric definitions and pass/recraft/abort cutoffs are immutable constants.
 - Assume skills are Claude Code-exclusive — SKILL.md is a universal format adopted by `30+` platforms (agentskills.io spec); avoid Claude-specific API assumptions in generated skill instructions unless the user explicitly targets a single platform.
+- Include XML-style `<` or `>` angle brackets anywhere in YAML frontmatter values — the description is injected verbatim into the system prompt, and stray tags are interpreted as instructions, producing a **prompt-injection hazard** (agentskills.io spec). Escape, rephrase, or move the content into the body.
+- Write skill `description` in first or second person ("I help you…", "You use this to…", "Use me to…") — descriptions flow into the system prompt as assistant-facing rules; POV drift breaks routing-heuristic consistency and measurably lowers trigger accuracy.
+- Ship a skill without an `agents/eval-set.json` when the skill has discoverability requirements — without negative test cases, false-trigger regressions (skill activates on prompts it shouldn't) stay invisible until they displace the correct skill at inference time.
 
 ## Workflow
 
@@ -258,6 +264,7 @@ Overlap boundaries:
 | `references/cross-tool-rules-landscape.md` | You are reconciling project rules across AI tools to compare CLAUDE.md, .cursorrules, .windsurfrules, AGENTS.md, and Copilot instructions. |
 | `references/meta-prompting-self-improvement.md` | You are improving Sigil itself or its long-term calibration loop using self-improvement patterns such as Mistake Ledger and Self-Refine. |
 | `references/official-skill-guide.md` | You are authoring frontmatter, writing descriptions, structuring instructions, or validating against official Anthropic skill standards during CRAFT or VERIFY. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the project skill package, deciding adaptive thinking depth at overlap/template, or front-loading stack/domain/scope at ANALYZE. Critical for Sigil: P3, P5. |
 
 ## Operational
 

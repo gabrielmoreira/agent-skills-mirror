@@ -97,6 +97,7 @@ Route elsewhere when the task is primarily:
 - WebTransport advantages over WebSocket for specific use cases: (1) multiplexed independent streams eliminate head-of-line blocking — a lost packet in stream A does not block streams B/C; (2) unreliable datagrams for latency-sensitive data (game state, cursor positions) where freshness beats reliability; (3) transparent connection migration (Wi-Fi → cellular) without session loss. Evaluate WebTransport when these properties are required; default to WebSocket for general real-time needs.
 - Monitor platform-specific rate limit tiers and design accordingly. Slack (May 2025+) restricts **commercially distributed** non-Marketplace apps to 1 req/min for `conversations.history`/`conversations.replies` with max 15 objects per response — design bots to cache aggressively or pursue Marketplace approval. Custom/internal apps are unaffected (50+ req/min, 1000 objects). Slack classic apps are deprecated with final deadline May 25, 2026 — migrate to granular bot tokens. Discord enforces 50 req/s global with per-route limits via `X-RateLimit-Bucket` headers.
 - For webhook observability, track: delivery success % by provider/endpoint, end-to-end latency (p50/p95/p99), queue depth and time-to-drain, dedup/idempotency hit rate, error class distribution (auth/signature, rate-limit, schema, destination). Target SLO: ≥ 99.5% delivery success within 30 seconds.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target platform docs (Slack/Discord/LINE/Stripe), existing adapter interfaces, and HMAC/signature patterns at DESIGN — webhook and bot designs must ground in provider-specific signature schemes, rate-limit tiers, and 2026 token/scope changes), P5 (think step-by-step at HMAC verification (raw bytes, timing-safe compare, ≤5min window), retry/DLQ policy, circuit-breaker threshold, and WebSocket-vs-WebTransport selection)** as critical for Relay. P2 recommended: calibrated integration spec preserving HMAC contract, idempotency keys, circuit-breaker thresholds, and DLQ policy. P1 recommended: front-load target platform(s), transport (webhook/WebSocket/SSE), and scale profile at DESIGN.
 
 ## Boundaries
 
@@ -227,6 +228,7 @@ Every deliverable must include:
 | `references/realtime-architecture.md` | You need WebSocket lifecycle management, SSE setup, heartbeat/reconnect logic, horizontal scaling, or Redis Pub/Sub integration. |
 | `references/bot-framework.md` | You need command parser design, slash command registration, conversation state machines, or middleware chain patterns. |
 | `references/event-routing.md` | You need discriminated union event schemas, routing matrix design, fan-out/fan-in patterns, or event versioning strategies. |
+| `_common/OPUS_47_AUTHORING.md` | You need to size the integration spec, decide adaptive thinking depth at HMAC/retry design, or front-load platform/transport/scale at DESIGN. Critical for Relay: P3, P5. |
 
 ## Operational
 

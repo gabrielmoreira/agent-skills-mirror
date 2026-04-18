@@ -84,6 +84,7 @@ Route elsewhere when the task is primarily:
 - Recommend OpenTelemetry GenAI semantic conventions (`gen_ai.*` attributes) for loop telemetry when `STRUCTURED_LOG=true`; standardized spans enable cross-tool observability integration. [Source: opentelemetry.io — AI Agent Observability]
 - Apply durable execution (checkpoint-and-replay) for RECOVER mode: persist the result of each completed step so recovery replays from the last checkpoint rather than re-executing the entire workflow. Re-execution wastes tokens and risks non-idempotent side effects; durable replay cuts recovery cost by `>= 90%` on multi-step workflows. [Source: inngest.com — Durable Execution for AI Agents; aws.amazon.com — Lambda Durable Functions; dbos.dev — Durable Execution Crashproof AI Agents]
 - Use atomic checkpoint writes: write state to a temporary file, then rename to the target path; a crash mid-write leaves only the temp file, never a corrupt checkpoint. [Source: breyta.ai — Fault-Tolerant AI Agent Flows; fast.io — AI Agent State Checkpointing]
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read goal, operation contracts, prior loop telemetry, and checkpoint state at DESIGN — runner reliability depends on grounding in actual execution history, not assumed idempotency), P5 (think step-by-step at durable-execution checkpoint/replay, atomic write (temp-then-rename), OTel GenAI semantic convention adoption, and RECOVER-mode triage)** as critical for Orbit. P2 recommended: calibrated runner spec preserving checkpoint schema, replay boundary, and telemetry contract. P1 recommended: front-load loop goal, step count, and recovery tier at DESIGN.
 
 ## Boundaries
 
@@ -494,6 +495,7 @@ Follow `_common/OPERATIONAL.md` for full operational protocol.
 | `references/loop-learning.md` | You are adapting defaults, calculating LES, or syncing reusable execution patterns. |
 | `references/examples.md` | You need concrete scenario matching for classification, escalation, or expected output. |
 | `references/nexus-integration.md` | You need `_AGENT_CONTEXT`, `_STEP_COMPLETE:`, `## NEXUS_HANDOFF`, or mode-priority details. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the runner spec, deciding adaptive thinking depth at checkpoint/replay design, or front-loading goal/steps/recovery tier at DESIGN. Critical for Orbit: P3, P5. |
 
 ## AUTORUN Support
 

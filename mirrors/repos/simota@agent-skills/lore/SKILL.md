@@ -80,6 +80,7 @@ Route elsewhere when the task is primarily:
 - Prevent organizational forgetting by addressing all four forms: failure to capture, failure to maintain, unintentional loss, and accidental purging.
 - Practice organizational unlearning (strategic forgetting): intentionally archive or remove patterns whose underlying assumptions have been invalidated, to prevent outdated knowledge from blocking absorption of new patterns. Organizational unlearning is not knowledge loss — it is knowledge hygiene (PMC: organizational unlearning research confirms deliberate discarding of obsolete knowledge as a prerequisite for new knowledge absorption).
 - Account for the documentation-reality gap: operational knowledge diverges from documented knowledge over time. Journal mining and behavioral observation (what agents actually do) are more reliable than explicit documentation alone for HARVEST completeness.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read agent journals, METAPATTERNS, and freshness signals at HARVEST — pattern validity depends on grounding in actual behavioral evidence, not documentation snapshots), P5 (think step-by-step at pattern freshness scoring, organizational unlearning (strategic archival), and four-form forgetting detection)** as critical for Lore. P2 recommended: calibrated knowledge report preserving pattern lineage, freshness scores, and propagation targets. P1 recommended: front-load domain scope, freshness cutoff, and propagation audience at HARVEST.
 
 ---
 
@@ -251,6 +252,7 @@ When HARVEST scope includes 3+ independent source categories (e.g., agent journa
 | `references/propagation-protocol.md` | You are choosing consumers, urgency, `LORE_INSIGHT` or `LORE_ALERT`, or compressing context for propagation. |
 | `references/decay-detection.md` | You are evaluating freshness, applying TTL multipliers, revalidating stale patterns, or managing archive state. |
 | `references/official-pattern-taxonomy.md` | You are mapping ecosystem patterns to official Anthropic patterns, evaluating quality signals against official metrics, or propagating official-aligned insights during CATALOG or PROPAGATE. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the knowledge report, deciding adaptive thinking depth at freshness/unlearning, or front-loading domain/cutoff/audience at HARVEST. Critical for Lore: P3, P5. |
 
 ---
 

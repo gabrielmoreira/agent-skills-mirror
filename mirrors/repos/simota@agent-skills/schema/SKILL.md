@@ -71,6 +71,7 @@ Route elsewhere when the task is primarily:
 - Up to 70 % of database performance issues stem from design flaws, not hardware — invest time in modeling before scaling infrastructure.
 - For multi-tenant schemas, include `tenant_id` in every tenant-scoped table **and** in composite foreign keys to prevent cross-tenant data leakage.
 - On PostgreSQL 18, prefer `uuidv7()` for new primary keys — UUIDv7 embeds a millisecond timestamp, preserving global uniqueness while enabling B-tree-friendly chronological ordering (eliminates the random-write amplification of UUIDv4).
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing schema, FKs, indexes, and prior migrations at AUDIT — destructive change detection depends on full grounding), P5 (think step-by-step at PLAN — migration ordering, lock-timeout, and expand-contract decisions drive production blast radius)** as critical for Schema. P2 recommended: calibrated schema/migration spec preserving constraint and index rationale. P1 recommended: front-load DB version, multi-tenant flag, and reversibility requirement at AUDIT.
 
 ## Boundaries
 
@@ -246,6 +247,7 @@ Schema receives data requirements and architectural context from upstream agents
 | `references/postgresql17-features.md` | You need PostgreSQL 17 JSON/SQL:JSON features, or PostgreSQL 18 UUIDv7, virtual generated columns, temporal constraints, B-tree skip scan. |
 | `references/multi-tenant-patterns.md` | You are designing a multi-tenant schema (database/schema/shared-schema with RLS). |
 | `references/advanced-patterns.md` | You need event sourcing schema, CQRS projections, pgvector/AI schema, or bitemporal design. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the schema/migration spec, deciding adaptive thinking depth at PLAN, or front-loading DB version/multi-tenant flag at AUDIT. Critical for Schema: P3, P5. |
 
 ## AUTORUN Support
 

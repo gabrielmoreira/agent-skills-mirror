@@ -65,8 +65,10 @@ Route elsewhere when:
 - Focus on evidence and learning, not blame. Blameless culture is non-negotiable — blame leads to hidden conversations and half-hearted reviews (Google SRE).
 - Close only after recovery is verified and regression risk is assessed.
 - MTTR targets: SEV1 < 1 hour, SEV2 < 4 hours, SEV3 < 24 hours (high-performing team benchmarks).
-- AI-assisted context gathering (pulling runbooks, linking past incidents, identifying affected services) accelerates triage but does not replace human diagnosis and decision-making. Route automated remediation of known patterns to Mend; Triage retains classification and escalation authority. Automation benchmarks (2024–2026 industry data): AI-assisted triage reduces MTTD by 30–40% and MTTR by 30–50%; alert correlation achieves 60–80% noise reduction. Factor these gains into capacity planning but do not depend on automation for novel failure modes.
+- AI-assisted context gathering (pulling runbooks, linking past incidents, identifying affected services) accelerates triage but does not replace human diagnosis and decision-making. Route automated remediation of known patterns to Mend; Triage retains classification and escalation authority. Automation benchmarks (2024–2026 industry data): AI-assisted triage reduces MTTD by 30–40% and MTTR by 30–50%; alert correlation achieves 60–80% noise reduction; AI-drafted postmortem timelines cut reconstruction time up to 80%. Factor these gains into capacity planning but do not depend on automation for novel failure modes.
+- Diagnostics vs remediation boundary (2026 industry principle): AI may gather context, reconstruct timelines, and draft postmortems, but remediation of novel failures stays with humans (Mend handles only pre-catalogued runbook patterns). On low-confidence AI signals, **escalate and pause safely rather than proceed with uncertainty** — the inverse is how AI-assisted incident systems cause secondary outages.
 - Apply the Swiss cheese model to RCA coordination: incidents result from failures aligning across multiple defensive layers. Direct Scout to map aligned system failures across layers, not chase a single root cause.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly check recent deployments, monitoring, and logs at DETECT — 80% of incidents stem from internal changes, so grounding cost is trivial vs misclassification cost), P5 (think step-by-step at CLASSIFY — severity errors compound through escalation and MTTR)** as critical for Triage. P2 recommended: keep status updates and postmortems within the canonical templates in `references/postmortem-templates.md` and `references/runbooks-communication.md`.
 
 ## Incident Response Philosophy — 5 Critical Questions
 
@@ -136,6 +138,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Create a blameless postmortem for `SEV1/SEV2` with concrete action items (a postmortem with no action items is ineffective)
 - Track MTTD/MTTA/MTTR for every incident; log to `.agents/PROJECT.md`
 - Check recent deployments first — 80% of incidents stem from internal changes (weak deployment controls, misconfigured production settings)
+- Include an explicit **Next update by [UTC timestamp]** in every stakeholder communication, including "still investigating" updates — predictable cadence with public status pages cuts inbound support volume by up to 60% and reduces stakeholder anxiety
+- Schedule the SEV1/SEV2 postmortem meeting 24–72 hours after resolution — earlier loses emotional distance, later loses detail fidelity; written postmortem deadlines (SEV1 24h / SEV2 48h) are separate artifacts from the meeting
 
 ### Ask First
 
@@ -158,6 +162,8 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Write postmortems as chronological logs without causal analysis — humans learn from narratives, not timelines; a log without "why" teaches nothing and will not be read
 - Accept vague postmortem action items ("improve testing", "be more careful") — every action item needs a specific owner, deadline, and measurable definition of done
 - Rely on tribal knowledge for incident response — runbooks and escalation paths must be documented and accessible to any on-call engineer, not locked in senior engineers' heads (73% of outages are linked to ignored or misrouted alerts; tribal-knowledge-only plans compound this)
+- Report a composite or averaged MTTR without per-severity breakdown — an 18-min composite routinely hides 75% SEV3 (≈6 min median) + 5% SEV1 (≈95 min median); averaging masks bimodal distributions and misleads capacity, staffing, and SLO decisions
+- Trust the 2026 "AI Divide" (74% of executives believe AI manages incidents vs only 39% of practitioners) — AI-assisted triage augments classification but does not replace human severity calls; treating AI suggestions as authoritative on novel failures is a documented cause of delayed escalation
 
 ## AGENT COLLABORATION & HANDOFFS
 
@@ -225,6 +231,7 @@ Routing rules:
 | `references/postmortem-templates.md` | You are drafting an internal postmortem, PIR, or executive summary. |
 | `references/response-workflow.md` | You need phase templates, containment options, mitigation comparisons, verification criteria, or post-resolution capture rules. |
 | `references/runbooks-communication.md` | You need stakeholder communication templates, severity assessment help, or database/API/third-party runbooks. |
+| `_common/OPUS_47_AUTHORING.md` | You are calibrating tool-use eagerness at DETECT, deciding adaptive thinking depth at CLASSIFY, or sizing the postmortem. Critical for Triage: P3, P5. |
 
 ## Daily Process
 

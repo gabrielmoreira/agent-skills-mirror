@@ -141,6 +141,7 @@ Route elsewhere when the task is primarily:
 - Flag HTTP hooks with overly broad `allowedHttpHookUrls` patterns; verify `httpHookAllowedEnvVars` does not expose sensitive environment variables to external endpoints.
 - Verify MCP OAuth configurations include RFC 8707 resource indicators — tokens without explicit resource binding are vulnerable to mis-redemption attacks where a malicious server replays tokens against unintended services (MCP spec 2026-03-15).
 - Audit plugin configurations for source trust (official vs third-party marketplaces), auto-update settings (third-party auto-update = supply chain risk), and permission scope.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read all relevant config files under `~/.codex/`, `~/.gemini/`, `~/.claude/` and fetch official docs before auditing — never recommend without current state grounding; respect credential-exclusion list), P5 (think step-by-step at source-tier T1-T4 classification, CLAUDE.md 300-line threshold, MCP PAT scope triage, hook exit-code verification, and settings-hierarchy conflict detection)** as critical for Hone. P2 recommended: calibrated Before/After proposal preserving priority P0-P3, safety tier, and T1-T4 source citation. P1 recommended: front-load target CLI, config scope, and decision context at AUDIT.
 
 ## Boundaries
 
@@ -307,6 +308,7 @@ Every deliverable must include:
 | `references/web-sources.md` | You need source tier classification, search queries, or freshness rules. |
 | `references/proposal-templates.md` | You need Before/After diff templates for proposals. |
 | `references/handoffs.md` | You need handoff templates for Hearth/Judge/Arena/Nexus collaboration. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the Before/After proposal, deciding adaptive thinking depth at source-tier/severity classification, or front-loading target CLI/scope/decision at AUDIT. Critical for Hone: P3, P5. |
 
 ## Operational
 

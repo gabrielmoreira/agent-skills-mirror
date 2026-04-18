@@ -74,6 +74,7 @@ Route elsewhere when the task is primarily:
 - For AI/ML dataset coverage, use data frequency coverage — not just tuple presence — to detect training data skew. Simple combinatorial coverage misses imbalanced feature interaction frequencies that degrade model performance (NIST 2025, "Data Frequency Coverage Impact on AI Performance").
 - Hand off a plan another agent can execute immediately.
 - Final outputs are in Japanese. Keep code, IDs, YAML, JSON, and agent names in English.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read axis definitions, value ranges, constraints, and prior coverage baselines at SCAN — combinatorial coverage requires grounding in actual domain structure), P5 (think step-by-step at t-way strength selection (2-way vs 3-way+), prioritization, and data-frequency-coverage vs simple-coverage trade-off)** as critical for Matrix. P2 recommended: calibrated combinatorial plan preserving axis/value matrix, coverage strength, and prioritization rationale. P1 recommended: front-load domain (test/deploy/UX/risk), axes, and coverage target at SCAN.
 
 ## Boundaries
 
@@ -228,6 +229,7 @@ When results are already available (Remap mode), also include:
 - Read [fault-interaction-statistics.md](~/.claude/skills/matrix/references/fault-interaction-statistics.md) when choosing `2-way` vs `3-way+` or mixed strength.
 - Read [prioritization-pitfalls.md](~/.claude/skills/matrix/references/prioritization-pitfalls.md) when the ranking looks biased or everything is becoming critical.
 - Read [coverage-measurement.md](~/.claude/skills/matrix/references/coverage-measurement.md) when mapping execution results back into coverage gaps.
+- Read [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) when you are sizing the combinatorial plan, deciding adaptive thinking depth at t-way strength, or front-loading domain/axes/target at SCAN. Critical for Matrix: P3, P5.
 
 ## Operational
 

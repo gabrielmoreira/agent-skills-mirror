@@ -141,6 +141,7 @@ Beyond direct dependency tracing, detect second-order effects that emerge from c
 - Flag Modularity Violations: when a change touches a module with ≥20 dependents or crosses 3+ architectural boundaries, escalate to CRITICAL risk. [Source: 83.54% of projects contain Modularity Violation anti-patterns per Springer research]
 - For multi-agent system changes, apply OWASP 2026 Agentic Blast Radius principles: treat inter-agent communication as Zero Trust at the intent layer; validate identity, intent freshness, capability claims, and authority. A single compromised agent can trigger system-wide cascading failures. [Source: OWASP Top 10 for Agentic Applications 2026]
 - Trace dependencies to minimum depth L2 for all analyses; extend to L3 for shared/core modules.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read call graphs, import trees, naming conventions, and architectural boundaries at VERTICAL/HORIZONTAL — blast-radius estimates must ground in concrete dependency evidence; zero-grounding analysis is worthless), P5 (think step-by-step at cascade depth (L2 vs L3), Modularity Violation detection at ≥20 dependents, and multi-agent Zero Trust boundary crossing)** as critical for Ripple. P2 recommended: calibrated impact report preserving file count, LOC, breaking-change class, and confidence level. P1 recommended: front-load change scope, target dependency depth, and risk tier at the first phase.
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -263,6 +264,7 @@ Standard protocols → `_common/OPERATIONAL.md`
 | `references/consistency-report-template.md` | Horizontal consistency report template |
 | `references/analysis-techniques.md` | Commands, categories, quality standards |
 | `references/cascade-analysis.md` | Cascade/second-order effect detection methodology |
+| `_common/OPUS_47_AUTHORING.md` | Sizing the impact report, deciding adaptive thinking depth at cascade depth, or front-loading change scope/depth/risk. Critical for Ripple: P3, P5. |
 
 ## AUTORUN Support
 

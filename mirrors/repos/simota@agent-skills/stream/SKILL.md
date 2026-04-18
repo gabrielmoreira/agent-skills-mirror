@@ -86,11 +86,11 @@ Route elsewhere when the task is primarily:
 
 Decision rules:
 - `latency < 1 minute` is a streaming candidate.
-- `volume > 10K events/sec` with low latency favors Kafka + Flink 2.x/Spark. Flink 2.0+ removed the DataSet API entirely — use Table API or DataStream API only. Flink 2.2+ adds native AI/ML SQL functions (ML_PREDICT, ML_FORECAST, ML_DETECT_ANOMALIES) — evaluate for in-stream inference before adding external ML services.
+- `volume > 10K events/sec` with low latency favors Kafka + Flink 2.x/Spark. Flink 2.0+ removed the DataSet API entirely — use Table API or DataStream API only. Flink 2.1 shipped native AI/ML SQL functions (ML_PREDICT, ML_FORECAST, ML_DETECT_ANOMALIES); Flink 2.2 adds VECTOR_SEARCH (real-time vector similarity for RAG/context retrieval) and Table API `model.predict()` parity — evaluate for in-stream inference before adding external ML services.
 - daily or weekly reporting defaults to batch. Airflow 3.x event-driven scheduling enables event-triggered batch pipelines without polling — supports Kafka and Amazon SQS as message queue sources via AssetWatcher.
 - cloud warehouses with strong compute usually favor ELT — 68% of cloud-first enterprises use medallion architecture (Bronze/Silver/Gold), reducing pipeline dev time by 40%.
 - constrained or transactional source systems often favor ETL before load.
-- dbt + Flink convergence enables unified batch/streaming SQL workflows (materializations: `view`, `streaming_table`, `streaming_source`). The dbt-confluent adapter deploys Flink SQL transformations as dbt models with CI/CD support — evaluate before building custom Flink jobs.
+- dbt + Flink convergence enables unified batch/streaming SQL workflows (materializations: `view`, `streaming_table`, `streaming_source`). The dbt-confluent adapter deploys Flink SQL transformations as dbt models with CI/CD support — evaluate before building custom Flink jobs. Note: the Flink adapter does NOT support `incremental` materialization (dbt's batch-incremental semantics do not map to Flink's continuous model) — rewrite `{{ is_incremental() }}` blocks as `streaming_table` or `materialized_view` when porting batch dbt models to Flink.
 - Tableflow (Confluent, GA) converts Kafka topics to Iceberg or Delta Lake tables for hybrid architectures. Supports DLQ for failed materializations. GA on AWS and Azure as of early 2026.
 - dbt Core remains Apache 2.0 after Fivetran's acquisition of dbt Labs (Oct 2025). Evaluate vendor lock-in risk when choosing dbt Cloud vs dbt Core for new projects.
 
@@ -126,6 +126,7 @@ Routing rules:
 - If the request mentions dbt, warehouse, or modeling, read `references/dbt-modeling.md`.
 - If the request mentions reliability, quality, or backfill, read `references/data-reliability.md`.
 - Always check anti-pattern references for validation phase.
+- Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing schemas, contracts, throughput/latency targets, and DLQ/outbox patterns at SCAN — pipeline architecture decisions depend on full grounding), P5 (think step-by-step at DESIGN — batch vs streaming vs hybrid, ETL vs ELT, exactly-once vs at-least-once decisions drive data correctness and operational cost)** as critical for Stream. P2 recommended: calibrated pipeline spec preserving anti-pattern IDs, idempotency rationale, and backfill posture. P1 recommended: front-load volume/latency/source-sink at SCAN.
 
 ## Boundaries
 
@@ -174,6 +175,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - **vs Builder**: Builder = implementation code; Stream = pipeline architecture and design.
 - **vs Beacon**: Beacon = SLO/SLI alerting and dashboard setup; Stream = pipeline SLA tier classification and freshness monitoring design.
 
+**Teams aptitude (Pattern D: Specialist parallel handoff):** After `LAYOUT` output is frozen (architecture + data contracts agreed) and `WIRE` begins, spawn downstream agents in parallel via Agent Teams when ≥3 are needed — Builder owns `src/pipelines/**`, Radar owns `tests/pipelines/**`, Canvas owns `docs/architecture/**`, Scaffold owns `infra/**`, Gear owns `.github/workflows/**`, Beacon owns `observability/**`. Do not spawn subagents while `LAYOUT` is still open (shared contract = iterative refinement). For single-downstream tasks, invoke directly. See `_common/SUBAGENT.md` Decision Flow and `rally/references/team-design-patterns.md` Pattern D.
+
 ## Output Requirements
 
 Deliver:
@@ -205,6 +208,7 @@ Deliver:
 | `references/event-streaming-anti-patterns.md` | You need event-streaming anti-pattern IDs `ES-01..07`, Kafka ops guardrails, or outbox rules. |
 | `references/dbt-warehouse-anti-patterns.md` | You need warehouse anti-pattern IDs `DW-01..07`, layer rules, or semantic-layer thresholds. |
 | `references/data-observability-anti-patterns.md` | You need observability anti-pattern IDs `DO-01..07`, five-pillar thresholds, or data-contract guidance. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the pipeline spec, deciding adaptive thinking depth at DESIGN, or front-loading volume/latency/source-sink at SCAN. Critical for Stream: P3, P5. |
 
 ## AUTORUN Support
 

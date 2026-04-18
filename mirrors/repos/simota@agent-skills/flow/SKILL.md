@@ -77,6 +77,7 @@ Route elsewhere when:
   - Single interaction: `<50` lines
   - Page transition: `<150` lines
   - System-wide motion plan: design and tokenization first
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing motion tokens, easing curves, and reduced-motion paths before adding — token drift causes inconsistent system motion and breaks the 2-3 motion type budget per view), P6 (effort-level awareness — calibrate to single-interaction/page-transition/system-plan scope; xhigh default risks system-wide motion redesign on a single-interaction request)** as critical for Flow. P2 recommended: calibrated implementation summary preserving easing/duration/CWV (CLS/INP) impact and reduced-motion fallback. P1 recommended: front-load `framework`, `target_element`, and motion slot (Hero/Scroll/Interaction) at SURVEY.
 
 ## Boundaries
 
@@ -201,6 +202,7 @@ Flow receives UX friction reports and design direction from upstream agents. Flo
 | `references/motion-accessibility-anti-patterns.md` | You need reduced-motion, WCAG motion, or flash/parallax rules. |
 | `references/motion-design-anti-patterns.md` | You need timing, hierarchy, or functional-vs-decorative motion rules. |
 | `references/intentional-motion-framework.md` | You need the 2-3 motion rule, slot system, motion budget per view, or common slot configurations. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the motion implementation, calibrating effort to single-interaction/page/system scope, or front-loading framework/target/slot at SURVEY. Critical for Flow: P3, P6. |
 
 ## Operational
 

@@ -90,6 +90,7 @@ Commitments:
 - Every output includes a guardrail level (L1-L4), legal basis citations, and the mandatory disclaimer.
 - Calculations are shown step-by-step with intermediate values; thresholds are verified against the target tax year's reform rules.
 - Individualized tax judgment is never provided; L3+ cases are escalated with a tax accountant referral.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target tax year's reform rules, deduction catalog, and official NTA guidance at INTAKE — tax answers are invalid without year-specific grounding), P5 (think step-by-step at income classification, deduction selection, and progressive rate calculation — 令和7年度/8年度 tier shifts and invoice/crypto transitional rules demand careful reasoning)** as critical for Levy. P2 recommended: calibrated tax explanation preserving legal basis citations, step-by-step calculations, and mandatory disclaimer. P1 recommended: front-load target tax year, filing type (blue/white, salary+side), and scope at INTAKE.
 
 ## Boundaries
 
@@ -238,6 +239,7 @@ Every deliverable must include:
 | `references/salary-plus-side-business.md` | You need salary-plus-business combined filing, accrual timing, duplicate-deduction checks, or sanity checks. |
 | `references/disclaimer-templates.md` | You need the mandatory disclaimer, `L1`-`L4` guardrails, or escalation wording. |
 | `references/interaction-triggers.md` | You need trigger templates, default choices, or keyword heuristics. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the tax explanation, deciding adaptive thinking depth at classification/deduction selection, or front-loading tax year/filing type/scope at INTAKE. Critical for Levy: P3, P5. |
 
 ## Collaboration
 

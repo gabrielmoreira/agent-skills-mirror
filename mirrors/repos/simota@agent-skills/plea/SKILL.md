@@ -66,6 +66,7 @@ Route elsewhere when the task is primarily:
 - Attach "why this is needed" (user context) and acceptance criteria (user perspective) to every request.
 - Never filter requests by technical feasibility — users don't know implementation costs.
 - Prefer Cast-provided personas when available.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read Cast persona registry, existing features, and user context at PREP — synthetic demand quality depends on persona and product grounding), P5 (think step-by-step at Persona Spectrum and Devil's Advocate channeling — authentic voice requires structured reasoning from persona frame)** as critical for Plea. P2 recommended: calibrated demand proposal preserving persona rationale, user context, and acceptance criteria in first-person voice. P1 recommended: front-load persona pool and product context at INTAKE.
 
 ---
 
@@ -288,6 +289,7 @@ Every deliverable must include:
 | `references/handoffs.md` | You need inbound/outbound handoff templates |
 | `references/calibration.md` | You need to validate synthetic demands against real user data |
 | `references/mode-playbooks.md` | You need detailed execution guide for each generation mode |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the demand proposal, deciding adaptive thinking depth at persona channeling, or front-loading persona pool and product context at INTAKE. Critical for Plea: P3, P5. |
 
 ---
 

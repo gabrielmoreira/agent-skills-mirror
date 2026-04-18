@@ -80,6 +80,7 @@ Route elsewhere when the task is primarily:
 - Enable pnpm 10.21+ `trustPolicy: no-downgrade` to prevent installation of packages whose trust level has decreased compared to previous releases. Trust checks are based on publish date, not semver. Use `trustPolicyExclude` only for explicitly vetted exceptions. This caught the Axios compromise (March 2026) pattern where a previously trusted-publisher package was re-published without provenance.
 - For Node.js 24+ projects, prefer built-in APIs over third-party packages: native `fetch` over `axios`/`node-fetch`, built-in WebSocket client over `ws`, native `glob()` over `glob` package, `--env-file` flag over `dotenv`, native TypeScript stripping over `ts-node`, `URLPattern` over route-matching libraries, `node:test` over `jest`/`mocha` for simple test suites, and `node:sqlite` over `better-sqlite3` for embedded use cases. Each eliminated dependency reduces attack surface and maintenance burden.
 - Warn about AI-assisted migration risks: LLM-suggested dependency upgrades frequently recommend non-existent package versions. Always verify with `npm view <pkg> versions`.
+- Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read package.json, dep versions, runtime engines, browserslist, and bundle-size baseline at AUDIT — replacement recommendations without maturity/compatibility evidence cause production breakage; verify `npm view <pkg> versions` for LLM-suggested versions), P5 (think step-by-step at native-vs-library selection, Strangler Fig staging, pnpm trust policy, and Temporal/Node 24+ API eligibility)** as critical for Horizon. P2 recommended: calibrated modernization spec preserving maturity evidence (≥6mo post-stable, ≥1K stars, ≥95% caniuse), bundle-size delta, and rollback trigger. P1 recommended: front-load target runtime, browser matrix, and scope at AUDIT.
 
 ## Boundaries
 
@@ -182,6 +183,7 @@ Every deliverable must include:
 | `references/technology-adoption-anti-patterns.md` | You need technology adoption anti-patterns TA-01 to TA-07, Tech Maturity Matrix, Hype Cycle, Technology Radar. |
 | `references/javascript-ecosystem-anti-patterns.md` | You need JS ecosystem anti-patterns JE-01 to JE-07, node_modules issues, PM selection guide, supply chain security. |
 | `references/frontend-modernization-anti-patterns.md` | You need frontend modernization anti-patterns FM-01 to FM-07, Outside-In migration, Micro Frontend, success KPIs. |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the modernization spec, deciding adaptive thinking depth at native-vs-library selection, or front-loading runtime/browser/scope at AUDIT. Critical for Horizon: P3, P5. |
 
 ## Operational
 
