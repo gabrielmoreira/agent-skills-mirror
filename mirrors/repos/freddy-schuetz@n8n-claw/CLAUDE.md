@@ -31,11 +31,11 @@ n8n-claw/
 │   ├── oauth-callback.json         # Handles OAuth2 redirects (Google services)
 │   ├── reminder-factory.json       # Creates reminders (inserts into reminders table)
 │   ├── reminder-runner.json        # Polls reminders table every minute, executes due reminders
-│   ├── memory-consolidation.json   # Nightly: summarizes daily log → long-term memory
+│   ├── memory-consolidation.json   # Nightly: summarizes daily log → long-term memory + extracts behavior patterns into category='insight' memories (v1.5.0)
 │   ├── workflow-builder.json       # Builds general n8n automations (Claude Code CLI)
 │   ├── sub-agent-runner.json       # Runs expert sub-agents with dynamic personas
 │   ├── agent-library-manager.json  # Install/remove expert agents from catalog
-│   ├── heartbeat.json              # Recurring actions + proactive reminders (every 5 min)
+│   ├── heartbeat.json              # Recurring actions + proactive reminders (every 5 min) + open-loop pings after 3 days (v1.5.0, throttled to 24h via heartbeat_config.last_open_loop_check)
 │   ├── background-checker.json     # Silent monitoring, notifies only on new findings
 │   ├── error-notification.json     # Global error handler: Telegram alert + logs failures to memory_long via PostgREST
 │   └── adapters/
@@ -74,7 +74,7 @@ The agent reads configuration from PostgreSQL at runtime via PostgREST (`http://
 | `agents` | Tool instructions & config | `key`, `content` — loaded into system prompt |
 | `user_profiles` | Per-user data | `user_id`, `display_name`, `context`, `setup_done` |
 | `conversations` | Chat history | `session_id`, `role`, `content`, `created_at` |
-| `memory_long` | Long-term memory | `content`, `category`, `importance`, `embedding`, `tags`, `entity_name`, `search_vector` |
+| `memory_long` | Long-term memory | `content`, `category`, `importance`, `embedding`, `tags`, `entity_name`, `search_vector`, `metadata` (jsonb — shallow-merged on update; carries `closed`, `outdated`, `outcome`, etc.) |
 | `memory_daily` | Daily interaction log | `date`, `content`, `role` |
 | `mcp_registry` | Available MCP servers | `server_name`, `path`, `mcp_url`, `tools[]`, `active` |
 | `reminders` | Scheduled reminders & actions | `message`, `fire_at`, `status`, `chat_id` |
@@ -111,7 +111,8 @@ Scheduled Task Trigger ──→ Format Task Input ─────────�
   → Load Agents Config (postgres)
   → Load User Profile (postgres, uses qualifiedUserId)
   → Load Conversation History (postgres, uses sessionId)
-  → Build System Prompt (code node)
+  → Load Insights (postgres) — top-3 active category='insight' memories (v1.5.0)
+  → Build System Prompt (code node) — appends silent "what you know about the user" section if insights exist
   → AI Agent (LLM — auto-configured per provider)
       ├── Memory Search (toolCode)
       ├── Memory Save (toolCode)

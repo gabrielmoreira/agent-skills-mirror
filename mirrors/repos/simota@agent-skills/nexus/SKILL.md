@@ -304,6 +304,7 @@ Use the table below for common cases. Canonical matrix: `references/routing-matr
 | `REFACTOR` | Zen → Radar | `+Sherpa` for multi-file refactors, `+Atlas` for architecture, `+Grove` for structure |
 | `OPTIMIZE` | Bolt/Tuner → Radar | `+Schema` for DB-heavy work |
 | `DESIGN_SYSTEM_DOCS` | Muse → Showcase + Canvas → Quill | `+Vision` for direction, `+Artisan` for live examples |
+| `DESIGN_WORKFLOW` | Atelier (orchestrates: Vision → Muse/Frame → Forge → Artisan → Showcase → Canvas) | Full design→code loop with design-system persistence. Use when request spans direction + tokens + prototype + implementation + catalog |
 
 **Sherpa skip conditions** (skip Sherpa from default chain only when ALL apply):
 - Task touches ≤ 2 files

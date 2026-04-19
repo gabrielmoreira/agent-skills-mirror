@@ -2,6 +2,7 @@
 name: infrahub-sot
 description: "OpsMill Infrahub — infrastructure source of truth with versioned branches, schema-driven nodes, GraphQL queries, relationship traversal. Use when querying Infrahub for device inventory, browsing infrastructure schemas, creating a branch for a change proposal, running GraphQL queries against Infrahub, or reconciling Infrahub data with live device state."
 version: 1.0.0
+license: Apache-2.0
 tags: [opsmill, infrahub, source-of-truth, infrastructure, graphql, schema, branches, ipam, dcim]
 ---
 

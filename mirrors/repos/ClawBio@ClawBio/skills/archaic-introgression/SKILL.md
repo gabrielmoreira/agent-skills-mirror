@@ -24,6 +24,21 @@ trigger_keywords:
   - Sprime
   - hmmix
   - introgressed segments
+
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - python3
+      env: []
+      config: []
+    always: false
+    emoji: "🦴"
+    os: [darwin, linux]
+    install:
+      - kind: pip
+        package: numpy
+        bins: []
 ---
 
 # Archaic Introgression Detector

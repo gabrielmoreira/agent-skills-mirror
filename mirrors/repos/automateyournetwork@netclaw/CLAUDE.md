@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-09
+Auto-generated from all feature plans. Last updated: 2026-04-16
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -34,6 +34,10 @@ Auto-generated from all feature plans. Last updated: 2026-04-09
 - N/A (stateless proxy to Aruba CX REST API) (025-aruba-cx-mcp-server)
 - N/A (Remote MCP server - no code required) + N/A (Remote MCP managed service) (026-devnet-content-search-mcp)
 - N/A (stateless - all data from remote API) (026-devnet-content-search-mcp)
+- Python 3.10+ (MCP servers, policy scripts), Bash (installation) + NVIDIA OpenShell CLI (uv tool), Docker (container runtime), existing FastMCP servers (027-netshell-security)
+- Local filesystem for policies and audit logs; no database (027-netshell-security)
+- Bash (installation scripts), Python 3.10+ (DefenseClaw requires), Go 1.25+, Node.js 20+ + DefenseClaw (Cisco), Docker (container runtime) (027-netshell-security)
+- SQLite (DefenseClaw audit logs), optional SIEM (Splunk HEC, OTLP) (027-netshell-security)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -53,10 +57,63 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 027-netshell-security: Added Bash (installation scripts), Python 3.10+ (DefenseClaw requires), Go 1.25+, Node.js 20+ + DefenseClaw (Cisco), Docker (container runtime)
+- 027-netshell-security: Added Python 3.10+ (MCP servers, policy scripts), Bash (installation) + NVIDIA OpenShell CLI (uv tool), Docker (container runtime), existing FastMCP servers
 - 026-devnet-content-search-mcp: Added N/A (Remote MCP server - no code required) + N/A (Remote MCP managed service)
-- 025-aruba-cx-mcp-server: Added Python 3.10+ (community MCP server with Aruba CX REST API client) + aruba-cx-mcp-server (community), httpx or requests (REST client)
-- 024-blender-3d-viz: Added Python 3.10+ (consistent with NetClaw MCP servers) + blender-mcp (community, via uvx), Blender 3.0+ (user-installed)
 
 
 <!-- MANUAL ADDITIONS START -->
+
+## DefenseClaw Security Layer
+
+DefenseClaw from Cisco AI Defense is the recommended enterprise security layer for NetClaw. It provides comprehensive protection including OpenShell sandbox, component scanning, runtime guardrails, and SIEM integration.
+
+### Quick Start
+
+```bash
+# During installation
+./scripts/install.sh
+# Answer "y" to "Enable DefenseClaw (recommended)?"
+
+# Or enable later
+./scripts/defenseclaw-enable.sh
+```
+
+### Key Features
+
+- **Automatic OpenShell Sandbox** - Kernel-level isolation (Landlock, seccomp, network namespaces)
+- **Component Scanning** - Skills, MCPs, and plugins scanned before execution
+- **CodeGuard Analysis** - Detects credentials, eval, shell commands, SQL injection
+- **Runtime Guardrails** - LLM prompt/completion inspection, tool call inspection
+- **Audit Logging** - SQLite database with optional SIEM export (Splunk HEC, OTLP)
+
+### Key Commands
+
+```bash
+defenseclaw --version              # Check installation
+defenseclaw skill scan <name>      # Scan a skill
+defenseclaw tool block <tool>      # Block a tool
+defenseclaw tool allow <tool>      # Allow a tool
+defenseclaw alerts                 # View security alerts
+defenseclaw setup guardrail --mode action  # Enable blocking mode
+```
+
+### Configuration
+
+Security mode is stored in `~/.openclaw/config/openclaw.json`:
+
+```json
+{
+  "security": {
+    "mode": "defenseclaw"  // or "hobby" for no security
+  }
+}
+```
+
+### Documentation
+
+- **Full Guide**: [docs/DEFENSECLAW.md](docs/DEFENSECLAW.md)
+- **Security Principles**: [docs/SOUL-DEFENSE.md](docs/SOUL-DEFENSE.md)
+- **Upgrade Guide**: [docs/UPGRADE-TO-DEFENSECLAW.md](docs/UPGRADE-TO-DEFENSECLAW.md)
+
 <!-- MANUAL ADDITIONS END -->

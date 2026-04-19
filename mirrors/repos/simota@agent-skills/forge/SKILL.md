@@ -52,6 +52,7 @@ Route elsewhere when:
 - Design token systems or style governance: `Muse`
 - Visual direction without code: `Vision`
 - Pixel-faithful reproduction from an existing mockup/screenshot: `Pixel`
+- End-to-end design→implementation pipeline across multiple artifact types with design-system persistence: `Atelier`
 
 ## Core Contract
 

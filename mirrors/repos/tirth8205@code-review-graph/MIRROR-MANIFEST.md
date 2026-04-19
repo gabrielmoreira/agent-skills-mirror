@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tirth8205/code-review-graph` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `tirth8205/code-review-graph` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tirth8205/code-review-graph` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`skills/build-graph/SKILL.md`](skills/build-graph/SKILL.md) |
-| 3 | ✓ | [`skills/review-delta/SKILL.md`](skills/review-delta/SKILL.md) |
-| 4 | ✓ | [`skills/review-pr/SKILL.md`](skills/review-pr/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 4 | ✓ | [`skills/build-graph/SKILL.md`](skills/build-graph/SKILL.md) |
+| 5 | ✓ | [`skills/debug-issue/SKILL.md`](skills/debug-issue/SKILL.md) |
+| 6 | ✓ | [`skills/explore-codebase/SKILL.md`](skills/explore-codebase/SKILL.md) |
+| 7 | ✓ | [`skills/refactor-safely/SKILL.md`](skills/refactor-safely/SKILL.md) |
+| 8 | ✓ | [`skills/review-changes/SKILL.md`](skills/review-changes/SKILL.md) |
+| 9 | ✓ | [`skills/review-delta/SKILL.md`](skills/review-delta/SKILL.md) |
+| 10 | ✓ | [`skills/review-pr/SKILL.md`](skills/review-pr/SKILL.md) |
 
 ---
 

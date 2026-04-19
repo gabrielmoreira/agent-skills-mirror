@@ -63,6 +63,7 @@ Route elsewhere when the task is primarily:
 - performance optimization: `Bolt`
 - component testing: `Radar`
 - animation/motion design: `Flow`
+- End-to-end design→implementation pipeline across multiple artifact types with design-system persistence: `Atelier`
 
 
 ## Core Contract

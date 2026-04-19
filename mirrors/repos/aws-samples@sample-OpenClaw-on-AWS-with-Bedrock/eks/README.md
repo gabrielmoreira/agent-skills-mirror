@@ -1,22 +1,34 @@
 # OpenClaw on Amazon EKS
 
-Deploy the [OpenClaw](https://www.npmjs.com/package/openclaw) Operator and AI agent instances on Amazon EKS. Supports **AWS Global** and **AWS China** regions.
+Deploy the [OpenClaw](https://www.npmjs.com/package/openclaw) Operator and AI agent instances on Amazon EKS with Graviton ARM64. Supports **AWS Global** and **AWS China** regions.
 
 ## Quick Start
 
-```bash
-# 1. (China only) Mirror images to ECR — required before terraform apply
-# bash scripts/china-image-mirror.sh --region cn-northwest-1 --name openclaw-cn --profile china
+### Workshop Studio (recommended)
 
-# 2. Deploy infrastructure
+Use the CloudFormation template for one-click deployment:
+
+```bash
+# Upload eks/cloudformation/workshop-studio-template.yaml to CloudFormation
+# or use it with Workshop Studio events
+```
+
+The template triggers CodeBuild → Terraform, deploying the full stack automatically.
+
+### Self-managed
+
+```bash
 cd terraform
 terraform init
-terraform apply -var="name=openclaw-prod" -var="enable_efs=true"
+terraform apply \
+  -var="name=openclaw-workshop" \
+  -var="region=us-west-2" \
+  -var="enable_efs=true"
 
-# 3. Configure kubectl
+# Configure kubectl
 $(terraform output -raw configure_kubectl)
 
-# 4. Deploy an OpenClaw instance
+# Deploy an OpenClaw instance
 kubectl apply -f ../manifests/examples/openclaw-bedrock-instance.yaml
 ```
 
@@ -24,35 +36,48 @@ kubectl apply -f ../manifests/examples/openclaw-bedrock-instance.yaml
 
 ```
 eks/
-├── terraform/                  # Terraform modules (the main deployment tool)
-│   ├── main.tf                 # Providers, locals, ECR host construction
-│   ├── root.tf                 # Module composition
-│   ├── variables.tf            # Input variables
-│   ├── outputs.tf              # Cluster endpoint, kubectl command, etc.
-│   ├── versions.tf             # Provider version constraints
+├── cloudformation/
+│   └── workshop-studio-template.yaml   # One-click CFN → CodeBuild → Terraform
+├── terraform/                          # Terraform modules
+│   ├── main.tf                         # Providers, locals, ECR host
+│   ├── root.tf                         # Module composition
+│   ├── variables.tf                    # Input variables
+│   ├── outputs.tf                      # Cluster endpoint, kubectl, etc.
+│   ├── versions.tf                     # Provider version constraints
 │   └── modules/
 │       ├── vpc/                # VPC, subnets, NAT gateway
-│       ├── eks-cluster/        # EKS cluster, managed node groups, CSI addons
+│       ├── eks-cluster/        # EKS 1.35, managed node groups, 5 managed add-ons
 │       ├── storage/            # EFS file system, EBS/EFS StorageClasses
 │       ├── bedrock-iam/        # Bedrock IRSA role for OpenClaw instances
 │       ├── operator/           # OpenClaw Operator Helm release
-│       ├── networking/         # AWS Load Balancer Controller (optional)
+│       ├── networking/         # AWS Load Balancer Controller + CloudFront (optional)
 │       ├── monitoring/         # Prometheus + Grafana (optional)
-│       ├── litellm/            # LiteLLM AI proxy (optional, required for China)
+│       ├── litellm/            # LiteLLM AI proxy + PostgreSQL + Pod Identity (optional)
 │       ├── kata/               # Kata Containers + Karpenter (optional)
-│       └── agent-sandbox/      # Agent sandbox CRDs (optional)
+│       └── agent-sandbox/      # Agent Sandbox CRDs (optional)
 ├── manifests/
 │   └── examples/               # OpenClawInstance CRD examples
 │       ├── openclaw-bedrock-instance.yaml    # Standard Bedrock instance
 │       ├── openclaw-kata-instance.yaml       # Firecracker VM isolation
-│       └── openclaw-slack-instance.yaml      # Slack bot integration
+│       ├── openclaw-slack-instance.yaml      # Slack bot integration
+│       └── openclaw-wecom-instance.yaml      # WeCom (企业微信) integration
 └── scripts/
     ├── china-image-mirror.sh   # Mirror images + Helm charts to ECR (China/air-gapped)
-    ├── install.sh              # Interactive deployment wizard
     ├── cleanup.sh              # Tear down all resources
-    ├── validate.sh             # Post-deploy validation checks
-    └── integration-test.sh     # End-to-end deployment test
+    └── validate.sh             # Post-deploy validation checks
 ```
+
+## EKS Managed Add-ons
+
+The EKS cluster module deploys 5 managed add-ons with automatic version updates:
+
+| Add-on | Pod Identity | Description |
+|--------|-------------|-------------|
+| `coredns` | — | DNS resolution |
+| `vpc-cni` | ✅ `AmazonEKS_CNI_Policy` | Pod networking (ENI management) |
+| `eks-pod-identity-agent` | — | Pod Identity token vending |
+| `aws-ebs-csi-driver` | ✅ `AmazonEBSCSIDriverPolicy` | EBS volume provisioning |
+| `aws-efs-csi-driver` | ✅ `AmazonEFSCSIDriverPolicy` | EFS mount targets |
 
 ## Terraform Variables
 
@@ -61,11 +86,28 @@ eks/
 | `name` | `openclaw-eks` | Cluster and resource name prefix |
 | `region` | `us-west-2` | AWS region (`cn-*` auto-detected as China) |
 | `architecture` | `arm64` | `arm64` (Graviton) or `x86` |
-| `enable_efs` | `true` | EFS persistent storage (default StorageClass) |
-| `enable_alb_controller` | `false` | AWS Load Balancer Controller |
+| `eks_cluster_version` | `1.35` | EKS Kubernetes version |
+| `enable_efs` | `true` | EFS persistent storage |
+| `enable_alb_controller` | `false` | AWS Load Balancer Controller + CloudFront |
 | `enable_kata` | `false` | Kata Containers (Firecracker VM isolation) |
+| `enable_karpenter` | `false` | Karpenter auto-scaling for Kata bare metal nodes |
 | `enable_monitoring` | `false` | Prometheus + Grafana |
-| `enable_litellm` | `false` | LiteLLM proxy (required for China) |
+| `enable_litellm` | `false` | LiteLLM proxy (Claude Sonnet 4.5 default model) |
+| `enable_agent_sandbox` | `false` | Agent Sandbox CRDs (namespace only) |
+
+Workshop Studio events enable all optional modules via CFN parameters.
+
+## CloudFormation Template
+
+`eks/cloudformation/workshop-studio-template.yaml` deploys:
+
+1. **Code Editor IDE** — EC2 + CloudFront with kubectl/helm/terraform pre-installed
+2. **CodeBuild Project** — Clones this repo, runs `terraform apply` with retry logic
+3. **Terraform State** — S3 bucket for shared state
+4. **IAM Identity Center** — SSO for EKS access
+5. **Wait Condition** — CFN waits for CodeBuild to complete before reporting success
+
+The buildspec includes a 3-attempt retry loop with 30s delays to handle transient failures (e.g., EKS API DNS propagation).
 
 ## China Region
 
@@ -80,24 +122,15 @@ bash scripts/china-image-mirror.sh \
 
 This mirrors all container images and Helm chart OCI artifacts to your private China ECR. Terraform auto-detects China and uses the ECR mirrors.
 
-When deploying OpenClaw instances in China, set `spec.registry` to your ECR host:
-
-```yaml
-spec:
-  registry: "ACCOUNT.dkr.ecr.cn-northwest-1.amazonaws.com.cn"
-```
-
 ## Image Version Pinning
 
-Pin `spec.image.tag` to a known stable release. The `latest` tag may have regressions.
+Pin `spec.image.tag` to a known stable release:
 
 ```yaml
 spec:
   image:
     tag: "2026.4.2"   # Known stable
 ```
-
-The mirror script defaults to `OPENCLAW_VERSION=2026.4.2` (override via environment variable).
 
 ## Guides
 

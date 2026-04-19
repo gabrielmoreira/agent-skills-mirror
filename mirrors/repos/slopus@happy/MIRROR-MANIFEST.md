@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 17 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,6 +76,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`packages/happy-cli/src/daemon/CLAUDE.md`](packages/happy-cli/src/daemon/CLAUDE.md) |
 | 16 | ✓ | [`packages/happy-server/.cursorrules`](packages/happy-server/.cursorrules) |
 | 17 | ✓ | [`packages/happy-server/CLAUDE.md`](packages/happy-server/CLAUDE.md) |
+| 18 | ✓ | [`packages/happy-server/deploy/integration-tests/AGENTS.md`](packages/happy-server/deploy/integration-tests/AGENTS.md) |
+| 19 | ✓ | [`packages/happy-server/deploy/integration-tests/CLAUDE.md`](packages/happy-server/deploy/integration-tests/CLAUDE.md) |
 
 ---
 

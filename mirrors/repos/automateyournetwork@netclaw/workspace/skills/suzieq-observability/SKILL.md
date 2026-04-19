@@ -1,6 +1,7 @@
 ---
 name: suzieq-observability
 description: "SuzieQ network observability — query current and historical network state, run validation assertions, get summary statistics, trace forwarding paths, and discover unique values across 20+ network tables. Use when investigating BGP/OSPF state, checking interface health, performing time-travel queries, validating network assertions, or tracing packet paths through the network via SuzieQ."
+license: Apache-2.0
 user-invocable: true
 metadata:
   { "openclaw": { "requires": { "bins": ["python3"], "env": ["SUZIEQ_API_URL", "SUZIEQ_API_KEY"] } } }

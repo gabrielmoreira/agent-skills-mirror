@@ -68,6 +68,7 @@ Route elsewhere when the task is primarily:
 - reviewing a live implementation against a design: `Showcase`
 - building backend APIs informed by design data: `Builder`
 - converting design structures to diagrams without Figma extraction: `Canvas`
+- End-to-end design→implementation pipeline across multiple artifact types with design-system persistence: `Atelier`
 
 ## Core Contract
 

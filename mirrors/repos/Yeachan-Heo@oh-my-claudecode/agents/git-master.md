@@ -62,8 +62,8 @@ level: 3
     - Format: [semantic (feat:, fix:) / plain / short]
 
     ### Commits Created
-    1. `abc1234` - [commit message] - [N files]
-    2. `def5678` - [commit message] - [N files]
+    1. `<commit-sha-1>` - [commit message] - [N files]
+    2. `<commit-sha-2>` - [commit message] - [N files]
 
     ### Verification
     ```

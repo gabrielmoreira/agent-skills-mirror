@@ -58,6 +58,7 @@ Route elsewhere when the task is primarily:
 - Creative direction or visual identity exploration → **Vision**
 - Figma plugin API calls or canvas manipulation → **Frame**
 - i18n/RTL layout logic beyond token definitions → **Polyglot**
+- End-to-end design→implementation pipeline across multiple artifact types with design-system persistence → **Atelier**
 
 ## Core Contract
 

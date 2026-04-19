@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 7 followed patterns, 37 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 7 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 7 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 37 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,36 +72,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md`](.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md`](.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`](.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md) |
-| 8 | ✓ | [`.cursor/index.mdc`](.cursor/index.mdc) |
-| 9 | ✓ | [`.cursor/rules/100-monorepo.mdc`](.cursor/rules/100-monorepo.mdc) |
-| 10 | ✓ | [`.cursor/rules/200-eval.mdc`](.cursor/rules/200-eval.mdc) |
-| 11 | ✓ | [`.cursorrules`](.cursorrules) |
-| 12 | ✓ | [`.windsurfrules`](.windsurfrules) |
-| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | ✓ | [`docs/code-indexing/cobol/README.md`](docs/code-indexing/cobol/README.md) |
-| 16 | ✓ | [`eval/README.md`](eval/README.md) |
-| 17 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md) |
-| 18 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md) |
-| 19 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md) |
-| 20 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md) |
-| 21 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md) |
-| 22 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md) |
-| 23 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md) |
-| 24 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md) |
-| 25 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md) |
-| 26 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md) |
-| 27 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md) |
-| 28 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md) |
-| 29 | ✓ | [`gitnexus/README.md`](gitnexus/README.md) |
-| 30 | ✓ | [`llms.txt`](llms.txt) |
-| 31 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 32 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 33 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 34 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 35 | → | [`README.md`](README.md) |
-| 36 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 37 | → | [`TESTING.md`](TESTING.md) |
+| 8 | ✓ | [`.cursor/.gitignore`](.cursor/.gitignore) |
+| 9 | ✓ | [`.cursor/index.mdc`](.cursor/index.mdc) |
+| 10 | ✓ | [`.cursor/rules/100-monorepo.mdc`](.cursor/rules/100-monorepo.mdc) |
+| 11 | ✓ | [`.cursor/rules/200-eval.mdc`](.cursor/rules/200-eval.mdc) |
+| 12 | ✓ | [`.cursorrules`](.cursorrules) |
+| 13 | ✓ | [`.windsurfrules`](.windsurfrules) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | ✓ | [`docs/code-indexing/cobol/README.md`](docs/code-indexing/cobol/README.md) |
+| 17 | ✓ | [`eval/README.md`](eval/README.md) |
+| 18 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md) |
+| 19 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md) |
+| 20 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md) |
+| 21 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md) |
+| 22 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md) |
+| 23 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md) |
+| 24 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md) |
+| 25 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md) |
+| 26 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md) |
+| 27 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md) |
+| 28 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md) |
+| 29 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md) |
+| 30 | ✓ | [`gitnexus/README.md`](gitnexus/README.md) |
+| 31 | ✓ | [`llms.txt`](llms.txt) |
+| 32 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 34 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 35 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 36 | → | [`README.md`](README.md) |
+| 37 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 38 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

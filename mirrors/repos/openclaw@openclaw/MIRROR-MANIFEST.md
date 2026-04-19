@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 143 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 144 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 143 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 143 |
+| Files         | 144 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -190,18 +190,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 129 | ✓ | [`src/gateway/protocol/CLAUDE.md`](src/gateway/protocol/CLAUDE.md) |
 | 130 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
 | 131 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
-| 132 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
-| 133 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
-| 134 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
-| 135 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
-| 136 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
-| 137 | ✓ | [`test/helpers/channels/AGENTS.md`](test/helpers/channels/AGENTS.md) |
-| 138 | ✓ | [`test/helpers/channels/CLAUDE.md`](test/helpers/channels/CLAUDE.md) |
-| 139 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
-| 140 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 141 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
-| 142 | ✓ | [`vendor/a2ui/.gemini/GEMINI.md`](vendor/a2ui/.gemini/GEMINI.md) |
-| 143 | ✓ | [`vendor/a2ui/specification/0.8/eval/GEMINI.md`](vendor/a2ui/specification/0.8/eval/GEMINI.md) |
+| 132 | ✓ | [`src/infra/outbound/AGENTS.md`](src/infra/outbound/AGENTS.md) |
+| 133 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
+| 134 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
+| 135 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
+| 136 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
+| 137 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 138 | ✓ | [`test/helpers/channels/AGENTS.md`](test/helpers/channels/AGENTS.md) |
+| 139 | ✓ | [`test/helpers/channels/CLAUDE.md`](test/helpers/channels/CLAUDE.md) |
+| 140 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
+| 141 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 142 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 143 | ✓ | [`vendor/a2ui/.gemini/GEMINI.md`](vendor/a2ui/.gemini/GEMINI.md) |
+| 144 | ✓ | [`vendor/a2ui/specification/0.8/eval/GEMINI.md`](vendor/a2ui/specification/0.8/eval/GEMINI.md) |
 
 ---
 

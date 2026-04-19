@@ -4,12 +4,13 @@ description: '用于 Tailwind CSS 设计系统搭建、组件库开发与主题�
 version: "1.0.0"
 author: "seaworld008"
 source: "skills.sh"
-source_url: ""
+source_url: "https://skills.sh/wshobson/agents/tailwind-design-system"
 tags: '["design", "development", "system", "tailwind"]'
 created_at: "2026-03-27"
 updated_at: "2026-03-27"
 quality: 4
 complexity: "intermediate"
+license: "MIT"
 ---
 
 # Tailwind Design System

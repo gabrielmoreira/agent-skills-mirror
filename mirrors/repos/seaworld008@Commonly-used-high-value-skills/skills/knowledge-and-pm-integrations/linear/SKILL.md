@@ -10,7 +10,8 @@ created_at: "2026-03-04"
 updated_at: "2026-04-13"
 quality: 4
 complexity: "intermediate"
-metadata: 
+license: "MIT"
+metadata:
 short-description: 'Manage Linear with GraphQL API first, MCP second'
 ---
 

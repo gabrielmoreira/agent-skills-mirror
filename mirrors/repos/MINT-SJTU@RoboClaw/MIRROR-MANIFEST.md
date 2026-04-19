@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MINT-SJTU/RoboClaw` — 26 default patterns, 3 followed patterns, 13 file(s) materialized.
+Mirror of `MINT-SJTU/RoboClaw` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `MINT-SJTU/RoboClaw` — 26 default patterns, 3 followed patterns, 13 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 13 |
+| Followed pats | 0 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,9 +51,7 @@ Mirror of `MINT-SJTU/RoboClaw` — 26 default patterns, 3 followed patterns, 13 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/product-vision.md`
-- `docs/architecture.md`
-- `docs/architecture-comparison.md`
+_None._
 
 ## File Index
 
@@ -61,19 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`roboclaw/skills/clawhub/SKILL.md`](roboclaw/skills/clawhub/SKILL.md) |
-| 3 | ✓ | [`roboclaw/skills/cron/SKILL.md`](roboclaw/skills/cron/SKILL.md) |
-| 4 | ✓ | [`roboclaw/skills/github/SKILL.md`](roboclaw/skills/github/SKILL.md) |
-| 5 | ✓ | [`roboclaw/skills/memory/SKILL.md`](roboclaw/skills/memory/SKILL.md) |
-| 6 | ✓ | [`roboclaw/skills/skill-creator/SKILL.md`](roboclaw/skills/skill-creator/SKILL.md) |
-| 7 | ✓ | [`roboclaw/skills/summarize/SKILL.md`](roboclaw/skills/summarize/SKILL.md) |
-| 8 | ✓ | [`roboclaw/skills/tmux/SKILL.md`](roboclaw/skills/tmux/SKILL.md) |
-| 9 | ✓ | [`roboclaw/skills/weather/SKILL.md`](roboclaw/skills/weather/SKILL.md) |
-| 10 | ✓ | [`roboclaw/templates/AGENTS.md`](roboclaw/templates/AGENTS.md) |
-| 11 | → | [`docs/architecture-comparison.md`](docs/architecture-comparison.md) |
-| 12 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 13 | → | [`docs/product-vision.md`](docs/product-vision.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`roboclaw/skills/clawhub/SKILL.md`](roboclaw/skills/clawhub/SKILL.md) |
+| 4 | ✓ | [`roboclaw/skills/cron/SKILL.md`](roboclaw/skills/cron/SKILL.md) |
+| 5 | ✓ | [`roboclaw/skills/github/SKILL.md`](roboclaw/skills/github/SKILL.md) |
+| 6 | ✓ | [`roboclaw/skills/memory/SKILL.md`](roboclaw/skills/memory/SKILL.md) |
+| 7 | ✓ | [`roboclaw/skills/skill-creator/SKILL.md`](roboclaw/skills/skill-creator/SKILL.md) |
+| 8 | ✓ | [`roboclaw/skills/summarize/SKILL.md`](roboclaw/skills/summarize/SKILL.md) |
+| 9 | ✓ | [`roboclaw/skills/tmux/SKILL.md`](roboclaw/skills/tmux/SKILL.md) |
+| 10 | ✓ | [`roboclaw/skills/weather/SKILL.md`](roboclaw/skills/weather/SKILL.md) |
+| 11 | ✓ | [`roboclaw/templates/AGENTS.md`](roboclaw/templates/AGENTS.md) |
 
 ---
 

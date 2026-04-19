@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
+Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 40 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 40 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,22 +83,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 | 23 | ✓ | [`packages/auth/AGENTS.md`](packages/auth/AGENTS.md) |
 | 24 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
-| 25 | ✓ | [`packages/codemod/AGENTS.md`](packages/codemod/AGENTS.md) |
-| 26 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
-| 27 | ✓ | [`packages/mcp/AGENTS.md`](packages/mcp/AGENTS.md) |
-| 28 | ✓ | [`packages/memory/AGENTS.md`](packages/memory/AGENTS.md) |
-| 29 | ✓ | [`packages/playground-ui/.cursor/rules/frontend.mdc`](packages/playground-ui/.cursor/rules/frontend.mdc) |
-| 30 | ✓ | [`packages/playground-ui/AGENTS.md`](packages/playground-ui/AGENTS.md) |
-| 31 | ✓ | [`packages/playground-ui/CLAUDE.md`](packages/playground-ui/CLAUDE.md) |
-| 32 | ✓ | [`packages/playground/.cursor/rules/frontend.mdc`](packages/playground/.cursor/rules/frontend.mdc) |
-| 33 | ✓ | [`packages/playground/AGENTS.md`](packages/playground/AGENTS.md) |
-| 34 | ✓ | [`packages/playground/CLAUDE.md`](packages/playground/CLAUDE.md) |
-| 35 | ✓ | [`packages/rag/AGENTS.md`](packages/rag/AGENTS.md) |
-| 36 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 37 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 38 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
-| 39 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
-| 40 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
+| 25 | ✓ | [`packages/codemod/.claude/skills/codemod-patterns/SKILL.md`](packages/codemod/.claude/skills/codemod-patterns/SKILL.md) |
+| 26 | ✓ | [`packages/codemod/AGENTS.md`](packages/codemod/AGENTS.md) |
+| 27 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
+| 28 | ✓ | [`packages/mcp/AGENTS.md`](packages/mcp/AGENTS.md) |
+| 29 | ✓ | [`packages/memory/AGENTS.md`](packages/memory/AGENTS.md) |
+| 30 | ✓ | [`packages/playground-ui/.cursor/rules/frontend.mdc`](packages/playground-ui/.cursor/rules/frontend.mdc) |
+| 31 | ✓ | [`packages/playground-ui/AGENTS.md`](packages/playground-ui/AGENTS.md) |
+| 32 | ✓ | [`packages/playground-ui/CLAUDE.md`](packages/playground-ui/CLAUDE.md) |
+| 33 | ✓ | [`packages/playground/.cursor/rules/frontend.mdc`](packages/playground/.cursor/rules/frontend.mdc) |
+| 34 | ✓ | [`packages/playground/AGENTS.md`](packages/playground/AGENTS.md) |
+| 35 | ✓ | [`packages/playground/CLAUDE.md`](packages/playground/CLAUDE.md) |
+| 36 | ✓ | [`packages/rag/AGENTS.md`](packages/rag/AGENTS.md) |
+| 37 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 38 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 39 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
+| 40 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
+| 41 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
 
 ---
 

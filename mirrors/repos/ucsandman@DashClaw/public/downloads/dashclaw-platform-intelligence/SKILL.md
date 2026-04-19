@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:a1474e482800bd24d85993b7e4ff9d69865042f4`
+**Shape snapshot:** `sha1:336090bcc66600212be6ddde75d1f791e84cb1c8`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -29,8 +29,8 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 ## At a Glance
 
-- **175** active API routes across **44** categories
-- **4** required + **101** optional environment variables
+- **178** active API routes across **45** categories
+- **4** required + **110** optional environment variables
 - **73** database tables
 
 ## API Surface
@@ -162,6 +162,12 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 ### `health`
 
 - `GET` `/api/health`
+
+### `hosted`
+
+- `POST` `/api/hosted/cleanup`
+- `GET, POST` `/api/hosted/workspaces`
+- `DELETE, GET` `/api/hosted/workspaces/[workspaceId]`
 
 ### `identities`
 
@@ -346,8 +352,8 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 66 file(s)
-- **`DATABASE_URL`** - referenced in 77 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 67 file(s)
+- **`DATABASE_URL`** - referenced in 80 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
 
@@ -381,6 +387,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_DB_POOL_MAX` *(undocumented)*
 - `DASHCLAW_DISABLE_RATE_LIMIT` *(undocumented)*
 - `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
+- `DASHCLAW_HOSTED` *(undocumented)*
 - `DASHCLAW_LOCAL_ADMIN_PASSWORD` *(undocumented)*
 - `DASHCLAW_MODE` *(undocumented)*
 - `DASHCLAW_RATE_LIMIT_MAX` *(undocumented)*
@@ -404,6 +411,11 @@ These have fallbacks or only activate specific features.
 - `GUARD_LLM_KEY` *(undocumented)*
 - `GUARD_LLM_MODEL` *(undocumented)*
 - `GUARD_WEBHOOK_SECRET` *(undocumented)*
+- `HOSTED_CLEANUP_SECRET` *(undocumented)*
+- `HOSTED_PROVISION_MAX_PER_IP_PER_DAY` *(undocumented)*
+- `HOSTED_TRIAL_ACTION_CAP` *(undocumented)*
+- `HOSTED_TRIAL_DAYS` *(undocumented)*
+- `INTEGRATION_DATABASE_URL` *(undocumented)*
 - `MEMORY_DIR` *(undocumented)*
 - `MOONSHOT_API_KEY` *(undocumented)*
 - `NEXTAUTH_URL`
@@ -411,6 +423,7 @@ These have fallbacks or only activate specific features.
 - `NEXT_PUBLIC_DASHCLAW_MODE` *(undocumented)*
 - `NEXT_PUBLIC_DASHCLAW_VERSION` *(undocumented)*
 - `NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS` *(undocumented)*
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` *(undocumented)*
 - `NODE_ENV` *(undocumented)*
 - `OIDC_AUTHORIZATION_URL` *(undocumented)*
 - `OIDC_CLIENT_ID` *(undocumented)*
@@ -450,7 +463,9 @@ These have fallbacks or only activate specific features.
 - `TELEGRAM_APPROVER_ORG_ID` *(undocumented)*
 - `TELEGRAM_BOT_TOKEN` *(undocumented)*
 - `TELEGRAM_WEBHOOK_SECRET` *(undocumented)*
+- `TEST_BASE_URL` *(undocumented)*
 - `TRUST_PROXY` *(undocumented)*
+- `TURNSTILE_SECRET_KEY` *(undocumented)*
 - `UPSTASH_REDIS_REST_TOKEN` *(undocumented)*
 - `UPSTASH_REDIS_REST_URL` *(undocumented)*
 - `VERCEL` *(undocumented)*

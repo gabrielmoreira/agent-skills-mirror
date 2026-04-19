@@ -137,6 +137,7 @@ Required modes:
 Behavior guidance:
 - detect a Python interpreter that can import `graphify`
 - use code-only rebuild for code changes when possible
+- if the upstream `graphify.watch._rebuild_code` helper is unavailable or changes shape, fall back automatically to `graphify update .`
 - fallback to full `graphify update .` when outputs are missing
 - treat `graphify-out/graph.json` and `graphify-out/GRAPH_REPORT.md` as the required outputs
 - do not require `manifest.json`; newer graphify versions may not emit it
@@ -163,6 +164,7 @@ If the user wants **autonomous continuation** rather than only repo integration:
 - expose task-board operator commands so humans and agents can inspect next actionable work
 - if local GSD is installed, let GSD phase workflows drive discuss / plan / execute / verify order
 - use graphify retrieval commands when cross-module structure is unclear
+- mirror GSD next-step judgment into a machine-readable runtime file such as `.planning/auto-gsd-next-state.json`
 
 ### 4. Update AGENTS.md
 Add or refine a workflow section covering:

@@ -4,7 +4,7 @@ description: "DingTalk Workspace CLI (dws) - officially open-sourced cross-platf
 license: Apache-2.0
 metadata:
   author: DingTalk-Real-AI
-  version: "1.0.8"
+  version: "1.0.10"
 ---
 
 # 钉钉 Workspace CLI (dws)
@@ -194,11 +194,22 @@ python3 scripts/dws_setup.py status
 ```
 
 ### scripts/dws_quick.py
-钉钉常用操作快捷脚本。
+钉钉常用操作快捷脚本（dws 薄封装；命令路径以 `dws schema` 输出为唯一事实源）。
 
 ```bash
-python3 scripts/dws_quick.py send --conversation-id xxx --content "消息内容"
-python3 scripts/dws_quick.py contacts
+# 通过机器人发消息到群（--text 支持 @file 引用，与 dws CLI 一致）
+python3 scripts/dws_quick.py send --robot-code <BOT> --group <GID> --text "你好" --title "通知"
+
+# 搜索联系人
+python3 scripts/dws_quick.py contacts --keyword "engineering"
+
+# 列日程
 python3 scripts/dws_quick.py calendar
-python3 scripts/dws_quick.py todo --title "待办事项"
+
+# 创建待办（executors 多个用英文逗号分隔）
+python3 scripts/dws_quick.py todo --title "季度报告" --executors "userId1,userId2"
+
+# 透传任意 dws 子命令（attendance/approval 等命名空间快速发现）
+python3 scripts/dws_quick.py raw -- attendance --help
+python3 scripts/dws_quick.py raw -- approval instance list --help
 ```

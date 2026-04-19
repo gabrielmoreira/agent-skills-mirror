@@ -4,12 +4,13 @@ description: '用于 Terraform 基础设施即代码（IaC）设计、模块化�
 version: "1.0.0"
 author: "seaworld008"
 source: "skills.sh"
-source_url: ""
+source_url: "https://skills.sh/jeffallan/claude-skills/terraform-engineer"
 tags: '["development", "engineer", "terraform"]'
 created_at: "2026-03-27"
 updated_at: "2026-03-27"
 quality: 4
 complexity: "intermediate"
+license: "MIT"
 ---
 
 # Terraform Engineer

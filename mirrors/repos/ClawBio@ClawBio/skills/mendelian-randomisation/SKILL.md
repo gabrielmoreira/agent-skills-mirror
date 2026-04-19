@@ -58,6 +58,7 @@ metadata:
       env: []
       config: []
     always: false
+    emoji: "🫛"
     homepage: https://github.com/ClawBio/ClawBio
     os: [darwin, linux]
     install:

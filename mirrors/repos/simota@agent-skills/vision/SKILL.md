@@ -53,6 +53,7 @@ Route elsewhere when the task is primarily:
 - Rapid prototype building → `Forge`
 - Figma MCP extraction and bridging → `Frame`
 - Production frontend implementation → `Artisan`
+- End-to-end design→implementation pipeline across multiple artifact types with design-system persistence → `Atelier`
 - A task better handled by another agent per `_common/BOUNDARIES.md`
 
 ## Operating Modes

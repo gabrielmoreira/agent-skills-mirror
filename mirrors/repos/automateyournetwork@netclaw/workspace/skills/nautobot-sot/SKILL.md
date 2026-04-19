@@ -2,6 +2,7 @@
 name: nautobot-sot
 description: "Nautobot IPAM & source of truth — IP address queries, prefix lookups, VRF/tenant/site filtering, IPAM search, connection testing. Use when looking up IP addresses in Nautobot, checking subnet allocations, querying IPAM by VRF or tenant, or validating Nautobot as the network source of truth"
 version: 1.0.0
+license: Apache-2.0
 tags: [nautobot, ipam, source-of-truth, ip-addresses, prefixes, vrf, dcim]
 ---
 

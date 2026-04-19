@@ -2,6 +2,8 @@
 
 **Full documentation:** **[README_ENTERPRISE.md](../README_ENTERPRISE.md)**
 
+**[Interactive UI Guide](https://aws-samples.github.io/sample-OpenClaw-on-AWS-with-Bedrock/ui-guide.html)** — 25-page bilingual documentation covering architecture design, every admin and portal page, deployment guide, and platform screenshots. Start here to understand what the platform does and how to use it.
+
 ---
 
 ## Quick Start

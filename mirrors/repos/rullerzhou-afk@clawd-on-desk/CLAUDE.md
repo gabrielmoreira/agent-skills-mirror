@@ -151,10 +151,10 @@ opencode 权限气泡（event hook + 反向 bridge，非阻塞）：
 | `src/prefs.js` | 纯数据层：`clawd-prefs.json` 的 schema / load / save / migrate / validate，零 Electron 依赖；`SCHEMA` 定义版本化字段 |
 | `src/settings-store.js` | 不可变 snapshot + subscribers，closure-private `_commit`（外部拿不到 mutator） |
 | `src/settings-controller.js` | 设置系统**唯一写入者**：组合 prefs + store + actions；`applyUpdate` / `applyBulk` / `applyCommand` / `hydrate` / `subscribe`；pre-commit effect gate（validate → effect → commit，effect 失败不提交）|
-| `src/settings-actions.js` | updateRegistry + commands：每个字段的 validate/effect 对，以及 `removeTheme`/`installHooks` 等命令 |
+| `src/settings-actions.js` | updateRegistry + commands：每个字段的 validate/effect 对，以及 `removeTheme`/`installHooks`/`registerShortcut`/`resetAllShortcuts` 等命令 |
+| `src/shortcut-actions.js` | 快捷键纯逻辑层（零 Electron 依赖）：`SHORTCUT_ACTIONS` 注册表、`parseAccelerator`、`DANGEROUS_ACCELERATORS` 黑名单、`buildAcceleratorFromEvent`、`formatAcceleratorLabel`、`normalizeShortcuts`（加载期 default-priority 两轮去重） |
 | `src/settings-renderer.js` | 设置窗口渲染进程（2k+ 行）：主题卡片、animation overrides、agent 面板、诊断 |
 | `src/preload-settings.js` | 设置窗口 contextBridge：读 snapshot、发 update/command、订阅变更 |
-| `src/preload-prompt.js` | 轻量提示子窗口（elicitation / 更新气泡等）preload |
 | `src/theme-loader.js` | 主题运行时（~1400 行）：加载 `theme.json`、必需状态校验、变体 merge、能力感知 overrides、SVG 白名单消毒、用户主题目录发现 |
 | `src/agent-gate.js` | 纯函数 gate：`isAgentEnabled(snapshot, id)` / `isAgentPermissionsEnabled(...)`，默认 true 兼容旧 prefs |
 | `src/animation-cycle.js` | 解析 SVG/APNG 的动画周期（精确 / 估算 / static / unavailable），供渲染循环与抖动检测使用 |
@@ -175,6 +175,7 @@ opencode 权限气泡（event hook + 反向 bridge，非阻塞）：
 | `src/mac-window.js` | macOS 专用窗口行为（alwaysOnTop 恢复、space 行为等） |
 | `src/login-item.js` | 开机自启：封装 `app.getLoginItemSettings` / `setLoginItemSettings`，供 controller 做 validate/effect |
 | `src/work-area.js` + `size-utils.js` | 多显示器工作区查询 / 窗口尺寸钳制工具 |
+| `src/visible-margins.js` | 透明窗口 → 可视角色的 margin 计算 + 拖拽/静置 clamp 策略；`allowEdgePinning` 开关决定是否允许贴边溢出（ON: top=0.6h / bottom=0.25h 等量 drag 与 rest 消除橡皮筋回弹；OFF: 保留 visibleMargins + 0.25h 回弹） |
 | `src/log-rotate.js` | 1MB 循环追加日志工具：超限时从文件中点的换行处切半保留新内容 |
 | `hooks/clawd-hook.js` | Claude Code command hook：事件名 → 状态映射 → HTTP POST，零依赖 |
 | `hooks/copilot-hook.js` | Copilot CLI command hook：camelCase 事件名，与 clawd-hook.js 相同架构 |
@@ -234,6 +235,7 @@ Clawd 是一个**主题化**的桌宠——所有动画资源、计时、hitbox�
 - `applyUpdate` 单字段和 `applyBulk` 多字段是**同步/异步同构**的——所有 effect 都同步时返回普通对象，任何 effect 返回 thenable 就整体转 Promise。这对保持"菜单 setter 立即可读"很关键（`ctx.lang = "zh"` 必须立刻在下一行读到）。`applyCommand` 永远 async（命令如 `installHooks` 做真实 IO）。
 - `hydrate()` 是唯一跳过 `effect` 的入口，用于启动时从 `app.getLoginItemSettings()` 等系统 API 导入状态而不触发回写。
 - 设置写入 → controller `_commit` → store 广播 → subscribe 订阅者（menu.js / main.js / tray）响应副作用。没有其它路径能修改 prefs。
+- **About tab**（Phase 5）：hero 用 inline SVG（`assets/svg/clawd-about-hero.svg`，"Deal with it" 墨镜动画播到 55% 冻结 + 呼吸循环 + 7 连点触发彩蛋 toast），信息行走 `settings:get-about-info` IPC（版本 / 仓库 / 许可证 / 作者），贡献者列表硬编码在 `CONTRIBUTORS` 常量（沿用 README 顺序），默认折叠。Inline SVG 而非 `<object>` 因为 `settings.html` CSP 是 `default-src 'none'`。
 
 ### Permission Bubble 系统（permission.js + server.js → bubble.html 渲染）
 
@@ -243,7 +245,7 @@ Clawd 是一个**主题化**的桌宠——所有动画资源、计时、hitbox�
 - **堆叠布局**：多个权限请求从屏幕右下角向上堆叠，`repositionBubbles()` 管理位置
 - **动态高度**：bubble 通过 IPC `bubble-height` 上报实际渲染高度，主进程据此精确堆叠
 - **决策选项**：Allow（允许）、Deny（拒绝）、suggestion 按钮（如"始终允许"、"自动接受编辑"）
-- **全局快捷键**：`Ctrl+Shift+Y`（Allow）/ `Ctrl+Shift+N`（Deny）操作最新的可操作气泡（排除 elicitation/codex notify/ExitPlanMode），仅在气泡可见时注册，hideBubbles/petHidden 时注销
+- **全局快捷键**：默认 `Ctrl+Shift+Y`（Allow）/ `Ctrl+Shift+N`（Deny）操作最新的可操作气泡（排除 elicitation/codex notify/ExitPlanMode），仅在气泡可见时注册，hideBubbles/petHidden 时注销。**Phase 4 起 accelerator 可在 Settings → Shortcuts 里自定义**，permission.js 订阅 `controller.subscribeKey("shortcuts", cb)` 触发 `syncPermissionShortcuts`，用 new-first 算法切换（register 新键成功才 unregister 旧键），切换失败写入 `shortcutRegistrationFailures` Map 让 UI 显⚠️暴露 prefs/runtime 分叉
 - **客户端断连**：`res.on("close")` 检测 Claude Code 超时或用户在终端回答，自动清理气泡
 - **DND 模式**：休眠时自动 deny 所有权限请求，不弹气泡
 - **suggestion 格式**：支持 `addRules`（权限规则）和 `setMode`（切换模式）两种类型
@@ -366,13 +368,24 @@ opencode 是唯一**以 plugin 形式集成**的 agent，其他 agent 都是 hoo
 - 位置持久化：窗口坐标 + 尺寸存入 `clawd-prefs.json`
 - 多显示器边界钳制：`clampToScreen()` 用 `getNearestWorkArea()` 查找最近显示器工作区
 
+## 文档导航（docs/）
+
+`docs/` 在 `08cc501` 拆成了 6 个分类子目录，需要背景或历史方案时按类找而不是全盘扫：
+
+- `docs/guides/` — 面向外部用户的指南：`state-mapping.md`（状态 → 动画权威表）、`guide-theme-creation.md`（主题作者指南）、`guide-svg-animation.md`（SVG 动画约定）、`setup-guide.md` / `known-limitations.md`（含 `.zh-CN` 翻译）、`guide-remote-ssh.md`、`copilot-setup.md`
+- `docs/plans/` — 功能方案 / 重构计划：`plan-settings-panel*.md`、`plan-opencode-integration.md`、`plan-multi-agent.md`、`plan-permission-bubble.md` 等（每个大 PR 基本都能找到对应 plan）
+- `docs/investigations/` — Bug 根因 / Spike 记录：`drag-bug-investigation.md`、`opencode-phase1-debug.md`、`permission-hook-fail-deny-investigation.md`、`pitfall-svg-apng-positioning.md`、`handover-opencode-dnd-fix.md` 等——新 bug 先搜这里看有没有踩过
+- `docs/project/` — 高层介绍：`project-architecture.md`、`project-introduction.md`、`session-dashboard-design.md`
+- `docs/releases/` — 发布相关记录
+- `docs/legal/` — 许可 / 法务相关
+
 ## 开发规范
 
 - 敏感信息只放 `.env`，禁止硬编码
 - 注册 Claude Code hook 时必须**追加**到已有 hook 数组，不能覆盖
 - HTTP 服务端口范围 `127.0.0.1:23333-23337`，运行时端口写入 `~/.clawd/runtime.json`，退出时清理；全部占用时降级为 idle-only 模式
 - hook 脚本仅依赖 Node 内置模块 + 同目录的 `server-config.js` / `shared-process.js` / `json-utils.js`，禁止引入三方包（所有 hook 入口：`clawd-hook.js` / `copilot-hook.js` / `cursor-hook.js` / `gemini-hook.js` / `kiro-hook.js` / `codebuddy-hook.js` 都复用 `shared-process.js` 的进程树遍历 + 终端名白名单）
-- main.js 启动时自动调用 `registerHooks({ silent: true })` 注册缺失的 hooks
+- main.js 启动时自动调用 `registerHooks({ silent: true })` 注册缺失的 hooks；同时扫 `DEPRECATED_CORE_HOOKS`（当前含 `WorktreeCreate`）清掉旧版本留下的过时 clawd hook 条目，仅删 command 指向 `clawd-hook.js` 的那条，用户自己写的同事件 hook 不动
 - PermissionRequest 必须用 HTTP hook（阻塞式），其他事件用 command hook（非阻塞式）
 - 极简模式动画期间（`miniTransitioning`），所有窗口定位路径（`always-on-top-changed`、`display-metrics-changed`、`display-removed` 等）都必须检查此标志，否则并发定位会导致 `setPosition()` 崩溃
 

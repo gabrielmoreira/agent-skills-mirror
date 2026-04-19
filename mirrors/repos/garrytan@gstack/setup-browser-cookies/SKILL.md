@@ -47,6 +47,16 @@ _TEL_START=$(date +%s)
 _SESSION_ID="$$-$(date +%s)"
 echo "TELEMETRY: ${_TEL:-off}"
 echo "TEL_PROMPTED: $_TEL_PROMPTED"
+# Question tuning (opt-in; see /plan-tune + docs/designs/PLAN_TUNING_V0.md)
+_QUESTION_TUNING=$(~/.claude/skills/gstack/bin/gstack-config get question_tuning 2>/dev/null || echo "false")
+echo "QUESTION_TUNING: $_QUESTION_TUNING"
+# Writing style (V1: default = ELI10-style, terse = V0 prose. See docs/designs/PLAN_TUNING_V1.md)
+_EXPLAIN_LEVEL=$(~/.claude/skills/gstack/bin/gstack-config get explain_level 2>/dev/null || echo "default")
+if [ "$_EXPLAIN_LEVEL" != "default" ] && [ "$_EXPLAIN_LEVEL" != "terse" ]; then _EXPLAIN_LEVEL="default"; fi
+echo "EXPLAIN_LEVEL: $_EXPLAIN_LEVEL"
+# V1 upgrade migration pending-prompt flag
+_WRITING_STYLE_PENDING=$([ -f ~/.gstack/.writing-style-prompt-pending ] && echo "yes" || echo "no")
+echo "WRITING_STYLE_PENDING: $_WRITING_STYLE_PENDING"
 mkdir -p ~/.gstack/analytics
 if [ "$_TEL" != "off" ]; then
 echo '{"skill":"setup-browser-cookies","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
@@ -107,6 +117,29 @@ of `/qa`, `/gstack-ship` instead of `/ship`). Disk paths are unaffected — alwa
 `~/.claude/skills/gstack/[skill-name]/SKILL.md` for reading skill files.
 
 If output shows `UPGRADE_AVAILABLE <old> <new>`: read `~/.claude/skills/gstack/gstack-upgrade/SKILL.md` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise AskUserQuestion with 4 options, write snooze state if declined). If `JUST_UPGRADED <from> <to>`: tell user "Running gstack v{to} (just updated!)" and continue.
+
+If `WRITING_STYLE_PENDING` is `yes`: You're on the first skill run after upgrading
+to gstack v1. Ask the user once about the new default writing style. Use AskUserQuestion:
+
+> v1 prompts = simpler. Technical terms get a one-sentence gloss on first use,
+> questions are framed in outcome terms, sentences are shorter.
+>
+> Keep the new default, or prefer the older tighter prose?
+
+Options:
+- A) Keep the new default (recommended — good writing helps everyone)
+- B) Restore V0 prose — set `explain_level: terse`
+
+If A: leave `explain_level` unset (defaults to `default`).
+If B: run `~/.claude/skills/gstack/bin/gstack-config set explain_level terse`.
+
+Always run (regardless of choice):
+```bash
+rm -f ~/.gstack/.writing-style-prompt-pending
+touch ~/.gstack/.writing-style-prompted
+```
+
+This only happens once. If `WRITING_STYLE_PENDING` is `no`, skip this entirely.
 
 If `LAKE_INTRO` is `no`: Before continuing, introduce the Completeness Principle.
 Tell the user: "gstack follows the **Boil the Lake** principle — always do the complete
@@ -208,7 +241,8 @@ Key routing rules:
 - Design system, brand → invoke design-consultation
 - Visual audit, design polish → invoke design-review
 - Architecture review → invoke plan-eng-review
-- Save progress, checkpoint, resume → invoke checkpoint
+- Save progress, save state, save my work → invoke context-save
+- Resume, where was I, pick up where I left off → invoke context-restore
 - Code quality, health check → invoke health
 ```
 

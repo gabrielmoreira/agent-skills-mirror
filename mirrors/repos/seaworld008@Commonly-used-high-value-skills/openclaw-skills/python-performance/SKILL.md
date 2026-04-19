@@ -4,12 +4,13 @@ description: '用于 Python 性能优化、内存分析和并发编程最佳实�
 version: "1.0.0"
 author: "seaworld008"
 source: "skills.sh"
-source_url: ""
+source_url: "https://skills.sh/wshobson/agents/python-performance-optimization"
 tags: '["development", "performance", "python"]'
 created_at: "2026-03-27"
 updated_at: "2026-03-27"
 quality: 4
 complexity: "intermediate"
+license: "MIT"
 ---
 
 # Python Performance Optimization
