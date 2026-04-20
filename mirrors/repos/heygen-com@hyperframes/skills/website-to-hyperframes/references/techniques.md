@@ -158,7 +158,7 @@ Vector animations that play inside a composition. Use for logos, character anima
 <script src="https://cdn.jsdelivr.net/npm/@dotlottie/player-component@2.7.12/dist/dotlottie-player.js"></script>
 <dotlottie-player
   class="lottie"
-  src="../assets/lottie/animation-0.json"
+  src="../capture/assets/lottie/animation-0.json"
   autoplay
   loop
   speed="1.5"
@@ -179,7 +179,7 @@ var anim = lottie.loadAnimation({
   renderer: "svg",
   loop: false,
   autoplay: false,
-  path: "../assets/lottie/animation-0.json",
+  path: "../capture/assets/lottie/animation-0.json",
 });
 ```
 
@@ -193,7 +193,7 @@ Embed real video footage inside compositions. Videos must be `muted` with `plays
 <div class="video-frame" style="width:680px;height:840px;border-radius:16px;overflow:hidden;">
   <video
     id="footage"
-    src="../assets/videos/clip.mp4"
+    src="../capture/assets/videos/clip.mp4"
     muted
     playsinline
     style="width:100%;height:100%;object-fit:cover;"
@@ -251,7 +251,15 @@ Animate font-variation-settings to reshape glyphs in real-time. Works with varia
 
 ```html
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&display=block");
+  /* Load the captured local variable font — do NOT use Google Fonts @import.
+     Replace this placeholder with an @font-face pointing to ../capture/assets/fonts/. */
+  @font-face {
+    font-family: "Fraunces";
+    src: url("../capture/assets/fonts/Fraunces-Variable.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
   .wordmark {
     --opsz: 144;
     --wght: 440;
@@ -327,6 +335,44 @@ tl.to(
 ```
 
 The fastest point of both curves meets at the cut — the viewer perceives smooth camera motion. Match ease families: `.in` for exits, `.out` for entries.
+
+---
+
+## 11. Audio-Reactive Animation
+
+Drive any GSAP-tweenable property from the playing audio. Bass pulses a logo on kick drums. Treble glows a CTA on cymbals. Amplitude breathes a background during quiet phrases. The result: motion that feels locked to the track in a way pre-authored tweens never can.
+
+**When to use:** Any video with music or dramatic narration — brand reels, product launches, hype edits. Skip for calm/tutorial pacing.
+
+**How it works:** Pre-extract audio frequency bands into a JSON file, then sample per-frame via `tl.call()`:
+
+```js
+// audio-data.json: { fps: 30, totalFrames: 900, frames: [{ bands: [0.82, 0.45, 0.31, ...] }, ...] }
+for (var f = 0; f < AUDIO_DATA.totalFrames; f++) {
+  tl.call(
+    (function (frame) {
+      return function () {
+        var bass = frame.bands[0]; // 0–1
+        var treble = frame.bands[13];
+        gsap.set(".logo", { scale: 1 + bass * 0.04 }); // 3–4% pulse on bass
+        gsap.set(".cta", { filter: `drop-shadow(0 0 ${treble * 24}px #00C3FF)` });
+      };
+    })(AUDIO_DATA.frames[f]),
+    [],
+    f / AUDIO_DATA.fps,
+  );
+}
+```
+
+Per-frame sampling is required — a single tween will not react. Use the extract script:
+
+```bash
+python3 skills/gsap/scripts/extract-audio-data.py narration.wav --fps 30 --bands 16 -o audio-data.json
+```
+
+Keep text/logo intensity subtle (≤5% scale, ≤30% glow) — audio-reactive motion on tiny elements reads as jitter. Bigger backgrounds can push to 10–30%.
+
+**Never do:** equalizer bars, spectrum analyzers, waveform displays, strobing, rainbow color cycling. The audio provides _timing and intensity_; the visual vocabulary still comes from the brand. See `skills/hyperframes/references/audio-reactive.md` for the full API and anti-patterns.
 
 ---
 

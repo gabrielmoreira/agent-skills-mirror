@@ -89,6 +89,16 @@ internal/
     registry.go        # skill metadata
     loader.go          # skill loading
     validate.go        # skill name validation
+  memory/
+    types.go             # Wire schemas mirroring the Kocoro Cloud memory sidecar HTTP contract
+    errclass.go          # ErrorClass enum + ClassifyHTTP (sub_code → class)
+    config.go            # LoadConfig, ResolveAPIKey, ResolveEndpoint
+    tenant.go            # sha256 fingerprint + tenant-switch detection
+    audit.go             # AuditLogger interface (boolean-only key/endpoint state)
+    client.go            # UDS HTTP client (Query/Reload/Health, X-Request-ID, ctx-cancel dial)
+    sidecar.go           # Spawn/WaitReady/Shutdown + AttachPolicy + Supervisor
+    bundle.go            # Puller: manifest fetch, tenant check, sandboxed stage, atomic install, retention
+    service.go           # Orchestrator: status FSM, supervisor + puller goroutines, NewServiceAttached
   mcp/
     client.go          # MCP client manager
     server.go          # MCP server
@@ -111,6 +121,14 @@ internal/
     compact.go         # TUI /compact command
   update/
     selfupdate.go      # GitHub release auto-update
+  sync/
+    sync.go            # Run(ctx, deps) — flock, marker read, scan, batch, upload, write, audit
+    marker.go          # Marker + FailedEntry; atomic read/write; sidecar on unknown version
+    config.go          # Typed view of sync.* config keys
+    scanner.go         # Multi-dir candidate discovery; failed-retry union; exclusions
+    batcher.go         # Marshal-once; dual-cap (sessions+bytes) packing; oversized + load-error rejection
+    uploader.go        # Uploader interface; CloudUploader + DryRunUploader; response anomaly normalization
+    backoff.go         # Reason classification + transient backoff math
 ```
 
 ## Key Conventions
@@ -158,6 +176,8 @@ Unknown tools are denied by default.
 - Large tool results spill to `~/.shannon/tmp/` and are cleaned up:
   - per-run in daemon and TUI
   - on manager close in one-shot mode
+- **Session sync** (`internal/sync/`): uploads local session JSON to Shannon Cloud once per day (opt-in via `sync.enabled`). Single entry point `sync.Run`; called from the daemon ticker and the `shan sessions sync` CLI; flock + atomic marker write serialize concurrent callers. Per-session ACK with persistent `marker.failed` bookkeeping; permanent reasons (`size_limit_exceeded`, `load_error`) stay forever and self-heal on session edit.
+- **Memory client** (`internal/memory/`, Phase 2.3): daemon owns sidecar lifecycle (spawn / health / restart / shutdown) and the 24h bundle pull loop. Tool `memory_recall` (`internal/tools/memory.go`) delegates to `memory.Service.Query` via UDS; falls back to `session_search` + MEMORY.md whenever `Service.Status() != Ready`. CLI/TUI use `memory.AttachPolicy` (probe-only, never spawn) and connect via `memory.NewServiceAttached`. Privacy invariant: the resolved API key bytes never reach disk or audit logs (only `sha256[:16]` fingerprint in `<bundle_root>/.tenant_fingerprint`).
 
 ### Turn Lifecycle
 
@@ -192,8 +212,13 @@ Scalars override, lists merge+dedup, structs merge field-by-field. MCP server en
 - Spill files: `~/.shannon/tmp/tool_result_<session>_<call_id>.txt`
 - Schedule index: `~/.shannon/schedules.json`
 - Schedule plists: `~/Library/LaunchAgents/com.shannon.schedule.<id>.plist`
+- Sync marker: `~/.shannon/sync_marker.json`
+- Sync lock (flock): `~/.shannon/sync.lock` (never delete)
+- Sync dry-run outbox: `~/.shannon/sync_outbox/` (only when `sync.dry_run=true`)
 - Audit log: `~/.shannon/logs/audit.log`
 - Schedule logs: `~/.shannon/logs/schedule-<id>.log`
+- Memory sidecar socket: `~/.shannon/memory.sock`
+- Memory bundle root: `~/.shannon/memory/` (with `bundles/<ts>/`, `current` symlink, `.tenant_fingerprint`, `bundle.lock`)
 
 ### Prompt Cache
 

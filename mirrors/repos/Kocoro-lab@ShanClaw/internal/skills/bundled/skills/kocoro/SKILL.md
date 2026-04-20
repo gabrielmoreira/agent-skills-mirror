@@ -5,6 +5,7 @@ description: >
   MUST use for: create/delete/configure agent, install skill, connect
   Slack/DB, manage rules, project init — any platform management task.
 allowed-tools: http file_read
+sticky-instructions: true
 ---
 
 # Kocoro — Platform Configuration Assistant
@@ -43,7 +44,10 @@ body: {"name": "agent-name", "prompt": "You are a ... assistant. You help users 
 **Create schedule:** `http POST http://localhost:7533/schedules` body: `{"prompt": "...", "cron": "0 9 * * 1-5"}`
 
 For detailed docs on MCP servers, permissions, project init, or multi-step recipes, load the relevant reference:
-`references/agents.md` · `references/skills.md` · `references/config.md` · `references/mcp.md` · `references/instructions.md` · `references/schedules.md` · `references/permissions.md` · `references/project-init.md` · `references/recipes.md`
+`references/agents.md` · `references/skills.md` · `references/config.md` · `references/mcp.md` · `references/instructions.md` · `references/schedules.md` · `references/permissions.md` · `references/project-init.md` · `references/recipes.md` · `references/session-sync.md` · `references/memory.md`
+
+- [Session sync](references/session-sync.md) — opt-in daily upload of local sessions to Shannon Cloud
+- references/memory.md — memory feature config + diagnostics
 
 ## Security
 

@@ -10,7 +10,7 @@ level: 3
 ---
 
 <Purpose>
-Deep Interview implements Ouroboros-inspired Socratic questioning with mathematical ambiguity scoring. It replaces vague ideas with crystal-clear specifications by asking targeted questions that expose hidden assumptions, measuring clarity across weighted dimensions, and refusing to proceed until ambiguity drops below a configurable threshold (default: 20%). The output feeds into a 3-stage pipeline: **deep-interview → ralplan (consensus refinement) → autopilot (execution)**, ensuring maximum clarity at every stage.
+Deep Interview implements Ouroboros-inspired Socratic questioning with mathematical ambiguity scoring. It replaces vague ideas with crystal-clear specifications by asking targeted questions that expose hidden assumptions, measuring clarity across weighted dimensions, and refusing to proceed until ambiguity drops below the resolved threshold for this run. The output feeds into a 3-stage pipeline: **deep-interview → ralplan (consensus refinement) → autopilot (execution)**, ensuring maximum clarity at every stage.
 </Purpose>
 
 <Use_When>
@@ -43,21 +43,21 @@ Inspired by the [Ouroboros project](https://github.com/Q00/ouroboros) which demo
 - Gather codebase facts via `explore` agent BEFORE asking the user about them
 - For brownfield confirmation questions, cite the repo evidence that triggered the question (file path, symbol, or pattern) instead of asking the user to rediscover it
 - Score ambiguity after every answer -- display the score transparently
-- Do not proceed to execution until ambiguity ≤ threshold (default 0.2)
+- Do not proceed to execution until ambiguity ≤ the resolved threshold for this run
 - Allow early exit with a clear warning if ambiguity is still high
 - Persist interview state for resume across session interruptions
 - Challenge agents activate at specific round thresholds to shift perspective
 </Execution_Policy>
 
 <Autoresearch_Mode>
-When arguments include `--autoresearch`, Deep Interview becomes the zero-learning-curve setup lane for `omc autoresearch`.
+When arguments include `--autoresearch`, Deep Interview becomes the zero-learning-curve setup lane for the stateful `autoresearch` skill.
 
 - If no usable mission brief is present yet, start by asking: **"What should autoresearch improve or prove for this repo?"**
 - After the mission is clear, collect an evaluator command. If the user leaves it blank, infer one only when repo evidence is strong; otherwise keep interviewing until an evaluator is explicit enough to launch safely.
 - Keep the usual one-question-per-round rule, but treat **mission clarity** and **evaluator clarity** as hard readiness gates in addition to the normal ambiguity threshold.
-- Once ready, do **not** bridge into `omc-plan`, `autopilot`, `ralph`, or `team`. Instead run:
-  - `omc autoresearch --mission "<mission>" --eval "<evaluator>" [--keep-policy <policy>] [--slug <slug>]`
-- This direct handoff is expected to detach into the real autoresearch runtime tmux session. After a successful handoff, announce the launched session and end the interview lane.
+- Once ready, do **not** bridge into `omc-plan`, `autopilot`, `ralph`, `team`, or the hard-deprecated `omc autoresearch` CLI. Instead write the mission/evaluator setup artifacts and invoke:
+  - `Skill("oh-my-claudecode:autoresearch")`
+- This handoff enters the real stateful autoresearch skill. After a successful handoff, announce the mission slug, evaluator command/script, max-runtime ceiling, and artifact location.
 </Autoresearch_Mode>
 
 <Steps>
@@ -70,6 +70,10 @@ When arguments include `--autoresearch`, Deep Interview becomes the zero-learnin
    - If source files exist AND the user's idea references modifying/extending something: **brownfield**
    - Otherwise: **greenfield**
 3. **For brownfield**: Run `explore` agent to map relevant codebase areas, store as `codebase_context`
+3.5. **Load runtime settings**:
+   - Read `[$CLAUDE_CONFIG_DIR|~/.claude]/settings.json` and `./.claude/settings.json` (project overrides user)
+   - Resolve `omc.deepInterview.ambiguityThreshold` into `<resolvedThreshold>`; if it is undefined, use `0.2`
+   - Derive `<resolvedThresholdPercent>` from `<resolvedThreshold>` and substitute both placeholders throughout the remaining instructions before continuing
 4. **Initialize state** via `state_write(mode="deep-interview")`:
 
 ```json
@@ -82,7 +86,7 @@ When arguments include `--autoresearch`, Deep Interview becomes the zero-learnin
     "initial_idea": "<user input>",
     "rounds": [],
     "current_ambiguity": 1.0,
-    "threshold": 0.2,
+    "threshold": <resolvedThreshold>,
     "codebase_context": null,
     "challenge_modes_used": [],
     "ontology_snapshots": []
@@ -92,7 +96,7 @@ When arguments include `--autoresearch`, Deep Interview becomes the zero-learnin
 
 5. **Announce the interview** to the user:
 
-> Starting deep interview. I'll ask targeted questions to understand your idea thoroughly before building anything. After each answer, I'll show your clarity score. We'll proceed to execution once ambiguity drops below 20%.
+> Starting deep interview. I'll ask targeted questions to understand your idea thoroughly before building anything. After each answer, I'll show your clarity score. We'll proceed to execution once ambiguity drops below <resolvedThresholdPercent>.
 >
 > **Your idea:** "{initial_idea}"
 > **Project type:** {greenfield|brownfield}
@@ -344,7 +348,7 @@ Spec structure:
 
 ## Phase 5: Execution Bridge
 
-**Autoresearch override:** if `--autoresearch` is active, skip the standard execution options below. The only valid bridge is the direct `omc autoresearch --mission ... --eval ...` handoff described above.
+**Autoresearch override:** if `--autoresearch` is active, skip the standard execution options below. The only valid bridge is the `Skill("oh-my-claudecode:autoresearch")` handoff described above. The `omc autoresearch` CLI is a hard-deprecated shim and must not be used for execution.
 
 After the spec is written, present execution options via `AskUserQuestion`:
 
@@ -384,7 +388,7 @@ Stage 1: Deep Interview          Stage 2: Ralplan                Stage 3: Autopi
 │ Ambiguity scoring   │───>│ Architect reviews         │───>│ Phase 3: QA cycling  │
 │ Challenge agents    │    │ Critic validates          │    │ Phase 4: Validation  │
 │ Spec crystallization│    │ Loop until consensus      │    │ Phase 5: Cleanup     │
-│ Gate: ≤20% ambiguity│    │ ADR + RALPLAN-DR summary  │    │                      │
+│ Gate: ≤<resolvedThresholdPercent> ambiguity│    │ ADR + RALPLAN-DR summary  │    │                      │
 └─────────────────────┘    └───────────────────────────┘    └──────────────────────┘
 Output: spec.md            Output: consensus-plan.md        Output: working code
 ```
@@ -453,7 +457,7 @@ Why good: Challenges a specific assumption (scale requirement) that could dramat
 Early exit with warning:
 ```
 User: "That's enough, just build it"
-System: "Current ambiguity is 35% (threshold: 20%). Areas still unclear:
+System: "Current ambiguity is 35% (threshold: <resolvedThresholdPercent>). Areas still unclear:
   - Success Criteria: 0.5 (How do we verify the search ranking algorithm works correctly?)
   - Constraints: 0.6 (No performance targets defined yet)
 
@@ -548,7 +552,7 @@ Optional settings in `.claude/settings.json`:
 {
   "omc": {
     "deepInterview": {
-      "ambiguityThreshold": 0.2,
+      "ambiguityThreshold": <resolvedThreshold>,
       "maxRounds": 20,
       "softWarningRounds": 10,
       "minRoundsBeforeExit": 3,
@@ -583,7 +587,7 @@ The recommended execution path chains three quality gates:
 
 ```
 /deep-interview "vague idea"
-  → Socratic Q&A until ambiguity ≤ 20%
+  → Socratic Q&A until ambiguity ≤ <resolvedThresholdPercent>
   → Spec written to .omc/specs/deep-interview-{slug}.md
   → User selects "Ralplan → Autopilot"
   → /omc-plan --consensus --direct (spec as input, skip interview)
@@ -641,11 +645,11 @@ Each mode is used exactly once, then normal Socratic questioning resumes. Modes 
 | Score Range | Meaning | Action |
 |-------------|---------|--------|
 | 0.0 - 0.1 | Crystal clear | Proceed immediately |
-| 0.1 - 0.2 | Clear enough | Proceed (default threshold) |
-| 0.2 - 0.4 | Some gaps | Continue interviewing |
-| 0.4 - 0.6 | Significant gaps | Focus on weakest dimensions |
-| 0.6 - 0.8 | Very unclear | May need reframing (Ontologist) |
-| 0.8 - 1.0 | Almost nothing known | Early stages, keep going |
+| At or below the resolved threshold | Clear enough | Proceed |
+| Above the resolved threshold with minor gaps | Some gaps | Continue interviewing |
+| Moderate ambiguity | Significant gaps | Focus on weakest dimensions |
+| High ambiguity | Very unclear | May need reframing (Ontologist) |
+| Extreme ambiguity | Almost nothing known | Early stages, keep going |
 </Advanced>
 
 Task: {{ARGUMENTS}}

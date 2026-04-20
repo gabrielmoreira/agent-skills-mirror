@@ -11,6 +11,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _No unreleased changes yet._
 
+## [10.4.0] - 2026-04-19 - "Strategy Tooling, Idea Pipeline, and IT/Ops Skill Expansion"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #525, #526, #528, #529, and #530 and refreshes canonical generated state on `main`. It expands the catalog with new strategy, SEO, product-planning, IT service-management, and x402 monetization guidance while preserving maintainer quality gates (checklist normalization, contributor sync, source credit coverage, and release-state preflight).
+
+## New Skills
+
+- **kotler-macro-analyzer** - strategic marketing analysis workflow based on Kotler-style macro-environment and positioning lenses.
+- **osterwalder-canvas-architect** - business model and value-proposition design workflow aligned to Osterwalder canvas structures.
+- **social-post-writer-seo** - social content writing workflow with SEO-aware structuring and publishing guidance.
+- **idea-os** - five-phase idea-to-PRD-to-plan pipeline (`triage -> clarify -> research -> PRD -> plan`) with artifact-driven outputs.
+- **itil-expert**, **it-manager-pro**, **it-manager-hospital** - IT service-management skill pack for enterprise and healthcare operations scenarios.
+- **x402-express-wrapper** - Node.js wrapper guidance for x402 paywall integration and protocol-locked escrow usage.
+
+## Improvements
+
+- **PR policy hygiene** - normalized PR bodies/checklists for stalled fork PRs and re-triggered fresh check suites.
+- **quality gate fixes** - added missing `## Limitations` coverage where required by repository tests before merge completion.
+- **source attribution alignment** - added community-source credit for `Slashworks-biz/idea-os` in README to satisfy `check:readme-credits`.
+- **release-state sync** - regenerated catalog/index/web assets/plugin mirrors so release artifacts are canonical on `main`.
+
+## Who should care
+
+- **Claude Code / Cursor / Codex CLI / Gemini CLI users** get seven new installable workflows spanning strategy, IT operations, and monetized API architecture.
+- **Product and PM-focused users** get the new `idea-os` planning pipeline plus Kotler/Osterwalder strategic analysis skills.
+- **Ops and platform teams** get ITIL and IT-manager playbooks plus x402 monetization integration guidance.
+- **Maintainers and downstream indexers** get synchronized generated artifacts and contributor/source-credit consistency for the merged batch.
+
+## Credits
+
+- **[@justmiroslav](https://github.com/justmiroslav)** for PR #525 (`kotler-macro-analyzer`, `osterwalder-canvas-architect`).
+- **[@WHOISABHISHEKADHIKARI](https://github.com/WHOISABHISHEKADHIKARI)** for PR #526 (`social-post-writer-seo`).
+- **[@Imasaikiran](https://github.com/Imasaikiran)** for PR #528 (`idea-os`).
+- **[@Evozim](https://github.com/Evozim)** for PR #529 (`x402-express-wrapper`).
+- **[@edudeftones-cloud](https://github.com/edudeftones-cloud)** for PR #530 (`itil-expert`, `it-manager-pro`, `it-manager-hospital`).
+
 ## [10.3.0] - 2026-04-17 - "Taste Design, Mise Toolchains, and MCP Discovery"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

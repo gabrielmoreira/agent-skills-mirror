@@ -4,7 +4,7 @@
 
 - **DESIGN.md** — your color palette, fonts, components, and Do's/Don'ts. Every composition must use EXACT hex colors and font families from this file. If it says "white backgrounds" — use white, not dark.
 - **STORYBOARD.md** — the beat-by-beat plan you're executing. Each beat specifies assets, animations, transitions, and which techniques to use.
-- **`extracted/asset-descriptions.md`** — when the storyboard assigns an asset to a beat, re-read the description to understand what it shows and how to position/style it correctly.
+- **`capture/extracted/asset-descriptions.md`** — when the storyboard assigns an asset to a beat, re-read the description to understand what it shows and how to position/style it correctly.
 - **[techniques.md](techniques.md)** — code patterns for the 10 visual techniques. When the storyboard says "SVG path drawing" or "per-word kinetic typography" — read the code pattern from this file and adapt it.
 - **transcript.json** — word-level timestamps that drive scene durations.
 
@@ -21,21 +21,21 @@ STORYBOARD for this beat:
 [paste the beat section from STORYBOARD.md]
 
 ASSETS — reference by path, do NOT read/inline the file contents:
-- Logo: <img src="../assets/favicon.svg"> (top-left, 40x40px)
-- Hero image: <img src="../assets/hero-bg.png"> (full-bleed background)
-- Noise texture: ../assets/noise.png (full-frame overlay, 3% opacity)
+- Logo: <img src="../capture/assets/favicon.svg"> (top-left, 40x40px)
+- Hero image: <img src="../capture/assets/hero-bg.png"> (full-bleed background)
+- Noise texture: ../capture/assets/noise.png (full-frame overlay, 3% opacity)
 
 FONTS — use @font-face with the captured font files, NOT Google Fonts:
-@font-face { font-family: 'BrandFont'; src: url('../assets/fonts/BrandFont-Regular.woff2'); }
+@font-face { font-family: 'BrandFont'; src: url('../capture/assets/fonts/BrandFont-Regular.woff2'); }
 
 Read DESIGN.md for exact colors and Do's/Don'ts.
 Read techniques.md for animation code patterns.
-Invoke /hyperframes for composition structure rules.
+Load the `hyperframes` skill for composition structure rules.
 ```
 
-After each sub-agent finishes, verify the composition references `../assets/` — if it used inline SVGs or Google Fonts instead of the captured files, fix it before moving on.
+After each sub-agent finishes, verify the composition references `../capture/assets/` — if it used inline SVGs or Google Fonts instead of the captured files, fix it before moving on.
 
-Invoke the `/hyperframes` skill first — it has the rules for data attributes, timeline contracts, deterministic rendering, and layout. Everything below supplements those rules, not replaces them.
+Load the `hyperframes` skill first — it has the rules for data attributes, timeline contracts, deterministic rendering, and layout. Everything below supplements those rules, not replaces them.
 
 ---
 
@@ -70,19 +70,20 @@ Use `gsap.from()` — animate FROM offscreen/invisible TO the CSS position. The 
 
 Every visible element must have continuous motion. A still image on a still background is a JPEG with a progress bar.
 
-| Element type           | Mid-scene activity                               |
-| ---------------------- | ------------------------------------------------ |
-| Image / screenshot     | Slow zoom (scale 1→1.03), slow pan, or Ken Burns |
-| Stat / number          | Counter animates from 0 to target                |
-| Logo grid              | Subtle shimmer sweep, or gentle scale pulse      |
-| Any persistent element | Subtle float (y ±4-6px, sine.inOut, yoyo)        |
+| Element type                           | Mid-scene activity                                                                                                                           |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Image / screenshot                     | Slow zoom (scale 1→1.03), slow pan, or Ken Burns                                                                                             |
+| Stat / number                          | Counter animates from 0 to target                                                                                                            |
+| Logo grid                              | Subtle shimmer sweep, or gentle scale pulse                                                                                                  |
+| Any persistent element                 | Subtle float (y ±4-6px, sine.inOut, yoyo)                                                                                                    |
+| Logo / CTA (with music or dramatic VO) | Audio-reactive scale/glow — bass pulses the logo (3–4%), treble glows the CTA. See technique #11 in `techniques.md` for the sampling pattern |
 
 ### 6. Add exit / transition
 
 Check the storyboard's transition specification for this beat:
 
 - **CSS transition**: implement the exit animation (e.g., `y:-150, blur:30px, 0.33s power2.in`). The next composition handles its own entry.
-- **Shader transition**: no exit animation needed — the shader handles the blend. Read `skills/hyperframes/references/transitions/shader-setup.md` for the full WebGL boilerplate and `skills/hyperframes/references/transitions/shader-transitions.md` for the fragment shader. Copy the FULL boilerplate — a simplified version produces black screens.
+- **Shader transition**: no exit animation needed — the shader handles the blend. Read `packages/shader-transitions/README.md` for the API, available shaders, and setup. The package handles WebGL init, capture, and GSAP integration — do not copy raw GLSL manually.
 - **Hard cut**: no exit animation. The scene simply ends.
 
 For all CSS transition types and their GSAP implementations, read `skills/hyperframes/references/transitions/catalog.md`.
@@ -95,8 +96,8 @@ Before self-review, verify you actually used the assets you planned to:
 2. List every asset that was assigned to this beat
 3. Search the composition HTML for each filename (e.g., grep for "wave-fallback-desktop")
 4. If any assigned asset is missing from the HTML, add it now
-5. Check for the inline anti-pattern: if the HTML contains `<svg xmlns=` or `data:image/` but no `../assets/` references, the assets were inlined instead of referenced. Replace inline content with `<img src="../assets/filename.svg">`
-6. Check fonts: if the HTML uses `fonts.googleapis.com` but there are captured fonts in `assets/fonts/`, replace with `@font-face` pointing to the local files
+5. Check for the inline anti-pattern: if the HTML contains `<svg xmlns=` or `data:image/` but no `../capture/assets/` references, the assets were inlined instead of referenced. Replace inline content with `<img src="../capture/assets/filename.svg">`
+6. Check fonts: if the HTML uses `fonts.googleapis.com` but there are captured fonts in `capture/assets/fonts/`, replace with `@font-face` pointing to the local files (e.g., `src: url('../capture/assets/fonts/BrandFont-Regular.woff2')`)
 
 This step catches the two most common failures: compositions ending up text-only, and assets being inlined instead of file-referenced.
 
@@ -113,6 +114,9 @@ After building the composition, check WITH ACTUAL CODE:
 - [ ] No full-screen dark linear gradients (H.264 creates visible banding — use solid + localized radial glows)
 - [ ] Timeline registered: `window.__timelines["comp-id"] = tl`
 - [ ] Colors match DESIGN.md exactly (paste the HEX value, don't approximate)
+- [ ] **Every `<template>` root element** — not just `index.html`, but every sub-composition's root — has `data-start="0"` **and** `data-duration="<beat_seconds>"`. The linter warns `root_composition_missing_data_start` / `root_composition_missing_data_duration` when missing; without `data-duration` the runtime may infer `Infinity` on repeating animations and stall playback.
+- [ ] **Caption exits have a hard kill.** If you animate captions out with `tl.to(groupEl, { opacity: 0 }, group.end)`, follow it with `tl.set(groupEl, { opacity: 0, visibility: "hidden" }, group.end)` as a deterministic kill — per-word karaoke tweens can override the exit tween and leave captions stuck on screen. Linter: `caption_exit_missing_hard_kill`.
+- [ ] **No duplicate media nodes.** If the same image/video source is referenced twice with identical `data-start` + `data-duration`, the compiler discovers it twice and can double-render. Dedupe by using a single `<img>` with appropriate z-layering, or stagger the `data-start` values. Linter: `duplicate_media_discovery_risk`.
 
 **If `skills/hyperframes-animation-map/` is installed**, run it:
 

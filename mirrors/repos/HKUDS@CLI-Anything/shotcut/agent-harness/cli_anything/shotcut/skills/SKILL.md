@@ -49,6 +49,9 @@ cli-anything-shotcut
 # Enter commands interactively with tab-completion and history
 ```
 
+The REPL exposes the same practical helpers as command mode, including
+`add-clip ... --at`, `volume-envelope`, and `duck`.
+
 
 ## Command Groups
 
@@ -77,7 +80,7 @@ Timeline operations: tracks, clips, trimming.
 | `tracks` | List all tracks |
 | `add-track` | Add a new track to the timeline |
 | `remove-track` | Remove a track by index |
-| `add-clip` | Add a media clip to a track |
+| `add-clip` | Add a media clip to a track; supports `--at` for absolute timeline placement |
 | `remove-clip` | Remove a clip from a track |
 | `move-clip` | Move a clip between tracks or positions |
 | `trim` | Trim a clip's in/out points |
@@ -100,6 +103,8 @@ Filter operations: add, remove, configure effects.
 | `add` | Add a filter to a clip, track, or globally |
 | `remove` | Remove a filter by index |
 | `set` | Set a parameter on a filter |
+| `volume-envelope` | Create or replace a keyframed volume envelope on a track or clip |
+| `duck` | Build a practical ducking envelope over one or more time windows |
 | `list` | List active filters on a target |
 
 
@@ -199,8 +204,48 @@ cli-anything-shotcut
 Export the project to a final output format.
 
 ```bash
-cli-anything-shotcut --project myproject.json export render output.pdf --overwrite
+cli-anything-shotcut --project myproject.json export render output.mp4 --overwrite
 ```
+
+### Deterministic Timeline Reconstruction
+
+For rebuilds, prefer absolute placement over append-only clip insertion:
+
+```bash
+cli-anything-shotcut --project myproject.json -s timeline add-clip intro.mp4 \
+  --track 1 --in 00:00:00.000 --out 00:00:04.000 --at 00:00:00.000
+
+cli-anything-shotcut --project myproject.json -s timeline add-clip broll.mp4 \
+  --track 1 --in 00:00:10.000 --out 00:00:16.000 --at 00:00:08.000
+```
+
+Notes:
+- `--at` inserts blanks automatically when the target time lands in empty space.
+- The CLI rejects overlap with an existing clip instead of silently changing the timeline.
+- For agent-built timelines, prefer explicit `--in` and `--out` values so later absolute placement remains unambiguous.
+
+### Audio Automation
+
+The released CLI now includes higher-level audio automation helpers:
+
+```bash
+cli-anything-shotcut --project myproject.json -s filter volume-envelope \
+  --track 2 \
+  --point 00:00:00.000=1.0 \
+  --point 00:00:03.000=0.35 \
+  --point 00:00:05.000=1.0
+
+cli-anything-shotcut --project myproject.json -s filter duck \
+  --track 2 \
+  --window 00:00:06.000:00:00:09.000 \
+  --window 00:00:15.000:00:00:18.000 \
+  --normal 1.0 --duck 0.25 \
+  --attack 00:00:00.150 --release 00:00:00.250
+```
+
+Keyframed `volume` filters now export as ffmpeg `volume=` expressions instead of
+collapsing to a simple fade. This is materially better, but you should still
+review final renders when automation is editorially important.
 
 
 ## State Management
@@ -235,6 +280,8 @@ When using this CLI programmatically:
 3. **Parse stderr** for error messages on failure
 4. **Use absolute paths** for all file operations
 5. **Verify outputs exist** after export operations
+6. **Prefer `timeline add-clip --at`** when recreating a known edit
+7. **Review final renders** after keyframed volume or ducking changes
 
 ## More Information
 

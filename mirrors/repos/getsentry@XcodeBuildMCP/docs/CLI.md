@@ -28,7 +28,58 @@ xcodebuildmcp <workflow> <tool> --help
 
 # Run interactive setup for .xcodebuildmcp/config.yaml
 xcodebuildmcp setup
+
+# Check for updates
+xcodebuildmcp upgrade --check
 ```
+
+## Upgrade
+
+`xcodebuildmcp upgrade` checks for a newer release and optionally runs the upgrade.
+
+```bash
+# Check for updates without upgrading
+xcodebuildmcp upgrade --check
+
+# Upgrade automatically (skip confirmation prompt)
+xcodebuildmcp upgrade --yes
+```
+
+### Flags
+
+| Flag | Description |
+|------|-------------|
+| `--check` | Report the latest version and exit. Never prompts or runs an upgrade. |
+| `--yes` / `-y` | Skip the confirmation prompt and run the upgrade command automatically. |
+
+When both `--check` and `--yes` are supplied, `--check` wins.
+
+### Channel-aware version lookup
+
+The version check queries the source of truth for your install channel — `brew info` for Homebrew, `npm view` for npm/npx, or GitHub Releases for unknown installs. This avoids misleading results when release channels drift (e.g. GitHub may publish a version before the Homebrew tap bumps). If the channel-specific lookup fails, the command does not fall back to another source; it reports the error and exits 1.
+
+### Install method behavior
+
+The command detects how XcodeBuildMCP was installed and adapts accordingly:
+
+| Method | Auto-upgrade | Command |
+|--------|--------------|----------|
+| Homebrew | Yes | `brew update && brew upgrade xcodebuildmcp` |
+| npm global | Yes | `npm install -g xcodebuildmcp@latest` |
+| npx | No | npx resolves `@latest` on each run; update the pinned version in your client config if needed. |
+| Unknown | No | Manual instructions for all supported channels are shown. |
+
+### Non-interactive mode
+
+When stdin is not a TTY (CI, pipes, scripts):
+
+- `--check` works normally and exits 0.
+- `--yes` runs the upgrade for Homebrew and npm-global installs.
+- Without `--check` or `--yes`, the command prints the manual upgrade command and exits 1 (it cannot prompt for confirmation).
+
+### Lookup failures
+
+If the channel-specific version check fails (network error, rate limit, timeout, missing formula), the command prints the detected install method and manual upgrade instructions, then exits 1.
 
 ## Tool Options
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,18 +59,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agents/claude-code.js`](agents/claude-code.js) |
-| 2 | ✓ | [`agents/codebuddy.js`](agents/codebuddy.js) |
-| 3 | ✓ | [`agents/codex-log-monitor.js`](agents/codex-log-monitor.js) |
-| 4 | ✓ | [`agents/codex.js`](agents/codex.js) |
-| 5 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
-| 6 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
-| 7 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
-| 8 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
-| 9 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
-| 10 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
-| 11 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`agents/claude-code.js`](agents/claude-code.js) |
+| 3 | ✓ | [`agents/codebuddy.js`](agents/codebuddy.js) |
+| 4 | ✓ | [`agents/codex-log-monitor.js`](agents/codex-log-monitor.js) |
+| 5 | ✓ | [`agents/codex.js`](agents/codex.js) |
+| 6 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
+| 7 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
+| 8 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
+| 9 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
+| 10 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
+| 11 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
+| 12 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

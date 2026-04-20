@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 555 file(s) materialized.
+Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 559 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClawBio/ClawBio` — 26 default patterns, 0 followed patterns, 555 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 555 |
+| Files         | 559 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -572,48 +572,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 511 | ✓ | [`skills/scrna-orchestrator/scrna_orchestrator.py`](skills/scrna-orchestrator/scrna_orchestrator.py) |
 | 512 | ✓ | [`skills/scrna-orchestrator/SKILL.md`](skills/scrna-orchestrator/SKILL.md) |
 | 513 | ✓ | [`skills/scrna-orchestrator/tests/test_scrna_orchestrator.py`](skills/scrna-orchestrator/tests/test_scrna_orchestrator.py) |
-| 514 | ✓ | [`skills/seq-wrangler/SKILL.md`](skills/seq-wrangler/SKILL.md) |
-| 515 | ✓ | [`skills/soul2dna/SKILL.md`](skills/soul2dna/SKILL.md) |
-| 516 | ✓ | [`skills/soul2dna/soul2dna.py`](skills/soul2dna/soul2dna.py) |
-| 517 | ✓ | [`skills/struct-predictor/core/__init__.py`](skills/struct-predictor/core/__init__.py) |
-| 518 | ✓ | [`skills/struct-predictor/core/confidence.py`](skills/struct-predictor/core/confidence.py) |
-| 519 | ✓ | [`skills/struct-predictor/core/io.py`](skills/struct-predictor/core/io.py) |
-| 520 | ✓ | [`skills/struct-predictor/core/predict.py`](skills/struct-predictor/core/predict.py) |
-| 521 | ✓ | [`skills/struct-predictor/core/report.py`](skills/struct-predictor/core/report.py) |
-| 522 | ✓ | [`skills/struct-predictor/core/viewer.py`](skills/struct-predictor/core/viewer.py) |
-| 523 | ✓ | [`skills/struct-predictor/demo_data/trpcage.yaml`](skills/struct-predictor/demo_data/trpcage.yaml) |
-| 524 | ✓ | [`skills/struct-predictor/SKILL.md`](skills/struct-predictor/SKILL.md) |
-| 525 | ✓ | [`skills/struct-predictor/struct_predictor.py`](skills/struct-predictor/struct_predictor.py) |
-| 526 | ✓ | [`skills/struct-predictor/tests/__init__.py`](skills/struct-predictor/tests/__init__.py) |
-| 527 | ✓ | [`skills/struct-predictor/tests/test_struct_predictor.py`](skills/struct-predictor/tests/test_struct_predictor.py) |
-| 528 | ✓ | [`skills/target-validation-scorer/checksums.sha256`](skills/target-validation-scorer/checksums.sha256) |
-| 529 | ✓ | [`skills/target-validation-scorer/commands.sh`](skills/target-validation-scorer/commands.sh) |
-| 530 | ✓ | [`skills/target-validation-scorer/demo_input.json`](skills/target-validation-scorer/demo_input.json) |
-| 531 | ✓ | [`skills/target-validation-scorer/environment.yml`](skills/target-validation-scorer/environment.yml) |
-| 532 | ✓ | [`skills/target-validation-scorer/SKILL.md`](skills/target-validation-scorer/SKILL.md) |
-| 533 | ✓ | [`skills/target-validation-scorer/target_validation_scorer.py`](skills/target-validation-scorer/target_validation_scorer.py) |
-| 534 | ✓ | [`skills/target-validation-scorer/tests/test_target_validation_scorer.py`](skills/target-validation-scorer/tests/test_target_validation_scorer.py) |
-| 535 | ✓ | [`skills/ukb-navigator/SKILL.md`](skills/ukb-navigator/SKILL.md) |
-| 536 | ✓ | [`skills/ukb-navigator/tests/test_ukb_navigator.py`](skills/ukb-navigator/tests/test_ukb_navigator.py) |
-| 537 | ✓ | [`skills/ukb-navigator/ukb_navigator.py`](skills/ukb-navigator/ukb_navigator.py) |
-| 538 | ✓ | [`skills/variant-annotation/example_data/synthetic_clinvar_panel.vcf`](skills/variant-annotation/example_data/synthetic_clinvar_panel.vcf) |
-| 539 | ✓ | [`skills/variant-annotation/figures/variant_annotation_summary.png`](skills/variant-annotation/figures/variant_annotation_summary.png) |
-| 540 | ✓ | [`skills/variant-annotation/SKILL.md`](skills/variant-annotation/SKILL.md) |
-| 541 | ✓ | [`skills/variant-annotation/tests/test_variant_annotation.py`](skills/variant-annotation/tests/test_variant_annotation.py) |
-| 542 | ✓ | [`skills/variant-annotation/variant_annotation.py`](skills/variant-annotation/variant_annotation.py) |
-| 543 | ✓ | [`skills/vcf-annotator/examples/demo_output/report.md`](skills/vcf-annotator/examples/demo_output/report.md) |
-| 544 | ✓ | [`skills/vcf-annotator/README.md`](skills/vcf-annotator/README.md) |
-| 545 | ✓ | [`skills/vcf-annotator/SKILL.md`](skills/vcf-annotator/SKILL.md) |
-| 546 | ✓ | [`skills/vcf-annotator/tests/test_vcf_annotator.py`](skills/vcf-annotator/tests/test_vcf_annotator.py) |
-| 547 | ✓ | [`skills/vcf-annotator/vcf_annotator.py`](skills/vcf-annotator/vcf_annotator.py) |
-| 548 | ✓ | [`skills/wes-clinical-report-en/examples/demo_WES_Report.md`](skills/wes-clinical-report-en/examples/demo_WES_Report.md) |
-| 549 | ✓ | [`skills/wes-clinical-report-en/SKILL.md`](skills/wes-clinical-report-en/SKILL.md) |
-| 550 | ✓ | [`skills/wes-clinical-report-en/tests/test_wes_clinical_report_en.py`](skills/wes-clinical-report-en/tests/test_wes_clinical_report_en.py) |
-| 551 | ✓ | [`skills/wes-clinical-report-en/wes_clinical_report_en.py`](skills/wes-clinical-report-en/wes_clinical_report_en.py) |
-| 552 | ✓ | [`skills/wes-clinical-report-es/examples/demo_WES_Report.md`](skills/wes-clinical-report-es/examples/demo_WES_Report.md) |
-| 553 | ✓ | [`skills/wes-clinical-report-es/SKILL.md`](skills/wes-clinical-report-es/SKILL.md) |
-| 554 | ✓ | [`skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py`](skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py) |
-| 555 | ✓ | [`skills/wes-clinical-report-es/wes_clinical_report_es.py`](skills/wes-clinical-report-es/wes_clinical_report_es.py) |
+| 514 | ✓ | [`skills/seq-wrangler/examples/demo-results/report.md`](skills/seq-wrangler/examples/demo-results/report.md) |
+| 515 | ✓ | [`skills/seq-wrangler/README.md`](skills/seq-wrangler/README.md) |
+| 516 | ✓ | [`skills/seq-wrangler/seq_wrangler.py`](skills/seq-wrangler/seq_wrangler.py) |
+| 517 | ✓ | [`skills/seq-wrangler/SKILL.md`](skills/seq-wrangler/SKILL.md) |
+| 518 | ✓ | [`skills/seq-wrangler/tests/test_seq_wrangler.py`](skills/seq-wrangler/tests/test_seq_wrangler.py) |
+| 519 | ✓ | [`skills/soul2dna/SKILL.md`](skills/soul2dna/SKILL.md) |
+| 520 | ✓ | [`skills/soul2dna/soul2dna.py`](skills/soul2dna/soul2dna.py) |
+| 521 | ✓ | [`skills/struct-predictor/core/__init__.py`](skills/struct-predictor/core/__init__.py) |
+| 522 | ✓ | [`skills/struct-predictor/core/confidence.py`](skills/struct-predictor/core/confidence.py) |
+| 523 | ✓ | [`skills/struct-predictor/core/io.py`](skills/struct-predictor/core/io.py) |
+| 524 | ✓ | [`skills/struct-predictor/core/predict.py`](skills/struct-predictor/core/predict.py) |
+| 525 | ✓ | [`skills/struct-predictor/core/report.py`](skills/struct-predictor/core/report.py) |
+| 526 | ✓ | [`skills/struct-predictor/core/viewer.py`](skills/struct-predictor/core/viewer.py) |
+| 527 | ✓ | [`skills/struct-predictor/demo_data/trpcage.yaml`](skills/struct-predictor/demo_data/trpcage.yaml) |
+| 528 | ✓ | [`skills/struct-predictor/SKILL.md`](skills/struct-predictor/SKILL.md) |
+| 529 | ✓ | [`skills/struct-predictor/struct_predictor.py`](skills/struct-predictor/struct_predictor.py) |
+| 530 | ✓ | [`skills/struct-predictor/tests/__init__.py`](skills/struct-predictor/tests/__init__.py) |
+| 531 | ✓ | [`skills/struct-predictor/tests/test_struct_predictor.py`](skills/struct-predictor/tests/test_struct_predictor.py) |
+| 532 | ✓ | [`skills/target-validation-scorer/checksums.sha256`](skills/target-validation-scorer/checksums.sha256) |
+| 533 | ✓ | [`skills/target-validation-scorer/commands.sh`](skills/target-validation-scorer/commands.sh) |
+| 534 | ✓ | [`skills/target-validation-scorer/demo_input.json`](skills/target-validation-scorer/demo_input.json) |
+| 535 | ✓ | [`skills/target-validation-scorer/environment.yml`](skills/target-validation-scorer/environment.yml) |
+| 536 | ✓ | [`skills/target-validation-scorer/SKILL.md`](skills/target-validation-scorer/SKILL.md) |
+| 537 | ✓ | [`skills/target-validation-scorer/target_validation_scorer.py`](skills/target-validation-scorer/target_validation_scorer.py) |
+| 538 | ✓ | [`skills/target-validation-scorer/tests/test_target_validation_scorer.py`](skills/target-validation-scorer/tests/test_target_validation_scorer.py) |
+| 539 | ✓ | [`skills/ukb-navigator/SKILL.md`](skills/ukb-navigator/SKILL.md) |
+| 540 | ✓ | [`skills/ukb-navigator/tests/test_ukb_navigator.py`](skills/ukb-navigator/tests/test_ukb_navigator.py) |
+| 541 | ✓ | [`skills/ukb-navigator/ukb_navigator.py`](skills/ukb-navigator/ukb_navigator.py) |
+| 542 | ✓ | [`skills/variant-annotation/example_data/synthetic_clinvar_panel.vcf`](skills/variant-annotation/example_data/synthetic_clinvar_panel.vcf) |
+| 543 | ✓ | [`skills/variant-annotation/figures/variant_annotation_summary.png`](skills/variant-annotation/figures/variant_annotation_summary.png) |
+| 544 | ✓ | [`skills/variant-annotation/SKILL.md`](skills/variant-annotation/SKILL.md) |
+| 545 | ✓ | [`skills/variant-annotation/tests/test_variant_annotation.py`](skills/variant-annotation/tests/test_variant_annotation.py) |
+| 546 | ✓ | [`skills/variant-annotation/variant_annotation.py`](skills/variant-annotation/variant_annotation.py) |
+| 547 | ✓ | [`skills/vcf-annotator/examples/demo_output/report.md`](skills/vcf-annotator/examples/demo_output/report.md) |
+| 548 | ✓ | [`skills/vcf-annotator/README.md`](skills/vcf-annotator/README.md) |
+| 549 | ✓ | [`skills/vcf-annotator/SKILL.md`](skills/vcf-annotator/SKILL.md) |
+| 550 | ✓ | [`skills/vcf-annotator/tests/test_vcf_annotator.py`](skills/vcf-annotator/tests/test_vcf_annotator.py) |
+| 551 | ✓ | [`skills/vcf-annotator/vcf_annotator.py`](skills/vcf-annotator/vcf_annotator.py) |
+| 552 | ✓ | [`skills/wes-clinical-report-en/examples/demo_WES_Report.md`](skills/wes-clinical-report-en/examples/demo_WES_Report.md) |
+| 553 | ✓ | [`skills/wes-clinical-report-en/SKILL.md`](skills/wes-clinical-report-en/SKILL.md) |
+| 554 | ✓ | [`skills/wes-clinical-report-en/tests/test_wes_clinical_report_en.py`](skills/wes-clinical-report-en/tests/test_wes_clinical_report_en.py) |
+| 555 | ✓ | [`skills/wes-clinical-report-en/wes_clinical_report_en.py`](skills/wes-clinical-report-en/wes_clinical_report_en.py) |
+| 556 | ✓ | [`skills/wes-clinical-report-es/examples/demo_WES_Report.md`](skills/wes-clinical-report-es/examples/demo_WES_Report.md) |
+| 557 | ✓ | [`skills/wes-clinical-report-es/SKILL.md`](skills/wes-clinical-report-es/SKILL.md) |
+| 558 | ✓ | [`skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py`](skills/wes-clinical-report-es/tests/test_wes_clinical_report_es.py) |
+| 559 | ✓ | [`skills/wes-clinical-report-es/wes_clinical_report_es.py`](skills/wes-clinical-report-es/wes_clinical_report_es.py) |
 
 ---
 

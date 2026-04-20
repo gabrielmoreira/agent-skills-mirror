@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 11 file
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 11 |
+| Followed pats | 1 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 0 followed patterns, 11 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
 
 ## File Index
 
@@ -61,15 +61,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/adding-backends.md`](.agents/adding-backends.md) |
 | 2 | ✓ | [`.agents/adding-gallery-models.md`](.agents/adding-gallery-models.md) |
-| 3 | ✓ | [`.agents/api-endpoints-and-auth.md`](.agents/api-endpoints-and-auth.md) |
-| 4 | ✓ | [`.agents/building-and-testing.md`](.agents/building-and-testing.md) |
-| 5 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
-| 6 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
-| 7 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
-| 8 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 9 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`.agents/ai-coding-assistants.md`](.agents/ai-coding-assistants.md) |
+| 4 | ✓ | [`.agents/api-endpoints-and-auth.md`](.agents/api-endpoints-and-auth.md) |
+| 5 | ✓ | [`.agents/building-and-testing.md`](.agents/building-and-testing.md) |
+| 6 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
+| 7 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
+| 8 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
+| 9 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
+| 10 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

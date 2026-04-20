@@ -3,8 +3,8 @@
 **Before writing anything, fully re-read these files:**
 
 - **DESIGN.md** — your color palette, font rules, components, Do's/Don'ts. Every creative decision must be grounded in this brand identity. If it says "white backgrounds with purple accent" — plan light scenes, not dark moody ones.
-- **`extracted/asset-descriptions.md`** — read EVERY line. This is your menu of available visuals. Each line describes what the image actually shows (e.g., "translucent ribbons in orange, pink, and purple on white background" or "a high-speed train under a dark starry sky"). Use these descriptions to decide which assets belong in which beat. Assets you don't understand from the description — view them directly before assigning.
-- **[techniques.md](techniques.md)** — 10 visual techniques (SVG path drawing, Canvas 2D art, CSS 3D, per-word typography, Lottie, video compositing, typing effect, variable fonts, MotionPath, velocity transitions). Pick 2-3 per beat and specify them in the storyboard.
+- **`capture/extracted/asset-descriptions.md`** — read EVERY line. This is your menu of available visuals. Each line describes what the image actually shows (e.g., "translucent ribbons in orange, pink, and purple on white background" or "a high-speed train under a dark starry sky"). Use these descriptions to decide which assets belong in which beat. Assets you don't understand from the description — view them directly before assigning.
+- **[techniques.md](techniques.md)** — 11 visual techniques (SVG path drawing, Canvas 2D art, CSS 3D, per-word typography, Lottie, video compositing, typing effect, variable fonts, MotionPath, velocity transitions, audio-reactive). Pick 2-3 per beat and specify them in the storyboard.
 
 The storyboard is the creative north star. It tells the engineer exactly what to build for each beat — mood, camera, animations, transitions, assets, sound. Write it as if you're briefing a motion designer who's never seen the website.
 
@@ -96,9 +96,9 @@ Cultural and design references, not hex codes:
 
 Which captured files to use, referenced by filename:
 
-- "Background: `assets/wave-fallback-desktop.png` — full-bleed, slow zoom 1→1.04 over beat duration"
-- "Logo: `assets/svgs/stripe-logo.svg` — centered, fades in at 0.5s"
-- "Enterprise photo: `assets/enterprise-accordion-hertz.png` — Ken Burns pan, 70% opacity overlay"
+- "Background: `capture/assets/wave-fallback-desktop.png` — full-bleed, slow zoom 1→1.04 over beat duration"
+- "Logo: `capture/assets/svgs/stripe-logo.svg` — centered, fades in at 0.5s"
+- "Enterprise photo: `capture/assets/enterprise-accordion-hertz.png` — Ken Burns pan, 70% opacity overlay"
 
 ### Animation choreography
 
@@ -116,6 +116,16 @@ Every element gets a verb. If you can't name the verb, the element is not yet de
 
 How this beat hands off to the next. Specify the type and parameters.
 
+**When to pick which:**
+
+| Choose shader transition for                                                    | Choose CSS transition for                                                           | Choose hard cut for                                            |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Reveals, big reaction shots, product/logo unveils, energy shifts, "wow" moments | Continuous camera-motion beats where the scene feels like one move broken into cuts | Rapid-fire lists, percussive edits on the beat, comedic timing |
+| Any moment the music/VO punctuates with a downbeat or SFX hit                   | Beats that ease from one composition into the next with shared motion vocabulary    | Sequences of 3+ quick tempo-matched switches                   |
+| Brand moments where the transition itself _is_ the visual                       | Minimal/editorial pacing                                                            | Anytime a 0.3-0.8s transition would feel too slow              |
+
+Rule of thumb: if the beat is the _centerpiece_ of the video, shader-transition into it. If the beat is connective tissue, CSS-transition. A brand reel of 5-7 beats usually wants 1-2 shader transitions (the hero reveal + the CTA) and the rest CSS or hard cuts — too many shader transitions flatten their impact.
+
 **CSS transitions** (choose from `skills/hyperframes/references/transitions/catalog.md`):
 
 - Velocity-matched upward: exit `y:-150, blur:30px, 0.33s power2.in` → entry `y:150→0, blur:30px→0, 1.0s power2.out`
@@ -124,13 +134,13 @@ How this beat hands off to the next. Specify the type and parameters.
 - Zoom through: exit `scale:1→1.2, blur:20px, 0.2s power3.in` → entry `scale:0.75→1, blur:20px→0, 0.5s expo.out`
 - Hard cut / smash cut (for rapid-fire sequences)
 
-**Shader transitions** (choose from `skills/hyperframes/references/transitions/shader-transitions.md`):
+**Shader transitions** (choose from `packages/shader-transitions/README.md`):
 
 - Cross-Warp Morph (organic, versatile) — 0.5-0.8s, power2.inOut
 - Cinematic Zoom (professional momentum) — 0.4-0.6s, power2.inOut
 - Gravitational Lens (otherworldly) — 0.6-1.0s, power2.inOut
 - Glitch (aggressive, high energy) — 0.3-0.5s
-- See `skills/hyperframes/references/transitions/shader-setup.md` for the full WebGL boilerplate
+- See `packages/shader-transitions/README.md` for the full API, available shaders, and setup
 
 **How velocity-matched CSS transitions work:**
 Exit the outgoing beat with an accelerating ease (power2.in or power3.in) plus a blur ramp. Enter the incoming beat with a decelerating ease (power2.out or power3.out) plus blur clear. The fastest point of both easing curves meets at the cut — the viewer perceives continuous camera motion, not two discrete animations. Match exit velocity to entry velocity within ~5% tolerance.
@@ -162,7 +172,22 @@ project/
 ├── STORYBOARD.md                 THIS FILE — creative north star
 ├── transcript.json               word-level timestamps (from Step 5)
 ├── narration.wav                 TTS audio (from Step 5)
-├── captures/<name>/              captured website data
+├── capture/                      captured website data (from Step 1)
+│   ├── screenshots/
+│   ├── assets/
+│   │   ├── svgs/
+│   │   ├── fonts/
+│   │   ├── lottie/
+│   │   └── videos/
+│   ├── extracted/
+│   │   ├── tokens.json
+│   │   ├── visible-text.txt
+│   │   ├── asset-descriptions.md
+│   │   ├── animations.json
+│   │   ├── assets-catalog.json
+│   │   └── detected-libraries.json
+│   ├── AGENTS.md
+│   └── CLAUDE.md
 └── compositions/
     ├── beat-1-hook.html
     ├── beat-2-features.html

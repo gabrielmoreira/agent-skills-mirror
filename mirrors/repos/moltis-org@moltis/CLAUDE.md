@@ -64,21 +64,58 @@ cargo build --release        # Release build
 cargo run / cargo run --release
 ```
 
-## Web UI Assets
+## Web UI (TypeScript + Preact + Vite)
 
-Assets in `crates/web/src/assets/` (JS, CSS, HTML). Dev mode serves from disk (edit and reload);
-release mode embeds via `include_dir!` with versioned URLs.
+TypeScript/TSX source in `crates/web/ui/src/`, built with Vite to `crates/web/src/assets/dist/`.
+CSS and static assets in `crates/web/src/assets/`. Release mode embeds via `include_dir!`.
+Both `dist/` and `style.css` are committed (unminified) so `cargo build` works without Node.js
+and diffs merge cleanly. See `docs/src/frontend.md` for the full architecture guide.
 
-- **Always** run `biome check --write` when JS files change.
-- Avoid creating HTML from JS — add hidden elements in `index.html`, toggle visibility. Preact/HTM exceptions allowed.
+### Build Commands
+
+```bash
+cd crates/web/ui
+npm run build          # Vite: TS/TSX → dist/ (MUST commit dist/ after)
+npm run build:css      # Tailwind: input.css → ../src/assets/css/style.css
+npm run build:sw       # esbuild: src/sw.ts → ../src/assets/sw.js
+npm run build:all      # All three above
+npm run dev            # Vite watch mode (rebuilds on save)
+npx tsc --noEmit       # Type check (strict, must be 0 errors)
+```
+
+**After changing TS/TSX files**, always:
+1. `biome check --write crates/web/ui/src/`
+2. `cd crates/web/ui && npm run build`
+3. `cd crates/web/ui && npx tsc --noEmit`
+4. Commit both the source changes AND the `dist/` output
+
+### TypeScript Rules
+
+- **File size limit: 1,500 lines** (same rule as Rust). Split large files into modules by domain.
+  - Pages: extract sections/modals into `pages/sections/`, `pages/channels/`, `pages/chat/`, etc.
+  - Utilities: extract sub-modules into sibling directories (`providers/`, `sessions/`, `ws/`).
+  - Keep shared signals, types, and re-exports in the main file; move logic into sub-modules.
+- All UI code is **TypeScript** with **JSX** (Preact). No HTM tagged templates.
+- Add typed Props interfaces for all Preact components.
+- Use `@preact/signals` with generic type parameters: `signal<string[]>([])`.
+- Prefer typed interfaces over `Record<string, unknown>` — define concrete shapes where property access is known.
+- Use `targetValue(e)` / `targetChecked(e)` from `typed-events.ts` for form event handlers.
+- No `any` types — use `unknown` with type guards or specific interfaces.
+- Use shared components from `components/forms/` (TextField, SaveButton, ListItem, Badge, TabBar, etc.).
+
+### CSS Rules
+
 - **Always use Tailwind classes** instead of inline `style="..."`.
 - Reuse CSS classes from `components.css`: `provider-btn`, `provider-btn-secondary`, `provider-btn-danger`.
 - Match button heights/text sizes when elements sit together.
-- **Rebuild Tailwind** after adding new classes and **commit the output**:
-  ```bash
-  cd crates/web/ui && npx tailwindcss -i input.css -o ../src/assets/style.css
-  ```
-  `style.css` is checked in (unminified, one rule per line) so `cargo build` works without Node.js and diffs merge cleanly.
+- **Rebuild Tailwind** after adding new classes: `cd crates/web/ui && npm run build:css`.
+
+### E2E Test Shims
+
+E2E tests dynamically import individual JS modules (`js/state.js`, `js/helpers.js`, etc.).
+With Vite bundling, these don't exist as standalone files. Shim files in `src/assets/js/`
+proxy to `window.__moltis_modules` (populated by `app.tsx`). When adding new modules that
+tests import, add a shim file and expose the module in `app.tsx`.
 
 ### Selection Cards
 
@@ -93,12 +130,13 @@ When adding fields, update: `ProviderConfig` struct, `available()` response, `sa
 ### Server-Injected Data (gon pattern)
 
 For server data needed at page load: add to `GonData` in `server.rs` / `build_gon_data()`.
-JS side: `import * as gon from "./gon.js"` — use `gon.get()`, `gon.onChange()`, `gon.refresh()`.
+TS side: `import * as gon from "./gon"` — use `gon.get()`, `gon.onChange()`, `gon.refresh()`.
+Types in `crates/web/ui/src/types/gon.ts` mirror the Rust `GonData` struct.
 Never inject inline `<script>` tags or build HTML in Rust.
 
 ### Event Bus
 
-Server events via WebSocket: `import { onEvent } from "./events.js"`. Returns unsubscribe function.
+Server events via WebSocket: `import { onEvent } from "./events"`. Returns unsubscribe function.
 Do **not** use `window.addEventListener`/`CustomEvent` for server events.
 
 ## API Namespace Convention
@@ -166,7 +204,7 @@ just format-check        # CI format check
 just release-preflight   # fmt + clippy gates
 cargo check              # Fast compile check
 taplo fmt                # Format TOML files
-biome check --write      # Lint/format JS
+biome check --write      # Lint/format TS/TSX
 ```
 
 ## Sandbox Architecture
@@ -275,9 +313,9 @@ Conventional commits: `feat|fix|docs|style|refactor|test|chore(scope): descripti
 **Always** run `./scripts/local-validate.sh <PR_NUMBER>` when a PR exists.
 
 For incremental local edits before full validation:
-- JS changed: run `biome check --write`.
+- TS/TSX changed: run `biome check --write` and `cd crates/web/ui && npm run build`.
 - Rust changed: run `cargo +nightly-2025-11-30 fmt --all -- --check`.
-- JS + Rust changed: run both.
+- Both changed: run all three.
 
 Exact commands (must match `local-validate.sh`):
 - Fmt: `cargo +nightly-2025-11-30 fmt --all -- --check`
@@ -298,7 +336,7 @@ with exact commands), `## Manual QA`. Include concrete test steps.
 **Run before every commit:**
 - [ ] No secrets or private tokens (CRITICAL)
 - [ ] `taplo fmt` (TOML changes)
-- [ ] `biome check --write` (JS changes)
+- [ ] `biome check --write` (TS/TSX changes)
 - [ ] Rust fmt passes (exact command above)
 - [ ] `just lint` passes (OS-aware clippy)
 - [ ] `just release-preflight` passes
