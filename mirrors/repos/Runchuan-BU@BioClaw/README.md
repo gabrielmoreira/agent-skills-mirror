@@ -167,6 +167,7 @@ BioClaw now supports two provider paths:
 
 - **Anthropic** — default, keeps the original Claude Agent SDK flow
 - **OpenRouter / OpenAI-compatible** — optional path for OpenRouter and similar `/chat/completions` providers
+- **OpenAI Codex login** — reuse a local `codex login` / ChatGPT sign-in, no API key required
 
 Create a `.env` file in the project root and choose **one** of the following setups.
 
@@ -197,6 +198,20 @@ OPENAI_COMPATIBLE_API_KEY=your_api_key
 OPENAI_COMPATIBLE_BASE_URL=https://your-provider.example/v1
 OPENAI_COMPATIBLE_MODEL=your-model-name
 ```
+
+**Option C — Reuse local Codex CLI login**
+
+```bash
+MODEL_PROVIDER=openai-codex
+OPENAI_CODEX_MODEL=gpt-5.4
+```
+
+Requirements:
+
+- `codex` is installed on the host and already signed in
+- `~/.codex/auth.json` exists and is valid
+
+BioClaw will reuse the host Codex login and keep Codex thread state inside the group session directory so GPT sessions can resume across messages.
 
 After updating `.env`, restart BioClaw:
 

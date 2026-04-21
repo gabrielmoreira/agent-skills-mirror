@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 12 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 0 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 17 |
+| Followed pats | 12 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,18 @@ Mirror of `PaddlePaddle/PaddleOCR` — 26 default patterns, 0 followed patterns,
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `readme/README_cn.md`
+- `readme/README_tcn.md`
+- `readme/README_ja.md`
+- `readme/README_ko.md`
+- `readme/README_fr.md`
+- `readme/README_ru.md`
+- `readme/README_es.md`
+- `readme/README_ar.md`
+- `docs/version3.x/pipeline_usage/instructions/benchmark.en.md`
+- `docs/version3.x/installation.en.md`
+- `awesome_projects.md`
 
 ## File Index
 
@@ -59,23 +70,61 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/paddleocr-doc-parsing/references/output_schema.md`](skills/paddleocr-doc-parsing/references/output_schema.md) |
-| 2 | ✓ | [`skills/paddleocr-doc-parsing/scripts/lib.py`](skills/paddleocr-doc-parsing/scripts/lib.py) |
-| 3 | ✓ | [`skills/paddleocr-doc-parsing/scripts/optimize_file.py`](skills/paddleocr-doc-parsing/scripts/optimize_file.py) |
-| 4 | ✓ | [`skills/paddleocr-doc-parsing/scripts/requirements-optimize.txt`](skills/paddleocr-doc-parsing/scripts/requirements-optimize.txt) |
-| 5 | ✓ | [`skills/paddleocr-doc-parsing/scripts/requirements.txt`](skills/paddleocr-doc-parsing/scripts/requirements.txt) |
-| 6 | ✓ | [`skills/paddleocr-doc-parsing/scripts/smoke_test.py`](skills/paddleocr-doc-parsing/scripts/smoke_test.py) |
-| 7 | ✓ | [`skills/paddleocr-doc-parsing/scripts/split_pdf.py`](skills/paddleocr-doc-parsing/scripts/split_pdf.py) |
-| 8 | ✓ | [`skills/paddleocr-doc-parsing/scripts/vl_caller.py`](skills/paddleocr-doc-parsing/scripts/vl_caller.py) |
-| 9 | ✓ | [`skills/paddleocr-doc-parsing/SKILL.md`](skills/paddleocr-doc-parsing/SKILL.md) |
-| 10 | ✓ | [`skills/paddleocr-text-recognition/references/output_schema.md`](skills/paddleocr-text-recognition/references/output_schema.md) |
-| 11 | ✓ | [`skills/paddleocr-text-recognition/scripts/lib.py`](skills/paddleocr-text-recognition/scripts/lib.py) |
-| 12 | ✓ | [`skills/paddleocr-text-recognition/scripts/ocr_caller.py`](skills/paddleocr-text-recognition/scripts/ocr_caller.py) |
-| 13 | ✓ | [`skills/paddleocr-text-recognition/scripts/requirements.txt`](skills/paddleocr-text-recognition/scripts/requirements.txt) |
-| 14 | ✓ | [`skills/paddleocr-text-recognition/scripts/smoke_test.py`](skills/paddleocr-text-recognition/scripts/smoke_test.py) |
-| 15 | ✓ | [`skills/paddleocr-text-recognition/SKILL.md`](skills/paddleocr-text-recognition/SKILL.md) |
-| 16 | ✓ | [`skills/README_cn.md`](skills/README_cn.md) |
-| 17 | ✓ | [`skills/README.md`](skills/README.md) |
+| 1 | ✓ | [`applications/README.md`](applications/README.md) |
+| 2 | ✓ | [`deploy/android_demo/README.md`](deploy/android_demo/README.md) |
+| 3 | ✓ | [`deploy/avh/README.md`](deploy/avh/README.md) |
+| 4 | ✓ | [`deploy/docker/hubserving/README_cn.md`](deploy/docker/hubserving/README_cn.md) |
+| 5 | ✓ | [`deploy/docker/hubserving/README.md`](deploy/docker/hubserving/README.md) |
+| 6 | ✓ | [`deploy/ios_demo/README.md`](deploy/ios_demo/README.md) |
+| 7 | ✓ | [`deploy/paddlecloud/README.md`](deploy/paddlecloud/README.md) |
+| 8 | ✓ | [`deploy/paddleocr_vl_docker/hps/README.md`](deploy/paddleocr_vl_docker/hps/README.md) |
+| 9 | ✓ | [`deploy/README.md`](deploy/README.md) |
+| 10 | ✓ | [`deploy/slim/auto_compression/README.md`](deploy/slim/auto_compression/README.md) |
+| 11 | ✓ | [`deploy/slim/prune/README.md`](deploy/slim/prune/README.md) |
+| 12 | ✓ | [`deploy/slim/quantization/README.md`](deploy/slim/quantization/README.md) |
+| 13 | ✓ | [`docs/version2.x/README.md`](docs/version2.x/README.md) |
+| 14 | ✓ | [`docs/version3.x/deployment/skills.md`](docs/version3.x/deployment/skills.md) |
+| 15 | ✓ | [`langchain-paddleocr/README_cn.md`](langchain-paddleocr/README_cn.md) |
+| 16 | ✓ | [`langchain-paddleocr/README.md`](langchain-paddleocr/README.md) |
+| 17 | ✓ | [`mcp_server/README.md`](mcp_server/README.md) |
+| 18 | ✓ | [`paddleocr-js/packages/core/README_cn.md`](paddleocr-js/packages/core/README_cn.md) |
+| 19 | ✓ | [`paddleocr-js/packages/core/README.md`](paddleocr-js/packages/core/README.md) |
+| 20 | ✓ | [`paddleocr-js/README_cn.md`](paddleocr-js/README_cn.md) |
+| 21 | ✓ | [`paddleocr-js/README.md`](paddleocr-js/README.md) |
+| 22 | ✓ | [`ppocr/postprocess/pse_postprocess/pse/README.md`](ppocr/postprocess/pse_postprocess/pse/README.md) |
+| 23 | ✓ | [`ppocr/utils/dict/README.md`](ppocr/utils/dict/README.md) |
+| 24 | ✓ | [`ppstructure/kie/README.md`](ppstructure/kie/README.md) |
+| 25 | ✓ | [`ppstructure/layout/README.md`](ppstructure/layout/README.md) |
+| 26 | ✓ | [`ppstructure/pdf2word/README.md`](ppstructure/pdf2word/README.md) |
+| 27 | ✓ | [`ppstructure/README.md`](ppstructure/README.md) |
+| 28 | ✓ | [`ppstructure/recovery/README.md`](ppstructure/recovery/README.md) |
+| 29 | ✓ | [`ppstructure/table/README.md`](ppstructure/table/README.md) |
+| 30 | ✓ | [`skills/paddleocr-doc-parsing/references/output_schema.md`](skills/paddleocr-doc-parsing/references/output_schema.md) |
+| 31 | ✓ | [`skills/paddleocr-doc-parsing/scripts/layout_caller.py`](skills/paddleocr-doc-parsing/scripts/layout_caller.py) |
+| 32 | ✓ | [`skills/paddleocr-doc-parsing/scripts/lib.py`](skills/paddleocr-doc-parsing/scripts/lib.py) |
+| 33 | ✓ | [`skills/paddleocr-doc-parsing/scripts/optimize_file.py`](skills/paddleocr-doc-parsing/scripts/optimize_file.py) |
+| 34 | ✓ | [`skills/paddleocr-doc-parsing/scripts/smoke_test.py`](skills/paddleocr-doc-parsing/scripts/smoke_test.py) |
+| 35 | ✓ | [`skills/paddleocr-doc-parsing/scripts/split_pdf.py`](skills/paddleocr-doc-parsing/scripts/split_pdf.py) |
+| 36 | ✓ | [`skills/paddleocr-doc-parsing/SKILL.md`](skills/paddleocr-doc-parsing/SKILL.md) |
+| 37 | ✓ | [`skills/paddleocr-text-recognition/references/output_schema.md`](skills/paddleocr-text-recognition/references/output_schema.md) |
+| 38 | ✓ | [`skills/paddleocr-text-recognition/scripts/lib.py`](skills/paddleocr-text-recognition/scripts/lib.py) |
+| 39 | ✓ | [`skills/paddleocr-text-recognition/scripts/ocr_caller.py`](skills/paddleocr-text-recognition/scripts/ocr_caller.py) |
+| 40 | ✓ | [`skills/paddleocr-text-recognition/scripts/smoke_test.py`](skills/paddleocr-text-recognition/scripts/smoke_test.py) |
+| 41 | ✓ | [`skills/paddleocr-text-recognition/SKILL.md`](skills/paddleocr-text-recognition/SKILL.md) |
+| 42 | ✓ | [`skills/README_cn.md`](skills/README_cn.md) |
+| 43 | ✓ | [`skills/README.md`](skills/README.md) |
+| 44 | → | [`awesome_projects.md`](awesome_projects.md) |
+| 45 | → | [`docs/version3.x/installation.en.md`](docs/version3.x/installation.en.md) |
+| 46 | → | [`docs/version3.x/pipeline_usage/instructions/benchmark.en.md`](docs/version3.x/pipeline_usage/instructions/benchmark.en.md) |
+| 47 | → | [`README.md`](README.md) |
+| 48 | → | [`readme/README_ar.md`](readme/README_ar.md) |
+| 49 | → | [`readme/README_cn.md`](readme/README_cn.md) |
+| 50 | → | [`readme/README_es.md`](readme/README_es.md) |
+| 51 | → | [`readme/README_fr.md`](readme/README_fr.md) |
+| 52 | → | [`readme/README_ja.md`](readme/README_ja.md) |
+| 53 | → | [`readme/README_ko.md`](readme/README_ko.md) |
+| 54 | → | [`readme/README_ru.md`](readme/README_ru.md) |
+| 55 | → | [`readme/README_tcn.md`](readme/README_tcn.md) |
 
 ---
 

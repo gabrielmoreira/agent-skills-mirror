@@ -60,7 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`claude-skill/src/core/SKILL.md`](claude-skill/src/core/SKILL.md) |
+| 2 | ✓ | [`claude-skill/pdca-framework/SKILL.md`](claude-skill/pdca-framework/SKILL.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed patterns, 109 file(s) materialized.
+Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed patterns, 110 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Yeachan-Heo/oh-my-claudecode` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 109 |
+| Files         | 110 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -134,40 +134,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 73 | ✓ | [`skills/sciomc/SKILL.md`](skills/sciomc/SKILL.md) |
 | 74 | ✓ | [`skills/self-improve/data_contracts.md`](skills/self-improve/data_contracts.md) |
 | 75 | ✓ | [`skills/self-improve/scripts/plot_progress.py`](skills/self-improve/scripts/plot_progress.py) |
-| 76 | ✓ | [`skills/self-improve/scripts/validate.sh`](skills/self-improve/scripts/validate.sh) |
-| 77 | ✓ | [`skills/self-improve/si-benchmark-builder.md`](skills/self-improve/si-benchmark-builder.md) |
-| 78 | ✓ | [`skills/self-improve/si-goal-clarifier.md`](skills/self-improve/si-goal-clarifier.md) |
-| 79 | ✓ | [`skills/self-improve/si-researcher.md`](skills/self-improve/si-researcher.md) |
-| 80 | ✓ | [`skills/self-improve/SKILL.md`](skills/self-improve/SKILL.md) |
-| 81 | ✓ | [`skills/self-improve/templates/agent-settings.json`](skills/self-improve/templates/agent-settings.json) |
-| 82 | ✓ | [`skills/self-improve/templates/goal.md`](skills/self-improve/templates/goal.md) |
-| 83 | ✓ | [`skills/self-improve/templates/harness.md`](skills/self-improve/templates/harness.md) |
-| 84 | ✓ | [`skills/self-improve/templates/idea.md`](skills/self-improve/templates/idea.md) |
-| 85 | ✓ | [`skills/self-improve/templates/settings.json`](skills/self-improve/templates/settings.json) |
-| 86 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
-| 87 | ✓ | [`skills/skill/SKILL.md`](skills/skill/SKILL.md) |
-| 88 | ✓ | [`skills/skillify/SKILL.md`](skills/skillify/SKILL.md) |
-| 89 | ✓ | [`skills/team/SKILL.md`](skills/team/SKILL.md) |
-| 90 | ✓ | [`skills/trace/SKILL.md`](skills/trace/SKILL.md) |
-| 91 | ✓ | [`skills/ultraqa/SKILL.md`](skills/ultraqa/SKILL.md) |
-| 92 | ✓ | [`skills/ultrawork/SKILL.md`](skills/ultrawork/SKILL.md) |
-| 93 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
-| 94 | ✓ | [`skills/visual-verdict/SKILL.md`](skills/visual-verdict/SKILL.md) |
-| 95 | ✓ | [`skills/wiki/SKILL.md`](skills/wiki/SKILL.md) |
-| 96 | ✓ | [`skills/writer-memory/lib/character-tracker.ts`](skills/writer-memory/lib/character-tracker.ts) |
-| 97 | ✓ | [`skills/writer-memory/lib/memory-manager.ts`](skills/writer-memory/lib/memory-manager.ts) |
-| 98 | ✓ | [`skills/writer-memory/lib/relationship-graph.ts`](skills/writer-memory/lib/relationship-graph.ts) |
-| 99 | ✓ | [`skills/writer-memory/lib/scene-organizer.ts`](skills/writer-memory/lib/scene-organizer.ts) |
-| 100 | ✓ | [`skills/writer-memory/lib/synopsis-builder.ts`](skills/writer-memory/lib/synopsis-builder.ts) |
-| 101 | ✓ | [`skills/writer-memory/SKILL.md`](skills/writer-memory/SKILL.md) |
-| 102 | ✓ | [`skills/writer-memory/templates/synopsis-template.md`](skills/writer-memory/templates/synopsis-template.md) |
-| 103 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 104 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
-| 105 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
-| 106 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
-| 107 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
-| 108 | ✓ | [`src/tools/diagnostics/AGENTS.md`](src/tools/diagnostics/AGENTS.md) |
-| 109 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
+| 76 | ✓ | [`skills/self-improve/scripts/resolve-paths.mjs`](skills/self-improve/scripts/resolve-paths.mjs) |
+| 77 | ✓ | [`skills/self-improve/scripts/validate.sh`](skills/self-improve/scripts/validate.sh) |
+| 78 | ✓ | [`skills/self-improve/si-benchmark-builder.md`](skills/self-improve/si-benchmark-builder.md) |
+| 79 | ✓ | [`skills/self-improve/si-goal-clarifier.md`](skills/self-improve/si-goal-clarifier.md) |
+| 80 | ✓ | [`skills/self-improve/si-researcher.md`](skills/self-improve/si-researcher.md) |
+| 81 | ✓ | [`skills/self-improve/SKILL.md`](skills/self-improve/SKILL.md) |
+| 82 | ✓ | [`skills/self-improve/templates/agent-settings.json`](skills/self-improve/templates/agent-settings.json) |
+| 83 | ✓ | [`skills/self-improve/templates/goal.md`](skills/self-improve/templates/goal.md) |
+| 84 | ✓ | [`skills/self-improve/templates/harness.md`](skills/self-improve/templates/harness.md) |
+| 85 | ✓ | [`skills/self-improve/templates/idea.md`](skills/self-improve/templates/idea.md) |
+| 86 | ✓ | [`skills/self-improve/templates/settings.json`](skills/self-improve/templates/settings.json) |
+| 87 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
+| 88 | ✓ | [`skills/skill/SKILL.md`](skills/skill/SKILL.md) |
+| 89 | ✓ | [`skills/skillify/SKILL.md`](skills/skillify/SKILL.md) |
+| 90 | ✓ | [`skills/team/SKILL.md`](skills/team/SKILL.md) |
+| 91 | ✓ | [`skills/trace/SKILL.md`](skills/trace/SKILL.md) |
+| 92 | ✓ | [`skills/ultraqa/SKILL.md`](skills/ultraqa/SKILL.md) |
+| 93 | ✓ | [`skills/ultrawork/SKILL.md`](skills/ultrawork/SKILL.md) |
+| 94 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
+| 95 | ✓ | [`skills/visual-verdict/SKILL.md`](skills/visual-verdict/SKILL.md) |
+| 96 | ✓ | [`skills/wiki/SKILL.md`](skills/wiki/SKILL.md) |
+| 97 | ✓ | [`skills/writer-memory/lib/character-tracker.ts`](skills/writer-memory/lib/character-tracker.ts) |
+| 98 | ✓ | [`skills/writer-memory/lib/memory-manager.ts`](skills/writer-memory/lib/memory-manager.ts) |
+| 99 | ✓ | [`skills/writer-memory/lib/relationship-graph.ts`](skills/writer-memory/lib/relationship-graph.ts) |
+| 100 | ✓ | [`skills/writer-memory/lib/scene-organizer.ts`](skills/writer-memory/lib/scene-organizer.ts) |
+| 101 | ✓ | [`skills/writer-memory/lib/synopsis-builder.ts`](skills/writer-memory/lib/synopsis-builder.ts) |
+| 102 | ✓ | [`skills/writer-memory/SKILL.md`](skills/writer-memory/SKILL.md) |
+| 103 | ✓ | [`skills/writer-memory/templates/synopsis-template.md`](skills/writer-memory/templates/synopsis-template.md) |
+| 104 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 105 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 106 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
+| 107 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
+| 108 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
+| 109 | ✓ | [`src/tools/diagnostics/AGENTS.md`](src/tools/diagnostics/AGENTS.md) |
+| 110 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
 
 ---
 

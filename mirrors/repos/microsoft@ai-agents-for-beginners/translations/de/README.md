@@ -1,8 +1,8 @@
-# KI-Agenten für Einsteiger - Ein Kurs
+# KI-Agenten für Anfänger - Ein Kurs
 
-![Generative KI für Einsteiger](../../translated_images/de/repo-thumbnailv2.06f4a48036fde647.webp)
+![KI-Agenten für Anfänger](../../translated_images/de/repo-thumbnailv2.06f4a48036fde647.webp)
 
-## Ein Kurs, der alles vermittelt, was Sie wissen müssen, um KI-Agenten zu entwickeln
+## Ein Kurs, der alles vermittelt, was Sie wissen müssen, um mit dem Erstellen von KI-Agenten zu beginnen
 
 [![GitHub-Lizenz](https://img.shields.io/github/license/microsoft/ai-agents-for-beginners.svg)](https://github.com/microsoft/ai-agents-for-beginners/blob/master/LICENSE?WT.mc_id=academic-105485-koreyst)
 [![GitHub-Mitwirkende](https://img.shields.io/github/contributors/microsoft/ai-agents-for-beginners.svg)](https://GitHub.com/microsoft/ai-agents-for-beginners/graphs/contributors/?WT.mc_id=academic-105485-koreyst)
@@ -12,14 +12,14 @@
 
 ### 🌐 Mehrsprachige Unterstützung
 
-#### Unterstützt durch GitHub Action (Automatisiert & Immer aktuell)
+#### Unterstützt durch GitHub Action (Automatisiert & Immer Aktuell)
 
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE START -->
-[Arabisch](../ar/README.md) | [Bengalisch](../bn/README.md) | [Bulgarisch](../bg/README.md) | [Birmanisch (Myanmar)](../my/README.md) | [Chinesisch (Vereinfacht)](../zh-CN/README.md) | [Chinesisch (Traditionell, Hongkong)](../zh-HK/README.md) | [Chinesisch (Traditionell, Macau)](../zh-MO/README.md) | [Chinesisch (Traditionell, Taiwan)](../zh-TW/README.md) | [Kroatisch](../hr/README.md) | [Tschechisch](../cs/README.md) | [Dänisch](../da/README.md) | [Niederländisch](../nl/README.md) | [Estnisch](../et/README.md) | [Finnisch](../fi/README.md) | [Französisch](../fr/README.md) | [Deutsch](./README.md) | [Griechisch](../el/README.md) | [Hebräisch](../he/README.md) | [Hindi](../hi/README.md) | [Ungarisch](../hu/README.md) | [Indonesisch](../id/README.md) | [Italienisch](../it/README.md) | [Japanisch](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Koreanisch](../ko/README.md) | [Litauisch](../lt/README.md) | [Malaiisch](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepalesisch](../ne/README.md) | [Nigerianisches Pidgin](../pcm/README.md) | [Norwegisch](../no/README.md) | [Persisch (Farsi)](../fa/README.md) | [Polnisch](../pl/README.md) | [Portugiesisch (Brasilien)](../pt-BR/README.md) | [Portugiesisch (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Rumänisch](../ro/README.md) | [Russisch](../ru/README.md) | [Serbisch (Kyrillisch)](../sr/README.md) | [Slowakisch](../sk/README.md) | [Slowenisch](../sl/README.md) | [Spanisch](../es/README.md) | [Suaheli](../sw/README.md) | [Schwedisch](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thailändisch](../th/README.md) | [Türkisch](../tr/README.md) | [Ukrainisch](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamesisch](../vi/README.md)
+[Arabisch](../ar/README.md) | [Bengalisch](../bn/README.md) | [Bulgarisch](../bg/README.md) | [Birmanisch (Myanmar)](../my/README.md) | [Chinesisch (Vereinfacht)](../zh-CN/README.md) | [Chinesisch (Traditionell, Hongkong)](../zh-HK/README.md) | [Chinesisch (Traditionell, Macau)](../zh-MO/README.md) | [Chinesisch (Traditionell, Taiwan)](../zh-TW/README.md) | [Kroatisch](../hr/README.md) | [Tschechisch](../cs/README.md) | [Dänisch](../da/README.md) | [Niederländisch](../nl/README.md) | [Estnisch](../et/README.md) | [Finnisch](../fi/README.md) | [Französisch](../fr/README.md) | [Deutsch](./README.md) | [Griechisch](../el/README.md) | [Hebräisch](../he/README.md) | [Hindi](../hi/README.md) | [Ungarisch](../hu/README.md) | [Indonesisch](../id/README.md) | [Italienisch](../it/README.md) | [Japanisch](../ja/README.md) | [Kannada](../kn/README.md) | [Khmer](../km/README.md) | [Koreanisch](../ko/README.md) | [Litauisch](../lt/README.md) | [Malaiisch](../ms/README.md) | [Malayalam](../ml/README.md) | [Marathi](../mr/README.md) | [Nepalesisch](../ne/README.md) | [Nigerianisches Pidgin](../pcm/README.md) | [Norwegisch](../no/README.md) | [Persisch (Farsi)](../fa/README.md) | [Polnisch](../pl/README.md) | [Portugiesisch (Brasilien)](../pt-BR/README.md) | [Portugiesisch (Portugal)](../pt-PT/README.md) | [Punjabi (Gurmukhi)](../pa/README.md) | [Rumänisch](../ro/README.md) | [Russisch](../ru/README.md) | [Serbisch (Kyrillisch)](../sr/README.md) | [Slowakisch](../sk/README.md) | [Slowenisch](../sl/README.md) | [Spanisch](../es/README.md) | [Swahili](../sw/README.md) | [Schwedisch](../sv/README.md) | [Tagalog (Filipino)](../tl/README.md) | [Tamil](../ta/README.md) | [Telugu](../te/README.md) | [Thai](../th/README.md) | [Türkisch](../tr/README.md) | [Ukrainisch](../uk/README.md) | [Urdu](../ur/README.md) | [Vietnamesisch](../vi/README.md)
 
-> **Möchten Sie lieber lokal klonen?**
+> **Möchten Sie lokal klonen?**
 >
-> Dieses Repository enthält Übersetzungen in über 50 Sprachen, was die Downloadgröße erheblich erhöht. Um ohne Übersetzungen zu klonen, verwenden Sie Sparse Checkout:
+> Dieses Repository enthält Übersetzungen in über 50 Sprachen, was die Download-Größe erheblich erhöht. Um ohne Übersetzungen zu klonen, verwenden Sie Sparse Checkout:
 >
 > **Bash / macOS / Linux:**
 > ```bash
@@ -35,51 +35,52 @@
 > git sparse-checkout set --no-cone "/*" "!translations" "!translated_images"
 > ```
 >
-> So erhalten Sie alles, was Sie brauchen, um den Kurs abzuschließen, und zwar mit einem viel schnelleren Download.
+> Dies gibt Ihnen alles, was Sie benötigen, um den Kurs mit einem viel schnelleren Download abzuschließen.
 <!-- CO-OP TRANSLATOR LANGUAGES TABLE END -->
 
-**Wenn Sie weitere unterstützte Übersetzungssprachen wünschen, finden Sie diese [hier](https://github.com/Azure/co-op-translator/blob/main/getting_started/supported-languages.md)**
+**Wenn Sie möchten, dass zusätzliche Übersetzungssprachen unterstützt werden, finden Sie diese [hier](https://github.com/Azure/co-op-translator/blob/main/getting_started/supported-languages.md)**
 
-[![GitHub-Beobachter](https://img.shields.io/github/watchers/microsoft/ai-agents-for-beginners.svg?style=social&label=Watch)](https://GitHub.com/microsoft/ai-agents-for-beginners/watchers/?WT.mc_id=academic-105485-koreyst)
+[![GitHub-Beobachter](https://img.shields.io/github/watchers/microsoft/ai-agents-for-beginners.svg?style=social&label=Beobachten)](https://GitHub.com/microsoft/ai-agents-for-beginners/watchers/?WT.mc_id=academic-105485-koreyst)
 [![GitHub-Forks](https://img.shields.io/github/forks/microsoft/ai-agents-for-beginners.svg?style=social&label=Fork)](https://GitHub.com/microsoft/ai-agents-for-beginners/network/?WT.mc_id=academic-105485-koreyst)
-[![GitHub-Sterne](https://img.shields.io/github/stars/microsoft/ai-agents-for-beginners.svg?style=social&label=Star)](https://GitHub.com/microsoft/ai-agents-for-beginners/stargazers/?WT.mc_id=academic-105485-koreyst)
+[![GitHub-Sterne](https://img.shields.io/github/stars/microsoft/ai-agents-for-beginners.svg?style=social&label=Stern)](https://GitHub.com/microsoft/ai-agents-for-beginners/stargazers/?WT.mc_id=academic-105485-koreyst)
 
 [![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
 
 
 ## 🌱 Erste Schritte
 
-Dieser Kurs enthält Lektionen, die die Grundlagen des Aufbaus von KI-Agenten abdecken. Jede Lektion behandelt ein eigenes Thema, starten Sie also, wo immer Sie möchten!
+Dieser Kurs enthält Lektionen, die die Grundlagen des Aufbaus von KI-Agenten abdecken. Jede Lektion behandelt ihr eigenes Thema, also beginnen Sie, wo Sie möchten!
 
-Es gibt mehrsprachige Unterstützung für diesen Kurs. Gehen Sie zu unseren [verfügbaren Sprachen hier](#-multi-language-support). 
+Für diesen Kurs gibt es mehrsprachige Unterstützung. Gehen Sie zu unseren [verfügbaren Sprachen hier](#-multi-language-support).
 
-Wenn Sie zum ersten Mal mit Generativen KI-Modellen arbeiten, schauen Sie sich unseren Kurs [Generative KI für Einsteiger](https://aka.ms/genai-beginners) an, der 21 Lektionen zum Bauen mit GenAI enthält.
+Wenn Sie zum ersten Mal mit generativen KI-Modellen arbeiten, sehen Sie sich unseren Kurs [Generative KI für Anfänger](https://aka.ms/genai-beginners) an, der 21 Lektionen zum Aufbau mit GenAI enthält.
 
-Vergessen Sie nicht, dieses Repository [mit einem Stern (🌟) zu versehen](https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars?WT.mc_id=academic-105485-koreyst) und das Repo zu [forken](https://github.com/microsoft/ai-agents-for-beginners/fork), um den Code auszuführen.
+Vergessen Sie nicht, dieses Repository zu [sternen (🌟)](https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars?WT.mc_id=academic-105485-koreyst) und [zu forken](https://github.com/microsoft/ai-agents-for-beginners/fork), um den Code auszuführen.
 
-### Treffen Sie andere Lernende, bekommen Sie Antworten auf Ihre Fragen
+### Treffen Sie andere Lernende, erhalten Sie Antworten auf Ihre Fragen
 
-Wenn Sie nicht weiterkommen oder Fragen zum Aufbau von KI-Agenten haben, treten Sie unserem speziellen Discord-Kanal im [Microsoft Foundry Discord](https://aka.ms/ai-agents/discord) bei.
+Wenn Sie auf Probleme stoßen oder Fragen zum Erstellen von KI-Agenten haben, treten Sie unserem dedizierten Discord-Kanal im [Microsoft Foundry Discord](https://aka.ms/ai-agents/discord) bei.
 
-### Was Sie benötigen
+### Was Sie brauchen
 
-Jede Lektion in diesem Kurs beinhaltet Codebeispiele, die im Ordner code_samples zu finden sind. Sie können dieses Repository [forken](https://github.com/microsoft/ai-agents-for-beginners/fork), um Ihre eigene Kopie zu erstellen.
+Jede Lektion in diesem Kurs enthält Codebeispiele, die im Ordner code_samples zu finden sind. Sie können dieses Repository [forken](https://github.com/microsoft/ai-agents-for-beginners/fork), um Ihre eigene Kopie zu erstellen.
 
-Die Codebeispiele in diesen Übungen nutzen das Microsoft Agent Framework mit dem Azure AI Foundry Agent Service V2:
+Die Codebeispiele in diesen Übungen verwenden Microsoft Agent Framework mit Azure AI Foundry Agent Service V2:
 
-- [Microsoft Foundry](https://aka.ms/ai-agents-beginners/ai-foundry) – Azure-Konto erforderlich
+- [Microsoft Foundry](https://aka.ms/ai-agents-beginners/ai-foundry) - Azure-Konto erforderlich
 
-Dieser Kurs verwendet die folgenden KI-Agent-Frameworks und -Services von Microsoft:
+Dieser Kurs verwendet die folgenden KI-Agenten-Frameworks und Dienste von Microsoft:
 
 - [Microsoft Agent Framework (MAF)](https://aka.ms/ai-agents-beginners/agent-framewrok)
 - [Azure AI Foundry Agent Service V2](https://aka.ms/ai-agents-beginners/ai-agent-service)
 
+Einige Codebeispiele unterstützen auch alternative OpenAI-kompatible Anbieter wie [MiniMax](https://platform.minimaxi.com/), das Modelle mit sehr großem Kontext (bis zu 204K Tokens) anbietet. Details zur Konfiguration finden Sie im [Course Setup](./00-course-setup/README.md).
 
-Für weitere Informationen zur Ausführung des Codes dieses Kurses gehen Sie zu [Course Setup](./00-course-setup/README.md).
+Für weitere Informationen über das Ausführen des Codes zu diesem Kurs gehen Sie zu [Course Setup](./00-course-setup/README.md).
 
 ## 🙏 Möchten Sie helfen?
 
-Haben Sie Vorschläge oder Fehler in Rechtschreibung oder Code gefunden? [Eröffnen Sie ein Issue](https://github.com/microsoft/ai-agents-for-beginners/issues?WT.mc_id=academic-105485-koreyst) oder [erstellen Sie einen Pull Request](https://github.com/microsoft/ai-agents-for-beginners/pulls?WT.mc_id=academic-105485-koreyst)
+Haben Sie Vorschläge oder Fehler in der Rechtschreibung oder im Code gefunden? [Erstellen Sie ein Issue](https://github.com/microsoft/ai-agents-for-beginners/issues?WT.mc_id=academic-105485-koreyst) oder [senden Sie einen Pull Request](https://github.com/microsoft/ai-agents-for-beginners/pulls?WT.mc_id=academic-105485-koreyst).
 
 
 
@@ -87,31 +88,31 @@ Haben Sie Vorschläge oder Fehler in Rechtschreibung oder Code gefunden? [Eröff
 
 - Eine schriftliche Lektion im README und ein kurzes Video
 - Python-Codebeispiele mit Microsoft Agent Framework und Azure AI Foundry
-- Links zu zusätzlichen Ressourcen, um Ihr Lernen fortzusetzen
+- Links zu zusätzlichen Ressourcen für Ihr weiteres Lernen
 
 
 ## 🗃️ Lektionen
 
-| **Lektion**                                  | **Text & Code**                                     | **Video**                                                  | **Zusätzliches Lernen**                                                                |
-|----------------------------------------------|----------------------------------------------------|------------------------------------------------------------|----------------------------------------------------------------------------------------|
-| Einführung in KI-Agenten und Anwendungsfälle | [Link](./01-intro-to-ai-agents/README.md)          | [Video](https://youtu.be/3zgm60bXmQk?si=z8QygFvYQv-9WtO1)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Erkundung agentischer KI-Frameworks          | [Link](./02-explore-agentic-frameworks/README.md)  | [Video](https://youtu.be/ODwF-EZo_O8?si=Vawth4hzVaHv-u0H)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Verständnis von agentischen Designmustern    | [Link](./03-agentic-design-patterns/README.md)     | [Video](https://youtu.be/m9lM8qqoOEA?si=BIzHwzstTPL8o9GF)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Designmuster zur Werkzeugnutzung              | [Link](./04-tool-use/README.md)                    | [Video](https://youtu.be/vieRiPRx-gI?si=2z6O2Xu2cu_Jz46N)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Agentic RAG                                  | [Link](./05-agentic-rag/README.md)                 | [Video](https://youtu.be/WcjAARvdL7I?si=gKPWsQpKiIlDH9A3)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Vertrauenswürdige KI-Agenten bauen           | [Link](./06-building-trustworthy-agents/README.md) | [Video](https://youtu.be/iZKkMEGBCUQ?si=jZjpiMnGFOE9L8OK ) | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Designmuster für Planung                      | [Link](./07-planning-design/README.md)             | [Video](https://youtu.be/kPfJ2BrBCMY?si=6SC_iv_E5-mzucnC)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Multi-Agent Designmuster                      | [Link](./08-multi-agent/README.md)                 | [Video](https://youtu.be/V6HpE9hZEx0?si=rMgDhEu7wXo2uo6g)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Metakognition Designmuster                 | [Link](./09-metacognition/README.md)               | [Video](https://youtu.be/His9R6gw6Ec?si=8gck6vvdSNCt6OcF)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| KI-Agenten im Einsatz                      | [Link](./10-ai-agents-production/README.md)        | [Video](https://youtu.be/l4TP6IyJxmQ?si=31dnhexRo6yLRJDl)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
+| **Lektion**                                   | **Text & Code**                                    | **Video**                                                  | **Zusätzliches Lernen**                                                                 |
+|----------------------------------------------|----------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| Einführung in KI-Agenten und Anwendungsfälle | [Link](./01-intro-to-ai-agents/README.md)          | [Video](https://youtu.be/3zgm60bXmQk?si=z8QygFvYQv-9WtO1)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Erforschung von KI-Agenten-Frameworks         | [Link](./02-explore-agentic-frameworks/README.md)  | [Video](https://youtu.be/ODwF-EZo_O8?si=Vawth4hzVaHv-u0H)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Verstehen von KI-Agenten-Designmustern       | [Link](./03-agentic-design-patterns/README.md)     | [Video](https://youtu.be/m9lM8qqoOEA?si=BIzHwzstTPL8o9GF)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Tool-Use Design Pattern                       | [Link](./04-tool-use/README.md)                    | [Video](https://youtu.be/vieRiPRx-gI?si=2z6O2Xu2cu_Jz46N)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Agentic RAG                                  | [Link](./05-agentic-rag/README.md)                 | [Video](https://youtu.be/WcjAARvdL7I?si=gKPWsQpKiIlDH9A3)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Vertrauenswürdige KI-Agenten bauen            | [Link](./06-building-trustworthy-agents/README.md) | [Video](https://youtu.be/iZKkMEGBCUQ?si=jZjpiMnGFOE9L8OK ) | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Planungs-Designmuster                         | [Link](./07-planning-design/README.md)             | [Video](https://youtu.be/kPfJ2BrBCMY?si=6SC_iv_E5-mzucnC)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Multi-Agenten-Designmuster                    | [Link](./08-multi-agent/README.md)                 | [Video](https://youtu.be/V6HpE9hZEx0?si=rMgDhEu7wXo2uo6g)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst)   |
+| Metakognitions-Designmuster                 | [Link](./09-metacognition/README.md)               | [Video](https://youtu.be/His9R6gw6Ec?si=8gck6vvdSNCt6OcF)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
+| KI-Agenten in der Produktion                      | [Link](./10-ai-agents-production/README.md)        | [Video](https://youtu.be/l4TP6IyJxmQ?si=31dnhexRo6yLRJDl)  | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
 | Verwendung agentischer Protokolle (MCP, A2A und NLWeb) | [Link](./11-agentic-protocols/README.md)           | [Video](https://youtu.be/X-Dh9R3Opn8)                                 | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Kontextentwicklung für KI-Agenten            | [Link](./12-context-engineering/README.md)         | [Video](https://youtu.be/F5zqRV7gEag)                                 | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
-| Verwaltung agentischen Gedächtnisses                      | [Link](./13-agent-memory/README.md)     |      [Video](https://youtu.be/QrYbHesIxpw?si=vZkVwKrQ4ieCcIPx)                                                      |                                                                                        |
-| Erkundung des Microsoft Agent Framework                         | [Link](./14-microsoft-agent-framework/README.md)                            |                                                            |                                                                                        |
-| Erstellung von Computer Use Agents (CUA)           | Demnächst verfügbar                            |                                                            |                                                                                        |
-| Bereitstellung skalierbarer Agenten                    | Demnächst verfügbar                            |                                                            |                                                                                        |
-| Erstellung lokaler KI-Agenten                     | Demnächst verfügbar                               |                                                            |                                                                                        |
-| Absicherung von KI-Agenten                           | Demnächst verfügbar                               |                                                            |                                                                                        |
+| Kontext-Engineering für KI-Agenten            | [Link](./12-context-engineering/README.md)         | [Video](https://youtu.be/F5zqRV7gEag)                                 | [Link](https://aka.ms/ai-agents-beginners/collection?WT.mc_id=academic-105485-koreyst) |
+| Verwaltung agentischer Erinnerungen                      | [Link](./13-agent-memory/README.md)     |      [Video](https://youtu.be/QrYbHesIxpw?si=vZkVwKrQ4ieCcIPx)                                                      |                                                                                        |
+| Erforschung des Microsoft Agent Framework                         | [Link](./14-microsoft-agent-framework/README.md)                            |                                                            |                                                                                        |
+| Erstellung von Computeranwendungs-Agenten (CUA)           | [Link](./15-browser-use/README.md)     |                                                            | [Link](https://docs.browser-use.com/examples/templates/playwright-integration)         |
+| Bereitstellung skalierbarer Agenten                    | Bald verfügbar                            |                                                            |                                                                                        |
+| Erstellung lokaler KI-Agenten                     | Bald verfügbar                               |                                                            |                                                                                        |
+| Sicherung von KI-Agenten                           | Bald verfügbar                               |                                                            |                                                                                        |
 
 ## 🎒 Weitere Kurse
 
@@ -132,7 +133,7 @@ Unser Team produziert weitere Kurse! Schau dir an:
 
 ---
  
-### Generative KI-Reihe
+### Generative KI-Serie
 [![Generative KI für Anfänger](https://img.shields.io/badge/Generative%20AI%20for%20Beginners-8B5CF6?style=for-the-badge&labelColor=E5E7EB&color=8B5CF6)](https://github.com/microsoft/generative-ai-for-beginners?WT.mc_id=academic-105485-koreyst)
 [![Generative KI (.NET)](https://img.shields.io/badge/Generative%20AI%20(.NET)-9333EA?style=for-the-badge&labelColor=E5E7EB&color=9333EA)](https://github.com/microsoft/Generative-AI-for-beginners-dotnet?WT.mc_id=academic-105485-koreyst)
 [![Generative KI (Java)](https://img.shields.io/badge/Generative%20AI%20(Java)-C084FC?style=for-the-badge&labelColor=E5E7EB&color=C084FC)](https://github.com/microsoft/generative-ai-for-beginners-java?WT.mc_id=academic-105485-koreyst)
@@ -140,7 +141,7 @@ Unser Team produziert weitere Kurse! Schau dir an:
 
 ---
  
-### Kernkompetenzen Lernen
+### Kernlernprogramme
 [![ML für Anfänger](https://img.shields.io/badge/ML%20for%20Beginners-22C55E?style=for-the-badge&labelColor=E5E7EB&color=22C55E)](https://aka.ms/ml-beginners?WT.mc_id=academic-105485-koreyst)
 [![Datenwissenschaft für Anfänger](https://img.shields.io/badge/Data%20Science%20for%20Beginners-84CC16?style=for-the-badge&labelColor=E5E7EB&color=84CC16)](https://aka.ms/datascience-beginners?WT.mc_id=academic-105485-koreyst)
 [![KI für Anfänger](https://img.shields.io/badge/AI%20for%20Beginners-A3E635?style=for-the-badge&labelColor=E5E7EB&color=A3E635)](https://aka.ms/ai-beginners?WT.mc_id=academic-105485-koreyst)
@@ -151,35 +152,42 @@ Unser Team produziert weitere Kurse! Schau dir an:
 
 ---
  
-### Copilot-Reihe
-[![Copilot für KI-Paargespräch](https://img.shields.io/badge/Copilot%20for%20AI%20Paired%20Programming-FACC15?style=for-the-badge&labelColor=E5E7EB&color=FACC15)](https://aka.ms/GitHubCopilotAI?WT.mc_id=academic-105485-koreyst)
+### Copilot-Serie
+[![Copilot für KI-Paired-Programming](https://img.shields.io/badge/Copilot%20for%20AI%20Paired%20Programming-FACC15?style=for-the-badge&labelColor=E5E7EB&color=FACC15)](https://aka.ms/GitHubCopilotAI?WT.mc_id=academic-105485-koreyst)
 [![Copilot für C#/.NET](https://img.shields.io/badge/Copilot%20for%20C%23/.NET-FBBF24?style=for-the-badge&labelColor=E5E7EB&color=FBBF24)](https://github.com/microsoft/mastering-github-copilot-for-dotnet-csharp-developers?WT.mc_id=academic-105485-koreyst)
 [![Copilot-Abenteuer](https://img.shields.io/badge/Copilot%20Adventure-FDE68A?style=for-the-badge&labelColor=E5E7EB&color=FDE68A)](https://github.com/microsoft/CopilotAdventures?WT.mc_id=academic-105485-koreyst)
 <!-- CO-OP TRANSLATOR OTHER COURSES END -->
 
-## 🌟 Community-Dank
+## 🌟 Dank an die Community
 
-Danke an [Shivam Goyal](https://www.linkedin.com/in/shivam2003/) für das Bereitstellen wichtiger Codebeispiele zur Demonstration von Agentic RAG. 
+Danke an [Shivam Goyal](https://www.linkedin.com/in/shivam2003/) für die Bereitstellung wichtiger Codeschnipsel, die Agentic RAG demonstrieren.
 
-## Beitrag leisten
+## Mitwirkung
 
-Dieses Projekt freut sich über Beiträge und Vorschläge. Die meisten Beiträge erfordern, dass Sie einer Contributor License Agreement (CLA) zustimmen, die erklärt, dass Sie das Recht haben und tatsächlich gewähren, uns die Rechte zur Nutzung Ihres Beitrags zu ermöglichen. Für Details besuchen Sie <https://cla.opensource.microsoft.com>.
+Dieses Projekt freut sich über Beiträge und Vorschläge. Die meisten Beiträge erfordern, dass Sie einer
+Mitwirkenden-Lizenzvereinbarung (CLA) zustimmen, in der Sie bestätigen, dass Sie das Recht haben und tatsächlich
+uns die Rechte zur Nutzung Ihres Beitrags gewähren. Für Details besuchen Sie <https://cla.opensource.microsoft.com>.
 
-Wenn Sie eine Pull-Anfrage einreichen, wird ein CLA-Bot automatisch feststellen, ob Sie eine CLA bereitstellen müssen, und die PR entsprechend kennzeichnen (z. B. Statusüberprüfung, Kommentar). Folgen Sie einfach den Anweisungen des Bots. Dies müssen Sie nur einmal für alle Repositories tun, die unsere CLA verwenden.
+Wenn Sie eine Pull-Anfrage einreichen, bestimmt ein CLA-Bot automatisch, ob Sie eine
+CLA vorlegen müssen, und kennzeichnet die PR entsprechend (z. B. Statusprüfung, Kommentar). Folgen Sie einfach den Anweisungen
+des Bots. Sie müssen dies nur einmal für alle Repositories tun, die unsere CLA verwenden.
 
 Dieses Projekt hat den [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/) übernommen.
-Für weitere Informationen siehe die [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) oder kontaktieren Sie [opencode@microsoft.com](mailto:opencode@microsoft.com) bei weiteren Fragen oder Anmerkungen.
+Weitere Informationen finden Sie in den [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) oder
+kontaktieren Sie [opencode@microsoft.com](mailto:opencode@microsoft.com) bei weiteren Fragen oder Anmerkungen.
 
 ## Markenrechte
 
-Dieses Projekt kann Marken oder Logos von Projekten, Produkten oder Dienstleistungen enthalten. Die autorisierte Verwendung von Microsoft-Marken oder -Logos unterliegt und muss den 
+Dieses Projekt kann Marken oder Logos für Projekte, Produkte oder Dienstleistungen enthalten. Die autorisierte Nutzung von Microsoft-
+Marken oder Logos unterliegt und muss den
 [Microsoft-Marken- und Markenrichtlinien](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general) folgen.
-Die Verwendung von Microsoft-Marken oder -Logos in modifizierten Versionen dieses Projekts darf keine Verwirrung stiften oder eine Microsoft-Unterstützung implizieren.
-Die Verwendung von Marken oder Logos Dritter unterliegt den Richtlinien dieser Dritten.
+Die Verwendung von Microsoft-Marken oder Logos in modifizierten Versionen dieses Projekts darf keine Verwirrung stiften oder eine Microsoft-Sponsoring implizieren.
+Die Nutzung von Marken oder Logos Dritter unterliegt den jeweiligen Richtlinien der Drittanbieter.
 
 ## Hilfe erhalten
 
-Wenn Sie feststecken oder Fragen zum Erstellen von KI-Apps haben, treten Sie bei:
+
+Wenn Sie feststecken oder Fragen zum Erstellen von KI-Anwendungen haben, treten Sie bei:
 
 [![Microsoft Foundry Discord](https://img.shields.io/badge/Discord-Azure_AI_Foundry_Community_Discord-blue?style=for-the-badge&logo=discord&color=5865f2&logoColor=fff)](https://aka.ms/foundry/discord)
 
@@ -191,5 +199,5 @@ Wenn Sie Produktfeedback oder Fehler beim Erstellen haben, besuchen Sie:
 
 <!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **Haftungsausschluss**:  
-Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir um Genauigkeit bemüht sind, bitten wir zu beachten, dass automatisierte Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner ursprünglichen Sprache gilt als maßgebliche Quelle. Bei kritischen Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für Missverständnisse oder Fehlinterpretationen, die aus der Verwendung dieser Übersetzung entstehen.
+Dieses Dokument wurde mit dem KI-Übersetzungsdienst [Co-op Translator](https://github.com/Azure/co-op-translator) übersetzt. Obwohl wir auf Genauigkeit achten, beachten Sie bitte, dass automatische Übersetzungen Fehler oder Ungenauigkeiten enthalten können. Das Originaldokument in seiner Ausgangssprache ist als maßgebliche Quelle zu betrachten. Für wichtige Informationen wird eine professionelle menschliche Übersetzung empfohlen. Wir übernehmen keine Haftung für etwaige Missverständnisse oder Fehlinterpretationen, die aus der Verwendung dieser Übersetzung entstehen.
 <!-- CO-OP TRANSLATOR DISCLAIMER END -->

@@ -193,7 +193,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 128 | ✓ | [`vendor/github.com/hashicorp/go-immutable-radix/README.md`](vendor/github.com/hashicorp/go-immutable-radix/README.md) |
 | 129 | ✓ | [`vendor/github.com/hashicorp/go-immutable-radix/v2/README.md`](vendor/github.com/hashicorp/go-immutable-radix/v2/README.md) |
 | 130 | ✓ | [`vendor/github.com/hashicorp/go-memdb/README.md`](vendor/github.com/hashicorp/go-memdb/README.md) |
-| 131 | ✓ | [`vendor/github.com/hashicorp/go-msgpack/codec/README.md`](vendor/github.com/hashicorp/go-msgpack/codec/README.md) |
+| 131 | ✓ | [`vendor/github.com/hashicorp/go-metrics/README.md`](vendor/github.com/hashicorp/go-metrics/README.md) |
 | 132 | ✓ | [`vendor/github.com/hashicorp/go-multierror/README.md`](vendor/github.com/hashicorp/go-multierror/README.md) |
 | 133 | ✓ | [`vendor/github.com/hashicorp/go-sockaddr/README.md`](vendor/github.com/hashicorp/go-sockaddr/README.md) |
 | 134 | ✓ | [`vendor/github.com/hashicorp/memberlist/README.md`](vendor/github.com/hashicorp/memberlist/README.md) |

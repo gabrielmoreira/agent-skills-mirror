@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pegasi-ai/clawreins` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `pegasi-ai/clawreins` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pegasi-ai/clawreins` — 26 default patterns, 0 followed patterns, 1 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`src/core/toolshield/CLAUDE.md`](src/core/toolshield/CLAUDE.md) |
+| 1 | ✓ | [`plugin/skills/reins/SKILL.md`](plugin/skills/reins/SKILL.md) |
+| 2 | ✓ | [`skill/scripts/ensure_installed.sh`](skill/scripts/ensure_installed.sh) |
+| 3 | ✓ | [`skill/SKILL.md`](skill/SKILL.md) |
+| 4 | ✓ | [`src/core/toolshield/CLAUDE.md`](src/core/toolshield/CLAUDE.md) |
 
 ---
 

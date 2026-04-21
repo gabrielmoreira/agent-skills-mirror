@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
+Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 44 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,15 +94,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`agents/gsd-verifier.md`](agents/gsd-verifier.md) |
 | 34 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 35 | ✓ | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 36 | ✓ | [`docs/ja-JP/AGENTS.md`](docs/ja-JP/AGENTS.md) |
-| 37 | ✓ | [`docs/ja-JP/ARCHITECTURE.md`](docs/ja-JP/ARCHITECTURE.md) |
-| 38 | ✓ | [`docs/ko-KR/AGENTS.md`](docs/ko-KR/AGENTS.md) |
-| 39 | ✓ | [`docs/ko-KR/ARCHITECTURE.md`](docs/ko-KR/ARCHITECTURE.md) |
-| 40 | ✓ | [`docs/pt-BR/AGENTS.md`](docs/pt-BR/AGENTS.md) |
-| 41 | ✓ | [`docs/pt-BR/ARCHITECTURE.md`](docs/pt-BR/ARCHITECTURE.md) |
-| 42 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
-| 43 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
-| 44 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
+| 36 | ✓ | [`docs/INVENTORY.md`](docs/INVENTORY.md) |
+| 37 | ✓ | [`docs/ja-JP/AGENTS.md`](docs/ja-JP/AGENTS.md) |
+| 38 | ✓ | [`docs/ja-JP/ARCHITECTURE.md`](docs/ja-JP/ARCHITECTURE.md) |
+| 39 | ✓ | [`docs/ko-KR/AGENTS.md`](docs/ko-KR/AGENTS.md) |
+| 40 | ✓ | [`docs/ko-KR/ARCHITECTURE.md`](docs/ko-KR/ARCHITECTURE.md) |
+| 41 | ✓ | [`docs/pt-BR/AGENTS.md`](docs/pt-BR/AGENTS.md) |
+| 42 | ✓ | [`docs/pt-BR/ARCHITECTURE.md`](docs/pt-BR/ARCHITECTURE.md) |
+| 43 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
+| 44 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
+| 45 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
 
 ---
 

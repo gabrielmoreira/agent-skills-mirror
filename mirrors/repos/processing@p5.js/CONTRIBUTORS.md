@@ -1109,6 +1109,9 @@
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Nitin2332"><img src="https://avatars.githubusercontent.com/u/175546686?v=4?s=64" width="64px;" alt="Nitin Rajpoot"/><br /><sub><b>Nitin Rajpoot</b></sub></a><br /><a href="https://github.com/processing/p5.js/commits?author=Nitin2332" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/geeta102"><img src="https://avatars.githubusercontent.com/u/216125877?v=4?s=64" width="64px;" alt="geeta102"/><br /><sub><b>geeta102</b></sub></a><br /><a href="https://github.com/processing/p5.js/issues?q=author%3Ageeta102" title="Bug reports">🐛</a> <a href="https://github.com/processing/p5.js/commits?author=geeta102" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Kathrina-dev"><img src="https://avatars.githubusercontent.com/u/178802899?v=4?s=64" width="64px;" alt="Kathrina Elangbam"/><br /><sub><b>Kathrina Elangbam</b></sub></a><br /><a href="https://github.com/processing/p5.js/commits?author=Kathrina-dev" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 

@@ -1,6 +1,5 @@
 ---
-name: >-
-  cli-anything-shotcut
+name: "cli-anything-shotcut"
 description: >-
   Command-line interface for Shotcut - A stateful command-line interface for video editing, built on the MLT XML format. Designed for AI ag...
 ---
@@ -19,7 +18,9 @@ pip install cli-anything-shotcut
 
 **Prerequisites:**
 - Python 3.10+
-- shotcut must be installed on your system
+- `melt` (MLT CLI) — required for rendering and playback
+- `ffmpeg` / `ffprobe` — required for media probing
+- `shotcut` must be installed on your system
 
 
 ## Usage
@@ -42,15 +43,55 @@ cli-anything-shotcut --json project info -p project.json
 
 ### REPL Mode
 
-When invoked without a subcommand, the CLI enters an interactive REPL session:
+When invoked without a subcommand, the CLI enters an interactive REPL session with undo/redo support:
 
 ```bash
 cli-anything-shotcut
-# Enter commands interactively with tab-completion and history
+# or with a project:
+cli-anything-shotcut --project my_project.mlt
 ```
 
-The REPL exposes the same practical helpers as command mode, including
-`add-clip ... --at`, `volume-envelope`, and `duck`.
+#### REPL Commands
+
+**Workflow:** Always `media import` first to get a `clip_id`, then use `add-clip` to place it on the timeline.
+
+**Project & Session:**
+- `new [profile]` — Create new project (default: `hd1080p30`)
+- `open <path>` — Open `.mlt` file
+- `save [path]` — Save project
+- `info` — Show project info
+- `xml` — Print raw MLT XML
+- `status` — Show session status
+- `undo` / `redo` — Navigate operation history
+
+**Media (two-step model):**
+- `media import <file> [--caption name]` — Import file into project bin, returns `clip_id` (e.g., `clip0`)
+- `media` — List all imported media
+- `probe <file>` — Analyze a media file
+
+**Timeline:**
+- `add-track <video|audio> [name]` — Add a track
+- `tracks` — List all tracks
+- `show` — Visual timeline overview
+- `add-clip <clip_id> <track> [in] [out] [--at time]` — Place imported clip on track
+- `clips <track>` — List clips on a track
+- `remove-clip <track> <clip>` — Remove a clip
+- `trim <track> <clip> [--in tc] [--out tc]` — Trim clip
+- `split <track> <clip> <at>` — Split clip at timecode
+
+**Filters:**
+- `list-filters [video|audio]` — Browse available filters
+- `filter-info <name>` — Show filter details
+- `add-filter <name> [--track n] [--clip n] [key=val ...]` — Add filter to clip, track, or global
+- `filters [--track n] [--clip n]` — List active filters
+- `remove-filter <idx> [--track n] [--clip n]` — Remove filter by index
+- `set-filter <idx> <param> <value> [--track n] [--clip n]` — Set filter parameter
+- `volume-envelope [--track n] [--clip n] TIME=LEVEL ...` — Keyframed volume (e.g., `00:00:00.000=1.0 00:00:03.000=0.35`)
+- `duck [--track n] [--clip n] START..END ...` — Ducking envelope (e.g., `00:00:06.000..00:00:09.000`)
+
+**Export:**
+- `presets` — List export presets
+- `render <output> [--preset name]` — Render to video file
 
 
 ## Command Groups
@@ -80,7 +121,7 @@ Timeline operations: tracks, clips, trimming.
 | `tracks` | List all tracks |
 | `add-track` | Add a new track to the timeline |
 | `remove-track` | Remove a track by index |
-| `add-clip` | Add a media clip to a track; supports `--at` for absolute timeline placement |
+| `add-clip` | Add an imported clip to a track by clip_id; supports `--at` for absolute placement |
 | `remove-clip` | Remove a clip from a track |
 | `move-clip` | Move a clip between tracks or positions |
 | `trim` | Trim a clip's in/out points |
@@ -103,9 +144,9 @@ Filter operations: add, remove, configure effects.
 | `add` | Add a filter to a clip, track, or globally |
 | `remove` | Remove a filter by index |
 | `set` | Set a parameter on a filter |
+| `list` | List active filters on a target |
 | `volume-envelope` | Create or replace a keyframed volume envelope on a track or clip |
 | `duck` | Build a practical ducking envelope over one or more time windows |
-| `list` | List active filters on a target |
 
 
 ### Media
@@ -114,6 +155,7 @@ Media operations: probe, list, check files.
 
 | Command | Description |
 |---------|-------------|
+| `import` | Import a media file into the project bin |
 | `probe` | Analyze a media file's properties |
 | `list` | List all media clips in the current project |
 | `check` | Check all media files for existence |
@@ -207,48 +249,40 @@ Export the project to a final output format.
 cli-anything-shotcut --project myproject.json export render output.mp4 --overwrite
 ```
 
+
 ### Deterministic Timeline Reconstruction
 
 For rebuilds, prefer absolute placement over append-only clip insertion:
 
 ```bash
-cli-anything-shotcut --project myproject.json -s timeline add-clip intro.mp4 \
+cli-anything-shotcut --project myproject.mlt media import intro.mp4
+cli-anything-shotcut --project myproject.mlt timeline add-clip clip0 \
   --track 1 --in 00:00:00.000 --out 00:00:04.000 --at 00:00:00.000
 
-cli-anything-shotcut --project myproject.json -s timeline add-clip broll.mp4 \
+cli-anything-shotcut --project myproject.mlt media import broll.mp4
+cli-anything-shotcut --project myproject.mlt timeline add-clip clip1 \
   --track 1 --in 00:00:10.000 --out 00:00:16.000 --at 00:00:08.000
 ```
 
-Notes:
 - `--at` inserts blanks automatically when the target time lands in empty space.
-- The CLI rejects overlap with an existing clip instead of silently changing the timeline.
-- For agent-built timelines, prefer explicit `--in` and `--out` values so later absolute placement remains unambiguous.
+- The CLI rejects overlap with an existing clip.
+- Prefer explicit `--in` and `--out` values so later absolute placement remains unambiguous.
 
 ### Audio Automation
 
-The released CLI now includes higher-level audio automation helpers:
-
 ```bash
-cli-anything-shotcut --project myproject.json -s filter volume-envelope \
+cli-anything-shotcut --project myproject.mlt filter volume-envelope \
   --track 2 \
   --point 00:00:00.000=1.0 \
   --point 00:00:03.000=0.35 \
   --point 00:00:05.000=1.0
 
-cli-anything-shotcut --project myproject.json -s filter duck \
+cli-anything-shotcut --project myproject.mlt filter duck \
   --track 2 \
-  --window 00:00:06.000:00:00:09.000 \
-  --window 00:00:15.000:00:00:18.000 \
-  --normal 1.0 --duck 0.25 \
-  --attack 00:00:00.150 --release 00:00:00.250
+  --window 00:00:06.000..00:00:09.000 \
+  --window 00:00:15.000..00:00:18.000 \
+  --normal 1.0 --duck 0.25
 ```
-
-Keyframed `volume` filters now export as ffmpeg `volume=` expressions instead of
-collapsing to a simple fade. This is materially better, but you should still
-review final renders when automation is editorially important.
-
-
-## State Management
 
 The CLI maintains session state with:
 

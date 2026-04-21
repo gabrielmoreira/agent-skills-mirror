@@ -29,7 +29,9 @@
       "has_tests": true,
       "has_demo": false,
       "demo_command": null,
-      "dependencies": [],
+      "dependencies": [
+        "python>=3.10"
+      ],
       "tags": [
         "literature",
         "papers",
@@ -39,7 +41,21 @@
         "pubmed",
         "scientific"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "search papers",
+        "find papers",
+        "literature search",
+        "experimental data",
+        "paper search",
+        "search studies",
+        "find studies",
+        "bgpt",
+        "scientific papers",
+        "research papers",
+        "paper data",
+        "full-text data",
+        "methods and results"
+      ],
       "chaining_partners": []
     },
     {
@@ -62,10 +78,10 @@
       ],
       "trigger_keywords": [
         "bigquery",
-        "public dataset",
-        "sql",
-        "public data",
-        "cloud query"
+        "public dataset sql",
+        "query public data",
+        "bigquery public data",
+        "public genomics dataset"
       ],
       "chaining_partners": []
     },
@@ -118,7 +134,10 @@
         "genomicranges",
         "variantannotation",
         "annotationhub",
-        "experimenthub"
+        "experimenthub",
+        "which bioconductor package",
+        "what package should i use",
+        "set up bioconductor"
       ],
       "chaining_partners": [
         "rnaseq-de",
@@ -146,7 +165,17 @@
         "imaging",
         "cell-biology"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "cellpose",
+        "cpsam",
+        "cell segmentation",
+        "nucleus segmentation",
+        "fluorescence microscopy",
+        "microscopy image",
+        "image segmentation",
+        "cell counting",
+        "segmentation mask"
+      ],
       "chaining_partners": []
     },
     {
@@ -230,7 +259,8 @@
         "disease neglect",
         "research gaps",
         "NTDs",
-        "SII"
+        "SII",
+        "knowledge silo"
       ],
       "chaining_partners": [
         "equity-scorer"
@@ -246,7 +276,9 @@
       "has_tests": true,
       "has_demo": true,
       "demo_command": "python skills/clinical-trial-finder/clinical_trial_finder.py --demo",
-      "dependencies": [],
+      "dependencies": [
+        "python>=3.11"
+      ],
       "tags": [
         "clinical-trials",
         "genomics",
@@ -254,7 +286,18 @@
         "clinical",
         "precision-medicine"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "clinical trial",
+        "clinical trials",
+        "trial finder",
+        "FHIR",
+        "ResearchStudy",
+        "NCT",
+        "ClinicalTrials.gov",
+        "GWAS",
+        "rsID",
+        "variant"
+      ],
       "chaining_partners": []
     },
     {
@@ -278,7 +321,19 @@
         "exome",
         "genome"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "ACMG",
+        "ACMG classification",
+        "pathogenic variant",
+        "likely pathogenic",
+        "variant of uncertain significance",
+        "VUS",
+        "clinical variant",
+        "germline classification",
+        "secondary findings",
+        "ACMG SF",
+        "variant interpretation"
+      ],
       "chaining_partners": []
     },
     {
@@ -338,7 +393,15 @@
         "interpretation",
         "bulk-rna-seq"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "DE summary",
+        "differential expression summary",
+        "top DE genes",
+        "summarise DE results",
+        "interpret DE",
+        "volcano summary",
+        "gene expression summary"
+      ],
       "chaining_partners": []
     },
     {
@@ -362,10 +425,11 @@
       ],
       "trigger_keywords": [
         "visualize de results",
-        "de visualization",
+        "differential expression visualization",
         "marker heatmap",
         "marker dotplot",
-        "top genes heatmap"
+        "top genes heatmap",
+        "diffviz"
       ],
       "chaining_partners": [
         "rnaseq-de",
@@ -442,7 +506,25 @@
         "causal-variants",
         "statistics"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "fine-mapping",
+        "finemapping",
+        "susie",
+        "susie-inf",
+        "susieinf",
+        "infinitesimal fine-mapping",
+        "credible set",
+        "posterior inclusion probability",
+        "PIP",
+        "causal variant",
+        "fine map",
+        "ABF",
+        "approximate bayes factor",
+        "FINEMAP",
+        "polyfun",
+        "fine map locus",
+        "causal SNP"
+      ],
       "chaining_partners": []
     },
     {
@@ -504,6 +586,7 @@
       "trigger_keywords": [
         "genome comparison",
         "IBS",
+        "identity by state",
         "George Church",
         "Corpasome",
         "pairwise"
@@ -531,7 +614,14 @@
         "disease-risk",
         "mating-selection"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "genome match",
+        "compatibility",
+        "mating pairs",
+        "genomebook match",
+        "heterozygosity score",
+        "breeding pairs"
+      ],
       "chaining_partners": []
     },
     {
@@ -593,6 +683,7 @@
       "has_demo": true,
       "demo_command": "python skills/hla-typing/hla_typing.py --demo",
       "dependencies": [
+        "python>=3.11",
         "pandas>=2.0"
       ],
       "tags": [
@@ -600,7 +691,11 @@
         "typing",
         "from"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "allele",
+        "typing",
+        "from"
+      ],
       "chaining_partners": []
     },
     {
@@ -622,7 +717,14 @@
         "vcf",
         "genomics"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "illumina",
+        "dragen",
+        "ica",
+        "basespace",
+        "sample sheet",
+        "samplesheet"
+      ],
       "chaining_partners": []
     },
     {
@@ -645,13 +747,22 @@
         "inventory",
         "LIMS"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "labstep",
+        "lab notebook",
+        "ELN",
+        "experiment",
+        "protocol steps",
+        "reagent inventory",
+        "lab inventory",
+        "LIMS"
+      ],
       "chaining_partners": []
     },
     {
       "name": "lit-synthesizer",
       "cli_alias": null,
-      "description": "Search PubMed and bioRxiv for bioinformatics literature, synthesise results into a structured report, and build a citation graph — all locally, with a reproducibility bundle.",
+      "description": "Search PubMed and bioRxiv for bioinformatics literature, synthesise results into a structured report, and build a citation graph — all locally, with a reproducibility bundle.\n",
       "version": "0.1.0",
       "status": "planned",
       "has_script": true,
@@ -659,6 +770,7 @@
       "has_demo": true,
       "demo_command": "python skills/lit-synthesizer/lit_synthesizer.py --demo",
       "dependencies": [
+        "python>=3.11",
         "biopython>=1.83"
       ],
       "tags": [
@@ -668,7 +780,18 @@
         "citation",
         "synthesis"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "search pubmed",
+        "find papers",
+        "literature review",
+        "search biorxiv",
+        "find articles",
+        "citation graph",
+        "synthesize literature",
+        "find research papers",
+        "pubmed search",
+        "recent papers on"
+      ],
       "chaining_partners": []
     },
     {
@@ -682,6 +805,7 @@
       "has_demo": true,
       "demo_command": "python skills/mendelian-randomisation/mendelian_randomisation.py --demo",
       "dependencies": [
+        "python>=3.10",
         "numpy>=1.24",
         "scipy>=1.10",
         "matplotlib>=3.7"
@@ -696,7 +820,18 @@
         "genetic-epidemiology",
         "drug-target-validation"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "mendelian randomisation",
+        "mendelian randomization",
+        "MR analysis",
+        "two-sample MR",
+        "causal inference genetics",
+        "IVW",
+        "MR-Egger",
+        "instrumental variable",
+        "drug target validation MR",
+        "GWAS causal"
+      ],
       "chaining_partners": []
     },
     {
@@ -734,7 +869,7 @@
       "has_demo": true,
       "demo_command": "python skills/multiqc-reporter/multiqc_reporter.py --demo",
       "dependencies": [
-        "multiqc>=1.20"
+        "python>=3.11"
       ],
       "tags": [
         "qc",
@@ -747,7 +882,16 @@
         "wes",
         "aggregation"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "multiqc",
+        "aggregate QC",
+        "QC report",
+        "FastQC summary",
+        "multi-sample QC",
+        "sequencing QC report",
+        "combine QC",
+        "QC aggregation"
+      ],
       "chaining_partners": []
     },
     {
@@ -771,12 +915,20 @@
         "vcf"
       ],
       "trigger_keywords": [
-        "nutrition",
+        "personalised nutrition",
         "nutrigenomics",
         "diet genetics",
         "MTHFR",
-        "caffeine",
-        "lactose"
+        "APOE",
+        "FTO",
+        "vitamin D",
+        "caffeine metabolism",
+        "lactose",
+        "omega-3",
+        "folate",
+        "what should I eat based on my DNA",
+        "vitamin absorption genetics",
+        "gluten"
       ],
       "chaining_partners": [
         "profile-report",
@@ -801,7 +953,13 @@
         "literature",
         "trials"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "target evidence",
+        "gene disease evidence",
+        "target triage",
+        "omics evidence",
+        "gene disease mapper"
+      ],
       "chaining_partners": []
     },
     {
@@ -856,7 +1014,8 @@
         "profile report",
         "unified report",
         "my profile",
-        "genomic profile"
+        "genomic profile",
+        "personal profile"
       ],
       "chaining_partners": [
         "pharmgx-reporter",
@@ -877,7 +1036,9 @@
       "demo_command": "python skills/proteomics-de/proteomics_de.py --demo",
       "dependencies": [],
       "tags": [],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "Differential expression analysis of proteomics data from MaxQuant or DIA-NN output"
+      ],
       "chaining_partners": []
     },
     {
@@ -899,7 +1060,15 @@
         "scientific-methods",
         "DOI"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "protocols.io",
+        "protocol search",
+        "lab protocol",
+        "scientific protocol",
+        "protocol steps",
+        "protocol DOI",
+        "methods repository"
+      ],
       "chaining_partners": []
     },
     {
@@ -914,7 +1083,16 @@
       "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
       "dependencies": [],
       "tags": [],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "pubmed",
+        "summarise papers",
+        "research briefing",
+        "papers about",
+        "recent studies",
+        "literature search pubmed",
+        "gene papers",
+        "disease papers"
+      ],
       "chaining_partners": []
     },
     {
@@ -936,7 +1114,15 @@
         "offspring",
         "clinical-genetics"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "recombinator",
+        "recombination",
+        "offspring",
+        "breed",
+        "meiosis",
+        "genomebook breed",
+        "next generation"
+      ],
       "chaining_partners": []
     },
     {
@@ -1013,10 +1199,12 @@
       "trigger_keywords": [
         "scvi",
         "scanvi",
-        "latent",
         "embedding",
+        "latent",
         "integration",
         "batch correction",
+        "batch integration",
+        "h5ad",
         "10x"
       ],
       "chaining_partners": [
@@ -1045,30 +1233,64 @@
         "10x"
       ],
       "trigger_keywords": [
-        "single-cell",
         "scrna",
+        "single-cell",
+        "scanpy",
         "h5ad",
         "mtx",
         "10x",
-        "scanpy",
-        "umap",
-        "leiden"
+        "leiden",
+        "marker genes",
+        "differential expression",
+        "contrastive markers",
+        "integrated.h5ad",
+        "x_scvi",
+        "doublet",
+        "celltypist"
       ],
       "chaining_partners": []
     },
     {
       "name": "seq-wrangler",
       "cli_alias": null,
-      "description": "Sequence QC, alignment, and BAM processing. Wraps FastQC, BWA/Bowtie2, SAMtools for automated read-to-BAM pipelines.",
+      "description": "NGS read QC, alignment, and BAM processing pipeline. Wraps FastQC, BWA/Bowtie2/Minimap2, SAMtools, and MultiQC for automated read-to-BAM workflows.",
       "version": "0.1.0",
       "status": "planned",
-      "has_script": false,
-      "has_tests": false,
-      "has_demo": false,
-      "demo_command": null,
-      "dependencies": [],
-      "tags": [],
-      "trigger_keywords": [],
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/seq-wrangler/seq_wrangler.py --demo",
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "tags": [
+        "fastq",
+        "alignment",
+        "bam",
+        "qc",
+        "bowtie2",
+        "bwa",
+        "minimap2",
+        "samtools",
+        "ngs",
+        "genomics"
+      ],
+      "trigger_keywords": [
+        "align reads",
+        "align fastq",
+        "map reads",
+        "paired-end alignment",
+        "bwa mem",
+        "bowtie2",
+        "minimap2",
+        "fastq to bam",
+        "read qc",
+        "trim adapters",
+        "coverage of bam",
+        "flagstat",
+        "sort and index bam",
+        "process fastq"
+      ],
       "chaining_partners": []
     },
     {
@@ -1088,7 +1310,14 @@
         "soul-compiler",
         "trait-mapping"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "soul2dna",
+        "soul compiler",
+        "soul to genome",
+        "genomebook compile",
+        "synthetic genome",
+        "character genome"
+      ],
       "chaining_partners": []
     },
     {
@@ -1117,6 +1346,7 @@
       "has_demo": true,
       "demo_command": "python skills/target-validation-scorer/target_validation_scorer.py --demo",
       "dependencies": [
+        "python>=3.11",
         "pandas>=2.0",
         "matplotlib>=3.7",
         "numpy>=1.24"
@@ -1128,7 +1358,12 @@
         "decision-support",
         "kinase"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "target validation",
+        "is this target druggable",
+        "evaluate drug target",
+        "GO NO-GO decision for target"
+      ],
       "chaining_partners": []
     },
     {
@@ -1172,7 +1407,15 @@
         "clinvar",
         "gnomad"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "vcf",
+        "variant annotation",
+        "vep",
+        "clinvar",
+        "gnomad",
+        "annotate variants",
+        "pathogenic variants"
+      ],
       "chaining_partners": []
     },
     {
@@ -1185,7 +1428,9 @@
       "has_tests": true,
       "has_demo": true,
       "demo_command": "python skills/vcf-annotator/vcf_annotator.py --demo",
-      "dependencies": [],
+      "dependencies": [
+        "python>=3.11"
+      ],
       "tags": [
         "vcf",
         "variants",
@@ -1195,7 +1440,18 @@
         "vep",
         "genomics"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "annotate vcf",
+        "annotate variants",
+        "variant annotation",
+        "clinvar lookup",
+        "gnomad frequency",
+        "vep annotation",
+        "pathogenic variants",
+        "variant effect",
+        "annotate my vcf",
+        "what variants are pathogenic"
+      ],
       "chaining_partners": []
     },
     {
@@ -1218,7 +1474,13 @@
         "PDF",
         "ANNOVAR"
       ],
-      "trigger_keywords": [],
+      "trigger_keywords": [
+        "WES clinical report",
+        "exome PDF report english",
+        "clinical report english",
+        "Novogene report english",
+        "WES report PDF"
+      ],
       "chaining_partners": []
     }
   ]
