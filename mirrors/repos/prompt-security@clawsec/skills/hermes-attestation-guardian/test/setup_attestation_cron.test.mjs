@@ -76,6 +76,48 @@ const args = process.argv.slice(2);
 const logPath = ${JSON.stringify(logPath)};
 const writePath = ${JSON.stringify(writePath)};
 if (args[0] === '-l') {
+  fs.appendFileSync(logPath, 'list-empty\\n', 'utf8');
+  process.stderr.write('no crontab for test-user\\n');
+  process.exit(1);
+}
+if (args[0] === '-') {
+  fs.appendFileSync(logPath, 'write\\n', 'utf8');
+  fs.writeFileSync(writePath, fs.readFileSync(0, 'utf8'), 'utf8');
+  process.exit(0);
+}
+process.stderr.write('unexpected crontab args: ' + args.join(' ') + '\\n');
+process.exit(2);
+`;
+  const fakeCrontabPath = path.join(fakeBinDir, "crontab");
+  await fs.writeFile(fakeCrontabPath, fakeCrontab, { encoding: "utf8", mode: 0o755 });
+
+  const result = runSetup(["--apply"], {
+    HERMES_HOME: hermesHome,
+    PATH: `${fakeBinDir}:${process.env.PATH}`,
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.ok(result.stdout.includes("Updated user schedule table"), result.stdout);
+  const log = await fs.readFile(logPath, "utf8");
+  assert.ok(log.includes("list-empty"), "script should treat empty-crontab stderr as no existing schedule");
+  assert.ok(log.includes("write"), "script should still write managed block on fresh machines");
+  const written = await fs.readFile(writePath, "utf8");
+  assert.ok(written.includes("# >>> hermes-attestation-guardian >>>"), written);
+});
+
+await withTempDir(async (tempDir) => {
+  const hermesHome = path.join(tempDir, ".hermes");
+  const fakeBinDir = path.join(tempDir, "bin");
+  const logPath = path.join(tempDir, "crontab.log");
+  const writePath = path.join(tempDir, "crontab.write");
+  await fs.mkdir(fakeBinDir, { recursive: true });
+
+  const fakeCrontab = `#!/usr/bin/env node
+const fs = require('node:fs');
+const args = process.argv.slice(2);
+const logPath = ${JSON.stringify(logPath)};
+const writePath = ${JSON.stringify(writePath)};
+if (args[0] === '-l') {
   fs.appendFileSync(logPath, 'list\\n', 'utf8');
   process.stdout.write('# >>> hermes-attestation-guardian >>>\\n# dangling-start-no-end\\n0 0 * * * /usr/bin/true\\n');
   process.exit(0);
@@ -97,13 +139,12 @@ process.exit(2);
   });
 
   assert.notEqual(result.status, 0, "unmatched start marker must fail closed");
-  assert.ok(result.stderr.includes("Malformed crontab markers"), result.stderr);
+  assert.ok(result.stderr.includes("Malformed schedule markers"), result.stderr);
   const log = await fs.readFile(logPath, "utf8");
   assert.ok(log.includes("list"), "script should read crontab before writing");
   const wrote = await fs.access(writePath).then(() => true).catch(() => false);
   assert.equal(wrote, false, "script must not write crontab on malformed marker block");
 });
-
 await withTempDir(async (tempDir) => {
   const hermesHome = path.join(tempDir, ".hermes");
   const fakeBinDir = path.join(tempDir, "bin");
@@ -138,7 +179,7 @@ process.exit(2);
   });
 
   assert.notEqual(result.status, 0, "unmatched end marker must fail closed");
-  assert.ok(result.stderr.includes("Malformed crontab markers"), result.stderr);
+  assert.ok(result.stderr.includes("Malformed schedule markers"), result.stderr);
   const log = await fs.readFile(logPath, "utf8");
   assert.ok(log.includes("list"), "script should read crontab before writing");
   const wrote = await fs.access(writePath).then(() => true).catch(() => false);
@@ -179,7 +220,7 @@ process.exit(2);
   });
 
   assert.notEqual(result.status, 0, "nested start marker must fail closed");
-  assert.ok(result.stderr.includes("Malformed crontab markers"), result.stderr);
+  assert.ok(result.stderr.includes("Malformed schedule markers"), result.stderr);
   const log = await fs.readFile(logPath, "utf8");
   assert.ok(log.includes("list"), "script should read crontab before writing");
   const wrote = await fs.access(writePath).then(() => true).catch(() => false);

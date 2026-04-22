@@ -1,6 +1,6 @@
 ---
 name: clawrouter
-description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 11 free NVIDIA models included. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
+description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, and Polymarket prediction market data as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
 homepage: https://blockrun.ai/clawrouter.md
 repository: https://github.com/BlockRunAI/ClawRouter
 license: MIT
@@ -26,7 +26,7 @@ metadata:
 
 # ClawRouter
 
-Hosted-gateway LLM router that saves 67% on inference costs by forwarding each request to the blockrun.ai gateway, which picks the cheapest model capable of handling it across 55+ models from 9 providers (11 free NVIDIA models). All billing flows through one USDC wallet; you do not hold provider API keys.
+Hosted-gateway LLM router that saves 67% on inference costs by forwarding each request to the blockrun.ai gateway, which picks the cheapest model capable of handling it across 55+ models from 9 providers (8 free NVIDIA models). All billing flows through one USDC wallet; you do not hold provider API keys.
 
 **This is not a local-inference tool.** ClawRouter is a thin local proxy. Your prompts are sent over HTTPS to the blockrun.ai gateway for model execution. If your workload requires inference that never leaves your machine, use a local runtime like Ollama — ClawRouter is not the right tool for that use case.
 
@@ -54,12 +54,12 @@ ClawRouter does **not** collect or forward third-party provider API keys. You do
 
 **What `models.providers.blockrun` stores (fully enumerated):**
 
-| Field | Sensitive | Purpose |
-|-------|-----------|---------|
-| `walletKey` | Yes | EVM private key used to sign USDC micropayments via x402. **Auto-generated locally on first run** — no user input required. Never transmitted over the network; only detached payment signatures are sent. |
-| `solanaKey` | Yes | Solana keypair (BIP-44 `m/44'/501'/0'/0'`). Auto-derived from the same local mnemonic via `@scure/bip32` + `@scure/bip39`. |
-| `gateway` | No | Gateway URL. Defaults: `https://blockrun.ai/api` (Base) · `https://sol.blockrun.ai/api` (Solana). |
-| `routing` | No | Optional override of the default four-tier router. |
+| Field       | Sensitive | Purpose                                                                                                                                                                                                    |
+| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `walletKey` | Yes       | EVM private key used to sign USDC micropayments via x402. **Auto-generated locally on first run** — no user input required. Never transmitted over the network; only detached payment signatures are sent. |
+| `solanaKey` | Yes       | Solana keypair (BIP-44 `m/44'/501'/0'/0'`). Auto-derived from the same local mnemonic via `@scure/bip32` + `@scure/bip39`.                                                                                 |
+| `gateway`   | No        | Gateway URL. Defaults: `https://blockrun.ai/api` (Base) · `https://sol.blockrun.ai/api` (Solana).                                                                                                          |
+| `routing`   | No        | Optional override of the default four-tier router.                                                                                                                                                         |
 
 **How and where keys are stored:**
 
@@ -108,7 +108,34 @@ Rules handle ~80% of requests in <1ms. Only ambiguous queries hit the LLM classi
 
 ## Available Models
 
-55+ models including: gpt-5.4, gpt-4o, o3, claude-opus-4.7, claude-opus-4.6, claude-sonnet-4.6, gemini-3.1-pro, gemini-2.5-flash, deepseek-chat, grok-3, kimi-k2.6, kimi-k2.5, and 11 free NVIDIA models (nemotron-ultra-253b, deepseek-v3.2, mistral-large-675b, qwen3-coder-480b, devstral-2-123b, llama-4-maverick, glm-4.7, gpt-oss-120b, gpt-oss-20b, nemotron-3-super-120b, nemotron-super-49b).
+55+ models including: gpt-5.4, gpt-4o, o3, claude-opus-4.7, claude-opus-4.6, claude-sonnet-4.6, gemini-3.1-pro, gemini-2.5-flash, deepseek-chat, grok-3, kimi-k2.6, kimi-k2.5, and 8 free NVIDIA models (gpt-oss-120b, gpt-oss-20b, deepseek-v3.2, qwen3-coder-480b, glm-4.7, llama-4-maverick, qwen3-next-80b-a3b-thinking, mistral-small-4-119b).
+
+## Built-in Agent Tools
+
+In addition to LLM routing, ClawRouter exposes BlockRun's x402-gated data APIs as ready-to-use OpenClaw tools. Every tool is paid from the same USDC wallet — no extra setup, no extra API keys.
+
+### Market Data
+
+Realtime prices and historical OHLC across every asset class. The agent should call these directly instead of scraping finance sites.
+
+| Tool                       | Coverage                                                                        | Price         |
+| -------------------------- | ------------------------------------------------------------------------------- | ------------- |
+| `blockrun_stock_price`     | 12 global markets: US (NYSE/Nasdaq), HK, JP, KR, UK, DE, FR, NL, IE, LU, CN, CA | $0.001 / call |
+| `blockrun_stock_history`   | OHLC bars at 1/5/15/60/240-min or D/W/M resolution                              | $0.001 / call |
+| `blockrun_stock_list`      | Ticker lookup / company-name search per market                                  | Free          |
+| `blockrun_crypto_price`    | BTC-USD, ETH-USD, SOL-USD, and more                                             | Free          |
+| `blockrun_fx_price`        | EUR-USD, GBP-USD, JPY-USD, and more                                             | Free          |
+| `blockrun_commodity_price` | XAU-USD (gold), XAG-USD (silver), XPT-USD (platinum)                            | Free          |
+
+### Twitter/X Intelligence
+
+| Tool                      | Purpose                                                                           | Price         |
+| ------------------------- | --------------------------------------------------------------------------------- | ------------- |
+| `blockrun_x_users_lookup` | Real-time user profiles (followers, bio, verification) — up to 100 usernames/call | $0.001 / user |
+
+### Polymarket (Predexon)
+
+Full prediction-market toolbox: live events, leaderboard, market search, smart money positioning, wallet analytics, and cross-market arbitrage matching (Polymarket ↔ Kalshi). 8 tools, `$0.001–$0.005` per call. See `blockrun_predexon_*` in the tool list.
 
 ## Example Output
 

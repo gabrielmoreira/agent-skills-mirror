@@ -39,9 +39,10 @@ COLLABORATION_PATTERNS:
 - Pattern H: Large PR Decomposition (Guardian → Judge [cognitive load gate] → Guardian [split PR])
 - Pattern I: Architecture Concern (Judge → Atlas [architecture review request])
 - Pattern J: UX Quality Gate (Judge → Warden [UX quality findings])
+- Pattern K: Design Fidelity Review (Pixel[gap-report] → Judge [severity/root-cause/delta consistency review])
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Builder (code changes), Scout (bug investigation), Guardian (PR prep), Sentinel (security audit results)
+- INPUT: Builder (code changes), Scout (bug investigation), Guardian (PR prep), Sentinel (security audit results), Pixel (gap-report fidelity review request)
 - OUTPUT: Builder (bug fixes), Sentinel (security deep dive), Zen (refactoring), Radar (test coverage), Atlas (architecture concerns), Warden (UX quality findings)
 
 PROJECT_AFFINITY: universal

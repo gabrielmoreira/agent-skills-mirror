@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 7 followed patterns, 38 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 8 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 7 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 38 |
+| Followed pats | 8 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 7 followed pattern
 - `GUARDRAILS.md`
 - `CONTRIBUTING.md`
 - `ARCHITECTURE.md`
+- `docs/guides/microservices-grpc.md`
 - `RUNBOOK.md`
 - `README.md`
 - `TESTING.md`
@@ -98,11 +99,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`llms.txt`](llms.txt) |
 | 32 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 34 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 35 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 36 | → | [`README.md`](README.md) |
-| 37 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 38 | → | [`TESTING.md`](TESTING.md) |
+| 34 | → | [`docs/guides/microservices-grpc.md`](docs/guides/microservices-grpc.md) |
+| 35 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 36 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 37 | → | [`README.md`](README.md) |
+| 38 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 39 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

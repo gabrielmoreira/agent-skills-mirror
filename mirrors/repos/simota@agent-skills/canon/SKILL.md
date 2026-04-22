@@ -16,6 +16,7 @@ COLLABORATION_PATTERNS:
 - Gateway -> Canon: API standards compliance evaluation for OpenAPI specs
 - Atlas -> Canon: architecture standards assessment (ISO 25010, 12-Factor)
 - Judge -> Canon: code review standards verification request
+- Pixel -> Canon: design-to-code gap-report a11y findings → WCAG/ISO 25010 mapping (contrast violations, semantic structure gaps)
 - Canon -> Builder: implementation fixes for compliance gaps
 - Canon -> Sentinel: security remediation tasks from OWASP/NIST findings
 - Canon -> Palette: accessibility fixes from WCAG assessment

@@ -55,6 +55,33 @@ await withTempDir(async (tempDir) => {
   const verify = runNode(verifierScript, ["--input", outputPath]);
   assert.equal(verify.status, 0, `verify should pass: ${verify.stderr}`);
 
+  const feedConfigFailureOutputPath = path.join(attestationsDir, "feed-config-fallback.json");
+  const generateWithBrokenFeedConfig = runNode(
+    generatorScript,
+    ["--output", feedConfigFailureOutputPath, "--generated-at", generatedAt],
+    {
+      HERMES_HOME: hermesHome,
+      HERMES_ADVISORY_CACHED_FEED: path.join(tempDir, "outside-cached-feed.json"),
+      HERMES_ADVISORY_FEED_STATE_PATH: path.join(tempDir, "outside-state.json"),
+    },
+  );
+  assert.equal(
+    generateWithBrokenFeedConfig.status,
+    0,
+    `generator must tolerate invalid feed config paths: ${generateWithBrokenFeedConfig.stderr}`,
+  );
+  const fallbackAttestation = JSON.parse(await fs.readFile(feedConfigFailureOutputPath, "utf8"));
+  assert.equal(fallbackAttestation.posture.feed_verification.status, "unknown");
+  assert.equal(fallbackAttestation.posture.feed_verification.configured, false);
+  assert.equal(
+    fallbackAttestation.posture.feed_verification.state_path,
+    path.join(hermesHome, "security", "advisories", "feed-verification-state.json"),
+  );
+  assert.ok(
+    String(fallbackAttestation.posture.feed_verification.config_warning || "").includes("outside HERMES_HOME"),
+    `expected explicit config warning, got: ${fallbackAttestation.posture.feed_verification.config_warning}`,
+  );
+
   const outOfScope = runNode(generatorScript, ["--output", path.join(tempDir, "outside.json")], { HERMES_HOME: hermesHome });
   assert.notEqual(outOfScope.status, 0, "generator must reject out-of-scope --output");
   assert.ok(outOfScope.stderr.includes("output path must stay under"), outOfScope.stderr);

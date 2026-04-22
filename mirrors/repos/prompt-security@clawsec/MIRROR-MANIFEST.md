@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `prompt-security/clawsec` — 26 default patterns, 5 followed patterns, 168 file(s) materialized.
+Mirror of `prompt-security/clawsec` — 26 default patterns, 9 followed patterns, 183 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `prompt-security/clawsec` — 26 default patterns, 5 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 168 |
+| Followed pats | 9 |
+| Files         | 183 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,10 @@ Mirror of `prompt-security/clawsec` — 26 default patterns, 5 followed patterns
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
+- `wiki/modules/nanoclaw-integration.md`
+- `wiki/modules/hermes-attestation-guardian.md`
+- `wiki/modules/clawsec-suite.md`
+- `wiki/modules/automation-release.md`
 - `wiki/security-signing-runbook.md`
 - `wiki/migration-signed-feed.md`
 - `CONTRIBUTING.md`
@@ -182,55 +186,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 117 | ✓ | [`skills/clawtributor/SKILL.md`](skills/clawtributor/SKILL.md) |
 | 118 | ✓ | [`skills/hermes-attestation-guardian/CHANGELOG.md`](skills/hermes-attestation-guardian/CHANGELOG.md) |
 | 119 | ✓ | [`skills/hermes-attestation-guardian/lib/attestation.mjs`](skills/hermes-attestation-guardian/lib/attestation.mjs) |
-| 120 | ✓ | [`skills/hermes-attestation-guardian/lib/diff.mjs`](skills/hermes-attestation-guardian/lib/diff.mjs) |
-| 121 | ✓ | [`skills/hermes-attestation-guardian/README.md`](skills/hermes-attestation-guardian/README.md) |
-| 122 | ✓ | [`skills/hermes-attestation-guardian/scripts/generate_attestation.mjs`](skills/hermes-attestation-guardian/scripts/generate_attestation.mjs) |
-| 123 | ✓ | [`skills/hermes-attestation-guardian/scripts/setup_attestation_cron.mjs`](skills/hermes-attestation-guardian/scripts/setup_attestation_cron.mjs) |
-| 124 | ✓ | [`skills/hermes-attestation-guardian/scripts/verify_attestation.mjs`](skills/hermes-attestation-guardian/scripts/verify_attestation.mjs) |
-| 125 | ✓ | [`skills/hermes-attestation-guardian/skill.json`](skills/hermes-attestation-guardian/skill.json) |
-| 126 | ✓ | [`skills/hermes-attestation-guardian/SKILL.md`](skills/hermes-attestation-guardian/SKILL.md) |
-| 127 | ✓ | [`skills/hermes-attestation-guardian/test/attestation_cli.test.mjs`](skills/hermes-attestation-guardian/test/attestation_cli.test.mjs) |
-| 128 | ✓ | [`skills/hermes-attestation-guardian/test/attestation_diff.test.mjs`](skills/hermes-attestation-guardian/test/attestation_diff.test.mjs) |
-| 129 | ✓ | [`skills/hermes-attestation-guardian/test/attestation_schema.test.mjs`](skills/hermes-attestation-guardian/test/attestation_schema.test.mjs) |
-| 130 | ✓ | [`skills/hermes-attestation-guardian/test/setup_attestation_cron.test.mjs`](skills/hermes-attestation-guardian/test/setup_attestation_cron.test.mjs) |
-| 131 | ✓ | [`skills/openclaw-audit-watchdog/.clawhubignore`](skills/openclaw-audit-watchdog/.clawhubignore) |
-| 132 | ✓ | [`skills/openclaw-audit-watchdog/CHANGELOG.md`](skills/openclaw-audit-watchdog/CHANGELOG.md) |
-| 133 | ✓ | [`skills/openclaw-audit-watchdog/examples/README.md`](skills/openclaw-audit-watchdog/examples/README.md) |
-| 134 | ✓ | [`skills/openclaw-audit-watchdog/examples/security-audit-config.example.json`](skills/openclaw-audit-watchdog/examples/security-audit-config.example.json) |
-| 135 | ✓ | [`skills/openclaw-audit-watchdog/README.md`](skills/openclaw-audit-watchdog/README.md) |
-| 136 | ✓ | [`skills/openclaw-audit-watchdog/scripts/codex_review.sh`](skills/openclaw-audit-watchdog/scripts/codex_review.sh) |
-| 137 | ✓ | [`skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs`](skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs) |
-| 138 | ✓ | [`skills/openclaw-audit-watchdog/scripts/render_report.mjs`](skills/openclaw-audit-watchdog/scripts/render_report.mjs) |
-| 139 | ✓ | [`skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh`](skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh) |
-| 140 | ✓ | [`skills/openclaw-audit-watchdog/scripts/runner.sh`](skills/openclaw-audit-watchdog/scripts/runner.sh) |
-| 141 | ✓ | [`skills/openclaw-audit-watchdog/scripts/send_smtp.mjs`](skills/openclaw-audit-watchdog/scripts/send_smtp.mjs) |
-| 142 | ✓ | [`skills/openclaw-audit-watchdog/scripts/sendmail_report.sh`](skills/openclaw-audit-watchdog/scripts/sendmail_report.sh) |
-| 143 | ✓ | [`skills/openclaw-audit-watchdog/scripts/setup_cron.mjs`](skills/openclaw-audit-watchdog/scripts/setup_cron.mjs) |
-| 144 | ✓ | [`skills/openclaw-audit-watchdog/skill.json`](skills/openclaw-audit-watchdog/skill.json) |
-| 145 | ✓ | [`skills/openclaw-audit-watchdog/SKILL.md`](skills/openclaw-audit-watchdog/SKILL.md) |
-| 146 | ✓ | [`skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md`](skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md) |
-| 147 | ✓ | [`skills/openclaw-audit-watchdog/test/empty-suppressions.json`](skills/openclaw-audit-watchdog/test/empty-suppressions.json) |
-| 148 | ✓ | [`skills/openclaw-audit-watchdog/test/invalid-json.json`](skills/openclaw-audit-watchdog/test/invalid-json.json) |
-| 149 | ✓ | [`skills/openclaw-audit-watchdog/test/malformed-config.json`](skills/openclaw-audit-watchdog/test/malformed-config.json) |
-| 150 | ✓ | [`skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs`](skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs) |
-| 151 | ✓ | [`skills/openclaw-audit-watchdog/test/setup_cron.test.mjs`](skills/openclaw-audit-watchdog/test/setup_cron.test.mjs) |
-| 152 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs) |
-| 153 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config.test.mjs) |
-| 154 | ✓ | [`skills/soul-guardian/.clawhubignore`](skills/soul-guardian/.clawhubignore) |
-| 155 | ✓ | [`skills/soul-guardian/CHANGELOG.md`](skills/soul-guardian/CHANGELOG.md) |
-| 156 | ✓ | [`skills/soul-guardian/README.md`](skills/soul-guardian/README.md) |
-| 157 | ✓ | [`skills/soul-guardian/scripts/install_launchd_plist.py`](skills/soul-guardian/scripts/install_launchd_plist.py) |
-| 158 | ✓ | [`skills/soul-guardian/scripts/onboard_state_dir.py`](skills/soul-guardian/scripts/onboard_state_dir.py) |
-| 159 | ✓ | [`skills/soul-guardian/scripts/soul_guardian.py`](skills/soul-guardian/scripts/soul_guardian.py) |
-| 160 | ✓ | [`skills/soul-guardian/scripts/test_install_launchd_plist.py`](skills/soul-guardian/scripts/test_install_launchd_plist.py) |
-| 161 | ✓ | [`skills/soul-guardian/scripts/test_soul_guardian.py`](skills/soul-guardian/scripts/test_soul_guardian.py) |
-| 162 | ✓ | [`skills/soul-guardian/skill.json`](skills/soul-guardian/skill.json) |
-| 163 | ✓ | [`skills/soul-guardian/SKILL.md`](skills/soul-guardian/SKILL.md) |
-| 164 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 165 | → | [`font/README.md`](font/README.md) |
-| 166 | → | [`README.md`](README.md) |
-| 167 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
-| 168 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
+| 120 | ✓ | [`skills/hermes-attestation-guardian/lib/cron.mjs`](skills/hermes-attestation-guardian/lib/cron.mjs) |
+| 121 | ✓ | [`skills/hermes-attestation-guardian/lib/diff.mjs`](skills/hermes-attestation-guardian/lib/diff.mjs) |
+| 122 | ✓ | [`skills/hermes-attestation-guardian/lib/feed.mjs`](skills/hermes-attestation-guardian/lib/feed.mjs) |
+| 123 | ✓ | [`skills/hermes-attestation-guardian/lib/semver.mjs`](skills/hermes-attestation-guardian/lib/semver.mjs) |
+| 124 | ✓ | [`skills/hermes-attestation-guardian/README.md`](skills/hermes-attestation-guardian/README.md) |
+| 125 | ✓ | [`skills/hermes-attestation-guardian/scripts/check_advisories.mjs`](skills/hermes-attestation-guardian/scripts/check_advisories.mjs) |
+| 126 | ✓ | [`skills/hermes-attestation-guardian/scripts/generate_attestation.mjs`](skills/hermes-attestation-guardian/scripts/generate_attestation.mjs) |
+| 127 | ✓ | [`skills/hermes-attestation-guardian/scripts/guarded_skill_verify.mjs`](skills/hermes-attestation-guardian/scripts/guarded_skill_verify.mjs) |
+| 128 | ✓ | [`skills/hermes-attestation-guardian/scripts/refresh_advisory_feed.mjs`](skills/hermes-attestation-guardian/scripts/refresh_advisory_feed.mjs) |
+| 129 | ✓ | [`skills/hermes-attestation-guardian/scripts/setup_advisory_check_cron.mjs`](skills/hermes-attestation-guardian/scripts/setup_advisory_check_cron.mjs) |
+| 130 | ✓ | [`skills/hermes-attestation-guardian/scripts/setup_attestation_cron.mjs`](skills/hermes-attestation-guardian/scripts/setup_attestation_cron.mjs) |
+| 131 | ✓ | [`skills/hermes-attestation-guardian/scripts/verify_attestation.mjs`](skills/hermes-attestation-guardian/scripts/verify_attestation.mjs) |
+| 132 | ✓ | [`skills/hermes-attestation-guardian/skill.json`](skills/hermes-attestation-guardian/skill.json) |
+| 133 | ✓ | [`skills/hermes-attestation-guardian/SKILL.md`](skills/hermes-attestation-guardian/SKILL.md) |
+| 134 | ✓ | [`skills/hermes-attestation-guardian/test/attestation_cli.test.mjs`](skills/hermes-attestation-guardian/test/attestation_cli.test.mjs) |
+| 135 | ✓ | [`skills/hermes-attestation-guardian/test/attestation_diff.test.mjs`](skills/hermes-attestation-guardian/test/attestation_diff.test.mjs) |
+| 136 | ✓ | [`skills/hermes-attestation-guardian/test/attestation_schema.test.mjs`](skills/hermes-attestation-guardian/test/attestation_schema.test.mjs) |
+| 137 | ✓ | [`skills/hermes-attestation-guardian/test/feed_verification.test.mjs`](skills/hermes-attestation-guardian/test/feed_verification.test.mjs) |
+| 138 | ✓ | [`skills/hermes-attestation-guardian/test/guarded_skill_verify.test.mjs`](skills/hermes-attestation-guardian/test/guarded_skill_verify.test.mjs) |
+| 139 | ✓ | [`skills/hermes-attestation-guardian/test/hermes_attestation_sandbox_regression.sh`](skills/hermes-attestation-guardian/test/hermes_attestation_sandbox_regression.sh) |
+| 140 | ✓ | [`skills/hermes-attestation-guardian/test/setup_advisory_check_cron.test.mjs`](skills/hermes-attestation-guardian/test/setup_advisory_check_cron.test.mjs) |
+| 141 | ✓ | [`skills/hermes-attestation-guardian/test/setup_attestation_cron.test.mjs`](skills/hermes-attestation-guardian/test/setup_attestation_cron.test.mjs) |
+| 142 | ✓ | [`skills/openclaw-audit-watchdog/.clawhubignore`](skills/openclaw-audit-watchdog/.clawhubignore) |
+| 143 | ✓ | [`skills/openclaw-audit-watchdog/CHANGELOG.md`](skills/openclaw-audit-watchdog/CHANGELOG.md) |
+| 144 | ✓ | [`skills/openclaw-audit-watchdog/examples/README.md`](skills/openclaw-audit-watchdog/examples/README.md) |
+| 145 | ✓ | [`skills/openclaw-audit-watchdog/examples/security-audit-config.example.json`](skills/openclaw-audit-watchdog/examples/security-audit-config.example.json) |
+| 146 | ✓ | [`skills/openclaw-audit-watchdog/README.md`](skills/openclaw-audit-watchdog/README.md) |
+| 147 | ✓ | [`skills/openclaw-audit-watchdog/scripts/codex_review.sh`](skills/openclaw-audit-watchdog/scripts/codex_review.sh) |
+| 148 | ✓ | [`skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs`](skills/openclaw-audit-watchdog/scripts/load_suppression_config.mjs) |
+| 149 | ✓ | [`skills/openclaw-audit-watchdog/scripts/render_report.mjs`](skills/openclaw-audit-watchdog/scripts/render_report.mjs) |
+| 150 | ✓ | [`skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh`](skills/openclaw-audit-watchdog/scripts/run_audit_and_format.sh) |
+| 151 | ✓ | [`skills/openclaw-audit-watchdog/scripts/runner.sh`](skills/openclaw-audit-watchdog/scripts/runner.sh) |
+| 152 | ✓ | [`skills/openclaw-audit-watchdog/scripts/send_smtp.mjs`](skills/openclaw-audit-watchdog/scripts/send_smtp.mjs) |
+| 153 | ✓ | [`skills/openclaw-audit-watchdog/scripts/sendmail_report.sh`](skills/openclaw-audit-watchdog/scripts/sendmail_report.sh) |
+| 154 | ✓ | [`skills/openclaw-audit-watchdog/scripts/setup_cron.mjs`](skills/openclaw-audit-watchdog/scripts/setup_cron.mjs) |
+| 155 | ✓ | [`skills/openclaw-audit-watchdog/skill.json`](skills/openclaw-audit-watchdog/skill.json) |
+| 156 | ✓ | [`skills/openclaw-audit-watchdog/SKILL.md`](skills/openclaw-audit-watchdog/SKILL.md) |
+| 157 | ✓ | [`skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md`](skills/openclaw-audit-watchdog/test/E2E-TEST-RESULTS.md) |
+| 158 | ✓ | [`skills/openclaw-audit-watchdog/test/empty-suppressions.json`](skills/openclaw-audit-watchdog/test/empty-suppressions.json) |
+| 159 | ✓ | [`skills/openclaw-audit-watchdog/test/invalid-json.json`](skills/openclaw-audit-watchdog/test/invalid-json.json) |
+| 160 | ✓ | [`skills/openclaw-audit-watchdog/test/malformed-config.json`](skills/openclaw-audit-watchdog/test/malformed-config.json) |
+| 161 | ✓ | [`skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs`](skills/openclaw-audit-watchdog/test/render_report_suppression.test.mjs) |
+| 162 | ✓ | [`skills/openclaw-audit-watchdog/test/setup_cron.test.mjs`](skills/openclaw-audit-watchdog/test/setup_cron.test.mjs) |
+| 163 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs) |
+| 164 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config.test.mjs) |
+| 165 | ✓ | [`skills/soul-guardian/.clawhubignore`](skills/soul-guardian/.clawhubignore) |
+| 166 | ✓ | [`skills/soul-guardian/CHANGELOG.md`](skills/soul-guardian/CHANGELOG.md) |
+| 167 | ✓ | [`skills/soul-guardian/README.md`](skills/soul-guardian/README.md) |
+| 168 | ✓ | [`skills/soul-guardian/scripts/install_launchd_plist.py`](skills/soul-guardian/scripts/install_launchd_plist.py) |
+| 169 | ✓ | [`skills/soul-guardian/scripts/onboard_state_dir.py`](skills/soul-guardian/scripts/onboard_state_dir.py) |
+| 170 | ✓ | [`skills/soul-guardian/scripts/soul_guardian.py`](skills/soul-guardian/scripts/soul_guardian.py) |
+| 171 | ✓ | [`skills/soul-guardian/scripts/test_install_launchd_plist.py`](skills/soul-guardian/scripts/test_install_launchd_plist.py) |
+| 172 | ✓ | [`skills/soul-guardian/scripts/test_soul_guardian.py`](skills/soul-guardian/scripts/test_soul_guardian.py) |
+| 173 | ✓ | [`skills/soul-guardian/skill.json`](skills/soul-guardian/skill.json) |
+| 174 | ✓ | [`skills/soul-guardian/SKILL.md`](skills/soul-guardian/SKILL.md) |
+| 175 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 176 | → | [`font/README.md`](font/README.md) |
+| 177 | → | [`README.md`](README.md) |
+| 178 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
+| 179 | → | [`wiki/modules/automation-release.md`](wiki/modules/automation-release.md) |
+| 180 | → | [`wiki/modules/clawsec-suite.md`](wiki/modules/clawsec-suite.md) |
+| 181 | → | [`wiki/modules/hermes-attestation-guardian.md`](wiki/modules/hermes-attestation-guardian.md) |
+| 182 | → | [`wiki/modules/nanoclaw-integration.md`](wiki/modules/nanoclaw-integration.md) |
+| 183 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
 
 ---
 

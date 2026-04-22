@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Runchuan-BU/BioClaw` — 26 default patterns, 9 followed patterns, 83 file(s) materialized.
+Mirror of `Runchuan-BU/BioClaw` — 26 default patterns, 11 followed patterns, 90 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Runchuan-BU/BioClaw` — 26 default patterns, 9 followed patterns, 83
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 83 |
+| Followed pats | 11 |
+| Files         | 90 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,12 +53,14 @@ Mirror of `Runchuan-BU/BioClaw` — 26 default patterns, 9 followed patterns, 83
 
 - `README.md`
 - `README.zh-CN.md`
+- `docs/BEGINNER_GUIDE.md`
 - `docs/CHANNELS.md`
 - `docs/CHANNELS.zh-CN.md`
 - `docs/DASHBOARD.md`
 - `ExampleTask/ExampleTask.md`
 - `docs/FEISHU_SETUP.zh-CN.md`
 - `docs/SEC_REPORT_WORKFLOW.zh-CN.md`
+- `docs/BEGINNER_GUIDE.zh-CN.md`
 - `docs/WINDOWS.zh-CN.md`
 
 ## File Index
@@ -137,19 +139,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`container/skills/structural-biology/commands_and_thresholds.md`](container/skills/structural-biology/commands_and_thresholds.md) |
 | 69 | ✓ | [`container/skills/structural-biology/SKILL.md`](container/skills/structural-biology/SKILL.md) |
 | 70 | ✓ | [`container/skills/structural-biology/technical_reference.md`](container/skills/structural-biology/technical_reference.md) |
-| 71 | ✓ | [`docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md`](docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md) |
-| 72 | ✓ | [`docs/QQ_SETUP.zh-CN.md`](docs/QQ_SETUP.zh-CN.md) |
-| 73 | ✓ | [`groups/global/CLAUDE.md`](groups/global/CLAUDE.md) |
-| 74 | ✓ | [`groups/main/CLAUDE.md`](groups/main/CLAUDE.md) |
-| 75 | → | [`docs/CHANNELS.md`](docs/CHANNELS.md) |
-| 76 | → | [`docs/CHANNELS.zh-CN.md`](docs/CHANNELS.zh-CN.md) |
-| 77 | → | [`docs/DASHBOARD.md`](docs/DASHBOARD.md) |
-| 78 | → | [`docs/FEISHU_SETUP.zh-CN.md`](docs/FEISHU_SETUP.zh-CN.md) |
-| 79 | → | [`docs/SEC_REPORT_WORKFLOW.zh-CN.md`](docs/SEC_REPORT_WORKFLOW.zh-CN.md) |
-| 80 | → | [`docs/WINDOWS.zh-CN.md`](docs/WINDOWS.zh-CN.md) |
-| 81 | → | [`ExampleTask/ExampleTask.md`](ExampleTask/ExampleTask.md) |
-| 82 | → | [`README.md`](README.md) |
-| 83 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 71 | ✓ | [`docs/APPTAINER.md`](docs/APPTAINER.md) |
+| 72 | ✓ | [`docs/CLUSTER_DEPLOYMENT.zh-CN.md`](docs/CLUSTER_DEPLOYMENT.zh-CN.md) |
+| 73 | ✓ | [`docs/CUSTOM_SKILLS.md`](docs/CUSTOM_SKILLS.md) |
+| 74 | ✓ | [`docs/DEBUG_CHECKLIST.md`](docs/DEBUG_CHECKLIST.md) |
+| 75 | ✓ | [`docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md`](docs/QQ_FEISHU_MIGRATION_PLAN.zh-CN.md) |
+| 76 | ✓ | [`docs/QQ_SETUP.zh-CN.md`](docs/QQ_SETUP.zh-CN.md) |
+| 77 | ✓ | [`docs/SECURITY.md`](docs/SECURITY.md) |
+| 78 | ✓ | [`groups/global/CLAUDE.md`](groups/global/CLAUDE.md) |
+| 79 | ✓ | [`groups/main/CLAUDE.md`](groups/main/CLAUDE.md) |
+| 80 | → | [`docs/BEGINNER_GUIDE.md`](docs/BEGINNER_GUIDE.md) |
+| 81 | → | [`docs/BEGINNER_GUIDE.zh-CN.md`](docs/BEGINNER_GUIDE.zh-CN.md) |
+| 82 | → | [`docs/CHANNELS.md`](docs/CHANNELS.md) |
+| 83 | → | [`docs/CHANNELS.zh-CN.md`](docs/CHANNELS.zh-CN.md) |
+| 84 | → | [`docs/DASHBOARD.md`](docs/DASHBOARD.md) |
+| 85 | → | [`docs/FEISHU_SETUP.zh-CN.md`](docs/FEISHU_SETUP.zh-CN.md) |
+| 86 | → | [`docs/SEC_REPORT_WORKFLOW.zh-CN.md`](docs/SEC_REPORT_WORKFLOW.zh-CN.md) |
+| 87 | → | [`docs/WINDOWS.zh-CN.md`](docs/WINDOWS.zh-CN.md) |
+| 88 | → | [`ExampleTask/ExampleTask.md`](ExampleTask/ExampleTask.md) |
+| 89 | → | [`README.md`](README.md) |
+| 90 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

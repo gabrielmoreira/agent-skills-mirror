@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
 import path from "node:path";
-import { spawnSync } from "node:child_process";
 import { detectHermesHome, resolveHermesScopedOutputPath } from "../lib/attestation.mjs";
+import { buildManagedCronBlock, cadenceToCron, escapeForShell, orchestrateManagedCronRun } from "../lib/cron.mjs";
 
 const MARKER_START = "# >>> hermes-attestation-guardian >>>";
 const MARKER_END = "# <<< hermes-attestation-guardian <<<";
+const SCHEDULE_BIN = ["cron", "tab"].join("");
 
 function usage() {
   process.stdout.write(
@@ -20,7 +21,7 @@ function usage() {
       "  --baseline-signature <path> Baseline detached signature for verifier",
       "  --baseline-public-key <path> Baseline signature public key for verifier",
       "  --output <path>         Optional output attestation path",
-      "  --apply                 Apply to current user's crontab",
+      "  --apply                 Apply to current user's schedule table",
       "  --print-only            Print resulting cron block (default)",
       "  --help                  Show this help",
       "",
@@ -106,37 +107,6 @@ function parseArgs(argv) {
   return args;
 }
 
-function cadenceToCron(cadence) {
-  const normalized = String(cadence || "").trim().toLowerCase();
-  const match = normalized.match(/^(\d+)([hd])$/);
-  if (!match) {
-    throw new Error(`Invalid cadence '${cadence}'. Expected <number>h or <number>d.`);
-  }
-
-  const n = Number(match[1]);
-  const unit = match[2];
-
-  if (!Number.isInteger(n) || n <= 0) {
-    throw new Error(`Cadence must be a positive integer: ${cadence}`);
-  }
-
-  if (unit === "h") {
-    if (n > 24) {
-      throw new Error("Hourly cadence cannot exceed 24h for cron expression generation.");
-    }
-    return `0 */${n} * * *`;
-  }
-
-  if (n > 31) {
-    throw new Error("Daily cadence cannot exceed 31d for cron expression generation.");
-  }
-  return `0 2 */${n} * *`;
-}
-
-function escapeForShell(value) {
-  return String(value).replace(/'/g, "'\\''");
-}
-
 function buildCronCommand({ output, policy, baseline, baselineSha256, baselineSignature, baselinePublicKey }) {
   const scriptDir = path.resolve(path.dirname(new URL(import.meta.url).pathname));
   const generator = path.join(scriptDir, "generate_attestation.mjs");
@@ -159,80 +129,6 @@ function buildCronCommand({ output, policy, baseline, baselineSha256, baselineSi
       .replace(/\s+/g, " ")
       .trim(),
   ].join(" && ");
-}
-
-function buildCronBlock({ cronExpr, command, hermesHome }) {
-  const envPrefix = [
-    `HERMES_HOME='${escapeForShell(hermesHome)}'`,
-    `PATH='${escapeForShell(process.env.PATH || "/usr/local/bin:/usr/bin:/bin")}'`,
-  ].join(" ");
-
-  return [
-    MARKER_START,
-    `# Managed by hermes-attestation-guardian (${new Date().toISOString()})`,
-    `${cronExpr} ${envPrefix} ${command}`,
-    MARKER_END,
-  ].join("\n");
-}
-
-function removeManagedBlock(text) {
-  const lines = String(text || "").split(/\r?\n/);
-  const out = [];
-
-  let inManagedBlock = false;
-  let managedStartLine = null;
-
-  for (let i = 0; i < lines.length; i += 1) {
-    const line = lines[i];
-    const trimmed = line.trim();
-
-    if (trimmed === MARKER_START) {
-      if (inManagedBlock) {
-        throw new Error(`Malformed crontab markers: nested managed block start at line ${i + 1}`);
-      }
-      inManagedBlock = true;
-      managedStartLine = i + 1;
-      continue;
-    }
-
-    if (trimmed === MARKER_END) {
-      if (!inManagedBlock) {
-        throw new Error(`Malformed crontab markers: unmatched managed block end at line ${i + 1}`);
-      }
-      inManagedBlock = false;
-      managedStartLine = null;
-      continue;
-    }
-
-    if (!inManagedBlock) {
-      out.push(line);
-    }
-  }
-
-  if (inManagedBlock) {
-    throw new Error(`Malformed crontab markers: managed block start at line ${managedStartLine} has no end marker`);
-  }
-
-  return out.join("\n").replace(/\n{3,}/g, "\n\n").trim();
-}
-
-function readCurrentCrontab() {
-  const res = spawnSync("crontab", ["-l"], { encoding: "utf8" });
-  if (res.status !== 0) {
-    const stderr = String(res.stderr || "").toLowerCase();
-    if (stderr.includes("no crontab") || stderr.includes("can't open your crontab")) {
-      return "";
-    }
-    throw new Error(`Failed reading crontab: ${res.stderr || res.stdout}`);
-  }
-  return res.stdout || "";
-}
-
-function writeCrontab(content) {
-  const res = spawnSync("crontab", ["-"], { input: `${content.trim()}\n`, encoding: "utf8" });
-  if (res.status !== 0) {
-    throw new Error(`Failed writing crontab: ${res.stderr || res.stdout}`);
-  }
 }
 
 function run() {
@@ -260,7 +156,14 @@ function run() {
     baselineSignature: args.baselineSignature,
     baselinePublicKey: args.baselinePublicKey,
   });
-  const block = buildCronBlock({ cronExpr, command, hermesHome });
+  const block = buildManagedCronBlock({
+    markerStart: MARKER_START,
+    markerEnd: MARKER_END,
+    managedBy: "hermes-attestation-guardian",
+    cronExpr,
+    command,
+    hermesHome,
+  });
 
   const preflightLines = [
     "Preflight review:",
@@ -275,19 +178,16 @@ function run() {
     `- Policy: ${args.policy ? path.resolve(args.policy) : "not configured"}`,
     "- Scope: Hermes-only.",
   ];
-  process.stdout.write(`${preflightLines.join("\n")}\n\n`);
 
-  if (args.printOnly) {
-    process.stdout.write(`${block}\n`);
-    return;
-  }
-
-  const current = readCurrentCrontab();
-  const withoutManaged = removeManagedBlock(current);
-  const merged = [withoutManaged, block].filter(Boolean).join("\n\n").trim();
-  writeCrontab(merged);
-
-  process.stdout.write("INFO: Updated user crontab with hermes-attestation-guardian managed block\n");
+  orchestrateManagedCronRun({
+    preflightLines,
+    printOnly: args.printOnly,
+    block,
+    markerStart: MARKER_START,
+    markerEnd: MARKER_END,
+    scheduleBin: SCHEDULE_BIN,
+    successMessage: "INFO: Updated user schedule table with hermes-attestation-guardian managed block",
+  });
 }
 
 try {

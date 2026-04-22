@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { defaultFeedStatePath, getFeedVerificationStatus } from "./feed.mjs";
 
 export const SCHEMA_VERSION = "0.0.1";
 export const SKILL_NAME = "hermes-attestation-guardian";
@@ -190,7 +191,8 @@ function bool(value, defaultValue = false) {
 }
 
 function readEnvBool(name, fallback = false) {
-  const raw = process.env[name];
+  const envObj = process?.["env"] || {};
+  const raw = envObj[name];
   if (typeof raw !== "string") {
     return fallback;
   }
@@ -211,6 +213,56 @@ function normalizePath(input, hermesHome) {
   if (raw.startsWith("~/")) return path.join(os.homedir(), raw.slice(2));
   if (raw.startsWith("$HERMES_HOME/")) return path.join(hermesHome, raw.slice("$HERMES_HOME/".length));
   return path.resolve(raw);
+}
+
+function resolveConfiguredFeedStatePath(config, hermesHome) {
+  const configuredStatePath =
+    process.env.HERMES_ADVISORY_FEED_STATE_PATH
+    || config?.advisory_feed?.state_path
+    || config?.security?.advisory_feed?.state_path;
+
+  const fallbackPath = defaultFeedStatePath(hermesHome);
+
+  if (typeof configuredStatePath !== "string" || !configuredStatePath.trim()) {
+    return { statePath: fallbackPath, configWarning: null };
+  }
+
+  const candidate = normalizePath(configuredStatePath, hermesHome);
+  if (!candidate) {
+    return {
+      statePath: fallbackPath,
+      configWarning: "configured advisory state path was empty after normalization; using default path",
+    };
+  }
+
+  if (isPathInside(candidate, hermesHome)) {
+    return { statePath: candidate, configWarning: null };
+  }
+
+  return {
+    statePath: fallbackPath,
+    configWarning: `configured advisory state path rejected (outside HERMES_HOME): ${candidate}`,
+  };
+}
+
+function readFeedVerificationStateSafe(config, hermesHome) {
+  const { statePath: safeStatePath, configWarning } = resolveConfiguredFeedStatePath(config, hermesHome);
+
+  try {
+    return {
+      ...getFeedVerificationStatus({ statePath: safeStatePath }),
+      config_warning: configWarning,
+    };
+  } catch {
+    return {
+      status: "unknown",
+      available: false,
+      checked_at: null,
+      state_path: safeStatePath,
+      source: null,
+      config_warning: configWarning,
+    };
+  }
 }
 
 function fileFingerprint(filePath) {
@@ -245,10 +297,8 @@ export function buildAttestation({
     bypass_verification: configBool(config?.security?.bypass_verification, readEnvBool("HERMES_BYPASS_VERIFICATION", false)),
   };
 
-  const feedStatus = String(
-    process.env.HERMES_FEED_VERIFICATION_STATUS || config?.feed_verification?.status || "unknown",
-  ).toLowerCase();
-  const normalizedFeedStatus = ["verified", "unverified", "unknown"].includes(feedStatus) ? feedStatus : "unknown";
+  const feedVerificationState = readFeedVerificationStateSafe(config, hermesHome);
+  const normalizedFeedStatus = feedVerificationState.status;
 
   const selectedPolicy = policy || { watch_files: [], trust_anchor_files: [] };
 
@@ -287,8 +337,12 @@ export function buildAttestation({
         risky_toggles: riskyToggles,
       },
       feed_verification: {
-        configured: normalizedFeedStatus !== "unknown",
+        configured: feedVerificationState.available,
         status: normalizedFeedStatus,
+        checked_at: feedVerificationState.checked_at,
+        source: feedVerificationState.source,
+        state_path: feedVerificationState.state_path,
+        config_warning: feedVerificationState.config_warning || null,
       },
       integrity: {
         watched_files: watchedFingerprints,

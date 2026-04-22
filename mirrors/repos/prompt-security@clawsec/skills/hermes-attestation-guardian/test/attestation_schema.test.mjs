@@ -194,6 +194,34 @@ function testSchemaValidationRequiresIntegrityEntryShapes() {
   assert.equal(validErrors.length, 0, `valid integrity entries should pass schema: ${validErrors.join(", ")}`);
 }
 
+async function testAttestationFeedConfigFailuresFallBackToUnknownStatus() {
+  await withTempDir(async (tempDir) => {
+    const hermesHome = path.join(tempDir, ".hermes");
+    await fs.mkdir(hermesHome, { recursive: true });
+
+    await withPatchedEnv(
+      {
+        HERMES_HOME: hermesHome,
+        HERMES_ADVISORY_CACHED_FEED: path.join(tempDir, "outside-feed.json"),
+        HERMES_ADVISORY_FEED_STATE_PATH: path.join(tempDir, "outside-state.json"),
+      },
+      async () => {
+        const attestation = buildAttestation({ generatedAt: "2026-04-15T18:00:00.000Z" });
+        assert.equal(attestation.posture.feed_verification.status, "unknown");
+        assert.equal(attestation.posture.feed_verification.configured, false);
+        assert.equal(
+          attestation.posture.feed_verification.state_path,
+          path.join(hermesHome, "security", "advisories", "feed-verification-state.json"),
+        );
+        assert.ok(
+          String(attestation.posture.feed_verification.config_warning || "").includes("outside HERMES_HOME"),
+          `expected explicit config warning, got: ${attestation.posture.feed_verification.config_warning}`,
+        );
+      },
+    );
+  });
+}
+
 async function testBooleanConfigCoercionDoesNotEnableFalseStrings() {
   await withTempDir(async (tempDir) => {
     const hermesHome = path.join(tempDir, ".hermes");
@@ -278,5 +306,6 @@ testDigestBindingRejectsUnsupportedAlgorithm();
 testSchemaValidationRequiresGeneratorVersionNonEmptyString();
 testSchemaValidationRequiresRuntimeGatewaysAndRiskyTogglesBooleans();
 testSchemaValidationRequiresIntegrityEntryShapes();
+await testAttestationFeedConfigFailuresFallBackToUnknownStatus();
 await testBooleanConfigCoercionDoesNotEnableFalseStrings();
 console.log("attestation_schema.test.mjs: ok");

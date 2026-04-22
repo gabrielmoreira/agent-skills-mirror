@@ -22,6 +22,7 @@ COLLABORATION_PATTERNS:
 - Vision -> Muse: Design direction
 - Frame -> Muse: Figma token extraction
 - Palette -> Muse: Usability requirements
+- Pixel -> Muse: Token regression from design-to-code gap-report (extracted CSS variable deltas → systemize as tokens)
 - Muse -> Artisan: Token-aware components
 - Muse -> Loom: Token definitions for guidelines
 - Muse -> Flow: Animation tokens
@@ -29,7 +30,7 @@ COLLABORATION_PATTERNS:
 - Muse -> Polyglot: RTL-aware spacing tokens
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Vision, Frame, Palette
+- INPUT: Vision, Frame, Palette, Pixel
 - OUTPUT: Artisan, Loom, Flow, Showcase, Polyglot
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(H) Marketing(M)

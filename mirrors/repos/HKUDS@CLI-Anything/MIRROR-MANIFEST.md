@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
+Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 100 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 98 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 98 |
+| Files         | 100 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -145,18 +145,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 84 | ✓ | [`skills/cli-anything-shotcut/SKILL.md`](skills/cli-anything-shotcut/SKILL.md) |
 | 85 | ✓ | [`skills/cli-anything-slay-the-spire-ii/SKILL.md`](skills/cli-anything-slay-the-spire-ii/SKILL.md) |
 | 86 | ✓ | [`skills/cli-anything-unimol-tools/SKILL.md`](skills/cli-anything-unimol-tools/SKILL.md) |
-| 87 | ✓ | [`skills/cli-anything-videocaptioner/SKILL.md`](skills/cli-anything-videocaptioner/SKILL.md) |
-| 88 | ✓ | [`skills/cli-anything-wiremock/SKILL.md`](skills/cli-anything-wiremock/SKILL.md) |
-| 89 | ✓ | [`skills/cli-anything-zoom/SKILL.md`](skills/cli-anything-zoom/SKILL.md) |
-| 90 | ✓ | [`skills/cli-anything-zotero/SKILL.md`](skills/cli-anything-zotero/SKILL.md) |
-| 91 | ✓ | [`skills/cli-hub-meta-skill/SKILL.md`](skills/cli-hub-meta-skill/SKILL.md) |
-| 92 | ✓ | [`skills/README.md`](skills/README.md) |
-| 93 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
-| 94 | ✓ | [`unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md`](unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md) |
-| 95 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
-| 96 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
-| 97 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
-| 98 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
+| 87 | ✓ | [`skills/cli-anything-unrealinsights/SKILL.md`](skills/cli-anything-unrealinsights/SKILL.md) |
+| 88 | ✓ | [`skills/cli-anything-videocaptioner/SKILL.md`](skills/cli-anything-videocaptioner/SKILL.md) |
+| 89 | ✓ | [`skills/cli-anything-wiremock/SKILL.md`](skills/cli-anything-wiremock/SKILL.md) |
+| 90 | ✓ | [`skills/cli-anything-zoom/SKILL.md`](skills/cli-anything-zoom/SKILL.md) |
+| 91 | ✓ | [`skills/cli-anything-zotero/SKILL.md`](skills/cli-anything-zotero/SKILL.md) |
+| 92 | ✓ | [`skills/cli-hub-meta-skill/SKILL.md`](skills/cli-hub-meta-skill/SKILL.md) |
+| 93 | ✓ | [`skills/README.md`](skills/README.md) |
+| 94 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
+| 95 | ✓ | [`unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md`](unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md) |
+| 96 | ✓ | [`unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md`](unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md) |
+| 97 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
+| 98 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
+| 99 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
+| 100 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
 
 ---
 

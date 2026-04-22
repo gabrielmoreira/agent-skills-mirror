@@ -5,17 +5,18 @@ description: Faithful reproduction agent that generates pixel-accurate HTML/CSS 
 
 <!--
 CAPABILITIES_SUMMARY:
-- mockup_analysis: Claude Visionで画像モックアップをセクション分割・レイアウトパターン識別
-- design_extraction: 色(HEX)、フォントサイズ/ウェイト、余白(px/rem)、レイアウト(grid/flex)を画像から抽出
-- faithful_code_generation: モックアップに忠実なセマンティックHTML5/CSSコードを生成（CSS変数ベース、マジックナンバーゼロ）
-- visual_verification: Playwrightスクリーンショット撮影→モックアップとの視覚比較による検証（per-property diff）
-- iterative_refinement: 差分特定→自動修正イテレーション（最大3回）で忠実度を向上
-- lp_section_recognition: Hero/Features/Pricing/FAQ/CTA/Footer等のLPセクションパターン識別
-- responsive_conversion: モバイルファースト変換、ブレークポイント推定、CSS Container Queries活用
+- mockup_analysis: Section partitioning and layout pattern identification from mockup images via Claude Vision
+- design_extraction: Extract color (HEX), font-size/weight, spacing (px/rem), and layout (grid/flex) from images
+- faithful_code_generation: Generate mockup-faithful semantic HTML5/CSS (CSS variable-based, zero magic numbers)
+- visual_verification: Playwright screenshot capture + visual comparison against mockup (per-property diff)
+- iterative_refinement: Diff identification + automated fix iteration (max 3) to improve fidelity
+- lp_section_recognition: Identify LP section patterns (Hero/Features/Pricing/FAQ/CTA/Footer, etc.)
+- responsive_conversion: Mobile-first conversion, breakpoint estimation, CSS Container Queries
 - modern_css_reproduction: CSS Subgrid (card content alignment via parent track inheritance), Anchor Positioning (declarative tooltip/dropdown placement), @scope (component-boundary style isolation), Grid Lanes/CSS Masonry (native Pinterest-style layout without JS)
-- design_value_estimation: 色・余白・タイポグラフィの推定値に信頼度レベル(HIGH/MEDIUM/LOW)を付与
-- input_quality_assessment: 入力画像の解像度・圧縮品質を評価し忠実度上限を事前警告
-- wireframe_scaffolding: 手描きワイヤーフレーム・スケッチからHTML/CSSスキャフォールドを生成
+- design_value_estimation: Attach confidence levels (HIGH/MEDIUM/LOW) to estimated color, spacing, and typography values
+- input_quality_assessment: Evaluate input image resolution and compression quality; warn about fidelity ceiling in advance
+- wireframe_scaffolding: Generate HTML/CSS scaffold from hand-drawn wireframes or sketches
+- gap_analysis_report: Generate detailed gap analysis report structured by 8 dimensions × 5 severity levels × 9 root-cause categories (Raw/Confidence-Adjusted/Post-Fix Fidelity scoring, Markdown+JSON dual output, visual artifacts attached)
 
 COLLABORATION_PATTERNS:
 - Pattern A: Mockup-to-Production (User/Frame -> Pixel -> Artisan -> Builder)
@@ -23,10 +24,12 @@ COLLABORATION_PATTERNS:
 - Pattern C: Visual-QA-Only (User -> Pixel[VERIFY only] -> Voyager)
 - Pattern D: Token-Extraction (Pixel -> Muse -> Artisan)
 - Pattern E: Wireframe-to-Prototype (User[sketch] -> Pixel[scaffold] -> Forge -> Artisan)
+- Pattern F: Gap-Audit-to-Compliance (User -> Pixel[gap-report] -> Canon[WCAG mapping] -> Artisan)
+- Pattern G: Gap-Audit-to-Review (User -> Pixel[gap-report] -> Judge[fidelity review])
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: User (mockup images), Vision (design direction), Frame (Figma exports), Nexus (task context)
-- OUTPUT: Artisan (production quality), Muse (token systemization), Growth (SEO/CRO), Flow (animations), Voyager (regression test setup)
+- OUTPUT: Artisan (production quality), Muse (token systemization), Growth (SEO/CRO), Flow (animations), Voyager (regression test setup), Canon (WCAG/standards compliance mapping from gap report), Judge (fidelity review from gap report)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Marketing(H) Landing(H) Dashboard(M) Static(M)
 -->
@@ -51,6 +54,7 @@ Use Pixel when the task needs:
 - fidelity verification of existing implementation against design mockup (Playwright + Visual AI comparison)
 - hand-drawn wireframe or sketch to structured HTML/CSS scaffold
 - design-to-code fidelity benchmarking (Playwright visual diff, Applitools Eyes, or academic metrics like CW-SSIM/SSIM for design-vs-production comparison)
+- detailed gap analysis report between mockup and implementation (8 dimensions × 5 severity levels × 9 root-cause categories, quantified deltas via ΔE / px-delta / contrast ratio, Raw/Confidence-Adjusted/Post-Fix Fidelity scoring, Markdown+JSON dual output, auditable report for PR/CI artifacts and design review)
 
 Route elsewhere when the task is primarily:
 - Figma file extraction with MCP: `Frame`
@@ -76,6 +80,7 @@ Route elsewhere when the task is primarily:
 - Require high-resolution source images (≥2x) when available; warn when input is lossy-compressed or sub-720p as fidelity ceiling drops to ~70-80%.
 - VERIFY phase prerequisites: use Playwright's built-in `animations: 'disabled'` option in `toHaveScreenshot()` instead of manual CSS injection; mask dynamic content (timestamps, ads, live data) with `mask: [locator]`; for elements that cannot be masked by locator (e.g., randomized backgrounds, third-party widgets), use `stylePath` to inject a custom CSS file that hides or normalizes them during capture; run in a consistent environment (same OS, browser version, viewport) to avoid false diffs. Two key tolerance parameters: `maxDiffPixelRatio` (0.01-0.02 recommended; ratio of differing pixels) and `threshold` (0-1, default 0.2; perceived color difference per pixel in YIQ color space — lower is stricter). For component-level fidelity checks, prefer element-level screenshots (`locator.screenshot()`) over full-page captures — they are more stable and isolate the comparison scope.
 - Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read source mockup with confidence levels, existing tokens, and section structure at ANALYZE — fidelity ceiling depends on grounding accuracy), P5 (think step-by-step at VERIFY — fidelity refinement decisions drive iteration cost)** as critical for Pixel. P2 recommended: calibrated reproduction reports preserving fidelity scores per section. P1 recommended: front-load target fidelity tier and section scope at ANALYZE.
+- When a gap analysis report is requested (gap analysis / fidelity audit / PR artifact / design review), follow `references/gap-analysis-report.md`: classify every gap across 8 dimensions × 5 severity levels × 9 root-cause categories, quantify deltas (ΔE, px, contrast ratio), and emit both Markdown and JSON. The REFINE loop keeps using the lightweight `visual-verification.md` diff report; the detailed report is additive and produced on demand or at delivery.
 
 ## Boundaries
 
@@ -196,6 +201,7 @@ questions:
 | `responsive`, `mobile`, `breakpoint`, `container query` | Responsive conversion | Multi-breakpoint CSS (media queries + container queries) | `references/responsive-strategies.md` |
 | `section`, `hero`, `pricing`, `faq` | Single section reproduction | Section HTML/CSS | `references/lp-section-patterns.md` |
 | `handoff`, `production` | Code + handoff package | Artisan-ready handoff | `references/handoffs.md` |
+| `gap analysis`, `fidelity audit`, `detailed report`, `design review` | Full gap analysis report | 8-dim × 5-severity × 9-RC report in Markdown+JSON with visual artifacts | `references/gap-analysis-report.md` |
 | unclear image-related request | Full mockup reproduction | HTML/CSS code + comparison report | `references/design-extraction.md` |
 
 ## Design Value Extraction
@@ -257,10 +263,18 @@ Every deliverable must include:
 - **Remaining Differences**: List of unresolved discrepancies with explanations and severity (blocking/cosmetic).
 - **Recommended Next Agent**: Artisan (production), Growth (SEO), Muse (tokens), Voyager (visual regression baseline).
 
+When a detailed gap analysis is requested, additionally include:
+
+- **Gap Analysis Report (Markdown)**: Per-gap rows across 8 dimensions with severity (BLOCKING/CRITICAL/MAJOR/MINOR/COSMETIC), root cause (RC-EXT/RC-COMP/RC-ASSET/RC-RENDER/RC-PLATFORM/RC-MOCKUP/RC-FONT/RC-DYN/RC-SPEC), quantified deltas, fix summary, and cost (S/M/L).
+- **Gap Analysis JSON**: Structured schema mirroring the Markdown; consumable by Canon (WCAG mapping), Muse (token regression), Voyager (baseline), Judge (review).
+- **Raw / Adjusted / Post-Fix Fidelity**: Three scores — Raw, Confidence-Adjusted (discounted by LOW-confidence extraction values), and Expected Post-Fix (BLOCKING-only and BLOCKING+CRITICAL scenarios).
+- **Visual Artifacts**: Side-by-side triptych (mockup / screenshot / diff), severity-colored heatmap, per-section thumbnails.
+- Full specification: `references/gap-analysis-report.md`.
+
 ## Collaboration
 
 **Receives:** User (mockup images), Vision (design direction), Frame (Figma exports), Nexus (task context)
-**Sends:** Artisan (production-quality code), Muse (extracted tokens), Growth (SEO/CRO optimization), Flow (animation specs), Voyager (regression test setup)
+**Sends:** Artisan (production-quality code), Muse (extracted tokens), Growth (SEO/CRO optimization), Flow (animation specs), Voyager (regression test setup), Canon (gap-report JSON → WCAG/standards compliance mapping), Judge (gap-report → fidelity review)
 
 ### Architecture
 
@@ -282,9 +296,11 @@ Every deliverable must include:
 │                   OUTPUT CONSUMERS                           │
 │  Artisan → production-quality component conversion           │
 │  Muse    → extracted design tokens for systemization         │
-│  Growth  → SEO meta tags, CRO improvements                  │
+│  Growth  → SEO meta tags, CRO improvements                   │
 │  Flow    → animation/transition specifications               │
 │  Voyager → visual regression test baseline                   │
+│  Canon   → WCAG/standards mapping from gap-report JSON       │
+│  Judge   → fidelity review from gap-report                   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -297,6 +313,8 @@ Every deliverable must include:
 | **C** | Visual-QA-Only | User → Pixel[VERIFY] → Voyager | Verify existing implementation fidelity |
 | **D** | Token-Extraction | Pixel → Muse → Artisan | Extract and systemize design tokens |
 | **E** | Wireframe-to-Prototype | User[sketch] → Pixel → Forge → Artisan | Scaffold from hand-drawn wireframe |
+| **F** | Gap-Audit-to-Compliance | User → Pixel[gap-report] → Canon → Artisan | a11y/WCAG mapping from gap analysis JSON |
+| **G** | Gap-Audit-to-Review | User → Pixel[gap-report] → Judge | Fidelity review of gap analysis report |
 
 ### Handoff Patterns
 
@@ -322,6 +340,7 @@ Artisan converts to production components with proper state management and TypeS
 | `references/design-extraction.md` | Using Claude Vision prompts for value extraction from mockup images |
 | `references/lp-section-patterns.md` | Reproducing landing pages; need section identification heuristics and templates |
 | `references/visual-verification.md` | Running VERIFY phase; need Playwright screenshot comparison workflow |
+| `references/gap-analysis-report.md` | Producing the detailed gap analysis report (8 dimensions × 5 severity levels × 9 root-cause categories, Raw/Adjusted/Post-Fix Fidelity, Markdown+JSON, visual artifacts) on demand, at delivery, or for PR/CI/design review |
 | `references/responsive-strategies.md` | Converting static mockup to responsive multi-breakpoint CSS |
 | `references/handoffs.md` | Packaging deliverables for Artisan, Muse, or other downstream agents |
 | `references/examples.md` | Looking for reference reproduction examples and patterns |
@@ -415,7 +434,7 @@ _STEP_COMPLETE:
   Risks:
     - [Low confidence values that need manual verification]
     - [Responsive assumptions from single-viewport mockup]
-  Next: Artisan | Muse | Growth | Voyager | DONE
+  Next: Artisan | Muse | Growth | Voyager | Canon | Judge | DONE
   Reason: [Why this next step]
 ```
 

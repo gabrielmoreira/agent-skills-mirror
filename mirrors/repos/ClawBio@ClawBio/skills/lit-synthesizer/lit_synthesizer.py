@@ -334,15 +334,34 @@ def generate_report(query: str, papers: list[dict], graph: dict, output_dir: Pat
                 "url":     p["url"],
             })
 
+
     # ── reproducibility bundle ──
     commands = f"""#!/usr/bin/env bash
-# ClawBio Lit Synthesizer — reproducibility bundle
+# ClawBio Lit Synthesizer — portable reproducibility bundle
 # Generated: {now}
 # Query: {query}
+#
+# How to replay:
+#   bash reproducibility/commands.sh
+# from anywhere inside the repository clone.
 
-python skills/lit-synthesizer/lit_synthesizer.py \\
+set -euo pipefail
+
+# ── Locate repo root ──────────────────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${{BASH_SOURCE[0]}}")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
+while [[ ! -d "$REPO_ROOT/skills" && "$REPO_ROOT" != "/" ]]; do
+  REPO_ROOT="$(dirname "$REPO_ROOT")"
+done
+if [[ ! -d "$REPO_ROOT/skills" ]]; then
+  echo "ERROR: Could not locate repo root (no skills/ directory found)" >&2
+  exit 1
+fi
+
+# ── Replay command ────────────────────────────────────────────────────────────
+python "$REPO_ROOT/skills/lit-synthesizer/lit_synthesizer.py" \\
     --query "{query}" \\
-    --output "{output_dir}"
+    --output "./report"
 """
     (output_dir / "reproducibility" / "commands.sh").write_text(commands)
 

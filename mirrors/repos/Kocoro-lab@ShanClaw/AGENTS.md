@@ -134,7 +134,7 @@ internal/
 ## Key Conventions
 
 ### Kocoro Skill Co-Maintenance
-The `kocoro` bundled skill (`internal/skills/bundled/skills/kocoro/`) is a platform configuration assistant. Its SKILL.md and reference files (`references/*.md`) describe daemon API endpoints, config fields, and workflows. When daemon APIs, config schema, permission model, or safety gates change, update the corresponding kocoro reference file in the same PR. See CLAUDE.md for the full mapping.
+The `kocoro` bundled skill (`internal/skills/bundled/skills/kocoro/`) is a platform configuration assistant. Its SKILL.md and reference files (`references/*.md`) describe daemon API endpoints, config fields, and workflows. Kocoro is the AI's only source of truth for ShanClaw's HTTP surface — missing docs cause it to hallucinate workarounds. **Adding a new endpoint or feature counts as a trigger, not only modifying existing ones**; any `mux.HandleFunc(...)` in `internal/daemon/server.go` must have a matching reference entry. See CLAUDE.md for the full mapping.
 
 ### Agent Names
 

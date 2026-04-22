@@ -70,6 +70,7 @@
 - [概览](#概览)
 - [这版新增了什么](#这版新增了什么)
 - [快速开始](#快速开始)
+- [新手详细指南](#新手详细指南)
 - [消息通道](#消息通道)
 - [示例演示](#示例演示)
 - [系统架构](#系统架构)
@@ -108,6 +109,17 @@ BioClaw 将常见的生物信息学任务带到聊天界面中。研究者可以
 - **OpenRouter 可以先做健康检查**：新增 `npm run check:openrouter`，会用当前 `.env` 发一个最小请求，先确认 key 能不能真正调模型。
 
 ## 快速开始
+
+如果你对 Docker、`.env`、workspace、allowlist、挂载这些概念还不熟，建议先看这份分步骤文档：
+
+- **[docs/BEGINNER_GUIDE.zh-CN.md](docs/BEGINNER_GUIDE.zh-CN.md)**  
+  面向刚入门用户，包含 API/provider 切换、workspace 是什么、什么时候需要 allowlist、如何配置额外挂载、如何验证是否生效。
+
+## 新手详细指南
+
+零基础上手建议直接从这里开始：
+
+- **[docs/BEGINNER_GUIDE.zh-CN.md](docs/BEGINNER_GUIDE.zh-CN.md)**
 
 ### 环境要求
 

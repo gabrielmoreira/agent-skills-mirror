@@ -102,6 +102,20 @@ lab job download JOB_ID --file "*.csv" -o ./results
 
 ## Creating Tasks
 
+### Scaffold a new task with `lab task init`
+
+**When the user asks to create, initialize, or start a new task, always use `lab task init`** rather than writing `task.yaml` / `main.py` by hand. It scaffolds both files with sensible defaults in the current directory so the user has a working starting point.
+
+```bash
+mkdir my-task && cd my-task
+lab task init            # writes task.yaml + main.py with defaults (skips existing files)
+lab task init --interactive   # prompts for name, CPUs, memory, setup, and run command
+```
+
+- Default mode is non-interactive. It creates `task.yaml` (with `name`, `resources: {cpus: 2, memory: 4}`, and `run: python main.py`) and a starter `main.py`. Existing files are skipped, not overwritten.
+- `--interactive` writes only `task.yaml` (no `main.py`) and prompts for each field. In this mode `task.yaml` will prompt before overwrite.
+- After init, edit `main.py`, customize `task.yaml`, then run `lab task add .` to upload it.
+
 ### task.yaml Structure
 
 Full docs: https://lab.cloud/for-teams/running-a-task/task-yaml-structure
@@ -291,6 +305,7 @@ This applies to launching jobs, fetching logs, checking cluster status, and ever
 | `lab version` | Show CLI version | No |
 | `lab task list` | List tasks in current experiment | Yes |
 | `lab task info <id>` | Get task details | Yes |
+| `lab task init` | Scaffold `task.yaml` + `main.py` in the current directory (`--interactive` to prompt) | No |
 | `lab task add [dir]` | Add task from directory or `--from-git` URL (`--no-interactive`, `--dry-run`) | Yes |
 | `lab task delete <id>` | Delete a task (`--no-interactive` to skip confirmation) | Yes |
 | `lab task queue <id>` | Queue task on compute provider | Yes |

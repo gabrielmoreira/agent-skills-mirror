@@ -1,6 +1,6 @@
 {
   "name": "hermes-attestation-guardian",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Hermes-only runtime security attestation and drift detection skill. Generates deterministic posture artifacts, verifies integrity fail-closed, and classifies baseline drift severity.",
   "author": "prompt-security",
   "license": "AGPL-3.0-or-later",
@@ -42,6 +42,11 @@
         "description": "Baseline comparison and severity classification"
       },
       {
+        "path": "lib/feed.mjs",
+        "required": true,
+        "description": "Hermes-native advisory feed verification and state helpers"
+      },
+      {
         "path": "scripts/generate_attestation.mjs",
         "required": true,
         "description": "Generate deterministic Hermes posture attestation artifact"
@@ -52,9 +57,29 @@
         "description": "Verify attestation schema, digest and optional detached signature"
       },
       {
+        "path": "scripts/refresh_advisory_feed.mjs",
+        "required": true,
+        "description": "Fetch, verify, and persist Hermes advisory feed verification state"
+      },
+      {
+        "path": "scripts/check_advisories.mjs",
+        "required": true,
+        "description": "Display human-readable advisory verification/feed summary"
+      },
+      {
+        "path": "scripts/guarded_skill_verify.mjs",
+        "required": true,
+        "description": "Advisory-aware guarded skill verification gate with explicit confirmation override"
+      },
+      {
         "path": "scripts/setup_attestation_cron.mjs",
         "required": true,
         "description": "Optional recurring schedule setup for Hermes attestation runs"
+      },
+      {
+        "path": "scripts/setup_advisory_check_cron.mjs",
+        "required": true,
+        "description": "Optional recurring schedule setup for Hermes guarded advisory checks"
       },
       {
         "path": "test/attestation_schema.test.mjs",
@@ -75,6 +100,26 @@
         "path": "test/setup_attestation_cron.test.mjs",
         "required": false,
         "description": "Hermes-only cron setup tests"
+      },
+      {
+        "path": "test/setup_advisory_check_cron.test.mjs",
+        "required": false,
+        "description": "Hermes-only guarded advisory cron setup tests"
+      },
+      {
+        "path": "test/feed_verification.test.mjs",
+        "required": false,
+        "description": "Advisory feed signature/checksum verification behavior tests"
+      },
+      {
+        "path": "test/guarded_skill_verify.test.mjs",
+        "required": false,
+        "description": "Advisory-aware guarded verification gate behavior tests"
+      },
+      {
+        "path": "test/hermes_attestation_sandbox_regression.sh",
+        "required": false,
+        "description": "Sandboxed end-to-end regression harness for install and verification paths"
       }
     ]
   },
@@ -94,25 +139,44 @@
         "HERMES_ATTESTATION_BASELINE",
         "HERMES_ATTESTATION_INTERVAL",
         "HERMES_ATTESTATION_FAIL_ON_SEVERITY",
-        "HERMES_ATTESTATION_POLICY"
+        "HERMES_ATTESTATION_POLICY",
+        "HERMES_ADVISORY_FEED_SOURCE",
+        "HERMES_ADVISORY_FEED_URL",
+        "HERMES_ADVISORY_FEED_SIG_URL",
+        "HERMES_ADVISORY_FEED_CHECKSUMS_URL",
+        "HERMES_ADVISORY_FEED_CHECKSUMS_SIG_URL",
+        "HERMES_LOCAL_ADVISORY_FEED",
+        "HERMES_LOCAL_ADVISORY_FEED_SIG",
+        "HERMES_LOCAL_ADVISORY_FEED_CHECKSUMS",
+        "HERMES_LOCAL_ADVISORY_FEED_CHECKSUMS_SIG",
+        "HERMES_ADVISORY_FEED_PUBLIC_KEY",
+        "HERMES_ADVISORY_ALLOW_UNSIGNED_FEED",
+        "HERMES_ADVISORY_VERIFY_CHECKSUM_MANIFEST",
+        "HERMES_ADVISORY_FEED_STATE_PATH",
+        "HERMES_ADVISORY_CACHED_FEED"
       ]
     },
     "execution": {
       "always": false,
       "persistence": "Runs on demand by default. Optional scheduler helper can install a managed schedule block when run with --apply.",
-      "network_egress": "None"
+      "network_egress": "Optional HTTPS advisory feed fetch via refresh_advisory_feed.mjs; no network required for local-mode verification"
     },
     "operator_review": [
       "Hermes-only skill: unsupported for OpenClaw runtime hooks.",
       "Verify watch/trust-anchor policy paths before scheduling recurring runs.",
-      "Verification fails closed for schema/digest/signature errors and unauthenticated baseline inputs; diff threshold defaults to critical."
+      "Verification fails closed for schema/digest/signature errors and unauthenticated baseline inputs; diff threshold defaults to critical.",
+      "Advisory feed verification is fail-closed by default; unsigned bypass must remain temporary and operator-audited."
     ],
     "triggers": [
       "generate hermes attestation",
       "verify hermes attestation",
       "hermes runtime drift detection",
       "hermes trust anchor drift",
-      "setup hermes attestation cron"
+      "refresh hermes advisory feed",
+      "check hermes advisories",
+      "guarded hermes skill verification",
+      "setup hermes attestation cron",
+      "setup hermes advisory check cron"
     ]
   }
 }

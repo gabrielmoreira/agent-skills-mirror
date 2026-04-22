@@ -75,6 +75,7 @@ Built on the [NanoClaw](https://github.com/qwibitai/nanoclaw) architecture with 
 - [Overview](#overview)
 - [What's New](#whats-new)
 - [Quick Start](#quick-start)
+- [Beginner Guide](#beginner-guide)
 - [Messaging channels](#messaging-channels)
 - [Demo Examples](#demo-examples)
 - [System Architecture](#system-architecture)
@@ -114,6 +115,17 @@ Recent updates make BioClaw feel much closer to a real multi-chat research works
 - **Quick OpenRouter health check** — `npm run check:openrouter` sends a tiny test request using your current `.env` so you can tell whether the key works before debugging the full app.
 
 ## Quick Start
+
+If you're not yet comfortable with Docker, `.env`, workspaces, allowlists, or mounts, start here instead:
+
+- **[docs/BEGINNER_GUIDE.md](docs/BEGINNER_GUIDE.md)**
+  A step-by-step onboarding doc covering API/provider switching, what a workspace is, when you need an allowlist, how to configure extra mounts, and how to verify the results.
+
+## Beginner Guide
+
+Zero-to-first-analysis walkthrough for non-technical users:
+
+- **[docs/BEGINNER_GUIDE.md](docs/BEGINNER_GUIDE.md)**
 
 ### Prerequisites
 

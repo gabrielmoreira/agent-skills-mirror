@@ -88,7 +88,9 @@ Phase 6: Results Presentation
 
 Run `sh install.sh --check-only` (or check `command -v ptengine-cli`):
 - **READY**: Proceed to parameter collection
-- **NEEDS_CONFIG**: Ask user for API Key and Profile ID, then:
+- **NEEDS_CONFIG**: Ask the user for API Key and Profile ID. If the user
+  does not have an API Key, walk them through the 6-step product-UI flow
+  in `references/ptengine-cli.md` § "Obtaining an API Key". Then run:
   `ptengine-cli config set --api-key <KEY> --profile-id <ID>`
 - **NOT_INSTALLED**: Run `sh install.sh`, then configure
 

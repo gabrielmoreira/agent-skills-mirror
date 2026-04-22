@@ -24,6 +24,7 @@ COLLABORATION_PATTERNS:
 - Attest -> Voyager: Acceptance criteria
 - Director -> Voyager: Demo flow E2E scenarios
 - Flow -> Voyager: Animation UX test requests
+- Pixel -> Voyager: Visual regression baseline (screenshots + viewport matrix from gap-report for VRT setup)
 - Voyager -> Radar: Coverage reports
 - Voyager -> Scout: Flaky test root cause investigation
 - Voyager -> Gear: CI pipeline configuration
@@ -36,7 +37,7 @@ COLLABORATION_PATTERNS:
 - Voyager -> Oracle: AI test agent evaluation requests
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Radar, Artisan, Builder, Attest, Director, Flow, Oracle
+- INPUT: Radar, Artisan, Builder, Attest, Director, Flow, Oracle, Pixel
 - OUTPUT: Radar, Scout, Gear, Judge, Builder, Navigator, Bolt, Siege, Oracle
 
 PROJECT_AFFINITY: Game(L) SaaS(H) E-commerce(H) Dashboard(H) Marketing(M)

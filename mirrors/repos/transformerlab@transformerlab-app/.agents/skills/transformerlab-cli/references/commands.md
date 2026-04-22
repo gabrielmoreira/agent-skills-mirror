@@ -98,6 +98,17 @@ Get details for a specific task.
 {"id": 1, "name": "my-task", "type": "TRAINING", "config": {...}, ...}
 ```
 
+### `task init`
+
+Scaffold a new task in the current directory. **Prefer this over writing `task.yaml` by hand.** Does not require an experiment to be set.
+
+| Option | Description |
+|---|---|
+| (default, no flag) | Non-interactive. Creates `task.yaml` with defaults (`name` = folder name, `cpus: 2`, `memory: 4`, `run: python main.py`) and a starter `main.py`. Existing files are skipped, not overwritten. |
+| `--interactive` | Prompts for task name, CPUs, memory, accelerators, setup, and run command. Writes only `task.yaml` (no `main.py`). Prompts before overwriting an existing `task.yaml`. |
+
+**JSON output (default):** `{"created": ["task.yaml", "main.py"], "skipped": [], "path": "/abs/dir"}`
+
 ### `task add [directory]`
 
 Add a new task from a local directory containing `task.yaml`, or from a Git repository.
