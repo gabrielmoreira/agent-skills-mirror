@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 31 file(s) materialized.
+Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 31 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,32 +64,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`mcp/requirements.txt`](mcp/requirements.txt) |
 | 4 | ✓ | [`mcp/server.py`](mcp/server.py) |
 | 5 | ✓ | [`skills/accessibility/skill.md`](skills/accessibility/skill.md) |
-| 6 | ✓ | [`skills/ai-engineer/skill.md`](skills/ai-engineer/skill.md) |
-| 7 | ✓ | [`skills/api-design/skill.md`](skills/api-design/skill.md) |
-| 8 | ✓ | [`skills/azure/skill.md`](skills/azure/skill.md) |
-| 9 | ✓ | [`skills/ci-cd/skill.md`](skills/ci-cd/skill.md) |
-| 10 | ✓ | [`skills/claude-api/skill.md`](skills/claude-api/skill.md) |
-| 11 | ✓ | [`skills/coding-standards/skill.md`](skills/coding-standards/skill.md) |
-| 12 | ✓ | [`skills/complex-doc-rag/skill.md`](skills/complex-doc-rag/skill.md) |
-| 13 | ✓ | [`skills/containerization/skill.md`](skills/containerization/skill.md) |
-| 14 | ✓ | [`skills/database-design/skill.md`](skills/database-design/skill.md) |
-| 15 | ✓ | [`skills/deployment-strategies/skill.md`](skills/deployment-strategies/skill.md) |
-| 16 | ✓ | [`skills/development-workflow/skill.md`](skills/development-workflow/skill.md) |
-| 17 | ✓ | [`skills/incident-response/skill.md`](skills/incident-response/skill.md) |
-| 18 | ✓ | [`skills/infrastructure-as-code/skill.md`](skills/infrastructure-as-code/skill.md) |
-| 19 | ✓ | [`skills/integration-testing/skill.md`](skills/integration-testing/skill.md) |
-| 20 | ✓ | [`skills/microservices/skill.md`](skills/microservices/skill.md) |
-| 21 | ✓ | [`skills/observability/skill.md`](skills/observability/skill.md) |
-| 22 | ✓ | [`skills/performance-testing/skill.md`](skills/performance-testing/skill.md) |
-| 23 | ✓ | [`skills/performance/skill.md`](skills/performance/skill.md) |
-| 24 | ✓ | [`skills/requirements-planning/skill.md`](skills/requirements-planning/skill.md) |
-| 25 | ✓ | [`skills/security/skill.md`](skills/security/skill.md) |
-| 26 | ✓ | [`skills/solution-testing/skill.md`](skills/solution-testing/skill.md) |
-| 27 | ✓ | [`skills/system-design/skill.md`](skills/system-design/skill.md) |
-| 28 | ✓ | [`skills/technical-documentation/skill.md`](skills/technical-documentation/skill.md) |
-| 29 | ✓ | [`skills/test-strategy/skill.md`](skills/test-strategy/skill.md) |
-| 30 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
-| 31 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | ✓ | [`skills/agentex/agentex.md`](skills/agentex/agentex.md) |
+| 7 | ✓ | [`skills/ai-engineer/skill.md`](skills/ai-engineer/skill.md) |
+| 8 | ✓ | [`skills/api-design/skill.md`](skills/api-design/skill.md) |
+| 9 | ✓ | [`skills/aws/skill.md`](skills/aws/skill.md) |
+| 10 | ✓ | [`skills/azure-service-bus/skill.md`](skills/azure-service-bus/skill.md) |
+| 11 | ✓ | [`skills/azure/skill.md`](skills/azure/skill.md) |
+| 12 | ✓ | [`skills/caching/skill.md`](skills/caching/skill.md) |
+| 13 | ✓ | [`skills/ci-cd/skill.md`](skills/ci-cd/skill.md) |
+| 14 | ✓ | [`skills/claude-api/skill.md`](skills/claude-api/skill.md) |
+| 15 | ✓ | [`skills/claude-code/skill.md`](skills/claude-code/skill.md) |
+| 16 | ✓ | [`skills/coding-standards/skill.md`](skills/coding-standards/skill.md) |
+| 17 | ✓ | [`skills/complex-doc-rag/skill.md`](skills/complex-doc-rag/skill.md) |
+| 18 | ✓ | [`skills/containerization/skill.md`](skills/containerization/skill.md) |
+| 19 | ✓ | [`skills/database-design/skill.md`](skills/database-design/skill.md) |
+| 20 | ✓ | [`skills/deployment-strategies/skill.md`](skills/deployment-strategies/skill.md) |
+| 21 | ✓ | [`skills/development-workflow/skill.md`](skills/development-workflow/skill.md) |
+| 22 | ✓ | [`skills/event-driven/skill.md`](skills/event-driven/skill.md) |
+| 23 | ✓ | [`skills/frontend/skill.md`](skills/frontend/skill.md) |
+| 24 | ✓ | [`skills/incident-response/skill.md`](skills/incident-response/skill.md) |
+| 25 | ✓ | [`skills/infrastructure-as-code/skill.md`](skills/infrastructure-as-code/skill.md) |
+| 26 | ✓ | [`skills/integration-testing/skill.md`](skills/integration-testing/skill.md) |
+| 27 | ✓ | [`skills/microservices/skill.md`](skills/microservices/skill.md) |
+| 28 | ✓ | [`skills/observability/skill.md`](skills/observability/skill.md) |
+| 29 | ✓ | [`skills/performance-testing/skill.md`](skills/performance-testing/skill.md) |
+| 30 | ✓ | [`skills/performance/skill.md`](skills/performance/skill.md) |
+| 31 | ✓ | [`skills/requirements-planning/skill.md`](skills/requirements-planning/skill.md) |
+| 32 | ✓ | [`skills/security/skill.md`](skills/security/skill.md) |
+| 33 | ✓ | [`skills/solution-testing/skill.md`](skills/solution-testing/skill.md) |
+| 34 | ✓ | [`skills/system-design/skill.md`](skills/system-design/skill.md) |
+| 35 | ✓ | [`skills/technical-documentation/skill.md`](skills/technical-documentation/skill.md) |
+| 36 | ✓ | [`skills/test-strategy/skill.md`](skills/test-strategy/skill.md) |
+| 37 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
+| 38 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

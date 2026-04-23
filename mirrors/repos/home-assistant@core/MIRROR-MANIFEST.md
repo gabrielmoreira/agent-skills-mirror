@@ -60,9 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/github-pr-reviewer/SKILL.md`](.claude/skills/github-pr-reviewer/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/integrations/platform-diagnostics.md`](.claude/skills/integrations/platform-diagnostics.md) |
-| 3 | ✓ | [`.claude/skills/integrations/platform-repairs.md`](.claude/skills/integrations/platform-repairs.md) |
-| 4 | ✓ | [`.claude/skills/integrations/SKILL.md`](.claude/skills/integrations/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-diagnostics.md`](.claude/skills/ha-integration-knowledge/platform-diagnostics.md) |
+| 3 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
+| 4 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
 | 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `npc-live/clawfirm` — 26 default patterns, 0 followed patterns, 82 file(s) materialized.
+Mirror of `npc-live/clawfirm` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `npc-live/clawfirm` — 26 default patterns, 0 followed patterns, 82 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 82 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,27 +120,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`app/assets/skills/agent-browser/SKILL.md`](app/assets/skills/agent-browser/SKILL.md) |
 | 60 | ✓ | [`app/assets/skills/kling/SKILL.md`](app/assets/skills/kling/SKILL.md) |
 | 61 | ✓ | [`app/assets/skills/remotion-video/SKILL.md`](app/assets/skills/remotion-video/SKILL.md) |
-| 62 | ✓ | [`app/assets/skills/skill-index/SKILL.md`](app/assets/skills/skill-index/SKILL.md) |
-| 63 | ✓ | [`app/assets/skills/social-cli/SKILL.md`](app/assets/skills/social-cli/SKILL.md) |
-| 64 | ✓ | [`app/assets/skills/social-publish/bilibili/SKILL.md`](app/assets/skills/social-publish/bilibili/SKILL.md) |
-| 65 | ✓ | [`app/assets/skills/social-publish/binance-square/SKILL.md`](app/assets/skills/social-publish/binance-square/SKILL.md) |
-| 66 | ✓ | [`app/assets/skills/social-publish/copywriting-base/SKILL.md`](app/assets/skills/social-publish/copywriting-base/SKILL.md) |
-| 67 | ✓ | [`app/assets/skills/social-publish/douyin/SKILL.md`](app/assets/skills/social-publish/douyin/SKILL.md) |
-| 68 | ✓ | [`app/assets/skills/social-publish/twitter/SKILL.md`](app/assets/skills/social-publish/twitter/SKILL.md) |
-| 69 | ✓ | [`app/assets/skills/social-publish/xiaohongshu/SKILL.md`](app/assets/skills/social-publish/xiaohongshu/SKILL.md) |
-| 70 | ✓ | [`app/assets/skills/social-publish/youtube/SKILL.md`](app/assets/skills/social-publish/youtube/SKILL.md) |
-| 71 | ✓ | [`app/assets/skills/video-skills/cover-gen/SKILL.md`](app/assets/skills/video-skills/cover-gen/SKILL.md) |
-| 72 | ✓ | [`app/assets/skills/video-skills/digital-avatar/SKILL.md`](app/assets/skills/video-skills/digital-avatar/SKILL.md) |
-| 73 | ✓ | [`app/assets/skills/video-skills/scene-video-generator/SKILL.md`](app/assets/skills/video-skills/scene-video-generator/SKILL.md) |
-| 74 | ✓ | [`app/assets/skills/video-skills/video-script-generator/SKILL.md`](app/assets/skills/video-skills/video-script-generator/SKILL.md) |
-| 75 | ✓ | [`app/assets/skills/video-skills/video-stitcher/SKILL.md`](app/assets/skills/video-skills/video-stitcher/SKILL.md) |
-| 76 | ✓ | [`app/assets/skills/video-skills/voice-clone-tts/SKILL.md`](app/assets/skills/video-skills/voice-clone-tts/SKILL.md) |
-| 77 | ✓ | [`app/assets/skills/whipflow/SKILL.md`](app/assets/skills/whipflow/SKILL.md) |
-| 78 | ✓ | [`cmd/clawfirm/SKILL.md`](cmd/clawfirm/SKILL.md) |
-| 79 | ✓ | [`cmd/whip/SKILL.md`](cmd/whip/SKILL.md) |
-| 80 | ✓ | [`skill/format_test.go`](skill/format_test.go) |
-| 81 | ✓ | [`skill/format.go`](skill/format.go) |
-| 82 | ✓ | [`skill/skill.go`](skill/skill.go) |
+| 62 | ✓ | [`app/assets/skills/repo-classify/SKILL.md`](app/assets/skills/repo-classify/SKILL.md) |
+| 63 | ✓ | [`app/assets/skills/skill-index/SKILL.md`](app/assets/skills/skill-index/SKILL.md) |
+| 64 | ✓ | [`app/assets/skills/social-cli/SKILL.md`](app/assets/skills/social-cli/SKILL.md) |
+| 65 | ✓ | [`app/assets/skills/social-publish/bilibili/SKILL.md`](app/assets/skills/social-publish/bilibili/SKILL.md) |
+| 66 | ✓ | [`app/assets/skills/social-publish/binance-square/SKILL.md`](app/assets/skills/social-publish/binance-square/SKILL.md) |
+| 67 | ✓ | [`app/assets/skills/social-publish/copywriting-base/SKILL.md`](app/assets/skills/social-publish/copywriting-base/SKILL.md) |
+| 68 | ✓ | [`app/assets/skills/social-publish/douyin/SKILL.md`](app/assets/skills/social-publish/douyin/SKILL.md) |
+| 69 | ✓ | [`app/assets/skills/social-publish/tiktok/SKILL.md`](app/assets/skills/social-publish/tiktok/SKILL.md) |
+| 70 | ✓ | [`app/assets/skills/social-publish/twitter/SKILL.md`](app/assets/skills/social-publish/twitter/SKILL.md) |
+| 71 | ✓ | [`app/assets/skills/social-publish/xiaohongshu/SKILL.md`](app/assets/skills/social-publish/xiaohongshu/SKILL.md) |
+| 72 | ✓ | [`app/assets/skills/social-publish/youtube/SKILL.md`](app/assets/skills/social-publish/youtube/SKILL.md) |
+| 73 | ✓ | [`app/assets/skills/video-skills/cover-gen/SKILL.md`](app/assets/skills/video-skills/cover-gen/SKILL.md) |
+| 74 | ✓ | [`app/assets/skills/video-skills/digital-avatar/SKILL.md`](app/assets/skills/video-skills/digital-avatar/SKILL.md) |
+| 75 | ✓ | [`app/assets/skills/video-skills/scene-video-generator/SKILL.md`](app/assets/skills/video-skills/scene-video-generator/SKILL.md) |
+| 76 | ✓ | [`app/assets/skills/video-skills/video-script-generator/SKILL.md`](app/assets/skills/video-skills/video-script-generator/SKILL.md) |
+| 77 | ✓ | [`app/assets/skills/video-skills/video-stitcher/SKILL.md`](app/assets/skills/video-skills/video-stitcher/SKILL.md) |
+| 78 | ✓ | [`app/assets/skills/video-skills/voice-clone-tts/SKILL.md`](app/assets/skills/video-skills/voice-clone-tts/SKILL.md) |
+| 79 | ✓ | [`app/assets/skills/whipflow/SKILL.md`](app/assets/skills/whipflow/SKILL.md) |
+| 80 | ✓ | [`cmd/clawfirm/SKILL.md`](cmd/clawfirm/SKILL.md) |
+| 81 | ✓ | [`cmd/whip/SKILL.md`](cmd/whip/SKILL.md) |
+| 82 | ✓ | [`skill/format_test.go`](skill/format_test.go) |
+| 83 | ✓ | [`skill/format.go`](skill/format.go) |
+| 84 | ✓ | [`skill/skill.go`](skill/skill.go) |
 
 ---
 

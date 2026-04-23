@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/awesome-claude-design` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `rohitg00/awesome-claude-design` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/awesome-claude-design` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,9 +63,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`prompts/3-designer-debate.md`](prompts/3-designer-debate.md) |
 | 3 | ✓ | [`prompts/audit-live-site.md`](prompts/audit-live-site.md) |
 | 4 | ✓ | [`prompts/brand-to-design-md.md`](prompts/brand-to-design-md.md) |
-| 5 | ✓ | [`prompts/family-picker.md`](prompts/family-picker.md) |
-| 6 | ✓ | [`prompts/README.md`](prompts/README.md) |
-| 7 | ✓ | [`prompts/remix-two-brands.md`](prompts/remix-two-brands.md) |
+| 5 | ✓ | [`prompts/break-default-aesthetic.md`](prompts/break-default-aesthetic.md) |
+| 6 | ✓ | [`prompts/family-picker.md`](prompts/family-picker.md) |
+| 7 | ✓ | [`prompts/README.md`](prompts/README.md) |
+| 8 | ✓ | [`prompts/remix-two-brands.md`](prompts/remix-two-brands.md) |
 
 ---
 

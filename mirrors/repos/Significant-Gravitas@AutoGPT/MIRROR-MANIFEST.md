@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed pat
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,33 +62,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills/open-pr/SKILL.md`](.claude/skills/open-pr/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/orchestrate/SKILL.md`](.claude/skills/orchestrate/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/pr-address/SKILL.md`](.claude/skills/pr-address/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/pr-test/SKILL.md`](.claude/skills/pr-test/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/setup-repo/SKILL.md`](.claude/skills/setup-repo/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/vercel-react-best-practices/AGENTS.md`](.claude/skills/vercel-react-best-practices/AGENTS.md) |
-| 8 | ✓ | [`.claude/skills/vercel-react-best-practices/SKILL.md`](.claude/skills/vercel-react-best-practices/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/worktree/SKILL.md`](.claude/skills/worktree/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/write-frontend-tests/SKILL.md`](.claude/skills/write-frontend-tests/SKILL.md) |
-| 11 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 13 | ✓ | [`autogpt_platform/AGENTS.md`](autogpt_platform/AGENTS.md) |
-| 14 | ✓ | [`autogpt_platform/backend/AGENTS.md`](autogpt_platform/backend/AGENTS.md) |
-| 15 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md`](autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md) |
-| 16 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md`](autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md) |
-| 17 | ✓ | [`autogpt_platform/backend/CLAUDE.md`](autogpt_platform/backend/CLAUDE.md) |
-| 18 | ✓ | [`autogpt_platform/CLAUDE.md`](autogpt_platform/CLAUDE.md) |
-| 19 | ✓ | [`autogpt_platform/frontend/AGENTS.md`](autogpt_platform/frontend/AGENTS.md) |
-| 20 | ✓ | [`autogpt_platform/frontend/CLAUDE.md`](autogpt_platform/frontend/CLAUDE.md) |
-| 21 | ✓ | [`autogpt_platform/frontend/src/tests/AGENTS.md`](autogpt_platform/frontend/src/tests/AGENTS.md) |
-| 22 | ✓ | [`autogpt_platform/frontend/src/tests/CLAUDE.md`](autogpt_platform/frontend/src/tests/CLAUDE.md) |
-| 23 | ✓ | [`classic/CLAUDE.md`](classic/CLAUDE.md) |
-| 24 | ✓ | [`classic/direct_benchmark/CLAUDE.md`](classic/direct_benchmark/CLAUDE.md) |
-| 25 | ✓ | [`classic/forge/CLAUDE.md`](classic/forge/CLAUDE.md) |
-| 26 | ✓ | [`classic/original_autogpt/CLAUDE.md`](classic/original_autogpt/CLAUDE.md) |
-| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 29 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 30 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
+| 4 | ✓ | [`.claude/skills/pr-polish/SKILL.md`](.claude/skills/pr-polish/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/pr-test/SKILL.md`](.claude/skills/pr-test/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/setup-repo/SKILL.md`](.claude/skills/setup-repo/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/vercel-react-best-practices/AGENTS.md`](.claude/skills/vercel-react-best-practices/AGENTS.md) |
+| 9 | ✓ | [`.claude/skills/vercel-react-best-practices/SKILL.md`](.claude/skills/vercel-react-best-practices/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/worktree/SKILL.md`](.claude/skills/worktree/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/write-frontend-tests/SKILL.md`](.claude/skills/write-frontend-tests/SKILL.md) |
+| 12 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 14 | ✓ | [`autogpt_platform/AGENTS.md`](autogpt_platform/AGENTS.md) |
+| 15 | ✓ | [`autogpt_platform/backend/AGENTS.md`](autogpt_platform/backend/AGENTS.md) |
+| 16 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md`](autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md) |
+| 17 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md`](autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md) |
+| 18 | ✓ | [`autogpt_platform/backend/CLAUDE.md`](autogpt_platform/backend/CLAUDE.md) |
+| 19 | ✓ | [`autogpt_platform/CLAUDE.md`](autogpt_platform/CLAUDE.md) |
+| 20 | ✓ | [`autogpt_platform/frontend/AGENTS.md`](autogpt_platform/frontend/AGENTS.md) |
+| 21 | ✓ | [`autogpt_platform/frontend/CLAUDE.md`](autogpt_platform/frontend/CLAUDE.md) |
+| 22 | ✓ | [`autogpt_platform/frontend/src/tests/AGENTS.md`](autogpt_platform/frontend/src/tests/AGENTS.md) |
+| 23 | ✓ | [`autogpt_platform/frontend/src/tests/CLAUDE.md`](autogpt_platform/frontend/src/tests/CLAUDE.md) |
+| 24 | ✓ | [`classic/CLAUDE.md`](classic/CLAUDE.md) |
+| 25 | ✓ | [`classic/direct_benchmark/CLAUDE.md`](classic/direct_benchmark/CLAUDE.md) |
+| 26 | ✓ | [`classic/forge/CLAUDE.md`](classic/forge/CLAUDE.md) |
+| 27 | ✓ | [`classic/original_autogpt/CLAUDE.md`](classic/original_autogpt/CLAUDE.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 30 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 31 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
 
 ---
 

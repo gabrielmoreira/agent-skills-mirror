@@ -2,7 +2,7 @@
 repo: kennedym-ds/copilot_orchestrator
 repoUrl: https://github.com/kennedym-ds/copilot_orchestrator.git
 refType: branch
-ref: main
+ref: enterprise
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `kennedym-ds/copilot_orchestrator` — 26 default patterns, 0 followed
 |---------------|-------|
 | Repo          | `kennedym-ds/copilot_orchestrator` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `enterprise` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 39 |

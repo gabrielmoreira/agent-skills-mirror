@@ -60,7 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`crates/tui/src/v2/bottom_pane/AGENTS.md`](crates/tui/src/v2/bottom_pane/AGENTS.md) |
+| 2 | ✓ | [`crates/tui/src/bottom_pane/AGENTS.md`](crates/tui/src/bottom_pane/AGENTS.md) |
 
 ---
 

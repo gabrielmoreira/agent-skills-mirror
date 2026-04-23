@@ -1,4 +1,4 @@
-﻿# Copilot Orchestrator — Agent Playbook
+# Copilot Orchestrator — Agent Playbook
 
 Multi-agent orchestration for GitHub Copilot. Works in VS Code Chat, Copilot CLI, and the VS Code Agents app.
 
@@ -60,7 +60,7 @@ Complexity scales the ceremony:
 
 ## Model Allocation
 
-All agents use fallback arrays and a `defaultEffort:` hint. VS Code picks the first available model in the array.
+All agents use fallback arrays and a `thinkingEffort:` hint. VS Code picks the first available model in the array.
 
 | Tier | Primary -> Fallback chain | Agents | Typical effort |
 |------|---------------------------|--------|----------------|
@@ -68,11 +68,58 @@ All agents use fallback arrays and a `defaultEffort:` hint. VS Code picks the fi
 | **Execution** | Claude Sonnet 4.6 -> GPT-5.4 -> GPT-5.3-Codex | Conductor, Reviewer, Implementer, Researcher, Ops, Test, IaC, GUI Tester, Translation Conductor, Translator, Translation Analyzer, Translation Validator | low / medium / high |
 | **Fast** | Claude Haiku 4.5 -> GPT-5.4 mini -> GPT-5 mini | Docs, UX, Translation Styler | low / medium |
 
-Security-mode review is pinned to `Claude Opus 4.6` via a prompt-level `model:` override (see `.github/prompts/support/security-review.prompt.md`).
+Security-mode review promotes Claude Opus 4.7 to the top of the fallback chain via a prompt-level override (see `.github/prompts/support/security-review.prompt.md`).
 
 Never pin a single model. Models deprecate monthly.
 
 ---
+
+## Permission & Complexity Tier Matrix
+
+Maps the conductor's complexity tiers to Copilot CLI permission modes and per-agent Autopilot safety. Closes gaps G2 and G33.
+
+| Complexity tier | Conductor path | Copilot CLI permission | Autopilot allowed? | Notes |
+|-----------------|----------------|------------------------|--------------------|-------|
+| INSTANT         | Implementer direct | Bypass Approvals    | Yes (free/pro branches only) | Single-file reads/edits; no multi-phase ceremony |
+| STANDARD        | Implementer + inline plan | Default      | No                 | Human confirms destructive actions |
+| DEEP            | Planner -> Implementer -> Reviewer | Default | No              | Mandatory pause points |
+| ULTRADEEP       | Full cycle + trilateral review | Default     | No                 | Explicit human ratification at every gate |
+| Security review | Reviewer --security | Default               | No                 | Autopilot explicitly disallowed regardless of tier |
+
+### Per-agent Autopilot safety
+
+| Agent class | Agents | Autopilot safe? | Rationale |
+|-------------|--------|-----------------|-----------|
+| Read-only   | researcher, docs, ux, translation-analyzer, translation-styler | Yes | No filesystem mutation in normal operation |
+| Edit-bounded | test, iac, translator, translation-validator | Case-by-case | Safe for trivial test authoring; never for infra apply |
+| State-changing | implementer, ops, translation-conductor, gui-tester | No | Destructive CLI calls, deploys, browser automation |
+| Judgement-critical | conductor, planner, reviewer | No | Autopilot removes the approval step that defines these roles |
+
+### Branch policy
+
+| Branch | Autopilot policy |
+|--------|------------------|
+| free / pro | Autopilot permitted for INSTANT tier only |
+| pro-plus | Autopilot permitted for INSTANT and read-only STANDARD |
+| enterprise | Autopilot permitted (ratified 2026-04-22); security review remains human-confirmed |
+
+---
+
+### Nested Subagent Allow-List
+
+Per [ADR](artifacts/plans/close-all-gaps/phase-2-nested-subagents.md) — the `chat.subagents.allowInvocationsFromSubagents` setting (VS Code March 2026) is enabled for these edges only, with depth capped at 2:
+
+| Parent -> Child | Rationale |
+|-----------------|-----------|
+| implementer -> test | Implementer authors code; test agent adds coverage |
+| implementer -> researcher | Mid-task library question without full conductor relay |
+| reviewer -> researcher | Evidence gathering for a finding |
+| reviewer -> reviewer[security] | Standard review escalates to security mode |
+| planner -> researcher | One more piece of evidence to finalize a phase |
+| translation-conductor -> translator | Per-file dispatch |
+| translation-conductor -> translation-analyzer | Mid-translation dependency analysis |
+
+All other edges relay through the conductor. Explicitly denied: `implementer -> reviewer`, `implementer -> implementer`, `* -> conductor`, `reviewer -> implementer`, `ops -> *`, `gui-tester -> *`. Depth > 2 forces conductor relay. Every nested invocation emits `artifacts/sessions/hooks/nested-call.jsonl` with `{parent, child, depth, purpose, ts}`.
 
 ## Development Commands
 
@@ -99,8 +146,23 @@ Agents load automatically in Copilot CLI sessions (VS Code 1.113+). MCP servers 
 # Start a CLI session with agent context
 copilot chat --agent conductor
 
-# Agents, instructions, and skills are discovered from workspace paths
 ```
+
+### CLI Command Affinity
+
+Agents declare `cli-affinity:` in frontmatter listing Copilot CLI slash commands they prefer when available. Falls back to internal orchestration when the command is absent (pre-1.113 VS Code, non-CLI surfaces).
+
+| Agent | Key commands | Purpose |
+|-------|--------------|---------|
+| conductor | `/fleet`, `/tasks`, `/delegate`, `/compact`, `/model`, `/context`, `/usage`, `/remote` | Native parallel subagents, task surfacing, budget metrics, long-run sessions |
+| planner | `/plan`, `/research`, `/context` | Authoring surface for multi-phase plans |
+| researcher | `/research`, `/ask`, `/share` | First-pass investigation, side-questions, gist publishing |
+| reviewer | `/review`, `/diff`, `/pr` | Baseline findings layered with confidence scoring and security mode |
+| ops | `/pr`, `/diff`, `/delegate`, `/share` | PR workflow; `gh` CLI remains the fallback |
+| implementer | `/ide`, `/diff`, `/rewind`, `/undo`, `/ask` | IDE bridge, safe TDD revert, side-questions |
+
+`/fleet` coexists with our `team-state.json` telemetry: the native command drives execution, hook JSONL feeds analytics. Validator warns on unknown `cli-affinity` entries (warn-only — CLI surface evolves).
+
 
 ---
 
@@ -136,6 +198,8 @@ Initialize with: `pwsh -File scripts/init-artifacts.ps1`
 ## Skills Ecosystem
 
 Our SKILL.md files follow the [vercel-labs/skills](https://github.com/vercel-labs/skills) standard (`name` + `description` frontmatter). This makes them compatible with the cross-agent skills ecosystem.
+
+> **Publishing status:** Our 12 skills are **not yet published** to the community catalogue (skills.sh / vercel-labs registry). See `artifacts/decisions/ADR-sota-2026-04-22-remaining-gaps.md` §G65 for the deferred publishing decision. The commands below apply once we publish or for installing *other* community skills.
 
 ### Installing Community Skills
 

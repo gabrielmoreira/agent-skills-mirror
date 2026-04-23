@@ -12,7 +12,7 @@ Use short, lowercase keys: `stack`, `current_work`, `gotchas`, `key_files`, etc.
 ---
 
 ## MCP Server (memory_map)
-This repo includes an MCP server at `mcp/server.py` that provides persistent memory and conversation history.
+Persistent memory and conversation history is provided by the standalone [memory_map](https://github.com/kid-sid/memory_map) repo — not bundled in this repo.
 
 **Tools available:**
 - `load_memory` / `save_memory` / `delete_memory` — per-project key-value context store
@@ -22,7 +22,34 @@ This repo includes an MCP server at `mcp/server.py` that provides persistent mem
 - `get_github_structure` — GitHub repo file tree
 - `get_git_history` — recent commits
 
-**One-time setup (already done):** `claude mcp add file-structure C:/Users/Sidhartha/claude-spellbook/mcp/venv/Scripts/python.exe C:/Users/Sidhartha/claude-spellbook/mcp/server.py`
+**One-time setup:**
+
+```bash
+# 1. Clone and install
+git clone https://github.com/kid-sid/memory_map.git
+cd memory_map
+python -m venv venv
+venv\Scripts\pip install -r requirements.txt   # Windows
+# source venv/bin/activate && pip install -r requirements.txt  # Mac/Linux
+
+# 2. Register globally (available in ALL projects)
+claude mcp add -s user memory_map C:/Users/yourname/memory_map/venv/Scripts/python.exe C:/Users/yourname/memory_map/server.py
+# Mac/Linux: claude mcp add -s user memory_map python3 /home/yourname/memory_map/server.py
+```
+
+**3. Add hooks to `~/.claude/settings.json`** so history saves automatically in every project:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [{ "matcher": "", "hooks": [{ "type": "command", "command": "python C:/Users/yourname/memory_map/history_hook.py", "timeout": 10 }] }],
+    "PreCompact":       [{ "matcher": "", "hooks": [{ "type": "command", "command": "python C:/Users/yourname/memory_map/history_hook.py --force", "timeout": 15 }] }],
+    "Stop":             [{ "matcher": "", "hooks": [{ "type": "command", "command": "python C:/Users/yourname/memory_map/history_hook.py --force", "timeout": 15, "async": true }] }]
+  }
+}
+```
+
+**4. Enable memory for a project** — copy `CLAUDE.md` from the memory_map repo into the project root. Claude reads it at session start and calls `load_memory` / `load_history` automatically.
 
 **Manual history save:** use `/mem_save` at any time to checkpoint the current conversation.
 
@@ -52,6 +79,10 @@ skills/<skill-name>/skill.md     — skill reference files (install to ~/.claude
 ### Development
 - `coding-standards` — naming conventions, SOLID, design patterns, code smells
 - `development-workflow` — branching, conventional commits, PR workflow, code review
+- `frontend` — React component design, state management (Zustand/Redux Toolkit), TanStack Query, React Hook Form, routing, performance, testing
+- `event-driven` — Kafka producer/consumer, topic partitioning, outbox pattern, dead-letter queues, idempotency, event sourcing
+- `caching` — Redis patterns, cache-aside/write-through/write-behind, TTL design, stampede prevention, HTTP Cache-Control, invalidation
+- `claude-code` — skills/commands/agents setup, hooks (PreToolUse/PostToolUse/SessionStart/Stop), settings.json permissions, MCP servers, CLAUDE.md
 
 ### Testing
 - `unit-testing` — AAA pattern, mocking, parameterized tests, TDD, coverage
@@ -65,6 +96,8 @@ skills/<skill-name>/skill.md     — skill reference files (install to ~/.claude
 - `accessibility` — WCAG 2.1/2.2 conformance, ARIA, keyboard navigation, focus management, contrast, screen readers
 - `claude-api` — Anthropic SDK patterns, tool use, streaming, agent SDK
 - `azure` — DefaultAzureCredential, Blob Storage, AI Search (vector/hybrid), Document Intelligence, Key Vault, retry patterns
+- `azure-service-bus` — queues vs topics/subscriptions, peek-lock settlement, DLQ, sessions, subscription filters, scheduled messages
+- `aws` — IAM credential chain, S3, DynamoDB single-table design, Lambda, SQS batch, Secrets Manager, botocore retry
 - `ai-engineer` — RAG pipelines, vector search, agent orchestration, prompt engineering, multimodal AI, cost optimization, AI safety
 - `complex-doc-rag` — RAG for PDFs (scanned, native, multi-column, tables, images), Excel (merged cells, charts, hidden sheets), CSV (dialect, encoding, wide tables), and standalone images; tiered extraction and edge-case handling
 

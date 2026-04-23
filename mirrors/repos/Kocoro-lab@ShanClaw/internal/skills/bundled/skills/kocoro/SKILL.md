@@ -1,9 +1,19 @@
 ---
 name: kocoro
 description: >
-  Set up agents, skills, MCP servers, schedules, permissions, config.
-  MUST use for: create/delete/configure agent, install skill, connect
-  Slack/DB, manage rules, project init — any platform management task.
+  Inspect AND manage ShanClaw platform state — agents, skills, MCP servers, schedules,
+  permissions, config, rules. 中:列出/查看/查询/创建/修改/删除/配置/安装 agent/skill/MCP/计划/权限/规则。
+  日:一覧/表示/確認/検索/作成/更新/削除/設定/インストール エージェント/スキル/MCPサーバー/スケジュール/権限/ルール。
+
+  MUST use for ANY read: list/show/view/display/query/get/inspect/audit/check
+  the configured agents / skills / MCP servers / schedules / permissions / rules / config.
+
+  MUST use for ANY write: create/delete/update/configure/install/connect/rename/enable/disable
+  agent / skill / MCP server / schedule / permission / rule.
+
+  Covers anything under ~/.shannon/. Do NOT use bash/file_read/file_edit to probe or modify
+  these — kocoro routes every op through the daemon HTTP API at localhost:7533 which handles
+  validation, atomic writes and audit logging.
 allowed-tools: http file_read
 ---
 

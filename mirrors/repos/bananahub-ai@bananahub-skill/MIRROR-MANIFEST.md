@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bananahub-ai/bananahub-skill` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `bananahub-ai/bananahub-skill` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bananahub-ai/bananahub-skill` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 2 | ✓ | [`references/providers/gemini.md`](references/providers/gemini.md) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

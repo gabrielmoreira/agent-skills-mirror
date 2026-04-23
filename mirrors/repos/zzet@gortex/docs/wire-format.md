@@ -289,15 +289,18 @@ re-hydrate by `JSON.parse` on such cells.
 
 ## Reference implementations
 
-- **Go encoder / decoder:** `pkg/wire/` — nested Go module, MIT-licensed,
-  `go get github.com/zzet/gortex/pkg/wire` (header + row + escape
-  primitives + generic fallback). Per-tool hand-tuned encoders live in
+- **Go encoder / decoder:** MIT-licensed standalone module at
+  [`github.com/gortexhq/gcx-go`](https://github.com/gortexhq/gcx-go)
+  (`go get github.com/gortexhq/gcx-go`) — header + row + escape
+  primitives + generic fallback. Per-tool hand-tuned encoders live in
   `internal/mcp/gcx.go`.
-- **TypeScript decoder:** `packages/wire-ts/` (npm: `@gortex/wire`, MIT).
+- **TypeScript decoder:** MIT-licensed standalone package at
+  [`github.com/gortexhq/gcx-ts`](https://github.com/gortexhq/gcx-ts)
+  (npm: [`@gortex/wire`](https://www.npmjs.com/package/@gortex/wire)).
 
 ## Benchmark
 
 See `bench/wire-format/`. The harness scores bytes, tiktoken tokens,
 gzip bytes, and round-trip integrity across 20 representative tool
 responses and emits a markdown scorecard. Rerun after any change to
-`pkg/wire/` or `internal/mcp/gcx.go` to catch regressions.
+the upstream `gcx-go` module or `internal/mcp/gcx.go` to catch regressions.

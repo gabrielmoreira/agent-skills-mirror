@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:7a0e5d7b1d45f7bad9643c1c77358d9f3123210a`
+**Shape snapshot:** `sha1:98ebcae770ee25c509bfb5d131b4fdb95efd681b`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -29,8 +29,8 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 ## At a Glance
 
-- **179** active API routes across **46** categories
-- **4** required + **113** optional environment variables
+- **181** active API routes across **48** categories
+- **4** required + **119** optional environment variables
 - **73** database tables
 
 ## API Surface
@@ -128,6 +128,10 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `POST` `/api/cron/routing-maintenance`
 - `GET` `/api/cron/signals`
 
+### `discord`
+
+- `POST` `/api/discord/interactions`
+
 ### `docs`
 
 - `GET` `/api/docs/raw`
@@ -222,6 +226,10 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `GET, POST` `/api/model-strategies`
 - `DELETE, GET, PATCH` `/api/model-strategies/[strategyId]`
 - `POST` `/api/model-strategies/[strategyId]/complete`
+
+### `monetization`
+
+- `GET` `/api/monetization/verified-integrations-count`
 
 ### `operations`
 
@@ -356,7 +364,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 70 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 71 file(s)
 - **`DATABASE_URL`** - referenced in 83 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
@@ -383,6 +391,7 @@ These have fallbacks or only activate specific features.
 - `CONVERGENCE_VERBOSE` *(undocumented)*
 - `CRON_SECRET` *(undocumented)*
 - `DASHCLAW_AGENT_ID` *(undocumented)*
+- `DASHCLAW_ALERTS_DISCORD` *(undocumented)*
 - `DASHCLAW_ALERTS_TELEGRAM` *(undocumented)*
 - `DASHCLAW_API_KEY_ORG` *(undocumented)*
 - `DASHCLAW_BASE_URL` *(undocumented)*
@@ -395,10 +404,15 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_LOCAL_ADMIN_PASSWORD` *(undocumented)*
 - `DASHCLAW_MAX_ORG_ATTACHMENT_BYTES` *(undocumented)*
 - `DASHCLAW_MODE` *(undocumented)*
+- `DASHCLAW_NEW_CONNECT_WEBHOOK` *(undocumented)*
 - `DASHCLAW_RATE_LIMIT_MAX` *(undocumented)*
 - `DASHCLAW_RATE_LIMIT_WINDOW_MS` *(undocumented)*
 - `DASHCLAW_URL` *(undocumented)*
 - `DISABLE_PROMPT_INJECTION_SCAN` *(undocumented)*
+- `DISCORD_APPROVER_ORG_ID` *(undocumented)*
+- `DISCORD_APPROVER_USER_ID` *(undocumented)*
+- `DISCORD_BOT_TOKEN` *(undocumented)*
+- `DISCORD_PUBLIC_KEY` *(undocumented)*
 - `ENFORCE_AGENT_SIGNATURES` *(undocumented)*
 - `GITHUB_CLIENT_ID` *(undocumented)*
 - `GITHUB_CLIENT_SECRET` *(undocumented)*
@@ -712,7 +726,7 @@ Each adapter delivers `integration_mismatch`, `integration_health_changed`, and 
 
 | Adapter | Required credential (any one) |
 | --- | --- |
-| `discord` | `DISCORD_WEBHOOK_URL` |
+| `org_id` | `DISCORD_WEBHOOK_URL` |
 | `email` | `RESEND_API_KEY`, `SENDGRID_API_KEY` |
 | `github` | `GITHUB_TOKEN` |
 | `linear` | `LINEAR_API_KEY` |

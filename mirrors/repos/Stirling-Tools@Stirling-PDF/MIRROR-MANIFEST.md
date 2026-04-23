@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 1 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 4 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`engine/AGENTS.md`](engine/AGENTS.md) |
-| 4 | → | [`frontend/DeveloperGuide.md`](frontend/DeveloperGuide.md) |
+| 3 | → | [`frontend/DeveloperGuide.md`](frontend/DeveloperGuide.md) |
 
 ---
 

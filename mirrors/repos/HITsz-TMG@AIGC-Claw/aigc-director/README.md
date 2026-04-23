@@ -229,7 +229,7 @@ IMAGE_T2I_MODEL=doubao-seedream-5-0-260128
 IMAGE_IT2I_MODEL=doubao-seedream-5-0-260128
 
 # 视频生成
-VIDEO_MODEL=wan2.6-i2v-flash
+VIDEO_MODEL=wan2.7-i2v
 VIDEO_RATIO=16:9
 ```
 
@@ -251,9 +251,9 @@ VIDEO_RATIO=16:9
 
 - **LLM 模型**: deepseek-chat, deepseek-reasoner, gpt-4o, gpt-4, gpt-5, o3, gemini-3-flash-preview, qwen3.5-plus, qwen3.5-max
 - **VLM 评估模型**: qwen3.5-plus, qwen-vl-plus, qwen3.5-max, gemini-2.5-flash-image (性价比最高), gemini-2.0-flash
-- **文生图模型**: doubao-seedream-5-0-260128, jimeng_t2i_v40, wan2.6-t2i, sora_image, gpt-image-1.5
+- **文生图模型**: doubao-seedream-5-0-260128, jimeng_t2i_v40, wan2.6-t2i, sora_image,  gpt-image-2
 - **图生图模型**: doubao-seedream-5-0-260128, jimeng_t2i_v40, wan2.6-image
-- **视频生成模型**: wan2.6-i2v-flash, kling-v3, kling-v2-6, kling-v2-5-turbo
+- **视频生成模型**: doubao-seedance-2-0-260128, wan2.7-i2v, wan2.6-i2v-flash, kling-v3, kling-v2-6, kling-v2-5-turbo
 - **视频比例**: 16:9, 9:16, 1:1, 4:3, 3:4, 21:9
 
 ### 并发配置

@@ -2,8 +2,10 @@
 name: heatmap-analyze
 description: >
   Ptengine Heatmap end-to-end analysis skill. Fetches real heatmap data via ptengine-cli and runs
-  AI-powered CRO behavior analysis using a 4-stage psychology model. Self-contained — includes
-  all analysis methodology, data transformation rules, and output schemas.
+  AI-powered CRO behavior analysis using a 4-stage psychology model. Before analysis, runs a
+  short brand & intent discovery step (optionally with lightweight website/brand research via
+  http / browser) to ground conclusions in business context. Self-contained — includes all
+  analysis methodology, data transformation rules, and output schemas.
   Use this skill when the user wants to: analyze a webpage's heatmap data, understand user behavior
   on a page, compare audience segments, validate A/B test results, evaluate ad channel performance,
   analyze audience characteristics, find conversion barriers or opportunities, or optimize a landing page.
@@ -11,6 +13,7 @@ description: >
   "how are users behaving", "compare segments", "A/B test results", "ad performance", "audience analysis",
   "ptengine", "block-level analysis", "conversion optimization", "exit rate", "dwell time", "user drop-off",
   "landing page analysis", or any request involving page analytics combined with behavioral insights.
+allowed-tools: bash file_read think http browser screenshot browser_navigate browser_snapshot browser_take_screenshot web_fetch web_search web_subpage_fetch
 ---
 
 # Ptengine Heatmap Analysis
@@ -27,6 +30,7 @@ heatmap-analyze/
 ├── install.sh                         # ptengine-cli installer
 └── references/
     ├── ptengine-cli.md                # CLI command reference and output format
+    ├── discovery.md                   # Phase 0b/0c: brand & intent discovery, research heuristic
     ├── data-transform.md              # Field mapping, tag/ranking computation
     ├── page-classification.md         # 7 page type definitions and classification
     ├── block-analysis.md              # Block content + stage classification (4-phase model)
@@ -41,22 +45,27 @@ heatmap-analyze/
 
 ## Data Source Boundary
 
-The **only authoritative data source** for this skill is `ptengine-cli`. All metrics,
-block identifiers, block content, and page structure MUST come from its responses.
+This skill has a **two-track data source rule**. Read carefully — the rule is different for
+heatmap data vs. brand context.
 
-**Do not** access the target URL through any other channel, including:
-- `browser_*`, `screenshot`, `computer`, any Playwright MCP (`mcp__playwright__*`),
-  or any other browser-automation tool
-- `http` GET / `WebFetch` against the target URL to scrape HTML or assets
+| Data type | Authoritative source | Not allowed |
+|---|---|---|
+| Heatmap metrics and block structure (`page_metrics`, `block_metrics`, `page_insight`, block names, dwell, exit, impression, etc.) for the analyzed URL | **`ptengine-cli` only** | Using `http` / `browser_*` / `screenshot` / Playwright MCP to scrape the analyzed URL and fill / replace block content or metrics |
+| Brand / company / product / audience / competitive context | `http`, `browser_*`, `screenshot`, or local `file_read` of a user-provided brand doc | — |
 
-**Why it matters (not just a preference):** ptengine-cli returns aggregated behavior
-over the selected date range. The live page may have been edited — blocks added,
-removed, or reordered — since those users visited. Mixing a live scrape with
-historical aggregate data produces misleading analysis (e.g. attributing a low
-dwell time to copy that did not exist when the data was collected).
+**Why the split matters (not just a preference):** `ptengine-cli` returns aggregated behavior
+over the selected date range. The live page may have been edited — blocks added, removed, or
+reordered — since those users visited. Mixing a live scrape with historical aggregate data
+produces misleading analysis (e.g. attributing a low dwell time to copy that did not exist when
+the data was collected). **Brand context is immune to this problem** — a company's mission,
+product line, and target audience are not time-window-specific.
 
-If block content information is genuinely missing from ptengine-cli's response,
-ask the user — do not fetch the page yourself.
+**Concretely:**
+- Phase 0c.1 MAY fetch the site root, `/about`, `/pricing`, etc. via `http` / `browser_*` to
+  inform `brand_context` (see `references/discovery.md`).
+- Phase 1–6 MUST populate every metric and block-level field from `ptengine-cli` responses.
+- If block content is missing from ptengine-cli's response, ASK the user — do not scrape the
+  analyzed URL to fill it in.
 
 ## Analysis Types
 
@@ -70,8 +79,16 @@ ask the user — do not fetch the page yourself.
 
 ## Pipeline
 
+Listed in **execution order** (not alphabetical). Letter labels are structural anchors for
+cross-references; the flow runs top-to-bottom:
+
 ```
-Phase 0: Prerequisites + Parameters
+Phase 0a: Prerequisites            # ptengine-cli install/config check
+Phase 0c: Auto Research (optional) # runs before 0b when the first message lacks context
+  0c.1: Website / brand research (web_fetch / http / browser, site root + about + pricing)
+  0c.2: Lightweight block_metrics preview (ptengine-cli, only when it helps classification)
+Phase 0b: Brand & Intent Discovery # informed clarifying questions, fewer after 0c.1 ran
+Phase 0d: Parameter Collection     # URL, date range, analysis type, device, language, conversion
 Phase 1: Data Fetch (ptengine-cli)
 Phase 2: Page Classification
 Phase 3: Data Enrichment (block content + phase assignment)
@@ -80,21 +97,67 @@ Phase 5: Analysis (apply methodology from references/)
 Phase 6: Results Presentation
 ```
 
+If the user already supplied enough context in the first message, Phase 0c and Phase 0b are
+skipped entirely. See `references/discovery.md § Decision table` for precise skip rules.
+
 ---
 
-## Phase 0: Prerequisites and Parameters
+## Phase 0a: Prerequisites
 
 ### Check ptengine-cli
 
 Run `sh install.sh --check-only` (or check `command -v ptengine-cli`):
-- **READY**: Proceed to parameter collection
+- **READY**: Proceed to Phase 0b / 0c / 0d
 - **NEEDS_CONFIG**: Ask the user for API Key and Profile ID. If the user
   does not have an API Key, walk them through the 6-step product-UI flow
   in `references/ptengine-cli.md` § "Obtaining an API Key". Then run:
   `ptengine-cli config set --api-key <KEY> --profile-id <ID>`
 - **NOT_INSTALLED**: Run `sh install.sh`, then configure
 
-### Collect Parameters
+---
+
+## Phase 0b: Brand & Intent Discovery
+
+Read `references/discovery.md` before running this phase. In short:
+
+- Do NOT jump to parameter collection if the user's first message lacks business context
+  (brand / product / audience / primary goal). A generic dataset produces generic conclusions.
+- Use `think` to pick **at most 5** (usually 1–3) targeted questions from the bank in
+  `discovery.md § Question bank`. Never re-ask anything the user already stated.
+- Skip this phase entirely when (a) the user supplied ≥ 2 business signals upfront, or
+  (b) the user says "just analyze" / "skip questions" / "直接分析".
+- The phase produces a `brand_context` object (schema in `discovery.md`) that Phases 2 / 3 / 5 / 6
+  consume. The card **never overrides metric evidence** — it only shapes phrasing and finding
+  priority.
+
+---
+
+## Phase 0c: Auto Research (optional)
+
+Two sub-probes, both optional.
+
+### 0c.1 — Website / brand research
+
+Run when the user gave a URL but little business context. Fetch at most 3 URLs (site root,
+`/about`, `/pricing` or similar) via `http` or, if JS-rendered, `browser_navigate`. Each page
+contributes ≤ ~1500 characters into `think`; total budget < 20 seconds.
+
+Do NOT fetch the analyzed URL to replace ptengine-cli's block-level data. See
+`references/discovery.md § Phase 0c.1` for the full boundary statement.
+
+Record every fetched URL in `brand_context.research_refs[]`. On timeout or error, fall back to
+pure Phase 0b Q&A.
+
+### 0c.2 — Heatmap preview (ptengine-cli)
+
+Default posture: SKIP. Only run the 7-day `block_metrics` probe when page-type classification
+is still ambiguous after 0c.1 AND a block-names sample would materially disambiguate it. The
+probe informs `preview_signals` only; Phase 1 always performs the full-range fetch with the
+user's requested date range. See `references/discovery.md § Phase 0c.2` for the full gate.
+
+---
+
+## Phase 0d: Parameter Collection
 
 | Parameter | Required | Default | Notes |
 |-----------|----------|---------|-------|
@@ -107,6 +170,9 @@ Run `sh install.sh --check-only` (or check `command -v ptengine-cli`):
 
 For **compare**: which segments to compare (e.g. new vs returning visitors)
 For **ab_test**: campaign name, type (inline/popup/redirect), version info
+
+If `brand_context.primary_goal` is known, prefer it as the conversion framing even when
+`Conversion name` is left blank.
 
 ---
 
@@ -157,6 +223,11 @@ this step wrong will produce incorrect analysis — pay special attention to per
 
 Read `references/page-classification.md` for full criteria.
 
+If `brand_context` is populated, its `business_model` and (when present) `preview_signals.proposed_page_type`
+act as **weak priors**. Full-data signals (actual block names from Phase 1, full page_insight
+sourceType distribution) still override the prior when they disagree. Never skip the full
+classification check just because the prior looks confident.
+
 Classify the URL into one of 7 types and map to internal key:
 
 | Result | Key | Notes |
@@ -179,14 +250,17 @@ Read `references/block-analysis.md` for the 4-phase psychology model and module 
 
 ### 3a. Block Content Analysis
 For each block, determine `module_category`, `content_summary`, `marketing_intent` using the
-module categories for the detected page type.
+module categories for the detected page type. If `brand_context.product_or_service` or
+`brand_voice` is set, use it to choose between equally-grounded paraphrasings — do NOT invent
+block copy that ptengine-cli did not return.
 
 ### 3b. Block Stage Classification
 Assign each block to phase 1-4 using the criteria in block-analysis.md. Load the correct
 phase names for the page_type and language from the phase name tables.
 
 Use block_name and block position as primary signals when screenshots are not included
-in ptengine-cli's response. Do not obtain screenshots by other means (see Data Source Boundary).
+in ptengine-cli's response. Do not fetch screenshots of the analyzed URL to substitute for
+ptengine-cli's block-level data (see Data Source Boundary — the first row of the table).
 
 ---
 
@@ -218,6 +292,11 @@ Before writing analysis, also read:
 - `references/page-types.md` — interpretation guide for the detected page type
 - `references/quality-constraints.md` — metric dictionary, evidence policy, terminology enforcement
 
+If `brand_context` is populated, apply its framing per `references/discovery.md § Handoff`:
+`primary_goal` shapes which barriers/opportunities surface first; `known_problems` becomes a
+hypothesis the narrative can confirm or complicate (always hedged, always backed by metric
+evidence).
+
 ### Critical quality gates (always apply)
 
 1. **Full block coverage**: ALL blocks must appear in narrative structure (no omissions)
@@ -244,3 +323,8 @@ The general structure is:
 3. **Barriers and opportunities** — clearly separated with supporting data
 4. **Improvement suggestions** — 1-3 concrete, actionable recommendations
 5. **Next steps** — offer to run a different analysis type, compare segments, or save results
+
+When `brand_context.source != "none"`, open the report with a one-sentence framing line that
+ties the analysis to `brand_context.primary_goal`. If `brand_context.research_refs` is non-empty,
+a small "Sources consulted" footnote listing those URLs may be appended at the end of the report.
+Do NOT echo `brand_context` itself as raw YAML in the report.

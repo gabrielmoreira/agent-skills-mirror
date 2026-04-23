@@ -43,7 +43,7 @@ For any list-shaped response, pass `format: "gcx"` to get the [GCX1 compact wire
 | Instead of...                         | You MUST use...                          |
 |---------------------------------------|------------------------------------------|
 | Default JSON on multi-row responses   | Pass `format: "gcx"` on `search_symbols`, `find_usages`, `analyze`, `contracts`, `batch_symbols`, `get_callers` / `get_call_chain` / `get_dependencies` / `get_dependents` / `find_implementations`, `get_file_summary`, `get_editing_context`, `smart_context` |
-| Parsing compact text output           | Use `@gortex/wire` (npm) or the Go `github.com/zzet/gortex/pkg/wire` package (MIT) — both decode GCX back to structured rows |
+| Parsing compact text output           | Use `@gortex/wire` (npm) or the Go `github.com/gortexhq/gcx-go` package (MIT) — both decode GCX back to structured rows |
 | Reading `compact: true` output        | Prefer `format: "gcx"` — lossy text is being phased out; GCX is round-trippable and tokenizer-optimised |
 
 ### Impact Analysis and Safety

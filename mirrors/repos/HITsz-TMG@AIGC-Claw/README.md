@@ -331,7 +331,7 @@ IMAGE_T2I_MODEL=doubao-seedream-5-0-260128
 IMAGE_IT2I_MODEL=doubao-seedream-5-0-260128
 
 # 视频生成
-VIDEO_MODEL=wan2.6-i2v-flash
+VIDEO_MODEL=wan2.7-i2v
 VIDEO_RATIO=16:9
 
 # API Keys
@@ -348,7 +348,7 @@ DEEPSEEK_API_KEY=your_key
 | **VLM** | qwen-vl-plus, gemini-2.5-flash-image |
 | **文生图** | doubao-seedream-5-0, jimeng_t2i_v40, wan2.6-t2i |
 | **图生图** | doubao-seedream-5-0, jimeng_t2i_v40, wan2.6-image |
-| **视频生成** | wan2.6-i2v-flash, kling-v3, jimeng_ti2v_v30_pro |
+| **视频生成** | doubao-seedance-2-0-260128, wan2.7-i2v, wan2.6-i2v-flash, kling-v3 |
 
 </details>
 

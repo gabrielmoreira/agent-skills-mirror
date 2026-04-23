@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 51,
+  "skill_count": 55,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -47,7 +47,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
+      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [],
@@ -309,7 +309,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/clinical_trial_finder.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -562,6 +562,43 @@
       "chaining_partners": []
     },
     {
+      "name": "flow-bio",
+      "cli_alias": null,
+      "description": "Flow.bio API bridge — authenticate, browse pipelines/samples/projects, search, upload data, launch pipeline executions, and check run status on any Flow instance.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/flow-bio/flow_bio.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "requests>=2.28"
+      ],
+      "tags": [
+        "flow",
+        "flow.bio",
+        "LIMS",
+        "pipelines",
+        "samples",
+        "nextflow",
+        "bioinformatics",
+        "cloud"
+      ],
+      "trigger_keywords": [
+        "flow",
+        "flow.bio",
+        "flow bio",
+        "flow pipeline",
+        "flow sample",
+        "flow execution",
+        "flow project",
+        "flow upload",
+        "run on flow"
+      ],
+      "chaining_partners": []
+    },
+    {
       "name": "galaxy-bridge",
       "cli_alias": "galaxy",
       "description": "Galaxy tool discovery, intelligent recommendation, and execution — 8,000+ bioinformatics tools from usegalaxy.org with multi-signal scoring and workflow suggestions",
@@ -682,6 +719,39 @@
         "gwas-prs",
         "lit-synthesizer"
       ]
+    },
+    {
+      "name": "gwas-pipeline",
+      "cli_alias": null,
+      "description": "End-to-end GWAS automation wrapping PLINK2 for genotype QC and REGENIE for two-step whole-genome regression association testing. Produces Manhattan plots, QQ plots, clumped lead variants, and structured summary statistics.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/gwas-pipeline/gwas_pipeline.py --demo",
+      "dependencies": [],
+      "tags": [
+        "gwas",
+        "association-testing",
+        "regenie",
+        "plink2",
+        "population-genetics",
+        "biobank",
+        "quality-control"
+      ],
+      "trigger_keywords": [
+        "GWAS",
+        "genome-wide association",
+        "PLINK",
+        "REGENIE",
+        "association testing",
+        "Manhattan plot",
+        "QQ plot",
+        "polygenic",
+        "case-control"
+      ],
+      "chaining_partners": []
     },
     {
       "name": "gwas-prs",
@@ -1059,6 +1129,44 @@
       ]
     },
     {
+      "name": "proteomics-clock",
+      "cli_alias": null,
+      "description": "Compute organ-specific biological age from Olink proteomic data using Goeminne et al. (2025) elastic net aging clocks.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/proteomics-clock/proteomics_clock.py --demo",
+      "dependencies": [
+        "python>=3.11",
+        "pandas>=2.0",
+        "numpy>=1.24",
+        "matplotlib>=3.7",
+        "seaborn>=0.12",
+        "requests>=2.28"
+      ],
+      "tags": [
+        "proteomics",
+        "aging",
+        "olink",
+        "organ-clock",
+        "biological-age",
+        "goeminne"
+      ],
+      "trigger_keywords": [
+        "proteomics clock",
+        "organ aging",
+        "proteomic clock",
+        "olink clock",
+        "organ clock",
+        "goeminne",
+        "plasma protein aging",
+        "organ-specific aging"
+      ],
+      "chaining_partners": []
+    },
+    {
       "name": "proteomics-de",
       "cli_alias": null,
       "description": "Differential expression analysis for label-free quantitative (LFQ) intensity data with standard MaxQuant and DIA-NN output. Workflow includes preprocessing, imputation, and statistical testing.",
@@ -1397,6 +1505,48 @@
         "is this target druggable",
         "evaluate drug target",
         "GO NO-GO decision for target"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "turingdb-graph",
+      "cli_alias": null,
+      "description": "Build, query, and analyse biomedical knowledge graphs in TuringDB, a columnar graph database with git-like versioning.",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/turingdb-graph/turingdb_graph.py --demo",
+      "dependencies": [
+        "python>=3.11",
+        "turingdb>=1.29",
+        "pandas>=2.0",
+        "fastapi>=0.110",
+        "uvicorn>=0.27",
+        "pydantic>=2.0",
+        "tabulate>=0.9"
+      ],
+      "tags": [
+        "graph-database",
+        "knowledge-graph",
+        "turingdb",
+        "cypher",
+        "biomedical",
+        "patient-cohort",
+        "pathway"
+      ],
+      "trigger_keywords": [
+        "knowledge graph",
+        "biomedical graph",
+        "turingdb",
+        "cypher query",
+        "patient cohort graph",
+        "pathway graph",
+        "graph database",
+        "build a graph from CSV",
+        "comorbidity analysis",
+        "comedication analysis"
       ],
       "chaining_partners": []
     },

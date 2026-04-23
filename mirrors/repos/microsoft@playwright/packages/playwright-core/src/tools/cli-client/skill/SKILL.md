@@ -38,6 +38,9 @@ playwright-cli dblclick e7
 # --submit presses Enter after filling the element
 playwright-cli fill e5 "user@example.com"  --submit
 playwright-cli drag e2 e8
+# drop files or data onto an element (from outside the page)
+playwright-cli drop e4 --path=./image.png
+playwright-cli drop e4 --data="text/plain=hello world"
 playwright-cli hover e4
 playwright-cli select e9 "option-value"
 playwright-cli upload ./document.pdf
@@ -159,8 +162,8 @@ playwright-cli video-start video.webm
 playwright-cli video-chapter "Chapter Title" --description="Details" --duration=2000
 playwright-cli video-stop
 
-# wait for the user to pick an element in the browser, print its ref and locator
-playwright-cli pick
+# launch the dashboard with annotation prompt to ask the user for input
+playwright-cli show --annotate
 
 # generate a Playwright locator for an element from its ref or selector
 playwright-cli generate-locator e5 --raw
@@ -356,22 +359,13 @@ playwright-cli tracing-stop
 playwright-cli close
 ```
 
-## Example: Interactive element inspection
+## Example: Interactive session
 
-Ask the user to point at an element in the browser, then keep it visible while you work on it:
+Ask the user to annotate the UI. User can provide contextual tasks or ask contextual questions using annotations:
 
 ```bash
 playwright-cli open https://example.com
-# blocks until the user clicks an element; prints `ref: eN` and the locator
-playwright-cli pick
-# keep the picked element highlighted while iterating; style is optional
-playwright-cli highlight e5 --style="outline: 3px dashed red"
-playwright-cli highlight e7
-# ... inspect, generate code, etc. ...
-# hide a single highlight, or drop them all in one shot
-playwright-cli highlight e5 --hide
-playwright-cli highlight --hide
-playwright-cli close
+playwright-cli show --annotate
 ```
 
 ## Specific tasks

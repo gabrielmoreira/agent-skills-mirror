@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coder/coder` — 26 default patterns, 0 followed patterns, 28 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,9 +84,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
 | 24 | ✓ | [`.cursorrules`](.cursorrules) |
 | 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 27 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 28 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 26 | ✓ | [`aibridge/AGENTS.md`](aibridge/AGENTS.md) |
+| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 28 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 29 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
 
 ---
 
