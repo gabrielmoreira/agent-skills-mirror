@@ -6,7 +6,7 @@ level: 4
 ---
 
 <Purpose>
-Ultrawork is a parallel execution engine that runs multiple agents simultaneously for independent tasks. It is a component, not a standalone persistence mode -- it provides parallelism and smart model routing but not persistence, verification loops, or state management.
+Ultrawork is a parallel execution engine and execution protocol for independent work. It emphasizes intent grounding, parallel context gathering, dependency-aware task graphs for non-trivial work, and concise evidence-backed execution summaries. It is a component, not a standalone persistence mode -- it provides parallelism and routing guidance, but not persistence, verification loops, or long-lived state management.
 </Purpose>
 
 <Use_When>
@@ -33,21 +33,34 @@ Sequential task execution wastes time when tasks are independent. Ultrawork enab
 - Read `docs/shared/agent-tiers.md` before first delegation for agent selection guidance
 - Use `run_in_background: true` for operations over ~30 seconds (installs, builds, tests)
 - Run quick commands (git status, file reads, simple checks) in the foreground
+- Resolve intent and uncertainty before implementation; explore first, ask only when still blocked
+- For non-trivial tasks, produce a dependency-aware plan with parallel waves before execution
+- Keep delegated-task reports concise: short summary, files touched, verification status, blockers
+- Manual QA is required for implemented behavior, not just diagnostics
 </Execution_Policy>
 
 <Steps>
 1. **Read agent reference**: Load `docs/shared/agent-tiers.md` for tier selection
-2. **Classify tasks by independence**: Identify which tasks can run in parallel vs which have dependencies
-3. **Route to correct tiers**:
+2. **Ground intent first**: Confirm whether the request is implementation, investigation, evaluation, or research; do not code before that is clear
+3. **Gather context in parallel**:
+   - direct tools for quick reads/searches
+   - exploration/docs agents for broad context
+4. **Classify tasks by independence**: Identify which tasks can run in parallel vs which have dependencies
+5. **Create a task graph for non-trivial work**:
+   - Parallel Execution Waves
+   - Dependency Matrix
+   - acceptance criteria and verification steps per task
+6. **Route to correct tiers**:
    - Simple lookups/definitions: LOW tier (Haiku)
    - Standard implementation: MEDIUM tier (Sonnet)
    - Complex analysis/refactoring: HIGH tier (Opus)
-4. **Fire independent tasks simultaneously**: Launch all parallel-safe tasks at once
-5. **Run dependent tasks sequentially**: Wait for prerequisites before launching dependent work
-6. **Background long operations**: Builds, installs, and test suites use `run_in_background: true`
-7. **Verify when all tasks complete** (lightweight):
+7. **Fire independent tasks simultaneously**: Launch all parallel-safe tasks at once
+8. **Run dependent tasks sequentially**: Wait for prerequisites before launching dependent work
+9. **Background long operations**: Builds, installs, and test suites use `run_in_background: true`
+10. **Verify when all tasks complete** (lightweight):
    - Build/typecheck passes
    - Affected tests pass
+   - Manual QA completed for implemented behavior
    - No new errors introduced
 </Steps>
 

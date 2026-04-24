@@ -1,6 +1,6 @@
 ---
 name: nest
-description: LLM-optimized folder structure design. Audits and restructures project directories for context efficiency, progressive disclosure, and prompt cache performance. Use when agents can't find files, context costs are high, or CLAUDE.md hierarchy needs organization. Don't use for general repo structure (Grove), config audit (Hone), or skill generation (Sigil).
+description: LLM-optimized folder structure design. Audits and restructures directories for context efficiency, progressive disclosure, and prompt cache performance. Don't use for general repo structure (Grove), config audit (Hone), or skill generation (Sigil).
 ---
 
 <!--

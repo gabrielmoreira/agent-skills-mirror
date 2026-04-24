@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "httpx>=0.27",
+#     "openai>=1.55",
 #     "python-dotenv>=1.0",
 # ]
 # ///

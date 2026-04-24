@@ -1,6 +1,6 @@
 ---
 name: spider
-description: "Crawl and scraping systems architecture — distributed crawler topology, URL frontier management, politeness policy, and compliance architecture. Architecture-only (no execution code). Use when crawl system architecture is needed. Don't use for single-page scraping (Navigator) or ETL pipelines (Stream)."
+description: "Crawl and scraping systems architecture — distributed crawler topology, URL frontier, politeness, and compliance. Architecture-only (no execution code). Don't use for single-page scraping (Navigator) or ETL pipelines (Stream)."
 # skill-routing-alias: crawl-architecture, web-crawler-design, distributed-scraper, url-frontier, crawl-budget, scrapy-architecture
 ---
 

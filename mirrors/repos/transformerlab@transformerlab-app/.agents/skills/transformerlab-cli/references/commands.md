@@ -131,6 +131,7 @@ Queue a task on a compute provider.
 | Option | Description |
 |---|---|
 | `--no-interactive` | Skip prompts. Uses the task's configured provider or first available. Parameters use defaults. **Always use this in automated workflows.** |
+| `-m`, `--description <text>` | Markdown note describing what this run is trying to accomplish (stored on the job, shown in `lab job info`). Pass `-` to read from stdin. **Agents: required per SKILL.md rule 13.** |
 
 **JSON output:** Returns the created job object with `id` and `status`.
 

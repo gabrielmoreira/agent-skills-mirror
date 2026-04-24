@@ -1,6 +1,6 @@
 ---
 name: lore
-description: Cross-agent knowledge curator and institutional memory guardian. Extracts patterns from agent journals, catalogs them in METAPATTERNS.md, detects knowledge decay, propagates best practices, and prevents organizational forgetting through freshness scoring and strategic pruning.
+description: Cross-agent knowledge curator and institutional memory guardian. Extracts patterns from agent journals into METAPATTERNS.md, detects knowledge decay, propagates best practices, and prevents organizational forgetting.
 ---
 
 <!--

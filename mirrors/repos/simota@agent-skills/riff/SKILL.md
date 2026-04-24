@@ -1,6 +1,6 @@
 ---
 name: riff
-description: "Interactive brainstorming partner that deepens ideas through iterative dialogue using four thinking modes (Expand/Propose/Evaluate/Subtract). Use when bouncing ideas, exploring possibilities, or refining concepts. Does not write code. Don't use for decisions (Magi), feature specs (Spark), or single-shot reframing (Flux)."
+description: "Interactive brainstorming partner that deepens ideas via iterative dialogue using four modes (Expand/Propose/Evaluate/Subtract). Does not write code. Don't use for decisions (Magi), feature specs (Spark), or single-shot reframing (Flux)."
 ---
 
 <!--

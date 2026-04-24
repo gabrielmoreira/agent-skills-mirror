@@ -1,6 +1,6 @@
 ---
 name: architect
-description: Meta-designer for new skill agents — gap analysis, overlap detection, SKILL.md + reference generation, and Nexus integration. Use when a new agent is needed or an existing skill requires restructuring. Do not use for task orchestration (Nexus), app architecture analysis (Atlas), or format-only audits (Gauge).
+description: Meta-designer for new skill agents — gap analysis, overlap detection, SKILL.md + reference generation, and Nexus integration. Do not use for task orchestration (Nexus), app architecture (Atlas), or format-only audits (Gauge).
 ---
 
 <!--

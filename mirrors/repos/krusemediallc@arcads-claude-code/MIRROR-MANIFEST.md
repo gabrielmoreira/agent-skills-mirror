@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `krusemediallc/arcads-claude-code` — 26 default patterns, 0 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,32 +62,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.cursor/rules/project-context.mdc`](.cursor/rules/project-context.mdc) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`skills/arcads-external-api/prompting/analyze-video/scripts/extract-frames.sh`](skills/arcads-external-api/prompting/analyze-video/scripts/extract-frames.sh) |
-| 5 | ✓ | [`skills/arcads-external-api/prompting/analyze-video/SKILL.md`](skills/arcads-external-api/prompting/analyze-video/SKILL.md) |
-| 6 | ✓ | [`skills/arcads-external-api/prompting/brand-voice-starter.md`](skills/arcads-external-api/prompting/brand-voice-starter.md) |
-| 7 | ✓ | [`skills/arcads-external-api/prompting/clone-ad/SKILL.md`](skills/arcads-external-api/prompting/clone-ad/SKILL.md) |
-| 8 | ✓ | [`skills/arcads-external-api/prompting/guide.md`](skills/arcads-external-api/prompting/guide.md) |
-| 9 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/character-sheet.md`](skills/arcads-external-api/prompting/prompt-library/character-sheet.md) |
-| 10 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/influencer-recreation.md`](skills/arcads-external-api/prompting/prompt-library/influencer-recreation.md) |
-| 11 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/kling-3.md`](skills/arcads-external-api/prompting/prompt-library/kling-3.md) |
-| 12 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/nano-banana.md`](skills/arcads-external-api/prompting/prompt-library/nano-banana.md) |
-| 13 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/product-showcase.md`](skills/arcads-external-api/prompting/prompt-library/product-showcase.md) |
-| 14 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-feature-walkthrough.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-feature-walkthrough.md) |
-| 15 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-premium-reveal.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-premium-reveal.md) |
-| 16 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-product-hero.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-product-hero.md) |
-| 17 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-studio-lookbook.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-studio-lookbook.md) |
-| 18 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-ugc.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-ugc.md) |
-| 19 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2.md) |
-| 20 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/sora-2.md`](skills/arcads-external-api/prompting/prompt-library/sora-2.md) |
-| 21 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/ugc-product-selfie.md`](skills/arcads-external-api/prompting/prompt-library/ugc-product-selfie.md) |
-| 22 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/ugc-selfie-style.md`](skills/arcads-external-api/prompting/prompt-library/ugc-selfie-style.md) |
-| 23 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/veo-3-1.md`](skills/arcads-external-api/prompting/prompt-library/veo-3-1.md) |
-| 24 | ✓ | [`skills/arcads-external-api/reference.md`](skills/arcads-external-api/reference.md) |
-| 25 | ✓ | [`skills/arcads-external-api/SKILL.md`](skills/arcads-external-api/SKILL.md) |
-| 26 | ✓ | [`skills/generate-youtube-thumbnail/prompting/formulas.md`](skills/generate-youtube-thumbnail/prompting/formulas.md) |
-| 27 | ✓ | [`skills/generate-youtube-thumbnail/prompting/guide.md`](skills/generate-youtube-thumbnail/prompting/guide.md) |
-| 28 | ✓ | [`skills/generate-youtube-thumbnail/scripts/generate-batch.sh`](skills/generate-youtube-thumbnail/scripts/generate-batch.sh) |
-| 29 | ✓ | [`skills/generate-youtube-thumbnail/SKILL.md`](skills/generate-youtube-thumbnail/SKILL.md) |
+| 4 | ✓ | [`shared/CLAUDE.md`](shared/CLAUDE.md) |
+| 5 | ✓ | [`skills/arcads-external-api/prompting/analyze-video/scripts/extract-frames.sh`](skills/arcads-external-api/prompting/analyze-video/scripts/extract-frames.sh) |
+| 6 | ✓ | [`skills/arcads-external-api/prompting/analyze-video/SKILL.md`](skills/arcads-external-api/prompting/analyze-video/SKILL.md) |
+| 7 | ✓ | [`skills/arcads-external-api/prompting/brand-voice-starter.md`](skills/arcads-external-api/prompting/brand-voice-starter.md) |
+| 8 | ✓ | [`skills/arcads-external-api/prompting/clone-ad/SKILL.md`](skills/arcads-external-api/prompting/clone-ad/SKILL.md) |
+| 9 | ✓ | [`skills/arcads-external-api/prompting/guide.md`](skills/arcads-external-api/prompting/guide.md) |
+| 10 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/character-sheet.md`](skills/arcads-external-api/prompting/prompt-library/character-sheet.md) |
+| 11 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/influencer-recreation.md`](skills/arcads-external-api/prompting/prompt-library/influencer-recreation.md) |
+| 12 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/kling-3.md`](skills/arcads-external-api/prompting/prompt-library/kling-3.md) |
+| 13 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/nano-banana.md`](skills/arcads-external-api/prompting/prompt-library/nano-banana.md) |
+| 14 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/product-showcase.md`](skills/arcads-external-api/prompting/prompt-library/product-showcase.md) |
+| 15 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-feature-walkthrough.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-feature-walkthrough.md) |
+| 16 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-premium-reveal.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-premium-reveal.md) |
+| 17 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-product-hero.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-product-hero.md) |
+| 18 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-studio-lookbook.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-studio-lookbook.md) |
+| 19 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2-ugc.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2-ugc.md) |
+| 20 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/seedance-2.md`](skills/arcads-external-api/prompting/prompt-library/seedance-2.md) |
+| 21 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/sora-2.md`](skills/arcads-external-api/prompting/prompt-library/sora-2.md) |
+| 22 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/ugc-product-selfie.md`](skills/arcads-external-api/prompting/prompt-library/ugc-product-selfie.md) |
+| 23 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/ugc-selfie-style.md`](skills/arcads-external-api/prompting/prompt-library/ugc-selfie-style.md) |
+| 24 | ✓ | [`skills/arcads-external-api/prompting/prompt-library/veo-3-1.md`](skills/arcads-external-api/prompting/prompt-library/veo-3-1.md) |
+| 25 | ✓ | [`skills/arcads-external-api/reference.md`](skills/arcads-external-api/reference.md) |
+| 26 | ✓ | [`skills/arcads-external-api/SKILL.md`](skills/arcads-external-api/SKILL.md) |
+| 27 | ✓ | [`skills/generate-youtube-thumbnail/scripts/generate-batch.sh`](skills/generate-youtube-thumbnail/scripts/generate-batch.sh) |
+| 28 | ✓ | [`skills/generate-youtube-thumbnail/SKILL.md`](skills/generate-youtube-thumbnail/SKILL.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: hone
-description: AI CLI configuration audit and optimization agent. Collects official best practices from the web for Codex CLI (~/.codex/), Gemini CLI (~/.gemini/), and Claude Code (~/.claude/), analyzes config.toml/settings.json/CLAUDE.md/GEMINI.md/AGENTS.md/permissions/commands/hooks/rules/MCP/extensions, and proposes improvements in Before/After diff format. Never edits configuration files directly.
+description: AI CLI configuration audit and optimization agent. Collects web best practices for Codex CLI (~/.codex/), Gemini CLI (~/.gemini/), and Claude Code (~/.claude/), analyzes config.toml/settings.json/CLAUDE.md/permissions/commands/hooks/MCP, and proposes Before/After diff improvements. Never edits configs directly.
 ---
 
 <!--

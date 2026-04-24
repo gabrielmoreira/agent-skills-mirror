@@ -27,6 +27,7 @@ Then follow Steps 4-6 in [README_ENTERPRISE.md](../README_ENTERPRISE.md) to depl
 | Test plan (62+ cases) | [TESTING.md](TESTING.md) |
 | Deployment script | [deploy.sh](deploy.sh) |
 | Environment config | [.env.example](.env.example) |
+| Azure AD SSO setup | [AZURE_AD_SETUP.md](AZURE_AD_SETUP.md) |
 
 ## Architecture
 
@@ -34,7 +35,8 @@ Then follow Steps 4-6 in [README_ENTERPRISE.md](../README_ENTERPRISE.md) to depl
 Admin Console (React + FastAPI, 30+ pages)
   ├── Admin: Dashboard, Agent Factory, Security Center, Monitor, Audit, Usage
   ├── Portal: Chat, Profile, Skills, Requests, Connect IM, My Agents
-  └── 3-role RBAC (admin / manager / employee)
+  ├── 3-role RBAC (admin / manager / employee)
+  └── Dual auth: Azure AD (Microsoft Entra ID) SSO + Employee ID/Password
 
 4-Tier Runtime Architecture:
   Standard    → Nova 2 Lite, scoped IAM, moderate guardrail

@@ -2,7 +2,7 @@
 repo: safishamsi/graphify
 repoUrl: https://github.com/safishamsi/graphify.git
 refType: branch
-ref: v4
+ref: v5
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `safishamsi/graphify` — 26 default patterns, 0 followed patterns, 1 
 |---------------|-------|
 | Repo          | `safishamsi/graphify` |
 | Ref Type      | `branch` |
-| Ref           | `v4` |
+| Ref           | `v5` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |

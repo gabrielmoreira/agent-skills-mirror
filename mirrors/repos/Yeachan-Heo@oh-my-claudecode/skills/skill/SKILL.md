@@ -725,7 +725,7 @@ When invoked without arguments, run the full guided wizard.
 
 **Automatic Application**: Claude detects triggers and applies skills automatically - no need to remember or search for solutions.
 
-**Version Control**: Project-level skills (.omc/skills/) are committed with your code, so the whole team benefits.
+**Version Control**: Project-level skills (`.omc/skills/`) are intended to be committed with your code so the whole team benefits. In linked worktrees, uncommitted skills remain local to that worktree and disappear if it is removed.
 
 **Evolving Knowledge**: Skills improve over time as you discover better approaches and refine triggers.
 

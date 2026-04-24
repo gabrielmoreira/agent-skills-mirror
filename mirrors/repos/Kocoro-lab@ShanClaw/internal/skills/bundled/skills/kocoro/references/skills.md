@@ -9,8 +9,10 @@ Skills are knowledge packages that teach agents specific abilities — like read
 ### List installed skills
 - Method: GET
 - Path: /skills
-- Response: `{"skills": [{"name": "...", "slug": "...", "description": "...", "source": "global", "install_source": "...", "required_secrets": [...], "configured_secrets": [...]}]}`
+- Query: `?include_hidden=true` (optional) — include skills with frontmatter `hidden: true`
+- Response: `{"skills": [{"name": "...", "slug": "...", "description": "...", "source": "global", "install_source": "...", "hidden": true, "required_secrets": [...], "configured_secrets": [...]}]}`
 - Notes: Shows all skills currently installed in your Shannon instance. Use `slug` (the on-disk / URL-safe identifier) for all subsequent CRUD calls; `name` is a free-form display label that may contain uppercase letters or CJK characters and is not guaranteed to match the slug.
+- Hidden skills: By default the response omits skills whose SKILL.md frontmatter sets `hidden: true` (e.g. `kocoro` itself) — this is a display-only filter so user-facing frontends hide internal/policy skills. The skill is still loaded, still invokable via `use_skill`, and still participates in skill discovery. Pass `?include_hidden=true` to see them (e.g. for an admin/management UI that needs to manage their secrets or config).
 
 ### List downloadable skills (bundled)
 - Method: GET

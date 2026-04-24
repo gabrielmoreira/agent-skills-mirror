@@ -1,6 +1,6 @@
 ---
 name: attest
-description: Specification compliance verification agent. Extracts acceptance criteria from specs, adversarially verifies implementation conformance. Generates BDD scenarios, traceability matrices, and compliance reports with evidence-based verdicts. Use when spec-based quality gates are needed. Does not write code.
+description: Spec compliance verification agent. Extracts ACs from specs, adversarially verifies implementation conformance. Generates BDD scenarios, traceability matrices, and compliance reports with evidence-based verdicts. Does not write code.
 ---
 
 <!--

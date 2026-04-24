@@ -1,6 +1,6 @@
 ---
 name: darwin
-description: Ecosystem self-evolution orchestrator. Detects project lifecycle phases, evaluates agent relevance, synthesizes cross-agent knowledge, and proposes evolution actions. Use when ecosystem health checks, fitness scoring, or evolution proposals are needed.
+description: Ecosystem self-evolution orchestrator. Detects project lifecycle phases, evaluates agent relevance, synthesizes cross-agent knowledge, and proposes evolution actions (health checks, fitness scoring, evolution proposals).
 ---
 
 <!--

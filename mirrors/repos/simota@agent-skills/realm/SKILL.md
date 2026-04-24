@@ -1,6 +1,6 @@
 ---
 name: realm
-description: Meta-visualization agent that gamifies the agent ecosystem. Provides Phaser-based 2D office simulations, real-time XP growth and rank-up effects, interactive HTML maps, character sheets, quest boards, and badge systems for ecosystem awareness and team morale.
+description: Meta-visualization agent that gamifies the agent ecosystem. Phaser-based 2D office simulations, real-time XP/rank-up effects, interactive HTML maps, character sheets, quest boards, and badge systems.
 ---
 
 <!--

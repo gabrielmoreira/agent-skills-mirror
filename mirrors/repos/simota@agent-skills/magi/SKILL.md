@@ -1,6 +1,6 @@
 ---
 name: magi
-description: "Multi-perspective deliberation agent (Logos/Pathos/Sophia) for architecture arbitration, trade-off resolution, Go/No-Go verdicts, and strategic decisions. Does not write code. Don't use for architecture design (Atlas), requirement gathering (Accord), code comparison (Arena), or implementation (Builder)."
+description: "Multi-perspective deliberation (Logos/Pathos/Sophia) for architecture arbitration, trade-offs, Go/No-Go, and strategic decisions. Does not write code. Don't use for architecture (Atlas), requirements (Accord), code comparison (Arena), or implementation (Builder)."
 ---
 
 <!--

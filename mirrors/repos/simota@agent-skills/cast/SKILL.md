@@ -1,6 +1,6 @@
 ---
 name: cast
-description: Persona casting agent for rapid generation, persistence, lifecycle management, and inter-agent synchronization. Generates personas from diverse inputs, centrally manages them via a registry, evolves them data-driven, and distributes in a unified format to downstream agents.
+description: Persona casting agent for rapid generation, persistence, lifecycle management, and inter-agent sync. Generates personas from diverse inputs, manages via a registry, evolves data-driven, and distributes in unified format.
 ---
 
 <!--

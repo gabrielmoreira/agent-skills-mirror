@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `iOfficeAI/AionUi` — 26 default patterns, 6 followed patterns, 53 file(s) materialized.
+Mirror of `iOfficeAI/AionUi` — 26 default patterns, 6 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 6 followed patterns, 53 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 53 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,50 +73,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.claude/skills/pr-automation/SKILL.md`](.claude/skills/pr-automation/SKILL.md) |
 | 8 | ✓ | [`.claude/skills/pr-fix/SKILL.md`](.claude/skills/pr-fix/SKILL.md) |
 | 9 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/pr-verify/SKILL.md`](.claude/skills/pr-verify/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
-| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 14 | ✓ | [`docs/prds/conversations/acp/skills.md`](docs/prds/conversations/acp/skills.md) |
-| 15 | ✓ | [`src/process/resources/skills/_builtin/aionui-skills/SKILL.md`](src/process/resources/skills/_builtin/aionui-skills/SKILL.md) |
-| 16 | ✓ | [`src/process/resources/skills/_builtin/cron/SKILL.md`](src/process/resources/skills/_builtin/cron/SKILL.md) |
-| 17 | ✓ | [`src/process/resources/skills/_builtin/office-cli/SKILL.md`](src/process/resources/skills/_builtin/office-cli/SKILL.md) |
-| 18 | ✓ | [`src/process/resources/skills/_builtin/skill-creator/SKILL.md`](src/process/resources/skills/_builtin/skill-creator/SKILL.md) |
-| 19 | ✓ | [`src/process/resources/skills/aionui-webui-setup/SKILL.md`](src/process/resources/skills/aionui-webui-setup/SKILL.md) |
-| 20 | ✓ | [`src/process/resources/skills/mermaid/SKILL.md`](src/process/resources/skills/mermaid/SKILL.md) |
-| 21 | ✓ | [`src/process/resources/skills/moltbook/SKILL.md`](src/process/resources/skills/moltbook/SKILL.md) |
-| 22 | ✓ | [`src/process/resources/skills/morph-ppt-3d/SKILL.md`](src/process/resources/skills/morph-ppt-3d/SKILL.md) |
-| 23 | ✓ | [`src/process/resources/skills/morph-ppt/SKILL.md`](src/process/resources/skills/morph-ppt/SKILL.md) |
-| 24 | ✓ | [`src/process/resources/skills/officecli-academic-paper/creating.md`](src/process/resources/skills/officecli-academic-paper/creating.md) |
-| 25 | ✓ | [`src/process/resources/skills/officecli-academic-paper/SKILL.md`](src/process/resources/skills/officecli-academic-paper/SKILL.md) |
-| 26 | ✓ | [`src/process/resources/skills/officecli-data-dashboard/creating.md`](src/process/resources/skills/officecli-data-dashboard/creating.md) |
-| 27 | ✓ | [`src/process/resources/skills/officecli-data-dashboard/SKILL.md`](src/process/resources/skills/officecli-data-dashboard/SKILL.md) |
-| 28 | ✓ | [`src/process/resources/skills/officecli-docx/creating.md`](src/process/resources/skills/officecli-docx/creating.md) |
-| 29 | ✓ | [`src/process/resources/skills/officecli-docx/editing.md`](src/process/resources/skills/officecli-docx/editing.md) |
-| 30 | ✓ | [`src/process/resources/skills/officecli-docx/SKILL.md`](src/process/resources/skills/officecli-docx/SKILL.md) |
-| 31 | ✓ | [`src/process/resources/skills/officecli-financial-model/creating.md`](src/process/resources/skills/officecli-financial-model/creating.md) |
-| 32 | ✓ | [`src/process/resources/skills/officecli-financial-model/SKILL.md`](src/process/resources/skills/officecli-financial-model/SKILL.md) |
-| 33 | ✓ | [`src/process/resources/skills/officecli-pitch-deck/creating.md`](src/process/resources/skills/officecli-pitch-deck/creating.md) |
-| 34 | ✓ | [`src/process/resources/skills/officecli-pitch-deck/SKILL.md`](src/process/resources/skills/officecli-pitch-deck/SKILL.md) |
-| 35 | ✓ | [`src/process/resources/skills/officecli-pptx/creating.md`](src/process/resources/skills/officecli-pptx/creating.md) |
-| 36 | ✓ | [`src/process/resources/skills/officecli-pptx/editing.md`](src/process/resources/skills/officecli-pptx/editing.md) |
-| 37 | ✓ | [`src/process/resources/skills/officecli-pptx/SKILL.md`](src/process/resources/skills/officecli-pptx/SKILL.md) |
-| 38 | ✓ | [`src/process/resources/skills/officecli-xlsx/creating.md`](src/process/resources/skills/officecli-xlsx/creating.md) |
-| 39 | ✓ | [`src/process/resources/skills/officecli-xlsx/editing.md`](src/process/resources/skills/officecli-xlsx/editing.md) |
-| 40 | ✓ | [`src/process/resources/skills/officecli-xlsx/SKILL.md`](src/process/resources/skills/officecli-xlsx/SKILL.md) |
-| 41 | ✓ | [`src/process/resources/skills/openclaw-setup/SKILL.md`](src/process/resources/skills/openclaw-setup/SKILL.md) |
-| 42 | ✓ | [`src/process/resources/skills/pdf/SKILL.md`](src/process/resources/skills/pdf/SKILL.md) |
-| 43 | ✓ | [`src/process/resources/skills/star-office-helper/SKILL.md`](src/process/resources/skills/star-office-helper/SKILL.md) |
-| 44 | ✓ | [`src/process/resources/skills/story-roleplay/SKILL.md`](src/process/resources/skills/story-roleplay/SKILL.md) |
-| 45 | ✓ | [`src/process/resources/skills/weixin-file-send/SKILL.md`](src/process/resources/skills/weixin-file-send/SKILL.md) |
-| 46 | ✓ | [`src/process/resources/skills/x-recruiter/SKILL.md`](src/process/resources/skills/x-recruiter/SKILL.md) |
-| 47 | ✓ | [`src/process/resources/skills/xiaohongshu-recruiter/SKILL.md`](src/process/resources/skills/xiaohongshu-recruiter/SKILL.md) |
-| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 49 | → | [`CONTRIBUTING.zh.md`](CONTRIBUTING.zh.md) |
-| 50 | → | [`docs/conventions/file-structure.md`](docs/conventions/file-structure.md) |
-| 51 | → | [`docs/conventions/pr-automation.md`](docs/conventions/pr-automation.md) |
-| 52 | → | [`docs/development.md`](docs/development.md) |
-| 53 | → | [`docs/tech/architecture.md`](docs/tech/architecture.md) |
+| 10 | ✓ | [`.claude/skills/pr-ship/SKILL.md`](.claude/skills/pr-ship/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/pr-verify/SKILL.md`](.claude/skills/pr-verify/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
+| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 15 | ✓ | [`docs/prds/conversations/acp/skills.md`](docs/prds/conversations/acp/skills.md) |
+| 16 | ✓ | [`src/process/resources/skills/_builtin/aionui-skills/SKILL.md`](src/process/resources/skills/_builtin/aionui-skills/SKILL.md) |
+| 17 | ✓ | [`src/process/resources/skills/_builtin/cron/SKILL.md`](src/process/resources/skills/_builtin/cron/SKILL.md) |
+| 18 | ✓ | [`src/process/resources/skills/_builtin/office-cli/SKILL.md`](src/process/resources/skills/_builtin/office-cli/SKILL.md) |
+| 19 | ✓ | [`src/process/resources/skills/_builtin/skill-creator/SKILL.md`](src/process/resources/skills/_builtin/skill-creator/SKILL.md) |
+| 20 | ✓ | [`src/process/resources/skills/aionui-webui-setup/SKILL.md`](src/process/resources/skills/aionui-webui-setup/SKILL.md) |
+| 21 | ✓ | [`src/process/resources/skills/mermaid/SKILL.md`](src/process/resources/skills/mermaid/SKILL.md) |
+| 22 | ✓ | [`src/process/resources/skills/moltbook/SKILL.md`](src/process/resources/skills/moltbook/SKILL.md) |
+| 23 | ✓ | [`src/process/resources/skills/morph-ppt-3d/SKILL.md`](src/process/resources/skills/morph-ppt-3d/SKILL.md) |
+| 24 | ✓ | [`src/process/resources/skills/morph-ppt/SKILL.md`](src/process/resources/skills/morph-ppt/SKILL.md) |
+| 25 | ✓ | [`src/process/resources/skills/officecli-academic-paper/creating.md`](src/process/resources/skills/officecli-academic-paper/creating.md) |
+| 26 | ✓ | [`src/process/resources/skills/officecli-academic-paper/SKILL.md`](src/process/resources/skills/officecli-academic-paper/SKILL.md) |
+| 27 | ✓ | [`src/process/resources/skills/officecli-data-dashboard/creating.md`](src/process/resources/skills/officecli-data-dashboard/creating.md) |
+| 28 | ✓ | [`src/process/resources/skills/officecli-data-dashboard/SKILL.md`](src/process/resources/skills/officecli-data-dashboard/SKILL.md) |
+| 29 | ✓ | [`src/process/resources/skills/officecli-docx/creating.md`](src/process/resources/skills/officecli-docx/creating.md) |
+| 30 | ✓ | [`src/process/resources/skills/officecli-docx/editing.md`](src/process/resources/skills/officecli-docx/editing.md) |
+| 31 | ✓ | [`src/process/resources/skills/officecli-docx/SKILL.md`](src/process/resources/skills/officecli-docx/SKILL.md) |
+| 32 | ✓ | [`src/process/resources/skills/officecli-financial-model/creating.md`](src/process/resources/skills/officecli-financial-model/creating.md) |
+| 33 | ✓ | [`src/process/resources/skills/officecli-financial-model/SKILL.md`](src/process/resources/skills/officecli-financial-model/SKILL.md) |
+| 34 | ✓ | [`src/process/resources/skills/officecli-pitch-deck/creating.md`](src/process/resources/skills/officecli-pitch-deck/creating.md) |
+| 35 | ✓ | [`src/process/resources/skills/officecli-pitch-deck/SKILL.md`](src/process/resources/skills/officecli-pitch-deck/SKILL.md) |
+| 36 | ✓ | [`src/process/resources/skills/officecli-pptx/creating.md`](src/process/resources/skills/officecli-pptx/creating.md) |
+| 37 | ✓ | [`src/process/resources/skills/officecli-pptx/editing.md`](src/process/resources/skills/officecli-pptx/editing.md) |
+| 38 | ✓ | [`src/process/resources/skills/officecli-pptx/SKILL.md`](src/process/resources/skills/officecli-pptx/SKILL.md) |
+| 39 | ✓ | [`src/process/resources/skills/officecli-xlsx/creating.md`](src/process/resources/skills/officecli-xlsx/creating.md) |
+| 40 | ✓ | [`src/process/resources/skills/officecli-xlsx/editing.md`](src/process/resources/skills/officecli-xlsx/editing.md) |
+| 41 | ✓ | [`src/process/resources/skills/officecli-xlsx/SKILL.md`](src/process/resources/skills/officecli-xlsx/SKILL.md) |
+| 42 | ✓ | [`src/process/resources/skills/openclaw-setup/SKILL.md`](src/process/resources/skills/openclaw-setup/SKILL.md) |
+| 43 | ✓ | [`src/process/resources/skills/pdf/SKILL.md`](src/process/resources/skills/pdf/SKILL.md) |
+| 44 | ✓ | [`src/process/resources/skills/star-office-helper/SKILL.md`](src/process/resources/skills/star-office-helper/SKILL.md) |
+| 45 | ✓ | [`src/process/resources/skills/story-roleplay/SKILL.md`](src/process/resources/skills/story-roleplay/SKILL.md) |
+| 46 | ✓ | [`src/process/resources/skills/weixin-file-send/SKILL.md`](src/process/resources/skills/weixin-file-send/SKILL.md) |
+| 47 | ✓ | [`src/process/resources/skills/x-recruiter/SKILL.md`](src/process/resources/skills/x-recruiter/SKILL.md) |
+| 48 | ✓ | [`src/process/resources/skills/xiaohongshu-recruiter/SKILL.md`](src/process/resources/skills/xiaohongshu-recruiter/SKILL.md) |
+| 49 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 50 | → | [`CONTRIBUTING.zh.md`](CONTRIBUTING.zh.md) |
+| 51 | → | [`docs/conventions/file-structure.md`](docs/conventions/file-structure.md) |
+| 52 | → | [`docs/conventions/pr-automation.md`](docs/conventions/pr-automation.md) |
+| 53 | → | [`docs/development.md`](docs/development.md) |
+| 54 | → | [`docs/tech/architecture.md`](docs/tech/architecture.md) |
 
 ---
 

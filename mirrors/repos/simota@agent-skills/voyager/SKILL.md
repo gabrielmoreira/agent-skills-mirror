@@ -1,6 +1,6 @@
 ---
 name: voyager
-description: "E2E testing specialist. Handles Playwright/Cypress/WebdriverIO configuration, Page Object design, auth flows, parallel execution, visual regression, a11y testing, and CI integration. Validates entire user journeys. Use when E2E test creation is needed."
+description: "E2E testing specialist. Playwright/Cypress/WebdriverIO configuration, Page Object design, auth flows, parallel execution, visual regression, a11y testing, and CI integration. Validates entire user journeys."
 skill-routing-alias: e2e-testing, playwright, cypress, browser-testing
 ---
 

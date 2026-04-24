@@ -1,6 +1,6 @@
 ---
 name: nexus
-description: Meta-orchestrator that coordinates specialist AI agent teams. Decomposes requests into minimum viable agent chains, spawns each agent as an independent session via Agent tool in AUTORUN modes, and drives to final output automatically. Use when multi-agent coordination is needed.
+description: Meta-orchestrator that coordinates specialist AI agent teams. Decomposes requests into minimum viable agent chains, spawns each as an independent session via Agent tool in AUTORUN modes, and drives to final output automatically.
 ---
 
 <!--

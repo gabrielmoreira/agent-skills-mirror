@@ -1,6 +1,6 @@
 ---
 name: relay
-description: Messaging integration, bot development, and real-time communication design+implementation agent. Handles channel adapter patterns, webhook handlers, WebSocket servers, event-driven architecture, and bot command frameworks. Use when messaging integration, bot development, or real-time communication is needed.
+description: Messaging integration, bot development, and real-time communication design+implementation. Channel adapter patterns, webhook handlers, WebSocket servers, event-driven architecture, and bot command frameworks.
 ---
 
 <!--

@@ -59,6 +59,26 @@ metadata:
       - clawhub
 ---
 
+# STEP 0: CANONICAL PATH SELF-CHECK — RUN BEFORE READING BELOW
+
+Before reading anything else in this file, verify that the SKILL.md you just loaded is the versioned cache copy, not a stale marketplace clone:
+
+```bash
+CANONICAL_ROOT="$HOME/.claude/plugins/cache/last30days-skill/last30days"
+CANONICAL_LATEST=$(ls -d "$CANONICAL_ROOT"/*/ 2>/dev/null | sort -V | tail -1)
+CANONICAL_LATEST="${CANONICAL_LATEST%/}"
+```
+
+If the SKILL.md file you just read is NOT under `$CANONICAL_LATEST/`, STOP and re-read `$CANONICAL_LATEST/SKILL.md` before proceeding. Do not run `--help`, do not plan, do not invoke the engine against any other path.
+
+**Why:** `~/.claude/plugins/marketplaces/last30days-skill/` is a git clone Claude Code auto-restores to `origin/main` on session start. It can lag the versioned cache by one or more releases. Three 2026-04-22 test runs (Linear, Coinbase) loaded SKILL.md from `marketplaces/`, ran `--help` from the same stale path, did not see the `--competitors` flag that existed in the cache, and fell back to a manual comparison plan. Result: 2 of 3 windows never invoked the feature they were asked to test.
+
+**How to self-check:** the file path you used in your last Read tool call should match `$CANONICAL_LATEST/SKILL.md`. If it contains `marketplaces/` or any other prefix, that is the stale-path failure mode. Re-read from `$CANONICAL_LATEST/SKILL.md` and restart this contract from the top.
+
+The same pinned resolver appears later in Step 1 for the engine Bash invocation. That guard is necessary but insufficient — by the time you reach Step 1, you may have already internalized an out-of-date flag list from the stale SKILL.md above it. This STEP 0 runs first so the CONTRACT itself is read from the right file.
+
+---
+
 # SKILL CONTRACT — READ BEFORE ANY TOOL CALL
 
 You are inside the `/last30days` SKILL. This is a specific research tool with a 1400+ line instruction contract (the rest of this file) that defines EXACTLY how to produce the research output. It is not a generic "last 30 days of X" research prompt. Do NOT treat `/last30days` as a search keyword you can improvise against.
@@ -90,7 +110,7 @@ Replace `{VERSION}` with the installed plugin version (`jq -r '.version' "$SKILL
 
 **Placement by query type:**
 - GENERAL / NEWS / PROMPTING / RECOMMENDATIONS: badge on line 1, blank line 2, `What I learned:` on line 3, then bold-lead-in paragraphs
-- COMPARISON: badge on line 1, blank line 2, `# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (Last 30 Days)` on line 3, then Quick Verdict section
+- COMPARISON: badge on line 1, blank line 2, `# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (/Last30Days)` on line 3, then Quick Verdict section
 
 ---
 
@@ -108,7 +128,7 @@ These LAWs dominate every other rule in this file. If you find yourself about to
 
 **LAW 2 - NO INVENTED TITLE LINE (with COMPARISON exception).** For QUERY_TYPE GENERAL, NEWS, PROMPTING, RECOMMENDATIONS: the first line of your synthesis body (after the badge and one blank line) is the prose label `What I learned:` on its own line. Not `What I learned about {Topic}`, not `{Topic} - Last 30 Days`, not `{Topic}: What People Are Saying`, not `# {Topic}`, not `The headline`, not `Why he is everywhere this month`. Nothing above `What I learned:` except the badge. If you are tempted to write a title or a `##`-prefixed section name, the rule is: the badge IS the title, and section headers are forbidden (see LAW 4).
 
-**COMPARISON exception:** For QUERY_TYPE=COMPARISON (topics containing `vs` or `versus`), the title `# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (Last 30 Days)` is REQUIRED, not a violation. Comparison queries do NOT use the `What I learned:` prose label at all.
+**COMPARISON exception:** For QUERY_TYPE=COMPARISON (topics containing `vs` or `versus`), the title `# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (/Last30Days)` is REQUIRED, not a violation. Comparison queries do NOT use the `What I learned:` prose label at all.
 
 **Global-preference override:** The skill-authored template for GENERAL / NEWS / PROMPTING / RECOMMENDATIONS queries uses `**bold**` for KEY PATTERNS items and for mid-paragraph lead-ins. Do NOT strip this bold on the grounds of a personal "no bold" memory. The skill's voice contract is the formatting authority here.
 
@@ -550,28 +570,61 @@ Generated: {date} | Sources: Reddit, X, Bluesky, YouTube, TikTok, HN, Polymarket
 
 ## If QUERY_TYPE = COMPARISON
 
-When the user asks "X vs Y", run ONE research pass with a comparison-optimized plan that covers both entities AND their rivalry. This replaces the old 3-pass approach (which took 13+ minutes and produced tangential content).
+When the user asks "X vs Y" (or "X vs Y vs Z"), the engine fans out N full `pipeline.run()` calls in parallel — one per entity — each with its own Step 0.55-grade targeting. This restored the old N-pass architecture (reverted the one-pass latency optimization that removed per-entity depth); parallel execution keeps wall clock ≈ a single pass.
 
-**IMPORTANT: Include BOTH X handles (`--x-handle={TOPIC_A_HANDLE} --x-related={TOPIC_B_HANDLE},{COMPANY_HANDLES},{COMMENTATOR_HANDLES}`), `--subreddits={RESOLVED_SUBREDDITS}`, `--tiktok-hashtags={RESOLVED_HASHTAGS}`, `--tiktok-creators={RESOLVED_TIKTOK_CREATORS}`, and `--ig-creators={RESOLVED_IG_CREATORS}` from Step 0.55. Omit any flag where the value was not resolved (empty).**
+**MANDATORY per-entity resolution.** For each entity, resolve the full Step 0.55 stack (X handle, subreddits, GitHub user/repos, news context). Then assemble a `--competitors-plan` JSON mapping each entity to its targeting, and invoke the engine ONCE with the vs-topic string.
 
-**Single pass with entity-aware subqueries:**
+**Output shape per run:**
+- Main topic saves to `{main-slug}-raw.md`.
+- Each peer saves to `{peer-slug}-raw.md`.
+- Stdout shows a merged comparison with the `## Head-to-Head` scaffold + per-entity Resolved Entities block.
+
+**Invocation:**
 ```bash
-"${LAST30DAYS_PYTHON}" "${SKILL_ROOT}/scripts/last30days.py" "{TOPIC_A} vs {TOPIC_B}" --emit=compact --save-dir="${LAST30DAYS_MEMORY_DIR}" --save-suffix=v3 --plan 'COMPARISON_PLAN_JSON' --x-handle={TOPIC_A_HANDLE} --x-related={TOPIC_B_HANDLE},{COMPANY_A_HANDLE},{COMPANY_B_HANDLE},{COMMENTATOR_HANDLES} --subreddits={RESOLVED_SUBREDDITS} --tiktok-hashtags={RESOLVED_HASHTAGS} --tiktok-creators={RESOLVED_TIKTOK_CREATORS} --ig-creators={RESOLVED_IG_CREATORS}
+"${LAST30DAYS_PYTHON}" "${SKILL_ROOT}/scripts/last30days.py" "{TOPIC_A} vs {TOPIC_B} vs {TOPIC_C}" \
+  --emit=compact \
+  --save-dir="${LAST30DAYS_MEMORY_DIR}" \
+  --save-suffix=v3 \
+  --x-handle={TOPIC_A_HANDLE} \
+  --subreddits={TOPIC_A_SUBS} \
+  --competitors-plan '{
+    "{TOPIC_B}": {"x_handle":"{TOPIC_B_HANDLE}","subreddits":["{TOPIC_B_SUB_1}","{TOPIC_B_SUB_2}"],"github_user":"{TOPIC_B_GH}","context":"{TOPIC_B_CONTEXT}"},
+    "{TOPIC_C}": {"x_handle":"{TOPIC_C_HANDLE}","subreddits":["{TOPIC_C_SUB_1}"],"github_user":"{TOPIC_C_GH}","context":"{TOPIC_C_CONTEXT}"}
+  }'
 ```
 
-**The `--plan` JSON for comparisons should include 3-4 subqueries:**
-1. **Head-to-head:** `"{TOPIC_A} vs {TOPIC_B}"` - catches rivalry content, direct comparisons
-2. **Entity A news:** `"{TOPIC_A} news {MONTH} {YEAR}"` - catches entity-specific developments
-3. **Entity B news:** `"{TOPIC_B} news {MONTH} {YEAR}"` - catches entity-specific developments
-4. (Optional) **Domain context:** `"{COMPANY_A} {COMPANY_B} {DOMAIN} news"` - catches industry context (e.g., "OpenAI Anthropic AI news")
+Topic A (the main topic, first in the vs-string) uses outer `--x-handle`, `--x-related`, `--subreddits`, `--github-user`, `--github-repo`, `--tiktok-*`, `--ig-creators` as usual. Topics B and C get their targeting from `--competitors-plan` entries (keyed by entity name, case-insensitive).
 
-ALL subqueries include ALL sources. The fusion engine handles deduplication across subqueries. **At least one subquery MUST include YouTube-specific search terms** (e.g., "{PERSON} interview 2026", "{PRODUCT_A} vs {PRODUCT_B} review") to ensure YouTube content is found. Without YouTube-specific terms, the engine may only find 0-1 videos for comparison queries.
+**Step 0.55 for N entities.** The same pre-research protocol that applies to a single-entity topic applies to EACH entity in a vs-run. For N=3, that means 3 WebSearches for X handles, 3 for subreddits, 3 for GitHub, 3 for news context — or equivalent batched queries. A `## Resolved Entities` block with dashes for any entity means you skipped Step 0.55 for that one. Re-run with a corrected plan.
 
-Then do WebSearch for: `{TOPIC_A} vs {TOPIC_B} comparison {YEAR}` and `{TOPIC_A} vs {TOPIC_B} which is better` and `{COMPANY_A} vs {COMPANY_B} news {MONTH} {YEAR}`.
+**Then do WebSearch supplements** for: `{TOPIC_A} vs {TOPIC_B} comparison {YEAR}` and `{TOPIC_A} vs {TOPIC_B} which is better` — these catch rivalry articles that per-entity passes might not surface.
 
 **Skip the normal Step 1 below** - go directly to the comparison synthesis format (see "If QUERY_TYPE = COMPARISON" in the synthesis section).
 
-**COMPARISON TABLE SCAFFOLD (engine-emitted, pass through verbatim):** For comparison topics, the engine's compact output includes a `## Head-to-Head Comparison` block with an empty markdown table (columns = entities, rows = axes like "Core pitch", "Who it's for", "Community stance", "Trajectory") plus a "Choose X if / Choose Y if" prose block. Your synthesis MUST include this block verbatim with filled cells, positioned between the narrative and the emoji-tree footer. Keep each cell to 5-15 words. Use ' - ' (hyphen with spaces) not em-dashes inside cells. The block is the canonical comparison output shape - do not invent your own table structure.
+**COMPARISON TABLE SCAFFOLD (engine-emitted, pass through verbatim):** For comparison topics, the engine's compact output includes a `## Head-to-Head` block with an empty markdown table (columns = entities, rows = axes like "What it is", "Community sentiment", "Trajectory"). Your synthesis MUST include this block verbatim with filled cells, positioned between the narrative and the emoji-tree footer. Keep each cell to 5-15 words. Use ' - ' (hyphen with spaces) not em-dashes inside cells.
+
+### Competitor mode (`--competitors`)
+
+`--competitors` is a SKILL.md-level shortcut for vs-mode with auto-discovery. The engine flag itself just signals intent; YOU (the hosting reasoning model) do the discovery and Step 0.55 via your own WebSearch tool, then invoke the vs-topic path above.
+
+**The four-step protocol:**
+1. **Discover peers** via WebSearch: `"{topic} competitors"` / `"{topic} alternatives"`. Pick N=2 by default (match the flag's default), N=argument value if the user passed `--competitors=N`.
+2. **Run Step 0.55 for the main topic AND each peer** — same protocol you use for a single-entity topic, just N times. X handle, subreddits, GitHub, news context, per entity.
+3. **Build the vs-topic string**: `"{main} vs {peer1} vs {peer2}"`.
+4. **Invoke the engine** with the vs-topic, `--competitors-plan` JSON covering both peers (and the main topic if you want to override the outer flags), and the outer `--x-handle`/`--subreddits`/`--github-*` for the main topic.
+
+**Flag surface (engine):**
+- `--competitors` (bare) - signals the hosting model to discover 2 peers (3-way total).
+- `--competitors=N` - N peers (1..6; out-of-range clamps with stderr warning).
+- `--competitors-list="A,B,C"` - minimum escape hatch; names only, no per-entity targeting. Peer sub-runs fall back to planner defaults (visibly thinner data).
+- `--competitors-plan '{entity: {x_handle, subreddits, github_user, github_repos, context}}'` - full per-entity targeting; implies vs-mode; preferred.
+- `--polymarket-keywords "kw1,kw2"` - disambiguate Polymarket for ambiguous single-token topics ("Warriors" → `nba,gsw,golden-state`).
+
+**Why --competitors-plan over --competitors-list:** without per-entity handles/subs, peer sub-runs run with deterministic single-word planner queries and produce visibly thinner evidence than the main topic. The Resolved Entities block in stdout makes the gap visible — dashes for a peer = you skipped its Step 0.55.
+
+**Engine-internal auto-resolve (headless fallback):** if the engine detects BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY / OPENROUTER_API_KEY, it runs its own per-entity `resolve.auto_resolve()` before each sub-run. The hosting-model path does NOT need those keys — you are the WebSearch. The engine's auto-resolve is the cron/CI fallback for when no reasoning model is driving.
+
+**Output:** one `{slug}-raw.md` per entity in `--save-dir` plus the merged comparison on stdout. Synthesis contract identical to the vs-mode protocol above.
 
 ---
 
@@ -1152,7 +1205,7 @@ Voice contract LAWs 1, 3, 5 apply to comparisons unchanged (no `Sources:` block,
 ```
 🌐 last30days v{VERSION} · synced {YYYY-MM-DD}
 
-# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (Last 30 Days)
+# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (/Last30Days)
 
 ## Quick Verdict
 

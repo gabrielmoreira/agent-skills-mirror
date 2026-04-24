@@ -127,11 +127,13 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 | `blockrun_fx_price`        | EUR-USD, GBP-USD, JPY-USD, and more                                             | Free          |
 | `blockrun_commodity_price` | XAU-USD (gold), XAG-USD (silver), XPT-USD (platinum)                            | Free          |
 
-### Twitter/X Intelligence
+### Image & Video Generation
 
-| Tool                      | Purpose                                                                           | Price         |
-| ------------------------- | --------------------------------------------------------------------------------- | ------------- |
-| `blockrun_x_users_lookup` | Real-time user profiles (followers, bio, verification) — up to 100 usernames/call | $0.001 / user |
+| Tool                          | Purpose                                                                 | Price                  |
+| ----------------------------- | ----------------------------------------------------------------------- | ---------------------- |
+| `blockrun_image_generation`   | 8 image models — DALL-E 3, Nano Banana / Pro, Flux, Grok Imagine, CogView-4 | $0.015–$0.15 / image   |
+| `blockrun_image_edit`         | Edit / inpaint existing image (openai/gpt-image-1)                      | $0.02–$0.04 / image    |
+| `blockrun_video_generation`   | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0), 5–10s     | $0.03–$0.30 / second   |
 
 ### Polymarket (Predexon)
 

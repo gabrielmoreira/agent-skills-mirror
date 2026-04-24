@@ -14,7 +14,8 @@ description: >
   Covers anything under ~/.shannon/. Do NOT use bash/file_read/file_edit to probe or modify
   these — kocoro routes every op through the daemon HTTP API at localhost:7533 which handles
   validation, atomic writes and audit logging.
-allowed-tools: http file_read
+allowed-tools: http file_read think
+hidden: true
 ---
 
 # Kocoro — Platform Configuration Assistant
@@ -55,10 +56,11 @@ body: {"name": "agent-name", "prompt": "You are a ... assistant. You help users 
 **Create schedule:** `http POST http://localhost:7533/schedules` body: `{"prompt": "...", "cron": "0 9 * * 1-5"}`
 
 For detailed docs on MCP servers, skill API keys, permissions, project init, or multi-step recipes, load the relevant reference:
-`references/agents.md` · `references/skills.md` · `references/config.md` · `references/mcp.md` · `references/instructions.md` · `references/schedules.md` · `references/permissions.md` · `references/project-init.md` · `references/recipes.md` · `references/session-sync.md` · `references/memory.md`
+`references/agents.md` · `references/skills.md` · `references/config.md` · `references/mcp.md` · `references/instructions.md` · `references/schedules.md` · `references/permissions.md` · `references/project-init.md` · `references/recipes.md` · `references/session-sync.md` · `references/memory.md` · `references/events.md`
 
 - [Session sync](references/session-sync.md) — opt-in daily upload of local sessions to Shannon Cloud
 - references/memory.md — memory feature config + diagnostics
+- references/events.md — `/events` SSE bus catalog (tool_status / usage / run_status / cloud_* / notification)
 
 ## Security
 

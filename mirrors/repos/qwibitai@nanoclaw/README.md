@@ -26,7 +26,9 @@ NanoClaw provides that same core functionality, but in a codebase small enough t
 ## Quick Start
 
 ```bash
-git clone https://github.com/qwibitai/nanoclaw.git && cd nanoclaw && bash nanoclaw.sh
+git clone https://github.com/qwibitai/nanoclaw.git nanoclaw-v2
+cd nanoclaw-v2
+bash nanoclaw.sh
 ```
 
 `nanoclaw.sh` walks you from a fresh machine to a named agent you can message. It installs Node, pnpm, and Docker if missing, registers your Anthropic credential with OneCLI, builds the agent container, and pairs your first channel (Telegram, Discord, WhatsApp, or a local CLI). If a step fails, Claude Code is invoked automatically to diagnose and resume from where it broke.

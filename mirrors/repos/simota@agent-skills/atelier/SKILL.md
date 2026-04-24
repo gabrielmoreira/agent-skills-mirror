@@ -1,6 +1,6 @@
 ---
 name: atelier
-description: "End-to-end design-to-implementation pipeline orchestrator that runs the code-to-visual-to-code closed loop through a single entrypoint. Use when a user request spans design extraction, prototype, visual assets, slides/marketing collateral, and production implementation together. Persists a project design system and routes multi-form artifact production across Frame, Muse, Loom, Forge, Pixel, Ink/Sketch/Dot/Clay, Stage, Canvas, Morph, Artisan, and Showcase. Don't use for single-token tweaks (Muse), single prototypes (Forge), design-direction decisions only (Vision), or generic multi-domain orchestration (Nexus)."
+description: "Design-to-implementation pipeline orchestrator for the code-to-visual-to-code closed loop. Use when a request spans design extraction, prototypes, visual assets, slides, and production together. Persists a project design system across downstream agents. Don't use for single-token tweaks (Muse), single prototypes (Forge), design direction only (Vision), or generic orchestration (Nexus)."
 ---
 
 <!--

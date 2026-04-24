@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trycua/cua` — 26 default patterns, 0 followed patterns, 19 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,9 +75,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md) |
 | 15 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
 | 16 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
-| 17 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
-| 18 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
-| 19 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
+| 17 | ✓ | [`libs/cua-driver/Skills/cua-driver/SKILL.md`](libs/cua-driver/Skills/cua-driver/SKILL.md) |
+| 18 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
+| 19 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
+| 20 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
 
 ---
 

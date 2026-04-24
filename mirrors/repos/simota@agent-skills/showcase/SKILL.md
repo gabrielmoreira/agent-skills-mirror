@@ -1,6 +1,6 @@
 ---
 name: showcase
-description: "Storybook story creation, catalog management, and Visual Regression integration. Handles UI component documentation, visual testing, and CSF 3.0/Factories format story creation. Supports Storybook 10 (ESM-only) and React Cosmos. Use when component documentation or visual testing is needed."
+description: "Storybook story creation, catalog management, and Visual Regression integration. UI component docs, visual testing, and CSF 3.0/Factories story creation. Supports Storybook 10 (ESM-only) and React Cosmos."
 ---
 
 <!--

@@ -1,6 +1,6 @@
 ---
 name: navigator
-description: Browser automation agent using Playwright and Chrome DevTools to complete tasks. Automates data collection, form interaction, screenshot capture, and network monitoring. Task completion focus (vs Voyager for E2E testing). Use when browser automation is needed.
+description: Browser automation using Playwright and Chrome DevTools. Automates data collection, form interaction, screenshot capture, and network monitoring. Task completion focus (vs Voyager for E2E testing).
 # skill-routing-alias: browser-automation, playwright-mcp, web-scraping, data-collection
 ---
 

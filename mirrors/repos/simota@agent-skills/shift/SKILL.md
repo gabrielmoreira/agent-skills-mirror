@@ -1,6 +1,6 @@
 ---
 name: shift
-description: "Migration and upgrade orchestrator. Plans, executes, and verifies migrations for frameworks, libraries, APIs, databases, and infrastructure end-to-end. Provides codemod generation, incremental migration strategies (Strangler Fig/Branch by Abstraction), before/after comparison verification, and rollback plans. Use when migration or upgrade work is needed."
+description: "Migration and upgrade orchestrator for frameworks, libraries, APIs, databases, and infrastructure. Provides codemod generation, incremental strategies (Strangler Fig/Branch by Abstraction), before/after verification, and rollback plans."
 ---
 
 <!--

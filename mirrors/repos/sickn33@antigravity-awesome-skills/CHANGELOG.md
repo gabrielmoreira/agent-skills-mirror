@@ -11,6 +11,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _No unreleased changes yet._
 
+## [10.6.0] - 2026-04-24 - "Agent Coordination, Browser Automation, API Integration, and Bullet Structuring"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #541, #545, #547, and #548 with maintainer source-only enforcement, generated-state sync, and checklist normalization for fork PRs. It adds four new skills across structured bullet formatting, frontend API integration, Skyvern browser automation, and lambda-lang agent coordination, and it patches the NotebookLM `python-dotenv` pin for Dependabot alert #40.
+
+## New Skills
+
+- **bulletmind** - scoped hierarchical bullet-formatting workflow for turning dense input into clean nested bullet structures.
+- **frontend-api-integration-patterns** - frontend API integration guidance covering typed clients, retries, cancellation, React state safety, and failure-mode handling.
+- **skyvern-browser-automation** - browser automation workflow for Skyvern-based web tasks, with usage triggers and operational limitations.
+- **lambda-lang** - native agent-to-agent coordination language workflow for structured multi-agent communication.
+
+## Improvements
+
+- **Dependabot remediation** - updates NotebookLM `python-dotenv` from `1.0.0` to `1.2.2` and keeps the local requirements documentation aligned.
+- **PR quality-gate hygiene** - refreshed fork PR branches against current `main`, normalized the Bulletmind PR body with the required Quality Bar Checklist, and reran the source-validation, artifact-preview, review, dependency, and CodeQL checks before merge.
+- **source-only merge flow** - preserved contributor merge credit through GitHub squash merges while regenerating catalog, index, plugin mirrors, web assets, and contributor state on `main`.
+- **release validation** - keeps the repository at the frozen warning budget of 16 validation warnings and confirms the web app build and npm package dry-run during preflight.
+
+## Who should care
+
+- **Frontend teams** get a new integration-patterns skill for robust API clients and UI-safe request lifecycles.
+- **Automation users** get Skyvern-oriented browser automation guidance for web workflows that need visual navigation.
+- **Agent-workflow builders** get lambda-lang coordination guidance for multi-agent handoffs.
+- **Study, notes, and writing users** get Bulletmind for reliable bullet-only structuring of dense material.
+- **Maintainers and security-conscious users** get a patched NotebookLM dependency and synchronized generated artifacts for downstream installers.
+
+## Credits
+
+- **[@tejasashinde](https://github.com/tejasashinde)** for PR #541 (`bulletmind`).
+- **[@avij1109](https://github.com/avij1109)** for PR #545 (`frontend-api-integration-patterns`).
+- **[@mark1ian](https://github.com/mark1ian)** for PR #547 (`skyvern-browser-automation`).
+- **[@voidborne-d](https://github.com/voidborne-d)** for PR #548 (`lambda-lang`).
+
 ## [10.5.0] - 2026-04-20 - "Audit Fixes, Source-Only PR Hygiene, and OpenCode Stability Guidance"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

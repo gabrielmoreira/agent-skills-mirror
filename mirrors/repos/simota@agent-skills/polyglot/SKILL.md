@@ -1,6 +1,6 @@
 ---
 name: polyglot
-description: Internationalization (i18n) and localization (l10n) specialist. Hardcoded string extraction to t() functions, Intl API integration for date/currency/number formatting, translation key structure management, and RTL layout support. Use when multi-language support or i18n setup is needed.
+description: Internationalization (i18n) and localization (l10n) specialist. Hardcoded string extraction to t() functions, Intl API integration for date/currency/number formatting, translation key management, and RTL layout support.
 ---
 
 <!--

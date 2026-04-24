@@ -203,6 +203,7 @@ Multiple agents may work on different files in the same worktree simultaneously.
 - ALWAYS use `git add <specific-file-paths>` listing only files you modified
 - Before committing, run `git status` and verify you are only staging YOUR files
 - Track which files you created/modified/deleted during the session
+- It is always fine to include `packages/ai/src/models.generated.ts` in a commit alongside the actual files you want to commit
 
 ### Forbidden Git Operations
 

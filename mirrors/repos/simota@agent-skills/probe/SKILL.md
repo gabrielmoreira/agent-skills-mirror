@@ -1,6 +1,6 @@
 ---
 name: probe
-description: OWASP ZAP/Burp Suite/Nuclei integration, penetration test planning, DAST execution, and vulnerability scanning. Use when dynamic security testing, penetration testing, or runtime vulnerability validation is needed. Complements Sentinel static analysis.
+description: OWASP ZAP/Burp Suite/Nuclei integration, penetration test planning, DAST execution, and vulnerability scanning. For dynamic security testing, pentesting, or runtime vulnerability validation. Complements Sentinel static analysis.
 ---
 
 <!--

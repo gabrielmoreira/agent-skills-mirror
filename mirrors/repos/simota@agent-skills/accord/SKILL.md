@@ -47,6 +47,7 @@ Use Accord when the task needs:
 - traceable requirements, BDD scenarios, or a cross-functional review packet
 - research, personas, or stakeholder feedback turned into a delivery-ready spec
 - structured downstream inputs for implementation, decomposition, testing, diagrams, or formal documentation
+- an executable specification for downstream AI agents (Builder/Radar/Voyager) to drive implementation, testing, and E2E flows — Accord is the spec-driven development (SDD) entry point for Nexus/AUTORUN flows (GitHub Spec Kit 2026, cc-sdd)
 
 Route elsewhere when the task is primarily:
 - implementation, architecture, or test execution: `Builder`, `Atlas`, `Radar`
@@ -60,6 +61,7 @@ Route elsewhere when the task is primarily:
 - Build the package in staged order: `L0 -> L1 -> L2 -> L3`.
 - Keep one truth and expose team-specific views without splitting the source of truth. Effective requirements management eliminates 50-80% of project defects and 60-80% of rework cost (CMU SEI).
 - Treat BDD as a collaboration tool for building shared understanding, not merely a testing tool. Scenarios exist to align product, dev, and QA — test automation is a secondary benefit.
+- Treat the delivered package as an **executable specification** consumed by downstream AI agents (Builder/Radar/Voyager), not passive documentation. `L0` scope-in/out, `L2-Dev` detail, and `L3` acceptance criteria must be executable and verifiable without reinterpretation — this is the contract for spec-driven development (GitHub Spec Kit, cc-sdd 2026).
 - Include BDD acceptance criteria in `L3`.
 - Maintain bidirectional requirement-to-test traceability explicitly — track from requirement to test case and from test case back to requirement. Bidirectional links catch orphaned tests and untested requirements that unidirectional tracing misses.
 - Select `Full`, `Standard`, or `Lite` scope deliberately and state the reason.
@@ -104,7 +106,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Let a single role author acceptance criteria alone — require at least product + dev + QA perspectives (Three Amigos) before finalizing `L3`.
 - Write excessive BDD scenarios to cover all code paths — scenarios should cover the most important positive, negative, and edge case behaviours; defer exhaustive path coverage to unit tests.
 - Defer NFR/CFR elicitation past `L1` without explicit scope-out in `L0` — late NFR identification is the most damaging requirements anti-pattern, causing rework at integration and acceptance phases. Real failures: healthcare.gov (scalability ignored), Knight Capital ($440M from missing rate-limiting constraints). Prefer the term "cross-functional requirement" (CFR) over "non-functional requirement" (NFR) — CFRs cross all functions being built and must be shifted left into story-level acceptance criteria, not deferred to end-of-delivery validation.
-- Accept LLM-generated requirements as final without stakeholder validation — LLMs systematically omit domain-specific requirements and hallucinate constraints not rooted in actual stakeholder needs; users exhibit automation bias toward AI-drafted text (Wiley SLR 2026, IEEE industry survey). Always route AI-drafted requirements through Three Amigos review before incorporating into `L1`/`L2`.
+- Accept LLM-generated requirements as final without stakeholder validation — LLMs systematically omit domain-specific requirements and hallucinate constraints not rooted in actual stakeholder needs; users exhibit automation bias toward AI-drafted text (Wiley SLR 2026: 58.2% use AI in RE, 81.2% of adopters require human review before acceptance). Always route AI-drafted requirements through Three Amigos review before incorporating into `L1`/`L2`.
+- Attach more than `7` acceptance criteria to a single user story — industry consensus (ScrumAlliance, ProductPlan, CraftUp 2026) treats `3-5` as optimal and `>7` as the signal to split the story. Aggregate `L3` scenario count and per-story `AC-*` count are independent rules.
+- Mix multiple business rules inside a single Gherkin `Rule:` block — each `Rule:` (Gherkin v6+) must illustrate exactly one business rule; mixing breaks IDE grouping and obscures the behavior under test.
 
 ## Scope Modes
 
@@ -146,6 +150,8 @@ Use it to log scope choice, section usage, alignment, revisions, adoption, and r
 | Must ratio | Warn when `Must` exceeds `60%` of requirements |
 | BDD specificity | `Given/When/Then` must contain concrete, testable outcomes; one scenario covers one user action; use business domain language, never implementation details |
 | BDD scale | Cap at `~12` scenarios per feature and `3-5` steps per scenario (Cucumber official guideline); exceeding these signals over-specification — defer exhaustive paths to unit tests |
+| AC per story | `3-5` acceptance criteria per user story is optimal; `>7` signals the story is too large and must be split (ScrumAlliance, ProductPlan 2026 consensus). This rule is per-`US`, independent from the `~12` scenarios-per-feature cap |
+| Business rule grouping | Group related `L3` scenarios under Gherkin `Rule:` keyword (Gherkin v6+, cucumber.io reference). One `Rule:` block must illustrate exactly one business rule — mixing rules breaks IDE grouping and obscures the behavior under test. Tags on `Rule:` inherit to its scenarios |
 | BDD collaboration | `L3` scenarios require Three Amigos review (product + dev + QA perspectives) before finalization |
 | BDD discovery | Use Example Mapping (rules → examples → questions → stories) to structure Three Amigos sessions; time-box to `25 min` per story to prevent scope drift |
 | NFR completeness | Every NFR in `L1` must have at least one testable `AC` in `L3`; listing `TBD` is not acceptable |

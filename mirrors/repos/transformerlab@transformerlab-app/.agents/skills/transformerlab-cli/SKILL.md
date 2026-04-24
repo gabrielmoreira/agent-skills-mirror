@@ -87,7 +87,9 @@ lab task list
 # 3. Queue a task on a compute provider
 #    NOTE: --no-interactive silently picks the DEFAULT provider (Local).
 #    To pick a specific provider, run interactively (see "Selecting a provider" below).
-lab task queue TASK_ID --no-interactive
+#    ALWAYS pass --description/-m with a markdown note describing the iteration
+#    (see "Always write a run description" below).
+lab task queue TASK_ID --no-interactive -m "Testing lr=3e-5 after loss plateaued at 2.1"
 
 # 4. Monitor the job (three log streams — see "Job logs: three real commands" below)
 lab job list --running
@@ -226,6 +228,37 @@ lab task add ./hello-world-task --no-interactive
 10. **Never use the deprecated `lab job logs`** — see the "Job logs: three real commands" section below.
 11. **After queuing a task, ASK the user if they'd like you to watch the logs.** Don't start streaming or polling automatically — jobs can take minutes to hours, and `--follow` blocks. Report the Job ID and ask: "Want me to watch the logs and report back?"
 12. **Never create API keys programmatically** — if auth fails, ask the user to provide an API key from the web UI
+13. **Always pass `--description/-m` when queuing a task. Generate it yourself — never ask the user.** See "Always write a run description" below.
+
+### Always write a run description
+
+Every `lab task queue` call MUST include `--description/-m "..."`. The description is markdown stored on the job and shown in `lab job info`. Its audience is a future researcher reading `lab job list` weeks later — they have git and the task code, but NOT this chat. The description is the only bridge.
+
+**Treat it like a short PR description for this run.** Draft 1–5 lines (bullets for multi-point notes) covering:
+
+1. **What changed vs the prior run / baseline** — the concrete diff (hyperparameters, code, model, data, infra). If nothing changed, say so and link the prior job.
+2. **What hypothesis you're testing** — why this run is worth doing.
+3. **What a future reader should remember** — gotchas, prior surprises, things to check in the output.
+
+Pull these from the conversation and recent git diff / edited files. If the note has newlines or shell-awkward characters, pipe it: `printf '%s' "$DESC" | lab task queue abc123 -m -`.
+
+```bash
+# Good: diff + hypothesis + watch
+printf '%s' "- Bumped lr 1e-5 → 3e-5, warmup 100 → 500 steps.
+- Testing whether higher lr clears the eval/loss=2.1 plateau seen in job 7f21 around step 2k.
+- Watch: earlier runs with lr≥5e-5 diverged by step 500." | lab task queue abc123 --no-interactive -m -
+
+# Good: small change — one line is enough
+lab task queue abc123 --no-interactive -m "Rerun on H100 (was A100) to confirm throughput regression from #1850."
+
+# Good: nothing changed
+lab task queue abc123 --no-interactive -m "Rerun of job 7f21, no code or config changes (network flake on first attempt)."
+
+# Bad: generic filler that tells the reader nothing
+lab task queue abc123 -m "train model"
+```
+
+Don't restate the task name, full hyperparameter dict, or file paths — those are already on the job record. Don't copy the user's last message verbatim — synthesize. If the conversation is truly empty of signal, fall back to `"Rerun of <id>, no changes"`.
 
 ### Selecting a provider when queuing a task
 
@@ -308,7 +341,7 @@ This applies to launching jobs, fetching logs, checking cluster status, and ever
 | `lab task init` | Scaffold `task.yaml` + `main.py` in the current directory (`--interactive` to prompt) | No |
 | `lab task add [dir]` | Add task from directory or `--from-git` URL (`--no-interactive`, `--dry-run`) | Yes |
 | `lab task delete <id>` | Delete a task (`--no-interactive` to skip confirmation) | Yes |
-| `lab task queue <id>` | Queue task on compute provider | Yes |
+| `lab task queue <id>` | Queue task on compute provider (`-m/--description` for a markdown run note; required for agents, see "Always write a run description") | Yes |
 | `lab task gallery` | Browse/import from task gallery | Yes |
 | `lab job list` | List jobs (`--running` for active only) | Yes |
 | `lab job info <id>` | Get detailed job information | Yes |

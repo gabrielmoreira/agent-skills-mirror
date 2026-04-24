@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 22 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,25 +62,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills/implementing-jsc-classes-cpp/SKILL.md`](.claude/skills/implementing-jsc-classes-cpp/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/implementing-jsc-classes-zig/SKILL.md`](.claude/skills/implementing-jsc-classes-zig/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/javascriptcore-garbage-collector/SKILL.md`](.claude/skills/javascriptcore-garbage-collector/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/writing-bundler-tests/SKILL.md`](.claude/skills/writing-bundler-tests/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/writing-dev-server-tests/SKILL.md`](.claude/skills/writing-dev-server-tests/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/zig-system-calls/SKILL.md`](.claude/skills/zig-system-calls/SKILL.md) |
-| 7 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
-| 8 | ✓ | [`.github/workflows/CLAUDE.md`](.github/workflows/CLAUDE.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`scripts/build/CLAUDE.md`](scripts/build/CLAUDE.md) |
-| 12 | ✓ | [`scripts/verify-baseline-static/CLAUDE.md`](scripts/verify-baseline-static/CLAUDE.md) |
-| 13 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 14 | ✓ | [`src/bun.js/bindings/v8/AGENTS.md`](src/bun.js/bindings/v8/AGENTS.md) |
-| 15 | ✓ | [`src/bun.js/bindings/v8/CLAUDE.md`](src/bun.js/bindings/v8/CLAUDE.md) |
-| 16 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
-| 17 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
-| 18 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
-| 19 | ✓ | [`src/unicode/uucode/CLAUDE.md`](src/unicode/uucode/CLAUDE.md) |
-| 20 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 21 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 22 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
+| 4 | ✓ | [`.claude/skills/slowest-tests/SKILL.md`](.claude/skills/slowest-tests/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/writing-bundler-tests/SKILL.md`](.claude/skills/writing-bundler-tests/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/writing-dev-server-tests/SKILL.md`](.claude/skills/writing-dev-server-tests/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/zig-system-calls/SKILL.md`](.claude/skills/zig-system-calls/SKILL.md) |
+| 8 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
+| 9 | ✓ | [`.github/workflows/CLAUDE.md`](.github/workflows/CLAUDE.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`scripts/build/CLAUDE.md`](scripts/build/CLAUDE.md) |
+| 13 | ✓ | [`scripts/verify-baseline-static/CLAUDE.md`](scripts/verify-baseline-static/CLAUDE.md) |
+| 14 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 15 | ✓ | [`src/bun.js/bindings/v8/AGENTS.md`](src/bun.js/bindings/v8/AGENTS.md) |
+| 16 | ✓ | [`src/bun.js/bindings/v8/CLAUDE.md`](src/bun.js/bindings/v8/CLAUDE.md) |
+| 17 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 18 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
+| 19 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
+| 20 | ✓ | [`src/unicode/uucode/CLAUDE.md`](src/unicode/uucode/CLAUDE.md) |
+| 21 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 22 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 23 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
 
 ---
 

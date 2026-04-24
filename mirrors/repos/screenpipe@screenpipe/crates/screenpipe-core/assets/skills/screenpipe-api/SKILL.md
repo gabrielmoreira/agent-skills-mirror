@@ -431,9 +431,16 @@ curl -X POST http://localhost:11435/notify \
   -d '{"title": "Export complete", "body": "saved to [report.csv](~/Downloads/report.csv)"}'
 
 # With action buttons
+# Use `type: "link"` for external URLs and `type: "deeplink"` for
+# screenpipe:// in-app routes. `type: "dismiss"` closes the notification.
 curl -X POST http://localhost:11435/notify \
   -H "Content-Type: application/json" \
   -d '{"title": "Meeting summary", "body": "**Q3 Planning**\n- Budget approved", "actions": [{"id": "view", "label": "view", "type": "deeplink", "url": "screenpipe://timeline"}, {"id": "skip", "label": "skip", "type": "dismiss"}]}'
+
+# External URL action (opens in browser)
+curl -X POST http://localhost:11435/notify \
+  -H "Content-Type: application/json" \
+  -d '{"title": "PR ready for review", "body": "nice work", "actions": [{"id": "open", "label": "open pr", "type": "link", "url": "https://github.com/screenpipe/screenpipe/pull/1234"}]}'
 
 # Custom auto-dismiss (5 seconds)
 curl -X POST http://localhost:11435/notify \

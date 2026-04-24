@@ -1,6 +1,6 @@
 ---
 name: gpt-image
-description: General-purpose image generation and reference-image editing via OpenAI GPT Image 2 (`gpt-image-2`). Wraps `/v1/images/generations` for text-to-image and `/v1/responses` + the `image_generation` tool for reference-image editing (the legacy `/v1/images/edits` endpoint does not accept gpt-image-2; the Responses API path does). Use whenever an agent or user needs to (a) generate an image from a text prompt, (b) restyle or transform an image using a reference image, (c) combine multiple reference images, or (d) render dense typography / Chinese text. Reads `OPENAI_API_KEY` from env; writes PNG/JPEG/WebP to disk. Optional prompt-craft references under `references/` for photorealism, posters, infographics, and character sheets.
+description: General-purpose image generation and reference-image editing via OpenAI GPT Image 2 (`gpt-image-2`). Wraps the two official endpoints from the OpenAI cookbook — `/v1/images/generations` for text-to-image and `/v1/images/edits` for reference-image edits (including alpha-channel masks). Use whenever an agent or user needs to (a) generate an image from a text prompt, (b) restyle or transform an image using a reference image, (c) combine multiple reference images, (d) inpaint a region using a PNG mask, or (e) render dense typography / Chinese text. Reads `OPENAI_API_KEY` from env; writes PNG/JPEG/WebP to disk. Optional prompt-craft references under `references/` for photorealism, posters, infographics, and character sheets.
 license: CC BY 4.0 (prompt patterns attributed to original authors)
 ---
 
@@ -29,58 +29,74 @@ Reads `OPENAI_API_KEY` from env. Writes to `OUT` (or auto-named `YYYY-MM-DD-HH-M
 |------|---------------|---------|------------|-------------|
 | `-p, --prompt` | str | — required | both | Text prompt for generation, or edit instruction. |
 | `-f, --file` | path | auto | both | Output path. Auto-gen if omitted. Extension follows `--format`. |
-| `-i, --image` | path (repeatable) | — | reference | Reference image(s). Presence routes through `/v1/responses` + the `image_generation` tool (not the legacy `/v1/images/edits` endpoint, which doesn't accept gpt-image-2). |
-| `-m, --mask` | path | — | — | **Not supported for gpt-image-2.** Alpha-channel inpainting exists only on the legacy `/v1/images/edits` endpoint, which accepts only `dall-e-2`. Skill errors out if `-m` is passed. |
+| `-i, --image` | path (repeatable) | — | edits | Reference image(s). Presence routes through `/v1/images/edits` (the official endpoint per the OpenAI cookbook). |
+| `-m, --mask` | path | — | edits | Alpha-channel PNG mask. Opaque pixels are preserved, transparent pixels are regenerated. Edits endpoint only — requires `-i`. |
+| `--input-fidelity` | `low` \| `high` | — | edits | Controls how closely the output tracks the reference. Supported on `gpt-image-1` and `gpt-image-1.5`. `gpt-image-2` rejects this parameter, so the CLI strips it locally before calling the API. |
 | `--model` | str | `gpt-image-2` | both | Model ID. Fallbacks: `gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`. |
 | `--size` | literal / shortcut | `1024x1024` | both | Literals: `1024x1024`, `1536x1024`, `1024x1536`, `2048x2048`, `2048x1152`, `3840x2160`, `2160x3840`, or any 16-px multiple up to 3840 max edge (3:1 ratio cap, 655k–8.3M total pixels). Shortcuts: `1k` `2k` `4k` `portrait` `landscape` `square` `wide` `tall`. |
-| `--quality` | `auto` \| `low` \| `medium` \| `high` | `high` | both | Cost roughly 10× per step. `low` ≈ $0.005/img, `medium` ≈ $0.04, `high` ≈ $0.17. We default to `high` because gpt-image-2's typography and fine-detail rendering degrade noticeably below it. Override to `low` for quick iterations. |
+| `--quality` | `auto` \| `low` \| `medium` \| `high` | `high` | both | Cost roughly 10× per step. `low` ≈ $0.005/img, `medium` ≈ $0.04, `high` ≈ $0.17. CLI default stays `high`, but agents should choose deliberately: `low` for cheap drafts / large sweeps, `medium` for normal exploration, `high` for final assets, typography, Chinese text, diagrams, or anything shipping-facing. |
 | `-n, --n` | int | `1` | both | Number of images to return. `>1` suffixes filenames `_0`, `_1`, … |
 | `--background` | `auto` \| `opaque` | API default | generations only | `opaque` disables transparent background. |
-| `--moderation` | `auto` \| `low` | API default | generations only | `low` relaxes content filter where policy allows. |
+| `--moderation` | `auto` \| `low` | `low` | generations only | Defaults to `low` here for broader prompt exploration. Switch to `auto` if you want the stricter API-side default. |
 | `--format` | `png` \| `jpeg` \| `webp` | `png` | both | Response encoding. |
 | `--compression` | int 0–100 | — | both | JPEG/WebP compression. Ignored for PNG. |
 | `--user` | str | — | both | Optional end-user identifier for OpenAI abuse tracking. |
 
-## Endpoint selection
+## Budget / quality policy for agents
+
+Use `--quality` as the budget dial. There is no separate `--budget` flag in this CLI.
+
+- `low` — cheap draft mode. Use for broad prompt exploration, collecting many variants, gallery mining, rough composition checks, or when the user explicitly wants low cost / fast iteration.
+- `medium` — balanced mode. Use for normal one-off exploration, style probing, or cases where readability matters but the output is not yet final.
+- `high` — shipping / report mode. Use for Chinese text, posters, infographics, paper figures, dense labels, multi-panel layouts, banners, or any asset likely to be kept.
+
+Rule of thumb for autonomous agents:
+- If the user asks for **many variants**, **cheap**, **draft**, **explore**, or **collect**, start with `low`.
+- If the user asks for **polished but still exploratory**, use `medium`.
+- If the user asks for **final**, **fancy**, **hero**, **paper figure**, **poster**, **diagram**, or **exact text**, use `high`.
+- If unsure, keep the CLI default `high` for text-heavy / delivery-facing outputs; otherwise prefer `medium` during exploration.
+
+## Endpoint selection (official OpenAI cookbook pattern)
 
 | Mode | Trigger | Endpoint |
 |------|---------|----------|
-| Generate from prompt | no `-i` | `POST /v1/images/generations` — calls `gpt-image-2` directly |
-| Reference-image generation | `-i` one or more times | `POST /v1/responses` with the `image_generation` tool (host model `gpt-4o`; tool runs `gpt-image-2` under the hood). Reference images are sent as `input_image` base64 data URLs. |
+| Generate from prompt | no `-i` | `POST /v1/images/generations` (JSON body) |
+| Edit / reference-based | `-i` one or more times | `POST /v1/images/edits` (multipart form) |
+| Inpaint with mask | `-i` + `-m` | `POST /v1/images/edits` with a `mask` file |
 
-**Why not `/v1/images/edits`?** That legacy endpoint currently accepts only `dall-e-2`, not `gpt-image-2`. The Responses API path is the supported way to feed reference images to `gpt-image-2`, and we route through it automatically whenever `-i` is passed.
+Both endpoints accept `gpt-image-2` as of April 2026 — verified against OpenAI's [official cookbook prompting guide](https://github.com/openai/openai-cookbook/blob/main/examples/multimodal/image-gen-models-prompting-guide.ipynb). The skill uses the official `openai` Python SDK under the hood (`from openai import OpenAI; client.images.generate(...)` / `client.images.edit(...)`) — the CLI is a thin wrapper that exposes every SDK parameter as a flag.
 
-**Content policy:** the image_generation tool still enforces `gpt-image-2`'s content rules. Real-person-likeness edits usually refuse (text reply, no image). The skill surfaces the refusal on stderr and exits 1 — it does not silently fall back to another model.
+**Content policy:** gpt-image-2 enforces its own content rules on the edits endpoint. Real-person-likeness edits usually refuse (400 error with a moderation message). The skill surfaces the response body verbatim on stderr and exits 1.
 
 ## Canonical examples
 
 ```bash
 # 1. Vanilla generate, 1K square, auto quality
-uv run generate.py -p "a photorealistic convenience store at 10pm"
+gpt-image -p "a photorealistic convenience store at 10pm"
 
 # 2. 2K portrait poster with exact Chinese text, high quality
-uv run generate.py \
+gpt-image \
   -p 'Design a 3:4 tea poster. Exact copy: "山川茶事" / "冷泡系列" / "中杯 16 元"' \
   --size portrait --quality high -f poster.png
 
 # 3. 4-image grid, transparent background disabled, webp
-uv run generate.py -p "isometric furniture, minimalist" \
+gpt-image -p "isometric furniture, minimalist" \
   -n 4 --background opaque --format webp --compression 85
 
 # 4. Edit / colorize existing image
-uv run generate.py -p "colorize this manga page and translate to Chinese" \
+gpt-image -p "colorize this manga page and translate to Chinese" \
   -i page.jpg -f colored.png
 
 # 5. Multi-reference brand collab
-uv run generate.py -p "77 (the cat) × KFC employee poster" \
+gpt-image -p "77 (the cat) × KFC employee poster" \
   -i cat.png -i kfc_logo.png -f collab.png --size portrait
 
-# 6. Restyle an image (was "edit" — now routes through Responses API)
-uv run generate.py -p "turn this chess board into a Studio Ghibli hand-painted still, cel shading" \
-  -i chess.png -f ghibli-chess.png
+# 6. Masked inpaint — replace sky only
+gpt-image -p "replace sky with aurora, keep foreground intact" \
+  -i photo.jpg -m sky_mask.png -f aurora.png --quality high
 
 # 7. 4K widescreen render
-uv run generate.py -p "cinematic Shanghai skyline at dusk" \
+gpt-image -p "cinematic Shanghai skyline at dusk" \
   --size 4k --quality high -f skyline.png
 ```
 
@@ -95,9 +111,8 @@ uv run generate.py -p "cinematic Shanghai skyline at dusk" \
 | Condition | Exit | stderr |
 |-----------|------|--------|
 | `OPENAI_API_KEY` unset | 2 | `error: OPENAI_API_KEY not set. ...` |
-| `--mask` passed at all | 2 | `error: --mask (alpha-channel inpainting) is not supported for gpt-image-2...` |
-| Responses-API refusal (e.g. real-person edit) | 1 | `error: Responses API returned no image. Likely a content-policy refusal.` + model's reply text |
-| `-i` path missing | 2 | `error: --image not found: PATH` |
+| `--mask` without `-i` | 2 | `error: --mask requires --image (edits endpoint only)` |
+| `-i` or `-m` path missing | 2 | `error: --image not found: PATH` |
 | OpenAI returns non-2xx | 1 | `error: <status> from OpenAI: <body>` (first 2000 chars of response) |
 | Response has no image data | 1 | `error: no image data in response: <json>` |
 
@@ -120,8 +135,9 @@ These are not required to use the script — they exist for prompt-quality uplif
 
 - `references/craft.md` — 12 cross-cutting principles: exact-text-in-quotes, aspect-ratio-first, camera/shot language, scene density, style anchoring, negation, reference-based unlocks, dense Chinese text, three-glances test.
 - `references/gallery.md` — 56 community-curated templates across 8 categories: photography, games, UI/UX, typography, infographics, character consistency, editing, collage. Each entry keeps its original `Source: @handle` attribution.
+- `references/openai-cookbook.md` — verbatim Markdown capture of OpenAI's [official GPT Image prompting guide](https://github.com/openai/openai-cookbook/blob/main/examples/multimodal/image-gen-models-prompting-guide.ipynb). Load this when the user asks about OpenAI's own parameter semantics, wants a use-case beyond what our gallery covers (UI mockups, pitch-deck slides, scientific diagrams, virtual try-on, billboard mockups, translation edits), or needs the authoritative parameter-coverage table.
 
-Load a reference file only when the user's request signals that category (e.g. asks for a poster → load `typography` section of gallery; asks about rendering Chinese → load craft.md sections 1, 7, 10).
+Load a reference file only when the user's request signals that category (e.g. asks for a poster → load `typography` section of gallery; asks about rendering Chinese → load craft.md sections 1, 7, 10; asks "how does the edits endpoint actually work?" → load `openai-cookbook.md`).
 
 ## Attribution
 

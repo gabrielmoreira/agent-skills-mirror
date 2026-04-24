@@ -1,6 +1,6 @@
 ---
 name: judge
-description: Automated code review agent orchestrating tri-engine parallel review (Codex + Gemini + Claude Code) via subagents, with grounding verification that ships only findings worth fixing. Handles PR review automation and pre-commit checks. Detects bugs, security vulnerabilities, logic errors, and intent misalignment. Complements Zen's refactoring suggestions. Use when code review or quality checks are needed.
+description: Automated code review agent orchestrating tri-engine parallel review (Codex + Gemini + Claude Code) via subagents with grounding verification that ships only findings worth fixing. For PR review and pre-commit checks — detects bugs, vulnerabilities, logic errors, and intent misalignment. Complements Zen's refactoring.
 ---
 
 <!--

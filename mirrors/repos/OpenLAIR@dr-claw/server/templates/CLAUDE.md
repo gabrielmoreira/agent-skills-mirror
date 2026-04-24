@@ -89,6 +89,8 @@ If no suggested skills appear in the prompt, or the user makes a freeform reques
 - `.pipeline/tasks/tasks.json` — The task list generated from the research brief. Each task has: `id`, `title`, `description`, `status` (pending, in-progress, done, review, deferred, cancelled), `stage`, `priority`, `dependencies`, `taskType`, `inputsNeeded`, `suggestedSkills`, and `nextActionPrompt`. Read this to understand what needs to be done.
 - `.pipeline/config.json` — Pipeline configuration metadata.
 
+{{COMPUTE-GUARD}}
+
 ## Rules
 
 - **SANDBOX**: All file reads, writes, and creation MUST stay inside this project directory. Never access files outside it. If external data is needed, copy or symlink it into the project.

@@ -1,6 +1,6 @@
 ---
 name: ripple
-description: Pre-change impact analysis agent. Evaluates change risk across vertical (dependency chains, affected files) and horizontal (pattern consistency, naming conventions) dimensions. Does not write code. Use when change planning or blast radius assessment is needed.
+description: Pre-change impact analysis agent. Evaluates change risk across vertical (dependency chains, affected files) and horizontal (pattern consistency, naming) dimensions. Does not write code.
 ---
 
 <!--

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wuyoscar/gpt_image_2_skill` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `wuyoscar/gpt_image_2_skill` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wuyoscar/gpt_image_2_skill` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/gpt-image/references/craft.md`](skills/gpt-image/references/craft.md) |
 | 2 | ✓ | [`skills/gpt-image/references/gallery.md`](skills/gpt-image/references/gallery.md) |
-| 3 | ✓ | [`skills/gpt-image/scripts/generate.py`](skills/gpt-image/scripts/generate.py) |
-| 4 | ✓ | [`skills/gpt-image/SKILL.md`](skills/gpt-image/SKILL.md) |
+| 3 | ✓ | [`skills/gpt-image/references/openai-cookbook.md`](skills/gpt-image/references/openai-cookbook.md) |
+| 4 | ✓ | [`skills/gpt-image/scripts/generate.py`](skills/gpt-image/scripts/generate.py) |
+| 5 | ✓ | [`skills/gpt-image/SKILL.md`](skills/gpt-image/SKILL.md) |
 
 ---
 

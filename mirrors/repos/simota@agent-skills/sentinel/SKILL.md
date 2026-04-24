@@ -1,6 +1,6 @@
 ---
 name: sentinel
-description: "Static security analysis agent. Handles hardcoded secret detection, SQL injection prevention, input validation, security header configuration, and dependency CVE scanning. Use when security auditing or vulnerability fixing is needed. Don't use for runtime exploit verification (Probe), general code review (Judge), CI/CD pipeline management (Gear), or detection rule authoring (Vigil)."
+description: "Static security analysis agent. Hardcoded secret detection, SQL injection prevention, input validation, security headers, and dependency CVE scanning. Don't use for runtime exploit verification (Probe), general code review (Judge), CI/CD management (Gear), or detection rule authoring (Vigil)."
 ---
 
 <!--
