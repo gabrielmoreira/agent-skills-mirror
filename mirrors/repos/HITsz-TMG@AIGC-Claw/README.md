@@ -327,12 +327,12 @@ clawhub install aigc-director
 
 ```bash
 # LLM 配置
-LLM_MODEL=qwen3.5-plus
-VLM_MODEL=qwen-vl-plus
+LLM_MODEL=deepseek-v3.2
+VLM_MODEL=qwen3.6-plus
 
 # 图像生成
-IMAGE_T2I_MODEL=doubao-seedream-5-0-260128
-IMAGE_IT2I_MODEL=doubao-seedream-5-0-260128
+IMAGE_T2I_MODEL=wan2.7-image
+IMAGE_IT2I_MODEL=wan2.7-image
 
 # 视频生成
 VIDEO_MODEL=wan2.7-i2v
@@ -348,11 +348,11 @@ DEEPSEEK_API_KEY=your_key
 
 | 类型 | 模型 |
 |:---:|:---|
-| **LLM** | qwen3.5-plus, deepseek-chat, gpt-4o, gemini-2.5-flash |
-| **VLM** | qwen-vl-plus, gemini-2.5-flash-image |
-| **文生图** | doubao-seedream-5-0, jimeng_t2i_v40, wan2.6-t2i |
-| **图生图** | doubao-seedream-5-0, jimeng_t2i_v40, wan2.6-image |
-| **视频生成** | doubao-seedance-2-0-260128, wan2.7-i2v, wan2.6-i2v-flash, kling-v3 |
+| **LLM** | qwen3.6-max-preview, qwen3-max, deepseek-chat, deepseek-reasoner, deepseek-v4-flash, deepseek-v4-pro, gpt-4o, gpt-5, gpt-5.4, gemini-2.5-flash, gemini-2.0-flash, kimi-k2.6 |
+| **VLM** | qwen3.6-plus, qwen3.6-flash, kimi-k2.6, gpt-5.4, gemini-2.5-flash-image, gemini-2.0-flash |
+| **文生图** | wan2.7-image, wan2.7-image-pro, wan2.6-t2i, jimeng_t2i_v40, doubao-seedream-5.0/4.5/4.0, gpt-image-2 |
+| **图生图** | wan2.7-image, wan2.7-image-pro, jimeng_t2i_v40, doubao-seedream-5.0/4.5/4.0, gpt-image-2 |
+| **视频生成** | wan2.7-i2v, wan2.6-i2v-flash, doubao-seedance-2.0 (Normal/Fast), kling-v3/v2.6/v2.5 |
 
 </details>
 

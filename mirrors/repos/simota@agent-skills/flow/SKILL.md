@@ -122,6 +122,33 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `VERIFY` | Check accessibility, performance, browser support | Reduced-motion and perf validation | `references/motion-accessibility-anti-patterns.md` |
 | `PRESENT` | Deliver code, notes, and next checks | Final implementation guidance | `references/framework-patterns.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Hover Effects | `hover` | ✓ | Hover effect implementation | `references/animation-catalog.md`, `references/easing-guide.md` |
+| Loading States | `loading` | | Loading state animations | `references/animation-catalog.md` |
+| Modal Transitions | `transition` | | Modal transition animations | `references/animation-catalog.md`, `references/modern-css-animations.md` |
+| Gesture Interaction | `gesture` | | Gesture interactions | `references/animation-catalog.md`, `references/framework-patterns.md` |
+| Spring Physics | `spring` | | Physics-based motion (stiffness/damping/mass tuning, drag-release, natural settle) | `references/spring-physics.md`, `references/easing-guide.md` |
+| Scroll-Triggered | `scroll` | | Scroll-triggered reveals (IntersectionObserver, animation-trigger, view() ranges) | `references/scroll-triggered.md`, `references/modern-css-animations.md` |
+| Parallax Effects | `parallax` | | Depth-illusion via differential layer translation (multi-layer, perf-budgeted) | `references/parallax-effects.md`, `references/animation-performance-anti-patterns.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`hover` = Hover Effects). Apply normal SURVEY → PLAN → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `hover`: Micro animations like hover/press/toggle. Prefer transform/opacity and target 60fps.
+- `loading`: Loading state animations such as skeleton/spinner/progress. Implement infinite loops with a safety timer.
+- `transition`: Modal/panel/route transitions. Consider the View Transitions API or CSS @starting-style first.
+- `gesture`: Gesture interactions such as drag/swipe/snap. Reduced-motion support is mandatory.
+- `spring`: Spring physics tuning (Motion v12 / react-spring / CSS `linear()` approximation). Tune stiffness/damping/mass; never set duration. Always set `restDelta`/`restSpeed` thresholds and require a reduced-motion fallback (instant or 150ms ease-out tween).
+- `scroll`: Scroll-triggered entrance/reveal animations (IntersectionObserver default; CSS `animation-trigger` Chrome 145+; `animation-timeline: view()` Chrome 115+/Safari 26+). Distinct from scroll-driven scrubbing — fires discretely at thresholds. Reserve space to prevent CLS; reduced-motion shows content instantly.
+- `parallax`: Multi-layer depth illusion. ≤4 layers, `transform: translate3d()` only, ≤120px max offset. Never parallax content/text. Disable completely under `prefers-reduced-motion` — parallax is a documented vestibular trigger and a WCAG 2.3.3 / EAA concern.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -202,6 +229,9 @@ Flow receives UX friction reports and design direction from upstream agents. Flo
 | `references/motion-accessibility-anti-patterns.md` | You need reduced-motion, WCAG motion, or flash/parallax rules. |
 | `references/motion-design-anti-patterns.md` | You need timing, hierarchy, or functional-vs-decorative motion rules. |
 | `references/intentional-motion-framework.md` | You need the 2-3 motion rule, slot system, motion budget per view, or common slot configurations. |
+| `references/spring-physics.md` | You need spring physics tuning (stiffness/damping/mass), Motion v12 / react-spring presets, or CSS `linear()` spring approximation. |
+| `references/scroll-triggered.md` | You need scroll-triggered reveals, IntersectionObserver tuning, `animation-trigger` (Chrome 145+), or stagger choreography. |
+| `references/parallax-effects.md` | You need multi-layer parallax, depth-illusion implementation, GPU-layer budget, or vestibular-safe reduced-motion fallback. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the motion implementation, calibrating effort to single-interaction/page/system scope, or front-loading framework/target/slot at SURVEY. Critical for Flow: P3, P6. |
 
 ## Operational

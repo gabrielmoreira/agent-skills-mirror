@@ -226,6 +226,27 @@ Risk formula:
 
 Read `references/decision-matrix.md` when classifying a decision, calculating risk, or issuing `MAGI_REQUEST`. Read `references/output-formats.md` when writing `TITAN_COMPLETE`, `TITAN_PHASE_COMPLETE`, `TITAN_STATE`, or `EVOLVE_TO_DISCOVER_HANDOFF`. Read `references/nexus-integration.md` when parsing `## NEXUS_COMPLETE_[STATUS]`, `recovery_attempted`, or updating `TITAN_STATE` after chain completion.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Deliver Minimum Chain | `deliver` | ✓ | Immediate build with minimum chain (auto scope detection → chain issuance) | `references/agent-deployment-matrix.md` |
+| Small Scope | `small` | | S scope (1-5 files, immediate build, skip planning) | `references/agent-deployment-matrix.md` |
+| Medium Scope | `medium` | | M scope (6-15 files, skip planning, build first) | `references/agent-deployment-matrix.md`, `references/product-lifecycle.md` |
+| Epic Scope | `epic` | | Epic scope (L/XL, chain composition, Nexus integration) | `references/product-lifecycle.md`, `references/anti-stall-engine.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`deliver` = Deliver Minimum Chain). Apply normal SCOPE_DETECT → JUSTIFY → BUILD → VALIDATE → COMPLETE workflow.
+
+Behavior notes per Recipe:
+- `deliver`: SCOPE_DETECT を実行し、S/M/L/XL を自動判定。最小正当チェーンを発行。Agent Justification Gate 必須。
+- `small`: S スコープを強制 (1-5 files)。`Builder → Radar` のみ。Docs ゼロ。計画は TITAN_STATE インライン。
+- `medium`: M スコープを強制 (6-15 files)。`Lens → Sherpa → Builder → Sentinel → Radar`。Docs ゼロ。計画予算 ≤20%。
+- `epic`: L/XL スコープ。9 フェーズ全評価。Rally は独立タスクのみ。Anti-Stall 回復ラダー準備。
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

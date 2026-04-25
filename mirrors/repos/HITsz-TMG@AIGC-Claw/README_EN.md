@@ -198,15 +198,15 @@ Configure the following in `aigc-claw/backend/.env`:
 
 ```bash
 # LLM configuration
-LLM_MODEL=qwen3.5-plus
-VLM_MODEL=qwen-vl-plus
+LLM_MODEL=deepseek-v3.2
+VLM_MODEL=qwen3.6-plus
 
 # Image generation
-IMAGE_T2I_MODEL=doubao-seedream-5-0-260128
-IMAGE_IT2I_MODEL=doubao-seedream-5-0-260128
+IMAGE_T2I_MODEL=wan2.7-image
+IMAGE_IT2I_MODEL=wan2.7-image
 
 # Video generation
-VIDEO_MODEL=wan2.6-i2v-flash
+VIDEO_MODEL=wan2.7-i2v
 VIDEO_RATIO=16:9
 
 # API keys

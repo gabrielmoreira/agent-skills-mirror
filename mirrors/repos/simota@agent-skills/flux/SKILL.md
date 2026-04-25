@@ -240,6 +240,33 @@ Dedicated mode for detecting cognitive biases in decision-making processes, inde
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Reframe | `reframe` | ✓ | Reframing of assumptions (full DEEP pipeline) | `references/thinking-frameworks.md` |
+| Perspective Shift | `shift` | | Perspective shift (RAPID) | `references/thinking-frameworks.md` |
+| Cross-Domain | `cross` | | Cross-domain knowledge fusion (LENS COMBINE) | `references/combination-engine.md` |
+| Challenge Assumption | `challenge` | | Challenge preconceptions (LENS CHALLENGE) | `references/thinking-frameworks.md` |
+| SCAMPER | `scamper` | | 7-lens artifact transformation (Substitute/Combine/Adapt/Modify/Put-to-other-use/Eliminate/Reverse) | `references/scamper-technique.md` |
+| Analogy | `analogy` | | Structural mapping from a source domain (Gentner; biomimicry; cross-industry) | `references/analogical-thinking.md` |
+| Inversion | `inversion` | | Munger inversion — invert the goal, enumerate failure-guarantees, derive avoid-list | `references/inversion-method.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`reframe` = Reframe). Apply normal CLASSIFY → CHALLENGE → COMBINE → SHIFT → CRYSTALLIZE workflow.
+
+Behavior notes per Recipe:
+- `reframe`: All 5 phases in DEEP mode. Cynefin classification → assumption surfacing → Serendipity Injection → CRYSTALLIZE.
+- `shift`: RAPID mode CLASSIFY → SHIFT → CRYSTALLIZE. Specializes in perspective rotation and Oblique Strategies.
+- `cross`: LENS mode CLASSIFY → COMBINE → CRYSTALLIZE. Specializes in cross-domain Bisociation and SCAMPER.
+- `challenge`: LENS mode CLASSIFY → CHALLENGE → CRYSTALLIZE. Specializes in First Principles and Assumption Reversal.
+- `scamper`: LENS mode CLASSIFY → SCAMPER probe → CRYSTALLIZE. Apply 7 lenses (S/C/A/M/P/E/R, Eberle 1971) with prompt banks; ≥3 ideas per lens, ASN-test filter, deliver 7-lens × N matrix. Pair with `challenge` or `shift` upstream — SCAMPER alone produces incremental ideas.
+- `analogy`: LENS mode CLASSIFY → ANALOGY map → CRYSTALLIZE. Gentner structural mapping — align relations not objects; budget near vs far analogies; mark breakdown points; rate transferability. Generate ≥5 candidates and kill 4.
+- `inversion`: LENS mode CLASSIFY → INVERT → ENUMERATE → AVOID → CRYSTALLIZE. Munger goal-flip and Taleb via negativa. Enumerate ≥10 failure-guarantees across 6 categories (technical/social/economic/cognitive/temporal/structural), derive avoid-list with owners. Hand failure-paths to Omen for RPN/AP scoring.
+
 ## Output Routing
 
 | Signal | Mode | Primary Output | Next |
@@ -297,6 +324,9 @@ Every deliverable must include:
 | `references/anti-patterns.md` | You need to guard against superficial reframing, framework abuse, or false insights. |
 | `references/collaboration-packets.md` | You need handoff formats for partner agents. |
 | `references/bias-catalog.md` | You need the full bias taxonomy, detection signals, and debiasing techniques for AUDIT mode. |
+| `references/scamper-technique.md` | You are running `scamper` — need 7-lens prompt banks, lens-selection heuristics, anti-patterns, and handoff for SCAMPER probing. |
+| `references/analogical-thinking.md` | You are running `analogy` — need Gentner structural mapping, near/far distance budget, biomimicry catalog, cross-industry patterns, breakdown-point testing. |
+| `references/inversion-method.md` | You are running `inversion` — need Munger goal-flip prompts, Taleb via negativa, 6-category failure-mode scaffold, avoid-list derivation, and Omen handoff. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the reframing output, deciding adaptive thinking depth at contradiction/ASN gating, or front-loading problem/stuck-point/axis at ENTER. Critical for Flux: P3, P5. |
 
 ---

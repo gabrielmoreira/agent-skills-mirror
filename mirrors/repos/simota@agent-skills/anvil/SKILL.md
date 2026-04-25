@@ -123,6 +123,33 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `HARDEN` | Validate failure paths: input errors, exit codes, `CTRL+C`, platform quirks, non-interactive environments | Test every non-happy path | `references/cross-platform.md`, `references/cli-design-anti-patterns.md` |
 | `PRESENT` | Deliver the interface, usage examples, integration notes, and the next operational handoff | Mandatory before expanding scope | `references/cli-design-patterns.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| CLI Build | `cli` | ✓ | CLI design/implementation (command design, flags, help, exit codes) | `references/cli-design-patterns.md` |
+| TUI Build | `tui` | | TUI (Terminal UI) design (spinners, tables, interactive prompts) | `references/tui-components.md` |
+| Tool Wrap | `wrap` | | Wrapping existing CLI tools (linter/formatter/test-runner integration) | `references/tool-integration.md` |
+| Dev Tool Integration | `devtool` | | linter/test-runner/build-tool integration, doctor command | `references/tool-integration.md`, `references/cross-platform.md` |
+| Shell Completion | `completion` | | Bash/Zsh/Fish/PowerShell completion generation, cobra/clap/argparse/oclif integration, static vs dynamic completion, install-path conventions | `references/completion-shell-scripts.md` |
+| Config File Design | `config` | | CLI config-file design, precedence chain (flag > env > file > default), YAML/TOML/JSON/INI trade-offs, XDG Base Directory, schema validation, secrets hygiene | `references/config-file-design.md` |
+| Packaging & Distribution | `pkg` | | Homebrew formula, deb/rpm via nfpm, npm/PyPI/cargo/go install, cross-compile (goreleaser/cross/napi-rs), signing/attestation, update-checker, install script | `references/pkg-distribution.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`cli` = CLI Build). Apply normal BLUEPRINT → CAST → TEMPER → HARDEN → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `cli`: Lock command contract at BLUEPRINT (signature/flags/exit-codes/JSON output). `--help` + `--version` mandatory. TTY-aware output.
+- `tui`: Select TUI framework (Ratatui/BubbleTea/Textual). Respect the event loop. Non-TTY degradation is mandatory.
+- `wrap`: Read existing tool CLI contracts first (P3). Prevent breaking changes. Add `--no-prompt` flag.
+- `devtool`: Doctor command pattern. Dependency verification. CI/non-TTY compatibility. Prepare handoff to Gear.
+- `completion`: Generator-driven completion for Bash/Zsh/Fish/PowerShell (cobra/clap/argparse/click/oclif), static vs dynamic callback trade-off, XDG-aware install paths (`/usr/share/bash-completion/completions/`, `_myapp` for Zsh, `~/.config/fish/completions/`), and a completion test harness so drift is caught in CI; load `completion-shell-scripts.md`. For user-side sourcing in the author's own `~/.zshrc` use Hearth; for CI regeneration and release attach use Gear; for the `pkg` install-path directives use `pkg`.
+- `config`: Precedence chain (flag > env > project config > user config > system config > default), format selection (TOML/YAML/JSON/JSON5/INI), XDG discovery order, schema validation with source-attributed errors, `config get/set/edit/validate/path/init` UX, and secrets-in-config anti-patterns (keychain adapter, `_file` suffix convention); load `config-file-design.md`. For feature code consuming the loaded config struct use Builder; for personal dotfile authoring (zsh/tmux/neovim) use Hearth; for CI env-var injection use Gear; for config-key deprecation policy across releases use Launch.
+- `pkg`: Channel selection (Homebrew / deb/rpm via nfpm / npm / PyPI / cargo / `go install` / Scoop / static tarball / OCI), cross-compile matrix (goreleaser / cross / cargo-zigbuild / napi-rs / cibuildwheel), signing/attestation (notarization, Authenticode, GPG repo metadata, cosign, SLSA provenance), install-script safety (checksum verify, no surprise `sudo`, idempotent), and an opt-in update-checker that auto-disables in CI and `--json` pipelines; load `pkg-distribution.md`. For CI pipeline wiring (goreleaser workflow, secret injection) use Gear; for release versioning strategy and changelog use Launch; for user-side `brew install` bootstrapping in dotfiles use Hearth; for supply-chain signing review use Sentinel.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

@@ -248,6 +248,30 @@ Legal-readability checks: are technical terms explained, are clauses concrete, a
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| ToS Review | `tos` | ✓ | Terms of Service clause coverage check and risk flagging | `references/legal-checklists.md` |
+| Privacy Policy | `privacy` | | Privacy Policy GDPR/APPI alignment check | `references/legal-checklists.md` |
+| Tokushoho | `tokushoho` | | Tokushoho (Specified Commercial Transactions Act) required-field check | `references/legal-checklists.md` |
+| Gap Analysis | `gap` | | Multi-document consistency check, missing clause detection | `references/patterns.md` |
+| DPA Review | `dpa` | | Data Processing Agreement review (GDPR Art. 28, sub-processor chain, SCC, Schrems II TIA) | `references/dpa-review.md` |
+| EULA Review | `eula` | | End User License Agreement review (license type, IP, warranty/indemnity, jurisdiction overrides) | `references/eula-review.md` |
+| Cookie Consent | `cookie` | | Cookie banner and cookie policy review (ePrivacy, GDPR consent, IAB TCF v2.2, categorization) | `references/cookie-consent.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`tos` = ToS Review). Apply normal SCOPE → SCAN → ASSESS → REPORT → SUGGEST workflow.
+
+### Subcommand Behavior Notes
+
+- `dpa`: Identify role pairing (controller/processor/sub-processor) and transfer geography first. Walk Art. 28(3) mandatory clauses, SCC module selection, Schrems II Transfer Impact Assessment, and audit-rights scope. Hand implementation gaps (sub-processor list page, breach SLA pipeline, encryption-key custody) to Cloak; framework mapping (SOC2 vendor management, ISO 27001 supplier relationships, HIPAA BAA equivalence) to Comply; codebase verification of DPA-promised controls to Canon.
+- `eula`: Identify license type (perpetual / subscription / SaaS / embedded SDK / OSS / dual) and governing-law jurisdiction first. Walk grant scope, restrictions (including AI-training clauses), IP ownership, warranty/indemnity, and OSS notices. Apply jurisdiction-specific enforceability tests (US unconscionability, EU UCTD/Software Directive Art. 6 interoperability carve-out, Japan Consumer Contract Act). Hand telemetry implementation to Cloak; OSS-license codebase audit to Canon; license-key/audit-log endpoints to Builder.
+- `cookie`: Identify target jurisdictions (EU/UK/CH/CA/CO/JP/etc.) and CMP/TCF participation first. Walk banner UX (equal Reject-All prominence, no pre-ticked, no cookie wall, withdraw path), per-cookie categorization (strictly necessary / functional / analytics / marketing), and policy-vs-scanner diff. Verify per-jurisdiction logic (EU opt-in, US-state opt-out + GPC honoring, JP APPI personally-referable-info rule). Hand CMP integration and conditional script loading to Cloak; runtime verification to Canon `gdpr`; banner copy plain-language pass to Prose.
+
 ## Output Routing
 
 | Signal | Approach | Read |
@@ -307,6 +331,9 @@ Handoff details: `references/handoffs.md`
 | `references/patterns.md` | You are selecting a review pattern |
 | `references/examples.md` | You need output-format references |
 | `references/handoffs.md` | You are coordinating with another agent |
+| `references/dpa-review.md` | Subcommand `dpa` — DPA / GDPR Art. 28 / SCC / Schrems II TIA / sub-processor chain |
+| `references/eula-review.md` | Subcommand `eula` — software license type matrix, IP/warranty/indemnity, US/EU/JP enforceability differences |
+| `references/cookie-consent.md` | Subcommand `cookie` — banner UX, IAB TCF v2.2, cookie categorization, EU/UK/CA/JP jurisdiction logic |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the review report, deciding adaptive thinking depth at clause evaluation, or front-loading jurisdiction/document type/priority at INTAKE. Critical for Clause: P3, P5. |
 
 ---

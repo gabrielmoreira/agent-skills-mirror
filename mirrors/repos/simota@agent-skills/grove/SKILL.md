@@ -135,6 +135,33 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `gitops`, `deployment config`, `app vs config separation` | GitOps layout | Repo separation plan + path-scoped CI guidance | `references/directory-templates.md` |
 | `governance`, `Well-Architected`, `naming convention` | Scaling governance | Naming/ruleset/custom-property audit report | `references/audit-commands.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Structure Audit | `audit` | ✓ | Audit existing repo structure, detect anti-patterns | `references/anti-patterns.md` |
+| New Structure Design | `design` | | Design a new directory structure | `references/directory-templates.md` |
+| Docs Layout | `docs` | | docs/ layout (PRD, specs, ADR) | `references/docs-structure.md` |
+| Migration Plan | `migrate` | | Migration plan for existing repo structure | `references/migration-strategies.md` |
+| Monorepo Structure | `monorepo` | | Monorepo layout, tool selection (Nx/Turborepo/pnpm/Bazel/Lerna), package boundaries, polyrepo→monorepo migration | `references/monorepo-structure.md` |
+| Tests Layout | `tests` | | Tests/ directory layout (unit/integration/e2e split, mirror vs co-locate, fixtures/factories/helpers) | `references/tests-layout.md` |
+| Scripts Organization | `scripts` | | scripts/ directory layout (language-pick rubric, setup/build/release/dev split, naming, shebangs) | `references/scripts-organization.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`audit` = Structure Audit). Apply normal SURVEY → PLAN → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `audit`: Output structural health score and anti-patterns (AP-001 to AP-016) for an existing repo. Emphasize the SURVEY phase.
+- `design`: Detect language/framework, then propose a new directory structure that follows native conventions.
+- `docs`: Scribe-compatible docs/ layout design. Include PRD, specs, and ADR directories.
+- `migrate`: Generate an incremental migration plan by L1-L5 risk level. Every step keeps CI green.
+- `monorepo`: Choose workspace tool (Turborepo/Nx/pnpm/Bazel; avoid Lerna for new repos), define apps/libs/packages split, draft CODEOWNERS, configure remote build cache, and plan polyrepo→monorepo migration with `git subtree`/`filter-repo` for blame preservation.
+- `tests`: Design tier-split tests/ layout (unit/integration/e2e/contract/perf), pick mirror-source vs centralized per tier, place fixtures/factories/helpers, and align naming (.test/.spec) with CI tier selectors.
+- `scripts`: Apply language-pick rubric (shell ≤30 LOC / Node 30–200 / Python >200 / Go for binaries), split scripts/ by category (setup/dev/build/release/ci/maintenance), enforce verb-noun naming, and fix shebang/`+x` hygiene.
+
 ## Output Requirements
 
 Every Grove deliverable should include:
@@ -174,6 +201,9 @@ Every Grove deliverable should include:
 | `references/codebase-organization-anti-patterns.md` | You need feature-vs-type structure guidance, naming rules, or scaling thresholds. |
 | `references/documentation-architecture-anti-patterns.md` | You are auditing doc drift, docs-as-code, audience layers, or docs governance. |
 | `references/project-scaffolding-anti-patterns.md` | You are designing an initial scaffold, config hygiene policy, or phased bootstrap strategy. |
+| `references/monorepo-structure.md` | You are running the `monorepo` recipe — workspace tool selection, apps/libs/packages layout, CODEOWNERS, remote cache, or polyrepo→monorepo migration. |
+| `references/tests-layout.md` | You are running the `tests` recipe — tier split, mirror-source vs centralized, fixtures/factories/helpers placement, naming, or CI tier selectors. |
+| `references/scripts-organization.md` | You are running the `scripts` recipe — language-pick rubric, category split, package.json delegation, naming, or shebang/`+x` hygiene. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the structure audit, deciding adaptive thinking depth at DESIGN, or front-loading mono/polyrepo/language stack at AUDIT. Critical for Grove: P3, P5. |
 
 ## Operational

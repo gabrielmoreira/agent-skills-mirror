@@ -129,6 +129,47 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `ANALYZE` | Design funnels, cohorts, dashboards, anomaly detection, and data quality checks | Leading indicators predict; lagging indicators confirm | `references/funnel-cohort-analysis.md`, `references/dashboard-spec.md` |
 | `DELIVER` | Present metrics framework, implementation code, dashboard specs, and alert rules | Include privacy review and data quality plan | `references/privacy-consent.md`, `references/data-quality.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| KPI Framework | `kpi` | ✓ | North Star Metric definition, KPI tree design, and OKR setup | `references/metrics-frameworks.md` |
+| Funnel Analysis | `funnel` | | Conversion funnel analysis and drop-off identification | `references/funnel-cohort-analysis.md` |
+| Cohort Analysis | `cohort` | | Retention cohort analysis and churn measurement | `references/funnel-cohort-analysis.md` |
+| Event Schema | `event` | | Event schema design and analytics implementation | `references/event-schema.md` |
+| Dashboard Spec | `dashboard` | | Dashboard spec design and chart definition | `references/dashboard-spec.md` |
+| North Star Deep-Dive | `northstar` | | NSM selection rubric, input-metric decomposition, counter/guardrail pairing, NSM stability contract | `references/north-star-deep-dive.md` |
+| Retention Curve Analysis | `retention` | | D1/D7/D30 curve shape classification (L/smile/flat), power-user band detection, Quick Ratio / DAU-over-MAU | `references/retention-curve-analysis.md` |
+| Activation Rate Design | `activation` | | Aha-moment discovery, Magic Number identification, time-to-value (TTV) measurement, activation milestone contract | `references/activation-design.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `kpi` (default).
+
+| First Token | Recipe Activated |
+|------------|-----------------|
+| `kpi` | KPI Framework |
+| `funnel` | Funnel Analysis |
+| `cohort` | Cohort Analysis |
+| `event` | Event Schema |
+| `dashboard` | Dashboard Spec |
+| `northstar` | North Star Deep-Dive |
+| `retention` | Retention Curve Analysis |
+| `activation` | Activation Rate Design |
+| _(no match)_ | KPI Framework (default) |
+
+Behavior notes per Recipe:
+- `kpi`: Metric tree entry point (NSM + 3-5 input KPIs + output KPIs) with counter metrics. Remain at the tree level; delegate NSM-selection depth to `northstar`.
+- `funnel`: Step-by-step conversion analysis with expected rates and segment overlay.
+- `cohort`: Retention cohort matrix and churn measurement. For curve-shape classification and power-user bands, switch to `retention`.
+- `event`: Typed event schema design (object_action naming, 15-25 event ceiling, payload contract).
+- `dashboard`: Leadership-level 8-12 KPI dashboard spec and chart selection.
+- `northstar`: North Star selection rubric (Amplitude NSM playbook + Reforge growth loops). Classify NSM as value-exchange / engagement / experience; decompose into 3-5 input metrics; pair with counter and guardrail metrics; commit to ≥6-month stability window with a documented change-trigger contract.
+- `retention`: D1/D7/D30 curve shape classification (L-shape = broken / smile = healthy / flat = stable). Add Power User Curve (a16z) band (≥21-day MAU) overlay, Quick Ratio (MRR growth / MRR lost ≥ 4 elite), and DAU-over-MAU stickiness target (≥0.20 healthy, ≥0.50 elite). Emit SQL for BigQuery/Snowflake and a cohort-drift alert spec.
+- `activation`: Define Aha-moment and Magic Number (e.g., Facebook "7 friends in 10 days", Slack "2,000 messages"). Build activation funnel from signup to activation event, target self-serve 50-70%, time-to-value <7 days for SaaS. Pair with retention overlay (activated cohorts must retain higher than non-activated) and a segment cut (acquisition channel × plan tier).
+
+---
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -210,6 +251,9 @@ Every deliverable must include:
 | `references/alerts-anomaly-detection.md` | You need Z-score anomaly detection, alert rules, or Slack template. |
 | `references/data-quality.md` | You need schema validation, freshness monitoring, or quality SQL. |
 | `references/revenue-analytics.md` | You need SaaS metrics, MRR movement, or churn analysis. |
+| `references/north-star-deep-dive.md` | You are selecting or reframing a North Star Metric (NSM type classification, input-metric decomposition, counter/guardrail pairing, stability contract). |
+| `references/retention-curve-analysis.md` | You need D1/D7/D30 curve shape classification, Power User Curve overlay, Quick Ratio, DAU/MAU stickiness, or retention SQL. |
+| `references/activation-design.md` | You need Aha-moment / Magic Number discovery, activation funnel, TTV measurement, or activated-vs-not retention overlay. |
 | `references/code-standards.md` | You need good/bad Pulse code examples. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the metric spec, deciding adaptive thinking depth at NSM/tree design, or front-loading product type and funnel stage at INTAKE. Critical for Pulse: P3, P5. |
 

@@ -149,6 +149,27 @@ Execution loop: `SURVEY -> PLAN -> VERIFY -> PRESENT`
 | `PACKAGE` | convert raw data into consumer-specific handoffs | select the handoff template before formatting | `references/handoff-formats.md` |
 | `DELIVER` | report status, rate usage, gaps, and next-safe action | incomplete data must be flagged explicitly | `references/execution-templates.md`, `references/design-to-code-anti-patterns.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Extract Context | `extract` | ✓ | Extract design context from Figma | `references/execution-templates.md`, `references/prompt-strategy.md` |
+| Code Connect | `code-connect` | | Code Connect template management | `references/code-connect-guide.md` |
+| DS Rules | `rules` | | Design system rule extraction | `references/prompt-strategy.md`, `references/figma-mcp-server-ga.md` |
+| Figma Inspect | `inspect` | | Programmatic inspection of a Figma file | `references/infrastructure-constraints.md`, `references/figma-mcp-server-ga.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`extract` = Extract Context). Apply normal CONNECT → SURVEY → EXTRACT → PACKAGE → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `extract`: After verifying the MCP connection, extract the design context of the target frame/component and generate a handoff package.
+- `code-connect`: Audit existing Code Connect mappings and fix or add any missing or stale mappings.
+- `rules`: Extract design system conventions from a Figma file and generate token rules and naming convention documentation.
+- `inspect`: Investigate the pages, frames, and component sets of a Figma file at the metadata level and build an extraction plan.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

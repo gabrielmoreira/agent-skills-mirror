@@ -52,6 +52,17 @@ Use these sections under `## [Unreleased]`:
 - **Internal changes (from issues)**: `Fixed foo bar ([#123](https://github.com/cameroncook/XcodeBuildMCP/issues/123))`
 - **External contributions**: `Added feature X ([#456](https://github.com/cameroncook/XcodeBuildMCP/pull/456) by [@username](https://github.com/username))`
 
+## Test Execution Rules
+- When running long test suites (snapshot tests, smoke tests), ALWAYS write full output to a log file and read it afterwards. NEVER pipe through `tail` or `grep` directly — that loses output you may need to debug failures.
+- Pattern: `DEVICE_ID=... npm run test:snapshot 2>&1 | tee /tmp/snapshot-results.txt` then read `/tmp/snapshot-results.txt` with the native read tool.
+- If you need a summary, read the log file and grep/filter it — the full output is always preserved.
+- Snapshot test command: `DEVICE_ID=<YOUR_DEVICE_ID> npm run test:snapshot`
+- **Snapshot suite expected duration**: ~7 min baseline (measured at 423s). Anything longer than ~10 min should be treated as a likely hang, not a slow run.
+  - Do NOT just kill the run — first inspect the process tree (`ps -ef | grep -E "vitest|xcodebuild|simctl|devicectl"`) to identify what's stuck.
+  - Common hang causes: locked physical device, stale simulator state, `devicectl diagnose` waiting for password, orphaned daemon process.
+  - Capture what you find before killing, so the root cause can be fixed rather than papered over.
+- If physical-device snapshot tests hang after the final test summary, the likely cause is Apple post-failure diagnostics invoking `devicectl diagnose`, which may prompt for a macOS password and wedge in automated runs; see `docs/dev/device-snapshot-password-hang-rca.md`.
+
 ## **CRITICAL** Tool Usage Rules **CRITICAL**
 - NEVER use sed/cat to read a file or a range of a file. Always use the native read tool.
 - You MUST read every file you modify in full before editing.

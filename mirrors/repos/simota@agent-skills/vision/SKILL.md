@@ -163,6 +163,21 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Token format (new systems) | DTCG specification v2025.10 | Design Tokens CG (Community Group Report, not W3C Standard) |
 | UX ROI target (major redesign) | $2–$100 return per $1 invested | Forrester/NN/g |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Design Direction | `direction` | ✓ | Design direction decision | `references/design-methodology.md` |
+| Full Redesign | `redesign` | | Full redesign | `references/design-methodology.md` |
+| Trend Application | `trend` | | Latest trend application | `references/design-trends.md` |
+| Design System Build | `system` | | Design System construction (Muse/Palette/Flow/Forge orchestration) | `references/agent-orchestration.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`direction` = Design Direction). Apply normal UNDERSTAND → ENVISION → SYSTEMATIZE → PRE-CHECK → DELEGATE → VALIDATE workflow.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

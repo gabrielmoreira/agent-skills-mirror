@@ -146,6 +146,33 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | **WIRE** | Transport implementation | Server architecture (WebSocket rooms/webhook endpoints) · Middleware chain (auth→validate→rate-limit→route→handle) · Connection lifecycle · Retry with backoff · Queue integration  `references/` |
 | **GUARD** | Security & reliability | HMAC-SHA256 verification · Token rotation · Rate limiting (per-user/channel/global) · Idempotency keys · Health checks · Alert thresholds  `references/` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Webhook Handler | `webhook` | ✓ | Webhook receive handler design (HMAC verification, idempotency) | `references/webhook-patterns.md` |
+| Bot Framework | `bot` | | Bot command framework and conversation state machine design | `references/bot-framework.md`, `references/channel-adapters.md` |
+| WebSocket Server | `websocket` | | WebSocket server and real-time communication design | `references/realtime-architecture.md` |
+| Channel Adapter | `adapter` | | Channel adapters (Slack/Discord/LINE normalization) | `references/channel-adapters.md`, `references/event-routing.md` |
+| SSE Streaming | `sse` | | Server-Sent Events design with Last-Event-ID resume, heartbeat, and proxy-safe headers | `references/sse-streaming.md` |
+| Queue Integration | `queue` | | Message-queue producer/consumer wiring (SQS/SNS/RabbitMQ/Kafka/NATS) with DLQ and idempotent consumers | `references/queue-integration.md` |
+| Rate Limiting | `rate` | | Rate limiting and backpressure for messaging (token/leaky bucket, 429/Retry-After, per-tenant quotas) | `references/rate-limiting.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`webhook` = Webhook Handler). Apply normal LISTEN → ROUTE → ADAPT → WIRE → GUARD workflow.
+
+Behavior notes per Recipe:
+- `webhook`: Must include HMAC-SHA256 (raw bytes), timestamp verification (≤5 min), idempotency key, DLQ, and Circuit Breaker. Return 2xx within 3 seconds.
+- `bot`: Design command parser, slash commands, conversation state machine, and middleware chain. Includes LLM-native runner integration evaluation.
+- `websocket`: Connection lifecycle, heartbeats, horizontal scaling (Redis session externalization), and WebSocketStream API evaluation.
+- `adapter`: Cross-platform normalization. Normalize-in/Adapt-out pattern. CloudEvents envelope and AsyncAPI spec.
+- `sse`: Unidirectional server-push with `Last-Event-ID` resume, heartbeat cadence tuned to proxy/LB idle timeouts, proxy/CDN buffering disabled, and long-polling fallback. For bidirectional low-latency use `websocket`; for HTTP request/response API use Gateway.
+- `queue`: Message-queue producer/consumer wiring (envelope, DLQ, visibility timeout, partition/group keys, idempotent consumer). For streaming ETL pipeline design use Stream; for retry/backoff policy use Tempo; for queue-depth SLO/alerting use Beacon.
+- `rate`: Transport-level rate limiting and backpressure for messaging surfaces (token bucket / leaky bucket / sliding window, 429 + `Retry-After`, cost-based quotas, per-tenant isolation). For public REST/GraphQL rate limits use Gateway; for retry schedule design use Tempo.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

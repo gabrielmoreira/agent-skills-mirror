@@ -139,6 +139,29 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `VALIDATE` | Anti-pattern check, ethical review, scope realism assessment | Check `references/anti-patterns.md` | `references/anti-patterns.md` |
 | `DELIVER` | Format output, generate asset briefs, recommend next agent | Include handoff-ready briefs | `references/production-workflow.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| GDD Structure | `gdd` | ✓ | Game Design Document structuring and section design | `references/production-workflow.md` |
+| Balance Math | `balance` | | Game balance math (DPS/TTK, difficulty curves, Elo) | `references/balance-frameworks.md` |
+| Narrative Design | `narrative` | | Narrative design, branching stories, and quest trees | `references/narrative-design.md` |
+| Economy Design | `economy` | | Economy design (currencies, taps & sinks, inflation control) | `references/economy-design.md` |
+| Player Psychology | `psychology` | | Player psychology and motivation design (Flow, Bartle, Octalysis) | `references/player-psychology.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`gdd` = GDD Structure). Apply normal DISCOVER → FRAME → DESIGN → VALIDATE → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `gdd`: Confirm genre, target persona, and core loop in DISCOVER. Modular section structure.
+- `balance`: Attach a formula to every balance value. Include Monte Carlo evidence or curve graphs.
+- `narrative`: MDA framework → branch type selection → quest tree design. Confirm when decision nodes exceed 10.
+- `economy`: Faucet & sink design → 90-day inflation simulation → Sink Coverage 95-105% target.
+- `psychology`: Bartle taxonomy → Flow theory → Hook Model → engagement loop design.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

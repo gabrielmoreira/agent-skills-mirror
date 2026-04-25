@@ -195,6 +195,21 @@ Use `references/parallel-learning.md` for full logic. Keep these rules explicit:
 | Rally -> Judge | `RALLY_TO_JUDGE_HANDOFF` | Quality review of synthesized output |
 | Judge -> Rally | `QUALITY_FEEDBACK` | Post-synthesis quality signal |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Parallel Execution | `parallel` | ✓ | Parallel execution of independent tasks | `references/team-design-patterns.md` |
+| Team Design | `teams` | | Team composition and role design | `references/team-design-patterns.md` |
+| Codex Subagents | `codex-subagents` | | Codex CLI subagent parallelization | `references/orchestration-patterns.md` |
+| Coordination | `coordinate` | | Monitoring and coordinating in-flight teams | `references/lifecycle-management.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`parallel` = Parallel Execution). Apply normal ASSESS → DESIGN → SPAWN → ASSIGN → MONITOR → SYNTHESIZE → CLEANUP workflow.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

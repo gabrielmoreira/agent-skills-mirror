@@ -1,6 +1,7 @@
 ---
 name: plan-ceo-review
 preamble-tier: 3
+interactive: true
 version: 1.0.0
 description: |
   CEO/founder-mode plan review. Rethink the problem, find the 10-star product,
@@ -117,6 +118,21 @@ echo "CHECKPOINT_PUSH: $_CHECKPOINT_PUSH"
 # Detect spawned session (OpenClaw or other orchestrator)
 [ -n "$OPENCLAW_SESSION" ] && echo "SPAWNED_SESSION: true" || true
 ```
+
+## Plan Mode Safe Operations
+
+In plan mode, these are always allowed (they inform the plan, don't modify source):
+`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
+writes to the plan file, `open` for generated artifacts.
+
+## Skill Invocation During Plan Mode
+
+If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
+by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
+point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
+MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
+above or explicitly exception-marked. Call ExitPlanMode only after the skill
+workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack skills AND do not
 auto-invoke skills based on conversation context. Only run skills the user explicitly
@@ -1018,21 +1034,6 @@ success/error/abort, and `USED_BROWSE` with true/false based on whether `$B` was
 If you cannot determine the outcome, use "unknown". The local JSONL always logs. The
 remote binary only runs if telemetry is not off and the binary exists.
 
-## Plan Mode Safe Operations
-
-In plan mode, these are always allowed (they inform the plan, don't modify source):
-`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
-writes to the plan file, `open` for generated artifacts.
-
-## Skill Invocation During Plan Mode
-
-If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
-by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
-point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
-MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
-above or explicitly exception-marked. Call ExitPlanMode only after the skill
-workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
-
 ## Plan Status Footer
 
 In plan mode, before ExitPlanMode: if the plan file lacks a `## GSTACK REVIEW REPORT`
@@ -1409,6 +1410,9 @@ Rules:
 - Do NOT proceed to mode selection (0F) without user approval of the chosen approach.
 
 Present these approach options via AskUserQuestion using the preamble's AskUserQuestion Format section: include RECOMMENDATION and `Completeness: N/10` on every option. These approaches differ in coverage (minimal viable vs ideal architecture), so completeness scoring applies directly.
+
+**STOP.** AskUserQuestion once per issue. Do NOT batch. Recommend + WHY. Do NOT proceed to Step 0D or 0F until the user responds to 0C-bis. A "clearly winning approach" is still an approach decision and still needs explicit user approval before it lands in the plan.
+**Reminder: Do NOT make any code changes. Review only.**
 
 ### 0D-prelude. Expansion Framing (shared by EXPANSION and SELECTIVE EXPANSION)
 

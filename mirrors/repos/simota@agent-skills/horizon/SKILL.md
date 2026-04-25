@@ -128,6 +128,33 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `EXPERIMENT` | Build PoC: isolated file/branch, side-by-side with old, measure difference | Self-contained and easy to discard | `references/migration-patterns.md` |
 | `PRESENT` | Document Trend/Legacy/Comparison/Demo, create PR/Issue | Include bundle size, compatibility, rollback plan | `references/code-standards.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Deprecated Detection | `detect` | ✓ | Detect deprecated libraries | `references/deprecation-detection.md`, `references/deprecated-library-catalog.md` |
+| Native API Replace | `replace` | | Replace with native APIs | `references/native-replacements.md`, `references/native-api-replacement-guide.md` |
+| Migration PoC | `poc` | | Create a migration PoC | `references/migration-patterns.md` |
+| Stack Refresh | `refresh` | | Refresh the full stack | `references/migration-risk-assessment.md` |
+| Codemod Transformation | `codemod` | | AST-based automated code transformation (jscodeshift / ast-grep / ts-morph / comby) with safety checks and dry-run | `references/codemod-transformation.md` |
+| Strangler Fig Migration | `strangler` | | Incremental replacement of legacy system via Strangler Fig façade routing, parallel-run validation, ramp-up | `references/strangler-fig-migration.md` |
+| Deprecation Lifecycle | `sunset` | | warn → deprecate → sunset → remove timeline, communication plan, compatibility windows, breaking-change policy | `references/deprecation-lifecycle.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`detect` = Deprecated Detection). Apply normal SCOUT → LAB → EXPERIMENT → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `detect`: Identify deprecated libs via npm audit + maintenance signals. Default entry.
+- `replace`: Swap library with native API (Intl, Fetch, etc.) with bundle impact.
+- `poc`: Build isolated migration PoC alongside old code.
+- `refresh`: Full-stack modernization planning (multi-library).
+- `codemod`: Author and apply AST-based code transformations (jscodeshift for JS/TS, ts-morph for typed refactors, ast-grep for polyglot pattern rewrites, comby for lightweight syntactic patches). Emit dry-run output, before/after diff sample, idempotency check, and rollout ordering (file batches, commit granularity).
+- `strangler`: Martin Fowler's Strangler Fig pattern — introduce a façade that routes a growing share of traffic to the new system while the legacy shrinks. Design façade placement, per-route cutover criteria, parallel-run validation (shadow), rollback plan, and final-shutdown conditions. Pair with ripple `canary-scope` for traffic ramp and ripple `rollback-plan` for reversibility.
+- `sunset`: Deprecation lifecycle from "announce" through "remove". Emit timeline (warn → deprecate → sunset → remove), compatibility window, customer communication plan (docs + changelog + email + in-product banner), breaking-change policy alignment (SemVer), and observability (usage metrics to know when it is safe to remove). Coordinate with Prose (notification copy), Launch (version policy), and Pulse (usage metrics).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -180,6 +207,9 @@ Every deliverable must include:
 | `references/migration-patterns.md` | You need Strangler Fig, Branch by Abstraction, Parallel Run + Checklist + Risk Matrix. |
 | `references/code-standards.md` | You need good/bad code examples or PoC commenting patterns. |
 | `references/dependency-upgrade-anti-patterns.md` | You need dependency upgrade anti-patterns DU-01 to DU-07, staged update strategy, SemVer criteria. |
+| `references/codemod-transformation.md` | You need jscodeshift / ts-morph / ast-grep / comby tool selection, dry-run workflow, idempotency check, or rollout batching. |
+| `references/strangler-fig-migration.md` | You need Strangler Fig façade design, per-route cutover criteria, parallel-run validation, or final-shutdown checklist. |
+| `references/deprecation-lifecycle.md` | You need warn → deprecate → sunset → remove timeline, customer comms plan, SemVer alignment, or usage-metric gate for safe removal. |
 | `references/technology-adoption-anti-patterns.md` | You need technology adoption anti-patterns TA-01 to TA-07, Tech Maturity Matrix, Hype Cycle, Technology Radar. |
 | `references/javascript-ecosystem-anti-patterns.md` | You need JS ecosystem anti-patterns JE-01 to JE-07, node_modules issues, PM selection guide, supply chain security. |
 | `references/frontend-modernization-anti-patterns.md` | You need frontend modernization anti-patterns FM-01 to FM-07, Outside-In migration, Micro Frontend, success KPIs. |

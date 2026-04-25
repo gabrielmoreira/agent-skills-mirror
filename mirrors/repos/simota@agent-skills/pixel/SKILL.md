@@ -191,6 +191,27 @@ questions:
 | `VERIFY` | Playwright screenshot with `animations: 'disabled'` + `mask` / `stylePath` for dynamic content + per-property verification against Spec Sheet; prefer element-level screenshots for component comparison | Check every property individually; use `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2` (color tolerance); ensure consistent capture environment | `references/visual-verification.md`, `references/precision-spec.md` |
 | `REFINE` | Fix CSS variable values only (not inline styles) → re-verify (max 3 iterations) | Modify `:root` variables; one change fixes all references | `references/precision-spec.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Faithful Reproduction | `reproduce` | ✓ | Faithful HTML/CSS generation from a mockup | `references/design-extraction.md`, `references/precision-spec.md` |
+| Visual Verify | `verify` | | Execute visual verification | `references/visual-verification.md` |
+| Gap Report | `gap` | | Gap analysis report generation | `references/gap-analysis-report.md` |
+| Design Audit | `audit` | | Fidelity audit | `references/gap-analysis-report.md`, `references/visual-verification.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`reproduce` = Faithful Reproduction). Apply normal SCAN → EXTRACT → COMPOSE → VERIFY → REFINE workflow.
+
+Behavior notes per Recipe:
+- `reproduce`: SCAN → EXTRACT → COMPOSE → VERIFY → REFINE フルフロー。信頼度付きで設計値を抽出し、HTML/CSS を生成してビジュアル検証する。
+- `verify`: 既存実装とモックアップの比較のみ。VERIFY フェーズに直行し比較レポートを生成。
+- `gap`: 8次元 × 5重大度 × 9根本原因カテゴリの詳細ギャップ分析レポートを生成 (Markdown + JSON)。
+- `audit`: fidelity スコアリング + 監査レポート。Canon/Judge へのハンドオフ用。
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 1 followed patterns, 74 file(s) materialized.
+Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 1 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 1 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 74 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,56 +83,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/commands/connector-standards.md`](skills/commands/connector-standards.md) |
 | 23 | ✓ | [`skills/commands/scaffold-connector.md`](skills/commands/scaffold-connector.md) |
 | 24 | ✓ | [`skills/commands/test-locally.md`](skills/commands/test-locally.md) |
-| 25 | ✓ | [`skills/connector-building/connector-profile.schema.json`](skills/connector-building/connector-profile.schema.json) |
-| 26 | ✓ | [`skills/connector-building/examples/dashboard-rest.yaml`](skills/connector-building/examples/dashboard-rest.yaml) |
-| 27 | ✓ | [`skills/connector-building/examples/database-sqlalchemy.yaml`](skills/connector-building/examples/database-sqlalchemy.yaml) |
-| 28 | ✓ | [`skills/connector-building/examples/pipeline-sdk.yaml`](skills/connector-building/examples/pipeline-sdk.yaml) |
-| 29 | ✓ | [`skills/connector-building/GUIDE.md`](skills/connector-building/GUIDE.md) |
-| 30 | ✓ | [`skills/connector-building/references/architecture-decision-tree.md`](skills/connector-building/references/architecture-decision-tree.md) |
-| 31 | ✓ | [`skills/connector-building/references/capability-mapping.md`](skills/connector-building/references/capability-mapping.md) |
-| 32 | ✓ | [`skills/connector-building/references/connection-type-guide.md`](skills/connector-building/references/connection-type-guide.md) |
-| 33 | ✓ | [`skills/connector-building/SKILL.md`](skills/connector-building/SKILL.md) |
-| 34 | ✓ | [`skills/connector-review/scripts/analyze_connector.py`](skills/connector-review/scripts/analyze_connector.py) |
-| 35 | ✓ | [`skills/connector-review/scripts/gather-connector-context.sh`](skills/connector-review/scripts/gather-connector-context.sh) |
-| 36 | ✓ | [`skills/connector-review/SKILL.md`](skills/connector-review/SKILL.md) |
-| 37 | ✓ | [`skills/connector-review/templates/full-review-report.md`](skills/connector-review/templates/full-review-report.md) |
-| 38 | ✓ | [`skills/connector-review/templates/incremental-review-report.md`](skills/connector-review/templates/incremental-review-report.md) |
-| 39 | ✓ | [`skills/connector-review/templates/pr-review-comment.md`](skills/connector-review/templates/pr-review-comment.md) |
-| 40 | ✓ | [`skills/connector-review/templates/specialized-review-report.md`](skills/connector-review/templates/specialized-review-report.md) |
-| 41 | ✓ | [`skills/connector-standards/SKILL.md`](skills/connector-standards/SKILL.md) |
-| 42 | ✓ | [`skills/hooks/hooks.json`](skills/hooks/hooks.json) |
-| 43 | ✓ | [`skills/openmetadata-workflow/SKILL.md`](skills/openmetadata-workflow/SKILL.md) |
-| 44 | ✓ | [`skills/planning/SKILL.md`](skills/planning/SKILL.md) |
-| 45 | ✓ | [`skills/README.md`](skills/README.md) |
-| 46 | ✓ | [`skills/standards/code_style.md`](skills/standards/code_style.md) |
-| 47 | ✓ | [`skills/standards/connection.md`](skills/standards/connection.md) |
-| 48 | ✓ | [`skills/standards/lineage.md`](skills/standards/lineage.md) |
-| 49 | ✓ | [`skills/standards/main.md`](skills/standards/main.md) |
-| 50 | ✓ | [`skills/standards/memory.md`](skills/standards/memory.md) |
-| 51 | ✓ | [`skills/standards/patterns.md`](skills/standards/patterns.md) |
-| 52 | ✓ | [`skills/standards/performance.md`](skills/standards/performance.md) |
-| 53 | ✓ | [`skills/standards/registration.md`](skills/standards/registration.md) |
-| 54 | ✓ | [`skills/standards/schema.md`](skills/standards/schema.md) |
-| 55 | ✓ | [`skills/standards/service_spec.md`](skills/standards/service_spec.md) |
-| 56 | ✓ | [`skills/standards/source_types/api.md`](skills/standards/source_types/api.md) |
-| 57 | ✓ | [`skills/standards/source_types/dashboard.md`](skills/standards/source_types/dashboard.md) |
-| 58 | ✓ | [`skills/standards/source_types/data_warehouses.md`](skills/standards/source_types/data_warehouses.md) |
-| 59 | ✓ | [`skills/standards/source_types/database.md`](skills/standards/source_types/database.md) |
-| 60 | ✓ | [`skills/standards/source_types/messaging.md`](skills/standards/source_types/messaging.md) |
-| 61 | ✓ | [`skills/standards/source_types/mlmodel.md`](skills/standards/source_types/mlmodel.md) |
-| 62 | ✓ | [`skills/standards/source_types/nosql_databases.md`](skills/standards/source_types/nosql_databases.md) |
-| 63 | ✓ | [`skills/standards/source_types/pipeline.md`](skills/standards/source_types/pipeline.md) |
-| 64 | ✓ | [`skills/standards/source_types/search.md`](skills/standards/source_types/search.md) |
-| 65 | ✓ | [`skills/standards/source_types/sql_databases.md`](skills/standards/source_types/sql_databases.md) |
-| 66 | ✓ | [`skills/standards/source_types/storage.md`](skills/standards/source_types/storage.md) |
-| 67 | ✓ | [`skills/standards/sql.md`](skills/standards/sql.md) |
-| 68 | ✓ | [`skills/standards/testing.md`](skills/standards/testing.md) |
-| 69 | ✓ | [`skills/systematic-debugging/SKILL.md`](skills/systematic-debugging/SKILL.md) |
-| 70 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
-| 71 | ✓ | [`skills/test-enforcement/SKILL.md`](skills/test-enforcement/SKILL.md) |
-| 72 | ✓ | [`skills/test-locally/SKILL.md`](skills/test-locally/SKILL.md) |
-| 73 | ✓ | [`skills/verification/SKILL.md`](skills/verification/SKILL.md) |
-| 74 | → | [`DEVELOPER.md`](DEVELOPER.md) |
+| 25 | ✓ | [`skills/connector-audit/prompts/00-setup.md`](skills/connector-audit/prompts/00-setup.md) |
+| 26 | ✓ | [`skills/connector-audit/prompts/01-metadata-ingestion.md`](skills/connector-audit/prompts/01-metadata-ingestion.md) |
+| 27 | ✓ | [`skills/connector-audit/prompts/02-error-handling.md`](skills/connector-audit/prompts/02-error-handling.md) |
+| 28 | ✓ | [`skills/connector-audit/prompts/03-connection-auth.md`](skills/connector-audit/prompts/03-connection-auth.md) |
+| 29 | ✓ | [`skills/connector-audit/prompts/04-lineage.md`](skills/connector-audit/prompts/04-lineage.md) |
+| 30 | ✓ | [`skills/connector-audit/prompts/05-scale-performance.md`](skills/connector-audit/prompts/05-scale-performance.md) |
+| 31 | ✓ | [`skills/connector-audit/prompts/06-refactor-plan.md`](skills/connector-audit/prompts/06-refactor-plan.md) |
+| 32 | ✓ | [`skills/connector-audit/prompts/07-implementation.md`](skills/connector-audit/prompts/07-implementation.md) |
+| 33 | ✓ | [`skills/connector-audit/SKILL.md`](skills/connector-audit/SKILL.md) |
+| 34 | ✓ | [`skills/connector-audit/templates/audit-report.md`](skills/connector-audit/templates/audit-report.md) |
+| 35 | ✓ | [`skills/connector-building/connector-profile.schema.json`](skills/connector-building/connector-profile.schema.json) |
+| 36 | ✓ | [`skills/connector-building/examples/dashboard-rest.yaml`](skills/connector-building/examples/dashboard-rest.yaml) |
+| 37 | ✓ | [`skills/connector-building/examples/database-sqlalchemy.yaml`](skills/connector-building/examples/database-sqlalchemy.yaml) |
+| 38 | ✓ | [`skills/connector-building/examples/pipeline-sdk.yaml`](skills/connector-building/examples/pipeline-sdk.yaml) |
+| 39 | ✓ | [`skills/connector-building/GUIDE.md`](skills/connector-building/GUIDE.md) |
+| 40 | ✓ | [`skills/connector-building/references/architecture-decision-tree.md`](skills/connector-building/references/architecture-decision-tree.md) |
+| 41 | ✓ | [`skills/connector-building/references/capability-mapping.md`](skills/connector-building/references/capability-mapping.md) |
+| 42 | ✓ | [`skills/connector-building/references/connection-type-guide.md`](skills/connector-building/references/connection-type-guide.md) |
+| 43 | ✓ | [`skills/connector-building/SKILL.md`](skills/connector-building/SKILL.md) |
+| 44 | ✓ | [`skills/connector-review/scripts/analyze_connector.py`](skills/connector-review/scripts/analyze_connector.py) |
+| 45 | ✓ | [`skills/connector-review/scripts/gather-connector-context.sh`](skills/connector-review/scripts/gather-connector-context.sh) |
+| 46 | ✓ | [`skills/connector-review/SKILL.md`](skills/connector-review/SKILL.md) |
+| 47 | ✓ | [`skills/connector-review/templates/full-review-report.md`](skills/connector-review/templates/full-review-report.md) |
+| 48 | ✓ | [`skills/connector-review/templates/incremental-review-report.md`](skills/connector-review/templates/incremental-review-report.md) |
+| 49 | ✓ | [`skills/connector-review/templates/pr-review-comment.md`](skills/connector-review/templates/pr-review-comment.md) |
+| 50 | ✓ | [`skills/connector-review/templates/specialized-review-report.md`](skills/connector-review/templates/specialized-review-report.md) |
+| 51 | ✓ | [`skills/connector-standards/SKILL.md`](skills/connector-standards/SKILL.md) |
+| 52 | ✓ | [`skills/hooks/hooks.json`](skills/hooks/hooks.json) |
+| 53 | ✓ | [`skills/openmetadata-workflow/SKILL.md`](skills/openmetadata-workflow/SKILL.md) |
+| 54 | ✓ | [`skills/planning/SKILL.md`](skills/planning/SKILL.md) |
+| 55 | ✓ | [`skills/README.md`](skills/README.md) |
+| 56 | ✓ | [`skills/standards/code_style.md`](skills/standards/code_style.md) |
+| 57 | ✓ | [`skills/standards/connection.md`](skills/standards/connection.md) |
+| 58 | ✓ | [`skills/standards/lineage.md`](skills/standards/lineage.md) |
+| 59 | ✓ | [`skills/standards/main.md`](skills/standards/main.md) |
+| 60 | ✓ | [`skills/standards/memory.md`](skills/standards/memory.md) |
+| 61 | ✓ | [`skills/standards/patterns.md`](skills/standards/patterns.md) |
+| 62 | ✓ | [`skills/standards/performance.md`](skills/standards/performance.md) |
+| 63 | ✓ | [`skills/standards/registration.md`](skills/standards/registration.md) |
+| 64 | ✓ | [`skills/standards/schema.md`](skills/standards/schema.md) |
+| 65 | ✓ | [`skills/standards/service_spec.md`](skills/standards/service_spec.md) |
+| 66 | ✓ | [`skills/standards/source_types/api.md`](skills/standards/source_types/api.md) |
+| 67 | ✓ | [`skills/standards/source_types/dashboard.md`](skills/standards/source_types/dashboard.md) |
+| 68 | ✓ | [`skills/standards/source_types/data_warehouses.md`](skills/standards/source_types/data_warehouses.md) |
+| 69 | ✓ | [`skills/standards/source_types/database.md`](skills/standards/source_types/database.md) |
+| 70 | ✓ | [`skills/standards/source_types/messaging.md`](skills/standards/source_types/messaging.md) |
+| 71 | ✓ | [`skills/standards/source_types/mlmodel.md`](skills/standards/source_types/mlmodel.md) |
+| 72 | ✓ | [`skills/standards/source_types/nosql_databases.md`](skills/standards/source_types/nosql_databases.md) |
+| 73 | ✓ | [`skills/standards/source_types/pipeline.md`](skills/standards/source_types/pipeline.md) |
+| 74 | ✓ | [`skills/standards/source_types/search.md`](skills/standards/source_types/search.md) |
+| 75 | ✓ | [`skills/standards/source_types/sql_databases.md`](skills/standards/source_types/sql_databases.md) |
+| 76 | ✓ | [`skills/standards/source_types/storage.md`](skills/standards/source_types/storage.md) |
+| 77 | ✓ | [`skills/standards/sql.md`](skills/standards/sql.md) |
+| 78 | ✓ | [`skills/standards/testing.md`](skills/standards/testing.md) |
+| 79 | ✓ | [`skills/systematic-debugging/SKILL.md`](skills/systematic-debugging/SKILL.md) |
+| 80 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
+| 81 | ✓ | [`skills/test-enforcement/SKILL.md`](skills/test-enforcement/SKILL.md) |
+| 82 | ✓ | [`skills/test-locally/SKILL.md`](skills/test-locally/SKILL.md) |
+| 83 | ✓ | [`skills/verification/SKILL.md`](skills/verification/SKILL.md) |
+| 84 | → | [`DEVELOPER.md`](DEVELOPER.md) |
 
 ---
 

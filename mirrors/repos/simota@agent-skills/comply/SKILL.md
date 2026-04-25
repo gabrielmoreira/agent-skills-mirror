@@ -181,6 +181,35 @@ Full framework details -> `references/regulatory-frameworks.md`
 | `REMEDIATE` | Provide implementation patterns for gaps: audit logging, access controls, encryption, monitoring | Actionable patterns, delegate to Builder | `references/policy-as-code.md` |
 | `REPORT` | Generate compliance matrix, gap summary, risk rating, remediation roadmap | Structured deliverable | `references/compliance-reporting.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| SOC2 Assessment | `soc2` | ✓ | SOC2 Type I/II preparation, Trust Service Criteria mapping | `references/regulatory-frameworks.md` |
+| PCI-DSS Assessment | `pci` | | PCI-DSS v4.0.1 requirement validation, CDE scope definition | `references/regulatory-frameworks.md` |
+| HIPAA Assessment | `hipaa` | | HIPAA technical/administrative/physical safeguard assessment | `references/regulatory-frameworks.md` |
+| ISO 27001 Assessment | `iso` | | ISO 27001:2022 Annex A control mapping, SoA generation | `references/regulatory-frameworks.md` |
+| Policy as Code | `policy` | | OPA/Rego, Kyverno policy implementation, CI/CD compliance gates | `references/policy-as-code.md` |
+| GDPR + EU AI Act | `gdpr` | | GDPR article-level mapping, DPIA, ROPA, SCC transfer, DSAR, EU AI Act risk tiering | `references/gdpr-eu-ai-act.md` |
+| Audit Readiness | `audit` | | Evidence collection, sampling, auditor interview prep, findings remediation, continuous audit | `references/audit-readiness.md` |
+| Vendor Risk Assessment | `vendor` | | Vendor inventory, tier policy, DPA/BAA, SIG/CAIQ, SOC 2 review, subprocessor chain | `references/vendor-risk-assessment.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`soc2` = SOC2 Assessment). Apply normal SCOPE → MAP → ASSESS → EVIDENCE → REMEDIATE → REPORT workflow.
+
+Behavior notes per Recipe:
+- `soc2`: SOC2 Type I (design effectiveness) / Type II (operating effectiveness) assessment. Map all 5 Trust Service Criteria (Security, Availability, Processing Integrity, Confidentiality, Privacy) to every CC control.
+- `pci`: PCI-DSS v4.0.1 all 12 requirements, CDE scope definition, SAQ/ROC preparation support. Assess against the latest version, including the 51 future-dated requirements (mandatory since March 2025).
+- `hipaa`: Technical/administrative/physical safeguard assessment + ePHI handling patterns + BAA requirement check. Factor in 2026 Security Rule NPRM readiness (all safeguards mandatory, encryption required, 24h reporting).
+- `iso`: ISO 27001:2022 Annex A 93 controls (4 themes) mapping + SoA draft generation. Always assess against the 2022 version since the 2013 version is invalid (since October 2025).
+- `policy`: OPA/Rego policy authoring, Kyverno YAML policies, CI/CD compliance gate integration. All implementation is delegated to Builder.
+- `gdpr`: GDPR + EU AI Act regulatory mapping at article level (Art. 5/6/7/13/14/15-22/25/32/33/34), DPIA triggers, ROPA template, lawful-basis selection, SCC/BCR transfer decision, DSAR workflow, and AI Act risk tiering (prohibited / high-risk / limited / minimal). For privacy-engineering implementation (consent SDK, PII scanner, pseudonymization code) use Cloak; for cryptographic key management under Art. 32 use Crypt; for pre-release functional quality gates use Warden; for breach detection rule authoring use Vigil.
+- `audit`: Audit readiness orchestration — evidence tiering, evidence-room structure with chain-of-custody, AICPA-aligned sampling strategy, auditor interview prep, findings remediation tracking, and 48-hour drift flagging for continuous audit. For V.A.I.R.E. functional quality gates use Warden; for detection rule coverage that feeds CC7.2 / PCI Req 10 evidence use Vigil; for cryptographic evidence artifacts (KMS rotation logs, HSM attestations) use Crypt.
+- `vendor`: Third-party vendor risk program — inventory sweep, critical/high/medium/low tier classification, DPA/BAA/SCC contract gating, SIG/CAIQ questionnaire handling, SOC 2 report review (scope, period, CUECs, exceptions, subservice organizations), tier-driven monitoring cadence, and subprocessor chain visibility. For processor/sub-processor privacy analysis under GDPR Art. 28 pair with Cloak; for validating vendor cryptographic claims use Crypt; for vendor SDK CVE scanning use Sentinel; for V.A.I.R.E. internal quality gates use Warden.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -226,6 +255,9 @@ Every compliance deliverable must include:
 | `references/audit-trail-design.md` | Immutable log architecture, tamper-evident patterns, chain-of-custody, retention policies |
 | `references/policy-as-code.md` | OPA/Rego patterns, Conftest CI integration, compliance gates, automated evidence collection |
 | `references/compliance-reporting.md` | Report templates, compliance matrix format, gap analysis structure, remediation roadmaps |
+| `references/gdpr-eu-ai-act.md` | GDPR article-level mapping, DPIA triggers, ROPA template, cross-border transfer, DSAR workflow, EU AI Act risk tiering |
+| `references/audit-readiness.md` | Evidence tier model, evidence-room structure, chain-of-custody, AICPA sampling, auditor interview prep, continuous audit |
+| `references/vendor-risk-assessment.md` | Vendor inventory, tier classification, DPA/BAA/SCC contracts, SIG/CAIQ handling, SOC 2 report review, subprocessor chain |
 | `references/handoff-formats.md` | Inbound/outbound handoff YAML templates for all collaboration partners |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the compliance report, deciding adaptive thinking depth at gap classification, or front-loading target framework/version/scope at INTAKE. Critical for Comply: P3, P5. |
 

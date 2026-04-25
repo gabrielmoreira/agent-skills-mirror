@@ -24,7 +24,7 @@ Gortex is running as an MCP server. You MUST use graph queries instead of file r
 
 | Instead of...                         | You MUST use...                          |
 |---------------------------------------|------------------------------------------|
-| `Read` a whole file for one function  | `get_symbol_source` (80% fewer tokens)   |
+| `Read` a whole file for one function  | `get_symbol_source` with `id: "path/to/file.go::SymbolName"` (80% fewer tokens) — use `get_file_summary` first if you don't know the symbol name |
 | `Read` to find a function             | `get_symbol` or `get_editing_context`    |
 | Multiple `get_symbol` calls           | `batch_symbols` (one call for N symbols) |
 | `Grep` for references                 | `find_usages` (zero false positives)     |

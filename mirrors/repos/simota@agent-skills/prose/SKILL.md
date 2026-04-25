@@ -139,6 +139,47 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | **6. DESIGN** | "content strategy", "landing page copy", "hero copy", "copy-first", "content system" | Write content wireframes before visual design → define principles and decision frameworks → apply 30% cut rule → align copy with composition |
 | **7. DISCLOSE** | "AI disclosure", "AI label", "made with AI", "transparency" | Classify content (fully AI-generated / AI-assisted) → draft dual-layer disclosure (visible label with standardized "AI" cue + C2PA/IPTC metadata) → use EU Code of Practice standard phrases ("Generated with AI" / "Manipulated with AI") adapted per modality → ensure first-exposure disclosure → verify platform compliance (mandatory Aug 2, 2026: EU AI Act + California SB 942; Code of Practice final expected June 2026) |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Microcopy | `microcopy` | ✓ | Button labels, tooltips, placeholders, and empty-state text | `references/microcopy-patterns.md` |
+| Error Messages | `errors` | | Error message design with What/Why/Next structure | `references/error-message-guide.md` |
+| Onboarding Copy | `onboarding` | | First-run experience, progressive disclosure, and feature intro text | `references/onboarding-copy-patterns.md` |
+| Accessibility Text | `a11y` | | ARIA labels, screen reader text, and WCAG 2.2 compliance | `references/accessibility-text-guide.md` |
+| Voice & Tone | `tone` | | Voice/tone framework definition and style guide creation | `references/voice-tone-framework.md` |
+| Empty State Copy | `empty-state` | | Zero-data UI copy with educational + promotional CTA, 3-type classification (first-use / user-cleared / search-no-results) | `references/empty-state-copy.md` |
+| Notification Copy | `notification` | | Push / email / in-app / SMS notification copy with channel-specific length, tone, and CTA rules | `references/notification-copy.md` |
+| Status & Progress | `status` | | Saving / saved / syncing / offline / reconnecting status messages, connection-state microcopy, long-task progress copy | `references/status-progress-copy.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `microcopy` (default).
+
+| First Token | Recipe Activated |
+|------------|-----------------|
+| `microcopy` | Microcopy |
+| `errors` | Error Messages |
+| `onboarding` | Onboarding Copy |
+| `a11y` | Accessibility Text |
+| `tone` | Voice & Tone |
+| `empty-state` | Empty State Copy |
+| `notification` | Notification Copy |
+| `status` | Status & Progress |
+| _(no match)_ | Microcopy (default) |
+
+Behavior notes per Recipe:
+- `microcopy`: General UI text (button labels, tooltips, placeholders). Delegate empty states to `empty-state` and connection/status cues to `status`.
+- `errors`: What/Why/Next structured error messages. Always include recovery guidance.
+- `onboarding`: First-run experience with progressive disclosure.
+- `a11y`: ARIA labels and screen-reader-only text.
+- `tone`: Voice framework definition.
+- `empty-state`: Design zero-data UI copy by type — first-use (invite, educate, first CTA), user-cleared (celebrate completion + next action), search-no-results (acknowledge query, suggest reformulation). Avoid nihilistic "Nothing here" copy.
+- `notification`: Channel-specific copy with length budgets — push (title ≤50 chars, body ≤120 chars), email (subject ≤50 chars, preheader ≤100 chars), in-app (body ≤160 chars), SMS (≤160 chars incl. opt-out). Emit CTA + deeplink + a11y alt.
+- `status`: Connection/progress microcopy (saving / saved / syncing / offline / reconnecting / ready). Map states to copy + icon + a11y announcement. Includes long-task progress phrasing (percentage, time remaining, cancel affordance).
+
+---
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -227,6 +268,9 @@ Prose receives copy direction and context from upstream agents. Prose sends vali
 | `references/onboarding-copy-patterns.md` | You need progressive disclosure, first-run experience, or feature introduction patterns. |
 | `references/accessibility-text-guide.md` | You need alt text rules, ARIA label patterns, screen reader text, or WCAG 2.2 criteria. |
 | `references/content-strategy-design.md` | You need product language principles, 30% cut rule, copy-first design process, hero copy contract, or content-composition alignment. |
+| `references/empty-state-copy.md` | You need zero-data UI copy with 3-type classification (first-use / user-cleared / search-no-results), educational + promotional CTA design. |
+| `references/notification-copy.md` | You need push / email / in-app / SMS notification copy with channel-specific length budgets, tone rules, and CTA patterns. |
+| `references/status-progress-copy.md` | You need saving/saved/syncing/offline connection-state microcopy, long-task progress phrasing, or state-to-copy mapping tables. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the copy deck, deciding adaptive thinking depth at WRITE, or front-loading surface/audience/tone at AUDIT. Critical for Prose: P3, P5. |
 
 ## Operational

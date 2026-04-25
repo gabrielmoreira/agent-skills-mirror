@@ -138,6 +138,27 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `COMPRESS` | Context-cost reduction after correctness is stable | `SCAN → CLASSIFY → COMPRESS → VERIFY → PROPOSE` | `context-compression.md`, `agent-evaluation-guardrails.md` |
 | `EVOLVE` | Architect self-improvement only | `INTROSPECT → DIAGNOSE → PRESCRIBE → MUTATE → VERIFY → PERSIST` | `self-evolution.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Create New Skill | `create` | ✓ | New skill generation (from gap analysis through design) | `references/creative-thinking.md`, `references/skill-template.md` |
+| Improve Existing | `improve` | | Improve existing skill (redefine contract/boundary) | `references/review-loop.md`, `references/enhancement-framework.md` |
+| Compress | `compress` | | Skill compression (token reduction, preserve 4-axis equivalence) | `references/context-compression.md` |
+| Evolve | `evolve` | | Skill self-evolution (lifecycle-driven self-improvement) | `references/self-evolution.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`create` = Create New Skill). Apply normal UNDERSTAND → ENVISION → ANALYZE → DESIGN → GENERATE → VALIDATE workflow.
+
+Behavior notes per Recipe:
+- `create`: ENVISION (20-30% effort) → ANALYZE (overlap scoring) → GENERATE (SKILL.md + references) → VALIDATE (16-item checklist). Read `creative-thinking.md` first.
+- `improve`: Read `review-loop.md` for Health Score. ANALYZE → SCORE → PRIORITIZE → VALIDATE workflow.
+- `compress`: Token-budget analysis before changes. Verify 4-axis equivalence (Behavioral/Structural/Integration/Routing). Confirm if reduction > 20%.
+- `evolve`: Architect self-modification only. Strictly enforce Safety Level A/B/C/D. Rollback snapshot is mandatory.
+
 ### Phase Contract
 
 | Phase | Keep Inline | Read This When |

@@ -12,6 +12,9 @@ CAPABILITIES_SUMMARY:
 - technical_debt_assessment: Quantify debt via SQALE/TDR (remediation cost / dev cost), prioritize by Cost of Delay, recommend ≥ 15% dev time allocation for high-complexity projects
 - module_boundary_design: Define clean module interfaces and boundaries
 - fitness_function_design: Recommend CI-integrated architectural fitness functions for coupling, complexity, and layer violation guardrails
+- circular_dependency_remediation: Targeted SCC detection and break strategies (dependency inversion, interface extraction, module re-layering) for cyclic import graphs
+- coupling_metric_assessment: Afferent/efferent coupling, instability (I), abstractness (A), distance-from-main-sequence (D) scoring per module with actionable targets
+- module_boundary_evaluation: Bounded-context fit analysis, cross-boundary leak detection, and anti-corruption layer recommendations
 
 COLLABORATION_PATTERNS:
 - Pattern A: Analysis-to-Design (Atlas → Architect)
@@ -127,6 +130,35 @@ Detailed checklists: `references/daily-process-checklists.md`
 | `architecture health`, `metrics` | Health assessment | Health score card | `references/architecture-health-metrics.md` |
 | `fitness function`, `evolutionary`, `guardrail` | Fitness function design | Fitness function spec + CI integration guide | `references/architecture-health-metrics.md` |
 | unclear architecture request | Dependency analysis + ADR | Analysis report + ADR | `references/dependency-analysis-patterns.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Architecture Analysis | `analyze` | ✓ | Full architecture analysis, combined evaluation of dependency/coupling/module boundaries | `references/dependency-analysis-patterns.md` |
+| Dependency Audit | `deps` | | Dependency graph, circular reference detection | `references/dependency-analysis-patterns.md` |
+| God Class Detection | `godclass` | | God Class / bloated module detection | `references/zen-integration.md` |
+| ADR Authoring | `adr` | | Author Architecture Decision Record | `references/adr-rfc-templates.md` |
+| RFC Drafting | `rfc` | | RFC draft for large-scale changes | `references/adr-rfc-templates.md` |
+| Cycle Break | `cycle` | | Circular dependency (SCC) detection and removal strategies (dependency inversion / interface extraction / re-layering) | `references/circular-dependency-remediation.md` |
+| Coupling Assessment | `coupling` | | Quantitative module coupling assessment (Ca/Ce/I/A/D) and improvement guidance | `references/coupling-metrics.md` |
+| Boundary Evaluation | `boundary` | | Bounded Context boundary evaluation, cross-boundary leak detection, anti-corruption layer proposals | `references/module-boundary-evaluation.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`analyze` = Architecture Analysis). Apply normal SURVEY → PLAN → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `analyze`: Generate full dependency graph + coupling metrics + health score. Focus on the SURVEY phase.
+- `deps`: Identify circular references and high-frequency bidirectional dependencies. Suggest fix candidates (merge/extract/tolerate).
+- `godclass`: Identify SRP-violating modules and generate a ZEN_HANDOFF draft for Zen.
+- `adr`: Author ADR using MADR 4.0 template. Always include Considered Options + pros/cons.
+- `rfc`: RFC draft for large-scale changes. Include migration strategy and rollback plan.
+- `cycle`: Detect SCCs (strongly connected components) and present prioritized removal strategies (DIP / interface extraction / re-layering / merge) per SCC. Recommend Canvas visualization of the dependency graph.
+- `coupling`: Calculate Martin metrics (Ca/Ce/Instability/Abstractness/Distance) and identify modules off the Main Sequence. Present target values and improvement candidates.
+- `boundary`: Evaluate alignment between Bounded Context boundaries and repository structure. Detect cross-boundary data leakage, excessive shared kernel, and missing anti-corruption layers.
 
 ## Output Requirements
 

@@ -188,6 +188,31 @@ Default tri-engine flow: `SCOPE → FAN-OUT → NORMALIZE → CLUSTER → SCORE 
 
 For single-engine mode (user-requested or degraded), collapse to `SCOPE → EXECUTE → ANALYZE → REPORT → ROUTE` using the named engine's usage reference. All findings are treated as CANDIDATE and require grounding before shipping.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Tri-Engine PR Review | `pr` | ✓ | Full diff review of an entire PR (Codex + Gemini + Claude in parallel) | `references/tri-engine-review.md`, `references/review-effectiveness.md` |
+| Security-First | `security` | | CWE/OWASP focus, stricter checks on AI-generated code | `references/tri-engine-review.md`, `references/codex-integration.md` |
+| Perf Focus | `perf` | | Focus on N+1 / render cost / bundle size | `references/tri-engine-review.md`, `references/review-effectiveness.md` |
+| Style Readability | `style` | | Naming and structure only (no bug flagging, Claude single engine) | `references/code-smell-detection.md`, `references/consistency-patterns.md` |
+| Quick Check | `quick` | | <50 LOC low-risk, Claude single engine | `references/claude-review-usage.md` |
+| Intent Alignment | `intent` | | Focus on alignment between code and PR body | `references/tri-engine-review.md`, `references/review-anti-patterns.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`pr` = Tri-Engine PR Review). Apply full SCOPE → FAN-OUT → ... → REPORT workflow.
+
+Behavior notes per Recipe:
+- `pr`: Tri-engine fan-out (Codex + Gemini + Claude Code in parallel). Apply cognitive-load gate and SNR optimization.
+- `security`: Tri-engine fan-out + security focus area. Attach OWASP/CWE mapping to every finding. Scrutinize AI-generated code closely.
+- `perf`: Tri-engine fan-out + performance focus area. Concentrate on N+1, render cost, and bundle size.
+- `style`: Claude single engine (subagent). No bug or security flags. Naming, structure, and consistency only.
+- `quick`: Claude single engine (subagent). For <50 LOC / low risk only. All findings require grounding as CANDIDATE.
+- `intent`: Focus on alignment between PR body and code changes. Scrutinize diffs via tri-engine.
+
 ## Output Routing
 
 Default routing is tri-engine fan-out (Codex + Gemini + Claude Code subagents in one message) per `references/tri-engine-review.md`. Single-engine rows apply only when the user explicitly names one engine, when two engines are unavailable, or for trivial scope (<50 LOC low-risk).

@@ -28,7 +28,7 @@ COLLABORATION_PATTERNS:
 - Compete -> Lore: Validated recurring patterns become shared knowledge
 - Compete -> Oracle: LLM brand visibility analysis needs AI/ML expertise
 - Flux -> Compete: Market assumption reframing and differentiation axis discovery
-- Compete -> Researcher: COMPETE_TO_RESEARCHER — win/loss 分析結果に基づくインタビュー設計示唆
+- Compete -> Researcher: COMPETE_TO_RESEARCHER — interview design suggestions based on win/loss analysis results
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Voice (customer feedback), Pulse (product metrics), Nexus (task routing), Flux (market assumption reframing)
@@ -142,6 +142,30 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Ecosystem | Map platform ecosystems, network effects, partnerships, and adjacent market threats | `references/ecosystem-mapping.md` |
 | Wargame | Simulate competitor responses to strategic moves via red/blue team exercises | `references/competitive-wargaming.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Competitor Matrix | `matrix` | ✓ | Competitor map, feature comparison matrix, tiering | `references/analysis-templates.md` |
+| SWOT Analysis | `swot` | | SWOT, positioning, differentiation strategy | `references/competitive-moats-category-design.md` |
+| Battle Card | `battle-card` | | Battle card creation, competitive alert response plan | `references/playbooks.md` |
+| Positioning Map | `positioning` | | Positioning map, category design, moat evaluation | `references/competitive-moats-category-design.md` |
+| LLM Visibility | `llm-visibility` | | LLM brand presence analysis, AI share of voice measurement | `references/intelligence-gathering.md` |
+| Battle Card | `battle` | | One-pager sales-enablement design, objection handling pairs, freshness governance, GTM distribution | `references/battle-card.md` |
+| Win/Loss Analysis | `winloss` | | Post-decision interviews, segmentation, theme extraction, cadence design, CRM integration | `references/winloss-analysis.md` |
+| Moat (7 Powers) | `moat` | | Helmer 7 Powers assessment, durability scoring, anti-moat detection, statics vs dynamics | `references/moat-7-powers.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`matrix` = Competitor Matrix). Apply normal MAP → ANALYZE → DIFFERENTIATE workflow.
+
+Behavior notes per Recipe:
+- `battle`: Author one-pager with TL;DR, why-we-win, why-we-lose, 5 objection-handling pairs, landmines, traps, pricing posture, and proof points. Source every claim; enforce 90-day max freshness; tag CRM `battle_card_used` for win-rate measurement. Pull win/lose narratives from `winloss` outputs — never synthesize from internal opinion. Distribute via CRM/Slack/deal-room (not standalone wiki).
+- `winloss`: Run post-decision interviews 2-6 weeks after decision; segment by `outcome x deal-size x competitor` minimum. Require `3+` mentions before elevating a theme; probe past "price" as it is the most-cited and least-real loss reason. Use third-party interviewers for losses. Quarterly cadence default; integrate findings into CRM and downstream into `battle` cards.
+- `moat`: Apply Helmer's 7 Powers double-test (Benefit AND Barrier); reject features-as-moats. Score durability via decade test; map industry phase (Origination/Take-Off/Stability) to assess Power-formation feasibility. Detect anti-moats (platform dependence, customer concentration, AI commoditization) and net-discount the moat. Hand off to Helm for strategic simulation.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -242,7 +266,7 @@ When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore suba
 | `Compete -> Helm` | `COMPETE_TO_HELM` | Strategic simulation or scenario planning is required |
 | `Compete -> Lore` | `COMPETE_TO_LORE` | Validated recurring patterns should become shared knowledge |
 | `Compete -> Oracle` | `COMPETE_TO_ORACLE` | LLM brand visibility analysis requires AI/ML domain expertise |
-| `Compete -> Researcher` | `COMPETE_TO_RESEARCHER` | win/loss 分析からのインタビュー設計示唆 |
+| `Compete -> Researcher` | `COMPETE_TO_RESEARCHER` | Interview design suggestions from win/loss analysis |
 
 ## Reference Map
 
@@ -260,6 +284,9 @@ When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore suba
 | `references/market-sizing.md` | You need to estimate TAM/SAM/SOM/PAM, competitive market share, or adjacent market size. |
 | `references/ecosystem-mapping.md` | You need to analyze platform ecosystems, network effects, partnerships, or adjacent market threats. |
 | `references/competitive-wargaming.md` | You need to simulate competitor responses, run red/blue team exercises, or conduct pre-mortem analysis. |
+| `references/battle-card.md` | You are designing a battle card, governing freshness, distributing to GTM, or measuring win-rate lift from card adoption. |
+| `references/winloss-analysis.md` | You are running post-decision interviews, segmenting deals, coding themes, choosing cadence, or integrating findings into CRM. |
+| `references/moat-7-powers.md` | You are evaluating moats via Helmer's 7 Powers, scoring durability, distinguishing Counter-Positioning from differentiation, or detecting anti-moats. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the intelligence report, deciding adaptive thinking depth at SHARPEN, or front-loading competitor scope and decision question at INTAKE. Critical for Compete: P3, P5. |
 
 ## Operational

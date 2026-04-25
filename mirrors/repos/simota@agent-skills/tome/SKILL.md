@@ -189,6 +189,33 @@ Output format templates → `references/output-templates.md`
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Learning Doc | `learn` | ✓ | Learning document generation (standard mode) | `references/output-templates.md` |
+| Diff to Teaching | `diff` | | Turn diffs into teaching materials | `references/patterns.md` |
+| Onboarding Material | `onboard` | | Material for new members (beginner depth) | `references/output-templates.md` |
+| Design Decision Record | `record` | | Design decision record (ADR/Decision Record) | `references/output-templates.md` |
+| Worked Example | `worked` | | Step-by-step problem→reasoning→solution document with cognitive scaffolding and faded guidance | `references/worked-example.md` |
+| Coding Kata | `kata` | | Deliberate-practice exercise with constraints, difficulty tiers, and comparison-target solutions | `references/coding-kata.md` |
+| Quickstart Guide | `quickstart` | | ≤15-minute first-success path with prerequisite filtering and "you should see..." anchors | `references/quickstart-guide.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`learn` = Learning Doc). Apply normal SCOPE → EXTRACT → ANALYZE → COMPOSE → REVIEW workflow.
+
+Behavior notes per Recipe:
+- `learn`: 標準 learning_doc。5W1H+WhyNot フレームワークで変更の背景・理由・代替案を文書化。
+- `diff`: diff/commit/PR を直接受け取り教材化。EXTRACT フェーズを重点化し before/after 比較必須。
+- `onboard`: beginner 深度で用語定義を徹底。新規メンバーが独立して読める資料を生成。
+- `record`: Nygard テンプレートで decision_record 生成。一決定一レコードを厳守。
+- `worked`: Sweller の認知負荷理論に基づき、専門家の思考プロセス・よくある誤り・「なぜ機能するか」を併記したステップ解法を生成。学習シーケンス時は faded-guidance 段階を設計。
+- `kata`: Dave Thomas の kata 伝統に基づく熟達練習課題。制約 (時間/言語/パラダイム) と難易度ティア (Bronze/Silver/Gold) を設計し、比較対象解と振り返りプロンプトを添付。
+- `quickstart`: 15 分以内の初回成功パスを設計。前提条件を厳格に絞り込み、「you should see...」アンカーで成功検証ポイントを設置。トラブルシューティングは決定木形式。
+
 ## Output Routing
 
 | Signal | Format | Approach | Read next |
@@ -301,6 +328,9 @@ All handoff templates → `references/handoffs.md`
 | `references/patterns.md` | You need analysis frameworks for specific change types (refactoring, bug fix, feature, etc.) |
 | `references/examples.md` | You need concrete sample outputs for reference |
 | `references/handoffs.md` | You need handoff templates for inter-agent collaboration |
+| `references/worked-example.md` | You are running the `worked` recipe — Sweller cognitive load theory, expert-reasoning annotation, faded-guidance progression |
+| `references/coding-kata.md` | You are running the `kata` recipe — constraint design, difficulty tiers (Bronze/Silver/Gold), pair vs solo facilitation, common katas |
+| `references/quickstart-guide.md` | You are running the `quickstart` recipe — 15-minute time budget, prerequisite filtering, success anchors, troubleshooting decision tree |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the learning document, deciding adaptive thinking depth at audience/evidence separation, or front-loading audience/doc-type/scope at EXTRACT. Critical for Tome: P3, P5. |
 
 ---

@@ -12,6 +12,9 @@ CAPABILITIES_SUMMARY:
 - evaluation_frameworks: Design eval suites for LLM outputs
 - mlops: Design ML pipeline, monitoring, and deployment patterns
 - cost_optimization: Optimize LLM usage costs (model selection, caching, batching)
+- agent_system_design: Design application-level LLM agents (tool-use loops, tool-call schemas, context/memory, subagent delegation, termination conditions, failure modes)
+- llm_cost_optimization: LLM-API cost tuning (token budget per request, prompt caching TTL, model tier routing haiku/sonnet/opus, batch API vs streaming, context compression, per-feature SLO/cost budget)
+- embedding_strategy: RAG embedding pipeline design (text chunking fixed/semantic/recursive, embedding model selection, vector index choice, cross-encoder re-ranking, hybrid BM25+vector retrieval)
 
 COLLABORATION_PATTERNS:
 - Builder -> Oracle: AI feature requirements, model selection questions
@@ -99,6 +102,35 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Skip safety design — OWASP LLM Top 10 2025: LLM01 (Prompt Injection) remains #1; new entries LLM07 (System Prompt Leakage) and LLM08 (Vector/Embedding Weaknesses) target RAG poisoning (BadRAG, TrojanRAG)
 - Trust single-model LLM-as-judge without cross-validation — position bias causes `40%` inconsistency in GPT-4 judges; True Negative Rate `< 25%` means invalid outputs pass undetected
 - Deploy RAG with naive fixed-size chunking without benchmarking — faithfulness drops to `0.47-0.51` vs `0.79-0.82` with optimized chunking
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Prompt Engineering | `prompt` | ✓ | Prompt design and optimization | `references/prompt-engineering.md` |
+| RAG Design | `rag` | | RAG design (retrieval + generation) | `references/rag-design-anti-patterns.md` |
+| Evaluation Framework | `eval` | | Evaluation framework (LLM output quality) | `references/evaluation-observability.md` |
+| AI Safety | `safety` | | Guardrails, red-teaming | `references/ai-safety-guardrails.md` |
+| MLOps Pipeline | `mlops` | | MLOps pipeline design | `references/llm-application-patterns.md` |
+| Agent System Design | `agent` | | Application-level LLM agent design (tool-use loops, tool schemas, memory, subagent delegation, termination) | `references/agent-design.md` |
+| LLM Cost Optimization | `cost` | | LLM-API cost tuning (token budget, prompt caching, model tier routing, batch vs streaming, context compression) | `references/cost-optimization.md` |
+| Embedding Strategy | `embed` | | RAG embedding pipeline deep dive (chunking, embedding model, vector index, re-ranking, hybrid BM25+vector) | `references/embedding-strategy.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`prompt` = Prompt Engineering). Apply normal ASSESS → DESIGN → EVALUATE → SPECIFY workflow.
+
+Behavior notes per Recipe:
+- `prompt`: Prompt design, versioning, testing. Includes XML tag structure, few-shot examples, caching strategy.
+- `rag`: RAG architecture design. Set chunking strategy, Hybrid Search, Recall@5 / Faithfulness thresholds.
+- `eval`: LLM-as-judge, regression tests, Golden Test Set design. Includes bias detection and TNR thresholds.
+- `safety`: OWASP LLM Top 10 2025 compliance. Prompt Injection defense, PII handling, guardrail layering.
+- `mlops`: MLOps pipeline design. Includes model routing, canary rollout, and cost optimization.
+- `agent`: Application-level LLM agent design — tool-use loops, tool-call schema authoring, context/memory management, subagent delegation, termination conditions, agent failure modes (infinite tool loop, context bloat, tool selection drift). Compounding failure budget (`95%` per layer → `77%` at 5 layers) drives termination and max-turn ceilings. Scope: agents INSIDE the user's product. For designing the SKILL AGENT ecosystem itself (skill files, inter-agent handoffs), route to `Architect`.
+- `cost`: LLM-API cost tuning — per-feature token budget, Anthropic prompt caching with 5-minute TTL (`45-80%` cost, `13-31%` TTFT reduction) or 1-hour TTL for stable prefixes, model tier routing (haiku / sonnet / opus), batch API (50% discount, async) vs streaming tradeoffs, context compression, semantic cache tuning. Scope: LLM-API spend only (tokens, model tier, caching, batch). For cloud infra FinOps (EC2, S3, RDS, GPU nodes), route to `Ledger`.
+- `embed`: RAG embedding pipeline deep dive — text chunking (fixed / semantic / recursive), embedding model selection (OpenAI text-embedding-3, Voyage, Cohere, bge-m3, nomic-embed), vector index choice (HNSW / IVF / flat), cross-encoder re-ranking (Cohere Rerank 3, bge-reranker-v2-m3, Voyage rerank-2), hybrid BM25+vector retrieval with RRF fusion. Zooms into the retrieval layer that `rag` assembles end-to-end; hand off here from `rag` when chunking/indexing/re-rank is the bottleneck. For full-system search architecture (query understanding, multi-index fan-out, faceting, relevance ops), route to `Seek`.
 
 ## Operating Modes
 

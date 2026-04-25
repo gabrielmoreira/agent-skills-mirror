@@ -1,0 +1,4 @@
+interface:
+  display_name: "GPT Image"
+  short_description: "Generate and edit GPT Image 2 visuals"
+  default_prompt: "Use $gpt-image to draft a gallery-informed image prompt and generate or edit the visual."

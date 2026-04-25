@@ -207,6 +207,27 @@ Routing rules:
 - If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
 - Always read relevant `references/` files before producing output.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Prune | `prune` | ✓ | Pruning proposals for unnecessary elements (comprehensive) | `references/evaluation-criteria.md` |
+| Scope Cut | `cut` | | Scope cut proposals | `references/subtraction-patterns.md` |
+| Question Justification | `question` | | Question the justification | `references/evaluation-criteria.md` |
+| Simplify | `simplify` | | Complexity reduction | `references/complexity-metrics.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`prune` = Prune). Apply normal QUESTION → WEIGH → SUBTRACT → PROPOSE workflow.
+
+Behavior notes per Recipe:
+- `prune`: 5 Existence Questions と CoK スコアリングで総合的な削減提案を生成。Standard Audit モード。
+- `cut`: スコープカットに特化。機能・モジュール単位で CoK と blast radius を評価。
+- `question`: "Why keep this?" に特化した問い直し。Quick Check モードで素早く判定。
+- `simplify`: 認知複雑度 >15 の SIMPLIFY 候補を対象に複雑性削減パターンを提案。
+
 ## Output Requirements
 
 - Primary output: `Subtraction Proposal`.

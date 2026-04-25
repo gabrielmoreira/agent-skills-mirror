@@ -1,144 +1,144 @@
 # AGENTS.md
 
-## 项目概览
+## Project Overview
 
-Astron Agent 是一个企业级 Agentic Workflow 开发平台，包含控制台前后端、多个核心微服务、插件系统以及部署与基础设施配置。仓库采用多语言多模块结构，主要语言包括 TypeScript、Java、Python 和 Go。
+Astron Agent is an enterprise-grade Agentic Workflow development platform. It includes the console frontend and backend, multiple core microservices, a plugin system, and deployment and infrastructure configuration. The repository uses a multi-language, multi-module structure. The primary languages are TypeScript, Java, Python, and Go.
 
-## 仓库结构
+## Repository Structure
 
-### 控制台
+### Console
 
 - `console/frontend`
-  - React 18 + TypeScript + Vite 前端应用
-  - 负责控制台 UI、Agent 创建、聊天界面、工作流可视化、模型管理、插件商店等功能
+  - React 18 + TypeScript + Vite frontend application
+  - Responsible for the console UI, agent creation, chat interface, workflow visualization, model management, plugin marketplace, and related features
 - `console/backend`
-  - Java Spring Boot 后端
-  - 负责控制台 REST API、SSE、鉴权、管理能力和业务聚合
-  - 主要子模块：
+  - Java Spring Boot backend
+  - Responsible for console REST APIs, SSE, authentication, management capabilities, and business aggregation
+  - Main submodules:
     - `hub`
     - `toolkit`
     - `commons`
 
-### 核心微服务
+### Core Microservices
 
 - `core/agent`
-  - Python FastAPI 服务
-  - 负责 Agent 执行引擎、Chat/CoT/CoT Process Agent、插件调用、会话上下文处理
+  - Python FastAPI service
+  - Responsible for the agent execution engine, Chat/CoT/CoT Process Agent, plugin invocation, and session context handling
 - `core/workflow`
-  - Python FastAPI 服务
-  - 负责工作流编排、执行、调试、版本与事件处理
+  - Python FastAPI service
+  - Responsible for workflow orchestration, execution, debugging, versioning, and event handling
 - `core/knowledge`
-  - Python FastAPI 服务
-  - 负责知识库、文档处理、向量化、检索、RAG 集成
+  - Python FastAPI service
+  - Responsible for the knowledge base, document processing, vectorization, retrieval, and RAG integration
 - `core/memory`
-  - Python 模块
-  - 负责对话历史、短期/长期记忆、会话持久化
+  - Python module
+  - Responsible for conversation history, short-term and long-term memory, and session persistence
 - `core/tenant`
-  - Go 服务
-  - 负责多租户、空间隔离、组织与资源配额管理
+  - Go service
+  - Responsible for multi-tenancy, space isolation, organization management, and resource quota management
 - `core/plugin`
-  - 插件能力目录
-  - 包含 `aitools`、`rpa`、`link` 等插件服务
+  - Plugin capability directory
+  - Includes plugin services such as `aitools`, `rpa`, and `link`
 - `core/common`
-  - Python 公共能力模块
-  - 负责认证、日志、观测、数据库/缓存/消息队列/对象存储等基础设施抽象
+  - Python shared capability module
+  - Responsible for abstractions around authentication, logging, observability, databases, cache, message queues, object storage, and other infrastructure concerns
 
-### 其他目录
+### Other Directories
 
 - `docs`
-  - 项目说明、部署、配置、模块说明
-  - 架构理解优先参考 `docs/PROJECT_MODULES_zh.md`
+  - Project documentation, deployment, configuration, and module descriptions
+  - For architectural understanding, refer first to `docs/PROJECT_MODULES_zh.md`
 - `docker`
-  - Docker Compose 及相关基础设施配置
+  - Docker Compose and related infrastructure configuration
 - `helm`
-  - Helm Chart 与 Kubernetes 部署配置
+  - Helm Charts and Kubernetes deployment configuration
 
-## 架构理解
+## Typical Communication Flows
 
-建议按以下路径理解系统：
+- Frontend -> Console Backend: HTTP/REST, SSE
+- Console Backend -> Core Services: HTTP/REST
+- Core Services -> Core Services: Kafka event-driven communication
 
-1. `console/frontend` 负责用户交互入口。
-2. `console/backend` 负责控制台 API 聚合和管理逻辑。
-3. `core/*` 承担实际智能体、工作流、知识库、租户、插件等核心能力。
-4. `core/common` 为 Python 微服务提供统一基础设施支持。
-5. 底层依赖 MySQL、Redis、Kafka、MinIO 等基础设施。
+## Behavioral Guidelines to Reduce Common LLM Coding Mistakes
 
-典型通信关系：
+Merge these with project-specific instructions as needed.
 
-- Frontend -> Console Backend：HTTP/REST、SSE
-- Console Backend -> Core Services：HTTP/REST
-- Core Services -> Core Services：Kafka 事件驱动
+Tradeoff: These guidelines prioritize caution over speed. Use judgment for trivial tasks.
 
-## 技术栈
+### 1. Think Before Coding
 
-- 前端：React 18、TypeScript 5、Vite 5、Ant Design 5、Tailwind CSS
-- 控制台后端：Java 21、Spring Boot 3.5.x、MyBatis Plus、Spring Security、OAuth2
-- 核心服务：Python 3.11+、FastAPI、SQLAlchemy / SQLModel、Pydantic、OpenTelemetry
-- 租户服务：Go 1.23、Gin
-- 基础设施：MySQL、Redis、Kafka、MinIO
+Do not assume. Do not hide confusion. Surface tradeoffs.
 
-## 开发约定
+Before implementing:
 
-### 通用
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them instead of choosing silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Identify what is confusing and ask.
 
-- 优先做最小必要改动，避免跨模块无关重构。
-- 改动前先确认模块边界，避免把控制台逻辑误放到核心服务，或把领域逻辑误放到 API 层。
-- 优先沿用现有工程风格、目录组织和命名习惯。
-- 如果变更涉及多个服务，明确调用链和依赖方向。
+### 2. Simplicity First
 
-### Python 模块
+Write the minimum code that solves the problem. Nothing speculative.
 
-- 重点目录：`core/agent`、`core/workflow`、`core/knowledge`、`core/common`
-- 优先保持清晰分层，避免把业务逻辑堆进路由层。
-- 测试使用 `pytest`
+- Do not add features beyond what was asked.
+- Do not add abstractions for single-use code.
+- Do not add "flexibility" or "configurability" that was not requested.
+- Do not add error handling for impossible scenarios.
+- If you write 200 lines and the same result could be achieved in 50, rewrite it.
+- Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
-### Java 模块
+### 3. Surgical Changes
 
-- 重点目录：`console/backend/*`
-- 遵守 Spring Boot 分层结构
-- DTO、Service、Controller、Mapper 各司其职
-- 测试通常使用 JUnit
+Touch only what you must. Clean up only your own mess.
 
-### TypeScript 前端
+When editing existing code:
 
-- 重点目录：`console/frontend/src`
-- 页面在 `pages`，复用组件在 `components`，状态在 `store`，接口调用在 `services` 或相邻模块中
-- 优先复用已有状态管理、工具函数和样式体系
-- 风格和质量工具以 ESLint、Prettier、TypeScript 配置为准
+- Do not "improve" adjacent code, comments, or formatting.
+- Do not refactor things that are not broken.
+- Match the existing style, even if you would normally do it differently.
+- If you notice unrelated dead code, mention it. Do not delete it.
 
-### Go 模块
+When your changes create orphans:
 
-- 重点目录：`core/tenant`
-- 保持接口、服务、存储职责清晰
-- 遵循 `go fmt` 和现有项目结构
+- Remove imports, variables, or functions that become unused because of your changes.
+- Do not remove pre-existing dead code unless asked.
+- Use this test: every changed line should trace directly to the user's request.
 
-## 修改建议
+### 4. Goal-Driven Execution
 
-- 改前先定位目标模块，不要在不了解调用链时直接改公共层。
-- 涉及接口字段变更时，同时检查：
-  - 前端调用
-  - 控制台后端 DTO / Controller / Service
-  - 下游核心服务 schema 或接口定义
-- 涉及工作流、知识库、插件能力时，优先检查是否已有测试覆盖。
-- 涉及 Kafka、Redis、MinIO 或鉴权时，优先评估对其他服务的联动影响。
+Define success criteria. Iterate until verified.
 
-## 常用关注路径
+Turn tasks into verifiable goals:
 
-- `docs/PROJECT_MODULES_zh.md`
-- `README.md`
-- `console/README.md`
-- `console/frontend`
-- `console/backend`
-- `core/agent`
-- `core/workflow`
-- `core/knowledge`
-- `core/common`
-- `helm/astron-agent`
-- `docker`
+- "Add validation" -> "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" -> "Write a test that reproduces it, then make it pass"
+- "Refactor X" -> "Ensure tests pass before and after"
 
-## 重要注意事项
+For multi-step tasks, state a brief plan:
 
-- 进行实现前，优先确认目标模块、上下游依赖和验证方式。
-- 优先使用官方的SDK进行代码编写。
-- 请确保生成的代码符合ci检查的规范，提高代码质量。
-- 主agent在完成需求实现后，必须创建并使用 `.codex/agents/ci-fix-subagent.md` 这个subagent，对本次新增或修改的代码文件进行CI检查；检查范围仅限本次修改的代码文件，不要对全量代码进行检查。
+1. [Step] -> verify: [check]
+2. [Step] -> verify: [check]
+3. [Step] -> verify: [check]
+
+Strong success criteria allow you to work independently in a loop. Weak criteria such as "make it work" require constant clarification.
+
+These guidelines are working if there are fewer unnecessary changes in diffs, fewer rewrites caused by overcomplication, and more clarifying questions before implementation rather than after mistakes.
+
+## Modification Recommendations
+
+- Before making changes, first identify the target module. Do not modify shared layers directly before understanding the call chain.
+- If a change involves multiple services, make the call chain and dependency direction explicit.
+- If Kafka, Redis, MinIO, or authentication is involved, evaluate the impact on other services first.
+
+## Important Notes
+
+- Before implementation, first confirm the target module, upstream and downstream dependencies, and the verification approach.
+- Prefer official SDKs when writing code.
+- Do not focus only on whether the feature works. It must also satisfy the corresponding language module's formatting, linting, type checking, static analysis, and testing requirements.
+- If the work is a bug fix, unit tests and integration tests are not required. If it is a complete feature request, unit tests are mandatory, and integration tests should also be added when feasible.
+- If it is a complete feature request or a complex bug, add logs at key points as much as reasonably possible to help with troubleshooting, but do not add excessive logging.
+
+## Key Workflow Expectations
+
+1. If unit tests or integration tests are involved, assign the test scenarios and test code to a new subagent for execution. The subagent should report test results back to the main agent. If tests fail, the main agent should fix the issue and hand testing back to the subagent. Repeat this loop for up to 5 rounds. If tests still do not pass after 5 rounds, inform the user. In addition, if any local environment issue appears during testing, ask the user whether local dependencies should be installed. After the user agrees, install the required local environment automatically and continue testing.
+2. After the feature work and testing are completed, ask the user whether the project needs to be redeployed. If the user confirms redeployment is needed, start a new subagent to execute the `.codex/skills/astron-agent-server-deploy` skill.

@@ -131,6 +131,21 @@ echo "CHECKPOINT_PUSH: $_CHECKPOINT_PUSH"
 [ -n "$OPENCLAW_SESSION" ] && echo "SPAWNED_SESSION: true" || true
 ```
 
+## Plan Mode Safe Operations
+
+In plan mode, these are always allowed (they inform the plan, don't modify source):
+`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
+writes to the plan file, `open` for generated artifacts.
+
+## Skill Invocation During Plan Mode
+
+If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
+by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
+point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
+MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
+above or explicitly exception-marked. Call ExitPlanMode only after the skill
+workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
+
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack skills AND do not
 auto-invoke skills based on conversation context. Only run skills the user explicitly
 types (e.g., /qa, /ship). If you would have auto-invoked a skill, instead briefly say:
@@ -1012,21 +1027,6 @@ Replace `SKILL_NAME` with the actual skill name from frontmatter, `OUTCOME` with
 success/error/abort, and `USED_BROWSE` with true/false based on whether `$B` was used.
 If you cannot determine the outcome, use "unknown". The local JSONL always logs. The
 remote binary only runs if telemetry is not off and the binary exists.
-
-## Plan Mode Safe Operations
-
-In plan mode, these are always allowed (they inform the plan, don't modify source):
-`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
-writes to the plan file, `open` for generated artifacts.
-
-## Skill Invocation During Plan Mode
-
-If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
-by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
-point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
-MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
-above or explicitly exception-marked. Call ExitPlanMode only after the skill
-workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
 
 ## Plan Status Footer
 

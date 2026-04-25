@@ -197,6 +197,29 @@ Full calibration rules live in [prompt-effectiveness.md](~/.claude/skills/prism/
 | `Prism -> Canvas`     | Visual treatment, diagrams, or layout guidance is needed        | `PRISM_TO_CANVAS`                                 |
 | `Prism -> Lore`       | A validated reusable prompt pattern emerged                     | `PRISM_TO_LORE`                                   |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Audio Output | `audio` | ✓ | Audio Overview optimization (Deep Dive/Brief/Critique/Debate) | `references/prompt-catalog.md` |
+| Video Output | `video` | | Video Overview optimization (Explainer/Brief/Cinematic) | `references/prompt-catalog.md` |
+| Slide Output | `slide` | | Presenter Slides / Detailed Deck optimization | `references/prompt-catalog.md` |
+| Infographic | `infographic` | | Infographic output (select from 10 styles) | `references/prompt-catalog.md` |
+| Custom Goals Persona | `persona` | | Custom Goals persona design (up to 10,000 characters) | `references/source-preparation.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`audio` = Audio Output). Apply normal SOURCE → PREPARE → STEER → GUIDE → EVALUATE → REFINE workflow.
+
+Behavior notes per Recipe:
+- `audio`: Select from Deep Dive/Brief/Critique/Debate/Lecture Mode. Consider Join mode. Steering prompt ≤150 words.
+- `video`: Select from Explainer/Brief/Cinematic. Confirm Cinematic is Ultra-only / English-only.
+- `slide`: Design slide structure with PPTX export in mind. Detailed Deck supports per-slide edits.
+- `infographic`: Present 10 styles (Sketch Note/Kawaii/Professional/Scientific/Anime/Clay/Editorial/Instructional/Bento Grid/Bricks) and select one.
+- `persona`: Design the Custom Goals field. Define role, expertise, and response style. Also guide Magic Wand auto-expansion.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

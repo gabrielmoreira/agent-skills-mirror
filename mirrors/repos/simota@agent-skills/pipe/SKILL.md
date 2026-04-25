@@ -16,6 +16,9 @@ CAPABILITIES_SUMMARY:
 - ci_cd_observability: Actions Data Stream for near real-time execution telemetry to S3/Azure Event Hub; Actions Performance Metrics (GA) for UI-based queue time and failure rate dashboards
 - artifact_attestations: Sigstore-based signed build provenance for verifiable supply chain
 - agentic_workflows: Guide adoption of Markdown-based agentic workflows (technical preview) vs traditional YAML
+- matrix_strategy: Design matrix builds (OS x runtime x arch) with `include` / `exclude`, fail-fast policy, `max-parallel`, dynamic `fromJSON` matrices, and sparse coverage to keep CI-time bounded
+- cache_strategy: Design `actions/cache` with lockfile-hash keys, `restore-keys` fallback, cross-OS compatibility, monorepo multi-cache layout, cache-hit telemetry, and 10 GB repo-limit eviction awareness
+- gha_secret_architecture: GitHub Actions secret surface — OIDC federation (AWS/GCP/Azure), environment vs repo secrets, `vars` vs `secrets`, `::add-mask::`, and fork-PR secret isolation (`pull_request` vs `pull_request_target`)
 
 COLLABORATION_PATTERNS:
 - Gear -> Pipe: Ci/cd requirements
@@ -144,6 +147,33 @@ Shared agent boundaries -> `_common/BOUNDARIES.md`
 | Self-hosted runners | Use ephemeral runners and ARC when scale or network locality justify them. For non-K8s environments, use the runner scale set client (standalone Go module, public preview) for custom autoscaling. Never use self-hosted runners for public repositories. Configure Azure VNET failover (secondary subnet, optionally cross-region) for hosted runners requiring network isolation. |
 | Agentic workflows | Use for AI-suited automation (issue triage, PR review, CI failure analysis, repository maintenance). Markdown definitions compiled to YAML via `gh aw` CLI. Default read-only permissions; writes require safe-output declarations. Not suited for build/deploy/release pipelines requiring deterministic execution. Technical preview — evaluate on non-critical workflows first. |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| New Workflow | `workflow` | ✓ | Create a new GHA workflow | `references/triggers-and-events.md` |
+| Reusable Workflow | `reusable` | | Reusable Workflow design | `references/reusable-and-composite.md` |
+| Security Hardening | `security` | | GHA security hardening | `references/security-hardening.md` |
+| PR Automation | `pr-automation` | | PR automation (label, assign, etc.) | `references/automation-recipes.md` |
+| Matrix Strategy | `matrix` | | Multi-axis matrix build design (OS x runtime x arch), `include` / `exclude`, dynamic `fromJSON` matrices, sparse coverage | `references/matrix-strategy.md` |
+| Cache Design | `cache` | | `actions/cache` key/`restore-keys` design, monorepo multi-cache, cross-OS keys, 10 GB eviction awareness | `references/cache-strategy.md` |
+| GHA Secret Architecture | `secret` | | OIDC federation, env vs repo secrets, `vars` vs `secrets`, fork-PR secret isolation | `references/gha-secrets.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`workflow` = New Workflow). Apply normal R → O → U → T → E workflow.
+
+Behavior notes per Recipe:
+- `workflow`: New workflow skeleton. Declare trigger set, `permissions: {}` baseline, runner choice, and cache strategy at Orchestrate. SHA-pin every third-party action. Validate with `actionlint` before handoff.
+- `reusable`: Extract reusable workflow (multi-job) or composite action (multi-step) only after 3+ copies. Version interface via `@vX` tag plus commit SHA. Document `inputs` / `outputs` / `secrets:` contract; prefer explicit `secrets:` over `secrets: inherit`.
+- `security`: Harden an existing workflow. Minimize `permissions`, pin SHAs, switch long-lived cloud credentials to OIDC, scope env protection rules, add artifact attestations. Never checkout fork code in `pull_request_target`.
+- `pr-automation`: Label, assign, required checks, merge queue, branch protection. Use `pull_request_target` only for metadata; gate privileged actions behind label or maintainer approval.
+- `matrix`: Design a matrix build. Enumerate axes (OS x runtime x arch), use `include` to add sparse combinations and `exclude` to drop impossible ones. Set `fail-fast: false` when axes give independent signal. Cap `max-parallel` to bound concurrency. Prefer dynamic matrices via `fromJSON` when axes are computed (changed packages, supported versions). Keep fan-out under ~100 jobs; expand full combinations only on nightly or release branches. Pair with `cache` for per-axis key strategy. For provider-agnostic CI topology, route to Gear `ci`.
+- `cache`: Design `actions/cache` layout. Key by `runner.os` + lockfile hash (`hashFiles('**/pnpm-lock.yaml')`); add `restore-keys` for graceful fallback. Cross-OS compatibility: include `runner.arch` for native binaries. Monorepo: separate caches per package manager root to avoid cross-contamination. Track cache-hit telemetry via step output or Data Stream. Stay under the 10 GB repo budget (entries evict after 7 days of no access); prefer built-in `setup-*` caches first. For provider-agnostic CI caching posture, route to Gear `ci`.
+- `secret`: Design the GHA secret surface. Prefer OIDC federation to AWS (`aws-actions/configure-aws-credentials`) / GCP (`google-github-actions/auth`) / Azure (`azure/login`) over long-lived cloud credentials — scope via `sub` claim (`repo:org/name:environment:prod`). Separate environment secrets (deploy-time, gated) from repo secrets (shared). Use `vars` for non-sensitive config and `secrets` for sensitive values; both are masked only when declared as secrets. Add `::add-mask::` for runtime-derived sensitive values. Fork-PR safety: `pull_request` from forks does NOT inherit secrets (by design) — never add `pull_request_target` to access them. For application-layer secret management (Vault, AWS Secrets Manager, Doppler, sealed-secrets), route to Gear `secret`. For secret leakage scans in source code, route to Sentinel — this recipe designs the CI architecture so secrets never enter code in the first place.
+
 ## Routing And Handoffs
 
 | Situation | Route |
@@ -200,6 +230,9 @@ Routing rules:
 | `references/security-anti-patterns.md` | you are checking for action pinning, permission leaks, runner hardening, or 2025-era supply-chain failures. |
 | `references/performance-cost-anti-patterns.md` | you are triaging slow CI, cache misses, runner overspend, or artifact bottlenecks. |
 | `references/reusable-maintenance-anti-patterns.md` | you are auditing duplication, reuse mistakes, monorepo CI maintenance, deployment hygiene, or org governance. |
+| `references/matrix-strategy.md` | you are designing a multi-axis matrix build (OS x runtime x arch), using `include` / `exclude`, sparse coverage, `fail-fast` / `max-parallel` tuning, or dynamic `fromJSON` matrices. |
+| `references/cache-strategy.md` | you are designing `actions/cache` keys, `restore-keys` fallback, cross-OS compatibility, monorepo multi-cache layout, cache-hit telemetry, or 10 GB eviction management. |
+| `references/gha-secrets.md` | you are designing the GHA secret surface — OIDC federation to AWS/GCP/Azure, env vs repo secrets, `vars` vs `secrets`, masking, or fork-PR secret isolation. |
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the workflow spec, deciding adaptive thinking depth at security hardening, or front-loading visibility/trigger/target at AUDIT. Critical for Pipe: P3, P5. |
 
 ## Operational

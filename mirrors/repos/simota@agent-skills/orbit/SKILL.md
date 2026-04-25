@@ -182,6 +182,27 @@ INTAKE -> CONTRACT -> CLASSIFY -> GENERATE_OR_AUDIT -> HANDOFF -> COMPLETE
 | `HANDOFF` | Build the smallest reversible next action | Use one handoff at a time | `references/patterns.md`, `references/examples.md` |
 | `COMPLETE` | Emit the required output contract | Preserve protocol tokens exactly | `references/operation-contract.md`, `references/nexus-integration.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Generate Loop | `generate` | ✓ | Generate a new nexus-autoloop script set from a goal | `references/script-templates.md` |
+| Loop Contract | `contract` | | goal.md, ACs, footer semantics design, weak contract hardening | `references/operation-contract.md` |
+| Loop Audit | `audit` | | Status classification and evidence verification of live loops | `references/operation-contract.md` |
+| State Recovery | `recover` | | Recovery from state.env drift, footer mismatch, or corrupted loop artifacts | `references/failure-taxonomy.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`generate` = Generate Loop). Apply normal INTAKE → CONTRACT → CLASSIFY → GENERATE_OR_AUDIT → HANDOFF → COMPLETE workflow.
+
+Behavior notes per Recipe:
+- `generate`: Generate a script set (run-loop.sh, bootstrap.sh, recover.sh, verify.sh) and operation contract from goal input. Customize executor engine, commit convention, and branch policy.
+- `contract`: Strengthen weak ACs and non-measurable DONE criteria in goal.md. Includes footer semantics (`NEXUS_LOOP_STATUS`) and resumable-state design. Prioritize on `ON_GOAL_CONTRACT_WEAK` trigger.
+- `audit`: Parse goal.md, progress.md, state.env, runner.log and classify loop status with evidence. Validate DONE gates.
+- `recover`: Diagnose failure classes such as STATE_DRIFT, VERIFY_GAP, CIRCUIT_OPEN and generate a reversible recovery plan or scripts. Prefer durable execution (checkpoint + replay).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

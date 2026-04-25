@@ -146,6 +146,27 @@ Critical rules:
 
 Rules: record `SCAN_BASELINE` YAML in `.agents/sweep.md`. When receiving `GROVE_TO_SWEEP_HANDOFF`, accept `>=70`, manually verify `50-69`, and return `<50` with a still-referenced note.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Dead Code | `dead` | ✓ | Dead code detection (unused functions/classes/variables) | `references/cleanup-targets.md` |
+| Orphan Files | `orphan` | | Orphan file detection (no imports/no references) | `references/cleanup-targets.md` |
+| Unused Exports | `unused` | | Unused export detection, dependency package audit | `references/dependency-cleanup.md` |
+| Tidy Up | `tidy` | | Comprehensive cleanup via SCAN → CATEGORIZE → PROPOSE | `references/cleanup-protocol.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`dead` = Dead Code). Apply normal SCAN → ANALYZE → CATEGORIZE → PROPOSE → EXECUTE → VERIFY workflow.
+
+Behavior notes per Recipe:
+- `dead`: knip (TS/JS) / vulture+deadcode (Python) / staticcheck (Go) で未使用コードを検出。信頼度 ≥ 90 のみ削除候補。≥ 2 シグナルで検証。
+- `orphan`: ファイルグラフ解析で参照ゼロのファイルを特定。`pages/`/`app/`/route ファイルは高リスク偽陽性として扱う。
+- `unused`: knip `--production` で未使用 export を検出。依存パッケージは lockfile 影響を確認後に削除候補に。
+- `tidy`: 複数カテゴリ横断の一括整理。バックアップブランチを作成後、10 ファイル以下のバッチで削除。
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

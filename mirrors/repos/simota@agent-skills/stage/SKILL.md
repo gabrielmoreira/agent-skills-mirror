@@ -92,6 +92,27 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Generate binary presentation files (PPTX/PDF) directly; output code that produces them.
 - Mix multiple slide frameworks in one deck.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Marp | `marp` | ✓ | Marp Markdown slide generation | `references/patterns.md` |
+| Reveal | `reveal` | | reveal.js HTML slide generation | `references/patterns.md` |
+| Slidev | `slidev` | | Slidev Vue slide generation | `references/patterns.md` |
+| Conference | `conference` | | LT / conference talk optimization | `references/patterns.md`, `references/examples.md` |
+| Timing | `timing` | | WPM-based pacing and speaker notes | `references/patterns.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`marp` = Marp). Apply normal OUTLINE → ARC → DRAFT → THEME → NOTES → REVIEW workflow.
+- `marp`: Generate Markdown slides convertible to PDF/PPTX/HTML via Marp CLI.
+- `reveal`: Generate reveal.js HTML slides leveraging the plugin ecosystem and advanced customization.
+- `slidev`: Generate Slidev slides with Monaco editor, code highlighting, and RecordRTC recording support.
+- `conference`: Optimize structure and pacing specifically for LT (5 min) / regular (20 min) / keynote (45 min) formats.
+- `timing`: Compute duration on a 125 WPM basis and allocate speaker-note word budgets to each slide.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

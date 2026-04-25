@@ -61,18 +61,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/api_code_review.md`](.agents/api_code_review.md) |
 | 2 | ✓ | [`.agents/card_style.md`](.agents/card_style.md) |
-| 3 | ✓ | [`.agents/code_review_guidelines.md`](.agents/code_review_guidelines.md) |
-| 4 | ✓ | [`.agents/frontend_controls.md`](.agents/frontend_controls.md) |
-| 5 | ✓ | [`.agents/frontend_design_guide.md`](.agents/frontend_design_guide.md) |
-| 6 | ✓ | [`.agents/python_test_guide.md`](.agents/python_test_guide.md) |
-| 7 | ✓ | [`.agents/skills/claude-maintain-models/SKILL.md`](.agents/skills/claude-maintain-models/SKILL.md) |
-| 8 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
-| 9 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 10 | ✓ | [`.cursor/rules/.gitignore`](.cursor/rules/.gitignore) |
-| 11 | ✓ | [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) |
-| 12 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/check_provider.py`](.cursor/skills/kiln-check-deprecation/scripts/check_provider.py) |
-| 13 | ✓ | [`.cursor/skills/kiln-check-deprecation/scripts/extract_models.py`](.cursor/skills/kiln-check-deprecation/scripts/extract_models.py) |
-| 14 | ✓ | [`.cursor/skills/kiln-check-deprecation/SKILL.md`](.cursor/skills/kiln-check-deprecation/SKILL.md) |
+| 3 | ✓ | [`.agents/claude/setup.sh`](.agents/claude/setup.sh) |
+| 4 | ✓ | [`.agents/code_review_guidelines.md`](.agents/code_review_guidelines.md) |
+| 5 | ✓ | [`.agents/cursor/setup.sh`](.agents/cursor/setup.sh) |
+| 6 | ✓ | [`.agents/frontend_controls.md`](.agents/frontend_controls.md) |
+| 7 | ✓ | [`.agents/frontend_design_guide.md`](.agents/frontend_design_guide.md) |
+| 8 | ✓ | [`.agents/mcp.json`](.agents/mcp.json) |
+| 9 | ✓ | [`.agents/python_test_guide.md`](.agents/python_test_guide.md) |
+| 10 | ✓ | [`.agents/skills/claude-maintain-models/SKILL.md`](.agents/skills/claude-maintain-models/SKILL.md) |
+| 11 | ✓ | [`.agents/skills/kiln-check-deprecation/scripts/check_provider.py`](.agents/skills/kiln-check-deprecation/scripts/check_provider.py) |
+| 12 | ✓ | [`.agents/skills/kiln-check-deprecation/scripts/extract_models.py`](.agents/skills/kiln-check-deprecation/scripts/extract_models.py) |
+| 13 | ✓ | [`.agents/skills/kiln-check-deprecation/SKILL.md`](.agents/skills/kiln-check-deprecation/SKILL.md) |
+| 14 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
 | 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---

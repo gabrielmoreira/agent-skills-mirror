@@ -192,6 +192,27 @@ Routing rules:
 - If the question spans multiple services or repositories, start with cross-boundary investigation.
 - If the question is about AI-generated code understanding or maintainability risk, start with comprehension debt assessment.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Structure Map | `map` | ✓ | Structure mapping (overview, module boundaries and responsibility analysis) | `references/investigation-patterns.md` |
+| Feature Discovery | `discover` | | Feature discovery ("does X exist?") | `references/investigation-patterns.md` |
+| Data Flow Trace | `trace` | | Data flow trace (origin → transformation → destination) | `references/investigation-patterns.md` |
+| Module Responsibility | `responsibility` | | Module responsibility analysis (cognitive complexity, comprehension debt evaluation) | `references/complexity-assessment.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`map` = Structure Map). Apply normal SCOPE → SURVEY → TRACE → CONNECT → REPORT workflow.
+
+Behavior notes per Recipe:
+- `map`: Classify investigation type as Structure in SCOPE. Establish module boundaries top-down before drilling into detail.
+- `discover`: Shortened SCOPE → SURVEY → REPORT workflow allowed. REPORT immediately after existence confirmation.
+- `trace`: Trace data from origin to destination. Explicitly flag dynamic-dispatch boundaries.
+- `responsibility`: Multi-signal cognitive complexity evaluation (SonarSource + nesting + naming). Identify comprehension debt hotspots.
+
 ## Output Requirements
 
 Every deliverable must include:

@@ -160,6 +160,35 @@ Routing rules:
 - If the request involves token lifecycle changes, read `references/token-lifecycle.md`.
 - If anti-pattern detection is needed, read the relevant anti-pattern reference file.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Token System | `tokens` | ✓ | Design token definition and structural design | `references/token-system.md` |
+| Apply Tokens | `apply` | | Token application to existing UI | `references/token-lifecycle.md` |
+| Theme Design | `theme` | | Light/Dark theme design | `references/dark-mode.md` |
+| Typography | `typography` | | Typography selection and scale design | `references/typography-selection-guide.md` |
+| Spacing & Layout | `spacing` | | Spacing and grid system design | `references/design-system-construction.md` |
+| Motion Tokens | `motion` | | Duration, easing, spring tokens with reduced-motion fallback | `references/motion-tokens.md` |
+| Elevation Tokens | `elevation` | | Elevation/shadow tokens with dark-mode inversion and semantic surface tiers | `references/elevation-tokens.md` |
+| Radius Tokens | `radius` | | Border-radius scale, corner-set tokens, and brand-personality spectrum | `references/radius-tokens.md` |
+
+Behavior notes:
+- **tokens** (default): SURVEY → DEFINE → VALIDATE → PRESENT; load `token-system.md` + `css-token-architecture-anti-patterns.md`.
+- **apply**: Map existing design values to token variables; load `token-lifecycle.md`; output token diff.
+- **theme**: Design color palette with dark mode; load `dark-mode.md` + `color-dark-mode-anti-patterns.md`.
+- **typography**: Select type scale and font pairing; load `typography-selection-guide.md`.
+- **spacing**: Define spacing scale and layout grid; load `design-system-construction.md`.
+- **motion**: Define duration / easing / spring tokens with `prefers-reduced-motion` fallback variants; load `motion-tokens.md`; output DTCG-compliant motion-token spec and platform mapping.
+- **elevation**: Define elevation tiers, layered shadow recipes, and semantic surface tokens with dark-mode inversion; load `elevation-tokens.md`; output elevation ladder + surface-tier component map.
+- **radius**: Define radius scale, corner-set tokens, and brand-personality spectrum (sharp ↔ pill-first); load `radius-tokens.md`; output component-radius map and resolver-driven brand-mode swap.
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column file at the initial step.
+- Otherwise → fall through to default Recipe (`tokens` = Token System).
+
 ## Output Requirements
 
 All final outputs are in Japanese.
@@ -215,6 +244,9 @@ Muse receives design direction and token extraction from upstream agents. Muse s
 | `references/color-dark-mode-anti-patterns.md` | Dark mode, glare, contrast, or color semantics break down. |
 | `references/css-token-architecture-anti-patterns.md` | CSS token structure, scoping, or theming architecture is unstable. |
 | `references/typography-selection-guide.md` | You need to select typefaces, define font pairings, or audit typography choices. |
+| `references/motion-tokens.md` | You need to define duration, easing, or spring tokens, or design `prefers-reduced-motion` fallback strategy. |
+| `references/elevation-tokens.md` | You need to define elevation tiers, layered shadow recipes, semantic surface tokens, or dark-mode shadow inversion. |
+| `references/radius-tokens.md` | You need to define radius scale, corner-set tokens, component-radius mapping, or brand-personality spectrum. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the token spec, deciding adaptive thinking depth at STRUCTURE, or front-loading token category/scope at AUDIT. Critical for Muse: P3, P5. |
 
 ## Operational

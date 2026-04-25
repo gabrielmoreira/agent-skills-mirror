@@ -137,6 +137,36 @@ Agent disambiguation → `references/agent-disambiguation.md`
 - `AUTORUN_FULL`: `PLAN → PREPARE → CHAIN_SELECT → EXECUTE → AGGREGATE → VERIFY → DELIVER`
 - `AUTORUN`: `CLASSIFY → CHAIN_SELECT → EXECUTE_LOOP → VERIFY → DELIVER`
 
+## Recipes
+
+> **Nexus Recipes represent task shape. `## Modes` (AUTORUN_FULL, etc.) represent execution control. They are orthogonal and combine independently.**
+
+| Recipe | Subcommand | Default? | When to Use | Chain Template |
+|--------|-----------|---------|-------------|----------------|
+| Auto Classify | `classify` | ✓ | Auto-classification when no Recipe is specified | CLASSIFY phase → CHAIN_SELECT (legacy flow) |
+| Bug Fix | `bug` | | Bug reports and fix requests | Scout → Sherpa → Builder → Radar |
+| Feature | `feature` | | New feature implementation | Sherpa → Forge → Builder → Radar |
+| Security | `security` | | Security response | Sentinel → Builder → Radar |
+| Refactor | `refactor` | | Refactoring | Zen → Radar |
+| Optimize | `optimize` | | Performance improvement | Bolt/Tuner → Radar |
+| Proactive | `proactive` | | /Nexus with no arguments, project state scan | Scan project → recommend |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → skip CLASSIFY and pass that Recipe's Chain Template directly to CHAIN_SELECT.
+- `/Nexus` with no arguments → apply the `proactive` Recipe. Read `references/proactive-mode.md` and scan.
+- Otherwise → default Recipe (`classify`) = legacy CLASSIFY → CHAIN_SELECT flow (existing behavior fully preserved).
+
+Execution-control Mode (AUTORUN_FULL / AUTORUN / GUIDED / INTERACTIVE) is applied after Recipe selection (orthogonal):
+- `classify` (default): Standard CLASSIFY determines task type and selects a chain from routing-matrix.md.
+- `bug`: Scout[bug] → Sherpa[epic] → Builder[fix] → Radar[regression] chain. +Sentinel for security.
+- `feature`: Sherpa[epic] → Forge[ui] → Builder[api] → Radar[edge] chain. +Muse for UI.
+- `security`: Sentinel[scan] → Builder[fix] → Radar[edge] chain. +Probe for dynamic testing.
+- `refactor`: Zen → Radar[coverage] chain. +Atlas for architectural scope.
+- `optimize`: Bolt/Tuner → Radar[edge] chain. +Schema for DB-heavy work.
+- `proactive`: Follow `references/proactive-mode.md` to scan project state and recommend next actions.
+
 ## Workflow
 
 `CLASSIFY → CHAIN → EXECUTE → AGGREGATE → VERIFY → DELIVER` `(+ LEARN post-chain)`
@@ -217,6 +247,7 @@ Agent(
     あなたは [AgentName] エージェントです。
     まず ~/.claude/skills/[agent]/SKILL.md を読み、その指示に従ってください。
 
+    Recipe: [recipe-name or auto]               # P-REC: サブコマンド指定 / auto-triage
     タスク: [task_description]
     前ステップからのコンテキスト: [handoff_context]
     制約: [constraints]

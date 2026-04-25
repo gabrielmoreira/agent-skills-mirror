@@ -208,6 +208,33 @@ Routing rules:
 - If the request involves AI-assisted UI, read `references/ai-assist-patterns.md`.
 - If anti-pattern detection is needed, read `references/interaction-anti-patterns.md` and `references/cognitive-load-anti-patterns.md`.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Usability Evaluation | `usability` | ✓ | Comprehensive UI/UX usability evaluation | `references/ux-evaluation.md` |
+| Cognitive Load | `cognitive` | | Cognitive load and information design analysis | `references/cognitive-load-anti-patterns.md` |
+| Feedback Design | `feedback` | | Feedback and microinteraction design | `references/microinteraction-patterns.md` |
+| Accessibility | `a11y` | | Accessibility and WCAG compliance evaluation | `references/wcag22-inclusive-design.md` |
+| Keyboard Navigation | `keyboard` | | Tab order, focus management, shortcut systems, roving tabindex, focus trap | `references/keyboard-navigation-patterns.md` |
+| Mobile Touch | `mobile` | | Thumb zone, tap targets, gestures, haptics, safe area, keyboard avoidance | `references/mobile-touch-patterns.md` |
+| Forms UX | `forms` | | Field order, validation timing, error voice, multi-step, autofill cooperation | `references/forms-ux-patterns.md` |
+
+Behavior notes:
+- **usability** (default): SURVEY → EVALUATE → PRIORITIZE → PRESENT; load `ux-evaluation.md` + `interaction-anti-patterns.md`.
+- **cognitive**: Analyze information density and hierarchy; load `cognitive-load-anti-patterns.md`; output redesign proposals.
+- **feedback**: Review or design system feedback states; load `microinteraction-patterns.md`; include animation timing notes.
+- **a11y**: Audit against WCAG 2.2 criteria; load `wcag22-inclusive-design.md` + `accessibility-patterns.md`; classify by level (A/AA/AAA).
+- **keyboard**: Keyboard navigation, shortcut systems, focus management, roving tabindex, focus trap; load `keyboard-navigation-patterns.md`. For WCAG 2.2 SC 2.1/2.4 conformance audit use `a11y`; for production `useFocusTrap` / `useHotkeys` hook implementation use Artisan; for focus animation timing use Flow.
+- **mobile**: Thumb zone layout, tap-target sizing, gesture affordances, haptic vocabulary, safe-area, keyboard avoidance; load `mobile-touch-patterns.md`. For WCAG 2.2 SC 2.5.7/2.5.8 audit use `a11y`; for React Native / Flutter / SwiftUI production use Artisan (or Native for store-review and offline strategy); for gesture animation choreography use Flow.
+- **forms**: Field-order rationale, validation timing, error voice direction, progressive disclosure, multi-step flows, autofill and password-manager cooperation; load `forms-ux-patterns.md`. For exact error-message wording use Prose; for React Hook Form / Zod production wiring use Artisan; for WCAG 2.2 SC 3.3.x and SC 1.3.5 conformance use `a11y`.
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column file at the initial step.
+- Otherwise → fall through to default Recipe (`usability` = Usability Evaluation).
+
 ## Output Requirements
 
 - All outputs in Japanese. Technical terms and code stay in English.
@@ -272,6 +299,9 @@ Palette receives UX direction and testing results from upstream agents. Palette 
 | `references/perceived-performance-patterns.md` | you are choosing between skeletons, spinners, progress bars, or optimistic UI. |
 | `references/wcag22-inclusive-design.md` | you need WCAG 2.2 deltas, inclusive design rules, or AV-pattern audits. |
 | `references/ai-assist-patterns.md` | You are designing or reviewing AI-powered interface elements. |
+| `references/keyboard-navigation-patterns.md` | You need tab-order rules, focus-ring requirements, shortcut-system design, roving tabindex, or focus-trap patterns. |
+| `references/mobile-touch-patterns.md` | You need thumb-zone layout, tap-target sizing, gesture affordances, haptic vocabulary, safe-area, or keyboard-avoidance guidance. |
+| `references/forms-ux-patterns.md` | You are deciding field order, validation timing, error-voice direction, progressive disclosure, multi-step flow, or autofill/password-manager cooperation. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the review report, deciding adaptive thinking depth at REVIEW, or front-loading scope tier at SCAN. Critical for Palette: P3, P5. |
 
 ## Operational

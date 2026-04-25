@@ -13,6 +13,9 @@ CAPABILITIES_SUMMARY:
 - tls_configuration: Design TLS/mTLS configurations with cipher suite selection
 - anti_pattern_detection: Detect cryptographic anti-patterns (ECB mode, fixed IV, weak RNG, custom crypto)
 - pqc_guidance: Provide post-quantum cryptography migration guidance (NIST FIPS 203/204/205, hybrid schemes, IR 8547 timeline, CNSA 2.0 compliance, hybrid TLS KEX)
+- password_hashing_design: Design password hashing scheme with Argon2id per OWASP 2024 (m=19MiB t=2 p=1 minimum, preferred m=64-128MiB) or bcrypt cost 12+ for legacy-compat, KMS-held pepper, bcrypt-to-Argon2id migration on next login, NIST SP 800-63B alignment
+- kms_integration: Design KMS-service integration (AWS KMS, GCP KMS, Azure Key Vault, Vault Transit) using envelope encryption, plaintext-DEK caching with nonce-exhaustion bounds, automatic CMK rotation, and HSM-backed CMK for FIPS 140-3 Level 3 / high-assurance workloads
+- pqc_migration: Plan classical-to-post-quantum migration against the harvest-now-decrypt-later threat — inventory, hybrid schemes (X25519+ML-KEM during transition), FIPS 203 ML-KEM / FIPS 204 ML-DSA / FIPS 205 SLH-DSA target selection, per-industry timeline (NIST IR 8547 / CNSA 2.0)
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Crypt: Vulnerability reports trigger crypto design review
@@ -100,6 +103,35 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Recommend ECB mode for any block cipher.
 - Store or log cryptographic keys in plaintext.
 - Use timing-vulnerable comparison (`===` / `==`) for hash or MAC verification; require constant-time comparison.
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Algorithm Selection | `algorithm` | ✓ | Crypto algorithm selection, parameter spec, anti-pattern detection | `references/patterns.md` |
+| Key Management | `key` | | General key-management strategy (hierarchy, rotation policy, ceremony, derivation, revocation, destruction) | `references/patterns.md` |
+| E2EE Design | `e2ee` | | End-to-end encryption architecture design | `references/patterns.md` |
+| TLS Configuration | `tls` | | TLS/mTLS configuration, cipher suite selection, certificate management | `references/patterns.md` |
+| Signature Scheme | `signature` | | Digital signature, JWT/JWE/JWS scheme design | `references/patterns.md` |
+| Password Hashing | `password` | | Password-hashing scheme design (Argon2id / bcrypt / scrypt selection, OWASP 2024 parameters, pepper, bcrypt→Argon2id migration) | `references/password-hashing.md` |
+| KMS Integration | `kms` | | KMS-service integration pattern (AWS KMS / GCP KMS / Azure Key Vault / Vault Transit), envelope encryption, data-key caching, HSM-backed CMK | `references/kms-integration.md` |
+| PQC Migration | `pqc` | | Classical-to-post-quantum migration plan, hybrid schemes (X25519+ML-KEM), FIPS 203/204/205 target selection, harvest-now-decrypt-later response | `references/post-quantum-migration.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`algorithm` = Algorithm Selection). Apply normal THREAT → SELECT → DESIGN → VERIFY → DOCUMENT workflow.
+
+Behavior notes per Recipe:
+- `algorithm`: Use-case-specific algorithm recommendations (symmetric, asymmetric, hash, KDF). Run anti-pattern checklist. Includes quantum-resistance assessment. Flags quantum-vulnerable choices but does not own the migration program — route to `pqc` for that.
+- `key`: General key-management strategy — key hierarchy, rotation policy, key ceremony, derivation chains, revocation, destruction. Policy layer above `kms`; defines the lifecycle that `kms` then wires to a specific service.
+- `e2ee`: Signal Protocol / MLS / custom E2EE architecture design. Includes key exchange flow, forward secrecy, and PFS design.
+- `tls`: TLS 1.3 configuration, cipher suite priority, mTLS mutual authentication. Applies PQC hybrid KEX (X25519MLKEM768) selected by `pqc` — does not own the transition decision itself.
+- `signature`: Ed25519 / ECDSA / ML-DSA signature scheme design. Includes JWT verification flow, algorithm pinning, and timing-safe comparison.
+- `password`: Password-hashing scheme design. Default Argon2id with OWASP 2024 parameters (m=19 MiB, t=2, p=1 minimum; preferred m=64–128 MiB, t=3, p=1); bcrypt cost ≥ 12 for legacy compatibility; scrypt or PBKDF2-HMAC-SHA-256 (≥ 600k iterations) where Argon2id unavailable. Require per-password salt (≥ 16 bytes, CSPRNG) plus server-wide pepper held in KMS. Specify bcrypt → Argon2id migration via rehash-on-next-login and Argon2id `needs_rehash` on parameter bump. Align with NIST SP 800-63B memorized-secret verifier. Sentinel `authn` reviews the implementing code against this design; Crypt does not audit code. Cross-link: Sentinel `authn` (implementation audit), Comply (NIST SP 800-63B / PCI-DSS 4.0 §8.3.6).
+- `kms`: KMS-service integration pattern. Provider selection (AWS KMS / GCP KMS / Azure Key Vault / HashiCorp Vault Transit), envelope encryption (CMK wraps DEK, DEK encrypts payload with AES-256-GCM + random 96-bit IV), encryption-context / AAD binding, data-key cache policy (max 10 GB or 2^32 messages per DEK, ≤ 10-minute TTL), KMS-managed automatic CMK rotation, alias-based lookup. HSM-backed CMK (CloudHSM / Cloud HSM / Managed HSM) only where FIPS 140-3 Level 3, CNSA 2.0, or tenant-isolated HSM is mandated. IAM split (encrypt-only, decrypt-only, admin break-glass) and CloudTrail `Decrypt` audit alerting. Cross-link: `key` (policy layer; runs first), Gear `secret` (application-level secrets store — e.g., Vault KV for DB passwords vs Vault Transit for crypto operations; overlap is intentional), Scaffold (provisions the CMK via IaC).
+- `pqc`: Post-quantum migration plan against the harvest-now-decrypt-later threat. Inventory every RSA / DH / ECDH / ECDSA / Ed25519 use; classify by HNDL sensitivity and deadline regime (NIST IR 8547 draft: deprecate by 2030, disallow by 2035; NSA CNSA 2.0: new NSS quantum-safe by Jan 2027, applications by 2030, infrastructure by 2035). Target NIST standards: FIPS 203 ML-KEM for key encapsulation, FIPS 204 ML-DSA for general signatures, FIPS 205 SLH-DSA for conservative hash-based signatures (non-CNSA). Use hybrid schemes during transition — X25519MLKEM768 (IANA `0x11EC`) for TLS 1.3 KEX, composite-sig for X.509. Stage rollout KEX → signatures → at-rest wrap keys. Symmetric AES-256 does not migrate (Grover-safe at 128-bit effective). Cross-link: `algo` (picks current algorithms; flags but does not own migration), `tls` (applies the hybrid KEX once selected here), Comply (CNSA 2.0 / BSI / ANSSI mandates drive the timeline).
 
 ## Output Routing
 
@@ -226,6 +258,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `references/patterns.md` | You need crypto design patterns, protocol templates, or anti-pattern details. |
 | `references/examples.md` | You need complete crypto architecture examples. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `references/password-hashing.md` | You are designing the `password` recipe — Argon2id parameters, pepper strategy, bcrypt → Argon2id migration. |
+| `references/kms-integration.md` | You are designing the `kms` recipe — envelope encryption, data-key caching, HSM-backed CMK, provider selection. |
+| `references/post-quantum-migration.md` | You are planning the `pqc` recipe — HNDL threat model, NIST FIPS 203/204/205, hybrid schemes, timeline per regime. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the crypto spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/security-strength target at SCAN. Critical for Crypt: P3, P5. |
 
 ## Operational

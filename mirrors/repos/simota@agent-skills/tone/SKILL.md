@@ -111,6 +111,29 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Recommend Udio as the primary BGM provider for a shipping commercial game — since the UMG settlement (Oct 2025), Udio operates as a walled-garden streaming platform; paid subscribers cannot download or redistribute tracks, so output cannot legally be packaged into a game build. Use only for prototyping or inspiration, never as a delivery pipeline.
 - Ship AI-generated voice/dialogue in the EU without the Article 50 disclosure layer (machine-readable AI-origin marker on all AI audio; audible disclaimer at the start of deepfake voice clips) once obligations activate 2026-08-02. Missing markers expose publishers to AI Act enforcement.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| SFX | `sfx` | ✓ | Sound effects (JSFXR/ElevenLabs) | `references/api-integration.md`, `references/game-audio-practices.md` |
+| BGM | `bgm` | | Background music (MusicGen/Suno) | `references/api-integration.md`, `references/suno-prompt-guide.md` |
+| Voice | `voice` | | Voice (OpenAI TTS) | `references/api-integration.md` |
+| Ambient | `ambient` | | Ambient sounds | `references/api-integration.md` |
+| UI Sound | `ui` | | UI interaction sounds | `references/api-integration.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`sfx` = SFX). Apply normal PLAN → GENERATE → PROCESS → VALIDATE → INTEGRATE workflow.
+
+Behavior notes per Recipe:
+- `sfx`: ElevenLabs SFX V2 API (≤30s) または JSFXR (レトロ) で効果音生成コードを出力。3+ バリエーション必須。-24 LUFS 正規化付き。
+- `bgm`: Stable Audio 2.5 または MusicGen でループ可能な BGM 生成コード。ループポイント + クロスフェード付き。ライセンス状況を明記。
+- `voice`: ElevenLabs TTS または OpenAI TTS でナレーション/ダイアログ生成コード。de-essing + ダイナミクス処理付き。
+- `ambient`: AudioCraft/Bark でシームレスループの環境音生成コード。フェードイン/アウト処理付き。
+- `ui`: JSFXR で UI 操作音セットを生成。<200ms、-9 dB ミックスレベル、一貫したセット設計。
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

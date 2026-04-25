@@ -271,6 +271,27 @@ Rules:
 - `success_criteria` must be measurable (contrast ratio, fidelity %, token-drift count, export format list).
 - `Variants` MUST follow `_common/parametric-output.md` — labeled endpoints with mandatory `base`, 3-5 steps. Binary choices belong in `Artifact_Target` as variants, not as sliders.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Full Pipeline | `pipeline` | ✓ | Full design→code loop (Vision → Muse → Forge → Artisan → Showcase → Canvas) | `_common/HANDOFF.md`, `_common/design-system-registry.md` |
+| Design Extract | `extract` | | Design extraction only (Frame → Muse token normalization) | `_common/design-system-registry.md` |
+| Persist Design System | `persist` | | Persist design system (.agents/design-system/{project}.json) | `_common/design-system-registry.md`, `_common/parametric-output.md` |
+| Asset Generation | `assets` | | Asset generation (parallel rollout of slides, visuals, prototypes) | `_common/HANDOFF.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`pipeline` = Full Pipeline). Apply normal ONBOARDING → INTAKE → PLAN → EXECUTE → HANDOFF → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `pipeline`: Check cache at ONBOARDING → full delegate fan-out. DESIGN_INTENT_HANDOFF mandatory. WCAG 2.2 AA validation.
+- `extract`: Invoke only Frame (if Figma) or Muse (codebase). Stop after ONBOARDING.
+- `persist`: Write to .agents/design-system/{project}.json. Detect drift via hash comparison. Record value ranges in parametric slider form.
+- `assets`: Independent parallel rollout of Stage/Ink/Forge (max 5 concurrent). Attach DESIGN_INTENT_HANDOFF to each delegate.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

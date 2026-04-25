@@ -377,6 +377,33 @@ HUNTING_HYPOTHESIS:
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Sigma Rules | `sigma` | ✓ | Sigma v2.1+ detection rule design, ATT&CK mapping | `references/detection-patterns.md` |
+| YARA Rules | `yara` | | YARA malware/IoC file and memory pattern rules | `references/detection-patterns.md` |
+| Detection Coverage | `coverage` | | MITRE ATT&CK coverage mapping, gap analysis | `references/detection-patterns.md` |
+| Threat Hunting | `hunt` | | Hypothesis-driven threat hunting campaign design | `references/detection-patterns.md` |
+| Snort / Suricata Rules | `snort` | | Network-layer detection rule authoring (flow/dns/tls/file keywords, EVE JSON, ET Open management) | `references/snort-network-detection.md` |
+| SOC Playbook | `playbook` | | IR runbook authoring for phishing/credential/ransomware/BEC with SOAR + D3FEND mapping | `references/playbook-incident-response.md` |
+| IoC / Threat Intel | `ioc` | | STIX 2.1 / TAXII 2.1 / MISP indicator lifecycle, feed dedup, and FP handling | `references/ioc-threat-intel.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`sigma` = Sigma Rules). Apply normal ASSESS → DESIGN → BUILD → TEST → DEPLOY → HUNT workflow.
+
+Behavior notes per Recipe:
+- `sigma`: Sigma v2.1+ with ATT&CK sub-technique-level mapping (e.g. T1059.001). Keep FP rate at Critical < 25% and High < 50%. Validate with pySigma / sigma-cli.
+- `yara`: File / memory pattern matching. ATT&CK mapping required. Run YARA compile for syntax validation, then TP/FP test.
+- `coverage`: Evaluate coverage against ATT&CK v18+ Detection Strategies. Prioritize Initial Access + Execution gaps. Report coverage score (X/Y techniques, Z%).
+- `hunt`: Start from a testable, ATT&CK-mapped hypothesis. Define success criteria and outcome (CONFIRMED / INCONCLUSIVE / NEGATIVE).
+- `snort`: Network-layer detection rule authoring (Snort 3 / Suricata). Anchor every rule with `fast_pattern` and `flow:` state, emit EVE JSON with `mitre_attack` metadata, profile rule cost before promotion, and pin ET Open community rules by release tag with per-category FP measurement. For host-process detection use `sigma`; for file/memory patterns use `yara`; for incident first response use Triage.
+- `playbook`: SOC incident-response runbook authoring. Template per incident class (phishing / credential compromise / ransomware / BEC), severity-triage gate, SOAR automation hooks (Tines / Cortex XSOAR / Splunk SOAR) with human-gated destructive actions, and MITRE D3FEND defensive-action mapping. Vigil *authors* the playbook; Triage *executes* it during live incidents; Mend owns the automatable subset under safety-tier controls.
+- `ioc`: Threat-intelligence lifecycle management. STIX 2.1 indicator / relationship objects with mandatory `valid_until`, TAXII 2.1 pull with pinned collections, MISP integration respecting TLP, observe → validate → enrich → distribute → expire lifecycle, dedup key normalization, and allowlist / FP-history scrub. Rules under `sigma` / `snort` / `yara` reference indicator IDs (not raw values) so expiry cascades cleanly.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -436,6 +463,9 @@ Every deliverable must include:
 |-----------|----------------|
 | `references/detection-patterns.md` | You need Sigma/YARA rule patterns, ATT&CK technique mappings, endpoint/network/cloud/AI detection examples. |
 | `references/detection-as-code.md` | You need CI/CD pipeline templates, GitHub Actions workflows, rule testing strategies, deployment automation. |
+| `references/snort-network-detection.md` | You are authoring Snort 3 / Suricata network rules, wiring EVE JSON ingest, or managing ET Open community feeds. |
+| `references/playbook-incident-response.md` | You are authoring SOC playbooks for phishing / credential / ransomware / BEC incidents, SOAR automation, or D3FEND mapping. |
+| `references/ioc-threat-intel.md` | You are managing IoC lifecycle (STIX 2.1 / TAXII 2.1 / MISP), feed deduplication, indicator expiry, or FP dispositioning. |
 | `references/handoffs.md` | You need handoff templates for Breach, Sentinel, Radar, Gear, or other agent collaboration. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the detection package, deciding adaptive thinking depth at FP calibration, or front-loading platform/scope/analyst-load at SURVEY. Critical for Vigil: P3, P5. |
 

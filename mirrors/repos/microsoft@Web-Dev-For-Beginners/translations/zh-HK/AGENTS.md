@@ -2,27 +2,27 @@
 
 ## Project Overview
 
-這是一個用於教授初學者網頁開發基礎的教育課程儲存庫。該課程是一個由 Microsoft Cloud Advocates 開發的全面 12 週課程，包括 24 個涵蓋 JavaScript、CSS 和 HTML 的實作課程。
+這是一個教育課程資源庫，旨在教導初學者網頁開發基礎。該課程由 Microsoft Cloud Advocates 開發，為期12週，包含24個實作課程，涵蓋 JavaScript、CSS 及 HTML。
 
 ### Key Components
 
-- <strong>教育內容</strong>：24 個結構化課程，組織成基於專案的模組
-- <strong>實作專案</strong>：溫室生態箱、打字遊戲、瀏覽器擴充功能、太空遊戲、銀行應用程式、程式碼編輯器及 AI 聊天助理
-- <strong>互動測驗</strong>：48 個包含 3 題的測驗（課程前後評量）
-- <strong>多語言支援</strong>：透過 GitHub Actions 自動翻譯 50 多種語言
-- <strong>技術</strong>：HTML、CSS、JavaScript、Vue.js 3、Vite、Node.js、Express、Python（AI 專案用）
+- <strong>教育內容</strong>：24個結構化課程，組成專案式模組
+- <strong>實作專案</strong>：溫室效應、打字遊戲、瀏覽器擴充功能、太空遊戲、銀行應用程式、程式碼編輯器及 AI 聊天助理
+- <strong>互動測驗</strong>：48個測驗，每個包含3題（課前/課後評量）
+- <strong>多語言支援</strong>：透過 GitHub Actions 自動翻譯50多種語言
+- <strong>技術</strong>：HTML、CSS、JavaScript、Vue.js 3、Vite、Node.js、Express、Python（用於 AI 專案）
 
 ### Architecture
 
-- 以課程為基礎結構的教育儲存庫
-- 每個課程資料夾包含 README、程式碼範例和解決方案
-- 獨立專案存放在單獨目錄（quiz-app、各課程專案）
+- 教育資源庫，採課程結構
+- 每個課程資料夾包含 README、範例程式碼及解答
+- 獨立專案存於不同目錄（quiz-app、多個課程專案）
 - 使用 GitHub Actions (co-op-translator) 的翻譯系統
-- 文件透過 Docsify 提供並有 PDF 格式
+- 文件由 Docsify 提供，並以 PDF 形式可用
 
 ## Setup Commands
 
-此儲存庫主要用於教育內容消費。若要操作特定專案：
+本資源庫主要用於教育內容瀏覽。若要操作特定專案：
 
 ### Main Repository Setup
 
@@ -56,7 +56,7 @@ npm run format     # 使用 Prettier 格式化
 ```bash
 cd 5-browser-extension/solution
 npm install
-# 遵循瀏覽器專用的擴充功能加載指示
+# 遵循瀏覽器特定的擴充功能載入指示
 ```
 
 ### Space Game Projects
@@ -72,7 +72,7 @@ npm install
 ```bash
 cd 9-chat-project/solution/backend/python
 pip install openai
-# 設定 GITHUB_TOKEN 環境變數
+# 設定 GITHUB_TOKEN 環境變量
 python api.py
 ```
 
@@ -80,29 +80,29 @@ python api.py
 
 ### For Content Contributors
 
-1. **Fork 儲存庫** 至您的 GitHub 帳號
-2. **本地複製您的 fork**
-3. <strong>建立新分支</strong> 以進行修改
+1. <strong>派生資源庫</strong>至您的 GitHub 帳號
+2. <strong>將派生版本複製（clone）</strong>到本機
+3. <strong>為變更建立新分支</strong>
 4. 修改課程內容或程式碼範例
 5. 在相關專案資料夾測試程式碼變更
-6. 按照貢獻指南提交 pull requests
+6. 依照貢獻指引提交 pull request
 
 ### For Learners
 
-1. Fork 或複製儲存庫
-2. 依序導覽各課程目錄
-3. 閱讀每課程的 README 檔案
-4. 完成 https://ff-quizzes.netlify.app/web/ 中的課前測驗
-5. 練習課程資料夾中的程式範例
-6. 完成作業及挑戰
-7. 進行課後測驗
+1. 派生或複製資源庫
+2. 依序瀏覽課程資料夾
+3. 閱讀每個課程的 README 文件
+4. 完成課前測驗 https://ff-quizzes.netlify.app/web/
+5. 練習課堂範例程式碼
+6. 完成作業與挑戰
+7. 參加課後測驗
 
 ### Live Development
 
-- <strong>文件</strong>：在根目錄執行 `docsify serve` (預設埠 3000)
-- <strong>測驗應用程式</strong>：在 quiz-app 目錄執行 `npm run dev`
-- <strong>專案</strong>：使用 VS Code 的 Live Server 外掛實作 HTML 專案服務
-- **API 專案**：在對應 API 目錄執行 `npm start`
+- <strong>文件</strong>：於根目錄執行 `docsify serve`（預設連接埠3000）
+- <strong>測驗應用</strong>：在 quiz-app 目錄執行 `npm run dev`
+- <strong>專案</strong>：使用 VS Code Live Server 擴充功能開發 HTML 專案
+- **API 專案**：在相應 API 目錄執行 `npm start`
 
 ## Testing Instructions
 
@@ -111,32 +111,32 @@ python api.py
 ```bash
 cd quiz-app
 npm run lint       # 檢查代碼風格問題
-npm run build      # 驗證構建是否成功
+npm run build      # 驗證構建成功
 ```
 
 ### Bank API Testing
 
 ```bash
 cd 7-bank-project/api
-npm run lint       # 檢查代碼風格問題
-node server.js     # 驗證服務器啟動時無錯誤
+npm run lint       # 檢查程式碼風格問題
+node server.js     # 驗證伺服器能否無錯誤啟動
 ```
 
 ### General Testing Approach
 
-- 這是教育儲存庫，沒有完整自動化測試
+- 本教育資源庫未包含全面的自動測試
 - 手動測試重點：
-  - 程式碼範例可順利執行
-  - 文件內連結功能正常
-  - 專案建置成功
-  - 範例遵循最佳實務
+  - 範例程式碼無錯誤執行
+  - 文件中的連結均正常
+  - 專案能成功編譯與建置
+  - 範例符合最佳實踐
 
 ### Pre-submission Checks
 
-- 在含有 package.json 的目錄執行 `npm run lint`
+- 在有 package.json 的目錄執行 `npm run lint`
 - 驗證 Markdown 連結有效
-- 在瀏覽器或 Node.js 中測試程式範例
-- 確認翻譯保持正確結構
+- 瀏覽器或 Node.js 測試範例程式碼
+- 確認翻譯結構維持正確
 
 ## Code Style Guidelines
 
@@ -144,48 +144,48 @@ node server.js     # 驗證服務器啟動時無錯誤
 
 - 使用現代 ES6+ 語法
 - 遵循專案中提供的標準 ESLint 設定
-- 使用有意義的變數與函數名稱以利教育理解
-- 添加解說概念的註解給學習者
-- 在有設定的地方使用 Prettier 格式化
+- 使用明確的變數與函式命名，利於教學理解
+- 添加解說概念的註解
+- 於配置的情況下使用 Prettier 格式化
 
 ### HTML/CSS
 
-- 使用語義化 HTML5 元素
-- 採用響應式設計原則
-- 清晰的 class 命名規則
-- 註解說明 CSS 技術給學習者
+- 使用語意化 HTML5 元素
+- 響應式設計原則
+- 清晰的類別命名規則
+- 為教學目的解釋 CSS 技巧的註解
 
 ### Python
 
-- 遵循 PEP 8 樣式指南
-- 清晰且有教育意義的程式範例
-- 在有助學習的地方使用型別提示
+- 遵守 PEP 8 編碼風格指南
+- 清晰且具教育意義的範例程式碼
+- 於有助於學習處使用型別提示
 
 ### Markdown Documentation
 
-- 明確的標題階層
-- 具語言宣告的程式碼區塊
-- 連結到補充資源
-- 在 `images/` 目錄包含截圖與圖片
-- 圖片包含無障礙的替代文字
+- 清晰的標題層級
+- 語言指定的程式碼區塊
+- 連結至額外資源
+- `images/` 目錄內的截圖與圖片
+- 圖片需有替代文字以利無障礙
 
 ### File Organization
 
 - 課程依序編號（1-getting-started-lessons、2-js-basics 等）
-- 每個專案有 `solution/`，通常有 `start/` 或 `your-work/` 目錄
-- 圖片儲存在特定課程的 `images/` 資料夾
-- 翻譯在 `translations/{language-code}/` 結構中
+- 每個專案含 `solution/`，通常也有 `start/` 或 `your-work/` 目錄
+- 圖片存放於各課程專屬的 `images/` 資料夾
+- 翻譯存於 `translations/{language-code}/` 結構下
 
 ## Build and Deployment
 
 ### Quiz App Deployment (Azure Static Web Apps)
 
-quiz-app 已配置為 Azure Static Web Apps 部署：
+quiz-app 已設定用於 Azure Static Web Apps 部署：
 
 ```bash
 cd quiz-app
 npm run build      # 建立 dist/ 資料夾
-# 當推送到 main 分支時透過 GitHub Actions 工作流程進行部署
+# 在推送至 main 時通過 GitHub Actions 工作流程部署
 ```
 
 Azure Static Web Apps 配置：
@@ -203,80 +203,80 @@ npm run convert               # 從 docs 生成 PDF
 ### Docsify Documentation
 
 ```bash
-npm install -g docsify-cli    # 全局安裝 Docsify
+npm install -g docsify-cli    # 全域安裝 Docsify
 docsify serve                 # 在 localhost:3000 提供服務
 ```
 
 ### Project-specific Builds
 
-每個專案目錄可能有獨立建置流程：
-- Vue 專案：使用 `npm run build` 產生正式包
+每個專案目錄可能有自己的建置流程：
+- Vue 專案：`npm run build` 產生生產用套件
 - 靜態專案：無建置步驟，直接提供檔案服務
 
 ## Pull Request Guidelines
 
 ### Title Format
 
-使用清晰描述變更領域的標題：
-- `[Quiz-app] 新增第 X 課的測驗`
-- `[Lesson-3] 修正溫室生態箱專案的錯字`
-- `[Translation] 新增第 5 課西班牙語翻譯`
-- `[Docs] 更新設置說明`
+使用清晰、有描述性的標題以指明變更範圍：
+- `[Quiz-app] 新增第X課測驗`
+- `[Lesson-3] 修正溫室專案錯字`
+- `[Translation] 新增第5課的西班牙文翻譯`
+- `[Docs] 更新設定指引`
 
 ### Required Checks
 
 提交 PR 前：
 
 1. <strong>程式碼品質</strong>：
-   - 在受影響的專案目錄執行 `npm run lint`
-   - 修復所有錯誤與警告
+   - 在受影響的專案資料夾執行 `npm run lint`
+   - 修正所有 lint 錯誤及警告
 
 2. <strong>建置驗證</strong>：
-   - 如適用執行 `npm run build`
-   - 確保無建置錯誤
+   - 執行 `npm run build`（如適用）
+   - 確認無建置錯誤
 
-3. <strong>連結檢查</strong>：
+3. <strong>連結驗證</strong>：
    - 測試所有 Markdown 連結
-   - 確認圖片引用正確
+   - 確認圖片參照正常
 
 4. <strong>內容審核</strong>：
    - 校對拼字與文法
-   - 確保程式範例正確且具教育意義
-   - 確認翻譯保持原意
+   - 確保程式碼範例正確且具教育意義
+   - 驗證翻譯保持原意
 
 ### Contribution Requirements
 
-- 同意 Microsoft CLA（首次 PR 有自動檢查）
-- 遵守 [Microsoft 開源行為守則](https://opensource.microsoft.com/codeofconduct/)
-- 參考 [CONTRIBUTING.md](./CONTRIBUTING.md) 詳細指引
-- 如適用，在 PR 描述中引用 Issue 編號
+- 同意 Microsoft CLA（首個 PR 自動檢查）
+- 遵守 [Microsoft 開源行為準則](https://opensource.microsoft.com/codeofconduct/)
+- 詳細指引請參閱 [CONTRIBUTING.md](./CONTRIBUTING.md)
+- 如適用於 Issue，請於 PR 說明中引用編號
 
 ### Review Process
 
-- PR 由維護者與社群審核
-- 優先考量教育清晰度
-- 程式範例需遵循最新最佳實務
-- 翻譯會審核準確性與文化適切性
+- PR 由維護者與社群審查
+- 優先考量教育清晰性
+- 程式碼範例需符合現行最佳實踐
+- 翻譯確認準確且文化適切
 
 ## Translation System
 
 ### Automated Translation
 
-- 使用 GitHub Actions 與 co-op-translator 工作流程
-- 自動翻譯至 50 多種語言
-- 原始檔在主要目錄
-- 翻譯檔位於 `translations/{language-code}/` 目錄
+- 使用 GitHub Actions 及 co-op-translator 工作流程
+- 自動翻譯成50多種語言
+- 主要檔案位於主目錄
+- 翻譯檔案位於 `translations/{language-code}/` 目錄
 
 ### Adding Manual Translation Improvements
 
-1. 找到 `translations/{language-code}/` 中的檔案
-2. 在保持結構下進行修正
-3. 確保程式碼範例依然可用
-4. 測試本地化的測驗內容
+1. 在 `translations/{language-code}/` 找到檔案
+2. 在維持結構的前提下優化翻譯
+3. 確保範例程式碼可運作
+4. 測試本地化測驗內容
 
 ### Translation Metadata
 
-翻譯檔案包含 metadata 標頭：
+翻譯檔含有元數據標頭：
 ```markdown
 <!--
 CO_OP_TRANSLATOR_METADATA:
@@ -293,116 +293,116 @@ CO_OP_TRANSLATOR_METADATA:
 
 ### Common Issues
 
-**Quiz app 啟動失敗**：
+<strong>測驗應用無法啟動</strong>：
 - 檢查 Node.js 版本（建議 v14+）
-- 刪除 `node_modules` 和 `package-lock.json`，重新執行 `npm install`
-- 檢查埠號衝突（預設：Vite 使用埠 5173）
+- 刪除 `node_modules` 及 `package-lock.json`，重新執行 `npm install`
+- 檢查埠號衝突（預設：Vite 使用埠5173）
 
 **API 伺服器無法啟動**：
-- 確認 Node.js 版本符合最低需求（node >=10）
-- 檢查埠號是否被佔用
-- 確保所有相依套件已用 `npm install` 安裝
+- 確認 Node.js 版本符合要求（node >=10）
+- 確定埠號未被占用
+- 確保已執行 `npm install` 安裝所有相依套件
 
 <strong>瀏覽器擴充功能無法載入</strong>：
 - 確認 manifest.json 格式正確
-- 檢查瀏覽器控制台錯誤
-- 按瀏覽器特定擴充安裝說明操作
+- 檢查瀏覽器主控台錯誤訊息
+- 遵循瀏覽器特定的擴充功能安裝指示
 
 **Python 聊天專案問題**：
 - 確認已安裝 OpenAI 套件：`pip install openai`
-- 確認 GITHUB_TOKEN 環境變數已設定
-- 稽核 GitHub Models 權限是否正常
+- 確保 GITHUB_TOKEN 環境變數設定正確
+- 檢查 GitHub Models 存取權限
 
-**Docsify 不能提供文件服務**：
+**Docsify 文件無法啟動**：
 - 全域安裝 docsify-cli：`npm install -g docsify-cli`
-- 從儲存庫根目錄執行
-- 確認 `docs/_sidebar.md` 存在
+- 於資源庫根目錄執行
+- 檢查 `docs/_sidebar.md` 是否存在
 
 ### Development Environment Tips
 
-- 使用 VS Code 並安裝 Live Server 外掛來服務 HTML 專案
-- 安裝 ESLint 與 Prettier 擴充以保持格式一致
-- 使用瀏覽器 DevTools 除錯 JavaScript
-- Vue 專案安裝 Vue DevTools 瀏覽器擴充
+- 使用 VS Code 的 Live Server 擴充功能開發 HTML 專案
+- 安裝 ESLint 和 Prettier 擴充套件以統一格式
+- 使用瀏覽器開發者工具除錯 JavaScript
+- Vue 專案安裝 Vue DevTools 瀏覽器擴充功能
 
 ### Performance Considerations
 
-- 大量翻譯檔案（50+ 語言），完整 clone 容量龐大
-- 若僅處理內容，使用淺層 clone：`git clone --depth 1`
-- 工作英文內容時，排除翻譯目錄搜尋
-- 第一次運行建置可能較慢（npm install、Vite build）
+- 大量翻譯檔案（50多種語言）使完整克隆檔案龐大
+- 僅工作於內容時，可使用淺層克隆：`git clone --depth 1`
+- 處理英文內容時，建議排除翻譯資料夾搜尋
+- 第一次建置流程（npm install、Vite build）可能較慢
 
 ## Security Considerations
 
 ### Environment Variables
 
-- API 金鑰絕不可提交到儲存庫
-- 使用 `.env` 檔（已加到 `.gitignore`）
-- 在專案 README 文件中記錄所需環境變數
+- API 金鑰切勿提交至資源庫
+- 使用 `.env` 檔（已加入 `.gitignore`）
+- 在專案 README 文件中說明必須的環境變數
 
 ### Python Projects
 
 - 使用虛擬環境：`python -m venv venv`
-- 維持相依套件更新
-- GitHub 令牌需具最小必要權限
+- 維持依賴套件更新
+- GitHub Token 需限權限為最小必須
 
 ### GitHub Models Access
 
-- 使用個人存取權杖 (PAT) 存取 GitHub Models
-- 將令牌存於環境變數
-- 絕不可提交令牌或認證資料
+- 需要個人存取權杖（PAT）
+- 令牌應存為環境變數
+- 切勿提交令牌或認證資訊
 
 ## Additional Notes
 
 ### Target Audience
 
-- 完全沒有經驗的網頁開發入門者
-- 學生及自學者
-- 在課堂使用本課程的教師
-- 內容設計考量無障礙與逐步技能培養
+- 完全初學者的網頁開發
+- 學生與自學者
+- 教師於課堂中使用本課綱
+- 內容設計符合無障礙及循序漸進學習
 
 ### Educational Philosophy
 
-- 採用專案導向學習方法
-- 頻繁知識檢核（測驗）
-- 實作程式練習
-- 真實世界應用範例
-- 先打好基礎再談框架
+- 專案導向學習
+- 頻繁知識檢測（測驗）
+- 動手練習程式碼實作
+- 實務應用範例
+- 強調基礎而非框架
 
 ### Repository Maintenance
 
-- 積極活躍的學習與貢獻社群
-- 定期更新相依套件與內容
-- 維護者監控 Issues 與討論
-- 翻譯更新由 GitHub Actions 自動化
+- 積極的學習者與貢獻者社群
+- 定期更新依賴與內容
+- 維護者監控議題與討論
+- 翻譯更新自動化由 GitHub Actions 管理
 
 ### Related Resources
 
 - [Microsoft Learn 模組](https://docs.microsoft.com/learn/)
-- [學生中心資源](https://docs.microsoft.com/learn/student-hub/)
-- 建議學習者使用 [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
-- 其他課程：生成式 AI、資料科學、機器學習、物聯網課程
+- [學生資源中心](https://docs.microsoft.com/learn/student-hub/)
+- 推薦使用 [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+- 其它課程：生成式 AI、資料科學、機器學習、物聯網課程可用
 
 ### Working with Specific Projects
 
-詳見各專案 README 指引：
+個別專案詳細說明，請參考各目錄下 README：
 - `quiz-app/README.md` - Vue 3 測驗應用程式
-- `7-bank-project/README.md` - 含身份驗證銀行應用
-- `5-browser-extension/README.md` - 瀏覽器擴充功能開發
+- `7-bank-project/README.md` - 含驗證的銀行應用程式
+- `5-browser-extension/README.md` - 瀏覽器擴充開發
 - `6-space-game/README.md` - Canvas 遊戲開發
 - `9-chat-project/README.md` - AI 聊天助理專案
 
 ### Monorepo Structure
 
-雖非傳統 monorepo，本儲存庫包含多個獨立專案：
-- 每個課程自包含
-- 專案彼此不共享相依
-- 專注個別專案開發不影響其他專案
-- 全部課程體驗可複製整個儲存庫
+本資源庫非典型 monorepo，但包含多個獨立專案：
+- 各課程各自獨立
+- 專案間不共用相依
+- 可獨立作業不影響其他專案
+- 克隆完整資源庫以取得全套課程體驗
 
 ---
 
 <!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **免責聲明**：  
-此文件是使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 進行翻譯。雖然我們致力於翻譯的準確性，但請注意，自動翻譯可能包含錯誤或不準確之處。原始文件的原文版本應被視為權威來源。對於重要資訊，建議進行專業人工翻譯。我們不對因使用此翻譯而產生的任何誤解或誤釋負責。
+本文件乃使用 AI 翻譯服務 [Co-op Translator](https://github.com/Azure/co-op-translator) 所翻譯。雖然我們致力於確保準確性，但請注意自動翻譯可能包含錯誤或不準確之處。原始文件之母語版本應被視為權威來源。對於關鍵資訊，建議採用專業人工翻譯。我們不對因使用本翻譯所產生之任何誤解或誤譯承擔責任。
 <!-- CO-OP TRANSLATOR DISCLAIMER END -->

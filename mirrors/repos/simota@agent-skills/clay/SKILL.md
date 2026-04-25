@@ -122,6 +122,29 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Use non-power-of-two texture resolutions from AI output — many engines require PoT dimensions (256/512/1024/2048/4096) for mipmapping; always validate and resize before integration.
 - Generate batch assets independently without style/scale/material consistency checks — 100 individually impressive assets create visual chaos when placed together; enforce shared style guide, uniform scale reference, and consistent PBR material ranges across batches.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Text-to-3D | `text` | ✓ | Text-to-3D (Meshy/Tripo) | `references/api-integration.md`, `references/prompt-engineering.md` |
+| Image-to-3D | `image` | | Image-to-3D (Hunyuan3D) | `references/api-integration.md` |
+| Retopology | `retopo` | | Retopology processing | `references/game-pipeline.md` |
+| UV Unwrap | `uv` | | UV unwrap | `references/game-pipeline.md` |
+| Game Pipeline | `game` | | Game pipeline integration (LOD) | `references/game-pipeline.md`, `references/quality-validation.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`text` = Text-to-3D). Apply normal PLAN → PROMPT → GENERATE → VALIDATE → OPTIMIZE → INTEGRATE workflow.
+
+Behavior notes per Recipe:
+- `text`: Output 3D-model generation API code from text prompts. Recommend Tripo P1 Smart Mesh (game-oriented) or Meshy 6 (fast iteration). Cost estimation is mandatory.
+- `image`: Output image-to-3D reconstruction API code. Recommend TRELLIS.2 (open-source PBR) or Tripo H3.1 (high fidelity).
+- `retopo`: Neural retopology processing via Blender Python bpy script. Targets game-ready quality.
+- `uv`: UV unwrap and packing via Blender Python bpy script. Hidden seams and proper island placement.
+- `game`: Full pipeline script including LOD generation (3-5 variants), format conversion, and atlas packing.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

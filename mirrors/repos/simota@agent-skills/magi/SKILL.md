@@ -158,6 +158,33 @@ Routing rules:
 - If findings require implementation, route to Builder/Forge/Artisan.
 - Collaborative Calibration: When multiple agents contribute assessments (e.g., Warden quality + Atlas architecture), use iterative confidence adjustment — agents share scores and reasoning, then adjust based on peer input to improve calibration. Ensemble-with-critique frameworks reduce ECE by up to 54% and improve accuracy by up to 47% versus single-judge evaluation. [Source: arxiv.org/abs/2404.09127; arxiv.org/abs/2508.06225]
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Go/No-Go Decision | `decide` | ✓ | Final adoption verdict (release readiness, feature approval, quality gate) | `references/decision-domains.md` |
+| Tradeoff Analysis | `tradeoff` | | Tradeoff comparison analysis (X vs Y form) | `references/decision-domains.md` |
+| Architecture Arbitration | `arbitrate` | | Design option arbitration (Logos/Pathos/Sophia) | `references/deliberation-framework.md` |
+| Strategic Direction | `strategic` | | Long-term strategy and roadmap decisions (build vs buy, etc.) | `references/decision-domains.md` |
+| Six Thinking Hats | `sixhat` | | Parallel-thinking surfacing across White/Red/Black/Yellow/Green/Blue modes before voting | `references/six-thinking-hats.md` |
+| Devil's Advocate | `devil` | | Formal red-team stress test on high-stakes irreversible proposals | `references/devils-advocate.md` |
+| Delphi Method | `delphi` | | Anonymous multi-round expert convergence for forecasts and uncertain estimates | `references/delphi-method.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`decide` = Go/No-Go Decision). Apply normal FRAME → DELIBERATE → VOTE → SYNTHESIZE → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `decide`: Focus on Go/No-Go. Classify as KNOWLEDGE task → share factual evidence at FRAME → independent voting.
+- `tradeoff`: Make both options explicit and have Logos/Pathos/Sophia evaluate independently. Weighted aggregation by confidence scores.
+- `arbitrate`: Evaluate 2+ design options. Auto-detect Engine Mode (low reversibility + high impact).
+- `strategic`: Classify as REASONING task → independent voting protocol. Sophia emphasizes long-term impact.
+- `sixhat`: Run de Bono Six Thinking Hats parallel-thinking session (whole group wears the same hat together) using the planned sequence (idea-evaluation, problem-solving, quick-decision, conflict-resolution, or strategic-planning). Pair every Black with equal-time Yellow. Hat outputs feed Logos (White, Black-risks), Pathos (Red, Black-team-impact), and Sophia (Yellow, Green) at VOTE.
+- `devil`: Assign rotated Devil's Advocate (never the proposal author); DA prepares in isolation with identical evidence, presents 3-7 ranked objections, proponents rebut with addressed/partial/unaddressed scoring. Unaddressed objections become explicit risks. Mandatory on 3-0 unanimity; recommended on irreversible architecture and high-stakes Go/No-Go.
+- `delphi`: Run anonymous multi-round (2-4 rounds) expert questionnaire with controlled feedback. Stop when IQR threshold, median stability, and dropout limits are jointly met. Bimodal distributions are reported as stable disagreement, not flattened. Output is a distribution feeding Magi's perspectives as evidence, not a vote substitute.
+
 ## Output Requirements
 
 Every deliverable must include:
@@ -231,6 +258,9 @@ Every deliverable must include:
 | `references/decision-domains.md` | You need the 5 decision domain evaluation matrices, domain-specific questions, or sample scenarios. |
 | `references/decision-templates.md` | You need the 4 verdict display variants, full report template, or sample deliberations. |
 | `references/reframing-toolkit.md` | You need the three-axis reframing methodology (absorbed from Refract). |
+| `references/six-thinking-hats.md` | You are running the `sixhat` recipe and need hat definitions, sequencing protocols, time-boxing, hat-switching rules, or facilitator scripts. |
+| `references/devils-advocate.md` | You are running the `devil` recipe and need the role charter, RAND-tradition rules, intellectual-honesty constraints, invocation triggers, or backfire mitigations. |
+| `references/delphi-method.md` | You are running the `delphi` recipe and need panel selection, anonymity preservation, classic-vs-real-time format, convergence indicators, or stop criteria (IQR, Kendall's W). |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the deliberation report, deciding adaptive thinking depth at independent evaluation, or front-loading decision scope/reversibility/domain at FRAME. Critical for Magi: P3, P5. |
 
 ---

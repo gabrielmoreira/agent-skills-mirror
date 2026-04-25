@@ -152,6 +152,29 @@ Route elsewhere when the task is primarily:
 | Morph -> Guardian | `MORPH_TO_GUARDIAN` | Converted deliverables must be attached to PR or release flow.     |
 | Morph -> Lore     | `MORPH_TO_LORE`     | A validated conversion pattern should become reusable knowledge.   |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Markdown Conversion | `md` | ✓ | Markdown → PDF/Word/HTML conversion (Pandoc/XeLaTeX/Typst) | `references/pandoc-recipes.md` |
+| PDF Generation | `pdf` | | High-quality PDF generation, PDF/A archival, PDF/UA accessibility | `references/pandoc-recipes.md` |
+| Word Export | `docx` | | Word (.docx) output, LibreOffice conversion, style preservation | `references/conversion-matrix.md` |
+| Excel Export | `xlsx` | | Excel (.xlsx) output, CSV/HTML conversion | `references/conversion-matrix.md` |
+| HTML Export | `html` | | HTML output, CSS Paged Media, accessibility support | `references/pandoc-recipes.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`md` = Markdown Conversion). Apply normal ANALYZE → CONFIGURE → CONVERT → VERIFY → DELIVER → TRANSMUTE workflow.
+
+Behavior notes per Recipe:
+- `md`: Conversion anchored on Markdown input. Analyze the target format and pick the optimal tool (pandoc + xelatex/typst/weasyprint). For Japanese documents, default to A4, 25mm margins, line height 1.7-1.8.
+- `pdf`: Focused on PDF generation. Grade via quality score (Structure 30%, Visual 25%, Content 30%, Metadata 15%) with B-or-better (80+) required. Confirm PDF/A and PDF/UA compliance needs before selecting a tool.
+- `docx`: Word output. Prefer LibreOffice. Warn about font substitution and style-mapping loss. Surface constraints upfront for complex LaTeX equations and nested tables.
+- `xlsx`: Excel output. Prefer LibreOffice. Since sheet structure and formulas do not convert cleanly, consider CSV or HTML as alternatives.
+- `html`: HTML output. Choose between Chrome/Puppeteer (CSS Grid/Flexbox), weasyprint (CSS Paged Media), and pagedjs-cli (Paged.js) per use case. Confirm WCAG 2.1 AA compliance.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

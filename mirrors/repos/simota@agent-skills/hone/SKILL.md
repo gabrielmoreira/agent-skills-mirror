@@ -238,6 +238,29 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Safety classification per proposal
 - Source citations with tier
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Full Audit | `audit` | ✓ | Comprehensive audit of target CLI config (FETCH→AUDIT→PROPOSE) | `references/audit-checklist.md` |
+| Codex Audit | `codex` | | Codex CLI (~/.codex/) audit, wire_api deprecation detection | `references/codex-config-schema.md` |
+| Gemini Audit | `gemini` | | Gemini CLI (~/.gemini/) audit, safety settings, extensions | `references/gemini-config-schema.md` |
+| Claude Code Audit | `claude` | | Claude Code (~/.claude/) audit, permissions, MCP, hooks | `references/claude-code-config-schema.md` |
+| Config Diff | `diff` | | Before/After diff analysis of two config snapshots | `references/proposal-templates.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`audit` = Full Audit). Apply normal FETCH → AUDIT → PROPOSE workflow.
+
+Behavior notes per Recipe:
+- `audit`: Auto-detect the target CLI for comprehensive audit. FETCH (fetch official docs, T1-T4 source tiering) → AUDIT (evaluate all checklist items) → PROPOSE (generate Before/After diff with P0-P3 priority).
+- `codex`: Codex CLI only. Targets config.toml, AGENTS.md, rules/, instructions.md. Always flag wire_api = "chat" deprecation errors (from Feb 2026) as P0.
+- `gemini`: Gemini CLI only. Targets settings.json, GEMINI.md, extensions. Evaluate safety thresholds, OAuth authentication, and progressive disclosure (@file.md imports) for large GEMINI.md.
+- `claude`: Claude Code only. Targets ~/.claude/settings.json, CLAUDE.md, .claude/commands/, hooks. Detect CLAUDE.md over 300 lines as P0, MCP broad-scope PAT as P0. Includes RFC 8707 resource-indicator validation.
+- `diff`: Compare two config snapshots (before/after) and analyze the diff. Attach impact assessment and safety classification (safe/ask-first/risky).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

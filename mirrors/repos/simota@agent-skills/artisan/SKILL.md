@@ -16,6 +16,9 @@ CAPABILITIES_SUMMARY:
 - modern_css: CSS @scope (native scoping), Anchor Positioning (declarative tooltip/dropdown placement with position-try-fallbacks), Popover API (popover attribute + popovertarget, top layer, light dismiss), text-wrap: balance/pretty (Baseline 2024), CSS if() (conditional custom property resolution, Chrome Canary), sibling-index()/sibling-count() (CSS sibling position reference), Grid Lanes/CSS Masonry (native masonry layout, WebKit implementation)
 - server_components: Server-first architecture, selective hydration, RSC boundaries
 - type_safety: TypeScript strict mode, Zod schemas, discriminated unions
+- a11y_implementation: Component-level accessibility hardening — ARIA roles/labels, keyboard navigation, focus management, screen reader affordances, WCAG 2.2 AA baseline (target size, focus appearance, dragging alternatives)
+- i18n_implementation: Component-level internationalization — t() extraction, ICU MessageFormat for plurals/selects, Intl API for date/number/currency, RTL-safe layout with logical properties, locale switching wiring
+- ui_performance: Frontend-component performance tuning — React memoization (memo/useMemo/useCallback when Compiler is off), list virtualization (TanStack Virtual / react-window), dynamic import code-splitting, bundle-size audit per route/component
 
 COLLABORATION_PATTERNS:
 - Forge -> Artisan: Prototype handoff for production conversion
@@ -163,6 +166,35 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Component completion checklist | `references/component-quality.md` |
 | State management decision guide | `references/state-management.md` |
 | Performance & testing strategies | `references/performance-testing.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Component Build | `component` | ✓ | UI component implementation (props/events/slots) | `references/react-patterns.md` |
+| State Management | `state` | | State management design (Context, Zustand, Redux, Pinia, etc.) | `references/state-management.md` |
+| Form Handling | `form` | | Form implementation (validation, submission, errors) | `references/component-quality.md` |
+| Data Fetching | `fetch` | | Data fetching layer (SWR, TanStack Query, Server Actions) | `references/state-management.md` |
+| Server Components | `rsc` | | React Server Components / Nuxt server routes | `references/react-patterns.md` |
+| Accessibility Hardening | `a11y` | | WCAG 2.2 AA hardening for an existing component/page (ARIA, keyboard, focus, SR) | `references/a11y-implementation.md` |
+| Internationalization | `i18n` | | Component-level i18n wiring (t(), ICU, Intl, RTL) in a production frontend file | `references/i18n-implementation.md` |
+| UI Performance | `perf` | | Frontend-component tuning (memoization, virtualization, dynamic import, bundle audit) | `references/ui-performance.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`component` = Component Build). Apply normal ANALYZE → DESIGN → IMPLEMENT → VERIFY → HANDOFF workflow.
+
+Behavior notes per Recipe:
+- `component`: Single component implementation. Always include type safety, a11y, and error/loading states. Target <50 lines.
+- `state`: Classify state (Remote/URL/Local/Shared) during DESIGN, then select the optimal library.
+- `form`: RHF + Zod validation. Include error display, submission state, and accessibility.
+- `fetch`: TanStack Query v5 or SWR. Design caching strategy and error/loading states.
+- `rsc`: Lock Server/Client boundaries during DESIGN. Consider selective hydration and streaming.
+- `a11y`: Tactical WCAG 2.2 AA hardening of an Artisan-owned component or page — wire ARIA roles/labels, keyboard paths, focus management, and screen reader affordances. Verify target size (≥24×24px), focus appearance, and dragging alternatives. Scope is a single component/page; route to `Palette` for product-level usability/interaction redesign, and route to `Canon` for repo-wide WCAG gap audits.
+- `i18n`: Component-level i18n wiring inside a production frontend file — extract hardcoded strings to `t()`, use ICU MessageFormat for plurals/selects, apply `Intl.DateTimeFormat`/`NumberFormat` for locale-aware formatting, and switch physical properties to logical ones (`margin-inline-start`, `text-align: start`) for RTL safety. Stop at single-component scope; hand off to `Polyglot` for full i18n/l10n specialist work (extraction tooling, locale pipelines, translator workflow, ICU message catalogs at repo scale).
+- `perf`: Frontend-component tuning inside a single component/page — apply memoization only when React Compiler is off or the compiler opts out, virtualize lists > ~100 rows with TanStack Virtual or react-window, split non-critical chunks with `next/dynamic` or `React.lazy`, and audit the route's bundle size. Measure INP/LCP before and after. Scope is one component or page; hand off to `Bolt` for cross-cutting frontend+backend performance work (rendering pipeline, server response, DB-backed waterfalls).
 
 ## Output Requirements
 

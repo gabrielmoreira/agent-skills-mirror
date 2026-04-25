@@ -94,6 +94,30 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Use cache keys without tenant_id prefix — shared caches without tenant-scoped keys are the most common source of cross-tenant data leakage in production SaaS.
 - Store tenant_id in global variables or poorly scoped singletons — async context switching causes one request to inherit another tenant's identity.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Isolation Strategy | `isolation` | ✓ | Tenant isolation strategy design (DB / schema / row-level comparison) | `references/patterns.md` |
+| RLS Design | `rls` | | Row Level Security policy design and tenant context propagation | `references/patterns.md` |
+| Tenant Routing | `routing` | | Tenant routing design (subdomain / header / path) | `references/patterns.md` |
+| Scale Design | `scale` | | Noisy-neighbor protection, resource limits, and migration planning | `references/patterns.md` |
+| Tenant Migration | `migration` | | Cross-shard rebalancing, isolation-level upgrade, zero-downtime tenant moves | `references/tenant-migration.md` |
+| Tenant Provisioning | `provisioning` | | Tenant lifecycle, IaC-driven onboarding, idempotent re-provisioning, deprovisioning + retention | `references/tenant-provisioning.md` |
+| Tenant Quota | `quota` | | Per-tenant rate limits, fair-share scheduling, soft/hard quota, burst budgets, overage handoff | `references/tenant-quota-throttling.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`isolation` = Isolation Strategy). Apply normal ASSESS → STRATEGY → DESIGN → VERIFY → DOCUMENT workflow.
+
+### Subcommand Behavior Notes
+
+- **`migration`**: produce a tenant-move plan with cutover mode (offline-copy / dual-write+cutover / logical-replica-promote / CDC-tail / shadow-read), verification queries (row-count parity, content hash, FK integrity), sequence-reset SQL, and a stage-keyed rollback playbook. Define the abort threshold *before* cutover. Hand DDL to Schema, scheduling to Tempo, SLO observation to Beacon.
+- **`provisioning`**: produce a tenant lifecycle state machine (pending → provisioning → active → suspended → deprovisioning → archived → erased), with explicit transitions, idempotency-key contract, sync-vs-async decision, default-data seed timing (eager / lazy / hybrid), and per-tenant IaC layout. Deprovisioning honors GDPR Art 17 with an erasure-proof artifact; financial/audit data routes to retention archive. Hand retention scheduling to Tempo, retention contract to Comply/Cloak.
+- **`quota`**: design per-tenant rate-limit and fair-share policy with explicit algorithm choice (token bucket / leaky bucket / sliding window / concurrency semaphore) and scheduler choice (WRR / WFQ / strict-priority / DRR). Pair every hard quota with a soft warning at ~80%. Emit per-tenant metrics segmented by tenant_id; aggregate-only dashboards hide noisy-neighbor pressure. Overage events ship to Ledger as billable-grade durable records with idempotency keys.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -187,6 +211,9 @@ Key design points:
 | `references/patterns.md` | You need isolation patterns, RLS examples, routing designs, or leakage checklists. |
 | `references/examples.md` | You need complete multi-tenant architecture examples. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `references/tenant-migration.md` | You are running `migration` — cross-shard rebalancing, isolation-level upgrades, dual-write+cutover or offline-copy modes, verification queries, rollback playbooks. |
+| `references/tenant-provisioning.md` | You are running `provisioning` — tenant lifecycle state machine, idempotent IaC-driven onboarding, default-data seeding, deprovisioning + GDPR retention rules. |
+| `references/tenant-quota-throttling.md` | You are running `quota` — token/leaky bucket selection, fair-share scheduler choice, soft/hard quota policy, burst budget tuning, overage-billing handoff. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the tenancy spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/scale projection at SCAN. Critical for Shard: P3, P5. |
 
 ## Operational

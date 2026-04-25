@@ -132,6 +132,33 @@ Pre-mortem分析エンジン。計画・設計・システムが**どう失敗�
 
 Use AP when stakeholders follow AIAG-VDA methodology; use RPN when numeric ranking across many failure modes is needed. Both may coexist in a single analysis.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Pre-Mortem | `premortem` | ✓ | Failure scenario enumeration (all-phase DEEP) | `references/failure-frameworks.md` |
+| RPN Scoring | `rpn` | | Risk Priority Number scoring | `references/scoring-methodology.md` |
+| Action Priority | `ap` | | Action Priority scoring (AIAG-VDA) | `references/scoring-methodology.md` |
+| Failure Mode ID | `mode` | | Failure mode identification (FMEA) | `references/failure-frameworks.md` |
+| Fault Tree Analysis | `faulttree` | | Top-down deductive analysis from one undesired top event, cut-set computation, optional probability roll-up | `references/fault-tree-analysis.md` |
+| Bowtie Diagram | `bowtie` | | Threat × top event × consequence map with preventive and mitigative barriers for stakeholder communication | `references/bowtie-diagram.md` |
+| HAZOP Study | `hazop` | | Parameter × guideword deviation study at process / pipeline / integration nodes | `references/hazop-methodology.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`premortem` = Pre-Mortem). Apply normal SCOPE → IMAGINE → ENUMERATE → SCORE → FORTIFY workflow.
+
+Behavior notes per Recipe:
+- `premortem`: All 5 phases in DEEP mode. Enumerate scenarios under "already failed" assumption and score with RPN/AP.
+- `rpn`: Focus on FMEA table generation and S × O × D scoring. Emphasize ENUMERATE → SCORE phases.
+- `ap`: Focus on AIAG-VDA Action Priority (H/M/L) evaluation. Use alongside FMEA.
+- `mode`: FMEA failure-mode identification only. Completes in SCOPE → IMAGINE → ENUMERATE phases.
+- `faulttree`: Deductive IEC 61025 decomposition of a single undesired top event with AND/OR/XOR/voting gates. Output Minimal Cut Sets and, when probabilities are known, a top-event estimate.
+- `bowtie`: Single-page risk picture — threats and preventive barriers on the left, consequences and mitigative barriers on the right, escalation factors annotated. Stakeholder-facing.
+- `hazop`: Node-by-node parameter × guideword (NO / MORE / LESS / AS WELL AS / PART OF / REVERSE / OTHER THAN) deviation study with Cause-Consequence-Safeguard-Action rows.
+
 ## Output Routing
 
 | Signal | Mode | Primary Output | Next |
@@ -169,6 +196,9 @@ Every deliverable must include:
 | `references/failure-frameworks.md` | FMEA procedures, pre-mortem techniques, fault tree, Swiss Cheese |
 | `references/scoring-methodology.md` | RPN scales, severity/occurrence/detection definitions, AP thresholds |
 | `references/output-templates.md` | Report templates, FMEA tables, mitigation plans |
+| `references/fault-tree-analysis.md` | Top-down FTA for a single undesired top event, gate semantics, Minimal Cut Sets, probability roll-up |
+| `references/bowtie-diagram.md` | Threat / top-event / consequence bowtie with preventive and mitigative barriers and escalation factors |
+| `references/hazop-methodology.md` | HAZOP deviation study at pipeline / broker / integration nodes using parameter × guideword grids |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the pre-mortem report, deciding adaptive thinking depth at scoring/severity, or front-loading scope/stakeholders/horizon at FRAME. Critical for Omen: P3, P5. |
 
 ## Operational

@@ -141,6 +141,29 @@ Route elsewhere when the task is primarily:
 | Output    | Darwin | Return anomaly or morale observations derived from Realm metrics.                  |
 | Output    | Nexus  | Return realm status summaries for proactive orchestration.                         |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Phaser Office | `phaser` | ✓ | Phaser 2D office sim — game visualization of the agent ecosystem | `references/phaser-optimization.md` |
+| Interactive Map | `map` | | Interactive HTML map — agent relationship diagram | `references/map-layout.md` |
+| Character Sheet | `character` | | RPG character sheets — per-agent status | `references/class-system.md` |
+| Quest Board | `quest` | | Quest board — active task and quest completion tracking | `references/quest-mapping.md` |
+| Badge System | `badge` | | Badge system — achievement, reward, and ranking design | `references/badge-catalog.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`phaser` = Phaser Office). Apply normal SURVEY → MAP → RENDER → NARRATE → PERSIST → CALIBRATE workflow.
+
+Behavior notes per Recipe:
+- `phaser`: Use the Phaser 3 template. Object pooling required. Evaluate Phaser 4 RC7 for new builds.
+- `map`: HTML + `{{REALM_DATA_JSON}}` template. Use `templates/realm-map.html`.
+- `character`: Output class, stats, XP, rank, and badges in RPG sheet format.
+- `quest`: Design quest difficulty, party composition, and reward rules per quest-mapping.md.
+- `badge`: Confirm behavior fit. Evaluate mechanics through the SDT lens (Autonomy, Competence, Relatedness).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

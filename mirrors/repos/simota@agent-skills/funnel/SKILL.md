@@ -285,6 +285,41 @@ Detailed performance optimization → delegate to Growth / Bolt. LP-specific pri
 | `OPTIMIZE` | Optimization | Performance, accessibility, variant design | — |
 | `DELIVER` | Delivery | Handoff to Artisan/Growth, improvement proposals | `references/handoffs.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Build LP | `build` | ✓ | Full LP design (starting from AIDA/PAS/BAB/4Ps framework selection) | `references/patterns.md` |
+| CTA Optimization | `cta` | | CTA placement, copy, micro-copy optimization | — |
+| Conversion Audit | `conversion` | | Conversion improvement and section audit for an existing LP | `references/patterns.md` |
+| Responsive Design | `responsive` | | Mobile-first implementation, tap targets, viewport optimization | `references/examples.md` |
+| Form Optimization | `form` | | LP form field minimization, progressive disclosure, autofill/password-manager cooperation, real-time validation, submit-button friction | `references/form-lp-optimization.md` |
+| Copy Authoring | `copy` | | LP headline formulas (PAS/BAB/4U), hero body, value-prop clarity, microcopy shells, readability targets, LP tone and voice | `references/copy-lp-authoring.md` |
+| Trust Signal Placement | `trust` | | Testimonial shape and quantity, logo bars, case studies, certification badges, review aggregation, scarcity/urgency vs dark patterns | `references/trust-signal-placement.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `build` (default).
+
+| First Token | Recipe Activated |
+|------------|-----------------|
+| `build` | Build LP |
+| `cta` | CTA Optimization |
+| `conversion` | Conversion Audit |
+| `responsive` | Responsive Design |
+| `form` | Form Optimization |
+| `copy` | Copy Authoring |
+| `trust` | Trust Signal Placement |
+| _(no match)_ | Build LP (default) |
+
+Behavior notes per Recipe:
+
+- `form`: LP form specification — field-count cost model, single vs multi-step progressive disclosure, autofill / `autocomplete` / `inputmode` contract, password-manager cooperation, blur-time validation, error-prevention patterns, submit-button copy and state machine. For production React/Vue form implementation use Artisan; for exact field-label and error-message wording use Prose; for A/B experimentation on field count and cross-page form analytics use Growth; for input/label/error-state design tokens use Muse.
+- `copy`: LP headline and body copy authoring — PAS/BAB/4U headline formulas, hero-section anatomy, value-prop clarity tests, benefit-vs-feature conversion, button/helper/tooltip/trust-line microcopy shells, readability targets, LP-context tone and voice. For exact microcopy authority and voice/tone design system use Prose; for copy framework reused across ads and nurture email use Growth; for typographic tokens and `text-wrap: balance` wiring use Muse; for brand positioning and master-narrative upstream use Vision.
+- `trust`: LP trust-signal placement — testimonial shape/quantity/placement, logo bar (customer and media) treatment, metric-forward vs story-forward case studies, certifications and guarantees, review-aggregation integration, and honest-urgency vs dark-pattern red lines. For testimonial wording polish use Prose; for live review-aggregation APIs, rich-result schema, and ongoing harvesting cadence use Growth; for testimonial/logo/badge design tokens use Muse; for FTC claim substantiation and endorsement disclosure use Clause.
+
+---
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -331,6 +366,9 @@ Handoff formats → `references/handoffs.md`
 | `references/patterns.md` | Selecting LP type pattern or section-level design |
 | `references/examples.md` | Need LP section structure reference during build phase |
 | `references/handoffs.md` | Sending to or receiving from another agent |
+| `references/form-lp-optimization.md` | You need LP form field count sizing, single vs multi-step decision, autofill/password-manager contract, blur-time validation strategy, or submit-button friction audit. |
+| `references/copy-lp-authoring.md` | You need an LP headline formula (PAS/BAB/4U), hero-section copy anatomy, value-prop clarity tests, benefit-vs-feature conversions, microcopy shells, or LP-context tone calibration. |
+| `references/trust-signal-placement.md` | You need trust-signal placement map, testimonial shape/quantity, logo-bar treatment, case-study length decision, review-aggregation integration, or the honest-urgency vs dark-pattern line. |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the LP spec, deciding adaptive thinking depth at section/CTA design, or front-loading LP type/audience/goal at FRAME. Critical for Funnel: P3, P5. |
 
 ## Operational

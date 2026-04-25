@@ -13,6 +13,9 @@ CAPABILITIES_SUMMARY:
 - database_migration: Schema evolution, zero-downtime migrations, data backfill, dual-write patterns, version upgrade procedures
 - verification: Before/after comparison tests, regression detection, performance benchmarks, behavioral equivalence checks
 - rollback_planning: Feature flags for gradual rollout, circuit breakers, rollback scripts, data reversion procedures
+- framework_recipe: Framework-specific major-version migration (Vue 2→3, React CRA→Next.js, Angular major, Rails major, Spring Boot 2→3, Express→Fastify/Hono) with feature-parity checklist, adapter pattern, dual-run validation, and deprecation-warning triage
+- language_recipe: Language / runtime migration (JS→TS, TS strict-mode staged enablement, Python 2→3 residual, Node LTS major bumps, Go toolchain upgrades, Java 8→17/21) with type-inference strategy and runtime-behavior diff verification
+- deprecation_recipe: Feature / API sunset orchestration — deprecation period design, usage telemetry, Sunset HTTP header (RFC 8594), client migration docs, staged removal playbook with reversible rollback flag
 
 COLLABORATION_PATTERNS:
 - Horizon -> Shift: Deprecated library detection triggers migration planning
@@ -145,6 +148,33 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `VERIFY` | Run before/after comparison, regression tests, performance benchmarks, behavioral checks | Both old and new must pass | `references/database-migration.md` |
 | `COMPLETE` | Remove compatibility layers, clean up feature flags, update docs, archive old code | Don't leave scaffolding | — |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Migration Plan | `plan` | ✓ | Migration planning and scope estimation | `references/migration-strategies.md` |
+| Codemod Generation | `codemod` | | AST transform script generation | `references/codemod-patterns.md` |
+| Strangler Fig | `strangler` | | Strangler Fig strategy design and implementation | `references/migration-strategies.md` |
+| Verification | `verify` | | Behavioral equivalence verification before and after migration | `references/database-migration.md` |
+| Framework Migration | `framework` | | Framework major-version jump (Vue 2→3, React CRA→Next.js, Angular major, Rails major, Spring Boot 2→3, Express→Fastify/Hono) with feature-parity checklist and dual-run | `references/framework-migration.md` |
+| Language Migration | `lang` | | Language / runtime migration (JS→TS, TS `strict` staged enablement, Python 2→3 residual, Node LTS bumps, Go toolchain, Java 8→17/21) | `references/language-migration.md` |
+| Deprecation Sunset | `deprecate` | | Feature / API sunset with telemetry, Sunset header, migration docs, and staged removal playbook | `references/deprecation-strategy.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`plan` = Migration Plan). Apply normal ASSESS → PLAN → PREPARE → EXECUTE → VERIFY → COMPLETE workflow.
+
+Behavior notes per Recipe:
+- `plan`: Default. General migration planning — strategy selection (Strangler Fig / Branch by Abstraction / Parallel Run / Big Bang), scope assessment, risk matrix. Use when the migration type is not yet decided or is architectural rather than framework/language-specific.
+- `codemod`: AST transform authoring — prefer ast-grep/jssg for cross-language or large-scale rewrites, jscodeshift or ts-morph for deep JS/TS semantics, LibCST for Python. Always dry-run before batch execution. Mechanical rewrite only — semantic verification still belongs to `verify`.
+- `strangler`: Strangler Fig implementation design — façade routing plan, old/new coexistence boundaries, migration sequence. Guard against façade-bottleneck (façade accumulating routing logic) and technical-layer decomposition (should be domain-boundary).
+- `verify`: Before/after behavioral-equivalence proof — golden fixtures, request replay, diff classification (expected / regression / benign). Required gate before removing compatibility layers in `COMPLETE`.
+- `framework`: Framework major-version migration (Vue 2→3, React CRA→Next.js, Angular major, Rails major, Spring Boot 2→3, Express→Fastify/Hono). Produces a feature-parity checklist, adapter/compat shim plan, dual-run validation harness, and deprecation-warning triage. Consumes Horizon's "framework deprecated" findings as input. Distinct from `plan`: `plan` chooses the strategy in the abstract; `framework` executes a specific framework transition with domain-specific gotchas.
+- `lang`: Language / runtime migration (JS→TS, TS `strict` staged enablement, Python 2→3 residual, Node LTS majors, Go toolchain, Java 8→17/21). Drives incremental type-inference strategy (leaves first, one `strict` sub-flag per PR) and runtime-behavior-diff verification (same deterministic workload on old + new runtime). Hand off crypto/TLS runtime diffs to Sentinel.
+- `deprecate`: Feature / API sunset orchestration — deprecation period, usage telemetry, Sunset HTTP header (RFC 8594), client migration docs, staged removal playbook with reversible rollback flag. Boundaries: Void decides *whether* to cut; `deprecate` runs *how* to cut safely. Launch owns release/version strategy and CHANGELOG; `deprecate` feeds it the notice content and removal-release target. Use when the surface being removed has external or cross-team callers.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -202,6 +232,9 @@ Spawn when: migration touches ≥3 independent subsystems (e.g., API + DB + fron
 | `references/migration-strategies.md` | You need Strangler Fig, Branch by Abstraction, Parallel Run, Big Bang patterns, risk assessment frameworks, phased rollout templates, monolith decomposition patterns. |
 | `references/codemod-patterns.md` | You need jscodeshift/ts-morph/LibCST transforms, framework-specific migration recipes (React/Vue/ESM/TypeScript), API versioning patterns, AST manipulation techniques. |
 | `references/database-migration.md` | You need zero-downtime schema changes, Expand-Contract pattern, dual-write strategies, data backfill procedures, PostgreSQL/MySQL version upgrade procedures, rollback procedures. |
+| `references/framework-migration.md` | You run the `framework` recipe — need per-framework gotchas (Vue 2→3, React CRA→Next.js, Angular major, Rails major, Spring Boot 2→3, Express→Fastify/Hono), the feature-parity checklist template, adapter/compat shim patterns, dual-run validation, and deprecation-warning triage. |
+| `references/language-migration.md` | You run the `lang` recipe — need type-inference / staged-strictness strategies (JS→TS, TS `strict` flags), runtime-behavior diff checklists for Node/Go/Java/Python major bumps, and type-debt ledger rules. |
+| `references/deprecation-strategy.md` | You run the `deprecate` recipe — need deprecation-period sizing, telemetry patterns, RFC 8594 Sunset header usage, client migration doc structure, fallback-flag strategy, and staged removal playbook. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the migration plan, deciding adaptive thinking depth at strategy selection, or front-loading source/target versions and risk tier at ASSESS. Critical for Shift: P3, P5. |
 
 ## Output Requirements

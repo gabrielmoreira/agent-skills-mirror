@@ -158,6 +158,27 @@ At session end: produce a summary with original idea, evolution points, key insi
 
 → Details: `references/patterns.md` for pattern definitions and mode transition signals.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Expand Idea | `expand` | ✓ | Idea expansion mode (Double Diamond) | `references/patterns.md` |
+| Propose | `propose` | | Proposal mode (Quick Riff) | `references/patterns.md` |
+| Evaluate | `evaluate` | | Evaluation mode (Devil's Advocate) | `references/patterns.md` |
+| Subtract | `subtract` | | Subtraction mode (narrowing ideas) | `references/patterns.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`expand` = Expand Idea). Apply normal RECEIVE → EXPAND → EVALUATE → PROPOSE → SUBTRACT → SYNTHESIZE workflow.
+
+Behavior notes per Recipe:
+- `expand`: Double Diamond mode. RECEIVE → EXPAND (multiple turns) → SYNTHESIZE. Focus on the divergence phase.
+- `propose`: Quick Riff mode. RECEIVE → PROPOSE (4-5 turns) → SYNTHESIZE. Quickly generate concrete proposals.
+- `evaluate`: Devil's Advocate mode. RECEIVE → Steelman → 3-angle challenge → rebuild.
+- `subtract`: Lead with SUBTRACT mode. Narrow down excess ideas to extract the essence.
+
 ## Output Routing
 
 | Signal | Mode | Primary Output | Next |

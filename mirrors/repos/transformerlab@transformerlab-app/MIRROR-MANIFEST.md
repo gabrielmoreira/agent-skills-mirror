@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 30 file(s) materialized.
+Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,11 +88,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`docs/task-execution/03-job-dispatch.md`](docs/task-execution/03-job-dispatch.md) |
 | 24 | ✓ | [`docs/task-execution/04-compute-providers.md`](docs/task-execution/04-compute-providers.md) |
 | 25 | ✓ | [`docs/task-execution/05-job-lifecycle.md`](docs/task-execution/05-job-lifecycle.md) |
-| 26 | → | [`docs/Auth.md`](docs/Auth.md) |
-| 27 | → | [`docs/backend.md`](docs/backend.md) |
-| 28 | → | [`docs/cli.md`](docs/cli.md) |
-| 29 | → | [`docs/frontend.md`](docs/frontend.md) |
-| 30 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
+| 26 | ✓ | [`transformerlab-docs/for-teams/advanced-install/authentication.md`](transformerlab-docs/for-teams/advanced-install/authentication.md) |
+| 27 | → | [`docs/Auth.md`](docs/Auth.md) |
+| 28 | → | [`docs/backend.md`](docs/backend.md) |
+| 29 | → | [`docs/cli.md`](docs/cli.md) |
+| 30 | → | [`docs/frontend.md`](docs/frontend.md) |
+| 31 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
 
 ---
 

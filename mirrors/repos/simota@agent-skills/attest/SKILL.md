@@ -321,6 +321,27 @@ Handoff tokens:
 - `ATTEST_TO_WARDEN_HANDOFF`
 - `ATTEST_TO_SCRIBE_HANDOFF`
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| AC Verify | `verify` | ✓ | FULL-mode verification that implementation meets spec acceptance criteria | `references/compliance-report.md` |
+| BDD Scenarios | `bdd` | | Generate Given/When/Then scenarios from spec | `references/bdd-generation.md` |
+| Traceability Matrix | `trace` | | Generate spec ↔ code traceability matrix | `references/traceability-advanced.md` |
+| Compliance Report | `report` | | Audit-oriented compliance report (AUDIT mode) | `references/compliance-report.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`verify` = AC Verify). Apply normal INGEST → EXTRACT → GENERATE → VERIFY → ATTEST workflow.
+
+Behavior notes per Recipe:
+- `verify`: FULL mode. Requires both spec and implementation. All CRITICAL criteria must PASS. Issue a verdict of CERTIFIED/CONDITIONAL/REJECTED.
+- `bdd`: EXTRACT mode. Extract ACs from spec only and generate minimum scenario counts per priority (CRITICAL: 5, HIGH: 3).
+- `trace`: AUDIT mode. Generate bidirectional traceability from spec section → implementation code. Coverage ≥ 90% is the CERTIFIED condition.
+- `report`: AUDIT mode + full-section compliance report generation. Hand off to Warden as audit evidence.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

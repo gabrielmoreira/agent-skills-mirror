@@ -151,6 +151,10 @@ public class OllamaClient @JvmOverloads constructor(
         }
         install(ContentNegotiation) {
             json(ollamaJson)
+            // Ollama sometimes returns non-streaming responses with `Content-Type: text/plain`
+            // (see https://github.com/JetBrains/koog/issues/1237). Register the same JSON
+            // deserializer for that content type so the body is still parsed correctly.
+            json(ollamaJson, ContentType.Text.Plain)
         }
         install(HttpTimeout) {
             requestTimeoutMillis = timeoutConfig.requestTimeoutMillis
@@ -285,7 +289,7 @@ public class OllamaClient @JvmOverloads constructor(
                     content = content,
                     metaInfo = responseMetadata
                 )
-                listOf(assistantMessage) + toolCallMessages
+                toolCallMessages + listOf(assistantMessage)
             }
         }
     }
@@ -387,7 +391,7 @@ public class OllamaClient @JvmOverloads constructor(
         }
 
         val embeddingResponse = response.body<EmbeddingBatchResponseDTO>()
-        return embeddingResponse.embeddings.first()
+        return embeddingResponse.normalizedEmbeddings().firstOrNull() ?: emptyList()
     }
 
     /**
@@ -414,7 +418,7 @@ public class OllamaClient @JvmOverloads constructor(
         }
 
         val embeddingResponse = response.body<EmbeddingBatchResponseDTO>()
-        return embeddingResponse.embeddings
+        return embeddingResponse.normalizedEmbeddings()
     }
 
     /**

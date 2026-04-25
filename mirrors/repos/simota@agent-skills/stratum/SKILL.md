@@ -132,6 +132,33 @@ DISCOVER → MODEL → VERIFY → EXPORT
 | `VERIFY` | Validate cross-level consistency and notation compliance | All 8 consistency checks + 4 notation checks must pass | Consistency checklist below |
 | `EXPORT` | Output verified model in requested format | Structurizr DSL is primary; Mermaid/PlantUML secondary | Structurizr DSL template below |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| New Model | `model` | ✓ | Create a new C4 model (Context/Container/Component/Code base 4 levels) | `references/c4-methodology.md` |
+| Evaluate Existing | `evaluate` | | Evaluate existing architecture (ATAM, SAAM, etc.) | `references/patterns.md` |
+| Structurizr DSL | `dsl` | | Generate or update Structurizr DSL | `references/structurizr-dsl.md` |
+| C4 Level Switch | `c4` | | C4 level switching (select L1-L4 detail) | `references/c4-methodology.md` |
+| ADR Authoring | `adr` | | Author Architecture Decision Records (Nygard/MADR) with status lifecycle and indexing | `references/adr-authoring.md` |
+| Quality Attribute Scenarios | `quality-attr` | | Elicit and structure SEI 6-part scenarios; build utility tree; QAW facilitation | `references/quality-attribute-scenarios.md` |
+| Tradeoff Analysis | `tradeoff` | | ATAM sensitivity/tradeoff/risk identification, optional CBAM cost-benefit extension | `references/tradeoff-analysis.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`model` = New Model). Apply normal DISCOVER → MODEL → VERIFY → EXPORT workflow.
+
+Behavior notes per Recipe:
+- `model`: Create a new C4 model. In the DISCOVER phase, scan the actual codebase and generate L1-L2 as the baseline.
+- `evaluate`: Evaluate the quality attributes and trade-offs of the existing architecture with methodologies such as ATAM/SAAM.
+- `dsl`: Generate Structurizr DSL or update existing DSL. Consider workspace extends, archetypes, and !adrs.
+- `c4`: Switch to the specified level (L1/L2/L3/L4). Select the detail granularity to match the audience, and verify consistency in the VERIFY phase.
+- `adr`: Author Architecture Decision Records using the Nygard or MADR template. Apply the status lifecycle (proposed → accepted → deprecated/superseded), assign monotonic IDs, write Y-statements, and produce embedding-ready files for `!adrs`. Distinguish ADR (record after consensus) from RFC (proposal before consensus).
+- `quality-attr`: Elicit Quality Attribute Scenarios in SEI 6-part form (source/stimulus/artifact/environment/response/measure). Build a utility tree, facilitate QAW workshops, and prioritize via the importance × difficulty matrix. Hand off the (H,H)/(H,M) leaves to `evaluate` or `tradeoff`.
+- `tradeoff`: Run ATAM Phase 2 analysis core. Enumerate architectural approaches, classify each lever as sensitivity / tradeoff / risk / non-risk, capture rationale, and optionally extend with CBAM cost-benefit. Hand contested points to Magi and recordable decisions to `adr`.
+
 ### Work Modes
 
 | Mode | When | Flow | Output |
@@ -414,10 +441,16 @@ STRATUM_TO_SCRIBE_HANDOFF:
 
 ## Reference Map
 
-Stratum has no `references/` directory. All C4 methodology guidance is embedded in this SKILL.md.
-
 | Reference | Read this when |
 |-----------|----------------|
+| `references/c4-methodology.md` | You need C4 model methodology depth (L1-L4 definitions, audience targeting). |
+| `references/structurizr-dsl.md` | You are authoring or updating Structurizr DSL workspaces. |
+| `references/patterns.md` | You need architectural pattern catalogs for `evaluate`. |
+| `references/examples.md` | You need worked C4 model examples. |
+| `references/handoffs.md` | You need detailed handoff payload templates. |
+| `references/adr-authoring.md` | You are running the `adr` recipe — Nygard/MADR templates, status lifecycle, Y-statements, ADR vs RFC, repo organization, adr-tools/log4brains. |
+| `references/quality-attribute-scenarios.md` | You are running the `quality-attr` recipe — 6-part scenarios, utility tree, QAW facilitation, importance × difficulty prioritization. |
+| `references/tradeoff-analysis.md` | You are running the `tradeoff` recipe — ATAM sensitivity/tradeoff/risk classification, CBAM extension, decision rationale capture, when to escalate to Magi. |
 | `_common/BOUNDARIES.md` | You need agent role boundary definitions. |
 | `_common/OPERATIONAL.md` | You need standard operational protocols. |
 | `_common/HANDOFF.md` | You need handoff format specifications. |

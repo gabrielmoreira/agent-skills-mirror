@@ -132,6 +132,33 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `ANALYZE` | Journey patterns, Peak-End, cross-persona analysis | Classify as Universal/Segment/Edge Case/Non-Issue | `references/ux-frameworks.md` |
 | `PRESENT` | Report with persona, emotions, friction, dark patterns, Canvas data | Include A/B test hypotheses and recommended next agent | `references/output-templates.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Walkthrough | `walkthrough` | ✓ | Persona cognitive walkthrough, emotion scoring | `references/process-workflows.md`, `references/ux-frameworks.md` |
+| Confusion Points | `confusion` | | Identify confusion points, cognitive load, mental model gaps | `references/ux-frameworks.md`, `references/output-templates.md` |
+| Emotion Map | `emotion` | | Emotion map, detailed friction score analysis | `references/ux-frameworks.md`, `references/output-templates.md` |
+| Persona Switch | `persona` | | Multi-persona comparison, cross-persona analysis | `references/analysis-frameworks.md`, `references/cognitive-persona-model.md` |
+| Heuristic Evaluation | `heuristic` | | Nielsen 10 / domain-specific heuristic expert review with severity scoring and evaluator-panel reconciliation | `references/heuristic-evaluation.md` |
+| SUS Scoring | `sus` | | System Usability Scale authoring, scoring, and benchmark comparison with percentile / grade / adjective mapping | `references/sus-scoring.md` |
+| Think-Aloud | `aloud` | | Concurrent / retrospective think-aloud session moderation, prompt discipline, transcript coding, and finding extraction | `references/think-aloud-protocol.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`walkthrough` = Walkthrough). Apply normal PRE-SCAN → MASK ON → WALK → SPEAK → ANALYZE → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `walkthrough`: Run every step. Persona selection → emotion scoring → dark pattern detection → A/B hypothesis generation end-to-end.
+- `confusion`: Focus on confusion points and cognitive load indices (SUS/SEQ). Deep-dive the WALK phase.
+- `emotion`: Per-touchpoint emotion scoring (-3 to +3) and journey pattern analysis. Apply the Peak-End rule.
+- `persona`: Run multiple personas in parallel. Output a Universal/Segment/Edge Case/Non-Issue classification matrix.
+- `heuristic`: Structured Nielsen-10 (or domain-extended) expert review. 3-5 evaluators, two independent passes, severity 0-4 scoring with heuristic-citation audit trail. For empirical confirmation use `aloud` or Researcher.
+- `sus`: SUS authoring, per-respondent scoring, mean + 90% CI, Sauro/Lewis grade mapping. Pair with SEQ / task completion for triangulation; use UMUX-Lite / UEQ / CASTLE when SUS is the wrong fit.
+- `aloud`: Concurrent (default) or retrospective think-aloud moderation. Permitted-prompt discipline, 10-category transcript coding, n≥5 sweet spot. Findings are timestamped, quote-backed, and severity-tagged.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -181,6 +208,9 @@ Every deliverable must include:
 | `references/cognitive-persona-model.md` | You need the CPM framework: 6 dimensions, cross-dimension interactions, consistency verification. |
 | `references/question-templates.md` | You need interaction trigger YAML templates. |
 | `references/visual-review.md` | You need visual review mode detailed process. |
+| `references/heuristic-evaluation.md` | You are running a Nielsen-10 or domain-extended heuristic expert review and need evaluator panels, severity scoring, and anti-patterns. |
+| `references/sus-scoring.md` | You need SUS item set, scoring formula, benchmark mapping, minimum-detectable-difference curves, or variant selection (UMUX-Lite / UEQ / CASTLE). |
+| `references/think-aloud-protocol.md` | You are moderating or coding a concurrent / retrospective think-aloud session and need prompt discipline, intervention rules, and transcript categories. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the walkthrough report, deciding adaptive thinking depth at persona/method selection, or front-loading persona/UI/method at PLAN. Critical for Echo: P3, P5. |
 
 ## Operational

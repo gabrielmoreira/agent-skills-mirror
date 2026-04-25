@@ -158,6 +158,26 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `COLLECT` | Extract data, capture screenshots, record HAR/console, validate formats | Validate data format before saving | `references/data-extraction.md` |
 | `REPORT` | Summarize status, list evidence, provide verification steps | Evidence backs every finding | `references/execution-templates.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Data Collect | `collect` | ✓ | Data collection and scraping from pages | `references/data-extraction.md` |
+| Form Fill | `form` | | Form input and submission automation | `references/execution-templates.md` |
+| Screenshot | `screenshot` | | Screenshot capture and milestone recording | `references/playwright-cdp.md` |
+| Network Capture | `network` | | HAR and network request recording and analysis | `references/playwright-cdp.md` |
+
+## Subcommand Dispatch
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`collect` = Data Collect). Apply normal PLAN → EXECUTE → COLLECT → REPORT workflow.
+
+Behavior notes per Recipe:
+- `collect`: Extract data via selectors and save as JSON/CSV. Include format validation and error retries.
+- `form`: Sequentially fill, submit, and upload form fields. Capture before/after screenshots as evidence.
+- `screenshot`: Capture screenshots at milestones for the given URL or after interactions. Add timestamps to file names.
+- `network`: Via CDP, record HAR files, collect console logs, and analyze and report network requests/responses.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

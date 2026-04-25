@@ -94,6 +94,33 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Delete or recommend deletion of code without full analysis.
 - Recommend big-bang rewrites without documenting the hidden-rule inventory first (Standish Group Chaos Report: over 70% of large-scale rewrites fail to meet original goals; undocumented rules and hidden dependencies are the primary cause — e.g., FBI Sentinel: 4 years late, $405M over budget).
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Extract Rules | `extract` | ✓ | Extract implicit business rules, generate rule catalog | `references/patterns.md` |
+| Assess Risk | `assess` | | Migration risk assessment, dependency map | `references/patterns.md` |
+| Document | `document` | | Convert rules to specifications (prepare Scribe handoff) | `references/patterns.md`, `references/handoffs.md` |
+| Archive | `archive` | | Dead code analysis, dormant logic investigation | `references/patterns.md`, `references/examples.md` |
+| Business Rule Mining | `bizrule` | | DRBM: condition/action/exception triple extraction, decision-table-ready rule registry | `references/business-rule-mining.md` |
+| Tribal Knowledge Interview | `tribal` | | Capture "why this exists" from original implementers and retired engineers; Chesterton's fence application | `references/tribal-knowledge-interview.md` |
+| Runbook Codification | `runbook` | | Convert undocumented operational logic into versioned runbooks with freshness metrics | `references/runbook-codification.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`extract` = Extract Rules). Apply normal SCOPE → DIG → CROSS-REF → CATALOG → ASSESS workflow.
+
+Behavior notes per Recipe:
+- `extract`: Run through all extraction layers (code/tests/schema/comments/history/infra). Generate a rule catalog with confidence scores.
+- `assess`: Generate a migration risk map from the catalogued rules. Priority-flag untested rules, conflicting logic, and hidden dependencies.
+- `document`: Convert the rule catalog to specification format and prepare a Scribe handoff packet. Use FOSSIL_TO_SCRIBE_HANDOFF.
+- `archive`: Focused on dead code and abandoned logic. Track introduction/modification/abandonment timing via temporal_analysis.
+- `bizrule`: Mine control-flow rules as (condition, action, exception) triples. Validate via tests and SMEs; emit a Markdown rule registry (BR-IDs) ready for decision-table / BRMS import. Hand off to Scribe / Builder.
+- `tribal`: Run semi-structured interviews with original implementers and retired engineers. Apply Chesterton's fence to deletion candidates; produce annotated transcripts and knowledge-transfer ceremony output for ≥2 successors.
+- `runbook`: Convert conditional branches, oncall scrollback, and tribal procedures into Trigger / Steps / Verification / Rollback runbooks with freshness metadata. Route to Triage (manual) or Mend (automation candidates).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -195,6 +222,9 @@ Main Fossil agent owns CROSS-REF, CATALOG, and ASSESS phases (sequential synthes
 | `references/patterns.md` | You need extraction techniques, pattern recognition rules, or analysis strategies. |
 | `references/examples.md` | You need complete rule catalog examples or analysis reports. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `references/business-rule-mining.md` | You are running `bizrule`: extracting condition/action/exception triples, building a rule registry, or preparing a BRMS / decision-table handoff. |
+| `references/tribal-knowledge-interview.md` | You are running `tribal`: interviewing original implementers / retired engineers, applying Chesterton's fence, or facilitating a knowledge-transfer ceremony. |
+| `references/runbook-codification.md` | You are running `runbook`: converting code branches or oncall procedures into Trigger / Steps / Verification / Rollback runbooks with freshness metrics, or routing to Triage / Mend. |
 | `_common/OPUS_47_AUTHORING.md` | You are scoping DIG breadth across source layers, deciding adaptive thinking depth at CROSS-REF, or sizing the rule catalog. Critical for Fossil: P3, P5. |
 
 ## Operational

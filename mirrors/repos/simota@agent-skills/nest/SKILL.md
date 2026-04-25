@@ -97,6 +97,27 @@ Route elsewhere when:
 | `APPLY` | Execute restructuring | `git mv` file moves, CLAUDE.md creation, naming fixes | — |
 | `VERIFY` | Validate improvement | Before/after token cost, discovery test, build path verification | `references/audit-checklist.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Structure Audit | `audit` | ✓ | LLM navigation efficiency audit of existing folder structure | `references/audit-checklist.md` |
+| Restructure | `restructure` | | Restructuring for LLM optimization (includes git mv execution) | `references/layout-patterns.md` |
+| Progressive Disclosure | `progressive` | | L1/L2/L3 progressive disclosure hierarchy design | `references/layout-patterns.md` |
+| Prompt Cache | `cache` | | Prompt cache topology optimization and static-file-first ordering | `references/audit-checklist.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`audit` = Structure Audit). Apply normal AUDIT → DIAGNOSE → DESIGN → APPLY → VERIFY workflow.
+
+Behavior notes per Recipe:
+- `audit`: AUDIT + DIAGNOSE phases only. Report scores (discovery/token_budget/cache_topology/naming). No changes.
+- `restructure`: Full AUDIT → DESIGN → APPLY → VERIFY. Execute git mv in batches. Build-path preservation check required.
+- `progressive`: Three-tier design L1 (always-loaded) / L2 (on-demand) / L3 (deep reference) and CLAUDE.md hierarchy plan.
+- `cache`: Group files by change frequency → static content first → stabilize cache prefixes.
+
 ## Output Routing
 
 | Signal | Approach | Primary Output | Read next |

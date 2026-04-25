@@ -18,6 +18,9 @@ CAPABILITIES_SUMMARY:
 - mttr_measurement: Track remediation effectiveness by severity (SEV-1 < 1h, SEV-2 < 4h, SEV-3 < 24h) with context-gathering optimization as primary MTTR reduction lever
 - circuit_breaker_management: Activate, monitor, and reset circuit breakers for cascading failure containment
 - k8s_self_healing: Kubernetes pod restart, CrashLoopBackOff recovery, liveness/readiness probe failure remediation
+- scale_remediation: Incident-time horizontal / vertical scaling, HPA/KEDA tuning, predictive and reactive autoscale, pre-warm for expected load, stateful-service scaling with connection drain and session stickiness guards
+- circuit_intervention: Trip breaker for failing dependency, adjust rate-limit thresholds, queue-based load shedding, bulkhead isolation, and graceful degradation during cascading failure
+- canary_control: Progressive rollout control (1% / 5% / 25% / 100%), health-metric promotion gates, automatic rollback triggers, cohort selection, feature-flag coordination, and partial-rollback tactics
 
 COLLABORATION_PATTERNS:
 - Triage -> Mend: Diagnosis + runbook + incident context for remediation
@@ -129,6 +132,32 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `EXECUTE` | Run remediation steps sequentially with checkpoints, rollback readiness, and step verification | T3 requires approval; T4 is always prohibited | `references/runbook-execution.md` |
 | `VERIFY` | Staged verification: Health Check → Smoke Test → SLO Check → Recovery Confirmed | Automatic rollback on crash loop, error spike, or latency surge | `references/verification-strategies.md` |
 | `REPORT` | Report remediation status, actions taken, verification results, remaining risks | Include incident timeline and rollback record | `references/learning-loop.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Runbook Execute | `runbook` | ✓ | Runbook execution for known patterns | `references/runbook-execution.md` |
+| Diagnose | `diagnose` | | Root cause diagnosis and pattern matching for unknown failures | `references/remediation-patterns.md` |
+| Rollback | `rollback` | | Rollback execution (T3 approval required) | `references/remediation-patterns.md` |
+| Verify | `verify` | | Staged post-remediation verification (Health→Smoke→SLO) | `references/verification-strategies.md` |
+| Scale | `scale` | | Incident-time horizontal / vertical scaling, HPA/KEDA tuning, pre-warm for expected load, stateful scaling with drain/stickiness guards | `references/scale-remediation.md` |
+| Circuit | `circuit` | | Trip / tune circuit breakers and rate limits, queue-based load shedding, bulkhead isolation, graceful degradation | `references/circuit-remediation.md` |
+| Canary | `canary` | | Progressive rollout control (1/5/25/100%), promotion gates, auto-rollback triggers, cohort and flag coordination | `references/canary-remediation.md` |
+
+## Subcommand Dispatch
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`runbook` = Runbook Execute). Apply normal INTAKE → MATCH → EXECUTE → VERIFY → REPORT workflow.
+
+Behavior notes per Recipe:
+- `runbook`: Execute the runbook step-by-step against diagnosed failures. Verify state at each checkpoint and prepare for immediate rollback on failure.
+- `diagnose`: Pattern-match from symptoms and alerts. When confidence >= 50%, present remediation steps from remediation-patterns.
+- `rollback`: Execute rollback after obtaining T3 approval. Crash loop, error spike, or latency surge triggers automatic rollback.
+- `verify`: Execute the 4-stage verification Health Check → Smoke Test → SLO Check → Recovery Confirmed and confirm recovery.
+- `scale`: Incident-time capacity remediation — pick horizontal vs vertical based on bottleneck evidence, tune HPA / KEDA thresholds, pre-warm instances for forecastable spikes, drain connections and preserve session stickiness before scaling stateful services. Safety tier: **T2 (advised)** for stateless services (web / API / worker); **T3 (approval-gated)** for stateful tiers (DB read replicas, primary scale-up, stateful queues, cache cluster resize) where resharding or connection drain is irreversible. Triage first (who / what / why is saturating) → Mend `scale` (reactive capacity delta); hand Beacon the preventive capacity-planning follow-up; hand Builder any code-level hotspot that scaling only masks.
+- `circuit`: Cascading-failure containment — trip an open breaker for a failing dependency, tighten or relax rate-limit thresholds, enable queue-based load shedding, enforce bulkhead isolation between tenants / call classes, and activate graceful-degradation fallbacks (stale cache, degraded response). Safety tier: **T2 (advised)** to trip a breaker or adjust a rate-limit config; **T3 (approval-gated)** when shedding real user traffic or degrading features visible to customers. Triage first (which dependency is failing, blast radius) → Mend `circuit` (runtime intervention); Builder owns the permanent code-level retry / timeout / fallback logic that lands in a PR.
+- `canary`: Progressive-rollout control for an in-flight release — hold, promote, or rollback across 1% / 5% / 25% / 100% stages, enforce health-metric gates (error rate, p95 latency, SLI burn), coordinate with feature flags for cohort targeting, and run partial rollbacks (drain the canary stage, keep prior stages). Safety tier: **T1 (read-only)** for status reads; **T2 (advised)** to hold / pause promotion; **T3 (approval-gated)** to promote to the next stage or roll back. Triage first (is the canary actually unhealthy or is the metric noisy) → Mend `canary` (operational gate decision); Builder owns any code fix that the rollback surfaces.
 
 ## Output Routing
 

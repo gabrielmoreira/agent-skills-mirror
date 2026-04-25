@@ -15,6 +15,9 @@ CAPABILITIES_SUMMARY:
 - multi_language_support: Node.js, Python (uv), Go, Rust dependency and CI patterns
 - build_troubleshooting: Common error diagnosis, cache debugging, Docker layer analysis
 - security_scanning: Gitleaks, Trivy, Docker Scout, Snyk Container, dependency audit, Renovate/Dependabot cooldown config, SBOM/provenance attestation (Docker Engine 25+ auto-provenance, Chainguard SLSA L2, EU CRA compliance), Cosign v3 keyless image signing (Sigstore Fulcio + Rekor), npm min-release-age / pnpm minimumReleaseAge / trustPolicy no-downgrade
+- alert_configuration: Alertmanager routing trees (receivers, inhibit_rules, grouping, suppression), PagerDuty / Opsgenie integration, severity taxonomy (P1-P4), alert fatigue mitigation via deduplication / time-based grouping / silences, on-call rotation plumbing, alert-as-code via Terraform / Pulumi providers
+- secrets_management: HashiCorp Vault (KV v2, dynamic secrets, AppRole / Kubernetes auth), AWS Secrets Manager, Doppler, .env separation strategy per environment, rotation policies and lease TTL, CI-secret leak prevention (git-secrets, trufflehog, detect-secrets pre-commit), Kubernetes sealed-secrets (Bitnami) and external-secrets operator
+- kubernetes_config: Deployment / StatefulSet / Service / Ingress manifests, Helm chart structure (Chart.yaml, values.yaml, templates), Kustomize overlays (base + per-env), resource requests / limits tuning (guaranteed vs burstable QoS), HPA / VPA, PodDisruptionBudget, NetworkPolicy, probes (liveness / readiness / startup)
 
 COLLABORATION_PATTERNS:
 - Pattern A: Provision-to-Optimize (Scaffold -> Gear)
@@ -125,6 +128,35 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `GREASE` | Implement: update/edit config, regenerate lockfile, run build | Keep changes <50 lines | Domain-specific reference |
 | `VERIFY` | Test: app starts? CI passes? Linter happy? | Build must pass | `references/troubleshooting.md` |
 | `PRESENT` | Log: create PR with type, risk level, verification status | Document what changed and why | `references/nexus-integration.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Dependency Management | `deps` | ✓ | Dependency management and upgrades | `references/dependency-management.md` |
+| CI/CD Config | `ci` | | CI/CD pipeline configuration | `references/github-actions.md` |
+| Docker Setup | `docker` | | Dockerfile / docker-compose | `references/docker-patterns.md` |
+| Logging Setup | `logs` | | Logging configuration (structured logs, etc.) | `references/observability.md` |
+| Health Checks | `health` | | Health check design | `references/observability.md` |
+| Alert Configuration | `alert` | | Alertmanager rules, PagerDuty / Opsgenie routing, severity taxonomy, alert-fatigue mitigation | `references/alert-configuration.md` |
+| Secrets Management | `secret` | | Vault / AWS Secrets Manager / Doppler, .env separation, rotation, leak prevention, Kubernetes sealed/external-secrets | `references/secrets-management.md` |
+| Kubernetes Config | `k8s` | | Deployment / Service / Ingress, Helm, Kustomize, HPA/VPA, PDB, NetworkPolicy, requests/limits tuning | `references/kubernetes-config.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`deps` = Dependency Management). Apply normal TUNE → TIGHTEN → GREASE → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `deps`: npm / pnpm / yarn / bun audit + safe update. Respect SemVer (patch/minor default). Keep lockfile in sync. Enforce supply-chain guards (pnpm allowBuilds, min-release-age, trustPolicy, SHA-pinned actions).
+- `ci`: GitHub Actions workflow / composite / reusable. Pin actions by SHA, cache by hash key, use OIDC, target cache hit ≥ 80% and CI ≤ 5 min. Hand off advanced workflow architecture to `Pipe`.
+- `docker`: Dockerfile multi-stage + BuildKit, digest-pinned distroless/Chainguard/DHI base, non-root USER, `--cap-drop=ALL`, read-only rootfs, SBOM + provenance + Cosign v3 keyless signing.
+- `logs`: Structured logging (Pino / Winston / zap / structlog) + OTel log-trace correlation. Use OTel Collector batch + memory limiter. Do not design SLO / alert thresholds — hand to `Beacon`.
+- `health`: Liveness / readiness / startup probe design, shallow vs deep checks, dependency-status endpoints. Do not design availability SLO — hand to `Beacon`.
+- `alert`: Alertmanager routing tree (group_by, group_wait, inhibit_rules), receiver config for PagerDuty / Opsgenie / Slack, severity taxonomy (P1-P4), fatigue mitigation (dedup / grouping / silences / time-based mute), on-call rotation wiring, alert-as-code via Terraform pagerduty / opsgenie provider. Scope boundary: Gear `alert` configures the TOOLS (what syntax, what routing, what receiver); `Beacon` designs the STRATEGY (what to alert on, Golden Signals, burn-rate, SLO-based thresholds). If input is "should we alert on X?" → `Beacon` first, then Gear `alert` materializes the rule.
+- `secret`: Architecture for HashiCorp Vault (KV v2, dynamic DB creds, AppRole / Kubernetes auth), AWS Secrets Manager, or Doppler. Define .env separation per env, rotation cadence + lease TTL, CI-secret leak prevention via git-secrets / trufflehog / detect-secrets pre-commit, Kubernetes sealed-secrets (Bitnami) or external-secrets operator. Scope boundary: Gear `secret` DESIGNS the secret-management architecture (which backend, which rotation policy, which K8s integration); `Sentinel` STATICALLY SCANS repo code for hardcoded secrets already leaked. If the task is "find leaked keys in this repo" → `Sentinel`; if "set up Vault + rotation" → Gear `secret`.
+- `k8s`: Day-1/2 in-cluster configuration. Deployment / StatefulSet / Service / Ingress manifests, Helm chart (Chart.yaml, values.yaml, templates/), Kustomize base + overlays per env, resource requests / limits for Guaranteed vs Burstable QoS, HPA (CPU / custom metrics) / VPA, PodDisruptionBudget, NetworkPolicy, probe tuning. Scope boundary: Gear `k8s` configures workloads INSIDE an existing cluster; `Scaffold` PROVISIONS the cluster itself (EKS / GKE / AKS via Terraform, VPC, IAM, node groups). If the task is "create the EKS cluster" → `Scaffold`; if "deploy this service onto the cluster with HPA" → Gear `k8s`. Typical handoff: Scaffold → Gear once cluster is up.
 
 ## Output Routing
 

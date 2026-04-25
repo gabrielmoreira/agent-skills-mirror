@@ -223,6 +223,27 @@ Design detection avoidance at the infrastructure level. **Ethical framing requir
 
 Full anti-detection patterns → `references/anti-detection-architecture.md`
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Distributed Topology | `topology` | ✓ | End-to-end distributed crawler topology design (Coordinator/Worker/Frontier) | `references/distributed-architecture.md` |
+| URL Frontier | `frontier` | | URL frontier design (deduplication, priority queue, re-crawl scheduling) | `references/frontier-design.md` |
+| Politeness Control | `politeness` | | Politeness (rate limit) control, Crawl-Delay, adaptive backoff | `references/compliance-architecture.md` |
+| Compliance | `compliance` | | robots.txt / legal compliance, AI Act conformance, jurisdictional risk | `references/compliance-architecture.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`topology` = Distributed Topology). Apply normal DISCOVER → CLASSIFY → DESIGN → COMPLY → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `topology`: Scale-tier classification → Coordinator/Worker split → fault tolerance → checkpoint design.
+- `frontier`: Bloom/Cuckoo/Redis/RocksDB selection → priority-queue design → URL normalization → persistence design.
+- `politeness`: Token-bucket design → robots.txt cache → 429/5xx adaptive backoff → fleet-wide concurrent-connection caps.
+- `compliance`: Verify all opt-out signals (robots.txt/ai.txt/TDM/meta/HTTP headers) → per-jurisdiction risk table → GDPR DPIA necessity.
+
 ## Output Routing
 
 | Signal | Approach | Primary Output | Handoff | Read next |

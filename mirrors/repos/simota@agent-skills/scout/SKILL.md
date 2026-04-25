@@ -17,6 +17,9 @@ CAPABILITIES_SUMMARY:
 - ai_generated_code_investigation: Investigate bugs in AI-generated code with awareness of common AI code failure patterns (boundary conditions, error handling gaps, dependency misunderstanding)
 - frontend_bug_investigation: Browser DevTools-driven investigation of React/Vue/CSS layout bugs, hydration mismatches, and state management issues
 - unified_confidence_scoring: Numeric confidence scale (0.0-1.0) with evidence thresholds aligned to cluster-wide Investigation Escalation Protocol
+- performance_bug_investigation: Profiler-driven root cause analysis for latency, CPU, or throughput regressions with flamegraph and hot-path isolation
+- memory_issue_investigation: Heap-snapshot-driven diagnosis of memory leaks, OOM, and GC pressure with retention-path analysis
+- intermittent_bug_investigation: Reproducibility-score-driven triage of flaky tests, race symptoms, and environment-dependent bugs with Specter handoff criteria
 
 COLLABORATION_PATTERNS:
 - Triage -> Scout: Incident reports requiring RCA
@@ -180,15 +183,35 @@ Use [advanced-reproduction-triage.md](references/advanced-reproduction-triage.md
 | `MEDIUM` | Reproduction succeeds and cause is estimated (score 0.5–0.79, 2 independent evidence) | Report as estimated and add verification steps. |
 | `LOW` | Reproduction fails and only hypotheses remain (score < 0.5, ≤1 evidence) | Report as hypothesis and list missing information. |
 
-## Modes
+## Recipes
 
-| Mode | Use When | Behavior |
-|------|----------|----------|
-| `Focused Hunt` | Default single-bug investigation | Use the normal workflow and a single evidence chain. |
-| `History-Led Investigation` | Regression is likely | Prioritize `git log`, diff, and bisect. Delegate to Rewind if history analysis alone is sufficient. |
-| `Observability-Led Investigation` | Production signals or distributed failures dominate | Prioritize traces, logs, metrics, and profiling evidence. |
-| `Multi-Engine Mode` | Root cause is ambiguous and multiple independent hypotheses are valuable | Use independent engines for hypothesis generation, then merge on evidence. |
-| `Cascading Failure Mode` | Single root cause produces multiple downstream errors across services | Build causal graph from failure traces; identify propagation path; separate root cause from symptomatic failures. |
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Focused Hunt | `bug` | ✓ | Single-bug investigation with clear symptom | `references/debug-strategies.md`, `references/bug-patterns.md` |
+| History-Led | `regression` | | Regression signal present (recent deploy, version bump) | `references/git-bisect.md`, `references/modern-rca-methodology.md` |
+| Observability-Led | `prod` | | Production traces/logs/metrics dominate the signal | `references/observability-debugging.md` |
+| Multi-Engine | `consensus` | | Root cause ambiguous after 3 hypotheses exhausted | `_common/SUBAGENT.md` |
+| Cascading Failure | `cascade` | | Multi-service propagation from a single origin | `references/observability-debugging.md`, `references/modern-rca-methodology.md` |
+| Performance Hunt | `perf` | | Profiler-led investigation when there is a clear latency, throughput drop, or CPU hotspot | `references/perf-investigation.md` |
+| Memory Hunt | `memory` | | Heap-snapshot-led investigation when OOM / heap bloat / GC pressure is suspected | `references/memory-investigation.md` |
+| Flake Hunt | `flake` | | Reproducibility diagnosis for intermittent bugs, flaky tests, and environment-dependent symptoms | `references/flake-investigation.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`bug` = Focused Hunt). Apply TRIAGE guardrails (3 hypotheses) and escalate to another Recipe if evidence warrants.
+- Auto-promotion: after 3 stalled hypotheses → promote to `consensus` Recipe (Multi-Engine Mode).
+
+Behavior notes per Recipe:
+- `bug`: normal workflow, single evidence chain.
+- `regression`: prioritize `git log` / diff / bisect. Delegate to Rewind if history alone is sufficient.
+- `prod`: prioritize traces, logs, metrics, profiling.
+- `consensus`: use independent engines for hypothesis generation, then merge on evidence. See Multi-Engine Mode section.
+- `cascade`: build causal graph from failure traces; separate root cause from symptomatic failures across services.
+- `perf`: Profiler-led flamegraph → hot path identification → classify into N+1 / algorithmic complexity / I/O / lock contention / GC pause. Delegate to Bolt (optimization implementation).
+- `memory`: Identify leak source using heap snapshot diff / retainer path / allocation timeline. Delegate to Bolt if GC pressure is the primary cause, or to Specter for concurrent leaks.
+- `flake`: Measure reproducibility rate (N trials / flip rate) → classify as environment-dependent, timing-dependent, or externally-dependent. If concurrency bug signals are strong, delegate immediately to Specter; if test-induced, to Radar.
 
 ## Output Routing
 

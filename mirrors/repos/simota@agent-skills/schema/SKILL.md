@@ -14,6 +14,9 @@ CAPABILITIES_SUMMARY:
 - multi_tenant: Design tenant isolation via RLS, schema-per-tenant, or partitioning strategies
 - vector_schema: Design pgvector columns and indexes for AI/embedding workloads (HNSW tuning, float16, hybrid retrieval)
 - temporal_schema: Design temporal constraints using WITHOUT OVERLAPS for scheduling and time-series data
+- migration_rollback: Design reverse-migration DDL with dual-write windows, destructive-change alternatives, and data-backfill plans
+- tenant_isolation_strategy: Pick shared-DB/schema-per-tenant/DB-per-tenant/shard-based with RLS and routing considerations (complements Shard)
+- partition_strategy: Design range/list/hash/time-based partitioning with pruning, maintenance, and migration tradeoffs
 
 COLLABORATION_PATTERNS:
 - Builder -> Schema: Data requirements
@@ -183,6 +186,36 @@ Routing rules:
 - If the request involves multi-tenant architecture, read `references/multi-tenant-patterns.md`.
 - If the request involves event sourcing, CQRS, pgvector, or bitemporal design, read `references/advanced-patterns.md`.
 - Always read relevant `references/` files before producing output.
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Schema Design | `design` | ✓ | New table or entity design | `references/schema-examples.md` |
+| Migration Plan | `migration` | | Schema change and migration design | `references/migration-patterns.md` |
+| ER Diagram | `er` | | ER diagram generation and review | `references/schema-examples.md` |
+| Normalization | `normalize` | | Normalization vs denormalization decisions | `references/normalization-guide.md` |
+| Index Strategy | `index` | | Index design and optimization | `references/index-strategies.md` |
+| Migration Rollback | `rollback` | | Reverse-operation design for destructive migrations (reverse DDL / dual-write / backfill / alternatives to destructive changes) | `references/migration-rollback.md` |
+| Multi-Tenant Design | `tenant` | | Tenant isolation strategy (shared-DB / schema-per-tenant / DB-per-tenant / shard) with RLS and routing design | `references/multi-tenant-patterns.md` |
+| Partitioning | `partition` | | range / list / hash / time-based partition design (pruning / maintenance / migration) | `references/partition-strategies.md` |
+
+Behavior notes:
+- **design** (default): SURVEY → MODEL → VALIDATE → PRESENT; load `schema-examples.md` + `schema-design-anti-patterns.md`.
+- **migration**: Draft step-by-step migration DDL with rollback; load `migration-patterns.md`; flag zero-downtime risks.
+- **er**: Generate Mermaid ER diagram from schema description or codebase; load `schema-examples.md`.
+- **normalize**: Assess NF level and propose de-normalization trade-offs; load `normalization-guide.md`.
+- **index**: Analyze query patterns and propose covering/partial indexes; load `index-strategies.md` + `index-performance-anti-patterns.md`.
+- **rollback**: Provide reverse migration DDL, dual-write windows, backfill scripts, and safe alternatives for destructive changes (DROP COLUMN / data conversion). Ask First: destructive change without rollback path.
+- **tenant**: Compare the 4 strategies (shared-DB / schema-per-tenant / DB-per-tenant / shard-based) against tenant count, isolation requirements, and cost constraints. Includes RLS / connection routing / per-tenant backup strategies. Coordinates with the Shard agent.
+- **index**: Query patterns → covering / partial / expression index design. Existing `index-strategies.md`.
+- **partition**: Select range / list / hash / time-based. Present pruning impact, partition maintenance (auto-creation, old-partition deletion), and staged migration from existing tables.
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column file at the initial step.
+- Otherwise → fall through to default Recipe (`design` = Schema Design).
 
 ## Output Requirements
 

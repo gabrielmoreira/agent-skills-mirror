@@ -246,6 +246,33 @@ INPUT
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Customer Story | `story` | ✓ | Customer-centric story — use cases and transformation arc | `references/templates.md` |
+| Scenario Story | `scenario` | | Persona-based scenario story | `references/templates.md` |
+| Product Narrative | `narrative` | | Product-level positioning narrative | `references/frameworks.md` |
+| Customer Journey | `customer` | | Customer experience narrative with a Before→After transformation arc | `references/templates.md` |
+| Hero's Journey | `hero-journey` | | Joseph Campbell 12-stage monomyth for major customer transformation stories | `references/hero-journey.md` |
+| Before-After-Bridge | `bab` | | BAB copywriting structure for LPs, email, and CTA-driven narratives | `references/before-after-bridge.md` |
+| Minto Pyramid | `pyramid` | | Pyramid Principle for answer-first executive/stakeholder narrative delivery | `references/minto-pyramid.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`story` = Customer Story). Apply normal DISCOVER → FRAME → CRAFT → REFINE → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `story`: Apply JTBD or StoryBrand SB7. The customer is the hero, the product is the guide. AP-1 through AP-9 checks required.
+- `scenario`: Load Cast persona definitions first. Generate persona-specific scenarios (400-1000 characters per persona).
+- `narrative`: Define the Controlling Idea first. Choose Promised Land or StoryBrand SB7. For pitches and LPs.
+- `customer`: Center on the Before→After transformation arc. Make observable/measurable changes explicit. Also consider Hero's Journey.
+- `hero-journey`: Load `references/hero-journey.md`. 12-stage transformation arc (Ordinary World → Call → Refusal → Meeting Mentor → Crossing Threshold → Tests/Allies/Enemies → Approach → Ordeal → Reward → Road Back → Resurrection → Return with Elixir). For major case studies where stakes are high and transformation is profound.
+- `bab`: Load `references/before-after-bridge.md`. Three-part copywriting: Before (current pain), After (ideal state), Bridge (product as connector). Short-form, CTA-oriented. Length target 200-500 chars.
+- `pyramid`: Load `references/minto-pyramid.md`. Top-down: Answer first → Supporting arguments (MECE) → Evidence. For executives, board meetings, investor memos. Combine with SB7 or Promised Land for narrative warmth.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -315,6 +342,9 @@ Every deliverable must include:
 | `references/templates.md` | You need output templates for each narrative type (use case, product, pitch, success, onboarding, scenario). |
 | `references/examples.md` | You need example narratives for reference or comparison during REFINE phase. |
 | `references/handoffs.md` | You need handoff templates for Prose, Scribe, Accord, Director, or Prism. |
+| `references/hero-journey.md` | You chose `hero-journey` recipe. 12-stage monomyth deep-dive with stage-by-stage customer transformation scripting. |
+| `references/before-after-bridge.md` | You chose `bab` recipe. BAB copywriting structure with LP/email/ad templates and CTA-friction mapping. |
+| `references/minto-pyramid.md` | You chose `pyramid` recipe. Minto Pyramid Principle (answer-first, MECE arguments, evidence layering) for executive/stakeholder narrative delivery. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the narrative output, deciding adaptive thinking depth at framework selection, or front-loading audience/channel/format at FRAME. Critical for Saga: P3, P5. |
 
 ---

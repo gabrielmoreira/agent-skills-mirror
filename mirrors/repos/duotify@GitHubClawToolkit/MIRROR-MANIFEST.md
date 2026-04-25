@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `duotify/GitHubClawToolkit` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
+Mirror of `duotify/GitHubClawToolkit` — 26 default patterns, 0 followed patterns, 163 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `duotify/GitHubClawToolkit` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 159 |
+| Files         | 163 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -145,79 +145,83 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 84 | ✓ | [`skills/gemini-image-describer/scripts/describe.js`](skills/gemini-image-describer/scripts/describe.js) |
 | 85 | ✓ | [`skills/gemini-image-describer/SKILL.md`](skills/gemini-image-describer/SKILL.md) |
 | 86 | ✓ | [`skills/gemini-image-describer/src/describe.js`](skills/gemini-image-describer/src/describe.js) |
-| 87 | ✓ | [`skills/gemini-nanobanana/githubclaw.json`](skills/gemini-nanobanana/githubclaw.json) |
-| 88 | ✓ | [`skills/gemini-nanobanana/README.md`](skills/gemini-nanobanana/README.md) |
-| 89 | ✓ | [`skills/gemini-nanobanana/references/image-generation-api.md`](skills/gemini-nanobanana/references/image-generation-api.md) |
-| 90 | ✓ | [`skills/gemini-nanobanana/references/sources.md`](skills/gemini-nanobanana/references/sources.md) |
-| 91 | ✓ | [`skills/gemini-nanobanana/scripts/gemini-nanobanana-cli.js`](skills/gemini-nanobanana/scripts/gemini-nanobanana-cli.js) |
-| 92 | ✓ | [`skills/gemini-nanobanana/SKILL.md`](skills/gemini-nanobanana/SKILL.md) |
-| 93 | ✓ | [`skills/gemini-summary/.gitignore`](skills/gemini-summary/.gitignore) |
-| 94 | ✓ | [`skills/gemini-summary/githubclaw.json`](skills/gemini-summary/githubclaw.json) |
-| 95 | ✓ | [`skills/gemini-summary/package.json`](skills/gemini-summary/package.json) |
-| 96 | ✓ | [`skills/gemini-summary/README.md`](skills/gemini-summary/README.md) |
-| 97 | ✓ | [`skills/gemini-summary/scripts/summarize.js`](skills/gemini-summary/scripts/summarize.js) |
-| 98 | ✓ | [`skills/gemini-summary/SKILL.md`](skills/gemini-summary/SKILL.md) |
-| 99 | ✓ | [`skills/gemini-summary/src/summarize.js`](skills/gemini-summary/src/summarize.js) |
-| 100 | ✓ | [`skills/google-stitch/githubclaw.json`](skills/google-stitch/githubclaw.json) |
-| 101 | ✓ | [`skills/google-stitch/README.md`](skills/google-stitch/README.md) |
-| 102 | ✓ | [`skills/google-stitch/references/workflow.md`](skills/google-stitch/references/workflow.md) |
-| 103 | ✓ | [`skills/google-stitch/scripts/generate.js`](skills/google-stitch/scripts/generate.js) |
-| 104 | ✓ | [`skills/google-stitch/scripts/google-stitch.js`](skills/google-stitch/scripts/google-stitch.js) |
-| 105 | ✓ | [`skills/google-stitch/SKILL.md`](skills/google-stitch/SKILL.md) |
-| 106 | ✓ | [`skills/README.md`](skills/README.md) |
-| 107 | ✓ | [`skills/skill-creator/agents/analyzer.md`](skills/skill-creator/agents/analyzer.md) |
-| 108 | ✓ | [`skills/skill-creator/agents/comparator.md`](skills/skill-creator/agents/comparator.md) |
-| 109 | ✓ | [`skills/skill-creator/agents/grader.md`](skills/skill-creator/agents/grader.md) |
-| 110 | ✓ | [`skills/skill-creator/assets/eval_review.html`](skills/skill-creator/assets/eval_review.html) |
-| 111 | ✓ | [`skills/skill-creator/eval-viewer/generate_review.py`](skills/skill-creator/eval-viewer/generate_review.py) |
-| 112 | ✓ | [`skills/skill-creator/eval-viewer/viewer.html`](skills/skill-creator/eval-viewer/viewer.html) |
-| 113 | ✓ | [`skills/skill-creator/githubclaw.json`](skills/skill-creator/githubclaw.json) |
-| 114 | ✓ | [`skills/skill-creator/LICENSE.txt`](skills/skill-creator/LICENSE.txt) |
-| 115 | ✓ | [`skills/skill-creator/README.md`](skills/skill-creator/README.md) |
-| 116 | ✓ | [`skills/skill-creator/references/schemas.md`](skills/skill-creator/references/schemas.md) |
-| 117 | ✓ | [`skills/skill-creator/scripts/__init__.py`](skills/skill-creator/scripts/__init__.py) |
-| 118 | ✓ | [`skills/skill-creator/scripts/aggregate_benchmark.py`](skills/skill-creator/scripts/aggregate_benchmark.py) |
-| 119 | ✓ | [`skills/skill-creator/scripts/generate_report.py`](skills/skill-creator/scripts/generate_report.py) |
-| 120 | ✓ | [`skills/skill-creator/scripts/improve_description.py`](skills/skill-creator/scripts/improve_description.py) |
-| 121 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
-| 122 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
-| 123 | ✓ | [`skills/skill-creator/scripts/run_eval.py`](skills/skill-creator/scripts/run_eval.py) |
-| 124 | ✓ | [`skills/skill-creator/scripts/run_loop.py`](skills/skill-creator/scripts/run_loop.py) |
-| 125 | ✓ | [`skills/skill-creator/scripts/utils.py`](skills/skill-creator/scripts/utils.py) |
-| 126 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 127 | ✓ | [`skills/telegram-notify/githubclaw.json`](skills/telegram-notify/githubclaw.json) |
-| 128 | ✓ | [`skills/telegram-notify/README.md`](skills/telegram-notify/README.md) |
-| 129 | ✓ | [`skills/telegram-notify/scripts/send-telegram.sh`](skills/telegram-notify/scripts/send-telegram.sh) |
-| 130 | ✓ | [`skills/telegram-notify/SKILL.md`](skills/telegram-notify/SKILL.md) |
-| 131 | ✓ | [`templates/codex-default/AGENTS.md`](templates/codex-default/AGENTS.md) |
-| 132 | ✓ | [`templates/codex-felo/.agents/skills/felo-search/SKILL.md`](templates/codex-felo/.agents/skills/felo-search/SKILL.md) |
-| 133 | ✓ | [`templates/codex-felo/.agents/skills/felo-slides/SKILL.md`](templates/codex-felo/.agents/skills/felo-slides/SKILL.md) |
-| 134 | ✓ | [`templates/codex-felo/.agents/skills/felo-web-fetch/SKILL.md`](templates/codex-felo/.agents/skills/felo-web-fetch/SKILL.md) |
-| 135 | ✓ | [`templates/codex-felo/.agents/skills/felo-x-search/SKILL.md`](templates/codex-felo/.agents/skills/felo-x-search/SKILL.md) |
-| 136 | ✓ | [`templates/codex-felo/AGENTS.md`](templates/codex-felo/AGENTS.md) |
-| 137 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md) |
-| 138 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md) |
-| 139 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-image-describer/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-image-describer/SKILL.md) |
-| 140 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md`](templates/codex-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md) |
-| 141 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md) |
-| 142 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-summary/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-summary/SKILL.md) |
-| 143 | ✓ | [`templates/codex-gemini-api/.agents/skills/google-stitch/SKILL.md`](templates/codex-gemini-api/.agents/skills/google-stitch/SKILL.md) |
-| 144 | ✓ | [`templates/codex-gemini-api/AGENTS.md`](templates/codex-gemini-api/AGENTS.md) |
-| 145 | ✓ | [`templates/copilot-felo/.agents/skills/felo-search/SKILL.md`](templates/copilot-felo/.agents/skills/felo-search/SKILL.md) |
-| 146 | ✓ | [`templates/copilot-felo/.agents/skills/felo-slides/SKILL.md`](templates/copilot-felo/.agents/skills/felo-slides/SKILL.md) |
-| 147 | ✓ | [`templates/copilot-felo/.agents/skills/felo-web-fetch/SKILL.md`](templates/copilot-felo/.agents/skills/felo-web-fetch/SKILL.md) |
-| 148 | ✓ | [`templates/copilot-felo/.agents/skills/felo-x-search/SKILL.md`](templates/copilot-felo/.agents/skills/felo-x-search/SKILL.md) |
-| 149 | ✓ | [`templates/copilot-felo/AGENTS.md`](templates/copilot-felo/AGENTS.md) |
-| 150 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md) |
-| 151 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md) |
-| 152 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-image-describer/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-image-describer/SKILL.md) |
-| 153 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md`](templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md) |
-| 154 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md) |
-| 155 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-summary/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-summary/SKILL.md) |
-| 156 | ✓ | [`templates/copilot-gemini-api/.agents/skills/google-stitch/SKILL.md`](templates/copilot-gemini-api/.agents/skills/google-stitch/SKILL.md) |
-| 157 | ✓ | [`templates/copilot-gemini-api/AGENTS.md`](templates/copilot-gemini-api/AGENTS.md) |
-| 158 | ✓ | [`templates/default/AGENTS.md`](templates/default/AGENTS.md) |
-| 159 | ✓ | [`templates/line-bot/AGENTS.md`](templates/line-bot/AGENTS.md) |
+| 87 | ✓ | [`skills/gemini-lyria-3/githubclaw.json`](skills/gemini-lyria-3/githubclaw.json) |
+| 88 | ✓ | [`skills/gemini-lyria-3/README.md`](skills/gemini-lyria-3/README.md) |
+| 89 | ✓ | [`skills/gemini-lyria-3/scripts/generate-track.js`](skills/gemini-lyria-3/scripts/generate-track.js) |
+| 90 | ✓ | [`skills/gemini-lyria-3/SKILL.md`](skills/gemini-lyria-3/SKILL.md) |
+| 91 | ✓ | [`skills/gemini-nanobanana/githubclaw.json`](skills/gemini-nanobanana/githubclaw.json) |
+| 92 | ✓ | [`skills/gemini-nanobanana/README.md`](skills/gemini-nanobanana/README.md) |
+| 93 | ✓ | [`skills/gemini-nanobanana/references/image-generation-api.md`](skills/gemini-nanobanana/references/image-generation-api.md) |
+| 94 | ✓ | [`skills/gemini-nanobanana/references/sources.md`](skills/gemini-nanobanana/references/sources.md) |
+| 95 | ✓ | [`skills/gemini-nanobanana/scripts/gemini-nanobanana-cli.js`](skills/gemini-nanobanana/scripts/gemini-nanobanana-cli.js) |
+| 96 | ✓ | [`skills/gemini-nanobanana/SKILL.md`](skills/gemini-nanobanana/SKILL.md) |
+| 97 | ✓ | [`skills/gemini-summary/.gitignore`](skills/gemini-summary/.gitignore) |
+| 98 | ✓ | [`skills/gemini-summary/githubclaw.json`](skills/gemini-summary/githubclaw.json) |
+| 99 | ✓ | [`skills/gemini-summary/package.json`](skills/gemini-summary/package.json) |
+| 100 | ✓ | [`skills/gemini-summary/README.md`](skills/gemini-summary/README.md) |
+| 101 | ✓ | [`skills/gemini-summary/scripts/summarize.js`](skills/gemini-summary/scripts/summarize.js) |
+| 102 | ✓ | [`skills/gemini-summary/SKILL.md`](skills/gemini-summary/SKILL.md) |
+| 103 | ✓ | [`skills/gemini-summary/src/summarize.js`](skills/gemini-summary/src/summarize.js) |
+| 104 | ✓ | [`skills/google-stitch/githubclaw.json`](skills/google-stitch/githubclaw.json) |
+| 105 | ✓ | [`skills/google-stitch/README.md`](skills/google-stitch/README.md) |
+| 106 | ✓ | [`skills/google-stitch/references/workflow.md`](skills/google-stitch/references/workflow.md) |
+| 107 | ✓ | [`skills/google-stitch/scripts/generate.js`](skills/google-stitch/scripts/generate.js) |
+| 108 | ✓ | [`skills/google-stitch/scripts/google-stitch.js`](skills/google-stitch/scripts/google-stitch.js) |
+| 109 | ✓ | [`skills/google-stitch/SKILL.md`](skills/google-stitch/SKILL.md) |
+| 110 | ✓ | [`skills/README.md`](skills/README.md) |
+| 111 | ✓ | [`skills/skill-creator/agents/analyzer.md`](skills/skill-creator/agents/analyzer.md) |
+| 112 | ✓ | [`skills/skill-creator/agents/comparator.md`](skills/skill-creator/agents/comparator.md) |
+| 113 | ✓ | [`skills/skill-creator/agents/grader.md`](skills/skill-creator/agents/grader.md) |
+| 114 | ✓ | [`skills/skill-creator/assets/eval_review.html`](skills/skill-creator/assets/eval_review.html) |
+| 115 | ✓ | [`skills/skill-creator/eval-viewer/generate_review.py`](skills/skill-creator/eval-viewer/generate_review.py) |
+| 116 | ✓ | [`skills/skill-creator/eval-viewer/viewer.html`](skills/skill-creator/eval-viewer/viewer.html) |
+| 117 | ✓ | [`skills/skill-creator/githubclaw.json`](skills/skill-creator/githubclaw.json) |
+| 118 | ✓ | [`skills/skill-creator/LICENSE.txt`](skills/skill-creator/LICENSE.txt) |
+| 119 | ✓ | [`skills/skill-creator/README.md`](skills/skill-creator/README.md) |
+| 120 | ✓ | [`skills/skill-creator/references/schemas.md`](skills/skill-creator/references/schemas.md) |
+| 121 | ✓ | [`skills/skill-creator/scripts/__init__.py`](skills/skill-creator/scripts/__init__.py) |
+| 122 | ✓ | [`skills/skill-creator/scripts/aggregate_benchmark.py`](skills/skill-creator/scripts/aggregate_benchmark.py) |
+| 123 | ✓ | [`skills/skill-creator/scripts/generate_report.py`](skills/skill-creator/scripts/generate_report.py) |
+| 124 | ✓ | [`skills/skill-creator/scripts/improve_description.py`](skills/skill-creator/scripts/improve_description.py) |
+| 125 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
+| 126 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
+| 127 | ✓ | [`skills/skill-creator/scripts/run_eval.py`](skills/skill-creator/scripts/run_eval.py) |
+| 128 | ✓ | [`skills/skill-creator/scripts/run_loop.py`](skills/skill-creator/scripts/run_loop.py) |
+| 129 | ✓ | [`skills/skill-creator/scripts/utils.py`](skills/skill-creator/scripts/utils.py) |
+| 130 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 131 | ✓ | [`skills/telegram-notify/githubclaw.json`](skills/telegram-notify/githubclaw.json) |
+| 132 | ✓ | [`skills/telegram-notify/README.md`](skills/telegram-notify/README.md) |
+| 133 | ✓ | [`skills/telegram-notify/scripts/send-telegram.sh`](skills/telegram-notify/scripts/send-telegram.sh) |
+| 134 | ✓ | [`skills/telegram-notify/SKILL.md`](skills/telegram-notify/SKILL.md) |
+| 135 | ✓ | [`templates/codex-default/AGENTS.md`](templates/codex-default/AGENTS.md) |
+| 136 | ✓ | [`templates/codex-felo/.agents/skills/felo-search/SKILL.md`](templates/codex-felo/.agents/skills/felo-search/SKILL.md) |
+| 137 | ✓ | [`templates/codex-felo/.agents/skills/felo-slides/SKILL.md`](templates/codex-felo/.agents/skills/felo-slides/SKILL.md) |
+| 138 | ✓ | [`templates/codex-felo/.agents/skills/felo-web-fetch/SKILL.md`](templates/codex-felo/.agents/skills/felo-web-fetch/SKILL.md) |
+| 139 | ✓ | [`templates/codex-felo/.agents/skills/felo-x-search/SKILL.md`](templates/codex-felo/.agents/skills/felo-x-search/SKILL.md) |
+| 140 | ✓ | [`templates/codex-felo/AGENTS.md`](templates/codex-felo/AGENTS.md) |
+| 141 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md) |
+| 142 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md) |
+| 143 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-image-describer/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-image-describer/SKILL.md) |
+| 144 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md`](templates/codex-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md) |
+| 145 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md) |
+| 146 | ✓ | [`templates/codex-gemini-api/.agents/skills/gemini-summary/SKILL.md`](templates/codex-gemini-api/.agents/skills/gemini-summary/SKILL.md) |
+| 147 | ✓ | [`templates/codex-gemini-api/.agents/skills/google-stitch/SKILL.md`](templates/codex-gemini-api/.agents/skills/google-stitch/SKILL.md) |
+| 148 | ✓ | [`templates/codex-gemini-api/AGENTS.md`](templates/codex-gemini-api/AGENTS.md) |
+| 149 | ✓ | [`templates/copilot-felo/.agents/skills/felo-search/SKILL.md`](templates/copilot-felo/.agents/skills/felo-search/SKILL.md) |
+| 150 | ✓ | [`templates/copilot-felo/.agents/skills/felo-slides/SKILL.md`](templates/copilot-felo/.agents/skills/felo-slides/SKILL.md) |
+| 151 | ✓ | [`templates/copilot-felo/.agents/skills/felo-web-fetch/SKILL.md`](templates/copilot-felo/.agents/skills/felo-web-fetch/SKILL.md) |
+| 152 | ✓ | [`templates/copilot-felo/.agents/skills/felo-x-search/SKILL.md`](templates/copilot-felo/.agents/skills/felo-x-search/SKILL.md) |
+| 153 | ✓ | [`templates/copilot-felo/AGENTS.md`](templates/copilot-felo/AGENTS.md) |
+| 154 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-audio-transcriber/SKILL.md) |
+| 155 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-deep-researcher/SKILL.md) |
+| 156 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-image-describer/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-image-describer/SKILL.md) |
+| 157 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md`](templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/references/image-generation-api.md) |
+| 158 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-nanobanana/SKILL.md) |
+| 159 | ✓ | [`templates/copilot-gemini-api/.agents/skills/gemini-summary/SKILL.md`](templates/copilot-gemini-api/.agents/skills/gemini-summary/SKILL.md) |
+| 160 | ✓ | [`templates/copilot-gemini-api/.agents/skills/google-stitch/SKILL.md`](templates/copilot-gemini-api/.agents/skills/google-stitch/SKILL.md) |
+| 161 | ✓ | [`templates/copilot-gemini-api/AGENTS.md`](templates/copilot-gemini-api/AGENTS.md) |
+| 162 | ✓ | [`templates/default/AGENTS.md`](templates/default/AGENTS.md) |
+| 163 | ✓ | [`templates/line-bot/AGENTS.md`](templates/line-bot/AGENTS.md) |
 
 ---
 

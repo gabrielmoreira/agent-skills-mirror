@@ -18,6 +18,9 @@ CAPABILITIES_SUMMARY:
 - drawio_mcp: Programmatic draw.io manipulation via MCP server when available
 - ci_diagram_validation: Architecture-as-Code CI pipeline integration for .mmd/.d2 files
 - accessibility_compliance: WCAG 2.2 alt-text, color-blind-safe palettes, target size, ASCII fallback
+- c4_rendering: Mermaid C4 diagrams (C4Context / C4Container / C4Component) rendered from descriptions or Stratum DSL output, preserving System Context / Container / Component / Code level boundaries
+- architecture_sketch: Informal architecture diagrams using Mermaid flowchart + subgraph for layered monolith, hexagonal, microservice, and event-driven topologies (logical / physical / deployment views)
+- gantt_roadmap: Gantt / roadmap / timeline diagrams with milestone markers, dependency arrows, critical path, and quarterly roadmap view rendered from Launch release plans or project schedules
 
 COLLABORATION_PATTERNS:
 - Atlas -> Canvas: Architecture, dependency, or system-structure visualization
@@ -119,6 +122,35 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `ANALYZE` | Extract entities, relationships, flows, states, and constraints | Real names only | `references/reverse-engineering.md` |
 | `DRAW` | Apply the right template and format (Mermaid / draw.io / ASCII) | Syntax correctness | `references/diagram-templates.md` |
 | `REVIEW` | Check accuracy, readability, syntax, accessibility, and complexity | ≤20 nodes per diagram | `references/accessibility.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Flow Chart | `flow` | ✓ | Flowchart generation (default Mermaid) | `references/diagram-templates.md` |
+| Sequence Diagram | `sequence` | | Sequence diagram | `references/diagram-templates.md` |
+| ER Diagram | `er` | | ER diagram (Schema integration) | `references/diagram-templates.md` |
+| Journey Map | `journey` | | User journey map (Echo integration) | `references/echo-integration.md` |
+| Class Diagram | `class` | | Class diagram | `references/diagram-templates.md` |
+| C4 Diagram | `c4` | | C4 model rendering (Context / Container / Component / Code) in Mermaid C4 syntax | `references/c4-diagrams.md` |
+| Architecture Diagram | `architecture` | | Informal system architecture sketch (layered / hexagonal / microservice / event-driven) with flowchart + subgraph | `references/architecture-diagrams.md` |
+| Gantt / Roadmap | `gantt` | | Gantt, roadmap, or timeline with milestones, dependencies, critical path | `references/gantt-diagrams.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`flow` = Flow Chart). Apply normal UNDERSTAND → ANALYZE → DRAW → REVIEW workflow.
+
+Behavior notes per Recipe:
+- `flow`: Flowchart. Choose Mermaid TD/LR direction based on purpose. Keep ≤20 nodes.
+- `sequence`: Sequence diagram. Cap at ≤15-20 messages. Start from actor/participant declarations.
+- `er`: ER diagram. Consider Schema skill integration and use only real entity names.
+- `journey`: Generate a user journey map from Echo data. Visualize emotion scores and friction points.
+- `class`: Class diagram. Express inheritance, aggregation, and dependencies. Ensure alignment with L3 Component level.
+- `c4`: Mermaid C4 rendering (C4Context / C4Container / C4Component). Pick one level per diagram — never mix Context and Component nodes. If a Structurizr DSL exists from `Stratum`, derive node names and relationships from the DSL rather than re-authoring. For ad-hoc requests without DSL, keep scope to one level and flag that the canonical model lives with Stratum. Code-level (L4) views should fall back to `class` diagrams.
+- `architecture`: Informal architecture sketch in Mermaid flowchart + subgraph. Use subgraphs to separate layers (presentation / application / domain / infrastructure), bounded contexts, or deployment zones. Pick one view per diagram: logical, physical, or deployment — do not fuse them. Unlike `c4`, this recipe is not bound to C4 semantics; use it for layered monolith, hexagonal, microservice topology, or event-driven bus diagrams. For formal C4 modeling, delegate to `Stratum`.
+- `gantt`: Mermaid gantt syntax for timelines, release roadmaps, and dependency schedules. Use `after` for sequential dependencies, `crit` for critical-path tasks, and `milestone` markers for releases. Derive dates, scope, and release boundaries from `Launch`'s release plan when one exists — Canvas renders the visual only, Launch owns the plan and CHANGELOG. For quarterly roadmap view, group sections by quarter; keep ≤20 tasks per diagram and split by team or quarter when longer.
 
 ## Work Modes
 

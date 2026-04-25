@@ -144,6 +144,27 @@ Postmortem mining rules:
 - Postmortems varying in depth require normalization: extract structured fields (severity, blast radius, time-to-resolve, root cause category) before pattern matching.
 - Blameless framing: record system/process failures, not individual attribution.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Curate Patterns | `curate` | ✓ | Knowledge extraction and pattern registration into METAPATTERNS.md | `references/knowledge-synthesis.md`, `references/pattern-taxonomy.md` |
+| Decay Detection | `decay` | | Knowledge decay and obsolescence detection (freshness score evaluation) | `references/decay-detection.md` |
+| Propagate | `propagate` | | Best practice propagation (LORE_INSIGHT/LORE_ALERT delivery) | `references/propagation-protocol.md` |
+| Extract from Journals | `extract` | | Pattern extraction from agent journals | `references/knowledge-synthesis.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`curate` = Curate Patterns). Apply normal HARVEST → SYNTHESIZE → CATALOG → PROPAGATE → AUDIT workflow.
+
+Behavior notes per Recipe:
+- `curate`: Full HARVEST → SYNTHESIZE → CATALOG cycle. Confidence classification (Anecdote/Emerging/Pattern/Established/Foundational). Update METAPATTERNS.md.
+- `decay`: Evaluate freshness score (0-100). Identify STALE patterns (>180 days) and decide on archival. Apply TTL multiplier.
+- `propagate`: Deliver patterns at PATTERN (3+) confidence or higher to consuming agents. Send in LORE_INSIGHT / LORE_ALERT format.
+- `extract`: Scan .agents/*.md. Focus on HARVEST phase. Process within 48 hours.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

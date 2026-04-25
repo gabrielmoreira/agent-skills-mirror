@@ -168,6 +168,33 @@ CAPTURE → MODEL → VALIDATE → REFINE → HANDOFF
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| State Design | `design` | ✓ | State transition design | `references/state-machine-patterns.md` |
+| Saga Pattern | `saga` | | Saga pattern distributed transactions | `references/saga-patterns.md` |
+| Approval Flow | `approval` | | Approval flow design | `references/approval-flow-patterns.md` |
+| Invalid Transition Detection | `detect` | | Invalid transition detection | `references/state-machine-patterns.md` |
+| Retry State Machine | `retry` | | Exponential backoff, jitter, max-attempt cap, DLQ terminal state, idempotency contract | `references/retry-state-machine.md` |
+| Timeout / TTL / Deadline | `timeout` | | TTL state design, deadline propagation, grace-period transitions, stuck-state recovery | `references/timeout-ttl-design.md` |
+| Compensation Transactions | `compensation` | | Saga compensation per forward step, idempotency keys, compensation-of-compensation, ordering | `references/compensation-transactions.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`design` = State Design). Apply normal CAPTURE → MODEL → VALIDATE → REFINE → HANDOFF workflow.
+
+Behavior notes per Recipe:
+- `design`: General state-machine design. Transition table + reachability + deadlock check.
+- `saga`: Saga pattern at the top level (orchestration vs choreography, participants, boundary). For per-step compensation depth, switch to `compensation`.
+- `approval`: Approval flow with BPMN 2.0 boundary timer + escalation. Includes SLA, delegation, and audit trail.
+- `detect`: Scan existing transition tables / code for invalid or missing transitions.
+- `retry`: Design retry state machine — exponential backoff (base × 2^n), jitter (full / equal / decorrelated), max-attempt cap, DLQ as terminal state, retriable vs non-retriable error classification, idempotency key contract. Pair with tempo for schedule design and Beacon for retry-exhaustion alerts.
+- `timeout`: TTL / deadline / expiry state design. Derive per-state timeout from business SLA, propagate deadline through downstream calls (context.deadline), design grace-period transitions, stuck-state escape (unknown → recovery), and distinguish soft-timeout (warn) vs hard-timeout (abort). Hand off to tempo for cron/schedule integration.
+- `compensation`: Per-forward-step compensation design (Saga depth). Each compensation must be idempotent, ordered (LIFO by default), and handle compensation-of-compensation. Emit compensation table with idempotency keys, execution order, and failure-of-compensation escalation (hand off to Triage).
+
 ## Output Routing
 
 | Signal | Approach | Read Next |

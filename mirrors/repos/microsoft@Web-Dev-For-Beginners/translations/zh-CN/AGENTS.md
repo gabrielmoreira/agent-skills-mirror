@@ -2,53 +2,53 @@
 
 ## 项目概述
 
-这是一个面向初学者教授网页开发基础的教学课程代码库。该课程由微软云推广者开发，是一个为期12周的综合课程，包括24个涵盖JavaScript、CSS和HTML的实践课程。
+这是一个面向初学者教授网页开发基础知识的教育课程仓库。该课程是一门由微软云宣传人员开发的为期12周的综合课程，包含24个涵盖JavaScript、CSS和HTML的实践课程。
 
-### 主要组成部分
+### 关键组成部分
 
-- <strong>教学内容</strong>：24节结构化课程，组织成基于项目的模块
-- <strong>实践项目</strong>：生态瓶、打字游戏、浏览器扩展、太空游戏、银行应用、代码编辑器和AI聊天助手
+- <strong>教学内容</strong>：24个结构化课程，按项目模块组织
+- <strong>实用项目</strong>：生态瓶、打字游戏、浏览器扩展、太空游戏、银行应用、代码编辑器和AI聊天助手
 - <strong>互动测验</strong>：48个测验，每个包含3个问题（课前/课后评估）
 - <strong>多语言支持</strong>：通过GitHub Actions自动翻译50多种语言
 - <strong>技术栈</strong>：HTML、CSS、JavaScript、Vue.js 3、Vite、Node.js、Express、Python（用于AI项目）
 
 ### 架构
 
-- 基于课程结构的教育代码库
-- 每节课的文件夹包含README、代码示例和解决方案
-- 独立项目放在单独目录（quiz-app，各个课程项目）
-- 使用GitHub Actions（co-op-translator）进行翻译系统
-- 文档通过Docsify服务并提供PDF版本
+- 教育仓库，基于课程结构
+- 每课文件夹包含README、代码示例和解决方案
+- 独立项目位于单独目录（quiz-app、各种课程项目）
+- 使用GitHub Actions（co-op-translator）实现翻译系统
+- 文档通过Docsify提供，并可导出为PDF
 
-## 安装命令
+## 设置命令
 
-该代码库主要用于学习内容浏览。若要使用特定项目：
+此仓库主要用于教学内容的使用。若需使用具体项目：
 
-### 主代码库设置
+### 主仓库设置
 
 ```bash
 git clone https://github.com/microsoft/Web-Dev-For-Beginners.git
 cd Web-Dev-For-Beginners
 ```
 
-### Quiz App 设置（Vue 3 + Vite）
+### 测验应用设置（Vue 3 + Vite）
 
 ```bash
 cd quiz-app
 npm install
 npm run dev        # 启动开发服务器
-npm run build      # 生成生产版本
+npm run build      # 构建生产版本
 npm run lint       # 运行 ESLint
 ```
 
-### 银行项目API（Node.js + Express）
+### 银行项目 API（Node.js + Express）
 
 ```bash
 cd 7-bank-project/api
 npm install
-npm start          # 启动API服务器
-npm run lint       # 运行ESLint
-npm run format     # 使用Prettier格式化
+npm start          # 启动 API 服务器
+npm run lint       # 运行 ESLint
+npm run format     # 使用 Prettier 格式化
 ```
 
 ### 浏览器扩展项目
@@ -56,7 +56,7 @@ npm run format     # 使用Prettier格式化
 ```bash
 cd 5-browser-extension/solution
 npm install
-# 遵循特定浏览器的扩展加载说明
+# 遵循浏览器特定的扩展加载说明
 ```
 
 ### 太空游戏项目
@@ -64,10 +64,10 @@ npm install
 ```bash
 cd 6-space-game/solution
 npm install
-# 在浏览器中打开 index.html 或使用 Live Server
+# 在浏览器中打开 index.html 或使用实时服务器
 ```
 
-### 聊天项目（Python后端）
+### 聊天项目（Python 后端）
 
 ```bash
 cd 9-chat-project/solution/backend/python
@@ -76,42 +76,42 @@ pip install openai
 python api.py
 ```
 
-## 开发工作流程
+## 开发工作流
 
-### 内容贡献者指南
+### 内容贡献者
 
-1. <strong>Fork代码库</strong>到你的GitHub账号
-2. <strong>克隆你的fork</strong>到本地
-3. <strong>创建新分支</strong>进行修改
+1. <strong>Fork 仓库</strong>到你的GitHub账号
+2. **克隆你的 Fork** 到本地
+3. <strong>创建新的分支</strong> 用于改动
 4. 修改课程内容或代码示例
-5. 在相关项目目录测试代码更改
+5. 在相关项目目录中测试代码改动
 6. 按贡献指南提交拉取请求
 
-### 学习者指引
+### 学习者
 
-1. Fork或克隆代码库
+1. Fork 或克隆仓库
 2. 按顺序进入课程目录
-3. 阅读每节课的README文件
+3. 阅读每课的README文件
 4. 在 https://ff-quizzes.netlify.app/web/ 完成课前测验
-5. 通过代码示例学习各课程内容
+5. 按课程学习代码示例
 6. 完成作业和挑战
-7. 参与课后测验
+7. 参加课后测验
 
 ### 实时开发
 
-- <strong>文档</strong>：在根目录运行 `docsify serve`（端口3000）
-- **Quiz App**：在 quiz-app 目录运行 `npm run dev`
-- <strong>项目</strong>：使用VS Code Live Server扩展运行HTML项目
-- **API项目**：在各API目录运行 `npm start`
+- <strong>文档</strong>：在根目录运行 `docsify serve` （端口3000）
+- <strong>测验应用</strong>：在quiz-app目录运行 `npm run dev`
+- <strong>项目</strong>：使用VS Code Live Server扩展打开HTML项目
+- **API项目**：分别在对应API目录运行 `npm start`
 
-## 测试说明
+## 测试指南
 
-### Quiz App 测试
+### 测验应用测试
 
 ```bash
 cd quiz-app
 npm run lint       # 检查代码风格问题
-npm run build      # 验证构建成功
+npm run build      # 验证构建是否成功
 ```
 
 ### 银行API测试
@@ -122,73 +122,73 @@ npm run lint       # 检查代码风格问题
 node server.js     # 验证服务器启动无错误
 ```
 
-### 一般测试方法
+### 测试总体方法
 
-- 这是教育代码库，没有完整自动化测试
-- 手动测试重点：
+- 这是一个没有完整自动测试的教学仓库
+- 手动测试关注点：
   - 代码示例无错误运行
-  - 文档链接正常
-  - 项目可成功构建
-  - 示例遵循最佳实践
+  - 文档中的链接正常
+  - 项目构建成功完成
+  - 示例符合最佳实践
 
 ### 提交前检查
 
-- 在有 package.json 的目录运行 `npm run lint`
-- 验证markdown链接有效
+- 在含package.json的目录运行 `npm run lint`
+- 验证Markdown链接有效
 - 在浏览器或Node.js中测试代码示例
-- 确认翻译保留正确结构
+- 检查翻译结构是否正确保持
 
 ## 代码风格指南
 
 ### JavaScript
 
 - 使用现代ES6+语法
-- 遵循项目中提供的ESLint标准配置
+- 遵循项目中的标准ESLint配置
 - 使用有意义的变量和函数名，便于教学理解
 - 添加注释解释概念
-- 在配置Prettier的地方格式化代码
+- 配置Prettier进行代码格式化
 
 ### HTML/CSS
 
-- 使用语义化HTML5元素
-- 采用响应式设计原则
-- 规范的类命名
-- 注释CSS技术以便教学
+- 语义化的HTML5元素
+- 响应式设计原则
+- 清晰的类命名规范
+- 注释说明CSS技术点
 
 ### Python
 
-- 遵循PEP 8风格指南
-- 清晰、教学友好的代码示例
-- 在有助于学习的地方使用类型提示
+- 遵循PEP 8规范
+- 清晰的教学示例代码
+- 适当添加类型提示，便于学习
 
 ### Markdown文档
 
-- 清晰的标题层级结构
-- 指定语言的代码块
-- 额外资源链接
-- 放在 `images/` 目录内的截图和图片
-- 图片的替代文本，方便无障碍访问
+- 明确的标题层级结构
+- 代码块标明语言
+- 资源链接
+- 在`images/`目录下存放截图和图片
+- 图片含有Alt文本，方便无障碍访问
 
 ### 文件组织
 
-- 课程编号有序，例如 1-getting-started-lessons，2-js-basics 等
-- 每个项目含有 `solution/` 文件夹，通常还有 `start/` 或 `your-work/`
-- 图片存储在课程对应的 `images/` 文件夹
-- 翻译文件存放于 `translations/{language-code}/` 结构
+- 课程按顺序编号（1-getting-started-lessons、2-js-basics等）
+- 每个项目包含`solution/`，通常还有`start/`或`your-work/`目录
+- 图片存放在对应课程的`images/`文件夹
+- 翻译文件在`translations/{language-code}/`结构下
 
 ## 构建与部署
 
-### Quiz App 部署（Azure Static Web Apps）
+### 测验应用部署（Azure Static Web Apps）
 
-quiz-app 已配置为部署到 Azure Static Web Apps：
+quiz-app配置为Azure静态网页应用部署：
 
 ```bash
 cd quiz-app
 npm run build      # 创建 dist/ 文件夹
-# 在推送到 main 时通过 GitHub Actions 工作流进行部署
+# 在 push 到 main 时通过 GitHub Actions 工作流部署
 ```
 
-Azure Static Web Apps 配置：
+Azure静态网页应用配置：
 - <strong>应用位置</strong>：`/quiz-app`
 - <strong>输出位置</strong>：`dist`
 - <strong>工作流</strong>：`.github/workflows/azure-static-web-apps-ashy-river-0debb7803.yml`
@@ -200,78 +200,78 @@ npm install                    # 安装 docsify-to-pdf
 npm run convert               # 从 docs 生成 PDF
 ```
 
-### Docsify 文档
+### Docsify文档
 
 ```bash
 npm install -g docsify-cli    # 全局安装 Docsify
-docsify serve                 # 在 localhost:3000 上提供服务
+docsify serve                 # 在 localhost:3000 上启动服务
 ```
 
-### 各项目特定构建
+### 项目专属构建
 
-每个项目目录可能有自己的构建流程：
-- Vue项目：运行 `npm run build` 生成生产包
+各项目目录可能有自己的构建流程：
+- Vue项目：运行`npm run build`生成生产包
 - 静态项目：无构建步骤，直接提供文件
 
 ## 拉取请求指南
 
 ### 标题格式
 
-使用清晰且描述性标题说明修改区域：
+使用清晰、描述性的标题，说明改动内容：
 - `[Quiz-app] 新增第X课测验`
-- `[Lesson-3] 修正生态瓶项目中的拼写错误`
-- `[Translation] 添加第5课西班牙语翻译`
-- `[Docs] 更新安装说明`
+- `[Lesson-3] 修复生态瓶项目拼写错误`
+- `[Translation] 为第5课添加西班牙语翻译`
+- `[Docs] 更新设置说明`
 
-### 必须检查项
+### 必需检查
 
 提交PR前：
 
 1. <strong>代码质量</strong>：
    - 在相关项目目录运行 `npm run lint`
-   - 解决所有lint错误和警告
+   - 修复所有lint错误和警告
 
 2. <strong>构建验证</strong>：
-   - 若适用，运行 `npm run build`
+   - 如适用，运行`npm run build`
    - 确保无构建错误
 
-3. <strong>链接有效性</strong>：
-   - 测试所有markdown链接
+3. <strong>链接验证</strong>：
+   - 测试所有Markdown链接
    - 确认图片引用正常
 
-4. <strong>内容审查</strong>：
-   - 校对拼写和语法
-   - 确认代码示例正确且适合教学
-   - 确认翻译保持原意
+4. <strong>内容校对</strong>：
+   - 拼写和语法检查
+   - 确保代码示例正确且有教学价值
+   - 翻译准确保持原意
 
 ### 贡献要求
 
 - 同意微软CLA（首次PR自动检查）
 - 遵守[微软开源行为准则](https://opensource.microsoft.com/codeofconduct/)
-- 详规见 [CONTRIBUTING.md](./CONTRIBUTING.md)
-- 若有，PR描述中引用issue编号
+- 请参阅[CONTRIBUTING.md](./CONTRIBUTING.md)了解详细指南
+- 若相关，请在PR描述中注明issue编号
 
 ### 审核流程
 
-- 由维护者和社区审核PR
-- 优先保证教学清晰度
-- 代码示例应遵循最新最佳实践
-- 翻译需审校准确且文化适配
+- PR由维护者和社区审核
+- 优先保证教育清晰度
+- 代码示例应遵循当前最佳实践
+- 翻译要求准确且文化适应
 
 ## 翻译系统
 
 ### 自动翻译
 
-- 使用GitHub Actions与co-op-translator工作流
-- 自动翻译成50多种语言
-- 源文件保存在主目录
-- 翻译文件在 `translations/{language-code}/` 目录
+- 使用GitHub Actions的co-op-translator工作流
+- 自动翻译50多种语言
+- 源文件位于主目录
+- 翻译文件存放于`translations/{language-code}/`目录
 
-### 添加人工翻译改进
+### 手动改进翻译
 
-1. 定位到 `translations/{language-code}/` 文件
-2. 在保留结构的前提下进行改进
-3. 确保代码示例仍然可用
+1. 在`translations/{language-code}/`找到文件
+2. 保持结构下做改进
+3. 确保代码示例依然可用
 4. 测试本地化测验内容
 
 ### 翻译元数据
@@ -289,120 +289,120 @@ CO_OP_TRANSLATOR_METADATA:
 -->
 ```
 
-## 调试与故障排除
+## 调试与排错
 
 ### 常见问题
 
-**Quiz app 启动失败**：
+<strong>测验应用启动失败</strong>：
 - 检查Node.js版本（建议v14+）
-- 删除 `node_modules` 和 `package-lock.json`，重新运行 `npm install`
+- 删除`node_modules`和`package-lock.json`，重新运行`npm install`
 - 检查端口冲突（默认Vite使用5173端口）
 
 **API服务器无法启动**：
-- 确认Node.js版本符合最低要求（node >=10）
+- 验证Node.js版本（node >=10）
 - 检查端口是否被占用
-- 确保运行了 `npm install` 安装所有依赖
+- 确认所有依赖已安装`npm install`
 
-<strong>浏览器扩展加载失败</strong>：
-- 验证 manifest.json 格式正确
-- 查看浏览器控制台是否有错误
-- 参考浏览器特定扩展安装说明
+<strong>浏览器扩展无法加载</strong>：
+- 确认manifest.json格式正确
+- 检查浏览器控制台错误
+- 按浏览器扩展安装说明操作
 
 **Python聊天项目问题**：
-- 确保已安装OpenAI包：`pip install openai`
-- 确认已设置 GITHUB_TOKEN 环境变量
-- 检查GitHub Models访问权限
+- 确认已安装OpenAI包：`pip install openai`
+- 确认GITHUB_TOKEN环境变量已设置
+- 检查GitHub模型访问权限
 
-**Docsify不提供文档服务**：
-- 全局安装 docsify-cli：`npm install -g docsify-cli`
-- 从仓库根目录运行
-- 确认 `docs/_sidebar.md` 文件存在
+**Docsify未提供文档**：
+- 全局安装docsify-cli：`npm install -g docsify-cli`
+- 在仓库根目录运行
+- 检查`docs/_sidebar.md`是否存在
 
-### 开发环境建议
+### 开发环境提示
 
-- 使用带有Live Server扩展的VS Code处理HTML项目
-- 安装ESLint和Prettier扩展实现统一格式
-- 使用浏览器开发工具调试JavaScript
+- HTML项目推荐使用VS Code Live Server扩展
+- 安装ESLint和Prettier扩展保持格式一致
+- 利用浏览器开发者工具调试JavaScript
 - Vue项目安装Vue DevTools浏览器扩展
 
 ### 性能考虑
 
-- 有大量翻译文件（50+语言），完整克隆体积较大
-- 如只修改内容，建议使用浅克隆：`git clone --depth 1`
-- 处理英语内容时排除翻译文件搜索
-- 构建流程首次运行可能较慢（npm安装、Vite构建）
+- 多语言翻译文件众多（50+语言）导致完整克隆体积大
+- 仅工作内容时可使用浅克隆：`git clone --depth 1`
+- 编辑英文内容时排除翻译文件搜索
+- 初次运行构建过程较慢（npm install，Vite构建）
 
-## 安全注意事项
+## 安全考虑
 
 ### 环境变量
 
 - API密钥绝不可提交到仓库
-- 使用 `.env` 文件（已列入 `.gitignore`）
-- 项目README中说明必要的环境变量
+- 使用`.env`文件（已包含在`.gitignore`中）
+- 在项目README中注明所需环境变量
 
 ### Python项目
 
 - 使用虚拟环境：`python -m venv venv`
 - 保持依赖更新
-- GitHub令牌需最低权限原则
+- GitHub令牌应仅授予必要权限
 
-### GitHub Models访问
+### GitHub模型访问权限
 
-- 需要个人访问令牌（PAT）
-- 将令牌存储为环境变量
-- 切勿提交令牌或凭据
+- 访问GitHub模型需要个人访问令牌（PAT）
+- 令牌应存为环境变量
+- 严禁提交令牌或凭据
 
 ## 其他说明
 
-### 目标群体
+### 目标受众
 
-- 完全初学者的网页开发学习者
+- 完全的网页开发初学者
 - 学生和自学者
-- 在课堂上使用该课程的教师
-- 内容注重无障碍性和循序渐进技能建设
+- 教室中使用该课程的教师
+- 内容设计注重无障碍和渐进技能培养
 
 ### 教学理念
 
 - 基于项目的学习方法
 - 频繁的知识检测（测验）
-- 实践编码练习
-- 真实应用案例示范
-- 先掌握基础，再学框架
+- 实操编码练习
+- 真实应用示例
+- 先掌握基础再学框架
 
-### 代码库维护
+### 仓库维护
 
 - 活跃的学习者和贡献者社区
-- 定期更新依赖和课程内容
-- 维护者监控issue和讨论
-- 通过GitHub Actions自动更新翻译
+- 定期更新依赖和内容
+- 维护者监控问题和讨论
+- 翻译更新自动化通过GitHub Actions
 
 ### 相关资源
 
-- [微软Learn学习模块](https://docs.microsoft.com/learn/)
+- [Microsoft Learn模块](https://docs.microsoft.com/learn/)
 - [学生中心资源](https://docs.microsoft.com/learn/student-hub/)
-- 推荐学习者使用 [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
-- 其他课程：生成式AI、数据科学、机器学习、物联网课程
+- 推荐学习者使用[GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+- 额外课程：生成式AI、数据科学、机器学习、物联网课程等
 
-### 具体项目使用
+### 使用具体项目
 
-查看各项目 README 获取详细说明：
+详见各项目README文件：
 - `quiz-app/README.md` - Vue 3测验应用
-- `7-bank-project/README.md` - 带身份验证的银行应用
+- `7-bank-project/README.md` - 带认证的银行应用
 - `5-browser-extension/README.md` - 浏览器扩展开发
 - `6-space-game/README.md` - 基于Canvas的游戏开发
 - `9-chat-project/README.md` - AI聊天助手项目
 
 ### Monorepo结构
 
-虽然不是传统monorepo，该代码库包含多个独立项目：
-- 每节课内容独立完整
-- 各项目不共享依赖
-- 可独立开发各个项目，互不影响
-- 克隆整个代码库体验完整课程内容
+虽非传统monorepo，但此仓库包含多个独立项目：
+- 每课内容自成体系
+- 项目不共享依赖
+- 可单独开发项目互不影响
+- 克隆整个仓库获得完整课程体验
 
 ---
 
 <!-- CO-OP TRANSLATOR DISCLAIMER START -->
 **免责声明**：  
-本文件使用 AI 翻译服务 [Co-op Translator](https://github.com/Azure/co-op-translator) 翻译而成。虽然我们力求准确，但请注意自动翻译可能包含错误或不准确之处。原始语言的原始文件应被视为权威来源。对于关键信息，建议使用专业人工翻译。我们不对因使用本翻译而引起的任何误解或误释承担责任。
+本文件由 AI 翻译服务 [Co-op Translator](https://github.com/Azure/co-op-translator) 进行翻译。虽然我们力求准确，但请注意自动翻译可能包含错误或不准确之处。原文的母语版本应被视为权威来源。对于重要信息，建议使用专业人工翻译。我们不对因使用本翻译而产生的任何误解或误释承担责任。
 <!-- CO-OP TRANSLATOR DISCLAIMER END -->

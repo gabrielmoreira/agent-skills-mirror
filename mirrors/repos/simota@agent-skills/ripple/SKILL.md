@@ -180,6 +180,32 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - **Impact Only** (vertical): Dependency/scope focus → `references/impact-report-template.md`
 - **Consistency Only** (horizontal): Pattern compliance → `references/consistency-report-template.md`
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Impact Analysis | `impact` | ✓ | Full impact analysis of changes (both vertical and horizontal) | `references/ripple-analysis-template.md` |
+| Vertical Only | `vertical` | | Vertical impact only: dependencies and call chains | `references/impact-report-template.md` |
+| Horizontal Only | `horizontal` | | Horizontal impact only: pattern consistency | `references/consistency-report-template.md` |
+| Naming Change | `naming` | | Impact analysis for symbol and API name changes | `references/cascade-analysis.md` |
+| Blast Radius Quant | `blast-radius` | | Quantify production-side blast radius — customer count, SLO burn, revenue, region/AZ scope, multi-tenant fan-out, data classification | `references/blast-radius-quant.md` |
+| Rollback Plan Design | `rollback-plan` | | Forward-compat / dual-write / backfill / reverse-migration plan for a change with a documented abort criteria | `references/rollback-plan-design.md` |
+| Canary Scope Design | `canary-scope` | | Canary cohort selection, metric gates, promotion/abort thresholds, and observation window design | `references/canary-scope-design.md` |
+
+## Subcommand Dispatch
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`impact` = Impact Analysis). Apply normal INGEST → MAP → ANALYZE → ASSESS → REPORT workflow.
+
+Behavior notes per Recipe:
+- `impact`: Analyze both vertical (dependency graph) and horizontal (pattern consistency) and output breaking changes, side effects, and risks in an integrated report.
+- `vertical`: Trace callers and dependencies up and down from the change target to identify scope and breaking changes. Skip consistency checks.
+- `horizontal`: Cross-check impact on other files and modules sharing the same pattern. Skip the dependency graph.
+- `naming`: Target symbol and export name changes, identify references and migration paths. Output in the cascade-analysis template.
+- `blast-radius`: Quantify *production* blast radius — customers affected, SLO error-budget burn, revenue-at-risk, region/AZ/tenant scope, data classification (PII/PHI/financial). Map to incident severity tier (SEV1-SEV4). Pair with Beacon (SLO), Triage (incident scope), and Sentinel (security blast).
+- `rollback-plan`: Design a reversibility contract: forward-compatible schema, dual-write windows, backfill plan, feature-flag kill-switch, reverse DDL / event-replay / compensating action. Document abort-criteria (what signal triggers rollback), time-to-rollback target, and blast-radius-after-rollback estimate. Hand off to schema `rollback` for DB-specific reverse operations and Launch for release gating.
+- `canary-scope`: Define canary cohort (% of traffic, tenant allowlist, geographic / plan-tier / platform filter), metric gates (SLO, error rate, business KPIs), ramp schedule (1/5/25/50/100%), observation window per stage, and auto-promote / auto-abort thresholds. Hand off to Experiment for guardrail metric overlap and Launch for rollout execution.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -264,6 +290,9 @@ Standard protocols → `_common/OPERATIONAL.md`
 | `references/consistency-report-template.md` | Horizontal consistency report template |
 | `references/analysis-techniques.md` | Commands, categories, quality standards |
 | `references/cascade-analysis.md` | Cascade/second-order effect detection methodology |
+| `references/blast-radius-quant.md` | Blast-radius quantification (customers, SLO burn, revenue, region/AZ, tenant fan-out, data classification, SEV mapping) |
+| `references/rollback-plan-design.md` | Reversibility contract (forward-compat, dual-write, backfill, reverse-migration, abort criteria, time-to-rollback) |
+| `references/canary-scope-design.md` | Canary cohort selection, metric gates, ramp schedule, auto-promote/abort thresholds |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the impact report, deciding adaptive thinking depth at cascade depth, or front-loading change scope/depth/risk. Critical for Ripple: P3, P5. |
 
 ## AUTORUN Support

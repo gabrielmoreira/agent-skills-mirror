@@ -155,6 +155,32 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `VERDICT` | Issue judgment (min >= 2 -> PASS -> Launch; any <= 1 -> FAIL -> fix request) | Binary PASS/FAIL only | `references/vaire-framework.md` |
 | `HANDOFF` | Direct next action (PASS -> Launch; FAIL -> Palette/Builder/Sentinel/Radar) | Include remediation path for FAIL | `references/ux-agent-matrix.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Quality Gate | `gate` | ✓ | Full pre-release V.A.I.R.E. evaluation | `references/vaire-framework.md` |
+| Scorecard Only | `scorecard` | | Individual scorecard generation (scoring only) | `references/patterns.md` |
+| Value Check | `value` | | Value axis standalone value verification | `references/vaire-framework.md` |
+| Resilience Audit | `resilience` | | Resilience axis standalone error state check | `references/patterns.md` |
+| Agency Audit | `agency` | | Agency axis standalone user-control and consent audit | `references/agency-user-control.md` |
+| Identity Audit | `identity` | | Identity axis standalone brand-voice consistency audit | `references/identity-brand-voice.md` |
+| Experience Audit | `experience` | | Experience axis standalone emotional-quality audit | `references/experience-emotional-quality.md` |
+
+## Subcommand Dispatch
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`gate` = Quality Gate). Apply normal INGEST → AUDIT → SYNTHESIZE → VERDICT → HANDOFF workflow.
+
+Behavior notes per Recipe:
+- `gate`: Evaluate all 5 V.A.I.R.E. axes (Value/Agency/Identity/Resilience/Echo) and output a PASS/FAIL verdict with remediation path.
+- `scorecard`: Run the scoring phase only. Output 0-3 scores per axis and blocking issues as a table. Do not issue a verdict.
+- `value`: Focus on the Value axis only. Evaluate user value, business value, and differentiators, then present scores and improvement suggestions.
+- `resilience`: Focus on the Resilience axis only. Evaluate completeness of error, loading, and offline scenarios.
+- `agency`: A-axis standalone audit of user control and consent (undo/redo, cancel/abort, destructive-action confirmation, exit affordances, consent granularity, opt-out visibility, no dark-pattern nudging). For usability-friction evaluation use Palette; for cognitive walkthrough with personas use Echo; for WCAG/standards compliance use Canon.
+- `identity`: I-axis standalone audit of brand-voice consistency (personality alignment, tone-of-voice adherence, visual identity fidelity, distinctiveness vs competitors, trust-signal presence, icon/illustration style consistency). For authoring the voice/tone itself use Prose; for creative direction use Vision; for competitor benchmarking use Compete.
+- `experience`: E-axis standalone audit of emotional quality (onboarding joy, achievement signals, flow-state affordances, delight moments, friction-vs-meaning trade-offs, emotional arc across the journey). For persona cognitive walkthrough use Echo; for motion/interaction craft use Flow/Palette; for journey mapping use Researcher/Canvas.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

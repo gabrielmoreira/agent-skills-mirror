@@ -290,6 +290,27 @@ Hook sources (merged at runtime): `~/.claude/settings.json` (user), `.claude/set
 - Use PID-scoped temp files such as `/tmp/hook-state-$$`.
 - Set explicit timeouts even when defaults would apply.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Configure Hook | `configure` | ✓ | PreToolUse/PostToolUse/Stop hook design, settings.json changes | `references/hook-system.md`, `references/hook-recipes.md` |
+| Debug Hook | `debug` | | Debug existing hooks (failure, latency, misfire) | `references/debugging-guide.md` |
+| PreToolUse | `pretool` | | PreToolUse hook specialization (block, approve, input rewrite) | `references/hook-system.md` |
+| PostToolUse | `posttool` | | PostToolUse hook specialization (logging, automation, quality gate) | `references/hook-system.md`, `references/hook-recipes.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`configure` = Configure Hook). Apply normal SCAN → PROPOSE → IMPLEMENT → VERIFY → MAINTAIN workflow.
+
+Behavior notes per Recipe:
+- `configure`: Full SCAN → PROPOSE → IMPLEMENT run. settings.json backup required. Instruct session restart after JSON syntax validation.
+- `debug`: Check `/hooks` → run `claude --debug` → manual stdin test. Validate timeout, exit code, and stdout/stderr mixing in order.
+- `pretool`: Choose permissionDecision (allow/deny/ask/defer). Block with exit 2. updatedInput must always pair with permissionDecision: allow.
+- `posttool`: Exit 0 only (no blocking). Optional context injection via JSON stdout. Can background with async: true.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

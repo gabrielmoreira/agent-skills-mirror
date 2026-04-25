@@ -2,27 +2,27 @@
 
 ## Project Overview
 
-Ito ay isang edukasyonal na repositoryo ng kurikulum para sa pagtuturo ng mga pundasyon ng web development sa mga nagsisimula. Ang kurikulum ay isang komprehensibong 12-linggong kurso na binuo ng Microsoft Cloud Advocates, na may 24 na hands-on na aralin na sumasaklaw sa JavaScript, CSS, at HTML.
+Ito ay isang edukasyonal na repositoryo ng kurikulum para sa pagtuturo ng mga pangunahing kaalaman sa web development sa mga nagsisimula. Ang kurikulum ay isang komprehensibong 12-linggong kurso na binuo ng Microsoft Cloud Advocates, na nagtatampok ng 24 na hands-on na aralin na sumasaklaw sa JavaScript, CSS, at HTML.
 
 ### Key Components
 
-- **Nilalamang Pang-edukasyon**: 24 na istrukturadong aralin na inayos sa mga module batay sa proyekto
-- **Mga Praktikal na Proyekto**: Terrarium, Typing Game, Browser Extension, Space Game, Banking App, Code Editor, at AI Chat Assistant
-- **Mga Interactive na Quiz**: 48 na quiz na may tig-3 tanong bawat isa (pre/post-lesson assessments)
-- **Suporta sa Maramihang Wika**: Awtomatikong pagsasalin para sa 50+ na wika gamit ang GitHub Actions
+- **Nilalaman Pang-edukasyon**: 24 na istrukturadong aralin na inayos sa mga proyekto bilang mga modulo
+- **Praktikal na Mga Proyekto**: Terrarium, Typing Game, Browser Extension, Space Game, Banking App, Code Editor, at AI Chat Assistant
+- **Interaktibong Mga Quiz**: 48 na quiz na may tig-3 tanong bawat isa (pagsusulit bago/pagkatapos ng aralin)
+- **Suporta sa Maraming Wika**: Awtomatikong pagsasalin para sa 50+ na wika gamit ang GitHub Actions
 - **Mga Teknolohiya**: HTML, CSS, JavaScript, Vue.js 3, Vite, Node.js, Express, Python (para sa mga AI na proyekto)
 
 ### Architecture
 
-- Edukasyonal na repositoryo na may lesson-based na estruktura
-- Bawat folder ng aralin ay naglalaman ng README, mga halimbawa ng code, at mga solusyon
-- Mga standalone na proyekto sa hiwalay na mga direktoryo (quiz-app, iba't ibang proyekto ng aralin)
+- Edukasyonal na repositoryo na may istruktura batay sa mga aralin
+- Ang bawat folder ng aralin ay naglalaman ng README, mga halimbawa ng code, at mga solusyon
+- Mga standalone na proyekto sa hiwalay na mga direktoryo (quiz-app, iba't ibang mga proyekto sa aralin)
 - Sistema ng pagsasalin gamit ang GitHub Actions (co-op-translator)
-- Dokumentasyon na ipinapakita sa pamamagitan ng Docsify at available bilang PDF
+- Dokumentasyon na ibinibigay sa pamamagitan ng Docsify at available bilang PDF
 
 ## Setup Commands
 
-Ang repositoryong ito ay pangunahing para sa pagkonsumo ng edukasyonal na nilalaman. Para sa pagtatrabaho sa mga partikular na proyekto:
+Ang repositoryong ito ay pangunahing para sa konsumpsyon ng edukasyonal na nilalaman. Para sa pagtatrabaho sa mga partikular na proyekto:
 
 ### Main Repository Setup
 
@@ -37,7 +37,7 @@ cd Web-Dev-For-Beginners
 cd quiz-app
 npm install
 npm run dev        # Simulan ang development server
-npm run build      # Bumuo para sa produksyon
+npm run build      # I-build para sa produksyon
 npm run lint       # Patakbuhin ang ESLint
 ```
 
@@ -56,7 +56,7 @@ npm run format     # I-format gamit ang Prettier
 ```bash
 cd 5-browser-extension/solution
 npm install
-# Sundin ang mga tagubilin para sa pag-load ng extension na tiyak sa browser
+# Sundin ang mga tagubilin sa pag-load ng extension na partikular sa browser
 ```
 
 ### Space Game Projects
@@ -72,37 +72,37 @@ npm install
 ```bash
 cd 9-chat-project/solution/backend/python
 pip install openai
-# Itakda ang environment variable na GITHUB_TOKEN
+# Itakda ang GITHUB_TOKEN na variable ng kapaligiran
 python api.py
 ```
 
 ## Development Workflow
 
-### Para sa mga Content Contributors
+### Para sa mga Contributor ng Nilalaman
 
-1. **I-fork ang repository** sa iyong GitHub account
+1. **I-fork ang repositoryo** sa iyong GitHub account
 2. **I-clone ang iyong fork** nang lokal
-3. **Gumawa ng bagong branch** para sa iyong mga pagbabago
-4. Gumawa ng mga pagbabago sa nilalaman ng aralin o mga halimbawa ng code
-5. Subukan ang anumang mga pagbabago sa code sa mga kaukulang direktoryo ng proyekto
-6. Mag-submit ng pull request alinsunod sa mga panuntunan ng kontribusyon
+3. **Gumawa ng bagong sanga** para sa iyong mga pagbabago
+4. Gawin ang mga pagbabago sa nilalaman ng aralin o mga halimbawa ng code
+5. Subukan ang anumang pagbabago sa code sa mga kaukulang direktoryo ng proyekto
+6. Mag-submit ng pull requests alinsunod sa mga gabay sa kontribusyon
 
-### Para sa mga Learners
+### Para sa mga Nag-aaral
 
-1. Mag-fork o mag-clone ng repositoryo
-2. Pumunta sa mga direktoryo ng aralin nang sunud-sunod
-3. Basahin ang mga README na file para sa bawat aralin
-4. Kumpletuhin ang mga pre-lesson quiz sa https://ff-quizzes.netlify.app/web/
-5. Gawing ang mga halimbawa ng code sa mga folder ng aralin
-6. Tapusin ang mga assignment at hamon
-7. Kunin ang mga post-lesson quiz
+1. I-fork o i-clone ang repositoryo
+2. Mag-navigate sa mga direktoryo ng aralin sunod-sunod
+3. Basahin ang mga README file para sa bawat aralin
+4. Kumpletuhin ang mga pre-lesson quizzes sa https://ff-quizzes.netlify.app/web/
+5. Trabahuhin ang mga halimbawa ng code sa mga folder ng aralin
+6. Kumpletuhin ang mga takdang-aralin at hamon
+7. Sagutan ang mga post-lesson quizzes
 
 ### Live Development
 
 - **Dokumentasyon**: Patakbuhin ang `docsify serve` sa root (port 3000)
-- **Quiz App**: Patakbuhin ang `npm run dev` sa direktoryo ng quiz-app
+- **Quiz App**: Patakbuhin ang `npm run dev` sa folder ng quiz-app
 - **Mga Proyekto**: Gamitin ang VS Code Live Server extension para sa mga HTML na proyekto
-- **API Projects**: Patakbuhin ang `npm start` sa kaukulang mga direktoryo ng API
+- **API Projects**: Patakbuhin ang `npm start` sa mga kaukulang API na direktoryo
 
 ## Testing Instructions
 
@@ -110,71 +110,71 @@ python api.py
 
 ```bash
 cd quiz-app
-npm run lint       # Suriin ang mga isyu sa estilo ng code
-npm run build      # Tiyakin na matagumpay ang build
+npm run lint       # Suriin kung may mga isyu sa istilo ng kodigo
+npm run build      # Tiyakin na matagumpay ang pagbuo
 ```
 
 ### Bank API Testing
 
 ```bash
 cd 7-bank-project/api
-npm run lint       # Suriin ang mga isyu sa istilo ng code
-node server.js     # Tiyakin na nagsisimula ang server nang walang mga error
+npm run lint       # Suriin ang mga isyu sa estilo ng code
+node server.js     # Tiyaking nagsisimula ang server nang walang mga error
 ```
 
-### General Testing Approach
+### Pangkalahatang Paraan ng Pagsusuri
 
-- Ito ay isang edukasyonal na repositoryo na walang kumpletong automated tests 
-- Manual testing ay nakatuon sa:
-  - Mga halimbawa ng code na tumatakbo nang walang error
-  - Mga link sa dokumentasyon ay gumagana nang tama
-  - Proyekto ay matagumpay na na-build
-  - Mga halimbawa ay sumusunod sa pinakamahusay na kasanayan
+- Ito ay isang edukasyonal na repositoryo na walang komprehensibong automated tests
+- Ang manual na pagsusuri ay nakatuon sa:
+  - Hindi nagkakaroon ng error ang mga halimbawa ng code kapag pinatakbo
+  - Gumagana nang maayos ang mga links sa dokumentasyon
+  - Matagumpay ang pagbuo ng mga proyekto
+  - Sumusunod ang mga halimbawa sa pinakamahusay na mga kasanayan
 
-### Pre-submission Checks
+### Mga Pre-submission Checks
 
-- Patakbuhin ang `npm run lint` sa mga direktoryo na may package.json
-- Siguraduhing ang mga markdown link ay valid
+- Patakbuhin ang `npm run lint` sa mga direktoryong may package.json
+- Tiyakin na wasto ang mga markdown links
 - Subukan ang mga halimbawa ng code sa browser o Node.js
-- Suriin na ang mga pagsasalin ay nagpapanatili ng tamang estruktura
+- Suriin na ang mga pagsasalin ay nananatiling maayos ang istruktura
 
 ## Code Style Guidelines
 
 ### JavaScript
 
-- Gumamit ng modernong ES6+ na sintaks
-- Sundan ang standard na ESLint configurations na ibinigay sa mga proyekto
-- Gumamit ng makahulugang pangalan ng mga variable at function para sa kalinawan sa edukasyon
-- Magdagdag ng mga komento na nagpapaliwanag ng mga konsepto para sa mga nag-aaral
+- Gumamit ng makabagong ES6+ na syntax
+- Sundin ang mga standard ESLint na konfigurasyon na ibinigay sa mga proyekto
+- Gumamit ng makabuluhang mga pangalan ng variable at function para sa kalinawan sa edukasyon
+- Magdagdag ng mga paliwanag na komentaryo tungkol sa mga konsepto para sa mga nag-aaral
 - I-format gamit ang Prettier kung saan naka-configure
 
 ### HTML/CSS
 
-- Semantic na HTML5 na mga elemento
+- Semantic HTML5 elements
 - Mga prinsipyo ng responsive design
-- Malinaw na klaseng pagnenaming mga kombensiyon
-- Mga komento na nagpapaliwanag ng mga teknik sa CSS para sa mga nag-aaral
+- Malinaw na conventions sa pagbibigay ng pangalan sa mga klase
+- Mga komentaryo na nagpapaliwanag ng mga teknik sa CSS para sa mga nag-aaral
 
 ### Python
 
-- PEP 8 na mga gabay sa estilo
-- Malinaw, edukasyonal na mga halimbawa ng code
-- Mga type hint kung makakatulong sa pag-aaral
+- Mga patnubay sa estilo ayon sa PEP 8
+- Malinaw, pang-edukasyonal na mga halimbawa ng code
+- Mga type hint kung nakakatulong sa pag-aaral
 
 ### Markdown Documentation
 
 - Malinaw na hierarchy ng mga heading
-- Mga code block na may pagtukoy ng wika
+- Mga code block na may pagspecify ng wika
 - Mga link sa karagdagang mga mapagkukunan
-- Mga screenshot at mga larawan sa `images/` na mga direktoryo
+- Mga screenshot at larawan sa mga `images/` na mga direktoryo
 - Alt text para sa mga larawan para sa accessibility
 
 ### File Organization
 
-- Mga aralin na naka-numero nang sunud-sunod (1-getting-started-lessons, 2-js-basics, atbp.)
-- Bawat proyekto ay may `solution/` at madalas ay `start/` o `your-work/` na mga direktoryo
-- Mga larawan na nakaimbak sa aralin-nakatuong mga folder na `images/`
-- Mga pagsasalin sa `translations/{language-code}/` na istruktura
+- Ang mga aralin ay may sunud-sunod na bilang (1-getting-started-lessons, 2-js-basics, atbp.)
+- Ang bawat proyekto ay may `solution/` at madalas `start/` o `your-work/` na mga direktoryo
+- Ang mga larawan ay naka-imbak sa mga lesson-specific na `images/` folder
+- Mga pagsasalin sa istrukturang `translations/{language-code}/`
 
 ## Build and Deployment
 
@@ -184,11 +184,11 @@ Ang quiz-app ay naka-configure para sa Azure Static Web Apps deployment:
 
 ```bash
 cd quiz-app
-npm run build      # Lumilikha ng folder na dist/
-# Nagde-deploy gamit ang GitHub Actions workflow sa push sa main
+npm run build      # Lumilikha ng dist/ folder
+# Nagde-deploy gamit ang GitHub Actions workflow kapag may push sa main
 ```
 
-Azure Static Web Apps configuration:
+Azure Static Web Apps na konfigurasyon:
 - **App location**: `/quiz-app`
 - **Output location**: `dist`
 - **Workflow**: `.github/workflows/azure-static-web-apps-ashy-river-0debb7803.yml`
@@ -207,76 +207,76 @@ npm install -g docsify-cli    # I-install ang Docsify nang globally
 docsify serve                 # I-serve sa localhost:3000
 ```
 
-### Project-specific Builds
+### Mga Build na Nakatuon sa Proyekto
 
-Bawat direktoryo ng proyekto ay maaaring may sarili nitong proseso ng pag-build:
-- Vue projects: `npm run build` ay lumilikha ng production bundles
-- Static projects: Walang build step, direktang nagseserbisyo ng mga file
+Ang bawat direktoryo ng proyekto ay maaaring may sariling proseso ng build:
+- Vue projects: `npm run build` na lumilikha ng mga production bundles
+- Static projects: Walang build step, direktang pag-serbisyo ng mga file
 
 ## Pull Request Guidelines
 
-### Title Format
+### Format ng Pamagat
 
-Gumamit ng malinaw, deskriptibong mga titulo na nagpapakita ng bahagi ng pagbabago:
-- `[Quiz-app] Magdagdag ng bagong quiz para sa aralin X`
-- `[Lesson-3] Ayusin ang typo sa terrarium na proyekto`
-- `[Translation] Magdagdag ng pagsasalin sa Spanish para sa aralin 5`
-- `[Docs] I-update ang mga tagubilin sa setup`
+Gumamit ng malinaw, deskriptibong mga pamagat na nagpapakita ng bahagi ng pagbabago:
+- `[Quiz-app] Add new quiz for lesson X`
+- `[Lesson-3] Fix typo in terrarium project`
+- `[Translation] Add Spanish translation for lesson 5`
+- `[Docs] Update setup instructions`
 
-### Required Checks
+### Mga Kinakailangang Pag-check
 
 Bago magsumite ng PR:
 
 1. **Kalidad ng Code**:
-   - Patakbuhin ang `npm run lint` sa mga naapektuhang direktoryo ng proyekto
-   - Ayusin lahat ng linting errors at warnings
+   - Patakbuhin ang `npm run lint` sa mga apektadong proyekto
+   - Ayusin ang lahat ng linting error at babala
 
-2. **Build Verification**:
-   - Patakbuhin ang `npm run build` kung naaangkop
+2. **Pag-verify ng Build**:
+   - Patakbuhin ang `npm run build` kung kinakailangan
    - Siguraduhing walang error sa build
 
-3. **Link Validation**:
-   - Subukan ang lahat ng markdown links
-   - Siguraduhing gumagana ang mga image references
+3. **Pag-validate ng Link**:
+   - Subukan ang lahat ng markdown link
+   - Siguraduhing gumagana ang mga reference ng larawan
 
-4. **Content Review**:
-   - Proofread para sa spelling at grammar
-   - Siguraduhin na ang mga halimbawa ng code ay tama at edukasyonal
-   - Suriin na ang mga pagsasalin ay nananatili ang orihinal na kahulugan
+4. **Pagsusuri ng Nilalaman**:
+   - Proofread para sa baybay at gramatika
+   - Siguraduhing tama at edukasyonal ang mga halimbawa ng code
+   - I-verify ang mga pagsasalin ay nananatili ang orihinal na kahulugan
 
-### Contribution Requirements
+### Mga Kinakailangan sa Kontribusyon
 
-- Sumasang-ayon sa Microsoft CLA (awtomatikong tseke sa unang PR)
-- Sundan ang [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/)
-- Tingnan ang [CONTRIBUTING.md](./CONTRIBUTING.md) para sa detalyadong mga panuntunan
-- Banggitin ang mga numero ng isyu sa deskripsiyon ng PR kung naaangkop
+- Sumang-ayon sa Microsoft CLA (automated check sa unang PR)
+- Sundin ang [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/)
+- Tumingin sa [CONTRIBUTING.md](./CONTRIBUTING.md) para sa mga detalyadong gabay
+- Banggitin ang mga numero ng isyu sa paglalarawan ng PR kung angkop
 
-### Review Process
+### Proseso ng Review
 
-- Ang mga PR ay nire-review ng mga maintainers at komunidad
+- Ang mga PR ay sinusuri ng mga maintainer at komunidad
 - Pinapahalagahan ang kalinawan sa edukasyon
-- Ang mga halimbawa ng code ay dapat sumunod sa kasalukuyang pinakamahusay na mga kasanayan
-- Ang mga pagsasalin ay nire-review para sa katumpakan at angkop sa kultura
+- Dapat sundin ng mga halimbawa ng code ang kasalukuyang best practices
+- Sinusuri ang mga pagsasalin para sa katumpakan at angkop na kultura
 
 ## Translation System
 
 ### Automated Translation
 
-- Gumagamit ng GitHub Actions sa co-op-translator workflow
-- Awtomatikong nagsasalin sa 50+ na mga wika
-- Source files ay nasa main directories
-- Mga isinaling file ay nasa `translations/{language-code}/` na mga direktoryo
+- Gumagamit ng GitHub Actions na may co-op-translator workflow
+- Nagsasalin sa 50+ na wika nang awtomatiko
+- Mga source file sa mga pangunahing direktoryo
+- Mga naisaling file sa `translations/{language-code}/` na mga direktoryo
 
-### Adding Manual Translation Improvements
+### Pagdaragdag ng Manual na Pagpapabuti sa Pagsasalin
 
 1. Hanapin ang file sa `translations/{language-code}/`
-2. Gumawa ng mga pagpapabuti habang pinapanatili ang estruktura
-3. Siguraduhin na ang mga halimbawa ng code ay nananatiling gumagana
-4. Subukan ang anumang lokal na nilalaman ng quiz
+2. Gawin ang mga pagpapabuti nang pinananatili ang istruktura
+3. Siguraduhing nananatiling gumagana ang mga halimbawa ng code
+4. Subukan ang anumang lokal na nilalamang quiz
 
-### Translation Metadata
+### Metadata ng Pagsasalin
 
-Ang mga isinaling file ay may kasama na metadata header:
+Ang mga naisaling file ay may kasamang metadata header:
 ```markdown
 <!--
 CO_OP_TRANSLATOR_METADATA:
@@ -291,118 +291,118 @@ CO_OP_TRANSLATOR_METADATA:
 
 ## Debugging and Troubleshooting
 
-### Common Issues
+### Mga Karaniwang Isyu
 
-**Quiz app ay hindi nagsisimula**:
-- Suriin ang Node.js na bersyon (v14+ ang inirerekomenda)
-- Tanggalin ang `node_modules` at `package-lock.json`, patakbuhin muli ang `npm install`
-- Suriin ang mga port conflicts (default: Vite gumagamit ng port 5173)
+**Hindi nagsisimula ang quiz app**:
+- Suriin ang bersyon ng Node.js (inirekomenda v14+)
+- Burahin ang `node_modules` at `package-lock.json`, patakbuhin muli ang `npm install`
+- Suriin kung may conflict sa port (default: Vite gumagamit ng port 5173)
 
-**API server ay hindi nagsisimula**:
-- Siguraduhin ang Node.js na bersyon ay naaabot ang minimum (node >=10)
-- Suriin kung ang port ay ginagamit na
-- Siguraduhin lahat ng dependencies ay na-install gamit ang `npm install`
+**Hindi nagsisimula ang API server**:
+- Tiyakin ang bersyon ng Node.js ay sapat (node >=10)
+- Suriin kung ginagamit na ng iba ang port
+- Siguraduhing naka-install lahat ng dependencies gamit ang `npm install`
 
-**Browser extension ay hindi naglo-load**:
-- Siguraduhin ang manifest.json ay tama ang format
-- Suriin ang browser console para sa mga error
-- Sundin ang mga tagubilin sa pag-install ng extension na nakabatay sa browser
+**Hindi naglo-load ang browser extension**:
+- Siguraduhing tama ang format ng manifest.json
+- Tingnan ang browser console para sa mga error
+- Sundin ang mga instruksyon sa pag-install ng extension para sa partikular na browser
 
 **Mga isyu sa Python chat project**:
-- Siguraduhin na naka-install ang OpenAI package: `pip install openai`
-- Siguraduhin ang environment variable na GITHUB_TOKEN ay nakaset
-- Suriin ang mga permiso sa GitHub Models access
+- Siguraduhing naka-install ang OpenAI package: `pip install openai`
+- Tiyakin na nakaset ang GITHUB_TOKEN environment variable
+- Suriin ang mga permiso sa access ng GitHub Models
 
-**Docsify ay hindi nagseserbisyo ng docs**:
+**Hindi nagseserbisyo ang Docsify ng docs**:
 - I-install ang docsify-cli globally: `npm install -g docsify-cli`
 - Patakbuhin mula sa root directory ng repositoryo
-- Siguraduhing ang `docs/_sidebar.md` ay naroon
+- Siguraduhing may `docs/_sidebar.md`
 
-### Development Environment Tips
+### Mga Tip para sa Development Environment
 
-- Gamitin ang VS Code na may Live Server extension para sa mga HTML na proyekto
+- Gumamit ng VS Code kasama ang Live Server extension para sa mga HTML na proyekto
 - Mag-install ng ESLint at Prettier extensions para sa konsistenteng pag-format
-- Gamitin ang browser DevTools para sa debugging ng JavaScript
-- Para sa Vue projects, mag-install ng Vue DevTools browser extension
+- Gamitin ang browser DevTools para i-debug ang JavaScript
+- Para sa mga Vue na proyekto, mag-install ng Vue DevTools browser extension
 
-### Performance Considerations
+### Mga Pagsasaalang-alang sa Performance
 
-- Maraming bilang ng mga isinaling file (50+ wika) kaya malaki ang buong clone
-- Gumamit ng shallow clone kung content lang ang oobrahon: `git clone --depth 1`
-- I-exclude ang mga pagsasalin sa paghahanap kapag nagtatrabaho sa English na nilalaman
-- Ang mga build process ay maaaring mabagal sa unang takbo (npm install, Vite build)
+- Malaki ang bilang ng naisaling mga file (50+ na wika) kaya malaki ang buong clone
+- Gumamit ng shallow clone kung nilalaman lang ang kanilang tinatrabaho: `git clone --depth 1`
+- I-exclude ang mga pagsasalin sa mga paghahanap kapag nagtatrabaho sa English na nilalaman
+- Maaaring mabagal ang build processes sa unang takbo (npm install, Vite build)
 
 ## Security Considerations
 
-### Environment Variables
+### Mga Environment Variable
 
-- Ang mga API key ay hindi dapat i-commit sa repositoryo
-- Gumamit ng `.env` files (naka-include na sa `.gitignore`)
+- Huwag kailanman i-commit ang API keys sa repositoryo
+- Gumamit ng `.env` files (nasa `.gitignore` na)
 - I-dokumento ang kinakailangang environment variables sa mga README ng proyekto
 
 ### Python Projects
 
 - Gumamit ng virtual environments: `python -m venv venv`
 - Panatilihing updated ang mga dependencies
-- Ang mga GitHub tokens ay dapat may minimal na mga kinakailangang permiso
+- Dapat may minimal na permiso lamang ang mga GitHub token
 
 ### GitHub Models Access
 
-- Kailangan ng Personal Access Tokens (PAT) para sa GitHub Models
-- Itago ang tokens bilang mga environment variables
-- Huwag i-commit ang mga tokens o credentials
+- Kinakailangan ang Personal Access Tokens (PAT) para sa GitHub Models
+- Itago ang mga token bilang environment variables
+- Huwag kailanman i-commit ang mga token o kredensyal
 
 ## Additional Notes
 
 ### Target Audience
 
-- Ganap na mga nagsisimula sa web development
-- Mga estudyante at mga self-learners
+- Mga ganap na nagsisimula sa web development
+- Mga estudyante at self-learners
 - Mga guro na gumagamit ng kurikulum sa mga silid-aralan
-- Nilalaman ay idinisenyo para sa accessibility at unti-unting pagbuo ng kasanayan
+- Ang nilalaman ay dinisenyo para sa accessibility at unti-unting pagbuo ng kakayahan
 
 ### Educational Philosophy
 
-- Paraan ng pag-aaral na nakabatay sa proyekto
-- Madalas na pagsusuri ng kaalaman (quizzes)
-- Hands-on na mga ehersisyo sa pagko-code
-- Mga halimbawa ng aplikasyon sa totoong mundo
-- Pokus sa mga pundasyon bago ang mga framework
+- Pagsasanay sa pag-aaral batay sa proyekto
+- Madalas na pagsusuri sa kaalaman (mga quiz)
+- Hands-on na coding exercises
+- Mga halimbawa ng aplikasyon sa tunay na mundo
+- Pagtuon sa mga pundasyon bago ang mga framework
 
 ### Repository Maintenance
 
-- Aktibong komunidad ng mga nag-aaral at mga contributor
-- Regular na pag-update sa dependencies at nilalaman
-- Mga isyu at diskusyon ay minomonitor ng mga maintainers
-- Ang mga update sa pagsasalin ay awtomatiko gamit ang GitHub Actions
+- Aktibong komunidad ng mga nag-aaral at contributor
+- Regular na pag-update ng dependencies at nilalaman
+- Sina-subsaybayan ang mga isyu at talakayan ng mga maintainer
+- Awtomatikong pag-update ng pagsasalin gamit ang GitHub Actions
 
 ### Related Resources
 
 - [Microsoft Learn modules](https://docs.microsoft.com/learn/)
 - [Student Hub resources](https://docs.microsoft.com/learn/student-hub/)
 - Inirerekomenda ang [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) para sa mga nag-aaral
-- Mga karagdagang kurso: Generative AI, Data Science, ML, IoT curricula ay available
+- Karagdagang mga kurso: Generative AI, Data Science, ML, IoT curricula ang available
 
-### Working with Specific Projects
+### Pagtatrabaho sa Partikular na Mga Proyekto
 
-Para sa detalyadong mga tagubilin sa mga indibidwal na proyekto, sumangguni sa README files sa:
+Para sa detalyadong mga instruksyon sa mga indibidwal na proyekto, tingnan ang mga README file sa:
 - `quiz-app/README.md` - Vue 3 quiz application
 - `7-bank-project/README.md` - Banking application na may authentication
 - `5-browser-extension/README.md` - Pag-develop ng browser extension
-- `6-space-game/README.md` - Canvas-based na pag-develop ng laro
-- `9-chat-project/README.md` - AI chat assistant na proyekto
+- `6-space-game/README.md` - Pag-develop ng game gamit ang canvas
+- `9-chat-project/README.md` - AI chat assistant project
 
 ### Monorepo Structure
 
-Bagaman hindi isang tradisyunal na monorepo, ang repositoryong ito ay naglalaman ng maraming independyenteng proyekto:
-- Bawat aralin ay self-contained
-- Ang mga proyekto ay hindi nagbabahagi ng mga dependencies
-- Magtrabaho sa mga indibidwal na proyekto nang hindi naaapektuhan ang iba
+Bagamat hindi tradisyunal na monorepo, ang repositoryong ito ay naglalaman ng maraming independiyenteng proyekto:
+- Ang bawat aralin ay nakahiwalay
+- Hindi nagbabahagi ng dependencies ang mga proyekto
+- Puwedeng magtrabaho sa bawat proyekto nang hindi naaapektuhan ang iba
 - I-clone ang buong repo para sa buong karanasan ng kurikulum
 
 ---
 
 <!-- CO-OP TRANSLATOR DISCLAIMER START -->
-**Pagsasanggalang**:  
-Ang dokumentong ito ay isinalin gamit ang AI translation service na [Co-op Translator](https://github.com/Azure/co-op-translator). Habang nagsusumikap kami para sa katumpakan, pakatandaan na ang mga awtomatikong pagsasalin ay maaaring maglaman ng mga error o kamalian. Ang orihinal na dokumento sa katutubong wika nito ang dapat ituring na opisyal na sanggunian. Para sa mahahalagang impormasyon, inirerekomenda ang propesyonal na pagsasalin ng tao. Hindi kami mananagot sa anumang hindi pagkakaintindihan o maling interpretasyon na nagmula sa paggamit ng pagsasaling ito.
+**Paunawa**:  
+Ang dokumentong ito ay isinalin gamit ang AI translation service na [Co-op Translator](https://github.com/Azure/co-op-translator). Bagaman nagsusumikap kami para sa katuparan, pakatandaan na ang mga awtomatikong pagsasalin ay maaaring maglaman ng mga pagkakamali o hindi pagkakatugma. Ang orihinal na dokumento sa orihinal nitong wika ang dapat ituring na pangunahing sanggunian. Para sa mga mahalagang impormasyon, inirerekomenda ang propesyonal na pagsasalin ng tao. Hindi kami mananagot para sa anumang hindi pagkakaunawaan o maling interpretasyon na nagmumula sa paggamit ng pagsasaling ito.
 <!-- CO-OP TRANSLATOR DISCLAIMER END -->

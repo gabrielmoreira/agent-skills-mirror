@@ -14,6 +14,9 @@ CAPABILITIES_SUMMARY:
 - story_scaffolding: Preview stories for component prototypes
 - ai_scaffold_review: Review and integrate AI-generated code (v0/Bolt.new/Lovable/Google Stitch/Figma Make) with security audit
 - modern_css_prototyping: Prototype with modern CSS features — Anchor Positioning (declarative tooltips/dropdowns), Popover API (native modals), Grid Lanes/CSS Masonry (native masonry), CSS if() (conditional theming)
+- mobile_prototype: React Native / Flutter / Expo prototype with stubbed native capabilities (camera, push, location, biometric) and device preview, throwaway-first lifecycle
+- dashboard_prototype: Admin / analytics dashboard PoC with charting library scaffolding (Recharts / Chart.js / ECharts), table virtualization, filter/date-range shell, and seeded mock time-series data
+- ai_feature_prototype: AI feature PoC (chat UI, streaming response shell, RAG demo, agent UI) with prompt-injection-safe input handling and token-cost budget awareness
 
 COLLABORATION_PATTERNS:
 - Spark -> Forge: Feature concept needs a working slice
@@ -107,6 +110,33 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `STRIKE` | Build minimum structure, wire events, connect mock data, make happy path demoable. Leverage AI scaffolding tools (Cursor, v0, Bolt.new, Lovable, Google Stitch) where appropriate but review generated code for OWASP Top 10 vulnerabilities (2.74× higher rate than human code). Hand-code auth/payment/encryption — never delegate these to AI scaffolding | Keep scope to one slice; prefer shadcn/ui CLI (`npx shadcn add`) for rapid component scaffolding — supports both Radix and Base UI primitives | `references/ui-templates.md`, `references/api-mocking.md` |
 | `COOL` | Run compile/render/interaction checks, verify concept clarity, note blockers and debt. Security spot-check AI-generated auth/input handling — specifically check for happy-path-only logic: AI often generates code that works for valid users but omits role checks, rate limits, and abuse prevention. Verify all AI-suggested dependencies exist in the official registry (slopsquatting check). Scan AI-generated files for hardcoded secrets/API keys/tokens (3.2% leak rate) | Self-check at least every 30 minutes; if not demoable at 75% of time-box, re-scope | `references/prototyping-anti-patterns.md` |
 | `PRESENT` | Demo result, decide ADOPT/ITERATE/DISCARD, prepare next handoff. Include explicit risk assessment for production conversion | Mandatory before expanding scope | `references/builder-integration.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| UI Prototype | `ui` | ✓ | Single screen/component PoC, Throwaway by default | `references/ui-templates.md`, `references/prototyping-anti-patterns.md` |
+| API Mock | `api` | | Backend stub, mock server PoC | `references/api-mocking.md`, `references/backend-poc.md` |
+| Full Stack PoC | `fullstack` | | Both frontend and backend, thin end-to-end slice | `references/prototype-to-production.md`, `references/api-mocking.md` |
+| Landing Page | `landing` | | LP-focused PoC (Funnel supporting role) | `references/ui-templates.md`, `references/rapid-iteration-methodology.md` |
+| Mobile PoC | `mobile` | | React Native / Flutter / Expo prototype with stubbed native capabilities and device preview | `references/mobile-prototyping.md` |
+| Dashboard PoC | `dashboard` | | Admin / analytics dashboard with charts, tables, filters, and seeded mock time-series | `references/dashboard-prototyping.md` |
+| AI Feature PoC | `ai` | | Chat UI / RAG demo / agent UI with streaming response shell and injection-safe input | `references/ai-feature-prototyping.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`ui` = UI Prototype). Apply SCAFFOLD → STRIKE → COOL → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `ui`: Single component or screen. Prefer shadcn/ui CLI. ≤4h time-box. Declare Throwaway vs Evolutionary during SCAFFOLD.
+- `api`: MSW v2 handlers or json-server. Set up as a shared source for dev/test. Hand-code security-sensitive logic.
+- `fullstack`: Both UI + mock/server. Validate the hypothesis as a thin slice. Declare each layer's responsibility in SCAFFOLD.
+- `landing`: Single LP page. Factor in separation of duties with Funnel; prioritize CTAs and forms. Pixel-perfect is forbidden.
+- `mobile`: Expo / React Native / Flutter PoC. Stub native capabilities (camera / push / location / biometric) with mock implementations during STRIKE. Prefer device preview (simulator, Expo Go) over real-device builds unless a native API is the actual hypothesis. ≤4h time-box, throwaway-first. Hand off to `Native` for production build when hypothesis survives.
+- `dashboard`: Single dashboard slice (one layout, one set of widgets). Pick one charting library (Recharts for React / ECharts for dense data / Chart.js for simple cases). Seed mock time-series with deterministic generators; skip real backend wiring. Virtualize tables beyond 100 rows. Defer color-token polish — hand off to `Muse` if survived.
+- `ai`: Chat UI, streaming response shell, RAG demo, or agent UI. Use fixture-based mock LLM responses during STRIKE; swap in real API only after the happy path is demoable. Sanitize user prompts and escape rendered markdown to block prompt-injection via rendered output. Budget-check token cost before scaling demo input. Hand off to `Oracle` for real prompt / RAG design when hypothesis survives.
 
 ## Output Routing
 

@@ -213,6 +213,33 @@ ASSUMPTION_CHALLENGE:
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Feature Request | `request` | ✓ | Authentic feature request generation — first-person demand from diverse personas | `references/patterns.md` |
+| Unmet Needs | `need` | | Surface unmet needs and uncover team blind spots | `references/patterns.md` |
+| Challenge Assumptions | `challenge` | | Counter team assumptions, validate the roadmap | `references/mode-playbooks.md` |
+| User Roleplay | `roleplay` | | End-user role-play and deep-dive on a persona | `references/mode-playbooks.md` |
+| Jobs-to-be-Done | `jtbd` | | Switch interview, four-forces table, Job Map for the progress users hire the product to make | `references/jtbd-switch-interview.md` |
+| 5 Whys Root Cause | `5whys` | | Iterative why-chain that drives a surface request to its root unmet need | `references/5whys-root-cause.md` |
+| Opportunity Solution Tree | `opportunity` | | Outcome → Opportunity → Solution → Experiment hierarchy for continuous discovery | `references/opportunity-solution-tree.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`request` = Feature Request). Apply normal SCOPE → CAST → CHANNEL → VOICE → COMPILE → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `request`: EXPLORE モード。3-7 ペルソナ必須 (初心者/パワーユーザー/エッジケース含む)。全需要を第一人称で生成。
+- `need`: 未充足ニーズにフォーカス。「呪いの知識」パターン表をガイドに死角を特定。
+- `challenge`: CHALLENGE モード。既存ロードマップの前提に反証するユーザーボイスを生成。Accord への連携を念頭に。
+- `roleplay`: 特定ペルソナを深く embodiment し、最悪の日・競合比較・サイレントマジョリティ視点で生成。
+- `jtbd`: Christensen / Moesta の Switch インタビュー手法で synthetic JTBD を生成。push/pull/anxiety/habit の 4 力、Job Map 8 段階、機能/感情/社会の 3 軸を必ず分離。real-user JTBD は Researcher の領域 — 出力は仮説として `synthetic: true` タグを付け Researcher へハンドオフ。
+- `5whys`: Toyota / Ohno の 5 Whys を「ユーザー要望」に適用。垂直方向は最低 5 段、水平方向は Ishikawa fishbone で複数根因を許容。因果（because）と時系列（and then）を厳格に区別。出力は表層要望ではなく root unmet need に書き換える。
+- `opportunity`: Teresa Torres の OST を構築。Outcome（行動指標）→ Opportunity（ユーザー声の未充足）→ Solution（介入候補 2-4）→ Experiment（最小検証 + kill rule）の 4 層を厳守。output framing / OKR confusion / solution-first を排除。週次 cadence で活用する living artifact として Researcher・Spark・Experiment にハンドオフ。
+
 ## Output Routing
 
 | Signal | Mode | Primary output | Next agent |
@@ -289,6 +316,9 @@ Every deliverable must include:
 | `references/handoffs.md` | You need inbound/outbound handoff templates |
 | `references/calibration.md` | You need to validate synthetic demands against real user data |
 | `references/mode-playbooks.md` | You need detailed execution guide for each generation mode |
+| `references/jtbd-switch-interview.md` | You are running `jtbd` — Switch interview, four-forces, Job Map, competing-job analysis, hand-off boundary with Researcher (real-user JTBD) |
+| `references/5whys-root-cause.md` | You are running `5whys` — vertical/lateral why protocol, causal-vs-sequential check, Ishikawa fishbone integration, anti-patterns for synthetic root cause |
+| `references/opportunity-solution-tree.md` | You are running `opportunity` — Torres OST four-layer hierarchy, outcome anchoring, opportunity stripping, experiment design with kill rules, weekly continuous-discovery cadence |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the demand proposal, deciding adaptive thinking depth at persona channeling, or front-loading persona pool and product context at INTAKE. Critical for Plea: P3, P5. |
 
 ---

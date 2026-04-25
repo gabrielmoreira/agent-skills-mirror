@@ -114,6 +114,21 @@ echo "CHECKPOINT_PUSH: $_CHECKPOINT_PUSH"
 [ -n "$OPENCLAW_SESSION" ] && echo "SPAWNED_SESSION: true" || true
 ```
 
+## Plan Mode Safe Operations
+
+In plan mode, these are always allowed (they inform the plan, don't modify source):
+`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
+writes to the plan file, `open` for generated artifacts.
+
+## Skill Invocation During Plan Mode
+
+If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
+by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
+point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
+MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
+above or explicitly exception-marked. Call ExitPlanMode only after the skill
+workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
+
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack skills AND do not
 auto-invoke skills based on conversation context. Only run skills the user explicitly
 types (e.g., /qa, /ship). If you would have auto-invoked a skill, instead briefly say:
@@ -996,21 +1011,6 @@ success/error/abort, and `USED_BROWSE` with true/false based on whether `$B` was
 If you cannot determine the outcome, use "unknown". The local JSONL always logs. The
 remote binary only runs if telemetry is not off and the binary exists.
 
-## Plan Mode Safe Operations
-
-In plan mode, these are always allowed (they inform the plan, don't modify source):
-`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
-writes to the plan file, `open` for generated artifacts.
-
-## Skill Invocation During Plan Mode
-
-If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
-by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
-point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
-MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
-above or explicitly exception-marked. Call ExitPlanMode only after the skill
-workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
-
 ## Plan Status Footer
 
 In plan mode, before ExitPlanMode: if the plan file lacks a `## GSTACK REVIEW REPORT`
@@ -1067,6 +1067,12 @@ command -v knip >/dev/null 2>&1 && echo "DEADCODE: knip"
 
 # Shell linting
 command -v shellcheck >/dev/null 2>&1 && ls *.sh scripts/*.sh bin/*.sh 2>/dev/null | head -1 | xargs -I{} echo "SHELL: shellcheck"
+
+# GBrain presence (D6) — only report as a dimension if gbrain is actually
+# set up; otherwise skip so machines without gbrain aren't penalized.
+if command -v gbrain >/dev/null 2>&1 && [ -f "$HOME/.gbrain/config.json" ]; then
+  echo "GBRAIN: gbrain doctor --json (wrapped in timeout 5s)"
+fi
 ```
 
 Use Glob to search for shell scripts:
@@ -1131,11 +1137,12 @@ Score each category on a 0-10 scale using this rubric:
 
 | Category | Weight | 10 | 7 | 4 | 0 |
 |-----------|--------|------|-----------|------------|-----------|
-| Type check | 25% | Clean (exit 0) | <10 errors | <50 errors | >=50 errors |
-| Lint | 20% | Clean (exit 0) | <5 warnings | <20 warnings | >=20 warnings |
-| Tests | 30% | All pass (exit 0) | >95% pass | >80% pass | <=80% pass |
-| Dead code | 15% | Clean (exit 0) | <5 unused exports | <20 unused | >=20 unused |
-| Shell lint | 10% | Clean (exit 0) | <5 issues | >=5 issues | N/A (skip) |
+| Type check | 22% | Clean (exit 0) | <10 errors | <50 errors | >=50 errors |
+| Lint | 18% | Clean (exit 0) | <5 warnings | <20 warnings | >=20 warnings |
+| Tests | 28% | All pass (exit 0) | >95% pass | >80% pass | <=80% pass |
+| Dead code | 13% | Clean (exit 0) | <5 unused exports | <20 unused | >=20 unused |
+| Shell lint | 9% | Clean (exit 0) | <5 issues | >=5 issues | N/A (skip) |
+| GBrain (D6) | 10% | doctor=ok, queue<10, pushed <24h | doctor=warnings OR queue<100 OR pushed <72h | doctor broken OR queue>=100 OR pushed >=72h | N/A (gbrain not installed) |
 
 **Parsing tool output for counts:**
 - **tsc:** Count lines matching `error TS` in output.
@@ -1146,11 +1153,30 @@ Score each category on a 0-10 scale using this rubric:
 
 **Composite score:**
 ```
-composite = (typecheck_score * 0.25) + (lint_score * 0.20) + (test_score * 0.30) + (deadcode_score * 0.15) + (shell_score * 0.10)
+composite = (typecheck_score * 0.22) + (lint_score * 0.18) + (test_score * 0.28) + (deadcode_score * 0.13) + (shell_score * 0.09) + (gbrain_score * 0.10)
 ```
 
-If a category is skipped (tool not available), redistribute its weight proportionally
-among the remaining categories.
+If a category is skipped (tool not available — includes GBrain when gbrain
+is not installed), redistribute its weight proportionally among the
+remaining categories.
+
+**GBrain sub-score computation (D6):**
+
+```
+doctor_component: 10 if `gbrain doctor --json | jq -r .status` == "ok";
+                   7 if "warnings"; 0 otherwise (or command times out after 5s).
+queue_component:   10 if ~/.gstack/.brain-queue.jsonl has <10 lines;
+                    7 if 10-100; 0 if >=100 (suggests secret-scan rejections
+                    piling up). N/A if gbrain_sync_mode == off.
+push_component:    10 if (now - mtime of ~/.gstack/.brain-last-push) < 24h;
+                    7 if <72h; 0 if >=72h. N/A if gbrain_sync_mode == off.
+gbrain_score     = 0.5 * doctor_component + 0.3 * queue_component + 0.2 * push_component
+                   (redistribute 0.3 + 0.2 into doctor when sync_mode is off:
+                   gbrain_score = doctor_component in that case)
+```
+
+The `gbrain doctor --json` call MUST be wrapped in `timeout 5s` so a hung
+or misconfigured gbrain doesn't stall the entire /health dashboard.
 
 ---
 
@@ -1173,6 +1199,7 @@ Lint          biome check .      8/10   WARNING    2s         3 warnings
 Tests         bun test          10/10   CLEAN      12s        47/47 passed
 Dead code     knip               7/10   WARNING    5s         4 unused exports
 Shell lint    shellcheck        10/10   CLEAN      1s         0 issues
+GBrain        gbrain doctor     10/10   CLEAN      <1s        doctor=ok, queue=3, pushed 2h ago
 
 COMPOSITE SCORE: 9.1 / 10
 
@@ -1206,17 +1233,19 @@ eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gst
 Append one JSONL line to `~/.gstack/projects/$SLUG/health-history.jsonl`:
 
 ```json
-{"ts":"2026-03-31T14:30:00Z","branch":"main","score":9.1,"typecheck":10,"lint":8,"test":10,"deadcode":7,"shell":10,"duration_s":23}
+{"ts":"2026-03-31T14:30:00Z","branch":"main","score":9.1,"typecheck":10,"lint":8,"test":10,"deadcode":7,"shell":10,"gbrain":10,"duration_s":23}
 ```
 
 Fields:
 - `ts` -- ISO 8601 timestamp
 - `branch` -- current git branch
 - `score` -- composite score (one decimal)
-- `typecheck`, `lint`, `test`, `deadcode`, `shell` -- individual category scores (integer 0-10)
+- `typecheck`, `lint`, `test`, `deadcode`, `shell`, `gbrain` -- individual category scores (integer 0-10)
 - `duration_s` -- total time for all tools in seconds
 
-If a category was skipped, set its value to `null`.
+If a category was skipped, set its value to `null`. Pre-D6 history entries
+won't have a `gbrain` field — treat them as `null` for trend comparison
+and start new tracking from the first post-D6 run.
 
 ---
 
@@ -1235,12 +1264,12 @@ tail -10 ~/.gstack/projects/$SLUG/health-history.jsonl 2>/dev/null || echo "NO_H
 ```
 HEALTH TREND (last 5 runs)
 ==========================
-Date          Branch         Score   TC   Lint  Test  Dead  Shell
-----------    -----------    -----   --   ----  ----  ----  -----
-2026-03-28    main           9.4     10   9     10    8     10
-2026-03-29    feat/auth      8.8     10   7     10    7     10
-2026-03-30    feat/auth      8.2     10   6     9     7     10
-2026-03-31    feat/auth      9.1     10   8     10    7     10
+Date          Branch         Score   TC   Lint  Test  Dead  Shell  GBrain
+----------    -----------    -----   --   ----  ----  ----  -----  ------
+2026-03-28    main           9.4     10   9     10    8     10     10
+2026-03-29    feat/auth      8.8     10   7     10    7     10     10
+2026-03-30    feat/auth      8.2     10   6     9     7     10      7
+2026-03-31    feat/auth      9.1     10   8     10    7     10     10
 
 Trend: IMPROVING (+0.9 since last run)
 ```

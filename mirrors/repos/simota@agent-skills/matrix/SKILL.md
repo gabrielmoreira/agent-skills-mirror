@@ -170,6 +170,33 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `visualize`  | `Canvas`                                  | The user needs a matrix visual, heatmap, or coverage diagram                   |
 | `document`   | `Scribe`                                  | The plan must become a reusable decision artifact                              |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Combination Control | `combine` | ✓ | Combination explosion control, minimum coverage set selection | `references/combination-methods.md` |
+| Min Coverage Set | `cover` | | Minimum coverage set selection (pairwise/n-wise) | `references/optimization-algorithms.md` |
+| Execution Plan | `plan` | | Prioritized execution plan generation | `references/output-templates.md` |
+| Prioritize | `prioritize` | | Prioritization by risk, frequency, and business impact | `references/prioritization-pitfalls.md` |
+| Pairwise / All-Pairs | `pairwise` | | IPOG algorithm, Orthogonal-Array-based test selection, 2-way 100% coverage with minimum size | `references/pairwise-ipog.md` |
+| Equivalence Class + BVA | `equiv-class` | | Myers equivalence partitioning + boundary value analysis (ON/OFF/IN/OUT points) for input-domain reduction | `references/equiv-class-bva.md` |
+| Risk-Weighted Coverage | `risk-cover` | | RPN (Severity × Occurrence × Detection) weighted coverage, FMEA-linked prioritization, risk-based test selection | `references/risk-weighted-coverage.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`combine` = Combination Control). Apply normal PARSE → EXPAND → OPTIMIZE → PLAN workflow.
+
+Behavior notes per Recipe:
+- `combine`: End-to-end combination explosion control workflow. Parse axes/values/constraints and generate the minimum coverage set.
+- `cover`: Focus on selecting the optimization algorithm (pairwise / OA / high-strength 3-way+).
+- `plan`: Generate an execution plan (priority, assigned agents) from the coverage set. Emphasize PLAN phase.
+- `prioritize`: Focus on Critical/High/Medium/Low prioritization and bias detection.
+- `pairwise`: Apply IPOG / IPOG-F algorithm (NIST ACTS) or Orthogonal Array Testing (OATS) to produce the smallest 2-way 100%-covering test set. Output: test-case table + uncovered 3-way tuple list + reduction ratio. Hand off to Radar (unit/integration), Voyager (E2E), or Siege (load). Use `cover` instead when the user wants a general n-wise selection without the IPOG-specific method rationale.
+- `equiv-class`: Partition input domain into equivalence classes (valid/invalid), derive representative test cases, and add boundary value analysis (BVA) with ON/OFF/IN/OUT points for each class boundary. Emit one-defect-per-case negative test rule (never mask defects by combining invalid values). Use when axes are primarily *input ranges* rather than enumerated values. Hand off to Radar (unit), Builder (input validator), Probe (negative security cases).
+- `risk-cover`: Compute Risk Priority Number (RPN = Severity × Occurrence × Detection) per combination, weight coverage priority by RPN, and align with FMEA findings. Classify into Action Priority (AP) H/M/L per AIAG-VDA. Emit risk-sorted coverage set plus a residual-risk report for uncovered combinations. Consumes omen FMEA output when available. Hand off to omen (depth analysis), Sentinel (security RPN), Siege (load-risk combinations).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -229,6 +256,9 @@ When results are already available (Remap mode), also include:
 - Read [fault-interaction-statistics.md](~/.claude/skills/matrix/references/fault-interaction-statistics.md) when choosing `2-way` vs `3-way+` or mixed strength.
 - Read [prioritization-pitfalls.md](~/.claude/skills/matrix/references/prioritization-pitfalls.md) when the ranking looks biased or everything is becoming critical.
 - Read [coverage-measurement.md](~/.claude/skills/matrix/references/coverage-measurement.md) when mapping execution results back into coverage gaps.
+- Read [pairwise-ipog.md](~/.claude/skills/matrix/references/pairwise-ipog.md) when you need the IPOG/IPOG-F algorithm walk-through, OATS selection rubric, or pairwise vs n-wise trade-offs.
+- Read [equiv-class-bva.md](~/.claude/skills/matrix/references/equiv-class-bva.md) when axes are input ranges (integers, strings, continuous values) and you need equivalence partitioning + BVA + one-defect-per-negative-case discipline.
+- Read [risk-weighted-coverage.md](~/.claude/skills/matrix/references/risk-weighted-coverage.md) when prioritizing combinations by RPN / Action Priority or integrating with FMEA output from omen.
 - Read [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) when you are sizing the combinatorial plan, deciding adaptive thinking depth at t-way strength, or front-loading domain/axes/target at SCAN. Critical for Matrix: P3, P5.
 
 ## Operational

@@ -164,6 +164,33 @@ Routing rules:
 - Always use safe git commands by default; confirm before bisect or checkout.
 - Handoff regression findings to Guardian/Builder; design flaws to Atlas; missing tests to Radar; security issues to Sentinel.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Regression Investigation | `regression` | ✓ | Identify regression cause (investigate git-originated breaking commits) | `references/framework-templates.md` |
+| Git Bisect | `bisect` | | Identify regression commit via binary search | `references/framework-templates.md` |
+| Blame Walk | `blame` | | Trace change history for specific lines | `references/git-commands.md` |
+| History Mining | `history` | | Timeline analysis and archive archaeology | `references/patterns.md` |
+| Flamegraph Regression | `flame` | | Diagnose CPU/memory regressions via differential flamegraph + bisect narrowing | `references/flamegraph-regression.md` |
+| Delta Debugging | `delta` | | Minimize failing input/state via ddmin (flaky tests, large reproducers, config) | `references/delta-debugging.md` |
+| Revert Strategy | `revert` | | Choose revert vs reset, handle merge `-m`, partial revert, post-revert verification | `references/revert-strategies.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`regression` = Regression Investigation). Apply normal SCOPE → LOCATE → TRACE → REPORT → RECOMMEND workflow.
+
+Behavior notes per Recipe:
+- `regression`: Pin down the good/bad commit pair in SCOPE. Set a log₂(n) iteration budget.
+- `bisect`: Generate a `git bisect run` script. Strictly follow exit codes 0/1-124/125. Use `--first-parent` for merge-heavy repos.
+- `blame`: `-w -M -C` flags required. Check `.git-blame-ignore-revs` before running. Focus on the commit, not the individual.
+- `history`: Use pickaxe (`-S`/`-G`/`-L`) + `--follow` to trace string/function appearance and disappearance. Generate a CHANGE_STORY.
+- `flame`: Capture stack samples at good/bad revs under identical workload, generate differential flamegraph, threshold ≥5% absolute frame-share delta. Hand the offending frame to `bisect` with custom terms `fast`/`slow`. Use `--call-graph dwarf` for `perf`; warm up JIT runtimes before sampling.
+- `delta`: Apply `ddmin` to minimize failing input/state (test case, config, event sequence). Define a deterministic oracle returning PASS/FAIL/UNRESOLVED; for flaky tests rerun K=10× per oracle call. Compose with `bisect` (find commit) → `delta` (minimize input). Always verify the 1-minimal still reproduces.
+- `revert`: Choose strategy via the decision matrix — `git revert` for shared/pushed history, `reset --hard` only for local-only branches with reflog backup. Merge commits require `-m <parent>` (typically `-m 1`); document the choice. Plan the revert-of-revert when reintroducing fixed work. Always tag a `backup/pre-revert-<ts>` branch and post the comms template before merging.
+
 ## Output Requirements
 
 Every deliverable must include:
@@ -238,6 +265,9 @@ Follow `_common/GIT_GUIDELINES.md`. Conventional Commits, no agent names, <50 ch
 | `references/best-practices.md` | You need investigation best practices or anti-pattern avoidance. |
 | `references/examples.md` | You need complete investigation examples for pattern matching. |
 | `references/non-functional-regression.md` | Performance, memory, bundle size, or startup time regression bisect is needed. |
+| `references/flamegraph-regression.md` | You need flamegraph tool selection, differential flamegraph workflow, hotspot thresholds, or bisect-with-frame-share script for the `flame` subcommand. |
+| `references/delta-debugging.md` | You need ddmin pseudocode, granularity selection, flaky-test minimization tuning, or `git bisect run` integration for the `delta` subcommand. |
+| `references/revert-strategies.md` | You need the revert vs reset decision matrix, merge-commit `-m` parent selection, partial revert techniques, post-revert verification checklist, or comms template for the `revert` subcommand. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Specter, unified confidence scale, or stall protocol is needed. |
 | `_common/OPUS_47_AUTHORING.md` | You are scoping bisect iteration budget, deciding tool-use eagerness in LOCATE, or sizing CHANGE_STORY/REPORT outputs. Critical for Rewind: P3, P5. |
 

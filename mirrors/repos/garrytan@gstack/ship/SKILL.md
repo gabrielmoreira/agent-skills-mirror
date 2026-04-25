@@ -117,6 +117,21 @@ echo "CHECKPOINT_PUSH: $_CHECKPOINT_PUSH"
 [ -n "$OPENCLAW_SESSION" ] && echo "SPAWNED_SESSION: true" || true
 ```
 
+## Plan Mode Safe Operations
+
+In plan mode, these are always allowed (they inform the plan, don't modify source):
+`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
+writes to the plan file, `open` for generated artifacts.
+
+## Skill Invocation During Plan Mode
+
+If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
+by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
+point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
+MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
+above or explicitly exception-marked. Call ExitPlanMode only after the skill
+workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
+
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack skills AND do not
 auto-invoke skills based on conversation context. Only run skills the user explicitly
 types (e.g., /qa, /ship). If you would have auto-invoked a skill, instead briefly say:
@@ -1016,21 +1031,6 @@ Replace `SKILL_NAME` with the actual skill name from frontmatter, `OUTCOME` with
 success/error/abort, and `USED_BROWSE` with true/false based on whether `$B` was used.
 If you cannot determine the outcome, use "unknown". The local JSONL always logs. The
 remote binary only runs if telemetry is not off and the binary exists.
-
-## Plan Mode Safe Operations
-
-In plan mode, these are always allowed (they inform the plan, don't modify source):
-`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
-writes to the plan file, `open` for generated artifacts.
-
-## Skill Invocation During Plan Mode
-
-If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
-by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
-point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
-MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
-above or explicitly exception-marked. Call ExitPlanMode only after the skill
-workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
 
 ## Plan Status Footer
 
@@ -2736,8 +2736,8 @@ fi
 Read the `STATE:` line and dispatch:
 
 - **FRESH** → proceed with the bump action below (steps 1–4).
-- **ALREADY_BUMPED** → skip the bump. Reuse `CURRENT_VERSION` for CHANGELOG and PR body. Continue to the next step.
-- **DRIFT_STALE_PKG** → a prior `/ship` bumped `VERSION` but failed to update `package.json`. Run the sync-only repair block below (after step 4). Do NOT re-bump. Reuse `CURRENT_VERSION` for CHANGELOG and PR body.
+- **ALREADY_BUMPED** → skip the bump by default, BUT check for queue drift first: call `bin/gstack-next-version` with the implied bump level (derived from `CURRENT_VERSION` vs `BASE_VERSION`), compare its `.version` against `CURRENT_VERSION`. If they differ (queue moved since last ship), use **AskUserQuestion**: "VERSION drift detected: you claim v<CURRENT> but next available is v<NEW> (queue moved). A) Rebump to v<NEW> and rewrite CHANGELOG header + PR title (recommended), B) Keep v<CURRENT> — will be rejected by CI version-gate until resolved." If A, treat this as FRESH with `NEW_VERSION=<new>` and run steps 1-4 (which will also trigger Step 13 CHANGELOG header rewrite and Step 19 PR title rewrite). If B, reuse `CURRENT_VERSION` and warn that CI will likely reject. If util is offline, warn and reuse `CURRENT_VERSION`.
+- **DRIFT_STALE_PKG** → a prior `/ship` bumped `VERSION` but failed to update `package.json`. Run the sync-only repair block below (after step 4). Do NOT re-bump. Reuse `CURRENT_VERSION` for CHANGELOG and PR body. (Queue check still runs in ALREADY_BUMPED terms after repair.)
 - **DRIFT_UNEXPECTED** → `/ship` has halted (exit 1). Resolve manually; /ship cannot tell which file is authoritative.
 
 1. Read the current `VERSION` file (4-digit format: `MAJOR.MINOR.PATCH.MICRO`)
@@ -2750,9 +2750,33 @@ Read the `STATE:` line and dispatch:
    - **MINOR** (2nd digit): **ASK the user** if ANY feature signal is detected, OR 500+ lines changed, OR new modules/packages added
    - **MAJOR** (1st digit): **ASK the user** — only for milestones or breaking changes
 
-3. Compute the new version:
-   - Bumping a digit resets all digits to its right to 0
-   - Example: `0.19.1.0` + PATCH → `0.19.2.0`
+   Save the chosen level as `BUMP_LEVEL` (one of `major`, `minor`, `patch`, `micro`). This is the user-intended level. The next step decides *placement* — the level stays the same even if queue-aware allocation has to advance past a claimed slot.
+
+3. **Queue-aware version pick (workspace-aware ship, v1.6.4.0+).** Call `bin/gstack-next-version` to see what's already claimed by open PRs + active sibling Conductor worktrees, then render the queue state to the user:
+
+   ```bash
+   QUEUE_JSON=$(bun run bin/gstack-next-version \
+     --base <base> \
+     --bump "$BUMP_LEVEL" \
+     --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
+   NEW_VERSION=$(echo "$QUEUE_JSON" | jq -r '.version // empty')
+   CLAIMED_COUNT=$(echo "$QUEUE_JSON" | jq -r '.claimed | length')
+   ACTIVE_SIBLING_COUNT=$(echo "$QUEUE_JSON" | jq -r '.active_siblings | length')
+   OFFLINE=$(echo "$QUEUE_JSON" | jq -r '.offline // false')
+   REASON=$(echo "$QUEUE_JSON" | jq -r '.reason // ""')
+   ```
+
+   - If `OFFLINE=true` or the util fails (auth expired, no `gh`/`glab`, network): fall back to local `BUMP_LEVEL` arithmetic (bump `BASE_VERSION` at the chosen level). Print `⚠ workspace-aware ship offline — using local bump only`. Continue.
+   - If `CLAIMED_COUNT > 0`: render the queue table to the user so they can see landing order at a glance:
+     ```
+     Queue on <base> (vBASE_VERSION):
+       #<pr> <branch> → v<version>   [⚠ collision with #<other>]
+     Active sibling workspaces (WIP, not yet PR'd):
+       <path> → v<version> (committed Nh ago)
+     Your branch will claim: vNEW_VERSION  (<reason>)
+     ```
+   - If `ACTIVE_SIBLING_COUNT > 0` and any active sibling's VERSION is `>= NEW_VERSION`, use **AskUserQuestion**: "Sibling workspace <path> has v<X> committed <N>h ago but hasn't PR'd yet. Wait for them to ship first, or advance past? A) Advance past (recommended for unrelated work), B) Abort /ship and sync up with sibling first."
+   - Validate `NEW_VERSION` matches `MAJOR.MINOR.PATCH.MICRO`. If util returns an empty or malformed version, fall back to local bump.
 
 4. **Validate** `NEW_VERSION` and write it to **both** `VERSION` and `package.json`. This block runs only when `STATE: FRESH`.
 
@@ -3093,7 +3117,11 @@ gh pr view --json url,number,state -q 'if .state == "OPEN" then "PR #\(.number):
 glab mr view -F json 2>/dev/null | jq -r 'if .state == "opened" then "MR_EXISTS" else "NO_MR" end' 2>/dev/null || echo "NO_MR"
 ```
 
-If an **open** PR/MR already exists: **update** the PR body using `gh pr edit --body "..."` (GitHub) or `glab mr update -d "..."` (GitLab). Always regenerate the PR body from scratch using this run's fresh results (test output, coverage audit, review findings, adversarial review, TODOS summary, documentation_section from Step 18). Never reuse stale PR body content from a prior run. Print the existing URL and continue to Step 20.
+If an **open** PR/MR already exists: **update** the PR body using `gh pr edit --body "..."` (GitHub) or `glab mr update -d "..."` (GitLab). Always regenerate the PR body from scratch using this run's fresh results (test output, coverage audit, review findings, adversarial review, TODOS summary, documentation_section from Step 18). Never reuse stale PR body content from a prior run.
+
+**Also update the PR title** if the version changed on rerun. PR titles use the workspace-aware format `v<NEW_VERSION> <type>: <summary>` — version ALWAYS first. If the current title's version prefix doesn't match `NEW_VERSION`, run `gh pr edit --title "v$NEW_VERSION <type>: <summary>"` (or the `glab mr update -t ...` equivalent). This keeps the title truthful when Step 12's queue-drift detection rebumps a stale version. If the title has no `v<X.Y.Z.W>` prefix (a custom title kept intentionally), leave the title alone — only rewrite titles that already follow the format.
+
+Print the existing URL and continue to Step 20.
 
 If no PR/MR exists: create a pull request (GitHub) or merge request (GitLab) using the platform detected in Step 0.
 
@@ -3161,7 +3189,7 @@ you missed it.>
 **If GitHub:**
 
 ```bash
-gh pr create --base <base> --title "<type>: <summary>" --body "$(cat <<'EOF'
+gh pr create --base <base> --title "v$NEW_VERSION <type>: <summary>" --body "$(cat <<'EOF'
 <PR body from above>
 EOF
 )"
@@ -3170,7 +3198,7 @@ EOF
 **If GitLab:**
 
 ```bash
-glab mr create -b <base> -t "<type>: <summary>" -d "$(cat <<'EOF'
+glab mr create -b <base> -t "v$NEW_VERSION <type>: <summary>" -d "$(cat <<'EOF'
 <MR body from above>
 EOF
 )"

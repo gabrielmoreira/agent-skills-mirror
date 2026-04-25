@@ -144,6 +144,35 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 **Important:** Canon does NOT make legal compliance determinations. Always consult appropriate professionals for regulated industries.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| OWASP Review | `owasp` | ✓ | OWASP Top 10 / ASVS security standards assessment | `references/security-standards.md` |
+| WCAG Accessibility | `wcag` | | WCAG 2.2 / WAI-ARIA accessibility assessment | `references/accessibility-standards.md` |
+| OpenAPI Compliance | `openapi` | | OpenAPI 3.1 / RFC 9110 API standards compliance check | `references/api-standards.md` |
+| ISO 25010 Quality | `iso` | | ISO/IEC 25010:2023 quality characteristics assessment (SOLID/Clean Code) | `references/quality-standards.md` |
+| Gap Analysis | `gap` | | Multi-standard gap analysis, audit report generation | `references/compliance-templates.md` |
+| NIST CSF | `nist` | | NIST CSF 2.0 (Govern/Identify/Protect/Detect/Respond/Recover) Tier and Profile assessment | `references/nist-csf.md` |
+| PCI-DSS | `pci` | | PCI-DSS v4.0.1 12-Requirement compliance, CDE scoping, SAQ/ROC selection | `references/pci-dss.md` |
+| GDPR | `gdpr` | | GDPR (Reg. (EU) 2016/679) Articles 5/6/7/13/17/25/30/32/33/35 data-protection assessment | `references/gdpr-compliance.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`owasp` = OWASP Review). Apply normal SURVEY → PLAN → ASSESS → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `owasp`: Security assessment using OWASP Top 10:2025 + ASVS 4.x. Always pin versions. Critical findings require 24-48h response.
+- `wcag`: Assess against WCAG 2.2 Level AA. Recommend automated scan + manual verification (automation covers only 31% of SC).
+- `openapi`: Assess API standards compliance with OpenAPI 3.1 / RFC 9110 / GraphQL Spec. Route remediation to Gateway.
+- `iso`: Quality assessment using ISO/IEC 25010:2023 (9 characteristics). Show correspondence with SOLID/CUPID/Clean Code.
+- `gap`: Parallel ASSESS phase across 3+ standards domains. Use per-domain subagents to generate a consolidated report.
+- `nist`: Assess against NIST CSF 2.0 (released Feb 2024). Always start with Govern function, then ID/PR/DE/RS/RC. Score Current vs. Target Profile per Category at Tier 1-4. Hand off to Comply for OSCAL/audit trail.
+- `pci`: Assess against PCI-DSS v4.0.1 (v3.2.1 retired Mar 31 2025). Determine CDE scope first; select SAQ type or ROC path; flag scope-minimization opportunities (tokenization, P2PE, segmentation). Misclassifying SAQ A vs. A-EP is a leading e-skimming risk.
+- `gdpr`: Assess against GDPR (Reg. (EU) 2016/679). Pin Article + paragraph (e.g., `Art. 6(1)(b)`); never make legal determinations — defer to Clause + qualified counsel. Validate 72h breach readiness (Art. 33), DPIA triggers (Art. 35), DPO threshold (Art. 37). Hand off to Cloak for privacy-by-design implementation.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -221,6 +250,9 @@ When a full compliance audit spans 3+ standard domains (e.g., Security + A11y + 
 | `references/quality-standards.md` | You need ISO 25010, 12-Factor, CNCF, or SRE. |
 | `references/compliance-templates.md` | You need compliance report template. |
 | `references/anthropic-skill-standards.md` | You need Anthropic official skill specification for SKILL.md compliance assessment, frontmatter validation, description quality evaluation, or progressive disclosure verification during ASSESS. |
+| `references/nist-csf.md` | You need NIST CSF 2.0 Functions/Categories/Subcategories, Implementation Tiers, Current vs. Target Profile mapping, or hand-off to Comply for OSCAL packages. |
+| `references/pci-dss.md` | You need PCI-DSS v4.0.1 12 Requirements, CDE scoping, SAQ type selection (A/A-EP/B/B-IP/C/C-VT/D/P2PE), or scope minimization (tokenization, segmentation). |
+| `references/gdpr-compliance.md` | You need GDPR Articles 5/6/7/13/17/25/30/32/33/35, six lawful bases, DPIA triggers, 72h breach notification, DPO appointment threshold, or hand-off to Cloak for privacy-by-design. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the compliance report, deciding adaptive thinking depth at version pinning, or front-loading standard/version/scope at ASSESS. Critical for Canon: P3, P5. |
 
 ## Operational

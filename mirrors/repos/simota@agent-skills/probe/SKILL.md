@@ -11,6 +11,9 @@ CAPABILITIES_SUMMARY:
 - api_security_testing: Test API endpoints for BOLA/BFLA, auth flaws, and stateful vulnerabilities
 - report_generation: Generate severity-prioritized security reports with remediation SLAs and SARIF export
 - continuous_security: Design scan cadence strategies (PR-level, staging, nightly) for DevSecOps integration
+- api_dast: API-focused DAST for REST/GraphQL/WebSocket — OWASP API Top 10 2023, BOLA/BFLA dual-identity testing, mass assignment, GraphQL introspection/depth/batching, schemathesis+restler fuzzing
+- mobile_dast: Mobile DAST for built iOS/Android apps — MobSF orchestration, Frida instrumentation, authorized SSL pinning bypass, insecure storage dump, deep-link abuse, WebView XSS against OWASP MASVS/MASTG
+- attack_surface_recon: Passive external recon — subfinder/amass/assetfinder, certificate transparency, DNS enumeration, tech fingerprinting, public-repo secret hunting, shodan/fofa/censys, leaked-credential lookup (no exploitation)
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Probe: Static analysis findings for runtime validation
@@ -163,6 +166,33 @@ Per OWASP Top 10 2025 and API Security Top 10:
 | `Probe -> Sentinel` | DAST evidence should refine static rules or correlate with source findings |
 | `Probe -> Vigil` | Confirmed exploit patterns should become detection/alerting rules |
 | `Probe -> Triage` | Critical (CVSS ≥ 9.0) vulnerability requires immediate incident response |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| OWASP ZAP | `zap` | ✓ | OWASP ZAP scanning | `references/zap-scanning-guide.md` |
+| Burp Suite | `burp` | | Burp Suite usage | `references/vulnerability-testing-patterns.md` |
+| Nuclei | `nuclei` | | Nuclei template scanning | `references/nuclei-templates.md` |
+| Pentest Plan | `pentest` | | Pentest planning | `references/pentest-methodology-pitfalls.md` |
+| API DAST | `api` | | REST/GraphQL/WebSocket dynamic testing — OWASP API Top 10 2023, BOLA/BFLA, mass assignment, GraphQL abuse | `references/api-dast.md` |
+| Mobile DAST | `mobile` | | iOS/Android built-app dynamic testing — MobSF, Frida, pinning bypass, storage dump, MASVS/MASTG | `references/mobile-dast.md` |
+| Attack-Surface Recon | `recon` | | Passive external reconnaissance — subdomains, CT, DNS, tech fingerprint, secret search, shodan (no exploitation) | `references/recon.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`zap` = OWASP ZAP). Apply normal PLAN → SCAN → VALIDATE → REPORT workflow.
+
+Behavior notes per Recipe:
+- `zap`: Default Recipe. Authenticated ZAP baseline (PR) or full active (staging/nightly). Use Zest scripts for multi-step login, TOTP, Client Script Auth. PTK add-on for combined DAST+IAST+SAST+SCA in one browser session.
+- `burp`: Burp Suite Professional / Enterprise with Intruder, Repeater, Autorize (BOLA). Preferred for manual exploit chaining and multi-identity authz testing. Pair with Collaborator for OOB checks.
+- `nuclei`: Template-based targeted scanning (12,000+ templates, incl. GCP/Azure/K8s). Pin template versions, verify sources (CVE-2024-43405). Default rate `150 req/s`; reduce to `30-50` on prod-adjacent. Review AI-generated templates manually.
+- `pentest`: Full PLAN→REPORT engagement. Scope, authorization, threat model, attack-path chaining. Output is a complete assessment report with CVSS v4.0, SLAs, and agent handoffs.
+- `api`: REST / GraphQL / WebSocket DAST. Requires written scope AND 2+ identities at different privilege tiers (single-identity scans cannot detect BOLA/BFLA). Run schemathesis + restler for stateful fuzz; Autorize for BOLA sweep; graphql-cop for GraphQL audit. Cross-link to Sentinel for static-first findings and Gateway when the flaw is spec-level (missing `security:`, CORS wildcard). BOLA alone is ~40% of API attacks — always include.
+- `mobile`: Dynamic testing of built iOS/Android binaries against OWASP MASVS 2.0 / MASTG. Requires written scope explicitly authorizing Frida instrumentation and SSL pinning bypass before use. MobSF for static+dynamic orchestration, Frida/Objection for runtime hooks, Burp for MITM post-pinning-bypass, Drozer for Android IPC. Cross-link to Sentinel for source-level audit and Native for remediation/rebuild. Test release builds, not debug.
+- `recon`: Passive-by-default external attack-surface mapping. Output is an inventory, NOT a pentest — no exploitation, no auth attempts, no active vuln scans without separate written scope. Subfinder + amass passive + assetfinder + crt.sh for subdomains; dnsx passive resolve; httpx single-GET fingerprint; trufflehog on public repos; HIBP for leaked-credential counts (never log in to verify). Feeds prioritized targets to `zap`/`nuclei`/`api`/`mobile`/`pentest`. Cross-link to Breach for full red-team engagement — `recon` is the recon-only slice, Breach owns the adversary scenario.
 
 ## Output Routing
 

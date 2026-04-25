@@ -111,6 +111,21 @@ echo "CHECKPOINT_PUSH: $_CHECKPOINT_PUSH"
 [ -n "$OPENCLAW_SESSION" ] && echo "SPAWNED_SESSION: true" || true
 ```
 
+## Plan Mode Safe Operations
+
+In plan mode, these are always allowed (they inform the plan, don't modify source):
+`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
+writes to the plan file, `open` for generated artifacts.
+
+## Skill Invocation During Plan Mode
+
+If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
+by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
+point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
+MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
+above or explicitly exception-marked. Call ExitPlanMode only after the skill
+workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
+
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack skills AND do not
 auto-invoke skills based on conversation context. Only run skills the user explicitly
 types (e.g., /qa, /ship). If you would have auto-invoked a skill, instead briefly say:
@@ -1011,21 +1026,6 @@ success/error/abort, and `USED_BROWSE` with true/false based on whether `$B` was
 If you cannot determine the outcome, use "unknown". The local JSONL always logs. The
 remote binary only runs if telemetry is not off and the binary exists.
 
-## Plan Mode Safe Operations
-
-In plan mode, these are always allowed (they inform the plan, don't modify source):
-`$B` (browse), `$D` (design), `codex exec`/`codex review`, writes to `~/.gstack/`,
-writes to the plan file, `open` for generated artifacts.
-
-## Skill Invocation During Plan Mode
-
-If the user invokes a skill in plan mode, that skill takes precedence over generic plan mode behavior. Treat it as executable instructions, not reference. Follow step
-by step. AskUserQuestion calls satisfy plan mode's end-of-turn requirement. At a STOP
-point, stop immediately. Do not continue the workflow past a STOP point and do not call ExitPlanMode there. Commands marked "PLAN
-MODE EXCEPTION — ALWAYS RUN" execute. Other writes need to be already permitted
-above or explicitly exception-marked. Call ExitPlanMode only after the skill
-workflow completes — only then call ExitPlanMode (or if the user tells you to cancel the skill or leave plan mode).
-
 ## Plan Status Footer
 
 In plan mode, before ExitPlanMode: if the plan file lacks a `## GSTACK REVIEW REPORT`
@@ -1444,6 +1444,49 @@ Record the CI wait time for the deploy report.
 If CI passes within the timeout: Tell the user "CI passed after {duration}. Moving to readiness checks." Continue to Step 4.
 If CI fails: **STOP.** "CI failed. Here's what broke: {failures}. This needs to pass before I can merge."
 If timeout (15 min): **STOP.** "CI has been running for over 15 minutes — that's unusual. Check the GitHub Actions tab to see if something is stuck."
+
+---
+
+## Step 3.4: VERSION drift detection (workspace-aware ship)
+
+Before gathering readiness evidence, verify that the VERSION this PR claims is still the next free slot. A sibling workspace may have shipped and landed since `/ship` ran, leaving this PR's VERSION stale.
+
+```bash
+BRANCH_VERSION=$(git show HEAD:VERSION 2>/dev/null | tr -d '\r\n[:space:]' || echo "")
+BASE_BRANCH=$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || echo main)
+BASE_VERSION=$(git show origin/$BASE_BRANCH:VERSION 2>/dev/null | tr -d '\r\n[:space:]' || echo "")
+
+# Imply bump level by comparing branch VERSION to base (crude but good enough for drift detection)
+# We don't need the exact original level — we just need "a level" that passes to the util.
+# If the minor digit advanced, call it minor; patch digit, patch; etc. If base > branch, skip (not ours to land).
+# For simplicity: use "patch" as a conservative default; util handles collision-past regardless of input level.
+QUEUE_JSON=$(bun run bin/gstack-next-version \
+  --base "$BASE_BRANCH" \
+  --bump patch \
+  --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
+NEXT_SLOT=$(echo "$QUEUE_JSON" | jq -r '.version // empty')
+OFFLINE=$(echo "$QUEUE_JSON" | jq -r '.offline // false')
+```
+
+Behavior:
+
+1. If `OFFLINE=true` or the util fails: print `⚠ VERSION drift check unavailable (util offline) — proceeding with PR version v<BRANCH_VERSION>`. Continue to Step 3.5. CI's version-gate job is the backstop.
+
+2. If `BRANCH_VERSION` is already `>=` than `NEXT_SLOT`: no drift (or our PR is ahead of the queue). Continue.
+
+3. If drift is detected (a PR landed ahead of us and `BRANCH_VERSION < NEXT_SLOT`): **STOP** and print exactly:
+   ```
+   ⚠ VERSION drift detected.
+     This PR claims:  v<BRANCH_VERSION>
+     Next free slot:  v<NEXT_SLOT>   (queue moved since last /ship)
+
+   Rerun /ship from the feature branch to reconcile. /ship's ALREADY_BUMPED
+   branch will detect the drift and rewrite VERSION + CHANGELOG header + PR title
+   atomically. Do NOT merge from here — the landed PR would overwrite the other
+   branch's CHANGELOG entry or land with a duplicate version header.
+   ```
+
+   Exit non-zero. Do NOT auto-bump from `/land-and-deploy` — rerunning `/ship` is the clean path (it already handles VERSION + package.json + CHANGELOG header + PR title atomically via Step 12 ALREADY_BUMPED detection).
 
 ---
 

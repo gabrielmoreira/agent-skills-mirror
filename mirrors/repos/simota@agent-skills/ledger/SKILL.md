@@ -193,6 +193,31 @@ Details → `references/cost-anomaly-detection.md`
 | `GOVERN` | Budget alerts, anomaly rules, CI/CD gates, tag enforcement | Governance configuration |
 | `HANDOFF` | Deliver to Scaffold/Beacon/Gear for implementation | Structured handoff package |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| IaC Cost Estimate | `estimate` | ✓ | IaC cost estimation, pre/post-change cost diff | `references/iac-cost-estimation.md` |
+| Right-Sizing | `rightsizing` | | Instance right-sizing, CPU/memory utilization analysis | `references/optimization-strategies.md` |
+| Cost Anomaly | `anomaly` | | Cost anomaly detection rule design, spike response playbook | `references/cost-anomaly-detection.md` |
+| RI / SP / CUD | `ri-sp` | | Reserved Instances, Savings Plans, GCP CUD, Azure RI commitment strategy with break-even and ladder design | `references/reserved-savings-plans.md` |
+| AI / GPU Cost | `gpu-cost` | | AI/ML and GPU workload cost — H100/H200/A100/L40S/T4 SKU economics, training vs inference split, spot strategy, quantization impact | `references/ai-gpu-cost.md` |
+| Cost-Allocation Tagging | `tagging` | | Mandatory tag taxonomy, AWS/GCP/Azure enforcement (SCP/Org Policy/Azure Policy), showback / chargeback design | `references/cost-tagging-strategy.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`estimate` = IaC Cost Estimate). Apply normal INFORM → ESTIMATE → OPTIMIZE → GOVERN → HANDOFF workflow.
+
+Behavior notes per Recipe:
+- `estimate`: Default. Run full INFORM → ESTIMATE → OPTIMIZE → GOVERN → HANDOFF. IaC-driven cost diff with data-transfer itemization and confidence band.
+- `rightsizing`: Utilization-evidence-first. Refuse on < 14 days of metrics. Output sizing table + IaC delta for Scaffold.
+- `anomaly`: Detection rules + response playbook. Tiered severity (INFO/WARNING/CRITICAL) with suppression and aggregation defaults.
+- `ri-sp`: Commitment strategy across AWS RI (Standard/Convertible), AWS Savings Plans (Compute/EC2 Instance/SageMaker), GCP CUD, Azure Reserved VM. 30+ days of usage required; coverage tier per workload class; staggered expiration ladder; >$10K/mo or 3y term needs executive approval; document Marketplace / exchange rollback path.
+- `gpu-cost`: AI/GPU workload economics. Separate training vs inference; SKU-match (H100/H200/A100/L40S/T4); spot+checkpoint cadence (rule: cadence ≈ MTBI/4); quantization (INT8/INT4/FP8) cost-vs-quality; unit cost in $/1K tokens or $/1K requests, never $/GPU-hour; cap GPU commitments at 1 year and 20-40% baseline.
+- `tagging`: Tag taxonomy + enforcement. Cap mandatory tags at 5-7 with allowed-value enums; lowercase + dash convention across AWS/GCP/Azure; ladder enforcement (soft-warn → alert → deny → auto-remediate) gated on coverage thresholds; define shared-cost split rules; downstream recipes refuse per-team output below 80% coverage.
+
 ## Output Routing
 
 | Signal | Approach | Primary Output | Read Next |
@@ -263,6 +288,9 @@ Spawn condition: task covers 3+ workflow phases with independent data sources. S
 | `references/cost-anomaly-detection.md` | Anomaly detection patterns, detection rules, response playbooks |
 | `references/cost-visibility.md` | Tag strategy, cost allocation, dashboard specs, showback/chargeback |
 | `references/cloud-pricing-models.md` | AWS/GCP/Azure pricing model comparison, pricing structure reference |
+| `references/reserved-savings-plans.md` | `ri-sp` subcommand: AWS RI / SP / GCP CUD / Azure RI vendor comparison, coverage targets per workload class, break-even thresholds, expiration ladder, anti-patterns |
+| `references/ai-gpu-cost.md` | `gpu-cost` subcommand: GPU SKU pricing (H100/H200/A100/L40S/T4), training vs inference profile, spot+checkpoint cadence rule, quantization cost-vs-quality, $/1K-token unitization |
+| `references/cost-tagging-strategy.md` | `tagging` subcommand: mandatory tag schema, AWS/GCP/Azure enforcement comparison, showback/chargeback model selection, untagged-resource SLA ladder |
 | `references/handoff-formats.md` | Inter-agent handoff YAML templates (inbound/outbound) |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the cost report, deciding adaptive thinking depth at commitment strategy, or front-loading cloud scope/timeframe/decision at INTAKE. Critical for Ledger: P3, P5. |
 

@@ -123,6 +123,44 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `VERIFY` | Check display and interpolation, validate key naming clarity, sort JSON alphabetically, add translator context comments | Test in context, not isolation | `references/rtl-support.md` |
 | `PRESENT` | Create PR with i18n scope and impact summary, document extracted count and namespaces | Include extraction count and namespace map | `references/library-setup.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| String Extraction | `extract` | ✓ | Extract hardcoded strings and replace with t() calls | `references/library-setup.md` |
+| Intl Formatting | `intl` | | Intl API integration for date, currency, and number formatting | `references/intl-api-patterns.md` |
+| Translation Keys | `keys` | | Translation key structure and namespace design | `references/icu-message-format.md` |
+| RTL Support | `rtl` | | RTL layout support and CSS logical properties implementation | `references/rtl-support.md` |
+| Pluralization | `pluralize` | | CLDR plural categories, ICU plural/selectordinal branches, per-locale category coverage, plural-branch testing | `references/pluralize-cldr-rules.md` |
+| Locale Negotiation | `locale` | | BCP 47 parsing, Accept-Language negotiation, fallback chain, user-override persistence, geolocation defaults | `references/locale-negotiation.md` |
+| Translation Workflow | `translate` | | TMS integration (Lokalise/Crowdin/Phrase/Smartling), translation memory, translator briefing, placeholder/HTML QA, release workflow | `references/translate-tms-workflow.md` |
+
+Behavior notes:
+- **extract** (default): SCAN → EXTRACT → VERIFY → PRESENT; hardcoded strings become `t()` calls with semantic nested keys; load `library-setup.md`.
+- **intl**: Intl API integration for dates, currencies, numbers, relative time, durations, and segmentation; load `intl-api-patterns.md`.
+- **keys**: Namespace design and key naming; load `icu-message-format.md`.
+- **rtl**: CSS logical properties, bidi isolation, `dir` attribute wiring; load `rtl-support.md`.
+- **pluralize**: CLDR plural-rule implementation, ICU `plural` / `selectordinal` branch authoring per locale (Arabic 6 / Polish 4 / English 2 / Japanese 1 forms), fallback strategy, and branch-coverage testing; load `pluralize-cldr-rules.md`. For source-language copy authoring use Prose; for framework-specific translation hooks (`t()` call sites, `<Plural>` components) use Artisan; for spec-level L10n requirements use Accord.
+- **locale**: BCP 47 parsing and canonicalization, `Accept-Language` negotiation, fallback chain design (`zh-Hant-HK → zh-Hant → zh → default`), user-override persistence (cookie / user record), geolocation-inferred defaults vs explicit user choice; load `locale-negotiation.md`. For source-language copy use Prose; for framework middleware / RSC locale wiring use Artisan; for supported-locale SLA and spec requirements use Accord.
+- **translate**: TMS integration (Lokalise / Crowdin / Phrase / Smartling), translation-memory reuse strategy, source-string change detection, translator briefing (description / max length / screenshots), QA gates (placeholder parity, HTML tag integrity, ICU syntax, coverage), and release workflow; load `translate-tms-workflow.md`. For source copy authoring use Prose; for extractor output format wiring use Artisan; for locale-coverage SLA use Accord.
+
+## Subcommand Dispatch
+
+Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `extract` (default).
+
+| First Token | Recipe Activated |
+|------------|-----------------|
+| `extract` | String Extraction |
+| `intl` | Intl Formatting |
+| `keys` | Translation Keys |
+| `rtl` | RTL Support |
+| `pluralize` | Pluralization |
+| `locale` | Locale Negotiation |
+| `translate` | Translation Workflow |
+| _(no match)_ | String Extraction (default) |
+
+---
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -252,6 +290,9 @@ Polyglot receives features and UI components from upstream agents. Polyglot send
 | `references/intl-api-patterns.md` | You need Intl API code examples, performance tips, or caching patterns. |
 | `references/icu-message-format.md` | You need ICU MessageFormat patterns, key naming conventions, or namespace design. |
 | `references/rtl-support.md` | You need CSS logical property mappings, bidi components, or RTL testing checklist. |
+| `references/pluralize-cldr-rules.md` | You need CLDR plural categories per locale, ICU `plural` / `selectordinal` authoring, fallback strategy, or plural-branch test matrix. |
+| `references/locale-negotiation.md` | You need BCP 47 parsing, `Accept-Language` negotiation, fallback chain design, user-override persistence, or geolocation-default resolution. |
+| `references/translate-tms-workflow.md` | You need TMS integration (Lokalise/Crowdin/Phrase/Smartling), translation-memory reuse, translator briefing, QA gates, or release rollout strategy. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the i18n deliverable, calibrating effort to component/feature/app scope, or front-loading locale/library at SCAN. Critical for Polyglot: P3, P6. |
 
 ## Operational

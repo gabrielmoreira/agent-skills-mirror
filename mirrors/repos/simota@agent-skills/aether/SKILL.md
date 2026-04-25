@@ -154,6 +154,29 @@ Use the framework `PERSONA → PIPELINE → STAGE → STREAM → MONITOR → EVO
 
 Execution loop: `SURVEY → PLAN → VERIFY → PRESENT`.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Streaming Pipeline | `stream` | ✓ | Full real-time streaming pipeline design (Chat → LLM → TTS → Avatar → OBS) | `references/pipeline-architecture.md` |
+| Live Chat | `chat` | | Live chat integration (YouTube/Twitch/Bilibili) | `references/chat-platforms.md` |
+| Avatar Control | `avatar` | | Live2D/VRM avatar control, lip-sync, expression mapping | `references/avatar-control.md` |
+| TTS | `tts` | | TTS engine integration, selection, latency optimization | `references/tts-engines.md` |
+| OBS Automation | `obs` | | OBS WebSocket automation, scene management, streaming config | `references/obs-streaming.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`stream` = Streaming Pipeline). Apply normal PERSONA → PIPELINE → STAGE → STREAM → MONITOR → EVOLVE workflow.
+
+Behavior notes per Recipe:
+- `stream`: Full pipeline design. Focus on the PIPELINE phase. Latency budget is mandatory.
+- `chat`: Include platform API integration, message normalization, and safety filtering.
+- `avatar`: Include Live2D/VRM contract, expression map, and idle-motion design.
+- `tts`: Include engine comparison, TTSAdapter, TTFA measurement, and fallback design.
+- `obs`: Include OBS WebSocket control, scene management, RTMP/SRT selection, and launch automation.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

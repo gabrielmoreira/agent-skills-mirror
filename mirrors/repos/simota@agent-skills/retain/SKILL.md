@@ -144,6 +144,35 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Lifecycle campaign execution or channel operations | `Growth` |
 | Cross-agent orchestration or AUTORUN routing | `Nexus` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Re-engagement | `reengagement` | ✓ | Re-engagement strategy and dormant user recovery | `references/engagement-triggers.md` |
+| Churn Prevention | `churn` | | Churn prevention and subscription save flows | `references/retention-analysis.md` |
+| Gamification | `gamification` | | Gamification design: points, badges, and streaks | `references/gamification.md` |
+| Habit Formation | `habit` | | Habit formation design, Hook Model, and streak design | `references/habit-formation.md` |
+| Loyalty Program | `loyalty` | | Loyalty program design and reward system construction | `references/gamification.md` |
+| Win-Back Campaign | `winback` | | Dormant / cancelled-user recovery campaign with recency-weighted offers, multi-touch cadence, and reactivation metric | `references/winback-campaign.md` |
+| Lifecycle Email Drip | `lifecycle-email` | | 30/60/90 onboarding + lifecycle email drip design: trigger-based, behavior-branched, deliverability and suppression rules | `references/lifecycle-email-drip.md` |
+| Power User Advocacy | `power-user` | | Power-user identification via L21+ MAU + NPS promoter overlap, advocacy ladder, community/referral program activation | `references/power-user-advocacy.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`reengagement` = Re-engagement). Apply normal MONITOR → IDENTIFY → INTERVENE → MEASURE workflow.
+
+Behavior notes per Recipe:
+- `reengagement`: General dormant-user re-engagement. Default entry point.
+- `churn`: Churn root-cause analysis and prevention tactics.
+- `gamification`: Points/badges/streaks systems.
+- `habit`: Hook Model (Eyal) habit loop design.
+- `loyalty`: Tier-based loyalty reward systems.
+- `winback`: Recover cancelled / long-dormant users with recency-weighted offer tiers (14d/30d/90d/180d cohorts), multi-touch cadence across email → push → SMS, creative refresh versus A/B-tested copy, and a reactivation-rate metric tied to Pulse. Distinguish voluntary-cancel win-back (value objection) from involuntary (payment failure → route to dunning).
+- `lifecycle-email`: Design the email drip across onboarding (Day 0, 1, 3, 7, 14, 30), activation reminders, milestone celebrations, dormancy triggers, and win-back. Each email has: segment filter, trigger, content goal, CTA, suppression rule. Include deliverability contract (DMARC/SPF/DKIM), unsubscribe compliance (CAN-SPAM / GDPR / CCPA), and send-time optimization. Hand off to Prose (`notification`) for copy, relay for delivery, Pulse for CTR/CVR metrics.
+- `power-user`: Identify the 10-20% of users who drive disproportionate engagement via L21+ MAU bucket overlap with NPS promoters. Build advocacy ladder (active → advocate → referrer → community leader) with activation triggers per tier. Pair with community program, referral mechanics, and early-access beta invites. Co-design with Voice (NPS signals) and Growth (referral loops).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -209,6 +238,12 @@ Use the template that matches the task focus:
   Read this when you need Hook Model design, streak logic, or habit-loop safeguards.
 - `references/gamification.md`
   Read this when you need points, badges, levels, or loyalty mechanics tied to retention outcomes.
+- `references/winback-campaign.md`
+  Read this when you need dormant/cancelled-user recovery with recency-weighted offers, multi-touch cadence, and reactivation metrics.
+- `references/lifecycle-email-drip.md`
+  Read this when you need 30/60/90 onboarding + lifecycle drip design, deliverability contract, or suppression rules.
+- `references/power-user-advocacy.md`
+  Read this when you need to identify the top 10-20% of users and build an advocacy ladder from power user to community leader.
 - `_common/OPUS_47_AUTHORING.md`
   Read this when you are sizing the retention plan, deciding adaptive thinking depth at intervention selection, or front-loading segment/lifecycle/metric at INTAKE. Critical for Retain: P3, P5.
 

@@ -26,6 +26,26 @@ bun run slop:diff     # slop findings in files changed on this branch only
 
 `test:evals` requires `ANTHROPIC_API_KEY`. Codex E2E tests (`test/codex-e2e.test.ts`)
 use Codex's own auth from `~/.codex/` config — no `OPENAI_API_KEY` env var needed.
+
+**Where the keys live on this machine.** Conductor workspaces don't inherit the
+user's interactive shell env, so `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` aren't
+in the default process env. Before running any paid eval / E2E, source them from
+`~/.zshrc` (that's where Garry keeps them):
+
+```bash
+bash -c '
+  eval "$(grep -E "^export (ANTHROPIC_API_KEY|OPENAI_API_KEY)=" ~/.zshrc)"
+  export ANTHROPIC_API_KEY OPENAI_API_KEY
+  EVALS=1 EVALS_TIER=periodic bun test test/skill-e2e-<whatever>.test.ts
+'
+```
+
+Do not echo the key value anywhere (stdout, logs, shell history). The grep+eval
+pattern keeps it in process env only. When passing to a test's Agent SDK, do NOT
+pass `env: {...}` to `runAgentSdkTest` — the SDK's auth pipeline doesn't pick up
+the key the same way when env is supplied as an object (confirmed failure mode).
+Instead, mutate `process.env.ANTHROPIC_API_KEY` ambiently before the call and
+restore in `finally`.
 E2E tests stream progress in real-time (tool-by-tool via `--output-format stream-json
 --verbose`). Results are persisted to `~/.gstack-dev/evals/` with auto-comparison
 against the previous run.
@@ -406,6 +426,16 @@ categories require explicit user approval via AskUserQuestion. No exceptions.
 No auto-merging. No "I'll just clean this up."
 
 ## CHANGELOG + VERSION style
+
+**Versioning invariant (workspace-aware ship).** VERSION is a monotonic ordered
+release identifier, not a strict semver commitment. The bump level
+(major/minor/patch/micro) expresses intent at ship time. Queue-advancing past a
+claimed version within the same bump level is explicitly permitted — if branch A
+claims v1.7.0.0 as a MINOR and branch B is also a MINOR, B lands at v1.8.0.0
+(still a MINOR relative to main). Downstream consumers must NOT rely on
+"MINOR = feature-only, PATCH = fix-only" as a strict contract. This is why
+`bin/gstack-next-version` advances within the chosen bump level rather than
+repicking the level when collisions happen.
 
 **VERSION and CHANGELOG are branch-scoped.** Every feature branch that ships gets its
 own version bump and CHANGELOG entry. The entry describes what THIS branch adds —

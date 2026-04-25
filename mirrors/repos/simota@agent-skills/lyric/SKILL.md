@@ -120,6 +120,33 @@ Route elsewhere when:
 | STYLE | Design style prompt using Top-Loaded Palette ordering (4-8 tags) | Style prompt |
 | DELIVER | Pair lyrics + style prompt with metadata (char count, structure map) | Final output |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Compose | `compose` | ✓ | Lyric writing (default) | `references/suno-format-guide.md`, `references/genre-templates.md` |
+| Metatags | `metatags` | | Suno metatag generation | `references/suno-format-guide.md` |
+| Style Prompt | `style` | | Style prompt design | `references/suno-format-guide.md` |
+| Refine | `refine` | | Refinement of existing lyrics | `references/lyric-craft.md`, `references/suno-format-guide.md` |
+| Verse | `verse` | | Verse-section craft (POV/tense, object writing, line contour, internal rhyme) | `references/verse-craft.md`, `references/lyric-craft.md` |
+| Hook | `hook` | | Chorus/hook craft (memorability, anchor word, title placement, earworm patterns) | `references/hook-craft.md`, `references/lyric-craft.md` |
+| Bridge | `bridge` | | Bridge craft (perspective shift, departure-return, key-change cues, false-bridge distinction) | `references/bridge-craft.md`, `references/suno-format-guide.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`compose` = Compose). Apply normal HEAR → COMPOSE → FORMAT → STYLE → DELIVER workflow.
+
+Behavior notes per Recipe:
+- `compose`: After confirming theme/genre/mood, generate structure-tagged lyrics paired with a style prompt.
+- `metatags`: Apply Suno metatags to existing lyrics. Place structure tags immediately before each section. Char limit check required.
+- `style`: Design style prompt only. Top-Loaded Palette order (genre → mood → vocal → instruments → tempo). Strictly 5-8 tags.
+- `refine`: Apply feedback to existing lyrics, generate A/B variants, rewrite. Focus on emotional resonance and melody fit improvements.
+- `verse`: Verse-section craft only. Decide POV/tense, run Pat Pattison object writing across 7 senses, tune image-to-emotion ratio (60-80% imagery), set line-length contour, calibrate internal rhyme density (1-2 per stanza), validate singability. Use when verses are weak/generic while chorus is fine.
+- `hook`: Chorus/hook craft only. Identify anchor word, choose title placement (top / bottom / sandwich), design repetition, enforce 4-line cap, contrast against verse, sing-test recall after 5 minutes. Targets memorability failures: too long, generic, no anchor.
+- `bridge`: Bridge-section craft only. Decide whether a bridge is needed at all, pick exactly one departure axis (POV / time / mood / zoom / frame), assign Suno cues (`[Bridge]`, `[Key Change]`, `[Build]`), set up final-chorus return tension. Distinguishes true bridge from pre-chorus / false bridge.
+
 ## Output Routing
 
 | Signal | Approach | Read next |
@@ -264,6 +291,9 @@ Next action: [LYRIC_TO_TONE_HANDOFF for audio generation | return to user for re
 | `references/examples.md` | ジャンル別の完成例（歌詞 + スタイルプロンプト） |
 | `references/patterns.md` | よくあるミスと対策、ベストプラクティスパターン |
 | `references/handoffs.md` | Tone・Quest等との連携パターン |
+| `references/verse-craft.md` | バース節の作詞技法 — POV/時制、Pat Pattison のオブジェクト・ライティング、行長コントゥア、内部韻密度、歌唱可能性チェック |
+| `references/hook-craft.md` | フック/コーラスの作詞技法 — 記憶性原則、アンカーワード選定、タイトル配置戦略、メロディフック vs リリックフック、Earworm 研究知見 |
+| `references/bridge-craft.md` | ブリッジ節の作詞技法 — 出発と帰還、視点シフト、Suno のキーチェンジ/ビルド指示、偽ブリッジとプリコーラスの区別 |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the lyric package, deciding adaptive thinking depth at structure/tag design, or front-loading theme/genre/mood/length at FRAME. Critical for Lyric: P3, P5. |
 
 ## Operational

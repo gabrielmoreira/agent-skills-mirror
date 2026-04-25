@@ -129,6 +129,35 @@ Route elsewhere when the task is primarily:
 | Nexus AUTORUN | Input explicitly invokes AUTORUN | Normal deliverable plus `_STEP_COMPLETE:` footer |
 | Nexus Hub | Input contains `## NEXUS_ROUTING` | Return only `## NEXUS_HANDOFF` packet |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Terraform / OpenTofu | `terraform` | ✓ | Terraform/OpenTofu IaC (most common) | `references/terraform-modules.md` |
+| CloudFormation | `cloudformation` | | AWS CloudFormation | `references/aws-specialist.md` |
+| Pulumi | `pulumi` | | Pulumi IaC | `references/multicloud-patterns.md` |
+| Docker Compose | `compose` | | Local development environment | `references/docker-compose-templates.md` |
+| Env Vars | `env` | | Environment variable design (.env, etc.) | `references/security-and-cost.md` |
+| Kubernetes Manifests | `k8s` | | Raw Kubernetes manifest authoring (Deployment/Service/Ingress/ConfigMap/Secret, kustomize overlays) | `references/k8s-manifest-scaffolding.md` |
+| Helm Chart | `helm` | | Helm chart authoring (Chart.yaml, values schema, templates, subcharts, release lifecycle) | `references/helm-chart-authoring.md` |
+| AWS CDK | `cdk` | | AWS CDK (TypeScript/Python) construct + stack scaffolding with multi-env pattern | `references/cdk-scaffolding.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`terraform` = Terraform / OpenTofu). Apply normal ASSESS → DESIGN → IMPLEMENT → VERIFY → HANDOFF workflow.
+
+Behavior notes per Recipe:
+- `terraform`: Default generic IaC path. Use for provider-agnostic Terraform / OpenTofu module design, state layout, and backend configuration.
+- `cloudformation`: AWS-only native IaC. Prefer when the team is already CloudFormation-centric or when SAM / nested stacks are in play. For new AWS-native TypeScript/Python work, prefer `cdk`.
+- `pulumi`: General-purpose imperative IaC in TypeScript/Python/Go. Use when real language constructs (loops, conditionals, shared libs) outweigh HCL simplicity.
+- `compose`: Local developer environment only. Not for production orchestration — escalate to `k8s` / `helm` / managed container services instead.
+- `env`: Environment variable design and `.env` schema. Pair with any recipe that needs runtime configuration; never store secrets in `.env` committed to the repo.
+- `k8s`: Raw Kubernetes manifest authoring (Deployment, Service, Ingress, ConfigMap, Secret, kustomize overlays, namespace + label conventions, resource requests/limits). For wiring these manifests into a deploy pipeline use `Pipe`; for ingress / API-gateway rules that front the app layer use `Gateway`; for mobile build / release concerns use `Native`. If the chart is reusable and versioned, prefer `helm` over raw manifests.
+- `helm`: Helm chart authoring — `Chart.yaml`, `values.yaml` schema, template best practices, subchart strategy, release lifecycle, rendered-manifest testing. Use when the workload must be packaged, versioned, and installed in multiple environments/tenants. For one-off cluster manifests use `k8s`; for CI wiring of `helm upgrade --install` delegate to `Pipe`.
+- `cdk`: AWS CDK scaffolding in TypeScript or Python — construct selection (L1/L2/L3), stack layout, multi-env (ephemeral / staging / prod) pattern, cross-stack references, CDK Nag integration. Use when AWS is fixed and the team wants real code over HCL. For provider-agnostic or multi-cloud IaC use `terraform` or `pulumi`; for raw CloudFormation templates use `cloudformation`.
+
 ## Critical Constraints
 
 - Use remote state with locking; local state is acceptable only for isolated personal experiments. Enable state encryption (OpenTofu native or backend-level).
@@ -212,6 +241,9 @@ Add these when relevant:
 | `references/multicloud-patterns.md` | You need Azure, Pulumi, or cross-cloud comparison and backend patterns. |
 | `references/docker-compose-templates.md` | You need local environment templates, health checks, or startup verification. |
 | `references/security-and-cost.md` | You need secrets, IAM, network guardrails, `.env.example`, or env validation patterns. |
+| `references/k8s-manifest-scaffolding.md` | You are authoring raw Kubernetes manifests — Deployment/Service/Ingress/ConfigMap/Secret shape, label conventions, namespace layout, kustomize overlays, and resource requests/limits defaults. |
+| `references/helm-chart-authoring.md` | You are packaging a workload as a Helm chart — Chart.yaml, values.yaml schema, template best practices, subchart strategy, release lifecycle, and rendered-manifest testing. |
+| `references/cdk-scaffolding.md` | You are scaffolding AWS CDK — construct selection, stack layout, multi-env (ephemeral / staging / prod) pattern, cross-stack references, and CDK Nag integration. |
 | `references/cost-estimation.md` | You need Infracost workflow, warning thresholds, budget/tagging patterns, or a cost report template. |
 | `references/terraform-operations.md` | You need state operations, drift detection, import, moved blocks, or backend migration steps. |
 | `references/terraform-compliance.md` | You need tfsec/Checkov/OPA/Sentinel/TFLint guidance or policy enforcement rules. |

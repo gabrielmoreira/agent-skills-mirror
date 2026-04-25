@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "stop": [
+      {
+        "command": "node .cursor/hooks/archive-hook.js",
+        "type": "command",
+        "timeout": 10
+      }
+    ]
+  }
+}

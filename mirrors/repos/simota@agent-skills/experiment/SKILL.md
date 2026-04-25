@@ -19,6 +19,9 @@ CAPABILITIES_SUMMARY:
 - warehouse_native_guidance: Platform architecture guidance (warehouse-native vs hosted) for experimentation infrastructure selection; covers Statsig (dual-mode cloud/warehouse-native), Datadog Experiments (Eppo-powered, observability-native with statistical canary testing, GA), GrowthBook (open-source warehouse-native first, product analytics beta in 4.2)
 - cookieless_experimentation: Server-side or 1st-party cookie assignment strategies for cookieless environments (~50% of web traffic blocks 3P cookies via Safari/Firefox)
 - cluster_randomization_guidance: Cluster-level randomization design for marketplace/network-effect experiments where user-level randomization causes interference bias (20%+ TATE bias in Airbnb meta-experiment); covers geographic, temporal, and entity-level clustering with delta-method variance estimation
+- guardrail_metric_portfolio: 4-layer metric taxonomy (primary/secondary/counter/guardrail) for experiment analysis; non-inferiority margin design, stop/ship trigger rules, Type II error handling on underpowered guardrails, and revenue/UX guardrail portfolios drawn from Netflix, Microsoft ExP, Airbnb, and Booking precedent
+- switchback_design: End-to-end switchback (time-series alternation) experiment design for interference-heavy domains — rotation window selection against response horizon, block randomization, carryover washout, Bojinov HAC/block-bootstrap variance, and DoorDash/Uber/Lyft/Airbnb precedent
+- flag_driven_experimentation: Experiment assignment and lifecycle via LaunchDarkly/Flagsmith/Unleash/Statsig/GrowthBook/Eppo — 1/5/25/50/100% staged ramp with sequential α budget, kill-switch triggers and rehearsal, flag-vs-experiment separation, and pre-registered decommission handoff to Launch
 
 COLLABORATION_PATTERNS:
 - Pattern A: Metrics-to-Test (Pulse → Experiment)
@@ -149,6 +152,41 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `EXECUTE` | Set up feature flags, monitoring, exposure tracking; configure SRM alerting | No parameter changes mid-flight; SRM monitoring active | `references/feature-flag-patterns.md` |
 | `ANALYZE` | SRM check → statistical analysis → confidence intervals → recommendations | SRM before results; sequential testing for early stopping | `references/statistical-methods.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| A/B Test Design | `ab` | ✓ | A/B test design, hypothesis document authoring, sample size calculation | `references/experiment-templates.md` |
+| CUPED | `cuped` | | CUPED/CUPAC variance reduction, sensitivity improvement design | `references/statistical-methods.md` |
+| Switchback | `switchback` | | Marketplace/network-effect switchback experiments with rotation-window, carryover, and block-randomization design | `references/switchback-design.md` |
+| Analyze | `analyze` | | Experiment result analysis, statistical significance, confidence interval report | `references/statistical-methods.md` |
+| Guardrail | `guardrail` | | Per-experiment metric portfolio — primary/secondary/counter/guardrail with non-inferiority margins and stop/ship triggers | `references/guardrail-metrics.md` |
+| Feature Flag | `ff` | | Flag-driven experiment assignment, staged ramp (1/5/25/50/100%), kill-switch design, decommission handoff | `references/feature-flag-experiments.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `ab` (default).
+
+| First Token | Recipe Activated |
+|------------|-----------------|
+| `ab` | A/B Test Design |
+| `cuped` | CUPED |
+| `switchback` | Switchback |
+| `analyze` | Analyze |
+| `guardrail` | Guardrail |
+| `ff` | Feature Flag |
+| _(no match)_ | A/B Test Design (default) |
+
+Behavior notes per Recipe:
+- `ab`: Full A/B experiment design — PICOT hypothesis, power analysis, randomization unit, SRM monitoring plan.
+- `cuped`: Apply CUPED/CUPAC variance reduction with a 7-day pre-exposure window. Combine with Winsorization for heavy-tailed metrics unless whales drive majority of revenue.
+- `switchback`: Measurement design under interference (marketplaces, logistics, pricing). Declare rotation window against treatment response horizon, block randomization (day-of-week × hour-of-day), washout/burn-in, and carryover-aware variance (block bootstrap or Bojinov HAC). Follow DoorDash 30-min / Uber 1-h / Lyft hourly / Airbnb daily precedent. Route to `cluster` randomization when response horizon > 24 h. Do not confuse with Mend `canary` — that is rollout risk-control, not measurement under interference.
+- `analyze`: Post-experiment statistical analysis — SRM check first, then effect sizes, CIs, and recommendations.
+- `guardrail`: Per-experiment metric portfolio — declare the 4-layer taxonomy (primary/secondary/counter/guardrail), pre-register non-inferiority margins, estimate power-for-margin per guardrail, apply Benjamini-Hochberg across 5–10 guardrails, and produce the stop/ship trigger matrix before launch. Distinct from Pulse: Pulse defines product-wide KPIs; `guardrail` defines the measurement contract for this specific test and its gaming modes. Cite Kohavi/Tang/Xu (*Trustworthy Online Controlled Experiments*) and the Netflix/Microsoft ExP/Airbnb/Booking portfolio patterns.
+- `ff`: Flag-driven assignment and ramp lifecycle. Separate the release flag (Launch owns) from the experiment flag (Experiment owns). Use the 1/5/25/50/100 % ramp with sequential-test α budget (mSPRT / confidence sequences) across stages; measure primary at ≥ 25 %, use 1 % / 5 % stages for crash/SRM/latency only. Pre-register kill-switch triggers and rehearse activation in staging. On conclusion, hand off to `Launch` via `EXPERIMENT_TO_LAUNCH` with flag key, final state, and decommission deadline.
+
+---
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -229,6 +267,9 @@ Experiment receives metric baselines and hypotheses from upstream agents, and de
 | `references/code-standards.md` | You need good/bad experiment code examples or key rules. |
 | `references/adaptive-experimentation.md` | You need MAB vs A/B selection, Thompson Sampling, auto-stop rules, or contextual bandits. |
 | `references/interleaving-tests.md` | You need high-sensitivity ranking tests, Team Draft Interleaving, or search/recommendation testing. |
+| `references/guardrail-metrics.md` | You need 4-layer metric taxonomy (primary/secondary/counter/guardrail), non-inferiority margin design, stop/ship trigger matrices, Type II handling on underpowered guardrails, or Netflix/Microsoft ExP/Airbnb/Booking portfolio patterns. |
+| `references/switchback-design.md` | You need switchback rotation window selection, block randomization, carryover washout, Bojinov HAC / block-bootstrap variance, or DoorDash/Uber/Lyft/Airbnb marketplace precedent. |
+| `references/feature-flag-experiments.md` | You need flag-driven experiment assignment, 1/5/25/50/100% staged ramp design, kill-switch triggers and rehearsal, flag-vs-experiment separation, or decommission handoff to Launch. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the experiment report, deciding adaptive thinking depth at method selection, or front-loading randomization unit/MDE/OEC at INTAKE. Critical for Experiment: P3, P5. |
 
 ## Operational

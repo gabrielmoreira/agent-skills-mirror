@@ -161,6 +161,35 @@ Route elsewhere when:
 
 Use Magi for executive choice, Scribe for formal strategy docs, Canvas for maps and matrices, Sherpa for decomposed execution, and Lore only after validation.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Scenario Planning | `scenario` | ✓ | Business scenario planning (Baseline/Optimistic/Pessimistic 3 scenarios) | `references/simulation-patterns.md`, `references/data-inputs.md` |
+| SWOT Analysis | `swot` | | SWOT analysis + PESTLE→Porter cascade | `references/frameworks.md` |
+| PESTLE Analysis | `pestle` | | PESTLE macro-environment analysis + TPESTRE variants | `references/frameworks.md`, `references/cognitive-biases.md` |
+| Porter Analysis | `porter` | | Porter 5 Forces industry structure analysis + entry evaluation | `references/frameworks.md`, `references/market-sizing-strategy.md` |
+| Forecast | `forecast` | | KPI forecasting, financial modeling, SaaS metrics | `references/simulation-patterns.md`, `references/financial-modeling-pitfalls.md` |
+| Jobs-to-be-Done | `jtbd` | | Christensen JTBD framework — job statement, forces of progress (push/pull/anxiety/habit), competitive set by job not product | `references/jobs-to-be-done.md` |
+| Blue Ocean Strategy | `blue-ocean` | | Kim & Mauborgne Blue Ocean — Value Curve, ERRC grid (Eliminate/Reduce/Raise/Create), Four Actions, non-customer tiers | `references/blue-ocean-strategy.md` |
+| Wardley Mapping | `wardley` | | Simon Wardley value-chain mapping — user-need anchor, visibility axis, evolution axis (Genesis→Custom→Product→Commodity), doctrine and climatic patterns | `references/wardley-mapping.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`scenario` = Scenario Planning). Apply normal SURVEY → PLAN → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `scenario`: Baseline/Optimistic (+20-40%)/Pessimistic (-20-40%) 3 scenarios required. Include sensitivity analysis and FORESIGHT record.
+- `swot`: Execute PESTLE→Porter→SWOT cascade. Always apply Devil's Advocate challenge.
+- `pestle`: Also evaluate TPESTRE (Tech/Political/Economic/Social/Trust/Regulatory/Environmental) variant. Prefer when Trust/ethics dimensions matter.
+- `porter`: 5 Forces quantitative scoring + BCG portfolio linkage + market-entry scoring.
+- `forecast`: SaaS Triangle (Gross Margin 75%+/CAC Payback <15mo/NRR 101%+) check. Rule of 40 and Burn Multiple alerts included.
+- `jtbd`: Write the job statement in `When [situation], I want [motivation], so I can [outcome]` form. Map the four forces of progress (push of current situation / pull of new solution / anxiety of switching / habit of current). Define the competitive set by *job*, not by product category. Identify functional, emotional, and social dimensions. Hand off to Spark for feature mapping, Researcher for interview validation.
+- `blue-ocean`: Build a Strategy Canvas (Value Curve) mapping the existing industry's competition factors. Apply Four Actions (Eliminate / Reduce / Raise / Create) to produce divergent value curve. Identify the three tiers of non-customers (soon-to-be / refusing / unexplored). Pair with buyer utility map. Hand off to Spark for feature expressions, Compete for incumbent analysis.
+- `wardley`: Anchor to a specific user need. Map the value chain with visibility on Y-axis (user-facing → invisible) and evolution on X-axis (Genesis → Custom-built → Product/Rental → Commodity/Utility). Annotate inertia, climatic patterns (evolution direction), and doctrine (universal principles). Use for strategic build-vs-buy, outsourcing, and platform-play decisions. Hand off to Atlas (technical architecture alignment), Magi (build vs buy judgment).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -223,6 +252,9 @@ Include only the sections needed for the request, but keep assumptions, scenario
 | `references/market-sizing-strategy.md` | you need to interpret TAM/SAM/SOM for strategic decisions, market entry scoring, or portfolio sizing |
 | `references/disruption-detection.md` | you need disruption risk scoring, S-curve analysis, industry lifecycle staging, or Christensen framework |
 | `references/wargaming-simulation.md` | you need to financially model competitor responses, build scenario trees from wargame data, or stress-test strategies |
+| `references/jobs-to-be-done.md` | you need Christensen JTBD — job statement syntax, forces of progress, functional/emotional/social dimensions, and competitive-set-by-job |
+| `references/blue-ocean-strategy.md` | you need Kim & Mauborgne Blue Ocean — Value Curve, ERRC grid, Four Actions, three tiers of non-customers, buyer utility map |
+| `references/wardley-mapping.md` | you need Wardley mapping — user-need anchor, visibility + evolution axes, doctrine, climatic patterns, build-vs-buy decisions |
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the strategic deliverable, deciding adaptive thinking depth at SIMULATE, or front-loading horizon/scope at SURVEY. Critical for Helm: P3, P5. |
 
 ## Operational

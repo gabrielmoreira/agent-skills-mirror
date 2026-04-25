@@ -175,6 +175,35 @@ Full regulation details → `references/privacy-regulations.md`
 | `REMEDIATE` | Provide code-level fixes: minimization, consent gates, encryption, redaction, retention | Actionable patterns | `references/implementation-patterns.md` |
 | `VERIFY` | Privacy checklist validation; confirm no PII in logs/errors; test DSAR flows | All gaps addressed | — |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| PII Detection | `pii` | ✓ | PII detection and classification | `references/pii-detection.md` |
+| Data Flow Mapping | `flow` | | Data flow visualization | `references/pii-detection.md` |
+| Consent Management | `consent` | | Consent management pattern implementation | `references/implementation-patterns.md` |
+| DPIA | `dpia` | | DPIA facilitation | `references/privacy-regulations.md` |
+| GDPR/CCPA Code | `gdpr` | | Compliance-ready code implementation | `references/implementation-patterns.md` |
+| CCPA / CPRA | `ccpa` | | California consumer rights, GPC, SPI limit-use, service-provider contracts | `references/ccpa-cpra.md` |
+| APPI (Japan) | `appi` | | Japanese APPI implementation: 三層分類, Art. 24/23, PPC reporting, 要配慮 | `references/appi-japan.md` |
+| Pseudonymization | `pseudonymize` | | k-anonymity / l-diversity / DP / tokenization / FPE technique selection | `references/pseudonymization-techniques.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`pii` = PII Detection). Apply normal DISCOVER → CLASSIFY → MAP → ASSESS → REMEDIATE → VERIFY workflow.
+
+Behavior notes per Recipe:
+- `pii`: Full-codebase PII scan and classification. Focus on DISCOVER → CLASSIFY phases. Recall ≥95% is mandatory.
+- `flow`: Full data flow visualization: collection → processing → storage → sharing → deletion. Focus on the MAP phase.
+- `consent`: Implement consent-capture patterns, preference center, and granular opt-in/opt-out.
+- `dpia`: EU AI Act FRIA + GDPR DPIA dual assessment. Risk scoring and mitigation measures.
+- `gdpr`: GDPR/CCPA/APPI compliance code patterns implementation. Includes DSAR handlers and retention enforcement.
+- `ccpa`: California-specific implementation. Consumer rights (know/delete/correct/opt-out of sale-or-share/limit-SPI), GPC honoring with visible confirmation, service-provider/contractor/third-party contractual flow-down, 2026 ADMT and risk-assessment readiness.
+- `appi`: Japan-specific implementation. Three-tier taxonomy (個人情報 / 仮名加工情報 / 匿名加工情報), Article 24 cross-border transfer, Article 23 opt-out filing, 要配慮個人情報 explicit consent, PPC notification within 速やか standard.
+- `pseudonymize`: Technique selection for de-identification — k-anonymity / l-diversity / t-closeness / differential privacy parameter calibration, tokenization vs HMAC vs format-preserving encryption tradeoffs, key custody and destruction protocol distinguishing pseudonymization from anonymization.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -226,6 +255,9 @@ Cloak receives security findings, standard requirements, and codebase analysis f
 | `references/pii-detection.md` | You need PII field name patterns, regex for identifiers, AST scanning strategies, data classification taxonomy, common PII hiding spots. |
 | `references/privacy-regulations.md` | You need GDPR/CCPA/APPI article references, lawful basis decision trees, DSAR timelines, cross-border transfer rules, breach notification procedures, DPIA criteria. |
 | `references/implementation-patterns.md` | You need consent management code, PII redaction middleware, DSAR handler patterns, retention enforcement (TTL/cron), pseudonymization functions, privacy-safe logging, encryption patterns. |
+| `references/ccpa-cpra.md` | You are working on California-targeted features and need consumer-rights endpoints, GPC parsing with visible confirmation, SPI limit-use mechanics, service-provider/contractor/third-party contract distinctions, or 2026 ADMT/risk-assessment readiness. |
+| `references/appi-japan.md` | You are processing data of subjects in Japan and need the 個人情報 / 仮名加工情報 / 匿名加工情報 distinction, Article 24 cross-border transfer paths, Article 23 opt-out filing, 要配慮個人情報 consent surface, or PPC notification thresholds. |
+| `references/pseudonymization-techniques.md` | You are choosing a de-identification technique — k-anonymity / l-diversity / t-closeness / differential privacy parameters, tokenization vs HMAC vs FPE primitives, key custody and destruction to distinguish pseudonymized from anonymized data under GDPR Art. 4(5). |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the privacy report, deciding adaptive thinking depth at classification/DPIA, or front-loading regulations/sensitivity/jurisdiction at SCAN. Critical for Cloak: P3, P5. |
 
 ## Output Requirements

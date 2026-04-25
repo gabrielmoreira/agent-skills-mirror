@@ -12,6 +12,9 @@ CAPABILITIES_SUMMARY:
 - caching_strategy: In-memory LRU / Redis / HTTP Cache-Control, cache-aside / write-through / write-behind patterns, stampede prevention (lock/lease, stale-while-revalidate), TTL enforcement
 - core_web_vitals: LCP (≤2.5s) / INP (≤200ms) / CLS (≤0.1) optimization and monitoring
 - profiling: React DevTools / Chrome DevTools / Lighthouse / web-vitals / clinic.js / 0x / autocannon
+- bundle_size_audit: App-wide JS/TS bundle-size reduction (tree-shaking audit, route/feature code-splitting, dynamic import, barrel-file removal, dependency-size budget, rollup-plugin-visualizer / webpack-bundle-analyzer / source-map-explorer, moment→dayjs / lodash→lodash-es migrations)
+- network_delivery_optimization: Client/server delivery tuning (HTTP/2 and HTTP/3 adoption, Early Hints 103, resource hints preload/prefetch/preconnect/dns-prefetch, Service Worker caching strategies, CDN cache-control tuning, Brotli compression, Link header)
+- memory_footprint_optimization: App-process memory reduction (Chrome DevTools heap snapshot diffing, detached DOM node detection, closure/listener leak detection, Node.js --inspect heap profiling, rising-baseline detection, WeakMap / WeakRef usage)
 
 COLLABORATION_PATTERNS:
 - Bolt → Tuner: DB bottleneck identified, hand off for EXPLAIN analysis & index design
@@ -109,6 +112,35 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `OPTIMIZE` | Clean code, comments explaining optimization, preserve functionality, consider edge cases | Readability preserved | Domain-specific reference |
 | `VERIFY` | Run lint+test, measure impact, ensure no regression | Impact documented | `references/profiling-tools.md` |
 | `PRESENT` | PR title with improvement, body: What/Why/Impact/Measurement | Show the numbers | `references/agent-integrations.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Frontend Perf | `frontend` | ✓ | Frontend optimization (re-render reduction, memoization, lazy loading) | `references/react-performance.md` |
+| Backend Perf | `backend` | | Backend optimization (N+1, caching, async) | `references/database-optimization.md` |
+| Render Reduction | `render` | | React/Vue re-render reduction only | `references/react-performance.md` |
+| Async Refactor | `async` | | Convert sync to async (waterfall elimination) | `references/optimization-anti-patterns.md` |
+| Cache Strategy | `cache` | | Caching strategy design (memo, Redis, CDN) | `references/caching-patterns.md` |
+| Bundle Audit | `bundle` | | App-wide JS/TS bundle-size reduction (tree-shake, split, dynamic import, analyzer, library swaps) | `references/bundle-optimization.md` |
+| Network Delivery | `network` | | Client/server delivery tuning (HTTP/2-3, Early Hints, resource hints, SW cache, CDN cache-control, Brotli) | `references/network-optimization.md` |
+| Memory Footprint | `memory` | | App-process memory reduction (heap snapshot diffing, leak detection, WeakMap/WeakRef, baseline trending) | `references/memory-optimization.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`frontend` = Frontend Perf). Apply normal PROFILE → SELECT → OPTIMIZE → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `frontend`: Verify React Compiler activation. Measure LCP/INP/CLS → optimize the single largest bottleneck.
+- `backend`: Target N+1/cache/connection pool. Follow Bolt→Tuner handoff criteria (deep SQL analysis).
+- `render`: Specialize in React re-render reduction. Consider manual memo only when React Compiler is not in use.
+- `async`: Convert sequential await to Promise.all. Async waterfall is the top performance root cause (Vercel research).
+- `cache`: LRU/Redis/HTTP cache. Always set TTL. Include stampede countermeasures (lock/lease).
+- `bundle`: App-wide JS/TS bundle-size audit. Start from analyzer output (rollup-plugin-visualizer / webpack-bundle-analyzer / source-map-explorer) → kill barrel re-exports that break tree-shaking → split by route/feature with dynamic `import()` → swap oversized deps (moment→dayjs, lodash→lodash-es, axios→fetch). Set a per-route kB budget. Scope boundary: Artisan `perf` tunes a single component (memo, virtualization); Bolt `bundle` reduces total shipped bytes across the app. If the hypothesis is "this one list is slow", route to Artisan.
+- `network`: Client/server delivery-layer tuning. Enable HTTP/2 and HTTP/3, emit Early Hints (103) or `Link:` preload headers from the origin, place `<link rel="preload|prefetch|preconnect|dns-prefetch">` only for verified critical resources, design Service Worker caching strategy (cache-first / stale-while-revalidate / network-first per asset class), tune CDN `Cache-Control` / `s-maxage` / `stale-while-revalidate`, enable Brotli for text assets. Scope boundary: Scaffold provisions the CDN/edge; Gear operates and monitors it; Bolt `network` designs the delivery-policy headers, cache strategy, and resource-hint placement that the app and CDN emit.
+- `memory`: App-process memory footprint reduction. Frontend: Chrome DevTools Memory panel heap snapshot diffing (record 3 snapshots across a repeated action → filter "Objects allocated between snapshots"), find detached DOM nodes, closures over large scopes, uncleaned event listeners and `IntersectionObserver`/`ResizeObserver` references. Backend: Node.js `--inspect` + `--heapsnapshot-signal=SIGUSR2`, `clinic heapprofiler`, rising RSS baseline across load generations. Apply `WeakMap` / `WeakRef` where identity caches would otherwise pin GC. Scope boundary: Specter finds the BUG (race, deadlock, resource leak with reproduction steps); Bolt `memory` removes the FAT (measures footprint, cuts retained size, enforces baseline budgets). If no leak is suspected but memory is simply too large, stay in Bolt. Tuner is DB-internal memory (buffer pools, work_mem) — out of scope here.
 
 ## Output Routing
 

@@ -227,6 +227,44 @@ INPUT
 
 ---
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Attack Scenario | `scenario` | ✓ | Attack scenario design, kill chain planning | `references/attack-playbooks.md` |
+| Threat Model | `threat-model` | | Threat modeling (STRIDE/PASTA/Attack Trees) | `references/threat-modeling.md` |
+| Purple Team | `purple` | | Purple Team exercise, Red/Blue coordination | `references/attack-playbooks.md` |
+| AI/LLM Red Team | `ai-red` | | AI/LLM-focused red team (prompt injection, agentic risks) | `references/ai-red-teaming.md` |
+| Phishing Campaign | `phishing` | | Authorized phishing campaign design with pretexting, landing-page clones, MFA-fatigue, quishing, OAuth consent-phishing, and SPF/DKIM/DMARC evasion | `references/phishing-campaign-design.md` |
+| Supply Chain Attack | `supply` | | Supply chain attack scenarios: dependency confusion, typosquatting, build-tool compromise, SBOM analysis, SLSA provenance, in-toto attestation | `references/supply-chain-attack-design.md` |
+| Social Engineering | `social` | | Social engineering scenarios: vishing, smishing, tailgating, OSINT pretexting, insider-threat, BEC, deepfake voice/video | `references/social-engineering-design.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `scenario` (default).
+
+| First Token | Recipe Activated |
+|------------|-----------------|
+| `scenario` | Attack Scenario |
+| `threat-model` | Threat Model |
+| `purple` | Purple Team |
+| `ai-red` | AI/LLM Red Team |
+| `phishing` | Phishing Campaign |
+| `supply` | Supply Chain Attack |
+| `social` | Social Engineering |
+| _(no match)_ | Attack Scenario (default) |
+
+Behavior notes per Recipe:
+- `scenario`: Attack scenario design with kill chain planning, technique-mapped exploitation paths, and framework-grounded testing. Maps every scenario to MITRE ATT&CK/OWASP/ATLAS identifiers. For static code scanning use Sentinel; for DAST/runtime exploitation use Probe; for detection rule authoring use Vigil.
+- `threat-model`: Threat modeling via STRIDE, PASTA, Attack Trees, and MITRE ATT&CK/ATLAS mapping. Builds per-engagement models — never reuse templates. For architecture-level C4 modeling use Stratum; for compliance-framework gap analysis use Canon; for regulatory controls use Comply.
+- `purple`: Purple Team exercise design — Red/Blue coordination, detection validation, and SIEM rule tuning. For Sigma/YARA rule authoring and detection engineering use Vigil; for post-incident playbook updates use Triage and Mend.
+- `ai-red`: AI/LLM red teaming with multi-turn attack chains (OWASP LLM Top 10 2025, Agentic Top 10 2026, MITRE ATLAS, CSA MAESTRO). Tests the deployed pipeline (RAG, tools, MCP, plugins). For AI/ML architecture design and prompt engineering use Oracle; for eval framework design also use Oracle.
+- `phishing`: Phishing campaign design with authorized scope — pretexting, credential-harvest vs session-token theft, MFA-fatigue, QR-phishing, OAuth consent-phishing, SPF/DKIM/DMARC evasion, awareness-training integration, and user-reporting feedback loop. For detection-rule authoring (email headers, landing-page indicators) use Vigil; for static code analysis of email-handling components use Sentinel; for DAST of landing-page infrastructure use Probe; for post-incident response playbook use Triage; for regulatory framework mapping (GDPR breach notification, PCI phishing controls) use Comply.
+- `supply`: Supply chain attack scenarios — dependency confusion, typosquatting, compromised build-tool (SolarWinds-style), malicious postinstall scripts, SBOM (CycloneDX/SPDX) analysis, SLSA provenance verification, signing and in-toto attestation, package-registry pinning. For static secret/dependency scanning use Sentinel; for runtime vulnerability scanning of dependencies use Probe; for detection rules on package-install anomalies use Vigil; for SLSA/SSDF regulatory alignment use Comply; for migration away from compromised dependencies use Shift.
+- `social`: Social engineering scenarios — vishing (voice), smishing (SMS), tailgating and physical access, OSINT pretexting via LinkedIn and corporate directories, insider-threat risk, business email compromise (BEC), deepfake voice and video, and awareness-program coordination. Behavioral, not code-centric. For detection rules on anomalous login / wire-transfer patterns use Vigil; for post-incident response use Triage; for privacy and PII-handling controls use Cloak; for regulatory obligations (SOC 2 awareness training, HIPAA) use Comply.
+
+---
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -322,6 +360,9 @@ All subagents share the threat model (read-only) produced in the MODEL phase. Th
 | `references/threat-modeling.md` | You need STRIDE tables, PASTA process, Attack Tree decomposition, or MITRE ATT&CK/ATLAS mapping methodology. |
 | `references/attack-playbooks.md` | You need application/infrastructure/supply-chain attack scenarios, kill chain templates, or OWASP Top 10 attack patterns. |
 | `references/ai-red-teaming.md` | You need AI/LLM red teaming techniques, prompt injection patterns, jailbreak methods, agentic risk assessment, or OWASP LLM/Agentic Top 10. |
+| `references/phishing-campaign-design.md` | You are designing an authorized phishing campaign (pretexting, landing-page clones, MFA-fatigue, quishing, OAuth consent-phishing, SPF/DKIM/DMARC evasion) with awareness-training integration. |
+| `references/supply-chain-attack-design.md` | You are modeling supply chain attacks (dependency confusion, typosquatting, build-tool compromise, postinstall scripts) with SBOM/SLSA/in-toto verification guidance. |
+| `references/social-engineering-design.md` | You are planning social engineering scenarios (vishing, smishing, tailgating, OSINT pretexting, BEC, deepfakes) coordinated with an awareness program. |
 | `references/handoffs.md` | You need handoff templates for passing findings to Builder, Sentinel, Radar, Scribe, or Mend. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the red-team report, deciding adaptive thinking depth at framework selection, or front-loading target type/framework/cadence at FRAME. Critical for Breach: P3, P5. |
 

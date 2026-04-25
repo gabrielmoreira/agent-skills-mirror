@@ -160,6 +160,35 @@ Every deliverable must include:
 - **vs Magi**: Magi = multi-perspective decision-making. Rank = quantitative score-based ordering.
 - **vs Matrix**: Matrix = multi-dimensional combinatorial analysis. Rank = single-dimension priority ordering.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| ICE Score | `ice` | ✓ | ICE scoring (Impact × Confidence × Ease) | `references/scoring-frameworks.md` |
+| RICE Score | `rice` | | RICE scoring (Reach × Impact × Confidence / Effort) | `references/scoring-frameworks.md` |
+| WSJF | `wsjf` | | WSJF (Weighted Shortest Job First) | `references/scoring-frameworks.md` |
+| MoSCoW | `moscow` | | MoSCoW method (Must/Should/Could/Won't) | `references/scoring-frameworks.md` |
+| Kano Model | `kano` | | Kano model (customer satisfaction classification) | `references/scoring-frameworks.md` |
+| Cost of Delay (CD3) | `cod` | | Deep CoD economic decomposition and CD3 sequencing (revenue/deadline-bound work) | `references/cost-of-delay.md` |
+| Value vs Effort | `value-effort` | | 2x2 quadrant workshop (Quick Win/Major/Fill-In/Thankless) for visual consensus | `references/value-effort-matrix.md` |
+| Priority Poker | `pokerplan` | | Anonymous Fibonacci voting (Wideband Delphi) to mitigate group bias | `references/priority-poker.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`ice` = ICE Score). Apply normal COLLECT → CRITERIA → SCORE → CALIBRATE → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `ice`: Score by Impact × Confidence × Ease (each 1-10). Apply QUICK mode. Best for small teams or sparse data.
+- `rice`: Score by Reach × Impact × Confidence / Effort. FULL mode. Suited to mid-size teams with usage data.
+- `wsjf`: Score by CoD / Job Duration. Suited to SAFe/Lean environments and large organizations with clear time value.
+- `moscow`: Classify into Must/Should/Could/Won't. Ideal for stakeholder alignment.
+- `kano`: Classify into Must-be / Performance / Attractive. Ideal for prioritizing UX improvements.
+- `cod`: Decompose Cost of Delay into four components (user-business value, time criticality, risk reduction, opportunity enablement), type the CoD curve, and sequence by CD3 = CoD / Duration. Distinct from `wsjf` (rough Fibonacci proxy) — use when revenue/deadline data justifies the deeper math.
+- `value-effort`: Plot items on a 2x2 (Value × Effort) and assign to Quick Wins / Major Projects / Fill-Ins / Thankless quadrants. Workshop-friendly visual format; upgrade to `rice` or `wsjf` when top-quadrant items need intra-quadrant ordering.
+- `pokerplan`: Anonymous Fibonacci voting per priority dimension with simultaneous reveal and dispersion-rule re-discussion. Wideband-Delphi-derived bias mitigation; produces inputs for `ice` / `rice` / `wsjf` rather than replacing them.
+
 ## References
 
 | File | Content |
@@ -167,6 +196,9 @@ Every deliverable must include:
 | `references/scoring-frameworks.md` | Detailed procedures for ICE/RICE/WSJF/MoSCoW/CoD/Kano |
 | `references/calibration-techniques.md` | Pairwise comparison, bias correction, sensitivity analysis |
 | `references/output-templates.md` | Ranking report, score matrix, comparison table templates |
+| `references/cost-of-delay.md` | CD3 = CoD / Duration, four-component CoD, CoD curve patterns, CD3-vs-WSJF distinction (`cod` recipe) |
+| `references/value-effort-matrix.md` | 2x2 quadrant definitions, axis-scoring rubrics, workshop facilitation, upgrade paths to RICE/WSJF (`value-effort` recipe) |
+| `references/priority-poker.md` | Wideband Delphi mechanics, Fibonacci scale, calibration anchors, dispersion-rule thresholds, online tool options (`pokerplan` recipe) |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the ranking report, deciding adaptive thinking depth at framework selection, or front-loading item universe/criteria/maturity at INTAKE. Critical for Rank: P3, P5. |
 
 ## Operational

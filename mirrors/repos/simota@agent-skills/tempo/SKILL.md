@@ -198,6 +198,25 @@ questions:
 | `VERIFY` | Simulate next N fires across a DST boundary, across end-of-month, across Feb-29 if relevant; use croniter / cron-parser | Numerical sanity check before handoff | `references/cron-patterns.md` |
 | `HARDEN` | Attach retry policy, DLQ target, backfill strategy, rate-limit if applicable; document failure modes | The unhappy path is half the design | `references/retry-strategies.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Cron Design | `cron` | ✓ | Cron expression design, timezone annotation, platform configuration | `references/cron-patterns.md` |
+| Timezone Safety | `timezone` | | Timezone/DST safety audit, library migration | `references/timezone-safety.md` |
+| Retry Policy | `retry` | | Retry/backoff policy design, DLQ configuration | `references/retry-strategies.md` |
+| Backfill Plan | `backfill` | | Backfill/replay planning, watermark design | `references/retry-strategies.md` |
+| Business Calendar | `calendar` | | Japanese holiday, bank business day, and fiscal year logic design | `references/business-calendar.md` |
+| Deadline Propagation | `deadline` | | Context deadline propagation across async boundaries, budget chain, partial-progress return | `references/deadline-propagation.md` |
+| Time Window | `window` | | Tumbling/sliding/session window semantics, watermark design, late-arrival handling, window-join math | `references/window-semantics.md` |
+| Idempotency Key | `idempotent` | | Idempotency-key design, dedup window, effectively-once semantics, Stripe/Square-style patterns | `references/idempotent-keys.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`cron` = Cron Design). Apply normal ANALYZE → MODEL → SPECIFY → VERIFY → HARDEN workflow.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -211,6 +230,9 @@ questions:
 | `GitHub Actions cron`, `GHA schedule` | GHA cron design with UTC-only constraint | `.github/workflows/*.yml` snippet + best-effort caveat | `references/cron-patterns.md` |
 | `EventBridge`, `AWS scheduled rule` | EventBridge 6-field cron + SQS/DLQ plan | EventBridge rule + DLQ spec | `references/cron-patterns.md`, `references/retry-strategies.md` |
 | `K8s CronJob`, `Kubernetes scheduled` | K8s CronJob with concurrencyPolicy + startingDeadlineSeconds | CronJob manifest + policy explanation | `references/cron-patterns.md` |
+| `deadline`, `context deadline`, `timeout budget`, `AbortSignal deadline`, `grpc-timeout` | `deadline`: Deadline propagation across async boundaries (context.Context, AbortSignal, gRPC deadline), budget chain math, partial-progress return on deadline. For HTTP/RPC wire timeout configuration use Gateway; for time-budget observability / SLO use Beacon. | Budget chain table + propagation mechanism + partial-progress policy + observability targets | `references/deadline-propagation.md` |
+| `window`, `tumbling`, `sliding`, `session window`, `watermark`, `late arrival` | `window`: Time-window semantics (tumbling/sliding/session, watermarks, allowed-lateness, window-join math). For stream-pipeline implementation use Stream; for watermark-lag observability use Beacon. | Window shape + watermark strategy + allowed-lateness policy + join semantics | `references/window-semantics.md` |
+| `idempotent`, `idempotency key`, `dedup`, `exactly-once`, `effectively-once`, `Stripe-Idempotency` | `idempotent`: Idempotency-key design (formula, dedup window, storage TTL vs request TTL, in-flight guard, distributed propagation). For pipeline-level exactly-once use Stream; for HTTP `Idempotency-Key` header enforcement use Gateway. | Key formula + dedup window (request/storage TTL) + storage mechanism + in-flight policy | `references/idempotent-keys.md` |
 | unclear temporal request | Full ANALYZE → HARDEN workflow | Schedule contract with all six fields | `references/cron-patterns.md` |
 
 ## Cron Patterns
@@ -420,6 +442,9 @@ Each scenario: input time, expected fire(s), assertion.
 | `references/timezone-safety.md` | Auditing TZ/DST handling; choosing between Temporal, Luxon, date-fns-tz; fixing `timestamp` vs `timestamptz` |
 | `references/business-calendar.md` | Implementing JP holidays, 振替休日, banking days, fiscal year, business hours |
 | `references/retry-strategies.md` | Designing retry/backoff, circuit breaker, DLQ, idempotency key, rate limiting |
+| `references/deadline-propagation.md` | Deadline propagation across async boundaries, context/AbortSignal/gRPC deadline, budget-chain math, partial-progress policy |
+| `references/window-semantics.md` | Time-window semantics (tumbling/sliding/session), watermark strategy, allowed-lateness, window-join math |
+| `references/idempotent-keys.md` | Idempotency-key design, dedup window (request vs storage TTL), effectively-once semantics, Stripe/Square-style patterns |
 | `references/handoffs.md` | Packaging deliverables for Builder, Gear, Weave, Beacon, Voyager, Judge, or Pipe |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the spec deliverable, deciding where to eagerly read at ANALYZE, or where to think step-by-step at VERIFY. Critical for Tempo: P3, P5 |
 | `_common/BOUNDARIES.md` | Disambiguating tempo vs Weave / Launch / Beacon / Gear / Builder at the routing boundary |

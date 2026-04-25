@@ -174,6 +174,27 @@ Use the framework `INTAKE → CLASSIFY → CALCULATE → OPTIMIZE → GUIDE`.
 
 Before finalizing, run `VERIFY`: recalculate key numbers, re-check deduction eligibility, and confirm common traps for the active mode.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Income Classification | `classify` | ✓ | Classify income (business/employment/miscellaneous, etc.) and confirm the taxation method | `references/income-classification.md` |
+| Deduction Optimization | `deduction` | | Deduction optimization, blue return special deduction, tax-credit check | `references/deduction-catalog.md` |
+| Tax Calculation | `calc` | | Tax calculation walkthrough (income tax, resident tax, special reconstruction tax) | `references/tax-calculation.md` |
+| Filing | `file` | | Return preparation, e-Tax procedure, submission flow | `references/filing-guide.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`classify` = Income Classification). Apply normal INTAKE → CLASSIFY → CALCULATE → OPTIMIZE → GUIDE workflow.
+
+Behavior notes per Recipe:
+- `classify`: Confirm target year → income classification decision checklist → apply aggregate vs separate self-assessment taxation.
+- `deduction`: Check every item in the deduction catalog → verify overlap risks → confirm blue return special deduction eligibility.
+- `calc`: Step-by-step calculation → show intermediate values → confirm tax reform applicability (year-specific thresholds).
+- `file`: Required document list → choose return form → e-Tax procedure (simplified assuming INTAKE is done).
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

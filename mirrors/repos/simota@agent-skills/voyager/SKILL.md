@@ -16,6 +16,9 @@ CAPABILITIES_SUMMARY:
 - flake_diagnosis: Systematic flaky test detection, root cause analysis, quarantine strategy, and stabilization
 - agentic_video_receipts: Generate visual proof of automated work using page.screencast API (1.59+)
 - cli_trace_analysis: Programmatic trace parsing via npx playwright trace for CI and agentic workflows
+- api_e2e_validation: User-journey E2E via API-only interface (Playwright APIRequestContext) with HTTP → state → downstream-API chained assertions, contract-test follow-up, and mock-vs-real backend toggle
+- mobile_e2e_harness: Shipped-app mobile E2E via Detox (React Native), Maestro (cross-platform YAML DSL), Appium (cross-platform), and device-farm integration (BrowserStack / Sauce Labs)
+- component_browser_testing: Real-browser component tests via Playwright Component Testing, Cypress Component Testing, and Storybook Interactions — real DOM, real events, isolated from full-page mounts
 
 COLLABORATION_PATTERNS:
 - Radar -> Voyager: Test escalation
@@ -162,6 +165,34 @@ Voyager receives test escalations, feature specs, and acceptance criteria from u
 | Siege | E2E functional validation | Load, chaos, and resilience testing |
 | Director | E2E test scenarios for journeys | Demo video recording and production |
 | Attest | E2E test implementation | Specification-level acceptance criteria |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Playwright Suite | `playwright` | ✓ | Playwright E2E test suite creation | `references/playwright-patterns.md` |
+| Page Object | `page-object` | | Page Object Model design and implementation | `references/playwright-patterns.md` |
+| Auth Flow | `auth` | | Authentication flow E2E tests | `references/complex-scenarios.md` |
+| Accessibility | `a11y` | | Accessibility automated testing | `references/visual-a11y-testing.md` |
+| Visual Regression | `visual` | | Visual regression testing | `references/visual-a11y-testing.md` |
+| API E2E | `api` | | User-journey E2E through an API-only interface (no UI): HTTP call → backend state → downstream API validation chain | `references/api-e2e-testing.md` |
+| Mobile E2E | `mobile` | | E2E testing for shipped mobile apps (Detox / Maestro / Appium / device farm) | `references/mobile-e2e-testing.md` |
+| Component Test | `component` | | Component tests executed in a real browser (Playwright CT / Cypress CT / Storybook Interactions) | `references/component-testing.md` |
+
+## Subcommand Dispatch
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`playwright` = Playwright Suite). Apply normal PLAN → IMPLEMENT → STABILIZE → INTEGRATE workflow.
+
+Behavior notes per Recipe:
+- `playwright`: full Playwright E2E test-suite generation. Apply POM pattern; follow the selector-accessibility-first principle for stable selectors.
+- `page-object`: design and implement Page Object classes from existing tests or screen specs. Prioritize reusability and maintainability.
+- `auth`: E2E tests targeting login / OAuth / MFA auth flows. Consider `storageState` for auth-state reuse across tests.
+- `a11y`: integrate axe-core or Playwright's a11y checks to auto-detect WCAG violations in test runs.
+- `visual`: visual regression testing via screenshot diff. Includes baseline management and diff-report configuration.
+- `api`: User-journey E2E through an API-only interface (no UI). Use Playwright `APIRequestContext` to chain HTTP call → persisted state → downstream-API assertion as a single flow. Always include at least one cross-endpoint state check (e.g. POST `/orders` → GET `/orders/:id` → GET `/inventory` must all agree) so the test exercises integration, not just one route. Define the mock-vs-real backend toggle at PLAN (env-driven) and pin to real backend for the critical-path smoke tag. Follow up with a Gateway/contract-test handoff when schema drift risk is high. Distinct from Radar `integration` (service-to-service backend internals) and Probe `api` (security DAST) — this recipe verifies functional user-journey correctness.
+- `mobile`: E2E for a shipped mobile app (not a throwaway PoC). Pick Detox for React Native (grey-box, fastest feedback on RN internals), Maestro for cross-platform YAML DSL (lowest authoring cost, best for smoke flows), Appium for cross-platform native + hybrid (widest device matrix), and route the matrix through a device farm (BrowserStack / Sauce Labs / AWS Device Farm) once ≥3 device combos are required. Distinct from Forge `mobile` (throwaway PoC) and Native (production build) — this recipe is the test harness around an already-shipped app. Real-device flake dominates here; quarantine device-specific noise separately from logic flake.
+- `component`: Component tests executed in a **real browser** with real DOM, real events, and real CSS — distinct from Radar `unit` which runs in Node/jsdom. Prefer Playwright Component Testing for Playwright-native stacks, Cypress Component Testing when the project already uses Cypress, and Storybook Interactions (`play` function + `@storybook/test`) when stories are the source of truth. If Showcase owns the Storybook stories, this recipe executes tests against those stories rather than duplicating the mount setup. Scope each test to a single component or composition — page-level assertions belong in `playwright`.
 
 ## Output Routing
 

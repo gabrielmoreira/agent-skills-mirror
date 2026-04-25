@@ -144,6 +144,33 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Mutation thresholds | Critical modules `85%` minimum / `95%+` target; project-wide `60%` minimum / `75%+` recommended |
 | Mutation defense depth | Mutation testing is one layer: unit tests → mutation testing → fuzz testing → formal verification → professional audit → monitoring |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Load Test | `load` | ✓ | Load/stress/spike/soak testing and SLO validation | `references/load-testing-guide.md` |
+| Contract Test | `contract` | | Contract testing (Pact/Specmatic), CDC verification | `references/contract-testing-patterns.md` |
+| Chaos Engineering | `chaos` | | Chaos engineering, fault injection, game days | `references/chaos-engineering-guide.md` |
+| Mutation Testing | `mutation` | | Mutation testing, test quality measurement, survivor analysis | `references/mutation-testing-guide.md` |
+| Fuzz Testing | `fuzz` | | Coverage-guided fuzzing (AFL++/libFuzzer/go-fuzz/cargo-fuzz/Jazzer), corpus management, sanitizer integration | `references/fuzz-testing-guide.md` |
+| Property Testing | `property` | | Property-based testing (fast-check/Hypothesis/jqwik/PropEr), generator design, stateful/model-based properties | `references/property-based-testing.md` |
+| Smoke Test | `smoke` | | Post-deploy smoke / sanity gates, synthetic checks, ≤3-min deploy-verification suite | `references/smoke-deployment-gates.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`load` = Load Test). Apply normal DEFINE → PREPARE → EXECUTE → ANALYZE → REPORT workflow.
+
+Behavior notes per Recipe:
+- `load`: Select LOAD mode. Verify throughput, latency, capacity, spike, and soak with k6/Locust/Artillery. Always report p50/p95/p99/max.
+- `contract`: Select CONTRACT mode. Verify consumer/provider contracts with Pact v4+ or Specmatic. Integrate into the CI gate.
+- `chaos`: Select CHAOS mode. Define steady state first, minimize blast radius, then inject faults. Always prepare a kill switch.
+- `mutation`: Select MUTATE mode. Generate mutants → classify survivors → evaluate coverage thresholds (60% project-wide / 75%+ recommended).
+- `fuzz`: Coverage-guided fuzzing of parsers, decoders, and security-sensitive surfaces with AFL++/libFuzzer/go-fuzz/cargo-fuzz/Jazzer. Always pair with a sanitizer (ASan+UBSan default), seed from a real corpus, and minimize+dedupe crashes before reporting. For unit-test coverage gaps use Radar; for test-data factory shapes use Mint; for deeper DAST on security-critical crashes hand off to Probe/Sentinel.
+- `property`: Property-based testing of invariants (round-trip, idempotent, monotonic, model-based) with fast-check/Hypothesis/jqwik/PropEr/proptest. Compose generators from primitives (no filter-heavy strategies), cap 100-1000 runs at PR tier, commit shrunk counter-examples as regression tests. For example-based unit tests use Radar; for realistic factory data use Mint; for AC-level conformance use Attest; for byte-level parser crashes use `fuzz`.
+- `smoke`: Minimum viable post-deploy gate, 8-15 checks, ≤3 min budget, serial by default, synthetic-check-capable. Emits PROMOTE/HOLD/ROLLBACK verdict tied to deploy SHA. For full user-journey E2E use Voyager; for unit coverage use Radar; for AC compliance use Attest; for SLO ownership and long-term synthetic monitoring topology use Beacon.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -231,6 +258,9 @@ Use mode-specific reporting:
 | `references/chaos-observability.md` | You need observability integration, chaos CI maturity, Game Day practices, or chaos anti-patterns. |
 | `references/mutation-testing-guide.md` | You need tool setup, survivor analysis, CI wiring, or baseline mutation thresholds. |
 | `references/mutation-testing-advanced.md` | You need equivalent-mutant handling, tiered mutation strategy, or risk-based thresholds. |
+| `references/fuzz-testing-guide.md` | You need coverage-guided fuzzing setup (AFL++/libFuzzer/go-fuzz/cargo-fuzz/Jazzer), corpus/dictionary design, sanitizer selection, crash triage, or continuous-fuzz CI wiring. |
+| `references/property-based-testing.md` | You need property-based test design (fast-check/Hypothesis/jqwik/PropEr), generator composition, shrinking tuning, or stateful/model-based testing patterns. |
+| `references/smoke-deployment-gates.md` | You need post-deploy smoke suite design, the canary/smoke/regression hierarchy, synthetic-check topology, or ≤3-min deploy-gate time-budget discipline. |
 | `references/resilience-patterns.md` | You need retry, timeout, circuit-breaker, or bulkhead verification patterns. |
 | `references/resilience-anti-patterns.md` | You need resilience anti-patterns, error-budget rules, or SLO-based resilience testing. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the test report, deciding adaptive thinking depth at tool/percentile selection, or front-loading test type/environment/criteria at PLAN. Critical for Siege: P3, P5. |

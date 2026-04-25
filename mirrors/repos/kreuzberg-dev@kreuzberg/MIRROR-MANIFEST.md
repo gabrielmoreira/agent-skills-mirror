@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,23 +64,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md`](.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md) |
 | 4 | ✓ | [`.ai-rulez/skills/format-specific-extraction/SKILL.md`](.ai-rulez/skills/format-specific-extraction/SKILL.md) |
 | 5 | ✓ | [`.ai-rulez/skills/plugin-architecture-patterns/SKILL.md`](.ai-rulez/skills/plugin-architecture-patterns/SKILL.md) |
-| 6 | ✓ | [`.cursor/skills/alef/references/adapters.md`](.cursor/skills/alef/references/adapters.md) |
-| 7 | ✓ | [`.cursor/skills/alef/references/backends.md`](.cursor/skills/alef/references/backends.md) |
-| 8 | ✓ | [`.cursor/skills/alef/references/cli-reference.md`](.cursor/skills/alef/references/cli-reference.md) |
-| 9 | ✓ | [`.cursor/skills/alef/references/configuration.md`](.cursor/skills/alef/references/configuration.md) |
-| 10 | ✓ | [`.cursor/skills/alef/references/e2e-testing.md`](.cursor/skills/alef/references/e2e-testing.md) |
-| 11 | ✓ | [`.cursor/skills/alef/references/troubleshooting.md`](.cursor/skills/alef/references/troubleshooting.md) |
-| 12 | ✓ | [`.cursor/skills/alef/SKILL.md`](.cursor/skills/alef/SKILL.md) |
-| 13 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 14 | ✓ | [`skills/kreuzberg/references/advanced-features.md`](skills/kreuzberg/references/advanced-features.md) |
-| 15 | ✓ | [`skills/kreuzberg/references/cli-reference.md`](skills/kreuzberg/references/cli-reference.md) |
-| 16 | ✓ | [`skills/kreuzberg/references/configuration.md`](skills/kreuzberg/references/configuration.md) |
-| 17 | ✓ | [`skills/kreuzberg/references/nodejs-api.md`](skills/kreuzberg/references/nodejs-api.md) |
-| 18 | ✓ | [`skills/kreuzberg/references/other-bindings.md`](skills/kreuzberg/references/other-bindings.md) |
-| 19 | ✓ | [`skills/kreuzberg/references/python-api.md`](skills/kreuzberg/references/python-api.md) |
-| 20 | ✓ | [`skills/kreuzberg/references/rust-api.md`](skills/kreuzberg/references/rust-api.md) |
-| 21 | ✓ | [`skills/kreuzberg/references/supported-formats.md`](skills/kreuzberg/references/supported-formats.md) |
-| 22 | ✓ | [`skills/kreuzberg/SKILL.md`](skills/kreuzberg/SKILL.md) |
+| 6 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 7 | ✓ | [`skills/kreuzberg/references/advanced-features.md`](skills/kreuzberg/references/advanced-features.md) |
+| 8 | ✓ | [`skills/kreuzberg/references/cli-reference.md`](skills/kreuzberg/references/cli-reference.md) |
+| 9 | ✓ | [`skills/kreuzberg/references/configuration.md`](skills/kreuzberg/references/configuration.md) |
+| 10 | ✓ | [`skills/kreuzberg/references/nodejs-api.md`](skills/kreuzberg/references/nodejs-api.md) |
+| 11 | ✓ | [`skills/kreuzberg/references/other-bindings.md`](skills/kreuzberg/references/other-bindings.md) |
+| 12 | ✓ | [`skills/kreuzberg/references/python-api.md`](skills/kreuzberg/references/python-api.md) |
+| 13 | ✓ | [`skills/kreuzberg/references/rust-api.md`](skills/kreuzberg/references/rust-api.md) |
+| 14 | ✓ | [`skills/kreuzberg/references/supported-formats.md`](skills/kreuzberg/references/supported-formats.md) |
+| 15 | ✓ | [`skills/kreuzberg/SKILL.md`](skills/kreuzberg/SKILL.md) |
 
 ---
 

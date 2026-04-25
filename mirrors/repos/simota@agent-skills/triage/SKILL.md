@@ -16,6 +16,9 @@ CAPABILITIES_SUMMARY:
 - postmortem_authoring: Blameless postmortem creation with 5 Whys, timeline, and actionable follow-ups
 - runbook_management: Runbook management, incident pattern detection, and lessons-learned capture
 - metrics_tracking: MTTD/MTTA/MTTR tracking and performance benchmarking per severity level
+- first_15_minutes: T-0 incident command — IC assignment, war-room opening, SEV1-4 classification, scribe assignment, initial timeline capture, and early holding comms (FEMA ICS / Google SRE Incident Command)
+- escalation_design: Escalation matrix authoring — tiered on-call rotation, paging policy, auto-escalation thresholds, handoff scripts, after-hours engagement, and PagerDuty / Opsgenie / VictorOps integration design
+- incident_comms_authoring: Incident-specific stakeholder comms — internal engineering / leadership / sales / support, external status page, customer notices, social updates, and SEV-based update cadence (Atlassian Incident Handbook)
 
 COLLABORATION_PATTERNS:
 - Pattern A: Standard Incident Flow (Triage → Scout → Builder → Radar → Triage)
@@ -182,6 +185,33 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Canonical handoffs you must preserve: `TRIAGE_TO_SCOUT_HANDOFF`, `SCOUT_TO_BUILDER_HANDOFF`, `BUILDER_TO_RADAR_HANDOFF`, `RADAR_TO_TRIAGE_HANDOFF`, `TRIAGE_TO_SENTINEL_HANDOFF`, `TRIAGE_TO_GEAR_HANDOFF`, `GEAR_TO_RADAR_HANDOFF`.
 - Detailed flow diagrams and multi-service variants → `references/collaboration-flows.md`
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Incident Response | `respond` | ✓ | Incident first response (impact isolation + initial response + SEV classification) | `references/response-workflow.md` |
+| Impact Scoping | `impact` | | Impact scope identification (user, feature, and business dimension evaluation) | `references/runbooks-communication.md` |
+| Recovery Plan | `recover` | | Recovery procedure formulation (rollback and failover procedures) | `references/response-workflow.md` |
+| Postmortem | `postmortem` | | Postmortem document creation (5 Whys + action items) | `references/postmortem-templates.md` |
+| First 15 Minutes | `first-response` | | T-0 incident command: IC assignment, war-room opening, SEV classification, scribe, initial timeline, holding comms | `references/first-response.md` |
+| Escalation Matrix | `escalation` | | Design tiered on-call escalation, paging policy, auto-escalation thresholds, handoff script, PagerDuty/Opsgenie/VictorOps integration | `references/escalation-matrix.md` |
+| Stakeholder Comms | `comms` | | Incident-specific communication templates across internal, external status page, customer notices, social, with SEV-based cadence | `references/incident-communications.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`respond` = Incident Response). Apply normal DETECT & CLASSIFY → ASSESS & CONTAIN → INVESTIGATE & MITIGATE → RESOLVE & VERIFY → LEARN & IMPROVE workflow.
+
+Behavior notes per Recipe:
+- `respond`: classify SEV within 5 minutes. Fan out in parallel: hand RCA to Scout, request the fix from Builder.
+- `impact`: scope the incident on 4 axes — affected users, feature outage surface, data risk, and business impact.
+- `recover`: decide rollback vs forward fix. Coordinate with Gear; validate regression risk with Radar.
+- `postmortem`: author within 24h (SEV1) / 48h (SEV2). 5 Whys + timeline + concrete action items (owner + due date).
+- `first-response`: T-0 to T+15 min only. Assign Incident Commander (IC) before any technical action (FEMA ICS / Google SRE) — IC owns coordination, not diagnosis. Open a war-room (Slack channel / Zoom bridge / dedicated doc) and assign a Scribe separate from the IC. Classify SEV1-4 within 5 min; when in doubt, pick the higher severity — downgrade costs nothing, late escalation compounds blast radius. Capture the initial timeline in UTC with decision rationale. Send a holding comm within 10 min ("aware, investigating, next update by HH:MM UTC") even without a root cause — silence breeds escalation. Does NOT execute remediation (→ Mend for catalogued runbooks, Builder for novel fixes); does NOT design the escalation policy (→ `escalation`).
+- `escalation`: Design-time, not runtime. Output the escalation matrix as a document: tier 0 (primary on-call) → tier 1 (secondary) → tier 2 (EM) → tier 3 (VP/CTO) with paging thresholds, SLA per tier, auto-escalation timers (e.g., unacked in 5 min → tier 1), and after-hours engagement rules (PagerDuty / Opsgenie / VictorOps schedules). Include a handoff script for end-of-shift and follow-the-sun rotations. Gear `alert` configures the alerting tool (Alertmanager routes, webhook targets); `escalation` defines what humans do once paged. Cross-link: Gear routes alert → PagerDuty; Triage `escalation` specifies PagerDuty's escalation policy, override rules, and override-by-role (PagerDuty Incident Response training).
+- `comms`: Author incident-specific templates with time-sensitive tone and severity-aware language — NOT generic microcopy (→ Prose for product voice / tone). Produce the full stakeholder matrix: internal engineering (technical detail), leadership (business impact + ETA), sales (customer talking points), support (canned responses + escalation flags), external status page (public-facing, legally reviewed), direct customer notices (email / in-app), and social (Twitter/X / LinkedIn short form). Define SEV-based cadence: SEV1 every 15 min, SEV2 every 30 min, SEV3 every 2 hours, SEV4 on resolution only. Include a legal-review hook for any external comms mentioning data loss, breach, or regulated systems. Prose voice/tone is inherited — incident-specific tone overrides: directness, no marketing polish, explicit "Next update by HH:MM UTC" (Atlassian Incident Handbook).
+
 ## Output Requirements
 
 - Status: `Active | Mitigating | Resolved | Monitoring` + severity + duration
@@ -231,6 +261,9 @@ Routing rules:
 | `references/postmortem-templates.md` | You are drafting an internal postmortem, PIR, or executive summary. |
 | `references/response-workflow.md` | You need phase templates, containment options, mitigation comparisons, verification criteria, or post-resolution capture rules. |
 | `references/runbooks-communication.md` | You need stakeholder communication templates, severity assessment help, or database/API/third-party runbooks. |
+| `references/first-response.md` | You are inside the first 15 minutes of an incident: assigning IC, opening the war-room, classifying SEV, assigning a scribe, capturing the initial timeline, or drafting a holding comm. |
+| `references/escalation-matrix.md` | You are designing the tiered escalation policy: on-call rotation, paging thresholds, auto-escalation timers, handoff scripts, after-hours rules, or PagerDuty / Opsgenie / VictorOps integration. |
+| `references/incident-communications.md` | You are authoring stakeholder-specific incident templates: internal engineering / leadership / sales / support, external status page, customer notices, social updates, with SEV-based cadence and legal-review hooks. |
 | `_common/OPUS_47_AUTHORING.md` | You are calibrating tool-use eagerness at DETECT, deciding adaptive thinking depth at CLASSIFY, or sizing the postmortem. Critical for Triage: P3, P5. |
 
 ## Daily Process

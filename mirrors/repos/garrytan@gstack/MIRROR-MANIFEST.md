@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `garrytan/gstack` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
+Mirror of `garrytan/gstack` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `garrytan/gstack` — 26 default patterns, 0 followed patterns, 51 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 51 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,31 +85,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`health/SKILL.md`](health/SKILL.md) |
 | 25 | ✓ | [`investigate/SKILL.md`](investigate/SKILL.md) |
 | 26 | ✓ | [`land-and-deploy/SKILL.md`](land-and-deploy/SKILL.md) |
-| 27 | ✓ | [`learn/SKILL.md`](learn/SKILL.md) |
-| 28 | ✓ | [`make-pdf/SKILL.md`](make-pdf/SKILL.md) |
-| 29 | ✓ | [`model-overlays/claude.md`](model-overlays/claude.md) |
-| 30 | ✓ | [`model-overlays/gemini.md`](model-overlays/gemini.md) |
-| 31 | ✓ | [`office-hours/SKILL.md`](office-hours/SKILL.md) |
-| 32 | ✓ | [`open-gstack-browser/SKILL.md`](open-gstack-browser/SKILL.md) |
-| 33 | ✓ | [`openclaw/skills/gstack-openclaw-ceo-review/SKILL.md`](openclaw/skills/gstack-openclaw-ceo-review/SKILL.md) |
-| 34 | ✓ | [`openclaw/skills/gstack-openclaw-investigate/SKILL.md`](openclaw/skills/gstack-openclaw-investigate/SKILL.md) |
-| 35 | ✓ | [`openclaw/skills/gstack-openclaw-office-hours/SKILL.md`](openclaw/skills/gstack-openclaw-office-hours/SKILL.md) |
-| 36 | ✓ | [`openclaw/skills/gstack-openclaw-retro/SKILL.md`](openclaw/skills/gstack-openclaw-retro/SKILL.md) |
-| 37 | ✓ | [`pair-agent/SKILL.md`](pair-agent/SKILL.md) |
-| 38 | ✓ | [`plan-ceo-review/SKILL.md`](plan-ceo-review/SKILL.md) |
-| 39 | ✓ | [`plan-design-review/SKILL.md`](plan-design-review/SKILL.md) |
-| 40 | ✓ | [`plan-devex-review/SKILL.md`](plan-devex-review/SKILL.md) |
-| 41 | ✓ | [`plan-eng-review/SKILL.md`](plan-eng-review/SKILL.md) |
-| 42 | ✓ | [`plan-tune/SKILL.md`](plan-tune/SKILL.md) |
-| 43 | ✓ | [`qa-only/SKILL.md`](qa-only/SKILL.md) |
-| 44 | ✓ | [`qa/SKILL.md`](qa/SKILL.md) |
-| 45 | ✓ | [`retro/SKILL.md`](retro/SKILL.md) |
-| 46 | ✓ | [`review/SKILL.md`](review/SKILL.md) |
-| 47 | ✓ | [`setup-browser-cookies/SKILL.md`](setup-browser-cookies/SKILL.md) |
-| 48 | ✓ | [`setup-deploy/SKILL.md`](setup-deploy/SKILL.md) |
-| 49 | ✓ | [`ship/SKILL.md`](ship/SKILL.md) |
-| 50 | ✓ | [`SKILL.md`](SKILL.md) |
-| 51 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
+| 27 | ✓ | [`landing-report/SKILL.md`](landing-report/SKILL.md) |
+| 28 | ✓ | [`learn/SKILL.md`](learn/SKILL.md) |
+| 29 | ✓ | [`make-pdf/SKILL.md`](make-pdf/SKILL.md) |
+| 30 | ✓ | [`model-overlays/claude.md`](model-overlays/claude.md) |
+| 31 | ✓ | [`model-overlays/gemini.md`](model-overlays/gemini.md) |
+| 32 | ✓ | [`office-hours/SKILL.md`](office-hours/SKILL.md) |
+| 33 | ✓ | [`open-gstack-browser/SKILL.md`](open-gstack-browser/SKILL.md) |
+| 34 | ✓ | [`openclaw/skills/gstack-openclaw-ceo-review/SKILL.md`](openclaw/skills/gstack-openclaw-ceo-review/SKILL.md) |
+| 35 | ✓ | [`openclaw/skills/gstack-openclaw-investigate/SKILL.md`](openclaw/skills/gstack-openclaw-investigate/SKILL.md) |
+| 36 | ✓ | [`openclaw/skills/gstack-openclaw-office-hours/SKILL.md`](openclaw/skills/gstack-openclaw-office-hours/SKILL.md) |
+| 37 | ✓ | [`openclaw/skills/gstack-openclaw-retro/SKILL.md`](openclaw/skills/gstack-openclaw-retro/SKILL.md) |
+| 38 | ✓ | [`pair-agent/SKILL.md`](pair-agent/SKILL.md) |
+| 39 | ✓ | [`plan-ceo-review/SKILL.md`](plan-ceo-review/SKILL.md) |
+| 40 | ✓ | [`plan-design-review/SKILL.md`](plan-design-review/SKILL.md) |
+| 41 | ✓ | [`plan-devex-review/SKILL.md`](plan-devex-review/SKILL.md) |
+| 42 | ✓ | [`plan-eng-review/SKILL.md`](plan-eng-review/SKILL.md) |
+| 43 | ✓ | [`plan-tune/SKILL.md`](plan-tune/SKILL.md) |
+| 44 | ✓ | [`qa-only/SKILL.md`](qa-only/SKILL.md) |
+| 45 | ✓ | [`qa/SKILL.md`](qa/SKILL.md) |
+| 46 | ✓ | [`retro/SKILL.md`](retro/SKILL.md) |
+| 47 | ✓ | [`review/SKILL.md`](review/SKILL.md) |
+| 48 | ✓ | [`setup-browser-cookies/SKILL.md`](setup-browser-cookies/SKILL.md) |
+| 49 | ✓ | [`setup-deploy/SKILL.md`](setup-deploy/SKILL.md) |
+| 50 | ✓ | [`setup-gbrain/SKILL.md`](setup-gbrain/SKILL.md) |
+| 51 | ✓ | [`ship/SKILL.md`](ship/SKILL.md) |
+| 52 | ✓ | [`SKILL.md`](SKILL.md) |
+| 53 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
 
 ---
 

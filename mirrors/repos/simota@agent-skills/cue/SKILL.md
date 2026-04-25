@@ -94,6 +94,31 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Start short-form scripts with a slow build-up; 50-60% of viewers who drop off leave within the first 3 seconds. Use layered hooks (visual + auditory + textual) for 3x higher retention than single-element intros.
 - Ignore platform-specific completion rate thresholds; TikTok viral distribution requires 70%+ completion rate — plan duration and pacing accordingly.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Script | `script` | ✓ | Full video script authoring | `references/patterns.md` |
+| Storyboard | `storyboard` | | Per-scene storyboard, visual design | `references/patterns.md`, `references/examples.md` |
+| Narration | `narration` | | Narration text with duration and pacing design | `references/patterns.md` |
+| Explainer | `explainer` | | Product explainer and comparison video scripts | `references/patterns.md`, `references/examples.md` |
+| Shorts | `shorts` | | Vertical short-form script for TikTok / Reels / YouTube Shorts | `references/shorts-format.md` |
+| Captions | `captions` | | SRT / VTT / ASS subtitle and SDH authoring with timing | `references/captions-authoring.md` |
+| Localize | `localize` | | Multi-language narration / voice-over adaptation with duration budgeting | `references/narration-localize.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`script` = Script). Apply normal BRIEF → STRUCTURE → SCENE → NARRATE → REVIEW workflow.
+- `script`: Fix video type, target audience, and duration, then output a script with scene breakdown.
+- `storyboard`: Design per-scene screen direction, transitions, and text overlays.
+- `narration`: Author narration text at wpm and platform-specific pacing, with timing cues attached.
+- `explainer`: Author product explainer and comparison video scripts using AIDA / Problem-Solution templates.
+- `shorts`: Author a 9:16 hook-first vertical script with burn-in captions, pattern interrupts every 2-3s, and a loopable ending sized to the platform sweet spot (TikTok/Reels 15-30s, Shorts ≤60s).
+- `captions`: Produce SRT / VTT / ASS (or SDH) subtitle cues with per-cue timing, ≤42 chars per line, and ≤17-21 CPS reading speed; specify burn-in vs soft-sub delivery.
+- `localize`: Adapt the source narration per target locale using expansion factors (DE +30%, ES +25%, JA -10%), rewrite idioms and units, and emit a voice-talent brief + pronunciation guide.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -180,6 +205,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `references/patterns.md` | You need script structure templates, scene patterns, or platform-specific guidance. |
 | `references/examples.md` | You need complete video script examples. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `references/shorts-format.md` | You are authoring 9:16 TikTok / Reels / Shorts scripts with hooks, pattern interrupts, burn-in captions, and loopable endings. |
+| `references/captions-authoring.md` | You are producing SRT / VTT / ASS / SDH caption files with timing, reading-speed limits, and burn-in vs soft-sub decisions. |
+| `references/narration-localize.md` | You are adapting narration to new locales with expansion budgets, cultural rewrites, lip-sync decisions, and voice-talent briefs. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the script, deciding adaptive thinking depth at story structure, or front-loading video type/audience/duration at FRAME. Critical for Cue: P3, P5. |
 
 ## Operational

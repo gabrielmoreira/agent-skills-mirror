@@ -210,6 +210,27 @@ Examples:
 
 Do not over-fit. The primary axis stays universal engineer appeal.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Propose Idea | `propose` | ✓ | Standard single-idea proposal (8-section brief) | — |
+| Morning Ritual | `morning` | | Morning routine use — short kickoff phrasing | — |
+| Weekend Hack | `weekend` | | Weekend hacks — prioritize practical/gadget axes | — |
+| Full Brief | `brief` | | Output the 8-section brief at maximum density | — |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`propose` = Propose Idea). Apply normal RECALL → DIVERGE → SELECT → SPECIFY → LOG workflow.
+
+Behavior notes per Recipe:
+- `propose`: Standard flow. Apply diversity rotation, fixed 8-section output, dense section 8.
+- `morning`: Tone tuned for a short morning kickoff. Simple opening → full 8-section proposal.
+- `weekend`: Bias the mood axis toward practical/gadget/nerdy. Keep MVP within a 1-2 day weekend.
+- `brief`: Maximize detail in section 8 (coding agent prompt). Expand concrete examples in other sections too.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

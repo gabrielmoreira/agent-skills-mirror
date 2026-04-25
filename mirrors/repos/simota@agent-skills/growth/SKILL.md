@@ -143,6 +143,29 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `LAUNCH` | Implement: semantic crawler-friendly code, stacked JSON-LD, above-fold optimization, E-E-A-T signals | Mobile-first, no dark patterns | Domain-specific reference |
 | `VERIFY` | Check metrics: Lighthouse SEO ≥90/Best Practices ≥90, Google Rich Results Test, Social Preview Debugger, INP <200ms/LCP ≤2.5s/CLS <0.1 | Measure impact, not just delivery | `references/core-web-vitals.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| SEO | `seo` | ✓ | Meta tags, JSON-LD, heading hierarchy, GEO optimization | `references/seo-checklist.md` |
+| Social Sharing | `smo` | | OGP / Twitter Card social-share setup | `references/ogp-twitter-card-guide.md` |
+| CRO | `cro` | | CTA optimization, form improvements, exit intent | `references/cro-patterns.md` |
+| GEO | `geo` | | AI Overview / ChatGPT / Perplexity citation optimization | `references/json-ld-templates.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input and activate the matching Recipe. If the token matches no subcommand, activate `seo` (default).
+
+| First Token | Recipe Activated |
+|------------|-----------------|
+| `seo` | SEO |
+| `smo` | Social Sharing |
+| `cro` | CRO |
+| `geo` | GEO |
+| _(no match)_ | SEO (default) |
+
+---
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

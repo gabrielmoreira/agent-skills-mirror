@@ -164,6 +164,32 @@ Tuner receives performance issues and context from upstream agents. Tuner sends 
 | Scout | Optimization recommendations after bottleneck identified | Root cause investigation, unknown performance regression |
 | Beacon | DB monitoring query authoring (pg_stat_*, slow query logs) | Alert routing, dashboard visualization, SLO management |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Explain Analyze | `explain` | ✓ | EXPLAIN ANALYZE analysis | `references/explain-analyze-guide.md` |
+| Slow Query Hunt | `slow` | | Slow query detection and fix | `references/slow-query-benchmarks.md` |
+| Index Recommendation | `index` | | Index recommendation | `references/query-index-anti-patterns.md` |
+| Plan Optimization | `plan` | | Query plan improvement | `references/optimization-patterns.md` |
+| Cache Strategy | `cache` | | Query/DB cache layer tuning (Redis, Memcached, shared_buffers) | `references/cache-strategy.md` |
+| Connection Pool Tuning | `connection` | | Pool sizing, lifetime, prepared-statement cache, leak detection | `references/connection-pool-tuning.md` |
+| VACUUM & Autovacuum | `vacuum` | | Bloat, autovacuum thresholds, freeze horizon, statistics target | `references/vacuum-autovacuum-tuning.md` |
+
+## Subcommand Dispatch
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`explain` = Explain Analyze). Apply normal INTAKE → ANALYZE → RECOMMEND → VALIDATE workflow.
+
+Behavior notes per Recipe:
+- `explain`: Take EXPLAIN ANALYZE output and annotate each plan node, decomposing the plan into readable steps. Identify bottleneck nodes and propose improvements.
+- `slow`: Extract high-cost queries from slow-query logs or pg_stat_statements and propose rewrite candidates.
+- `index`: Analyze access patterns and recommend DDL for covering, partial, and composite indexes.
+- `plan`: Tune planner statistics and configuration parameters (work_mem, enable_seqscan, etc.) to steer the planner toward the optimal execution plan.
+- `cache`: Query-result and DB-layer cache strategy (Redis/Memcached in front of SQL, `shared_buffers` sizing, cache-aside vs write-through, TTL and invalidation design, stampede guards). Scope: application/query cache layer. For HTTP/edge/API-gateway-level caching use Gateway; for design-time denormalization or materialized views use Schema. Hand off repository integration to Builder.
+- `connection`: Connection-pool tuning (PgBouncer/HikariCP/pgpool sizing, pool mode trade-offs, prepared-statement cache behavior, idle/max-lifetime coordination, connection-leak detection). Scope: DB-side pool. For HTTP/upstream connection keep-alive use Gateway; for application-side thread-pool or async-runtime sizing use Bolt; when `max_connections` itself must rise, coordinate with Schema.
+- `vacuum`: PostgreSQL VACUUM/ANALYZE/autovacuum tuning (per-table autovacuum overrides, bloat detection, `fillfactor`, freeze horizon, `default_statistics_target`, pg_repack vs VACUUM FULL timing). Scope: runtime maintenance. For design-time `fillfactor`/partitioning/column layout decisions use Schema; for bloat monitoring and alerting dashboards hand off to Beacon.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -208,6 +234,9 @@ Routing rules:
 | [n1-detection-cache-orm.md](references/n1-detection-cache-orm.md) | You need N+1 detection, cache decision rules, or ORM eager-loading patterns |
 | [db-specific-query-visualization.md](references/db-specific-query-visualization.md) | You need PostgreSQL/MySQL/SQLite tuning baselines or Canvas query-plan visualization |
 | [connection-pool-guide.md](references/connection-pool-guide.md) | You need connection-pool sizing, pooler selection, or monitoring checks |
+| [connection-pool-tuning.md](references/connection-pool-tuning.md) | You need in-depth pool tuning — lifetime coordination, prepared-statement cache, leak detection, HikariCP/PgBouncer knobs |
+| [cache-strategy.md](references/cache-strategy.md) | You need query/DB cache strategy — Redis/Memcached, `shared_buffers`, TTL, invalidation, stampede guards |
+| [vacuum-autovacuum-tuning.md](references/vacuum-autovacuum-tuning.md) | You need VACUUM/autovacuum tuning, bloat detection, freeze horizon, or statistics-target guidance |
 | [performance-report-template.md](references/performance-report-template.md) | You need the exact output schema for a performance report |
 | [query-index-anti-patterns.md](references/query-index-anti-patterns.md) | You need `QA-01..06` or `IA-01..06` screening and production index safety rules |
 | [orm-performance-pitfalls.md](references/orm-performance-pitfalls.md) | You need ORM-specific risk screening, raw-SQL switch criteria, or 2025 ORM comparison |

@@ -17,6 +17,9 @@ CAPABILITIES_SUMMARY:
 - tokenizer_design: Lexer modes, context-sensitive tokens, indentation-based (Python-like)
 - error_recovery: Panic mode, phrase-level recovery, diagnostic quality (Elm-style)
 - grammar_evolution: Backward-compat rule additions, deprecation, version gates
+- lexer_design: Standalone tokenizer design (separate lexer justification, off-side rule, hand-written vs generator, lookahead, trivia handling)
+- error_design: Parser error-recovery + diagnostic-message design (panic-mode, phrase-level, error productions, multi-span diagnostics, expected-token reporting)
+- incremental_parsing: Incremental reparse design (tree-sitter-style edit-aware state, dirty-subtree tracking, LSP integration, amortized cost)
 
 COLLABORATION_PATTERNS:
 - Pattern A: Grammar-to-Impl (User -> Grok -> Builder -> Radar)
@@ -209,6 +212,35 @@ questions:
 | `IMPLEMENT` | Specify tokenizer, parser, AST node types, error-recovery strategy; hand off to Builder | AST is tagged union + source position + (optional) trivia | `references/ast-transforms.md` |
 | `HARDEN` | Produce worst-case inputs, property-based tests, fuzz corpus; annotate ReDoS complexity | Every regex has a documented complexity class | `references/regex-safety.md` |
 | `DOCUMENT` | Package grammar + tests + error-recovery notes + evolution plan for downstream agents | Grammar is a contract; downstream must know how to extend it | `references/handoffs.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Regex Design | `regex` | ✓ | Regex design, ReDoS audit, and engine selection | `references/regex-safety.md` |
+| Parser Design | `parser` | | Parser design, grammar class classification, generator selection | `references/parser-generators.md` |
+| DSL Design | `dsl` | | Domain Specific Language design (internal/external DSL) | `references/dsl-design.md` |
+| AST Transform | `ast` | | AST transformation, codemod, visitor design | `references/ast-transforms.md` |
+| ReDoS Audit | `redos` | | ReDoS safety audit of existing regex only | `references/regex-safety.md` |
+| Lexer Design | `lexer` | | Standalone tokenizer/lexer design — justify separation, handle off-side rule, context-sensitive tokens, trivia | `references/lexer-design.md` |
+| Error Recovery Design | `error` | | Parser error-recovery and diagnostic-message design (panic-mode, phrase-level, error productions, multi-span) | `references/error-recovery.md` |
+| Incremental Parser Design | `incremental` | | Incremental reparse design for IDE/LSP — edit-aware state, dirty-subtree tracking, tree-sitter-style | `references/incremental-parsing.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`regex` = Regex Design). Apply normal ANALYZE → GRAMMAR → IMPLEMENT → HARDEN → DOCUMENT workflow.
+
+Behavior notes per Recipe:
+- `regex`: Identify engine target → ReDoS analysis → document pump strings → verify Unicode posture.
+- `parser`: Grammar class classification → generator decision matrix → error recovery strategy → Builder handoff.
+- `dsl`: Decide internal vs external DSL → vocabulary design → versioning strategy → evolution plan.
+- `ast`: Node type design → visitor pattern selection → round-trip safety → codemod strategy.
+- `redos`: Extract pump strings from existing patterns → determine complexity class → propose fixes only.
+- `lexer`: Justify a separate tokenization stage → choose hand-written vs generator (re2c, flex, ANTLR lexer, logos, chumsky lexer, tree-sitter external scanner) → specify lexer modes / context-sensitive tokens / off-side rule (INDENT/DEDENT) → define lookahead budget and trivia (whitespace/comment) policy. Differs from `parser`: `parser` picks the grammar-class + parser generator for the full syntactic layer; `lexer` decides whether and how to extract the tokenization sub-layer. Many small DSLs skip this — invoke `lexer` only when separation is justified by performance, IDE reuse, context-sensitive tokens, or indentation semantics.
+- `error`: Design parser-level error recovery and diagnostic messages as a language-theoretic artifact — choose recovery strategy (panic-mode, phrase-level, error productions, tree-sitter error nodes, GLR "all parses"), specify source-span tracking (byte offset + line/col + multi-span for Rust-style pointers), draft expected-token and "did you mean" templates. Differs from Builder: Builder writes the error-handling code; `error` produces the recovery spec (which tokens synchronize, what productions catch common mistakes, what the diagnostic looks like) that Builder implements. Cross-ref chumsky's recovery combinators, lalrpop's `!` marker, ANTLR4 default error strategy, Elm/rustc/Clang diagnostic styles.
+- `incremental`: Design a re-parse-on-edit architecture for IDE/LSP contexts. Specify edit-aware state (persistent tree or CST with stable node IDs), dirty-subtree tracking, reuse-on-unchanged-region strategy, amortized cost target (O(log n) per edit for typical keystroke), and (de)serialization for cross-session persistence. Reference tree-sitter's incremental GLR, Roslyn's red-green trees, rust-analyzer's Rowan/salsa, Langium's LSP-first architecture. Differs from `parser`: `parser` designs a one-shot parse; `incremental` designs continuous reparse-under-edit. Almost always cross-links with `parser` (pick a grammar compatible with incremental reuse) and `error` (incremental parsers must recover locally without invalidating the whole tree). Differs from Builder: `incremental` delivers the algorithmic/architectural spec; Builder implements the LSP server and wiring.
 
 ## Output Routing
 

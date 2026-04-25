@@ -143,6 +143,27 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `VALIDATION` | Verify confidence, completeness, and consistency | No unsupported claims | `references/persona-validation.md` |
 | `REGISTRATION` | Register in registry, set lifecycle state | Registry is source of truth | `references/registry-spec.md` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Generate Persona | `generate` | ✓ | Persona generation (CONJURE) — create new personas from sources | `references/generation-workflows.md` |
+| Registry | `registry` | | Registry management — lifecycle check, audit, archive | `references/registry-spec.md` |
+| Evolve | `evolve` | | Data-driven evolution — drift updates from Trace/Voice/Pulse | `references/evolution-engine.md` |
+| Distribute | `distribute` | | Packaging for other agents (Echo/Spark/Retain, etc.) | `references/distribution-adapters.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`generate` = Generate Persona). Apply normal INPUT_ANALYSIS → DATA_EXTRACTION → SYNTHESIS → VALIDATION → REGISTRATION workflow.
+
+Behavior notes per Recipe:
+- `generate`: CONJURE mode. Source detection → schema-compliant persona generation → registry.yaml registration.
+- `registry`: AUDIT mode. Evaluate and report freshness, duplication, coverage, and Echo compatibility.
+- `evolve`: EVOLVE mode. Confirm deviation ≥5% trigger → bump version → record evolution log.
+- `distribute`: DISTRIBUTE mode. Per-target-agent adapter conversion → generate delivery package.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

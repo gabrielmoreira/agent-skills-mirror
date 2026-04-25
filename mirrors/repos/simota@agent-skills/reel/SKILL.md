@@ -127,6 +127,25 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 Full workflows, .tape structure, commands/settings/timing/theme references, optimization, quality checklists → `references/recording-workflows.md`
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| VHS | `vhs` | ✓ | VHS declarative CLI demo (.tape DSL) | `references/vhs-tape-patterns.md`, `references/tape-templates.md` |
+| Terminalizer | `terminalizer` | | terminalizer interactive recording | `references/recording-workflows.md` |
+| Asciinema | `asciinema` | | asciinema recording and live streaming | `references/recording-workflows.md` |
+| README GIF | `readme` | | README GIF generation and optimization | `references/output-optimization.md`, `references/vhs-tape-patterns.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`vhs` = VHS). Apply normal SCRIPT → SET → RECORD → DELIVER workflow.
+- `vhs`: Generate and run declarative CLI demos with the .tape DSL.
+- `terminalizer`: Record interactive sessions with YAML config, post-edit, and output.
+- `asciinema`: Record sessions, live stream, and convert .cast with the v3.0 Rust CLI.
+- `readme`: Generate compression-optimized GIFs (≤5MB) and provide README embed code.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

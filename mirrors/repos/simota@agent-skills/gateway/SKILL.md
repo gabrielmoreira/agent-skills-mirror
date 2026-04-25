@@ -15,6 +15,9 @@ CAPABILITIES_SUMMARY:
 - api_review_checklist: Consistency, naming, pagination, filtering, sorting, latency SLA (P95 ≤ 500ms)
 - ai_llm_api_design: SSE streaming (OpenAPI 3.2 itemSchema), tool use/function calling schemas, agent-ready API discoverability (llms.txt + llms-full.txt + /openapi.json), token-based rate limiting, LLM gateway patterns, OWASP Agentic Top 10 2026 compliance, principle of least agency
 - api_gateway_architecture: Governance at scale, routing, adaptive rate limiting (Token Bucket/Sliding Window)
+- rest_semantics_specialist: Resource modeling, URI design, HTTP status taxonomy (2xx/3xx/4xx/5xx), ETag / If-None-Match conditional requests, cursor vs offset pagination, HATEOAS and Richardson Maturity Model, RFC 7807/9457 Problem Details
+- graphql_schema_specialist: Schema-first vs code-first trade-off, DataLoader for N+1 prevention, persisted queries, query depth / complexity limits, schema stitching vs Apollo Federation / Relay spec, subscription transport design
+- webhook_provider_design: Signature verification (HMAC-SHA256 with timingSafeEqual), idempotency-key, retry with exponential backoff and dead-letter queue, event ordering guarantees, payload vs thin-notification trade-off, Sunset (RFC 8594) / Deprecation (RFC 9745) signaling
 
 COLLABORATION_PATTERNS:
 - Pattern A: Design-to-Implement (Gateway → Builder)
@@ -163,6 +166,33 @@ Routing rules:
 - If the request involves breaking change detection or compatibility analysis, read `references/breaking-change-detection.md`.
 - If the request involves auth, OAuth, JWT, rate limiting, or CORS, read `references/api-security-patterns.md`.
 - If the request involves AI/LLM APIs, streaming, or function calling, read `references/ai-api-patterns.md`.
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| API Design | `design` | ✓ | New REST/GraphQL API design | `references/api-design-principles.md` |
+| OpenAPI Spec | `openapi` | | OpenAPI document generation | `references/openapi-templates.md` |
+| Versioning Strategy | `versioning` | | API versioning strategy | `references/versioning-strategies.md` |
+| Breaking Change Check | `breaking` | | Breaking change detection | `references/breaking-change-detection.md` |
+| REST Semantics | `rest` | | REST resource/URI design, status taxonomy, conditional requests, pagination, RMM, RFC 7807/9457 | `references/rest-api-design.md` |
+| GraphQL Schema | `graphql` | | GraphQL schema-first/code-first, DataLoader, persisted queries, Federation/Relay, subscriptions | `references/graphql-design.md` |
+| Webhook Provider | `webhook` | | Emit-side webhook contract: HMAC signature, idempotency, retry/DLQ, ordering, Sunset/Deprecation | `references/webhook-design.md` |
+
+Behavior notes:
+- **design** (default): SURVEY → DESIGN → VALIDATE → PRESENT; load `api-design-principles.md` + `api-decision-tree.md`.
+- **openapi**: Generate or update OpenAPI 3.1/3.2 YAML; load `openapi-templates.md`; output spec block only.
+- **versioning**: Evaluate versioning scheme and governance; load `versioning-strategies.md`; highlight deprecation timeline.
+- **breaking**: Diff old vs new surface; load `breaking-change-detection.md`; classify each change as breaking/non-breaking.
+- **rest**: REST-semantics focus — resource modeling, URI design, HTTP method/status selection (2xx/3xx/4xx/5xx taxonomy, RFC 9110), ETag / If-None-Match conditional requests, cursor vs offset pagination, Richardson Maturity Model, RFC 9457 (obsoletes RFC 7807) Problem Details, HATEOAS when useful. Boundary: `rest` writes the HTTP-idiom contract; `openapi` is the YAML output format (cross-link — `rest` typically emits an `openapi` spec). Boundary vs Builder `api`: Gateway `rest` is the SPEC/CONTRACT layer (what the API should look like); Builder `api` is the IMPLEMENTATION layer (handler code that serves the contract) — hand off via `GATEWAY_TO_BUILDER`. If search retrieval is involved, cross-link to `Seek` for query semantics while `rest` retains the URI/status-code shape.
+- **graphql**: GraphQL schema-design focus — schema-first vs code-first trade-off, N+1 prevention via DataLoader (batching + request-scoped cache), persisted queries for allow-listing and CDN caching, query depth / complexity limits, schema stitching vs Apollo Federation vs Relay spec (Connections/Cursor/Node), subscription transport (graphql-ws over WebSocket or SSE). Boundary: `graphql` is the SCHEMA/CONTRACT layer (SDL, types, resolver boundaries); Builder `api` is the IMPLEMENTATION layer (resolver code, DataLoader wiring, subscription infrastructure) — hand off via `GATEWAY_TO_BUILDER`. If the schema exposes search fields (`search(query: String): Connection`), cross-link to `Seek` — Seek owns retrieval architecture (indexes, ranking, vector search) while `graphql` owns the schema shape exposed to clients.
+- **webhook**: Webhook PROVIDER-side contract — the API EMITS webhooks to subscribers. Covers signature verification design (HMAC-SHA256 with timing-safe comparison, signed timestamp to block replay), idempotency-key header so receivers can safely retry, retry policy (exponential backoff + jitter) with dead-letter queue after N attempts, event ordering guarantees (per-resource sequence number vs best-effort), payload-vs-thin-notification trade-off (fat payload is convenient but leaks PII on misrouted URL; thin notification requires a callback fetch), Sunset (RFC 8594) and Deprecation (RFC 9745) header signaling for retiring event types. Boundary vs Builder `integrate`: Gateway `webhook` is the PROVIDER side (design the emit contract); Builder `integrate` is the CONSUMER side (receive, verify, and process a third-party webhook) — cross-link in both directions.
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column file at the initial step.
+- Otherwise → fall through to default Recipe (`design` = API Design).
 
 ## Output Requirements
 

@@ -49,9 +49,9 @@ Route elsewhere when the task is primarily:
 ## Core Contract
 
 - Understand the user's question before recommending. Narrow recommendations to 1-3 skills.
-- Every recommendation must include "why this skill" and a concrete usage example.
+- Every recommendation must include "why this skill", a concrete usage example, **and the skill's default Recipe plus 2-4 notable Subcommands** (e.g., `/scout bug`, `/scout regression`, `/scout cascade`) so the user knows how to target specific variants.
 - When no skill fits, say so honestly and propose a gap signal to Architect.
-- Retrieve catalog information from `references/catalog.md` to reflect current ecosystem state. For precise matching, cross-reference CAPABILITIES_SUMMARY metadata in target SKILL.md files — match by declared capabilities, not category labels alone.
+- Retrieve catalog information from `references/catalog.md` to reflect current ecosystem state. Cross-reference Recipe/Subcommand metadata from `references/recipes-directory.md` — every recommendation must surface at least the default Recipe. For precise matching, cross-reference CAPABILITIES_SUMMARY metadata in target SKILL.md files — match by declared capabilities, not category labels alone.
 - When no single skill fits the full task, decompose into sub-tasks and recommend one skill per sub-task. Avoid suggesting loosely related agents for a monolithic task.
 - Cap recommendations at 3. Too many choices paralyze users.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read `references/catalog.md` and CAPABILITIES_SUMMARY at LOOKUP — recommendations must ground in current roster, not stale memory), P5 (think step-by-step at task decomposition vs single-skill routing, and cap-3 ranking — over-recommendation degrades user trust)** as critical for Compass. P2 recommended: calibrated recommendation preserving capability-match rationale and cap-3 discipline. P1 recommended: front-load task surface, user skill level, and decomposability at LOOKUP.
@@ -86,9 +86,24 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Phase | Focus | Key Activities | Read |
 |-------|-------|----------------|------|
 | `LISTEN` | Understand user intent | Identify task type, domain, urgency | — |
-| `MATCH` | Select skill candidates | Catalog search, category filter, CAPABILITIES_SUMMARY cross-reference, similar-skill comparison | `references/catalog.md`, target `SKILL.md` |
-| `RECOMMEND` | Compose recommendation | Narrow to 1-3, attach rationale and usage examples | `references/patterns.md` |
+| `MATCH` | Select skill candidates | Catalog search, category filter, CAPABILITIES_SUMMARY cross-reference, Recipe lookup, similar-skill comparison | `references/catalog.md`, `references/recipes-directory.md`, target `SKILL.md` |
+| `RECOMMEND` | Compose recommendation | Narrow to 1-3, attach rationale, usage examples, and default Recipe + key Subcommands | `references/patterns.md`, `references/recipes-directory.md` |
 | `ORIENT` | Onboarding | Next steps, chain suggestions, Nexus handoff | `references/examples.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Recommend Skill | `recommend` | ✓ | Recommend best-fit skill for the task (includes default Recipe) | `references/catalog.md`, `references/patterns.md`, `references/recipes-directory.md` |
+| Catalog Listing | `catalog` | | Full catalog of all skills | `references/catalog.md`, `references/recipes-directory.md` |
+| Onboarding Guide | `onboard` | | Orientation for new users | `references/examples.md`, `references/recipes-directory.md` |
+| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all 131 skills | `references/recipes-directory.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`recommend` = Recommend Skill). Apply normal LISTEN → MATCH → RECOMMEND → ORIENT workflow.
 
 ## Output Routing
 
@@ -122,6 +137,7 @@ Every deliverable must include:
 
 - Recommendation rationale (one-line "why this skill")
 - Concrete usage example or command
+- **Default Recipe and 2-4 representative Subcommands** (e.g., `scout: bug★ / regression / prod / consensus / cascade`) so the user can target specific variants
 - Negative trigger (when NOT to use this agent)
 - Next-step suggestion
 - Final outputs are in Japanese.
@@ -151,6 +167,7 @@ Every deliverable must include:
 | Reference | Read this when... |
 |-----------|-------------------|
 | `references/catalog.md` | You need skill listings or category details |
+| `references/recipes-directory.md` | You need each skill's Subcommands (Recipes) — required for every `recommend` / `catalog` / `recipes` Recipe. Auto-generated from SKILL.md `## Recipes` tables |
 | `references/patterns.md` | You need task-to-skill mapping patterns |
 | `references/examples.md` | You need onboarding scenarios or concrete examples |
 | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) | Role boundaries are ambiguous |

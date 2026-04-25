@@ -155,6 +155,33 @@ Default opportunity patterns: dashboards from unused data · smart defaults from
 - **Methodology-first, not prompt-first**: AI output quality depends on structured inputs (explicit OST node, persona, hypothesis, fail condition), not prompt cleverness. 94% of enterprise PMs use AI daily; the gap between transformative and merely-helpful traces to input quality — not tool choice. Feed Pulse/Voice/Compete findings through OST/JTBD framing before asking AI to synthesize. [Source: productboard.com — AI product discovery; ainna.ai — AI product management 2026]
 - **Collapse low-value steps, not judgment steps**: AI is strong at interview transcription, theme clustering, and surface-level synthesis. Keep persona selection, fail-condition definition, and cross-opportunity trade-off reasoning human-led — AI-generated versions of these anchor to training-data averages, not the current customer. [Source: producttalk.org — 2026 roadmap / AI-powered discovery]
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Propose | `propose` | ✓ | New feature proposal (generate one RFC) | `references/proposal-templates.md`, `references/modern-product-discovery.md` |
+| Plan | `plan` | | Prioritization and backlog scoring | `references/prioritization-frameworks.md`, `references/outcome-roadmapping-alignment.md` |
+| Brainstorm | `brainstorm` | | Divergent candidate generation and opportunity mining | `references/modern-product-discovery.md`, `references/persona-jtbd.md` |
+| Refine | `refine` | | Refine existing proposals, add hypotheses and fail conditions | `references/feature-ideation-anti-patterns.md`, `references/experiment-lifecycle.md` |
+| Opportunity | `opportunity` | | Opportunity sizing: TAM/SAM/SOM, reach × impact × confidence, WTP signals, OST mapping | `references/opportunity-sizing.md`, `references/modern-product-discovery.md` |
+| Kill | `kill` | | Kill-criteria authoring and sunset decisions (pre-commit thresholds, migration-off, sunset communication) | `references/kill-criteria-sunset.md`, `references/feature-ideation-anti-patterns.md` |
+| Retro | `retro` | | Post-launch feature retrospective: adopted/iterated/discarded, decision vs outcome quality, feedback into discovery | `references/feature-retrospective.md`, `references/experiment-lifecycle.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`propose` = Propose). Apply normal IGNITE → SYNTHESIZE → SPECIFY → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `propose`: Narrow to one proposal. Must include persona, JTBD, RICE score, fail conditions, and OST integration.
+- `plan`: Score existing candidates with RICE/MoSCoW. Strictly adhere to RICE guardrails (Impact distribution, Confidence rationale).
+- `brainstorm`: Explore opportunity patterns (unused data, repetitive actions, friction). Link to OST nodes.
+- `refine`: Take an existing RFC and reinforce hypotheses, fail conditions, and acceptance criteria. Run a duplication check.
+- `opportunity`: Size the opportunity upstream of scoring — TAM/SAM/SOM with two independent paths, reach × impact × confidence in RICE-compatible units, WTP signal tier, market-timing assessment, OST placement. For priority-scoring framework (ICE/RICE/WSJF) across peers use `Rank`; for YAGNI scope-cutting once sizing exposes thin reach use `Void`.
+- `kill`: Kill-criteria authoring and sunset decision. Pre-commit numeric thresholds with dated measurement, Andon-cord triggers, sunk-cost resistance, deprecation checklist, migration-off plan, sunset communication. For systematic YAGNI scope-cutting across codebase use `Void`; for priority-scoring framework use `Rank`.
+- `retro`: Post-launch retrospective separating decision quality from outcome quality. Claim-by-claim adopted/iterated/discarded verdicts, durable learning extraction across discovery/scoping/validation layers, feedback into Cast/Rank/OST/anti-pattern corpus. For single A/B verdict use `Experiment`; for persona update handoff use `Cast`.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

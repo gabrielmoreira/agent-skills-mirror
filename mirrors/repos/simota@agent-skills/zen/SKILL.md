@@ -15,6 +15,9 @@ CAPABILITIES_SUMMARY:
 - defensive_cleanup: Unnecessary guard removal on type-guaranteed internal paths
 - multi_engine_refactoring: Cross-engine comparison for quality-critical proposals
 - ai_code_quality: AI-generated code review for architectural drift, duplicated logic, behavioral vulnerabilities, security flaws
+- logic_simplification: Collapse verbose conditionals, ternary chains, and redundant transformations into concise equivalents while preserving behavior
+- function_splitting: Break large functions along responsibility seams with step-by-step extraction and rollback checkpoints
+- guard_clause_conversion: Convert nested conditionals to early returns / guard clauses for reduced cyclomatic complexity and improved readability
 
 COLLABORATION_PATTERNS:
 - Judge -> Zen: Code smell findings for refactoring (JUDGE_TO_ZEN)
@@ -148,6 +151,35 @@ Routing rules:
 - If the request mentions dead code, read `references/dead-code-detection.md`.
 - If the request is a PR review, read `references/review-report-templates.md`.
 - If coverage is < 80%, hand off to Radar first before refactoring.
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| General Refactor | `refactor` | ✓ | General refactoring (composite improvements, code smell fixes) | `references/refactoring-recipes.md` |
+| Naming Improvement | `naming` | | Variable and function name improvements only | `references/refactoring-recipes.md` |
+| Extract Function | `extract` | | Split and extract long functions | `references/refactoring-recipes.md` |
+| Magic Constants | `constants` | | Replace magic numbers with named constants | `references/refactoring-recipes.md` |
+| Dead Code Removal | `dead` | | Unused code removal | `references/dead-code-detection.md` |
+| Simplify Logic | `simplify` | | Compress redundant branches, ternaries, and unnecessary conversions into equivalent concise forms | `references/logic-simplification.md` |
+| Split Function | `split` | | Incrementally split overly long functions along responsibility boundaries (enhanced `extract`) | `references/function-splitting.md` |
+| Guard Clauses | `guard` | | Convert nested `if` to early return / guard clauses | `references/guard-clauses.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`refactor` = General Refactor). Apply normal SURVEY → PLAN → APPLY → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `refactor`: 複合的なコードスメルを対象。SURVEY でホットスポット特定後、最優先 1 件に絞って適用。
+- `naming`: 命名のみに限定。スコープ Focused 固定。public API 変更は Ask First。
+- `extract`: 長いメソッドを 1 関数抽出。cognitive complexity 15 超を優先。テストパスを VERIFY で確認。
+- `constants`: マジックナンバーを検索し名前付き定数化。型注釈を付与する。
+- `dead`: ローカル/private から着手。export・動的利用は確認後に実施。Sweep との境界: ファイルレベルは Sweep。
+- `simplify`: 冗長な条件・三項演算チェーン・`if/else return true/false` 等を等価圧縮。behavior-preserving 変換パターンのみ採用。ユニットテスト通過を VERIFY 必須。
+- `split`: 50 行超または cognitive complexity 20 超の関数を責務単位で段階分割。extract より構造的 (境界設計 → 段階実行 → 検証)。テストカバレッジ維持を VERIFY 必須。
+- `guard`: ネスト深度 3 以上の条件を早期 return / guard clause に変換。複雑度削減の測定可能な前後比較を添付。
 
 ## Output Requirements
 

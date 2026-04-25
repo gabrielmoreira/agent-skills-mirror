@@ -194,6 +194,31 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | image use in stories or catalogs | `Sketch -> Showcase` |
 | delivered marketing assets | `Sketch -> Growth` |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Generate | `generate` | ✓ | Text-to-image generation | `references/prompt-patterns.md`, `references/api-integration.md` |
+| Edit | `edit` | | Editing existing images | `references/api-integration.md` |
+| Prompt Optimization | `prompt` | | Prompt optimization | `references/prompt-patterns.md` |
+| Batch | `batch` | | Generate many variants with consistent seed and style (cards, hero sets, character sheets) | `references/batch-generation.md`, `references/api-integration.md` |
+| Style | `style` | | Match an existing brand or reference style, or anchor cross-asset cohesion | `references/style-transfer.md`, `references/prompt-patterns.md` |
+| Upscale | `upscale` | | Post-process: upscale, masked inpaint, or outpaint a base render | `references/upscale-postprocess.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`generate` = Generate). Apply normal INTAKE → TRANSLATE → CONFIGURE → CODE → VERIFY workflow.
+
+Behavior notes per Recipe:
+- `generate`: Generate text-to-image Python code in SINGLE_SHOT or BATCH mode. JP → EN translation and Subject + Style + Composition + Technical prompt structure. Cost estimate and SynthID disclosure required.
+- `edit`: Generate existing-image editing code with Nano Banana / Nano Banana 2 (ITERATIVE or REFERENCE_BASED mode). Leverage Thought Signatures. inlineData is required.
+- `prompt`: Redesign existing prompts into Subject + Style + Composition + Technical structure. Target 50-200 words with 3-5 strong keywords.
+- `batch`: Read `references/batch-generation.md` first. Lock seed strategy (stride default), pin style anchor, emit an async script with semaphore-bounded concurrency, resumable checkpoint, pHash dedup, per-asset `metadata.json`. Recommend Batch API when N ≥ 50.
+- `style`: Read `references/style-transfer.md` first. Extract a reusable `STYLE_TOKEN` (20-40 words) from references, attach 2-4 anchor images via `inlineData`, add negative phrasing against known leakage, verify cohesion via reference vs output pHash distance (20-35). Route to external SDXL / Flux pipelines when numeric style weight is required.
+- `upscale`: Read `references/upscale-postprocess.md` first. Prefer native-resolution regeneration over upscaler hallucination; pick Real-ESRGAN / Topaz only when the base is fixed. Author feathered masks for inpainting, stage outpainting in 20-30% passes, gate artifacts before export, and pick format (WebP / AVIF / PNG / JPEG) per surface while preserving SynthID disclosure.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -243,6 +268,9 @@ Overlap boundaries:
 | `references/prompt-patterns.md` | you need prompt architecture, style presets, domain templates, JP -> EN mappings, negative-pattern rules, or `v1.50+` prompt-control guidance |
 | `references/api-integration.md` | you need SDK compatibility, auth setup, request patterns, response handling, rate or cost guidance, error recovery, or SynthID documentation |
 | `references/examples.md` | you need mode-specific examples, collaboration handoffs, or reusable script packaging patterns |
+| `references/batch-generation.md` | you are generating ≥5 consistent variants and need seed strategy, rate-limit-aware concurrency, resumable checkpointing, or pHash dedup |
+| `references/style-transfer.md` | you are matching an existing brand/reference style, extracting reusable STYLE_TOKENs, or deciding between Gemini and SDXL/Flux for style control |
+| `references/upscale-postprocess.md` | you are upscaling for print/retina, authoring inpaint masks, outpainting canvas extensions, or picking final export format |
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the generation report, deciding adaptive thinking depth at GENERATE, or front-loading model/budget/style at PLAN. Critical for Sketch: P3, P5 |
 
 ## Operational

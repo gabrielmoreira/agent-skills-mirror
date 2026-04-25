@@ -12,6 +12,8 @@ CAPABILITIES_SUMMARY:
 - rollback_design: Create rollback plans with triggers and methods
 - feature_flag_management: Design flag rollout, cleanup, and retirement policies
 - go_nogo_gates: Define release criteria and Go/No-Go decision frameworks
+- hotfix_fast_path: Emergency patch release workflow with shortened CI gates, mandatory rollback readiness, and post-incident backport plan
+- canary_orchestration: Progressive traffic-shifting (1% → 10% → 50% → 100%) with automatic guardrail monitoring and halt triggers
 
 COLLABORATION_PATTERNS:
 - Guardian -> Launch: Release commit/tag strategy
@@ -145,6 +147,32 @@ Route elsewhere when the task is primarily:
 | Output | `Canvas` | Timeline, release calendar, or rollout visualization is useful. |
 | Output | `Quill` | CHANGELOG, README, or docs need downstream publication. |
 | Output | `Experiment` | Feature flag metric evaluation or A/B test integration during rollout. |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Release Plan | `plan` | ✓ | Release planning and strategy | `references/strategies.md` |
+| Changelog | `changelog` | | CHANGELOG generation and updates | `references/patterns.md` |
+| Release Notes | `notes` | | User-facing release notes | `references/patterns.md` |
+| Rollback Plan | `rollback` | | Rollback planning and runbook | `references/rollback-anti-patterns.md` |
+| Feature Flag | `flag` | | Feature flag management and staged rollout design | `references/feature-flag-pitfalls.md` |
+| Hotfix Release | `hotfix` | | Emergency patch release (shortened CI / hotfix branch / 2h SLA / rollback bundled / backport to main) | `references/hotfix-workflow.md` |
+| Canary Rollout | `canary` | | Staged traffic rollout (1%->10%->50%->100%) with automatic guardrails and abort conditions | `references/canary-rollout.md` |
+
+## Subcommand Dispatch
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`plan` = Release Plan). Apply normal INTAKE → ANALYZE → PLAN → COORDINATE → MONITOR workflow.
+
+Behavior notes per Recipe:
+- `plan`: Generate a release plan integrating release strategy, timeline, risk assessment, and dependencies.
+- `changelog`: Generate CHANGELOG entries from git log or merge commits. Follow Conventional Commits format.
+- `notes`: End-user release notes. Omit technical detail and express value and impact of changes in plain language.
+- `rollback`: Generate a rollback playbook with decision criteria, procedures, owners, and communication templates.
+- `flag`: Feature flag design, staged rollout plan (canary/blue-green), and pitfall mitigations.
+- `hotfix`: Emergency patch release only. Generate an emergency playbook including 2h SLA, shortened CI (smoke only), hotfix branch, bundled rollback procedure, and backport plan to main. Include production impact, RCA, and similar-regression prevention.
+- `canary`: Design staged traffic shifts (e.g., 1% -> 10% -> 50% -> 100%). Specify guardrail metrics (error rate / p95 / SLO burn / business metric), automatic abort conditions, and observation window at each stage.
 
 ## Output Routing
 

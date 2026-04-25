@@ -12,6 +12,9 @@ CAPABILITIES_SUMMARY:
 - multi_language_testing: Support JS/TS, Python, Go, Rust, Java test frameworks
 - mutation_testing: Evaluate and improve test strength via mutation score analysis and assertion hardening
 - flaky_quarantine: Quarantine nondeterministic tests from CI pipeline and schedule stabilization
+- unit_test_design: Design unit test architecture with AAA structure, test-double selection (fake/stub/mock/spy), boundary isolation, and deterministic setup across Jest/Vitest, pytest, Go testing, and cargo-test
+- integration_test_design: Design integration test architecture with Testcontainers (DB/Redis/Kafka), WireMock/MSW HTTP stubbing, contract-at-boundary, and DB fixture strategy (transaction rollback vs truncate vs per-test DB)
+- mutation_test_recipe: Run Stryker (JS/TS), PIT (Java), mutmut (Python), cargo-mutants (Rust) to measure test-suite effectiveness, triage equivalent mutants, and wire mutation-score thresholds into CI
 
 COLLABORATION_PATTERNS:
 - Scout -> Radar: Bug reports needing regression tests
@@ -107,14 +110,34 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Train teams to ignore test results by leaving flaky tests in the main pipeline — quarantine immediately and fix in dedicated sessions.
 - Let AI agents auto-fix flaky failures in CI loops without verifying flaky vs. real regression first — autonomous retry-fix cycles cause regression cascades (observed pattern: multiple iterations, zero real bugs fixed, introduced regressions and wasted compute). Always confirm the failure is a genuine regression before applying code changes (Source: Frontiers AI-augmented CI/CD 2026).
 
-## Operating Modes
+## Recipes
 
-| Mode | Trigger Keywords | Primary Goal | Read This |
-|------|------------------|--------------|-----------|
-| `Default` | default | Add or tighten missing tests for risky behavior | `references/testing-patterns.md` |
-| `FLAKY` | `flaky test`, `intermittent failure` | Diagnose and stabilize nondeterministic tests | `references/flaky-test-guide.md` |
-| `AUDIT` | `coverage`, `coverage gaps` | Produce coverage gaps and prioritized next steps | `references/coverage-strategy.md` |
-| `SELECT` | `test selection`, `CI speed` | Reduce CI time while preserving confidence | `references/test-selection-strategy.md` |
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Edge Cases | `edge` | ✓ | Add missing tests for boundary values and error paths | `references/testing-patterns.md` |
+| Flaky Repair | `flaky` | | Root-cause diagnosis and stabilization of flaky tests | `references/flaky-test-guide.md` |
+| Coverage Fill | `coverage` | | Coverage gap filling and priority gap identification | `references/coverage-strategy.md` |
+| Regression Suite | `regression` | | Add regression tests from Scout handoffs | `references/testing-patterns.md`, `references/advanced-techniques.md` |
+| CI Optimize | `ci` | | Test selection and CI speed improvements | `references/test-selection-strategy.md` |
+| Unit Test Design | `unit` | | Design unit test architecture from scratch (AAA, test doubles, boundary isolation) across Jest/Vitest, pytest, Go testing, cargo-test | `references/unit-testing.md` |
+| Integration Test Design | `integration` | | Design backend-integration test architecture with Testcontainers, WireMock/MSW, DB fixture strategy | `references/integration-testing.md` |
+| Mutation Testing | `mutation` | | Run Stryker/PIT/mutmut/cargo-mutants, analyze survivors, triage equivalent mutants, enforce CI mutation-score threshold | `references/mutation-testing.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`edge` = Edge Cases). Apply SCAN → LOCK → PING → VERIFY workflow.
+
+Behavior notes per Recipe:
+- `edge`: Prioritize boundary values, null, empty, timeout, and error branches. Confirm regressions fail-first.
+- `flaky`: Identify the root cause (async timing / shared state / order dependency) before fixing. No automatic retries.
+- `coverage`: Target 80%+ diff coverage and select priority gaps by risk assessment.
+- `regression`: Only after a Scout or Builder handoff. Add bug-reproducing tests fail-first, then confirm green after the fix.
+- `ci`: Reduce suite runtime with TIA or skip conditions. Delegate CI infrastructure changes to Gear.
+- `unit`: Design unit test architecture from scratch or restructure an existing suite. Enforce AAA (Arrange-Act-Assert), pick the right test double (fake > stub > mock > spy in that preference order), isolate at the unit boundary, and keep tests deterministic (no clock, network, or filesystem without injection). Multi-language: Jest/Vitest for TS, pytest for Python, Go `testing`, `cargo test` for Rust. Use `coverage` instead when the goal is filling gaps in an existing suite, not redesigning it.
+- `integration`: Design backend-service integration tests (component-to-component: service ↔ DB / cache / queue / downstream HTTP). Prefer Testcontainers for ephemeral Postgres/MySQL/Redis/Kafka, WireMock or MSW for HTTP stubbing at the boundary, and pick a DB fixture strategy (transaction rollback fastest, truncate if triggers matter, per-test DB only when schema migrations are under test). Playwright API mode is acceptable for backend HTTP assertions. Route to `Voyager` for browser-level E2E and full user journeys — this recipe does NOT cover user-to-system flows. Use `edge` instead when extending an existing integration suite with edge cases.
+- `mutation`: Run a mutation testing tool against an existing suite to measure test-suite effectiveness. Stryker for JS/TS, PIT for Java/Kotlin, mutmut (or cosmic-ray) for Python, cargo-mutants for Rust. Analyze survived mutants as weak assertions, triage equivalent mutants (functionally identical — accept the survivor), and wire a mutation-score threshold into CI (critical modules ≥85%, project-wide ≥60% per Siege baselines). Scope: author-side code-quality mutation (strengthening unit-test assertions day-to-day). Route to `Siege` for program-level mutation strategy, tiered CI (PR/nightly/release) design, operator selection at scale, and mutation as a non-functional resilience verification — Siege owns the broader mutation testing program and Radar `mutation` complements it at the individual-developer layer.
 
 ## Workflow
 
@@ -246,6 +269,9 @@ Radar receives bug reports, implementation changes, review findings, coverage ga
 | File | Read This When |
 |------|----------------|
 | `references/testing-patterns.md` | Writing or tightening TS/JS tests |
+| `references/unit-testing.md` | Designing unit test architecture from scratch (AAA, test doubles, boundary isolation) across Jest/Vitest/pytest/Go/Rust |
+| `references/integration-testing.md` | Designing backend integration tests (Testcontainers, WireMock/MSW, DB fixture strategy) — not E2E/browser |
+| `references/mutation-testing.md` | Running Stryker/PIT/mutmut/cargo-mutants for test-suite effectiveness and CI threshold wiring |
 | `references/multi-language-testing.md` | Working in Python, Go, Rust, or Java |
 | `references/advanced-techniques.md` | Using property-based, contract, mutation, snapshot, or Testcontainers patterns |
 | `references/flaky-test-guide.md` | Investigating flaky tests or CI-only failures |

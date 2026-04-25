@@ -119,6 +119,25 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | `Shoot` | Record the demo | Playwright demo code and video output (`.webm` baseline) | Locator-based waits for state, `waitForTimeout()` only for pacing |
 | `Deliver` | Validate and package | Playback check, checklist results, optional `MP4/GIF`, next handoff | Quality gate: `/65` scorecard, `< 30` = reshoot |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Demo | `demo` | ✓ | Feature demo video recording and production | `references/scenario-guidelines.md`, `references/playwright-config.md` |
+| Scenario | `scenario` | | Scenario design, storyboard | `references/scenario-guidelines.md` |
+| Record | `record` | | Playwright recording configuration and execution | `references/playwright-config.md`, `references/implementation-patterns.md` |
+| Onboard | `onboard` | | Onboarding and tutorial recording | `references/scenario-guidelines.md`, `references/implementation-patterns.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`demo` = Demo). Apply normal Script → Stage → Shoot → Deliver workflow.
+- `demo`: Produce a feature demo video end-to-end with Playwright, from scenario design to recording.
+- `scenario`: Pre-design persona, Aha moment, and duration, then output a scenario document.
+- `record`: Fix Playwright settings (slowMo / viewport / codec) and execute recording.
+- `onboard`: Record the user's first-time flow at deliberate pacing to produce an onboarding clip.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

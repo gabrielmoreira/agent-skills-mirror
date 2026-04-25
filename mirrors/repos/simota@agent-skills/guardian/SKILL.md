@@ -12,6 +12,10 @@ CAPABILITIES_SUMMARY:
 - branch_strategy: Recommend branching strategy (GitHub Flow/Git Flow/Trunk-Based)
 - reviewer_assignment: Recommend reviewers based on CODEOWNERS and expertise
 - squash_optimization: Group and score squash plans for merge efficiency
+- history_reshape: Rebuild commit history from a fresh base branch via squash-then-redistribute workflow
+- history_audit: Read-only audit of commit history quality (WIP/fixup residue, Conventional Commits violations, atomicity, size excess)
+- pr_split_planning: Decompose oversized branches into stacked PRs with dependency order and per-PR review time estimates
+- branch_health_diagnosis: Repository-wide branch inventory — stale, diverged, merged-but-undeleted, high-conflict-risk
 
 COLLABORATION_PATTERNS:
 - Judge -> Guardian: Review feedback and AI-assisted defect findings
@@ -189,6 +193,35 @@ Routing rules:
 
 - If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
 - Always read relevant `references/` files before producing output.
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| PR Preparation | `pr` | ✓ | PR preparation (title/body/review angles/risk assessment) | `references/pr-workflow-patterns.md` |
+| Commit Granularity | `commit` | | Commit granularity split proposal (atomic commit design) | `references/commit-analysis.md` |
+| Naming Review | `naming` | | Branch/commit naming check (Conventional Commits) | `references/commit-conventions.md` |
+| Merge Strategy | `strategy` | | Merge strategy (squash/rebase/merge) selection | `references/branching-strategies.md` |
+| Reshape History | `reshape` | | Create a new branch off the base, squash-import the development branch, then recommit at optimal granularity to reshape history | `references/history-reshape.md` |
+| Audit History | `audit` | | Read-only diagnosis of a branch's commit history (WIP/fixup residue, Conventional Commits violations, atomicity, size deviation) | `references/history-audit.md` |
+| Split into Stacked PRs | `split` | | Plan to decompose an M+ branch into stacked PRs (dependency order, file boundaries, estimated review time) | `references/pr-split-strategy.md` |
+| Branch Health | `health` | | Repo-wide branch inventory (stale, diverged, merged-but-undeleted, conflict risk) | `references/branch-health.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`pr` = PR Preparation). Apply normal SURVEY → PLAN → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `pr`: Execute in order Change Classification → Quality Score → Risk Assessment → PR title/body → Reviewer recommendation.
+- `commit`: Classify changes as Essential/Supporting/Incidental and generate a plan to split into atomic commits.
+- `naming`: Conventional Commits compliance check. Validate scope, verb, and 50-character limit.
+- `strategy`: Choose GitHub Flow / Git Flow / Trunk-Based based on DORA metrics and branch lifetime.
+- `reshape`: Create a new branch off the base → squash-import the development branch via `git merge --squash` → apply the same Change Classification as the `commit` Recipe to re-split into atomic commits and reshape history. **Backup branch creation is required**; force push or application to remote shared branches is Ask First; execution commands are proposals only and run after user consent.
+- `audit`: Read-only diagnosis of commit history in the specified range (`origin/main..HEAD` by default). Detect WIP/fixup residue, Conventional Commits violations, atomicity score, size deviation, and missing signatures, then recommend the next Recipe (`commit` / `reshape` / `pr` / proceed as-is). Zero side effects.
+- `split`: Generate a plan to decompose an M+ branch into stacked PRs. Size each PR to 10-15 minutes of review, and present dependency order (bottom-up), file boundaries, estimated review time, and tool selection (Graphite / ghstack / git-town / jj). Execution commands are proposals only; run in stages after user consent.
+- `health`: Inventory the repo's local/remote branches. Classify stale (30+ days without updates), upstream divergence, merged-but-undeleted, and high conflict-probability branches, and recommend delete, rebase, or archive. Branch deletion is Ask First.
 
 ## Output Requirements
 

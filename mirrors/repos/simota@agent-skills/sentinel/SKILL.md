@@ -13,6 +13,9 @@ CAPABILITIES_SUMMARY:
 - ai_code_security: Heightened security review for AI-generated/vibe-coded code (45% flaw rate baseline)
 - owasp_2025_audit: Full OWASP Top 10:2025 compliance auditing with updated category mappings
 - multi_engine_consensus: Multi-scanner correlation for high-assurance targets (78% single-tool miss rate)
+- authn_audit: Authentication audit — session management, JWT handling, OAuth/OIDC flows, MFA, password storage (OWASP A07:2025 Identification & Auth Failures, CWE-287/384/521/798)
+- authz_audit: Authorization audit — RBAC/ABAC correctness, IDOR, BOLA/BFLA, horizontal + vertical privilege escalation (OWASP A01:2025 Broken Access Control, CWE-285/639/863)
+- ai_security_audit: LLM integration static review — prompt injection, jailbreak, indirect prompt injection via retrieved content, PII leakage, unsafe tool-use boundary (OWASP LLM Top 10 2025: LLM01/LLM02/LLM06/LLM07)
 
 COLLABORATION_PATTERNS:
 - Guardian -> Sentinel: Security-classified changes
@@ -143,6 +146,35 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `SECURE` | Apply the fix using defensive code, established libraries, `Zod`, `helmet`, strict auth checks, or dependency/CI hardening | Use framework-native controls; prefer established libraries | `references/defensive-controls.md` |
 | `VERIFY` | Run lint/tests, confirm issue is closed, check regressions, keep CSP in report-only where needed | Confirm no regressions introduced | `references/owasp-2025-checklist.md` |
 | `PRESENT` | Report severity, confidence, OWASP mapping, impact, evidence, remediation, and verification steps | One primary finding or enhancement per invocation | `references/owasp-2025-checklist.md` |
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Full Security Scan | `scan` | ✓ | Full static security scan (OWASP Top 10) | `references/vulnerability-patterns.md`, `references/owasp-2025-checklist.md` |
+| Secrets Audit | `secrets` | | Hardcoded credential and API key detection | `references/vulnerability-patterns.md`, `references/defensive-controls.md` |
+| Injection Check | `injection` | | SQL/XSS/command injection focus | `references/vulnerability-patterns.md`, `references/owasp-2025-checklist.md` |
+| Dependency CVE | `deps` | | Dependency vulnerability scan and supply-chain risk | `references/supply-chain-security.md` |
+| Headers Audit | `headers` | | Security header audit (CSP/CORS/HSTS) | `references/defensive-controls.md` |
+| Authentication Audit | `authn` | | Session / JWT / OAuth-OIDC / MFA / password-storage review (OWASP A07:2025) | `references/authn-audit.md`, `references/api-security.md` |
+| Authorization Audit | `authz` | | RBAC / ABAC correctness, IDOR, BOLA/BFLA, privilege-escalation review (OWASP A01:2025) | `references/authz-audit.md`, `references/api-security.md` |
+| AI Security Audit | `aisec` | | LLM integration static review — prompt injection, PII leakage, unsafe tool-use (OWASP LLM Top 10 2025) | `references/ai-security.md`, `references/ai-code-security.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`scan` = Full Security Scan). Apply SCAN → PRIORITIZE → FILTER → SECURE → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `scan`: Cover every OWASP Top 10:2025 category. Prefer delta scans with periodic full scans. Multi-engine recommended.
+- `secrets`: regex + entropy-based hybrid. Cover git history as well. Not considered complete until revocation is confirmed.
+- `injection`: SQL / XSS / command / NoSQL / prompt injection. Apply heightened scrutiny to AI-generated code.
+- `deps`: SCA tooling + lockfile integrity + namespace-squatting checks. Manage SBOM in the operational workflow.
+- `headers`: CSP / CORS / HSTS / Permissions-Policy. Start in report-only and enforce incrementally.
+- `authn`: Static audit of authentication surfaces — session lifecycle (rotation, fixation, idle/absolute timeout), JWT handling (algorithm pinning, `none`/alg-confusion, `kid` injection, expiry + audience validation), OAuth/OIDC flows (PKCE, state, redirect-URI allowlist, token storage), MFA enforcement paths, password storage (bcrypt/argon2id cost, pepper handling). Maps to OWASP A07:2025 and CWE-287/384/521/798. Scope boundary: Sentinel reviews USE of crypto primitives — algorithm/key design belongs to `Crypt`; runtime exploitability (credential stuffing, session hijack demo) belongs to `Probe`. Cross-link both on CRITICAL findings.
+- `authz`: Static audit of access-control enforcement — RBAC/ABAC correctness, missing `requireRole` / `requirePermission` wiring on handlers, IDOR (CWE-639) via unverified path/query IDs, BOLA/BFLA on REST+GraphQL resolvers, horizontal (same-role cross-tenant) and vertical (role-escalation) privilege checks, tenant-scope leaks in ORM queries. Maps to OWASP A01:2025 and CWE-285/639/863. Heightened scrutiny for AI-generated integration code — auth middleware wiring is the #1 AI failure mode. Scope boundary: Sentinel finds the missing check statically; `Probe` confirms exploitability against a live endpoint. Cross-link to `Probe` when the gap is high-confidence.
+- `aisec`: Static review of LLM integration code — prompt-template injection surfaces, output handling (markdown / HTML escaping to block rendered-prompt attacks), indirect prompt injection via retrieved content (RAG sources, tool results, user-uploaded docs), PII scrubbing before prompt assembly and before logging, tool-use boundary (allowlisted tools, parameter validation, no shell/SQL passthrough), model-output-to-action gating, rate/cost limits. Maps to OWASP LLM Top 10 2025: LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM06 Excessive Agency, LLM07 System Prompt Leakage. Scope boundary: Sentinel audits the integration code path; adversarial jailbreak/red-team validation belongs to `Breach`. Cross-link to `Breach` for adversarial validation after static findings are remediated.
 
 ## Output Routing
 

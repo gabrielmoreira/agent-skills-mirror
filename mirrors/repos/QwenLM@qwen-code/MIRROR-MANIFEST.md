@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 13 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,19 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.qwen/skills/docs-audit-and-refresh/SKILL.md`](.qwen/skills/docs-audit-and-refresh/SKILL.md) |
-| 2 | ✓ | [`.qwen/skills/docs-update-from-diff/SKILL.md`](.qwen/skills/docs-update-from-diff/SKILL.md) |
-| 3 | ✓ | [`.qwen/skills/e2e-testing/SKILL.md`](.qwen/skills/e2e-testing/SKILL.md) |
-| 4 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
-| 5 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
-| 6 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
-| 9 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
-| 10 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
-| 11 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
-| 12 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 13 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 1 | ✓ | [`.qwen/skills/bugfix/SKILL.md`](.qwen/skills/bugfix/SKILL.md) |
+| 2 | ✓ | [`.qwen/skills/docs-audit-and-refresh/SKILL.md`](.qwen/skills/docs-audit-and-refresh/SKILL.md) |
+| 3 | ✓ | [`.qwen/skills/docs-update-from-diff/SKILL.md`](.qwen/skills/docs-update-from-diff/SKILL.md) |
+| 4 | ✓ | [`.qwen/skills/e2e-testing/SKILL.md`](.qwen/skills/e2e-testing/SKILL.md) |
+| 5 | ✓ | [`.qwen/skills/feat-dev/SKILL.md`](.qwen/skills/feat-dev/SKILL.md) |
+| 6 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
+| 7 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
+| 8 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
+| 11 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
+| 12 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
+| 13 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
+| 14 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 15 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
 
 ---
 

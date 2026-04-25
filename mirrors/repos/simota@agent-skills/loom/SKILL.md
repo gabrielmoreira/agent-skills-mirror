@@ -227,6 +227,25 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `Loom -> Warden` | a validated Make output needs a quality gate | V.A.I.R.E. review request |
 | `Loom -> Pixel` | Make output needs visual fidelity verification against mockup | pixel comparison request |
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Guidelines | `guidelines` | ✓ | Generate Figma Make Guidelines.md packages | `references/guidelines-templates.md`, `references/prompt-patterns.md` |
+| Analyze | `analyze` | | Codebase analysis and token alignment review | `references/token-alignment-guide.md` |
+| Prompt | `prompt` | | Staged prompt design for Make | `references/prompt-patterns.md`, `references/figma-make-constraints.md` |
+| Validate | `validate` | | Scoring and validation of Make output | `references/validation-checklist.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`guidelines` = Guidelines). Apply normal ANALYZE → COMPOSE → PRIME → VALIDATE → REFINE workflow.
+- `guidelines`: Generate a Guidelines.md package from the codebase, optimized for Make.
+- `analyze`: Review tokens, components, and layout across 4 axes (Name/Value/Semantics/Hierarchy) and report drift.
+- `prompt`: Design staged prompts in TC-EBC structure and build an execution plan with credit optimization in mind.
+- `validate`: Score Make output (detach rate, 0-100) and return a PASS/CONDITIONAL/REVISE/REBUILD verdict.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

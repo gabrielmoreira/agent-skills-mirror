@@ -156,6 +156,21 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Track activation rate per skill; flag skills with `< 50%` activation for description refinement.
 - Run `3` grading passes per rubric evaluation and use majority vote to reduce grader non-determinism (single-pass scores can vary `±2` points).
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Generate New Skill | `generate` | ✓ | Project-specific skill generation | `references/context-analysis.md`, `references/skill-templates.md` |
+| Analyze Project | `analyze` | | Codebase and stack analysis | `references/context-analysis.md` |
+| Extract Conventions | `convention` | | Convention extraction | `references/context-analysis.md`, `references/claude-md-best-practices.md` |
+| Migrate Existing | `migrate` | | Adapt an existing skill to the project | `references/evolution-patterns.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`generate` = Generate New Skill). Apply normal SCAN → DISCOVER → CRAFT → INSTALL → VERIFY workflow.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

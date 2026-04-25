@@ -126,6 +126,35 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Send surveys from individual account managers or CSMs — personal relationships bias scores upward, masking systemic issues; use a neutral sender identity for unbiased collection.
 - Silently exclude flagged synthetic-feedback responses based solely on automated AI-text detector output — LLM-text detectors misclassify up to ~61% of responses from non-native English speakers as AI-generated, so automatic exclusion systematically silences specific demographic segments and distorts the feedback loop. Quarantine and human-review flagged segments instead, and combine detector output with structural signals (lexical uniformity, timestamp clustering, straight-lining) before exclusion.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| NPS Survey | `nps` | ✓ | NPS survey design, score analysis, follow-up | `references/nps-survey.md` |
+| Review Analysis | `review` | | Multi-channel analysis of reviews, tickets, and comments | `references/multi-channel-synthesis.md` |
+| Sentiment Analysis | `sentiment` | | Sentiment analysis, multi-emotion detection (joy/anger/frustration/surprise) | `references/multi-channel-synthesis.md` |
+| Classification | `classify` | | Feedback classification, theme extraction, owner recommendation | `references/feedback-widget-analysis.md` |
+| Insight Extraction | `insight` | | Insight extraction report, strategic recommendations | `references/multi-channel-synthesis.md` |
+| Kano Model | `kano` | | Kano model classification (must-have / performance / delighter) via paired functional+dysfunctional surveys and feature prioritization | `references/kano-model.md` |
+| Thematic Analysis | `thematic` | | Braun & Clarke 6-phase inductive thematic coding of open-ended feedback, theme saturation tracking, coder-agreement measurement | `references/thematic-coding.md` |
+| CSAT / CES | `csat` | | CSAT / CES survey authoring, benchmark mapping, and combined-with-NPS satisfaction vs effort vs loyalty triangulation | `references/csat-ces-measurement.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`nps` = NPS Survey). Apply normal COLLECT → ANALYZE → AMPLIFY workflow.
+
+Behavior notes per Recipe:
+- `nps`: スコアバンド (0-6/7-8/9-10) を厳守。関係 NPS は四半期、トランザクション NPS はマイルストーン直後に実施。
+- `review`: 2 チャネル以上の入力を Multi-Channel Synthesis で統合。コンタミネーションゲート必須。
+- `sentiment`: LLM ベース分析時は MVP (Model Variability Problem) 対策としてアンサンブルと不確実性定量化を適用。
+- `classify`: フィードバック分類後にオーナー推薦と優先度マトリクスを添付。
+- `insight`: パターン優先・個別事例非優先。セグメント・ジャーニーステージ・ビジネスインパクトと連携。
+- `kano`: ペア質問 (functional + dysfunctional) を Berger 行列で分類。Better/Worse 係数で優先度を提示。Delighter は時間で減衰するため 12-18 ヶ月で再測定。
+- `thematic`: Braun & Clarke 6 フェーズを順守。飽和曲線で停止判断、複数コーダー時は κ または α でエージェント間一致を測定。
+- `csat`: CSAT は 1-5 / Top-Two-Box、CES は 1-7 / 平均で報告。NPS と 3 軸トライアンギュレーションし「高 CSAT × 低 CES」の沈黙離反コホートを必ず可視化。
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
@@ -200,6 +229,9 @@ Overlap boundaries:
 | `references/exit-survey.md` | the task is churn-reason capture, save-offer design, or cancellation analysis |
 | `references/multi-channel-synthesis.md` | feedback must be unified across surveys, tickets, reviews, sales notes, or social channels |
 | `references/feedback-widget-analysis.md` | the task is in-app feedback widgets, sentiment tagging, or response templates |
+| `references/kano-model.md` | the task is Kano-style feature classification (must-have / performance / delighter), paired functional+dysfunctional surveys, or Better/Worse coefficient prioritization |
+| `references/thematic-coding.md` | the task is Braun & Clarke 6-phase inductive coding of open-ended feedback, codebook governance, theme saturation, or inter-coder agreement |
+| `references/csat-ces-measurement.md` | the task is CSAT / CES instrument design, benchmark mapping, touchpoint selection, or combined CSAT × CES × NPS triangulation |
 | `_common/OPUS_47_AUTHORING.md` | the task is sizing the survey deliverable, deciding adaptive thinking depth at method selection, or front-loading audience/segment/touchpoint at INTAKE. Critical for Voice: P3, P5. |
 
 ## Operational

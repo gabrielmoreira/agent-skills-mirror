@@ -132,6 +132,33 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 Post-task CHRONICLE: `RECORD → EVALUATE → CALIBRATE → PROPAGATE`. Read `references/documentation-effectiveness.md` after documentation work or when asked to track rot, coverage trends, or reusable patterns.
 
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Docstrings | `docstring` | ✓ | Add JSDoc/TSDoc (per function/class) | `references/jsdoc-style-guide.md` |
+| README Update | `readme` | | README updates and structure | `references/readme-templates.md` |
+| Type Definitions | `types` | | Replace any types with concrete types | `references/type-improvement-strategies.md` |
+| High-Value Comments | `comments` | | Add intent comments to complex logic | `references/documentation-patterns.md` |
+| ADR Authoring | `adr` | | Record an architectural decision (Nygard / MADR) with context, alternatives, consequences, and supersession lifecycle | `references/adr-authoring.md` |
+| Migration Guide | `migrate` | | Author version-jump upgrade guides with breaking-change notation, codemod steps, rollback, and verification | `references/migrate-guide-authoring.md` |
+| Tutorial / How-To | `tutorial` | | Write Diátaxis-aligned tutorials and how-to guides with prerequisites, executable snippets, and validation checkpoints | `references/tutorial-guide-authoring.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`docstring` = Docstrings). Apply normal READ → INSCRIBE → WRITE → VERIFY → PRESENT workflow.
+
+Behavior notes per Recipe:
+- `docstring`: Add JSDoc/TSDoc to public APIs, functions, and interfaces. Follow tag order (@param→@returns→@throws→@example).
+- `readme`: Create, update, and audit README. Flesh out install, usage, config, and contributing sections.
+- `types`: Replace `any` types with interfaces, generics, and type guards. Comply with TS 6.0+ strict mode.
+- `comments`: Add WHY comments to magic numbers, complex regex, and business rules. Required for complexity >10.
+- `adr`: Architecture Decision Record authoring (Nygard / MADR). Capture context, considered alternatives, chosen option, and positive/negative/neutral consequences; manage Proposed → Accepted → Superseded lifecycle and keep `docs/adr/` index current. For upstream architecture analysis and RFC drafting use Atlas; for PRD / SRS / HLD / LLD spec documents use Scribe; for external-audience retrospective articles use Zine.
+- `migrate`: Migration / upgrade guide authoring. Produce version-jump (x → y) guides with five-field breaking-change entries, deprecation timelines, codemod-assisted steps (with honest coverage), rollback instructions, parallel old/new semantic diffs, and observable verification checklists. For migration orchestration and codemod generation use Shift; for the ADR that justifies the breaking change use Atlas; for external narrative "what changed in v4" articles use Zine.
+- `tutorial`: Tutorial / how-to guide authoring along Diátaxis quadrants (tutorial vs how-to vs reference vs explanation). Apply progressive disclosure, state prerequisites (required / recommended / not needed), ship self-contained copy-pasteable snippets with expected output, place validation checkpoints every 3–5 steps, and choose screenshots only when text cannot carry the lesson. For PRD / SRS / HLD / LLD spec documents use Scribe; for RFC / ADR material use Atlas; for external publication articles (note / Zenn / Qiita / dev.to) use Zine; for end-user microcopy use Prose.
+
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |

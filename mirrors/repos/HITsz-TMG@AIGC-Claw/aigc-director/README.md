@@ -219,14 +219,14 @@ API 返回的资产路径使用相对路径格式：`code/result/...`
 
 ```bash
 # LLM 配置（剧本生成）
-LLM_MODEL=qwen3.5-plus
+LLM_MODEL=deepseek-v3.2
 
 # VLM 配置（图像评估）
-VLM_MODEL=qwen-vl-plus
+VLM_MODEL=qwen3.6-plus
 
-# 图像生成（默认：doubao-seedream-5-0-260128，支持高并发）
-IMAGE_T2I_MODEL=doubao-seedream-5-0-260128
-IMAGE_IT2I_MODEL=doubao-seedream-5-0-260128
+# 图像生成（默认：wan2.6-t2i）
+IMAGE_T2I_MODEL=wan2.6-t2i
+IMAGE_IT2I_MODEL=wan2.6-t2i
 
 # 视频生成
 VIDEO_MODEL=wan2.7-i2v
@@ -239,21 +239,21 @@ VIDEO_RATIO=16:9
 
 | API Key | 提供商 | 可用模型 |
 |---------|------|---------|
-| `DASHSCOPE_API_KEY` | 阿里云DashScope | qwen3.5-plus, qwen-vl-plus, wan2.6-t2i, wan2.6-i2v-flash |
+| `DASHSCOPE_API_KEY` | 阿里云DashScope | qwen3.6-max-preview, qwen3.6-plus, wan2.6-t2i, wan2.7-i2v, wan2.6-i2v-flash |
 | `ARK_API_KEY` | 字节跳动Seedream | doubao-seedream-5-0-260128 (500次/分钟，高并发) |
 | `VOLC_ACCESS_KEY/SECRET` | 火山引擎即梦 | jimeng_t2i_v40, jimeng_ti2v_v30_pro |
-| `KLING_ACCESS_KEY/SECRET` | 快手可灵 | kling-v3, kling-v2-6 |
-| `DEEPSEEK_API_KEY` | DeepSeek | deepseek-chat, deepseek-reasoner |
-| `OPENAI_API_KEY` | OpenAI | gpt-4o, gpt-5, o3 |
-| `GEMINI_API_KEY` | Google Gemini | gemini-2.5-flash, gemini-2.5-flash-image |
+| `KLING_ACCESS_KEY/SECRET` | 快手可灵 | kling-v3, kling-v2-6, kling-v2-5-turbo |
+| `DEEPSEEK_API_KEY` | DeepSeek | deepseek-chat, deepseek-reasoner, deepseek-v4-flash, deepseek-v4-pro |
+| `OPENAI_API_KEY` | OpenAI | gpt-4o, gpt-5, gpt-5.4, sora_image, gpt-image-2 |
+| `GEMINI_API_KEY` | Google Gemini | gemini-2.5-flash, gemini-2.5-flash-image, gemini-2.0-flash |
 
 ### 可用模型
 
-- **LLM 模型**: deepseek-chat, deepseek-reasoner, gpt-4o, gpt-4, gpt-5, o3, gemini-3-flash-preview, qwen3.5-plus, qwen3.5-max
-- **VLM 评估模型**: qwen3.5-plus, qwen-vl-plus, qwen3.5-max, gemini-2.5-flash-image (性价比最高), gemini-2.0-flash
-- **文生图模型**: doubao-seedream-5-0-260128, jimeng_t2i_v40, wan2.6-t2i, sora_image,  gpt-image-2
-- **图生图模型**: doubao-seedream-5-0-260128, jimeng_t2i_v40, wan2.6-image
-- **视频生成模型**: doubao-seedance-2-0-260128, wan2.7-i2v, wan2.6-i2v-flash, kling-v3, kling-v2-6, kling-v2-5-turbo
+- **LLM 模型**: qwen3.6-max-preview, qwen3-max, deepseek-chat, deepseek-reasoner, deepseek-v4-flash, deepseek-v4-pro, gpt-4o, gpt-5, gpt-5.4, gemini-2.5-flash, gemini-2.0-flash
+- **VLM 评估模型**: qwen3.6-plus, qwen3.6-flash, kimi-k2.6, gpt-5.4, gemini-2.5-flash-image (性价比最高), gemini-2.0-flash
+- **文生图模型**: wan2.6-t2i, jimeng_t2i_v40, doubao-seedream-5-0-260128, sora_image, gpt-image-2
+- **图生图模型**: wan2.6-t2i, jimeng_t2i_v40, doubao-seedream-5-0-260128, gpt-image-2
+- **视频生成模型**: wan2.7-i2v, wan2.6-i2v-flash, doubao-seedance-2-0-260128, kling-v3, kling-v2-6, kling-v2-5-turbo, jimeng_ti2v_v30_pro
 - **视频比例**: 16:9, 9:16, 1:1, 4:3, 3:4, 21:9
 
 ### 并发配置
@@ -281,29 +281,32 @@ VIDEO_RATIO=16:9
 
 | 模型 | 调用限制 | 并发数上限 | 备注 |
 |------|---------|-----------|------|
-| **wan2.6-t2i** | 1次/秒 | 5个 | 文生图 |
-| **wan2.6-image** | 5次/秒 | 5个 | 图像生成 |
-| **jimeng_t2i_v40** | - | 2-5个 | 即梦系列 |
-| **doubao-seedream-*** | 500次/分钟 | 高并发 | 字节跳动Seedream |
-| **qwen-image** | 2次/秒 | 同步无限制 | 需开通 |
+| **wan2.6-t2i** | 1次/秒 | 5个 | 文生图/图生图 |
+| **jimeng_t2i_v40** | - | 2个 | 即梦系列 |
+| **doubao-seedream-*** | 500次/分钟 | 10个 | 字节跳动Seedream |
+| **sora_image** | - | 3个 | OpenAI |
+| **gpt-image-2** | - | 3个 | OpenAI |
 
 #### 视频生成
 
 | 模型 | 调用限制 | 并发数上限 | 备注 |
 |------|------|------|------|
-| **wan2.6-i2v-flash** | 5次/秒 | 5个 | 首帧生视频 |
-| **wan2.6-i2v** | 5次/秒 | 5个 | 首帧生视频 |
-| **jimeng_ti2v_v30_pro** | 即梦视频，需实测限流 | | |
-| **kling-v3/v2-6** | 快手可灵，需查阅官方文档 | | |
+| **wan2.7-i2v** | 5次/秒 | 5个 | 阿里大模型 |
+| **wan2.6-i2v-flash** | 5次/秒 | 5个 | 阿里大模型 (快速) |
+| **doubao-seedance-*** | - | 10个 | 字节跳动 |
+| **kling-v3/v2-6/v2-5** | - | 3个 | 快手可灵 |
+| **jimeng_ti2v_v30_pro** | - | 3个 | 即梦视频 |
 
 #### LLM / VLM
 
 | 模型 | RPM | TPM |
 |------|-----|-----|
-| **qwen3.5-plus** | 30,000 | 5,000,000 |
-| **qwen-plus** | 30,000 | 5,000,000 |
-| **qwen-vl-plus** | 1,200 | 1,000,000 |
+| **qwen3.6-max-preview** | 30,000 | 5,000,000 |
+| **qwen3.6-plus** | 30,000 | 5,000,000 |
 | **deepseek-chat** | 15,000 | 1,200,000 |
+| **deepseek-v4-flash** | 1,000 | 4,000 |
+| **deepseek-v4-pro** | 2,000 | 8,000 |
+| **gpt-4o** | - | - |
 
 > **RPM**: 每分钟请求数 | **TPM**: 每分钟Token数
 

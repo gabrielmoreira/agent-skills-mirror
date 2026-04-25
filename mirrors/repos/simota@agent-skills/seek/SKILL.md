@@ -15,6 +15,9 @@ CAPABILITIES_SUMMARY:
 - rag_retrieval_layer: Design the Retrieval layer of RAG pipelines (chunking-aware retrieval, reranking, context assembly)
 - search_quality_evaluation: Evaluate search quality with Precision, Recall, MRR, NDCG, and relevance judgments
 - scaling_strategy: Design sharding, replica, caching, and warm-up strategies for search infrastructure
+- rerank_pipeline: Design second-stage re-ranking for any retrieval system — cross-encoder (BGE Reranker / Cohere Rerank 3), Learning to Rank (LambdaMART / LightGBM LTR), two-stage retrieve-then-rerank latency budget, click-feedback loop
+- autocomplete_design: Design search-as-you-type / suggestion subsystems — edge n-gram analyzer, prefix query, typo tolerance (Levenshtein / BK-tree / symspell), synonym expansion, personalization, sub-50ms latency budget
+- search_evaluation_program: Design end-to-end search quality evaluation — offline metrics (nDCG / MRR / MAP / Precision@k / Recall@k), online signals (CTR / position bias), golden-query set curation, click models, A/B test design for ranking changes
 
 COLLABORATION_PATTERNS:
 - Oracle -> Seek: RAG retrieval requirements, embedding strategy, reranking specs
@@ -386,6 +389,35 @@ EVALUATION_SPEC:
 ```
 
 ---
+
+## Recipes
+
+| Recipe | Subcommand | Default? | When to Use | Read First |
+|--------|-----------|---------|-------------|------------|
+| Full-Text Search | `fulltext` | ✓ | Elasticsearch/OpenSearch index design, analyzer configuration | `references/patterns.md` |
+| Vector Search | `vector` | | Vector search design, embedding model selection, pgvector/Pinecone | `references/embedding-models.md` |
+| Hybrid Search | `hybrid` | | BM25 + vector fusion, RRF scoring, reranking pipeline | `references/patterns.md` |
+| Index Optimization | `index` | | Index mapping optimization, scaling design | `references/patterns.md` |
+| RAG Retrieval | `rag` | | RAG retrieval-layer design, chunking, reranking, context assembly | `references/evaluation-methods.md` |
+| Re-ranking | `rerank` | | Second-stage re-ranking pipeline — cross-encoder (BGE / Cohere Rerank 3), LTR (LambdaMART / LightGBM), latency budget, click-feedback loop | `references/rerank-design.md` |
+| Autocomplete / Suggest | `suggest` | | Search-as-you-type / suggestion subsystem — edge n-gram, prefix query, typo tolerance (Levenshtein / symspell), sub-50ms latency | `references/suggest-design.md` |
+| Search Evaluation | `eval` | | Search quality evaluation program — offline metrics (nDCG / MRR / MAP), online signals (CTR / position bias), golden set, A/B design | `references/search-evaluation.md` |
+
+## Subcommand Dispatch
+
+Parse the first token of user input.
+- If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
+- Otherwise → default Recipe (`fulltext` = Full-Text Search). Apply normal PROFILE → SELECT → MAP → QUERY → RANK → EVALUATE workflow.
+
+Behavior notes per Recipe:
+- `fulltext`: Elasticsearch / OpenSearch / Meilisearch / Typesense index design. Start from data volume, language, and update cadence. Deliver mapping + query template as paired artifacts. NDCG@10 ≥ 0.70 baseline.
+- `vector`: Vector index spec (HNSW / IVFFlat / DiskANN). Validate embedding-model choice against domain — general-purpose models fail on specialized corpora (medical / legal / code). Declare distance metric and dimensions up front.
+- `hybrid`: BM25 + vector fusion via RRF (default `k = 60`) or weighted sum. Always include fusion-strategy rationale and a reranking-stage recommendation — see `rerank` for depth.
+- `index`: Existing index optimization — mapping, analyzer, shard count, replica, refresh interval, warmers. Profile current query mix before changing any setting.
+- `rag`: RAG retrieval layer only. Chunking strategy + retrieval method + reranking + context assembly. Hand off to `Oracle` for prompt design and LLM-output evaluation. Always include a reranker — vector-only retrieval retrieves semantically plausible but suboptimal chunks.
+- `rerank`: Second-stage re-ranking over any retrieval system (not RAG-specific). Pick cross-encoder (BGE Reranker v2 / Cohere Rerank 3 / jina-reranker) for quality, LTR (LambdaMART / LightGBM LTR) when click-feedback data exists. Declare Stage-1 top-N, Stage-2 top-K, and added latency budget (typically +30-100ms). Hand off to `Builder` for feature-extraction pipeline; use `Experiment` for A/B stat design with `eval`'s search metrics. Cross-link: Oracle `embed` defers to `rerank` for reranker depth.
+- `suggest`: Autocomplete / search-as-you-type subsystem, separate from the main `fulltext` retrieval index. Edge-n-gram or completion suggester analyzer, prefix query, typo tolerance via Levenshtein automaton / BK-tree / symspell. Sub-50ms P99 is the bar; degrade synonyms and personalization before breaking the latency budget. Log query-prefix pairs to feed `eval`'s suggestion-acceptance metric. Cross-link: main retrieval stays in `fulltext`.
+- `eval`: Search-specific quality evaluation — offline (nDCG / MRR / MAP / Precision@k / Recall@k) and online (CTR with position-bias correction, abandonment, reformulation). Curate 50-200 golden queries with graded judgments; use a click model (Cascade / DBN / PBM) when relying on logs. Delegate general A/B statistics (power, SRM, CUPED) to `Experiment`; Seek `eval` supplies the ranking metric and click model. Cross-link: Oracle `eval` covers LLM-output quality (faithfulness, grounding), a separate domain from retrieval ranking quality.
 
 ## Output Routing
 
