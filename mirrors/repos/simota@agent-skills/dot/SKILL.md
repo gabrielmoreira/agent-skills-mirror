@@ -125,6 +125,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Phaser 3 | `phaser` | | Phaser 3 sprites | `references/code-patterns.md`, `references/engine-integration.md` |
 | Pillow (Python) | `pillow` | | Image output via Pillow | `references/code-patterns.md`, `references/sprite-animation.md` |
 | CSS Pixel Art | `css` | | CSS pixel art | `references/code-patterns.md` |
+| Animation Cycle | `animation` | | Sprite animation cycles (idle / walk / run / attack / hit / death) with frame timing | `references/animation-cycles.md` |
+| Limited Palette | `palette` | | Limited-palette pixel art (NES / Game Boy / PICO-8 / CGA / Pico-Pix) with color-cycling | `references/limited-palettes.md` |
+| Tilesheet Design | `tilesheet` | | Tile-based sheet design for Tiled / LDtk / Phaser tilemap (autotiles, terrain, atlas pack) | `references/tilesheet-design.md` |
 
 ## Subcommand Dispatch
 
@@ -138,6 +141,9 @@ Behavior notes per Recipe:
 - `phaser`: Generate Phaser 3 `generateTexture()` code with `pixelArt: true`. Intended for handoff to Realm.
 - `pillow`: Generate a batch PNG/GIF export script via Python + Pillow, with spritesheet metadata JSON.
 - `css`: Generate pixel art via CSS `box-shadow` or CSS Grid. Suited to small decorative assets.
+- `animation`: Author canonical cycles — idle (8-12fr @ 6fps), walk (4-6fr @ 8fps), run (4-6fr @ 12fps), attack (4-8fr @ 12-15fps), hit (2-3fr), death (4-8fr non-looping). Apply squash-and-stretch and anticipation ticks. Output frames + JSON timing.
+- `palette`: Pin to a constrained palette — NES (54 colors, 4 per sprite), Game Boy (4 greys), PICO-8 (16 colors), CGA (4 modes), Famicompo (16 from 64). Validate via Lospec. Optional color-cycling for water/lava.
+- `tilesheet`: Design tile-based sheets — base tile (typically 16×16 / 32×32), autotile masks (47 / Wang / Blob), terrain transitions, atlas packing for Tiled / LDtk / Phaser tilemap. Emit `.tsx` / `.ldtk` / Phaser config alongside the sheet.
 
 ## Output Routing
 

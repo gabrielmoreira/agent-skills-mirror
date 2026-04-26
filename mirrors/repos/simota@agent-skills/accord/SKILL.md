@@ -185,12 +185,18 @@ Routing rules:
 | Requirements | `requirements` | | Detail functional/non-functional requirements | `references/user-story-smells.md` |
 | Detailed Spec | `detail` | | L2 detailed spec, flow, data model | `references/handoff-formats.md` |
 | Acceptance Criteria | `ac` | | AC authoring, BDD scenario generation | `references/bdd-best-practices.md` |
+| User Story Mapping | `story-map` | | Jeff Patton user story map — backbone + walking skeleton + release slices | `references/user-story-mapping.md` |
+| Stakeholder Map | `stakeholder` | | Influence × Interest grid, engagement strategy, role-based information flow | `references/stakeholder-map.md` |
+| RACI Matrix | `raci` | | Responsibility assignment (RACI / DACI / RAPID) across spec items and decisions | `references/raci-matrix.md` |
 
 Behavior notes:
 - **vision** (default): SURVEY → ALIGN → DRAFT → PRESENT; load `unified-template.md`; produce L0 Vision Block.
 - **requirements**: Expand feature list into L1 requirements; load `user-story-smells.md`; flag smell patterns.
 - **detail**: Author L2 detailed spec with flow, data model, edge cases; load `handoff-formats.md`.
 - **ac**: Write AC in Given/When/Then; load `bdd-best-practices.md`; validate count within scope-mode limit.
+- **story-map**: Load `user-story-mapping.md`. Build backbone (user activities) → walking skeleton → release slice 1/2/3. Pair with L1 requirements. Output map as matrix.
+- **stakeholder**: Load `stakeholder-map.md`. Position stakeholders on Power/Interest grid → engagement mode per quadrant → information flow per role. Pair with L0 Vision.
+- **raci**: Load `raci-matrix.md`. Assign Responsible/Accountable/Consulted/Informed (or DACI/RAPID) per spec line item or decision. Pair with L3 handoff.
 
 ## Subcommand Dispatch
 
@@ -258,6 +264,9 @@ Unified Specification Package: [Feature Name]
 | `references/traceability-pitfalls.md` | The traceability matrix is incomplete or noisy. |
 | `references/specification-anti-patterns.md` | The package shows scope, audience, or collaboration failures. |
 | `references/specification-calibration.md` | Running `UNIFY` or tuning scope heuristics. |
+| `references/user-story-mapping.md` | You chose `story-map` recipe. Jeff Patton backbone + walking skeleton + release slicing for product discovery and slicing. |
+| `references/stakeholder-map.md` | You chose `stakeholder` recipe. Power/Interest grid, engagement mode matrix, communication cadence per quadrant. |
+| `references/raci-matrix.md` | You chose `raci` recipe. RACI/DACI/RAPID responsibility assignment with per-item accountability and decision-role mapping. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the unified package, deciding adaptive thinking depth at PLAN, or front-loading audience/scope at INTAKE. Critical for Accord: P3, P5. |
 
 ## Operational

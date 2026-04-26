@@ -235,6 +235,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Analyze | `analyze` | | Codebase analysis and token alignment review | `references/token-alignment-guide.md` |
 | Prompt | `prompt` | | Staged prompt design for Make | `references/prompt-patterns.md`, `references/figma-make-constraints.md` |
 | Validate | `validate` | | Scoring and validation of Make output | `references/validation-checklist.md` |
+| Variants | `variants` | | Component variant specification for Make — variant matrix (size × state × color), Figma Variant property naming alignment, default variant designation, variant API in Guidelines.md, Make's "1 variant per screen" constraint workaround | `references/variant-spec.md` |
+| Motion | `motion` | | Motion specification for Make — Make's animation limitations, Framer Motion handoff strategy, transition-only fallback, micro-interaction documentation, prefers-reduced-motion respect | `references/motion-spec.md` |
+| RTL | `rtl` | | RTL / i18n design specification for Make — logical CSS properties (margin-inline, padding-block), text-direction handling, locale-aware formatting (Intl), font-fallback for non-Latin scripts, Guidelines.md i18n section template | `references/rtl-i18n-spec.md` |
 
 ## Subcommand Dispatch
 
@@ -245,6 +248,9 @@ Parse the first token of user input.
 - `analyze`: Review tokens, components, and layout across 4 axes (Name/Value/Semantics/Hierarchy) and report drift.
 - `prompt`: Design staged prompts in TC-EBC structure and build an execution plan with credit optimization in mind.
 - `validate`: Score Make output (detach rate, 0-100) and return a PASS/CONDITIONAL/REVISE/REBUILD verdict.
+- `variants`: Read `references/variant-spec.md` first. Build the variant matrix (size × state × color × disabled) per component, define Figma Variant property/value names that align with TS prop interfaces (kebab-case ↔ camelCase), designate default variant explicitly, document variant API in Guidelines.md `## Variants` section. Make's "1 variant per generated screen" limit requires staged prompts: generate base variant first, then iterate per state. Keep variant count ≤ 24 per Component Set to stay within Make rendering budget.
+- `motion`: Read `references/motion-spec.md` first. Make has weak animation support — document explicit transitions (CSS `transition` only, no keyframes), hand off complex animations to Framer Motion via Artisan, fallback to `transition: opacity/transform` only (composite-safe). Always include `@media (prefers-reduced-motion: reduce)` block. Micro-interactions (hover lift, button press) are in-scope; page transitions and scroll-triggered animations are handed off. Guidelines.md `## Motion` section uses the motion-token vocabulary (`--motion-fast`, `--ease-out`).
+- `rtl`: Read `references/rtl-i18n-spec.md` first. Convert physical CSS (margin-left, padding-right) to logical (`margin-inline-start`, `padding-block-end`) so Make output works in both LTR/RTL. Specify `dir="auto"` on text containers, document text-direction-dependent component variants (e.g., chevron-right → chevron-end), Intl-based date/number/currency formatting via `Intl.DateTimeFormat`/`Intl.NumberFormat`. Provide font-fallback chain for non-Latin scripts (Arabic/Hebrew/CJK). Guidelines.md `## i18n & RTL` section lists locales targeted, font stack, and direction-aware components.
 
 ## Output Routing
 
@@ -297,6 +303,12 @@ Read `references/token-alignment-guide.md` when you need token diff categories, 
 Read `references/collaboration-handoffs.md` when you need exact handoff anchors or minimum payload fields.
 
 Read `references/figma-make-constraints.md` when you need platform constraints, reliability limits, or package-aware generation rules.
+
+Read `references/variant-spec.md` when you need a variant matrix template, Figma Variant property naming, default-variant designation, or workarounds for Make's "1 variant per screen" limit.
+
+Read `references/motion-spec.md` when you need Make-compatible motion patterns, transition-only fallback, Framer Motion handoff strategy, or `prefers-reduced-motion` blocks.
+
+Read `references/rtl-i18n-spec.md` when you need logical-CSS conversion (margin-inline / padding-block), `dir="auto"` patterns, Intl-based formatting, or non-Latin font fallback chains.
 
 Read `_common/OPUS_47_AUTHORING.md` when you are sizing the Guidelines package, deciding adaptive thinking depth at screen/variant limits, or front-loading stack/screens/scope at EXTRACT. Critical for Loom: P3, P5.
 

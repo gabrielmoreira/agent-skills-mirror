@@ -329,6 +329,9 @@ Handoff tokens:
 | BDD Scenarios | `bdd` | | Generate Given/When/Then scenarios from spec | `references/bdd-generation.md` |
 | Traceability Matrix | `trace` | | Generate spec ↔ code traceability matrix | `references/traceability-advanced.md` |
 | Compliance Report | `report` | | Audit-oriented compliance report (AUDIT mode) | `references/compliance-report.md` |
+| Gherkin Authoring | `gherkin` | | Gherkin/Cucumber/SpecFlow/Behave feature files with step-definition mapping | `references/gherkin-authoring.md` |
+| Property-Based | `property` | | Property-based test design from spec invariants (Hypothesis / fast-check / jqwik / ScalaCheck / proptest) | `references/property-based-testing.md` |
+| Test Oracle | `oracle` | | Test oracle design — golden master, metamorphic, differential, model-based | `references/test-oracle-design.md` |
 
 ## Subcommand Dispatch
 
@@ -341,6 +344,9 @@ Behavior notes per Recipe:
 - `bdd`: EXTRACT mode. Extract ACs from spec only and generate minimum scenario counts per priority (CRITICAL: 5, HIGH: 3).
 - `trace`: AUDIT mode. Generate bidirectional traceability from spec section → implementation code. Coverage ≥ 90% is the CERTIFIED condition.
 - `report`: AUDIT mode + full-section compliance report generation. Hand off to Warden as audit evidence.
+- `gherkin`: Author Gherkin .feature files with Background, Scenario Outline, Examples tables, Tags, and step-definition stubs for the target framework (Cucumber-JVM/JS, SpecFlow, Behave, pytest-bdd). Map each Gherkin step to a code step-def with regex/cucumber-expression.
+- `property`: Identify spec invariants and generalize them into properties (idempotency, commutativity, round-trip, monotonicity, associativity). Produce framework-specific code (Hypothesis, fast-check, jqwik, proptest, ScalaCheck) with shrinking and stateful-machine tests.
+- `oracle`: Choose the test oracle pattern per criterion. Golden master for legacy; metamorphic relations when expected output is unknown; differential testing across implementations; model-based via state machine; consistency oracle for cross-API invariants.
 
 ## Output Routing
 

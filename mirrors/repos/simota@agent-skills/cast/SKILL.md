@@ -151,6 +151,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Registry | `registry` | | Registry management — lifecycle check, audit, archive | `references/registry-spec.md` |
 | Evolve | `evolve` | | Data-driven evolution — drift updates from Trace/Voice/Pulse | `references/evolution-engine.md` |
 | Distribute | `distribute` | | Packaging for other agents (Echo/Spark/Retain, etc.) | `references/distribution-adapters.md` |
+| Archetype Mapping | `archetype` | | Map personas to Jung 12 brand archetypes + Jobs-To-Be-Done archetype model | `references/archetype-mapping.md` |
+| Segmentation | `segment` | | RFM scoring, behavioral cohort, psychographic clustering for evidence-grounded personas | `references/segmentation-methods.md` |
+| Bias Audit | `bias-audit` | | Representation bias detection, intersectionality coverage, ethical-persona checklist | `references/persona-bias-audit.md` |
 
 ## Subcommand Dispatch
 
@@ -163,6 +166,9 @@ Behavior notes per Recipe:
 - `registry`: AUDIT mode. Evaluate and report freshness, duplication, coverage, and Echo compatibility.
 - `evolve`: EVOLVE mode. Confirm deviation ≥5% trigger → bump version → record evolution log.
 - `distribute`: DISTRIBUTE mode. Per-target-agent adapter conversion → generate delivery package.
+- `archetype`: Tag each persona with primary Jung archetype (Hero/Sage/Lover/Caregiver/...) and JTBD-aligned archetype (Functional/Emotional/Social). Validate brand-archetype consistency across persona set.
+- `segment`: Compute RFM tier (Recency / Frequency / Monetary) for transactional, k-means or hierarchical clustering for behavioral, and psychographic factors (Schwartz values, OCEAN). Persona must trace to a segment with sample size ≥30.
+- `bias-audit`: Run representation matrix (gender × age × ability × ethnicity × locale), intersectionality coverage check, and the WCAG-style "Inclusive Persona Checklist". Flag stereotyping; require evidence citation per attribute.
 
 ## Output Routing
 

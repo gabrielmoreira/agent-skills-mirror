@@ -71,8 +71,29 @@ def _normalize_phrase(text: str) -> str:
     return ' '.join(re.sub(r'[^\w\s]', ' ', text.lower()).split())
 
 
+class PreparedQuery:
+    """Precomputed query shape reused across items in a stream.
+
+    Built once per ranking_query; reused by token_overlap_relevance so the
+    per-item normalize/score loops don't re-tokenize the same query N times.
+    """
+
+    __slots__ = ("raw", "q_tokens", "informative_q_tokens", "normalized_phrase")
+
+    def __init__(self, query: str) -> None:
+        self.raw = query
+        self.q_tokens = tokenize(query)
+        informative = {t for t in self.q_tokens if t not in LOW_SIGNAL_QUERY_TOKENS}
+        self.informative_q_tokens = informative or self.q_tokens
+        self.normalized_phrase = _normalize_phrase(query)
+
+
+def _as_prepared(query: "str | PreparedQuery") -> PreparedQuery:
+    return query if isinstance(query, PreparedQuery) else PreparedQuery(query)
+
+
 def token_overlap_relevance(
-    query: str,
+    query: "str | PreparedQuery",
     text: str,
     hashtags: Optional[List[str]] = None,
 ) -> float:
@@ -95,7 +116,8 @@ def token_overlap_relevance(
     Returns:
         Float between 0.0 and 1.0 (0.5 for empty queries)
     """
-    q_tokens = tokenize(query)
+    prepared = _as_prepared(query)
+    q_tokens = prepared.q_tokens
 
     # Combine text and hashtags for matching
     combined = text
@@ -119,9 +141,7 @@ def token_overlap_relevance(
     if overlap == 0:
         return 0.0
 
-    informative_q_tokens = {t for t in q_tokens if t not in LOW_SIGNAL_QUERY_TOKENS}
-    if not informative_q_tokens:
-        informative_q_tokens = q_tokens
+    informative_q_tokens = prepared.informative_q_tokens
 
     coverage = overlap / len(q_tokens)
     informative_overlap = len(informative_q_tokens & t_tokens) / len(informative_q_tokens)
@@ -129,7 +149,7 @@ def token_overlap_relevance(
     precision = overlap / precision_denominator
 
     phrase_bonus = 0.0
-    normalized_query = _normalize_phrase(query)
+    normalized_query = prepared.normalized_phrase
     normalized_text = _normalize_phrase(combined)
     if normalized_query and normalized_query in normalized_text:
         phrase_bonus = 0.12 if len(normalized_query.split()) > 1 else 0.16

@@ -39,11 +39,14 @@ def normalize_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def _ngrams_of_normalized(norm: str, n: int = 3) -> set[str]:
+    if len(norm) < n:
+        return {norm} if norm else set()
+    return {norm[index:index + n] for index in range(len(norm) - n + 1)}
+
+
 def get_ngrams(text: str, n: int = 3) -> set[str]:
-    text = normalize_text(text)
-    if len(text) < n:
-        return {text} if text else set()
-    return {text[index:index + n] for index in range(len(text) - n + 1)}
+    return _ngrams_of_normalized(normalize_text(text), n)
 
 
 def jaccard_similarity(left: set[str], right: set[str]) -> float:
@@ -90,7 +93,7 @@ class _PreparedText:
 
     def __init__(self, raw: str) -> None:
         norm = normalize_text(raw)
-        self.ngrams = get_ngrams(norm) if norm else set()
+        self.ngrams = _ngrams_of_normalized(norm)
         self.tokens = _tokenize(norm)
 
 

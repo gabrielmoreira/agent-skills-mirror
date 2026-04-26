@@ -123,12 +123,20 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Blog Strategy | `blog` | | Blog, Qiita, Zenn content strategy and article planning | `references/amplification-playbook.md` |
 | Conference CFP | `conference` | | Conference CFP authoring, talk theme design | `references/channel-templates.md` |
 | SNS Strategy | `sns` | | X, Bluesky, LinkedIn SNS publishing strategy, zero-click design | `references/amplification-playbook.md` |
+| Topic DNA | `topic-dna` | | Topic DNA / niche positioning — define what the engineer is known for; tech × domain × perspective triangulation | `references/topic-dna.md` |
+| Portfolio | `portfolio` | | Personal portfolio site / homepage architecture — projects, case studies, contact, hire-readiness | `references/portfolio-architecture.md` |
+| Bio | `bio` | | Multi-platform bio writing — GitHub one-line, LinkedIn About ≤275 chars, X 160-char, conference 50-word, long 200-word variants | `references/multi-platform-bio.md` |
 
 ## Subcommand Dispatch
 
 Parse the first token of user input.
 - If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise → default Recipe (`github` = GitHub Profile). Apply normal DISCOVER → POSITION → CRAFT → AMPLIFY → MEASURE workflow.
+
+Behavior notes per Recipe:
+- `topic-dna`: Define the engineer's niche via Tech × Domain × Perspective triangulation; produce a single-sentence positioning statement and 3–5 content pillars; verify defensibility, audience fit, and 12-month durability.
+- `portfolio`: Design a personal portfolio / homepage IA — hero + projects + case studies + writing + speaking + contact — with hire-readiness checklist (CTA, contact, response time, availability signal).
+- `bio`: Author a coherent bio family across platforms — GitHub one-line, LinkedIn About ≤275 chars, X 160-char, conference 50-word, long 200-word — derived from one canonical positioning statement.
 
 ## Output Routing
 

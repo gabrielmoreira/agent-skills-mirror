@@ -39,9 +39,9 @@ If you prefer step-by-step control:
 
 2. **Run tests and build**:
    ```bash
-   TMPDIR=/tmp go test ./...
+   make test
    golangci-lint run ./...
-   TMPDIR=/tmp go build -o bd ./cmd/bd
+   make build
    ./bd version  # Verify it shows new version
    ```
 
@@ -82,7 +82,7 @@ This updates:
 
 **IMPORTANT**: After version bump, rebuild the local binary:
 ```bash
-go build -o bd ./cmd/bd
+make build
 ./bd version  # Should show new version
 ```
 
@@ -99,6 +99,11 @@ git push origin v0.9.X
 **That's it!** GitHub Actions automatically handles the rest:
 - GoReleaser builds and publishes binaries to GitHub Releases
 - PyPI publish job uploads the MCP server package to PyPI
+
+Release automation only runs for `v*` tags. Keep `refs/tags/v*` protected so
+only trusted release maintainers can create, update, or delete release tags.
+Manual workflow dispatch is for rerunning a release from the tag, not from a
+branch.
 
 ### 2. GitHub Secrets Setup (One-Time)
 

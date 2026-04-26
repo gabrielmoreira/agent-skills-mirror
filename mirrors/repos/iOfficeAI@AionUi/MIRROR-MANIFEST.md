@@ -53,10 +53,10 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 6 followed patterns, 54 fi
 
 - `CONTRIBUTING.md`
 - `CONTRIBUTING.zh.md`
-- `docs/conventions/file-structure.md`
-- `docs/tech/architecture.md`
-- `docs/conventions/pr-automation.md`
-- `docs/development.md`
+- `docs/contributing/file-structure.md`
+- `docs/architecture/overview.md`
+- `docs/contributing/pr-automation.md`
+- `docs/contributing/development.md`
 
 ## File Index
 
@@ -114,10 +114,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`src/process/resources/skills/xiaohongshu-recruiter/SKILL.md`](src/process/resources/skills/xiaohongshu-recruiter/SKILL.md) |
 | 49 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 50 | → | [`CONTRIBUTING.zh.md`](CONTRIBUTING.zh.md) |
-| 51 | → | [`docs/conventions/file-structure.md`](docs/conventions/file-structure.md) |
-| 52 | → | [`docs/conventions/pr-automation.md`](docs/conventions/pr-automation.md) |
-| 53 | → | [`docs/development.md`](docs/development.md) |
-| 54 | → | [`docs/tech/architecture.md`](docs/tech/architecture.md) |
+| 51 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
+| 52 | → | [`docs/contributing/development.md`](docs/contributing/development.md) |
+| 53 | → | [`docs/contributing/file-structure.md`](docs/contributing/file-structure.md) |
+| 54 | → | [`docs/contributing/pr-automation.md`](docs/contributing/pr-automation.md) |
 
 ---
 

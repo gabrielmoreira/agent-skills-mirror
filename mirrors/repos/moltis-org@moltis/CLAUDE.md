@@ -196,7 +196,7 @@ avoid `waitForTimeout()`.
 
 ## Code Quality
 
-- Never run `cargo fmt` on stable in this repo. Always use the pinned nightly rustfmt (`just format`, `just format-check`, or `cargo +nightly-2025-11-30 fmt ...`).
+- Never run `cargo fmt` on stable in this repo. Always use the pinned nightly rustfmt (`just format`, `just format-check`, or `cargo fmt` — `rust-toolchain.toml` selects the right nightly automatically).
 
 ```bash
 just format              # Format Rust (pinned nightly)
@@ -314,11 +314,11 @@ Conventional commits: `feat|fix|docs|style|refactor|test|chore(scope): descripti
 
 For incremental local edits before full validation:
 - TS/TSX changed: run `biome check --write` and `cd crates/web/ui && npm run build`.
-- Rust changed: run `cargo +nightly-2025-11-30 fmt --all -- --check`.
+- Rust changed: run `cargo fmt --all -- --check`.
 - Both changed: run all three.
 
 Exact commands (must match `local-validate.sh`):
-- Fmt: `cargo +nightly-2025-11-30 fmt --all -- --check`
+- Fmt: `cargo fmt --all -- --check`
 - Clippy: `just lint` (OS-aware: on macOS excludes CUDA features, on Linux uses `--all-features`)
 - Tests: `just test` (OS-aware: on macOS uses nextest without CUDA features, on Linux uses `--all-features`)
 - macOS app (Darwin hosts): `./scripts/build-swift-bridge.sh && ./scripts/generate-swift-project.sh && ./scripts/lint-swift.sh && xcodebuild -project apps/macos/Moltis.xcodeproj -scheme Moltis -configuration Release -destination "platform=macOS" -derivedDataPath apps/macos/.derivedData-local-validate CODE_SIGNING_ALLOWED=NO build`

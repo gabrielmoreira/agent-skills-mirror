@@ -166,6 +166,9 @@ At session end: produce a summary with original idea, evolution points, key insi
 | Propose | `propose` | | Proposal mode (Quick Riff) | `references/patterns.md` |
 | Evaluate | `evaluate` | | Evaluation mode (Devil's Advocate) | `references/patterns.md` |
 | Subtract | `subtract` | | Subtraction mode (narrowing ideas) | `references/patterns.md` |
+| Steelman | `steelman` | | Steel-manning protocol — build the strongest case FOR and AGAINST in sequence, surface the decisive question, hand back a soft verdict. Use for hard-to-reverse decisions, asymmetric stakes, or split teams | `references/steelman-protocol.md` |
+| SCAMPER | `scamper` | | Structured 7-lens transformation — Substitute / Combine / Adapt / Modify / Put-to-other-use / Eliminate / Reverse — each lens producing 1-3 concrete variations of the same idea | `references/scamper-method.md` |
+| Crazy 8s | `crazy8` | | Time-boxed rapid divergence — 8 distinct one-sentence variations along one declared axis, generated under time pressure to bypass self-censorship and break out of single-shape thinking | `references/crazy-eights.md` |
 
 ## Subcommand Dispatch
 
@@ -178,6 +181,9 @@ Behavior notes per Recipe:
 - `propose`: Quick Riff mode. RECEIVE → PROPOSE (4-5 turns) → SYNTHESIZE. Quickly generate concrete proposals.
 - `evaluate`: Devil's Advocate mode. RECEIVE → Steelman → 3-angle challenge → rebuild.
 - `subtract`: Lead with SUBTRACT mode. Narrow down excess ideas to extract the essence.
+- `steelman`: Read `references/steelman-protocol.md` first. Strict 5 phases: RECEIVE → STEELMAN FOR → STEELMAN AGAINST → SYNTHESIZE → SOFT VERDICT. Build FOR and AGAINST sequentially (no parallel construction); suppress counter-arguments while building each side. Quality test (internal): "would the most thoughtful proponent / skeptic recognize this as their actual view?". Forbid lukewarm both-sides, sandwich softening, premature synthesis, hidden vote, and verdict creep. Fatal flaws (technical impossibility / ethical issue / known failure pattern) must headline the AGAINST phase, not appear as a caveat. SOFT VERDICT must hand back in the structure "for FOR to win, X must be true / for AGAINST to win, Y / cheapest experiment is Z"; route formal Go/No-Go to **Magi**.
+- `scamper`: Read `references/scamper-method.md` first. Apply 7 lenses (Substitute / Combine / Adapt / Modify-Magnify / Put-to-other-use / Eliminate / Reverse) sequentially; for each lens, surface 1-3 concrete variations and let the user pick. Sequencing is situational: generic idea → A→M→R; feature bloat suspected → E→S→P; stuck → R→A→C; pre-launch → M→E→S. Variation quality bar: concrete / testable / differentiated / bounded must all hold; skip any lens that cannot meet it. Forbid all-seven-no-depth, lens dressing (relabeling the same idea 7 times), user backseat (21 variations overwhelming the user), premature combine, and reverse-as-gimmick. In SYNTHESIZE, present the strongest variations as a table along with the hybrid candidate and the decisive question.
+- `crazy8`: Read `references/crazy-eights.md` first. Strict constraints: exactly 8 variations / one sentence each (≤ 20 JP chars / ≤ 12 EN words) / one divergence axis declared up front / each variation changes a different attribute / fast pace. Have the user pick one axis from the catalog (form-factor / target-user / time-horizon / scale / constraint / interaction-model / data-source / stance / polarity). Present all 8 numbered variations in a single turn with no inter-variation explanation, then immediately ask "pick 1-3". Quality bar: complete idea / distinguishable / axis-aligned / contains a concrete noun / 1-2 deliberately absurd. Politely decline user softening like "let's do 5" and recommend SCAMPER instead. Forbid lazy 8 (4 padding), 8 hedges, axis drift, no absurdity, and no convergence. After picks, route to propose / steelman / another-axis crazy8 / Magi based on selection count.
 
 ## Output Routing
 
@@ -221,6 +227,9 @@ Every session deliverable must include:
 | `references/patterns.md` | You need pattern definitions, mode transition signals, or session structure guidance |
 | `references/examples.md` | You need session examples, question repertoires, or tone guidance |
 | `references/handoffs.md` | You need handoff templates for partner agents |
+| `references/steelman-protocol.md` | You are running the `steelman` recipe and need the 5-step protocol, quality test, honest-friction rules, dialogue template, or routing guidance |
+| `references/scamper-method.md` | You are running the `scamper` recipe and need the 7-lens probing questions, sequencing strategies for different situations, variation quality bar, or output format |
+| `references/crazy-eights.md` | You are running the `crazy8` recipe and need the divergence axis catalog, the constraint rationale, dialogue template, convergence-after-8 routing, or anti-patterns |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the session summary, deciding adaptive thinking depth at mode/pacing, or front-loading topic/mode-bias/length at ENTER. Critical for Riff: P3, P5. |
 
 ## Operational

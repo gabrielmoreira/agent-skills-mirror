@@ -166,6 +166,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Form Fill | `form` | | Form input and submission automation | `references/execution-templates.md` |
 | Screenshot | `screenshot` | | Screenshot capture and milestone recording | `references/playwright-cdp.md` |
 | Network Capture | `network` | | HAR and network request recording and analysis | `references/playwright-cdp.md` |
+| Stealth | `stealth` | | Anti-bot evasion within ToS-compliant boundaries — TLS / JA3 / JA4 fingerprinting awareness, behavioral humanization, residential proxy rotation, Cloudflare/Akamai/PerimeterX handling | `references/stealth-mode.md` |
+| Mobile | `mobile` | | Mobile device emulation — viewport, user-agent, touch gestures, network throttling (3G/4G), iOS Safari / Android Chrome divergence, hover/active state nuances | `references/mobile-emulation.md` |
+| Parallel | `parallel` | | Parallel browser sessions — context isolation, worker pool sizing, shared auth state, per-session storage, throughput vs detection trade-off, queue management for 100+ task batches | `references/parallel-sessions.md` |
 
 ## Subcommand Dispatch
 Parse the first token of user input.
@@ -177,6 +180,9 @@ Behavior notes per Recipe:
 - `form`: Sequentially fill, submit, and upload form fields. Capture before/after screenshots as evidence.
 - `screenshot`: Capture screenshots at milestones for the given URL or after interactions. Add timestamps to file names.
 - `network`: Via CDP, record HAR files, collect console logs, and analyze and report network requests/responses.
+- `stealth`: Read `references/stealth-mode.md` first. Apply human-like behavior (mouse movement curves, dwell time variance, scroll inertia), TLS fingerprint matching (curl-impersonate / playwright-stealth-equivalent), residential proxy rotation, ToS verification before deployment. **Refuse if target ToS prohibits automation, or if intent is bypassing rate limits / CAPTCHA / paywall.** Stealth mode is for legitimate research, accessibility-tool building, monitoring of consenting services — not for circumventing protections.
+- `mobile`: Read `references/mobile-emulation.md` first. Configure device descriptors (`devices['iPhone 15 Pro']`, `Pixel 8`), viewport+UA+touch+geolocation+timezone, network throttling (Slow 3G, Fast 3G, 4G), test hover-only desktop interactions for mobile fallback, validate touch targets (≥44px iOS / ≥48dp Android). Note: emulation is **not equivalent to real device** for: WebGL, camera, biometrics, push notifications.
+- `parallel`: Read `references/parallel-sessions.md` first. Spin up isolated `BrowserContext` per worker (not new pages in shared context), pool size = min(CPU cores, target rate-limit headroom, typically 3-8), shared auth via `storageState.json` write-once read-many, per-task timeout cap (default 120s), backpressure queue for batches >100 URLs, aggregate failure reporting. Each context has independent cookies/cache — required for multi-account or A/B testing.
 
 ## Output Routing
 
@@ -278,6 +284,9 @@ Console monitoring, network interception, performance metrics, coverage analysis
 | `references/playwright-cdp.md` | You need connection patterns, CDP methods, fallback implementation, or code examples. |
 | `references/video-recording.md` | You need recording code examples, configuration, or best practices. |
 | `references/data-extraction.md` | You need full extraction/form code patterns, validation, or authentication examples. |
+| `references/stealth-mode.md` | You need TLS/JA3/JA4 fingerprint awareness, behavioral humanization, residential proxy rotation, Cloudflare/Akamai/PerimeterX handling, or ToS-compliance gating. |
+| `references/mobile-emulation.md` | You need device descriptors, viewport+UA+touch+geolocation, network throttling profiles, iOS/Android divergence, or touch-target validation. |
+| `references/parallel-sessions.md` | You need BrowserContext isolation, worker pool sizing, shared auth state, queue management, throughput vs detection trade-off, or batch >100 patterns. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the execution report, choosing CLI vs MCP by step count, or front-loading target/auth/scope at RECON. Critical for Navigator: P3, P6. |
 
 ---

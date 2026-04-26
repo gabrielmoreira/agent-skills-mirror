@@ -109,6 +109,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Animated SVG | `animate` | | SMIL/CSS animation authoring for icons and microinteractions | `references/svg-animation.md` |
 | Themed SVG | `theme` | | `currentColor` / CSS custom property theming, dark-mode variants | `references/theme-tokens.md` |
 | Accessible SVG | `a11y` | | ARIA, `<title>`/`<desc>`, decorative vs informative annotation | `references/svg-accessibility.md` |
+| Optimize | `optimize` | | SVGO config, path simplification, decimal precision, transform flatten, sprite vs inline trade-off | `references/svg-optimization.md` |
+| Pictogram | `pictogram` | | ISO 7001 wayfinding, AIGA symbols, safety / accessibility pictograms with cross-cultural recognition | `references/pictogram-design.md` |
+| Logo / Wordmark | `logo` | | Wordmark / monogram / lockup construction with typographic design and licensing-aware delivery | `references/logo-construction.md` |
 
 ## Subcommand Dispatch
 
@@ -124,6 +127,9 @@ Behavior notes per Recipe:
 - `animate`: Author SMIL/CSS animation for loaders, status transitions, and microinteractions. Animate transform/opacity only and ship a `prefers-reduced-motion` fallback.
 - `theme`: Theme icons via `currentColor` and CSS custom properties. Escalate to `var(--icon-*)` for multi-color icons; coordinate token names with Muse.
 - `a11y`: Annotate with ARIA / `<title>` / `<desc>`. Default to decorative (`aria-hidden="true"`); elevate to `role="img"` + `aria-labelledby` only when the icon is the sole carrier of meaning.
+- `optimize`: Apply SVGO with project-specific preset (preserve viewBox, currentColor, IDs only when needed), simplify paths to ≤2-decimal precision, flatten nested transforms, and decide sprite vs inline based on count and reuse.
+- `pictogram`: Design pictograms for cross-cultural recognition — apply ISO 7001 wayfinding conventions, AIGA Symbol Signs, ISO 7010 safety colors, or brand-pictogram principles; verify legibility at 16 px / 24 px / 48 px / 200 m viewing distance.
+- `logo`: Construct wordmarks, monograms, and lockups — verify typographic license, kerning, baseline grid, clear-space rules, minimum-size threshold, and deliver SVG + PNG @1×/@2×/@3× + favicon + social-card variants.
 
 ## Output Routing
 

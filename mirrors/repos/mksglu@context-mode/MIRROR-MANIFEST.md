@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 32
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,33 +64,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`configs/claude-code/CLAUDE.md`](configs/claude-code/CLAUDE.md) |
 | 4 | ✓ | [`configs/codex/AGENTS.md`](configs/codex/AGENTS.md) |
 | 5 | ✓ | [`configs/gemini-cli/GEMINI.md`](configs/gemini-cli/GEMINI.md) |
-| 6 | ✓ | [`configs/kilo/AGENTS.md`](configs/kilo/AGENTS.md) |
-| 7 | ✓ | [`configs/openclaw/AGENTS.md`](configs/openclaw/AGENTS.md) |
-| 8 | ✓ | [`configs/opencode/AGENTS.md`](configs/opencode/AGENTS.md) |
-| 9 | ✓ | [`configs/pi/AGENTS.md`](configs/pi/AGENTS.md) |
-| 10 | ✓ | [`configs/vscode-copilot/copilot-instructions.md`](configs/vscode-copilot/copilot-instructions.md) |
-| 11 | ✓ | [`configs/zed/AGENTS.md`](configs/zed/AGENTS.md) |
-| 12 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 13 | ✓ | [`llms.txt`](llms.txt) |
-| 14 | ✓ | [`skills/context-mode-ops/agent-teams.md`](skills/context-mode-ops/agent-teams.md) |
-| 15 | ✓ | [`skills/context-mode-ops/communication.md`](skills/context-mode-ops/communication.md) |
-| 16 | ✓ | [`skills/context-mode-ops/marketing.md`](skills/context-mode-ops/marketing.md) |
-| 17 | ✓ | [`skills/context-mode-ops/release.md`](skills/context-mode-ops/release.md) |
-| 18 | ✓ | [`skills/context-mode-ops/review-pr.md`](skills/context-mode-ops/review-pr.md) |
-| 19 | ✓ | [`skills/context-mode-ops/SKILL.md`](skills/context-mode-ops/SKILL.md) |
-| 20 | ✓ | [`skills/context-mode-ops/tdd.md`](skills/context-mode-ops/tdd.md) |
-| 21 | ✓ | [`skills/context-mode-ops/triage-issue.md`](skills/context-mode-ops/triage-issue.md) |
-| 22 | ✓ | [`skills/context-mode-ops/validation.md`](skills/context-mode-ops/validation.md) |
-| 23 | ✓ | [`skills/context-mode/references/anti-patterns.md`](skills/context-mode/references/anti-patterns.md) |
-| 24 | ✓ | [`skills/context-mode/references/patterns-javascript.md`](skills/context-mode/references/patterns-javascript.md) |
-| 25 | ✓ | [`skills/context-mode/references/patterns-python.md`](skills/context-mode/references/patterns-python.md) |
-| 26 | ✓ | [`skills/context-mode/references/patterns-shell.md`](skills/context-mode/references/patterns-shell.md) |
-| 27 | ✓ | [`skills/context-mode/SKILL.md`](skills/context-mode/SKILL.md) |
-| 28 | ✓ | [`skills/ctx-doctor/SKILL.md`](skills/ctx-doctor/SKILL.md) |
-| 29 | ✓ | [`skills/ctx-insight/SKILL.md`](skills/ctx-insight/SKILL.md) |
-| 30 | ✓ | [`skills/ctx-purge/SKILL.md`](skills/ctx-purge/SKILL.md) |
-| 31 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
-| 32 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
+| 6 | ✓ | [`configs/jetbrains-copilot/copilot-instructions.md`](configs/jetbrains-copilot/copilot-instructions.md) |
+| 7 | ✓ | [`configs/kilo/AGENTS.md`](configs/kilo/AGENTS.md) |
+| 8 | ✓ | [`configs/openclaw/AGENTS.md`](configs/openclaw/AGENTS.md) |
+| 9 | ✓ | [`configs/opencode/AGENTS.md`](configs/opencode/AGENTS.md) |
+| 10 | ✓ | [`configs/pi/AGENTS.md`](configs/pi/AGENTS.md) |
+| 11 | ✓ | [`configs/vscode-copilot/copilot-instructions.md`](configs/vscode-copilot/copilot-instructions.md) |
+| 12 | ✓ | [`configs/zed/AGENTS.md`](configs/zed/AGENTS.md) |
+| 13 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 14 | ✓ | [`llms.txt`](llms.txt) |
+| 15 | ✓ | [`skills/context-mode-ops/agent-teams.md`](skills/context-mode-ops/agent-teams.md) |
+| 16 | ✓ | [`skills/context-mode-ops/communication.md`](skills/context-mode-ops/communication.md) |
+| 17 | ✓ | [`skills/context-mode-ops/marketing.md`](skills/context-mode-ops/marketing.md) |
+| 18 | ✓ | [`skills/context-mode-ops/release.md`](skills/context-mode-ops/release.md) |
+| 19 | ✓ | [`skills/context-mode-ops/review-pr.md`](skills/context-mode-ops/review-pr.md) |
+| 20 | ✓ | [`skills/context-mode-ops/SKILL.md`](skills/context-mode-ops/SKILL.md) |
+| 21 | ✓ | [`skills/context-mode-ops/tdd.md`](skills/context-mode-ops/tdd.md) |
+| 22 | ✓ | [`skills/context-mode-ops/triage-issue.md`](skills/context-mode-ops/triage-issue.md) |
+| 23 | ✓ | [`skills/context-mode-ops/validation.md`](skills/context-mode-ops/validation.md) |
+| 24 | ✓ | [`skills/context-mode/references/anti-patterns.md`](skills/context-mode/references/anti-patterns.md) |
+| 25 | ✓ | [`skills/context-mode/references/patterns-javascript.md`](skills/context-mode/references/patterns-javascript.md) |
+| 26 | ✓ | [`skills/context-mode/references/patterns-python.md`](skills/context-mode/references/patterns-python.md) |
+| 27 | ✓ | [`skills/context-mode/references/patterns-shell.md`](skills/context-mode/references/patterns-shell.md) |
+| 28 | ✓ | [`skills/context-mode/SKILL.md`](skills/context-mode/SKILL.md) |
+| 29 | ✓ | [`skills/ctx-doctor/SKILL.md`](skills/ctx-doctor/SKILL.md) |
+| 30 | ✓ | [`skills/ctx-insight/SKILL.md`](skills/ctx-insight/SKILL.md) |
+| 31 | ✓ | [`skills/ctx-purge/SKILL.md`](skills/ctx-purge/SKILL.md) |
+| 32 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
+| 33 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
 
 ---
 

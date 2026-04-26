@@ -135,6 +135,9 @@ Full workflows, .tape structure, commands/settings/timing/theme references, opti
 | Terminalizer | `terminalizer` | | terminalizer interactive recording | `references/recording-workflows.md` |
 | Asciinema | `asciinema` | | asciinema recording and live streaming | `references/recording-workflows.md` |
 | README GIF | `readme` | | README GIF generation and optimization | `references/output-optimization.md`, `references/vhs-tape-patterns.md` |
+| Optimize | `optimize` | | GIF / video size optimization — gifsicle palette + Bayer dither + lossy + frame-drop, ffmpeg 2-pass | `references/gif-optimization.md` |
+| Theme | `theme` | | Terminal theme design for demos — font (JetBrains Mono / FiraCode), size scaling, color contrast, Dracula / Solarized / custom | `references/terminal-theme-design.md` |
+| Narration | `narration` | | Audio narration overlay — TTS overlay on terminal recording, ffmpeg keystroke ducking, LUFS match | `references/audio-narration-overlay.md` |
 
 ## Subcommand Dispatch
 
@@ -145,6 +148,9 @@ Parse the first token of user input.
 - `terminalizer`: Record interactive sessions with YAML config, post-edit, and output.
 - `asciinema`: Record sessions, live stream, and convert .cast with the v3.0 Rust CLI.
 - `readme`: Generate compression-optimized GIFs (≤5MB) and provide README embed code.
+- `optimize`: File size optimization — gifsicle palette quantization (≤256 colors, Bayer dither), frame-rate / frame-drop analysis, lossy mode, ffmpeg 2-pass VP9 / AV1 for MP4, target ≤500KB README GIF.
+- `theme`: Terminal theme design for demo readability — JetBrains Mono / FiraCode Nerd Font, 14-18pt, WCAG 4.5:1 contrast, Dracula / Solarized / One Dark / custom brand palette, transparent BG handling.
+- `narration`: Audio narration overlay on terminal recording — TTS (OpenAI / ElevenLabs), ffmpeg sidechain ducking at keystrokes, -16 LUFS match, subtitle track sync for WCAG 1.2.2.
 
 ## Output Routing
 

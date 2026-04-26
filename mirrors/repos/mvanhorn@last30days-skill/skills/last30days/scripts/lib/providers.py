@@ -93,13 +93,6 @@ class GeminiClient(ReasoningClient):
         )
         return extract_gemini_text(payload)
 
-    def ground_search(self, model: str, prompt: str) -> dict[str, Any]:
-        return self._generate_content(model, prompt, tools=[{"google_search": {}}])
-
-    def url_context_json(self, model: str, prompt: str) -> dict[str, Any]:
-        return self.generate_json(model, prompt, tools=[{"url_context": {}}])
-
-
 class OpenAIClient(ReasoningClient):
     name = "openai"
 

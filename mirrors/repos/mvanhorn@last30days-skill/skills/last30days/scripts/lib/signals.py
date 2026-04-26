@@ -26,7 +26,10 @@ def source_quality(source: str) -> float:
     return SOURCE_QUALITY.get(source, 0.6)
 
 
-def local_relevance(item: schema.SourceItem, ranking_query: str) -> float:
+def local_relevance(
+    item: schema.SourceItem,
+    ranking_query: "str | relevance.PreparedQuery",
+) -> float:
     text = "\n".join(
         part
         for part in [item.title, item.body, item.snippet]
@@ -175,13 +178,14 @@ def normalize(values: list[float | None]) -> list[int | None]:
 
 def annotate_stream(
     items: list[schema.SourceItem],
-    ranking_query: str,
+    ranking_query: "str | relevance.PreparedQuery",
     freshness_mode: str,
 ) -> list[schema.SourceItem]:
     """Attach local scoring metadata and return items sorted by local_rank_score."""
+    prepared_query = ranking_query if isinstance(ranking_query, relevance.PreparedQuery) else relevance.PreparedQuery(ranking_query)
     engagement_scores = normalize([engagement_raw(item) for item in items])
     for item, eng_score in zip(items, engagement_scores, strict=True):
-        item.local_relevance = local_relevance(item, ranking_query)
+        item.local_relevance = local_relevance(item, prepared_query)
         item.freshness = freshness(item, freshness_mode)
         item.engagement_score = eng_score
         item.source_quality = source_quality(item.source)

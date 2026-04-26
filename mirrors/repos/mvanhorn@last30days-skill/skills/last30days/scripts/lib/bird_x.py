@@ -7,13 +7,11 @@ See scripts/lib/vendor/bird-search/package.json for authoritative version.
 
 import json
 import os
-import signal
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
-from . import http, log
+from . import http, log, subproc
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -168,62 +166,51 @@ def _run_bird_search(query: str, count: int, timeout: int) -> Dict[str, Any]:
         "--json",
     ]
 
-    # Use process groups for clean cleanup on timeout/kill
-    preexec = os.setsid if hasattr(os, 'setsid') else None
+    pid_holder: list[int] = []
 
-    try:
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            preexec_fn=preexec,
-            env=_subprocess_env(),
-        )
-
-        # Register for cleanup tracking (if available)
+    def _register(pid: int) -> None:
+        pid_holder.append(pid)
         try:
-            from last30days import register_child_pid, unregister_child_pid
-            register_child_pid(proc.pid)
+            from last30days import register_child_pid
+            register_child_pid(pid)
         except ImportError:
             pass
 
-        try:
-            stdout, stderr = proc.communicate(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            # Kill the entire process group
-            try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-            except (ProcessLookupError, PermissionError, OSError):
-                proc.kill()
-            proc.wait(timeout=5)
-            return {"error": f"Search timed out after {timeout}s", "items": []}
-        finally:
+    try:
+        result = subproc.run_with_timeout(
+            cmd,
+            timeout=timeout,
+            env=_subprocess_env(),
+            on_pid=_register,
+        )
+    except subproc.SubprocTimeout:
+        return {"error": f"Search timed out after {timeout}s", "items": []}
+    except Exception as e:
+        return {"error": str(e), "items": []}
+    finally:
+        if pid_holder:
             try:
                 from last30days import unregister_child_pid
-                unregister_child_pid(proc.pid)
+                unregister_child_pid(pid_holder[0])
             except Exception:
                 pass
 
-        if proc.returncode != 0:
-            error = stderr.strip() if stderr else "Bird search failed"
-            return {"error": error, "items": []}
+    if result.returncode != 0:
+        error = result.stderr.strip() or "Bird search failed"
+        return {"error": error, "items": []}
 
-        output = stdout.strip() if stdout else ""
-        if not output:
-            return {"items": []}
+    output = result.stdout.strip()
+    if not output:
+        return {"items": []}
 
+    try:
         parsed = json.loads(output)
-        if isinstance(parsed, list):
-            return {"items": parsed}
-        return parsed
-
     except json.JSONDecodeError as e:
         return {"error": f"Invalid JSON response: {e}", "items": []}
-    except Exception as e:
-        return {"error": str(e), "items": []}
+
+    if isinstance(parsed, list):
+        return {"items": parsed}
+    return parsed
 
 
 def search_x(
@@ -330,47 +317,29 @@ def search_handles(
             "--json",
         ]
 
-        preexec = os.setsid if hasattr(os, 'setsid') else None
+        try:
+            result = subproc.run_with_timeout(cmd, timeout=15, env=_subprocess_env())
+        except subproc.SubprocTimeout:
+            _log(f"Handle search timed out for @{handle}")
+            return []
+        except OSError as e:
+            _log(f"Handle search error for @{handle}: {e}")
+            return []
+
+        if result.returncode != 0:
+            _log(f"Handle search failed for @{handle}: {result.stderr.strip()}")
+            return []
+
+        output = result.stdout.strip()
+        if not output:
+            return []
 
         try:
-            proc = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                preexec_fn=preexec,
-                env=_subprocess_env(),
-            )
-
-            try:
-                stdout, stderr = proc.communicate(timeout=15)
-            except subprocess.TimeoutExpired:
-                try:
-                    os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-                except (ProcessLookupError, PermissionError, OSError):
-                    proc.kill()
-                proc.wait(timeout=5)
-                _log(f"Handle search timed out for @{handle}")
-                return []
-
-            if proc.returncode != 0:
-                _log(f"Handle search failed for @{handle}: {(stderr or '').strip()}")
-                return []
-
-            output = (stdout or "").strip()
-            if not output:
-                return []
-
             response = json.loads(output)
-            return parse_bird_response(response, query=core_topic)
-
         except json.JSONDecodeError:
             _log(f"Invalid JSON from handle search for @{handle}")
-        except (OSError, subprocess.SubprocessError) as e:
-            _log(f"Handle search error for @{handle}: {e}")
-        return []
+            return []
+        return parse_bird_response(response, query=core_topic)
 
     from concurrent.futures import ThreadPoolExecutor, as_completed
 

@@ -151,6 +151,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Social Sharing | `smo` | | OGP / Twitter Card social-share setup | `references/ogp-twitter-card-guide.md` |
 | CRO | `cro` | | CTA optimization, form improvements, exit intent | `references/cro-patterns.md` |
 | GEO | `geo` | | AI Overview / ChatGPT / Perplexity citation optimization | `references/json-ld-templates.md` |
+| Keyword | `keyword` | | Keyword research methodology — search intent classification, query clustering, SERP feature analysis, AI prompt mining | `references/keyword-research.md` |
+| Audit | `audit` | | Full-site SEO audit — crawlability, indexability, content gap, internal linking, log-file analysis | `references/seo-audit.md` |
+| Vitals | `vitals` | | Core Web Vitals deep optimization — LCP/INP/CLS root-cause and targeted fix patterns at p75 | `references/core-web-vitals-deep.md` |
 
 ## Subcommand Dispatch
 
@@ -162,7 +165,15 @@ Parse the first token of user input and activate the matching Recipe. If the tok
 | `smo` | Social Sharing |
 | `cro` | CRO |
 | `geo` | GEO |
+| `keyword` | Keyword |
+| `audit` | Audit |
+| `vitals` | Vitals |
 | _(no match)_ | SEO (default) |
+
+Behavior notes per Recipe:
+- `keyword`: Build a keyword universe from seed terms, classify by search intent (informational/navigational/commercial/transactional), cluster by SERP overlap, and surface AI-prompt opportunities for GEO.
+- `audit`: Run a full-site audit covering crawl depth, indexability (robots/canonical/noindex), content gaps vs competitors, internal linking topology, and log-file (Googlebot/AI bots) access patterns.
+- `vitals`: Diagnose LCP / INP / CLS root causes at p75 (RUM, not lab), then prescribe targeted fix patterns (priority hints, long-task breakup, layout reservation) — not generic Lighthouse advice.
 
 ---
 

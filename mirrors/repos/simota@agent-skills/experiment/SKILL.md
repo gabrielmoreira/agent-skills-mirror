@@ -162,6 +162,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Analyze | `analyze` | | Experiment result analysis, statistical significance, confidence interval report | `references/statistical-methods.md` |
 | Guardrail | `guardrail` | | Per-experiment metric portfolio — primary/secondary/counter/guardrail with non-inferiority margins and stop/ship triggers | `references/guardrail-metrics.md` |
 | Feature Flag | `ff` | | Flag-driven experiment assignment, staged ramp (1/5/25/50/100%), kill-switch design, decommission handoff | `references/feature-flag-experiments.md` |
+| SRM Detection | `srm` | | Sample Ratio Mismatch diagnosis via chi-squared + segment root-cause decomposition | `references/srm-detection.md` |
+| Sequential Testing | `sequential` | | Anytime-valid sequential testing (mSPRT / confidence sequences / group sequential α-spending) | `references/sequential-testing.md` |
+| Bayesian A/B | `bayesian` | | Bayesian A/B with priors, posterior inference, credible intervals, ROPE, probability-to-beat | `references/bayesian-ab.md` |
 
 ## Subcommand Dispatch
 
@@ -175,6 +178,9 @@ Parse the first token of user input and activate the matching Recipe. If the tok
 | `analyze` | Analyze |
 | `guardrail` | Guardrail |
 | `ff` | Feature Flag |
+| `srm` | SRM Detection |
+| `sequential` | Sequential Testing |
+| `bayesian` | Bayesian A/B |
 | _(no match)_ | A/B Test Design (default) |
 
 Behavior notes per Recipe:
@@ -184,6 +190,9 @@ Behavior notes per Recipe:
 - `analyze`: Post-experiment statistical analysis — SRM check first, then effect sizes, CIs, and recommendations.
 - `guardrail`: Per-experiment metric portfolio — declare the 4-layer taxonomy (primary/secondary/counter/guardrail), pre-register non-inferiority margins, estimate power-for-margin per guardrail, apply Benjamini-Hochberg across 5–10 guardrails, and produce the stop/ship trigger matrix before launch. Distinct from Pulse: Pulse defines product-wide KPIs; `guardrail` defines the measurement contract for this specific test and its gaming modes. Cite Kohavi/Tang/Xu (*Trustworthy Online Controlled Experiments*) and the Netflix/Microsoft ExP/Airbnb/Booking portfolio patterns.
 - `ff`: Flag-driven assignment and ramp lifecycle. Separate the release flag (Launch owns) from the experiment flag (Experiment owns). Use the 1/5/25/50/100 % ramp with sequential-test α budget (mSPRT / confidence sequences) across stages; measure primary at ≥ 25 %, use 1 % / 5 % stages for crash/SRM/latency only. Pre-register kill-switch triggers and rehearse activation in staging. On conclusion, hand off to `Launch` via `EXPERIMENT_TO_LAUNCH` with flag key, final state, and decommission deadline.
+- `srm`: Load `references/srm-detection.md`. Dedicated SRM diagnosis — chi-squared test, p < 0.001 threshold, segment-level decomposition (device / region / tenure / traffic source), bucket-mismatch and assignment-bug root causes. SRM invalidates the test; trust > ship.
+- `sequential`: Load `references/sequential-testing.md`. Anytime-valid sequential testing — mSPRT, confidence sequences, group sequential (Pocock / O'Brien-Fleming / Lan-DeMets α-spending). Controls Type I error under peeking; mSPRT preferred for continuous monitoring.
+- `bayesian`: Load `references/bayesian-ab.md`. Bayesian A/B — prior specification (Beta for proportions, Normal for means), posterior updating, credible intervals, probability-to-beat, ROPE (Region of Practical Equivalence), expected loss decision rule. Contrast with frequentist; Bayesian better for decision communication and continuous monitoring without p-hacking guilt.
 
 ---
 

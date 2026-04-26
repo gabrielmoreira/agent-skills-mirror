@@ -185,7 +185,7 @@ Full regulation details → `references/privacy-regulations.md`
 | DPIA | `dpia` | | DPIA facilitation | `references/privacy-regulations.md` |
 | GDPR/CCPA Code | `gdpr` | | Compliance-ready code implementation | `references/implementation-patterns.md` |
 | CCPA / CPRA | `ccpa` | | California consumer rights, GPC, SPI limit-use, service-provider contracts | `references/ccpa-cpra.md` |
-| APPI (Japan) | `appi` | | Japanese APPI implementation: 三層分類, Art. 24/23, PPC reporting, 要配慮 | `references/appi-japan.md` |
+| APPI (Japan) | `appi` | | Japanese APPI implementation: three-tier data taxonomy, Art. 24/23, PPC reporting, special-care personal info | `references/appi-japan.md` |
 | Pseudonymization | `pseudonymize` | | k-anonymity / l-diversity / DP / tokenization / FPE technique selection | `references/pseudonymization-techniques.md` |
 
 ## Subcommand Dispatch

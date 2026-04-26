@@ -199,6 +199,9 @@ questions:
 | Visual Verify | `verify` | | Execute visual verification | `references/visual-verification.md` |
 | Gap Report | `gap` | | Gap analysis report generation | `references/gap-analysis-report.md` |
 | Design Audit | `audit` | | Fidelity audit | `references/gap-analysis-report.md`, `references/visual-verification.md` |
+| Responsive | `responsive` | | Derive responsive breakpoints from a single-viewport mockup — fluid typography (clamp), container queries vs media queries, mobile-first reflow, common-breakpoint priority (320/768/1024/1440), aspect-ratio handling | `references/responsive-derivation.md` |
+| Dark Mode | `dark` | | Derive a dark-mode variant from a light-mode mockup — semantic token mapping, contrast preservation (WCAG AA/AAA), elevation/depth via brightness (not solid black), `prefers-color-scheme`, system-mode toggle pattern | `references/dark-mode-derivation.md` |
+| Animation | `animation` | | Extract micro-interactions from mockup signals (motion blur, ghost frames, multiple keyframes) — hover/focus/active states, transition tokens, easing curves, reduced-motion fallback, performance budget (transform/opacity only) | `references/animation-extraction.md` |
 
 ## Subcommand Dispatch
 
@@ -211,6 +214,9 @@ Behavior notes per Recipe:
 - `verify`: 既存実装とモックアップの比較のみ。VERIFY フェーズに直行し比較レポートを生成。
 - `gap`: 8次元 × 5重大度 × 9根本原因カテゴリの詳細ギャップ分析レポートを生成 (Markdown + JSON)。
 - `audit`: fidelity スコアリング + 監査レポート。Canon/Judge へのハンドオフ用。
+- `responsive`: Read `references/responsive-derivation.md` first. 単一ビューポート mockup から responsive 派生を生成。fluid typography (`clamp(min, vw-based, max)`)、container queries (`@container`) を component に、media queries (`@media`) を page-level layout に使い分け。標準 breakpoint (320/768/1024/1440) を優先し、コンテンツ幅で必要な追加 breakpoint を算出。すべての派生値は LOW 信頼度として明記、デザイナー確認を推奨。
+- `dark`: Read `references/dark-mode-derivation.md` first. light-mode mockup から dark-mode 派生を生成。semantic token (`--color-bg`, `--color-fg`, `--color-surface-1`) の意味的マッピングで反転、`prefers-color-scheme: dark` メディアクエリ + `[data-theme="dark"]` 属性両対応、コントラスト比 WCAG AA (4.5:1 normal / 3:1 large) を全テキスト+UI で再検証。pure `#000` 背景は禁止 — depth 表現が消える、代わりに `#0d0d12-#1a1a24` などの低彩度ベース。
+- `animation`: Read `references/animation-extraction.md` first. mockup の motion blur / ghost frames / multi-keyframe heuristics から micro-interactions を抽出。hover / focus / active / disabled の各 state を CSS で定義、transition は `--motion-fast 150ms` / `--motion-base 250ms` / `--motion-slow 400ms` token 化、easing は `--ease-out cubic-bezier(0.16,1,0.3,1)` 推奨、`@media (prefers-reduced-motion: reduce)` で全アニメーション無効化、`transform` と `opacity` のみアニメーション (composite-only)、layout-trigger プロパティ (width/height/top) は禁止。
 
 ## Output Routing
 
@@ -363,6 +369,9 @@ Artisan converts to production components with proper state management and TypeS
 | `references/visual-verification.md` | Running VERIFY phase; need Playwright screenshot comparison workflow |
 | `references/gap-analysis-report.md` | Producing the detailed gap analysis report (8 dimensions × 5 severity levels × 9 root-cause categories, Raw/Adjusted/Post-Fix Fidelity, Markdown+JSON, visual artifacts) on demand, at delivery, or for PR/CI/design review |
 | `references/responsive-strategies.md` | Converting static mockup to responsive multi-breakpoint CSS |
+| `references/responsive-derivation.md` | Deriving responsive breakpoints from a single-viewport mockup; need fluid typography, container query vs media query decision, mobile-first reflow patterns |
+| `references/dark-mode-derivation.md` | Deriving a dark-mode variant from a light-mode mockup; need semantic token mapping, contrast preservation, elevation-via-brightness, system toggle pattern |
+| `references/animation-extraction.md` | Extracting micro-interactions from mockup signals (motion blur, ghost frames, multi-keyframe); need state matrix, transition tokens, reduced-motion fallback, performance budget |
 | `references/handoffs.md` | Packaging deliverables for Artisan, Muse, or other downstream agents |
 | `references/examples.md` | Looking for reference reproduction examples and patterns |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the reproduction report, deciding adaptive thinking depth at VERIFY, or front-loading fidelity tier/section scope at ANALYZE. Critical for Pixel: P3, P5 |

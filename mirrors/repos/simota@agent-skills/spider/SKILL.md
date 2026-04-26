@@ -231,6 +231,9 @@ Full anti-detection patterns → `references/anti-detection-architecture.md`
 | URL Frontier | `frontier` | | URL frontier design (deduplication, priority queue, re-crawl scheduling) | `references/frontier-design.md` |
 | Politeness Control | `politeness` | | Politeness (rate limit) control, Crawl-Delay, adaptive backoff | `references/compliance-architecture.md` |
 | Compliance | `compliance` | | robots.txt / legal compliance, AI Act conformance, jurisdictional risk | `references/compliance-architecture.md` |
+| Extraction Pipeline | `extraction` | | HTML/JS rendering choice, parser strategy (DOM / XPath / CSS / LLM), structured extraction, near-dup (SimHash/MinHash) | `references/extraction-pipeline-deep.md` |
+| Deduplication Strategy | `dedup` | | URL canonicalization, Bloom/Cuckoo/HyperLogLog, content-hash dedup, near-dup clustering | `references/dedup-strategies.md` |
+| Crawl Monitoring | `monitoring` | | Crawl observability — fetch-rate, frontier depth, fetch-error taxonomy, cost-per-URL, graceful shutdown/resume | `references/crawl-monitoring.md` |
 
 ## Subcommand Dispatch
 
@@ -243,6 +246,9 @@ Behavior notes per Recipe:
 - `frontier`: Bloom/Cuckoo/Redis/RocksDB selection → priority-queue design → URL normalization → persistence design.
 - `politeness`: Token-bucket design → robots.txt cache → 429/5xx adaptive backoff → fleet-wide concurrent-connection caps.
 - `compliance`: Verify all opt-out signals (robots.txt/ai.txt/TDM/meta/HTTP headers) → per-jurisdiction risk table → GDPR DPIA necessity.
+- `extraction`: Load `references/extraction-pipeline-deep.md`. Render layer (static / Playwright / Splash) → parser (lxml / Beautiful Soup / Scrapy selector / LLM) → structured-data (JSON-LD / microdata / OpenGraph) → near-dup detection (SimHash / MinHash + LSH) → output schema (WARC / JSONL / Parquet).
+- `dedup`: Load `references/dedup-strategies.md`. URL canonicalization rules → exact-URL dedup (Bloom/Cuckoo) → content-hash dedup (SHA-256 + Merkle) → near-duplicate clustering (SimHash / MinHash / SSDEEP) → cross-session persistence.
+- `monitoring`: Load `references/crawl-monitoring.md`. RED signals per worker, frontier depth/breadth, fetch-error taxonomy (DNS/TLS/HTTP), cost-per-URL dashboard, graceful shutdown + resume checkpoint protocol, hand off SLOs to Beacon.
 
 ## Output Routing
 

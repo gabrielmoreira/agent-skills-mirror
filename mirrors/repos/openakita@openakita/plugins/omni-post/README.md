@@ -5,8 +5,9 @@
 
 | | |
 |---|---|
-| **版本** | 0.1.0 (Sprint 1 / S1 骨架) |
+| **版本** | 0.2.0 (Sprint 1-4 完整发布) |
 | **SDK 范围** | `>=0.7.0,<0.8.0` |
+| **Plugin API** | `~2` / UI API `~1` |
 | **入口** | `plugin.py` (`PluginBase`) + `ui/dist/index.html` |
 | **形态** | 双引擎（Playwright / MultiPost Compat）· 10 平台 · 6 Tab · 14 工具 |
 
@@ -103,12 +104,12 @@ py -3.11 -m ruff check .             # 0 error
 | `data.own` | 独占 `$DATA_DIR/plugins/omni-post/` 下的 SQLite / uploads / thumbs |
 | `assets.publish` / `assets.consume` | 产出 `publish_receipt`、消费上游素材 |
 | `memory.read` / `memory.write` | MDRM 记录 "平台 × 账号 × 时段 × 成功率" |
-| `channel.push` | 任务状态 SSE 推送 |
 | `brain.access` | LLM 差异化文案与定时推荐 |
+| `vector.access` | MDRM 相似素材 / 同主题发布召回（可选） |
 
 ---
 
-## 5 · 目录结构（当前 S1）
+## 5 · 目录结构（当前 0.2.0）
 
 ```
 plugins/omni-post/

@@ -5,7 +5,8 @@ description: Automated code review agent orchestrating tri-engine parallel revie
 
 <!--
 CAPABILITIES_SUMMARY:
-- tri_engine_orchestration: Default `/judge` flow — spawn Codex + Gemini + Claude Code subagents in parallel (one Agent-tool message), integrate findings via NORMALIZE→CLUSTER→SCORE→GROUND→ARBITRATE→FILTER, return only actionable verified findings. Independent subagent contexts eliminate self-bias
+- tri_engine_orchestration: Default `/judge` flow — preflight engine availability in main context, then spawn Codex + Gemini + Claude Code subagents in parallel (one Agent-tool message), integrate findings via NORMALIZE→CLUSTER→SCORE→GROUND→ARBITRATE→FILTER, return only actionable verified findings. Independent subagent contexts eliminate self-bias
+- engine_availability_preflight: Robust binary detection in main Judge context with fallback path probing (`~/.bun/bin/`, `~/.local/bin/`, `/usr/local/bin/`, `/opt/homebrew/bin/`, `~/.npm-global/bin/`) before fan-out. Subagent PATH is narrower than interactive shell — never delegate availability detection. Auth/network/quota errors are runtime failures, not unavailability
 - concurrence_scoring: Label each finding cluster by engine agreement — CONFIRMED (3/3), LIKELY (2/3), CANDIDATE (1/3-must-ground)
 - grounding_verification: Judge-main-context verification of CANDIDATE findings by reading actual code; mark VERIFIED / REJECTED / NEEDS-INFO based on existence, mitigation, style-only, or unrelated-fix criteria
 - code_review: Automated code review via Codex / Gemini / Claude Code CLIs in PR, pre-commit, commit, and `--from-pr` modes
@@ -132,6 +133,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 ### Always
 
 - Default to tri-engine parallel review: spawn Codex + Gemini + Claude Code subagents in a single message per `references/tri-engine-review.md`.
+- Preflight engine availability **in main Judge context** before fan-out: probe `command -v` first, then fall back to `~/.bun/bin/`, `~/.local/bin/`, `/usr/local/bin/`, `/opt/homebrew/bin/`, `~/.npm-global/bin/`. Pass absolute binary paths into subagents when standard PATH probes fail. See `references/tri-engine-review.md` PREFLIGHT section.
 - Run each engine's CLI per its usage reference; never skip CLI execution inside any subagent.
 - Categorize findings by severity (CRITICAL/HIGH/MEDIUM/LOW/INFO) with line-specific references.
 - Tag each finding with engine concurrence (3/3 CONFIRMED, 2/3 LIKELY, 1/3-grounded CANDIDATE).
@@ -171,12 +173,13 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ## Workflow
 
-Default tri-engine flow: `SCOPE → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → ARBITRATE → FILTER → REPORT → ROUTE`
+Default tri-engine flow: `SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND → ARBITRATE → FILTER → REPORT → ROUTE`
 
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
 | `SCOPE` | Define review target once for all three engines: `git status`, mode (PR/Pre-Commit/Commit/`--from-pr`), base branch/SHA, focus areas, project guidelines (REVIEW.md / AGENTS.md / CLAUDE.md). Assess PR size via `git diff --stat` and flag cognitive load risk. | Understand intent from PR/commit description before reviewing code | `references/tri-engine-review.md`, `references/review-effectiveness.md` |
-| `FAN-OUT` | Spawn three Agent subagents in a single message: `review-codex`, `review-gemini`, `review-claude`. Each runs its engine's CLI per its usage reference and returns JSON-structured findings. | Parallel execution via one message with 3 Agent calls; no shared context between engines | `references/tri-engine-review.md`, `references/codex-review-usage.md`, `references/gemini-review-usage.md`, `references/claude-review-usage.md` |
+| `PREFLIGHT` | Detect engine availability **in main Judge context** before fan-out: probe `command -v` first, then fall back to known install locations (`~/.bun/bin/`, `~/.local/bin/`, `/usr/local/bin/`, `/opt/homebrew/bin/`, `~/.npm-global/bin/`). Pass absolute binary paths into subagent prompts when standard PATH probes fail. **Never** declare an engine unavailable based on auth errors, transient network failures, missing extensions, or quota errors — those are runtime failures, not unavailability. | Subagent PATH is narrower than the user's interactive shell; never delegate availability detection to the subagent | `references/tri-engine-review.md` (PREFLIGHT section) |
+| `FAN-OUT` | Spawn one Agent subagent per AVAILABLE engine in a single message: `review-codex`, `review-gemini`, `review-claude`. Each runs its engine's CLI (using the absolute path from PREFLIGHT if provided) and returns JSON-structured findings. | Parallel execution via one message with N Agent calls; no shared context between engines | `references/tri-engine-review.md`, `references/codex-review-usage.md`, `references/gemini-review-usage.md`, `references/claude-review-usage.md` |
 | `NORMALIZE` | Parse all three JSON outputs into a unified finding list tagged with source engine. If an engine returns free-form, ask its subagent to re-emit JSON. | Deterministic schema: `{severity, file, line, line_end?, issue_class, issue, evidence, suggested_fix}` (`line_end` optional, defaults to `line`) | `references/tri-engine-review.md` |
 | `CLUSTER` | Group findings describing the same defect: same file + line range overlap (±3) + same issue_class / semantic equivalence. Record concurrence set. | One defect = one cluster; multi-engine matches dedup to a single entry | `references/tri-engine-review.md` |
 | `SCORE` | Label each cluster: 3/3 = CONFIRMED · 2/3 = LIKELY · 1/3 = CANDIDATE. | Concurrence raises confidence; single-engine findings must be grounded | `references/tri-engine-review.md` |

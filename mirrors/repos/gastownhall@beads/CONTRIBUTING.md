@@ -6,7 +6,7 @@ Thank you for your interest in contributing to bd! This document provides guidel
 
 ### Prerequisites
 
-- Go 1.24 or later
+- Go (see `go.mod` for the required version; currently 1.26+)
 - Git
 - A C compiler (CGO is required for the embedded Dolt database)
 - (Optional) golangci-lint for local linting
@@ -22,13 +22,10 @@ cd beads
 # Build the project (uses gms_pure_go tag via Makefile)
 make build
 
-# Run tests
-go test ./...
+# Run tests (uses correct build tags automatically)
+make test
 
-# Run with race detection
-go test -race ./...
-
-# Build and install locally
+# Build and install locally to ~/.local/bin
 make install
 ```
 
@@ -48,18 +45,18 @@ beads/
 ## Running Tests
 
 ```bash
-# Run all tests
-go test ./...
+# Run all tests (recommended — uses correct build tags)
+make test
 
 # Run tests with coverage
-go test -v -coverprofile=coverage.out ./...
+go test -tags gms_pure_go -v -coverprofile=coverage.out ./...
 go tool cover -html=coverage.out
 
 # Run specific package tests
-go test ./internal/storage/dolt/ -v
+go test -tags gms_pure_go ./internal/storage/dolt/ -v
 
 # Run tests with race detection
-go test -race ./...
+go test -tags gms_pure_go -race ./...
 ```
 
 ## Code Style
@@ -148,14 +145,14 @@ Slow tests use `testing.Short()` to skip when `-short` flag is present.
 ```bash
 # Fast tests (recommended for development - skips slow tests)
 # Use this for rapid iteration during development
-go test -short ./...
+make test
 
 # Full test suite (before committing - includes all tests)
 # Run this before pushing to ensure nothing breaks
-go test ./...
+make test
 
 # With race detection and coverage
-go test -race -coverprofile=coverage.out ./...
+CGO_ENABLED=1 go test -tags gms_pure_go -race -coverprofile=coverage.out ./...
 ```
 
 **When to use `-short`:**
@@ -185,16 +182,17 @@ Tests are split into two categories based on whether they need the embedded Dolt
 
 ```bash
 # Fast non-CGO tests (recommended for development)
-make test                     # or: go test -short ./...
+make test                     # or: ./scripts/test.sh
 
-# Full CGO-enabled suite (before committing)
-make test-full-cgo            # or: ./scripts/test-cgo.sh ./...
+# Opt-in ICU regex path (maintainer-only)
+make test-icu-path            # or: ./scripts/test-icu-path.sh ./...
 
-# Run a specific CGO test
-./scripts/test-cgo.sh -run '^TestMyFeature$' ./cmd/bd/...
+# Run a specific package or test with shipped config
+CGO_ENABLED=1 go test -tags gms_pure_go ./cmd/bd/...
+CGO_ENABLED=1 go test -tags gms_pure_go -run '^TestMyFeature$' ./cmd/bd/...
 ```
 
-On macOS, always use the script or Make target for CGO tests -- they configure the required ICU linker flags automatically.
+On macOS, use the Make target or script for the opt-in ICU regex path -- they configure the required ICU linker flags automatically.
 
 ### ICU and Build Tags
 
@@ -344,13 +342,14 @@ All contributions go through code review:
 ### Testing Locally
 
 ```bash
-# Build and test your changes quickly
-go build -o bd ./cmd/bd && ./bd init --prefix test
+# Build and install your changes
+make install
 
 # Test specific functionality
-./bd create "Test issue" -p 1 -t bug
-./bd dep add test-2 test-1
-./bd ready
+bd init --prefix test
+bd create "Test issue" -p 1 -t bug
+bd dep add test-2 test-1
+bd ready
 ```
 
 ### Database Inspection

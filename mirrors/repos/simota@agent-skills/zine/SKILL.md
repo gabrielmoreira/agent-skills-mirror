@@ -199,12 +199,20 @@ questions:
 | Qiita Article | `qiita` | | Qiita tech tips, tag strategy, LGTM optimization | `references/platform-optimization.md` |
 | dev.to Article | `devto` | | dev.to articles for a global English audience, cover image and tag configuration | `references/platform-optimization.md` |
 | Series Design | `series` | | Series design, index articles, cross-links, and episode management | `references/series-management.md` |
+| Headline | `headline` | | Title and headline patterns — CTR-tested formulas, number/curiosity/promise/contrarian variants, platform-specific length tuning | `references/headline-patterns.md` |
+| Repurpose | `repurpose` | | Cross-platform content repurposing — canonical → note/Zenn/Qiita/dev.to/X-thread/LinkedIn variants, atomic asset extraction | `references/content-repurposing.md` |
+| Interview | `interview` | | Interview-format article authoring — Q&A reshape from raw transcripts, podcast-to-article adaptation, lightning-talk to long-form | `references/interview-format.md` |
 
 ## Subcommand Dispatch
 
 Parse the first token of user input.
 - If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise → default Recipe (`note` = note Article). Apply normal FRAME → DRAFT → STRUCTURE → POLISH → PUBLISH workflow.
+
+Behavior notes per Recipe:
+- `headline`: Generate 5–10 title variants across CTR-tested formulas (number / curiosity gap / promise / contrarian / how-to / question), score against platform-specific length and tone, then recommend top 3 with rationale.
+- `repurpose`: Take one canonical draft and produce platform-adapted variants (note / Zenn / Qiita / dev.to / X thread / LinkedIn) plus atomic assets (quote cards, threads, snippets) without lossy translation.
+- `interview`: Reshape raw Q&A material — interview transcripts, podcast episodes, AMA threads, lightning talks — into a polished Q&A article that preserves voice while removing filler and re-sequencing for narrative arc.
 
 ## Output Routing
 

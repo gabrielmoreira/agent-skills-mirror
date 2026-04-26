@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 11 followed patterns, 27 file(s) materialized.
+Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 11 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 27 |
+| Followed pats | 2 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,15 +52,6 @@ Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 11 followed pattern
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `docs/GETTING_STARTED.md`
-- `docs/SKILLS.md`
-- `docs/DEVICE_CODE_SIGNING.md`
-- `docs/PRIVACY.md`
-- `docs/CLI.md`
-- `docs/CONFIGURATION.md`
-- `docs/TOOLS.md`
-- `docs/TROUBLESHOOTING.md`
-- `docs/dev/CONTRIBUTING.md`
 - `THIRD_PARTY_PACKAGE_LICENSES.md`
 
 ## File Index
@@ -74,28 +65,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.github/workflows/README.md`](.github/workflows/README.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`docs/dev/ARCHITECTURE.md`](docs/dev/ARCHITECTURE.md) |
-| 7 | ✓ | [`docs/dev/README.md`](docs/dev/README.md) |
-| 8 | ✓ | [`docs/dev/TESTING.md`](docs/dev/TESTING.md) |
-| 9 | ✓ | [`docs/README.md`](docs/README.md) |
-| 10 | ✓ | [`docs/SESSION_DEFAULTS.md`](docs/SESSION_DEFAULTS.md) |
-| 11 | ✓ | [`docs/TOOLS-CLI.md`](docs/TOOLS-CLI.md) |
-| 12 | ✓ | [`docs/XCODE_IDE_MCPBRIDGE.md`](docs/XCODE_IDE_MCPBRIDGE.md) |
-| 13 | ✓ | [`example_projects/iOS_Calculator/AGENTS.md`](example_projects/iOS_Calculator/AGENTS.md) |
-| 14 | ✓ | [`example_projects/iOS/.cursor/rules/errors.mdc`](example_projects/iOS/.cursor/rules/errors.mdc) |
-| 15 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
-| 16 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
-| 17 | → | [`docs/CLI.md`](docs/CLI.md) |
-| 18 | → | [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) |
-| 19 | → | [`docs/dev/CONTRIBUTING.md`](docs/dev/CONTRIBUTING.md) |
-| 20 | → | [`docs/DEVICE_CODE_SIGNING.md`](docs/DEVICE_CODE_SIGNING.md) |
-| 21 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 22 | → | [`docs/PRIVACY.md`](docs/PRIVACY.md) |
-| 23 | → | [`docs/SKILLS.md`](docs/SKILLS.md) |
-| 24 | → | [`docs/TOOLS.md`](docs/TOOLS.md) |
-| 25 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 26 | → | [`README.md`](README.md) |
-| 27 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
+| 6 | ✓ | [`example_projects/iOS_Calculator/AGENTS.md`](example_projects/iOS_Calculator/AGENTS.md) |
+| 7 | ✓ | [`example_projects/iOS/.cursor/rules/errors.mdc`](example_projects/iOS/.cursor/rules/errors.mdc) |
+| 8 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
+| 9 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
+| 10 | → | [`README.md`](README.md) |
+| 11 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
 
 ---
 

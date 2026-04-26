@@ -105,6 +105,9 @@ Route elsewhere when:
 | Restructure | `restructure` | | Restructuring for LLM optimization (includes git mv execution) | `references/layout-patterns.md` |
 | Progressive Disclosure | `progressive` | | L1/L2/L3 progressive disclosure hierarchy design | `references/layout-patterns.md` |
 | Prompt Cache | `cache` | | Prompt cache topology optimization and static-file-first ordering | `references/audit-checklist.md` |
+| Naming | `naming` | | File and folder naming audit for LLM grep/glob discoverability — bias-correction for generic names (utils, helpers), domain-vs-type grouping, suffix conventions (.config, .test, .spec), case strategy (kebab/camel/Pascal), rename-impact analysis | `references/naming-guide.md` |
+| Sharding | `sharding` | | Large file sharding strategy — split CLAUDE.md / reference docs via @import, choose split axis (by domain / by phase / by frequency), preserve cache prefixes, design include manifest, validate cycle-free imports | `references/sharding-strategy.md` |
+| Monorepo | `monorepo` | | Monorepo workspace topology for LLM efficiency — package boundaries (apps/, packages/, libs/), per-workspace CLAUDE.md cascade, turborepo / nx / pnpm-workspace path optimization, shared rule deduplication | `references/monorepo-topology.md` |
 
 ## Subcommand Dispatch
 
@@ -117,6 +120,9 @@ Behavior notes per Recipe:
 - `restructure`: Full AUDIT → DESIGN → APPLY → VERIFY. Execute git mv in batches. Build-path preservation check required.
 - `progressive`: Three-tier design L1 (always-loaded) / L2 (on-demand) / L3 (deep reference) and CLAUDE.md hierarchy plan.
 - `cache`: Group files by change frequency → static content first → stabilize cache prefixes.
+- `naming`: AUDIT 命名のみ。glob/grep ヒット率を測定し、ジェネリック名 (utils.ts / helpers.ts / common.ts) を ドメイン由来名 (string-helpers.ts / date-formatters.ts) に置換する rename plan を提示。kebab-case ディレクトリ + ドメイングループ化 + サフィックス規約 (.config / .test / .spec) を適用。`git mv` バッチで実行、import path 影響を事前列挙。
+- `sharding`: 単一 CLAUDE.md / reference が 300 行超 / 1200 token 超の場合、`@import` で分割。分割軸を 3 種から選定 (by domain / by lifecycle phase / by change frequency)。cache prefix を破壊しない順序で並べ替え、include manifest を生成、循環参照チェック必須。Hone と協調 (Hone = density audit, Nest = split topology)。
+- `monorepo`: turborepo / nx / pnpm-workspace を検出し、apps/ packages/ libs/ の境界に CLAUDE.md cascade を設計。ルートに共通ルール、各ワークスペースに override のみ配置。重複ルールは root に巻き上げ。tsconfig path alias と CLAUDE.md の整合性も検証。
 
 ## Output Routing
 
@@ -285,6 +291,8 @@ When input contains `## NEXUS_ROUTING`, return results via:
 | `references/audit-checklist.md` | Running AUDIT or VERIFY phase, need scoring criteria and test patterns |
 | `references/layout-patterns.md` | Designing new structure, need standard LLM-optimized templates |
 | `references/naming-guide.md` | Evaluating or fixing file/folder naming for LLM discoverability |
+| `references/sharding-strategy.md` | Splitting large CLAUDE.md/reference docs via @import while preserving cache prefixes |
+| `references/monorepo-topology.md` | Designing per-workspace CLAUDE.md cascade for turborepo / nx / pnpm-workspace |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the structure proposal, deciding adaptive thinking depth at DESIGN, or front-loading LLM target/token budget at AUDIT. Critical for Nest: P3, P5 |
 
 ## Operational

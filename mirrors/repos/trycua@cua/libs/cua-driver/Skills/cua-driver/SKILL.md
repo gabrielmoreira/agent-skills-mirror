@@ -66,14 +66,17 @@ frontmost state:
   the receiving app interprets "user wants to type here" as
   activation intent and raises its window to be key. Even when
   delivered to a backgrounded pid via `hotkey`, the downstream app
-  pulls focus. **For omnibox navigation specifically**, don't
-  `hotkey ⌘L`; instead find the omnibox AX element via `som` snapshot
-  (`AXTextField` id=something like `location_bar` / `omnibox`) and
-  either AX-click it by `element_index` or dispatch `set_value` with
-  the URL directly — both stay backgrounded. The general principle:
-  a shortcut that says "put my cursor inside this app" is a
-  focus-steal; a shortcut that says "do this thing" (copy, save,
-  quit) is fine.
+  pulls focus. **For omnibox navigation specifically**, the correct
+  path is `launch_app({bundle_id: "com.google.Chrome", urls:
+  ["https://…"]})` — no omnibox dance, no `⌘L`, no focus-steal. Do
+  NOT try `set_value` on the omnibox: Chrome's commit logic requires
+  a "user-typed" signal that neither an AX value write nor
+  `CGEvent.postToPid` keystrokes supply from a backgrounded pid —
+  the URL lands in the field but Return fires as a no-op. See
+  `WEB_APPS.md` → "Navigate to a URL" for the full pattern. The
+  general principle: a shortcut that says "put my cursor inside this
+  app" is a focus-steal; a shortcut that says "do this thing" (copy,
+  save, quit) is fine.
 - **Tab-switching shortcuts in browsers (`⌘1..⌘9`, `⌘]`, `⌘[`,
   `⌘⇧[`, `⌘⇧]`) are visibly disruptive even when delivered to a
   backgrounded pid.** The app's key handler processes the shortcut,

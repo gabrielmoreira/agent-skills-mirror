@@ -154,6 +154,9 @@ Rules: record `SCAN_BASELINE` YAML in `.agents/sweep.md`. When receiving `GROVE_
 | Orphan Files | `orphan` | | Orphan file detection (no imports/no references) | `references/cleanup-targets.md` |
 | Unused Exports | `unused` | | Unused export detection, dependency package audit | `references/dependency-cleanup.md` |
 | Tidy Up | `tidy` | | Comprehensive cleanup via SCAN → CATEGORIZE → PROPOSE | `references/cleanup-protocol.md` |
+| Imports | `imports` | | Import statement cleanup — unused imports, circular dependencies, duplicate imports, side-effect-only import survival, barrel file overhead, type-only import promotion | `references/imports-cleanup.md` |
+| Comments | `comments` | | Stale / obsolete comment detection — TODO/FIXME age out, commented-out code blocks, divergent JSDoc, version-stale "added in v1.x" comments, dead documentation references | `references/stale-comments.md` |
+| Types | `types` | | Unused type definitions (TS/Flow) — orphan interfaces, types referenced only by other unused types, generic constraint pollution, deprecated type re-exports, `any` accumulation cleanup | `references/unused-types.md` |
 
 ## Subcommand Dispatch
 
@@ -166,6 +169,9 @@ Behavior notes per Recipe:
 - `orphan`: ファイルグラフ解析で参照ゼロのファイルを特定。`pages/`/`app/`/route ファイルは高リスク偽陽性として扱う。
 - `unused`: knip `--production` で未使用 export を検出。依存パッケージは lockfile 影響を確認後に削除候補に。
 - `tidy`: 複数カテゴリ横断の一括整理。バックアップブランチを作成後、10 ファイル以下のバッチで削除。
+- `imports`: Read `references/imports-cleanup.md` first. unused imports は eslint `no-unused-vars` + `import/no-unused-modules` で検出。circular dependencies は madge / dpdm。`import 'side-effect-css'` は副作用 import として保護。barrel files (`index.ts` 一括 re-export) はツリーシェイク阻害要因として削減候補だが、外部 API として公開されている場合は保護。`import type` への昇格 (TS 4.5+) は `verbatimModuleSyntax` 有効化で検出。
+- `comments`: Read `references/stale-comments.md` first. TODO/FIXME は git blame の年齢で分類 (>180日 = stale 候補)、コメントアウトコード (`/* */` ブロックで連続 N 行) は dead と扱う、JSDoc の `@param` / `@returns` は実関数シグネチャと突き合わせて divergent を検出、version-stale (`// added in v1.2`) は現バージョンと比較、`@deprecated` から N バージョン経過したものは削除候補。コメントは挙動に影響しないため信頼度 ≥ 70 で削除可。
+- `types`: Read `references/unused-types.md` first. TS の orphan interface / type は ts-prune / knip `--include exports types` で検出。型のみ参照される型 (transitively unused via type-graph) も対象。generic constraint で渡されているだけの型は実質 unused。`export type Foo` の re-export 連鎖は ts-unused-exports でフラット化。`any` 漸進削減は別途プロジェクトとして扱い、Quill にハンドオフ。
 
 ## Output Routing
 
@@ -237,6 +243,9 @@ When scanning a polyglot monorepo, spawn language-specific scanner subagents in 
 | `references/large-scale-cleanup.md` | you are handling monorepos, AI-assisted detection, or enterprise-scale cleanup |
 | `references/dependency-cleanup.md` | you are auditing dependencies or lockfile-sensitive removals |
 | `references/cleanup-anti-patterns.md` | you need safety guardrails against risky cleanup behavior |
+| `references/imports-cleanup.md` | you need import-statement cleanup patterns: unused imports, circular dependencies, duplicate imports, side-effect import survival, barrel-file overhead, type-only import promotion |
+| `references/stale-comments.md` | you need stale-comment detection: aged TODO/FIXME, commented-out code blocks, divergent JSDoc, version-stale annotations, dead doc references |
+| `references/unused-types.md` | you need unused TypeScript type detection: orphan interfaces, transitively unused types, generic constraint pollution, deprecated type re-exports, `any` accumulation handoff |
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the cleanup report, deciding adaptive thinking depth at confidence gating, or front-loading scope/ecosystem/risk at SCAN. Critical for Sweep: P3, P5. |
 
 ## Operational

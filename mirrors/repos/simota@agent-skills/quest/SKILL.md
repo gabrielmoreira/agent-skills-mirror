@@ -148,6 +148,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Narrative Design | `narrative` | | Narrative design, branching stories, and quest trees | `references/narrative-design.md` |
 | Economy Design | `economy` | | Economy design (currencies, taps & sinks, inflation control) | `references/economy-design.md` |
 | Player Psychology | `psychology` | | Player psychology and motivation design (Flow, Bartle, Octalysis) | `references/player-psychology.md` |
+| Gameplay Loop | `gameplay-loop` | | Core / mid / meta loop design — 5-second / 5-minute / 5-hour rhythms, compulsion-loop ethics | `references/gameplay-loop-design.md` |
+| Level Design | `level-design` | | Level / dungeon / mission design — pacing, signposting, critical-path vs branching, encounter density | `references/level-design.md` |
+| Monetization | `monetization` | | F2P monetization design — battle pass, gacha math (pity systems, probability disclosure), regulatory ethics | `references/monetization-design.md` |
 
 ## Subcommand Dispatch
 
@@ -161,6 +164,9 @@ Behavior notes per Recipe:
 - `narrative`: MDA framework → branch type selection → quest tree design. Confirm when decision nodes exceed 10.
 - `economy`: Faucet & sink design → 90-day inflation simulation → Sink Coverage 95-105% target.
 - `psychology`: Bartle taxonomy → Flow theory → Hook Model → engagement loop design.
+- `gameplay-loop`: Design the 5-second (action) / 5-minute (session) / 5-hour (campaign) loops; verify reward cadence, identify the compulsion-loop boundary, and validate against retention benchmarks.
+- `level-design`: Design pacing curves (calm-tense-calm), signposting (lighting / silhouette / audio cues), critical path vs branching, encounter density, and 8-shape progression (Lazzaro). Output level beat-sheet + map outline.
+- `monetization`: Choose model (premium / F2P / hybrid / subscription / battle pass), design probability-disclosed gacha with pity systems, audit against EU Digital Fairness Act draft, Brazil/Belgium prohibitions, age-rating uplift; flag predatory patterns.
 
 ## Output Routing
 

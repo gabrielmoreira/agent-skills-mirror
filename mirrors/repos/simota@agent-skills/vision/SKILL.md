@@ -171,12 +171,24 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Full Redesign | `redesign` | | Full redesign | `references/design-methodology.md` |
 | Trend Application | `trend` | | Latest trend application | `references/design-trends.md` |
 | Design System Build | `system` | | Design System construction (Muse/Palette/Flow/Forge orchestration) | `references/agent-orchestration.md` |
+| Brand Strategy | `brand` | | Brand identity strategy and visual brand language — primary/secondary palette, tone-of-voice translation to UI, brand-fit scoring against existing UI, multi-brand orchestration (Core → Brand → Product token cascade), repositioning checks before redesign | `references/brand-strategy.md` |
+| Moodboard | `moodboard` | | Visual moodboard curation for ENVISION phase — reference selection (3-5 directional axes), competitor / adjacent-industry samples, texture/color/typography palettes, tone keywords with anti-keywords, narrowing 9 candidates → 3 finalists with rationale | `references/moodboard-curation.md` |
+| Design Audit | `audit` | | REVIEW-mode design quality audit — heuristic evaluation (Nielsen 10), WCAG 2.2 AA contrast / focus / target-size pass-fail, token-drift detection, design-system anti-pattern scan, prioritized remediation backlog with effort/impact scoring | `references/design-audit-checklist.md` |
 
 ## Subcommand Dispatch
 
 Parse the first token of user input.
 - If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise → default Recipe (`direction` = Design Direction). Apply normal UNDERSTAND → ENVISION → SYSTEMATIZE → PRE-CHECK → DELEGATE → VALIDATE workflow.
+
+Behavior notes per Recipe:
+- `direction`: 3+ options + trade-offs, 各案にビジネス成果メトリクス (task-success / time-on-task / conversion lift) を必ず添付。Warden pre-check 必須。
+- `redesign`: REDESIGN モードで brand 整合性を保ったまま現状を近代化。スコープが 3+ ページなら Ask First。`brand` サブコマンドの結果があれば必ず参照。
+- `trend`: TREND_APPLICATION モード、2026 トレンド (AI-driven UI / Calm UI / Adaptive Systems / DTCG v2025.10) に絞り、product identity を破壊する変更は禁止。before/after 概念図を提示。
+- `system`: NEW_PRODUCT のスーパーセット。Muse/Palette/Flow/Forge への分配計画を必ず生成。Core → Brand → Product のトークン階層を明示。
+- `brand`: Vision strategy + brand alignment。primary palette / typography pair / voice keyword 5 語 / anti-keyword 5 語を必ず定義。multi-brand なら orchestrated inheritance を適用。Compete のレポートがあれば必ず読む。
+- `moodboard`: ENVISION 前段。3-5 directional axis ごとに参照画像 / 配色 / フォント / トーンキーワードをまとめ、9 候補 → 3 finalists に絞る。差別化軸とリスクを finalist ごとに併記。
+- `audit`: REVIEW モード。Nielsen 10 heuristic / WCAG 2.2 AA contrast & focus & target-size を pass/fail で出力、token drift を検出して remediation backlog (P1/P2/P3) を effort × impact で優先順位付け。
 
 ## Output Routing
 
@@ -253,6 +265,9 @@ Vision receives research and analysis from upstream agents. Vision sends design 
 | `references/ux-anti-patterns-ethics.md` | you need dark-pattern, accessibility, or ethical-design checks |
 | `references/design-handoff-collaboration.md` | you need handoff readiness, state coverage, or dev-collaboration rules |
 | `references/design-review-feedback.md` | you need critique structure, review cadence, or feedback quality rules |
+| `references/brand-strategy.md` | you need brand identity strategy, voice keyword definition, multi-brand orchestration, or brand-fit scoring |
+| `references/moodboard-curation.md` | you are running ENVISION moodboard curation: directional axes, candidate-to-finalist narrowing, anti-keywords |
+| `references/design-audit-checklist.md` | you are running REVIEW-mode audit: Nielsen heuristics, WCAG 2.2 AA pass-fail grid, token-drift detection, prioritized backlog |
 | `_common/BOUNDARIES.md` | role boundaries are ambiguous |
 | `references/composition-principles.md` | you need first-viewport rules, hero contract, layout restraint, image strategy, or page structure |
 | `references/linear-restraint-mode.md` | you need Linear-style restraint: calm surfaces, minimal chrome, card usage rules, or app vs marketing guidance |

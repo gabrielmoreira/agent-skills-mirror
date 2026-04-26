@@ -8,11 +8,8 @@ Inspired by Peter Steinberger's toolchain approach (yt-dlp + summarize CLI).
 
 import json
 import math
-import os
 import re
-import signal
 import shutil
-import subprocess
 import sys
 import tempfile
 import urllib.error
@@ -37,7 +34,7 @@ TRANSCRIPT_LIMITS = {
 # Max words to keep from each transcript
 TRANSCRIPT_MAX_WORDS = 5000
 
-from . import http, log
+from . import http, log, subproc
 from .relevance import token_overlap_relevance as _compute_relevance
 
 
@@ -227,30 +224,16 @@ def search_youtube(
         "--no-download",
     ]
 
-    preexec = os.setsid if hasattr(os, 'setsid') else None
-
     try:
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            preexec_fn=preexec,
-        )
-        try:
-            stdout, stderr = proc.communicate(timeout=120)
-        except subprocess.TimeoutExpired:
-            try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-            except (ProcessLookupError, PermissionError, OSError):
-                proc.kill()
-            proc.wait(timeout=5)
-            _log("YouTube search timed out (120s)")
-            return {"items": [], "error": "Search timed out"}
+        result = subproc.run_with_timeout(cmd, timeout=120)
+    except subproc.SubprocTimeout:
+        _log("YouTube search timed out (120s)")
+        return {"items": [], "error": "Search timed out"}
     except FileNotFoundError:
         return {"items": [], "error": "yt-dlp not found"}
 
-    if not (stdout or "").strip():
+    stdout = result.stdout
+    if not stdout.strip():
         _log("YouTube search returned 0 results")
         return {"items": []}
 
@@ -452,25 +435,10 @@ def _fetch_transcript_ytdlp(video_id: str, temp_dir: str) -> Optional[str]:
         f"https://www.youtube.com/watch?v={video_id}",
     ]
 
-    preexec = os.setsid if hasattr(os, 'setsid') else None
-
     try:
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            preexec_fn=preexec,
-        )
-        try:
-            proc.communicate(timeout=30)
-        except subprocess.TimeoutExpired:
-            try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-            except (ProcessLookupError, PermissionError, OSError):
-                proc.kill()
-            proc.wait(timeout=5)
-            return None
+        subproc.run_with_timeout(cmd, timeout=30)
+    except subproc.SubprocTimeout:
+        return None
     except FileNotFoundError:
         return None
 
@@ -556,7 +524,7 @@ def fetch_transcripts_parallel(
                 vid = futures[future]
                 try:
                     results[vid] = future.result()
-                except (OSError, subprocess.SubprocessError) as exc:
+                except OSError as exc:
                     _log(f"Transcript fetch error for {vid}: {exc}")
                     results[vid] = None
                 except Exception as exc:

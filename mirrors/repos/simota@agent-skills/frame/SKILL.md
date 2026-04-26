@@ -157,6 +157,9 @@ Execution loop: `SURVEY -> PLAN -> VERIFY -> PRESENT`
 | Code Connect | `code-connect` | | Code Connect template management | `references/code-connect-guide.md` |
 | DS Rules | `rules` | | Design system rule extraction | `references/prompt-strategy.md`, `references/figma-mcp-server-ga.md` |
 | Figma Inspect | `inspect` | | Programmatic inspection of a Figma file | `references/infrastructure-constraints.md`, `references/figma-mcp-server-ga.md` |
+| Variants | `variants` | | Component variant extraction — Component Set discovery, prop/state matrix flattening, naming convention (kebab-case property=value), boolean vs enum prop typing, default-variant identification, missing-state detection | `references/variant-extraction.md` |
+| Tokens | `tokens` | | Token mapping — Figma Variables → W3C DTCG (2025.10) format, primitive/semantic/component layer mapping, mode/theme support (light/dark/brand), alias chain resolution, Display P3/Oklch color preservation | `references/token-mapping.md` |
+| Breakpoint | `breakpoint` | | Responsive breakpoint extraction — multi-frame variant analysis, layout-grid extraction (column count + gutter + margin), constraint inheritance from parent frame, container-query candidate identification | `references/breakpoint-extraction.md` |
 
 ## Subcommand Dispatch
 
@@ -169,6 +172,9 @@ Behavior notes per Recipe:
 - `code-connect`: Audit existing Code Connect mappings and fix or add any missing or stale mappings.
 - `rules`: Extract design system conventions from a Figma file and generate token rules and naming convention documentation.
 - `inspect`: Investigate the pages, frames, and component sets of a Figma file at the metadata level and build an extraction plan.
+- `variants`: Read `references/variant-extraction.md` first. `search_design_system` で Component Set を発見、`get_design_context` で variant property + value matrix を取得。boolean prop (`disabled` / `loading`) と enum prop (`size: sm | md | lg`) を区別、default variant を特定、prop combination の missing state (size × variant × state) を検出。命名は kebab-case `property=value` 形式 (Figma 慣習)、TS 出力は PascalCase prop interface に変換。
+- `tokens`: Read `references/token-mapping.md` first. `search_design_system --includeVariables` → `get_variable_defs` で全 Variable Collection を取得。primitive (`--neutral-500`)、semantic (`--color-bg`)、component (`--button-bg`) の3層に分類、mode (Light/Dark) と theme (Brand A/B) の dimension を W3C DTCG `$value` の `{mode}` 構文で出力。alias chain (`{semantic.color.brand}` → `{primitive.indigo.500}`) は完全展開した resolved value も併記。Display P3 / Oklch は CSS `color()` / `oklch()` で出力。
+- `breakpoint`: Read `references/breakpoint-extraction.md` first. mobile/tablet/desktop の各 frame を比較して responsive 派生を抽出。Figma Layout Grid (column count + gutter + margin) を CSS Grid に変換、`Constraints` プロパティ (Left/Right/Center/Scale) から flex 動作を推定、parent frame size の差分から breakpoint 値を逆算 (320/768/1024/1440 が標準)。container-query 候補は同一コンポーネントが複数 width で出現するもの。各派生値は LOW 信頼度で designer 確認推奨。
 
 ## Output Routing
 

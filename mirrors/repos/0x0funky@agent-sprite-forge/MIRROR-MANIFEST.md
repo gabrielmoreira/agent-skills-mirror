@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/generate2dsprite/agents/openai.yaml`](skills/generate2dsprite/agents/openai.yaml) |
-| 2 | ✓ | [`skills/generate2dsprite/references/modes.md`](skills/generate2dsprite/references/modes.md) |
-| 3 | ✓ | [`skills/generate2dsprite/references/prompt-rules.md`](skills/generate2dsprite/references/prompt-rules.md) |
-| 4 | ✓ | [`skills/generate2dsprite/scripts/generate2dsprite.py`](skills/generate2dsprite/scripts/generate2dsprite.py) |
-| 5 | ✓ | [`skills/generate2dsprite/SKILL.md`](skills/generate2dsprite/SKILL.md) |
+| 1 | ✓ | [`skills/generate2dmap/agents/openai.yaml`](skills/generate2dmap/agents/openai.yaml) |
+| 2 | ✓ | [`skills/generate2dmap/references/layered-map-contract.md`](skills/generate2dmap/references/layered-map-contract.md) |
+| 3 | ✓ | [`skills/generate2dmap/references/map-strategies.md`](skills/generate2dmap/references/map-strategies.md) |
+| 4 | ✓ | [`skills/generate2dmap/SKILL.md`](skills/generate2dmap/SKILL.md) |
+| 5 | ✓ | [`skills/generate2dsprite/agents/openai.yaml`](skills/generate2dsprite/agents/openai.yaml) |
+| 6 | ✓ | [`skills/generate2dsprite/references/modes.md`](skills/generate2dsprite/references/modes.md) |
+| 7 | ✓ | [`skills/generate2dsprite/references/prompt-rules.md`](skills/generate2dsprite/references/prompt-rules.md) |
+| 8 | ✓ | [`skills/generate2dsprite/scripts/generate2dsprite.py`](skills/generate2dsprite/scripts/generate2dsprite.py) |
+| 9 | ✓ | [`skills/generate2dsprite/SKILL.md`](skills/generate2dsprite/SKILL.md) |
 
 ---
 

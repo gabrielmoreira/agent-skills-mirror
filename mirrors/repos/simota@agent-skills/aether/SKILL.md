@@ -163,6 +163,9 @@ Execution loop: `SURVEY → PLAN → VERIFY → PRESENT`.
 | Avatar Control | `avatar` | | Live2D/VRM avatar control, lip-sync, expression mapping | `references/avatar-control.md` |
 | TTS | `tts` | | TTS engine integration, selection, latency optimization | `references/tts-engines.md` |
 | OBS Automation | `obs` | | OBS WebSocket automation, scene management, streaming config | `references/obs-streaming.md` |
+| Latency Budget | `latency` | | End-to-end latency budget design — Chat → LLM → TTS → Avatar → OBS pipeline; per-stage targets and bottleneck audit | `references/latency-budget.md` |
+| Content Safety | `safety` | | Content moderation pipeline — chat NG-word filter, prompt-injection defense, persona-drift detection, age-rating compliance | `references/content-safety.md` |
+| Monetization | `monetize` | | AITuber monetization — Super Chat / Bits / membership / sponsorship integration with safety and tax compliance | `references/aituber-monetization.md` |
 
 ## Subcommand Dispatch
 
@@ -176,6 +179,9 @@ Behavior notes per Recipe:
 - `avatar`: Include Live2D/VRM contract, expression map, and idle-motion design.
 - `tts`: Include engine comparison, TTSAdapter, TTFA measurement, and fallback design.
 - `obs`: Include OBS WebSocket control, scene management, RTMP/SRT selection, and launch automation.
+- `latency`: Set a target end-to-end latency budget (default ≤ 2 s), allocate per-stage budgets (chat ingest / LLM / TTS / avatar / OBS / RTMP), measure each, and identify bottleneck stages.
+- `safety`: Layer chat-side filtering (NG terms, regex, hash-based block lists), prompt-injection defense in LLM stage, persona-drift detection, output moderation, and platform-specific age-rating compliance.
+- `monetize`: Design Super Chat / Bits / membership reactions with persona consistency, sponsorship slots, donation gating, and tax / disclosure compliance per region.
 
 ## Output Routing
 

@@ -219,6 +219,9 @@ Routing rules:
 | Keyboard Navigation | `keyboard` | | Tab order, focus management, shortcut systems, roving tabindex, focus trap | `references/keyboard-navigation-patterns.md` |
 | Mobile Touch | `mobile` | | Thumb zone, tap targets, gestures, haptics, safe area, keyboard avoidance | `references/mobile-touch-patterns.md` |
 | Forms UX | `forms` | | Field order, validation timing, error voice, multi-step, autofill cooperation | `references/forms-ux-patterns.md` |
+| Error States | `error` | | Error state UX — message hierarchy, recovery paths, inline vs toast vs page, retry/undo, server-error handling | `references/error-states.md` |
+| Empty States | `empty` | | Empty state design — first-use, zero-results, post-clear, post-error variants with onboarding cues and templates | `references/empty-states.md` |
+| Loading States | `loading` | | Loading state UX — skeleton, spinner, progressive, optimistic UI, perceived-speed strategy by latency band | `references/loading-states.md` |
 
 Behavior notes:
 - **usability** (default): SURVEY → EVALUATE → PRIORITIZE → PRESENT; load `ux-evaluation.md` + `interaction-anti-patterns.md`.
@@ -228,6 +231,9 @@ Behavior notes:
 - **keyboard**: Keyboard navigation, shortcut systems, focus management, roving tabindex, focus trap; load `keyboard-navigation-patterns.md`. For WCAG 2.2 SC 2.1/2.4 conformance audit use `a11y`; for production `useFocusTrap` / `useHotkeys` hook implementation use Artisan; for focus animation timing use Flow.
 - **mobile**: Thumb zone layout, tap-target sizing, gesture affordances, haptic vocabulary, safe-area, keyboard avoidance; load `mobile-touch-patterns.md`. For WCAG 2.2 SC 2.5.7/2.5.8 audit use `a11y`; for React Native / Flutter / SwiftUI production use Artisan (or Native for store-review and offline strategy); for gesture animation choreography use Flow.
 - **forms**: Field-order rationale, validation timing, error voice direction, progressive disclosure, multi-step flows, autofill and password-manager cooperation; load `forms-ux-patterns.md`. For exact error-message wording use Prose; for React Hook Form / Zod production wiring use Artisan; for WCAG 2.2 SC 3.3.x and SC 1.3.5 conformance use `a11y`.
+- **error**: Error UX as a system — classify failures (validation/permission/server/network), design message hierarchy, recovery paths, inline vs toast vs page placement, retry/undo, and post-error empty-state handoff; load `error-states.md`. For exact error wording use Prose; for status-code → message mapping in code use Artisan.
+- **empty**: First-use, zero-results, post-clear, post-error variants — design illustration vs not, primary action vs templates, onboarding-cue vs invitation copy; load `empty-states.md`. For illustration design use Ink; for first-time-user onboarding journey use Vision.
+- **loading**: Latency-band strategy (skeleton ≤1s, spinner 1–10s, determinate progress >10s, optimistic UI for retries), perceived-speed tactics, skeleton-vs-spinner-vs-shimmer choice, async-state handoff; load `loading-states.md`. For data-fetching architecture use Artisan; for animation timing curves use Flow; for backend speed see Bolt.
 
 ## Subcommand Dispatch
 

@@ -1,65 +1,60 @@
 # context-mode — MANDATORY routing rules
 
-You have context-mode MCP tools available. These rules are NOT optional — they protect your context window from flooding. A single unrouted command can dump 56 KB into context and waste the entire session. Zed does NOT have hooks, so these instructions are your ONLY enforcement mechanism. Follow them strictly.
+context-mode MCP tools available. Rules protect context window from flooding. One unrouted command dumps 56 KB into context. Zed has NO hooks — these instructions are ONLY enforcement. Follow strictly.
 
 ## Think in Code — MANDATORY
 
-When you need to analyze, count, filter, compare, search, parse, transform, or process data: **write code** that does the work via `mcp:context-mode:ctx_execute(language, code)` and `console.log()` only the answer. Do NOT read raw data into context to process mentally. Your role is to PROGRAM the analysis, not to COMPUTE it. Write robust, pure JavaScript — no npm dependencies, only Node.js built-ins (`fs`, `path`, `child_process`). Always use `try/catch`, handle `null`/`undefined`, and ensure compatibility with both Node.js and Bun. One script replaces ten tool calls and saves 100x context.
+Analyze/count/filter/compare/search/parse/transform data: **write code** via `mcp:context-mode:ctx_execute(language, code)`, `console.log()` only the answer. Do NOT read raw data into context. PROGRAM the analysis, not COMPUTE it. Pure JavaScript — Node.js built-ins only (`fs`, `path`, `child_process`). `try/catch`, handle `null`/`undefined`. One script replaces ten tool calls.
 
-## BLOCKED commands — do NOT use these
+## BLOCKED — do NOT use
 
 ### curl / wget — FORBIDDEN
-Do NOT use `curl` or `wget` in any shell command. They dump raw HTTP responses directly into your context window.
-Instead use:
-- `mcp:context-mode:ctx_fetch_and_index(url, source)` to fetch and index web pages
-- `mcp:context-mode:ctx_execute(language: "javascript", code: "const r = await fetch(...)")` to run HTTP calls in sandbox
+Do NOT use `curl`/`wget` in shell. Dumps raw HTTP into context.
+Use: `mcp:context-mode:ctx_fetch_and_index(url, source)` or `mcp:context-mode:ctx_execute(language: "javascript", code: "const r = await fetch(...)")`
 
 ### Inline HTTP — FORBIDDEN
-Do NOT run inline HTTP calls via `node -e "fetch(..."`, `python -c "requests.get(..."`, or similar patterns. They bypass the sandbox and flood context.
-Instead use:
-- `mcp:context-mode:ctx_execute(language, code)` to run HTTP calls in sandbox — only stdout enters context
+No `node -e "fetch(..."`, `python -c "requests.get(..."`. Bypasses sandbox.
+Use: `mcp:context-mode:ctx_execute(language, code)` — only stdout enters context
 
 ### Direct web fetching — FORBIDDEN
-Do NOT use any direct URL fetching tool. Raw HTML can exceed 100 KB.
-Instead use:
-- `mcp:context-mode:ctx_fetch_and_index(url, source)` then `mcp:context-mode:ctx_search(queries)` to query the indexed content
+Raw HTML can exceed 100 KB.
+Use: `mcp:context-mode:ctx_fetch_and_index(url, source)` then `mcp:context-mode:ctx_search(queries)`
 
-## REDIRECTED tools — use sandbox equivalents
+## REDIRECTED — use sandbox
 
 ### Shell (>20 lines output)
-Shell is ONLY for: `git`, `mkdir`, `rm`, `mv`, `cd`, `ls`, `npm install`, `pip install`, and other short-output commands.
-For everything else, use:
-- `mcp:context-mode:ctx_batch_execute(commands, queries)` — run multiple commands + search in ONE call
-- `mcp:context-mode:ctx_execute(language: "shell", code: "...")` — run in sandbox, only stdout enters context
+Shell ONLY for: `git`, `mkdir`, `rm`, `mv`, `cd`, `ls`, `npm install`, `pip install`.
+Otherwise: `mcp:context-mode:ctx_batch_execute(commands, queries)` or `mcp:context-mode:ctx_execute(language: "shell", code: "...")`
 
 ### File reading (for analysis)
-If you are reading a file to **edit** it → reading is correct (edit needs content in context).
-If you are reading to **analyze, explore, or summarize** → use `mcp:context-mode:ctx_execute_file(path, language, code)` instead. Only your printed summary enters context. The raw file stays in the sandbox.
+Reading to **edit** → reading correct. Reading to **analyze/explore/summarize** → `mcp:context-mode:ctx_execute_file(path, language, code)`.
 
 ### grep / search (large results)
-Search results can flood context. Use `mcp:context-mode:ctx_execute(language: "shell", code: "grep ...")` to run searches in sandbox. Only your printed summary enters context.
+Use `mcp:context-mode:ctx_execute(language: "shell", code: "grep ...")` in sandbox.
 
-## Tool selection hierarchy
+## Tool selection
 
-1. **GATHER**: `mcp:context-mode:ctx_batch_execute(commands, queries)` — Primary tool. Runs all commands, auto-indexes output, returns search results. ONE call replaces 30+ individual calls. Each command: `{label: "descriptive header", command: "..."}`. Label becomes FTS5 chunk title — descriptive labels improve search.
-2. **FOLLOW-UP**: `mcp:context-mode:ctx_search(queries: ["q1", "q2", ...])` — Query indexed content. Pass ALL questions as array in ONE call.
-3. **PROCESSING**: `mcp:context-mode:ctx_execute(language, code)` | `mcp:context-mode:ctx_execute_file(path, language, code)` — Sandbox execution. Only stdout enters context.
-4. **WEB**: `mcp:context-mode:ctx_fetch_and_index(url, source)` then `mcp:context-mode:ctx_search(queries)` — Fetch, chunk, index, query. Raw HTML never enters context.
-5. **INDEX**: `mcp:context-mode:ctx_index(content, source)` — Store content in FTS5 knowledge base for later search.
+1. **GATHER**: `mcp:context-mode:ctx_batch_execute(commands, queries)` — runs all commands, auto-indexes, returns search. ONE call replaces 30+. Each command: `{label: "header", command: "..."}`.
+2. **FOLLOW-UP**: `mcp:context-mode:ctx_search(queries: ["q1", "q2", ...])` — all questions as array, ONE call.
+3. **PROCESSING**: `mcp:context-mode:ctx_execute(language, code)` | `mcp:context-mode:ctx_execute_file(path, language, code)` — sandbox, only stdout enters context.
+4. **WEB**: `mcp:context-mode:ctx_fetch_and_index(url, source)` then `mcp:context-mode:ctx_search(queries)` — raw HTML never enters context.
+5. **INDEX**: `mcp:context-mode:ctx_index(content, source)` — store in FTS5 for later search.
 
-## Output constraints
+## Output
 
-- Keep responses under 500 words.
-- Write artifacts (code, configs, PRDs) to FILES — never return them as inline text. Return only: file path + 1-line description.
-- When indexing content, use descriptive source labels so others can `search(source: "label")` later.
+Terse like caveman. Technical substance exact. Only fluff die.
+Drop: articles, filler (just/really/basically), pleasantries, hedging. Fragments OK. Short synonyms. Code unchanged.
+Pattern: [thing] [action] [reason]. [next step]. Auto-expand for: security warnings, irreversible actions, user confusion.
+Write artifacts to FILES — never inline. Return: file path + 1-line description.
+Descriptive source labels for `search(source: "label")`.
 
 ## ctx commands
 
 | Command | Action |
 |---------|--------|
-| `ctx stats` | Call the `stats` MCP tool and display the full output verbatim |
-| `ctx doctor` | Call the `doctor` MCP tool, run the returned shell command, display as checklist |
-| `ctx upgrade` | Call the `upgrade` MCP tool, run the returned shell command, display as checklist |
-| `ctx purge` | Call the `mcp:context-mode:purge` MCP tool with confirm: true. Warns before wiping the knowledge base. |
+| `ctx stats` | Call `stats` MCP tool, display full output verbatim |
+| `ctx doctor` | Call `doctor` MCP tool, run returned shell command, display as checklist |
+| `ctx upgrade` | Call `upgrade` MCP tool, run returned shell command, display as checklist |
+| `ctx purge` | Call `mcp:context-mode:purge` MCP tool with confirm: true. Warns before wiping knowledge base. |
 
-After /clear or /compact: knowledge base and session stats are preserved. Use `ctx purge` if you want to start fresh.
+After /clear or /compact: knowledge base and session stats preserved. Use `ctx purge` to start fresh.

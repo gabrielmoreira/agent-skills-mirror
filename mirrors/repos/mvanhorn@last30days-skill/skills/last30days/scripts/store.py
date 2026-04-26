@@ -346,61 +346,83 @@ def store_findings(
     findings: List[Dict[str, Any]],
 ) -> Dict[str, int]:
     """Store findings with URL-based dedup. Returns counts of new/updated."""
+    # Collect findings that have a URL, preserving order.
+    with_urls: List[tuple[str, Dict[str, Any]]] = []
+    for f in findings:
+        url = f.get("source_url") or f.get("url")
+        if url:
+            with_urls.append((url, f))
+
+    if not with_urls:
+        conn = _connect()
+        try:
+            conn.execute(
+                "UPDATE research_runs SET findings_new = 0, findings_updated = 0 WHERE id = ?",
+                (run_id,),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+        return {"new": 0, "updated": 0}
+
     conn = _connect()
-    new_count = 0
-    updated_count = 0
-
     try:
-        for f in findings:
-            url = f.get("source_url") or f.get("url")
-            if not url:
-                continue
+        # Single batch SELECT to find existing findings by URL.
+        urls = [url for url, _ in with_urls]
+        placeholders = ",".join("?" for _ in urls)
+        rows = conn.execute(
+            f"SELECT id, source_url, engagement_score FROM findings WHERE source_url IN ({placeholders})",
+            urls,
+        ).fetchall()
+        existing_by_url = {row["source_url"]: row for row in rows}
 
-            existing = conn.execute(
-                "SELECT id, engagement_score, sighting_count FROM findings WHERE source_url = ?",
-                (url,),
-            ).fetchone()
+        update_rows: List[tuple] = []
+        insert_rows: List[tuple] = []
 
+        for url, f in with_urls:
+            existing = existing_by_url.get(url)
+            new_engagement = f.get("engagement_score", 0)
             if existing:
-                # Update engagement and re-sighting info
-                new_engagement = f.get("engagement_score", 0)
-                conn.execute(
-                    """UPDATE findings SET
-                           last_seen = datetime('now'),
-                           sighting_count = sighting_count + 1,
-                           engagement_score = ?,
-                           run_id = ?
-                       WHERE id = ?""",
-                    (
-                        max(new_engagement, existing["engagement_score"] or 0),
-                        run_id,
-                        existing["id"],
-                    ),
-                )
-                updated_count += 1
+                update_rows.append((
+                    max(new_engagement, existing["engagement_score"] or 0),
+                    run_id,
+                    existing["id"],
+                ))
             else:
-                # New finding
-                conn.execute(
-                    """INSERT INTO findings
-                       (run_id, topic_id, source, source_url, source_title,
-                        author, content, summary, engagement_score, relevance_score)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        run_id,
-                        topic_id,
-                        f.get("source", "unknown"),
-                        url,
-                        f.get("source_title") or f.get("title", ""),
-                        f.get("author", ""),
-                        f.get("content") or f.get("text", ""),
-                        f.get("summary", ""),
-                        f.get("engagement_score", 0),
-                        f.get("relevance_score", 0),
-                    ),
-                )
-                new_count += 1
+                insert_rows.append((
+                    run_id,
+                    topic_id,
+                    f.get("source", "unknown"),
+                    url,
+                    f.get("source_title") or f.get("title", ""),
+                    f.get("author", ""),
+                    f.get("content") or f.get("text", ""),
+                    f.get("summary", ""),
+                    new_engagement,
+                    f.get("relevance_score", 0),
+                ))
 
-        # Update run stats
+        if update_rows:
+            conn.executemany(
+                """UPDATE findings SET
+                       last_seen = datetime('now'),
+                       sighting_count = sighting_count + 1,
+                       engagement_score = ?,
+                       run_id = ?
+                   WHERE id = ?""",
+                update_rows,
+            )
+        if insert_rows:
+            conn.executemany(
+                """INSERT INTO findings
+                   (run_id, topic_id, source, source_url, source_title,
+                    author, content, summary, engagement_score, relevance_score)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                insert_rows,
+            )
+
+        new_count = len(insert_rows)
+        updated_count = len(update_rows)
         conn.execute(
             "UPDATE research_runs SET findings_new = ?, findings_updated = ? WHERE id = ?",
             (new_count, updated_count, run_id),

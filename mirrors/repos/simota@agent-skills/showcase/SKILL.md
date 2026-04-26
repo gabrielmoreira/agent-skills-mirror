@@ -150,6 +150,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Storybook Interactions | `interaction` | | Play function authoring with `@storybook/test`, addon-vitest integration | `references/storybook-interactions.md` |
 | MDX Documentation | `mdx` | | Hand-authored MDX docs with Doc Blocks, Autodocs vs MDX trade-off | `references/mdx-docs.md` |
 | React Cosmos | `cosmos` | | React Cosmos fixture authoring, Storybook vs Cosmos decision | `references/react-cosmos.md` |
+| Accessibility Addon | `a11y` | | Storybook addon-a11y wiring (axe-core), per-story rules, CI failure thresholds, role-aware keyboard testing | `references/a11y-addon.md` |
+| Chromatic | `chromatic` | | Chromatic-specific visual review — Tokens of Trust, branch comparison, TurboSnap, baseline approval flow, monorepo project routing | `references/chromatic-platform.md` |
+| Coverage | `coverage` | | Story coverage tracking — which components have stories, addon-coverage / addon-test, gap reporting, CI gate | `references/story-coverage.md` |
 
 ## Subcommand Dispatch
 

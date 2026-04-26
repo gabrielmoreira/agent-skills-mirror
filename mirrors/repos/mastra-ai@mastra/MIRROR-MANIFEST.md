@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
+Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 42 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 42 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,41 +66,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/skills/react-best-practices/SKILL.md`](.claude/skills/react-best-practices/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/smoke-test/SKILL.md`](.claude/skills/smoke-test/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/tailwind-best-practices/SKILL.md`](.claude/skills/tailwind-best-practices/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/testing-mastracode-tui/SKILL.md`](.claude/skills/testing-mastracode-tui/SKILL.md) |
-| 9 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 10 | ✓ | [`.github/prompts/changeset.prompt.md`](.github/prompts/changeset.prompt.md) |
-| 11 | ✓ | [`.github/prompts/commit.prompt.md`](.github/prompts/commit.prompt.md) |
-| 12 | ✓ | [`.github/prompts/gh-bulk-issues.prompt.md`](.github/prompts/gh-bulk-issues.prompt.md) |
-| 13 | ✓ | [`.github/prompts/gh-debug-issue.prompt.md`](.github/prompts/gh-debug-issue.prompt.md) |
-| 14 | ✓ | [`.github/prompts/gh-fix-ci.prompt.md`](.github/prompts/gh-fix-ci.prompt.md) |
-| 15 | ✓ | [`.github/prompts/gh-new-pr.prompt.md`](.github/prompts/gh-new-pr.prompt.md) |
-| 16 | ✓ | [`.github/prompts/gh-pr-comments.prompt.md`](.github/prompts/gh-pr-comments.prompt.md) |
-| 17 | ✓ | [`.github/prompts/make-moves.prompt.md`](.github/prompts/make-moves.prompt.md) |
-| 18 | ✓ | [`.github/prompts/pr.prompt.md`](.github/prompts/pr.prompt.md) |
-| 19 | ✓ | [`.github/prompts/ralph-plan.prompt.md`](.github/prompts/ralph-plan.prompt.md) |
-| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 22 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 23 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 24 | ✓ | [`packages/auth/AGENTS.md`](packages/auth/AGENTS.md) |
-| 25 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
-| 26 | ✓ | [`packages/codemod/.claude/skills/codemod-patterns/SKILL.md`](packages/codemod/.claude/skills/codemod-patterns/SKILL.md) |
-| 27 | ✓ | [`packages/codemod/AGENTS.md`](packages/codemod/AGENTS.md) |
-| 28 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
-| 29 | ✓ | [`packages/mcp/AGENTS.md`](packages/mcp/AGENTS.md) |
-| 30 | ✓ | [`packages/memory/AGENTS.md`](packages/memory/AGENTS.md) |
-| 31 | ✓ | [`packages/playground-ui/.cursor/rules/frontend.mdc`](packages/playground-ui/.cursor/rules/frontend.mdc) |
-| 32 | ✓ | [`packages/playground-ui/AGENTS.md`](packages/playground-ui/AGENTS.md) |
-| 33 | ✓ | [`packages/playground-ui/CLAUDE.md`](packages/playground-ui/CLAUDE.md) |
-| 34 | ✓ | [`packages/playground/.cursor/rules/frontend.mdc`](packages/playground/.cursor/rules/frontend.mdc) |
-| 35 | ✓ | [`packages/playground/AGENTS.md`](packages/playground/AGENTS.md) |
-| 36 | ✓ | [`packages/playground/CLAUDE.md`](packages/playground/CLAUDE.md) |
-| 37 | ✓ | [`packages/rag/AGENTS.md`](packages/rag/AGENTS.md) |
-| 38 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 39 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 40 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
-| 41 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
-| 42 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/testing-core-processors/SKILL.md`](.claude/skills/testing-core-processors/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/testing-mastracode-tui/SKILL.md`](.claude/skills/testing-mastracode-tui/SKILL.md) |
+| 10 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 11 | ✓ | [`.github/prompts/changeset.prompt.md`](.github/prompts/changeset.prompt.md) |
+| 12 | ✓ | [`.github/prompts/commit.prompt.md`](.github/prompts/commit.prompt.md) |
+| 13 | ✓ | [`.github/prompts/gh-bulk-issues.prompt.md`](.github/prompts/gh-bulk-issues.prompt.md) |
+| 14 | ✓ | [`.github/prompts/gh-debug-issue.prompt.md`](.github/prompts/gh-debug-issue.prompt.md) |
+| 15 | ✓ | [`.github/prompts/gh-fix-ci.prompt.md`](.github/prompts/gh-fix-ci.prompt.md) |
+| 16 | ✓ | [`.github/prompts/gh-new-pr.prompt.md`](.github/prompts/gh-new-pr.prompt.md) |
+| 17 | ✓ | [`.github/prompts/gh-pr-comments.prompt.md`](.github/prompts/gh-pr-comments.prompt.md) |
+| 18 | ✓ | [`.github/prompts/make-moves.prompt.md`](.github/prompts/make-moves.prompt.md) |
+| 19 | ✓ | [`.github/prompts/pr.prompt.md`](.github/prompts/pr.prompt.md) |
+| 20 | ✓ | [`.github/prompts/ralph-plan.prompt.md`](.github/prompts/ralph-plan.prompt.md) |
+| 21 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 22 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 23 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 24 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 25 | ✓ | [`packages/auth/AGENTS.md`](packages/auth/AGENTS.md) |
+| 26 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
+| 27 | ✓ | [`packages/codemod/.claude/skills/codemod-patterns/SKILL.md`](packages/codemod/.claude/skills/codemod-patterns/SKILL.md) |
+| 28 | ✓ | [`packages/codemod/AGENTS.md`](packages/codemod/AGENTS.md) |
+| 29 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
+| 30 | ✓ | [`packages/mcp/AGENTS.md`](packages/mcp/AGENTS.md) |
+| 31 | ✓ | [`packages/memory/AGENTS.md`](packages/memory/AGENTS.md) |
+| 32 | ✓ | [`packages/playground-ui/.cursor/rules/frontend.mdc`](packages/playground-ui/.cursor/rules/frontend.mdc) |
+| 33 | ✓ | [`packages/playground-ui/AGENTS.md`](packages/playground-ui/AGENTS.md) |
+| 34 | ✓ | [`packages/playground-ui/CLAUDE.md`](packages/playground-ui/CLAUDE.md) |
+| 35 | ✓ | [`packages/playground/.cursor/rules/frontend.mdc`](packages/playground/.cursor/rules/frontend.mdc) |
+| 36 | ✓ | [`packages/playground/AGENTS.md`](packages/playground/AGENTS.md) |
+| 37 | ✓ | [`packages/playground/CLAUDE.md`](packages/playground/CLAUDE.md) |
+| 38 | ✓ | [`packages/rag/AGENTS.md`](packages/rag/AGENTS.md) |
+| 39 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 40 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 41 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
+| 42 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
+| 43 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
 
 ---
 

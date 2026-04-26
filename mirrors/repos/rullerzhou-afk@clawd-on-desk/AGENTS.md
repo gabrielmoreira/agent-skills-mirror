@@ -11,6 +11,9 @@ Clawd 是一个 Electron 桌宠：通过 hook、日志轮询和 plugin 感知 AI
 ```bash
 npm start
 npm run build
+npm run build:win:x64
+npm run build:win:arm64
+npm run build:win:all
 npm run build:mac
 npm run build:linux
 npm run build:all
@@ -109,6 +112,7 @@ Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/gui
 - 注册 Claude Code hook 时只能追加，不能覆盖用户已有 hook 数组
 - Copilot CLI 是唯一不自动同步的 agent；仅支持手动配置 `~/.copilot/hooks/hooks.json`
 - Kiro 的 `sessionId="default"` 会复用；session alias key 必须按 cwd scope 区分，同时保留旧 `local|kiro-cli|default` 只读 fallback
+- Windows NSIS release 必须产出明确架构的 x64 / ARM64 安装包：`win.artifactName` 保留 `${arch}`，`nsis.buildUniversalInstaller` 保持 `false`
 - 资源路径统一用 `path.join(__dirname, ...)`
 - 需要编辑发布素材时，先复制到 `assets/source/` 再改，不要直接改工作素材来源不明的文件
 - 主题状态、sleep/DND、mini mode、状态映射的细节在 `docs/project/theme-state-ui.md`

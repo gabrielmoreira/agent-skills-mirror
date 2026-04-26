@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 109 file(s) materialized.
+Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 109 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 109 |
+| Files         | 108 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -156,18 +156,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 95 | ✓ | [`crates/skills/src/assets/smart-home/weather/SKILL.md`](crates/skills/src/assets/smart-home/weather/SKILL.md) |
 | 96 | ✓ | [`crates/skills/src/assets/social-media/xurl/SKILL.md`](crates/skills/src/assets/social-media/xurl/SKILL.md) |
 | 97 | ✓ | [`crates/skills/src/assets/software-development/github/SKILL.md`](crates/skills/src/assets/software-development/github/SKILL.md) |
-| 98 | ✓ | [`crates/skills/src/assets/software-development/mcporter/SKILL.md`](crates/skills/src/assets/software-development/mcporter/SKILL.md) |
-| 99 | ✓ | [`crates/skills/src/assets/software-development/oracle/SKILL.md`](crates/skills/src/assets/software-development/oracle/SKILL.md) |
-| 100 | ✓ | [`crates/skills/src/assets/software-development/peekaboo/SKILL.md`](crates/skills/src/assets/software-development/peekaboo/SKILL.md) |
-| 101 | ✓ | [`crates/skills/src/assets/software-development/plan/SKILL.md`](crates/skills/src/assets/software-development/plan/SKILL.md) |
-| 102 | ✓ | [`crates/skills/src/assets/software-development/requesting-code-review/SKILL.md`](crates/skills/src/assets/software-development/requesting-code-review/SKILL.md) |
-| 103 | ✓ | [`crates/skills/src/assets/software-development/skill-creator/SKILL.md`](crates/skills/src/assets/software-development/skill-creator/SKILL.md) |
-| 104 | ✓ | [`crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md`](crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md) |
-| 105 | ✓ | [`crates/skills/src/assets/software-development/systematic-debugging/SKILL.md`](crates/skills/src/assets/software-development/systematic-debugging/SKILL.md) |
-| 106 | ✓ | [`crates/skills/src/assets/software-development/test-driven-development/SKILL.md`](crates/skills/src/assets/software-development/test-driven-development/SKILL.md) |
-| 107 | ✓ | [`crates/skills/src/assets/software-development/tmux/SKILL.md`](crates/skills/src/assets/software-development/tmux/SKILL.md) |
-| 108 | ✓ | [`crates/skills/src/assets/software-development/writing-plans/SKILL.md`](crates/skills/src/assets/software-development/writing-plans/SKILL.md) |
-| 109 | ✓ | [`website/llms.txt`](website/llms.txt) |
+| 98 | ✓ | [`crates/skills/src/assets/software-development/oracle/SKILL.md`](crates/skills/src/assets/software-development/oracle/SKILL.md) |
+| 99 | ✓ | [`crates/skills/src/assets/software-development/peekaboo/SKILL.md`](crates/skills/src/assets/software-development/peekaboo/SKILL.md) |
+| 100 | ✓ | [`crates/skills/src/assets/software-development/plan/SKILL.md`](crates/skills/src/assets/software-development/plan/SKILL.md) |
+| 101 | ✓ | [`crates/skills/src/assets/software-development/requesting-code-review/SKILL.md`](crates/skills/src/assets/software-development/requesting-code-review/SKILL.md) |
+| 102 | ✓ | [`crates/skills/src/assets/software-development/skill-creator/SKILL.md`](crates/skills/src/assets/software-development/skill-creator/SKILL.md) |
+| 103 | ✓ | [`crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md`](crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md) |
+| 104 | ✓ | [`crates/skills/src/assets/software-development/systematic-debugging/SKILL.md`](crates/skills/src/assets/software-development/systematic-debugging/SKILL.md) |
+| 105 | ✓ | [`crates/skills/src/assets/software-development/test-driven-development/SKILL.md`](crates/skills/src/assets/software-development/test-driven-development/SKILL.md) |
+| 106 | ✓ | [`crates/skills/src/assets/software-development/tmux/SKILL.md`](crates/skills/src/assets/software-development/tmux/SKILL.md) |
+| 107 | ✓ | [`crates/skills/src/assets/software-development/writing-plans/SKILL.md`](crates/skills/src/assets/software-development/writing-plans/SKILL.md) |
+| 108 | ✓ | [`website/llms.txt`](website/llms.txt) |
 
 ---
 

@@ -1505,16 +1505,6 @@ def _top_comments_list(item: schema.SourceItem | None, limit: int = 3, min_score
     return [c for c in comments if (c.get("score") or 0) >= min_score][:limit]
 
 
-def _top_comment_excerpt(item: schema.SourceItem | None) -> str | None:
-    if not item:
-        return None
-    comments = item.metadata.get("top_comments") or []
-    if not comments or not isinstance(comments[0], dict):
-        return None
-    top = comments[0]
-    return str(top.get("excerpt") or top.get("text") or "").strip() or None
-
-
 def _comment_insight(item: schema.SourceItem | None) -> str | None:
     if not item:
         return None

@@ -200,6 +200,9 @@ Routing rules:
 | Feature Discovery | `discover` | | Feature discovery ("does X exist?") | `references/investigation-patterns.md` |
 | Data Flow Trace | `trace` | | Data flow trace (origin → transformation → destination) | `references/investigation-patterns.md` |
 | Module Responsibility | `responsibility` | | Module responsibility analysis (cognitive complexity, comprehension debt evaluation) | `references/complexity-assessment.md` |
+| Dependency | `dependency` | | Deep dependency graph analysis — fan-in/fan-out per module, transitive closure, circular dependencies, dependency direction violations (UI → DB), package-boundary leakage detection | `references/dependency-graph.md` |
+| Hotspot | `hotspot` | | Change-frequency hotspot identification — git log churn × cognitive complexity heatmap, coupling between churn and bug reports, "hot+complex" risk ranking for refactor prioritization | `references/change-hotspot.md` |
+| Evolution | `evolution` | | Code evolution tracing via git history — file lifespan, author concentration (bus factor), abstraction churn, conceptual drift between commits, growth/decay trajectory of modules | `references/code-evolution.md` |
 
 ## Subcommand Dispatch
 
@@ -212,6 +215,9 @@ Behavior notes per Recipe:
 - `discover`: Shortened SCOPE → SURVEY → REPORT workflow allowed. REPORT immediately after existence confirmation.
 - `trace`: Trace data from origin to destination. Explicitly flag dynamic-dispatch boundaries.
 - `responsibility`: Multi-signal cognitive complexity evaluation (SonarSource + nesting + naming). Identify comprehension debt hotspots.
+- `dependency`: Read `references/dependency-graph.md` first. madge / dpdm (TS/JS) / pydeps (Python) / go list -deps (Go) で依存グラフ生成。fan-in/fan-out per module を計測 (高 fan-in = god module 候補)、transitive closure size を測定、circular dependencies を HIGH/MED/LOW 重要度で分類、依存方向違反 (UI → DB 直接 import 等) を flag、package boundary leakage (`internal/` パッケージへの外部参照) を検出。出力は dependency table + Mermaid graph + violation list。
+- `hotspot`: Read `references/change-hotspot.md` first. `git log --since=N.months --name-only` で file change frequency を取得、SonarSource Cognitive Complexity と組み合わせて "churn × complexity" heatmap を生成。`hot+complex` (churn > median + complexity > 15) はリファクタリング最優先候補。bug-correlation: `git log --grep='fix\|bug'` で bug-fix commit に登場する頻度も加算。出力は ranked hotspot table + 推奨 refactor 順序。
+- `evolution`: Read `references/code-evolution.md` first. ファイル単位で lifespan (作成 → 最終変更日) を追跡、author 集中度 (bus factor: 80% 変更を担う著者数) を計算、commit message と diff のキーワード抽出で abstraction churn (リファクタ vs 機能追加比) を測定、conceptual drift (ファイルの責務変化を pre/post diff の class/function 変化から推定) を検出。長期不変ファイル = 安定 vs 死体、頻繁書き換え = 設計未確定 vs 機能成長 を区別。
 
 ## Output Requirements
 

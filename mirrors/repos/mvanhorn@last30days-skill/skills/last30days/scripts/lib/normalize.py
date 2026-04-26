@@ -110,6 +110,19 @@ def _first_present(d: dict[str, Any], keys: tuple[str, ...], default: Any) -> An
     return default
 
 
+def _join_comment_excerpts(
+    top_comments: list[Any],
+    key: str,
+    limit: int = 3,
+) -> str:
+    """Space-join the `key` field from the first `limit` dict-shaped comments."""
+    return " ".join(
+        str(comment.get(key) or "").strip()
+        for comment in top_comments[:limit]
+        if isinstance(comment, dict)
+    )
+
+
 def _domain_from_url(url: str) -> str | None:
     if not url:
         return None
@@ -169,11 +182,7 @@ def _normalize_reddit(
     to_date: str,
 ) -> schema.SourceItem:
     top_comments = item.get("top_comments") or []
-    comment_text = " ".join(
-        str(comment.get("excerpt") or "").strip()
-        for comment in top_comments[:3]
-        if isinstance(comment, dict)
-    )
+    comment_text = _join_comment_excerpts(top_comments, "excerpt")
     body = "\n".join(
         part
         for part in [
@@ -338,11 +347,7 @@ def _normalize_hackernews(
     to_date: str,
 ) -> schema.SourceItem:
     top_comments = item.get("top_comments") or []
-    comment_text = " ".join(
-        str(comment.get("text") or "").strip()
-        for comment in top_comments[:3]
-        if isinstance(comment, dict)
-    )
+    comment_text = _join_comment_excerpts(top_comments, "text")
     title = str(item.get("title") or "").strip()
     body = "\n".join(part for part in [title, str(item.get("text") or "").strip(), comment_text] if part)
     return _source_item(
@@ -441,11 +446,7 @@ def _normalize_github(
     title = str(item.get("title") or "").strip()
     snippet_text = str(item.get("snippet") or "").strip()
     top_comments = item.get("metadata", {}).get("top_comments") or []
-    comment_text = " ".join(
-        str(comment.get("excerpt") or "").strip()
-        for comment in top_comments[:3]
-        if isinstance(comment, dict)
-    )
+    comment_text = _join_comment_excerpts(top_comments, "excerpt")
     body = "\n".join(part for part in [title, snippet_text, comment_text] if part)
     metadata = item.get("metadata") or {}
     return _source_item(

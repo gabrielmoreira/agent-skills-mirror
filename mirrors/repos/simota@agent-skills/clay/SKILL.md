@@ -131,6 +131,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Retopology | `retopo` | | Retopology processing | `references/game-pipeline.md` |
 | UV Unwrap | `uv` | | UV unwrap | `references/game-pipeline.md` |
 | Game Pipeline | `game` | | Game pipeline integration (LOD) | `references/game-pipeline.md`, `references/quality-validation.md` |
+| Auto-Rigging | `rigging` | | Auto-rig via Mixamo / Rodin / Meshy / Anything-World, skeleton + skin weight | `references/auto-rigging.md` |
+| Texture Baking | `baking` | | PBR baking (normal / AO / metallic / roughness / curvature / height) high→low poly | `references/texture-baking.md` |
+| Animation Retarget | `retarget` | | Mocap / animation retargeting across rigs (Mixamo→custom, BVH/FBX, root-motion handling) | `references/animation-retargeting.md` |
 
 ## Subcommand Dispatch
 
@@ -144,6 +147,9 @@ Behavior notes per Recipe:
 - `retopo`: Neural retopology processing via Blender Python bpy script. Targets game-ready quality.
 - `uv`: UV unwrap and packing via Blender Python bpy script. Hidden seams and proper island placement.
 - `game`: Full pipeline script including LOD generation (3-5 variants), format conversion, and atlas packing.
+- `rigging`: Auto-rigging pipeline. Mixamo (humanoid), Rodin auto-rig, Meshy 5 rigging, Anything-World (game-genre rigs). Skeleton standard (Mixamo / Unity Humanoid / UE Mannequin), skin-weight smoothing, weight-paint review.
+- `baking`: PBR texture baking high-poly → low-poly. Normal (tangent space), AO, curvature, ID, height, position. Cage-based projection, anti-aliasing, edge padding. xNormal / Substance Painter / Marmoset / Blender bake.
+- `retarget`: Animation retargeting across rigs. Bone-name mapping (Mixamo → custom skeleton), pose alignment (T/A-pose), root-motion vs in-place, BVH / FBX / glTF anim conversion, foot-locking for IK.
 
 ## Output Routing
 

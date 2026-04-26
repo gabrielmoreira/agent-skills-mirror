@@ -30,6 +30,7 @@ from . import (
     query,
     reddit,
     reddit_public,
+    relevance,
     rerank,
     schema,
     signals,
@@ -500,11 +501,12 @@ def _normalize_score_dedupe(
         source, raw_items, from_date, to_date,
         freshness_mode=freshness_mode,
     )
-    normalized = signals.annotate_stream(normalized, ranking_query, freshness_mode)
+    prepared_query = relevance.PreparedQuery(ranking_query)
+    normalized = signals.annotate_stream(normalized, prepared_query, freshness_mode)
     normalized = signals.prune_low_relevance(normalized)
     normalized = dedupe.dedupe_items(normalized)
     for item in normalized:
-        item.snippet = snippet.extract_best_snippet(item, ranking_query)
+        item.snippet = snippet.extract_best_snippet(item, prepared_query)
     return normalized
 
 

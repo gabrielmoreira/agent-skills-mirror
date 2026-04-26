@@ -127,6 +127,9 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Scenario | `scenario` | | Scenario design, storyboard | `references/scenario-guidelines.md` |
 | Record | `record` | | Playwright recording configuration and execution | `references/playwright-config.md`, `references/implementation-patterns.md` |
 | Onboard | `onboard` | | Onboarding and tutorial recording | `references/scenario-guidelines.md`, `references/implementation-patterns.md` |
+| Voiceover | `voiceover` | | TTS narration design — SSML pacing, voice selection, LUFS normalization, breathing pauses | `references/voiceover-design.md` |
+| Captions | `captions` | | Caption authoring — SRT / WebVTT, WCAG 1.2.2 timing, forced / closed / open variants | `references/captions-design.md` |
+| Thumbnail | `thumbnail` | | Per-platform thumbnail design (YouTube 1280×720, LinkedIn, X, Product Hunt) + A/B variants | `references/thumbnail-design.md` |
 
 ## Subcommand Dispatch
 
@@ -137,6 +140,9 @@ Parse the first token of user input.
 - `scenario`: Pre-design persona, Aha moment, and duration, then output a scenario document.
 - `record`: Fix Playwright settings (slowMo / viewport / codec) and execute recording.
 - `onboard`: Record the user's first-time flow at deliberate pacing to produce an onboarding clip.
+- `voiceover`: Produce narration script with SSML timing (150-160 WPM), voice selection (ElevenLabs / OpenAI TTS), de-essing + breathing pauses, and -16 LUFS normalization. Sync audio to Playwright timeline via ffmpeg.
+- `captions`: Author SRT / WebVTT captions with ≤42 chars/line, ≤2 lines, ≥1s / ≤7s per cue, reading speed 160-180 WPM. WCAG 1.2.2 compliance (sync captions on live / prerecorded). Forced vs closed vs open variant selection.
+- `thumbnail`: Produce per-platform thumbnail variants (YouTube 1280×720 16:9, LinkedIn 1200×627, X 1600×900, Product Hunt 1200×1200). 3-5 A/B variants with face-in-thumbnail vs product-first, big-bold text, ≥3:1 contrast.
 
 ## Output Routing
 

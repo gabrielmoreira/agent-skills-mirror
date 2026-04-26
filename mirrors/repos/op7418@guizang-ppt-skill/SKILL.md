@@ -15,6 +15,7 @@ description: 生成"电子杂志 × 电子墨水"风格的横向翻页网页 PPT
 - **Lucide 线性图标**（不用 emoji）
 - **横向左右翻页**（键盘 ← →、滚轮、触屏滑动、底部圆点、ESC 索引）
 - **主题平滑插值**：翻到 hero 页时颜色和 shader 柔顺过渡
+- **翻页入场动效**（Motion One 驱动,5 种 recipe 自动匹配布局,本地 + CDN 双保险,离线可用）
 
 这个 skill 的美学不是"商务 PPT"，也不是"消费互联网 UI"——它像 *Monocle* 杂志贴上了代码后的样子。
 
@@ -226,10 +227,11 @@ open "项目/XXX/ppt/index.html"
 guizang-ppt-skill/
 ├── SKILL.md              ← 你正在读
 ├── assets/
-│   └── template.html     ← 完整的可运行模板（种子文件）
+│   ├── template.html     ← 完整的可运行模板（种子文件）
+│   └── motion.min.js     ← Motion One 本地副本（离线兜底,约 64KB）
 └── references/
-    ├── components.md     ← 组件手册（字体、色、网格、图标、callout、stat、pipeline...）
-    ├── layouts.md        ← 10 种页面布局骨架（可直接粘贴）
+    ├── components.md     ← 组件手册（字体、色、网格、图标、callout、stat、pipeline、动效...）
+    ├── layouts.md        ← 10 种页面布局骨架（可直接粘贴,含动效标记）
     ├── themes.md         ← 5 套主题色预设（只能选不能自定义）
     └── checklist.md      ← 质量检查清单（P0/P1/P2/P3 分级）
 ```
@@ -238,9 +240,11 @@ guizang-ppt-skill/
 1. 先读完 `SKILL.md`(这个文件)了解整体
 2. Step 1 需求澄清完成后,读 `themes.md` 帮用户选定一套主题色
 3. **动手前 Read `assets/template.html` 的 `<style>` 块**——这是类名的唯一来源,缺类会导致整页样式崩
-4. 读 `layouts.md` 挑布局(顶部有 Pre-flight 类名清单和主题节奏规划)
-5. 细节调整时读 `components.md` 查组件
-6. 生成后读 `checklist.md` 自检(顶部 P0-0 规则强制预检)
+4. 读 `layouts.md` 挑布局(顶部有 Pre-flight 类名清单、主题节奏规划、动效 recipe 决策树)
+5. 细节调整时读 `components.md` 查组件(含 Motion 动效系统章节)
+6. 生成后读 `checklist.md` 自检(顶部 P0-0 规则强制预检 + 动效自检块)
+
+**动效相关**:模板已把 Motion One 的加载和 5 种 recipe 逻辑全部内嵌到 `template.html` 底部的 module script。你不需要改 JS,只需要按 `layouts.md` 的骨架在 HTML 里加 `data-anim` / `data-animate` 即可。离线演示靠 `assets/motion.min.js`,断网时自动降级为"无动画但内容可读"。
 
 ## 核心设计原则（哲学）
 

@@ -116,6 +116,8 @@ def weighted_rrf(
     """Fuse ranked lists into a single candidate pool."""
     subqueries = {subquery.label: subquery for subquery in plan.subqueries}
     candidates: dict[str, schema.Candidate] = {}
+    # Track (source, item_id) pairs already attached to each candidate for O(1) dedup.
+    seen_source_items: dict[str, set[tuple[str, str]]] = {}
 
     for (label, source), items in streams.items():
         subquery = subqueries[label]
@@ -154,6 +156,7 @@ def weighted_rrf(
                         ]
                     },
                 )
+                seen_source_items[key] = {(item.source, item.item_id)}
                 continue
 
             candidate = candidates[key]
@@ -179,7 +182,9 @@ def weighted_rrf(
                 candidate.subquery_labels.append(label)
             if item.source not in candidate.sources:
                 candidate.sources.append(item.source)
-            if not any(existing.source == item.source and existing.item_id == item.item_id for existing in candidate.source_items):
+            source_item_key = (item.source, item.item_id)
+            if source_item_key not in seen_source_items[key]:
+                seen_source_items[key].add(source_item_key)
                 candidate.source_items.append(item)
             candidate.metadata.setdefault("provenance", []).append(
                 {

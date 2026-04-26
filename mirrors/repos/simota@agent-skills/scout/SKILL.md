@@ -195,6 +195,9 @@ Use [advanced-reproduction-triage.md](references/advanced-reproduction-triage.md
 | Performance Hunt | `perf` | | Profiler-led investigation when there is a clear latency, throughput drop, or CPU hotspot | `references/perf-investigation.md` |
 | Memory Hunt | `memory` | | Heap-snapshot-led investigation when OOM / heap bloat / GC pressure is suspected | `references/memory-investigation.md` |
 | Flake Hunt | `flake` | | Reproducibility diagnosis for intermittent bugs, flaky tests, and environment-dependent symptoms | `references/flake-investigation.md` |
+| 5 Whys | `5whys` | | Iterative root-cause chain (Toyota TPS) — drive from symptom to systemic cause with explicit why-chain | `references/5whys-rca.md` |
+| Fishbone / Ishikawa | `fishbone` | | Categorical RCA across 6M (Machine/Method/Material/Measurement/Mother-nature/Manpower) for multi-factor failures | `references/fishbone-6m.md` |
+| Timeline Reconstruction | `timeline` | | Incident timeline reconstruction — second-by-second event sequence, detection/response gap analysis | `references/timeline-reconstruction.md` |
 
 ## Subcommand Dispatch
 
@@ -212,6 +215,9 @@ Behavior notes per Recipe:
 - `perf`: Profiler-led flamegraph → hot path identification → classify into N+1 / algorithmic complexity / I/O / lock contention / GC pause. Delegate to Bolt (optimization implementation).
 - `memory`: Identify leak source using heap snapshot diff / retainer path / allocation timeline. Delegate to Bolt if GC pressure is the primary cause, or to Specter for concurrent leaks.
 - `flake`: Measure reproducibility rate (N trials / flip rate) → classify as environment-dependent, timing-dependent, or externally-dependent. If concurrency bug signals are strong, delegate immediately to Specter; if test-induced, to Radar.
+- `5whys`: Load `references/5whys-rca.md`. Iterative why-chain from the surface symptom to a systemic cause — each answer becomes the next question. Stop when you reach a process/design issue, not a person. Distinguish from fishbone (categorical) and 5 Whys (linear).
+- `fishbone`: Load `references/fishbone-6m.md`. Ishikawa diagram across the 6M categories (Machine / Method / Material / Measurement / Mother-nature / Manpower). Best when multiple contributing factors are suspected, and root cause is not a single chain.
+- `timeline`: Load `references/timeline-reconstruction.md`. Build a second-by-second event timeline — external user actions, system internal events, alerts, and responder actions interleaved. Used for incident post-mortems; feeds Triage.
 
 ## Output Routing
 
