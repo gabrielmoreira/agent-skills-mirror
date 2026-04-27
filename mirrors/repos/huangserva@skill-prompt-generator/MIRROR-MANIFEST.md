@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `huangserva/skill-prompt-generator` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `huangserva/skill-prompt-generator` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `huangserva/skill-prompt-generator` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.claude/skills/intelligent-prompt-generator/SKILL.md`](.claude/skills/intelligent-prompt-generator/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/prompt-analyzer/SKILL.md`](.claude/skills/prompt-analyzer/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/universal-learner/SKILL.md`](.claude/skills/universal-learner/SKILL.md) |
+| 5 | ✓ | [`.codex/skills/intelligent-prompt-generator/SKILL.md`](.codex/skills/intelligent-prompt-generator/SKILL.md) |
+| 6 | ✓ | [`.codex/skills/prompt-analyzer/SKILL.md`](.codex/skills/prompt-analyzer/SKILL.md) |
+| 7 | ✓ | [`.codex/skills/universal-learner/SKILL.md`](.codex/skills/universal-learner/SKILL.md) |
 
 ---
 

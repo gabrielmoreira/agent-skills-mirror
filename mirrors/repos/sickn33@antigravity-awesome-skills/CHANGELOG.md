@@ -11,6 +11,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _No unreleased changes yet._
 
+## [10.7.0] - 2026-04-26 - "MCP-Aware Optimization, SEO Writing Hardening, and Unslop Cleanup"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #549, #553, and #554 with maintainer source-only enforcement, fork-run approval, contributor credit sync, and generated-state refreshes on `main`. It adds a new `unslop` prose cleanup skill, improves the WordPress/social SEO writing guidance, and upgrades `zipai-optimizer` with MCP-aware operating rules.
+
+## New Skills
+
+- **unslop** - CLI-backed prose cleanup workflow for deterministic and LLM-assisted removal of AI writing patterns before publishing.
+
+## Improvements
+
+- **zipai-optimizer v12.0** - adds review-mode output labels, MCP-aware tool usage rules, pagination safeguards, SHA discipline, and regression-risk signaling.
+- **WordPress SEO writing guidance** - clarifies source-backed market claims, Yoast/SEO output conditions, examples, best practices, and common pitfalls.
+- **social-post-writer-seo** - expands usage guidance while removing unsupported example claims from maintainer edits.
+- **source-only merge hygiene** - drops derived plugin artifact edits from contributor branches, validates changed skill files, checks README source credits, and lets `main` regenerate canonical artifacts.
+
+## Who should care
+
+- **Claude Code, Cursor, Codex CLI, Gemini CLI, and Antigravity users** get a new `unslop` workflow for final prose cleanup before docs, posts, and release notes ship.
+- **MCP-heavy agent workflows** get clearer token and tool-use discipline through the updated `zipai-optimizer`.
+- **SEO/content users** get more cautious source handling and safer publishing copy requirements.
+- **Maintainers** get another tested batch through the source-only PR merge path with generated artifacts refreshed on `main`.
+
+## Credits
+
+- **[@nickdesi](https://github.com/nickdesi)** for PR #549 (`zipai-optimizer`).
+- **[@WHOISABHISHEKADHIKARI](https://github.com/WHOISABHISHEKADHIKARI)** for PR #553 (`social-post-writer-seo`, `wordpress-centric-high-seo-optimized-blogwriting-skill`).
+- **[@MohamedAbdallah-14](https://github.com/MohamedAbdallah-14)** for PR #554 (`unslop`).
+
 ## [10.6.0] - 2026-04-24 - "Agent Coordination, Browser Automation, API Integration, and Bullet Structuring"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

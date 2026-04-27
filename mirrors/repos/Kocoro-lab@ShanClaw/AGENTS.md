@@ -133,6 +133,15 @@ internal/
 
 ## Key Conventions
 
+### Auto-installed Builtin Skills
+
+Skills in `builtinSkills` (`internal/skills/api.go`) are content-addressed-overlaid from `embed.FS` to `~/.shannon/skills/<name>/` on every startup by `EnsureBuiltinSkills`; concurrent callers serialize on `~/.shannon/skills/.builtin.lock`. Two are currently shipped:
+
+- `kocoro` — daemon HTTP API + config assistant (see below).
+- `kocoro-generative-ui` — inline visualization assistant. Emits `html-artifact` fenced blocks that Kocoro Desktop renders in a sandboxed WKWebView; covers charts, diagrams, maps, SVG setup, and UI components. `hidden: true` (omitted from default `GET /skills` listings, still callable via `use_skill`).
+
+User edits to either are wiped on next startup — fork under a different skill name to customize.
+
 ### Kocoro Skill Co-Maintenance
 The `kocoro` bundled skill (`internal/skills/bundled/skills/kocoro/`) is a platform configuration assistant. Its SKILL.md and reference files (`references/*.md`) describe daemon API endpoints, config fields, and workflows. Kocoro is the AI's only source of truth for ShanClaw's HTTP surface — missing docs cause it to hallucinate workarounds. **Adding a new endpoint or feature counts as a trigger, not only modifying existing ones**; any `mux.HandleFunc(...)` in `internal/daemon/server.go` must have a matching reference entry. See CLAUDE.md for the full mapping.
 

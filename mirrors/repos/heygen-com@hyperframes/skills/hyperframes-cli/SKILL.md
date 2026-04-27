@@ -73,6 +73,20 @@ npx hyperframes preview --port 4567       # custom port (default 3002)
 
 Hot-reloads on file changes. Opens the studio in your browser automatically.
 
+When handing a project back to the user, use the Studio project URL, not the
+source `index.html` path:
+
+```text
+http://localhost:<port>/#project/<project-name>
+```
+
+Use the actual port from the preview output and the project directory name. For
+example, after `npx hyperframes preview --port 3017` in `codex-openai-video`,
+report `http://localhost:3017/#project/codex-openai-video`.
+
+Treat `index.html` as source-code context only. It is fine to link it as an
+implementation file, but do not label it as the project or preview surface.
+
 ## Rendering
 
 ```bash

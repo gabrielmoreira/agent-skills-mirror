@@ -26,6 +26,8 @@ npm run uninstall:claude-hooks
 npm run install:cursor-hooks
 npm run install:gemini-hooks
 npm run install:kiro-hooks
+npm run install:kimi-hooks
+npm run install:codex-hooks
 node hooks/codebuddy-install.js
 node hooks/opencode-install.js
 
@@ -36,7 +38,7 @@ bash test-macos.sh
 bash test-oneshot-gate.sh [state] [seconds]
 ```
 
-正常启动时，Clawd 会自动同步 Claude / Gemini / Cursor / CodeBuddy / Kiro hooks 和 opencode plugin。手动安装命令主要用于调试、重装或远程部署。
+正常启动时，Clawd 会自动同步 Claude / Codex / Gemini / Cursor / CodeBuddy / Kiro / Kimi hooks 和 opencode plugin。手动安装命令主要用于调试、重装或远程部署。
 Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/guides/copilot-setup.md`。
 
 ## Read These Docs
@@ -57,7 +59,7 @@ Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/gui
 - 事件主路径：hook / log monitor → `src/server.js` → `src/state.js` → IPC → `src/renderer.js`
 - 桌宠采用双窗口模型：渲染窗口只负责显示；输入窗口负责 pointer 事件和拖拽
 - 多会话 UI 主路径：`src/state.js` 生成 session snapshot → Dashboard / Session HUD；HUD 贴近桌宠显示当前 live session，Dashboard 负责详情、别名和跳转终端
-- `src/server.js` 启动后会异步同步缺失 hooks / plugins
+- `src/server.js` 启动后会异步同步缺失 hooks / plugins；Codex official hooks 为 primary，JSONL 轮询保留为 fallback
 - `src/server.js` 还会 watch `~/.claude/settings.json` 被外部工具覆盖的场景，并在 hook 被抹掉时自动重装
 - `src/agent-gate.js` 控制各 agent 的启用状态和权限气泡开关
 - 设置系统主链路是 `src/prefs.js` → `src/settings-controller.js` → `src/settings-store.js`
@@ -93,18 +95,20 @@ Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/gui
 | `src/focus.js` | 终端聚焦 |
 | `src/hit-renderer.js` + `src/hit-geometry.js` | 输入窗口命中、拖拽、连击反应 |
 | `agents/registry.js` | agent 注册表 |
-| `agents/codex-log-monitor.js` | Codex JSONL 轮询 |
+| `agents/codex-log-monitor.js` | Codex JSONL fallback 轮询 |
 | `agents/gemini-log-monitor.js` | Gemini session JSON 轮询 |
 | `hooks/clawd-hook.js` + `hooks/copilot-hook.js` | Claude Code / Copilot CLI 状态上报脚本 |
 | `hooks/install.js` | Claude hook 注册 / 卸载 |
 | `hooks/auto-start.js` | Claude `SessionStart` 自动拉起 Clawd 的 hook |
-| `hooks/cursor-install.js` / `gemini-install.js` / `kiro-install.js` / `codebuddy-install.js` / `opencode-install.js` | 各 agent 集成安装逻辑 |
+| `hooks/codex-hook.js` / `hooks/codex-install.js` | Codex official hooks 状态与权限审批、安装 / 卸载 |
+| `hooks/cursor-install.js` / `gemini-install.js` / `kiro-install.js` / `kimi-install.js` / `codebuddy-install.js` / `opencode-install.js` | 各 agent 集成安装逻辑 |
 | `hooks/codex-remote-monitor.js` | 远程 Codex JSONL 轮询并通过 SSH 隧道回传 |
 | `extensions/vscode/extension.js` | VS Code / Cursor 终端 tab 聚焦辅助扩展 |
 
 ## Constraints
 
 - Claude Code / CodeBuddy 的阻塞式权限审批走 `POST /permission` HTTP hook；普通状态事件走 command hook
+- Codex 的阻塞式权限审批走 official `PermissionRequest` command hook：hook 脚本长连接 `POST /permission`，只允许 stdout 返回 sanitized `behavior/message`，`updatedInput` / `updatedPermissions` / `interrupt` 必须 omit
 - hook 脚本只允许依赖 Node 内置模块，以及同目录的 `server-config.js`、`shared-process.js`、`json-utils.js`
 - hook 脚本需要稳定终端 PID 时，必须走 `getStablePid()` 进程树解析；不要用 `process.ppid` 做简化替代
 - opencode 权限不走 `permission.ask` hook，而是 event hook + reverse bridge
@@ -130,7 +134,7 @@ Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/gui
 
 - `hitWin.focusable = true` 是修复 Windows 拖拽 bug 的关键，不要轻易改回去
 - `miniTransitioning` 期间，所有窗口定位路径都必须先检查保护标志，否则 `setPosition()` 可能并发崩
-- DND 会屏蔽 hook 事件并压住 bubble，但**不应替用户做权限决定**：opencode 走 silent drop 回到 TUI 提示，Claude Code / CodeBuddy 走断连回到内置聊天/终端确认
+- DND 会屏蔽 hook 事件并压住 bubble，但**不应替用户做权限决定**：opencode 走 silent drop 回到 TUI 提示，Claude Code / CodeBuddy 走断连回到内置聊天/终端确认，Codex official hook 走 no-decision `{}` 回到原生审批提示
 - Session HUD 显示所有非 headless、非 sleeping 的 live session，包括 badge=Done 的 idle session；不要再按 `state !== "idle"` 过滤，否则完成后的 Claude Code 会话会从 HUD 消失
 - update bubble 跟随桌宠时要同时避让 Session HUD 和 permission stack；permission bubble 增删、测高、deny-and-focus 后都要触发 update bubble 重排
 - `mini-working` 是可选主题能力，缺失时必须优雅降级
@@ -138,7 +142,7 @@ Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/gui
 - Windows 前台窗口锁依赖 ALT trick + `koffi` FFI；相关回归通常不是单点逻辑 bug
 - `~/.claude/settings.json` 的 hook 恢复 watcher 必须盯目录而不是文件；原子替换会让文件级 watch 在 Windows 上静默失效
 - opencode 的 `permission.ask` hook 目前不可用，权限只能走 event hook + bridge
-- Codex CLI 只有 JSONL 轮询，约 1.5s 延迟，且 Windows 下 hooks 被 Codex 禁用
+- Codex CLI official hooks 已接入；JSONL 轮询仍是 fallback，用于 hook 不可用、hook 未覆盖事件（如 WebSearch / compaction / abort）和历史兼容。Windows command 必须用 PowerShell `& "node" ...` 格式，裸 `"node" "hook.js"` 会 exit 1
 - Kiro 没有 global hooks，只能注入到 `~/.kiro/agents/*.json`
 - `src/renderer.js` 里给 `<img>` SVG 追加的 `?_t=` cache-bust query 不能删；Chromium 会复用同 URL SVG 的动画时间线，一次性动画会停在末帧
 

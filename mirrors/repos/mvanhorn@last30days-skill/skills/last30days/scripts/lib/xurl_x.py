@@ -46,9 +46,10 @@ def is_available() -> bool:
             timeout=10,
         )
         return result.returncode == 0 and '"username"' in result.stdout
-    except FileNotFoundError:
-        return False
-    except subprocess.TimeoutExpired:
+    except (OSError, subprocess.TimeoutExpired):
+        # OSError covers FileNotFoundError (no xurl on PATH) and
+        # PermissionError (a non-executable match on PATH, e.g. WSL's
+        # /mnt/c/.../WindowsApps shim returning EACCES on exec).
         return False
 
 

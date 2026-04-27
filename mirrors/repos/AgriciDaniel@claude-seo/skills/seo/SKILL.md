@@ -6,7 +6,7 @@ argument-hint: "[command] [url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "1.9.0"
+  version: "1.9.6"
   category: seo
 ---
 
@@ -17,7 +17,7 @@ metadata:
 **Scripts:** Located at the plugin root `scripts/` directory.
 
 Comprehensive SEO analysis across all industries (SaaS, local services,
-e-commerce, publishers, agencies). Orchestrates 20 specialized sub-skills and 15 subagents
+e-commerce, publishers, agencies). Orchestrates 21 specialized sub-skills and 18 subagents
 (+ 3 optional extension sub-skills: seo-dataforseo, seo-firecrawl, and seo-image-gen).
 
 ## Quick Reference
@@ -49,6 +49,7 @@ e-commerce, publishers, agencies). Orchestrates 20 specialized sub-skills and 15
 | `/seo firecrawl [command] <url>` | Full-site crawling and site mapping (extension) |
 | `/seo dataforseo [command]` | Live SEO data via DataForSEO (extension) |
 | `/seo image-gen [use-case] <description>` | AI image generation for SEO assets (extension) |
+| `/seo flow [stage] [url\|topic]` | FLOW framework: evidence-led prompts for Find, Leverage, Optimize, Win, or Local stages |
 
 ## Orchestration Logic
 
@@ -170,7 +171,7 @@ Weighted aggregate of all categories:
 
 ## Sub-Skills
 
-This skill orchestrates 20 specialized sub-skills (+ 3 extensions):
+This skill orchestrates 21 specialized sub-skills (+ 3 extensions):
 
 1. **seo-audit** -- Full website audit with parallel delegation
 2. **seo-page** -- Deep single-page analysis
@@ -195,6 +196,7 @@ This skill orchestrates 20 specialized sub-skills (+ 3 extensions):
 21. **seo-firecrawl** -- Full-site crawling and site mapping via Firecrawl MCP (extension)
 22. **seo-dataforseo** -- Live SEO data via DataForSEO MCP (extension)
 23. **seo-image-gen** -- AI image generation for SEO assets via Gemini (extension)
+24. **seo-flow** -- FLOW framework integration (Find → Leverage → Optimize → Win, 41 AI prompts, CC BY 4.0)
 
 ## Subagents
 

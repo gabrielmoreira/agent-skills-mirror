@@ -8,10 +8,12 @@ description: 'Queries Azure Monitor activity logs and sign-in logs via azure-mon
 domain: cybersecurity
 subdomain: security-operations
 tags:
-- analyzing
 - azure
-- activity
-- logs
+- cloud-security
+- azure-monitor
+- kql
+- threat-hunting
+- activity-logs
 version: '1.0'
 author: mahipal
 license: Apache-2.0

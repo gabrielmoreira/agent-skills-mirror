@@ -18,6 +18,7 @@ Full template library for Prompt Master. Read the relevant template when the use
 | [J — Reference Image Editing](#template-j--reference-image-editing) | Editing an existing image with a reference |
 | [K — ComfyUI](#template-k--comfyui) | ComfyUI node-based image workflows |
 | [L — Prompt Decompiler](#template-l--prompt-decompiler) | Breaking down, adapting, or splitting existing prompts |
+| [M — Opus 4.7 Task Brief](#template-m--opus-4.7-task-brief) | Complex, multi-step, or agentic task on Claude Opus 4.7 |
 
 ---
 
@@ -393,3 +394,59 @@ Prompt 2 — [what it handles]:
 
 Run these in order. Each output feeds the next.
 ```
+---
+
+## Template M — Opus 4.7 Task Brief
+
+*Use for any complex, multi-step, or agentic task on Claude Opus 4.7 — claude.ai, API, or Claude Code. Opus 4.7 reads prompts literally. Missing context produces narrow output. This template front-loads everything so the first turn is the only turn.*
+
+```
+## Objective
+[What needs to be built, fixed, or produced — one clear sentence. Add WHY if it affects approach.]
+
+## Context
+[What exists now — relevant files, current behavior, stack already in place, what was tried and failed]
+
+## Target State
+[What done looks like — specific files changed, behavior produced, tests passing. Binary where possible.]
+
+## Scope
+- Work only in: [specific files and directories]
+- Do NOT touch: [forbidden files — .env, package-lock.json, configs, anything outside scope]
+
+## Constraints
+- [Stack version, naming conventions, no new dependencies without asking]
+- Only make changes directly requested. Do not add features, abstractions, or files beyond what was asked.
+
+## Acceptance Criteria
+- [ ] [Binary check 1]
+- [ ] [Binary check 2]
+- [ ] [Binary check 3]
+
+## Stop Conditions
+Stop and ask before:
+- Deleting any file
+- Adding any dependency
+- Modifying database schema or migrations
+- Touching anything outside Scope
+
+## Progress
+After each completed step: ✅ [what was done] — [file(s) affected]
+```
+
+**Thinking depth** — add only when needed, delete otherwise:
+- Hard multi-step task: `"Think carefully and step-by-step before starting."`
+- Simple targeted change: `"Prioritize responding quickly. This is a scoped change."`
+- Default: say nothing — adaptive thinking calibrates itself.
+
+**Claude Code only — add Session Strategy block when relevant:**
+```
+## Session Strategy
+[Pick one:]
+- New session — unrelated to prior context, start fresh
+- Continue — prior context still needed
+- Subagent — spin off for [file-heavy research / verification] so intermediate output stays out of main context
+- Compact first — run /compact [focus on X] then begin
+```
+
+**When to use:** Opus 4.7 on any surface — claude.ai, API, Claude Code — when the task is complex, multi-file, ambiguous, or agentic. Not needed for simple one-shot tasks.

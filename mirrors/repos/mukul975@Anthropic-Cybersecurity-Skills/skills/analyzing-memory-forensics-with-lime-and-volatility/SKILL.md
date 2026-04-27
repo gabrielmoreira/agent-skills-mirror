@@ -8,10 +8,12 @@ description: 'Performs Linux memory acquisition using LiME (Linux Memory Extract
 domain: cybersecurity
 subdomain: security-operations
 tags:
-- analyzing
-- memory
-- forensics
-- with
+- memory-forensics
+- linux-forensics
+- lime
+- volatility
+- incident-response
+- kernel-modules
 version: '1.0'
 author: mahipal
 license: Apache-2.0

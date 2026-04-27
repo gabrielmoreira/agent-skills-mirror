@@ -1,11 +1,20 @@
 // Codex CLI agent configuration
-// Windows hooks completely disabled — uses JSONL log polling instead
+// Official hooks are primary for lifecycle state; JSONL polling remains as
+// fallback and for events official hooks do not cover yet.
 
 module.exports = {
   id: "codex",
   name: "Codex CLI",
   processNames: { win: ["codex.exe"], mac: ["codex"], linux: ["codex"] },
-  eventSource: "log-poll",
+  eventSource: "hook+log-poll",
+  eventMap: {
+    SessionStart: "idle",
+    UserPromptSubmit: "thinking",
+    PreToolUse: "working",
+    PermissionRequest: "notification",
+    PostToolUse: "working",
+    Stop: "codex-turn-end",
+  },
   // JSONL record type:subtype → pet state mapping
   // ⚠️ Also duplicated in hooks/codex-remote-monitor.js (zero-dep requirement) — keep in sync
   logEventMap: {
@@ -25,9 +34,9 @@ module.exports = {
   },
   capabilities: {
     httpHook: false,
-    permissionApproval: false,
-    // Read-only "Got it" notification, not an approval prompt — kept
-    // separate from permissionApproval so UI doesn't mislabel it.
+    permissionApproval: true,
+    // Official PermissionRequest is a real approval path. JSONL fallback still
+    // keeps interactiveBubble=true for older/no-hook sessions.
     interactiveBubble: true,
     sessionEnd: false, // no SessionEnd event, rely on task_complete + timeout
     subagent: false,
@@ -37,5 +46,9 @@ module.exports = {
     filePattern: "rollout-*.jsonl",
     pollIntervalMs: 1500,
   },
+  hookConfig: {
+    configFormat: "codex-hooks-json",
+  },
+  stdinFormat: "codexHookJson",
   pidField: "codex_pid",
 };

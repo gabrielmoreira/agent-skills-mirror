@@ -27,8 +27,8 @@ openclaw.anywhere/
 - **Payments**: Polar SDK
 - **Cloud Provider**: Hetzner Cloud
 - **DNS**: Cloudflare
-- **SSH/Terminal**: SSH2 + WebSocket (ws) for remote terminal access
-- **Runtime**: Node.js 20+ with tsx
+- **SSH/Terminal**: SSH2 + Bun native WebSocket for remote terminal access
+- **Runtime**: Bun
 
 ### Frontend (apps/web)
 
@@ -381,8 +381,8 @@ import { Fragment } from 'react'
 **Migrations**: Use Drizzle Kit
 
 ```bash
-pnpm --filter api db:generate  # Generate migration
-pnpm --filter api db:migrate   # Run migrations
+bun --filter api db:generate  # Generate migration
+bun --filter api db:migrate   # Run migrations
 ```
 
 ### API Structure
@@ -494,20 +494,19 @@ The provider resolver includes in-memory caching with TTL (5 min for server type
 
 ### Prerequisites
 
-- **Node.js**: >= 20
-- **pnpm**: 10.29.3 (`corepack enable` or `npm install -g pnpm@10.29.3`)
+- **Bun**: >= 1.0
 
 ### Initial Setup
 
 ```bash
-pnpm install                           # Install all dependencies
-pnpm --filter api db:migrate           # Run database migrations
+bun install                           # Install all dependencies
+bun --filter api db:migrate           # Run database migrations
 ```
 
 To set up Polar payment products:
 
 ```bash
-pnpm --filter api exec tsx scripts/create-polar-products.ts hetzner
+cd apps/api && bun scripts/create-polar-products.ts hetzner
 ```
 
 The command outputs `POLAR_PRODUCT_*` env vars to add to `apps/api/.env`.
@@ -516,21 +515,21 @@ The command outputs `POLAR_PRODUCT_*` env vars to add to `apps/api/.env`.
 
 ```bash
 # Development
-pnpm dev          # Run all apps
-pnpm dev:web      # Run web only (port 1111)
-pnpm dev:api      # Run API only (port 2222)
+bun dev          # Run all apps
+bun dev:web      # Run web only (port 1111)
+bun dev:api      # Run API only (port 2222)
 # Building
-pnpm build        # Build all apps
+bun build        # Build all apps
 
 # Database
-pnpm --filter api db:generate
-pnpm --filter api db:migrate
-pnpm --filter api db:studio
+bun --filter api db:generate
+bun --filter api db:migrate
+bun --filter api db:studio
 
 # Linting & Formatting
-pnpm check        # tsc + eslint for all apps
-pnpm lint         # ESLint check
-pnpm format       # Prettier + ESLint auto-fix
+bun check        # tsc + eslint for all apps
+bun lint         # ESLint check
+bun format       # Prettier + ESLint auto-fix
 ```
 
 ### Ports
@@ -739,8 +738,8 @@ React-specific rules (web app only):
 
 On every commit, Husky runs:
 
-1. `pnpm check` — Runs `tsc --noEmit` and `eslint .` for api and web
-2. `pnpm version:patch` — Auto-bumps patch version in `apps/api/package.json` and `apps/web/package.json`
+1. `bun check` — Runs `tsc --noEmit` and `eslint .` for api and web
+2. `bun version:patch` — Auto-bumps patch version in `apps/api/package.json` and `apps/web/package.json`
 3. Stages the bumped `package.json` files
 
 ### How to Follow These Rules
@@ -781,11 +780,11 @@ const myObject = {
 ### Verification Commands
 
 ```bash
-pnpm format:check    # Check if all files match Prettier rules
-pnpm format          # Auto-fix Prettier formatting
-pnpm lint            # Check ESLint rules
-pnpm lint:fix        # Auto-fix ESLint issues
-pnpm check           # Run tsc + eslint for both api and web
+bun format:check    # Check if all files match Prettier rules
+bun format          # Auto-fix Prettier formatting
+bun lint            # Check ESLint rules
+bun lint:fix        # Auto-fix ESLint issues
+bun check           # Run tsc + eslint for both api and web
 ```
 
 ## Guidelines for AI
@@ -806,7 +805,7 @@ pnpm check           # Run tsc + eslint for both api and web
 14. **Never add console.log** - Do not add `console.log` statements. Use `console.error` only for actual error handling in catch blocks. No debug logging, no request logging, no data logging. **`console.error` format must be exactly `console.error('functionName', error)`** — first argument is the function name as a plain string (no message, no colon, no description), second argument is the caught error. The catch variable must be named `error`, never `err`. For nested catches where `error` is already in scope, use a descriptive suffix like `dnsError`, `volumeError`, `subError`
 15. **No section markers** - Never write comments like `// Section Name`, `{/* Section */}`, `// ========`, or category headers in files
 16. **Strict formatting compliance** - Every line of code must follow the Prettier and ESLint rules defined above. 4-space indentation, single quotes, no semicolons, no trailing commas, no end-of-file newlines. No exceptions
-17. **Run checks after changes** - After writing or modifying code, verify with `pnpm lint` and `pnpm format:check` to ensure compliance
+17. **Run checks after changes** - After writing or modifying code, verify with `bun lint` and `bun format:check` to ensure compliance
 18. **Use camelCase for SVG attributes in JSX** - React requires camelCase for SVG/HTML attributes. Use `stopColor` not `stop-color`, `stopOpacity` not `stop-opacity`, `fillRule` not `fill-rule`, `clipPath` not `clip-path`, `strokeWidth` not `stroke-width`, etc.
 19. **Full cleanup on feature removal** - When removing a feature, delete ALL related code: components, hooks, store properties, interfaces/types, translation keys, utility functions, data files, barrel exports, API routes/controllers, and constants. Never leave orphaned code behind
 20. **Use PATHS for all URL path segments** - Never hardcode URL path segments like `'/blog'` or `'claws'`. Always use `PATHS` from `@/lib/paths` (or `@/lib`) for path segments and `ROUTES` from `@/lib/routes` (or `@/lib`) for full route strings. When constructing URLs in scripts, components, or SEO metadata, use `PATHS.BLOG`, `PATHS.LOGIN`, etc. To change a URL, update it only in `paths.ts` — everything else derives from it

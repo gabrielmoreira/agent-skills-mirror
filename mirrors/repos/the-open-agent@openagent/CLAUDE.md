@@ -105,7 +105,7 @@ cd web && yarn lint
 2. Frontend build (Node.js 20 + Yarn)
 3. Go binary build
 4. golangci-lint
-5. Semantic release + Docker push to `the-open-agent/openagent`
+5. Semantic release + Docker push to `casbin/openagent` (and `casbin/openagent-all-in-one`)
 
 ## Configuration
 

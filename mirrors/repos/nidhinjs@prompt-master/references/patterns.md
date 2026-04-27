@@ -1,6 +1,6 @@
 # Credit-Killing Patterns Reference
 
-35 patterns that waste tokens and cause re-prompts. Read this file when the user pastes a bad prompt and asks you to fix it, or when diagnosing why a prompt is underperforming.
+37 patterns that waste tokens and cause re-prompts. Read this file when the user pastes a bad prompt and asks you to fix it, or when diagnosing why a prompt is underperforming.
 
 ---
 
@@ -78,3 +78,5 @@
 | 33 | **Silent agent** | No progress output | "After each step output: ✅ [what was completed]" |
 | 34 | **Unlocked filesystem** | No file restrictions | "Only edit files inside `src/`. Do not touch `package.json`, `.env`, or any config file." |
 | 35 | **No human review trigger** | Agent decides everything autonomously | "Stop and ask before: deleting any file, adding any dependency, or changing the database schema" |
+| 36 | **Vague first turn on Opus 4.7** | "fix the auth bug" with no scope, no files, no criteria | Opus 4.7 reads prompts literally — it no longer fills implicit context like 4.6 did. Use Template M. Front-load intent, file scope, constraints, and acceptance criteria. |
+| 37 | **Context rot on long sessions** | Keeps correcting in the same session for 60+ turns | New task = new session. Use /rewind instead of correcting. /compact at ~50% context. Subagents for file-heavy investigation. |schema" |

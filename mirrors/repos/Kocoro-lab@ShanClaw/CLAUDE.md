@@ -147,6 +147,13 @@ When a feature is added, refactored, or significantly changed, check and update 
 - **CLAUDE.md** — developer-facing: project structure tree, conventions, file paths, architecture notes
 - **AGENTS.md** — external-agent-facing: overlaps with CLAUDE.md (structure tree, conventions, tool inventory). Keep in sync.
 
+### Auto-installed Builtin Skills
+
+Skills listed in `builtinSkills` (`internal/skills/api.go`) are synced from `embed.FS` to `~/.shannon/skills/<name>/` on every daemon/TUI/CLI startup via `EnsureBuiltinSkills`. The mechanism is content-addressed: a sha256 walk over the embed subtree is compared against the on-disk subtree, and any drift triggers a wipe-and-overlay (per-file `temp+rename`, dest-dir `RemoveAll` first to evict orphans). Concurrent callers serialize on `~/.shannon/skills/.builtin.lock`. User edits to a builtin SKILL.md are wiped on next startup — fork under a different skill name to customize. Current builtins:
+
+- `kocoro` — daemon HTTP API + config assistant (see "Kocoro Skill Co-Maintenance" below).
+- `kocoro-generative-ui` — inline visualization assistant. Teaches the LLM how to emit `html-artifact` fenced blocks that Kocoro Desktop renders in a sandboxed WKWebView. `hidden: true` (excluded from end-user `GET /skills` listings, still loadable via `use_skill`). Reference files cover charts, structural / illustrative diagrams, geographic maps, SVG setup, and UI components.
+
 ### Kocoro Skill Co-Maintenance
 The `kocoro` bundled skill (`internal/skills/bundled/skills/kocoro/`) is a platform configuration assistant that teaches the AI how to manage ShanClaw via the daemon HTTP API. Its SKILL.md and 11 reference files (`references/*.md`) describe available API endpoints, config fields, and workflows. **Kocoro is the AI's only source of truth for ShanClaw's HTTP surface — if it doesn't know an endpoint exists, it will hallucinate a workaround (e.g., telling users to edit `.env` when the API handles secrets).**
 

@@ -6,10 +6,12 @@ description: Parse Windows PowerShell Script Block Logs (Event ID 4104) from EVT
 domain: cybersecurity
 subdomain: security-operations
 tags:
-- analyzing
 - powershell
-- script
-- block
+- script-block-logging
+- event-id-4104
+- obfuscation-detection
+- windows-forensics
+- endpoint-security
 version: '1.0'
 author: mahipal
 license: Apache-2.0

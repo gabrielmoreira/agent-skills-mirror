@@ -214,11 +214,14 @@ editor state.
 
 1. `cua-driver` is on `$PATH` (`which cua-driver`). If not, point the
    user at `scripts/install-local.sh` and stop.
-2. Run `cua-driver check_permissions`. If either grant is `false`, tell
-   the user to open System Settings → Privacy & Security and grant
+2. Run `cua-driver check_permissions` (with the daemon up — see step 3).
+   The default behavior also raises the system permission dialogs for
+   any missing grants, so the user can grant on the spot. If either
+   grant still reads `false` after that (user dismissed the dialog),
+   tell them to open System Settings → Privacy & Security and grant
    Accessibility and Screen Recording to `CuaDriver.app`, then stop.
-   (`cua-driver check_permissions '{"prompt":true}'` raises the system
-   dialogs, but only do that if the user asks — it steals focus.)
+   Pass `'{"prompt":false}'` for a purely read-only status check that
+   won't steal focus.
 3. Start the daemon with `open -n -g -a CuaDriver --args serve` (the
    recommended form — goes through LaunchServices so TCC attributes
    the process to CuaDriver.app). `cua-driver serve &` also works;
@@ -746,6 +749,69 @@ in-page clicks, and typing into web inputs.
 Chromium web content specifically also coerces `right_click` back to
 left — use `element_index` for AX-addressable targets and accept the
 limit otherwise.
+
+### Browser JS primitives — `page` tool and `get_window_state(javascript=)`
+
+When the AX tree doesn't expose the data you need (common in
+Chromium/Electron — the tree is sparse for web content), use the
+`page` tool or the `javascript` param on `get_window_state` to query
+the DOM directly via Apple Events. Requires "Allow JavaScript from
+Apple Events" to be enabled — see `WEB_APPS.md` for the setup path.
+
+**Three actions on the `page` tool:**
+
+- `page({pid, window_id, action: "get_text"})` — returns
+  `document.body.innerText`. Fastest way to read page content, prices,
+  article text, or any raw text the AX tree truncates or omits.
+
+- `page({pid, window_id, action: "query_dom", css_selector: "a[href]",
+  attributes: ["href"]})` — runs `querySelectorAll` and returns each
+  match's tag, text, and requested attributes as a JSON array. Use for
+  table rows, link hrefs, data attributes, structured page data.
+
+- `page({pid, window_id, action: "execute_javascript", javascript:
+  "..."})` — raw JS. Wrap in an IIFE with try-catch. Don't use this for
+  elements already indexed by `get_window_state` — `click` and
+  `set_value` are more reliable there.
+
+**Co-located read — `get_window_state` with `javascript`:**
+
+```
+get_window_state({pid, window_id, javascript: "document.title"})
+```
+
+Runs the JS and appends the result as a `## JavaScript result` section
+alongside the AX snapshot — one round-trip instead of two. Use this
+when you need both the element tree (for subsequent clicks) and some
+page data in the same turn.
+
+**Decision rule — AX vs JS:**
+
+| Need | Use |
+|---|---|
+| Click / type into an element | `get_window_state` → `click` / `set_value` (AX, works backgrounded) |
+| Read text the AX tree drops | `page(get_text)` or `get_window_state(javascript=)` |
+| Scrape structured data (tables, hrefs) | `page(query_dom)` |
+| Trigger JS events / mutations | `page(execute_javascript)` |
+
+Supported backends:
+
+| App type | How | Context |
+|---|---|---|
+| Chrome / Brave / Edge | Apple Events `execute javascript` | Full DOM ✅ |
+| Safari | Apple Events `do JavaScript` | Full DOM ✅ |
+| Electron (VS Code, Cursor…) | SIGUSR1 → V8 inspector → CDP | Main process only: `process`, `Buffer` — no `document`, no `require` in sandboxed apps |
+| Electron (with `--remote-debugging-port`) | CDP page target | Full DOM ✅ |
+
+**Electron sandbox note:** SIGUSR1 connects to the Node.js *main* process.
+Sandboxed Electron apps (VS Code, Cursor) strip `require` and Electron
+APIs there. Useful for: `process.env`, `process.versions`, `process.cwd()`,
+`process.pid`. For full DOM/renderer access, launch the app with
+`--remote-debugging-port=9222` — cua-driver will detect and prefer the
+page target automatically.
+
+Arc returns no values; Firefox has no JS-via-AppleEvents support — see
+`WEB_APPS.md` for the full matrix.
 
 ### 3. Re-snapshot and verify — mandatory
 

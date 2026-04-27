@@ -40,6 +40,7 @@ ClawSec is a **complete security skill suite for AI agent platforms**. It provid
 - **OpenClaw** (MoltBot, Clawdbot, and clones) - Full suite with skill installer, file integrity protection, and security audits
 - **NanoClaw** - Containerized WhatsApp bot security with MCP tools for advisory monitoring, signature verification, and file integrity
 - **Hermes** - Hermes-native security skills for signed advisory feed verification, advisory-aware guarded verification, deterministic attestation generation, fail-closed verification, and baseline drift detection
+- **Picoclaw** - Lightweight AI gateway security posture checks with advisory awareness, config drift detection, release-artifact verification, and an optional separate self-pen-testing package
 
 ### Skill Feature Matrix
 
@@ -54,6 +55,8 @@ ClawSec is a **complete security skill suite for AI agent platforms**. It provid
 | clawtributor | OpenClaw | Yes | No | No | No |
 | hermes-attestation-guardian | Hermes | Yes (signed advisory feed verification) | Yes | No | Limited (advisory preflight gating only; no artifact signature/provenance install verification) |
 | openclaw-audit-watchdog | OpenClaw | No | No | Yes | No |
+| picoclaw-security-guardian | Picoclaw | Yes | Yes | No | Yes |
+| picoclaw-self-pen-testing | Picoclaw | No | No | Yes | No |
 | soul-guardian | OpenClaw | No | Yes | No | No |
 
 ### Core Capabilities
@@ -135,12 +138,16 @@ Troubleshooting: if you see directories such as `~/.openclaw/workspace/$HOME/...
 Detailed platform and suite docs live in the wiki modules:
 - NanoClaw: [wiki/modules/nanoclaw-integration.md](wiki/modules/nanoclaw-integration.md)
 - Hermes: [wiki/modules/hermes-attestation-guardian.md](wiki/modules/hermes-attestation-guardian.md)
+- Picoclaw: [wiki/modules/picoclaw-security-guardian.md](wiki/modules/picoclaw-security-guardian.md)
+- Picoclaw self-pen-testing: [wiki/modules/picoclaw-self-pen-testing.md](wiki/modules/picoclaw-self-pen-testing.md)
 - ClawSec Suite (OpenClaw): [wiki/modules/clawsec-suite.md](wiki/modules/clawsec-suite.md)
 - CI/CD pipelines: [wiki/modules/automation-release.md](wiki/modules/automation-release.md)
 
 Quick install links:
 - NanoClaw install: [skills/clawsec-nanoclaw/INSTALL.md](skills/clawsec-nanoclaw/INSTALL.md)
 - Hermes skill package: `skills/hermes-attestation-guardian/`
+- Picoclaw guardian package: `skills/picoclaw-security-guardian/`
+- Picoclaw self-pen-testing package: `skills/picoclaw-self-pen-testing/`
 - Suite package: `skills/clawsec-suite/`
 
 ---
@@ -164,6 +171,7 @@ Compatibility mirror (legacy): `https://clawsec.prompt.security/releases/latest/
 The feed polls CVEs related to:
 - **OpenClaw Platform**: `OpenClaw`, `clawdbot`, `Moltbot`
 - **NanoClaw Platform**: `NanoClaw`, `WhatsApp-bot`, `baileys`
+- **Picoclaw Platform**: `Picoclaw`, `picoclaw`, lightweight AI gateways, MCP gateway exposure
 - Prompt injection patterns
 - Agent security vulnerabilities
 
@@ -219,7 +227,9 @@ This feature helps agents prioritize vulnerabilities that pose immediate threats
 **Platform values:**
 - `"openclaw"` - OpenClaw/Clawdbot/MoltBot only
 - `"nanoclaw"` - NanoClaw only
-- `["openclaw", "nanoclaw"]` - Both platforms
+- `"hermes"` - Hermes only
+- `"picoclaw"` - Picoclaw only
+- `["openclaw", "nanoclaw", "hermes", "picoclaw"]` - All core platforms
 - (empty/missing) - All platforms (backward compatible)
 
 ---
@@ -340,6 +350,8 @@ npm run build
 │   ├── clawtributor/                # 🤝 Community reporting skill
 │   ├── hermes-attestation-guardian/ # 🛡️ Hermes attestation + drift verification
 │   ├── openclaw-audit-watchdog/     # 🔭 Automated audit skill
+│   ├── picoclaw-security-guardian/  # 🦐 Picoclaw posture/advisory/drift/supply-chain checks
+│   ├── picoclaw-self-pen-testing/   # 🧪 Picoclaw self-pen-testing checks (separate package)
 │   └── soul-guardian/               # 👻 File integrity skill
 ├── utils/
 │   ├── package_skill.py             # Skill packager utility

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `prompt-security/clawsec` — 26 default patterns, 9 followed patterns, 183 file(s) materialized.
+Mirror of `prompt-security/clawsec` — 26 default patterns, 11 followed patterns, 209 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `prompt-security/clawsec` — 26 default patterns, 9 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 183 |
+| Followed pats | 11 |
+| Files         | 209 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,8 @@ Mirror of `prompt-security/clawsec` — 26 default patterns, 9 followed patterns
 - `README.md`
 - `wiki/modules/nanoclaw-integration.md`
 - `wiki/modules/hermes-attestation-guardian.md`
+- `wiki/modules/picoclaw-security-guardian.md`
+- `wiki/modules/picoclaw-self-pen-testing.md`
 - `wiki/modules/clawsec-suite.md`
 - `wiki/modules/automation-release.md`
 - `wiki/security-signing-runbook.md`
@@ -231,25 +233,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 162 | ✓ | [`skills/openclaw-audit-watchdog/test/setup_cron.test.mjs`](skills/openclaw-audit-watchdog/test/setup_cron.test.mjs) |
 | 163 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config_fuzz.test.mjs) |
 | 164 | ✓ | [`skills/openclaw-audit-watchdog/test/suppression_config.test.mjs`](skills/openclaw-audit-watchdog/test/suppression_config.test.mjs) |
-| 165 | ✓ | [`skills/soul-guardian/.clawhubignore`](skills/soul-guardian/.clawhubignore) |
-| 166 | ✓ | [`skills/soul-guardian/CHANGELOG.md`](skills/soul-guardian/CHANGELOG.md) |
-| 167 | ✓ | [`skills/soul-guardian/README.md`](skills/soul-guardian/README.md) |
-| 168 | ✓ | [`skills/soul-guardian/scripts/install_launchd_plist.py`](skills/soul-guardian/scripts/install_launchd_plist.py) |
-| 169 | ✓ | [`skills/soul-guardian/scripts/onboard_state_dir.py`](skills/soul-guardian/scripts/onboard_state_dir.py) |
-| 170 | ✓ | [`skills/soul-guardian/scripts/soul_guardian.py`](skills/soul-guardian/scripts/soul_guardian.py) |
-| 171 | ✓ | [`skills/soul-guardian/scripts/test_install_launchd_plist.py`](skills/soul-guardian/scripts/test_install_launchd_plist.py) |
-| 172 | ✓ | [`skills/soul-guardian/scripts/test_soul_guardian.py`](skills/soul-guardian/scripts/test_soul_guardian.py) |
-| 173 | ✓ | [`skills/soul-guardian/skill.json`](skills/soul-guardian/skill.json) |
-| 174 | ✓ | [`skills/soul-guardian/SKILL.md`](skills/soul-guardian/SKILL.md) |
-| 175 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 176 | → | [`font/README.md`](font/README.md) |
-| 177 | → | [`README.md`](README.md) |
-| 178 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
-| 179 | → | [`wiki/modules/automation-release.md`](wiki/modules/automation-release.md) |
-| 180 | → | [`wiki/modules/clawsec-suite.md`](wiki/modules/clawsec-suite.md) |
-| 181 | → | [`wiki/modules/hermes-attestation-guardian.md`](wiki/modules/hermes-attestation-guardian.md) |
-| 182 | → | [`wiki/modules/nanoclaw-integration.md`](wiki/modules/nanoclaw-integration.md) |
-| 183 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
+| 165 | ✓ | [`skills/picoclaw-security-guardian/CHANGELOG.md`](skills/picoclaw-security-guardian/CHANGELOG.md) |
+| 166 | ✓ | [`skills/picoclaw-security-guardian/lib/advisories.mjs`](skills/picoclaw-security-guardian/lib/advisories.mjs) |
+| 167 | ✓ | [`skills/picoclaw-security-guardian/lib/drift.mjs`](skills/picoclaw-security-guardian/lib/drift.mjs) |
+| 168 | ✓ | [`skills/picoclaw-security-guardian/lib/profile.mjs`](skills/picoclaw-security-guardian/lib/profile.mjs) |
+| 169 | ✓ | [`skills/picoclaw-security-guardian/lib/supply_chain.mjs`](skills/picoclaw-security-guardian/lib/supply_chain.mjs) |
+| 170 | ✓ | [`skills/picoclaw-security-guardian/README.md`](skills/picoclaw-security-guardian/README.md) |
+| 171 | ✓ | [`skills/picoclaw-security-guardian/scripts/check_advisories.mjs`](skills/picoclaw-security-guardian/scripts/check_advisories.mjs) |
+| 172 | ✓ | [`skills/picoclaw-security-guardian/scripts/check_drift.mjs`](skills/picoclaw-security-guardian/scripts/check_drift.mjs) |
+| 173 | ✓ | [`skills/picoclaw-security-guardian/scripts/generate_profile.mjs`](skills/picoclaw-security-guardian/scripts/generate_profile.mjs) |
+| 174 | ✓ | [`skills/picoclaw-security-guardian/scripts/verify_supply_chain.mjs`](skills/picoclaw-security-guardian/scripts/verify_supply_chain.mjs) |
+| 175 | ✓ | [`skills/picoclaw-security-guardian/skill.json`](skills/picoclaw-security-guardian/skill.json) |
+| 176 | ✓ | [`skills/picoclaw-security-guardian/SKILL.md`](skills/picoclaw-security-guardian/SKILL.md) |
+| 177 | ✓ | [`skills/picoclaw-security-guardian/test/drift.test.mjs`](skills/picoclaw-security-guardian/test/drift.test.mjs) |
+| 178 | ✓ | [`skills/picoclaw-security-guardian/test/picoclaw_security_guardian_sandbox_regression.sh`](skills/picoclaw-security-guardian/test/picoclaw_security_guardian_sandbox_regression.sh) |
+| 179 | ✓ | [`skills/picoclaw-security-guardian/test/profile.test.mjs`](skills/picoclaw-security-guardian/test/profile.test.mjs) |
+| 180 | ✓ | [`skills/picoclaw-security-guardian/test/supply_chain.test.mjs`](skills/picoclaw-security-guardian/test/supply_chain.test.mjs) |
+| 181 | ✓ | [`skills/picoclaw-self-pen-testing/CHANGELOG.md`](skills/picoclaw-self-pen-testing/CHANGELOG.md) |
+| 182 | ✓ | [`skills/picoclaw-self-pen-testing/lib/format.mjs`](skills/picoclaw-self-pen-testing/lib/format.mjs) |
+| 183 | ✓ | [`skills/picoclaw-self-pen-testing/lib/self_pen_test.mjs`](skills/picoclaw-self-pen-testing/lib/self_pen_test.mjs) |
+| 184 | ✓ | [`skills/picoclaw-self-pen-testing/README.md`](skills/picoclaw-self-pen-testing/README.md) |
+| 185 | ✓ | [`skills/picoclaw-self-pen-testing/scripts/self_pen_test.mjs`](skills/picoclaw-self-pen-testing/scripts/self_pen_test.mjs) |
+| 186 | ✓ | [`skills/picoclaw-self-pen-testing/skill.json`](skills/picoclaw-self-pen-testing/skill.json) |
+| 187 | ✓ | [`skills/picoclaw-self-pen-testing/SKILL.md`](skills/picoclaw-self-pen-testing/SKILL.md) |
+| 188 | ✓ | [`skills/picoclaw-self-pen-testing/test/self_pen_test.test.mjs`](skills/picoclaw-self-pen-testing/test/self_pen_test.test.mjs) |
+| 189 | ✓ | [`skills/soul-guardian/.clawhubignore`](skills/soul-guardian/.clawhubignore) |
+| 190 | ✓ | [`skills/soul-guardian/CHANGELOG.md`](skills/soul-guardian/CHANGELOG.md) |
+| 191 | ✓ | [`skills/soul-guardian/README.md`](skills/soul-guardian/README.md) |
+| 192 | ✓ | [`skills/soul-guardian/scripts/install_launchd_plist.py`](skills/soul-guardian/scripts/install_launchd_plist.py) |
+| 193 | ✓ | [`skills/soul-guardian/scripts/onboard_state_dir.py`](skills/soul-guardian/scripts/onboard_state_dir.py) |
+| 194 | ✓ | [`skills/soul-guardian/scripts/soul_guardian.py`](skills/soul-guardian/scripts/soul_guardian.py) |
+| 195 | ✓ | [`skills/soul-guardian/scripts/test_install_launchd_plist.py`](skills/soul-guardian/scripts/test_install_launchd_plist.py) |
+| 196 | ✓ | [`skills/soul-guardian/scripts/test_soul_guardian.py`](skills/soul-guardian/scripts/test_soul_guardian.py) |
+| 197 | ✓ | [`skills/soul-guardian/skill.json`](skills/soul-guardian/skill.json) |
+| 198 | ✓ | [`skills/soul-guardian/SKILL.md`](skills/soul-guardian/SKILL.md) |
+| 199 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 200 | → | [`font/README.md`](font/README.md) |
+| 201 | → | [`README.md`](README.md) |
+| 202 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
+| 203 | → | [`wiki/modules/automation-release.md`](wiki/modules/automation-release.md) |
+| 204 | → | [`wiki/modules/clawsec-suite.md`](wiki/modules/clawsec-suite.md) |
+| 205 | → | [`wiki/modules/hermes-attestation-guardian.md`](wiki/modules/hermes-attestation-guardian.md) |
+| 206 | → | [`wiki/modules/nanoclaw-integration.md`](wiki/modules/nanoclaw-integration.md) |
+| 207 | → | [`wiki/modules/picoclaw-security-guardian.md`](wiki/modules/picoclaw-security-guardian.md) |
+| 208 | → | [`wiki/modules/picoclaw-self-pen-testing.md`](wiki/modules/picoclaw-self-pen-testing.md) |
+| 209 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
 
 ---
 

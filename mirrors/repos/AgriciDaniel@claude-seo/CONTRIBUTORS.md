@@ -21,6 +21,14 @@ into v1.9.0 with the contributors' permission.
 | **Matej Marjanovic** | E-commerce + DataForSEO Cost Config + ASO + Platform Support | [matej-marjanovic/claude-seo](https://github.com/matej-marjanovic/claude-seo) | `seo-ecommerce` (core), cost infrastructure, `seo-aso` (extension), `AGENTS.md` |
 | **Benjamin Samar** | SEO Dungeon | -- | Reviewed (not integrated in v1.9.0) |
 
+## Framework Integration (v1.9.5)
+
+| Source | Type | License | Integrated As |
+|--------|------|---------|--------------|
+| **[FLOW](https://github.com/AgriciDaniel/flow)** — Daniel Agrici | 41 AI prompts + framework doc + bibliography | CC BY 4.0 | `seo-flow` skill + `skills/seo-flow/references/` |
+
+Attribution header on every bundled prompt file (automated by `scripts/sync_flow.py`).
+
 ## Community Pull Requests
 
 | Contributor | PR | What |

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/hero-banner.png" width="100%" alt="AI Collab Playbook" />
+  <img src="docs/figs/hero-banner.png" width="100%" alt="AI Collab Playbook" />
 </p>
 
 <p align="center">
@@ -8,9 +8,9 @@
 
 ---
 
-这是一份我在读博士期间持续更新的 **AI 协作手册**。它不是“装哪些工具”的清单，也不是“怎么写 Prompt”的速成教程，而是记录我如何把 AI 放进真实的学习、科研、写作、编程和日常生活里：什么时候该让 AI 执行，什么时候必须自己判断；什么时候该沉淀成 Skill，什么时候反而应该做减法。
+这是一份我在读博士期间持续更新的 **AI 协作手册**。它不是“装哪些工具”的清单，也不是“怎么写 Prompt”的速成教程。它更想回答的是：当 AI 已经能进入学习、科研、写作、编程和日常生活以后，人应该怎样继续主导问题、判断质量、沉淀经验，并避免把理解能力外包出去。
 
-如果你也在经历这种感觉：AI 工具越来越多，信息越来越吵，效率好像变高了，但自己有时反而更难确认“我到底想清楚了吗”——那这份 playbook 可能会有帮助。
+我的核心立场很简单：**把 AI 当同事，不当工具；但人仍然是主变量。** AI 可以帮你探索、生成、执行，但问题表述、验收标准、必要取舍和最终判断不能交出去。否则效率越高，越可能只是更快地制造一种“我好像在推进”的幻觉。
 
 ## 先读什么
 
@@ -22,37 +22,15 @@
 ## 这份手册在讲什么
 
 ```text
-低摩擦入口      把 AI 放到划词、IM、远程 Agent 和日常材料流里
-上下文优先      先准备材料、目标、偏好和验收标准，再让模型生成
-多模型协作      GPT / Claude / Gemini / Grok / Agent 各取所长
-可视化理解      用图像模型把复杂关系画出来，再反过来检查理解
-人在回路        问题表述、验收标准、必要取舍和最终判断不能外包
-持续复盘        Skill 不是越多越好，工作流也需要定期清理和迭代
+人是主变量      AI 可以放大能力，但不能替代问题意识和判断力
+当同事协作      让 AI 进入真实工作流，而不是停留在一次性问答窗口
+低摩擦入口      把划词、IM、远程 Agent 和知识库接到日常材料流里
+上下文优先      先准备目标、材料、偏好和验收标准，再让模型执行
+经验沉淀        把有效流程固化为 Skill / Workflow，但也要定期做减法
+反效率幻觉      警惕把理解、审美、取舍和学习过程一起外包给 AI
 ```
 
-[![博士生 AI 协作总览图](https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-collab-overview.png)](docs/phd-ai-collab.md)
-
-## 图集速览
-
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <a href="docs/phd-ai-collab.md#ai-learning-guide"><img src="https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-learning-guide.png" alt="AI时代学习指南图" width="250"></a><br>
-      <sub><strong>学习指南</strong></sub><br>
-      <sub>噪声很大的时候，先把自己的判断稳住。</sub>
-    </td>
-    <td align="center" width="33%">
-      <a href="docs/phd-ai-collab.md#code-agent-framework"><img src="https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-agent-framework.png" alt="AI 协作框架图" width="250"></a><br>
-      <sub><strong>AI 协作框架</strong></sub><br>
-      <sub>低摩擦入口、上下文、模型和 Agent 如何接成一套系统。</sub>
-    </td>
-    <td align="center" width="33%">
-      <a href="docs/phd-ai-collab.md#ai-learning-roadmap"><img src="https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-learning-roadmap.png" alt="AI时代学习路线图" width="250"></a><br>
-      <sub><strong>学习路线</strong></sub><br>
-      <sub>AI 时代哪些基本功还值得补。</sub>
-    </td>
-  </tr>
-</table>
+[![AI 协作框架图](docs/figs/phd-ai-agent-framework.png)](docs/phd-ai-collab.md#code-agent-framework)
 
 ## 仓库内容
 
@@ -86,6 +64,10 @@
 - 随手留言 / 读后反馈：[Discussions](https://github.com/cnfjlhj/ai-collab-playbook/discussions/1)
 - 勘误 / 结构建议：[提 Issue](https://github.com/cnfjlhj/ai-collab-playbook/issues/new/choose)
 - 小红书转发版：[链接](https://www.xiaohongshu.com/discovery/item/69ab040f000000001a02d99e)
+
+## 友链
+
+- [linux.do](https://linux.do/)
 
 ---
 

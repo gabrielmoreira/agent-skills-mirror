@@ -15,7 +15,7 @@ license: MIT
 compatibility: "Requires DataForSEO MCP server"
 metadata:
   author: AgriciDaniel
-  version: "1.9.0"
+  version: "1.9.6"
   category: seo
 ---
 

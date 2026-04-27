@@ -4,8 +4,8 @@
 
 This repository contains **Claude SEO**, a Tier 4 Claude Code skill for comprehensive
 SEO analysis across all industries. It follows the Agent Skills open standard and the
-3-layer architecture (directive, orchestration, execution). 20 core sub-skills (+ 3
-extensions), 15 core subagents (+ 2 extension agents, 17 total), and an extensible reference
+3-layer architecture (directive, orchestration, execution). 21 core sub-skills (+ 3
+extensions), 16 core subagents (+ 2 extension agents, 18 total), and an extensible reference
 system cover technical SEO, content quality,
 schema markup, image optimization, sitemap architecture, AI search optimization,
 local SEO (GBP, citations, reviews, map pack), maps intelligence, semantic topic
@@ -22,7 +22,7 @@ claude-seo/
   .claude-plugin/
     plugin.json                    # Plugin manifest (v1.9.0)
     marketplace.json               # Marketplace catalog for distribution
-  skills/                            # 23 skills (auto-discovered)
+  skills/                            # 24 skills (auto-discovered)
     seo/                           # Main orchestrator skill
       SKILL.md                     # Entry point, routing table, core rules
       references/                  # On-demand knowledge files (12 files)
@@ -61,7 +61,7 @@ claude-seo/
     seo-image-gen/              # AI image generation for SEO assets (extension mirror)
       SKILL.md
       references/                # Image gen reference files (7 files)
-  agents/                          # 17 subagents (auto-discovered)
+  agents/                          # 18 subagents (auto-discovered)
     seo-technical.md             # Crawlability, indexability, security
     seo-content.md               # E-E-A-T, readability, thin content
     seo-schema.md                # Structured data validation
@@ -81,7 +81,7 @@ claude-seo/
     seo-ecommerce.md             # E-commerce SEO analysis
   hooks/                           # Quality gate hooks
     hooks.json                   # PostToolUse schema validation
-  scripts/                         # Python execution scripts (28 tracked + 2 dev-only)
+  scripts/                         # Python execution scripts (30 tracked + 2 dev-only)
     google_auth.py               # Credential management (OAuth, SA, API key, 4-tier detection)
     backlinks_auth.py            # Backlink API credential management (Moz, Bing)
     moz_api.py                   # Moz Link Explorer API (DA/PA, spam, domains, anchors)
@@ -109,6 +109,7 @@ claude-seo/
     dataforseo_costs.py          # DataForSEO cost estimation and budget tracking
     dataforseo_merchant.py       # Google Shopping / Amazon data fetching
     dataforseo_normalize.py      # DataForSEO response normalization utility
+    sync_flow.py                 # FLOW prompt library sync (GitHub API, CC BY 4.0 headers, --dry-run, --ref)
     mobile_analysis.py           # Mobile rendering analysis (gitignored, dev-only)
   schema/                          # Schema.org JSON-LD templates
   extensions/                      # Optional add-on install helpers

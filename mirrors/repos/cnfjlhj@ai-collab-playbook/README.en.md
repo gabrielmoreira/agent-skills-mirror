@@ -2,7 +2,7 @@
 
 [中文](README.md) | English
 
-A practical AI collaboration playbook for research, writing, reading, coding, and everyday learning. This is not just a tool list or a prompt cookbook; it documents how I put AI into real workflows while keeping human judgment, acceptance criteria, and reflection in the loop.
+A practical AI collaboration playbook for research, writing, reading, coding, and everyday learning. This is not just a tool list or a prompt cookbook; it is about human-led collaboration: putting AI into real workflows while keeping problem framing, quality judgment, trade-offs, and learning in human hands.
 
 The main article is still the center of the repository. The surrounding rules, prompts, figures, and skill index are here to make the workflow reusable rather than merely inspirational.
 
@@ -19,15 +19,15 @@ The main article is still the center of the repository. The surrounding rules, p
 ## Core Ideas
 
 ```text
-Low-friction entry   Put AI where materials and thoughts already appear
+Human as variable    AI amplifies capability, but does not replace judgment
+Colleague mindset    Put AI into real workflows, not only Q&A windows
+Low-friction entry   Put AI where materials, thoughts, and tasks already appear
 Context first        Prepare goals, materials, preferences, and acceptance criteria
-Multi-model work     Use different models and agents for their strengths
-Visual thinking      Turn complex relations into images, then verify them
-Human in the loop    Do not outsource problem framing or final judgment
-Regular review       Skills and workflows need pruning, not only accumulation
+Reusable practice    Turn useful routines into skills, then prune the noise
+Anti-efficiency fog  Do not outsource understanding, taste, trade-offs, or learning
 ```
 
-[![PhD AI collaboration overview](https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-collab-overview.png)](docs/phd-ai-collab.md)
+[![PhD AI collaboration overview](docs/figs/phd-ai-collab-overview.png)](docs/phd-ai-collab.md)
 
 ## What's in this update
 
@@ -38,17 +38,17 @@ The public edition is now synced to `2026-04-26`. This update expands the playbo
 <table>
   <tr>
     <td align="center" width="33%">
-      <a href="docs/phd-ai-collab.md#ai-learning-guide"><img src="https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-learning-guide.png" alt="AI-era learning guide" width="250"></a><br>
+      <a href="docs/phd-ai-collab.md#ai-learning-guide"><img src="docs/figs/phd-ai-learning-guide.png" alt="AI-era learning guide" width="250"></a><br>
       <sub><strong>Learning guide</strong></sub><br>
       <sub>How I try to stay clear-headed when the noise gets loud.</sub>
     </td>
     <td align="center" width="33%">
-      <a href="docs/phd-ai-collab.md#code-agent-framework"><img src="https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-agent-framework.png" alt="AI collaboration framework" width="250"></a><br>
+      <a href="docs/phd-ai-collab.md#code-agent-framework"><img src="docs/figs/phd-ai-agent-framework.png" alt="AI collaboration framework" width="250"></a><br>
       <sub><strong>AI collaboration framework</strong></sub><br>
       <sub>How low-friction entry points, context, models, and agents become one system.</sub>
     </td>
     <td align="center" width="33%">
-      <a href="docs/phd-ai-collab.md#ai-learning-roadmap"><img src="https://cdn.jsdelivr.net/gh/cnfjlhj/ai-collab-playbook@main/docs/figs/phd-ai-learning-roadmap.png" alt="AI learning roadmap" width="250"></a><br>
+      <a href="docs/phd-ai-collab.md#ai-learning-roadmap"><img src="docs/figs/phd-ai-learning-roadmap.png" alt="AI learning roadmap" width="250"></a><br>
       <sub><strong>Learning roadmap</strong></sub><br>
       <sub>What I still think is worth learning in the AI era.</sub>
     </td>

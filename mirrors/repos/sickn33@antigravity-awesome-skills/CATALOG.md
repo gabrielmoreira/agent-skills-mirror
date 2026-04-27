@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1435
+Total skills: 1436
 
 ## architecture (95)
 
@@ -178,7 +178,7 @@ Total skills: 1435
 | `seo-snippet-hunter` | Formats content to be eligible for featured snippets and SERP features. Creates snippet-optimized content blocks based on best practices. Use PROACTIVELY for... | seo, snippet, hunter | seo, snippet, hunter, formats, content, eligible, featured, snippets, serp, features, creates, optimized |
 | `seo-structure-architect` | Analyzes and optimizes content structure including header hierarchy, suggests schema markup, and internal linking opportunities. Creates search-friendly cont... | seo, structure | seo, structure, architect, analyzes, optimizes, content, including, header, hierarchy, suggests, schema, markup |
 | `social-content` | You are an expert social media strategist with direct access to a scheduling platform that publishes to all major social networks. Your goal is to help creat... | social, content | social, content, media, strategist, direct, access, scheduling, platform, publishes, all, major, networks |
-| `social-post-writer-seo` | Social Media Strategist and Content Writer. Creates clear, engaging social media posts for Instagram, LinkedIn, and Facebook. | social, post, writer, seo | social, post, writer, seo, media, strategist, content, creates, clear, engaging, posts, instagram |
+| `social-post-writer-seo` | Social Media Strategist and Content Writer. Creates clear, engaging social media posts for Instagram, LinkedIn, and Facebook. | social-media, marketing, content-writing, seo, growth | social-media, marketing, content-writing, seo, growth, social, post, writer, media, strategist, content, creates |
 | `startup-analyst` | Expert startup business analyst specializing in market sizing, financial modeling, competitive analysis, and strategic planning for early-stage companies. | startup, analyst | startup, analyst, business, specializing, market, sizing, financial, modeling, competitive, analysis, strategic, planning |
 | `startup-business-analyst-business-case` | Generate comprehensive investor-ready business case document with market, solution, financials, and strategy | startup, business, analyst, case | startup, business, analyst, case, generate, investor, document, market, solution, financials |
 | `startup-business-analyst-financial-projections` | Create detailed 3-5 year financial model with revenue, costs, cash flow, and scenarios | startup, business, analyst, financial, projections | startup, business, analyst, financial, projections, detailed, year, model, revenue, costs, cash, flow |
@@ -188,9 +188,9 @@ Total skills: 1435
 | `steve-jobs` | Agente que simula Steve Jobs — cofundador da Apple, CEO da Pixar, fundador da NeXT, o maior designer de produtos tecnologicos da historia e o mais influente ... | persona, design-thinking, product, presentations | persona, design-thinking, product, presentations, steve, jobs, agente, que, simula, cofundador, da, apple |
 | `warren-buffett` | Agente que simula Warren Buffett — o maior investidor do seculo XX e XXI, CEO da Berkshire Hathaway, discipulo de Benjamin Graham e socio intelectual de Char... | persona, investing, value-investing, business | persona, investing, value-investing, business, warren, buffett, agente, que, simula, maior, investidor, do |
 | `whatsapp-automation` | Automate WhatsApp Business tasks via Rube MCP (Composio): send messages, manage templates, upload media, and handle contacts. Always search tools first for c... | whatsapp | whatsapp, automation, automate, business, tasks, via, rube, mcp, composio, send, messages, upload |
-| `wordpress-centric-high-seo-optimized-blogwriting-skill` | Use this skill when the user asks to write a blog post, article, or SEO content. This applies a professional structure, truth boxes, click-bait-free accurate... | writing, blog, seo, content, wordpress | writing, blog, seo, content, wordpress, centric, high, optimized, blogwriting, skill, user, asks |
+| `wordpress-centric-high-seo-optimized-blogwriting-skill` | Create long-form, high-quality, SEO-optimized blog posts ready for WordPress with truth boxes and FAQ schema. | writing, blog, seo, content, wordpress | writing, blog, seo, content, wordpress, centric, high, optimized, blogwriting, skill, long, form |
 
-## data-ai (274)
+## data-ai (275)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -450,6 +450,7 @@ Total skills: 1435
 | `trigger-dev` | Trigger.dev expert for background jobs, AI workflows, and reliable async execution with excellent developer experience and TypeScript-first design. | trigger, dev | trigger, dev, background, jobs, ai, reliable, async, execution, excellent, developer, experience, typescript |
 | `uniprot-database` | Direct REST API access to UniProt. Protein searches, FASTA retrieval, ID mapping, Swiss-Prot/TrEMBL. For Python workflows with multiple databases, prefer bio... | uniprot, database | uniprot, database, direct, rest, api, access, protein, searches, fasta, retrieval, id, mapping |
 | `unity-ecs-patterns` | Production patterns for Unity's Data-Oriented Technology Stack (DOTS) including Entity Component System, Job System, and Burst Compiler. | unity, ecs | unity, ecs, data, oriented, technology, stack, dots, including, entity, component, job, burst |
+| `unslop` | Post-process AI-generated text through the unslop CLI to strip AI writing patterns before publishing | writing, content-quality, ai-writing, text-processing, cli, publishing | writing, content-quality, ai-writing, text-processing, cli, publishing, unslop, post, process, ai, generated, text |
 | `uxui-principles` | Evaluate interfaces against 168 research-backed UX/UI principles, detect antipatterns, and inject UX context into AI coding sessions. | ux, ui, design, evaluation, principles, antipatterns, accessibility | ux, ui, design, evaluation, principles, antipatterns, accessibility, uxui, evaluate, interfaces, against, 168 |
 | `vector-database-engineer` | Expert in vector databases, embedding strategies, and semantic search implementation. Masters Pinecone, Weaviate, Qdrant, Milvus, and pgvector for RAG applic... | vector, database | vector, database, engineer, databases, embedding, semantic, search, masters, pinecone, weaviate, qdrant, milvus |
 | `vector-index-tuning` | Optimize vector index performance for latency, recall, and memory. Use when tuning HNSW parameters, selecting quantization strategies, or scaling vector sear... | vector, index, tuning | vector, index, tuning, optimize, performance, latency, recall, memory, hnsw, parameters, selecting, quantization |
@@ -648,7 +649,6 @@ Total skills: 1435
 | `senior-frontend` | Frontend development skill for React, Next.js, TypeScript, and Tailwind CSS applications. Use when building React components, optimizing Next.js performance,... | senior, frontend | senior, frontend, development, skill, react, next, js, typescript, tailwind, css, applications, building |
 | `shopify-apps` | Expert patterns for Shopify app development including Remix/React Router apps, embedded apps with App Bridge, webhook handling, GraphQL Admin API, Polaris co... | shopify, apps | shopify, apps, app, development, including, remix, react, router, embedded, bridge, webhook, handling |
 | `shopify-development` | Build Shopify apps, extensions, themes using GraphQL Admin API, Shopify CLI, Polaris UI, and Liquid. | shopify | shopify, development, apps, extensions, themes, graphql, admin, api, cli, polaris, ui, liquid |
-| `skills/x402-express-wrapper` | Wrapper oficial de M2MCent (Node.js) para inyectar muros de pago x402 en APIs o servidores Model Context Protocol (MCP). Usar al construir nuevos servicios q... | x402, defi, monetization, express, mcp | x402, defi, monetization, express, mcp, wrapper, oficial, de, m2mcent, node, js, para |
 | `slack-bot-builder` | Build Slack apps using the Bolt framework across Python, JavaScript, and Java. Covers Block Kit for rich UIs, interactive components, slash commands, event h... | slack, bot, builder | slack, bot, builder, apps, bolt, framework, python, javascript, java, covers, block, kit |
 | `sred-work-summary` | Go back through the previous year of work and create a Notion doc that groups relevant links into projects that can then be documented as SRED projects. | sred, work, summary | sred, work, summary, go, back, through, previous, year, notion, doc, groups, relevant |
 | `statsmodels` | Statsmodels is Python's premier library for statistical modeling, providing tools for estimation, inference, and diagnostics across a wide range of statistic... | statsmodels | statsmodels, python, premier, library, statistical, modeling, providing, estimation, inference, diagnostics, wide, range |
@@ -678,6 +678,7 @@ Total skills: 1435
 | `viral-generator-builder` | Expert in building shareable generator tools that go viral - name generators, quiz makers, avatar creators, personality tests, and calculator tools. Covers t... | viral, generator, builder | viral, generator, builder, building, shareable, go, name, generators, quiz, makers, avatar, creators |
 | `vscode-extension-guide-en` | Guide for VS Code extension development from scaffolding to Marketplace publication | vscode, extension, ide, typescript, marketplace | vscode, extension, ide, typescript, marketplace, en, vs, code, development, scaffolding, publication |
 | `webapp-testing` | To test local web applications, write native Python Playwright scripts. | webapp | webapp, testing, test, local, web, applications, write, native, python, playwright, scripts |
+| `x402-express-wrapper` | Wrapper oficial de M2MCent (Node.js) para inyectar muros de pago x402 en APIs o servidores Model Context Protocol (MCP). Usar al construir nuevos servicios q... | x402, defi, monetization, express, mcp | x402, defi, monetization, express, mcp, wrapper, oficial, de, m2mcent, node, js, para |
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
@@ -1031,7 +1032,7 @@ Total skills: 1435
 | `yann-lecun-filosofia` | Sub-skill filosófica e pedagógica de Yann LeCun. | persona, ai-philosophy, open-source, education | persona, ai-philosophy, open-source, education, yann, lecun, filosofia, sub, skill, filos, fica, pedag |
 | `yann-lecun-tecnico` | Sub-skill técnica de Yann LeCun. Cobre CNNs, LeNet, backpropagation, JEPA (I-JEPA, V-JEPA, MC-JEPA), AMI (Advanced Machinery of Intelligence), Self-Supervise... | persona, cnn, jepa, self-supervised, pytorch | persona, cnn, jepa, self-supervised, pytorch, yann, lecun, tecnico, sub, skill, cnica, de |
 | `youtube-summarizer` | Extract transcripts from YouTube videos and generate comprehensive, detailed summaries using intelligent analysis frameworks | video, summarization, transcription, youtube, content-analysis | video, summarization, transcription, youtube, content-analysis, summarizer, extract, transcripts, videos, generate, detailed, summaries |
-| `zipai-optimizer` | Adaptive token optimizer: intelligent filtering, surgical output, ambiguity-first, context-window-aware, VCS-aware. | zipai, optimizer | zipai, optimizer, adaptive, token, intelligent, filtering, surgical, output, ambiguity, first, context, window |
+| `zipai-optimizer` | Adaptive token optimizer: intelligent filtering, surgical output, ambiguity-first, context-window-aware, VCS-aware, MCP-aware. | zipai, optimizer | zipai, optimizer, adaptive, token, intelligent, filtering, surgical, output, ambiguity, first, context, window |
 
 ## infrastructure (130)
 
