@@ -279,6 +279,10 @@ Returns credentials to use with service APIs directly:
 
 If not connected, tell user to set up in Settings > Connections.
 
+Each entry's `description` field is self-describing — for capabilities that
+need a control surface (browsers, gateways, etc.), the description includes
+the exact endpoint and body shape. Read it before guessing.
+
 ---
 
 ## 9. Meetings — `GET /meetings`

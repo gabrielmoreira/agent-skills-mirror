@@ -1,7 +1,7 @@
 interface:
   display_name: "Generate 2D Map"
-  short_description: "Choose and build 2D game maps."
-  default_prompt: "Use $generate2dmap to choose the right 2D map strategy and build the map assets, collision data, and game integration."
+  short_description: "Build 2D map pipelines, props, previews, and collision data."
+  default_prompt: "Use $generate2dmap to choose a 2D map pipeline, generate map assets or prop packs, assemble a layered preview, and produce collision or placement metadata."
 
 policy:
   allow_implicit_invocation: true

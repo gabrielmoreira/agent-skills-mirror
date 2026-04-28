@@ -239,7 +239,7 @@ VIDEO_RATIO=16:9
 
 | API Key | 提供商 | 可用模型 |
 |---------|------|---------|
-| `DASHSCOPE_API_KEY` | 阿里云DashScope | qwen3.6-max-preview, qwen3.6-plus, wan2.6-t2i, wan2.7-i2v, wan2.6-i2v-flash |
+| `DASHSCOPE_API_KEY` | 阿里云DashScope | qwen3.6-max-preview, qwen3.6-plus, wan2.6-t2i, wan2.7-i2v, wan2.6-i2v-flash, happyhorse-1.0-i2v |
 | `ARK_API_KEY` | 字节跳动Seedream | doubao-seedream-5-0-260128 (500次/分钟，高并发) |
 | `VOLC_ACCESS_KEY/SECRET` | 火山引擎即梦 | jimeng_t2i_v40, jimeng_ti2v_v30_pro |
 | `KLING_ACCESS_KEY/SECRET` | 快手可灵 | kling-v3, kling-v2-6, kling-v2-5-turbo |
@@ -253,7 +253,7 @@ VIDEO_RATIO=16:9
 - **VLM 评估模型**: qwen3.6-plus, qwen3.6-flash, kimi-k2.6, gpt-5.4, gemini-2.5-flash-image (性价比最高), gemini-2.0-flash
 - **文生图模型**: wan2.6-t2i, jimeng_t2i_v40, doubao-seedream-5-0-260128, sora_image, gpt-image-2
 - **图生图模型**: wan2.6-t2i, jimeng_t2i_v40, doubao-seedream-5-0-260128, gpt-image-2
-- **视频生成模型**: wan2.7-i2v, wan2.6-i2v-flash, doubao-seedance-2-0-260128, kling-v3, kling-v2-6, kling-v2-5-turbo, jimeng_ti2v_v30_pro
+- **视频生成模型**: wan2.7-i2v, wan2.6-i2v-flash, happyhorse-1.0-i2v, doubao-seedance-2-0-260128, kling-v3, kling-v2-6, kling-v2-5-turbo, jimeng_ti2v_v30_pro
 - **视频比例**: 16:9, 9:16, 1:1, 4:3, 3:4, 21:9
 
 ### 并发配置
@@ -293,6 +293,7 @@ VIDEO_RATIO=16:9
 |------|------|------|------|
 | **wan2.7-i2v** | 5次/秒 | 5个 | 阿里大模型 |
 | **wan2.6-i2v-flash** | 5次/秒 | 5个 | 阿里大模型 (快速) |
+| **happyhorse-1.0-i2v** | 5次/秒 | 5个 | 阿里大模型 |
 | **doubao-seedance-*** | - | 10个 | 字节跳动 |
 | **kling-v3/v2-6/v2-5** | - | 3个 | 快手可灵 |
 | **jimeng_ti2v_v30_pro** | - | 3个 | 即梦视频 |

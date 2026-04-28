@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/hve-core` — 26 default patterns, 0 followed patterns, 223 file(s) materialized.
+Mirror of `microsoft/hve-core` — 26 default patterns, 0 followed patterns, 224 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/hve-core` — 26 default patterns, 0 followed patterns, 223
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 223 |
+| Files         | 224 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -212,76 +212,77 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 151 | ✓ | [`.github/prompts/hve-core/prompt-refactor.prompt.md`](.github/prompts/hve-core/prompt-refactor.prompt.md) |
 | 152 | ✓ | [`.github/prompts/hve-core/pull-request.prompt.md`](.github/prompts/hve-core/pull-request.prompt.md) |
 | 153 | ✓ | [`.github/prompts/hve-core/rpi.prompt.md`](.github/prompts/hve-core/rpi.prompt.md) |
-| 154 | ✓ | [`.github/prompts/hve-core/task-implement.prompt.md`](.github/prompts/hve-core/task-implement.prompt.md) |
-| 155 | ✓ | [`.github/prompts/hve-core/task-plan.prompt.md`](.github/prompts/hve-core/task-plan.prompt.md) |
-| 156 | ✓ | [`.github/prompts/hve-core/task-research.prompt.md`](.github/prompts/hve-core/task-research.prompt.md) |
-| 157 | ✓ | [`.github/prompts/hve-core/task-review.prompt.md`](.github/prompts/hve-core/task-review.prompt.md) |
-| 158 | ✓ | [`.github/prompts/jira/jira-discover-issues.prompt.md`](.github/prompts/jira/jira-discover-issues.prompt.md) |
-| 159 | ✓ | [`.github/prompts/jira/jira-execute-backlog.prompt.md`](.github/prompts/jira/jira-execute-backlog.prompt.md) |
-| 160 | ✓ | [`.github/prompts/jira/jira-prd-to-wit.prompt.md`](.github/prompts/jira/jira-prd-to-wit.prompt.md) |
-| 161 | ✓ | [`.github/prompts/jira/jira-triage-issues.prompt.md`](.github/prompts/jira/jira-triage-issues.prompt.md) |
-| 162 | ✓ | [`.github/prompts/pptx.prompt.md`](.github/prompts/pptx.prompt.md) |
-| 163 | ✓ | [`.github/prompts/rai-planning/rai-capture.prompt.md`](.github/prompts/rai-planning/rai-capture.prompt.md) |
-| 164 | ✓ | [`.github/prompts/rai-planning/rai-plan-from-prd.prompt.md`](.github/prompts/rai-planning/rai-plan-from-prd.prompt.md) |
-| 165 | ✓ | [`.github/prompts/rai-planning/rai-plan-from-security-plan.prompt.md`](.github/prompts/rai-planning/rai-plan-from-security-plan.prompt.md) |
-| 166 | ✓ | [`.github/prompts/README.md`](.github/prompts/README.md) |
-| 167 | ✓ | [`.github/prompts/security/incident-response.prompt.md`](.github/prompts/security/incident-response.prompt.md) |
-| 168 | ✓ | [`.github/prompts/security/risk-register.prompt.md`](.github/prompts/security/risk-register.prompt.md) |
-| 169 | ✓ | [`.github/prompts/security/security-capture.prompt.md`](.github/prompts/security/security-capture.prompt.md) |
-| 170 | ✓ | [`.github/prompts/security/security-plan-from-prd.prompt.md`](.github/prompts/security/security-plan-from-prd.prompt.md) |
-| 171 | ✓ | [`.github/prompts/security/security-review-llm.prompt.md`](.github/prompts/security/security-review-llm.prompt.md) |
-| 172 | ✓ | [`.github/prompts/security/security-review-sbd.prompt.md`](.github/prompts/security/security-review-sbd.prompt.md) |
-| 173 | ✓ | [`.github/prompts/security/security-review-web.prompt.md`](.github/prompts/security/security-review-web.prompt.md) |
-| 174 | ✓ | [`.github/prompts/security/security-review.prompt.md`](.github/prompts/security/security-review.prompt.md) |
-| 175 | ✓ | [`.github/prompts/security/sssc-capture.prompt.md`](.github/prompts/security/sssc-capture.prompt.md) |
-| 176 | ✓ | [`.github/prompts/security/sssc-from-brd.prompt.md`](.github/prompts/security/sssc-from-brd.prompt.md) |
-| 177 | ✓ | [`.github/prompts/security/sssc-from-prd.prompt.md`](.github/prompts/security/sssc-from-prd.prompt.md) |
-| 178 | ✓ | [`.github/prompts/security/sssc-from-security-plan.prompt.md`](.github/prompts/security/sssc-from-security-plan.prompt.md) |
-| 179 | ✓ | [`.github/skills/coding-standards/python-foundational/SKILL.md`](.github/skills/coding-standards/python-foundational/SKILL.md) |
-| 180 | ✓ | [`.github/skills/experimental/customer-card-render/SKILL.md`](.github/skills/experimental/customer-card-render/SKILL.md) |
-| 181 | ✓ | [`.github/skills/experimental/powerpoint/content-extra-py-template.md`](.github/skills/experimental/powerpoint/content-extra-py-template.md) |
-| 182 | ✓ | [`.github/skills/experimental/powerpoint/content-yaml-template.md`](.github/skills/experimental/powerpoint/content-yaml-template.md) |
-| 183 | ✓ | [`.github/skills/experimental/powerpoint/SKILL.md`](.github/skills/experimental/powerpoint/SKILL.md) |
-| 184 | ✓ | [`.github/skills/experimental/powerpoint/style-yaml-template.md`](.github/skills/experimental/powerpoint/style-yaml-template.md) |
-| 185 | ✓ | [`.github/skills/experimental/video-to-gif/SKILL.md`](.github/skills/experimental/video-to-gif/SKILL.md) |
-| 186 | ✓ | [`.github/skills/experimental/vscode-playwright/SKILL.md`](.github/skills/experimental/vscode-playwright/SKILL.md) |
-| 187 | ✓ | [`.github/skills/gitlab/gitlab/SKILL.md`](.github/skills/gitlab/gitlab/SKILL.md) |
-| 188 | ✓ | [`.github/skills/installer/hve-core-installer/SKILL.md`](.github/skills/installer/hve-core-installer/SKILL.md) |
-| 189 | ✓ | [`.github/skills/jira/jira/SKILL.md`](.github/skills/jira/jira/SKILL.md) |
-| 190 | ✓ | [`.github/skills/security/owasp-agentic/SKILL.md`](.github/skills/security/owasp-agentic/SKILL.md) |
-| 191 | ✓ | [`.github/skills/security/owasp-cicd/SKILL.md`](.github/skills/security/owasp-cicd/SKILL.md) |
-| 192 | ✓ | [`.github/skills/security/owasp-docker/SKILL.md`](.github/skills/security/owasp-docker/SKILL.md) |
-| 193 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
-| 194 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
-| 195 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
-| 196 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
-| 197 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
-| 198 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
-| 199 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
-| 200 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
-| 201 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
-| 202 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
-| 203 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
-| 204 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
-| 205 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
-| 206 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
-| 207 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
-| 208 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
-| 209 | ✓ | [`plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md) |
-| 210 | ✓ | [`plugins/coding-standards/instructions/coding-standards/python-script.instructions.md`](plugins/coding-standards/instructions/coding-standards/python-script.instructions.md) |
-| 211 | ✓ | [`plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md`](plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md) |
-| 212 | ✓ | [`plugins/data-science/instructions/coding-standards/python-script.instructions.md`](plugins/data-science/instructions/coding-standards/python-script.instructions.md) |
-| 213 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md) |
-| 214 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md) |
-| 215 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md) |
-| 216 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md) |
-| 217 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md`](plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md) |
-| 218 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md`](plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md) |
-| 219 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md) |
-| 220 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md) |
-| 221 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md) |
-| 222 | ✓ | [`plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md) |
-| 223 | ✓ | [`plugins/hve-core/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core/instructions/hve-core/pull-request.instructions.md) |
+| 154 | ✓ | [`.github/prompts/hve-core/task-challenge.prompt.md`](.github/prompts/hve-core/task-challenge.prompt.md) |
+| 155 | ✓ | [`.github/prompts/hve-core/task-implement.prompt.md`](.github/prompts/hve-core/task-implement.prompt.md) |
+| 156 | ✓ | [`.github/prompts/hve-core/task-plan.prompt.md`](.github/prompts/hve-core/task-plan.prompt.md) |
+| 157 | ✓ | [`.github/prompts/hve-core/task-research.prompt.md`](.github/prompts/hve-core/task-research.prompt.md) |
+| 158 | ✓ | [`.github/prompts/hve-core/task-review.prompt.md`](.github/prompts/hve-core/task-review.prompt.md) |
+| 159 | ✓ | [`.github/prompts/jira/jira-discover-issues.prompt.md`](.github/prompts/jira/jira-discover-issues.prompt.md) |
+| 160 | ✓ | [`.github/prompts/jira/jira-execute-backlog.prompt.md`](.github/prompts/jira/jira-execute-backlog.prompt.md) |
+| 161 | ✓ | [`.github/prompts/jira/jira-prd-to-wit.prompt.md`](.github/prompts/jira/jira-prd-to-wit.prompt.md) |
+| 162 | ✓ | [`.github/prompts/jira/jira-triage-issues.prompt.md`](.github/prompts/jira/jira-triage-issues.prompt.md) |
+| 163 | ✓ | [`.github/prompts/pptx.prompt.md`](.github/prompts/pptx.prompt.md) |
+| 164 | ✓ | [`.github/prompts/rai-planning/rai-capture.prompt.md`](.github/prompts/rai-planning/rai-capture.prompt.md) |
+| 165 | ✓ | [`.github/prompts/rai-planning/rai-plan-from-prd.prompt.md`](.github/prompts/rai-planning/rai-plan-from-prd.prompt.md) |
+| 166 | ✓ | [`.github/prompts/rai-planning/rai-plan-from-security-plan.prompt.md`](.github/prompts/rai-planning/rai-plan-from-security-plan.prompt.md) |
+| 167 | ✓ | [`.github/prompts/README.md`](.github/prompts/README.md) |
+| 168 | ✓ | [`.github/prompts/security/incident-response.prompt.md`](.github/prompts/security/incident-response.prompt.md) |
+| 169 | ✓ | [`.github/prompts/security/risk-register.prompt.md`](.github/prompts/security/risk-register.prompt.md) |
+| 170 | ✓ | [`.github/prompts/security/security-capture.prompt.md`](.github/prompts/security/security-capture.prompt.md) |
+| 171 | ✓ | [`.github/prompts/security/security-plan-from-prd.prompt.md`](.github/prompts/security/security-plan-from-prd.prompt.md) |
+| 172 | ✓ | [`.github/prompts/security/security-review-llm.prompt.md`](.github/prompts/security/security-review-llm.prompt.md) |
+| 173 | ✓ | [`.github/prompts/security/security-review-sbd.prompt.md`](.github/prompts/security/security-review-sbd.prompt.md) |
+| 174 | ✓ | [`.github/prompts/security/security-review-web.prompt.md`](.github/prompts/security/security-review-web.prompt.md) |
+| 175 | ✓ | [`.github/prompts/security/security-review.prompt.md`](.github/prompts/security/security-review.prompt.md) |
+| 176 | ✓ | [`.github/prompts/security/sssc-capture.prompt.md`](.github/prompts/security/sssc-capture.prompt.md) |
+| 177 | ✓ | [`.github/prompts/security/sssc-from-brd.prompt.md`](.github/prompts/security/sssc-from-brd.prompt.md) |
+| 178 | ✓ | [`.github/prompts/security/sssc-from-prd.prompt.md`](.github/prompts/security/sssc-from-prd.prompt.md) |
+| 179 | ✓ | [`.github/prompts/security/sssc-from-security-plan.prompt.md`](.github/prompts/security/sssc-from-security-plan.prompt.md) |
+| 180 | ✓ | [`.github/skills/coding-standards/python-foundational/SKILL.md`](.github/skills/coding-standards/python-foundational/SKILL.md) |
+| 181 | ✓ | [`.github/skills/experimental/customer-card-render/SKILL.md`](.github/skills/experimental/customer-card-render/SKILL.md) |
+| 182 | ✓ | [`.github/skills/experimental/powerpoint/content-extra-py-template.md`](.github/skills/experimental/powerpoint/content-extra-py-template.md) |
+| 183 | ✓ | [`.github/skills/experimental/powerpoint/content-yaml-template.md`](.github/skills/experimental/powerpoint/content-yaml-template.md) |
+| 184 | ✓ | [`.github/skills/experimental/powerpoint/SKILL.md`](.github/skills/experimental/powerpoint/SKILL.md) |
+| 185 | ✓ | [`.github/skills/experimental/powerpoint/style-yaml-template.md`](.github/skills/experimental/powerpoint/style-yaml-template.md) |
+| 186 | ✓ | [`.github/skills/experimental/video-to-gif/SKILL.md`](.github/skills/experimental/video-to-gif/SKILL.md) |
+| 187 | ✓ | [`.github/skills/experimental/vscode-playwright/SKILL.md`](.github/skills/experimental/vscode-playwright/SKILL.md) |
+| 188 | ✓ | [`.github/skills/gitlab/gitlab/SKILL.md`](.github/skills/gitlab/gitlab/SKILL.md) |
+| 189 | ✓ | [`.github/skills/installer/hve-core-installer/SKILL.md`](.github/skills/installer/hve-core-installer/SKILL.md) |
+| 190 | ✓ | [`.github/skills/jira/jira/SKILL.md`](.github/skills/jira/jira/SKILL.md) |
+| 191 | ✓ | [`.github/skills/security/owasp-agentic/SKILL.md`](.github/skills/security/owasp-agentic/SKILL.md) |
+| 192 | ✓ | [`.github/skills/security/owasp-cicd/SKILL.md`](.github/skills/security/owasp-cicd/SKILL.md) |
+| 193 | ✓ | [`.github/skills/security/owasp-docker/SKILL.md`](.github/skills/security/owasp-docker/SKILL.md) |
+| 194 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
+| 195 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
+| 196 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
+| 197 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
+| 198 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
+| 199 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
+| 200 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
+| 201 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
+| 202 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
+| 203 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
+| 204 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
+| 205 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
+| 206 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
+| 207 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
+| 208 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
+| 209 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
+| 210 | ✓ | [`plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md) |
+| 211 | ✓ | [`plugins/coding-standards/instructions/coding-standards/python-script.instructions.md`](plugins/coding-standards/instructions/coding-standards/python-script.instructions.md) |
+| 212 | ✓ | [`plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md`](plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md) |
+| 213 | ✓ | [`plugins/data-science/instructions/coding-standards/python-script.instructions.md`](plugins/data-science/instructions/coding-standards/python-script.instructions.md) |
+| 214 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-coaching-identity.instructions.md) |
+| 215 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-method-sequencing.instructions.md) |
+| 216 | ✓ | [`plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/design-thinking/instructions/design-thinking/dt-quality-constraints.instructions.md) |
+| 217 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md) |
+| 218 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md`](plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md) |
+| 219 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md`](plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md) |
+| 220 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-coaching-identity.instructions.md) |
+| 221 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-method-sequencing.instructions.md) |
+| 222 | ✓ | [`plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md`](plugins/hve-core-all/instructions/design-thinking/dt-quality-constraints.instructions.md) |
+| 223 | ✓ | [`plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md) |
+| 224 | ✓ | [`plugins/hve-core/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core/instructions/hve-core/pull-request.instructions.md) |
 
 ---
 

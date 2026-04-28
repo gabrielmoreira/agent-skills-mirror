@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 13 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,14 +64,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/ai-coding-assistants.md`](.agents/ai-coding-assistants.md) |
 | 4 | ✓ | [`.agents/api-endpoints-and-auth.md`](.agents/api-endpoints-and-auth.md) |
 | 5 | ✓ | [`.agents/building-and-testing.md`](.agents/building-and-testing.md) |
-| 6 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
-| 7 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
-| 8 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
-| 9 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 10 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | ✓ | [`.agents/ci-caching.md`](.agents/ci-caching.md) |
+| 7 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
+| 8 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
+| 9 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
+| 10 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
+| 11 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

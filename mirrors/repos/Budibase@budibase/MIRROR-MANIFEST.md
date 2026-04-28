@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Budibase/budibase` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Budibase/budibase` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Budibase/budibase` — 26 default patterns, 0 followed patterns, 2 fi
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/budibase-setup-run/agents/openai.yaml`](.agents/skills/budibase-setup-run/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/budibase-setup-run/SKILL.md`](.agents/skills/budibase-setup-run/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -14,7 +14,7 @@ Automate releasing all components of the screenpipe monorepo.
 |-----------|--------------|-----------------|----------|
 | Desktop App | `screenpipe-app-tauri/src-tauri/Cargo.toml` | `version = "X.Y.Z"` | `release-app.yml` |
 | CLI/Server | `Cargo.toml` (workspace.package) | `version = "0.2.X"` | `release-cli.yml` |
-| MCP | `screenpipe-integrations/screenpipe-mcp/package.json` | `"version": "X.Y.Z"` | `release-mcp.yml` |
+| MCP | `packages/screenpipe-mcp/package.json` | `"version": "X.Y.Z"` | `release-mcp.yml` |
 
 ## When to Release What
 
@@ -45,7 +45,7 @@ git diff <COMMIT>..HEAD --stat -- screenpipe-core screenpipe-vision screenpipe-a
 ```bash
 echo "=== App ===" && grep '^version' screenpipe-app-tauri/src-tauri/Cargo.toml | head -1
 echo "=== CLI ===" && grep '^version' Cargo.toml | head -1
-echo "=== MCP ===" && grep '"version"' screenpipe-integrations/screenpipe-mcp/package.json | head -1
+echo "=== MCP ===" && grep '"version"' packages/screenpipe-mcp/package.json | head -1
 ```
 
 ### 2. Bump Version

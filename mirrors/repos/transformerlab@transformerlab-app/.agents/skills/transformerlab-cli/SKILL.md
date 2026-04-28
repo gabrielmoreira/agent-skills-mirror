@@ -1,12 +1,12 @@
 ---
 name: transformerlab-cli
-description: Transformer Lab CLI for managing ML training tasks, jobs, and compute providers. Use when the user needs to check job status, stream logs, download artifacts, queue training tasks, manage compute providers, or interact with Transformer Lab programmatically. Triggers include "check job status", "download results", "queue a task", "list providers", "stream logs", "what's running", "monitor training", "add a task", "check provider health".
+description: Transformer Lab CLI for managing ML training tasks, jobs, compute providers, models, and datasets. Use when the user needs to check job status, stream logs, download artifacts, queue training tasks, manage compute providers, list or create models, upload or download datasets, publish job outputs, or interact with Transformer Lab programmatically. Triggers include "check job status", "download results", "queue a task", "list providers", "stream logs", "what's running", "monitor training", "add a task", "check provider health", "list models", "create model", "upload dataset", "download dataset", "publish model", "publish dataset".
 allowed-tools: Bash(lab *), Bash(curl *beta.lab.cloud*), Bash(curl *localhost:8338*)
 ---
 
 # Transformer Lab CLI
 
-Use the `lab` CLI to interact with Transformer Lab programmatically — managing tasks, jobs, compute providers, and server configuration from the terminal.
+Use the `lab` CLI to interact with Transformer Lab programmatically — managing tasks, jobs, compute providers, models, datasets, and server configuration from the terminal.
 
 ## Installation
 
@@ -214,6 +214,96 @@ lab.finish(message="Hello world complete!")
 lab task add ./hello-world-task --no-interactive
 ```
 
+## Managing Models
+
+Use `lab model` commands to list, inspect, create, edit, and delete model groups on the server. Models are organized as **groups** — each group can contain multiple versions (e.g. v1, v2, …).
+
+```bash
+# List all model groups
+lab --format json model list
+
+# Get details for a specific model (by group_id or group_name)
+lab --format json model info GROUP_ID
+
+# Register a new model (e.g. a HuggingFace model ID)
+lab --format json model create my-hf-model-id --name "My Fine-tuned Model" --description "SFT on custom data"
+
+# Edit a model group's name or description
+lab model edit GROUP_ID --name "New Name" --description "Updated description"
+
+# Delete a model group and all its versions (--yes to skip confirmation)
+lab model delete GROUP_ID --yes
+```
+
+### Publishing a model from a job
+
+After a training job completes, publish its output model to the registry:
+
+```bash
+# Interactive — prompts for model name, group, mode, tag
+lab job publish model JOB_ID
+
+# Non-interactive (for agents) — all options explicit
+lab --format json job publish model JOB_ID MODEL_NAME --group "my-model-group" --mode new --tag latest --description "Trained with lr=3e-5"
+```
+
+## Managing Datasets
+
+Use `lab dataset` commands to list, inspect, upload, download, edit, and delete datasets. Like models, datasets are organized as **groups** with versions.
+
+```bash
+# List all dataset groups
+lab --format json dataset list
+
+# Get details for a specific dataset (by group_id or group_name)
+lab --format json dataset info GROUP_ID
+
+# Upload local files to a dataset (creates it if it doesn't exist)
+lab dataset upload my-dataset train.jsonl eval.jsonl
+
+# Download a dataset from HuggingFace Hub to the server
+lab dataset download Trelis/touch-rugby-rules
+lab dataset download Trelis/touch-rugby-rules --config default
+
+# Edit a dataset group's name or description
+lab dataset edit GROUP_ID --name "New Name" --description "Updated description"
+
+# Delete a dataset group and all its versions (--yes to skip confirmation)
+lab dataset delete GROUP_ID --yes
+```
+
+### Publishing a dataset from a job
+
+After a job produces output datasets, publish them to the registry:
+
+```bash
+# Interactive — prompts for dataset name, group, mode, tag
+lab job publish dataset JOB_ID
+
+# Non-interactive (for agents) — all options explicit
+lab --format json job publish dataset JOB_ID DATASET_NAME --group "my-dataset-group" --mode new --tag latest --description "Generated eval set"
+```
+
+### Dataset workflow for tasks
+
+When a task needs a specific dataset, ensure it exists on the server **before** queuing:
+
+```bash
+# 1. Check if the dataset already exists
+lab --format json dataset list
+
+# 2. If not, download from HuggingFace or upload local files
+lab dataset download user/my-dataset
+# or
+lab dataset upload my-dataset train.jsonl eval.jsonl
+
+# 3. Reference the dataset in task.yaml parameters
+#    The task code uses lab.get_config()["dataset_id"] to access it
+
+# 4. Queue the task
+lab task queue TASK_ID --no-interactive -m "Training on my-dataset"
+```
+
 ## Agent-Specific Rules
 
 1. **NEVER use the REST API unless the user explicitly asks for it.** The CLI is the supported interface. If a CLI command appears missing or broken, run `lab <command> --help` first and check this skill — do not reach for `curl`. Using the REST API as a workaround is a hard rule violation.
@@ -359,6 +449,19 @@ This applies to launching jobs, fetching logs, checking cluster status, and ever
 | `lab provider check <id>` | Check provider health | No |
 | `lab provider enable <id>` | Enable a provider | No |
 | `lab provider disable <id>` | Disable a provider | No |
+| `lab model list` | List all model groups | No |
+| `lab model info <id>` | Show model group details (by group_id or group_name) | No |
+| `lab model create <asset_id>` | Create a new model group + first version (`--name`, `--description`, `--tag`) | No |
+| `lab model edit <id>` | Edit model group name or description | No |
+| `lab model delete <id>` | Delete a model group and all versions (`--yes` to skip prompt) | No |
+| `lab dataset list` | List all dataset groups | No |
+| `lab dataset info <id>` | Show dataset group details (by group_id or group_name) | No |
+| `lab dataset upload <id> <files...>` | Upload local files to a dataset (creates if needed) | No |
+| `lab dataset download <id>` | Download a dataset from HuggingFace Hub (`--config` for subset) | No |
+| `lab dataset edit <id>` | Edit dataset group name or description | No |
+| `lab dataset delete <id>` | Delete a dataset group and all versions (`--yes` to skip prompt) | No |
+| `lab job publish model <job_id>` | Publish a model from a job to the registry | Yes |
+| `lab job publish dataset <job_id>` | Publish a dataset from a job to the registry | Yes |
 | `lab server install` | Interactive server setup wizard | No |
 | `lab server version` | Show installed server version | No |
 | `lab server update` | Update server to latest | No |

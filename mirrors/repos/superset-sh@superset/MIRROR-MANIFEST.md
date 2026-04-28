@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,20 +64,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/commands/create-plan.md`](.agents/commands/create-plan.md) |
 | 4 | ✓ | [`.agents/commands/create-pr.md`](.agents/commands/create-pr.md) |
 | 5 | ✓ | [`.agents/commands/deslop.md`](.agents/commands/deslop.md) |
-| 6 | ✓ | [`.agents/commands/refresh-compare-pages.md`](.agents/commands/refresh-compare-pages.md) |
-| 7 | ✓ | [`.agents/commands/respond-to-pr-comments.md`](.agents/commands/respond-to-pr-comments.md) |
-| 8 | ✓ | [`.agents/commands/task-run.md`](.agents/commands/task-run.md) |
-| 9 | ✓ | [`.agents/commands/task.md`](.agents/commands/task.md) |
-| 10 | ✓ | [`.github/prompts/generate-changelog.md`](.github/prompts/generate-changelog.md) |
-| 11 | ✓ | [`.github/prompts/triage-issue.md`](.github/prompts/triage-issue.md) |
-| 12 | ✓ | [`.github/prompts/update-docs.md`](.github/prompts/update-docs.md) |
-| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
-| 15 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
-| 16 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
-| 17 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 18 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`.agents/commands/pr/create-pr.md`](.agents/commands/pr/create-pr.md) |
+| 7 | ✓ | [`.agents/commands/refresh-compare-pages.md`](.agents/commands/refresh-compare-pages.md) |
+| 8 | ✓ | [`.agents/commands/respond-to-pr-comments.md`](.agents/commands/respond-to-pr-comments.md) |
+| 9 | ✓ | [`.agents/commands/task-run.md`](.agents/commands/task-run.md) |
+| 10 | ✓ | [`.agents/commands/task.md`](.agents/commands/task.md) |
+| 11 | ✓ | [`.github/prompts/generate-changelog.md`](.github/prompts/generate-changelog.md) |
+| 12 | ✓ | [`.github/prompts/triage-issue.md`](.github/prompts/triage-issue.md) |
+| 13 | ✓ | [`.github/prompts/update-docs.md`](.github/prompts/update-docs.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
+| 16 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
+| 17 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
+| 18 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 19 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

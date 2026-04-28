@@ -1,88 +1,125 @@
 ---
 name: generate2dmap
-description: "Generate 2D game maps for RPGs, monster-taming games, tactical maps, arcade games, and canvas/HTML games by choosing the right map strategy: single baked background, layered base map plus prop sprites, tilemap/tileset, or hybrid. Use when Codex needs to make or revise a 2D map, collision map, map props, tile-like layout, top-down scene, parallax/overlay layer, simple background map, or a base-map-plus-sprites game scene."
+description: "Generate and revise production-oriented 2D game maps by choosing a visual model, runtime object model, collision model, and engine/export target. Use when Codex needs to create or integrate RPG maps, monster-taming maps, tactical arenas, battle backgrounds, side-scroller/parallax scenes, tilemaps, layered raster maps, prop packs, collision zones, walkable areas, or map previews."
 ---
 
 # Generate2dmap
 
 ## Overview
 
-Choose and build the simplest 2D map structure that supports the game's needs. This skill is a map orchestrator: it decides whether the right output is a single baked map, a baked map plus collision metadata, a hybrid map, a layered base map plus props, or a tilemap.
+Build the smallest map bundle that satisfies the game. Decide the map as a pipeline, not as a single strategy label:
 
-Use a single baked image for simple or mostly decorative maps. Use layered assets when collision, occlusion, interaction, reuse, or animation matter. Use tilemaps when the existing engine or user request expects tile-based editing.
+1. `visual_model`: `baked_raster` | `layered_raster` | `tilemap` | `layered_tilemap` | `parallax_layers`
+2. `runtime_object_model`: `none` | `separate_props` | `y_sorted_props` | `interactive_entities` | `foreground_occluders`
+3. `collision_model`: `none` | `coarse_shapes` | `precise_shapes` | `tile_collision` | `polygon_walkmesh` | `trigger_zones`
+4. `engine_target`: `raw_canvas` | `Phaser` | `Tiled_JSON` | `LDtk` | `Godot_TileMap` | `Unity_Tilemap` | project-native
 
-Invoke `$generate2dsprite` only when the chosen map strategy needs reusable transparent props, usually in layered or hybrid maps. Do not create props just because this skill can use them.
+Use user-specified parameters when present. When the user does not specify them, infer the lightest pipeline from the existing game, camera, collision needs, map scale, and editing needs.
+
+Read [references/map-strategies.md](references/map-strategies.md) when the pipeline choice is not obvious. Read [references/layered-map-contract.md](references/layered-map-contract.md) before implementing a layered raster map. Read [references/prop-pack-contract.md](references/prop-pack-contract.md) before batching generated props into a sheet.
+
+## Parameter Contract
+
+User-facing parameters may be stated in natural language:
+
+- `map_kind`: overworld | town | dungeon | shrine | arena | battle_bg | side_scroller | tactical
+- `visual_model`: baked raster | layered raster | tilemap | layered tilemap | parallax
+- `size`: pixel dimensions, tile dimensions, or camera-relative size
+- `perspective`: top-down | 3/4 top-down | side-view | isometric-like
+- `collision_precision`: none | coarse | precise | tile | walkmesh
+- `prop_generation`: none | one_by_one | prop_pack_2x2 | prop_pack_3x3 | prop_pack_4x4
+- `output_format`: PNG only | layered preview | manifest JSON | engine-native map data
+
+When unspecified:
+
+- Use `baked_raster + coarse_shapes` for battle backgrounds, title/menu scenes, cutscenes, and fixed arenas.
+- Use `layered_raster + y_sorted_props + precise_shapes` for top-down RPG exploration with tall props, occlusion, interactables, or reusable props.
+- Use `tilemap` or `layered_tilemap` only when the engine/editor already uses tiles or the user asks for editable tiles.
+- Use `parallax_layers` for side-scrollers and scrolling backgrounds.
+- Use prop packs when 4 or more small/medium static props share one style and can fit into equal cells.
+- Use one-by-one prop generation for hero props, buildings, gates, irregular large props, animated props, or props needing strong identity.
 
 ## Workflow
 
 1. Inspect the target game.
-   - Find map dimensions, camera scale, render loop, asset loading, collision shape support, spawn/rest/NPC/encounter zone data, and debug collision tools.
-   - Preserve the game engine's existing style and coordinate system.
+   - Find camera size, map dimensions, coordinate system, render order, asset loading, collision support, zone data, and existing map formats.
+   - Preserve the engine's existing style and data contracts.
 
-2. Choose the map strategy.
-   - Single baked image: best for simple maps, menu/background scenes, fixed arenas, prototypes, and games with minimal or coarse collision.
-   - Layered map: best for RPG exploration, precise collision, tall objects, occlusion, props reused across areas, animated props, or interactables.
-   - Tilemap: best when the engine already uses tiles, the user asks for tile editing/export, or grid-perfect level design matters.
-   - Hybrid: use a baked base/background with a small number of separate overlays, props, or collision shapes.
-   - Read [references/map-strategies.md](references/map-strategies.md) when the strategy is not obvious.
+2. Choose the pipeline axes.
+   - Select `visual_model`, `runtime_object_model`, `collision_model`, and `engine_target`.
+   - Treat `hybrid` as a result of combining axes, not as a primary category.
 
-3. Produce the chosen asset set.
-   - For a single baked map, generate or edit one complete map image and integrate it directly.
-   - For a single baked map with gameplay constraints, generate or edit one complete map image plus collision or zone metadata.
-   - For a hybrid map, keep most of the scene baked and split out only the objects that need collision, occlusion, interaction, reuse, or animation.
-   - For a layered map, create a ground-only base map plus generated props. Use `$generate2dsprite` for the prop assets, then place them in map coordinates. Read [references/layered-map-contract.md](references/layered-map-contract.md) before implementing a new layered map or a major map revision.
-   - For a tilemap, follow the project's tilemap format or create a tileset/map JSON only when the consuming engine supports it.
+3. Produce assets.
+   - For baked raster maps, generate or edit one background and optional collision/zones metadata.
+   - For layered raster maps, generate a ground-only base map first. Then show that base image in context and generate a dressed reference from the visible base before making final props and placements.
+   - For tilemaps, follow the engine/editor format; do not force image-generation-only maps into tilemaps.
+   - For parallax scenes, produce background/midground/foreground layers and scroll metadata.
 
-4. Build collision and zones.
-   - Use simple structured shapes first: rectangles, ellipses, and polygons.
-   - Keep collision data independent from art files.
-   - Add only the gameplay metadata the map needs: walk bounds, blockers, encounter zones, rest zones, NPC collision radius, spawn point, battle return points, exits, or triggers.
-   - For single baked maps, collision may be coarse or minimal if the gameplay does not require precision.
-   - For layered maps, verify critical points programmatically: spawn is walkable, path centers are walkable, prop bases block, entrances remain open.
+4. Build metadata.
+   - Store prop placement, actor spawn points, interactables, blockers, walk bounds, encounter zones, exits, and triggers as structured data.
+   - Keep collision independent from pixels unless the target engine explicitly uses tile collision.
 
-5. QA and iterate.
-   - Produce a flattened preview when using layered assets.
-   - Check map scale, camera framing, text/UI overlap, collision, path readability, and keyboard/controller navigation.
-   - If a layered prop is poor or touches edges, regenerate or reprocess the prop instead of cutting it from a baked map.
+5. Validate and preview.
+   - Compose a flattened preview for layered maps.
+   - Validate image sizes, alpha channels, prop pack extraction metadata, JSON parseability, and critical walkability points when collision matters.
 
-## Decision Rules
+## Prop Generation Rules
 
-- Prefer the simplest map that works for the requested game.
-- Use a single baked image when the map is decorative, tiny, fixed-screen, or only needs broad collision.
-- Use layered props when an object should block, cover, interact, animate, be reused, or be edited independently.
-- Paint purely ground-level details into the base map.
-- If a baked map's collision or occlusion feels imprecise, convert only the troublesome objects into props instead of rebuilding everything.
-- Use tilesets only when the existing game already uses tilemap tooling or the user asks for a tile-based editor/export.
-- Keep generated text out of map art. Put labels and UI in code.
+Use `$generate2dsprite` for reusable transparent props, but choose the generation shape deliberately:
+
+- `one_by_one`: safest for large, important, animated, or irregular props.
+- `prop_pack_2x2`: 4 related props, safest batch size.
+- `prop_pack_3x3`: 9 small/medium props, good quality/time tradeoff.
+- `prop_pack_4x4`: 16 very simple small props; fastest but most likely to drift or touch edges.
+
+Prop packs save image-generation calls and prompt overhead, but reduce per-prop control. Use them for rocks, shrubs, barrels, small signs, lamps, crates, floor ornaments, plants, and repeated environmental props. Do not use prop packs for buildings, gates, trees with wide canopies, character-like statues, hero objects, or anything that must be pixel-perfect.
+
+For layered maps with generated props, prefer this reference pipeline:
+
+1. Generate `assets/map/<name>-base.png` as ground-only terrain.
+2. Make the base image visible in conversation context. If the base is a local file, use `view_image` before calling built-in `image_gen`; do not rely on a path string as the reference.
+3. Generate `assets/map/<name>-dressed-reference.png` from the visible base, preserving camera, terrain, size, road/water shapes, anchor pads, and boundaries. Treat this as a planning/reference image, not the final runtime map.
+4. Generate one-by-one props or a prop pack based on the dressed reference.
+5. Place extracted props over the original base and compose a flattened preview.
+6. Validate that base, dressed reference, and preview dimensions match.
+
+Use `scripts/extract_prop_pack.py` after generating a solid-magenta prop sheet. If the sheet has antialiased magenta fringe, run the imagegen chroma-key helper with soft matte and despill before extraction, then extract from the alpha-cleaned sheet. Use `scripts/compose_layered_preview.py` to verify placement over the base map.
 
 ## Expected Deliverables
 
-For a simple baked scene, produce:
+For a baked raster map:
 
 - `assets/map/<name>.png`
 - optional `<name>.prompt.txt`
-- optional collision metadata if gameplay needs it
+- optional `data/<name>-collision.json` or `data/<name>-zones.json`
 - code changes that load/use the image
 
-For a layered playable scene, produce:
+For a layered raster map:
 
 - `assets/map/<name>-base.png`
 - `assets/map/<name>-base.prompt.txt`
-- generated prop folders created through `$generate2dsprite`
-- `assets/props/<prop-name>/prop.png` plus `pipeline-meta.json`
-- prop placement metadata in the target game's format
-- `assets/map/<name>-layered-preview.png` as a flattened final preview for QA and showcase
-- collision metadata such as `data/collision-map.json`
-- code changes that load the base map, load prop images, render y-sorted props/actors, and use the collision metadata
+- optional `assets/map/<name>-dressed-reference.png` for prop planning
+- `assets/props/<prop>/prop.png` folders, from one-by-one props or extracted prop packs
+- `data/<name>-props.json` placement metadata
+- `data/<name>-collision.json` and/or `data/<name>-zones.json` when gameplay needs them
+- `assets/map/<name>-layered-preview.png`
+- code changes that load the base, props, y-sorted renderables, collision, and zones
+
+For a prop pack:
+
+- raw generated sheet with solid `#FF00FF` background
+- extracted `assets/props/<prop>/prop.png` files
+- `prop-pack.json` extraction manifest
+- no `edge_touch` entries for accepted props
 
 ## Validation
 
-Always validate what the chosen strategy requires:
+Always validate what the chosen pipeline requires:
 
 - map files exist and have expected dimensions
-- transparent prop PNGs have alpha when props are used
-- prop `pipeline-meta.json` has no `edge_touch_frames` when generated props are used
-- game JavaScript/TypeScript parses
-- collision JSON parses when collision metadata exists
-- critical point tests pass when precise collision is required
-- visual preview or in-game render looks coherent at the game's camera size
+- transparent props contain alpha
+- prop pack manifests parse and accepted props do not touch cell edges
+- placement JSON parses and referenced prop files exist
+- collision/zones JSON parses when present
+- critical spawn, path, entrance, blocker, and zone points behave as expected
+- flattened preview looks coherent at the game's camera size

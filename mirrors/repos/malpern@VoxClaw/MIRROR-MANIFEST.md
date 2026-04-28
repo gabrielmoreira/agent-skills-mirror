@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `malpern/VoxClaw` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `malpern/VoxClaw` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `malpern/VoxClaw` — 26 default patterns, 0 followed patterns, 5 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`plugins/voxclaw/skills/voxclaw-read-task-summary/SKILL.md`](plugins/voxclaw/skills/voxclaw-read-task-summary/SKILL.md) |
-| 3 | ✓ | [`plugins/voxclaw/skills/voxclaw-read-test-failures/SKILL.md`](plugins/voxclaw/skills/voxclaw-read-test-failures/SKILL.md) |
-| 4 | ✓ | [`plugins/voxclaw/skills/voxclaw/SKILL.md`](plugins/voxclaw/skills/voxclaw/SKILL.md) |
-| 5 | ✓ | [`SKILL.md`](SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.claude/commands/asc-app-create-ui/SKILL.md`](.claude/commands/asc-app-create-ui/SKILL.md) |
+| 3 | ✓ | [`.claude/commands/asc-aso-audit/SKILL.md`](.claude/commands/asc-aso-audit/SKILL.md) |
+| 4 | ✓ | [`.claude/commands/asc-build-lifecycle/SKILL.md`](.claude/commands/asc-build-lifecycle/SKILL.md) |
+| 5 | ✓ | [`.claude/commands/asc-cli-usage/SKILL.md`](.claude/commands/asc-cli-usage/SKILL.md) |
+| 6 | ✓ | [`.claude/commands/asc-crash-triage/SKILL.md`](.claude/commands/asc-crash-triage/SKILL.md) |
+| 7 | ✓ | [`.claude/commands/asc-id-resolver/SKILL.md`](.claude/commands/asc-id-resolver/SKILL.md) |
+| 8 | ✓ | [`.claude/commands/asc-localize-metadata/SKILL.md`](.claude/commands/asc-localize-metadata/SKILL.md) |
+| 9 | ✓ | [`.claude/commands/asc-metadata-sync/SKILL.md`](.claude/commands/asc-metadata-sync/SKILL.md) |
+| 10 | ✓ | [`.claude/commands/asc-notarization/SKILL.md`](.claude/commands/asc-notarization/SKILL.md) |
+| 11 | ✓ | [`.claude/commands/asc-ppp-pricing/SKILL.md`](.claude/commands/asc-ppp-pricing/SKILL.md) |
+| 12 | ✓ | [`.claude/commands/asc-release-flow/SKILL.md`](.claude/commands/asc-release-flow/SKILL.md) |
+| 13 | ✓ | [`.claude/commands/asc-revenuecat-catalog-sync/examples.md`](.claude/commands/asc-revenuecat-catalog-sync/examples.md) |
+| 14 | ✓ | [`.claude/commands/asc-revenuecat-catalog-sync/references.md`](.claude/commands/asc-revenuecat-catalog-sync/references.md) |
+| 15 | ✓ | [`.claude/commands/asc-revenuecat-catalog-sync/SKILL.md`](.claude/commands/asc-revenuecat-catalog-sync/SKILL.md) |
+| 16 | ✓ | [`.claude/commands/asc-screenshot-resize/SKILL.md`](.claude/commands/asc-screenshot-resize/SKILL.md) |
+| 17 | ✓ | [`.claude/commands/asc-shots-pipeline/SKILL.md`](.claude/commands/asc-shots-pipeline/SKILL.md) |
+| 18 | ✓ | [`.claude/commands/asc-signing-setup/SKILL.md`](.claude/commands/asc-signing-setup/SKILL.md) |
+| 19 | ✓ | [`.claude/commands/asc-submission-health/SKILL.md`](.claude/commands/asc-submission-health/SKILL.md) |
+| 20 | ✓ | [`.claude/commands/asc-subscription-localization/SKILL.md`](.claude/commands/asc-subscription-localization/SKILL.md) |
+| 21 | ✓ | [`.claude/commands/asc-testflight-orchestration/SKILL.md`](.claude/commands/asc-testflight-orchestration/SKILL.md) |
+| 22 | ✓ | [`.claude/commands/asc-wall-submit/SKILL.md`](.claude/commands/asc-wall-submit/SKILL.md) |
+| 23 | ✓ | [`.claude/commands/asc-whats-new-writer/SKILL.md`](.claude/commands/asc-whats-new-writer/SKILL.md) |
+| 24 | ✓ | [`.claude/commands/asc-workflow/SKILL.md`](.claude/commands/asc-workflow/SKILL.md) |
+| 25 | ✓ | [`.claude/commands/asc-xcode-build/SKILL.md`](.claude/commands/asc-xcode-build/SKILL.md) |
+| 26 | ✓ | [`.claude/commands/building-apple-platform-products/SKILL.md`](.claude/commands/building-apple-platform-products/SKILL.md) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | ✓ | [`plugins/voxclaw/skills/voxclaw-read-task-summary/SKILL.md`](plugins/voxclaw/skills/voxclaw-read-task-summary/SKILL.md) |
+| 30 | ✓ | [`plugins/voxclaw/skills/voxclaw-read-test-failures/SKILL.md`](plugins/voxclaw/skills/voxclaw-read-test-failures/SKILL.md) |
+| 31 | ✓ | [`plugins/voxclaw/skills/voxclaw/SKILL.md`](plugins/voxclaw/skills/voxclaw/SKILL.md) |
+| 32 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

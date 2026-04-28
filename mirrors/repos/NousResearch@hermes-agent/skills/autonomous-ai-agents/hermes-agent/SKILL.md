@@ -1,6 +1,6 @@
 ---
 name: hermes-agent
-description: Complete guide to using and extending Hermes Agent — CLI usage, setup, configuration, spawning additional agents, gateway platforms, skills, voice, tools, profiles, and a concise contributor reference. Load this skill when helping users configure Hermes, troubleshoot issues, spawn agent instances, or make code contributions.
+description: "Configure, extend, or contribute to Hermes Agent."
 version: 2.0.0
 author: Hermes Agent + Teknium
 license: MIT
@@ -115,7 +115,7 @@ hermes tools disable NAME   Disable a toolset
 
 hermes skills list          List installed skills
 hermes skills search QUERY  Search the skills hub
-hermes skills install ID    Install a skill
+hermes skills install ID    Install a skill (ID can be a hub identifier OR a direct https://…/SKILL.md URL; pass --name to override when frontmatter has no name)
 hermes skills inspect ID    Preview without installing
 hermes skills config        Enable/disable skills per platform
 hermes skills check         Check for updates
@@ -408,17 +408,17 @@ Common "why is Hermes doing X to my output / tool calls / commands?" toggles —
 
 ### Secret redaction in tool output
 
-Hermes auto-redacts strings that look like API keys, tokens, and secrets in all tool output (terminal stdout, `read_file`, web content, subagent summaries, etc.) so the model never sees raw credentials. If the user is intentionally working with mock tokens, share-management tokens, or their own secrets and the redaction is getting in the way:
+Secret redaction is **off by default** — tool output (terminal stdout, `read_file`, web content, subagent summaries, etc.) passes through unmodified. If the user wants Hermes to auto-mask strings that look like API keys, tokens, and secrets before they enter the conversation context and logs:
 
 ```bash
-hermes config set security.redact_secrets false      # disable globally
+hermes config set security.redact_secrets true       # enable globally
 ```
 
-**Restart required.** `security.redact_secrets` is snapshotted at import time — setting it mid-session (e.g. via `export HERMES_REDACT_SECRETS=false` from a tool call) will NOT take effect for the running process. Tell the user to run `hermes config set security.redact_secrets false` in a terminal, then start a new session. This is deliberate — it prevents an LLM from turning off redaction on itself mid-task.
+**Restart required.** `security.redact_secrets` is snapshotted at import time — toggling it mid-session (e.g. via `export HERMES_REDACT_SECRETS=true` from a tool call) will NOT take effect for the running process. Tell the user to run `hermes config set security.redact_secrets true` in a terminal, then start a new session. This is deliberate — it prevents an LLM from flipping the toggle on itself mid-task.
 
-Re-enable with:
+Disable again with:
 ```bash
-hermes config set security.redact_secrets true
+hermes config set security.redact_secrets false
 ```
 
 ### PII redaction in gateway messages

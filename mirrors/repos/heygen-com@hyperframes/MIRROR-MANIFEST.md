@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
+Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 64 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -112,17 +112,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 51 | ✓ | [`skills/hyperframes/references/typography.md`](skills/hyperframes/references/typography.md) |
 | 52 | ✓ | [`skills/hyperframes/scripts/animation-map.mjs`](skills/hyperframes/scripts/animation-map.mjs) |
 | 53 | ✓ | [`skills/hyperframes/scripts/contrast-report.mjs`](skills/hyperframes/scripts/contrast-report.mjs) |
-| 54 | ✓ | [`skills/hyperframes/SKILL.md`](skills/hyperframes/SKILL.md) |
-| 55 | ✓ | [`skills/hyperframes/visual-styles.md`](skills/hyperframes/visual-styles.md) |
-| 56 | ✓ | [`skills/website-to-hyperframes/references/step-1-capture.md`](skills/website-to-hyperframes/references/step-1-capture.md) |
-| 57 | ✓ | [`skills/website-to-hyperframes/references/step-2-design.md`](skills/website-to-hyperframes/references/step-2-design.md) |
-| 58 | ✓ | [`skills/website-to-hyperframes/references/step-3-script.md`](skills/website-to-hyperframes/references/step-3-script.md) |
-| 59 | ✓ | [`skills/website-to-hyperframes/references/step-4-storyboard.md`](skills/website-to-hyperframes/references/step-4-storyboard.md) |
-| 60 | ✓ | [`skills/website-to-hyperframes/references/step-5-vo.md`](skills/website-to-hyperframes/references/step-5-vo.md) |
-| 61 | ✓ | [`skills/website-to-hyperframes/references/step-6-build.md`](skills/website-to-hyperframes/references/step-6-build.md) |
-| 62 | ✓ | [`skills/website-to-hyperframes/references/step-7-validate.md`](skills/website-to-hyperframes/references/step-7-validate.md) |
-| 63 | ✓ | [`skills/website-to-hyperframes/references/techniques.md`](skills/website-to-hyperframes/references/techniques.md) |
-| 64 | ✓ | [`skills/website-to-hyperframes/SKILL.md`](skills/website-to-hyperframes/SKILL.md) |
+| 54 | ✓ | [`skills/hyperframes/scripts/package-loader.mjs`](skills/hyperframes/scripts/package-loader.mjs) |
+| 55 | ✓ | [`skills/hyperframes/SKILL.md`](skills/hyperframes/SKILL.md) |
+| 56 | ✓ | [`skills/hyperframes/visual-styles.md`](skills/hyperframes/visual-styles.md) |
+| 57 | ✓ | [`skills/website-to-hyperframes/references/step-1-capture.md`](skills/website-to-hyperframes/references/step-1-capture.md) |
+| 58 | ✓ | [`skills/website-to-hyperframes/references/step-2-design.md`](skills/website-to-hyperframes/references/step-2-design.md) |
+| 59 | ✓ | [`skills/website-to-hyperframes/references/step-3-script.md`](skills/website-to-hyperframes/references/step-3-script.md) |
+| 60 | ✓ | [`skills/website-to-hyperframes/references/step-4-storyboard.md`](skills/website-to-hyperframes/references/step-4-storyboard.md) |
+| 61 | ✓ | [`skills/website-to-hyperframes/references/step-5-vo.md`](skills/website-to-hyperframes/references/step-5-vo.md) |
+| 62 | ✓ | [`skills/website-to-hyperframes/references/step-6-build.md`](skills/website-to-hyperframes/references/step-6-build.md) |
+| 63 | ✓ | [`skills/website-to-hyperframes/references/step-7-validate.md`](skills/website-to-hyperframes/references/step-7-validate.md) |
+| 64 | ✓ | [`skills/website-to-hyperframes/references/techniques.md`](skills/website-to-hyperframes/references/techniques.md) |
+| 65 | ✓ | [`skills/website-to-hyperframes/SKILL.md`](skills/website-to-hyperframes/SKILL.md) |
 
 ---
 

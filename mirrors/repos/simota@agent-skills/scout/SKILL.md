@@ -26,7 +26,7 @@ COLLABORATION_PATTERNS:
 - Builder -> Scout: Implementation context for investigation
 - Radar -> Scout: Test failures needing root cause
 - Pulse -> Scout: Metrics anomalies needing investigation
-- Rewind -> Scout: Regression confirmation after history analysis
+- Trail -> Scout: Regression confirmation after history analysis
 - Sentinel -> Scout: Security findings needing runtime reproduction
 - Scout -> Builder: Fix specifications (SCOUT_TO_BUILDER_HANDOFF)
 - Scout -> Radar: Regression test specs (SCOUT_TO_RADAR_HANDOFF)
@@ -34,15 +34,15 @@ COLLABORATION_PATTERNS:
 - Scout -> Triage: Severity updates, reverse escalation (SCOUT_TO_TRIAGE_HANDOFF)
 - Scout -> Specter: Concurrency/resource issue escalation (SCOUT_TO_SPECTER_HANDOFF)
 - Scout -> Sentinel: Security suspicion escalation (SCOUT_TO_SENTINEL_HANDOFF)
-- Scout -> Rewind: History-led delegation (SCOUT_TO_REWIND_HANDOFF)
+- Scout -> Trail: History-led delegation (SCOUT_TO_TRAIL_HANDOFF)
 - Beacon -> Scout: Observability alerts with trace/metric context
 - Scout -> Beacon: SLO-impacting root causes for alert tuning
 - Lens -> Scout: Anomaly discovery during comprehension (LENS_TO_SCOUT_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
 - Scout -> Lens: Context/flow trace requests (SCOUT_TO_LENS_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Triage, Builder, Radar, Pulse, Rewind, Sentinel, Beacon, Lens
-- OUTPUT: Builder, Radar, Guardian, Triage, Specter, Sentinel, Rewind, Beacon
+- INPUT: Triage, Builder, Radar, Pulse, Trail, Sentinel, Beacon, Lens
+- OUTPUT: Builder, Radar, Guardian, Triage, Specter, Sentinel, Trail, Beacon
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(H) Marketing(L)
 -->
@@ -67,7 +67,7 @@ Route elsewhere when the task is primarily:
 - incident coordination or operational recovery ownership -> Triage
 - security investigation that may be a vulnerability -> Sentinel
 - concurrency bugs, race conditions, or memory leaks -> Specter
-- git history regression analysis without runtime symptoms -> Rewind
+- git history regression analysis without runtime symptoms -> Trail
 - codebase exploration or understanding -> Lens
 
 ## Core Contract
@@ -208,7 +208,7 @@ Parse the first token of user input.
 
 Behavior notes per Recipe:
 - `bug`: normal workflow, single evidence chain.
-- `regression`: prioritize `git log` / diff / bisect. Delegate to Rewind if history alone is sufficient.
+- `regression`: prioritize `git log` / diff / bisect. Delegate to Trail if history alone is sufficient.
 - `prod`: prioritize traces, logs, metrics, profiling.
 - `consensus`: use independent engines for hypothesis generation, then merge on evidence. See Multi-Engine Mode section.
 - `cascade`: build causal graph from failure traces; separate root cause from symptomatic failures across services.
@@ -318,10 +318,10 @@ SCOUT_TO_SENTINEL_HANDOFF:
   files_involved: ["file1", "file2"]
 ```
 
-### SCOUT_TO_REWIND_HANDOFF
+### SCOUT_TO_TRAIL_HANDOFF
 
 ```yaml
-SCOUT_TO_REWIND_HANDOFF:
+SCOUT_TO_TRAIL_HANDOFF:
   bug_id: "[identifier or title]"
   regression_signal: "[what suggests a regression]"
   time_range: "[suspected window]"
@@ -331,17 +331,17 @@ SCOUT_TO_REWIND_HANDOFF:
 
 ## Collaboration
 
-**Receives:** Triage (incident reports), Builder (implementation context), Radar (test failures), Pulse (metrics anomalies), Rewind (regression confirmation), Sentinel (security findings needing reproduction), Beacon (observability alerts with traces/metrics context for production debugging)
-**Sends:** Builder (fix specifications), Radar (regression test specs), Guardian (PR recommendations), Triage (severity updates), Specter (concurrency/resource escalation), Sentinel (security suspicion), Rewind (history-led delegation), Beacon (SLO-impacting root causes for alert tuning and dashboard updates)
+**Receives:** Triage (incident reports), Builder (implementation context), Radar (test failures), Pulse (metrics anomalies), Trail (regression confirmation), Sentinel (security findings needing reproduction), Beacon (observability alerts with traces/metrics context for production debugging)
+**Sends:** Builder (fix specifications), Radar (regression test specs), Guardian (PR recommendations), Triage (severity updates), Specter (concurrency/resource escalation), Sentinel (security suspicion), Trail (history-led delegation), Beacon (SLO-impacting root causes for alert tuning and dashboard updates)
 
-**Cross-cluster escalation:** See `_common/INVESTIGATION_ESCALATION.md` for Lens↔Scout, Rewind↔Specter handoff formats and stall protocol.
+**Cross-cluster escalation:** See `_common/INVESTIGATION_ESCALATION.md` for Lens↔Scout, Trail↔Specter handoff formats and stall protocol.
 
 **Overlap boundaries:**
 - **vs Triage**: Triage = incident coordination, severity classification, recovery planning. Scout = root cause analysis and reproduction. Escalate back to Triage when impact scope changes during investigation.
 - **vs Builder**: Builder = code implementation. Scout = investigation only. Hand off when root cause is confirmed with fix direction.
 - **vs Radar**: Radar = test implementation. Scout = identifies what to test. Hand off regression test specs after investigation.
 - **vs Sentinel**: Sentinel = security vulnerability analysis and remediation. Scout = runtime bug reproduction. Escalate to Sentinel when investigation reveals potential security impact.
-- **vs Rewind**: Rewind = git history investigation and regression pinpointing. Scout = runtime symptom investigation. Delegate to Rewind when the primary investigation method is `git log`/bisect/blame without runtime symptoms. Retain ownership when runtime reproduction is needed even if regression is suspected.
+- **vs Trail**: Trail = git history investigation and regression pinpointing. Scout = runtime symptom investigation. Delegate to Trail when the primary investigation method is `git log`/bisect/blame without runtime symptoms. Retain ownership when runtime reproduction is needed even if regression is suspected.
 - **vs Specter**: Specter = concurrency and resource issue detection. Scout = general bug investigation. Escalate to Specter when evidence points to race conditions, memory leaks, or deadlocks.
 - **vs Lens**: Lens = codebase understanding and exploration. Scout = bug-focused investigation. Use Lens output as input when codebase context is needed, but do not delegate the investigation itself.
 

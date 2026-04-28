@@ -19,6 +19,18 @@ Always keep these constraints:
 - same asset identity across frames
 - same bounding box and same pixel scale across frames
 
+## Reference Rules
+
+Use these rules when the user attaches a reference, points to a local image, asks for consistency with an earlier generated image, or asks for an evolution/variant of an existing sprite:
+
+- Make the reference image visible to built-in `image_gen` before generation. If the reference is a local file, call `view_image` first; do not assume a path string is a visual input.
+- In the prompt, say `use the image just shown as the visual reference`.
+- State what must stay fixed: silhouette family, palette, face/eyes, costume or markings, accessories, material language, and pixel-art style.
+- State what may change: pose, animation phase, action energy, size progression, evolution traits, or FX intensity.
+- For animation sheets, preserve the same character identity in every cell and only change the animation pose or effect state.
+- For evolution lines, keep visible lineage markers while allowing larger silhouette, added details, or stronger colors per form.
+- Keep the normal magenta-background and containment rules even when using a reference.
+
 ## Containment Rules
 
 For any sheet mode, say this explicitly when consistency matters:
@@ -202,6 +214,7 @@ Do not try to force unrelated assets into one giant sheet.
 
 1. state the asset type and sheet shape
 2. describe the subject identity
-3. describe frame-by-frame motion
-4. restate same-scale and containment rules
-5. restate magenta background and no-text rules
+3. if applicable, state the reference role and invariants
+4. describe frame-by-frame motion
+5. restate same-scale and containment rules
+6. restate magenta background and no-text rules

@@ -32,6 +32,8 @@
 **Git Workflow and Releases**
 - `main` is the release branch. Never commit directly to `main`.
 - `dev` is the working branch. All feature work branches off `dev` and merges back into `dev`.
+- All PRs must use the template at `.github/PULL_REQUEST_TEMPLATE.md` — fill in every section. When opening a PR via `gh pr create`, copy the template into the body explicitly; GitHub only auto-applies it through the web UI.
+- Link the issue with `Closes #<number>` (or `Fixes` / `Resolves`) in the PR description so it auto-closes on merge.
 - To release, use the `/release` skill. It compares `dev` to `main`, generates changelog entries, bumps the version, and creates a PR to merge `dev` into `main`.
 - Releases follow Semantic Versioning: `/release` (patch), `/release minor`, `/release major`.
 - Changelog lives in `CHANGELOG.md` and follows Keep a Changelog format.
@@ -689,6 +691,7 @@ async function createSession(conversationId: string, codebaseId: string) {
 - `$DOCS_DIR` - Documentation directory path; configured via `docs.path` in `.archon/config.yaml`. Defaults to `docs/`. Never throws.
 - `$LOOP_USER_INPUT` - User feedback provided via `/workflow approve <id> <text>` at an interactive loop gate. Only populated on the first iteration of a resumed interactive loop; empty string on all other iterations.
 - `$REJECTION_REASON` - Reviewer feedback provided via `/workflow reject <id> <reason>` at an approval gate. Only populated in `on_reject` prompts; empty string elsewhere.
+- `$LOOP_PREV_OUTPUT` - Cleaned output of the previous loop iteration (loop nodes only). Empty string on the first iteration (no prior output exists). Useful for `fresh_context: true` loops that need to reference what the previous pass produced or why it failed without carrying full session history.
 
 **Command Types:**
 

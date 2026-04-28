@@ -57,7 +57,7 @@ Each agent handles one workflow stage:
 External API integrations in `aigc-claw/backend/tool/`:
 - **LLM clients**: llm_dashscope.py, llm_deepseek.py, llm_gpt.py, llm_gemini.py
 - **Image clients**: image_dashscope.py, image_client.py (Seedream, Jimeng, Wan)
-- **Video clients**: video_wan.py, video_kling.py (Wan, Kling)
+- **Video clients**: video_dashscope.py, video_kling.py (Wan, Kling)
 - **VLM clients**: vlm_dashscope.py, vlm_gemini.py
 
 ### Data Storage

@@ -243,6 +243,130 @@ Kind-polymorphic header tag (`analyze.dead_code`,
 - `contracts.orphans` (only when `action=check`): `contract_id`,
   `side`, `repo`, `symbol`.
 
+## Workspace-aware MCP shapes
+
+GCX1 v1 also defines three protocol-level shapes that travel alongside
+tool responses: a **tool-definitions** registry section, a
+**tool-request** envelope, and an **error** envelope. Every MCP
+tool definition carries an explicit `scope`, and so the legality of an
+inbound call can be decided by combining that scope with the request's
+`repo` parameter. All three shapes are first-class GCX1 sections and
+must round-trip byte-identically across `gcx-go` and `gcx-ts`.
+
+[adr2]: ../../adr/0002-workspace-aware-mcp-bind.md
+
+### `tool_definitions`
+
+Section for the per-tool scope registry. Layout:
+
+```
+GCX1 tool=tool_definitions fields=name,scope
+<name>\t<scope>\n
+...
+```
+
+- `name` is the MCP tool name (one row per tool).
+- `scope` is one of the three string literals `repo`, `workspace`,
+  `fan-out`. Anything else is a schema error in both codecs.
+- Rows are emitted in ascending `name` order so the bytes are
+  reproducible regardless of the encoder's input order.
+
+A definition without `scope` (empty cell, missing column, or unknown
+value) is a schema error and both codecs reject it on encode and on
+decode.
+
+### `tool_request`
+
+Envelope for one inbound MCP call. Layout:
+
+```
+GCX1 tool=tool_request fields=tool,scope,repo
+<tool>\t<scope>\t<repo-cell>\n
+```
+
+Exactly one row. The `repo` cell is a **union shape decided by
+`scope`**:
+
+| scope        | `repo` cell                                                                       |
+|--------------|-----------------------------------------------------------------------------------|
+| `repo`       | a non-empty repo name (plain string, e.g. `gortex`)                               |
+| `workspace`  | empty string (the `repo` parameter is absent)                                     |
+| `fan-out`    | a compact JSON-array literal, e.g. `["*"]` or `["gortex","gortex-cloud"]`         |
+
+Rationale for the cell encoding choices:
+
+- **scope=repo → plain string.** A single repo name is the most
+  common case and never needs structure; a plain string keeps the cell
+  tokenizer-friendly.
+- **scope=workspace → empty.** The `repo` parameter MUST NOT be
+  present for workspace-level tools. The empty
+  cell — already how GCX1 represents an absent column under the
+  "fewer values than declared fields default to empty" rule — is the
+  correct on-wire signal for that absence.
+- **scope=fan-out → compact JSON array.** This re-uses the
+  generic-fallback nested-value rule already used elsewhere in GCX1
+  ("nested values inside a cell serialise to compact JSON"). Callers
+  decode the cell with `JSON.parse` (TypeScript) or `json.Unmarshal`
+  (Go) without learning a new escape format. Alternative encodings
+  considered:
+
+  - *Comma-joined string* (e.g. `gortex,gortex-cloud`): rejected
+    because some namespaces legitimately contain commas (gRPC method
+    paths, generic type parameters).
+  - *Repeated cells across multiple rows*: rejected because the
+    request envelope is single-row by contract; multi-row would
+    overload the section's identity.
+  - *Tab-joined string*: rejected because tab is the GCX1 column
+    delimiter; any in-cell use would force an escape and break the
+    "tabs never appear in cells" property the format relies on for
+    fast scanning.
+
+  Compact JSON wins on three axes simultaneously: it is unambiguous
+  (every list value round-trips), it composes with the existing
+  generic-fallback rule, and it stays on a single physical line.
+
+The `["*"]` sentinel is a literal two-character string `*` inside a
+JSON array — it is the **only** legal way to spell "fan out across
+every repo in this workspace". Omitting `repo` for a fan-out tool is a
+protocol error, surfaced as an `error` section with code
+`missing_repo_list` (see below). 
+
+### `error`
+
+Envelope for protocol-level rejections returned by the server in lieu
+of a tool result. Layout:
+
+```
+GCX1 tool=error fields=code,message,detail
+<code>\t<message>\t<detail>\n
+```
+
+Exactly one row. `code` MUST be non-empty; `message` and `detail` are
+free-form strings (escape rules apply per the standard table). The
+codes defined in GCX1 v1:
+
+| code                | when                                                                                |
+|---------------------|-------------------------------------------------------------------------------------|
+| `unknown_repo`      | a fan-out request lists a name not present in the active workspace (resolved Q1)    |
+| `missing_repo_list` | a `scope: fan-out` request omits `repo` in workspace mode                           |
+| `missing_repo`      | a `scope: repo` request omits `repo` in workspace mode                              |
+| `repo_not_allowed`  | a `scope: workspace` request includes `repo` (any value)                            |
+| `wrong_repo_shape`  | the `repo` parameter has the wrong type for the tool's declared scope               |
+
+Both codecs expose these as named constants
+(`ErrCodeUnknownRepo` / `ERR_CODE_UNKNOWN_REPO`, etc.) so call sites
+do not stringly type the code value.
+
+### Conformance
+
+The fixtures under `gcx-ts/test/golden/scope_*.gcx` cover one fixture
+per scope kind (repo, workspace, fan-out with `["*"]`, fan-out with a
+named subset) plus the two named protocol-error shapes. The Go-side
+`gcx-go` parity test (`scope_golden_test.go`) re-encodes the same
+logical inputs and asserts byte-for-byte equality against the
+committed fixtures. Any drift between `gcx-go` and `gcx-ts` MUST fail
+that test before any other CI step.
+
 ## Generic fallback
 
 Any tool without a hand-tuned encoder routes through the generic

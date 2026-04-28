@@ -304,6 +304,134 @@ Disable a provider.
 
 ---
 
+## Model Commands
+
+**Model commands do NOT require `current_experiment`.**
+
+### `model list`
+
+List all model groups on the server.
+
+**JSON output:**
+```json
+[{"group_id": "abc123", "group_name": "my-model", "latest_version_label": "v2", "version_count": 2, "tags": ["latest"]}]
+```
+
+### `model info <group_id>`
+
+Show detailed information about a specific model group. Accepts `group_id` or `group_name`.
+
+### `model create <asset_id>`
+
+Create a new model group and register its first version. The `asset_id` is the underlying model ID (e.g. a HuggingFace model ID). Version label is auto-generated (v1, v2, …).
+
+| Option | Description |
+|---|---|
+| `--name <name>` | Display name for the model group (required) |
+| `--description <text>` | Optional description |
+| `--tag <tag>` | Tag for this version (default: `latest`) |
+
+### `model edit <group_id>`
+
+Edit the name or description of a model group.
+
+| Option | Description |
+|---|---|
+| `--name <name>` | New display name |
+| `--description <text>` | New description |
+
+### `model delete <group_id>`
+
+Delete a model group and all its versions.
+
+| Option | Description |
+|---|---|
+| `--yes` / `-y` | Skip confirmation prompt. **Always use in automated workflows.** |
+
+---
+
+## Dataset Commands
+
+**Dataset commands do NOT require `current_experiment`.**
+
+### `dataset list`
+
+List all dataset groups on the server.
+
+**JSON output:**
+```json
+[{"group_id": "abc123", "group_name": "my-dataset", "latest_version_label": "v1", "version_count": 1, "tags": ["latest"]}]
+```
+
+### `dataset info <group_id>`
+
+Show detailed information about a specific dataset group. Accepts `group_id` or `group_name`.
+
+### `dataset upload <dataset_id> <files...>`
+
+Upload local files to a dataset. Creates the dataset if it does not exist. Accepts `.jsonl`, `.json`, or `.csv` files.
+
+```bash
+lab dataset upload my-dataset train.jsonl eval.jsonl
+```
+
+### `dataset download <dataset_id>`
+
+Download a dataset from the HuggingFace Hub to the server.
+
+| Option | Description |
+|---|---|
+| `--config <name>` | Dataset config/subset name (optional) |
+
+```bash
+lab dataset download Trelis/touch-rugby-rules
+lab dataset download Trelis/touch-rugby-rules --config default
+```
+
+### `dataset edit <group_id>`
+
+Edit the name or description of a dataset group.
+
+| Option | Description |
+|---|---|
+| `--name <name>` | New display name |
+| `--description <text>` | New description |
+
+### `dataset delete <group_id>`
+
+Delete a dataset group and all its versions.
+
+| Option | Description |
+|---|---|
+| `--yes` / `-y` | Skip confirmation prompt. **Always use in automated workflows.** |
+
+---
+
+## Job Publish Commands
+
+**Publish commands require `current_experiment` to be set.**
+
+Publish models or datasets produced by a job to the server registry. Interactive by default — prompts for asset name, group, mode, and tag. Use explicit arguments for non-interactive/agent usage.
+
+### `job publish model <job_id> [model_name]`
+
+Publish a model from a job to the registry.
+
+| Option | Description |
+|---|---|
+| `--group` / `-g <name>` | Registry group name |
+| `--mode <new\|existing>` | Publish as a new group or add version to existing (default: `new`) |
+| `--tag <tag>` | Version tag (default: `latest`) |
+| `--description` / `-d <text>` | Version description |
+
+**Note:** `model_name` is required in `--format json` mode. In pretty mode, omitting it triggers an interactive picker.
+
+### `job publish dataset <job_id> [dataset_name]`
+
+Publish a dataset from a job to the registry. Same options as `job publish model`.
+
+---
+
 ## Server Commands
 
 ### `server install`

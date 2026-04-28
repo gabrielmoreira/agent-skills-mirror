@@ -22,6 +22,7 @@ Infer these from the user request:
 - `effect_policy`: `all` | `largest`
 - `anchor`: `center` | `bottom` | `feet`
 - `margin`: `tight` | `normal` | `safe`
+- `reference`: `none` | `attached_image` | `generated_image` | `local_file`
 - `prompt`: the user's theme or visual direction
 - `role`: only when the asset is clearly an NPC role
 - `name`: optional output slug
@@ -33,6 +34,7 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 - Decide the asset plan yourself. Do not force the user to spell out sheet size, frame count, or bundle structure when the request already implies them.
 - Write the art prompt yourself. Do not default to the prompt-builder script.
 - Use built-in `image_gen` for every raw image.
+- When the user provides or implies a visual reference, use built-in image edit/reference semantics only after the reference image is visible in the conversation context. If the reference is a local file, call `view_image` first; do not rely on a filesystem path in the prompt as the visual reference.
 - Use the script only as a deterministic processor: magenta cleanup, frame splitting, component filtering, scaling, alignment, QC metadata, transparent sheet export, and GIF export.
 - Treat script flags as execution primitives chosen by the agent, not user-facing hardcoded workflow.
 - If a generated sheet touches cell edges, drifts in scale, or breaks a projectile / impact loop, either reprocess with better primitive settings or regenerate the raw sheet.
@@ -60,6 +62,14 @@ Examples:
 ### 2. Write the prompt manually
 
 Use [references/prompt-rules.md](references/prompt-rules.md).
+
+If a reference is involved:
+
+- Make the reference visible first. For local paths, use `view_image`; for freshly generated references, rely on the image already shown in context.
+- State the reference role explicitly: preserve identity/style, create an animation sheet for the same subject, create an evolution/variant, or derive a matching prop/FX.
+- Preserve the stable identity markers from the reference: silhouette, palette, face/eye features, costume marks, major accessories, and material language.
+- Let only the requested action or evolution change. Do not redesign the subject unless the user asks.
+- Still require exact sheet shape, solid magenta background, frame containment, and same scale across frames.
 
 Keep the strict parts:
 

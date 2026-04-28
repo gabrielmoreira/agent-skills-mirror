@@ -15,13 +15,15 @@ module.exports = {
     PostToolUse: "working",
     Stop: "codex-turn-end",
   },
-  // JSONL record type:subtype → pet state mapping
-  // ⚠️ Also duplicated in hooks/codex-remote-monitor.js (zero-dep requirement) — keep in sync
+  // JSONL record type:subtype → pet state mapping. The remote monitor keeps
+  // a zero-dep subset of this table; update both paths when adding shared
+  // Codex JSONL events.
   logEventMap: {
     "session_meta": "idle",
     "event_msg:task_started": "thinking",
     "event_msg:user_message": "thinking",
     "event_msg:agent_message": null, // text output only — working is reserved for function_call
+    "event_msg:guardian_assessment": "working", // Codex Desktop auto-review/approval is active work, not terminal idle
     "event_msg:exec_command_end": "working",
     "event_msg:patch_apply_end": "working",
     "event_msg:custom_tool_call_output": "working",

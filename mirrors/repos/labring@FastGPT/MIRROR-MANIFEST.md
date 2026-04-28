@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 1 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 14 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 14 |
+| Followed pats | 1 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 14 fil
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.codex/code/syntax.md`
 
 ## File Index
 
@@ -72,7 +72,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.claude/skills/system-pr_review/SKILL.md`](.claude/skills/system-pr_review/SKILL.md) |
 | 12 | ✓ | [`.claude/skills/system-prompt_optimize/SKILL.md`](.claude/skills/system-prompt_optimize/SKILL.md) |
 | 13 | ✓ | [`.claude/skills/system-test/SKILL.md`](.claude/skills/system-test/SKILL.md) |
-| 14 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 14 | ✓ | [`.codex/skills/core/ai/prompt_optimize/SKILL.md`](.codex/skills/core/ai/prompt_optimize/SKILL.md) |
+| 15 | ✓ | [`.codex/skills/core/workflow/deprecate_workflow_node/SKILL.md`](.codex/skills/core/workflow/deprecate_workflow_node/SKILL.md) |
+| 16 | ✓ | [`.codex/skills/doc/i18n/SKILL.md`](.codex/skills/doc/i18n/SKILL.md) |
+| 17 | ✓ | [`.codex/skills/support/permission/add-permission/checklist.md`](.codex/skills/support/permission/add-permission/checklist.md) |
+| 18 | ✓ | [`.codex/skills/support/permission/add-permission/SKILL.md`](.codex/skills/support/permission/add-permission/SKILL.md) |
+| 19 | ✓ | [`.codex/skills/system/api-development/SKILL.md`](.codex/skills/system/api-development/SKILL.md) |
+| 20 | ✓ | [`.codex/skills/system/local-pr-review/code-quality-standards.md`](.codex/skills/system/local-pr-review/code-quality-standards.md) |
+| 21 | ✓ | [`.codex/skills/system/local-pr-review/common-issues-checklist.md`](.codex/skills/system/local-pr-review/common-issues-checklist.md) |
+| 22 | ✓ | [`.codex/skills/system/local-pr-review/SKILL.md`](.codex/skills/system/local-pr-review/SKILL.md) |
+| 23 | ✓ | [`.codex/skills/system/pr-review/SKILL.md`](.codex/skills/system/pr-review/SKILL.md) |
+| 24 | ✓ | [`.codex/skills/system/test-case/SKILL.md`](.codex/skills/system/test-case/SKILL.md) |
+| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 26 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 27 | → | [`.codex/code/syntax.md`](.codex/code/syntax.md) |
 
 ---
 

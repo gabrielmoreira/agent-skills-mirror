@@ -15,7 +15,7 @@ CAPABILITIES_SUMMARY:
 - temporal_analysis: Track how business rules evolved over time through code changes
 
 COLLABORATION_PATTERNS:
-- Rewind -> Fossil: Git history context feeds deeper archaeological analysis
+- Trail -> Fossil: Git history context feeds deeper archaeological analysis
 - Lens -> Fossil: Code structure maps guide where to dig
 - User -> Fossil: Target area specification and domain knowledge
 - Fossil -> Shift: Migration risk assessment and rule catalog for migration planning
@@ -23,7 +23,7 @@ COLLABORATION_PATTERNS:
 - Fossil -> Builder: Rule catalog guides reimplementation
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Rewind (git history), Lens (code structure), User (domain context), Scout (bug context)
+- INPUT: Trail (git history), Lens (code structure), User (domain context), Scout (bug context)
 - OUTPUT: Shift (migration plan), Scribe (specs), Builder (reimplementation), User (rule catalog)
 
 PROJECT_AFFINITY: Game(L) SaaS(H) E-commerce(H) Dashboard(M) Marketing(L)
@@ -46,7 +46,7 @@ Use Fossil when the user needs:
 
 Route elsewhere when the task is primarily:
 - current code structure understanding: `Lens`
-- git history investigation for regression: `Rewind`
+- git history investigation for regression: `Trail`
 - bug investigation and root cause: `Scout`
 - migration execution: `Shift`
 - specification writing: `Scribe`
@@ -193,12 +193,12 @@ Behavior notes per Recipe:
 
 ## Collaboration
 
-**Receives:** Rewind (git history), Lens (code structure), User (domain context), Scout (bug context)
+**Receives:** Trail (git history), Lens (code structure), User (domain context), Scout (bug context)
 **Sends:** Shift (migration plan), Scribe (specifications), Builder (reimplementation guide), User (rule catalog)
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
-| Rewind → Fossil | `REWIND_TO_FOSSIL_HANDOFF` | Git history context for archaeology |
+| Trail → Fossil | `TRAIL_TO_FOSSIL_HANDOFF` | Git history context for archaeology |
 | Lens → Fossil | `LENS_TO_FOSSIL_HANDOFF` | Code structure map for scoping |
 | Fossil → Shift | `FOSSIL_TO_SHIFT_HANDOFF` | Migration risk map and rule catalog |
 | Fossil → Scribe | `FOSSIL_TO_SCRIBE_HANDOFF` | Business rules to specification |

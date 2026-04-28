@@ -14,10 +14,15 @@ The UI layer is **additive**. Under the hood it's still tools, resources, and th
 
 ## Claude host specifics
 
-- `_meta.ui.prefersBorder: false` on a `ui://` resource removes the outer card border (mobile).
+| `_meta.ui.*` key | Where | Effect |
+|---|---|---|
+| `resourceUri` | tool | Which `ui://` resource the host renders for this tool's results. |
+| `visibility: ["app"]` | tool | Hide a widget-only helper tool (e.g. geometry/image fetcher called via `callServerTool`) from Claude's tool list. |
+| `prefersBorder: false` | resource | Drop the host's outer card border (mobile). |
+| `csp.{connectDomains, resourceDomains, baseUriDomains}` | resource | Declare external origins; default is block-all. `frameDomains` is currently restricted in Claude. |
+
 - `hostContext.safeAreaInsets: {top, right, bottom, left}` (px) — honor these for notches and the composer overlay.
-- `_meta.ui.csp.{connectDomains, resourceDomains, baseUriDomains}` — declare external origins per resource; default is block-all. `frameDomains` is currently restricted in Claude.
-- Directory submission for MCP Apps requires 3–5 PNG screenshots, ≥1000px wide, cropped to the app response only (no prompt in the image). See https://claude.com/docs/connectors/building/submission#asset-specifications.
+- Directory submission requires OAuth or **authless** (`none`) — static bearer is private-deploy only and blocks listing — plus tool `annotations` and 3–5 PNG screenshots; see `references/directory-checklist.md`.
 
 ---
 
@@ -104,6 +109,7 @@ const server = new McpServer({ name: "contacts", version: "1.0.0" });
 // 1. The tool — returns DATA, declares which UI to show
 registerAppTool(server, "pick_contact", {
   description: "Open an interactive contact picker",
+  annotations: { title: "Pick Contact", readOnlyHint: true },
   inputSchema: { filter: z.string().optional() },
   _meta: { ui: { resourceUri: "ui://widgets/contact-picker.html" } },
 }, async ({ filter }) => {
@@ -172,7 +178,10 @@ The `/*__EXT_APPS_BUNDLE__*/` placeholder gets replaced by the server at startup
 | `app.updateModelContext({...})` | Widget → host | Update context silently (no visible message) |
 | `app.callServerTool({name, arguments})` | Widget → server | Call another tool on your server |
 | `app.openLink({url})` | Widget → host | Open a URL in a new tab (sandbox blocks `window.open`) |
-| `app.getHostContext()` / `app.onhostcontextchanged` | Host → widget | Theme (`light`/`dark`), locale, etc. |
+| `app.getHostContext()` / `app.onhostcontextchanged` | Host → widget | Theme, host CSS vars, `containerDimensions`, `displayMode`, `deviceCapabilities` |
+| `app.requestDisplayMode({mode})` | Widget → host | Ask for `inline` / `pip` / `fullscreen` |
+| `app.downloadFile({name, mimeType, content})` | Widget → host | Host-mediated download (base64 content) |
+| `new App(info, caps, {autoResize: true})` | — | Iframe height tracks rendered content |
 
 `sendMessage` is the typical "user picked something, tell Claude" path. `updateModelContext` is for state that Claude should know about but shouldn't clutter the chat. `openLink` is **required** for any outbound navigation — `window.open` and `<a target="_blank">` are blocked by the sandbox attribute.
 
@@ -225,6 +234,7 @@ const pickerHtml = readFileSync("./widgets/picker.html", "utf8")
 
 registerAppTool(server, "pick_contact", {
   description: "Open an interactive contact picker. User selects one contact.",
+  annotations: { title: "Pick Contact", readOnlyHint: true },
   inputSchema: { filter: z.string().optional().describe("Name/email prefix filter") },
   _meta: { ui: { resourceUri: "ui://widgets/picker.html" } },
 }, async ({ filter }) => {
@@ -348,6 +358,24 @@ Desktop caches UI resources aggressively. After editing widget HTML, **fully qui
 
 The `sleep` keeps stdin open long enough to collect all responses. Parse the jsonl output with `jq` or a Python one-liner.
 
+**Widget dev loop** — avoid the ⌘Q-relaunch cycle entirely by serving the inlined widget HTML at a plain GET route with a fake `ExtApps` shim that fires `ontoolresult` from a query param:
+
+```ts
+app.get("/widget-preview", (_req, res) => {
+  const shim = `globalThis.ExtApps={applyHostStyleVariables:()=>{},App:class{
+    constructor(){this.h={}} ontoolresult;onhostcontextchanged;
+    async connect(){const p=new URLSearchParams(location.search).get("payload");
+      if(p)this.ontoolresult?.({content:[{type:"text",text:p}]});}
+    getHostContext(){return{theme:"light"}}
+    sendMessage(m){console.log("sendMessage",m)} updateModelContext(){}
+    callServerTool(){return Promise.resolve({content:[]})} openLink(){} downloadFile(){}
+  }};`;
+  res.type("html").send(widgetHtml.replace("/*__EXT_APPS_BUNDLE__*/", shim));
+});
+```
+
+Open `http://localhost:3000/widget-preview?payload={"rows":[...]}` in a normal browser tab and iterate with ordinary devtools.
+
 **Host fallback** — use a host without the apps surface (or MCP Inspector) and confirm the tool's text content degrades gracefully.
 
 **CSP debugging** — open the iframe's own devtools console. CSP violations are the #1 reason widgets silently fail (blank rectangle, no error in the main console). See `references/iframe-sandbox.md`.
@@ -356,6 +384,9 @@ The `sleep` keeps stdin open long enough to collect all responses. Parse the jso
 
 ## Reference files
 
-- `references/iframe-sandbox.md` — CSP/sandbox constraints, the bundle-inlining pattern, image handling
+- `references/iframe-sandbox.md` — CSP/sandbox constraints, the bundle-inlining pattern, image handling, host theming
 - `references/widget-templates.md` — reusable HTML scaffolds for picker / confirm / progress / display
-- `references/apps-sdk-messages.md` — the `App` class API: widget ↔ host ↔ server messaging
+- `references/apps-sdk-messages.md` — the `App` class API: widget ↔ host ↔ server messaging, lifecycle & supersession
+- `references/payload-budgeting.md` — host tool-result size caps, prune-then-truncate, heavy assets via `callServerTool`
+- `references/abuse-protection.md` — Anthropic egress CIDRs, tiered rate limiting, `trust proxy`, response caching
+- `references/directory-checklist.md` — pre-flight for connector-directory submission

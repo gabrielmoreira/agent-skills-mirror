@@ -69,7 +69,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`skills/deploying-ui-bundle/SKILL.md`](skills/deploying-ui-bundle/SKILL.md) |
 | 9 | ✓ | [`skills/developing-agentforce/assets/agent-spec-template.md`](skills/developing-agentforce/assets/agent-spec-template.md) |
 | 10 | ✓ | [`skills/developing-agentforce/assets/agents/hello-world.agent`](skills/developing-agentforce/assets/agents/hello-world.agent) |
-| 11 | ✓ | [`skills/developing-agentforce/assets/agents/multi-topic.agent`](skills/developing-agentforce/assets/agents/multi-topic.agent) |
+| 11 | ✓ | [`skills/developing-agentforce/assets/agents/multi-subagent.agent`](skills/developing-agentforce/assets/agents/multi-subagent.agent) |
 | 12 | ✓ | [`skills/developing-agentforce/assets/agents/order-service.agent`](skills/developing-agentforce/assets/agents/order-service.agent) |
 | 13 | ✓ | [`skills/developing-agentforce/assets/agents/production-faq.agent`](skills/developing-agentforce/assets/agents/production-faq.agent) |
 | 14 | ✓ | [`skills/developing-agentforce/assets/agents/production-faq.bundle-meta.xml`](skills/developing-agentforce/assets/agents/production-faq.bundle-meta.xml) |
@@ -83,7 +83,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/developing-agentforce/assets/components/escalation-setup.agent`](skills/developing-agentforce/assets/components/escalation-setup.agent) |
 | 23 | ✓ | [`skills/developing-agentforce/assets/components/flow-action.agent`](skills/developing-agentforce/assets/components/flow-action.agent) |
 | 24 | ✓ | [`skills/developing-agentforce/assets/components/n-ary-conditions.agent`](skills/developing-agentforce/assets/components/n-ary-conditions.agent) |
-| 25 | ✓ | [`skills/developing-agentforce/assets/components/topic-with-actions.agent`](skills/developing-agentforce/assets/components/topic-with-actions.agent) |
+| 25 | ✓ | [`skills/developing-agentforce/assets/components/subagent-with-actions.agent`](skills/developing-agentforce/assets/components/subagent-with-actions.agent) |
 | 26 | ✓ | [`skills/developing-agentforce/assets/deterministic-routing.agent`](skills/developing-agentforce/assets/deterministic-routing.agent) |
 | 27 | ✓ | [`skills/developing-agentforce/assets/escalation-pattern.agent`](skills/developing-agentforce/assets/escalation-pattern.agent) |
 | 28 | ✓ | [`skills/developing-agentforce/assets/flow-action-lookup.agent`](skills/developing-agentforce/assets/flow-action-lookup.agent) |
@@ -112,8 +112,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 51 | ✓ | [`skills/developing-agentforce/assets/patterns/system-instruction-overrides.agent`](skills/developing-agentforce/assets/patterns/system-instruction-overrides.agent) |
 | 52 | ✓ | [`skills/developing-agentforce/assets/prompt-rag-search.agent`](skills/developing-agentforce/assets/prompt-rag-search.agent) |
 | 53 | ✓ | [`skills/developing-agentforce/assets/README-legacy.md`](skills/developing-agentforce/assets/README-legacy.md) |
-| 54 | ✓ | [`skills/developing-agentforce/assets/template-multi-topic.agent`](skills/developing-agentforce/assets/template-multi-topic.agent) |
-| 55 | ✓ | [`skills/developing-agentforce/assets/template-single-topic.agent`](skills/developing-agentforce/assets/template-single-topic.agent) |
+| 54 | ✓ | [`skills/developing-agentforce/assets/template-multi-subagent.agent`](skills/developing-agentforce/assets/template-multi-subagent.agent) |
+| 55 | ✓ | [`skills/developing-agentforce/assets/template-single-subagent.agent`](skills/developing-agentforce/assets/template-single-subagent.agent) |
 | 56 | ✓ | [`skills/developing-agentforce/assets/verification-gate.agent`](skills/developing-agentforce/assets/verification-gate.agent) |
 | 57 | ✓ | [`skills/developing-agentforce/README.md`](skills/developing-agentforce/README.md) |
 | 58 | ✓ | [`skills/developing-agentforce/references/action-prompt-templates.md`](skills/developing-agentforce/references/action-prompt-templates.md) |
@@ -122,7 +122,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 61 | ✓ | [`skills/developing-agentforce/references/agent-design-and-spec-creation.md`](skills/developing-agentforce/references/agent-design-and-spec-creation.md) |
 | 62 | ✓ | [`skills/developing-agentforce/references/agent-metadata-and-lifecycle.md`](skills/developing-agentforce/references/agent-metadata-and-lifecycle.md) |
 | 63 | ✓ | [`skills/developing-agentforce/references/agent-script-core-language.md`](skills/developing-agentforce/references/agent-script-core-language.md) |
-| 64 | ✓ | [`skills/developing-agentforce/references/agent-topic-map-diagrams.md`](skills/developing-agentforce/references/agent-topic-map-diagrams.md) |
+| 64 | ✓ | [`skills/developing-agentforce/references/agent-subagent-map-diagrams.md`](skills/developing-agentforce/references/agent-subagent-map-diagrams.md) |
 | 65 | ✓ | [`skills/developing-agentforce/references/agent-user-setup.md`](skills/developing-agentforce/references/agent-user-setup.md) |
 | 66 | ✓ | [`skills/developing-agentforce/references/agent-validation-and-debugging.md`](skills/developing-agentforce/references/agent-validation-and-debugging.md) |
 | 67 | ✓ | [`skills/developing-agentforce/references/architecture-patterns.md`](skills/developing-agentforce/references/architecture-patterns.md) |

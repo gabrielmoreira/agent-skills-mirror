@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 10 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,8 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
 | 7 | ✓ | [`.github/skills/integration-test-analysis/SKILL.md`](.github/skills/integration-test-analysis/SKILL.md) |
 | 8 | ✓ | [`.github/skills/merge-into-branch/SKILL.md`](.github/skills/merge-into-branch/SKILL.md) |
-| 9 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
-| 10 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
+| 9 | ✓ | [`.github/skills/new-compiler-feature/SKILL.md`](.github/skills/new-compiler-feature/SKILL.md) |
+| 10 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
+| 11 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
 
 ---
 

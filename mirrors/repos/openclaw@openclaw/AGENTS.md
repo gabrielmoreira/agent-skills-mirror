@@ -50,13 +50,15 @@ Telegraph style. Root rules only. Read scoped `AGENTS.md` before subtree work.
 - Prod sweep: `pnpm check`; tests: `pnpm test`, `pnpm test:changed`, `pnpm test:serial`, `pnpm test:coverage`.
 - Extension tests: `pnpm test:extensions`, `pnpm test extensions`, `pnpm test extensions/<id>`.
 - Targeted tests: `pnpm test <path-or-filter> [vitest args...]`; never raw `vitest`.
+- Vitest flags only; no Jest flags like `--runInBand`. For serial runs use `pnpm test:serial` or `OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test ...`.
 - Typecheck: `tsgo` lanes only (`pnpm tsgo*`, `pnpm check:test-types`); do not add `tsc --noEmit`, `typecheck`, `check:types`.
 - Formatting: use `oxfmt`, not Prettier. Prefer `pnpm format:check` / `pnpm format`; for targeted files use `pnpm exec oxfmt --check --threads=1 <files...>` or `pnpm exec oxfmt --write --threads=1 <files...>`.
 - Linting: use repo wrappers (`pnpm lint:*`, `scripts/run-oxlint.mjs`); do not invoke generic JS formatters/lints unless a repo script uses them.
 - Heavy checks: `OPENCLAW_LOCAL_CHECK=1`, mode `OPENCLAW_LOCAL_CHECK_MODE=throttled|full`; CI/shared use `OPENCLAW_LOCAL_CHECK=0`.
-- Maintainer Testbox mode: if `OPENCLAW_TESTBOX=1` is present in env or standing user rules, use Blacksmith Testbox for `pnpm` gates, e2e, broad suites, and long/heavy validation. This is maintainers-only and requires Blacksmith access.
-- Testbox escape hatch: if `OPENCLAW_TESTBOX=1` is set but `OPENCLAW_LOCAL_CHECK_MODE=throttled|full` is explicitly set for the task/command, use the local repo `pnpm` lane instead.
-- Testbox warmup: start from repo root, save/reuse the returned ID for every run in the same task. Use `ci-check-testbox.yml` for normal checks; use `ci-build-artifacts-testbox.yml` when build artifacts, e2e, or package-like proof benefits from seeded `dist/`/`dist-runtime/` caches.
+- Blacksmith/Testbox: on maintainer machines with Blacksmith access, broad/shared validation defaults to Testbox. This includes `pnpm check`, `pnpm check:changed`, `pnpm test`, `pnpm test:changed`, Docker/E2E/live/package/build gates, and any command likely to fan out across many Vitest projects. Do not start those broad gates locally unless the user explicitly asks for local proof or sets `OPENCLAW_LOCAL_CHECK_MODE=throttled|full`.
+- Local validation: targeted edit loops only, such as `pnpm test <specific-file>`, targeted formatter checks, and small lint/type probes. If a local command expands beyond targeted proof, stop it and move the broad gate to Testbox.
+- Testbox use: run from repo root, pre-warm early with `blacksmith testbox warmup ci-check-testbox.yml --ref main --idle-timeout 90`, reuse the returned `tbx_...` id for all `run`/`download` commands, and stop boxes you created before handoff. Timeout bins: `90` minutes default, `240` multi-hour, `720` all-day, `1440` overnight; anything above `1440` needs explicit approval and cleanup.
+- Testbox full-suite profile: `blacksmith testbox run --id <ID> "env NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_TEST_PROJECTS_PARALLEL=6 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test"`. For installable package proof, prefer the GitHub `Package Acceptance` workflow over ad hoc Testbox commands.
 
 ## GitHub / CI
 
@@ -90,7 +92,8 @@ Telegraph style. Root rules only. Read scoped `AGENTS.md` before subtree work.
   - extension tests: extension test typecheck/tests
   - public SDK/plugin contract: extension prod/test too
   - unknown root/config: all lanes
-- Before handoff/push for code/test/runtime/config changes: `pnpm check:changed`. Tests-only: `pnpm test:changed`. Full prod sweep: `pnpm check`.
+- Before handoff/push for code/test/runtime/config changes: run `pnpm check:changed` in Testbox by default on maintainer machines. Tests-only: run `pnpm test:changed` in Testbox by default. Full prod sweep: run `pnpm check` in Testbox. Use local only for narrow targeted proof or when explicitly requested.
+- If `pnpm test:changed` or `pnpm check:changed` selects broad/shared lanes, it belongs in Testbox; do not let it continue locally after it fans out.
 - Docs/changelog-only and CI/workflow metadata-only changes are not changed-gate work by default. Use `git diff --check` plus the relevant formatter/docs/workflow sanity check; escalate to `pnpm check:changed` only when scripts, test config, generated docs/API, package metadata, or runtime/build behavior changed.
 - Rebase sanity: after a green `pnpm check:changed`, a clean rebase onto current
   `origin/main` does not require rerunning the full changed gate when the rebase
@@ -139,7 +142,7 @@ Telegraph style. Root rules only. Read scoped `AGENTS.md` before subtree work.
 
 - Docs change with behavior/API. Use docs list/read_when hints; docs links per `docs/AGENTS.md`.
 - Changelog user-facing only; pure test/internal usually no entry.
-- Changelog placement: active version `### Changes`/`### Fixes`; every added entry must include at least one `Thanks @author` attribution, using credited GitHub username(s). Never add `Thanks @steipete` or `Thanks @codex`.
+- Changelog placement: active version `### Changes`/`### Fixes`; every added entry must include at least one `Thanks @author` attribution, using credited GitHub username(s). Never add `Thanks @codex`, `Thanks @openclaw`, or `Thanks @steipete`.
 - Changelog bullets are always single-line. No wrapping/continuation across multiple lines. Long entries stay on one long line so dedupe, PR-ref, and credit-audit tooling work and so the visual style stays uniform.
 
 ## Git

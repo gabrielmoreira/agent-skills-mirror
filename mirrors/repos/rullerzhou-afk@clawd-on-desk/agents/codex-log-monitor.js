@@ -377,9 +377,15 @@ class CodexLogMonitor {
       tracked.sessionTitle = extractedTitle;
     }
 
-    // Approval heuristic: exec_command_end or function_call_output means command finished —
-    // clear pending approval timer (these events are not in logEventMap)
-    if (key === "event_msg:exec_command_end" || key === "response_item:function_call_output") {
+    // Approval heuristic: exec_command_end / function_call_output means command finished.
+    // guardian_assessment is Codex Desktop auto-review approving or checking the shell
+    // call before it runs; once present, the shell is not waiting on the user-facing
+    // approval prompt this heuristic is trying to infer.
+    if (
+      key === "event_msg:exec_command_end"
+      || key === "response_item:function_call_output"
+      || this._isGuardianApprovalActivity(payload)
+    ) {
       if (tracked.approvalTimer) {
         clearTimeout(tracked.approvalTimer);
         tracked.approvalTimer = null;
@@ -510,6 +516,12 @@ class CodexLogMonitor {
     return false;
   }
 
+  _isGuardianApprovalActivity(payload) {
+    if (!payload || typeof payload !== "object") return false;
+    if (payload.type !== "guardian_assessment") return false;
+    return payload.status === "in_progress" || payload.status === "approved";
+  }
+
   // Extract UUID from rollout filename
   // rollout-2026-03-25T15-10-51-019d23d4-f1a9-7633-b9c7-758327137228.jsonl
   _extractSessionId(fileName) {
@@ -581,7 +593,12 @@ class CodexLogMonitor {
         // them silently instead of synthesizing a fake "sleeping" event.
         if (tracked.approvalTimer) clearTimeout(tracked.approvalTimer);
         if (tracked.hasEmittedState) {
-          this._emitStateChange(tracked, "sleeping", "stale-cleanup", {
+          // Use SessionEnd so state.js actually deletes the session entry.
+          // Codex desktop runs as a long-lived process — every conversation
+          // shares the same agentPid/sourcePid, so the timeout-based cleanup
+          // in cleanStaleSessions can never observe the source dying and
+          // would otherwise leave idle zombie sessions piling up forever.
+          this._emitStateChange(tracked, "sleeping", "SessionEnd", {
             sourcePid: tracked.agentPid,
             agentPid: tracked.agentPid,
           });

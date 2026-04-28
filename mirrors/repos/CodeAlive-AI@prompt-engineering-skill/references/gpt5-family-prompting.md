@@ -1,22 +1,25 @@
 # GPT-5 Family Prompting Guide
 
-Covers GPT-5, GPT-5.1, and GPT-5.2. Based on official OpenAI Cookbook guides and production patterns.
+Covers GPT-5, GPT-5.1, GPT-5.2, GPT-5.4, and GPT-5.5. Based on official OpenAI Cookbook and developer-docs prompting guides.
 
 Sources:
 - [GPT-5 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5_prompting_guide)
 - [GPT-5.1 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5-1_prompting_guide)
 - [GPT-5.2 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5-2_prompting_guide)
+- [GPT-5.4 / GPT-5.5 Prompt Guidance (developers.openai.com)](https://developers.openai.com/api/docs/guides/prompt-guidance)
+- [Prompt Personalities Cookbook](https://developers.openai.com/cookbook/examples/gpt-5/prompt_personalities)
 
 ## Model Comparison
 
-| Aspect | GPT-5 | GPT-5.1 | GPT-5.2 |
-|--------|-------|---------|---------|
-| Default reasoning_effort | `medium` | `medium` | `none` |
-| Reasoning levels | low/medium/high + `minimal` | low/medium/high + `none` | none/minimal/low/medium/high/`xhigh` |
-| Key strength | Agentic eagerness control | Calibrated token consumption | Enterprise accuracy & instruction following |
-| Verbosity | Steerable | Can be excessively concise | Concise by default, prompt-sensitive |
-| Tool calling | Improved vs GPT-4 | Named tools (apply_patch, shell) | Best structured reasoning & grounding |
-| API | Responses API + Chat Completions | Responses API (preferred) | Responses API (preferred) |
+| Aspect | GPT-5 | GPT-5.1 | GPT-5.2 | GPT-5.4 | GPT-5.5 |
+|--------|-------|---------|---------|---------|---------|
+| Default reasoning_effort | `medium` | `medium` | `none` | `none` (action) / `medium` (research) | Task-driven; treat as last-mile knob |
+| Reasoning levels | low/medium/high + `minimal` | low/medium/high + `none` | none/minimal/low/medium/high/`xhigh` | none/low/medium/high/`xhigh` | none/low/medium/high/`xhigh` |
+| Key strength | Agentic eagerness control | Calibrated token consumption | Enterprise accuracy & instruction following | Long-running autonomy, evidence-rich synthesis, batched tool calls | Outcome-first prompts, default-direct personality, steerable formatting |
+| Verbosity | Steerable | Can be excessively concise | Concise by default, prompt-sensitive | More structured by default; may overuse bullets | `text.verbosity` API control (default `medium`); steerable via prompt |
+| Tool calling | Improved vs GPT-4 | Named tools (apply_patch, shell) | Best structured reasoning & grounding | Dependency-aware, parallel; weak early tool routing | Inherits 5.4 tooling; `phase` field for commentary vs final answer |
+| Compaction / `phase` | — | — | Compaction API | Compaction + `phase` field | Compaction + `phase` field |
+| API | Responses API + Chat Completions | Responses API (preferred) | Responses API (preferred) | Responses API (`previous_response_id`, `phase`) | Responses API (`previous_response_id`, `phase`, `text.verbosity`) |
 
 ## Reasoning Effort Parameter
 
@@ -61,6 +64,25 @@ completely resolved.
 | GPT-4o / GPT-4.1 | `none` | Fast/low-deliberation; increase only if evals regress |
 | GPT-5 | Same, except `minimal` → `none` | GPT-5 default is `medium` |
 | GPT-5.1 / GPT-5.2 | Same value | GPT-5.2 default is `none` |
+
+### GPT-5.4 / 5.5 — Reasoning as a Last-Mile Knob
+
+For 5.4 and 5.5, OpenAI explicitly recommends treating reasoning effort as a *last-mile* tuning knob, not the primary lever for quality. Before raising reasoning effort, first add:
+
+- `<completeness_contract>` (see below)
+- `<verification_loop>`
+- `<tool_persistence_rules>`
+
+Recommended starting points for migrations to GPT-5.4 / 5.5:
+
+| Current setup | Suggested start | Notes |
+|---|---|---|
+| `gpt-5.2` | Match current effort | Preserve latency/quality first, then tune. |
+| `gpt-5.3-codex` | Match current effort | Coding workflows: keep effort the same. |
+| `gpt-4.1` / `gpt-4o` | `none` | Keep snappy; raise only if evals regress. |
+| Research-heavy assistants | `medium` or `high` | Pair with explicit research multi-pass and citation gating. |
+| Long-horizon agents | `medium` or `high` | Pair with tool persistence and completeness accounting. |
+| Execution-heavy (extraction, triage) | `none` | Often sufficient on 5.4/5.5 with a strong output contract. |
 
 ## Agentic Eagerness Control
 
@@ -354,6 +376,495 @@ Propose minimal edits to reduce observed issues while preserving good behaviors.
 Output: patch_notes + revised_system_prompt
 ```
 
+## GPT-5.5 Patterns (Outcome-First Prompting)
+
+GPT-5.5 works best when the prompt defines the **outcome** and leaves room for the model to choose an efficient path. Legacy prompts often over-specify the process — that adds noise on 5.5, narrows the search space, and produces mechanical answers. Strip prompt blocks the older models needed for hand-holding before adding 5.5-specific scaffolding.
+
+### Outcome-First Prompts and Stopping Conditions
+
+Describe the destination, not every step:
+
+```
+Resolve the customer's issue end to end.
+Success means:
+- the eligibility decision is made from the available policy and account data
+- any allowed action is completed before responding
+- the final answer includes completed_actions, customer_message, and blockers
+- if evidence is missing, ask for the smallest missing field
+```
+
+Reserve `ALWAYS`, `NEVER`, `must`, `only` for true invariants (safety, required output fields, prohibited actions). For judgment calls (when to search, when to ask, when to keep iterating), use **decision rules** instead of absolutes.
+
+Add explicit stopping conditions:
+
+```
+Resolve the user query in the fewest useful tool loops, but do not let loop
+minimization outrank correctness, accessible fallback evidence, calculations,
+or required citation tags for factual claims.
+After each result, ask: "Can I answer the user's core request now with useful
+evidence and citations for the factual claims?" If yes, answer.
+```
+
+Define missing-evidence behavior:
+
+```
+Use the minimum evidence sufficient to answer correctly, cite it precisely,
+then stop.
+```
+
+### Personality vs Collaboration Style
+
+Keep these two concerns **separate** and short:
+
+- **Personality** — sound: tone, warmth, directness, formality, humor, empathy, polish.
+- **Collaboration style** — work: when to ask, when to assume, proactivity, depth of context, when to check work, how to handle uncertainty/risk.
+
+Neither replaces clear goals, success criteria, tool rules, or stopping conditions.
+
+Steady, task-focused assistant:
+
+```
+# Personality
+You are a capable collaborator: approachable, steady, and direct. Assume the user
+is competent and acting in good faith, and respond with patience, respect, and
+practical helpfulness.
+Prefer making progress over stopping for clarification when the request is already
+clear enough to attempt. Use context and reasonable assumptions to move forward.
+Ask for clarification only when the missing information would materially change
+the answer or create meaningful risk, and keep any question narrow.
+Stay concise without becoming curt. Match the user's tone within professional
+bounds. Avoid emojis and profanity by default.
+```
+
+Expressive, collaborative assistant:
+
+```
+# Personality
+Adopt a vivid conversational presence: intelligent, curious, playful when
+appropriate, attentive to the user's thinking. Ask good questions when the
+problem is blurry, then become decisive once there is enough context.
+Be warm, collaborative, and polished. Offer a real point of view rather than
+mirroring the user, while staying responsive to their goals.
+State a clear recommendation when you have enough context, explain important
+tradeoffs, and name uncertainty without becoming evasive.
+```
+
+### Time-to-First-Visible-Token Preamble
+
+In streaming UIs, GPT-5.5 may spend time reasoning or preparing tool calls before any visible text. For longer / tool-heavy tasks, prompt for a short preamble:
+
+```
+Before any tool calls for a multi-step task, send a short user-visible update
+that acknowledges the request and states the first step. Keep it to one or two
+sentences.
+```
+
+For coding agents with separate message phases:
+
+```
+You must always start with an intermediary update before any content in the
+analysis channel if the task will require calling tools. The user update should
+acknowledge the request and explain your first step.
+```
+
+### Formatting (5.5)
+
+5.5 is highly steerable on output format. Set `text.verbosity` (API default `medium`; use `low` for shorter answers) and describe shape only when it improves comprehension:
+
+```
+Let formatting serve comprehension. Use plain paragraphs as the default for normal
+conversation, explanations, reports, documentation, and technical writeups.
+Use headers, bold text, bullets, and numbered lists sparingly — reach for them
+when the user requests them, when the answer needs clear comparison or ranking,
+or when the information would be harder to scan as prose.
+Respect formatting preferences from the user. If they ask for a terse answer,
+no bullets, no headers, or a specific structure, follow that preference.
+```
+
+For editing/rewriting/customer-facing summaries:
+
+```
+Preserve the requested artifact, length, structure, and genre first. Quietly
+improve clarity, flow, and correctness. Do not add new claims, extra sections,
+or a more promotional tone unless explicitly requested.
+```
+
+### Retrieval Budgets
+
+Retrieval budgets are stopping rules for search — they tell the model when enough evidence is enough:
+
+```
+For ordinary Q&A, start with one broad search using short, discriminative keywords.
+If the top results contain enough citable support for the core request, answer
+from those results instead of searching again.
+Make another retrieval call only when:
+- The top results do not answer the core question.
+- A required fact, parameter, owner, date, ID, or source is missing.
+- The user asked for exhaustive coverage, a comparison, or a comprehensive list.
+- A specific document, URL, email, meeting, record, or code artifact must be read.
+- The answer would otherwise contain an important unsupported factual claim.
+Do not search again to improve phrasing, add examples, cite nonessential details,
+or support wording that can safely be made more generic.
+```
+
+### Creative Drafting Guardrails
+
+For slides, launch copy, customer summaries, talk tracks, leadership blurbs, and narrative framing — separate source-backed facts from creative wording:
+
+```
+For creative or generative requests such as slides, leadership blurbs, outbound
+copy, summaries for sharing, talk tracks, or narrative framing, distinguish
+source-backed facts from creative wording.
+- Use retrieved or provided facts for concrete product, customer, metric, roadmap,
+  date, capability, and competitive claims, and cite those claims.
+- Do not invent specific names, first-party data claims, metrics, roadmap status,
+  customer outcomes, or product capabilities to make the draft sound stronger.
+- If there is little or no citable support, write a useful generic draft with
+  placeholders or clearly labeled assumptions rather than unsupported specifics.
+```
+
+### Suggested 5.5 Prompt Structure
+
+Use as a starting skeleton — keep each section short, add detail only where it changes behavior:
+
+```
+Role: [1-2 sentences defining the model's function, context, and job]
+# Personality
+[tone, demeanor, and collaboration style]
+# Goal
+[user-visible outcome]
+# Success criteria
+[what must be true before the final answer]
+# Constraints
+[policy, safety, business, evidence, and side-effect limits]
+# Output
+[sections, length, and tone]
+# Stop rules
+[when to retry, fallback, abstain, ask, or stop]
+```
+
+## GPT-5.4 Patterns (Long-Running Agents)
+
+GPT-5.4 is tuned for long-running multi-step agents, evidence-rich synthesis, and batched tool calls. It is most reliable when the prompt defines an explicit output contract, dependency-aware tool rules, and completion criteria.
+
+### Output Contract & Verbosity Controls
+
+```xml
+<output_contract>
+- Return exactly the sections requested, in the requested order.
+- If the prompt defines a preamble, analysis block, or working section, do not
+  treat it as extra output.
+- Apply length limits only to the section they are intended for.
+- If a format is required (JSON, Markdown, SQL, XML), output only that format.
+</output_contract>
+<verbosity_controls>
+- Prefer concise, information-dense writing.
+- Avoid repeating the user's request.
+- Keep progress updates brief.
+- Do not shorten the answer so aggressively that required evidence, reasoning,
+  or completion checks are omitted.
+</verbosity_controls>
+```
+
+### Default Follow-Through Policy
+
+```xml
+<default_follow_through_policy>
+- If the user's intent is clear and the next step is reversible and low-risk,
+  proceed without asking.
+- Ask permission only if the next step is:
+  (a) irreversible,
+  (b) has external side effects (sending, purchasing, deleting, writing to prod), or
+  (c) requires missing sensitive information or a choice that would materially
+      change the outcome.
+- If proceeding, briefly state what you did and what remains optional.
+</default_follow_through_policy>
+```
+
+### Instruction Priority
+
+```xml
+<instruction_priority>
+- User instructions override default style, tone, formatting, and initiative.
+- Safety, honesty, privacy, and permission constraints do not yield.
+- If a newer user instruction conflicts with an earlier one, follow the newer.
+- Preserve earlier instructions that do not conflict.
+</instruction_priority>
+```
+
+Higher-priority developer or system instructions remain binding.
+
+### Mid-Conversation Task Updates
+
+Use scoped steering messages that explicitly state Scope, Override, Carry forward:
+
+```
+<task_update>
+For the next response only:
+- Do not complete the task.
+- Only produce a plan.
+- Keep it to 5 bullets.
+All earlier instructions still apply unless they conflict with this update.
+</task_update>
+```
+
+If the task itself changes:
+
+```
+<task_update>
+The task has changed.
+Previous task: complete the workflow.
+Current task: review the workflow and identify risks only.
+Rules for this turn:
+- Do not execute actions.
+- Do not call destructive tools.
+- Return exactly:
+  1. Main risks
+  2. Missing information
+  3. Recommended next step
+</task_update>
+```
+
+### Tool Persistence, Dependencies, Parallelism
+
+GPT-5.4 can be **less reliable at tool routing early in a session** when context is thin. Prompt for prerequisites and exact tool intent:
+
+```xml
+<tool_persistence_rules>
+- Use tools whenever they materially improve correctness, completeness, or
+  grounding.
+- Do not stop early when another tool call is likely to materially improve
+  correctness or completeness.
+- Keep calling tools until:
+  (1) the task is complete, and
+  (2) verification passes (see <verification_loop>).
+- If a tool returns empty or partial results, retry with a different strategy.
+</tool_persistence_rules>
+
+<dependency_checks>
+- Before taking an action, check whether prerequisite discovery, lookup, or
+  memory retrieval steps are required.
+- Do not skip prerequisite steps just because the intended final action seems
+  obvious.
+- If the task depends on the output of a prior step, resolve that dependency first.
+</dependency_checks>
+
+<parallel_tool_calling>
+- When multiple retrieval or lookup steps are independent, prefer parallel tool
+  calls to reduce wall-clock time.
+- Do not parallelize steps that have prerequisite dependencies or where one
+  result determines the next action.
+- After parallel retrieval, pause to synthesize results before more calls.
+- Prefer selective parallelism: parallelize independent evidence gathering,
+  not speculative or redundant tool use.
+</parallel_tool_calling>
+```
+
+### Completeness Contract & Empty-Result Recovery
+
+```xml
+<completeness_contract>
+- Treat the task as incomplete until all requested items are covered or
+  explicitly marked [blocked].
+- Keep an internal checklist of required deliverables.
+- For lists, batches, or paginated results:
+  - determine expected scope when possible,
+  - track processed items or pages,
+  - confirm coverage before finalizing.
+- If any item is blocked by missing data, mark it [blocked] and state exactly
+  what is missing.
+</completeness_contract>
+
+<empty_result_recovery>
+If a lookup returns empty, partial, or suspiciously narrow results:
+- do not immediately conclude that no results exist,
+- try at least one or two fallback strategies, such as:
+  - alternate query wording,
+  - broader filters,
+  - a prerequisite lookup,
+  - or an alternate source or tool,
+- only then report that no results were found, along with what you tried.
+</empty_result_recovery>
+```
+
+### Verification Loop & Action Safety
+
+```xml
+<verification_loop>
+Before finalizing:
+- Check correctness: does the output satisfy every requirement?
+- Check grounding: are factual claims backed by the provided context or tool outputs?
+- Check formatting: does the output match the requested schema or style?
+- Check safety and irreversibility: if the next step has external side effects,
+  ask permission first.
+</verification_loop>
+
+<missing_context_gating>
+- If required context is missing, do NOT guess.
+- Prefer the appropriate lookup tool when the missing context is retrievable;
+  ask a minimal clarifying question only when it is not.
+- If you must proceed, label assumptions explicitly and choose a reversible action.
+</missing_context_gating>
+
+<action_safety>
+- Pre-flight: summarize the intended action and parameters in 1-2 lines.
+- Execute via tool.
+- Post-flight: confirm the outcome and any validation that was performed.
+</action_safety>
+```
+
+### Citation & Grounding Rules (5.4)
+
+```xml
+<citation_rules>
+- Only cite sources retrieved in the current workflow.
+- Never fabricate citations, URLs, IDs, or quote spans.
+- Use exactly the citation format required by the host application.
+- Attach citations to the specific claims they support, not only at the end.
+</citation_rules>
+
+<grounding_rules>
+- Base claims only on provided context or tool outputs.
+- If sources conflict, state the conflict explicitly and attribute each side.
+- If the context is insufficient or irrelevant, narrow the answer or say you
+  cannot support the claim.
+- If a statement is an inference rather than a directly supported fact, label
+  it as an inference.
+</grounding_rules>
+```
+
+### Research Mode (Three-Pass)
+
+Use for research/review/synthesis tasks. Do not force onto short execution tasks:
+
+```xml
+<research_mode>
+- Do research in 3 passes:
+  1) Plan: list 3-6 sub-questions to answer.
+  2) Retrieve: search each sub-question and follow 1-2 second-order leads.
+  3) Synthesize: resolve contradictions and write the final answer with citations.
+- Stop only when more searching is unlikely to change the conclusion.
+</research_mode>
+```
+
+### Strict Output Formats & BBox Extraction
+
+```xml
+<structured_output_contract>
+- Output only the requested format.
+- Do not add prose or markdown fences unless they were requested.
+- Validate that parentheses and brackets are balanced.
+- Do not invent tables or fields.
+- If required schema information is missing, ask for it or return an explicit
+  error object.
+</structured_output_contract>
+
+<bbox_extraction_spec>
+- Use the specified coordinate format exactly, e.g. [x1,y1,x2,y2] normalized 0..1.
+- For each box, include page, label, text snippet, confidence.
+- Add a vertical-drift sanity check so boxes stay aligned with the correct line.
+- For dense layouts, process page by page and do a second pass for missed items.
+</bbox_extraction_spec>
+```
+
+### Image Detail (Vision / Computer Use)
+
+If the workflow depends on visual precision, set image `detail` explicitly rather than `auto`:
+
+- `high` — standard high-fidelity image understanding.
+- `original` — large, dense, or spatially sensitive images (computer use, OCR, click accuracy).
+- `low` — only when speed/cost matter more than fine detail.
+
+### Coding-Agent Guardrails
+
+```xml
+<terminal_tool_hygiene>
+- Only run shell commands via the terminal tool.
+- Never "run" tool names as shell commands.
+- If a patch or edit tool exists, use it directly; do not attempt it in bash.
+- After changes, run a lightweight verification step (ls, tests, or build) before
+  declaring the task done.
+</terminal_tool_hygiene>
+
+<autonomy_and_persistence>
+Persist until the task is fully handled end-to-end within the current turn:
+do not stop at analysis or partial fixes; carry changes through implementation,
+verification, and a clear explanation of outcomes unless the user explicitly
+pauses or redirects.
+Unless the user is asking a question, brainstorming, or clearly does not want
+code, assume they want code changes — implement them, don't propose them.
+If you encounter blockers, attempt to resolve them yourself.
+</autonomy_and_persistence>
+```
+
+5.4 also tends to overuse nested bullets; clamp shape if you want clean prose:
+
+```
+Never use nested bullets. Keep lists flat (single level). If you need hierarchy,
+split into separate lists or sections, or place the would-be sub-bullet immediately
+after a colon. For numbered lists, use `1. 2. 3.` only — never `1)`.
+```
+
+### Personality vs Per-Response Writing Controls
+
+GPT-5.4 separates persistent personality from per-response writing controls:
+
+```xml
+<personality_and_writing_controls>
+- Persona: <one sentence>
+- Channel: <Slack | email | memo | PRD | blog>
+- Emotional register: <direct/calm/energized/etc.> + "not <overdo this>"
+- Formatting: <ban bullets/headers/markdown if you want prose>
+- Length: <hard limit, e.g. <=150 words or 3-5 sentences>
+- Default follow-through: if the request is clear and low-risk, proceed without
+  asking permission.
+</personality_and_writing_controls>
+```
+
+Memo / professional-writing mode:
+
+```xml
+<memo_mode>
+- Write in a polished, professional memo style.
+- Use exact names, dates, entities, and authorities when supported by the record.
+- Follow domain-specific structure if one is requested.
+- Prefer precise conclusions over generic hedging.
+- When uncertainty is real, tie it to the exact missing fact or conflicting source.
+- Synthesize across documents rather than summarizing each one independently.
+</memo_mode>
+```
+
+### Phase Parameter (5.4 / 5.5 / Codex)
+
+For long-running or tool-heavy Responses workflows, the assistant `phase` field separates intermediate updates from final answers. `phase` is optional but **strongly recommended**.
+
+- `phase: "commentary"` — intermediate user-visible updates (preambles, tool-related notes).
+- `phase: "final_answer"` — the completed answer.
+- Do **not** add `phase` to user messages.
+- If you use `previous_response_id`, the API preserves prior assistant state automatically.
+- If you manually replay assistant items, **preserve each original `phase` value unchanged**. Dropped phases can cause preambles to be interpreted as final answers and degrade behavior on multi-step tasks.
+
+### Small-Model Guidance (`gpt-5.4-mini`, `gpt-5.4-nano`)
+
+Smaller models in the 5.4 line are highly steerable but less likely to infer missing steps or resolve ambiguity implicitly. Prompts for them are typically a bit longer and more explicit.
+
+**`gpt-5.4-mini`:**
+- More literal, fewer assumptions; weaker on implicit workflows and ambiguity.
+- Put critical rules first.
+- Specify the full execution order when tool use or side effects matter.
+- Use structural scaffolding (numbered steps, decision rules, explicit action definitions) — do not rely on `you MUST` alone.
+- Separate "do the action" from "report the action."
+- Define ambiguity behavior explicitly: when to ask, abstain, or proceed.
+- Prefer scoped instructions like `after the final JSON, output nothing further` over bare `output nothing else`.
+
+**`gpt-5.4-nano`:**
+- Use only for narrow, well-bounded tasks.
+- Prefer closed outputs: labels, enums, short JSON, or fixed templates.
+- Avoid multi-step orchestration unless the flow is extremely constrained.
+- Route ambiguous or planning-heavy tasks to a stronger model.
+
+Default pattern: Task → Critical rule → Exact step order → Edge cases / clarification behavior → Output format → One correct example.
+
 ## Migration Checklist
 
 1. **Switch model, keep prompt identical** — isolate the variable
@@ -383,6 +894,26 @@ Output: patch_notes + revised_system_prompt
 - Make scope discipline explicit
 - Adjust for default `none` reasoning — set explicit level if depth needed
 - Leverage compaction API for long sessions
+
+### GPT-5.2 → GPT-5.4 Adjustments
+
+- Add `<output_contract>` and `<verbosity_controls>` — 5.4 may overuse bullets/structure
+- Add `<tool_persistence_rules>` and `<dependency_checks>` — 5.4 can be weak at early-session tool routing
+- Add `<completeness_contract>` and `<empty_result_recovery>` — 5.4 can stop at partial coverage
+- Add `<verification_loop>` before high-impact actions
+- Round-trip the `phase` field if you replay assistant items manually
+- Treat reasoning effort as last-mile; before raising it, add the contracts above
+
+### GPT-5.4 → GPT-5.5 Adjustments
+
+- **Strip over-specification**: legacy step-by-step process prompts often hurt 5.5 — describe the outcome, not every step
+- Replace blanket `ALWAYS`/`NEVER`/`must` with **decision rules**, except for true invariants (safety, required output fields, prohibited actions)
+- Split persona into **Personality** (sound) and **Collaboration style** (work)
+- Add a preamble instruction for streaming UIs (time-to-first-visible-token)
+- Add an explicit **retrieval budget** for grounded / search-tool agents
+- Add **creative drafting guardrails** for slides / launch copy / customer summaries
+- Use `text.verbosity` (`low` / `medium`) before adding prompt-level length rules
+- Adopt the suggested 5.5 prompt structure (Role → Personality → Goal → Success criteria → Constraints → Output → Stop rules)
 
 ## Web Research Agent Pattern
 

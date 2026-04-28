@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 14 followed patterns, 41 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 15 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 14 followed patterns, 41 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 41 |
+| Followed pats | 15 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 14 followed patterns, 41 file(
 - `rules/openai-reasoning-models.md`
 - `rules/adding-settings.md`
 - `rules/chat-message-indicators.md`
+- `rules/supabase-functions.md`
 - `rules/product-principles.md`
 - `rules/jotai-testing.md`
 
@@ -112,7 +113,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | → | [`rules/native-modules.md`](rules/native-modules.md) |
 | 39 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
 | 40 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 41 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 41 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 42 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
 
 ---
 

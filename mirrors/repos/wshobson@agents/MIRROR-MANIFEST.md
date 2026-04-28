@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wshobson/agents` — 26 default patterns, 1 followed patterns, 153 file(s) materialized.
+Mirror of `wshobson/agents` — 26 default patterns, 1 followed patterns, 154 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wshobson/agents` — 26 default patterns, 1 followed patterns, 153 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 153 |
+| Files         | 154 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -185,33 +185,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 124 | ✓ | [`plugins/reverse-engineering/skills/binary-analysis-patterns/SKILL.md`](plugins/reverse-engineering/skills/binary-analysis-patterns/SKILL.md) |
 | 125 | ✓ | [`plugins/reverse-engineering/skills/memory-forensics/SKILL.md`](plugins/reverse-engineering/skills/memory-forensics/SKILL.md) |
 | 126 | ✓ | [`plugins/reverse-engineering/skills/protocol-reverse-engineering/SKILL.md`](plugins/reverse-engineering/skills/protocol-reverse-engineering/SKILL.md) |
-| 127 | ✓ | [`plugins/security-scanning/skills/attack-tree-construction/SKILL.md`](plugins/security-scanning/skills/attack-tree-construction/SKILL.md) |
-| 128 | ✓ | [`plugins/security-scanning/skills/sast-configuration/SKILL.md`](plugins/security-scanning/skills/sast-configuration/SKILL.md) |
-| 129 | ✓ | [`plugins/security-scanning/skills/security-requirement-extraction/SKILL.md`](plugins/security-scanning/skills/security-requirement-extraction/SKILL.md) |
-| 130 | ✓ | [`plugins/security-scanning/skills/stride-analysis-patterns/SKILL.md`](plugins/security-scanning/skills/stride-analysis-patterns/SKILL.md) |
-| 131 | ✓ | [`plugins/security-scanning/skills/threat-mitigation-mapping/SKILL.md`](plugins/security-scanning/skills/threat-mitigation-mapping/SKILL.md) |
-| 132 | ✓ | [`plugins/shell-scripting/skills/bash-defensive-patterns/SKILL.md`](plugins/shell-scripting/skills/bash-defensive-patterns/SKILL.md) |
-| 133 | ✓ | [`plugins/shell-scripting/skills/bats-testing-patterns/SKILL.md`](plugins/shell-scripting/skills/bats-testing-patterns/SKILL.md) |
-| 134 | ✓ | [`plugins/shell-scripting/skills/shellcheck-configuration/SKILL.md`](plugins/shell-scripting/skills/shellcheck-configuration/SKILL.md) |
-| 135 | ✓ | [`plugins/signed-audit-trails/skills/signed-audit-trails-recipe/SKILL.md`](plugins/signed-audit-trails/skills/signed-audit-trails-recipe/SKILL.md) |
-| 136 | ✓ | [`plugins/startup-business-analyst/skills/competitive-landscape/SKILL.md`](plugins/startup-business-analyst/skills/competitive-landscape/SKILL.md) |
-| 137 | ✓ | [`plugins/startup-business-analyst/skills/market-sizing-analysis/SKILL.md`](plugins/startup-business-analyst/skills/market-sizing-analysis/SKILL.md) |
-| 138 | ✓ | [`plugins/startup-business-analyst/skills/startup-financial-modeling/SKILL.md`](plugins/startup-business-analyst/skills/startup-financial-modeling/SKILL.md) |
-| 139 | ✓ | [`plugins/startup-business-analyst/skills/startup-metrics-framework/SKILL.md`](plugins/startup-business-analyst/skills/startup-metrics-framework/SKILL.md) |
-| 140 | ✓ | [`plugins/startup-business-analyst/skills/team-composition-analysis/SKILL.md`](plugins/startup-business-analyst/skills/team-composition-analysis/SKILL.md) |
-| 141 | ✓ | [`plugins/systems-programming/skills/go-concurrency-patterns/SKILL.md`](plugins/systems-programming/skills/go-concurrency-patterns/SKILL.md) |
-| 142 | ✓ | [`plugins/systems-programming/skills/memory-safety-patterns/SKILL.md`](plugins/systems-programming/skills/memory-safety-patterns/SKILL.md) |
-| 143 | ✓ | [`plugins/systems-programming/skills/rust-async-patterns/SKILL.md`](plugins/systems-programming/skills/rust-async-patterns/SKILL.md) |
-| 144 | ✓ | [`plugins/ui-design/skills/accessibility-compliance/SKILL.md`](plugins/ui-design/skills/accessibility-compliance/SKILL.md) |
-| 145 | ✓ | [`plugins/ui-design/skills/design-system-patterns/SKILL.md`](plugins/ui-design/skills/design-system-patterns/SKILL.md) |
-| 146 | ✓ | [`plugins/ui-design/skills/interaction-design/SKILL.md`](plugins/ui-design/skills/interaction-design/SKILL.md) |
-| 147 | ✓ | [`plugins/ui-design/skills/mobile-android-design/SKILL.md`](plugins/ui-design/skills/mobile-android-design/SKILL.md) |
-| 148 | ✓ | [`plugins/ui-design/skills/mobile-ios-design/SKILL.md`](plugins/ui-design/skills/mobile-ios-design/SKILL.md) |
-| 149 | ✓ | [`plugins/ui-design/skills/react-native-design/SKILL.md`](plugins/ui-design/skills/react-native-design/SKILL.md) |
-| 150 | ✓ | [`plugins/ui-design/skills/responsive-design/SKILL.md`](plugins/ui-design/skills/responsive-design/SKILL.md) |
-| 151 | ✓ | [`plugins/ui-design/skills/visual-design-foundations/SKILL.md`](plugins/ui-design/skills/visual-design-foundations/SKILL.md) |
-| 152 | ✓ | [`plugins/ui-design/skills/web-component-design/SKILL.md`](plugins/ui-design/skills/web-component-design/SKILL.md) |
-| 153 | → | [`docs/plugin-eval.md`](docs/plugin-eval.md) |
+| 127 | ✓ | [`plugins/review-agent-governance/skills/review-agent-setup/SKILL.md`](plugins/review-agent-governance/skills/review-agent-setup/SKILL.md) |
+| 128 | ✓ | [`plugins/security-scanning/skills/attack-tree-construction/SKILL.md`](plugins/security-scanning/skills/attack-tree-construction/SKILL.md) |
+| 129 | ✓ | [`plugins/security-scanning/skills/sast-configuration/SKILL.md`](plugins/security-scanning/skills/sast-configuration/SKILL.md) |
+| 130 | ✓ | [`plugins/security-scanning/skills/security-requirement-extraction/SKILL.md`](plugins/security-scanning/skills/security-requirement-extraction/SKILL.md) |
+| 131 | ✓ | [`plugins/security-scanning/skills/stride-analysis-patterns/SKILL.md`](plugins/security-scanning/skills/stride-analysis-patterns/SKILL.md) |
+| 132 | ✓ | [`plugins/security-scanning/skills/threat-mitigation-mapping/SKILL.md`](plugins/security-scanning/skills/threat-mitigation-mapping/SKILL.md) |
+| 133 | ✓ | [`plugins/shell-scripting/skills/bash-defensive-patterns/SKILL.md`](plugins/shell-scripting/skills/bash-defensive-patterns/SKILL.md) |
+| 134 | ✓ | [`plugins/shell-scripting/skills/bats-testing-patterns/SKILL.md`](plugins/shell-scripting/skills/bats-testing-patterns/SKILL.md) |
+| 135 | ✓ | [`plugins/shell-scripting/skills/shellcheck-configuration/SKILL.md`](plugins/shell-scripting/skills/shellcheck-configuration/SKILL.md) |
+| 136 | ✓ | [`plugins/signed-audit-trails/skills/signed-audit-trails-recipe/SKILL.md`](plugins/signed-audit-trails/skills/signed-audit-trails-recipe/SKILL.md) |
+| 137 | ✓ | [`plugins/startup-business-analyst/skills/competitive-landscape/SKILL.md`](plugins/startup-business-analyst/skills/competitive-landscape/SKILL.md) |
+| 138 | ✓ | [`plugins/startup-business-analyst/skills/market-sizing-analysis/SKILL.md`](plugins/startup-business-analyst/skills/market-sizing-analysis/SKILL.md) |
+| 139 | ✓ | [`plugins/startup-business-analyst/skills/startup-financial-modeling/SKILL.md`](plugins/startup-business-analyst/skills/startup-financial-modeling/SKILL.md) |
+| 140 | ✓ | [`plugins/startup-business-analyst/skills/startup-metrics-framework/SKILL.md`](plugins/startup-business-analyst/skills/startup-metrics-framework/SKILL.md) |
+| 141 | ✓ | [`plugins/startup-business-analyst/skills/team-composition-analysis/SKILL.md`](plugins/startup-business-analyst/skills/team-composition-analysis/SKILL.md) |
+| 142 | ✓ | [`plugins/systems-programming/skills/go-concurrency-patterns/SKILL.md`](plugins/systems-programming/skills/go-concurrency-patterns/SKILL.md) |
+| 143 | ✓ | [`plugins/systems-programming/skills/memory-safety-patterns/SKILL.md`](plugins/systems-programming/skills/memory-safety-patterns/SKILL.md) |
+| 144 | ✓ | [`plugins/systems-programming/skills/rust-async-patterns/SKILL.md`](plugins/systems-programming/skills/rust-async-patterns/SKILL.md) |
+| 145 | ✓ | [`plugins/ui-design/skills/accessibility-compliance/SKILL.md`](plugins/ui-design/skills/accessibility-compliance/SKILL.md) |
+| 146 | ✓ | [`plugins/ui-design/skills/design-system-patterns/SKILL.md`](plugins/ui-design/skills/design-system-patterns/SKILL.md) |
+| 147 | ✓ | [`plugins/ui-design/skills/interaction-design/SKILL.md`](plugins/ui-design/skills/interaction-design/SKILL.md) |
+| 148 | ✓ | [`plugins/ui-design/skills/mobile-android-design/SKILL.md`](plugins/ui-design/skills/mobile-android-design/SKILL.md) |
+| 149 | ✓ | [`plugins/ui-design/skills/mobile-ios-design/SKILL.md`](plugins/ui-design/skills/mobile-ios-design/SKILL.md) |
+| 150 | ✓ | [`plugins/ui-design/skills/react-native-design/SKILL.md`](plugins/ui-design/skills/react-native-design/SKILL.md) |
+| 151 | ✓ | [`plugins/ui-design/skills/responsive-design/SKILL.md`](plugins/ui-design/skills/responsive-design/SKILL.md) |
+| 152 | ✓ | [`plugins/ui-design/skills/visual-design-foundations/SKILL.md`](plugins/ui-design/skills/visual-design-foundations/SKILL.md) |
+| 153 | ✓ | [`plugins/ui-design/skills/web-component-design/SKILL.md`](plugins/ui-design/skills/web-component-design/SKILL.md) |
+| 154 | → | [`docs/plugin-eval.md`](docs/plugin-eval.md) |
 
 ---
 

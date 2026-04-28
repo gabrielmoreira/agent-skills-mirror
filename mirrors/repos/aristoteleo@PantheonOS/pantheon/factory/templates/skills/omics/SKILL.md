@@ -8,200 +8,127 @@ description: |
 
 # Agent Skills for Omics Data Analysis
 
-Here are best practices and workflows for analyzing single-cell and spatial omics data.
-When performing specific analysis tasks, load the relevant skill files to guide your approach.
+Best practices and workflows for single-cell and spatial omics analysis.
+Load the relevant skill files when performing specific analysis tasks.
 
-## Available Skills
+## Core Single-Cell Skills
 
-### Gene Panel Selection Workflow
+High-priority, actionable workflows for the most common single-cell analysis tasks.
 
-End-to-end workflow for designing **biologically meaningful** and **algorithmically robust**
-gene panels in scRNA-seq and spatial transcriptomics (HVG/DE/RF/scGeneFit/SpaPROS),
-with sub-panel discovery (ARI vs size), consensus scoring, biological completion
-(Completion Rule), and benchmarking on test splits.
+**Skill index**: [single_cell/SKILL.md](./single_cell/SKILL.md)
 
-**Skill folder**: [gene_panel_selection/](./gene_panel_selection/) (contains `SKILL.md` + `scripts/gene_panel_helpers.py`)
+**Skills**:
+- **Quality Control**: Filtering, doublet detection, normalization, QC metrics
+- **Cell Type Annotation**: Marker-based and reference-based label assignment
+- **Trajectory Inference**: Pseudotime, lineage tracing, RNA velocity
+
+---
+
+## Gene Panel Selection
+
+End-to-end workflow for designing gene panels in scRNA-seq and spatial
+transcriptomics (HVG/DE/RF/scGeneFit/SpaPROS), with sub-panel discovery,
+consensus scoring, biological completion, and benchmarking.
+
+**Skill folder**: [gene_panel_selection/](./gene_panel_selection/)
 
 **When to use**:
-- You need to design a gene panel 
-- You need to benchmark (ARI/NMI/Silhouette + UMAP similarity) already existing panels
-- **IMPORTANT**: When you do gene panel selection you should **STRICLY** respect this workflow 
+- Designing a gene panel for spatial transcriptomics
+- Benchmarking existing panels (ARI/NMI/Silhouette + UMAP)
+- **IMPORTANT**: When doing gene panel selection, **strictly** follow this workflow
 
-### Single-Cell to Spatial Mapping
+---
 
-If you have both single-cell and spatial data for the same/similar sample,
-you can map single-cell data to spatial data to impute unobserved genes
-and enhance spatial resolution.
+## Spatial Omics
 
-**Skill file**: [single_cell_spatial_mapping.md](./single_cell_spatial_mapping.md)
+Skills for spatial transcriptomics mapping, imputation, and 3D visualization.
+
+**Skill index**: [spatial/SKILL.md](./spatial/SKILL.md)
+
+**Skills**:
+- **Single-Cell to Spatial Mapping**: Map scRNA-seq to spatial data with MOSCOT
+  for gene imputation and cell type transfer
+- **3D Spatial Visualization**: Interactive 3D plots and rotating animations
+  with PyVista
 
 **When to use**:
 - You have paired scRNA-seq and spatial transcriptomics data
-- You want to impute genes not measured in the spatial modality
-- You want to transfer cell type annotations to spatial coordinates
+- You want to impute genes or transfer cell type labels to spatial coordinates
+- Your spatial data has 3D coordinates and you want to visualize them
 
 ---
 
-### 3D Spatial Data Visualization
+## Single-Cell Foundation Models (SCFM)
 
-For visualizing 3D spatial transcriptomics data with interactive plots
-and animations.
+Workflow and model reference for embedding/integration with foundation models
+(scGPT, Geneformer, UCE, scBERT, etc.).
 
-**Skill file**: [visualize_3d_spatial.md](./visualize_3d_spatial.md)
-
-**When to use**:
-- Your spatial data has 3D coordinates
-- You want to visualize gene expression or cell types in 3D
-- You want to create rotating GIF animations
-
----
-
-### Quality Control Workflow
-
-Standard quality control workflow for single-cell data.
-
-**Skill file**: [quality_control.md](./quality_control.md)
+**Skill index**: [scfm/SKILL.md](./scfm/SKILL.md)
 
 **When to use**:
-- Starting analysis of new single-cell dataset
-- Need to filter low-quality cells
-- Assessing data quality metrics
-
----
-
-### Cell Type Annotation
-
-Approaches for annotating cell types in single-cell data.
-
-**Skill file**: [cell_type_annotation.md](./cell_type_annotation.md)
-
-**When to use**:
-- After clustering, need to assign cell type labels
-- Using marker genes for annotation
-- Using reference-based methods
-
----
-
-### Single-Cell Foundation Models (SCFM)
-
-Workflow and model reference for embedding/integration with foundation models (scGPT, Geneformer, UCE).
-
-**Skill files**:
-- [scfm-workflow.md](file:///scfm-workflow.md)
-- [scfm-models.md](file:///scfm-models.md)
-
-**When to use**:
-- You want FM embeddings (e.g., `obsm["X_uce"]`, `obsm["X_scGPT"]`, `obsm["X_geneformer"]`)
+- You want FM embeddings (e.g., `obsm["X_uce"]`, `obsm["X_scGPT"]`)
 - You need model selection based on gene ID scheme and species
 - You want a validation-first workflow before heavy inference
 
 ---
 
-### Trajectory Inference
+## Database Access
 
-Pseudotime analysis and trajectory inference for cell differentiation,
-neurogenesis, and lineage tracing studies.
+Tools for querying genomic databases, downloading sequencing data, and
+accessing large-scale single-cell datasets programmatically.
 
-**Skill file**: [trajectory_inference.md](./trajectory_inference.md)
+**Skill index**: [database_access/SKILL.md](./database_access/SKILL.md)
 
-**When to use**:
-- Studying cell differentiation paths (e.g., stem cell → mature cell)
-- Neurogenesis analysis (neural progenitors → neurons)
-- Comparing developmental trajectories between conditions
-- RNA velocity analysis for directional dynamics
-
----
-
-### Parallel Computing & Performance
-
-Strategies for accelerating single-cell analysis using multi-core CPU,
-GPU acceleration, and memory optimization.
-
-**Skill file**: [parallel_computing.md](./parallel_computing.md)
-
-**When to use**:
-- Analysis is running slowly on single core
-- Dataset has >50k cells and operations are timing out
-- GPU is available and you want 10-100x speedup
-- Need to parallelize custom analysis loops
+**Tools covered**:
+- **gget**: 23 modules for querying Ensembl, NCBI, UniProt, COSMIC, OpenTargets, etc.
+- **iSeq**: CLI for downloading from GSA, SRA, ENA, DDBJ, GEO
+- **CZ CELLxGENE Census**: API for 217M+ single-cell observations
 
 ---
 
 ## Upstream Processing
 
 Technology-specific pipelines for processing raw sequencing data into
-analysis-ready count matrices with spatial coordinates. These cover the steps
-that precede standard single-cell analysis (QC, normalization, clustering, etc.).
+analysis-ready count matrices.
 
 **Skill index**: [upstream_processing/SKILL.md](./upstream_processing/SKILL.md)
 
 **Technologies covered**:
-- **nf-core Pipelines**: 143+ curated Nextflow pipelines for scRNA-seq, spatial
-  transcriptomics, bulk RNA-seq, ATAC-seq, ChIP-seq, CUT&Run, methylation,
-  and variant calling (WGS/WES)
-- **OpenST**: Open-source spatial transcriptomics at sub-cellular resolution —
-  flow cell barcode preprocessing, spacemake alignment, image registration,
-  Cellpose segmentation, 3D reconstruction, and downstream analysis
-
-**When to use**:
-- Processing raw BCL/FASTQ files with nf-core community pipelines
-- Running technology-specific alignment and preprocessing pipelines
-- Spatial coordinate registration and cell segmentation
-- Variant calling from WGS/WES/targeted sequencing
-- 3D reconstruction from serial tissue sections
+- **nf-core Pipelines**: 143+ Nextflow pipelines for scRNA-seq, spatial, bulk,
+  ATAC-seq, ChIP-seq, variant calling
+- **OpenST**: Open-source spatial transcriptomics processing pipeline
 
 ---
 
-## Database Access
+## General Data Analysis
 
-Tools for querying genomic databases, downloading sequencing data from public
-repositories, and accessing large-scale single-cell datasets programmatically.
+Cross-cutting skills for environment setup and computational performance.
 
-**Skill index**: [database_access/SKILL.md](./database_access/SKILL.md)
+**Skill index**: [general_data_analysis/SKILL.md](./general_data_analysis/SKILL.md)
 
-**Tools covered**:
-- **gget**: Python package with 23 modules for querying Ensembl, NCBI, UniProt,
-  ARCHS4, Enrichr, COSMIC, OpenTargets, CellxGene, cBioPortal, PDB, and Bgee
-- **iSeq**: Bash CLI for downloading sequencing data from GSA, SRA, ENA, DDBJ,
-  and GEO databases with parallel downloads and Aspera support
-- **CZ CELLxGENE Census**: Cloud-based Python API for accessing 217M+
-  single-cell RNA-seq observations with flexible metadata queries and
-  pre-computed embeddings
-
-**When to use**:
-- Querying gene/protein information from public databases
-- Downloading raw sequencing data (FASTQ/SRA) from public repositories
-- Accessing curated single-cell RNA-seq datasets by tissue, cell type, disease
-- Performing enrichment analysis or cancer mutation queries
-- Fetching reference genomes, annotations, and sequences
+**Skills**:
+- **Environment Management**: Conda/Mamba/venv setup for reproducible environments
+- **Parallel Computing**: Multi-core CPU, GPU acceleration, memory optimization
 
 ---
 
 ## Supplementary Reference: SC Best Practices
 
-For more comprehensive guidance on single-cell and spatial omics analysis, refer to
-the **SC Best Practices** skill collection, derived from the authoritative
-[Single-cell Best Practices](https://www.sc-best-practices.org) book. It covers
-the full analysis pipeline from preprocessing to reproducibility, including
-detailed workflows, method comparisons, and code examples for the scverse ecosystem.
+Comprehensive guidance derived from the
+[Single-cell Best Practices](https://www.sc-best-practices.org) book.
+Use as supplementary context when the core skills above need deeper background.
 
 **Skill index**: [sc_best_practices/SKILL.md](./sc_best_practices/SKILL.md)
 
 **Topics covered**:
-- Introduction & raw data processing frameworks
-- Preprocessing (QC, normalization, HVG, dimensionality reduction)
-- Clustering, annotation & dataset integration
-- Trajectory analysis (pseudotime, RNA velocity, lineage tracing)
-- Differential expression & condition analysis
-- Gene regulatory networks & cell-cell communication
-- Bulk deconvolution, chromatin accessibility (scATAC-seq)
-- Spatial omics (neighborhood analysis, deconvolution, imputation)
-- Surface protein (CITE-seq), immune repertoire (TCR/BCR)
-- Multimodal integration & reproducibility
-
-When the skills above provide task-specific workflows, these supplementary
-references offer broader context, alternative methods, and detailed best practices
-to complement your analysis.
+- Preprocessing, normalization, dimensionality reduction
+- Clustering, annotation, dataset integration
+- Trajectory analysis, RNA velocity, lineage tracing
+- Differential expression, compositional analysis, pathway analysis
+- Gene regulatory networks, cell-cell communication
+- Bulk deconvolution, scATAC-seq, spatial omics
+- CITE-seq, immune repertoire (TCR/BCR)
+- Multimodal integration, reproducibility
 
 ---
 

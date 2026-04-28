@@ -1,84 +1,132 @@
-# Map Strategy Selection
+# Map Pipeline Selection
 
-Choose the lightest structure that gives the game enough control.
+Choose maps by combining pipeline axes. Avoid treating `hybrid` as a top-level strategy; most real 2D maps are hybrid combinations of visual art, objects, and collision metadata.
 
-## Single Baked Image
+## Visual Model
 
-Use when:
-
-- the scene is small, static, decorative, or fixed-screen
-- collision is absent, coarse, or handled by simple invisible shapes
-- no actor needs to pass behind tall objects
-- the user values speed over future editability
-- the map is a menu background, battle backdrop, title scene, cutscene, or quick prototype
-
-Deliver:
-
-- one map image
-- optional prompt file
-- optional simple collision shapes
-- direct code integration
-
-Do not split props just because the skill can do it.
-
-## Layered Base Plus Props
+### `baked_raster`
 
 Use when:
 
-- objects block movement precisely
-- actors must walk in front of and behind objects
-- objects are interactive, animated, reusable, destructible, or likely to be edited
-- the user complains about collision accuracy or visual overlap
-- the scene is an RPG exploration map, town, dungeon, field, shrine, house interior, or tactical arena
+- the scene is static, decorative, fixed-screen, or visual-first
+- the game needs a battle background, title scene, menu backdrop, cutscene, or quick prototype
+- collision is absent or can be represented by a few invisible shapes
 
-Deliver:
+Deliver one image plus optional collision/zones metadata.
 
-- ground-only base image
-- prop sprites generated through `$generate2dsprite` or provided separately
-- prop placement metadata
-- collision/zones metadata
-- flattened preview for QA
-- code integration with render ordering
-
-Use `$generate2dsprite` for generated prop sprites. Do not split props just because this strategy exists; choose layered props only when the game benefits from independent collision, occlusion, interaction, reuse, animation, or later editing.
-
-## Tilemap / Tileset
+### `layered_raster`
 
 Use when:
 
-- the existing engine uses Tiled, Phaser tilemaps, Godot TileMap, Unity Tilemap, or another tilemap format
-- the user asks for tiles, tilesets, tile collision, autotiling, or map editor compatibility
-- grid-perfect editing, procedural generation, or very large maps matter
+- a hand-painted or generated base map is best, but tall objects need collision, occlusion, interaction, reuse, or later editing
+- the scene is an RPG town, shrine, dungeon room, field, interior, or monster-taming exploration map
+- y-sorted actors should walk in front of and behind props
 
-Deliver according to the engine:
+Deliver a ground-only base image, separate props, placement metadata, collision/zones metadata, and a flattened preview.
 
-- tileset image
-- tilemap JSON/TMX/engine-native data
-- tile collision layers
-- object/trigger layers
-
-Do not force image-generation-only maps into a tilemap workflow unless the user asks.
-
-## Hybrid
+### `tilemap`
 
 Use when:
 
-- most of the scene can be baked but a few objects need control
-- only foreground occlusion or interactables need separate sprites
-- the project already has a baked map and only one or two pain points
+- the engine/editor already uses Tiled, LDtk, Phaser tilemaps, Godot TileMap, Unity Tilemap, or similar tooling
+- the user asks for tiles, tilesets, tile collision, autotiling, or editable grid-perfect maps
+- procedural generation, large maps, or editor workflows matter
 
-Deliver:
+Deliver engine-native map data, tileset images, tile layers, object layers, and tile/object collision.
 
-- baked background or base
-- only the necessary prop/foreground overlays
-- targeted collision metadata
+### `layered_tilemap`
+
+Use when:
+
+- the game needs multiple tile layers such as ground, decor, walls, overhead, and foreground
+- actors need to pass under selected tile layers
+- collision and triggers are tile/object-layer driven
+
+Deliver layered tile data and a render-order contract.
+
+### `parallax_layers`
+
+Use when:
+
+- the map is a side-scroller, runner, shooter, or scrolling backdrop
+- background depth matters more than top-down collision
+
+Deliver background, midground, foreground, and scroll-speed metadata.
+
+## Runtime Object Model
+
+- `none`: the map is just a background or tile layers.
+- `separate_props`: props are independent sprites but do not require y-sort.
+- `y_sorted_props`: props and actors sort by base `y`; use for top-down RPG scenes.
+- `interactive_entities`: objects need dialogue, pickups, doors, destructibles, or state.
+- `foreground_occluders`: selected overlays always draw over actors.
+
+Use the simplest model that can express collision and occlusion correctly.
+
+## Collision Model
+
+- `none`: visual-only maps and simple backgrounds.
+- `coarse_shapes`: a few rectangles/ellipses for fixed arenas or decorative maps.
+- `precise_shapes`: explicit blockers and walk bounds for layered RPG maps.
+- `tile_collision`: collision stored per tile or tile layer.
+- `polygon_walkmesh`: irregular walkable regions or constrained path maps.
+- `trigger_zones`: encounter/rest/exit/dialogue areas; often combined with another collision model.
+
+Do not infer collision from prop PNG bounds automatically. Use explicit blockers for prop bases and explicit walkable zones for navigation.
+
+## Engine Target
+
+- `raw_canvas`: use PNG assets, JSON metadata, and project-specific render code.
+- `Phaser`: prefer atlas/tilemap JSON when the project already uses Phaser loaders.
+- `Tiled_JSON`: produce Tiled-compatible tilesets, layers, objects, and custom properties.
+- `LDtk`: produce or adapt to LDtk entity/layer concepts if the project uses LDtk.
+- `Godot_TileMap`: produce tile layers and scene metadata matching Godot's structure.
+- `Unity_Tilemap`: produce tileset/sprite assets and placement data for Unity workflows.
+- project-native: preserve existing schema when a game already has one.
+
+## Presets
+
+### Fixed Battle Background
+
+- `visual_model`: `baked_raster`
+- `runtime_object_model`: `none`
+- `collision_model`: `none` or `coarse_shapes`
+- Typical deliverables: one PNG, optional zones.
+
+### RPG Exploration Scene
+
+- `visual_model`: `layered_raster`
+- `runtime_object_model`: `y_sorted_props`
+- `collision_model`: `precise_shapes + trigger_zones`
+- Typical deliverables: base map, prop images, placement JSON, collision JSON, preview.
+
+### Monster Grassland
+
+- `visual_model`: `layered_raster`
+- `runtime_object_model`: `y_sorted_props + interactive_entities`
+- `collision_model`: `precise_shapes + trigger_zones`
+- Good prop-pack candidates: rocks, shrubs, flowers, signs, small logs.
+
+### Tile-Based Dungeon
+
+- `visual_model`: `layered_tilemap`
+- `runtime_object_model`: `interactive_entities`
+- `collision_model`: `tile_collision + trigger_zones`
+- Use only when the engine/editor supports tilemaps.
+
+### Side-Scroller Stage
+
+- `visual_model`: `parallax_layers`
+- `runtime_object_model`: `separate_props`
+- `collision_model`: `precise_shapes` or engine-native platform collision
+- Typical deliverables: parallax layers, collision platforms, hazards, spawn/checkpoints.
 
 ## Escalation Heuristic
 
-Start simple, then escalate:
+Start with the smallest bundle that works:
 
-1. Single image
-2. Single image plus collision metadata
-3. Hybrid image plus a few props/overlays
-4. Fully layered base plus props
-5. Tilemap, when engine/editor requirements justify it
+1. `baked_raster`
+2. `baked_raster + coarse_shapes`
+3. `layered_raster + a few props`
+4. `layered_raster + y_sorted_props + precise_shapes`
+5. `tilemap` or `layered_tilemap`, only when engine/editor requirements justify it

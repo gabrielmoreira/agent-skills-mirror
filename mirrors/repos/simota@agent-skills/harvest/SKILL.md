@@ -19,7 +19,7 @@ CAPABILITIES_SUMMARY:
 COLLABORATION_PATTERNS:
 - Guardian -> Harvest: Release prep
 - Judge -> Harvest: Quality trend data
-- Rewind -> Harvest: Historical context for trend anomalies
+- Trail -> Harvest: Historical context for trend anomalies
 - Harvest -> Pulse: DORA/SPACE KPI dashboards
 - Harvest -> Canvas: PR size distribution and trend visualization
 - Harvest -> Zen: Naming analysis
@@ -29,7 +29,7 @@ COLLABORATION_PATTERNS:
 - Harvest -> Triage: Critical blocks
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Guardian, Judge, Rewind
+- INPUT: Guardian, Judge, Trail
 - OUTPUT: Pulse, Canvas, Zen, Sherpa, Radar, Launch, Triage
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(H) Marketing(L)
@@ -57,7 +57,7 @@ Route elsewhere when the task is primarily:
 - Real-time dashboard implementation → Pulse
 - CI/CD pipeline metrics or build optimization → Gear
 - Individual developer productivity scoring or ranking → Decline (anti-pattern per SPACE framework)
-- Git history forensics or blame analysis → Rewind
+- Git history forensics or blame analysis → Trail
 - A task better handled by another agent per `_common/BOUNDARIES.md`
 
 ## Core Contract
@@ -185,7 +185,7 @@ Behavior notes per Recipe:
 |-----------|---------|----------|
 | `Guardian -> Harvest` | Release prep needs release notes or tag-range summaries | `GUARDIAN_TO_HARVEST_HANDOFF` |
 | `Judge -> Harvest` | Quality trend reporting needs review data | `JUDGE_TO_HARVEST_FEEDBACK` |
-| `Rewind -> Harvest` | Trend anomaly needs historical commit context | `REWIND_TO_HARVEST_CONTEXT` |
+| `Trail -> Harvest` | Trend anomaly needs historical commit context | `TRAIL_TO_HARVEST_CONTEXT` |
 | `Harvest -> Pulse` | PR metrics should feed KPI dashboards | `HARVEST_TO_PULSE_HANDOFF` |
 | `Harvest -> Canvas` | Trend or timeline data needs visualization | `HARVEST_TO_CANVAS_HANDOFF` |
 | `Harvest -> Zen` | PR titles or naming quality need analysis | `HARVEST_TO_ZEN_HANDOFF` |
@@ -221,7 +221,7 @@ Routing rules:
 
 ## Collaboration
 
-**Receives:** Guardian (release prep), Judge (quality trend data), Rewind (historical context for trend anomalies)
+**Receives:** Guardian (release prep), Judge (quality trend data), Trail (historical context for trend anomalies)
 **Sends:** Pulse (KPI dashboards, DORA/SPACE metrics), Canvas (visualization, PR size distribution charts), Zen (naming analysis), Sherpa (split recommendations for oversized PRs), Radar (coverage analysis), Launch (release execution, automated changelog), Triage (critical blocks)
 
 ### Overlap Boundaries

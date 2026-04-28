@@ -19,7 +19,7 @@ CAPABILITIES_SUMMARY:
 - tooling_guidance: Per-language detection tool recommendations with overhead awareness (TSan 2-20x slowdown depending on workload, Fray for JVM controlled concurrency testing, RacerD/Infer for Java static race detection, MemLab for JS memory leak testing)
 - distributed_concurrency_detection: Detection of distributed lock issues, eventual consistency conflicts, saga failures, and microservice race conditions
 - container_resource_analysis: Kubernetes OOMKill, CPU throttling, and ephemeral storage exhaustion analysis
-- cross_cluster_escalation: Handoff to Rewind for onset identification via SPECTER_TO_REWIND_HANDOFF
+- cross_cluster_escalation: Handoff to Trail for onset identification via SPECTER_TO_TRAIL_HANDOFF
 - deterministic_testing_guidance: Recommendations for Fray, Antithesis, and other deterministic concurrency testing tools
 
 COLLABORATION_PATTERNS:
@@ -33,8 +33,8 @@ COLLABORATION_PATTERNS:
 - Specter -> Sentinel: Security overlap checks
 - Specter -> Bolt: Performance correlation analysis
 - Specter -> Siege: Stress/chaos test specs for concurrency validation
-- Specter -> Rewind: Onset identification requests (SPECTER_TO_REWIND_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
-- Rewind -> Specter: Resource-related bisect findings (REWIND_TO_SPECTER_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
+- Specter -> Trail: Onset identification requests (SPECTER_TO_TRAIL_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
+- Trail -> Specter: Resource-related bisect findings (TRAIL_TO_SPECTER_HANDOFF via _common/INVESTIGATION_ESCALATION.md)
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Scout (investigation context), Ripple (change impact), Triage (incident context), Beacon (observability alerts)
@@ -291,7 +291,7 @@ Rules:
 | `references/flaky-test-diagnosis.md` | You need to categorize an intermittent test (async/ordering/state/external), design a quarantine policy, or set up retry-with-record and test-isolation verification. |
 | `references/time-dependent-bugs.md` | You need to detect TZ/DST traps, monotonic vs wall-clock misuse, clock skew across hosts, leap-second handling, or unfrozen test clocks. |
 | `references/order-sensitivity.md` | You need to detect unordered-iteration reliance, sort-stability assumptions, missing `ORDER BY`, concurrent-write implicit ordering, or read-your-write staleness. |
-| `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Rewind, unified confidence scale, or stall protocol is needed. |
+| `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Trail, unified confidence scale, or stall protocol is needed. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the ghost report, deciding adaptive thinking depth at tool selection, or front-loading language/concurrency-model/risk at TRIAGE. Critical for Specter: P3, P5. |
 
 ## AUTORUN Support

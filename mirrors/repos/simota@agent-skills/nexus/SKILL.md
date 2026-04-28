@@ -229,7 +229,7 @@ Is spawn tool available? (Agent / spawn_agent)
 
 | Agent Role | model | Rationale |
 |-----------|-------|-----------|
-| Investigation / read-only (Scout, Lens, Rewind) | sonnet | Cost-efficient |
+| Investigation / read-only (Scout, Lens, Trail) | sonnet | Cost-efficient |
 | Standard implementation (Builder, Artisan, Radar) | sonnet | Balanced |
 | High-complexity design (Sentinel, Atlas) | opus | Precision-critical |
 | Lightweight tasks (Quill, Morph) | haiku | Minimal cost |

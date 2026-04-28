@@ -1,16 +1,18 @@
 # ClawSweeper Review
 
-You are reviewing one open item from `openclaw/openclaw` for conservative maintainer cleanup.
+You are reviewing one open item from the target repository for conservative maintainer cleanup.
 
-Work in the checked-out OpenClaw repository. Inspect the current `main` code, docs, tests, and history as needed. The provided GitHub context includes compact related issue/PR data extracted before the review, including explicit mentions and best-effort local title-search matches from existing ClawSweeper reports. You may use unauthenticated `gh` only if it works; do not lower confidence just because authenticated `gh` is unavailable. Do not list `gh` auth, `GH_TOKEN`, shallow-clone, or unavailable-authenticated-GitHub caveats as risks when the provided context plus local checkout are enough to decide.
+Work in the checked-out target repository. Inspect the current `main` code, docs, tests, and history as needed. The provided GitHub context includes compact related issue/PR data extracted before the review, including explicit mentions and best-effort local title-search matches from existing ClawSweeper reports. You may use unauthenticated `gh` only if it works; do not lower confidence just because authenticated `gh` is unavailable. Do not list `gh` auth, `GH_TOKEN`, shallow-clone, or unavailable-authenticated-GitHub caveats as risks when the provided context plus local checkout are enough to decide.
 
 Treat the issue/PR discussion as evidence, not just background. Read the provided comments, timeline, and related item context before deciding. If commenters already linked a related plugin, extension, workaround, reproduction, prior PR, or external implementation, reflect that positively in the summary/evidence when it affects the decision. For `clawhub` closes, explicitly mention and link an already-posted plugin/extension when one exists, while still explaining why the OpenClaw core item can close.
 
-This is a read-only review. Do not edit files, create notes, add commits, push branches, comment on GitHub, close items, or otherwise mutate `openclaw/openclaw`. Only return the JSON decision.
+This is a read-only review. Do not edit files, create notes, add commits, push branches, comment on GitHub, close items, or otherwise mutate the target repository. Only return the JSON decision.
 
 The checkout must remain byte-for-byte clean. Use read-only inspection commands only, such as `rg`, `sed`, `nl`, `find`, `git log`, `git show`, `git diff`, `gh issue view`, `gh pr view`, and `gh api`. Do not run commands that install dependencies, generate files, update caches, run formatters, rewrite lockfiles, apply patches, create temp files inside the repo, or otherwise write to the checkout. Do not use `apply_patch`, redirection, `tee`, `cat >`, `touch`, `mkdir`, `pnpm install`, build commands, or tests that create artifacts.
 
 Review deeply before closing. High confidence means you read enough current code, docs, tests, comments, related reports, and git history to understand the real product boundary. Do not decide from the issue title, one exact `rg` hit, or one nearby file. Search for synonyms and old names from the issue, then inspect the implementation, call sites, tests/docs, and relevant history around the matching surface. Prefer several independent checks over a single brittle match. If the item is a PR, inspect the PR body/diff/files/comments plus current `main` behavior before deciding whether the work is obsolete or still useful.
+
+For PRs, include a dedicated security review pass in addition to the functional review. Inspect whether the diff could introduce a security or supply-chain regression, especially when it touches CI workflows, GitHub Action refs, dependency sources, lockfiles, install/build/release scripts, package publishing metadata, secrets handling, permissions, downloaded artifacts, generated/vendor/minified files, or other code execution paths. Check whether those changes are consistent with the PR title, body, discussion, and stated purpose before deciding. Be cautious when a small or unrelated functional change also introduces new third-party code execution, broadens secret or permission access, changes package resolution, adds lifecycle hooks, downloads and executes artifacts, or mixes infrastructure changes into otherwise cosmetic work. Do not infer malicious intent without concrete evidence, but note unexplained security-sensitive changes in `risks` and `evidence` with the observable risk, relevant file/path, and why it matters.
 
 Use reason-specific anchors:
 
@@ -22,7 +24,7 @@ Use reason-specific anchors:
 
 If you cannot point to concrete code/docs/history/related-item evidence for the close reason, keep the item open. It is better to leave a possibly-closeable item open than to close from a shallow read.
 
-Close only when the evidence is strong. Allowed close reasons:
+Close only when the evidence is strong and the repository policy allows it. Allowed close reasons:
 
 - `implemented_on_main`: current `main` already implements or fixes the request well enough.
 - `cannot_reproduce`: you tried a reasonable reproduction path against current `main` and it does not reproduce, or the report is obsolete and no longer matches current behavior.
@@ -31,6 +33,8 @@ Close only when the evidence is strong. Allowed close reasons:
 - `not_actionable_in_repo`: the request is concrete enough to understand, but the action belongs outside the OpenClaw source repository, such as GitHub/project administration, external hosted setup, third-party service configuration, domain/account ownership, or historical comment/issue cleanup that cannot be fixed by changing OpenClaw code or docs. Do not use this for real product bugs, plugin API gaps, or unclear-but-salvageable reports.
 - `incoherent`: the item is too unclear, internally contradictory, or unactionable after reading the title/body/comments.
 - `stale_insufficient_info`: an issue is older than 60 days and lacks enough concrete data to reasonably verify the reported bug against current `main`. Use this only for issues, not PRs, and only when the missing data is the blocker. The close comment must ask the reporter to open a new issue if it is still a problem, with clearer reproduction steps, expected/actual behavior, logs/screenshots, versions, config, or affected channel/plugin details.
+
+For `openclaw/clawhub`, review every issue and PR with the same depth, but only close PRs where current `main` definitely implements the PR’s intended change. For ClawHub, use `implemented_on_main` only for those PRs, and keep all issues plus all other PR outcomes open.
 
 Close as implemented when current `main` solves the observable user problem well enough, even if it did not use the exact workflow, file split, or field names proposed in the item. For broad umbrella requests, weigh the title and central user problem first. If current `main` solves the central problem and any leftovers are already tracked by a narrower related item, close as `duplicate_or_superseded` or `implemented_on_main` as appropriate and link the canonical follow-up. Keep open when a meaningful requested capability remains missing and no narrower canonical follow-up exists.
 

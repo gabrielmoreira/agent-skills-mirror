@@ -100,7 +100,7 @@ Reference this matrix to know which principles your skill must address.
 | Role | Critical (◎) | Recommended (○) |
 |------|---|---|
 | Orchestrators (Nexus, Titan, Sherpa, Rally, Arena, Magi, Darwin, Orbit) | P4, P6, P7 | P1 |
-| Investigators (Scout, Lens, Rewind, Atlas, Fossil, Triage) | P3, P5 | P2 |
+| Investigators (Scout, Lens, Trail, Atlas, Fossil, Triage) | P3, P5 | P2 |
 | Reviewers (Judge, Gauge, Sentinel, Probe, Radar, Warden, Attest) | P2, P5 | P1 |
 | Builders (Builder, Artisan, Forge, Anvil, Native) | P5, P7 | P3 |
 | Designers (Vision, Muse, Palette, Schema, Gateway, Stratum) | P1 | P5 |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,12 +62,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`skills/generate2dmap/agents/openai.yaml`](skills/generate2dmap/agents/openai.yaml) |
 | 2 | ✓ | [`skills/generate2dmap/references/layered-map-contract.md`](skills/generate2dmap/references/layered-map-contract.md) |
 | 3 | ✓ | [`skills/generate2dmap/references/map-strategies.md`](skills/generate2dmap/references/map-strategies.md) |
-| 4 | ✓ | [`skills/generate2dmap/SKILL.md`](skills/generate2dmap/SKILL.md) |
-| 5 | ✓ | [`skills/generate2dsprite/agents/openai.yaml`](skills/generate2dsprite/agents/openai.yaml) |
-| 6 | ✓ | [`skills/generate2dsprite/references/modes.md`](skills/generate2dsprite/references/modes.md) |
-| 7 | ✓ | [`skills/generate2dsprite/references/prompt-rules.md`](skills/generate2dsprite/references/prompt-rules.md) |
-| 8 | ✓ | [`skills/generate2dsprite/scripts/generate2dsprite.py`](skills/generate2dsprite/scripts/generate2dsprite.py) |
-| 9 | ✓ | [`skills/generate2dsprite/SKILL.md`](skills/generate2dsprite/SKILL.md) |
+| 4 | ✓ | [`skills/generate2dmap/references/prop-pack-contract.md`](skills/generate2dmap/references/prop-pack-contract.md) |
+| 5 | ✓ | [`skills/generate2dmap/scripts/compose_layered_preview.py`](skills/generate2dmap/scripts/compose_layered_preview.py) |
+| 6 | ✓ | [`skills/generate2dmap/scripts/extract_prop_pack.py`](skills/generate2dmap/scripts/extract_prop_pack.py) |
+| 7 | ✓ | [`skills/generate2dmap/SKILL.md`](skills/generate2dmap/SKILL.md) |
+| 8 | ✓ | [`skills/generate2dsprite/agents/openai.yaml`](skills/generate2dsprite/agents/openai.yaml) |
+| 9 | ✓ | [`skills/generate2dsprite/references/modes.md`](skills/generate2dsprite/references/modes.md) |
+| 10 | ✓ | [`skills/generate2dsprite/references/prompt-rules.md`](skills/generate2dsprite/references/prompt-rules.md) |
+| 11 | ✓ | [`skills/generate2dsprite/scripts/generate2dsprite.py`](skills/generate2dsprite/scripts/generate2dsprite.py) |
+| 12 | ✓ | [`skills/generate2dsprite/SKILL.md`](skills/generate2dsprite/SKILL.md) |
 
 ---
 

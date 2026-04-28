@@ -19,6 +19,7 @@ LocalAI follows the Linux kernel project's [guidelines for AI coding assistants]
 |------|-------------|
 | [.agents/ai-coding-assistants.md](.agents/ai-coding-assistants.md) | Policy for AI-assisted contributions — licensing, DCO, attribution |
 | [.agents/building-and-testing.md](.agents/building-and-testing.md) | Building the project, running tests, Docker builds for specific platforms |
+| [.agents/ci-caching.md](.agents/ci-caching.md) | CI build cache layout (registry-backed BuildKit cache on quay.io/go-skynet/ci-cache), `DEPS_REFRESH` weekly cache-buster for unpinned Python deps, manual eviction |
 | [.agents/adding-backends.md](.agents/adding-backends.md) | Adding a new backend (Python, Go, or C++) — full step-by-step checklist, including importer integration (the `/import-model` dropdown is server-driven from `GET /backends/known`) |
 | [.agents/coding-style.md](.agents/coding-style.md) | Code style, editorconfig, logging, documentation conventions |
 | [.agents/llama-cpp-backend.md](.agents/llama-cpp-backend.md) | Working on the llama.cpp backend — architecture, updating, tool call parsing |

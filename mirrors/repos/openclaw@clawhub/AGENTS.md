@@ -41,6 +41,7 @@
 - Before merging any PR, verify TypeScript cleanly with `bunx tsc -p packages/schema/tsconfig.json --noEmit` and `bunx tsc -p packages/clawhub/tsconfig.json --noEmit`; if Convex code changed, also run the repo typecheck path used by deploy so `bunx convex deploy` will not fail on `tsc`.
 - GitHub comments: for multiline `gh` comments/close messages, use `--body-file`, `--input`, or stdin/heredoc with real newlines; never pass literal `\\n` in shell strings.
 - Reject PRs that add skills into source code/repo content directly (for example under `skills/` or seed-only additions intended as published skills). Skills must be uploaded/published via CLI.
+- Repo-local Convex developer skills under `.agents/skills/convex*/` are allowed when they support working on this codebase; keep top-level `skills/` reserved for installed/published skill content and ignored by git.
 
 ## Production Release
 
