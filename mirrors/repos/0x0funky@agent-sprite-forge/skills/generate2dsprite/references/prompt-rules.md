@@ -19,13 +19,25 @@ Always keep these constraints:
 - same asset identity across frames
 - same bounding box and same pixel scale across frames
 
+## Style Rules
+
+Choose the art style from the user request, project context, map context, or reference:
+
+- `pixel_art`: general sprite default for classic 2D game actors and animation sheets.
+- `clean_hd`: clean hand-painted HD 2D game asset style, crisp silhouettes, smooth surfaces, low texture noise, controlled lighting, no chunky pixels.
+- `pixel_inspired`: clean modern pixel-art-inspired style without 16-bit wording, heavy dithering, or noisy microtexture.
+- `retro_pixel`: 16-bit pixel art or retro JRPG pixel art, only when explicitly requested.
+- `map_style` or `project-native`: match the visible reference, existing game, or `$generate2dmap` selected art style.
+
+Do not write `16-bit`, `retro JRPG`, or `chunky pixel-art` unless the user asks for that look. For clean HD map props, explicitly say `Do not make pixel art`.
+
 ## Reference Rules
 
 Use these rules when the user attaches a reference, points to a local image, asks for consistency with an earlier generated image, or asks for an evolution/variant of an existing sprite:
 
 - Make the reference image visible to built-in `image_gen` before generation. If the reference is a local file, call `view_image` first; do not assume a path string is a visual input.
 - In the prompt, say `use the image just shown as the visual reference`.
-- State what must stay fixed: silhouette family, palette, face/eyes, costume or markings, accessories, material language, and pixel-art style.
+- State what must stay fixed: silhouette family, palette, face/eyes, costume or markings, accessories, material language, and art style.
 - State what may change: pose, animation phase, action energy, size progression, evolution traits, or FX intensity.
 - For animation sheets, preserve the same character identity in every cell and only change the animation pose or effect state.
 - For evolution lines, keep visible lineage markers while allowing larger silhouette, added details, or stronger colors per form.
@@ -56,13 +68,23 @@ If detached FX are required, say:
 
 ## Character Style
 
-For `player` and `npc`:
+For `player` and `npc` when the request does not specify another style:
 
 - top-down 2D pixel art for a 16-bit RPG overworld
 - 3/4 view from slightly above
 - full body visible
 - chunky readable pixel-art with crisp dark outlines
 - enough margin for clean engine rendering
+
+## Map Prop Style
+
+For `prop` assets requested by `$generate2dmap`, match the selected map art style:
+
+- `clean_hd`: clean hand-painted HD 2D game asset style, crisp silhouettes, smooth painted surfaces, low texture noise, controlled accent lighting, no chunky pixels.
+- `pixel_inspired`: clean modern pixel-art-inspired prop, crisp readable shape, no 16-bit wording, no heavy dithering.
+- `retro_pixel`: 16-bit or retro JRPG pixel-art prop, only when the map is explicitly retro pixel.
+
+For clean HD props, use mostly front-facing top-down RPG object view: upright objects are vertical and centered, with only a small visible top face. Avoid strong isometric diagonal rotation unless requested.
 
 ## Creature and FX Style
 

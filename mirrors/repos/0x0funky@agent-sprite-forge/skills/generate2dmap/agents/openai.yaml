@@ -1,7 +1,7 @@
 interface:
   display_name: "Generate 2D Map"
-  short_description: "Build 2D map pipelines, props, previews, and collision data."
-  default_prompt: "Use $generate2dmap to choose a 2D map pipeline, generate map assets or prop packs, assemble a layered preview, and produce collision or placement metadata."
+  short_description: "Image-generated 2D map art, props, previews, and collision data."
+  default_prompt: "Use $generate2dmap to create an image-generated clean hand-painted top-down 2D RPG map with a ground-only base, dressed reference, 3x3 prop pack, layered preview, and collision metadata."
 
 policy:
   allow_implicit_invocation: true

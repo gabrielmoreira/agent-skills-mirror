@@ -1,6 +1,6 @@
 ---
 name: generate2dmap
-description: "Generate and revise production-oriented 2D game maps by choosing a visual model, runtime object model, collision model, and engine/export target. Use when Codex needs to create or integrate RPG maps, monster-taming maps, tactical arenas, battle backgrounds, side-scroller/parallax scenes, tilemaps, layered raster maps, prop packs, collision zones, walkable areas, or map previews."
+description: "Generate and revise production-oriented 2D game maps with built-in image generation as the default visual asset source, choosing a visual model, runtime object model, collision model, art direction, and engine/export target. Use when Codex needs to create or integrate RPG maps, monster-taming maps, tactical arenas, battle backgrounds, side-scroller/parallax scenes, tilemaps, layered raster maps, clean HD hand-painted maps, pixel-inspired maps, prop packs, collision zones, walkable areas, or map previews."
 ---
 
 # Generate2dmap
@@ -18,6 +18,14 @@ Use user-specified parameters when present. When the user does not specify them,
 
 Read [references/map-strategies.md](references/map-strategies.md) when the pipeline choice is not obvious. Read [references/layered-map-contract.md](references/layered-map-contract.md) before implementing a layered raster map. Read [references/prop-pack-contract.md](references/prop-pack-contract.md) before batching generated props into a sheet.
 
+## Image Generation First
+
+This skill is image-generation-first for visual assets. Use built-in `image_gen` as the default creative art source for base maps, dressed references, prop sheets, prop sprites, tileset art, parallax layers, battle backgrounds, and other visible map assets.
+
+The agent must write the creative image prompts itself. Do not use scripts to generate creative prompts or to procedurally draw final visual art. Scripts may assemble, slice, chroma-key, crop, validate, compose previews, emit JSON metadata, and wire image-generated assets into engine-native files such as Godot `.tscn` scenes.
+
+Only use procedural drawing or scripted placeholder art when the user explicitly asks for placeholders, test fixtures, debug maps, or engine scaffolding without final art. If using an engine target such as `Godot_TileMap`, generate or reuse the visual tileset art first, then use scripts/code only to build tile layers, collision, zones, and scene wiring.
+
 ## Parameter Contract
 
 User-facing parameters may be stated in natural language:
@@ -26,18 +34,24 @@ User-facing parameters may be stated in natural language:
 - `visual_model`: baked raster | layered raster | tilemap | layered tilemap | parallax
 - `size`: pixel dimensions, tile dimensions, or camera-relative size
 - `perspective`: top-down | 3/4 top-down | side-view | isometric-like
+- `art_style`: clean_hd | pixel_inspired | retro_pixel | hand_painted | project-native
+- `visual_asset_source`: image_gen | existing_assets | procedural_placeholder
 - `collision_precision`: none | coarse | precise | tile | walkmesh
 - `prop_generation`: none | one_by_one | prop_pack_2x2 | prop_pack_3x3 | prop_pack_4x4
 - `output_format`: PNG only | layered preview | manifest JSON | engine-native map data
 
 When unspecified:
 
+- Use `image_gen` as the visual asset source.
 - Use `baked_raster + coarse_shapes` for battle backgrounds, title/menu scenes, cutscenes, and fixed arenas.
 - Use `layered_raster + y_sorted_props + precise_shapes` for top-down RPG exploration with tall props, occlusion, interactables, or reusable props.
 - Use `tilemap` or `layered_tilemap` only when the engine/editor already uses tiles or the user asks for editable tiles.
 - Use `parallax_layers` for side-scrollers and scrolling backgrounds.
 - Use prop packs when 4 or more small/medium static props share one style and can fit into equal cells.
 - Use one-by-one prop generation for hero props, buildings, gates, irregular large props, animated props, or props needing strong identity.
+- Use `clean_hd` for generated exploration maps unless the project or user asks for pixel art. This means clean hand-painted top-down 2D RPG game map, HD game asset style, sharp readable terrain shapes, low texture noise, and no chunky pixels.
+- Use `pixel_inspired` only when the user wants a pixel-adjacent look without retro chunkiness.
+- Use `retro_pixel` only when the user explicitly asks for 16-bit, retro JRPG, or classic pixel-art maps.
 
 ## Workflow
 
@@ -47,13 +61,17 @@ When unspecified:
 
 2. Choose the pipeline axes.
    - Select `visual_model`, `runtime_object_model`, `collision_model`, and `engine_target`.
+   - Select `art_style`. Prefer readable gameplay shapes over decorative texture density.
+   - Select `visual_asset_source`. Default to `image_gen`; use `existing_assets` only when the project already has suitable art; use `procedural_placeholder` only when explicitly requested.
    - Treat `hybrid` as a result of combining axes, not as a primary category.
 
 3. Produce assets.
-   - For baked raster maps, generate or edit one background and optional collision/zones metadata.
+   - Write the creative prompts manually and use built-in `image_gen` for visible map art unless the user explicitly chose existing assets or procedural placeholders.
+   - For baked raster maps, generate one background with built-in `image_gen`, or edit/use an existing image when supplied, then add optional collision/zones metadata.
    - For layered raster maps, generate a ground-only base map first. Then show that base image in context and generate a dressed reference from the visible base before making final props and placements.
-   - For tilemaps, follow the engine/editor format; do not force image-generation-only maps into tilemaps.
-   - For parallax scenes, produce background/midground/foreground layers and scroll metadata.
+   - For tilemaps, generate or reuse tileset art first, then follow the engine/editor format for layers, objects, collision, and scene files. Do not script-draw the tileset as the final art source.
+   - For parallax scenes, generate background/midground/foreground visual layers first, then produce scroll metadata.
+   - Do not present a rerunnable script that creates the whole art pack as the main solution unless the user asked for procedural placeholder art.
 
 4. Build metadata.
    - Store prop placement, actor spawn points, interactables, blockers, walk bounds, encounter zones, exits, and triggers as structured data.
@@ -65,7 +83,9 @@ When unspecified:
 
 ## Prop Generation Rules
 
-Use `$generate2dsprite` for reusable transparent props, but choose the generation shape deliberately:
+Use `$generate2dsprite` for reusable transparent props, but the agent must write the prop prompt itself using the selected map `art_style`. Do not use a script to generate the creative prompt. For `clean_hd` maps, explicitly request clean hand-painted HD 2D game assets and explicitly forbid pixel art. For `pixel_inspired`, request clean modern pixel-art-inspired props without retro chunkiness. For `retro_pixel`, request 16-bit or retro JRPG pixel art.
+
+Choose the generation shape deliberately:
 
 - `one_by_one`: safest for large, important, animated, or irregular props.
 - `prop_pack_2x2`: 4 related props, safest batch size.
@@ -104,6 +124,15 @@ For a layered raster map:
 - `data/<name>-collision.json` and/or `data/<name>-zones.json` when gameplay needs them
 - `assets/map/<name>-layered-preview.png`
 - code changes that load the base, props, y-sorted renderables, collision, and zones
+
+For a tilemap or layered tilemap:
+
+- image-generated or user-supplied `assets/tilesets/<name>.png`
+- optional tile slicing/atlas metadata
+- engine-native tile layer data such as Tiled JSON, LDtk data, Godot TileMap scene data, Unity tile placement data, or project-native JSON
+- object layers for spawns, exits, interactables, blockers, and zones
+- a flattened preview assembled from the visual tileset and layer data
+- no script-drawn final tileset art unless the user explicitly asked for procedural placeholders
 
 For a prop pack:
 

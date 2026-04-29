@@ -1,6 +1,6 @@
 ---
 name: generate2dsprite
-description: "Generate and postprocess general 2D pixel-art assets and animation sheets: creatures, characters, NPCs, spells, projectiles, impacts, props, summons, and transparent GIF exports. Use when Codex should infer the asset plan from a natural-language request, call built-in `image_gen` for solid-magenta raw sheets, and use the local processor only for chroma-key cleanup, frame extraction, alignment, QC, and transparent exports."
+description: "Generate and postprocess general 2D game assets and animation sheets: pixel-art sprites, clean HD map props, creatures, characters, NPCs, spells, projectiles, impacts, props, summons, and transparent GIF exports. Use when Codex should infer the asset plan from a natural-language request, match a reference or map art style, call built-in `image_gen` for solid-magenta raw sheets, and use the local processor only for chroma-key cleanup, frame extraction, alignment, QC, and transparent exports."
 ---
 
 # Generate2dsprite
@@ -22,6 +22,7 @@ Infer these from the user request:
 - `effect_policy`: `all` | `largest`
 - `anchor`: `center` | `bottom` | `feet`
 - `margin`: `tight` | `normal` | `safe`
+- `art_style`: pixel_art | clean_hd | pixel_inspired | retro_pixel | map_style | project-native
 - `reference`: `none` | `attached_image` | `generated_image` | `local_file`
 - `prompt`: the user's theme or visual direction
 - `role`: only when the asset is clearly an NPC role
@@ -35,7 +36,9 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 - Write the art prompt yourself. Do not default to the prompt-builder script.
 - Use built-in `image_gen` for every raw image.
 - When the user provides or implies a visual reference, use built-in image edit/reference semantics only after the reference image is visible in the conversation context. If the reference is a local file, call `view_image` first; do not rely on a filesystem path in the prompt as the visual reference.
+- Do not force pixel art when the asset is a map prop for `$generate2dmap` or when the user/project requests a different style. Match the map or reference style first.
 - Use the script only as a deterministic processor: magenta cleanup, frame splitting, component filtering, scaling, alignment, QC metadata, transparent sheet export, and GIF export.
+- Do not use scripts to generate the creative image prompt. If a legacy prompt-builder command exists, treat it as historical compatibility only, not the normal skill workflow.
 - Treat script flags as execution primitives chosen by the agent, not user-facing hardcoded workflow.
 - If a generated sheet touches cell edges, drifts in scale, or breaks a projectile / impact loop, either reprocess with better primitive settings or regenerate the raw sheet.
 - Keep the solid `#FF00FF` background rule unless the user explicitly wants a different processing workflow.
@@ -62,6 +65,13 @@ Examples:
 ### 2. Write the prompt manually
 
 Use [references/prompt-rules.md](references/prompt-rules.md).
+
+Choose `art_style` before writing the prompt:
+
+- Use `pixel_art` or `retro_pixel` for classic sprites, 16-bit RPG actors, and requests that explicitly ask for pixel art.
+- Use `clean_hd` for map props or assets intended to match clean hand-painted HD maps.
+- Use `pixel_inspired` only when the user wants a pixel-adjacent look without retro chunkiness.
+- Use `map_style` or `project-native` when an existing map, game, or reference should define the style.
 
 If a reference is involved:
 

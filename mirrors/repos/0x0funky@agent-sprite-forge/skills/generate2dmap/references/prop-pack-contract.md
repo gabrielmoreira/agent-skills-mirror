@@ -34,18 +34,19 @@ Use one-by-one generation instead of a pack for hero props, wide gates, building
 ## Prompt Pattern
 
 ```text
-Create exactly one <ROWS>x<COLS> pixel-art prop sheet for a top-down 2D RPG map.
+Create exactly one <ROWS>x<COLS> prop sheet for a top-down 2D RPG map.
 Each cell contains one separate static environmental prop from this list, in row-major order:
 1. <prop>
 2. <prop>
 ...
-All props share the same biome, palette, camera angle, and pixel scale.
+All props share the same biome, palette, camera angle, selected map art style, and scale.
+Use clean hand-painted HD 2D game asset style by default: crisp silhouettes, smooth surfaces, low texture noise, controlled accent lighting. Do not make pixel art unless the user asked for it.
 Mostly front-facing top-down RPG object view: upright objects are vertical and centered, with only a small visible top face. Avoid strong isometric diagonal rotation; crates and barrels should not become diamond-shaped or tilted unless the user explicitly asks for isometric art.
-Full object visible, centered in its own cell, crisp dark pixel outlines.
+Full object visible, centered in its own cell, crisp but not chunky outlines.
 Each prop must fit fully inside the central 50% to 60% of its cell with generous flat magenta gutters on all four sides.
-No prop, branch, roof, sign, smoke, sparkle, shadow, or fragment may touch or cross a cell edge.
+No prop, branch, roof, sign, glow, cable, smoke, sparkle, shadow, or fragment may touch or cross a cell edge.
 Background must be 100% solid flat #FF00FF magenta in every cell, no gradients, no texture, no shadows, no floor plane.
-No text, labels, UI, watermark, numbers, arrows, borders, or grid lines.
+No text, labels, UI, watermark, numbers, arrows, borders, grid lines, or readable letters.
 ```
 
 If a cell should stay empty, explicitly say `empty magenta cell`.

@@ -216,6 +216,24 @@ Outcome:
 - Nested modals don’t “flatten” into each other.
 - The backdrop always darkens the page behind the active modal without hiding lower modals incorrectly.
 
+### Floating no-backdrop modals
+
+Use `.modal-floating` on the outer `.modal` when a modal should behave like a floating utility panel instead of a blocking dialog. This is for special live surfaces such as the browser panel where the user should keep seeing and interacting with the chat or dashboard behind the panel.
+
+Working contract:
+
+- `.modal-floating` suppresses the shared `.modal-backdrop` for that modal.
+- `.modal-floating` makes the full-screen `.modal` shell pointer-transparent.
+- `.modal-floating .modal-inner` remains pointer-active, so the floating panel itself still receives clicks, keyboard focus, drag handlers, resize handles, and form input.
+- Floating modal sizing, dragging, and resizing are still component-owned unless promoted to shared modal CSS later. The modal system only provides the backdrop and pointer-event behavior.
+
+Good to know:
+
+- A floating modal does not close by clicking the page behind it, because those clicks pass through to the app. Keep an obvious close button in the modal header.
+- If a floating modal opens another normal modal, the normal modal can still use the backdrop; stacking remains governed by the shared z-index logic.
+- Use `.modal-no-backdrop` only when a component needs backdrop suppression without click-through floating behavior. Prefer `.modal-floating` for utility panels.
+- Do not use `.modal-floating` for destructive confirmations, settings forms, auth, import/export, or workflows that require the user to finish or dismiss the dialog before interacting with the rest of the app.
+
 ---
 
 ## Writing a modal component (conventions)

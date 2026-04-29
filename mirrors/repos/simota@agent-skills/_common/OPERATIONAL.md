@@ -95,6 +95,34 @@ Follow `_common/GIT_GUIDELINES.md`:
 
 ---
 
+## Shell Commands
+
+When agents emit, document, or execute shell commands (in SKILL.md examples, references, generated scripts, or Bash tool calls), assume the user runs **macOS (Darwin)** with **zsh** unless the repository or user states otherwise.
+
+**Rules:**
+- Default to BSD-compatible syntax. macOS ships BSD coreutils, not GNU. Commands written for Linux often fail silently or with cryptic errors on macOS.
+- When BSD/GNU divergence matters, prefer portable POSIX syntax. If GNU-only flags are required, document the dependency (`brew install coreutils gnu-sed`) and use `g`-prefixed binaries (`gsed`, `gdate`, `gfind`, `gstat`).
+- Do not assume `/bin/bash` — macOS default shell is zsh. Use `#!/usr/bin/env bash` in scripts that require bash.
+
+**Common BSD/GNU divergences to watch:**
+
+| Command | macOS (BSD) | Linux (GNU) | Portable form |
+|---------|-------------|-------------|---------------|
+| `sed -i` | `sed -i '' 's/a/b/' f` | `sed -i 's/a/b/' f` | Use `sed -i.bak ... && rm f.bak` or write to a temp file |
+| `date -d` | unsupported | `date -d '1 day ago'` | Use `date -v-1d` (BSD) or branch on `uname` |
+| `readlink -f` | unsupported pre-12.3 | supported | Use `python3 -c "import os; print(os.path.realpath('$f'))"` |
+| `stat -c` | `stat -f` | `stat -c` | Branch on `uname` or use `gstat` |
+| `mktemp` | requires template arg variant | tolerant | Always pass an explicit template |
+| `xargs -r` | unsupported | supported | Pipe through `[ -s ] && xargs` instead |
+| `tar --xattrs` | different defaults | GNU defaults | Specify flags explicitly |
+
+**When generating shell commands for the user:**
+- If the command is macOS-incompatible, either rewrite portably or call out the limitation explicitly.
+- For one-shot interactive Bash tool calls, prefer the BSD form directly (the user is on macOS).
+- For SKILL.md examples and reference scripts intended for reuse, prefer portable POSIX or branch on `uname` so Linux CI environments still work.
+
+---
+
 ## Subagent Parallel
 
 When a task has 2-3 independent subtasks, agents may spawn sub-agents via the Agent tool for parallel execution.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 15 followed patterns, 42 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 16 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 15 followed patterns, 42 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 42 |
+| Followed pats | 16 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 15 followed patterns, 42 file(
 - `rules/supabase-functions.md`
 - `rules/product-principles.md`
 - `rules/jotai-testing.md`
+- `rules/claude-github-workflows.md`
 
 ## File Index
 
@@ -103,18 +104,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | → | [`rules/adding-settings.md`](rules/adding-settings.md) |
 | 29 | → | [`rules/base-ui-components.md`](rules/base-ui-components.md) |
 | 30 | → | [`rules/chat-message-indicators.md`](rules/chat-message-indicators.md) |
-| 31 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
-| 32 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
-| 33 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
-| 34 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
-| 35 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
-| 36 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
-| 37 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
-| 38 | → | [`rules/native-modules.md`](rules/native-modules.md) |
-| 39 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
-| 40 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 41 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
-| 42 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 31 | → | [`rules/claude-github-workflows.md`](rules/claude-github-workflows.md) |
+| 32 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
+| 33 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
+| 34 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
+| 35 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
+| 36 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
+| 37 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
+| 38 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
+| 39 | → | [`rules/native-modules.md`](rules/native-modules.md) |
+| 40 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
+| 41 | → | [`rules/product-principles.md`](rules/product-principles.md) |
+| 42 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 43 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
 
 ---
 

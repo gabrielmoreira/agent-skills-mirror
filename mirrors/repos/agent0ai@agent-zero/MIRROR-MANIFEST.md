@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agent0ai/agent-zero` — 26 default patterns, 4 followed patterns, 107 file(s) materialized.
+Mirror of `agent0ai/agent-zero` — 26 default patterns, 4 followed patterns, 112 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agent0ai/agent-zero` — 26 default patterns, 4 followed patterns, 10
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 107 |
+| Files         | 112 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,92 +83,97 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`agents/researcher/agent.yaml`](agents/researcher/agent.yaml) |
 | 20 | ✓ | [`agents/researcher/prompts/agent.system.main.communication.md`](agents/researcher/prompts/agent.system.main.communication.md) |
 | 21 | ✓ | [`agents/researcher/prompts/agent.system.main.specifics.md`](agents/researcher/prompts/agent.system.main.specifics.md) |
-| 22 | ✓ | [`prompts/agent.context.extras.md`](prompts/agent.context.extras.md) |
-| 23 | ✓ | [`prompts/agent.extras.agent_info.md`](prompts/agent.extras.agent_info.md) |
-| 24 | ✓ | [`prompts/agent.extras.workdir_structure.md`](prompts/agent.extras.workdir_structure.md) |
-| 25 | ✓ | [`prompts/agent.system.behaviour_default.md`](prompts/agent.system.behaviour_default.md) |
-| 26 | ✓ | [`prompts/agent.system.behaviour.md`](prompts/agent.system.behaviour.md) |
-| 27 | ✓ | [`prompts/agent.system.datetime.md`](prompts/agent.system.datetime.md) |
-| 28 | ✓ | [`prompts/agent.system.main.communication_additions.md`](prompts/agent.system.main.communication_additions.md) |
-| 29 | ✓ | [`prompts/agent.system.main.communication.md`](prompts/agent.system.main.communication.md) |
-| 30 | ✓ | [`prompts/agent.system.main.environment.md`](prompts/agent.system.main.environment.md) |
-| 31 | ✓ | [`prompts/agent.system.main.md`](prompts/agent.system.main.md) |
-| 32 | ✓ | [`prompts/agent.system.main.role.md`](prompts/agent.system.main.role.md) |
-| 33 | ✓ | [`prompts/agent.system.main.solving.md`](prompts/agent.system.main.solving.md) |
-| 34 | ✓ | [`prompts/agent.system.main.specifics.md`](prompts/agent.system.main.specifics.md) |
-| 35 | ✓ | [`prompts/agent.system.main.tips.md`](prompts/agent.system.main.tips.md) |
-| 36 | ✓ | [`prompts/agent.system.main.tips.py`](prompts/agent.system.main.tips.py) |
-| 37 | ✓ | [`prompts/agent.system.mcp_tools.md`](prompts/agent.system.mcp_tools.md) |
-| 38 | ✓ | [`prompts/agent.system.projects.active.md`](prompts/agent.system.projects.active.md) |
-| 39 | ✓ | [`prompts/agent.system.projects.inactive.md`](prompts/agent.system.projects.inactive.md) |
-| 40 | ✓ | [`prompts/agent.system.projects.main.md`](prompts/agent.system.projects.main.md) |
-| 41 | ✓ | [`prompts/agent.system.response_tool_tips.md`](prompts/agent.system.response_tool_tips.md) |
-| 42 | ✓ | [`prompts/agent.system.secrets.md`](prompts/agent.system.secrets.md) |
-| 43 | ✓ | [`prompts/agent.system.skills.loaded.md`](prompts/agent.system.skills.loaded.md) |
-| 44 | ✓ | [`prompts/agent.system.skills.md`](prompts/agent.system.skills.md) |
-| 45 | ✓ | [`prompts/agent.system.skills.relevant.md`](prompts/agent.system.skills.relevant.md) |
-| 46 | ✓ | [`prompts/agent.system.tool.a2a_chat.md`](prompts/agent.system.tool.a2a_chat.md) |
-| 47 | ✓ | [`prompts/agent.system.tool.behaviour.md`](prompts/agent.system.tool.behaviour.md) |
-| 48 | ✓ | [`prompts/agent.system.tool.call_sub.md`](prompts/agent.system.tool.call_sub.md) |
-| 49 | ✓ | [`prompts/agent.system.tool.call_sub.py`](prompts/agent.system.tool.call_sub.py) |
-| 50 | ✓ | [`prompts/agent.system.tool.document_query.md`](prompts/agent.system.tool.document_query.md) |
-| 51 | ✓ | [`prompts/agent.system.tool.notify_user.md`](prompts/agent.system.tool.notify_user.md) |
-| 52 | ✓ | [`prompts/agent.system.tool.response.md`](prompts/agent.system.tool.response.md) |
-| 53 | ✓ | [`prompts/agent.system.tool.scheduler.md`](prompts/agent.system.tool.scheduler.md) |
-| 54 | ✓ | [`prompts/agent.system.tool.search_engine.md`](prompts/agent.system.tool.search_engine.md) |
-| 55 | ✓ | [`prompts/agent.system.tool.skills.md`](prompts/agent.system.tool.skills.md) |
-| 56 | ✓ | [`prompts/agent.system.tool.wait.md`](prompts/agent.system.tool.wait.md) |
-| 57 | ✓ | [`prompts/agent.system.tools_vision.md`](prompts/agent.system.tools_vision.md) |
-| 58 | ✓ | [`prompts/agent.system.tools.md`](prompts/agent.system.tools.md) |
-| 59 | ✓ | [`prompts/behaviour.merge.msg.md`](prompts/behaviour.merge.msg.md) |
-| 60 | ✓ | [`prompts/behaviour.merge.sys.md`](prompts/behaviour.merge.sys.md) |
-| 61 | ✓ | [`prompts/behaviour.search.sys.md`](prompts/behaviour.search.sys.md) |
-| 62 | ✓ | [`prompts/behaviour.updated.md`](prompts/behaviour.updated.md) |
-| 63 | ✓ | [`prompts/fw.ai_response.md`](prompts/fw.ai_response.md) |
-| 64 | ✓ | [`prompts/fw.bulk_summary.msg.md`](prompts/fw.bulk_summary.msg.md) |
-| 65 | ✓ | [`prompts/fw.bulk_summary.sys.md`](prompts/fw.bulk_summary.sys.md) |
-| 66 | ✓ | [`prompts/fw.document_query.optmimize_query.md`](prompts/fw.document_query.optmimize_query.md) |
-| 67 | ✓ | [`prompts/fw.document_query.system_prompt.md`](prompts/fw.document_query.system_prompt.md) |
-| 68 | ✓ | [`prompts/fw.error.md`](prompts/fw.error.md) |
-| 69 | ✓ | [`prompts/fw.hint.call_sub.md`](prompts/fw.hint.call_sub.md) |
-| 70 | ✓ | [`prompts/fw.initial_message.md`](prompts/fw.initial_message.md) |
-| 71 | ✓ | [`prompts/fw.intervention.md`](prompts/fw.intervention.md) |
-| 72 | ✓ | [`prompts/fw.knowledge_tool.response.md`](prompts/fw.knowledge_tool.response.md) |
-| 73 | ✓ | [`prompts/fw.memories_deleted.md`](prompts/fw.memories_deleted.md) |
-| 74 | ✓ | [`prompts/fw.memories_not_found.md`](prompts/fw.memories_not_found.md) |
-| 75 | ✓ | [`prompts/fw.msg_cleanup.md`](prompts/fw.msg_cleanup.md) |
-| 76 | ✓ | [`prompts/fw.msg_critical_error.md`](prompts/fw.msg_critical_error.md) |
-| 77 | ✓ | [`prompts/fw.msg_from_subordinate.md`](prompts/fw.msg_from_subordinate.md) |
-| 78 | ✓ | [`prompts/fw.msg_misformat.md`](prompts/fw.msg_misformat.md) |
-| 79 | ✓ | [`prompts/fw.msg_nudge.md`](prompts/fw.msg_nudge.md) |
-| 80 | ✓ | [`prompts/fw.msg_repeat.md`](prompts/fw.msg_repeat.md) |
-| 81 | ✓ | [`prompts/fw.msg_summary.md`](prompts/fw.msg_summary.md) |
-| 82 | ✓ | [`prompts/fw.msg_timeout.md`](prompts/fw.msg_timeout.md) |
-| 83 | ✓ | [`prompts/fw.msg_truncated.md`](prompts/fw.msg_truncated.md) |
-| 84 | ✓ | [`prompts/fw.notify_user.notification_sent.md`](prompts/fw.notify_user.notification_sent.md) |
-| 85 | ✓ | [`prompts/fw.rename_chat.msg.md`](prompts/fw.rename_chat.msg.md) |
-| 86 | ✓ | [`prompts/fw.rename_chat.sys.md`](prompts/fw.rename_chat.sys.md) |
-| 87 | ✓ | [`prompts/fw.tool_not_found.md`](prompts/fw.tool_not_found.md) |
-| 88 | ✓ | [`prompts/fw.tool_result.md`](prompts/fw.tool_result.md) |
-| 89 | ✓ | [`prompts/fw.topic_summary.msg.md`](prompts/fw.topic_summary.msg.md) |
-| 90 | ✓ | [`prompts/fw.topic_summary.sys.md`](prompts/fw.topic_summary.sys.md) |
-| 91 | ✓ | [`prompts/fw.user_message.md`](prompts/fw.user_message.md) |
-| 92 | ✓ | [`prompts/fw.wait_complete.md`](prompts/fw.wait_complete.md) |
-| 93 | ✓ | [`prompts/fw.warning.md`](prompts/fw.warning.md) |
-| 94 | ✓ | [`skills/a0-contribute-plugin/SKILL.md`](skills/a0-contribute-plugin/SKILL.md) |
-| 95 | ✓ | [`skills/a0-create-plugin/SKILL.md`](skills/a0-create-plugin/SKILL.md) |
-| 96 | ✓ | [`skills/a0-debug-plugin/SKILL.md`](skills/a0-debug-plugin/SKILL.md) |
-| 97 | ✓ | [`skills/a0-development/SKILL.md`](skills/a0-development/SKILL.md) |
-| 98 | ✓ | [`skills/a0-manage-plugin/SKILL.md`](skills/a0-manage-plugin/SKILL.md) |
-| 99 | ✓ | [`skills/a0-plugin-router/SKILL.md`](skills/a0-plugin-router/SKILL.md) |
-| 100 | ✓ | [`skills/a0-review-plugin/checklists.md`](skills/a0-review-plugin/checklists.md) |
-| 101 | ✓ | [`skills/a0-review-plugin/SKILL.md`](skills/a0-review-plugin/SKILL.md) |
-| 102 | ✓ | [`skills/a0-setup-cli/SKILL.md`](skills/a0-setup-cli/SKILL.md) |
-| 103 | ✓ | [`skills/create-skill/SKILL.md`](skills/create-skill/SKILL.md) |
-| 104 | → | [`docs/agents/AGENTS.banners.md`](docs/agents/AGENTS.banners.md) |
-| 105 | → | [`docs/agents/AGENTS.components.md`](docs/agents/AGENTS.components.md) |
-| 106 | → | [`docs/agents/AGENTS.modals.md`](docs/agents/AGENTS.modals.md) |
-| 107 | → | [`docs/agents/AGENTS.plugins.md`](docs/agents/AGENTS.plugins.md) |
+| 22 | ✓ | [`plugins/_a0_connector/skills/a0-cli-remote-workflows/SKILL.md`](plugins/_a0_connector/skills/a0-cli-remote-workflows/SKILL.md) |
+| 23 | ✓ | [`plugins/_office/skills/office-artifacts/SKILL.md`](plugins/_office/skills/office-artifacts/SKILL.md) |
+| 24 | ✓ | [`prompts/agent.context.extras.md`](prompts/agent.context.extras.md) |
+| 25 | ✓ | [`prompts/agent.extras.agent_info.md`](prompts/agent.extras.agent_info.md) |
+| 26 | ✓ | [`prompts/agent.extras.workdir_structure.md`](prompts/agent.extras.workdir_structure.md) |
+| 27 | ✓ | [`prompts/agent.system.behaviour_default.md`](prompts/agent.system.behaviour_default.md) |
+| 28 | ✓ | [`prompts/agent.system.behaviour.md`](prompts/agent.system.behaviour.md) |
+| 29 | ✓ | [`prompts/agent.system.datetime.md`](prompts/agent.system.datetime.md) |
+| 30 | ✓ | [`prompts/agent.system.main.communication_additions.md`](prompts/agent.system.main.communication_additions.md) |
+| 31 | ✓ | [`prompts/agent.system.main.communication.md`](prompts/agent.system.main.communication.md) |
+| 32 | ✓ | [`prompts/agent.system.main.environment.md`](prompts/agent.system.main.environment.md) |
+| 33 | ✓ | [`prompts/agent.system.main.md`](prompts/agent.system.main.md) |
+| 34 | ✓ | [`prompts/agent.system.main.role.md`](prompts/agent.system.main.role.md) |
+| 35 | ✓ | [`prompts/agent.system.main.solving.md`](prompts/agent.system.main.solving.md) |
+| 36 | ✓ | [`prompts/agent.system.main.specifics.md`](prompts/agent.system.main.specifics.md) |
+| 37 | ✓ | [`prompts/agent.system.main.tips.md`](prompts/agent.system.main.tips.md) |
+| 38 | ✓ | [`prompts/agent.system.main.tips.py`](prompts/agent.system.main.tips.py) |
+| 39 | ✓ | [`prompts/agent.system.mcp_tools.md`](prompts/agent.system.mcp_tools.md) |
+| 40 | ✓ | [`prompts/agent.system.projects.active.md`](prompts/agent.system.projects.active.md) |
+| 41 | ✓ | [`prompts/agent.system.projects.inactive.md`](prompts/agent.system.projects.inactive.md) |
+| 42 | ✓ | [`prompts/agent.system.projects.main.md`](prompts/agent.system.projects.main.md) |
+| 43 | ✓ | [`prompts/agent.system.response_tool_tips.md`](prompts/agent.system.response_tool_tips.md) |
+| 44 | ✓ | [`prompts/agent.system.secrets.md`](prompts/agent.system.secrets.md) |
+| 45 | ✓ | [`prompts/agent.system.skills.loaded.md`](prompts/agent.system.skills.loaded.md) |
+| 46 | ✓ | [`prompts/agent.system.skills.md`](prompts/agent.system.skills.md) |
+| 47 | ✓ | [`prompts/agent.system.skills.relevant.md`](prompts/agent.system.skills.relevant.md) |
+| 48 | ✓ | [`prompts/agent.system.tool.a2a_chat.md`](prompts/agent.system.tool.a2a_chat.md) |
+| 49 | ✓ | [`prompts/agent.system.tool.behaviour.md`](prompts/agent.system.tool.behaviour.md) |
+| 50 | ✓ | [`prompts/agent.system.tool.call_sub.md`](prompts/agent.system.tool.call_sub.md) |
+| 51 | ✓ | [`prompts/agent.system.tool.call_sub.py`](prompts/agent.system.tool.call_sub.py) |
+| 52 | ✓ | [`prompts/agent.system.tool.document_query.md`](prompts/agent.system.tool.document_query.md) |
+| 53 | ✓ | [`prompts/agent.system.tool.notify_user.md`](prompts/agent.system.tool.notify_user.md) |
+| 54 | ✓ | [`prompts/agent.system.tool.response.md`](prompts/agent.system.tool.response.md) |
+| 55 | ✓ | [`prompts/agent.system.tool.scheduler.md`](prompts/agent.system.tool.scheduler.md) |
+| 56 | ✓ | [`prompts/agent.system.tool.search_engine.md`](prompts/agent.system.tool.search_engine.md) |
+| 57 | ✓ | [`prompts/agent.system.tool.skills.md`](prompts/agent.system.tool.skills.md) |
+| 58 | ✓ | [`prompts/agent.system.tool.wait.md`](prompts/agent.system.tool.wait.md) |
+| 59 | ✓ | [`prompts/agent.system.tools_vision.md`](prompts/agent.system.tools_vision.md) |
+| 60 | ✓ | [`prompts/agent.system.tools.md`](prompts/agent.system.tools.md) |
+| 61 | ✓ | [`prompts/behaviour.merge.msg.md`](prompts/behaviour.merge.msg.md) |
+| 62 | ✓ | [`prompts/behaviour.merge.sys.md`](prompts/behaviour.merge.sys.md) |
+| 63 | ✓ | [`prompts/behaviour.search.sys.md`](prompts/behaviour.search.sys.md) |
+| 64 | ✓ | [`prompts/behaviour.updated.md`](prompts/behaviour.updated.md) |
+| 65 | ✓ | [`prompts/fw.ai_response.md`](prompts/fw.ai_response.md) |
+| 66 | ✓ | [`prompts/fw.bulk_summary.msg.md`](prompts/fw.bulk_summary.msg.md) |
+| 67 | ✓ | [`prompts/fw.bulk_summary.sys.md`](prompts/fw.bulk_summary.sys.md) |
+| 68 | ✓ | [`prompts/fw.document_query.optmimize_query.md`](prompts/fw.document_query.optmimize_query.md) |
+| 69 | ✓ | [`prompts/fw.document_query.system_prompt.md`](prompts/fw.document_query.system_prompt.md) |
+| 70 | ✓ | [`prompts/fw.error.md`](prompts/fw.error.md) |
+| 71 | ✓ | [`prompts/fw.hint.call_sub.md`](prompts/fw.hint.call_sub.md) |
+| 72 | ✓ | [`prompts/fw.initial_message.md`](prompts/fw.initial_message.md) |
+| 73 | ✓ | [`prompts/fw.intervention.md`](prompts/fw.intervention.md) |
+| 74 | ✓ | [`prompts/fw.knowledge_tool.response.md`](prompts/fw.knowledge_tool.response.md) |
+| 75 | ✓ | [`prompts/fw.memories_deleted.md`](prompts/fw.memories_deleted.md) |
+| 76 | ✓ | [`prompts/fw.memories_not_found.md`](prompts/fw.memories_not_found.md) |
+| 77 | ✓ | [`prompts/fw.msg_cleanup.md`](prompts/fw.msg_cleanup.md) |
+| 78 | ✓ | [`prompts/fw.msg_critical_error.md`](prompts/fw.msg_critical_error.md) |
+| 79 | ✓ | [`prompts/fw.msg_from_subordinate.md`](prompts/fw.msg_from_subordinate.md) |
+| 80 | ✓ | [`prompts/fw.msg_misformat.md`](prompts/fw.msg_misformat.md) |
+| 81 | ✓ | [`prompts/fw.msg_nudge.md`](prompts/fw.msg_nudge.md) |
+| 82 | ✓ | [`prompts/fw.msg_repeat.md`](prompts/fw.msg_repeat.md) |
+| 83 | ✓ | [`prompts/fw.msg_summary.md`](prompts/fw.msg_summary.md) |
+| 84 | ✓ | [`prompts/fw.msg_timeout.md`](prompts/fw.msg_timeout.md) |
+| 85 | ✓ | [`prompts/fw.msg_truncated.md`](prompts/fw.msg_truncated.md) |
+| 86 | ✓ | [`prompts/fw.notify_user.notification_sent.md`](prompts/fw.notify_user.notification_sent.md) |
+| 87 | ✓ | [`prompts/fw.rename_chat.msg.md`](prompts/fw.rename_chat.msg.md) |
+| 88 | ✓ | [`prompts/fw.rename_chat.sys.md`](prompts/fw.rename_chat.sys.md) |
+| 89 | ✓ | [`prompts/fw.tool_not_found.md`](prompts/fw.tool_not_found.md) |
+| 90 | ✓ | [`prompts/fw.tool_result.md`](prompts/fw.tool_result.md) |
+| 91 | ✓ | [`prompts/fw.topic_summary.msg.md`](prompts/fw.topic_summary.msg.md) |
+| 92 | ✓ | [`prompts/fw.topic_summary.sys.md`](prompts/fw.topic_summary.sys.md) |
+| 93 | ✓ | [`prompts/fw.user_message.md`](prompts/fw.user_message.md) |
+| 94 | ✓ | [`prompts/fw.wait_complete.md`](prompts/fw.wait_complete.md) |
+| 95 | ✓ | [`prompts/fw.warning.md`](prompts/fw.warning.md) |
+| 96 | ✓ | [`skills/a0-browser-ext/SKILL.md`](skills/a0-browser-ext/SKILL.md) |
+| 97 | ✓ | [`skills/a0-contribute-plugin/SKILL.md`](skills/a0-contribute-plugin/SKILL.md) |
+| 98 | ✓ | [`skills/a0-create-agent/SKILL.md`](skills/a0-create-agent/SKILL.md) |
+| 99 | ✓ | [`skills/a0-create-plugin/SKILL.md`](skills/a0-create-plugin/SKILL.md) |
+| 100 | ✓ | [`skills/a0-debug-plugin/SKILL.md`](skills/a0-debug-plugin/SKILL.md) |
+| 101 | ✓ | [`skills/a0-development/SKILL.md`](skills/a0-development/SKILL.md) |
+| 102 | ✓ | [`skills/a0-manage-plugin/SKILL.md`](skills/a0-manage-plugin/SKILL.md) |
+| 103 | ✓ | [`skills/a0-plugin-router/SKILL.md`](skills/a0-plugin-router/SKILL.md) |
+| 104 | ✓ | [`skills/a0-review-plugin/checklists.md`](skills/a0-review-plugin/checklists.md) |
+| 105 | ✓ | [`skills/a0-review-plugin/SKILL.md`](skills/a0-review-plugin/SKILL.md) |
+| 106 | ✓ | [`skills/a0-setup-cli/SKILL.md`](skills/a0-setup-cli/SKILL.md) |
+| 107 | ✓ | [`skills/computer-use-remote/SKILL.md`](skills/computer-use-remote/SKILL.md) |
+| 108 | ✓ | [`skills/create-skill/SKILL.md`](skills/create-skill/SKILL.md) |
+| 109 | → | [`docs/agents/AGENTS.banners.md`](docs/agents/AGENTS.banners.md) |
+| 110 | → | [`docs/agents/AGENTS.components.md`](docs/agents/AGENTS.components.md) |
+| 111 | → | [`docs/agents/AGENTS.modals.md`](docs/agents/AGENTS.modals.md) |
+| 112 | → | [`docs/agents/AGENTS.plugins.md`](docs/agents/AGENTS.plugins.md) |
 
 ---
 

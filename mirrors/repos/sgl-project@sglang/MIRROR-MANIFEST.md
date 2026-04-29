@@ -66,9 +66,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/skills/debug-cuda-crash/SKILL.md`](.claude/skills/debug-cuda-crash/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/debug-distributed-hang/SKILL.md`](.claude/skills/debug-distributed-hang/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/generate-profile/SKILL.md`](.claude/skills/generate-profile/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/sglang-auto-benchmark/SKILL.md`](.claude/skills/sglang-auto-benchmark/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/sglang-bisect-ci-regression/SKILL.md`](.claude/skills/sglang-bisect-ci-regression/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/sglang-torch-profiler-analysis/SKILL.md`](.claude/skills/sglang-torch-profiler-analysis/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/llm-torch-profiler-analysis/SKILL.md`](.claude/skills/llm-torch-profiler-analysis/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/sglang-auto-benchmark/SKILL.md`](.claude/skills/sglang-auto-benchmark/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/sglang-bisect-ci-regression/SKILL.md`](.claude/skills/sglang-bisect-ci-regression/SKILL.md) |
 | 11 | ✓ | [`.claude/skills/write-sglang-test/SKILL.md`](.claude/skills/write-sglang-test/SKILL.md) |
 | 12 | ✓ | [`docs_new/AGENTS.md`](docs_new/AGENTS.md) |
 | 13 | ✓ | [`python/sglang/multimodal_gen/.claude/CLAUDE.md`](python/sglang/multimodal_gen/.claude/CLAUDE.md) |

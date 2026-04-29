@@ -455,6 +455,8 @@ class MyEndpoint(ApiHandler):
 
 Agent profiles define specialized subordinates with custom prompts and behaviors.
 
+> For a guided, step-by-step wizard (scope selection, `agent.yaml` schema, prompt overrides, tool/extension stubs, test checklist) use the dedicated `/a0/skills/a0-create-agent/SKILL.md` skill.
+
 ### Profile Directory Structure
 
 ```
@@ -489,7 +491,7 @@ context: Use this agent for software development tasks, including writing code,
 | `context` | Instructions for when to delegate to this profile |
 
 > [!NOTE]
-> There is **no** per-profile model configuration, temperature, or allowed_tools in the profile YAML. Model configuration is managed by the `_model_config` plugin. Tool availability is controlled by plugin activation.
+> There is **no** model configuration, temperature, or allowed_tools in the profile YAML. `agent.yaml` contains only `title`, `description`, and `context`. Profile-specific Main/Utility model settings are managed by the `_model_config` plugin in `usr/agents/<profile>/plugins/_model_config/config.json`. Tool availability is controlled by plugin activation.
 
 ### Where Profiles Live
 
@@ -704,7 +706,7 @@ The framework ships with these core plugins in `/a0/plugins/`:
 | `_memory` | Persistent vector memory system |
 | `_text_editor` | File read/write/patch with line numbers |
 | `_model_config` | LLM model selection and configuration |
-| `_browser_agent` | Browser automation and web interaction |
+| `_browser` | Direct browser automation and WebUI viewing |
 | `_infection_check` | Prompt injection safety checks |
 | `_error_retry` | Retry on critical exceptions |
 | `_email_integration` | Email communication via IMAP/SMTP |

@@ -4,7 +4,7 @@ This file is the entry point for coding agents working in this repository. Keep 
 
 ## Project Overview
 
-Clawd 是一个 Electron 桌宠：通过 hook、日志轮询和 plugin 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Cursor Agent、Gemini CLI、Kiro CLI、CodeBuddy、opencode；内置 Clawd / Calico 两套主题，支持用户主题；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / ko。
+Clawd 是一个 Electron 桌宠：通过 hook、日志轮询和 plugin 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Gemini CLI、Cursor Agent、CodeBuddy、Kiro CLI、Kimi Code CLI (Kimi-CLI)、opencode；内置 Clawd / Calico 两套主题，支持用户主题；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / ko / ja。
 
 ## Common Commands
 

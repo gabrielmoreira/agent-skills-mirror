@@ -1,4 +1,4 @@
 interface:
   display_name: "Generate 2D Sprite"
-  short_description: "General 2D assets, bundles, and transparent GIFs"
-  default_prompt: "Use $generate2dsprite to create a wizard spell bundle with cast, projectile, and impact sprites."
+  short_description: "Pixel sprites, clean HD props, bundles, and transparent GIFs."
+  default_prompt: "Use $generate2dsprite to create a clean HD top-down map prop sheet that matches the current map style."

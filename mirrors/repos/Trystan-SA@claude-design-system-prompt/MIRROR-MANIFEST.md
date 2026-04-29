@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Trystan-SA/claude-design-system-prompt` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `Trystan-SA/claude-design-system-prompt` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Trystan-SA/claude-design-system-prompt` — 26 default patterns, 0 fo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,20 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/accessibility-audit.md`](skills/accessibility-audit.md) |
-| 2 | ✓ | [`skills/ai-slop-check.md`](skills/ai-slop-check.md) |
-| 3 | ✓ | [`skills/component-extract.md`](skills/component-extract.md) |
-| 4 | ✓ | [`skills/design-system-extract.md`](skills/design-system-extract.md) |
-| 5 | ✓ | [`skills/discovery-questions.md`](skills/discovery-questions.md) |
-| 6 | ✓ | [`skills/frontend-aesthetic-direction.md`](skills/frontend-aesthetic-direction.md) |
-| 7 | ✓ | [`skills/generate-variations.md`](skills/generate-variations.md) |
-| 8 | ✓ | [`skills/hierarchy-rhythm-review.md`](skills/hierarchy-rhythm-review.md) |
-| 9 | ✓ | [`skills/interaction-states-pass.md`](skills/interaction-states-pass.md) |
-| 10 | ✓ | [`skills/make-a-deck.md`](skills/make-a-deck.md) |
-| 11 | ✓ | [`skills/make-a-prototype.md`](skills/make-a-prototype.md) |
-| 12 | ✓ | [`skills/make-tweakable.md`](skills/make-tweakable.md) |
-| 13 | ✓ | [`skills/polish-pass.md`](skills/polish-pass.md) |
-| 14 | ✓ | [`skills/wireframe.md`](skills/wireframe.md) |
+| 1 | ✓ | [`codex/AGENTS.md`](codex/AGENTS.md) |
 
 ---
 

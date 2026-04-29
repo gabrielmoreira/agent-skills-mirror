@@ -2,6 +2,12 @@
 
 Choose maps by combining pipeline axes. Avoid treating `hybrid` as a top-level strategy; most real 2D maps are hybrid combinations of visual art, objects, and collision metadata.
 
+## Visual Asset Source
+
+Default to built-in image generation for visual assets. Base maps, dressed references, prop sheets, prop sprites, tileset art, parallax layers, and battle backgrounds should come from `image_gen` unless the user supplies existing art or explicitly asks for procedural placeholders.
+
+Scripts may slice, assemble, chroma-key, validate, compose previews, create metadata, and emit engine files. They must not replace image generation as the creative art source for final map visuals. Engine outputs such as Godot `.tscn`, Tiled JSON, LDtk data, or Unity placement data should wire up image-generated or user-supplied assets.
+
 ## Visual Model
 
 ### `baked_raster`
@@ -12,7 +18,7 @@ Use when:
 - the game needs a battle background, title scene, menu backdrop, cutscene, or quick prototype
 - collision is absent or can be represented by a few invisible shapes
 
-Deliver one image plus optional collision/zones metadata.
+Deliver one image generated or edited through image generation, plus optional collision/zones metadata.
 
 ### `layered_raster`
 
@@ -22,7 +28,7 @@ Use when:
 - the scene is an RPG town, shrine, dungeon room, field, interior, or monster-taming exploration map
 - y-sorted actors should walk in front of and behind props
 
-Deliver a ground-only base image, separate props, placement metadata, collision/zones metadata, and a flattened preview.
+Deliver an image-generated ground-only base image, separate image-generated props, placement metadata, collision/zones metadata, and a flattened preview.
 
 ### `tilemap`
 
@@ -32,7 +38,7 @@ Use when:
 - the user asks for tiles, tilesets, tile collision, autotiling, or editable grid-perfect maps
 - procedural generation, large maps, or editor workflows matter
 
-Deliver engine-native map data, tileset images, tile layers, object layers, and tile/object collision.
+Deliver image-generated or user-supplied tileset images, engine-native map data, tile layers, object layers, and tile/object collision. Do not script-draw the tileset as final art unless the user explicitly asked for procedural placeholders.
 
 ### `layered_tilemap`
 
@@ -42,7 +48,7 @@ Use when:
 - actors need to pass under selected tile layers
 - collision and triggers are tile/object-layer driven
 
-Deliver layered tile data and a render-order contract.
+Deliver image-generated or user-supplied tileset art, layered tile data, and a render-order contract.
 
 ### `parallax_layers`
 
@@ -51,7 +57,7 @@ Use when:
 - the map is a side-scroller, runner, shooter, or scrolling backdrop
 - background depth matters more than top-down collision
 
-Deliver background, midground, foreground, and scroll-speed metadata.
+Deliver image-generated background, midground, foreground, and scroll-speed metadata.
 
 ## Runtime Object Model
 
@@ -77,11 +83,11 @@ Do not infer collision from prop PNG bounds automatically. Use explicit blockers
 ## Engine Target
 
 - `raw_canvas`: use PNG assets, JSON metadata, and project-specific render code.
-- `Phaser`: prefer atlas/tilemap JSON when the project already uses Phaser loaders.
-- `Tiled_JSON`: produce Tiled-compatible tilesets, layers, objects, and custom properties.
-- `LDtk`: produce or adapt to LDtk entity/layer concepts if the project uses LDtk.
-- `Godot_TileMap`: produce tile layers and scene metadata matching Godot's structure.
-- `Unity_Tilemap`: produce tileset/sprite assets and placement data for Unity workflows.
+- `Phaser`: prefer atlas/tilemap JSON when the project already uses Phaser loaders; visual assets still come from image generation or existing art.
+- `Tiled_JSON`: produce Tiled-compatible tilesets, layers, objects, and custom properties around image-generated or existing tileset art.
+- `LDtk`: produce or adapt to LDtk entity/layer concepts if the project uses LDtk, while preserving image-generated or existing art as the visual source.
+- `Godot_TileMap`: produce tile layers and scene metadata matching Godot's structure after generating or selecting the visual tileset art.
+- `Unity_Tilemap`: produce tileset/sprite assets and placement data for Unity workflows after generating or selecting the visual art.
 - project-native: preserve existing schema when a game already has one.
 
 ## Presets

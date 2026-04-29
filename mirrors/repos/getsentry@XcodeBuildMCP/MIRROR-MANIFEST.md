@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
+Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 11 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,17 +60,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.cursor/BUGBOT.md`](.cursor/BUGBOT.md) |
-| 2 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
-| 3 | ✓ | [`.github/workflows/README.md`](.github/workflows/README.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`example_projects/iOS_Calculator/AGENTS.md`](example_projects/iOS_Calculator/AGENTS.md) |
-| 7 | ✓ | [`example_projects/iOS/.cursor/rules/errors.mdc`](example_projects/iOS/.cursor/rules/errors.mdc) |
-| 8 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
-| 9 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
-| 10 | → | [`README.md`](README.md) |
-| 11 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
+| 1 | ✓ | [`.agents/skills/warden-sweep/references/patch-prompt.md`](.agents/skills/warden-sweep/references/patch-prompt.md) |
+| 2 | ✓ | [`.agents/skills/warden-sweep/references/verify-prompt.md`](.agents/skills/warden-sweep/references/verify-prompt.md) |
+| 3 | ✓ | [`.agents/skills/warden-sweep/scripts/_utils.py`](.agents/skills/warden-sweep/scripts/_utils.py) |
+| 4 | ✓ | [`.agents/skills/warden-sweep/scripts/create_issue.py`](.agents/skills/warden-sweep/scripts/create_issue.py) |
+| 5 | ✓ | [`.agents/skills/warden-sweep/scripts/extract_findings.py`](.agents/skills/warden-sweep/scripts/extract_findings.py) |
+| 6 | ✓ | [`.agents/skills/warden-sweep/scripts/find_reviewers.py`](.agents/skills/warden-sweep/scripts/find_reviewers.py) |
+| 7 | ✓ | [`.agents/skills/warden-sweep/scripts/generate_report.py`](.agents/skills/warden-sweep/scripts/generate_report.py) |
+| 8 | ✓ | [`.agents/skills/warden-sweep/scripts/index_prs.py`](.agents/skills/warden-sweep/scripts/index_prs.py) |
+| 9 | ✓ | [`.agents/skills/warden-sweep/scripts/organize.py`](.agents/skills/warden-sweep/scripts/organize.py) |
+| 10 | ✓ | [`.agents/skills/warden-sweep/scripts/scan.py`](.agents/skills/warden-sweep/scripts/scan.py) |
+| 11 | ✓ | [`.agents/skills/warden-sweep/SKILL.md`](.agents/skills/warden-sweep/SKILL.md) |
+| 12 | ✓ | [`.agents/skills/warden/references/cli-reference.md`](.agents/skills/warden/references/cli-reference.md) |
+| 13 | ✓ | [`.agents/skills/warden/references/config-schema.md`](.agents/skills/warden/references/config-schema.md) |
+| 14 | ✓ | [`.agents/skills/warden/references/configuration.md`](.agents/skills/warden/references/configuration.md) |
+| 15 | ✓ | [`.agents/skills/warden/references/creating-skills.md`](.agents/skills/warden/references/creating-skills.md) |
+| 16 | ✓ | [`.agents/skills/warden/SKILL.md`](.agents/skills/warden/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/xcodebuildmcp-docs-release-review/SKILL.md`](.agents/skills/xcodebuildmcp-docs-release-review/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/xcodebuildmcp-packaging-resource-review/SKILL.md`](.agents/skills/xcodebuildmcp-packaging-resource-review/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/xcodebuildmcp-rendering-streaming-review/SKILL.md`](.agents/skills/xcodebuildmcp-rendering-streaming-review/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/xcodebuildmcp-runtime-boundary-review/SKILL.md`](.agents/skills/xcodebuildmcp-runtime-boundary-review/SKILL.md) |
+| 21 | ✓ | [`.agents/skills/xcodebuildmcp-snapshot-fixture-review/SKILL.md`](.agents/skills/xcodebuildmcp-snapshot-fixture-review/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/xcodebuildmcp-structured-output-review/SKILL.md`](.agents/skills/xcodebuildmcp-structured-output-review/SKILL.md) |
+| 23 | ✓ | [`.agents/skills/xcodebuildmcp-test-boundary-review/SKILL.md`](.agents/skills/xcodebuildmcp-test-boundary-review/SKILL.md) |
+| 24 | ✓ | [`.agents/skills/xcodebuildmcp-tool-contract-review/SKILL.md`](.agents/skills/xcodebuildmcp-tool-contract-review/SKILL.md) |
+| 25 | ✓ | [`.cursor/BUGBOT.md`](.cursor/BUGBOT.md) |
+| 26 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
+| 27 | ✓ | [`.github/workflows/README.md`](.github/workflows/README.md) |
+| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 30 | ✓ | [`example_projects/iOS_Calculator/AGENTS.md`](example_projects/iOS_Calculator/AGENTS.md) |
+| 31 | ✓ | [`example_projects/iOS/.cursor/rules/errors.mdc`](example_projects/iOS/.cursor/rules/errors.mdc) |
+| 32 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
+| 33 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
+| 34 | → | [`README.md`](README.md) |
+| 35 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
 
 ---
 

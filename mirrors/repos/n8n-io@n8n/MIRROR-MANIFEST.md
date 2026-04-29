@@ -59,14 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/design-system-style-rules.md`](.agents/design-system-style-rules.md) |
-| 2 | ✓ | [`.claude/plugins/n8n/skills/content-design/SKILL.md`](.claude/plugins/n8n/skills/content-design/SKILL.md) |
-| 3 | ✓ | [`.claude/plugins/n8n/skills/conventions/SKILL.md`](.claude/plugins/n8n/skills/conventions/SKILL.md) |
-| 4 | ✓ | [`.claude/plugins/n8n/skills/create-community-node-lint-rule/reference.md`](.claude/plugins/n8n/skills/create-community-node-lint-rule/reference.md) |
-| 5 | ✓ | [`.claude/plugins/n8n/skills/create-community-node-lint-rule/SKILL.md`](.claude/plugins/n8n/skills/create-community-node-lint-rule/SKILL.md) |
-| 6 | ✓ | [`.claude/plugins/n8n/skills/create-issue/SKILL.md`](.claude/plugins/n8n/skills/create-issue/SKILL.md) |
-| 7 | ✓ | [`.claude/plugins/n8n/skills/create-pr/SKILL.md`](.claude/plugins/n8n/skills/create-pr/SKILL.md) |
-| 8 | ✓ | [`.claude/plugins/n8n/skills/create-skill/SKILL.md`](.claude/plugins/n8n/skills/create-skill/SKILL.md) |
+| 1 | ✓ | [`.claude/plugins/n8n/skills/content-design/SKILL.md`](.claude/plugins/n8n/skills/content-design/SKILL.md) |
+| 2 | ✓ | [`.claude/plugins/n8n/skills/conventions/SKILL.md`](.claude/plugins/n8n/skills/conventions/SKILL.md) |
+| 3 | ✓ | [`.claude/plugins/n8n/skills/create-community-node-lint-rule/reference.md`](.claude/plugins/n8n/skills/create-community-node-lint-rule/reference.md) |
+| 4 | ✓ | [`.claude/plugins/n8n/skills/create-community-node-lint-rule/SKILL.md`](.claude/plugins/n8n/skills/create-community-node-lint-rule/SKILL.md) |
+| 5 | ✓ | [`.claude/plugins/n8n/skills/create-issue/SKILL.md`](.claude/plugins/n8n/skills/create-issue/SKILL.md) |
+| 6 | ✓ | [`.claude/plugins/n8n/skills/create-pr/SKILL.md`](.claude/plugins/n8n/skills/create-pr/SKILL.md) |
+| 7 | ✓ | [`.claude/plugins/n8n/skills/create-skill/SKILL.md`](.claude/plugins/n8n/skills/create-skill/SKILL.md) |
+| 8 | ✓ | [`.claude/plugins/n8n/skills/design-system-rules/SKILL.md`](.claude/plugins/n8n/skills/design-system-rules/SKILL.md) |
 | 9 | ✓ | [`.claude/plugins/n8n/skills/linear-issue/SKILL.md`](.claude/plugins/n8n/skills/linear-issue/SKILL.md) |
 | 10 | ✓ | [`.claude/plugins/n8n/skills/loom-transcript/SKILL.md`](.claude/plugins/n8n/skills/loom-transcript/SKILL.md) |
 | 11 | ✓ | [`.claude/plugins/n8n/skills/node-add-oauth/SKILL.md`](.claude/plugins/n8n/skills/node-add-oauth/SKILL.md) |

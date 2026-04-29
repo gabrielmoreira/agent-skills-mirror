@@ -47,3 +47,53 @@ These files MUST be consistent with each other. For example:
 - "Netdata Agent" (capitalized) when referring to the product
 - "`netdata`" (lowercase, code-formatted) when referring to the process
 - See DICTIONARY.md for precise terminology
+
+## AI agent skills
+
+Repo-scoped skills for AI agents live under `.agents/skills/<skill-name>/`.
+Each skill is self-contained: a `SKILL.md` with frontmatter (`name`,
+`description`) plus its own `scripts/` directory. Skills carry the operational
+knowledge for tasks that recur across sessions (Coverity triage, SonarCloud
+triage, GitHub Code Scanning triage, etc.).
+
+When an agent learns something new while running a skill (a new gotcha, a
+working API call, a corrected workflow) it MUST update the skill's
+`SKILL.md` and commit it before proceeding. Knowledge that isn't committed
+is lost.
+
+Currently available skills:
+- `.agents/skills/coverity-audit/` - Coverity Scan defect triage
+- `.agents/skills/sonarqube-audit/` - SonarCloud findings triage
+- `.agents/skills/graphql-audit/` - GitHub Code Scanning (CodeQL) triage
+- `.agents/skills/pr-reviews/` - PR comment / review iteration loop
+
+## Local-only working directory
+
+`/.local/` at the repo root is gitignored and reserved for per-user runtime
+artifacts: audit reports, fetched API data, scratch notes, queue files,
+intermediate triage decisions. Agents writing skill output should default to
+`<repo-root>/.local/audits/<topic>/...` -- where `<topic>` is the skill
+name with any trailing `-audit` suffix removed (so `coverity-audit/`
+writes under `coverity/`, `pr-reviews/` writes under `pr-reviews/`).
+
+Convention:
+- `/.local/audits/coverity/`  - Coverity raw fetches, per-defect details, triage decisions
+- `/.local/audits/sonarqube/` - Sonar finding queues, FP comment templates
+- `/.local/audits/graphql/`   - GitHub Code Scanning fetches and dismissals
+- `/.local/audits/pr-reviews/`- Per-PR comment / review caches
+
+Naming: each skill `<topic>-audit/` writes to `.local/audits/<topic>/`
+(the `-audit` suffix is dropped from the directory name so the URL-style
+path stays short). Skills without the `-audit` suffix keep their full
+name (e.g. `pr-reviews/` writes to `.local/audits/pr-reviews/`). When
+adding a new skill, follow this convention.
+
+Nothing under `/.local/` is committed. Treat the directory as ephemeral
+between users and machines, not as a shared source of truth.
+
+## Per-user secrets via `.env`
+
+`/.env` at the repo root is gitignored and holds per-user secrets and
+endpoint configuration consumed by skill scripts: API tokens, session
+cookies, project keys. Each skill's `SKILL.md` documents the variables it
+needs. Never commit secrets; never hard-code tokens in scripts.

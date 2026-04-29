@@ -117,7 +117,7 @@ Design principles for hot reload:
 
 | Layer                | Technology                |
 | -------------------- | ------------------------- |
-| Desktop/Mobile shell | Tauri 2.x                 |
+| Desktop/Mobile shell | Tauri 2.x with Electron migration path |
 | Frontend             | SolidJS + TailwindCSS     |
 | State                | Solid stores + IndexedDB  |
 | IPC                  | Tauri commands + events   |

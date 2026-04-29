@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
+Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moltis-org/moltis` — 26 default patterns, 0 followed patterns, 108 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 108 |
+| Files         | 113 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -108,65 +108,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`crates/skills/src/assets/media/youtube-content/SKILL.md`](crates/skills/src/assets/media/youtube-content/SKILL.md) |
 | 48 | ✓ | [`crates/skills/src/assets/messaging/bluebubbles/SKILL.md`](crates/skills/src/assets/messaging/bluebubbles/SKILL.md) |
 | 49 | ✓ | [`crates/skills/src/assets/messaging/discord/SKILL.md`](crates/skills/src/assets/messaging/discord/SKILL.md) |
-| 50 | ✓ | [`crates/skills/src/assets/messaging/imsg/SKILL.md`](crates/skills/src/assets/messaging/imsg/SKILL.md) |
-| 51 | ✓ | [`crates/skills/src/assets/messaging/wacli/SKILL.md`](crates/skills/src/assets/messaging/wacli/SKILL.md) |
-| 52 | ✓ | [`crates/skills/src/assets/mlops/evaluation/evaluating-llms-harness/SKILL.md`](crates/skills/src/assets/mlops/evaluation/evaluating-llms-harness/SKILL.md) |
-| 53 | ✓ | [`crates/skills/src/assets/mlops/evaluation/weights-and-biases/SKILL.md`](crates/skills/src/assets/mlops/evaluation/weights-and-biases/SKILL.md) |
-| 54 | ✓ | [`crates/skills/src/assets/mlops/huggingface-hub/SKILL.md`](crates/skills/src/assets/mlops/huggingface-hub/SKILL.md) |
-| 55 | ✓ | [`crates/skills/src/assets/mlops/inference/llama-cpp/SKILL.md`](crates/skills/src/assets/mlops/inference/llama-cpp/SKILL.md) |
-| 56 | ✓ | [`crates/skills/src/assets/mlops/inference/obliteratus/SKILL.md`](crates/skills/src/assets/mlops/inference/obliteratus/SKILL.md) |
-| 57 | ✓ | [`crates/skills/src/assets/mlops/inference/outlines/SKILL.md`](crates/skills/src/assets/mlops/inference/outlines/SKILL.md) |
-| 58 | ✓ | [`crates/skills/src/assets/mlops/inference/serving-llms-vllm/SKILL.md`](crates/skills/src/assets/mlops/inference/serving-llms-vllm/SKILL.md) |
-| 59 | ✓ | [`crates/skills/src/assets/mlops/models/audiocraft-audio-generation/SKILL.md`](crates/skills/src/assets/mlops/models/audiocraft-audio-generation/SKILL.md) |
-| 60 | ✓ | [`crates/skills/src/assets/mlops/models/segment-anything-model/SKILL.md`](crates/skills/src/assets/mlops/models/segment-anything-model/SKILL.md) |
-| 61 | ✓ | [`crates/skills/src/assets/mlops/research/dspy/SKILL.md`](crates/skills/src/assets/mlops/research/dspy/SKILL.md) |
-| 62 | ✓ | [`crates/skills/src/assets/mlops/training/axolotl/SKILL.md`](crates/skills/src/assets/mlops/training/axolotl/SKILL.md) |
-| 63 | ✓ | [`crates/skills/src/assets/mlops/training/fine-tuning-with-trl/SKILL.md`](crates/skills/src/assets/mlops/training/fine-tuning-with-trl/SKILL.md) |
-| 64 | ✓ | [`crates/skills/src/assets/mlops/training/unsloth/SKILL.md`](crates/skills/src/assets/mlops/training/unsloth/SKILL.md) |
-| 65 | ✓ | [`crates/skills/src/assets/note-taking/obsidian/SKILL.md`](crates/skills/src/assets/note-taking/obsidian/SKILL.md) |
-| 66 | ✓ | [`crates/skills/src/assets/productivity/1password/SKILL.md`](crates/skills/src/assets/productivity/1password/SKILL.md) |
-| 67 | ✓ | [`crates/skills/src/assets/productivity/bear-notes/SKILL.md`](crates/skills/src/assets/productivity/bear-notes/SKILL.md) |
-| 68 | ✓ | [`crates/skills/src/assets/productivity/gog/SKILL.md`](crates/skills/src/assets/productivity/gog/SKILL.md) |
-| 69 | ✓ | [`crates/skills/src/assets/productivity/google-workspace/SKILL.md`](crates/skills/src/assets/productivity/google-workspace/SKILL.md) |
-| 70 | ✓ | [`crates/skills/src/assets/productivity/goplaces/SKILL.md`](crates/skills/src/assets/productivity/goplaces/SKILL.md) |
-| 71 | ✓ | [`crates/skills/src/assets/productivity/linear/SKILL.md`](crates/skills/src/assets/productivity/linear/SKILL.md) |
-| 72 | ✓ | [`crates/skills/src/assets/productivity/maps/SKILL.md`](crates/skills/src/assets/productivity/maps/SKILL.md) |
-| 73 | ✓ | [`crates/skills/src/assets/productivity/nano-pdf/SKILL.md`](crates/skills/src/assets/productivity/nano-pdf/SKILL.md) |
-| 74 | ✓ | [`crates/skills/src/assets/productivity/notion/SKILL.md`](crates/skills/src/assets/productivity/notion/SKILL.md) |
-| 75 | ✓ | [`crates/skills/src/assets/productivity/ocr-and-documents/SKILL.md`](crates/skills/src/assets/productivity/ocr-and-documents/SKILL.md) |
-| 76 | ✓ | [`crates/skills/src/assets/productivity/ordercli/SKILL.md`](crates/skills/src/assets/productivity/ordercli/SKILL.md) |
-| 77 | ✓ | [`crates/skills/src/assets/productivity/powerpoint/editing.md`](crates/skills/src/assets/productivity/powerpoint/editing.md) |
-| 78 | ✓ | [`crates/skills/src/assets/productivity/powerpoint/pptxgenjs.md`](crates/skills/src/assets/productivity/powerpoint/pptxgenjs.md) |
-| 79 | ✓ | [`crates/skills/src/assets/productivity/powerpoint/SKILL.md`](crates/skills/src/assets/productivity/powerpoint/SKILL.md) |
-| 80 | ✓ | [`crates/skills/src/assets/productivity/slack/SKILL.md`](crates/skills/src/assets/productivity/slack/SKILL.md) |
-| 81 | ✓ | [`crates/skills/src/assets/productivity/things-mac/SKILL.md`](crates/skills/src/assets/productivity/things-mac/SKILL.md) |
-| 82 | ✓ | [`crates/skills/src/assets/productivity/trello/SKILL.md`](crates/skills/src/assets/productivity/trello/SKILL.md) |
-| 83 | ✓ | [`crates/skills/src/assets/research/arxiv/SKILL.md`](crates/skills/src/assets/research/arxiv/SKILL.md) |
-| 84 | ✓ | [`crates/skills/src/assets/research/blogwatcher/SKILL.md`](crates/skills/src/assets/research/blogwatcher/SKILL.md) |
-| 85 | ✓ | [`crates/skills/src/assets/research/gemini/SKILL.md`](crates/skills/src/assets/research/gemini/SKILL.md) |
-| 86 | ✓ | [`crates/skills/src/assets/research/llm-wiki/SKILL.md`](crates/skills/src/assets/research/llm-wiki/SKILL.md) |
-| 87 | ✓ | [`crates/skills/src/assets/research/polymarket/SKILL.md`](crates/skills/src/assets/research/polymarket/SKILL.md) |
-| 88 | ✓ | [`crates/skills/src/assets/research/research-paper-writing/SKILL.md`](crates/skills/src/assets/research/research-paper-writing/SKILL.md) |
-| 89 | ✓ | [`crates/skills/src/assets/research/summarize/SKILL.md`](crates/skills/src/assets/research/summarize/SKILL.md) |
-| 90 | ✓ | [`crates/skills/src/assets/smart-home/blucli/SKILL.md`](crates/skills/src/assets/smart-home/blucli/SKILL.md) |
-| 91 | ✓ | [`crates/skills/src/assets/smart-home/camsnap/SKILL.md`](crates/skills/src/assets/smart-home/camsnap/SKILL.md) |
-| 92 | ✓ | [`crates/skills/src/assets/smart-home/eightctl/SKILL.md`](crates/skills/src/assets/smart-home/eightctl/SKILL.md) |
-| 93 | ✓ | [`crates/skills/src/assets/smart-home/openhue/SKILL.md`](crates/skills/src/assets/smart-home/openhue/SKILL.md) |
-| 94 | ✓ | [`crates/skills/src/assets/smart-home/sonoscli/SKILL.md`](crates/skills/src/assets/smart-home/sonoscli/SKILL.md) |
-| 95 | ✓ | [`crates/skills/src/assets/smart-home/weather/SKILL.md`](crates/skills/src/assets/smart-home/weather/SKILL.md) |
-| 96 | ✓ | [`crates/skills/src/assets/social-media/xurl/SKILL.md`](crates/skills/src/assets/social-media/xurl/SKILL.md) |
-| 97 | ✓ | [`crates/skills/src/assets/software-development/github/SKILL.md`](crates/skills/src/assets/software-development/github/SKILL.md) |
-| 98 | ✓ | [`crates/skills/src/assets/software-development/oracle/SKILL.md`](crates/skills/src/assets/software-development/oracle/SKILL.md) |
-| 99 | ✓ | [`crates/skills/src/assets/software-development/peekaboo/SKILL.md`](crates/skills/src/assets/software-development/peekaboo/SKILL.md) |
-| 100 | ✓ | [`crates/skills/src/assets/software-development/plan/SKILL.md`](crates/skills/src/assets/software-development/plan/SKILL.md) |
-| 101 | ✓ | [`crates/skills/src/assets/software-development/requesting-code-review/SKILL.md`](crates/skills/src/assets/software-development/requesting-code-review/SKILL.md) |
-| 102 | ✓ | [`crates/skills/src/assets/software-development/skill-creator/SKILL.md`](crates/skills/src/assets/software-development/skill-creator/SKILL.md) |
-| 103 | ✓ | [`crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md`](crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md) |
-| 104 | ✓ | [`crates/skills/src/assets/software-development/systematic-debugging/SKILL.md`](crates/skills/src/assets/software-development/systematic-debugging/SKILL.md) |
-| 105 | ✓ | [`crates/skills/src/assets/software-development/test-driven-development/SKILL.md`](crates/skills/src/assets/software-development/test-driven-development/SKILL.md) |
-| 106 | ✓ | [`crates/skills/src/assets/software-development/tmux/SKILL.md`](crates/skills/src/assets/software-development/tmux/SKILL.md) |
-| 107 | ✓ | [`crates/skills/src/assets/software-development/writing-plans/SKILL.md`](crates/skills/src/assets/software-development/writing-plans/SKILL.md) |
-| 108 | ✓ | [`website/llms.txt`](website/llms.txt) |
+| 50 | ✓ | [`crates/skills/src/assets/messaging/discrawl/SKILL.md`](crates/skills/src/assets/messaging/discrawl/SKILL.md) |
+| 51 | ✓ | [`crates/skills/src/assets/messaging/imsg/SKILL.md`](crates/skills/src/assets/messaging/imsg/SKILL.md) |
+| 52 | ✓ | [`crates/skills/src/assets/messaging/slacrawl/SKILL.md`](crates/skills/src/assets/messaging/slacrawl/SKILL.md) |
+| 53 | ✓ | [`crates/skills/src/assets/messaging/wacli/SKILL.md`](crates/skills/src/assets/messaging/wacli/SKILL.md) |
+| 54 | ✓ | [`crates/skills/src/assets/messaging/wacrawl/SKILL.md`](crates/skills/src/assets/messaging/wacrawl/SKILL.md) |
+| 55 | ✓ | [`crates/skills/src/assets/mlops/evaluation/evaluating-llms-harness/SKILL.md`](crates/skills/src/assets/mlops/evaluation/evaluating-llms-harness/SKILL.md) |
+| 56 | ✓ | [`crates/skills/src/assets/mlops/evaluation/weights-and-biases/SKILL.md`](crates/skills/src/assets/mlops/evaluation/weights-and-biases/SKILL.md) |
+| 57 | ✓ | [`crates/skills/src/assets/mlops/huggingface-hub/SKILL.md`](crates/skills/src/assets/mlops/huggingface-hub/SKILL.md) |
+| 58 | ✓ | [`crates/skills/src/assets/mlops/inference/llama-cpp/SKILL.md`](crates/skills/src/assets/mlops/inference/llama-cpp/SKILL.md) |
+| 59 | ✓ | [`crates/skills/src/assets/mlops/inference/obliteratus/SKILL.md`](crates/skills/src/assets/mlops/inference/obliteratus/SKILL.md) |
+| 60 | ✓ | [`crates/skills/src/assets/mlops/inference/outlines/SKILL.md`](crates/skills/src/assets/mlops/inference/outlines/SKILL.md) |
+| 61 | ✓ | [`crates/skills/src/assets/mlops/inference/serving-llms-vllm/SKILL.md`](crates/skills/src/assets/mlops/inference/serving-llms-vllm/SKILL.md) |
+| 62 | ✓ | [`crates/skills/src/assets/mlops/models/audiocraft-audio-generation/SKILL.md`](crates/skills/src/assets/mlops/models/audiocraft-audio-generation/SKILL.md) |
+| 63 | ✓ | [`crates/skills/src/assets/mlops/models/segment-anything-model/SKILL.md`](crates/skills/src/assets/mlops/models/segment-anything-model/SKILL.md) |
+| 64 | ✓ | [`crates/skills/src/assets/mlops/research/dspy/SKILL.md`](crates/skills/src/assets/mlops/research/dspy/SKILL.md) |
+| 65 | ✓ | [`crates/skills/src/assets/mlops/training/axolotl/SKILL.md`](crates/skills/src/assets/mlops/training/axolotl/SKILL.md) |
+| 66 | ✓ | [`crates/skills/src/assets/mlops/training/fine-tuning-with-trl/SKILL.md`](crates/skills/src/assets/mlops/training/fine-tuning-with-trl/SKILL.md) |
+| 67 | ✓ | [`crates/skills/src/assets/mlops/training/unsloth/SKILL.md`](crates/skills/src/assets/mlops/training/unsloth/SKILL.md) |
+| 68 | ✓ | [`crates/skills/src/assets/note-taking/obsidian/SKILL.md`](crates/skills/src/assets/note-taking/obsidian/SKILL.md) |
+| 69 | ✓ | [`crates/skills/src/assets/productivity/1password/SKILL.md`](crates/skills/src/assets/productivity/1password/SKILL.md) |
+| 70 | ✓ | [`crates/skills/src/assets/productivity/bear-notes/SKILL.md`](crates/skills/src/assets/productivity/bear-notes/SKILL.md) |
+| 71 | ✓ | [`crates/skills/src/assets/productivity/gog/SKILL.md`](crates/skills/src/assets/productivity/gog/SKILL.md) |
+| 72 | ✓ | [`crates/skills/src/assets/productivity/google-workspace/SKILL.md`](crates/skills/src/assets/productivity/google-workspace/SKILL.md) |
+| 73 | ✓ | [`crates/skills/src/assets/productivity/goplaces/SKILL.md`](crates/skills/src/assets/productivity/goplaces/SKILL.md) |
+| 74 | ✓ | [`crates/skills/src/assets/productivity/linear/SKILL.md`](crates/skills/src/assets/productivity/linear/SKILL.md) |
+| 75 | ✓ | [`crates/skills/src/assets/productivity/maps/SKILL.md`](crates/skills/src/assets/productivity/maps/SKILL.md) |
+| 76 | ✓ | [`crates/skills/src/assets/productivity/nano-pdf/SKILL.md`](crates/skills/src/assets/productivity/nano-pdf/SKILL.md) |
+| 77 | ✓ | [`crates/skills/src/assets/productivity/notion/SKILL.md`](crates/skills/src/assets/productivity/notion/SKILL.md) |
+| 78 | ✓ | [`crates/skills/src/assets/productivity/ocr-and-documents/SKILL.md`](crates/skills/src/assets/productivity/ocr-and-documents/SKILL.md) |
+| 79 | ✓ | [`crates/skills/src/assets/productivity/ordercli/SKILL.md`](crates/skills/src/assets/productivity/ordercli/SKILL.md) |
+| 80 | ✓ | [`crates/skills/src/assets/productivity/powerpoint/editing.md`](crates/skills/src/assets/productivity/powerpoint/editing.md) |
+| 81 | ✓ | [`crates/skills/src/assets/productivity/powerpoint/pptxgenjs.md`](crates/skills/src/assets/productivity/powerpoint/pptxgenjs.md) |
+| 82 | ✓ | [`crates/skills/src/assets/productivity/powerpoint/SKILL.md`](crates/skills/src/assets/productivity/powerpoint/SKILL.md) |
+| 83 | ✓ | [`crates/skills/src/assets/productivity/slack/SKILL.md`](crates/skills/src/assets/productivity/slack/SKILL.md) |
+| 84 | ✓ | [`crates/skills/src/assets/productivity/things-mac/SKILL.md`](crates/skills/src/assets/productivity/things-mac/SKILL.md) |
+| 85 | ✓ | [`crates/skills/src/assets/productivity/trello/SKILL.md`](crates/skills/src/assets/productivity/trello/SKILL.md) |
+| 86 | ✓ | [`crates/skills/src/assets/research/arxiv/SKILL.md`](crates/skills/src/assets/research/arxiv/SKILL.md) |
+| 87 | ✓ | [`crates/skills/src/assets/research/blogwatcher/SKILL.md`](crates/skills/src/assets/research/blogwatcher/SKILL.md) |
+| 88 | ✓ | [`crates/skills/src/assets/research/data-sync/SKILL.md`](crates/skills/src/assets/research/data-sync/SKILL.md) |
+| 89 | ✓ | [`crates/skills/src/assets/research/gemini/SKILL.md`](crates/skills/src/assets/research/gemini/SKILL.md) |
+| 90 | ✓ | [`crates/skills/src/assets/research/llm-wiki/SKILL.md`](crates/skills/src/assets/research/llm-wiki/SKILL.md) |
+| 91 | ✓ | [`crates/skills/src/assets/research/polymarket/SKILL.md`](crates/skills/src/assets/research/polymarket/SKILL.md) |
+| 92 | ✓ | [`crates/skills/src/assets/research/research-paper-writing/SKILL.md`](crates/skills/src/assets/research/research-paper-writing/SKILL.md) |
+| 93 | ✓ | [`crates/skills/src/assets/research/summarize/SKILL.md`](crates/skills/src/assets/research/summarize/SKILL.md) |
+| 94 | ✓ | [`crates/skills/src/assets/smart-home/blucli/SKILL.md`](crates/skills/src/assets/smart-home/blucli/SKILL.md) |
+| 95 | ✓ | [`crates/skills/src/assets/smart-home/camsnap/SKILL.md`](crates/skills/src/assets/smart-home/camsnap/SKILL.md) |
+| 96 | ✓ | [`crates/skills/src/assets/smart-home/eightctl/SKILL.md`](crates/skills/src/assets/smart-home/eightctl/SKILL.md) |
+| 97 | ✓ | [`crates/skills/src/assets/smart-home/openhue/SKILL.md`](crates/skills/src/assets/smart-home/openhue/SKILL.md) |
+| 98 | ✓ | [`crates/skills/src/assets/smart-home/sonoscli/SKILL.md`](crates/skills/src/assets/smart-home/sonoscli/SKILL.md) |
+| 99 | ✓ | [`crates/skills/src/assets/smart-home/weather/SKILL.md`](crates/skills/src/assets/smart-home/weather/SKILL.md) |
+| 100 | ✓ | [`crates/skills/src/assets/social-media/birdclaw/SKILL.md`](crates/skills/src/assets/social-media/birdclaw/SKILL.md) |
+| 101 | ✓ | [`crates/skills/src/assets/social-media/xurl/SKILL.md`](crates/skills/src/assets/social-media/xurl/SKILL.md) |
+| 102 | ✓ | [`crates/skills/src/assets/software-development/github/SKILL.md`](crates/skills/src/assets/software-development/github/SKILL.md) |
+| 103 | ✓ | [`crates/skills/src/assets/software-development/oracle/SKILL.md`](crates/skills/src/assets/software-development/oracle/SKILL.md) |
+| 104 | ✓ | [`crates/skills/src/assets/software-development/peekaboo/SKILL.md`](crates/skills/src/assets/software-development/peekaboo/SKILL.md) |
+| 105 | ✓ | [`crates/skills/src/assets/software-development/plan/SKILL.md`](crates/skills/src/assets/software-development/plan/SKILL.md) |
+| 106 | ✓ | [`crates/skills/src/assets/software-development/requesting-code-review/SKILL.md`](crates/skills/src/assets/software-development/requesting-code-review/SKILL.md) |
+| 107 | ✓ | [`crates/skills/src/assets/software-development/skill-creator/SKILL.md`](crates/skills/src/assets/software-development/skill-creator/SKILL.md) |
+| 108 | ✓ | [`crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md`](crates/skills/src/assets/software-development/subagent-driven-development/SKILL.md) |
+| 109 | ✓ | [`crates/skills/src/assets/software-development/systematic-debugging/SKILL.md`](crates/skills/src/assets/software-development/systematic-debugging/SKILL.md) |
+| 110 | ✓ | [`crates/skills/src/assets/software-development/test-driven-development/SKILL.md`](crates/skills/src/assets/software-development/test-driven-development/SKILL.md) |
+| 111 | ✓ | [`crates/skills/src/assets/software-development/tmux/SKILL.md`](crates/skills/src/assets/software-development/tmux/SKILL.md) |
+| 112 | ✓ | [`crates/skills/src/assets/software-development/writing-plans/SKILL.md`](crates/skills/src/assets/software-development/writing-plans/SKILL.md) |
+| 113 | ✓ | [`website/llms.txt`](website/llms.txt) |
 
 ---
 

@@ -14,16 +14,20 @@ Use this contract for hand-painted or generated 2D RPG scenes, monster-taming ex
 
 ## Base Map Prompt Pattern
 
-Use this shape when generating a base map:
+Default to clean HD maps for gameplay readability unless the user explicitly asks for pixel art:
 
 ```text
-Create a ground-only top-down 2D pixel-art RPG map.
-This is a BASE GROUND MAP ONLY.
-Include terrain, paths, grass, water, cliffs, ground markings, floor patterns, and flat anchor pads.
+Create a clean hand-painted top-down 2D RPG game map.
+This is a BASE GROUND MAP ONLY for a layered raster exploration scene.
+Style: clean HD game asset style, sharp readable terrain shapes, crisp silhouettes, smooth painted surfaces, low texture noise, controlled accent lighting.
+Do not make pixel art. Avoid chunky pixels, retro dithering, noisy microtexture, tiny debris, clutter, blurry painterly mush, and over-detailed grime.
+Include terrain, paths, grass/water/floor materials, ground markings, floor patterns, and flat anchor pads.
 Do not include tall collidable objects: no buildings, gates, fences, lanterns, trees, signs, barrels, NPCs, monsters, UI, or text.
 Leave clear empty spaces where props will be placed later.
 Make walkable paths and zone boundaries easy to trace.
 ```
+
+If the user wants a pixel-adjacent look, use `clean modern pixel-art-inspired` and still forbid heavy dithering and noisy microtexture. Use `16-bit pixel art`, `retro JRPG pixel art`, or similar terms only when the user explicitly asks for a retro pixel look.
 
 ## Prop Generation
 
@@ -61,9 +65,10 @@ No UI, no text, no labels, no watermark.
 ## One-By-One Prop Prompt Pattern
 
 ```text
-Create a single <prop> prop for a top-down 2D pixel-art RPG map.
+Create a single <prop> prop for a top-down 2D RPG map.
+Use the same selected map art style: clean HD hand-painted by default, pixel-inspired only when requested, retro pixel only when explicitly requested.
 Mostly front-facing top-down RPG object view: upright objects are vertical and centered, with only a small visible top face. Avoid strong isometric diagonal rotation.
-Full object visible, centered, crisp dark pixel outlines.
+Full object visible, centered, crisp but not chunky outlines.
 Background must be 100% solid flat #FF00FF magenta, no gradients, no texture, no shadows, no floor plane.
 No text, labels, UI, or watermark.
 Entire prop must fit fully inside the image with generous magenta margin on all sides; no part may touch or cross the image edge.

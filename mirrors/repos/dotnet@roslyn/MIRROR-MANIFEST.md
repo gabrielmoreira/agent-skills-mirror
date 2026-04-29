@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 11 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,14 +62,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 2 | ✓ | [`.github/instructions/Compiler.instructions.md`](.github/instructions/Compiler.instructions.md) |
 | 3 | ✓ | [`.github/instructions/IDE.instructions.md`](.github/instructions/IDE.instructions.md) |
-| 4 | ✓ | [`.github/skills/analyzer-codefix/SKILL.md`](.github/skills/analyzer-codefix/SKILL.md) |
-| 5 | ✓ | [`.github/skills/ci-analysis/SKILL.md`](.github/skills/ci-analysis/SKILL.md) |
-| 6 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
-| 7 | ✓ | [`.github/skills/integration-test-analysis/SKILL.md`](.github/skills/integration-test-analysis/SKILL.md) |
-| 8 | ✓ | [`.github/skills/merge-into-branch/SKILL.md`](.github/skills/merge-into-branch/SKILL.md) |
-| 9 | ✓ | [`.github/skills/new-compiler-feature/SKILL.md`](.github/skills/new-compiler-feature/SKILL.md) |
-| 10 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
-| 11 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
+| 4 | ✓ | [`.github/instructions/Razor.instructions.md`](.github/instructions/Razor.instructions.md) |
+| 5 | ✓ | [`.github/skills/analyzer-codefix/SKILL.md`](.github/skills/analyzer-codefix/SKILL.md) |
+| 6 | ✓ | [`.github/skills/ci-analysis/SKILL.md`](.github/skills/ci-analysis/SKILL.md) |
+| 7 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
+| 8 | ✓ | [`.github/skills/formatting-log/SKILL.md`](.github/skills/formatting-log/SKILL.md) |
+| 9 | ✓ | [`.github/skills/integration-test-analysis/SKILL.md`](.github/skills/integration-test-analysis/SKILL.md) |
+| 10 | ✓ | [`.github/skills/merge-into-branch/SKILL.md`](.github/skills/merge-into-branch/SKILL.md) |
+| 11 | ✓ | [`.github/skills/new-compiler-feature/SKILL.md`](.github/skills/new-compiler-feature/SKILL.md) |
+| 12 | ✓ | [`.github/skills/run-toolset-tests/SKILL.md`](.github/skills/run-toolset-tests/SKILL.md) |
+| 13 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
+| 14 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
 
 ---
 
