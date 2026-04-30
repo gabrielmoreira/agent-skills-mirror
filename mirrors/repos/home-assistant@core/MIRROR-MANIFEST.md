@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 7 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,8 +64,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
 | 4 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
 | 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

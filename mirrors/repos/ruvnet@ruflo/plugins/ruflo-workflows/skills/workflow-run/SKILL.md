@@ -1,6 +1,7 @@
 ---
 name: workflow-run
 description: Execute, pause, resume, and cancel running workflows
+argument-hint: "<workflow-id>"
 allowed-tools: mcp__claude-flow__workflow_execute mcp__claude-flow__workflow_run mcp__claude-flow__workflow_pause mcp__claude-flow__workflow_resume mcp__claude-flow__workflow_cancel mcp__claude-flow__workflow_status Bash
 ---
 

@@ -140,7 +140,7 @@ Full roster at `commands/gsd/*.md`. The groupings below mirror `docs/COMMANDS.md
 | `/gsd-scan` | Rapid codebase assessment — lightweight alternative to `/gsd-map-codebase`. | [commands/gsd/scan.md](../commands/gsd/scan.md) |
 | `/gsd-intel` | Query, inspect, or refresh codebase intelligence files in `.planning/intel/`. | [commands/gsd/intel.md](../commands/gsd/intel.md) |
 | `/gsd-graphify` | Build, query, and inspect the project knowledge graph in `.planning/graphs/`. | [commands/gsd/graphify.md](../commands/gsd/graphify.md) |
-| `/gsd-extract-learnings` | Extract decisions, lessons, patterns, and surprises from completed phase artifacts. | [commands/gsd/extract_learnings.md](../commands/gsd/extract_learnings.md) |
+| `/gsd-extract-learnings` | Extract decisions, lessons, patterns, and surprises from completed phase artifacts. | [commands/gsd/extract-learnings.md](../commands/gsd/extract-learnings.md) |
 
 ### Review, Debug & Recovery
 

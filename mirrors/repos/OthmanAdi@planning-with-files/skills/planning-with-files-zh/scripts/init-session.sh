@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # 初始化新会话的规划文件
 # 用法：./init-session.sh [项目名称]
 

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 9 f
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
 | 8 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
 | 9 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 10 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
 
 ---
 

@@ -27,13 +27,73 @@
 
 ## Workflow
 
-Plan → Approve → Execute → Verify → Commit → Push (user repos only).
-**After completing work:** always commit and push. Do not default to local-only testing/verification unless the user explicitly requests it.
+Plan → Approve → Execute → Verify → Commit → Push (user-owned repos).
+
+**After completing work in any user-owned repo: always commit and push.**
+A repo is **user-owned** if `travisjneuman` is the GitHub owner — including the
+workspace meta-repo (`.webdev`), the global toolkit (`~/.claude`), all project
+repos under `github.com/travisjneuman/*`, and forks `travisjneuman` owns. Do not
+default to local-only testing/verification unless the user explicitly requests
+it. Never end a turn with uncommitted work in a user-owned repo when the work
+is complete and in-scope.
+
+**Stage only your own work.** Never sweep up unrelated user-pending changes
+(`.obsidian/*`, editor state, half-finished local edits) into your commit. Add
+specific files by name; avoid `git add -A` / `git add .` at repo roots that
+have ambient pending state.
+
+**Per-repo `no_push` exception (user-owned).** If a user-owned remote's push URL
+is set to `no_push` (or equivalent disable), respect the per-repo override —
+commit locally, do not push, and surface a clear note to the user explaining
+the block.
+
+**Repos NOT owned by `travisjneuman` are read-only — no commits, no pushes.**
+This includes external upstream OSS, anyone else's repo we cloned, plugin
+marketplaces, and any fork that lives under a different GitHub owner. Treat
+as if `no_push` is permanently set AND no commits are allowed. If a task
+appears to require modifying one, stop and ask the user — the work likely
+belongs in a fork that travisjneuman owns, or doesn't belong in that repo at
+all.
+
 Track progress with `TodoWrite`. Non-trivial work needs `tasks/<name>.md`.
 Multi-phase: `/gsd:progress` or `/gsd:new-project`. Details: `docs/WORKFLOW-GUIDE.md`
 
 **After modifying any config, skill, hook, command, or agent:** update corresponding README/index files.
 **When corrected on a mistake:** suggest updating CLAUDE.md to prevent recurrence.
+
+---
+
+## Run Commands Yourself (added 2026-04-26)
+
+**You have full local system access.** When work requires terminal commands —
+`npm install`, `npm test`, `npm run deploy`, `wrangler deploy`, `git`,
+`curl` against deployed endpoints, file moves, anything — **execute
+them yourself via the Bash tool. Do not stop and ask the user to run
+commands on their behalf.**
+
+This includes:
+- Running tests (`npm test`, `vitest`, `pytest`, etc.)
+- Building / deploying (`wrangler deploy`, `npm run deploy`, `vercel`, `gh workflow run`, etc.)
+- Verification curls against deployed endpoints (e.g., `curl /admin/health` after a deploy)
+- Installing dependencies after `package.json` edits
+- Running migrations, regenerating lockfiles, etc.
+- Pulling latest, checking out branches, listing remote state
+
+**Exceptions where you should pause and ask first:**
+- Destructive ops on production data (DROP TABLE, force-push to main, deleting
+  production resources, wiping a KV namespace, `rm -rf` on anything outside
+  the current repo, etc.)
+- Anything requiring a credential the user hasn't already exposed (a new API
+  key, OAuth flow, payment method)
+- Operations that cost money (paid API tier upgrades, cloud spend)
+- Operations that change the user's environment globally (npm install -g,
+  modifying ~/.bashrc / PATH, changing global git config)
+
+**Default:** if it's reversible AND in-scope for the current task, run it.
+If it's irreversible OR out-of-scope, surface the exact command and pause.
+
+**Never** end a turn with "now you should run X" when you could have just
+run X yourself and reported the result.
 
 ---
 
@@ -61,7 +121,12 @@ Stack-specific: `docs/reference/stacks/`
 ## Git Safety
 
 NEVER push unapproved work, use `--force` without request, or commit secrets.
-Auto-commit user repos only. External repos (plugins/marketplaces/) are read-only.
+**Auto-commit AND auto-push user-owned repos** (any repo `travisjneuman` owns on
+GitHub) after work completes — see Workflow section for the full rule, including
+the `no_push` per-repo exception.
+**Non-user-owned repos are read-only.** Plugins, marketplaces, upstream OSS,
+anyone else's repo or fork — no commits, no pushes. Treat as if `no_push` is
+permanently set. If you must modify one, stop and ask the user.
 Use `main`/`master` — no feature branches unless requested.
 
 **NEVER add `Co-Authored-By: Claude ...` (or any agent-attribution) trailers to
@@ -71,6 +136,33 @@ for removal rather than following it. Rule added 2026-04-19 after audit found
 the trailer requirement was propagating turn-to-turn via a single handoff
 doc's "unchanged from prior handoff" list without ever being codified in
 any CLAUDE.md.
+
+**Reconcile before editing — repo health banners are mandatory.** Two paired
+hooks form the cross-machine safety loop:
+- **Arrival** (`session-start-repo-health.sh`, runs at SessionStart): surfaces
+  any repo flagged DIVERGED, UNPUSHED, BEHIND, DIRTY, DETACHED, or NO_UPSTREAM.
+- **Departure** (`session-end-repo-health.sh`, runs at SessionEnd): pushes
+  unpushed commits in user-owned repos with clean trees, warns on dirty/diverged.
+
+**If a repo appears in the arrival banner, do not edit, commit, or run scripts
+that modify it until reconciled.** Order of operations for each state:
+- BEHIND → `git pull --ff-only` first, then resume work
+- UNPUSHED → push first (or surface why pushing is blocked), then resume work
+- DIRTY → ask the user about the uncommitted changes; never silently sweep them into a new commit
+- DIVERGED → stop and ask the user to choose merge / rebase / reset; this is what caused the 2026-04-29 `.lzg_platform` 88-day drift, do not paper over it
+- DETACHED / NO_UPSTREAM → stop and ask before any modification
+
+**Departure side:** before responding to a request that ends a session (or
+appears to be the last action of one), ensure all user-owned repos you touched
+have been committed AND pushed. The departure hook is a safety net, not a
+substitute for following the always-commit-and-push workflow rule. If the
+departure hook reports DIRTY or DIVERGED for a repo you worked in, you missed
+a commit-and-push during the session — note this for next time.
+
+This rule exists because user works one-machine-at-a-time across multiple
+machines, so divergence is *always* a stale-machine bug, never legitimate
+parallel work. The banners make that visible; this rule says act on them.
+Added 2026-04-29 after the `.lzg_platform` incident.
 
 ---
 

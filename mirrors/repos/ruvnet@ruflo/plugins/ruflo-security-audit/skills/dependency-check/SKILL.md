@@ -1,6 +1,7 @@
 ---
 name: dependency-check
 description: Scan project dependencies for known vulnerabilities and CVEs
+argument-hint: "[--path PATH]"
 allowed-tools: Bash(npx * npm *) mcp__claude-flow__memory_store Read
 ---
 Check dependencies for CVEs and outdated packages:

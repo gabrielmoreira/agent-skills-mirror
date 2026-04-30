@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HITsz-TMG/AIGC-Claw` — 26 default patterns, 2 followed patterns, 6 file(s) materialized.
+Mirror of `HITsz-TMG/AIGC-Claw` — 26 default patterns, 2 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HITsz-TMG/AIGC-Claw` — 26 default patterns, 2 followed patterns, 6 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 6 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,10 +62,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`aigc-director/aigc-claw/frontend/README.md`](aigc-director/aigc-claw/frontend/README.md) |
 | 2 | ✓ | [`aigc-director/CLAUDE.md`](aigc-director/CLAUDE.md) |
-| 3 | ✓ | [`aigc-director/README.md`](aigc-director/README.md) |
-| 4 | ✓ | [`aigc-director/SKILL.md`](aigc-director/SKILL.md) |
-| 5 | → | [`README_EN.md`](README_EN.md) |
-| 6 | → | [`README.md`](README.md) |
+| 3 | ✓ | [`aigc-director/SKILL.md`](aigc-director/SKILL.md) |
+| 4 | → | [`README_EN.md`](README_EN.md) |
+| 5 | → | [`README.md`](README.md) |
 
 ---
 

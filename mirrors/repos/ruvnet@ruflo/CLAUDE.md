@@ -1,8 +1,8 @@
 # Claude Code Configuration - Ruflo v3.5
 
-> **Ruflo v3.5** (2026-04-07) — Stable release with verified capabilities.
-> 6,000+ commits, 314 MCP tools, 16 agent roles + custom types, 19 AgentDB controllers.
-> Packages: `@claude-flow/cli@3.5.65`, `claude-flow@3.5.65`, `ruflo@3.5.65`
+> **Ruflo v3.6** (2026-04-29) — Stable release with agent federation and comms-first coordination.
+> 6,000+ commits, 314 MCP tools, 16 agent roles + custom types, 19 AgentDB controllers, 21 native plugins.
+> Packages: `@claude-flow/cli@3.6.10`, `claude-flow@3.6.10`, `ruflo@3.6.10`
 
 ## Behavioral Rules (Always Enforced)
 
@@ -254,39 +254,50 @@ const designDocs = await orchestrator.getMemory('design-decisions');
 When the user requests a complex task (multi-file changes, feature implementation, refactoring), **immediately execute this pattern in a SINGLE message:**
 
 ```javascript
-// STEP 1: Initialize swarm coordination via MCP (in parallel with agent spawning)
+// STEP 1: Initialize swarm coordination via MCP
 mcp__ruv-swarm__swarm_init({
   topology: "hierarchical",
   maxAgents: 8,
   strategy: "specialized"
 })
 
-// STEP 2: Spawn agents concurrently using Claude Code's Task tool
-// ALL Task calls MUST be in the SAME message for parallel execution
-Task("Coordinator", "You are the swarm coordinator. Initialize session, coordinate other agents via memory. Run: npx claude-flow@v3alpha hooks session-start", "hierarchical-coordinator")
-Task("Researcher", "Analyze requirements and existing code patterns. Store findings in memory via hooks.", "researcher")
-Task("Architect", "Design implementation approach based on research. Document decisions in memory.", "system-architect")
-Task("Coder", "Implement the solution following architect's design. Coordinate via hooks.", "coder")
-Task("Tester", "Write tests for the implementation. Report coverage via hooks.", "tester")
-Task("Reviewer", "Review code quality and security. Document findings.", "reviewer")
+// STEP 2: Spawn NAMED agents concurrently — all in ONE message
+// Each agent knows WHO to message next in the pipeline
+Task({
+  prompt: "Research requirements and codebase. SendMessage findings to 'architect' when done.",
+  subagent_type: "researcher", name: "researcher", run_in_background: true
+})
+Task({
+  prompt: "Wait for research from 'researcher'. Design implementation. SendMessage design to 'coder'.",
+  subagent_type: "system-architect", name: "architect", run_in_background: true
+})
+Task({
+  prompt: "Wait for design from 'architect'. Implement the solution. SendMessage code paths to 'tester'.",
+  subagent_type: "coder", name: "coder", run_in_background: true
+})
+Task({
+  prompt: "Wait for implementation from 'coder'. Write tests. SendMessage results to 'reviewer'.",
+  subagent_type: "tester", name: "tester", run_in_background: true
+})
+Task({
+  prompt: "Wait for test results from 'tester'. Review code quality and security. Report findings.",
+  subagent_type: "reviewer", name: "reviewer", run_in_background: true
+})
 
-// STEP 3: Batch all todos
+// STEP 3: Kick off the pipeline
+SendMessage({ to: "researcher", summary: "Start research", message: "[task description and context]" })
+
+// STEP 4: Batch todos
 TodoWrite({ todos: [
-  {content: "Initialize swarm coordination", status: "in_progress", activeForm: "Initializing swarm"},
-  {content: "Research and analyze requirements", status: "in_progress", activeForm: "Researching requirements"},
-  {content: "Design architecture", status: "pending", activeForm: "Designing architecture"},
-  {content: "Implement solution", status: "pending", activeForm: "Implementing solution"},
-  {content: "Write tests", status: "pending", activeForm: "Writing tests"},
-  {content: "Review and finalize", status: "pending", activeForm: "Reviewing code"}
+  {content: "Research and analyze requirements", status: "in_progress", activeForm: "Researching"},
+  {content: "Design architecture", status: "pending", activeForm: "Designing"},
+  {content: "Implement solution", status: "pending", activeForm: "Implementing"},
+  {content: "Write tests", status: "pending", activeForm: "Testing"},
+  {content: "Review and finalize", status: "pending", activeForm: "Reviewing"}
 ]})
 
-// STEP 4: Store swarm state in memory
-mcp__claude-flow__memory_usage({
-  action: "store",
-  namespace: "swarm",
-  key: "current-session",
-  value: JSON.stringify({task: "[user's task]", agents: 6, startedAt: new Date().toISOString()})
-})
+// Pipeline flow via SendMessage:
+// researcher ──→ architect ──→ coder ──→ tester ──→ reviewer
 ```
 
 ### Agent Routing (Anti-Drift)
@@ -530,68 +541,141 @@ const config = optimizer.getOptimalConfig(agentCount);
 ### Testing & Validation
 `tdd-london-swarm`, `production-validator`
 
-## Agent Teams (Multi-Agent Coordination)
+## Agent Teams & Comms System
 
-Claude Code's experimental Agent Teams feature is fully integrated with Claude Flow for advanced multi-agent coordination.
+Agent Teams turns Claude Code into a multi-agent system where named agents communicate in real-time via `SendMessage`. The comms system is the primary coordination mechanism — agents talk to each other, not just to the lead.
 
-### Enabling Agent Teams
+### Architecture
 
-Agent Teams is automatically enabled when you run `npx claude-flow@v3alpha init`. The following is added to `.claude/settings.json`:
-
-```json
-{
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
-  "claudeFlow": {
-    "agentTeams": {
-      "enabled": true,
-      "teammateMode": "auto",
-      "taskListEnabled": true,
-      "mailboxEnabled": true
-    }
-  }
-}
+```
+Team Lead (you)
+  ├── SendMessage ←→ architect (named agent)
+  ├── SendMessage ←→ developer (named agent)
+  ├── SendMessage ←→ tester (named agent)
+  └── SendMessage ←→ reviewer (named agent)
+       ↕ agents can message each other by name
 ```
 
-### Agent Teams Components
+### Core Principle: Named Agents + SendMessage
 
-| Component | Tool | Purpose |
-|-----------|------|---------|
-| **Team Lead** | You (main Claude) | Coordinates teammates, assigns tasks, reviews results |
-| **Teammates** | `Task` tool | Sub-agents spawned to work on specific tasks |
-| **Task List** | `TaskCreate/TaskList/TaskUpdate` | Shared todo list visible to all team members |
-| **Mailbox** | `SendMessage` | Inter-agent messaging for coordination |
-
-### Creating and Managing Teams
+Every agent MUST have a `name` so it's addressable. Communication happens via `SendMessage`, not polling or shared memory.
 
 ```javascript
-// Create a team
-TeamCreate({
-  team_name: "feature-dev",
-  description: "Building new feature",
-  agent_type: "coordinator"
-})
-
-// Create shared tasks
-TaskCreate({ subject: "Design API", description: "...", activeForm: "Designing" })
-TaskCreate({ subject: "Implement endpoints", description: "...", activeForm: "Implementing" })
-TaskCreate({ subject: "Write tests", description: "...", activeForm: "Testing" })
-
-// Spawn teammates (run in background for parallel work)
+// STEP 1: Spawn named agents (all in ONE message, background)
 Task({
-  prompt: "Design the API according to task #1...",
+  prompt: "Design the API. When done, send your design to 'developer' via SendMessage.",
   subagent_type: "system-architect",
-  team_name: "feature-dev",
   name: "architect",
   run_in_background: true
 })
 Task({
-  prompt: "Implement endpoints from task #2...",
+  prompt: "Wait for architect's design via SendMessage. Then implement it. Send code to 'tester'.",
   subagent_type: "coder",
-  team_name: "feature-dev",
   name: "developer",
   run_in_background: true
+})
+Task({
+  prompt: "Wait for developer's code via SendMessage. Write tests. Send results to 'reviewer'.",
+  subagent_type: "tester",
+  name: "tester",
+  run_in_background: true
+})
+
+// STEP 2: Kick off the pipeline by messaging the first agent
+SendMessage({
+  to: "architect",
+  summary: "Start API design",
+  message: "Design a REST API for user management with CRUD endpoints. Send the design to 'developer' when done."
+})
+```
+
+### SendMessage Protocol
+
+```javascript
+// Lead → Teammate: assign work
+SendMessage({ to: "developer", summary: "Implement auth", message: "Build OAuth2 flow..." })
+
+// Lead → Teammate: redirect priorities
+SendMessage({ to: "developer", summary: "Prioritize auth", message: "Auth endpoint is blocking tester, do it first." })
+
+// Lead → Teammate: provide context from another agent's results
+SendMessage({ to: "tester", summary: "Architect output", message: "The architect designed these endpoints: [details]. Write tests for them." })
+
+// Lead → Teammate: graceful shutdown
+SendMessage({ to: "developer", message: { type: "shutdown_request" } })
+```
+
+### Coordination Patterns
+
+**Pipeline (A → B → C)** — each agent messages the next when done:
+```
+architect ──SendMessage──→ developer ──SendMessage──→ tester ──SendMessage──→ reviewer
+```
+Tell each agent WHO to message next in their prompt.
+
+**Fan-out / Fan-in** — lead spawns parallel agents, collects results:
+```
+         ┌→ researcher-1 ──→┐
+lead ────┼→ researcher-2 ──→├──→ lead synthesizes
+         └→ researcher-3 ──→┘
+```
+Spawn with `run_in_background: true`. Results arrive as task completions.
+
+**Supervisor / Worker** — lead assigns, workers report back:
+```
+lead ←──SendMessage──→ worker-1
+lead ←──SendMessage──→ worker-2
+lead ←──SendMessage──→ worker-3
+```
+Lead sends tasks via SendMessage, workers respond with results.
+
+### Agent Prompt Template (Comms-Aware)
+
+When spawning agents that need to coordinate, include comms instructions:
+
+```javascript
+Task({
+  prompt: `You are the architect for this feature team.
+
+YOUR TASK: Design the database schema for user management.
+
+COMMS PROTOCOL:
+- When your design is ready, send it to "developer" via SendMessage
+- If you need clarification, message the team lead (just output text)
+- Include file paths and key decisions in your message
+
+DELIVERABLE: Schema design with entity relationships, indexes, and migration plan.`,
+  subagent_type: "system-architect",
+  name: "architect",
+  run_in_background: true
+})
+```
+
+### Full Team Spawn Example
+
+```javascript
+// Create shared task list first
+TaskCreate({ subject: "Design schema", description: "...", activeForm: "Designing" })
+TaskCreate({ subject: "Implement models", description: "...", activeForm: "Implementing" })
+TaskCreate({ subject: "Write tests", description: "...", activeForm: "Testing" })
+TaskCreate({ subject: "Security review", description: "...", activeForm: "Reviewing" })
+
+// Spawn ALL named agents in ONE message
+Task({
+  prompt: "Design the schema. SendMessage to 'developer' with your design when done. Update task #1.",
+  subagent_type: "system-architect", name: "architect", run_in_background: true
+})
+Task({
+  prompt: "Wait for schema from 'architect'. Implement models + endpoints. SendMessage to 'tester'. Update task #2.",
+  subagent_type: "coder", name: "developer", run_in_background: true
+})
+Task({
+  prompt: "Wait for code from 'developer'. Write integration tests. SendMessage results to 'security'. Update task #3.",
+  subagent_type: "tester", name: "tester", run_in_background: true
+})
+Task({
+  prompt: "Wait for test results from 'tester'. Review for vulnerabilities. Update task #4.",
+  subagent_type: "security-auditor", name: "security", run_in_background: true
 })
 ```
 
@@ -599,53 +683,23 @@ Task({
 
 | Hook | Trigger | Purpose |
 |------|---------|---------|
-| `TeammateIdle` | Teammate finishes turn | Auto-assign pending tasks to idle teammates |
-| `TaskCompleted` | Task marked complete | Train patterns from successful work, notify lead |
-
-### Hook Commands
+| `TeammateIdle` | Teammate finishes turn | Auto-assign pending tasks via SendMessage |
+| `TaskCompleted` | Task marked complete | Train patterns, notify lead via SendMessage |
 
 ```bash
-# Handle idle teammate (auto-assigns available tasks)
 npx claude-flow@v3alpha hooks teammate-idle --auto-assign true
-
-# Handle task completion (trains patterns, notifies lead)
 npx claude-flow@v3alpha hooks task-completed -i task-123 --train-patterns true
-
-# Check on team progress
-TaskList
-
-# Send message to teammate
-SendMessage({
-  type: "message",
-  recipient: "developer",
-  content: "Please prioritize the auth endpoint",
-  summary: "Prioritize auth"
-})
-
-# Shutdown teammate gracefully
-SendMessage({
-  type: "shutdown_request",
-  recipient: "developer",
-  content: "Work complete, shutting down"
-})
 ```
 
-### Best Practices for Agent Teams
+### Rules
 
-1. **Spawn teammates in background**: Use `run_in_background: true` for parallel work
-2. **Create tasks first**: Use TaskCreate before spawning teammates so they have work
-3. **Use descriptive names**: Name teammates by role (architect, developer, tester)
-4. **Don't poll status**: Wait for teammates to message back or complete
-5. **Graceful shutdown**: Always send shutdown_request before TeamDelete
-6. **Clean up**: Use TeamDelete after all teammates have shut down
-
-### Teammate Display Modes
-
-| Mode | Description |
-|------|-------------|
-| `auto` | Automatically selects best mode for environment |
-| `in-process` | Teammates run in same process (default for CI/background) |
-| `tmux` | Split-pane display in terminal (requires tmux) |
+1. **Always name agents** — use `name: "role-name"` so they're addressable
+2. **Comms over memory** — use SendMessage for real-time coordination, memory for persistence
+3. **Pipeline prompts** — tell each agent WHO to message next and WHAT to send
+4. **Spawn all at once** — all Task calls in ONE message with `run_in_background: true`
+5. **Don't poll** — agents message back when done; wait for task completion notifications
+6. **Graceful shutdown** — send `{ type: "shutdown_request" }` before TeamDelete
+7. **Lead synthesizes** — when agents complete, review ALL results before responding to user
 
 ## V3 Hooks System (17 Hooks + 12 Workers)
 

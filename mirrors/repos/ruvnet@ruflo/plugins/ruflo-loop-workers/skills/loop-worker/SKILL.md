@@ -1,6 +1,7 @@
 ---
 name: loop-worker
 description: Run Ruflo background workers using Claude Code native /loop scheduling
+argument-hint: "<worker-name>"
 allowed-tools: Bash(npx *) mcp__claude-flow__hooks_worker-dispatch mcp__claude-flow__hooks_worker-status ScheduleWakeup
 ---
 Use `/loop` for in-session periodic workers. Cache-aware delays keep prompt cache warm:

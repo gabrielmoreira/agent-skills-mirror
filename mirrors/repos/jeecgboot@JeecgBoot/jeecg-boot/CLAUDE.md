@@ -4,19 +4,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Paths
-
-| Project                       | Path                                                     |
-|-------------------------------|----------------------------------------------------------|
-| Frontend (Vue3 + TS + Vite)   | `E:\workspace-cc-jeecg\jeecgboot-vue3-2026`                |
-| Backend (Spring Boot 3.5.5)   | `E:\workspace-cc-jeecg\jeecg-boot-framework-2026` |
-| Base Starter (底层共通依赖)    | `E:\workspace-cc-jeecg\1jeecg-boot-starter-springboot3`             |
-| 底层针对poi封装的excel工具项目  | `E:\workspace-cc-jeecg\1autopoi-github`           |
-| Technical Docs (Docusaurus)   | `E:\workspace-cc-jeecg\jeecgboot_docus_site`           |
-
 ## Project Overview
 
-JeecgBoot 3.9.1 — a Java low-code development platform built on **Spring Boot 3.5.5**, **Java 17** (also supports 21, 24). It runs as a monolithic app by default, with an optional Spring Cloud microservices mode. Uses `jakarta` namespace (not `javax`) throughout.
+JeecgBoot 3.9.2 — a Java low-code development platform built on **Spring Boot 3.5.5**, **Java 17** (also supports 21, 24). It runs as a monolithic app by default, with an optional Spring Cloud microservices mode. Uses `jakarta` namespace (not `javax`) throughout.
 
 ## Build & Run Commands
 

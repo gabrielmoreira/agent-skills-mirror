@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # 检查 task_plan.md 中所有阶段是否完成
 # 始终以退出码 0 结束 — 使用标准输出报告状态
 # 由 Stop 钩子调用以报告任务完成状态

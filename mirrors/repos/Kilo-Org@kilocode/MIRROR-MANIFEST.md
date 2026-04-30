@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kilo-Org/kilocode` — 26 default patterns, 2 followed patterns, 16 file(s) materialized.
+Mirror of `Kilo-Org/kilocode` — 26 default patterns, 2 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kilo-Org/kilocode` — 26 default patterns, 2 followed patterns, 16 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,22 +60,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.kilocode/skills/vscode-visual-regression/SKILL.md`](.kilocode/skills/vscode-visual-regression/SKILL.md) |
-| 2 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
-| 5 | ✓ | [`packages/desktop-electron/AGENTS.md`](packages/desktop-electron/AGENTS.md) |
-| 6 | ✓ | [`packages/kilo-docs/AGENTS.md`](packages/kilo-docs/AGENTS.md) |
-| 7 | ✓ | [`packages/kilo-docs/pages/ai-providers/gemini.md`](packages/kilo-docs/pages/ai-providers/gemini.md) |
-| 8 | ✓ | [`packages/kilo-docs/pages/customize/skills.md`](packages/kilo-docs/pages/customize/skills.md) |
-| 9 | ✓ | [`packages/kilo-jetbrains/AGENTS.md`](packages/kilo-jetbrains/AGENTS.md) |
-| 10 | ✓ | [`packages/kilo-vscode/AGENTS.md`](packages/kilo-vscode/AGENTS.md) |
-| 11 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
-| 12 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
-| 13 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
-| 14 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
-| 15 | → | [`packages/kilo-docs/pages/contributing/architecture/config-schema.md`](packages/kilo-docs/pages/contributing/architecture/config-schema.md) |
-| 16 | → | [`TESTING.md`](TESTING.md) |
+| 1 | ✓ | [`.kilo/skills/jetbrains-ui-style/SKILL.md`](.kilo/skills/jetbrains-ui-style/SKILL.md) |
+| 2 | ✓ | [`.kilocode/skills/vscode-visual-regression/SKILL.md`](.kilocode/skills/vscode-visual-regression/SKILL.md) |
+| 3 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
+| 6 | ✓ | [`packages/desktop-electron/AGENTS.md`](packages/desktop-electron/AGENTS.md) |
+| 7 | ✓ | [`packages/kilo-docs/AGENTS.md`](packages/kilo-docs/AGENTS.md) |
+| 8 | ✓ | [`packages/kilo-docs/pages/ai-providers/gemini.md`](packages/kilo-docs/pages/ai-providers/gemini.md) |
+| 9 | ✓ | [`packages/kilo-docs/pages/customize/skills.md`](packages/kilo-docs/pages/customize/skills.md) |
+| 10 | ✓ | [`packages/kilo-jetbrains/AGENTS.md`](packages/kilo-jetbrains/AGENTS.md) |
+| 11 | ✓ | [`packages/kilo-vscode/AGENTS.md`](packages/kilo-vscode/AGENTS.md) |
+| 12 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
+| 13 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
+| 14 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
+| 15 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 16 | → | [`packages/kilo-docs/pages/contributing/architecture/config-schema.md`](packages/kilo-docs/pages/contributing/architecture/config-schema.md) |
+| 17 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

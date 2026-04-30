@@ -1,6 +1,7 @@
 ---
 name: git-workflow
 description: Advanced git workflows with branch management, conflict resolution, and PR lifecycle
+argument-hint: "<branch|pr|merge|rebase> [options]"
 allowed-tools: mcp__claude-flow__analyze_diff mcp__claude-flow__analyze_diff-risk mcp__claude-flow__analyze_diff-stats mcp__claude-flow__github_pr_manage mcp__claude-flow__github_repo_analyze mcp__claude-flow__github_metrics Bash
 ---
 

@@ -1,0 +1,14 @@
+---
+name: iot-anomalies
+description: Detect and classify telemetry anomalies on Cognitum Seed devices
+allowed-tools: Bash(npx *) mcp__claude-flow__memory_store Read
+argument-hint: "<device-id>"
+---
+Run Z-score anomaly detection on a device's recent telemetry.
+
+Steps:
+1. `npx @claude-flow/cli@latest iot anomalies DEVICE_ID`
+2. Review detected anomaly types (spike, flatline, drift, oscillation, pattern-break, cluster-outlier)
+3. If score > 0.9, recommend quarantine
+4. Store anomaly pattern for learning:
+   `mcp__claude-flow__memory_store({ key: "iot-anomaly-DEVICEID", value: "TYPE at SCORE", namespace: "iot-anomalies" })`

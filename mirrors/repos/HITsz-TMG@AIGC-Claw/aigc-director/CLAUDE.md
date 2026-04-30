@@ -54,7 +54,7 @@ Each agent handles one workflow stage:
 | VideoEditorAgent | editor_agent.py | post_production |
 
 ### Tool Clients
-External API integrations in `aigc-claw/backend/tool/`:
+External API integrations in `aigc-claw/backend/models/`:
 - **LLM clients**: llm_dashscope.py, llm_deepseek.py, llm_gpt.py, llm_gemini.py
 - **Image clients**: image_dashscope.py, image_client.py (Seedream, Jimeng, Wan)
 - **Video clients**: video_dashscope.py, video_kling.py (Wan, Kling)

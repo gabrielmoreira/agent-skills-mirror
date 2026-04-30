@@ -1,6 +1,6 @@
 ﻿---
 name: aigc-director
-description: AI 视频生成全流程：通过 6 个阶段（剧本→角色/场景设计→分镜→参考图→视频生成→后期剪辑）将用户想法转化为完整视频。支持临时工作台（单独调用 LLM、VLM、文生图、图生图、视频生成）。触发词：视频生成、AI视频、AIGC、创作视频、制作视频、AI画图。
+description: AI 视频生成全流程：通过 6 个阶段（剧本→角色/场景设计→分镜→参考图→视频生成→后期剪辑）将用户想法转化为完整视频。支持临时工作台（单独调用 LLM、VLM、文生图、图生图、视频生成）和一次性短流程 Pipeline（静态短视频、动作迁移、数字人口播）。触发词：视频生成、AI视频、AIGC、创作视频、制作视频、AI画图、静态短视频、动作迁移、数字人口播。
 license: MIT License
 metadata:
   author: Lychee
@@ -29,15 +29,22 @@ metadata:
 aigc-director/                    ← OpenClaw 调用的 skill 根目录
 ├── aigc-claw/                    ← 前后端项目代码
 │   ├── backend/                  ← FastAPI 后端（端口 8000）
-│   │   └── code/result/          ← 模型生成产物存放目录
-│   │            ├── image/       ← 图片产物（角色、场景、参考图）
-│   │            └── video/       ← 视频产物
+│   │   ├── api/                  ← API 路由、Schema 和服务
+│   │   ├── models/               ← 模型注册、能力标签和模型调用客户端
+│   │   ├── pipelines/            ← 一次性短流程 Pipeline
+│   │   └── code/                 ← 数据与生成产物
+│   │       ├── data/tasks/       ← Pipeline 任务元数据：<task_id>.json
+│   │       └── result/
+│   │           ├── image/        ← 主流程图片产物
+│   │           ├── video/        ← 主流程视频产物
+│   │           └── task/         ← Pipeline 产物：<task_id>/
 │   └── frontend/                 ← Next.js 前端（端口 3000）
 ├── references/                   ← OpenClaw 调用时的参考文档
 │   ├── init_project/             ← 项目初始化
 │   ├── run_project/              ← 服务启动
 │   ├── workflow/                 ← 六阶段工作流 API
 │   ├── sandbox/                  ← 临时工作台 API
+│   ├── pipelines/                ← 一次性短流程 Pipeline API
 │   └── send_message/             ← 消息发送
 └── SKILL.md                      ← skill 正文
 ```
@@ -46,6 +53,9 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 > - `script/` - 剧本产物
 > - `image/` - 图片产物（角色、场景、参考图）
 > - `video/` - 视频产物
+> - `task/<task_id>/` - Pipeline 产物（静态短视频、动作迁移、数字人口播）
+>
+> **Pipeline 元数据目录**：`aigc-claw/backend/code/data/tasks/<task_id>.json`
 
 ---
 
@@ -85,7 +95,10 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 | 用户说 | 处理 |
 |--------|------|
 | "生成图片" | 临时工作台 (sandbox) |
-| "生成视频" | 必须先询问：长视频(工作流) 还是 短视频(工作台)？ |
+| "生成视频" | 必须先询问：长视频(六阶段工作流)、静态短视频、动作迁移、数字人口播，还是临时工作台视频？ |
+| "静态短视频" / "图文短视频" / "旁白配图视频" | Pipeline：静态短视频，参考 `references/pipelines/static_short_video.md` |
+| "动作迁移" / "把动作迁到人物上" | Pipeline：动作迁移，参考 `references/pipelines/action_transfer.md` |
+| "数字人口播" / "口播视频" / "商品口播" | Pipeline：数字人口播，参考 `references/pipelines/digital_human.md` |
 | "分析图片" | 临时工作台 (sandbox) |
 | "问 LLM 问题" | 临时工作台 (sandbox) |
 | "照片转动漫" | 临时工作台 (sandbox) |
@@ -107,6 +120,24 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 ```
 
 > **注意**：一定要参考 `references/` 目录下的具体文档执行每一步操作，不要凭记忆或想当然去调用 API！
+
+### 4. 执行一次性 Pipeline
+
+当用户明确选择静态短视频、动作迁移或数字人口播时，不走六阶段停点流程，而是创建 Pipeline 任务：
+
+```
+1. 检查后端运行状态
+2. 检查前端运行状态
+3. 检查 API Key 配置
+4. 根据用户目标选择 pipeline 文档
+5. 必要时上传媒体文件
+6. POST /api/pipelines/{pipeline}/tasks 创建任务
+7. 通过 /api/tasks/{task_id}/events 订阅进度
+8. 任务完成后查询 /api/tasks/{task_id}
+9. 发送 final 视频和必要中间产物给用户
+```
+
+> **Pipeline 特点**：一次输入、后台执行、中间无需人工介入；任务状态只显示进度和产物，不显示日志。
 
 #### 检查 API Key 配置
 
@@ -272,6 +303,11 @@ send_to_user(f"📊 查看详情：{frontend_url}")
 | [generate_image_t2i.md](references/sandbox/generate_image_t2i.md) | 文生图 API | 用户要求生成图片时 |
 | [generate_image_it2i.md](references/sandbox/generate_image_it2i.md) | 图生图/风格转换 API | 用户要求转换图片风格时 |
 | [generate_video.md](references/sandbox/generate_video.md) | 短视频生成 API | 用户要求生成15秒内视频时 |
+| **pipelines/** | 一次性短流程 Pipeline | |
+| [overview.md](references/pipelines/overview.md) | Pipeline 总览、任务状态、模型能力筛选 | 用户选择任一 Pipeline 时先读 |
+| [static_short_video.md](references/pipelines/static_short_video.md) | 静态短视频 Pipeline | 用户要求静态短视频/旁白配图短视频时 |
+| [action_transfer.md](references/pipelines/action_transfer.md) | 动作迁移 Pipeline | 用户要求动作迁移时 |
+| [digital_human.md](references/pipelines/digital_human.md) | 数字人口播 Pipeline | 用户要求数字人口播/口播视频时 |
 | **send_message/** | 消息发送 | |
 | [feishu.md](references/send_message/feishu.md) | 飞书发送媒体文件 | 用户通过飞书渠道发起对话，并且需要向用户发送图片/视频给用户时 |
 | [wechat.md](references/send_message/wechat.md) | 微信发送媒体文件 | 用户通过微信渠道发起对话，并且需要向用户发送图片/视频给用户时 |

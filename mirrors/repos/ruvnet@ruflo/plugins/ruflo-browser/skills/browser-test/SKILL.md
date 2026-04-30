@@ -1,6 +1,7 @@
 ---
 name: browser-test
 description: Automated browser testing with Playwright -- navigate, interact, screenshot, and validate UI
+argument-hint: "<url> [--screenshot]"
 allowed-tools: mcp__claude-flow__browser_open mcp__claude-flow__browser_click mcp__claude-flow__browser_fill mcp__claude-flow__browser_type mcp__claude-flow__browser_press mcp__claude-flow__browser_check mcp__claude-flow__browser_uncheck mcp__claude-flow__browser_select mcp__claude-flow__browser_hover mcp__claude-flow__browser_wait mcp__claude-flow__browser_screenshot mcp__claude-flow__browser_snapshot mcp__claude-flow__browser_get-text mcp__claude-flow__browser_get-title mcp__claude-flow__browser_get-url mcp__claude-flow__browser_get-value mcp__claude-flow__browser_eval mcp__claude-flow__browser_close mcp__claude-flow__browser_session-list Bash
 ---
 

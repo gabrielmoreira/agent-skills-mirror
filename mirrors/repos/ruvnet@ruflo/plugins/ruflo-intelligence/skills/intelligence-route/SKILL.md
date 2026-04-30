@@ -1,6 +1,7 @@
 ---
 name: intelligence-route
 description: Route tasks to optimal agents using learned patterns, model recommendations, and confidence scoring
+argument-hint: "<task-description>"
 allowed-tools: mcp__claude-flow__hooks_route mcp__claude-flow__hooks_model-route mcp__claude-flow__hooks_model-stats mcp__claude-flow__hooks_model-outcome mcp__claude-flow__hooks_intelligence_pattern-search mcp__claude-flow__hooks_intelligence_attention mcp__claude-flow__hooks_intelligence_stats mcp__claude-flow__neural_predict mcp__claude-flow__hooks_pre-task Bash
 ---
 

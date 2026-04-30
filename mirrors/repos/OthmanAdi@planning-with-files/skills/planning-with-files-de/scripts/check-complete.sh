@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Prüft, ob alle Phasen in task_plan.md abgeschlossen sind
 # Immer mit Exit-Code 0 beenden — Status über stdout melden
 # Wird vom Stop-Hook aufgerufen, um Aufgabenabschlussstatus zu melden

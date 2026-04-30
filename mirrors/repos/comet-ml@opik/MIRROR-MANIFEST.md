@@ -68,7 +68,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/commands/comet/address-github-pr-comments.md`](.agents/commands/comet/address-github-pr-comments.md) |
 | 8 | ✓ | [`.agents/commands/comet/analyze-sentry-issue.md`](.agents/commands/comet/analyze-sentry-issue.md) |
 | 9 | ✓ | [`.agents/commands/comet/create-and-run-tests.md`](.agents/commands/comet/create-and-run-tests.md) |
-| 10 | ✓ | [`.agents/commands/comet/create-initiative-ticket.md`](.agents/commands/comet/create-initiative-ticket.md) |
+| 10 | ✓ | [`.agents/commands/comet/create-initiative-epic.md`](.agents/commands/comet/create-initiative-epic.md) |
 | 11 | ✓ | [`.agents/commands/comet/create-jira-ticket.md`](.agents/commands/comet/create-jira-ticket.md) |
 | 12 | ✓ | [`.agents/commands/comet/create-pr.md`](.agents/commands/comet/create-pr.md) |
 | 13 | ✓ | [`.agents/commands/comet/generate-code-review-slack-command.md`](.agents/commands/comet/generate-code-review-slack-command.md) |

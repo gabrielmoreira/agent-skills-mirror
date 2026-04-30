@@ -59,6 +59,8 @@ Generate or edit provider-backed images from non-English or mixed-language reque
 - **Optimization pipeline**: `references/optimization-pipeline.md` — read when optimizing prompts
 - **Template format spec**: `references/template-format-spec.md` — detailed field definitions, repo structure, sample requirements
 - **Template validator**: `python3 {baseDir}/scripts/validate_templates.py` — validates bundled/user template metadata for schema v1/v2 compatibility
+- **Mode detector**: `python3 {baseDir}/scripts/bananahub.py check-mode` — reports provider-backed / host-native / prompt-only execution mode and capability layer boundaries
+- **Prompt archive**: current working directory `bananahub-prompts/` when `--save-prompt`, `--prompt-output`, or `BANANAHUB_SAVE_PROMPTS=1` is used
 - **API config** (priority high→low):
   1. `--config <file>` CLI flag
   2. Environment variables (`GOOGLE_API_KEY`, `GEMINI_API_KEY`, `BANANAHUB_PROVIDER`, `BANANAHUB_AUTH_MODE`, `BANANAHUB_MODEL`, `GOOGLE_GEMINI_BASE_URL`, `GEMINI_BASE_URL`, `BANANAHUB_BASE_URL`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`)
@@ -100,6 +102,24 @@ Before executing any command other than `help`, check if the environment is read
    - `gemini-compatible`: if the user pastes a URL ending in `/v1beta`, keep it conceptually but normalize the trailing version during runtime so it is not duplicated
    - `openai-compatible`: if the user pastes a bare host, the runtime may append `/v1`; for Google's official endpoint, resolve it to `/v1beta/openai`
 
+## Runtime Mode Layers
+
+Run `python3 {baseDir}/scripts/bananahub.py check-mode --pretty` when the execution path is unclear. BananaHub has three execution modes:
+
+| Mode | Trigger | Behavior |
+|---|---|---|
+| `provider-backed` | Config validates for a supported provider | Optimize/render prompt, call `generate` or `edit`, and save image outputs |
+| `host-native` | Provider config is missing or incomplete, but `BANANAHUB_HOST_IMAGEGEN=1` or the caller explicitly has a native image tool | Optimize/render prompt, optionally archive it, then hand it to the host image tool instead of calling the provider script |
+| `prompt-only` | No valid provider and no host image tool | Act as a prompt/template advisor: return the final prompt and archive it when requested; do not claim image generation succeeded |
+
+Capability ownership is layered:
+
+- **Cross-model skill layer**: prompt optimization, translation policy, conservative enhancement, `--direct`, `--raw`, prompt archiving, template discovery/activation, host-native delegation, and prompt-only advisory output.
+- **Template layer**: matching and activation are common, but provider/model compatibility, prompt variants, tested quality, and samples belong to template metadata.
+- **Provider/model layer**: image edit, mask edit, multi-reference, exact size, native quality, transparent background, output format/compression, and fallback are not universal; route them through `references/capability-registry.md`, `references/model-registry.json`, and provider adapters.
+
+If a feature changes request payload shape, file validation, cost, policy behavior, or output parsing, do not treat it as cross-model even if several providers happen to support similar wording.
+
 ## Command Routing
 
 Route user input to the appropriate action based on arguments:
@@ -113,6 +133,7 @@ Route user input to the appropriate action based on arguments:
 | `optimize <description>` | Optimize prompt only; display result without generating |
 | `generate <English prompt>` | Generate image directly with given English prompt (skip optimization) |
 | `models` | Run `python3 {baseDir}/scripts/bananahub.py models` to query image-capable models from API |
+| `check-mode` | Run `python3 {baseDir}/scripts/bananahub.py check-mode --pretty` to inspect provider-backed / host-native / prompt-only mode and capability layers |
 | `templates` | Read `references/template-system.md`, then list all templates grouped by profile and type |
 | `templates <name>` | Read `references/template-system.md`, parse frontmatter `type`, then show prompt-template or workflow-template details accordingly |
 | `use <template-id> [custom description]` | Read `references/template-system.md`, parse frontmatter `type`, then either generate from a prompt template or activate a workflow template |
@@ -139,6 +160,8 @@ Optional flags (append to any generation command):
 - `--resize <WxH>` — post-process resize after generation/edit (e.g., `1024x1024`)
 - `--size <value>` — legacy compatibility flag; `1K/2K/4K` means native image size, `WxH` means post-process resize
 - `--output <path>` — specify output path
+- `--save-prompt` — archive the final prompt under `bananahub-prompts/`
+- `--prompt-output <path>` — archive the final prompt to a specific file or directory
 - `--input <path>` — source image for edit commands
 - `--ref <path> [path...]` — reference images for edit commands (Gemini up to 13 refs; OpenAI provider enforces its own lower runtime limit)
 - `--mask <path>` — OpenAI-native mask image for masked edits
@@ -244,16 +267,16 @@ Multi-image use cases: style transfer, character consistency, multi-image blendi
 Read `references/template-system.md` for the full template system. Overview:
 
 - **Search paths**: built-in (`references/templates/`) + user-installed (`~/.config/bananahub/templates/`)
-- **Local vs remote**: `templates` / `use` operate on installed templates; `discover` operates on BananaHub catalog and installs only on demand
+- **Local vs remote**: `templates` / `use` operate on installed templates; `discover` operates on BananaHub catalog, including the official `bananahub-ai/templates` library, and installs only on demand
 - **Format**: `template.md` with YAML frontmatter and `type: prompt | workflow`
 - **Prompt templates**: produce a reusable prompt with variables, then generate or edit
 - **Workflow templates**: act as progressive-disclosure context; load the workflow, ask only for missing blockers, and execute step-by-step with `generate` / `edit` primitives when needed
 - **Model transparency**: when a template or heuristic selects `gpt-image-2` or Gemini/Nano Banana automatically, state that recommendation explicitly instead of hiding the model choice
-- **Built-in workflow example**: `consistent-character-storyboard` for character-consistency storyboard exploration
+- **Built-in starter examples**: `info-diagram` for one-page infographics, `article-one-page-summary` for article explainers, `background-replace-edit` for edit workflows
 - **Commands**: `templates` (list installed), `templates <name>` (details), `use <id> [desc]` (activate), `discover <need>` (search hub), `create-template` (create)
 - **Auto-matching**: Phase 2.1 suggests installed templates first; Phase 2.2 can search BananaHub when local coverage is weak
 - **Adoption telemetry**: when a template is selected, call `python3 {baseDir}/scripts/bananahub.py telemetry track --event selected ...`; when template-driven `generate`/`edit` succeeds, pass template telemetry flags so the script can report `generate_success` / `edit_success`
-- **Install more**: prefer `discover` inside the skill, or run `npx bananahub add <user/repo>` directly when the install target is already known
+- **Install more**: prefer `discover` inside the skill; official rich templates install from `bananahub-ai/templates`, and known targets can still be installed with `npx bananahub add <user/repo[/template]>`
 - **Publishing rule**: when creating templates, save samples as `sample-{model-short}-{nn}.png` and make README list verified models, supported models, and sample-to-prompt mappings
 
 ## Safety Rules

@@ -6,6 +6,8 @@ Keep changes narrow, evidence-backed, and automation-safe.
 ## Structure
 
 - Main code: `src/clawsweeper.ts`.
+- Repair lane code: `src/repair/`; durable repair jobs/results: `jobs/`,
+  `results/`; repair dashboard: `docs/repair/README.md`.
 - Tests: `test/clawsweeper.test.mjs`.
 - Workflow: `.github/workflows/sweep.yml`.
 - Dashboard and explainer: `README.md`.

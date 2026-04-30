@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `prompt-security/clawsec` — 26 default patterns, 11 followed patterns, 209 file(s) materialized.
+Mirror of `prompt-security/clawsec` — 26 default patterns, 22 followed patterns, 309 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `prompt-security/clawsec` — 26 default patterns, 11 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 209 |
+| Followed pats | 22 |
+| Files         | 309 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,17 @@ Mirror of `prompt-security/clawsec` — 26 default patterns, 11 followed pattern
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
+- `README.de.md`
+- `README.es.md`
+- `README.fr.md`
+- `README.ja.md`
+- `README.ko.md`
+- `wiki/de/INDEX.md`
+- `wiki/es/INDEX.md`
+- `wiki/fr/INDEX.md`
+- `wiki/ja/INDEX.md`
+- `wiki/ko/INDEX.md`
+- `wiki/INDEX.md`
 - `wiki/modules/nanoclaw-integration.md`
 - `wiki/modules/hermes-attestation-guardian.md`
 - `wiki/modules/picoclaw-security-guardian.md`
@@ -267,17 +278,117 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 196 | ✓ | [`skills/soul-guardian/scripts/test_soul_guardian.py`](skills/soul-guardian/scripts/test_soul_guardian.py) |
 | 197 | ✓ | [`skills/soul-guardian/skill.json`](skills/soul-guardian/skill.json) |
 | 198 | ✓ | [`skills/soul-guardian/SKILL.md`](skills/soul-guardian/SKILL.md) |
-| 199 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 200 | → | [`font/README.md`](font/README.md) |
-| 201 | → | [`README.md`](README.md) |
-| 202 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
-| 203 | → | [`wiki/modules/automation-release.md`](wiki/modules/automation-release.md) |
-| 204 | → | [`wiki/modules/clawsec-suite.md`](wiki/modules/clawsec-suite.md) |
-| 205 | → | [`wiki/modules/hermes-attestation-guardian.md`](wiki/modules/hermes-attestation-guardian.md) |
-| 206 | → | [`wiki/modules/nanoclaw-integration.md`](wiki/modules/nanoclaw-integration.md) |
-| 207 | → | [`wiki/modules/picoclaw-security-guardian.md`](wiki/modules/picoclaw-security-guardian.md) |
-| 208 | → | [`wiki/modules/picoclaw-self-pen-testing.md`](wiki/modules/picoclaw-self-pen-testing.md) |
-| 209 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
+| 199 | ✓ | [`wiki/architecture.md`](wiki/architecture.md) |
+| 200 | ✓ | [`wiki/configuration.md`](wiki/configuration.md) |
+| 201 | ✓ | [`wiki/data-flow.md`](wiki/data-flow.md) |
+| 202 | ✓ | [`wiki/de/architecture.md`](wiki/de/architecture.md) |
+| 203 | ✓ | [`wiki/de/configuration.md`](wiki/de/configuration.md) |
+| 204 | ✓ | [`wiki/de/data-flow.md`](wiki/de/data-flow.md) |
+| 205 | ✓ | [`wiki/de/dependencies.md`](wiki/de/dependencies.md) |
+| 206 | ✓ | [`wiki/de/GENERATION.md`](wiki/de/GENERATION.md) |
+| 207 | ✓ | [`wiki/de/glossary.md`](wiki/de/glossary.md) |
+| 208 | ✓ | [`wiki/de/localization.md`](wiki/de/localization.md) |
+| 209 | ✓ | [`wiki/de/migration-signed-feed.md`](wiki/de/migration-signed-feed.md) |
+| 210 | ✓ | [`wiki/de/overview.md`](wiki/de/overview.md) |
+| 211 | ✓ | [`wiki/de/platform-verification.md`](wiki/de/platform-verification.md) |
+| 212 | ✓ | [`wiki/de/remediation-plan.md`](wiki/de/remediation-plan.md) |
+| 213 | ✓ | [`wiki/de/security-signing-runbook.md`](wiki/de/security-signing-runbook.md) |
+| 214 | ✓ | [`wiki/de/security.md`](wiki/de/security.md) |
+| 215 | ✓ | [`wiki/de/testing.md`](wiki/de/testing.md) |
+| 216 | ✓ | [`wiki/de/workflow.md`](wiki/de/workflow.md) |
+| 217 | ✓ | [`wiki/dependencies.md`](wiki/dependencies.md) |
+| 218 | ✓ | [`wiki/es/architecture.md`](wiki/es/architecture.md) |
+| 219 | ✓ | [`wiki/es/configuration.md`](wiki/es/configuration.md) |
+| 220 | ✓ | [`wiki/es/data-flow.md`](wiki/es/data-flow.md) |
+| 221 | ✓ | [`wiki/es/dependencies.md`](wiki/es/dependencies.md) |
+| 222 | ✓ | [`wiki/es/GENERATION.md`](wiki/es/GENERATION.md) |
+| 223 | ✓ | [`wiki/es/glossary.md`](wiki/es/glossary.md) |
+| 224 | ✓ | [`wiki/es/localization.md`](wiki/es/localization.md) |
+| 225 | ✓ | [`wiki/es/migration-signed-feed.md`](wiki/es/migration-signed-feed.md) |
+| 226 | ✓ | [`wiki/es/overview.md`](wiki/es/overview.md) |
+| 227 | ✓ | [`wiki/es/platform-verification.md`](wiki/es/platform-verification.md) |
+| 228 | ✓ | [`wiki/es/remediation-plan.md`](wiki/es/remediation-plan.md) |
+| 229 | ✓ | [`wiki/es/security-signing-runbook.md`](wiki/es/security-signing-runbook.md) |
+| 230 | ✓ | [`wiki/es/security.md`](wiki/es/security.md) |
+| 231 | ✓ | [`wiki/es/testing.md`](wiki/es/testing.md) |
+| 232 | ✓ | [`wiki/es/workflow.md`](wiki/es/workflow.md) |
+| 233 | ✓ | [`wiki/fr/architecture.md`](wiki/fr/architecture.md) |
+| 234 | ✓ | [`wiki/fr/configuration.md`](wiki/fr/configuration.md) |
+| 235 | ✓ | [`wiki/fr/data-flow.md`](wiki/fr/data-flow.md) |
+| 236 | ✓ | [`wiki/fr/dependencies.md`](wiki/fr/dependencies.md) |
+| 237 | ✓ | [`wiki/fr/GENERATION.md`](wiki/fr/GENERATION.md) |
+| 238 | ✓ | [`wiki/fr/glossary.md`](wiki/fr/glossary.md) |
+| 239 | ✓ | [`wiki/fr/localization.md`](wiki/fr/localization.md) |
+| 240 | ✓ | [`wiki/fr/migration-signed-feed.md`](wiki/fr/migration-signed-feed.md) |
+| 241 | ✓ | [`wiki/fr/overview.md`](wiki/fr/overview.md) |
+| 242 | ✓ | [`wiki/fr/platform-verification.md`](wiki/fr/platform-verification.md) |
+| 243 | ✓ | [`wiki/fr/remediation-plan.md`](wiki/fr/remediation-plan.md) |
+| 244 | ✓ | [`wiki/fr/security-signing-runbook.md`](wiki/fr/security-signing-runbook.md) |
+| 245 | ✓ | [`wiki/fr/security.md`](wiki/fr/security.md) |
+| 246 | ✓ | [`wiki/fr/testing.md`](wiki/fr/testing.md) |
+| 247 | ✓ | [`wiki/fr/workflow.md`](wiki/fr/workflow.md) |
+| 248 | ✓ | [`wiki/GENERATION.md`](wiki/GENERATION.md) |
+| 249 | ✓ | [`wiki/glossary.md`](wiki/glossary.md) |
+| 250 | ✓ | [`wiki/i18n/README.md`](wiki/i18n/README.md) |
+| 251 | ✓ | [`wiki/ja/architecture.md`](wiki/ja/architecture.md) |
+| 252 | ✓ | [`wiki/ja/configuration.md`](wiki/ja/configuration.md) |
+| 253 | ✓ | [`wiki/ja/data-flow.md`](wiki/ja/data-flow.md) |
+| 254 | ✓ | [`wiki/ja/dependencies.md`](wiki/ja/dependencies.md) |
+| 255 | ✓ | [`wiki/ja/GENERATION.md`](wiki/ja/GENERATION.md) |
+| 256 | ✓ | [`wiki/ja/glossary.md`](wiki/ja/glossary.md) |
+| 257 | ✓ | [`wiki/ja/localization.md`](wiki/ja/localization.md) |
+| 258 | ✓ | [`wiki/ja/migration-signed-feed.md`](wiki/ja/migration-signed-feed.md) |
+| 259 | ✓ | [`wiki/ja/overview.md`](wiki/ja/overview.md) |
+| 260 | ✓ | [`wiki/ja/platform-verification.md`](wiki/ja/platform-verification.md) |
+| 261 | ✓ | [`wiki/ja/remediation-plan.md`](wiki/ja/remediation-plan.md) |
+| 262 | ✓ | [`wiki/ja/security-signing-runbook.md`](wiki/ja/security-signing-runbook.md) |
+| 263 | ✓ | [`wiki/ja/security.md`](wiki/ja/security.md) |
+| 264 | ✓ | [`wiki/ja/testing.md`](wiki/ja/testing.md) |
+| 265 | ✓ | [`wiki/ja/workflow.md`](wiki/ja/workflow.md) |
+| 266 | ✓ | [`wiki/ko/architecture.md`](wiki/ko/architecture.md) |
+| 267 | ✓ | [`wiki/ko/configuration.md`](wiki/ko/configuration.md) |
+| 268 | ✓ | [`wiki/ko/data-flow.md`](wiki/ko/data-flow.md) |
+| 269 | ✓ | [`wiki/ko/dependencies.md`](wiki/ko/dependencies.md) |
+| 270 | ✓ | [`wiki/ko/GENERATION.md`](wiki/ko/GENERATION.md) |
+| 271 | ✓ | [`wiki/ko/glossary.md`](wiki/ko/glossary.md) |
+| 272 | ✓ | [`wiki/ko/localization.md`](wiki/ko/localization.md) |
+| 273 | ✓ | [`wiki/ko/migration-signed-feed.md`](wiki/ko/migration-signed-feed.md) |
+| 274 | ✓ | [`wiki/ko/overview.md`](wiki/ko/overview.md) |
+| 275 | ✓ | [`wiki/ko/platform-verification.md`](wiki/ko/platform-verification.md) |
+| 276 | ✓ | [`wiki/ko/remediation-plan.md`](wiki/ko/remediation-plan.md) |
+| 277 | ✓ | [`wiki/ko/security-signing-runbook.md`](wiki/ko/security-signing-runbook.md) |
+| 278 | ✓ | [`wiki/ko/security.md`](wiki/ko/security.md) |
+| 279 | ✓ | [`wiki/ko/testing.md`](wiki/ko/testing.md) |
+| 280 | ✓ | [`wiki/ko/workflow.md`](wiki/ko/workflow.md) |
+| 281 | ✓ | [`wiki/localization.md`](wiki/localization.md) |
+| 282 | ✓ | [`wiki/overview.md`](wiki/overview.md) |
+| 283 | ✓ | [`wiki/platform-verification.md`](wiki/platform-verification.md) |
+| 284 | ✓ | [`wiki/remediation-plan.md`](wiki/remediation-plan.md) |
+| 285 | ✓ | [`wiki/security.md`](wiki/security.md) |
+| 286 | ✓ | [`wiki/testing.md`](wiki/testing.md) |
+| 287 | ✓ | [`wiki/workflow.md`](wiki/workflow.md) |
+| 288 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 289 | → | [`font/README.md`](font/README.md) |
+| 290 | → | [`README.de.md`](README.de.md) |
+| 291 | → | [`README.es.md`](README.es.md) |
+| 292 | → | [`README.fr.md`](README.fr.md) |
+| 293 | → | [`README.ja.md`](README.ja.md) |
+| 294 | → | [`README.ko.md`](README.ko.md) |
+| 295 | → | [`README.md`](README.md) |
+| 296 | → | [`wiki/de/INDEX.md`](wiki/de/INDEX.md) |
+| 297 | → | [`wiki/es/INDEX.md`](wiki/es/INDEX.md) |
+| 298 | → | [`wiki/fr/INDEX.md`](wiki/fr/INDEX.md) |
+| 299 | → | [`wiki/INDEX.md`](wiki/INDEX.md) |
+| 300 | → | [`wiki/ja/INDEX.md`](wiki/ja/INDEX.md) |
+| 301 | → | [`wiki/ko/INDEX.md`](wiki/ko/INDEX.md) |
+| 302 | → | [`wiki/migration-signed-feed.md`](wiki/migration-signed-feed.md) |
+| 303 | → | [`wiki/modules/automation-release.md`](wiki/modules/automation-release.md) |
+| 304 | → | [`wiki/modules/clawsec-suite.md`](wiki/modules/clawsec-suite.md) |
+| 305 | → | [`wiki/modules/hermes-attestation-guardian.md`](wiki/modules/hermes-attestation-guardian.md) |
+| 306 | → | [`wiki/modules/nanoclaw-integration.md`](wiki/modules/nanoclaw-integration.md) |
+| 307 | → | [`wiki/modules/picoclaw-security-guardian.md`](wiki/modules/picoclaw-security-guardian.md) |
+| 308 | → | [`wiki/modules/picoclaw-self-pen-testing.md`](wiki/modules/picoclaw-self-pen-testing.md) |
+| 309 | → | [`wiki/security-signing-runbook.md`](wiki/security-signing-runbook.md) |
 
 ---
 

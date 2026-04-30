@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 104 file(s) materialized.
+Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/CLI-Anything` — 26 default patterns, 0 followed patterns, 104
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 104 |
+| Files         | 108 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,70 +99,74 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`openscreen/agent-harness/cli_anything/openscreen/skills/SKILL.md`](openscreen/agent-harness/cli_anything/openscreen/skills/SKILL.md) |
 | 39 | ✓ | [`pm2/agent-harness/cli_anything/pm2/skills/SKILL.md`](pm2/agent-harness/cli_anything/pm2/skills/SKILL.md) |
 | 40 | ✓ | [`QGIS/agent-harness/cli_anything/qgis/skills/SKILL.md`](QGIS/agent-harness/cli_anything/qgis/skills/SKILL.md) |
-| 41 | ✓ | [`renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md`](renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md) |
-| 42 | ✓ | [`rms/agent-harness/cli_anything/rms/skills/SKILL.md`](rms/agent-harness/cli_anything/rms/skills/SKILL.md) |
-| 43 | ✓ | [`safari/agent-harness/cli_anything/safari/skills/SKILL.md`](safari/agent-harness/cli_anything/safari/skills/SKILL.md) |
-| 44 | ✓ | [`seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md`](seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md) |
-| 45 | ✓ | [`shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md`](shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md) |
-| 46 | ✓ | [`skills/cli-anything-adguardhome/SKILL.md`](skills/cli-anything-adguardhome/SKILL.md) |
-| 47 | ✓ | [`skills/cli-anything-anygen/SKILL.md`](skills/cli-anything-anygen/SKILL.md) |
-| 48 | ✓ | [`skills/cli-anything-audacity/SKILL.md`](skills/cli-anything-audacity/SKILL.md) |
-| 49 | ✓ | [`skills/cli-anything-blender/SKILL.md`](skills/cli-anything-blender/SKILL.md) |
-| 50 | ✓ | [`skills/cli-anything-browser/SKILL.md`](skills/cli-anything-browser/SKILL.md) |
-| 51 | ✓ | [`skills/cli-anything-chromadb/SKILL.md`](skills/cli-anything-chromadb/SKILL.md) |
-| 52 | ✓ | [`skills/cli-anything-cloudanalyzer/SKILL.md`](skills/cli-anything-cloudanalyzer/SKILL.md) |
-| 53 | ✓ | [`skills/cli-anything-cloudcompare/SKILL.md`](skills/cli-anything-cloudcompare/SKILL.md) |
-| 54 | ✓ | [`skills/cli-anything-comfyui/SKILL.md`](skills/cli-anything-comfyui/SKILL.md) |
-| 55 | ✓ | [`skills/cli-anything-dify-workflow/SKILL.md`](skills/cli-anything-dify-workflow/SKILL.md) |
-| 56 | ✓ | [`skills/cli-anything-drawio/SKILL.md`](skills/cli-anything-drawio/SKILL.md) |
-| 57 | ✓ | [`skills/cli-anything-eth2-quickstart/SKILL.md`](skills/cli-anything-eth2-quickstart/SKILL.md) |
-| 58 | ✓ | [`skills/cli-anything-exa/SKILL.md`](skills/cli-anything-exa/SKILL.md) |
-| 59 | ✓ | [`skills/cli-anything-freecad/SKILL.md`](skills/cli-anything-freecad/SKILL.md) |
-| 60 | ✓ | [`skills/cli-anything-gimp/SKILL.md`](skills/cli-anything-gimp/SKILL.md) |
-| 61 | ✓ | [`skills/cli-anything-godot/SKILL.md`](skills/cli-anything-godot/SKILL.md) |
-| 62 | ✓ | [`skills/cli-anything-inkscape/SKILL.md`](skills/cli-anything-inkscape/SKILL.md) |
-| 63 | ✓ | [`skills/cli-anything-intelwatch/SKILL.md`](skills/cli-anything-intelwatch/SKILL.md) |
-| 64 | ✓ | [`skills/cli-anything-iterm2-ctl/SKILL.md`](skills/cli-anything-iterm2-ctl/SKILL.md) |
-| 65 | ✓ | [`skills/cli-anything-iterm2/SKILL.md`](skills/cli-anything-iterm2/SKILL.md) |
-| 66 | ✓ | [`skills/cli-anything-kdenlive/SKILL.md`](skills/cli-anything-kdenlive/SKILL.md) |
-| 67 | ✓ | [`skills/cli-anything-krita/SKILL.md`](skills/cli-anything-krita/SKILL.md) |
-| 68 | ✓ | [`skills/cli-anything-libreoffice/SKILL.md`](skills/cli-anything-libreoffice/SKILL.md) |
-| 69 | ✓ | [`skills/cli-anything-lldb/SKILL.md`](skills/cli-anything-lldb/SKILL.md) |
-| 70 | ✓ | [`skills/cli-anything-mermaid/SKILL.md`](skills/cli-anything-mermaid/SKILL.md) |
-| 71 | ✓ | [`skills/cli-anything-mubu/SKILL.md`](skills/cli-anything-mubu/SKILL.md) |
-| 72 | ✓ | [`skills/cli-anything-musescore/SKILL.md`](skills/cli-anything-musescore/SKILL.md) |
-| 73 | ✓ | [`skills/cli-anything-n8n/SKILL.md`](skills/cli-anything-n8n/SKILL.md) |
-| 74 | ✓ | [`skills/cli-anything-notebooklm/SKILL.md`](skills/cli-anything-notebooklm/SKILL.md) |
-| 75 | ✓ | [`skills/cli-anything-novita/SKILL.md`](skills/cli-anything-novita/SKILL.md) |
-| 76 | ✓ | [`skills/cli-anything-nsight-graphics/SKILL.md`](skills/cli-anything-nsight-graphics/SKILL.md) |
-| 77 | ✓ | [`skills/cli-anything-obs-studio/SKILL.md`](skills/cli-anything-obs-studio/SKILL.md) |
-| 78 | ✓ | [`skills/cli-anything-obsidian/SKILL.md`](skills/cli-anything-obsidian/SKILL.md) |
-| 79 | ✓ | [`skills/cli-anything-ollama/SKILL.md`](skills/cli-anything-ollama/SKILL.md) |
-| 80 | ✓ | [`skills/cli-anything-openclaw/SKILL.md`](skills/cli-anything-openclaw/SKILL.md) |
-| 81 | ✓ | [`skills/cli-anything-openscreen/SKILL.md`](skills/cli-anything-openscreen/SKILL.md) |
-| 82 | ✓ | [`skills/cli-anything-pm2/SKILL.md`](skills/cli-anything-pm2/SKILL.md) |
-| 83 | ✓ | [`skills/cli-anything-qgis/SKILL.md`](skills/cli-anything-qgis/SKILL.md) |
-| 84 | ✓ | [`skills/cli-anything-renderdoc/SKILL.md`](skills/cli-anything-renderdoc/SKILL.md) |
-| 85 | ✓ | [`skills/cli-anything-rms/SKILL.md`](skills/cli-anything-rms/SKILL.md) |
-| 86 | ✓ | [`skills/cli-anything-safari/SKILL.md`](skills/cli-anything-safari/SKILL.md) |
-| 87 | ✓ | [`skills/cli-anything-seaclip/SKILL.md`](skills/cli-anything-seaclip/SKILL.md) |
-| 88 | ✓ | [`skills/cli-anything-shotcut/SKILL.md`](skills/cli-anything-shotcut/SKILL.md) |
-| 89 | ✓ | [`skills/cli-anything-slay-the-spire-ii/SKILL.md`](skills/cli-anything-slay-the-spire-ii/SKILL.md) |
-| 90 | ✓ | [`skills/cli-anything-unimol-tools/SKILL.md`](skills/cli-anything-unimol-tools/SKILL.md) |
-| 91 | ✓ | [`skills/cli-anything-unrealinsights/SKILL.md`](skills/cli-anything-unrealinsights/SKILL.md) |
-| 92 | ✓ | [`skills/cli-anything-videocaptioner/SKILL.md`](skills/cli-anything-videocaptioner/SKILL.md) |
-| 93 | ✓ | [`skills/cli-anything-wiremock/SKILL.md`](skills/cli-anything-wiremock/SKILL.md) |
-| 94 | ✓ | [`skills/cli-anything-zoom/SKILL.md`](skills/cli-anything-zoom/SKILL.md) |
-| 95 | ✓ | [`skills/cli-anything-zotero/SKILL.md`](skills/cli-anything-zotero/SKILL.md) |
-| 96 | ✓ | [`skills/cli-hub-meta-skill/SKILL.md`](skills/cli-hub-meta-skill/SKILL.md) |
-| 97 | ✓ | [`skills/README.md`](skills/README.md) |
-| 98 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
-| 99 | ✓ | [`unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md`](unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md) |
-| 100 | ✓ | [`unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md`](unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md) |
-| 101 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
-| 102 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
-| 103 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
-| 104 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
+| 41 | ✓ | [`quietshrink/agent-harness/cli_anything/quietshrink/skills/SKILL.md`](quietshrink/agent-harness/cli_anything/quietshrink/skills/SKILL.md) |
+| 42 | ✓ | [`renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md`](renderdoc/agent-harness/cli_anything/renderdoc/skills/SKILL.md) |
+| 43 | ✓ | [`rms/agent-harness/cli_anything/rms/skills/SKILL.md`](rms/agent-harness/cli_anything/rms/skills/SKILL.md) |
+| 44 | ✓ | [`safari/agent-harness/cli_anything/safari/skills/SKILL.md`](safari/agent-harness/cli_anything/safari/skills/SKILL.md) |
+| 45 | ✓ | [`sbox/agent-harness/cli_anything/sbox/skills/SKILL.md`](sbox/agent-harness/cli_anything/sbox/skills/SKILL.md) |
+| 46 | ✓ | [`seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md`](seaclip/agent-harness/cli_anything/seaclip/skills/SKILL.md) |
+| 47 | ✓ | [`shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md`](shotcut/agent-harness/cli_anything/shotcut/skills/SKILL.md) |
+| 48 | ✓ | [`skills/cli-anything-adguardhome/SKILL.md`](skills/cli-anything-adguardhome/SKILL.md) |
+| 49 | ✓ | [`skills/cli-anything-anygen/SKILL.md`](skills/cli-anything-anygen/SKILL.md) |
+| 50 | ✓ | [`skills/cli-anything-audacity/SKILL.md`](skills/cli-anything-audacity/SKILL.md) |
+| 51 | ✓ | [`skills/cli-anything-blender/SKILL.md`](skills/cli-anything-blender/SKILL.md) |
+| 52 | ✓ | [`skills/cli-anything-browser/SKILL.md`](skills/cli-anything-browser/SKILL.md) |
+| 53 | ✓ | [`skills/cli-anything-chromadb/SKILL.md`](skills/cli-anything-chromadb/SKILL.md) |
+| 54 | ✓ | [`skills/cli-anything-cloudanalyzer/SKILL.md`](skills/cli-anything-cloudanalyzer/SKILL.md) |
+| 55 | ✓ | [`skills/cli-anything-cloudcompare/SKILL.md`](skills/cli-anything-cloudcompare/SKILL.md) |
+| 56 | ✓ | [`skills/cli-anything-comfyui/SKILL.md`](skills/cli-anything-comfyui/SKILL.md) |
+| 57 | ✓ | [`skills/cli-anything-dify-workflow/SKILL.md`](skills/cli-anything-dify-workflow/SKILL.md) |
+| 58 | ✓ | [`skills/cli-anything-drawio/SKILL.md`](skills/cli-anything-drawio/SKILL.md) |
+| 59 | ✓ | [`skills/cli-anything-eth2-quickstart/SKILL.md`](skills/cli-anything-eth2-quickstart/SKILL.md) |
+| 60 | ✓ | [`skills/cli-anything-exa/SKILL.md`](skills/cli-anything-exa/SKILL.md) |
+| 61 | ✓ | [`skills/cli-anything-freecad/SKILL.md`](skills/cli-anything-freecad/SKILL.md) |
+| 62 | ✓ | [`skills/cli-anything-gimp/SKILL.md`](skills/cli-anything-gimp/SKILL.md) |
+| 63 | ✓ | [`skills/cli-anything-godot/SKILL.md`](skills/cli-anything-godot/SKILL.md) |
+| 64 | ✓ | [`skills/cli-anything-inkscape/SKILL.md`](skills/cli-anything-inkscape/SKILL.md) |
+| 65 | ✓ | [`skills/cli-anything-intelwatch/SKILL.md`](skills/cli-anything-intelwatch/SKILL.md) |
+| 66 | ✓ | [`skills/cli-anything-iterm2-ctl/SKILL.md`](skills/cli-anything-iterm2-ctl/SKILL.md) |
+| 67 | ✓ | [`skills/cli-anything-iterm2/SKILL.md`](skills/cli-anything-iterm2/SKILL.md) |
+| 68 | ✓ | [`skills/cli-anything-kdenlive/SKILL.md`](skills/cli-anything-kdenlive/SKILL.md) |
+| 69 | ✓ | [`skills/cli-anything-krita/SKILL.md`](skills/cli-anything-krita/SKILL.md) |
+| 70 | ✓ | [`skills/cli-anything-libreoffice/SKILL.md`](skills/cli-anything-libreoffice/SKILL.md) |
+| 71 | ✓ | [`skills/cli-anything-lldb/SKILL.md`](skills/cli-anything-lldb/SKILL.md) |
+| 72 | ✓ | [`skills/cli-anything-mermaid/SKILL.md`](skills/cli-anything-mermaid/SKILL.md) |
+| 73 | ✓ | [`skills/cli-anything-mubu/SKILL.md`](skills/cli-anything-mubu/SKILL.md) |
+| 74 | ✓ | [`skills/cli-anything-musescore/SKILL.md`](skills/cli-anything-musescore/SKILL.md) |
+| 75 | ✓ | [`skills/cli-anything-n8n/SKILL.md`](skills/cli-anything-n8n/SKILL.md) |
+| 76 | ✓ | [`skills/cli-anything-notebooklm/SKILL.md`](skills/cli-anything-notebooklm/SKILL.md) |
+| 77 | ✓ | [`skills/cli-anything-novita/SKILL.md`](skills/cli-anything-novita/SKILL.md) |
+| 78 | ✓ | [`skills/cli-anything-nsight-graphics/SKILL.md`](skills/cli-anything-nsight-graphics/SKILL.md) |
+| 79 | ✓ | [`skills/cli-anything-obs-studio/SKILL.md`](skills/cli-anything-obs-studio/SKILL.md) |
+| 80 | ✓ | [`skills/cli-anything-obsidian/SKILL.md`](skills/cli-anything-obsidian/SKILL.md) |
+| 81 | ✓ | [`skills/cli-anything-ollama/SKILL.md`](skills/cli-anything-ollama/SKILL.md) |
+| 82 | ✓ | [`skills/cli-anything-openclaw/SKILL.md`](skills/cli-anything-openclaw/SKILL.md) |
+| 83 | ✓ | [`skills/cli-anything-openscreen/SKILL.md`](skills/cli-anything-openscreen/SKILL.md) |
+| 84 | ✓ | [`skills/cli-anything-pm2/SKILL.md`](skills/cli-anything-pm2/SKILL.md) |
+| 85 | ✓ | [`skills/cli-anything-qgis/SKILL.md`](skills/cli-anything-qgis/SKILL.md) |
+| 86 | ✓ | [`skills/cli-anything-quietshrink/SKILL.md`](skills/cli-anything-quietshrink/SKILL.md) |
+| 87 | ✓ | [`skills/cli-anything-renderdoc/SKILL.md`](skills/cli-anything-renderdoc/SKILL.md) |
+| 88 | ✓ | [`skills/cli-anything-rms/SKILL.md`](skills/cli-anything-rms/SKILL.md) |
+| 89 | ✓ | [`skills/cli-anything-safari/SKILL.md`](skills/cli-anything-safari/SKILL.md) |
+| 90 | ✓ | [`skills/cli-anything-sbox/SKILL.md`](skills/cli-anything-sbox/SKILL.md) |
+| 91 | ✓ | [`skills/cli-anything-seaclip/SKILL.md`](skills/cli-anything-seaclip/SKILL.md) |
+| 92 | ✓ | [`skills/cli-anything-shotcut/SKILL.md`](skills/cli-anything-shotcut/SKILL.md) |
+| 93 | ✓ | [`skills/cli-anything-slay-the-spire-ii/SKILL.md`](skills/cli-anything-slay-the-spire-ii/SKILL.md) |
+| 94 | ✓ | [`skills/cli-anything-unimol-tools/SKILL.md`](skills/cli-anything-unimol-tools/SKILL.md) |
+| 95 | ✓ | [`skills/cli-anything-unrealinsights/SKILL.md`](skills/cli-anything-unrealinsights/SKILL.md) |
+| 96 | ✓ | [`skills/cli-anything-videocaptioner/SKILL.md`](skills/cli-anything-videocaptioner/SKILL.md) |
+| 97 | ✓ | [`skills/cli-anything-wiremock/SKILL.md`](skills/cli-anything-wiremock/SKILL.md) |
+| 98 | ✓ | [`skills/cli-anything-zoom/SKILL.md`](skills/cli-anything-zoom/SKILL.md) |
+| 99 | ✓ | [`skills/cli-anything-zotero/SKILL.md`](skills/cli-anything-zotero/SKILL.md) |
+| 100 | ✓ | [`skills/cli-hub-meta-skill/SKILL.md`](skills/cli-hub-meta-skill/SKILL.md) |
+| 101 | ✓ | [`skills/README.md`](skills/README.md) |
+| 102 | ✓ | [`slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md`](slay_the_spire_ii/agent-harness/cli_anything/slay_the_spire_ii/skills/SKILL.md) |
+| 103 | ✓ | [`unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md`](unimol_tools/agent-harness/cli_anything/unimol_tools/SKILL.md) |
+| 104 | ✓ | [`unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md`](unrealinsights/agent-harness/cli_anything/unrealinsights/skills/SKILL.md) |
+| 105 | ✓ | [`videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md`](videocaptioner/agent-harness/cli_anything/videocaptioner/skills/SKILL.md) |
+| 106 | ✓ | [`wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md`](wiremock/agent-harness/cli_anything/wiremock/skills/SKILL.md) |
+| 107 | ✓ | [`zoom/agent-harness/cli_anything/zoom/skills/SKILL.md`](zoom/agent-harness/cli_anything/zoom/skills/SKILL.md) |
+| 108 | ✓ | [`zotero/agent-harness/cli_anything/zotero/skills/SKILL.md`](zotero/agent-harness/cli_anything/zotero/skills/SKILL.md) |
 
 ---
 

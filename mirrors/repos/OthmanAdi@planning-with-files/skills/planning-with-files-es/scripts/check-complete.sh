@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Verificar si todas las fases en task_plan.md están completas
 # Siempre salir con código 0 — usar stdout para informar el estado
 # Llamado por el hook Stop para informar el estado de finalización de la tarea

@@ -170,17 +170,20 @@ Complex conditions:
 ## Workflow
 
 ```text
-INTAKE -> CONTRACT -> CLASSIFY -> GENERATE_OR_AUDIT -> HANDOFF -> COMPLETE
+INTAKE -> CONTRACT -> CLASSIFY -> PRE_FLIGHT -> GENERATE_OR_AUDIT -> VERIFY -> HANDOFF -> COMPLETE -> LEARN
 ```
 
 | Phase | Required action | Key rule | Read |
 |-------|-----------------|----------|------|
 | `INTAKE` | Classify the request as `GENERATE`, `AUDIT`, `RECOVER`, or `PROACTIVE_AUDIT` | Parse artifacts and mode markers before proposing actions | `references/operation-contract.md`, `references/vague-goal-handling.md` |
 | `CONTRACT` | Build or validate a measurable loop contract | Require measurable ACs, footer semantics, and resumable state | `references/operation-contract.md` |
-| `CLASSIFY` | Map findings to failure class and severity | Taxonomy first; `P0` always wins | `references/failure-taxonomy.md`, `references/anti-patterns.md` |
+| `CLASSIFY` | Map findings to failure class and severity; in `AUDIT` mode also evaluate convergence (action similarity `>= 85%` over `3` iters), oscillation (A↔B `>= 3` cycles in `6` iters), and dedup window (last `5` actions) | Taxonomy first; `P0` always wins; semantic stalls outrank exit-code success | `references/failure-taxonomy.md`, `references/anti-patterns.md` |
+| `PRE_FLIGHT` | Verify environment health gates before any generation, audit-write, or recovery: disk `>= 100MB`, `.run-loop.lock` liveness, git health under `AUTOCOMMIT=true`, `state.env.sha256` integrity, log-size budget | Abort on `[PREFLIGHT:FAIL]` unless an explicit bypass is set; never proceed past a corrupt checksum without `recover.sh` | `references/script-flow.md`, `references/failure-taxonomy.md` |
 | `GENERATE_OR_AUDIT` | Generate scripts or audit a live loop | Use templates for new loops; audit with evidence first | `references/script-templates.md`, `references/script-flow.md`, `references/executor-engines.md` |
-| `HANDOFF` | Build the smallest reversible next action | Use one handoff at a time | `references/patterns.md`, `references/examples.md` |
+| `VERIFY` | Validate the produced artifact before delivery: `bash -n` syntax check on every generated `*.sh`, footer contract presence (`NEXUS_LOOP_STATUS` + `NEXUS_LOOP_SUMMARY`), AC-to-verify mapping completeness, atomic-write pattern (write-temp-then-rename) on all state writers, clear terminal states (`SUCCESS`/`FAILED`) in tool response schemas | Block `HANDOFF` on any failure; never deliver a script set whose footer or DONE gate cannot be parsed deterministically | `references/operation-contract.md`, `references/script-flow.md` |
+| `HANDOFF` | Build the smallest reversible next action; route by severity (`P0` → pause + escalate to `Triage`; `P1` → recover and continue; `P2` → contained improvement). Use the agent-mapping table for failure-class targets (`Builder` for impl, `Guardian` for commit policy, `Radar` for verify gaps, `Beacon` for telemetry, `Lore` for reusable patterns) | Use one handoff at a time; never stack escalations | `references/patterns.md`, `references/examples.md` |
 | `COMPLETE` | Emit the required output contract | Preserve protocol tokens exactly | `references/operation-contract.md`, `references/nexus-integration.md` |
+| `LEARN` | Fire `RF-01` unconditionally on every completed loop: append outcome row to `.agents/orbit.md` (tier, ACs passed, MTTR, cost-per-task, intervention count), record manual overrides, then evaluate `RF-02..RF-06` for cycle escalation | `RF-01` is non-skippable; full/medium `REFINE` cycles only fire when their own conditions are met | `references/loop-learning.md` |
 
 ## Recipes
 
@@ -195,7 +198,7 @@ INTAKE -> CONTRACT -> CLASSIFY -> GENERATE_OR_AUDIT -> HANDOFF -> COMPLETE
 
 Parse the first token of user input.
 - If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
-- Otherwise → default Recipe (`generate` = Generate Loop). Apply normal INTAKE → CONTRACT → CLASSIFY → GENERATE_OR_AUDIT → HANDOFF → COMPLETE workflow.
+- Otherwise → default Recipe (`generate` = Generate Loop). Apply normal INTAKE → CONTRACT → CLASSIFY → PRE_FLIGHT → GENERATE_OR_AUDIT → VERIFY → HANDOFF → COMPLETE → LEARN workflow.
 
 Behavior notes per Recipe:
 - `generate`: Generate a script set (run-loop.sh, bootstrap.sh, recover.sh, verify.sh) and operation contract from goal input. Customize executor engine, commit convention, and branch policy.

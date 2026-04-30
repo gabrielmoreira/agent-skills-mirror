@@ -1,6 +1,7 @@
 ---
 name: browser-scrape
 description: Extract structured data from web pages using browser automation and DOM queries
+argument-hint: "<url>"
 allowed-tools: mcp__claude-flow__browser_open mcp__claude-flow__browser_get-text mcp__claude-flow__browser_get-value mcp__claude-flow__browser_eval mcp__claude-flow__browser_snapshot mcp__claude-flow__browser_screenshot mcp__claude-flow__browser_scroll mcp__claude-flow__browser_wait mcp__claude-flow__browser_click mcp__claude-flow__browser_close mcp__claude-flow__browser_session-list Bash
 ---
 

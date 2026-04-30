@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `InternLM/lmdeploy` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `InternLM/lmdeploy` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `InternLM/lmdeploy` — 26 default patterns, 0 followed patterns, 6 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/check-env/SKILL.md`](.claude/skills/check-env/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/code-navigation/SKILL.md`](.claude/skills/code-navigation/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/resolve-review/SKILL.md`](.claude/skills/resolve-review/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/submit-pr/SKILL.md`](.claude/skills/submit-pr/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/support-new-model/SKILL.md`](.claude/skills/support-new-model/SKILL.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/docker-build/SKILL.md`](.claude/skills/docker-build/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/support-new-model/SKILL.md`](.claude/skills/support-new-model/SKILL.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: research-synthesize
 description: Synthesize research findings from memory into structured reports with evidence grading, contradiction resolution, and actionable recommendations
+argument-hint: "<topic> [--format report|brief|table]"
 allowed-tools: mcp__claude-flow__memory_search mcp__claude-flow__memory_search_unified mcp__claude-flow__memory_list mcp__claude-flow__memory_retrieve mcp__claude-flow__memory_store mcp__claude-flow__agentdb_context-synthesize mcp__claude-flow__agentdb_pattern-search mcp__claude-flow__neural_predict Bash Read Write
 ---
 

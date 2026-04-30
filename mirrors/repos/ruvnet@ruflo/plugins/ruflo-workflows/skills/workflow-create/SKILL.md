@@ -1,6 +1,7 @@
 ---
 name: workflow-create
 description: Create reusable workflow templates with steps, conditions, and parallel execution
+argument-hint: "<name> [--steps N]"
 allowed-tools: mcp__claude-flow__workflow_create mcp__claude-flow__workflow_template mcp__claude-flow__workflow_list mcp__claude-flow__workflow_status mcp__claude-flow__workflow_delete Bash
 ---
 

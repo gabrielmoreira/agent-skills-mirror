@@ -1,6 +1,7 @@
 ---
 name: safety-scan
 description: Scan inputs for prompt injection, unsafe content, and adversarial attacks using AIDefence
+argument-hint: "<input-text>"
 allowed-tools: mcp__claude-flow__aidefence_scan mcp__claude-flow__aidefence_analyze mcp__claude-flow__aidefence_is_safe mcp__claude-flow__aidefence_learn mcp__claude-flow__aidefence_stats Bash
 ---
 

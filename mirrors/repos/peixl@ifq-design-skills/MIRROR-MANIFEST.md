@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `peixl/ifq-design-skills` — 26 default patterns, 31 followed patterns, 36 file(s) materialized.
+Mirror of `peixl/ifq-design-skills` — 26 default patterns, 30 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `peixl/ifq-design-skills` — 26 default patterns, 31 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 31 |
-| Files         | 36 |
+| Followed pats | 30 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,22 +54,19 @@ Mirror of `peixl/ifq-design-skills` — 26 default patterns, 31 followed pattern
 - `references/modes.md`
 - `references/agent-compatibility.md`
 - `references/ifq-brand-spec.md`
-- `references/fact-and-asset-protocol.md`
-- `references/design-direction-advisor.md`
-- `references/app-prototype-rules.md`
-- `references/slide-decks.md`
-- `references/animation-pitfalls.md`
-- `references/animations.md`
-- `references/video-export.md`
 - `references/font-loading.md`
+- `references/quickstart.md`
 - `references/ifq-ambient-runtime.md`
+- `references/fact-and-asset-protocol.md`
 - `references/designer-operating-principles.md`
 - `references/anti-ai-slop.md`
+- `references/design-direction-advisor.md`
 - `references/design-styles.md`
 - `references/ifq-native-recipes.md`
 - `references/delivery-workflow.md`
 - `references/workflow.md`
 - `references/verification.md`
+- `references/agent-interaction-protocol.md`
 - `references/killer-skill-playbook.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
@@ -77,7 +74,9 @@ Mirror of `peixl/ifq-design-skills` — 26 default patterns, 31 followed pattern
 - `references/skill-leaderboard-lessons.md`
 - `references/smoke-test.md`
 - `references/react-setup.md`
+- `references/slide-decks.md`
 - `references/editable-pptx.md`
+- `references/animation-pitfalls.md`
 - `references/animation-best-practices.md`
 - `references/audio-design-rules.md`
 - `references/sfx-library.md`
@@ -97,34 +96,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | → | [`assets/ifq-brand/BRAND-DNA.md`](assets/ifq-brand/BRAND-DNA.md) |
 | 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 8 | → | [`references/agent-compatibility.md`](references/agent-compatibility.md) |
-| 9 | → | [`references/animation-best-practices.md`](references/animation-best-practices.md) |
-| 10 | → | [`references/animation-pitfalls.md`](references/animation-pitfalls.md) |
-| 11 | → | [`references/animations.md`](references/animations.md) |
+| 9 | → | [`references/agent-interaction-protocol.md`](references/agent-interaction-protocol.md) |
+| 10 | → | [`references/animation-best-practices.md`](references/animation-best-practices.md) |
+| 11 | → | [`references/animation-pitfalls.md`](references/animation-pitfalls.md) |
 | 12 | → | [`references/anti-ai-slop.md`](references/anti-ai-slop.md) |
-| 13 | → | [`references/app-prototype-rules.md`](references/app-prototype-rules.md) |
-| 14 | → | [`references/audio-design-rules.md`](references/audio-design-rules.md) |
-| 15 | → | [`references/delivery-workflow.md`](references/delivery-workflow.md) |
-| 16 | → | [`references/design-direction-advisor.md`](references/design-direction-advisor.md) |
-| 17 | → | [`references/design-styles.md`](references/design-styles.md) |
-| 18 | → | [`references/designer-operating-principles.md`](references/designer-operating-principles.md) |
-| 19 | → | [`references/editable-pptx.md`](references/editable-pptx.md) |
-| 20 | → | [`references/fact-and-asset-protocol.md`](references/fact-and-asset-protocol.md) |
-| 21 | → | [`references/font-loading.md`](references/font-loading.md) |
-| 22 | → | [`references/ifq-ambient-runtime.md`](references/ifq-ambient-runtime.md) |
-| 23 | → | [`references/ifq-brand-spec.md`](references/ifq-brand-spec.md) |
-| 24 | → | [`references/ifq-native-recipes.md`](references/ifq-native-recipes.md) |
-| 25 | → | [`references/killer-skill-playbook.md`](references/killer-skill-playbook.md) |
-| 26 | → | [`references/marketplace-quality.md`](references/marketplace-quality.md) |
-| 27 | → | [`references/modes.md`](references/modes.md) |
+| 13 | → | [`references/audio-design-rules.md`](references/audio-design-rules.md) |
+| 14 | → | [`references/delivery-workflow.md`](references/delivery-workflow.md) |
+| 15 | → | [`references/design-direction-advisor.md`](references/design-direction-advisor.md) |
+| 16 | → | [`references/design-styles.md`](references/design-styles.md) |
+| 17 | → | [`references/designer-operating-principles.md`](references/designer-operating-principles.md) |
+| 18 | → | [`references/editable-pptx.md`](references/editable-pptx.md) |
+| 19 | → | [`references/fact-and-asset-protocol.md`](references/fact-and-asset-protocol.md) |
+| 20 | → | [`references/font-loading.md`](references/font-loading.md) |
+| 21 | → | [`references/ifq-ambient-runtime.md`](references/ifq-ambient-runtime.md) |
+| 22 | → | [`references/ifq-brand-spec.md`](references/ifq-brand-spec.md) |
+| 23 | → | [`references/ifq-native-recipes.md`](references/ifq-native-recipes.md) |
+| 24 | → | [`references/killer-skill-playbook.md`](references/killer-skill-playbook.md) |
+| 25 | → | [`references/marketplace-quality.md`](references/marketplace-quality.md) |
+| 26 | → | [`references/modes.md`](references/modes.md) |
+| 27 | → | [`references/quickstart.md`](references/quickstart.md) |
 | 28 | → | [`references/react-setup.md`](references/react-setup.md) |
 | 29 | → | [`references/sfx-library.md`](references/sfx-library.md) |
 | 30 | → | [`references/skill-leaderboard-lessons.md`](references/skill-leaderboard-lessons.md) |
 | 31 | → | [`references/slide-decks.md`](references/slide-decks.md) |
 | 32 | → | [`references/smoke-test.md`](references/smoke-test.md) |
 | 33 | → | [`references/verification.md`](references/verification.md) |
-| 34 | → | [`references/video-export.md`](references/video-export.md) |
-| 35 | → | [`references/workflow.md`](references/workflow.md) |
-| 36 | → | [`SECURITY.md`](SECURITY.md) |
+| 34 | → | [`references/workflow.md`](references/workflow.md) |
+| 35 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

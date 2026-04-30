@@ -1,17 +1,58 @@
 ---
 name: memory-search
-description: Semantic search across Ruflo AgentDB with HNSW vector indexing
-allowed-tools: mcp__claude-flow__memory_search mcp__claude-flow__memory_store mcp__claude-flow__memory_list mcp__claude-flow__memory_retrieve Bash(npx *)
-argument-hint: "[query]"
+description: SOTA semantic search — hybrid (sparse+dense), Graph RAG multi-hop, MMR diversity reranking, recency weighting
+allowed-tools: Bash Read mcp__claude-flow__memory_search mcp__claude-flow__memory_store mcp__claude-flow__memory_list mcp__claude-flow__memory_retrieve mcp__claude-flow__memory_search_unified mcp__claude-flow__agentdb_pattern-search mcp__claude-flow__agentdb_context-synthesize
+argument-hint: "<query> [--hybrid] [--graph-rag] [--namespace NAME]"
 ---
-Search memory with semantic vector search (150x-12,500x faster than brute force).
 
-Via MCP: `mcp__claude-flow__memory_search({ query: "authentication patterns", namespace: "patterns", limit: 5 })`
+# Memory Search (SOTA)
 
-Store: `mcp__claude-flow__memory_store({ key: "pattern-name", value: "what worked", namespace: "patterns" })`
+State-of-the-art semantic search across Ruflo memory with multiple retrieval strategies.
 
-List: `mcp__claude-flow__memory_list({ namespace: "patterns", limit: 10 })`
+## Strategy Selection
 
-Retrieve: `mcp__claude-flow__memory_retrieve({ key: "pattern-name", namespace: "patterns" })`
+Choose based on query type:
+- **Default** (dense): fast single-hop semantic match
+- **--hybrid**: sparse + dense with RRF fusion (20-49% better for keyword+semantic queries)
+- **--graph-rag**: multi-hop knowledge retrieval (30-60% better for reasoning queries)
 
-Common namespaces: `patterns`, `tasks`, `solutions`, `feedback`, `security`.
+## Steps
+
+1. **Parse query and flags** — extract search text and strategy flags from arguments
+2. **Select retrieval strategy**:
+
+   **Dense search (default)**:
+   ```bash
+   npx @claude-flow/cli@latest memory search --query "QUERY" --namespace NAMESPACE --limit 10
+   ```
+   Or via MCP: `mcp__claude-flow__memory_search({ query: "QUERY", namespace: "NAMESPACE", limit: 10 })`
+
+   **Hybrid search** (when --hybrid or query has specific keywords):
+   ```bash
+   npx ruvector search "QUERY" --hybrid --limit 10
+   ```
+
+   **Graph RAG** (when --graph-rag or multi-hop reasoning needed):
+   ```bash
+   npx ruvector search "QUERY" --graph-rag --limit 10
+   ```
+
+   **Unified cross-namespace**:
+   `mcp__claude-flow__memory_search_unified({ query: "QUERY", limit: 10 })`
+
+3. **Apply MMR reranking** — for diverse results, filter near-duplicates (cosine > 0.92) while maximizing relevance
+4. **Apply recency weighting** — boost recent entries with exponential decay (0.95/day)
+5. **Synthesize context** (for complex queries):
+   `mcp__claude-flow__agentdb_context-synthesize({ query: "QUERY", sources: ["patterns", "tasks", "solutions"] })`
+6. **Present results** — ranked by composite score (relevance * diversity * recency), with source namespace attribution
+
+## Namespace Guide
+
+| Namespace | Best For |
+|-----------|----------|
+| `patterns` | "How did we handle X?" |
+| `tasks` | "What was the context for Y?" |
+| `solutions` | "How did we fix Z?" |
+| `feedback` | "What did the user prefer?" |
+| `security` | "Known vulnerabilities in..." |
+| (omit) | Search all namespaces |

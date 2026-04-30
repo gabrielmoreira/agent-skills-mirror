@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patterns, 70 file(s) materialized.
+Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 70 |
+| Files         | 72 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,30 +105,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`mcp/streamable_client_test.go`](mcp/streamable_client_test.go) |
 | 45 | ✓ | [`mcp/streamable_client.go`](mcp/streamable_client.go) |
 | 46 | ✓ | [`mcp/streamable_example_test.go`](mcp/streamable_example_test.go) |
-| 47 | ✓ | [`mcp/streamable_server.go`](mcp/streamable_server.go) |
-| 48 | ✓ | [`mcp/streamable_test.go`](mcp/streamable_test.go) |
-| 49 | ✓ | [`mcp/streamable.go`](mcp/streamable.go) |
-| 50 | ✓ | [`mcp/testdata/conformance/server/bad_requests.txtar`](mcp/testdata/conformance/server/bad_requests.txtar) |
-| 51 | ✓ | [`mcp/testdata/conformance/server/lifecycle.txtar`](mcp/testdata/conformance/server/lifecycle.txtar) |
-| 52 | ✓ | [`mcp/testdata/conformance/server/prompts.txtar`](mcp/testdata/conformance/server/prompts.txtar) |
-| 53 | ✓ | [`mcp/testdata/conformance/server/resources.txtar`](mcp/testdata/conformance/server/resources.txtar) |
-| 54 | ✓ | [`mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar`](mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar) |
-| 55 | ✓ | [`mcp/testdata/conformance/server/tools.txtar`](mcp/testdata/conformance/server/tools.txtar) |
-| 56 | ✓ | [`mcp/testdata/conformance/server/version-latest.txtar`](mcp/testdata/conformance/server/version-latest.txtar) |
-| 57 | ✓ | [`mcp/testdata/conformance/server/version-older.txtar`](mcp/testdata/conformance/server/version-older.txtar) |
-| 58 | ✓ | [`mcp/testdata/files/info.txt`](mcp/testdata/files/info.txt) |
-| 59 | ✓ | [`mcp/testdata/files/template.txt`](mcp/testdata/files/template.txt) |
-| 60 | ✓ | [`mcp/testdata/private.txt`](mcp/testdata/private.txt) |
-| 61 | ✓ | [`mcp/testdata/public/dir/file3.txt`](mcp/testdata/public/dir/file3.txt) |
-| 62 | ✓ | [`mcp/testdata/public/file1.txt`](mcp/testdata/public/file1.txt) |
-| 63 | ✓ | [`mcp/testdata/public/file2.txt`](mcp/testdata/public/file2.txt) |
-| 64 | ✓ | [`mcp/tool_example_test.go`](mcp/tool_example_test.go) |
-| 65 | ✓ | [`mcp/tool_test.go`](mcp/tool_test.go) |
-| 66 | ✓ | [`mcp/tool.go`](mcp/tool.go) |
-| 67 | ✓ | [`mcp/transport_example_test.go`](mcp/transport_example_test.go) |
-| 68 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
-| 69 | ✓ | [`mcp/transport.go`](mcp/transport.go) |
-| 70 | ✓ | [`mcp/util.go`](mcp/util.go) |
+| 47 | ✓ | [`mcp/streamable_headers_test.go`](mcp/streamable_headers_test.go) |
+| 48 | ✓ | [`mcp/streamable_headers.go`](mcp/streamable_headers.go) |
+| 49 | ✓ | [`mcp/streamable_server.go`](mcp/streamable_server.go) |
+| 50 | ✓ | [`mcp/streamable_test.go`](mcp/streamable_test.go) |
+| 51 | ✓ | [`mcp/streamable.go`](mcp/streamable.go) |
+| 52 | ✓ | [`mcp/testdata/conformance/server/bad_requests.txtar`](mcp/testdata/conformance/server/bad_requests.txtar) |
+| 53 | ✓ | [`mcp/testdata/conformance/server/lifecycle.txtar`](mcp/testdata/conformance/server/lifecycle.txtar) |
+| 54 | ✓ | [`mcp/testdata/conformance/server/prompts.txtar`](mcp/testdata/conformance/server/prompts.txtar) |
+| 55 | ✓ | [`mcp/testdata/conformance/server/resources.txtar`](mcp/testdata/conformance/server/resources.txtar) |
+| 56 | ✓ | [`mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar`](mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar) |
+| 57 | ✓ | [`mcp/testdata/conformance/server/tools.txtar`](mcp/testdata/conformance/server/tools.txtar) |
+| 58 | ✓ | [`mcp/testdata/conformance/server/version-latest.txtar`](mcp/testdata/conformance/server/version-latest.txtar) |
+| 59 | ✓ | [`mcp/testdata/conformance/server/version-older.txtar`](mcp/testdata/conformance/server/version-older.txtar) |
+| 60 | ✓ | [`mcp/testdata/files/info.txt`](mcp/testdata/files/info.txt) |
+| 61 | ✓ | [`mcp/testdata/files/template.txt`](mcp/testdata/files/template.txt) |
+| 62 | ✓ | [`mcp/testdata/private.txt`](mcp/testdata/private.txt) |
+| 63 | ✓ | [`mcp/testdata/public/dir/file3.txt`](mcp/testdata/public/dir/file3.txt) |
+| 64 | ✓ | [`mcp/testdata/public/file1.txt`](mcp/testdata/public/file1.txt) |
+| 65 | ✓ | [`mcp/testdata/public/file2.txt`](mcp/testdata/public/file2.txt) |
+| 66 | ✓ | [`mcp/tool_example_test.go`](mcp/tool_example_test.go) |
+| 67 | ✓ | [`mcp/tool_test.go`](mcp/tool_test.go) |
+| 68 | ✓ | [`mcp/tool.go`](mcp/tool.go) |
+| 69 | ✓ | [`mcp/transport_example_test.go`](mcp/transport_example_test.go) |
+| 70 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
+| 71 | ✓ | [`mcp/transport.go`](mcp/transport.go) |
+| 72 | ✓ | [`mcp/util.go`](mcp/util.go) |
 
 ---
 

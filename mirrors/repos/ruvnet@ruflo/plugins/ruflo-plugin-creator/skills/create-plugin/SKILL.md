@@ -1,6 +1,7 @@
 ---
 name: create-plugin
 description: Scaffold a new Claude Code plugin with proper directory structure, plugin.json, skills, commands, and agents
+argument-hint: "<plugin-name>"
 allowed-tools: mcp__claude-flow__transfer_plugin-info mcp__claude-flow__transfer_plugin-search mcp__claude-flow__transfer_store-search Bash Read Write Edit
 ---
 

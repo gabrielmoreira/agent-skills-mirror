@@ -31,6 +31,22 @@ addresses in `likelyOwners`, `person`, reasons, summaries, or public comments.
 Prefer GitHub handles from PR/commit metadata; otherwise use a display name
 without the `<email>` part.
 
+For PRs, set `changeSummary` to a neutral one-sentence summary of what the PR
+branch changes, based on the title, body, diff, files, and commits. Describe the
+actual code/docs/tests/workflow/package surface touched; do not use
+`changeSummary` for the merge verdict, maintainer follow-up, risk, or whether
+the PR is redundant. For issues, set `changeSummary` to the requested behavior,
+bug, or cleanup in one sentence. Keep `summary` for the review decision and
+rationale.
+
+Keep user-visible fields non-overlapping. `summary` is the verdict and
+rationale, `changeSummary` is only the requested change or PR diff,
+`workReason` is the routing or next-action reason, `bestSolution` is the desired
+end state, `reproductionAssessment` answers whether the issue has a
+high-confidence reproduction path, `solutionAssessment` answers whether the
+current/proposed path is the best fix, and `risks` are only unresolved
+uncertainty. Do not repeat the same sentence or evidence across those fields.
+
 For PRs, do not list the PR author solely because they opened the PR, reported
 the issue, or authored the proposed branch. `likelyOwners` should point to
 people connected to the current `main` history and merged feature history for
@@ -42,7 +58,23 @@ ownership beyond this PR. If the PR author is only the proposer/reporter, you
 may mention that in evidence or summary when useful, but do not make them a
 likely owner.
 
-For PRs, include a dedicated security review pass in addition to the functional review. Inspect whether the diff could introduce a security or supply-chain regression, especially when it touches CI workflows, GitHub Action refs, dependency sources, lockfiles, install/build/release scripts, package publishing metadata, secrets handling, permissions, downloaded artifacts, generated/vendor/minified files, or other code execution paths. Check whether those changes are consistent with the PR title, body, discussion, and stated purpose before deciding. Be cautious when a small or unrelated functional change also introduces new third-party code execution, broadens secret or permission access, changes package resolution, adds lifecycle hooks, downloads and executes artifacts, or mixes infrastructure changes into otherwise cosmetic work. Do not infer malicious intent without concrete evidence, but note unexplained security-sensitive changes in `risks` and `evidence` with the observable risk, relevant file/path, and why it matters.
+For PRs, include a dedicated security review pass in addition to the functional review. Inspect whether the diff could introduce a security or supply-chain regression, especially when it touches CI workflows, GitHub Action refs, dependency sources, lockfiles, install/build/release scripts, package publishing metadata, secrets handling, permissions, downloaded artifacts, generated/vendor/minified files, or other code execution paths. Check whether those changes are consistent with the PR title, body, discussion, and stated purpose before deciding. Be cautious when a small or unrelated functional change also introduces new third-party code execution, broadens secret or permission access, changes package resolution, adds lifecycle hooks, downloads and executes artifacts, or mixes infrastructure changes into otherwise cosmetic work. Do not infer malicious intent without concrete evidence. Always summarize this pass in `securityReview`; set `status: "cleared"` when the diff has no concrete security or supply-chain concern, `status: "needs_attention"` when there is a concrete concern, and `status: "not_applicable"` for non-PR items without a security-sensitive report. Put concrete security concerns in `securityReview.concerns` with file/line when possible, and also include blocking concerns in `risks` and `evidence` when they affect the merge/close decision.
+
+For PRs, also emit Codex `/review`-style findings in `reviewFindings`.
+Review the diff as another engineer's proposed patch and list every discrete,
+actionable bug the author would likely fix. Findings must be introduced by the
+PR, concrete enough to fix, and tied to the smallest useful changed line range.
+Prefer an empty finding list when nothing definite is wrong; do not pad with
+style preferences, broad speculation, missing tests without a real bug, or
+general praise. Use priorities as `0=P0 critical`, `1=P1 high`, `2=P2 normal`,
+and `3=P3 low`. Keep each title imperative and at most 80 characters. Keep each
+body brief, matter-of-fact, and focused on why this breaks current behavior.
+Use repository-relative `file`, `lineStart`, and `lineEnd`; the location should
+overlap the PR diff when possible. Set `overallCorrectness` to `patch is
+incorrect` when at least one P0/P1/P2 finding should block merge, `patch is
+correct` when the PR has no blocking correctness finding, and `not a patch` for
+issues and other non-PR reviews. Set `overallConfidenceScore` to a 0-1 number
+matching your confidence in the overall verdict.
 
 Use reason-specific anchors:
 
@@ -80,7 +112,7 @@ Close as implemented when current `main` solves the observable user problem well
 
 Keep open for everything else, including real bugs, unclear-but-salvageable reports, stale PRs that might still contain useful work, optional features that require a new core/plugin API first, or anything where the evidence is not high-confidence.
 
-For keep-open items, also decide whether this is a safe Clownfish fix-PR
+For keep-open items, also decide whether this is a safe ClawSweeper repair
 candidate. This is not permission to mutate GitHub; it only marks a manual work
 lane candidate for a maintainer to promote later. Set `workCandidate` to
 `queue_fix_pr` only when all of these are true:
@@ -98,13 +130,21 @@ priority or product judgment before implementation. Set it to `none` for close
 decisions, stale/unclear reports, security-sensitive work, protected-label
 items, broad feature programs, pure administration, or items already paired
 with an open fix PR. When you choose `queue_fix_pr`, write `workPrompt` as the
-custom maintainer prompt that ProjectClownfish should give Codex: include the
+custom maintainer prompt that the ClawSweeper repair lane should give Codex: include the
 observable bug or feature, the expected fix boundary, related refs from
 `workClusterRefs`, likely files, validation commands, changelog expectation, and
 anything that must not be changed. Keep it concrete enough that a single
 autonomous PR can be attempted without reopening triage. Use `workValidation`
 for the exact tests or checks a fix PR should run, and `workLikelyFiles` for
 probable implementation/test/docs paths.
+
+For pull requests, `workCandidate` is also the automation contract. Use
+`queue_fix_pr` only when there is a concrete, actionable repair that an
+automated worker can attempt on the PR branch or a narrow replacement branch.
+Use `manual_review` or `none` when the remaining action is maintainer judgment,
+normal PR review, protected-label handling, ownership/product/security review,
+or validation without a specific code/docs/test defect. Do not mark an open
+implementation PR as `queue_fix_pr` merely because it needs maintainer review.
 
 Keep an issue open when an open PR specifically references it with GitHub closing
 syntax such as `Fixes #123`, `Closes #123`, or `Resolves #123`. That PR is an
@@ -183,7 +223,35 @@ phrases like `shell check`, `swept through`, or `tide pool` are okay. Use at
 most one such phrase per public comment, and never let the bit obscure the
 evidence or decision.
 
-Always fill `bestSolution`. For close decisions, describe the best current outcome: usually keep the shipped implementation, follow the canonical linked item, move the work to ClawHub/plugin API discussion, or leave external administration outside this repository. For keep-open decisions, describe the best possible implementation or product/docs path in concrete maintainer terms: what should change, where it likely belongs, what evidence still needs reproduction, or which plugin/API extension would make the request feasible. Make it useful for a visible Codex automated review comment.
+Always fill `bestSolution`. For close decisions, describe the best current outcome: usually keep the shipped implementation, follow the canonical linked item, move the work to ClawHub/plugin API discussion, or leave external administration outside this repository. For keep-open decisions, describe the best possible implementation or product/docs path in concrete maintainer terms: what should change, where it likely belongs, what evidence still needs reproduction, or which plugin/API extension would make the request feasible. Do not repeat `workReason`; if the next action and best solution are the same, put the routing/action wording in `workReason` and keep `bestSolution` as the end state. Make it useful for a visible Codex automated review comment.
+
+Always fill `reproductionAssessment` and answer this exact question in one or
+two concise sentences: "Do we have a high-confidence way to reproduce the
+issue?" For bug reports and review findings, say yes/no/unclear and name the
+reproduction path, focused check, failing test, current-main verification, or
+missing data. For feature/docs/admin requests where reproduction is not
+applicable, say that directly and explain the evidence basis.
+
+Always fill `solutionAssessment` and answer this exact question in one or two
+concise sentences: "Is this the best way to solve the issue?" Say
+yes/no/unclear/not applicable and explain whether the current implementation,
+PR diff, suggested repair, or requested direction is the narrowest maintainable
+solution. If there is a safer alternative, name it.
+
+Always fill `reviewFindings`, `overallCorrectness`, and
+`overallConfidenceScore`. For issues or close-only cleanup where there is no
+proposed patch to review, use an empty `reviewFindings` array,
+`overallCorrectness: "not a patch"`, and a low-but-honest confidence score.
+For PRs, use these fields for the concise reviewer feedback that should appear
+near the top of the public ClawSweeper comment; the rest of the evidence can
+stay in the collapsed details.
+
+Always fill `securityReview`. This is the dedicated public security section,
+separate from functional findings. Use `cleared` with a concise summary when no
+security or supply-chain issue was found, `needs_attention` with one or more
+typed concerns when the patch or discussion raises a concrete security issue,
+and `not_applicable` for ordinary non-PR issue triage where no patch security
+review applies.
 
 Always fill the work-lane fields too. For non-candidates, use
 `workCandidate: "none"`, low confidence/priority, an empty `workPrompt`, and

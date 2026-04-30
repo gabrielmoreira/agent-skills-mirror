@@ -1,6 +1,7 @@
 ---
 name: vector-search
 description: HNSW vector search with RuVector embeddings for 150x-12500x faster semantic retrieval
+argument-hint: "<query> [--limit N]"
 allowed-tools: mcp__claude-flow__embeddings_generate mcp__claude-flow__embeddings_search mcp__claude-flow__embeddings_compare mcp__claude-flow__embeddings_init mcp__claude-flow__embeddings_status mcp__claude-flow__embeddings_hyperbolic mcp__claude-flow__embeddings_neural mcp__claude-flow__ruvllm_hnsw_create mcp__claude-flow__ruvllm_hnsw_add mcp__claude-flow__ruvllm_hnsw_route mcp__claude-flow__memory_search_unified Bash
 ---
 

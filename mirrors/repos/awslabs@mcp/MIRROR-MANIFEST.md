@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `awslabs/mcp` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
+Mirror of `awslabs/mcp` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `awslabs/mcp` — 26 default patterns, 1 followed patterns, 9 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,10 +64,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`src/aurora-dsql-mcp-server/skills/aws-dsql-skill/SKILL.md`](src/aurora-dsql-mcp-server/skills/aws-dsql-skill/SKILL.md) |
 | 4 | ✓ | [`src/aurora-dsql-mcp-server/skills/distributed-postgres-skill/SKILL.md`](src/aurora-dsql-mcp-server/skills/distributed-postgres-skill/SKILL.md) |
 | 5 | ✓ | [`src/aurora-dsql-mcp-server/skills/distributed-sql-skill/SKILL.md`](src/aurora-dsql-mcp-server/skills/distributed-sql-skill/SKILL.md) |
-| 6 | ✓ | [`src/aurora-dsql-mcp-server/skills/dsql-skill/SKILL.md`](src/aurora-dsql-mcp-server/skills/dsql-skill/SKILL.md) |
-| 7 | ✓ | [`src/cloudwatch-mcp-server/skills/agentcore-investigation/SKILL.md`](src/cloudwatch-mcp-server/skills/agentcore-investigation/SKILL.md) |
-| 8 | ✓ | [`src/dynamodb-mcp-server/AGENTS.md`](src/dynamodb-mcp-server/AGENTS.md) |
-| 9 | → | [`scripts/README.md`](scripts/README.md) |
+| 6 | ✓ | [`src/aurora-dsql-mcp-server/skills/dsql-skill/mcp/platforms/gemini.md`](src/aurora-dsql-mcp-server/skills/dsql-skill/mcp/platforms/gemini.md) |
+| 7 | ✓ | [`src/aurora-dsql-mcp-server/skills/dsql-skill/SKILL.md`](src/aurora-dsql-mcp-server/skills/dsql-skill/SKILL.md) |
+| 8 | ✓ | [`src/cloudwatch-mcp-server/skills/agentcore-investigation/SKILL.md`](src/cloudwatch-mcp-server/skills/agentcore-investigation/SKILL.md) |
+| 9 | ✓ | [`src/dynamodb-mcp-server/AGENTS.md`](src/dynamodb-mcp-server/AGENTS.md) |
+| 10 | → | [`scripts/README.md`](scripts/README.md) |
 
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: doctor
 description: Run health checks on the Ruflo installation and fix common issues
+argument-hint: "[--fix]"
 allowed-tools: Bash(npx *)
 ---
 Run `npx @claude-flow/cli@latest doctor --fix` to diagnose and auto-repair common issues.

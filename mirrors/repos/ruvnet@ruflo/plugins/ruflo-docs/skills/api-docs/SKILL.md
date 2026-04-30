@@ -1,6 +1,7 @@
 ---
 name: api-docs
 description: Generate API documentation from source code with JSDoc and OpenAPI support
+argument-hint: "<source-path>"
 allowed-tools: Bash(npx *) mcp__claude-flow__hooks_worker-dispatch Read Write Grep
 ---
 Generate API documentation from TypeScript/JavaScript source:

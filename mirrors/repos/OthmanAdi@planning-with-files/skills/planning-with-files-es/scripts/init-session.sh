@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Inicializar archivos de planificación para una nueva sesión
 # Uso: ./init-session.sh [nombre_del_proyecto]
 
