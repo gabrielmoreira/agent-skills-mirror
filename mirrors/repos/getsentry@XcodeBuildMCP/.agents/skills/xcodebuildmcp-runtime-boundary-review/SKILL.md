@@ -38,5 +38,4 @@ Review guardrails for runtime routing and invocation boundaries.
 
 - `npm test -- src/runtime/__tests__/tool-invoker.test.ts`
 - `npm run typecheck`
-- `npm run docs:check`
 - `npx skill-check .agents/skills/xcodebuildmcp-runtime-boundary-review`

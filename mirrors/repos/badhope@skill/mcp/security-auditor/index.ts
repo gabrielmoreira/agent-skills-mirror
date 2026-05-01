@@ -13,13 +13,9 @@ export default createMCPServer({
   name: 'security-auditor',
   version: '1.0.0',
   description: 'Security auditing - OWASP Top 10, secret scanning, vulnerability detection',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🔒'
-})  .forTrae({
-    categories: ['Security, Audit'],
-    rating: 'advanced',
-    features: ['OWASP, Secrets, Vulnerabilities']
-  })
+})
   .addTool({
     name: 'scan_secrets',
     description: 'Security auditing - OWASP Top 10, secret scanning, vulnerability detection',
@@ -28,20 +24,12 @@ export default createMCPServer({
       results: await safeExec('npx gitleaks detect --source . -v 2>/dev/null || echo "N/A"'),
       patterns: ['pk_', 'sk_', 'PRIVATE_KEY', 'password', 'secret']
     })
-  })  .forTrae({
-    categories: ['Security, Audit'],
-    rating: 'advanced',
-    features: ['OWASP, Secrets, Vulnerabilities']
   })
   .addTool({
     name: 'audit_npm_packages',
     description: 'Security auditing - OWASP Top 10, secret scanning, vulnerability detection',
     parameters: {},
     execute: async () => ({ audit: await safeExec('npm audit --json').then(JSON.parse).catch(() => ({})) })
-  })  .forTrae({
-    categories: ['Security, Audit'],
-    rating: 'advanced',
-    features: ['OWASP, Secrets, Vulnerabilities']
   })
   .addTool({
     name: 'check_owasp',

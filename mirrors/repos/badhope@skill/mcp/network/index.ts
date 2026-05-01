@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'network',
   version: '2.0.0',
   description: 'Network toolkit - ports, DNS, HTTP, SSL, firewall, bandwidth',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🌐'
 })
-  .forTrae({
-    categories: ['Networking', 'Security'],
-    rating: 'intermediate',
-    features: ['Ports', 'DNS', 'SSL', 'Firewall', 'Bandwidth']
-  })
   .addTool({
     name: 'net_ports',
     description: 'Port scanning and management',

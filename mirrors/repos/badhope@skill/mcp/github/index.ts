@@ -16,13 +16,8 @@ export default createMCPServer({
   version: '2.0.0',
   description: 'Enterprise GitHub toolkit - full API coverage, PR workflows, Actions automation, and team collaboration',
   icon: '🐙',
-  author: 'Trae Official'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['API Integration', 'DevOps', 'CI/CD'],
-    rating: 'intermediate',
-    features: ['Repositories', 'Pull Requests', 'Issues', 'Releases', 'GitHub Actions', 'Team Management']
-  })
   .addTool({
     name: 'github_set_token',
     description: 'Configure GitHub Personal Access Token for authenticated API calls',
@@ -195,7 +190,7 @@ export default createMCPServer({
     }
   })
   .addResource({
-    uri: 'trae://github/pr-template',
+    uri: 'mcp://github/pr-template',
     name: 'PR Best Practices',
     description: 'Pull request templates and standards',
     get: async () => ({

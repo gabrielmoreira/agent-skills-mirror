@@ -8,7 +8,7 @@ Query structured federation audit logs. Supports compliance mode filtering (HIPA
 
 Steps:
 1. Parse compliance mode, date range, and severity from arguments
-2. `npx @claude-flow/cli@latest federation audit --compliance MODE --since DATE --severity LEVEL`
+2. `npx -y -p @claude-flow/plugin-agent-federation@latest ruflo-federation audit --compliance MODE --since DATE --severity LEVEL`
 3. Summarize findings: total events, PII detections, threat blocks, trust changes
 4. Highlight any critical or error-severity events
 

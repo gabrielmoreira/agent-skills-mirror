@@ -3,7 +3,7 @@ import { validateParams, formatSuccess, formatError } from '../../packages/core'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 
-const MEMORY_DIR = path.join(process.cwd(), '.trae', 'memory')
+const MEMORY_DIR = path.join(process.cwd(), '.agent-memory')
 
 interface MemoryEntry {
   id: string
@@ -79,14 +79,9 @@ export default createMCPServer({
   name: 'memory',
   version: '2.0.0',
   description: 'Enterprise Persistent Memory System - Semantic search, fact storage, preference learning, context management and task tracking across sessions',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🧠'
 })
-  .forTrae({
-    categories: ['Memory', 'Context', 'Productivity'],
-    rating: 'advanced',
-    features: ['Cross-session Persistence', 'Semantic Search', 'Fact Storage', 'Preference Learning', 'Task Management', 'Vector Embeddings']
-  })
 
   .addTool({
     name: 'memory_configure',

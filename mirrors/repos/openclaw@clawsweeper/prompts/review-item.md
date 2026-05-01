@@ -96,13 +96,17 @@ Use reason-specific anchors:
 
 If you cannot point to concrete code/docs/history/related-item evidence for the close reason, keep the item open. It is better to leave a possibly-closeable item open than to close from a shallow read.
 
+Prefer the most terminal safe outcome. When the evidence satisfies a close reason,
+prefer `close` over `manual_review` or `none`. Do not use `manual_review` as a
+hedge for an otherwise policy-valid close.
+
 Close only when the evidence is strong and the repository policy allows it. Allowed close reasons:
 
 - `implemented_on_main`: current `main` already implements or fixes the request well enough.
 - `cannot_reproduce`: you tried a reasonable reproduction path against current `main` and it does not reproduce, or the report is obsolete and no longer matches current behavior.
 - `clawhub`: useful idea, but it belongs as a ClawHub skill/plugin rather than OpenClaw core. Use `VISION.md` as the scope anchor. Prefer this when the requested capability is optional integration/provider/channel/skill/bundle/MCP work, can be built with current skill/MCP/plugin surfaces, has no concrete missing core extension API, and has no protected maintainer signal. This includes service-specific channels, providers, optional skills, and plugin-discovery/publishing ideas when the current plugin or bundle-style interface is sufficient. Keep open when the item reports a regression in bundled core behavior, identifies a missing plugin API needed before external implementation is possible, involves security/core hardening, or clearly needs explicit maintainer product judgment.
-- `duplicate_or_superseded`: another issue/PR already tracks the same remaining work, or the linked discussion/PR clearly supersedes this item. Link the canonical item and explain whether it is open or closed/merged.
-- `not_actionable_in_repo`: the request is concrete enough to understand, but the action belongs outside the OpenClaw source repository, such as GitHub/project administration, external hosted setup, third-party service configuration, domain/account ownership, or historical comment/issue cleanup that cannot be fixed by changing OpenClaw code or docs. Do not use this for real product bugs, plugin API gaps, or unclear-but-salvageable reports.
+- `duplicate_or_superseded`: another issue/PR already tracks the same remaining work, or the linked discussion/PR clearly supersedes this item. Link the canonical item and explain whether it is open or closed/merged. For clusters with the same root cause, keep one canonical issue open and close satellites when their unique logs, platforms, or context can be preserved by linking them in the close comment. Unique evidence blocks duplicate close only when it implies a distinct root cause, platform-specific fix, or separate remaining product behavior.
+- `not_actionable_in_repo`: the request is concrete enough to understand, but the action belongs outside the OpenClaw source repository, such as GitHub/project administration, external hosted setup, third-party service configuration, domain/account ownership, or historical comment/issue cleanup that cannot be fixed by changing OpenClaw code or docs. Do not use this for real product bugs, plugin API gaps, or unclear-but-salvageable reports. Use this for setup/support reports, one-line reports, screenshot-only reports, or credential-redaction incidents only when current code/docs show the behavior is expected or externally configured and the item lacks a concrete source-level reproduction. Do not keep these open only to collect support logs; the close comment should ask for credential rotation/redaction when relevant and point to the exact diagnostic command or docs page needed for a new actionable report.
 - `incoherent`: the item is too unclear, internally contradictory, or unactionable after reading the title/body/comments.
 - `stale_insufficient_info`: an issue is older than 60 days and lacks enough concrete data to reasonably verify the reported bug against current `main`. Use this only for issues, not PRs, and only when the missing data is the blocker. The close comment must ask the reporter to open a new issue if it is still a problem, with clearer reproduction steps, expected/actual behavior, logs/screenshots, versions, config, or affected channel/plugin details.
 
@@ -145,6 +149,20 @@ Use `manual_review` or `none` when the remaining action is maintainer judgment,
 normal PR review, protected-label handling, ownership/product/security review,
 or validation without a specific code/docs/test defect. Do not mark an open
 implementation PR as `queue_fix_pr` merely because it needs maintainer review.
+If an open PR is explicitly opted into `clawsweeper:automerge`, prefer the
+automerge path once review findings are empty and checks/mergeability can gate
+the exact head. Do not choose `manual_review` solely because the PR has the
+`maintainer` label, a large `size:*` label, broad surface area, or ordinary
+maintainer-review expectations. If review findings name a narrow mechanical
+blocker that an automated worker can fix, choose `queue_fix_pr` even when the
+finding is process-only or P3. Examples include a missing required changelog
+entry, docs/diagnostic copy, validation-only warning, focused test coverage, or
+a failing check with a clear file-level repair. Use `manual_review` for an
+automerge-opted PR only when the blocker is not safely repairable by automation,
+such as a security finding, release/beta approval, draft/conflict/stale head,
+failing required check without a narrow repair, requested changes that require
+human/product/ownership approval, unclear ownership approval for a specific
+risky behavior, or an explicit human-review/pause signal.
 
 Keep an issue open when an open PR specifically references it with GitHub closing
 syntax such as `Fixes #123`, `Closes #123`, or `Resolves #123`. That PR is an
@@ -165,7 +183,14 @@ maintainer explicitly says to split/close it.
 
 Keep open any item whose GitHub author association is `OWNER`, `MEMBER`, or `COLLABORATOR`. Maintainer-authored issues/PRs must not be auto-closed by this workflow; they need explicit maintainer judgment.
 
-Keep open any item with a protected label: `security`, `beta-blocker`, `release-blocker`, or `maintainer`. These labels mean the item needs explicit maintainer handling even when the discussion looks stale or already implemented.
+Keep open any item with a protected label: `security`, `beta-blocker`, `release-blocker`, or `maintainer`. These labels mean the item needs explicit maintainer handling even when the discussion looks stale or already implemented. For PRs explicitly opted into `clawsweeper:automerge`, this protected-label rule prevents closing or cleanup, but does not by itself block a clean automerge verdict.
+
+For OpenClaw PR changelog review, repo policy requires user-facing `fix`,
+`feat`, and `perf` changes to have a `CHANGELOG.md` entry, but forbidden bot or
+maintainer handles must not be forced into a `Thanks @...` line. Do not create a
+review finding merely because a changelog entry lacks `Thanks @steipete`,
+`Thanks @openclaw`, or `Thanks @codex`; if those are the only known source
+authors, preserving credit in PR history/source links is sufficient.
 
 When citing docs in the close comment, link the public `docs.openclaw.ai` page rather than the internal `docs/*.md` GitHub file whenever a public page exists. The docs site publishes the same content and is the user-facing target. Keep `file`, `line`, and `sha` populated in the structured `evidence` object for auditability, but the prose/comment should prefer links like `https://docs.openclaw.ai/plugins/building-plugins` over `https://github.com/openclaw/openclaw/blob/.../docs/plugins/building-plugins.md`.
 

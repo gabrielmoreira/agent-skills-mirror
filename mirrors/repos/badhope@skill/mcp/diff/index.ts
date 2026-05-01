@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'diff',
   version: '2.0.0',
   description: 'Diff toolkit - text compare, semantic diff, patch generation, merge conflict resolution',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔀'
 })
-  .forTrae({
-    categories: ['Developer Tools', 'Code Review'],
-    rating: 'intermediate',
-    features: ['Text Diff', 'Patch Generation', 'Merge', 'Conflict Resolution']
-  })
   .addTool({
     name: 'diff_text',
     description: 'Compare two texts with line-by-line character-level diff',

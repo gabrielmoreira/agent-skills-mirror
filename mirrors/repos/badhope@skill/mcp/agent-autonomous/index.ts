@@ -33,14 +33,9 @@ export default createMCPServer({
   name: 'autonomous-agent',
   version: '2.0.0',
   description: 'Professional Autonomous Agent Framework - BabyAGI inspired task loop with self-directed goal execution',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🤖'
 })
-  .forTrae({
-    categories: ['AI Agent', 'Autonomy', 'Task Management', 'Automation'],
-    rating: 'advanced',
-    features: ['Task Generation', 'Self-Planning', 'Execution Loop', 'Result Processing', 'State Management']
-  })
 
   .addTool({
     name: 'initialize_objective',

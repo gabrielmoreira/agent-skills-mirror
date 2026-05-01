@@ -14,14 +14,9 @@ export default createMCPServer({
   name: 'gitlab',
   version: '2.0.0',
   description: 'Enterprise GitLab API toolkit - Repositories, merge requests, CI/CD pipelines, issues, groups and user management',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🦊'
 })
-  .forTrae({
-    categories: ['API Integration', 'DevOps'],
-    rating: 'intermediate',
-    features: ['Repository Management', 'Merge Requests', 'CI/CD Pipelines', 'Issues & Boards']
-  })
   .addTool({
     name: 'gitlab_set_token',
     description: 'Set GitLab Personal Access Token for authenticated API calls',

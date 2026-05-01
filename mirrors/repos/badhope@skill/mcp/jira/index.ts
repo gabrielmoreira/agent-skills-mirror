@@ -17,14 +17,9 @@ export default createMCPServer({
   name: 'jira',
   version: '2.0.0',
   description: 'Enterprise Jira API toolkit - Projects, issues, sprints, workflows, search and agile board management',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📋'
 })
-  .forTrae({
-    categories: ['Project Management', 'API Integration'],
-    rating: 'intermediate',
-    features: ['Issue Tracking', 'Sprint Management', 'Project Planning', 'Workflow Automation']
-  })
   .addTool({
     name: 'jira_set_auth',
     description: 'Configure Jira authentication with domain, email, and API token',

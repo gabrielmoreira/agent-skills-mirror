@@ -131,13 +131,8 @@ export default createMCPServer({
   version: '1.0.0',
   description: '浏览器自动化增强版 - 人类行为模拟、反检测指纹、智能交互',
   icon: '🎭',
-  author: 'Trae Official'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['Automation', 'Testing', 'Web Scraping'],
-    rating: 'advanced',
-    features: ['Human Behavior Simulation', 'Anti-Detection', 'Stealth Mode', 'Proxy Support']
-  })
 
   .addTool({
     name: 'browser_list_presets',

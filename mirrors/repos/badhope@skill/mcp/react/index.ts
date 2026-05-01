@@ -94,14 +94,9 @@ export default createMCPServer({
   name: 'react',
   version: '2.0.0',
   description: 'Professional React + TypeScript Toolkit - Architecture detection, hooks generation, render optimization, static analysis, best practices enforcement',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '⚛️'
 })
-  .forTrae({
-    categories: ['Frontend', 'React', 'TypeScript', 'Performance'],
-    rating: 'advanced',
-    features: ['Architecture Detection', 'Hooks Generation', 'Render Optimization', 'Static Analysis', 'Best Practices']
-  })
   .addTool({
     name: 'react_detect_config',
     description: 'Auto-detect React project architecture, framework, state management, and tooling',

@@ -157,7 +157,7 @@ export default createMCPServer({
   name: 'mcp-hub',
   version: '2.0.0',
   description: 'MCP Hub - 80+ Unified Professional Tools',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔌'
 })
   .addTool({

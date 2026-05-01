@@ -57,7 +57,7 @@ export default createMCPServer({
   name: 'web-search',
   version: '1.0.0',
   description: '全网搜索引擎 - 实时网页搜索、维基百科、新闻检索、URL内容提取',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔍'
 })
   .addTool({

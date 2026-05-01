@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 28 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,30 +63,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`mcp/consts.go`](mcp/consts.go) |
 | 3 | ✓ | [`mcp/elicitation_test.go`](mcp/elicitation_test.go) |
 | 4 | ✓ | [`mcp/elicitation_validation_test.go`](mcp/elicitation_validation_test.go) |
-| 5 | ✓ | [`mcp/errors_additional_test.go`](mcp/errors_additional_test.go) |
-| 6 | ✓ | [`mcp/errors_test.go`](mcp/errors_test.go) |
-| 7 | ✓ | [`mcp/errors.go`](mcp/errors.go) |
-| 8 | ✓ | [`mcp/icons_test.go`](mcp/icons_test.go) |
-| 9 | ✓ | [`mcp/prompts_test.go`](mcp/prompts_test.go) |
-| 10 | ✓ | [`mcp/prompts.go`](mcp/prompts.go) |
-| 11 | ✓ | [`mcp/resources_test.go`](mcp/resources_test.go) |
-| 12 | ✓ | [`mcp/resources.go`](mcp/resources.go) |
-| 13 | ✓ | [`mcp/tasks_test.go`](mcp/tasks_test.go) |
-| 14 | ✓ | [`mcp/tasks.go`](mcp/tasks.go) |
-| 15 | ✓ | [`mcp/tools_additional_test.go`](mcp/tools_additional_test.go) |
-| 16 | ✓ | [`mcp/tools_defer_loading_test.go`](mcp/tools_defer_loading_test.go) |
-| 17 | ✓ | [`mcp/tools_properties_test.go`](mcp/tools_properties_test.go) |
-| 18 | ✓ | [`mcp/tools_test.go`](mcp/tools_test.go) |
-| 19 | ✓ | [`mcp/tools.go`](mcp/tools.go) |
-| 20 | ✓ | [`mcp/typed_tools_additional_test.go`](mcp/typed_tools_additional_test.go) |
-| 21 | ✓ | [`mcp/typed_tools_test.go`](mcp/typed_tools_test.go) |
-| 22 | ✓ | [`mcp/typed_tools.go`](mcp/typed_tools.go) |
-| 23 | ✓ | [`mcp/types_test.go`](mcp/types_test.go) |
-| 24 | ✓ | [`mcp/types.go`](mcp/types.go) |
-| 25 | ✓ | [`mcp/utils_additional_test.go`](mcp/utils_additional_test.go) |
-| 26 | ✓ | [`mcp/utils_helpers_test.go`](mcp/utils_helpers_test.go) |
-| 27 | ✓ | [`mcp/utils_test.go`](mcp/utils_test.go) |
-| 28 | ✓ | [`mcp/utils.go`](mcp/utils.go) |
+| 5 | ✓ | [`mcp/error_unmarshal_test.go`](mcp/error_unmarshal_test.go) |
+| 6 | ✓ | [`mcp/errors_additional_test.go`](mcp/errors_additional_test.go) |
+| 7 | ✓ | [`mcp/errors_test.go`](mcp/errors_test.go) |
+| 8 | ✓ | [`mcp/errors.go`](mcp/errors.go) |
+| 9 | ✓ | [`mcp/icons_test.go`](mcp/icons_test.go) |
+| 10 | ✓ | [`mcp/prompts_test.go`](mcp/prompts_test.go) |
+| 11 | ✓ | [`mcp/prompts.go`](mcp/prompts.go) |
+| 12 | ✓ | [`mcp/resources_test.go`](mcp/resources_test.go) |
+| 13 | ✓ | [`mcp/resources.go`](mcp/resources.go) |
+| 14 | ✓ | [`mcp/tasks_test.go`](mcp/tasks_test.go) |
+| 15 | ✓ | [`mcp/tasks.go`](mcp/tasks.go) |
+| 16 | ✓ | [`mcp/tools_additional_test.go`](mcp/tools_additional_test.go) |
+| 17 | ✓ | [`mcp/tools_defer_loading_test.go`](mcp/tools_defer_loading_test.go) |
+| 18 | ✓ | [`mcp/tools_properties_test.go`](mcp/tools_properties_test.go) |
+| 19 | ✓ | [`mcp/tools_test.go`](mcp/tools_test.go) |
+| 20 | ✓ | [`mcp/tools.go`](mcp/tools.go) |
+| 21 | ✓ | [`mcp/typed_tools_additional_test.go`](mcp/typed_tools_additional_test.go) |
+| 22 | ✓ | [`mcp/typed_tools_test.go`](mcp/typed_tools_test.go) |
+| 23 | ✓ | [`mcp/typed_tools.go`](mcp/typed_tools.go) |
+| 24 | ✓ | [`mcp/types_test.go`](mcp/types_test.go) |
+| 25 | ✓ | [`mcp/types.go`](mcp/types.go) |
+| 26 | ✓ | [`mcp/utils_additional_test.go`](mcp/utils_additional_test.go) |
+| 27 | ✓ | [`mcp/utils_helpers_test.go`](mcp/utils_helpers_test.go) |
+| 28 | ✓ | [`mcp/utils_test.go`](mcp/utils_test.go) |
+| 29 | ✓ | [`mcp/utils.go`](mcp/utils.go) |
 
 ---
 

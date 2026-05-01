@@ -6,14 +6,9 @@ export default createMCPServer({
   name: 'code-generator',
   version: '2.0.0',
   description: 'Intelligent scaffolding engine - CRUD APIs, components, templates with project auto-detection',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '⚡'
 })
-  .forTrae({
-    categories: ['Code Generation', 'Core Development'],
-    rating: 'intermediate',
-    features: ['CRUD APIs', 'Components', 'Project Templates', 'Tech Stack Auto-detection']
-  })
   .addTool({
     name: 'detect_project_type',
     description: 'Auto-detect project tech stack and framework configuration',
@@ -129,7 +124,7 @@ export default createMCPServer({
     }
   })
   .addResource({
-    uri: 'trae://code-generator/templates',
+    uri: 'mcp://code-generator/templates',
     name: 'Code Generation Templates',
     description: 'Available code templates and generation patterns',
     get: async () => ({

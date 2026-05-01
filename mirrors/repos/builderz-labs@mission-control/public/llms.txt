@@ -1,0 +1,30 @@
+# Mission Control
+
+> Open-source dashboard for AI agent orchestration.
+
+Mission Control is a self-hosted dashboard for managing AI agent fleets. It provides task dispatch, cost tracking, quality review gates, recurring task scheduling, and multi-agent coordination — all powered by SQLite with zero external dependencies.
+
+## Key Features
+- Agent management with full lifecycle (register, heartbeat, wake, retire)
+- Kanban task board with priorities, assignments, and comments
+- Task queue with atomic claiming and priority-based dispatch
+- Auto-dispatch with model routing (Opus/Sonnet/Haiku by task complexity)
+- Aegis quality review gates for task sign-off
+- Real-time monitoring via WebSocket + SSE
+- Token usage and cost tracking with per-model breakdowns
+- Natural language recurring tasks with cron scheduling
+- MCP server with 35+ tools for agent integration
+- CLI for headless/scripted usage
+- Role-based access control (viewer, operator, admin)
+- REST API with OpenAPI spec
+
+## Stack
+Next.js 16, React 19, TypeScript 5, SQLite (better-sqlite3), Tailwind CSS
+
+## Links
+- Source: https://github.com/builderz-labs/mission-control
+- Landing page: https://mc.builderz.dev
+- License: MIT
+
+## llms-full.txt
+For the complete API reference and integration guide, see docs/cli-agent-control.md in the repository.

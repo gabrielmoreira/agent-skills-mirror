@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'game-dev-toolkit',
   version: '2.0.0',
   description: 'Professional Game Development Toolkit - Unity, Unreal, Godot, Phaser project setup, sprite tools, audio processing, shader generation, architecture patterns',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🎮'
 })
-  .forTrae({
-    categories: ['Game Development', 'Unity', 'Unreal', 'Godot', 'Phaser'],
-    rating: 'advanced',
-    features: ['Project Setup', 'Spritesheet Tools', 'Shader Templates', 'Audio Configuration', 'Architecture Patterns', 'Physics Setup']
-  })
 
   .addTool({
     name: 'game_project_setup',
@@ -227,7 +222,7 @@ AudioManager="*res://src/scripts/autoload/AudioManager.gd"`,
             duration: Math.round(1000 / fps)
           })),
           meta: {
-            app: 'Trae Game Dev Toolkit',
+            app: 'MCP Game Dev Toolkit',
             version: '2.0',
             image: `${animName}_sheet.png`,
             format: 'RGBA8888',

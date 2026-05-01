@@ -7,14 +7,9 @@ export default createMCPServer({
   name: 'documentation',
   version: '2.0.0',
   description: 'Automated documentation engine - JSDoc, README, API docs, TypeScript types extraction',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '📚'
 })
-  .forTrae({
-    categories: ['Documentation', 'Development'],
-    rating: 'beginner',
-    features: ['JSDoc Generation', 'README Templates', 'API Documentation', 'Type Extraction']
-  })
   .addTool({
     name: 'extract_public_apis',
     description: 'Extract public API exports and type definitions from source files',
@@ -154,7 +149,7 @@ export default createMCPServer({
     }
   })
   .addResource({
-    uri: 'trae://documentation/standards',
+    uri: 'mcp://documentation/standards',
     name: 'Documentation Standards',
     description: 'Documentation templates and quality standards',
     get: async () => ({

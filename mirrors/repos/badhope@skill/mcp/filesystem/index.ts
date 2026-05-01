@@ -27,13 +27,8 @@ export default createMCPServer({
   version: '2.0.0',
   description: 'Enterprise Filesystem Toolkit - Advanced file operations, search, permissions, and batch processing',
   icon: '📂',
-  author: 'Trae Professional'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['System', 'Productivity', 'Development'],
-    rating: 'intermediate',
-    features: ['File Operations', 'Advanced Search', 'Bulk Processing', 'Permissions', 'Deduplication', 'Watching']
-  })
   .addTool({
     name: 'fs_list_directory',
     description: 'List directory contents with detailed information',

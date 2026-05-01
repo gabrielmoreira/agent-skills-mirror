@@ -28,7 +28,7 @@ async function httpsGet(url: string): Promise<string> {
 async function searchGitHub(query: string, token?: string): Promise<any> {
   const headers: any = {
     'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'Trae-MCP-Search/1.0'
+    'User-Agent': 'Universal-MCP-Search/1.0'
   }
   if (token) headers['Authorization'] = `token ${token}`
 
@@ -73,14 +73,9 @@ export default createMCPServer({
   name: 'search-tools',
   version: '1.0.0',
   description: 'Comprehensive search and documentation toolkit - GitHub code search, StackOverflow, academic papers, and multi-source research',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🔍'
 })
-  .forTrae({
-    categories: ['Search', 'Research', 'Documentation'],
-    rating: 'intermediate',
-    features: ['Code Search', 'Q&A Search', 'Academic Search', 'Documentation Lookup', 'Multi-source Research']
-  })
   .addTool({
     name: 'search_github_code',
     description: 'Search GitHub repositories and code',

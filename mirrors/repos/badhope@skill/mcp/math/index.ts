@@ -69,7 +69,7 @@ export default createMCPServer({
   name: 'math',
   version: '1.0.0',
   description: '数学计算工具集 - 阶乘、排列组合、最大公约数、质数判断、统计计算',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🧮'
 })
   .addTool({

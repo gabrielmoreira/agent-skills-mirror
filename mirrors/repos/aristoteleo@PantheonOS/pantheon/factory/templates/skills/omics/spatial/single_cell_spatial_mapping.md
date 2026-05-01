@@ -126,9 +126,10 @@ before imputation or label transfer.
 ```python
 import numpy as np
 
-pi = mp.solutions[('src', 'tgt')].transport_matrix
-pi = np.array(pi)
-pi *= pi.shape[0]  # REQUIRED: scale for correct imputation magnitude
+sol = list(mp.solutions.values())[0]
+# JAX-backed arrays are read-only; force a writable float32 copy
+pi = np.array(sol.transport_matrix, dtype=np.float32, copy=True)
+pi *= float(pi.shape[0])  # REQUIRED: scale for correct imputation magnitude
 ```
 
 ### 6. Impute Gene Expression
@@ -153,7 +154,37 @@ adata_imputed.obs_names = adata_sp.obs_names
 adata_imputed.var_names = adata_sc.var_names
 ```
 
-### 7. Transfer Cell Type Labels
+### 7. Cross-Modality Imputation
+
+The transport matrix maps **cells**, not genes. Any feature matrix that shares
+the same sc cells can be projected to spatial coordinates using the same `pi`.
+
+This is useful when you have paired multiome data (e.g. scRNA + scATAC from
+the same cells): build `pi` from RNA (which has more shared genes with spatial),
+then reuse it to impute ATAC or other modalities.
+
+```python
+# Example: impute ATAC accessibility to spatial coordinates
+# adata_atac must have the SAME cells (same obs index) as adata_sc
+atac_X = adata_atac.X
+if hasattr(atac_X, 'toarray'):
+    atac_X = atac_X.toarray()
+imputed_atac = pi.dot(atac_X.astype(np.float32))
+
+adata_imputed_atac = AnnData(
+    X=imputed_atac,
+    obsm=adata_sp.obsm.copy(),
+    obs=adata_sp.obs.copy()
+)
+adata_imputed_atac.var_names = adata_atac.var_names
+```
+
+> [!IMPORTANT]
+> The sc cells in the other modality must be identical to (or a subset of) the
+> cells used to build `pi`. If they come from multiome experiments, match
+> barcodes between RNA and ATAC before mapping.
+
+### 8. Transfer Cell Type Labels
 
 Map cell type annotations from single-cell to spatial:
 
@@ -221,8 +252,9 @@ for i, sp_batch in enumerate(sp_batches):
     mp = mp.prepare(sc_attr=None, xy_callback="local-pca")
     mp = mp.solve(alpha=0, tau_a=1, tau_b=0.9, device="cpu")
     
-    pi = np.array(mp.solutions[('src', 'tgt')].transport_matrix)
-    pi *= pi.shape[0]
+    sol = list(mp.solutions.values())[0]
+    pi = np.array(sol.transport_matrix, dtype=np.float32, copy=True)
+    pi *= float(pi.shape[0])
     
     # Impute and transfer labels per batch...
     imputed_X = pi.dot(gexp_sc)

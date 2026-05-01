@@ -13,14 +13,9 @@ export default createMCPServer({
   name: 'search-pdf-advanced',
   version: '2.0.0',
   description: 'Enterprise Search + Advanced PDF Toolkit - Full text search, OCR, forms, watermarks, signatures, compression',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔍'
 })
-  .forTrae({
-    categories: ['Search', 'Documents', 'Enterprise'],
-    rating: 'advanced',
-    features: ['Elasticsearch', 'OCR', 'PDF Forms', 'Watermarks', 'Comparison', 'Compression']
-  })
 
   .addTool({
     name: 'es_configure',

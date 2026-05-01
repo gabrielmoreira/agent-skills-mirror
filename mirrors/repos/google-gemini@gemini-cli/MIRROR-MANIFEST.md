@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,18 +72,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.gemini/skills/string-reviewer/SKILL.md`](.gemini/skills/string-reviewer/SKILL.md) |
 | 12 | ✓ | [`docs/cli/creating-skills.md`](docs/cli/creating-skills.md) |
 | 13 | ✓ | [`docs/cli/gemini-md.md`](docs/cli/gemini-md.md) |
-| 14 | ✓ | [`docs/cli/skills.md`](docs/cli/skills.md) |
-| 15 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 16 | ✓ | [`packages/a2a-server/GEMINI.md`](packages/a2a-server/GEMINI.md) |
-| 17 | ✓ | [`packages/cli/GEMINI.md`](packages/cli/GEMINI.md) |
-| 18 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md) |
-| 19 | ✓ | [`packages/core/GEMINI.md`](packages/core/GEMINI.md) |
-| 20 | ✓ | [`packages/core/src/skills/builtin/skill-creator/SKILL.md`](packages/core/src/skills/builtin/skill-creator/SKILL.md) |
-| 21 | ✓ | [`packages/devtools/GEMINI.md`](packages/devtools/GEMINI.md) |
-| 22 | ✓ | [`packages/sdk/GEMINI.md`](packages/sdk/GEMINI.md) |
-| 23 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
-| 24 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
-| 25 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
+| 14 | ✓ | [`docs/cli/skills-best-practices.md`](docs/cli/skills-best-practices.md) |
+| 15 | ✓ | [`docs/cli/skills.md`](docs/cli/skills.md) |
+| 16 | ✓ | [`docs/cli/using-agent-skills.md`](docs/cli/using-agent-skills.md) |
+| 17 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 18 | ✓ | [`packages/a2a-server/GEMINI.md`](packages/a2a-server/GEMINI.md) |
+| 19 | ✓ | [`packages/cli/GEMINI.md`](packages/cli/GEMINI.md) |
+| 20 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/greeter/SKILL.md) |
+| 21 | ✓ | [`packages/core/GEMINI.md`](packages/core/GEMINI.md) |
+| 22 | ✓ | [`packages/core/src/skills/builtin/skill-creator/SKILL.md`](packages/core/src/skills/builtin/skill-creator/SKILL.md) |
+| 23 | ✓ | [`packages/devtools/GEMINI.md`](packages/devtools/GEMINI.md) |
+| 24 | ✓ | [`packages/sdk/GEMINI.md`](packages/sdk/GEMINI.md) |
+| 25 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
+| 26 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
+| 27 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
 
 ---
 

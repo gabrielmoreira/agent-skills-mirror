@@ -97,14 +97,9 @@ export default createMCPServer({
   name: 'code-review',
   version: '2.0.0',
   description: 'Enterprise-grade code quality analysis - bugs, complexity, security, maintainability with standardized reporting',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🔍'
 })
-  .forTrae({
-    categories: ['Code Quality', 'Core Development'],
-    rating: 'intermediate',
-    features: ['Bug Detection', 'Complexity Analysis', 'Security Scanning', 'Maintainability Metrics']
-  })
   .addTool({
     name: 'detect_bugs',
     description: 'Static bug detection analysis with severity classification',
@@ -301,7 +296,7 @@ export default createMCPServer({
     }
   })
   .addResource({
-    uri: 'trae://code-review/quality-dashboard',
+    uri: 'mcp://code-review/quality-dashboard',
     name: 'Code Quality Dashboard',
     description: 'Project-wide code quality metrics and trends',
     get: async () => {

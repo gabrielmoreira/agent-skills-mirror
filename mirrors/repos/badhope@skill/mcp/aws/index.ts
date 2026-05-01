@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'aws',
   version: '2.0.0',
   description: 'AWS CLI toolkit - EC2, S3, Lambda, CloudWatch operations with multi-profile support',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '☁️'
 })
-  .forTrae({
-    categories: ['Cloud', 'DevOps'],
-    rating: 'intermediate',
-    features: ['EC2', 'S3', 'Lambda', 'CloudWatch', 'IAM']
-  })
   .addTool({
     name: 'aws_ec2_list',
     description: 'List EC2 instances with filtering and status checks',

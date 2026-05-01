@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'puppeteer',
   version: '2.0.0',
   description: 'Puppeteer toolkit - screenshots, scraping, automation, PDF generation',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🎭'
 })
-  .forTrae({
-    categories: ['Automation', 'Testing'],
-    rating: 'advanced',
-    features: ['Screenshots', 'Scraping', 'Testing', 'PDF']
-  })
   .addTool({
     name: 'puppet_screenshot',
     description: 'Generate screenshot code',

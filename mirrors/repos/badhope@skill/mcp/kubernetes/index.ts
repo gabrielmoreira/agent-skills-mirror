@@ -14,13 +14,8 @@ export default createMCPServer({
   version: '1.0.0',
   description: 'Kubernetes toolkit - Manage pods, deployments, services, configmaps, and cluster resources',
   icon: '☸️',
-  author: 'Trae Official'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['DevOps', 'Infrastructure', 'Containers'],
-    rating: 'advanced',
-    features: ['Pod Management', 'Deployments', 'Services', 'ConfigMaps', 'Secrets', 'Logs']
-  })
   .addTool({
     name: 'k8s_set_kubeconfig',
     description: 'Set kubeconfig path or context',

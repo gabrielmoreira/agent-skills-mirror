@@ -150,6 +150,7 @@ Agent disambiguation → `references/agent-disambiguation.md`
 | Refactor | `refactor` | | Refactoring | Zen → Radar |
 | Optimize | `optimize` | | Performance improvement | Bolt/Tuner → Radar |
 | Proactive | `proactive` | | /Nexus with no arguments, project state scan | Scan project → recommend |
+| Apex | `apex` | | Full-cycle auto-implementation: discovery → spec → parallel design → risk gate → loop → ship. With no-args, also runs Phase 0 to **autonomously discover the goal** before Phase 1. For high-stakes new features with cross-team impact. | (Phase 0: project_scan + spark + rank + voice/pulse/compete/sage/magi as available, when no goal supplied) → Discovery (plea+researcher+echo?) → Ideate (riff) → Verdict (magi) → Spec (accord+void?+scribe?) → Design [Tech (atlas+gateway?+schema?) ‖ UX (vision sub-orchestrates muse+palette+prose+flow?+frame?+forge+echo)] → Risk Gate (omen+ripple+echo) → Loop (orbit drives builder+artisan?+showcase?+judge+radar+voyager?) → Ship (guardian+launch) |
 
 ## Subcommand Dispatch
 
@@ -166,6 +167,7 @@ Execution-control Mode (AUTORUN_FULL / AUTORUN / GUIDED / INTERACTIVE) is applie
 - `refactor`: Zen → Radar[coverage] chain. +Atlas for architectural scope.
 - `optimize`: Bolt/Tuner → Radar[edge] chain. +Schema for DB-heavy work.
 - `proactive`: Follow `references/proactive-mode.md` to scan project state and recommend next actions.
+- `apex`: Full-cycle auto-implementation across 6 sequential phases (Discovery → Ideate → Verdict → Spec → Design+Risk Gate → Implement Loop → Ship) with parallel Tech/UX sub-tracks in Phase 5. Vision sub-orchestrates UX (Muse/Palette/Prose/Flow/Frame/Forge/Echo) on Claude Code. **Orbit sub-orchestrates the implementation loop on Codex CLI (fixed engine — `spawn_agent`/`wait_agent`)**, driving Builder/Artisan/Showcase/Judge/Radar/Voyager. Risk Gate is tri-axis (Omen + Ripple + Echo). With no-args, Phase 0 autonomously discovers the goal before Phase 1. Read `references/apex-recipe.md` for phase contracts, conditional inclusion rules, sub-orchestration topology, engine boundary semantics, and AUTORUN chain template. **Prerequisite**: Codex CLI must be reachable with `agents.max_depth ≥ 2` before Phase 6; otherwise Orbit fails the handoff. **Confirm with user before launch — Apex spawns 8-25 agents and is high-cost.**
 
 ## Workflow
 
@@ -306,6 +308,7 @@ Detailed execution flows: `references/execution-phases.md`, `references/orchestr
 | `review`, `check`, `audit` | Quality review chain | Review report | `references/routing-matrix.md` |
 | `design system docs`, `token docs`, `component catalog` | Design system documentation chain | Token + catalog + diagrams + API docs | `references/routing-matrix.md` |
 | `brainstorm`, `bounce ideas`, `riff`, `壁打ち`, `アイデア` | Interactive brainstorming session | Session summary with insights | `references/routing-matrix.md` |
+| `apex`, `auto-impl`, `自動実装`, `フル実装`, `discovery to launch`, `最強`, `end-to-end feature` | Apex full-cycle auto-implementation (discovery → ship) | Working feature + Risk Gate report + Release plan | `references/apex-recipe.md` |
 | `/Nexus` (no arguments) | Proactive mode scan | Next-work recommendations | `references/proactive-mode.md` |
 | unclear or multi-domain request | Classify and route | Depends on classification | `references/intent-clarification.md` |
 
@@ -421,6 +424,8 @@ Read only the files that match the current decision point.
 | `references/production-reliability-anti-patterns.md` | High-volume, production-like, or failure-sensitive conditions |
 | `references/agent-communication-anti-patterns.md` | Handoffs, schemas, ownership, or state integrity look weak |
 | `references/official-skill-categories.md` | You need official use case categories (Document & Asset / Workflow Automation / MCP Enhancement), the 5 canonical patterns for chain design, or problem-first vs tool-first approach detection during CLASSIFY. |
+| `references/apex-recipe.md` | User invoked `/nexus apex` or asks for full-cycle auto-implementation (discovery → spec → parallel design → risk gate → loop → ship). Read for phase contracts, conditional inclusion rules, sub-orchestration topology (Vision for UX, Orbit for loop), tri-axis Risk Gate criteria, and AUTORUN chain template. |
+| `references/apex-walkthrough.md` | User asks "what does apex do" / "apex で何が起きる" / requests a visual or narrative explanation of the apex pipeline. Read for Mermaid flowcharts, sequence diagrams, per-phase storyboards, parallel topology visualisation, failure-and-rollback paths, Gantt timeline, and concrete example outputs. Use this for human-facing explanation; use `apex-recipe.md` for machine contract. |
 | `_common/OPUS_47_AUTHORING.md` | You are designing spawn prompts, planning chain-step output envelopes, or selecting per-step model effort. Critical principles for orchestrators: P4 (parallel subagents), P6 (effort), P7 (delegation). |
 
 ## Operational Notes

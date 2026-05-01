@@ -13,14 +13,9 @@ export default createMCPServer({
   name: 'gitee',
   version: '2.0.0',
   description: 'Enterprise Gitee(码云) API toolkit - Chinese Git hosting platform repository, PR, issues and user management',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🐎'
 })
-  .forTrae({
-    categories: ['API Integration', 'DevOps'],
-    rating: 'intermediate',
-    features: ['Repository Management', 'Pull Requests', 'Issues', 'Gitee Pages']
-  })
   .addTool({
     name: 'gitee_set_token',
     description: 'Set Gitee Personal Access Token for authenticated API calls',

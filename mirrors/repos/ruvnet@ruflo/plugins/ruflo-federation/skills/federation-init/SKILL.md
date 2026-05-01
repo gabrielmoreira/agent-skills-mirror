@@ -7,8 +7,8 @@ argument-hint: "[--compliance hipaa|soc2|gdpr|none]"
 Initialize this node for federation. Generates an ed25519 keypair, creates the federation config, and optionally sets a compliance mode.
 
 Steps:
-1. `npx @claude-flow/cli@latest federation init`
-2. If a compliance mode is specified, configure it: `npx @claude-flow/cli@latest federation config --compliance MODE`
+1. `npx -y -p @claude-flow/plugin-agent-federation@latest ruflo-federation init`
+2. If a compliance mode is specified, configure it: `npx -y -p @claude-flow/plugin-agent-federation@latest ruflo-federation config --compliance MODE`
 3. Show the node's public key and endpoint for sharing with peers
 
 Store init event:

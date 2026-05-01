@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 68 fi
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,9 +124,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`skills/user-skills/generated/infra/SKILL.md`](skills/user-skills/generated/infra/SKILL.md) |
 | 64 | ✓ | [`skills/user-skills/infrastructure-extensions/SKILL.md`](skills/user-skills/infrastructure-extensions/SKILL.md) |
 | 65 | ✓ | [`skills/user-skills/local-development/SKILL.md`](skills/user-skills/local-development/SKILL.md) |
-| 66 | ✓ | [`skills/user-skills/project-structure/SKILL.md`](skills/user-skills/project-structure/SKILL.md) |
-| 67 | ✓ | [`skills/user-skills/webiny-sdk/SKILL.md`](skills/user-skills/webiny-sdk/SKILL.md) |
-| 68 | ✓ | [`skills/user-skills/website-builder/SKILL.md`](skills/user-skills/website-builder/SKILL.md) |
+| 66 | ✓ | [`skills/user-skills/mailer-smtp/SKILL.md`](skills/user-skills/mailer-smtp/SKILL.md) |
+| 67 | ✓ | [`skills/user-skills/project-structure/SKILL.md`](skills/user-skills/project-structure/SKILL.md) |
+| 68 | ✓ | [`skills/user-skills/webiny-sdk/SKILL.md`](skills/user-skills/webiny-sdk/SKILL.md) |
+| 69 | ✓ | [`skills/user-skills/website-builder/SKILL.md`](skills/user-skills/website-builder/SKILL.md) |
 
 ---
 

@@ -11,13 +11,8 @@ export default createMCPServer({
   version: '2.0.0',
   description: 'Enterprise PDF Toolkit - Extract text, merge, split, convert, OCR, and analyze PDF documents',
   icon: '📄',
-  author: 'Trae Professional'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['Documents', 'Productivity', 'Enterprise'],
-    rating: 'intermediate',
-    features: ['Text Extraction', 'Merge/Split', 'Conversion', 'Analysis', 'Compression', 'OCR', 'Watermark']
-  })
   
   .addTool({
     name: 'pdf_extract_text',

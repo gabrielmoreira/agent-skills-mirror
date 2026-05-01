@@ -4,15 +4,10 @@ import { validateParams, formatSuccess, formatError, safeExec, safeExecRaw, sani
 export default createMCPServer({
   name: 'mcp-template',
   version: '2.0.0',
-  description: 'Professional MCP Template - Standardized starter kit for building high-quality Trae MCP tools with best practices',
-  author: 'Trae Professional',
+  description: 'Professional MCP Template - Standardized starter kit for building high-quality Universal MCP tools with best practices',
+  author: 'MCP Expert Community',
   icon: '✨'
 })
-  .forTrae({
-    categories: ['Development', 'Template', 'Starter Kit', 'Best Practices'],
-    rating: 'professional',
-    features: ['Tool Template', 'Prompt Template', 'Resource Template', 'Parameter Validation', 'Error Handling']
-  })
 
   .addTool({
     name: 'generate_mcp_scaffold',
@@ -29,7 +24,7 @@ export default createMCPServer({
       const validation = validateParams(params, {
         name: { type: 'string', required: true },
         description: { type: 'string', required: true },
-        author: { type: 'string', required: false, default: 'Trae Developer' },
+        author: { type: 'string', required: false, default: 'MCP Developer' },
         icon: { type: 'string', required: false, default: '✨' },
         category: { type: 'string', required: false, default: 'Utilities' },
         includeExampleTools: { type: 'boolean', required: false, default: true }
@@ -52,11 +47,6 @@ export default createMCPServer({
   author: '${validation.data.author}',
   icon: '${validation.data.icon}'
 })
-  .forTrae({
-    categories: ['${validation.data.category}', 'Productivity'],
-    rating: 'intermediate',
-    features: ['Feature 1', 'Feature 2', 'Feature 3']
-  })
 
   // Add your tools here
 
@@ -134,7 +124,7 @@ export default createMCPServer({
         { name: 'Uses formatSuccess/formatError', weight: 15 },
         { name: 'Version 2.0.0', weight: 5 },
         { name: 'Professional description', weight: 10 },
-        { name: 'forTrae metadata present', weight: 10 },
+        { name: 'withMetadata metadata present', weight: 10 },
         { name: 'Icon and author set', weight: 5 },
         { name: 'No console.log statements', weight: 5 },
         { name: 'Proper TypeScript types', weight: 10 },
@@ -267,7 +257,7 @@ ${validationRules}
 ### 🏗️ PHASE 2: IMPLEMENTATION
 - [ ] Copy from professional template
 - [ ] Update package metadata (name, version, description)
-- [ ] Add forTrae metadata (categories, rating, features)
+- [ ] Add withMetadata metadata (categories, rating, features)
 - [ ] Implement each tool with:
   - [ ] Clear specific description
   - [ ] Complete parameter definitions

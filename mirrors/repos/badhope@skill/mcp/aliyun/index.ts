@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'aliyun',
   version: '2.0.0',
   description: '阿里云 toolkit - ECS, OSS, RDS, CDN, Function Compute',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '☁️'
 })
-  .forTrae({
-    categories: ['Cloud', 'DevOps'],
-    rating: 'intermediate',
-    features: ['ECS', 'OSS', 'RDS', 'CDN', 'FC']
-  })
   .addTool({
     name: 'aliyun_ecs_list',
     description: 'List ECS instances',

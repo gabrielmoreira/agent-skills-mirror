@@ -58,14 +58,9 @@ export default createMCPServer({
   name: 'ui-design-kit',
   version: '2.0.0',
   description: 'Enterprise UI Design System Toolkit - Professional color, typography, motion, and component systems',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🎨'
 })
-  .forTrae({
-    categories: ['UI Design', 'Design System', 'CSS', 'Tokens', 'Components'],
-    rating: 'advanced',
-    features: ['Color System', 'Motion Library', 'Design Tokens', 'Component Generator']
-  })
   .addTool({
     name: 'ui_generate_palette',
     description: 'Generate professional accessible color palettes with Tailwind 11-shade scale',

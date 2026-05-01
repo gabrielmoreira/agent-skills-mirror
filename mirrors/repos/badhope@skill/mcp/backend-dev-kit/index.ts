@@ -6,14 +6,9 @@ export default createMCPServer({
   name: 'backend-dev-kit',
   version: '2.0.0',
   description: 'Enterprise Backend Development Kit - Auth, Database, Cache, Queue, Validation, Middleware',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '⚙️'
 })
-  .forTrae({
-    categories: ['Backend', 'Database', 'Security', 'API'],
-    rating: 'advanced',
-    features: ['Authentication', 'Database', 'Caching', 'Queues', 'Validation', 'Middleware']
-  })
   .addTool({
     name: 'auth_generate_tokens',
     description: 'Generate JWT tokens with configurable expiration and claims',
@@ -30,7 +25,7 @@ export default createMCPServer({
         secret: { type: 'string', required: true },
         expiresIn: { type: 'string', required: false, default: '1h' },
         roles: { type: 'string', required: false, default: '' },
-        issuer: { type: 'string', required: false, default: 'trae-backend' }
+        issuer: { type: 'string', required: false, default: 'mcp-backend' }
       })
       if (!validation.valid) return formatError('Invalid parameters', validation.errors)
 

@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'cloudflare',
   version: '2.0.0',
   description: 'Cloudflare toolkit - DNS, Workers, Cache, Rules, Analytics API',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🌩️'
 })
-  .forTrae({
-    categories: ['Cloud', 'Networking'],
-    rating: 'intermediate',
-    features: ['DNS', 'Workers', 'Cache', 'Rules', 'Analytics']
-  })
   .addTool({
     name: 'cf_dns_list',
     description: 'List DNS records for a zone',

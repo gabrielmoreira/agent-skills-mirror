@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'sentry',
   version: '2.0.0',
   description: 'Sentry toolkit - error monitoring, release management, performance profiling',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🛡️'
 })
-  .forTrae({
-    categories: ['Monitoring', 'Debugging'],
-    rating: 'intermediate',
-    features: ['Error Tracking', 'Releases', 'Performance', 'Source Maps']
-  })
   .addTool({
     name: 'sentry_init',
     description: 'Generate Sentry initialization code',

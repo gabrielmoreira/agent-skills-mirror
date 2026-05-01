@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'encoding',
   version: '2.0.0',
   description: 'Encoding toolkit - base64, url, html, hex, jwt, hash, and compression utilities',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔐'
 })
-  .forTrae({
-    categories: ['Security', 'Developer Tools'],
-    rating: 'intermediate',
-    features: ['Base64', 'URL Encode', 'HTML Entities', 'Hashing', 'JWT']
-  })
   .addTool({
     name: 'enc_base64',
     description: 'Base64 encode/decode with file and URL-safe variants',

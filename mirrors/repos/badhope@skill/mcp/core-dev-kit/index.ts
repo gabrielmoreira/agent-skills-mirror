@@ -8,14 +8,9 @@ export default createMCPServer({
   name: 'core-dev-kit',
   version: '2.0.0',
   description: 'Professional Core Development Kit - Essential tools for Git, Docker, Filesystem, Terminal, Encoding, and Security operations',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔧'
 })
-  .forTrae({
-    categories: ['Development', 'Version Control', 'DevOps', 'System', 'Utilities'],
-    rating: 'professional',
-    features: ['Git Operations', 'Docker Management', 'File System', 'Terminal Execution', 'Encoding', 'Hashing', 'Compression']
-  })
 
   .addTool({
     name: 'git_clone',

@@ -6,14 +6,9 @@ export default createMCPServer({
   name: 'academic-writing',
   version: '2.0.0',
   description: 'Professional Academic Writing Toolkit - Paper writing, citation management, literature search, BibTeX, LaTeX support, systematic review',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📝'
 })
-  .forTrae({
-    categories: ['Writing', 'Academic', 'Research', 'Publication', 'LaTeX'],
-    rating: 'advanced',
-    features: ['Citation Management', 'LaTeX Support', 'BibTeX Tools', 'Literature Search', 'Systematic Review', 'Format Conversion']
-  })
 
   .addTool({
     name: 'paper_structure_outline',

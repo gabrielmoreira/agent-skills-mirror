@@ -157,6 +157,17 @@ Four types of skills. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full taxono
 
 Before creating a PR, adding a skill, or preparing any contribution, you MUST read [CONTRIBUTING.md](CONTRIBUTING.md). It covers accepted change types, the four skill types and their guidelines, `SKILL.md` format rules, and the pre-submission checklist.
 
+## PR Hygiene
+
+Before creating a PR, run these checks:
+
+```bash
+git diff upstream/main --stat HEAD
+git log upstream/main..HEAD --oneline
+```
+
+Show the output and wait for approval. Installation-specific files (group files, .claude/settings.json, local configs) should not be included.
+
 ## Development
 
 Run commands directly — don't tell the user to run them.

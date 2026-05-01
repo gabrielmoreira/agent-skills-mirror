@@ -13,13 +13,9 @@ export default createMCPServer({
   name: 'performance-optimizer',
   version: '1.0.0',
   description: 'Performance optimization - build speed, bundle analysis, dead code elimination',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '⚡'
-})  .forTrae({
-    categories: ['Performance'],
-    rating: 'advanced',
-    features: ['Build Speed, Bundle Size, Runtime']
-  })
+})
   .addTool({
     name: 'analyze_bundle',
     description: 'Performance optimization - build speed, bundle analysis, dead code elimination',
@@ -28,10 +24,6 @@ export default createMCPServer({
       hasAnalyzer: await fs.access('node_modules/webpack-bundle-analyzer').then(() => true).catch(() => false),
       distSize: await safeExec('du -sh dist 2>/dev/null || echo "N/A"')
     })
-  })  .forTrae({
-    categories: ['Performance'],
-    rating: 'advanced',
-    features: ['Build Speed, Bundle Size, Runtime']
   })
   .addTool({
     name: 'find_large_files',
@@ -42,10 +34,6 @@ export default createMCPServer({
     execute: async (params: Record<string, any>) => ({
       largeFiles: await safeExec(`find . -type f -size +${params.thresholdKB || 50}k -name "*.js" -o -name "*.ts" | head -20`)
     })
-  })  .forTrae({
-    categories: ['Performance'],
-    rating: 'advanced',
-    features: ['Build Speed, Bundle Size, Runtime']
   })
   .addTool({
     name: 'check_unused_code',

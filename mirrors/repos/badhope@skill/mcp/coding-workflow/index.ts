@@ -19,11 +19,6 @@ export default createMCPServer({
   description: 'Standard development workflow - feature branch, TDD cycle, code review, release',
   icon: '🚀'
 })
-  .forTrae({
-    categories: ['Workflow, DevEx'],
-    rating: 'intermediate',
-    features: ['TDD, Feature Branches, PR Ready']
-  })
   .addTool({
     name: 'create_feature_branch',
     description: 'Create feature branch from latest base branch',

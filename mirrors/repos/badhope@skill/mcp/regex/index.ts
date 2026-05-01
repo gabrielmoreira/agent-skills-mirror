@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'regex',
   version: '2.0.0',
   description: 'Regex toolkit - testing, explanation, generation, common patterns library',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔍'
 })
-  .forTrae({
-    categories: ['Developer Tools', 'Utilities'],
-    rating: 'intermediate',
-    features: ['Match', 'Replace', 'Explain', 'Validate', 'Pattern Library']
-  })
   .addTool({
     name: 'regex_test',
     description: 'Test regex against input with detailed match information',

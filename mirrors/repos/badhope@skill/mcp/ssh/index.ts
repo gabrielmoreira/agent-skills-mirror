@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'ssh',
   version: '2.0.0',
   description: 'SSH toolkit - connections, tunneling, key management, batch execution',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔑'
 })
-  .forTrae({
-    categories: ['System', 'Networking'],
-    rating: 'advanced',
-    features: ['Remote Execution', 'Tunneling', 'Key Management']
-  })
   .addTool({
     name: 'ssh_connect',
     description: 'Generate SSH connection command',
@@ -81,7 +76,7 @@ export default createMCPServer({
       const validation = validateParams(params, {
         type: { type: 'string', required: false, default: 'ed25519' },
         bits: { type: 'number', required: false, default: 4096 },
-        comment: { type: 'string', required: false, default: 'trae@local' }
+        comment: { type: 'string', required: false, default: 'mcp@local' }
       })
       if (!validation.valid) return formatError('Invalid parameters', validation.errors)
 

@@ -37,7 +37,6 @@ Review guardrails for package/build/resource integrity and portable distribution
 ## Validation
 
 - `npm run build`
-- `npm run docs:check`
 - Packaging-specific when touched:
   - `npm run package:macos -- --help` (if supported)
   - `npm run verify:portable` after artifact creation

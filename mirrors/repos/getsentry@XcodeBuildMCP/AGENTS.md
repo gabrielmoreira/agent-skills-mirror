@@ -7,7 +7,6 @@
 - `npm run lint` / `npm run lint:fix` - ESLint
 - `npm run format` / `npm run format:check` - Prettier
 - `npm run typecheck` - TypeScript type checking (src + test config)
-- `npm run docs:check` - Validate docs match CLI surface
 
 ## Architecture
 ESM TypeScript project (`type: module`). Key layers:
@@ -34,7 +33,6 @@ ESM TypeScript project (`type: module`). Key layers:
    npm run typecheck
    npm run format
    npm run build
-   npm run docs:check
    npm test
    ```
 4. Update `CHANGELOG.md` under `## [Unreleased]`

@@ -65,14 +65,9 @@ export default createMCPServer({
   name: 'json',
   version: '2.0.0',
   description: 'Enterprise-grade JSON toolkit - validation with schema, JSONPath query, deep diff, transformation, sorting, and format conversion',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📋'
 })
-  .forTrae({
-    categories: ['Data Processing', 'Developer Tools'],
-    rating: 'intermediate',
-    features: ['JSON Schema', 'JSONPath', 'Deep Diff', 'Transformation', 'Format Conversion', 'Sorting', 'Minification']
-  })
   .addTool({
     name: 'json_format',
     description: 'Format JSON with configurable indentation, sorting, and key ordering',

@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'terminal',
   version: '2.0.0',
   description: 'Secure sandboxed terminal execution with validation, timeout, and proper error handling',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '💻'
 })
-  .forTrae({
-    categories: ['Core', 'System'],
-    rating: 'advanced',
-    features: ['Command Execution', 'Script Runner', 'Package Manager', 'Security']
-  })
   .addTool({
     name: 'run_shell',
     description: 'Execute shell commands with timeout and proper error handling',
@@ -156,7 +151,7 @@ export default createMCPServer({
     }
   })
   .addResource({
-    uri: 'trae://terminal/system-info',
+    uri: 'mcp://terminal/system-info',
     name: 'System Information',
     description: 'Current working directory and environment information',
     get: async () => {

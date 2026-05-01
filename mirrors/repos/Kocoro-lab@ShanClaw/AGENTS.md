@@ -274,7 +274,7 @@ E2E tests in `test/e2e/` split into offline (no API) and live (`SHANNON_E2E_LIVE
 
 - GoReleaser: `.goreleaser.yaml`
 - npm package: `@kocoro/shanclaw`
-- Versioning is PATCH-only (`0.0.x`) unless explicitly directed otherwise
+- Versioning is PATCH-only by default unless explicitly directed otherwise
 - Release flow: tag → push tag → CI builds and publishes
 - `docs/` is gitignored — documentation lives locally only
 

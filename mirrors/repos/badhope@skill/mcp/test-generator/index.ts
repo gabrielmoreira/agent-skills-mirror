@@ -7,14 +7,9 @@ export default createMCPServer({
   name: 'test-generator',
   version: '2.0.0',
   description: 'Enterprise testing toolkit - unit/integration/e2e generation, coverage reporting, test workflow automation',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🧪'
 })
-  .forTrae({
-    categories: ['Testing', 'Quality Assurance'],
-    rating: 'intermediate',
-    features: ['Unit Tests', 'Integration Tests', 'Coverage Reports', 'TDD Workflow']
-  })
   .addTool({
     name: 'detect_test_framework',
     description: 'Auto-detect project testing framework and capabilities',
@@ -142,7 +137,7 @@ export default createMCPServer({
     }
   })
   .addResource({
-    uri: 'trae://test-generator/dashboard',
+    uri: 'mcp://test-generator/dashboard',
     name: 'Testing Dashboard',
     description: 'Test coverage and quality metrics',
     get: async () => ({

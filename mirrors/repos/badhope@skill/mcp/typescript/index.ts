@@ -134,14 +134,9 @@ export default createMCPServer({
   name: 'typescript',
   version: '2.0.0',
   description: 'TypeScript type mastery - advanced type system mastery, strictness auditing, and type safety engineering',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '📘'
 })
-  .forTrae({
-    categories: ['TypeScript', 'Type Safety', 'Static Analysis'],
-    rating: 'advanced',
-    features: ['Type Strictness Auditing', 'Advanced Type Patterns', 'Type Refactoring']
-  })
   .addTool({
     name: 'ts_audit_config',
     description: 'Comprehensive TypeScript config strictness audit with scoring and violation analysis',

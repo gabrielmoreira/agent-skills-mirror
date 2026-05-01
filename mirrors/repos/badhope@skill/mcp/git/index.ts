@@ -7,11 +7,6 @@ export default createMCPServer({
   description: 'Git version control toolkit - commit, branch, diff, log and code review operations with full error handling',
   icon: '📦'
 })
-  .forTrae({
-    categories: ['Version Control', 'Core'],
-    rating: 'beginner',
-    features: ['Git Operations', 'Code Review', 'Branch Management', 'Quality Assurance']
-  })
   .addTool({
     name: 'get_current_branch',
     description: 'Get the name of currently active git branch',

@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'testing-toolkit',
   version: '2.0.0',
   description: 'Professional Testing & QA Toolkit - Unit testing, integration, E2E, coverage, mocking, performance, contract testing suite',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🧪'
 })
-  .forTrae({
-    categories: ['Testing', 'QA', 'Development', 'Quality'],
-    rating: 'advanced',
-    features: ['Unit Testing', 'E2E Testing', 'Coverage Analysis', 'Mock Generation', 'Performance Testing', 'Contract Testing']
-  })
 
   .addTool({
     name: 'test_config_generator',

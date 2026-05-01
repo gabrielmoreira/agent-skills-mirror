@@ -28,13 +28,8 @@ export default createMCPServer({
   version: '2.0.0',
   description: 'Enterprise Redis Toolkit - Cache management, data structures, pub/sub, and performance optimization',
   icon: '🔴',
-  author: 'Trae Professional'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['Database', 'Development', 'Caching', 'Performance'],
-    rating: 'intermediate',
-    features: ['Key-Value Operations', 'Hash/Sorted Set', 'Pub/Sub Messaging', 'Connection Management', 'Pipeline & Batch', 'Info & Diagnostics']
-  })
   
   .addTool({
     name: 'redis_configure',

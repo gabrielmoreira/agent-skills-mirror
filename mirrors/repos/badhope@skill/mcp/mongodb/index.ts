@@ -24,13 +24,8 @@ export default createMCPServer({
   version: '2.0.0',
   description: 'Enterprise MongoDB Toolkit - Connect, query, aggregate, index and manage NoSQL databases',
   icon: '🍃',
-  author: 'Trae Professional'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['Database', 'Development', 'Enterprise'],
-    rating: 'intermediate',
-    features: ['CRUD Operations', 'Aggregation Pipeline', 'Index Management', 'Schema Analysis', 'Backup/Restore', 'Diagnostics']
-  })
   
   .addTool({
     name: 'mongo_configure',

@@ -3,7 +3,7 @@ import { validateParams, formatSuccess, formatError } from '../../packages/core'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 
-const THINKING_DIR = path.join(process.cwd(), '.trae', 'thinking')
+const THINKING_DIR = path.join(process.cwd(), '.agent-thinking')
 
 interface ThinkStep {
   id: string
@@ -73,14 +73,9 @@ export default createMCPServer({
   name: 'sequential-thinking',
   version: '2.0.0',
   description: 'Enterprise Chain-of-Thought System - Structured reasoning framework with persistence, critical review, and cognitive bias mitigation for complex problem solving',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🧠'
 })
-  .forTrae({
-    categories: ['Reasoning', 'Productivity', 'AI Assistant'],
-    rating: 'advanced',
-    features: ['Chain of Thought', 'Critical Review', 'Persistence', 'Bias Mitigation', 'Multi-path Exploration']
-  })
 
   .addTool({
     name: 'thinking_start',

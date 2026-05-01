@@ -24,13 +24,8 @@ export default createMCPServer({
   version: '1.0.0',
   description: 'Bitbucket API toolkit - Manage repositories, PRs, Pipelines with App password authentication',
   icon: '🪣',
-  author: 'Trae Official'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['API Integration', 'DevOps'],
-    rating: 'intermediate',
-    features: ['Repository Management', 'Pull Requests', 'Pipelines CI/CD', 'Jira Integration']
-  })
   .addTool({
     name: 'bitbucket_set_auth',
     description: 'Set Bitbucket authentication with username and App password',

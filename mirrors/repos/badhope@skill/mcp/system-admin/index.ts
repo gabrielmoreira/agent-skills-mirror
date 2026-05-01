@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'system-admin',
   version: '2.0.0',
   description: 'System admin toolkit - process, memory, disk, users, services, logs',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🖥️'
 })
-  .forTrae({
-    categories: ['System', 'DevOps'],
-    rating: 'advanced',
-    features: ['Process Management', 'Monitoring', 'Services', 'Logs']
-  })
   .addTool({
     name: 'sys_process',
     description: 'Process management commands',

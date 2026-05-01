@@ -13,7 +13,7 @@ export default createMCPServer({
   name: 'reflection',
   version: '1.0.0',
   description: 'Self-Improvement Reflection System - Metacognition for AI agents',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🧠'
 })
   .addTool({

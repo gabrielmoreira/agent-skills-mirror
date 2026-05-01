@@ -23,13 +23,9 @@ export default createMCPServer({
   name: 'search',
   version: '1.0.0',
   description: 'Advanced code search - regex, symbol lookup, reference tracking',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🔍'
-})  .forTrae({
-    categories: ['Code Search, Analysis'],
-    rating: 'intermediate',
-    features: ['Regex Search, Symbol Lookup, References']
-  })
+})
   .addTool({
     name: 'search_by_regex',
     description: 'Advanced code search - regex, symbol lookup, reference tracking',
@@ -38,10 +34,6 @@ export default createMCPServer({
       fileTypes: { type: 'string', description: 'Advanced code search - regex, symbol lookup, reference tracking', required: false }
     },
     execute: async (params: Record<string, any>) => ({ results: await grepSearch(params.pattern) })
-  })  .forTrae({
-    categories: ['Code Search, Analysis'],
-    rating: 'intermediate',
-    features: ['Regex Search, Symbol Lookup, References']
   })
   .addTool({
     name: 'find_symbol_definition',
@@ -53,10 +45,6 @@ export default createMCPServer({
       symbol: params.symbol,
       definitions: await grepSearch(`(function|const|let|var|class|interface|type)\\s+${params.symbol}[\\s<(]`)
     })
-  })  .forTrae({
-    categories: ['Code Search, Analysis'],
-    rating: 'intermediate',
-    features: ['Regex Search, Symbol Lookup, References']
   })
   .addTool({
     name: 'find_all_references',

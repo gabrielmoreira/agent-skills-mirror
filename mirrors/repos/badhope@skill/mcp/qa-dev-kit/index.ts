@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'qa-dev-kit',
   version: '2.0.0',
   description: 'Professional QA & Code Quality Toolkit - Testing, Refactoring, Debugging, Code Review, and Performance Analysis Suite',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🧪'
 })
-  .forTrae({
-    categories: ['Testing', 'QA', 'Code Quality', 'Performance'],
-    rating: 'intermediate',
-    features: ['Unit Testing', 'E2E Testing', 'Code Review', 'Performance Analysis', 'Refactoring']
-  })
   .addTool({
     name: 'qa_jest_config',
     description: 'Generate production-ready Jest configuration with TypeScript and coverage',

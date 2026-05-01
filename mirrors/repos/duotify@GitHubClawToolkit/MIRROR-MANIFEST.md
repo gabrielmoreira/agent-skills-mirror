@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `duotify/GitHubClawToolkit` — 26 default patterns, 0 followed patterns, 165 file(s) materialized.
+Mirror of `duotify/GitHubClawToolkit` — 26 default patterns, 0 followed patterns, 166 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `duotify/GitHubClawToolkit` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 165 |
+| Files         | 166 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -224,6 +224,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 163 | ✓ | [`templates/copilot-gemini-api/AGENTS.md`](templates/copilot-gemini-api/AGENTS.md) |
 | 164 | ✓ | [`templates/default/AGENTS.md`](templates/default/AGENTS.md) |
 | 165 | ✓ | [`templates/line-bot/AGENTS.md`](templates/line-bot/AGENTS.md) |
+| 166 | ✓ | [`templates/pi-byok/AGENTS.md`](templates/pi-byok/AGENTS.md) |
 
 ---
 

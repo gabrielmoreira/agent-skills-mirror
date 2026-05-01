@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'images',
   version: '2.0.0',
   description: 'Image toolkit - resize, compress, convert, placeholder, QR code',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🖼️'
 })
-  .forTrae({
-    categories: ['Media', 'Utilities'],
-    rating: 'intermediate',
-    features: ['Resize', 'Compress', 'Convert', 'Placeholders', 'QR Codes']
-  })
   .addTool({
     name: 'img_resize',
     description: 'Generate ImageMagick resize command',

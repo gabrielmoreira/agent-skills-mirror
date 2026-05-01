@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'dependency-analyzer',
   version: '2.0.0',
   description: 'Enterprise dependency management - security audit, unused detection, version conflict resolution',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '📦'
 })
-  .forTrae({
-    categories: ['Dependencies', 'Security'],
-    rating: 'intermediate',
-    features: ['Security Audit', 'Version Check', 'Unused Detection', 'Conflict Resolution']
-  })
   .addTool({
     name: 'list_dependencies',
     description: 'List all project dependencies with metadata',
@@ -174,7 +169,7 @@ export default createMCPServer({
     }
   })
   .addResource({
-    uri: 'trae://dependency-analyzer/health',
+    uri: 'mcp://dependency-analyzer/health',
     name: 'Dependency Health Dashboard',
     description: 'Overall dependency health metrics',
     get: async () => ({

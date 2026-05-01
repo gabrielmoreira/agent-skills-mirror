@@ -26,13 +26,8 @@ export default createMCPServer({
   version: '2.0.0',
   description: 'Enterprise SQL Database Toolkit - PostgreSQL, MySQL, SQLite querying, schema management and analytics',
   icon: '🗄️',
-  author: 'Trae Professional'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['Database', 'Data Analysis', 'Enterprise'],
-    rating: 'intermediate',
-    features: ['PostgreSQL', 'MySQL', 'SQLite', 'Query Execution', 'Schema Inspection', 'Backup/Restore', 'CSV Export']
-  })
   .addTool({
     name: 'db_configure',
     description: 'Configure database connection parameters with validation',

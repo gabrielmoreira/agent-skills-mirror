@@ -160,14 +160,9 @@ export default createMCPServer({
   name: 'site-generator',
   version: '2.0.0',
   description: 'Professional Static Site Generator - Astro, Next.js, Hugo, 11ty, Docusaurus, cross-platform miniprogram scaffolding',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🌐'
 })
-  .forTrae({
-    categories: ['Web Development', 'DevTools', 'Frontend'],
-    rating: 'intermediate',
-    features: ['Template Engine', 'One-Click Deploy', 'Theme Customization', 'Cross-Platform']
-  })
   .addTool({
     name: 'site_list_templates',
     description: 'List all available site and miniprogram templates with category filtering',

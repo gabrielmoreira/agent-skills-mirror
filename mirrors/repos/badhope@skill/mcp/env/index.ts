@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'env',
   version: '2.0.0',
   description: 'Environment variables toolkit - .env parsing, validation, template generation',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🔧'
 })
-  .forTrae({
-    categories: ['Configuration', 'Developer Tools'],
-    rating: 'beginner',
-    features: ['.env Parse', 'Validation', 'Template Gen', 'Dotenv']
-  })
   .addTool({
     name: 'env_parse',
     description: 'Parse .env file content with type inference',

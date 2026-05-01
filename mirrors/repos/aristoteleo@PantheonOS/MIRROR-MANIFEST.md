@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
+Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 59 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,21 +103,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`pantheon/factory/templates/skills/omics/single_cell/SKILL.md`](pantheon/factory/templates/skills/omics/single_cell/SKILL.md) |
 | 43 | ✓ | [`pantheon/factory/templates/skills/omics/single_cell/trajectory_inference.md`](pantheon/factory/templates/skills/omics/single_cell/trajectory_inference.md) |
 | 44 | ✓ | [`pantheon/factory/templates/skills/omics/SKILL.md`](pantheon/factory/templates/skills/omics/SKILL.md) |
-| 45 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/single_cell_spatial_mapping.md`](pantheon/factory/templates/skills/omics/spatial/single_cell_spatial_mapping.md) |
-| 46 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/SKILL.md`](pantheon/factory/templates/skills/omics/spatial/SKILL.md) |
-| 47 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/visualize_3d_spatial.md`](pantheon/factory/templates/skills/omics/spatial/visualize_3d_spatial.md) |
-| 48 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_dynamic_discovery.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_dynamic_discovery.md) |
-| 49 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_epigenomics.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_epigenomics.md) |
-| 50 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_hic.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_hic.md) |
-| 51 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_spatial.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_spatial.md) |
-| 52 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_transcriptomics.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_transcriptomics.md) |
-| 53 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_usage.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_usage.md) |
-| 54 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_variant_calling.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_variant_calling.md) |
-| 55 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/SKILL.md) |
-| 56 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md) |
-| 57 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md) |
-| 58 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md) |
-| 59 | ✓ | [`pantheon/factory/templates/skills/paper_writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/SKILL.md) |
+| 45 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/he_image_registration.md`](pantheon/factory/templates/skills/omics/spatial/he_image_registration.md) |
+| 46 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/single_cell_spatial_mapping.md`](pantheon/factory/templates/skills/omics/spatial/single_cell_spatial_mapping.md) |
+| 47 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/SKILL.md`](pantheon/factory/templates/skills/omics/spatial/SKILL.md) |
+| 48 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/spatial_3d_alignment.md`](pantheon/factory/templates/skills/omics/spatial/spatial_3d_alignment.md) |
+| 49 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/spatial_boundary_analysis.md`](pantheon/factory/templates/skills/omics/spatial/spatial_boundary_analysis.md) |
+| 50 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/spatial_cci.md`](pantheon/factory/templates/skills/omics/spatial/spatial_cci.md) |
+| 51 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/spatial_deconvolution.md`](pantheon/factory/templates/skills/omics/spatial/spatial_deconvolution.md) |
+| 52 | ✓ | [`pantheon/factory/templates/skills/omics/spatial/visualize_3d_spatial.md`](pantheon/factory/templates/skills/omics/spatial/visualize_3d_spatial.md) |
+| 53 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_dynamic_discovery.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_dynamic_discovery.md) |
+| 54 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_epigenomics.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_epigenomics.md) |
+| 55 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_hic.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_hic.md) |
+| 56 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_spatial.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_spatial.md) |
+| 57 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_transcriptomics.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_transcriptomics.md) |
+| 58 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_usage.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_usage.md) |
+| 59 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_variant_calling.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/nfcore_variant_calling.md) |
+| 60 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/nfcore/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/nfcore/SKILL.md) |
+| 61 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md) |
+| 62 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md) |
+| 63 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md) |
+| 64 | ✓ | [`pantheon/factory/templates/skills/paper_writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/SKILL.md) |
 
 ---
 

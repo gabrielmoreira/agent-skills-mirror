@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'random',
   version: '2.0.0',
   description: 'Random generation toolkit - numbers, strings, UUID, passwords, colors, datasets',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🎲'
 })
-  .forTrae({
-    categories: ['Utilities', 'Developer Tools'],
-    rating: 'beginner',
-    features: ['Numbers', 'Strings', 'UUID', 'Passwords', 'Datasets']
-  })
   .addTool({
     name: 'rand_int',
     description: 'Generate random integer(s) with range and seed support',

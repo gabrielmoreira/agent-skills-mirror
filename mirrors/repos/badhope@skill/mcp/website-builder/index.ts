@@ -63,14 +63,9 @@ export default createMCPServer({
   name: 'website-builder',
   version: '2.0.0',
   description: 'No-Code Website Builder - Professional Tailwind CSS templates, section blocks, and full site generation',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🎨'
 })
-  .forTrae({
-    categories: ['Web Development', 'Frontend', 'No-Code'],
-    rating: 'intermediate',
-    features: ['Template System', 'Section Blocks', 'Tailwind CSS', 'One-Click Export', 'Responsive Design']
-  })
   .addTool({
     name: 'wb_list_templates',
     description: 'List all professional website templates with tech stack details',

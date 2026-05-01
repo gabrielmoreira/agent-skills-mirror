@@ -16,7 +16,6 @@ Review guardrails for documentation, generated references, and release flow cons
 
 - `README.md`
 - `CHANGELOG.md` when present
-- `scripts/check-docs-cli-commands.js`
 - `scripts/build-website-manifest.mjs`
 - `scripts/generate-github-release-notes.mjs`
 - `scripts/release.sh`
@@ -33,11 +32,11 @@ Review guardrails for documentation, generated references, and release flow cons
 - Website manifest generation preserves expected normalized fields.
 - Docs explain runtime/contracts without deprecated patterns.
 - Keep docs-only work from introducing product behavior changes.
+- CLI command references in changelog entries are reviewed by `xcodebuildmcp-docs-command-review`.
 
 ## Validation
 
 - `npm run build`
-- `npm run docs:check`
 - Release notes check when touched:
   - `node scripts/generate-github-release-notes.mjs --version <version> --changelog CHANGELOG.md`
 - `npx skill-check .agents/skills/xcodebuildmcp-docs-release-review`

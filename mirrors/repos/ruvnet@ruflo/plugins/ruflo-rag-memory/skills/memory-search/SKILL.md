@@ -37,6 +37,15 @@ Choose based on query type:
    npx ruvector search "QUERY" --graph-rag --limit 10
    ```
 
+   **Smart retrieval** (when --smart or complex recall needed):
+   ```bash
+   npx @claude-flow/cli@latest memory search --query "QUERY" --smart --limit 10
+   ```
+   Or via MCP: `mcp__claude-flow__memory_search({ query: "QUERY", smart: true, limit: 10 })`
+
+   Applies 5-phase pipeline: query expansion, RRF fusion, recency boost, MMR diversity, session round-robin.
+   Best for: multi-session recall, temporal queries, diverse result sets.
+
    **Unified cross-namespace**:
    `mcp__claude-flow__memory_search_unified({ query: "QUERY", limit: 10 })`
 

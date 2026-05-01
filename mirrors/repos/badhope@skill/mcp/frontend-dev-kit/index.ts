@@ -82,14 +82,9 @@ export default createMCPServer({
   name: 'frontend-dev-kit',
   version: '2.0.0',
   description: 'Enterprise Frontend Development Kit - Complete toolkit for building modern, accessible, and performant web applications',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🎨'
 })
-  .forTrae({
-    categories: ['Frontend', 'UI Design', 'Accessibility', 'CSS', 'React'],
-    rating: 'advanced',
-    features: ['Color System', 'Component Library', 'Accessibility Audit', 'Layout Generation']
-  })
   .addTool({
     name: 'ui_generate_palette',
     description: 'Generate WCAG-compliant Tailwind-style color palette with accessibility validation',

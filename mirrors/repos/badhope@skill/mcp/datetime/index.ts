@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'datetime',
   version: '2.0.0',
   description: 'Datetime toolkit - parsing, formatting, timezone conversion, duration calculation',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🕐'
 })
-  .forTrae({
-    categories: ['Developer Tools', 'Utilities'],
-    rating: 'beginner',
-    features: ['Parsing', 'Formatting', 'Timezones', 'Duration', 'Calendar']
-  })
   .addTool({
     name: 'dt_now',
     description: 'Get current datetime in multiple formats and timezones',

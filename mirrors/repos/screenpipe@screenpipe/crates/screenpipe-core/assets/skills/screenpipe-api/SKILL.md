@@ -283,6 +283,34 @@ Each entry's `description` field is self-describing — for capabilities that
 need a control surface (browsers, gateways, etc.), the description includes
 the exact endpoint and body shape. Read it before guessing.
 
+### Browser Control — `owned-default`
+
+You have an embedded browser you can drive directly. Don't curl `/connections`
+to discover it — just hit these endpoints:
+
+```bash
+# Navigate (slides the browser sidebar in for the user)
+curl -X POST -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}' \
+  http://localhost:3030/connections/browsers/owned-default/eval
+
+# Run JS on the current page and read the result
+curl -X POST -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "document.title"}' \
+  http://localhost:3030/connections/browsers/owned-default/eval
+
+# Navigate AND run JS in one call
+curl -X POST -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://news.ycombinator.com", "code": "[...document.querySelectorAll(\".titleline > a\")].slice(0,5).map(a => a.innerText)"}' \
+  http://localhost:3030/connections/browsers/owned-default/eval
+```
+
+Response: `{"ok": true, "result": <whatever your code returned>}` or
+`{"ok": false, "error": "..."}`. Cookies persist across calls (own profile).
+
 ---
 
 ## 9. Meetings — `GET /meetings`

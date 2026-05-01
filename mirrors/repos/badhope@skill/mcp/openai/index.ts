@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'openai',
   version: '2.0.0',
   description: 'OpenAI toolkit - completions, embeddings, fine-tuning, function calling',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🤖'
 })
-  .forTrae({
-    categories: ['AI', 'LLM'],
-    rating: 'advanced',
-    features: ['Chat Completion', 'Embeddings', 'Function Calling', 'Fine-tuning', 'Vision']
-  })
   .addTool({
     name: 'openai_chat',
     description: 'Generate chat completion parameters',

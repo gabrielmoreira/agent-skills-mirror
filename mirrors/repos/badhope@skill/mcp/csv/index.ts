@@ -23,14 +23,9 @@ export default createMCPServer({
   name: 'csv',
   version: '2.0.0',
   description: 'Enterprise CSV toolkit - parsing, validation, aggregation, pivot tables, schema detection',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📊'
 })
-  .forTrae({
-    categories: ['Data Processing', 'Analytics'],
-    rating: 'intermediate',
-    features: ['CSV Parse', 'Stringify', 'Schema Detection', 'Validation', 'Pivot Tables']
-  })
   .addTool({
     name: 'csv_parse',
     description: 'Parse CSV with type inference and schema detection',

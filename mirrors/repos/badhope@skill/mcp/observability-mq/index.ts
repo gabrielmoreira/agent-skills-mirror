@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'observability-mq',
   version: '2.0.0',
   description: 'Observability & Message Queue toolkit - Prometheus, Grafana, Loki, RabbitMQ, Kafka',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📊'
 })
-  .forTrae({
-    categories: ['Monitoring', 'Infrastructure'],
-    rating: 'advanced',
-    features: ['Metrics', 'Logging', 'Tracing', 'Messaging']
-  })
   .addTool({
     name: 'prom_query',
     description: 'Prometheus query builder',

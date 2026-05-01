@@ -6,10 +6,10 @@ argument-hint: "<deploy|advance|rollback|status|list> [options]"
 ---
 Manage firmware rollouts across device fleets.
 
-**deploy**: `npx @claude-flow/cli@latest iot firmware deploy FLEET_ID --version VERSION`
-**advance**: `npx @claude-flow/cli@latest iot firmware advance ROLLOUT_ID`
-**rollback**: `npx @claude-flow/cli@latest iot firmware rollback ROLLOUT_ID`
-**status**: `npx @claude-flow/cli@latest iot firmware status ROLLOUT_ID`
-**list**: `npx @claude-flow/cli@latest iot firmware list`
+**deploy**: `npx -y -p @claude-flow/plugin-iot-cognitum@latest cognitum-iot firmware deploy FLEET_ID --version VERSION`
+**advance**: `npx -y -p @claude-flow/plugin-iot-cognitum@latest cognitum-iot firmware advance ROLLOUT_ID`
+**rollback**: `npx -y -p @claude-flow/plugin-iot-cognitum@latest cognitum-iot firmware rollback ROLLOUT_ID`
+**status**: `npx -y -p @claude-flow/plugin-iot-cognitum@latest cognitum-iot firmware status ROLLOUT_ID`
+**list**: `npx -y -p @claude-flow/plugin-iot-cognitum@latest cognitum-iot firmware list`
 
 Rollout stages: pending → canary → rolling → complete (or rolled-back)

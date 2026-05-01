@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'spreadsheet',
   version: '2.0.0',
   description: 'Professional Spreadsheet & Data Analysis Toolkit - CSV/Excel query, filter, transform, pivot, statistics, and format conversion',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📊'
 })
-  .forTrae({
-    categories: ['Data Analysis', 'Documents', 'Excel', 'CSV', 'Reporting'],
-    rating: 'advanced',
-    features: ['CSV Query Engine', 'Excel Processing', 'Data Filtering', 'Pivot Tables', 'Statistics', 'Format Conversion']
-  })
 
   .addTool({
     name: 'csv_read_query',

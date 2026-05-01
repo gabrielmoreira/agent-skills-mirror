@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'web-crawler',
   version: '2.0.0',
   description: 'Web crawler toolkit - recursive crawling, sitemap, robots.txt, extraction',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🕷️'
 })
-  .forTrae({
-    categories: ['Scraping', 'SEO'],
-    rating: 'advanced',
-    features: ['Crawling', 'Sitemap', 'SEO Analysis']
-  })
   .addTool({
     name: 'crawl_config',
     description: 'Generate crawler configuration',

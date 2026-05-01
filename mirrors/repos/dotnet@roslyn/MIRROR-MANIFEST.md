@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/roslyn` — 26 default patterns, 0 followed patterns, 14 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,7 +72,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.github/skills/new-compiler-feature/SKILL.md`](.github/skills/new-compiler-feature/SKILL.md) |
 | 12 | ✓ | [`.github/skills/run-toolset-tests/SKILL.md`](.github/skills/run-toolset-tests/SKILL.md) |
 | 13 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
-| 14 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
+| 14 | ✓ | [`.github/skills/validate-sdk/SKILL.md`](.github/skills/validate-sdk/SKILL.md) |
+| 15 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
 
 ---
 

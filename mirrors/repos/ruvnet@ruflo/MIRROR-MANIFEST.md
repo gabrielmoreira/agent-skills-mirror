@@ -261,8 +261,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 200 | ✓ | [`plugins/ruflo-browser/skills/browser-scrape/SKILL.md`](plugins/ruflo-browser/skills/browser-scrape/SKILL.md) |
 | 201 | ✓ | [`plugins/ruflo-browser/skills/browser-test/SKILL.md`](plugins/ruflo-browser/skills/browser-test/SKILL.md) |
 | 202 | ✓ | [`plugins/ruflo-core/skills/discover-plugins/SKILL.md`](plugins/ruflo-core/skills/discover-plugins/SKILL.md) |
-| 203 | ✓ | [`plugins/ruflo-core/skills/doctor/SKILL.md`](plugins/ruflo-core/skills/doctor/SKILL.md) |
-| 204 | ✓ | [`plugins/ruflo-core/skills/init-project/SKILL.md`](plugins/ruflo-core/skills/init-project/SKILL.md) |
+| 203 | ✓ | [`plugins/ruflo-core/skills/init-project/SKILL.md`](plugins/ruflo-core/skills/init-project/SKILL.md) |
+| 204 | ✓ | [`plugins/ruflo-core/skills/ruflo-doctor/SKILL.md`](plugins/ruflo-core/skills/ruflo-doctor/SKILL.md) |
 | 205 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-optimize/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-optimize/SKILL.md) |
 | 206 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-report/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-report/SKILL.md) |
 | 207 | ✓ | [`plugins/ruflo-daa/skills/cognitive-pattern/SKILL.md`](plugins/ruflo-daa/skills/cognitive-pattern/SKILL.md) |

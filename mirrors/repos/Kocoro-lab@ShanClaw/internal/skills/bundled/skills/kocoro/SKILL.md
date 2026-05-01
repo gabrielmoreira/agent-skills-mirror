@@ -55,6 +55,16 @@ body: {"name": "agent-name", "prompt": "You are a ... assistant. You help users 
 
 **Create schedule:** `http POST http://localhost:7533/schedules` body: `{"prompt": "...", "cron": "0 9 * * 1-5"}`
 
+**Long markdown content — use `body_from_file` for raw-text endpoints.** When uploading a long markdown file (instructions, rule body, etc.) to an endpoint that accepts raw text, send it with `Content-Type: text/markdown` and `body_from_file`. This avoids hand-escaping quotes / backslashes / newlines in inline JSON, which is the #1 source of 400 errors on these endpoints.
+
+```
+http PUT http://localhost:7533/instructions
+  headers: {"Content-Type": "text/markdown"}
+  body_from_file: ~/source.md
+```
+
+Currently raw-text upload is supported on **`PUT /instructions`** only. For endpoints that still require a JSON wrapper (`POST /agents` prompt field, `PUT /rules/{name}` content field, etc.), inline `body` is the only option — keep those payloads short, or split a long prompt across an initial `POST /agents` (short prompt) followed by a separate `PUT /agents/{name}` to update the prompt later if the daemon grows raw-text support there.
+
 For detailed docs on MCP servers, skill API keys, permissions, project init, or multi-step recipes, load the relevant reference:
 `references/agents.md` · `references/skills.md` · `references/config.md` · `references/mcp.md` · `references/instructions.md` · `references/schedules.md` · `references/permissions.md` · `references/project-init.md` · `references/recipes.md` · `references/session-sync.md` · `references/memory.md` · `references/events.md`
 

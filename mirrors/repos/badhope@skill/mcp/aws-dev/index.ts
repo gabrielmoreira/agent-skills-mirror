@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'aws-dev',
   version: '2.0.0',
   description: 'AWS CDK & SAM development toolkit - infrastructure as code',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🏗️'
 })
-  .forTrae({
-    categories: ['Cloud', 'Infrastructure'],
-    rating: 'advanced',
-    features: ['CDK', 'SAM', 'Infrastructure as Code']
-  })
   .addTool({
     name: 'awscdk_init',
     description: 'Initialize CDK project',

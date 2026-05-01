@@ -13,13 +13,9 @@ export default createMCPServer({
   name: 'refactoring-workflow',
   version: '1.0.0',
   description: 'Standardized refactoring workflow - safety checks, incremental improvement, validation',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '♻️'
-})  .forTrae({
-    categories: ['Refactoring, Quality'],
-    rating: 'advanced',
-    features: ['Safe Refactor, Tests, Validation']
-  })
+})
   .addTool({
     name: 'before_refactor_check',
     description: 'Standardized refactoring workflow - safety checks, incremental improvement, validation',
@@ -32,10 +28,6 @@ export default createMCPServer({
       files: params.targetFiles.split(','),
       branch: await safeExec('git branch --show-current')
     })
-  })  .forTrae({
-    categories: ['Refactoring, Quality'],
-    rating: 'advanced',
-    features: ['Safe Refactor, Tests, Validation']
   })
   .addTool({
     name: 'create_safety_commit',
@@ -45,10 +37,6 @@ export default createMCPServer({
       stash: await safeExec('git stash || echo "no stash"'),
       commit: await safeExec('git commit -a -m "refactor: safety point BEFORE refactoring" --allow-empty')
     })
-  })  .forTrae({
-    categories: ['Refactoring, Quality'],
-    rating: 'advanced',
-    features: ['Safe Refactor, Tests, Validation']
   })
   .addTool({
     name: 'verify_after_refactor',

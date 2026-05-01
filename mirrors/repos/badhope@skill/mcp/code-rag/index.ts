@@ -47,7 +47,7 @@ interface RAGIndex {
   reverseCallGraph: Map<string, string[]>
 }
 
-const RAG_STORAGE_DIR = path.join(process.cwd(), '.trae', 'code-rag')
+const RAG_STORAGE_DIR = path.join(process.cwd(), '.agent-code-rag')
 
 async function initRAGStorage() {
   await fs.mkdir(RAG_STORAGE_DIR, { recursive: true })
@@ -286,13 +286,8 @@ export default createMCPServer({
   version: '2.0.0',
   description: 'Enterprise Code RAG System - Intelligent semantic indexing, call graph analysis, cross-file dependency tracking, and automated architecture visualization for modern codebases',
   icon: '🧠',
-  author: 'Trae Professional'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['Code Analysis', 'Architecture', 'Developer Tools'],
-    rating: 'advanced',
-    features: ['Incremental Indexing', 'Call Graphs', 'Dependency Tracking', 'Semantic Vector Search', 'Impact Analysis', 'Architecture Generation']
-  })
   .withCache(300)
 
   .addTool({

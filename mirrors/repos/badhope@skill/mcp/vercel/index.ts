@@ -5,14 +5,9 @@ export default createMCPServer({
   name: 'vercel',
   version: '2.0.0',
   description: 'Vercel toolkit - deployments, domains, env vars, analytics API',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '▲'
 })
-  .forTrae({
-    categories: ['Cloud', 'Deployment'],
-    rating: 'beginner',
-    features: ['Deploy', 'Environment Variables', 'Domains', 'Analytics']
-  })
   .addTool({
     name: 'vercel_deploy',
     description: 'Create deployment command',

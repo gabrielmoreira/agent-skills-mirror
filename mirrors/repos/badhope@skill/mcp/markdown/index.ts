@@ -11,14 +11,9 @@ export default createMCPServer({
   name: 'markdown',
   version: '2.0.0',
   description: 'Markdown toolkit - tables, TOC generation, mermaid diagrams, badges, alerts, and documentation generation',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📄'
 })
-  .forTrae({
-    categories: ['Documentation', 'Content'],
-    rating: 'beginner',
-    features: ['Tables', 'TOC', 'Badges', 'Mermaid Diagrams', 'Alerts', 'Checklists']
-  })
   .addTool({
     name: 'md_table',
     description: 'Generate advanced Markdown tables with alignment and formatting',

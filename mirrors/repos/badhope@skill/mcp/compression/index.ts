@@ -19,7 +19,7 @@ export default createMCPServer({
   name: 'compression',
   version: '1.0.0',
   description: '压缩解压工具集 - gzip、deflate、base64编码、字符串压缩',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📦'
 })
   .addTool({

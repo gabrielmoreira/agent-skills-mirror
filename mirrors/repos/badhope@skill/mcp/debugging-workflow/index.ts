@@ -13,13 +13,9 @@ export default createMCPServer({
   name: 'debugging-workflow',
   version: '1.0.0',
   description: 'Standardized debugging workflow - system diagnostics, root cause analysis, reproduction verification',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '🔧'
-})  .forTrae({
-    categories: ['Debugging, Troubleshooting'],
-    rating: 'advanced',
-    features: ['Root Cause, System Info, Logs']
-  })
+})
   .addTool({
     name: 'collect_system_info',
     description: 'Standardized debugging workflow - system diagnostics, root cause analysis, reproduction verification',
@@ -31,10 +27,6 @@ export default createMCPServer({
       git: await safeExec('git --version'),
       env: Object.keys(process.env).filter(k => k.includes('NODE') || k.includes('PATH')).slice(0, 10)
     })
-  })  .forTrae({
-    categories: ['Debugging, Troubleshooting'],
-    rating: 'advanced',
-    features: ['Root Cause, System Info, Logs']
   })
   .addTool({
     name: 'check_logs_and_errors',
@@ -44,10 +36,6 @@ export default createMCPServer({
       gitChanges: await safeExec('git diff HEAD~1 --name-only'),
       lastCommit: await safeExec('git log -1 --oneline')
     })
-  })  .forTrae({
-    categories: ['Debugging, Troubleshooting'],
-    rating: 'advanced',
-    features: ['Root Cause, System Info, Logs']
   })
   .addTool({
     name: 'verify_fix',

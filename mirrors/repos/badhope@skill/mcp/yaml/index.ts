@@ -78,14 +78,9 @@ export default createMCPServer({
   name: 'yaml',
   version: '2.0.0',
   description: 'Enterprise-grade YAML toolkit - schema validation, anchors/aliases resolution, JSON↔YAML conversion, linting, and schema generation',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '📝'
 })
-  .forTrae({
-    categories: ['Data Processing', 'Developer Tools'],
-    rating: 'intermediate',
-    features: ['YAML Parsing', 'YAML Stringification', 'JSON↔YAML', 'Schema Validation', 'Linting', 'Anchors']
-  })
   .addTool({
     name: 'yaml_parse',
     description: 'Parse YAML with anchors, aliases, and multi-line strings',

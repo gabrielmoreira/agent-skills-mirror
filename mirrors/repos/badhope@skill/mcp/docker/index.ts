@@ -14,13 +14,8 @@ export default createMCPServer({
   version: '1.0.0',
   description: 'Docker toolkit - Manage containers, images, volumes, networks, and compose stacks',
   icon: '🐳',
-  author: 'Trae Official'
+  author: 'MCP Expert Community'
 })
-  .forTrae({
-    categories: ['DevOps', 'Containers', 'Infrastructure'],
-    rating: 'intermediate',
-    features: ['Container Management', 'Image Management', 'Volumes', 'Networks', 'Docker Compose']
-  })
   .addTool({
     name: 'docker_version',
     description: 'Check Docker version and system info',

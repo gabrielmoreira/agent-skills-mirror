@@ -72,7 +72,7 @@ export default createMCPServer({
   name: 'multi-agent',
   version: '1.0.0',
   description: 'Multi-Agent Collaboration System - Expert panel for decision making',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '👥'
 })
   .addTool({

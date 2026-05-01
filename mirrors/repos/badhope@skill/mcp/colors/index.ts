@@ -4,7 +4,7 @@ export default createMCPServer({
   name: 'colors',
   version: '1.0.0',
   description: '颜色转换、调色板生成、对比度检查、主题配色工具',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🎨'
 })
   .addTool({

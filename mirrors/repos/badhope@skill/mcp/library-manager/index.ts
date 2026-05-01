@@ -134,14 +134,9 @@ export default createMCPServer({
   name: 'library-manager',
   version: '2.0.0',
   description: 'Professional Library & Dependency Management Toolkit - Package intelligence, security scanning, license compliance, dependency visualization, and health analytics',
-  author: 'Trae Official',
+  author: 'MCP Expert Community',
   icon: '📦'
 })
-  .forTrae({
-    categories: ['Libraries', 'Security', 'Development', 'DevOps'],
-    rating: 'intermediate',
-    features: ['Package Intelligence', 'Vulnerability Scanning', 'License Compliance', 'Dependency Analytics', 'Health Assessment']
-  })
   .addTool({
     name: 'lib_search_npm',
     description: 'Search and analyze npm packages with health scoring, quality metrics, and adoption statistics',

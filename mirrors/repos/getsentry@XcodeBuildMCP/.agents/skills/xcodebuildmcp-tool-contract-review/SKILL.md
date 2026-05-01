@@ -37,7 +37,6 @@ Review guardrails for tool contract changes across implementation, manifests, an
 
 ## Validation
 
-- `npm run docs:check`
 - `npm run typecheck`
 - `npm test -- src/core/manifest/__tests__/schema.test.ts`
 - `npm test -- src/runtime/__tests__/tool-invoker.test.ts`

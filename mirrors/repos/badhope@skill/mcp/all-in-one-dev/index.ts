@@ -45,14 +45,9 @@ export default createMCPServer({
   name: 'all-in-one-dev',
   version: '2.0.0',
   description: 'Professional All-in-One Development Kit - Comprehensive tool suite for full-stack development including Git, Docker, API, Database, Security, UI, and Testing',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🚀'
 })
-  .forTrae({
-    categories: ['Development', 'DevOps', 'Full-Stack', 'All-in-One', 'Productivity'],
-    rating: 'professional',
-    features: ['Git Workflows', 'Docker Containerization', 'API Testing', 'Database Operations', 'Security Auditing', 'UI Utilities', 'Quality Assurance']
-  })
 
   .addTool({
     name: 'git_clone',

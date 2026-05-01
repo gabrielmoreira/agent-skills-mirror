@@ -118,7 +118,7 @@ export default createMCPServer({
   name: 'fun',
   version: '1.0.0',
   description: '趣味特色工具集 - 藏头诗、彩虹屁、毒鸡汤、谐音梗、土味情话、脑筋急转弯',
-  author: 'Trae Professional',
+  author: 'MCP Expert Community',
   icon: '🎉'
 })
   .addTool({
