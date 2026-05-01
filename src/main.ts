@@ -56,6 +56,11 @@ const COMMON_SKILL_FOLDERS_PATTERNS = [
 // - one for coding assistants / dev tools
 // - one for MCP / tool integration ecosystems
 // - one for prompt / skills / instruction-heavy repos
+// - one for the "claw" family of openclaw forks
+// - one for repos named "agent-skills" or "agent-skill" in their name
+// - one for repos mentioning both "claude" and "skills"
+// - one for GitHub topic-based discovery
+// - one for copilot/plugin instruction repos
 //
 // Notes:
 // - pushed: helps avoid dead repos
@@ -80,6 +85,24 @@ const REAL_SEARCH_QUERIES = [
 
   // 6) claw
   "claw stars:>10 pushed:>2024-01-01 fork:false archived:false",
+
+  // 7) repos named "agent-skills" or "agent-skill" — catches the
+  //    large ecosystem of per-project agent skill collections.
+  //    Low star threshold because many are legitimate but new.
+  "agent-skills in:name stars:>1 pushed:>2024-01-01 fork:false archived:false",
+
+  // 8) repos that explicitly mention both "claude" and "skills" —
+  //    catches claude-skills, claude code skill collections, etc.
+  "claude skills stars:>3 pushed:>2024-01-01 fork:false archived:false",
+
+  // 9) GitHub topic-based discovery for the main ecosystems.
+  //    Topics are curated by repo owners, so signal-to-noise is high.
+  "topic:claude-code OR topic:agent-skills OR topic:copilot-skills fork:false archived:false",
+
+  // 10) instruction/plugin-style repos — copilot instructions,
+  //     claude plugins, ai-tools, and similar patterns that don't
+  //     use the word "skills" but serve the same purpose.
+  "\"copilot instructions\" OR \"claude plugins\" OR \"ai-tools\" stars:>5 pushed:>2024-01-01 fork:false archived:false",
 ];
 
 const config = {
