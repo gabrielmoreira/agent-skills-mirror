@@ -172,7 +172,8 @@ The test reports:
 - Repos found in the mirror
 - Repos missed
 - Coverage percentage
-- Whether the 80% target is met
+
+The coverage report is informational — it does not assert a specific threshold because coverage depends on running the mirror with a live GitHub token first.
 
 To run coverage evaluation without running all tests:
 

@@ -475,9 +475,10 @@ Deno.test("coverage report: mirror vs target list", async (t) => {
     console.log("────────────────────────────────────────────────────────────");
   });
 
-  // The coverage test itself is informational — it does NOT assert 80% because
-  // the mirror may be run in CI without a live GitHub token or with a cold
-  // cache. The structural query tests above are the hard assertions.
+  // The coverage test is informational — it does NOT assert a specific threshold
+  // because coverage depends on running the mirror with a live GitHub token first.
+  // Structural query constraints (operator count, no hardcoded repos) are the
+  // hard assertions enforced by the tests above.
   assert(coverage.total > 0, "Target list must not be empty");
   assert(mirrored.size >= 0, "Mirrored set is valid (may be empty)");
 });
