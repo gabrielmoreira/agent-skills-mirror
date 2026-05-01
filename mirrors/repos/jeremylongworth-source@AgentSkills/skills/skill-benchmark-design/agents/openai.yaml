@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Benchmark Design"
+  short_description: "Design benchmarks for agent skills."
+  default_prompt: "Use this skill to design lightweight benchmarks that compare baseline and skill-enabled agent behavior with realistic scenarios, acceptance criteria, scoring rubrics, evidence capture, and promotion decision rules."

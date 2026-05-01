@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/internal-narrative/../../../c-level-advisor/internal-narrative/SKILL.md

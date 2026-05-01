@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pilot To Scale Roadmap"
+  short_description: "Plan AI pilot-to-scale rollout."
+  default_prompt: "Use this skill to summarize AI pilot learnings, decide stop/revise/scale, define production readiness gates, and create governed rollout roadmaps."

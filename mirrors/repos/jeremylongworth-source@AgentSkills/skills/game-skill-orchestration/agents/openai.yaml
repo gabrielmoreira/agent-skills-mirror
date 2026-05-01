@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Skill Orchestration"
+  short_description: "Coordinate game skills with strong briefs."
+  default_prompt: "Use this skill to choose and coordinate multiple game development skills, write outcome-first briefs, set acceptance criteria, plan validation, and route complex game projects across design, code, art, audio, story, UI, multiplayer, social, and cinematic work."

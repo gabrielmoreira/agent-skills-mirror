@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Test Plan"
+  short_description: "Plan backend test coverage."
+  default_prompt: "Use this skill to create backend test plans for APIs, services, databases, auth, integrations, background jobs, migrations, errors, performance, and regressions."

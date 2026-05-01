@@ -1,0 +1,4 @@
+interface:
+  display_name: "Changelog Maintenance"
+  short_description: "Maintain changelog entries."
+  default_prompt: "Use this skill to update CHANGELOG.md, normalize changelog sections, add unreleased entries, prepare version sections, and preserve accurate release history."

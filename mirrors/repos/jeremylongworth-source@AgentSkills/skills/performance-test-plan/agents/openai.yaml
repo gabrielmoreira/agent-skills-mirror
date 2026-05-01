@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance Test Plan"
+  short_description: "Plan performance testing."
+  default_prompt: "Use this skill to plan performance tests for frontend, backend, APIs, databases, jobs, load, latency, throughput, Core Web Vitals, observability, profiling, thresholds, and regression gates."

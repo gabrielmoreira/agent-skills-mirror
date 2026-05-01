@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/popup-cro/../../../marketing-skill/popup-cro/SKILL.md

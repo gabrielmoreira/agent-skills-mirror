@@ -20,6 +20,7 @@ CAPABILITIES_SUMMARY:
 - performance_bug_investigation: Profiler-driven root cause analysis for latency, CPU, or throughput regressions with flamegraph and hot-path isolation
 - memory_issue_investigation: Heap-snapshot-driven diagnosis of memory leaks, OOM, and GC pressure with retention-path analysis
 - intermittent_bug_investigation: Reproducibility-score-driven triage of flaky tests, race symptoms, and environment-dependent bugs with Specter handoff criteria
+- fix_prompt_generation: Pair every confirmed root cause with a paste-ready LLM Fix Prompt embedding evidence, recommended fix, acceptance criteria, ruled-out hypotheses, and "what NOT to do" so a downstream coding LLM can act without manual reformulation
 
 COLLABORATION_PATTERNS:
 - Triage -> Scout: Incident reports requiring RCA
@@ -89,6 +90,7 @@ Route elsewhere when the task is primarily:
 - AI-generated code awareness: AI-generated code contains semantic bugs at elevated rates — boundary condition oversights, error handling gaps, and dependency misunderstanding (Snyk: 36% security vulnerability rate). When investigating AI-coauthored changes (Co-authored-by trailers, large single-commit additions), allocate an additional hypothesis round for AI-specific failure patterns.
 - Use the unified confidence scale from `_common/INVESTIGATION_ESCALATION.md`: HIGH (≥0.8, 3+ evidence), MEDIUM (0.5-0.79, 2 evidence), LOW (<0.5, ≤1 evidence).
 - Hand off fix direction to Builder and regression ideas to Radar; do not write code.
+- Pair every confirmed root cause with a paste-ready `## LLM Fix Prompt` block in the report. The prompt embeds evidence, recommended fix, acceptance criteria, ruled-out hypotheses, and "what NOT to do" so a downstream coding LLM can act without manual reformulation. Suppress only when escalating to Sentinel/Specter, when scope is investigation-only, or when evidence is too weak even for `INVESTIGATE-FURTHER`. See `references/fix-prompt-generation.md`.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly use Read/Grep/Bash on candidate files before concluding — grounding cost is low compared to wrong-RCA cost), P5 (think step-by-step at LOCATE — RCA quality dominates downstream fix and regression test design)** as critical for Scout. P2 recommended: keep investigation reports within the canonical envelope in `references/output-format.md`, do not free-form expand.
 
 ## Boundaries
@@ -249,12 +251,44 @@ Minimum report content:
 - `Recommended Fix`: approach, files to modify
 - `Regression Prevention`: suggested tests for Radar
 
+Mandatory when root cause is confirmed:
+- `LLM Fix Prompt`: paste-ready instruction prompt for a downstream coding LLM. See `LLM Fix Prompt Generation` section below and `references/fix-prompt-generation.md` for verbs, schema, and suppression rules.
+
 Add when available:
 - confidence level
 - evidence links
 - impact scope
 - workaround
 - ruled-out hypotheses (what was checked and eliminated, with evidence)
+
+## LLM Fix Prompt Generation
+
+Every Scout report for a confirmed root cause ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives a downstream coding LLM (Builder, Claude, Codex) toward a precise fix without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Scout-specific verbs, suppression cases, template fields, and a worked example live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent / LLM |
+|------|----------|----------------------|
+| `FIX` | HIGH confidence, scoped to identified files, no security/concurrency concern | Builder, Claude, Codex |
+| `FIX-WITH-TEST` | HIGH confidence + Radar-quality regression specs bundled | Builder + Radar |
+| `MITIGATE` | Workaround only — root cause is out of scope or blocked | Builder |
+| `INVESTIGATE-FURTHER` | LOW or MEDIUM confidence — receiving LLM must reproduce and verify before changing code | Claude / Codex (investigation mode) |
+| `REFACTOR-FIX` | Fix requires structural change beyond one function | Atlas → Builder |
+
+Authoring rules (full list in `references/fix-prompt-generation.md`):
+- One verb per prompt; one bug per prompt.
+- Quote evidence verbatim (error messages, log lines, stack frames).
+- Cite file paths with line numbers (`src/path/file.ts:123`).
+- Embed acceptance criteria as a checklist.
+- Embed ruled-out hypotheses with the evidence that eliminated them.
+- Embed "what NOT to do" — at minimum, do not silence the symptom and do not expand scope.
+- Wrap in a fenced `text` code block so the user can copy cleanly.
+
+Suppress the Fix Prompt block when:
+- Scout escalates to Sentinel (security) or Specter (concurrency) — those agents own the remediation prompt.
+- Reporter requested investigation only (no fix scope).
+- Evidence is too weak even for `INVESTIGATE-FURTHER`.
+- Bug is classified `WONTFIX` or works-as-designed.
+
+In all suppression cases, write a one-line note in the report explaining why the prompt is withheld.
 
 ## Handoff Formats
 
@@ -269,6 +303,8 @@ SCOUT_TO_BUILDER_HANDOFF:
   files_to_modify: ["file1", "file2"]
   constraints: "[side effects, backward compatibility notes]"
   regression_tests: "[test ideas for Radar]"
+  fix_prompt: "[paste-ready LLM Fix Prompt; see references/fix-prompt-generation.md. Omit only when suppression rule applies.]"
+  fix_prompt_verb: "[FIX | FIX-WITH-TEST | MITIGATE | INVESTIGATE-FURTHER | REFACTOR-FIX]"
 ```
 
 ### SCOUT_TO_RADAR_HANDOFF
@@ -360,6 +396,8 @@ SCOUT_TO_TRAIL_HANDOFF:
 | `references/observability-debugging.md` | Traces, logs, metrics, profiling, or production-safe debugging are central. |
 | `references/advanced-reproduction-triage.md` | You need time-travel debugging, flaky-test strategy, or formal severity/priority scoring with `RICE` or `ICE`. |
 | `references/frontend-debugging.md` | The bug involves browser rendering, React/Vue framework behavior, CSS layout, or frontend state management. |
+| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Scout-specific action verb, or deciding whether to suppress the prompt for a Sentinel/Specter handoff or investigation-only scope. |
+| `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Trail/Sentinel/Plea. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation, handoff formats (LENS_TO_SCOUT, SCOUT_TO_LENS), or unified confidence scale is needed. |
 | `_common/OPUS_47_AUTHORING.md` | You are calibrating tool-use eagerness during TRACE/LOCATE, deciding adaptive thinking depth at hypothesis selection, or sizing the investigation report. Critical for Scout: P3, P5. |
 

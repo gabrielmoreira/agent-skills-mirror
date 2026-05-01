@@ -1,0 +1,4 @@
+interface:
+  display_name: "Podcast Outline"
+  short_description: "Create creator podcast outlines."
+  default_prompt: "Use this skill to create podcast episode outlines with audience promise, segments, questions, sponsor slots, CTAs, clip moments, research gaps, and repurposing plans."

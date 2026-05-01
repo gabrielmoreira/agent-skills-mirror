@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game 3D Development"
+  short_description: "Build and review real-time 3D game systems."
+  default_prompt: "Use this skill to design or build a 3D game feature, scene, controller, camera, physics interaction, or performance-sensitive gameplay system."

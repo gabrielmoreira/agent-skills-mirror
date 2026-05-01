@@ -1,0 +1,4 @@
+interface:
+  display_name: "Escalation Pack"
+  short_description: "Prepare support escalation handoffs."
+  default_prompt: "Use this skill to package support escalations with severity, customer impact, evidence, reproduction details, owners, requested decisions, and safe customer update drafts."

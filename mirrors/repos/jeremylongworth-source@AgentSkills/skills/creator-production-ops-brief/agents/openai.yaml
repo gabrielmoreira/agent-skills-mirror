@@ -1,0 +1,4 @@
+interface:
+  display_name: "Creator Production Ops Brief"
+  short_description: "Create creator production ops briefs."
+  default_prompt: "Use this skill to organize creator production work, budgets, assets, assistant or contractor handoffs, dependencies, blockers, acceptance criteria, and review gates."

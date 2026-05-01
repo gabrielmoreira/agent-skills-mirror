@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tutorial Writing"
+  short_description: "Write task-focused tutorials."
+  default_prompt: "Use this skill to write tutorials, quickstarts, walkthroughs, and how-to guides with prerequisites, concrete steps, expected output, verification checks, troubleshooting notes, and a finished outcome."

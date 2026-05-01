@@ -1,0 +1,4 @@
+interface:
+  display_name: "itch.io HTML5 Publishing"
+  short_description: "Package and publish HTML5 games on itch.io."
+  default_prompt: "Use this skill to package, test, publish, price, and update browser-playable HTML5 games on itch.io, including ZIP requirements, iframe/fullscreen behavior, mobile settings, donations, pay-what-you-want pricing, and creator page readiness."

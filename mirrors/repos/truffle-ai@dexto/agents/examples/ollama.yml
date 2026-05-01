@@ -1,0 +1,67 @@
+# describes the mcp servers to use
+mcpServers:
+  filesystem:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - "@modelcontextprotocol/server-filesystem"
+      - .
+  playwright:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - "@playwright/mcp@latest"
+  # hf:
+  #   type: stdio
+  #   command: npx
+  #   args:
+  #     - -y
+  #     - "@llmindset/mcp-hfspace"
+
+# System prompt configuration - defines the agent's behavior and instructions
+systemPrompt:
+  contributors:
+    - id: primary
+      type: static
+      priority: 0
+      content: |
+        You are a helpful AI assistant with access to tools.
+        Use these tools when appropriate to answer user queries.
+        You can use multiple tools in sequence to solve complex problems.
+        After each tool result, determine if you need more information or can provide a final answer.
+
+    - id: date
+      type: dynamic
+      priority: 10
+      source: date
+      enabled: true
+
+# first start the ollama server
+# ollama run gemma3n:e2b
+# then run the following command to start the agent:
+# dexto --agent <path_to_ollama.yml>
+# dexto --agent <path_to_ollama.yml> for web ui
+llm:
+  provider: openai-compatible
+  model: gemma3n:e2b
+  baseURL: http://localhost:11434/v1
+  apiKey: $OPENAI_API_KEY
+  maxInputTokens: 32768
+
+# Storage configuration - uses a two-tier architecture: cache (fast, ephemeral) and database (persistent, reliable)
+# Memory cache with file-based database (good for development with persistence)
+# storage:
+#   cache:
+#     type: in-memory
+#   database:
+#     type: sqlite
+#     path: ./data/dexto.db
+
+## To use Google Gemini, replace the LLM section with Google Gemini configuration below
+## Similar for anthropic/groq/etc.
+# llm:
+#   provider: google
+#   model: gemini-2.0-flash
+#   apiKey: $GOOGLE_GENERATIVE_AI_API_KEY

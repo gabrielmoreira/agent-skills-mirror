@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content Pillars"
+  short_description: "Define creator content pillars."
+  default_prompt: "Use this skill to define creator content pillars, audience promises, recurring themes, content lanes, series ideas, platform fit, trust notes, and next content ideas."

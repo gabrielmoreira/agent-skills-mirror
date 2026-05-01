@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/information-security-manager-iso27001/../../../ra-qm-team/information-security-manager-iso27001/SKILL.md

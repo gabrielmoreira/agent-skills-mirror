@@ -84,6 +84,7 @@ Route elsewhere when the task is primarily:
 - Guard against the Prompting Fallacy. Apply Anthropic's five context engineering operations — **select**, **compress**, **order**, **isolate**, **format** — when designing agent information flows. Most agent failures are context failures, not prompt wording failures.
 - Prefer general tools composed into patterns over specialized single-purpose tools. Promote to declarative tools only for security boundaries, reversibility, UX presentation, or observability requirements. See `references/official-design-patterns.md` Section 10.3.
 - Choose the right parallelism layer for multi-agent designs: skill-internal subagents (2-3 independent subtasks, same session) vs Agent Teams (4+ workers, cross-session coordination, file ownership isolation). Refer to `_common/SUBAGENT.md` for the decision flow.
+- When invoking the `Agent` tool, append `Open with the deliverable, not with completion preamble. See _common/OUTPUT_STYLE.md §Subagent Completion Pattern.` to the prompt. Banned subagent openers cost tokens without signal.
 - Author for Opus 4.7 defaults. Generated skills must front-load context capture, calibrate response length explicitly, document tool-use "when/why", spell out parallel subagent triggers, and include adaptive thinking hints at high-stakes decisions. See `references/official-design-patterns.md` Section 11.
 
 ## Boundaries
@@ -145,6 +146,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Create New Skill | `create` | ✓ | New skill generation (from gap analysis through design) | `references/creative-thinking.md`, `references/skill-template.md` |
 | Improve Existing | `improve` | | Improve existing skill (redefine contract/boundary) | `references/review-loop.md`, `references/enhancement-framework.md` |
 | Compress | `compress` | | Skill compression (token reduction, preserve 4-axis equivalence) | `references/context-compression.md` |
+| Audit Verbosity | `audit-verbosity` | | Score runtime output verbosity against the Output Density Protocol; produce SKILL.md edit proposals | `references/output-audit.md`, `_common/OUTPUT_STYLE.md` |
 | Evolve | `evolve` | | Skill self-evolution (lifecycle-driven self-improvement) | `references/self-evolution.md` |
 
 ## Subcommand Dispatch
@@ -157,6 +159,7 @@ Behavior notes per Recipe:
 - `create`: ENVISION (20-30% effort) → ANALYZE (overlap scoring) → GENERATE (SKILL.md + references) → VALIDATE (16-item checklist). Read `creative-thinking.md` first.
 - `improve`: Read `review-loop.md` for Health Score. ANALYZE → SCORE → PRIORITIZE → VALIDATE workflow.
 - `compress`: Token-budget analysis before changes. Verify 4-axis equivalence (Behavioral/Structural/Integration/Routing). Confirm if reduction > 20%.
+- `audit-verbosity`: COLLECT samples → MEASURE 5 metrics (filler/tier/format/header/tautology) → PROPOSE diff to Output Contract → emit `OUTPUT_AUDIT_REPORT`. Refuse if zero samples; never grade on speculation.
 - `evolve`: Architect self-modification only. Strictly enforce Safety Level A/B/C/D. Rollback snapshot is mandatory.
 
 ### Phase Contract
@@ -218,6 +221,7 @@ Compression rules:
 | `new agent`, `create agent`, `design skill` | CREATE flow | Skill package (SKILL.md + references) | `references/skill-template.md`, `references/creative-thinking.md` |
 | `improve`, `enhance`, `upgrade skill` | IMPROVE flow | Enhancement proposal + updated SKILL.md | `references/review-loop.md`, `references/enhancement-framework.md` |
 | `compress`, `reduce tokens`, `optimize context` | COMPRESS flow | Compressed SKILL.md with equivalence report | `references/context-compression.md` |
+| `audit-verbosity`, `output too verbose`, `response too long` | audit-verbosity recipe | OUTPUT_AUDIT_REPORT + Output Contract diff | `references/output-audit.md`, `_common/OUTPUT_STYLE.md` |
 | `evolve`, `self-improve` | EVOLVE flow | Self-evolution report | `references/self-evolution.md` |
 | `overlap`, `duplicate agent` | ANALYZE phase | Overlap detection report | `references/overlap-detection.md` |
 | `validate`, `check skill` | VALIDATE phase | Validation checklist results | `references/validation-checklist.md` |
@@ -333,6 +337,8 @@ Read only the files required for the current decision.
 | `references/skill-template.md` | You are drafting or checking the canonical generated-skill structure |
 | `references/validation-checklist.md` | You are validating a generated or improved skill |
 | `references/context-compression.md` | You are planning or reviewing compression and need token-budget or equivalence rules |
+| `references/output-audit.md` | You are scoring runtime output verbosity for an agent and proposing Output Contract corrections (audit-verbosity recipe) |
+| `_common/OUTPUT_STYLE.md` | You need the canonical runtime output style (tiers, banned patterns, format priority) for the Output Density Protocol |
 | `references/review-loop.md` | You need `Health Score`, review cadence, or degradation triggers |
 | `references/enhancement-framework.md` | You are improving an existing skill and need prioritization or proposal structure |
 | `references/nexus-integration.md` | You need exact AUTORUN or hub-mode compatibility details |

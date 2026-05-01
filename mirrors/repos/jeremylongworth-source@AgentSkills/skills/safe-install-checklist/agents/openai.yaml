@@ -1,0 +1,4 @@
+interface:
+  display_name: "Safe Install Checklist"
+  short_description: "Recommend safe skill installs."
+  default_prompt: "Use this skill to produce safe install recommendations for agent skills and skillsets, including source/version checks, least-privilege setup, approval gates, post-install checks, and approve/block/defer decisions."

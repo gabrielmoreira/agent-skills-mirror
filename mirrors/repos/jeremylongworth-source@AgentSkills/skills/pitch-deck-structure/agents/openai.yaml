@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pitch Deck Structure"
+  short_description: "Outline investor pitch decks."
+  default_prompt: "Use this skill to create pitch deck outlines, seed deck structures, Series A deck flows, investor deck stories, slide titles, speaker notes, and deck gap reviews."

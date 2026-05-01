@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/codebase-onboarding/../../../engineering/codebase-onboarding/SKILL.md

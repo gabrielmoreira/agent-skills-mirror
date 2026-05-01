@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ms365-tenant-manager/../../../engineering-team/ms365-tenant-manager/SKILL.md

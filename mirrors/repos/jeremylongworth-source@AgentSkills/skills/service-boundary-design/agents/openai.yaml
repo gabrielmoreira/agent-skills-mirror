@@ -1,0 +1,4 @@
+interface:
+  display_name: "Service Boundary Design"
+  short_description: "Design backend service boundaries."
+  default_prompt: "Use this skill to define backend service or module responsibilities, data ownership, interfaces, dependencies, transaction boundaries, consistency needs, migration paths, and tradeoffs."

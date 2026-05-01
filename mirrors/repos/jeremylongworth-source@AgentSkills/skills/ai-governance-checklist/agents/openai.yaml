@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Governance Checklist"
+  short_description: "Draft AI governance readiness checklists."
+  default_prompt: "Use this skill to create AI governance checklists, responsible AI readiness reviews, policy control maps, model/data governance gates, and rollout readiness artifacts."

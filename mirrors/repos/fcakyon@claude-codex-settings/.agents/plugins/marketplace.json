@@ -1,0 +1,308 @@
+{
+  "name": "claude-settings",
+  "interface": {
+    "displayName": "Claude & Codex Settings"
+  },
+  "plugins": [
+    {
+      "name": "intelligent-compact",
+      "source": {
+        "source": "local",
+        "path": "./plugins/intelligent-compact"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "development"
+    },
+    {
+      "name": "claude-telemetry-hooks",
+      "source": {
+        "source": "local",
+        "path": "./plugins/claude-telemetry-hooks"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "observability"
+    },
+    {
+      "name": "anthropic-office-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/anthropic-office-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "documents"
+    },
+    {
+      "name": "openai-office-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/openai-office-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "documents"
+    },
+    {
+      "name": "python-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/python-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "development"
+    },
+    {
+      "name": "react-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/react-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "frontend"
+    },
+    {
+      "name": "agent-browser",
+      "source": {
+        "source": "local",
+        "path": "./plugins/agent-browser"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "web-testing"
+    },
+    {
+      "name": "frontend-design-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/frontend-design-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "frontend"
+    },
+    {
+      "name": "mongodb-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/mongodb-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "database"
+    },
+    {
+      "name": "supabase-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/supabase-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "database"
+    },
+    {
+      "name": "stripe-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/stripe-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "payment"
+    },
+    {
+      "name": "polar-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/polar-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "payment"
+    },
+    {
+      "name": "livekit-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/livekit-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "ai"
+    },
+    {
+      "name": "cloudflare-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/cloudflare-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "deployment"
+    },
+    {
+      "name": "web-performance-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/web-performance-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "web-testing"
+    },
+    {
+      "name": "openobserve-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/openobserve-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "observability"
+    },
+    {
+      "name": "hetzner-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/hetzner-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "deployment"
+    },
+    {
+      "name": "dokploy-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/dokploy-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "deployment"
+    },
+    {
+      "name": "github-dev",
+      "source": {
+        "source": "local",
+        "path": "./plugins/github-dev"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "developer-tools"
+    },
+    {
+      "name": "ultralytics-dev",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ultralytics-dev"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "developer-tools"
+    },
+    {
+      "name": "azure-tools",
+      "source": {
+        "source": "local",
+        "path": "./plugins/azure-tools"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "deployment"
+    },
+    {
+      "name": "claude-tools",
+      "source": {
+        "source": "local",
+        "path": "./plugins/claude-tools"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "developer-tools"
+    },
+    {
+      "name": "gcloud-tools",
+      "source": {
+        "source": "local",
+        "path": "./plugins/gcloud-tools"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "deployment"
+    },
+    {
+      "name": "paper-search-tools",
+      "source": {
+        "source": "local",
+        "path": "./plugins/paper-search-tools"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "research"
+    },
+    {
+      "name": "tavily-tools",
+      "source": {
+        "source": "local",
+        "path": "./plugins/tavily-tools"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "search"
+    }
+  ]
+}

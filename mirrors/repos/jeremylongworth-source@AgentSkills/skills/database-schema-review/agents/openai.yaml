@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Schema Review"
+  short_description: "Review backend database schemas."
+  default_prompt: "Use this skill to review database tables, migrations, indexes, constraints, relationships, tenant boundaries, query fit, data integrity, privacy, retention, and schema evolution risk."

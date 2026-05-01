@@ -1,0 +1,1 @@
+cache/repos/github.com/timescale@pg-aiguide/skills/postgres/references/../../postgres-hybrid-text-search/SKILL.md

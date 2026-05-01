@@ -1,0 +1,1 @@
+cache/repos/github.com/utensils@mcp-nixos/CLAUDE.md

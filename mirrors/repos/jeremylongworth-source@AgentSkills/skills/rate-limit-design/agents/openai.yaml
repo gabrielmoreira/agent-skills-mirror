@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rate Limit Design"
+  short_description: "Design API rate limits."
+  default_prompt: "Use this skill to design backend API rate limits, quotas, throttling, abuse controls, response headers, retry behavior, monitoring, rollout, and tests."

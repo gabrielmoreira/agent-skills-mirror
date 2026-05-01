@@ -1,0 +1,4 @@
+interface:
+  display_name: "Risk Register"
+  short_description: "Draft executive risk registers."
+  default_prompt: "Use this skill to create or review executive risk registers, opportunity registers, risk prioritization, mitigations, owners, triggers, escalation paths, and leadership risk review artifacts."

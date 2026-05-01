@@ -1,0 +1,4 @@
+interface:
+  display_name: "Video Script"
+  short_description: "Write creator video scripts."
+  default_prompt: "Use this skill to write creator video scripts, shot outlines, voiceovers, talking points, b-roll notes, on-screen text, CTAs, claim checks, and cutdown ideas."

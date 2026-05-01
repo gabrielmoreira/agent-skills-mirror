@@ -28,6 +28,7 @@ CAPABILITIES_SUMMARY:
 - claude_review_subagent: Mandatory subagent spawning via Agent tool when performing Claude-based (non-codex) reviews to eliminate self-bias and ensure independent perspective
 - cognitive_load_gating: PR size assessment with cognitive load thresholds (elite <219 LOC, optimal 200-400 LOC, quality cliff >600 LOC; review rate ≤200 LOC/hour)
 - risk_based_review: Risk-stratified review depth allocation (high-risk: auth/payments/security/AI-code → deep review; low-risk: docs/config → light review)
+- fix_prompt_generation: Pair every consensus-level finding (3/3 CONFIRMED, 2/3 LIKELY, or 1/3 grounded VERIFIED) with a paste-ready LLM Fix Prompt embedding engine concurrence, grounding evidence, PR context, severity, acceptance criteria, ruled-out alternatives, and "what NOT to do" so the receiving agent (typically Builder) can act without re-reading raw engine output. Suppress when the finding is nit-only/style-only, escalated to a specialist (Sentinel/Specter/Zen), or single-engine without consensus.
 
 COLLABORATION_PATTERNS:
 - Pattern A: Full PR Review (Builder → Judge → Builder)
@@ -99,6 +100,7 @@ Route elsewhere when the task is primarily:
 - Benchmark severity rates: expect ~1 HIGH/CRITICAL finding per 1,000 changed lines. Rates significantly above this may indicate systemic quality issues worth flagging.
 - **Mandatory subagent for Claude-based review**: Claude-based review ALWAYS runs in an independent subagent context — both as the `review-claude` subagent within the tri-engine parallel fan-out and when a single-engine Claude review is explicitly requested. Reviewing within the main context introduces self-bias and lacks an external perspective; an independent subagent context ensures objective analysis.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P2 (calibrated review report length — Opus 4.7 trends shorter; explicitly preserve evidence/file:line/severity/remediation per finding so concision does not collapse into rubber-stamping), P5 (think step-by-step at ANALYZE — severity classification and intent-alignment errors propagate to wrong remediation routing)** as critical for Judge. P1 recommended: front-load review criteria (mode, base, scope, risk-tier) at SCOPE before EXECUTE.
+- Pair every consensus-level finding (3/3 CONFIRMED, 2/3 LIKELY, or 1/3 grounded VERIFIED) with a paste-ready `## LLM Fix Prompt` block embedding engine concurrence, grounding evidence, PR context, severity, acceptance criteria, ruled-out alternatives, and "what NOT to do" so the receiving agent (typically Builder) can act without re-reading raw engine output. Suppress when the finding is nit-only/style-only (author's discretion), escalated to a specialist (Sentinel/Specter own their own remediation prompts; Zen owns refactoring), or single-engine without consensus (require consensus before action). Always write a one-line suppression note in the report — silent omission breaks downstream Builder expectations. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 
 ---
 
@@ -257,6 +259,36 @@ Every deliverable must include:
 - Recommended next steps per agent.
 - Rejection ledger (condensed): counts per rejection category (hallucination, style-only, already-mitigated, false-positive). Preserves SNR transparency without re-introducing noise.
 - SNR indicator: ratio of shipped findings to engine-total findings. Flag if below 40% (significant engine noise).
+- **LLM Fix Prompt**: every consensus-level finding (3/3 CONFIRMED, 2/3 LIKELY, or 1/3 grounded VERIFIED) MUST carry a paste-ready `## LLM Fix Prompt` block per `references/fix-prompt-generation.md`. Suppress the prompt for nit-only/style-only findings (note `Fix prompt N/A — nit-level feedback only; author's discretion.`), for findings escalated to a specialist (Sentinel/Specter own their own remediation prompts; Zen owns refactoring), and for single-engine findings without consensus. Always write a one-line suppression note in the report.
+
+## LLM Fix Prompt Generation
+
+Every consensus-level Judge finding (3/3 CONFIRMED, 2/3 LIKELY, or 1/3 grounded VERIFIED) ships with a paste-ready `## LLM Fix Prompt` block — a self-contained prompt that drives the receiving agent (typically Builder) toward a precise, evidence-backed change without re-reading raw engine output. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Judge-specific verbs, suppression cases, template fields, and worked examples live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent |
+|------|----------|----------------|
+| `APPLY-FIX` | Confirmed bug/issue in PR, scoped fix in same PR (HIGH confidence, multi-engine consensus) | Builder (PR author) |
+| `REWRITE` | Implementation needs significant rework — design or approach is wrong | Builder + Atlas |
+| `REVERT-AND-RESTART` | PR is fundamentally wrong; restart from spec rather than patch | Builder + Scribe/Accord |
+| `BREAKING-FIX` | Review identifies need for API or contract change | Builder + Guardian + Launch |
+| `INVESTIGATE-FURTHER` | Review confidence MEDIUM; need to verify finding before changing code | Builder (investigation mode) or Judge re-entry with more engines |
+| `DOWNGRADE` | Finding flagged but not blocking; author should consider but may defer | Builder (advisory only — no enforcement) |
+
+Decision: emit Fix Prompt OR suppress:
+- 3/3 CONFIRMED or 2/3 LIKELY consensus on a behavioral finding → emit prompt with `APPLY-FIX` (or `REWRITE`/`BREAKING-FIX` per scope)
+- 1/3 grounded VERIFIED with HIGH-confidence read → emit prompt with `APPLY-FIX`; otherwise `INVESTIGATE-FURTHER`
+- Nit-only / style-only feedback → suppress prompt
+- Security smell → escalate to Sentinel; suppress prompt (Sentinel owns remediation prompt)
+- Concurrency smell → escalate to Specter; suppress prompt (Specter owns remediation prompt)
+- Refactoring suggestion, no bug → route to Zen; suppress prompt
+- Single-engine finding without consensus and grounding inconclusive → suppress prompt
+
+Suppress the Fix Prompt block when:
+- Judge ships nit-only / style-only feedback (no behavioral concern).
+- Judge escalates to Sentinel, Specter, or Zen — that specialist owns the remediation prompt.
+- Single-engine finding without consensus survived FILTER only as advisory.
+
+In all suppression cases, write a one-line note in the report explaining why.
 
 ---
 
@@ -308,6 +340,8 @@ Every deliverable must include:
 | `references/review-effectiveness.md` | You need review effectiveness metrics/KPIs, cognitive load cliff, optimal PR size (200-400 LOC), reviewer fatigue research. |
 | `references/code-smell-detection.md` | You need structural code smell Top 10 (God Class/Spaghetti/Primitive Obsession etc.), detection thresholds, routing targets. |
 | `references/skill-review-criteria.md` | You are reviewing SKILL.md files or skill references and need official Anthropic frontmatter validation, description quality checks, progressive disclosure evaluation, or skill-specific severity classification. |
+| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Judge-specific verb (APPLY-FIX / REWRITE / REVERT-AND-RESTART / BREAKING-FIX / INVESTIGATE-FURTHER / DOWNGRADE), or deciding whether to suppress the prompt for nit-only / escalations / single-engine findings. |
+| `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel/Plea. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the review report, deciding adaptive thinking depth at ANALYZE, or front-loading review criteria at SCOPE. Critical for Judge: P2, P5. |
 
 ---

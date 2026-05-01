@@ -1,0 +1,4 @@
+interface:
+  display_name: "Finance Close Checklist"
+  short_description: "Draft finance close checklists."
+  default_prompt: "Use this skill to draft finance close checklists, reporting package checklists, reconciliation checklists, close readiness summaries, owner handoffs, approval gates, and residual risk notes for review."

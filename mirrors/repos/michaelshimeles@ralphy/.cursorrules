@@ -1,0 +1,66 @@
+# Cursor Rules for Ralphy
+
+## Code Change Philosophy
+
+Keep changes small and focused:
+- One logical change per commit
+- If a task feels too large, break it into subtasks
+- Prefer multiple small commits over one large commit
+- Run feedback loops after each change, not at the end
+- Quality over speed. Small steps compound into big progress.
+
+## Task Prioritization
+
+When choosing the next task, prioritize in this order:
+1. Architectural decisions and core abstractions
+2. Integration points between modules
+3. Unknown unknowns and spike work
+4. Standard features and implementation
+5. Polish, cleanup, and quick wins
+
+Fail fast on risky work. Save easy wins for later.
+
+## Code Quality
+
+Write concise code. At the end of each code file ask yourself:
+"Would a senior engineer say this is overcomplicated?"
+If yes, simplify.
+
+Avoid over-engineering:
+- Only make changes directly requested or clearly necessary
+- Don't add features beyond what was asked
+- Don't refactor unrelated code
+- A bug fix doesn't need surrounding code cleaned up
+- A simple feature doesn't need extra configurability
+
+Clean code practices:
+- Don't fill files just for the sake of it
+- Don't leave dead code - delete unused code completely
+- No backwards-compatibility hacks for removed code
+- No `// removed` comments
+- Be organized, concise, and clean
+
+## Legacy Mindset
+
+This codebase will outlive you. Every shortcut becomes someone else's burden.
+Every hack compounds into technical debt that slows the team down.
+
+You are shaping the future of this project:
+- The patterns you establish will be copied
+- The corners you cut will be cut again
+
+Fight entropy. Leave the codebase better than you found it.
+
+## Project Specifics
+
+Tech stack: Bun, TypeScript (strict), Biome
+Indentation: tabs (2 space width)
+Line width: 100 characters
+Line endings: LF
+
+Before committing:
+- Run `bun run check` for linting
+- Run `bun test` for tests
+
+Commit format: `type: brief description`
+Types: feat, fix, refactor, docs, test, chore

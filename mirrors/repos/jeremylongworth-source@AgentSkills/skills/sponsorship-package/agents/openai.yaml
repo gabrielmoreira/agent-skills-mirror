@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sponsorship Package"
+  short_description: "Design creator sponsor packages."
+  default_prompt: "Use this skill to build creator sponsorship package options, deliverable bundles, add-ons, rights assumptions, exclusions, and review notes."

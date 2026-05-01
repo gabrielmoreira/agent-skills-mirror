@@ -1,0 +1,1 @@
+cache/repos/github.com/timescale@pg-aiguide/skills/postgres/references/../../design-postgis-tables/SKILL.md

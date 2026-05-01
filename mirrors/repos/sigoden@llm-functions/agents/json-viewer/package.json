@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@inquirer/input": "^4.0.2",
+    "to-json-schema": "^0.2.5"
+  }
+}

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-project-manager/../../../agents/project-management/cs-project-manager.md

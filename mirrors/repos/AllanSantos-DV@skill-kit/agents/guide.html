@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guia de Agentes</title>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --border: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #7ee787;
+      --accent-purple: #d2a8ff;
+      --accent-orange: #ffa657;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --glass-bg: rgba(22, 27, 34, 0.65);
+      --glass-border: rgba(48, 54, 61, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      font-size: 16px;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Header / Mini-Hero ── */
+    .header {
+      position: relative;
+      padding: 48px 0;
+      margin-bottom: 40px;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(88, 166, 255, 0.08) 0%, rgba(210, 168, 255, 0.05) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .header > * { position: relative; z-index: 1; }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .back-link:hover {
+      color: #79b8ff;
+      text-decoration: underline;
+    }
+
+    .header h1 {
+      font-size: 2em;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 0.95em;
+      line-height: 1.7;
+      max-width: 720px;
+    }
+
+    .count-badge {
+      display: inline-block;
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+      font-size: 0.8em;
+      padding: 3px 12px;
+      border-radius: 20px;
+      margin-left: 8px;
+      font-weight: 700;
+      -webkit-text-fill-color: var(--accent-blue);
+      background-clip: padding-box;
+    }
+
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+      background: rgba(110, 118, 129, 0.15);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 0.88em;
+      color: var(--accent-orange);
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .card:hover {
+      border-color: rgba(88, 166, 255, 0.35);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 24px rgba(88, 166, 255, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      font-size: 1.5em;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+    }
+    /* Tinted icon backgrounds per agent */
+    .card:nth-child(1) .card-icon { background: rgba(210, 168, 255, 0.10); }
+    .card:nth-child(2) .card-icon { background: rgba(88, 166, 255, 0.10); }
+    .card:nth-child(3) .card-icon { background: rgba(255, 166, 87, 0.10); }
+    .card:nth-child(4) .card-icon { background: rgba(126, 231, 135, 0.10); }
+
+    .card-header h3 {
+      font-size: 1.15em;
+      font-weight: 700;
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    /* ── Access badges ── */
+    .access-badge {
+      font-size: 0.7em;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .access-full {
+      background: rgba(126, 231, 135, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(126, 231, 135, 0.25);
+    }
+    .access-readonly {
+      background: rgba(255, 166, 87, 0.12);
+      color: var(--accent-orange);
+      border: 1px solid rgba(255, 166, 87, 0.25);
+    }
+    .access-coordinator {
+      background: rgba(210, 168, 255, 0.12);
+      color: var(--accent-purple);
+      border: 1px solid rgba(210, 168, 255, 0.25);
+    }
+
+    .card-desc {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 14px;
+      font-size: 0.92em;
+    }
+    .card-desc strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ── Section labels ── */
+    .section-label {
+      font-size: 0.75em;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Meta rows ── */
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .meta-label {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 110px;
+    }
+
+    /* ── Tags ── */
+    .tag {
+      font-size: 0.82em;
+      padding: 2px 9px;
+      border-radius: 6px;
+      border: 1px solid rgba(48, 54, 61, 0.5);
+      color: var(--text-secondary);
+      background: rgba(110, 118, 129, 0.12);
+    }
+    .tag-agent {
+      background: rgba(88, 166, 255, 0.08);
+      color: var(--accent-blue);
+      border-color: rgba(88, 166, 255, 0.25);
+    }
+
+    /* ── Hook tags ── */
+    .hook-tag {
+      font-size: 0.82em;
+      padding: 2px 9px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .hook-PreToolUse {
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+    }
+    .hook-Stop {
+      background: rgba(255, 166, 87, 0.12);
+      color: var(--accent-orange);
+      border: 1px solid rgba(255, 166, 87, 0.25);
+    }
+    .hook-SubagentStart {
+      background: rgba(176, 126, 255, 0.12);
+      color: #b07eff;
+      border: 1px solid rgba(176, 126, 255, 0.25);
+    }
+    .hook-SessionStart {
+      background: rgba(126, 231, 135, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(126, 231, 135, 0.25);
+    }
+
+    .hook-detail {
+      font-size: 0.85em;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      padding-left: 4px;
+    }
+
+    /* ── Handoff list ── */
+    .handoff-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 6px;
+    }
+    .handoff-list li {
+      font-size: 0.88em;
+      padding: 8px 14px;
+      margin-bottom: 6px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: rgba(88, 166, 255, 0.04);
+      border-left: 3px solid var(--accent-blue);
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+    .handoff-label {
+      font-weight: 600;
+      color: var(--accent-blue);
+    }
+    .handoff-target {
+      color: var(--text-secondary);
+    }
+
+    /* ── When list ── */
+    .when-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .when-list li {
+      font-size: 0.85em;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Inline hook description spans ── */
+    .hook-desc-text {
+      font-size: 0.85em;
+      color: var(--text-secondary);
+    }
+    .none-text {
+      font-size: 0.85em;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .header { padding: 32px 0; }
+      .header h1 { font-size: 1.6em; }
+      .container { padding: 0 16px; }
+      .card { padding: 18px; }
+      .card-icon { width: 40px; height: 40px; font-size: 1.3em; }
+      .card-header h3 { font-size: 1.05em; }
+      .handoff-list li { padding: 6px 10px; }
+    }
+    @media (max-width: 480px) {
+      .header { padding: 24px 0; margin-bottom: 24px; }
+      .header h1 { font-size: 1.35em; }
+      .header p { font-size: 0.88em; }
+      .container { padding: 0 12px; }
+      .card { padding: 14px; margin-bottom: 14px; border-radius: var(--radius-md); }
+      .card-icon { width: 36px; height: 36px; font-size: 1.1em; border-radius: var(--radius-sm); }
+      .card-header { gap: 8px; }
+      .access-badge { font-size: 0.65em; padding: 2px 8px; }
+      .when-list { gap: 6px; }
+      .when-list li { font-size: 0.8em; padding: 3px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <div class="header">
+    <a href="../index.html" class="back-link">← Home</a>
+    <h1>🤖 Guia de Agentes <span class="count-badge">4</span></h1>
+    <p>
+      Agentes são arquivos <code>.agent.md</code> que definem personas especializadas de IA com instruções
+      próprias, acesso a ferramentas e capacidade de delegar trabalho. Cada agente aparece como um modo
+      selecionável no VS Code Copilot Chat. O sistema usa um padrão de orquestração onde o orchestrator
+      avalia e roteia, e os especialistas executam dentro de suas disciplinas.
+    </p>
+  </div>
+
+  <!-- orchestrator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🎭</span>
+      <h3>orchestrator</h3>
+      <span class="access-badge access-coordinator">Coordenador</span>
+    </div>
+    <p class="card-desc">
+      Coordenador inteligente. Avalia cada requisição, coleta contexto suficiente e roteia para o
+      especialista certo — ou resolve trabalho leve diretamente. Tem autonomia para análise e
+      planejamento, mas NUNCA edita arquivos, roda comandos ou escreve código.
+    </p>
+
+    <div class="section-label">Acesso a ferramentas</div>
+    <div class="meta-row">
+      <span class="tag">tools: omitido (herda TODAS)</span>
+    </div>
+    <div class="hook-detail">
+      Herda todas as ferramentas, mas é restrito via instruções no corpo a usar apenas ferramentas de leitura e busca para assessment.
+    </div>
+
+    <div class="section-label">Sub-agentes</div>
+    <div class="meta-row">
+      <span class="tag tag-agent">researcher</span>
+      <span class="tag tag-agent">validator</span>
+      <span class="tag tag-agent">implementor</span>
+    </div>
+
+    <div class="section-label">Handoffs</div>
+    <ul class="handoff-list">
+      <li><span class="handoff-label">Research This</span> <span class="handoff-target">→ researcher</span> — Pesquisar e coletar contexto para a tarefa</li>
+      <li><span class="handoff-label">Validate This</span> <span class="handoff-target">→ validator</span> — Validar a análise e premissas</li>
+      <li><span class="handoff-label">Implement This</span> <span class="handoff-target">→ implementor</span> — Implementar a tarefa descrita</li>
+    </ul>
+
+    <div class="section-label">Hooks configurados</div>
+    <div class="meta-row">
+      <span class="hook-tag hook-PreToolUse">PreToolUse</span>
+      <span class="hook-desc-text">pre-commit-guard — Guarda contra commits/push/tags sem aprovação</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-SubagentStart">SubagentStart</span>
+      <span class="hook-desc-text">subagent-audit — Loga decisões de roteamento de sub-agentes</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">verify-claims — Verifica que claims factuais foram tool-checked</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">context-confidence-check — Valida evidência de ferramentas na tabela de confiança</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">skill-feedback — Captura feedback de skills quando houve insatisfação</span>
+    </div>
+
+    <div class="section-label">Quando usar</div>
+    <ul class="when-list">
+      <li>Entrada padrão para qualquer requisição</li>
+      <li>Escopo ambíguo que precisa assessment</li>
+      <li>Roteamento para o especialista certo</li>
+      <li>Trabalho leve (perguntas simples, breakdowns)</li>
+    </ul>
+  </div>
+
+  <!-- implementor -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">⚡</span>
+      <h3>implementor</h3>
+      <span class="access-badge access-full">Acesso Total</span>
+    </div>
+    <p class="card-desc">
+      Agente de implementação disciplinado. Planeja antes de codificar, raciocina em decisões,
+      verifica fatos externos e documenta com task maps. Tem acesso total a ferramentas —
+      pode editar arquivos, rodar comandos, criar artefatos e executar testes.
+    </p>
+
+    <div class="section-label">Acesso a ferramentas</div>
+    <div class="meta-row">
+      <span class="tag">tools: omitido (herda TODAS)</span>
+    </div>
+    <div class="hook-detail">
+      Herda todas as ferramentas do pai. Acesso irrestrito a edit, terminal, search, read, web, etc.
+    </div>
+
+    <div class="section-label">Sub-agentes</div>
+    <div class="meta-row">
+      <span class="tag tag-agent">researcher</span>
+      <span class="tag tag-agent">validator</span>
+    </div>
+
+    <div class="section-label">Handoffs</div>
+    <ul class="handoff-list">
+      <li><span class="handoff-label">← Research More</span> <span class="handoff-target">→ researcher</span> — Enviar gaps para mais pesquisa</li>
+      <li><span class="handoff-label">← Validate Output</span> <span class="handoff-target">→ validator</span> — Revisar implementação e verificar qualidade</li>
+    </ul>
+
+    <div class="section-label">Hooks configurados</div>
+    <div class="meta-row">
+      <span class="hook-tag hook-PreToolUse">PreToolUse</span>
+      <span class="hook-desc-text">pre-commit-guard — Guarda contra commits/push/tags sem aprovação</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">stop-checklist — Lembra de rodar testes e produzir task map</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">verify-claims — Verifica que claims factuais foram tool-checked</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">context-confidence-check — Valida evidência de ferramentas na tabela de confiança</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">skill-feedback — Captura feedback de skills quando houve insatisfação</span>
+    </div>
+
+    <div class="section-label">Quando usar</div>
+    <ul class="when-list">
+      <li>Escopo claro e tarefa definida</li>
+      <li>Mudanças mecânicas e bem compreendidas</li>
+      <li>Trabalho pronto para implementação</li>
+      <li>Quando veio de pesquisa/validação prévia</li>
+    </ul>
+  </div>
+
+  <!-- researcher -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🔬</span>
+      <h3>researcher</h3>
+      <span class="access-badge access-readonly">Somente Leitura</span>
+    </div>
+    <p class="card-desc">
+      Agente de pesquisa. Investiga intenção, coleta contexto, verifica fatos — tudo antes de qualquer
+      código. É <strong>read-only</strong>: pode buscar, ler e navegar, mas não pode editar arquivos
+      nem executar comandos. Entrega Research Summary estruturado.
+    </p>
+
+    <div class="section-label">Acesso a ferramentas</div>
+    <div class="meta-row">
+      <span class="tag">search</span>
+      <span class="tag">read</span>
+      <span class="tag">web</span>
+      <span class="tag">todo</span>
+    </div>
+    <div class="hook-detail">
+      Ferramentas declaradas explicitamente — sobrescreve herança com set restrito de somente leitura.
+    </div>
+
+    <div class="section-label">Sub-agentes</div>
+    <div class="meta-row">
+      <span class="none-text">Nenhum — agents: []</span>
+    </div>
+
+    <div class="section-label">Handoffs</div>
+    <ul class="handoff-list">
+      <li><span class="handoff-label">Validate Context →</span> <span class="handoff-target">→ validator</span> — Validar a pesquisa, checar premissas e classificar confiança</li>
+    </ul>
+
+    <div class="section-label">Hooks configurados</div>
+    <div class="meta-row">
+      <span class="hook-tag hook-PreToolUse">PreToolUse</span>
+      <span class="hook-desc-text">pre-commit-guard — Guarda contra commits/push/tags sem aprovação</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">output-format — Verifica que o output segue formato Research Summary</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">verify-claims — Verifica que claims factuais foram tool-checked</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">context-confidence-check — Valida evidência de ferramentas na tabela de confiança</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">skill-feedback — Captura feedback de skills quando houve insatisfação</span>
+    </div>
+
+    <div class="section-label">Quando usar</div>
+    <ul class="when-list">
+      <li>Escopo incerto ou causa desconhecida</li>
+      <li>Decisões de design necessárias</li>
+      <li>Múltiplas abordagens válidas</li>
+      <li>Investigação profunda antes de agir</li>
+    </ul>
+  </div>
+
+  <!-- validator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">✅</span>
+      <h3>validator</h3>
+      <span class="access-badge access-readonly">Somente Leitura</span>
+    </div>
+    <p class="card-desc">
+      Agente de validação e análise estruturada. Pega output de pesquisa e faz
+      stress-test — questiona premissas, classifica confiança em 6 eixos, realiza pesquisa ativa
+      nos gaps e produz Validation Report. É <strong>read-only</strong>.
+    </p>
+
+    <div class="section-label">Acesso a ferramentas</div>
+    <div class="meta-row">
+      <span class="tag">search</span>
+      <span class="tag">read</span>
+      <span class="tag">web</span>
+      <span class="tag">todo</span>
+    </div>
+    <div class="hook-detail">
+      Ferramentas declaradas explicitamente — sobrescreve herança com set restrito de somente leitura.
+    </div>
+
+    <div class="section-label">Sub-agentes</div>
+    <div class="meta-row">
+      <span class="none-text">Nenhum — agents: []</span>
+    </div>
+
+    <div class="section-label">Handoffs</div>
+    <ul class="handoff-list">
+      <li><span class="handoff-label">Implement →</span> <span class="handoff-target">→ implementor</span> — Implementar o plano validado, seguindo decisões e restrições</li>
+    </ul>
+
+    <div class="section-label">Hooks configurados</div>
+    <div class="meta-row">
+      <span class="hook-tag hook-PreToolUse">PreToolUse</span>
+      <span class="hook-desc-text">pre-commit-guard — Guarda contra commits/push/tags sem aprovação</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">output-format — Verifica que o output segue formato Validation Report</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">verify-claims — Verifica que claims factuais foram tool-checked</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">context-confidence-check — Valida evidência de ferramentas na tabela de confiança</span>
+    </div>
+    <div class="meta-row">
+      <span class="hook-tag hook-Stop">Stop</span>
+      <span class="hook-desc-text">skill-feedback — Captura feedback de skills quando houve insatisfação</span>
+    </div>
+
+    <div class="section-label">Quando usar</div>
+    <ul class="when-list">
+      <li>Verificar planos antes de implementar</li>
+      <li>Revisar output de pesquisa</li>
+      <li>Checar abordagens antes de executar</li>
+      <li>Stress-test de premissas e decisões</li>
+    </ul>
+  </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/secrets-vault-manager/../../../engineering/secrets-vault-manager/SKILL.md

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Short-Form Hooks"
+  short_description: "Write short-form content hooks."
+  default_prompt: "Use this skill to write and review short-form hooks, opening lines, first beats, visual ideas, retention risks, claim checks, and test variants for creator content."

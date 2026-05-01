@@ -1,0 +1,4 @@
+interface:
+  display_name: "SQL Analysis Plan"
+  short_description: "Plan analytics SQL safely."
+  default_prompt: "Use this skill to plan SQL analyses with business questions, tables, joins, filters, CTEs, aggregations, validation checks, output shape, caveats, and read-only safety."

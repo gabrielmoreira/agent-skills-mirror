@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/finance-lead/../../../agents/personas/finance-lead.md

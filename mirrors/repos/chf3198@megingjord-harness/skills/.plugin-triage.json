@@ -1,0 +1,42 @@
+{
+  "_doc": "Canonical skill triage. 'universal' ships in plugin.json. 'personal' deploys only via deploy.sh.",
+  "universal": [
+    "docs-drift-maintenance",
+    "github-actions-security-hardening",
+    "github-capability-resolver",
+    "github-ops-excellence",
+    "github-ops-tree-router",
+    "github-projects-agile-linkage",
+    "github-release-incident-flow",
+    "github-review-merge-admin",
+    "github-ruleset-architecture",
+    "github-ticket-lifecycle-orchestrator",
+    "llm-wiki-ops-portable",
+    "manager-ticket-lifecycle",
+    "release-version-integrity",
+    "repo-onboarding-standards",
+    "repo-profile-governance",
+    "repo-standards-router",
+    "repo-structure-conventions",
+    "role-baton-orchestrator",
+    "role-collaborator-execution",
+    "role-consultant-critique",
+    "role-manager-execution",
+    "secret-exposure-prevention",
+    "web-regression-governance",
+    "workflow-self-anneal"
+  ],
+  "personal": [
+    { "name": "global-skills-bootstrap", "reason": "repo-specific bootstrap wiring" },
+    { "name": "global-task-router", "reason": "fleet-specific lane routing" },
+    { "name": "llm-wiki-ops", "reason": "replaced by portable version in #171" },
+    { "name": "mem-watchdog-ops", "reason": "Crostini-specific memory management" },
+    { "name": "network-platform-resources", "reason": "personal fleet inventory" },
+    { "name": "openclaw-availability-utilization", "reason": "personal OpenClaw gateway" },
+    { "name": "openclaw-universal-system", "reason": "personal OpenClaw gateway" },
+    { "name": "openrouter-free-failover", "reason": "personal OpenRouter config" },
+    { "name": "operator-identity-context", "reason": "personal identity/authority model" },
+    { "name": "playwright-vision-low-resource", "reason": "hardware-specific constraints" },
+    { "name": "role-admin-execution", "reason": "personal admin workflow with deploy access" }
+  ]
+}

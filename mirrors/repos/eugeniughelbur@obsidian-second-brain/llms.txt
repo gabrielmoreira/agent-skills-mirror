@@ -1,0 +1,118 @@
+# obsidian-second-brain
+
+> A Claude Code skill that turns any Obsidian vault into a self-rewriting second brain. An evolution of Karpathy's LLM Wiki pattern (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): every source updates existing pages instead of just appending, contradictions reconcile automatically, and 4 scheduled agents maintain the vault while you sleep. 31 slash commands span vault management, thinking tools, scheduled agents, and a research toolkit (live X posts via Grok, web research via Perplexity, YouTube transcripts).
+
+## What this is
+
+obsidian-second-brain is an open-source Claude Code skill (MIT license) for Obsidian users who use Claude as their primary interface to their own knowledge. It treats the vault as a knowledge base optimized for AI retrieval rather than human reading. Every note follows an AI-first design rule: self-contained context, "For future Claude" preamble, rich machine-readable frontmatter, recency markers per claim, sources preserved verbatim, mandatory wikilinks, and confidence levels.
+
+Owner: Eugeniu Ghelbur. AI Automation Engineer at Single Grain.
+
+## Why people use it
+
+- Claude sessions start from zero every time. This skill solves that by storing context in the Obsidian vault and letting Claude read, write, and reason over it across sessions.
+- Notes accumulate unconnected. This skill propagates every write across people, projects, kanban boards, and daily notes automatically.
+- Research findings get lost. The research toolkit (5 commands) saves every X read, X pulse, web research, and YouTube extraction directly to the vault as structured notes.
+- Vaults are usually optimized for humans browsing in Obsidian. This skill treats the vault as an AI knowledge graph: future-Claude is the primary reader.
+
+## How this extends Karpathy's LLM Wiki pattern
+
+Andrej Karpathy described an LLM Wiki pattern: drop sources into a folder, have an LLM read them, create wiki pages, and cross-reference entities and concepts so future questions are answered from the wiki rather than a fresh search. Reference: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+
+obsidian-second-brain implements this pattern and extends it on five axes:
+
+1. New sources rewrite existing pages instead of appending. When you ingest a YouTube video about a person already in your vault, the person's page gets updated. Stale claims get replaced. The vault stays current automatically.
+2. Contradictions get reconciled, not just flagged. The /obsidian-reconcile command finds conflicts between notes and resolves them by checking sources, dates, and confidence levels.
+3. Patterns get surfaced without prompting. The /obsidian-synthesize command scans the vault for unnamed recurring themes and writes synthesis pages on its own.
+4. Maintenance is scheduled, not manual. 4 scheduled agents run nightly close, weekly review, contradiction sweep, and vault-health check.
+5. Notes are written for AI retrieval. Every note has a "For future Claude" preamble, machine-readable frontmatter, mandatory wikilinks, and recency markers per claim. Karpathy's pattern produces human-readable wiki pages; this produces AI-first notes.
+
+If Karpathy's LLM Wiki is a knowledge base you maintain with an LLM, obsidian-second-brain is a knowledge base that maintains itself.
+
+## Long-form deep dive
+
+The complete analysis of how this skill extends Karpathy's pattern, including the AI-First Vault Principle, comparison against existing implementations (rohitg00's LLM Wiki v2 from 2026-03, Penfield Labs' typed-link extension), and an engineering retrospective covering three bugs shipped in the first version of /research-deep:
+
+- "I rebuilt Karpathy's LLM Wiki. Here's what's missing from the original." (2026-04-29). https://ghelburlabs.substack.com/p/i-rebuilt-karpathys-llm-wiki-heres
+
+## The 31 commands
+
+Operations (21): obsidian-save, obsidian-ingest, obsidian-synthesize, obsidian-reconcile, obsidian-export, obsidian-daily, obsidian-log, obsidian-task, obsidian-person, obsidian-decide, obsidian-capture, obsidian-find, obsidian-recap, obsidian-review, obsidian-board, obsidian-project, obsidian-health, obsidian-adr, obsidian-visualize, obsidian-learn, obsidian-init.
+
+Thinking (4): obsidian-challenge, obsidian-emerge, obsidian-connect, obsidian-graduate.
+
+Context (1): obsidian-world.
+
+Research (5, new in v0.5): x-read, x-pulse, research, research-deep, youtube.
+
+Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 1 background agent that runs on Claude Code's PostCompact hook.
+
+## Stack
+
+- Python 3.10+ with uv for the research toolkit
+- xAI Grok via the Agent Tools API (`/v1/responses`, `tools=[{"type": "x_search"}]`) for live X access
+- Perplexity Sonar (sonar-pro for /research, sonar-reasoning-pro for /research-deep synthesis)
+- youtube-transcript-api for free transcript extraction
+- YouTube Data API v3 (free tier, optional) for video metadata + comments
+- API keys stored Mac-locally at `~/.config/obsidian-second-brain/.env` with permissions 600
+
+## The AI-first vault rule
+
+The single most important design principle. Every note Claude writes must satisfy seven rules:
+
+1. Self-contained context: each note explains itself; future-Claude may pull it via search with no surrounding context
+2. "For future Claude" preamble: 2-3 sentence summary so Claude can decide relevance in 10 seconds before parsing the note
+3. Rich consistent frontmatter: type, date, tags, ai-first: true, plus type-specific fields per the schemas in `references/ai-first-rules.md`
+4. Recency markers per claim: "Mem0 raised $24M (as of 2026-04, mem0.ai)" so future-Claude knows what to verify
+5. Sources preserved verbatim: every external claim has its source URL inline
+6. Cross-links mandatory: every person, project, idea, decision uses `[[wikilinks]]` so the graph is traversable
+7. Confidence levels: `stated | high | medium | speculation` where applicable
+
+The rule lives in `_CLAUDE.md` Section 0 of every vault using this skill, and in `references/ai-first-rules.md` (the canonical specification with frontmatter schemas and preamble templates per note type).
+
+## Releases
+
+- v0.6.0 (2026-04-26): Phase 2. AI-first rule wired into all 26 existing commands. New canonical spec at references/ai-first-rules.md. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.6.0
+- v0.5.0 (2026-04-26): Phase 1. Research toolkit added. Five new commands. New layer in the architecture. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.5.0
+
+## Install
+
+```bash
+git clone https://github.com/eugeniughelbur/obsidian-second-brain ~/.claude/skills/obsidian-second-brain
+bash ~/.claude/skills/obsidian-second-brain/install.sh
+```
+
+Then run `/obsidian-init` in Claude Code to bootstrap your vault's `_CLAUDE.md`.
+
+## Common questions
+
+### How does this compare to Karpathy's LLM Wiki pattern?
+This skill is an evolution of Karpathy's pattern. Karpathy's wiki appends new pages and cross-references on ingest. This skill rewrites existing pages, reconciles contradictions automatically (`/obsidian-reconcile`), surfaces unnamed patterns into synthesis pages (`/obsidian-synthesize`), runs 4 scheduled maintenance agents, and writes notes in an AI-first format optimized for future-Claude retrieval rather than human reading. See https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f for Karpathy's original gist.
+
+### What is a Claude Code skill?
+A Claude Code skill is a reusable behavior package for Anthropic's Claude Code CLI. It bundles slash commands, scripts, references, and operating instructions that Claude loads automatically. Skills give Claude domain expertise without prompt-engineering each session.
+
+### Does this work with Obsidian Sync?
+Yes. The skill writes to your vault as standard markdown files. Obsidian Sync, iCloud, Syncthing, and Git-based sync all work without modification.
+
+### Do I need API keys to use this?
+No. The original 26 vault commands work without any API keys. Only the 5 research commands (x-read, x-pulse, research, research-deep, youtube) require API keys for xAI Grok, Perplexity, and optionally YouTube Data API v3. Without keys, those commands degrade gracefully.
+
+### How is this different from Notion AI or Mem?
+Notion AI and Mem are closed-source SaaS products that own your data. This skill stores everything as plain markdown in your local Obsidian vault, with no vendor lock-in. The AI is on top of your data, not behind it.
+
+### What is the AI-first design rule?
+The principle that vault notes are written for future-Claude to retrieve and reason over, not for human reading. Notes have machine-readable structure, recency markers, mandatory wikilinks, and source URLs preserved verbatim. See `references/ai-first-rules.md` for the canonical specification.
+
+### Is this safe to run on my existing vault?
+Yes. The skill never deletes or modifies notes destructively without explicit confirmation. Existing notes are left as-is. New notes follow the AI-first rule. `/obsidian-health` flags pre-AI-first notes so you can update them on your own schedule.
+
+### What does /research-deep do that /research doesn't?
+`/research` runs a single Perplexity query and returns a dossier. `/research-deep` scans your vault first, identifies what you already know about the topic, spawns 3-5 targeted follow-up searches to fill only the gaps, and produces a delta report (what's new, what's confirmed, contradictions to resolve). Vault-first means you stop re-researching what's already in your notes.
+
+### What do the research commands cost?
+Approximate per-call costs as of 2026-04: /x-read ~$0.05, /x-pulse ~$0.13, /research ~$0.04, /research-deep ~$0.40-$0.80, /youtube ~$0.04. Costs are tracked per call in `~/.research-toolkit/usage.log`. No hard caps; user is trusted to monitor.
+
+## License
+
+MIT. https://github.com/eugeniughelbur/obsidian-second-brain/blob/main/LICENSE

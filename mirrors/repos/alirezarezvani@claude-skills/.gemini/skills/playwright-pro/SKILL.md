@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/playwright-pro/../../../engineering-team/playwright-pro/SKILL.md

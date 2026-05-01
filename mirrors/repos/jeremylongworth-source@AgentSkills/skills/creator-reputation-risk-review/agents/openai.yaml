@@ -1,0 +1,4 @@
+interface:
+  display_name: "Creator Reputation Risk Review"
+  short_description: "Review creator reputation risks."
+  default_prompt: "Use this skill to prepare review-only reputation risk memos for creator content, campaigns, disclosures, rights, AI labeling, platform policy, brand safety, and public-response decisions."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Adoption Plan"
+  short_description: "Plan AI rollout and enablement."
+  default_prompt: "Use this skill to create AI adoption plans, rollout plans, training plans, enablement artifacts, stakeholder communication, feedback loops, and change-management plans."

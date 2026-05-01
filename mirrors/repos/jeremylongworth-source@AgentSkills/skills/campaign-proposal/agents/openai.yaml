@@ -1,0 +1,4 @@
+interface:
+  display_name: "Campaign Proposal"
+  short_description: "Create creator sponsor proposals."
+  default_prompt: "Use this skill to build creator sponsorship proposals with concepts, deliverables, timelines, measurement plans, assumptions, and review gates."

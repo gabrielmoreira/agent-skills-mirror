@@ -1,0 +1,68 @@
+{
+  "skill_name": "ios-notifications",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How should I implement ios notifications best practices?",
+      "expected_output": "**Framework**: Use `UserNotifications` for all notification handling.",
+      "assertions": [
+        {
+          "type": "contains",
+          "value": "UserNotifications"
+        },
+        {
+          "type": "contains",
+          "value": ".alert"
+        },
+        {
+          "type": "contains",
+          "value": ".badge"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What are the common anti-patterns to avoid in ios notifications?",
+      "expected_output": "**Delegate**: Implement `UNUserNotificationCenterDelegate` for foreground & tap handling.",
+      "assertions": [
+        {
+          "type": "contains",
+          "value": ".sound"
+        },
+        {
+          "type": "contains",
+          "value": "AppDelegate"
+        },
+        {
+          "type": "contains",
+          "value": "Priority: P2 (OPTIONAL)"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Give me a quick-start example for ios notifications.",
+      "expected_output": "**Permissions**: Request `.alert`, `.badge`, `.sound` after priming the user.",
+      "assertions": [
+        {
+          "type": "contains",
+          "value": "Framework"
+        },
+        {
+          "type": "contains",
+          "value": "Delegate"
+        },
+        {
+          "type": "contains",
+          "value": "Permissions"
+        }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "Set up a basic ios project from scratch",
+    "How do I install ios dependencies?",
+    "What is ios?",
+    "Configure CI/CD for an unrelated platform"
+  ]
+}

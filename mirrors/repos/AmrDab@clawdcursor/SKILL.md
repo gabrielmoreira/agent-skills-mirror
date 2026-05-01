@@ -1,8 +1,8 @@
 ---
 name: clawdcursor
-version: 0.8.3
+version: 0.8.6
 description: >
-  The skill that gives AI agents eyes, hands, and ears on a real desktop.
+  The skill that gives AI agents eyes, hands, and a keyboard on a real desktop.
   When the user asks you to do something a human would normally do at their
   computer — click a button, type in a field, read what is on screen, open
   an app, send an email through a GUI, fill out a form, drive a web page
@@ -29,11 +29,12 @@ metadata:
     install:
       - npm install -g clawdcursor
       - clawdcursor consent --accept
-      - clawdcursor serve
     skill_dir: ~/.openclaw/workspace/skills/clawdcursor
 ---
 
 **If a human can do it on a screen, you can too.** No API? No integration? No problem.
+
+> **No task is impossible.** If the user has a GUI, a mouse, and a keyboard — you have everything you need. There is no "I can't do that in this app." There is only the right sequence of reads, clicks, keys, and waits to get it done. Clawdcursor gives you all of them.
 
 > **USE AS A FALLBACK — NOT FIRST CHOICE**
 >
@@ -66,7 +67,7 @@ metadata:
 > - MCP clients: add `"args": ["mcp", "--compact"]` to your config.
 > - REST clients: use `GET /tools?mode=compact` and `POST /execute/{compound}` with an `action` enum.
 >
-> Granular mode's 72 tools are kept for back-compat. Compact's 6 tools are ~12× smaller and reduce mis-tool-selection. Use granular only if your runtime MUST have every primitive as its own top-level schema.
+> Granular mode's 74 tools are kept for back-compat. Compact's 6 tools are ~12× smaller and reduce mis-tool-selection. Use granular only if your runtime MUST have every primitive as its own top-level schema.
 
 If you connect via MCP with `--compact`, or hit REST's compact mode, you get a
 single tool that takes the whole task:
@@ -102,6 +103,17 @@ task({instruction})       See above — hand off a whole task to the pipeline
 Pick a compound FIRST based on what kind of operation it is, then set the
 `action` enum, then supply the args. The catalog is ~1,500 tokens — ~12× smaller
 than the granular surface — so small models (Haiku, Kimi, Ollama) stay focused.
+
+### Cost tier — always use the cheapest tier that works
+
+| Tier | Label | Cost | Use when |
+|---|---|---|---|
+| T1 | **structured** | ~free | Default. `accessibility.*`, `window.*`, `browser.read_text`, clipboard. Returns structured text — no image, no vision LLM. |
+| T2 | **ocr** | cheap | A11y tree is empty or sparse. `system({"action":"ocr"})` — OS-level OCR, text out, no LLM vision. |
+| T3 | **screenshot** | medium | OCR isn't enough and you need pixel context. `computer({"action":"screenshot"})` — sends an image into the LLM context. Use sparingly. |
+| T4 | **vision** | expensive | Screen is canvas-only (Paint, Figma, games) or the task requires spatial reasoning that text cannot express. `smart_click`, `smart_read`, `smart_type`. Last resort. |
+
+**Rule: start at T1. Escalate to the next tier only when the current one fails.** The pipeline does this automatically via `task({...})`; apply the same logic when you call compound tools manually.
 
 ### Quick reference — what action to pick
 
@@ -184,9 +196,9 @@ Never self-approve actions on these surfaces. The safety layer elevates them to 
 
 | Mode | Command | Brain | Tools available |
 |------|---------|-------|-----------------|
-| `serve` | `clawdcursor serve` | **You** (REST client) | 72 granular + 6 compact via HTTP |
-| `mcp` | `clawdcursor mcp [--compact]` | **You** (MCP client) | 72 granular (default) or 6 compact (`--compact`) via stdio |
-| `start` | `clawdcursor start` | Built-in LLM pipeline | 72 granular + autonomous agent (submit a task, poll for completion) |
+| `serve` | `clawdcursor serve` | **You** (REST client) | 74 granular + 6 compact via HTTP |
+| `mcp` | `clawdcursor mcp [--compact]` | **You** (MCP client) | 74 granular (default) or 6 compact (`--compact`) via stdio |
+| `start` | `clawdcursor start` | Built-in LLM pipeline | 74 granular + autonomous agent (submit a task, poll for completion) |
 
 In `serve` and `mcp` modes: **you reason, clawdcursor acts.** There is no built-in LLM. You call tools, interpret results, decide next steps. In `start` mode: clawdcursor reasons AND acts — hand it a plain-English task and poll for completion.
 
@@ -208,7 +220,7 @@ In `serve` and `mcp` modes: **you reason, clawdcursor acts.** There is no built-
 }
 ```
 
-**Granular — 72 individual tools (power-user, back-compat, larger prompt budget):**
+**Granular — 74 individual tools (power-user, back-compat, larger prompt budget):**
 ```json
 {
   "mcpServers": {
@@ -230,10 +242,10 @@ All POST endpoints require `Authorization: Bearer <token>` — token at
 `~/.clawdcursor/token`.
 
 ```
-GET  /tools                  → 72 granular schemas (OpenAI function-calling)
+GET  /tools                  → 74 granular schemas (OpenAI function-calling)
 GET  /tools?mode=compact     → 6 compound schemas (recommended for LLMs)
 POST /execute/{name}         → run any tool by name — granular or compact
-GET  /health                 → {"status":"ok","version":"0.8.2"}
+GET  /health                 → {"status":"ok","version":"<x.y.z>"}
 GET  /docs                   → full docs for the granular surface
 GET  /docs?mode=compact      → docs for the compact surface
 ```
@@ -437,6 +449,25 @@ Per-OS setup notes:
 
 ---
 
+**What's new in 0.8.6:**
+- **`McpServer` advertises the right version** — the MCP server-info struct hardcoded `0.7.2` since v0.7.x; clients have been seeing stale metadata for seven minor releases. Now reflects the package version.
+- **Homepage simplified** — landing page trimmed of decorative cursor animation, hero badge tightened to a one-liner, "any AI Model" filler tile removed from stats, CLI mode card relabeled `testing only` to match the README skill-first reframe.
+- **Repo hygiene** — removed stale `V0.7.5-SPEC.md` (architecture doc superseded in v0.8.1), pruned unlinked pinned-version docs (`docs/v0.7.0/`, `v0.7.2/`, `v0.7.12/`, `v0.7.14/`), corrected `LICENSE` copyright year range, added `SECURITY.md` with private vulnerability reporting.
+
+**What's new in 0.8.5:**
+- **Compact-tool keyboard fix** — `computer({"action":"key","combo":"mod+s"})` now actually works. The remap `combo → key` documented in `compact.ts` since v0.8.1 was never implemented; it is now wired up across `key`, `key_press`, `key_down`, and `key_up` actions.
+- **Cost-tier ladder** — added an explicit T1/T2/T3/T4 ladder to SKILL.md (structured a11y → OCR → screenshot → vision) so agents know to escalate cost only when the cheaper tier fails. Plus a "no task is impossible" callout: GUI + mouse + keyboard = everything you need.
+- **Documentation accuracy pass** — 16 review findings closed across README, SKILL.md, docs/index.html, and source comments: corrected installer claims (no MCP auto-register, no SKILL.md propagation, install path is `~/clawdcursor` not `~/.clawdcursor`); fixed compact-action enum names (`accessibility.read_tree` not `read_screen`, `system.clipboard_read` not `read_clipboard`, etc.); fixed Linux a11y package (`gir1.2-atspi-2.0`, not `at-spi2-core`); removed non-existent `clawdcursor dashboard` command; renamed "Anthropic Agent SDK" → "Claude Agent SDK"; aligned tool counts at 74 across all docs and source comments.
+
+**What's new in 0.8.4:**
+- **Dependency security audit** — patches every fixable advisory in the lockfile: vite (3× high — path traversal, fs.deny bypass, WS read), path-to-regexp (high — ReDoS), picomatch (high — ReDoS + method injection), hono (moderate — JSX SSR HTML injection), follow-redirects (moderate — auth-header leak across cross-domain redirects). 7 moderate alerts in the `jimp → @nut-tree-fork/nut-js` chain remain — no upstream fix yet.
+- **README rewrite** — reframed clawdcursor as a *skill* rather than a standalone server. The `start`/`task` CLI is now explicitly testing-only; agents reach the skill via MCP (`clawdcursor mcp --compact`) or the local REST surface (`clawdcursor serve`).
+
+**What's new in 0.8.3:**
+- **Idempotent `open_app`** — repeated `open_app("Outlook")` calls focus the existing window instead of stacking new instances. Closes the "N copies of Outlook" class of bug under any retry loop.
+- **Agent runaway guard** — if the agent calls the same tool with identical args ≥ 3 times in a 6-turn window, the loop exits with a `give_up` and a targeted hint (typically pointing at `detect_webview` for Electron/WebView2 targets with sparse a11y trees).
+- **`clawdcursor stop` sweeps every mode** — tears down `start`, `serve`, AND `mcp` (stdio) processes by walking `~/.clawdcursor/*.pid`. Fixes the "stale `serve` keeps receiving traffic" footgun.
+
 **What's new in 0.8.2:**
 - **Silent-401 auth bug fixed** — `requireAuth` now accepts the on-disk token with an mtime cache so concurrent clawdcursor processes no longer cause mid-session 401s.
 - **Force-focus-window** — Windows `focus_window` now uses the `AttachThreadInput` + `AllowSetForegroundWindow` + topmost-toggle sequence to raise windows across foreground lock.
@@ -446,3 +477,5 @@ Per-OS setup notes:
 - **SKILL.md polish** — harder push to compact mode, Escape-in-web-apps warning, a11y-empty troubleshooting split between Electron and true-canvas cases.
 
 **0.8.1 features (now stable in 0.8.2):** unified blind/hybrid/vision agent (one loop, three modes), compact MCP surface (`--compact`, 6 tools, ~1.5k tokens — Anthropic Computer-Use style), Linux AT-SPI bridge (read-only), Wayland input routing via `ydotool`/`wtype`, cross-OS PlatformAdapter verified on Windows 11 + macOS 14 + Ubuntu 24. Model-agnostic (Claude, GPT, Gemini, Llama, Kimi, Ollama) over REST or MCP.
+
+> See [CHANGELOG.md](CHANGELOG.md) for full v0.8.x history.

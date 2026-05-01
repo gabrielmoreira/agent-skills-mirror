@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integration Test Plan"
+  short_description: "Plan integration tests."
+  default_prompt: "Use this skill to plan integration tests across modules, APIs, databases, queues, services, auth, contracts, dependencies, fixtures, environments, and cleanup."

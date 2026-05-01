@@ -1,0 +1,516 @@
+{
+  "global": {
+    "author": "Hoang Nguyen",
+    "repository": "https://github.com/HoangNguyen0403/agent-skills-standard"
+  },
+  "broad_globs": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.jsx",
+    "**/*.js",
+    "**/*.go",
+    "**/*.dart",
+    "**/*.java",
+    "**/*.kt",
+    "**/*.swift",
+    "**/*.py",
+    "**/*.php",
+    "**/*.mjs",
+    "**/*.cjs"
+  ],
+  "base_language_skills": {
+    "_comment": "The ONE skill per language that keeps the broad file glob in the File Match section of _INDEX.md. All other skills with broad globs are demoted to Keyword Match only.",
+    "typescript": "typescript-language",
+    "javascript": "javascript-language",
+    "dart": "dart-language",
+    "kotlin": "kotlin-language",
+    "java": "java-language",
+    "swift": "swift-language",
+    "php": "php-language",
+    "golang": "golang-language",
+    "react": "react-component-patterns",
+    "react-native": "react-native-architecture",
+    "angular": "angular-components",
+    "nestjs": "nestjs-architecture",
+    "nextjs": "nextjs-rendering",
+    "spring-boot": "spring-boot-architecture",
+    "ios": "ios-swiftui",
+    "android": "android-compose",
+    "laravel": "laravel-architecture",
+    "flutter": "flutter-bloc-state-management",
+    "database": "database-postgresql"
+  },
+  "file_routing": {
+    "_comment": "Maps file extensions to the skill categories that should be consulted. Used by IndexGeneratorService to generate the AGENTS.md router table. Extensions with multiple categories mean the agent should check all listed category indexes.",
+    "go": [
+      "golang"
+    ],
+    "ts": [
+      "typescript",
+      "nestjs",
+      "nextjs",
+      "react",
+      "angular"
+    ],
+    "tsx": [
+      "typescript",
+      "nextjs",
+      "react"
+    ],
+    "js": [
+      "javascript"
+    ],
+    "mjs": [
+      "javascript"
+    ],
+    "jsx": [
+      "react"
+    ],
+    "dart": [
+      "dart",
+      "flutter"
+    ],
+    "java": [
+      "java",
+      "spring-boot"
+    ],
+    "kt": [
+      "kotlin",
+      "android"
+    ],
+    "kts": [
+      "kotlin"
+    ],
+    "swift": [
+      "swift",
+      "ios"
+    ],
+    "php": [
+      "php",
+      "laravel"
+    ],
+    "sql": [
+      "database"
+    ],
+    "entity.ts": [
+      "database"
+    ],
+    "prisma": [
+      "database"
+    ],
+    "component.ts": [
+      "angular"
+    ],
+    "component.html": [
+      "angular"
+    ],
+    "service.ts": [
+      "nestjs",
+      "angular"
+    ],
+    "module.ts": [
+      "nestjs",
+      "angular"
+    ],
+    "spec.ts": [
+      "common"
+    ],
+    "test.ts": [
+      "common"
+    ],
+    "test.tsx": [
+      "react"
+    ],
+    "spec.tsx": [
+      "react"
+    ],
+    "_test.go": [
+      "golang"
+    ]
+  },
+  "foundational_composite_rules": {
+    "_comment": "Maps a foundational skill ID to skill-name substrings (skill directory name only, not full path). The CLI auto-injects matching composites at index-generation time via String.includes(). No framework SKILL.md needs updating when a new skill is added — only this file. Intentionally unmatched: deployment/ops skills (android/deployment, ios/deployment, nestjs/deployment, react-native/deployment, spring-boot/deployment, flutter/cicd is TDD-matched).",
+    "common/best-practices": [
+      "architecture",
+      "best-practices",
+      "language",
+      "component",
+      "controllers-services",
+      "styl",
+      "api",
+      "error-handling",
+      "dependency",
+      "hooks",
+      "idiomatic",
+      "microservices",
+      "data-access-layer",
+      "navigation",
+      "notification",
+      "state",
+      "tooling",
+      "rout",
+      "forms",
+      "widget",
+      "design-system",
+      "localization",
+      "i18n",
+      "compose",
+      "swiftui",
+      "rxjs",
+      "di",
+      "xml",
+      "resource",
+      "lifecycle",
+      "eloquent",
+      "real-time",
+      "document",
+      "transport",
+      "search",
+      "schedul",
+      "upgrade",
+      "typescript",
+      "platform",
+      "server-action",
+      "ssr",
+      "fetching",
+      "http",
+      "dls",
+      "bullmq",
+      "directive",
+      "accessibility"
+    ],
+    "common/security-standards": [
+      "security",
+      "auth",
+      "authentication",
+      "security-isolation",
+      "file-uploads",
+      "logging",
+      "sessions-middleware",
+      "networking",
+      "persistence",
+      "database",
+      "configuration",
+      "mongo",
+      "sql",
+      "redis",
+      "forms",
+      "server-action",
+      "real-time",
+      "http"
+    ],
+    "common/performance-engineering": [
+      "performance",
+      "caching",
+      "rendering",
+      "concurrency",
+      "optimization",
+      "observ",
+      "database",
+      "background",
+      "memory",
+      "data-access",
+      "coroutines",
+      "networking",
+      "mongo",
+      "sql",
+      "redis",
+      "ssr",
+      "real-time",
+      "search",
+      "bullmq",
+      "schedul",
+      "fetching"
+    ],
+    "common/tdd": [
+      "test",
+      "quality",
+      "quality-engineer",
+      "zephyr",
+      "cicd",
+      "jira",
+      "business"
+    ],
+    "common/accessibility": [
+      "component",
+      "widget",
+      "swiftui",
+      "compose",
+      "page",
+      "screen",
+      "view",
+      "form"
+    ],
+    "common/api-design": [
+      "api",
+      "controller",
+      "router",
+      "handler",
+      "api-server",
+      "api-standards",
+      "rest"
+    ],
+    "common/error-handling": [
+      "error-handling",
+      "exception",
+      "filter",
+      "middleware",
+      "result"
+    ],
+    "common/observability": [
+      "observ",
+      "logging",
+      "tracing",
+      "metrics"
+    ],
+    "common/mobile-ux-core": [
+      "screen",
+      "page",
+      "view",
+      "activity",
+      "fragment"
+    ],
+    "common/system-design": [
+      "architecture",
+      "migration",
+      "microservices",
+      "transport",
+      "background-work",
+      "background-processing",
+      "clean-architecture"
+    ]
+  },
+  "categories": {
+    "flutter": {
+      "version": "1.7.0",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "flutter-v",
+      "token_metrics": {
+        "total_skills": 22,
+        "total_tokens": 11562,
+        "avg_tokens_per_skill": 526,
+        "largest_skill": "flutter-testing (846 tokens)"
+      }
+    },
+    "dart": {
+      "version": "1.3.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "dart-v",
+      "token_metrics": {
+        "total_skills": 3,
+        "total_tokens": 1650,
+        "avg_tokens_per_skill": 550,
+        "largest_skill": "dart-language (638 tokens)"
+      }
+    },
+    "typescript": {
+      "version": "1.3.3",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "typescript-v",
+      "token_metrics": {
+        "total_skills": 4,
+        "total_tokens": 2744,
+        "avg_tokens_per_skill": 686,
+        "largest_skill": "typescript-security (768 tokens)"
+      }
+    },
+    "javascript": {
+      "version": "1.3.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "javascript-v",
+      "token_metrics": {
+        "total_skills": 3,
+        "total_tokens": 1109,
+        "avg_tokens_per_skill": 370,
+        "largest_skill": "javascript-language (457 tokens)"
+      }
+    },
+    "react": {
+      "version": "1.3.5",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "react-v",
+      "token_metrics": {
+        "total_skills": 8,
+        "total_tokens": 4383,
+        "avg_tokens_per_skill": 548,
+        "largest_skill": "react-performance (733 tokens)"
+      }
+    },
+    "react-native": {
+      "version": "1.4.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "react-native-v",
+      "token_metrics": {
+        "total_skills": 13,
+        "total_tokens": 5795,
+        "avg_tokens_per_skill": 446,
+        "largest_skill": "react-native-performance (583 tokens)"
+      }
+    },
+    "nestjs": {
+      "version": "1.4.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "nestjs-v",
+      "token_metrics": {
+        "total_skills": 21,
+        "total_tokens": 13165,
+        "avg_tokens_per_skill": 627,
+        "largest_skill": "nestjs-performance (962 tokens)"
+      }
+    },
+    "nextjs": {
+      "version": "1.4.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "nextjs-v",
+      "token_metrics": {
+        "total_skills": 18,
+        "total_tokens": 11819,
+        "avg_tokens_per_skill": 657,
+        "largest_skill": "nextjs-architecture (1040 tokens)"
+      }
+    },
+    "common": {
+      "version": "2.0.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "common-v",
+      "token_metrics": {
+        "total_skills": 31,
+        "total_tokens": 19648,
+        "avg_tokens_per_skill": 634,
+        "largest_skill": "common-skill-creator (1354 tokens)"
+      }
+    },
+    "quality-engineering": {
+      "version": "1.4.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "quality-engineering-v",
+      "token_metrics": {
+        "total_skills": 5,
+        "total_tokens": 3860,
+        "avg_tokens_per_skill": 772,
+        "largest_skill": "quality-engineering-zephyr-test-generation (1213 tokens)"
+      }
+    },
+    "golang": {
+      "version": "1.3.3",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "golang-v",
+      "token_metrics": {
+        "total_skills": 11,
+        "total_tokens": 5110,
+        "avg_tokens_per_skill": 465,
+        "largest_skill": "golang-tooling (533 tokens)"
+      }
+    },
+    "angular": {
+      "version": "1.4.2",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "angular-v",
+      "token_metrics": {
+        "total_skills": 15,
+        "total_tokens": 7697,
+        "avg_tokens_per_skill": 513,
+        "largest_skill": "angular-tooling (676 tokens)"
+      }
+    },
+    "kotlin": {
+      "version": "1.3.3",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "kotlin-v",
+      "token_metrics": {
+        "total_skills": 4,
+        "total_tokens": 1685,
+        "avg_tokens_per_skill": 421,
+        "largest_skill": "kotlin-best-practices (471 tokens)"
+      }
+    },
+    "java": {
+      "version": "1.3.3",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "java-v",
+      "token_metrics": {
+        "total_skills": 5,
+        "total_tokens": 2483,
+        "avg_tokens_per_skill": 497,
+        "largest_skill": "java-language (540 tokens)"
+      }
+    },
+    "spring-boot": {
+      "version": "1.3.3",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "spring-boot-v",
+      "token_metrics": {
+        "total_skills": 10,
+        "total_tokens": 4810,
+        "avg_tokens_per_skill": 481,
+        "largest_skill": "spring-boot-architecture (643 tokens)"
+      }
+    },
+    "android": {
+      "version": "1.4.0",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "android-v",
+      "token_metrics": {
+        "total_skills": 26,
+        "total_tokens": 10922,
+        "avg_tokens_per_skill": 420,
+        "largest_skill": "android-edge-to-edge (768 tokens)"
+      }
+    },
+    "swift": {
+      "version": "1.3.5",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "swift-v",
+      "token_metrics": {
+        "total_skills": 8,
+        "total_tokens": 3946,
+        "avg_tokens_per_skill": 493,
+        "largest_skill": "swift-best-practices (702 tokens)"
+      }
+    },
+    "ios": {
+      "version": "1.4.5",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "ios-v",
+      "token_metrics": {
+        "total_skills": 15,
+        "total_tokens": 5786,
+        "avg_tokens_per_skill": 386,
+        "largest_skill": "ios-architecture (665 tokens)"
+      }
+    },
+    "php": {
+      "version": "1.3.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "php-v",
+      "token_metrics": {
+        "total_skills": 7,
+        "total_tokens": 3710,
+        "avg_tokens_per_skill": 530,
+        "largest_skill": "php-security (585 tokens)"
+      }
+    },
+    "laravel": {
+      "version": "1.3.4",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "laravel-v",
+      "token_metrics": {
+        "total_skills": 10,
+        "total_tokens": 6648,
+        "avg_tokens_per_skill": 665,
+        "largest_skill": "laravel-security (742 tokens)"
+      }
+    },
+    "database": {
+      "version": "1.3.3",
+      "last_updated": "2026-04-22",
+      "tag_prefix": "database-v",
+      "token_metrics": {
+        "total_skills": 3,
+        "total_tokens": 1720,
+        "avg_tokens_per_skill": 573,
+        "largest_skill": "database-mongodb (637 tokens)"
+      }
+    }
+  }
+}

@@ -570,6 +570,18 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ---
 
+## Output Contract
+
+- Default tier: M (regex/parser advice + ReDoS analysis is typically 5–15 lines)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - quick regex fix or single-pattern verdict: S
+  - full grammar / DSL spec design: L
+- Domain bans:
+  - Do not paraphrase the regex in prose — emit it inline (`/.../`) or in a code block, then explain only the non-obvious parts.
+
+---
+
 ## Output Language
 
 All final outputs (reports, comments, etc.) must be written in Japanese.

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-karpathy-reviewer/../../../agents/engineering/cs-karpathy-reviewer.md

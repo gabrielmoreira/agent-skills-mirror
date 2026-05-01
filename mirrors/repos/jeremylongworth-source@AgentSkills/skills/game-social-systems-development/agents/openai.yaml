@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Social Systems"
+  short_description: "Build safe player social features."
+  default_prompt: "Use this skill to design, implement, debug, or review social interaction features for games, including chat, voice, friends, parties, guilds, presence, invites, emotes, reputation, reporting, moderation, privacy, and trust and safety."

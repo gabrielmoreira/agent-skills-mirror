@@ -1,0 +1,40 @@
+{
+  "skill_name": "flutter-feature-based-clean-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm adding a new 'promotions' feature. Where should I put the files?",
+      "expected_output": "Create lib/features/promotions/ with 3-layer separation: domain/ (entities, failures, repo interface), data/ (DTOs, data sources, repo implementations), presentation/ (BLoC/Cubit, pages, widgets).",
+      "assertions": [
+        { "type": "contains", "value": "lib/features/" },
+        { "type": "contains", "value": "domain" },
+        { "type": "contains", "value": "data" },
+        { "type": "contains", "value": "presentation" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The orders feature needs loyalty points from a separate loyalty feature. How should orders access that data?",
+      "expected_output": "Only import Domain types across features. Orders can depend on loyalty's domain layer (repository interface, entities) but never import from loyalty's data/ or presentation/ layers.",
+      "assertions": [
+        { "type": "contains", "value": "Domain" },
+        { "type": "contains", "value": "never import" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Should I put shared utilities used by multiple features in lib/features/shared/?",
+      "expected_output": "No — keep lib/features/ flat with no nested feature directories. Move reusable utilities to lib/shared/ or lib/core/ instead.",
+      "assertions": [
+        { "type": "contains", "value": "lib/shared/" },
+        { "type": "contains", "value": "flat" }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "How do I use BlocBuilder in Flutter?",
+    "Add a test for the LoginBloc",
+    "Fix the navigation so the back button works correctly",
+    "I need to add a loading spinner to the checkout page"
+  ]
+}

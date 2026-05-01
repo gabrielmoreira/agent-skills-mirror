@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Exfiltration Review"
+  short_description: "Review data movement risks."
+  default_prompt: "Use this skill to review agent skills for unauthorized data access, secret exposure, network sends, hidden output channels, logging leaks, and least-privilege data handling."

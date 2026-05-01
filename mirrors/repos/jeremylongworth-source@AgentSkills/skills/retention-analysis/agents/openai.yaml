@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retention Analysis"
+  short_description: "Plan retention analyses."
+  default_prompt: "Use this skill to define, plan, or interpret retention, churn, renewal, repeat usage, engagement, revenue retention, cohort retention, caveats, and follow-up analysis."

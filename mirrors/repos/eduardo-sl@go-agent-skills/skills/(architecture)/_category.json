@@ -1,0 +1,5 @@
+{
+  "name": "Architecture & Design",
+  "description": "Package structure, dependency direction, interface design, API patterns, and project layout for Go services.",
+  "icon": "🏗️"
+}

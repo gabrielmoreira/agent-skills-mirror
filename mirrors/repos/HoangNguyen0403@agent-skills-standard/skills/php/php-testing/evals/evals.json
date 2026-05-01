@@ -1,0 +1,65 @@
+{
+  "skill_name": "php-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write a PHPUnit test for a PHP service class",
+      "expected_output": "Create a test class extending TestCase in tests/Unit/. Use assertSame for strict type checking. Follow Red-Green-Refactor TDD workflow.",
+      "assertions": [
+        { "type": "contains", "value": "TestCase" },
+        { "type": "contains", "value": "assertSame" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "How do I use Pest for testing in PHP?",
+      "expected_output": "Pest provides expressive syntax with it() and expect(). Use dataset for data-driven tests. Organize into Unit/, Integration/, and Feature/ directories.",
+      "assertions": [
+        { "type": "contains", "value": "Pest" },
+        { "type": "contains", "value": "expect" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How should I mock dependencies in PHP tests?",
+      "expected_output": "Use createMock() for external dependencies. Do NOT mock simple data objects. Tests must be independent and repeatable. Use transactions or SQLite :memory: for DB tests.",
+      "assertions": [
+        { "type": "contains", "value": "createMock" },
+        { "type": "contains", "value": "independent" }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Set up data providers in PHPUnit",
+      "expected_output": "Use #[DataProvider('providerName')] attribute in PHPUnit 10+. Define a static method returning test cases as arrays. In Pest, use dataset() instead.",
+      "assertions": [
+        { "type": "contains", "value": "DataProvider" },
+        { "type": "contains", "value": "static" }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Should I use assertSame or assertEquals in PHPUnit?",
+      "expected_output": "Use assertSame which checks strict equality (===) to avoid type coercion. assertEquals uses loose comparison (==). Also use assertCount() and assertMatchesRegularExpression().",
+      "assertions": [
+        { "type": "contains", "value": "assertSame" },
+        { "type": "contains", "value": "type coercion" }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "What should I NOT do in PHP unit tests?",
+      "expected_output": "Do not test private methods — test through public interfaces. Do not over-mock internals. Do not use real network or DB in unit tests. Do not chase coverage metrics over meaningful assertions.",
+      "assertions": [
+        { "type": "contains", "value": "private" },
+        { "type": "contains", "value": "public interface" }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "Jest tests for JavaScript React components",
+    "JUnit 5 tests in a Java Spring Boot app",
+    "Go table-driven tests with testify",
+    "Vitest tests for a Next.js application"
+  ]
+}

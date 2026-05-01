@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tailwind Design System"
+  short_description: "Build disciplined Tailwind UI systems."
+  default_prompt: "Use this skill to build, audit, or refactor Tailwind CSS interfaces and design systems, including tokens, class usage, responsive patterns, component variants, source detection, production CSS, and visual consistency."

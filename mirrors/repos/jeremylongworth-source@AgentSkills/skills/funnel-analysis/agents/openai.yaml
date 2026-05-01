@@ -1,0 +1,4 @@
+interface:
+  display_name: "Funnel Analysis"
+  short_description: "Plan funnel analyses."
+  default_prompt: "Use this skill to define, plan, or interpret funnel analyses with ordered steps, conversion and drop-off rules, segments, instrumentation quality, caveats, and recommended next actions."

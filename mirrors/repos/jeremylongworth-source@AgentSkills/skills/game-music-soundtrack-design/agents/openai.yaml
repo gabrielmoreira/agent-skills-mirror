@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Music Soundtrack"
+  short_description: "Design adaptive game music and soundtracks."
+  default_prompt: "Use this skill to compose, generate, direct, implement, or review game music, soundtrack concepts, adaptive scores, stems, loops, transitions, motifs, boss themes, ambience beds, and music systems."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Risk"
+  short_description: "Assess engineering release readiness."
+  default_prompt: "Use this skill to assess release risk, deployment readiness, rollout plans, rollback plans, monitoring, owner approvals, go/no-go gates, and production change readiness."

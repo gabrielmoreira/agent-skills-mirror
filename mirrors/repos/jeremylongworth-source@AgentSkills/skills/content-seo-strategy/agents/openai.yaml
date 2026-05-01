@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content SEO Strategy"
+  short_description: "Create helpful content and SEO systems."
+  default_prompt: "Use this skill to plan, create, audit, or improve SEO, content strategy, editorial calendars, topic clusters, landing pages, E-E-A-T, helpful content, and organic acquisition."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Vendor Evaluation"
+  short_description: "Compare AI vendors and risks."
+  default_prompt: "Use this skill to compare AI vendors, draft vendor evaluation matrices, assess AI platform fit, prepare procurement questions, and review AI tool risk."

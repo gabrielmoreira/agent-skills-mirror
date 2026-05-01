@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Multiplayer Design"
+  short_description: "Design client/server multiplayer systems."
+  default_prompt: "Use this skill to design, implement, debug, or review multiplayer game systems, including client/server authority, replication, prediction, matchmaking, lobbies, netcode, cheating risks, and network testing."

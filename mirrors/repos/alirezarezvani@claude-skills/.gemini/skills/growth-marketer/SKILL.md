@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/growth-marketer/../../../agents/personas/growth-marketer.md

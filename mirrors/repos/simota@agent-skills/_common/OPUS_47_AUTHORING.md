@@ -39,6 +39,8 @@ State intent, constraints, acceptance criteria, and file locations on the first 
 Opus 4.7 calibrates verbosity to task complexity. Skills must state expected output shape and length explicitly.
 
 **Apply by:**
+- Reference `_common/OUTPUT_STYLE.md` from the SKILL.md `Output Contract` section. That file is the single source of truth for tier definitions (`S`/`M`/`L`/`XL`), banned filler patterns, and format priority.
+- Declare a default tier and per-task overrides in SKILL.md instead of duplicating style rules.
 - Output sections specify length envelopes (line counts, bullet counts, table dimensions).
 - `_STEP_COMPLETE` and `## NEXUS_HANDOFF` blocks already provide envelopes — keep them; do not let agents emit free-form summaries instead.
 - For prose, state length explicitly: "1-3 sentence summary", "5-bullet checklist".

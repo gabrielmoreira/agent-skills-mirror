@@ -547,6 +547,19 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 - Next action: CONTINUE | VERIFY | DONE
 ```
 
+## Output Contract
+
+- Default tier: L (C4 model + Structurizr DSL + ADR is multi-section)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - single-question architecture clarification: M
+  - DSL fragment / single view: M
+  - full system architecture (4 levels + ADRs): XL
+- Domain bans:
+  - Do not paraphrase the DSL in prose — emit the DSL in a code block, then 1–3 lines of design rationale.
+
+---
+
 ## Output Language
 
 All final outputs (reports, summaries, model descriptions) must be written in Japanese.

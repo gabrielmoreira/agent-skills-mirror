@@ -1,0 +1,4 @@
+interface:
+  display_name: "CI Workflow Plan"
+  short_description: "Plan CI quality gates."
+  default_prompt: "Use this skill to design CI workflows with triggers, jobs, quality gates, caching, artifacts, secrets, permissions, required checks, and validation steps across CI hosts."

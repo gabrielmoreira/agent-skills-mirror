@@ -1,0 +1,4 @@
+interface:
+  display_name: "Concise Technical Writing"
+  short_description: "Write clear, concise technical text."
+  default_prompt: "Use this skill to write or edit concise technical docs, commit messages, PR descriptions, changelogs, design notes, README sections, status updates, and implementation summaries."

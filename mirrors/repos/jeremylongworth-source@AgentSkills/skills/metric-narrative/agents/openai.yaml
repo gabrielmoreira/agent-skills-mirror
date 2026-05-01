@@ -1,0 +1,4 @@
+interface:
+  display_name: "Metric Narrative"
+  short_description: "Write reviewed KPI narratives."
+  default_prompt: "Use this skill to write or review KPI narratives, dashboard summaries, metric movement explanations, activation/retention/revenue trend updates, confidence notes, and follow-up checks from supplied data."

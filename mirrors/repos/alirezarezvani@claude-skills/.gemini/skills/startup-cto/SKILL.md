@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/startup-cto/../../../agents/personas/startup-cto.md

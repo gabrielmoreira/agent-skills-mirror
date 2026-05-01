@@ -605,6 +605,19 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ---
 
+## Output Contract
+
+- Default tier: L (rule pack + coverage analysis is structured, multi-section)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - quick rule lookup or single-rule advice: M
+  - single Sigma/YARA snippet only: S (emit just the rule + 1-line rationale)
+  - full Detection-as-Code CI design or threat-hunting playbook: XL
+- Domain bans:
+  - Do not paraphrase the detection rule in prose — emit the rule body in a code block, then 1–2 lines of rationale.
+
+---
+
 ## Output Language
 
 All final outputs (rules, reports, coverage analyses) must be written in Japanese.

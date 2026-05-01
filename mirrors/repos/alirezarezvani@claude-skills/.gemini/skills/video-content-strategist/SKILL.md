@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/video-content-strategist/../../../marketing-skill/video-content-strategist/SKILL.md

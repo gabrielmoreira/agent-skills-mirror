@@ -1,0 +1,4 @@
+interface:
+  display_name: "Action Tracker"
+  short_description: "Track executive follow-through."
+  default_prompt: "Use this skill to create executive action trackers, owner follow-up lists, leadership meeting action logs, decision follow-through summaries, blockers, dependencies, and accountability lists."

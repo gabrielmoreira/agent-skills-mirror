@@ -1,0 +1,4 @@
+interface:
+  display_name: "Creator Offer Ladder"
+  short_description: "Design creator monetization ladders."
+  default_prompt: "Use this skill to map creator offers across free, paid, recurring, affiliate, sponsor, course, merch, community, and premium revenue paths."

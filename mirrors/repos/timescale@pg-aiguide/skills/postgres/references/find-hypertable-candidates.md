@@ -1,0 +1,1 @@
+cache/repos/github.com/timescale@pg-aiguide/skills/postgres/references/../../find-hypertable-candidates/SKILL.md

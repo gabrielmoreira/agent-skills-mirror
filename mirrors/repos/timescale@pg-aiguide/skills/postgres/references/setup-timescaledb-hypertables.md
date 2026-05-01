@@ -1,0 +1,1 @@
+cache/repos/github.com/timescale@pg-aiguide/skills/postgres/references/../../setup-timescaledb-hypertables/SKILL.md

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Analytics Instrumentation"
+  short_description: "Design event taxonomy and telemetry."
+  default_prompt: "Use this skill to design, audit, or improve product analytics instrumentation, event taxonomy, funnels, activation/retention metrics, telemetry schemas, tracking plans, observability events, QA, and data quality for apps, games, websites, and products."

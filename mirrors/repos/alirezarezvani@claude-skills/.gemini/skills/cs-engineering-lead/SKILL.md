@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-engineering-lead/../../../agents/engineering-team/cs-engineering-lead.md

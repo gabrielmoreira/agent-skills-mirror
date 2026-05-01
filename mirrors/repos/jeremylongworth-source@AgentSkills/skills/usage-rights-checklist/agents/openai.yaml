@@ -1,0 +1,4 @@
+interface:
+  display_name: "Usage Rights Checklist"
+  short_description: "Review creator usage-rights questions."
+  default_prompt: "Use this skill to create creator usage-rights checklists, risk flags, missing term lists, and negotiation questions for professional review."

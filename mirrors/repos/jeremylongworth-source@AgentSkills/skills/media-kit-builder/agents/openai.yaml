@@ -1,0 +1,4 @@
+interface:
+  display_name: "Media Kit Builder"
+  short_description: "Build creator media kit copy."
+  default_prompt: "Use this skill to structure creator media kits, audience summaries, partnership formats, proof tables, and missing asset lists."

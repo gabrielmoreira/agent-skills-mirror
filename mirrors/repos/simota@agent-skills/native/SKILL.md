@@ -574,6 +574,19 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ---
 
+## Output Contract
+
+- Default tier: L (production iOS/Android implementation typically spans multiple files)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - single-file fix or property-tweak: M
+  - new feature with multi-module + tests + Privacy Manifest: XL
+  - quick API question (Swift Concurrency, Compose): S
+- Domain bans:
+  - Do not narrate the implementation step-by-step ("Now I'll write the ViewModel…") — let the diff speak; surface only platform-specific rationale (Liquid Glass / M3 Expressive / Privacy Manifest).
+
+---
+
 ## Output Language
 
 All final outputs (reports, comments, etc.) must be written in Japanese. Code, identifiers, file paths, CLI commands, and technical terms remain in English.

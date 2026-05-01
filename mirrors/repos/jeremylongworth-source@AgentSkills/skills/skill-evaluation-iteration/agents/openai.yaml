@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Evaluation Iteration"
+  short_description: "Test and improve Codex skills."
+  default_prompt: "Use this skill to evaluate, forward-test, compare, and improve Codex skills using baseline runs, skill-assisted runs, gaps, acceptance criteria, validation checklists, and iterative revisions."

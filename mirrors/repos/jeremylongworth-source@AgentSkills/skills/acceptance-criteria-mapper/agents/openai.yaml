@@ -1,0 +1,4 @@
+interface:
+  display_name: "Acceptance Criteria Mapper"
+  short_description: "Make evaluation criteria testable."
+  default_prompt: "Use this skill to turn skill, bundle, feature, or workflow goals into observable acceptance criteria with evidence requirements, safety gates, and validation methods."

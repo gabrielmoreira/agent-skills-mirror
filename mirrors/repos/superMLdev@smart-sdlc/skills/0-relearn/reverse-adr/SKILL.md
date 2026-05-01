@@ -1,0 +1,192 @@
+---
+name: reverse-adr
+description: "Reverse-engineer Architecture Decision Records (ADRs) from an existing codebase. Use when a project has no ADRs but you want to document WHY architectural decisions were made based on the code evidence."
+---
+
+# Reverse ADR — Architecture Decision Records from Code
+
+Detect architectural decisions that have already been made in this codebase and produce documented ADRs explaining what was chosen and why (inferred from code patterns, library choices, and structure).
+
+## When to Use
+
+- Project has no ADRs or DECISIONS.md
+- New team members need to understand *why* things are the way they are
+- Preparing to evaluate changing an architectural decision
+- Creating a brownfield knowledge transfer document
+
+## What Makes a Good Reverse ADR
+
+An ADR is worth writing when:
+- A technology, library, or pattern was chosen over a notable alternative
+- A structural decision affects how the whole system is organized
+- The choice has trade-offs worth understanding
+- Understanding it helps prevent someone from accidentally reversing it
+
+## Step 1: Identify Decision Points
+
+Scan the codebase for these high-signal decision indicators:
+
+**Dependency choices** (read `package.json`, `pyproject.toml`, etc.):
+- ORM selection (Prisma vs TypeORM vs raw SQL vs Mongoose)
+- Auth library (Passport vs JWT-only vs Auth0 vs NextAuth)
+- Validation library (Zod vs Joi vs class-validator vs Pydantic)
+- HTTP client (axios vs fetch vs got)
+- Testing framework (Jest vs Vitest vs Mocha)
+- State management (Redux vs Zustand vs MobX vs Jotai)
+
+**Structural decisions** (read directory layout + imports):
+- Layered architecture vs feature folders vs domain-driven structure
+- Monorepo vs single package
+- REST vs GraphQL vs gRPC choice
+- Synchronous vs async/event-driven design
+- Database per service vs shared database (if microservices)
+
+**Configuration decisions**:
+- TypeScript strict mode (read `tsconfig.json`)
+- Environment management approach (.env vs vault vs cloud config)
+- Docker vs bare metal vs serverless deployment
+
+**Pattern decisions**:
+- Dependency injection vs direct imports
+- Repository pattern vs active record
+- DTO pattern vs direct entity exposure
+- Error handling strategy (exceptions vs Result types vs error codes)
+
+---
+
+## Step 2: For Each Decision, Gather Evidence
+
+For each decision identified, collect:
+
+```
+Decision: {Name}
+Evidence files: [{file1}, {file2}]
+What was chosen: {the actual choice made}
+What was NOT chosen: {notable alternatives not present}
+Signals suggesting why: {code comments, config settings, patterns}
+Confidence: High (explicit) | Medium (inferred) | Low (speculative)
+```
+
+**High confidence** = explicit config, comment, or highly specific library version  
+**Medium confidence** = consistent pattern across files without explicit statement  
+**Low confidence** = only guessable from indirect signals  
+
+---
+
+## Step 3: Write ADRs
+
+Write to: `{project-root}/docs/decisions/`
+
+Create one file per decision: `ADR-001-{kebab-case-title}.md`
+
+Also create an index: `{project-root}/docs/DECISIONS.md`
+
+**ADR Template:**
+
+```markdown
+# ADR-{nnn}: {Decision Title}
+
+**Status:** Active (reverse-engineered — not verified with original authors)  
+**Date:** {approximate — use earliest relevant commit or "unknown"}  
+**Confidence:** {High | Medium | Low}  
+**Evidence:** `{primary source file(s)}`
+
+---
+
+## Context
+
+{What situation prompted this decision? Inferred from the codebase context — e.g., "This is a REST API serving a React frontend. An ORM was needed to manage a PostgreSQL database."}
+
+## Decision
+
+**Chosen:** {Prisma as the ORM}
+
+{1–2 sentences describing what was chosen and how it's used}
+
+## Observed Evidence
+
+- `{prisma/schema.prisma}` — primary schema definition in Prisma SDL format
+- `{src/repositories/}` — all database queries written using Prisma Client
+- `{package.json}` — `@prisma/client` is a production dependency, `prisma` is a dev dependency
+- {No TypeORM, Sequelize, or raw SQL found anywhere in the codebase}
+
+## Likely Reasoning
+
+{Based on the code patterns, the likely reason for this choice was:}
+
+1. {Type-safe database queries — Prisma generates typed client from schema}
+2. {Schema-first development — migrations managed by Prisma Migrate}
+3. {Good TypeScript ergonomics — common choice in the TypeScript ecosystem circa 2022–present}
+
+**Alternatives not chosen:** TypeORM (no `typeorm` in dependencies), Sequelize (no `sequelize`), raw `pg` queries.
+
+## Trade-offs
+
+**Benefits realized** (inferred from consistent patterns):
+- Type safety at the DB query layer
+- Schema-first workflow
+
+**Costs observed:**
+- {e.g., No raw query fallback seen — may limit complex queries}
+
+## Consequences
+
+If you are considering changing this decision, note:
+- All database access goes through `{src/repositories/}` — changing ORMs would require rewriting these
+- Schema is defined in `prisma/schema.prisma` — migrating to another tool requires schema migration
+
+---
+
+_Generated by Scout (reverse-adr skill). Confidence: {High|Medium|Low}. Verify with original authors before treating as authoritative._
+```
+
+---
+
+## Step 4: Create DECISIONS.md Index
+
+Write to: `{project-root}/docs/DECISIONS.md`
+
+```markdown
+# Architecture Decisions — {project_name}
+
+> Reverse-engineered by Scout from observed code patterns.
+> These are inferred decisions. Confidence level noted for each.
+> Verified by: {none yet — manually review and remove this notice when done}
+
+## Index
+
+| ADR | Decision | Status | Confidence |
+|-----|----------|--------|-----------|
+| [ADR-001](decisions/ADR-001-{title}.md) | {Short decision title} | Active | High |
+| [ADR-002](decisions/ADR-002-{title}.md) | ... | Active | Medium |
+
+## Commonly Questioned Decisions
+
+{Link to any ADRs that are frequently surprising to new developers}
+```
+
+---
+
+## Decisions to Always Look For
+
+Produce an ADR for each of these that applies (if sufficient evidence exists):
+
+1. **ORM / Database Access Pattern** — Prisma, TypeORM, raw SQL, etc.
+2. **Authentication Strategy** — JWT, session, external provider
+3. **API Style** — REST vs GraphQL vs gRPC (if a choice was made and alternatives were possible)
+4. **Monorepo vs Multi-repo** (if monorepo with workspaces)
+5. **Dependency Injection** — NestJS DI, InversifyJS, manual wiring
+6. **Validation Library** — where and how validation happens
+7. **Error Handling Pattern** — exceptions, Result types, error middleware
+8. **Test Strategy** — unit-only vs integration-heavy vs E2E
+9. **Configuration Management** — env vars, config service, vault
+10. **TypeScript Strictness** — strict mode, explicit `any`, `noUncheckedIndexedAccess`
+
+---
+
+## Important Notes
+
+- **Never claim certainty about intent** — always say "inferred", "likely", "suggested by"
+- **Do not write ADRs at Low confidence unless asked** — they risk misleading new developers
+- **Do not document trivial choices** — `lodash` vs `underscore` is not an ADR
+- The goal is to help future developers understand the existing system, not to judge past choices

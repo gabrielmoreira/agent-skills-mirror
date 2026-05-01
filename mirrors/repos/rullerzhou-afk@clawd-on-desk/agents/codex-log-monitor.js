@@ -1,6 +1,6 @@
 // Codex CLI JSONL log monitor
 // Polls ~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl for state changes
-// Zero dependencies (node built-ins only)
+// Zero external dependencies (node built-ins + local Codex helpers only)
 //
 // Replay protection is two layers — change one, consider the other:
 //   1. Line-level: _processLine skips entries whose `timestamp` field is
@@ -17,6 +17,7 @@
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
+const CodexSubagentClassifier = require("./codex-subagent-classifier");
 
 const APPROVAL_HEURISTIC_MS = 2000;
 const MAX_TRACKED_FILES = 50;
@@ -38,10 +39,12 @@ class CodexLogMonitor {
   /**
    * @param {object} agentConfig - codex.js config (logConfig + logEventMap)
    * @param {function} onStateChange - (sessionId, state, event, extra) => void
+   * @param {object} options
    */
-  constructor(agentConfig, onStateChange) {
+  constructor(agentConfig, onStateChange, options = {}) {
     this._config = agentConfig;
     this._onStateChange = onStateChange;
+    this._classifier = options.classifier || new CodexSubagentClassifier();
     this._interval = null;
     // Map<filePath, { offset, sessionId, cwd, lastEventTime, lastState, partial }>
     this._tracked = new Map();
@@ -286,6 +289,7 @@ class CodexLogMonitor {
         hasEmittedState: false,
         partial: "",
         hadToolUse: false,
+        isSubagent: false,
         agentPid: null,
         pendingApprovalDetail: null,
         // Backfill mode: only a file whose last write predates monitor
@@ -366,6 +370,9 @@ class CodexLogMonitor {
     // Extract CWD from session_meta
     if (type === "session_meta" && payload) {
       tracked.cwd = payload.cwd || "";
+      const role = this._classifier.registerSession(tracked.sessionId, { sessionMeta: payload });
+      if (role === "subagent") tracked.isSubagent = true;
+      else if (role === "root") tracked.isSubagent = false;
     }
 
     // Extract Codex-authored session summary (turn_context.summary).
@@ -418,7 +425,9 @@ class CodexLogMonitor {
         tracked.approvalTimer = null;
       }
       tracked.pendingApprovalDetail = null;
-      const resolved = tracked.hadToolUse ? "attention" : "idle";
+      const resolved = this._isTrackedSubagent(tracked)
+        ? "idle"
+        : (tracked.hadToolUse ? "attention" : "idle");
       tracked.hadToolUse = false;
       tracked.lastState = resolved;
       if (tracked.backfilling) return;
@@ -622,6 +631,22 @@ class CodexLogMonitor {
     );
   }
 
+  _isTrackedSubagent(tracked) {
+    if (!tracked) return false;
+    const role = this._classifier && typeof this._classifier.classify === "function"
+      ? this._classifier.classify(tracked.sessionId)
+      : "unknown";
+    if (role === "subagent") {
+      tracked.isSubagent = true;
+      return true;
+    }
+    if (role === "root") {
+      tracked.isSubagent = false;
+      return false;
+    }
+    return tracked.isSubagent === true;
+  }
+
   _emitStateChange(tracked, state, event, extra = null) {
     tracked.lastState = state;
     tracked.lastEventTime = Date.now();
@@ -637,6 +662,9 @@ class CodexLogMonitor {
         : agentPid,
       sessionTitle: tracked.sessionTitle,
       ...(extra || {}),
+      headless: this._isTrackedSubagent(tracked)
+        ? true
+        : (extra && Object.prototype.hasOwnProperty.call(extra, "headless") ? extra.headless : undefined),
     });
   }
 }

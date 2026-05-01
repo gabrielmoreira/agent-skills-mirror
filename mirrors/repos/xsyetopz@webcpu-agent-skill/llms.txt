@@ -1,0 +1,67 @@
+# webcpu-agent-skill
+
+> All-agent skill/plugin for precise CPU-rendered Canvas2D 3D scenes with `@xsyetopz/easel` EASEL.js.
+
+Baseline package: `@xsyetopz/easel@0.5.0`.
+Canonical source: `source/skills/webcpu-easel/`.
+Generated outputs: `.build/generated/`, `.build/llms/`, and `dist/`.
+Agent rule: do not invent APIs; answer `UNKNOWN` when references and installed declarations do not verify a requested symbol or behavior.
+
+## Docs
+
+- [README](README.md): build, runtime support, Claude plugin marketplace install, agent prompts, install outputs, and grounding contract.
+- [Agent instructions](AGENTS.md): canonical repository-wide AI agent rules.
+- [Agent platform matrix](docs/agent-platforms.md): generated support table for Codex, Claude, Copilot, Cursor, Gemini, Zed, JetBrains, Cline, KiloCode Legacy, Augment, Amp, Neovim, and Antigravity.
+- [Contributing guide](CONTRIBUTING.md): contributor workflow, validation, generated-surface rules, CI/CD, and public-doc guardrails.
+- [Skill contract](source/skills/webcpu-easel/body.md): execution protocol, anti-rules, runtime decision table.
+- [Reference map](source/skills/webcpu-easel/REFERENCE.md): lookup order, examples, templates, references.
+
+## API References
+
+- [API index](source/skills/webcpu-easel/reference/api-index.md): verified exports from `@xsyetopz/easel@0.5.0`.
+- [Class signatures](source/skills/webcpu-easel/reference/class-signatures.md): constructor, method, and property shapes.
+- [Enums and constants](source/skills/webcpu-easel/reference/enums-constants.md): exported constants and literal values.
+- [Module imports](source/skills/webcpu-easel/reference/module-imports.md): npm, Bun, JSR, Deno, ESM, and CommonJS imports.
+- [Deno runtime](source/skills/webcpu-easel/reference/deno-runtime.md): Deno-managed browser app constraints and commands.
+
+## Recipes
+
+- [Setup](source/skills/webcpu-easel/reference/setup.md): first validation path.
+- [Renderer/framebuffer](source/skills/webcpu-easel/reference/renderer-framebuffer.md): renderer, framebuffer, and Canvas2D upload.
+- [Render loops](source/skills/webcpu-easel/reference/render-loop-recipes.md): animation frames, resize, profiling.
+- [Manual geometry](source/skills/webcpu-easel/reference/geometry-manual.md): positions, normals, UVs, indices.
+- [Materials](source/skills/webcpu-easel/reference/materials.md): material choices, side, opacity, shading.
+- [Textures/assets](source/skills/webcpu-easel/reference/textures-assets.md): textures, atlases, `DataTexture`.
+- [Input/picking](source/skills/webcpu-easel/reference/input-picking.md): pointer scaling, `Raycaster`, voxel DDA.
+- [Voxel worlds](source/skills/webcpu-easel/reference/voxel-worlds.md): chunk meshing and rebuild budgets.
+- [Performance](source/skills/webcpu-easel/reference/performance.md): CPU renderer optimization checklist.
+
+## Agent Instructions
+
+- [Claude Code instructions](CLAUDE.md): generated Claude-specific wrapper importing `AGENTS.md`.
+- [Gemini CLI instructions](GEMINI.md): generated Gemini wrapper importing `AGENTS.md`.
+- [GitHub Copilot instructions](.github/copilot-instructions.md): generated Copilot repository guidance.
+- [Cursor rule](.cursor/rules/webcpu-easel.mdc): generated Cursor always-apply project rule.
+- [Zed rules](.rules): generated Zed project rule.
+- [JetBrains AI Assistant rule](.aiassistant/rules/webcpu-easel.md): generated JetBrains project rule.
+- [JetBrains Junie instructions](.junie/AGENTS.md): generated Junie-preferred `AGENTS.md`.
+- [Cline rule](.clinerules/00-webcpu-easel.md): generated Cline workspace rule.
+- [KiloCode Legacy installer](install.sh): online installer copies the packaged skill into `.kilocode/skills/webcpu-easel`.
+- [Augment rule](.augment/rules/webcpu-easel.md): generated Augment workspace rule.
+
+## Templates
+
+- [Vite vanilla TypeScript](source/skills/webcpu-easel/templates/vite-vanilla-ts): minimal browser bundler starter.
+- [React canvas](source/skills/webcpu-easel/templates/react-canvas): React canvas mount starter.
+- [Astro canvas](source/skills/webcpu-easel/templates/astro-canvas): Astro page with EASEL scene.
+- [Voxel world starter](source/skills/webcpu-easel/templates/voxel-world-starter): chunk meshing starter.
+- [Deno browser](source/skills/webcpu-easel/templates/deno-browser): Deno-managed browser app starter.
+
+## Optional
+
+- [Version provenance](source/skills/webcpu-easel/reference/version-provenance.md): upstream package and docs links.
+- [Package identity](source/skills/webcpu-easel/reference/package-identity.md): EASEL.js naming boundaries.
+- [THREE.js migration](source/skills/webcpu-easel/reference/threejs-migration.md): concept mapping from THREE.js.
+- [CreateJS comparison](source/skills/webcpu-easel/reference/createjs-easeljs-comparison.md): boundary against CreateJS EaselJS.
+- [WebGL/WebGPU comparison](source/skills/webcpu-easel/reference/webgl-webgpu-comparison.md): backend capability matrix.
+- [llms full manifest](llms-full.txt): complete LLM manifest with every reference, example, template, and script.

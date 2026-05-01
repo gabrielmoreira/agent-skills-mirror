@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/adversarial-reviewer/../../../engineering-team/adversarial-reviewer/SKILL.md

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ticket Triage"
+  short_description: "Classify support tickets and route next actions."
+  default_prompt: "Use this skill to triage customer support tickets, classify severity and impact, identify missing information, route ownership, and recommend safe next actions."

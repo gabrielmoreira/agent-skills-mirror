@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paid Media Growth"
+  short_description: "Plan paid acquisition campaigns."
+  default_prompt: "Use this skill to plan, launch, audit, or optimize paid media across Google Ads, LinkedIn Ads, Meta Ads, paid social, search, retargeting, creative testing, budgeting, and conversion measurement."

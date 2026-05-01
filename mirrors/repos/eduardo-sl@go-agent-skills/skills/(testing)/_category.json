@@ -1,0 +1,5 @@
+{
+  "name": "Testing",
+  "description": "Test patterns, table-driven tests, mocking strategies, coverage analysis, and test infrastructure for Go.",
+  "icon": "🧪"
+}

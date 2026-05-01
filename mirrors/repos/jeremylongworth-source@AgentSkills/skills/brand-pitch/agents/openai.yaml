@@ -1,0 +1,4 @@
+interface:
+  display_name: "Brand Pitch"
+  short_description: "Draft creator sponsor pitches."
+  default_prompt: "Use this skill to draft creator brand partnership outreach, pitch angles, follow-ups, proof-point notes, and review gates."

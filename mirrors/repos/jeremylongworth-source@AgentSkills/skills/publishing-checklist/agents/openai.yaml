@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publishing Checklist"
+  short_description: "Prepare creator content to publish."
+  default_prompt: "Use this skill to create creator publishing checklists with asset, caption, link, metadata, disclosure, rights, accessibility, approval, post-publish monitoring, and go/no-go checks."

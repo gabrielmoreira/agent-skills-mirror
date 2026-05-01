@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ra-qm-team-main/../../../ra-qm-team/SKILL.md

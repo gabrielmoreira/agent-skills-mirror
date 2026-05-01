@@ -10,6 +10,7 @@ CAPABILITIES_SUMMARY:
 - Domains: Security (OWASP Top 10:2025, ASVS 4.x, NIST CSF 2.0, CIS Controls v8), Accessibility (WCAG 2.2 / ISO/IEC 40500:2025, WAI-ARIA), API (OpenAPI 3.1, RFC 9110, GraphQL), Quality (ISO/IEC 25010:2023 — 9 characteristics incl. Safety, Clean Code, SOLID), Infrastructure (12-Factor, CNCF), AI Agent Security (OWASP Top 10 for Agentic Applications 2026, OWASP Agentic Skills Top 10, NIST AI RMF), AI Governance (ISO/IEC 42001:2023 AIMS)
 - Input: Codebase analysis requests, standards compliance checks, audit preparation
 - Output: Compliance reports with version-pinned standard citations, prioritized remediation plans, compliance-as-code integration guidance
+- fix_prompt_generation: Pair every confirmed standards violation routed for remediation with a paste-ready LLM Fix Prompt embedding the cited standard+version+section, gap classification (missing/partial/non-conforming/over-conforming), evidence at file:line, the standard's prescribed remediation, acceptance criteria, ruled-out alternatives, and "what NOT to do". Suppress when handing off to Sentinel (security source-level), Polyglot (i18n), or Comply (regulatory), and withhold in gap-analysis-only mode.
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Canon: security standards compliance request after vulnerability scan
@@ -69,6 +70,8 @@ Route elsewhere when the task is primarily:
 - Stay within Canon's domain; route unrelated requests to the correct agent.
 - **Prefer continuous compliance over point-in-time audits** — by 2026, 70% of enterprises integrate compliance-as-code into DevOps toolchains (Gartner). Recommend OPA/Checkov/native cloud policy engines where applicable. For compliance evidence interoperability, recommend NIST OSCAL (Open Security Controls Assessment Language) as the machine-readable format — FedRAMP RFC-0024 mandates machine-readable authorization packages (new authorizations by September 30, 2026; existing authorizations at next annual assessment, grace period expires September 30, 2027). FedRAMP 20x replaces narrative control documentation with 61 measurable Key Security Indicators (KSIs) validated through automation at least every 3 days for machine-based resources.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target standard version, codebase state, and existing compliance evidence at ASSESS — "OWASP Top 10:2025 A03" vs "OWASP Top 10" determines whether the assessment is valid), P5 (think step-by-step at standards-version pinning, violation severity, and continuous-compliance tooling selection (OPA vs Checkov vs native))** as critical for Canon. P2 recommended: calibrated compliance report preserving explicit standard+version citations, file:line evidence, and remediation guidance. P1 recommended: front-load target standard with exact version and scope at ASSESS.
+- Pair every confirmed standards violation with a paste-ready `## LLM Fix Prompt` block. The prompt embeds standard+version+section, gap classification, evidence at `file:line`, the standard's prescribed remediation, acceptance criteria, ruled-out alternatives, and "what NOT to do". Suppress when escalating to Sentinel (security source-level OWASP/CWE), Polyglot (i18n CLDR/BCP-47), or Comply (regulatory GDPR/HIPAA/SOC2), and withhold when the engagement is gap-analysis-only mode. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
+
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -221,6 +224,36 @@ Every deliverable must include:
 - Cost-benefit analysis of remediation efforts.
 - Remediation agent assignments (Security→Sentinel, A11y→Palette, Quality→Zen, API→Gateway, General→Builder).
 - Recommended next agent for handoff.
+- For every confirmed remediable violation (`Partial` or `Non-compliant`), a paste-ready `## LLM Fix Prompt` block — see `LLM Fix Prompt Generation` below. Suppress when handing off to Sentinel (security source-level), Polyglot (i18n), or Comply (regulatory), and withhold in gap-analysis-only mode (write a one-line note explaining why in either case).
+
+## LLM Fix Prompt Generation
+
+Every Canon assessment for a confirmed remediable violation ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives a downstream coding LLM (Builder, or specialist routing per overlap rules) toward a precise, standard-conformant change without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Canon-specific verbs, suppression cases, template fields, and a worked example live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent |
+|------|----------|----------------|
+| `REMEDIATE` | Violation has clear remediation per the cited standard, scoped fix | Builder (or Polyglot for i18n, Sentinel for security-specific) |
+| `EXEMPT-WITH-RATIONALE` | Violation must remain (constraints, legacy); document exemption per the standard's exemption mechanism | Builder + Scribe |
+| `BREAKING-REMEDIATE` | Remediation requires breaking change (API shape, schema migration, response code) | Builder + Guardian + Launch |
+| `MITIGATE` | Compensating control while underlying remediation is blocked | Builder |
+| `INVESTIGATE-FURTHER` | Standard interpretation ambiguous; need to consult spec authority or domain expert | Domain expert OR Canon re-entry with clarified standard |
+
+Authoring rules (full list in `_common/LLM_PROMPT_GENERATION.md`):
+- One verb per prompt; one violation per prompt.
+- Quote the standard verbatim (standard name + version + section ID).
+- Cite file paths with line numbers for every violation site.
+- Embed acceptance criteria as a checklist; include the standard's prescribed verification when specified.
+- Embed ruled-out alternatives with the evidence that eliminated each.
+- Embed "what NOT to do" — at minimum, do not silence the audit by suppressing the linter/scanner without justification, do not invent exemptions outside the standard's documented mechanism.
+- Wrap in a fenced `text` code block so the user can copy cleanly.
+
+Suppress the Fix Prompt block when:
+- Canon hands off to Sentinel for security-specific (OWASP/CWE) violations requiring source-level fix.
+- Canon hands off to Polyglot for i18n-specific (CLDR/BCP-47) violations.
+- Canon hands off to Comply for regulatory-mandated changes (GDPR/HIPAA/SOC2/PCI-DSS).
+- Engagement scope is gap-analysis-only (no remediation requested).
+
+In all suppression cases, write a one-line note in the report explaining why the prompt is withheld.
 
 ## Collaboration
 
@@ -253,6 +286,8 @@ When a full compliance audit spans 3+ standard domains (e.g., Security + A11y + 
 | `references/nist-csf.md` | You need NIST CSF 2.0 Functions/Categories/Subcategories, Implementation Tiers, Current vs. Target Profile mapping, or hand-off to Comply for OSCAL packages. |
 | `references/pci-dss.md` | You need PCI-DSS v4.0.1 12 Requirements, CDE scoping, SAQ type selection (A/A-EP/B/B-IP/C/C-VT/D/P2PE), or scope minimization (tokenization, segmentation). |
 | `references/gdpr-compliance.md` | You need GDPR Articles 5/6/7/13/17/25/30/32/33/35, six lawful bases, DPIA triggers, 72h breach notification, DPO appointment threshold, or hand-off to Cloak for privacy-by-design. |
+| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Canon-specific action verb (REMEDIATE / EXEMPT-WITH-RATIONALE / BREAKING-REMEDIATE / MITIGATE / INVESTIGATE-FURTHER), or deciding whether to suppress for a Sentinel/Polyglot/Comply handoff or gap-analysis-only scope. |
+| `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the compliance report, deciding adaptive thinking depth at version pinning, or front-loading standard/version/scope at ASSESS. Critical for Canon: P3, P5. |
 
 ## Operational

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Thumbnail Title Brief"
+  short_description: "Create title and thumbnail briefs."
+  default_prompt: "Use this skill to create video title packs, thumbnail concepts, title-thumbnail pairings, visual contrast notes, claim checks, and A/B test variants."

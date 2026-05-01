@@ -1,0 +1,37 @@
+{
+  "skill_name": "react-security",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My React app stores the JWT access token in localStorage.",
+      "expected_output": "Never store secrets in localStorage — it's vulnerable to XSS. Use HttpOnly Secure cookies instead. They are inaccessible to JavaScript.",
+      "assertions": [
+        { "type": "contains", "value": "HttpOnly" },
+        { "type": "contains", "value": "XSS" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "A user can view other users' private data by changing the user ID in the URL.",
+      "expected_output": "This is an IDOR vulnerability — validate ownership on the backend. The API must verify the requesting user owns the resource. Never rely on frontend validation for security.",
+      "assertions": [
+        { "type": "contains", "value": "backend" },
+        { "type": "contains", "value": "validate" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My React app has outdated npm dependencies. What should I do?",
+      "expected_output": "Run npm audit to find known vulnerabilities. Pin specific dependency versions. Update high and critical severity advisories immediately.",
+      "assertions": [
+        { "type": "contains", "value": "npm audit" },
+        { "type": "contains", "value": "vulnerabilit" }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "Configure PostgreSQL replication",
+    "Write a Go database migration",
+    "Set up Kubernetes network policies"
+  ]
+}

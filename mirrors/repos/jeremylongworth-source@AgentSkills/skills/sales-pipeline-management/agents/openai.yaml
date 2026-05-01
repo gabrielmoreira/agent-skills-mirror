@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sales Pipeline Management"
+  short_description: "Manage pipeline stages and forecasts."
+  default_prompt: "Use this skill to design, audit, or improve sales pipeline stages, qualification, CRM hygiene, deal reviews, forecasting, pipeline coverage, stage exit criteria, and sales operating metrics."

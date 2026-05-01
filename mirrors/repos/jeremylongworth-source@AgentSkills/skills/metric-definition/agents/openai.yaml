@@ -1,0 +1,4 @@
+interface:
+  display_name: "Metric Definition"
+  short_description: "Define metrics and KPIs."
+  default_prompt: "Use this skill to create metric definitions, KPI dictionaries, formulas, grains, filters, exclusions, source-of-truth notes, caveats, quality checks, owners, and review cadence."

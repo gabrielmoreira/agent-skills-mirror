@@ -1,0 +1,1 @@
+cache/repos/github.com/DeckardGer@tanstack-agent-skills/AGENTS.md

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/extract/../../../engineering-team/self-improving-agent/skills/extract/SKILL.md

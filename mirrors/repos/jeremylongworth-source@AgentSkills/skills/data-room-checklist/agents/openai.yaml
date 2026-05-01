@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Room Checklist"
+  short_description: "Prepare fundraising data room checklists."
+  default_prompt: "Use this skill to prepare startup fundraising data room indexes, diligence checklists, document readiness plans, investor folder structures, missing-item reviews, and sensitivity notes."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Visual UI UX Audit"
+  short_description: "Audit UI with visual evidence."
+  default_prompt: "Use this skill to visually audit web apps and product UIs with screenshots/browser inspection, identifying issues in hierarchy, layout, typography, color, spacing, states, responsiveness, accessibility, and perceived quality."

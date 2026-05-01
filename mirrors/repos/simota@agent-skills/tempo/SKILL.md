@@ -602,6 +602,18 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ---
 
+## Output Contract
+
+- Default tier: M (typical schedule design / cron review fits 5–15 lines)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - quick cron syntax check or DST-edge-case answer: S
+  - full retry/backoff design or business-calendar spec: L
+- Domain bans:
+  - Do not restate the user's cron expression in prose — emit it inline (` * * * * * `) and explain only the deltas.
+
+---
+
 ## Output Language
 
 All final outputs (reports, comments, etc.) must be written in Japanese.

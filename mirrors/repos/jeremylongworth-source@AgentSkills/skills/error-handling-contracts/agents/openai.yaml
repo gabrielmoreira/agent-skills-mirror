@@ -1,0 +1,4 @@
+interface:
+  display_name: "Error Handling Contracts"
+  short_description: "Design backend error contracts."
+  default_prompt: "Use this skill to design backend and API error response shapes, status code mappings, validation errors, retry behavior, logging, observability, client-safe messages, and test cases."

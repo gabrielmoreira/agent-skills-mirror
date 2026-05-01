@@ -167,11 +167,11 @@ failure mode and it steals focus every time.
 When a cua-driver call surprises you, diagnose cua-driver first:
 
 - **Tiny screenshot / empty `tree_markdown`?** Check
-  `cua-driver get_config` → `capture_mode`. Default `"vision"` omits
-  the AX tree (PNG only), `"ax"` omits the PNG, `"som"` returns
-  both. If a snapshot lacks a tree, `capture_mode` is almost
-  certainly `"vision"` — either reason purely from the PNG or flip
-  to `"som"` / `"ax"` via `set_config`.
+  `cua-driver get_config` → `capture_mode`. Default `"som"` returns
+  both the AX tree and screenshot. `"vision"` omits the AX tree
+  (PNG only), `"ax"` omits the PNG. If a snapshot lacks a tree,
+  `capture_mode` is almost certainly `"vision"` — either reason
+  purely from the PNG or flip to `"som"` / `"ax"` via `set_config`.
 - **`has_screenshot: false`?** The window capture failed (transient
   race against a close, or the window has no backing store yet).
   Re-snapshot; if persistent, pick a different `window_id` via
@@ -414,50 +414,39 @@ single-window case you can skip `list_windows` entirely and read the
 
 Call `get_window_state({pid, window_id})` with the `window_id` from
 `launch_app`'s `windows` array (or a fresh `list_windows({pid})` if
-you're interacting with a long-lived process). In the default
-`vision` capture_mode the response carries **only the screenshot**
-— no AX tree — so the canonical loop is `list_windows →
-get_window_state → reason over PNG → pixel click`. When you need
-`element_index` dispatch (AX-addressable elements, backgrounded
-clicks), flip to `som` first: `cua-driver set_config '{"key":
-"capture_mode", "value": "som"}'`, or call `get_accessibility_tree`
-directly. The rest of this section walks through `som` mode, which
-is what you want once you've decided element-indexed addressing is
-required.
+you're interacting with a long-lived process). The default `som`
+capture_mode returns **both the AX tree and screenshot**, so the
+canonical loop works immediately without any config change. The rest
+of this section walks through `som` mode. If you're in `vision` mode
+(PNG only, no AX tree), flip back: `cua-driver set_config '{"key":
+"capture_mode", "value": "som"}'`.
 
-In `som` mode the response carries:
+In `som` mode (the default) the response carries:
 
 - `tree_markdown` — every actionable element tagged `[N]`. That `N`
   is the `element_index`. The tree can be very large (Finder is
   ~1600 elements, ~190 KB); when it exceeds token limits the MCP
   harness saves it to a file and returns the path. Use `Bash` +
   `jq -r '.tree_markdown'` + `grep` to pull the section you need.
-- `screenshot_png_b64` + `screenshot_width` / `_height` /
-  `_scale_factor` — the window screenshot (actually JPEG-85 despite
-  the `_png_` field name, hard-coded in
-  `WindowCapture.captureFrontmostWindow`). Present in `som` mode
-  (spliced into the structured JSON alongside the tree). In `vision`
-  mode the image arrives as a native MCP image content block with no
-  structured wrapper. Omitted when the target has no on-screen
-  window.
-- `has_screenshot: bool` — **gate on this before piping the PNG**.
-  Otherwise `jq -r '.screenshot_png_b64'` emits the literal
-  `"null"`, base64-decodes into 3 bytes of garbage, and downstream
-  vision APIs reject it with an opaque "Could not process image"
-  error.
+- `screenshot_file_path` — absolute path to the saved screenshot when
+  `screenshot_out_file` was passed. Absent otherwise.
+- `screenshot_width` / `_height` / `_scale_factor` — dimensions of the
+  captured image. Present whenever a screenshot was taken.
+**Getting the screenshot as a file (CLI and context-constrained agents):**
 
-```
-# canonical, works in every capture mode — writes the image bytes
-# wherever you point, stdout stays readable (tree in som, summary
-# in vision). stderr warns (exit 0) if the response had no image.
-cua-driver get_window_state '{"pid":N,"window_id":W}' --image-out /tmp/shot.png
+```bash
+# write to file — stdout stays readable (AX tree / summary only, no base64)
+cua-driver get_window_state '{"pid":N,"window_id":W,"screenshot_out_file":"/tmp/shot.jpg"}'
 
-# som-only legacy path: pull the spliced base64 out of structuredContent.
-# Prefer --image-out above — it's one flag vs a probe + pipe.
-if [ "$(cua-driver get_window_state '{"pid":N,"window_id":W}' | jq -r '.has_screenshot')" = "true" ]; then
-  cua-driver get_window_state '{"pid":N,"window_id":W}' | jq -r '.screenshot_png_b64' | base64 -d > shot.png
-fi
+# CLI --screenshot-out-file flag is equivalent and works for all capture modes
+cua-driver get_window_state '{"pid":N,"window_id":W}' --screenshot-out-file /tmp/shot.jpg
 ```
+
+Pass `screenshot_out_file` when using `get_window_state` via CLI or from an
+agent whose context window can't absorb ~31 KB of inline base64 (e.g.
+OpenCode with a local Ollama model). The MCP image content block is omitted
+from the response when this param is set — the model receives only the AX
+tree and `screenshot_file_path`, then reads the image from disk.
 
 **Reason over both the tree AND the screenshot — they're
 complementary, not redundant.** In `som` mode every
@@ -512,7 +501,7 @@ anchor the conversion against a specific window):
 | Focus + send key | `press_key({pid, key, window_id, element_index, modifiers})` | element_index sets AXFocused, then posts key |
 | Send key to pid | `press_key({pid, key, modifiers})` | no focus change; key goes to pid's current focus |
 | Modifier combo | `hotkey({pid, keys})` | e.g. `["cmd","c"]`; posted per-pid, not HID tap |
-| Unicode keystrokes | `type_text_chars({pid, text, delay_ms})` | CGEvent-to-pid; reaches Chromium/Electron inputs |
+| Unicode keystrokes | `type_text({pid, text, delay_ms})` | AX write with automatic CGEvent fallback; reaches Chromium/Electron inputs |
 
 **All keyboard/text primitives require `pid`.** There is no
 frontmost-routed variant — every key goes to the named target via
@@ -556,7 +545,7 @@ below against the full-resolution file in that case.
 1. `get_window_state({pid, window_id})` returns an image capped
    at 1568 long-side (default) plus its dimensions
    (`screenshot_width` / `screenshot_height`). Write the bytes to
-   disk with `--image-out <path>` in any capture mode — works
+   disk with `--screenshot-out-file <path>` in any capture mode — works
    identically in `vision` (where it's the only way) and `som`
    (where it sidesteps the jq + base64 dance on the spliced
    `screenshot_png_b64` field).

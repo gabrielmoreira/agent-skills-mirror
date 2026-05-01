@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/content-strategist/../../../agents/personas/content-strategist.md

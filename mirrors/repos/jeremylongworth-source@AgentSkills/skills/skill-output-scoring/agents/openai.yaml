@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Output Scoring"
+  short_description: "Score skill outputs with a rubric."
+  default_prompt: "Use this skill to score agent skill outputs with evidence-backed rubric ratings, identify blockers, compare baseline and skill-enabled outputs, and recommend promotion or revision decisions."

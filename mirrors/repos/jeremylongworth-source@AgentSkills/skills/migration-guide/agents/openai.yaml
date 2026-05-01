@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Guide"
+  short_description: "Write migration guides."
+  default_prompt: "Use this skill to write migration guides for breaking changes, version upgrades, API changes, host moves, repo restructures, and workflow transitions with verification and rollback notes."

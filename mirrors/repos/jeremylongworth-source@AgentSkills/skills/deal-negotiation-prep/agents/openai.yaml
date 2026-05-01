@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deal Negotiation Prep"
+  short_description: "Prepare creator sponsor negotiations."
+  default_prompt: "Use this skill to prepare creator sponsorship counteroffers, tradeoff tables, objection responses, red flags, and review checklists."

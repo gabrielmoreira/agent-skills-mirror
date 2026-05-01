@@ -1,0 +1,4 @@
+interface:
+  display_name: "QA Test Strategy"
+  short_description: "Plan practical software test coverage."
+  default_prompt: "Use this skill to design, audit, or improve QA and test strategy, including test plans, regression, smoke tests, acceptance tests, exploratory testing, automation scope, risk-based coverage, test data, release gates, and defect triage."

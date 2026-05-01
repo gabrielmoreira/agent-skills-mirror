@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sales Prospecting Outreach"
+  short_description: "Plan ethical prospecting and outreach."
+  default_prompt: "Use this skill to build prospecting lists, outreach sequences, cold email/call/social messaging, personalization, qualification, reply handling, and compliant outbound workflows."

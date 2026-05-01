@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vendor Negotiation Prep"
+  short_description: "Prepare vendor negotiation briefs."
+  default_prompt: "Use this skill to prepare vendor negotiation briefs, renewal tradeoffs, talking points, vendor option comparisons, and vendor decision memos."

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-ux-researcher/../../../agents/product/cs-ux-researcher.md

@@ -1,0 +1,3 @@
+# Include these server snippets for browser QA and visual/UI audits.
+servers = ["playwright", "chrome-devtools"]
+

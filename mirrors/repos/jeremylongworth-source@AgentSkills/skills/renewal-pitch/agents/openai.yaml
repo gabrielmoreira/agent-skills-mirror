@@ -1,0 +1,4 @@
+interface:
+  display_name: "Renewal Pitch"
+  short_description: "Draft creator sponsor renewals."
+  default_prompt: "Use this skill to draft creator sponsorship renewal angles, next-campaign proposals, follow-up emails, measurement plans, and approval notes."

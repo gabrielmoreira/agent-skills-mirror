@@ -1,0 +1,545 @@
+# Claude Octopus Agent Configuration
+# Maps curated agents to CLI preferences, phases, and complexity tiers
+#
+# CLI Options: codex (gpt-5.3-codex), codex-max, codex-mini, codex-spark, codex-reasoning,
+#              codex-large-context, codex-review, gemini, gemini-fast, claude-opus
+# Models (v8.9.0): gpt-5.3-codex (flagship), gpt-5.3-codex-spark (ultra-fast),
+#                  gpt-5.2-codex, gpt-5.1-codex-mini (budget), o3 (reasoning),
+#                  gpt-4.1 (1M context), gpt-4.1-mini (1M context, budget)
+# Phases: probe (discover), grasp (define), tangle (develop), ink (deliver)
+# Tiers: trivial, standard, premium
+# permissionMode: plan (read-only), acceptEdits (can write), default (standard)
+# memory: project (codebase learning), user (cross-project prefs), local (ephemeral run context)
+# skills: list of skill files to preload into agent context
+#
+# v8.19.0 Tool Policy RBAC (via OCTOPUS_TOOL_POLICIES env var):
+# Roles are mapped to tool policies that restrict tool access via prompt injection.
+#   read_search   → Read, Glob, Grep, WebSearch only (researcher, ai-engineer, business-analyst, research-synthesizer)
+#   read_exec     → Read, Glob, Grep + Bash read-only (code-reviewer, security-auditor, performance-engineer)
+#   read_communicate → Read, Glob, Grep only (synthesizer, orchestrator, context-manager, docs-architect)
+#   full          → No restrictions (implementer, tdd-orchestrator, debugger, python-pro, typescript-pro)
+
+version: "2.0"
+description: "Curated agent personas with contextual Codex model routing (v8.9.0, v8.19.0 tool policies, v8.20.0 capabilities)"
+
+# Phase-to-agent mappings (default agents per phase)
+phase_defaults:
+  probe:
+    primary: researcher
+    agents: [ai-engineer, business-analyst, context-manager]
+  grasp:
+    primary: backend-architect
+    agents: [frontend-developer, database-architect, cloud-architect, graphql-architect]
+  tangle:
+    primary: implementer
+    agents: [tdd-orchestrator, debugger, devops-troubleshooter, python-pro, typescript-pro]
+  ink:
+    primary: code-reviewer
+    agents: [security-auditor, test-automator, performance-engineer, deployment-engineer]
+
+# v8.9.0: Phase-to-model routing defaults for Codex agents
+# These can be overridden per-user in ~/.claude-octopus/config/providers.json → phase_routing
+phase_model_routing:
+  probe:   gpt-5.3-codex           # Deep research needs max reasoning
+  grasp:   gpt-5.3-codex           # Requirements analysis needs precision
+  tangle:  gpt-5.3-codex           # Complex implementation (override to spark for iteration)
+  ink:     gpt-5.3-codex-spark     # Fast review feedback loops (15x faster)
+  quick:   gpt-5.3-codex-spark     # Speed over depth
+  debate:  gpt-5.3-codex           # Deep reasoning for arguments
+  review:  gpt-5.3-codex-spark     # Rapid PR reviews
+  security: gpt-5.3-codex          # Thorough security analysis
+
+# Individual agent configurations
+agents:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PROBE PHASE AGENTS (Discovery/Research)
+  # ═══════════════════════════════════════════════════════════════════════════
+  ai-engineer:
+    file: personas/ai-engineer.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [probe, tangle]
+    background: true
+    tier: premium
+    expertise: [llm-applications, rag-systems, prompt-engineering]
+    capabilities: [llm-applications, rag-systems, prompt-engineering, ai-agents, vector-search]
+    memory: local
+    permissionMode: plan
+
+  business-analyst:
+    file: personas/business-analyst.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [probe, grasp]
+    background: true
+    tier: standard
+    expertise: [requirements, metrics, stakeholder-analysis]
+    capabilities: [requirements, metrics, stakeholder-analysis, data-analysis]
+    memory: user
+    permissionMode: plan
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GRASP PHASE AGENTS (Architecture/Design)
+  # ═══════════════════════════════════════════════════════════════════════════
+  backend-architect:
+    file: personas/backend-architect.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [grasp, tangle]
+    tier: premium
+    expertise: [api-design, microservices, distributed-systems]
+    capabilities: [api-design, microservices, distributed-systems, system-design, scalability]
+    memory: project
+    skills: [skill-architecture]
+    permissionMode: plan
+
+  frontend-developer:
+    file: personas/frontend-developer.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [grasp, tangle]
+    tier: premium
+    expertise: [react, nextjs, state-management, accessibility]
+    capabilities: [react, css, accessibility, typescript, state-management, nextjs]
+    memory: project
+    permissionMode: plan
+
+  database-architect:
+    file: personas/database-architect.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [grasp, tangle]
+    tier: premium
+    expertise: [schema-design, sql, nosql, migrations]
+    capabilities: [schema-design, query-optimization, sql, nosql, migrations]
+    memory: project
+    permissionMode: plan
+
+  cloud-architect:
+    file: personas/cloud-architect.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [grasp]
+    tier: premium
+    expertise: [aws, gcp, azure, infrastructure]
+    capabilities: [aws, gcp, azure, infrastructure, kubernetes, terraform]
+    memory: local
+    permissionMode: plan
+
+  graphql-architect:
+    file: personas/graphql-architect.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [grasp, tangle]
+    tier: premium
+    expertise: [graphql, federation, resolvers]
+    capabilities: [graphql, federation, resolvers, api-design]
+    memory: local
+    permissionMode: plan
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # TANGLE PHASE AGENTS (Development/Implementation)
+  # isolation: worktree (v8.19 / CC v2.1.50+) — runs agent in isolated git worktree to prevent file conflicts
+  # ═══════════════════════════════════════════════════════════════════════════
+  tdd-orchestrator:
+    file: personas/tdd-orchestrator.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [tangle]
+    tier: premium
+    expertise: [test-driven-development, red-green-refactor]
+    capabilities: [test-writing, coverage-analysis, test-driven-development, refactoring]
+    memory: local
+    skills: [skill-tdd]
+    permissionMode: acceptEdits
+    isolation: worktree
+
+  debugger:
+    file: personas/debugger.md
+    cli: codex
+    model: gpt-5.2-codex
+    phases: [tangle, ink]
+    tier: standard
+    expertise: [error-analysis, stack-traces, debugging]
+    capabilities: [error-analysis, stack-traces, debugging, profiling]
+    memory: project
+    skills: [skill-debug]
+    permissionMode: acceptEdits
+    isolation: worktree
+
+  devops-troubleshooter:
+    file: personas/devops-troubleshooter.md
+    cli: codex
+    model: gpt-5.2-codex
+    phases: [tangle, ink]
+    tier: standard
+    expertise: [deployment, logs, infrastructure-debugging]
+    capabilities: [ci-cd, kubernetes, docker, infrastructure, debugging]
+    memory: local
+    permissionMode: acceptEdits
+    isolation: worktree
+
+  python-pro:
+    file: personas/python-pro.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [tangle]
+    tier: premium
+    expertise: [python, fastapi, django, async]
+    capabilities: [python, fastapi, django, async, testing]
+    memory: local
+    permissionMode: acceptEdits
+    isolation: worktree
+
+  typescript-pro:
+    file: personas/typescript-pro.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [tangle]
+    tier: premium
+    expertise: [typescript, node, react, types]
+    capabilities: [typescript, node, react, types, testing]
+    memory: local
+    permissionMode: acceptEdits
+    isolation: worktree
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # INK PHASE AGENTS (Delivery/Review)
+  # v8.9.0: Review agents use codex-spark for fast feedback (15x faster)
+  # Security agents stay on full codex for thorough analysis
+  # ═══════════════════════════════════════════════════════════════════════════
+  code-reviewer:
+    file: personas/code-reviewer.md
+    cli: codex-spark              # v8.9.0: Fast review via Spark (was codex-review)
+    model: gpt-5.3-codex-spark
+    fallback_cli: codex-review    # v8.9.0: Falls back to codex-review if spark unavailable
+    phases: [ink]
+    tier: premium
+    expertise: [code-quality, best-practices, architecture-review]
+    capabilities: [code-quality, best-practices, architecture-review, refactoring]
+    memory: project
+    skills: [skill-code-review]
+    permissionMode: default
+
+  security-auditor:
+    file: personas/security-auditor.md
+    cli: codex                    # v8.9.0: Stays on full codex for deep security analysis
+    model: gpt-5.3-codex
+    phases: [ink]
+    tier: premium
+    expertise: [owasp, vulnerability-scanning, security-review]
+    capabilities: [vulnerability-scanning, owasp-compliance, security-review, authentication]
+    memory: project
+    skills: [skill-security-audit]
+    permissionMode: default
+    isolation: worktree    # v8.26: Prevents lock contention during deep analysis
+
+  test-automator:
+    file: personas/test-automator.md
+    cli: codex
+    model: gpt-5.2-codex
+    phases: [tangle, ink]
+    tier: standard
+    expertise: [unit-tests, integration-tests, e2e-tests]
+    capabilities: [test-writing, coverage-analysis, unit-tests, integration-tests, e2e-tests]
+    memory: local
+    permissionMode: acceptEdits
+    isolation: worktree
+
+  performance-engineer:
+    file: personas/performance-engineer.md
+    cli: codex-spark              # v8.9.0: Fast perf analysis via Spark
+    model: gpt-5.3-codex-spark
+    fallback_cli: codex
+    phases: [ink]
+    tier: premium
+    expertise: [profiling, optimization, benchmarking]
+    capabilities: [profiling, query-optimization, scalability, benchmarking]
+    memory: project
+    permissionMode: default
+
+  deployment-engineer:
+    file: personas/deployment-engineer.md
+    cli: codex
+    model: gpt-5.2-codex
+    phases: [ink]
+    tier: standard
+    expertise: [ci-cd, kubernetes, docker, gitops]
+    capabilities: [ci-cd, kubernetes, docker, gitops, terraform]
+    memory: local
+    permissionMode: default
+    isolation: worktree    # v8.26: May modify infra files, needs isolation
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # KNOWLEDGE WORK AGENTS (v6.0, v8.32, v8.33)
+  # ═══════════════════════════════════════════════════════════════════════════
+  ux-researcher:
+    file: personas/ux-researcher.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [probe, grasp]
+    tier: standard
+    expertise: [user-research, journey-mapping, usability, personas]
+    capabilities: [user-research, journey-mapping, usability, personas, affinity-mapping]
+    memory: user
+    permissionMode: plan
+
+  exec-communicator:
+    file: personas/exec-communicator.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [grasp, ink]
+    tier: standard
+    expertise: [executive-communication, board-presentations, stakeholder-reports]
+    capabilities: [executive-communication, board-presentations, stakeholder-reports, workshop-synthesis]
+    memory: user
+    permissionMode: plan
+
+  product-writer:
+    file: personas/product-writer.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [probe, grasp]
+    tier: premium
+    expertise: [prd-writing, user-stories, acceptance-criteria]
+    capabilities: [prd-writing, user-stories, acceptance-criteria, feature-specs]
+    memory: user
+    skills: [skill-prd]
+    permissionMode: plan
+
+  academic-writer:
+    file: personas/academic-writer.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [probe, ink]
+    tier: standard
+    expertise: [research-papers, grant-proposals, scholarly-communication]
+    capabilities: [research-papers, grant-proposals, scholarly-communication, literature-review]
+    memory: user
+    permissionMode: plan
+
+  marketing-strategist:
+    file: personas/marketing-strategist.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [probe, grasp]
+    tier: standard
+    expertise: [campaign-planning, growth-funnels, seo, brand-positioning]
+    capabilities: [campaign-planning, growth-funnels, seo, brand-positioning, content-strategy]
+    memory: user
+    permissionMode: plan
+
+  finance-analyst:
+    file: personas/finance-analyst.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [probe, grasp]
+    tier: standard
+    expertise: [financial-modeling, budgeting, forecasting, unit-economics]
+    capabilities: [financial-modeling, budgeting, forecasting, unit-economics, pricing]
+    memory: user
+    permissionMode: plan
+
+  legal-compliance-advisor:
+    file: personas/legal-compliance-advisor.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [probe, grasp]
+    tier: standard
+    expertise: [gdpr, ccpa, hipaa, soc2, privacy-policy, regulatory-risk]
+    capabilities: [gdpr, ccpa, hipaa, soc2, privacy-policy, regulatory-risk, contract-review]
+    memory: user
+    permissionMode: plan
+
+  ui-ux-designer:
+    file: personas/ui-ux-designer.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [grasp, tangle]
+    tier: premium
+    expertise: [design-systems, style-guides, component-specs, ui-design]
+    capabilities: [design-systems, style-guides, component-specs, ui-design, color-theory]
+    memory: user
+    skills: [skill-ui-ux-design]
+    permissionMode: plan
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ORCHESTRATION/SUPPORTING AGENTS
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ═══════════════════════════════════════════════════════════════════════════
+  # CLAUDE OPUS AGENTS (Premium Claude tasks - v8.0)
+  # ═══════════════════════════════════════════════════════════════════════════
+  strategy-analyst:
+    file: personas/strategy-analyst.md
+    cli: claude-opus
+    model: claude-opus-4.6
+    phases: [probe, grasp]
+    tier: premium
+    expertise: [strategic-analysis, market-research, business-strategy]
+    capabilities: [strategic-analysis, market-research, business-strategy, data-analysis]
+    memory: user
+    permissionMode: plan
+    fast_mode: opt-in  # v8.4: fast Opus available but 6x cost, user must explicitly request
+
+  research-synthesizer:
+    file: personas/research-synthesizer.md
+    cli: claude-opus
+    model: claude-opus-4.6
+    phases: [probe]
+    tier: premium
+    expertise: [research-synthesis, literature-review, knowledge-integration]
+    capabilities: [research-synthesis, literature-review, knowledge-integration, documentation]
+    memory: user
+    permissionMode: plan
+    fast_mode: opt-in  # v8.4: fast Opus available but 6x cost, user must explicitly request
+
+  context-manager:
+    file: personas/context-manager.md
+    cli: gemini-fast
+    model: gemini-3-flash-preview
+    phases: [probe, grasp, tangle, ink]
+    background: true
+    tier: standard
+    expertise: [context-management, multi-agent-coordination]
+    capabilities: [context-management, multi-agent-coordination, documentation]
+    memory: project
+    permissionMode: plan
+
+  docs-architect:
+    file: personas/docs-architect.md
+    cli: gemini
+    model: gemini-3-pro-preview
+    phases: [ink]
+    tier: standard
+    expertise: [documentation, technical-writing]
+    capabilities: [documentation, technical-writing, api-design]
+    memory: local
+    skills: [skill-doc-delivery]
+    permissionMode: default
+
+  openclaw-admin:
+    file: personas/openclaw-admin.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [grasp, tangle, ink]
+    tier: premium
+    expertise: [sysadmin, openclaw, infrastructure, security-hardening]
+    capabilities: [sysadmin, openclaw, docker, proxmox, oci, macos, ubuntu, security-hardening]
+    memory: project
+    skills: [skill-claw]
+    permissionMode: acceptEdits
+
+  incident-responder:
+    file: personas/incident-responder.md
+    cli: codex
+    model: gpt-5.3-codex
+    phases: [tangle, ink]
+    tier: premium
+    expertise: [incident-management, runbooks, postmortems]
+    capabilities: [incident-management, debugging, infrastructure, monitoring]
+    memory: local
+    permissionMode: acceptEdits
+    isolation: worktree
+
+  mermaid-expert:
+    file: personas/mermaid-expert.md
+    cli: gemini-fast
+    model: gemini-3-flash-preview
+    phases: [grasp, ink]
+    tier: trivial
+    expertise: [diagrams, flowcharts, sequence-diagrams]
+    capabilities: [diagrams, flowcharts, sequence-diagrams, documentation]
+    memory: local
+    permissionMode: plan
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SPECIALIZED CODEX AGENTS (v8.9.0)
+  # Large-context and reasoning agents for specific use cases
+  # ═══════════════════════════════════════════════════════════════════════════
+  codebase-analyst:
+    file: personas/code-reviewer.md       # Reuses code-reviewer persona
+    cli: codex-large-context              # v8.9.0: gpt-4.1 with 1M context window
+    model: gpt-4.1
+    fallback_cli: codex
+    phases: [probe, ink]
+    tier: premium
+    expertise: [large-codebase-analysis, architecture-review, dependency-analysis]
+    capabilities: [architecture-review, code-quality, large-codebase-analysis, refactoring]
+    memory: project
+    permissionMode: plan
+
+  reasoning-analyst:
+    file: personas/strategy-analyst.md    # Reuses strategy-analyst persona
+    cli: codex-reasoning                  # v8.9.0: o3 deep reasoning model
+    model: o3
+    fallback_cli: codex
+    phases: [probe, grasp]
+    tier: premium
+    expertise: [complex-reasoning, trade-off-analysis, decision-making]
+    capabilities: [complex-reasoning, trade-off-analysis, strategic-analysis, system-design]
+    memory: local
+    permissionMode: plan
+
+# ═══════════════════════════════════════════════════════════════════════════
+# RALPH-WIGGUM INTEGRATION (Iterative Loop Support)
+# ═══════════════════════════════════════════════════════════════════════════
+ralph_wiggum:
+  enabled: true
+  # Completion promise pattern - agent outputs this when truly done
+  completion_promise: "<promise>COMPLETE</promise>"
+  # Default max iterations for loop modes
+  max_iterations: 50
+  # Phases that support iterative loops
+  loop_phases: [tangle]
+  # Claude Code integration (optional)
+  claude_code:
+    # Auto-detect if claude CLI is available
+    auto_detect: true
+    # Use Claude Code for these task patterns
+    patterns:
+      - "iterate.*until.*pass"
+      - "keep.*trying.*until"
+      - "loop.*until.*complete"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# SKILL TRIGGERS (Progressive Disclosure)
+# ═══════════════════════════════════════════════════════════════════════════
+skill_triggers:
+  api-design:
+    pattern: "(rest|graphql|grpc).*(api|endpoint|service)"
+    skill: api-design-principles
+  security:
+    pattern: "(security|owasp|vulnerability|auth)"
+    skill: security-patterns
+  testing:
+    pattern: "(test|tdd|coverage|e2e)"
+    skill: testing-patterns
+  performance:
+    pattern: "(performance|optimize|profile|benchmark)"
+    skill: performance-optimization
+
+  # Natural Language Trigger Enhancements (v7.7.0)
+  task-completion:
+    pattern: "(commit.*push|complete.*tasks.*push|wrap.*up.*push)"
+    skill: skill-finish-branch
+  task-management:
+    pattern: "(add.*todo|resume.*task|save.*progress|proceed.*next)"
+    skill: skill-task-management
+  why-questions:
+    pattern: "(why.*(is|did|isn't|doesn't|didn't).*(not|n't)|why.*fail)"
+    skill: skill-debug
+  visual-feedback:
+    pattern: "(\\[Image\\]|button.*styles.*fix|UI.*mess|UX.*mess)"
+    skill: skill-visual-feedback
+  options-request:
+    pattern: "(fix.*or.*provide.*option|give.*me.*option|show.*alternative)"
+    skill: skill-decision-support
+  iteration:
+    pattern: "(loop.*times|loop.*around.*times|keep.*trying.*until|iterate.*until)"
+    skill: skill-iterative-loop
+  audit:
+    pattern: "(audit.*and.*check|audit.*app|process.*to.*audit|scan.*for.*issue)"
+    skill: skill-audit
+  openclaw-admin:
+    pattern: "(openclaw|manage.*server|sysadmin|proxmox|oci.*instance|server.*health|harden.*server)"
+    skill: skill-claw

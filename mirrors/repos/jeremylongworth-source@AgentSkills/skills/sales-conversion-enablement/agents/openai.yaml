@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sales Conversion Enablement"
+  short_description: "Improve discovery, demos, and closing."
+  default_prompt: "Use this skill to improve sales discovery, demos, objection handling, proposals, business cases, negotiation, mutual action plans, handoffs, and sales enablement assets."

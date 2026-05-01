@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/content-humanizer/../../../marketing-skill/content-humanizer/SKILL.md

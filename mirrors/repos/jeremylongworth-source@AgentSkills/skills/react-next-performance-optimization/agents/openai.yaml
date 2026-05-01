@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Next Performance"
+  short_description: "Audit React and Next.js performance."
+  default_prompt: "Use this skill to audit, diagnose, and optimize React or Next.js performance, including Core Web Vitals, bundle size, caching, rendering, re-renders, images, scripts, Server Components, and production checks."

@@ -16,6 +16,7 @@ CAPABILITIES_SUMMARY:
 - ai_commit_archaeology: Detection and interpretation of AI-coauthored commits in blame/log/archaeology workflows
 - cross_cluster_escalation: Handoff to Specter for resource-related bisect findings via TRAIL_TO_SPECTER_HANDOFF
 - benchmark_driven_bisect: Custom bisect terms and automated scripts for non-binary pass/fail regression detection
+- fix_prompt_generation: Pair every confirmed regression with a paste-ready LLM Fix Prompt embedding breaking commit, bisect evidence, rollback safety, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream coding LLM can act without manual reformulation
 
 COLLABORATION_PATTERNS:
 - Scout -> Trail: Bug location for history investigation
@@ -85,6 +86,7 @@ Route elsewhere when the task is primarily:
 - Use `git bisect skip <commit>..<commit>` to pre-mark known-untestable ranges (e.g., build system rewrites, large refactors) before starting the run. This preserves binary search efficiency better than hitting exit 125 repeatedly during automated runs.
 - Use `git bisect visualize` (or `git bisect view`) mid-session to review the remaining suspect range before continuing. Pipe to `--oneline --graph` for quick triage of complex merge topologies.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly run safe `git log`/`blame`/`show` before forming hypothesis — checking history is cheaper than re-bisecting), P5 (think step-by-step at SCOPE — wrong good/bad pair wastes log₂(n) iterations)** as critical for Trail. P2 recommended: keep timeline visualization within `references/output-formats.md` envelope.
+- Pair every confirmed regression with a paste-ready `## LLM Fix Prompt` block in the report. The prompt embeds breaking commit (SHA + diff hunk), bisect evidence, rollback safety, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream coding LLM can act without manual reformulation. Suppress only when escalating to Specter/Sentinel/Atlas, when the task is archaeology-only, or when bisect identifies a merge commit and parents are not yet isolated. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 
 ## Boundaries
 
@@ -202,6 +204,40 @@ Every deliverable must include:
 - Rollback options or recommended fixes.
 - Suggested next agent for handoff.
 
+Mandatory when a regression is confirmed (not for archaeology-only tasks):
+- `LLM Fix Prompt`: paste-ready instruction prompt for a downstream coding LLM. See `LLM Fix Prompt Generation` section below and `references/fix-prompt-generation.md` for verbs, schema, and suppression rules.
+
+## LLM Fix Prompt Generation
+
+Every Trail report for a confirmed regression ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives a downstream coding LLM (Builder, Claude, Codex) toward a precise forward fix or revert without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Trail-specific verbs, suppression cases, template fields, and a worked example live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent / LLM |
+|------|----------|----------------------|
+| `FIX-REGRESSION` | HIGH confidence, forward fix is straightforward | Builder, Claude, Codex |
+| `REVERT` | Breaking commit isolated, dependent changes minimal, safe to `git revert` | Builder + Guardian |
+| `REVERT-WITH-FORWARD-FIX` | Revert to stop the bleeding, then re-implement original intent | Builder |
+| `INVESTIGATE-FURTHER` | Bisect inconclusive, multiple suspects, or non-deterministic reproduction | Claude / Codex (investigation mode) |
+| `REFACTOR-FIX` | Regression reflects a structural design issue | Atlas → Builder |
+
+Authoring rules (full list in `_common/LLM_PROMPT_GENERATION.md`):
+- One verb per prompt; one regression per prompt.
+- Quote the breaking commit's diff hunk verbatim.
+- Cite SHA + author date + commit subject.
+- Embed bisect evidence (good/bad pair, iterations, test command, custom terms).
+- Embed rollback safety (history status, dependent commits, recommended strategy).
+- Embed acceptance criteria as a checklist.
+- Embed ruled-out alternatives with the evidence that eliminated each.
+- Embed "what NOT to do" — at minimum, do not silence the symptom and do not `reset --hard` on shared history.
+- Wrap in a fenced `text` code block so the user can copy cleanly.
+
+Suppress the Fix Prompt block when:
+- Trail escalates to Specter (resource-related bisect finding), Sentinel (security regression in commit), or Atlas (architectural concern, not regression).
+- Task is archaeology-only (explaining "why is this code like this?", no fix proposed).
+- Bisect identifies a merge commit as first-bad and parents are not yet independently tested.
+- Evidence is too weak even for `INVESTIGATE-FURTHER`.
+
+In all suppression cases, write a one-line note in the report explaining why the prompt is withheld.
+
 ## Git Safety
 
 **Safe (always):** log, show, diff, blame, grep, rev-parse, describe, merge-base, bisect log, bisect replay · **Confirm first:** bisect start, bisect run, checkout, stash · **Never:** reset --hard, clean -f, checkout ., rebase, push --force
@@ -268,6 +304,8 @@ Follow `_common/GIT_GUIDELINES.md`. Conventional Commits, no agent names, <50 ch
 | `references/flamegraph-regression.md` | You need flamegraph tool selection, differential flamegraph workflow, hotspot thresholds, or bisect-with-frame-share script for the `flame` subcommand. |
 | `references/delta-debugging.md` | You need ddmin pseudocode, granularity selection, flaky-test minimization tuning, or `git bisect run` integration for the `delta` subcommand. |
 | `references/revert-strategies.md` | You need the revert vs reset decision matrix, merge-commit `-m` parent selection, partial revert techniques, post-revert verification checklist, or comms template for the `revert` subcommand. |
+| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Trail-specific action verb (FIX-REGRESSION / REVERT / REVERT-WITH-FORWARD-FIX / INVESTIGATE-FURTHER / REFACTOR-FIX), or deciding whether to suppress the prompt for a Specter/Sentinel/Atlas handoff or archaeology-only scope. |
+| `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Sentinel/Plea. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Specter, unified confidence scale, or stall protocol is needed. |
 | `_common/OPUS_47_AUTHORING.md` | You are scoping bisect iteration budget, deciding tool-use eagerness in LOCATE, or sizing CHANGE_STORY/REPORT outputs. Critical for Trail: P3, P5. |
 

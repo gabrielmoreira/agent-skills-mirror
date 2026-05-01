@@ -1,0 +1,4 @@
+interface:
+  display_name: "Regression Check"
+  short_description: "Plan regression tests for changed behavior."
+  default_prompt: "Use this skill to identify regression risks, define direct and broader verification tests, choose smoke coverage, separate automated and manual checks, and make release gate recommendations."

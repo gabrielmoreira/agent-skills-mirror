@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Risk Register"
+  short_description: "Map AI risks and controls."
+  default_prompt: "Use this skill to create AI risk registers, governance risk reviews, control maps, pilot versus production risk summaries, and escalation plans for AI-enabled workflows."

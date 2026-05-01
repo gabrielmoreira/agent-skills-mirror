@@ -1,0 +1,4 @@
+interface:
+  display_name: "Phaser Game Development"
+  short_description: "Build 2D HTML5 games with Phaser."
+  default_prompt: "Use this skill to build, debug, optimize, or review Phaser 2D HTML5 games, including scenes, sprites, tilemaps, Arcade/Matter physics, input, cameras, UI, asset loading, and browser/mobile QA."

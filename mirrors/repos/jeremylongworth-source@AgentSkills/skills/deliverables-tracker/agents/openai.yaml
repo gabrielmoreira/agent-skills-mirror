@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deliverables Tracker"
+  short_description: "Track creator sponsor deliverables."
+  default_prompt: "Use this skill to create creator sponsorship deliverables trackers, approval tables, blocker lists, reporting dates, and next actions."

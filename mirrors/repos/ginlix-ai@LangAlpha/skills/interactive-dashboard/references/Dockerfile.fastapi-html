@@ -1,0 +1,18 @@
+FROM python:3.12-slim
+ENV PORT=8050
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl tzdata \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install uv
+
+WORKDIR /app
+
+COPY server/requirements.txt ./
+RUN uv pip install --system --no-cache -r requirements.txt
+
+COPY server/ ./server/
+COPY static/ ./static/
+
+EXPOSE ${PORT}
+CMD uvicorn server.main:app --host 0.0.0.0 --port ${PORT}

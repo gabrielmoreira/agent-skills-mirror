@@ -1,0 +1,515 @@
+# Quickstart: Your First Babysitter Run
+
+**Time:** 10 minutes | **Level:** Beginner | **Prerequisites:** [Installation complete](./installation.md)
+
+Welcome! In this quickstart, you will build a calculator module using Test-Driven Development (TDD) with Babysitter. By the end, you will have experienced:
+
+- Automatic quality convergence (iterate until quality target met)
+- The TDD workflow (tests first, then implementation)
+- Journal-based persistence (everything is recorded)
+
+**Note:** TDD Quality Convergence is the full name; we use "TDD" as shorthand throughout this guide.
+
+Let's get started!
+
+---
+
+## What You Will Build
+
+A simple calculator module with:
+- `add(a, b)` - Add two numbers
+- `subtract(a, b)` - Subtract two numbers
+- `multiply(a, b)` - Multiply two numbers
+- `divide(a, b)` - Divide two numbers (with error handling)
+
+The result will include:
+- Working implementation
+- Test suite with multiple test cases
+- 80%+ quality score achieved through automatic iteration
+
+---
+
+## Before You Begin
+
+### Step 1: Set Up Your Profile (First Time Only)
+
+If you haven't already, configure your personal preferences:
+
+```bash
+/babysitter:user-install
+```
+
+This personalizes Babysitter for your workflow - breakpoint frequency, communication style, and expertise areas.
+
+### Step 2: Set Up Your Project
+
+In your project directory:
+
+```bash
+/babysitter:project-install
+```
+
+This analyzes your codebase and configures project-specific settings.
+
+### Step 3: Verify Installation
+
+Quick check that everything is working:
+
+```bash
+# In your terminal
+npx -y @a5c-ai/babysitter-sdk@latest --version
+
+# Or run diagnostics
+/babysitter:doctor
+```
+
+You should see a version number. If not, revisit the [installation guide](./installation.md).
+
+### Open Your Project
+
+Navigate to your project directory (or create a new one):
+
+```bash
+# Create a new project directory
+mkdir my-babysitter-project
+cd my-babysitter-project
+
+# Initialize npm (optional but recommended)
+npm init -y
+```
+
+---
+
+## Step 1: Launch Your First Run
+
+Open Claude Code in your project directory and enter this command:
+
+```
+/babysitter:call create a calculator module with add, subtract, multiply, and divide functions using TDD with 80% quality target
+```
+
+**Alternative (natural language):**
+```
+Use the babysitter skill to build a calculator module with TDD and 80% quality target
+```
+
+### What You Should See
+
+Babysitter will start and show output like:
+
+```
+Creating new babysitter run: calculator-20260125-143012
+Process: TDD Quality Convergence
+Target Quality: 80%
+
+Run ID: 01KFFTSF8TK8C9GT3YM9QYQ6WG
+Run Directory: .a5c/runs/01KFFTSF8TK8C9GT3YM9QYQ6WG/
+```
+
+Babysitter is now orchestrating your TDD workflow!
+
+---
+
+## Step 2: Watch the Magic Happen
+
+Sit back and observe as Babysitter works through the TDD methodology:
+
+### Phase 1: Research (~30 seconds)
+
+```
+[Phase 1] Research
+- Analyzing project structure... done
+- Checking existing patterns... done
+- Identifying test framework... done
+```
+
+Babysitter examines your codebase to understand the context.
+
+### Phase 2: Specifications (~1 minute)
+
+```
+[Phase 2] Specifications
+- Defining calculator interface...
+- Specifying test cases...
+- Creating implementation plan...
+
+Specifications complete:
+- 4 functions defined
+- 12 test cases planned
+- Jest test framework selected
+```
+
+Babysitter creates a clear specification before coding.
+
+### Phase 3: TDD Implementation Loop
+
+This is where the magic happens. Babysitter iterates until quality is achieved:
+
+#### Iteration 1:
+
+```
+[Iteration 1/5] Starting TDD implementation...
+
+Writing tests:
+- add.test.js: 3 test cases
+- subtract.test.js: 3 test cases
+- multiply.test.js: 3 test cases
+- divide.test.js: 3 test cases (including error handling)
+
+Implementing code:
+- calculator.js: add, subtract, multiply, divide functions
+
+Quality checks:
+- Tests: 11/12 passing
+- Coverage: 75%
+- Linting: 2 warnings
+
+Quality Score: 72/100 (target: 80)
+Below target, continuing...
+```
+
+#### Iteration 2:
+
+```
+[Iteration 2/5] Refining implementation...
+
+Fixes:
+- Fixed divide by zero test
+- Improved edge case handling
+- Resolved lint warnings
+
+Quality checks:
+- Tests: 12/12 passing
+- Coverage: 92%
+- Linting: 0 warnings
+
+Quality Score: 88/100 (target: 80)
+Target achieved!
+```
+
+---
+
+## Step 3: Review the Results
+
+When Babysitter completes, you'll see a summary:
+
+```
+Run completed successfully!
+
+Summary:
+- Iterations: 2 of 5
+- Final Quality Score: 88/100
+- Test Coverage: 92%
+- Tests: 12 passing
+- Duration: 3m 45s
+
+Files created:
+- calculator.js
+- calculator.test.js
+
+Run ID: 01KFFTSF8TK8C9GT3YM9QYQ6WG
+Journal: .a5c/runs/01KFFTSF8TK8C9GT3YM9QYQ6WG/journal/*.json
+```
+
+### Explore What Was Created
+
+Check your project directory:
+
+```bash
+ls -la
+```
+
+You should see new files:
+```
+calculator.js       # Your calculator implementation
+calculator.test.js  # Test suite
+.a5c/              # Babysitter run data
+```
+
+### View the Calculator Code
+
+Open `calculator.js`:
+
+```javascript
+// calculator.js - Created by Babysitter TDD workflow
+
+function add(a, b) {
+  return a + b;
+}
+
+function subtract(a, b) {
+  return a - b;
+}
+
+function multiply(a, b) {
+  return a * b;
+}
+
+function divide(a, b) {
+  if (b === 0) {
+    throw new Error('Cannot divide by zero');
+  }
+  return a / b;
+}
+
+module.exports = { add, subtract, multiply, divide };
+```
+
+### Run the Tests Yourself
+
+```bash
+npm test
+# or
+npx jest
+```
+
+**Expected output:**
+```
+PASS  ./calculator.test.js
+  Calculator
+    add
+      ✓ adds two positive numbers
+      ✓ adds negative numbers
+      ✓ adds zero
+    subtract
+      ✓ subtracts two numbers
+      ...
+
+Test Suites: 1 passed, 1 total
+Tests:       12 passed, 12 total
+```
+
+---
+
+## Step 4: Explore the Journal
+
+Every action Babysitter took is recorded in the journal. Let's explore:
+
+```bash
+# View the journal files
+ls .a5c/runs/01KFFTSF8TK8C9GT3YM9QYQ6WG/journal/*.json
+```
+
+**Sample events from journal JSON files:**
+```json
+{"type":"RUN_CREATED","recordedAt":"2026-01-25T14:30:12Z","data":{"runId":"01KFFTSF8TK8C9GT3YM9QYQ6WG"},"checksum":"a1b2c3"}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T14:30:13Z","data":{"effectId":"research-001","effectType":"agent"},"checksum":"d4e5f6"}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T14:30:38Z","data":{"effectId":"research-001","duration":25000},"checksum":"g7h8i9"}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T14:31:00Z","data":{"effectId":"tdd-impl-001","effectType":"agent","iteration":1},"checksum":"j0k1l2"}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T14:33:00Z","data":{"effectId":"tdd-impl-001","iteration":1},"checksum":"m3n4o5"}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T14:33:01Z","data":{"effectId":"tdd-impl-002","effectType":"agent","iteration":2},"checksum":"p6q7r8"}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T14:34:30Z","data":{"effectId":"tdd-impl-002","iteration":2},"checksum":"s9t0u1"}
+{"type":"RUN_COMPLETED","recordedAt":"2026-01-25T14:34:45Z","data":{"status":"success"},"checksum":"v2w3x4"}
+```
+
+This is the audit trail. Every effect request, every resolution - all recorded. The five SDK event types are: `RUN_CREATED`, `EFFECT_REQUESTED`, `EFFECT_RESOLVED`, `RUN_COMPLETED`, and `RUN_FAILED`.
+
+---
+
+## Step 5: Try a Quick Modification
+
+Let's see how easy it is to extend your calculator. Ask Babysitter to add more features:
+
+```
+/babysitter:call add a power function and square root function to the calculator with TDD
+```
+
+Babysitter will:
+1. Analyze the existing calculator
+2. Write new tests for power and sqrt
+3. Implement the new functions
+4. Iterate until quality is achieved
+
+---
+
+## What Just Happened?
+
+Let's recap what Babysitter did for you:
+
+### Without Babysitter (Manual Approach)
+
+1. You: "Claude, write tests for a calculator"
+2. You: "Now implement the calculator"
+3. You: "Run the tests... 2 failed. Fix them."
+4. You: "Check coverage... too low. Add more tests."
+5. You: "Run tests again... passed!"
+6. You: (repeat if you want higher quality)
+
+**Time:** 20-30 minutes with multiple back-and-forth interactions
+
+### With Babysitter (Automated Approach)
+
+1. You: "/babysitter:call create calculator with TDD, 80% quality"
+2. (Babysitter handles everything automatically)
+3. Done!
+
+**Time:** ~5 minutes, hands-free
+
+### Key Takeaways
+
+1. **Quality Convergence:** You set 80% target, Babysitter iterated until it achieved 88%
+2. **TDD Methodology:** Tests were written before implementation
+3. **Complete Audit Trail:** Every action logged in the journal
+4. **No Context Loss:** If interrupted, you can resume exactly where you left off
+
+---
+
+## Bonus: Try Different Modes
+
+You just used `/babysitter:call` — the default interactive mode. Babysitter has four modes, each with different levels of autonomy:
+
+| Mode | Command | When to Use |
+|------|---------|-------------|
+| **Interactive** | `/babysitter:call` | What you just used. Pauses for approval. |
+| **YOLO** | `/babysitter:yolo` | Full auto. Ship while you sleep. |
+| **Forever** | `/babysitter:forever` | Never-ending loops for monitoring tasks. |
+| **Plan** | `/babysitter:plan` | Review the process before executing. |
+
+**Try YOLO mode** for a trusted task:
+
+```
+/babysitter:yolo add input validation to all form fields
+```
+
+No breakpoints, no questions. Babysitter handles everything autonomously.
+
+**Full reference:** [Slash Commands Reference](../reference/slash-commands.md)
+
+---
+
+## Bonus: Experience Session Resumption
+
+One of Babysitter's superpowers is persistence. Let's try it:
+
+### Start a Long-Running Task
+
+```
+/babysitter:call build a REST API for task management with authentication, using TDD with 85% quality target and max 10 iterations
+```
+
+### Interrupt It
+
+Close Claude Code or press Ctrl+C while it's running.
+
+### Resume Later
+
+Open Claude Code again and run:
+
+```
+/babysitter:call resume the babysitter run
+```
+
+or
+
+```
+/babysitter:call resume
+```
+
+Babysitter will:
+1. Find the interrupted run
+2. Replay the journal to restore state
+3. Continue from exactly where it stopped
+
+No work lost!
+
+---
+
+## Common First-Run Issues
+
+### "Nothing happens after I type the command"
+
+**Cause:** Plugin may not be loaded.
+
+**Solution:**
+1. Check `/skills` shows "babysit"
+2. Restart Claude Code if needed
+3. Verify plugin is enabled: `claude plugin list`
+
+### "Breakpoint timeout" error
+
+**Cause:** You may have missed the question in the chat or the session timed out.
+
+**Solution:**
+- Scroll up to find the breakpoint question and respond
+- Or resume the run: `claude "/babysitter:call resume the babysitter run"`
+
+### Quality score not reaching target
+
+**Cause:** Target may be too high for the task complexity.
+
+**Solution:**
+- Lower the target (try 70% instead of 90%)
+- Increase max iterations: `--max-iterations 10`
+- Be more specific in your request
+
+### Run seems stuck
+
+**Cause:** Waiting for breakpoint approval.
+
+**Solution:**
+- Look for a question from Claude in your chat
+- Respond to approve and continue the workflow
+
+---
+
+## Next Steps
+
+Congratulations! You've completed your first Babysitter run. Here's what to explore next:
+
+### Immediate Next Steps
+
+1. **[First Run Deep Dive](./first-run.md)** - Understand exactly what happened in detail
+2. **Try different prompts:**
+   - `/babysitter:call refactor the calculator for better error handling`
+   - `/babysitter:call add comprehensive documentation to the calculator`
+   - `/babysitter:call increase test coverage to 95%`
+
+### This Week
+
+3. **Explore methodologies:**
+   - TDD (Test-Driven Development) - what you just used
+   - GSD (Get Shit Done) - faster, less formal
+   - Spec-Kit - specification-driven development
+
+4. **Configure breakpoints** for approval workflows
+
+### Advanced Topics
+
+5. **Custom quality targets** and scoring criteria
+6. **Parallel execution** for faster runs
+7. **Custom process definitions** (for power users)
+
+---
+
+## Quick Reference
+
+Commands used in this quickstart:
+
+```bash
+# Start a TDD run with quality target (in Claude Code)
+/babysitter:call <description> with TDD and <X>% quality target
+
+# Resume an interrupted run
+/babysitter:call resume
+
+# View run journal files
+ls .a5c/runs/<runId>/journal/*.json
+
+# List all runs
+ls .a5c/runs/
+```
+
+---
+
+## Summary
+
+In just 10 minutes, you:
+
+- Built a calculator module with TDD methodology
+- Achieved automatic quality convergence (set target, iterate until met)
+- Explored the event journal (complete audit trail)
+- Learned how to resume interrupted sessions
+
+**Babysitter turns complex AI workflows into single commands with deterministic, resumable execution.**
+
+Ready to go deeper? Continue to [First Run Deep Dive](./first-run.md) to understand exactly what happened under the hood.

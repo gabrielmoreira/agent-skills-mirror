@@ -6,13 +6,15 @@ Keep changes narrow, evidence-backed, and automation-safe.
 ## Structure
 
 - Main code: `src/clawsweeper.ts`.
-- Repair lane code: `src/repair/`; durable repair jobs/results: `jobs/`,
-  `results/`; repair dashboard: `docs/repair/README.md`.
-- Tests: `test/clawsweeper.test.mjs`.
+- Repair lane code: `src/repair/`; durable generated state lives in
+  `openclaw/clawsweeper-state`.
+- Tests: `test/clawsweeper.test.ts`.
 - Workflow: `.github/workflows/sweep.yml`.
-- Dashboard and explainer: `README.md`.
-- Open/reviewed records: `records/<repo-slug>/items/<number>.md`.
-- Archived records: `records/<repo-slug>/closed/<number>.md`.
+- Explainer: `README.md`; state/dashboard repo: `../clawsweeper-state`.
+- Open/reviewed records in state repo:
+  `records/<repo-slug>/items/<number>.md`.
+- Archived records in state repo:
+  `records/<repo-slug>/closed/<number>.md`.
 - Scratch/generated output: `.artifacts/`, `artifacts/`, `apply-report.json`.
 
 Preserve one flat `items/` and `closed/` report layout per repository slug. Do
@@ -28,8 +30,15 @@ not split reports into issue/PR subtrees.
 - Worker concurrency is shard-level: each shard processes its selected items
   sequentially. Maximum parallel Codex sessions equals `shard_count`, not
   `batch_size * shard_count`.
-- The README dashboard is the live status surface. Check current Actions and the
-  remote README before trusting local dashboard timestamps.
+- `openclaw/clawsweeper-state` is the live status surface and generated state
+  store. Check current Actions and that repo before trusting local generated
+  timestamps.
+- When Peter asks about PRs outside `openclaw/clawsweeper`, treat the task as
+  monitoring/debugging how ClawSweeper workflows operate on that PR. Do not fix
+  foreign PR branches directly; ClawSweeper repair/automerge workflows own those
+  branch edits.
+- When referencing GitHub issues or PRs in user-facing output, always include
+  the full GitHub URL, not only `#12345`.
 
 ## Safety Rules
 

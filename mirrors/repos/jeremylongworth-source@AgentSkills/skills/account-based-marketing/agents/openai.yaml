@@ -1,0 +1,4 @@
+interface:
+  display_name: "Account-Based Marketing"
+  short_description: "Run ABM for high-value accounts."
+  default_prompt: "Use this skill to design account-based marketing, account selection, buying committees, plays, sales-marketing alignment, personalization, engagement scoring, target account campaigns, and enterprise pipeline programs."

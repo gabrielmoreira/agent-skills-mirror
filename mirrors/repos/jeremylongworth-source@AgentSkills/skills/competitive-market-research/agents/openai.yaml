@@ -1,0 +1,4 @@
+interface:
+  display_name: "Competitive Market Research"
+  short_description: "Research markets and competitors."
+  default_prompt: "Use this skill to research, compare, and synthesize markets, competitors, categories, positioning, pricing, feature sets, audience segments, review themes, and strategic opportunities."

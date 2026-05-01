@@ -1,0 +1,4 @@
+interface:
+  display_name: "Investor Update"
+  short_description: "Draft founder investor updates."
+  default_prompt: "Use this skill to draft monthly investor updates, founder updates, investor memos, stakeholder progress notes, traction updates, asks, and review notes."

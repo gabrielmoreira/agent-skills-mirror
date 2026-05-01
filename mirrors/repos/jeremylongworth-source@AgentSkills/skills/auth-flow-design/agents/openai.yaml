@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auth Flow Design"
+  short_description: "Design backend auth flows."
+  default_prompt: "Use this skill to design authentication and authorization flows, sessions, tokens, roles, permissions, service accounts, tenant access, error behavior, abuse cases, and auth tests."

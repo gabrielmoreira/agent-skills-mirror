@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-content-creator/../../../agents/marketing/cs-content-creator.md

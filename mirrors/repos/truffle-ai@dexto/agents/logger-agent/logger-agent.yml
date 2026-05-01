@@ -1,0 +1,148 @@
+# Request Logger Agent Configuration
+# Logs all user requests, tool calls, and assistant responses to ~/.dexto/logs/request-logger.log
+#
+# Uses `@dexto/image-logger-agent`, which provides the `request-logger` hook via image factories.
+
+# MCP Servers - basic filesystem and browser tools
+mcpServers:
+  filesystem:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - "@modelcontextprotocol/server-filesystem"
+      - .
+  playwright:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - "@playwright/mcp@latest"
+
+# System prompt configuration
+systemPrompt:
+  contributors:
+    - id: primary
+      type: static
+      priority: 0
+      content: |
+        You are a helpful AI assistant with comprehensive logging enabled.
+        All your interactions (requests, tool calls, and responses) are being logged to help understand your behavior.
+
+        Use tools when appropriate to answer user queries. You can use multiple tools in sequence to solve complex problems.
+        After each tool result, determine if you need more information or can provide a final answer.
+    - id: date
+      type: dynamic
+      priority: 10
+      source: date
+      enabled: true
+
+# Memory configuration - controls how memories are included in system prompt
+memories:
+  enabled: true
+  priority: 40
+  includeTimestamps: false
+  includeTags: true
+  limit: 10
+  pinnedOnly: false
+
+# Optional greeting shown at chat start
+greeting: "Hi! I'm the Logger Agent — all interactions are being logged for analysis. How can I help?"
+
+# Image provides custom hook(s) and DI providers
+image: "@dexto/image-logger-agent"
+
+# LLM configuration
+llm:
+  provider: openai
+  model: gpt-5-mini
+  apiKey: $OPENAI_API_KEY
+
+# Storage configuration
+storage:
+  cache:
+    type: in-memory
+  database:
+    type: sqlite
+  blob:
+    type: local  # CLI provides storePath automatically
+    maxBlobSize: 52428800
+    maxTotalSize: 1073741824
+    cleanupAfterDays: 30
+
+# Tool confirmation settings
+permissions:
+  mode: manual
+  # timeout: omitted = infinite wait
+  allowedToolsStorage: memory
+
+# Elicitation configuration - required for ask_user tool
+elicitation:
+  enabled: true
+  # timeout: omitted = infinite wait
+
+# Tools - unified tool factory configuration (builtins + custom tool providers)
+tools:
+  - type: builtin-tools
+    enabledTools:
+      - ask_user
+
+# Resources configuration
+resources:
+  - type: filesystem
+    paths: ["."]
+    maxFiles: 50
+    maxDepth: 3
+    includeHidden: false
+    includeExtensions: [".txt", ".md", ".json", ".yaml", ".yml", ".js", ".ts", ".py", ".html", ".css"]
+  - type: blob
+
+# Hook system configuration
+hooks:
+  - type: request-logger
+    logFileName: request-logger.log
+
+  - type: content-policy
+    maxInputChars: 50000
+    redactEmails: true
+    redactApiKeys: true
+
+  - type: response-sanitizer
+    redactEmails: true
+    redactApiKeys: true
+    maxResponseLength: 100000
+
+# Prompts - shown as clickable buttons in WebUI
+prompts:
+  - type: inline
+    id: simple-question
+    title: "🤔 Ask a Simple Question"
+    description: "Test basic request/response logging"
+    prompt: "What is the capital of France?"
+    category: learning
+    priority: 9
+    showInStarters: true
+  - type: inline
+    id: tool-usage
+    title: "🔧 Use a Tool"
+    description: "Test tool call and result logging"
+    prompt: "List the files in the current directory"
+    category: tools
+    priority: 8
+    showInStarters: true
+  - type: inline
+    id: multi-step
+    title: "🎯 Multi-Step Task"
+    description: "Test logging across multiple tool calls"
+    prompt: "Create a new file called test.txt with the content 'Hello from Logger Agent' and then read it back to me"
+    category: tools
+    priority: 7
+    showInStarters: true
+  - type: inline
+    id: check-logs
+    title: "📋 Check the Logs"
+    description: "View the request logger output"
+    prompt: "Can you read the file at ~/.dexto/logs/request-logger.log and show me the last 50 lines?"
+    category: tools
+    priority: 6
+    showInStarters: true

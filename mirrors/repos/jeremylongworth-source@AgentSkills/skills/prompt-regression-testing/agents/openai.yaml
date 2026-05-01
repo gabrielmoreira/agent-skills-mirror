@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prompt Regression Testing"
+  short_description: "Design prompt regression tests."
+  default_prompt: "Use this skill to create reusable prompt regression tests with expected routing, acceptance criteria, invariants, negative cases, and re-run triggers for agent skills and workflows."

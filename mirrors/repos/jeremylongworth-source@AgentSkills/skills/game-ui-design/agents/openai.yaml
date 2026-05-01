@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game UI Design"
+  short_description: "Design HUDs, menus, and game interface flows."
+  default_prompt: "Use this skill to design or improve game HUDs, menus, overlays, input flows, accessibility, and interactive UI polish."

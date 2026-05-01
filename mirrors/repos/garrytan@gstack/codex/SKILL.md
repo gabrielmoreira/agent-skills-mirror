@@ -110,7 +110,7 @@ In plan mode, allowed because they inform the plan: `$B`, `$D`, `codex exec`/`co
 
 ## Skill Invocation During Plan Mode
 
-If the user invokes a skill in plan mode, the skill takes precedence over generic plan mode behavior. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; the first AskUserQuestion is the workflow entering plan mode, not a violation of it. AskUserQuestion satisfies plan mode's end-of-turn requirement. At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" execute. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
+If the user invokes a skill in plan mode, the skill takes precedence over generic plan mode behavior. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; the first AskUserQuestion is the workflow entering plan mode, not a violation of it. AskUserQuestion (any variant — `mcp__*__AskUserQuestion` or native; see "AskUserQuestion Format → Tool resolution") satisfies plan mode's end-of-turn requirement. If no variant is callable, fall back to writing the decision brief into the plan file as a `## Decisions to confirm` section + ExitPlanMode — never silently auto-decide. At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" execute. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
 
 If `PROACTIVE` is `"false"`, do not auto-invoke or proactively suggest skills. If a skill seems useful, ask: "I think /skillname might help here — want me to run it?"
 
@@ -274,6 +274,16 @@ AI orchestrator (e.g., OpenClaw). In spawned sessions:
 - End with a completion report: what shipped, decisions made, anything uncertain.
 
 ## AskUserQuestion Format
+
+### Tool resolution (read first)
+
+"AskUserQuestion" can resolve to two tools at runtime: the **host MCP variant** (e.g. `mcp__conductor__AskUserQuestion` — appears in your tool list when the host registers it) or the **native** Claude Code tool.
+
+**Rule:** if any `mcp__*__AskUserQuestion` variant is in your tool list, prefer it. Hosts may disable native AUQ via `--disallowedTools AskUserQuestion` (Conductor does, by default) and route through their MCP variant; calling native there silently fails. Same questions/options shape; same decision-brief format applies.
+
+**Fallback when neither variant is callable:** in plan mode, write the decision brief into the plan file as a `## Decisions to confirm` section + ExitPlanMode (the native "Ready to execute?" surfaces it). Outside plan mode, output the brief as prose and stop. **Never silently auto-decide** — only `/plan-tune` AUTO_DECIDE opt-ins authorize auto-picking.
+
+### Format
 
 Every AskUserQuestion is a decision brief and must be sent as tool_use, not prose.
 
@@ -781,6 +791,23 @@ deadlock fixed in #972.
 
 ---
 
+## Step 0.6: Resolve portable roots
+
+Before any mode runs, resolve `$PLAN_ROOT` (where plan files live) and `$TMP_ROOT`
+(where ephemeral codex stderr / response captures land) via `bin/gstack-paths`.
+This keeps the skill working whether installed as a Claude Code plugin
+(`CLAUDE_PLANS_DIR` set), a global `~/.claude/skills/gstack/` install, or a CI
+container where `HOME` may be unset and `/tmp` may be read-only.
+
+```bash
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+```
+
+After this, every subsequent bash block in this skill uses `"$PLAN_ROOT"` and
+`"$TMP_ROOT"` rather than hardcoded `~/.claude/plans` or `/tmp/codex-*`.
+
+---
+
 ## Step 1: Detect mode
 
 Parse the user's input to determine which mode to run:
@@ -798,8 +825,8 @@ Parse the user's input to determine which mode to run:
      C) Something else — I'll provide a prompt
      ```
    - If no diff, check for plan files scoped to the current project:
-     `ls -t ~/.claude/plans/*.md 2>/dev/null | xargs grep -l "$(basename $(pwd))" 2>/dev/null | head -1`
-     If no project-scoped match, fall back to: `ls -t ~/.claude/plans/*.md 2>/dev/null | head -1`
+     `ls -t "$PLAN_ROOT"/*.md 2>/dev/null | xargs grep -l "$(basename $(pwd))" 2>/dev/null | head -1`
+     If no project-scoped match, fall back to: `ls -t "$PLAN_ROOT"/*.md 2>/dev/null | head -1`
      but warn the user: "Note: this plan may be from a different project."
    - If a plan file exists, offer to review it
    - Otherwise, ask: "What would you like to ask Codex?"
@@ -832,7 +859,7 @@ Run Codex code review against the current branch diff.
 
 1. Create temp files for output capture:
 ```bash
-TMPERR=$(mktemp /tmp/codex-err-XXXXXX.txt)
+TMPERR=$(mktemp "$TMP_ROOT/codex-err-XXXXXX.txt")
 ```
 
 2. Run the review (5-minute timeout). **Always** pass the filesystem boundary instruction
@@ -1015,7 +1042,7 @@ If the user passed `--xhigh`, use `"xhigh"` instead of `"high"`.
 _REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
 # Fix 1+2: wrap with timeout (gtimeout/timeout fallback chain via probe helper),
 # capture stderr to $TMPERR for auth error detection (was: 2>/dev/null).
-TMPERR=${TMPERR:-$(mktemp /tmp/codex-err-XXXXXX.txt)}
+TMPERR=${TMPERR:-$(mktemp "$TMP_ROOT/codex-err-XXXXXX.txt")}
 _gstack_codex_timeout_wrapper 600 codex exec "<prompt>" -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="high"' --enable web_search_cached --json < /dev/null 2>"$TMPERR" | PYTHONUNBUFFERED=1 python3 -u -c "
 import sys, json
 turn_completed_count = 0
@@ -1094,17 +1121,17 @@ B) Start a new conversation
 
 2. Create temp files:
 ```bash
-TMPRESP=$(mktemp /tmp/codex-resp-XXXXXX.txt)
-TMPERR=$(mktemp /tmp/codex-err-XXXXXX.txt)
+TMPRESP=$(mktemp "$TMP_ROOT/codex-resp-XXXXXX.txt")
+TMPERR=$(mktemp "$TMP_ROOT/codex-err-XXXXXX.txt")
 ```
 
 3. **Plan review auto-detection:** If the user's prompt is about reviewing a plan,
 or if plan files exist and the user said `/codex` with no arguments:
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-ls -t ~/.claude/plans/*.md 2>/dev/null | xargs grep -l "$(basename $(pwd))" 2>/dev/null | head -1
+ls -t "$PLAN_ROOT"/*.md 2>/dev/null | xargs grep -l "$(basename $(pwd))" 2>/dev/null | head -1
 ```
-If no project-scoped match, fall back to `ls -t ~/.claude/plans/*.md 2>/dev/null | head -1`
+If no project-scoped match, fall back to `ls -t "$PLAN_ROOT"/*.md 2>/dev/null | head -1`
 but warn: "Note: this plan may be from a different project — verify before sending to Codex."
 
 **IMPORTANT — embed content, don't reference path:** Codex runs sandboxed to the repo

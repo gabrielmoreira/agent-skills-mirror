@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/brand-guidelines/../../../marketing-skill/brand-guidelines/SKILL.md

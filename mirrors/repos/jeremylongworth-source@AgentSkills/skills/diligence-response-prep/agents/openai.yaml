@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diligence Response Prep"
+  short_description: "Draft investor diligence responses."
+  default_prompt: "Use this skill to prepare investor diligence response drafts, diligence FAQs, evidence maps, risky-claim review notes, missing-proof lists, and owner routing."

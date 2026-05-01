@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pricing Margin Review"
+  short_description: "Review owner pricing and margin options."
+  default_prompt: "Use this skill to review pricing, margin pressure, discounting, package economics, service profitability, and owner pricing action options."

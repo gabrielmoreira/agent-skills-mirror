@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rollback Plan"
+  short_description: "Plan release rollback and recovery."
+  default_prompt: "Use this skill to create rollback and fallback plans with triggers, owner, steps, reversible and irreversible risks, validation, communication, and follow-up actions."

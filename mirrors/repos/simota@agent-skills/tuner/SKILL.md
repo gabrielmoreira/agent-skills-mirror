@@ -13,6 +13,7 @@ CAPABILITIES_SUMMARY:
 - database_profiling: Profile database workload patterns and connection pool utilization
 - pg18_optimization: Leverage PostgreSQL 18 features (AIO, skip scan, parallel GIN builds, virtual generated columns)
 - ai_assisted_analysis: AI-driven execution plan interpretation and index recommendation from query patterns
+- fix_prompt_generation: Pair every actionable performance finding with a paste-ready LLM Fix Prompt embedding the slow query, current/predicted EXPLAIN ANALYZE plan, workload context, recommended action, acceptance criteria (including row-estimate sanity check and write-overhead budget), ruled-out alternatives, and "what NOT to do" so a downstream agent (Builder, Schema for migrations, Bolt for caching) can act without manual reformulation
 
 COLLABORATION_PATTERNS:
 - Bolt -> Tuner: Application performance issues
@@ -72,6 +73,7 @@ Route elsewhere when the task is primarily:
 - Prefer composite indexes over multiple single-column indexes when queries filter on 2+ columns together.
 - On PostgreSQL 18+, recommend `uuidv7()` over `gen_random_uuid()` for indexed primary keys — UUIDv7's time-ordering eliminates B-tree page splits and reduces buffer hits by ~30× compared to random UUIDv4.
 - Author for Opus 4.7 defaults. Apply [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) principles **P3 (eagerly Read `EXPLAIN (ANALYZE, BUFFERS)` output, schema, indexes, and statistics at PROFILE — optimization recommendations without plan evidence are speculation; distinguish cache hits from disk I/O), P5 (think step-by-step at index read/write trade-offs, row-estimate-ratio diagnosis (>10× stale stats, >100× unreliable), and PostgreSQL version-specific tuning (17 vs 18+, UUIDv7, skip scan))** as critical for Tuner. P2 recommended: calibrated performance report preserving before/after P50/P95/P99, buffer hits/reads, and row-estimate ratios. P1 recommended: front-load DB engine+version, workload class, and latency target at PROFILE.
+- Pair every actionable performance finding with a paste-ready `## LLM Fix Prompt` block in the report. The prompt embeds the slow query (verbatim), current EXPLAIN ANALYZE plan (highlighting the bottleneck node), predicted plan after fix, workload context (table size, selectivity, buffer hits/reads, row-estimate ratio, frequency, P99), recommended action (with `CREATE INDEX CONCURRENTLY` for production index DDL), acceptance criteria, ruled-out alternatives, and "what NOT to do". Suppress when handing off to Schema (migration ownership) or Bolt (app-level caching), and withhold in analysis-only mode or when the query is owned by a 3rd-party library. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 
 ## Boundaries
 
@@ -223,6 +225,42 @@ Routing rules:
 - Final outputs are in Japanese.
 - Use the canonical report format in [performance-report-template.md](references/performance-report-template.md) when producing a full report.
 
+Mandatory when an actionable finding is identified (suppress for analysis-only / Schema-owned migration / Bolt-owned caching / 3rd-party library queries):
+- For every actionable finding, a paste-ready `## LLM Fix Prompt` block — see `LLM Fix Prompt Generation` below. When suppressed, write a one-line note explaining why (analysis-only / Schema owns migration / Bolt owns caching / upstream library coordination).
+
+## LLM Fix Prompt Generation
+
+Every Tuner performance report for an actionable finding ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives the receiving agent (Builder for query rewrites, Schema for migration coordination on `ADD-INDEX`, Bolt for caching layer on `MITIGATE`) toward a precise, plan-evidence-backed change without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Tuner-specific verbs, suppression cases, template fields, and a worked example live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent |
+|------|----------|----------------|
+| `OPTIMIZE-QUERY` | Query plan fix (rewrite, hint, parameterization, JOIN order, predicate pushdown) | Builder |
+| `ADD-INDEX` | Schema-level index addition (single/composite/partial/covering) | Schema → Builder |
+| `BREAKING-OPTIMIZE` | Query/schema change with API or contract impact | Builder + Guardian + Launch |
+| `MIGRATE-WORKLOAD` | Structural — different query pattern needed (batched fetch, MV, denormalization) | Atlas + Builder + Schema |
+| `INVESTIGATE-FURTHER` | EXPLAIN ANALYZE inconclusive; need production trace before deciding | Beacon (data collection) or Tuner re-entry |
+| `MITIGATE` | Cache layer / MV / read replica routing while query is fixed | Builder + Bolt |
+
+Authoring rules (full list in `_common/LLM_PROMPT_GENERATION.md`):
+- One verb per prompt; one finding per prompt.
+- Quote the slow query verbatim; cite the file:line where the query is constructed.
+- Embed the current `EXPLAIN (ANALYZE, BUFFERS)` snippet showing the bottleneck node.
+- Embed the predicted plan after the fix with estimated execution time delta.
+- Embed workload context: table size, selectivity, buffer hits/reads, row-estimate ratio, frequency, P99 latency.
+- For `ADD-INDEX`, include the DDL with `CREATE INDEX CONCURRENTLY` for any table > 1M rows on PostgreSQL production.
+- Embed acceptance criteria as a checklist — including row-estimate sanity check, write-overhead budget, and adjacent-query non-regression.
+- Embed ruled-out alternatives with the evidence that eliminated each.
+- Embed "what NOT to do" — at minimum, do not silence the symptom by raising thresholds, do not drop indexes without usage verification, do not wrap indexed columns in functions.
+- Wrap in a fenced `text` code block so the user can copy cleanly.
+
+Suppress the Fix Prompt block when:
+- Tuner hands off to Schema for migration ownership (Schema owns the migration prompt).
+- Tuner hands off to Bolt for app-level caching (Bolt owns the caching remediation prompt).
+- Engagement is analysis-only (slow query inventory without remediation scope).
+- Query is owned by a 3rd-party ORM/library where Tuner cannot rewrite.
+
+In all suppression cases, write a one-line note in the report explaining why the prompt is withheld.
+
 ## Reference Map
 
 | File | Read this when... |
@@ -245,6 +283,8 @@ Routing rules:
 | [db-monitoring-observability.md](references/db-monitoring-observability.md) | You need monitoring pillars, alert thresholds, or dashboard guidance |
 | [vector-search-query-optimization.md](references/vector-search-query-optimization.md) | You need pgvector tuning, HNSW/IVFFlat parameters, or filtered vector search |
 | [cloud-db-optimization-patterns.md](references/cloud-db-optimization-patterns.md) | You need Aurora QPM, Neon cold-start tuning, or cloud DB selection guidance |
+| [fix-prompt-generation.md](references/fix-prompt-generation.md) | You are authoring the `## LLM Fix Prompt` block, choosing a Tuner-specific verb (OPTIMIZE-QUERY / ADD-INDEX / BREAKING-OPTIMIZE / MIGRATE-WORKLOAD / INVESTIGATE-FURTHER / MITIGATE), or deciding whether to suppress for Schema/Bolt handoff or analysis-only scope |
+| [\_common/LLM_PROMPT_GENERATION.md](~/.claude/skills/_common/LLM_PROMPT_GENERATION.md) | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel |
 | [\_common/BOUNDARIES.md](~/.claude/skills/_common/BOUNDARIES.md) | Role boundaries are ambiguous |
 | [\_common/OPERATIONAL.md](~/.claude/skills/_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
 | [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md) | You are sizing the performance report, deciding adaptive thinking depth at index trade-offs, or front-loading DB engine/version/workload/latency target at PROFILE. Critical for Tuner: P3, P5. |

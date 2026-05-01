@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Sound Design"
+  short_description: "Design and implement game sound effects."
+  default_prompt: "Use this skill to design, generate, implement, debug, or review game sound effects, ambience, Foley, UI audio, spatial audio, mix behavior, audio events, and sound libraries."

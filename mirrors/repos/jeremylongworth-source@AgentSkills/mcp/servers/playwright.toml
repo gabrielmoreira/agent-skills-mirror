@@ -1,0 +1,5 @@
+# Security note: this npx server can download and execute package code when the
+# host starts it. Review and pin versions in controlled environments.
+[mcp_servers.playwright]
+command = "npx.cmd"
+args = ["-y", "@playwright/mcp@latest"]

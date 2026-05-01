@@ -1,0 +1,4 @@
+interface:
+  display_name: "Longform To Shorts"
+  short_description: "Repurpose long-form content."
+  default_prompt: "Use this skill to repurpose long-form videos, podcasts, livestreams, newsletters, blogs, and interviews into short-form clip plans, scripts, captions, edit notes, and platform adaptations."

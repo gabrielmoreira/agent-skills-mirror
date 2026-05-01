@@ -1,0 +1,5 @@
+{
+  "name": "Safety & Performance",
+  "description": "Concurrency correctness, security hardening, and performance optimization for Go applications.",
+  "icon": "🛡️"
+}

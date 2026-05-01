@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unit Test Generation"
+  short_description: "Plan focused unit tests."
+  default_prompt: "Use this skill to add or plan focused unit tests with behavior under test, fixtures, mocks, edge cases, regression cases, validation commands, and coverage gaps."

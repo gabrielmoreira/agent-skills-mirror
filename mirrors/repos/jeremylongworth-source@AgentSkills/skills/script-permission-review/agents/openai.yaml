@@ -1,0 +1,4 @@
+interface:
+  display_name: "Script Permission Review"
+  short_description: "Review skill scripts for risk."
+  default_prompt: "Use this skill to review scripts and command examples bundled with agent skills for file, shell, network, dependency, environment, destructive-operation, and permission risks."

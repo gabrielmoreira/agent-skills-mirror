@@ -1,0 +1,4 @@
+interface:
+  display_name: "Decision Memo"
+  short_description: "Frame executive decisions and tradeoffs."
+  default_prompt: "Use this skill to write executive decision memos, compare strategic options, define decision criteria, recommend next steps, and create decision log entries."

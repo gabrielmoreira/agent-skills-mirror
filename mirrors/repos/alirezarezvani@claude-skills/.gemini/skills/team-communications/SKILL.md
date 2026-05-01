@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/team-communications/../../../project-management/team-communications/SKILL.md

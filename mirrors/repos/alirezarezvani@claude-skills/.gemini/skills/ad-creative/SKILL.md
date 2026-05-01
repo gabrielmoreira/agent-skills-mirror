@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ad-creative/../../../marketing-skill/ad-creative/SKILL.md

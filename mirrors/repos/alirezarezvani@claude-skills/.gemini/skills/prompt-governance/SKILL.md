@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/prompt-governance/../../../engineering/prompt-governance/SKILL.md

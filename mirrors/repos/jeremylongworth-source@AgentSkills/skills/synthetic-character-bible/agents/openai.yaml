@@ -1,0 +1,4 @@
+interface:
+  display_name: "Synthetic Character Bible"
+  short_description: "Define synthetic character guardrails."
+  default_prompt: "Use this skill to prepare review-only synthetic character bibles for AI-assisted creator personas, including identity boundaries, voice, visuals, disclosure, likeness risks, provenance, and prohibited claims."

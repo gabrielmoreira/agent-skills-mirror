@@ -21,6 +21,7 @@ CAPABILITIES_SUMMARY:
 - container_resource_analysis: Kubernetes OOMKill, CPU throttling, and ephemeral storage exhaustion analysis
 - cross_cluster_escalation: Handoff to Trail for onset identification via SPECTER_TO_TRAIL_HANDOFF
 - deterministic_testing_guidance: Recommendations for Fray, Antithesis, and other deterministic concurrency testing tools
+- fix_prompt_generation: Pair every confirmed concurrency/resource finding with a paste-ready LLM Fix Prompt embedding ghost category, detection method, reproducibility, synchronization plan, acceptance criteria, ruled-out alternatives, and "what NOT to do" so Builder can act without manual reformulation. Suppress when escalating to Sentinel (security), Atlas (architecture), Bolt (performance), or in detection-only mode.
 
 COLLABORATION_PATTERNS:
 - Scout -> Specter: Investigation context for ghost hunting (TRIAGE_TO_SPECTER)
@@ -86,6 +87,7 @@ Route elsewhere when the task is primarily:
 - Data races are expensive: at Uber scale, 5-15 new data races appear daily and a single race takes an average of 11 developer-days to fix. Prioritize early detection to avoid compounding costs.
 - For Node.js/pg-style connection pools, treat `totalCount === max && idleCount === 0 && waitingCount > 0` sustained beyond a few seconds as an **active leak signal**, not transient load. Industry post-mortems show 1% leak rates on unreleased connections compound into 68× higher failure rates vs pools with disciplined `try/finally` release, because every leaked connection is permanently removed from the pool. Pair this signal with acquire-site stack traces and `maxUses` rotation (~7500) to bound backend-process memory drift.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read concurrency primitives, resource lifecycles, and AI-coauthored regions at SCAN — AI-generated code is 2.29× more likely to misuse concurrency control; grounding in actual locking/async patterns is essential), P5 (think step-by-step at pattern matching (race/leak/deadlock), risk scoring Detectability/Impact/Frequency/Recovery/DataRisk, and language-specific tool recommendation (TSan vs RacerD vs Fray vs MemLab))** as critical for Specter. P2 recommended: calibrated ghost report preserving pattern ID, confidence, FP risk, and Bad→Good examples. P1 recommended: front-load language/runtime, concurrency model, and risk tier at TRIAGE.
+- Pair every confirmed concurrency/resource finding with a paste-ready `## LLM Fix Prompt` block that hands remediation to Builder. The prompt embeds ghost category, detection method, reproducibility, synchronization plan, acceptance criteria, ruled-out alternatives, and "what NOT to do" so Builder can act without manual reformulation. Suppress the prompt when escalating to Sentinel (security overlap), Atlas (architectural redesign), or Bolt (performance optimization), or when running in detection-only mode. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 
 ## Ghost Triage
 
@@ -270,6 +272,37 @@ Rules:
 - every finding needs evidence and a confidence label
 - every report includes Bad -> Good examples
 - every report includes test suggestions when handoff to `Radar` is useful
+- Mandatory when finding is confirmed (not for detection-only): `LLM Fix Prompt` block — see section below
+
+## LLM Fix Prompt Generation
+
+When Specter confirms a finding and hands remediation to Builder, the report ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives Builder toward a precise concurrency-correct change. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Specter-specific verbs, suppression cases, template fields, and a worked example live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent |
+|------|----------|----------------|
+| `RACE-FIX` | Confirmed race with reproducer (TSAN / Go race detector / repeated trial flip) | Builder |
+| `LEAK-FIX` | Memory or resource leak with retention path / handle leak source identified | Builder |
+| `LOCK-FIX` | Deadlock with documented lock acquisition order | Builder |
+| `RESOURCE-FIX` | Resource exhaustion (FD, connection pool, goroutine/thread leak) with budget plan | Builder |
+| `MITIGATE` | Workaround (timeout, circuit breaker, retry budget) while underlying fix is blocked | Builder |
+| `INVESTIGATE-FURTHER` | Low confidence — needs runtime instrumentation, profiler, or deeper trace | Claude/Codex (investigation mode) or Specter re-entry |
+| `REFACTOR-FIX` | Structural concurrency redesign needed (remove shared mutable state, switch to actor model) | Atlas → Builder |
+
+Authoring rules summary (full list in `_common/LLM_PROMPT_GENERATION.md`):
+- Quote evidence verbatim — paste TSAN output, race trace, pool stat snapshot, exact log line
+- Cite file paths with line numbers (`internal/session/store.go:142`)
+- Embed acceptance criteria as a checklist (detector clean, reproducer flips to 0, regression test added, no p99 regression)
+- Embed ruled-out alternatives with the evidence that eliminated each
+- Embed "what NOT to do" — at minimum: do not silence the symptom, do not mask with sleeps/retries, do not disable the detector
+- State confidence at the top; one verb per prompt; wrap in a fenced `text` block
+
+Suppress the Fix Prompt block when:
+- Specter escalates to Sentinel (concurrency issue is actually a security vuln like TOCTOU)
+- Specter escalates to Atlas (structural design issue, not a single bug)
+- Specter escalates to Bolt (resource issue is performance optimization, not correctness)
+- Detection-only mode (no fix scope)
+
+In all suppression cases, write a one-line note in the report explaining why.
 
 ## Operational
 
@@ -291,6 +324,8 @@ Rules:
 | `references/flaky-test-diagnosis.md` | You need to categorize an intermittent test (async/ordering/state/external), design a quarantine policy, or set up retry-with-record and test-isolation verification. |
 | `references/time-dependent-bugs.md` | You need to detect TZ/DST traps, monotonic vs wall-clock misuse, clock skew across hosts, leap-second handling, or unfrozen test clocks. |
 | `references/order-sensitivity.md` | You need to detect unordered-iteration reliance, sort-stability assumptions, missing `ORDER BY`, concurrent-write implicit ordering, or read-your-write staleness. |
+| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Specter-specific verb (RACE-FIX / LEAK-FIX / LOCK-FIX / RESOURCE-FIX / MITIGATE / INVESTIGATE-FURTHER / REFACTOR-FIX), or deciding whether to suppress the prompt because the finding is being escalated to Sentinel/Atlas/Bolt. |
+| `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel/Plea. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Trail, unified confidence scale, or stall protocol is needed. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the ghost report, deciding adaptive thinking depth at tool selection, or front-loading language/concurrency-model/risk at TRIAGE. Critical for Specter: P3, P5. |
 

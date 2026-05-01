@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Content Design"
+  short_description: "Design levels, quests, encounters, and rewards."
+  default_prompt: "Use this skill to create or review game content such as quests, encounters, levels, progression, rewards, missions, and design documentation."

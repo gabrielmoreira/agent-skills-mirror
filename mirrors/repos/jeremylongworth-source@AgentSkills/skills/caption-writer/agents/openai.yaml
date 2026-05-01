@@ -1,0 +1,4 @@
+interface:
+  display_name: "Caption Writer"
+  short_description: "Write creator social captions."
+  default_prompt: "Use this skill to write creator captions, post copy, CTAs, community prompts, sponsor disclosure notes, hashtag or keyword notes, variants, and claim checks."

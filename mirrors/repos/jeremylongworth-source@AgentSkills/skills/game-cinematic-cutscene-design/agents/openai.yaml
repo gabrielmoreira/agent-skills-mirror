@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Cinematic Cutscenes"
+  short_description: "Design game cutscenes and intro videos."
+  default_prompt: "Use this skill to design, storyboard, implement, render, or review game cutscenes, intro videos, cinematics, trailers, camera sequences, animatics, and engine timeline/sequencer work."

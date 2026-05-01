@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/onboarding-cro/../../../marketing-skill/onboarding-cro/SKILL.md

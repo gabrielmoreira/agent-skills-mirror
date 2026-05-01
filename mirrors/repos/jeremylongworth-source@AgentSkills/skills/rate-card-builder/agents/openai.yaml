@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rate Card Builder"
+  short_description: "Draft creator sponsor rate cards."
+  default_prompt: "Use this skill to draft creator rate cards, package pricing structures, assumptions, usage-rights adjustments, add-ons, and review notes."

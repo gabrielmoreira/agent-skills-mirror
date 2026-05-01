@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supply Chain Review"
+  short_description: "Review skill supply-chain risk."
+  default_prompt: "Use this skill to review third-party skill sources, dependencies, install commands, package managers, remote downloads, version pins, provenance, licenses, and update risks before install or publish."

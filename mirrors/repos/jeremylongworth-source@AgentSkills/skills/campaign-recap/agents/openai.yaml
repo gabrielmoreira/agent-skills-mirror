@@ -1,0 +1,4 @@
+interface:
+  display_name: "Campaign Recap"
+  short_description: "Create creator sponsor recaps."
+  default_prompt: "Use this skill to create creator sponsorship recap reports with delivered assets, metrics, learnings, caveats, and renewal angles."

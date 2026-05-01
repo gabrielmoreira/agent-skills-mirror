@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Character Design"
+  short_description: "Design readable playable and NPC characters."
+  default_prompt: "Use this skill to create, critique, or refine game characters, including silhouette, shape language, costume, role, gameplay readability, personality, faction identity, and production notes."

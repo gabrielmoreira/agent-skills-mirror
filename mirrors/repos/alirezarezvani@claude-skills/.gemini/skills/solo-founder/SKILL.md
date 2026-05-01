@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/solo-founder/../../../agents/personas/solo-founder.md

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chroma-core/chroma` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `chroma-core/chroma` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chroma-core/chroma` — 26 default patterns, 0 followed patterns, 2 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/mintlify/AGENTS.md`](docs/mintlify/AGENTS.md) |
-| 2 | ✓ | [`docs/mintlify/CLAUDE.md`](docs/mintlify/CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`docs/mintlify/AGENTS.md`](docs/mintlify/AGENTS.md) |
+| 4 | ✓ | [`docs/mintlify/CLAUDE.md`](docs/mintlify/CLAUDE.md) |
 
 ---
 

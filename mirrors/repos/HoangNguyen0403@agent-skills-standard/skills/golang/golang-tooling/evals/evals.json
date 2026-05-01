@@ -1,0 +1,37 @@
+{
+  "skill_name": "golang-tooling",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How do I set up golangci-lint for my Go project and which linters should I enable?",
+      "expected_output": "Create .golangci.yml at repo root. Enable: errcheck, staticcheck, govet, revive, gosec. Run golangci-lint run ./... in CI. Use the golangci.yml example for configuration.",
+      "assertions": [
+        { "type": "contains", "value": "golangci.yml" },
+        { "type": "contains", "value": "errcheck" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What's the difference between gofmt and goimports? Which should I use?",
+      "expected_output": "goimports does everything gofmt does (formatting) plus organizes imports. Use goimports — never gofmt alone. Run goimports -w . before committing.",
+      "assertions": [
+        { "type": "contains", "value": "goimports" },
+        { "type": "contains", "value": "gofmt" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How do I get real-time Go diagnostics and type errors in Claude Code?",
+      "expected_output": "Use the mcp__ide__getDiagnostics tool via the gopls-lsp plugin. Install gopls with: go install golang.org/x/tools/gopls@latest. getDiagnostics gives real-time compiler-level feedback without running go build.",
+      "assertions": [
+        { "type": "contains", "value": "getDiagnostics" },
+        { "type": "contains", "value": "gopls" }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "Write a table-driven test in Go",
+    "How do I implement Clean Architecture in Go?",
+    "Build a REST API handler with Echo"
+  ]
+}

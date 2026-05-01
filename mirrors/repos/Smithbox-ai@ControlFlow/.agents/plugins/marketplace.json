@@ -1,0 +1,20 @@
+{
+  "name": "controlflow-local",
+  "interface": {
+    "displayName": "ControlFlow Local Plugins"
+  },
+  "plugins": [
+    {
+      "name": "controlflow-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/controlflow-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    }
+  ]
+}

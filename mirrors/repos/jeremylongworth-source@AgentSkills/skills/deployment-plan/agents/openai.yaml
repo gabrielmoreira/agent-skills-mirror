@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deployment Plan"
+  short_description: "Plan safe deployments."
+  default_prompt: "Use this skill to create deployment plans and runbooks with prechecks, rollout steps, smoke tests, monitoring, communication, rollback triggers, owners, and go/no-go criteria."

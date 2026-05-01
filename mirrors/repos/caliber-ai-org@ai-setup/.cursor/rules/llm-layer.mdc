@@ -1,0 +1,13 @@
+---
+description: LLM provider implementation patterns
+globs: src/llm/**
+---
+
+- Providers implement `LLMProvider` from `src/llm/types.ts`: `call()`, `stream()`, optional `listModels()`
+- Config: env vars → `~/.caliber/config.json` via `src/llm/config.ts`
+- Seat-based: `isSeatBased()` in `src/llm/types.ts` (cursor, claude-cli)
+- Cursor: `agent --print --trust --workspace /tmp` in `src/llm/cursor-acp.ts`
+- Fast model: `getFastModel()` in `src/llm/config.ts`
+- Model recovery: `src/llm/model-recovery.ts` · Errors: `src/llm/seat-based-errors.ts`
+- Usage: `trackUsage()` from `src/llm/usage.ts`
+- `validateModel()` skips seat-based providers

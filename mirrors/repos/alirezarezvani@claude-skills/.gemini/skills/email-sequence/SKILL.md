@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/email-sequence/../../../marketing-skill/email-sequence/SKILL.md

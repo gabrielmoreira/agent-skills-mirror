@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-quality-regulatory/../../../agents/ra-qm-team/cs-quality-regulatory.md

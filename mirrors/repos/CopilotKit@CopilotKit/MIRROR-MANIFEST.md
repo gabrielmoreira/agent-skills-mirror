@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 4 followed patterns, 29 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 4 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 4 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,35 +62,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/git-hooks/SKILL.md`](.claude/skills/git-hooks/SKILL.md) |
-| 2 | ✓ | [`.cursor/rules/agent-development.mdc`](.cursor/rules/agent-development.mdc) |
-| 3 | ✓ | [`.cursor/rules/copilotkit-architecture.mdc`](.cursor/rules/copilotkit-architecture.mdc) |
-| 4 | ✓ | [`.cursor/rules/development-workflow.mdc`](.cursor/rules/development-workflow.mdc) |
-| 5 | ✓ | [`.cursor/rules/examples-and-demos.mdc`](.cursor/rules/examples-and-demos.mdc) |
-| 6 | ✓ | [`.cursor/rules/frontend-development.mdc`](.cursor/rules/frontend-development.mdc) |
-| 7 | ✓ | [`.cursor/rules/quick-reference.mdc`](.cursor/rules/quick-reference.mdc) |
-| 8 | ✓ | [`.cursor/rules/suggestions-development.mdc`](.cursor/rules/suggestions-development.mdc) |
-| 9 | ✓ | [`.cursor/rules/working-with-rules.mdc`](.cursor/rules/working-with-rules.mdc) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
-| 13 | ✓ | [`examples/e2e/AGENTS.md`](examples/e2e/AGENTS.md) |
-| 14 | ✓ | [`examples/integrations/langgraph-python-threads/CLAUDE.md`](examples/integrations/langgraph-python-threads/CLAUDE.md) |
-| 15 | ✓ | [`examples/integrations/langgraph-python/CLAUDE.md`](examples/integrations/langgraph-python/CLAUDE.md) |
-| 16 | ✓ | [`examples/showcases/adk-dashboard/AGENTS.md`](examples/showcases/adk-dashboard/AGENTS.md) |
-| 17 | ✓ | [`examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md`](examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md) |
-| 18 | ✓ | [`examples/showcases/generative-ui-playground/CLAUDE.md`](examples/showcases/generative-ui-playground/CLAUDE.md) |
-| 19 | ✓ | [`examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md`](examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md) |
-| 20 | ✓ | [`examples/showcases/mcp-apps/CLAUDE.md`](examples/showcases/mcp-apps/CLAUDE.md) |
-| 21 | ✓ | [`examples/showcases/mcp-demo/.cursorrules`](examples/showcases/mcp-demo/.cursorrules) |
-| 22 | ✓ | [`examples/showcases/multi-agent-canvas/frontend/.cursorrules`](examples/showcases/multi-agent-canvas/frontend/.cursorrules) |
-| 23 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
-| 24 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
-| 25 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
-| 26 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 27 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 28 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 29 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 1 | ✓ | [`.claude/skills/copilotkit-demo-parity/SKILL.md`](.claude/skills/copilotkit-demo-parity/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/git-hooks/SKILL.md`](.claude/skills/git-hooks/SKILL.md) |
+| 3 | ✓ | [`.cursor/rules/agent-development.mdc`](.cursor/rules/agent-development.mdc) |
+| 4 | ✓ | [`.cursor/rules/copilotkit-architecture.mdc`](.cursor/rules/copilotkit-architecture.mdc) |
+| 5 | ✓ | [`.cursor/rules/development-workflow.mdc`](.cursor/rules/development-workflow.mdc) |
+| 6 | ✓ | [`.cursor/rules/examples-and-demos.mdc`](.cursor/rules/examples-and-demos.mdc) |
+| 7 | ✓ | [`.cursor/rules/frontend-development.mdc`](.cursor/rules/frontend-development.mdc) |
+| 8 | ✓ | [`.cursor/rules/quick-reference.mdc`](.cursor/rules/quick-reference.mdc) |
+| 9 | ✓ | [`.cursor/rules/suggestions-development.mdc`](.cursor/rules/suggestions-development.mdc) |
+| 10 | ✓ | [`.cursor/rules/working-with-rules.mdc`](.cursor/rules/working-with-rules.mdc) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 14 | ✓ | [`examples/e2e/AGENTS.md`](examples/e2e/AGENTS.md) |
+| 15 | ✓ | [`examples/integrations/langgraph-python-threads/CLAUDE.md`](examples/integrations/langgraph-python-threads/CLAUDE.md) |
+| 16 | ✓ | [`examples/integrations/langgraph-python/CLAUDE.md`](examples/integrations/langgraph-python/CLAUDE.md) |
+| 17 | ✓ | [`examples/showcases/adk-dashboard/AGENTS.md`](examples/showcases/adk-dashboard/AGENTS.md) |
+| 18 | ✓ | [`examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md`](examples/showcases/generative-ui-playground/a2a-agent/CLAUDE.md) |
+| 19 | ✓ | [`examples/showcases/generative-ui-playground/CLAUDE.md`](examples/showcases/generative-ui-playground/CLAUDE.md) |
+| 20 | ✓ | [`examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md`](examples/showcases/generative-ui-playground/mcp-server/CLAUDE.md) |
+| 21 | ✓ | [`examples/showcases/mcp-apps/CLAUDE.md`](examples/showcases/mcp-apps/CLAUDE.md) |
+| 22 | ✓ | [`examples/showcases/mcp-demo/.cursorrules`](examples/showcases/mcp-demo/.cursorrules) |
+| 23 | ✓ | [`examples/showcases/multi-agent-canvas/frontend/.cursorrules`](examples/showcases/multi-agent-canvas/frontend/.cursorrules) |
+| 24 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
+| 25 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
+| 26 | ✓ | [`examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](examples/showcases/open-mcp-client/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
+| 27 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 28 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 29 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 30 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
 
 ---
 

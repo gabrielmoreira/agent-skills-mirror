@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Docs"
+  short_description: "Write architecture docs and ADRs."
+  default_prompt: "Use this skill to document system architecture, module boundaries, data flow, dependencies, decisions, tradeoffs, constraints, risks, and architecture decision records from source material."

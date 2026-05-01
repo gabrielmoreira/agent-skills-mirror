@@ -1,0 +1,4 @@
+interface:
+  display_name: "Executive Briefing"
+  short_description: "Draft concise leadership briefs."
+  default_prompt: "Use this skill to create weekly CEO briefs, executive summaries, leadership briefings, operating updates, strategic snapshots, and decision-ready 1-page briefs."

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-wiki-ingestor/../../../agents/engineering/cs-wiki-ingestor.md

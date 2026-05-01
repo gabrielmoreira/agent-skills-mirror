@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Media Prompt Brief"
+  short_description: "Draft provider-neutral AI media prompts."
+  default_prompt: "Use this skill to prepare provider-neutral AI media prompt briefs with creative intent, source references, constraints, exclusions, rights/provenance notes, acceptance criteria, and human-review gates."

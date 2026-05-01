@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Sprite Design"
+  short_description: "Create game-ready 2D sprites."
+  default_prompt: "Use this skill to design, generate, animate, export, or review game-ready 2D sprites, sprite sheets, pixel art, tile sets, UI icons, VFX sprites, animation frames, atlases, and Phaser/HTML5 sprite pipelines."

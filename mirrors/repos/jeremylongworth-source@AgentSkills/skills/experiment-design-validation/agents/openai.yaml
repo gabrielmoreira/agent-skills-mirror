@@ -1,0 +1,4 @@
+interface:
+  display_name: "Experiment Design Validation"
+  short_description: "Design experiments with clear metrics."
+  default_prompt: "Use this skill to design, evaluate, or document experiments, A/B tests, product tests, growth tests, hypotheses, metrics, guardrails, sample considerations, decision rules, and learning plans."

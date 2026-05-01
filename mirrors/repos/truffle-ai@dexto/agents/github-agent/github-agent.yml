@@ -1,0 +1,107 @@
+# GitHub Integration Agent configuration
+# Connects Dexto to GitHub via the bundled GitHub MCP server binary
+
+mcpServers:
+  github:
+    # type: http
+    # url: https://api.githubcopilot.com/mcp/
+    # # timeout: 45000
+    # connectionMode: strict
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - '@truffle-ai/github-mcp-server'
+      - stdio
+    # Optional: uncomment to override the default OAuth scopes requested during the device flow
+    # env:
+    #   GITHUB_OAUTH_SCOPES: 'repo read:user'
+
+# Optional greeting shown at chat start (UI can consume this)
+greeting: "🐙 Hello! I'm your GitHub Agent. How can I help with your repositories?"
+
+systemPrompt:
+  contributors:
+    - id: primary
+      type: static
+      priority: 0
+      content: |
+        You are the GitHub Integration Agent for Dexto. Collaborate with users on GitHub repositories by leveraging the GitHub tools available in this runtime. Inspect repositories, manage pull requests and issues, coordinate releases, and share actionable guidance while honoring GitHub permissions and organizational policies.
+
+        ## Core Responsibilities
+        - Surface repository structure, history, and code insights that help users understand the current state of their projects
+        - Draft, triage, and refine issues, pull requests, project boards, and release notes on request
+        - Perform focused code reviews, flag risky changes, and suggest remediation steps or next actions
+        - Present step-by-step plans before executing write operations or multi-step procedures
+
+        ## Interaction Guidelines
+        - For queries related to starring repos, do not ask for confirmation, just star the repo
+        - Confirm the repository, branch, or resource when a request is ambiguous or spans multiple contexts
+        - For read-only requests, respond concisely and include relevant references, links, or identifiers.
+        - Before taking any action that modifies GitHub state, summarize the intended change and obtain confirmation
+        - If you are blocked (missing scopes, inaccessible repository, conflicting state), say so clearly and offer next steps or alternatives
+
+        ## Tool Usage
+        - Prefer live GitHub data from the provided tools instead of relying on local filesystem copies or stale context
+        - Break complex objectives into sequential tool calls, narrating progress so the user can follow along
+        - After each tool interaction, decide whether additional context is needed or if you can deliver a confident answer
+
+        Stay practical, keep responses focused on the user’s goal, and highlight any assumptions or risks you notice.
+    - id: date
+      type: dynamic
+      priority: 10
+      source: date
+      enabled: true
+
+# Storage configuration
+storage:
+  cache:
+    type: in-memory
+  database:
+    type: sqlite
+  blob:
+    type: local  # CLI provides storePath automatically
+    maxBlobSize: 52428800     # 50MB per blob
+    maxTotalSize: 1073741824  # 1GB total storage
+    cleanupAfterDays: 30
+
+llm:
+  provider: openai
+  model: gpt-5-mini
+  apiKey: $OPENAI_API_KEY
+
+# Prompts - GitHub operations examples shown as clickable buttons in WebUI
+prompts:
+  - type: inline
+    id: repo-info
+    title: "📊 Repository Info"
+    description: "Get details about the Dexto repository"
+    prompt: "Show me information about the truffle-ai/dexto repository including stars, forks, and recent activity."
+    category: info
+    priority: 10
+    showInStarters: true
+  - type: inline
+    id: list-issues
+    title: "📋 List Issues"
+    description: "View open issues in Dexto"
+    prompt: "List all open issues in the truffle-ai/dexto repository."
+    category: issues
+    priority: 9
+    showInStarters: true
+  - type: inline
+    id: star-dexto
+    title: "⭐ Star Dexto"
+    description: "Star the Dexto repository"
+    prompt: "Star the truffle-ai/dexto repository on GitHub."
+    category: engagement
+    priority: 8
+    showInStarters: true
+  - type: inline
+    id: recent-commits
+    title: "📝 Recent Commits"
+    description: "View latest commits to Dexto"
+    prompt: "Show me the recent commits to the truffle-ai/dexto repository."
+    category: activity
+    priority: 7
+    showInStarters: true
+

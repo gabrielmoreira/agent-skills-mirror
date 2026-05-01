@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/quality-manager-qms-iso13485/../../../ra-qm-team/quality-manager-qms-iso13485/SKILL.md

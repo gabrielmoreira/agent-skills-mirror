@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game 3D Asset Design"
+  short_description: "Design game-ready 3D asset pipelines."
+  default_prompt: "Use this skill to plan, create, optimize, import, export, or review game-ready 3D assets, props, environment pieces, materials, textures, LODs, and engine asset packages."

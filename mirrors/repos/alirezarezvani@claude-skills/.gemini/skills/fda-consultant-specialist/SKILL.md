@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/fda-consultant-specialist/../../../ra-qm-team/fda-consultant-specialist/SKILL.md

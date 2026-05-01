@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reply Drafting"
+  short_description: "Draft customer-safe support replies."
+  default_prompt: "Use this skill to write or review customer support replies, troubleshooting responses, policy-aware answers, apologies, customer updates, and follow-up questions that require human approval before sending."

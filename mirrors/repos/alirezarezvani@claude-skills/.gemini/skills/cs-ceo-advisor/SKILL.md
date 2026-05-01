@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-ceo-advisor/../../../agents/c-level/cs-ceo-advisor.md

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Experiment Readout"
+  short_description: "Write experiment result memos."
+  default_prompt: "Use this skill to write experiment readouts with hypothesis, variants, metrics, guardrails, results, caveats, decision, learning, and follow-up actions."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Containerization Plan"
+  short_description: "Plan container images and runtime."
+  default_prompt: "Use this skill to plan or review Dockerfiles, container images, compose files, runtime users, build layers, healthchecks, ports, volumes, logs, secrets, and container security."

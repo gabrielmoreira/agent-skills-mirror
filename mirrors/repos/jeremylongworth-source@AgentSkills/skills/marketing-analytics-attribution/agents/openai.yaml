@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marketing Analytics Attribution"
+  short_description: "Measure funnel and campaign performance."
+  default_prompt: "Use this skill to define marketing analytics, GA4 events, conversion goals, attribution, dashboards, funnel metrics, CAC/LTV, campaign measurement, experimentation, and data quality checks."

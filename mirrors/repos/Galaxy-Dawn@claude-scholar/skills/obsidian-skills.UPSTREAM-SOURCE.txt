@@ -1,0 +1,6 @@
+Upstream repository: https://github.com/kepano/obsidian-skills
+Vendored from commit: bb9ec95e1b59c3471bd6fd77a78a4042430bfac3
+License: MIT
+Included skills:
+- obsidian-kb-artifacts (consolidated from upstream markdown/cli/bases/canvas capabilities)
+- defuddle

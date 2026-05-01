@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guia de Skills</title>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --border: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #7ee787;
+      --accent-purple: #d2a8ff;
+      --accent-orange: #ffa657;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --glass-bg: rgba(22, 27, 34, 0.65);
+      --glass-border: rgba(48, 54, 61, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      font-size: 16px;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+      background: rgba(110, 118, 129, 0.15);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 0.88em;
+      color: var(--accent-orange);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header / Mini-hero */
+    .header {
+      position: relative;
+      padding: 48px 0;
+      margin-bottom: 40px;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(88, 166, 255, 0.08) 0%, rgba(126, 231, 135, 0.05) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .header .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: #79b8ff;
+      text-decoration: none;
+    }
+
+    .header h1 {
+      font-size: 2em;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1em;
+      line-height: 1.7;
+      max-width: 720px;
+    }
+
+    .count-badge {
+      display: inline-block;
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+      font-size: 0.45em;
+      padding: 3px 12px;
+      border-radius: 20px;
+      margin-left: 8px;
+      font-weight: 700;
+      vertical-align: middle;
+      -webkit-text-fill-color: var(--accent-blue);
+    }
+
+    /* Cards */
+    .cards-container {
+      padding-bottom: 48px;
+    }
+
+    .card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .card:hover {
+      border-color: rgba(88, 166, 255, 0.35);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 24px rgba(88, 166, 255, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      font-size: 1.4em;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      background: rgba(88, 166, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .card-header h3 {
+      font-size: 1.15em;
+      font-weight: 700;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    /* Category badges */
+    .category-badge {
+      font-size: 0.7em;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .category-workflow {
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+    }
+
+    .category-tool {
+      background: rgba(126, 231, 135, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(126, 231, 135, 0.25);
+    }
+
+    .category-guide {
+      background: rgba(255, 166, 87, 0.12);
+      color: var(--accent-orange);
+      border: 1px solid rgba(255, 166, 87, 0.25);
+    }
+
+    .card-desc {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 14px;
+      font-size: 0.95em;
+    }
+
+    .section-label {
+      font-size: 0.75em;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .use-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .use-list li {
+      font-size: 0.85em;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .use-list.dont li {
+      background: rgba(248, 81, 73, 0.08);
+      color: #f85149;
+      border: 1px solid rgba(248, 81, 73, 0.2);
+    }
+
+    .features {
+      margin-top: 10px;
+      padding-left: 20px;
+      color: var(--text-primary);
+      font-size: 0.9em;
+    }
+
+    .features li {
+      margin-bottom: 5px;
+      line-height: 1.6;
+    }
+
+    .features li::marker {
+      color: var(--text-secondary);
+    }
+
+    /* Card icon tints per category */
+    .category-tool ~ .card-icon,
+    .card:nth-child(3) .card-icon,
+    .card:nth-child(8) .card-icon {
+      background: rgba(126, 231, 135, 0.08);
+    }
+
+    .category-guide ~ .card-icon {
+      background: rgba(255, 166, 87, 0.08);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 32px 0;
+      }
+      .header h1 {
+        font-size: 1.6em;
+      }
+      .container {
+        padding: 0 16px;
+      }
+      .card {
+        padding: 20px;
+      }
+      .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+      }
+      .card-header {
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        font-size: 14px;
+      }
+      .header {
+        padding: 24px 0;
+        margin-bottom: 24px;
+      }
+      .header h1 {
+        font-size: 1.4em;
+      }
+      .container {
+        padding: 0 12px;
+      }
+      .card {
+        padding: 16px;
+        margin-bottom: 14px;
+        border-radius: var(--radius-md);
+      }
+      .card-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1em;
+        border-radius: var(--radius-sm);
+      }
+      .card-header h3 {
+        font-size: 1.05em;
+      }
+      .use-list {
+        gap: 4px;
+      }
+      .use-list li {
+        font-size: 0.8em;
+        padding: 3px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <a href="../index.html" class="back-link">← Home</a>
+      <h1>📦 Guia de Skills <span class="count-badge">12</span></h1>
+      <p>
+        Skills são arquivos <code>SKILL.md</code> que injetam conhecimento especializado no agente de IA.
+        Cada skill ensina padrões, workflows e técnicas específicas de um domínio — funcionando como
+        instruções de sistema que o agente segue durante a sessão. Abaixo estão todas as skills disponíveis
+        neste repositório, organizadas com descrição, casos de uso e capacidades.
+      </p>
+    </div>
+  </div>
+
+  <div class="container cards-container">
+
+  <!-- agent-creator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🤖</span>
+      <h3>agent-creator</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Guia completo para criação de agentes customizados do VS Code Copilot (<code>.agent.md</code>).
+      Ensina toda a anatomia de um arquivo de agente — frontmatter YAML, configuração de ferramentas,
+      handoffs entre agentes, sub-agentes e padrões de orquestração.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Criar novos agentes</li>
+      <li>Restrições de ferramentas</li>
+      <li>Handoffs e orquestração</li>
+      <li>Padrões de disciplina</li>
+      <li>Configurar sub-agentes</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Coding geral</li>
+      <li>Desenvolvimento de extensões VS Code</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Referência completa de campos do frontmatter (name, description, tools, agents, handoffs, model)</li>
+      <li>Regra de herança de ferramentas: <code>tools</code> omitido = herda tudo; declarado = sobrescreve</li>
+      <li>Tabela de tool sets disponíveis (search, read, edit, terminal, agent, todo, web)</li>
+      <li>Sintaxe MCP: <code>&lt;server-name&gt;/*</code> para servidores MCP</li>
+      <li>Configuração de handoffs com label, agent, prompt e send</li>
+    </ul>
+  </div>
+
+  <!-- contextacao -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🔍</span>
+      <h3>contextação</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Análise estruturada de contexto antes de agir. Força uma decomposição crítica do problema em
+      6 eixos (premissas, escopo, dependências, fontes de verdade, modos de falha, stakeholders)
+      com classificação de confiança e pesquisa ativa para evitar respostas superficiais e hallucinations.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Questionar premissas</li>
+      <li>Mapear dependências</li>
+      <li>Identificar pontos cegos</li>
+      <li>Validar escopo</li>
+      <li>Analisar antes de implementar</li>
+      <li>Prevenir hallucination</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Tarefas simples (usar task-intent)</li>
+      <li>Implementação direta</li>
+      <li>Code review</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Triagem de complexidade (Simples / Médio / Complexo) com critérios objetivos</li>
+      <li>Decomposição em 6 eixos com perguntas críticas por eixo</li>
+      <li>Classificação de confiança (🟢 Alta / 🟡 Média / 🔴 Baixa) com ações requeridas</li>
+      <li>Active Research Gate: verificar fatos com ferramentas antes de aceitar claims</li>
+      <li>Fluxo visual de triagem para decisão rápida de profundidade</li>
+    </ul>
+  </div>
+
+  <!-- doc-to-markdown -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📄</span>
+      <h3>doc-to-markdown</h3>
+      <span class="category-badge category-tool">Tool Skill</span>
+    </div>
+    <p class="card-desc">
+      Converte documentos binários e Office para Markdown otimizado para consumo por LLMs.
+      Usa o <strong>markitdown</strong> da Microsoft como ferramenta primária, com fallbacks para
+      formatos específicos. Inclui scripts prontos para conversão individual, em lote e extração de tabelas.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Converter Word, Excel, PowerPoint</li>
+      <li>Converter PDF, Visio, MS Project</li>
+      <li>Conversão em lote de diretórios</li>
+      <li>Extrair texto de formatos binários</li>
+      <li>OCR em imagens</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Formatação/linting de Markdown</li>
+      <li>File I/O geral</li>
+      <li>Web scraping</li>
+      <li>Geração de imagens</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Mapeamento formato → ferramenta para 15+ formatos (docx, xlsx, pptx, pdf, vsdx, mpp, etc.)</li>
+      <li>Scripts standalone: <code>convert.py</code>, <code>batch_convert.py</code>, <code>extract_tables.py</code></li>
+      <li>Suporte a OCR via <code>markitdown[all]</code></li>
+      <li>Fallbacks automáticos (mammoth, pdfplumber, pandoc, LibreOffice headless)</li>
+      <li>Auto-instalação de dependências em ambientes não-interativos</li>
+    </ul>
+  </div>
+
+  <!-- error-learning -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🧠</span>
+      <h3>error-learning</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Registra e generaliza erros do agente em lições reutilizáveis. Quando o usuário corrige o agente,
+      esta skill analisa a causa raiz, generaliza o erro em uma regra genérica e persiste como lição
+      em <code>~/.copilot/lessons/</code> para prevenir recorrência.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>O usuário corrigiu o agente</li>
+      <li>Capturar o que deu errado</li>
+      <li>Analisar causa raiz</li>
+      <li>Generalizar correções em lições</li>
+      <li>Prevenir erros recorrentes</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Debugging geral</li>
+      <li>Escrever testes</li>
+      <li>Code review</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Classificação de causa raiz: wrong-assumption, missing-context, unknown-pattern, wrong-scope, skipped-verification</li>
+      <li>Generalização: transforma caso específico em regra genérica que cobre cenários similares</li>
+      <li>Persistência em <code>~/.copilot/lessons/L{NNN}-{slug}.md</code> com template estruturado</li>
+      <li>Tags de action (create, modify, fix) e domain (git, regex, hooks, yaml) para matching</li>
+      <li>Consolidação automática quando 30+ lições acumulam — merge de clusters similares</li>
+    </ul>
+  </div>
+
+  <!-- hooks-creator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🪝</span>
+      <h3>hooks-creator</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Guia completo para criação e configuração de hooks de ciclo de vida para agentes.
+      <strong>Plataforma padrão: VS Code GitHub Copilot</strong> — Claude Code só quando o usuário
+      pedir explicitamente ou houver <code>.claude/</code> no workspace. Hooks são comandos
+      determinísticos (Node.js) executados em eventos específicos — garantem execução
+      (diferente de instruções, que o agente pode ignorar).
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Criar scripts de hook</li>
+      <li>Configurar hooks de lifecycle</li>
+      <li>SessionStart, PreToolUse, PostToolUse, Stop</li>
+      <li>Hooks no frontmatter de agentes</li>
+      <li>Scripts cross-platform</li>
+      <li>Segurança e enforcement</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Coding geral</li>
+      <li>Criar agentes (usar agent-creator)</li>
+      <li>Criar skills (usar skill-creator)</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Tabela completa de 20 eventos de lifecycle (8 compartilhados VS Code + Claude Code)</li>
+      <li>Detecção de plataforma (VS Code Copilot vs Claude Code vs Hybrid)</li>
+      <li>Locais de configuração: <code>.github/hooks/</code>, frontmatter, <code>.claude/settings.json</code></li>
+      <li>Regras de precedência e comportamento com múltiplos hooks (most restrictive wins)</li>
+      <li>Formatos de entrada/saída JSON para cada tipo de evento</li>
+    </ul>
+  </div>
+
+  <!-- markdown-to-document -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📝</span>
+      <h3>markdown-to-document</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Gera documentos formatados a partir de Markdown ou conteúdo estruturado. Suporta PowerPoint,
+      Word, Excel, MS Project (MSPDI) e PDF. Workflow baseado em templates para output profissional,
+      com análise automática de exemplos e perfis de estilo.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Criar apresentações PowerPoint</li>
+      <li>Gerar documentos Word</li>
+      <li>Gerar planilhas Excel</li>
+      <li>Criar arquivos MS Project</li>
+      <li>Gerar PDFs a partir de Markdown</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Converter documentos PARA Markdown (usar doc-to-markdown)</li>
+      <li>File I/O geral</li>
+      <li>Web scraping</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>11 scripts standalone: <code>generate_pptx.py</code>, <code>generate_docx.py</code>, <code>generate_xlsx.py</code>, <code>generate_project.py</code>, <code>generate_pdf.py</code>, e mais</li>
+      <li>Workflow de templates: análise de exemplo → extração de perfil → geração com padrões</li>
+      <li>Script <code>analyze_template.py</code> extrai perfis de estilo de documentos existentes</li>
+      <li>Scripts de auditoria: <code>audit_overflow.py</code>, <code>check_placeholders.py</code></li>
+      <li>MS Project gera MSPDI XML (formato de intercâmbio oficial, abre nativamente no Project)</li>
+    </ul>
+  </div>
+
+  <!-- safety-check -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🛡️</span>
+      <h3>safety-check</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Análise de risco com peso variável antes de agir. Aceita três níveis de profundidade —
+      Light (scan rápido), Standard (análise dimensional) e Deep (investigação completa com evidências).
+      Pode ser invocada múltiplas vezes no mesmo fluxo com peso crescente.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Avaliar riscos de segurança</li>
+      <li>Integridade de dados</li>
+      <li>Compatibilidade retroativa</li>
+      <li>Impacto operacional</li>
+      <li>Avaliar reversibilidade</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Penetration testing</li>
+      <li>Auditorias de compliance</li>
+      <li>Ferramentas de análise estática</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Modelo de peso: Light (Risk Pulse — 1 frase por dimensão), Standard (Risk Radar — análise dimensional), Deep (investigação completa com evidências)</li>
+      <li>5 dimensões de risco: Security, Data Integrity, Backward Compatibility, Operational, Reversibility (multiplicador)</li>
+      <li>Reversibilidade como multiplicador: amplifica peso de outras dimensões quando ação é irreversível</li>
+      <li>Output estruturado: Risk Pulse (Light) ou Risk Radar com tabela de dimensões (Standard/Deep)</li>
+      <li>Invocação incremental: pode começar em Light e escalar para Deep se sinais de risco emergem</li>
+    </ul>
+  </div>
+
+  <!-- skill-benchmark -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📊</span>
+      <h3>skill-benchmark</h3>
+      <span class="category-badge category-tool">Tool Skill</span>
+    </div>
+    <p class="card-desc">
+      Framework de benchmark para medir a efetividade de skills via testes A/B controlados.
+      Executa tarefas idênticas com e sem a skill injetada, pontua ambos os outputs contra uma
+      rubrica e produz relatório comparativo em HTML.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Validar qualidade de uma skill</li>
+      <li>Comparar antes/depois de mudanças</li>
+      <li>Provar ROI de skills com dados</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Testes gerais</li>
+      <li>Unit tests</li>
+      <li>CI pipelines</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Pipeline de 5 etapas: Read → Provision → Execute → Evaluate → Report</li>
+      <li>Scripts: <code>provision.py</code> (geração de tarefas), avaliação e relatório HTML</li>
+      <li>4 dimensões de avaliação: correctness, completeness, pattern_adherence, e mais</li>
+      <li>Design de benchmarks com tarefas realistas e rubricas específicas</li>
+      <li>Diretório de output com timestamp para unicidade</li>
+    </ul>
+  </div>
+
+  <!-- skill-creator -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🛠️</span>
+      <h3>skill-creator</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Guia completo para criar skills bem-estruturadas do Copilot do zero. Cobre toda a anatomia
+      de um <code>SKILL.md</code> — frontmatter YAML, corpo com instruções, estrutura de diretório,
+      referências on-demand e protocolo de feedback.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Scaffolding de novos SKILL.md</li>
+      <li>Escrever instruções eficazes para agentes</li>
+      <li>Configurar campos do frontmatter</li>
+      <li>Estrutura de diretório (references, FEEDBACK.md)</li>
+      <li>Otimizar descrição para discoverability</li>
+      <li>Aplicar progressive disclosure</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Gerenciar/sincronizar skills existentes (usar skill-manager-guide)</li>
+      <li>Coding geral</li>
+      <li>Desenvolvimento de extensões VS Code</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Referência completa de campos do frontmatter (name, description, argument-hint, user-invocable, etc.)</li>
+      <li>Template de estrutura de corpo: conceitos → workflows → referências → FAQ</li>
+      <li>Convenção de nomes: kebab-case, lowercase, deve corresponder ao campo <code>name</code></li>
+      <li>Estrutura de diretório: SKILL.md, FEEDBACK.md, .skillconfig.json, references/</li>
+      <li>Princípio de progressive disclosure: resumo up-front, detalhes em referências</li>
+    </ul>
+  </div>
+
+  <!-- skill-manager-guide -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📋</span>
+      <h3>skill-manager-guide</h3>
+      <span class="category-badge category-guide">Guide Skill</span>
+    </div>
+    <p class="card-desc">
+      Guia do usuário para a extensão Skill Manager for Copilot. Ensina como a extensão funciona —
+      adicionar/remover repositórios, sincronizar skills e agentes, enviar feedback e resolver
+      problemas de sincronização.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Adicionar/remover repos de skills</li>
+      <li>Sincronizar skills</li>
+      <li>Enviar feedback (push)</li>
+      <li>Configurar intervalos de sync</li>
+      <li>Troubleshooting de problemas de sync</li>
+      <li>Entender o formato de skills</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Criar novas skills (usar skill-creator)</li>
+      <li>Criar agentes (usar agent-creator)</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Referência de todos os comandos da extensão (Pull, Push Feedback, Status, Enable/Disable, etc.)</li>
+      <li>Configuração via settings: repos, syncIntervalMinutes, conflictStrategy, localEditStrategy</li>
+      <li>Fluxo de sincronização: clone → copy → manifest → auto-update / conflict resolution</li>
+      <li>Estrutura de skills no repositório (SKILL.md, FEEDBACK.md, references/)</li>
+      <li>Convenção de versionamento: Patch / Minor / Major</li>
+    </ul>
+  </div>
+
+  <!-- task-intent -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🎯</span>
+      <h3>task-intent</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Disciplina de compreensão antes de implementação. Força o agente a responder POR QUÊ, PARA QUÊ
+      e PARA QUEM antes de escrever código — quebrando o ciclo de requisições superficiais seguidas
+      de entregas sem questionamento que geram dívida técnica.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Validar intenção antes de implementar</li>
+      <li>Planejar antes de codificar</li>
+      <li>Raciocinar antes de agir</li>
+      <li>Desafiar premissas</li>
+      <li>Prevenir implementação prematura</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Análise profunda multi-tecnologia (usar contextação)</li>
+      <li>Persistir decisões entre tarefas (usar task-map)</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Triângulo de Condição de Sucesso: POR QUÊ? / PARA QUÊ? / PARA QUEM?</li>
+      <li>Verificação antes de declarar: fetch docs, search codebase, testar premissas</li>
+      <li>Planejar antes do código: decompor → sequenciar → apresentar plano</li>
+      <li>Raciocinar nas decisões: declarar o porquê de cada escolha significativa</li>
+      <li>Perguntar cirurgicamente: uma pergunta direcionada vale mais que cinco vagas</li>
+    </ul>
+  </div>
+
+  <!-- task-map -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🗺️</span>
+      <h3>task-map</h3>
+      <span class="category-badge category-workflow">Workflow Skill</span>
+    </div>
+    <p class="card-desc">
+      Externaliza análise para que sobreviva à compressão de contexto e encadeie entre tarefas.
+      Produz um Task Analysis Map leve — um arquivo Markdown que preserva intenção, decisões-chave
+      e contexto de cadeia para que a próxima tarefa não comece do zero.
+    </p>
+    <div class="section-label">Quando usar</div>
+    <ul class="use-list">
+      <li>Documentar decisões que afetam trabalho futuro</li>
+      <li>Criar continuidade entre tarefas</li>
+      <li>Prevenir perda de contexto</li>
+      <li>Conectar tarefas em série</li>
+      <li>Externalizar raciocínio</li>
+    </ul>
+    <div class="section-label">Quando NÃO usar</div>
+    <ul class="use-list dont">
+      <li>Validação rápida de intent (usar task-intent)</li>
+      <li>Análise estruturada profunda (usar contextação)</li>
+    </ul>
+    <div class="section-label">Capacidades principais</div>
+    <ul class="features">
+      <li>Template de mapa: Intent → Key Decisions → Done When → For Next</li>
+      <li>Decisões marcadas como ✅ (verificado) ou ⚠️ (premissa) para rastreabilidade</li>
+      <li>Efeito cadeia: seção "For Next" alimenta o contexto inicial da próxima tarefa</li>
+      <li>Escalamento por impacto: Moderado (intent + decisions) / Alto (mapa completo)</li>
+      <li>Regras de quando NÃO produzir mapa (renames, typos, formatting)</li>
+    </ul>
+  </div>
+
+  </div><!-- .cards-container -->
+
+</body>
+</html>

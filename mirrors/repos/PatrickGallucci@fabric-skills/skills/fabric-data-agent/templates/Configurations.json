@@ -1,0 +1,34 @@
+{
+  "configuration": {
+    "goals": "Provide data-driven answers to business questions by querying operational data sources.",
+    "instructions": "1. Analyze the user's natural language question.\n2. Identify the appropriate data source based on the question context.\n3. Generate a valid query (SQL, DAX, or KQL) to retrieve the answer.\n4. Execute the query using the caller's identity and permissions.\n5. Return a clear, formatted response with the results.",
+    "dataSources": {
+      "primaryKusto": {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "type": "KustoDatabase",
+        "workspaceId": "00000000-0000-0000-0000-000000000000"
+      }
+    },
+    "actions": {
+      "alertFlow": {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "kind": "PowerAutomateAction",
+        "displayName": "Send Alert Notification",
+        "description": "Triggers a Power Automate flow to send alert notifications when thresholds are exceeded.",
+        "parameters": [
+          {
+            "name": "Severity",
+            "description": "Alert severity level (Low, Medium, High, Critical)"
+          },
+          {
+            "name": "Message",
+            "description": "Alert message body describing the condition"
+          }
+        ]
+      }
+    },
+    "recipient": "team@contoso.com"
+  },
+  "playbook": {},
+  "shouldRun": true
+}

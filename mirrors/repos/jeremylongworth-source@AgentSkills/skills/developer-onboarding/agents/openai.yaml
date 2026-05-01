@@ -1,0 +1,4 @@
+interface:
+  display_name: "Developer Onboarding"
+  short_description: "Write developer setup docs."
+  default_prompt: "Use this skill to create developer onboarding docs with prerequisites, setup steps, verification checks, repo orientation, common workflows, contribution paths, and troubleshooting notes."

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `ThinkInAIXYZ/deepchat` — 26 default patterns, 1 followed patterns, 24 file(s) materialized.
+Mirror of `ThinkInAIXYZ/deepchat` — 26 default patterns, 1 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ThinkInAIXYZ/deepchat` — 26 default patterns, 1 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 24 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,25 +64,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/deepchat-release/SKILL.md`](.agents/skills/deepchat-release/SKILL.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`resources/skills/algorithmic-art/SKILL.md`](resources/skills/algorithmic-art/SKILL.md) |
-| 7 | ✓ | [`resources/skills/code-review/SKILL.md`](resources/skills/code-review/SKILL.md) |
-| 8 | ✓ | [`resources/skills/deepchat-settings/SKILL.md`](resources/skills/deepchat-settings/SKILL.md) |
-| 9 | ✓ | [`resources/skills/doc-coauthoring/SKILL.md`](resources/skills/doc-coauthoring/SKILL.md) |
-| 10 | ✓ | [`resources/skills/docx/docx-js.md`](resources/skills/docx/docx-js.md) |
-| 11 | ✓ | [`resources/skills/docx/ooxml.md`](resources/skills/docx/ooxml.md) |
-| 12 | ✓ | [`resources/skills/docx/SKILL.md`](resources/skills/docx/SKILL.md) |
-| 13 | ✓ | [`resources/skills/frontend-design/SKILL.md`](resources/skills/frontend-design/SKILL.md) |
-| 14 | ✓ | [`resources/skills/git-commit/SKILL.md`](resources/skills/git-commit/SKILL.md) |
-| 15 | ✓ | [`resources/skills/infographic-syntax-creator/SKILL.md`](resources/skills/infographic-syntax-creator/SKILL.md) |
-| 16 | ✓ | [`resources/skills/mcp-builder/SKILL.md`](resources/skills/mcp-builder/SKILL.md) |
-| 17 | ✓ | [`resources/skills/pdf/SKILL.md`](resources/skills/pdf/SKILL.md) |
-| 18 | ✓ | [`resources/skills/pptx/html2pptx.md`](resources/skills/pptx/html2pptx.md) |
-| 19 | ✓ | [`resources/skills/pptx/ooxml.md`](resources/skills/pptx/ooxml.md) |
-| 20 | ✓ | [`resources/skills/pptx/SKILL.md`](resources/skills/pptx/SKILL.md) |
-| 21 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
-| 22 | ✓ | [`resources/skills/web-artifacts-builder/SKILL.md`](resources/skills/web-artifacts-builder/SKILL.md) |
-| 23 | ✓ | [`resources/skills/xlsx/SKILL.md`](resources/skills/xlsx/SKILL.md) |
-| 24 | → | [`docs/spec-driven-dev.md`](docs/spec-driven-dev.md) |
+| 6 | ✓ | [`plugins/cua/skills/cua-driver/SKILL.md`](plugins/cua/skills/cua-driver/SKILL.md) |
+| 7 | ✓ | [`plugins/cua/vendor/cua-driver/source/Skills/cua-driver/SKILL.md`](plugins/cua/vendor/cua-driver/source/Skills/cua-driver/SKILL.md) |
+| 8 | ✓ | [`resources/skills/algorithmic-art/SKILL.md`](resources/skills/algorithmic-art/SKILL.md) |
+| 9 | ✓ | [`resources/skills/code-review/SKILL.md`](resources/skills/code-review/SKILL.md) |
+| 10 | ✓ | [`resources/skills/deepchat-settings/SKILL.md`](resources/skills/deepchat-settings/SKILL.md) |
+| 11 | ✓ | [`resources/skills/doc-coauthoring/SKILL.md`](resources/skills/doc-coauthoring/SKILL.md) |
+| 12 | ✓ | [`resources/skills/docx/docx-js.md`](resources/skills/docx/docx-js.md) |
+| 13 | ✓ | [`resources/skills/docx/ooxml.md`](resources/skills/docx/ooxml.md) |
+| 14 | ✓ | [`resources/skills/docx/SKILL.md`](resources/skills/docx/SKILL.md) |
+| 15 | ✓ | [`resources/skills/frontend-design/SKILL.md`](resources/skills/frontend-design/SKILL.md) |
+| 16 | ✓ | [`resources/skills/git-commit/SKILL.md`](resources/skills/git-commit/SKILL.md) |
+| 17 | ✓ | [`resources/skills/infographic-syntax-creator/SKILL.md`](resources/skills/infographic-syntax-creator/SKILL.md) |
+| 18 | ✓ | [`resources/skills/mcp-builder/SKILL.md`](resources/skills/mcp-builder/SKILL.md) |
+| 19 | ✓ | [`resources/skills/pdf/SKILL.md`](resources/skills/pdf/SKILL.md) |
+| 20 | ✓ | [`resources/skills/pptx/html2pptx.md`](resources/skills/pptx/html2pptx.md) |
+| 21 | ✓ | [`resources/skills/pptx/ooxml.md`](resources/skills/pptx/ooxml.md) |
+| 22 | ✓ | [`resources/skills/pptx/SKILL.md`](resources/skills/pptx/SKILL.md) |
+| 23 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
+| 24 | ✓ | [`resources/skills/web-artifacts-builder/SKILL.md`](resources/skills/web-artifacts-builder/SKILL.md) |
+| 25 | ✓ | [`resources/skills/xlsx/SKILL.md`](resources/skills/xlsx/SKILL.md) |
+| 26 | → | [`docs/spec-driven-dev.md`](docs/spec-driven-dev.md) |
 
 ---
 

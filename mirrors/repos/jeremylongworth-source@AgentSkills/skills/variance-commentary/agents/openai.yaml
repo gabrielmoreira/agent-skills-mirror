@@ -1,0 +1,4 @@
+interface:
+  display_name: "Variance Commentary"
+  short_description: "Explain actuals versus plan variance."
+  default_prompt: "Use this skill to write or review variance commentary for actuals versus target, plan, forecast, prior period, cohort, budget, revenue, KPI, or finance reporting changes."

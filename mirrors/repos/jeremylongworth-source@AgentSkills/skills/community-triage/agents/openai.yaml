@@ -1,0 +1,4 @@
+interface:
+  display_name: "Community Triage"
+  short_description: "Classify creator community messages."
+  default_prompt: "Use this skill to triage creator comments, DMs, replies, member posts, and fan feedback into reviewed next actions, risks, owners, and escalation paths."

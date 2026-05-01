@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/qms-audit-expert/../../../ra-qm-team/qms-audit-expert/SKILL.md

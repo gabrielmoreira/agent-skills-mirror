@@ -1,0 +1,3 @@
+# Include all common MCP servers.
+servers = ["context7", "openaiDeveloperDocs", "playwright", "chrome-devtools"]
+

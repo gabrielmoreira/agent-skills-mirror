@@ -1,0 +1,7 @@
+interface:
+  display_name: "STRM Mapping"
+  short_description: "NIST IR 8477 framework crosswalk, gap analysis, and control mapping"
+  default_prompt: "Map two cybersecurity frameworks using the NIST IR 8477 STRM methodology and produce a 12-column CSV output"
+
+policy:
+  allow_implicit_invocation: true

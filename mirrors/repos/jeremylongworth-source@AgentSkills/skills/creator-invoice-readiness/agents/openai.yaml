@@ -1,0 +1,4 @@
+interface:
+  display_name: "Creator Invoice Readiness"
+  short_description: "Check creator invoice readiness."
+  default_prompt: "Use this skill to prepare creator invoice readiness checklists, deliverable proof, missing fields, approval needs, and accounting handoff notes."

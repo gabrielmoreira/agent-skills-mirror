@@ -6,20 +6,31 @@ description: "Use this skill any time a .pptx file is involved -- as input, outp
 
 # OfficeCLI PPTX Skill
 
-## BEFORE YOU START
+## BEFORE YOU START (CRITICAL)
 
-**Mental model.** A `.pptx` is a ZIP of XML parts (`ppt/slides/*.xml`, `slideLayouts/`, `slideMasters/`, `theme*.xml`, `charts/`, `media/`, `notesSlides/`). `officecli` gives you a semantic-path API (`/slide[N]/shape[M]`, `/slide[N]/shape[@name=X]`) over it. Raw XML only via `raw-set`.
+**If `officecli` is not installed:**
 
-**Slides are consumed at ~3 seconds per slide in a live room.** Scanned, not read. Every design decision below serves that constraint.
+`macOS / Linux`
 
-**Install check.** If `officecli --version` fails, install then open a new terminal (should report `1.0.63` or newer):
+```bash
+if ! command -v officecli >/dev/null 2>&1; then
+    curl -fsSL https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.sh | bash
+fi
+```
 
-- macOS / Linux: `curl -fsSL https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.sh | bash`
-- Windows (PowerShell): `irm https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.ps1 | iex`
+`Windows (PowerShell)`
 
-**Shell quoting (zsh / bash).** ALWAYS quote element paths (`"/slide[1]/..."`). Single-quote values containing `$`. Never hand-write `\$` / `\t` / `\n` — CLI does not interpret them. Full rules in "Shell escape — three layers" below.
+```powershell
+if (-not (Get-Command officecli -ErrorAction SilentlyContinue)) {
+    irm https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.ps1 | iex
+}
+```
 
-**Incremental execution.** One command → check exit code → continue. A 50-command script that fails at command 3 cascades silently. After any structural op (new slide, chart, animation, connector) run `get` before stacking more.
+Verify: `officecli --version`
+
+If `officecli` is still not found after first install, open a new terminal and run the verify command again.
+
+If the install command above fails (e.g. blocked by security policy, no network access, or insufficient permissions), install manually — download the binary for your platform from https://github.com/iOfficeAI/OfficeCLI/releases — then re-run the verify command.
 
 ## ⚠️ Help-First Rule
 
@@ -34,6 +45,18 @@ officecli help pptx <element> --json        # Machine-readable schema
 
 Help is pinned to the installed CLI version (v1.0.63). When skill and help disagree, **help is authoritative**. Triggers to run help immediately: `UNSUPPORTED props:` warning, unknown animation preset, `connector.shape=` enum (drifts — C-P-5), prop-vs-alias (`lineWidth` vs `line.width`, `color` vs `font.color`).
 
+## Mental Model & Inheritance
+
+**Mental model.** A `.pptx` is a ZIP of XML parts (`ppt/slides/*.xml`, `slideLayouts/`, `slideMasters/`, `theme*.xml`, `charts/`, `media/`, `notesSlides/`). `officecli` gives you a semantic-path API (`/slide[N]/shape[M]`, `/slide[N]/shape[@name=X]`) over it. Raw XML only via `raw-set`.
+
+**Slides are consumed at ~3 seconds per slide in a live room.** Scanned, not read. Every design decision below serves that constraint.
+
+## Shell & Execution Discipline
+
+**Shell quoting (zsh / bash).** ALWAYS quote element paths (`"/slide[1]/..."`). Single-quote values containing `$`. Never hand-write `\$` / `\t` / `\n` — CLI does not interpret them. Full rules in "Shell escape — three layers" below.
+
+**Incremental execution.** One command → check exit code → continue. A 50-command script that fails at command 3 cascades silently. After any structural op (new slide, chart, animation, connector) run `get` before stacking more.
+
 ## Requirements for Outputs
 
 These are the deliverable standards every deck MUST meet. Violating any one = not done, regardless of content quality.
@@ -44,12 +67,14 @@ These are the deliverable standards every deck MUST meet. Violating any one = no
 
 **Explicit type hierarchy — do NOT rely on theme defaults.** Theme defaults drift between masters. Set sizes explicitly on every text shape. **This is the single source of truth — Visual Floor, Design Principles, and Pitfalls all cross-link back here.**
 
-| Element              | Minimum         | Typical |
-| -------------------- | --------------- | ------- |
-| Slide title          | **≥ 36pt** bold | 36–44pt |
-| Section / subtitle   | ≥ 20pt          | 20–24pt |
-| Body text            | **≥ 18pt**      | 18–22pt |
-| Caption / axis label | ≥ 10pt muted    | 10–12pt |
+| Element              | Minimum         | Typical | Min shape height |
+| -------------------- | --------------- | ------- | ---------------- |
+| Slide title          | **≥ 36pt** bold | 36–44pt | ≥ 2cm            |
+| Section / subtitle   | ≥ 20pt          | 20–24pt | ≥ 1.2cm          |
+| Body text            | **≥ 18pt**      | 18–22pt | ≥ 1cm            |
+| Caption / axis label | ≥ 10pt muted    | 10–12pt | ≥ 0.6cm          |
+
+Rule of thumb: **min shape height ≈ font_pt × 0.05cm**. An 18pt sublabel in a 0.8cm-tall box will overflow — `view annotated` catches this.
 
 Title must be **≥ 2× body size** (36pt over 20pt works; 28pt over 20pt looks timid). Four legit exceptions to body ≥ 18pt: chart axis labels, legends, footer / page number, and ≤ 5-word KPI sublabels (e.g. "Active users"). Descriptive sentences must be ≥ 18pt. Left-align body; center only titles and hero numbers.
 
@@ -71,7 +96,7 @@ Before declaring done, the per-slide render (see QA) MUST satisfy:
 - **No text overflow inside shapes.** A 72pt KPI in a 4cm-tall box clips. Shrink the number, enlarge the box, or shorten the text — never trim content to fit.
 - **Cover slide is content-rich.** Title + subtitle + presenter/client block + date + a brand band or key-takeaway strap. A cover with 80% whitespace reads as a stub.
 - **Contrast floor.** On dark backgrounds (brightness < 30%), body text MUST be `FFFFFF` or > 80%-bright. Mid-gray on dark navy is invisible on projection.
-- **Animation restraint.** ≤ 1 animation per slide, ≤ 600ms, entrance/emphasis only (never `bounce`, `swivel`, `fly-from-edge`). Animation is a runtime feature — `view html --browser` shows static geometry; the animation itself runs only when the `.pptx` is opened in a live presentation viewer.
+- **Animation restraint.** ≤ 1 animation per slide, ≤ 600ms, entrance/emphasis only (never `bounce`, `swivel`, `fly-from-edge`). Animation is a runtime feature — `view html` shows static geometry; the animation itself runs only when the `.pptx` is opened in a live presentation viewer.
 - **No `\$`, `\t`, `\n` literals in slide text.** If `view text` shows these, a shell-escape leaked — delete and re-enter via heredoc batch.
 
 If any fails, STOP and fix before declaring done.
@@ -146,10 +171,10 @@ Each animation is a cognitive interrupt. Limits:
 
 1. **Open/close mode.** Always `officecli open <file>` at start + `officecli close <file>` at end. Resident is the default, not an optimization. Use `batch` in ≤ 12-op chunks for repetitive shape grids.
 2. **Orient.** New deck: `officecli create deck.pptx`. Existing: `officecli view deck.pptx outline` first. Never edit blind.
-3. **Build in display order — HARD RULE.** `--index` on slide add is frequently ignored. Add slides in audience-view order: cover → agenda → section-1 divider → section-1 content → section-2 divider → … → closing. Out-of-order insertion requires `officecli move deck.pptx /slide[N] --index M` + re-verify with `get --depth 0`. **Before final delivery, confirm slide count + narrative arc match your build plan** — Evaluators REJECTed R1 decks where the cover rendered as slide 11 of 14. Gate 4 catches this.
+3. **Build in display order — HARD RULE.** `--index` on slide add is frequently ignored. Add slides in audience-view order: cover → agenda → section-1 divider → section-1 content → section-2 divider → … → closing. Out-of-order insertion requires `officecli move deck.pptx /slide[N] --index M` + re-verify with `get --depth 0`. **Before final delivery, confirm slide count + narrative arc match your build plan.** Gate 4 catches cases where the cover ends up as slide 11 of 14 instead of slide 1.
 4. **Incremental per slide.** Create slide + background, then title, then supporting shapes / charts / connectors. Always `layout=blank` for custom designs. After each structural op, `get /slide[N] --depth 1` to confirm shape IDs.
 5. **Format to spec.** Explicit title ≥ 36pt, body ≥ 18pt, colors from one palette, connectors via `@id=`. Formatting is deliverable, not polish.
-6. **Close + verify in target viewer.** `officecli close` writes the ZIP. `view html --browser` is OK for structural QA; **always open in the target presentation viewer before shipping** — chart colors, animations, font substitution, zoom are runtime features that only the live viewer renders faithfully.
+6. **Close + verify in target viewer.** `officecli close` writes the ZIP. `view html` — Read the returned HTML path — is OK for structural QA; **always open in the target presentation viewer before shipping** — chart colors, animations, font substitution, zoom are runtime features that only the live viewer renders faithfully.
 7. **QA — assume there are problems.** Fix-and-verify until a cycle finds zero new issues.
 
 ## Quick Start
@@ -225,12 +250,12 @@ officecli query deck.pptx 'animation'                      # every animation in 
 **Visual preview (LEAD).**
 
 ```bash
-officecli view deck.pptx html --browser       # per-slide PNG in one browser tab — best structural ground truth
+officecli view deck.pptx html                # prints an HTML preview path; Read it for per-slide visual audit (best structural ground truth)
 officecli view deck.pptx svg --start 3 --end 3   # single slide SVG (charts + gradients do NOT render in SVG)
-officecli watch deck.pptx                     # keeps the preview live as you iterate (optional)
+officecli watch deck.pptx                     # live preview for the human user — they open it at their discretion
 ```
 
-`view html --browser` is the best structural check. Not final ground truth for runtime-only features (animations, zoom) — see Renderer Honesty.
+`view html` is the best structural check. Not final ground truth for runtime-only features (animations, zoom) — see Renderer Honesty.
 
 ## Creating & Editing
 
@@ -368,7 +393,14 @@ officecli set deck.pptx "/slide[7]/shape[@name=DocsBtn]" --prop link=https://exa
 - **Tables** — `--type table --prop rows=N --prop cols=M`. Row-level `set` supports `height`, `header`, `c1/c2/c3`. Cell formatting lives on the cell paragraph / run. Populate rows BEFORE setting table-level font (font cascade gets reset by row ops).
 - **Placeholders** — `"/slide[N]/placeholder[title]"` / `placeholder[body]`. Available only when the slide uses a layout with placeholders (not `layout=blank`).
 - **Groups** (LEAD) — address children via `"/slide[N]/group[@name=G]/shape[1]"`. Survives reordering better than positional indexes. `officecli help pptx group`.
-- **Zoom slide** (LEAD) — `--type zoom --prop targets="3,7,15"`. Section-navigation hub. Zoom is a runtime feature — `view html --browser` shows the static geometry; the zoom interaction runs only in a live presentation viewer. `officecli help pptx zoom`.
+- **Zoom slide** (LEAD) — `--type zoom --prop targets="3,7,15"`. Section-navigation hub. Zoom is a runtime feature — `view html` shows the static geometry; the zoom interaction runs only in a live presentation viewer. `officecli help pptx zoom`.
+- **Slide comments** — reviewer annotations anchored at `/slide[N]/comment[M]`. Full lifecycle (`add / set / get / query / remove`). Props: `text`, `author`, `initials` (auto-derived), `date` (ISO 8601, defaults to UtcNow), `x` / `y` (EMU anchor).
+  ```bash
+  officecli add "$FILE" "/slide[2]" --type comment --prop author="Alice" --prop text="Tighten this bullet" --prop x=20cm --prop y=3cm
+  officecli query "$FILE" 'comment' --json | jq '.data.results | length'   # count all review comments
+  officecli remove "$FILE" "/slide[2]/comment[1]"                           # resolve after addressing
+  ```
+  → `officecli help pptx comment`.
 
 ### Raw-set escape hatch (L1 / L2 / L3)
 
@@ -453,7 +485,8 @@ Grid math for 4 boxes across a 33.87cm slide with 1.5cm margins: `gap = (33.87 �
 
 ```bash
 # Use explicit slide index — [last()] is rejected in some resident versions (see Pitfalls).
-N_SLIDE=$(officecli get "$FILE" --depth 0 | grep -c '"path": "/slide\[')
+# COUNT slides via query (works on closed AND resident-open files; get --depth 0 default output is not JSON).
+N_SLIDE=$(officecli query "$FILE" 'slide' --json | jq '.data.results | length')
 officecli add "$FILE" / --type slide --prop layout=blank --prop background=FFFFFF
 SLIDE=$((N_SLIDE + 1))
 
@@ -615,7 +648,7 @@ for pair in "Decide YesBox" "Decide NoBox" "YesBox Done" "NoBox Done"; do
 done
 ```
 
-Color convention: red path = stop/escalate, blue path = standard-action, green terminal = safe end-state. **Every connector carries `--prop tailEnd=triangle`** — without arrowheads, trainees can read a decision tree backwards (Evaluator-flagged life-safety defect in R1). For diamonds, the `preset=rightArrow` overlay does NOT substitute — edges diverge left and right, not horizontally.
+Color convention: red path = stop/escalate, blue path = standard-action, green terminal = safe end-state. **Every connector carries `--prop tailEnd=triangle`** — without arrowheads, trainees can read a decision tree backwards (a real life-safety risk in training / compliance decks). For diamonds, the `preset=rightArrow` overlay does NOT substitute — edges diverge left and right, not horizontally.
 
 ## QA (Required)
 
@@ -624,7 +657,7 @@ Color convention: red path = stop/escalate, blue path = standard-action, green t
 ### Minimum cycle before "done"
 
 1. `officecli view deck.pptx issues` + `view annotated` — empty slides, overflow hints, size violations (< 36pt title, < 18pt body). `"Slide has no title"` on `layout=blank` is expected, not a defect.
-2. `officecli view deck.pptx html --browser` — per-slide PNG preview. Walk every slide for alignment, overflow, placeholder leaks, one clear focal point.
+2. `officecli view deck.pptx html` — Read the returned HTML path for a per-slide visual audit. Walk every slide for alignment, overflow, placeholder leaks, one clear focal point.
 3. Query for known defect classes:
    ```bash
    officecli query deck.pptx 'shape:contains("lorem")'
@@ -633,12 +666,12 @@ Color convention: red path = stop/escalate, blue path = standard-action, green t
    officecli query deck.pptx 'picture:no-alt'
    ```
 4. `officecli close deck.pptx && officecli validate deck.pptx` — schema check. NEVER run validate against a resident-open file (spurious errors).
-5. **Open the deck in the target presentation viewer before shipping.** `view html --browser` catches overflow and placeholders; the target viewer is ground truth for chart colors, fonts, zoom, and animations (these are runtime features).
+5. **Open the deck in the target presentation viewer before shipping.** `view html` (Read the returned HTML path) catches overflow and placeholders; the target viewer is ground truth for chart colors, fonts, zoom, and animations (these are runtime features). For human preview, run `officecli watch deck.pptx` — the user opens the live preview at their own discretion — or have them open the `.pptx` directly in PowerPoint / Keynote / WPS.
 6. If anything failed, fix, then **rerun the full cycle**. One fix commonly creates another problem.
 
 ### Delivery Gate (any failure = REJECT, do NOT deliver)
 
-Five checks. Gates 1–3 are token-grep defenses; Gate 4 catches build-order bugs; Gate 5 is the only visual-assembly check. **None of Gates 1–3 can see a rendered slide** — that is what R1 Evaluators unanimously REJECTed on. Refuse to declare done until every gate prints its OK message.
+Five checks. Gates 1–3 are token-grep defenses; Gate 4 catches build-order bugs; Gate 5 is the only visual-assembly check. **None of Gates 1–3 can see a rendered slide.** Refuse to declare done until every gate prints its OK message.
 
 ```bash
 FILE="deck.pptx"
@@ -662,7 +695,9 @@ officecli raw "$FILE" slide 2>/dev/null | grep -E '<a:rPr[^>]*>.*<a:hlinkClick' 
   { echo "REJECT Gate 3: hyperlink rPr (C-P-1) — clean with raw-set remove //a:rPr/a:hlinkClick"; exit 1; } || echo "Gate 3 OK"
 
 # Gate 4 — slide-order sanity. Must match your build plan.
-SLIDE_COUNT=$(officecli get "$FILE" --depth 0 | grep -c '"path": "/slide\[')
+# COUNT via query (works closed or open; plain `get --depth 0` default output is NOT JSON and grep returns 0).
+SLIDE_COUNT=$(officecli query "$FILE" 'slide' --json | jq '.data.results | length')
+if [ "$SLIDE_COUNT" -lt 1 ]; then echo "REJECT Gate 4: zero slides"; exit 1; fi
 echo "Gate 4: total slides = $SLIDE_COUNT"
 # Dump titles in order to compare to your narrative outline:
 officecli query "$FILE" 'shape[@name=Title]' --format 'path: %p text: %t' 2>/dev/null || \
@@ -678,33 +713,25 @@ DARK_HIT=$(officecli query "$FILE" 'shape[fill=1E2761],shape[fill=0A1628],shape[
 echo "Delivery Gate 1–5a PASS — proceed to Gate 5b (fresh-eyes visual audit)"
 ```
 
-Each grep corresponds to an R1 failure: `$...$` = shell-escape leaks, `{{...}}` = unmigrated tokens, `()` / `[]` = chart-title unit placeholders, `\$`/`\t`/`\n` = shell-escape literals, Gate 3 = hyperlink rPr on styled buttons, Gate 4 = scrambled slide order, Gate 5a = dark-on-dark contrast.
+Each grep catches a real failure class: `$...$` = shell-escape leaks, `{{...}}` = unmigrated tokens, `()` / `[]` = chart-title unit placeholders, `\$`/`\t`/`\n` = shell-escape literals, Gate 3 = hyperlink rPr on styled buttons, Gate 4 = scrambled slide order, Gate 5a = dark-on-dark contrast.
 
-### Gate 5b — Fresh-eyes visual audit (MANDATORY, not optional)
+### Gate 5b — Visual audit via HTML preview (MANDATORY, not optional)
 
-You are reading the same deck you wrote. R1 showed that all 3 Testers passed Gates 1–3 AND YET all 3 decks were REJECTed by Evaluators for slide-order + title overlap + dark-on-dark. **Gates 1–4 cannot see rendered slides.** This step is the only visual-assembly check. Do not skip.
+You are reading the same deck you wrote. **Gates 1–4 cannot see rendered slides.** This step is the only visual-assembly check. Do not skip.
 
-Open the per-slide preview:
-
-```bash
-officecli view "$FILE" html --browser
-```
-
-Walk every slide and answer, for EACH:
+Run `officecli view "$FILE" html` and Read the returned HTML path. For every slide, answer:
 
 - **overlap**: do any text shapes overlap each other or a chart? (flag e.g. a title wrapping to 2 lines with its subtitle underneath the wrap)
 - **dark-on-dark**: is any text on a fill where fill brightness < 30% AND text brightness < 80%? (quiz options, phone numbers, labels on navy/red/green cards)
 - **divider overlap**: any giant decorative number (01/02/03 at 100pt+) colliding with the divider title text?
 - **order sanity**: does the slide sequence match the narrative outline (cover → agenda → dividers-before-their-sections → closing)?
-- **missing arrowheads**: do flowchart/decision-tree connectors show direction, or plain lines? (R1 Evaluator flagged 42+ connectors as plain lines.)
+- **missing arrowheads**: do flowchart/decision-tree connectors show direction, or plain lines?
 
 REJECT the delivery if ANY of the above is present; list every instance with its slide number. If none, report "Gate 5b PASS".
 
-For scripted/subagent audits, point the subagent at the browser preview URL or hand off the `.pptx` path and the checklist above — the same questions apply.
-
 ### Honest limit
 
-`validate` catches schema errors, not design errors. A deck can pass `validate` with 14pt body on every slide, five fonts, placeholder tokens in chart titles, animation on every slide, or gray text on navy. The QA cycle above — especially `view annotated`, `view html --browser`, and opening in the target presentation viewer — is how you catch what validation can't.
+`validate` catches schema errors, not design errors. A deck can pass `validate` with 14pt body on every slide, five fonts, placeholder tokens in chart titles, animation on every slide, or gray text on navy. The QA cycle above — especially `view annotated`, `view html` (Read the returned HTML), and opening in the target presentation viewer — is how you catch what validation can't.
 
 ## Known Issues & Pitfalls
 
@@ -720,11 +747,11 @@ When something looks broken, attribute it first: **[AGENT-ERROR]** (deck itself 
 | **C-P-4** | `remove /slide[N]/shape[@id=X]/animation[1]` rejected (deep-path accepted by `add` but not `remove`).                                              | Use `set --prop animation=none`, or overwrite with a new preset.                                                                                                                                         |
 | **C-P-5** | `shape=bentConnector2` / `curvedConnector2` rejected. Only 3 short + 3 specific storage names accepted.                                            | Use short form `straight \| elbow \| curve`, or storage `straightConnector1 \| bentConnector3 \| curvedConnector3 \| line`.                                                                              |
 | **C-P-6** | Connector `from=/to=` rejects `@name=` selectors (works everywhere else).                                                                          | Resolve `@id=` first via `query`. See Recipe (c).                                                                                                                                                        |
-| **C-P-7** | [RENDERER-BUG] Some viewers normalize chart series colors to theme defaults, ignoring `seriesN.color=`.                                            | Verify chart colors in the user's target presentation viewer. `view html --browser` respects colors as the officecli-layer ground truth.                                                                 |
+| **C-P-7** | [RENDERER-BUG] Some viewers normalize chart series colors to theme defaults, ignoring `seriesN.color=`.                                            | Verify chart colors in the user's target presentation viewer. `view html` respects colors as the officecli-layer ground truth.                                                                           |
 
 ### Renderer honesty
 
-`officecli view html --browser` = structural QA (overflow, placeholders, hierarchy). Some features are runtime-only or viewer-specific and only render faithfully in a live presentation viewer: chart series colors (C-P-7), font substitution, animation, zoom, shadow / glow / soft fill, slide-number fields. **Ground-truth layering:** `view html --browser` for officecli-layer structure, then open in the user's target presentation viewer for runtime / color fidelity.
+`officecli view html` = structural QA (overflow, placeholders, hierarchy) — Read the returned HTML path. Some features are runtime-only or viewer-specific and only render faithfully in a live presentation viewer: chart series colors (C-P-7), font substitution, animation, zoom, shadow / glow / soft fill, slide-number fields. **Ground-truth layering:** `view html` for officecli-layer structure, then open in the user's target presentation viewer for runtime / color fidelity.
 
 ### Schema-invalid on current CLI — disabled APIs + working forms
 
@@ -771,7 +798,7 @@ Quirks: keep arrays **≤ 12 ops** (larger = ~1-in-15 "Failed to send to residen
 
 ## Advanced capability index
 
-Single-verb where pptxgenjs / raw-XML would need hand-work: `help <element> --json`, CSS queries (`shape:contains / picture:no-alt / shape[fill=]`), `@name=` / `@id=` selectors, `view html --browser`, gradient + image backgrounds, zoom slides, animation CRUD, `@id=` connectors, hyperlink + tooltip, groups, resident + batch heredoc, `raw-set` L3, master/layout background override. When in doubt: `officecli help pptx <element> --json`.
+Single-verb where pptxgenjs / raw-XML would need hand-work: `help <element> --json`, CSS queries (`shape:contains / picture:no-alt / shape[fill=]`), `@name=` / `@id=` selectors, `view html`, gradient + image backgrounds, zoom slides, animation CRUD, `@id=` connectors, hyperlink + tooltip, groups, resident + batch heredoc, `raw-set` L3, master/layout background override. When in doubt: `officecli help pptx <element> --json`.
 
 ## Common Pitfalls
 
@@ -787,8 +814,8 @@ Sanity-check cheatsheet — what breaks on the first try. CLI-bug pitfalls (hype
 | `/shape[myname]` (bare name in brackets)             | Use `@name=` selector: `/shape[@name=myname]` or `/shape[@id=10007]`                                                                                                                                                                                                                                                                       |
 | Positional `/shape[3]` after z-order / remove        | Positions drift. Use `@name=` / `@id=` for any repeated reference                                                                                                                                                                                                                                                                          |
 | `[last]` without parens                              | Must be `[last()]`: `/slide[last()]/shape[1]`                                                                                                                                                                                                                                                                                              |
-| `/slide[last()]` in resident mode                    | Some resident versions reject it with "Shapes must be added to a slide: /slide[N]". Use explicit `/slide[N]` from `get --depth 0` for production builds — R1 Tester #2 blocker                                                                                                                                                             |
-| `[ ]` empty-bracket checkboxes                       | False-positives Gate 2's empty-bracket token check. Use `☐` (U+2610) / `☑` (U+2611) in checklist UI — R1 Tester #3 blocker                                                                                                                                                                                                                 |
+| `/slide[last()]` in resident mode                    | Some resident versions reject it with "Shapes must be added to a slide: /slide[N]". Use explicit `/slide[N]` from `get --depth 0` for production builds.                                                                                                                                                                                   |
+| `[ ]` empty-bracket checkboxes                       | False-positives Gate 2's empty-bracket token check. Use `☐` (U+2610) / `☑` (U+2611) in checklist UI.                                                                                                                                                                                                                                       |
 | Connector with no arrowhead                          | Plain `bentConnector3` renders without direction. Use `--prop tailEnd=triangle` on add or set (CLI-native; values: `triangle/arrow/stealth/diamond/oval/none`). For custom size, raw-set `<a:tailEnd w="med" len="med"/>` on `/connector[@id=ID]/spPr/ln`. `preset=rightArrow` overlay works for horizontal flows only. See Recipe (c)/(f) |
 | Paths 1-based vs `--index` 0-based                   | `/slide[1]` = first slide; `--index 0` = first position                                                                                                                                                                                                                                                                                    |
 | `$` in `--prop text=`                                | Single-quote: `--prop text='$15M'`. Double-quoted `"$15M"` gets shell-expanded to `M`                                                                                                                                                                                                                                                      |

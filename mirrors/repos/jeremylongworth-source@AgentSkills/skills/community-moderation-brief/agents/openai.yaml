@@ -1,0 +1,4 @@
+interface:
+  display_name: "Community Moderation Brief"
+  short_description: "Draft moderation review briefs."
+  default_prompt: "Use this skill to prepare review-only moderation and escalation briefs for creator communities, including rationale, missing context, response options, and approval owners."

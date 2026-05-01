@@ -1,0 +1,39 @@
+{
+  "skill_name": "common-protocol-enforcement",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just finished implementing the feature. Can you verify it's done?",
+      "expected_output": "Run Red-Team Verification: 1) Adversarial Audit for Standard Defaults, 2) Protocol Check for Pre-Write Audit Log, 3) Execution Bias Check.",
+      "assertions": [
+        { "type": "contains", "value": "Adversarial" },
+        { "type": "contains", "value": "Pre-Write Audit" },
+        { "type": "contains", "value": "Standard Defaults" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run a self-scan on the code I just wrote.",
+      "expected_output": "Post-Write Self-Scan: Read the diff, check against Anti-Patterns in all active skills, fix violations immediately.",
+      "assertions": [
+        { "type": "contains", "value": "Anti-Patterns" },
+        { "type": "contains", "value": "active skills" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What should I check before marking a task complete?",
+      "expected_output": "Check for execution bias: local mocks instead of shared fakes, hardcoded styles instead of design tokens, missing Pre-Write Audit Log. Functional success does not equal protocol success.",
+      "assertions": [
+        { "type": "contains", "value": "hardcoded" },
+        { "type": "contains", "value": "design tokens" },
+        { "type": "contains", "value": "protocol" }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "Write a Go function to parse JSON",
+    "Configure webpack for production",
+    "Add unit tests for the auth service"
+  ]
+}

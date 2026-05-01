@@ -646,6 +646,19 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as the hub.
 
 ---
 
+## Output Contract
+
+- Default tier: L (5–80 line persona-advocate report; full demand docs are L/XL)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - quick demand probe (single persona, single ask): M
+  - persona-portfolio summary (≥3 personas): L
+  - full demand letter / formal advocacy doc: XL
+- Domain bans:
+  - Do not narrate the persona's "thinking process" — speak as them in first person where appropriate, and surface unmet needs as concrete demands.
+
+---
+
 ## Output Language
 
 All final outputs (reports, demands, comments, etc.) must be written in Japanese.

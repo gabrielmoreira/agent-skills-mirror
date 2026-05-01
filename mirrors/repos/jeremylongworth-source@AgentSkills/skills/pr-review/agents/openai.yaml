@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Review"
+  short_description: "Review code changes for release risk."
+  default_prompt: "Use this skill to review pull requests, patches, diffs, and code changes for correctness, regressions, security, performance, maintainability, missing tests, and pre-merge risk."

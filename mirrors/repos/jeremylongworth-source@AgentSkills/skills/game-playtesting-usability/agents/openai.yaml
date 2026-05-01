@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Playtesting Usability"
+  short_description: "Plan and analyze game playtests."
+  default_prompt: "Use this skill to plan, run, analyze, or review game playtests, usability sessions, player feedback, telemetry, onboarding tests, difficulty tests, controls tests, fun/enjoyability research, and playtest reports."

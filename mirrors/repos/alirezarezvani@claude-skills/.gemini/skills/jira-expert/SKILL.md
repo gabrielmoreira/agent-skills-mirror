@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/jira-expert/../../../project-management/jira-expert/SKILL.md

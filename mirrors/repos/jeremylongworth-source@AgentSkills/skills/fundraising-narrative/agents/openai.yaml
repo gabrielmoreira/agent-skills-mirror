@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fundraising Narrative"
+  short_description: "Shape investor fundraising stories."
+  default_prompt: "Use this skill to shape seed or Series A fundraising narratives, founder pitch stories, investor positioning, raise theses, traction stories, and fundraising memos for review."

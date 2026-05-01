@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scenario Test Authoring"
+  short_description: "Write skill routing scenarios."
+  default_prompt: "Use this skill to create realistic tests/scenarios prompts, expected routing entries, bundle coverage scenarios, and validation notes for agent skills and skillsets."

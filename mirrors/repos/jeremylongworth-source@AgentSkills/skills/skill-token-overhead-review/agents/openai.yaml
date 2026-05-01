@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Token Overhead Review"
+  short_description: "Review skill context overhead."
+  default_prompt: "Use this skill to review whether a skill or bundle adds justified context, token, tool, and process overhead, then recommend keep, trim, split, merge, lazy-load, or defer."

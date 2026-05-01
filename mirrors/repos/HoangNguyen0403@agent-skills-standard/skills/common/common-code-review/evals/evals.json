@@ -1,0 +1,37 @@
+{
+  "skill_name": "common-code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this PR — it adds a new endpoint that takes a user ID from the URL and returns their data without any auth check.",
+      "expected_output": "[BLOCKER] [routes/user.ts] Missing authentication and authorization check. Why: Any unauthenticated caller can retrieve any user's data (IDOR vulnerability). Fix: Add auth middleware and verify the requesting user owns the resource.",
+      "assertions": [
+        { "type": "contains", "value": "BLOCKER" },
+        { "type": "contains", "value": "auth" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you critique this code? It works fine but I want a senior engineer's perspective.",
+      "expected_output": "Review using Principal Engineer persona. Check: correctness, security (injection, auth, secrets), performance (N+1, memory leaks), clean code (DRY, SOLID, naming). Output each finding with [SEVERITY] [File] Issue / Why / Fix format.",
+      "assertions": [
+        { "type": "contains", "value": "MAJOR" },
+        { "type": "contains", "value": "Fix:" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Analyze this pull request that adds a caching layer to reduce database calls.",
+      "expected_output": "Check: Is cache invalidation correct? Are edge cases (empty results, null) handled? Does it introduce race conditions? Is TTL appropriate? Group findings as [BLOCKER], [MAJOR], [NIT]. Include test coverage review.",
+      "assertions": [
+        { "type": "contains", "value": "cache" },
+        { "type": "contains", "value": "Why:" }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "How do I install Node.js on Ubuntu?",
+    "Explain what a binary search tree is",
+    "Generate a CSV export function"
+  ]
+}

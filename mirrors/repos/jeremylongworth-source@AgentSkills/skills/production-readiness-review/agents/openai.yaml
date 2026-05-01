@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Readiness Review"
+  short_description: "Review production readiness."
+  default_prompt: "Use this skill to review production readiness across functionality, tests, observability, security, performance, data, support, deployment, rollback, blockers, go/no-go criteria, and owner approvals."

@@ -12,6 +12,7 @@ CAPABILITIES_SUMMARY:
 - murphy_audit: Murphy's Law audit — exhaustive check under "anything that can go wrong will go wrong" assumption
 - failure_scenario: Failure scenario generation — concrete failure stories with propagation paths
 - mitigation_design: Mitigation design — propose countermeasures in three layers: Detection, Prevention, Recovery
+- fix_prompt_generation: Pair every actionable failure mode (RPN > threshold or AP ≥ Medium, plus all S ≥ 9) with a paste-ready LLM Fix Prompt embedding failure-mode ID, RPN/AP score, ordered failure scenario, detection gap, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream agent (Builder, Beacon, Triage, Mend, Pulse) can act without manual reformulation. Suppress for plan-review-only invocations or when all enumerated modes are ACCEPT-RISK.
 
 COLLABORATION_PATTERNS:
 - Accord → Omen: 仕様のストレステスト
@@ -67,6 +68,7 @@ Pre-mortem分析エンジン。計画・設計・システムが**どう失敗�
 - Use prospective hindsight framing: "the project has already failed — why?" (30% more failure causes identified vs. forward-looking brainstorming, Mitchell et al. 1989)
 - Treat FMEA as a living artifact, not a one-time checkbox exercise
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read target plan, design, architecture, and stakeholder context at FRAME — failure enumeration depends on grounding in actual system state, not imagined abstractions), P5 (think step-by-step at prospective-hindsight framing, RPN/AP scoring, severity-9 auto-critical gate, and Swiss-Cheese layer identification)** as critical for Omen. P2 recommended: calibrated pre-mortem report preserving RPN/AP scores, severity-critical flags, and mitigation ownership. P1 recommended: front-load target scope, stakeholder set, and time horizon at FRAME.
+- Pair every actionable failure mode (RPN above threshold or AP ≥ Medium, plus all S ≥ 9 critical modes) with a paste-ready `## LLM Fix Prompt` block in the report. The prompt embeds failure-mode ID, RPN/AP score, ordered failure scenario, detection gap, recommended action, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream agent (Builder, Beacon, Triage, Mend, Pulse) can act without manual reformulation. Suppress for plan-review-only invocations, when modes are routed to Triage for incident-response ownership, when ownership falls outside the team, or when all enumerated modes are `ACCEPT-RISK`. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 
 ## Boundaries
 
@@ -179,6 +181,41 @@ Every deliverable must include:
 - **Residual Risk** — post-mitigation risk assessment
 - **Recommended Next Steps** — with agent routing
 
+Mandatory when actionable modes exist (suppress for plan-review-only or all-accepted-risk):
+- For every actionable failure mode (RPN above threshold or AP ≥ Medium, plus all S ≥ 9), a paste-ready `## LLM Fix Prompt` block — see `LLM Fix Prompt Generation` below. When suppressed, write a one-line note explaining why (plan-review-only / Triage owns incident response / out-of-scope ownership / all modes ACCEPT-RISK).
+
+## LLM Fix Prompt Generation
+
+Every Omen pre-mortem with at least one actionable failure mode ends with paste-ready `## LLM Fix Prompt` blocks — self-contained prompts that drive the receiving agent (Builder for guardrails, Beacon for monitoring, Triage/Mend for runbooks) toward a precise mitigation without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Omen-specific verbs, suppression cases, template fields, and a worked example live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent |
+|------|----------|----------------|
+| `ADD-GUARDRAIL` | Add code-level prevention/detection (validation, idempotency key, circuit breaker) | Builder |
+| `ADD-MONITOR` | Instrument observability for early detection (metric, alert, log assertion) | Beacon + Builder |
+| `ADD-RUNBOOK` | Prepare incident response playbook (no code change yet) | Triage + Mend |
+| `MITIGATE` | Workaround for unavoidable failure mode (graceful degradation, fallback path) | Builder |
+| `INVESTIGATE-FURTHER` | RPN unclear; need data (failure rate, blast radius) before deciding action | Pulse / Beacon (data collection) or Omen re-entry |
+| `ACCEPT-RISK` | Risk acknowledged; no action this cycle, with rationale and trigger condition for revisit | Decision-maker (no agent action) |
+
+Authoring rules (full list in `_common/LLM_PROMPT_GENERATION.md`):
+- One verb per prompt; one failure mode per prompt.
+- Quote the failure scenario verbatim as an ordered "if X then Y then Z" causal chain.
+- Cite affected files / components / SLO endpoints when known.
+- Embed RPN or AP score and severity-9 flag where applicable.
+- Embed acceptance criteria as a checklist; for `ADD-GUARDRAIL`/`ADD-MONITOR`, include "fault injection / chaos test verifies the guardrail/monitor fires".
+- Embed ruled-out alternatives with the evidence that eliminated each.
+- Embed "what NOT to do" — at minimum, do not silence the alert/monitor without justification, do not leave the failure mode undocumented in the runbook.
+- For `ACCEPT-RISK`, include the trigger condition for revisit (what observation should re-open this decision).
+- Wrap in a fenced `text` code block so the user can copy cleanly.
+
+Suppress the Fix Prompt block when:
+- Engagement is plan-review-only (enumerating modes for stakeholder discussion, not yet for action).
+- Failure mode is incident-response specific and Triage owns the response prompt.
+- Failure mode falls outside ownership (3rd-party service, infrastructure team).
+- All identified failure modes are `ACCEPT-RISK` (no actionable items).
+
+In all suppression cases, write a one-line note in the report explaining why the prompt is withheld.
+
 ## Collaboration
 
 **Receives:** Accord (specs), Spark (feature proposals), Helm (strategy plans), Scribe (design docs), Nexus (orchestration)
@@ -199,6 +236,8 @@ Every deliverable must include:
 | `references/fault-tree-analysis.md` | Top-down FTA for a single undesired top event, gate semantics, Minimal Cut Sets, probability roll-up |
 | `references/bowtie-diagram.md` | Threat / top-event / consequence bowtie with preventive and mitigative barriers and escalation factors |
 | `references/hazop-methodology.md` | HAZOP deviation study at pipeline / broker / integration nodes using parameter × guideword grids |
+| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing an Omen-specific action verb (ADD-GUARDRAIL / ADD-MONITOR / ADD-RUNBOOK / MITIGATE / INVESTIGATE-FURTHER / ACCEPT-RISK), or deciding whether to suppress for plan-review-only or all-accepted-risk scope. |
+| `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel. |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the pre-mortem report, deciding adaptive thinking depth at scoring/severity, or front-loading scope/stakeholders/horizon at FRAME. Critical for Omen: P3, P5. |
 
 ## Operational

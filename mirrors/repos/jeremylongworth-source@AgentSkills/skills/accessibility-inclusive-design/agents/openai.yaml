@@ -1,0 +1,4 @@
+interface:
+  display_name: "Accessibility Inclusive Design"
+  short_description: "Design and audit accessible experiences."
+  default_prompt: "Use this skill to design, audit, or improve accessibility and inclusive UX, including WCAG 2.2, keyboard navigation, screen readers, focus states, contrast, motion, captions, forms, game accessibility, and accessibility QA."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Pilot Selection"
+  short_description: "Choose AI pilots with decision rules."
+  default_prompt: "Use this skill to choose AI pilots, compare pilot candidates, define pilot scope, create pilot scorecards, and set hypotheses, metrics, guardrails, and decision rules."

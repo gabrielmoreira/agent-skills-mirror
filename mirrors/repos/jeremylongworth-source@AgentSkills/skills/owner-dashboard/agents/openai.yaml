@@ -1,0 +1,4 @@
+interface:
+  display_name: "Owner Dashboard"
+  short_description: "Draft small-business owner dashboards."
+  default_prompt: "Use this skill to create monthly owner dashboards, business snapshots, operating summaries, cash/customer/staffing overviews, and owner-ready status reports."

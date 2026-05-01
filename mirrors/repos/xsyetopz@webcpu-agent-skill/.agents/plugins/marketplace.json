@@ -1,0 +1,20 @@
+{
+	"name": "webcpu-agent-skill",
+	"interface": {
+		"displayName": "webcpu-agent-skill Marketplace"
+	},
+	"plugins": [
+		{
+			"name": "webcpu-agent-skill",
+			"source": {
+				"source": "local",
+				"path": "./plugins/webcpu-agent-skill"
+			},
+			"policy": {
+				"installation": "AVAILABLE",
+				"authentication": "ON_INSTALL"
+			},
+			"category": "Development"
+		}
+	]
+}

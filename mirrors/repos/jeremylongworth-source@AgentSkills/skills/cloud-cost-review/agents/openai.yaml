@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cloud Cost Review"
+  short_description: "Review infrastructure cost risk."
+  default_prompt: "Use this skill to review cloud, hosting, CI, storage, database, logging, tracing, and managed-service cost drivers, risks, estimates, guardrails, alerts, and optimization options."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Secrets Handling Review"
+  short_description: "Review skills for secrets risk."
+  default_prompt: "Use this skill to review how agent skills, scripts, examples, templates, logs, and MCP/tool instructions handle credentials, tokens, env vars, redaction, storage, and exposure paths."

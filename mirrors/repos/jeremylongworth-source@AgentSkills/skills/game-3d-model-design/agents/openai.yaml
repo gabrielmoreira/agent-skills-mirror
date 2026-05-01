@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game 3D Model Design"
+  short_description: "Model topology, UVs, baking, and mesh quality."
+  default_prompt: "Use this skill to design, build, repair, or review 3D models for games, including topology, retopology, UVs, normals, baking, deformation, and mesh cleanliness."

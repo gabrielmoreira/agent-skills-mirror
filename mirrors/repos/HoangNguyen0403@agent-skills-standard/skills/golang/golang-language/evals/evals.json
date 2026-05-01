@@ -1,0 +1,38 @@
+{
+  "skill_name": "golang-language",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What's the idiomatic way to define a set of related constants in Go?",
+      "expected_output": "Use iota inside a const block for type-safe enumerations.",
+      "assertions": [
+        { "type": "contains", "value": "iota" },
+        { "type": "contains", "value": "const" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "How should I format and organize imports in Go?",
+      "expected_output": "Run goimports to auto-organize. Use gofmt or goimports on save. Use gopls for LSP features.",
+      "assertions": [
+        { "type": "contains", "value": "goimports" },
+        { "type": "contains", "value": "gofmt" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What are the anti-patterns I should avoid in Go?",
+      "expected_output": "No init() — use constructors like NewService(). No globals — use dependency injection. No panic — return errors. No ignored errors with _. No stuttering names like log.LogError.",
+      "assertions": [
+        { "type": "contains", "value": "init" },
+        { "type": "contains", "value": "constructor" },
+        { "type": "contains", "value": "panic" }
+      ]
+    }
+  ],
+  "should_not_trigger": [
+    "How do I create a Kubernetes deployment manifest?",
+    "Write a React component for the order list",
+    "Set up PostgreSQL connection pooling"
+  ]
+}

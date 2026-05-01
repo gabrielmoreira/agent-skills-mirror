@@ -1,0 +1,442 @@
+---
+name: dotnet-testing-autofixture-nsubstitute-integration
+description: |
+  AutoFixture 與 NSubstitute 整合指南 - 實現自動模擬 (Auto-Mocking)。當需要自動建立 Mock 物件、簡化複雜相依性注入測試時使用。涵蓋 AutoNSubstituteDataAttribute、Frozen 機制、Greedy 建構策略。包含 IMapper (AutoMapper/Mapster) 等特殊相依性的客製化處理。
+  Make sure to use this skill whenever the user mentions AutoFixture with NSubstitute, auto-mocking, AutoNSubstituteCustomization, Frozen attribute, or AutoNSubstituteDataAttribute, even if they don't explicitly ask for integration guidance.
+  Keywords: autofixture nsubstitute, auto mocking, AutoNSubstituteDataAttribute, 自動模擬, Frozen, AutoNSubstituteCustomization, AutoFixture.AutoNSubstitute, Greedy, fixture.Freeze, Received(), Returns(), IMapper, AutoMapper, Mapster, mapper testing
+---
+
+# AutoFixture + NSubstitute 自動模擬整合
+
+## 核心價值
+
+- **減少樣板程式碼**：不需要手動為每個介面建立 `Substitute.For<T>()`
+- **自動處理複雜相依圖**：AutoFixture 會自動解析並建立所需的物件
+- **提升測試維護性**：當建構函式變更時，測試程式碼通常不需要同步修改
+- **保持測試重點**：讓開發者專注於測試邏輯而非物件建立
+
+---
+
+## 套件安裝與設定
+
+### 必要套件
+
+```bash
+# 核心套件
+dotnet add package AutoFixture.AutoNSubstitute
+
+# 相關套件（如尚未安裝）
+dotnet add package AutoFixture
+dotnet add package AutoFixture.Xunit2
+dotnet add package NSubstitute
+dotnet add package xunit
+```
+
+### NuGet 套件資訊
+
+| 套件名稱                      | 用途                            | NuGet 連結                                                               |
+| ----------------------------- | ------------------------------- | ------------------------------------------------------------------------ |
+| `AutoFixture.AutoNSubstitute` | AutoFixture 與 NSubstitute 整合 | [nuget.org](https://www.nuget.org/packages/AutoFixture.AutoNSubstitute/) |
+| `AutoFixture.Xunit2`          | xUnit 整合（AutoData 屬性）     | [nuget.org](https://www.nuget.org/packages/AutoFixture.Xunit2/)          |
+| `NSubstitute`                 | 模擬框架                        | [nuget.org](https://www.nuget.org/packages/NSubstitute/)                 |
+
+---
+
+## 核心概念
+
+### AutoNSubstituteCustomization 的作用
+
+當在 AutoFixture 中加入 `AutoNSubstituteCustomization` 時，它會自動：
+
+1. **偵測介面類型**：當 AutoFixture 遇到介面或抽象類別時
+2. **自動建立替身**：使用 NSubstitute 的 `Substitute.For<T>()` 建立 Mock 物件
+3. **注入相依性**：將這些替身物件注入到需要的建構函式中
+4. **保持實例一致性**：確保相同類型的替身在同一個測試中保持一致
+
+```csharp
+using AutoFixture;
+using AutoFixture.AutoNSubstitute;
+
+// 建立包含 AutoNSubstitute 功能的 Fixture
+var fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+
+// 自動建立服務和其相依性
+// MyService 的所有介面相依性都會自動變成 NSubstitute 的替身
+var service = fixture.Create<MyService>();
+```
+
+### FrozenAttribute 凍結機制
+
+`[Frozen]` 屬性用來控制測試中某個類型的實例：
+
+- 當參數被標註為 `[Frozen]` 時，AutoFixture 會建立這個類別的一個實例並**凍結**它
+- 後續在測試方法中都會使用同一個已凍結的實例
+- 這對於需要設定相依性行為然後驗證 SUT 的測試特別重要
+
+```csharp
+[Theory]
+[AutoData]
+public async Task TestMethod(
+    [Frozen] IRepository repository,  // 這個 repository 會被凍結
+    MyService sut)                    // sut 會使用同一個 repository
+{
+    // 設定凍結實例的行為
+    repository.GetAsync(Arg.Any<int>()).Returns(someData);
+
+    // SUT 內部使用的是同一個 repository 實例
+    var result = await sut.DoSomething();
+}
+```
+
+### 參數順序的重要性
+
+使用 `[Frozen]` 時，**參數順序非常重要**：
+
+```csharp
+// 正確：Frozen 參數在 SUT 之前
+public async Task TestMethod(
+    [Frozen] IRepository repository,
+    MyService sut)
+
+// 錯誤：SUT 會使用不同的 repository 實例
+public async Task TestMethod(
+    MyService sut,
+    [Frozen] IRepository repository)  // 太晚凍結了
+```
+
+---
+
+## 傳統方式 vs AutoNSubstitute 方式
+
+### 傳統手動方式
+
+```csharp
+[Fact]
+public async Task TraditionalWay()
+{
+    // Arrange - 手動建立每個相依性
+    var repository = Substitute.For<IRepository>();
+    var logger = Substitute.For<ILogger<OrderService>>();
+    var notificationService = Substitute.For<INotificationService>();
+    var cacheService = Substitute.For<ICacheService>();
+
+    var sut = new OrderService(repository, logger, notificationService, cacheService);
+
+    // 設定替身行為
+    repository.GetOrderAsync(Arg.Any<int>()).Returns(someOrder);
+
+    // Act
+    var result = await sut.GetOrderAsync(orderId);
+
+    // Assert
+    result.Should().NotBeNull();
+}
+```
+
+**問題**：
+
+- 當服務增加新相依性時，所有測試都需要修改
+- 大量重複的 `Substitute.For<T>()` 呼叫
+- 測試程式碼冗長，難以快速理解測試意圖
+
+### 使用 AutoNSubstitute 方式
+
+```csharp
+[Theory]
+[AutoDataWithCustomization]
+public async Task WithAutoNSubstitute(
+    [Frozen] IRepository repository,
+    OrderService sut)
+{
+    // Arrange - 相依性已自動建立，只需設定需要的行為
+    repository.GetOrderAsync(Arg.Any<int>()).Returns(someOrder);
+
+    // Act
+    var result = await sut.GetOrderAsync(orderId);
+
+    // Assert
+    result.Should().NotBeNull();
+}
+```
+
+**優勢**：
+
+- 只需宣告需要互動的相依性
+- 其他相依性（logger, notificationService, cacheService）自動建立
+- 建構函式變更時，測試通常不需要修改
+
+---
+
+## 自訂 AutoData 屬性
+
+### 為什麼需要自訂 AutoData 屬性？
+
+在實際專案中，通常需要整合多種客製化設定：
+
+- **AutoNSubstituteCustomization**：自動為介面建立 NSubstitute 替身
+- **專案特定的 Customization**：如 Mapper 設定、驗證器設定等
+- **一致的測試基礎設施**：確保整個專案使用相同的設定
+
+### AutoDataWithCustomizationAttribute 實作
+
+```csharp
+using AutoFixture;
+using AutoFixture.AutoNSubstitute;
+using AutoFixture.Xunit2;
+
+namespace MyProject.Tests.AutoFixtureConfigurations;
+
+/// <summary>
+/// 包含客製化設定的 AutoData 屬性
+/// </summary>
+public class AutoDataWithCustomizationAttribute : AutoDataAttribute
+{
+    /// <summary>
+    /// 建構函式
+    /// </summary>
+    public AutoDataWithCustomizationAttribute() : base(CreateFixture)
+    {
+    }
+
+    private static IFixture CreateFixture()
+    {
+        var fixture = new Fixture()
+            .Customize(new AutoNSubstituteCustomization())
+            .Customize(new MapsterMapperCustomization())  // 專案特定設定
+            .Customize(new DomainCustomization());        // 領域模型設定
+
+        return fixture;
+    }
+}
+```
+
+### InlineAutoDataWithCustomizationAttribute 實作
+
+用於結合固定測試值與自動產生物件：
+
+```csharp
+using AutoFixture;
+using AutoFixture.AutoNSubstitute;
+using AutoFixture.Xunit2;
+
+namespace MyProject.Tests.AutoFixtureConfigurations;
+
+/// <summary>
+/// 包含客製化設定的 InlineAutoData 屬性
+/// </summary>
+public class InlineAutoDataWithCustomizationAttribute : InlineAutoDataAttribute
+{
+    /// <summary>
+    /// 建構函式
+    /// </summary>
+    /// <param name="values">固定值（將填入測試方法的前幾個參數）</param>
+    public InlineAutoDataWithCustomizationAttribute(params object[] values)
+        : base(new AutoDataWithCustomizationAttribute(), values)
+    {
+    }
+}
+```
+
+### 重要實作細節
+
+**為什麼使用 `new AutoDataWithCustomizationAttribute()` 而不是 `CreateFixture` 方法？**
+
+```csharp
+// 錯誤：InlineAutoDataAttribute 需要 AutoDataAttribute，不是 Func<IFixture>
+public InlineAutoDataWithCustomizationAttribute(params object[] values)
+    : base(CreateFixture, values)  // 編譯錯誤或行為異常
+
+// 正確：傳遞 AutoDataAttribute 實例
+public InlineAutoDataWithCustomizationAttribute(params object[] values)
+    : base(new AutoDataWithCustomizationAttribute(), values)
+```
+
+原因：
+
+- `InlineAutoDataAttribute` 繼承自 `CompositeDataAttribute`
+- 它需要接收一個 `AutoDataAttribute` 實例作為資料來源提供者
+- 這樣可以重用 `AutoDataWithCustomizationAttribute` 的所有設定
+
+---
+
+## 常見相依性的客製化處理
+
+某些相依性（如 IMapper）不適合使用 Mock，而應該使用真實實例。包含 Mapster 和 AutoMapper 的客製化範例。
+
+> 完整客製化處理範例請參考 [references/dependency-customization.md](references/dependency-customization.md)
+
+---
+
+## 測試實作範例
+
+涵蓋基本測試、Frozen 相依行為設定、自動產生測試資料、InlineAutoData 參數化測試、CollectionSize 控制、IFixture 複雜資料設定、Nullable 參考類型處理等完整範例。
+
+> 完整測試實作範例請參考 [references/test-implementation-examples.md](references/test-implementation-examples.md)
+
+---
+
+## 適用場景判斷
+
+### 建議使用的場景
+
+| 場景             | 原因                               |
+| ---------------- | ---------------------------------- |
+| 服務層測試       | 通常有多個相依性，自動模擬效益最大 |
+| 複雜相依圖       | AutoFixture 自動處理多層相依性     |
+| 參數化測試       | 結合固定值與自動產生資料           |
+| 需要大量測試資料 | 減少手動建立測試資料的工作         |
+| 快速迭代開發     | 建構函式變更時測試通常不需修改     |
+
+### 謹慎使用的場景
+
+| 場景                   | 原因                                     |
+| ---------------------- | ---------------------------------------- |
+| 單一相依性測試         | 手動建立可能更清晰直覺                   |
+| 精確控制屬性值         | 需要額外的 `fixture.Build().With()` 設定 |
+| 團隊不熟悉 AutoFixture | 學習成本可能影響開發效率                 |
+| 除錯困難的場景         | 自動產生的物件可能讓除錯變複雜           |
+| 效能敏感的測試         | 物件建立的開銷可能影響執行速度           |
+
+---
+
+## 最佳實踐
+
+### 導入策略
+
+1. **漸進式採用**
+   - 從簡單的服務類別開始
+   - 逐步擴展到複雜場景
+   - 讓團隊逐漸熟悉模式
+
+2. **團隊培訓**
+   - 確保團隊理解 Frozen 機制
+   - 說明參數順序的重要性
+   - 分享除錯技巧
+
+3. **建立規範**
+   - 何時使用自動產生 vs 手動建立
+   - 自訂 Customization 的命名與組織
+   - 測試資料的控制策略
+
+### 程式碼組織
+
+```text
+MyProject.Tests/
+├── AutoFixtureConfigurations/
+│   ├── AutoDataWithCustomizationAttribute.cs
+│   ├── InlineAutoDataWithCustomizationAttribute.cs
+│   ├── AutoMapperCustomization.cs
+│   └── DomainCustomization.cs
+├── Services/
+│   ├── OrderServiceTests.cs
+│   └── ShipperServiceTests.cs
+└── ...
+```
+
+### 命名慣例
+
+- **自訂 AutoData 屬性**：`[專案名稱]AutoDataAttribute` 或 `AutoDataWithCustomizationAttribute`
+- **Customization 類別**：`[功能]Customization`（如 `MapsterMapperCustomization`）
+- **測試方法**：維持 `方法_情境_預期` 的命名模式
+
+---
+
+## 注意事項與限制
+
+### 常見陷阱
+
+1. **參數順序錯誤**
+
+   ```csharp
+   // Frozen 參數在 SUT 之後，不會生效
+   public void Test(MyService sut, [Frozen] IRepository repo)
+
+   // Frozen 參數必須在 SUT 之前
+   public void Test([Frozen] IRepository repo, MyService sut)
+   ```
+
+2. **遺忘 AutoNSubstituteCustomization**
+
+   ```csharp
+   // 沒有 AutoNSubstitute，介面會產生異常
+   var fixture = new Fixture();
+
+   // 加入 AutoNSubstituteCustomization
+   var fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+   ```
+
+3. **過度依賴自動產生**
+
+   ```csharp
+   // 測試意圖不明確
+   public void Test(Order order, Customer customer, MyService sut)
+   {
+       var result = sut.Process(order);
+       result.Should().NotBeNull();  // 驗證什麼？
+   }
+
+   // 明確控制關鍵屬性
+   public void Test(IFixture fixture, MyService sut)
+   {
+       var order = fixture.Build<Order>()
+                          .With(o => o.Status, OrderStatus.Pending)
+                          .Create();
+
+       var result = sut.Process(order);
+       result.Status.Should().Be(OrderStatus.Processed);
+   }
+   ```
+
+### 效能考量
+
+- 每個測試方法都會建立新的 Fixture 和所有相依性
+- 複雜物件圖可能增加測試執行時間
+- 考慮使用 `[ClassData]` 或 `IClassFixture<T>` 共享設定
+
+---
+
+## 相關技能
+
+| 技能名稱                     | 關聯說明                               |
+| ---------------------------- | -------------------------------------- |
+| `autofixture-basics`         | AutoFixture 基礎使用，本技能的前置知識 |
+| `autofixture-customization`  | 自訂 Customization 的進階用法          |
+| `autodata-xunit-integration` | AutoData 屬性家族的完整說明            |
+| `nsubstitute-mocking`        | NSubstitute 基礎，Mock 設定的詳細說明  |
+
+---
+
+## 輸出格式
+
+- 產生自訂 `AutoDataAttribute` 衍生類別檔案（`*AutoDataAttribute.cs`）
+- 產生 `ICustomization` 實作類別檔案（`*Customization.cs`）
+- 測試方法使用 `[Theory]` 搭配自訂 AutoData 屬性
+- `[Frozen]` 參數置於 SUT 參數之前
+- 搭配 NSubstitute 的 `Returns()` 與 `Received()` 進行行為設定與驗證
+
+## 參考資源
+
+### 原始文章
+
+本技能內容提煉自「老派軟體工程師的測試修練 - 30 天挑戰」系列文章：
+
+- **Day 13 - AutoFixture 整合 NSubstitute：自動建立 Mock 對象**
+  - 鐵人賽文章：https://ithelp.ithome.com.tw/articles/10375419
+  - 範例程式碼：https://github.com/kevintsengtw/30Days_in_Testing_Samples/tree/main/day13
+
+### 官方文件
+
+- [AutoFixture.AutoNSubstitute NuGet Package](https://www.nuget.org/packages/AutoFixture.AutoNSubstitute/)
+- [AutoFixture Documentation - Auto Mocking](https://autofixture.readthedocs.io/en/stable/)
+- [NSubstitute Documentation](https://nsubstitute.github.io/help/getting-started/)
+
+### 延伸閱讀
+
+- [使用 AutoFixture.AutoData 來改寫以前的測試程式碼 | mrkt的程式學習筆記](https://www.dotblogs.com.tw/mrkt/2024/09/29/191300)
+
+
+### 範例程式碼
+
+- [custom-autodata-attributes.cs](templates/custom-autodata-attributes.cs) - 自訂 AutoData 屬性範本
+- [frozen-patterns.cs](templates/frozen-patterns.cs) - Frozen 機制使用模式
+- [service-testing-examples.cs](templates/service-testing-examples.cs) - 服務層測試完整範例

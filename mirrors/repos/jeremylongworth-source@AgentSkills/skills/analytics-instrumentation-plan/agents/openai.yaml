@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analytics Instrumentation Plan"
+  short_description: "Plan analytics tracking."
+  default_prompt: "Use this skill to plan analytics instrumentation with event taxonomy, properties, identity, funnel mapping, privacy, consent, validation, QA, monitoring, ownership, and change control."

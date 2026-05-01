@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-product-analyst/../../../agents/product/cs-product-analyst.md

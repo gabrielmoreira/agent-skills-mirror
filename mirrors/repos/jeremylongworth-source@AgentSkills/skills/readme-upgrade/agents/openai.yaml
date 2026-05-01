@@ -1,0 +1,4 @@
+interface:
+  display_name: "README Upgrade"
+  short_description: "Improve README structure and clarity."
+  default_prompt: "Use this skill to audit, restructure, or rewrite README files with clear positioning, install steps, usage examples, validation commands, roadmap links, and contribution guidance."

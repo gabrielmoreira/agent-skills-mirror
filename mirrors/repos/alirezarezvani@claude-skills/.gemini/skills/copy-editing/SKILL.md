@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/copy-editing/../../../marketing-skill/copy-editing/SKILL.md

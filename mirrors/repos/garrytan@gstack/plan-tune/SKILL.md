@@ -121,7 +121,7 @@ In plan mode, allowed because they inform the plan: `$B`, `$D`, `codex exec`/`co
 
 ## Skill Invocation During Plan Mode
 
-If the user invokes a skill in plan mode, the skill takes precedence over generic plan mode behavior. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; the first AskUserQuestion is the workflow entering plan mode, not a violation of it. AskUserQuestion satisfies plan mode's end-of-turn requirement. At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" execute. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
+If the user invokes a skill in plan mode, the skill takes precedence over generic plan mode behavior. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; the first AskUserQuestion is the workflow entering plan mode, not a violation of it. AskUserQuestion (any variant — `mcp__*__AskUserQuestion` or native; see "AskUserQuestion Format → Tool resolution") satisfies plan mode's end-of-turn requirement. If no variant is callable, fall back to writing the decision brief into the plan file as a `## Decisions to confirm` section + ExitPlanMode — never silently auto-decide. At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" execute. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
 
 If `PROACTIVE` is `"false"`, do not auto-invoke or proactively suggest skills. If a skill seems useful, ask: "I think /skillname might help here — want me to run it?"
 
@@ -285,6 +285,16 @@ AI orchestrator (e.g., OpenClaw). In spawned sessions:
 - End with a completion report: what shipped, decisions made, anything uncertain.
 
 ## AskUserQuestion Format
+
+### Tool resolution (read first)
+
+"AskUserQuestion" can resolve to two tools at runtime: the **host MCP variant** (e.g. `mcp__conductor__AskUserQuestion` — appears in your tool list when the host registers it) or the **native** Claude Code tool.
+
+**Rule:** if any `mcp__*__AskUserQuestion` variant is in your tool list, prefer it. Hosts may disable native AUQ via `--disallowedTools AskUserQuestion` (Conductor does, by default) and route through their MCP variant; calling native there silently fails. Same questions/options shape; same decision-brief format applies.
+
+**Fallback when neither variant is callable:** in plan mode, write the decision brief into the plan file as a `## Decisions to confirm` section + ExitPlanMode (the native "Ready to execute?" surfaces it). Outside plan mode, output the brief as prose and stop. **Never silently auto-decide** — only `/plan-tune` AUTO_DECIDE opt-ins authorize auto-picking.
+
+### Format
 
 Every AskUserQuestion is a decision brief and must be sent as tool_use, not prose.
 
@@ -783,7 +793,8 @@ Power-user shortcuts (one-word invocations) — handle these too:
    # Ensure profile exists
    ~/.claude/skills/gstack/bin/gstack-developer-profile --read >/dev/null
    # Update declared dimensions atomically
-   _PROFILE="${GSTACK_HOME:-$HOME/.gstack}/developer-profile.json"
+   eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+   _PROFILE="$GSTACK_STATE_ROOT/developer-profile.json"
    bun -e "
      const fs = require('fs');
      const p = JSON.parse(fs.readFileSync('$_PROFILE','utf-8'));
@@ -844,7 +855,8 @@ Parse the JSON. Present in **plain English**, not raw floats:
 
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-_LOG="${GSTACK_HOME:-$HOME/.gstack}/projects/$SLUG/question-log.jsonl"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+_LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
 if [ ! -f "$_LOG" ]; then
   echo "NO_LOG"
 else
@@ -937,7 +949,8 @@ is a trust boundary (Codex #15 in the design doc).
 
 3. After Y, write:
    ```bash
-   _PROFILE="${GSTACK_HOME:-$HOME/.gstack}/developer-profile.json"
+   eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+   _PROFILE="$GSTACK_STATE_ROOT/developer-profile.json"
    bun -e "
      const fs = require('fs');
      const p = JSON.parse(fs.readFileSync('$_PROFILE','utf-8'));
@@ -978,7 +991,8 @@ the user decides whether declared is wrong or behavior is wrong.
 ```bash
 ~/.claude/skills/gstack/bin/gstack-question-preference --stats
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-_LOG="${GSTACK_HOME:-$HOME/.gstack}/projects/$SLUG/question-log.jsonl"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+_LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
 [ -f "$_LOG" ] && echo "TOTAL_LOGGED: $(wc -l < "$_LOG" | tr -d ' ')" || echo "TOTAL_LOGGED: 0"
 ~/.claude/skills/gstack/bin/gstack-developer-profile --profile | bun -e "
   const p = JSON.parse(await Bun.stdin.text());

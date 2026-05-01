@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ops Bottleneck Review"
+  short_description: "Map practical operations bottlenecks."
+  default_prompt: "Use this skill to find operational constraints, map workflow bottlenecks, prioritize process fixes, review staffing or delegation constraints, and create owner operations action plans."

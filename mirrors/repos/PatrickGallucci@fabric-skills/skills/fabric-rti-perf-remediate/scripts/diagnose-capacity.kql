@@ -1,0 +1,176 @@
+// diagnose-capacity.kql
+// Diagnostic script for Eventhouse capacity and resource utilization
+// Run against the workspace monitoring Eventhouse/KQL database
+// Requires: Workspace monitoring enabled
+//
+// Usage: Copy individual sections into a KQL Queryset and execute
+
+// ============================================================
+// 1. RESOURCE UTILIZATION OVERVIEW (Last 6 Hours)
+// ============================================================
+Metrics
+| where TimeGenerated > ago(6h)
+| where MetricName in ("CpuUsage", "MemoryUsage", "CacheUtilization", "IngestionUtilization")
+| summarize 
+    AvgPct = round(avg(Value), 1),
+    MaxPct = round(max(Value), 1),
+    MinPct = round(min(Value), 1)
+    by MetricName
+| order by MetricName asc
+
+// ============================================================
+// 2. RESOURCE UTILIZATION TREND (5-Minute Buckets, Last 24 Hours)
+// ============================================================
+Metrics
+| where TimeGenerated > ago(24h)
+| where MetricName in ("CpuUsage", "MemoryUsage", "CacheUtilization")
+| summarize AvgValue = round(avg(Value), 1), MaxValue = round(max(Value), 1)
+    by MetricName, bin(TimeGenerated, 5m)
+| order by TimeGenerated asc, MetricName asc
+
+// ============================================================
+// 3. CPU SATURATION DETECTION
+// Periods where CPU usage exceeds 80%
+// ============================================================
+Metrics
+| where TimeGenerated > ago(24h)
+| where MetricName == "CpuUsage"
+| where Value > 80
+| summarize 
+    SaturationMinutes = count(),
+    AvgCPU = round(avg(Value), 1),
+    MaxCPU = round(max(Value), 1)
+    by bin(TimeGenerated, 1h)
+| where SaturationMinutes > 3
+| order by TimeGenerated desc
+
+// ============================================================
+// 4. MEMORY PRESSURE ANALYSIS
+// ============================================================
+Metrics
+| where TimeGenerated > ago(24h)
+| where MetricName == "MemoryUsage"
+| summarize 
+    AvgMemPct = round(avg(Value), 1),
+    MaxMemPct = round(max(Value), 1),
+    P95MemPct = round(percentile(Value, 95), 1)
+    by bin(TimeGenerated, 1h)
+| where P95MemPct > 70
+| order by TimeGenerated desc
+
+// ============================================================
+// 5. CACHE HIT RATE ANALYSIS
+// Low cache utilization may indicate over-provisioned cache
+// High utilization with cold storage access indicates under-provisioned
+// ============================================================
+Metrics
+| where TimeGenerated > ago(24h)
+| where MetricName == "CacheUtilization"
+| summarize 
+    AvgCacheUtil = round(avg(Value), 1),
+    MaxCacheUtil = round(max(Value), 1)
+    by bin(TimeGenerated, 1h)
+| order by TimeGenerated asc
+
+// ============================================================
+// 6. THROTTLED OPERATIONS (Last 7 Days)
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(7d)
+| where State == "Throttled"
+| summarize ThrottledCount = count()
+    by bin(TimeGenerated, 1h), DatabaseName
+| order by TimeGenerated desc
+
+// ============================================================
+// 7. CONCURRENT QUERY LOAD
+// Identify peak concurrency periods
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| where State == "Completed"
+| summarize ConcurrentQueries = dcount(RootActivityId)
+    by bin(TimeGenerated, 1m)
+| order by ConcurrentQueries desc
+| take 30
+
+// ============================================================
+// 8. DATABASE SIZE AND EXTENT SUMMARY
+// ============================================================
+.show database extents
+| summarize 
+    ExtentCount = count(),
+    TotalSizeGB = round(sum(ExtentSize) / 1GB, 2),
+    TotalRowCount = sum(RowCount),
+    CompressedSizeGB = round(sum(CompressedSize) / 1GB, 2)
+    by TableName
+| order by TotalSizeGB desc
+
+// ============================================================
+// 9. CACHE POLICY AUDIT
+// Check all tables for cache policy alignment with query patterns
+// ============================================================
+.show tables details
+| project TableName, CachingPolicy, RetentionPolicy, TotalExtentSize, TotalRowCount
+| order by TotalExtentSize desc
+
+// ============================================================
+// 10. COMMAND EXECUTION ANALYSIS
+// Management commands that may impact performance
+// ============================================================
+CommandLogs
+| where TimeGenerated > ago(24h)
+| where State != "Completed" or Duration > 30s
+| project 
+    TimeGenerated,
+    CommandType,
+    Text = substring(Text, 0, 200),
+    State,
+    DurationSec = round(Duration / 1s, 1),
+    User,
+    DatabaseName
+| order by DurationSec desc
+| take 20
+
+// ============================================================
+// 11. EVENTHOUSE HEALTH SCORECARD
+// Single-view summary of key health indicators
+// ============================================================
+let cpuAvg = toscalar(
+    Metrics 
+    | where TimeGenerated > ago(1h) 
+    | where MetricName == "CpuUsage" 
+    | summarize round(avg(Value), 1)
+);
+let memAvg = toscalar(
+    Metrics 
+    | where TimeGenerated > ago(1h) 
+    | where MetricName == "MemoryUsage" 
+    | summarize round(avg(Value), 1)
+);
+let cacheAvg = toscalar(
+    Metrics 
+    | where TimeGenerated > ago(1h) 
+    | where MetricName == "CacheUtilization" 
+    | summarize round(avg(Value), 1)
+);
+let queryFailRate = toscalar(
+    QueryLogs 
+    | where TimeGenerated > ago(1h) 
+    | summarize round(100.0 * countif(State != "Completed") / count(), 1)
+);
+let ingestionFailRate = toscalar(
+    IngestionResultLogs 
+    | where TimeGenerated > ago(1h) 
+    | summarize round(100.0 * countif(Status != "Succeeded") / count(), 1)
+);
+print 
+    CPUAvgPct = cpuAvg,
+    CPUStatus = case(cpuAvg > 90, "CRITICAL", cpuAvg > 70, "WARNING", "HEALTHY"),
+    MemoryAvgPct = memAvg,
+    MemoryStatus = case(memAvg > 90, "CRITICAL", memAvg > 70, "WARNING", "HEALTHY"),
+    CacheUtilPct = cacheAvg,
+    QueryFailRatePct = queryFailRate,
+    QueryStatus = case(queryFailRate > 10, "CRITICAL", queryFailRate > 2, "WARNING", "HEALTHY"),
+    IngestionFailRatePct = ingestionFailRate,
+    IngestionStatus = case(ingestionFailRate > 5, "CRITICAL", ingestionFailRate > 1, "WARNING", "HEALTHY")

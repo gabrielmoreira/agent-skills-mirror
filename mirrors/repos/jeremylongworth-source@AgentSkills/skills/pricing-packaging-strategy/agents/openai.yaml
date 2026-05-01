@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pricing Packaging Strategy"
+  short_description: "Design pricing and packaging models."
+  default_prompt: "Use this skill to design, audit, or test pricing and packaging strategy, including tiers, usage-based pricing, subscriptions, freemium, pay-what-you-want, discounts, packaging, value metrics, willingness to pay, billing implications, and pricing experiments."

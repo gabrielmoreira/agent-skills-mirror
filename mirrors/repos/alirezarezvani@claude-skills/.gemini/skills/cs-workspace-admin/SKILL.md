@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-workspace-admin/../../../agents/engineering-team/cs-workspace-admin.md

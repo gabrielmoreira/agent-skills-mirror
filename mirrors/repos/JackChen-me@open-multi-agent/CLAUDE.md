@@ -19,7 +19,7 @@ Tests live in `tests/` (vitest); E2E suite under `tests/e2e/`. Examples in `exam
 
 ## Architecture
 
-ES module TypeScript framework for multi-agent orchestration. Three runtime dependencies: `@anthropic-ai/sdk`, `openai`, `zod`. Optional peer deps `@google/genai` (Gemini) and `@modelcontextprotocol/sdk` (MCP) are loaded lazily so users only install what they use; the three-dependency promise covers `dependencies` only.
+ES module TypeScript framework for multi-agent orchestration. Three runtime dependencies: `@anthropic-ai/sdk`, `openai`, `zod`. Optional peer deps `@aws-sdk/client-bedrock-runtime` (Bedrock), `@google/genai` (Gemini), and `@modelcontextprotocol/sdk` (MCP) are loaded lazily so users only install what they use; the three-dependency promise covers `dependencies` only.
 
 ### Core Execution Flow
 
@@ -47,7 +47,7 @@ This is the framework's key feature. When `runTeam()` is called:
 | Agent | `agent/agent.ts`, `agent/runner.ts`, `agent/pool.ts`, `agent/structured-output.ts`, `agent/loop-detector.ts` | Agent lifecycle (idle→running→completed/error), conversation loop, concurrency pool with Semaphore, structured output validation, sliding-window loop detection |
 | Task | `task/queue.ts`, `task/task.ts` | Dependency-aware queue, auto-unblock on completion, cascade failure to dependents |
 | Tool | `tool/framework.ts`, `tool/executor.ts`, `tool/mcp.ts`, `tool/text-tool-extractor.ts`, `tool/built-in/` | `defineTool()` with Zod schemas, ToolRegistry, parallel batch execution with concurrency semaphore, MCP integration, fallback text-format tool-call extraction for local models |
-| LLM | `llm/adapter.ts` + per-provider files (`anthropic`, `openai`, `azure-openai`, `gemini`, `grok`, `deepseek`, `minimax`, `qiniu`, `copilot`) + `openai-common.ts` | `LLMAdapter` interface (`chat` + `stream`); async `createAdapter()` factory imports the chosen adapter lazily so unused SDKs aren't loaded; `baseURL` parameter targets OpenAI-compatible servers (Ollama, vLLM, LM Studio) |
+| LLM | `llm/adapter.ts` + per-provider files (`anthropic`, `openai`, `azure-openai`, `bedrock`, `gemini`, `grok`, `deepseek`, `minimax`, `qiniu`, `copilot`) + `openai-common.ts` | `LLMAdapter` interface (`chat` + `stream`); async `createAdapter()` factory imports the chosen adapter lazily so unused SDKs aren't loaded; `baseURL` parameter targets OpenAI-compatible servers (Ollama, vLLM, LM Studio) |
 | Memory | `memory/shared.ts`, `memory/store.ts` | Namespaced key-value store (`agentName/key`), markdown summary injection into prompts. Custom backends via `TeamConfig.sharedMemoryStore` (any `MemoryStore` impl); `sharedMemory: true` uses the default in-process store |
 | Dashboard | `dashboard/render-team-run-dashboard.ts`, `dashboard/layout-tasks.ts` | Pure HTML renderer for the post-run team task DAG (no I/O) |
 | CLI | `cli/oma.ts` | Shell/CI entry; built to `dist/cli/oma.js` and exposed as the `oma` npm bin |
@@ -59,6 +59,16 @@ This is the framework's key feature. When `runTeam()` is called:
 ### Agent Conversation Loop (AgentRunner)
 
 `AgentRunner.run()`: send messages → extract tool-use blocks → execute tools in parallel batch → append results → loop until `end_turn` or `maxTurns` exhausted. Accumulates `TokenUsage` across all turns.
+
+### Context Compaction
+
+Long multi-turn runs risk exceeding the context window. `AgentRunner` offers three strategies (configured via `AgentConfig.contextStrategy`):
+
+- **`sliding-window`** — keeps the last N turns, dropping older ones. Preserves `tool_use`/`tool_result` pairs so the LLM never sees orphaned tool blocks.
+- **`compact`** — rewrites the conversation inline without an LLM call, collapsing large tool outputs that exceed a size threshold.
+- **`summarize`** — asks the LLM to summarise the history so far, replacing it with a concise digest. Image blocks are stripped before the summarise call to avoid ballooning token cost.
+
+Optionally, `compressToolResults` (default false) truncates large tool results to a head+tail excerpt, keeping the total under a configurable `minChars` threshold. Delegation tool_result blocks are exempt from compression so the parent agent retains the full sub-agent output.
 
 ### Concurrency Control
 

@@ -1,0 +1,156 @@
+// diagnose-ingestion.kql
+// Diagnostic script for identifying ingestion issues in Fabric RTI
+// Run against the workspace monitoring Eventhouse/KQL database
+// Requires: Workspace monitoring enabled
+//
+// Usage: Copy individual sections into a KQL Queryset and execute
+
+// ============================================================
+// 1. INGESTION SUCCESS/FAILURE SUMMARY (Last 24 Hours)
+// ============================================================
+IngestionResultLogs
+| where TimeGenerated > ago(24h)
+| summarize 
+    TotalBatches = count(),
+    Succeeded = countif(Status == "Succeeded"),
+    Failed = countif(Status == "Failed"),
+    PartiallySucceeded = countif(Status == "PartiallySucceeded")
+    by Database, Table
+| extend SuccessRate = round(100.0 * Succeeded / TotalBatches, 1)
+| order by SuccessRate asc, TotalBatches desc
+
+// ============================================================
+// 2. INGESTION FAILURE DETAILS
+// ============================================================
+IngestionResultLogs
+| where TimeGenerated > ago(24h)
+| where Status != "Succeeded"
+| project 
+    TimeGenerated,
+    Database,
+    Table,
+    Status,
+    FailureStatus,
+    Details,
+    IngestionSourcePath,
+    RootActivityId
+| order by TimeGenerated desc
+| take 50
+
+// ============================================================
+// 3. INGESTION VOLUME TREND (Hourly, Last 7 Days)
+// ============================================================
+IngestionResultLogs
+| where TimeGenerated > ago(7d)
+| where Status == "Succeeded"
+| summarize 
+    BatchCount = count(),
+    TotalRows = sum(RowCount),
+    TotalSizeMB = round(sum(OriginalSize) / 1MB, 1)
+    by bin(TimeGenerated, 1h)
+| order by TimeGenerated asc
+
+// ============================================================
+// 4. INGESTION VOLUME BY TABLE (Last 24 Hours)
+// ============================================================
+IngestionResultLogs
+| where TimeGenerated > ago(24h)
+| where Status == "Succeeded"
+| summarize 
+    BatchCount = count(),
+    TotalRows = sum(RowCount),
+    TotalSizeMB = round(sum(OriginalSize) / 1MB, 1),
+    AvgRowsPerBatch = avg(RowCount),
+    AvgBatchSizeKB = round(avg(OriginalSize) / 1KB, 1)
+    by Database, Table
+| order by TotalSizeMB desc
+
+// ============================================================
+// 5. INGESTION LATENCY ANALYSIS
+// Time between event generation and successful ingestion
+// ============================================================
+IngestionResultLogs
+| where TimeGenerated > ago(24h)
+| where Status == "Succeeded"
+| extend IngestionDurationSec = datetime_diff('second', IngestionEndTime, IngestionStartTime)
+| summarize 
+    AvgIngestionSec = round(avg(IngestionDurationSec), 1),
+    P50IngestionSec = round(percentile(IngestionDurationSec, 50), 1),
+    P95IngestionSec = round(percentile(IngestionDurationSec, 95), 1),
+    MaxIngestionSec = max(IngestionDurationSec)
+    by Database, Table
+| order by P95IngestionSec desc
+
+// ============================================================
+// 6. INGESTION ERROR CATEGORIES
+// Group failures by type to identify systemic issues
+// ============================================================
+IngestionResultLogs
+| where TimeGenerated > ago(7d)
+| where Status != "Succeeded"
+| summarize ErrorCount = count()
+    by FailureStatus, Database, Table
+| order by ErrorCount desc
+| take 30
+
+// ============================================================
+// 7. INGESTION SPIKES AND DROPS
+// Detect unusual volume changes
+// ============================================================
+let hourlyVolume = 
+    IngestionResultLogs
+    | where TimeGenerated > ago(7d)
+    | where Status == "Succeeded"
+    | summarize HourlyRows = sum(RowCount) by bin(TimeGenerated, 1h);
+let avgVolume = toscalar(hourlyVolume | summarize avg(HourlyRows));
+hourlyVolume
+| extend 
+    DeviationPct = round(100.0 * (HourlyRows - avgVolume) / avgVolume, 1),
+    IsAnomaly = abs(HourlyRows - avgVolume) > 2 * avgVolume
+| where IsAnomaly
+| order by TimeGenerated desc
+
+// ============================================================
+// 8. DATA OPERATION LOGS (Exports, Moves, Purges)
+// ============================================================
+DataOperationLogs
+| where TimeGenerated > ago(24h)
+| project 
+    TimeGenerated,
+    OperationType,
+    Database,
+    Table,
+    State,
+    Duration,
+    RootActivityId
+| order by TimeGenerated desc
+| take 30
+
+// ============================================================
+// 9. STREAMING INGESTION POLICY CHECK
+// Verify streaming ingestion is enabled where needed
+// ============================================================
+.show database policies streamingingestion
+
+// ============================================================
+// 10. TABLE-LEVEL INGESTION HEALTH SCORECARD
+// Combines multiple metrics into a single view
+// ============================================================
+IngestionResultLogs
+| where TimeGenerated > ago(24h)
+| summarize 
+    TotalBatches = count(),
+    SuccessRate = round(100.0 * countif(Status == "Succeeded") / count(), 1),
+    TotalRows = sum(RowCount),
+    TotalSizeMB = round(sum(OriginalSize) / 1MB, 1),
+    AvgBatchSizeKB = round(avg(OriginalSize) / 1KB, 1),
+    LastIngestion = max(TimeGenerated)
+    by Database, Table
+| extend 
+    HoursSinceLastIngestion = round(datetime_diff('minute', now(), LastIngestion) / 60.0, 1),
+    HealthStatus = case(
+        SuccessRate < 90, "CRITICAL",
+        SuccessRate < 99, "WARNING",
+        "HEALTHY"
+    )
+| order by HealthStatus asc, SuccessRate asc

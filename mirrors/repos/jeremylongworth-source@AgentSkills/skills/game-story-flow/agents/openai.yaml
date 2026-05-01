@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Story Flow"
+  short_description: "Design narrative beats, branches, and story flow."
+  default_prompt: "Use this skill to create or refine game story structure, scene beats, branching narrative, character arcs, dialogue flow, or player-choice consequences."

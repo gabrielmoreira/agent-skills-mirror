@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cohort Analysis"
+  short_description: "Plan cohort analyses."
+  default_prompt: "Use this skill to define, plan, or interpret cohort analyses with cohort keys, start events, measurement windows, inclusion rules, chart/table specs, caveats, confidence, and decision implications."

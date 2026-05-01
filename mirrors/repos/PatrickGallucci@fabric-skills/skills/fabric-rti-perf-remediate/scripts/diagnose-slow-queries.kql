@@ -1,0 +1,153 @@
+// diagnose-slow-queries.kql
+// Diagnostic script for identifying and analyzing slow KQL queries
+// Run against the workspace monitoring Eventhouse/KQL database
+// Requires: Workspace monitoring enabled
+//
+// Usage: Copy individual sections into a KQL Queryset and execute
+
+// ============================================================
+// 1. TOP 20 SLOWEST QUERIES (Last 24 Hours)
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| where State == "Completed"
+| project 
+    TimeGenerated,
+    User,
+    QueryText = substring(Text, 0, 300),
+    DurationSec = round(Duration / 1s, 2),
+    TotalCPUSec = round(TotalCPU / 1s, 2),
+    MemoryPeakMB = round(MemoryPeak / 1MB, 1),
+    ScannedDataMB = round(ScannedDataSize / 1MB, 1),
+    DatabaseName
+| order by DurationSec desc
+| take 20
+
+// ============================================================
+// 2. TOP 20 QUERIES BY CPU CONSUMPTION
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| where State == "Completed"
+| project 
+    TimeGenerated,
+    User,
+    QueryText = substring(Text, 0, 300),
+    DurationSec = round(Duration / 1s, 2),
+    TotalCPUSec = round(TotalCPU / 1s, 2),
+    MemoryPeakMB = round(MemoryPeak / 1MB, 1),
+    DatabaseName
+| order by TotalCPUSec desc
+| take 20
+
+// ============================================================
+// 3. TOP 20 QUERIES BY MEMORY PEAK
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| where State == "Completed"
+| project 
+    TimeGenerated,
+    User,
+    QueryText = substring(Text, 0, 300),
+    DurationSec = round(Duration / 1s, 2),
+    MemoryPeakMB = round(MemoryPeak / 1MB, 1),
+    DatabaseName
+| order by MemoryPeakMB desc
+| take 20
+
+// ============================================================
+// 4. FAILED AND THROTTLED QUERIES
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| where State in ("Failed", "Throttled")
+| project 
+    TimeGenerated,
+    User,
+    State,
+    FailureReason,
+    QueryText = substring(Text, 0, 300),
+    DatabaseName
+| order by TimeGenerated desc
+| take 50
+
+// ============================================================
+// 5. QUERY VOLUME AND FAILURE RATE TREND (Hourly, Last 7 Days)
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(7d)
+| summarize 
+    TotalQueries = count(),
+    CompletedQueries = countif(State == "Completed"),
+    FailedQueries = countif(State == "Failed"),
+    ThrottledQueries = countif(State == "Throttled"),
+    AvgDurationSec = round(avg(Duration / 1s), 2),
+    P95DurationSec = round(percentile(Duration / 1s, 95), 2)
+    by bin(TimeGenerated, 1h)
+| extend FailureRate = round(100.0 * FailedQueries / TotalQueries, 1)
+| order by TimeGenerated asc
+
+// ============================================================
+// 6. TOP QUERY PATTERNS (Repeated Expensive Queries)
+// Identifies queries that could benefit from materialized views
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| where State == "Completed"
+| where Duration > 5s
+| extend QueryPattern = substring(Text, 0, 150)
+| summarize 
+    ExecutionCount = count(),
+    AvgDurationSec = round(avg(Duration / 1s), 2),
+    TotalCPUSec = round(sum(TotalCPU / 1s), 1),
+    MaxMemoryMB = round(max(MemoryPeak / 1MB), 1)
+    by QueryPattern
+| where ExecutionCount > 3
+| order by TotalCPUSec desc
+| take 20
+
+// ============================================================
+// 7. QUERIES BY APPLICATION SOURCE
+// Identifies which tools/apps generate the most load
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| summarize 
+    QueryCount = count(),
+    TotalCPUSec = round(sum(TotalCPU / 1s), 1),
+    AvgDurationSec = round(avg(Duration / 1s), 2)
+    by Application
+| order by TotalCPUSec desc
+
+// ============================================================
+// 8. MATERIALIZED VIEW HEALTH CHECK
+// ============================================================
+.show materialized-views
+| project 
+    Name, 
+    IsHealthy, 
+    IsEnabled,
+    MaterializedTo, 
+    LastRun,
+    AgeBehindMinutes = datetime_diff('minute', now(), MaterializedTo),
+    EffectiveDateTime
+| order by AgeBehindMinutes desc
+
+// ============================================================
+// 9. COLD STORAGE ACCESS DETECTION
+// Queries accessing data outside the cache window
+// ============================================================
+QueryLogs
+| where TimeGenerated > ago(24h)
+| where State == "Completed"
+| where CacheStatistics has "Disk" or CacheStatistics has "Cold"
+| project 
+    TimeGenerated,
+    User,
+    QueryText = substring(Text, 0, 200),
+    DurationSec = round(Duration / 1s, 2),
+    CacheStatistics,
+    DatabaseName
+| order by DurationSec desc
+| take 20

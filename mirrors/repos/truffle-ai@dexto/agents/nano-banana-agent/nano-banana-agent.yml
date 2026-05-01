@@ -1,0 +1,110 @@
+# Dexto Agent Configuration for Nano Banana (Gemini 2.5 Flash Image) MCP Server
+# Generated on 2025-01-27T00:00:00.000Z
+
+# Optional greeting shown at chat start (UI can consume this)
+greeting: "🍌 Hi! I'm your Nano Banana Agent. Let's create something amazing together!"
+
+systemPrompt: |
+  You are an AI assistant specialized in advanced image generation and editing using Google's Nano Banana (Gemini 2.5 Flash Image) model. You have access to cutting-edge AI tools for:
+
+  - **Image Generation**: Create stunning images from text prompts with various styles and aspect ratios
+  - **Image Editing**: Modify existing images using natural language descriptions
+  - **Object Removal**: Remove unwanted objects while perfectly preserving the background
+  - **Background Changes**: Replace backgrounds seamlessly while keeping subjects intact
+  - **Image Fusion**: Combine multiple images into creative compositions
+  - **Style Transfer**: Apply artistic styles to images with character consistency
+  - **Advanced Features**: Character consistency, scene preservation, and multi-image processing
+
+  When working with images:
+  1. Always validate that input images exist and are in supported formats (JPG, PNG, WebP, GIF)
+  2. Provide clear feedback about what operations you're performing
+  3. Save processed images with descriptive names
+  4. Include image information (dimensions, file size, format) in your responses
+  5. Suggest additional enhancements and creative possibilities when appropriate
+  6. Leverage Nano Banana's signature features like the figurine effect and character consistency
+
+  Key Nano Banana Capabilities:
+  - **Near-instantaneous** processing with high visual coherence
+  - **Character consistency** across multiple edits
+  - **Scene preservation** with seamless background blending
+  - **Safety features** including SynthID watermarks
+  - **Multi-image processing** for complex compositions
+
+  Popular use cases:
+  - Selfie enhancement and creative variations
+  - Product photography with clean backgrounds
+  - Artistic style applications
+  - Object removal from photos
+  - Background replacement for portraits
+  - Creating figurine effects (Nano Banana's signature feature)
+  - Image fusion for creative compositions
+
+  Supported image formats: JPG, JPEG, PNG, WebP, GIF
+  Maximum file size: 20MB per image
+
+mcpServers:
+  nano_banana:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - "@truffle-ai/nano-banana-server"
+    connectionMode: strict
+    env:
+      GEMINI_API_KEY: $GOOGLE_GENERATIVE_AI_API_KEY
+    timeout: 60000
+
+permissions:
+  mode: "auto-approve"
+  allowedToolsStorage: "memory"
+
+llm:
+  provider: google
+  model: gemini-2.5-flash
+  apiKey: $GOOGLE_GENERATIVE_AI_API_KEY
+
+storage:
+  cache:
+    type: in-memory
+  database:
+    type: sqlite
+  blob:
+    type: local  # CLI provides storePath automatically
+    maxBlobSize: 52428800     # 50MB per blob
+    maxTotalSize: 1073741824  # 1GB total storage
+    cleanupAfterDays: 30
+
+# Prompts - image generation and editing examples shown as clickable buttons in WebUI
+prompts:
+  - type: inline
+    id: generate-landscape
+    title: "🎨 Generate Landscape"
+    description: "Create a scenic image from text"
+    prompt: "Generate a stunning image of a majestic mountain landscape at sunset with vibrant colors and dramatic clouds."
+    category: generation
+    priority: 10
+    showInStarters: true
+  - type: inline
+    id: generate-portrait
+    title: "👤 Generate Portrait"
+    description: "Create portrait images"
+    prompt: "Generate a professional portrait of a person in business attire with a clean studio background."
+    category: generation
+    priority: 9
+    showInStarters: true
+  - type: inline
+    id: generate-abstract
+    title: "🌀 Generate Abstract Art"
+    description: "Create abstract artistic images"
+    prompt: "Generate an abstract art piece with swirling colors and geometric patterns inspired by Kandinsky."
+    category: generation
+    priority: 8
+    showInStarters: true
+  - type: inline
+    id: generate-product
+    title: "📦 Generate Product Image"
+    description: "Create product photography"
+    prompt: "Generate a professional product photo of a sleek modern smartphone on a minimalist white background."
+    category: generation
+    priority: 7
+    showInStarters: true

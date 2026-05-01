@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bug Reproduction"
+  short_description: "Create reproducible bug steps."
+  default_prompt: "Use this skill to turn bug reports into observed/expected behavior, environment details, minimal reproduction steps, diagnostic checks, regression test targets, and missing evidence."

@@ -1,0 +1,102 @@
+{
+  "source_repo": "https://github.com/Orchestra-Research/AI-Research-SKILLs",
+  "source_commit": "22bca4dbc2a8319f0819d053b30045e467985eff",
+  "skills": [
+    {
+      "skill_id": "vendor.autoresearch",
+      "local_path": "vendor-ai-research/0-autoresearch-skill",
+      "source_path": "0-autoresearch-skill",
+      "source_kind": "vendored",
+      "enabled_stages": ["planning", "ideation", "literature"],
+      "keywords_override": ["autonomous research", "research orchestration", "multi-hypothesis", "proposal framing", "literature survey"]
+    },
+    {
+      "skill_id": "vendor.brainstorming-research-ideas",
+      "local_path": "vendor-ai-research/brainstorming-research-ideas",
+      "source_path": "21-research-ideation/brainstorming-research-ideas",
+      "source_kind": "vendored",
+      "enabled_stages": ["planning", "ideation", "literature"],
+      "keywords_override": ["research ideation", "brainstorming", "hypothesis generation", "novel idea", "proposal framing"]
+    },
+    {
+      "skill_id": "vendor.creative-thinking-for-research",
+      "local_path": "vendor-ai-research/creative-thinking-for-research",
+      "source_path": "21-research-ideation/creative-thinking-for-research",
+      "source_kind": "vendored",
+      "enabled_stages": ["planning", "ideation", "literature"],
+      "keywords_override": ["creative research", "idea generation", "framing", "novelty", "research strategy"]
+    },
+    {
+      "skill_id": "vendor.ml-paper-writing",
+      "local_path": "vendor-ai-research/ml-paper-writing",
+      "source_path": "20-ml-paper-writing",
+      "source_kind": "vendored",
+      "enabled_stages": ["writing", "review"],
+      "keywords_override": ["paper writing", "latex", "neurips", "iclr", "icml", "abstract", "introduction", "related work", "citations", "conference paper"]
+    },
+    {
+      "skill_id": "vendor.academic-plotting",
+      "local_path": "vendor-ai-research/academic-plotting",
+      "source_path": "20-ml-paper-writing/academic-plotting",
+      "source_kind": "vendored",
+      "enabled_stages": ["writing", "review"],
+      "keywords_override": ["figure", "plot", "chart", "caption", "diagram", "benchmark plot", "ablation figure"]
+    },
+    {
+      "skill_id": "vendor.peft-fine-tuning",
+      "local_path": "vendor-ai-research/peft",
+      "source_path": "03-fine-tuning/peft",
+      "source_kind": "vendored",
+      "enabled_stages": ["experiment", "coding", "planning"],
+      "keywords_override": ["peft", "lora", "qlora", "adapter", "parameter-efficient fine-tuning", "fine-tuning"]
+    },
+    {
+      "skill_id": "vendor.unsloth",
+      "local_path": "vendor-ai-research/unsloth",
+      "source_path": "03-fine-tuning/unsloth",
+      "source_kind": "vendored",
+      "enabled_stages": ["experiment", "coding", "planning"],
+      "keywords_override": ["unsloth", "fast fine-tuning", "memory efficient lora", "qlora", "finetuning"]
+    },
+    {
+      "skill_id": "vendor.huggingface-accelerate",
+      "local_path": "vendor-ai-research/accelerate",
+      "source_path": "08-distributed-training/accelerate",
+      "source_kind": "vendored",
+      "enabled_stages": ["experiment", "coding", "planning"],
+      "keywords_override": ["accelerate", "distributed training", "ddp", "fsdp", "deepspeed", "bf16"]
+    },
+    {
+      "skill_id": "vendor.ml-training-recipes",
+      "local_path": "vendor-ai-research/ml-training-recipes",
+      "source_path": "10-optimization/ml-training-recipes",
+      "source_kind": "vendored",
+      "enabled_stages": ["experiment", "coding"],
+      "keywords_override": ["training recipes", "optimizer", "lr schedule", "oom", "mixed precision", "training loop"]
+    },
+    {
+      "skill_id": "vendor.lm-evaluation-harness",
+      "local_path": "vendor-ai-research/lm-evaluation-harness",
+      "source_path": "11-evaluation/lm-evaluation-harness",
+      "source_kind": "vendored",
+      "enabled_stages": ["experiment", "coding", "review"],
+      "keywords_override": ["lm-eval", "benchmark", "gsm8k", "mmlu", "evaluation harness", "academic results"]
+    },
+    {
+      "skill_id": "vendor.ray-data",
+      "local_path": "vendor-ai-research/ray-data",
+      "source_path": "05-data-processing/ray-data",
+      "source_kind": "vendored",
+      "enabled_stages": ["experiment", "coding", "planning"],
+      "keywords_override": ["data processing", "etl", "dataset preprocessing", "batch inference", "ray data"]
+    },
+    {
+      "skill_id": "vendor.skypilot-multi-cloud-orchestration",
+      "local_path": "vendor-ai-research/skypilot",
+      "source_path": "09-infrastructure/skypilot",
+      "source_kind": "vendored",
+      "enabled_stages": ["experiment", "coding", "planning"],
+      "keywords_override": ["skypilot", "gpu cluster", "cloud orchestration", "spot instances", "infrastructure"]
+    }
+  ]
+}

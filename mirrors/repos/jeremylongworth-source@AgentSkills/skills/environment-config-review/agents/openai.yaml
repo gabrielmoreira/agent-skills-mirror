@@ -1,0 +1,4 @@
+interface:
+  display_name: "Environment Config Review"
+  short_description: "Review runtime configuration."
+  default_prompt: "Use this skill to review environment variables, config files, secrets, feature flags, environment parity, config drift, validation, defaults, and deployment-specific settings."

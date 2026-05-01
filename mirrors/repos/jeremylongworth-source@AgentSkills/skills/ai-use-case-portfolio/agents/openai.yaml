@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Use Case Portfolio"
+  short_description: "Map and score AI opportunities."
+  default_prompt: "Use this skill to inventory AI opportunities, map business use cases, score AI initiatives, compare automation candidates, and create AI opportunity portfolios."

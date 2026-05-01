@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Threat Model"
+  short_description: "Threat model agent skills."
+  default_prompt: "Use this skill to threat model agent skills, skillsets, scripts, MCP presets, and install paths by inventorying assets, trust boundaries, permissions, threat paths, mitigations, and approval recommendations."

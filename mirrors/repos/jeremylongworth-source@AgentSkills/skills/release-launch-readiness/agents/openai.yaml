@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Launch Readiness"
+  short_description: "Plan releases, launches, and rollbacks."
+  default_prompt: "Use this skill to plan, audit, or execute release and launch readiness, including release checklists, deployment risk, feature flags, rollout plans, rollback plans, monitoring, support readiness, communications, incident response, and post-launch review."

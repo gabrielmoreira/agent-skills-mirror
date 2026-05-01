@@ -1,0 +1,4 @@
+interface:
+  display_name: "Creator Content Performance Review"
+  short_description: "Review creator content analytics."
+  default_prompt: "Use this skill to analyze supplied creator content metrics, watch time, retention, hooks, titles, thumbnails, audience response, caveats, and next content actions."

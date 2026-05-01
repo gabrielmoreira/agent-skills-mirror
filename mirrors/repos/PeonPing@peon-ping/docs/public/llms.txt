@@ -1,0 +1,169 @@
+# peon-ping — llms.txt
+
+> Game character voice lines + visual overlay notifications when your AI coding agent needs attention.
+
+peon-ping plays voice lines and shows bold on-screen overlay banners from Warcraft, StarCraft, Portal, Zelda, and 90+ other games when your AI coding agent finishes a task, needs permission, or hits an error. Works with Claude Code, Amp, GitHub Copilot, Cursor, OpenCode, Codex, Kiro, Kimi Code, Windsurf, DeepAgents, and any MCP-compatible AI agent.
+
+## Links
+
+- Website: https://peonping.com
+- GitHub: https://github.com/PeonPing/peon-ping
+- Pack Browser: https://openpeon.com/packs
+- CESP Spec: https://openpeon.com/spec
+- Integration Guide: https://openpeon.com/integrate
+- Registry: https://github.com/PeonPing/registry
+- Desktop Pet: https://github.com/PeonPing/peon-pet
+- X: https://x.com/peonping
+
+## Install
+
+```bash
+brew install PeonPing/tap/peon-ping
+```
+
+or
+
+```bash
+curl -fsSL peonping.com/install | bash
+```
+
+## What it does
+
+When your AI agent finishes a task, asks for permission, or hits an error, peon-ping plays a voice line from a game character. The Warcraft orc peon says "Work, work." when a task completes. GLaDOS says "Oh, it's you." when a session starts. Duke Nukem says "Son of a bitch!" when something breaks.
+
+## MCP Server
+
+peon-ping includes an MCP server so any AI agent can call `play_sound` directly. The agent picks the sound based on context — no hooks required, works with any MCP client (Claude, Cursor, Windsurf, etc).
+
+```json
+{
+  "mcpServers": {
+    "peon-ping": {
+      "command": "node",
+      "args": ["/path/to/peon-ping/mcp/peon-mcp.js"]
+    }
+  }
+}
+```
+
+MCP tools: `play_sound`
+MCP resources: `peon-ping://catalog`, `peon-ping://pack/{name}`
+
+## Hook Events Supported
+
+- session.start — Session or workspace opens
+- session.end — Session closes gracefully
+- task.acknowledge — Agent accepted work, is processing
+- task.complete — Work finished successfully
+- task.error — Something failed
+- task.progress — Long-running task still in progress
+- input.required — Blocked, waiting for user input or approval
+- resource.limit — Rate, token, or quota limit hit
+- user.spam — User sending commands too fast
+
+## IDEs Supported (hook-based)
+
+- Claude Code (built-in)
+- Amp (adapter — filesystem watcher for ampcode.com thread files)
+- Gemini CLI (adapter)
+- GitHub Copilot (adapter)
+- OpenAI Codex
+- Cursor
+- OpenCode
+- Kilo CLI
+- Kiro (Amazon)
+- Kimi Code (MoonshotAI; filesystem watcher for Wire Mode events; --install registers a macOS LaunchAgent that survives reboots, falls back to nohup+pidfile on Linux or with KIMI_NO_LAUNCHD=1; install with `bash install.sh --kimi` to land files under ~/.kimi/hooks/peon-ping/ with no Claude dependency, or auto-detected when ~/.kimi exists and ~/.claude does not; when ~/.claude/hooks/peon-ping/packs/ already exists, --kimi symlinks ~/.kimi/.../packs at it so a single pack download serves both IDEs. Pass --no-shared-packs or --packs=/--all to keep them separate)
+- Windsurf (Codeium)
+- Google Antigravity
+- OpenClaw (via adapters/openclaw.sh — call with any CESP category or Claude Code event name)
+- Rovo Dev CLI (Atlassian — adapter for on_complete, on_error, on_tool_permission events)
+- DeepAgents (adapter — translates deepagents-cli events to CESP JSON)
+
+All adapters have native Windows PowerShell (.ps1) versions alongside the bash (.sh) originals. Filesystem watchers (Amp, Antigravity, Kimi) use .NET FileSystemWatcher on Windows instead of fswatch/inotifywait. The Windows installer (install.ps1) copies adapter scripts to ~/.claude/hooks/peon-ping/adapters/.
+
+## Sound Packs (160+ available)
+
+Packs use the OpenPeon (CESP v1.0) standard. Each pack maps event categories to audio files.
+
+Notable packs: peon (Warcraft III orc), glados (Portal), sc_kerrigan (StarCraft), sc2_abathur (StarCraft II Co-op), duke_nukem, tf2_engineer, hd2_helldiver (Helldivers 2), ra2_kirov (Red Alert 2), dota2_axe, molag_bal (Elder Scrolls), rick (Rick and Morty), murloc (Warcraft), ocarina_of_time (Zelda).
+
+Full list: https://openpeon.com/packs
+
+## Key Features
+
+- Volume control (0.0–1.0)
+- No-repeat logic per category
+- Category toggles (enable/disable individual events)
+- Desktop notifications (overlay or standard, with click-to-focus terminal on macOS; Windows Forms/toast on WSL/MSYS2; click-to-focus IDE window on native Windows with multi-window PID-based targeting)
+- Terminal tab title updates (● project: done)
+- Mobile push notifications (ntfy.sh, Pushover, Telegram)
+- Remote development support (SSH, devcontainers, Codespaces)
+- Pack rotation (random, round-robin, or agent-assigned)
+- Multi-language packs (English, Spanish, French, Czech, Polish, Russian)
+
+## Configuration
+
+Config file: `~/.claude/hooks/peon-ping/config.json`
+
+Key settings: volume, categories (per-event toggles), default_pack (replaces active_pack), path_rules (glob-based per-repo pack assignment), exclude_dirs (fully silence sounds & notifications when cwd matches, use for noisy background agents like CodexBar/ClaudeProbe), ide_rules (pack-per-IDE/source assignment), pack_rotation, pack_rotation_mode, desktop_notifications, silent_window_seconds, session_start_cooldown_seconds (dedup greeting sounds when many workspaces open at once; default 30s), suppress_idle_prompt_repeats (default true; suppress Notification+idle_prompt re-pokes when a task.complete already fired for the same session inside idle_prompt_suppress_window_seconds, default 3600s), headphones_only (mute when no headphones detected), suppress_sound_when_tab_focused (skip sound when the generating tab is focused), notification_position (screen position for overlays), notification_dismiss_seconds (auto-dismiss timer, 0 = persistent), notification_title_override (custom project label), notification_title_marker (character(s) before project name in titles, set to "" to disable), notification_title_ide (include IDE label in desktop notification titles as Project - IDE; default false), notification_title_script (shell command for dynamic project name; receives PEON_SESSION_ID/PEON_CWD/PEON_HOOK_EVENT/PEON_IDE/PEON_SESSION_NAME env vars), project_name_map (directory-to-label mapping), notification_templates (per-event message/body format strings with {project}/{ide}/{ide_id}/{summary}/{tool_name} variables), debug (enable structured hook logging), debug_retention_days (auto-prune old logs, default 7). Desktop notification titles use `Project` by default; message/body defaults to status plus details. Terminal tab titles remain `project: status`.
+
+Pack selection hierarchy (highest to lowest priority): session_override (per-session via /peon-ping-use) > path_rules (glob match on working directory) > ide_rules (IDE/source match such as codex or claude) > pack_rotation (random/round-robin from list) > default_pack (static fallback) > hardcoded "peon". Invalid or missing packs fall through to the next layer. Separately, if exclude_dirs matches cwd the entire invocation short-circuits to silence (suppressed=True reason=excluded_dir).
+
+Rule management via CLI: `peon packs bind <pack>` / `unbind` / `bindings` for path rules, `peon packs ide-bind <ide> <pack>` / `ide-unbind` / `ide-bindings` for IDE rules, and `peon packs exclude add <glob-or-dir>` / `remove` / `list` to silence sounds & notifications in matching directories.
+
+Slash command: /peon-ping-rename <name> — give the current Claude Code session a custom name shown in notification titles and terminal tab title. Zero tokens consumed (hook-intercepted). No argument resets to auto-detect. Priority chain: /peon-ping-rename > CLAUDE_SESSION_NAME > .peon-label > notification_title_script > project_name_map > notification_title_override > git repo name > folder name.
+
+Env var: CLAUDE_SESSION_NAME — set before launching claude to give a session a custom name shown in notification titles and terminal tab titles. Example: `CLAUDE_SESSION_NAME="Auth Refactor" claude`. Priority chain: /peon-ping-rename > CLAUDE_SESSION_NAME > .peon-label > notification_title_script > project_name_map > notification_title_override > git repo name > folder name.
+
+## Common Use Cases
+
+Sounds without popups:
+- User wants voice feedback but no visual distractions
+- Solution: peon notifications off
+- Result: Sounds play, desktop popups suppressed, mobile notifications continue
+- Config: desktop_notifications: false
+
+Silent mode with notifications only:
+- User wants visual alerts but no audio
+- Solution: peon pause (or enabled: false in config)
+- Result: Desktop popups show, no sounds play
+
+Independent Controls:
+- enabled: master audio switch (affects sounds only)
+- desktop_notifications: desktop popup banners (affects popups only)
+- mobile_notify.enabled: phone push notifications (affects mobile only)
+
+## CLI Commands
+
+```bash
+peon pause / resume / mute / unmute / status
+peon volume [0.0-1.0]
+peon rotation [random|round-robin|session_override]
+peon packs list / use / install / next / remove / bind / unbind / bindings / community / search
+peon sounds list [pack] / disable <cat> <file> / enable <cat> <file>  (disable or re-enable individual sounds in a pack)
+peon notifications on / off / test
+peon debug on / off / status
+peon logs [--last N] [--session ID] [--clear]
+peon mobile ntfy <topic>
+peon relay --daemon
+peon trainer on / off / log / status / goal
+```
+
+## Debugging
+
+Structured debug logging traces every hook invocation through config, event, sound, play, and notify phases. Enable with `peon debug on` or `PEON_DEBUG=1` env var. Logs are written to `~/.claude/hooks/peon-ping/logs/peon-ping-YYYY-MM-DD.log` (one file per day).
+
+Log format: `TIMESTAMP [phase] inv=ID key=value ...` where inv is a 4-char invocation ID linking all phases of a single hook call. Phases: config, event, sound, play, notify.
+
+Config keys: `debug` (boolean, default false) enables logging. `debug_retention_days` (integer, default 7) auto-prunes old log files.
+
+View logs with `peon logs` (last 50 lines of today), `peon logs --last N` (last N lines across all files), `peon logs --session ID` (filter today by session), `peon logs --session ID --all` (search all log files for session), `peon logs --clear` (delete all).
+
+## Claude Code Skills
+
+Four skills are installed alongside peon-ping for use inside Claude Code sessions:
+
+- `/peon-ping-toggle` — Mute/unmute sounds for the current session
+- `/peon-ping-config` — Modify any setting (volume, packs, categories, etc.)
+- `/peon-ping-use <pack>` — Assign a specific pack to the current agent session (session_override mode)
+- `/peon-ping-log <n> <exercise>` — Log exercise reps to the Peon Trainer (e.g. `/peon-ping-log 25 pushups`)

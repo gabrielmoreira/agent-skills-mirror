@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Doc Writing"
+  short_description: "Write API docs from source."
+  default_prompt: "Use this skill to document endpoints, SDK methods, schemas, auth, errors, rate limits, request/response examples, side effects, and OpenAPI-style contracts from source material."

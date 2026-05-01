@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/senior-computer-vision/../../../engineering-team/senior-computer-vision/SKILL.md

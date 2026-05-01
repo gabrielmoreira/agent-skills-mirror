@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Spec"
+  short_description: "Write PRDs and feature specs."
+  default_prompt: "Use this skill to write or review PRDs, product specs, feature briefs, requirements docs, acceptance criteria, analytics plans, risks, dependencies, and implementation-ready product plans."

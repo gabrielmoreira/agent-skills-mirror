@@ -519,6 +519,18 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ---
 
+## Output Contract
+
+- Default tier: M (state machine review or transition advice fits 5–15 lines)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - single transition / guard fix: S
+  - full state machine + Saga compensation design: L
+- Domain bans:
+  - Do not enumerate states/transitions in prose — emit a transition table or a Mermaid state diagram, then explain the invariants.
+
+---
+
 ## Output Language
 
 Deliver reports, comments, and other final outputs in the user's working language. Code identifiers and technical terms remain in English.

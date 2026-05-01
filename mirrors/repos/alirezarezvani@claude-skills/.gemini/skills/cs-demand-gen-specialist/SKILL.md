@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-demand-gen-specialist/../../../agents/marketing/cs-demand-gen-specialist.md

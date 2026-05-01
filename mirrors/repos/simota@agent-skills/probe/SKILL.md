@@ -14,6 +14,7 @@ CAPABILITIES_SUMMARY:
 - api_dast: API-focused DAST for REST/GraphQL/WebSocket — OWASP API Top 10 2023, BOLA/BFLA dual-identity testing, mass assignment, GraphQL introspection/depth/batching, schemathesis+restler fuzzing
 - mobile_dast: Mobile DAST for built iOS/Android apps — MobSF orchestration, Frida instrumentation, authorized SSL pinning bypass, insecure storage dump, deep-link abuse, WebView XSS against OWASP MASVS/MASTG
 - attack_surface_recon: Passive external recon — subfinder/amass/assetfinder, certificate transparency, DNS enumeration, tech fingerprinting, public-repo secret hunting, shodan/fofa/censys, leaked-credential lookup (no exploitation)
+- fix_prompt_generation: Pair every confirmed runtime exploit with a paste-ready LLM Fix Prompt embedding attack chain, tool evidence, affected endpoints, runtime observation, defensive controls, acceptance criteria, ruled-out alternatives, and "what NOT to do" so a downstream coding LLM (Builder) can act without manual reformulation. Suppress when Sentinel owns the source-level remediation prompt, when escalating to Breach for adversarial validation, or when the engagement was reconnaissance only.
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Probe: Static analysis findings for runtime validation
@@ -71,6 +72,7 @@ Route elsewhere when the task is primarily:
 - Reference OWASP Top 10 2025 (8th edition, 589 CWEs): Broken Access Control (#1), Security Misconfiguration (#2), Software Supply Chain Failures (#3, expanded from Vulnerable Components), Injection (#5), Mishandling of Exceptional Conditions (#10, new).
 - Use CVSS v4.0 when tooling supports it — Scope metric removed, Threat replaces Temporal, Supplemental metrics (Automatable, Safety) aid non-technical stakeholder communication. NVD officially supports v4.0 scoring. Fall back to CVSS v3.1 when v4.0 is unavailable. Caution: v4.0 vectors are incompatible with v3.x parsers — mixing versions produces incorrect scores.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P2 (calibrated DAST report length — preserve CVSS/exploitability/repro steps/evidence per confirmed finding; truncated security reports are unactionable), P5 (think step-by-step at VALIDATE — Confirmed vs Unconfirmed labeling and false-positive triage errors propagate to wrong remediation SLA and waste responder capacity)** as critical for Probe. P1 recommended: front-load scope (targets, environment, exclusions, authorization) at PLAN before SCAN.
+- Pair every confirmed runtime exploit with a paste-ready `## LLM Fix Prompt` block addressed to Builder (or Builder + Gear/Guardian/Sentinel/Beacon/Launch depending on verb). The prompt embeds the attack chain, tool evidence, affected endpoints, runtime observation, defensive controls, acceptance criteria, ruled-out alternatives, and "what NOT to do". Suppress the prompt when Sentinel owns the source-level remediation prompt (Probe's role was runtime confirmation only), when escalating to Breach for adversarial validation, or when the engagement was reconnaissance / scope-mapping only. See `references/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 
 ## Boundaries
 
@@ -224,8 +226,37 @@ Every final deliverable must include:
 - For each finding: CVSS, exploitability status, impact, reproduction steps, evidence, remediation, and references
 - False positives or unconfirmed findings, explicitly labeled
 - Recommended next agent when follow-up is needed
+- For every confirmed runtime exploit, a `## LLM Fix Prompt` block — see `LLM Fix Prompt Generation` below. Suppress the prompt only for: reconnaissance / scope-mapping engagements, escalation to Breach for adversarial validation, or findings where Sentinel owns the source-level remediation prompt. In every suppression case, include a one-line note explaining why.
 
 Use `references/security-report-template.md` as the canonical report skeleton.
+
+## LLM Fix Prompt Generation
+
+When Probe confirms a runtime exploit, the report ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives Builder (and parallel agents) toward a precise, security-correct change. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; Probe-specific verbs, suppression cases, template fields, and worked examples live in `references/fix-prompt-generation.md`.
+
+| Verb | Use when | Receiving agent |
+|------|----------|----------------|
+| `EXPLOIT-FIX` | Confirmed runtime exploit with reproducible attack chain, scoped fix possible | Builder |
+| `HARDEN-RUNTIME` | Defense-in-depth based on observed attack surface (rate limit, WAF rule, header) | Builder + Gear |
+| `MITIGATE` | WAF rule / IP block / feature flag while patching upstream | Builder + Beacon |
+| `BREAKING-FIX` | API or contract change required to close the vulnerability | Builder + Guardian + Launch |
+| `AUTH-FIX` | Authentication / session / authorization bypass confirmed via runtime test | Builder + Guardian + Sentinel |
+| `INVESTIGATE-FURTHER` | Anomaly observed but exploit path unconfirmed; need deeper red-team analysis | Breach or Probe re-entry |
+
+Decision: emit Fix Prompt OR suppress:
+- Confirmed runtime exploit → emit prompt with the matching verb
+- Anomaly only, exploit unconfirmed → emit `INVESTIGATE-FURTHER` (verification plan, not code change)
+- Sentinel owns source-level remediation → suppress, runtime confirmation only
+- Escalating to Breach for red-team validation → suppress, Breach owns remediation prompt
+- Reconnaissance / scope-mapping only → suppress, no actionable finding
+
+Suppress the Fix Prompt block when:
+- Sentinel owns the source-level remediation prompt — Probe's report covers runtime confirmation only.
+- Probe escalates to Breach for adversarial validation — Breach owns the red-team remediation prompt.
+- The engagement was reconnaissance / scope-mapping only — no exploit was attempted.
+- Exploit is out of scope (third-party service, infrastructure) — coordinate via the responsible party.
+
+In all suppression cases, write a one-line note in the report explaining why.
 
 ## AUTORUN Support
 
@@ -295,6 +326,8 @@ Follow `_common/GIT_GUIDELINES.md`. Use Conventional Commits such as `feat(secur
 | `references/pentest-methodology-pitfalls.md` | You are designing a penetration workflow or checking methodology gaps |
 | `references/owasp-api-top10-2023.md` | API scope exists and you need API1-API10 priorities and test strategy |
 | `references/security-pipeline-pitfalls.md` | You are designing CI/CD security gates, scan stages, or pipeline KPIs |
+| `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Probe-specific verb (EXPLOIT-FIX / HARDEN-RUNTIME / MITIGATE / BREAKING-FIX / AUTH-FIX / INVESTIGATE-FURTHER), or deciding whether to suppress the prompt (Sentinel ownership / Breach escalation / reconnaissance only). |
+| `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Sentinel/Scout/Trail/Plea. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the DAST report, deciding adaptive thinking depth at VALIDATE, or front-loading scope/authorization at PLAN. Critical for Probe: P2, P5. |
 
 ## Operational

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,17 +63,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`agents/claude-code.js`](agents/claude-code.js) |
 | 3 | ✓ | [`agents/codebuddy.js`](agents/codebuddy.js) |
 | 4 | ✓ | [`agents/codex-log-monitor.js`](agents/codex-log-monitor.js) |
-| 5 | ✓ | [`agents/codex.js`](agents/codex.js) |
-| 6 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
-| 7 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
-| 8 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
-| 9 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
-| 10 | ✓ | [`agents/kimi-cli.js`](agents/kimi-cli.js) |
-| 11 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
-| 12 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
-| 13 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
-| 14 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`agents/codex-subagent-classifier.js`](agents/codex-subagent-classifier.js) |
+| 6 | ✓ | [`agents/codex.js`](agents/codex.js) |
+| 7 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
+| 8 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
+| 9 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
+| 10 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
+| 11 | ✓ | [`agents/kimi-cli.js`](agents/kimi-cli.js) |
+| 12 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
+| 13 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
+| 14 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
+| 15 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

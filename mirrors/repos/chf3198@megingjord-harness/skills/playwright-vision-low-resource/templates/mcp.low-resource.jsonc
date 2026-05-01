@@ -1,0 +1,22 @@
+{
+  "servers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/node_modules/@playwright/mcp/cli.js",
+        "--headless",
+        "--isolated",
+        "--no-sandbox",
+        "--output-dir",
+        "${workspaceFolder}/.playwright-mcp",
+        "--output-mode",
+        "file",
+        "--timeout-navigation",
+        "90000",
+        "--timeout-action",
+        "10000"
+      ]
+    }
+  }
+}

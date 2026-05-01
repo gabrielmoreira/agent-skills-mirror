@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dashboard Design"
+  short_description: "Design decision-oriented dashboards."
+  default_prompt: "Use this skill to design dashboard specs with audience, decisions, KPIs, chart layout, filters, segments, drilldowns, caveats, data quality, action rules, and review cadence."

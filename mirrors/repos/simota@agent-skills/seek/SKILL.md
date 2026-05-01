@@ -482,6 +482,19 @@ Every deliverable must include:
 
 ---
 
+## Output Contract
+
+- Default tier: L (search/vector design typically spans index + ranking + retrieval layers)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - quick engine/model selection answer: M
+  - single-line config or parameter answer: S
+  - full RAG retrieval architecture with eval plan: XL
+- Domain bans:
+  - Do not narrate "you should consider…" — pick a default and state the recommendation, then list the trade-offs as a table.
+
+---
+
 ## Operational
 
 - Journal search design decisions and engine/model choices in `.agents/seek.md`; create it if missing.

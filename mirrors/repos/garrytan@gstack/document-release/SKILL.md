@@ -110,7 +110,7 @@ In plan mode, allowed because they inform the plan: `$B`, `$D`, `codex exec`/`co
 
 ## Skill Invocation During Plan Mode
 
-If the user invokes a skill in plan mode, the skill takes precedence over generic plan mode behavior. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; the first AskUserQuestion is the workflow entering plan mode, not a violation of it. AskUserQuestion satisfies plan mode's end-of-turn requirement. At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" execute. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
+If the user invokes a skill in plan mode, the skill takes precedence over generic plan mode behavior. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; the first AskUserQuestion is the workflow entering plan mode, not a violation of it. AskUserQuestion (any variant — `mcp__*__AskUserQuestion` or native; see "AskUserQuestion Format → Tool resolution") satisfies plan mode's end-of-turn requirement. If no variant is callable, fall back to writing the decision brief into the plan file as a `## Decisions to confirm` section + ExitPlanMode — never silently auto-decide. At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" execute. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
 
 If `PROACTIVE` is `"false"`, do not auto-invoke or proactively suggest skills. If a skill seems useful, ask: "I think /skillname might help here — want me to run it?"
 
@@ -274,6 +274,16 @@ AI orchestrator (e.g., OpenClaw). In spawned sessions:
 - End with a completion report: what shipped, decisions made, anything uncertain.
 
 ## AskUserQuestion Format
+
+### Tool resolution (read first)
+
+"AskUserQuestion" can resolve to two tools at runtime: the **host MCP variant** (e.g. `mcp__conductor__AskUserQuestion` — appears in your tool list when the host registers it) or the **native** Claude Code tool.
+
+**Rule:** if any `mcp__*__AskUserQuestion` variant is in your tool list, prefer it. Hosts may disable native AUQ via `--disallowedTools AskUserQuestion` (Conductor does, by default) and route through their MCP variant; calling native there silently fails. Same questions/options shape; same decision-brief format applies.
+
+**Fallback when neither variant is callable:** in plan mode, write the decision brief into the plan file as a `## Decisions to confirm` section + ExitPlanMode (the native "Ready to execute?" surfaces it). Outside plan mode, output the brief as prose and stop. **Never silently auto-decide** — only `/plan-tune` AUTO_DECIDE opt-ins authorize auto-picking.
+
+### Format
 
 Every AskUserQuestion is a decision brief and must be sent as tool_use, not prose.
 
@@ -1017,6 +1027,54 @@ rm -f /tmp/gstack-pr-body-$$.md
 6. If `gh pr view` / `glab mr view` fails (no PR/MR exists): skip with message "No PR/MR found — skipping body update."
 7. If `gh pr edit` / `glab mr update` fails: warn "Could not update PR/MR body — documentation changes are in the
    commit." and continue.
+
+**PR/MR title sync (idempotent, always-on):**
+
+PR titles must always start with `v<VERSION>` — same rule as `/ship`. If Step 8 bumped VERSION after `/ship` had already created the PR, the title is now stale. This sub-step fixes it.
+
+1. Read the current VERSION:
+
+```bash
+V=$(cat VERSION 2>/dev/null | tr -d '[:space:]')
+```
+
+If `VERSION` does not exist or is empty, skip this sub-step entirely.
+
+2. Read the current PR/MR title:
+
+**If GitHub:**
+```bash
+CURRENT_TITLE=$(gh pr view --json title -q .title 2>/dev/null || true)
+```
+
+**If GitLab:**
+```bash
+CURRENT_TITLE=$(glab mr view -F json 2>/dev/null | jq -r .title 2>/dev/null || true)
+```
+
+If `CURRENT_TITLE` is empty (no open PR/MR), skip with message "No PR/MR found — skipping title sync."
+
+3. Compute the corrected title using the shared helper (single source of truth — same one `/ship` uses):
+
+```bash
+NEW_TITLE=$(~/.claude/skills/gstack/bin/gstack-pr-title-rewrite.sh "$V" "$CURRENT_TITLE")
+```
+
+The helper handles three cases: title already correct (no-op), title has a different `v<X.Y.Z.W>` prefix (replace it), or title has no version prefix (prepend one).
+
+4. If `NEW_TITLE` differs from `CURRENT_TITLE`, update it:
+
+**If GitHub:**
+```bash
+gh pr edit --title "$NEW_TITLE"
+```
+
+**If GitLab:**
+```bash
+glab mr update -t "$NEW_TITLE"
+```
+
+5. If the edit command fails: warn "Could not update PR/MR title — documentation changes are still in the commit." and continue. Do not block on title sync failure.
 
 **Structured doc health summary (final output):**
 

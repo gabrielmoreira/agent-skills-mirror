@@ -1,0 +1,4 @@
+interface:
+  display_name: "Before/After Evaluation"
+  short_description: "Compare skill evaluation outputs."
+  default_prompt: "Use this skill to compare baseline and skill-enabled agent outputs, score improvements and regressions, document safety and overhead, and recommend whether to keep, revise, split, merge, defer, or retire a skill."

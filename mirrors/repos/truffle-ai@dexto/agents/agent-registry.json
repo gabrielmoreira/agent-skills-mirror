@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "agents": {
+    "database-agent": {
+      "id": "database-agent",
+      "name": "Database Agent",
+      "description": "AI agent for database operations and SQL queries",
+      "author": "Truffle AI",
+      "tags": ["database", "sql", "data", "queries"],
+      "source": "database-agent/",
+      "main": "database-agent.yml"
+    },
+    "github-agent": {
+      "id": "github-agent",
+      "name": "GitHub Agent",
+      "description": "GitHub operations agent for analyzing pull requests, issues, repos and more",
+      "author": "Truffle AI",
+      "tags": ["github", "repositories", "collaboration", "devops", "mcp"],
+      "source": "github-agent/",
+      "main": "github-agent.yml"
+    },
+    "talk2pdf-agent": {
+      "id": "talk2pdf-agent",
+      "name": "Talk2PDF Agent",
+      "description": "PDF document analysis and conversation",
+      "author": "Truffle AI",
+      "tags": ["pdf", "documents", "analysis", "conversation"],
+      "source": "talk2pdf-agent/",
+      "main": "talk2pdf-agent.yml"
+    },
+    "image-editor-agent": {
+      "id": "image-editor-agent",
+      "name": "Image Editor Agent",
+      "description": "AI agent for image editing and manipulation",
+      "author": "Truffle AI",
+      "tags": ["images", "editing", "graphics", "visual"],
+      "source": "image-editor-agent/",
+      "main": "image-editor-agent.yml"
+    },
+    "music-agent": {
+      "id": "music-agent",
+      "name": "Music Agent",
+      "description": "AI agent for music creation and audio processing",
+      "author": "Truffle AI",
+      "tags": ["music", "audio", "creation", "sound"],
+      "source": "music-agent/",
+      "main": "music-agent.yml"
+    },
+    "product-researcher": {
+      "id": "product-researcher",
+      "name": "Product Researcher",
+      "description": "AI agent for product name research and branding",
+      "author": "Truffle AI",
+      "tags": ["product", "research", "branding", "naming"],
+      "source": "product-name-researcher/",
+      "main": "product-name-researcher.yml"
+    },
+    "triage-agent": {
+      "id": "triage-agent",
+      "name": "Triage Agent",
+      "description": "Customer support triage system",
+      "author": "Truffle AI",
+      "tags": ["support", "triage", "routing", "multi-agent"],
+      "source": "triage-demo/",
+      "main": "triage-agent.yml"
+    },
+    "nano-banana-agent": {
+      "id": "nano-banana-agent",
+      "name": "Nano Banana Agent",
+      "description": "AI agent for advanced image generation and editing using Google's Nano Banana (Gemini 2.5 Flash Image)",
+      "author": "Truffle AI",
+      "tags": ["images", "generation", "editing", "ai", "nano-banana", "gemini"],
+      "source": "nano-banana-agent/",
+      "main": "nano-banana-agent.yml"
+    },
+    "podcast-agent": {
+      "id": "podcast-agent",
+      "name": "Podcast Agent",
+      "description": "Advanced podcast generation agent using Google Gemini TTS for multi-speaker audio content",
+      "author": "Truffle AI",
+      "tags": ["podcast", "audio", "tts", "speech", "multi-speaker", "gemini"],
+      "source": "podcast-agent/",
+      "main": "podcast-agent.yml"
+    },
+    "sora-video-agent": {
+      "id": "sora-video-agent",
+      "name": "Sora Video Agent",
+      "description": "AI agent for video generation using OpenAI's Sora technology with comprehensive video creation and management capabilities",
+      "author": "Truffle AI",
+      "tags": ["video", "generation", "sora", "openai", "ai", "media", "creation"],
+      "source": "sora-video-agent/",
+      "main": "sora-video-agent.yml"
+    },
+    "default-agent": {
+      "id": "default-agent",
+      "name": "Default",
+      "description": "Default Dexto agent with filesystem and playwright tools",
+      "author": "Truffle AI",
+      "tags": ["default", "filesystem", "playwright"],
+      "source": "default-agent.yml"
+    },
+    "coding-agent": {
+      "id": "coding-agent",
+      "name": "Coding Agent",
+      "description": "Expert software development assistant with all internal coding tools for building, debugging, and maintaining codebases",
+      "author": "Truffle AI",
+      "tags": ["coding", "development", "software", "internal-tools", "programming"],
+      "source": "coding-agent/",
+      "main": "coding-agent.yml"
+    },
+    "workflow-builder-agent": {
+      "id": "workflow-builder-agent",
+      "name": "Workflow Builder Agent",
+      "description": "AI agent for building and managing n8n automation workflows with comprehensive workflow, execution, and credential management",
+      "author": "Truffle AI",
+      "tags": ["n8n", "automation", "workflows", "integration", "mcp"],
+      "source": "workflow-builder-agent/",
+      "main": "workflow-builder-agent.yml"
+    },
+    "product-analysis-agent": {
+      "id": "product-analysis-agent",
+      "name": "Product Analysis Agent",
+      "description": "AI agent for product analytics using PostHog with insights, feature flags, error tracking, and user behavior analysis",
+      "author": "Truffle AI",
+      "tags": ["posthog", "analytics", "product", "insights", "feature-flags", "mcp"],
+      "source": "product-analysis-agent/",
+      "main": "product-analysis-agent.yml"
+    },
+    "gaming-agent": {
+      "id": "gaming-agent",
+      "name": "Gaming Agent",
+      "description": "AI agent that plays GameBoy games like Pokemon through an emulator with screen capture and button controls",
+      "author": "Truffle AI",
+      "tags": ["gaming", "gameboy", "pokemon", "emulator", "mcp"],
+      "source": "gaming-agent/",
+      "main": "gaming-agent.yml"
+    },
+    "explore-agent": {
+      "id": "explore-agent",
+      "name": "Explore Agent",
+      "description": "Fast, read-only agent for codebase exploration. Use for: 'explore the codebase', 'what's in this folder', 'how does X work', 'find where Y is handled', 'understand the architecture'. Optimized for speed with Haiku.",
+      "author": "Truffle AI",
+      "tags": ["explore", "search", "understand", "find", "research"],
+      "source": "explore-agent/",
+      "main": "explore-agent.yml"
+    }
+  }
+}

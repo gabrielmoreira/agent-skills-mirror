@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content Calendar"
+  short_description: "Build creator publishing calendars."
+  default_prompt: "Use this skill to build creator content calendars with platforms, formats, pillars, hooks, CTAs, owners, status, review gates, repurposing, and measurement checkpoints."

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/spec-driven-workflow/../../../engineering/spec-driven-workflow/SKILL.md

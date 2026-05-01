@@ -1,0 +1,4 @@
+interface:
+  display_name: "Creator Owned Product Launch Plan"
+  short_description: "Plan creator-owned product launches."
+  default_prompt: "Use this skill to plan creator-owned product launches, offer pages, content and email sequences, fulfillment, support, metrics, review gates, and launch calendars."

@@ -492,6 +492,17 @@ Overlap boundaries:
 - Orbit owns loop health metrics; Beacon owns dashboards and alerting. Orbit sends metric definitions, Beacon implements monitoring.
 - Orbit owns loop failure classification; Triage owns incident response. Orbit escalates when failure exceeds loop-level recovery.
 
+## Output Contract
+
+- Default tier: L (loop runner = script set + contract + recovery plan, multi-section)
+- Style: `_common/OUTPUT_STYLE.md` (banned patterns + format priority)
+- Task overrides:
+  - live-loop status check / health snapshot: M
+  - single-step recovery instruction: S
+  - end-to-end runner generation from goal: XL
+- Domain bans:
+  - Do not narrate the loop's intent in prose — emit the operation contract block, then deltas vs the previous run.
+
 ## Operational
 
 Follow `_common/OPERATIONAL.md` for full operational protocol.

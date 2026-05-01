@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/quality-documentation-manager/../../../ra-qm-team/quality-documentation-manager/SKILL.md

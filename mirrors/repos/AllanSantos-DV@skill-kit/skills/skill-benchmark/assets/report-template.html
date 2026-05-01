@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="{{T_LANG}}" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Benchmark — {{SKILL_NAME}}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-card: #1c2128;
+            --border: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --accent-blue: #58a6ff;
+            --accent-purple: #bc8cff;
+            --accent-yellow: #d29922;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        header .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Summary cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .stat-card .label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+        .neutral { color: var(--text-secondary); }
+
+        /* Chart sections */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .chart-card h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            max-height: 350px;
+        }
+
+        /* Dimension table */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-card h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.6rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            font-size: 0.9rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .delta-bar {
+            display: inline-block;
+            height: 8px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+
+        /* Expandable prompt rows */
+        .task-row {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .task-row:hover {
+            background: rgba(88, 166, 255, 0.05);
+        }
+
+        .task-row td:first-child::before {
+            content: '▶';
+            display: inline-block;
+            margin-right: 0.4rem;
+            font-size: 0.7rem;
+            transition: transform 0.15s ease;
+            color: var(--text-secondary);
+        }
+
+        .task-row.expanded td:first-child::before {
+            transform: rotate(90deg);
+        }
+
+        .prompt-row {
+            display: none;
+        }
+
+        .prompt-row.visible {
+            display: table-row;
+        }
+
+        .prompt-cell {
+            padding: 0.8rem 1rem 0.8rem 2.2rem;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .prompt-hint {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-style: italic;
+            margin-left: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 {{T_TITLE}}</h1>
+            <p class="subtitle">{{T_TARGET_SKILL}}: <strong>{{SKILL_NAME}}</strong></p>
+        </header>
+
+        <div class="summary-grid" id="summaryGrid"></div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h2>{{T_RADAR_TITLE}}</h2>
+                <div class="chart-wrapper">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h2>{{T_BAR_TITLE}}</h2>
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <h2>{{T_DIM_BREAKDOWN}}</h2>
+            <table id="dimTable">
+                <thead>
+                    <tr>
+                        <th>{{T_DIMENSION}}</th>
+                        <th>{{T_WITH_SKILL}}</th>
+                        <th>{{T_WITHOUT_SKILL}}</th>
+                        <th>{{T_DELTA}}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="table-card">
+            <h2>{{T_TASK_RESULTS}}</h2>
+            <table id="taskTable">
+                <thead>
+                    <tr>
+                        <th>{{T_TASK}}</th>
+                        <th>{{T_WITH_SKILL}}</th>
+                        <th>{{T_WITHOUT_SKILL}}</th>
+                        <th>{{T_DELTA}}</th>
+                        <th>{{T_WINNER}}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <footer>
+            {{T_FOOTER}}
+        </footer>
+    </div>
+
+    <script>
+        // Data injected by report.py
+        const radarData = {{RADAR_DATA}};
+        const tasksData = {{TASKS_DATA}};
+        const aggregateData = {{AGGREGATE_DATA}};
+        const T = {{TRANSLATIONS_JSON}};
+
+        // --- Helpers ---
+        function deltaClass(val) {
+            if (val > 0.01) return 'positive';
+            if (val < -0.01) return 'negative';
+            return 'neutral';
+        }
+
+        function formatDelta(val) {
+            const sign = val > 0 ? '+' : '';
+            return sign + val.toFixed(3);
+        }
+
+        function deltaBarHTML(val) {
+            const width = Math.min(Math.abs(val) * 200, 100);
+            const color = val > 0.01 ? 'var(--accent-green)' : val < -0.01 ? 'var(--accent-red)' : 'var(--border)';
+            return `<span class="delta-bar" style="width:${width}px;background:${color}"></span>`;
+        }
+
+        // --- Summary Cards ---
+        (function renderSummary() {
+            const grid = document.getElementById('summaryGrid');
+            const d = aggregateData;
+            const cards = [
+                { value: d.total_tasks, label: T.T_TASKS, cls: '' },
+                { value: formatDelta(d.overall_delta), label: T.T_OVERALL_DELTA, cls: deltaClass(d.overall_delta) },
+                { value: (d.win_rate * 100).toFixed(0) + '%', label: T.T_WIN_RATE, cls: d.win_rate >= 0.7 ? 'positive' : d.win_rate >= 0.4 ? 'neutral' : 'negative' },
+                { value: d.wins, label: T.T_WINS, cls: 'positive' },
+                { value: d.losses, label: T.T_LOSSES, cls: 'negative' },
+                { value: d.ties, label: T.T_TIES, cls: 'neutral' },
+            ];
+            if (d.num_runs > 1) {
+                cards.push({ value: d.num_runs, label: T.T_RUNS_AVERAGED, cls: '' });
+            }
+            if (d.runs_per_task > 1) {
+                cards.push({ value: d.runs_per_task, label: T.T_RUNS_PER_TASK, cls: '' });
+                cards.push({ value: d.total_calls, label: T.T_TOTAL_CALLS, cls: '' });
+            }
+            grid.innerHTML = cards.map(c =>
+                `<div class="stat-card"><div class="value ${c.cls}">${c.value}</div><div class="label">${c.label}</div></div>`
+            ).join('');
+        })();
+
+        // --- Radar Chart ---
+        (function renderRadar() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: radarData.labels,
+                    datasets: [
+                        {
+                            label: T.T_CHART_WITH,
+                            data: radarData.with_values,
+                            borderColor: 'rgba(88,166,255,0.9)',
+                            backgroundColor: 'rgba(88,166,255,0.15)',
+                            pointBackgroundColor: 'rgba(88,166,255,1)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: T.T_CHART_WITHOUT,
+                            data: radarData.without_values,
+                            borderColor: 'rgba(139,148,158,0.9)',
+                            backgroundColor: 'rgba(139,148,158,0.1)',
+                            pointBackgroundColor: 'rgba(139,148,158,1)',
+                            borderWidth: 2,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            min: 0, max: 1,
+                            ticks: { stepSize: 0.25, color: '#8b949e', backdropColor: 'transparent' },
+                            grid: { color: 'rgba(48,54,61,0.6)' },
+                            pointLabels: { color: '#e6edf3', font: { size: 11 } },
+                            angleLines: { color: 'rgba(48,54,61,0.6)' },
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#e6edf3', padding: 16 } }
+                    }
+                }
+            });
+        })();
+
+        // --- Bar Chart ---
+        (function renderBar() {
+            const ctx = document.getElementById('barChart').getContext('2d');
+            const colors = tasksData.deltas.map(d => d > 0.01 ? 'rgba(63,185,80,0.8)' : d < -0.01 ? 'rgba(248,81,73,0.8)' : 'rgba(139,148,158,0.5)');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: tasksData.labels,
+                    datasets: [{
+                        label: T.T_CHART_DELTA,
+                        data: tasksData.deltas,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.8', '1').replace('0.5', '0.8')),
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            min: -1, max: 1,
+                            ticks: { color: '#8b949e', stepSize: 0.25 },
+                            grid: { color: 'rgba(48,54,61,0.4)' },
+                        },
+                        x: {
+                            ticks: { color: '#8b949e' },
+                            grid: { display: false },
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(ctx) {
+                                    const i = ctx.dataIndex;
+                                    return `With: ${tasksData.with_avgs[i].toFixed(3)}  Without: ${tasksData.without_avgs[i].toFixed(3)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+
+        // --- Dimension Table ---
+        (function renderDimTable() {
+            const tbody = document.querySelector('#dimTable tbody');
+            const dims = aggregateData.dimensions;
+            for (const [dim, vals] of Object.entries(dims)) {
+                const delta = vals.avg_delta;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${dim}</td>
+                    <td>${vals.avg_with.toFixed(3)}</td>
+                    <td>${vals.avg_without.toFixed(3)}</td>
+                    <td class="${deltaClass(delta)}">${formatDelta(delta)}</td>
+                    <td>${deltaBarHTML(delta)}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        })();
+
+        // --- Task Table ---
+        (function renderTaskTable() {
+            const tbody = document.querySelector('#taskTable tbody');
+            tasksData.labels.forEach((label, i) => {
+                const t = {
+                    label,
+                    with_avg: tasksData.with_avgs[i],
+                    without_avg: tasksData.without_avgs[i],
+                    delta: tasksData.deltas[i],
+                    prompt: (tasksData.prompts && tasksData.prompts[i]) || '',
+                };
+                const winner = t.delta > 0.01 ? T.T_WINNER_WITH : t.delta < -0.01 ? T.T_WINNER_WITHOUT : T.T_WINNER_TIE;
+                const truncated = t.prompt.length > 200 ? t.prompt.slice(0, 200) + '...' : t.prompt;
+                const hint = t.prompt ? `<span class="prompt-hint">${truncated ? T.T_CLICK_TO_EXPAND : ''}</span>` : '';
+
+                const row = document.createElement('tr');
+                row.className = 'task-row';
+                row.innerHTML = `
+                    <td>${t.label}${hint}</td>
+                    <td>${t.with_avg.toFixed(3)}</td>
+                    <td>${t.without_avg.toFixed(3)}</td>
+                    <td class="${deltaClass(t.delta)}">${formatDelta(t.delta)}</td>
+                    <td>${winner}</td>
+                `;
+                tbody.appendChild(row);
+
+                if (t.prompt) {
+                    const promptRow = document.createElement('tr');
+                    promptRow.className = 'prompt-row';
+                    promptRow.innerHTML = `<td class="prompt-cell" colspan="5"><strong>${T.T_PROMPT}:</strong>\n${t.prompt}</td>`;
+                    tbody.appendChild(promptRow);
+
+                    row.addEventListener('click', () => {
+                        row.classList.toggle('expanded');
+                        promptRow.classList.toggle('visible');
+                    });
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

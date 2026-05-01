@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marketing Positioning Strategy"
+  short_description: "Define ICP, positioning, and messaging."
+  default_prompt: "Use this skill to define ICPs, buyer personas, positioning, category strategy, messaging, offers, value propositions, campaign strategy, and go-to-market narratives."

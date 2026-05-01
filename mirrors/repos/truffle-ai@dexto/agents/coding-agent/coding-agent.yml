@@ -1,0 +1,302 @@
+# Coding Agent Configuration
+# Optimized for software development with internal coding tools
+
+# Image: Specifies the provider bundle for this agent
+# This agent requires local development tools (filesystem, process)
+image: '@dexto/image-local'
+
+# System prompt configuration - defines the agent's behavior as a coding assistant
+systemPrompt:
+  contributors:
+    - id: date
+      type: dynamic
+      priority: 10
+      source: date
+    - id: env
+      type: dynamic
+      priority: 15
+      source: env
+    - id: primary
+      type: static
+      priority: 0
+      content: |
+        You are an expert software development assistant with deep knowledge of multiple programming languages,
+        frameworks, and development best practices.
+
+        Your primary goal is to help users write, debug, refactor, and understand code efficiently.
+
+        Key capabilities:
+        - Read and analyze codebases using glob and grep patterns
+        - Write and edit files with precise, well-structured code
+        - Execute shell commands for testing, building, and running code
+        - Debug issues by examining error messages and code structure
+        - Refactor code following best practices and design patterns
+        - Explain complex code concepts clearly
+        - Delegate exploration tasks to specialized sub-agents
+
+        ## Task Delegation
+
+        You have access to spawn_agent for delegating tasks to specialized sub-agents.
+
+        **When to delegate to explore-agent:**
+        - Open-ended exploration: "explore the codebase", "what's in this folder", "how does X work"
+        - Understanding architecture: "explain the project structure", "how are components organized"
+        - Finding patterns: "where is authentication handled", "find all API endpoints"
+        - Research tasks: "what testing framework is used", "how is state managed"
+
+        **When to use your own tools directly:**
+        - Specific file operations: "read src/index.ts", "edit the config file"
+        - Targeted searches: "find the User class", "grep for 'TODO'"
+        - Writing/editing code: any task that requires modifications
+        - Running commands: build, test, install dependencies
+
+        **Rule of thumb:** If the task requires understanding or exploring before you know what to do, delegate to explore-agent first. If you know exactly what file/function to target, use your tools directly.
+
+        ## Task Tracking with Todos
+
+        Use the todo_write tool to track progress on multi-step tasks:
+        - **DO use todos for:** Feature implementations, multi-file refactors, bug fixes requiring investigation + fix + tests, any task with 3+ distinct steps
+        - **DON'T use todos for:** Reading files, answering questions, single-file edits, quick explanations
+
+        When using todos:
+        1. Create the todo list when you identify a multi-step task
+        2. Mark a task as in_progress when you start working on it
+        3. Mark it as completed when done, and move to the next task
+        4. Keep only ONE task in_progress at a time
+
+        ## Bash Tool Guidelines
+        When using bash_exec:
+        - Your environment is already configured with the correct working directory.
+        - NEVER prefix commands to run in current working directory with cd <working_directory> && <remaining_command>.
+        - Only use cd <directory> as command prefix if the command needs to run outside the working directory.
+        
+        ## Guidelines
+        - Always read relevant code before making changes to understand context
+        - Use glob_files to find files and grep_content to search within files
+        - Test changes when possible using bash_exec
+        - Follow the project's existing code style and conventions
+        - Provide clear explanations for your code decisions
+        - Ask for clarification when requirements are ambiguous
+
+# Memory configuration - controls how memories are included in system prompt
+memories:
+  enabled: true
+  priority: 40
+  includeTimestamps: false
+  includeTags: true
+  limit: 10
+  pinnedOnly: false
+
+# Greeting optimized for coding tasks
+greeting: "👨‍💻 Ready to code! What are we building today?"
+
+# LLM configuration - using a powerful model for coding tasks
+llm:
+  provider: anthropic
+  model: claude-sonnet-4-5-20250929
+  apiKey: $ANTHROPIC_API_KEY
+
+storage:
+  cache:
+    type: in-memory
+  database:
+    type: sqlite
+  blob:
+    type: local  # CLI provides storePath automatically
+    maxBlobSize: 52428800     # 50MB per blob
+    maxTotalSize: 1073741824  # 1GB total storage
+    cleanupAfterDays: 30
+
+permissions:
+  mode: manual
+  # timeout: omitted = infinite wait (no timeout for CLI)
+  allowedToolsStorage: storage  # Persist allowed tools across sessions
+
+  # Tool policies optimized for coding workflows
+  toolPolicies:
+    # Tools that never require approval (safe, read-only operations)
+    alwaysAllow:
+      - ask_user
+      - read_file      # Read files without approval
+      - read_media_file      # Read files without approval
+      - glob_files     # Search for files without approval
+      - grep_content   # Search within files without approval
+      - bash_output    # Check background process output
+      - kill_process   # Kill processes without approval (only processes started by agent)
+      - todo_write     # Todo updates don't need approval
+      - plan_create    # Create plan without approval
+      - plan_read      # Read plan without approval
+      - plan_update    # Update plan without approval
+      - wait_for       # Wait for background tasks without approval
+      - check_task     # Check background tasks without approval
+
+    # Tools that are always denied (dangerous operations)
+    # Uncomment to restrict certain operations
+    # alwaysDeny:
+    #   - bash_exec  # Require approval for all shell commands
+
+# Compaction configuration - automatically summarizes conversation when context is full
+compaction:
+  type: reactive-overflow
+  enabled: true
+  # Uncomment to override model's context window (useful for testing or capping usage):
+  # maxContextTokens: 50000  # Cap at 50K tokens regardless of model's max
+  # thresholdPercent: 0.9    # Trigger at 90% of context window (leaves safety buffer)
+
+# Elicitation configuration - required for ask_user tool
+elicitation:
+  enabled: true
+  # timeout: omitted = infinite wait (no timeout for CLI)
+
+# Tools - unified tool factory configuration (builtins + custom tool providers)
+tools:
+  - type: builtin-tools
+    enabledTools:
+      - ask_user       # Ask questions and collect input
+      - invoke_skill   # Invoke skills/prompts during execution
+      - http_request   # Fetch web pages and APIs
+      - web_search     # Web search via Exa MCP (internal tool)
+      - code_search    # Code/context search via Exa MCP (internal tool)
+  - type: filesystem-tools
+    allowedPaths: ["."]
+    blockedPaths: [".git", "node_modules/.bin", ".env"]
+    blockedExtensions: [".exe", ".dll", ".so"]
+    enableBackups: false
+  - type: process-tools
+    securityLevel: moderate
+  - type: todo-tools
+  - type: plan-tools
+    basePath: "${{dexto.project_dir}}/plans"
+  - type: agent-spawner
+    maxConcurrentAgents: 5
+    defaultTimeout: 0
+    allowSpawning: true
+    # List of agent IDs from the registry that can be spawned.
+    # Agent metadata (name, description) is pulled from the registry at runtime.
+    allowedAgents:
+      - explore-agent
+    # Agents with read-only tools that should have auto-approved tool calls
+    autoApproveAgents:
+      - explore-agent
+
+# Resources configuration - expanded for coding projects
+resources:
+  # Filesystem resource - comprehensive file access for coding
+  - type: filesystem
+    paths: ["."]
+    maxFiles: 500              # Increased for larger codebases
+    maxDepth: 10               # Deeper traversal for nested projects
+    includeHidden: true        # Include hidden files (.env, .gitignore, etc.)
+    includeExtensions:
+      # Web development
+      - .js
+      - .jsx
+      - .ts
+      - .tsx
+      - .html
+      - .css
+      - .scss
+      - .sass
+      - .less
+      - .vue
+      - .svelte
+      # Backend languages
+      - .py
+      - .java
+      - .go
+      - .rs
+      - .rb
+      - .php
+      - .c
+      - .cpp
+      - .h
+      - .hpp
+      - .cs
+      - .swift
+      - .kt
+      # Shell and config
+      - .sh
+      - .bash
+      - .zsh
+      - .fish
+      # Config and data
+      - .json
+      - .yaml
+      - .yml
+      - .toml
+      - .xml
+      - .ini
+      - .env
+      # Documentation
+      - .md
+      - .mdx
+      - .txt
+      - .rst
+      # Build and package files
+      - .gradle
+      - .maven
+      - .dockerignore
+      - .gitignore
+
+  # Blob resource - for handling build artifacts, images, etc.
+  - type: blob
+
+# Prompts - coding-focused examples shown as clickable buttons in WebUI
+prompts:
+  # Skills - can be invoked by the LLM via invoke_skill tool
+  - type: file
+    file: "${{dexto.agent_dir}}/skills/code-review.md"
+    # user-invocable: true (default) - appears as /code-review slash command
+    # disable-model-invocation: false (default) - LLM can invoke via invoke_skill
+  - type: inline
+    id: analyze-codebase
+    title: "🔍 Analyze Codebase"
+    description: "Get an overview of the project structure"
+    prompt: "Analyze this codebase. Show me the project structure, main technologies used, and provide a high-level overview."
+    category: analysis
+    priority: 10
+    showInStarters: true
+  - type: inline
+    id: implement-feature
+    title: "✨ Implement Feature"
+    description: "Build a new feature from scratch"
+    prompt: "Help me implement a new feature. I'll describe what I need, and you can design and implement it following best practices."
+    category: development
+    priority: 9
+    showInStarters: true
+  - type: inline
+    id: write-tests
+    title: "🧪 Write Tests"
+    description: "Generate unit tests for code"
+    prompt: "Help me write comprehensive unit tests. Identify the testing framework and create tests that cover edge cases."
+    category: testing
+    priority: 8
+    showInStarters: true
+  - type: inline
+    id: refactor-code
+    title: "♻️ Refactor Code"
+    description: "Improve code quality and structure"
+    prompt: "Help me refactor some code to improve its structure, readability, and maintainability while preserving functionality."
+    category: refactoring
+    priority: 7
+    showInStarters: true
+
+## Alternative LLM configurations for coding
+
+## Claude Sonnet (excellent for coding)
+# llm:
+#   provider: anthropic
+#   model: claude-sonnet-4-20250514
+#   apiKey: $ANTHROPIC_API_KEY
+
+## Google Gemini (strong coding capabilities)
+# llm:
+#   provider: google
+#   model: gemini-2.5-pro
+#   apiKey: $GOOGLE_GENERATIVE_AI_API_KEY
+
+## OpenAI o1 (for complex reasoning tasks)
+# llm:
+#   provider: openai
+#   model: o1
+#   apiKey: $OPENAI_API_KEY

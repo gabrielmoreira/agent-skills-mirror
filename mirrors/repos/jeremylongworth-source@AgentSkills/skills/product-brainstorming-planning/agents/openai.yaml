@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Brainstorming Planning"
+  short_description: "Explore intent before implementation plans."
+  default_prompt: "Use this skill to brainstorm product ideas, clarify intent, explore options, ask sharp planning questions, compare approaches, and turn rough ideas into implementation-ready briefs."

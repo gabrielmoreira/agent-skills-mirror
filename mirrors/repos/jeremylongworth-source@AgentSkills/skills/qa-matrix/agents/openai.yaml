@@ -1,0 +1,4 @@
+interface:
+  display_name: "QA Matrix"
+  short_description: "Create risk-based QA matrices."
+  default_prompt: "Use this skill to create QA matrices for features, releases, platforms, browsers, devices, roles, permissions, scenarios, evidence, gaps, and release recommendations."

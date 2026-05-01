@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer Research Validation"
+  short_description: "Validate customers, problems, and demand."
+  default_prompt: "Use this skill to plan, conduct, synthesize, or review customer research, interviews, surveys, usability studies, JTBD analysis, demand validation, customer evidence, and research-backed product or marketing decisions."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cash Flow Triage"
+  short_description: "Summarize owner cash pressure and options."
+  default_prompt: "Use this skill to triage cash-flow pressure, summarize cash risk, review receivables and payables, identify cash conservation options, and create owner cash action lists."

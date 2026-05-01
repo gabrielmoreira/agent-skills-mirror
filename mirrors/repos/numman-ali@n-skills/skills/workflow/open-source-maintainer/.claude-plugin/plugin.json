@@ -1,0 +1,20 @@
+{
+  "name": "open-source-maintainer",
+  "description": "End-to-end GitHub repository maintenance for open-source projects. Use when asked to triage issues, review PRs, analyze contributor activity, generate maintenance reports, or maintain a repository.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Numman Ali",
+    "url": "https://github.com/numman-ali"
+  },
+  "repository": "https://github.com/numman-ali/n-skills",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/numman-ali/n-skills",
+  "keywords": [
+    "open-source",
+    "maintenance",
+    "github",
+    "issues",
+    "pull-requests",
+    "triage"
+  ]
+}

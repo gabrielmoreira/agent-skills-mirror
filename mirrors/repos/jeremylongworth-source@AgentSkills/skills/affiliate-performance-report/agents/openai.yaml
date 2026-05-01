@@ -1,0 +1,4 @@
+interface:
+  display_name: "Affiliate Performance Report"
+  short_description: "Report creator affiliate performance."
+  default_prompt: "Use this skill to report supplied creator affiliate clicks, conversions, revenue, commissions, attribution caveats, disclosure checks, and test recommendations."

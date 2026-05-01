@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Notes"
+  short_description: "Draft user-facing release notes."
+  default_prompt: "Use this skill to draft release notes from source changes, grouping highlights, additions, improvements, fixes, breaking changes, docs, validation, known limitations, and action-required notes."

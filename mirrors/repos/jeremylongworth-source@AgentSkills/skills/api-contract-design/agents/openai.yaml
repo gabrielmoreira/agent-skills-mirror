@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Contract Design"
+  short_description: "Design backend API contracts."
+  default_prompt: "Use this skill to design backend API contracts with endpoints, resource models, request and response schemas, status codes, errors, idempotency, pagination, filtering, examples, and compatibility notes."

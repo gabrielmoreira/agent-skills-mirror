@@ -1,0 +1,119 @@
+---
+repo: mxyhi/ok-skills
+repoUrl: https://github.com/mxyhi/ok-skills.git
+refType: branch
+ref: main
+---
+
+# Mirror Manifest
+
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
+
+## Metadata
+
+| Field         | Value |
+|---------------|-------|
+| Repo          | `mxyhi/ok-skills` |
+| Ref Type      | `branch` |
+| Ref           | `main` |
+| Default pats  | 26 |
+| Followed pats | 0 |
+| Files         | 54 |
+
+## Default Sparse Patterns  *(included from config)*
+
+- `**/AGENTS.md`
+- `**/CLAUDE.md`
+- `**/claude.md`
+- `**/gemini.md`
+- `**/GEMINI.md`
+- `**/SKILL.md`
+- `**/skills.md`
+- `**/LLMs.txt`
+- `**/llms.txt`
+- `**/copilot-instructions.md`
+- `**/.cursorrules`
+- `**/.cursor/rules/**`
+- `**/.windsurfrules`
+- `**/.continue/**`
+- `.github/instructions/**`
+- `.github/prompts/**`
+- `.agents/**`
+- `agents/**`
+- `skills/**`
+- `skill/**`
+- `prompts/**`
+- `prompt/**`
+- `.cursor/**`
+- `.continue/**`
+- `.mcp/**`
+- `mcp/**`
+
+## Followed Sparse Patterns  *(discovered via markdown refs)*
+
+_None._
+
+## File Index
+
+Legend: **✓** = default pattern · **→** = followed via markdown
+
+| # | S | File |
+|---|---|------|
+| 1 | ✓ | [`agent-browser/SKILL.md`](agent-browser/SKILL.md) |
+| 2 | ✓ | [`ai-elements/SKILL.md`](ai-elements/SKILL.md) |
+| 3 | ✓ | [`autoresearch/SKILL.md`](autoresearch/SKILL.md) |
+| 4 | ✓ | [`better-icons/SKILL.md`](better-icons/SKILL.md) |
+| 5 | ✓ | [`brainstorming/SKILL.md`](brainstorming/SKILL.md) |
+| 6 | ✓ | [`browser-trace/EXAMPLES.md`](browser-trace/EXAMPLES.md) |
+| 7 | ✓ | [`browser-trace/REFERENCE.md`](browser-trace/REFERENCE.md) |
+| 8 | ✓ | [`browser-trace/SKILL.md`](browser-trace/SKILL.md) |
+| 9 | ✓ | [`browser-use/SKILL.md`](browser-use/SKILL.md) |
+| 10 | ✓ | [`caveman/SKILL.md`](caveman/SKILL.md) |
+| 11 | ✓ | [`dogfood/SKILL.md`](dogfood/SKILL.md) |
+| 12 | ✓ | [`electron/SKILL.md`](electron/SKILL.md) |
+| 13 | ✓ | [`exa-search/SKILL.md`](exa-search/SKILL.md) |
+| 14 | ✓ | [`find-docs/SKILL.md`](find-docs/SKILL.md) |
+| 15 | ✓ | [`find-skills/SKILL.md`](find-skills/SKILL.md) |
+| 16 | ✓ | [`frontend-skill/SKILL.md`](frontend-skill/SKILL.md) |
+| 17 | ✓ | [`get-api-docs/SKILL.md`](get-api-docs/SKILL.md) |
+| 18 | ✓ | [`gh-address-comments/SKILL.md`](gh-address-comments/SKILL.md) |
+| 19 | ✓ | [`gh-fix-ci/SKILL.md`](gh-fix-ci/SKILL.md) |
+| 20 | ✓ | [`gsap-skills/gsap-core/SKILL.md`](gsap-skills/gsap-core/SKILL.md) |
+| 21 | ✓ | [`gsap-skills/gsap-frameworks/SKILL.md`](gsap-skills/gsap-frameworks/SKILL.md) |
+| 22 | ✓ | [`gsap-skills/gsap-performance/SKILL.md`](gsap-skills/gsap-performance/SKILL.md) |
+| 23 | ✓ | [`gsap-skills/gsap-plugins/SKILL.md`](gsap-skills/gsap-plugins/SKILL.md) |
+| 24 | ✓ | [`gsap-skills/gsap-react/SKILL.md`](gsap-skills/gsap-react/SKILL.md) |
+| 25 | ✓ | [`gsap-skills/gsap-scrolltrigger/SKILL.md`](gsap-skills/gsap-scrolltrigger/SKILL.md) |
+| 26 | ✓ | [`gsap-skills/gsap-timeline/SKILL.md`](gsap-skills/gsap-timeline/SKILL.md) |
+| 27 | ✓ | [`gsap-skills/gsap-utils/SKILL.md`](gsap-skills/gsap-utils/SKILL.md) |
+| 28 | ✓ | [`gsap-skills/llms.txt`](gsap-skills/llms.txt) |
+| 29 | ✓ | [`improve-codebase-architecture/INTERFACE-DESIGN.md`](improve-codebase-architecture/INTERFACE-DESIGN.md) |
+| 30 | ✓ | [`improve-codebase-architecture/LANGUAGE.md`](improve-codebase-architecture/LANGUAGE.md) |
+| 31 | ✓ | [`improve-codebase-architecture/SKILL.md`](improve-codebase-architecture/SKILL.md) |
+| 32 | ✓ | [`migrate-to-shoehorn/SKILL.md`](migrate-to-shoehorn/SKILL.md) |
+| 33 | ✓ | [`minimax-docx/SKILL.md`](minimax-docx/SKILL.md) |
+| 34 | ✓ | [`minimax-pdf/SKILL.md`](minimax-pdf/SKILL.md) |
+| 35 | ✓ | [`minimax-xlsx/SKILL.md`](minimax-xlsx/SKILL.md) |
+| 36 | ✓ | [`opencli/opencli-adapter-author/SKILL.md`](opencli/opencli-adapter-author/SKILL.md) |
+| 37 | ✓ | [`opencli/opencli-autofix/SKILL.md`](opencli/opencli-autofix/SKILL.md) |
+| 38 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
+| 39 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
+| 40 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
+| 41 | ✓ | [`opensrc/SKILL.md`](opensrc/SKILL.md) |
+| 42 | ✓ | [`planning-with-files/examples.md`](planning-with-files/examples.md) |
+| 43 | ✓ | [`planning-with-files/reference.md`](planning-with-files/reference.md) |
+| 44 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
+| 45 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
+| 46 | ✓ | [`shader-dev/SKILL.md`](shader-dev/SKILL.md) |
+| 47 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
+| 48 | ✓ | [`tdd/deep-modules.md`](tdd/deep-modules.md) |
+| 49 | ✓ | [`tdd/interface-design.md`](tdd/interface-design.md) |
+| 50 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
+| 51 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
+| 52 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
+| 53 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 54 | ✓ | [`yeet/SKILL.md`](yeet/SKILL.md) |
+
+---
+
+*Generated by mirror — do not edit manually*

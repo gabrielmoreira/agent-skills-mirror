@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/terraform-patterns/../../../engineering/terraform-patterns/SKILL.md

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cs-agile-product-owner/../../../agents/product/cs-agile-product-owner.md

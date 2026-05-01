@@ -1,0 +1,4 @@
+interface:
+  display_name: "KB From Resolution"
+  short_description: "Draft KB articles from resolved support issues."
+  default_prompt: "Use this skill to turn resolved tickets into help-center articles, support runbooks, troubleshooting guides, FAQs, known issue notes, or reusable customer support knowledge."

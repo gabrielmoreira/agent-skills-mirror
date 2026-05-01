@@ -1,0 +1,4 @@
+# Include these server snippets for documentation and current-source research.
+# scripts/install-skillset.ps1 expands these names from mcp/servers/.
+servers = ["context7", "openaiDeveloperDocs"]
+

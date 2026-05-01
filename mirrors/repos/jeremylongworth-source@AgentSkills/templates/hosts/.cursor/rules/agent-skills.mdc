@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+Use installed AgentSkills when the user request matches a skill description.
+Read the matching `SKILL.md` first, then load referenced files only when needed.
+
+Keep this rule short. Put detailed procedures in skills or path-scoped Cursor
+rules.

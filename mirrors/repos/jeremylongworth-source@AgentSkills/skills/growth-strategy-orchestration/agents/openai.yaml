@@ -1,0 +1,4 @@
+interface:
+  display_name: "Growth Strategy Orchestration"
+  short_description: "Coordinate sales and marketing growth work."
+  default_prompt: "Use this skill to coordinate sales and marketing strategy, define ICP, funnel, GTM motion, growth priorities, operating rhythm, experiments, and cross-functional revenue plans."

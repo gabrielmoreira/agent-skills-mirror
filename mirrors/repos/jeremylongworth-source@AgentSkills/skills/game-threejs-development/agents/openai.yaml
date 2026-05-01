@@ -1,0 +1,4 @@
+interface:
+  display_name: "Three.js Game Development"
+  short_description: "Build 3D browser games with Three.js."
+  default_prompt: "Use this skill to build, debug, optimize, or review Three.js 3D browser games, including scenes, cameras, render loops, controls, loaders, physics integrations, shaders, WebGL performance, and mobile/browser QA."

@@ -1,0 +1,5 @@
+{
+  "name": "Code Quality",
+  "description": "Coding standards, code review, error handling patterns, and idiomatic Go conventions grounded in Effective Go, Go Code Review Comments, and production-proven idioms.",
+  "icon": "✅"
+}

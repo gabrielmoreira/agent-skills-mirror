@@ -1,0 +1,4 @@
+interface:
+  display_name: "E2E Test Plan"
+  short_description: "Plan end-to-end tests."
+  default_prompt: "Use this skill to plan E2E tests for user journeys, browser flows, CLI workflows, APIs, smoke tests, release-critical paths, assertions, data setup, cleanup, CI cadence, and flake risks."

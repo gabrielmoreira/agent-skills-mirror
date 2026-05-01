@@ -1,0 +1,4 @@
+interface:
+  display_name: "Newsletter Repurpose"
+  short_description: "Adapt creator newsletters."
+  default_prompt: "Use this skill to repurpose creator content into newsletters or newsletters into social content, including subject lines, preview text, structure, CTAs, links, disclosure notes, and social cutdowns."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue To Plan"
+  short_description: "Turn issues into implementation plans."
+  default_prompt: "Use this skill to analyze issues, bugs, feature requests, and engineering tasks, then produce scoped implementation plans with acceptance criteria, affected areas, tests, risks, and open questions."

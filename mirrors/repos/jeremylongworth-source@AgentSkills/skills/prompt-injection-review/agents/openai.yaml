@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prompt Injection Review"
+  short_description: "Review skills for prompt injection."
+  default_prompt: "Use this skill to review SKILL.md files, references, examples, and scripts for prompt injection, instruction override, unsafe untrusted-content handling, and agent-hijacking patterns."

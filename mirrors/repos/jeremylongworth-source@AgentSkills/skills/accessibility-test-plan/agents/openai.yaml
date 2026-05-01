@@ -1,0 +1,4 @@
+interface:
+  display_name: "Accessibility Test Plan"
+  short_description: "Plan accessibility validation."
+  default_prompt: "Use this skill to plan accessibility tests for keyboard, focus, screen readers, semantics, ARIA, contrast, reduced motion, captions, forms, errors, responsive states, severity, and release gates."

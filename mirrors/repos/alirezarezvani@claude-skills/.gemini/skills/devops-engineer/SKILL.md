@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/devops-engineer/../../../agents/personas/devops-engineer.md

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feedback Synthesis"
+  short_description: "Turn feedback into product insight."
+  default_prompt: "Use this skill to synthesize product feedback, support tickets, interviews, surveys, reviews, and voice-of-customer data into themes, evidence, opportunities, confidence, and next decisions."
