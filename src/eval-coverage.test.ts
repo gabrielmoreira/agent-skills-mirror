@@ -14,6 +14,7 @@
 
 import { assertEquals, assertLess, assert } from "jsr:@std/assert";
 import { join } from "node:path";
+import { REAL_SEARCH_QUERIES } from "./app/config.ts";
 
 // ─── Reference target list ───────────────────────────────────────────────────
 // These are known high-signal repositories that the queries should discover.
@@ -274,20 +275,7 @@ const GITHUB_TARGET_REPOS: string[] = [
 
 // ─── Query constraints ────────────────────────────────────────────────────────
 
-// Keep this list in sync with REAL_SEARCH_QUERIES in src/main.ts.
-// It is duplicated here so that running tests does not execute the main script.
-const SEARCH_QUERIES_UNDER_TEST: string[] = [
-  "(opencode OR omp OR qwen OR llama OR chatglm OR minimax) stars:>40 pushed:>2024-01-01 fork:false archived:false",
-  "(coding agent OR agent framework OR opencode OR pi-agent) stars:>25 pushed:>2024-01-01 fork:false archived:false",
-  "(coding assistant OR copilot OR codex OR claude OR gemini) stars:>20 pushed:>2024-01-01 fork:false archived:false",
-  "mcp stars:>10 pushed:>2024-01-01 fork:false archived:false",
-  "skills prompts stars:>10 pushed:>2024-01-01 fork:false archived:false",
-  "claw stars:>10 pushed:>2024-01-01 fork:false archived:false",
-  "agent-skills in:name stars:>1 pushed:>2024-01-01 fork:false archived:false",
-  "claude skills stars:>3 pushed:>2024-01-01 fork:false archived:false",
-  "topic:claude-code OR topic:agent-skills OR topic:copilot-skills fork:false archived:false",
-  '"copilot instructions" OR "claude plugins" OR "ai-tools" stars:>5 pushed:>2024-01-01 fork:false archived:false',
-];
+const SEARCH_QUERIES_UNDER_TEST = [...REAL_SEARCH_QUERIES];
 
 /** Count boolean operators (OR, AND, NOT) in a GitHub search query string. */
 function countBooleanOperators(query: string): number {
@@ -302,6 +290,39 @@ function containsHardcodedRepo(query: string): boolean {
   // Pattern: two slugs separated by /, not preceded by topic: or in: qualifiers.
   // This is a heuristic — genuine "path:foo/bar" patterns should be caught too.
   return /\brepo:[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+\b/.test(query);
+}
+
+/**
+ * GitHub repository search allows boolean operators only for text terms.
+ * Qualifier-only operands like `topic:foo OR topic:bar` are rejected with HTTP 422.
+ */
+function hasQualifierOperandBooleanOperator(query: string): boolean {
+  const tokens = query
+    .replace(/"[^"]*"/g, " __TEXT__ ")
+    .replace(/[()]/g, " $& ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  for (let i = 0; i < tokens.length; i++) {
+    if (!/^(OR|AND|NOT)$/.test(tokens[i])) continue;
+
+    let left = i - 1;
+    while (left >= 0 && /^[()]$/.test(tokens[left])) left--;
+
+    let right = i + 1;
+    while (right < tokens.length && /^[()]$/.test(tokens[right])) right++;
+
+    if (left < 0 || right >= tokens.length) return true;
+    if (isQueryQualifier(tokens[left]) || isQueryQualifier(tokens[right])) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function isQueryQualifier(token: string): boolean {
+  return /^-?[a-z][\w.-]*:[^\s]+$/i.test(token);
 }
 
 // ─── Mirror coverage helpers ──────────────────────────────────────────────────
@@ -390,6 +411,16 @@ Deno.test("queries: no hardcoded repo references", () => {
   }
 });
 
+Deno.test("queries: boolean operators are not applied to qualifiers", () => {
+  for (const query of SEARCH_QUERIES_UNDER_TEST) {
+    assertEquals(
+      hasQualifierOperandBooleanOperator(query),
+      false,
+      `Query applies a boolean operator to a qualifier operand: ${query}`,
+    );
+  }
+});
+
 Deno.test("queries: no duplicate query strings", () => {
   const deduped = deduplicateRepos(SEARCH_QUERIES_UNDER_TEST);
   assertEquals(
@@ -426,6 +457,21 @@ Deno.test("countBooleanOperators: counts OR/AND/NOT correctly", () => {
   assertEquals(countBooleanOperators("foo AND bar NOT baz OR qux"), 3);
   assertEquals(countBooleanOperators('"foo OR bar" baz'), 0); // quoted, doesn't count
   assertEquals(countBooleanOperators("no operators here"), 0);
+});
+
+Deno.test("hasQualifierOperandBooleanOperator: flags qualifier-only operands", () => {
+  assertEquals(
+    hasQualifierOperandBooleanOperator(
+      "topic:claude-code OR topic:agent-skills fork:false archived:false",
+    ),
+    true,
+  );
+  assertEquals(
+    hasQualifierOperandBooleanOperator(
+      '"copilot instructions" OR "claude plugins" stars:>5 pushed:>2024-01-01',
+    ),
+    false,
+  );
 });
 
 Deno.test("computeCoverage: basic metrics", () => {
