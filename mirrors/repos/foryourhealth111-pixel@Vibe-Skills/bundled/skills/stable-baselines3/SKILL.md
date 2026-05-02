@@ -8,6 +8,10 @@ metadata:
 
 # Stable Baselines3
 
+## Routing Boundary
+
+Use this skill only for Stable-Baselines3, SB3, PPO/SAC/DQN, reinforcement learning agents, Gymnasium environments, policies, rollouts, and RL training workflows. Do not use it for ordinary scikit-learn, random forests, supervised classification, tabular regression, or generic machine-learning model training.
+
 ## Overview
 
 Stable Baselines3 (SB3) is a PyTorch-based library providing reliable implementations of reinforcement learning algorithms. This skill provides comprehensive guidance for training RL agents, creating custom environments, implementing callbacks, and optimizing training workflows using SB3's unified API.

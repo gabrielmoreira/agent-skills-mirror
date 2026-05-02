@@ -25,7 +25,7 @@ Use this skill when:
 ## Not For / Boundaries
 
 - Model evaluation strategy selection: use `evaluating-machine-learning-models`
-- Full regression or causal analysis ownership: use `performing-regression-analysis`
+- Full regression modeling ownership: use `scikit-learn`; causal analysis ownership: use `performing-causal-analysis`
 - Chart design or presentation decisions: use `creating-data-visualizations`
 
 ## Typical Outputs

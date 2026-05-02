@@ -29,41 +29,20 @@ This skill should be used when:
 - Writing preliminary data or feasibility sections
 - Preparing biosketches, CVs, or facilities descriptions
 
-## Visual Enhancement with Scientific Schematics
+## Proposal Outputs
 
-**⚠️ MANDATORY: Every research grant proposal MUST include at least 1-2 AI-generated figures using the scientific-schematics skill.**
+Grant proposals often benefit from clear visual elements, but visuals are outputs of the grant-writing task rather than a required secondary skill route.
 
-This is not optional. Grant proposals without visual elements are incomplete and less competitive. Before finalizing any document:
-1. Generate at minimum ONE schematic or diagram (e.g., project timeline, methodology flowchart, or conceptual framework)
-2. Prefer 2-3 figures for comprehensive proposals (research workflow, Gantt chart, preliminary data visualization)
+Use visuals when they strengthen the proposal:
 
-**How to generate figures:**
-- Use the **scientific-schematics** skill to generate AI-powered publication-quality diagrams
-- Simply describe your desired diagram in natural language
-- Nano Banana Pro will automatically generate, review, and refine the schematic
+- Research workflow or methodology diagram
+- Project timeline or milestone chart
+- Conceptual framework
+- Preliminary data figure plan
+- Collaboration structure
+- Broader impacts activity map
 
-**How to generate schematics:**
-```bash
-python scripts/generate_schematic.py "your diagram description" -o figures/output.png
-```
-
-The AI will automatically:
-- Create publication-quality images with proper formatting
-- Review and refine through multiple iterations
-- Ensure accessibility (colorblind-friendly, high contrast)
-- Save outputs in the figures/ directory
-
-**When to add schematics:**
-- Research methodology and workflow diagrams
-- Project timeline Gantt charts
-- Conceptual framework illustrations
-- System architecture diagrams (for technical proposals)
-- Experimental design flowcharts
-- Broader impacts activity diagrams
-- Collaboration network diagrams
-- Any complex concept that benefits from visualization
-
-For detailed guidance on creating schematics, refer to the scientific-schematics skill documentation.
+Do not require a separate helper expert before the grant proposal can be considered complete.
 
 ---
 
@@ -951,4 +930,3 @@ Load these references as needed when working on specific aspects of grant writin
 ---
 
 **Final Note**: Grant writing is both an art and a science. Success requires not only excellent research ideas but also clear communication, strategic positioning, and meticulous attention to detail. Start early, seek feedback, and remember that even the best researchers face rejection—persistence and revision are key to funding success.
-

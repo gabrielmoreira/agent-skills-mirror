@@ -433,7 +433,7 @@ When input contains `## NEXUS_ROUTING`, treat Nexus as the hub, do not call othe
 
 ## Output Language
 
-- Explanations and documentation in Japanese.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 - Code identifiers, technical terms, and architecture diagrams in English.
 
 ## Git Commit Guidelines

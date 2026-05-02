@@ -1,6 +1,6 @@
 ---
 name: latex-posters
-description: "Create professional research posters in LaTeX using beamerposter, tikzposter, or baposter. Support for conference presentations, academic posters, and scientific communication. Includes layout design, color schemes, multi-column formats, figure integration, and poster-specific best practices for visual communication."
+description: "Use when creating or revising LaTeX research posters with beamerposter, tikzposter, or baposter, including poster layout, typography, color, print sizing, figure placement, QR codes, compilation, and print-ready PDF checks."
 allowed-tools: [Read, Write, Edit, Bash]
 ---
 
@@ -22,41 +22,9 @@ This skill should be used when:
 - Building posters with complex multi-column layouts
 - Integrating figures, tables, equations, and citations in poster format
 
-## Visual Enhancement with Scientific Schematics
+## Boundary
 
-**⚠️ MANDATORY: Every research poster MUST include at least 2-3 AI-generated figures using the scientific-schematics skill.**
-
-This is not optional. Posters are primarily visual media - text-heavy posters fail to communicate effectively. Before finalizing any poster:
-1. Generate at minimum TWO schematics or diagrams
-2. Target 3-4 figures for comprehensive posters (methodology flowchart, key results visualization, conceptual framework)
-3. Figures should occupy 40-50% of poster area
-
-**How to generate figures:**
-- Use the **scientific-schematics** skill to generate AI-powered publication-quality diagrams
-- Simply describe your desired diagram in natural language
-- Nano Banana Pro will automatically generate, review, and refine the schematic
-
-**How to generate schematics:**
-```bash
-python scripts/generate_schematic.py "your diagram description" -o figures/output.png
-```
-
-The AI will automatically:
-- Create publication-quality images with proper formatting
-- Review and refine through multiple iterations
-- Ensure accessibility (colorblind-friendly, high contrast)
-- Save outputs in the figures/ directory
-
-**When to add schematics:**
-- Research methodology flowcharts for poster content
-- Conceptual framework diagrams
-- Experimental design visualizations
-- Data analysis pipeline diagrams
-- System architecture diagrams
-- Biological pathway illustrations
-- Any complex concept that benefits from visualization
-
-For detailed guidance on creating schematics, refer to the scientific-schematics skill documentation.
+This skill owns poster layout and LaTeX poster production. It can place existing figures and specify visual space allocation, but it does not generate diagrams, plots, data figures, or presentation decks, and it must not require a separate visual specialist as part of normal poster work.
 
 ---
 
@@ -870,13 +838,9 @@ Guidance beyond LaTeX for effective poster sessions:
    - Create handout version (8.5×11" summary)
    - Prepare digital version for email sharing
 
-## Integration with Other Skills
+## Scope Boundary
 
-This skill works effectively with:
-- **Scientific Writing**: For developing poster content from papers
-- **Figure Creation**: For generating high-quality visualizations
-- **Literature Review**: For contextualizing research
-- **Data Analysis**: For creating result figures and charts
+Keep this skill focused on the poster artifact: layout, source files, compile path, print checks, and final PDF. Treat upstream research text, data analysis, literature context, and figure generation as already-provided inputs unless the router selected another owner before this skill is used.
 
 ## Common Pitfalls to Avoid
 
@@ -955,4 +919,3 @@ Ready-to-use poster templates in `assets/` directory:
 - Color scheme definitions and institutional templates
 
 Load these templates and customize for your specific research and conference requirements.
-

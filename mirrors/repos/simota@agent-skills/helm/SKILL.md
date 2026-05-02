@@ -211,7 +211,7 @@ Routing rules:
 
 ## Output Requirements
 
-All final outputs are in Japanese. Canonical top-level response:
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Canonical top-level response:
 
 - `## Business Simulation Report`
 - `Executive Summary`

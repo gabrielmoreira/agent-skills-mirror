@@ -243,7 +243,7 @@ Parse the first token of user input.
 
 ## Output Requirements
 
-- All outputs in Japanese. Technical terms and code stay in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Technical terms and code stay in English.
 - For evaluation work, return:
   - heuristic table
   - overall score

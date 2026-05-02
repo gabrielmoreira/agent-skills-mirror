@@ -1,11 +1,13 @@
 ---
 name: performing-causal-analysis
-description: Fits causal models, estimates impacts, and plots results using CausalPy. Use when performing analysis with DiD, ITS, SC, or RD.
+description: Estimate causal effects from existing data. Use when fitting or interpreting DiD, ITS, synthetic control, regression discontinuity, or other treatment-effect analyses, including robustness checks and counterfactual plots. For choosing a study design before analysis, use designing-experiments instead.
 ---
 
 # Performing Causal Analysis
 
-Executes causal analysis using CausalPy experiment classes.
+Executes causal analysis on existing data. This skill owns model setup, treatment-effect estimation, counterfactual comparison, robustness checks, and interpretation of fitted causal results.
+
+It does not own the earlier question of which experiment or quasi-experiment should be designed before analysis begins.
 
 ## Workflow
 

@@ -191,7 +191,7 @@ Parse the first token of user input.
 
 ## Output Requirements
 
-All final outputs are in Japanese.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 - **Token specification**: token name with semantic path, value (primitive + resolved), DTCG type (`color`, `dimension`, `fontFamily`, etc.), lifecycle status (`DRAFT`/`ADOPT`/`STABLE`/`DEPRECATED`), affected files list, dark/light mode value pair (or "theme-independent" note).
 - **Token audit report**: token coverage percentage (hardcoded vs. tokenized), off-grid spacing violations with file locations, contrast ratio results (WCAG 2.2 AA: normal `4.5:1`, large `3:1`), unresolved risks or follow-up actions.

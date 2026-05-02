@@ -1,11 +1,13 @@
 ---
 name: designing-experiments
-description: Selects the appropriate quasi-experimental method (DiD, ITS, SC) based on data structure and research questions. Use when the user is unsure which method to apply.
+description: Design experiments and quasi-experiments before analysis. Use when choosing study design, treatment/control structure, outcomes, assumptions, validation plans after scientific experiment failure, or which of DiD, ITS, synthetic control, or regression discontinuity fits the research question. For fitting models or estimating effects on existing data, use performing-causal-analysis instead.
 ---
 
 # Designing Experiments
 
-Helps select the appropriate causal inference method.
+Helps choose and specify a research design before data analysis starts. This skill owns study-design decisions: what is treated, what is compared, what outcome is measured, which assumptions are required, which validation or recovery experiment should follow a failed scientific experiment, and which design is defensible.
+
+It does not fit causal models, estimate treatment effects, interpret fitted model output from existing data, or debug software/build failures.
 
 ## Decision Framework
 
@@ -29,3 +31,12 @@ Helps select the appropriate causal inference method.
 *   **Difference-in-Differences (DiD)**: Compares trend changes between treated and control groups. Assumes **Parallel Trends**.
 *   **Interrupted Time Series (ITS)**: Analyzes trend/level change for a single unit after intervention. Assumes **Trend Continuity**.
 *   **Synthetic Control (SC)**: Constructs a synthetic counterfactual from weighted control units. Assumes **Convex Hull** (treated unit within range of controls).
+
+## Failed Experiment Recovery
+
+When a scientific experiment or optimization plan produces weak or contradictory results, use the same design surface to:
+
+* Separate implementation or measurement errors from design-assumption failures.
+* Identify which assumption should be tested next.
+* Define a minimal validation experiment before abandoning the approach.
+* State the decision rule for continuing, revising, or stopping the line of work.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Video Prompt Pack"
+  short_description: "Create AI video prompt packs."
+  default_prompt: "Use $ai-video-prompt-pack to create platform-aware AI video prompts with timing, framing, audio, negative prompts, and review gates."

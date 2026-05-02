@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `drayline/rootnode-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `drayline/rootnode-skills` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `drayline/rootnode-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,10 +74,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`rootnode-memory-optimization/SKILL.md`](rootnode-memory-optimization/SKILL.md) |
 | 14 | ✓ | [`rootnode-output-blocks/SKILL.md`](rootnode-output-blocks/SKILL.md) |
 | 15 | ✓ | [`rootnode-project-audit/SKILL.md`](rootnode-project-audit/SKILL.md) |
-| 16 | ✓ | [`rootnode-prompt-compilation/SKILL.md`](rootnode-prompt-compilation/SKILL.md) |
-| 17 | ✓ | [`rootnode-prompt-validation/SKILL.md`](rootnode-prompt-validation/SKILL.md) |
-| 18 | ✓ | [`rootnode-reasoning-blocks/SKILL.md`](rootnode-reasoning-blocks/SKILL.md) |
-| 19 | ✓ | [`rootnode-skill-builder/SKILL.md`](rootnode-skill-builder/SKILL.md) |
+| 16 | ✓ | [`rootnode-project-brief/SKILL.md`](rootnode-project-brief/SKILL.md) |
+| 17 | ✓ | [`rootnode-prompt-compilation/SKILL.md`](rootnode-prompt-compilation/SKILL.md) |
+| 18 | ✓ | [`rootnode-prompt-validation/SKILL.md`](rootnode-prompt-validation/SKILL.md) |
+| 19 | ✓ | [`rootnode-reasoning-blocks/SKILL.md`](rootnode-reasoning-blocks/SKILL.md) |
+| 20 | ✓ | [`rootnode-session-handoff/SKILL.md`](rootnode-session-handoff/SKILL.md) |
+| 21 | ✓ | [`rootnode-skill-builder/SKILL.md`](rootnode-skill-builder/SKILL.md) |
 
 ---
 

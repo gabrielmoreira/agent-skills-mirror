@@ -330,7 +330,7 @@ Full format -> `_common/HANDOFF.md`
 
 ## Output Language
 
-All final outputs must be in Japanese. Code identifiers and technical terms remain in English.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
 
 ## Git Guidelines
 

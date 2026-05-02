@@ -1,6 +1,6 @@
 ---
 name: scientific-writing
-description: "Core skill for the deep research and writing tool. Write scientific manuscripts in full paragraphs (never bullet points). Use two-stage process: (1) create section outlines with key points using research-lookup, (2) convert to flowing prose. IMRAD structure, citations (APA/AMA/Vancouver), figures/tables, reporting guidelines (CONSORT/STROBE/PRISMA), for research papers and journal submissions."
+description: "Use when writing or revising scientific manuscript prose: IMRAD sections, abstracts, figure/table captions, citation-integrated paragraphs, reporting-guideline language, terminology, clarity, and journal-submission text."
 allowed-tools: [Read, Write, Edit, Bash]
 ---
 
@@ -8,11 +8,9 @@ allowed-tools: [Read, Write, Edit, Bash]
 
 ## Overview
 
-**This is the core skill for the deep research and writing tool**—combining AI-driven deep research with well-formatted written outputs. Every document produced is backed by comprehensive literature search and verified citations through the research-lookup skill.
+Scientific writing is a process for communicating research with precision and clarity. Write manuscripts using IMRAD structure, citation-integrated prose, figure/table captions, and reporting guidelines (CONSORT/STROBE/PRISMA). Apply this skill for research papers and journal submissions.
 
-Scientific writing is a process for communicating research with precision and clarity. Write manuscripts using IMRAD structure, citations (APA/AMA/Vancouver), figures/tables, and reporting guidelines (CONSORT/STROBE/PRISMA). Apply this skill for research papers and journal submissions.
-
-**Critical Principle: Always write in full paragraphs with flowing prose. Never submit bullet points in the final manuscript.** Use a two-stage process: first create section outlines with key points using research-lookup, then convert those outlines into complete paragraphs.
+**Critical Principle: Always write in full paragraphs with flowing prose. Never submit bullet points in the final manuscript.** Use a two-stage process: first create section outlines with key points, then convert those outlines into complete paragraphs.
 
 ## When to Use This Skill
 
@@ -20,48 +18,17 @@ This skill should be used when:
 - Writing or revising any section of a scientific manuscript (abstract, introduction, methods, results, discussion)
 - Structuring a research paper using IMRAD or other standard formats
 - Formatting citations and references in specific styles (APA, AMA, Vancouver, Chicago, IEEE)
-- Creating, formatting, or improving figures, tables, and data visualizations
+- Writing figure/table callouts, captions, and result interpretation in manuscript prose
 - Applying study-specific reporting guidelines (CONSORT for trials, STROBE for observational studies, PRISMA for reviews)
 - Drafting abstracts that meet journal requirements (structured or unstructured)
 - Preparing manuscripts for submission to specific journals
 - Improving writing clarity, conciseness, and precision
 - Ensuring proper use of field-specific terminology and nomenclature
-- Addressing reviewer comments and revising manuscripts
+- Revising manuscript prose in response to reviewer comments
 
-## Visual Enhancement with Scientific Schematics
+## Figure And Table Prose Boundary
 
-**⚠️ MANDATORY: Every scientific paper MUST include at least 1-2 AI-generated figures using the scientific-schematics skill.**
-
-This is not optional. Scientific papers without visual elements are incomplete. Before finalizing any document:
-1. Generate at minimum ONE schematic or diagram using scientific-schematics
-2. Prefer 2-3 figures for comprehensive papers (methods flowchart, results visualization, conceptual diagram)
-
-**How to generate figures:**
-- Use the **scientific-schematics** skill to generate AI-powered publication-quality diagrams
-- Simply describe your desired diagram in natural language
-- Nano Banana Pro will automatically generate, review, and refine the schematic
-
-**How to generate schematics:**
-```bash
-python scripts/generate_schematic.py "your diagram description" -o figures/output.png
-```
-
-The AI will automatically:
-- Create publication-quality images with proper formatting
-- Review and refine through multiple iterations
-- Ensure accessibility (colorblind-friendly, high contrast)
-- Save outputs in the figures/ directory
-
-**When to add schematics:**
-- Study design and methodology flowcharts (CONSORT, PRISMA, STROBE)
-- Conceptual framework diagrams
-- Experimental workflow illustrations
-- Data analysis pipeline diagrams
-- Biological pathway or mechanism diagrams
-- System architecture visualizations
-- Any complex concept that benefits from visualization
-
-For detailed guidance on creating schematics, refer to the scientific-schematics skill documentation.
+This skill can specify where figures/tables belong, write captions, and connect display items to the narrative. It does not generate diagrams, plots, posters, or visual assets, and it must not require a separate visual specialist as part of normal writing.
 
 ---
 
@@ -115,9 +82,9 @@ For detailed guidance on IMRAD structure, refer to `references/imrad_structure.m
 - Proposing mechanistic explanations
 - Suggesting practical implications and future research
 
-### 3. Citation and Reference Management
+### 3. Citation-Integrated Prose
 
-Apply citation styles correctly across disciplines. For comprehensive style guides, refer to `references/citation_styles.md`.
+Apply citation styles correctly across disciplines. This skill handles citation placement and style in prose; it does not manage reference libraries or bibliography cleanup. For style details, refer to `references/citation_styles.md`.
 
 **Major Citation Styles:**
 - **AMA (American Medical Association)**: Numbered superscript citations, common in medicine
@@ -131,11 +98,11 @@ Apply citation styles correctly across disciplines. For comprehensive style guid
 - Include recent literature (last 5-10 years for active fields)
 - Balance citation distribution across introduction and discussion
 - Verify all citations against original sources
-- Use reference management software (Zotero, Mendeley, EndNote)
+- Keep bibliography management as a separate deliverable if the user explicitly asks for it
 
-### 4. Figures and Tables
+### 4. Figure And Table Writing
 
-Create effective data visualizations that enhance comprehension. For detailed best practices, refer to `references/figures_tables.md`.
+Write effective figure/table references and captions that enhance comprehension. For detailed best practices, refer to `references/figures_tables.md`.
 
 **When to Use Tables vs. Figures:**
 - **Tables**: Precise numerical data, complex datasets, multiple variables requiring exact values
@@ -211,7 +178,7 @@ Scientific papers must be written in complete, flowing prose. Use this two-stage
 **Stage 1: Create Section Outlines with Key Points**
 
 When starting a new section:
-1. Use the research-lookup skill to gather relevant literature and data
+1. Gather relevant literature notes, accepted source excerpts, methods, and data points from the available materials
 2. Create a structured outline with bullet points marking:
    - Main arguments or findings to present
    - Key studies to cite
@@ -291,13 +258,12 @@ Lists may appear in scientific papers only in specific contexts:
 - **Supplementary Materials**: Extended protocols, equipment lists, detailed parameters
 - **Never in**: Abstract, Introduction, Results, Discussion, Conclusions
 
-**Integration with Research Lookup:**
+**Evidence-to-prose process:**
 
-The research-lookup skill is essential for Stage 1 (creating outlines):
-1. Search for relevant papers using research-lookup
-2. Extract key findings, methods, and data
-3. Organize findings as bullet points in your outline
-4. Then convert the outline to full paragraphs in Stage 2
+Stage 1 creates an evidence outline:
+1. Gather relevant findings, methods, and data from the provided sources or accepted research notes
+2. Organize findings as bullet points in the outline
+3. Then convert the outline to full paragraphs in Stage 2
 
 This two-stage process ensures you:
 - Gather and organize information systematically
@@ -435,7 +401,7 @@ Adapt language, terminology, and conventions to match the specific scientific di
 **Stage 2: Drafting** (Use two-stage writing process for each section)
 1. Start with figures and tables (the core data story)
 2. For each section below, follow the two-stage process:
-   - **First**: Create outline with bullet points using research-lookup
+   - **First**: Create outline with bullet points from the available evidence notes
    - **Second**: Convert bullet points to full paragraphs with flowing prose
 3. Write Methods (often easiest to draft first)
 4. Draft Results (describing figures/tables objectively)
@@ -462,13 +428,9 @@ Adapt language, terminology, and conventions to match the specific scientific di
 4. Complete submission checklists
 5. Gather all required statements and forms
 
-## Integration with Other Scientific Skills
+## Boundary
 
-This skill works effectively with:
-- **Data analysis skills**: For generating results to report
-- **Statistical analysis**: For determining appropriate statistical presentations
-- **Literature review skills**: For contextualizing research
-- **Figure creation tools**: For developing publication-quality visualizations
+This skill owns manuscript prose only. It does not inline-call data analysis, literature search, figure generation, reference-library cleanup, or submission packaging. If the user request includes those deliverables, routing should select the appropriate owner before work starts rather than treating them as helpers inside this skill.
 
 ## References
 

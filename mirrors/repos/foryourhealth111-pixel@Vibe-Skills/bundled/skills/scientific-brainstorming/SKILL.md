@@ -1,6 +1,6 @@
 ---
 name: scientific-brainstorming
-description: "Research ideation partner. Generate hypotheses, explore interdisciplinary connections, challenge assumptions, develop methodologies, identify research gaps, for creative scientific problem-solving."
+description: "Open-ended scientific ideation partner. Use for research gaps, mechanism exploration, interdisciplinary connections, assumptions, possible research directions, and lightweight literature matrix or A+B paper-combination idea mapping. For structured testable hypotheses and validation plans, use hypothesis-generation instead."
 ---
 
 # Scientific Brainstorming
@@ -17,6 +17,7 @@ This skill should be used when:
 - Challenging assumptions in existing research frameworks
 - Developing new methodological approaches
 - Identifying research gaps or opportunities
+- Building lightweight paper-combination or A+B idea maps without a separate matrix workflow
 - Overcoming creative blocks in problem-solving
 - Brainstorming experimental designs or study plans
 
@@ -90,7 +91,7 @@ Help the scientist generate a wide range of ideas without judgment. The goal is 
 - Rapid-fire idea generation with the scientist
 - Build on their suggestions with "Yes, and..."
 - Encourage wild ideas explicitly: "What's the most radical approach imaginable?"
-- Consult references/brainstorming_methods.md for additional structured techniques
+- Use `references/brainstorming_methods.md` when the session needs a named structured technique
 
 ### Phase 3: Connection Making
 
@@ -106,6 +107,8 @@ Help identify patterns, themes, and unexpected connections among the generated i
 - "I notice several ideas involve [theme]—what if we combined them?"
 - "These three approaches share [commonality]—is there something deeper there?"
 - "What's the most unexpected connection you're seeing?"
+
+For literature-combination work, keep the matrix lightweight: list candidate papers or methods, compare complementarity, data compatibility, theory fit, implementation cost, and likely innovation value. Do not turn this into a separate routed workflow.
 
 ### Phase 4: Critical Evaluation
 
@@ -167,14 +170,14 @@ Help crystallize insights and create concrete paths forward.
 
 ### references/brainstorming_methods.md
 
-Contains detailed descriptions of structured brainstorming methodologies that can be consulted when standard techniques need supplementation:
+Contains detailed descriptions of structured brainstorming methodologies for sessions that need a named method:
 - SCAMPER framework (Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse)
 - Six Thinking Hats for multi-perspective analysis
 - Morphological analysis for systematic exploration
 - TRIZ principles for inventive problem-solving
 - Biomimicry approaches for nature-inspired solutions
 
-Consult this file when the scientist requests a specific methodology or when the brainstorming session would benefit from a more structured approach.
+Use this file when the scientist requests a specific methodology or when the brainstorming session would benefit from a more structured approach.
 
 ## Notes
 

@@ -8,6 +8,10 @@ metadata:
 
 # SimPy - Discrete-Event Simulation
 
+## Routing Boundary
+
+Use this skill only for SimPy or explicit discrete-event simulation work involving SimPy environments, resources, processes, queues, and event scheduling. Do not use it for generic simulation, Monte Carlo work, agent-based modeling, physics simulation, animation, or SymPy symbolic math unless the user explicitly asks for SimPy.
+
 ## Overview
 
 SimPy is a process-based discrete-event simulation framework based on standard Python. Use SimPy to model systems where entities (customers, vehicles, packets, etc.) interact with each other and compete for shared resources (servers, machines, bandwidth, etc.) over time.

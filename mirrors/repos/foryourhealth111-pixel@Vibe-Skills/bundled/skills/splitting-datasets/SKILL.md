@@ -25,7 +25,7 @@ Use this skill when:
 
 - Full preprocessing-pipeline ownership: use `preprocessing-data-with-automated-pipelines`
 - Leakage audits and prediction-time checks: use `ml-data-leakage-guard`
-- Model training and tuning after the split: use `training-machine-learning-models`
+- Model training and tuning after the split: use `scikit-learn`
 
 ## Typical Outputs
 

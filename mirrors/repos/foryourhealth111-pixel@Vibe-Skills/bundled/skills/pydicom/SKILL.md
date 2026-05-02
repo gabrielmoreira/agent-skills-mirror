@@ -12,6 +12,10 @@ metadata:
 
 Pydicom is a pure Python package for working with DICOM files, the standard format for medical imaging data. This skill provides guidance on reading, writing, and manipulating DICOM files, including working with pixel data, metadata, and various compression formats.
 
+## Routing Boundary
+
+Use this skill for DICOM files, tags, pixel data, anonymization, CT/MRI/PET/X-ray medical scans, PACS-oriented processing, and pydicom-specific coding. Generic PNG/JPEG image processing, OCR, screenshots, PubMed/literature search, ClinicalTrials.gov lookup, LaTeX/PDF builds, bioinformatics, chemistry, or generic Data Commons tasks are outside this skill.
+
 ## When to Use This Skill
 
 Use this skill when working with:

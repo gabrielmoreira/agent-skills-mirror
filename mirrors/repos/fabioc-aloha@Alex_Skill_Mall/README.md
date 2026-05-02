@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="Alex Skill Mall — 303 curated skills for AI-assisted work across code, cloud, healthcare, research, publishing, and governance" width="100%"/>
+  <img src="assets/banner.svg" alt="Alex Skill Mall — 302 curated skills for AI-assisted work across code, cloud, healthcare, research, publishing, and governance" width="100%"/>
 </p>
 
 # Alex Skill Mall
@@ -44,7 +44,7 @@ Your AI assistant (Copilot, Claude, Cursor, etc.) now has access to the skill.
 
 ## What's Here
 
-### [Skills](skills/) — Hard Knowledge (301 skills)
+### [Skills](skills/) — Hard Knowledge (302 skills)
 
 Expert knowledge across 35 domains:
 
@@ -168,5 +168,3 @@ MIT — use freely, contribute back.
 ## Origin
 
 These skills are extracted from [Alex](https://github.com/fabioc-aloha/alex) — the cognitive architecture for AI-assisted development. The Knowledge Base shares the hard skills without the full brain infrastructure.
-
-

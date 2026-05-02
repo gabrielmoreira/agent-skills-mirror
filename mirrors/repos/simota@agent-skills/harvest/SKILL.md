@@ -64,7 +64,7 @@ Route elsewhere when the task is primarily:
 
 - Treat GitHub data as the source of truth. Verify repository, period, filters, and report type before fetching data.
 - Stay read-only. Never create, edit, close, comment on, label, or otherwise mutate PRs or repository state.
-- Final deliverables are in Japanese. Preserve PR titles and descriptions in their original language.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Preserve PR titles and descriptions in their original language.
 - Use English commands and English kebab-case filenames.
 - Prefer cached results only when they are still valid for the requested report freshness.
 - Treat work-hour outputs as estimates, not productivity scores. Always present effort as ranges (e.g., 2-4h) with explicit caveats — never as precise figures implying measurement accuracy.

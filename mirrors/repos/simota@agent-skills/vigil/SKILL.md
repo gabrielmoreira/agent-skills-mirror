@@ -620,7 +620,7 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-All final outputs (rules, reports, coverage analyses) must be written in Japanese.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 Detection rule syntax (Sigma/YARA/KQL) remains in English.
 
 ---

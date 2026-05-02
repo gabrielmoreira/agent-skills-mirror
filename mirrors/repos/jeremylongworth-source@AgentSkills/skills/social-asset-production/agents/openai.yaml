@@ -1,0 +1,4 @@
+interface:
+  display_name: "Social Asset Production"
+  short_description: "Produce social-ready assets."
+  default_prompt: "Use $social-asset-production to plan, create, export, and review social images, banners, profile assets, thumbnails, and crop-safe variants."

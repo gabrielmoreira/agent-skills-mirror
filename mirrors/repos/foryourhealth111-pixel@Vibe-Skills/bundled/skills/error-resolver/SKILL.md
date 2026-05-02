@@ -1,11 +1,15 @@
 ---
 name: Error Resolver
-description: Systematic error diagnosis and resolution using first-principle analysis. Use when encountering any error message, stack trace, or unexpected behavior. Supports replay functionality to record and reuse solutions.
+description: Legacy error-resolution reference archive retained for migration. Do not route user tasks here; use systematic-debugging for active bug, stack-trace, and root-cause work.
 ---
 
 # Error Resolver
 
-A first-principle approach to diagnosing and resolving errors across all languages and frameworks.
+Legacy reference archive for first-principle error diagnosis across languages and frameworks.
+
+## Routing Status
+
+This directory is retained because it contains substantial analysis, pattern, and replay material. It is not an active `code-quality` route owner. Route user-facing bug, stack-trace, and root-cause tasks to `systematic-debugging`.
 
 ## Core Philosophy
 

@@ -8,6 +8,10 @@ metadata:
 
 # Neuropixels Data Analysis
 
+## Routing Boundary
+
+Use this skill only for Neuropixels, SpikeGLX, Kilosort, Open Ephys, spike sorting, probe/channel maps, or electrophysiology recording workflows tied to these tools. Do not use it for generic neuroscience literature, clinical EEG, fMRI, flow cytometry, or single-cell RNA analysis.
+
 ## Overview
 
 Comprehensive toolkit for analyzing Neuropixels high-density neural recordings using current best practices from SpikeInterface, Allen Institute, and International Brain Laboratory (IBL). Supports the full workflow from raw data to publication-ready curated units.

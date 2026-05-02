@@ -16,6 +16,10 @@ metadata:
 
 Use the `idc-index` Python package to query and download public cancer imaging data from the National Cancer Institute Imaging Data Commons (IDC). No authentication required for data access.
 
+## Routing Boundary
+
+Use this skill for NCI Imaging Data Commons, IDC, TCIA cancer imaging cohorts, DICOMWeb, public cancer imaging data, radiology datasets, and DICOM imaging cohort retrieval. This is not generic Data Commons, public statistical data, population indicators, statistical variables, DCIDs, PubMed, ClinicalTrials.gov, or generic public dataset search.
+
 **Current IDC Data Version: v23** (always verify with `IDCClient().get_idc_version()`)
 
 **Primary tool:** `idc-index` ([GitHub](https://github.com/imagingdatacommons/idc-index))

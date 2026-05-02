@@ -93,7 +93,7 @@ Interaction triggers → `_common/INTERACTION.md`
 - Check `.agents/PROJECT.md` for existing series context, tone conventions, and previous episode links.
 - For series articles, update the index article's episode list in the same pass.
 - Attach a platform-appropriate metadata block (note: タグ 3-5 / Zenn: emoji + topics max 5 / Qiita: tags max 5 / dev.to: cover image 1000×420 + tags max 4).
-- Output in the user's requested language; default to Japanese for note/Qiita, English for dev.to, bilingual-friendly for Zenn.
+- Article output language follows the user's request for the target platform; platform defaults: Japanese for note/Qiita, English for dev.to, bilingual-friendly for Zenn. Internal reports/handoffs follow the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ### Ask First
 
@@ -525,7 +525,7 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-All final article outputs are written in the user's requested language. Default: Japanese for note/Qiita, English for dev.to, Japanese with English code comments for Zenn. Internal reports, handoffs, and commentary: Japanese.
+Internal reports, handoffs, and commentary follow the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Final article outputs follow the user's requested language for the target platform; platform defaults: Japanese for note/Qiita, English for dev.to, Japanese with English code comments for Zenn (bilingual acceptable).
 
 ---
 

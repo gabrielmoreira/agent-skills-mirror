@@ -263,7 +263,7 @@ Read only the files required for the current decision.
 - **Journal** (`.agents/builder.md`): Record domain model insights (business rules, data integrity constraints, DDD pattern decisions). Create the file if missing on first use.
 - Add an activity row to `.agents/PROJECT.md` after task completion: `| YYYY-MM-DD | Builder | (action) | (files) | (outcome) |`.
 - Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
-- Final outputs are in Japanese. Code identifiers and technical terms remain in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
 - Do not include agent names in commits or PRs.
 
 ## AUTORUN Support

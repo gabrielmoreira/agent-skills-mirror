@@ -43,6 +43,22 @@ Use these rules when the user attaches a reference, points to a local image, ask
 - For evolution lines, keep visible lineage markers while allowing larger silhouette, added details, or stronger colors per form.
 - Keep the normal magenta-background and containment rules even when using a reference.
 
+## Layout Guide Rules
+
+Use a layout guide when the sheet needs stronger geometric control than text alone can provide:
+
+- good fit: `3x3` and `4x4` prop packs, tileset-like atlases, fixed atlas rows, and non-directional 16-frame sequences such as casting, summoning, charging, death, or transformation
+- possible fit: `3x3` large idles or showcase loops when earlier generations drift in scale, spacing, or edge safety
+- risky fit: four-direction walk sheets, because guide pressure can make directional poses too centered and reduce locomotion clarity
+
+When using a layout guide, make the guide image visible first and write:
+
+```text
+Use the layout guide image just shown as a layout-only reference. Use it only to understand the rows, columns, equal invisible frame slots, centering, spacing, and safe padding. Do not reproduce the guide: no visible boxes, no safe-area rectangles, no center marks, no labels, no borders, no guide background.
+```
+
+Keep the creative prompt agent-written. The layout guide only provides geometry; it must not replace the action plan, art style, identity lock, or containment rules.
+
 ## Containment Rules
 
 For any sheet mode, say this explicitly when consistency matters:
@@ -197,6 +213,8 @@ Use:
 - column 3: neutral again
 - column 4: right foot forward
 
+Do not use a layout guide by default for this sheet. Try an unguided prompt first unless the previous result crossed cell edges or failed the grid shape.
+
 ### `3x3` large idle
 
 Say:
@@ -205,6 +223,18 @@ Say:
 - same bounding box in all 9 cells
 - subject fills only about 55% to 65% of each cell
 - no edge crossing anywhere
+
+Use a layout guide when a previous 3x3 result has uneven spacing, inconsistent scale, or edge-touching frames.
+
+### `4x4` non-directional action sequence
+
+Use for casting, summoning, charging, transformation, death, and other single-action loops:
+
+- exactly 16 equal cells in a `4x4` grid
+- read frames left-to-right across each row, then continue on the next row
+- describe each phase in order, from anticipation through peak action to settle or loop return
+- keep the subject identity stable while allowing pose, energy, and compact attached effects to change
+- use a layout guide when the action includes VFX, portals, circles, summons, or other elements that might cross cell boundaries
 
 ### `1x4` projectile
 

@@ -448,7 +448,7 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 ## Operational
 
 Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
-Deliver review output in the user's working language; match document templates to the jurisdiction under review (e.g., Japanese templates for Japanese-jurisdiction documents). Code identifiers and technical terms remain in English.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); match document templates to the jurisdiction under review (e.g., Japanese templates for Japanese-jurisdiction documents). Code identifiers and technical terms remain in English.
 
 Before starting, read `.agents/clause.md` (create if missing).
 After task completion, add a row to `.agents/PROJECT.md`.

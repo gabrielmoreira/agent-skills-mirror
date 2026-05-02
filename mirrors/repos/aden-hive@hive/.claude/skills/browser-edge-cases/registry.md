@@ -214,7 +214,7 @@ Curated list of known browser automation edge cases with symptoms, causes, and f
 | **Symptom** | `browser_open()` returns `"No group with id: XXXXXXX"` even though `browser_status` shows `running: true` |
 | **Root Cause** | In-memory `_contexts` dict has a stale `groupId` from a Chrome tab group that was closed outside the tool (e.g. user closed the tab group) |
 | **Detection** | `browser_status` returns `running: true` but `browser_open` fails with "No group with id" |
-| **Fix** | Call `browser_stop()` to clear stale context from `_contexts`, then `browser_start()` again |
+| **Fix** | Call `browser_stop()` to clear stale context from `_contexts`, then `browser_open(url)` to lazy-create a fresh one |
 | **Code** | `tools/lifecycle.py:144-160` - `already_running` check uses cached dict without validating against Chrome |
 | **Verified** | 2026-04-03 ✓ |
 

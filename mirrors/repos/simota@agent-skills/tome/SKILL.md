@@ -422,7 +422,7 @@ When input contains `## NEXUS_ROUTING`, operate as hub node. Do not instruct oth
 
 ## Output Language
 
-All final outputs (learning documents, reports, etc.) must be written in Japanese.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 Code identifiers and technical terms remain in English.
 
 ---

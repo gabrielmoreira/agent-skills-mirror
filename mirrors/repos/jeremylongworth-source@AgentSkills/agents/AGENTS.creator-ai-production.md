@@ -6,6 +6,15 @@ voiceover, thumbnail, b-roll, and batch media prompt briefs with creative
 intent, source references, constraints, exclusions, rights/provenance notes,
 acceptance criteria, and review gates.
 
+Use `ai-video-prompt-pack` when a video generation request needs
+platform/model constraints, scene timing, prompt variants, negative prompts,
+safe areas, regeneration notes, or provider-specific checks for tools such as
+Gemini/Veo, Sora, Runway, Pika, or Luma.
+
+Use `social-asset-production` for profile images, banners, post images,
+article covers, thumbnails, short-video covers, crop-safe prompts, export
+checks, and accessibility notes for social creative.
+
 Use `synthetic-character-bible` for AI-assisted personas, virtual influencers,
 fictional hosts, mascots, synthetic spokescharacters, identity boundaries,
 voice/visual continuity, prohibited claims, disclosure rules, likeness/voice

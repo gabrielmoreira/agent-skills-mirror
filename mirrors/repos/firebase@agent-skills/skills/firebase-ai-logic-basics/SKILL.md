@@ -1,7 +1,7 @@
 ---
 name: firebase-ai-logic-basics
 description: Official skill for integrating Firebase AI Logic (Gemini API) into web applications. Covers setup, multimodal inference, structured output, and security.
-version: 1.0.0
+version: 1.0.1
 ---
 
 # Firebase AI Logic Basics
@@ -40,7 +40,7 @@ Ensure there's at least one app associated with the current project
 
 Initialize AI logic SDK with the init command
 
-`npx -y firebase-tools@latest init # Choose AI logic`
+`npx -y firebase-tools@latest init ailogic`
 
 This will automatically enable the Gemini Developer API in the Firebase console.
 
@@ -96,6 +96,10 @@ See [App Check with reCAPTCHA Enterprise](https://firebase.google.com/docs/app-c
 
 Consider that you do not need to hardcode model names (e.g., `gemini-flash-lite-latest`). Use Firebase Remote Config to update model versions dynamically without deploying new client code.  See [Changing model names remotely](https://firebase.google.com/docs/ai-logic/change-model-name-remotely.md.txt) 
 
+
+> [!WARNING]
+> **CRITICAL: Backend Provisioning Required**
+> For all platforms (Flutter, Android, iOS, Web), you MUST run `npx firebase-tools init ailogic` to provision the service. `flutterfire configure` ONLY handles client configuration and does NOT enable the AI service, leading to `PERMISSION_DENIED` errors.
 ## Initialization Code References
 
 | Language, Framework, Platform | Gemini API provider | Context URL |
@@ -104,7 +108,7 @@ Consider that you do not need to hardcode model names (e.g., `gemini-flash-lite-
 | iOS (Swift) | Gemini Developer API | [ios_setup.md](references/ios_setup.md) |
 | Flutter (Dart) | Gemini Developer API | [flutter_setup.md](references/flutter_setup.md) |
 
-**Always use the most recent version of Gemini (gemini-flash-latest) unless another model is requested by the docs or the user. DO NOT USE gemini-1.5-flash**
+**Always use the most recent version of Gemini (gemini-flash-latest) unless another model is requested by the docs or the user. DO NOT USE gemini-1.5-flash. **
 
 ## References
 

@@ -222,7 +222,7 @@ Routing rules:
 
 - Deliver structured Markdown.
 - Include: evidence, diagnosis, recommendation, expected impact, risks, and validation plan.
-- Final outputs are in Japanese.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 - Use the canonical report format in [performance-report-template.md](references/performance-report-template.md) when producing a full report.
 
 Mandatory when an actionable finding is identified (suppress for analysis-only / Schema-owned migration / Bolt-owned caching / 3rd-party library queries):

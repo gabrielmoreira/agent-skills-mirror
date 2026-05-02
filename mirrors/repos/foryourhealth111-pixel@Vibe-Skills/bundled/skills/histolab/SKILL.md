@@ -12,6 +12,10 @@ metadata:
 
 Histolab is a Python library for processing whole slide images (WSI) in digital pathology. It automates tissue detection, extracts informative tiles from gigapixel images, and prepares datasets for deep learning pipelines. The library handles multiple WSI formats, implements sophisticated tissue segmentation, and provides flexible tile extraction strategies.
 
+## Routing Boundary
+
+Use this skill for basic WSI tile extraction, tissue detection, H&E tile preprocessing, and quick histolab dataset preparation. Full computational pathology workflows, PathML pipelines, nucleus segmentation, spatial pathology, multiplex pathology, DICOM/IDC retrieval, OMERO server work, and generic image-processing tasks are outside this skill.
+
 ## Installation
 
 ```bash

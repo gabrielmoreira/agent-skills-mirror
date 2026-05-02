@@ -156,7 +156,7 @@ Every deliverable must include:
 - **Default Recipe and 2-4 representative Subcommands** (e.g., `scout: bug★ / regression / prod / consensus / cascade`) so the user can target specific variants
 - Negative trigger (when NOT to use this agent)
 - Next-step suggestion
-- Final outputs are in Japanese.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ## Collaboration
 

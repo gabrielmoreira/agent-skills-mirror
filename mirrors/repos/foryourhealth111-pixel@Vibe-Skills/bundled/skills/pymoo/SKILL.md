@@ -8,6 +8,10 @@ metadata:
 
 # Pymoo - Multi-Objective Optimization in Python
 
+## Routing Boundary
+
+Use this skill only for pymoo, NSGA-II/NSGA, Pareto-front analysis, multi-objective optimization, constrained optimization, and pymoo algorithm implementation. Do not use it for generic optimization planning, experiment design, gradient descent, Bayesian modeling, PyMC, or causal analysis.
+
 ## Overview
 
 Pymoo is a comprehensive Python framework for optimization with emphasis on multi-objective problems. Solve single and multi-objective optimization using state-of-the-art algorithms (NSGA-II/III, MOEA/D), benchmark problems (ZDT, DTLZ), customizable genetic operators, and multi-criteria decision making methods. Excels at finding trade-off solutions (Pareto fronts) for problems with conflicting objectives.

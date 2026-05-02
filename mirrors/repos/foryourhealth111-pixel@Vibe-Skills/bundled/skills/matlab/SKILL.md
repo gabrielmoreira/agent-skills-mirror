@@ -9,6 +9,10 @@ metadata:
 
 # MATLAB/Octave Scientific Computing
 
+## Routing Boundary
+
+Use this skill only when the user explicitly asks for MATLAB, Octave, Simulink, `.m` scripts, M-files, or MATLAB-specific tooling. Do not use it for generic NumPy, Python matrix work, Jupyter notebooks, scientific visualization, data analysis, or numerical computing unless MATLAB or Octave is explicit.
+
 MATLAB is a numerical computing environment optimized for matrix operations and scientific computing. GNU Octave is a free, open-source alternative with high MATLAB compatibility.
 
 ## Quick Start
@@ -370,4 +374,3 @@ For complete compatibility guide, see [references/octave-compatibility.md](refer
 - GNU Octave Manual: https://docs.octave.org/latest/
 - MATLAB Onramp (free course): https://www.mathworks.com/learn/tutorials/matlab-onramp.html
 - File Exchange: https://www.mathworks.com/matlabcentral/fileexchange/
-

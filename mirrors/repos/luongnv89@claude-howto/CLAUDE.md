@@ -1,157 +1,62 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Tutorial repo. Output is markdown in numbered modules `01-` through `10-`, not an app. Scripts in `scripts/` exist only to validate docs and build the EPUB.
 
-## Project Overview
+See also `.claude/CLAUDE.md` for stack/commands and `STYLE_GUIDE.md` for lesson structure.
 
-Claude How To is a tutorial repository for Claude Code features. This is **documentation-as-code** — the primary output is markdown files organized into numbered learning modules, not an executable application.
-
-**Architecture**: Each module (01-10) covers a specific Claude Code feature with copy-paste templates, Mermaid diagrams, and examples. The build system validates documentation quality and generates an EPUB ebook.
-
-## Common Commands
-
-### Pre-commit Quality Checks
-
-All documentation must pass four quality checks before commits (these run automatically via pre-commit hooks):
+## Critical commands
 
 ```bash
-# Install pre-commit hooks (runs on every commit)
-pre-commit install
-
-# Run all checks manually
+# Quality gate (also runs on commit via pre-commit hooks)
 pre-commit run --all-files
-```
 
-The four checks are:
-1. **markdown-lint** — Markdown structure and formatting via `markdownlint`
-2. **cross-references** — Internal links, anchors, code fence syntax (Python script)
-3. **mermaid-syntax** — Validates all Mermaid diagrams parse correctly (Python script)
-4. **link-check** — External URLs are reachable (Python script)
-5. **build-epub** — EPUB generates without errors (on `.md` changes)
-
-### Development Environment Setup
-
-```bash
-# Install uv (Python package manager)
-pip install uv
-
-# Create virtual environment and install Python dependencies
-uv venv
-source .venv/bin/activate
-uv pip install -r scripts/requirements-dev.txt
-
-# Install Node.js tools (markdown linter and Mermaid validator)
-npm install -g markdownlint-cli
-npm install -g @mermaid-js/mermaid-cli
-
-# Install pre-commit hooks
-uv pip install pre-commit
-pre-commit install
-```
-
-### Testing
-
-Python scripts in `scripts/` have unit tests:
-
-```bash
-# Run all tests
+# Tests
 pytest scripts/tests/ -v
 
-# Run with coverage
-pytest scripts/tests/ -v --cov=scripts --cov-report=html
-
-# Run specific test
-pytest scripts/tests/test_build_epub.py -v
-```
-
-### Code Quality
-
-```bash
-# Lint and format Python code
-ruff check scripts/
-ruff format scripts/
-
-# Security scan
-bandit -c scripts/pyproject.toml -r scripts/ --exclude scripts/tests/
-
-# Type checking
-mypy scripts/ --ignore-missing-imports
-```
-
-### EPUB Build
-
-```bash
-# Generate ebook (renders Mermaid diagrams via Kroki.io API)
+# EPUB build (calls Kroki.io API to render Mermaid — needs network)
 uv run scripts/build_epub.py
 
-# With options
-uv run scripts/build_epub.py --verbose --output custom-name.epub --max-concurrent 5
+# Python tooling
+ruff check scripts/ && ruff format scripts/
+mypy scripts/ --ignore-missing-imports
+bandit -c scripts/pyproject.toml -r scripts/ --exclude scripts/tests/
 ```
 
-## Directory Structure
+Pre-commit runs 5 checks: markdown-lint, cross-references, mermaid-syntax, link-check, build-epub (on `.md` changes). All must pass.
 
-```
-├── 01-slash-commands/      # User-invoked shortcuts
-├── 02-memory/              # Persistent context examples
-├── 03-skills/              # Reusable capabilities
-├── 04-subagents/           # Specialized AI assistants
-├── 05-mcp/                 # Model Context Protocol examples
-├── 06-hooks/               # Event-driven automation
-├── 07-plugins/             # Bundled features
-├── 08-checkpoints/         # Session snapshots
-├── 09-advanced-features/   # Planning, thinking, backgrounds
-├── 10-cli/                 # CLI reference
-├── scripts/
-│   ├── build_epub.py           # EPUB generator (renders Mermaid via Kroki API)
-│   ├── check_cross_references.py   # Validates internal links
-│   ├── check_links.py          # Checks external URLs
-│   ├── check_mermaid.py        # Validates Mermaid syntax
-│   └── tests/                  # Unit tests for scripts
-├── .pre-commit-config.yaml    # Quality check definitions
-└── README.md               # Main guide (also module index)
-```
+## Architecture map
 
-## Content Guidelines
+- `01-` … `10-` — tutorial modules. **Numbered prefix = learning order**, not alphabetical. Do not reorganize.
+- Each module: `README.md` + copy-paste templates (`.md`, `.json`, `.sh`).
+- `scripts/` — utilities (EPUB builder, link/mermaid/cross-ref validators). Not the product.
+- `02-memory/*.md` — CLAUDE.md templates users copy into their own projects. Don't confuse with this file.
+- `openspec/` — spec-driven change proposals.
 
-### Module Structure
-Each numbered folder follows the pattern:
-- **README.md** — Overview of the feature with examples
-- **Example files** — Copy-paste templates (`.md` for commands, `.json` for configs, `.sh` for hooks)
-- Files are organized by feature complexity and dependencies
+## Hard rules
 
-### Mermaid Diagrams
-- All diagrams must parse successfully (checked by pre-commit hook)
-- EPUB build renders diagrams via Kroki.io API (requires internet)
-- Use Mermaid for flowcharts, sequence diagrams, and architecture visuals
+- **YOU MUST NOT commit or push without explicit user request.**
+- **YOU MUST NOT add `Co-Authored-By: Claude`** to any commit message.
+- Always activate `.venv` before running Python scripts (check `venv/`, `.venv/`, `env/`).
+- Internal links use **relative paths** (e.g. `01-slash-commands/README.md`); anchors use `#heading-name`.
+- Code fences **must** declare a language (`bash`, `python`, `json`, …) — the cross-reference check fails otherwise.
+- External URLs must be reachable and stable. No ephemeral links.
+- Mermaid diagrams must parse (validated pre-commit). Broken EPUB build is usually invalid Mermaid or no network to Kroki.
+- Commit format: `type(scope): subject` where `scope` matches the module folder (e.g. `feat(slash-commands):`, `docs(memory):`, `fix(README):`).
+- Do not reorganize the `01-`–`10-` numbering. The order is the curriculum.
 
-### Cross-References
-- Use relative paths for internal links (e.g., `(01-slash-commands/README.md)`)
-- Code fences must specify language (e.g., ` ```bash `, ` ```python `)
-- Anchor links use `#heading-name` format
+## Workflow preferences
 
-### Link Validation
-- External URLs must be reachable (checked by pre-commit hook)
-- Avoid linking to ephemeral content
-- Use permalinks where possible
+- For lesson edits, follow `STYLE_GUIDE.md` for structure/naming/diagrams.
+- Small fixes → minimal diff. Don't rewrite a section to fix a typo.
+- When adding a module page: README + templates first, then update root `README.md` index and `LEARNING-ROADMAP.md` if order/timing changes.
+- Tutorial > library: prioritize clear explanations and copy-paste examples over reusable abstractions.
+- If a quality check fails, fix the underlying issue. Don't bypass with `--no-verify`.
 
-## Key Architecture Points
-
-1. **Numbered folders indicate learning order** — The 01-10 prefix represents the recommended sequence for learning Claude Code features. This numbering is intentional; do not reorganize alphabetically.
-
-2. **Scripts are utilities, not the product** — The Python scripts in `scripts/` support documentation quality and EPUB generation. The actual content is in the numbered module folders.
-
-3. **Pre-commit is the gatekeeper** — All four quality checks must pass before a PR is accepted. The CI pipeline runs these same checks as a second pass.
-
-4. **Mermaid rendering requires network** — The EPUB build calls Kroki.io API to render diagrams. Build failures here are typically network issues or invalid Mermaid syntax.
-
-5. **This is a tutorial, not a library** — When adding content, focus on clear explanations, copy-paste examples, and visual diagrams. The value is in teaching concepts, not providing reusable code.
-
-## Commit Conventions
-
-Follow conventional commit format:
-- `feat(slash-commands): Add API documentation generator`
-- `docs(memory): Improve personal preferences example`
-- `fix(README): Correct table of contents link`
-- `refactor(hooks): Simplify hook configuration examples`
-
-Scope should match the folder name when applicable.
+## Token Efficiency
+- Never re-read files you just wrote or edited. You know the contents.
+- Never re-run commands to "verify" unless the outcome was uncertain.
+- Don't echo back large blocks of code or file contents unless asked.
+- Batch related edits into single operations. Don't make 5 edits when 1 handles it.
+- Skip confirmations like "I'll continue..." Just do it.
+- If a task needs 1 tool call, don't use 3. Plan before acting.
+- Do not summarize what you just did unless the result is ambiguous or you need additional input.

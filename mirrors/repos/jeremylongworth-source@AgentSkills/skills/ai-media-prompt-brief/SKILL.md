@@ -13,7 +13,9 @@ license: MIT
 2. Define provider-neutral prompt briefs for image, video, audio, thumbnail,
    b-roll, or voiceover assets. Keep production operations in
    `creator-production-ops-brief` when scheduling, owners, contractors, or batch
-   handoff details dominate.
+   handoff details dominate. Use `ai-video-prompt-pack` when video generation
+   needs platform/model constraints, timing maps, prompt variants, negative
+   prompts, or regeneration notes.
 3. Include creative intent, format, references, constraints, exclusions, source
    asset needs, acceptance criteria, and review gates.
 4. Avoid copying protected styles, living artists, private likenesses, specific

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Brand Social Launch Pack"
+  short_description: "Plan coordinated social launches."
+  default_prompt: "Use $brand-social-launch-pack to build a coordinated social launch package with profile updates, posts, assets, video prompts, and verification checks."

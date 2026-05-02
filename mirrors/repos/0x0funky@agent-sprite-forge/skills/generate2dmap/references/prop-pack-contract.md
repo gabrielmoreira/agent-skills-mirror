@@ -33,6 +33,19 @@ Use one-by-one generation instead of a pack for hero props, wide gates, building
 
 ## Prompt Pattern
 
+For `3x3` and `4x4` packs, create a layout-only guide first with `$generate2dsprite`:
+
+```bash
+python skills/generate2dsprite/scripts/make_layout_guide.py \
+  --rows <ROWS> \
+  --cols <COLS> \
+  --cell-width 384 \
+  --cell-height 384 \
+  --output assets/props/raw/<name>-layout-guide.png
+```
+
+Make the guide visible before image generation. Tell the model to use it only for invisible slot count, spacing, centering, and safe padding. The output must not copy guide boxes, safe-area rectangles, center marks, labels, borders, or guide background.
+
 ```text
 Create exactly one <ROWS>x<COLS> prop sheet for a top-down 2D RPG map.
 Each cell contains one separate static environmental prop from this list, in row-major order:

@@ -65,7 +65,7 @@ Route elsewhere when the task is primarily:
 - Adapt routing from execution evidence with safety constraints; track OE (orchestration efficiency) per chain type.
 - Leverage standardized inter-agent protocols where available: MCP (Anthropic) for tool/resource access, A2A (Google) for peer agent coordination and delegation, ACP (IBM) for enterprise governance and agent lifecycle management. [Source: arxiv.org/html/2601.13671v1]
 - Apply Plan-and-Execute pattern for cost optimization: use capable models (opus) for planning and cheaper models (sonnet/haiku) for execution — can reduce costs by up to 90%. [Source: machinelearningmastery.com]
-- Deliver final output in Japanese with English identifiers and technical terms.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); identifiers and technical terms remain in English.
 
 ## Core Rules
 
@@ -377,7 +377,7 @@ Before expanding a chain, consult the anti-pattern references when the plan star
 - `DELIVER` returns `NEXUS_COMPLETE` semantics. Canonical formats live in `references/output-formats.md`.
 - `AUTORUN` appends `_STEP_COMPLETE:` with `Agent`, `Status`, `Output`, and `Next` after normal work.
 - Hub mode uses `## NEXUS_ROUTING` as input and returns `## NEXUS_HANDOFF`.
-- Final outputs are in Japanese; identifiers, protocol markers, schema keys, and technical terms stay in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); identifiers, protocol markers, schema keys, and technical terms stay in English.
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|

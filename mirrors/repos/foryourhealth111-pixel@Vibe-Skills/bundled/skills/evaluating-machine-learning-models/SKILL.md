@@ -24,8 +24,8 @@ This skill focuses on choosing and interpreting the right evaluation metrics for
 
 ## Not For / Boundaries
 
-- Building the training pipeline itself: use `training-machine-learning-models`
-- Engineering features: use `engineering-features-for-machine-learning`
+- Building the training pipeline itself: use `scikit-learn` for classical modeling or `ml-pipeline-workflow` for end-to-end workflow ownership
+- Engineering features: use `preprocessing-data-with-automated-pipelines`
 - Checking train/test contamination: use `ml-data-leakage-guard`
 
 ## Typical Outputs
@@ -36,5 +36,5 @@ This skill focuses on choosing and interpreting the right evaluation metrics for
 
 ## Related Skills
 
-- `confusion-matrix-generator` for class-level error breakdowns
+- `scikit-learn` for class-level error breakdowns and confusion matrices
 - `scientific-reporting` when the evaluation must become a deliverable

@@ -1,6 +1,6 @@
 ---
 name: latex-submission-pipeline
-description: "LaTeX submission pipeline: templates, local build (latexmk), bibliography (bibtex/biber), lint (chktex), formatting (latexindent), CI build (GitHub Actions), and submission zip packaging."
+description: "Use when building a LaTeX manuscript submission pipeline with templates, latexmk, BibTeX/Biber, chktex, latexindent, CI PDF builds, compile debugging, and submission zip packaging."
 allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 ---
 
@@ -20,8 +20,8 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 
 ### 1) 选择模板与约束
 
-用 `venue-templates` 找对应模板或官方要求：
-- 页边距、双栏/单栏、匿名/非匿名、附录策略
+先记录目标 venue 的官方模板或格式要求：
+- 页边距、双栏/单栏、匿名/非匿名、附录策略、页数限制
 
 ### 2) 本地可复现构建
 
@@ -58,4 +58,3 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 - 字体：投稿要求嵌入字体（PDF 检查）
 - Overfull box：大量警告影响排版质量（需要在关键位置修）
 - 参考文献缺字段：DOI/年份/期刊名缺失造成审稿人观感差
-

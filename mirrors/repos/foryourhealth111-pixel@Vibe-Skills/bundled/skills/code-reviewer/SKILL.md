@@ -1,11 +1,35 @@
 ---
 name: code-reviewer
-description: Comprehensive code review skill for TypeScript, JavaScript, Python, Swift, Kotlin, Go. Includes automated code analysis, best practice checking, security scanning, and review checklist generation. Use when reviewing pull requests, providing code feedback, identifying issues, or ensuring code quality standards.
+description: Default code-quality route for broad code review, PR review, maintainability, correctness, and regression-risk checks. Do not use as the primary route for dedicated OWASP/security audits, review-feedback handling, completion verification, AI-code cleanup, or TDD/test-first work.
 ---
 
 # Code Reviewer
 
 Complete toolkit for code reviewer with modern tools and best practices.
+
+## Routing Boundary
+
+Use `code-reviewer` when the user asks for a fresh review of code or a PR:
+- correctness and likely bugs
+- maintainability and readability
+- regression risk
+- test coverage gaps from a reviewer's point of view
+
+Do not let this skill own narrower problems:
+- `security-reviewer` owns OWASP, secret leak, auth bypass, injection, and dedicated security audit prompts.
+- `receiving-code-review` owns existing CodeRabbit/GitHub/human review comments.
+- `verification-before-completion` owns final evidence before claiming work is done.
+- `deslop` owns cleanup of AI-generated comments, redundant guards, and boilerplate.
+- `tdd-guide` owns test-first or RED -> GREEN -> REFACTOR development.
+
+## Migrated Legacy Assets
+
+The legacy review wrapper has been absorbed into this direct route owner.
+
+- `references/python-style-guide.md` contains the retained Python naming, import, documentation, error-handling, and secret-handling guidance.
+- `scripts/check_style.py` is a lightweight stdin/string style checker for quick local review support.
+
+Use these assets as supporting material inside `code-reviewer`; do not route to the deleted wrapper skill.
 
 ## Quick Start
 
@@ -158,10 +182,8 @@ Follow the patterns and practices documented in:
 - Monitor in production
 
 ### Security
-- Validate all inputs
-- Use parameterized queries
-- Implement proper authentication
-- Keep dependencies updated
+- Flag obvious security risks during a general review.
+- Route dedicated OWASP, auth, secret, injection, or threat-model requests to `security-reviewer`.
 
 ### Maintainability
 - Write clear code

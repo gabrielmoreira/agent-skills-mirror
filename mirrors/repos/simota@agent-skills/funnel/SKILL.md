@@ -428,7 +428,7 @@ When input contains `## NEXUS_ROUTING`, do not call other agents directly. Retur
 
 ## Output Language
 
-All final outputs (LP copy, reports, comments) must be written in Japanese.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Owned Social Profile Audit"
+  short_description: "Audit owned social profiles."
+  default_prompt: "Use $owned-social-profile-audit to audit an owned social profile for positioning, profile fields, pinned content, public visibility, and verification gaps."

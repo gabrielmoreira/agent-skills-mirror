@@ -80,7 +80,7 @@ All agents operate in hub-and-spoke mode through Nexus.
 
 ## Output Language
 
-- Explanations, reports, questions: **Japanese**
+- Explanations, reports, questions: follow the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`)
 - Code, identifiers, APIs, commit messages: **Repository conventions** (typically English)
 
 ---

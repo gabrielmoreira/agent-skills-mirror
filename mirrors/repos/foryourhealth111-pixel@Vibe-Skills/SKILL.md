@@ -44,9 +44,11 @@ Do not inspect repository files, protocol docs, previous run outputs, or old
 proof artifacts before canonical launch returns. Reading this file, a wrapper,
 or an AGENTS/CLAUDE bootstrap block is not proof of canonical entry.
 
-Canonical router: `scripts/router/resolve-pack-route.ps1`
+Internal specialist recommendation router: `scripts/router/resolve-pack-route.ps1`
 
-Router input rules:
+Specialist recommender input rules:
+
+This recommender runs inside canonical `vibe`; it may suggest specialist skills, but it does not decide whether `$vibe` is the public runtime entry.
 
 - Include work type, domain/technology, deliverable, and explicit constraints.
 - Reuse verified frozen requirement/plan facts when continuing a run.
@@ -179,21 +181,20 @@ host-visible command or skill wrappers:
 - `vibe-how-do-we-do` -> `xl_plan`
 - `vibe-do-it` -> `phase_cleanup`
 
-## Specialist Dispatch
+## Skill Execution
 
-The router may surface specialist recommendations, but `vibe` remains the
-runtime-selected skill and runtime authority.
+The router may surface selected skill execution candidates, but `vibe` remains
+the runtime-selected skill and runtime authority.
 
-The host must inspect surfaced specialist recommendations and make a structured
-dispatch decision when curation is needed. It may approve, defer, or reject only
-surfaced recommendation ids. Unsuitable or noisy specialists should be rejected
-or deferred with a reason rather than forced into execution.
+The host must inspect surfaced candidates and make a structured skill execution
+decision when curation is needed. It may approve, defer, or reject only surfaced
+candidate ids. Unsuitable or noisy candidates should be rejected or deferred
+with a reason rather than forced into execution.
 
-Only approved specialists become execution units. The host must not invent
-unsurfaced specialists, bypass runtime validation, create hidden specialist
-sub-sessions, or open a second requirement/plan/runtime surface. Specialist work
-must preserve the specialist skill's own workflow, inputs, outputs, and
-validation style.
+Only selected skills become execution units. The host must not invent unsurfaced
+skills, bypass runtime validation, create hidden skill sub-sessions, or open a
+second requirement/plan/runtime surface. Selected skill work must preserve the
+skill's own workflow, inputs, outputs, and validation style.
 
 For XL delegation, root/child hierarchy remains governed: only `root_governed`
 may freeze canonical requirements/plans or make final completion claims.
@@ -228,6 +229,6 @@ Read these references only after canonical launch or when maintaining the repo:
 
 - Runtime family: governed-runtime-first
 - Version: 3.1.0
-- Updated: 2026-04-26
-- Canonical router: `scripts/router/resolve-pack-route.ps1`
+- Updated: 2026-04-25
+- Internal specialist recommendation router: `scripts/router/resolve-pack-route.ps1`
 - Primary contract metadata: `core/skill-contracts/v1/vibe.json`

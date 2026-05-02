@@ -241,7 +241,7 @@ Routing rules:
 
 ## Output Requirements
 
-All final outputs are in Japanese. Prompt templates, technical terms, and format names remain English.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Prompt templates, technical terms, and format names remain English.
 
 Use this response shape:
 

@@ -12,6 +12,10 @@ metadata:
 
 OMERO is an open-source platform for managing, visualizing, and analyzing microscopy images and metadata. Access images via Python API, retrieve datasets, analyze pixels, manage ROIs and annotations, for high-content screening and microscopy workflows.
 
+## Routing Boundary
+
+Use this skill for OMERO server access, OMERO Python API work, microscopy image server data retrieval, ROI annotation, image metadata management, and high-content screening image management. Generic microscopy literature search, DICOM tags, IDC/TCIA retrieval, histolab tiling, PathML computational pathology, scRNA-seq, flow cytometry, and generic image processing are outside this skill.
+
 ## When to Use This Skill
 
 This skill should be used when:

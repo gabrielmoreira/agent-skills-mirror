@@ -87,9 +87,9 @@ Vista assumes test artifacts already exist. If no artifacts are present, Vista r
 - Mermaid is the default visualization format; fall back to D2 for >50 nodes, ASCII for terminal/comment contexts, draw.io only when the user requests presentation-grade editable output.
 - Every visualization includes `Title`, `Source`, `Sample Size`, `Time Window`, `Diagram`, `Legend`, `Findings` (top 3), `Limitations`.
 - **Dual-format delivery is mandatory.** Every Vista deliverable produces a Markdown file (`.md`) AND a self-contained HTML file (`.html`) side by side under the same output directory. The HTML version must inline Mermaid via `mermaid.min.js` (CDN or vendored), preserve the same headings/findings as the Markdown, and render diagrams as live SVG. ASCII fallbacks remain in the Markdown for terminal contexts.
-- **Output language is Japanese.** All narrative — Title, headings, Findings, Limitations, Suggested Next Agent rationale, Legend descriptions, alt-text — is written in Japanese (日本語). Diagram node labels, file paths, parser identifiers (`junit-xml-v5`, `lcov-1.16` 等), code identifiers, anti-pattern IDs (`ICE-CREAM-CONE` 等), and metric names (`Wilson lower-bound` 等) remain in English. This applies to BOTH the Markdown and HTML outputs.
+- **Output language follows the CLI global config** (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). All narrative — Title, headings, Findings, Limitations, Suggested Next Agent rationale, Legend descriptions, alt-text — uses the resolved output language. Diagram node labels, file paths, parser identifiers (`junit-xml-v5`, `lcov-1.16` 等), code identifiers, anti-pattern IDs (`ICE-CREAM-CONE` 等), and metric names (`Wilson lower-bound` 等) remain in English. This applies to BOTH the Markdown and HTML outputs.
 - Color-blind safe palette by default (Okabe-Ito or ColorBrewer Set2); pair color with shape/icon redundancy. Contrast ≥ 4.5:1 (WCAG 2.2 AA).
-- Always provide alt-text or ASCII fallback for accessibility. HTML output uses `lang="ja"` on `<html>` and provides `<title>` plus meta description in Japanese.
+- Always provide alt-text or ASCII fallback for accessibility. HTML output sets the `lang` attribute on `<html>` to match the resolved output language (e.g., `lang="ja"` when responding in Japanese, `lang="en"` in English) and provides `<title>` plus meta description in the same language.
 - Surface anti-patterns by name (ICE-CREAM-CONE, HOURGLASS, FLAKE-CLUSTER, COVERAGE-DESERT) when ≥2 signals match.
 - Risk-weight gaps. Untested code that hasn't changed in 2 years is lower priority than untested code touched in the last sprint.
 - Distinguish branch coverage from line/statement coverage; flag misleading "100% line, 40% branch" cases.
@@ -116,7 +116,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Surface named anti-patterns (ICE-CREAM-CONE, HOURGLASS, FLAKE-CLUSTER, COVERAGE-DESERT) when signals match.
 - Distinguish branch/line/statement coverage explicitly.
 - Persist rendered output under `docs/test-vis/<recipe>/<YYYY-MM-DD>/` unless the user specifies a path. **Both `<title>.md` AND `<title>.html` MUST be written** — never one without the other. The HTML file inlines Mermaid rendering so it opens standalone in a browser without a build step.
-- Write all human-readable narrative in Japanese (日本語); keep identifiers, paths, parser names, anti-pattern IDs in English.
+- Write all human-readable narrative in the language defined by the CLI global config (`settings.json` / `CLAUDE.md` / `AGENTS.md` / `GEMINI.md`); keep identifiers, paths, parser names, anti-pattern IDs in English.
 
 ### Ask First
 - Coverage threshold for "hot/cold" highlighting (default 80% line / 70% branch).
@@ -385,7 +385,7 @@ Read only the files required for the current decision.
 - Journal only durable visualization insights in `.agents/vista.md` (e.g., recurring anti-pattern signatures, parser quirks worth remembering).
 - Add an activity row to `.agents/PROJECT.md` after task completion: `| YYYY-MM-DD | Vista | (action) | (files) | (outcome) |`.
 - Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
-- Final outputs (findings, summaries, narrative, headings, alt-text, legend) are in Japanese (日本語) — both in the Markdown and HTML versions. Diagram node labels, file paths, parser names, anti-pattern IDs (`ICE-CREAM-CONE` 等), metric names (`Wilson lower-bound` 等), and code identifiers remain in English.
+- Output language for findings, summaries, narrative, headings, alt-text, and legend follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`) — applies to both the Markdown and HTML versions. Diagram node labels, file paths, parser names, anti-pattern IDs (`ICE-CREAM-CONE` 等), metric names (`Wilson lower-bound` 等), and code identifiers remain in English.
 - Every Vista deliverable persists BOTH `<title>.md` AND `<title>.html` under the same directory; never ship only one.
 - Do not include agent names in commits or PRs.
 

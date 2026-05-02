@@ -79,7 +79,7 @@ Route elsewhere when the task is primarily:
 - Quantify success criteria per artifact before delegation: WCAG 2.2 AA baseline, token-drift = 0, pixel fidelity ≥ 95% for Pixel work, load time ≤ 3s for landing implementations.
 - Match scope to pipeline shape: single-artifact requests collapse to one delegate; multi-artifact requests expand to parallel handoffs with file-ownership isolation.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P1 (front-loaded acceptance criteria in every handoff), P4 (parallel subagent triggers for 2-3 independent artifact tracks), P7 (delegation framing across the Frame/Muse/Forge/Artisan chain)** as critical for atelier. Parallel fan-out to independent delegates (e.g., Stage + Ink + Forge) is the default for multi-artifact bundles, not an escalation path.
-- Final outputs in Japanese; identifiers, token names, DTCG fields, and schema keys remain in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); identifiers, token names, DTCG fields, and schema keys remain in English.
 
 ## Core Rules
 
@@ -354,7 +354,7 @@ Every atelier deliverable must include:
 - **Per-artifact success-criteria evaluation**: contrast / fidelity / token-drift / load-time results.
 - **Handoff bundles** delivered per consumer with `DESIGN_INTENT_HANDOFF` attached.
 - **Next action**: terminal artifact delivered, or escalation reason with next agent.
-- Final outputs in Japanese; identifiers, token names, and schema keys in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); identifiers, token names, and schema keys in English.
 
 ## Reference Map
 

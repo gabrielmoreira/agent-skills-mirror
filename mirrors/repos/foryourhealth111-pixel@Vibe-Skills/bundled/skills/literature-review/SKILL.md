@@ -11,9 +11,7 @@ metadata:
 
 ## Overview
 
-Conduct systematic, comprehensive literature reviews following rigorous academic methodology. Search multiple literature databases, synthesize findings thematically, verify all citations for accuracy, and generate professional output documents in markdown and PDF formats.
-
-This skill integrates with multiple scientific skills for database access (gget, bioservices, datacommons-client) and provides specialized tools for citation verification, result aggregation, and document generation.
+Conduct systematic, comprehensive literature reviews following rigorous academic methodology. Search multiple literature sources, synthesize findings thematically, verify citations for accuracy, and generate professional output documents in markdown and PDF formats.
 
 ## When to Use This Skill
 
@@ -25,43 +23,6 @@ Use this skill when:
 - Investigating the state of the art in a research domain
 - Identifying research gaps and future directions
 - Requiring verified citations and professional formatting
-
-## Visual Enhancement with Scientific Schematics
-
-**⚠️ MANDATORY: Every literature review MUST include at least 1-2 AI-generated figures using the scientific-schematics skill.**
-
-This is not optional. Literature reviews without visual elements are incomplete. Before finalizing any document:
-1. Generate at minimum ONE schematic or diagram (e.g., PRISMA flow diagram for systematic reviews)
-2. Prefer 2-3 figures for comprehensive reviews (search strategy flowchart, thematic synthesis diagram, conceptual framework)
-
-**How to generate figures:**
-- Use the **scientific-schematics** skill to generate AI-powered publication-quality diagrams
-- Simply describe your desired diagram in natural language
-- Nano Banana Pro will automatically generate, review, and refine the schematic
-
-**How to generate schematics:**
-```bash
-python scripts/generate_schematic.py "your diagram description" -o figures/output.png
-```
-
-The AI will automatically:
-- Create publication-quality images with proper formatting
-- Review and refine through multiple iterations
-- Ensure accessibility (colorblind-friendly, high contrast)
-- Save outputs in the figures/ directory
-
-**When to add schematics:**
-- PRISMA flow diagrams for systematic reviews
-- Literature search strategy flowcharts
-- Thematic synthesis diagrams
-- Research gap visualization maps
-- Citation network diagrams
-- Conceptual framework illustrations
-- Any complex concept that benefits from visualization
-
-For detailed guidance on creating schematics, refer to the scientific-schematics skill documentation.
-
----
 
 ## Core Workflow
 
@@ -97,9 +58,9 @@ Literature reviews follow a structured, multi-phase workflow:
    Select databases appropriate for the domain:
 
    **Biomedical & Life Sciences:**
-   - Use `gget` skill: `gget search pubmed "search terms"` for PubMed/PMC
-   - Use `gget` skill: `gget search biorxiv "search terms"` for preprints
-   - Use `bioservices` skill for ChEMBL, KEGG, UniProt, etc.
+   - Use PubMed/PMC for biomedical literature retrieval
+   - Include bioRxiv/medRxiv preprints when the review scope requires recent non-peer-reviewed evidence
+   - Use specialized biomedical databases for pathway, structure, variant, and target evidence when relevant
 
    **General Scientific Literature:**
    - Search arXiv via direct API (preprints in physics, math, CS, q-bio)
@@ -107,9 +68,9 @@ Literature reviews follow a structured, multi-phase workflow:
    - Use Google Scholar for comprehensive coverage (manual or careful scraping)
 
    **Specialized Databases:**
-   - Use `gget alphafold` for protein structures
-   - Use `gget cosmic` for cancer genomics
-   - Use `datacommons-client` for demographic/statistical data
+   - Include protein structure evidence when needed
+   - Include cancer genomics evidence when needed
+   - Include demographic, economic, or health statistics when needed
    - Use specialized databases as appropriate for the domain
 
 2. **Document Search Parameters**:
@@ -301,14 +262,14 @@ Literature reviews follow a structured, multi-phase workflow:
 
 ### PubMed / PubMed Central
 
-Access via `gget` skill:
+Access via PubMed, PMC, or Entrez-compatible APIs:
 ```bash
 # Search PubMed
-gget search pubmed "CRISPR gene editing" -l 100
+pubmed search "CRISPR gene editing" --limit 100
 
 # Search with filters
 # Use PubMed Advanced Search Builder to construct complex queries
-# Then execute via gget or direct Entrez API
+# Then execute via PubMed/Entrez-compatible access
 ```
 
 **Search tips**:
@@ -320,9 +281,9 @@ gget search pubmed "CRISPR gene editing" -l 100
 
 ### bioRxiv / medRxiv
 
-Access via `gget` skill:
+Use preprint servers as literature sources inside the review workflow:
 ```bash
-gget search biorxiv "CRISPR sickle cell" -l 50
+search biorxiv "CRISPR sickle cell" --limit 50
 ```
 
 **Important considerations**:
@@ -356,13 +317,16 @@ Access via direct API (requires API key, or use free tier):
 
 ### Specialized Biomedical Databases
 
-Use appropriate skills:
-- **ChEMBL**: `bioservices` skill for chemical bioactivity
-- **UniProt**: `gget` or `bioservices` skill for protein information
-- **KEGG**: `bioservices` skill for pathways and genes
-- **COSMIC**: `gget` skill for cancer mutations
-- **AlphaFold**: `gget alphafold` for protein structures
-- **PDB**: `gget` or direct API for experimental structures
+Keep literature-review focused on paper search, screening, synthesis, and evidence extraction.
+Biomedical database lookup is a separate problem surface; use this section only to record which
+external evidence source a paper cites or which database a review protocol should query.
+
+- **ChEMBL**: chemical bioactivity evidence cited by drug-discovery papers
+- **UniProt**: protein annotations, accessions, and protein evidence cited by papers
+- **KEGG**: pathway and gene annotations cited by biology papers
+- **COSMIC**: cancer mutation evidence cited by oncology papers
+- **AlphaFold**: predicted protein structures cited by structural-biology papers
+- **PDB**: experimental structures cited by structural-biology papers
 
 ### Citation Chaining
 
@@ -498,8 +462,9 @@ Complete workflow for a biomedical literature review:
 # 1. Create review document from template
 cp assets/review_template.md crispr_sickle_cell_review.md
 
-# 2. Search multiple databases using appropriate skills
-# - Use gget skill for PubMed, bioRxiv
+# 2. Search multiple literature sources
+# - Use PubMed for curated biomedical literature
+# - Include bioRxiv/medRxiv preprints when recent non-peer-reviewed evidence matters
 # - Use direct API access for arXiv, Semantic Scholar
 # - Export results in JSON format
 
@@ -541,29 +506,6 @@ python scripts/generate_pdf.py crispr_sickle_cell_review.md \
 
 # 8. Review final PDF and markdown outputs
 ```
-
-## Integration with Other Skills
-
-This skill works seamlessly with other scientific skills:
-
-### Database Access Skills
-- **gget**: PubMed, bioRxiv, COSMIC, AlphaFold, Ensembl, UniProt
-- **bioservices**: ChEMBL, KEGG, Reactome, UniProt, PubChem
-- **datacommons-client**: Demographics, economics, health statistics
-
-### Analysis Skills
-- **pydeseq2**: RNA-seq differential expression (for methods sections)
-- **scanpy**: Single-cell analysis (for methods sections)
-- **anndata**: Single-cell data (for methods sections)
-- **biopython**: Sequence analysis (for background sections)
-
-### Visualization Skills
-- **matplotlib**: Generate figures and plots for review
-- **seaborn**: Statistical visualizations
-
-### Writing Skills
-- **brand-guidelines**: Apply institutional branding to PDF
-- **internal-comms**: Adapt review for different audiences
 
 ## Resources
 
@@ -626,7 +568,7 @@ python scripts/generate_pdf.py --check-deps
 This literature-review skill provides:
 
 1. **Systematic methodology** following academic best practices
-2. **Multi-database integration** via existing scientific skills
+2. **Multi-source literature coverage** across domain-appropriate databases
 3. **Citation verification** ensuring accuracy and credibility
 4. **Professional output** in markdown and PDF formats
 5. **Comprehensive guidance** covering the entire review process

@@ -36,6 +36,8 @@ If any MCP call fails because Figma MCP is not connected, pause and set it up:
 
 After successful login, the user will have to restart codex. You should finish your answer and tell them so when they try again they can continue with Step 1.
 
+Detailed setup and tool-selection references are available in `references/figma-mcp-config.md` and `references/figma-tools-and-prompts.md`.
+
 ### Step 1: Get Node ID
 
 #### Option A: Parse from Figma URL
@@ -259,6 +261,8 @@ By following this workflow, you ensure that every Figma design is implemented wi
 
 ## Additional Resources
 
+- `references/figma-mcp-config.md` - Codex MCP config, environment, and troubleshooting reference.
+- `references/figma-tools-and-prompts.md` - Figma MCP tool catalog and prompt patterns.
 - [Figma MCP Server Documentation](https://developers.figma.com/docs/figma-mcp-server/)
 - [Figma MCP Server Tools and Prompts](https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/)
 - [Figma Variables and Design Tokens](https://help.figma.com/hc/en-us/articles/15339657135383-Guide-to-variables-in-Figma)

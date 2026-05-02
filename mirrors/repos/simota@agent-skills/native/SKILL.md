@@ -589,7 +589,7 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-All final outputs (reports, comments, etc.) must be written in Japanese. Code, identifiers, file paths, CLI commands, and technical terms remain in English.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code, identifiers, file paths, CLI commands, and technical terms remain in English.
 
 ---
 

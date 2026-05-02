@@ -8,6 +8,10 @@ metadata:
 
 # FluidSim
 
+## Routing Boundary
+
+Use this skill only for FluidSim or explicit CFD workflows such as Navier-Stokes, turbulence, shallow-water, stratified-flow, or pseudospectral fluid simulations. Do not use it for CSS fluid layouts, responsive design, generic Python simulation, generic PDE solving, or non-FluidSim numerical physics work.
+
 ## Overview
 
 FluidSim is an object-oriented Python framework for high-performance computational fluid dynamics (CFD) simulations. It provides solvers for periodic-domain equations using pseudospectral methods with FFT, delivering performance comparable to Fortran/C++ while maintaining Python's ease of use.

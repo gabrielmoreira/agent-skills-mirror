@@ -2,7 +2,6 @@
 name: preprocessing-data-with-automated-pipelines
 description: |
   Design and implement repeatable preprocessing pipelines for cleaning, encoding, transforming, and validating ML input data.
-  In governed ML routing this skill is a stage assistant: it helps on preprocessing-heavy steps after the main route owner is chosen, and should not take over the whole ML workflow by itself.
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(cmd:*)
 version: 1.0.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
@@ -12,8 +11,9 @@ license: MIT
 
 ## Positioning
 
-In governed ML routing, treat this skill as a stage assistant.
-It is for preprocessing-heavy execution after the pack owner is chosen.
+Use this skill as the direct owner for ML input-preparation pipelines.
+
+It covers preprocessing-heavy tasks where the requested deliverable is a repeatable pipeline for cleaning, encoding, transforming, and validating input data.
 
 ## When to Use
 
@@ -24,7 +24,7 @@ Use this skill when:
 
 ## Not For / Boundaries
 
-- Whole-task ML ownership: use `scikit-learn`, `ml-pipeline-workflow`, or `training-machine-learning-models`
+- Whole-task ML ownership: use `scikit-learn` or `ml-pipeline-workflow`
 - Leakage and prediction-time auditing: use `ml-data-leakage-guard`
 - Grouped scientific preprocessing with stronger methodological constraints: use `scientific-data-preprocessing`
 
@@ -32,7 +32,7 @@ Use this skill when:
 
 - A preprocessing pipeline plan or implementation sketch
 - Clear sequencing for clean, encode, transform, and validate steps
-- Handoff notes for leakage review, training, or evaluation
+- Notes that identify where leakage review, training, or evaluation should be run next
 
 ## Related Skills
 

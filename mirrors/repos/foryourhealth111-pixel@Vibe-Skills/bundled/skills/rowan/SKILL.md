@@ -9,6 +9,10 @@ metadata:
 
 # Rowan: Cloud-Based Quantum Chemistry Platform
 
+## Routing Boundary
+
+Use this skill only for explicit Rowan context, including Rowan, rowan-python, labs.rowansci.com, the Rowan API, or a Rowan-specific chemistry workflow. Do not use it for generic chemistry, RDKit, PubChem, ChEMBL, docking, pKa, conformer search, quantum chemistry, molecular machine learning, Boltz, or Chai-1 unless explicit Rowan context is present.
+
 ## Overview
 
 Rowan is a cloud-based computational chemistry platform that provides programmatic access to quantum chemistry workflows through a Python API. It enables automation of complex molecular simulations without requiring local computational resources or expertise in multiple quantum chemistry packages.
@@ -421,4 +425,3 @@ except TimeoutError:
 - **Documentation**: https://docs.rowansci.com
 - **Python API Docs**: https://docs.rowansci.com/api/python/v2/
 - **Tutorials**: https://docs.rowansci.com/tutorials
-

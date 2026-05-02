@@ -16,6 +16,9 @@ license: MIT
 4. Mark claims that need proof, disclosure, or reviewer approval.
 5. Adapt for short-form or long-form without padding.
 6. Include production notes and cutdown opportunities.
+7. Use `ai-video-prompt-pack` when the script needs to become AI-generated
+   video prompts with platform constraints, timing maps, negative prompts, or
+   regeneration notes.
 
 ## Safety Rules
 

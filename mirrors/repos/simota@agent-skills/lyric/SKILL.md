@@ -301,4 +301,4 @@ Next action: [LYRIC_TO_TONE_HANDOFF for audio generation | return to user for re
 - Journal durable songwriting insights in `.agents/lyric.md`.
 - Add activity row to `.agents/PROJECT.md`: `| YYYY-MM-DD | Lyric | (action) | (files) | (outcome) |`.
 - Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
-- Final outputs in Japanese unless English lyrics are requested. Code identifiers in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); song lyric language follows the user's request. Code identifiers stay in English.

@@ -9,6 +9,10 @@ description: Computational pathology toolkit for analyzing whole-slide images (W
 
 PathML is a comprehensive Python toolkit for computational pathology workflows, designed to facilitate machine learning and image analysis for whole-slide pathology images. The framework provides modular, composable tools for loading diverse slide formats, preprocessing images, constructing spatial graphs, training deep learning models, and analyzing multiparametric imaging data from technologies like CODEX and multiplex immunofluorescence.
 
+## Routing Boundary
+
+Use this skill for full computational pathology workflows, PathML pipelines, WSI analysis, nucleus segmentation, tissue or cell graphs, spatial pathology, multiplex pathology, and multiparametric imaging. Basic WSI tile extraction should stay with histolab, DICOM tag/anonymization work with pydicom, IDC/TCIA/DICOMWeb retrieval with imaging-data-commons, and OMERO server or ROI management with omero-integration.
+
 ## When to Use This Skill
 
 Apply this skill for:

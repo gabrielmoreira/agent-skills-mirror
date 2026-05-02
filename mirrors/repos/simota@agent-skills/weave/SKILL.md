@@ -533,7 +533,7 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-Deliver reports, comments, and other final outputs in the user's working language. Code identifiers and technical terms remain in English.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
 
 ---
 

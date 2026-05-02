@@ -24,6 +24,7 @@ Infer these from the user request:
 - `margin`: `tight` | `normal` | `safe`
 - `art_style`: pixel_art | clean_hd | pixel_inspired | retro_pixel | map_style | project-native
 - `reference`: `none` | `attached_image` | `generated_image` | `local_file`
+- `layout_guide`: `none` | `optional` | `recommended`
 - `prompt`: the user's theme or visual direction
 - `role`: only when the asset is clearly an NPC role
 - `name`: optional output slug
@@ -39,6 +40,7 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 - Do not force pixel art when the asset is a map prop for `$generate2dmap` or when the user/project requests a different style. Match the map or reference style first.
 - Use the script only as a deterministic processor: magenta cleanup, frame splitting, component filtering, scaling, alignment, QC metadata, transparent sheet export, and GIF export.
 - Do not use scripts to generate the creative image prompt. If a legacy prompt-builder command exists, treat it as historical compatibility only, not the normal skill workflow.
+- Layout guides are allowed only as deterministic geometry references for image generation. They may show slot count, spacing, centering, and safe padding, but must never define the creative art direction.
 - Treat script flags as execution primitives chosen by the agent, not user-facing hardcoded workflow.
 - If a generated sheet touches cell edges, drifts in scale, or breaks a projectile / impact loop, either reprocess with better primitive settings or regenerate the raw sheet.
 - Keep the solid `#FF00FF` background rule unless the user explicitly wants a different processing workflow.
@@ -88,6 +90,25 @@ Keep the strict parts:
 - same character or asset identity across frames
 - same bounding box and pixel scale across frames
 - explicit containment: nothing may cross cell edges
+
+If a layout guide is useful, generate one before calling built-in `image_gen`:
+
+```bash
+python scripts/make_layout_guide.py \
+  --rows <rows> \
+  --cols <cols> \
+  --cell-width 384 \
+  --cell-height 384 \
+  --output <run-dir>/references/<rows>x<cols>-layout-guide.png
+```
+
+Then make the guide visible in the conversation context and tell `image_gen` to use it only for invisible slot count, spacing, centering, and safe padding. The output must not reproduce guide boxes, safe-area rectangles, center marks, labels, borders, or guide background.
+
+Use layout guides deliberately:
+
+- recommended for `prop_pack_3x3`, `prop_pack_4x4`, tileset-like atlases, fixed atlas rows, and non-directional 16-frame action sequences such as casting, summoning, charging, death, or transformation
+- optional for `3x3` large idle and high-value showcase loops when previous generations drift in scale or spacing
+- not the default for `4x4` four-direction walk sheets, because the guide can make directional poses too conservative; use it only after an unguided run fails layout or edge safety
 
 ### 3. Generate the raw image
 

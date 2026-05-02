@@ -1,6 +1,6 @@
 ---
 name: biopython
-description: "Primary Python toolkit for molecular biology. Preferred for Python-based PubMed/NCBI queries (Bio.Entrez), sequence manipulation, file parsing (FASTA, GenBank, FASTQ, PDB), advanced BLAST workflows, structures, phylogenetics. For quick BLAST, use gget. For direct REST API, use pubmed-database."
+description: "Primary retained Python toolkit for molecular biology sequence work. Preferred for sequence manipulation, FASTA/FASTQ/GenBank parsing, Bio.Entrez, BLAST workflows, alignments, structures, and phylogenetics. For biological database evidence lookup, use bio-database-evidence. For single-cell workflows use scanpy. For direct literature REST API, use pubmed-database."
 ---
 
 # Biopython: Computational Molecular Biology in Python
@@ -25,6 +25,8 @@ Use this skill when:
 - Performing structural bioinformatics tasks
 - Working with population genetics data
 - Any other computational molecular biology task
+
+Do not use this skill as a catch-all for single-cell analysis, bulk RNA-seq differential expression, biological database evidence tables, protein language model training, metabolic flux modeling, or flow-cytometry file parsing. Those surfaces are either owned by another retained bio-science skill or intentionally no longer exposed as separate bundled route owners.
 
 ## Core Capabilities
 

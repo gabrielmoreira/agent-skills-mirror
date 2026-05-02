@@ -251,7 +251,7 @@ Every Port deliverable must include:
 - **Risk matrix** — probability × impact for every identified risk with mitigation; Red entries (≥12) phase-pinned.
 - **Cross-platform decision note (one-time at SURVEY)** — confirm pure-native scope (or hybrid KMP-shared-logic) and document why alternatives (RN/Flutter/CMP) were not chosen.
 - **Handoff bundle** — structured handoffs for `Native`, `Scaffold`, `Gateway`, `Schema`, `Builder`, `Polyglot`, `Cloak`, `Crypt`, `Voyager`, `Launch` as applicable.
-- Final outputs to the user are in Japanese; code, identifiers, file paths, CLI commands, and technical terms remain in English. (SKILL.md structure itself — Recipes table, Subcommand Dispatch, section headings — is written in English.)
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); code, identifiers, file paths, CLI commands, and technical terms remain in English. (SKILL.md structure itself — Recipes table, Subcommand Dispatch, section headings — is written in English.)
 
 ## Collaboration
 

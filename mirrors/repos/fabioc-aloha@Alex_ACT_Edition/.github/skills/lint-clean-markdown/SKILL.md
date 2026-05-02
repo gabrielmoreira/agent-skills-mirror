@@ -6,8 +6,8 @@ description: "Write markdown that passes markdownlint on first attempt — encod
 tier: standard
 inheritance: inheritable
 applyTo: '**/*.md'
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+currency: 2026-05-01
+lastReviewed: 2026-05-01
 ---
 
 # Lint-Clean Markdown
@@ -35,6 +35,7 @@ Roughly 90% of markdown lint errors are missing blank lines. Lists, code blocks,
 | Blank line before headings | MD022 | `text\n\n## Head` | "Headers breathe" |
 | Use dash for lists | MD004 | `-` not `*` or `+` | "Dash dash dash" |
 | No trailing whitespace | MD009 | No spaces at line end | "Clean endings" |
+| Hard line break in prose | (no MD code) | End line with `\` then newline | "Backslash breaks" |
 | Single final newline | MD047 | One `\n` at EOF | "One newline" |
 | Language on fences | MD040 | ` ```js ` not ` ``` ` | "Name your code" |
 | Consistent fence style | MD046 | Use ` ``` ` not indent | "Fences only" |
@@ -69,6 +70,49 @@ Roughly 90% of markdown lint errors are missing blank lines. Lists, code blocks,
 ❌ Wrong: `Some text.\n## Heading`
 
 ✅ Correct: `Some text.\n\n## Heading`
+
+### Hard Line Breaks in Prose (the metadata-block trap)
+
+**The problem**: Markdown collapses consecutive lines into one wrapped paragraph. A block of metadata like `**Date**:`, `**Author**:`, `**Status**:` on consecutive lines renders as one run-on sentence unless you force breaks.
+
+**The wrong fixes**:
+
+- **Two trailing spaces** (`text  `) — works in most renderers, but lints as MD009 (no trailing whitespace) and is invisible in source review.
+- **Empty lines between every item** — turns the metadata block into a wall of paragraphs with massive vertical spacing.
+- **`<br/>` tag** — works but mixes HTML into prose markdown; flagged as MD033 in many configs.
+
+**The right fix**: end each line with a backslash (`\`) followed by a newline. This is the CommonMark hard-line-break form. Renders identically to two spaces, but is visible in source review and lints clean.
+
+❌ Wrong (renders as one wrapped paragraph):
+
+```markdown
+**Date**: 2026-05-01
+**Author**: Supervisor
+**Status**: Analysis
+```
+
+✅ Correct (renders as three lines):
+
+```markdown
+**Date**: 2026-05-01 \
+**Author**: Supervisor \
+**Status**: Analysis
+```
+
+**Note the spacing**: one space before the backslash, then the newline. The last line in the block does not need the backslash (no break needed after the final line).
+
+**When this rule fires**:
+
+- Document metadata blocks (Date / Author / Status / Audience / Trigger) at the top of decision docs, ADRs, READMEs
+- Address blocks, contact-info blocks
+- Any list of consecutive `**Label**: value` lines that should *visually* be separate but should *not* have full paragraph spacing between them
+- Poetry, lyrics, or any prose where line breaks are semantic
+
+**When this rule does NOT fire**:
+
+- Inside a real Markdown list (use `-` or `1.` instead)
+- Inside a table (use `<br/>` for in-cell line breaks)
+- Inside a code fence (literal newlines work; no special handling needed)
 
 ### MD004: Use Dash for Unordered Lists
 

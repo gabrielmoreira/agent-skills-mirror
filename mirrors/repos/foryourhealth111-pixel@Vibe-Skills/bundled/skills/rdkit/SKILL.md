@@ -1,6 +1,6 @@
 ---
 name: rdkit
-description: "Cheminformatics toolkit for fine-grained molecular control. SMILES/SDF parsing, descriptors (MW, LogP, TPSA), fingerprints, substructure search, 2D/3D generation, similarity, reactions. For standard workflows with simpler interface, use datamol (wrapper around RDKit). Use rdkit for advanced control, custom sanitization, specialized algorithms."
+description: "Core cheminformatics toolkit for SMILES/SDF/InChI parsing, descriptors (MW, LogP, TPSA), fingerprints, ECFP/Morgan fingerprints, substructure search, 2D/3D generation, similarity, reactions, and datamol-style molecule standardization when no separate wrapper skill is routed."
 ---
 
 # RDKit Cheminformatics Toolkit

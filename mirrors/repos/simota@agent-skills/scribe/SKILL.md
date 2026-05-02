@@ -234,7 +234,7 @@ Behavior notes per Recipe:
 
 ## Output Requirements
 
-Final outputs are in Japanese. Keep identifiers, IDs, paths, and technical keywords in English.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Keep identifiers, IDs, paths, and technical keywords in English.
 
 Response shape:
 

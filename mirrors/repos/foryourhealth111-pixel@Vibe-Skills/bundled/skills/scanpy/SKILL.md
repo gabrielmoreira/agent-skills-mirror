@@ -1,6 +1,6 @@
 ---
 name: scanpy
-description: "Single-cell RNA-seq analysis. Load .h5ad/10X data, QC, normalization, PCA/UMAP/t-SNE, Leiden clustering, marker genes, cell type annotation, trajectory, for scRNA-seq analysis."
+description: "Single-cell RNA-seq and retained scverse workflow owner. Load .h5ad/10X data, manage AnnData metadata, plan scVI/scANVI batch-correction workflows, QC, normalization, PCA/UMAP/t-SNE, Leiden clustering, marker genes, cell type annotation, trajectory, for scRNA-seq analysis."
 ---
 
 # Scanpy: Single-Cell Analysis
@@ -8,6 +8,8 @@ description: "Single-cell RNA-seq analysis. Load .h5ad/10X data, QC, normalizati
 ## Overview
 
 Scanpy is a scalable Python toolkit for analyzing single-cell RNA-seq data, built on AnnData. Apply this skill for complete single-cell workflows including quality control, normalization, dimensionality reduction, clustering, marker gene identification, visualization, and trajectory analysis.
+
+In the bundled Vibe-Skills routing surface, this skill also absorbs the former AnnData and scVI/scANVI route surfaces. Use it for h5ad container handling and scverse latent-model planning when those tasks appear inside a single-cell workflow.
 
 ## When to Use This Skill
 
@@ -19,6 +21,8 @@ This skill should be used when:
 - Annotating cell types based on gene expression
 - Conducting trajectory inference or pseudotime analysis
 - Generating publication-quality single-cell plots
+- Reading, writing, subsetting, or annotating AnnData/h5ad objects as part of single-cell work
+- Planning scVI/scANVI batch-correction, latent-model, or cell-type annotation workflows
 
 ## Quick Start
 

@@ -8,6 +8,10 @@ metadata:
 
 # Matchms
 
+## Routing Boundary
+
+Use this skill only for matchms, mass spectra, MS/MS spectrum processing, spectral similarity, and metabolomics spectrum workflows. Do not use it for PubMed searches, generic chemistry, non-spectral metabolomics, plotting-only requests, or literature review tasks that do not process mass spectra.
+
 ## Overview
 
 Matchms is an open-source Python library for mass spectrometry data processing and analysis. Import spectra from various formats, standardize metadata, filter peaks, calculate spectral similarities, and build reproducible analytical workflows.

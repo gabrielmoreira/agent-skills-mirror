@@ -12,6 +12,12 @@ metadata:
 
 Provides comprehensive access to the Data Commons Python API v2 for querying statistical observations, exploring the knowledge graph, and resolving entity identifiers. Data Commons aggregates data from census bureaus, health organizations, environmental agencies, and other authoritative sources into a unified knowledge graph.
 
+## Routing Boundary
+
+Use this skill when the user explicitly asks for Data Commons/datacommons, Data Commons statistical variables, Data Commons entities/DCIDs, or population/economic indicators that fit the Data Commons knowledge graph.
+
+Generic public data, open data, public dataset search, or public download-link collection by itself is not enough to select this skill. Those requests need a clearer Data Commons/statistical-graph signal before this skill becomes the route owner.
+
 ## Installation
 
 Install the Data Commons Python client with Pandas support:

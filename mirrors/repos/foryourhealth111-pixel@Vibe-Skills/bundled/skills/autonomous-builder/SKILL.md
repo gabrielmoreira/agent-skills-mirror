@@ -273,16 +273,16 @@ DURING IMPLEMENTATION:
 
 | Task Type | Recommended Skills |
 |-----------|--------------------|
-| Code review | `code-reviewer`, `code-review-excellence` |
+| Code review | `code-reviewer` |
 | Data analysis | `exploratory-data-analysis`, `statistical-analysis` |
 | Visualization | `data-artist`, `matplotlib`, `plotly` |
 | ML training | `senior-ml-engineer`, `pytorch-lightning` |
 | ML evaluation | `evaluating-machine-learning-models`, `shap` |
 | Scientific writing | `scientific-writing`, `scientific-schematics` |
-| Debugging | `debugging-strategies`, `error-resolver` |
+| Debugging | `systematic-debugging` |
 | Documentation | `docs-write`, `writing-docs` |
 | Architecture | `architecture-patterns` |
-| Bioinformatics | `biopython`, `bioservices`, `gget` |
+| Bioinformatics | `biopython`, `bio-database-evidence` |
 | Drug discovery | `torchdrug`, `rdkit`, `uniprot-database` |
 
 **Feature with Skill Planning:**
@@ -1091,7 +1091,7 @@ git checkout -b rollback-to-v0.1.0
 **Steps**:
 1. Detect existing project structure
 2. Read relevant code files
-3. Identify bug using error-resolver patterns
+3. Identify bug using systematic-debugging patterns
 4. Apply fix with 3-strike protocol
 5. Run tests to verify fix
 6. Update state and commit

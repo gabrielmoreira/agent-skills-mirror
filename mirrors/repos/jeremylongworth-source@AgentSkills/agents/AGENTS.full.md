@@ -40,10 +40,12 @@ Use `metric-definition`, `dashboard-design`, `cohort-analysis`,
 and BI workflows.
 
 Use `content-pillars`, `short-form-hooks`, `video-script`,
-`thumbnail-title-brief`, `caption-writer`, `content-calendar`,
-`longform-to-shorts`, `newsletter-repurpose`, `podcast-outline`, and
-`publishing-checklist` for creator content engines, hooks, scripts, calendars,
-captions, repurposing, and pre-publish checks.
+`ai-video-prompt-pack`, `thumbnail-title-brief`, `social-asset-production`,
+`caption-writer`, `content-calendar`, `longform-to-shorts`,
+`newsletter-repurpose`, `podcast-outline`, `owned-social-profile-audit`,
+`brand-social-launch-pack`, and `publishing-checklist` for creator content
+engines, hooks, scripts, AI video prompt packs, social visuals, calendars,
+profile audits, launch packs, captions, repurposing, and pre-publish checks.
 
 Use `brand-pitch`, `media-kit-builder`, `sponsorship-package`,
 `rate-card-builder`, `campaign-proposal`, `usage-rights-checklist`,
@@ -81,11 +83,13 @@ creator reputation risk reviews, disclosure checks, rights/copyright risk,
 AI-labeling questions, brand-safety review, platform-policy uncertainty,
 controversy response briefs, and hold/revise/go recommendations.
 
-Use `ai-media-prompt-brief` and `synthetic-character-bible` with existing
-content, publishing, rights, reputation, production, and AI governance skills
-for creator AI production planning, provider-neutral media prompt packs,
-synthetic persona bibles, voiceover plans, source provenance, disclosure,
-likeness/voice boundaries, and human-review gates.
+Use `ai-media-prompt-brief`, `ai-video-prompt-pack`, `social-asset-production`,
+and `synthetic-character-bible` with existing content, publishing, rights,
+reputation, production, and AI governance skills for creator AI production
+planning, provider-neutral media prompt packs, platform-aware video prompt
+packs, social creative briefs, synthetic persona bibles, voiceover plans,
+source provenance, disclosure, likeness/voice boundaries, and human-review
+gates.
 
 Use `concise-technical-writing` for commit messages, PR descriptions, changelogs, implementation summaries, status updates, and direct technical communication.
 

@@ -235,7 +235,7 @@ Every deliverable must include:
 - **Quality report** — `.haul/{batch-id}/reports/quality-report.md` with resolution / blur / watermark / dedup outcomes.
 - **License report** — `.haul/{batch-id}/reports/license-report.md` with per-image license class and source ToS notes.
 - **Failures report** — `.haul/{batch-id}/reports/failures.md` with per-product failure reason and recovery hint (resumable).
-- Final outputs to the user are in Japanese; code, identifiers, file paths, CLI commands, and technical terms remain in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); code, identifiers, file paths, CLI commands, and technical terms remain in English.
 
 Manifest schema and report templates → `references/output-manifest.md`
 

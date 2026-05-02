@@ -9,8 +9,14 @@ short-form opening lines, first beats, and retention-oriented hooks.
 Use `video-script` for creator video scripts, shot outlines, voiceover,
 talking points, b-roll, on-screen text, CTAs, and cutdown ideas.
 
+Use `ai-video-prompt-pack` for AI-generated video prompt packs, scene timing,
+prompt variants, negative prompts, safe areas, and platform/model constraints.
+
 Use `thumbnail-title-brief` for YouTube and video title packs, thumbnail
 creative briefs, title-thumbnail pairings, and test variants.
+
+Use `social-asset-production` for profile images, banners, post images,
+article covers, thumbnails, short-video covers, and crop-safe export checks.
 
 Use `caption-writer` for social captions, CTAs, community prompts, sponsor
 disclosure notes, hashtag notes, and caption variants.
@@ -26,6 +32,10 @@ digests, email intros, and newsletter-to-social cutdowns.
 
 Use `podcast-outline` for episode outlines, guest questions, sponsor slots,
 talking points, and clip opportunities.
+
+Use `owned-social-profile-audit` and `brand-social-launch-pack` for profile
+positioning, bios, links, pinned/featured content, launch posts, social assets,
+and coordinated owned-channel launch packages.
 
 Use `publishing-checklist` for pre-publish QA, disclosure, rights, metadata,
 accessibility, approval, and post-publish monitoring checks.

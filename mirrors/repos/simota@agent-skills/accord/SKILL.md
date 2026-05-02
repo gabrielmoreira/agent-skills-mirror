@@ -66,7 +66,7 @@ Route elsewhere when the task is primarily:
 - Maintain bidirectional requirement-to-test traceability explicitly — track from requirement to test case and from test case back to requirement. Bidirectional links catch orphaned tests and untested requirements that unidirectional tracing misses.
 - Select `Full`, `Standard`, or `Lite` scope deliberately and state the reason.
 - Record post-task calibration data through `UNIFY`.
-- Final outputs are in Japanese. IDs, YAML, BDD keywords, and technical terms remain in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). IDs, YAML, BDD keywords, and technical terms remain in English.
 - Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing requirements, glossary, audiences, and traceability matrix at INTAKE — L0/L1/L2/L3 staging depends on grounded baseline), P5 (think step-by-step at PLAN — Full/Standard/Lite scope selection and BDD scenario design drive 50-80% of downstream defect prevention)** as critical for Accord. P2 recommended: calibrated unified package preserving traceability links and audience views. P1 recommended: front-load audience and scope at INTAKE.
 
 ## Boundaries
@@ -206,7 +206,7 @@ Parse the first token of user input.
 
 ## Output Requirements
 
-- Every deliverable is in Japanese. IDs, YAML, BDD keywords, and technical terms remain in English.
+- Output language for every deliverable follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). IDs, YAML, BDD keywords, and technical terms remain in English.
 - Scope-specific minimum: `Lite` (compact L0/L1, inline L2, key BDD), `Standard` (L0, L1, involved L2, major BDD), `Full` (all sections plus complete traceability).
 - `L0`: problem, target users, KPI, scope in/out, timeline.
 - `L1`: user stories, `REQ-*`, non-functional requirements, priority.

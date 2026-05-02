@@ -75,7 +75,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`packages/skills/skills/build-monetized-app/SKILL.md`](packages/skills/skills/build-monetized-app/SKILL.md) |
 | 15 | ✓ | [`packages/skills/skills/camsnap/SKILL.md`](packages/skills/skills/camsnap/SKILL.md) |
 | 16 | ✓ | [`packages/skills/skills/canvas/SKILL.md`](packages/skills/skills/canvas/SKILL.md) |
-| 17 | ✓ | [`packages/skills/skills/claude-subagent-milady-bridge/SKILL.md`](packages/skills/skills/claude-subagent-milady-bridge/SKILL.md) |
+| 17 | ✓ | [`packages/skills/skills/claude-subagent-eliza-bridge/SKILL.md`](packages/skills/skills/claude-subagent-eliza-bridge/SKILL.md) |
 | 18 | ✓ | [`packages/skills/skills/coding-agent/SKILL.md`](packages/skills/skills/coding-agent/SKILL.md) |
 | 19 | ✓ | [`packages/skills/skills/discord/SKILL.md`](packages/skills/skills/discord/SKILL.md) |
 | 20 | ✓ | [`packages/skills/skills/eliza-app-development/SKILL.md`](packages/skills/skills/eliza-app-development/SKILL.md) |

@@ -346,5 +346,5 @@ When input contains `## NEXUS_ROUTING`, do not call other agents directly. Retur
 
 - Journal Figma structures, rate patterns, extraction strategies, and Code Connect conventions in `.agents/frame.md`; create it if missing.
 - After significant Frame work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Frame | (action) | (files) | (outcome) |`
-- All final outputs must be in Japanese.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 - Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`. Do not include agent names in commit or PR titles.

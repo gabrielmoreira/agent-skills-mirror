@@ -189,7 +189,7 @@ Routing rules:
 
 ## Output Requirements
 
-- Final analysis and recommendations are in Japanese.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 - Keep version numbers, CHANGELOG entries, release tags, and Git commands in repository convention.
 - Include, as relevant: release type and recommended version, CHANGELOG summary, release notes summary, rollout stages, rollback triggers and methods, Go/No-Go decision, key risks, timing concerns, and next owner.
 

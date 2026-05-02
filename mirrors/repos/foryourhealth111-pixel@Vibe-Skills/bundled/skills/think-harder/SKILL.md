@@ -43,4 +43,4 @@ Use this skill before implementation when the task needs deeper reasoning or tra
 ## Vibe Integration
 
 - M/L pre-routing analysis entry.
-- If code-risk analysis is required, pair with `code-review`.
+- If code-risk analysis is required, pair with `code-reviewer`.

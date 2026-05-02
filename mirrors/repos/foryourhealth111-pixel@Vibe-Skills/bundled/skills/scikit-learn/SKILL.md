@@ -27,6 +27,7 @@ uv uv pip install pandas numpy
 Use the scikit-learn skill when:
 
 - Building classification or regression models
+- Running ordinary regression analysis where the main need is fitting, coefficients, confidence intervals, residual checks, or cross-validation rather than causal identification
 - Performing clustering or dimensionality reduction
 - Preprocessing and transforming data for machine learning
 - Evaluating model performance with cross-validation
@@ -35,6 +36,8 @@ Use the scikit-learn skill when:
 - Comparing different algorithms for a task
 - Working with both structured (tabular) and text data
 - Need interpretable, classical machine learning approaches
+
+Do not use this skill for causal identification, policy-effect claims, DiD, synthetic control, or interrupted time-series effect estimation; those belong to `performing-causal-analysis`.
 
 ## Quick Start
 

@@ -8,6 +8,10 @@ metadata:
 
 # PyMC Bayesian Modeling
 
+## Routing Boundary
+
+Use this skill only for PyMC, probabilistic programming, Bayesian hierarchical models, NUTS/MCMC sampling, posterior predictive checks, and PyMC model diagnostics. Do not use it for generic regression, scikit-learn modeling, causal analysis, pymoo optimization, or materials-science prompts.
+
 ## Overview
 
 PyMC is a Python library for Bayesian modeling and probabilistic programming. Build, fit, validate, and compare Bayesian models using PyMC's modern API (version 5.x+), including hierarchical models, MCMC sampling (NUTS), variational inference, and model comparison (LOO, WAIC).

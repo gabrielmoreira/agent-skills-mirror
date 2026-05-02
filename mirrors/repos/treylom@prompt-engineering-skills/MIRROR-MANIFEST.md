@@ -59,11 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/claude-4.6-prompt-strategies.md`](skills/claude-4.6-prompt-strategies.md) |
+| 1 | ✓ | [`skills/claude-4.7-prompt-strategies.md`](skills/claude-4.7-prompt-strategies.md) |
 | 2 | ✓ | [`skills/context-engineering-collection.md`](skills/context-engineering-collection.md) |
 | 3 | ✓ | [`skills/expert-domain-priming.md`](skills/expert-domain-priming.md) |
 | 4 | ✓ | [`skills/gemini-3.1-prompt-strategies.md`](skills/gemini-3.1-prompt-strategies.md) |
-| 5 | ✓ | [`skills/gpt-5.4-prompt-enhancement.md`](skills/gpt-5.4-prompt-enhancement.md) |
+| 5 | ✓ | [`skills/gpt-5.5-prompt-enhancement.md`](skills/gpt-5.5-prompt-enhancement.md) |
 | 6 | ✓ | [`skills/image-prompt-guide.md`](skills/image-prompt-guide.md) |
 | 7 | ✓ | [`skills/prompt-engineering-guide.md`](skills/prompt-engineering-guide.md) |
 | 8 | ✓ | [`skills/research-prompt-guide.md`](skills/research-prompt-guide.md) |

@@ -73,7 +73,7 @@ Route elsewhere when the task is primarily:
 - For mixed-strength plans, apply risk-based strength assignment: safety/security-critical parameter subsets at 3-way+, business logic at 2-way, UI/cosmetic at 1-way.
 - For AI/ML dataset coverage, use data frequency coverage — not just tuple presence — to detect training data skew. Simple combinatorial coverage misses imbalanced feature interaction frequencies that degrade model performance (NIST 2025, "Data Frequency Coverage Impact on AI Performance").
 - Hand off a plan another agent can execute immediately.
-- Final outputs are in Japanese. Keep code, IDs, YAML, JSON, and agent names in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Keep code, IDs, YAML, JSON, and agent names in English.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read axis definitions, value ranges, constraints, and prior coverage baselines at SCAN — combinatorial coverage requires grounding in actual domain structure), P5 (think step-by-step at t-way strength selection (2-way vs 3-way+), prioritization, and data-frequency-coverage vs simple-coverage trade-off)** as critical for Matrix. P2 recommended: calibrated combinatorial plan preserving axis/value matrix, coverage strength, and prioritization rationale. P1 recommended: front-load domain (test/deploy/UX/risk), axes, and coverage target at SCAN.
 
 ## Boundaries
@@ -217,7 +217,7 @@ Routing rules:
 
 ## Output Requirements
 
-Every final answer must be in Japanese and include:
+Every final answer follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`) for output language and includes:
 
 - Matrix name or domain
 - Axes and value counts

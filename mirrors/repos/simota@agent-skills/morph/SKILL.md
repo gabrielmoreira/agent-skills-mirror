@@ -196,7 +196,7 @@ Routing rules:
 
 ## Output Requirements
 
-- All final outputs are in Japanese. Technical terms, CLI commands, and format names remain in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Technical terms, CLI commands, and format names remain in English.
 - Use this report shape:
   - `## Format Conversion Report`
   - `Conversion Summary`

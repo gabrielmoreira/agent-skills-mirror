@@ -46,6 +46,12 @@ end state, `reproductionAssessment` answers whether the issue has a
 high-confidence reproduction path, `solutionAssessment` answers whether the
 current/proposed path is the best fix, and `risks` are only unresolved
 uncertainty. Do not repeat the same sentence or evidence across those fields.
+Keep these fields concise because they become the public review comment. Prefer
+one short sentence for `changeSummary`, `workReason`, `bestSolution`, and
+`securityReview.summary`; use bullets only inside `reviewFindings`,
+`securityReview.concerns`, `evidence`, and `likelyOwners`. Do not turn
+`changeSummary` or `workReason` into an automerge/autofix status update; merge
+automation is reported by the command/status comment and hidden markers.
 
 For PRs, do not list the PR author solely because they opened the PR, reported
 the issue, or authored the proposed branch. `likelyOwners` should point to

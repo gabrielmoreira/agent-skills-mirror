@@ -65,6 +65,7 @@ Use this file when the user's wording leaves room for multiple valid asset plans
   - high-value showcase idles
 - `4x4`
   - topdown 4-direction player walk sheet
+  - non-directional 16-frame action sequence when the user asks for richer casting, summoning, charging, transformation, or death animation
 
 ## Agent-First Mapping Hints
 
@@ -95,6 +96,7 @@ Keep these mappings working:
 - use `align=center` for floating effects, projectiles, and detached FX
 - use `component_mode=largest` when raw sheets contain detached sparkles or edge debris
 - use `component_mode=all` when detached effects are an intentional part of the asset silhouette
+- use a layout guide for prop packs, tileset-like atlases, fixed atlas rows, and non-directional 16-frame VFX-heavy action sequences; avoid making it the default for 4-direction walk sheets
 
 ## Output Shape
 

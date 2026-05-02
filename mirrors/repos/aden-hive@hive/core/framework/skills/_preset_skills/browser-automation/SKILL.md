@@ -113,7 +113,7 @@ Even after `wait_until="load"`, React/Vue SPAs often render their real chrome in
 ### Reading pages efficiently
 
 - **Prefer `browser_snapshot` over `browser_get_text("body")`** — returns a compact ~1–5 KB accessibility tree vs 100+ KB of raw HTML.
-- Interaction tools `browser_click`, `browser_type`, `browser_type_focused`, `browser_fill`, and `browser_scroll` wait 0.5 s for the page to settle after a successful action, then attach a fresh accessibility snapshot under the `snapshot` key of their result. Use it to decide your next action — do NOT call `browser_snapshot` separately after every action. Tune the capture via `auto_snapshot_mode`: `"default"` (full tree, the default), `"simple"` (trims unnamed structural nodes), `"interactive"` (only controls — tightest token footprint), or `"off"` to skip the capture entirely (useful when batching several interactions and you don't need the intermediate trees). Call `browser_snapshot` explicitly only when you need a newer view or a different mode than what was auto-captured.
+- Interaction tools `browser_click`, `browser_type`, `browser_type_focused`, and `browser_scroll` wait 0.5 s for the page to settle after a successful action, then attach a fresh accessibility snapshot under the `snapshot` key of their result. Use it to decide your next action — do NOT call `browser_snapshot` separately after every action. Tune the capture via `auto_snapshot_mode`: `"default"` (full tree, the default), `"simple"` (trims unnamed structural nodes), `"interactive"` (only controls — tightest token footprint), or `"off"` to skip the capture entirely (useful when batching several interactions and you don't need the intermediate trees). Call `browser_snapshot` explicitly only when you need a newer view or a different mode than what was auto-captured.
 - Complex pages (LinkedIn, Twitter/X, SPAs with virtual scrolling) can have DOMs that don't match what's visually rendered — snapshot refs may be stale, missing, or misaligned with visible layout. Try the available snapshot first; when the target is not present in that snapshot or visual position matters, switch to `browser_screenshot` to orient yourself.
 - Only fall back to `browser_get_text` for extracting specific small elements by CSS selector.
 
@@ -244,8 +244,8 @@ The highlight overlay stays visible on the page for **10 seconds** after each in
 
 **Close tabs as soon as you are done with them** — not only at the end of the task. After reading or extracting data from a tab, close it immediately.
 
-- Finished reading/extracting from a tab? `browser_close(target_id=...)`
-- Completed a multi-tab workflow? `browser_close_finished()` to clean up all your tabs
+- Finished reading/extracting from a tab? `browser_close(tab_id=...)` (or no arg to close the active tab)
+- Completed a multi-tab workflow? Call `browser_close` for each tab you opened — list with `browser_tabs` first if you've lost track of IDs
 - More than 3 tabs open? Stop and close finished ones before opening more
 - Popup appeared that you didn't need? Close it immediately
 
@@ -410,7 +410,7 @@ In all of these cases the script is SHORT (< 10 lines) and the result is CONSUME
 - If a tool fails, retry once with the same approach.
 - If it fails a second time, STOP retrying and switch approach.
 - If `browser_snapshot` fails, try `browser_get_text` with a specific small selector as fallback.
-- If `browser_open` fails or page seems stale, `browser_stop`, then `browser_start`, then retry.
+- If `browser_open` fails or page seems stale, `browser_stop`, then `browser_open(url)` again to recreate a fresh context.
 
 ## Verified workflows
 

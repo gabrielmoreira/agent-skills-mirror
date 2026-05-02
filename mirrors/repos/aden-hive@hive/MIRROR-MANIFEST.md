@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 15 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,8 +72,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`core/framework/skills/_default_skills/quality-monitor/SKILL.md`](core/framework/skills/_default_skills/quality-monitor/SKILL.md) |
 | 12 | ✓ | [`core/framework/skills/_default_skills/writing-hive-skills/SKILL.md`](core/framework/skills/_default_skills/writing-hive-skills/SKILL.md) |
 | 13 | ✓ | [`core/framework/skills/_preset_skills/browser-automation/SKILL.md`](core/framework/skills/_preset_skills/browser-automation/SKILL.md) |
-| 14 | ✓ | [`core/framework/skills/_preset_skills/linkedin-automation/SKILL.md`](core/framework/skills/_preset_skills/linkedin-automation/SKILL.md) |
-| 15 | ✓ | [`core/framework/skills/_preset_skills/x-automation/SKILL.md`](core/framework/skills/_preset_skills/x-automation/SKILL.md) |
+| 14 | ✓ | [`core/framework/skills/_preset_skills/chart-creation-foundations/SKILL.md`](core/framework/skills/_preset_skills/chart-creation-foundations/SKILL.md) |
+| 15 | ✓ | [`core/framework/skills/_preset_skills/linkedin-automation/SKILL.md`](core/framework/skills/_preset_skills/linkedin-automation/SKILL.md) |
+| 16 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-foundations/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-foundations/SKILL.md) |
+| 17 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-fs-search/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-fs-search/SKILL.md) |
+| 18 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-job-control/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-job-control/SKILL.md) |
+| 19 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md) |
+| 20 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md) |
+| 21 | ✓ | [`core/framework/skills/_preset_skills/x-automation/SKILL.md`](core/framework/skills/_preset_skills/x-automation/SKILL.md) |
 
 ---
 

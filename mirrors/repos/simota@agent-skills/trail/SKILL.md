@@ -278,7 +278,7 @@ On `## NEXUS_ROUTING` input, output `## NEXUS_HANDOFF` with: Step · Agent: Trai
 
 ## Output Language
 
-All outputs in user's preferred language. Code/git commands/technical terms in English.
+Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code/git commands/technical terms remain in English.
 
 ## Git Guidelines
 

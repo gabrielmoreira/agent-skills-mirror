@@ -1,6 +1,6 @@
 ---
 name: scholarly-publishing
-description: "End-to-end scholarly publishing workflow: manuscript → figures → LaTeX/Word → submission → revision/rebuttal → camera-ready. Includes meta-rules, checklists, repo structure, and case-based guidance."
+description: "Use when planning an end-to-end scholarly publishing workflow, including manuscript source-of-truth, submission assets, revision/rebuttal files, camera-ready checks, reproducible build expectations, and publication package structure."
 allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 ---
 
@@ -8,10 +8,10 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 
 ## 你会得到什么（输出契约）
 
-当用户说“我要投稿/返修/顶刊作图/相机就绪/需要 LaTeX 工程化/写 rebuttal/写 cover letter/做组会汇报”时，本 skill 负责把目标拆成**可交付的出版资产包**：
+当用户说“我要投稿/返修/相机就绪/需要 LaTeX 工程化/写 rebuttal/写 cover letter”时，本 skill 负责把目标拆成**可交付的出版资产包**：
 
 - `manuscript/`：论文源文件（LaTeX / Word / Markdown 任一作为 *source-of-truth*）
-- `figures/`：每张图的源代码/源数据/最终导出（PDF/EPS/SVG/TIFF）
+- `figures/`：每张图的源代码/源数据/最终导出要求（PDF/EPS/SVG/TIFF）
 - `supplement/`：补充材料（方法细节、附录、扩展实验、额外图表）
 - `submission/`：投稿所需文件（cover letter、graphical abstract、highlights、checklist、打包 zip）
 - `revision/`：返修资产（rebuttal、diff、逐条回应矩阵）
@@ -25,14 +25,12 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 
 适用场景（中英混合均可）：
 - 投稿/返修：`投稿`、`submission`、`返修`、`revision`、`rebuttal`、`回复审稿意见`、`camera-ready`、`proof`
-- 顶刊作图：`顶刊作图`、`投稿图`、`publication-quality`、`600dpi`、`tiff`、`多子图`、`panel`、`subplot`
 - LaTeX 工程化：`latex template`、`latexmk`、`bibtex`、`biber`、`Overleaf`、`chktex`、`latexindent`
-- 研究报告/技术报告：`科研报告`、`technical report`、`HTML + PDF`、`Quarto`
-- 组会/答辩/汇报：`slides`、`Slidev`、`Marp`、`Reveal.js`、`Beamer`
+- 可复现出版包：`manuscript as code`、`reproducible manuscript`、`submission zip`、`paper pdf build`
 
-不适用（应交给其它技能）：
-- 仅“从 PDF 提取文本/合并 PDF/批注回复”等纯文档处理 → `docs-media/pdf/docx/docx-comment-reply`
-- 仅“画流程图/概念示意图（非数据图）” → `scientific-schematics` 或 `markdown-mermaid-writing`
+不适用：
+- 仅“从 PDF 提取文本/合并 PDF/批注回复”等纯文档处理。
+- 仅“画流程图/概念示意图/数据结果图/组会幻灯片”，且不涉及投稿资产包或出版交付。
 
 ---
 
@@ -41,7 +39,7 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 为了稳定落地，至少需要：
 1) **目标投向**：期刊/会议/出版社（不知道也可以先用“类目”：Nature/IEEE/ACM/NeurIPS/PLOS）
 2) **论文类型**：研究论文/方法论文/综述/短文/技术报告
-3) **交付物**：只要“投稿包”？还是“报告 + 图 + slides”？（可多选）
+3) **交付物**：投稿包、返修包、camera-ready 包、可复现构建包、项目主页/视频摘要/海报等传播资产（可多选）
 4) **写作来源**：是否已有草稿/数据/图？（已有就以“改稿/补齐规范”为主）
 
 ---
@@ -59,13 +57,13 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 
 ### Phase 1 — 先建“投稿约束”再写正文
 
-1) 目标投向与模板：用 `venue-templates` 获取模板/版式约束  
-2) 投稿清单：用 `submission-checklist` 拉一份对应 stage 的 checklist  
-3) 明确图的规格：列出每张图的用途、类型（line art / raster / combination）与导出格式（PDF/TIFF）  
+1) 目标投向与模板：记录版式、匿名、页数、图表、引用和补充材料约束
+2) 投稿清单：按 pre-submission、submission、revision、camera-ready 四类阶段列出必需文件
+3) 明确图的规格：列出每张图的用途、类型（line art / raster / combination）与导出格式（PDF/TIFF）
 
 ### Phase 2 — 论文主线（写作）
 
-用 `scientific-writing` 执行两段式写作：
+执行两段式写作：
 - 先写“结构大纲（允许 bullet）”
 - 再写“最终正文（必须段落，禁止 bullet）”
 
@@ -74,9 +72,9 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 - **句子不超载**：每句一个主张；每段一个中心句；每节一个问题
 - **让审稿人省力**：方法可复现、统计可追溯、图注自解释
 
-### Phase 3 — 图表管线（顶刊作图）
+### Phase 3 — 图表交付约束
 
-用 `scientific-visualization` 作为默认图表技能，必要时补 `scientific-schematics`（流程/机制示意）：
+本 skill 只定义投稿所需的图表交付约束，不在正文内要求调用其它作图专家：
 - 对 data figure：统一字体、字号、线宽、配色、子图间距、panel label（A/B/C）
 - 导出：优先 `PDF/EPS/SVG`（矢量），必要时 `TIFF 600dpi`（栅格）
 - 可访问性：色盲友好（Okabe-Ito / colorcet / cmcrameri）
@@ -84,26 +82,24 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 ### Phase 4 — LaTeX/构建/打包
 
 如果 source-of-truth 是 LaTeX：
-- 用 `latex-submission-pipeline` 完成：本地编译 → lint/format → CI 编译 → submission zip
+- 明确本地编译命令、lint/format 要求、CI 编译要求和 submission zip 文件清单
 
 如果 source-of-truth 是 Word：
 - 仍然遵循“图表输出标准 + 引用一致性 + 文件命名规范”，并准备投稿系统所需附件
 
 ### Phase 5 — 投稿与返修
 
-- 投稿前：`submission-checklist/templates/pre-submission-checklist.md`
-- 返修：用 `submission-checklist/templates/rebuttal-response-matrix.md` 逐条回应
-- 相机就绪：`submission-checklist/templates/camera-ready-checklist.md`
+- 投稿前：列出主文稿、图表、补充材料、伦理/数据/利益冲突声明、cover letter
+- 返修：维护逐条回应矩阵、修改位置、证据来源和未采纳理由
+- 相机就绪：检查最终版式、作者信息、版权/许可、源文件和最终 PDF
 
-### Phase 6 — 汇报与传播（可选）
+### Phase 6 — 传播资产（可选）
 
-用 `slides-as-code` 或 `scientific-slides` 把论文变成可讲的故事：
-- 1 张图 = 1 个结论点
-- Slides 的图直接复用 `figures/` 的最终导出，不要二次截图
+如果需要项目主页、视频摘要或海报，先定义输入来源、目标受众、输出目录和会议/机构限制。本 skill 不负责生成幻灯片，也不在正文内要求调用传播类专家。
 
 ---
 
-## 规范（Meta Rules → Skills）
+## 规范（Meta Rules）
 
 ### A. 资产命名规范
 
@@ -129,7 +125,7 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 
 ## 案例库（GitHub 高信号仓库）
 
-见：`references/case-library.md`（按“写作清单/论文工程化/顶刊作图/LaTeX pipeline/Slides-as-code”分类）
+见：`references/case-library.md`（按“写作清单/论文工程化/出版包/返修资产”分类）
 
 ---
 
@@ -139,4 +135,3 @@ allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
 - “顶刊作图：matplotlib 多子图 + 色盲友好 + 导出 PDF + TIFF 600dpi（每张图的规范写清楚）”
 - “我要回复审稿意见：请生成 rebuttal 矩阵，并给出逐条回应的写作规范”
 - “请把当前 LaTeX 项目接入 GitHub Actions 自动编译并生成 submission zip”
-

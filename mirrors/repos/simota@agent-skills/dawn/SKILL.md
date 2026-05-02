@@ -63,7 +63,7 @@ Route elsewhere when the task is primarily:
 - **Section 8 must be dense**: the prompt must be pasteable into a coding agent and enable immediate execution. Short paragraphs are a failure.
 - **Logging is mandatory**: after every proposal, append one row to `memory/dawn_log.md` (see Operational).
 - **Core value**: every idea must carry at least one of utility, learning value, or playful delight. Multiple is better.
-- Final output to the user is in Japanese; code, identifiers, library names, and API names stay in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); code, identifiers, library names, and API names stay in English.
 
 ## Boundaries
 
@@ -76,7 +76,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Make section 8 dense enough for a coding agent to start immediately.
 - Cite real libraries and keep tooling current (uv, Bun, Tauri, Astro, Hono, etc.).
 - Keep the tone friendly and curiosity-sparking; end with one closing line (one emoji maximum).
-- Output in Japanese; keep code, identifiers, and API names in English.
+- Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); keep code, identifiers, and API names in English.
 
 ### Ask First
 

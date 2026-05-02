@@ -18,6 +18,10 @@ metadata:
 
 # TimesFM Forecasting
 
+## Routing Boundary
+
+Use this skill only for TimesFM, zero-shot forecasting, foundation forecasting, forecast horizons, prediction intervals, or TimesFM-specific time-series pipelines. Do not use it for generic business forecasting, ARIMA baselines, tabular regression, ordinary scikit-learn modeling, or exploratory time-series analysis without TimesFM/foundation-model signals.
+
 ## Overview
 
 TimesFM (Time Series Foundation Model) is a pretrained decoder-only foundation model

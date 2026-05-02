@@ -25,7 +25,7 @@ Use this skill when:
 
 ## Not For / Boundaries
 
-- Model training and hyperparameter search: use `training-machine-learning-models`
+- Model training and hyperparameter search: use `scikit-learn`
 - Benchmark comparison and threshold selection: use `evaluating-machine-learning-models`
 - Leakage or prediction-time audits: use `ml-data-leakage-guard`
 
