@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/stripe-integration-expert/../../../engineering-team/stripe-integration-expert/SKILL.md

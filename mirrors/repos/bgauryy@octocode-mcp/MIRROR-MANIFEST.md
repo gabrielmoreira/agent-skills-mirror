@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bgauryy/octocode-mcp` — 26 default patterns, 0 followed patterns, 280 file(s) materialized.
+Mirror of `bgauryy/octocode-mcp` — 26 default patterns, 0 followed patterns, 282 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bgauryy/octocode-mcp` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 280 |
+| Files         | 282 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -338,7 +338,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 277 | ✓ | [`skills/octocode-rfc-generator/SKILL.md`](skills/octocode-rfc-generator/SKILL.md) |
 | 278 | ✓ | [`skills/octocode-roast/references/sin-registry.md`](skills/octocode-roast/references/sin-registry.md) |
 | 279 | ✓ | [`skills/octocode-roast/SKILL.md`](skills/octocode-roast/SKILL.md) |
-| 280 | ✓ | [`skills/README.md`](skills/README.md) |
+| 280 | ✓ | [`skills/octocode-search-skill/INSTALL_REFERENCE.md`](skills/octocode-search-skill/INSTALL_REFERENCE.md) |
+| 281 | ✓ | [`skills/octocode-search-skill/SKILL.md`](skills/octocode-search-skill/SKILL.md) |
+| 282 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

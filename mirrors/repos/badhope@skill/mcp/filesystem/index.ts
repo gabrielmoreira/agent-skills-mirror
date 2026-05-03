@@ -328,6 +328,253 @@ export default createMCPServer({
     }
   })
   .addTool({
+    name: 'fs_read_file',
+    description: 'Read file content with encoding options',
+    parameters: {
+      path: { type: 'string', description: 'File path to read', required: true },
+      encoding: { type: 'string', description: 'Encoding: utf8, base64, hex', required: false },
+      maxSize: { type: 'number', description: 'Max bytes to read', required: false }
+    },
+    execute: async (params: Record<string, any>) => {
+      const validation = validateParams(params, {
+        path: { type: 'string', required: true },
+        encoding: { type: 'string', required: false, default: 'utf8' },
+        maxSize: { type: 'number', required: false, default: 10485760 }
+      })
+      if (!validation.valid) return formatError('Invalid parameters', validation.errors)
+
+      const { encoding, maxSize } = validation.data
+      const targetPath = sanitizePath(validation.data.path)
+      const resolvedPath = path.resolve(targetPath)
+
+      try {
+        const content = await fs.readFile(resolvedPath, { encoding: encoding as BufferEncoding })
+        
+        if (typeof content === 'string' && content.length > maxSize) {
+          return formatSuccess({
+            path: resolvedPath,
+            content: content.substring(0, maxSize),
+            truncated: true,
+            totalSize: content.length,
+            encoding
+          })
+        }
+
+        return formatSuccess({
+          path: resolvedPath,
+          content,
+          truncated: false,
+          totalSize: typeof content === 'string' ? content.length : content.byteLength,
+          encoding
+        })
+      } catch (e: any) {
+        return formatError('Failed to read file', e.message)
+      }
+    }
+  })
+  .addTool({
+    name: 'fs_write_file',
+    description: 'Write content to file with options for overwriting and encoding',
+    parameters: {
+      path: { type: 'string', description: 'File path to write', required: true },
+      content: { type: 'string', description: 'Content to write', required: true },
+      encoding: { type: 'string', description: 'Encoding: utf8, base64', required: false },
+      overwrite: { type: 'boolean', description: 'Overwrite existing file', required: false },
+      createParents: { type: 'boolean', description: 'Create parent directories', required: false }
+    },
+    execute: async (params: Record<string, any>) => {
+      const validation = validateParams(params, {
+        path: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+        encoding: { type: 'string', required: false, default: 'utf8' },
+        overwrite: { type: 'boolean', required: false, default: true },
+        createParents: { type: 'boolean', required: false, default: true }
+      })
+      if (!validation.valid) return formatError('Invalid parameters', validation.errors)
+
+      const { content, encoding, overwrite, createParents } = validation.data
+      const targetPath = sanitizePath(validation.data.path)
+      const resolvedPath = path.resolve(targetPath)
+
+      try {
+        const exists = await pathExists(resolvedPath)
+        
+        if (exists && !overwrite) {
+          return formatError('File already exists', resolvedPath)
+        }
+
+        if (createParents) {
+          await fs.mkdir(path.dirname(resolvedPath), { recursive: true })
+        }
+
+        await fs.writeFile(resolvedPath, content, { encoding: encoding as BufferEncoding })
+
+        return formatSuccess({
+          path: resolvedPath,
+          written: true,
+          bytes: Buffer.byteLength(content, encoding as BufferEncoding),
+          encoding,
+          overwritten: exists
+        })
+      } catch (e: any) {
+        return formatError('Failed to write file', e.message)
+      }
+    }
+  })
+  .addTool({
+    name: 'fs_append_file',
+    description: 'Append content to existing file',
+    parameters: {
+      path: { type: 'string', description: 'File path to append to', required: true },
+      content: { type: 'string', description: 'Content to append', required: true },
+      encoding: { type: 'string', description: 'Encoding: utf8', required: false },
+      createIfNotExists: { type: 'boolean', description: 'Create file if it does not exist', required: false }
+    },
+    execute: async (params: Record<string, any>) => {
+      const validation = validateParams(params, {
+        path: { type: 'string', required: true },
+        content: { type: 'string', required: true },
+        encoding: { type: 'string', required: false, default: 'utf8' },
+        createIfNotExists: { type: 'boolean', required: false, default: true }
+      })
+      if (!validation.valid) return formatError('Invalid parameters', validation.errors)
+
+      const { content, encoding, createIfNotExists } = validation.data
+      const targetPath = sanitizePath(validation.data.path)
+      const resolvedPath = path.resolve(targetPath)
+
+      try {
+        const exists = await pathExists(resolvedPath)
+        
+        if (!exists && !createIfNotExists) {
+          return formatError('File does not exist', resolvedPath)
+        }
+
+        if (!exists && createIfNotExists) {
+          await fs.mkdir(path.dirname(resolvedPath), { recursive: true })
+        }
+
+        await fs.appendFile(resolvedPath, content, { encoding: encoding as BufferEncoding })
+
+        return formatSuccess({
+          path: resolvedPath,
+          appended: true,
+          bytes: Buffer.byteLength(content, encoding as BufferEncoding),
+          encoding
+        })
+      } catch (e: any) {
+        return formatError('Failed to append file', e.message)
+      }
+    }
+  })
+  .addTool({
+    name: 'fs_delete_file',
+    description: 'Delete file or directory',
+    parameters: {
+      path: { type: 'string', description: 'Path to delete', required: true },
+      recursive: { type: 'boolean', description: 'Delete directory recursively', required: false },
+      force: { type: 'boolean', description: 'Ignore errors if file does not exist', required: false }
+    },
+    execute: async (params: Record<string, any>) => {
+      const validation = validateParams(params, {
+        path: { type: 'string', required: true },
+        recursive: { type: 'boolean', required: false, default: false },
+        force: { type: 'boolean', required: false, default: false }
+      })
+      if (!validation.valid) return formatError('Invalid parameters', validation.errors)
+
+      const { recursive, force } = validation.data
+      const targetPath = sanitizePath(validation.data.path)
+      const resolvedPath = path.resolve(targetPath)
+
+      try {
+        const exists = await pathExists(resolvedPath)
+        
+        if (!exists) {
+          if (force) {
+            return formatSuccess({ path: resolvedPath, deleted: false, existed: false })
+          }
+          return formatError('File does not exist', resolvedPath)
+        }
+
+        const isDir = await isDirectory(resolvedPath)
+        
+        if (isDir) {
+          await fs.rm(resolvedPath, { recursive, force })
+        } else {
+          await fs.unlink(resolvedPath)
+        }
+
+        return formatSuccess({
+          path: resolvedPath,
+          deleted: true,
+          wasDirectory: isDir
+        })
+      } catch (e: any) {
+        return formatError('Failed to delete', e.message)
+      }
+    }
+  })
+  .addTool({
+    name: 'fs_copy_file',
+    description: 'Copy file or directory to destination',
+    parameters: {
+      source: { type: 'string', description: 'Source path', required: true },
+      destination: { type: 'string', description: 'Destination path', required: true },
+      overwrite: { type: 'boolean', description: 'Overwrite existing destination', required: false },
+      recursive: { type: 'boolean', description: 'Copy directory recursively', required: false }
+    },
+    execute: async (params: Record<string, any>) => {
+      const validation = validateParams(params, {
+        source: { type: 'string', required: true },
+        destination: { type: 'string', required: true },
+        overwrite: { type: 'boolean', required: false, default: false },
+        recursive: { type: 'boolean', required: false, default: false }
+      })
+      if (!validation.valid) return formatError('Invalid parameters', validation.errors)
+
+      const { source, destination, overwrite, recursive } = validation.data
+      const safeSource = sanitizePath(source)
+      const safeDest = sanitizePath(destination)
+      const resolvedSource = path.resolve(safeSource)
+      const resolvedDest = path.resolve(safeDest)
+
+      try {
+        const exists = await pathExists(resolvedSource)
+        
+        if (!exists) {
+          return formatError('Source does not exist', resolvedSource)
+        }
+
+        const destExists = await pathExists(resolvedDest)
+        if (destExists && !overwrite) {
+          return formatError('Destination already exists', resolvedDest)
+        }
+
+        const isDir = await isDirectory(resolvedSource)
+        
+        if (isDir) {
+          await fs.cp(resolvedSource, resolvedDest, { recursive, force: overwrite })
+        } else {
+          if (overwrite) {
+            await fs.copyFile(resolvedSource, resolvedDest)
+          } else {
+            await fs.copyFile(resolvedSource, resolvedDest)
+          }
+        }
+
+        return formatSuccess({
+          source: resolvedSource,
+          destination: resolvedDest,
+          copied: true,
+          wasDirectory: isDir
+        })
+      } catch (e: any) {
+        return formatError('Failed to copy', e.message)
+      }
+    }
+  })
+  .addTool({
     name: 'fs_clean_empty_dirs',
     description: 'Recursively remove empty directories',
     parameters: {

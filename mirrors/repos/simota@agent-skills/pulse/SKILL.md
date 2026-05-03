@@ -211,6 +211,7 @@ Every deliverable must include:
 - Alert thresholds (conversion drop ≥20% from baseline, velocity spike ≥30%).
 - Dashboard or visualization specification where applicable.
 - Next steps (A/B test, growth optimization, monitoring).
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=dashboard, style_pack=data-viz-bold) for a visual KPI overview.
 
 ## Collaboration
 

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/mdr-745-specialist/../../../ra-qm-team/mdr-745-specialist/SKILL.md

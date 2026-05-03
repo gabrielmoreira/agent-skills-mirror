@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/demo-video/../../../engineering/demo-video/SKILL.md

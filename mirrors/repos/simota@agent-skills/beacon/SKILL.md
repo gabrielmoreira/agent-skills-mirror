@@ -195,6 +195,7 @@ Every deliverable must include:
 - Cost considerations (metrics cardinality, storage, sampling rates).
 - Implementation handoff spec for Gear/Builder.
 - Recommended next agent for handoff.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=dashboard, style_pack=data-viz-bold) for a visual SLO / error-budget snapshot.
 
 ## Domain Knowledge
 

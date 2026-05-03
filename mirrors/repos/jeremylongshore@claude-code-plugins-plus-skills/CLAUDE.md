@@ -6,13 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Tons of Skills — Claude Code plugins marketplace (425 plugins, 2,851 skills, 177 agents). Live at https://tonsofskills.com
 
-**Monorepo structure:** pnpm workspaces (v9.15.9+)
-- `plugins/[category]/*` - AI instruction plugins (Markdown, ~98% of plugins)
+**Runtime:** Node `>=20.0.0`, pnpm `>=9.0.0` (pinned to `9.15.9` via `packageManager` field). Developers on Node 18 will hit silent workspace-resolution failures.
+
+**Monorepo structure:** pnpm workspaces (see `pnpm-workspace.yaml` — only 6 directories are actual workspace members)
+- `plugins/[category]/*` - AI instruction plugins (Markdown, ~98% of plugins). `plugins/` has 23 top-level entries; most are categories but a few are special: `mcp/`, `saas-packs/`, `packages/`, `examples/`, `jeremy-google-adk/`, `jeremy-vertex-ai/`. Only `mcp/*` and `saas-packs/*-pack` are pnpm workspace members — category dirs are flat collections of plugins.
 - `plugins/mcp/*` - MCP server plugins (TypeScript, ~2%)
 - `plugins/saas-packs/*-pack` - SaaS skill packs (pnpm workspace members)
 - `marketplace/` - Astro 5 website (**uses npm, not pnpm** - CI enforced)
 - `packages/cli` - `ccpi` CLI (`@intentsolutionsio/ccpi` on npm)
 - `packages/analytics-*` - Analytics daemon and dashboard
+
+> **Session protocol lives in `AGENTS.md`, not here.** Post-compaction recovery (`bd ready`), the mandatory end-of-session push checklist ("Landing the Plane"), and the beads workflow are all in `AGENTS.md`. Read it before starting work — those rules are load-bearing and intentionally not duplicated below.
 
 **Package manager policy (CI-enforced by `scripts/check-package-manager.mjs`):**
 - `pnpm` everywhere at root
@@ -29,6 +33,8 @@ pnpm run sync-marketplace           # Regenerate marketplace.json from .extended
 pnpm install && pnpm build          # Install and build all workspace packages
 pnpm test && pnpm typecheck         # Run vitest tests and TypeScript checks
 pnpm lint                           # ESLint across all packages
+pnpm run verify                     # Full verification pipeline (scripts/run-verification-pipeline.mjs) — what CI's `verify` job runs
+pnpm run update-metrics             # Refresh plugin/skill/agent counts in README + marketplace data
 
 # Single MCP plugin
 cd plugins/mcp/[name]/ && pnpm build && chmod +x dist/index.js
@@ -82,20 +88,61 @@ Run `pnpm run sync-marketplace` after editing `.extended.json`. CI fails if out 
 | `marketplace/src/data/unified-search-index.json` | `generate-unified-search.mjs` (build step 3) |
 | `marketplace/src/data/cowork-manifest.json` | `build-cowork-zips.mjs` (build step 4) |
 | `README.md` TOC block (between `AUTO-TOC:START`/`AUTO-TOC:END` sentinels) | `node scripts/generate-readme-toc.mjs` (CI-enforced via `--check`) |
+| `README.md` Killer-Skill block (between `KILLER-SKILL:START`/`KILLER-SKILL:END` sentinels) | `node scripts/render-spotlight.mjs` (CI-enforced via `--check`); source of truth = `marketplace/src/data/spotlights.json` |
 | `marketplace/src/data/npm-stats.json` + `README.md` NPM-STATS block | `node scripts/fetch-npm-stats.mjs` (daily cron via `update-npm-stats.yml`) |
 | Per-plugin `plugins/**/package.json` (for npm tracking) | `node scripts/generate-plugin-package-jsons.mjs` (idempotent; touches only plugins without one) |
 
+## Killer Skill of the Week — Editorial Workflow
+
+Single source of truth: **`marketplace/src/data/spotlights.json`** (drives both `KillerSkills.astro` on the homepage and the `KILLER-SKILL` block in README).
+
+**Picking is editorial — not automated.** You decide who/when. The tooling just removes the rotation tedium.
+
+### Promote a new spotlight
+
+1. Write a JSON file (or pipe via stdin) with the new spotlight content. Required fields: `pluginSlug`, `headline`, `author`, `authorGithub`, `grade`, `category`, `link`. Optional: `whyKiller`, `quote`, `skillCount`.
+2. Run the promote script:
+
+   ```bash
+   node scripts/promote-spotlight.mjs path/to/new-spotlight.json
+   # or
+   node scripts/promote-spotlight.mjs --stdin < new-spotlight.json
+   ```
+
+3. The script atomically rotates: previous `spotlight` → top of `hallOfFame` (tagged with the previous week's ISO label), new content → `spotlight`, `week` → today's ISO week, `meta.lastUpdated` → today, `meta.version` minor-bumped. Then it regenerates the README block via `render-spotlight.mjs`.
+4. Commit + PR + merge. CI (`Verify README Killer-Skill block is in sync`) blocks any drift.
+
+### Render-only (no rotation)
+
+Use when you hand-edit `spotlights.json` and just want the README block synced:
+
+```bash
+node scripts/render-spotlight.mjs           # write README
+node scripts/render-spotlight.mjs --check   # CI: exit 1 if README is out of sync
+```
+
+### Why not Changesets / weekly cron / auto-pick
+
+Marketing surface — taste-driven, not metric-driven. The "auto-pick by stars / by latest A-grade / by GitHub star delta" patterns lose editorial control. Tooling here only removes drift between the two render surfaces and the manual JSON-array surgery; humans still curate.
+
 ## npm Publish Pipeline
+
+Full operator-facing flow lives in [`RELEASING.md`](./RELEASING.md). Quick reference:
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `.github/workflows/cli-publish.yml` | Tag push `cli-v*.*.*` | Publishes `@intentsolutionsio/ccpi` only |
-| `.github/workflows/publish-all-packages.yml` | Manual dispatch with `confirm="publish all"` | One-shot mass publish of every `@intentsolutionsio/*` package; idempotent |
-| `.github/workflows/publish-changed-packages.yml` | Push to main touching `plugins/**` | Publishes each changed `@intentsolutionsio/*` package whose declared version isn't on npm yet |
-| `.github/workflows/update-npm-stats.yml` | Daily cron (00:15 UTC) | Refreshes `marketplace/src/data/npm-stats.json` + README NPM-STATS block |
-| `.github/workflows/slack-daily-downloads.yml` | Daily cron (18:00 UTC = 1pm Central) | Posts totals + top-5 to #operation-hired (pings `<@U099CBRE7CL>`) via `SLACK_OPERATION_HIRED_WEBHOOK_URL` secret — per `/slack` skill conventions |
+| `.github/workflows/auto-bump-on-pr.yml` | `pull_request` touching `plugins/**` or `packages/**` | For every plugin whose source changed, bumps `package.json` patch (X.Y.Z → X.Y.Z+1) and commits back to the PR branch. Skipped on `automation/*` branches and PRs marked `[skip auto-bump]`. |
+| `.github/workflows/publish-changed-packages.yml` | Push to main touching `plugins/**` | For each changed plugin where the declared version isn't yet on npm: `npm publish --provenance` + annotated git tag `@scope/name@version` + GitHub Release with auto-generated notes. |
+| `.github/workflows/cli-publish.yml` | Tag push `cli-v*.*.*` | Publishes `@intentsolutionsio/ccpi` only (parallel system; not auto-bumped). |
+| `.github/workflows/publish-all-packages.yml` | Manual dispatch with `confirm="publish all"` | One-shot mass publish of every `@intentsolutionsio/*` package; idempotent. Use only for the freeze-fix sweep or recovery. |
+| `.github/workflows/update-npm-stats.yml` | Daily cron (00:15 UTC) | Refreshes `marketplace/src/data/npm-stats.json` + README NPM-STATS block. Pushes to `automation/npm-stats` and opens a PR (main is branch-protected). |
+| `.github/workflows/slack-daily-downloads.yml` | Daily cron (18:00 UTC = 1pm Central) | Posts totals + top-5 to #operation-hired (pings `<@U099CBRE7CL>`) via `SLACK_OPERATION_HIRED_WEBHOOK_URL` secret — per `/slack` skill conventions. |
 
-Versioning is manual: bump a plugin's `package.json` `version` when you want a new release. The incremental publish workflow mirrors the declared version; it never auto-bumps.
+**Versioning is now automated by default.** A code-touching PR auto-bumps the affected plugins' patch versions; merge to main publishes + tags + releases. **For minor or major bumps, hand-edit the version in the same PR** (auto-bumper steps aside when the PR's only plugin-dir change is to its own `package.json`).
+
+**Tag convention:** per-package tags use `@scope/name@version` (e.g. `@intentsolutionsio/langchain-pack@1.1.0`). Repo-wide `vX.Y.Z` tags from before this pipeline (e.g. `v4.28.0`) are left in place but not extended.
+
+**Freeze fix utility:** `scripts/bulk-bump-versions.mjs` is a one-time minor sweep (1.0.0 → 1.1.0 across every package whose declared version matches npm-latest). Used to break the historical 1.0.0 freeze; re-runs are no-ops once everything's bumped.
 
 After editing the catalog (`marketplace.extended.json`), run both syncs:
 ```bash
@@ -406,7 +453,7 @@ python3 freshie/scripts/batch-remediate.py --all --execute
 
 ## Task Tracking (Beads)
 
-See `AGENTS.md` for full protocol. Quick reference:
+See `AGENTS.md` for full protocol — including the mandatory post-compaction `bd ready` recovery step and "Landing the Plane" end-of-session push checklist. Quick reference:
 
 ```bash
 bd sync && bd ready                        # Session start: find work
@@ -414,3 +461,12 @@ bd update <id> --status in_progress        # Claim task BEFORE starting
 bd close <id> --reason "..."               # Complete with evidence
 bd sync && git push                        # Session end: MANDATORY
 ```
+
+## Legacy / Ancillary Files at Root
+
+These exist at repo root but are not part of the active build/deploy path. Do not assume they are live without checking git log:
+
+- `docker-compose.test.yml` + `Dockerfile.test` — test-harness containers (not referenced by any current CI workflow)
+- `firebase.json` + `firestore.rules` — Firebase config (marketplace deploys to GitHub Pages via `deploy-marketplace.yml`, not Firebase; these may be legacy)
+- `config.zcf.json` — ZCF tool config
+- `test_youtube_strategy.py`, `asset_generation*.log`, `setup.sh`, `create-tasks.sh`, `package.json.tmp` — scratch/legacy. If you're tempted to extend them, check whether they should move to `archive/` first.

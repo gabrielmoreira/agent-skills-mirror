@@ -52,31 +52,7 @@ Always-active unconscious behavior. Monitor context usage and ensure graceful se
 
 ### Session Memory Template
 
-```markdown
-# Session: [Topic]
-
-**Started**: [Date]
-**Status**: [Active/Concluded]
-
-## Progress Summary
-- [Completed items]
-- [Current state]
-
-## Next Steps
-- [Remaining work]
-
-## Key Decisions
-- [Important choices made]
-
-## Files Modified
-- [List of changed files]
-```
-
-### Location
-
-- Path: `/memories/session/[descriptive-name].md`
-- Session memory is conversation-scoped — auto-cleared after session ends
-- For persistent notes, use `/memories/` (user memory) instead
+Write session notes to `/memories/session/[descriptive-name].md` with: Status (Active/Concluded), Progress Summary, Next Steps, Key Decisions, Files Modified. Session memory is conversation-scoped.
 
 ## Warning Signs
 

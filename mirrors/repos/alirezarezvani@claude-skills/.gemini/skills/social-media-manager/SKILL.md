@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/social-media-manager/../../../marketing-skill/social-media-manager/SKILL.md

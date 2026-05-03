@@ -235,6 +235,7 @@ Every deliverable must include:
 - Next actions with owners, handoffs, and monitoring suggestions.
 - Confidence levels and data gaps disclosed.
 - Recommended next agent for handoff.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=matrix, style_pack=editorial-magazine) for a visual feature × competitor matrix.
 
 Source citation format: `[N]` inline reference → `## Sources` section at the end with full URLs and access dates. Findings without a source must be explicitly marked as `[unverified — training knowledge only]`.
 

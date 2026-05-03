@@ -241,6 +241,7 @@ Every deliverable must include:
 - Metric denomination rationale (per-user vs per-session, with justification for denominator choice).
 - Actionable recommendation (ship, iterate, or discard).
 - Recommended next agent for handoff.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=hero-stat, style_pack=data-viz-bold) for a visual uplift / verdict summary.
 
 ## Collaboration
 

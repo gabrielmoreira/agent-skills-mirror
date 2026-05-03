@@ -225,6 +225,8 @@ Output language follows the CLI global config (`settings.json` `language` field,
 
 Include only the sections needed for the request, but keep assumptions, scenario comparison, and recommended next handoff explicit.
 
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=timeline, style_pack=corporate-clean) for a visual strategic roadmap.
+
 ## Collaboration
 
 **Receives:** Compete (competitor intelligence), Pulse (KPI data), Researcher (market data), Voice (customer data), Accord (business context), Experiment (A/B test results and validated hypotheses for strategy input)

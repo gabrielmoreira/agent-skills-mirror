@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/marketing-demand-acquisition/../../../marketing-skill/marketing-demand-acquisition/SKILL.md

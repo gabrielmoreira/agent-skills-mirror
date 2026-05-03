@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/senior-devops/../../../engineering-team/senior-devops/SKILL.md

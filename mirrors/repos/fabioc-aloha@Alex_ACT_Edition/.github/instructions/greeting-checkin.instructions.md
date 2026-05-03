@@ -4,7 +4,7 @@ lifecycle: stable
 inheritance: inheritable
 description: "Greeting-triggered check-in — when the user opens the session with a greeting, run the Edition + AI-Memory check before responding"
 application: "First user message of a session that reads as a greeting (hi, hello, hey, good morning, how are you, what's up, etc.) — fires once per session"
-applyTo: "**"
+applyTo: "**/*checkin*,**/*greeting*,**/*welcome*,**/*hello*,**/*hey*"
 currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---

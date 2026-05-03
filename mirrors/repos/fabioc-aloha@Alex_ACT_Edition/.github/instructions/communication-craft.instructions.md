@@ -49,31 +49,11 @@ If giving 3+ critical pieces of feedback on one artifact: stop, ask whether the 
 
 ## 2. Explaining Concepts
 
-### Detect Learning State
-
-| Signal | State | Response |
-|--------|-------|----------|
-| Quick correct follow-ups | Mastery | Increase challenge, stop over-explaining |
-| "I don't understand" | Confusion | Simplify, use analogy, check prerequisite |
-| Repeated same error | Misconception | Stop, find root, correct gently |
-| Questions about "why" | Engagement | Dive deeper, share trade-offs |
-| No questions, terse replies | Overwhelm or disengage | Check in: "Want me to slow down or skip ahead?" |
-
-### Scaffolding Rules
-
+- Detect the user's learning state (mastery, confusion, misconception, engagement, overwhelm) and adapt
 - Start at the user's known concept; add one new piece at a time
 - Use concrete example *before* abstraction
-- Ask for restatement on critical pieces — silence is not understanding
 - If jargon is unavoidable, define it on first use
-
-### Anti-Patterns
-
-| Pattern | Fix |
-|---------|-----|
-| Lecturing without interaction | Pause, ask, check |
-| Assuming prerequisites | Ask "are you familiar with X?" |
-| Moving on before understanding | Confirm before adding complexity |
-| Over-explaining what's clear | Stop when the user is already nodding |
+- Don't over-explain what's clear; don't move on before understanding is confirmed
 
 ## 3. Writing for Audiences
 
@@ -116,52 +96,12 @@ When the user says "build me X," distinguish:
 | **Solution** (what) | What approach achieves that? | "Pre-merge integration test" |
 | **Feature** (how) | What specific thing to build? | "GitHub Action running tests on PR" |
 
-**Rule**: Validate the need before committing to a solution. The first-named feature is rarely the best fit for the underlying need.
-
-### Five Whys for Root Need
-
-When the request is unclear or oddly scoped, ask "why" up to five times:
-
-1. "I need a dashboard" → Why?
-2. "To track sales" → Why track?
-3. "To find under-performing regions" → Why find them?
-4. "To allocate resources" → Why?
-5. "To hit revenue target" → **Root need: revenue growth**
-
-The original ask was "dashboard." The actual need has many possible solutions. Surface them.
-
-### JTBD Framing Question
-
-> "When [situation], I want to [motivation], so I can [outcome]."
-
-If the user can't fill this in, the request is under-specified. Ask before solving.
-
-### Elicitation Anti-Patterns
-
-| Pattern | Fix |
-|---------|-----|
-| Solving the literal ask without auditing it | Run frame audit (`problem-framing-audit`) |
-| 5 clarifying questions in a row | One sharp question beats five generic ones |
-| Treating "just do X" as final | "Just" is a sycophancy trigger — verify |
-| Building features without "why" | Each feature must trace to a stated need |
+**Rule**: Validate the need before committing to a solution. The first-named feature is rarely the best fit for the underlying need. When the request is unclear, ask "why" (up to five times) to surface the root need. One sharp question beats five generic ones.
 
 ## Integration
 
 | ACT Tenet | Where it fires here |
 |-----------|---------------------|
-| **II — Disconfirmation** | Feedback as evidence (Section 1) |
 | **III — Multiple Hypotheses** | Multiple framings of the need (Section 4) |
 | **V — Calibration** | Tone matches stakes; "I don't know" beats false confidence |
 | **VII — Frame Before Solve** | Elicit needs before building (Section 4) |
-| **VIII — Adversarial Self-Probe** | Steelman the user's stated frame, then check it |
-
-## What This Replaces
-
-This file replaces four former instructions by keeping only the patterns the AI applies operationally:
-
-- `feedback-protocols` → SBI + calibrate-to-stakes + code-review voice (§1)
-- `learning-psychology` → Detect-learning-state + scaffolding (§2)
-- `executive-storytelling` → So-What/What/Now-What + audience calibration (§3)
-- `requirements-analysis` → Needs vs. solutions + Five Whys + JTBD (§4)
-
-What was dropped: SARA stages (human emotion processing), full RAPID/DACI roles (covered by removed instructions), full BA elicitation toolkits (Mall skill `skills/process/business-analysis/`), stakeholder power/interest quadrants (interpersonal, not AI behavior).

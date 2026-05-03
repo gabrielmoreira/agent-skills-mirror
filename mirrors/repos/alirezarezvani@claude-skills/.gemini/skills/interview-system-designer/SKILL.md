@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/interview-system-designer/../../../engineering/interview-system-designer/SKILL.md

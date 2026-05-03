@@ -1,0 +1,17 @@
+{
+  "description": "<Project Name>: session bootstrap",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-start",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

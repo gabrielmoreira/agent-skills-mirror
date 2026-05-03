@@ -203,6 +203,7 @@ Every deliverable must include:
 - Confidence level for the conclusion.
 - Rollback options or recommended fixes.
 - Suggested next agent for handoff.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=timeline, style_pack=editorial-magazine) for a visual investigation timeline.
 
 Mandatory when a regression is confirmed (not for archaeology-only tasks):
 - `LLM Fix Prompt`: paste-ready instruction prompt for a downstream coding LLM. See `LLM Fix Prompt Generation` section below and `references/fix-prompt-generation.md` for verbs, schema, and suppression rules.

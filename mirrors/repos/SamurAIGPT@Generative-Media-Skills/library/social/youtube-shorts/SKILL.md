@@ -1,19 +1,29 @@
 ---
 slug: muapi-youtube-shorts
 name: muapi-youtube-shorts
-version: "1.0.0"
-description: Auto-generate viral 9:16 YouTube Shorts (or TikTok/Reels clips) from a long-form YouTube URL or hosted video. Pipeline downloads the source, transcribes locally with Whisper, ranks highlights through a virality framework (hook / emotional peak / opinion bomb / revelation / conflict / quotable / story peak / practical value), dedupes overlapping candidates, and vertically auto-crops the top N as mp4s via `muapi edit clipping`.
+version: "2.0.0"
+description: Auto-generate viral 9:16 YouTube Shorts (or TikTok / Reels clips) from a long-form video. Thin platform-aware wrapper around the AI Clipping skill — picks sensible defaults for short-form social platforms (9:16, 30–60s sweet spot) and delegates the actual highlight extraction + crop to muapi.ai's `/ai-clipping` endpoint.
 acceptLicenseTerms: true
 ---
 
 # YouTube Shorts Generator
 
-**End-to-end pipeline: Long Video → Transcript → Ranked Highlights → Vertical Clips.**
+**Long video → ranked vertical short clips, tuned for short-form social.**
 
-Turns one long video into N viral-ready vertical mp4s. Each clip ships with a viral score (0–100), an opening hook line, and a one-sentence reason it should perform.
+This skill is a platform-aware preset over the [AI Clipping](../../edit/ai-clipping/) primitive. It picks the right aspect ratio and clip count for the target platform and delegates highlight extraction, dedupe, and face-tracked auto-crop to muapi.ai's managed `/ai-clipping` endpoint.
 
 Reference implementation: https://github.com/SamurAIGPT/AI-Youtube-Shorts-Generator
 Underlying API: https://muapi.ai/playground/ai-clipping
+
+---
+
+## When to Use This vs. AI Clipping
+
+| Use this skill when… | Use [AI Clipping](../../edit/ai-clipping/) directly when… |
+|:---|:---|
+| Target is YouTube Shorts / TikTok / Reels | You want full control over aspect / count |
+| You want platform-tuned defaults | You want raw timestamps (`--coords-only`) |
+| You'd rather pass `--platform tiktok` than think about ratios | You're integrating into a custom renderer |
 
 ---
 
@@ -21,64 +31,67 @@ Underlying API: https://muapi.ai/playground/ai-clipping
 
 ### Step 1 — Collect Inputs
 
-Ask once, then proceed:
-
 | Input | Default | Notes |
 |:---|:---|:---|
-| `source` | — | YouTube URL, or hosted mp4 URL, or local file path |
-| `num_clips` | `3` | How many shorts to render |
-| `aspect_ratio` | `9:16` | `9:16` for TikTok/Reels/Shorts, `1:1` square, `4:5` portrait |
-| `whisper_model` | `base` | `tiny` / `base` / `small` / `medium` / `large` |
-| `language` | auto | Whisper language code (e.g. `en`) |
-| `output_json` | — | Optional path; if set, dump full result there |
+| `--source` | — | YouTube URL, hosted mp4 URL, or local file |
+| `--platform` | `shorts` | `shorts` \| `tiktok` \| `reels` \| `feed` (sets ratio + count defaults) |
+| `--num-clips` | platform default | Override clip count |
+| `--aspect-ratio` | platform default | Override aspect ratio |
 
-If the user gave only a URL, use defaults and don't block on questions.
+If the user gave only a URL, run with platform defaults — don't block.
 
 ---
 
 ### Step 2 — Verify Prerequisites
 
 - `muapi-cli` installed and authed (`muapi auth configure`)
-- `ffmpeg` on PATH (Whisper needs it for audio decoding)
-- Python 3.10+ with `openai-whisper` installed (only if running the local transcribe stage)
+- `MUAPI_API_KEY` available
 
-If `MUAPI_API_KEY` is missing, stop and ask the user. Never invent a key.
+That's it. Transcription, highlight ranking, dedupe, and cropping all run server-side — no `ffmpeg`, no Python, no Whisper, no LLM keys needed locally.
 
 ---
 
 ### Step 3 — Run the Pipeline
 
-The standard path is the orchestrator script — it handles all eight stages in order:
-
 ```bash
 bash library/social/youtube-shorts/scripts/run-youtube-shorts.sh \
   --source "<YOUTUBE_URL>" \
+  --platform shorts \
   --num-clips 5 \
-  --aspect-ratio 9:16 \
-  --whisper-model base \
-  --output-json result.json \
   --view
 ```
 
-The eight stages:
+The script:
+1. Resolves the source (uploads local files to muapi CDN if needed).
+2. Picks platform defaults if `--aspect-ratio` / `--num-clips` aren't passed.
+3. Calls `muapi edit clipping` (the `/ai-clipping` endpoint) with the chosen params.
+4. Polls until done, prints a ranked summary, optionally downloads / opens clips.
 
-1. **Download** — pull the source video at the requested resolution (`360`/`480`/`720`/`1080`, default `720`). For local files, skip.
-2. **Transcribe** — local Whisper produces timestamped segments. Audio stays on the machine.
-3. **Classify content type** — LLM tags the video (podcast / interview / tutorial / vlog / lecture / monologue) and density. Tunes the highlight prompt per type.
-4. **Chunk if long** — videos > `LONG_VIDEO_THRESHOLD` (1800s default) are split into `CHUNK_SIZE_SECONDS` (1200s default) windows with `CHUNK_OVERLAP_SECONDS` (60s default) overlap so cross-boundary highlights aren't missed.
-5. **Rank highlights** — LLM scans each chunk through `VIRALITY_CRITERIA`:
-   - **Hook moments** — strong opening line that stops the scroll
-   - **Emotional peaks** — laughter, anger, vulnerability, awe
-   - **Opinion bombs** — spicy, contrarian, debate-bait takes
-   - **Revelation moments** — "wait, what?" reframes
-   - **Conflict** — disagreement, tension, callouts
-   - **Quotable lines** — tight, screenshot-worthy phrasing
-   - **Story peaks** — climax of a narrative arc
-   - **Practical value** — actionable insight a viewer will save
-   Each candidate gets `start_time`, `end_time`, `score` 0–100, `title`, `hook_sentence`, `virality_reason`. Aim for 30–75s clips unless content dictates otherwise.
-6. **Dedupe** — collapse overlaps. Rule: if two candidates overlap > 50%, keep the higher score, drop the other.
-7. **Top-N selection** — sort surviving candidates by score, take `num_clips`.
-8. **Vertical auto-crop** — render each highlight at `aspect_ratio` via `muapi edit clipping`. Auto-handles face tracking and screen recordings.
+---
+
+## What Happens Server-Side
+
+The `/ai-clipping` endpoint runs the full pipeline:
+
+- **Transcribes** the audio.
+- **Ranks highlights** through a virality framework — hook moments, emotional peaks, opinion bombs, revelation moments, conflict, quotable lines, story peaks, practical value.
+- **Dedupes** overlapping candidates by score.
+- **Top-N selects** and **face-tracks** vertical crops.
+
+Each clip ships with score (0–100), opening hook line, and a one-sentence "why it works" reason.
+
+---
+
+## Platform Defaults
+
+| Platform | Flag | Aspect | Default clips | Notes |
+|:---|:---|:---|:---|:---|
+| YouTube Shorts | `--platform shorts` | `9:16` | 3 | Hook in first 1s |
+| TikTok | `--platform tiktok` | `9:16` | 5 | Higher energy, longer ok |
+| Instagram Reels | `--platform reels` | `9:16` | 3 | Hook in first 1s |
+| Instagram Feed | `--platform feed` | `1:1` | 3 | Static-feel works well |
+
+Override any default with `--aspect-ratio` / `--num-clips`.
 
 ---
 
@@ -86,45 +99,29 @@ The eight stages:
 
 **Single video, defaults:**
 ```bash
-bash scripts/run-youtube-shorts.sh --source "https://youtube.com/watch?v=VIDEO_ID"
+bash run-youtube-shorts.sh --source "https://youtube.com/watch?v=VIDEO_ID"
 ```
 
-**Tuned for high-density podcast (more clips, larger Whisper model):**
+**TikTok preset — 5 clips, view in player:**
 ```bash
-bash scripts/run-youtube-shorts.sh \
-  --source "<URL>" --num-clips 8 --whisper-model medium --view
+bash run-youtube-shorts.sh --source "<URL>" --platform tiktok --view
 ```
 
-**Square clips for Instagram feed:**
+**Square Instagram feed clips:**
 ```bash
-bash scripts/run-youtube-shorts.sh \
-  --source "<URL>" --aspect-ratio 1:1 --num-clips 3
+bash run-youtube-shorts.sh --source "<URL>" --platform feed --num-clips 3
 ```
 
 **Batch — `urls.txt` with one URL per line:**
 ```bash
-xargs -a urls.txt -I{} bash scripts/run-youtube-shorts.sh --source "{}"
+xargs -a urls.txt -I{} bash run-youtube-shorts.sh --source "{}"
 ```
 
 **Async submit (returns request_id, poll later):**
 ```bash
-REQUEST_ID=$(bash scripts/run-youtube-shorts.sh \
-  --source "<URL>" --async --output-json - --jq '.request_id' | tr -d '"')
+REQUEST_ID=$(bash run-youtube-shorts.sh --source "<URL>" --async --output-json - | jq -r '.request_id')
 muapi predict wait "$REQUEST_ID" --download ./outputs
 ```
-
----
-
-## Platform Specs
-
-| Platform | Aspect | Sweet-spot duration | Notes |
-|:---|:---|:---|:---|
-| YouTube Shorts | 9:16 | 30–60s | Hook in first 1s, max quality |
-| TikTok | 9:16 | 30–75s | High energy; longer is fine if hook lands |
-| Instagram Reels | 9:16 | 30–60s | Hook in first 1s |
-| Instagram Feed | 1:1 | 15–45s | Static-feel works well |
-| LinkedIn | 16:9 or 1:1 | 30–60s | Professional tone |
-| Twitter/X | 16:9 | 15–60s | Punchy, direct |
 
 ---
 
@@ -133,8 +130,6 @@ muapi predict wait "$REQUEST_ID" --download ./outputs
 ```json
 {
   "source_video_url": "...",
-  "transcript": { "duration": 1873.4, "segments": [...] },
-  "highlights": [ /* every candidate, before top-N cut */ ],
   "shorts": [
     {
       "title": "The one mistake that cost me $50K",
@@ -149,53 +144,24 @@ muapi predict wait "$REQUEST_ID" --download ./outputs
 }
 ```
 
-When reporting back to the user, surface for each clip: rank, score, time range, title, hook, and clip URL. Skip the raw transcript unless asked.
-
----
-
-## Tunable Knobs
-
-Edit defaults inside the orchestrator or pass via flags:
-
-| Knob | Default | Purpose |
-|:---|:---|:---|
-| `CHUNK_SIZE_SECONDS` | `1200` | Chunk length for long videos |
-| `LONG_VIDEO_THRESHOLD` | `1800` | Videos longer than this get chunked |
-| `CHUNK_OVERLAP_SECONDS` | `60` | Overlap between chunks |
-| `MUAPI_POLL_INTERVAL` | `5` | Seconds between job-status polls |
-| `MUAPI_POLL_TIMEOUT` | `1800` | Give up after this long |
-| `OVERLAP_DEDUPE_THRESHOLD` | `0.5` | Min IoU to collapse overlapping candidates |
-
----
-
-## Whisper Model Selection
-
-- `tiny` / `base` — fast, English-leaning, fine for clean studio audio
-- `small` / `medium` — better for accents and music beds
-- `large` — highest accuracy, much slower; only worth it on a GPU
-
-Pick `base` unless transcript quality is poor, then bump to `medium`.
+When reporting back, surface for each clip: rank, score, time range, title, hook, and clip URL.
 
 ---
 
 ## Common Mistakes to Avoid
 
-1. **Skipping the dedupe step** — without it, you ship near-duplicate clips that all came from the same hot moment.
-2. **Generic virality prompt** — the highlight ranker must score against the eight signals above, not "interestingness."
-3. **Wrong aspect ratio for the platform** — YouTube Shorts and TikTok are `9:16`; LinkedIn often `16:9`. Default to `9:16` only if the platform isn't specified.
-4. **Crop without face tracking** — vertical crops on talking-head content must follow the speaker's face; static center-crop loses the subject.
-5. **Padding to hit `num_clips`** — if dedupe leaves fewer survivors than requested, return what you have. Don't ship low-score filler.
-6. **Re-running the full pipeline on a 404'd clip URL** — re-run only the crop stage for that highlight.
+1. **Wrong aspect ratio for the platform** — Shorts / TikTok / Reels are `9:16`. The platform preset handles this; only override if you know why.
+2. **Padding to hit `--num-clips`** — if the API returns fewer survivors, return what you have. Don't ship low-score filler.
+3. **Re-running on a 404'd clip URL** — re-fetch the same `request_id` with `muapi predict wait <id>` rather than re-clipping.
 
 ---
 
 ## Failure Modes
 
-- **`ffmpeg not found on PATH`** — stop and tell the user to install (`brew install ffmpeg` / `apt install ffmpeg`).
-- **Whisper produced no segments** — likely no detectable speech or a hard language. Retry with `--whisper-model medium --language <code>` before declaring failure.
-- **API key missing or rejected** — surface the exact error; don't fabricate a key.
-- **Job timed out** — bump `MUAPI_POLL_TIMEOUT` and retry; don't silently truncate.
-- **Highlight ranker returned <`num_clips`** — return what survived dedupe with a note.
+- **API key missing or rejected** — surface the error; don't fabricate a key.
+- **Job timed out** — bump `--poll-timeout` and retry.
+- **Source URL not reachable** — upload the file via `muapi upload file` and pass the returned URL.
+- **Fewer clips returned than requested** — source had fewer rankable highlights. Return what came back with a note.
 
 ---
 

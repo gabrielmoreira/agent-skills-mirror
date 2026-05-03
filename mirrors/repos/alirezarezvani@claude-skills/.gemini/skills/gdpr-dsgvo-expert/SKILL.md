@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/gdpr-dsgvo-expert/../../../ra-qm-team/gdpr-dsgvo-expert/SKILL.md

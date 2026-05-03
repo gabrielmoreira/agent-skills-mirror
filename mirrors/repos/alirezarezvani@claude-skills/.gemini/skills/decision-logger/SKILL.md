@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/decision-logger/../../../c-level-advisor/decision-logger/SKILL.md

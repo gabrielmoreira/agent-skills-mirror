@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/performance-profiler/../../../engineering/performance-profiler/SKILL.md

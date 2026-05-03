@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/epic-design/../../../engineering-team/epic-design/SKILL.md

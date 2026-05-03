@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/senior-data-scientist/../../../engineering-team/senior-data-scientist/SKILL.md

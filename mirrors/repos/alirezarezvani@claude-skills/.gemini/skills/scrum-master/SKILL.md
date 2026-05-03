@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/scrum-master/../../../project-management/scrum-master/SKILL.md

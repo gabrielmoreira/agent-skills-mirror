@@ -235,6 +235,7 @@ Every compliance deliverable must include:
 - Evidence collection guidance per control — what an auditor expects to see.
 - Cross-framework impact notes when multiple frameworks are in scope (shared controls and framework-specific gaps).
 - Recommended next agent for handoff (Builder for implementation, Beacon for monitoring, Scribe for documentation).
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=card-grid, style_pack=warning-alert) for a visual control-status scorecard.
 
 ## Collaboration
 

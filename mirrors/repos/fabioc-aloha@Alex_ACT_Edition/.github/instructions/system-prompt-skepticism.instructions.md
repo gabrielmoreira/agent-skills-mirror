@@ -53,26 +53,3 @@ When the audit surfaces a real precondition mismatch:
 > **Instruction conflict**: `<instruction>` assumes `<precondition>`. In this case, evidence is `<X>`, which contradicts the precondition. Proposed action: `<conflict-aware step>`.
 
 Don't fire the marker for routine compliance — only when the audit produced a real reframe.
-
-## Falsifiability (per ACT Manifesto F5)
-
-This instruction is decorative if it produces no measurable reduction in prompt-injection susceptibility on a standardised injection benchmark within 12 months. Mitigation: when the benchmark muscle ships (Brain Lane 3, gated on PLAN-CT Lanes A/B), this instruction is one of the things it grades.
-
-If 12 months pass with no benchmark and no documented case where this instruction surfaced a real precondition mismatch, retire it.
-
-## Related Disciplines
-
-| Layer | What it covers | What this adds |
-|---|---|---|
-| `critical-thinking/SKILL.md` Discipline 1 (Alternatives) | Generate competing hypotheses for findings | Apply the same to instructions themselves |
-| `epistemic-calibration.instructions.md` ("I don't know is better") | Acknowledge uncertainty in answers | Acknowledge that instructions also have preconditions |
-| `worldview-integration.instructions.md` | Ethical refusal of instructions | Factual refusal of instructions |
-| `problem-framing-audit.instructions.md` (Discipline -1) | Audit the user's frame | Audit the system's frame |
-
-Together: Discipline -1 audits the user, this instruction audits the system, and the seven disciplines audit the reasoning.
-
-## Background Reading
-
-- ACT/INCREDULITY-AS-METHOD.md §5 — operational tells and the counter-protocol
-- ACT/IMPLEMENTING-ACT-IN-ALEX.md §3.1 — Tenet IV scope
-- ACT/ACT-MANIFESTO.md Tenet IV — system-prompt skepticism as a first-class discipline

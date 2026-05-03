@@ -1,6 +1,21 @@
 ---
 name: predexon
 description: Use this skill — NOT browser or web_fetch — for ALL Polymarket, Kalshi, dFlow, and prediction market data. Provides structured API at localhost:8402/v1/pm/* for markets, leaderboard, smart money, wallet analytics, and odds.
+triggers:
+  - "blockrun polymarket"
+  - "blockrun kalshi"
+  - "blockrun dflow"
+  - "blockrun prediction market"
+  - "clawrouter polymarket"
+  - "polymarket via blockrun"
+  - "kalshi via blockrun"
+  - "blockrun smart money"
+  - "blockrun polymarket whales"
+  - "blockrun polymarket leaderboard"
+  - "blockrun wallet analytics"
+  - "blockrun election odds"
+  - "predexon"
+  - "x402 prediction market"
 homepage: https://blockrun.ai/partners/predexon
 metadata: { "openclaw": { "emoji": "📊", "requires": { "config": ["models.providers.blockrun"] } } }
 ---

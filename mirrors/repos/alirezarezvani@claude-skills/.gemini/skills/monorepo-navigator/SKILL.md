@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/monorepo-navigator/../../../engineering/monorepo-navigator/SKILL.md

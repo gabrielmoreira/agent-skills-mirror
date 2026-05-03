@@ -11,13 +11,7 @@ Capture a short observation, reminder, or open thread to `AI-Memory/notes.md` (u
 ## Steps
 
 1. **Get the note from the user** — one or two sentences. If they didn't include one in the request, ask: "What should I capture?"
-2. **Resolve the AI-Memory root** — try in order:
-   - `%USERPROFILE%/OneDrive - Correa Family/AI-Memory`
-   - `%USERPROFILE%/OneDrive/AI-Memory`
-   - `%USERPROFILE%/iCloudDrive/AI-Memory`
-   - `%USERPROFILE%/iCloud Drive/AI-Memory`
-   - `%USERPROFILE%/Dropbox/AI-Memory`
-   - First existing path wins.
+2. **Resolve the AI-Memory root** using the standard algorithm: check `cognitive-config.json` for `ai_memory_root`, then auto-discover cloud drives, skip `ai_memory_exclude`, pick the first with `AI-Memory/`. CLI: `node .github/scripts/_registry.cjs --resolve .`
 3. **Append to `notes.md`** at that root, creating the file if needed. Format:
 
    ```markdown

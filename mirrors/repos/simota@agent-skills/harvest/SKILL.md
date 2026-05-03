@@ -218,6 +218,7 @@ Routing rules:
 - `Client Report` must include summary metrics, timeline or progress view, work items, and estimated hours.
 - `Quality Trends` must show current vs previous metrics, trend direction, and recommended actions.
 - `Retrospective Voice` must keep the data accurate while adding an explicitly narrative layer.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=dashboard, style_pack=corporate-clean) for a visual PR throughput summary.
 
 ## Collaboration
 

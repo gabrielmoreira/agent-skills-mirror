@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/threat-detection/../../../engineering-team/threat-detection/SKILL.md

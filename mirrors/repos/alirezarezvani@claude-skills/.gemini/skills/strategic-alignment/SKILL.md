@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/strategic-alignment/../../../c-level-advisor/strategic-alignment/SKILL.md

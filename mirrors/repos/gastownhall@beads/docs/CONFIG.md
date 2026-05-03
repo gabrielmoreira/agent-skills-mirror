@@ -641,8 +641,8 @@ Linear integration provides bidirectional sync between bd and Linear via GraphQL
 **Required configuration:**
 
 ```bash
-# API Key (can also use LINEAR_API_KEY environment variable)
-bd config set linear.api_key "lin_api_YOUR_API_KEY"
+# API Key (recommended: use environment variable to avoid git exposure)
+export LINEAR_API_KEY="lin_api_YOUR_API_KEY"  # add to ~/.secrets or ~/.zshrc
 
 # Team ID (find in Linear team settings or URL)
 bd config set linear.team_id "team-uuid-here"
@@ -733,6 +733,12 @@ bd linear sync
 # Pull only (import from Linear)
 bd linear sync --pull
 
+# Pull only if data is stale (skip if fresh)
+bd linear sync --pull-if-stale
+
+# Pull with custom staleness threshold (default 20m)
+bd linear sync --pull-if-stale --threshold 5m
+
 # Pull issues and Linear relations as bd dependencies
 bd linear sync --pull --relations
 
@@ -750,6 +756,16 @@ bd linear sync --prefer-linear   # Linear version wins on conflicts
 # Check sync status
 bd linear status
 ```
+
+**Staleness detection:**
+
+After each successful pull, `bd` writes the current timestamp to `.beads/last_pull`. This enables ambient staleness detection:
+
+- **`--pull-if-stale`**: Only pull if data is older than the threshold (default 20m). When data is fresh, prints "Linear data is fresh" and exits. In `--json` mode, includes `"is_fresh": true/false`.
+- **`--threshold`**: Override the default 20-minute staleness threshold (e.g., `--threshold 5m`).
+- **Debounce**: A 5-minute debounce prevents agent loops — if a pull completed within the last 5 minutes, data is always treated as fresh regardless of the threshold.
+- **`bd prime` auto-pull**: When `LINEAR_API_KEY` is set and data is stale, `bd prime` automatically pulls from Linear before emitting orientation output.
+- **Per-session warning**: On any `bd` command, if data is stale, a one-time warning is emitted to stderr: `⚠ Linear data is 45m stale — run 'bd linear sync --pull' to refresh`. Suppressed in subsequent commands within the same shell session.
 
 **Automatic sync tracking:**
 

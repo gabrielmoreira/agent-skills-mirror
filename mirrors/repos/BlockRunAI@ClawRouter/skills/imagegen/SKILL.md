@@ -1,6 +1,21 @@
 ---
 name: imagegen
 description: Generate or edit images via BlockRun's image API. Trigger when the user asks to generate, create, draw, make an image — or to edit, modify, change, or retouch an existing image.
+triggers:
+  - "blockrun image"
+  - "blockrun image generation"
+  - "clawrouter image"
+  - "generate image via blockrun"
+  - "blockrun ai art"
+  - "blockrun dall-e"
+  - "blockrun flux"
+  - "blockrun nano banana"
+  - "blockrun cogview"
+  - "blockrun grok imagine"
+  - "edit image via blockrun"
+  - "inpainting via blockrun"
+  - "x402 image generation"
+  - "usdc image generation"
 metadata: { "openclaw": { "emoji": "🖼️", "requires": { "config": ["models.providers.blockrun"] } } }
 ---
 

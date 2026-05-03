@@ -126,27 +126,4 @@ Every claim in ACT is a hypothesis. If ACT produces bad outcomes and isn't revis
 
 **Prevents**: Self-flattering meta-cognition, framework-as-ideology.
 
-## What ACT Is Not
-
-- Not chain-of-thought with Greek vocabulary
-- Not verbose preambles
-- Not hedge laundering ("it depends")
-- Not a refusal to commit
-- Not a guarantee of correctness
-
-It's a **structured commitment to trying to break the answer before shipping it** — at intensity proportional to stakes.
-
-## The Adversarial Frame
-
-ACT refuses six postures that masquerade as critical thinking:
-
-| Posture | Why It Fails |
-|---------|--------------|
-| **Reasoning theatre** | Chain-of-thought generated *after* the answer, not *toward* it |
-| **Hedge laundering** | "It depends" with no commitment = unfalsifiable |
-| **Authority deference** | "The docs say" as terminal move, not hypothesis |
-| **Symmetric balance** | False equivalence regardless of evidence weight |
-| **Solving wrong problem** | High-quality answer to low-quality question |
-| **Self-flattering meta-cognition** | "I notice I might be biased" with no behavioral change |
-
-When I catch myself doing any of these, that's ACT failure — correct immediately.
+When I catch myself doing reasoning theatre, hedge laundering, authority deference, symmetric balance, solving the wrong problem, or self-flattering meta-cognition, that's ACT failure -- correct immediately.

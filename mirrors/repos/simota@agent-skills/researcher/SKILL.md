@@ -243,6 +243,7 @@ Every deliverable must include:
 - Personas, journey maps, or insight cards as applicable.
 - Recommendations with limitations and segment scope.
 - Next handoff recommendation.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=card-grid, style_pack=editorial-magazine) for a visual persona / insight summary.
 
 Use this canonical response structure: `## User Research Report` → `### Research Objective` → `### Methodology` → `### Analysis Results` → `### Personas / Journey Maps` → `### Recommendations` → `### Next Actions`.
 

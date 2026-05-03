@@ -1,6 +1,14 @@
 ---
 name: release
 description: Use this skill for EVERY ClawRouter release. Enforces the full checklist — version sync, CHANGELOG, blockrun server constant, build, tests, npm publish, git tag, GitHub release. No step can be skipped.
+triggers:
+  - "release clawrouter"
+  - "ship clawrouter"
+  - "publish clawrouter"
+  - "version bump clawrouter"
+  - "tag clawrouter release"
+  - "npm publish clawrouter"
+  - "clawrouter release"
 ---
 
 # ClawRouter Release Checklist

@@ -676,6 +676,22 @@ toolset = SkillsToolset(directories=[
 ])
 ```
 
+### Loading a Single Skill
+
+When you know the exact path to a skill, use `Skill.from_file()` instead of `SkillsDirectory`:
+
+```python
+from pydantic_ai_skills import Skill
+
+# Pass the directory that contains SKILL.md …
+skill = Skill.from_file("./skills/research/arxiv-search")
+
+# … or pass the SKILL.md file directly
+skill = Skill.from_file("./skills/research/arxiv-search/SKILL.md")
+```
+
+`from_file()` raises `SkillValidationError` if the file is missing or the `name` field is absent (when `validate=True`, the default).
+
 ## Skill Metadata
 
 Add useful metadata to help organize and discover skills:
@@ -740,7 +756,7 @@ Test with a real agent:
 
 ```python
 import asyncio
-from pydantic_ai import Agent, RunContext
+from pydantic_ai import Agent
 from pydantic_ai_skills import SkillsToolset
 
 async def test_skill():
@@ -751,13 +767,6 @@ async def test_skill():
         instructions="You are a test assistant.",
         toolsets=[toolset]
     )
-
-    # For pydantic-ai<1.74, you must add an instructions hook to inject the skills instructions into the agent's context
-    # On pydantic-ai >= 1.74, this is automatic and you can omit the following instructions hook
-    # @agent.instructions
-    # async def add_skills(ctx: RunContext) -> str | None:
-    #     """Add skills instructions to the agent's context."""
-    #     return await toolset.get_instructions(ctx)
 
     result = await agent.run("Test my-skill with input: test data")
     print(result.output)

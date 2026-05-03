@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/saas-metrics-coach/../../../finance/saas-metrics-coach/SKILL.md

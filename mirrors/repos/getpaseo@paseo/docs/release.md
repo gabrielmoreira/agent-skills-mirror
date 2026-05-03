@@ -257,7 +257,17 @@ Rules:
 - **One bullet = one user-facing change**, regardless of how many PRs went into it. Group related PRs on the same bullet.
 - **De-duplicate contributors.** If the same person authored multiple PRs in one bullet, list them once.
 - **Only credit external contributors.** Skip attribution for [@boudra](https://github.com/boudra). The changelog credits community contributions — core team work is the default.
-- **Use `git log` to find PR numbers and authors.** PR numbers are typically in the commit message as `(#N)`. Use `gh pr view N --json author` if the commit doesn't include the GitHub username.
+- **Credit the commit author, not the PR opener.** A maintainer often opens a PR that lands work authored by someone else (cherry-pick, rebase of a contributor's branch, manual extraction from a stacked PR). The squash commit preserves the original commit's author, but `gh pr view N --json author` returns the PR opener — using that field will silently mis-credit the work to the maintainer (and then the "skip @boudra" rule drops the attribution entirely). Always resolve attribution from commit authors.
+
+  Use this command to get the GitHub logins for each PR:
+
+  ```bash
+  gh pr view N --json commits --jq '[.commits[].authors[].login] | unique | .[]'
+  ```
+
+  This returns every distinct GitHub login that authored or co-authored a commit in the PR. Use those logins for attribution. Fall back to `gh pr view N --json author` only if the commits command returns nothing (which should not happen for merged PRs).
+
+  When listing PR numbers, `git log --format='%H %s' v<previous>..HEAD | grep -E '\(#[0-9]+\)$'` pulls the PR number out of squash commit subjects.
 
 ## Changelog ordering
 

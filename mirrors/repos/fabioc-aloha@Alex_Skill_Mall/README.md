@@ -1,170 +1,126 @@
-<p align="center">
-  <img src="assets/banner.svg" alt="Alex Skill Mall — 302 curated skills for AI-assisted work across code, cloud, healthcare, research, publishing, and governance" width="100%"/>
-</p>
+<img src="assets/banner.svg" alt="Alex ACT Plugin Mall" width="100%"/>
 
-# Alex Skill Mall
+# Alex ACT Plugin Mall
 
-**Curated skills for AI-assisted work — from code to healthcare to fleet governance**
+The plugin marketplace for ACT (Artificial Critical Thinking) agents and heirs. Curated plugins that extend the capabilities of Alex ACT Edition and any AI agent that reads `.github/` files.
 
-We develop original skills from real project experience, and we curate the best from the broader ecosystem. The Supervisor continuously evaluates skills from Microsoft, community stores, and internal repositories, then promotes the ones that meet our quality bar — with standardized frontmatter, stripped telemetry, and consistent structure.
+## What's Here
 
-The result: a single marketplace where your AI assistant finds expert knowledge across software engineering, cloud infrastructure, healthcare informatics, academic research, data analysis, publishing, security compliance, and AI agent governance. Drop a skill into your `.github/` folder and it learns instantly.
+283 plugins organized into 16 categories. Each plugin is a self-contained folder with a human-readable README, machine-readable manifest (`plugin.json`), brain artifact (`SKILL.md`), and optional instructions, prompts, or muscles.
 
-## Built for ACT Edition
+Install plugins into any ACT heir project without losing them to Edition upgrades.
 
-The Mall's primary consumer is [**Alex ACT Edition**](https://github.com/fabioc-aloha/Alex_ACT_Edition) — an AI assistant brain built on the Artificial Critical Thinking (ACT) framework. Edition projects use `/find-skill` and `/install-from-mall` to shop the Mall directly.
-
-The Mall also works with any AI assistant that reads `.github/` skill files:
-
-| Surface | How it uses the Mall |
+| Metric | Value |
 | --- | --- |
-| **ACT Edition projects** | Native integration — `/find-skill`, `/install-from-mall`, auto-discovery via CATALOG.json |
-| **GitHub Copilot** | Drop skills into `.github/skills/` — Copilot reads them as custom instructions |
-| **Claude (Code + Desktop)** | Skills work as `.claude/` instructions or project knowledge files |
-| **Cursor** | Copy skills into `.cursor/rules/` for context-aware completions |
-| **Windsurf** | Skills load as `.windsurfrules` project knowledge |
-| **Any AI assistant** | Plain Markdown — paste into system prompts, knowledge bases, or context files |
-
-The [ACT Supervisor](https://github.com/fabioc-aloha/Alex_ACT_Supervisor) curates this Mall. The complete Supervisor package is available in [skills/supervisor/](skills/supervisor/) for anyone who wants to run their own curation instance.
+| Plugins | 283 |
+| Categories | 16 |
+| Shape types | 7 (see notation below) |
+| Install path | `.github/skills/local/` (or matching `local/` dirs) |
+| Primary consumer | Alex ACT Edition v1.0.0+ |
+| Also works with | GitHub Copilot, Claude, Cursor, Windsurf, any AI reading `.github/` |
 
 ## Quick Start
 
 ```bash
-# Clone the skill mall
-git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git
+# Clone the Mall
+git clone https://github.com/fabioc-aloha/Alex_ACT_Plugin_Mall.git
 
-# Copy a skill to your project
-cp -r Alex_Skill_Mall/skills/security/shell-injection-prevention/ /your/project/.github/skills/
-
-# Or copy a whole category
-cp -r Alex_Skill_Mall/skills/azure/ /your/project/.github/skills/
+# Install a plugin to your project
+cp -r Alex_ACT_Plugin_Mall/plugins/converters/md-to-word/ \
+  /your/project/.github/skills/local/md-to-word/
 ```
 
-Your AI assistant (Copilot, Claude, Cursor, etc.) now has access to the skill.
+Then reload your AI agent. The plugin is now available.
 
-## What's Here
+## From ACT Edition
 
-### [Skills](skills/) — Hard Knowledge (302 skills)
+If you're running Alex ACT Edition, use the in-session commands:
 
-Expert knowledge across 35 domains:
+```text
+/mall search azure cosmos
+/mall install md-to-word
+```
 
-| Category | Count | What They Solve |
+Plugins install into `local/` paths so Edition upgrades never clobber them.
+
+## Browse the Mall
+
+Three axes for discovery: **category** (what domain), **shape** (how complex), **tier** (how specialized).
+
+### Categories (283 plugins)
+
+| Category | Count | Coverage |
 | --- | --- | --- |
-| [Security](skills/security/) | 48 | XSS, injection, API hardening, secrets, threat modeling, SFI compliance, bug hunting |
-| [Quality](skills/quality/) | 25 | Code review, testing strategies, audit patterns, deployment safety |
-| [Documentation](skills/documentation/) | 20 | Mermaid, docs decay, count drift, version stamps, coauthoring |
-| [AI / LLM](skills/ai-llm/) | 19 | MCP servers, agents, RAG, prompt engineering, evals, plugin governance |
-| [Azure](skills/azure/) | 19 | Graph API, Fabric, OpenAI, deployment, Entra, MSAL, IaC import, cost optimization |
-| [Data](skills/data/) | 17 | Power BI modeling, Fabric Lakehouse, KQL, semantic models, DAX, data visualization |
-| [Supervisor](skills/supervisor/) | 17 | Fleet governance, Mall curation, release ritual, feedback triage — complete Supervisor package |
-| [Critical Thinking](skills/critical-thinking/) | 15 | ACT pass, hypothesis debugging, root cause, problem framing |
-| [Media](skills/media/) | 14 | Banners, SVG, image processing, presentations |
-| [Architecture](skills/architecture/) | 14 | Microservices, saga orchestration, API connectors, workflow patterns |
-| [Domain](skills/domain/) | 12 | Healthcare informatics, legal compliance, financial analysis, localization, sales enablement |
-| [Converters](skills/converters/) | 11 | Word, PDF, EPUB, LaTeX, PPTX, HTML, email, plain text |
-| [Process](skills/process/) | 10 | Release preflight, git workflow, scope management, risk |
-| [Academic](skills/academic/) | 7 | Editorial judgment, survey verification, research methodology |
-| [Communication](skills/communication/) | 5 | Executive storytelling, stakeholder management, status reports |
-| [Build](skills/build/) | 5 | Path rot, config separation, data-driven layouts |
-| [Cross-Platform](skills/cross-platform/) | 5 | Path handling, regex, line endings, shell quirks |
-| [Publishing](skills/publishing/) | 4 | KDP, book publishing, editorial workflows |
-| [Productivity](skills/productivity/) | 4 | Workflow optimization, deep work, automation patterns |
-| [People](skills/people/) | 4 | Team dynamics, mentoring, collaboration |
-| [Infrastructure](skills/infrastructure/) | 4 | IaC, Bicep AVM, Dockerfiles, ASP.NET containerization |
-| [Operations](skills/operations/) | 4 | Postmortem, observability, monitoring, Copilot usage metrics |
-| [Frontend](skills/frontend/) | 3 | React, CSS, responsive patterns |
-| [VitePress](skills/vitepress/) | 3 | Iframe embed, clean URLs, SPA routing |
-| [VS Code](skills/vscode/) | 3 | Extension patterns, config validation, environment |
-| [Design](skills/design/) | 2 | UI/UX patterns, design systems |
-| [GitHub](skills/github/) | 2 | README override, Wiki structure |
-| [Privacy](skills/privacy/) | 2 | Responsible AI, data protection |
-| [Visual](skills/visual/) | 2 | Image embedding, storage split |
-| [Windows/Node](skills/windows-node/) | 2 | Winget collisions, PAT expiration |
-| [Testing](skills/testing/) | 1 | Python mock patching location |
-| [JavaScript](skills/javascript/) | 1 | Boolean string trap |
-| [Cloud](skills/cloud/) | 1 | Azure SWA gotchas (12 issues) |
-| [GitHub Actions](skills/github-actions/) | 1 | Version upgrades |
-| [Performance](skills/performance/) | 1 | CPU, memory, network profiling |
+| [Security & Privacy](plugins/security-privacy/) | 30 | XSS, injection, secrets, threat modeling, SFI compliance, responsible AI |
+| [DevOps & Process](plugins/devops-process/) | 26 | Git workflow, release, deployment, CI/CD, project management |
+| [Documentation](plugins/documentation/) | 25 | Mermaid, docs decay, VitePress, publishing, version stamps |
+| [Cloud & Infrastructure](plugins/cloud-infrastructure/) | 24 | Azure, Fabric, IaC, Bicep, deployment, cost optimization |
+| [Code Quality](plugins/code-quality/) | 24 | Code review, testing, audit patterns, refactoring, coverage |
+| [AI & Agents](plugins/ai-agents/) | 19 | MCP servers, agent design, RAG, prompt engineering, evals |
+| [Media & Graphics](plugins/media-graphics/) | 19 | Banners, SVG, slides, presentations, video, image handling |
+| [Data & Analytics](plugins/data-analytics/) | 22 | Power BI, KQL, Fabric, dashboards, data visualization, chart selection |
+| [Reasoning & Metacognition](plugins/reasoning-metacognition/) | 15 | ACT pass, hypothesis debugging, root cause, calibration |
+| [Platform & Tooling](plugins/platform-tooling/) | 14 | VS Code, cross-platform, Node.js, frontend patterns |
+| [Architecture & Patterns](plugins/architecture-patterns/) | 13 | Microservices, saga, API design, workflow orchestration |
+| [Supervisor & Fleet](plugins/supervisor-fleet/) | 13 | Fleet governance, Mall curation, release ritual |
+| [Domain Expertise](plugins/domain-expertise/) | 12 | Healthcare, legal, finance, game design, localization |
+| [Converters](plugins/converters/) | 11 | Word, HTML, email, PDF, EPUB, LaTeX, PPTX, plain text |
+| [Communication & People](plugins/communication-people/) | 9 | Stakeholder management, coaching, collaboration |
+| [Academic & Research](plugins/academic-research/) | 7 | Paper drafting, citations, survey verification, lit review |
 
-[Browse the full catalog →](CATALOG.json) (machine-readable JSON — use `/find-skill` for search)
+### Shape Notation
 
-Need something not in this Mall? Run `/feedback` in your project to request it. The Supervisor evaluates external stores and promotes skills here.
+Shape tells you what a plugin contains before you open the folder:
 
-### [Scaffolds](scaffolds/) — Project Starters
-
-Pre-configured projects that actually deploy:
-
-| Scaffold | Stack | What You Get |
+| Shape | Contents | Complexity |
 | --- | --- | --- |
-| [vite-azure-swa](scaffolds/vite-azure-swa/) | Vite + Azure Static Web Apps | SPA with auth, CI/CD, correct config |
+| `.S..` | Skill only | Minimal (1 file) |
+| `I...` | Instruction only | Minimal (1 file) |
+| `.S.M` | Skill + muscle | Light (2 files) |
+| `ISP.` | Instruction + skill + prompt (trifecta) | Medium (3 files) |
+| `I.P.` | Instruction + prompt | Medium (2 files) |
+| `ISPM` | Full stack | Heavy (4+ files) |
+| `I...L` | Lock (boundary guard) | Minimal but critical |
 
-### [Patterns](patterns/) — Cross-Domain Solutions
+Position key: **I**nstruction, **S**kill, **P**rompt, **M**uscle. A dot means that artifact type is absent.
 
-Reusable patterns that apply everywhere:
+## Plugin Structure
 
-| Pattern | Description |
-| --- | --- |
-| [Champion-Challenger Cache](patterns/champion-challenger-cache.md) | Hash LLM inputs, skip API if unchanged |
+Each plugin is a self-contained folder:
 
-## Where Skills Come From
+```text
+plugin-name/
+  README.md          Human-readable: what, why, when, prerequisites
+  plugin.json        Machine manifest: shape, artifacts, dependencies, token cost
+  SKILL.md           Brain artifact (the actual rules or knowledge)
+  *.instructions.md  Optional instruction artifact
+  *.prompt.md        Optional prompt artifact
+  *.cjs              Optional muscle (executable code)
+```
 
-Skills arrive from three streams. Every skill passes the same quality gates regardless of origin.
+## Machine-Readable Discovery
 
-| Source | How it works | Examples |
-| --- | --- | --- |
-| **Original** | Built from real project friction — the gotcha you hit, documented so nobody hits it again | Shell injection prevention, TMDL linter false positives, boolean string trap |
-| **Curated from external stores** | The Supervisor scans 19+ plugin stores (Microsoft, community, internal), evaluates with a five-dimension scorecard, strips telemetry, standardizes frontmatter, and promotes | CodeQL skills from `.github-private`, Fabric skills from `awesome-copilot`, enterprise patterns from `wshobson-agents` |
-| **Promoted from projects** | Fleet projects surface patterns through `/feedback` — the Supervisor triages and generalizes | Cross-platform path gotchas, Azure SWA deployment issues |
-
-The [Supervisor](skills/supervisor/) automates this pipeline: `/scan-stores` to discover, `/add-store` to evaluate, `/audit-mall` to keep it fresh.
-
-## Quality Standard
-
-Every skill in this repo has passed:
-
-| Gate | Requirement |
-| --- | --- |
-| **Time savings** | Would save 30+ minutes of work — debugging, research, or ramp-up |
-| **Non-obvious** | Encodes expertise that isn't a quick search away |
-| **Battle-tested** | Used in a real project or domain |
-| **Specific** | Solves a concrete problem with actionable guidance |
-| **Current** | Still relevant and maintained (currency-stamped) |
-
-If a skill doesn't teach your AI assistant something it wouldn't already know, it doesn't belong here.
-
-## Works With Any AI Assistant
-
-This Mall is AI-platform agnostic. Skills are plain Markdown — they work with GitHub Copilot, Claude, Cursor, Windsurf, or any AI assistant that reads `.github/` files. The machine-readable [CATALOG.json](CATALOG.json) enables programmatic search and auto-discovery.
-
-## Using the Mall
-
-### From a VS Code project
-
-1. Run `/find-skill <keyword>` to search
-2. Run `/install-from-mall` for guided install with project-needs assessment
-3. Skills install into `.github/skills/local/` (survives Edition upgrades)
-
-### Clone for local access
+[CATALOG.json](CATALOG.json) enables programmatic search:
 
 ```bash
-git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git ~/Alex_Skill_Mall
+# Search by category
+jq '.plugins[] | select(.category == "security-privacy")' CATALOG.json
+
+# Filter by shape
+jq '.plugins[] | select(.shape == "ISP.")' CATALOG.json
+
+# Find plugins under N tokens
+jq '.plugins[] | select(.token_cost < 500)' CATALOG.json
 ```
+
+## Curation
+
+The [Alex ACT Supervisor](https://github.com/fabioc-aloha/Alex_ACT_Supervisor) maintains this Mall. Plugins are evaluated on maintenance health, adoption signal, license clarity, ACT-Edition fit, and documentation quality. Stale plugins are pruned quarterly.
 
 ## Contributing
 
-Found expertise worth sharing? [See the contribution guide](CONTRIBUTING.md).
-
-Skills must:
-
-1. Solve a real problem you've encountered — in code, in a domain, or in a workflow
-2. Save meaningful time (debugging, research, ramp-up, or decision-making)
-3. Encode knowledge that isn't a quick search away
-4. Include actionable guidance, not just theory
+See [CONTRIBUTING.md](CONTRIBUTING.md). Plugins must solve a real problem, save meaningful time, and encode knowledge that isn't a quick search away.
 
 ## License
 
-MIT — use freely, contribute back.
-
-## Origin
-
-These skills are extracted from [Alex](https://github.com/fabioc-aloha/alex) — the cognitive architecture for AI-assisted development. The Knowledge Base shares the hard skills without the full brain infrastructure.
+MIT. See individual plugin folders for any additional license terms.

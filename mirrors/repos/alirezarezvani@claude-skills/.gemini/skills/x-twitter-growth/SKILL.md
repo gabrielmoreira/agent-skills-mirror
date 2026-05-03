@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/x-twitter-growth/../../../marketing-skill/x-twitter-growth/SKILL.md

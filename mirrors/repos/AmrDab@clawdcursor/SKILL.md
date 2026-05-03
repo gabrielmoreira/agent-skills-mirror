@@ -1,6 +1,6 @@
 ---
 name: clawdcursor
-version: 0.8.6
+version: 0.8.7
 description: >
   The skill that gives AI agents eyes, hands, and a keyboard on a real desktop.
   When the user asks you to do something a human would normally do at their
@@ -448,6 +448,14 @@ Per-OS setup notes:
 - **Changelog:** CHANGELOG.md
 
 ---
+
+**What's new in 0.8.7:**
+- **Direct tool execution now goes through the safety gate** — every tool invocation via REST `/execute/:name` and MCP `callTool` now passes through a shared `safety-gate` module. Previously, direct tool calls bypassed the same safety checks the agent loop applied. Read-only tools, blocked tools, and confirm-tier tools all now resolve consistently regardless of the entry point.
+- **A11y / window / clipboard reads route through `PlatformAdapter`** — accessibility tree, active-window, and clipboard reads now use the shared adapter when available (with a legacy fallback). Aligns the granular tools with the rest of the codebase.
+- **Single-source version string + drift guard** — `src/index.ts` and `src/onboarding.ts` no longer hardcode the version; both import from `src/version.ts`. CI test (`tests/version-drift.test.ts`) fails the build if any source file pins the package version as a literal. Future bumps only need to touch `package.json`.
+- **TypeScript 5.9.3 → 6.0.3** (devDependency) — major compiler bump. `tsconfig.json` adds `"ignoreDeprecations": "6.0"` to silence the `moduleResolution: "node"` deprecation warning without changing CommonJS runtime behaviour.
+- **ESLint 9 → 10 + typescript-eslint plugins** (devDependency) — major linter bump. Resolved 8 errors from new rules promoted into `recommended` (`no-useless-assignment`, `preserve-caught-error`) without weakening any existing checks.
+- **Routine dependency hygiene** — Playwright 1.58.2 → 1.59.1, ws 8.19.0 → 8.20.0, postcss + `@types/*` group bumps, GitHub Actions `setup-node` and `checkout` to v6.
 
 **What's new in 0.8.6:**
 - **`McpServer` advertises the right version** — the MCP server-info struct hardcoded `0.7.2` since v0.7.x; clients have been seeing stale metadata for seven minor releases. Now reflects the package version.

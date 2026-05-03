@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/form-cro/../../../marketing-skill/form-cro/SKILL.md

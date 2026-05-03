@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ux-researcher-designer/../../../product-team/ux-researcher-designer/SKILL.md

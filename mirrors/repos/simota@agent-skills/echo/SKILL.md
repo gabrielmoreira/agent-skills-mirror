@@ -184,6 +184,7 @@ Every deliverable must include:
 - Latent needs (JTBD) findings.
 - A/B test hypotheses generated from findings.
 - Recommended next agent for handoff.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=card-grid, style_pack=editorial-magazine) for a visual friction / emotion summary.
 
 ## Collaboration
 

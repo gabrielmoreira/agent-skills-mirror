@@ -1,6 +1,20 @@
 ---
 name: clawrouter
 description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, and Polymarket prediction market data as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
+triggers:
+  - "clawrouter"
+  - "claw router"
+  - "@blockrun/clawrouter"
+  - "blockrun gateway"
+  - "blockrun llm router"
+  - "blockrun ai gateway"
+  - "blockrun.ai inference"
+  - "save on llm costs blockrun"
+  - "cheapest model blockrun"
+  - "free nvidia models blockrun"
+  - "x402 llm payment"
+  - "usdc llm gateway"
+  - "openrouter alternative"
 homepage: https://blockrun.ai/clawrouter.md
 repository: https://github.com/BlockRunAI/ClawRouter
 license: MIT

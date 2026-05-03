@@ -258,6 +258,7 @@ Routing rules:
 - List created or updated files plus local and CI run commands.
 - Report evidence: results, artifacts, flake findings, accessibility findings, and performance findings when relevant.
 - End with remaining risks, blocked areas, and the next validation step.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=dashboard, style_pack=data-viz-bold) for a visual E2E run summary.
 
 ## Reference Map
 

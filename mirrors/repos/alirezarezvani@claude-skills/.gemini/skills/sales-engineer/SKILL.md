@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/sales-engineer/../../../business-growth/sales-engineer/SKILL.md

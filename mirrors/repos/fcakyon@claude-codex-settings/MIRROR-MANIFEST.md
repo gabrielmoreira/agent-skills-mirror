@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
+Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 61 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,25 +101,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`plugins/openai-office-skills/skills/slides/SKILL.md`](plugins/openai-office-skills/skills/slides/SKILL.md) |
 | 41 | ✓ | [`plugins/openai-office-skills/skills/spreadsheet/SKILL.md`](plugins/openai-office-skills/skills/spreadsheet/SKILL.md) |
 | 42 | ✓ | [`plugins/openobserve-skills/skills/openobserve-api/SKILL.md`](plugins/openobserve-skills/skills/openobserve-api/SKILL.md) |
-| 43 | ✓ | [`plugins/paper-search-tools/skills/paper-search-usage/SKILL.md`](plugins/paper-search-tools/skills/paper-search-usage/SKILL.md) |
-| 44 | ✓ | [`plugins/paper-search-tools/skills/setup/SKILL.md`](plugins/paper-search-tools/skills/setup/SKILL.md) |
-| 45 | ✓ | [`plugins/polar-skills/skills/polar-billing/SKILL.md`](plugins/polar-skills/skills/polar-billing/SKILL.md) |
-| 46 | ✓ | [`plugins/polar-skills/skills/polar-local-environment/SKILL.md`](plugins/polar-skills/skills/polar-local-environment/SKILL.md) |
-| 47 | ✓ | [`plugins/python-skills/skills/python-guidelines/SKILL.md`](plugins/python-skills/skills/python-guidelines/SKILL.md) |
-| 48 | ✓ | [`plugins/react-skills/skills/composition-patterns/SKILL.md`](plugins/react-skills/skills/composition-patterns/SKILL.md) |
-| 49 | ✓ | [`plugins/react-skills/skills/react-best-practices/SKILL.md`](plugins/react-skills/skills/react-best-practices/SKILL.md) |
-| 50 | ✓ | [`plugins/react-skills/skills/react-native-skills/SKILL.md`](plugins/react-skills/skills/react-native-skills/SKILL.md) |
-| 51 | ✓ | [`plugins/react-skills/skills/react-view-transitions/SKILL.md`](plugins/react-skills/skills/react-view-transitions/SKILL.md) |
-| 52 | ✓ | [`plugins/react-skills/skills/web-design-guidelines/SKILL.md`](plugins/react-skills/skills/web-design-guidelines/SKILL.md) |
-| 53 | ✓ | [`plugins/stripe-skills/skills/stripe-best-practices/SKILL.md`](plugins/stripe-skills/skills/stripe-best-practices/SKILL.md) |
-| 54 | ✓ | [`plugins/stripe-skills/skills/stripe-projects/SKILL.md`](plugins/stripe-skills/skills/stripe-projects/SKILL.md) |
-| 55 | ✓ | [`plugins/stripe-skills/skills/upgrade-stripe/SKILL.md`](plugins/stripe-skills/skills/upgrade-stripe/SKILL.md) |
-| 56 | ✓ | [`plugins/supabase-skills/skills/supabase-cli/SKILL.md`](plugins/supabase-skills/skills/supabase-cli/SKILL.md) |
-| 57 | ✓ | [`plugins/supabase-skills/skills/supabase-js/SKILL.md`](plugins/supabase-skills/skills/supabase-js/SKILL.md) |
-| 58 | ✓ | [`plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md`](plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md) |
-| 59 | ✓ | [`plugins/tavily-tools/skills/setup/SKILL.md`](plugins/tavily-tools/skills/setup/SKILL.md) |
-| 60 | ✓ | [`plugins/tavily-tools/skills/tavily-usage/SKILL.md`](plugins/tavily-tools/skills/tavily-usage/SKILL.md) |
-| 61 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
+| 43 | ✓ | [`plugins/overleaf-skills/skills/review-overleaf/SKILL.md`](plugins/overleaf-skills/skills/review-overleaf/SKILL.md) |
+| 44 | ✓ | [`plugins/overleaf-skills/skills/setup/SKILL.md`](plugins/overleaf-skills/skills/setup/SKILL.md) |
+| 45 | ✓ | [`plugins/paper-search-tools/skills/paper-search-usage/SKILL.md`](plugins/paper-search-tools/skills/paper-search-usage/SKILL.md) |
+| 46 | ✓ | [`plugins/paper-search-tools/skills/setup/SKILL.md`](plugins/paper-search-tools/skills/setup/SKILL.md) |
+| 47 | ✓ | [`plugins/polar-skills/skills/polar-billing/SKILL.md`](plugins/polar-skills/skills/polar-billing/SKILL.md) |
+| 48 | ✓ | [`plugins/polar-skills/skills/polar-local-environment/SKILL.md`](plugins/polar-skills/skills/polar-local-environment/SKILL.md) |
+| 49 | ✓ | [`plugins/python-skills/skills/python-guidelines/SKILL.md`](plugins/python-skills/skills/python-guidelines/SKILL.md) |
+| 50 | ✓ | [`plugins/react-skills/skills/composition-patterns/SKILL.md`](plugins/react-skills/skills/composition-patterns/SKILL.md) |
+| 51 | ✓ | [`plugins/react-skills/skills/react-best-practices/SKILL.md`](plugins/react-skills/skills/react-best-practices/SKILL.md) |
+| 52 | ✓ | [`plugins/react-skills/skills/react-native-skills/SKILL.md`](plugins/react-skills/skills/react-native-skills/SKILL.md) |
+| 53 | ✓ | [`plugins/react-skills/skills/react-view-transitions/SKILL.md`](plugins/react-skills/skills/react-view-transitions/SKILL.md) |
+| 54 | ✓ | [`plugins/react-skills/skills/web-design-guidelines/SKILL.md`](plugins/react-skills/skills/web-design-guidelines/SKILL.md) |
+| 55 | ✓ | [`plugins/stripe-skills/skills/stripe-best-practices/SKILL.md`](plugins/stripe-skills/skills/stripe-best-practices/SKILL.md) |
+| 56 | ✓ | [`plugins/stripe-skills/skills/stripe-projects/SKILL.md`](plugins/stripe-skills/skills/stripe-projects/SKILL.md) |
+| 57 | ✓ | [`plugins/stripe-skills/skills/upgrade-stripe/SKILL.md`](plugins/stripe-skills/skills/upgrade-stripe/SKILL.md) |
+| 58 | ✓ | [`plugins/supabase-skills/skills/supabase-cli/SKILL.md`](plugins/supabase-skills/skills/supabase-cli/SKILL.md) |
+| 59 | ✓ | [`plugins/supabase-skills/skills/supabase-js/SKILL.md`](plugins/supabase-skills/skills/supabase-js/SKILL.md) |
+| 60 | ✓ | [`plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md`](plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md) |
+| 61 | ✓ | [`plugins/tavily-tools/skills/setup/SKILL.md`](plugins/tavily-tools/skills/setup/SKILL.md) |
+| 62 | ✓ | [`plugins/tavily-tools/skills/tavily-usage/SKILL.md`](plugins/tavily-tools/skills/tavily-usage/SKILL.md) |
+| 63 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
 
 ---
 

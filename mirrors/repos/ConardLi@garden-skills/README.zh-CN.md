@@ -4,10 +4,39 @@
 
 **花园老师的开源 [Agent Skills](https://support.claude.com/en/articles/12512176-what-are-skills) 集合，面向 Claude Code、Cursor、Codex 等所有支持 `SKILL.md` 格式的 AI 编程代理。**
 
+<a id="skills-gallery"></a>
+
+<table>
+<tr>
+<td width="50%" valign="top">
+<a href="#web-video-presentation"><img src="./dist/imgs/web-video-presentation-skill.png" alt="Web Video Presentation Skill" width="100%"></a>
+<br/><a href="#web-video-presentation"><strong>web-video-presentation</strong></a>
+<br/><sub>网页视频 / 演示工程</sub>
+</td>
+<td width="50%" valign="top">
+<a href="#web-design-engineer"><img src="./dist/imgs/web-design-skill.png" alt="Web Design Skill" width="100%"></a>
+<br/><a href="#web-design-engineer"><strong>web-design-engineer</strong></a>
+<br/><sub>设计 / 前端</sub>
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<a href="#gpt-image-2"><img src="./dist/imgs/gpt-image-2-skill.png" alt="GPT Image 2 Skill" width="100%"></a>
+<br/><a href="#gpt-image-2"><strong>gpt-image-2</strong></a>
+<br/><sub>图像生成 / Prompt</sub>
+</td>
+<td width="50%" valign="top">
+<a href="#kb-retriever"><img src="./dist/imgs/kb-retriever-skill.png" alt="KB Retriever Skill" width="100%"></a>
+<br/><a href="#kb-retriever"><strong>kb-retriever</strong></a>
+<br/><sub>本地知识库检索</sub>
+</td>
+</tr>
+</table>
+
 [![License: MIT](https://img.shields.io/github/license/ConardLi/web-design-skill?style=flat-square&color=blue)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/ConardLi/web-design-skill?style=flat-square)](https://github.com/ConardLi/web-design-skill/stargazers)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#贡献)
-[![Skills count](https://img.shields.io/badge/skills-3-orange?style=flat-square)](#集合内的-skills)
+[![Skills count](https://img.shields.io/badge/skills-4-orange?style=flat-square)](#skills-gallery)
 [![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
 
 [English](./README.md) · [中文文档](./README.zh-CN.md)
@@ -18,24 +47,33 @@
 
 ## 目录
 
-- [集合内的 Skills](#集合内的-skills)
-  - [web-design-engineer（设计 / 前端）](#web-design-engineer)
-  - [gpt-image-2（图像生成 / Prompt）](#gpt-image-2)
-  - [web-video-presentation（即将上线）](#web-video-presentation)
-  - [kb-retriever（本地知识库检索）](#kb-retriever)
-- [安装](#安装)
-  - [方式 A · Claude Code 插件市场](#方式-a--claude-code-插件市场)
-  - [方式 B · 手动拷贝到项目](#方式-b--手动拷贝到项目)
-  - [方式 C · Git Submodule](#方式-c--git-submodule)
-- [兼容性](#兼容性)
-- [Skill 的标准结构](#skill-的标准结构)
-- [仓库结构](#仓库结构)
-- [致谢](#致谢)
-- [许可证](#许可证)
+| 安装 | 指南 | 项目 | 其他 |
+|---|---|---|---|
+| [安装](#安装)<br>[Claude Code 插件市场](#方式-a--claude-code-插件市场)<br>[手动拷贝](#方式-b--手动拷贝到项目)<br>[Git Submodule](#方式-c--git-submodule) | [兼容性](#兼容性)<br>[Skill 的标准结构](#skill-的标准结构) | [仓库结构](#仓库结构) | [致谢](#致谢)<br>[许可证](#许可证) |
 
 ---
 
-## 集合内的 Skills
+### [`web-video-presentation`](./skills/web-video-presentation)
+
+![Web Video Presentation Skill](./dist/imgs/web-video-presentation-skill.png)
+
+**类别：** 网页视频 / 演示工程  
+**适合：** 把口播稿、文章、课程、产品演示和 talk 做成视频（网页模拟）。
+
+`web-video-presentation` 用于构建适合录屏的 Vite + React + TypeScript 演示。它会把原始文章转成口播稿，把口播节拍映射成全屏视觉 step，在关键节点暂停让用户确认，并可在视觉 outline 确认后选择性合成口播音频。
+
+亮点：
+
+- 固定 1920×1080 舞台，并按视口缩放，适合稳定录屏
+- 点击 / 键盘驱动 `(chapter, step)` 游标，一个口播节拍对应一个视觉 step
+- 在稿子、主题、outline、开发模式和可选音频合成前设置硬 checkpoint
+- 悬浮才出现的进度控制，录屏时画面保持干净
+- 基于主题 token 的视觉架构，内置从 `paper-press` 到 `terminal-green` 的多种设计语言
+- 脚手架产出 Vite + React + TypeScript 项目，并附带舞台原语与录屏指南
+
+链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md)
+
+---
 
 ### [`web-design-engineer`](./skills/web-design-engineer)
 
@@ -79,29 +117,6 @@
 
 ---
 
-### `web-video-presentation`
-
-![Web Video Presentation Skill](./dist/imgs/web-video-presentation-skill.png)
-
-**状态：** 即将上线  
-**类别：** 网页视频 / 演示工程  
-**适合：** 把口播稿、文章、课程、产品演示和 talk 做成点击驱动的 16:9 网页演示，再通过录屏产出有电影感的视频。
-
-`web-video-presentation` 是一个方法论驱动的 Skill，用于构建适合录屏的 Vite + React + TypeScript 演示。每次点击推进一个口播节拍，每一步独占 1920×1080 舞台，常驻 UI 尽量隐藏，让录屏画面保持干净。
-
-预告亮点：
-
-- 固定 16:9 舞台，并按视口缩放
-- 全局 `(chapter, step)` 游标，支持点击和键盘推进
-- 口播节拍与视觉 step 一一对应
-- 悬浮才出现的进度控制，适合干净录屏
-- 基于主题 token 的视觉架构，支持多种设计语言
-- 动效优先，每一屏更像视频而不是幻灯片
-
-这个 Skill 正在整理进入集合，等文档、模板和打包方式稳定后会正式发布。
-
----
-
 ### [`kb-retriever`](./skills/kb-retriever)
 
 ![Kb Retriever Skill](./dist/imgs/kb-retriever-skill.png)
@@ -131,6 +146,7 @@
 
 ```bash
 /plugin marketplace add ConardLi/garden-skills
+/plugin install presentation-skills@garden-skills
 /plugin install web-design-skills@garden-skills
 /plugin install knowledge-base-skills@garden-skills
 /plugin install image-generation-skills@garden-skills
@@ -140,6 +156,7 @@
 
 | 插件包 | 包含的 Skills |
 |---|---|
+| `presentation-skills` | `web-video-presentation` |
 | `web-design-skills` | `web-design-engineer` |
 | `knowledge-base-skills` | `kb-retriever` |
 | `image-generation-skills` | `gpt-image-2` |
@@ -221,22 +238,30 @@ description: 用一句话清楚说明这个 Skill 是干什么的、什么时候
 ```text
 .
 ├── skills/                              ← 所有 Skill 都在这里，每个一个文件夹
+│   ├── web-video-presentation/
+│   │   ├── SKILL.md
+│   │   ├── README.md  /  README.zh-CN.md
+│   │   ├── references/  (原则、outline、主题、音频、录屏)
+│   │   ├── scripts/scaffold.sh
+│   │   ├── templates/
+│   │   └── themes/
+│   │
 │   ├── web-design-engineer/
 │   │   ├── SKILL.md
 │   │   ├── README.md  /  README.zh-CN.md
 │   │   └── references/advanced-patterns.md
 │   │
-│   ├── kb-retriever/
+│   ├── gpt-image-2/
 │   │   ├── SKILL.md
 │   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (pdf_reading.md、excel_reading.md、excel_analysis.md)
-│   │   └── scripts/convert_pdf_to_images.py
+│   │   ├── references/  (18 大类、70+ 个提示词模板)
+│   │   └── scripts/     (check-mode.js、generate.js、edit.js、shared.js)
 │   │
-│   └── gpt-image-2/
+│   └── kb-retriever/
 │       ├── SKILL.md
 │       ├── README.md  /  README.zh-CN.md
-│       ├── references/  (18 大类、70+ 个提示词模板)
-│       └── scripts/     (check-mode.js、generate.js、edit.js、shared.js)
+│       ├── references/  (pdf_reading.md、excel_reading.md、excel_analysis.md)
+│       └── scripts/convert_pdf_to_images.py
 │
 ├── .claude-plugin/
 │   └── marketplace.json                 ← Claude Code 插件市场清单
@@ -250,10 +275,6 @@ description: 用一句话清楚说明这个 Skill 是干什么的、什么时候
 │
 ├── dist/                                ← 共享展示素材
 │   ├── imgs/                            ← README Skill 海报
-│   │   ├── web-design-skill.png
-│   │   ├── gpt-image-2-skill.png
-│   │   ├── kb-retriever-skill.png
-│   │   └── web-video-presentation-skill.png
 │   ├── prompt/
 │   │   └── claude-design-system-prompt.md   （Claude Design 原始系统提示词）
 │

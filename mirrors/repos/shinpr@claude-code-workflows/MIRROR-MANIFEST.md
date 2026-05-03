@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 110 file(s) materialized.
+Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 110 |
+| Files         | 112 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -123,52 +123,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`dev-workflows/skills/recipe-fullstack-implement/SKILL.md`](dev-workflows/skills/recipe-fullstack-implement/SKILL.md) |
 | 63 | ✓ | [`dev-workflows/skills/recipe-implement/SKILL.md`](dev-workflows/skills/recipe-implement/SKILL.md) |
 | 64 | ✓ | [`dev-workflows/skills/recipe-plan/SKILL.md`](dev-workflows/skills/recipe-plan/SKILL.md) |
-| 65 | ✓ | [`dev-workflows/skills/recipe-reverse-engineer/SKILL.md`](dev-workflows/skills/recipe-reverse-engineer/SKILL.md) |
-| 66 | ✓ | [`dev-workflows/skills/recipe-review/SKILL.md`](dev-workflows/skills/recipe-review/SKILL.md) |
-| 67 | ✓ | [`dev-workflows/skills/recipe-task/SKILL.md`](dev-workflows/skills/recipe-task/SKILL.md) |
-| 68 | ✓ | [`dev-workflows/skills/recipe-update-doc/SKILL.md`](dev-workflows/skills/recipe-update-doc/SKILL.md) |
-| 69 | ✓ | [`dev-workflows/skills/subagents-orchestration-guide/SKILL.md`](dev-workflows/skills/subagents-orchestration-guide/SKILL.md) |
-| 70 | ✓ | [`dev-workflows/skills/task-analyzer/SKILL.md`](dev-workflows/skills/task-analyzer/SKILL.md) |
-| 71 | ✓ | [`dev-workflows/skills/testing-principles/SKILL.md`](dev-workflows/skills/testing-principles/SKILL.md) |
-| 72 | ✓ | [`skills/ai-development-guide/SKILL.md`](skills/ai-development-guide/SKILL.md) |
-| 73 | ✓ | [`skills/coding-principles/references/security-checks.md`](skills/coding-principles/references/security-checks.md) |
-| 74 | ✓ | [`skills/coding-principles/SKILL.md`](skills/coding-principles/SKILL.md) |
-| 75 | ✓ | [`skills/documentation-criteria/references/adr-template.md`](skills/documentation-criteria/references/adr-template.md) |
-| 76 | ✓ | [`skills/documentation-criteria/references/design-template.md`](skills/documentation-criteria/references/design-template.md) |
-| 77 | ✓ | [`skills/documentation-criteria/references/plan-template.md`](skills/documentation-criteria/references/plan-template.md) |
-| 78 | ✓ | [`skills/documentation-criteria/references/prd-template.md`](skills/documentation-criteria/references/prd-template.md) |
-| 79 | ✓ | [`skills/documentation-criteria/references/task-template.md`](skills/documentation-criteria/references/task-template.md) |
-| 80 | ✓ | [`skills/documentation-criteria/references/ui-spec-template.md`](skills/documentation-criteria/references/ui-spec-template.md) |
-| 81 | ✓ | [`skills/documentation-criteria/SKILL.md`](skills/documentation-criteria/SKILL.md) |
-| 82 | ✓ | [`skills/frontend-ai-guide/SKILL.md`](skills/frontend-ai-guide/SKILL.md) |
-| 83 | ✓ | [`skills/implementation-approach/SKILL.md`](skills/implementation-approach/SKILL.md) |
-| 84 | ✓ | [`skills/integration-e2e-testing/references/e2e-design.md`](skills/integration-e2e-testing/references/e2e-design.md) |
-| 85 | ✓ | [`skills/integration-e2e-testing/SKILL.md`](skills/integration-e2e-testing/SKILL.md) |
-| 86 | ✓ | [`skills/recipe-add-integration-tests/SKILL.md`](skills/recipe-add-integration-tests/SKILL.md) |
-| 87 | ✓ | [`skills/recipe-build/SKILL.md`](skills/recipe-build/SKILL.md) |
-| 88 | ✓ | [`skills/recipe-design/SKILL.md`](skills/recipe-design/SKILL.md) |
-| 89 | ✓ | [`skills/recipe-diagnose/SKILL.md`](skills/recipe-diagnose/SKILL.md) |
-| 90 | ✓ | [`skills/recipe-front-build/SKILL.md`](skills/recipe-front-build/SKILL.md) |
-| 91 | ✓ | [`skills/recipe-front-design/SKILL.md`](skills/recipe-front-design/SKILL.md) |
-| 92 | ✓ | [`skills/recipe-front-plan/SKILL.md`](skills/recipe-front-plan/SKILL.md) |
-| 93 | ✓ | [`skills/recipe-front-review/SKILL.md`](skills/recipe-front-review/SKILL.md) |
-| 94 | ✓ | [`skills/recipe-fullstack-build/SKILL.md`](skills/recipe-fullstack-build/SKILL.md) |
-| 95 | ✓ | [`skills/recipe-fullstack-implement/SKILL.md`](skills/recipe-fullstack-implement/SKILL.md) |
-| 96 | ✓ | [`skills/recipe-implement/SKILL.md`](skills/recipe-implement/SKILL.md) |
-| 97 | ✓ | [`skills/recipe-plan/SKILL.md`](skills/recipe-plan/SKILL.md) |
-| 98 | ✓ | [`skills/recipe-reverse-engineer/SKILL.md`](skills/recipe-reverse-engineer/SKILL.md) |
-| 99 | ✓ | [`skills/recipe-review/SKILL.md`](skills/recipe-review/SKILL.md) |
-| 100 | ✓ | [`skills/recipe-task/SKILL.md`](skills/recipe-task/SKILL.md) |
-| 101 | ✓ | [`skills/recipe-update-doc/SKILL.md`](skills/recipe-update-doc/SKILL.md) |
-| 102 | ✓ | [`skills/subagents-orchestration-guide/references/monorepo-flow.md`](skills/subagents-orchestration-guide/references/monorepo-flow.md) |
-| 103 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
-| 104 | ✓ | [`skills/task-analyzer/references/skills-index.yaml`](skills/task-analyzer/references/skills-index.yaml) |
-| 105 | ✓ | [`skills/task-analyzer/SKILL.md`](skills/task-analyzer/SKILL.md) |
-| 106 | ✓ | [`skills/test-implement/references/e2e.md`](skills/test-implement/references/e2e.md) |
-| 107 | ✓ | [`skills/test-implement/references/frontend.md`](skills/test-implement/references/frontend.md) |
-| 108 | ✓ | [`skills/test-implement/SKILL.md`](skills/test-implement/SKILL.md) |
-| 109 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
-| 110 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
+| 65 | ✓ | [`dev-workflows/skills/recipe-prepare-implementation/SKILL.md`](dev-workflows/skills/recipe-prepare-implementation/SKILL.md) |
+| 66 | ✓ | [`dev-workflows/skills/recipe-reverse-engineer/SKILL.md`](dev-workflows/skills/recipe-reverse-engineer/SKILL.md) |
+| 67 | ✓ | [`dev-workflows/skills/recipe-review/SKILL.md`](dev-workflows/skills/recipe-review/SKILL.md) |
+| 68 | ✓ | [`dev-workflows/skills/recipe-task/SKILL.md`](dev-workflows/skills/recipe-task/SKILL.md) |
+| 69 | ✓ | [`dev-workflows/skills/recipe-update-doc/SKILL.md`](dev-workflows/skills/recipe-update-doc/SKILL.md) |
+| 70 | ✓ | [`dev-workflows/skills/subagents-orchestration-guide/SKILL.md`](dev-workflows/skills/subagents-orchestration-guide/SKILL.md) |
+| 71 | ✓ | [`dev-workflows/skills/task-analyzer/SKILL.md`](dev-workflows/skills/task-analyzer/SKILL.md) |
+| 72 | ✓ | [`dev-workflows/skills/testing-principles/SKILL.md`](dev-workflows/skills/testing-principles/SKILL.md) |
+| 73 | ✓ | [`skills/ai-development-guide/SKILL.md`](skills/ai-development-guide/SKILL.md) |
+| 74 | ✓ | [`skills/coding-principles/references/security-checks.md`](skills/coding-principles/references/security-checks.md) |
+| 75 | ✓ | [`skills/coding-principles/SKILL.md`](skills/coding-principles/SKILL.md) |
+| 76 | ✓ | [`skills/documentation-criteria/references/adr-template.md`](skills/documentation-criteria/references/adr-template.md) |
+| 77 | ✓ | [`skills/documentation-criteria/references/design-template.md`](skills/documentation-criteria/references/design-template.md) |
+| 78 | ✓ | [`skills/documentation-criteria/references/plan-template.md`](skills/documentation-criteria/references/plan-template.md) |
+| 79 | ✓ | [`skills/documentation-criteria/references/prd-template.md`](skills/documentation-criteria/references/prd-template.md) |
+| 80 | ✓ | [`skills/documentation-criteria/references/task-template.md`](skills/documentation-criteria/references/task-template.md) |
+| 81 | ✓ | [`skills/documentation-criteria/references/ui-spec-template.md`](skills/documentation-criteria/references/ui-spec-template.md) |
+| 82 | ✓ | [`skills/documentation-criteria/SKILL.md`](skills/documentation-criteria/SKILL.md) |
+| 83 | ✓ | [`skills/frontend-ai-guide/SKILL.md`](skills/frontend-ai-guide/SKILL.md) |
+| 84 | ✓ | [`skills/implementation-approach/SKILL.md`](skills/implementation-approach/SKILL.md) |
+| 85 | ✓ | [`skills/integration-e2e-testing/references/e2e-design.md`](skills/integration-e2e-testing/references/e2e-design.md) |
+| 86 | ✓ | [`skills/integration-e2e-testing/SKILL.md`](skills/integration-e2e-testing/SKILL.md) |
+| 87 | ✓ | [`skills/recipe-add-integration-tests/SKILL.md`](skills/recipe-add-integration-tests/SKILL.md) |
+| 88 | ✓ | [`skills/recipe-build/SKILL.md`](skills/recipe-build/SKILL.md) |
+| 89 | ✓ | [`skills/recipe-design/SKILL.md`](skills/recipe-design/SKILL.md) |
+| 90 | ✓ | [`skills/recipe-diagnose/SKILL.md`](skills/recipe-diagnose/SKILL.md) |
+| 91 | ✓ | [`skills/recipe-front-build/SKILL.md`](skills/recipe-front-build/SKILL.md) |
+| 92 | ✓ | [`skills/recipe-front-design/SKILL.md`](skills/recipe-front-design/SKILL.md) |
+| 93 | ✓ | [`skills/recipe-front-plan/SKILL.md`](skills/recipe-front-plan/SKILL.md) |
+| 94 | ✓ | [`skills/recipe-front-review/SKILL.md`](skills/recipe-front-review/SKILL.md) |
+| 95 | ✓ | [`skills/recipe-fullstack-build/SKILL.md`](skills/recipe-fullstack-build/SKILL.md) |
+| 96 | ✓ | [`skills/recipe-fullstack-implement/SKILL.md`](skills/recipe-fullstack-implement/SKILL.md) |
+| 97 | ✓ | [`skills/recipe-implement/SKILL.md`](skills/recipe-implement/SKILL.md) |
+| 98 | ✓ | [`skills/recipe-plan/SKILL.md`](skills/recipe-plan/SKILL.md) |
+| 99 | ✓ | [`skills/recipe-prepare-implementation/SKILL.md`](skills/recipe-prepare-implementation/SKILL.md) |
+| 100 | ✓ | [`skills/recipe-reverse-engineer/SKILL.md`](skills/recipe-reverse-engineer/SKILL.md) |
+| 101 | ✓ | [`skills/recipe-review/SKILL.md`](skills/recipe-review/SKILL.md) |
+| 102 | ✓ | [`skills/recipe-task/SKILL.md`](skills/recipe-task/SKILL.md) |
+| 103 | ✓ | [`skills/recipe-update-doc/SKILL.md`](skills/recipe-update-doc/SKILL.md) |
+| 104 | ✓ | [`skills/subagents-orchestration-guide/references/monorepo-flow.md`](skills/subagents-orchestration-guide/references/monorepo-flow.md) |
+| 105 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
+| 106 | ✓ | [`skills/task-analyzer/references/skills-index.yaml`](skills/task-analyzer/references/skills-index.yaml) |
+| 107 | ✓ | [`skills/task-analyzer/SKILL.md`](skills/task-analyzer/SKILL.md) |
+| 108 | ✓ | [`skills/test-implement/references/e2e.md`](skills/test-implement/references/e2e.md) |
+| 109 | ✓ | [`skills/test-implement/references/frontend.md`](skills/test-implement/references/frontend.md) |
+| 110 | ✓ | [`skills/test-implement/SKILL.md`](skills/test-implement/SKILL.md) |
+| 111 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
+| 112 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
 
 ---
 

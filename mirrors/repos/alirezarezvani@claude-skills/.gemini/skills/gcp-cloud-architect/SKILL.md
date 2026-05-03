@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/gcp-cloud-architect/../../../engineering-team/gcp-cloud-architect/SKILL.md

@@ -8,8 +8,9 @@ Use `skill-benchmark-design`, `scenario-test-authoring`,
 `before-after-evaluation`, `acceptance-criteria-mapper`,
 `prompt-regression-testing`, `skill-output-scoring`, and
 `skill-token-overhead-review` for AgentOps evaluation, route scenarios,
-before/after reports, prompt regression tests, scoring, and context overhead
-review.
+before/after reports, prompt regression tests, scoring, measured context
+overhead review, repeated-run compounding checks, and split/merge/compose
+decisions.
 
 Use `skill-threat-model`, `prompt-injection-review`,
 `data-exfiltration-review`, `script-permission-review`,

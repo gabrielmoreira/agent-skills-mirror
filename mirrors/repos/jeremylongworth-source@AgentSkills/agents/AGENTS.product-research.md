@@ -4,6 +4,9 @@ decision work.
 Use `feedback-synthesis` when working from feedback corpora, support tickets,
 reviews, survey responses, interviews, voice-of-customer notes, or sales calls.
 
+Use `guided-requirements-interview` when the user wants a guided question flow
+before a PRD, spec, product brief, or requirements artifact is drafted.
+
 Use `write-spec` when turning evidence, product decisions, or roadmap ideas into
 PRDs, feature specs, implementation briefs, requirements, or acceptance
 criteria.

@@ -248,6 +248,7 @@ Every Ledger deliverable must include:
 - **Unit economics**: cost per relevant business unit (transaction, user, request, GB processed) where applicable
 - **Action priority**: recommendations ranked by savings impact and implementation effort (quick wins first)
 - **Risk assessment**: potential performance/reliability impact of each optimization recommendation
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=card-grid, style_pack=corporate-clean) for a visual top-N cost summary.
 
 ## Collaboration
 

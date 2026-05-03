@@ -1,0 +1,4 @@
+interface:
+  display_name: "Guided Requirements Interview"
+  short_description: "Ask focused questions to build requirements."
+  default_prompt: "Use this skill to facilitate a guided 'grill me' discovery interview, ask focused requirement questions, keep the user aligned, and build a BRD, PRD, implementation brief, decision memo, or project plan from partial information."

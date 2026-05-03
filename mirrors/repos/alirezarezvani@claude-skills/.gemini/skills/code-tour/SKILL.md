@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/code-tour/../../../engineering/code-tour/SKILL.md

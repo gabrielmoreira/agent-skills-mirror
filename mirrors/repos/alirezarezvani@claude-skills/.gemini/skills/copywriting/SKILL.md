@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/copywriting/../../../marketing-skill/copywriting/SKILL.md

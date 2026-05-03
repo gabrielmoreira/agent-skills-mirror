@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/browser-automation/../../../engineering/browser-automation/SKILL.md

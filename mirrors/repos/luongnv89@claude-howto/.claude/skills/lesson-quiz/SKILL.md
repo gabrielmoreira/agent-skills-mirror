@@ -79,7 +79,7 @@ Present 10 questions from the question bank in rounds of 2 questions each (5 rou
 
 **IMPORTANT**: Use AskUserQuestion with max 4 options per question, 2 questions per round.
 
-For each round, present 2 questions. After all 5 rounds, proceed to scoring.
+For each round, present 2 questions. After the user answers each round, immediately show per-question feedback: whether each answer was correct or incorrect, and if incorrect, show the correct answer and a brief explanation. Then proceed to the next round. After all 5 rounds, proceed to final scoring.
 
 **Question format per round:**
 
@@ -89,6 +89,10 @@ Each question from the question bank has:
 - `correct`: The correct answer label
 - `explanation`: Why the answer is correct
 - `category`: "conceptual" or "practical"
+
+**CRITICAL — Shuffle answer options**: For each question, you MUST randomize the order of the answer options before presenting them via AskUserQuestion. Do NOT present them in the order they appear in the question bank (A, B, C, D), and do NOT place the correct answer first. Use a different random permutation for each question. Track which shuffled position contains the correct answer so you can score accurately.
+
+Example: If the question bank lists options A (correct), B, C, D — you might present them as: C, A, D, B. The correct answer is now in position 2.
 
 Present each question using AskUserQuestion. Record the user's answer for each.
 

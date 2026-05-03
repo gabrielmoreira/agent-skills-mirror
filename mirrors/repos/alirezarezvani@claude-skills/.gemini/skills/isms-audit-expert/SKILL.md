@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/isms-audit-expert/../../../ra-qm-team/isms-audit-expert/SKILL.md

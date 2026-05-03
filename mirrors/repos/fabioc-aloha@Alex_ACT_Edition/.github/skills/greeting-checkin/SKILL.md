@@ -5,7 +5,7 @@ inheritance: inheritable
 name: greeting-checkin
 description: "Greeting-triggered self-check — recognise greetings, check Edition version against the upstream tag, scan AI-Memory announcements, and report inside the greeting reply"
 tier: standard
-applyTo: "**"
+applyTo: "**/*checkin*,**/*greeting*,**/*welcome*,**/*hello*,**/*hey*"
 currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---
@@ -60,23 +60,25 @@ Outcomes:
 
 ### 3. Check AI-Memory announcements
 
-Resolve the AI-Memory root by checking these candidates in order, taking the first that exists:
+Resolve the AI-Memory root using the resolution algorithm from [ai-memory-setup](../ai-memory-setup/SKILL.md):
 
-| Priority | Path (Windows) |
-|---|---|
-| 1 | `%USERPROFILE%\OneDrive - Correa Family\AI-Memory\announcements\alex-act\` |
-| 2 | `%USERPROFILE%\OneDrive\AI-Memory\announcements\alex-act\` |
-| 3 | `%USERPROFILE%\iCloudDrive\AI-Memory\announcements\alex-act\` |
-| 4 | `%USERPROFILE%\Dropbox\AI-Memory\announcements\alex-act\` |
+1. Check `cognitive-config.json` for `ai_memory_root` override
+2. Auto-discover cloud drives (OneDrive, iCloud, Dropbox, Google Drive, Box, MEGA, pCloud, Nextcloud)
+3. Skip folders listed in `ai_memory_exclude`
+4. Pick the first drive with an existing `AI-Memory/` subfolder
+5. Fall back to `~/AI-Memory`
 
-If none exist, AI-Memory isn't configured — note that briefly (one line, not a problem) and move on.
+Or use the CLI: `node .github/scripts/_registry.cjs --resolve .`
 
-If the folder exists, list `*.md` files (skip `README.md`). For each file, parse the frontmatter for `date` (or fall back to file mtime). Filter to files newer than `last_sync_at` from the heir marker.
+Once the root is resolved, check `<root>/announcements/alex-act/` for `*.md` files (skip `README.md`).
+
+If the root resolves, check for announcements. Parse frontmatter for `date` (or fall back to file mtime). Filter to files newer than `last_sync_at` from the heir marker.
 
 Outcomes:
 
+- **AI-Memory not found** → "AI-Memory isn't set up yet. Run `node .github/scripts/_registry.cjs --discover` to see available cloud drives, then `--init <name>` to create it."
 - **No new announcements** → "no new announcements"
-- **1–3 new announcements** → list them by title, with one-line summaries
+- **1-3 new announcements** → list them by title, with one-line summaries
 - **4+ new announcements** → say how many, list the most recent 3, point at the folder
 
 ### 3b. Execute auto_actions from announcements

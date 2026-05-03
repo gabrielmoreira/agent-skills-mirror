@@ -57,4 +57,4 @@ Skill: [alex-banner-generation](../skills/alex-banner-generation/SKILL.md). Musc
 
 - **Watermark whitelist is enforced.** Custom watermarks are rejected by the muscle. If you need a new category, add it to the muscle's `ALLOWED_WATERMARKS` list (governance change, not a per-banner choice).
 - **No PNG conversion.** The muscle outputs SVG only. Convert to PNG with `npx svgexport` if needed (separate workflow).
-- **Pastel-color variants live in the Mall.** If you need a non-Edition aesthetic (e.g. `document-banner-pastel`), install from Alex_Skill_Mall — don't shoehorn this muscle.
+- **Pastel-color variants live in the Mall.** If you need a non-Edition aesthetic (e.g. `document-banner-pastel`), install from the Plugin Mall -- don't shoehorn this muscle.

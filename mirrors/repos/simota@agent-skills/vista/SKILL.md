@@ -247,6 +247,7 @@ Every Vista deliverable includes:
 - **Output Paths / 出力パス** — write BOTH side by side:
   - Markdown: `docs/test-vis/<recipe>/<YYYY-MM-DD>/<title>.md`
   - HTML:     `docs/test-vis/<recipe>/<YYYY-MM-DD>/<title>.html`
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=dashboard, style_pack=data-viz-bold) for a visual test-quality snapshot beyond the Mermaid/D2 diagrams.
 
 ### HTML Output Specification
 

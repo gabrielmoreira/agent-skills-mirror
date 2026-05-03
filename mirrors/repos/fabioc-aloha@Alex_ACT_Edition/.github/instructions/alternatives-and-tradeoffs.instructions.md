@@ -4,7 +4,7 @@ lifecycle: stable
 inheritance: inheritable
 description: "Generate alternatives and compare them — methods for option generation and trade-off analysis"
 application: "When choosing between options, recommending an approach, or explaining 'it depends'"
-applyTo: "**"
+applyTo: "**/*option*,**/*alternative*,**/*trade*,**/*compare*,**/*decision*,**/*choose*,**/*versus*,**/*pros*,**/*cons*"
 currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/mcp-server-builder/../../../engineering/mcp-server-builder/SKILL.md

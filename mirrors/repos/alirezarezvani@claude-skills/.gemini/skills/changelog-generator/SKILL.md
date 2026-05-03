@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/changelog-generator/../../../engineering/changelog-generator/SKILL.md

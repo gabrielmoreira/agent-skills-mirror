@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/scenario-war-room/../../../c-level-advisor/scenario-war-room/SKILL.md

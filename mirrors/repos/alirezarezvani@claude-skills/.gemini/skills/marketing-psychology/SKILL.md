@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/marketing-psychology/../../../marketing-skill/marketing-psychology/SKILL.md

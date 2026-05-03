@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/meeting-analyzer/../../../project-management/meeting-analyzer/SKILL.md

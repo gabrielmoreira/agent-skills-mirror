@@ -170,6 +170,7 @@ Every deliverable must include:
 - Trade-offs and risks.
 - Rollback plan (incremental strangulation preferred over big bang).
 - Recommended next agent for handoff.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=matrix, style_pack=minimalist-iso) for a visual service-risk map.
 
 ## Collaboration
 

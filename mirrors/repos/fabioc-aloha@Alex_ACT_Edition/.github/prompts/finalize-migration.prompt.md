@@ -56,6 +56,14 @@ The script's triage table has a "review" bucket for files it couldn't confidentl
 1. Read the file. Decide: keep (port to `local/`), drop (extension-only or obsolete), or archive (interesting but no current use).
 2. Document the decision briefly in the migration commit message so future-you knows why.
 
+## Pass 3.5 — Episodic Memory
+
+`.github/episodic/` is heir-owned by definition: meditations, post-mortems, calibration logs are all heir-specific writing.
+
+1. Check `.github-old-*/episodic/` for any non-template files (anything beyond `INDEX.md`, `README.md`, `calibration-log.md`).
+2. Copy heir-authored episodic files (meditations, dream reports, project-framing docs) to `.github/episodic/`, preserving filenames.
+3. Do NOT skip this step. Episodic content is irreplaceable institutional memory.
+
 ## Pass 4 — Verification
 
 1. Run `node .github/muscles/heir-doctor.cjs` — must exit 0.

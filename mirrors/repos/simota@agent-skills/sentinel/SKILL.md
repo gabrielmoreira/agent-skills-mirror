@@ -209,6 +209,7 @@ Routing rules:
 - If a hardcoded secret was detected, ALWAYS include a `REVOKE-AND-ROTATE` Fix Prompt addressed to the operator (file deletion alone is insufficient).
 - If a finding is downgraded or suppressed, include a short false-positive note.
 - Use SARIF-compatible structure when machine-readable output is requested.
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=card-grid, style_pack=warning-alert) for a visual security scorecard.
 
 ## LLM Fix Prompt Generation
 

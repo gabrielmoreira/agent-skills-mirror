@@ -3,8 +3,8 @@ type: instruction
 lifecycle: stable
 inheritance: inheritable
 description: "Partnership Charter — five commitments for effective human-AI collaboration"
-application: "Always active — defines the behavioral contract between human and AI"
-applyTo: "**/*"
+application: "When collaboration norms are in question, when friction arises, or when roles need clarification"
+applyTo: "**/*partner*,**/*collaborat*,**/*charter*,**/*trust*,**/*roles*"
 currency: 2026-04-30
 lastReviewed: 2026-04-30
 ---

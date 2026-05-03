@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/email-template-builder/../../../engineering-team/email-template-builder/SKILL.md

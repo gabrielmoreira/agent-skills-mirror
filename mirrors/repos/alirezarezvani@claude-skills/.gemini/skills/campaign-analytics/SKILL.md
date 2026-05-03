@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/campaign-analytics/../../../marketing-skill/campaign-analytics/SKILL.md

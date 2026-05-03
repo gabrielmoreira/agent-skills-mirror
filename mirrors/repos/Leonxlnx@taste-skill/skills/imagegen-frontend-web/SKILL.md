@@ -1,6 +1,6 @@
 ---
 name: imagegen-frontend-web
-description: Elite frontend image-direction skill for generating premium, artistic, implementation-friendly website design references. Uses combinatorial variation to avoid repetitive AI aesthetics, enforces cinematic hero minimalism, strong hierarchy, generous spacing, image-led composition, and anti-slop visual discipline. Optimized for hero sections, landing pages, and multi-section site comps that developers or coding models can accurately recreate.
+description: Elite frontend image-direction skill for generating premium, artistic, implementation-friendly website design references. Uses combinatorial variation plus a narrative “concept spine” and second-read visual moments so outputs stay memorable—not template swaps. Enforces cinematic hero minimalism, strong hierarchy, generous spacing, image-led composition, and anti-slop visual discipline. Optimized for hero sections, landing pages, and multi-section site comps that developers or coding models can accurately recreate.
 ---
 
 # CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION
@@ -376,6 +376,15 @@ Use short, believable, design-friendly copy.
 - no trying to fill every empty area
 - no visually exhausting wall-of-content layouts
 
+### Carousel / marquee slop (layout)
+- infinity logo strips repeating the same 6 blobs
+- “trusted by” ticker that is unreadable mosquito logos
+- auto-play-style hero dots with no semantic purpose
+
+### Data / KPI slop
+- three identical stat columns (99% satisfaction, $10 saved, ∞ scale) unless user asked for KPIs
+- fake dashboards with pointless charts shading the real layout
+
 ---
 
 ## 9. TYPOGRAPHY-FIRST DISCIPLINE
@@ -602,37 +611,64 @@ Before finalizing, verify internally:
 5. Is it premium rather than template-like?
 6. Can someone code from this?
 7. If multiple images exist, do they clearly belong together?
-8. Is imagery used strongly enough?
+8. Is imagery used strongly enough (with variation, not one repeated crop)?
 9. Does the page breathe, or is it too dense?
 10. Is there enough spacing between sections?
-11. Does the creativity feel intentional and premium?
+11. Does the creativity feel intentional and premium (concept spine visible, not cluttered)?
 12. Is the spacing between sections even and controlled?
 13. Do smaller sections still have enough surrounding space to feel clean?
+14. Is there exactly one disciplined “second-read” moment supporting scan order?
 
 If not, refine internally before output.
 
 ---
 
-## 18. RESPONSE BEHAVIOR
+## 18. EXTRA CREATIVITY & IMPLEMENTATION EDGE
+
+Apply unless the user opts out:
+
+### Cross-section contrast
+Across the slice, deliberately vary foreground/background intensity at least twice (lighter → richer → calmer) so the scroll feels paced, not monotonous slabs.
+
+### CTA specificity
+Prefer one unmistakable primary action per major viewport tier; secondary actions must look secondary (scale, outline, ghost), not clones of primary.
+
+### Image variety inside one comp
+Mix at least **two distinct image crops** where multiple sections exist — e.g. macro product + contextual environment, or portrait editorial + widescreen artifact — avoiding one repeated stock silhouette.
+
+### Data-viz restraint
+Charts, sparklines, and graphs appear only when the site type logically needs them (analytics, pricing, infra, observability brands). Else keep proof human (quotes, receipts, timelines, screenshots of real workflows).
+
+### Cultural / tonal alignment
+When the brief names an industry or region, steer palette and typographic temperament to match — don’t ship default “neutral SF startup” unless the brief is intentionally generic SaaS.
+
+### Mobile-implied fidelity (even for desktop mocks)
+Maintain tap-friendly hit sizes and readable caption sizes visually; stacking order should imply a sane single-column narrative.
+
+---
+
+## 19. RESPONSE BEHAVIOR
 When the user asks for a frontend design:
 1. infer site type
 2. infer number of sections
 3. choose image count
-4. choose a strong visual combination
+4. choose a strong visual combination (including Narrative spine + Second-read moment + combinator picks)
 5. choose 4 signature components
 6. choose 2 motion-implied cues
 7. enforce hero minimalism
 8. enforce strong image usage
-9. increase creativity without adding clutter
-10. keep section spacing generous, even, and clean
-11. remove AI slop
-12. generate the design image(s)
+9. apply §18 EXTRA CREATIVITY & IMPLEMENTATION EDGE
+10. increase creativity without adding clutter
+11. keep section spacing generous, even, and clean
+12. remove AI slop (including marquee / fake KPI clichés unless requested)
+13. run §17 CLARITY CHECK
+14. generate the design image(s)
 
 Do not ask unnecessary follow-up questions if a strong interpretation is possible.
 
 ---
 
-## 19. EXAMPLE INTERPRETATIONS
+## 20. EXAMPLE INTERPRETATIONS
 
 ### Example 1
 User:
@@ -671,7 +707,7 @@ Interpretation:
 
 ---
 
-## 20. FINAL GOAL
+## 21. FINAL GOAL
 Generate frontend reference images that feel:
 - artistic
 - premium

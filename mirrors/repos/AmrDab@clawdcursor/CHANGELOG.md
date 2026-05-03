@@ -2,6 +2,34 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [0.8.7] - 2026-05-02 — Security hardening: direct-tool safety gate, version-string single-source, tooling bumps
+
+A security-focused patch release. The headline is a real behaviour change: every direct tool invocation — both the REST `/execute/:name` endpoint and the MCP `callTool` handler — now passes through a shared safety gate, so direct callers can no longer bypass the checks the agent loop already enforced. Plus: the version string is now single-sourced (no more `0.7.2` showing up in MCP metadata three releases late), and the dev tooling is current (TypeScript 6.0, ESLint 10).
+
+### Fixed
+
+- **Direct tool execution bypassed safety checks.** REST `/execute/:name` and MCP `callTool` invoked tools without consulting the same gate the agent loop used. A misconfigured client could reach `confirm`-tier or blocked tools without the expected guardrails. New `src/tools/safety-gate.ts` (~40 lines) wraps every direct invocation; both entry points (`src/index.ts`, `src/tool-server.ts`) now route through it. Read-only, blocked, and confirm-tier decisions resolve identically across REST, MCP, and the agent loop. Test coverage in `src/__tests__/tool-safety-gate.test.ts`.
+- **Accessibility / window / clipboard reads now use `PlatformAdapter` consistently.** `src/tools/a11y.ts` previously called underlying OS APIs directly; aligns with the rest of the codebase by routing through the shared adapter, with a legacy fallback if the adapter is unavailable.
+
+### Changed
+
+- **Version string is single-sourced from `package.json`.** `src/index.ts` (the `McpServer` constructor) and `src/onboarding.ts` (the consent file) each kept their own hardcoded copy of the version. Both fell out of sync — `index.ts` shipped `0.7.2` in the MCP handshake for several releases until v0.8.6 caught it manually. Both now import `VERSION` from `src/version.ts`, which already reads `package.json` at runtime. Adds `tests/version-drift.test.ts`: scans `src/**/*.ts` for any literal of the current `package.json` version and fails the build if found anywhere except `src/version.ts`. Future bumps only need to touch `package.json`.
+- **TypeScript 5.9.3 → 6.0.3** (devDependency). Major compiler bump. `tsconfig.json` adds `"ignoreDeprecations": "6.0"` to silence the new `moduleResolution: "node"` deprecation without changing runtime behaviour — the project remains CommonJS with the same module resolution semantics. A proper migration to `nodenext` can land in a later release.
+- **ESLint 9 → 10 + typescript-eslint plugins** (devDependency). Major linter bump. ESLint 10 promotes `no-useless-assignment` and `preserve-caught-error` into the recommended ruleset. Resolved all 8 new errors as actual code fixes rather than rule downgrades:
+  - `cdp-driver.ts`: removed useless `let selector = ''` initialiser (all branches assign before use).
+  - `doctor.ts`, `ocr-reasoner.ts`: scoped `smokeOk` and `guidePrompt` as `const` inside their try blocks (they were never read outside).
+  - `compound.ts`: removed useless `= []` initialiser; the catch always returns, so TypeScript still considers `points` definitely assigned.
+  - `smart-interaction.ts`: eliminated the `currentA11yState` tracking variable entirely — it was always equal to the fresh `a11yContext` read at the top of each ReAct loop iteration. Three useless-assignment sites disappear by replacing references with `a11yContext` directly.
+  - `ui-driver.ts`: rethrown `SyntaxError` now includes `{ cause: err }`.
+- **Routine dependency hygiene.** Playwright `1.58.2 → 1.59.1`, ws `8.19.0 → 8.20.0`, postcss + `@types/*` group bumps, GitHub Actions `setup-node@v4 → v6`, `checkout@v4 → v6`.
+
+### Documentation
+
+- SKILL.md "What's new" expanded with the 0.8.7 section. README "Latest Release" updated.
+- `docs/index.html` (homepage) bumped to v0.8.7 across title, meta tags, hero badge, and footer.
+
+---
+
 ## [0.8.6] - 2026-05-01 — Polish release: MCP server version, homepage simplification, repo hygiene
 
 A short follow-up to 0.8.5 that closes one user-visible bug carried over from the v0.7.x line and a handful of professionalism gaps surfaced in a pre-release audit. No schema changes, no behavior changes for agents — purely metadata, docs, and the public landing page.

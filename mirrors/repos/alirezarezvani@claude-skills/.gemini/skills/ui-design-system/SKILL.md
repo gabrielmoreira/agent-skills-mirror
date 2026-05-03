@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ui-design-system/../../../product-team/ui-design-system/SKILL.md

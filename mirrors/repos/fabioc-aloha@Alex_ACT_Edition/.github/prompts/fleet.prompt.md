@@ -10,13 +10,7 @@ Show every heir the user has bootstrapped across machines, ranked by which ones 
 
 ## Steps
 
-1. **Resolve AI-Memory root** — try in priority order:
-   - `%USERPROFILE%/OneDrive - Correa Family/AI-Memory`
-   - `%USERPROFILE%/OneDrive/AI-Memory`
-   - `%USERPROFILE%/iCloudDrive/AI-Memory`
-   - `%USERPROFILE%/iCloud Drive/AI-Memory`
-   - `%USERPROFILE%/Dropbox/AI-Memory`
-   - `~/AI-Memory`
+1. **Resolve AI-Memory root** using the standard algorithm: check `cognitive-config.json` for `ai_memory_root` override, then auto-discover cloud drives, skip `ai_memory_exclude` entries, pick the first with `AI-Memory/`. CLI: `node .github/scripts/_registry.cjs --resolve .`
 
 2. **Read the registry** at `<root>/heirs/registry.json`. If missing, report: "No heirs registered yet. The registry is populated automatically by `bootstrap-heir.cjs` and `upgrade-self.cjs` (when `opt_in.fleet_inventory: true` in the heir's marker)."
 

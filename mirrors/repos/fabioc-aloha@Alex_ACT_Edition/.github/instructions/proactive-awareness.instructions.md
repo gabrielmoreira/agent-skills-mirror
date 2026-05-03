@@ -53,25 +53,6 @@ When starting a session or after completing a task that touched files:
 | Staged changes >24h | Medium | "N uncommitted staged changes" |
 | Modified tracked files >24h (not staged) | Low | Mention only if user asks about project status |
 
-## Project Health Trend Alerts (PA3)
-
-Notice cross-session patterns from whatever signal is available — recent session-memory files, episodic notes, or git/build state surfaced this session. If `.github/quality/session-history.json` exists, read it for structured trend data; otherwise rely on the lighter signals.
-
-| Pattern | Alert |
-|---------|-------|
-| Test failures in 3+ consecutive sessions | "Tests have been failing across recent sessions — want to investigate?" |
-| Build errors persisting across sessions | "Recurring build issues detected" |
-| Dream overdue >14 days (if dream pipeline present) | "Architecture health check overdue" |
-
-When writing session summaries to `/memories/session/`, include a `## Session Outcome` section so the next session has a signal to read even without a structured history file:
-
-```markdown
-## Session Outcome
-- Tests: passing/failing/not-run
-- Build: clean/errors
-- Files modified: N
-```
-
 ## Focus Routing (PA4)
 
 Read `.github/config/goals.json` for the user's active focus:
@@ -82,26 +63,9 @@ Read `.github/config/goals.json` for the user's active focus:
 
 ## Silence as Signal (Inhibitory Gate)
 
-This section consolidates `silence-as-signal.instructions.md` — the brake to proactive-awareness's accelerator.
+When proactive awareness and user flow state conflict, silence wins:
 
-### Detection Signals
-
-| Signal | Meaning | Action |
-|--------|---------|--------|
-| Rapid technical messages with no questions | Flow state | Suppress all nudges |
-| User just received complex answer | Processing | Do NOT follow up with "does that help?" |
-| Single-word replies after long exchange | Fatigue or disengagement | Offer break, don't pile on |
-| Long pause after error message | Frustration processing | Acknowledge briefly, then hold |
-| User editing files rapidly (via tool calls) | Deep work | Minimize commentary |
-
-### Suppression Rules
-
-1. **Never interrupt flow** — hold all proactive suggestions until a natural break
-2. **No "helpful" follow-ups** — silence is consent. Don't ask if it worked
-3. **One nudge per breakpoint** — at most one proactive observation per natural break
-4. **Frustration override** — suppress proactive nudges entirely when frustration detected
-5. **When both fire, silence wins** — suppress the nudge
-
-### The Balance Rule
-
-> **Proactive ≠ intrusive.** Offer context recovery and health alerts at natural breakpoints only. Never interrupt focused work.
+- **Never interrupt flow** (rapid technical messages, rapid file edits)
+- **No "helpful" follow-ups** -- silence is consent, don't ask if it worked
+- **One nudge per breakpoint** at most
+- **Frustration override** -- suppress all nudges when frustration detected

@@ -38,9 +38,41 @@ Compose: call `create_worktree` first, then `create_agent` with `cwd` set to the
 
 `claude/sonnet` (default), `claude/opus` (harder reasoning), `codex/gpt-5.4` (frontier coding), `claude/haiku` (tests only).
 
+## Orchestration preferences
+
+User-specific configuration at `~/.paseo/orchestration-preferences.json`. **Any paseo skill that picks an agent reads this file.** Never hardcode a provider string in another skill — resolve through this file.
+
+Two parts:
+
+- `providers` — map of role categories to provider strings. Pass straight to `create_agent`'s `provider` field.
+- `preferences` — freeform string array. Read on startup; weave into agent prompts contextually.
+
+Categories: `impl`, `ui`, `research`, `planning`, `audit`. Skills pick the category that matches the role they're launching.
+
+```json
+{
+  "providers": {
+    "impl": "codex/gpt-5.4",
+    "ui": "claude/opus",
+    "research": "codex/gpt-5.4",
+    "planning": "codex/gpt-5.4",
+    "audit": "codex/gpt-5.4"
+  },
+  "preferences": [
+    "Claude Opus is the right choice for anything artistic or human-skill-oriented: copywriting, naming, UX copy, visual design, styling. Codex is the workhorse for mechanical work."
+  ]
+}
+```
+
+If the file is missing, use sensible defaults and tell the user once.
+
 ## Waiting
 
-`create_agent` and `send_agent_prompt` block by default — trust them. Real tasks take 10–30+ minutes routinely. Don't poll `list_agents` or `get_agent_status` to "check on" a blocking call. To work in parallel, pass `background: true` and call `wait_for_agent` later.
+Agents take time — 10–30+ minutes is routine. Favor asynchronous workflows.
+
+For every `create_agent` or `send_agent_prompt`, pass `background: true` and `notifyOnFinish: true`. Paseo delivers a notification to your conversation when the agent finishes, errors, or needs permission. **You must not call `wait_for_agent` on a notify-on-finish agent.** Move on to other work. The notification arrives on its own.
+
+Don't poll `list_agents` or `get_agent_status` to "check on" a running agent. The notification will tell you.
 
 ## CLI parity
 

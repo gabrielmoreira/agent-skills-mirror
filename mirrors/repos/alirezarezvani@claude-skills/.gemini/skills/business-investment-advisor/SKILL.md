@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/business-investment-advisor/../../../finance/business-investment-advisor/SKILL.md

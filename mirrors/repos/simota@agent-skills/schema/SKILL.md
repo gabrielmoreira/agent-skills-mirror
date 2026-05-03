@@ -235,6 +235,7 @@ Provide:
 Add the following only when relevant:
 - Mermaid `erDiagram` for multi-entity or visualization-heavy requests
 - Prisma / TypeORM / Drizzle snippets when the repo or user request is framework-specific
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=matrix, style_pack=minimalist-iso) for a visual entity-relationship overview.
 
 ## Operational
 

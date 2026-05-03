@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SamurAIGPT/Generative-Media-Skills` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `SamurAIGPT/Generative-Media-Skills` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SamurAIGPT/Generative-Media-Skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,15 +62,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`core/edit/SKILL.md`](core/edit/SKILL.md) |
 | 2 | ✓ | [`core/media/SKILL.md`](core/media/SKILL.md) |
 | 3 | ✓ | [`core/platform/SKILL.md`](core/platform/SKILL.md) |
-| 4 | ✓ | [`library/motion/cinema-director/SKILL.md`](library/motion/cinema-director/SKILL.md) |
-| 5 | ✓ | [`library/motion/seedance-2/SKILL.md`](library/motion/seedance-2/SKILL.md) |
-| 6 | ✓ | [`library/social/social-media-video/SKILL.md`](library/social/social-media-video/SKILL.md) |
-| 7 | ✓ | [`library/social/youtube-shorts/SKILL.md`](library/social/youtube-shorts/SKILL.md) |
-| 8 | ✓ | [`library/visual/logo-creator/SKILL.md`](library/visual/logo-creator/SKILL.md) |
-| 9 | ✓ | [`library/visual/nano-banana/SKILL.md`](library/visual/nano-banana/SKILL.md) |
-| 10 | ✓ | [`library/visual/photo-pack-generator/SKILL.md`](library/visual/photo-pack-generator/SKILL.md) |
-| 11 | ✓ | [`library/visual/ui-design/SKILL.md`](library/visual/ui-design/SKILL.md) |
-| 12 | ✓ | [`library/workflow/SKILL.md`](library/workflow/SKILL.md) |
+| 4 | ✓ | [`library/edit/ai-clipping/SKILL.md`](library/edit/ai-clipping/SKILL.md) |
+| 5 | ✓ | [`library/motion/cinema-director/SKILL.md`](library/motion/cinema-director/SKILL.md) |
+| 6 | ✓ | [`library/motion/seedance-2/SKILL.md`](library/motion/seedance-2/SKILL.md) |
+| 7 | ✓ | [`library/social/social-media-video/SKILL.md`](library/social/social-media-video/SKILL.md) |
+| 8 | ✓ | [`library/social/youtube-shorts/SKILL.md`](library/social/youtube-shorts/SKILL.md) |
+| 9 | ✓ | [`library/visual/logo-creator/SKILL.md`](library/visual/logo-creator/SKILL.md) |
+| 10 | ✓ | [`library/visual/nano-banana/SKILL.md`](library/visual/nano-banana/SKILL.md) |
+| 11 | ✓ | [`library/visual/photo-pack-generator/SKILL.md`](library/visual/photo-pack-generator/SKILL.md) |
+| 12 | ✓ | [`library/visual/ui-design/SKILL.md`](library/visual/ui-design/SKILL.md) |
+| 13 | ✓ | [`library/workflow/SKILL.md`](library/workflow/SKILL.md) |
 
 ---
 

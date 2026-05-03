@@ -195,6 +195,7 @@ Routing rules:
   - `Churn Analysis Report`
   - `Multi-Channel Feedback Report`
   - `Feedback Analysis Report`
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=hero-stat, style_pack=corporate-clean) for a visual sentiment headline.
 
 ## Collaboration
 

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/customer-success-manager/../../../business-growth/customer-success-manager/SKILL.md

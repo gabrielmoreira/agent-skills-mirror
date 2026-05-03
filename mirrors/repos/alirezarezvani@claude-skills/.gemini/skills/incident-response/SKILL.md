@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/incident-response/../../../engineering-team/incident-response/SKILL.md

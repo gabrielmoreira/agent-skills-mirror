@@ -90,7 +90,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/.defaults/build-monetized-app/SKILL.md`](skills/.defaults/build-monetized-app/SKILL.md) |
 | 30 | ✓ | [`skills/.defaults/camsnap/SKILL.md`](skills/.defaults/camsnap/SKILL.md) |
 | 31 | ✓ | [`skills/.defaults/canvas/SKILL.md`](skills/.defaults/canvas/SKILL.md) |
-| 32 | ✓ | [`skills/.defaults/claude-subagent-eliza-bridge/SKILL.md`](skills/.defaults/claude-subagent-eliza-bridge/SKILL.md) |
+| 32 | ✓ | [`skills/.defaults/claude-subagent-milady-bridge/SKILL.md`](skills/.defaults/claude-subagent-milady-bridge/SKILL.md) |
 | 33 | ✓ | [`skills/.defaults/coding-agent/SKILL.md`](skills/.defaults/coding-agent/SKILL.md) |
 | 34 | ✓ | [`skills/.defaults/discord/SKILL.md`](skills/.defaults/discord/SKILL.md) |
 | 35 | ✓ | [`skills/.defaults/eliza-app-development/references/repo-map.md`](skills/.defaults/eliza-app-development/references/repo-map.md) |

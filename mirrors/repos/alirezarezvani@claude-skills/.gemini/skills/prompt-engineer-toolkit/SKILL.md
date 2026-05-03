@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/prompt-engineer-toolkit/../../../marketing-skill/prompt-engineer-toolkit/SKILL.md

@@ -137,6 +137,21 @@ Terminal I/O and agent streaming share the same connection via `BinaryMuxFrame`:
 - Channel 1: terminal data
 - 1-byte channel ID + 1-byte flags + variable payload
 
+### Compatibility rules
+
+- WebSocket schemas are append-only. Add fields, do not remove fields, and never make optional fields required.
+- New wire enum values must be gated at serialization with `session.supports(CLIENT_CAPS.someCapability)`.
+- `Session` stores client capabilities from the `hello` handshake and rehydrates them on reconnect, so the wire boundary can ask one question: `session.supports(...)`.
+
+Example: adding a new enum value
+
+```ts
+// 1. Add CLIENT_CAPS.newThing = "new_thing"
+// 2. Let new clients advertise it in WS hello
+// 3. Keep the shared producer schema strict
+// 4. Gate the new emitted value: session.supports(CLIENT_CAPS.newThing) ? "new_value" : "old_value"
+```
+
 ## Agent lifecycle
 
 ```

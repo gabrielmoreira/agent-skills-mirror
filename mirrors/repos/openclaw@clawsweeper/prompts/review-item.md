@@ -53,6 +53,24 @@ one short sentence for `changeSummary`, `workReason`, `bestSolution`, and
 `changeSummary` or `workReason` into an automerge/autofix status update; merge
 automation is reported by the command/status comment and hidden markers.
 
+Classify issue type conservatively. Set `itemCategory: "bug"` only when the
+item reports broken existing behavior and the expected behavior is already
+defined by current docs, tests, CLI/API contract, or established behavior. Do
+not classify requests for a new capability, config option, flag, mode,
+provider, workflow, fallback, UX change, or policy choice as bugs; use
+`feature`, `support`, `admin`, `docs`, `cleanup`, `security`, or `unclear`
+instead. Set `requiresNewFeature`, `requiresNewConfigOption`, and
+`requiresProductDecision` independently. Any true value means the item is not a
+strict bug-fix automation candidate even if useful.
+
+Populate structured reproduction metadata separately from the public prose.
+Use `reproductionStatus: "reproduced"` only when there is a concrete,
+current-main reproduction path for the bug with high confidence. Use
+`source_reproducible` when the code path is clear from source inspection but you
+did not actually establish a failing current-main path. Use `not_reproduced`,
+`unclear`, or `not_applicable` otherwise. `reproductionConfidence` must match
+the evidence, not the importance of the bug.
+
 For PRs, do not list the PR author solely because they opened the PR, reported
 the issue, or authored the proposed branch. `likelyOwners` should point to
 people connected to the current `main` history and merged feature history for
@@ -113,7 +131,7 @@ Close only when the evidence is strong and the repository policy allows it. Allo
 - `clawhub`: useful idea, but it belongs as a ClawHub skill/plugin rather than OpenClaw core. Use `VISION.md` as the scope anchor. Prefer this when the requested capability is optional integration/provider/channel/skill/bundle/MCP work, can be built with current skill/MCP/plugin surfaces, has no concrete missing core extension API, and has no protected maintainer signal. This includes service-specific channels, providers, optional skills, and plugin-discovery/publishing ideas when the current plugin or bundle-style interface is sufficient. Keep open when the item reports a regression in bundled core behavior, identifies a missing plugin API needed before external implementation is possible, involves security/core hardening, or clearly needs explicit maintainer product judgment.
 - `duplicate_or_superseded`: another issue/PR already tracks the same remaining work, or the linked discussion/PR clearly supersedes this item. Link the canonical item and explain whether it is open or closed/merged. For clusters with the same root cause, keep one canonical issue open and close satellites when their unique logs, platforms, or context can be preserved by linking them in the close comment. Unique evidence blocks duplicate close only when it implies a distinct root cause, platform-specific fix, or separate remaining product behavior.
 - `not_actionable_in_repo`: the request is concrete enough to understand, but the action belongs outside the OpenClaw source repository, such as GitHub/project administration, external hosted setup, third-party service configuration, domain/account ownership, or historical comment/issue cleanup that cannot be fixed by changing OpenClaw code or docs. Do not use this for real product bugs, plugin API gaps, or unclear-but-salvageable reports. Use this for setup/support reports, one-line reports, screenshot-only reports, or credential-redaction incidents only when current code/docs show the behavior is expected or externally configured and the item lacks a concrete source-level reproduction. Do not keep these open only to collect support logs; the close comment should ask for credential rotation/redaction when relevant and point to the exact diagnostic command or docs page needed for a new actionable report.
-- `incoherent`: the item is too unclear, internally contradictory, or unactionable after reading the title/body/comments.
+- `incoherent`: the item is too unclear or internally contradictory after reading the title/body/comments.
 - `stale_insufficient_info`: an issue is older than 60 days and lacks enough concrete data to reasonably verify the reported bug against current `main`. Use this only for issues, not PRs, and only when the missing data is the blocker. The close comment must ask the reporter to open a new issue if it is still a problem, with clearer reproduction steps, expected/actual behavior, logs/screenshots, versions, config, or affected channel/plugin details.
 
 For `openclaw/clawhub`, review every issue and PR with the same depth, but only close PRs where current `main` definitely implements the PR’s intended change. For ClawHub, use `implemented_on_main` only for those PRs, and keep all issues plus all other PR outcomes open.
@@ -147,6 +165,16 @@ anything that must not be changed. Keep it concrete enough that a single
 autonomous PR can be attempted without reopening triage. Use `workValidation`
 for the exact tests or checks a fix PR should run, and `workLikelyFiles` for
 probable implementation/test/docs paths.
+
+For issues, `queue_fix_pr` may mark general manual work-lane candidates, but
+automatic implementation is stricter. A report is eligible for automatic
+bug-fix PR creation only when `itemCategory` is exactly `bug`,
+`reproductionStatus` is exactly `reproduced`, `reproductionConfidence` is
+`high`, `workConfidence` is `high`, and `requiresNewFeature`,
+`requiresNewConfigOption`, and `requiresProductDecision` are all `false`.
+Keep the bug boundary narrow in `workPrompt`: fix broken existing behavior,
+add or update regression coverage, and stop if the implementation would add a
+feature/config/product-policy change.
 
 For pull requests, `workCandidate` is also the automation contract. Use
 `queue_fix_pr` only when there is a concrete, actionable repair that an

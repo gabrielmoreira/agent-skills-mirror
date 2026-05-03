@@ -17,8 +17,23 @@ license: MIT
 4. Choose scoring criteria from `docs/evaluation/skill-quality-rubric.md` and
    add task-specific pass/fail checks.
 5. Specify evidence capture: prompt, inputs, outputs, reviewer notes,
-   validation output, and overhead when available.
+   validation output, loaded context, tools/scripts, and overhead when
+   available.
 6. Set the decision rule: keep, revise, split, merge, defer, or retire.
+
+## Overhead And Composition Checks
+
+- Include one repeated-run or batch scenario when the skill may be used many
+  times in one thread.
+- Compare monolithic guidance against composed skills or skillsets when the
+  workflow has separable stages.
+- Capture activated skills, loaded references, command/script output, MCP tool
+  use, artifacts, and validation results.
+- Keep host optimizations optional. Benchmark Claude Code `context: fork`,
+  dynamic `!command` injection, or MCP Tool Search separately from the portable
+  AgentSkills baseline.
+- Do not report exact context or token savings unless the host exposes reliable
+  measurements.
 
 ## Safety Rules
 
@@ -39,6 +54,7 @@ For benchmark plans, provide:
 - Baseline and skill-enabled run plan
 - Acceptance criteria and scoring rubric
 - Evidence capture plan
+- Overhead and composition checks
 - Safety boundaries
 - Promotion decision rule
 

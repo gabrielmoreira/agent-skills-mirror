@@ -15,13 +15,7 @@ Capture friction, bugs, feature ideas, or success notes from this session and wr
    - `category`: `bug` | `friction` | `feature-request` | `success`
    - `severity`: `low` | `medium` | `high` | `critical`
    - `skill`: name of the skill if specific to one, otherwise empty
-3. **Resolve the AI-Memory root** — try in order:
-   - `%USERPROFILE%/OneDrive - Correa Family/AI-Memory`
-   - `%USERPROFILE%/OneDrive/AI-Memory`
-   - `%USERPROFILE%/iCloudDrive/AI-Memory`
-   - `%USERPROFILE%/iCloud Drive/AI-Memory`
-   - `%USERPROFILE%/Dropbox/AI-Memory`
-   - First existing path wins. If none exist, fall back to creating `~/AI-Memory/feedback/alex-act/`.
+3. **Resolve the AI-Memory root** using the standard algorithm: check `cognitive-config.json` for `ai_memory_root` override, then auto-discover cloud drives (OneDrive, iCloud, Dropbox, Google Drive, Box, etc.), skip `ai_memory_exclude` entries, pick the first with `AI-Memory/`. Run `node .github/scripts/_registry.cjs --resolve .` if unsure. If none found, offer to create one: `node .github/scripts/_registry.cjs --discover` then `--init <name>`.
 4. **Strip per `cross-project-isolation.instructions.md`** before writing:
    - No file paths from the heir project
    - No client names, domain entities, or business specifics

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/founder-coach/../../../c-level-advisor/founder-coach/SKILL.md

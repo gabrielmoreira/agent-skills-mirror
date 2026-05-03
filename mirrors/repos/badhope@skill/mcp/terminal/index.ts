@@ -1,6 +1,44 @@
 import { createMCPServer } from '../../packages/core/mcp/builder'
 import { safeExec, safeExecRaw, validateParams, formatSuccess, formatError, sanitizePath } from '../../packages/core/shared'
 
+const ALLOWED_COMMANDS = [
+  'npm', 'npx', 'node', 'git', 'ls', 'dir', 'cat', 'type', 
+  'echo', 'mkdir', 'rmdir', 'rm', 'del', 'cp', 'copy', 'mv', 'move',
+  'cd', 'pwd', 'whoami', 'date', 'time', 'env', 'set', 'export',
+  'grep', 'find', 'sed', 'awk', 'head', 'tail', 'wc', 'sort', 'uniq',
+  'chmod', 'chown', 'touch', 'ln', 'tar', 'zip', 'unzip', 'curl', 'wget'
+]
+
+const DANGEROUS_PATTERNS = [
+  /\|\|/, /\&\&/, /\;/, /\`/, /\$\(/, /\(\(/, /\<\(/,
+  /rm\s+-rf/, /rmdir\s+-p/, /del\s+/, /erase\s+/,
+  /kill\s+/, /shutdown\s+/, /reboot\s+/, /init\s+0/,
+  /chmod\s+777/, /chown\s+/, /passwd\s+/, /useradd\s+/, /userdel\s+/,
+  /curl\s+.*\|/, /wget\s+.*\|/, /nc\s+/, /netcat\s+/,
+  /python\s+/, /php\s+/, /ruby\s+/, /perl\s+/, /bash\s+/, /sh\s+/
+]
+
+function validateCommand(command: string): { valid: boolean; message: string } {
+  const cmdParts = command.trim().split(/\s+/);
+  const baseCommand = cmdParts[0].toLowerCase();
+
+  if (!ALLOWED_COMMANDS.includes(baseCommand)) {
+    return { valid: false, message: `Command "${baseCommand}" is not allowed` };
+  }
+
+  for (const pattern of DANGEROUS_PATTERNS) {
+    if (pattern.test(command)) {
+      return { valid: false, message: `Command contains dangerous pattern: ${pattern}` };
+    }
+  }
+
+  if (command.length > 500) {
+    return { valid: false, message: 'Command too long (max 500 characters)' };
+  }
+
+  return { valid: true, message: '' };
+}
+
 export default createMCPServer({
   name: 'terminal',
   version: '2.0.0',
@@ -35,6 +73,11 @@ export default createMCPServer({
         timeout: { type: 'number', required: false, default: 30000 }
       })
       if (!validation.valid) return formatError('Invalid parameters', validation.errors)
+
+      const cmdValidation = validateCommand(validation.data.command)
+      if (!cmdValidation.valid) {
+        return formatError('Command not allowed', cmdValidation.message)
+      }
 
       const safeCwd = validation.data.cwd ? sanitizePath(validation.data.cwd) : undefined
       const result = await safeExecRaw(validation.data.command, validation.data.timeout, safeCwd)

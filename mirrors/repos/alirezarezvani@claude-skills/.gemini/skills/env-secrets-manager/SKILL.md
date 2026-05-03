@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/env-secrets-manager/../../../engineering/env-secrets-manager/SKILL.md

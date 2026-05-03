@@ -1,0 +1,4 @@
+interface:
+  display_name: "Business Requirements Document"
+  short_description: "Write BRDs and business requirements."
+  default_prompt: "Use this skill to create or review Business Requirements Documents, stakeholder requirements, scope, current and future state, business rules, success criteria, traceability, risks, dependencies, and approval-ready business-analysis packages."

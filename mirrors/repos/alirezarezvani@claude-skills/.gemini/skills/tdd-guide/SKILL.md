@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/tdd-guide/../../../engineering-team/tdd-guide/SKILL.md

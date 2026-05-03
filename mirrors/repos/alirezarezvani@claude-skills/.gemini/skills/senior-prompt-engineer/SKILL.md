@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/senior-prompt-engineer/../../../engineering-team/senior-prompt-engineer/SKILL.md

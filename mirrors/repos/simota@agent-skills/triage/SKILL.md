@@ -222,6 +222,7 @@ Behavior notes per Recipe:
 - Actions Taken
 - Pending
 - Communication checklist
+- Optionally emit `Infographic_Payload` per `_common/INFOGRAPHIC.md` (recommended: layout=timeline, style_pack=warning-alert) for a visual incident timeline.
 
 ## Output Routing
 

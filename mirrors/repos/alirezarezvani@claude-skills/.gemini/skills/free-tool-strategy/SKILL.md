@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/free-tool-strategy/../../../marketing-skill/free-tool-strategy/SKILL.md

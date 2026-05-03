@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/observability-designer/../../../engineering/observability-designer/SKILL.md
