@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 1 followed patterns, 2777 file(s) materialized.
+Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 1 followed patterns, 2778 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 2777 |
+| Files         | 2778 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -2835,7 +2835,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2774 | ✓ | [`skills/48-copaper-ai-chinese-de-aigc/references/patterns.md`](skills/48-copaper-ai-chinese-de-aigc/references/patterns.md) |
 | 2775 | ✓ | [`skills/48-copaper-ai-chinese-de-aigc/references/scoring.md`](skills/48-copaper-ai-chinese-de-aigc/references/scoring.md) |
 | 2776 | ✓ | [`skills/48-copaper-ai-chinese-de-aigc/SKILL.md`](skills/48-copaper-ai-chinese-de-aigc/SKILL.md) |
-| 2777 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 2777 | ✓ | [`test-skill/SKILL.md`](test-skill/SKILL.md) |
+| 2778 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

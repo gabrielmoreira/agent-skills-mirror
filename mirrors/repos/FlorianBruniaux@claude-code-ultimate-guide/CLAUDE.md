@@ -42,7 +42,7 @@ tools/                    # Interactive utilities
 └── onboarding-prompt.md  # Personalized learning prompt
 
 docs/                     # Public documentation (tracked)
-└── resource-evaluations/ # External resource evaluations (68 files)
+└── resource-evaluations/ # External resource evaluations (151 files)
 
 claudedocs/               # Claude working documents (gitignored)
 ├── resource-evaluations/ # Research working docs (prompts, private audits)
@@ -53,7 +53,7 @@ claudedocs/               # Claude working documents (gitignored)
 
 | File | Purpose |
 |------|---------|
-| `VERSION` | Single source of truth for version (currently 3.34.1) |
+| `VERSION` | Single source of truth for version (currently 3.40.0) |
 | `guide/ultimate-guide.md` | The main reference (search here first) |
 | `guide/cheatsheet.md` | Quick reference for daily use |
 | `machine-readable/reference.yaml` | LLM-optimized index with line numbers |
@@ -248,7 +248,7 @@ External resources (articles, videos, discussions) are evaluated before integrat
 
 | Location | Content | Tracking |
 |----------|---------|----------|
-| `docs/resource-evaluations/` | Final evaluations (68 files) | ✅ Git tracked (public) |
+| `docs/resource-evaluations/` | Final evaluations (151 files) | ✅ Git tracked (public) |
 | `claudedocs/resource-evaluations/` | Working docs, prompts, private audits | ❌ Gitignored (private) |
 
 ### Scoring Grid

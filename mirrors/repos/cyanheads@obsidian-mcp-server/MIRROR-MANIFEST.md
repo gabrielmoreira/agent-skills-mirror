@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,34 +67,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`skills/add-test/SKILL.md`](skills/add-test/SKILL.md) |
 | 7 | ✓ | [`skills/add-tool/SKILL.md`](skills/add-tool/SKILL.md) |
 | 8 | ✓ | [`skills/api-auth/SKILL.md`](skills/api-auth/SKILL.md) |
-| 9 | ✓ | [`skills/api-config/SKILL.md`](skills/api-config/SKILL.md) |
-| 10 | ✓ | [`skills/api-context/SKILL.md`](skills/api-context/SKILL.md) |
-| 11 | ✓ | [`skills/api-errors/SKILL.md`](skills/api-errors/SKILL.md) |
-| 12 | ✓ | [`skills/api-linter/SKILL.md`](skills/api-linter/SKILL.md) |
-| 13 | ✓ | [`skills/api-services/references/graph.md`](skills/api-services/references/graph.md) |
-| 14 | ✓ | [`skills/api-services/references/llm.md`](skills/api-services/references/llm.md) |
-| 15 | ✓ | [`skills/api-services/references/speech.md`](skills/api-services/references/speech.md) |
-| 16 | ✓ | [`skills/api-services/SKILL.md`](skills/api-services/SKILL.md) |
-| 17 | ✓ | [`skills/api-testing/SKILL.md`](skills/api-testing/SKILL.md) |
-| 18 | ✓ | [`skills/api-utils/references/formatting.md`](skills/api-utils/references/formatting.md) |
-| 19 | ✓ | [`skills/api-utils/references/parsing.md`](skills/api-utils/references/parsing.md) |
-| 20 | ✓ | [`skills/api-utils/references/security.md`](skills/api-utils/references/security.md) |
-| 21 | ✓ | [`skills/api-utils/SKILL.md`](skills/api-utils/SKILL.md) |
-| 22 | ✓ | [`skills/api-workers/SKILL.md`](skills/api-workers/SKILL.md) |
-| 23 | ✓ | [`skills/design-mcp-server/SKILL.md`](skills/design-mcp-server/SKILL.md) |
-| 24 | ✓ | [`skills/field-test/SKILL.md`](skills/field-test/SKILL.md) |
-| 25 | ✓ | [`skills/maintenance/SKILL.md`](skills/maintenance/SKILL.md) |
-| 26 | ✓ | [`skills/migrate-mcp-ts-template/SKILL.md`](skills/migrate-mcp-ts-template/SKILL.md) |
-| 27 | ✓ | [`skills/polish-docs-meta/references/agent-protocol.md`](skills/polish-docs-meta/references/agent-protocol.md) |
-| 28 | ✓ | [`skills/polish-docs-meta/references/package-meta.md`](skills/polish-docs-meta/references/package-meta.md) |
-| 29 | ✓ | [`skills/polish-docs-meta/references/readme.md`](skills/polish-docs-meta/references/readme.md) |
-| 30 | ✓ | [`skills/polish-docs-meta/references/server-json.md`](skills/polish-docs-meta/references/server-json.md) |
-| 31 | ✓ | [`skills/polish-docs-meta/SKILL.md`](skills/polish-docs-meta/SKILL.md) |
-| 32 | ✓ | [`skills/release-and-publish/SKILL.md`](skills/release-and-publish/SKILL.md) |
-| 33 | ✓ | [`skills/report-issue-framework/SKILL.md`](skills/report-issue-framework/SKILL.md) |
-| 34 | ✓ | [`skills/report-issue-local/SKILL.md`](skills/report-issue-local/SKILL.md) |
-| 35 | ✓ | [`skills/security-pass/SKILL.md`](skills/security-pass/SKILL.md) |
-| 36 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
+| 9 | ✓ | [`skills/api-canvas/SKILL.md`](skills/api-canvas/SKILL.md) |
+| 10 | ✓ | [`skills/api-config/SKILL.md`](skills/api-config/SKILL.md) |
+| 11 | ✓ | [`skills/api-context/SKILL.md`](skills/api-context/SKILL.md) |
+| 12 | ✓ | [`skills/api-errors/SKILL.md`](skills/api-errors/SKILL.md) |
+| 13 | ✓ | [`skills/api-linter/SKILL.md`](skills/api-linter/SKILL.md) |
+| 14 | ✓ | [`skills/api-services/references/graph.md`](skills/api-services/references/graph.md) |
+| 15 | ✓ | [`skills/api-services/references/llm.md`](skills/api-services/references/llm.md) |
+| 16 | ✓ | [`skills/api-services/references/speech.md`](skills/api-services/references/speech.md) |
+| 17 | ✓ | [`skills/api-services/SKILL.md`](skills/api-services/SKILL.md) |
+| 18 | ✓ | [`skills/api-testing/SKILL.md`](skills/api-testing/SKILL.md) |
+| 19 | ✓ | [`skills/api-utils/references/formatting.md`](skills/api-utils/references/formatting.md) |
+| 20 | ✓ | [`skills/api-utils/references/parsing.md`](skills/api-utils/references/parsing.md) |
+| 21 | ✓ | [`skills/api-utils/references/security.md`](skills/api-utils/references/security.md) |
+| 22 | ✓ | [`skills/api-utils/SKILL.md`](skills/api-utils/SKILL.md) |
+| 23 | ✓ | [`skills/api-workers/SKILL.md`](skills/api-workers/SKILL.md) |
+| 24 | ✓ | [`skills/design-mcp-server/SKILL.md`](skills/design-mcp-server/SKILL.md) |
+| 25 | ✓ | [`skills/field-test/SKILL.md`](skills/field-test/SKILL.md) |
+| 26 | ✓ | [`skills/maintenance/SKILL.md`](skills/maintenance/SKILL.md) |
+| 27 | ✓ | [`skills/migrate-mcp-ts-template/SKILL.md`](skills/migrate-mcp-ts-template/SKILL.md) |
+| 28 | ✓ | [`skills/polish-docs-meta/references/agent-protocol.md`](skills/polish-docs-meta/references/agent-protocol.md) |
+| 29 | ✓ | [`skills/polish-docs-meta/references/package-meta.md`](skills/polish-docs-meta/references/package-meta.md) |
+| 30 | ✓ | [`skills/polish-docs-meta/references/readme.md`](skills/polish-docs-meta/references/readme.md) |
+| 31 | ✓ | [`skills/polish-docs-meta/references/server-json.md`](skills/polish-docs-meta/references/server-json.md) |
+| 32 | ✓ | [`skills/polish-docs-meta/SKILL.md`](skills/polish-docs-meta/SKILL.md) |
+| 33 | ✓ | [`skills/release-and-publish/SKILL.md`](skills/release-and-publish/SKILL.md) |
+| 34 | ✓ | [`skills/report-issue-framework/SKILL.md`](skills/report-issue-framework/SKILL.md) |
+| 35 | ✓ | [`skills/report-issue-local/SKILL.md`](skills/report-issue-local/SKILL.md) |
+| 36 | ✓ | [`skills/security-pass/SKILL.md`](skills/security-pass/SKILL.md) |
+| 37 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
 
 ---
 

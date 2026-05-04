@@ -14,11 +14,11 @@ If the user wants a whole playable content pack, map, story, slideshow, or pack 
 Infer these from the user request:
 
 - `asset_type`: `player` | `npc` | `creature` | `character` | `spell` | `projectile` | `impact` | `prop` | `summon` | `fx`
-- `action`: `single` | `idle` | `cast` | `attack` | `hurt` | `combat` | `walk` | `run` | `hover` | `charge` | `projectile` | `impact` | `explode` | `death`
+- `action`: `single` | `idle` | `cast` | `attack` | `shoot` | `jump` | `hurt` | `combat` | `walk` | `run` | `hover` | `charge` | `projectile` | `impact` | `explode` | `death`
 - `view`: `topdown` | `side` | `3/4`
-- `sheet`: `auto` | `1x4` | `2x2` | `2x3` | `3x3` | `4x4`
+- `sheet`: `auto` | `1x4` | `2x2` | `2x3` | `3x3` | `4x4` | `5x5` | `custom_grid`
 - `frames`: `auto` or explicit count
-- `bundle`: `single_asset` | `unit_bundle` | `spell_bundle` | `combat_bundle` | `line_bundle`
+- `bundle`: `single_asset` | `unit_bundle` | `spell_bundle` | `combat_bundle` | `line_bundle` | `hero_action_bundle` | `engine_atlas`
 - `effect_policy`: `all` | `largest`
 - `anchor`: `center` | `bottom` | `feet`
 - `margin`: `tight` | `normal` | `safe`
@@ -34,6 +34,8 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 ## Agent Rules
 
 - Decide the asset plan yourself. Do not force the user to spell out sheet size, frame count, or bundle structure when the request already implies them.
+- Do not pack unrelated actions into one raw generated sheet just to satisfy a `4x4`, `5x5`, or custom engine atlas. A raw generated sheet should represent one action family, one continuous sequence, one canonical directional locomotion sheet, or one prop/asset pack.
+- For controllable heroes, main characters, and high-value player assets with multiple actions, generate separate per-action sheets first, QC each action, then deterministically assemble the engine-required atlas only after the rows/strips pass visual review.
 - Write the art prompt yourself. Do not default to the prompt-builder script.
 - Use built-in `image_gen` for every raw image.
 - When the user provides or implies a visual reference, use built-in image edit/reference semantics only after the reference image is visible in the conversation context. If the reference is a local file, call `view_image` first; do not rely on a filesystem path in the prompt as the visual reference.
@@ -54,6 +56,13 @@ Pick the smallest useful output.
 Examples:
 
 - controllable hero with four directions -> `player` + `player_sheet`
+- side-view controllable hero with idle/run/shoot/jump -> `player` + `hero_action_bundle`
+  - idle sheet
+  - run sheet
+  - shoot sheet with body/weapon only
+  - jump sheet
+  - projectile / muzzle flash as separate assets when needed
+  - optional assembled engine atlas after per-action QC
 - healer overworld NPC -> `npc` + `single_asset` or `unit_bundle`
 - large boss idle loop -> `creature` + `idle` + `3x3`
 - wizard throwing a magic orb -> `spell_bundle`
@@ -90,6 +99,13 @@ Keep the strict parts:
 - same character or asset identity across frames
 - same bounding box and pixel scale across frames
 - explicit containment: nothing may cross cell edges
+
+Mixed-action atlas guardrail:
+
+- Do not ask `image_gen` to generate unrelated action rows in one raw sheet, such as `row 1 idle, row 2 run, row 3 shoot, row 4 jump`, for a controllable hero or main character.
+- If an engine needs a combined `4x4`, `5x5`, or custom atlas, generate the action rows/strips separately, process and QC them separately, then assemble the delivery atlas deterministically.
+- Exceptions are canonical directional locomotion sheets, one continuous long action sequence, prop packs, tileset-like atlases, and low-stakes compact enemy combat sheets. These still need one coherent prompt and visual QC.
+- Keep projectile, muzzle flash, impact, dust trails, and detached FX in separate sheets unless they are intentionally part of the same action silhouette and remain tightly attached.
 
 If a layout guide is useful, generate one before calling built-in `image_gen`:
 
@@ -136,6 +152,8 @@ The processor is intentionally low-level. The agent chooses:
 
 Use the processor to gather QC metadata, not to make aesthetic decisions for you.
 
+For hero action bundles, process each action row as its own sheet before any final atlas assembly. Prefer `component_mode=largest` for body-only hero rows when projectiles, dust, muzzle flashes, or trails would distort the body bounding box. Use `component_mode=all` for projectile, impact, aura, or intentionally attached FX sheets.
+
 ### 5. QC the result
 
 Check:
@@ -168,6 +186,13 @@ For `player_sheet`, expect:
 
 For `spell_bundle` or `unit_bundle`, create one folder per asset in the bundle.
 
+For `hero_action_bundle`, expect:
+
+- one raw and processed sheet per action
+- per-action frame PNGs and GIFs for visual QC
+- separate projectile / muzzle / impact assets when the hero shoots or casts
+- optional assembled `engine-atlas-transparent.png` only after per-action QC passes
+
 ## Defaults
 
 - `idle`
@@ -179,6 +204,13 @@ For `spell_bundle` or `unit_bundle`, create one folder per asset in the bundle.
 - `walk`
   - topdown actor -> `4x4` for four-direction walk
   - side-view asset -> `2x2`
+- controllable hero or main player with multiple actions -> `hero_action_bundle`
+  - generate one action per raw sheet, commonly `1x4` per action
+  - do not generate a mixed-action raw `4x4`, `5x5`, or custom atlas
+  - assemble the final atlas only as a deterministic delivery step if the game requires it
+- `4x4`, `5x5`, and custom grids
+  - use as raw generation only for one coherent long action sequence, canonical directional locomotion, prop packs, or tileset-like atlases
+  - use as delivery atlases for mixed actions only after separate action sheets pass QC
 - use `shared_scale` by default for any multi-frame asset where frame-to-frame consistency matters
 - use `largest` component mode when detached sparkles or edge debris make the main body unstable
 

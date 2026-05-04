@@ -1,7 +1,9 @@
 ---
 name: 15-social-listening
 description: Giam sat thuong hieu, doi thu, xu huong nganh tren mang xa hoi — phat hien som khung hoang va co hoi content
-category: operations
+metadata:
+  version: 2.1.0
+  category: operations
 triggers:
   - "social listening"
   - "theo doi thuong hieu"
@@ -153,6 +155,53 @@ ACT       — Phan hoi, dieu chinh chien luoc, xu ly khung hoang
 | PR tich cuc | Bai viet ve cai thien, cam ket chat luong |
 | Engagement | Tang tuong tac voi community, tra loi comment nhanh hon |
 | Do hieu qua | So sanh sentiment truoc — trong — sau khung hoang |
+
+---
+
+## Niche Research — 20 chu de nong trong 7 ngay
+
+> Ap dung tu `social-media-skills/niche-research` — adapt cho VN channels.
+
+### Muc dich
+
+Moi tuan, surface 20 chu de/xu huong dang nong nhat trong nganh de:
+- Tao content kip thoi (khong bi chay sau doi thu)
+- Phat hien co hoi content truoc nguoi khac
+- Biet khach hang dang quan tam/tranh luan gi
+
+### Quy trinh research (30–45 phut/tuan)
+
+| Buoc | Nguon | Cach lam | Thoi gian |
+|------|-------|---------|-----------|
+| 1 | **Facebook Groups nganh** | Tim kiem tu khoa nganh, loc 7 ngay, doc bai co nhieu tuong tac | 10 phut |
+| 2 | **TikTok Discover** | Search hashtag nganh, loc video 7 ngay, xem video >10K views | 10 phut |
+| 3 | **Google News VN** | Search "[nganh] + tin tuc", loc 7 ngay | 5 phut |
+| 4 | **Zalo Communities** | Doc bai noi bat trong nhom nganh | 5 phut |
+| 5 | **Forum (Voz, Reddit VN)** | Search tu khoa, doc thread moi co nhieu comment | 5 phut |
+| 6 | **KOL/Influencer feed** | Xem 5–10 KOL nganh dang lam gi tuan nay | 5 phut |
+
+### Output format
+
+```markdown
+# Niche Research — Tuan [X] ([DD/MM] – [DD/MM/YYYY])
+
+| # | Chu de / Xu huong | Nguon | Muc do nong | Dang tranh luan gi | Co hoi content | Goc de xuat |
+|---|-------------------|-------|-------------|---------------------|----------------|-------------|
+| 1 | [Chu de] | FB Group / TikTok / News | Cao/TB/Thap | [Tom tat] | [Mo ta] | [Y tuong bai] |
+| 2 | ... | ... | ... | ... | ... | ... |
+| ... | ... | ... | ... | ... | ... | ... |
+| 20 | ... | ... | ... | ... | ... | ... |
+```
+
+### Quy tac
+
+- **Chi lay 7 ngay gan nhat** — cu hon thi loai
+- **Xac minh ngay dang** truoc khi dua vao bang
+- Khong bao gio **tu nghi ra** link hoac so lieu — chi dung thong tin thuc te
+- Neu khong du 20 chu de → ghi ro so luong thuc te, **khong chen**
+- Uu tien chu de co **tranh luan** hoac **tuong tac cao** — khong chi lay tin tuc
+
+> **Tip:** Ket hop voi Content Matrix (skill 01) — lay chu de nong → dien vao matrix → co content kip thoi.
 
 ---
 
@@ -416,6 +465,8 @@ ACT       — Phan hoi, dieu chinh chien luoc, xu ly khung hoang
 - [ ] Bao cao tuan da gui cho team/stakeholder
 - [ ] Bang theo doi doi thu da cap nhat
 - [ ] Xu huong moi da ghi nhan va de xuat y tuong content
+- [ ] Niche Research da chay — co it nhat 10 chu de/tuan
+- [ ] Chu de nong da chuyen sang Content Matrix (skill 01) hoac lich noi dung
 
 ### Hang thang
 

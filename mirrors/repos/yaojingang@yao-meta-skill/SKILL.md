@@ -31,11 +31,11 @@ Mode rules: [Method](references/skill-engineering-method.md), [Operating Modes](
 2. Capture job, output, exclusions, constraints, and standards.
 3. Run a reference scan: external benchmarks first, user references second, local fit third. Keep synthesis silent unless intent stays unclear or a real design conflict needs a user call.
 4. Write the `description` early and test route quality before expanding the package.
-5. Add output-risk and artifact-design profiles when user-facing deliverables matter.
+5. Add output-risk, artifact-design, and prompt-quality profiles only when they matter.
 6. Add only folders and gates that earn their keep.
 7. Surface the top three next iteration directions.
 
-Core playbooks: [Method](references/skill-engineering-method.md), [Intent Dialogue](references/intent-dialogue.md), [Reference Scan](references/reference-scan.md), [Artifact Design](references/artifact-design-doctrine.md).
+Core playbooks: [Method](references/skill-engineering-method.md), [Intent Dialogue](references/intent-dialogue.md), [Reference Scan](references/reference-scan.md), [Artifact Design](references/artifact-design-doctrine.md), [Prompt Engineering](references/prompt-engineering-doctrine.md).
 
 ## First-Turn Style
 
@@ -63,4 +63,4 @@ Unless the user asks otherwise, produce:
 
 ## Reference Map
 
-Primary references: [Method](references/skill-engineering-method.md), [Reference Scan](references/reference-scan.md), [Artifact Design](references/artifact-design-doctrine.md), [Output Visual Quality](references/output-visual-quality.md), [Governance](references/governance.md).
+Primary references: [Method](references/skill-engineering-method.md), [Reference Scan](references/reference-scan.md), [Artifact Design](references/artifact-design-doctrine.md), [Prompt Engineering](references/prompt-engineering-doctrine.md), [Governance](references/governance.md).

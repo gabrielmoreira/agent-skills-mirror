@@ -7,14 +7,16 @@ description: "Generate and revise production-oriented 2D game maps with built-in
 
 ## Overview
 
-Build the smallest map bundle that satisfies the game. Decide the map as a pipeline, not as a single strategy label:
+Build the smallest playable map bundle that satisfies the game. Decide the map as a pipeline, not as a single strategy label:
 
 1. `visual_model`: `baked_raster` | `layered_raster` | `tilemap` | `layered_tilemap` | `parallax_layers`
-2. `runtime_object_model`: `none` | `separate_props` | `y_sorted_props` | `interactive_entities` | `foreground_occluders`
+2. `runtime_object_model`: `none` | `separate_props` | `platform_objects` | `y_sorted_props` | `interactive_entities` | `foreground_occluders`
 3. `collision_model`: `none` | `coarse_shapes` | `precise_shapes` | `tile_collision` | `polygon_walkmesh` | `trigger_zones`
 4. `engine_target`: `raw_canvas` | `Phaser` | `Tiled_JSON` | `LDtk` | `Godot_TileMap` | `Unity_Tilemap` | project-native
 
-Use user-specified parameters when present. When the user does not specify them, infer the lightest pipeline from the existing game, camera, collision needs, map scale, and editing needs.
+Use user-specified parameters when present. When the user does not specify them, infer the lightest playable pipeline from the existing game, camera, collision needs, map scale, and editing needs.
+
+For requests that imply a playable game map, level, stage, room, prototype, or engine scene, do not ship a single baked image as the runtime map unless the user explicitly asks for a flat background only. A baked image may be a background, reference, or preview artifact, but the playable deliverable must expose gameplay geometry and objects as separate layers, props, tile/object data, collision, zones, or engine-native scene nodes.
 
 Read [references/map-strategies.md](references/map-strategies.md) when the pipeline choice is not obvious. Read [references/layered-map-contract.md](references/layered-map-contract.md) before implementing a layered raster map. Read [references/prop-pack-contract.md](references/prop-pack-contract.md) before batching generated props into a sheet.
 
@@ -43,10 +45,10 @@ User-facing parameters may be stated in natural language:
 When unspecified:
 
 - Use `image_gen` as the visual asset source.
-- Use `baked_raster + coarse_shapes` for battle backgrounds, title/menu scenes, cutscenes, and fixed arenas.
+- Use `baked_raster + coarse_shapes` only for battle backgrounds, title/menu scenes, cutscenes, decorative backdrops, non-playable previews, or when the user explicitly asks for a single flat image.
 - Use `layered_raster + y_sorted_props + precise_shapes` for top-down RPG exploration with tall props, occlusion, interactables, or reusable props.
 - Use `tilemap` or `layered_tilemap` only when the engine/editor already uses tiles or the user asks for editable tiles.
-- Use `parallax_layers` for side-scrollers and scrolling backgrounds.
+- Use `parallax_layers + platform_objects + interactive_entities + precise_shapes` for playable side-scrollers and scrolling stages; the parallax/background image is not the runtime map by itself.
 - Use prop packs when 4 or more small/medium static props share one style and can fit into equal cells.
 - Use one-by-one prop generation for hero props, buildings, gates, irregular large props, animated props, or props needing strong identity.
 - Use `clean_hd` for generated exploration maps unless the project or user asks for pixel art. This means clean hand-painted top-down 2D RPG game map, HD game asset style, sharp readable terrain shapes, low texture noise, and no chunky pixels.
@@ -61,6 +63,7 @@ When unspecified:
 
 2. Choose the pipeline axes.
    - Select `visual_model`, `runtime_object_model`, `collision_model`, and `engine_target`.
+   - If the request is for a playable map, stage, level, room, prototype, or game scene, choose a pipeline with explicit runtime objects. Do not downgrade to `baked_raster` unless the user asked for a background-only image.
    - Select `art_style`. Prefer readable gameplay shapes over decorative texture density.
    - Select `visual_asset_source`. Default to `image_gen`; use `existing_assets` only when the project already has suitable art; use `procedural_placeholder` only when explicitly requested.
    - Treat `hybrid` as a result of combining axes, not as a primary category.
@@ -70,7 +73,7 @@ When unspecified:
    - For baked raster maps, generate one background with built-in `image_gen`, or edit/use an existing image when supplied, then add optional collision/zones metadata.
    - For layered raster maps, generate a ground-only base map first. Then show that base image in context and generate a dressed reference from the visible base before making final props and placements.
    - For tilemaps, generate or reuse tileset art first, then follow the engine/editor format for layers, objects, collision, and scene files. Do not script-draw the tileset as the final art source.
-   - For parallax scenes, generate background/midground/foreground visual layers first, then produce scroll metadata.
+   - For playable parallax or side-scroller stages, generate background/midground/foreground visual layers first, then generate or define separate platforms, terrain chunks, foreground occluders, hazards, pickups, doors, spawn/checkpoints, collision, and scroll metadata.
    - Do not present a rerunnable script that creates the whole art pack as the main solution unless the user asked for procedural placeholder art.
 
 4. Build metadata.
@@ -114,6 +117,8 @@ For a baked raster map:
 - optional `data/<name>-collision.json` or `data/<name>-zones.json`
 - code changes that load/use the image
 
+Use this deliverable only for non-playable backgrounds or explicitly requested flat images. If actors must move through the scene, collide with level geometry, jump on platforms, collect items, trigger doors, or edit the level later, upgrade to a layered, parallax-stage, tilemap, or engine-native deliverable.
+
 For a layered raster map:
 
 - `assets/map/<name>-base.png`
@@ -134,6 +139,17 @@ For a tilemap or layered tilemap:
 - a flattened preview assembled from the visual tileset and layer data
 - no script-drawn final tileset art unless the user explicitly asked for procedural placeholders
 
+For a playable side-scroller or platformer stage:
+
+- image-generated `assets/map/<name>-background.png` and optional parallax `midground` / `foreground` layers
+- separate image-generated platform, terrain-chunk, foreground-occluder, hazard, door, pickup, and checkpoint sprites when these are visible game objects
+- `data/<name>-objects.json` or engine-native object layers for platforms, hazards, pickups, doors, spawn points, checkpoints, camera bounds, and exits
+- `data/<name>-collision.json` with explicit platform/solid geometry independent from the background pixels
+- `assets/map/<name>-stage-preview.png` composed from the background plus objects for QA only
+- code or scene changes that load the background, render object layers, and use the collision/object data as runtime gameplay data
+
+Do not accept a single generated Megaman-like stage image plus collision rectangles as the final playable map. The stage must expose platforms, hazards, doors, pickups, and checkpoints as separate runtime objects or tile/object layers.
+
 For a prop pack:
 
 - raw generated sheet with solid `#FF00FF` background
@@ -151,4 +167,5 @@ Always validate what the chosen pipeline requires:
 - placement JSON parses and referenced prop files exist
 - collision/zones JSON parses when present
 - critical spawn, path, entrance, blocker, and zone points behave as expected
+- playable stages have explicit runtime objects for every gameplay-relevant platform, blocker, hazard, door, pickup, spawn, checkpoint, and exit
 - flattened preview looks coherent at the game's camera size

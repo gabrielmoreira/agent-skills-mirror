@@ -39,7 +39,7 @@ model_preset: gemini-only
 # Example:
 # agents:
 #   backend:
-#     model: openai/gpt-5.3-codex
+#     model: openai/gpt-5.5
 #     effort: high
 #   qa:
 #     model: anthropic/claude-sonnet-4-6
@@ -60,7 +60,7 @@ model_preset: gemini-only
 #     extends: claude-only
 #     description: "Team A — sonnet base, codex backend"
 #     agent_defaults:
-#       backend: { model: openai/gpt-5.3-codex, effort: high }
+#       backend: { model: openai/gpt-5.5, effort: high }
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Resolution order (when an agent runs):

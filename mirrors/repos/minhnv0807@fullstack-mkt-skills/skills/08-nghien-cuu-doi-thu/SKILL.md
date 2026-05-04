@@ -1,7 +1,9 @@
 ---
 name: 08-nghien-cuu-doi-thu
 description: Phan tich doi thu canh tranh 3 tang (truc tiep, gian tiep, thu cap) — dinh vi, SWOT, content benchmark, tim khoang trong thi truong
-category: strategy
+metadata:
+  version: 2.2.0
+  category: strategy
 triggers:
   - "nghien cuu doi thu"
   - "phan tich canh tranh"
@@ -14,6 +16,7 @@ related:
   - 00-ke-hoach-mkt
   - 02-brief-chien-dich
   - 05-copy-quang-cao
+  - references/mcp-ads-integration
 ---
 
 # Nghien Cuu Doi Thu Canh Tranh
@@ -26,6 +29,49 @@ Hoi user toi da 4 cau sau truoc khi bat dau:
 2. **Ke ten 2–5 doi thu ma ban biet** (ten thuong hieu, link fanpage/TikTok/website neu co)
 3. **Ban dang lo nhat dieu gi ve doi thu?** (Ho ban re hon? Content hay hon? Ads manh hon? Chiem thi phan?)
 4. **Muc tieu cua ban sau khi co bao cao nay?** (Dinh vi lai? Lam content tot hon? Tim khoang trong? Chay ads hieu qua hon?)
+
+### Auto-research qua MCP (neu co ket noi)
+
+> Xem huong dan setup: `skills/references/mcp-ads-integration.md`
+> **Meta Official MCP:** `https://mcp.facebook.com/ads` — setup 5 phut qua `claude.ai/settings/integrations`
+
+#### A. Facebook Ads Library MCP (Nghien cuu quang cao doi thu)
+
+**Facebook Ads Library MCP** (`facebook-ads-library-mcp`) cho phep tu dong:
+
+| Chuc nang | Mo ta |
+|-----------|-------|
+| **Search quang cao doi thu** | Tim tat ca ads dang chay cua 1 brand theo ten page |
+| **Phan tich creative** | AI phan tich hook, format, tone, CTA cua tung ad |
+| **Competitor discovery** | Tu dong tim doi thu tuong tu trong nganh |
+| **Spend estimation** | Uoc tinh ngan sach quang cao cua doi thu |
+| **Trend monitoring** | Theo doi thay doi chien dich theo thoi gian thuc |
+| **Market gap** | So sanh nhieu brand → tim khoang trong |
+
+**Cach dung:**
+1. Setup `facebook-ads-library-mcp` (can Facebook access token voi `ads_read`)
+2. Nhap ten page doi thu → MCP tra ve danh sach ads dang active
+3. Phan tich: format nao nhieu nhat? Hook gi? CTA gi? Chay bao lau?
+4. So sanh voi ads cua minh → tim gap va co hoi
+
+> **Luu y:** Ads Library MCP chi cho phep XEM quang cao cong khai cua doi thu — khong truy cap data noi bo (spend chinh xac, targeting, conversion). Spend chi la uoc tinh.
+
+#### B. Meta Official MCP (Benchmarks va boi canh nganh)
+
+Neu da ket noi Meta Official MCP (`mcp.facebook.com/ads`), co the bo sung nghien cuu doi thu bang data chinh thuc:
+
+| Tool | Dung cho |
+|------|---------|
+| `ads_insights_advertiser_context` | Data boi canh nganh va khu vuc — biet "san choi" rong the nao |
+| `ads_insights_industry_benchmark` | CPM, CTR, CPC trung binh nganh — benchmark de so sanh |
+| `ads_insights_auction_ranking_benchmarks` | Quality ranking, engagement ranking cua MINH vs doi thu trong dau gia |
+
+**Ket hop 2 nguon:**
+```
+Ads Library MCP → Xem creative + strategy doi thu (QUAN SAT)
+Meta Official MCP → So sanh metrics cua minh vs nganh (DO LUONG)
+→ Gap analysis chinh xac hon: biet doi thu lam gi + biet minh dang o dau so voi trung binh
+```
 
 ---
 

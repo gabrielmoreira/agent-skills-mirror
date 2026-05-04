@@ -1,6 +1,6 @@
 ---
 name: clawrouter
-description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, and Polymarket prediction market data as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
+description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, and prediction-market data across Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow + UMA oracle resolution + wallet identity & clustering as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
 triggers:
   - "clawrouter"
   - "claw router"
@@ -149,9 +149,16 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 | `blockrun_image_edit`       | Edit / inpaint existing image (openai/gpt-image-1)                          | $0.02–$0.04 / image  |
 | `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0), 5–10s         | $0.03–$0.30 / second |
 
-### Polymarket (Predexon)
+### Prediction Markets (Predexon)
 
-Full prediction-market toolbox: live events, leaderboard, market search, smart money positioning, wallet analytics, and cross-market arbitrage matching (Polymarket ↔ Kalshi). 8 tools, `$0.001–$0.005` per call. See `blockrun_predexon_*` in the tool list.
+Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow** + Binance for crypto candles. 49 endpoints in 4 categories:
+
+- **Markets & trading** — events, markets list per venue, cross-venue search (`markets/search`), orderbooks, candlesticks (per-market and per-token), trades, positions, volume charts.
+- **Leaderboard & smart money** — global + per-market leaderboards, smart-money positioning, top holders, smart-activity feed.
+- **Wallet analytics** — full wallet profile, P&L time series, per-market breakdown, similar-wallet discovery, batch profiles, AND/OR filters.
+- **UMA oracle + wallet identity** — UMA optimistic-oracle resolution status (`uma/markets`, `uma/market/{conditionId}`); wallet identity labels (ENS / Lens / exchange / risk tags), bulk identity, on-chain cluster discovery.
+
+Pricing: `$0.001` per market-data call, `$0.005` per analytics / search / wallet call. See the `predexon` skill for the full reference; agent tools surface as `blockrun_predexon_*`.
 
 ## Example Output
 

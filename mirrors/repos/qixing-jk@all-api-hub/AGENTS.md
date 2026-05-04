@@ -190,7 +190,7 @@ Node.js version from `.nvmrc` and pnpm 10+.
 
 ### Translation Workflow
 
-- `docs/docs/en/**` and `docs/docs/ja/**` are auto-translated by `docs_assistant/translate.py` and `.github/workflows/translate-docs.yml`; avoid manual edits unless the workflow itself changes.
+- `docs/docs/en/**` and `docs/docs/ja/**` are auto-translated by `docs_assistant/translate.py` and `.github/workflows/translate-docs.yml`; avoid manual edits by default. If the user explicitly asks to update translated docs directly, manual edits are allowed, but keep them minimal and aligned with the Chinese source.
 
 ### Navigation
 

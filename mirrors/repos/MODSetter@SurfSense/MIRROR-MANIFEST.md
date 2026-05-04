@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MODSetter/SurfSense` — 26 default patterns, 0 followed patterns, 170 file(s) materialized.
+Mirror of `MODSetter/SurfSense` — 26 default patterns, 0 followed patterns, 176 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MODSetter/SurfSense` — 26 default patterns, 0 followed patterns, 17
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 170 |
+| Files         | 176 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -228,7 +228,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 167 | ✓ | [`.cursor/skills/vercel-react-best-practices/rules/server-serialization.md`](.cursor/skills/vercel-react-best-practices/rules/server-serialization.md) |
 | 168 | ✓ | [`.cursor/skills/vercel-react-best-practices/SKILL.md`](.cursor/skills/vercel-react-best-practices/SKILL.md) |
 | 169 | ✓ | [`.cursor/skills/web-design-guidelines/SKILL.md`](.cursor/skills/web-design-guidelines/SKILL.md) |
-| 170 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
+| 170 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/email-drafting/SKILL.md) |
+| 171 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/kb-research/SKILL.md) |
+| 172 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/meeting-prep/SKILL.md) |
+| 173 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/report-writing/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/report-writing/SKILL.md) |
+| 174 | ✓ | [`surfsense_backend/app/agents/new_chat/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/new_chat/skills/builtin/slack-summary/SKILL.md) |
+| 175 | ✓ | [`surfsense_obsidian/AGENTS.md`](surfsense_obsidian/AGENTS.md) |
+| 176 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
 
 ---
 

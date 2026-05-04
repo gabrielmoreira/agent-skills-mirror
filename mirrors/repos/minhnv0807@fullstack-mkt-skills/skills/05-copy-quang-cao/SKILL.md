@@ -1,7 +1,9 @@
 ---
 name: 05-copy-quang-cao
 description: Viet 6 bien the copy quang cao theo 3 tang pheu (TOFU/MOFU/BOFU), tuan thu chinh sach quang cao, co CTA phu hop tung nen tang
-category: content
+metadata:
+  version: 2.2.0
+  category: content
 triggers:
   - "viet quang cao"
   - "copy quang cao"
@@ -16,6 +18,9 @@ related:
   - 02-brief-chien-dich
   - 09-insight-khach-hang
   - 10-tinh-kpi-nguoc
+  - references/copy-frameworks-vn
+  - references/quality-gates-vn
+  - references/hook-formulas-vn
 ---
 
 # Copy Quang Cao
@@ -60,6 +65,110 @@ XAU:  "Chao ban, cam on ban da quan tam den dich vu cua chung toi. Hom nay minh 
 - TOFU: To mo (6), Noi dau (1), Khat vong (2)
 - MOFU: Bang chung xa hoi (4), Uy tin (5), Noi dau (1)
 - BOFU: FOMO (3), Bang chung xa hoi (4), Noi dau (1)
+
+---
+
+## 6 Framework Copy Chuyen Nghiep
+
+> **Reference day du:** `skills/references/copy-frameworks-vn.md` — template char-limit theo tung nen tang, vi du VN cho moi framework.
+
+### Chon framework theo nhiet do audience
+
+| Nhiet do | Framework uu tien | Ly do |
+|---------|------------------|-------|
+| **Cold** (chua biet san pham) | AIDA, Star·Story·Solution | Dan dat logic tu dau; ke chuyen khong lo quang cao |
+| **Warm** (da tuong tac, chua mua) | PAS, 4P | Nhac lai noi dau; tang trust bang proof |
+| **Hot** (co intent, gan mua) | FAB, BAB | Rap dap loi ich cu the; visual transformation |
+| **Retarget** (da xem, chua mua) | PAS hoac BAB | Nhan manh hau qua hoac bien doi |
+
+### Tom tat 6 frameworks
+
+| Framework | Cau truc | Dung khi | Platform phu hop |
+|-----------|---------|---------|-----------------|
+| **AIDA** | Attention → Interest → Desire → Action | Cold audience, launch san pham moi | Meta feed, TikTok, YouTube pre-roll |
+| **PAS** | Problem → Agitate → Solution | Warm audience, nganh co pain point ro (spa, y te, GD) | Meta feed, LinkedIn, Google RSA |
+| **BAB** | Before → After → Bridge | Transformation offer (spa, fitness, giao duc) | Meta Reels/Stories, TikTok |
+| **4P** | Promise → Picture → Proof → Push | High-ticket, can nhieu trust (BDS, khoa hoc, B2B) | LinkedIn, Google, Meta feed dai |
+| **FAB** | Features → Advantages → Benefits | Khach co intent cao, dang so sanh | Google RSA, Meta retarget |
+| **Star·Story·Solution** | Star → Story → Solution | Brand storytelling, UGC-style, khong muon lo quang cao | TikTok, Reels, YouTube Shorts |
+
+> **Sai lam pho bien VN:** Viet theo cau truc tu do (gioi thieu → tinh nang → CTA) thay vi ap framework. Ket qua: copy nhat, it cam xuc, CTR thap. Moi bien the trong 6 bien the output nen dung **1 framework khac nhau**.
+
+### Andromeda Warning — Khong clone ads
+
+> **Meta 2026:** He thong Andromeda cluster cac quang cao co **Creative Similarity Score > 60%** — giam delivery tu dong. 100 bien the nho (doi mau, cat clip, thay font) KHONG tot hon 10 creative thuc su khac biet.
+
+**Nguong an toan:**
+
+| Similarity Score | Trang thai | Hanh dong |
+|-----------------|-----------|-----------|
+| < 40% | An toan | Tiep tuc chay |
+| 40–60% | Canh bao | Kiem tra lai — co the bi cluster |
+| > 60% | Nguy hiem | Andromeda cluster → giam delivery tu dong |
+
+**5 chieu da dang de vuot Andromeda:**
+1. **Hook khac nhau** — Pain vs To mo vs Aspiration (khong chi thay text, phai thay goc nhin)
+2. **Format khac nhau** — Video doc 9:16 vs Anh vuong 1:1 vs Carousel
+3. **Nhan vat khac nhau** — Founder vs Khach hang review vs KOC/bac si
+4. **Am nhac khac nhau** — Trending VN vs Nhac cam trang vs Giong noi/voiceover
+5. **Boi canh khac nhau** — Studio vs Ngoai canh vs UGC phong khach
+
+> Xem them: `skills/references/quality-gates-vn.md` Gate 5 (Andromeda Creative Diversity)
+
+---
+
+### 6 kieu hook quang cao — Dong 1 quyet dinh tat ca
+
+> Ap dung tu `social-media-skills/hook-generator` — adapt cho ads VN.
+
+125 ky tu dau cua primary text = hook quang cao. Moi bien the nen dung **kieu hook khac nhau**:
+
+| # | Kieu hook | Cong thuc | Vi du VN |
+|---|-----------|-----------|----------|
+| 1 | **Con so** | So lieu cu the, bat ngo | "1,247 chi da trai nghiem — 98% quay lai lan 2" |
+| 2 | **Nguoc doi** | Lat nguoc niem tin pho bien | "Chay ads nhieu hon KHONG giup ban co them khach" |
+| 3 | **Truoc/Sau** | Ket qua bien doi cu the | "Tu 5 don/tuan len 40 don/tuan — chi trong 60 ngay" |
+| 4 | **Muon uy tin** | Nhac ten chuyen gia, chung nhan, brand | "Bac si da lieu 15 nam khuyen dung — ly do bat ngo" |
+| 5 | **Thu nhan** | Chia se sai lam, bai hoc that | "Toi da tieu 200 trieu chay ads sai — bay gio toi lam khac" |
+| 6 | **Khan cap** | Gioi han thoi gian, so luong | "Con 8 slot thang 6 — 34 nguoi dang cho" |
+
+**Quy tac chon hook theo tang pheu:**
+- TOFU (cold): Uu tien hook 1 (con so), 2 (nguoc doi) — thu hut chu y
+- MOFU (warm): Uu tien hook 3 (truoc/sau), 4 (uy tin) — tang tin tuong
+- BOFU (hot): Uu tien hook 5 (thu nhan), 6 (khan cap) — thuc day hanh dong
+
+**Kiem tra hook:**
+- [ ] Dong 1 ≤ 125 ky tu va tu hoan chinh ve nghia
+- [ ] Co con so hoac chi tiet cu the (khong chung chung)
+- [ ] Gay to mo hoac cham cam xuc — nguoi doc MUON bam "Xem them"
+- [ ] 6 bien the dung 6 kieu hook KHAC nhau
+
+---
+
+### Copy Scoring — Cham diem truoc khi giao
+
+> Ap dung tu `social-media-skills/post-scorer` — adapt cho quang cao VN.
+
+Cham 5 tieu chi, moi tieu chi 1–10 diem. **Chi giao khi dat ≥ 35/50.**
+
+| Tieu chi | 8–10 diem | 5–7 diem | 1–4 diem |
+|----------|----------|----------|----------|
+| **Hook strength** | Gay to mo manh, co con so/chi tiet, khop tang pheu | Chap nhan duoc nhung chua gay an tuong | Chung chung, khong co diem nhan |
+| **Cam xuc trigger** | Trigger ro rang (Pain/FOMO/Social proof), cam nhan duoc | Co trigger nhung nhe | Khong co trigger, doc xong khong cam giac gi |
+| **CTA clarity** | CTA cu the, hanh dong ro, 1 buoc duy nhat | CTA co nhung chua cu the | CTA mo ho ("Tim hieu them", "Click vao day") |
+| **Compliance** | 0 vi pham chinh sach | 1 canh bao nhe | Co vi pham se bi reject |
+| **Platform fit** | Dung char limit, giong van khop platform | Gan dung | Sai char limit hoac giong van khong phu hop |
+
+| Tong | Danh gia | Hanh dong |
+|------|---------|----------|
+| 45–50 | Xuat sac | Giao ngay, theo doi hieu suat |
+| 35–44 | Tot | Giao duoc, ghi chu cai thien |
+| 25–34 | Trung binh | Chinh lai truoc khi giao |
+| < 25 | Yeu | Viet lai tu dau |
+
+> **Moi lan giao copy, them dong:** `Copy Score: [X]/50 — [Danh gia]` vao cuoi file output.
+
+---
 
 ### Quy tac theo nen tang
 
@@ -236,3 +345,6 @@ Kiem tra truoc khi giao copy:
 - [ ] Giong van phu hop nen tang (Meta vs TikTok vs Google)
 - [ ] Co huong dan A/B test ro rang
 - [ ] Retarget copy khac creative voi ads lan 1
+- [ ] Moi bien the dung dung framework phu hop voi nhiet do audience (Cold/Warm/Hot)
+- [ ] Khong co 2 bien the nao dung cung framework + cung hook → Andromeda risk
+- [ ] Creative di kem moi bien the thuc su khac biet — khong chi doi mau/cat clip

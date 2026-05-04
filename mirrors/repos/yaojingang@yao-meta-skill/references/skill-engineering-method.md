@@ -137,6 +137,20 @@ Generate `reports/artifact-design-profile.md` and expose it in the overview and 
 
 See [Artifact Design Doctrine](artifact-design-doctrine.md) and [Output Visual Quality](output-visual-quality.md).
 
+## Phase 5.7: Prompt Quality Profiling
+
+When a skill depends on prompt behavior, role design, dialogue quality, or output contracts, turn prompt methodology into an evidence profile.
+
+- identify the explicit need, implicit need, scenario, user level, and success standard
+- map Role, Task, and Format into skill behavior instead of copying a full meta-prompt into `SKILL.md`
+- classify the task family and complexity before adding structure
+- score completeness, clarity, consistency, practicality, and specificity
+- expose the full reasoning to reviewers while keeping the user-facing flow recommendation-led
+
+Generate `reports/prompt-quality-profile.md` and expose it in the overview and review viewer.
+
+See [Prompt Engineering Doctrine](prompt-engineering-doctrine.md).
+
 ## Phase 6: Trigger-First Authoring
 
 Author the frontmatter `description` before expanding the body.

@@ -2,7 +2,7 @@
 
 Instructions for Codex and other AI coding agents working in this repository. Read this before making changes.
 
-This file is the canonical public agent guide. `CLAUDE.md` mirrors it for Claude Code. Maintainer-local `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` may contain fresher planning details when present, but public contributors and bots must not assume those files exist.
+`CLAUDE.md` may lag behind the current plan. For Codex work, treat this file plus `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` as the fresher source of truth.
 
 ## What This Project Is
 
@@ -12,7 +12,7 @@ The v0.2 direction is no longer a single-prompt generator. Each design is a long
 
 The original inspiration was Claude Design. The product boundary is now clearer: Open CoDesign borrows proven coding-agent mechanics, then adds design-specific tools and a local-first workspace model.
 
-`docs/` is mostly maintainer-local and gitignored. Some public research notes may exist, but internal plans, handoffs, and roadmap files usually do not. Do not cite `docs/**` in public PR review comments unless the exact file exists in the public checkout and is directly relevant.
+`docs/` is gitignored. Maintainers may have internal plans, handoffs, and research locally; public contributors may not. Do not cite `docs/**` in public PR review comments unless the file exists in the public checkout.
 
 ## Hard Constraints
 
@@ -26,7 +26,19 @@ These are project commitments, not preferences:
 6. Lazy-load heavy features. PPTX export, web capture, scaffolds, skills, brand refs, and image generation must load on demand rather than at app start.
 7. Reuse pi primitives first. `pi-coding-agent` owns sessions, built-in tools, bash execution, event streaming, model registry, provider registration, and capability data unless a design-specific need proves otherwise.
 8. Brand values are data, not model memory. Use `DESIGN.md`, user files, official CSS/SVG/screenshots, or brand URLs. Do not invent brand hex values from memory.
-9. PRs should satisfy Principles 5b: compatible, upgradeable, no bloat, elegant.
+9. PRs must satisfy Principles 5b: compatible, upgradeable, no bloat, elegant.
+
+## AI Visibility For Web Work
+
+When building or updating any website, project homepage, product page, personal site, documentation site, blog, or public project page, include AI visibility in the default delivery scope unless the user explicitly opts out.
+
+- Add `/llms.txt` with a concise Markdown overview of the site, author or organization, key pages, canonical project or product descriptions, and links to machine-readable resources.
+- Add `/llms-full.txt` when the site has enough substantive public content to justify a fuller AI-readable context file.
+- Configure `robots.txt` deliberately: allow search and retrieval crawlers that help AI systems cite or retrieve public content, and treat training crawlers as a separate policy decision.
+- Maintain `sitemap.xml` and make sure it covers important public pages. Mention Google Search Console and Bing Webmaster Tools submission when relevant.
+- Add appropriate JSON-LD structured data where useful, such as `Person`, `Organization`, `WebSite`, `BlogPosting`, `SoftwareApplication`, `FAQPage`, or `CreativeWork`.
+- Prefer clean Markdown or JSON machine-readable endpoints for important entities such as profiles, projects, posts, docs, releases, FAQs, and product facts.
+- Keep the content truthful, source-backed, and non-spammy. The goal is to help AI systems understand and cite existing real content accurately, not to generate low-quality SEO filler.
 
 ## Current Architecture Direction
 
@@ -96,7 +108,7 @@ Do not reintroduce a verifier subagent, snip tool, custom bash tool, custom list
 
 ## Repository Layout
 
-```text
+```
 apps/
   desktop/           # Electron app shell, main process, renderer
 packages/
@@ -108,17 +120,16 @@ packages/
   exporters/         # PDF / PPTX / ZIP exporters, lazy-loaded
   templates/         # Built-in examples and starter templates
   shared/            # Shared types, utils, schemas
-docs/                # Mostly maintainer-local plans/research; many files are gitignored
+docs/                # Internal vision, plans, principles, research; gitignored
 examples/            # Public demo reproductions
 ```
 
 ## Doing Tasks Here
 
-- Read `AGENTS.md` or `CLAUDE.md` first, depending on your agent runtime.
-- For non-trivial architecture or product work, also read `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` when they exist locally.
-- Use planning files in `.Codex/workspace/` or your agent's local workspace for tasks spanning more than five tool calls or more than three files.
+- Read `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` before non-trivial architecture or product work.
+- Use planning files in `.Codex/workspace/` for tasks spanning more than five tool calls or more than three files.
 - Use git worktrees for parallel or unrelated feature work. Do not mix two unrelated branches in one checkout.
-- Check `docs/RESEARCH_QUEUE.md` when it exists before touching sandbox, inline comments, tweaks, PPTX, pi capabilities, scaffolds, skills, or brand refs.
+- Check `docs/RESEARCH_QUEUE.md` before touching sandbox, inline comments, tweaks, PPTX, pi capabilities, scaffolds, skills, or brand refs.
 - Keep edits scoped. Avoid drive-by refactors.
 - Before adding a dependency, check license, install size, alternatives, and whether it can be a peer dep.
 - Add or update Vitest coverage for feature work. Broaden tests when changing migrations, permissions, tool hooks, or shared contracts.

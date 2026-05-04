@@ -2,11 +2,6 @@
 
 Este arquivo é lido automaticamente por agentes como GitHub Copilot, Codex, Claude e outros que reconhecem `AGENTS.md` como ponto de entrada de instruções.
 
-## Contexto do projeto
-
-<!-- Descreva brevemente o propósito do projeto em 2-3 linhas. -->
-<!-- Exemplo: API REST em Node.js para gerenciamento de pedidos. PostgreSQL + Express. Deploy na AWS. -->
-
 ## Fonte de verdade técnica
 
 A documentação técnica verificada do projeto vive em `docs/lorebase/`:
@@ -29,7 +24,7 @@ As regras completas para este projeto vivem em `.github/instructions/`:
 
 | Arquivo | Conteúdo |
 |---|---|
-| `codebase.instructions.md` | Quando e como consultar `docs/lorebase/*.md` |
+| `lorebase.instructions.md` | Quando e como consultar `docs/lorebase/*.md` |
 | `learn.instructions.md` | Governança da memória técnica — fluxos permitidos e proibidos |
 | `safety.instructions.md` | Ações irreversíveis, arquivos protegidos, commits seguros |
 | `superpowers.instructions.md` | Ordem de trabalho com as skills operacionais do agente |

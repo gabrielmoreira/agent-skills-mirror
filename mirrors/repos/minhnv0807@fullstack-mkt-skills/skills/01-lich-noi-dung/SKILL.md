@@ -1,7 +1,9 @@
 ---
 name: 01-lich-noi-dung
 description: Lich noi dung thang — len lich dang bai da kenh voi ti le pheu, content pillar, repurposing matrix, va scoring tieu chi.
-category: content
+metadata:
+  version: 2.1.0
+  category: content
 triggers:
   - "lich noi dung"
   - "len lich dang bai"
@@ -15,6 +17,8 @@ related:
   - 05-copy-quang-cao
   - 06-brief-ugc-egc
   - 09-insight-khach-hang
+  - 15-social-listening
+  - references/hook-formulas-vn
 ---
 
 # Lich Noi Dung
@@ -67,6 +71,47 @@ Moi thuong hieu can 3–5 pillar. Kiem tra balance moi tuan.
 | Brand Content | 30–35% | Noi dung thuong hieu chinh thuc |
 | UGC (User Generated) | 20–25% | Khach hang tu tao — social proof |
 | EGC (Employee Generated) | 10–15% | Nhan vien chia se — authentic |
+
+---
+
+## Content Matrix — Y tuong noi dung tu dong
+
+> Ap dung tu `social-media-skills/content-matrix` (Justin Welsh method) — adapt cho VN.
+
+Ghep **content pillar** cua brand voi **8 dinh dang** de tao 24–40 y tuong cung luc.
+
+### 8 dinh dang content
+
+| # | Dinh dang | Mo ta | Vi du |
+|---|-----------|-------|-------|
+| 1 | **Huong dan** | Day 1 ky nang cu the, buoc-buoc | "3 buoc setup Pixel Meta dung chuan" |
+| 2 | **Truyen cam hung** | Cau chuyen thanh cong, vuot kho | "Tu 0 follower den 50K trong 6 thang — chuyen that" |
+| 3 | **Phan tich** | Giai thich tai sao, co che hoat dong | "Tai sao ads ban dat ma khong co don? Root cause analysis" |
+| 4 | **Nguoc doi** | Thach thuc niem tin pho bien | "Chay ads nhieu hon KHONG phai la cach tang don" |
+| 5 | **Quan sat** | Xu huong an, dieu it ai de y | "Dieu dang xay ra tren TikTok Shop ma it ai biet" |
+| 6 | **So sanh X vs Y** | 2 cong cu/cach tiep can/chien luoc | "Meta Ads vs TikTok Ads: nganh nao chon gi?" |
+| 7 | **Hien tai vs Tuong lai** | Du bao, xu huong sap den | "Marketing 2025 vs 2026: 5 thay doi lon" |
+| 8 | **Danh sach** | Tips, sai lam, bai hoc, cong cu | "7 sai lam chay ads pho bien nhat cua SME Viet" |
+
+### Cach dung
+
+1. Lay 3–5 content pillar cua brand (tu `product-marketing-context` hoac hoi user)
+2. Tao bang: pillar (hang) x 8 dinh dang (cot) = 24–40 y tuong
+3. Moi o ghi **tieu de cu the** — khong ghi chung chung ("Marketing" ❌, "3 cach giam CPMess duoi 25K" ✅)
+4. Chon 15 y tuong tot nhat → dien vao lich noi dung tuan
+
+### Template content matrix
+
+```markdown
+| Pillar \ Dinh dang | Huong dan | Truyen cam hung | Phan tich | Nguoc doi | Quan sat | X vs Y | Hien tai vs TL | Danh sach |
+|---------------------|----------|-----------------|-----------|-----------|---------|--------|----------------|-----------|
+| [Pillar 1] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] |
+| [Pillar 2] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] |
+| [Pillar 3] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] |
+| [Pillar 4] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] | [Y tuong] |
+```
+
+> **Tip:** Chay content matrix 1 lan/thang → co san 32+ y tuong. Khong bao gio het chu de.
 
 ---
 

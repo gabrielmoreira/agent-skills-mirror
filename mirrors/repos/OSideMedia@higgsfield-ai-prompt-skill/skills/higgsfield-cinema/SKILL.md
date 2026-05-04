@@ -4,8 +4,8 @@ description: "Guides users through professional filmmaking workflows in Higgsfie
 user-invocable: true
 metadata:
   tags: [higgsfield, cinema-studio, multi-shot, storyboard, popcorn, hero-frame, optical, elements, director-panel, speed-ramp, soul-cast, color-grading]
-  version: 3.1.0
-  updated: 2026-04-25
+  version: 3.2.0
+  updated: 2026-05-03
   parent: higgsfield
 ---
 
@@ -529,6 +529,19 @@ this limit (e.g., 6 scenes × 2s each, or 4 scenes × 3s, or 3 scenes × 4s).
 5. Scene 5: Consequence / turn — medium or wide
 6. Scene 6: Resolution / button — varies
 
+**Morph-Cut and Smooth-Cut breathing room — 2-second still moments.** Editors
+land morph cuts and smooth cuts (transition styles in DaVinci Resolve, Premiere,
+and similar editors that hide the cut by morphing similar frames) on stillness,
+not on motion. If every shot starts and ends mid-action, every cut between them
+has to happen mid-action too — and the model renders mid-action transitions
+poorly. Build cut-friendly material by prompting an explicit 2-second
+still-or-near-still moment at the **start** AND **end** of every shot. Examples
+of buildable stillness: a held look, a settled pose, a held pause before motion
+begins, a held breath after motion stops. The middle of the shot can be as
+kinetic as the script demands; the boundaries earn the cuts. This rule is
+adapted from the Mr. Core methodology and pairs with editor-side workflow in
+`../higgsfield-pipeline/SKILL.md` § Stage 8 — Assembly.
+
 ---
 
 ## Reference Anchor System
@@ -646,6 +659,20 @@ ensemble cast. The outfit sheet is **not** the same as a character sheet — the
 character sheet locks identity (face, build, hair, distinguishing marks), while
 the outfit sheet locks what the character is wearing AND how that wardrobe
 behaves in motion. Build both when you have a hero costume on a hero character.
+
+**The piano test — wardrobe complexity has a generation cost.** Every detail of
+wardrobe complexity — buttons, ties, jewelry, scarves, layered garments,
+intricate prints, fastening hardware — costs the model rendering budget. The
+piano test (adapted from the Mr. Core methodology) is the rule: if a wardrobe
+element is as visually demanding for the model to render as a piano in the
+frame, the model will spend its budget rendering that element instead of the
+action. Strip the wardrobe to the simplest silhouette that still reads as the
+character. A trench coat reads as a trench coat without the buttons rendering
+correctly. A uniform reads as a uniform without the rank insignia drifting
+across frames. Design the costume's *signature* — the silhouette and one
+identifying feature — and let the rest go simple. Hero costumes that must
+render under close-up scrutiny earn their complexity; background costumes do
+not.
 
 ### Palette / Mood Sheet
 
@@ -1212,7 +1239,7 @@ For the full Pre-Prompt Checklist, one-action-per-scene rule, and fast motion tr
 
 ---
 
-## Fight Scene Rules (Tested)
+## Fight Scene & Action Design Rules (Tested)
 
 Two-character fight sequences are among the hardest things to generate in Cinema Studio.
 These rules come from extensive real-world testing.
@@ -1259,6 +1286,53 @@ Scene 6 (@ Elements) — Resolution: Hero walks away from camera
 Alternate @ Element scenes (for character faces) with plain text scenes (for action).
 The viewer's brain fills in character continuity between cuts — that's how real film
 editing works.
+
+### Action Design Around AI Strengths
+
+The Fight Scene rules above describe what the model can and cannot render at
+any given action moment. The rules below describe how to *design* the action
+itself so the model never has to render the things it fails at. These rules
+are adapted from the Mr. Core methodology — a long-form workflow document by a
+working creator on the platform — and apply to all action sequences, not just
+fights.
+
+**Choose locations the model renders forgivingly.** Some spaces hide drift;
+others expose it. Design action around the forgiving ones:
+
+- **Forgiving:** circular arenas (camera can rotate without a continuity
+  reference), vague ruins (no architectural lines for the audience to audit),
+  repeating textures (a forest, a dune field, a colonnade — drift between
+  frames reads as parallax, not error), fog / dust / smoke environments
+  (visual noise covers most artifacts).
+- **Punishing:** familiar landmarks (the audience knows the building's real
+  geometry), geometric architecture with strong sight lines (any drift in a
+  hallway or grid reads instantly), public spaces with text or signage
+  (lettering drifts across frames), continuous reflective surfaces (mirror or
+  glass continuity is brutal).
+
+**Design choreography around what the model can render.** Don't write action
+the model fails at and try to compensate with prompt language. Cut the action
+to the model's strengths up front:
+
+- Standoffs, near-misses, the moment before contact, the aftermath of contact,
+  bodies in motion through a space — all render reliably.
+- Precise hand-to-hand, prop combat, multi-character grappling, choreographed
+  martial arts, frame-by-frame impact sequences — all fail reliably.
+- If the script calls for the second category, restage it as a sequence of
+  shots from the first category. The cut between shots does the work the
+  model can't do in a single take.
+
+**One transformation per shot.** Plan exactly one state change per generation —
+one location to one location, one emotional beat to the next, one action to
+its consequence. Multi-beat shots ("she enters, sees the body, draws her
+weapon, advances on the door") force the model to interpolate between two or
+three different intents and the result drifts on at least one of them. Cut the
+shot at the first beat. Generate the second as its own shot.
+
+**Single-generation strategy.** Plan the shot well enough that the first
+generation is the work. Generate-and-pick-from-twenty is a budgeting failure,
+not a workflow — every additional generation is paying twice for prep you
+should have done up front. Treat each generation as the deliverable.
 
 ---
 

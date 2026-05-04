@@ -60,14 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`.github/instructions/codebase.instructions.md`](.github/instructions/codebase.instructions.md) |
-| 3 | ✓ | [`.github/instructions/learn.instructions.md`](.github/instructions/learn.instructions.md) |
+| 2 | ✓ | [`.github/instructions/learn.instructions.md`](.github/instructions/learn.instructions.md) |
+| 3 | ✓ | [`.github/instructions/lorebase.instructions.md`](.github/instructions/lorebase.instructions.md) |
 | 4 | ✓ | [`.github/instructions/safety.instructions.md`](.github/instructions/safety.instructions.md) |
 | 5 | ✓ | [`.github/instructions/superpowers.instructions.md`](.github/instructions/superpowers.instructions.md) |
 | 6 | ✓ | [`.github/prompts/learn-capture.prompt.md`](.github/prompts/learn-capture.prompt.md) |
 | 7 | ✓ | [`.github/prompts/learn-discovery.prompt.md`](.github/prompts/learn-discovery.prompt.md) |
 | 8 | ✓ | [`.github/prompts/learn-update.prompt.md`](.github/prompts/learn-update.prompt.md) |
-| 9 | ✓ | [`.github/skills/acquire-codebase-knowledge/SKILL.md`](.github/skills/acquire-codebase-knowledge/SKILL.md) |
+| 9 | ✓ | [`.github/skills/learn-capture/criteria.md`](.github/skills/learn-capture/criteria.md) |
 | 10 | ✓ | [`.github/skills/learn-capture/SKILL.md`](.github/skills/learn-capture/SKILL.md) |
 | 11 | ✓ | [`.github/skills/learn-discovery/SKILL.md`](.github/skills/learn-discovery/SKILL.md) |
 | 12 | ✓ | [`.github/skills/learn-update/SKILL.md`](.github/skills/learn-update/SKILL.md) |

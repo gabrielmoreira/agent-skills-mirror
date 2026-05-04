@@ -1,7 +1,9 @@
 ---
 name: 09-insight-khach-hang
 description: Xay dung chan dung khach hang sau — Consumer vs Shopper, JTBD, hanh trinh mua hang, insight validation, internal monologue
-category: strategy
+metadata:
+  version: 2.0.0
+  category: strategy
 triggers:
   - "insight khach hang"
   - "chan dung khach hang"

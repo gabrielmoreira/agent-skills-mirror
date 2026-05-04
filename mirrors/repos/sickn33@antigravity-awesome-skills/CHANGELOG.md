@@ -9,7 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- _No unreleased changes yet._
+_No unreleased changes yet._
+
+## [10.9.0] - 2026-05-03 - "Skill Audit, PR Writing, and Heading Cleanup"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #565, #569, and #570 through the maintainer squash-merge workflow, closes issue #568 with a repo-wide heading cleanup, and closes issue #566 as out of scope for this skill-library repository.
+
+## New Skills
+
+- **skill-audit** - defensive pre-install review workflow for auditing third-party agent skills before installation.
+- **git-pr-review** - token-efficient pull-request description workflow based on commit history.
+- **mise-configurator** - production-ready `mise.toml` setup guidance for local development and CI/CD toolchains.
+
+## Improvements
+
+- **React file structure guidance** - adds a reference section for organizing React files and component/module boundaries.
+- **heading quality cleanup** - fixes duplicate and skipped `##` heading defects reported in issue #568 across skill and plugin skill documentation.
+- **source provenance and metadata** - credits the `aptratcn/skill-audit` source, adds release-ready metadata for new skills, and syncs generated catalog, index, plugin mirrors, contributor credits, and visible skill counts to `1,443+`.
+
+## Who should care
+
+- **Claude Code, Cursor, Codex CLI, Gemini CLI, and Antigravity users** get three new installable skills across security review, PR writing, and toolchain setup.
+- **React users** get clearer file-structure guidance inside the React patterns skill.
+- **Maintainers** get cleaner heading structure, warning-budget headroom, and refreshed generated artifacts before the release.
+
+## Credits
+
+- **[@aptratcn](https://github.com/aptratcn)** for PR #565 (`skill-audit`).
+- **[@hardeepcoder](https://github.com/hardeepcoder)** for PR #569 (`react-patterns` file structure guidance).
+- **[@thejasreddyc](https://github.com/thejasreddyc)** for PR #570 (`git-pr-review`, `mise-configurator`).
 
 ## [10.8.0] - 2026-04-29 - "Kubernetes, Commerce, Code Review, and Full-Cycle Development"
 

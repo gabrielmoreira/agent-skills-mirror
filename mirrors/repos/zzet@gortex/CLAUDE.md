@@ -59,13 +59,36 @@ For any list-shaped response, pass `format: "gcx"` to get the [GCX1 compact wire
 
 ### Code Quality and Analysis
 
+The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
+
 | Instead of...                         | You MUST use...                          |
 |---------------------------------------|------------------------------------------|
 | Manually hunting unused code          | `analyze` with `kind: "dead_code"` — zero incoming edges (excludes entry points, tests, exports) |
 | Guessing which symbols are over-coupled| `analyze` with `kind: "hotspots"` — ranks by fan-in, fan-out, community crossings |
 | Manually scanning for circular deps   | `analyze` with `kind: "cycles"` — Tarjan's SCC with severity classification |
+| Wondering if a new dep creates a cycle| `analyze` with `kind: "would_create_cycle"` — checks before you add it |
+| Grepping for TODO / FIXME             | `analyze` with `kind: "todos"` — KindTodo nodes; filter by tag/assignee/ticket |
+| Walking blame by hand                 | `analyze` with `kind: "blame"` — stamps meta.last_authored from git blame |
+| Reading a cover.out profile manually  | `analyze` with `kind: "coverage"` — stamps meta.coverage_pct on executable symbols |
+| Hunting symbols nobody touches        | `analyze` with `kind: "stale_code"` — symbols older than `older_than` days |
+| Asking who owns a package             | `analyze` with `kind: "ownership"` — author rollup with symbol/file counts |
+| Finding undertested symbols           | `analyze` with `kind: "coverage_gaps"` — symbols inside [min_pct, max_pct) |
+| Per-package coverage rollup           | `analyze` with `kind: "coverage_summary"` — directory-level avg/covered/partial/uncovered |
+| Stale feature flags                   | `analyze` with `kind: "stale_flags"` — flag callers untouched for `older_than` days |
+| Walking git tags by hand              | `analyze` with `kind: "releases"` — stamps meta.added_in on file nodes |
+| Surveying cgo / wasm boundaries       | `analyze` with `kind: "cgo_users"` or `kind: "wasm_users"` — files crossing the FFI boundary |
+| Finding tables without migrations     | `analyze` with `kind: "orphan_tables"` — queried tables missing EdgeProvides |
+| Finding migrations without users      | `analyze` with `kind: "unreferenced_tables"` — provided tables with zero EdgeQueries |
+| Spotting channel send/recv mismatches | `analyze` with `kind: "channel_ops"` — channels grouped by sends/recvs |
+| Finding goroutine spawn hotspots      | `analyze` with `kind: "goroutine_spawns"` — EdgeSpawns grouped by target + mode |
+| Finding mutability hotspots           | `analyze` with `kind: "field_writers"` — fields ranked by EdgeWrites; pass `id` for one field |
+| Listing every @Deprecated use         | `analyze` with `kind: "annotation_users"` — pass `id` or `name` for one annotation |
+| Tracing config-key readers            | `analyze` with `kind: "config_readers"` — config_key nodes grouped by EdgeReadsConfig |
+| Tracing event/log emitters            | `analyze` with `kind: "event_emitters"` — events grouped by EdgeEmits, `level` filter optional |
+| Mapping the error surface             | `analyze` with `kind: "error_surface"` — function/method nodes with their EdgeThrows targets |
 | Checking if the index is stale        | `index_health` — health score, parse failures, stale files |
 | Wondering what changed this session   | `get_symbol_history` — modification counts, flags churning (3+ edits) |
+| Hydrating blame / coverage / releases | `gortex enrich blame|coverage|releases|all` (CLI) — bulk-stamps the graph for the `stale_*`, `coverage_*`, `ownership`, and `releases` analyzers |
 
 ### Code Generation and Editing
 
@@ -125,3 +148,15 @@ For any list-shaped response, pass `format: "gcx"` to get the [GCX1 compact wire
 8. After editing, call `check_guards` to verify team conventions, then `get_test_targets` for tests to run (includes cross-repo test files).
 9. Before committing, call `detect_changes` to verify scope. Use `diff_context` for graph-enriched review.
 10. After completing a task, call `feedback` with `action: "record"` to report which symbols from `smart_context` were useful, not needed, or missing. This improves future context quality.
+
+## Graph Schema
+
+**Node kinds** (filter `search_symbols` with `kind`):
+- Code structure: `file`, `package`, `function`, `method`, `type`, `interface`, `field`, `variable`, `constant`, `import`, `contract`, `param`, `closure`, `enum_member`, `generic_param`
+- Coverage extensions: `module` (ecosystem deps), `table` / `column` (db schema), `config_key` (env/viper/cli), `flag` (feature flags), `event` (logs/metrics/spans), `migration`, `fixture` (test data), `todo` (TODO/FIXME comments), `team` (CODEOWNERS), `license`, `release` (tag boundaries)
+
+**Edge kinds** (used internally; many are queryable via `analyze` kinds above):
+- Calls / structure: `calls`, `imports`, `defines`, `implements`, `extends`, `references`, `member_of`, `instantiates`, `provides`, `consumes`, `composes`, `aliases`, `typed_as`, `returns`, `captures`, `param_of`
+- Concurrency: `spawns` (goroutine/async/promise), `sends` / `recvs` (channels)
+- Mutation: `reads` / `writes` (fields), `reads_config` / `writes_config`
+- Metadata: `annotated` (decorators), `emits` (events), `throws` (errors), `queries` (SQL), `reads_col` / `writes_col`, `toggles_flag`, `depends_on_module`, `matches` (fixtures), `generated_by`, `tests` (test → tested symbol), `covered_by`, `owns` (CODEOWNERS), `authored`, `licensed_as`

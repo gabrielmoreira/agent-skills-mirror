@@ -6,12 +6,12 @@
 
 - Title: Claude Code Ultimate Guide
 - Author: Florian Bruniaux (Founding Engineer @ Méthode Aristote)
-- Version: 3.39.1
-- Last Updated: April 16, 2026
+- Version: 3.40.0
+- Last Updated: May 3, 2026
 - License: CC BY-SA 4.0 (free, open source)
-- Lines of Documentation: 25,100+
-- Production Templates: 247
-- Quiz Questions: 330
+- Lines of Documentation: 25,368
+- Production Templates: 186
+- Quiz Questions: 271
 
 ## What This Guide Covers
 
@@ -34,18 +34,48 @@
 
 ### For Learning
 - Full Guide (~10h): https://github.com/FlorianBruniaux/claude-code-ultimate-guide/blob/main/guide/ultimate-guide.md
-- Interactive Quiz (330 questions): https://cc.bruniaux.com/quiz.html
+- Interactive Quiz (271 questions): https://cc.bruniaux.com/quiz.html
 
 - Whitepapers (FR + EN, 9 titles): https://www.florian.bruniaux.com/guides
 - Landing site: https://cc.bruniaux.com
 
 ### For Templates
-- 247 Production Templates: https://github.com/FlorianBruniaux/claude-code-ultimate-guide/tree/main/examples
+- 186 Production Templates: https://github.com/FlorianBruniaux/claude-code-ultimate-guide/tree/main/examples
 - Agents: backend-architect, security-guardian, code-reviewer, debugger, devops-sre, adr-writer
 - Commands: /pr, /commit, /release-notes, /diagnose, /generate-tests, /optimize, /git-worktree
 - Hooks: dangerous-actions-blocker, prompt-injection-detector, secrets-scanner (bash + PowerShell)
 - Skills: pdf-generator, tdd-workflow, guide-recap, landing-page-generator, skill-creator
 - Scripts: session-search, audit-scan, fresh-context-loop, sync-claude-config
+
+## Built-in Commands Reference
+
+- /compact: compress context - use at >70%
+- /clear: reset conversation - use at >90%
+- /status: show context % and cost
+- /plan: read-only exploration mode
+- /ultraplan: cloud plan mode (v2.1.91+, GitHub required)
+- /execute: exit plan mode
+- /rewind: undo changes
+- /model: switch model (sonnet|opus|opusplan)
+- /mcp: show MCP server status
+- /context: detailed token breakdown
+- /teleport: bring web session to local CLI
+- /tasks: monitor background tasks
+- /remote-env: configure cloud environment
+- /remote-control: start remote control session (Pro/Max)
+- /rc: alias for /remote-control
+- /mobile: get Claude mobile app download links
+- /usage: shows token + cost usage per model (v2.1.118) - replaces /cost and /stats
+- /cost: alias for /usage (v2.1.118+)
+- /stats: alias for /usage (v2.1.118+)
+- /recap: summarizes the current session (v2.1.108)
+- /effort: sets thinking effort level xlow/low/default/high/xhigh (v2.1.111)
+- /tui: shows tool calls in TUI mode (v2.1.110)
+- /focus: focuses agent on specific files or tasks (v2.1.110)
+- /less-permission-prompts: reduces permission prompt frequency (v2.1.111)
+- /ultrareview: multi-agent cloud code review (v2.1.114)
+- /proactive: enables proactive suggestions alias (v2.1.105)
+- /undo: reverts last action (v2.1.108)
 
 ## CLAUDE.md Starter Template
 
@@ -80,7 +110,7 @@ Disable training: https://claude.ai/settings/data-privacy-controls
 ## Security
 
 This guide tracks the MCP/AI agent threat landscape:
-- CVE database: 24 tracked vulnerabilities
+- CVE database: 28+ tracked vulnerabilities
 - Supply chain threat analysis
 - Production security hardening checklist
 - Threat database: examples/commands/resources/threat-db.yaml

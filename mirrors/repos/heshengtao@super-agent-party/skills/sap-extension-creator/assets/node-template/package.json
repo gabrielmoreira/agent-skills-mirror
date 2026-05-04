@@ -1,0 +1,18 @@
+{
+  "name": "my-node-extension",
+  "version": "1.0.0",
+  "description": "TODO: describe your extension",
+  "author": "TODO: your name",
+  "systemPrompt": "",
+  "repository": "",
+  "backupRepository": "",
+  "category": "Uncategorized",
+  "main": "index.js",
+  "nodePort": 0,
+  "width": 800,
+  "height": 600,
+  "transparent": false,
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

@@ -40,7 +40,7 @@ module.exports = {
     // Official PermissionRequest is a real approval path. JSONL fallback still
     // keeps interactiveBubble=true for older/no-hook sessions.
     interactiveBubble: true,
-    sessionEnd: false, // no SessionEnd event, rely on task_complete + timeout
+    sessionEnd: false, // no SessionEnd event; task_complete marks the turn done, process exit clears the session
     subagent: false,
   },
   logConfig: {

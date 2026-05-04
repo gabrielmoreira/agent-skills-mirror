@@ -25,7 +25,7 @@ Exit immediately if any:
 
 Open CoDesign is an open-source AI design tool — Electron desktop app that turns prompts into HTML prototypes, slide decks, and marketing assets. Multi-model via `pi-ai`, BYOK, local-first.
 
-**Stack:** Electron desktop app, React, TypeScript, Vite, Tailwind v4, better-sqlite3, pnpm + Turborepo, Biome. Treat specific package versions as live facts: read `package.json`, workspace package manifests, `pnpm-lock.yaml`, and release metadata before making version-sensitive claims.
+**Stack:** Electron desktop app, React, TypeScript, Vite, Tailwind v4, pnpm + Turborepo, Biome. Treat specific package versions as live facts: read `package.json`, workspace package manifests, `pnpm-lock.yaml`, and release metadata before making version-sensitive claims.
 
 **Key modules:**
 - `apps/desktop/` — Electron shell

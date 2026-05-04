@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heshengtao/super-agent-party` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `heshengtao/super-agent-party` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heshengtao/super-agent-party` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,13 +61,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/find-skills/SKILL.md`](skills/find-skills/SKILL.md) |
 | 2 | ✓ | [`skills/officeCLI/SKILL.md`](skills/officeCLI/SKILL.md) |
-| 3 | ✓ | [`skills/skill-creator/LICENSE.txt`](skills/skill-creator/LICENSE.txt) |
-| 4 | ✓ | [`skills/skill-creator/references/output-patterns.md`](skills/skill-creator/references/output-patterns.md) |
-| 5 | ✓ | [`skills/skill-creator/references/workflows.md`](skills/skill-creator/references/workflows.md) |
-| 6 | ✓ | [`skills/skill-creator/scripts/init_skill.py`](skills/skill-creator/scripts/init_skill.py) |
-| 7 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
-| 8 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
-| 9 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 3 | ✓ | [`skills/sap-extension-creator/assets/node-template/index.html`](skills/sap-extension-creator/assets/node-template/index.html) |
+| 4 | ✓ | [`skills/sap-extension-creator/assets/node-template/index.js`](skills/sap-extension-creator/assets/node-template/index.js) |
+| 5 | ✓ | [`skills/sap-extension-creator/assets/node-template/package.json`](skills/sap-extension-creator/assets/node-template/package.json) |
+| 6 | ✓ | [`skills/sap-extension-creator/assets/static-template/index.html`](skills/sap-extension-creator/assets/static-template/index.html) |
+| 7 | ✓ | [`skills/sap-extension-creator/assets/static-template/package.json`](skills/sap-extension-creator/assets/static-template/package.json) |
+| 8 | ✓ | [`skills/sap-extension-creator/references/node-entry-spec.md`](skills/sap-extension-creator/references/node-entry-spec.md) |
+| 9 | ✓ | [`skills/sap-extension-creator/references/package-json-spec.md`](skills/sap-extension-creator/references/package-json-spec.md) |
+| 10 | ✓ | [`skills/sap-extension-creator/SKILL.md`](skills/sap-extension-creator/SKILL.md) |
+| 11 | ✓ | [`skills/skill-creator/LICENSE.txt`](skills/skill-creator/LICENSE.txt) |
+| 12 | ✓ | [`skills/skill-creator/references/output-patterns.md`](skills/skill-creator/references/output-patterns.md) |
+| 13 | ✓ | [`skills/skill-creator/references/workflows.md`](skills/skill-creator/references/workflows.md) |
+| 14 | ✓ | [`skills/skill-creator/scripts/init_skill.py`](skills/skill-creator/scripts/init_skill.py) |
+| 15 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
+| 16 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
+| 17 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
 
 ---
 

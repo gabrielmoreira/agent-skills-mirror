@@ -6,8 +6,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, apps, one-click, workflow, influencer, ad, product]
-  version: 3.0.0
-  updated: 2026-04-06
+  version: 3.0.1
+  updated: 2026-05-04
   parent: higgsfield
 ---
 
@@ -114,7 +114,7 @@ into a single-click experience. No prompt writing needed — just upload your in
 
 ## Cinema Studio
 
-Cinema Studio is Higgsfield's premium filmmaking environment — a full production
+Cinema Studio is Higgsfield's professional filmmaking environment — a full production
 workflow tool for creating longer, multi-shot cinematic content.
 
 **Best for:**

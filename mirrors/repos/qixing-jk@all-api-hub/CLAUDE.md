@@ -164,7 +164,7 @@ If a user asks about backend behavior that could differ by deployment, verify up
 
 - Keep `README.md` and `README_EN.md` aligned when shared repo-level documentation changes.
 - In `docs/docs/`, Chinese pages are the source of truth.
-- `docs/docs/en/**` and `docs/docs/ja/**` are usually generated via `docs_assistant/translate.py`; avoid manual edits unless the workflow itself changes.
+- `docs/docs/en/**` and `docs/docs/ja/**` are usually generated via `docs_assistant/translate.py`; avoid manual edits by default. If the user explicitly asks to update translated docs directly, manual edits are allowed, but keep them minimal and aligned with the Chinese source.
 
 ## Practical Workflow
 

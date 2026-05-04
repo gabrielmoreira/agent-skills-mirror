@@ -1,7 +1,9 @@
 ---
 name: 12-brief-landing-page
 description: Tao brief landing page chuyen doi cao — 7 section, 1 page = 1 goal = 1 CTA, mobile-first, toi uu conversion
-category: content
+metadata:
+  version: 2.0.0
+  category: content
 triggers:
   - "brief landing page"
   - "trang ban hang"

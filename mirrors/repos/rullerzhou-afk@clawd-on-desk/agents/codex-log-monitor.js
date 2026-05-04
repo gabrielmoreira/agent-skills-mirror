@@ -18,9 +18,11 @@ const fs = require("fs");
 const path = require("path");
 const os = require("os");
 const CodexSubagentClassifier = require("./codex-subagent-classifier");
+const { readCodexThreadName } = require("../hooks/codex-session-index");
 
 const APPROVAL_HEURISTIC_MS = 2000;
 const MAX_TRACKED_FILES = 50;
+const MAX_RETIRED_TRACKED_FILES = 100;
 const MAX_PARTIAL_BYTES = 65536;
 const RECENT_DAY_DIR_CACHE_MS = 60 * 60 * 1000; // 1 hour
 // A rollout file is considered "active" if written within this window. Used by
@@ -48,7 +50,9 @@ class CodexLogMonitor {
     this._interval = null;
     // Map<filePath, { offset, sessionId, cwd, lastEventTime, lastState, partial }>
     this._tracked = new Map();
+    this._retiredTracked = new Map();
     this._baseDir = this._resolveBaseDir();
+    this._codexDir = options.codexDir || null;
     this._recentDayDirsCache = [];
     this._recentDayDirsCacheAt = 0;
     this._recentDayDirsDateKey = "";
@@ -85,6 +89,7 @@ class CodexLogMonitor {
       if (tracked.approvalTimer) clearTimeout(tracked.approvalTimer);
     }
     this._tracked.clear();
+    this._retiredTracked.clear();
   }
 
   _poll() {
@@ -110,7 +115,7 @@ class CodexLogMonitor {
         this._pollFile(filePath, file);
       }
     }
-    this._cleanStaleFiles();
+    this._pruneTrackedFilesIfNeeded();
   }
 
   _getSessionDirs() {
@@ -274,23 +279,26 @@ class CodexLogMonitor {
       if (!sessionId) return;
       // Cap tracked files to prevent unbounded Map growth
       if (this._tracked.size >= MAX_TRACKED_FILES) {
-        this._cleanStaleFiles();
+        this._pruneTrackedFilesIfNeeded();
         if (this._tracked.size >= MAX_TRACKED_FILES) return;
       }
+      const retired = this._retiredTracked.get(filePath) || null;
+      const resumeOffset = retired && stat.size >= retired.offset ? retired.offset : 0;
+      if (retired) this._retiredTracked.delete(filePath);
       tracked = {
-        offset: 0,
+        offset: resumeOffset,
         sessionId: "codex:" + sessionId,
         filePath,
-        cwd: "",
-        sessionTitle: null,
+        cwd: retired ? retired.cwd : "",
+        sessionTitle: retired ? retired.sessionTitle : null,
         lastEventTime: Date.now(),
-        lastState: null,
-        lastStateEvent: null,
-        hasEmittedState: false,
+        lastState: retired ? retired.lastState : null,
+        lastStateEvent: retired ? retired.lastStateEvent : null,
+        hasEmittedState: retired ? retired.hasEmittedState === true : false,
         partial: "",
-        hadToolUse: false,
-        isSubagent: false,
-        agentPid: null,
+        hadToolUse: retired ? retired.hadToolUse === true : false,
+        isSubagent: retired ? retired.isSubagent === true : false,
+        agentPid: retired ? retired.agentPid : null,
         pendingApprovalDetail: null,
         // Backfill mode: only a file whose last write predates monitor
         // start (by more than BACKFILL_GRACE_MS) is treated as stale
@@ -299,6 +307,7 @@ class CodexLogMonitor {
         // inside the grace window are live sessions and emit normally.
         // Empty files have nothing to replay.
         backfilling:
+          !retired &&
           stat.size > 0 &&
           stat.mtimeMs < this._startedAtMs - BACKFILL_GRACE_MS,
       };
@@ -382,6 +391,10 @@ class CodexLogMonitor {
     const extractedTitle = this._extractSessionTitle(obj);
     if (extractedTitle && extractedTitle !== tracked.sessionTitle) {
       tracked.sessionTitle = extractedTitle;
+    }
+    const threadName = readCodexThreadName(tracked.sessionId, { codexDir: this._codexDir });
+    if (threadName && threadName !== tracked.sessionTitle) {
+      tracked.sessionTitle = threadName;
     }
 
     // Approval heuristic: exec_command_end / function_call_output means command finished.
@@ -592,28 +605,40 @@ class CodexLogMonitor {
     return null;
   }
 
-  // Remove files not updated for 5 minutes
-  _cleanStaleFiles() {
-    const now = Date.now();
-    for (const [filePath, tracked] of this._tracked) {
-      const age = now - tracked.lastEventTime;
-      if (age > 300000) {
-        // Pure history-only backfills were never visible in the UI, so drop
-        // them silently instead of synthesizing a fake "sleeping" event.
-        if (tracked.approvalTimer) clearTimeout(tracked.approvalTimer);
-        if (tracked.hasEmittedState) {
-          // Use SessionEnd so state.js actually deletes the session entry.
-          // Codex desktop runs as a long-lived process — every conversation
-          // shares the same agentPid/sourcePid, so the timeout-based cleanup
-          // in cleanStaleSessions can never observe the source dying and
-          // would otherwise leave idle zombie sessions piling up forever.
-          this._emitStateChange(tracked, "sleeping", "SessionEnd", {
-            sourcePid: tracked.agentPid,
-            agentPid: tracked.agentPid,
-          });
-        }
-        this._tracked.delete(filePath);
-      }
+  _pruneTrackedFilesIfNeeded() {
+    if (this._tracked.size < MAX_TRACKED_FILES) return;
+    const byAge = (a, b) => (a[1].lastEventTime || 0) - (b[1].lastEventTime || 0);
+    const neverEmitted = [...this._tracked.entries()]
+      .filter(([, tracked]) => tracked && !tracked.hasEmittedState)
+      .sort(byAge);
+    const emitted = [...this._tracked.entries()]
+      .filter(([, tracked]) => tracked && tracked.hasEmittedState)
+      .sort(byAge);
+    for (const [filePath, tracked] of [...neverEmitted, ...emitted]) {
+      if (this._tracked.size < MAX_TRACKED_FILES) break;
+      this._retireTrackedFile(filePath, tracked);
+    }
+  }
+
+  _retireTrackedFile(filePath, tracked) {
+    if (tracked && tracked.approvalTimer) clearTimeout(tracked.approvalTimer);
+    this._tracked.delete(filePath);
+    if (!filePath || !tracked) return;
+    this._retiredTracked.delete(filePath);
+    this._retiredTracked.set(filePath, {
+      offset: Number.isFinite(tracked.offset) ? tracked.offset : 0,
+      cwd: tracked.cwd || "",
+      sessionTitle: tracked.sessionTitle || null,
+      lastState: tracked.lastState || null,
+      lastStateEvent: tracked.lastStateEvent || null,
+      hasEmittedState: tracked.hasEmittedState === true,
+      hadToolUse: tracked.hadToolUse === true,
+      isSubagent: tracked.isSubagent === true,
+      agentPid: tracked.agentPid || null,
+    });
+    while (this._retiredTracked.size > MAX_RETIRED_TRACKED_FILES) {
+      const oldest = this._retiredTracked.keys().next().value;
+      this._retiredTracked.delete(oldest);
     }
   }
 

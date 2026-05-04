@@ -1,7 +1,9 @@
 ---
 name: 10-tinh-kpi-nguoc
 description: Tinh KPI nguoc tu doanh thu ve ngan sach va tinh xuoi tu ngan sach ra doanh thu — 3 kich ban, sensitivity analysis, break-even, phan bo ngan sach theo giai doan va kenh
-category: performance
+metadata:
+  version: 2.0.0
+  category: performance
 triggers:
   - "tinh KPI"
   - "can bao nhieu ngan sach"

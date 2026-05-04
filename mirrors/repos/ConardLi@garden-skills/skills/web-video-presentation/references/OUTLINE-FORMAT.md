@@ -40,7 +40,6 @@
 **开发计划**：
 
 - step 1 (~Ts) — <屏幕内容>
-- step 2 (~Ts) — <关系名前缀，可选>：<屏幕内容>
 - ...
 
 口播节选：
@@ -93,11 +92,6 @@
 画面时按需取用**——可能挂成右下角 mono 角标 / 副标小字 /
 pull-quote 引用 / 数据浮层。
 
-> **关键设计变化**：旧版 outline 把 article 补放在**每个 step**下。
-> 这导致 chapter agent 机械地给每步右下角都挂 mono 角标 → 装饰过度。
-> 新版降级为**章节级信息池** —— agent 在该章实现时根据每步是否真的
-> 需要才挂，**不是每步必挂**。
-
 #### 信息池条目格式
 
 ```
@@ -111,108 +105,18 @@ pull-quote 引用 / 数据浮层。
 ### Step 列表：每步 **1 行**
 
 ```
-- step N (~Ts) — [关系名前缀（可选）]：<屏幕内容>
+- step N (~Ts) — <屏幕内容>
 ```
 
 | 规则 | 原因 |
 |---|---|
 | `step N` 1-indexed | agent 实现时 `if (step === N - 1) ...`（注意零基偏移） |
 | **`(~Ts)`** 必填 | 按 script.md 本步对应口播段字数 ÷ 4 估算（中文 ~ 4 字/秒）。范围 3~10s |
-| **关系名前缀**（可选） | 让 chapter agent 知道这步内容的"语义类型"，在 CHAPTER-CRAFT.md 决策树里查推荐动作。屏幕内容里"动作 / 关系"明显时可以省略 |
 | **屏幕内容** | 一句话讲清楚这一步舞台上有什么：hero / 标语 / 数据 / 装饰元素。**≤ 1 行**，再多就该拆 step |
 | **不写动画** | 写死 = 翻译机化（详见本文件顶部框） |
 | **不写时长数值 / 错峰量** | 这些在章节开发阶段决定 |
 | **不写实现手段** | filter / SVG / Canvas 选型留给 chapter agent |
 
-### 关系名前缀清单（**可选 hint**）
-
-chapter agent 看到关系名前缀，会回 [`CHAPTER-CRAFT.md`](CHAPTER-CRAFT.md)
-Part 1「关系→动作决策树」查推荐动作类型。
-
-| 关系名 | 例 | 触发的 chapter 动作类型 |
-|---|---|---|
-| **反差对照** | 70% vs 95% / before vs after / Prompt vs Context | wipe / 双数字 ticker / 左右镜像揭示 |
-| **递进列表** | 1→2→3 / step1→step2→step3 | 节点依次点亮 / SVG path 接力 |
-| **金句** | pull-quote / 一句重磅结论 | 衬线大字停留 / 引号 stroke + 整体 ken burns |
-| **数字赛跑** | 多个数据比较 | 多 ticker 同时滚 + 横条 scaleX 同步 |
-| **流程 / 流水线** | 6 层架构 / 5 步流程 | SVG 节点 + 连线 stroke-dashoffset |
-| **否定 / 划掉** | "这不再是答案" | 红色横条 wipe / FAKE 印章 / brush stroke |
-| **揭示 / 反转** | 隐藏内容露出 / 答案揭晓 | mask reveal / 聚光灯 / brand takeover |
-| **桥接 / 转场** | A → B / 章节衔接 | 箭头 path stroke + 沿路 motion dot |
-| **铺垫 / 旁白** | 一行陪衬 / 设问 | typewriter 慢速 / 整体 fade |
-| **chip / 标识** | 章节小标 / section badge | 小标签 fade-up + 下划线 stroke |
-| **品牌 / takeover** | "答案就是 X" / 巨字落下 | 字符 stagger 缩入 + accent 横条 |
-| **总结 / 收束** | 一句结论 / 章末小结 | 主导动作慢落定 + 微微 ken burns（可选） |
-
-> **没合适的关系名**：直接省略前缀，把内容描述清楚就行。chapter agent
-> 在 [`CHAPTER-CRAFT.md`](CHAPTER-CRAFT.md) 的"开工 5 问"里会自己识别
-> 内容关系。**不要**强行硬塞关系名。
-
-### Step 描述抽象示例
-
-**正例 1**（关系明确，关系名前缀帮 agent 选动作类型）：
-
-```
-- step 5 (~9s) — 反差对照：左侧 <70%（v1.x）/ 中线贯穿 / 右侧 95%+（v2.x），底部脚注「同样的模型 同样的提示词」
-```
-
-→ chapter agent 看到"反差对照"会回决策树查 → 推荐 wipe / 双数字 ticker
-/ 左右镜像揭示。具体选哪个由 agent 在主题禁区内决定。
-
-**正例 2**（无明确关系，纯 hero step，省略关系名）：
-
-```
-- step 1 (~5s) — 中央巨字 "HARNESS"，下方 small caps 副标 "ENGINEERING"，左下 mono cue "n. 缰绳·马具·约束装置"
-```
-
-→ 这是 takeover 类，chapter agent 在 [`CHAPTER-CRAFT.md`](CHAPTER-CRAFT.md)
-（含原则 + 决策树 + 反 AI 味反模式）约束下自由设计字符入场效果。
-
-**正例 3**（多元素 step，描述清晰但留实现空间）：
-
-```
-- step 3 (~7s) — 三个名词水平展开：Prompt → Context → Harness，每词下方 mono 标年份
-```
-
-→ 描述了"三个词水平展开"和"每词下方挂年份"。具体如何"展开"（依次
-blur clear？还是 typewriter？还是 stagger 缩入？）由 chapter agent 决定。
-
-**反例 1**（违反"outline 不写动画"）：
-
-```
-- step 5 — 反差画面
-  · 动画：左 70% blur clear → 中线 stroke 描边 → 右 95%+ filter blur 转为 drop-shadow
-  · 手段：filter blur transition + SVG stroke-dashoffset
-```
-
-→ ❌ 把 CSS 实现搬进 outline。chapter agent 会照搬，失去思考机会。
-**移到章节开发阶段决定**。
-
-**反例 2**（动画行写了具体时长 —— 不可接受）：
-
-```
-- step 1 (~6s) — hero 进场（blur clear ~2.5s + 副标错峰 0.5s）
-```
-
-→ ❌ 写死 ms 数字会让实现僵化。**outline 只写口播估时 (~Ts)，不写动画
-时长**。
-
-**反例 3**（屏幕内容太抽象）：
-
-```
-- step 1 (~6s) — 标题入场
-```
-
-→ ❌ 是什么标题？hero 文案是什么？信息池要不要挂角标？这种 step
-chapter agent 不知道画什么，**一定做成 PPT**。
-
-**反例 4**（多个想法塞同一 step）：
-
-```
-- step 1 (~6s) — hero 进场 + 三个特性 stagger + 数据浮出
-```
-
-→ ❌ 违反 [CHAPTER-CRAFT.md Part 0 原则 8](CHAPTER-CRAFT.md#8-多点内容必须逐个揭示绝不同时上)（多点逐个揭示）。每个并列项 1 step。
 
 ### 口播节选（每章末尾，可选但推荐）
 
@@ -262,14 +166,32 @@ chapter agent 不知道画什么，**一定做成 PPT**。
 
 ---
 
-## 自检（写完 outline 必过）
+## 自检（写完 outline **强制**执行，不可跳过）
+
+> ⚠️ **硬性流程**：outline 写完后**必须**走自检 → 修改 → 提交 三步。
+> **禁止**写完直接进入 Checkpoint Plan 让用户对齐。
+>
+> **执行方式**（按能力降级）：
+>
+> 1. **优先 Agent Teams**：开一个独立 reviewer agent，传入 `outline.md`
+>    + 本节自检清单 + `script.md` / `article.md` 路径，让它**逐项核查 +
+>    出结论**（哪几条 fail + 证据）。
+> 2. **其次 subAgent**：当前 agent 没 Teams 但能开 subagent，用 subagent
+>    走同样流程。
+> 3. **都没有**：自己**严格逐项**核查。
+>
+> 拿到结论后**先按 fail 项改 outline，再进入 Checkpoint Plan**。
 
 - [ ] 每个 step 都是**单一句屏幕内容描述**，没有"动画"行 / "手段"行
 - [ ] 没有任何 step 写了具体毫秒 / 秒数（除 `(~Ts)` 口播估时）
-- [ ] 每章首段都有「信息池」block，至少 3 条 article 抽取项
+- [ ] 每章首段都有「信息池」block，至少 3 条 article 抽取项，**每条
+      必带来源标注**（`—— 来源 article §X / Lxx`）—— 没标注 chapter agent
+      回不到原文
+- [ ] **所有 step `(~Ts)` 累加 ≈ 顶部声明的总时长**（误差 < 10%）—— 不
+      一致说明节奏规划失真
 - [ ] 章节切分符合"每章 3~8 步 / 30~60s 一聚焦主题"经验
 - [ ] 末尾「素材清单」分章节列出，✓ / ⚠️ 标注清楚
-- [ ] 关系名前缀（如有）来自上方清单，没造新词
+- [ ] 脚本不得包含标题、序号等非口播内容，仅包含人类正常可读的内容
 
 写完看一眼：**outline 是不是干净到 chapter agent 看了能立刻开工 + 还有
 设计空间**？是 = 合格。如果你看了都觉得"太空，agent 不知道动画选什么"

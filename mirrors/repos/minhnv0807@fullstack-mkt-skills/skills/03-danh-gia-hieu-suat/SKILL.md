@@ -1,7 +1,9 @@
 ---
 name: 03-danh-gia-hieu-suat
 description: Danh gia hieu suat marketing — audit performance ads va organic, chan doan root cause, de xuat toi uu voi action plan 48h va checklist hang tuan.
-category: performance
+metadata:
+  version: 2.2.0
+  category: performance
 triggers:
   - "danh gia chien dich"
   - "audit performance"
@@ -17,6 +19,8 @@ related:
   - 00-ke-hoach-mkt
   - 05-copy-quang-cao
   - 04-script-video
+  - 21-audit-ads-performance
+  - references/quality-gates-vn
 ---
 
 # Danh Gia Hieu Suat
@@ -31,6 +35,97 @@ Hoi user toi da 4 cau truoc khi bat dau:
 2. **So lieu hien tai?** Cung cap data: Spend, Impressions, Click, CTR, CPMess/CPL, So mess/lead, ROAS, thoi gian chay.
 3. **Van de dang gap?** CPMess tang / ROAS giam / Lead chat luong kem / Khong co don / Creative khong hieu qua?
 4. **Muc tieu la gi?** KPI muc tieu ban dau la bao nhieu? (CPMess, ROAS, so lead/don/thang)
+
+### Auto-pull data qua MCP (neu co ket noi)
+
+> Neu user da setup MCP server, pull data tu dong thay vi yeu cau paste.
+> Xem huong dan: `skills/references/mcp-ads-integration.md`
+> **Meta Official MCP:** `https://mcp.facebook.com/ads` — setup 5 phut qua `claude.ai/settings/integrations`
+
+| Nen tang | MCP khuyen dung | Data pull |
+|----------|----------------|----------|
+| Meta Ads | **Meta Official MCP** (`mcp.facebook.com/ads`) | 29 tools — xem chi tiet ben duoi |
+| Meta Ads (alt) | Pipeboard (`mcp.pipeboard.co/meta-ads-mcp`) | 29 tools — targeting research manh hon |
+| Google Ads | Google Official MCP | GAQL query — cost, clicks, conversions, impression share |
+| TikTok Ads | TikTok Ads MCP | Campaign/ad group performance reports |
+| Nhieu nen tang | Adspirer ads-mcp | 222 metrics, cross-platform unified |
+
+**Meta Official MCP — Tools dung cho Danh gia hieu suat:**
+
+```
+DIAGNOSTIC (chan doan):
+  ads_insights_anomaly_signal             ← Tim KPI bat thuong vs baseline → feed vao 5 Whys
+  ads_insights_performance_trend          ← Xu huong 7/14/30 ngay → phat hien suy giam
+
+BENCHMARK (so sanh):
+  ads_insights_industry_benchmark         ← CPM, CTR, CPC cua ban vs trung binh nganh
+  ads_insights_auction_ranking_benchmarks ← Quality ranking, engagement rate ranking vs doi thu
+  ads_insights_advertiser_context         ← Boi canh nganh va khu vuc
+
+OPTIMIZATION:
+  ads_get_opportunity_score               ← Meta goi y co hoi toi uu → action plan
+  ads_get_dataset_quality                 ← Chat luong tracking (pixel + CAPI)
+```
+
+**Quy trinh danh gia nhanh voi MCP:**
+```
+1. ads_insights_performance_trend → Co dang giam khong?
+2. ads_insights_anomaly_signal → KPI nao bat thuong?
+3. ads_insights_industry_benchmark → So voi nganh the nao?
+4. ads_get_opportunity_score → Meta goi y gi?
+→ Dien vao Benchmark Table + chay Diagnostic Tree
+```
+
+---
+
+## Phan 0 — Ads Health Score (0-100)
+
+> **Audit day du:** Dung `21-audit-ads-performance` khi can chay full 84 checkpoints cho Meta/TikTok/Google/Zalo.
+> Phan nay la quick-check — danh gia nhanh truoc khi di sau vao diagnostic.
+
+### Cong thuc tinh Health Score
+
+```
+Health Score = Σ(Check_pass × W_severity × W_category) / Σ(Check_total × W_severity × W_category) × 100
+```
+
+**He so muc do (W_severity):**
+
+| Muc do | He so | Vi du checkpoints |
+|--------|-------|------------------|
+| Critical | 5× | Pixel khong fire, CAPI chua setup, CPA > 3× target |
+| High | 3× | Creative similarity > 60%, budget duoi 5× CPA/ngay |
+| Medium | 1.5× | Chua co retarget audience, headline qua 40 char |
+| Low | 0.5× | Ten chien dich khong theo naming convention |
+
+### Bang diem va hanh dong
+
+| Diem | Grade | Nhan xet | Hanh dong |
+|------|-------|---------|-----------|
+| 90–100 | **A** ✅ | Xuat sac | Giu nguyen, tap trung scale |
+| 75–89 | **B** 🟢 | Tot | Fix Medium issues, tang budget nhe |
+| 60–74 | **C** 🟡 | Trung binh | Fix High issues truoc khi scale |
+| 40–59 | **D** 🔴 | Kem | Fix Critical + High truoc toan bo |
+| < 40 | **F** ⛔ | Nguy hiem | Pause, audit toan dien, rebuild |
+
+### 10 Quality Gates — Bat buoc kiem tra truoc moi de xuat
+
+> **Reference:** `skills/references/quality-gates-vn.md` — 10 hard rules KHONG bao gio vi pham.
+
+| Gate | Quy tac | Nguong vi pham | Hanh dong bat buoc |
+|------|---------|---------------|-------------------|
+| **G1** 3× Kill Rule | CPA > 3× CPA muc tieu | > 3× | Pause ad set NGAY |
+| **G2** Budget Sufficiency | Ngan sach < 5× CPA/ad set/ngay | < 5× | Gop ad set, tang budget |
+| **G3** Learning Phase | Ad set dang "Learning" | Dang hoc | KHONG chinh sua bat ky thu gi |
+| **G4** Pixel Integrity | EMQ < 6.0, duplicate event | < 6.0 | Fix tracking TRUOC khi chay |
+| **G5** Creative Diversity | Similarity Score > 60% | > 60% | Lam creative moi thuc su khac biet |
+| **G6** Compliance | Nganh dac biet chua kiem tra | Chua check | Review policy truoc launch |
+| **G7** TikTok Sound | Video TikTok khong co am thanh | Khong audio | Them nhac/voiceover |
+| **G8** Scale Speed | Tang ngan sach > 20%/72h | > 20% | Giam toc do tang, toi da 20%/lan |
+| **G9** Min Data | < 1,000 impression (Meta) | < 1K impr | Doi du data moi ket luan |
+| **G10** LTV:CAC | LTV:CAC < 3:1 | < 3:1 | Khong nen scale, kiem tra churn |
+
+> ⚠️ **Vi pham bat ky gate nao = CRITICAL** — phai fix truoc toan bo de xuat toi uu.
 
 ---
 
@@ -366,12 +461,14 @@ Khi gap van de, hoi "Tai sao?" 5 lan de tim nguyen nhan goc:
 
 | Khi can | Goi skill |
 |---------|-----------|
+| Audit day du voi Health Score 0-100 (84 checkpoints) | `21-audit-ads-performance` |
 | Bao cao marketing hang thang day du | `07-bao-cao-marketing` |
 | Tinh lai ngan sach va KPI tu doanh thu | `10-tinh-kpi-nguoc` |
-| Viet lai copy quang cao | `05-copy-quang-cao` |
+| Viet lai copy quang cao theo 6 frameworks | `05-copy-quang-cao` |
 | Viet lai script video | `04-script-video` |
 | Len ke hoach lai toan bo | `00-ke-hoach-mkt` |
 | Review doi thu (neu nghi doi thu chay deal) | `08-nghien-cuu-doi-thu` |
+| Tra cuu 10 Quality Gates va 6 copy frameworks | `references/quality-gates-vn`, `references/copy-frameworks-vn` |
 
 ---
 
@@ -379,6 +476,8 @@ Khi gap van de, hoi "Tai sao?" 5 lan de tim nguyen nhan goc:
 
 Truoc khi giao danh gia, kiem tra:
 
+- [ ] 10 Quality Gates da kiem tra — bat ky vi pham = CRITICAL, fix truoc toan bo de xuat
+- [ ] Health Score da uoc tinh (neu co du data) — neu < 60 thi focus fix truoc khi toi uu
 - [ ] Data cua user da dien day du vao bang benchmark
 - [ ] Diagnostic decision tree da chay — xac dinh dung nhanh nguyen nhan
 - [ ] 5 Whys da thuc hien — tim duoc nguyen nhan goc, khong dung o trieu chung

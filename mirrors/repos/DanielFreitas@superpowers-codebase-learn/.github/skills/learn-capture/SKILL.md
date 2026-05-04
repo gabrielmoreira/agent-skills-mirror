@@ -19,6 +19,16 @@ Use durante qualquer fase do Superpowers ao observar:
 - Risco ou dívida não listada em `docs/lorebase/CONCERNS.md`
 - Estrutura de diretório não refletida em `docs/lorebase/STRUCTURE.md`
 
+### Gatilhos de momento no fluxo
+
+O check é **por task**, não uma vez ao final. Execute imediatamente ao concluir cada task, antes de marcá-la como feita:
+
+- Subagente reportou `DONE_WITH_CONCERNS`? Leia as preocupações agora. Se indicarem comportamento inesperado de biblioteca, ambiente ou divergência de design, capture antes de avançar.
+- Code reviewer apontou comportamento não documentado de biblioteca, API ou ambiente nesta task? Capture antes de avançar.
+- A implementação desta task divergiu do que estava especificado no plano? Capture a divergência e o motivo.
+
+Se nenhum desses se aplicar, avance sem capturar.
+
 ## Filtro de relevância
 
 **Capture:**
@@ -50,13 +60,7 @@ Use durante qualquer fase do Superpowers ao observar:
 - **Confiança**: HIGH / MEDIUM / LOW
 ```
 
-**Critérios de confiança:**
-
-| Nível | Quando usar |
-|-------|-------------|
-| `HIGH` | Evidência direta e inequívoca: configuração explícita, teste, implementação confirmada |
-| `MEDIUM` | Evidência indireta: convenção inferida de múltiplos arquivos, padrão recorrente |
-| `LOW` | Evidência circunstancial: padrão parece existir mas não foi confirmado diretamente |
+Critérios de confiança: [`criteria.md`](criteria.md).
 
 5. Confirme ao desenvolvedor que o sinal foi registrado com a localização da evidência.
 
@@ -67,7 +71,4 @@ Use durante qualquer fase do Superpowers ao observar:
 - Um sinal por observação distinta — não agrupe múltiplas observações em um sinal.
 - Sempre inclua evidência verificável. Sem evidência, não capture.
 
-## Cadeia
 
-Os sinais capturados aqui são consumidos pela skill `learn-update`, que valida e promove para `docs/lorebase/*.md`.
-Use a skill `learn-discovery` para detectar divergências estruturais que esta skill não cobre.

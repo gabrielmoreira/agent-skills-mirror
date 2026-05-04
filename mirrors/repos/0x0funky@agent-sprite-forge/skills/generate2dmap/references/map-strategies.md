@@ -2,6 +2,16 @@
 
 Choose maps by combining pipeline axes. Avoid treating `hybrid` as a top-level strategy; most real 2D maps are hybrid combinations of visual art, objects, and collision metadata.
 
+## Playable Map Default
+
+When the user asks for a playable game map, level, stage, room, prototype, or engine scene, the runtime map must not be only a flattened generated image. A single baked image can be used as a background, planning reference, or QA preview, but playable output needs explicit runtime structure:
+
+- top-down maps: ground/base layer plus separate props, object placement, collision, zones, exits, and spawn data
+- side-scrollers/platformers: background/parallax layers plus platform objects, terrain chunks, foreground occluders, hazards, doors, pickups, checkpoints, camera bounds, and collision
+- tile/editor workflows: generated or supplied tileset art plus tile layers, object layers, collision, zones, and engine-native scene/map data
+
+If the request mentions "game", "playable", "prototype", "level", "stage", "Megaman-like", "platformer", "RPG exploration", "tower defense", or engine integration, start from the nearest playable preset below instead of `baked_raster`.
+
 ## Visual Asset Source
 
 Default to built-in image generation for visual assets. Base maps, dressed references, prop sheets, prop sprites, tileset art, parallax layers, and battle backgrounds should come from `image_gen` unless the user supplies existing art or explicitly asks for procedural placeholders.
@@ -17,8 +27,11 @@ Use when:
 - the scene is static, decorative, fixed-screen, or visual-first
 - the game needs a battle background, title scene, menu backdrop, cutscene, or quick prototype
 - collision is absent or can be represented by a few invisible shapes
+- the user explicitly asks for a single flat image or background
 
 Deliver one image generated or edited through image generation, plus optional collision/zones metadata.
+
+Do not use this as the final runtime map for platformers, RPG exploration, tower defense, or any scene where props, platforms, hazards, exits, or interactables must be edited, collided with, reused, or rendered independently.
 
 ### `layered_raster`
 
@@ -59,10 +72,13 @@ Use when:
 
 Deliver image-generated background, midground, foreground, and scroll-speed metadata.
 
+For a playable side-scroller or platformer, parallax layers are only the scenery. The playable stage also needs separate runtime objects for platforms, terrain chunks, hazards, pickups, doors, spawn/checkpoints, camera bounds, exits, and explicit collision.
+
 ## Runtime Object Model
 
 - `none`: the map is just a background or tile layers.
 - `separate_props`: props are independent sprites but do not require y-sort.
+- `platform_objects`: platforms, terrain chunks, walls, doors, hazards, checkpoints, pickups, and exits are independent runtime objects with placement and collision data.
 - `y_sorted_props`: props and actors sort by base `y`; use for top-down RPG scenes.
 - `interactive_entities`: objects need dialogue, pickups, doors, destructibles, or state.
 - `foreground_occluders`: selected overlays always draw over actors.
@@ -123,16 +139,24 @@ Do not infer collision from prop PNG bounds automatically. Use explicit blockers
 ### Side-Scroller Stage
 
 - `visual_model`: `parallax_layers`
-- `runtime_object_model`: `separate_props`
-- `collision_model`: `precise_shapes` or engine-native platform collision
-- Typical deliverables: parallax layers, collision platforms, hazards, spawn/checkpoints.
+- `runtime_object_model`: `platform_objects + interactive_entities + foreground_occluders`
+- `collision_model`: `precise_shapes` or engine-native platform/object collision
+- Typical deliverables: parallax layers, separate platform/terrain sprites, foreground pieces, hazards, pickups, doors, spawn/checkpoints, camera bounds, exits, object metadata, collision metadata, and a stage preview.
+
+### Megaman-Like Platformer Stage
+
+- `visual_model`: `parallax_layers` or `layered_tilemap` if the engine/editor already uses tiles
+- `runtime_object_model`: `platform_objects + interactive_entities + foreground_occluders`
+- `collision_model`: `precise_shapes` or engine-native platform/object collision
+- Required deliverables: background/parallax art, separate platform or terrain-chunk sprites, hazard sprites, pickups/doors/checkpoints when present, object placement data, collision data, camera bounds, and a QA preview.
+- Anti-pattern: one generated full-stage PNG plus collision rectangles. That is a background with hitboxes, not a playable map.
 
 ## Escalation Heuristic
 
-Start with the smallest bundle that works:
+Start with the smallest playable bundle that works:
 
-1. `baked_raster`
-2. `baked_raster + coarse_shapes`
-3. `layered_raster + a few props`
-4. `layered_raster + y_sorted_props + precise_shapes`
-5. `tilemap` or `layered_tilemap`, only when engine/editor requirements justify it
+1. non-playable background: `baked_raster`
+2. fixed visual scene with minimal interaction: `baked_raster + coarse_shapes`
+3. playable top-down map: `layered_raster + separate/y_sorted_props + precise_shapes`
+4. playable side-scroller: `parallax_layers + platform_objects + interactive_entities + precise_shapes`
+5. editor/grid workflow: `tilemap` or `layered_tilemap` when engine/editor requirements justify it

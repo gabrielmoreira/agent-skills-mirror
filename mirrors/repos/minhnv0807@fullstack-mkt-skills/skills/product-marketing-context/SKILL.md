@@ -2,7 +2,7 @@
 name: product-marketing-context
 description: "Khi nguoi dung muon tao hoac cap nhat tai lieu goc ve san pham, khach hang, va dinh vi thuong hieu. Cung dung khi nguoi dung nhac 'product context', 'marketing context', 'thiet lap context', 'dinh vi', 'tep khach hang muc tieu', 'mo ta san pham', 'ICP', 'chan dung khach hang ly tuong', hoac muon tranh lap lai thong tin co ban cho moi task. Dung O DAU moi du an marketing truoc khi dung cac skill khac — skill nay tao file `.agents/product-marketing-context.md` ma tat ca skill khac doc truoc."
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   category: foundation
 license: MIT
 ---
@@ -177,11 +177,33 @@ Ghi lai cac cau khach noi NGUYEN VAN — khong paraphrase.
 
 ## 10. Giong noi thuong hieu (Brand Voice)
 
+> Ap dung tu `social-media-skills/voice-builder` — adapt cho brand VN.
+
+### 10a. Brand voice co ban
 - **3 tinh tu mo ta thuong hieu:**
 - **Giong noi:** (Chuyen nghiep / Than thien / Hai huoc / Truyen cam hung)
 - **KHONG dung giong:** (vi du: khong sap dat, khong xuong hang)
 - **Vi du cau noi dung phong cach:**
 - **Vi du cau KHONG nen dung:**
+
+### 10b. Phan tich voice tu mau content (neu co)
+
+Neu user cung cap 3–5 mau content da dang (bai post, email, video script), phan tich:
+
+**Tin hieu voice:**
+- Do dai cau trung binh
+- Nhip doan van (cau ngan lien tuc hay doan dai?)
+- Kieu hook thuong dung (cau hoi, con so, tinh huong, nguoc doi?)
+- Goc nhin (ngoi thu nhat, thu hai, quan sat?)
+- Tone (thuc te, am ap, thang than, vui ve, chuyen nghiep?)
+- Cum tu dac trung hoac tu lap lai
+
+**Tin hieu vang mat (Absence signals):**
+- Tu/cu phap KHONG xuat hien o bat ky mau nao
+- Kieu hook brand KHONG bao gio dung
+- Tone brand KHONG bao gio cham
+
+> **Quy tac:** Chi phan tich tu mau thuc te — khong tu nghi ra pattern. Neu mau it (<3), ghi ro la "can them mau de xac nhan pattern".
 
 ## 11. Bang chung xa hoi (Proof Points)
 

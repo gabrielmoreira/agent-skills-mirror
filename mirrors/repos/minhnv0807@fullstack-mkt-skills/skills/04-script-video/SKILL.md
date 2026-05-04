@@ -1,7 +1,9 @@
 ---
 name: 04-script-video
 description: Viet script video ngan cho TikTok, Reels, YouTube Shorts — 2 ban A/B, co hook, CTA, huong dan quay chi tiet
-category: content
+metadata:
+  version: 2.1.0
+  category: content
 triggers:
   - "viet script"
   - "script TikTok"
@@ -16,6 +18,7 @@ related:
   - 06-brief-ugc-egc
   - 01-lich-noi-dung
   - 09-insight-khach-hang
+  - references/hook-formulas-vn
 ---
 
 # Script Video
@@ -69,6 +72,38 @@ Ap dung cho video 30–45s (dieu chinh ti le theo thoi luong):
 | 45s | 0–3s | 3–12s | 12–28s | 28–40s | 40–45s |
 | 60s | 0–3s | 3–15s | 15–35s | 35–53s | 53–60s |
 
+### 6 cong thuc hook chuyen nghiep
+
+> Ap dung tu `social-media-skills/hook-generator` — da adapt cho thi truong VN.
+
+Moi hook gom **2 dong**: Dong 1 (mo) toi da 50 ky tu, Dong 2 (twist) toi da 50 ky tu.
+
+| # | Kieu hook | Cong thuc | Vi du VN |
+|---|-----------|-----------|----------|
+| 1 | **Con so dan dau** | Mo bang so lieu cu the, bat ngo | "97% chu spa dang lam sai buoc nay" / "Va no ton 200 trieu/nam" |
+| 2 | **Nguoc doi** | Noi dieu pho bien roi lat nguoc | "Chay ads nhieu hon khong giup ban" / "Toi giam budget 50% va tang don 3x" |
+| 3 | **Bien doi ca nhan** | Truoc vs Sau voi con so | "6 thang truoc toi khong co khach" / "Bay gio 40 booking/tuan — day la cach" |
+| 4 | **Muon uy tin** | Nhac ten thuong hieu, nguoi noi tieng, cong cu | "ChatGPT vua thay doi cach toi lam MKT" / "Va 90% marketer chua biet" |
+| 5 | **Thu nhan** | Chia se sai lam, mat mat | "Toi da mat 500 trieu chay ads sai" / "Day la bai hoc dat gia nhat" |
+| 6 | **Du bao tuong lai** | Dieu sap thay doi ma it nguoi biet | "TikTok Shop sap thay doi hoan toan" / "Ai khong chuan bi se mat thi phan" |
+
+**Quy tac hook:**
+- **Khong bao gio mo bang "Toi"** — dung "Ban", "Day", con so, hoac ten nguoi/brand
+- Dong 1 tao curiosity gap — Dong 2 tang stakes hoac lat nguoc
+- Dem ky tu: 50 char/dong la toi da — tren mobile, nhieu hon se cat
+- Chon kieu hook phu hop tang pheu: TOFU (1,2,6), MOFU (3,4), BOFU (5,3)
+
+### Reverse-engineer video viral (tham khao)
+
+> Hoc tu video doi thu/KOL de viet script tot hon — KHONG copy.
+
+Khi user cung cap link video tham khao (TikTok, Reels, YouTube Shorts):
+
+1. **Phan tich cau truc**: Hook (may giay?), so diem chinh (2 hay 3?), CTA kieu gi?
+2. **Rut ky thuat**: Goc quay, nhip cat, text overlay style, am nhac
+3. **Adapt cho brand**: Giu cau truc + ky thuat, thay noi dung bang san pham/dich vu cua user
+4. **Khong copy loi thoai** — chi hoc pattern, viet lai bang giong van brand
+
 ### Quy tac viet script
 
 1. **1 y chinh duy nhat** — khong noi 2 dieu trong 1 video.
@@ -77,6 +112,8 @@ Ap dung cho video 30–45s (dieu chinh ti le theo thoi luong):
 4. **Transition ro rang** — ghi chi dan chuyen canh trong script.
 5. **Text overlay bat buoc** — ghi ro noi dung text hien tren man hinh.
 6. **Khong dung nhac nen co ban quyen** — chi dung nhac trending hoac royalty-free.
+7. **Toi da 2 diem chinh** — 3 diem = qua nhieu, nguoi xem khong nho.
+8. **Khong ket luan ho** — de su that/so lieu tu noi len.
 
 ---
 
@@ -204,6 +241,34 @@ Cham diem 5 yeu to, moi yeu to 1–5 diem:
 | 15–19 | Kha | Chay A/B test, theo doi 24h dau |
 | 10–14 | Trung binh | Can chinh hook hoac CTA |
 | <10 | Yeu | Viet lai — khong nen chay |
+
+---
+
+## QA Score — Kiem tra truoc khi giao
+
+> Ap dung tu `social-media-skills/reels-scripting` — QA gate 95/100.
+
+Cham diem script theo 10 tieu chi, moi tieu chi 10 diem. **Chi giao khi dat ≥ 85/100.**
+
+| # | Tieu chi | 10 diem | 0 diem |
+|---|----------|---------|--------|
+| 1 | Hook trong 3s | Co hook ro, khong gioi thieu ban than | Mo bang "Xin chao, hom nay minh se..." |
+| 2 | Hook ≤ 50 ky tu | Dong 1 ngan, dam, du nghia | Dong 1 dai, cat giua y |
+| 3 | 1 y chinh duy nhat | Toan bo script phuc vu 1 message | Nhieu y lan man |
+| 4 | Toi da 2 diem chinh | 2 diem ro rang, de nho | 3+ diem, qua nhieu thong tin |
+| 5 | Ngon ngu noi | Doc len tu nhien, nhu dang noi chuyen | Viet van, cung nhac |
+| 6 | Cau ≤ 15 tu | Moi cau ngan gon | Co cau dai >15 tu |
+| 7 | CTA cu the | "Nhan tin ngay", "Comment [TU KHOA]" | "Tim hieu them", "Lien he" |
+| 8 | Thoi luong phu hop | Script doc het trong thoi luong da chon | Qua dai hoac qua ngan |
+| 9 | Khong mo bang "Toi" | Mo bang "Ban", "Day", con so, brand | Dong dau tien la "Toi..." |
+| 10 | Co huong dan quay | Goc quay, hanh dong, text overlay ro | Chi co loi thoai, khong co visual |
+
+| Tong diem | Danh gia | Hanh dong |
+|-----------|---------|----------|
+| 95–100 | Xuat sac | Giao ngay |
+| 85–94 | Tot | Giao duoc, ghi chu cai thien |
+| 70–84 | Trung binh | Chinh lai truoc khi giao |
+| < 70 | Yeu | Viet lai |
 
 ---
 

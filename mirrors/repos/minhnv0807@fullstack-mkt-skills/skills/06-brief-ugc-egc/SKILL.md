@@ -1,7 +1,9 @@
 ---
 name: 06-brief-ugc-egc
 description: Tao brief chi tiet cho UGC (khach hang), EGC (nhan vien), KOC (creator tra phi) — gom huong dan quay, do/don't, quyen su dung, quan ly batch
-category: content
+metadata:
+  version: 2.0.0
+  category: content
 triggers:
   - "brief creator"
   - "brief UGC"

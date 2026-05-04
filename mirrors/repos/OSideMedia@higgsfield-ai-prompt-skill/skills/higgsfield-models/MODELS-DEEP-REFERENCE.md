@@ -25,7 +25,7 @@ The Kling lineup in Higgsfield spans two generations (2.x and 3.0) plus the O1 r
 
 ---
 
-### Kling 3.0 ⭐ EXCLUSIVE — Current Top Model
+### Kling 3.0
 **Duration:** 3s–15s · **Resolution:** 720p / 1080p / 4K HDR · **FPS:** 30fps (60fps in some configurations) · **Audio:** Native
 **Best for:** Cinematic realism · character drama · long sequences · multi-shot storytelling · native audio dialogue
 **Strengths:** Longest clip duration on the platform (up to 15s) · native multilingual audio (English, Chinese, Japanese, Korean, Spanish + accents) · superior subject consistency · precise text rendering in video · physics-aware motion (object interactions, hugging, fighting, complex machinery) · AI Director mode understands shot-reverse-shot, cross-cutting, camera blocking from a prompt alone · stylized output engine for anime, Pixar/claymation, felt/fabric textures
@@ -65,7 +65,7 @@ noise, turns to camera. Two cuts. Footsteps, rain ambiance, tense score.
 
 ---
 
-### Kling 3.0 Omni ⭐ EXCLUSIVE
+### Kling 3.0 Omni
 **Duration:** 3s–15s · **Resolution:** 4K · **FPS:** 60fps · **Audio:** Native
 **Best for:** Reference-driven generation · video-based character cloning · custom multi-shot storyboards · maximum consistency workflows
 **vs Kling 3.0:** Same generation quality. Omni = more control knobs. 3.0 = AI auto-directs from prompt alone. Omni = you control per-shot.
@@ -91,7 +91,7 @@ and voice → generate a 15s branded ad campaign with your AI double in a studio
 
 ---
 
-### Kling 3.0 Omni Edit ⭐ EXCLUSIVE
+### Kling 3.0 Omni Edit
 **Duration:** 3s–10s input · **Resolution:** 1080p
 **Best for:** Transforming existing video with reference-guided edits at 3.0 quality
 **What it does:** Upload existing footage → describe or show the change → model applies it while preserving original motion, camera angles, and scene structure. 3D spatial awareness means edits respect lighting geometry and don't break scene coherence.
@@ -99,7 +99,7 @@ and voice → generate a 15s branded ad campaign with your AI double in a studio
 
 ---
 
-### Kling 3.0 Motion Control ⭐ NEW (March 25, 2026)
+### Kling 3.0 Motion Control (added March 25, 2026)
 **Duration:** 3s–30s · **Resolution:** 1080p
 **Best for:** Reference-video motion transfer · full-body choreography · complex dance/action sequences · talking head with precise gestures
 
@@ -234,7 +234,7 @@ Shot 4 ([Xs]): [Resolution]. Camera: tracking / pull back.
 
 ### Sora 2
 **Best for:** Epic scale · long sequences · complex physics · action blockbuster feel
-**Strengths:** Best-in-class for large-scale events — crowds, explosions, environment scale
+**Strengths:** Strongest at large-scale events — crowds, explosions, environment scale
 **Weaknesses:** Characters can lose fine facial consistency over long clips
 **Use when:** The scene is about spectacle, scale, or physics-heavy action
 **Prompt note:** Pairs perfectly with Crane Up, 360 Orbit, and Super Dolly Out
@@ -638,7 +638,7 @@ Example: Upload reference choreography video + 2 character images + music MP3
 **Best for:** Native joint audio-video generation · multilingual dialogue and lip-sync · cinematic camera control with audio · character narratives requiring SFX + BGM + speech in one pass
 **Architecture:** Dual-branch Diffusion Transformer — generates audio and video simultaneously in a single pass (not layered on top after the fact). This is the key architectural differentiator — eliminates lip-sync mismatches and produces spatially accurate sound without post-production.
 
-**Audio capabilities (class-leading at this tier):**
+**Audio capabilities:**
 - **Multilingual lip-sync** — English, Chinese (incl. dialects: Sichuanese, Cantonese, Taiwanese Mandarin, Shanghainese), Japanese, Korean, Spanish, Indonesian. Accurate prosody and regional vocal patterns, not just translation.
 - **Multi-character dialogue** — multiple characters can speak different languages in a single scene. Model correctly assigns lip motion to the right character.
 - **Audio types** — speech, singing, non-verbal vocalizations (laughter, gasps), environmental SFX, background music. All generated natively in sync with visuals.
@@ -905,7 +905,7 @@ Supported style range: photorealistic → anime → oil painting → pencil sket
 
 | Strength | Notes |
 |---|---|
-| Text and logos in-image | One of Aurora's top differentiators — most models fail here |
+| Text and logos in-image | Where Aurora outperforms most models — most models fail here |
 | Multi-person scenes | More accurate composition than DALL-E for groups |
 | Precise prompt adherence | MoE architecture routes to specialized experts per task type |
 | Photorealism | Detailed textures, convincing lighting, sharp compositions |
@@ -975,7 +975,6 @@ SDK convenience: `client.video.generate()` handles polling automatically with co
 - Duration extended to 10s (was 8s previously)
 - Resolution: 720p
 - Significantly improved audio — dialogue, ambience, and SFX align more naturally with visuals
-- xAI describes: "best-in-class instruction following for video generation"
 - Video editing: restyling, adding/removing objects, controlling motion
 
 #### Audio in Video
@@ -1041,7 +1040,7 @@ Best use cases:
 
 ### Nano Banana Pro
 **Best for:** Maximum sharpness · 4K detail · product photography · any subject requiring ultra clarity
-**Strengths:** Best image quality on the platform, exceptional detail, Thinking mode reasoning, up to 14 reference images
+**Strengths:** Strongest image quality on the platform, exceptional detail, Thinking mode reasoning, up to 14 reference images
 **Use when:** Image quality is the top priority and speed is secondary
 **Prompt note:** Works for any subject — not limited to portraits
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Character 64"
+  short_description: "Make 64x64 8-way pixel sprites."
+  default_prompt: "Create a 64x64 pixel-art game character with 8-direction movement and attack animations."

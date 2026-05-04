@@ -4,8 +4,8 @@ description: "Creates and manages reusable character profiles (Soul IDs) for con
 user-invocable: true
 metadata:
   tags: [higgsfield, soul, character, consistency, Soul ID, identity]
-  version: 3.1.0
-  updated: 2026-04-25
+  version: 3.2.0
+  updated: 2026-05-03
   parent: higgsfield
 ---
 
@@ -387,6 +387,46 @@ Style: Cinematic, [grade], [aspect ratio].
 ```
 
 Keep the two blocks textually separate in the prompt. Do not re-describe identity inside the Scene/Style block — Soul Cinema is sensitive to identity drift if face/wardrobe descriptors leak into environmental phrasing. For broader picker context (when to pick Soul Cinema vs Cinematic Characters vs Cinematic Locations vs Cinematic Cameras), see `../higgsfield-cinema/SKILL.md` § Per-Cinematic-model selection guide.
+
+### Studio Look vs. Cinematic Look — Soul Cinema as the Re-Pass
+
+When a model returns a character that reads as **studio-feeling** — clean,
+evenly lit, glossy, slightly plastic — the result is not a final. It's an
+intermediate. The studio look is what the model defaults to when no atmosphere
+or grade is doing work in the prompt; it's competently rendered but reads as
+"AI-generated" rather than "filmed." (Distinct from **Cinema Studio**, the
+product — here "studio" describes a visual quality of the output, not the
+generation environment that produced it.) The fix is to treat the studio-feeling
+output as a starting frame and re-pass it through Soul Cinema with explicit
+cinematic direction — palette, grade, lens character, lighting language — until
+the look lands.
+
+These rules are adapted from the Mr. Core methodology.
+
+**Diagnose the studio look.** Symptoms: skin reads as smooth/even rather than
+specular; lighting feels evenly distributed (no key/fill ratio, no directional
+shadow); palette is wide and accurate rather than graded; clothing fabric
+reads as new and clean rather than worn or weighted; the frame as a whole
+looks like a product photograph rather than a film still.
+
+**The re-pass workflow.** Take the studio-feeling output and:
+
+1. Use it as a reference upload into Soul Cinema (or use Edit Shot in Seedance
+   if you want to preserve identity exactly and modify only the look).
+2. Add an explicit grade direction — "Bleach Bypass," "Teal Orange Epic,"
+   "Sodium Decay," "Bleached Warm" — pick from the Cinema Studio 3.5 Color
+   Palette presets in `../higgsfield-cinema/SKILL.md` § Style Settings, or
+   describe one in Manual Style.
+3. Add directional lighting language — single key source, side rim, contre-jour,
+   silhouette — not "well-lit" or "evenly lit."
+4. Add lens character — Vintage Haze, Warm Halation, Anamorphic — to break the
+   default clinical sharpness.
+5. Add a palette compression — "muted," "desaturated," "crushed blacks" — to
+   pull the wide accurate palette into a graded one.
+
+The studio look is a stop on the path, not the destination. Plan for the
+re-pass as part of the workflow; don't treat the first generation as the
+final.
 
 ---
 

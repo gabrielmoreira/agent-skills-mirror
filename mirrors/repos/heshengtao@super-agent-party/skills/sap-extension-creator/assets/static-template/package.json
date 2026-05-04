@@ -1,0 +1,13 @@
+{
+  "name": "my-static-extension",
+  "version": "1.0.0",
+  "description": "TODO: describe your extension",
+  "author": "TODO: your name",
+  "systemPrompt": "",
+  "repository": "",
+  "backupRepository": "",
+  "category": "Uncategorized",
+  "width": 800,
+  "height": 600,
+  "transparent": false
+}

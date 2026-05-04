@@ -1,162 +1,105 @@
-# CLAUDE.md - Open CoDesign
+# CLAUDE.md — Open CoDesign
 
-Instructions for Claude Code and other AI coding agents working in this repository. Read this before making changes.
+Instructions for Claude Code (and any AI coding agent) working in this repository. Read this before making changes.
 
-`AGENTS.md` is the canonical public agent guide. This file mirrors it for Claude Code. Maintainer-local `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` may contain fresher planning details when present, but public contributors and bots must not assume those files exist.
+## What this project is
 
-## What This Project Is
+open-codesign is an Electron desktop app that turns natural-language prompts into design artifacts (HTML prototypes, PDFs, PPTX decks, marketing assets). It's the open-source counterpart to Anthropic's Claude Design, with multi-provider model support via `pi-ai` and a local-first storage model.
 
-Open CoDesign is an open-source desktop design agent. It turns prompts, local files, skills, scaffolds, brand systems, and model output into design artifacts on the user's laptop.
+The full vision and locked decisions live in `docs/VISION.md`. Read it before suggesting architectural changes.
 
-The v0.2 direction is no longer a single-prompt generator. Each design is a long-running pi session with a real workspace. The agent can read and edit files, run permissioned commands, ask structured questions, preview artifacts, expose tweak controls, generate images when the configured model supports it, and produce `DESIGN.md` design-system artifacts.
+> Note: `docs/` is gitignored — internal team materials (research, roadmaps, handoffs) live there but are not part of the public repo. Clone contributors will not have this directory; team members will find it present locally after cloning and copying the internal docs back.
 
-The original inspiration was Claude Design. The product boundary is now clearer: Open CoDesign borrows proven coding-agent mechanics, then adds design-specific tools and a local-first workspace model.
+## Hard constraints (do not violate)
 
-`docs/` is mostly maintainer-local and gitignored. Some public research notes may exist, but internal plans, handoffs, and roadmap files usually do not. Do not cite `docs/**` in public PR review comments unless the exact file exists in the public checkout and is directly relevant.
+These are project-level commitments, not preferences:
 
-## Hard Constraints
+1. **No bundled model runtimes.** No Ollama, llama.cpp, Python, or browser binaries shipped in the installer. Use system installs or lazy-download on demand.
+2. **BYOK only.** No proxied API calls, no cloud account, no telemetry by default. User credentials stay in `~/.config/open-codesign/config.toml` (plaintext, file mode 0600 — matching Claude Code / Codex / gh CLI conventions).
+3. **Local-first storage.** Designs, history, and codebase scans live on disk (SQLite via `better-sqlite3`). No mandatory cloud sync.
+4. **MIT-compatible permissive licenses only.** Reject GPL/AGPL/SSPL/proprietary deps. Check license before adding anything.
+5. **Lazy-load heavy features.** PPTX export, web capture, codebase scan, etc. must dynamic-import on first use, not on app start.
+6. **Compatibility, upgradeability, no bloat, elegance** — the four PRINCIPLES §5b checks. Every PR description must mark all four green.
 
-These are project commitments, not preferences:
+## Stack & conventions
 
-1. No bundled model runtimes. Do not ship Ollama, llama.cpp, Python, browser binaries, or model weights inside the installer. Use system installs or lazy-download with user-visible consent.
-2. BYOK only. No hosted account, proxied API, or telemetry by default. User credentials stay in human-readable local config.
-3. Local-first storage. v0.2 uses pi JSONL sessions plus real workspace files. Existing v0.1 SQLite data may be migrated, but do not add new SQLite tables for sessions, chat history, comments, snapshots, or design files.
-4. Every design has a workspace. No sealed/open split in v0.2. The workspace filesystem is the source of truth for artifacts and assets.
-5. MIT-compatible permissive licenses only. Reject GPL, AGPL, SSPL, proprietary deps, and unclear copied assets. Check licenses before adding scaffolds, brand refs, or package deps.
-6. Lazy-load heavy features. PPTX export, web capture, scaffolds, skills, brand refs, and image generation must load on demand rather than at app start.
-7. Reuse pi primitives first. `pi-coding-agent` owns sessions, built-in tools, bash execution, event streaming, model registry, provider registration, and capability data unless a design-specific need proves otherwise.
-8. Brand values are data, not model memory. Use `DESIGN.md`, user files, official CSS/SVG/screenshots, or brand URLs. Do not invent brand hex values from memory.
-9. PRs should satisfy Principles 5b: compatible, upgradeable, no bloat, elegant.
+- **Package manager**: `pnpm` only. Never use `npm` or `yarn`. Workspace declared in `pnpm-workspace.yaml`.
+- **Build orchestration**: Turborepo.
+- **Lint + format**: Biome (single tool, no ESLint + Prettier).
+- **Tests**: Vitest (unit) + Playwright (E2E). New features require at least one Vitest test.
+- **TypeScript**: `strict: true`, `verbatimModuleSyntax: true`, `moduleResolution: "bundler"`. No `any`.
+- **Commits**: Conventional Commits, enforced by commitlint.
+- **Versioning**: Changesets. Don't hand-edit `CHANGELOG.md`.
+- **Node**: 22 LTS (pinned via `.nvmrc` + `engines`).
+- **Model layer**: All LLM calls go through `@mariozechner/pi-ai`. Don't import provider SDKs directly in app code; if pi-ai lacks a feature, add it to `packages/providers` as a thin extension.
 
-## Current Architecture Direction
+### Frontend stack (locked)
 
-### Agent Runtime
+- **UI framework**: React 19 + Vite 6
+- **Styles**: Tailwind v4 + CSS variables (tokens in `packages/ui`)
+- **State**: Zustand (do not introduce Redux / Recoil / MobX)
+- **Routing**: native `useState` view switching at first; TanStack Router only when route count > 5
+- **Components**: Radix UI primitives + custom shadcn-style wrappers in `packages/ui`
+- **Icons**: `lucide-react` (only)
+- **Forms**: native `<form>` + `FormData` (do not introduce react-hook-form / formik)
+- **Animations**: Tailwind transitions (do not introduce framer-motion / motion)
+- **Sandbox renderer**: Electron iframe `srcdoc` + esbuild-wasm + import maps (see `docs/research/03-sandbox-runtime.md`)
+- **Electron version**: latest stable, but NOT 41.x (cross-origin isolation regression)
+- **Storage**: better-sqlite3 for design history; TOML files for config (no electron-store blob)
 
-- Use `pi-coding-agent` and `pi-ai`.
-- Use pi built-ins for `read`, `write`, `edit`, `bash`, `grep`, `find`, and `ls`.
-- Gate tools through the pi `tool_call` hook and the Open CoDesign permission UI.
-- Read capabilities from pi `Model<T>` fields such as `input`, `reasoning`, `cost`, `contextWindow`, and `maxTokens`.
-- Register custom providers through `pi.registerProvider()`. Do not build a parallel provider SDK layer.
-- All LLM calls go through `pi-ai`; do not import provider SDKs directly in app code.
+## Repository layout
 
-### Storage
-
-- Design equals pi session.
-- Session history lives under app user data as pi JSONL.
-- Design files, generated HTML/JSX/CSS, assets, exports, `AGENTS.md`, and `DESIGN.md` live in the user workspace.
-- Workspace settings live in `.codesign/settings.json` with `schemaVersion`.
-- `settings.local.json` is personal and should stay gitignored.
-- v0.1 SQLite is legacy data to migrate, not the v0.2 storage model.
-
-### Tools
-
-The v0.2 tool surface is pi's seven built-ins plus Open CoDesign design tools:
-
-- `ask(questions)` renders structured questions and waits for the user.
-- `scaffold(kind, path)` copies a curated starter into the workspace.
-- `skill(name)` lazy-loads skill text from a manifest.
-- `preview(path)` renders artifacts and returns console errors, asset errors, DOM outline, metrics, and screenshots for vision models.
-- `gen_image(prompt, path)` writes generated images to disk when capability and provider config allow it.
-- `tweaks(blocks)` declares editable controls across files.
-- `todos(items)` shows task state for complex turns.
-- `done(path)` ends a turn after preview self-check.
-
-Do not reintroduce a verifier subagent, snip tool, custom bash tool, custom list-files tool, or agent-written working memory for v0.2 unless the plan changes.
-
-### Design System
-
-- `DESIGN.md` follows the Google spec and can be both input and output.
-- Agent-generated multi-screen work should keep visual consistency by updating `DESIGN.md` as tokens emerge.
-- Built-in brand refs must include attribution, source, license metadata, and a "not affiliated" note.
-- Built-in skills use the agentskills-style `SKILL.md` format.
-- Skill and scaffold manifests should carry license and source metadata.
-
-## Stack and Conventions
-
-- Package manager: `pnpm` only. Never use `npm` or `yarn`.
-- Build orchestration: Turborepo.
-- Lint and format: Biome.
-- Tests: Vitest for unit tests, Playwright for E2E.
-- TypeScript: strict mode, `verbatimModuleSyntax`, bundler resolution, no `any`.
-- Commits: Conventional Commits.
-- Versioning: Changesets. Do not hand-edit `CHANGELOG.md`.
-- Node: 22 LTS, pinned by `.nvmrc` and `engines`.
-- Exact package versions live in `package.json`, workspace manifests, and `pnpm-lock.yaml`. Read those files instead of trusting stale docs.
-
-### Frontend
-
-- React + Vite + Tailwind v4 + CSS variables.
-- State uses Zustand. Do not introduce Redux, Recoil, or MobX.
-- Components use Radix primitives and custom shadcn-style wrappers in `packages/ui`.
-- Icons use `lucide-react`.
-- Forms use native `<form>` and `FormData`.
-- Animations use Tailwind transitions. Do not introduce framer-motion or motion.
-- App chrome must use `packages/ui` tokens. Artifact output may define its own visual system.
-- Sandbox preview remains Electron iframe `srcdoc` plus runtime tooling.
-
-## Repository Layout
-
-```text
+```
 apps/
-  desktop/           # Electron app shell, main process, renderer
+  desktop/           # Electron app shell (main + renderer)
 packages/
-  core/              # Agent orchestration, prompts, design tools
-  providers/         # pi integration and provider compatibility shims
-  runtime/           # Sandbox renderer and preview runtime
-  ui/                # Shared app UI tokens and components
-  artifacts/         # Artifact schemas and bundle formats
-  exporters/         # PDF / PPTX / ZIP exporters, lazy-loaded
-  templates/         # Built-in examples and starter templates
-  shared/            # Shared types, utils, schemas
-docs/                # Mostly maintainer-local plans/research; many files are gitignored
-examples/            # Public demo reproductions
+  core/              # Generation orchestration (prompt → artifact pipeline)
+  providers/         # pi-ai adapter + custom provider extensions
+  runtime/           # Sandbox renderer (iframe-based preview)
+  ui/                # Shared design system (aligned with open-cowork tokens)
+  artifacts/         # Artifact schema (HTML / React / SVG / PPTX)
+  exporters/         # PDF / PPTX / ZIP exporters (lazy-loaded)
+  templates/         # Built-in demo prompts and starter templates
+  shared/            # Types, utils, zod schemas
+docs/                # Vision, roadmap, principles, RFCs (gitignored — internal only)
+examples/            # Reproductions of Claude Design public demos
 ```
 
-## Doing Tasks Here
+## Doing tasks here
 
-- Read `AGENTS.md` or `CLAUDE.md` first, depending on your agent runtime.
-- For non-trivial architecture or product work, also read `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` when they exist locally.
-- Use planning files in `.claude/workspace/` or your agent's local workspace for tasks spanning more than five tool calls or more than three files.
-- Use git worktrees for parallel or unrelated feature work. Do not mix two unrelated branches in one checkout.
-- Check `docs/RESEARCH_QUEUE.md` when it exists before touching sandbox, inline comments, tweaks, PPTX, pi capabilities, scaffolds, skills, or brand refs.
-- Keep edits scoped. Avoid drive-by refactors.
-- Before adding a dependency, check license, install size, alternatives, and whether it can be a peer dep.
-- Add or update Vitest coverage for feature work. Broaden tests when changing migrations, permissions, tool hooks, or shared contracts.
-- Prefer manifest and switch logic over registries until two real callers need more.
-- Comment only when the reason would surprise the next maintainer.
+- **Always read `docs/VISION.md` and `docs/PRINCIPLES.md` first** for any non-trivial change. The constraints are not negotiable.
+- **Use the planning-with-files workflow** for any task spanning > 5 tool calls or > 3 files. Plans live in `.claude/workspace/`.
+- **Use git worktrees for parallel work.** See `docs/COLLABORATION.md` for the workflow. Never run two unrelated feature branches in the same checkout.
+- **Check `docs/RESEARCH_QUEUE.md`** before starting work that touches sandbox / inline-comment / slider / PPTX / pi-ai capabilities — research may still be pending and decisions unresolved.
+- **Respect the lean budget.** Before adding a dependency: search for a tiny alternative, consider inlining, ask if it can be a peer dep.
+- **UI must use `packages/ui` tokens.** Don't hard-code colors, fonts, or spacing in app code. If a token is missing, add it to `packages/ui` first.
+- **No "design for the future" abstractions.** Three similar lines is fine. Don't introduce factories, plugin systems, or config-driven dispatch unless we have two real callers.
+- **No comments explaining what code does.** Names should do that. Only comment the *why* when it's surprising.
+- **Schema-version everything that lives on disk.** Config files, SQLite tables, IPC payloads, exported bundle formats — all carry a `schemaVersion` field so we can migrate without breaking older installs.
 
-## Permission Model
+## Things to avoid
 
-Open CoDesign uses one permission model with tiers:
+- ❌ Adding `node_modules`, build outputs, or `.env*` files to git
+- ❌ Importing from a provider SDK (`@anthropic-ai/sdk`, `openai`, `@google/genai`) in app code
+- ❌ Writing tests that mock the LLM at the SDK level — mock at the `core` boundary instead
+- ❌ Adding tracking, analytics, or auto-update without explicit opt-in UX
+- ❌ Hard-coding any path; respect XDG base dirs / Electron `app.getPath()`
+- ❌ Synchronous I/O in the main process
+- ❌ `console.*` in `apps/desktop/src/main/**`, `packages/core/**`, `packages/providers/**`, `packages/exporters/**`, `packages/shared/**` — use `getLogger()` (main) or the injected `CoreLogger` (core/providers/exporters). Biome enforces this.
 
-- Tier 0: workspace-local reads/writes, simple file commands, and read-only git may run without interruption.
-- Tier 1: installs, build commands, non-local network fetches, and cwd-external commands ask once and can be allowlisted.
-- Tier 2: publishing, pushing, sudo, and high-blast-radius commands ask every time.
-- Tier 3: destructive system commands, `curl | sh`, and system-directory writes are blocked without override.
-
-Do not hide blocked tool calls. Show the command, path, tier, and reason.
-
-## Things to Avoid
-
-- Adding `node_modules`, build outputs, `.env*`, generated release artifacts, or private local files to git.
-- Importing `@anthropic-ai/sdk`, `openai`, `@google/genai`, or other provider SDKs in app code.
-- Writing tests that mock the LLM at the SDK level. Mock at the core or pi boundary.
-- Adding tracking, analytics, account flows, cloud sync, or auto-update without explicit opt-in UX.
-- Hard-coding user paths. Respect XDG, Electron `app.getPath()`, and workspace roots.
-- Adding new SQLite-backed feature state for v0.2 session/design data.
-- Introducing `project` as a product abstraction in v0.2. Multiple sessions can share a workspace, but the sidebar lists sessions.
-- Exposing session branching UI, undo/version rollback, MCP support, or community skill installation in v0.2 unless the plan changes.
-- Using `console.*` in `apps/desktop/src/main/**`, `packages/core/**`, `packages/providers/**`, `packages/exporters/**`, or `packages/shared/**`. Use the project logger.
-
-## Useful Commands
+## Useful commands
 
 ```bash
-pnpm i
-pnpm dev
-pnpm test
-pnpm test:e2e
-pnpm lint
-pnpm typecheck
-pnpm build
-pnpm changeset
+pnpm i                  # install (uses Corepack-pinned pnpm)
+pnpm dev                # start Electron + Vite renderer
+pnpm test               # vitest watch
+pnpm test:e2e           # playwright
+pnpm lint               # biome check
+pnpm typecheck          # tsc --noEmit across workspace
+pnpm build              # produce signed Mac/Win installers
+pnpm changeset          # record a release-worthy change
 ```
+
+## Open questions / pending research
+
+See `docs/RESEARCH_QUEUE.md`. Don't prematurely lock in answers to questions still under investigation.

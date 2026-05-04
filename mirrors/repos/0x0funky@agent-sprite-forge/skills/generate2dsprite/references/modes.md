@@ -21,6 +21,8 @@ Use this file when the user's wording leaves room for multiple valid asset plans
 - `idle`: looped breathing / stance / aura cycle
 - `cast`: spell or skill wind-up / release
 - `attack`: attack-only animation
+- `shoot`: ranged attack body action; projectile and muzzle flash should usually be separate assets
+- `jump`: airborne takeoff / rise / fall / landing action
 - `hurt`: damage reaction
 - `combat`: combined attack + hurt sheet
 - `walk`: travel loop
@@ -45,6 +47,13 @@ Use this file when the user's wording leaves room for multiple valid asset plans
 - `line_bundle`
   - default: 1-3 forms
   - per form, choose only the needed sheets
+- `hero_action_bundle`
+  - default: one sheet per action, often `idle` + `run` + `attack` or `shoot` + `jump`
+  - keep projectiles, muzzle flashes, impacts, and dust as separate assets unless tightly attached to the body action
+  - assemble an engine atlas only after each action passes QC
+- `engine_atlas`
+  - delivery format only when it combines unrelated actions
+  - build from processed action sheets, not from one mixed-action raw image
 
 ## Sheet Presets
 
@@ -66,10 +75,14 @@ Use this file when the user's wording leaves room for multiple valid asset plans
 - `4x4`
   - topdown 4-direction player walk sheet
   - non-directional 16-frame action sequence when the user asks for richer casting, summoning, charging, transformation, or death animation
+- `5x5` or `custom_grid`
+  - use as raw generation only for one coherent long action sequence, prop packs, tileset-like atlases, or another single action family
+  - use as a delivery atlas for mixed actions only after separate action sheets have been generated and QC'd
 
 ## Agent-First Mapping Hints
 
 - `"make a 4-direction main hero"` -> `player` + `player_sheet`
+- `"make a side-view hero with idle, run, shoot, and jump"` -> `player` + `hero_action_bundle`; generate one action sheet per action and keep projectile/impact assets separate
 - `"make a healer npc"` -> `npc` + `single_asset`, `role=healer`
 - `"make a healer npc walk sheet"` -> `npc` + `walk`
 - `"make a boss idle"` -> `creature` + `idle`; prefer `3x3`
@@ -96,6 +109,7 @@ Keep these mappings working:
 - use `align=center` for floating effects, projectiles, and detached FX
 - use `component_mode=largest` when raw sheets contain detached sparkles or edge debris
 - use `component_mode=all` when detached effects are an intentional part of the asset silhouette
+- for body-only controllable hero actions, prefer `component_mode=largest`; for projectile, impact, aura, or intentionally attached FX sheets, use `component_mode=all`
 - use a layout guide for prop packs, tileset-like atlases, fixed atlas rows, and non-directional 16-frame VFX-heavy action sequences; avoid making it the default for 4-direction walk sheets
 
 ## Output Shape
@@ -103,4 +117,5 @@ Keep these mappings working:
 - any sheet mode: transparent sheet + per-frame PNGs + GIF
 - `player_sheet`: plus direction strips and four GIFs
 - `single_asset`: cleaned transparent PNG
+- `hero_action_bundle`: per-action folders, per-action GIFs, separate projectile/impact assets when needed, and optional assembled engine atlas
 - bundles: one output folder per asset inside the bundle root

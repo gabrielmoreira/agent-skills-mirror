@@ -53,11 +53,20 @@ Most installations only need to override a handful of keys. If you want a comple
   "circuitBreakerCooldownMs": 1800000,
   "fallbackProviders": [],
   "proactiveThresholdCompactionMode": "deferred",
+  "autoRotateSessionFiles": {
+    "enabled": true,
+    "sizeBytes": 2097152,
+    "startup": "rotate",
+    "runtime": "rotate"
+  },
   "cacheAwareCompaction": {
     "enabled": true,
+    "cacheTTLSeconds": 300,
     "maxColdCacheCatchupPasses": 2,
     "hotCachePressureFactor": 4,
-    "hotCacheBudgetHeadroomRatio": 0.2
+    "hotCacheBudgetHeadroomRatio": 0.2,
+    "coldCacheObservationThreshold": 3,
+    "criticalBudgetPressureRatio": 0.70
   },
   "dynamicLeafChunkTokens": {
     "enabled": true,
@@ -114,8 +123,16 @@ openclaw plugins install --link /path/to/lossless-claw
 | `pruneHeartbeatOk` | `boolean` | `false` | `LCM_PRUNE_HEARTBEAT_OK` | Retroactively removes `HEARTBEAT_OK` turn cycles from persisted storage. |
 | `transcriptGcEnabled` | `boolean` | `false` | `LCM_TRANSCRIPT_GC_ENABLED` | Enables transcript rewrite GC during `maintain()`; disabled by default so transcript rewrites stay opt-in. |
 | `proactiveThresholdCompactionMode` | `"deferred" \| "inline"` | `"deferred"` | `LCM_PROACTIVE_THRESHOLD_COMPACTION_MODE` | Controls whether proactive threshold compaction is deferred into maintenance debt by default or run inline for legacy behavior. |
+| `autoRotateSessionFiles.enabled` | `boolean` | `true` | `LCM_AUTO_ROTATE_SESSION_FILES_ENABLED` | Enables automatic rotation for oversized LCM-managed session JSONL files. |
+| `autoRotateSessionFiles.sizeBytes` | `integer` | `2097152` | `LCM_AUTO_ROTATE_SESSION_FILES_SIZE_BYTES` | Byte threshold that triggers automatic session-file rotation. |
+| `autoRotateSessionFiles.startup` | `"rotate" \| "warn" \| "off"` | `"rotate"` | `LCM_AUTO_ROTATE_SESSION_FILES_STARTUP` | Startup behavior for oversized indexed OpenClaw session transcripts that also have active LCM bootstrap state. |
+| `autoRotateSessionFiles.runtime` | `"rotate" \| "warn" \| "off"` | `"rotate"` | `LCM_AUTO_ROTATE_SESSION_FILES_RUNTIME` | Runtime behavior after `afterTurn()` and `maintain()` check the current transcript size. |
 
 > **Multi-profile note:** `OPENCLAW_STATE_DIR` (set by the host OpenClaw gateway) controls where state is stored. When two gateways run on the same host (e.g. separate bot personas), each gateway sets its own `OPENCLAW_STATE_DIR` and lossless-claw automatically uses that directory for the database, large-file payloads, auth-profile lookups, and legacy secrets — no per-profile plugin config is needed.
+
+Automatic session-file rotation uses the same safe path as `/lcm rotate`: runtime rotation replaces the rolling `rotate-latest` SQLite backup, rewrites only the live session transcript, keeps the active LCM conversation and durable history intact, and refreshes the bootstrap checkpoint. Startup rotation first scans OpenClaw's current indexed session stores for configured agents, then intersects those candidates with active LCM conversations and matching bootstrap file mappings. If multiple startup candidates need rotation, one pre-rotation LCM database backup is created for the batch before any transcript is rewritten. Rotation never runs for ignored sessions, stateless sessions, or sessions without active LCM state. The preserved JSONL tail follows the existing rotate behavior, which is controlled by `freshTailCount`.
+
+Every automatic decision emits grep-able log lines prefixed with `[lcm] auto-rotate:`. Startup emits one compact summary line with `phase=startup`, `action=summary`, `scanned`, `eligible`, `rotated`, `warned`, `skipped`, `durationMs`, `bytesRemoved`, and backup fields when a batch backup was created; quiet skips such as missing files, missing bootstrap mappings, and below-threshold files are counted there instead of producing one line per candidate. Rotation detail lines include `phase`, `action`, `sessionId`, `sessionKey`, `sessionFile`, `sizeBytes`, `thresholdBytes`, `durationMs`, `backupPath`, `bytesRemoved`, `preservedTailMessageCount`, and `checkpointSize`; real warning lines include the same available context plus `reason` or `error`.
 
 ### Compaction thresholds and summary sizing
 
@@ -173,6 +190,7 @@ openclaw plugins install --link /path/to/lossless-claw
 | `cacheAwareCompaction.hotCachePressureFactor` | `number` | `4` | `LCM_HOT_CACHE_PRESSURE_FACTOR` | Multiplier applied to the hot-cache leaf trigger before raw-history pressure overrides cache preservation. |
 | `cacheAwareCompaction.hotCacheBudgetHeadroomRatio` | `number` | `0.2` | `LCM_HOT_CACHE_BUDGET_HEADROOM_RATIO` | Minimum fraction of the real token budget that must remain free before hot-cache incremental compaction is skipped entirely. |
 | `cacheAwareCompaction.coldCacheObservationThreshold` | `integer` | `3` | `LCM_COLD_CACHE_OBSERVATION_THRESHOLD` | Consecutive cold observations required before non-explicit cache misses are treated as truly cold. This dampens one-off routing noise and provider failover blips. |
+| `cacheAwareCompaction.criticalBudgetPressureRatio` | `number` | `0.70` | `LCM_CRITICAL_BUDGET_PRESSURE_RATIO` | Fraction of the token budget at which deferred compaction bypasses hot-cache delay so prompt-mutating debt can run before overflow. Set to `1` to disable this bypass. |
 
 #### `dynamicLeafChunkTokens`
 
@@ -189,6 +207,7 @@ When cache-aware compaction is enabled:
 - hot cache skips incremental maintenance entirely when the assembled context is still comfortably below the real token budget
 - hot cache also gets a short hysteresis window so one ambiguous turn does not immediately discard a recently healthy cache signal
 - cold cache still allows bounded catch-up passes via `cacheAwareCompaction.maxColdCacheCatchupPasses`
+- once `currentTokenCount >= criticalBudgetPressureRatio * tokenBudget`, deferred compaction bypasses hot-cache delay so prompt-mutating debt can run before emergency overflow handling
 
 When incremental leaf compaction still runs on a hot cache, follow-on condensed passes are suppressed so the maintenance cycle only pays for the leaf pass that was explicitly justified.
 

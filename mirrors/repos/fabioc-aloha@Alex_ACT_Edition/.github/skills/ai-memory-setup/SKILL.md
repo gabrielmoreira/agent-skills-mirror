@@ -54,9 +54,17 @@ The resolution order matches `_registry.cjs` (the muscle used by `bootstrap-heir
       README.md
   heirs/
     registry.json                     # Fleet registry (auto-maintained)
-  knowledge/                          # Shared knowledge base
+  knowledge/                          # Shared knowledge base (see index.json)
   insights/                           # Analytical insights
 ```
+
+### Knowledge Packages
+
+`AI-Memory/knowledge/` contains reference material installed from the Plugin Mall. These are **not** loaded into the brain -- they are consulted on demand when a task matches their domain.
+
+Read `AI-Memory/knowledge/index.json` to discover available packages. Each entry has `name`, `keywords`, `use_phase`, and `path`. When a task involves a matching phase (planning, audit, review, implementation) or keyword, read the referenced `reference.md` for guidance.
+
+This costs zero tokens until you actually read it.
 
 ## Operations
 

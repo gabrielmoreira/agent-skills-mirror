@@ -4,8 +4,8 @@ description: "Use when building, writing, refining, or structuring a Higgsfield 
 user-invocable: true
 metadata:
   tags: [higgsfield, prompt, MCSLA, formula, text-to-video, image-to-video]
-  version: 3.1.0
-  updated: 2026-04-10
+  version: 3.2.0
+  updated: 2026-05-03
   parent: higgsfield
 ---
 
@@ -266,6 +266,39 @@ during fan-out.
 
 If you find yourself wanting to "fix everything at once," stop and ask which
 fix matters most. That one goes in this regeneration; the rest wait their turn.
+
+### When You Don't Know What's Wrong Yet — the 6-Pass Diagnostic Sequence
+
+The Iteration Rule above assumes you can identify which one variable to change.
+When you can't — the prompt produces output that's vaguely off and you can't
+name why — run the 6-Pass Diagnostic Sequence to find it. Each pass isolates
+one variable, in order, and tests it before moving on.
+
+The order is not arbitrary. Subject and action carry the heaviest token weight
+(early-prompt positioning); camera and style come next; audio and output
+controls sit at the periphery. Diagnosing in this order surfaces the highest-
+leverage problem first and stops you from chasing a style-pass fix when the
+real issue was the subject description three layers up.
+
+| Pass | Variable | Question |
+|------|----------|----------|
+| 1 | Subject | Is the character / object / focal element described unambiguously? |
+| 2 | Action | Is the action concrete (physics-based) and singular for the shot? |
+| 3 | Camera | Is the camera move named (Director Panel preset or specific verb), not implied? |
+| 4 | Style | Is the look anchored (palette, grade, lens, lighting), not adjective-only? |
+| 5 | Audio | If audio is part of the output, is it described as a parallel track with concrete sounds? |
+| 6 | Output | Are aspect ratio, duration, and resolution set deliberately for the shot's needs? |
+
+**How to use it:** start at Pass 1. If the result improves when you sharpen the
+subject, you've found your variable — return to the Iteration Rule loop and
+keep going. If Pass 1 doesn't move the result, lock the subject, advance to
+Pass 2, and so on. The sequence is a finder, not a refinement loop. Once you
+know which variable is wrong, the Iteration Rule takes over.
+
+**Don't run all six passes blindly.** Six regenerations cost six credits. The
+sequence's value is the *order* — most prompt failures land on Pass 1 or Pass 2
+because early-prompt tokens dominate. If you reach Pass 4 without moving the
+result, the prompt may need a structural rewrite, not iteration.
 
 ---
 

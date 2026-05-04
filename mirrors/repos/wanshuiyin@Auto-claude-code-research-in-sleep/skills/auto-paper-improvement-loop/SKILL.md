@@ -1,7 +1,7 @@
 ---
 name: auto-paper-improvement-loop
 description: "Autonomously improve a generated paper via GPT-5.4 xhigh review → implement fixes → recompile, for 2 rounds. Use when user says \"改论文\", \"improve paper\", \"论文润色循环\", \"auto improve\", or wants to iteratively polish a generated paper."
-argument-hint: [paper-directory]
+argument-hint: "[paper-directory] [— style-ref: <source>]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 ---
 
@@ -19,11 +19,39 @@ Unlike `/auto-review-loop` (which iterates on **research** — running experimen
 
 - **MAX_ROUNDS = 2** — Two rounds of review→fix→recompile. Empirically, Round 1 catches structural issues (4→6/10), Round 2 catches remaining presentation issues (6→7/10). Diminishing returns beyond 2 rounds for writing-only improvements.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for paper review.
-- **REVIEWER_BIAS_GUARD = true** — When `true`, every review round uses a fresh `mcp__codex__codex` thread with no prior review context. Never use `mcp__codex__codex-reply` for review rounds. Set to `false` only for deliberate debugging of the legacy behavior. **Empirical evidence (April 2026):** running the same paper with `codex-reply` + "since last round we did X" prompts inflated scores from real 3/10 → fake 8/10 across 5 rounds; switching to fresh threads recovered the true 3/10 assessment.
+- **REVIEWER_BIAS_GUARD = true** — When `true`, every review round uses a fresh `mcp__codex__codex` thread with no prior review context. Never use `mcp__codex__codex-reply` for review rounds. Set to `false` only for deliberate debugging of the legacy behavior. **Empirical evidence:** running the same paper with `codex-reply` + "since last round we did X" prompts inflated scores from real 3/10 → fake 8/10 across multiple rounds; switching to fresh threads recovered the true 3/10 assessment.
 - **REVIEW_LOG = `PAPER_IMPROVEMENT_LOG.md`** — Cumulative log of all rounds, stored in paper directory.
 - **HUMAN_CHECKPOINT = false** — When `true`, pause after each round's review and present score + weaknesses to the user. The user can approve fixes, provide custom modification instructions, skip specific fixes, or stop early. When `false` (default), runs fully autonomously.
 
 > 💡 Override: `/auto-paper-improvement-loop "paper/" — human checkpoint: true`
+
+## Optional: Style reference (`— style-ref: <source>`, opt-in)
+
+Lets the user steer **structural fixes only** during improvement (section reordering hints, paragraph length nudges, figure density adjustments) toward a reference paper. **Default OFF — when the user does not pass `— style-ref`, do nothing differently from before.**
+
+Only when `— style-ref: <source>` appears in `$ARGUMENTS`, run the helper FIRST, before the loop starts:
+
+```bash
+if [ ! -f tools/extract_paper_style.py ]; then
+  echo "error: tools/extract_paper_style.py not found — re-run 'bash tools/install_aris.sh' to refresh the '.aris/tools' symlink (added in #174), or copy the helper manually from the ARIS repo" >&2
+  exit 1
+fi
+CACHE=$(python3 tools/extract_paper_style.py --source "<source>")
+case $? in
+  0) ;;                                       # use $CACHE/style_profile.md as structural guidance for the FIX phase only
+  2) echo "warning: style-ref skipped (missing optional dep)" >&2 ;;
+  3) echo "error: --style-ref source failed; aborting loop" >&2 ; exit 1 ;;
+  *) echo "error: helper failed unexpectedly; aborting loop" >&2 ; exit 1 ;;
+esac
+```
+
+Sources accepted: local TeX dir / file, local PDF, arXiv id, http(s) URL. Overleaf URLs/IDs are rejected — clone via `/overleaf-sync setup <id>` first and pass the local clone path.
+
+**Strict rules** (full contract in `tools/extract_paper_style.py` docstring):
+
+- Use `style_profile.md` only during the **fix-implementation** phase, to nudge structural choices when applying reviewer feedback. Reviewer feedback always takes precedence; style ref is tie-breaker for *how* to apply a fix, not *whether* to apply it.
+- **Never copy prose, claims, examples, or terminology** from anything reachable through the cache when implementing fixes.
+- **Never pass `— style-ref` (or the cache contents) to the GPT-5.4 reviewer sub-agent.** The Reviewer Independence Protocol below requires reviewers see only the artifact and the user's prompt — leaking the style ref would contaminate the review with author-side context. **This is the most critical invariant in this skill.**
 
 ## Inputs
 
@@ -207,7 +235,7 @@ def normalize(s):
 PY
 ```
 
-**Empirical motivation:** in our April 2026 NeurIPS run, `thm:dsm-oracle` had a 3-case split (w=0/1/>1) in main but no case split in appendix; `nu_T` was named "stationary" in main and "terminal" in appendix. These drifted multiple times across fix rounds because no automated check caught regression.
+**Empirical motivation:** in a real submission run, a key theorem had a multi-case split in the main text but a single-case statement in the appendix; a key variable was named one way in main and another in appendix. These drifted multiple times across fix rounds because no automated check caught regression.
 
 **Optional deeper check: `/proof-checker --restatement-check`**
 
@@ -285,7 +313,7 @@ This is a late-stage adversarial check. It must always use **fresh** `mcp__codex
 
 This phase feeds directly into Step 6. The attack/defense findings must be merged before the final recompile.
 
-**Empirical motivation:** in our April 2026 NeurIPS run, after 5 rounds of standard improvement (score 7-8/10), the kill-argument exercise surfaced framing weaknesses that no prior review caught (e.g., "width-w is mostly conditional", "CRF irrelevant to real D-LLMs"). Author rebuttal forced explicit scope qualifications in abstract and discussion.
+**Empirical motivation:** in a real submission run, after several rounds of standard improvement (score 7-8/10), the kill-argument exercise surfaced framing weaknesses that no prior review caught (e.g., a setting being mostly conditional rather than truly general, or a baseline being irrelevant to real systems). Author rebuttal forced explicit scope qualifications in abstract and discussion.
 
 ### Step 5b: Human Checkpoint (if enabled)
 
@@ -369,7 +397,7 @@ echo "$BIB_OVERFULL"
 - Classify by the source file reported in the `-file-line-error` log.
 - If a warning cannot be classified, treat it as main body and fix it.
 
-**Empirical motivation:** in our April 2026 NeurIPS run, 28+ overfull hbox warnings (largest 160pt in the appendix bridge proof) survived 5 improvement rounds because the previous blanket "overfull > 10pt blocks" rule was too lax and treated all locations equally.
+**Empirical motivation:** in a real submission run, dozens of overfull hbox warnings (the largest well over 100pt in an appendix proof) survived multiple improvement rounds because the previous blanket "overfull > 10pt blocks" rule was too lax and treated all locations equally.
 
 ### Step 9: Document Results
 

@@ -200,6 +200,30 @@ State the travel behavior clearly:
 
 ## Sheet-Specific Rules
 
+### Mixed-action atlas guardrail
+
+Do not use a single raw generated sheet to pack unrelated actions just because the target engine wants a `4x4`, `5x5`, or custom atlas.
+
+Avoid prompts like:
+
+- row 1 idle, row 2 run, row 3 shoot, row 4 jump
+- first row walk, second row attack, third row hurt, fourth row death
+- one big atlas containing every hero action
+
+For controllable heroes, main characters, and high-value player assets:
+
+1. Generate each action as its own sheet, usually `1x4` or the smallest useful row/sequence.
+2. Keep shooting body animation separate from projectile, muzzle flash, impact, and dust unless the FX is tightly attached.
+3. Process and visually QC each action independently for feet line, body center, scale, silhouette, and edge safety.
+4. Assemble a `4x4`, `5x5`, or custom engine atlas only after the separate action sheets pass QC.
+
+Allowed raw multi-row sheets:
+
+- canonical four-direction locomotion sheets where every row is the same walk/run action in a different direction
+- one continuous non-directional long action sequence, read left-to-right across rows
+- prop packs or tileset-like atlases where each cell is intentionally a separate object
+- compact low-stakes enemy combat sheets, but not controllable hero production assets
+
 ### `4x4` player sheet
 
 Use:
@@ -235,6 +259,14 @@ Use for casting, summoning, charging, transformation, death, and other single-ac
 - describe each phase in order, from anticipation through peak action to settle or loop return
 - keep the subject identity stable while allowing pose, energy, and compact attached effects to change
 - use a layout guide when the action includes VFX, portals, circles, summons, or other elements that might cross cell boundaries
+
+Do not use this format as a shortcut for four unrelated hero actions. If the requested rows are different actions, treat it as a `hero_action_bundle` or `engine_atlas` delivery problem instead.
+
+### `5x5` and custom grids
+
+Use raw `5x5` or custom-grid generation only when the entire sheet is one coherent action family, a prop pack, a tileset-like atlas, or a single long sequence.
+
+For mixed action requirements, generate each action separately and assemble the final grid after QC. The assembled atlas is a delivery artifact, not the raw image-generation target.
 
 ### `1x4` projectile
 

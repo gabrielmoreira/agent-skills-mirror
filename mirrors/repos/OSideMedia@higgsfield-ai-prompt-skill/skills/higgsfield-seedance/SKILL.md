@@ -4,8 +4,8 @@ description: "Rewrites scene descriptions using professional cinematography lang
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, seedance-pro, content-filter, prompt, director, flagged]
-  version: 1.0.0
-  updated: 2026-04-10
+  version: 1.1.0
+  updated: 2026-05-03
   parent: higgsfield
 ---
 
@@ -77,7 +77,7 @@ words, passes the filter because the scene is fully legible.
 
 ## Seedance 2.0 Prompt Modes
 
-Seedance 2.0 exposes four generation modes that each take the six-slot formula
+Seedance 2.0 exposes five generation modes that each take the six-slot formula
 but apply it to a different starting point. Picking the right mode is upstream of
 prompt writing — the same sentence will produce different results in different
 modes, because each mode reads the prompt as a different kind of instruction.
@@ -137,12 +137,39 @@ Change [specific element] to [new state]. Keep [everything else] unchanged.
 [Preserve identity, composition, lighting, and camera behavior from the original.]
 ```
 
+### Transformation
+
+The prompt describes an explicit state change inside a single clip — the subject,
+object, or environment visibly becomes something else within the shot's
+duration. Distinct from Continuation (which extends time across two clips) and
+from Edit Shot (which modifies a generated clip after the fact). Transformation
+happens *during* the generation, in one continuous take. Use it when the shot's
+core idea is the change itself: a character morphing, an object decaying, a
+landscape shifting from one season to another. The skeleton below is written
+for character → character; the same pattern applies to object → object and
+environment → environment with the relevant noun substituted.
+
+```
+[Subject in starting state — full identity descriptors]. [Triggering moment or
+cue]. [Subject mid-transformation — what visibly changes, in observable
+physical terms]. [Subject in ending state — new identity descriptors].
+[Camera behavior across the change]. [Lighting / palette shift if any].
+```
+
+The transformation must be one continuous arc, not a cut. Describe the
+intermediate state explicitly — the model needs a midpoint anchor or it will
+either snap from start to end (looks like a cut) or render an ambiguous blur.
+Keep the duration short (5–8 seconds is the sweet spot for a single
+transformation); longer clips drift.
+
 ### Mode Selection Rule
 
 Reference-Based for new action with an existing character. Continuation for the
 next beat in time. Expand Shot to widen the frame spatially. Edit Shot to patch
-specific details. If you find yourself writing across multiple modes in one
-prompt — stop, pick one, generate, then use the output as input to the next mode.
+specific details. Transformation prompt mode when the shot's core idea is a
+state change inside a single clip — the change is the content. If you find
+yourself writing across multiple modes in one prompt — stop, pick one,
+generate, then use the output as input to the next mode.
 
 ---
 
@@ -352,7 +379,9 @@ is the loop that wastes hours.
 
 ## Related Skills
 
-- `higgsfield-prompt` — MCSLA formula, archetype router, general prompt structure
+- `higgsfield-prompt` — MCSLA formula, archetype router, general prompt structure;
+  the Iteration Rule and 6-Pass Diagnostic Sequence for when generations are
+  off-target and you can't name why
 - `higgsfield-troubleshoot` — diagnosis for non-filter failures (render quality, etc.)
 - `higgsfield-recall` — pre-generation memory check against past failures
 - `../shared/negative-constraints.md` — full negative-constraint reference,

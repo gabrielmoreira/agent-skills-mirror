@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `minhnv0807/fullstack-mkt-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `minhnv0807/fullstack-mkt-skills` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `minhnv0807/fullstack-mkt-skills` — 26 default patterns, 0 followed 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,7 +85,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills/17-pricing-strategy/SKILL.md`](skills/17-pricing-strategy/SKILL.md) |
 | 25 | ✓ | [`skills/18-referral-program/SKILL.md`](skills/18-referral-program/SKILL.md) |
 | 26 | ✓ | [`skills/19-ab-test-setup/SKILL.md`](skills/19-ab-test-setup/SKILL.md) |
-| 27 | ✓ | [`skills/product-marketing-context/SKILL.md`](skills/product-marketing-context/SKILL.md) |
+| 27 | ✓ | [`skills/20-brief-client-intake/README.md`](skills/20-brief-client-intake/README.md) |
+| 28 | ✓ | [`skills/20-brief-client-intake/SKILL.md`](skills/20-brief-client-intake/SKILL.md) |
+| 29 | ✓ | [`skills/20-brief-client-intake/variants/01-spa-beauty.md`](skills/20-brief-client-intake/variants/01-spa-beauty.md) |
+| 30 | ✓ | [`skills/20-brief-client-intake/variants/02-fnb-restaurant.md`](skills/20-brief-client-intake/variants/02-fnb-restaurant.md) |
+| 31 | ✓ | [`skills/20-brief-client-intake/variants/03-healthcare-clinic.md`](skills/20-brief-client-intake/variants/03-healthcare-clinic.md) |
+| 32 | ✓ | [`skills/20-brief-client-intake/variants/04-fitness-gym-yoga.md`](skills/20-brief-client-intake/variants/04-fitness-gym-yoga.md) |
+| 33 | ✓ | [`skills/20-brief-client-intake/variants/05-education-center.md`](skills/20-brief-client-intake/variants/05-education-center.md) |
+| 34 | ✓ | [`skills/20-brief-client-intake/variants/06-wedding-photography.md`](skills/20-brief-client-intake/variants/06-wedding-photography.md) |
+| 35 | ✓ | [`skills/20-brief-client-intake/variants/07-pet-service.md`](skills/20-brief-client-intake/variants/07-pet-service.md) |
+| 36 | ✓ | [`skills/20-brief-client-intake/variants/08-fashion.md`](skills/20-brief-client-intake/variants/08-fashion.md) |
+| 37 | ✓ | [`skills/20-brief-client-intake/variants/09-cosmetics-skincare.md`](skills/20-brief-client-intake/variants/09-cosmetics-skincare.md) |
+| 38 | ✓ | [`skills/20-brief-client-intake/variants/10-fnb-product.md`](skills/20-brief-client-intake/variants/10-fnb-product.md) |
+| 39 | ✓ | [`skills/20-brief-client-intake/variants/11-mom-baby.md`](skills/20-brief-client-intake/variants/11-mom-baby.md) |
+| 40 | ✓ | [`skills/20-brief-client-intake/variants/12-home-living.md`](skills/20-brief-client-intake/variants/12-home-living.md) |
+| 41 | ✓ | [`skills/20-brief-client-intake/variants/13-health-supplement.md`](skills/20-brief-client-intake/variants/13-health-supplement.md) |
+| 42 | ✓ | [`skills/20-brief-client-intake/variants/14-saas-software.md`](skills/20-brief-client-intake/variants/14-saas-software.md) |
+| 43 | ✓ | [`skills/20-brief-client-intake/variants/15-agency-consulting.md`](skills/20-brief-client-intake/variants/15-agency-consulting.md) |
+| 44 | ✓ | [`skills/20-brief-client-intake/variants/16-online-course.md`](skills/20-brief-client-intake/variants/16-online-course.md) |
+| 45 | ✓ | [`skills/20-brief-client-intake/variants/17-real-estate.md`](skills/20-brief-client-intake/variants/17-real-estate.md) |
+| 46 | ✓ | [`skills/20-brief-client-intake/variants/18-auto-vehicle.md`](skills/20-brief-client-intake/variants/18-auto-vehicle.md) |
+| 47 | ✓ | [`skills/20-brief-client-intake/variants/19-travel-resort.md`](skills/20-brief-client-intake/variants/19-travel-resort.md) |
+| 48 | ✓ | [`skills/20-brief-client-intake/variants/20-aesthetic-clinic.md`](skills/20-brief-client-intake/variants/20-aesthetic-clinic.md) |
+| 49 | ✓ | [`skills/21-audit-ads-performance/SKILL.md`](skills/21-audit-ads-performance/SKILL.md) |
+| 50 | ✓ | [`skills/product-marketing-context/SKILL.md`](skills/product-marketing-context/SKILL.md) |
+| 51 | ✓ | [`skills/references/copy-frameworks-vn.md`](skills/references/copy-frameworks-vn.md) |
+| 52 | ✓ | [`skills/references/hook-formulas-vn.md`](skills/references/hook-formulas-vn.md) |
+| 53 | ✓ | [`skills/references/mcp-ads-integration.md`](skills/references/mcp-ads-integration.md) |
+| 54 | ✓ | [`skills/references/quality-gates-vn.md`](skills/references/quality-gates-vn.md) |
 
 ---
 

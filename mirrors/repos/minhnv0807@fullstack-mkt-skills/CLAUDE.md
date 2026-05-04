@@ -30,6 +30,7 @@ Vi du: "viet copy quang cao" → kich hoat `05-copy-quang-cao.md`
 ### Skill chain (chuoi skill)
 
 Mot so skill goi skill khac tu dong:
+- `20-brief-client-intake` → goi `09-insight-khach-hang` + `08-nghien-cuu-doi-thu` + `10-tinh-kpi-nguoc` + `00-ke-hoach-mkt`
 - `00-ke-hoach-mkt` → goi `08-nghien-cuu-doi-thu` + `09-insight-khach-hang` + `10-tinh-kpi-nguoc`
 - `02-brief-chien-dich` → goi `05-copy-quang-cao` + `04-script-video` + `01-lich-noi-dung`
 - `07-bao-cao-marketing` → goi `03-danh-gia-hieu-suat` + `10-tinh-kpi-nguoc`
@@ -37,6 +38,7 @@ Mot so skill goi skill khac tu dong:
 ### Workflow
 
 Workflow = chuoi skill chay lien tuc:
+- `client-onboard` = **20** → 09 → 08 → 10 → 00 → 02 → 01
 - `campaign-launch` = 00 → 02 → 01 → 04 → 05 → 06 → 11
 - `monthly-cycle` = 13 → 03 → 07 → 01 → 10
 - `content-production` = 09 → 01 → 04 → 06
@@ -71,6 +73,22 @@ related:
 ## Checklist chat luong
 [Kiem tra truoc khi giao]
 ```
+
+## MCP Ads Integration
+
+Khi user da ket noi MCP server cho nen tang quang cao, cac skill co the pull data tu dong thay vi yeu cau user paste.
+
+> **Reference day du:** `skills/references/mcp-ads-integration.md`
+
+| Nen tang | MCP chinh thuc | MCP community tot nhat |
+|----------|---------------|----------------------|
+| Meta Ads | Meta Official MCP (`@meta/ads-cli`) | Pipeboard (29 tools), brijr/meta-mcp (25 tools) |
+| Google Ads | Google Official MCP (read-only) | — |
+| TikTok Ads | — | AdsMCP/tiktok-ads-mcp-server |
+| Cross-platform | — | Adspirer ads-mcp (175+ tools) |
+| Doi thu research | — | facebook-ads-library-mcp (15+ tools) |
+
+**Skills ho tro MCP:** 03, 07, 08, 10, 21
 
 ## Agent chuyen biet
 

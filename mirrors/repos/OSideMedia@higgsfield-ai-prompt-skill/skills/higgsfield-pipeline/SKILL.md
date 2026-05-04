@@ -10,7 +10,7 @@ user-invocable: true
 metadata:
   tags: [higgsfield, pipeline, workflow, chain, production, multi-shot, short-film, popcorn, recast]
   version: 3.1.0
-  updated: 2026-04-10
+  updated: 2026-05-03
   parent: higgsfield
 ---
 
@@ -249,6 +249,11 @@ Higgsfield doesn't have a native timeline editor — assemble in your editing to
 5. Color grade if needed (minimal — Higgsfield output is already color-intentional)
 6. Export for platform
 ```
+
+**Cut-friendly source material:** if you're landing morph cuts or smooth cuts
+in the editor, generate the source clips with explicit 2-second still-or-near-
+still moments at start and end. See `../higgsfield-cinema/SKILL.md` §
+Multi-Shot Manual → Morph-Cut and Smooth-Cut breathing room.
 
 ---
 

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>My SAP Extension</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- For chat UI extensions, also include markdown rendering -->
+<!-- <link rel="stylesheet" href="github-markdown-dark.css"/> -->
+<!-- <link rel="stylesheet" href="prism-tomorrow.min.css"/> -->
+<!-- <script src="marked.min.js"></script> -->
+<!-- <script src="prism.min.js"></script> -->
+<style>
+/* ========== Theme Variables ========== */
+:root {
+  --bg: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text: #333333;
+  --text-sub: #888888;
+  --accent: #00c2a8;
+  --accent-hover: #00a896;
+  --border: rgba(0,0,0,0.08);
+  --radius: 12px;
+  --shadow: 0 8px 24px rgba(0,0,0,0.08);
+  --transition: 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body.dark {
+  --bg: #1e1f20;
+  --bg-secondary: #25262a;
+  --text: #e8e8e8;
+  --text-sub: #8a8f9b;
+  --border: #333538;
+  --shadow: 0 8px 24px rgba(0,0,0,0.36);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; font-family: var(--font);
+  font-size: 15px; line-height: 1.6;
+  background: var(--bg); color: var(--text);
+  transition: background var(--transition), color var(--transition);
+  user-select: none; -webkit-user-select: none;
+}
+
+/* ========== Layout ========== */
+header {
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  background: var(--bg-secondary);
+}
+header .logo {
+  font-weight: 600; font-size: 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+header .logo i { color: var(--accent); }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.header-actions button {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(128,128,128,0.1); border: 1px solid var(--border);
+  color: var(--text-sub); cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.header-actions button:hover { background: rgba(128,128,128,0.2); color: var(--text); }
+.header-actions button.lang-btn { width: auto; padding: 0 10px; border-radius: 17px; font-size: 12px; font-weight: 600; }
+
+#messages {
+  flex: 1; overflow-y: auto; scroll-behavior: smooth;
+  padding: 0 24px 24px;
+}
+.msg {
+  display: flex; padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.msg.user { justify-content: flex-end; }
+.msg.assistant { justify-content: flex-start; }
+.msg-inner {
+  max-width: 640px; display: flex; gap: 12px; align-items: flex-start;
+}
+.msg.user .msg-inner { flex-direction: row-reverse; }
+.msg .icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.msg.user .icon { background: #3c3d40; color: var(--text-sub); }
+.msg.assistant .icon { background: var(--accent); color: #fff; }
+.msg .bubble {
+  padding: 12px 16px; border-radius: var(--radius);
+  box-shadow: var(--shadow); word-break: break-word; line-height: 1.65;
+}
+.msg.user .bubble { background: var(--accent); color: #fff; }
+.msg.assistant .bubble { background: var(--bg-secondary); }
+.msg.system {
+  justify-content: center; font-style: italic;
+  color: var(--text-sub); font-size: 14px;
+}
+
+#empty {
+  height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--text-sub); gap: 8px;
+}
+#empty i { font-size: 40px; }
+
+/* ========== Input ========== */
+#inputBar {
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary); padding: 16px 24px;
+}
+#inputWrap {
+  max-width: 768px; margin: 0 auto;
+  display: flex; gap: 12px; align-items: center;
+}
+#userInput {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 14px; resize: none;
+  max-height: 120px; min-height: 44px; line-height: 1.5;
+  font-size: 15px; color: var(--text); font-family: var(--font);
+}
+#userInput:focus { outline: none; border-color: var(--accent); }
+#sendBtn {
+  width: 44px; height: 44px; border-radius: var(--radius);
+  background: var(--accent); border: none; color: #fff;
+  cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.2s;
+}
+#sendBtn:hover { background: var(--accent-hover); }
+#sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+#clearBtn {
+  width: 44px; height: 44px; border-radius: var(--radius);
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-sub); cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+#clearBtn:hover { background: rgba(128,128,128,0.1); color: var(--accent); border-color: var(--accent); }
+
+/* Scrollbar */
+#messages::-webkit-scrollbar { width: 6px; }
+#messages::-webkit-scrollbar-track { background: transparent; }
+#messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+#messages::-webkit-scrollbar-thumb:hover { background: var(--text-sub); }
+
+/* ========== Responsive ========== */
+@media (max-width: 900px) {
+  body { font-size: 14px; }
+  header { padding: 0 16px; }
+  #messages { padding: 0 16px 16px; }
+  #inputBar { padding: 12px 16px; }
+  .msg-inner { max-width: 100%; }
+}
+@media (max-width: 600px) {
+  header .logo { font-size: 15px; }
+  header .logo span { display: none; }
+  header { height: 48px; padding: 0 12px; }
+  #inputWrap { gap: 8px; }
+  #userInput { font-size: 14px; padding: 8px 12px; }
+  #sendBtn, #clearBtn { width: 38px; height: 38px; font-size: 16px; }
+  #inputBar { padding: 10px 12px; }
+}
+
+/* ========== Compact Mode (Transparent Windows) ========== */
+body.compact { background: transparent !important; }
+html.compact { background: transparent !important; }
+
+body.compact header,
+body.compact #inputBar {
+  -webkit-app-region: drag;
+}
+
+body.compact button,
+body.compact input,
+body.compact textarea,
+body.compact .compact-close-btn {
+  -webkit-app-region: no-drag;
+}
+
+.compact-close-btn { display: none; }
+body.compact .compact-close-btn {
+  display: flex;
+  position: absolute; top: 5px; right: 5px;
+  width: 20px; height: 20px;
+  background: rgb(255,57,57); border: none; border-radius: 50%;
+  color: #fff; align-items: center; justify-content: center;
+  font-size: 10px; cursor: pointer; transition: 0.2s;
+  z-index: 100;
+  -webkit-app-region: no-drag;
+}
+body.compact .compact-close-btn:hover { background: #ec4141; }
+
+body.compact header { padding: 0 12px; height: 44px; border-bottom: none; }
+body.compact header .header-actions { display: none; }
+body.compact #messages { display: none; }
+body.compact #inputBar {
+  padding: 8px 16px; border-top: none;
+  background: rgba(35,36,39,0.95); border-radius: 8px;
+}
+body.compact #userInput { max-height: 36px; min-height: 36px; font-size: 13px; }
+body.compact #sendBtn { width: 36px; height: 36px; font-size: 16px; }
+body.compact #clearBtn { display: none; }
+</style>
+</head>
+<body>
+
+  <button class="compact-close-btn" onclick="closeWindow()" title="关闭窗口">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+
+  <header>
+    <div class="logo"><i class="fa-solid fa-puzzle-piece"></i><span id="header-title">My Extension</span></div>
+    <div class="header-actions">
+      <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">EN</button>
+      <button onclick="toggleDarkMode()" title="Toggle theme"><i class="fa-solid fa-moon" id="darkIcon"></i></button>
+    </div>
+  </header>
+
+  <main id="messages">
+    <div id="empty">
+      <i class="fa-regular fa-comments"></i>
+      <span id="empty-text">No messages yet</span>
+    </div>
+  </main>
+
+  <footer id="inputBar">
+    <div id="inputWrap">
+      <button id="clearBtn" title="Clear messages"><i class="fa-solid fa-trash"></i></button>
+      <textarea id="userInput" placeholder="Send a message…"></textarea>
+      <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </footer>
+
+<script>
+/* ========== SAP Extension — Static Template ========== */
+const $ = s => document.querySelector(s);
+const msgs = $('#messages');
+const input = $('#userInput');
+const btn = $('#sendBtn');
+const clearBtn = $('#clearBtn');
+let ws;
+let MY_EXT_ID = '';
+
+/* ---- i18n ---- */
+const i18n = {
+  zh: {
+    title: '我的扩展',
+    empty: '暂无消息',
+    placeholder: '输入消息…',
+    darkMode: '切换深色模式',
+    langSwitch: '切换到英文',
+    clear: '清空消息'
+  },
+  en: {
+    title: 'My Extension',
+    empty: 'No messages yet',
+    placeholder: 'Send a message…',
+    darkMode: 'Toggle dark mode',
+    langSwitch: 'Switch to Chinese',
+    clear: 'Clear messages'
+  }
+};
+let lang = localStorage.getItem('myext_lang') || 'zh';
+function t(k) { return i18n[lang]?.[k] || i18n.zh[k] || k; }
+function toggleLanguage() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  localStorage.setItem('myext_lang', lang);
+  updateAllTexts();
+}
+function updateAllTexts() {
+  $('#header-title').textContent = t('title');
+  $('#empty-text').textContent = t('empty');
+  $('#userInput').placeholder = t('placeholder');
+  $('#langBtn').textContent = lang === 'zh' ? 'EN' : '中';
+  $('#langBtn').title = t('langSwitch');
+  $('#darkIcon').parentElement.title = t('darkMode');
+  $('#clearBtn').title = t('clear');
+}
+
+/* ---- Theme ---- */
+(function initTheme() {
+  const saved = localStorage.getItem('myext_dark');
+  if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme:dark)').matches)) {
+    document.body.classList.add('dark');
+  }
+  updateDarkIcon();
+})();
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('myext_dark', isDark ? 'dark' : 'light');
+  updateDarkIcon();
+}
+function updateDarkIcon() {
+  const icon = $('#darkIcon');
+  if (icon) icon.className = document.body.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+}
+
+/* ---- Extension ID ---- */
+function getExtId() {
+  try {
+    const match = window.location.pathname.match(/\/extensions\/([^\/]+)/);
+    MY_EXT_ID = match ? match[1] : 'my-extension';
+  } catch(e) { MY_EXT_ID = 'my-extension'; }
+  return MY_EXT_ID;
+}
+
+/* ---- WebSocket ---- */
+function initWS() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${proto}//${location.host}/ws`);
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ type: 'get_messages' }));
+    const extId = getExtId();
+
+    // === Register MCP tools (optional) ===
+    // Remove or customize these tools for your extension
+    /*
+    ws.send(JSON.stringify({
+      type: 'register_node_extension_mcp',
+      data: {
+        ext_id: extId,
+        tools: [
+          {
+            name: `${extId}_example_tool`,
+            description: lang === 'zh' ? '一个示例工具' : 'An example tool',
+            parameters: {
+              type: 'object',
+              properties: {
+                message: { type: 'string', description: lang === 'zh' ? '消息内容' : 'Message content' }
+              },
+              required: ['message']
+            }
+          }
+        ]
+      }
+    }));
+    */
+  };
+  ws.onclose = () => setTimeout(initWS, 5000);
+  ws.onmessage = e => {
+    try {
+      const d = JSON.parse(e.data);
+      if (d.type === 'messages_update' || d.type === 'broadcast_messages') render(d.data.messages);
+      if (d.type === 'call_mcp_tool') handleMcpCall(d.data);
+      if (d.type === 'mcp_registered') console.log('MCP registered');
+    } catch {}
+  };
+}
+
+/* ---- Message Rendering ---- */
+function render(list) {
+  if (!list || !list.length) {
+    msgs.innerHTML = `<div id="empty"><i class="fa-regular fa-comments"></i><span id="empty-text">${t('empty')}</span></div>`;
+    return;
+  }
+  msgs.innerHTML = list.map(m => {
+    if (m.role === 'system') return '';
+    const content = m.pure_content || m.content || '';
+    // For basic rendering (no markdown):
+    const html = content.replace(/\n/g, '<br>');
+    // For markdown rendering, use: const html = marked.parse(content);
+    return `
+      <div class="msg ${m.role}">
+        <div class="msg-inner">
+          <div class="icon">
+            ${m.role === 'user' ? '<i class="fa-solid fa-user"></i>' : '<i class="fa-solid fa-robot"></i>'}
+          </div>
+          <div class="bubble">${html}</div>
+        </div>
+      </div>`;
+  }).join('');
+  msgs.scrollTop = msgs.scrollHeight;
+  // If using Prism: Prism.highlightAllUnder(msgs);
+}
+
+/* ---- MCP Tool Handler (customize this) ---- */
+async function handleMcpCall(data) {
+  const { ext_id, tool_name, tool_params, call_id } = data;
+  if (ext_id !== MY_EXT_ID && !tool_name.includes(MY_EXT_ID)) return;
+
+  let resultStr = 'success';
+  try {
+    let params = tool_params;
+    if (typeof params === 'string') {
+      try { params = JSON.parse(params); } catch(e) {}
+    }
+
+    // TODO: handle your custom tools here
+    // if (tool_name.includes('_example_tool')) { ... }
+    resultStr = `Tool ${tool_name} executed`;
+  } catch(e) { resultStr = `Error: ${e.message}`; }
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: 'mcp_tool_result',
+      data: { call_id, result: resultStr }
+    }));
+  }
+}
+
+/* ---- Send / Clear ---- */
+function send() {
+  const t = input.value.trim();
+  if (!t) return;
+  ws.send(JSON.stringify({ type: 'set_user_input', data: { text: t } }));
+  ws.send(JSON.stringify({ type: 'trigger_send_message' }));
+  input.value = ''; input.style.height = 'auto';
+}
+function clear() {
+  ws.send(JSON.stringify({ type: 'trigger_clear_message' }));
+}
+function closeWindow() { window.close(); }
+
+/* ---- Compact Mode ---- */
+function checkCompactMode() {
+  if (window.innerHeight < 200) {
+    document.documentElement.classList.add('compact');
+    document.body.classList.add('compact');
+  } else {
+    document.documentElement.classList.remove('compact');
+    document.body.classList.remove('compact');
+  }
+}
+
+/* ---- Events ---- */
+input.addEventListener('input', () => {
+  autoHeight();
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'set_user_input', data: { text: input.value } }));
+  }
+});
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+btn.addEventListener('click', send);
+clearBtn.addEventListener('click', clear);
+function autoHeight() { input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px'; }
+
+window.addEventListener('beforeunload', () => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'unregister_node_extension_mcp', data: { ext_id: MY_EXT_ID } }));
+  }
+});
+
+/* ---- Init ---- */
+checkCompactMode();
+window.addEventListener('resize', checkCompactMode);
+updateAllTexts();
+getExtId();
+initWS();
+</script>
+</body>
+</html>

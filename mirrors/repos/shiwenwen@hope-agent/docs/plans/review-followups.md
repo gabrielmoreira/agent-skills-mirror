@@ -31,6 +31,65 @@
 ## Open
 
 
+
+### F-051 `currentSessionMeta` + `incognitoEnabled` 三处复制可推进 `useQuickChatSession` / `useChatSession`
+
+- **来源**：2026-05-03 QuickChat → MessageList 复用 PR `/simplify` review (reuse + quality + efficiency 三只 agent 同样标记)
+- **现象**：[`ChatScreen.tsx:145-159`](src/components/chat/ChatScreen.tsx#L145-L159) / [`QuickChatWindow.tsx:33-48`](src/QuickChatWindow.tsx#L33-L48) / [`QuickChatDialog.tsx:38-50`](src/components/chat/QuickChatDialog.tsx#L38-L50) 三处都复制了：`useMemo(() => sessions.find(s => s.id === currentSessionId))` + `incognitoEnabled = currentSessionId ? meta?.incognito : draftIncognito` 这套派生。ChatScreen 还多一个 `incognitoDisabledReason` 派生；QuickChat 没有 project / channel 概念所以不需要
+- **当前选择**：不动。本期 PR 主题是"删 QuickChatMessages 复用 MessageList"，把派生推进 hook 是独立重构（影响 ChatScreen 顶层）；本期接受 2 个新复制点（QuickChatWindow / QuickChatDialog），从 1 处升到 3 处，仍在"小到不值得抽"的阈值附近
+- **改的话要做什么**：
+  - 在 [`useQuickChatSession.ts`](src/components/chat/useQuickChatSession.ts) 内部计算 `currentSessionMeta` + `incognitoEnabled`（`draftIncognito` 已经在 hook 里），return 出来；两个 quick 入口直接 destructure
+  - `useChatSession` 同款追加（ChatScreen 的派生最复杂，含 `incognitoDisabledReason` / `isCronSession` / `isSubagentSession`，可能值得专门一个 `useSessionMeta(session)` 子 hook）
+  - 三处 `handleIncognitoChange`（3 行 callback）也可以一并推进 hook，但单独看不值得抽
+- **影响面**：纯代码卫生 + 防漂移。当前没有用户可见 bug；性能上 `Array.find` 在 sessions 数 ≤100 量级是 µs 级，无忧
+- **触发时机建议**：下次有人为了某个 incognito / session-meta 派生 bug 同时改这三个文件时（说明复制成本开始外溢），把派生推进 hook
+
+### F-050 `_clientId` 下划线前缀挂在 `Message` 公共导出 interface 上
+
+- **来源**：2026-05-03 react-virtuoso 移除后续 `/simplify` review (quality agent)
+- **现象**：[`src/types/chat.ts:160`](src/types/chat.ts#L160) 给 `Message` 加了 `_clientId?: string` 运行时字段，用来在 placeholder→DB 转换时维持 React row key 稳定。下划线前缀只是命名约定，TypeScript 不会因此把它从公共类型隔离——所有 `Message` 消费者（前端组件、test、merge 工具、序列化 boundary）都看得到这个字段
+- **当前选择**：不动。带上下划线 + 8 行 WHY 注释（讲清楚仅运行时、不持久化、不上 wire）+ `mergeMessagesByDbId` 是唯一写入点，足够防御。改 typing 改动面太大（要拆 `MessageRuntime extends Message` 之类，影响 200+ 处消费）
+- **改的话要做什么**：
+  - 拆出 `interface MessageRuntime extends Message { _clientId?: string }`，只在 useChatStream / chatScrollKeys / chatUtils.mergeMessagesByDbId 这条 client 链路用 `MessageRuntime`；其它路径继续用纯 `Message`
+  - 检查所有把 `Message` 序列化 / 落库 / 跨进程传输的 boundary（Tauri command return、HTTP API、IM channel forward、`SessionDB::insert_message`）有没有不小心把 `_clientId` 带过去——目前应该都没有（runtime ref 不会转 JSON 跨进程），但要写显式 strip 兜底
+- **影响面**：纯类型卫生 + 防御性。当前没有用户可见 bug
+- **触发时机建议**：下次有人专门动 chat 类型层 / serialize boundary 时；或某次发现 `_clientId` 真的混进了不该混进的地方时
+
+
+
+### F-049 ~~三处~~两处消息流 scroll listener / atBottom / ResizeObserver 复制
+
+- **来源**：2026-05-03 react-virtuoso 移除后续 `/simplify` review (reuse + quality agents)
+- **2026-05-03 状态更新**：原 3 处复制中 `QuickChatMessages.tsx` 已整体删除——快捷会话浮窗 / dialog 改为直接复用 `MessageList`（详见对应 commit）。剩下 [`MessageList.tsx`](src/components/chat/MessageList.tsx) ↔ [`TeamMessageFeed.tsx`](src/components/team/TeamMessageFeed.tsx) 两处复制
+- **现象**：两个组件的滚动跟随逻辑相似度很高：byte-相同的 `el.scrollHeight - el.scrollTop - el.clientHeight < THRESHOLD` 距底判定、近乎相同的 RAF-节流 scroll listener、近乎相同的 ResizeObserver pin-to-bottom 块、相同的 reverse-find-last-user + scrollIntoView 块
+- **当前选择**：不动。MessageList 复杂（forceFollow / lastUserKey / pendingScrollTarget / askUser+planCard footer），TeamFeed 极简，差异点仍然大于共性，强行抽 hook 会推高耦合
+- **改的话要做什么**（hook 抽不动但纯 helper 函数可以抽）：
+  - 新建 `src/components/chat/chatScroll.ts`，提供：
+    1. `isNearBottom(el, threshold = 48): boolean` —— 两处都在用的距底判定
+    2. `scrollLastUserIntoView(el, messages, opts?)` —— 两个组件字节相同的 reverse-find + `scrollIntoView({ block: "start", behavior: "smooth" })`
+  - RAF-scroll listener scaffold + ResizeObserver-pin 块仍然各自留在组件里——它们绑定 ref，抽出来就是隐形 hook 化，违背原决策
+  - 顺手把 [`ChatSidebar.tsx`](src/components/chat/ChatSidebar.tsx) 里 `< 100px` 距顶判定改成 `isNearTop` 同款 helper
+- **影响面**：纯代码卫生。当前是可控的复制——剩 ~60 行重复，都是原子小块，单点修复不易踩坑
+- **触发时机建议**：下次有人为了某个滚动 bug 同时改这两个文件时（说明复制成本开始外溢），顺手把 helper 抽出来
+
+
+
+### F-048 ChatScreen tray:focus-session effect 的 react-hooks/exhaustive-deps warning
+
+- **来源**：2026-05-02 react-virtuoso 迁移 `/simplify` 收尾发现（main 预存 warning，不是本次引入）
+- **现象**：[`ChatScreen.tsx:550-555`](src/components/chat/ChatScreen.tsx#L550-L555) 的 useEffect deps 写 `[session.handleSwitchSession]`，ESLint `react-hooks/exhaustive-deps` 抱怨「访问 `.handleSwitchSession` 形式上依赖整个 `session` 对象，应该把 `session` 放进 deps」。由 commit `f596e8d0`（refactor tray simplify）引入，至今未修
+- **当前选择**：不动。两条朴素「修法」都不可取：
+  1. **加 `// eslint-disable-next-line`**——掩盖 lint 提示而不是解决问题，下次同款代码再撞还是要 disable，越积越多
+  2. **把 `session` 整个放进 deps**——会让 effect 在 session 对象引用变化时重订阅 tray 监听器，引入 listener churn / 重复订阅风险，是真 regression
+- **改的话要做什么**：根因是 `session` 是 `useChatSession` hook 返回的大对象，里面所有方法每次 render 都新建。正确做法：
+  - 把 `handleSwitchSession` 在 [`useChatSession`](src/components/chat/hooks/useChatSession.ts) 内部用 `useCallback` 包好（应该已经是 useCallback，确认即可），然后在 ChatScreen 顶部 destructure：`const { handleSwitchSession } = session`
+  - effect 改 deps 为 `[handleSwitchSession]`——既消除 warning，也保留「只在 handleSwitchSession 变时重订阅」的语义
+  - 同款问题在 ChatScreen 里可能还有其它处（grep `session\.\w+` 在 effect deps 里），一并整理
+- **影响面**：纯 lint 卫生 + 防御性。当前是 warning 不是 error，CI 不会红
+- **触发时机建议**：下次有人专门做 ChatScreen / useChatSession refactor 时；或单独的 lint 卫生 PR 一并清理同款问题
+
+
+
 ### F-040 mid-turn plan-state probe 用 AtomicU64 version gate 跳过 RwLock 读
 
 - **来源**：2026-05-02 mid-turn plan mode rebuild 修复 `/simplify` review (efficiency agent)
@@ -485,6 +544,16 @@
 ## Closed
 
 > 已修复条目移到此处，附 commit hash + 关闭日期。保留以便后续 grep。
+
+### F-044 / F-045 / F-046 / F-047 react-virtuoso 迁移期登记的 4 条 followup 全部失效
+
+- **关闭于**：2026-05-03，react-virtuoso 整体卸载并改用 `messages.map(slice)` + 浏览器 `overflow-anchor` + `content-visibility: auto` + windowed view (DOM 上限 200) + React.memo，commit 待提交
+- **失效原因**：上一期 react-virtuoso 迁移落地后撞了横向滚动条 / 用户消息裁剪 / 会话切换闪烁 / 分页 firstItemIndex 误判等多处虚拟化边界 bug。本期决定整体撤掉虚拟化，改用浏览器原生滚动 + 数据层窗口卸载，[`MessageList.tsx`](../../src/components/chat/MessageList.tsx) / [`QuickChatMessages.tsx`](../../src/components/chat/QuickChatMessages.tsx) / [`TeamMessageFeed.tsx`](../../src/components/team/TeamMessageFeed.tsx) 三个组件全部重写：
+  - **F-044（抽 `useChatVirtuoso` hook）**：源头消失——三组件不再使用 react-virtuoso，所谓「重复的 6 块 hook 模板」不存在；剩余的 windowed view + auto-follow 逻辑差异较大（QuickChat 简化版 / Team 极简），不需要抽 hook
+  - **F-045（Footer re-mount 风险）**：源头消失——MessageList 已不用 virtuoso 的 `components.Footer` API，askUser / planCard / empty 直接拼在 `messages.map()` 后面，AskUserQuestionBlock 的 React 子树由 React 自身管理，不会被 virtuoso 内部 element-type 变化撕掉
+  - **F-046（`createVirtuosoMock()` test util）**：源头消失——MessageList.test.tsx / QuickChatMessages.test.tsx 删除了 ~80 行 `vi.mock("react-virtuoso", ...)` 工厂，改用 `Element.prototype.scrollIntoView` / `scrollTo` spy 直接断言；不再有需要抽 helper 的重复
+  - **F-047（MessageBubble React.memo）**：本期一并验证完成——[`MessageBubble.tsx`](../../src/components/chat/message/MessageBubble.tsx) 已 `React.memo` 包装；MessageList 重写后所有 callback (hover / copy / contextMenu / open* / switch*) 都 useCallback'd 稳定；`itemContent` 14 项依赖的 useCallback 已不存在（直接内联 `messages.map()` 渲染），鼠标 hover 不再触发可见区全量 re-render
+- **本期附带解决**：横向滚动条根因（virtuoso flow item 撑宽 list）、用户消息裁剪（flex item `min-width: auto`）、会话切换闪烁（virtuoso firstItemIndex 派生 state 1-frame 延迟）三个虚拟化边界 bug 同时消失
 
 ### F-036 PlanPanel + PlanDetachedWindow 内联 comment 逻辑重复 ~120 行 × 2，`usePlanComment.ts` hook 是死代码
 
