@@ -50,10 +50,20 @@ BlocklistClient blocklistClient = new BlocklistClientBuilder()
 ### With DefaultAzureCredential
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 ContentSafetyClient client = new ContentSafetyClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .endpoint(endpoint)
     .buildClient();
 ```
@@ -263,8 +273,9 @@ try {
 ## Environment Variables
 
 ```bash
-CONTENT_SAFETY_ENDPOINT=https://<resource>.cognitiveservices.azure.com/
-CONTENT_SAFETY_KEY=<your-api-key>
+CONTENT_SAFETY_ENDPOINT=https://<resource>.cognitiveservices.azure.com/ # Required for all auth methods
+CONTENT_SAFETY_KEY=<your-api-key> # Only required for AzureKeyCredential auth
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Best Practices

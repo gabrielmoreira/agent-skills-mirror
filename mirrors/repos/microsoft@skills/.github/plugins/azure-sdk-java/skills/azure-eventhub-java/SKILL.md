@@ -51,12 +51,23 @@ EventHubProducerClient producer = new EventHubClientBuilder()
 ### With DefaultAzureCredential
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 EventHubProducerClient producer = new EventHubClientBuilder()
     .fullyQualifiedNamespace("<namespace>.servicebus.windows.net")
     .eventHubName("<event-hub-name>")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildProducerClient();
 ```
 
@@ -336,9 +347,10 @@ try (EventHubProducerClient producer = new EventHubClientBuilder()
 ## Environment Variables
 
 ```bash
-EVENT_HUBS_CONNECTION_STRING=Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=...
-EVENT_HUBS_NAME=<event-hub-name>
-STORAGE_CONNECTION_STRING=<for-checkpointing>
+EVENT_HUBS_CONNECTION_STRING=Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=...  # Alternative to Entra ID auth
+EVENT_HUBS_NAME=<event-hub-name>  # Required for event hub name
+STORAGE_CONNECTION_STRING=<for-checkpointing>  # Alternative to Entra ID auth for checkpointing
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Best Practices

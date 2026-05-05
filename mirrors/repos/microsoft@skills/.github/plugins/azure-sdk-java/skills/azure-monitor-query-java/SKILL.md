@@ -63,8 +63,9 @@ Or use Azure SDK BOM:
 ## Environment Variables
 
 ```bash
-LOG_ANALYTICS_WORKSPACE_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-AZURE_RESOURCE_ID=/subscriptions/{sub}/resourceGroups/{rg}/providers/{provider}/{resource}
+LOG_ANALYTICS_WORKSPACE_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  # Required for Log Analytics workspace queries
+AZURE_RESOURCE_ID=/subscriptions/{sub}/resourceGroups/{rg}/providers/{provider}/{resource}  # Required for metrics queries against a resource
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Client Creation
@@ -72,12 +73,23 @@ AZURE_RESOURCE_ID=/subscriptions/{sub}/resourceGroups/{rg}/providers/{provider}/
 ### LogsQueryClient (Sync)
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
 import com.azure.monitor.query.LogsQueryClient;
 import com.azure.monitor.query.LogsQueryClientBuilder;
 
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
+
 LogsQueryClient logsClient = new LogsQueryClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 ```
 
@@ -87,7 +99,7 @@ LogsQueryClient logsClient = new LogsQueryClientBuilder()
 import com.azure.monitor.query.LogsQueryAsyncClient;
 
 LogsQueryAsyncClient logsAsyncClient = new LogsQueryClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildAsyncClient();
 ```
 
@@ -98,7 +110,7 @@ import com.azure.monitor.query.MetricsQueryClient;
 import com.azure.monitor.query.MetricsQueryClientBuilder;
 
 MetricsQueryClient metricsClient = new MetricsQueryClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 ```
 
@@ -108,7 +120,7 @@ MetricsQueryClient metricsClient = new MetricsQueryClientBuilder()
 import com.azure.monitor.query.MetricsQueryAsyncClient;
 
 MetricsQueryAsyncClient metricsAsyncClient = new MetricsQueryClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildAsyncClient();
 ```
 
@@ -117,13 +129,13 @@ MetricsQueryAsyncClient metricsAsyncClient = new MetricsQueryClientBuilder()
 ```java
 // Azure China Cloud - Logs
 LogsQueryClient logsClient = new LogsQueryClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .endpoint("https://api.loganalytics.azure.cn/v1")
     .buildClient();
 
 // Azure China Cloud - Metrics
 MetricsQueryClient metricsClient = new MetricsQueryClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .endpoint("https://management.chinacloudapi.cn")
     .buildClient();
 ```

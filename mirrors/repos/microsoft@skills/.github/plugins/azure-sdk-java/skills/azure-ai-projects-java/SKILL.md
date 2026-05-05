@@ -27,18 +27,29 @@ High-level SDK for Azure AI Foundry project management with access to connection
 ## Environment Variables
 
 ```bash
-PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project>
+PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project> # Required for project configuration
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
 
 ```java
 import com.azure.ai.projects.AIProjectClientBuilder;
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 AIProjectClientBuilder builder = new AIProjectClientBuilder()
     .endpoint(System.getenv("PROJECT_ENDPOINT"))
-    .credential(new DefaultAzureCredentialBuilder().build());
+    .credential(credential);
 ```
 
 ## Client Hierarchy

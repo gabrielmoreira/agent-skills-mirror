@@ -47,7 +47,7 @@ export function ProgressBar({ chapters, cursor, onJumpChapter }: Props) {
               <span className="pb-title">{c.title}</span>
               {isActive && (
                 <div className="pb-pips">
-                  {Array.from({ length: c.totalSteps }, (_, s) => (
+                  {Array.from({ length: c.narrations.length }, (_, s) => (
                     <span
                       key={s}
                       className={`pb-pip ${

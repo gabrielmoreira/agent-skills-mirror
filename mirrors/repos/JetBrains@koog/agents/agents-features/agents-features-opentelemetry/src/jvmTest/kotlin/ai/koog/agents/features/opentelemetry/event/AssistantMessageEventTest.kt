@@ -4,12 +4,12 @@ import ai.koog.agents.features.opentelemetry.attribute.CommonAttributes
 import ai.koog.agents.features.opentelemetry.mock.MockLLMProvider
 import ai.koog.prompt.message.Message
 import ai.koog.prompt.message.ResponseMetaInfo
+import ai.koog.utils.time.KoogClock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import kotlin.time.Clock
 
 class AssistantMessageEventTest {
 
@@ -127,7 +127,7 @@ class AssistantMessageEventTest {
 
     private fun createTestAssistantMessage(content: String): Message.Response = Message.Assistant(
         content = content,
-        metaInfo = ResponseMetaInfo(Clock.System.now())
+        metaInfo = ResponseMetaInfo(KoogClock.System.now())
     )
 
     private fun createTestToolCallMessage(id: String, tool: String, content: String): Message.Tool.Call =
@@ -135,7 +135,7 @@ class AssistantMessageEventTest {
             id = id,
             tool = tool,
             content = content,
-            metaInfo = ResponseMetaInfo(Clock.System.now())
+            metaInfo = ResponseMetaInfo(KoogClock.System.now())
         )
 
     //endregion Private Methods

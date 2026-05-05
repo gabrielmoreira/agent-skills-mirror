@@ -1,6 +1,6 @@
 ---
 type: skill
-lifecycle: evolving
+lifecycle: stable
 inheritance: inheritable
 name: datasource-connectors
 description: "Ingestion patterns for CSV, JSON, REST API, SQL, Excel, and Parquet -- guides an LLM through loading data from any common source"

@@ -33,8 +33,8 @@
 </tr>
 </table>
 
-[![License: MIT](https://img.shields.io/github/license/ConardLi/web-design-skill?style=flat-square&color=blue)](./LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/ConardLi/web-design-skill?style=flat-square)](https://github.com/ConardLi/web-design-skill/stargazers)
+[![License: MIT](https://img.shields.io/github/license/ConardLi/garden-skills?style=flat-square&color=blue)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ConardLi/garden-skills?style=flat-square)](https://github.com/ConardLi/garden-skills/stargazers)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#贡献)
 [![Skills count](https://img.shields.io/badge/skills-4-orange?style=flat-square)](#skills-gallery)
 [![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
@@ -47,9 +47,9 @@
 
 ## 目录
 
-| 安装 | 指南 | 项目 | 其他 |
-|---|---|---|---|
-| [安装](#安装)<br>[Claude Code 插件市场](#方式-a--claude-code-插件市场)<br>[手动拷贝](#方式-b--手动拷贝到项目)<br>[Git Submodule](#方式-c--git-submodule) | [兼容性](#兼容性)<br>[Skill 的标准结构](#skill-的标准结构) | [仓库结构](#仓库结构) | [致谢](#致谢)<br>[许可证](#许可证) |
+| 安装 | 使用 | 参与共建 |
+|---|---|---|
+| [安装](#安装)<br>[`skills` CLI（npx）](#方式-a--skills-clinpx)<br>[Claude Code 插件市场](#方式-b--claude-code-插件市场)<br>[Releases 钉版本 `.zip`](#方式-c--releases-钉版本-zip)<br>[手动拷贝](#方式-d--手动拷贝到项目)<br>[Git Submodule](#方式-e--git-submodule) | [兼容性](#兼容性)<br>[什么是 Skill？](#什么是-skill) | [贡献](#贡献)<br>[致谢](#致谢)<br>[许可证](#许可证) |
 
 ---
 
@@ -71,7 +71,7 @@
 - 基于主题 token 的视觉架构，内置从 `paper-press` 到 `terminal-green` 的多种设计语言
 - 脚手架产出 Vite + React + TypeScript 项目，并附带舞台原语与录屏指南
 
-链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md)
+链接：[README](./skills/web-video-presentation/README.zh-CN.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[下载 v1.1.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.1.1/web-video-presentation-1.1.1.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 
@@ -92,7 +92,7 @@
 - 包含 inline React + Babel、CSS tokens、`oklch()` 配色、container queries、reduced-motion 等实现规则
 - 提供高级模式参考，覆盖设备框、幻灯片引擎、动画时间线、仪表盘等常见 Web 产物
 
-链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo)
+链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.0.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.0.0/web-design-engineer-1.0.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 
@@ -113,7 +113,7 @@
 - 同时覆盖图像生成和图像编辑，并配套专门工作流与脚本
 - Garden 模式下会把 prompt 与生成图片保存到 `garden-gpt-image-2/`，方便复用、审查和版本管理
 
-链接：[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website)
+链接：[README](./skills/gpt-image-2/README.zh-CN.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website) · <!-- DOWNLOAD:gpt-image-2:start -->[下载 v1.0.3 .zip](https://github.com/ConardLi/garden-skills/releases/download/gpt-image-2-v1.0.3/gpt-image-2-1.0.3.zip)<!-- DOWNLOAD:gpt-image-2:end -->
 
 ---
 
@@ -134,15 +134,74 @@
 - 最多 5 轮检索，让探索过程有边界
 - 内置 `grep`、`pdftotext`、`pdfplumber`、`pandas` 工作流，并强调答案来源
 
-链接：[README](./skills/kb-retriever/README.zh-CN.md) · [SKILL.md](./skills/kb-retriever/SKILL.md)
+链接：[README](./skills/kb-retriever/README.zh-CN.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[下载 v1.0.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.0/kb-retriever-1.0.0.zip)<!-- DOWNLOAD:kb-retriever:end -->
 
 ---
 
 ## 安装
 
-### 方式 A · Claude Code 插件市场
+总共支持 5 种安装方式，按你的工作流选一个即可：
 
-如果你用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)，这是最快的路径：
+| # | 方式 | 适合场景 | 能钉版本？ |
+|---|---|---|---|
+| A | [`skills` CLI（`npx skills add`）](#方式-a--skills-clinpx) | 任意 Agent，一行命令，可挑选单个 Skill | ✅ 通过 tag URL |
+| B | [Claude Code 插件市场](#方式-b--claude-code-插件市场) | Claude Code 用户、订阅插件包 | ✅ 通过市场版本 |
+| C | [Releases 钉版本 `.zip`](#方式-c--releases-钉版本-zip) | CI / 内网 / 可复现安装 | ✅ ✅（不可变） |
+| D | [`git clone` 后手动拷贝](#方式-d--手动拷贝到项目) | 本地 hack / 想自己魔改 | ❌（跟随 `main`） |
+| E | [Git Submodule](#方式-e--git-submodule) | 嵌进更大项目，需要随上游升级 | ✅ 通过 submodule SHA |
+
+> 上面每个 Skill 的"链接"那一行末尾，都有一个 **`下载 v<版本> .zip`** 链接，
+> 指向该 Skill 当前的钉版本发布产物。这些 URL 由
+> [`scripts/release/update-readme.mjs`](./scripts/release/update-readme.mjs)
+> 在每次发版后自动重写，永远指向最新的不可变版本。
+
+### 方式 A · `skills` CLI（npx）
+
+最快的、跨 Agent 通用的方式。直接使用社区标准的
+[`npx skills` CLI](https://www.npmjs.com/package/skills)，它会自动识别你正在用
+的 Agent（Claude Code / Cursor / Codex / …）并把 Skill 放到对的目录。
+
+```bash
+# 一次装上整个仓库（4 个 Skill），最新
+npx skills add ConardLi/garden-skills
+
+# 只装某一个 Skill，最新
+npx skills add ConardLi/garden-skills -s web-design-engineer
+
+# 装到全局 (~/.skills) 而不是当前项目 (./.skills)
+npx skills add ConardLi/garden-skills -s gpt-image-2 --global
+
+# 指定目标 Agent
+npx skills add ConardLi/garden-skills -s kb-retriever -a claude-code
+```
+
+> **默认就是 `main` 上的最新版本**，95% 的场景这就是你想要的——CLI 直接从源码
+> 树拉每个 Skill 当前的 `SKILL.md`。
+
+**想钉版本？（CI / 生产环境）** 用带 tag 的 `tree/` URL，会指向某次 release
+对应的那次提交：
+
+```bash
+# 把某个 Skill 钉到具体的 release
+npx skills add ConardLi/garden-skills/tree/web-design-engineer-v1.0.0/skills/web-design-engineer
+```
+
+每个 Skill 当前的钉版本 `.zip` URL 也直接挂在了上面"链接"那一行末尾的
+`下载 v<版本> .zip` 链接里。
+
+常用子命令：
+
+```bash
+npx skills list                 # 看已安装了什么
+npx skills find web-design      # 在仓库内搜索
+npx skills update               # 全部升级
+npx skills remove kb-retriever  # 卸载
+```
+
+### 方式 B · Claude Code 插件市场
+
+如果你用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)，可以
+订阅插件市场，按"包"安装一组相关的 Skill：
 
 ```bash
 /plugin marketplace add ConardLi/garden-skills
@@ -161,27 +220,66 @@
 | `knowledge-base-skills` | `kb-retriever` |
 | `image-generation-skills` | `gpt-image-2` |
 
-### 方式 B · 手动拷贝到项目
+### 方式 C · Releases 钉版本 `.zip`
 
-每个 Skill 文件夹都是自包含的，挑你要的拷过去即可：
+每次正式发版都会把对应 Skill 打包成一个**不可变**的 `.zip`（附带
+SHA-256 校验文件）发到
+[GitHub Releases](https://github.com/ConardLi/garden-skills/releases)。
+适合 CI、Dockerfile、内网部署等需要"字节级可复现"的场景。
 
 ```bash
-# Claude Code / Claude.ai
-cp -r skills/web-design-engineer  your-project/.claude/skills/
+# 把 <skill> / <version> 替换成你要的版本即可
+SKILL=web-design-engineer
+VERSION=1.0.0
 
-# Cursor / 通用 Agent
-cp -r skills/web-design-engineer  your-project/.agents/skills/
+curl -fsSL -o "${SKILL}.zip" \
+  "https://github.com/ConardLi/garden-skills/releases/download/${SKILL}-v${VERSION}/${SKILL}-${VERSION}.zip"
+
+# 校验 SHA-256（无人值守安装时强烈建议）
+curl -fsSL -o "${SKILL}.zip.sha256" \
+  "https://github.com/ConardLi/garden-skills/releases/download/${SKILL}-v${VERSION}/${SKILL}-${VERSION}.zip.sha256"
+shasum -a 256 -c "${SKILL}.zip.sha256"
+
+# 解压到 Agent 的 skills 目录
+unzip -q "${SKILL}.zip" -d .claude/skills/   # 或 .agents/skills/、.codex/skills/ 等
+```
+
+如果你只想"永远拿最新"，也有一个跟着最近一次 release 走的 URL：
+
+```bash
+https://github.com/ConardLi/garden-skills/releases/latest/download/<skill>-<version>.zip
+```
+
+> **每个 Skill 当前版本的钉版本 URL 都直接列在 README 里**——见上面每个 Skill
+> 区块"链接"那一行下面的"下载"块。这些链接由发布流水线自动同步。
+
+### 方式 D · 手动拷贝到项目
+
+`git clone` 整仓后再拷贝你要的 Skill。适合本地 fork、二次开发场景：
+
+```bash
+git clone https://github.com/ConardLi/garden-skills.git
+cp -r garden-skills/skills/web-design-engineer  your-project/.claude/skills/
+# Cursor / 通用 Agent：
+cp -r garden-skills/skills/web-design-engineer  your-project/.agents/skills/
 ```
 
 Agent 在下次扫描工作区时会自动发现。
 
-### 方式 C · Git Submodule
+### 方式 E · Git Submodule
 
-如果你想在更大的项目里跟踪上游更新：
+如果你想在更大的项目里把本仓库作为依赖来跟踪上游更新：
 
 ```bash
-git submodule add https://github.com/ConardLi/web-design-skill.git vendor/garden-skills
+git submodule add https://github.com/ConardLi/garden-skills.git vendor/garden-skills
 ln -s ../../vendor/garden-skills/skills/web-design-engineer .claude/skills/web-design-engineer
+```
+
+为了可复现，建议把 submodule 钉到某个 release tag：
+
+```bash
+cd vendor/garden-skills
+git checkout web-design-engineer-v1.0.0
 ```
 
 ---
@@ -201,90 +299,42 @@ ln -s ../../vendor/garden-skills/skills/web-design-engineer .claude/skills/web-d
 
 ---
 
-## Skill 的标准结构
+## 什么是 Skill？
 
-本仓库每个 Skill 都遵循同一种最简结构：
+**Skill** 就是 Agent 可以按需加载的一个自包含文件夹。它的核心是一个
+`SKILL.md`（YAML frontmatter + 指令），按需配上 reference 文档、脚本和素材：
 
 ```text
 <skill-name>/
-├── SKILL.md            ← 必需：YAML frontmatter + 给 Agent 看的指令
-├── README.md           ← 给人看的英文文档（GitHub 渲染的就是它）
-├── README.zh-CN.md     ← 给人看的中文文档
-├── references/         ← 可选：Agent 按需加载的扩展文档
-├── scripts/            ← 可选：确定性的可执行代码
-└── assets/             ← 可选：模板、字体、图标等输出物素材
+├── SKILL.md      ← 必需：什么时候用 + 怎么用
+├── README.md     ← 给人看的文档
+├── references/   ← 可选：Agent 按需加载的扩展文档
+├── scripts/      ← 可选：确定性的可执行代码
+└── assets/       ← 可选：模板、字体、图标等
 ```
 
-frontmatter 是 Agent 判断"什么时候该用这个 Skill"的契约：
-
-```markdown
----
-name: my-skill
-description: 用一句话清楚说明这个 Skill 是干什么的、什么时候应该用。
-              Agent 会用这段话判断是否激活本 Skill。
----
-
-# My Skill
-
-详细指令、示例与约束写在这里。
-```
-
-完整规范见 [agentskills.io](https://agentskills.io) 与 [Anthropic 官方示例仓库](https://github.com/anthropics/skills)。
+Agent 会根据 frontmatter 里的 `description` 决定要不要激活这个 Skill——
+所以 description 就是你和 Agent 之间的契约。完整规范见
+[agentskills.io](https://agentskills.io) 与
+[Anthropic 官方示例仓库](https://github.com/anthropics/skills)。
 
 ---
 
-## 仓库结构
+## 贡献
 
-```text
-.
-├── skills/                              ← 所有 Skill 都在这里，每个一个文件夹
-│   ├── web-video-presentation/
-│   │   ├── SKILL.md
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (原则、outline、主题、音频、录屏)
-│   │   ├── scripts/scaffold.sh
-│   │   ├── templates/
-│   │   └── themes/
-│   │
-│   ├── web-design-engineer/
-│   │   ├── SKILL.md
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   └── references/advanced-patterns.md
-│   │
-│   ├── gpt-image-2/
-│   │   ├── SKILL.md
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (18 大类、70+ 个提示词模板)
-│   │   └── scripts/     (check-mode.js、generate.js、edit.js、shared.js)
-│   │
-│   └── kb-retriever/
-│       ├── SKILL.md
-│       ├── README.md  /  README.zh-CN.md
-│       ├── references/  (pdf_reading.md、excel_reading.md、excel_analysis.md)
-│       └── scripts/convert_pdf_to_images.py
-│
-├── .claude-plugin/
-│   └── marketplace.json                 ← Claude Code 插件市场清单
-│
-├── demo/                                ← 可直接打开的演示
-│   └── web-design-demo/
-│       └── demo2/                       ← web-design-engineer 的有/无 Skill 对比展示
-│           ├── index.html
-│           ├── demo1.html  /  demo1-with-skill.html
-│           └── demo2-with-skill.html
-│
-├── dist/                                ← 共享展示素材
-│   ├── imgs/                            ← README Skill 海报
-│   ├── prompt/
-│   │   └── claude-design-system-prompt.md   （Claude Design 原始系统提示词）
-│
-├── website/                             ← 独立展示网站
-│   ├── gpt-image2-website/              ← GPT Image 2 Skill 展示站
-│   └── web-design-website/              ← web-design-engineer Skill 展示站
-│
-├── README.md  /  README.zh-CN.md        ← 集合首页（本文件）
-├── LICENSE
-└── .gitignore
+欢迎提 issue、贡献新的 Skill、或者改进发版工具链。
+
+维护者向的文档——仓库结构、发版流程、版本号规则、CI 工作流、常见问题——
+都在 [**`CONTRIBUTING.zh-CN.md`**](./CONTRIBUTING.zh-CN.md)
+（[English](./CONTRIBUTING.md)）。新增 Skill 或者发版前先读那份。
+
+快速上手：
+
+```bash
+git clone https://github.com/ConardLi/garden-skills.git
+cd garden-skills
+npm run list      # 列出所有 Skill + manifest 状态
+npm run validate  # 跑一遍和 PR CI 完全一样的检查
 ```
 
 ---

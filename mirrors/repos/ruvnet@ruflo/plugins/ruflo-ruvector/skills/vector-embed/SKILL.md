@@ -1,6 +1,6 @@
 ---
 name: vector-embed
-description: Generate embeddings via npx ruvector (ONNX all-MiniLM-L6-v2, 384-dim), normalize, and store in HNSW index
+description: Generate embeddings via npx ruvector@0.2.25 embed text (ONNX all-MiniLM-L6-v2, 384-dim), normalize, and store in HNSW index
 argument-hint: "<text-or-file>"
 allowed-tools: Bash Read mcp__claude-flow__memory_store mcp__claude-flow__memory_search
 ---
@@ -15,29 +15,33 @@ Use this skill to embed text, code, or documents into 384-dimensional vectors fo
 
 ## Steps
 
-1. **Ensure ruvector is available**:
+1. **Ensure ruvector@0.2.25 is available**:
    ```bash
-   npm ls ruvector 2>/dev/null || npm install ruvector
+   npm ls ruvector 2>/dev/null | grep '0.2.25' || npm install ruvector@0.2.25
    ```
-2. **Embed the input**:
-   - For text: `npx ruvector embed "your text here"`
-   - For a file: `npx ruvector embed --file src/module.ts`
-   - For batch: `npx ruvector embed --batch --glob "src/**/*.ts"`
-3. **Normalization** -- ruvector L2-normalizes by default (unit sphere, cosine similarity). Alternatives: `--norm l1`, `--norm minmax`, `--norm zscore`
-4. **Confirm** -- report vector ID, dimension (384), norm, and index stored in
+   If `embed text` later reports `ONNX WASM files not bundled`, also run:
+   ```bash
+   npm install ruvector-onnx-embeddings-wasm
+   ```
+2. **Embed the input** (use the `text` subcommand, with text as a positional arg):
+   - Single string: `npx -y ruvector@0.2.25 embed text "your text here"`
+   - With output file: `npx -y ruvector@0.2.25 embed text "your text here" -o vec.json`
+   - For a file: read its content via the Read tool, then pass it as the positional argument.
+   - For batch: loop over files in shell — ruvector@0.2.25 has no built-in `--batch`/`--glob` flags.
+3. **Adaptive (LoRA) variant**: `npx -y ruvector@0.2.25 embed text "..." --adaptive --domain code`
+4. **Confirm** — report vector dimension (384), norm, and any output path written.
 5. **Store metadata** in AgentDB if needed:
    `mcp__claude-flow__memory_store({ key: "embed-SOURCE", value: "VECTOR_METADATA", namespace: "vector-patterns" })`
 
 ## MCP alternative
 
-If ruvector MCP server is connected (`claude mcp add ruvector -- npx ruvector mcp start`):
-- `hooks_rag_context` — semantic context retrieval
-- `brain_search` — shared brain knowledge search
-
-## Batch embedding
-
+Register the MCP server once with the pinned version:
 ```bash
-npx ruvector embed --batch --glob "src/**/*.ts"
+claude mcp add ruvector -- npx -y ruvector@0.2.25 mcp start
 ```
+Then call MCP tools directly: `hooks_rag_context` (semantic context), `brain_search` (collective brain), `hooks_ast_analyze`, `hooks_route`.
 
-Reports total vectors inserted and index growth.
+## Caveats
+
+- The `embed --batch --glob` and `embed --file` flags do **not** exist in ruvector@0.2.25; only `embed text <text>` is supported. Read files yourself and call `embed text` per file.
+- ONNX runtime is not bundled by default. If embedding fails, install `ruvector-onnx-embeddings-wasm` or run `npx -y ruvector@0.2.25 doctor` to diagnose.

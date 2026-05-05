@@ -2,7 +2,7 @@
 
 Instructions for Codex and other AI coding agents working in this repository. Read this before making changes.
 
-`CLAUDE.md` may lag behind the current plan. For Codex work, treat this file plus `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` as the fresher source of truth.
+`CLAUDE.md` may lag behind the current plan. For Codex work, treat this file as the public source of truth. If local internal docs such as `docs/VISION.md`, `docs/PRINCIPLES.md`, or `docs/v0.2-plan.md` exist, use them as additional context; if they are missing, do not block public-contributor work on them.
 
 ## What This Project Is
 
@@ -11,6 +11,8 @@ Open CoDesign is an open-source desktop design agent. It turns prompts, local fi
 The v0.2 direction is no longer a single-prompt generator. Each design is a long-running pi session with a real workspace. The agent can read and edit files, run permissioned commands, ask structured questions, preview artifacts, expose tweak controls, generate images when the configured model supports it, and produce `DESIGN.md` design-system artifacts.
 
 The original inspiration was Claude Design. The product boundary is now clearer: Open CoDesign borrows proven coding-agent mechanics, then adds design-specific tools and a local-first workspace model.
+
+Product model: a `Design` owns a workspace. The agent edits design source files in that workspace; the preview runtime turns those sources into a rendered web document; exporters turn the rendered/source document into standard outputs such as HTML, PDF, PPTX, ZIP, or Markdown. In v0.2 the default source entry is `App.jsx`; `index.html` is reserved for standalone exports or legacy workspace files.
 
 `docs/` is gitignored. Maintainers may have internal plans, handoffs, and research locally; public contributors may not. Do not cite `docs/**` in public PR review comments unless the file exists in the public checkout.
 
@@ -22,11 +24,11 @@ These are project commitments, not preferences:
 2. BYOK only. No hosted account, proxied API, or telemetry by default. User credentials stay in human-readable local config.
 3. Local-first storage. v0.2 uses pi JSONL sessions plus real workspace files. Existing v0.1 SQLite data may be migrated, but do not add new SQLite tables for sessions, chat history, comments, snapshots, or design files.
 4. Every design has a workspace. No sealed/open split in v0.2. The workspace filesystem is the source of truth for artifacts and assets.
-5. MIT-compatible permissive licenses only. Reject GPL, AGPL, SSPL, proprietary deps, and unclear copied assets. Check licenses before adding scaffolds, brand refs, or package deps.
+5. Shipped app/runtime dependencies, bundled assets, scaffolds, skills, brand refs, and copied code must be MIT-compatible permissive. Reject GPL, AGPL, SSPL, proprietary deps, and unclear copied assets in anything that is bundled, linked, imported by app code, or distributed to users. Workflow-only CI/release tools may use copyleft licenses when they are not vendored, bundled, linked, or copied into the product; document the reason and keep their outputs limited to ordinary metadata or manifests.
 6. Lazy-load heavy features. PPTX export, web capture, scaffolds, skills, brand refs, and image generation must load on demand rather than at app start.
 7. Reuse pi primitives first. `pi-coding-agent` owns sessions, built-in tools, bash execution, event streaming, model registry, provider registration, and capability data unless a design-specific need proves otherwise.
 8. Brand values are data, not model memory. Use `DESIGN.md`, user files, official CSS/SVG/screenshots, or brand URLs. Do not invent brand hex values from memory.
-9. PRs must satisfy Principles 5b: compatible, upgradeable, no bloat, elegant.
+9. PRs should stay compatible, upgradeable, lean, and elegant. If `docs/PRINCIPLES.md` is present, use its Principles 5b wording as the detailed checklist.
 
 ## AI Visibility For Web Work
 
@@ -55,7 +57,7 @@ When building or updating any website, project homepage, product page, personal 
 
 - Design equals pi session.
 - Session history lives under app user data as pi JSONL.
-- Design files, generated HTML/JSX/CSS, assets, exports, `AGENTS.md`, and `DESIGN.md` live in the user workspace.
+- Design source files, generated JSX/HTML/CSS, assets, exports, `AGENTS.md`, and `DESIGN.md` live in the user workspace.
 - Workspace settings live in `.codesign/settings.json` with `schemaVersion`.
 - `settings.local.json` is personal and should stay gitignored.
 - v0.1 SQLite is legacy data to migrate, not the v0.2 storage model.
@@ -103,8 +105,8 @@ Do not reintroduce a verifier subagent, snip tool, custom bash tool, custom list
 - Icons use `lucide-react`.
 - Forms use native `<form>` and `FormData`.
 - Animations use Tailwind transitions. Do not introduce framer-motion or motion.
-- App chrome must use `packages/ui` tokens. Artifact output may define its own visual system.
-- Sandbox preview remains Electron iframe `srcdoc` plus runtime tooling.
+- App chrome must use `packages/ui` tokens. Generated design sources and exports may define their own visual system.
+- Sandbox preview remains Electron iframe `srcdoc` plus runtime tooling. `App.jsx` JSX source is wrapped by the runtime for preview/export; exported `index.html` is the standalone deliverable.
 
 ## Repository Layout
 
@@ -126,12 +128,12 @@ examples/            # Public demo reproductions
 
 ## Doing Tasks Here
 
-- Read `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` before non-trivial architecture or product work.
-- Use planning files in `.Codex/workspace/` for tasks spanning more than five tool calls or more than three files.
+- For non-trivial architecture or product work, read `docs/VISION.md`, `docs/PRINCIPLES.md`, and `docs/v0.2-plan.md` when they exist locally. Public checkouts may not have `docs/`; in that case rely on this file, public issues/PRs, and README context.
+- Use planning files in `.Codex/workspace/` for tasks spanning more than five tool calls or more than three files when a durable local plan would help. Do not create planning churn for small, direct fixes.
 - Use git worktrees for parallel or unrelated feature work. Do not mix two unrelated branches in one checkout.
-- Check `docs/RESEARCH_QUEUE.md` before touching sandbox, inline comments, tweaks, PPTX, pi capabilities, scaffolds, skills, or brand refs.
+- Check `docs/RESEARCH_QUEUE.md` before touching sandbox, inline comments, tweaks, PPTX, pi capabilities, scaffolds, skills, or brand refs when that file exists locally.
 - Keep edits scoped. Avoid drive-by refactors.
-- Before adding a dependency, check license, install size, alternatives, and whether it can be a peer dep.
+- Before adding a shipped/runtime dependency, check license, install size, alternatives, and whether it can be a peer dep. For workflow-only tools, document why they are not bundled and whether their outputs affect distributed artifacts.
 - Add or update Vitest coverage for feature work. Broaden tests when changing migrations, permissions, tool hooks, or shared contracts.
 - Prefer manifest and switch logic over registries until two real callers need more.
 - Comment only when the reason would surprise the next maintainer.

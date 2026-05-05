@@ -4,10 +4,10 @@ import ai.koog.agents.features.opentelemetry.attribute.CommonAttributes
 import ai.koog.agents.features.opentelemetry.mock.MockLLMProvider
 import ai.koog.prompt.message.Message
 import ai.koog.prompt.message.RequestMetaInfo
+import ai.koog.utils.time.KoogClock
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import kotlin.time.Clock
 
 class SystemMessageEventTest {
 
@@ -60,7 +60,7 @@ class SystemMessageEventTest {
 
     private fun createTestSystemMessage(content: String): Message.System = Message.System(
         content = content,
-        metaInfo = RequestMetaInfo(Clock.System.now())
+        metaInfo = RequestMetaInfo(KoogClock.System.now())
     )
 
     //endregion Private Methods

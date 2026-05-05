@@ -40,15 +40,15 @@ import ai.koog.prompt.streaming.StreamFrame
 import ai.koog.serialization.JSONElement
 import ai.koog.serialization.JSONObject
 import ai.koog.serialization.TypeToken
+import ai.koog.utils.time.KoogClock
 import kotlin.reflect.KClass
-import kotlin.time.Clock
 
 /**
  * Platform-agnostic API for agent pipelines. Implemented by both the expect/actual AIAgentPipeline
  * and the shared AIAgentPipelineImpl.
  */
 public interface AIAgentPipelineAPI {
-    public val clock: Clock
+    public val clock: KoogClock
 
     public val config: AIAgentConfig
 

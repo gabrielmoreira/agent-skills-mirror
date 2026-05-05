@@ -48,17 +48,17 @@ import ai.koog.prompt.streaming.StreamFrame
 import ai.koog.serialization.JSONElement
 import ai.koog.serialization.JSONObject
 import ai.koog.serialization.TypeToken
+import ai.koog.utils.time.KoogClock
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
-import kotlin.time.Clock
 
 /**
  * Default implementation of [AIAgentPipelineAPI]
  */
 public class AIAgentPipelineImpl(
     override val config: AIAgentConfig,
-    public override val clock: Clock
+    public override val clock: KoogClock
 ) : AIAgentPipelineAPI {
 
     // Notes on suppressed warnings used in this class:

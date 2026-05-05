@@ -11,7 +11,7 @@ Before proposing a fix:
 1. Analyze `Package.swift` or `.pbxproj` to determine Swift language mode, strict concurrency level, default isolation, and upcoming features. Do this always, not only for migration work.
 2. Capture the exact diagnostic and offending symbol.
 3. Determine the isolation boundary: `@MainActor`, custom actor, actor instance isolation, or `nonisolated`.
-4. Confirm whether the code is UI-bound or intended to run off the main actor. For delayed retries, timers, and backoff tasks, separate the waiting from the UI mutation. The sleep often belongs off the main actor even when the final state update belongs on it.
+4. Confirm whether the code is UI-bound or intended to run off the main actor. When spawning unstructured tasks, inspect the synchronous prefix (everything before the first `await`): start on `@MainActor` only when that prefix truly needs main-actor access; otherwise use `Task { @concurrent in ... }` and hop back with `MainActor.run` only after the suspension. A trivial non-main line (for example, `print`) followed by main-actor work in the same prefix is not a reason to use `@concurrent`. For delayed retries, timers, and backoff tasks, separate the waiting from the UI mutation. The sleep often belongs off the main actor even when the final state update belongs on it.
 
 Project settings that change concurrency behavior:
 
@@ -72,7 +72,7 @@ Prefer changes that preserve behavior while satisfying data-race safety:
 
 - **UI-bound state**: isolate the type or member to `@MainActor`.
 - **Shared mutable state**: move it behind an `actor`, or use `@MainActor` only if the state is UI-owned.
-- **Background work**: when work must hop off caller isolation, use an `async` API marked `@concurrent`; when work can safely inherit caller isolation, use `nonisolated` without `@concurrent`. If a task mostly waits or retries before one UI-bound mutation, keep the delay off `@MainActor` and hop back only for the final update.
+- **Background work**: when work must hop off caller isolation, use an `async` API marked `@concurrent`; when work can safely inherit caller isolation, use `nonisolated` without `@concurrent`. When spawning a `Task`, match entry isolation to its synchronous prefix. If nothing before the first `await` needs the main actor, use `Task { @concurrent in ... }` and hop back via `await MainActor.run { ... }` for the UI update. If the prefix mixes a trivial non-main statement with main-actor work, keep the inherited `@MainActor` start—splitting the cheap line off-main is not worth an extra hop.
 - **Sendability issues**: prefer immutable values and explicit boundaries over `@unchecked Sendable`.
 
 ## Concurrency Tool Selection
@@ -105,6 +105,40 @@ await withTaskGroup(of: ProcessedItem.self) { group in
     for await result in group {
         results.append(result)
     }
+}
+```
+
+
+## Task entry isolation
+
+Match a `Task`'s entry isolation to its synchronous prefix (everything from `{` to the first `await`).
+
+- If anything in that prefix needs `@MainActor`, keep the inherited `@MainActor` start.
+- If nothing in that prefix needs `@MainActor`, prefer `Task { @concurrent in ... }` and hop back only for UI-owned mutation.
+
+```swift
+// ❌ Synchronous prefix is empty; first work hops away
+Task {
+    await hopToOtherIsolationDomain()
+}
+
+// ❌ Synchronous prefix is only `print` (trivial, non-main); first await hops away
+Task {
+    print("Also not main-thread-bound")
+    await hopToOtherIsolationDomain()
+}
+
+// ✅ Start off the main actor, hop back only for UI work
+Task { @concurrent in
+    await hopToOtherIsolationDomain()
+    await MainActor.run { updateUI() }
+}
+
+// ✅ Synchronous prefix DOES contain main-actor work — keep inheritance
+Task {
+    print("debug")              // trivial, non-main — rides along
+    self.isLoading = true       // needs @MainActor, before any await
+    await fetchData()
 }
 ```
 

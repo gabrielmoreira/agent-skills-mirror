@@ -21,6 +21,7 @@ import ai.koog.prompt.message.ResponseMetaInfo
 import ai.koog.prompt.structure.json.generator.BasicJsonSchemaGenerator
 import ai.koog.prompt.structure.json.generator.StandardJsonSchemaGenerator
 import ai.koog.serialization.typeToken
+import ai.koog.utils.time.KoogClock
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -29,13 +30,10 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
-import kotlin.time.Clock
 import kotlin.time.Instant
 
 class LLMAsJudgeNodeTest {
-    private val testClock: Clock = object : Clock {
-        override fun now(): Instant = Instant.parse("2023-01-01T00:00:00Z")
-    }
+    private val testClock: KoogClock = KoogClock { Instant.parse("2023-01-01T00:00:00Z") }
 
     companion object {
         const val CRITIC_TASK = "Find all numbers produced by LLM and check that they are not divided by 3"

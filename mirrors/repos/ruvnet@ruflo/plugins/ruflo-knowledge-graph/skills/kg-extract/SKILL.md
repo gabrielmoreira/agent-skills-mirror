@@ -2,7 +2,7 @@
 name: kg-extract
 description: Extract entities and relations from source files to build a knowledge graph
 argument-hint: "<path>"
-allowed-tools: Read Glob Grep mcp__claude-flow__agentdb_hierarchical-store mcp__claude-flow__agentdb_causal-edge mcp__claude-flow__agentdb_semantic-route mcp__claude-flow__agentdb_pattern-store mcp__claude-flow__embeddings_embed Bash
+allowed-tools: Read Glob Grep mcp__claude-flow__agentdb_hierarchical-store mcp__claude-flow__agentdb_causal-edge mcp__claude-flow__agentdb_semantic-route mcp__claude-flow__agentdb_pattern-store mcp__claude-flow__embeddings_generate Bash
 ---
 
 # KG Extract

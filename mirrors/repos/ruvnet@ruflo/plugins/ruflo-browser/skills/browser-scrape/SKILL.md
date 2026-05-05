@@ -1,31 +1,36 @@
 ---
 name: browser-scrape
-description: Extract structured data from web pages using browser automation and DOM queries
+description: DEPRECATED in v0.2.0 -- use browser-extract instead; this is a thin shim for backward compatibility, removed in v0.3.0
 argument-hint: "<url>"
-allowed-tools: mcp__claude-flow__browser_open mcp__claude-flow__browser_get-text mcp__claude-flow__browser_get-value mcp__claude-flow__browser_eval mcp__claude-flow__browser_snapshot mcp__claude-flow__browser_screenshot mcp__claude-flow__browser_scroll mcp__claude-flow__browser_wait mcp__claude-flow__browser_click mcp__claude-flow__browser_close mcp__claude-flow__browser_session-list Bash
+allowed-tools: Bash Read
 ---
 
-# Browser Scraping
+# Browser Scrape (deprecated)
 
-Extract structured data from web pages using browser automation.
+> **Deprecated since plugin v0.2.0.** Removed in v0.3.0.
+>
+> Use [`browser-extract`](../browser-extract/SKILL.md) instead. It provides the same scraping capability plus:
+>
+> - RVF cognitive container per session (replayable, federatable)
+> - Mandatory AIDefence PII + prompt-injection gates
+> - Persistent `browser-templates` namespace for reusable recipes
+> - Automatic `browser-selectors` namespace updates so DOM drift is recoverable
 
-## When to use
+## Migration
 
-When you need to gather information from web pages that require JavaScript rendering, authentication, or dynamic content loading.
+| v0.1 invocation | v0.2 equivalent |
+|-----------------|-----------------|
+| `/browser-scrape <url>` | `/browser-extract <url>` |
+| `/browser-scrape <url>` (with template intent) | `/browser-extract <url> --template <name>` |
+| Manual selector storage in `browser-patterns` namespace | Automatic — `browser-extract` writes to `browser-templates` and `browser-selectors` |
 
-## Steps
+## Behavior of this shim
 
-1. **Open page** — call `mcp__claude-flow__browser_open` with the target URL
-2. **Wait for content** — call `mcp__claude-flow__browser_wait` for dynamic content to load
-3. **Get accessibility tree** — call `mcp__claude-flow__browser_snapshot` for structured page content
-4. **Extract text** — call `mcp__claude-flow__browser_get-text` with CSS selectors
-5. **Run queries** — call `mcp__claude-flow__browser_eval` with JavaScript to extract structured data
-6. **Paginate** — use `browser_click` on next/load-more buttons, then repeat extraction
-7. **Close** — call `mcp__claude-flow__browser_close` when done
+This skill delegates to `browser-extract`. Calling it emits a deprecation notice and proceeds.
 
-## Best practices
+```bash
+# This skill is intentionally minimal — it just points the agent at the new skill.
+echo "browser-scrape is deprecated; running browser-extract instead." >&2
+```
 
-- Prefer `browser_snapshot` (accessibility tree) over raw HTML for structured extraction
-- Use `browser_eval` with `document.querySelectorAll` for bulk extraction
-- Add `browser_wait` between page loads to avoid timing issues
-- Respect robots.txt and rate limits
+The deprecation notice is captured in the agent's transcript so callers see the remediation. There is no behavior preserved here beyond the redirect — if you depended on a specific extraction shape, port to `browser-extract` and use `--template` to encode it.

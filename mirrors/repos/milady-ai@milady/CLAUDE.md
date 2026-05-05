@@ -132,7 +132,7 @@ Two distinct skill systems live in this repo. Don't conflate them.
 
 Bundled `@elizaos/skills` are the default knowledge base for the running Eliza agent and for any code agent working in this repo. Repo setup mirrors them into `skills/.defaults/` so workspace task agents (Claude, Codex) can read them directly from the checkout.
 
-- **Source of truth:** `eliza/packages/skills/skills/` (31 bundled skills).
+- **Source of truth:** `eliza/packages/skills/skills/` (33 bundled skills).
 - **Workspace mirror:** `skills/.defaults/` — refreshed by `scripts/sync-workspace-default-skills.mjs` during repo setup.
 - **Managed store seed:** `eliza/packages/app-core/scripts/ensure-skills.mjs` seeds the bundled skills into the user's managed skills store on first run.
 - **Runtime knowledge seed:** `eliza/packages/agent/src/runtime/default-knowledge.ts` seeds baseline runtime knowledge items (including Eliza Cloud guidance) into the agent.
@@ -145,10 +145,12 @@ Open the `SKILL.md` of any of these directly from the workspace mirror when rele
 - `elizaos` — runtime concepts, plugin abstractions, AgentRuntime, actions/providers/evaluators/services.
 - `eliza-cloud` — Cloud as managed backend, app registration, hosted APIs, billing, monetization, container deploys.
 - `build-monetized-app` — building a Cloud app that earns via inference markup; pairs with `eliza-cloud`.
+- `eliza-cloud-buy-domain` — registering a confirmed custom domain for an Eliza Cloud app.
+- `eliza-cloud-manage-domain` — listing, verifying, syncing, detaching, and editing DNS for app domains.
 
 **Agent-orchestration / authoring:**
 - `coding-agent` — spawning Codex / Claude Code / OpenCode / Pi via PTY-backed bash for sub-agent work.
-- `claude-subagent-milady-bridge` — read-only loopback endpoints (`/api/coding-agents/<sessionId>/...`) that give a spawned coding sub-agent access to parent runtime context.
+- `task-agent-eliza-bridge` — read-only loopback endpoints (`/api/coding-agents/<sessionId>/...`) that give a spawned coding task agent access to parent runtime context.
 - `skill-creator` — authoring new SKILL.md packages (frontmatter, scripts, references, progressive disclosure).
 
 **Connectors / OS / SaaS integrations** (use when the task touches that surface):

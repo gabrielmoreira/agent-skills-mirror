@@ -328,7 +328,7 @@ node skills/gpt-image-2/scripts/edit.js \
 
 ### 8. Scenes & Illustrations (`references/scenes-and-illustrations/`)
 
-适合“氛围 + 故事 + 情绪”的插画类视觉。当前已落地：
+适合 “氛围 + 故事 + 情绪” 的插画类视觉。当前已落地：
 
 - `healing-scene.md` — 治愈系日常 / 季节场景插画
 - `concept-scene.md` — 电影感概念大场景 / IP key art

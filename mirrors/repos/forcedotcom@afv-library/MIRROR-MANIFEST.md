@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns, 171 file(s) materialized.
+Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns, 167 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 171 |
+| Files         | 167 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -214,22 +214,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 153 | ✓ | [`skills/testing-agentforce/references/test-report-format.md`](skills/testing-agentforce/references/test-report-format.md) |
 | 154 | ✓ | [`skills/testing-agentforce/references/troubleshooting.md`](skills/testing-agentforce/references/troubleshooting.md) |
 | 155 | ✓ | [`skills/testing-agentforce/SKILL.md`](skills/testing-agentforce/SKILL.md) |
-| 156 | ✓ | [`skills/trigger-refactor-pipeline/assets/test_template.apex`](skills/trigger-refactor-pipeline/assets/test_template.apex) |
-| 157 | ✓ | [`skills/trigger-refactor-pipeline/references/handler_patterns.md`](skills/trigger-refactor-pipeline/references/handler_patterns.md) |
-| 158 | ✓ | [`skills/trigger-refactor-pipeline/scripts/analyze_trigger.py`](skills/trigger-refactor-pipeline/scripts/analyze_trigger.py) |
-| 159 | ✓ | [`skills/trigger-refactor-pipeline/SKILL.md`](skills/trigger-refactor-pipeline/SKILL.md) |
-| 160 | ✓ | [`skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md) |
-| 161 | ✓ | [`skills/uplifting-components-to-slds2/references/common-patterns.md`](skills/uplifting-components-to-slds2/references/common-patterns.md) |
-| 162 | ✓ | [`skills/uplifting-components-to-slds2/references/examples.md`](skills/uplifting-components-to-slds2/references/examples.md) |
-| 163 | ✓ | [`skills/uplifting-components-to-slds2/references/migration-checklist.md`](skills/uplifting-components-to-slds2/references/migration-checklist.md) |
-| 164 | ✓ | [`skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md) |
-| 165 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md`](skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md) |
-| 166 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md`](skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md) |
-| 167 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md`](skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md) |
-| 168 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md`](skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md) |
-| 169 | ✓ | [`skills/uplifting-components-to-slds2/SKILL.md`](skills/uplifting-components-to-slds2/SKILL.md) |
-| 170 | ✓ | [`skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh`](skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh) |
-| 171 | ✓ | [`skills/using-ui-bundle-salesforce-data/SKILL.md`](skills/using-ui-bundle-salesforce-data/SKILL.md) |
+| 156 | ✓ | [`skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md) |
+| 157 | ✓ | [`skills/uplifting-components-to-slds2/references/common-patterns.md`](skills/uplifting-components-to-slds2/references/common-patterns.md) |
+| 158 | ✓ | [`skills/uplifting-components-to-slds2/references/examples.md`](skills/uplifting-components-to-slds2/references/examples.md) |
+| 159 | ✓ | [`skills/uplifting-components-to-slds2/references/migration-checklist.md`](skills/uplifting-components-to-slds2/references/migration-checklist.md) |
+| 160 | ✓ | [`skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md) |
+| 161 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md`](skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md) |
+| 162 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md`](skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md) |
+| 163 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md`](skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md) |
+| 164 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md`](skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md) |
+| 165 | ✓ | [`skills/uplifting-components-to-slds2/SKILL.md`](skills/uplifting-components-to-slds2/SKILL.md) |
+| 166 | ✓ | [`skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh`](skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh) |
+| 167 | ✓ | [`skills/using-ui-bundle-salesforce-data/SKILL.md`](skills/using-ui-bundle-salesforce-data/SKILL.md) |
 
 ---
 

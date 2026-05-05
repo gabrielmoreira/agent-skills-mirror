@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,18 +76,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`skills/qt-qml-docs/platforms/windsurf.md`](skills/qt-qml-docs/platforms/windsurf.md) |
 | 16 | ✓ | [`skills/qt-qml-docs/README.md`](skills/qt-qml-docs/README.md) |
 | 17 | ✓ | [`skills/qt-qml-docs/SKILL.md`](skills/qt-qml-docs/SKILL.md) |
-| 18 | ✓ | [`skills/qt-qml-review/LICENSE.txt`](skills/qt-qml-review/LICENSE.txt) |
-| 19 | ✓ | [`skills/qt-qml-review/platforms/copilot.prompt.md`](skills/qt-qml-review/platforms/copilot.prompt.md) |
-| 20 | ✓ | [`skills/qt-qml-review/platforms/windsurf.md`](skills/qt-qml-review/platforms/windsurf.md) |
-| 21 | ✓ | [`skills/qt-qml-review/README.md`](skills/qt-qml-review/README.md) |
-| 22 | ✓ | [`skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py`](skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py) |
-| 23 | ✓ | [`skills/qt-qml-review/references/qt-qml-review-checklist.md`](skills/qt-qml-review/references/qt-qml-review-checklist.md) |
-| 24 | ✓ | [`skills/qt-qml-review/SKILL.md`](skills/qt-qml-review/SKILL.md) |
-| 25 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
-| 26 | ✓ | [`skills/qt-qml/platforms/copilot.prompt.md`](skills/qt-qml/platforms/copilot.prompt.md) |
-| 27 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
-| 28 | ✓ | [`skills/qt-qml/README.md`](skills/qt-qml/README.md) |
-| 29 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
+| 18 | ✓ | [`skills/qt-qml-profiler/LICENSE.txt`](skills/qt-qml-profiler/LICENSE.txt) |
+| 19 | ✓ | [`skills/qt-qml-profiler/README.md`](skills/qt-qml-profiler/README.md) |
+| 20 | ✓ | [`skills/qt-qml-profiler/references/qml-performance-anti-patterns.md`](skills/qt-qml-profiler/references/qml-performance-anti-patterns.md) |
+| 21 | ✓ | [`skills/qt-qml-profiler/references/scripts/parse-qmlprofiler-trace.py`](skills/qt-qml-profiler/references/scripts/parse-qmlprofiler-trace.py) |
+| 22 | ✓ | [`skills/qt-qml-profiler/SKILL.md`](skills/qt-qml-profiler/SKILL.md) |
+| 23 | ✓ | [`skills/qt-qml-review/LICENSE.txt`](skills/qt-qml-review/LICENSE.txt) |
+| 24 | ✓ | [`skills/qt-qml-review/platforms/copilot.prompt.md`](skills/qt-qml-review/platforms/copilot.prompt.md) |
+| 25 | ✓ | [`skills/qt-qml-review/platforms/windsurf.md`](skills/qt-qml-review/platforms/windsurf.md) |
+| 26 | ✓ | [`skills/qt-qml-review/README.md`](skills/qt-qml-review/README.md) |
+| 27 | ✓ | [`skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py`](skills/qt-qml-review/references/lint-scripts/qt_qml_lint.py) |
+| 28 | ✓ | [`skills/qt-qml-review/references/qt-qml-review-checklist.md`](skills/qt-qml-review/references/qt-qml-review-checklist.md) |
+| 29 | ✓ | [`skills/qt-qml-review/SKILL.md`](skills/qt-qml-review/SKILL.md) |
+| 30 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
+| 31 | ✓ | [`skills/qt-qml/platforms/copilot.prompt.md`](skills/qt-qml/platforms/copilot.prompt.md) |
+| 32 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
+| 33 | ✓ | [`skills/qt-qml/README.md`](skills/qt-qml/README.md) |
+| 34 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
 
 ---
 

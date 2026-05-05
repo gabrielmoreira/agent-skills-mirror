@@ -24,7 +24,7 @@ Before reviewing, extract project constraints from repository context:
 4. Apply the stricter rule when project context and this skill overlap.
 5. If project docs or CI name a verification command, prefer that over auto-detection.
 
-For the context shape, see `references/project-context.md`.
+For the context shape, see `references/project-context.md`. Load it when the diff touches release files, manifests, or CI config.
 
 ## Get the Diff
 

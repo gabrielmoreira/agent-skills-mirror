@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `cube-js/cube` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `cube-js/cube` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cube-js/cube` — 26 default patterns, 0 followed patterns, 10 file(s
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,15 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.cursor/rules/docs-example-data-model.mdc`](.cursor/rules/docs-example-data-model.mdc) |
-| 2 | ✓ | [`.cursor/rules/namings-rule.mdc`](.cursor/rules/namings-rule.mdc) |
-| 3 | ✓ | [`.cursor/rules/static-assets.mdc`](.cursor/rules/static-assets.mdc) |
-| 4 | ✓ | [`.cursor/rules/writing-documentation.mdc`](.cursor/rules/writing-documentation.mdc) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 7 | ✓ | [`packages/cubejs-backend-shared/CLAUDE.md`](packages/cubejs-backend-shared/CLAUDE.md) |
-| 8 | ✓ | [`packages/cubejs-query-orchestrator/CLAUDE.md`](packages/cubejs-query-orchestrator/CLAUDE.md) |
-| 9 | ✓ | [`rust/cubesql/CLAUDE.md`](rust/cubesql/CLAUDE.md) |
-| 10 | ✓ | [`rust/cubestore/CLAUDE.md`](rust/cubestore/CLAUDE.md) |
+| 2 | ✓ | [`.cursor/rules/mintlify-mdx-gotchas.mdc`](.cursor/rules/mintlify-mdx-gotchas.mdc) |
+| 3 | ✓ | [`.cursor/rules/namings-rule.mdc`](.cursor/rules/namings-rule.mdc) |
+| 4 | ✓ | [`.cursor/rules/static-assets.mdc`](.cursor/rules/static-assets.mdc) |
+| 5 | ✓ | [`.cursor/rules/writing-documentation.mdc`](.cursor/rules/writing-documentation.mdc) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 8 | ✓ | [`packages/cubejs-backend-shared/CLAUDE.md`](packages/cubejs-backend-shared/CLAUDE.md) |
+| 9 | ✓ | [`packages/cubejs-query-orchestrator/CLAUDE.md`](packages/cubejs-query-orchestrator/CLAUDE.md) |
+| 10 | ✓ | [`rust/cubesql/CLAUDE.md`](rust/cubesql/CLAUDE.md) |
+| 11 | ✓ | [`rust/cubestore/CLAUDE.md`](rust/cubestore/CLAUDE.md) |
 
 ---
 

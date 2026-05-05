@@ -12,6 +12,12 @@
 > - 章节切分 / 每章 step 数 / 每步估时
 > - 每步屏幕内容（hero / 标语 / 数据 / 列表项）
 > - 章节级**信息池**（从 article 抽的数字 / 引用 / 案例 / 标签）
+>
+> **outline 里的 step 数是初始预估**。最终 step 数以章节实现时的
+> `narrations.ts` 为准——后者既是 step 数源，也是音频合成源
+> （详见 [`CHAPTER-CRAFT.md`](CHAPTER-CRAFT.md) 「代码层最小约束」+
+> [`AUDIO.md`](AUDIO.md)）。如果实现时章节 step 数和 outline 不一致，
+> 回过来同步 outline 即可，不需要纠结"对得严丝合缝"。
 
 > **写 outline 前必读**（双源原则，[CHAPTER-CRAFT.md Part 0 原则 10](CHAPTER-CRAFT.md#10-双源原则scriptmd-定节拍--articlemd-定画面密度)）：
 >

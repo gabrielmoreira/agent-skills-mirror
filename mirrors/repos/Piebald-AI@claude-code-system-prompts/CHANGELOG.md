@@ -4,6 +4,29 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.128](https://github.com/Piebald-AI/claude-code-system-prompts/commit/526c2d3)
+
+_+1,406 tokens_
+
+- **NEW:** Agent Prompt: Background job agent instructions — Replaces the background-job behavior system prompt with built-in background-agent instructions for progress narration, tool-result restatement, noisy-investigation delegation, and explicit `result:`, `needs input:`, or `failed:` status signals.
+- **NEW:** Agent Prompt: Onboarding guide share link close — Adds onboarding-guide closing instructions that upload finalized `ONBOARDING.md` with `ShareOnboardingGuide`, handle existing-guide and unavailable-tool cases, and return the generated team share link.
+- **NEW:** Tool Description: RemoteTrigger prompt — Describes the claude.ai remote-trigger API tool for listing, reading, creating, updating, and running scheduled remote agent routines without exposing OAuth tokens.
+- **REMOVED:** Agent Prompt: Session memory update instructions — Removed the conversation-session notes update prompt that edited structured session memory files during chats.
+- **REMOVED:** Data: Session memory template — Removed the structured `summary.md` session memory template.
+- **REMOVED:** System Prompt: Background job behavior — Removed the standalone background-job behavior prompt; its conventions now live in the new built-in background job agent instructions.
+- Data: Claude API SDK references — Added structured refusal stop-details guidance across Python, TypeScript, C#, Go, Java, PHP, and Ruby, and added programmatic API error type guidance for Java, PHP, Ruby, and the HTTP error reference.
+- Data: Claude API reference — C# — Documents beta C# tool-runner and Managed Agents support via `BetaToolRunner` and `client.Beta.Agents`/Sessions/Environments.
+- Data: Claude API reference — Go — Adds typed model constants, updates adaptive thinking syntax, and documents the beta advisor tool parameter.
+- Data: Claude API reference — Java — Updates the documented SDK version from `2.17.0` to `2.27.0` and adds beta advisor tool guidance.
+- Data: Claude model catalog — Marks Claude Sonnet 4 and Claude Opus 4 as deprecated, recommends Opus 4.7 or Sonnet 4.6 replacements, and updates older Sonnet replacement guidance to Sonnet 4.6.
+- Data: Managed Agents references — Updates Python and TypeScript examples to use `client.beta.sessions.events.stream` and the current custom-tool event `name` field.
+- Data: Tool use concepts — Adds beta server-side advisor tool documentation, including required model selection, optional fields, and the `advisor-tool-2026-03-01` beta header.
+- Skill: Building LLM-powered applications with Claude — Refreshes the current-model table for Opus 4.7, Opus 4.6, Sonnet 4.6, and Haiku 4.5; updates default model-ID examples; and notes beta C# support for tool running and Managed Agents.
+- Skill: Model migration guide — Adds Opus 4.7 as the recommended Opus 4.6 migration target and adds a tuning check to parse tool inputs as JSON rather than matching serialized raw strings.
+- System Prompt: Agent thread notes — Instructs agent threads to return reports, summaries, findings, and analysis directly in the final message instead of writing `.md` files for the parent agent to read.
+- Tool Description: Edit — Hardcodes the Read-output line-number prefix format as “line number + tab” in indentation-preservation guidance.
+- Tool Description: ReadFile — Always appends the additional read note placeholder at the end of the empty-file warning instead of gating it behind a separate conditional helper.
+
 # [2.1.126](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b9d42f2)
 
 _-87 tokens_

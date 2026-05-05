@@ -1,3 +1,1 @@
-# PostHog Development Guide
-
-See consolidated agents instructions in @AGENTS.md
+cache/repos/github.com/PostHog@posthog/AGENTS.md

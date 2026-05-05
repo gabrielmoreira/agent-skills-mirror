@@ -42,6 +42,7 @@ Before calling the workflow complete:
 2. Confirm plan review artifacts exist for the required tier.
 3. Confirm execution results line up with the approved plan or document scope drift.
 4. Run `controlflow-review` for code-level findings.
+5. Confirm the plan's lifecycle sections (`## Progress`, `## Discoveries`, `## Decision Log`, `## Outcomes`, `## Idempotence & Recovery`) are current: `## Progress` reflects all completed phases, `## Discoveries` records any unexpected findings, `## Decision Log` captures key execution decisions, `## Outcomes` describes what was achieved or deferred, and `## Idempotence & Recovery` notes which phases are safe to re-run. Update these sections at each phase boundary during execution and again at final review.
 
 ## Common Mistakes
 

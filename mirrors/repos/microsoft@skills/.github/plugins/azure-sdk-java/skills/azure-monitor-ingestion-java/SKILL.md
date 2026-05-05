@@ -57,9 +57,10 @@ Or use Azure SDK BOM:
 ## Environment Variables
 
 ```bash
-DATA_COLLECTION_ENDPOINT=https://<dce-name>.<region>.ingest.monitor.azure.com
-DATA_COLLECTION_RULE_ID=dcr-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-STREAM_NAME=Custom-MyTable_CL
+DATA_COLLECTION_ENDPOINT=https://<dce-name>.<region>.ingest.monitor.azure.com  # Required for all auth methods
+DATA_COLLECTION_RULE_ID=dcr-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Required for log upload routing
+STREAM_NAME=Custom-MyTable_CL  # Required for the target DCR stream
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Client Creation
@@ -67,12 +68,20 @@ STREAM_NAME=Custom-MyTable_CL
 ### Synchronous Client
 
 ```java
-import com.azure.identity.DefaultAzureCredential;
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
 import com.azure.monitor.ingestion.LogsIngestionClient;
 import com.azure.monitor.ingestion.LogsIngestionClientBuilder;
 
-DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 LogsIngestionClient client = new LogsIngestionClientBuilder()
     .endpoint("<data-collection-endpoint>")
@@ -87,7 +96,7 @@ import com.azure.monitor.ingestion.LogsIngestionAsyncClient;
 
 LogsIngestionAsyncClient asyncClient = new LogsIngestionClientBuilder()
     .endpoint("<data-collection-endpoint>")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildAsyncClient();
 ```
 

@@ -73,11 +73,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`scripts/build/CLAUDE.md`](scripts/build/CLAUDE.md) |
 | 13 | ✓ | [`scripts/verify-baseline-static/CLAUDE.md`](scripts/verify-baseline-static/CLAUDE.md) |
 | 14 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 15 | ✓ | [`src/bun.js/bindings/v8/AGENTS.md`](src/bun.js/bindings/v8/AGENTS.md) |
-| 16 | ✓ | [`src/bun.js/bindings/v8/CLAUDE.md`](src/bun.js/bindings/v8/CLAUDE.md) |
-| 17 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
-| 18 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
-| 19 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
+| 15 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 16 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
+| 17 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
+| 18 | ✓ | [`src/jsc/bindings/v8/AGENTS.md`](src/jsc/bindings/v8/AGENTS.md) |
+| 19 | ✓ | [`src/jsc/bindings/v8/CLAUDE.md`](src/jsc/bindings/v8/CLAUDE.md) |
 | 20 | ✓ | [`src/unicode/uucode/CLAUDE.md`](src/unicode/uucode/CLAUDE.md) |
 | 21 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
 | 22 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |

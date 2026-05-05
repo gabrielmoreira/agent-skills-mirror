@@ -25,20 +25,31 @@ Securely store and manage secrets like passwords, API keys, and connection strin
 ## Client Creation
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.SecretClientBuilder;
-import com.azure.identity.DefaultAzureCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 // Sync client
 SecretClient secretClient = new SecretClientBuilder()
     .vaultUrl("https://<vault-name>.vault.azure.net")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 
 // Async client
 SecretAsyncClient secretAsyncClient = new SecretClientBuilder()
     .vaultUrl("https://<vault-name>.vault.azure.net")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildAsyncClient();
 ```
 
@@ -310,7 +321,8 @@ try {
 ## Environment Variables
 
 ```bash
-AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net
+AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net  # Required for vault URL
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Best Practices

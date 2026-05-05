@@ -9,6 +9,7 @@ import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.clients.openai.OpenAIModels
 import ai.koog.prompt.params.LLMParams
 import ai.koog.serialization.kotlinx.KotlinxSerializer
+import ai.koog.utils.time.KoogClock
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -16,7 +17,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.util.concurrent.Executors
 import kotlin.test.assertNotNull
-import kotlin.time.Clock
 import kotlin.time.Instant
 
 /**
@@ -30,9 +30,7 @@ class JavaAPIAgentBuilderTest {
     companion object {
         val ts: Instant = Instant.parse("2023-01-01T00:00:00Z")
 
-        val testClock: Clock = object : Clock {
-            override fun now(): Instant = ts
-        }
+        val testClock: KoogClock = KoogClock { ts }
     }
 
     @Test

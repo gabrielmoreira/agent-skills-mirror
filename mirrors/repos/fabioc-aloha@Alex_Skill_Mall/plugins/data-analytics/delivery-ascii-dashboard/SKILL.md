@@ -1,6 +1,6 @@
 ---
 type: skill
-lifecycle: evolving
+lifecycle: stable
 inheritance: inheritable
 name: delivery-ascii-dashboard
 description: Render data dashboards as pure ASCII art in monospace text -- the cheapest, most portable delivery method. No rendering engine, no SVG, no browser. LLM-native output with predictable character geometry.
@@ -242,6 +242,70 @@ The dashboard takes a simple JSON or table structure:
 4. Pad every line to its card width (right-pad with spaces inside borders)
 5. Validate: every line in a card has identical character count
 6. Join with newlines
+7. Run the Alignment QA Loop (see below)
+
+## Module 5: Alignment QA Loop
+
+After generating the dashboard, run a mechanical validation before writing the output file. This is mandatory. Do not skip it. Do not self-report "all lines OK" without actually measuring. "Looks correct" is not a measurement.
+
+### The Problem This Solves
+
+LLMs cannot reliably count characters in generated text. The model will produce lines it believes are 78 characters but are actually 77, 79, or 80. This is not a rare edge case; it happens on nearly every generation. The only reliable fix is to measure after generation and fix before delivery.
+
+### Validation Method
+
+Use `run_in_terminal` to measure every line. This is the ONLY acceptable validation method. Mental counting or estimation is not acceptable.
+
+PowerShell:
+```powershell
+$lines = Get-Content "<file>"
+$fails = $lines | Where-Object { $_.Length -gt 0 -and $_.Length -ne 78 }
+if ($fails) { $fails | ForEach-Object { "$($_.Length): $_" } }
+else { "ALL LINES OK (78 chars)" }
+```
+
+### Construction Method (prevents most failures)
+
+Do not freehand ASCII lines. Use a padding function to construct each line:
+
+```
+function Row(content):  return "| " + content.padRight(74) + " |"
+function Border(char):  return "+" + (char * 76) + "+"
+```
+
+For side-by-side panels:
+```
+function DualRow(left, right):
+  L = "| " + left.padRight(34) + " |"
+  R = "| " + right.padRight(34) + " |"
+  return L + "  " + R
+```
+
+Generate lines using these functions, then validate. This approach prevents most misalignment on first pass.
+
+### Width Constants (do not deviate)
+
+| Element | Formula | Result |
+| --- | --- | --- |
+| Total line width | fixed | 78 |
+| Full-width border | `+` + 76 dashes + `+` | 78 |
+| Full-width inner | `\| ` + 74 content + ` \|` | 78 |
+| Side-by-side border | `+` + 36 + `+` + `  ` + `+` + 36 + `+` | 78 |
+| Side-by-side inner | `\| ` + 34 + ` \|` + `  ` + `\| ` + 34 + ` \|` | 78 |
+
+The width is 78, NOT 80. Common mistake: using 80 as the target because "80-column terminal." The 1-char margin on each side means content is 78.
+
+### Fix-and-Recheck Loop
+
+If any line fails:
+
+1. Identify the failing lines (line number + measured width + content)
+2. Determine whether the line is too long (trim trailing content before `|`) or too short (add spaces before closing `|`)
+3. Apply the fix
+4. Re-run the terminal measurement command
+5. Repeat until zero failures
+
+Do NOT write the output file until the measurement passes with zero failures. A dashboard with misaligned edges is a rendering bug, not a cosmetic issue.
 
 ## Anti-Patterns
 

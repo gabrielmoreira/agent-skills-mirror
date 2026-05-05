@@ -14,7 +14,7 @@ description: 把一篇文章或口播稿，做成"看起来像视频"的点击�
 - 想做 "动态 PPT"
 - 16:9 横屏录屏，大字、留白、每屏都要有动效
 - 教学 / 产品演示 / keynote 想要电影感
-- B 站 / YouTube / 视频号录屏类内容
+- B 站 / YouTube /抖音视频内容
 
 本 Skill **以方法论 + 协作流程为核心**。脚手架模板提供 token 和原语，
 但每个美学决策（配色、字型、动效气质）都应该针对你的主题重新设计 ——
@@ -56,8 +56,21 @@ my-video/
 ├── script.md           # 必有：B 站风格口播稿（决定节拍）
 ├── outline.md          # 必有：开发计划（章节切分 + 每步内容 + 信息池）
 └── presentation/       # 脚手架产出的 Vite + React + TS 项目
-    └── public/audio/   # 可选：合成的音频
+    ├── src/chapters/<NN>-<id>/
+    │   ├── <Chapter>.tsx     # 视觉实现
+    │   ├── <Chapter>.css
+    │   └── narrations.ts     # ★ step 数 + 口播文本的唯一真相源
+    ├── scripts/
+    │   ├── extract-narrations.ts   # 扫所有 narrations.ts → audio-segments.json
+    │   └── synthesize-audio.sh     # 调 mmx 合成 mp3
+    ├── audio-segments.json         # extract 产出（合成前 review）
+    └── public/audio/<id>/<N>.mp3   # 可选：合成的音频
 ```
+
+> **关键**：`narrations.ts` 是 step 数和音频合成的**唯一真相源**。
+> 章节 `.tsx` 里的 `if (step === N)` 出现的最大 N + 1 必须等于
+> `narrations.length`。这保证 5 处地方（script / outline / 章节代码 /
+> chapters.ts / 音频文件）永远不会漂。
 
 ---
 
@@ -96,9 +109,9 @@ Phase 2.4 的"实现单章"会重复 N 次 —— 每次都要回看核心约束
 | Phase 1.1-1.2 内容编写 | `references/SCRIPT-STYLE.md` + `references/OUTLINE-FORMAT.md` + `article.md`（用户原文，如有） | —— |
 | **Checkpoint Plan 选主题** | —— | `themes/*/theme.json`（动态读全部，列清单 + `bestFor` 推荐 + `descriptionZh`）；`references/THEMES.md`（用户想了解主题系统时） |
 | Phase 2.1 脚手架 | —— | SKILL.md 本节看一次 |
-| **Phase 2.4 实现单章（×N 次，被 2.2 / 2.3 调用）** | **`references/CHAPTER-CRAFT.md`** 单一入口 —— Part 0 十条原则 / Part 1 开工 5 问 / Part 2 关系→动作决策树 / Part 3 视觉工具箱 / Part 4 时长参考 / Part 5 反 AI 味反模式 / Part 6 代码硬规则 / Part 7 完工自检 / Part 8 反馈速查 + 当前主题的 `themes/<id>/theme.json` + 当前章节的 outline.md 段落 + **`article.md` 本章对应段落** + 素材清单 | `references/EXAMPLES/`（结构示意，不是抄袭模板）；`references/THEMES.md` 完整 token 契约 |
-| Phase 3 音频合成 | `references/AUDIO.md` | —— |
-| Phase 4 录屏 + 后期 | `references/RECORDING.md` | —— |
+| **Phase 2.4 实现单章（×N 次，被 2.2 / 2.3 调用）** | **`references/CHAPTER-CRAFT.md`** 单一入口 —— Part 0 十条原则 / Part 1 开工 5 问 / Part 2 关系→动作决策树 / Part 3 视觉工具箱 / Part 4 时长参考 / Part 5 反 AI 味反模式 / Part 6 代码硬规则（**含 narrations.ts 强制约束**）/ Part 7 完工自检 / Part 8 反馈速查 + 当前主题的 `themes/<id>/theme.json` + 当前章节的 outline.md 段落 + **`article.md` 本章对应段落** + 素材清单 | `references/EXAMPLES/`（结构示意，不是抄袭模板）；`references/THEMES.md` 完整 token 契约 |
+| Phase 3 音频合成 | `references/AUDIO.md`（含 narrations.ts → segments.json → mmx 流程） | —— |
+| Phase 4 录屏 + 后期 | `references/RECORDING.md`（含 `?auto=1` 自动录屏） | —— |
 | 选 / 造 / 切主题 | —— | `references/THEMES.md` |
 
 > **写章节时只读一份 `CHAPTER-CRAFT.md`**。十条原则 / 开工 self-prompting /
@@ -327,9 +340,9 @@ rm -rf presentation/src/chapters/01-example
 
 ### 2.5 大改后 bump STORAGE_KEY
 
-改动 `chapters.ts`（增加 / 删除 / 重排章节，或某章 totalSteps 变化）
-后，**bump** `presentation/src/hooks/useStepper.ts` 的 `STORAGE_KEY`
-（如 `v3` → `v4`），避免持久化游标落到不存在的 step 上。
+改动 `chapters.ts`（增加 / 删除 / 重排章节，或某章 `narrations.ts`
+长度变化）后，**bump** `presentation/src/hooks/useStepper.ts` 的
+`STORAGE_KEY`（如 `v4` → `v5`），避免持久化游标落到不存在的 step 上。
 
 ---
 
@@ -340,32 +353,44 @@ Phase 2 结束后必须停下来，问用户：
 ```
 网页做完，{N} 章 {M} 步，dev server 在 localhost:5173 跑着。
 
-要不要把口播稿合成音频？
-  ✓ 合成 → 我会按 outline.md 切分，每步一个 mp3 到 public/audio/。
-           默认 MiniMax CLI（mmx-cli）；本机没装会问你用什么 TTS。
-  ✗ 不合成 → 流程结束，后期你自己配音 / 用别的工具。
+要不要合成音频做"自动播放录屏"？
+  ✓ 合成 → 扫所有章节的 narrations.ts 出 audio-segments.json，
+           调 mmx-cli 合成每步一个 mp3 到 public/audio/。
+           合成完后用 ?auto=1 模式可以一镜到底录屏（音视频天然同步）。
+           本机没装 mmx 会问你用什么 TTS。
+  ✗ 不合成 → 跳过 Phase 3，直接 Phase 4 用手动录屏 + 后期配音。
 ```
 
-要合成 → Phase 3。不合成 → 进入 Phase 4 录屏指引。
+要合成 → Phase 3。不合成 → 直接 Phase 4。
 
 ---
 
 ## Phase 3 —— 音频合成（可选）
 
-详见 [`references/AUDIO.md`](references/AUDIO.md)（MiniMax CLI 检测 /
-调用、按 step 切分、用户自带 TTS 退化路径、故障排查）。
+详细流程见 [`references/AUDIO.md`](references/AUDIO.md)。简版：
 
-合成完后告诉用户：输出位置 / 总时长 / 哪些 step 稿子可能太长太短 ——
-给最后一次校准节奏的机会。然后进入 Phase 4。
+```bash
+cd presentation
+npm run extract-narrations   # 扫所有 narrations.ts → audio-segments.json
+# 让用户扫一眼 audio-segments.json 确认文本对
+npm run synthesize-audio     # 调 mmx 串行合成；增量、跳过已存在
+```
+
+合成完告诉用户：输出位置 / 总段数 / 哪些段时长异常（太长 = 该 step 拆
+分；太短 = 文案太薄）—— 给最后一次校准节奏的机会。然后进入 Phase 4。
 
 ---
 
 ## Phase 4 —— 录屏 + 后期
 
-完整自动化合成 mp4 当前未实现，标作 roadmap。手动录屏 + 后期对音频
-的标准路径详见 [`references/RECORDING.md`](references/RECORDING.md)。
+详见 [`references/RECORDING.md`](references/RECORDING.md)。两种路径：
 
-> agent 应主动告诉用户这条路径，让用户知道下一步怎么把网页变成 mp4。
+| 场景 | 推荐路径 |
+|---|---|
+| Phase 3 已合成音频 | **Auto 模式一镜到底**：浏览器开 `localhost:5173/?auto=1` → 按 SPACE → 整片自动播完 → 停录 → 裁头尾即成片，**无需后期对音轨** |
+| Phase 3 跳过 | 默认 Manual 模式手动点击推进 → 后期任意剪辑工具配音 |
+
+> agent 在 Phase 3 / Checkpoint Audio 后**主动告诉用户**适合的录屏路径。
 
 ---
 
@@ -412,3 +437,4 @@ Part 8「常见反馈速查」。**关键**：先定位是哪一层（节奏 / �
 | [`references/RECORDING.md`](references/RECORDING.md) | Phase 4 才读 | 录屏工具 + 后期合成 |
 | [`themes/`](themes) | Checkpoint Plan / Phase 1.2 时翻 | 内置主题（每个含 `theme.json` + `tokens.css`） |
 | [`scripts/scaffold.sh`](scripts/scaffold.sh) | Phase 2.1 跑一次 | 一键项目脚手架 |
+

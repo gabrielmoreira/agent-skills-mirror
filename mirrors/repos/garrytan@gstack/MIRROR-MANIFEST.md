@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `garrytan/gstack` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
+Mirror of `garrytan/gstack` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `garrytan/gstack` — 26 default patterns, 0 followed patterns, 56 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 56 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,7 +114,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`ship/SKILL.md`](ship/SKILL.md) |
 | 54 | ✓ | [`SKILL.md`](SKILL.md) |
 | 55 | ✓ | [`skillify/SKILL.md`](skillify/SKILL.md) |
-| 56 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
+| 56 | ✓ | [`sync-gbrain/SKILL.md`](sync-gbrain/SKILL.md) |
+| 57 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
 
 ---
 

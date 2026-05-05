@@ -66,7 +66,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/plugins/n8n/skills/create-issue/SKILL.md`](.claude/plugins/n8n/skills/create-issue/SKILL.md) |
 | 6 | ✓ | [`.claude/plugins/n8n/skills/create-pr/SKILL.md`](.claude/plugins/n8n/skills/create-pr/SKILL.md) |
 | 7 | ✓ | [`.claude/plugins/n8n/skills/create-skill/SKILL.md`](.claude/plugins/n8n/skills/create-skill/SKILL.md) |
-| 8 | ✓ | [`.claude/plugins/n8n/skills/design-system-rules/SKILL.md`](.claude/plugins/n8n/skills/design-system-rules/SKILL.md) |
+| 8 | ✓ | [`.claude/plugins/n8n/skills/design-system/SKILL.md`](.claude/plugins/n8n/skills/design-system/SKILL.md) |
 | 9 | ✓ | [`.claude/plugins/n8n/skills/linear-issue/SKILL.md`](.claude/plugins/n8n/skills/linear-issue/SKILL.md) |
 | 10 | ✓ | [`.claude/plugins/n8n/skills/loom-transcript/SKILL.md`](.claude/plugins/n8n/skills/loom-transcript/SKILL.md) |
 | 11 | ✓ | [`.claude/plugins/n8n/skills/node-add-oauth/SKILL.md`](.claude/plugins/n8n/skills/node-add-oauth/SKILL.md) |

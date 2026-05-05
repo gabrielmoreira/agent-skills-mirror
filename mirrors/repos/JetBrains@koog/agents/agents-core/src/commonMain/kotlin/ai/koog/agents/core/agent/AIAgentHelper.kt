@@ -12,8 +12,8 @@ import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.params.LLMParams
 import ai.koog.prompt.processor.ResponseProcessor
 import ai.koog.serialization.typeToken
+import ai.koog.utils.time.KoogClock
 import kotlin.jvm.JvmStatic
-import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 
 @PublishedApi
@@ -50,7 +50,7 @@ internal object AIAgentHelper {
         strategy: AIAgentGraphStrategy<Input, Output>,
         toolRegistry: ToolRegistry = ToolRegistry.EMPTY,
         id: String? = null,
-        clock: Clock = Clock.System,
+        clock: KoogClock = KoogClock.System,
         noinline installFeatures: FeatureContext.() -> Unit = {},
     ): AIAgent<Input, Output> {
         return GraphAIAgent(
@@ -94,7 +94,7 @@ internal object AIAgentHelper {
         toolRegistry = toolRegistry,
         strategy = strategy,
         id = id,
-        clock = Clock.System,
+        clock = KoogClock.System,
         installFeatures = installFeatures
     )
 
@@ -117,7 +117,7 @@ internal object AIAgentHelper {
         strategy: AIAgentFunctionalStrategy<Input, Output>,
         toolRegistry: ToolRegistry = ToolRegistry.EMPTY,
         id: String? = null,
-        clock: Clock = Clock.System,
+        clock: KoogClock = KoogClock.System,
         installFeatures: FunctionalAIAgent.FeatureContext.() -> Unit = {},
     ): FunctionalAIAgent<Input, Output> {
         return FunctionalAIAgent(
@@ -191,7 +191,7 @@ internal object AIAgentHelper {
      * @param strategy The agent strategy [AIAgentGraphStrategy] defining how the agent processes inputs and outputs.
      * @param toolRegistry An optional [ToolRegistry] specifying the tools available to the agent for execution. Defaults to `[ToolRegistry.EMPTY]`.
      * @param id Unique identifier for the agent. Random UUID will be generated if set to null.
-     * @param clock A `Clock` instance used for time-related operations. Defaults to `Clock.System`.
+     * @param clock A `Clock` instance used for time-related operations. Defaults to `KoogClock.System`.
      * @param systemPrompt A string representing the system-level prompt for the agent. Defaults to an empty string.
      * @param temperature A double value controlling the randomness of the model's output. Defaults to `1.0`.
      * @param numberOfChoices The number of choices the model should generate per invocation. Defaults to `1`.
@@ -208,7 +208,7 @@ internal object AIAgentHelper {
         responseProcessor: ResponseProcessor? = null,
         toolRegistry: ToolRegistry = ToolRegistry.EMPTY,
         id: String? = null,
-        clock: Clock = Clock.System,
+        clock: KoogClock = KoogClock.System,
         systemPrompt: String? = null,
         temperature: Double? = null,
         numberOfChoices: Int = 1,
@@ -326,7 +326,7 @@ internal object AIAgentHelper {
         strategy: AIAgentPlannerStrategy<Input, Output, *>,
         toolRegistry: ToolRegistry,
         id: String?,
-        clock: Clock,
+        clock: KoogClock,
         installFeatures: PlannerAIAgent.FeatureContext.() -> Unit
     ): AIAgent<Input, Output> = PlannerAIAgent(
         promptExecutor = promptExecutor,

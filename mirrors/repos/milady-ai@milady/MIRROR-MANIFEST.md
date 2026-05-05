@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `milady-ai/milady` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
+Mirror of `milady-ai/milady` — 26 default patterns, 0 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `milady-ai/milady` — 26 default patterns, 0 followed patterns, 71 fi
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 71 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,46 +90,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/.defaults/build-monetized-app/SKILL.md`](skills/.defaults/build-monetized-app/SKILL.md) |
 | 30 | ✓ | [`skills/.defaults/camsnap/SKILL.md`](skills/.defaults/camsnap/SKILL.md) |
 | 31 | ✓ | [`skills/.defaults/canvas/SKILL.md`](skills/.defaults/canvas/SKILL.md) |
-| 32 | ✓ | [`skills/.defaults/claude-subagent-eliza-bridge/SKILL.md`](skills/.defaults/claude-subagent-eliza-bridge/SKILL.md) |
-| 33 | ✓ | [`skills/.defaults/coding-agent/SKILL.md`](skills/.defaults/coding-agent/SKILL.md) |
-| 34 | ✓ | [`skills/.defaults/discord/SKILL.md`](skills/.defaults/discord/SKILL.md) |
-| 35 | ✓ | [`skills/.defaults/eliza-app-development/references/repo-map.md`](skills/.defaults/eliza-app-development/references/repo-map.md) |
-| 36 | ✓ | [`skills/.defaults/eliza-app-development/references/runtime-and-cloud.md`](skills/.defaults/eliza-app-development/references/runtime-and-cloud.md) |
-| 37 | ✓ | [`skills/.defaults/eliza-app-development/SKILL.md`](skills/.defaults/eliza-app-development/SKILL.md) |
-| 38 | ✓ | [`skills/.defaults/eliza-cloud/references/apps-and-containers.md`](skills/.defaults/eliza-cloud/references/apps-and-containers.md) |
-| 39 | ✓ | [`skills/.defaults/eliza-cloud/references/cloud-backend-and-monetization.md`](skills/.defaults/eliza-cloud/references/cloud-backend-and-monetization.md) |
-| 40 | ✓ | [`skills/.defaults/eliza-cloud/SKILL.md`](skills/.defaults/eliza-cloud/SKILL.md) |
-| 41 | ✓ | [`skills/.defaults/elizaos/references/core-abstractions.md`](skills/.defaults/elizaos/references/core-abstractions.md) |
-| 42 | ✓ | [`skills/.defaults/elizaos/references/plugin-development.md`](skills/.defaults/elizaos/references/plugin-development.md) |
-| 43 | ✓ | [`skills/.defaults/elizaos/SKILL.md`](skills/.defaults/elizaos/SKILL.md) |
-| 44 | ✓ | [`skills/.defaults/github/SKILL.md`](skills/.defaults/github/SKILL.md) |
-| 45 | ✓ | [`skills/.defaults/healthcheck/SKILL.md`](skills/.defaults/healthcheck/SKILL.md) |
-| 46 | ✓ | [`skills/.defaults/imsg/SKILL.md`](skills/.defaults/imsg/SKILL.md) |
-| 47 | ✓ | [`skills/.defaults/nano-banana-pro/scripts/generate_image.py`](skills/.defaults/nano-banana-pro/scripts/generate_image.py) |
-| 48 | ✓ | [`skills/.defaults/nano-banana-pro/SKILL.md`](skills/.defaults/nano-banana-pro/SKILL.md) |
-| 49 | ✓ | [`skills/.defaults/nano-pdf/SKILL.md`](skills/.defaults/nano-pdf/SKILL.md) |
-| 50 | ✓ | [`skills/.defaults/notion/SKILL.md`](skills/.defaults/notion/SKILL.md) |
-| 51 | ✓ | [`skills/.defaults/obsidian/SKILL.md`](skills/.defaults/obsidian/SKILL.md) |
-| 52 | ✓ | [`skills/.defaults/ordercli/SKILL.md`](skills/.defaults/ordercli/SKILL.md) |
-| 53 | ✓ | [`skills/.defaults/skill-creator/license.txt`](skills/.defaults/skill-creator/license.txt) |
-| 54 | ✓ | [`skills/.defaults/skill-creator/scripts/init_skill.py`](skills/.defaults/skill-creator/scripts/init_skill.py) |
-| 55 | ✓ | [`skills/.defaults/skill-creator/scripts/package_skill.py`](skills/.defaults/skill-creator/scripts/package_skill.py) |
-| 56 | ✓ | [`skills/.defaults/skill-creator/scripts/quick_validate.py`](skills/.defaults/skill-creator/scripts/quick_validate.py) |
-| 57 | ✓ | [`skills/.defaults/skill-creator/SKILL.md`](skills/.defaults/skill-creator/SKILL.md) |
-| 58 | ✓ | [`skills/.defaults/slack/SKILL.md`](skills/.defaults/slack/SKILL.md) |
-| 59 | ✓ | [`skills/.defaults/spotify-player/SKILL.md`](skills/.defaults/spotify-player/SKILL.md) |
-| 60 | ✓ | [`skills/.defaults/things-mac/SKILL.md`](skills/.defaults/things-mac/SKILL.md) |
-| 61 | ✓ | [`skills/.defaults/tmux/scripts/find-sessions.sh`](skills/.defaults/tmux/scripts/find-sessions.sh) |
-| 62 | ✓ | [`skills/.defaults/tmux/scripts/wait-for-text.sh`](skills/.defaults/tmux/scripts/wait-for-text.sh) |
-| 63 | ✓ | [`skills/.defaults/tmux/SKILL.md`](skills/.defaults/tmux/SKILL.md) |
-| 64 | ✓ | [`skills/.defaults/trello/SKILL.md`](skills/.defaults/trello/SKILL.md) |
-| 65 | ✓ | [`skills/.defaults/wacli/SKILL.md`](skills/.defaults/wacli/SKILL.md) |
-| 66 | ✓ | [`skills/.defaults/weather/SKILL.md`](skills/.defaults/weather/SKILL.md) |
-| 67 | ✓ | [`skills/.defaults/yara-authoring/SKILL.md`](skills/.defaults/yara-authoring/SKILL.md) |
-| 68 | ✓ | [`skills/plan-my-day/_meta.json`](skills/plan-my-day/_meta.json) |
-| 69 | ✓ | [`skills/plan-my-day/.scan-results.json`](skills/plan-my-day/.scan-results.json) |
-| 70 | ✓ | [`skills/plan-my-day/SKILL.md`](skills/plan-my-day/SKILL.md) |
-| 71 | ✓ | [`skills/README.md`](skills/README.md) |
+| 32 | ✓ | [`skills/.defaults/coding-agent/SKILL.md`](skills/.defaults/coding-agent/SKILL.md) |
+| 33 | ✓ | [`skills/.defaults/discord/SKILL.md`](skills/.defaults/discord/SKILL.md) |
+| 34 | ✓ | [`skills/.defaults/eliza-app-development/references/repo-map.md`](skills/.defaults/eliza-app-development/references/repo-map.md) |
+| 35 | ✓ | [`skills/.defaults/eliza-app-development/references/runtime-and-cloud.md`](skills/.defaults/eliza-app-development/references/runtime-and-cloud.md) |
+| 36 | ✓ | [`skills/.defaults/eliza-app-development/SKILL.md`](skills/.defaults/eliza-app-development/SKILL.md) |
+| 37 | ✓ | [`skills/.defaults/eliza-cloud-buy-domain/references/api-shape.md`](skills/.defaults/eliza-cloud-buy-domain/references/api-shape.md) |
+| 38 | ✓ | [`skills/.defaults/eliza-cloud-buy-domain/references/dns-and-ssl.md`](skills/.defaults/eliza-cloud-buy-domain/references/dns-and-ssl.md) |
+| 39 | ✓ | [`skills/.defaults/eliza-cloud-buy-domain/references/failure-modes.md`](skills/.defaults/eliza-cloud-buy-domain/references/failure-modes.md) |
+| 40 | ✓ | [`skills/.defaults/eliza-cloud-buy-domain/SKILL.md`](skills/.defaults/eliza-cloud-buy-domain/SKILL.md) |
+| 41 | ✓ | [`skills/.defaults/eliza-cloud-manage-domain/references/api-shape.md`](skills/.defaults/eliza-cloud-manage-domain/references/api-shape.md) |
+| 42 | ✓ | [`skills/.defaults/eliza-cloud-manage-domain/references/dns-records.md`](skills/.defaults/eliza-cloud-manage-domain/references/dns-records.md) |
+| 43 | ✓ | [`skills/.defaults/eliza-cloud-manage-domain/references/failure-modes.md`](skills/.defaults/eliza-cloud-manage-domain/references/failure-modes.md) |
+| 44 | ✓ | [`skills/.defaults/eliza-cloud-manage-domain/SKILL.md`](skills/.defaults/eliza-cloud-manage-domain/SKILL.md) |
+| 45 | ✓ | [`skills/.defaults/eliza-cloud/references/apps-and-containers.md`](skills/.defaults/eliza-cloud/references/apps-and-containers.md) |
+| 46 | ✓ | [`skills/.defaults/eliza-cloud/references/cloud-backend-and-monetization.md`](skills/.defaults/eliza-cloud/references/cloud-backend-and-monetization.md) |
+| 47 | ✓ | [`skills/.defaults/eliza-cloud/SKILL.md`](skills/.defaults/eliza-cloud/SKILL.md) |
+| 48 | ✓ | [`skills/.defaults/elizaos/references/core-abstractions.md`](skills/.defaults/elizaos/references/core-abstractions.md) |
+| 49 | ✓ | [`skills/.defaults/elizaos/references/plugin-development.md`](skills/.defaults/elizaos/references/plugin-development.md) |
+| 50 | ✓ | [`skills/.defaults/elizaos/SKILL.md`](skills/.defaults/elizaos/SKILL.md) |
+| 51 | ✓ | [`skills/.defaults/github/SKILL.md`](skills/.defaults/github/SKILL.md) |
+| 52 | ✓ | [`skills/.defaults/healthcheck/SKILL.md`](skills/.defaults/healthcheck/SKILL.md) |
+| 53 | ✓ | [`skills/.defaults/imsg/SKILL.md`](skills/.defaults/imsg/SKILL.md) |
+| 54 | ✓ | [`skills/.defaults/nano-banana-pro/scripts/generate_image.py`](skills/.defaults/nano-banana-pro/scripts/generate_image.py) |
+| 55 | ✓ | [`skills/.defaults/nano-banana-pro/SKILL.md`](skills/.defaults/nano-banana-pro/SKILL.md) |
+| 56 | ✓ | [`skills/.defaults/nano-pdf/SKILL.md`](skills/.defaults/nano-pdf/SKILL.md) |
+| 57 | ✓ | [`skills/.defaults/notion/SKILL.md`](skills/.defaults/notion/SKILL.md) |
+| 58 | ✓ | [`skills/.defaults/obsidian/SKILL.md`](skills/.defaults/obsidian/SKILL.md) |
+| 59 | ✓ | [`skills/.defaults/ordercli/SKILL.md`](skills/.defaults/ordercli/SKILL.md) |
+| 60 | ✓ | [`skills/.defaults/skill-creator/license.txt`](skills/.defaults/skill-creator/license.txt) |
+| 61 | ✓ | [`skills/.defaults/skill-creator/scripts/init_skill.py`](skills/.defaults/skill-creator/scripts/init_skill.py) |
+| 62 | ✓ | [`skills/.defaults/skill-creator/scripts/package_skill.py`](skills/.defaults/skill-creator/scripts/package_skill.py) |
+| 63 | ✓ | [`skills/.defaults/skill-creator/scripts/quick_validate.py`](skills/.defaults/skill-creator/scripts/quick_validate.py) |
+| 64 | ✓ | [`skills/.defaults/skill-creator/SKILL.md`](skills/.defaults/skill-creator/SKILL.md) |
+| 65 | ✓ | [`skills/.defaults/slack/SKILL.md`](skills/.defaults/slack/SKILL.md) |
+| 66 | ✓ | [`skills/.defaults/spotify-player/SKILL.md`](skills/.defaults/spotify-player/SKILL.md) |
+| 67 | ✓ | [`skills/.defaults/task-agent-eliza-bridge/SKILL.md`](skills/.defaults/task-agent-eliza-bridge/SKILL.md) |
+| 68 | ✓ | [`skills/.defaults/things-mac/SKILL.md`](skills/.defaults/things-mac/SKILL.md) |
+| 69 | ✓ | [`skills/.defaults/tmux/scripts/find-sessions.sh`](skills/.defaults/tmux/scripts/find-sessions.sh) |
+| 70 | ✓ | [`skills/.defaults/tmux/scripts/wait-for-text.sh`](skills/.defaults/tmux/scripts/wait-for-text.sh) |
+| 71 | ✓ | [`skills/.defaults/tmux/SKILL.md`](skills/.defaults/tmux/SKILL.md) |
+| 72 | ✓ | [`skills/.defaults/trello/SKILL.md`](skills/.defaults/trello/SKILL.md) |
+| 73 | ✓ | [`skills/.defaults/wacli/SKILL.md`](skills/.defaults/wacli/SKILL.md) |
+| 74 | ✓ | [`skills/.defaults/weather/SKILL.md`](skills/.defaults/weather/SKILL.md) |
+| 75 | ✓ | [`skills/.defaults/yara-authoring/SKILL.md`](skills/.defaults/yara-authoring/SKILL.md) |
+| 76 | ✓ | [`skills/plan-my-day/_meta.json`](skills/plan-my-day/_meta.json) |
+| 77 | ✓ | [`skills/plan-my-day/.scan-results.json`](skills/plan-my-day/.scan-results.json) |
+| 78 | ✓ | [`skills/plan-my-day/SKILL.md`](skills/plan-my-day/SKILL.md) |
+| 79 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

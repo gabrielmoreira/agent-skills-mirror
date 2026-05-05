@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-gitagent/gitagent-protocol` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `open-gitagent/gitagent-protocol` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `open-gitagent/gitagent-protocol` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,16 +68,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`examples/gitagent-helper/skills/get-started/SKILL.md`](examples/gitagent-helper/skills/get-started/SKILL.md) |
 | 8 | ✓ | [`examples/gitagent-helper/skills/manage-skills/SKILL.md`](examples/gitagent-helper/skills/manage-skills/SKILL.md) |
 | 9 | ✓ | [`examples/gitagent-helper/skills/run-agent/SKILL.md`](examples/gitagent-helper/skills/run-agent/SKILL.md) |
-| 10 | ✓ | [`examples/llm-wiki/skills/wiki-ingest/SKILL.md`](examples/llm-wiki/skills/wiki-ingest/SKILL.md) |
-| 11 | ✓ | [`examples/llm-wiki/skills/wiki-lint/SKILL.md`](examples/llm-wiki/skills/wiki-lint/SKILL.md) |
-| 12 | ✓ | [`examples/llm-wiki/skills/wiki-query/SKILL.md`](examples/llm-wiki/skills/wiki-query/SKILL.md) |
-| 13 | ✓ | [`examples/lyzr-agent/skills/research/SKILL.md`](examples/lyzr-agent/skills/research/SKILL.md) |
-| 14 | ✓ | [`examples/nvidia-deep-researcher/AGENTS.md`](examples/nvidia-deep-researcher/AGENTS.md) |
-| 15 | ✓ | [`examples/nvidia-deep-researcher/skills/knowledge-retrieval/SKILL.md`](examples/nvidia-deep-researcher/skills/knowledge-retrieval/SKILL.md) |
-| 16 | ✓ | [`examples/nvidia-deep-researcher/skills/paper-search/SKILL.md`](examples/nvidia-deep-researcher/skills/paper-search/SKILL.md) |
-| 17 | ✓ | [`examples/nvidia-deep-researcher/skills/web-search/SKILL.md`](examples/nvidia-deep-researcher/skills/web-search/SKILL.md) |
-| 18 | ✓ | [`examples/standard/AGENTS.md`](examples/standard/AGENTS.md) |
-| 19 | ✓ | [`examples/standard/skills/code-review/SKILL.md`](examples/standard/skills/code-review/SKILL.md) |
+| 10 | ✓ | [`examples/jason-my-claw-is-the-law-deebee-4567b4/skills/compute-ladder/SKILL.md`](examples/jason-my-claw-is-the-law-deebee-4567b4/skills/compute-ladder/SKILL.md) |
+| 11 | ✓ | [`examples/jason-my-claw-is-the-law-deebee-4567b4/skills/narco-check/SKILL.md`](examples/jason-my-claw-is-the-law-deebee-4567b4/skills/narco-check/SKILL.md) |
+| 12 | ✓ | [`examples/jason-my-claw-is-the-law-deebee-4567b4/skills/packet-factory/SKILL.md`](examples/jason-my-claw-is-the-law-deebee-4567b4/skills/packet-factory/SKILL.md) |
+| 13 | ✓ | [`examples/llm-wiki/skills/wiki-ingest/SKILL.md`](examples/llm-wiki/skills/wiki-ingest/SKILL.md) |
+| 14 | ✓ | [`examples/llm-wiki/skills/wiki-lint/SKILL.md`](examples/llm-wiki/skills/wiki-lint/SKILL.md) |
+| 15 | ✓ | [`examples/llm-wiki/skills/wiki-query/SKILL.md`](examples/llm-wiki/skills/wiki-query/SKILL.md) |
+| 16 | ✓ | [`examples/lyzr-agent/skills/research/SKILL.md`](examples/lyzr-agent/skills/research/SKILL.md) |
+| 17 | ✓ | [`examples/nvidia-deep-researcher/AGENTS.md`](examples/nvidia-deep-researcher/AGENTS.md) |
+| 18 | ✓ | [`examples/nvidia-deep-researcher/skills/knowledge-retrieval/SKILL.md`](examples/nvidia-deep-researcher/skills/knowledge-retrieval/SKILL.md) |
+| 19 | ✓ | [`examples/nvidia-deep-researcher/skills/paper-search/SKILL.md`](examples/nvidia-deep-researcher/skills/paper-search/SKILL.md) |
+| 20 | ✓ | [`examples/nvidia-deep-researcher/skills/web-search/SKILL.md`](examples/nvidia-deep-researcher/skills/web-search/SKILL.md) |
+| 21 | ✓ | [`examples/standard/AGENTS.md`](examples/standard/AGENTS.md) |
+| 22 | ✓ | [`examples/standard/skills/code-review/SKILL.md`](examples/standard/skills/code-review/SKILL.md) |
 
 ---
 

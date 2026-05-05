@@ -12,8 +12,8 @@ import ai.koog.agents.core.utils.runOnStrategyDispatcher
 import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.processor.ResponseProcessor
+import ai.koog.utils.time.KoogClock
 import java.util.concurrent.ExecutorService
-import kotlin.time.Clock
 
 public actual abstract class AIAgentService<Input, Output, TAgent : AIAgent<Input, Output>> {
     public actual abstract val promptExecutor: PromptExecutor
@@ -23,7 +23,7 @@ public actual abstract class AIAgentService<Input, Output, TAgent : AIAgent<Inpu
         id: String?,
         additionalToolRegistry: ToolRegistry,
         agentConfig: AIAgentConfig,
-        clock: Clock
+        clock: KoogClock
     ): TAgent
 
     public actual abstract suspend fun createAgentAndRun(
@@ -31,7 +31,7 @@ public actual abstract class AIAgentService<Input, Output, TAgent : AIAgent<Inpu
         id: String?,
         additionalToolRegistry: ToolRegistry,
         agentConfig: AIAgentConfig,
-        clock: Clock
+        clock: KoogClock
     ): Output
 
     public actual abstract suspend fun removeAgent(agent: TAgent): Boolean
@@ -55,7 +55,7 @@ public actual abstract class AIAgentService<Input, Output, TAgent : AIAgent<Inpu
         additionalToolRegistry: ToolRegistry = ToolRegistry.EMPTY,
         agentConfig: AIAgentConfig = this.agentConfig,
         executorService: ExecutorService? = null,
-        clock: Clock = Clock.System
+        clock: KoogClock = KoogClock.System
     ): TAgent = agentConfig.runOnStrategyDispatcher(executorService) {
         createAgent(id, additionalToolRegistry, agentConfig, clock)
     }
@@ -79,7 +79,7 @@ public actual abstract class AIAgentService<Input, Output, TAgent : AIAgent<Inpu
         additionalToolRegistry: ToolRegistry = ToolRegistry.EMPTY,
         agentConfig: AIAgentConfig = this.agentConfig,
         executorService: ExecutorService? = null,
-        clock: Clock
+        clock: KoogClock
     ): Output = createAgent(id, additionalToolRegistry, agentConfig, executorService, clock)
         .javaNonSuspendRun(agentInput, null, executorService)
 

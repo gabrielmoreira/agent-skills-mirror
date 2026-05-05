@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
+Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 85 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 85 |
+| Files         | 86 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -144,6 +144,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 83 | ✓ | [`plugins/dotnet/skills/csharp-scripts/SKILL.md`](plugins/dotnet/skills/csharp-scripts/SKILL.md) |
 | 84 | ✓ | [`plugins/dotnet/skills/dotnet-pinvoke/SKILL.md`](plugins/dotnet/skills/dotnet-pinvoke/SKILL.md) |
 | 85 | ✓ | [`plugins/dotnet/skills/nuget-trusted-publishing/SKILL.md`](plugins/dotnet/skills/nuget-trusted-publishing/SKILL.md) |
+| 86 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
 
 ---
 

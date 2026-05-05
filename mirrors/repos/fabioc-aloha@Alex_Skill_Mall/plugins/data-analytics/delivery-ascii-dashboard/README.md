@@ -2,6 +2,8 @@
 
 Pure ASCII art dashboards. The cheapest, most portable delivery method.
 
+**Status**: Published (v1.0.0)
+
 ## Why ASCII
 
 - **Zero dependencies.** No SVG renderer, no browser, no Chart.js CDN.

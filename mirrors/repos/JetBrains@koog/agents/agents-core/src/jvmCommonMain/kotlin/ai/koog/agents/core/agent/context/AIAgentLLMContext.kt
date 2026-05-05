@@ -17,8 +17,8 @@ import ai.koog.prompt.dsl.Prompt
 import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.processor.ResponseProcessor
+import ai.koog.utils.time.KoogClock
 import java.util.function.Function
-import kotlin.time.Clock
 
 public actual open class AIAgentLLMContext actual constructor(
     tools: List<ToolDescriptor>,
@@ -29,7 +29,7 @@ public actual open class AIAgentLLMContext actual constructor(
     promptExecutor: PromptExecutor,
     environment: AIAgentEnvironment,
     config: AIAgentConfig,
-    clock: Clock
+    clock: KoogClock
 ) : AIAgentLLMContextCommon(
     initialTools = tools,
     initialToolRegistry = toolRegistry,
@@ -51,7 +51,7 @@ public actual open class AIAgentLLMContext actual constructor(
         promptExecutor: PromptExecutor,
         environment: AIAgentEnvironment,
         config: AIAgentConfig,
-        clock: Clock
+        clock: KoogClock
     ): AIAgentLLMContext =
         super.copy(tools, toolRegistry, prompt, model, responseProcessor, promptExecutor, environment, config, clock)
 
@@ -102,7 +102,7 @@ public actual open class AIAgentLLMContext actual constructor(
         promptExecutor: PromptExecutor,
         environment: AIAgentEnvironment,
         config: AIAgentConfig,
-        clock: Clock
+        clock: KoogClock
     ): AIAgentLLMContext =
         super.copy(tools, prompt, model, responseProcessor, promptExecutor, environment, config, clock)
 }

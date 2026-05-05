@@ -1,3 +1,4 @@
+<!-- managed-by: lorebase -->
 # Instruções para agentes de IA
 
 Este arquivo é lido automaticamente por agentes como GitHub Copilot, Codex, Claude e outros que reconhecem `AGENTS.md` como ponto de entrada de instruções.

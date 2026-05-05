@@ -54,11 +54,21 @@ ImageAnalysisAsyncClient asyncClient = new ImageAnalysisClientBuilder()
 ### With DefaultAzureCredential
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 ImageAnalysisClient client = new ImageAnalysisClientBuilder()
     .endpoint(endpoint)
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 ```
 
@@ -268,8 +278,9 @@ try {
 ## Environment Variables
 
 ```bash
-VISION_ENDPOINT=https://<resource>.cognitiveservices.azure.com/
-VISION_KEY=<your-api-key>
+VISION_ENDPOINT=https://<resource>.cognitiveservices.azure.com/ # Required for all auth methods
+VISION_KEY=<your-api-key> # Only required for AzureKeyCredential auth
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Image Requirements

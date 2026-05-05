@@ -2,6 +2,8 @@
 
 Chart catalog organized by communication goal, with an evaluation framework for AI-generated chart choices.
 
+**Status**: Published (v1.0.0)
+
 ## What It Does
 
 - **Chart catalog** organized by 7 communication goals (comparison, change over time, proportion, distribution, relationship, flow, deviation) with specific chart recommendations and avoid-when guidance

@@ -1,6 +1,6 @@
 ---
 type: skill
-lifecycle: evolving
+lifecycle: stable
 inheritance: inheritable
 name: storytelling-requirements
 description: Guided requirements template for data storytelling projects -- walks users through audience, Big Idea, questions, data sources, and delivery target before any chart is created

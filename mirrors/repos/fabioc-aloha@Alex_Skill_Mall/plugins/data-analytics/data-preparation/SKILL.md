@@ -1,6 +1,6 @@
 ---
 type: skill
-lifecycle: evolving
+lifecycle: stable
 inheritance: inheritable
 name: data-preparation
 description: "Data cleaning, profiling, transformation, and quality gates -- prepares raw data for visualization and analysis"

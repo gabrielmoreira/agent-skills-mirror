@@ -129,13 +129,32 @@ client = ServiceClient(endpoint, credential)
 
 ```csharp
 // C#
-var credential = new DefaultAzureCredential();
+using Azure.Identity;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 var client = new ServiceClient(new Uri(endpoint), credential);
 ```
 
 ```java
 // Java
-TokenCredential credential = new DefaultAzureCredentialBuilder().build();
+import com.azure.identity.AzureIdentityEnvVars;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredential;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 ServiceClient client = new ServiceClientBuilder()
     .endpoint(endpoint)
     .credential(credential)

@@ -108,11 +108,13 @@ Use reason-specific anchors:
   `git show -s --format=%H%n%cI%n%s <sha>`, `git tag --contains <sha>`,
   `git branch --contains <sha>`, `git show <tag>:CHANGELOG.md`, and
   `gh release list/view` when available. Determine the fix/proof commit, the
-  commit timestamp, and whether that commit is included in a shipped release. If
-  the fix shipped, name the exact release tag/version. If it is only on current
-  `main`, say that and include the commit timestamp. If you cannot establish
-  either the shipped release or the main-only timestamp with high confidence,
-  keep the item open.
+  commit timestamp, whether a merged PR closed the issue, and whether that
+  commit is included in a shipped release. If the GitHub context includes a
+  merged `closingPullRequests` entry, mention that PR as provenance when it
+  matches the implementation evidence. If the fix shipped, name the exact
+  release tag/version. If it is only on current `main`, say that and include the
+  commit timestamp. If you cannot establish either the shipped release or the
+  main-only timestamp with high confidence, keep the item open.
 - For `clawhub`, inspect `VISION.md` and the relevant plugin/skill/MCP/channel/provider docs or APIs, then confirm the request can be satisfied outside core without a missing extension API.
 - For `duplicate_or_superseded`, read the canonical related report/PR from the provided context or `gh`, and explain whether it is open, closed, merged, or already shipped.
 - For `not_actionable_in_repo`, read enough discussion/context to confirm the action belongs to repo/project administration, third-party setup, external ownership, or historical cleanup rather than OpenClaw code/docs.

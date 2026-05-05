@@ -30,12 +30,12 @@ import ai.koog.prompt.message.ResponseMetaInfo
 import ai.koog.prompt.params.LLMParams
 import ai.koog.prompt.streaming.StreamFrame
 import ai.koog.prompt.streaming.buildStreamFrameFlow
+import ai.koog.utils.time.KoogClock
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlin.jvm.JvmOverloads
-import kotlin.time.Clock
 
 /**
  * Configuration settings for connecting to the OpenRouter API.
@@ -66,7 +66,7 @@ public class OpenRouterClientSettings(
 public class OpenRouterLLMClient @JvmOverloads constructor(
     private val settings: OpenRouterClientSettings = OpenRouterClientSettings(),
     httpClient: KoogHttpClient,
-    clock: Clock = Clock.System,
+    clock: KoogClock = KoogClock.System,
     toolsConverter: OpenAICompatibleToolDescriptorSchemaGenerator = OpenAICompatibleToolDescriptorSchemaGenerator(),
 ) : AbstractOpenAILLMClient<OpenRouterChatCompletionResponse, OpenRouterChatCompletionStreamResponse>(
     settings = settings,
@@ -81,7 +81,7 @@ public class OpenRouterLLMClient @JvmOverloads constructor(
         apiKey: String,
         settings: OpenRouterClientSettings = OpenRouterClientSettings(),
         baseClient: HttpClient = HttpClient(),
-        clock: Clock = Clock.System,
+        clock: KoogClock = KoogClock.System,
         toolsConverter: OpenAICompatibleToolDescriptorSchemaGenerator = OpenAICompatibleToolDescriptorSchemaGenerator(),
     ) : this(
         settings = settings,

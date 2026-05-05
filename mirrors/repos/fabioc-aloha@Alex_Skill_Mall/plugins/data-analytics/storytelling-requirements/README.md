@@ -2,6 +2,8 @@
 
 Guided requirements template for data storytelling projects.
 
+**Status**: Published (v1.0.0)
+
 ## What It Does
 
 Walks users through a structured brief before any chart is created. Covers:

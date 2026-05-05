@@ -25,28 +25,39 @@ Manage cryptographic keys and perform cryptographic operations in Azure Key Vaul
 ## Client Creation
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
 import com.azure.security.keyvault.keys.KeyClient;
 import com.azure.security.keyvault.keys.KeyClientBuilder;
 import com.azure.security.keyvault.keys.cryptography.CryptographyClient;
 import com.azure.security.keyvault.keys.cryptography.CryptographyClientBuilder;
-import com.azure.identity.DefaultAzureCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 // Key management client
 KeyClient keyClient = new KeyClientBuilder()
     .vaultUrl("https://<vault-name>.vault.azure.net")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 
 // Async client
 KeyAsyncClient keyAsyncClient = new KeyClientBuilder()
     .vaultUrl("https://<vault-name>.vault.azure.net")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildAsyncClient();
 
 // Cryptography client (for encrypt/decrypt/sign/verify)
 CryptographyClient cryptoClient = new CryptographyClientBuilder()
     .keyIdentifier("https://<vault-name>.vault.azure.net/keys/<key-name>/<key-version>")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 ```
 
@@ -347,7 +358,8 @@ try {
 ## Environment Variables
 
 ```bash
-AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net
+AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net  # Required for vault URL
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Best Practices

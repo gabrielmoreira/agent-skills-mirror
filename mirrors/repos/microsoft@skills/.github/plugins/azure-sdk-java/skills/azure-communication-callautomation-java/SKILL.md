@@ -27,12 +27,23 @@ Build server-side call automation workflows including IVR systems, call routing,
 ```java
 import com.azure.communication.callautomation.CallAutomationClient;
 import com.azure.communication.callautomation.CallAutomationClientBuilder;
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 // With DefaultAzureCredential
 CallAutomationClient client = new CallAutomationClientBuilder()
     .endpoint("https://<resource>.communication.azure.com")
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 
 // With connection string
@@ -244,9 +255,10 @@ try {
 ## Environment Variables
 
 ```bash
-AZURE_COMMUNICATION_ENDPOINT=https://<resource>.communication.azure.com
-AZURE_COMMUNICATION_CONNECTION_STRING=endpoint=https://...;accesskey=...
-CALLBACK_BASE_URL=https://your-app.com/api/callbacks
+AZURE_COMMUNICATION_ENDPOINT=https://<resource>.communication.azure.com  # Required for all auth methods
+AZURE_COMMUNICATION_CONNECTION_STRING=endpoint=https://...;accesskey=...  # Alternative to Entra ID auth
+CALLBACK_BASE_URL=https://your-app.com/api/callbacks  # Required for webhook callbacks
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Trigger Phrases

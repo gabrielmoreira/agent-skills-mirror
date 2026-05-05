@@ -55,8 +55,9 @@ Or use Azure SDK BOM:
 ## Environment Variables
 
 ```bash
-AZURE_APPCONFIG_CONNECTION_STRING=Endpoint=https://<store>.azconfig.io;Id=<id>;Secret=<secret>
-AZURE_APPCONFIG_ENDPOINT=https://<store>.azconfig.io
+AZURE_APPCONFIG_CONNECTION_STRING=Endpoint=https://<store>.azconfig.io;Id=<id>;Secret=<secret>  # Alternative to Entra ID auth
+AZURE_APPCONFIG_ENDPOINT=https://<store>.azconfig.io  # Required for all auth methods
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Client Creation
@@ -85,10 +86,21 @@ ConfigurationAsyncClient asyncClient = new ConfigurationClientBuilder()
 ### With Entra ID (Recommended)
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 ConfigurationClient configClient = new ConfigurationClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .endpoint(System.getenv("AZURE_APPCONFIG_ENDPOINT"))
     .buildClient();
 ```

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Oglaf/skills` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Oglaf/skills` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Oglaf/skills` — 26 default patterns, 0 followed patterns, 3 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`angular-runtime-env-vars/SKILL.md`](angular-runtime-env-vars/SKILL.md) |
 | 3 | ✓ | [`azure-devops-changelog-generator/SKILL.md`](azure-devops-changelog-generator/SKILL.md) |
+| 4 | ✓ | [`azure-devops-pr-review/SKILL.md`](azure-devops-pr-review/SKILL.md) |
 
 ---
 

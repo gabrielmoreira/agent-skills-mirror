@@ -16,7 +16,7 @@ Infer these from the user request:
 - `asset_type`: `player` | `npc` | `creature` | `character` | `spell` | `projectile` | `impact` | `prop` | `summon` | `fx`
 - `action`: `single` | `idle` | `cast` | `attack` | `shoot` | `jump` | `hurt` | `combat` | `walk` | `run` | `hover` | `charge` | `projectile` | `impact` | `explode` | `death`
 - `view`: `topdown` | `side` | `3/4`
-- `sheet`: `auto` | `1x4` | `2x2` | `2x3` | `3x3` | `4x4` | `5x5` | `custom_grid`
+- `sheet`: `auto` | `2x2` | `2x3` | `2x4` | `3x3` | `3x4` | `4x4` | `5x5` | `custom_grid` | `strip_1x3` | `strip_1x4`
 - `frames`: `auto` or explicit count
 - `bundle`: `single_asset` | `unit_bundle` | `spell_bundle` | `combat_bundle` | `line_bundle` | `hero_action_bundle` | `engine_atlas`
 - `effect_policy`: `all` | `largest`
@@ -35,7 +35,7 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 
 - Decide the asset plan yourself. Do not force the user to spell out sheet size, frame count, or bundle structure when the request already implies them.
 - Do not pack unrelated actions into one raw generated sheet just to satisfy a `4x4`, `5x5`, or custom engine atlas. A raw generated sheet should represent one action family, one continuous sequence, one canonical directional locomotion sheet, or one prop/asset pack.
-- For controllable heroes, main characters, and high-value player assets with multiple actions, generate separate per-action sheets first, QC each action, then deterministically assemble the engine-required atlas only after the rows/strips pass visual review.
+- For controllable heroes, main characters, and high-value player assets with multiple actions, generate separate per-action grid sheets first, QC each action, then deterministically assemble the engine-required atlas only after the grids pass visual review.
 - Write the art prompt yourself. Do not default to the prompt-builder script.
 - Use built-in `image_gen` for every raw image.
 - When the user provides or implies a visual reference, use built-in image edit/reference semantics only after the reference image is visible in the conversation context. If the reference is a local file, call `view_image` first; do not rely on a filesystem path in the prompt as the visual reference.
@@ -45,6 +45,11 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 - Layout guides are allowed only as deterministic geometry references for image generation. They may show slot count, spacing, centering, and safe padding, but must never define the creative art direction.
 - Treat script flags as execution primitives chosen by the agent, not user-facing hardcoded workflow.
 - If a generated sheet touches cell edges, drifts in scale, or breaks a projectile / impact loop, either reprocess with better primitive settings or regenerate the raw sheet.
+- Do not use raw single-row sheets such as `1x4`, `1x6`, `1x8`, or `1xN` for characters, players, controllable heroes, creatures, NPCs, enemies, summons, animated props, or any asset where a body/subject must stay centered. Single-row raw generation is too likely to drift horizontally and crop inconsistently.
+- For animated body assets, use a multi-row grid by default: 4 frames -> `2x2`, 6 frames -> `2x3`, 8 frames -> `2x4`, 9 frames -> `3x3`, 12 frames -> `3x4` or `4x3`, 16 frames -> `4x4`.
+- If a game engine needs a final single-row strip or mixed atlas, first generate and QC the action as a multi-row grid, then assemble the delivery strip/atlas deterministically.
+- In every animated body grid prompt, require the subject body to stay centered in each cell, full body inside the central 60% to 70% safe area, consistent scale across cells, stable feet/bottom anchor line when applicable, and no limbs, weapons, hair, capes, dust, muzzle flashes, or detached FX crossing cell edges.
+- For map prop packs, classify props before choosing a grid. Square `2x2`, `3x3`, and `4x4` packs are only for compact props. Do not put platforms, floors, bridges, walls, ladders, gates, doors, long hazards, wide/tall props, collision-bearing objects, or tileset/strip pieces into square prop packs; use one-by-one, `1x3`/`1x4` strips, custom wide cells, or a tileset-like atlas instead.
 - Keep the solid `#FF00FF` background rule unless the user explicitly wants a different processing workflow.
 
 ## Workflow
@@ -57,10 +62,10 @@ Examples:
 
 - controllable hero with four directions -> `player` + `player_sheet`
 - side-view controllable hero with idle/run/shoot/jump -> `player` + `hero_action_bundle`
-  - idle sheet
-  - run sheet
-  - shoot sheet with body/weapon only
-  - jump sheet
+  - idle grid sheet, usually `2x2` for 4 frames
+  - run grid sheet, usually `2x2` or `2x3` depending on needed frame count
+  - shoot grid sheet with body/weapon only, usually `2x2`
+  - jump grid sheet, usually `2x2`
   - projectile / muzzle flash as separate assets when needed
   - optional assembled engine atlas after per-action QC
 - healer overworld NPC -> `npc` + `single_asset` or `unit_bundle`
@@ -103,9 +108,29 @@ Keep the strict parts:
 Mixed-action atlas guardrail:
 
 - Do not ask `image_gen` to generate unrelated action rows in one raw sheet, such as `row 1 idle, row 2 run, row 3 shoot, row 4 jump`, for a controllable hero or main character.
-- If an engine needs a combined `4x4`, `5x5`, or custom atlas, generate the action rows/strips separately, process and QC them separately, then assemble the delivery atlas deterministically.
+- Do not ask `image_gen` to generate raw single-row action strips such as `1x4 idle`, `1x4 run`, `1x4 shoot`, or `1x4 jump` for a controllable hero, character, creature, NPC, enemy, summon, or animated prop.
+- If an engine needs a combined `4x4`, `5x5`, custom atlas, or row-strip delivery format, generate the action grids separately, process and QC them separately, then assemble the delivery atlas deterministically.
 - Exceptions are canonical directional locomotion sheets, one continuous long action sequence, prop packs, tileset-like atlases, and low-stakes compact enemy combat sheets. These still need one coherent prompt and visual QC.
 - Keep projectile, muzzle flash, impact, dust trails, and detached FX in separate sheets unless they are intentionally part of the same action silhouette and remain tightly attached.
+
+Animated body grid guardrail:
+
+- `1x4` and other raw single-row sheets are not valid defaults for animated bodies. This includes players, controllable heroes, creatures, NPCs, enemies, summons, animated props, and body-attached combat actions.
+- Use `2x2` for 4-frame body actions. This is the default for idle, short attack, shoot body, jump, hurt, hover, and compact side-view walk/run actions.
+- Use `2x3` for 6-frame body actions such as cast, attack, summon, run, charge, or transformation.
+- Use `2x4`, `3x3`, `3x4`, or `4x4` for longer body actions. Prefer a compact grid over a long row.
+- For 4-direction top-down walk, `4x4` can remain a raw generation shape because it is a canonical directional locomotion sheet, not four unrelated action rows.
+- If final runtime needs a row strip, assemble it after QC from the processed multi-row grid frames.
+- Keep the character centered in every cell. The body centerline should stay near the cell center, feet/bottom anchor should stay on the same y-position when visible, and the subject should occupy only the central safe area with generous magenta padding.
+
+Map prop pack guardrail:
+
+- Use square `2x2`, `3x3`, and `4x4` raw prop packs only for compact props such as rocks, shrubs, barrels, crates, lamps, small signs, pots, debris, and small ornaments.
+- Do not use square prop packs for wide or collision-critical map objects: floors, platforms, ledges, terrain chunks, bridges, wall runs, ladders, roads, rails, pipes, long spike traps, gates, doors, buildings, large trees, checkpoints, exits, or build pads.
+- Use one-by-one generation for unique, large, important, tall, irregular, or collision-aligned props.
+- Use `1x3` or `1x4` strips for repeatable platform/floor assets, with left cap, middle repeat, right cap, and optional slope/corner/end variant.
+- Use custom wide cells for multiple similar wide objects. The grid must state explicit non-square cell dimensions and must not mix compact props with platform/terrain objects.
+- If a square prop pack fails due to edge touch or bad cropping, do not solve it by relaxing QC. Reclassify the object and regenerate with a more suitable sheet shape.
 
 If a layout guide is useful, generate one before calling built-in `image_gen`:
 
@@ -122,7 +147,7 @@ Then make the guide visible in the conversation context and tell `image_gen` to 
 
 Use layout guides deliberately:
 
-- recommended for `prop_pack_3x3`, `prop_pack_4x4`, tileset-like atlases, fixed atlas rows, and non-directional 16-frame action sequences such as casting, summoning, charging, death, or transformation
+- recommended for `prop_pack_3x3`, `prop_pack_4x4`, tileset-like atlases, fixed multi-row animation grids, and non-directional 16-frame action sequences such as casting, summoning, charging, death, or transformation
 - optional for `3x3` large idle and high-value showcase loops when previous generations drift in scale or spacing
 - not the default for `4x4` four-direction walk sheets, because the guide can make directional poses too conservative; use it only after an unguided run fails layout or edge safety
 
@@ -152,7 +177,7 @@ The processor is intentionally low-level. The agent chooses:
 
 Use the processor to gather QC metadata, not to make aesthetic decisions for you.
 
-For hero action bundles, process each action row as its own sheet before any final atlas assembly. Prefer `component_mode=largest` for body-only hero rows when projectiles, dust, muzzle flashes, or trails would distort the body bounding box. Use `component_mode=all` for projectile, impact, aura, or intentionally attached FX sheets.
+For hero action bundles, process each action grid as its own sheet before any final atlas assembly. Prefer `component_mode=largest` for body-only hero grids when projectiles, dust, muzzle flashes, or trails would distort the body bounding box. Use `component_mode=all` for projectile, impact, aura, or intentionally attached FX sheets.
 
 ### 5. QC the result
 
@@ -199,13 +224,15 @@ For `hero_action_bundle`, expect:
   - small or medium actor -> `2x2`
   - large creature or boss -> `3x3`
 - `cast` -> prefer `2x3`
-- `projectile` -> prefer `1x4`
+- `projectile` -> prefer `2x2` for short animated loops; use row strips only when the engine specifically requires a strip, and assemble that strip after QC when practical
 - `impact` / `explode` -> prefer `2x2`
 - `walk`
   - topdown actor -> `4x4` for four-direction walk
   - side-view asset -> `2x2`
 - controllable hero or main player with multiple actions -> `hero_action_bundle`
-  - generate one action per raw sheet, commonly `1x4` per action
+  - generate one action per raw multi-row grid sheet, not as a raw `1x4` strip
+  - default 4-frame action grid is `2x2`
+  - use `2x3` for 6-frame actions and `2x4`, `3x3`, `3x4`, or `4x4` for longer actions
   - do not generate a mixed-action raw `4x4`, `5x5`, or custom atlas
   - assemble the final atlas only as a deterministic delivery step if the game requires it
 - `4x4`, `5x5`, and custom grids

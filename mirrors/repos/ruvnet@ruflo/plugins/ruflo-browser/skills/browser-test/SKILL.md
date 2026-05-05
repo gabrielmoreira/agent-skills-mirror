@@ -1,27 +1,32 @@
 ---
 name: browser-test
-description: Automated browser testing with Playwright -- navigate, interact, screenshot, and validate UI
-argument-hint: "<url> [--screenshot]"
-allowed-tools: mcp__claude-flow__browser_open mcp__claude-flow__browser_click mcp__claude-flow__browser_fill mcp__claude-flow__browser_type mcp__claude-flow__browser_press mcp__claude-flow__browser_check mcp__claude-flow__browser_uncheck mcp__claude-flow__browser_select mcp__claude-flow__browser_hover mcp__claude-flow__browser_wait mcp__claude-flow__browser_screenshot mcp__claude-flow__browser_snapshot mcp__claude-flow__browser_get-text mcp__claude-flow__browser_get-title mcp__claude-flow__browser_get-url mcp__claude-flow__browser_get-value mcp__claude-flow__browser_eval mcp__claude-flow__browser_close mcp__claude-flow__browser_session-list Bash
+description: UI test recipe -- composes browser-record (capture) + browser-replay (verify) so every test produces a replayable RVF artifact, not an ephemeral run
+argument-hint: "<url> [--screenshot] [--against <prior-session-id>]"
+allowed-tools: mcp__claude-flow__browser_open mcp__claude-flow__browser_click mcp__claude-flow__browser_fill mcp__claude-flow__browser_type mcp__claude-flow__browser_press mcp__claude-flow__browser_check mcp__claude-flow__browser_uncheck mcp__claude-flow__browser_select mcp__claude-flow__browser_hover mcp__claude-flow__browser_wait mcp__claude-flow__browser_screenshot mcp__claude-flow__browser_snapshot mcp__claude-flow__browser_get-text mcp__claude-flow__browser_get-title mcp__claude-flow__browser_get-url mcp__claude-flow__browser_get-value mcp__claude-flow__browser_eval mcp__claude-flow__browser_close mcp__claude-flow__browser_session-list mcp__claude-flow__aidefence_is_safe Bash Read Write
 ---
 
-# Browser Testing
+# Browser Test
 
-Automated UI testing using Playwright via the ruflo browser MCP tools.
+Automated UI testing. **Now backed by a recorded RVF session container** instead of an ephemeral run, so every test produces a replayable artifact.
 
 ## When to use
 
-When you need to verify UI functionality, test user flows, or validate that frontend changes work correctly in a real browser.
+- Verifying UI functionality, user flows, or that frontend changes work in a real browser.
+- Producing a baseline session that future regressions can diff against.
+- Re-running a stored test session when CI fails (no need to re-author the test).
 
 ## Steps
 
-1. **Open page** — call `mcp__claude-flow__browser_open` with the target URL
-2. **Interact** — use `browser_click`, `browser_fill`, `browser_type`, `browser_select` for form inputs
-3. **Wait** — call `mcp__claude-flow__browser_wait` for elements to appear or network idle
-4. **Validate** — call `browser_get-text` / `browser_get-value` to check content
-5. **Screenshot** — call `mcp__claude-flow__browser_screenshot` to capture visual state
-6. **Snapshot** — call `mcp__claude-flow__browser_snapshot` for accessibility tree
-7. **Clean up** — call `mcp__claude-flow__browser_close` when done
+1. **Record the test run** by composing `browser-record`:
+   - Allocates an RVF container with `--kind browser-session`.
+   - Begins a ruvector trajectory.
+2. **Drive interactions** — `browser_open`, `browser_click`, `browser_fill`, `browser_type`, `browser_select`. Each action emits a `trajectory-step`.
+3. **Wait** for elements / network idle via `browser_wait` before assertions.
+4. **Validate** with `browser_get-text` / `browser_get-value` / `browser_get-title` / `browser_get-url`. Validation outcomes go into `findings.md` inside the RVF container.
+5. **Screenshot** before / after key interactions for visual regression. Filenames follow `<step-id>.png`.
+6. **Snapshot** the accessibility tree at navigation boundaries.
+7. **End** the session: `trajectory-end --verdict pass|fail`, `rvf compact`, AgentDB index in `browser-sessions`.
+8. **(Optional) Diff against `--against <prior-session-id>`**: invoke `browser-screenshot-diff` to compare the new run with a baseline.
 
 ## Navigation
 
@@ -29,8 +34,15 @@ When you need to verify UI functionality, test user flows, or validate that fron
 - `browser_reload` to refresh the page
 - `browser_scroll` to scroll to elements or coordinates
 
+## What changed from v0.1.0
+
+- The skill no longer ends with `browser_close` alone — it ends with the session-end protocol.
+- Selectors discovered during the test land in `browser-selectors` (host:intent), so the next test can find them by embedding similarity.
+- Validation outputs pass `aidefence_is_safe` before any LLM-facing summary; injection-flagged content is quarantined to `findings.md`.
+- The same skill, used in CI, now produces an artifact that `/ruflo-browser replay` can re-drive.
+
 ## Tips
 
-- Use `browser_wait` before assertions to handle async rendering
-- Take screenshots before and after interactions for visual regression
-- Use `browser_eval` for custom JavaScript assertions
+- Use `browser_wait` before assertions to handle async rendering.
+- For visual regression, save the parent session id and pass `--against <id>` on the next run.
+- Use `browser_eval` for custom JavaScript assertions — but redact any returned strings via the `aidefence_is_safe` gate before logging.

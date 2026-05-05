@@ -51,10 +51,21 @@ WebPubSubServiceClient client = new WebPubSubServiceClientBuilder()
 ### With DefaultAzureCredential
 
 ```java
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 WebPubSubServiceClient client = new WebPubSubServiceClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .endpoint("<endpoint>")
     .hub("chat")
     .buildClient();
@@ -273,9 +284,10 @@ try {
 ## Environment Variables
 
 ```bash
-WEB_PUBSUB_CONNECTION_STRING=Endpoint=https://<resource>.webpubsub.azure.com;AccessKey=...
-WEB_PUBSUB_ENDPOINT=https://<resource>.webpubsub.azure.com
-WEB_PUBSUB_ACCESS_KEY=<your-access-key>
+WEB_PUBSUB_CONNECTION_STRING=Endpoint=https://<resource>.webpubsub.azure.com;AccessKey=...  # Alternative to Entra ID auth
+WEB_PUBSUB_ENDPOINT=https://<resource>.webpubsub.azure.com  # Required for AzureKeyCredential or TokenCredential auth
+WEB_PUBSUB_ACCESS_KEY=<your-access-key>  # Only required for AzureKeyCredential auth
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Client Roles

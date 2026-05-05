@@ -11,6 +11,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes yet._
 
+## [10.10.0] - 2026-05-04 - "Production Audit, Context Pruning, and BuyWhere MCP"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #571, #573, and #574 through the maintainer squash-merge workflow, including fork-run approval, PR body normalization, source validation fixes, contributor credit sync, and generated-state refreshes on `main`. It adds production-readiness auditing, context/token budgeting guidance, and updates the BuyWhere source link to the general MCP server.
+
+## New Skills
+
+- **production-audit** - shipped-app readiness auditing across deployment health, RLS, webhooks, secrets exposure, grants, Stripe idempotency, mobile UX, and production signals.
+- **recursive-context-pruning-token-budgeting** - context-pruning and token-budgeting workflow for long-running AI agent sessions, concise outputs, and compression handoffs.
+
+## Improvements
+
+- **BuyWhere MCP source update** - points the `buywhere-product-catalog` skill and README source credit to `BuyWhere/buywhere-mcp`, the broader MCP server entrypoint, instead of the Cursor-specific plugin.
+- **source provenance and credits** - adds `commitshow/production-audit` README source coverage and refreshes contributor credits after the batch merge.
+- **generated artifact sync** - refreshes catalog, skill index, plugin mirrors, web assets, package metadata, and visible skill counts to `1,445+`.
+
+## Who should care
+
+- **Security and launch reviewers** get a new production-readiness lens for deployed apps after normal in-session checks.
+- **Agent workflow authors** get a compact context-management skill for keeping long sessions focused and token-efficient.
+- **Commerce-agent builders** get the more general BuyWhere MCP source and onboarding path.
+- **Maintainers** get another source-only PR batch with fresh checks, source credits, and generated artifacts aligned before release.
+
+## Credits
+
+- **[@kench001](https://github.com/kench001)** for PR #571 (`recursive-context-pruning-token-budgeting`).
+- **[@commitshow](https://github.com/commitshow)** for PR #573 (`production-audit`).
+- **[@BuyWhere](https://github.com/BuyWhere)** for PR #574 (`buywhere-product-catalog` source update).
+
 ## [10.9.0] - 2026-05-03 - "Skill Audit, PR Writing, and Heading Cleanup"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

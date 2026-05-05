@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
+Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 93 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -129,29 +129,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`skills/oracle-codex/scripts/check-codex.sh`](skills/oracle-codex/scripts/check-codex.sh) |
 | 69 | ✓ | [`skills/oracle-codex/scripts/run-codex-exec.sh`](skills/oracle-codex/scripts/run-codex-exec.sh) |
 | 70 | ✓ | [`skills/oracle-codex/SKILL.md`](skills/oracle-codex/SKILL.md) |
-| 71 | ✓ | [`skills/process-cleanup/scripts/kill-zombies.sh`](skills/process-cleanup/scripts/kill-zombies.sh) |
-| 72 | ✓ | [`skills/process-cleanup/SKILL.md`](skills/process-cleanup/SKILL.md) |
-| 73 | ✓ | [`skills/tailwind-css/references/tailwind-v4-rules.md`](skills/tailwind-css/references/tailwind-v4-rules.md) |
-| 74 | ✓ | [`skills/tailwind-css/references/tailwind-variants.md`](skills/tailwind-css/references/tailwind-variants.md) |
-| 75 | ✓ | [`skills/tailwind-css/references/tw-animate-css.md`](skills/tailwind-css/references/tw-animate-css.md) |
-| 76 | ✓ | [`skills/tailwind-css/SKILL.md`](skills/tailwind-css/SKILL.md) |
-| 77 | ✓ | [`skills/vitest/references/monorepo-testing.md`](skills/vitest/references/monorepo-testing.md) |
-| 78 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
-| 79 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
-| 80 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
-| 81 | ✓ | [`skills/work/SKILL.md`](skills/work/SKILL.md) |
-| 82 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
-| 83 | ✓ | [`skills/yeet/references/commons.md`](skills/yeet/references/commons.md) |
-| 84 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
-| 85 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
-| 86 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
-| 87 | ✓ | [`skills/yeet/references/issue-biome.md`](skills/yeet/references/issue-biome.md) |
-| 88 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
-| 89 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
-| 90 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
-| 91 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
-| 92 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
-| 93 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
+| 71 | ✓ | [`skills/tailwind-css/references/tailwind-v4-rules.md`](skills/tailwind-css/references/tailwind-v4-rules.md) |
+| 72 | ✓ | [`skills/tailwind-css/references/tailwind-variants.md`](skills/tailwind-css/references/tailwind-variants.md) |
+| 73 | ✓ | [`skills/tailwind-css/references/tw-animate-css.md`](skills/tailwind-css/references/tw-animate-css.md) |
+| 74 | ✓ | [`skills/tailwind-css/SKILL.md`](skills/tailwind-css/SKILL.md) |
+| 75 | ✓ | [`skills/vitest/references/monorepo-testing.md`](skills/vitest/references/monorepo-testing.md) |
+| 76 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
+| 77 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
+| 78 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
+| 79 | ✓ | [`skills/work/SKILL.md`](skills/work/SKILL.md) |
+| 80 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
+| 81 | ✓ | [`skills/yeet/references/commons.md`](skills/yeet/references/commons.md) |
+| 82 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
+| 83 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
+| 84 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
+| 85 | ✓ | [`skills/yeet/references/issue-biome.md`](skills/yeet/references/issue-biome.md) |
+| 86 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
+| 87 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
+| 88 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
+| 89 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
+| 90 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
+| 91 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
 
 ---
 

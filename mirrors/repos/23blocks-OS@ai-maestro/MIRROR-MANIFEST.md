@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 16 followed patterns, 23 file(s) materialized.
+Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 17 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 16 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 23 |
+| Followed pats | 17 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 16 followed patterns
 - `CONTRIBUTING.md`
 - `docs/WINDOWS-INSTALLATION.md`
 - `docs/QUICKSTART.md`
+- `docs/ECOSYSTEM.md`
 - `docs/CONCEPTS.md`
 - `docs/USE-CASES.md`
 - `docs/SETUP-TUTORIAL.md`
@@ -87,16 +88,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
 | 12 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
 | 13 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
-| 14 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
-| 15 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
-| 16 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
-| 17 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
-| 18 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
-| 19 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 20 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
-| 21 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
-| 22 | → | [`README.md`](README.md) |
-| 23 | → | [`SECURITY.md`](SECURITY.md) |
+| 14 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 15 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
+| 16 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
+| 17 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| 18 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
+| 19 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
+| 20 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 21 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
+| 22 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
+| 23 | → | [`README.md`](README.md) |
+| 24 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

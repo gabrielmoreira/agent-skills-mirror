@@ -1,22 +1,3 @@
-<!-- OPENSPEC:START -->
-# OpenSpec Instructions
-
-These instructions are for AI assistants working in this project.
-
-Always open `@/openspec/AGENTS.md` when the request:
-- Mentions planning or proposals (words like proposal, spec, change, plan)
-- Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
-- Sounds ambiguous and you need the authoritative spec before coding
-
-Use `@/openspec/AGENTS.md` to learn:
-- How to create and apply change proposals
-- Spec format and conventions
-- Project structure and guidelines
-
-Keep this managed block so 'openspec update' can refresh the instructions.
-
-<!-- OPENSPEC:END -->
-
 # Commands
 - **Test all**: `go test ./... -race`
 - **Test package**: `go test ./mcp -v` or `go test ./server -v`
@@ -24,6 +5,9 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - **Coverage**: `go test -coverprofile=coverage.txt -covermode=atomic $(go list ./... | grep -v '/examples/' | grep -v '/testdata' | grep -v '/mcptest' | grep -v '/server/internal/gen')`
 - **Lint**: `golangci-lint run` (uses .golangci.yml config)
 - **Generate**: `go generate ./...` (regenerates hooks and request handlers)
+
+# Git
+- **Verified commits**: When possible, make verified (signed) commits using GPG, SSH, or S/MIME signing keys
 
 # Code Style
 - **Imports**: Standard library first, then third-party, then local packages (goimports handles this)

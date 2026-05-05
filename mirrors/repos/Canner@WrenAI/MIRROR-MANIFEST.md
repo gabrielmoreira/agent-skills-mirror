@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `Canner/WrenAI` — 26 default patterns, 2 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 1 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 2 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 1 file(s
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `core/wren/README.md`
 
 ## File Index
 
@@ -60,6 +61,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
+| 2 | ✓ | [`core/wren-core-base/.claude/CLAUDE.md`](core/wren-core-base/.claude/CLAUDE.md) |
+| 3 | ✓ | [`core/wren-core-base/AGENTS.md`](core/wren-core-base/AGENTS.md) |
+| 4 | ✓ | [`core/wren-core-base/manifest-macro/README.md`](core/wren-core-base/manifest-macro/README.md) |
+| 5 | ✓ | [`core/wren-core-base/README.md`](core/wren-core-base/README.md) |
+| 6 | ✓ | [`core/wren-core-py/.claude/CLAUDE.md`](core/wren-core-py/.claude/CLAUDE.md) |
+| 7 | ✓ | [`core/wren-core-py/AGENTS.md`](core/wren-core-py/AGENTS.md) |
+| 8 | ✓ | [`core/wren-core-py/README.md`](core/wren-core-py/README.md) |
+| 9 | ✓ | [`core/wren-core-wasm/.claude/CLAUDE.md`](core/wren-core-wasm/.claude/CLAUDE.md) |
+| 10 | ✓ | [`core/wren-core-wasm/README.md`](core/wren-core-wasm/README.md) |
+| 11 | ✓ | [`core/wren-core/.claude/CLAUDE.md`](core/wren-core/.claude/CLAUDE.md) |
+| 12 | ✓ | [`core/wren-core/AGENTS.md`](core/wren-core/AGENTS.md) |
+| 13 | ✓ | [`core/wren-core/benchmarks/README.md`](core/wren-core/benchmarks/README.md) |
+| 14 | ✓ | [`core/wren-core/README.md`](core/wren-core/README.md) |
+| 15 | ✓ | [`core/wren-core/wren-example/README.md`](core/wren-core/wren-example/README.md) |
+| 16 | ✓ | [`core/wren/.claude/CLAUDE.md`](core/wren/.claude/CLAUDE.md) |
+| 17 | ✓ | [`docs/core/README.md`](docs/core/README.md) |
+| 18 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
+| 19 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
+| 20 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 21 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
+| 22 | ✓ | [`skills/check-versions.sh`](skills/check-versions.sh) |
+| 23 | ✓ | [`skills/index.json`](skills/index.json) |
+| 24 | ✓ | [`skills/install.sh`](skills/install.sh) |
+| 25 | ✓ | [`skills/README.md`](skills/README.md) |
+| 26 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
+| 27 | ✓ | [`skills/versions.json`](skills/versions.json) |
+| 28 | ✓ | [`skills/wren-dlt-connector/evals/evals.json`](skills/wren-dlt-connector/evals/evals.json) |
+| 29 | ✓ | [`skills/wren-dlt-connector/references/dlt_sources.md`](skills/wren-dlt-connector/references/dlt_sources.md) |
+| 30 | ✓ | [`skills/wren-dlt-connector/scripts/introspect_dlt.py`](skills/wren-dlt-connector/scripts/introspect_dlt.py) |
+| 31 | ✓ | [`skills/wren-dlt-connector/SKILL.md`](skills/wren-dlt-connector/SKILL.md) |
+| 32 | ✓ | [`skills/wren-generate-mdl/SKILL.md`](skills/wren-generate-mdl/SKILL.md) |
+| 33 | ✓ | [`skills/wren-onboarding/SKILL.md`](skills/wren-onboarding/SKILL.md) |
+| 34 | ✓ | [`skills/wren-usage/references/memory.md`](skills/wren-usage/references/memory.md) |
+| 35 | ✓ | [`skills/wren-usage/references/wren-sql.md`](skills/wren-usage/references/wren-sql.md) |
+| 36 | ✓ | [`skills/wren-usage/SKILL.md`](skills/wren-usage/SKILL.md) |
+| 37 | → | [`core/wren/README.md`](core/wren/README.md) |
+| 38 | → | [`README.md`](README.md) |
 
 ---
 

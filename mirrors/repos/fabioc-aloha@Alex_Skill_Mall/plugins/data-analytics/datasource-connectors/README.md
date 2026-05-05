@@ -3,7 +3,7 @@
 Ingestion patterns for CSV, JSON, REST API, SQL, Excel, and Parquet. A decision
 framework that guides an LLM through loading data from any common source.
 
-**Status**: Complete (ready for Mall promotion)
+**Status**: Published (v1.0.0)
 
 ## What It Does
 

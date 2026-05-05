@@ -24,34 +24,41 @@ Scala runs on the JVM, so it uses the same OpenTelemetry Java agent as Java appl
 Download the agent JAR:
 
 ```sh
-wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar
+OTEL_JAVA_VERSION=$(curl -sf "https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/releases/latest" \
+  | grep '"tag_name"' | cut -d'"' -f4)
+[ -z "$OTEL_JAVA_VERSION" ] && { echo "Failed to resolve OTel Java version" >&2; exit 1; }
+wget "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/${OTEL_JAVA_VERSION}/opentelemetry-javaagent.jar"
 ```
 
 **Note**: The javaagent.jar contains both the agent and instrumentation libraries, enabling automatic instrumentation without modifying source code.
 
-For sbt projects, add a task to download the agent:
+For sbt projects, resolve the agent from Maven Central via the [sbt-javaagent](https://github.com/sbt/sbt-javaagent) plugin.
+Maven artifacts are immutable and checksum-verified, which avoids the unpinned-runtime-download risk of fetching the JAR directly from GitHub release URLs.
+
+```scala
+// project/plugins.sbt
+addSbtPlugin("com.github.sbt" % "sbt-javaagent" % "<version>")
+```
+
+Find the current version at [sbt-javaagent releases](https://github.com/sbt/sbt-javaagent/releases).
 
 ```scala
 // build.sbt
-lazy val downloadAgent = taskKey[File]("Download the OpenTelemetry Java agent")
-downloadAgent := {
-  val agentFile = target.value / "opentelemetry-javaagent.jar"
-  if (!agentFile.exists()) {
-    val url = new java.net.URL(
-      "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"
-    )
-    IO.transfer(url.openStream(), agentFile)
-  }
-  agentFile
-}
+enablePlugins(JavaAgent)
+javaAgents += "io.opentelemetry.javaagent" % "opentelemetry-javaagent" % "<version>"
 ```
+
+The plugin resolves the agent JAR through sbt's dependency resolution (Maven Central), caches it in the local Ivy/Coursier cache, and wires `-javaagent:<resolved-path>` into the `run`, `test`, and packaging tasks automatically.
+Bump the version when a new release is published: [Maven Central — opentelemetry-javaagent](https://central.sonatype.com/artifact/io.opentelemetry.javaagent/opentelemetry-javaagent).
 
 Add the OpenTelemetry API dependency for custom spans:
 
 ```scala
 // build.sbt
-libraryDependencies += "io.opentelemetry" % "opentelemetry-api" % "1.47.0"
+libraryDependencies += "io.opentelemetry" % "opentelemetry-api" % "<version>"
 ```
+
+Find the current version at [Maven Central — opentelemetry-api](https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-api).
 
 ## Environment variables
 
@@ -85,7 +92,13 @@ All environment variables that control the SDK behavior:
 
 The SDK is activated by attaching the Java agent to the JVM.
 
-**Via sbt `javaOptions`:**
+**Via sbt-javaagent plugin (recommended):**
+The plugin (declared above under [Installation](#installation)) wires `-javaagent:<resolved-path>` into the relevant tasks automatically, including forked `run`.
+No additional `javaOptions` setting is required.
+
+**Via sbt `javaOptions` (manual JAR path):**
+Use this only if you are not using the sbt-javaagent plugin and have downloaded the JAR yourself.
+
 ```scala
 // build.sbt
 run / javaOptions += s"-javaagent:${target.value}/opentelemetry-javaagent.jar"

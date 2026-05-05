@@ -52,6 +52,11 @@ All products are clients of the **CLI** (`packages/opencode/`), which contains t
 
 Extension-specific settings should live in the Kilo extension settings, not default VS Code settings, unless they are intentionally VS Code-wide.
 
+## Package Instructions
+
+- When a task primarily touches `packages/kilo-jetbrains/`, read `packages/kilo-jetbrains/AGENTS.md` before planning or editing.
+- For JetBrains Kotlin/Swing UI work, also apply `packages/kilo-jetbrains/.kilo/skills/jetbrains-ui-style/SKILL.md`.
+
 ## Monorepo Structure
 
 Turborepo + Bun workspaces. The packages you'll work with most:

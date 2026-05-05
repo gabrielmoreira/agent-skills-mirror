@@ -1,3 +1,4 @@
+<!-- managed-by: lorebase -->
 # Instruções globais do repositório para o GitHub Copilot
 
 ## Idioma

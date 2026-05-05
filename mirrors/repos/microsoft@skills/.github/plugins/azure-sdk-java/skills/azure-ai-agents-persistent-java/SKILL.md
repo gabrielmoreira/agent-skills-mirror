@@ -27,8 +27,9 @@ Low-level SDK for creating and managing persistent AI agents with threads, messa
 ## Environment Variables
 
 ```bash
-PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project>
-MODEL_DEPLOYMENT_NAME=gpt-4o-mini
+PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project> # Required for project configuration
+MODEL_DEPLOYMENT_NAME=gpt-4o-mini # Required for agent model selection
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
@@ -36,12 +37,22 @@ MODEL_DEPLOYMENT_NAME=gpt-4o-mini
 ```java
 import com.azure.ai.agents.persistent.PersistentAgentsClient;
 import com.azure.ai.agents.persistent.PersistentAgentsClientBuilder;
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
 
 String endpoint = System.getenv("PROJECT_ENDPOINT");
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
+
 PersistentAgentsClient client = new PersistentAgentsClientBuilder()
     .endpoint(endpoint)
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .buildClient();
 ```
 

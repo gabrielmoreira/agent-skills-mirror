@@ -33,8 +33,8 @@
 </tr>
 </table>
 
-[![License: MIT](https://img.shields.io/github/license/ConardLi/web-design-skill?style=flat-square&color=blue)](./LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/ConardLi/web-design-skill?style=flat-square)](https://github.com/ConardLi/web-design-skill/stargazers)
+[![License: MIT](https://img.shields.io/github/license/ConardLi/garden-skills?style=flat-square&color=blue)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ConardLi/garden-skills?style=flat-square)](https://github.com/ConardLi/garden-skills/stargazers)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#contributing)
 [![Skills count](https://img.shields.io/badge/skills-4-orange?style=flat-square)](#skills-gallery)
 [![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
@@ -47,9 +47,9 @@
 
 ## Table of contents
 
-| Install | Guide | Project | Meta |
-|---|---|---|---|
-| [Install](#install)<br>[Claude Code plugin marketplace](#option-a--claude-code-plugin-marketplace)<br>[Manual copy](#option-b--manual-copy-into-your-project)<br>[Git submodule](#option-c--git-submodule) | [Compatibility](#compatibility)<br>[Anatomy of a Skill](#anatomy-of-a-skill) | [Repository layout](#repository-layout) | [Acknowledgments](#acknowledgments)<br>[License](#license) |
+| Install | Use | Contribute |
+|---|---|---|
+| [Install](#install)<br>[`skills` CLI (npx)](#option-a--skills-cli-npx)<br>[Claude Code plugin marketplace](#option-b--claude-code-plugin-marketplace)<br>[Pinned `.zip` from Releases](#option-c--pinned-zip-from-releases)<br>[Manual copy](#option-d--manual-copy-into-your-project)<br>[Git submodule](#option-e--git-submodule) | [Compatibility](#compatibility)<br>[What is a Skill?](#what-is-a-skill) | [Contributing](#contributing)<br>[Acknowledgments](#acknowledgments)<br>[License](#license) |
 
 ---
 
@@ -71,7 +71,7 @@ Highlights:
 - Theme-token architecture with multiple visual languages, from `paper-press` to `terminal-green`
 - Scaffolded Vite + React + TypeScript project with reusable stage primitives and recording guidance
 
-Links: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md)
+Links: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.1.1 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.1.1/web-video-presentation-1.1.1.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 
@@ -92,7 +92,7 @@ Highlights:
 - Includes practical implementation rules for inline React + Babel, CSS tokens, `oklch()` color work, container queries, and reduced-motion handling
 - Ships an advanced patterns reference for device frames, slide engines, animation timelines, dashboards, and other reusable web artifacts
 
-Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo)
+Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.0.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.0.0/web-design-engineer-1.0.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 
@@ -113,7 +113,7 @@ Highlights:
 - Covers both image generation and image editing through dedicated workflows and scripts
 - Saves prompts and generated images under `garden-gpt-image-2/` in Garden mode for reuse, review, and versioning
 
-Links: [README](./skills/gpt-image-2/README.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website)
+Links: [README](./skills/gpt-image-2/README.md) · [SKILL.md](./skills/gpt-image-2/SKILL.md) · [Website](./website/gpt-image2-website) · <!-- DOWNLOAD:gpt-image-2:start -->[Download v1.0.3 .zip](https://github.com/ConardLi/garden-skills/releases/download/gpt-image-2-v1.0.3/gpt-image-2-1.0.3.zip)<!-- DOWNLOAD:gpt-image-2:end -->
 
 ---
 
@@ -134,15 +134,76 @@ Highlights:
 - Bounds retrieval to at most 5 search rounds so exploration stays controlled
 - Includes workflows for `grep`, `pdftotext`, `pdfplumber`, and `pandas`, with source-aware answer formatting
 
-Links: [README](./skills/kb-retriever/README.md) · [SKILL.md](./skills/kb-retriever/SKILL.md)
+Links: [README](./skills/kb-retriever/README.md) · [SKILL.md](./skills/kb-retriever/SKILL.md) · <!-- DOWNLOAD:kb-retriever:start -->[Download v1.0.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/kb-retriever-v1.0.0/kb-retriever-1.0.0.zip)<!-- DOWNLOAD:kb-retriever:end -->
 
 ---
 
 ## Install
 
-### Option A · Claude Code plugin marketplace
+There are five supported install paths. Pick the one that fits your stack:
 
-The fastest path if you use [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
+| # | Method | Best for | Pinned version? |
+|---|---|---|---|
+| A | [`skills` CLI (`npx skills add`)](#option-a--skills-cli-npx) | Any agent, one-line install, pick & choose skills | ✅ via tag URL |
+| B | [Claude Code plugin marketplace](#option-b--claude-code-plugin-marketplace) | Claude Code users who want to subscribe to plugin packs | ✅ via marketplace version |
+| C | [Pinned `.zip` from GitHub Releases](#option-c--pinned-zip-from-releases) | CI / air-gapped envs / reproducible installs | ✅ ✅ (immutable) |
+| D | [Manual copy after `git clone`](#option-d--manual-copy-into-your-project) | Local hacking on the skill itself | ❌ (tracks `main`) |
+| E | [Git submodule](#option-e--git-submodule) | Vendored into a larger project, want upstream updates | ✅ via submodule SHA |
+
+> Each skill section above also has a **`Download v<version> .zip`** link in
+> its "Links:" row that points at the current pinned release artifact. Those
+> URLs are auto-rewritten by [`scripts/release/update-readme.mjs`](./scripts/release/update-readme.mjs)
+> on every release, so they always advertise the latest immutable version.
+
+### Option A · `skills` CLI (npx)
+
+The fastest agent-agnostic path. Uses the standard [`npx skills` CLI](https://www.npmjs.com/package/skills),
+which auto-detects your agent (Claude Code, Cursor, Codex, etc.) and drops the
+skill into the right directory.
+
+```bash
+# Install all four skills (latest)
+npx skills add ConardLi/garden-skills
+
+# Install just one skill (latest)
+npx skills add ConardLi/garden-skills -s web-design-engineer
+
+# Install globally (~/.skills) instead of per-project (./.skills)
+npx skills add ConardLi/garden-skills -s gpt-image-2 --global
+
+# Target a specific agent
+npx skills add ConardLi/garden-skills -s kb-retriever -a claude-code
+```
+
+> **Defaults to the latest commit on `main`.** That's what you want 95% of the
+> time — the CLI tracks each skill's most recent published `SKILL.md` straight
+> from the source tree.
+
+**Want a pinned version? (CI / production)** Use a tag-scoped `tree/` URL —
+this points at the exact commit a release was cut from:
+
+```bash
+# Pin one skill to a specific release
+npx skills add ConardLi/garden-skills/tree/web-design-engineer-v1.0.0/skills/web-design-engineer
+```
+
+For each skill, the current pinned `.zip` URL is also shown inline in its
+"Links:" row above (the `Download v<version> .zip` link).
+
+Useful sub-commands:
+
+```bash
+npx skills list                 # what's installed
+npx skills find web-design      # search registries
+npx skills update               # bump everything
+npx skills remove kb-retriever  # uninstall
+```
+
+### Option B · Claude Code plugin marketplace
+
+If you use [Claude Code](https://docs.anthropic.com/en/docs/claude-code), you
+can subscribe to the marketplace and install plugin packs that bundle one or
+more skills together:
 
 ```bash
 /plugin marketplace add ConardLi/garden-skills
@@ -161,27 +222,68 @@ Plugin packs are declared in [`.claude-plugin/marketplace.json`](./.claude-plugi
 | `knowledge-base-skills` | `kb-retriever` |
 | `image-generation-skills` | `gpt-image-2` |
 
-### Option B · Manual copy into your project
+### Option C · Pinned `.zip` from Releases
 
-Each skill folder is self-contained — copy the one(s) you want into your project's skills directory:
+Every formal release publishes an immutable `.zip` (with a SHA-256 checksum) to
+[GitHub Releases](https://github.com/ConardLi/garden-skills/releases). Pin to
+this from CI, Dockerfiles, or air-gapped installers when you need the exact
+bytes to never move under you.
 
 ```bash
-# Claude Code / Claude.ai
-cp -r skills/web-design-engineer  your-project/.claude/skills/
+# Replace <skill> and <version> with the version you want.
+SKILL=web-design-engineer
+VERSION=1.0.0
 
-# Cursor / generic agent
-cp -r skills/web-design-engineer  your-project/.agents/skills/
+curl -fsSL -o "${SKILL}.zip" \
+  "https://github.com/ConardLi/garden-skills/releases/download/${SKILL}-v${VERSION}/${SKILL}-${VERSION}.zip"
+
+# Verify the checksum (highly recommended for unattended installs)
+curl -fsSL -o "${SKILL}.zip.sha256" \
+  "https://github.com/ConardLi/garden-skills/releases/download/${SKILL}-v${VERSION}/${SKILL}-${VERSION}.zip.sha256"
+shasum -a 256 -c "${SKILL}.zip.sha256"
+
+# Drop the folder into the agent's skills directory
+unzip -q "${SKILL}.zip" -d .claude/skills/   # or .agents/skills/, .codex/skills/, ...
 ```
 
-The agent will discover the skill the next time it scans the workspace.
-
-### Option C · Git submodule
-
-If you want to track upstream updates inside a larger project:
+A floating "always-latest" URL is also available — useful for one-off installs:
 
 ```bash
-git submodule add https://github.com/ConardLi/web-design-skill.git vendor/garden-skills
+https://github.com/ConardLi/garden-skills/releases/latest/download/<skill>-<version>.zip
+```
+
+> **Pinned URLs for every skill are listed inline in this README** — see the
+> "Download" line under each skill's "Links" entry above. They are kept in sync
+> automatically by the release pipeline.
+
+### Option D · Manual copy into your project
+
+Clone the repo and copy the skill folder you want — handy if you want to fork
+or hack on the skill itself.
+
+```bash
+git clone https://github.com/ConardLi/garden-skills.git
+cp -r garden-skills/skills/web-design-engineer  your-project/.claude/skills/
+# Cursor / generic agent:
+cp -r garden-skills/skills/web-design-engineer  your-project/.agents/skills/
+```
+
+The agent discovers the skill the next time it scans the workspace.
+
+### Option E · Git submodule
+
+For vendoring into a larger project where you want to track upstream updates:
+
+```bash
+git submodule add https://github.com/ConardLi/garden-skills.git vendor/garden-skills
 ln -s ../../vendor/garden-skills/skills/web-design-engineer .claude/skills/web-design-engineer
+```
+
+Pin to a release tag for reproducibility:
+
+```bash
+cd vendor/garden-skills
+git checkout web-design-engineer-v1.0.0
 ```
 
 ---
@@ -201,94 +303,47 @@ ln -s ../../vendor/garden-skills/skills/web-design-engineer .claude/skills/web-d
 
 ---
 
-## Anatomy of a Skill
+## What is a Skill?
 
-Every skill in this repo follows the same minimal shape:
+A **Skill** is a self-contained folder the agent can load on-demand. It's
+just a `SKILL.md` (YAML frontmatter + instructions), optionally accompanied
+by reference docs, scripts, and assets:
 
 ```text
 <skill-name>/
-├── SKILL.md            ← required: YAML frontmatter + instructions for the agent
-├── README.md           ← English docs for humans (this is what GitHub renders)
-├── README.zh-CN.md     ← Chinese docs for humans
-├── references/         ← optional: docs the agent loads on-demand
-├── scripts/            ← optional: deterministic executable code
-└── assets/             ← optional: templates, fonts, icons used in outputs
+├── SKILL.md      ← required: when to use it + how to do it
+├── README.md     ← human-facing docs
+├── references/   ← optional: extended docs the agent loads on demand
+├── scripts/      ← optional: deterministic executable helpers
+└── assets/       ← optional: templates, fonts, icons
 ```
 
-Frontmatter is the contract that tells the agent *when* to use the skill:
-
-```markdown
----
-name: my-skill
-description: A clear sentence about what this skill does and when to use it.
-              The agent uses this to decide whether to load the skill.
----
-
-# My Skill
-
-Detailed instructions, examples, and constraints go here.
-```
-
-For the full spec, see [agentskills.io](https://agentskills.io) and the [official examples from Anthropic](https://github.com/anthropics/skills).
+The agent decides whether to activate the skill from the `description` line
+in the frontmatter — so the description is the contract between you and the
+agent. For the full spec, see [agentskills.io](https://agentskills.io) and
+[Anthropic's reference repository](https://github.com/anthropics/skills).
 
 ---
 
-## Repository layout
+## Contributing
 
-```text
-.
-├── skills/                              ← all skills live here, one folder each
-│   ├── web-video-presentation/
-│   │   ├── SKILL.md
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (principles, outline, themes, audio, recording)
-│   │   ├── scripts/scaffold.sh
-│   │   ├── templates/
-│   │   └── themes/
-│   │
-│   ├── web-design-engineer/
-│   │   ├── SKILL.md
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   └── references/advanced-patterns.md
-│   │
-│   ├── gpt-image-2/
-│   │   ├── SKILL.md
-│   │   ├── README.md  /  README.zh-CN.md
-│   │   ├── references/  (18 categories, 70+ prompt templates)
-│   │   └── scripts/     (check-mode.js, generate.js, edit.js, shared.js)
-│   │
-│   └── kb-retriever/
-│       ├── SKILL.md
-│       ├── README.md  /  README.zh-CN.md
-│       ├── references/  (pdf_reading.md, excel_reading.md, excel_analysis.md)
-│       └── scripts/convert_pdf_to_images.py
-│
-├── .claude-plugin/
-│   └── marketplace.json                 ← Claude Code plugin marketplace manifest
-│
-├── demo/                                ← live, openable demos
-│   └── web-design-demo/
-│       └── demo2/                       ← side-by-side viewer for web-design-engineer
-│           ├── index.html
-│           ├── demo1.html  /  demo1-with-skill.html
-│           └── demo2-with-skill.html
-│
-├── dist/                                ← shared reference assets
-│   ├── imgs/                            ← README skill posters
-│   ├── prompt/
-│   │   └── claude-design-system-prompt.md   (original Claude Design system prompt)
-│
-├── website/                             ← standalone showcase websites
-│   ├── gpt-image2-website/              ← GPT Image 2 skill website
-│   └── web-design-website/              ← web-design-engineer skill website
-│
-├── README.md  /  README.zh-CN.md        ← collection index (this file)
-├── LICENSE
-└── .gitignore
+Bug reports, new skills, and tooling improvements are all welcome.
+
+The maintainer-facing docs — repository layout, release process, version
+rules, CI workflow, troubleshooting — live in
+[**`CONTRIBUTING.md`**](./CONTRIBUTING.md) ([中文](./CONTRIBUTING.zh-CN.md)).
+Read that first if you want to add a skill or cut a release.
+
+Quick orientation:
+
+```bash
+git clone https://github.com/ConardLi/garden-skills.git
+cd garden-skills
+npm run list      # show all skills + manifest status
+npm run validate  # the same check CI runs on every PR
 ```
 
 ---
-
 
 ## Acknowledgments
 

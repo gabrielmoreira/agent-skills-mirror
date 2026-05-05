@@ -1,0 +1,1340 @@
+# IM Channel 系统架构文档
+
+> 返回 [文档索引](../README.md)
+
+> Hope Agent 多渠道即时通讯接入 — Rust 原生实现
+
+## 目录
+
+- [概述](#概述)
+- [设计目标](#设计目标)
+- [整体架构](#整体架构)
+- [核心抽象层](#核心抽象层)
+  - [ChannelId 枚举](#channelid-枚举)
+  - [ChannelPlugin Trait](#channelplugin-trait)
+  - [MsgContext（入站消息）](#msgcontext入站消息)
+  - [ReplyPayload（出站消息）](#replypayload出站消息)
+  - [ChannelCapabilities](#channelcapabilities)
+  - [安全策略（SecurityConfig）](#安全策略securityconfig)
+- [消息流转架构](#消息流转架构)
+  - [入站流程](#入站流程)
+  - [出站流程](#出站流程)
+  - [完整时序图](#完整时序图)
+- [模块拆分](#模块拆分)
+- [Channel Registry（注册表）](#channel-registry注册表)
+- [会话管理](#会话管理)
+  - [channel_conversations 表](#channel_conversations-表)
+  - [会话映射策略](#会话映射策略)
+- [Project 绑定与 IM 禁用命令](#project-绑定与-im-禁用命令)
+- [Worker 分发器](#worker-分发器)
+- [Telegram 插件实现](#telegram-插件实现)
+  - [架构](#telegram-架构)
+  - [teloxide 封装层](#teloxide-封装层)
+  - [Long-Polling 循环](#long-polling-循环)
+  - [Markdown → Telegram HTML](#markdown--telegram-html)
+  - [群组消息过滤](#群组消息过滤)
+  - [媒体处理](#媒体处理)
+- [工具审批交互](#工具审批交互)
+- [配置格式](#配置格式)
+  - [配置结构](#配置结构)
+  - [Telegram 配置示例](#telegram-配置示例)
+- [Tauri 命令 API](#tauri-命令-api)
+- [前端设置面板](#前端设置面板)
+- [扩展新渠道指南](#扩展新渠道指南)
+- [安全设计](#安全设计)
+- [文件清单](#文件清单)
+
+---
+
+## 概述
+
+IM Channel 系统是 Hope Agent 的多渠道即时通讯接入层，允许用户通过 Telegram、Discord、Slack 等 IM 平台与 AI Agent 对话。系统基于 Rust 原生实现，充分利用 tokio 异步运行时获得优秀的性能和较低的资源开销。
+
+### 核心特性
+
+- **统一抽象**：12 个内置渠道 + 自定义扩展，共用一套 ChannelId / 配置格式 / 能力声明
+- **Rust 原生**：基于 tokio 异步运行时，零 Node.js 依赖
+- **插件化架构**：一个 `ChannelPlugin` trait 定义所有渠道行为，新增渠道只需实现该 trait
+- **完整 Agent 能力**：复用 `AssistantAgent` 的全部工具（30+ 内置工具）和 Failover 降级策略
+- **会话持久化**：Channel 消息映射到 SessionDB，桌面端可查看所有 IM 对话历史
+- **安全控制**：DM Policy（open/allowlist/pairing）+ 群组白名单 + 用户白名单
+
+### 渠道支持矩阵
+
+#### 已实现渠道
+
+| 渠道 | 传输方式 | 认证 | ChatType | 特色 |
+|------|---------|------|----------|------|
+| **Telegram** | Long-polling (teloxide) | Bot Token | DM, Group, Forum | 完整功能：Draft 流式、Edit/Delete、媒体、斜杠命令同步 |
+| **WeChat** | HTTP 长轮询 (iLink) | QR 码登录 | DM | AES-128 媒体加密、Typing Indicator、会话过期暂停 |
+| **Discord** | WebSocket Gateway | Bot Token | DM, Group, Forum, Channel | Application Commands 同步、RESUME 重连、原生媒体（multipart files[N]） |
+| **Slack** | Socket Mode WebSocket | Bot Token + App Token | DM, Group, Channel | mrkdwn 格式、一次性 URL 重连 |
+| **飞书 / Lark** | WebSocket 事件订阅 | App ID + App Secret | DM, Group | OAuth Token 自动刷新、多域名支持 (feishu/lark/私有部署)、原生媒体（im/v1/images + im/v1/files） |
+| **QQ Bot** | WebSocket Gateway | App ID + Client Secret | DM, Group, Channel | RESUME 重连、QQBotAccessToken 认证 |
+
+| **IRC** | TCP/TLS 直连 | Nick + NickServ | DM, Group | 原生 IRC 协议、PING/PONG 心跳、自动加入频道 |
+| **Signal** | SSE + HTTP RPC (signal-cli) | 手机号 + 链接设备 | DM, Group | 实时推送、撤回/回复/Typing、需外部 signal-cli |
+| **iMessage** | JSON-RPC over stdio (imsg CLI) | macOS 本地数据库 | DM, Group | macOS 限定、imsg CLI 进程管理 |
+| **WhatsApp** | HTTP 轮询（外部桥接服务） | Bridge URL + Token | DM, Group | 同 WeChat iLink 架构、QR 登录、媒体支持 |
+| **Google Chat** | Webhook + REST API | Service Account JWT | DM, Group | 嵌入式 Webhook 服务器、线程回复、需公网 URL |
+| **LINE** | Webhook + REST API | Channel Token + Secret | DM, Group | HMAC-SHA256 签名验证、Reply/Push 双模式、需公网 URL |
+
+所有 12 个渠道均已实现。`ChannelId` 枚举还支持 `Custom(String)` 用于扩展自定义渠道。各渠道的**出站附件支持现状**详见下方矩阵 —— 未支持的渠道由 dispatcher 自动降级为"贴下载链接"的纯文本兜底，不会丢消息但缺少富媒体预览。
+
+### 出站附件能力支持矩阵
+
+`supports_media: Vec<MediaType>` 决定 dispatcher 是否会把模型生成的图 / 音视频 / 文件以原生消息形式投递给该渠道。`Vec::new()` 时统一降级为"贴下载链接的纯文本兜底"（[`build_media_fallback_lines`](../../crates/ha-core/src/channel/worker/dispatcher.rs)）。
+
+| 渠道 | 状态 | 已支持 MediaType | 上行 API | 备注 |
+|------|------|------------------|---------|------|
+| **Telegram** | ✅ 已实现 | Photo, Video, Audio, Document, Sticker, Voice, Animation | teloxide `send_photo` / `send_document` | 多类型最完整，复用 `InputFile` |
+| **WeChat** | ✅ 已实现 | Photo, Video, Document, Voice | iLink `getUploadUrl` + AES-128-ECB CDN 上传 + `sendMessage` | 自建加密通道，单文件 100 MB 上限 |
+| **Discord** | ✅ 已实现（本次新增） | Photo, Video, Audio, Document | `POST /channels/{id}/messages` multipart `payload_json` + `files[N]` | 单条 25 MiB 硬上限，超限退化链接 |
+| **飞书 / Lark** | ✅ 已实现（本次新增） | Photo, Video, Audio, Document | 两步：`im/v1/images` 或 `im/v1/files` 上传换 key → `im/v1/messages` `msg_type=image\|file` | image/file 不带 caption，文本由 dispatcher 单发 |
+| **Slack** | ⏳ 待补 | — | `files.getUploadURLExternal` + `files.completeUploadExternal`（v2） | Slack v1 `files.upload` 已弃用，需走两步上传 + initial_comment |
+| **QQ Bot** | ⏳ 待补 | — | `POST /v2/groups/{group_openid}/files` 拿 `file_info` 再发 `media` 消息 | 群消息富媒体走"上传换 file_info"两步 |
+| **Signal** | ⏳ 待补 | — | signal-cli `--attachment <path>` | 通过外部 signal-cli 进程传文件路径 |
+| **iMessage** | ⏳ 待补 | — | imsg CLI `send_attachment` 子命令（待新增 stdio 协议字段） | macOS 本地路径 + Apple Messages.app 协议 |
+| **WhatsApp** | ⏳ 待补 | — | 桥接服务（与 WeChat iLink 同源协议）`media` 字段 | 桥接侧已具备能力，待 plugin 端补封装 |
+| **Google Chat** | ⏳ 待补 | — | `spaces.messages.create` + `attachment` 数组（先 `media.upload` 拿 resourceName） | 需要 Service Account 拓展 Drive scope |
+| **LINE** | ⏳ 待补 | — | Reply/Push API 的 `image` / `video` / `audio` / `file` message object | 必须公网 HTTPS URL，本地附件需自带文件中转 |
+| **IRC** | ❌ 协议限制 | — | （IRC 纯文本协议） | 无原生二进制传输，永久走链接兜底；可选未来接 DCC SEND 但实用性低 |
+
+补齐参考实现：Telegram 走 SDK 内置 `InputFile`（[telegram/media.rs](../../crates/ha-core/src/channel/telegram/media.rs)），Discord 走单 POST multipart（[discord/media.rs](../../crates/ha-core/src/channel/discord/media.rs)），飞书走"上传 → 引用 key 发消息"两步（[feishu/media.rs](../../crates/ha-core/src/channel/feishu/media.rs)），WeChat 走"获取 CDN 上传 URL → AES 加密上传 → 引用消息项"自建加密链路（[wechat/media.rs](../../crates/ha-core/src/channel/wechat/media.rs)）。新增渠道时按平台 API 形态选最接近的范本套用 — 大多数 IM 平台属于 Discord 或飞书两类。
+
+---
+
+## 设计目标
+
+| 目标 | 说明 |
+|------|------|
+| **Rust 原生** | 所有核心逻辑在 Rust 后端实现，前端只负责配置界面 |
+| **最小依赖** | 仅新增 `teloxide` + `tokio-util` 两个 crate |
+| **插件可扩展** | 新增渠道只需实现 `ChannelPlugin` trait + 注册到 Registry |
+| **复用已有架构** | 消息分发复用 `chat_engine::run_chat_engine()`（与 UI 聊天共享同一套 Agent 执行引擎），会话复用 `SessionDB` |
+| **安全优先** | Bot Token 不出现在日志中，DM/群组分级权限控制 |
+
+---
+
+## 整体架构
+
+```mermaid
+graph TB
+    subgraph "IM 平台"
+        TG["Telegram Bot API"]
+        WX["WeChat iLink"]
+        DC["Discord Gateway"]
+        SL["Slack Socket Mode"]
+        FS["Feishu / Lark"]
+        QQ["QQ Bot API"]
+    end
+
+    subgraph "Channel Plugin Layer"
+        TG_PLUGIN["TelegramPlugin<br/>telegram/"]
+        WX_PLUGIN["WeChatPlugin<br/>wechat/"]
+        DC_PLUGIN["DiscordPlugin<br/>discord/"]
+        SL_PLUGIN["SlackPlugin<br/>slack/"]
+        FS_PLUGIN["FeishuPlugin<br/>feishu/"]
+        QQ_PLUGIN["QqBotPlugin<br/>qqbot/"]
+    end
+
+    subgraph "Channel Core"
+        REGISTRY["ChannelRegistry<br/>registry.rs"]
+        WORKER["Worker Dispatcher<br/>worker.rs"]
+        CHANNEL_DB["ChannelDB<br/>db.rs"]
+        TYPES["Core Types<br/>types.rs"]
+        TRAITS["ChannelPlugin Trait<br/>traits.rs"]
+        CONFIG["ChannelStoreConfig<br/>config.rs"]
+    end
+
+    subgraph "Hope Agent Core"
+        AGENT["AssistantAgent<br/>agent/mod.rs"]
+        TOOLS["30 内置工具<br/>tools/"]
+        PROVIDERS["4 种 LLM Provider<br/>agent/providers/"]
+        FAILOVER["Failover 降级<br/>failover.rs"]
+    end
+
+    subgraph "持久化层"
+        SESSION_DB["SessionDB<br/>sessions.db"]
+        PROVIDER_STORE["AppConfig<br/>config.json"]
+    end
+
+    subgraph "前端"
+        PANEL["ChannelPanel<br/>settings"]
+    end
+
+    TG -->|getUpdates| TG_PLUGIN
+    WX -->|longpoll| WX_PLUGIN
+    DC -->|WebSocket| DC_PLUGIN
+    SL -->|Socket Mode| SL_PLUGIN
+    FS -->|WebSocket| FS_PLUGIN
+    QQ -->|WebSocket| QQ_PLUGIN
+
+    TG_PLUGIN -->|MsgContext| REGISTRY
+    WX_PLUGIN -->|MsgContext| REGISTRY
+    DC_PLUGIN -->|MsgContext| REGISTRY
+    SL_PLUGIN -->|MsgContext| REGISTRY
+    FS_PLUGIN -->|MsgContext| REGISTRY
+    QQ_PLUGIN -->|MsgContext| REGISTRY
+
+    REGISTRY -->|mpsc channel| WORKER
+    WORKER -->|resolve session| CHANNEL_DB
+    WORKER -->|"chat_engine::run_chat_engine()"| AGENT
+    AGENT --> TOOLS
+    AGENT --> PROVIDERS
+    AGENT --> FAILOVER
+
+    WORKER -->|send_message| REGISTRY
+    REGISTRY -->|ReplyPayload| TG_PLUGIN
+    TG_PLUGIN -->|sendMessage| TG
+
+    CHANNEL_DB --> SESSION_DB
+    CONFIG --> PROVIDER_STORE
+    PANEL -->|"invoke()"| REGISTRY
+```
+
+---
+
+## 核心抽象层
+
+### ChannelId 枚举
+
+统一的渠道 ID 枚举，覆盖所有内置渠道：
+
+```rust
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ChannelId {
+    Telegram,       // ✅ 已实现
+    WeChat,         // ✅ 已实现
+    WhatsApp,       // ✅ 已实现
+    Discord,        // ✅ 已实现
+    Irc,            // ✅ 已实现
+    GoogleChat,     // ✅ 已实现
+    Slack,          // ✅ 已实现
+    Signal,         // ✅ 已实现
+    IMessage,       // ✅ 已实现
+    Line,           // ✅ 已实现
+    Feishu,         // ✅ 已实现（飞书/Lark）
+    QqBot,          // ✅ 已实现（QQ 官方机器人）
+    Custom(String), // 扩展渠道
+}
+```
+
+使用 `serde(rename_all = "lowercase")` 确保 JSON 序列化兼容（`"telegram"`, `"discord"`, `"feishu"`, `"qqbot"` 等）。
+
+### ChannelPlugin Trait
+
+所有渠道插件实现的核心契约。trait 按职责分区组织，涵盖生命周期、出站、状态、安全、格式转换、凭据验证 6 个维度：
+
+```rust
+#[async_trait]
+pub trait ChannelPlugin: Send + Sync + 'static {
+    // 元数据
+    fn meta(&self) -> ChannelMeta;
+    fn capabilities(&self) -> ChannelCapabilities;
+
+    // 生命周期
+    async fn start_account(&self, account, inbound_tx, cancel) -> Result<()>;
+    async fn stop_account(&self, account_id) -> Result<()>;
+
+    // 出站
+    async fn send_message(&self, account_id, chat_id, payload) -> Result<DeliveryResult>;
+    async fn send_typing(&self, account_id, chat_id) -> Result<()>;
+    async fn edit_message(...) -> Result<DeliveryResult>;   // default: not supported
+    async fn delete_message(...) -> Result<()>;              // default: not supported
+
+    // 状态
+    async fn probe(&self, account) -> Result<ChannelHealth>;
+
+    // 安全
+    fn check_access(&self, account, msg) -> bool;
+
+    // 格式转换
+    fn markdown_to_native(&self, markdown) -> String;
+    fn chunk_message(&self, text) -> Vec<String>;
+
+    // 凭据验证
+    async fn validate_credentials(&self, credentials) -> Result<String>;
+}
+```
+
+### MsgContext（入站消息）
+
+从任何渠道收到的消息统一转换为此结构：
+
+```rust
+pub struct MsgContext {
+    pub channel_id: ChannelId,           // 来源渠道
+    pub account_id: String,              // Bot 账户 ID
+    pub sender_id: String,               // 发送者平台 ID
+    pub sender_name: Option<String>,     // 发送者显示名
+    pub sender_username: Option<String>, // 发送者用户名 (@username)
+    pub chat_id: String,                 // 聊天/群组 ID
+    pub chat_type: ChatType,             // Dm / Group / Forum / Channel
+    pub chat_title: Option<String>,      // 群组标题
+    pub thread_id: Option<String>,       // 论坛话题 ID
+    pub message_id: String,              // 消息唯一 ID
+    pub text: Option<String>,            // 文本内容
+    pub media: Vec<InboundMedia>,        // 附件媒体
+    pub reply_to_message_id: Option<String>, // 回复的消息 ID
+    pub timestamp: DateTime<Utc>,        // 消息时间戳
+    pub raw: serde_json::Value,          // 原始平台数据（调试用）
+}
+```
+
+### ReplyPayload（出站消息）
+
+Agent 回复统一通过此结构发送到渠道：
+
+```rust
+pub struct ReplyPayload {
+    pub text: Option<String>,                    // 文本内容（已转为渠道原生格式）
+    pub media: Vec<OutboundMedia>,               // 附件媒体
+    pub reply_to_message_id: Option<String>,     // 引用回复的消息 ID
+    pub parse_mode: Option<ParseMode>,           // Html / Markdown / Plain
+    pub buttons: Vec<Vec<InlineButton>>,         // 内联键盘按钮
+    pub thread_id: Option<String>,               // 论坛话题 ID
+}
+```
+
+### ChannelCapabilities
+
+渠道静态能力声明，前端可据此显示/隐藏功能选项：
+
+```rust
+pub struct ChannelCapabilities {
+    pub chat_types: Vec<ChatType>,        // 支持的聊天类型
+    pub supports_polls: bool,             // 投票
+    pub supports_reactions: bool,         // 表情回应
+    pub supports_edit: bool,              // 编辑消息
+    pub supports_unsend: bool,            // 撤回消息
+    pub supports_reply: bool,             // 引用回复
+    pub supports_threads: bool,           // 线程/话题
+    pub supports_media: Vec<MediaType>,   // 支持的媒体类型
+    pub supports_typing: bool,            // 输入中指示器
+    pub supports_buttons: bool,           // 交互按钮（审批等）
+    pub max_message_length: Option<usize>,// 单条消息长度限制
+}
+```
+
+### 安全策略（SecurityConfig）
+
+每个渠道账户独立配置安全策略，采用 `dmPolicy` + `allowFrom` 组合模型：
+
+```rust
+pub struct SecurityConfig {
+    pub dm_policy: DmPolicy,          // Open / Allowlist / Pairing
+    pub group_allowlist: Vec<String>, // 允许的群组 ID 列表（空=全部允许）
+    pub user_allowlist: Vec<String>,  // 允许的用户 ID 列表
+    pub admin_ids: Vec<String>,       // 管理员 ID（始终允许）
+}
+```
+
+**DM 策略说明：**
+
+| 策略 | 行为 |
+|------|------|
+| `Open` | 任何人都可以私聊 Bot |
+| `Allowlist` | 仅 `user_allowlist` + `admin_ids` 中的用户可以私聊 |
+| `Pairing` | 配对模式（需要用户发起配对请求，预留未来实现） |
+
+---
+
+## 消息流转架构
+
+### 入站流程
+
+```
+IM 平台 (Telegram/Discord/...)
+    │
+    ▼
+Channel Plugin (polling/webhook)
+    │ 将平台 Update 转换为 MsgContext
+    ▼
+mpsc::channel<MsgContext>  ← 所有渠道共享一个 inbound channel
+    │
+    ▼
+Worker Dispatcher (worker.rs)
+    ├── 1. 查找 ChannelAccountConfig
+    ├── 2. check_access() 权限校验
+    ├── 3. resolve_or_create_session() 查找/创建会话
+    ├── 4. append_message(user_msg) 保存用户消息
+    ├── 5. send_typing() 发送输入中指示器
+    ├── 5a. [斜杠命令拦截] is_slash_command(user_text)?
+    │       ├── YES → dispatch_slash_for_channel()
+    │       │           ├── Reply 类 (help/status/new/clear/...) → 直接回复，跳过 LLM，return
+    │       │           └── PassThrough 类 (技能调用/search) → 替换为转换后指令，继续 ↓
+    │       └── NO  → 继续 ↓
+    ├── 6. chat_engine::run_chat_engine() 共享聊天引擎
+    │       ├── 构建 Agent（model chain + failover）
+    │       ├── 恢复会话历史 (restore_agent_context)
+    │       ├── AssistantAgent.chat() → 流式执行 → Tool Loop
+    │       ├── 工具事件实时持久化 (persist_tool_event)
+    │       ├── 流式事件推送前端 (ChannelStreamSink → EventBus → channel:stream_delta)
+    │       ├── Context compaction (溢出时自动压缩)
+    │       ├── 保存助手回复（含 token/duration/thinking 元数据）
+    │       ├── 持久化对话上下文 (save_agent_context)
+    │       └── 异步记忆提取 (memory extraction)
+    ├── 8. markdown_to_native() 格式转换
+    ├── 9. chunk_message() 分块（4096 字符限制）
+    └── 10. send_message() 逐块发送
+```
+
+### 出站流程
+
+```
+Agent Response (Markdown)
+    │
+    ▼
+markdown_to_native()
+    │ Telegram: Markdown → HTML (<b>, <i>, <code>, <pre>, <a>)
+    │ Discord:  保持原始 Markdown
+    │ Slack:    Markdown → mrkdwn
+    ▼
+chunk_message()
+    │ 按平台限制分块（Telegram: 4096 chars）
+    │ 优先在段落边界(\n\n)分割
+    │ 其次在行边界(\n)、句号(. )、空格处分割
+    ▼
+send_message() × N chunks
+    │ 每个 chunk 作为独立消息发送
+    │ 第一个 chunk 带 reply_to（引用原消息）
+    │ 所有 chunk 带 thread_id（保持话题上下文）
+    ▼
+IM 平台 API
+```
+
+### 完整时序图
+
+```mermaid
+sequenceDiagram
+    participant User as IM 用户
+    participant TG as Telegram API
+    participant Plugin as TelegramPlugin
+    participant Registry as ChannelRegistry
+    participant Worker as Worker Dispatcher
+    participant DB as ChannelDB
+    participant Agent as AssistantAgent
+    participant LLM as LLM Provider
+
+    Note over Plugin: polling loop 运行中
+
+    User->>TG: 发送消息
+    TG->>Plugin: getUpdates 返回 Update
+    Plugin->>Plugin: convert_update → MsgContext
+    Plugin->>Registry: inbound_tx.send(MsgContext)
+    Registry->>Worker: inbound_rx.recv()
+
+    Worker->>Worker: check_access() 权限校验
+    Worker->>DB: resolve_or_create_session()
+    DB-->>Worker: session_id
+
+    Worker->>DB: append_message(user_msg)
+    Worker->>Plugin: send_typing(chat_id)
+    Plugin->>TG: sendChatAction("typing")
+
+    alt 斜杠命令 (/help, /new, /model, /skill, ...)
+        Worker->>Worker: dispatch_slash_for_channel()
+        alt Reply 类 (直接回复，不调用 LLM)
+            Worker->>DB: append_message(assistant_reply)
+            Worker->>Plugin: send_message(slash_reply)
+            Plugin->>TG: sendMessage(reply)
+            TG-->>User: 显示命令结果
+        else PassThrough 类 (技能/search，转换后交给 LLM)
+            Note over Worker: engine_message = 转换后的指令
+        end
+    end
+
+    Worker->>Agent: chat_engine::run_chat_engine()
+    Agent->>LLM: API 请求 (流式 + tool loop)
+    LLM-->>Agent: 流式响应 (text_delta → ChannelStreamSink → EventBus → 前端)
+    Agent-->>Worker: 完整响应
+    Worker->>Plugin: markdown_to_native(response)
+    Worker->>Plugin: chunk_message(native_text)
+
+    loop 每个 chunk
+        Worker->>Plugin: send_message(chat_id, payload)
+        Plugin->>TG: sendMessage(chat_id, text, HTML)
+        TG-->>User: 显示 Bot 回复
+    end
+```
+
+---
+
+## 模块拆分
+
+```
+crates/ha-core/src/channel/
+├── mod.rs              模块根入口，re-export 公共类型
+├── types.rs            核心数据类型（20+ struct/enum）
+├── traits.rs           ChannelPlugin trait 定义 + chunk_text 辅助函数
+├── config.rs           ChannelStoreConfig（配置存储）
+├── db.rs               ChannelDB（channel_conversations 表操作）
+├── registry.rs         ChannelRegistry（插件注册 + 账户生命周期）
+├── worker/             入站消息分发器（MsgContext → Agent → Reply）
+│   ├── mod.rs          worker 入口 + spawn_dispatcher
+│   ├── dispatcher.rs   主分发循环（权限校验、agent_id 重算、媒体降级）
+│   ├── approval.rs     工具审批 EventBus 监听 + 按钮/文本回执
+│   ├── ask_user.rs     ask_user_question 工具的 IM 适配
+│   ├── slash.rs        斜杠命令拦截 + dispatch_slash_for_channel
+│   ├── streaming.rs    ChannelStreamSink（流式 text_delta 累积 + 推送）
+│   ├── media.rs        媒体附件下载 / 出站附件 partition 与降级
+│   └── tests.rs        worker 单元测试
+├── ws.rs               共享 WebSocket 工具（WsConnection + 重连退避）
+├── cancel.rs           流式取消注册表
+├── process_manager.rs  外部子进程管理（Signal/iMessage 共享）
+├── webhook_server.rs   嵌入式 Webhook HTTP 服务器（Google Chat/LINE 共享）
+├── telegram/           Telegram（Long-polling, teloxide）
+│   ├── mod.rs, api.rs, format.rs, media.rs, polling.rs
+├── wechat/             WeChat（HTTP 长轮询, iLink 协议）
+│   ├── mod.rs, api.rs, login.rs, media.rs, polling.rs
+├── discord/            Discord（WebSocket Gateway）
+│   ├── mod.rs, api.rs, format.rs, gateway.rs
+├── slack/              Slack（Socket Mode WebSocket）
+│   ├── mod.rs, api.rs, format.rs, socket.rs
+├── feishu/             飞书/Lark（WebSocket 事件订阅 + OAuth）
+│   ├── mod.rs, api.rs, auth.rs, format.rs, ws_event.rs
+├── qqbot/              QQ Bot（WebSocket Gateway）
+│   ├── mod.rs, api.rs, auth.rs, format.rs, gateway.rs
+├── irc/                IRC（TCP/TLS 直连）
+│   ├── mod.rs, client.rs, format.rs, protocol.rs
+├── signal/             Signal（signal-cli daemon + SSE）
+│   ├── mod.rs, client.rs, daemon.rs, format.rs
+├── imessage/           iMessage（macOS, imsg CLI JSON-RPC）
+│   ├── mod.rs, client.rs, format.rs
+├── whatsapp/           WhatsApp（外部桥接服务轮询）
+│   ├── mod.rs, api.rs, format.rs, polling.rs
+├── googlechat/         Google Chat（Webhook + REST API）
+│   ├── mod.rs, api.rs, auth.rs, format.rs, webhook.rs
+└── line/               LINE（Webhook + REST API）
+    ├── mod.rs, api.rs, format.rs, webhook.rs
+
+src-tauri/src/commands/
+└── channel.rs          12 个 Tauri 命令（CRUD + 生命周期 + 健康探针）
+
+src/components/settings/
+└── ChannelPanel.tsx    渠道设置面板（账户列表 + 添加/删除/启停）
+```
+
+---
+
+## Channel Registry（注册表）
+
+`ChannelRegistry` 是整个 Channel 系统的核心管理器：
+
+```rust
+pub struct ChannelRegistry {
+    plugins: HashMap<ChannelId, Arc<dyn ChannelPlugin>>,   // 已注册的插件
+    workers: Mutex<HashMap<String, ChannelWorkerHandle>>,  // 运行中的账户
+    inbound_tx: mpsc::Sender<MsgContext>,                  // 入站消息发送端
+}
+```
+
+### 生命周期管理
+
+```
+App 启动
+    │
+    ▼
+ChannelRegistry::new(256)  ← 创建 registry + mpsc channel(256)
+    │
+    ▼
+registry.register_plugin(TelegramPlugin::new())  ← 注册插件
+    │
+    ▼
+spawn_dispatcher(registry, channel_db, inbound_rx)  ← 启动分发器
+    │
+    ▼
+for account in enabled_accounts:
+    registry.start_account(account)  ← 自动启动已启用的账户
+        │
+        ├── plugin.start_account(account, inbound_tx, cancel)
+        │       └── 启动 polling loop / webhook server
+        └── workers.insert(account_id, ChannelWorkerHandle)
+
+App 运行中
+    │
+    ├── registry.start_account()   ← 启动新账户
+    ├── registry.stop_account()    ← 停止账户
+    ├── registry.restart_account() ← 重启（stop + start）
+    ├── registry.health()          ← 查询运行状态
+    └── registry.send_reply()      ← 发送消息
+
+App 关闭
+    │
+    ▼
+registry.stop_all()  ← 取消所有 CancellationToken
+```
+
+### ChannelWorkerHandle
+
+每个运行中的账户由一个 `ChannelWorkerHandle` 跟踪：
+
+```rust
+pub struct ChannelWorkerHandle {
+    pub account_id: String,
+    pub channel_id: ChannelId,
+    cancel: CancellationToken,          // tokio_util 取消令牌
+    started_at: DateTime<Utc>,          // 启动时间（计算 uptime）
+}
+```
+
+---
+
+## 会话管理
+
+### channel_conversations 表
+
+新增 SQLite 表，将 IM 对话映射到 Hope Agent 会话：
+
+```sql
+CREATE TABLE channel_conversations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    channel_id TEXT NOT NULL,          -- "telegram", "discord", ...
+    account_id TEXT NOT NULL,          -- bot 账户 ID
+    chat_id TEXT NOT NULL,             -- 平台聊天/群组 ID
+    thread_id TEXT,                    -- 论坛话题 ID（可空）
+    session_id TEXT NOT NULL,          -- FK → sessions.id
+    sender_id TEXT,                    -- 主要发送者 ID
+    sender_name TEXT,                  -- 主要发送者名称
+    chat_type TEXT NOT NULL DEFAULT 'dm',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
+    UNIQUE (channel_id, account_id, chat_id, thread_id, session_id)
+);
+```
+
+### 会话映射策略
+
+每个唯一的 `(channel_id, account_id, chat_id, thread_id)` 元组对应**最新的**一个会话（`updated_at DESC LIMIT 1` 查询）：
+
+| 场景 | 映射 |
+|------|------|
+| 用户 A 私聊 Bot | `(telegram, bot1, user_a_id, NULL)` → session_1 |
+| 用户 B 私聊 Bot | `(telegram, bot1, user_b_id, NULL)` → session_2 |
+| 群组 G 中的消息 | `(telegram, bot1, group_g_id, NULL)` → session_3 |
+| 群组 G 话题 T 中的消息 | `(telegram, bot1, group_g_id, topic_t_id)` → session_4 |
+
+**`/new` 和 `/agent` 命令的会话重置：** UNIQUE 约束包含 `session_id`，因此同一对话可以有多行记录（每次 `/new` 新增一行）。`update_session()` 通过 `INSERT OR IGNORE ... SELECT` 复制频道元数据并指向新 session_id，旧 session 的历史记录保持不变、在桌面端仍可查看。
+
+会话的 `context_json` 字段存储渠道元信息：
+
+```json
+{
+  "channel": {
+    "channelId": "telegram",
+    "accountId": "tg-abc123",
+    "chatId": "-1001234567890",
+    "threadId": "42",
+    "chatType": "forum",
+    "senderName": "John"
+  }
+}
+```
+
+---
+
+## Project 绑定与 IM 禁用命令
+
+### Project.bound_channel — 项目认领 IM 渠道
+
+项目侧通过 `Project.bound_channel: Option<{channel_id, account_id}>` 单向认领一个 IM channel account。绑定后，该 (channel, account) 下的所有 IM 入站消息在新建会话时自动归属到该项目。
+
+- **写入 contract（双层 patch）**：`UpdateProjectInput.bound_channel` 是 `Option<Option<BoundChannel>>` —— 字段缺省（`None`）= 不变，`Some(None)` = 解绑，`Some(Some(...))` = 设置/换绑
+- **唯一性约束**：同一 (channel_id, account_id) 同时只允许被一个未归档项目认领。DB 索引兜底，写入冲突时返回错误，前端「绑定 IM Channel」select 也据此过滤掉已被占用的 account
+- **会话路由**：[`channel/db.rs::resolve_or_create_session`](../../crates/ha-core/src/channel/db.rs) 在创建新会话前查 `projects WHERE bound_channel_id = ? AND bound_channel_account_id = ? AND archived = 0`，命中即把 `project_id` 注入 `create_session_with_project`，并按 5 级 agent 解析链覆盖 `agent_id`：
+
+  ```
+  显式参数 → project.default_agent_id → channel_account.agent_id → AppConfig.default_agent_id → "default"
+  ```
+
+  统一入口 [`crate::agent::resolver::resolve_default_agent_id`](../../crates/ha-core/src/agent/resolver.rs)（`_with_source` 版本带 tag 给 `/status` 显示命中位置）
+
+- **`/status` 输出**：项目会话尾部追加项目摘要段并标注 Agent Source 来源（command / project / channel-account / app-config / default）
+
+### IM 渠道禁用命令
+
+部分桌面专属斜杠命令在 IM 渠道里既不下发菜单也不执行。**入口**：[`crates/ha-core/src/slash_commands/registry.rs::IM_DISABLED_COMMANDS`](../../crates/ha-core/src/slash_commands/registry.rs)。
+
+```rust
+pub const IM_DISABLED_COMMANDS: &[&str] = &["project", "agent"];
+```
+
+| 命令 | 禁用原因 | 引入 commit |
+|---|---|---|
+| `/agent` | IM dispatcher 每条入站消息都从 channel-account / topic / group 配置重算 `agent_id`（[`channel/worker/dispatcher.rs`](../../crates/ha-core/src/channel/worker/dispatcher.rs)），不读 `sessions.agent_id`。允许 `/agent` 会让会话标签和实际运行 agent 永久漂移——`/agent` 切完后回复「Switched to X」，下一条入站消息又被 channel-account 配置拉回原 agent，是幻觉切换。改 IM agent 应去「设置 → IM Channel → account → Agent」或 topic/group override | `48fa4986` |
+| `/project` | IM session 已绑定 channel-account，不能再被另一个项目认领；项目 ↔ IM channel 关系由项目侧 `bound_channel` 字段单向维护（0..1 ↔ 0..1），不允许从 IM 内部反向切换 | `0fe6ec0a` |
+
+**双层防御**：
+
+1. **同步阶段过滤** —— Discord Application Commands、Telegram bot menu、Slack slash 同步阶段都先过 `IM_DISABLED_COMMANDS`，禁用命令不下发到平台菜单
+2. **handler 自检** —— 用户硬键入 `/project xxx` 或 `/agent xxx` 仍能到达分发器，[`handlers/project.rs`](../../crates/ha-core/src/slash_commands/handlers/project.rs) 与 [`handlers/agent.rs`](../../crates/ha-core/src/slash_commands/handlers/agent.rs) 入口检测 `session.channel_info.is_some()` 直接返回 `DisplayOnly` 提示「在 IM 渠道不可用」，不会走到模糊匹配 / 实际切换
+
+新增此类命令时同时改两处：(1) `IM_DISABLED_COMMANDS` 常量让 IM 同步阶段不下发菜单；(2) handler 内自检 `session.channel_info`，处理用户绕过菜单硬键入的情况。
+
+---
+
+## Worker 分发器
+
+`worker.rs` 中的分发器是一个后台 tokio task，负责将入站消息路由到 Agent：
+
+```rust
+pub fn spawn_dispatcher(
+    registry: Arc<ChannelRegistry>,
+    channel_db: Arc<ChannelDB>,
+    mut inbound_rx: mpsc::Receiver<MsgContext>,
+) {
+    tokio::spawn(async move {
+        while let Some(msg) = inbound_rx.recv().await {
+            // 每条消息在独立 task 中处理（并发）
+            tokio::spawn(handle_inbound_message(registry, channel_db, msg));
+        }
+    });
+}
+```
+
+**关键设计决策：**
+
+- **并发处理**：每条入站消息在独立 `tokio::spawn` 中处理，不阻塞其他消息
+- **斜杠命令拦截**：在调用 LLM 之前，`dispatch_slash_for_channel()` 检测以 `/` 开头的消息并转发给 `slash_commands::handlers::dispatch()`。`Reply` 类命令（`/help`、`/new`、`/clear`、`/model`、`/status` 等）直接回复并跳过 LLM；`PassThrough` 类命令（技能调用、`/search`）将转换后的指令作为 `engine_message` 交给 LLM（详见 [斜杠命令系统](slash-commands.md)）
+- **共享 ChatEngine**：调用 `chat_engine::run_chat_engine()` — 与 UI 聊天使用完全相同的 Agent 执行引擎，拥有相同的能力：流式输出、会话历史恢复、工具事件持久化、Failover 降级、Context compaction、Token 跟踪、异步记忆提取
+- **EventSink 抽象**：UI 聊天在桌面通过 `ChannelSink`（Tauri Channel）推流，在 HTTP 模式通过 `chat:stream_delta` EventBus 推到 `/ws/events`；IM 聊天通过 `ChannelStreamSink`（EventBus）推流到前端 + 累积 text_delta 发送 `channel:stream_delta` 事件
+- **每个渠道可绑定独立 Agent**：`ChannelAccountConfig.agent_id` 字段支持每个渠道账户绑定不同 Agent，未设置时回退到全局默认
+- **Channel 上下文注入**：通过 `extra_system_context` 向 Agent 注入当前 IM 渠道信息（channel type、chat type、sender 等）
+- **格式转换后发送**：先 `markdown_to_native()` 转格式，再 `chunk_message()` 分块，最后逐块发送
+- **错误通知**：Agent 执行失败时，向渠道发送错误提示消息
+
+---
+
+## Telegram 插件实现
+
+### Telegram 架构
+
+```mermaid
+graph LR
+    subgraph "TelegramPlugin"
+        API["TelegramBotApi<br/>api.rs"]
+        FORMAT["format.rs<br/>MD → HTML"]
+        MEDIA["media.rs<br/>媒体转换"]
+        POLL["polling.rs<br/>Long-Polling"]
+    end
+
+    subgraph "teloxide"
+        BOT["Bot"]
+        TYPES["types::*<br/>100+ 类型"]
+    end
+
+    subgraph "Telegram Server"
+        TGAPI["Bot API<br/>api.telegram.org"]
+    end
+
+    POLL -->|getUpdates| API
+    API -->|委托| BOT
+    BOT -->|HTTPS| TGAPI
+    TGAPI -->|"Update[]"| BOT
+
+    FORMAT -.->|被 Plugin 调用| API
+    MEDIA -.->|类型转换| API
+```
+
+### teloxide 封装层
+
+`api.rs` 在 teloxide 之上提供一层薄封装，隔离框架细节：
+
+```rust
+pub struct TelegramBotApi {
+    bot: teloxide::Bot,
+}
+
+impl TelegramBotApi {
+    pub fn new(token, proxy_url, api_root) -> Self;
+    pub async fn get_me() -> Result<Me>;
+    pub async fn send_text(chat_id, text, parse_mode, reply_to, thread_id) -> Result<Message>;
+    pub async fn send_text_with_fallback(...) -> Result<Message>;  // HTML → 纯文本降级
+    pub async fn send_typing(chat_id) -> Result<()>;
+    pub async fn edit_message_text(...) -> Result<()>;
+    pub async fn delete_message(...) -> Result<()>;
+    pub async fn get_updates(offset, timeout, allowed_updates) -> Result<Vec<Update>>;
+    pub async fn send_photo(...) -> Result<Message>;
+    pub async fn send_document(...) -> Result<Message>;
+}
+```
+
+**代理支持**：通过环境变量 `HTTPS_PROXY` 注入（teloxide 的 `Bot::new()` 内部调用 `client_from_env()`），支持 channel 级别和全局级别代理。
+
+### Long-Polling 循环
+
+```rust
+pub async fn run_polling_loop(
+    api, account_id, bot_id, bot_username, inbound_tx, cancel,
+) {
+    let mut offset: i32 = 0;
+    loop {
+        tokio::select! {
+            _ = cancel.cancelled() => break,
+            result = api.get_updates(offset, 30, &["message", "edited_message"]) => {
+                match result {
+                    Ok(updates) => {
+                        for update in updates {
+                            offset = update.id + 1;
+                            if let Some(msg_ctx) = convert_update(&update, ...) {
+                                inbound_tx.send(msg_ctx).await;
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        // 指数退避: 2s → 4s → 8s → 16s → 30s (max)
+                        sleep(backoff).await;
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+**特性：**
+- 30 秒长轮询超时
+- `CancellationToken` 优雅关闭
+- 指数退避错误重试（2^n 秒，最大 30 秒）
+- 自动跳过 Bot 自己发送的消息
+- 群组消息仅在被 @mention 或 /command 时处理
+
+### Markdown → Telegram HTML
+
+Telegram 支持有限的 HTML 子集，`format.rs` 提供转换：
+
+| Markdown | Telegram HTML |
+|----------|--------------|
+| `**bold**` | `<b>bold</b>` |
+| `*italic*` | `<i>italic</i>` |
+| `` `code` `` | `<code>code</code>` |
+| ```` ```lang\n...\n``` ```` | `<pre><code class="language-lang">...</code></pre>` |
+| `[text](url)` | `<a href="url">text</a>` |
+| `~~strike~~` | `<s>strike</s>` |
+| `> quote` | `<blockquote>quote</blockquote>` |
+| `## Heading` | `<b>Heading</b>` (降级为粗体) |
+
+**降级策略**：如果 HTML 发送失败（解析错误），自动剥离所有 HTML 标签以纯文本重发。
+
+### 群组消息过滤
+
+在群组/超级群组中，Bot 仅响应以下情况的消息：
+
+1. **回复 Bot 的消息** — `reply_to_message.from.id == bot_id`
+2. **@mention Bot** — 消息文本包含 `@bot_username`
+3. **/ 命令** — 消息以 `/` 开头
+4. **mention entity** — Telegram entity 中包含 Bot 的 mention
+
+私聊（DM）中所有消息都会被处理（受 DmPolicy 限制）。
+
+### 媒体处理
+
+| 方向 | 支持的类型 | 说明 |
+|------|-----------|------|
+| 入站 | Photo, Document, Audio, Video, Sticker, Voice, Animation | 从 `teloxide::types` 转为 `InboundMedia` |
+| 出站 | Photo, Document | 从 `OutboundMedia` 转为 `InputFile`（URL/路径/字节） |
+
+照片选择最高分辨率版本（Telegram 发送多个尺寸）。
+
+---
+
+## Discord 插件实现
+
+### 连接协议
+
+- **认证**：Bot Token（`credentials.token`），内部拼 `"Bot "` 前缀
+- **传输**：WebSocket Gateway（`GET /gateway/bot` 获取 WSS URL）
+- **Intents**：`GUILDS(1<<0) | GUILD_MESSAGES(1<<9) | DIRECT_MESSAGES(1<<12) | MESSAGE_CONTENT(1<<15)`
+- **心跳**：按 HELLO 返回的 `heartbeat_interval` 毫秒定期发送
+- **重连**：RESUME（携带 session_id + seq）→ 失败则重新 IDENTIFY，指数退避最多 50 次
+
+### 斜杠命令同步
+
+启动时调用 `PUT /applications/{app_id}/commands` 批量注册全局 Application Commands，复用 `all_commands()` + `description_en()`。
+
+### 格式转换
+
+Discord 原生支持 Markdown，`markdown_to_native()` 直接透传原文。
+
+### 事件处理
+
+| 事件 | 映射 |
+|------|------|
+| `MESSAGE_CREATE` | 解析为 `MsgContext`，跳过 bot 自身消息 |
+| `INTERACTION_CREATE` (type=2) | 解析为斜杠命令 MsgContext |
+| channel.type 0 → Group, 1 → Dm, 11 → Forum | |
+
+### 出站附件
+
+单条 `POST /channels/{channel_id}/messages` 走 `multipart/form-data`：
+
+| Part | 内容 |
+|------|------|
+| `payload_json` | JSON 字符串：`{content?, message_reference?, components?, attachments: [{id, filename}]}` |
+| `files[N]` | 二进制文件（与 `attachments[N].id` 对齐） |
+
+| 方向 | 支持类型 | 说明 |
+|------|---------|------|
+| 出站 | Photo, Video, Audio, Document | dispatcher 已按 `partition_media_by_channel` 把 Animation 自动降级为 Photo |
+
+- **大小上限**：`MAX_DISCORD_FILE_BYTES = 25 MiB`（[discord/media.rs](../../crates/ha-core/src/channel/discord/media.rs)），超限返回 Err 让 dispatcher 走"下载链接文本"兜底
+- **caption 处理**：`payload.text` 与每个 `OutboundMedia.caption` 在 [`merge_captions`](../../crates/ha-core/src/channel/discord/media.rs) 里合成单段 Discord `content`，避免拆条
+- **MIME 推断**：[channel/media_helpers.rs](../../crates/ha-core/src/channel/media_helpers.rs) 优先 URL Content-Type，回退按文件扩展名查内置表
+
+---
+
+## Slack 插件实现
+
+### 连接协议
+
+- **认证**：Bot Token (`xoxb-`) 用于 API 调用 + App Token (`xapp-`) 用于 Socket Mode
+- **传输**：Socket Mode WebSocket（`POST apps.connections.open` 获取一次性 WSS URL）
+- **重连**：断连后必须重新调用 `connections.open` 获取新 URL，不可复用
+
+### 格式转换（mrkdwn）
+
+| Markdown | Slack mrkdwn |
+|----------|-------------|
+| `**bold**` | `*bold*` |
+| `~~strike~~` | `~strike~` |
+| `[text](url)` | `<url\|text>` |
+| 代码块/inline code/blockquote | 保持不变 |
+
+### 事件处理
+
+Socket Mode 信封格式：`{envelope_id, type, payload}`，收到后立即 ACK `{envelope_id}`。
+
+| 事件类型 | 处理 |
+|---------|------|
+| `events_api` → `event.type = "message"` | 解析为 MsgContext |
+| `events_api` → `event.type = "app_mention"` | MsgContext，was_mentioned=true |
+| `slash_commands` | 解析为斜杠命令 MsgContext |
+
+---
+
+## 飞书 / Lark 插件实现
+
+### 连接协议
+
+- **认证**：`appId` + `appSecret` → `POST auth/v3/tenant_access_token/internal/` → `tenant_access_token`（2 小时 TTL，80% 时自动刷新）
+- **域名**：`"feishu"` → `open.feishu.cn`，`"lark"` → `open.larksuite.com`，自定义 URL 用于私有部署
+- **传输**：WebSocket 事件订阅（`POST /open-apis/callback/ws/endpoint` 获取 URL）
+
+### 格式转换
+
+飞书 text 消息类型不支持 Markdown，`markdown_to_native()` 剥离所有格式标记输出纯文本。
+
+### 事件处理
+
+| 事件 | 映射 |
+|------|------|
+| `im.message.receive_v1` | 解析为 MsgContext |
+| `chat_type = "p2p"` → Dm, `"group"` → Group | |
+| `mentions` 中含 bot `open_id` → was_mentioned=true | |
+
+### API 消息格式
+
+消息内容为 JSON 嵌套格式：`content: "{\"text\":\"hello\"}"`
+
+### 出站附件
+
+飞书的图片与文件走**两步流程**（先上传换 key，再发引用 key 的消息）：
+
+| 步骤 | API |
+|------|-----|
+| 1. 图片上传 | `POST /open-apis/im/v1/images` (multipart `image_type=message` + `image=<bytes>`) → `image_key` |
+| 1. 文件上传 | `POST /open-apis/im/v1/files` (multipart `file_type` + `file_name` + `file=<bytes>`) → `file_key` |
+| 2. 发送图片 | `POST /open-apis/im/v1/messages?receive_id_type=chat_id` (`msg_type=image`, `content={"image_key": "..."}`) 或 `/messages/{id}/reply` |
+| 2. 发送文件 | 同上，`msg_type=file`, `content={"file_key": "..."}` |
+
+`MediaType` → 飞书 `file_type` 映射（[feishu/media.rs](../../crates/ha-core/src/channel/feishu/media.rs)）：
+
+| MediaType | 走 API | file_type |
+|-----------|--------|-----------|
+| `Photo` | `upload_image` | — |
+| `Video` / `Animation` | `upload_file` | `mp4` |
+| `Audio` / `Voice` | `upload_file` | `opus` |
+| `Document` (.pdf) | `upload_file` | `pdf` |
+| `Document` (.doc/.docx) | `upload_file` | `doc` |
+| `Document` (.xls/.xlsx) | `upload_file` | `xls` |
+| `Document` (.ppt/.pptx) | `upload_file` | `ppt` |
+| `Document` (其他扩展名) | `upload_file` | `stream` |
+
+| 方向 | 支持类型 | 说明 |
+|------|---------|------|
+| 出站 | Photo, Video, Audio, Document | image / file 消息**不带 caption**；同轮的 `payload.text` 由 dispatcher 单独发为 text 消息 |
+
+---
+
+## QQ Bot 插件实现
+
+### 连接协议
+
+- **认证**：`appId` + `clientSecret` → `POST https://bots.qq.com/app/getAppAccessToken` → `access_token`（2 小时 TTL）
+- **Auth Header**：`Authorization: QQBotAccessToken {token}`（非 Bearer）
+- **传输**：WebSocket Gateway（`GET /gateway` → WSS URL），与 Discord 类似的 opcode 协议
+- **Intents**：`PUBLIC_GUILD_MESSAGES(1<<30) | DIRECT_MESSAGE(1<<12) | GROUP_AND_C2C(1<<25)`
+
+### chat_id 编码
+
+QQ Bot 有多种消息端点，`chat_id` 使用前缀区分：
+- `"c2c:{openid}"` → `POST /v2/c2c/users/{openid}/messages`
+- `"group:{group_openid}"` → `POST /v2/groups/{group_openid}/messages`
+- `"channel:{channel_id}"` → `POST /channels/{channel_id}/messages`
+- `"dms:{guild_id}"` → `POST /dms/{guild_id}/messages`
+
+### 事件处理
+
+| 事件 | ChatType | was_mentioned |
+|------|----------|--------------|
+| `C2C_MESSAGE_CREATE` | Dm | false |
+| `GROUP_AT_MESSAGE_CREATE` | Group | true |
+| `AT_MESSAGE_CREATE` | Channel | true |
+| `DIRECT_MESSAGE_CREATE` | Dm | true |
+
+### 限制
+
+不支持 edit/unsend（QQ Bot API 不提供消息编辑/撤回接口）。
+
+---
+
+## 工具审批交互
+
+当 AI Agent 在 IM 渠道对话中调用需要审批的工具时，审批提示会直接发送到 IM 渠道内，而非仅在桌面 UI 显示。
+
+### 架构
+
+`channel/worker/approval.rs` 在应用启动时注册 EventBus 监听器，拦截 `approval_required` 事件：
+
+1. 通过 `ApprovalRequest.session_id` 查询 `ChannelDB.get_conversation_by_session()` 反查渠道信息
+2. 非渠道会话的审批事件跳过（由桌面 UI 处理）
+3. 根据 `ChannelCapabilities.supports_buttons` 决定发送方式
+
+### 按钮渠道（supports_buttons = true）
+
+发送平台原生交互按钮（Allow Once / Always Allow / Deny），用户点击后通过各平台回调机制路由回 `submit_approval_response()`：
+
+| 渠道 | 按钮格式 | 回调机制 |
+|------|---------|---------|
+| Telegram | InlineKeyboard | callback_query |
+| Discord | Action Row + Button | INTERACTION_CREATE type=3 |
+| Slack | Block Kit actions | Socket Mode `interactive` envelope |
+| 飞书 | Interactive Card | `card.action.trigger` 事件 |
+| QQ Bot | Markdown + Keyboard | INTERACTION_CREATE |
+| LINE | Buttons Template | `postback` 事件 |
+| Google Chat | Card v2 | CARD_CLICKED 事件 |
+
+### 文本渠道（supports_buttons = false）
+
+发送文本提示（"回复 1/2/3"），用户回复的数字消息在 `dispatcher.rs` 的消息处理最前端被 `try_handle_approval_reply()` 拦截。不匹配 "1"/"2"/"3" 的消息正常处理。
+
+适用渠道：WeChat、Signal、iMessage、IRC、WhatsApp
+
+### 自动审批
+
+`ChannelAccountConfig.auto_approve_tools`（默认 `false`）可在渠道设置中开启。开启后该渠道的所有工具调用通过 `ToolExecContext.auto_approve_tools` 直接跳过审批门控，无需任何交互。
+
+### Smart 模式判官说明
+
+当会话处于 Smart 模式（`SessionMode::Smart`）且 `judge_model` 返回 `Ask` 时，`ApprovalReasonPayload { kind: SmartJudge, detail: rationale }` 会经 EventBus 事件 `approval_required` 一并落到 IM 端。`format_approval_text` / `format_text_approval` 在 command preview 后追加一行 `💭 Smart Judge: {rationale}`（UTF-8 安全截断到 280 字节，文本 fallback 路径置于 `Reply: 1 / 2 / 3` 数字列表前以避免破坏数字解析）。其它 `AskReason` kind（保护路径命中、危险命令命中等）当前在 IM 端只渲染基础 `command` 预览，已登记 review-followups。
+
+### `/permission` 切换会话权限模式
+
+IM 用户可在渠道内直接发 `/permission default | smart | yolo`，命令在 [`channel/worker/slash.rs`](../../crates/ha-core/src/channel/worker/slash.rs) `SetToolPermission` 分支调用 `SessionDB::update_session_permission_mode` 写入 `SessionMeta.permission_mode`，并 emit `permission:mode_changed` 事件供桌面端订阅。命令必传参；`arg_options` 在支持按钮的渠道（Telegram / Discord 等）让无参 `/permission` 直接弹出 `default / smart / yolo` 三个内联按钮。查看当前模式走 `/status`（输出包含 `Permission Mode` 行）。详情见 [permission-system.md](permission-system.md)。
+
+**源码**：`crates/ha-core/src/channel/worker/approval.rs`
+
+---
+
+## 配置格式
+
+### 配置结构
+
+Channel 配置存储在 `~/.hope-agent/config.json` 的 `AppConfig.channels` 字段中：
+
+```typescript
+// TypeScript 等效类型
+interface ChannelStoreConfig {
+  accounts: ChannelAccountConfig[]
+  defaultAgentId?: string    // 默认使用的 Agent（默认 "default"）
+  defaultModel?: ActiveModel // 默认模型（使用全局 activeModel 时为 null）
+}
+
+interface ChannelAccountConfig {
+  id: string                 // 账户唯一 ID（自动生成）
+  channelId: string          // "telegram" | "discord" | ...
+  label: string              // 显示名称
+  enabled: boolean           // 是否启用
+  credentials: object        // 渠道特定凭据
+  settings: object           // 渠道特定设置
+  security: SecurityConfig   // 安全策略
+  autoApproveTools: boolean  // 自动审批所有工具调用（默认 false）
+}
+```
+
+### Telegram 配置示例
+
+```json
+{
+  "channels": {
+    "accounts": [
+      {
+        "id": "telegram-a1b2c3",
+        "channelId": "telegram",
+        "label": "@MyAssistantBot",
+        "enabled": true,
+        "credentials": {
+          "token": "123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+        },
+        "settings": {
+          "transport": "polling",
+          "proxy": null,
+          "apiRoot": null
+        },
+        "security": {
+          "dmPolicy": "open",
+          "groupAllowlist": [],
+          "userAllowlist": [],
+          "adminIds": ["123456789"]
+        }
+      }
+    ],
+    "defaultAgentId": "default",
+    "defaultModel": null
+  }
+}
+```
+
+### Discord 配置示例
+
+```json
+{
+  "id": "discord-x1y2z3",
+  "channelId": "discord",
+  "label": "MyBot#1234",
+  "credentials": { "token": "MTIzNDU2Nzg5MDEyMzQ1Njc4OQ.Xxxxxx.xxxx" },
+  "settings": {},
+  "security": { "dmPolicy": "open", "groupAllowlist": [], "userAllowlist": [], "adminIds": [] }
+}
+```
+
+### Slack 配置示例
+
+```json
+{
+  "id": "slack-a1b2c3",
+  "channelId": "slack",
+  "label": "MySlackBot",
+  "credentials": { "botToken": "xoxb-xxx", "appToken": "xapp-xxx" },
+  "settings": {},
+  "security": { "dmPolicy": "open" }
+}
+```
+
+### 飞书配置示例
+
+```json
+{
+  "id": "feishu-f1g2h3",
+  "channelId": "feishu",
+  "label": "MyFeishuBot",
+  "credentials": { "appId": "cli_xxx", "appSecret": "xxx", "domain": "feishu" },
+  "settings": {},
+  "security": { "dmPolicy": "open" }
+}
+```
+
+### QQ Bot 配置示例
+
+```json
+{
+  "id": "qqbot-q1r2s3",
+  "channelId": "qqbot",
+  "label": "QQ Bot (102xxx)",
+  "credentials": { "appId": "102xxx", "clientSecret": "xxx" },
+  "settings": {},
+  "security": { "dmPolicy": "open" }
+}
+```
+
+---
+
+## Tauri 命令 API
+
+| 命令 | 参数 | 返回值 | 说明 |
+|------|------|--------|------|
+| `channel_list_plugins` | - | `PluginInfo[]` | 列出所有已注册的 Channel 插件 |
+| `channel_list_accounts` | - | `AccountConfig[]` | 列出所有配置的账户 |
+| `channel_add_account` | channelId, label, credentials, settings, security | `string` (ID) | 添加新账户（自动启动） |
+| `channel_update_account` | accountId, label?, enabled?, credentials?, settings?, security? | - | 更新账户配置 |
+| `channel_remove_account` | accountId | - | 停止并删除账户 |
+| `channel_start_account` | accountId | - | 启动指定账户 |
+| `channel_stop_account` | accountId | - | 停止指定账户 |
+| `channel_health` | accountId | `ChannelHealth` | 查询单个账户健康状态 |
+| `channel_health_all` | - | `[string, ChannelHealth][]` | 查询所有运行中账户状态 |
+| `channel_validate_credentials` | channelId, credentials | `string` (bot name) | 验证凭据有效性 |
+| `channel_send_test_message` | accountId, chatId, text | `DeliveryResult` | 发送测试消息 |
+| `channel_list_sessions` | channelId, accountId | `Conversation[]` | 列出渠道会话 |
+
+---
+
+## 前端设置面板
+
+`ChannelPanel.tsx` 提供渠道管理界面：
+
+### 账户列表
+
+- 每个账户显示：状态指示灯（绿=运行/黄=启动中/灰=停止）、名称、渠道类型标签、uptime、bot name
+- 操作：启用/禁用开关、启动/停止按钮、删除按钮
+- 健康状态每 10 秒自动刷新
+
+### 添加账户对话框
+
+1. 选择渠道类型（两步式：先选渠道带 Logo，再配置）
+2. 按渠道输入凭据：
+   - Telegram / Discord：Bot Token
+   - Slack：Bot Token (xoxb-) + App Token (xapp-)
+   - 飞书：App ID + App Secret + 域名选择
+   - QQ Bot：App ID + Client Secret
+   - 微信：QR 码扫码登录
+3. "测试连接" 按钮 → 调用 `channel_validate_credentials` → 显示 Bot 名称
+4. 输入账户名称（测试成功后自动填充）
+5. 选择 DM 策略（Open / Allowlist）
+6. 保存 → 自动启动
+
+---
+
+## 扩展新渠道指南
+
+添加一个新的 IM 渠道只需 5 步（当前已有 6 个参考实现：Telegram/WeChat/Discord/Slack/Feishu/QQ Bot）：
+
+### 1. 创建渠道目录
+
+以 WebSocket 渠道为例：
+```
+crates/ha-core/src/channel/{channel_name}/
+├── mod.rs          // {Channel}Plugin: impl ChannelPlugin
+├── api.rs          // REST API 封装（reqwest）
+├── auth.rs         // 可选：OAuth Token 管理（如需 app_id+secret 认证）
+├── format.rs       // Markdown 格式转换
+└── gateway.rs      // WebSocket/Polling 连接（使用 ws.rs 共享工具）
+```
+
+### 2. 实现 ChannelPlugin trait
+
+参考现有实现：
+- **WebSocket 协议**：参考 `discord/gateway.rs` 或 `qqbot/gateway.rs`（opcode 协议）
+- **Socket Mode**：参考 `slack/socket.rs`（一次性 URL + 信封 ACK）
+- **HTTP 长轮询**：参考 `telegram/polling.rs`（getUpdates）或 `wechat/polling.rs`（iLink）
+- **OAuth Token 管理**：参考 `feishu/auth.rs` 或 `qqbot/auth.rs`
+
+### 3. 注册插件
+
+在 `crates/ha-core/src/channel/mod.rs` 添加 `pub mod {channel_name};`
+
+在 `crates/ha-core/src/lib.rs` 的 setup 中添加：
+```rust
+registry.register_plugin(Arc::new(channel::{channel_name}::{Channel}Plugin::new()));
+```
+
+### 4. 如需新增 ChannelId 枚举变体
+
+在 `types.rs` 的 `ChannelId` 枚举中添加变体，并在 `Display` impl 中添加对应 arm。
+
+### 5. 前端凭据表单
+
+在 `ChannelPanel.tsx` 的 `AddAccountDialog` 中添加渠道特定的凭据输入字段。
+在 `ChannelIcon.tsx` 中添加渠道图标。
+在 `zh.json`/`en.json` 中添加翻译。
+
+`ChannelPanel` 会自动从 `channel_list_plugins` 获取新渠道并在选择器中显示。
+
+---
+
+## 安全设计
+
+### 凭据保护
+
+- Bot Token 存储在 `~/.hope-agent/config.json` 中（与 API Key 相同的安全级别）
+- Token 不出现在任何日志中（使用 `app_info!` 宏，不记录 credentials 字段）
+- 前端使用 `type="password"` 输入框
+
+### 访问控制层级
+
+```
+入站消息
+    │
+    ├── Layer 1: 群组消息过滤
+    │   └── 仅处理 @mention / /command / reply-to-bot
+    │
+    ├── Layer 2: check_access() 策略引擎
+    │   ├── DM: dmPolicy (open/allowlist/pairing)
+    │   ├── Group: group_allowlist + user_allowlist
+    │   └── Admin: admin_ids 始终通过
+    │
+    └── Layer 3: Agent 工具权限
+        └── 复用 Hope Agent 的工具审批机制
+```
+
+### 隔离机制
+
+- 每个渠道对话映射到独立的 SessionDB 会话
+- 不同用户/群组的对话完全隔离
+- CancellationToken 确保账户停止时所有后台任务优雅退出
+
+---
+
+## 文件清单
+
+### 核心模块文件
+
+| 文件路径 | 说明 |
+|---------|------|
+| `crates/ha-core/src/channel/mod.rs` | 模块根 |
+| `crates/ha-core/src/channel/types.rs` | 核心数据类型（ChannelId 12+Custom 变体） |
+| `crates/ha-core/src/channel/traits.rs` | ChannelPlugin trait + chunk_text |
+| `crates/ha-core/src/channel/ws.rs` | 共享 WebSocket 工具（WsConnection + 退避） |
+| `crates/ha-core/src/channel/config.rs` | 配置存储 |
+| `crates/ha-core/src/channel/db.rs` | 会话映射 DB |
+| `crates/ha-core/src/channel/registry.rs` | 插件注册表 |
+| `crates/ha-core/src/channel/worker/` | 入站分发器目录（`mod.rs` / `dispatcher.rs` / `approval.rs` / `ask_user.rs` / `slash.rs` / `streaming.rs` / `media.rs` / `tests.rs`） |
+| `crates/ha-core/src/channel/cancel.rs` | 流式取消注册表 |
+| `crates/ha-core/src/channel/process_manager.rs` | 外部子进程管理（Signal/iMessage 共享） |
+| `crates/ha-core/src/channel/webhook_server.rs` | 嵌入式 Webhook HTTP 服务器（axum, Google Chat/LINE 共享） |
+| `crates/ha-core/src/chat_engine/` | 共享聊天执行引擎 |
+
+### 渠道插件文件
+
+| 渠道 | 文件 | 说明 |
+|------|------|------|
+| **Telegram** | `telegram/{mod,api,format,media,polling}.rs` | teloxide + Long-polling |
+| **WeChat** | `wechat/{mod,api,login,media,polling}.rs` | iLink HTTP 长轮询 |
+| **Discord** | `discord/{mod,api,format,gateway}.rs` | WebSocket Gateway + Application Commands |
+| **Slack** | `slack/{mod,api,format,socket}.rs` | Socket Mode WebSocket |
+| **飞书** | `feishu/{mod,api,auth,format,ws_event}.rs` | WebSocket + OAuth Token |
+| **QQ Bot** | `qqbot/{mod,api,auth,format,gateway}.rs` | WebSocket Gateway + Token |
+| **IRC** | `irc/{mod,client,format,protocol}.rs` | TCP/TLS 直连 + 原生 IRC 协议 |
+| **Signal** | `signal/{mod,client,daemon,format}.rs` | signal-cli daemon + SSE |
+| **iMessage** | `imessage/{mod,client,format}.rs` | imsg CLI JSON-RPC over stdio (macOS) |
+| **WhatsApp** | `whatsapp/{mod,api,format,polling}.rs` | 外部桥接服务 HTTP 轮询 |
+| **Google Chat** | `googlechat/{mod,api,auth,format,webhook}.rs` | Service Account JWT + Webhook |
+| **LINE** | `line/{mod,api,format,webhook}.rs` | HMAC-SHA256 Webhook + REST API |
+
+### 前端文件
+
+| 文件路径 | 说明 |
+|---------|------|
+| `src/components/settings/ChannelPanel.tsx` | 渠道设置面板（12 渠道凭据表单） |
+| `src/components/common/ChannelIcon.tsx` | 渠道图标（全部 12 渠道 + fallback） |
+| `src-tauri/src/commands/channel.rs` | 12 个 Tauri 命令 |
+
+### 依赖
+
+| Crate | 版本 | 用途 |
+|-------|------|------|
+| `teloxide` | 0.17 | Telegram Bot API 框架 |
+| `tokio-util` | 0.7 | `CancellationToken`（优雅关闭） |
+| `tokio-tungstenite` | 0.24 | WebSocket 客户端（Discord/Slack/Feishu/QQ Bot） |

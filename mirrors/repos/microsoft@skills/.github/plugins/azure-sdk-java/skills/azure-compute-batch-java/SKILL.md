@@ -32,9 +32,10 @@ Client library for running large-scale parallel and high-performance computing (
 ## Environment Variables
 
 ```bash
-AZURE_BATCH_ENDPOINT=https://<account>.<region>.batch.azure.com
-AZURE_BATCH_ACCOUNT=<account-name>
-AZURE_BATCH_ACCESS_KEY=<account-key>
+AZURE_BATCH_ENDPOINT=https://<account>.<region>.batch.azure.com  # Required for all auth methods
+AZURE_BATCH_ACCOUNT=<account-name>  # Only required for shared key auth
+AZURE_BATCH_ACCESS_KEY=<account-key>  # Only required for shared key auth
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Client Creation
@@ -44,10 +45,21 @@ AZURE_BATCH_ACCESS_KEY=<account-key>
 ```java
 import com.azure.compute.batch.BatchClient;
 import com.azure.compute.batch.BatchClientBuilder;
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.AzureIdentityEnvVars;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.identity.ManagedIdentityCredentialBuilder;
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+TokenCredential credential = new DefaultAzureCredentialBuilder()
+    .requireEnvVars(AzureIdentityEnvVars.AZURE_TOKEN_CREDENTIALS)
+    .build();
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/java/api/overview/azure/identity-readme?view=azure-java-stable#credential-classes
+// TokenCredential credential = new ManagedIdentityCredentialBuilder().build();
 
 BatchClient batchClient = new BatchClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .endpoint(System.getenv("AZURE_BATCH_ENDPOINT"))
     .buildClient();
 ```
@@ -58,7 +70,7 @@ BatchClient batchClient = new BatchClientBuilder()
 import com.azure.compute.batch.BatchAsyncClient;
 
 BatchAsyncClient batchAsyncClient = new BatchClientBuilder()
-    .credential(new DefaultAzureCredentialBuilder().build())
+    .credential(credential)
     .endpoint(System.getenv("AZURE_BATCH_ENDPOINT"))
     .buildAsyncClient();
 ```
