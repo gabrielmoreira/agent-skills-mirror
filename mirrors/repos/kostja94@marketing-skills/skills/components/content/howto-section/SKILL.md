@@ -2,7 +2,7 @@
 name: howto-section-generator
 description: When the user wants to create, optimize, or audit a HowTo section block—an in-page block of ordered steps with optional Schema.org HowTo JSON-LD. Also use when the user mentions "HowTo section," "how-to section," "steps section," "quick start," "walkthrough," "tutorial block," "3 steps," "N steps," "simple steps," "tutorial steps," "step-by-step block," "HowTo schema," "HowTo JSON-LD," "instruction steps," "numbered steps SEO," "horizontal tabs for steps," or "procedure section." This skill is for a section inside a page, not a full page template—use article-page-generator, docs-page-generator, or tools-page-generator for page-level layout. For FAQ Q&A blocks, use faq-page-generator. For structured data details beyond HowTo, use schema-markup. For article body copy only, use article-content.
 metadata:
-  version: 1.0.3
+  version: 1.1.0
 ---
 
 # Components: HowTo Section
@@ -89,7 +89,7 @@ See **featured-snippet**, **serp-features**.
 **Principles** (detail in **schema-markup**):
 
 - **JSON-LD** in `<script type="application/ld+json">`; properties must **match visible content**—no hidden-only steps.
-- **Google**: HowTo was **high-impact** for rich results on **desktop**; **mobile** support is **limited/context-dependent**. Google may have **deprecated or reduced HowTo rich results** (2023–2024); **Schema.org** still defines HowTo; **Bing and AI systems** may still consume it.
+- **Google**: HowTo rich results were **fully deprecated** (mobile Aug 2023, desktop Sep 2023). Google Search Console removed the How-To Enhancement Report in Jan 2024. The markup does **not** generate rich results on any device, but you may leave it in place—it does not cause errors. **Bing and AI systems** may still consume HowTo schema.
 - **GEO**: HowTo is among types that help AI cite structured procedures (**generative-engine-optimization**).
 
 **Where the section lives** (parent page type)

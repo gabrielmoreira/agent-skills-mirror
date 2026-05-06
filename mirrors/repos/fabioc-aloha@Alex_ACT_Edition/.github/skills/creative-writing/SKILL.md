@@ -468,3 +468,9 @@ Present tense. Active voice. Brief.
 - Sonnet — 14 lines, specific rhyme
 - Haiku — 5-7-5 syllables
 - Villanelle — 19 lines, refrains
+
+## Falsifiability
+
+- This skill adds no value if output quality does not measurably differ between sessions that activate it and sessions that do not
+- The form constraints are wrong if they produce stilted or unnatural prose that the user consistently overrides
+- Stale if contemporary creative writing conventions shift away from the structures documented here

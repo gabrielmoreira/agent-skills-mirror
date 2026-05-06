@@ -1,0 +1,4 @@
+interface:
+  display_name: "AgentSkills Project Onboarding"
+  short_description: "Set up focused AgentSkills in a repo."
+  default_prompt: "Use this skill to inspect a repository, recommend a focused AgentSkills profile, choose skillsets or atomic skills, plan project instructions, recommend MCP presets, and verify setup without installing unnecessary broad bundles."

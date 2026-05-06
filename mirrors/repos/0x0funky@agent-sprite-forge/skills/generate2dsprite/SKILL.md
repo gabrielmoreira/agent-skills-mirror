@@ -7,7 +7,7 @@ description: "Generate and postprocess general 2D game assets and animation shee
 
 Use this skill for self-contained 2D sprite or animation assets.
 
-If the user wants a whole playable content pack, map, story, slideshow, or pack assembly, use `generate2dgamepack`.
+When a larger game or playable prototype needs sprites, use this skill for the visible sprite assets and keep runtime/game assembly separate. Do not replace requested sprite assets with code-drawn placeholders.
 
 ## Parameters
 
@@ -36,8 +36,11 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 - Decide the asset plan yourself. Do not force the user to spell out sheet size, frame count, or bundle structure when the request already implies them.
 - Do not pack unrelated actions into one raw generated sheet just to satisfy a `4x4`, `5x5`, or custom engine atlas. A raw generated sheet should represent one action family, one continuous sequence, one canonical directional locomotion sheet, or one prop/asset pack.
 - For controllable heroes, main characters, and high-value player assets with multiple actions, generate separate per-action grid sheets first, QC each action, then deterministically assemble the engine-required atlas only after the grids pass visual review.
+- For controllable heroes, main characters, and high-value player body actions, default attack/shoot/cast body sheets to body-only. Do not include large slash arcs, muzzle flashes, projectiles, impact bursts, detached dust, long trails, or wide detached FX in the body sheet. Generate those as separate `fx`, `projectile`, or `impact` sheets and layer them in the game.
+- Only include wide attack FX in the same raw body sheet when the target runtime explicitly supports wider per-action cells plus per-action origin/anchor metadata. Otherwise, a wide FX bbox will force the body to shrink inside the fixed cell.
 - Write the art prompt yourself. Do not default to the prompt-builder script.
 - Use built-in `image_gen` for every raw image.
+- Do not create raw sprite art with Three.js, Canvas, SVG, HTML/CSS drawing, PIL shape drawing, procedural geometry, placeholder primitives, or code-rendered screenshots. Runtime code may display finished generated assets, and scripts may make layout guides or postprocess generated images, but requested sprite art must originate from built-in `image_gen`.
 - When the user provides or implies a visual reference, use built-in image edit/reference semantics only after the reference image is visible in the conversation context. If the reference is a local file, call `view_image` first; do not rely on a filesystem path in the prompt as the visual reference.
 - Do not force pixel art when the asset is a map prop for `$generate2dmap` or when the user/project requests a different style. Match the map or reference style first.
 - Use the script only as a deterministic processor: magenta cleanup, frame splitting, component filtering, scaling, alignment, QC metadata, transparent sheet export, and GIF export.
@@ -49,6 +52,7 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 - For animated body assets, use a multi-row grid by default: 4 frames -> `2x2`, 6 frames -> `2x3`, 8 frames -> `2x4`, 9 frames -> `3x3`, 12 frames -> `3x4` or `4x3`, 16 frames -> `4x4`.
 - If a game engine needs a final single-row strip or mixed atlas, first generate and QC the action as a multi-row grid, then assemble the delivery strip/atlas deterministically.
 - In every animated body grid prompt, require the subject body to stay centered in each cell, full body inside the central 60% to 70% safe area, consistent scale across cells, stable feet/bottom anchor line when applicable, and no limbs, weapons, hair, capes, dust, muzzle flashes, or detached FX crossing cell edges.
+- For hero attack body prompts, explicitly require body height and body scale to match the accepted idle/run sheets, stable feet/bottom anchor, weapon kept close enough to avoid widening the body bbox, and no detached slash arc or screen-space attack effect.
 - For map prop packs, classify props before choosing a grid. Square `2x2`, `3x3`, and `4x4` packs are only for compact props. Do not put platforms, floors, bridges, walls, ladders, gates, doors, long hazards, wide/tall props, collision-bearing objects, or tileset/strip pieces into square prop packs; use one-by-one, `1x3`/`1x4` strips, custom wide cells, or a tileset-like atlas instead.
 - Keep the solid `#FF00FF` background rule unless the user explicitly wants a different processing workflow.
 
@@ -68,6 +72,10 @@ Examples:
   - jump grid sheet, usually `2x2`
   - projectile / muzzle flash as separate assets when needed
   - optional assembled engine atlas after per-action QC
+- side-view controllable hero with melee attack -> `player` + `hero_action_bundle`
+  - attack body grid sheet, usually `2x2` or `2x3`, body-only
+  - slash arc / weapon trail as a separate `fx` sheet when the attack needs a wide visual effect
+  - impact spark as a separate `impact` sheet when hits need feedback
 - healer overworld NPC -> `npc` + `single_asset` or `unit_bundle`
 - large boss idle loop -> `creature` + `idle` + `3x3`
 - wizard throwing a magic orb -> `spell_bundle`
@@ -112,6 +120,7 @@ Mixed-action atlas guardrail:
 - If an engine needs a combined `4x4`, `5x5`, custom atlas, or row-strip delivery format, generate the action grids separately, process and QC them separately, then assemble the delivery atlas deterministically.
 - Exceptions are canonical directional locomotion sheets, one continuous long action sequence, prop packs, tileset-like atlases, and low-stakes compact enemy combat sheets. These still need one coherent prompt and visual QC.
 - Keep projectile, muzzle flash, impact, dust trails, and detached FX in separate sheets unless they are intentionally part of the same action silhouette and remain tightly attached.
+- For controllable heroes and main characters, "tightly attached" is not enough when the effect makes the action bbox much wider or taller than idle/run. Split wide slash arcs, muzzle flashes, long weapon trails, dust clouds, and impact bursts into separate FX sheets by default.
 
 Animated body grid guardrail:
 
@@ -122,6 +131,7 @@ Animated body grid guardrail:
 - For 4-direction top-down walk, `4x4` can remain a raw generation shape because it is a canonical directional locomotion sheet, not four unrelated action rows.
 - If final runtime needs a row strip, assemble it after QC from the processed multi-row grid frames.
 - Keep the character centered in every cell. The body centerline should stay near the cell center, feet/bottom anchor should stay on the same y-position when visible, and the subject should occupy only the central safe area with generous magenta padding.
+- For attack, shoot, cast, charge, and other body actions, the body height should stay close to the accepted idle/run body height. If a fixed-cell runtime is being used, reject body-action output when the body appears more than about 10-15% smaller than idle/run, even if `edge_touch_frames` is empty.
 
 Map prop pack guardrail:
 
@@ -155,6 +165,8 @@ Use layout guides deliberately:
 
 Use built-in `image_gen`.
 
+Do not use Three.js, Canvas, SVG, HTML/CSS, PIL drawing, or other code-generated art as the raw sprite source. These are acceptable only for runtime display, debug overlays, deterministic layout guides, or postprocessing already-generated images.
+
 After generation:
 
 - find the raw PNG under `$CODEX_HOME/generated_images/...`
@@ -177,7 +189,7 @@ The processor is intentionally low-level. The agent chooses:
 
 Use the processor to gather QC metadata, not to make aesthetic decisions for you.
 
-For hero action bundles, process each action grid as its own sheet before any final atlas assembly. Prefer `component_mode=largest` for body-only hero grids when projectiles, dust, muzzle flashes, or trails would distort the body bounding box. Use `component_mode=all` for projectile, impact, aura, or intentionally attached FX sheets.
+For hero action bundles, process each action grid as its own sheet before any final atlas assembly. Use `component_mode=largest` for body-only hero grids. Use `component_mode=all` only for projectile, impact, aura, slash FX, or intentionally detached FX sheets, not for fixed-cell hero body attacks that need stable body scale.
 
 ### 5. QC the result
 
@@ -187,6 +199,8 @@ Check:
 - did any frame resize differently than intended
 - did detached effects become noise
 - does the sheet still read as one coherent animation
+- for hero/player body actions, does the body height match the accepted idle/run scale within roughly 10-15%
+- for fixed-cell runtimes, did a wide weapon trail or FX arc shrink the body inside the cell
 
 If not, rerun with different processor settings or regenerate the raw sheet.
 
@@ -215,7 +229,7 @@ For `hero_action_bundle`, expect:
 
 - one raw and processed sheet per action
 - per-action frame PNGs and GIFs for visual QC
-- separate projectile / muzzle / impact assets when the hero shoots or casts
+- separate projectile / muzzle / slash / impact assets when the hero shoots, casts, or uses wide melee effects
 - optional assembled `engine-atlas-transparent.png` only after per-action QC passes
 
 ## Defaults
@@ -231,6 +245,7 @@ For `hero_action_bundle`, expect:
   - side-view asset -> `2x2`
 - controllable hero or main player with multiple actions -> `hero_action_bundle`
   - generate one action per raw multi-row grid sheet, not as a raw `1x4` strip
+  - attack/shoot/cast body sheets are body-only by default; wide slash arcs, muzzle flashes, projectiles, trails, dust, and hit impacts are separate FX/projectile/impact sheets
   - default 4-frame action grid is `2x2`
   - use `2x3` for 6-frame actions and `2x4`, `3x3`, `3x4`, or `4x4` for longer actions
   - do not generate a mixed-action raw `4x4`, `5x5`, or custom atlas
@@ -239,7 +254,7 @@ For `hero_action_bundle`, expect:
   - use as raw generation only for one coherent long action sequence, canonical directional locomotion, prop packs, or tileset-like atlases
   - use as delivery atlases for mixed actions only after separate action sheets pass QC
 - use `shared_scale` by default for any multi-frame asset where frame-to-frame consistency matters
-- use `largest` component mode when detached sparkles or edge debris make the main body unstable
+- use `largest` component mode for hero/player body grids; use `all` for separate FX/projectile/impact sheets
 
 ## Resources
 

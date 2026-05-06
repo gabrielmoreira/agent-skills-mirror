@@ -57,30 +57,37 @@ while IFS=$'\t' read -r name url version; do
 
   # 情况 1：目录存在但为空 → 删除后重新 clone
   if [ -d "$dir" ] && [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
-    echo "[清理] $name（空目录，重新下载）"
+    echo "[清理] $name"
     rm -rf "$dir"
   fi
 
   # 情况 2：目录存在且有内容
   if [ -d "$dir" ]; then
     if [ -n "$version" ]; then
-      echo "[更新] $name → $version"
-      if (cd "$dir" && git fetch -q --tags 2>/dev/null && \
-          (git checkout -q "$version" 2>/dev/null || git checkout -q "v${version}" 2>/dev/null)); then
-        update_count=$((update_count + 1))
+      # 检查当前是否已在目标版本
+      current_tag=$(cd "$dir" && git describe --tags --exact-match 2>/dev/null)
+      if [ "$current_tag" = "$version" ] || [ "$current_tag" = "v${version}" ]; then
+        echo "[跳过] $name $version"
+        skip_count=$((skip_count + 1))
       else
-        echo "  ⚠ checkout $version 失败"
-        fail_count=$((fail_count + 1))
+        echo "[更新] $name $version"
+        if (cd "$dir" && git fetch -q --tags 2>/dev/null && \
+            (git checkout -q "$version" 2>/dev/null || git checkout -q "v${version}" 2>/dev/null)); then
+          update_count=$((update_count + 1))
+        else
+          echo "  ⚠ checkout $version 失败"
+          fail_count=$((fail_count + 1))
+        fi
       fi
     else
-      echo "[跳过] $name（已存在）"
+      echo "[跳过] $name"
       skip_count=$((skip_count + 1))
     fi
     continue
   fi
 
   # 情况 3：目录不存在 → clone
-  echo "[下载] $name ${version:+→ $version}"
+  echo "[下载] $name ${version:+$version}"
   if [ -n "$version" ]; then
     if git clone -q "$url" "$name" 2>/dev/null && \
        (cd "$name" && (git checkout -q "$version" 2>/dev/null || git checkout -q "v${version}" 2>/dev/null)); then

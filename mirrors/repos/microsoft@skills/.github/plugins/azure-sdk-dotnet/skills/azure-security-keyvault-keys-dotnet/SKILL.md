@@ -25,9 +25,9 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-KEY_VAULT_NAME=<your-key-vault-name>
-# Or full URI
-AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net
+KEY_VAULT_NAME=<your-key-vault-name>  # Required: Key Vault name
+AZURE_KEYVAULT_URL=https://<vault-name>.vault.azure.net  # Optional: full Key Vault URL
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Client Hierarchy
@@ -53,7 +53,7 @@ KeyResolver (key resolution)
 
 ## Authentication
 
-### DefaultAzureCredential (Recommended)
+### Microsoft Entra Token Credential
 
 ```csharp
 using Azure.Identity;
@@ -62,7 +62,14 @@ using Azure.Security.KeyVault.Keys;
 var keyVaultName = Environment.GetEnvironmentVariable("KEY_VAULT_NAME");
 var kvUri = $"https://{keyVaultName}.vault.azure.net";
 
-var client = new KeyClient(new Uri(kvUri), new DefaultAzureCredential());
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
+var client = new KeyClient(new Uri(kvUri), credential);
 ```
 
 ### Service Principal

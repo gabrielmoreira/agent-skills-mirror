@@ -24,12 +24,30 @@ Guides E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) imple
 
 ## Author Bio
 
+### Components
+
 | Element | Guideline |
 |---------|-----------|
-| **Placement** | End of article or sidebar; link to author page |
-| **Content** | Name, credentials, photo, brief expertise, link to author page |
+| **Real name** | Full name used consistently across platforms |
+| **Photo** | Professional headshot; compress for LCP |
+| **Credentials** | Current role, relevant experience tied to article topic |
+| **Verifiable links** | LinkedIn, personal site; align `sameAs` in Person schema |
 | **Author page** | Dedicated page per author; bio, other articles, social |
-| **Schema** | Person schema; link author to Article schema; see **entity-seo** |
+| **Lightweight action (optional)** | Newsletter signup, social follow — avoid link stacking |
+
+### Placement
+
+- **End of article** (default): User finishes reading, naturally curious about author; standard for blogs and deep content.
+- **Top of article**: Strong expert endorsement; suited for news, YMYL, or short items.
+- **Sidebar** (desktop): Compact version. **Mobile fallback required** — sidebar content often disappears on small screens; place author block within the main content column at the bottom on mobile.
+
+### Multi-Author
+
+For co-authored, reviewed, or fact-checked content, list multiple author cards or label roles consistently (e.g. "Written by / Reviewed by").
+
+### Schema
+
+Author entity uses `Person` JSON-LD with `name`, `url`, `image`, `jobTitle`, `worksFor`, `knowsAbout`, `sameAs`. Must match visible page content — no exaggeration or fabricated credentials. Validate with [Rich Results Test](https://search.google.com/test/rich-results). See **entity-seo**, **schema-markup**.
 
 ## Citations & References
 

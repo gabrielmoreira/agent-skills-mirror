@@ -123,3 +123,9 @@ A meditation is complete when:
 - [meditation.instructions.md](../../instructions/meditation.instructions.md) — when this skill fires
 - [/meditate prompt](../../prompts/meditate.prompt.md) — slash-command entry
 - [memory-triggers.instructions.md](../../instructions/memory-triggers.instructions.md) — automatic triggers between meditations
+
+## Falsifiability
+
+- This skill adds no value if meditation sessions produce no actionable items (skill extractions, pattern recognitions, or architecture insights) over a 90-day window
+- The protocol is wrong if chronicles written per this format are never consulted in future sessions
+- Stale if the memory tier structure changes and this skill references obsolete storage locations

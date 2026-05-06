@@ -123,7 +123,7 @@ After creating the diagram, verify ALL of these:
 
 ## VS Code 1.109+ Native Chat Rendering
 
-VS Code 1.109 introduces **native Mermaid rendering in chat** via the `renderMermaidDiagram` tool.
+VS Code 1.109 introduces **native Mermaid rendering in chat** via the `renderMermaidDiagram` tool. This is a **deferred tool**: call `tool_search` for "mermaid" to load it before invocation.
 
 ### When to Use Native Rendering
 
@@ -262,7 +262,7 @@ Icons from [Simple Icons](https://simpleicons.org/) via `logo=iconname&logoColor
 
 ### Emoji Usage
 
-**Best Practice**: Use actual emoji characters, not HTML entities or unicode escapes.
+**Recommended** (renders reliably across GitHub, VS Code, and terminal): Use actual emoji characters, not HTML entities or unicode escapes.
 
 | Good ✅ | Bad ❌ |
 | ------- | ------ |
@@ -1645,3 +1645,9 @@ Several Mermaid modes fail silently on colons and special characters. Default to
 **Rule**: If your labels contain colons, times (`HH:MM`), or complex text, use `flowchart` and structure with subgraphs instead.
 
 **Debug silent failures**: Check browser console, simplify content, test incrementally, try flowchart — if it works in flowchart, the mode is the problem.
+
+## Falsifiability
+
+- This skill is wrong if diagrams authored per these patterns fail to render in GitHub or VS Code preview
+- The syntax guidance is stale if it conflicts with the current Mermaid.js spec (check mermaid.js.org/changelog)
+- The mode-fragility warnings are not earning tokens if Mermaid resolves the documented rendering bugs in a future release

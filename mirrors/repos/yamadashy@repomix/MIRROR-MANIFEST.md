@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yamadashy/repomix` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `yamadashy/repomix` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yamadashy/repomix` — 26 default patterns, 0 followed patterns, 31 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,28 +68,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/clawhub/SKILL.md`](.agents/clawhub/SKILL.md) |
 | 8 | ✓ | [`.agents/commands/agent/claude-rule-update.md`](.agents/commands/agent/claude-rule-update.md) |
 | 9 | ✓ | [`.agents/commands/agent/gemini-discuss.md`](.agents/commands/agent/gemini-discuss.md) |
-| 10 | ✓ | [`.agents/commands/code/lint-fix.md`](.agents/commands/code/lint-fix.md) |
-| 11 | ✓ | [`.agents/commands/code/perf-tuning.md`](.agents/commands/code/perf-tuning.md) |
-| 12 | ✓ | [`.agents/commands/code/review-loop.md`](.agents/commands/code/review-loop.md) |
-| 13 | ✓ | [`.agents/commands/git/git-commit-push.md`](.agents/commands/git/git-commit-push.md) |
-| 14 | ✓ | [`.agents/commands/git/git-commit.md`](.agents/commands/git/git-commit.md) |
-| 15 | ✓ | [`.agents/commands/git/pr-address-feedback.md`](.agents/commands/git/pr-address-feedback.md) |
-| 16 | ✓ | [`.agents/commands/git/pr-create.md`](.agents/commands/git/pr-create.md) |
-| 17 | ✓ | [`.agents/commands/git/pr-prepare.md`](.agents/commands/git/pr-prepare.md) |
-| 18 | ✓ | [`.agents/commands/git/pr-review.md`](.agents/commands/git/pr-review.md) |
-| 19 | ✓ | [`.agents/commands/git/release-note-generate.md`](.agents/commands/git/release-note-generate.md) |
-| 20 | ✓ | [`.agents/rules/base.md`](.agents/rules/base.md) |
-| 21 | ✓ | [`.claude/skills/agent-memory/SKILL.md`](.claude/skills/agent-memory/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/contextual-commit/SKILL.md`](.claude/skills/contextual-commit/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/repomix-explorer/SKILL.md`](.claude/skills/repomix-explorer/SKILL.md) |
-| 24 | ✓ | [`.cursor/rules/base.mdc`](.cursor/rules/base.mdc) |
-| 25 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 26 | ✓ | [`.github/instructions/base.instructions.md`](.github/instructions/base.instructions.md) |
-| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 28 | ✓ | [`browser/.claude/skills/browser-extension-developer/SKILL.md`](browser/.claude/skills/browser-extension-developer/SKILL.md) |
-| 29 | ✓ | [`browser/CLAUDE.md`](browser/CLAUDE.md) |
-| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 31 | ✓ | [`website/.claude/skills/website-maintainer/SKILL.md`](website/.claude/skills/website-maintainer/SKILL.md) |
+| 10 | ✓ | [`.agents/commands/code/codex-review-loop.md`](.agents/commands/code/codex-review-loop.md) |
+| 11 | ✓ | [`.agents/commands/code/lint-fix.md`](.agents/commands/code/lint-fix.md) |
+| 12 | ✓ | [`.agents/commands/code/perf-tuning.md`](.agents/commands/code/perf-tuning.md) |
+| 13 | ✓ | [`.agents/commands/code/review-loop.md`](.agents/commands/code/review-loop.md) |
+| 14 | ✓ | [`.agents/commands/git/git-commit-push.md`](.agents/commands/git/git-commit-push.md) |
+| 15 | ✓ | [`.agents/commands/git/git-commit.md`](.agents/commands/git/git-commit.md) |
+| 16 | ✓ | [`.agents/commands/git/pr-address-feedback.md`](.agents/commands/git/pr-address-feedback.md) |
+| 17 | ✓ | [`.agents/commands/git/pr-create.md`](.agents/commands/git/pr-create.md) |
+| 18 | ✓ | [`.agents/commands/git/pr-prepare.md`](.agents/commands/git/pr-prepare.md) |
+| 19 | ✓ | [`.agents/commands/git/pr-review.md`](.agents/commands/git/pr-review.md) |
+| 20 | ✓ | [`.agents/commands/git/release-note-generate.md`](.agents/commands/git/release-note-generate.md) |
+| 21 | ✓ | [`.agents/rules/base.md`](.agents/rules/base.md) |
+| 22 | ✓ | [`.claude/skills/agent-memory/SKILL.md`](.claude/skills/agent-memory/SKILL.md) |
+| 23 | ✓ | [`.claude/skills/contextual-commit/SKILL.md`](.claude/skills/contextual-commit/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/repomix-explorer/SKILL.md`](.claude/skills/repomix-explorer/SKILL.md) |
+| 25 | ✓ | [`.cursor/rules/base.mdc`](.cursor/rules/base.mdc) |
+| 26 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 27 | ✓ | [`.github/instructions/base.instructions.md`](.github/instructions/base.instructions.md) |
+| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 29 | ✓ | [`browser/.claude/skills/browser-extension-developer/SKILL.md`](browser/.claude/skills/browser-extension-developer/SKILL.md) |
+| 30 | ✓ | [`browser/CLAUDE.md`](browser/CLAUDE.md) |
+| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 32 | ✓ | [`website/.claude/skills/website-maintainer/SKILL.md`](website/.claude/skills/website-maintainer/SKILL.md) |
 
 ---
 

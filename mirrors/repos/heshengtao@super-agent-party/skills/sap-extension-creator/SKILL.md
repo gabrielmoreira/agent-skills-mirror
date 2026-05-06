@@ -120,47 +120,67 @@ See `references/node-entry-spec.md` for the full protocol. The entry point:
 
 ### Step 6: Implement Tool Registration (optional, works in both modes)
 
-Extensions can register tools that the AI agent can call — via WebSocket in the frontend (both static and Node.js). Register via WebSocket:
+Extensions can register tools that the AI agent can call — via WebSocket in the frontend (both static and Node.js). The MCP lifecycle has three mandatory stages:
 
-```js
-ws.send(JSON.stringify({
-    type: 'register_node_extension_mcp',
-    data: {
-        ext_id: extId,
-        tools: [{
-            name: `${extId}_my_tool`,
-            description: 'What this tool does (use the user\'s language)',
-            parameters: {
-                type: 'object',
-                properties: {
-                    param1: { type: 'string', description: '...' }
-                },
-                required: ['param1']
-            }
-        }]
-    }
-}));
+```
+STARTUP  → ws.onopen         → registerMcpTools()
+RUNTIME  → ws.onmessage      → handleMcpCall() when AI calls a tool
+SHUTDOWN → window.beforeunload → unregisterMcpTools()
 ```
 
-Handle incoming tool calls:
+**① Register on startup** — always in `ws.onopen`, using a dedicated function:
+
 ```js
-if (d.type === 'call_mcp_tool') {
-    // Execute tool, then:
-    ws.send(JSON.stringify({
-        type: 'mcp_tool_result',
-        data: { call_id: d.data.call_id, result: 'output' }
-    }));
+function registerMcpTools() {
+  getExtId();
+  ws.send(JSON.stringify({
+    type: 'register_node_extension_mcp',
+    data: {
+      ext_id: MY_EXT_ID,
+      tools: [{
+        name: `${MY_EXT_ID}_my_tool`,
+        description: 'What this tool does (use the user\'s language)',
+        parameters: {
+          type: 'object',
+          properties: {
+            param1: { type: 'string', description: '...' }
+          },
+          required: ['param1']
+        }
+      }]
+    }
+  }));
 }
 ```
 
-**Important**: Always send `unregister_node_extension_mcp` on `beforeunload`:
+**② Handle tool calls** — the AI agent calls your tool:
+
 ```js
-window.addEventListener('beforeunload', () => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type:'unregister_node_extension_mcp', data:{ext_id:MY_EXT_ID} }));
-    }
-});
+async function handleMcpCall(data) {
+  const { ext_id, tool_name, tool_params, call_id } = data;
+  if (ext_id !== MY_EXT_ID && !tool_name.includes(MY_EXT_ID)) return;
+  // ... execute logic, then:
+  ws.send(JSON.stringify({
+    type: 'mcp_tool_result',
+    data: { call_id, result: 'output' }
+  }));
+}
 ```
+
+**③ Unregister on shutdown** — MUST send `unregister_node_extension_mcp` before the window closes:
+
+```js
+function unregisterMcpTools() {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'unregister_node_extension_mcp', data: { ext_id: MY_EXT_ID } }));
+  }
+}
+window.addEventListener('beforeunload', () => { unregisterMcpTools(); });
+```
+
+**Key rule**: Registration and unregistration MUST be in separate named functions (`registerMcpTools` / `unregisterMcpTools`), NOT inline code. This makes the lifecycle explicit and easy for AI to understand.
+
+If an extension has no MCP tools, all three functions can be deleted.
 
 See `sap-lx-music/index.html` for a complete real-world MCP implementation example (static extension with 12+ registered tools).
 
@@ -443,12 +463,235 @@ This avoids `window.open()` popup blockers and works reliably inside Electron.
 
 ---
 
+## Simple Chat HTTP API (`/simple_chat`)
+
+SAP exposes a **stateless HTTP endpoint** `POST /simple_chat` that extensions can call for one-off AI tasks — translation, summarization, quick Q&A, code generation — **without** going through the WebSocket chat flow and **without** adding messages to the conversation history.
+
+This is ideal when your extension needs a quick, single-turn AI call: translate text, summarize content, extract keywords, classify input, etc.
+
+### When to Use `/simple_chat` vs WebSocket
+
+| Feature | `/simple_chat` HTTP API | WebSocket (`trigger_send_message`) |
+|---|---|---|
+| Conversation history | ❌ Stateless — no history | ✅ Full chat history |
+| Messages shown in UI | ❌ Not added to chat | ✅ Rendered in message list |
+| Use case | One-off: translate, summarize, classify | Multi-turn chat, agent tasks |
+| Response format | OpenAI-compatible JSON / NDJSON stream | `messages_update` / `broadcast_messages` events |
+| Speed | Uses SAP's `fast` client config | Uses current active model provider |
+
+### Endpoint
+
+```
+POST /simple_chat
+Content-Type: application/json
+```
+
+The endpoint is on the same origin as the extension, so use a relative URL:
+
+```js
+const res = await fetch('/simple_chat', { ... });
+```
+
+### Request Format
+
+```json
+{
+  "messages": [
+    { "role": "system", "content": "You are a professional translator." },
+    { "role": "user", "content": "Translate 'Hello world' to Chinese." }
+  ],
+  "stream": false,
+  "temperature": 0.7
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `messages` | array | ✅ | Array of `{role, content}` objects (system/user/assistant) |
+| `stream` | boolean | ❌ (default `false`) | `true` for streaming, `false` for one-shot JSON response |
+| `temperature` | number | ❌ (default from settings) | 0–2, lower = more deterministic |
+
+### Non-Streaming Response (`stream: false`)
+
+Returns a standard **OpenAI-compatible ChatCompletion JSON object**:
+
+```json
+{
+  "id": "chatcmpl-xxx",
+  "object": "chat.completion",
+  "created": 1234567890,
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "你好世界"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 5,
+    "total_tokens": 25
+  }
+}
+```
+
+Access the result: `data.choices[0].message.content`
+
+### Streaming Response (`stream: true`)
+
+Returns **NDJSON** (one JSON object per line), matching OpenAI's streaming format. Each line contains a delta chunk:
+
+```
+{"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null}]}
+{"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"你好"},"finish_reason":null}]}
+{"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"世界"},"finish_reason":null}]}
+{"id":"chatcmpl-xxx","object":"chat.completion.chunk","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+```
+
+**Note**: The stream does NOT send a `[DONE]` marker. Detect completion by checking `choices[0].finish_reason`.
+
+### JavaScript Usage Examples
+
+#### Non-Streaming (Simple One-Shot Call)
+
+```js
+/**
+ * Call SAP's /simple_chat for a one-off AI task.
+ * @param {Array} messages - [{role, content}, ...]
+ * @param {number} [temperature=0.7]
+ * @returns {Promise<object>} OpenAI-compatible ChatCompletion
+ */
+async function simpleChat(messages, temperature = 0.7) {
+  const res = await fetch('/simple_chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, stream: false, temperature })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+// ---------- Practical Examples ----------
+
+// Translation
+async function translate(text, targetLang = 'Chinese') {
+  const res = await simpleChat([
+    { role: 'system', content: `You are a translator. Translate to ${targetLang}. Reply ONLY with the translation, no explanations.` },
+    { role: 'user', content: text }
+  ]);
+  return res.choices[0].message.content;
+}
+
+// Summarization
+async function summarize(text, maxWords = 50) {
+  const res = await simpleChat([
+    { role: 'system', content: `Summarize in ≤${maxWords} words. Reply ONLY with the summary.` },
+    { role: 'user', content: text }
+  ]);
+  return res.choices[0].message.content;
+}
+
+// Quick classification
+async function classify(text, labels) {
+  const res = await simpleChat([
+    { role: 'system', content: `Classify into one of: ${labels.join(', ')}. Reply ONLY with the label.` },
+    { role: 'user', content: text }
+  ]);
+  return res.choices[0].message.content.trim();
+}
+```
+
+#### Streaming (Real-Time Display)
+
+```js
+/**
+ * Call /simple_chat with streaming. Yields delta content strings.
+ * @param {Array} messages
+ * @param {number} [temperature=0.7]
+ * @returns {AsyncGenerator<string>} Yields delta content chunks
+ */
+async function* simpleChatStream(messages, temperature = 0.7) {
+  const res = await fetch('/simple_chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, stream: true, temperature })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop();  // keep incomplete line in buffer
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const chunk = JSON.parse(line);
+        const content = chunk.choices?.[0]?.delta?.content;
+        if (content) yield content;
+        if (chunk.choices?.[0]?.finish_reason === 'stop') return;
+      } catch(e) { /* ignore parse errors for partial lines */ }
+    }
+  }
+}
+
+// Usage: render streaming response into an element
+const el = document.getElementById('output');
+el.textContent = '';
+for await (const chunk of simpleChatStream([
+  { role: 'user', content: 'Write a haiku about coding.' }
+])) {
+  el.textContent += chunk;
+}
+```
+
+### Error Handling
+
+On error, the endpoint returns a JSON object with an `error` field:
+
+```json
+{
+  "error": {
+    "message": "No model providers configured",
+    "type": "server_error",
+    "code": 500
+  }
+}
+```
+
+Always check `res.ok` and parse the error body.
+
+### Important Notes for `/simple_chat`
+
+- **Stateless**: Each call is independent. No conversation context is preserved between calls.
+- **No UI impact**: Results are NOT displayed in the main chat window. Your extension owns the rendering.
+- **Uses fast client**: The endpoint uses SAP's "fast" model provider configuration. This may be a different model than the main chat.
+- **Same origin only**: Extensions are served from the same origin, so no CORS issues. Use a relative URL (`/simple_chat`).
+- **Not a replacement for MCP tools**: If you need the AI agent to call your extension, register MCP tools via WebSocket. `/simple_chat` is for your extension to call the AI, not the other way around.
+
+---
+
 ## Important Notes
 
 - **Extension ID format**: `{owner}_{repo}` (e.g., `heshengtao_sap-example`)
 - **nodePort: 0** means auto-assign a free port (3100-13999 range)
 - **Always register `beforeunload` handler** to send `unregister_node_extension_mcp`
-- **MCP works in both static and Node.js extensions** — the `register_node_extension_mcp` message type name is historical; it works over WebSocket from any extension
+- **MCP works in both static and Node.js extensions** — the `register_node_extension_mcp` message type name is historical; it works over WebSocket from any extension. Always follow the three-stage lifecycle: `registerMcpTools()` on WS open, `handleMcpCall()` on tool call, `unregisterMcpTools()` on beforeunload
 - **Font Awesome**: Always use CDN (`cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css`). Relative paths like `../../fontawesome/` do NOT work for Node.js extensions (they're served from Express, not from SAP's static directory)
 - **Theme colors**: Each extension defines its own identity via CSS variables on `:root` and `body.dark`. Do NOT force SAP's theme colors
 - **Always implement dark/light mode** and **Chinese/English i18n** as basic functionality

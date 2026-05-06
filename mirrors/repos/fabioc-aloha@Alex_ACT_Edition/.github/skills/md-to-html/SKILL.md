@@ -221,3 +221,9 @@ Get-ChildItem docs/*.md | ForEach-Object {
 ---
 
 *Skill version: 2.0.0 | Last updated: 2026-04-14 | Category: document-conversion*
+
+## Falsifiability
+
+- This skill is wrong if generated HTML fails W3C validation on structural elements the skill explicitly handles
+- The conversion flags are stale if Pandoc changes default HTML5 output behavior in a major version
+- Not earning tokens if the output loses semantic structure (headings, lists, code blocks) that raw Pandoc preserves without the documented options

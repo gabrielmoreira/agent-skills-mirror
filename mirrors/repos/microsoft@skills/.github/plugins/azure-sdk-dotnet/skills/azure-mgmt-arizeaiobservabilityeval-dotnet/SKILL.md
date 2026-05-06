@@ -31,10 +31,11 @@ dotnet add package Azure.ResourceManager.ArizeAIObservabilityEval --version 1.0.
 ## Environment Variables
 
 ```bash
-AZURE_SUBSCRIPTION_ID=<your-subscription-id>
-AZURE_TENANT_ID=<your-tenant-id>
-AZURE_CLIENT_ID=<your-client-id>
-AZURE_CLIENT_SECRET=<your-client-secret>
+AZURE_SUBSCRIPTION_ID=<your-subscription-id> # Required: Azure subscription ID
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
+AZURE_TENANT_ID=<your-tenant-id> # For service principal auth (optional)
+AZURE_CLIENT_ID=<your-client-id> # For service principal auth (optional)
+AZURE_CLIENT_SECRET=<your-client-secret> # For service principal auth (optional)
 ```
 
 ## Authentication
@@ -44,8 +45,13 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.ArizeAIObservabilityEval;
 
-// Always use DefaultAzureCredential
-var credential = new DefaultAzureCredential();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 var armClient = new ArmClient(credential);
 ```
 

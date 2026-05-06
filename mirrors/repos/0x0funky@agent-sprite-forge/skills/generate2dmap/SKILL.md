@@ -7,12 +7,13 @@ description: "Generate and revise production-oriented 2D game maps with built-in
 
 ## Overview
 
-Build the smallest playable map bundle that satisfies the game. Decide the map as a pipeline, not as a single strategy label:
+Build the smallest playable map bundle that satisfies the game. Start by choosing a user-facing `map_mode`, then map it to the lower-level pipeline axes. Do not treat a map as only one image unless the user explicitly asks for a flat visual background.
 
-1. `visual_model`: `baked_raster` | `layered_raster` | `tilemap` | `layered_tilemap` | `parallax_layers`
-2. `runtime_object_model`: `none` | `separate_props` | `platform_objects` | `y_sorted_props` | `interactive_scene_objects` | `foreground_occluders` | `scene_hooks`
-3. `collision_model`: `none` | `coarse_shapes` | `precise_shapes` | `tile_collision` | `polygon_walkmesh` | `trigger_zones`
-4. `engine_target`: `raw_canvas` | `Phaser` | `Tiled_JSON` | `LDtk` | `Godot_TileMap` | `Unity_Tilemap` | project-native
+1. `map_mode`: `tile_mode` | `scene_mode` | `side_scroll_mode` | `grid_mode` | `room_chunk_mode` | `baked_scene_mode`
+2. `visual_model`: `baked_raster` | `layered_raster` | `tilemap` | `layered_tilemap` | `parallax_layers`
+3. `runtime_object_model`: `none` | `separate_props` | `platform_objects` | `y_sorted_props` | `interactive_scene_objects` | `foreground_occluders` | `scene_hooks`
+4. `collision_model`: `none` | `coarse_shapes` | `precise_shapes` | `tile_collision` | `polygon_walkmesh` | `trigger_zones`
+5. `engine_target`: `raw_canvas` | `Phaser` | `Tiled_JSON` | `LDtk` | `Godot_TileMap` | `Unity_Tilemap` | project-native
 
 Use user-specified parameters when present. When the user does not specify them, infer the lightest playable pipeline from the existing game, camera, collision needs, map scale, and editing needs.
 
@@ -21,6 +22,32 @@ For requests that imply a playable game map, level, stage, room, prototype, or e
 This skill is for scenes and maps. Do not generate character, enemy, boss, projectile, NPC, player, or animation sprite assets as map deliverables. The map may include scene hooks such as player spawns, actor spawn marker metadata, patrol/encounter zones, arena entrances, gates, exits, and camera triggers, but actor artwork, projectiles, and animations belong in `$generate2dsprite`.
 
 Read [references/map-strategies.md](references/map-strategies.md) when the pipeline choice is not obvious. Read [references/layered-map-contract.md](references/layered-map-contract.md) before implementing a layered raster map. Read [references/prop-pack-contract.md](references/prop-pack-contract.md) before batching generated props into a sheet.
+
+## Map Modes
+
+Use `map_mode` as the first decision. It is a product-level preset that chooses the initial pipeline axes and expected deliverables:
+
+- `tile_mode`: editable tile/grid maps for RPGs, monster-taming games, platformers, tactical maps, factory games, and engines/editors that already use tiles. Default axes: `tilemap` or `layered_tilemap` + `interactive_scene_objects + scene_hooks` + `tile_collision + trigger_zones`.
+- `scene_mode`: base map plus separate props for tower defense, survivors-like arenas, cozy demos, top-down adventure scenes, and visual showcase maps. Default axes: `layered_raster` + `separate_props` or `y_sorted_props + interactive_scene_objects + scene_hooks` + `precise_shapes + trigger_zones`.
+- `side_scroll_mode`: parallax side-scroller stages for action platformers, runners, Metroidvania rooms, side-view shooters, and beat-em-up stages. Default axes: `parallax_layers` + `platform_objects + interactive_scene_objects + foreground_occluders + scene_hooks` + `precise_shapes`.
+- `grid_mode`: rule-heavy grid scenes for tactical RPGs, factory/automation games, board/card battlers, build grids, and terrain-cost maps. Default axes: `layered_tilemap` or `tilemap` + `interactive_scene_objects + scene_hooks` + `tile_collision` or grid metadata.
+- `room_chunk_mode`: modular rooms/chunks for roguelikes, Metroidvania rooms, dungeon rooms, and procedural level assembly. Default axes: `layered_tilemap` or `parallax_layers` or `layered_raster` + object layers + exits/connection metadata + collision.
+- `baked_scene_mode`: fixed battle backgrounds, title/menu screens, boss-room concept art, visual novel scenes, point-and-click backgrounds, or other explicitly flat/non-editable scenes. Default axes: `baked_raster` + `none` or `coarse_shapes`.
+
+When the mode and lower-level axes disagree, the mode's playable/editable contract wins. For example, `side_scroll_mode` always needs separate collision and platform/object data even if it also produces a beautiful full-width preview image.
+
+## Genre Routing
+
+When the user gives a genre instead of a technical map mode, choose the mode conservatively:
+
+- Pokemon-like / monster-taming RPG / top-down RPG town or route -> `tile_mode` with optional separate props, encounter zones, exits, NPC spawn markers, and collision.
+- Tower defense / Kingdom Rush-like -> `scene_mode` with path metadata, build slots, props, collision/blockers, spawn/exit hooks, and optional engine scene scaffold.
+- Survivors-like / arena survival -> `scene_mode` or `tile_mode` depending on map scale; keep obstacles sparse, define spawn rings/zones, camera bounds, and collision separately.
+- Mega Man-like / side-view action platformer / runner / Metroidvania side room -> `side_scroll_mode`.
+- Beat-em-up / brawler -> `side_scroll_mode` with a walkable belt polygon instead of jump-platform geometry; use parallax/background depth plus props, enemy wave zones, and camera bounds.
+- Tactical RPG / strategy grid / factory automation / board-like game -> `grid_mode`.
+- Roguelike dungeon / modular Metroidvania / procedural room assembly -> `room_chunk_mode`.
+- Visual novel, title screen, point-and-click, boss arena concept, or non-playable showcase -> `baked_scene_mode` unless gameplay/editability is requested.
 
 ## Image Generation First
 
@@ -67,9 +94,11 @@ If a generated base/background already contains those runtime objects, do not us
 
 User-facing parameters may be stated in natural language:
 
-- `map_kind`: overworld | town | dungeon | shrine | arena | battle_bg | side_scroller | side_view_action | platformer | tactical
+- `map_mode`: tile_mode | scene_mode | side_scroll_mode | grid_mode | room_chunk_mode | baked_scene_mode
+- `map_kind`: overworld | town | dungeon | shrine | arena | battle_bg | side_scroller | side_view_action | platformer | metroidvania | brawler | tower_defense | survivors_like | tactical | factory | card_board | room_chunk
 - `visual_model`: baked raster | layered raster | tilemap | layered tilemap | parallax
 - `size`: pixel dimensions, tile dimensions, or camera-relative size
+- `stage_canvas`: exact pixel dimensions and aspect ratio for side-scroll/parallax layers, references, and previews
 - `perspective`: top-down | 3/4 top-down | side-view | isometric-like
 - `art_style`: clean_hd | pixel_inspired | retro_pixel | hand_painted | project-native
 - `visual_asset_source`: image_gen | existing_assets | procedural_placeholder
@@ -80,6 +109,14 @@ User-facing parameters may be stated in natural language:
 When unspecified:
 
 - Use `image_gen` as the visual asset source.
+- Infer `map_mode` from genre and editing needs before selecting lower-level axes.
+- Use `tile_mode` for Pokemon-like, top-down RPG, monster-taming, editor/grid-perfect, or tilemap requests.
+- Use `scene_mode` for tower defense, survivors-like, cozy/top-down showcase maps, and base-map-plus-props requests.
+- Use `side_scroll_mode` for side-scrollers, platformers, runners, side-view action, brawlers, Metroidvania side rooms, Mega Man-like, Castlevania-like, Contra-like, and parallax background requests.
+- For `side_scroll_mode`, choose a canonical `stage_canvas` before image generation. Use the project camera/viewport aspect when available; otherwise default to a 16:9 side-scroller canvas such as `1536x864`. All primary parallax plates, stage references, and previews must preserve this same size/aspect.
+- Use `grid_mode` for tactical RPGs, factory/automation maps, board/card battlers, build grids, and terrain-cost maps.
+- Use `room_chunk_mode` for modular rooms, roguelike rooms, procedural room assembly, or Metroidvania room-chunk planning.
+- Use `baked_scene_mode` only for non-playable visual scenes or explicitly flat images.
 - Use `baked_raster + coarse_shapes` only for battle backgrounds, title/menu scenes, cutscenes, decorative backdrops, non-playable previews, or when the user explicitly asks for a single flat image.
 - Use `layered_raster + y_sorted_props + precise_shapes` for top-down RPG exploration with tall props, occlusion, interactables, or reusable props; the base must be foundation-only and the props/interactables must remain separate.
 - Use `tilemap` or `layered_tilemap` only when the engine/editor already uses tiles or the user asks for editable tiles; do not flatten gameplay objects into one background image.
@@ -97,6 +134,7 @@ When unspecified:
    - Preserve the engine's existing style and data contracts.
 
 2. Choose the pipeline axes.
+   - Choose `map_mode` first. Use the genre routing table when the user describes a game type instead of a technical map format.
    - Select `visual_model`, `runtime_object_model`, `collision_model`, and `engine_target`.
    - If the request is for a playable map, stage, level, room, prototype, or game scene, choose a pipeline with explicit runtime objects. Do not downgrade to `baked_raster` unless the user asked for a background-only image.
    - If the request implies a playable side-view scrolling/action stage, such as a side-scroller, platformer, runner, shooter, brawler, scrolling combat stage, Megaman-like stage, Castlevania-like stage, or Contra-like stage, lock the map pipeline to `parallax_layers + platform_objects + interactive_scene_objects + scene_hooks + precise_shapes` unless the engine already requires a tilemap.
@@ -110,18 +148,24 @@ When unspecified:
    - For playable or editable layered maps, generate a foundation-only base/background first. The base must not contain runtime-controlled props, interactables, hazards, doors, gates, pickups, actors, or foreground occluders. If it does, regenerate or demote it to a reference artifact.
    - For layered raster maps, generate a ground-only/foundation-only base map first. Then perform the visual reference handoff and generate an in-world dressed reference mockup from the visible base before making final props and placements.
    - For tilemaps, generate or reuse tileset art first, then follow the engine/editor format for layers, objects, collision, and scene files. Do not script-draw the tileset as the final art source, and do not flatten object layers into a single runtime image.
-   - For playable side-view scrolling/action stages, generate scenery-only background/parallax layers first. The background pass must not contain playable foreground platforms, walkable floors, terrain chunks, hazards, pickups, doors, gates, checkpoints, crates, fences, spikes, or other runtime objects. Then perform the visual reference handoff and generate an in-world stage reference mockup that visually places up to 9 distinct intended platform/object candidates before generating final separate scene objects and metadata.
+   - For `grid_mode`, generate or reuse grid/tileset visual art first, then write cell metadata such as walkable/buildable flags, move cost, terrain effects, resource nodes, and object layers.
+   - For `room_chunk_mode`, define chunk dimensions, exits, connection sockets, collision contract, and spawn/trigger metadata before final art assembly. Chunks must be reusable and validated at their seams.
+   - For playable side-view scrolling/action stages, define the canonical `stage_canvas` before generating art. Generate named scenery-only parallax layers first: `sky`, `far_bg`, `mid_bg`, `near_bg`, and optional `foreground_overlay`. Every primary parallax layer must use the same pixel dimensions, aspect ratio, camera framing, horizon line, and top-left anchor as the `stage_canvas`; do not accept mismatched image sizes that require guesswork to stack. Do not treat one full-width background image as a complete `side_scroll_mode` background stack unless the user explicitly asks for a flat/non-parallax background. These parallax passes must not contain playable foreground platforms, walkable floors, terrain chunks, hazards, pickups, doors, gates, checkpoints, crates, fences, spikes, or other runtime objects. Then perform the visual reference handoff and generate an in-world stage reference mockup that visually places up to 9 distinct intended platform/object candidates before generating final separate scene objects and metadata.
    - If a side-view background already contains collidable-looking foreground geometry, walkable floors, or reusable gameplay props, reject it as a runtime background and regenerate a cleaner scenery-only background before continuing.
    - Treat the reference mockup as a checkpoint, not a deliverable. Do not stop after generating it. After the relevant `dressed-reference` or `stage-reference` exists, inspect it and continue into the post-reference object production gate.
    - Do not present a rerunnable script that creates the whole art pack as the main solution unless the user asked for procedural placeholder art.
 
 4. Build metadata.
    - Store prop placement, player spawns, actor spawn marker metadata, interactable scene objects, blockers, walk bounds, encounter zones, exits, camera bounds, and triggers as structured data.
+   - For `grid_mode`, store grid dimensions, cell size, tile ids, terrain types, walkable/buildable flags, movement cost, collision, resource nodes, and object/entity slots.
+   - For `room_chunk_mode`, store chunk id, size, entrances/exits, connection sockets, collision, spawn markers, camera bounds, and validation hints for seam alignment.
+   - For `side_scroll_mode`, store `stage_canvas`, parallax layer source size, display size, anchor, render order, scroll factors, loop/repeat policy, camera bounds, platform collision, hazards, exits, checkpoints, and actor spawn marker metadata.
    - Keep collision independent from pixels unless the target engine explicitly uses tile collision.
 
 5. Validate and preview.
    - Compose a flattened preview for layered maps.
    - Validate image sizes, alpha channels, prop pack extraction metadata, JSON parseability, and critical walkability points when collision matters.
+   - For `side_scroll_mode`, reject or normalize mismatched primary parallax layer sizes before runtime integration. The stage reference and QA preview must match `stage_canvas` exactly. Deterministic resizing/cropping/padding is allowed only as a normalization step on generated art, not as a way to invent missing art.
 
 ## Prop Generation Rules
 
@@ -200,8 +244,12 @@ For prop packs or object packs generated after a reference mockup, the prompt mu
 
 For playable side-view scrolling/action maps, an in-world stage reference mockup is mandatory before generating final scene objects or scene metadata. This applies across art styles and game styles, including pixel art, clean HD, side-scrollers, platformers, runners, shooters, brawlers, scrolling combat stages, and Megaman-like or Castlevania-like stages:
 
-1. Generate `assets/map/<name>-background.png` and optional parallax layers as scenery-only art.
-   - The background is the far/mid scenery layer, not the playable foreground. It may contain sky, clouds, mountains, distant buildings, distant castle walls, silhouettes, atmosphere, and non-colliding far depth.
+0. Choose and record one `stage_canvas`, for example `1536x864` for a default 16:9 HD side-scroller when the project has no explicit camera size. Use the engine's existing viewport aspect ratio when it exists. All primary parallax layers, the stage reference, and the stage preview must share this exact size unless a layer is explicitly marked as a repeatable strip.
+1. Generate named parallax scenery layers as separate runtime images: `assets/map/<name>-sky.png`, `assets/map/<name>-far-bg.png`, `assets/map/<name>-mid-bg.png`, `assets/map/<name>-near-bg.png`, and optional `assets/map/<name>-foreground-overlay.png`.
+- These layers are scenery only, not playable foreground. They may contain sky, clouds, mountains, distant buildings, distant castle walls, silhouettes, atmosphere, and non-colliding far depth.
+- Do not collapse these layers into only `assets/map/<name>-background.png` for a playable `side_scroll_mode` stage. A single scenery background is allowed only when the user explicitly requests a flat/non-parallax background; in that case still continue with stage reference, separate objects, collision, camera bounds, and QA preview.
+   - Each primary layer prompt must specify the same target canvas size/aspect ratio, same camera framing, same horizon height, and same top-left aligned composition. If image generation returns different sizes, regenerate or normalize them to `stage_canvas` before using them together.
+   - Repeatable strips and foreground/object sprites may have different source dimensions, but they must declare display size, anchor point, repeat axis, and scale in metadata. They are not substitutes for the primary parallax plates.
    - It must not contain walkable floors, platform tops, terrain chunks, spike traps, pickups, crates, doors, gates, checkpoints, ladders, near fences, near stone walls, enemies, player characters, UI, labels, or any object that should later be edited, collided with, reused, or layered independently.
    - Keep the playable foreground lane visually open or neutral so separate platform/object layers can stack clearly over it.
 2. Make the background visible in conversation context. If it is a local file, use `view_image` immediately before calling built-in `image_gen`; do not rely on a path string as the reference.
@@ -255,7 +303,8 @@ For a tilemap or layered tilemap:
 
 For a playable side-view scrolling/action stage:
 
-- image-generated `assets/map/<name>-background.png` and optional parallax `midground` / `foreground` layers
+- image-generated parallax scenery layers such as `assets/map/<name>-sky.png`, `assets/map/<name>-far-bg.png`, `assets/map/<name>-mid-bg.png`, `assets/map/<name>-near-bg.png`, and optional `assets/map/<name>-foreground-overlay.png`
+- one recorded `stage_canvas` shared by the primary parallax layers, `stage-reference`, and `stage-preview`
 - `assets/map/<name>-background.prompt.txt` and prompt files/manifests for other generated visual assets
 - `assets/map/<name>-stage-reference.png` as an in-world reference mockup for platform/object placement
 - separate image-generated platform, terrain-chunk, foreground-occluder, hazard, door, pickup, checkpoint, gate, and exit sprites when these are visible scene objects
@@ -266,6 +315,29 @@ For a playable side-view scrolling/action stage:
 - code or scene changes that load the background, render object layers, and use the collision/object data as runtime gameplay data
 
 Do not accept a single generated side-view action/platformer stage image plus collision rectangles as the final playable map. The stage must expose platforms or walkable lanes, hazards, doors, pickups, checkpoints, gates, exits, scene hooks, and camera bounds as separate runtime objects, tile/object layers, or metadata. Runtime `background` fields must point to the scenery-only background or parallax layer, never to `stage-reference` or `stage-preview`; previews are QA artifacts only.
+
+For `grid_mode`:
+
+- image-generated or user-supplied tileset/grid art
+- grid dimensions, cell size, and map data in project-native JSON, Tiled JSON, LDtk, Godot TileMap, Unity Tilemap, or equivalent
+- cell metadata for walkable/buildable, movement cost, terrain effects, resources, collision, and placement rules
+- object layers for units, buildings, machines, cards/board slots, exits, spawns, and triggers
+- a QA preview that can show optional debug grid/collision overlays
+
+For `room_chunk_mode`:
+
+- reusable chunk art or tile/object layers
+- chunk metadata with `chunk_id`, size, entrances/exits, connection sockets, spawn markers, blockers, hazards, and camera bounds
+- collision and seam validation metadata
+- a chunk preview and, when multiple chunks exist, an assembled layout preview
+
+For `scene_mode`:
+
+- foundation-only `assets/map/<name>-base.png`
+- in-world `assets/map/<name>-dressed-reference.png`
+- separate props/interactables/blockers from one-by-one assets or compact prop packs
+- placement, collision, zones, exits, camera bounds, and scene-hook metadata
+- a QA preview composed from the base plus final runtime objects
 
 For a prop pack:
 
@@ -288,6 +360,10 @@ Always validate what the chosen pipeline requires:
 - playable/editable layered maps use a foundation-only base/background and do not bake runtime-controlled props, interactables, hazards, doors, gates, pickups, actors, foreground occluders, or reusable scene objects into the base
 - playable stages have explicit runtime objects or metadata for every gameplay-relevant platform or walkable lane, blocker, hazard, door, pickup, checkpoint, gate, exit, player spawn, actor spawn marker, encounter/arena trigger, and camera bound
 - playable side-view backgrounds are scenery-only and do not contain baked-in foreground gameplay platforms, hazards, pickups, doors, gates, checkpoints, or other reusable runtime objects
+- `side_scroll_mode` primary parallax layers, stage references, and stage previews match the recorded `stage_canvas`; any repeatable strips or differently sized foreground sprites declare display size, anchor, scale, and repeat policy
+- `side_scroll_mode` parallax layers have explicit render order, scroll factors, dimensions, loop/repeat policy, and are not used as collision sources
+- `grid_mode` outputs include grid dimensions, cell size, cell metadata, object layers, and validation of critical walkable/buildable cells
+- `room_chunk_mode` outputs include chunk dimensions, exits/connection sockets, seam validation, collision, and at least one assembled or per-chunk preview
 - stage-reference maps preserve the background dimensions and their object plan matches the final object/collision metadata
 - stage-reference and dressed-reference mockups contain no more than 9 distinct visible runtime prop/object candidates unless the user explicitly requested a larger pass
 - reference mockups are followed by final props/objects, placement metadata, collision/scene-hook metadata, and a QA preview unless the user explicitly requested reference-only output

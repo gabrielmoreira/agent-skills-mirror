@@ -1,0 +1,39 @@
+# Skill index — agents view
+
+*Auto-generated from `skills/<name>/SKILL.md` frontmatter — DO NOT EDIT.*
+
+- **docs-drift-maintenance** — Detect and remediate documentation drift after code, config, workflow, or UX changes. Use after implementation, before merge, and before release.
+- **fleet-model-optimizer** — Analyze any fleet's inventory/devices.json and recommend optimal Ollama models per device based on hardware constraints, inference tier, and current LLM landscape. Generates pull/delete commands and a
+- **github-actions-security-hardening** — Enforce secure GitHub Actions posture with least-privilege tokens, pinned dependencies, runner risk controls, and workflow supply-chain checks.
+- **github-capability-resolver** — Resolve GitHub feature availability and policy constraints by plan, repo visibility, account type, and enabled settings before recommending governance actions.
+- **github-ops-excellence** — Define and apply expert GitHub policy profiles and control catalogs used by specialized execution skills across ticketing, review/merge, governance, and release flows.
+- **github-ops-tree-router** — Route GitHub workflow requests through a capability-first GitHub skill tree with explicit ownership boundaries and minimal overlap.
+- **github-projects-agile-linkage** — Apply Agile linkage controls in GitHub using issue types, sub-issues, dependencies, issue-branch/PR linkage, project fields, and built-in automations.
+- **github-release-incident-flow** — Govern release readiness and incident response flow in GitHub with rollback evidence, hotfix linkage, and follow-up controls.
+- **github-review-merge-admin** — Enforce review and merge administration gates with required checks, approvals, conversation resolution, rulesets, and merge queue readiness.
+- **github-ruleset-architecture** — Design and audit repository and organization ruleset architecture, including layering, bypass controls, enforcement modes, and merge queue compatibility.
+- **github-ticket-lifecycle-orchestrator** — Naming conventions and phase protocol for GitHub ticket lifecycle. Baton workflow in manager-ticket-lifecycle.
+- **global-skills-bootstrap** — Initialize a repository so global skills are always loaded first through repository instructions, local hooks, and governance presence checks.
+- **global-task-router** — Classify tasks into free, fleet, or premium lanes and persist an escalation rationale for the active session.
+- **llm-wiki-ops-portable** — Operate an LLM Wiki knowledge system in any workspace using the Karpathy pattern
+- **manager-ticket-lifecycle** — The GitHub issue IS the baton. Manager creates tickets, pre-assigns roles, enforces status transitions through the Agile workflow.
+- **mem-watchdog-ops** — Operate and tune Crostini Mem Watchdog for low-memory development sessions. Use for status triage, log interpretation, and safe threshold tuning.
+- **network-platform-resources** — Inventory of all network-accessible compute platforms, connection methods, credentials, and specs. Load this skill when a task could benefit from remote execution, offloading, or cross-platform deploy
+- **openclaw-availability-utilization** — Keep OpenClaw gateway highly available and actively used through mandatory preflight checks, execution routing, and failover controls.
+- **openclaw-universal-system** — Make OpenClaw a reusable machine-global execution system for all VS Code Copilot agent chats, regardless of repository, by standardizing routing, observability, and decision checkpoints.
+- **openrouter-free-failover** — Configure and maintain optimal OpenRouter free model failover for OpenClaw. Prioritized cascade of free models ranked by coding capability, with automatic failover on rate limits, downtime, and errors
+- **operator-identity-context** — Establishes the operator identity, access authority, and execution mandate for all agent sessions. Always load at session start. The agent is the full operator and executes responsibilities through si
+- **playwright-vision-low-resource** — Apply a low-resource operating profile for Playwright MCP + Claude Vision on constrained machines. Use this at session start, before visual QA, or after browser-context/OOM failures. Establishes bound
+- **release-version-integrity** — Validate and enforce release version integrity across tags, manifests, changelogs, and publish workflows. Use before tagging, publishing, or when release metadata drift is suspected.
+- **repo-onboarding-standards** — Onboard any repository into a standardized Copilot + CI governance baseline. Use for new repos and first-time sessions to ensure immediate standards adoption.
+- **repo-profile-governance** — Audit and harden repository profile, community health, discoverability metadata, and contribution surfaces across repos using bounded, evidence-based checks.
+- **repo-standards-router** — Classify a repository by app type and route it to the correct standards branch, policy profile, and verification gates.
+- **repo-structure-conventions** — Enforce file organization, naming conventions, and app-type-specific project layouts. Use when creating, restructuring, or onboarding a repository.
+- **role-admin-execution** — Execute operational tasks after validated implementation: runtime controls, git/PR/release flow, and governance checks.
+- **role-baton-orchestrator** — Orchestrate single-thread baton handoff across Manager -> Collaborator -> Admin -> Consultant with explicit entry/exit contracts.
+- **role-collaborator-execution** — Implement scoped changes and produce validation evidence matching manager-defined gates.
+- **role-consultant-critique** — Perform independent post-execution critique, risk scoring, and recommendation synthesis without changing implementation scope.
+- **role-manager-execution** — Define scope, constraints, acceptance criteria, and verification gates before implementation begins.
+- **secret-exposure-prevention** — Prevent secret leakage across git history, package artifacts, logs, and docs. Use when editing workflows, packaging configuration, environment files, or release automation.
+- **web-regression-governance** — Apply non-bypass visual/DOM/runtime regression governance for website-static and web-app repositories that use HTML/CSS/JS runtime behavior.
+- **workflow-self-anneal** — Run a bounded self-annealing review of operating instructions and workflow outcomes. Use this after failures, after long sessions, before merge, or when repeated mismatches appear between intended pro

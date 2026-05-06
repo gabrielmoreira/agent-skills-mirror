@@ -25,21 +25,28 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-AZURE_SERVICEBUS_FULLY_QUALIFIED_NAMESPACE=<namespace>.servicebus.windows.net
-# Or connection string (less secure)
-AZURE_SERVICEBUS_CONNECTION_STRING=Endpoint=sb://...
+AZURE_SERVICEBUS_FULLY_QUALIFIED_NAMESPACE=<namespace>.servicebus.windows.net  # Required: Service Bus fully qualified namespace
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
+AZURE_SERVICEBUS_CONNECTION_STRING=Endpoint=sb://...  # Alternative to Entra ID auth
 ```
 
 ## Authentication
 
-### Microsoft Entra ID (Recommended)
+### Microsoft Entra Token Credential
 
 ```csharp
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 
 string fullyQualifiedNamespace = "<namespace>.servicebus.windows.net";
-await using ServiceBusClient client = new(fullyQualifiedNamespace, new DefaultAzureCredential());
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
+await using ServiceBusClient client = new(fullyQualifiedNamespace, credential);
 ```
 
 ### Connection String

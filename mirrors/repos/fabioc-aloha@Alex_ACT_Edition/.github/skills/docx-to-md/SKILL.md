@@ -251,3 +251,9 @@ Get-ChildItem *.docx | ForEach-Object {
 ---
 
 *Skill version: 2.0.0 | Last updated: 2026-04-14 | Category: document-conversion*
+
+## Falsifiability
+
+- This skill is wrong if converted documents lose semantic structure (headings, lists, tables) that Pandoc preserves by default without the documented flags
+- The flag recommendations are stale if a Pandoc major version changes default behaviors for the documented options
+- The workflow is not earning its tokens if the user must manually fix the same structural issues on every conversion

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chf3198/megingjord-harness` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
+Mirror of `chf3198/megingjord-harness` — 26 default patterns, 1 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `chf3198/megingjord-harness` — 26 default patterns, 0 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 75 |
+| Followed pats | 1 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `chf3198/megingjord-harness` — 26 default patterns, 0 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/skills-agents.md`
 
 ## File Index
 
@@ -134,6 +134,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 73 | ✓ | [`skills/web-regression-governance/SKILL.md`](skills/web-regression-governance/SKILL.md) |
 | 74 | ✓ | [`skills/workflow-self-anneal/INSTALL-GLOBAL.md`](skills/workflow-self-anneal/INSTALL-GLOBAL.md) |
 | 75 | ✓ | [`skills/workflow-self-anneal/SKILL.md`](skills/workflow-self-anneal/SKILL.md) |
+| 76 | → | [`docs/skills-agents.md`](docs/skills-agents.md) |
 
 ---
 

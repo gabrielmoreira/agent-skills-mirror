@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elizaOS/eliza` — 26 default patterns, 0 followed patterns, 48 file(
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 48 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,7 +106,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`packages/skills/skills/wacli/SKILL.md`](packages/skills/skills/wacli/SKILL.md) |
 | 46 | ✓ | [`packages/skills/skills/weather/SKILL.md`](packages/skills/skills/weather/SKILL.md) |
 | 47 | ✓ | [`packages/skills/skills/yara-authoring/SKILL.md`](packages/skills/skills/yara-authoring/SKILL.md) |
-| 48 | ✓ | [`plugins/plugin-agent-orchestrator/assets/claude-code-skills/eliza-runtime/SKILL.md`](plugins/plugin-agent-orchestrator/assets/claude-code-skills/eliza-runtime/SKILL.md) |
+| 48 | ✓ | [`packages/training/AGENTS.md`](packages/training/AGENTS.md) |
+| 49 | ✓ | [`packages/training/CLAUDE.md`](packages/training/CLAUDE.md) |
+| 50 | ✓ | [`plugins/plugin-agent-orchestrator/assets/claude-code-skills/eliza-runtime/SKILL.md`](plugins/plugin-agent-orchestrator/assets/claude-code-skills/eliza-runtime/SKILL.md) |
 
 ---
 

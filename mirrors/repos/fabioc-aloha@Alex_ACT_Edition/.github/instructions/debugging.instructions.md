@@ -109,3 +109,9 @@ Full procedural depth in:
 - `root-cause-analysis` → §2
 
 Combined because every non-trivial bug uses both: hypotheses to find the cause, then RCA to prevent recurrence.
+
+## Would Revise If
+
+- Hypothesis-driven debugging is consistently slower than brute-force approaches for the majority of bug classes encountered
+- RCA analysis produces root causes that are too abstract to act on (no actionable prevention emerges)
+- Teams report the structured approach adds overhead without reducing mean-time-to-resolution

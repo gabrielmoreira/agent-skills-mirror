@@ -17,6 +17,12 @@ curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030
 
 The `$SCREENPIPE_LOCAL_API_KEY` env var is already set in your environment. Without it you get 403. The only exception is `/health` (no auth needed).
 
+> ⚠️ **Use `$SCREENPIPE_LOCAL_API_KEY` — not `$SCREENPIPE_API_KEY`.** They are different env vars for different APIs:
+> - `SCREENPIPE_LOCAL_API_KEY` (short `sp-<uuid>`) authenticates to `localhost:3030` (this skill).
+> - `SCREENPIPE_API_KEY` (long JWT) authenticates to `https://api.screenpi.pe` (cloud LLM, not this skill).
+>
+> Sending the JWT to `localhost:3030` will return `unauthorized` and lead you down a dead-end debugging path. If you only see one of these env vars, use that one — but if `SCREENPIPE_LOCAL_API_KEY` is missing, the local server will reject every request you make regardless. Don't substitute the JWT for it.
+
 ## Context Window Protection
 
 API responses can be large. Always write curl output to a file first (`curl ... -o /tmp/sp_result.json`), check size (`wc -c /tmp/sp_result.json`), and if over 5KB read only the first 50-100 lines. Extract what you need with `jq`. NEVER dump full large responses into context.

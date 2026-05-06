@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer Health Review"
+  short_description: "Review account health and renewal risk."
+  default_prompt: "Use this skill to prepare customer success account health reviews, QBR briefs, renewal risk summaries, onboarding and adoption plans, customer value narratives, expansion signals, and success action plans."

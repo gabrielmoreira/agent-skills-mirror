@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns, 311 file(s) materialized.
+Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns, 347 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 311 |
+| Files         | 347 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -352,24 +352,60 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 291 | ✓ | [`.agents/workflows/ultrawork/resources/phase-gates.md`](.agents/workflows/ultrawork/resources/phase-gates.md) |
 | 292 | ✓ | [`.agents/workflows/work.md`](.agents/workflows/work.md) |
 | 293 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 294 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 295 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
-| 296 | ✓ | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
-| 297 | ✓ | [`cli/CLAUDE.md`](cli/CLAUDE.md) |
-| 298 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 299 | ✓ | [`web/docs/core-concepts/skills.md`](web/docs/core-concepts/skills.md) |
-| 300 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 301 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 302 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 303 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 304 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 305 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 306 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 307 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 308 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 309 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 310 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 311 | ✓ | [`web/static/llms.txt`](web/static/llms.txt) |
+| 294 | ✓ | [`benchmarks/runs/ecc/AGENTS.md`](benchmarks/runs/ecc/AGENTS.md) |
+| 295 | ✓ | [`benchmarks/runs/ecc/CLAUDE.md`](benchmarks/runs/ecc/CLAUDE.md) |
+| 296 | ✓ | [`benchmarks/runs/oma/.agents/skills/_shared/runtime/execution-protocols/claude.md`](benchmarks/runs/oma/.agents/skills/_shared/runtime/execution-protocols/claude.md) |
+| 297 | ✓ | [`benchmarks/runs/oma/.agents/skills/_shared/runtime/execution-protocols/gemini.md`](benchmarks/runs/oma/.agents/skills/_shared/runtime/execution-protocols/gemini.md) |
+| 298 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-architecture/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-architecture/SKILL.md) |
+| 299 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-backend/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-backend/SKILL.md) |
+| 300 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-brainstorm/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-brainstorm/SKILL.md) |
+| 301 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-coordination/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-coordination/SKILL.md) |
+| 302 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-db/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-db/SKILL.md) |
+| 303 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-debug/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-debug/SKILL.md) |
+| 304 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-design/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-design/SKILL.md) |
+| 305 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-dev-workflow/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-dev-workflow/SKILL.md) |
+| 306 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-frontend/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-frontend/SKILL.md) |
+| 307 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-hwp/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-hwp/SKILL.md) |
+| 308 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-image/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-image/SKILL.md) |
+| 309 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-mobile/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-mobile/SKILL.md) |
+| 310 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-observability/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-observability/SKILL.md) |
+| 311 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-orchestrator/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-orchestrator/SKILL.md) |
+| 312 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-pdf/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-pdf/SKILL.md) |
+| 313 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-pm/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-pm/SKILL.md) |
+| 314 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-qa/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-qa/SKILL.md) |
+| 315 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-recap/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-recap/SKILL.md) |
+| 316 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-scholar/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-scholar/SKILL.md) |
+| 317 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-scm/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-scm/SKILL.md) |
+| 318 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-search/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-search/SKILL.md) |
+| 319 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-skill-creator/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-skill-creator/SKILL.md) |
+| 320 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-tf-infra/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-tf-infra/SKILL.md) |
+| 321 | ✓ | [`benchmarks/runs/oma/.agents/skills/oma-translator/SKILL.md`](benchmarks/runs/oma/.agents/skills/oma-translator/SKILL.md) |
+| 322 | ✓ | [`benchmarks/runs/oma/AGENTS.md`](benchmarks/runs/oma/AGENTS.md) |
+| 323 | ✓ | [`benchmarks/runs/oma/CLAUDE.md`](benchmarks/runs/oma/CLAUDE.md) |
+| 324 | ✓ | [`benchmarks/runs/omc/AGENTS.md`](benchmarks/runs/omc/AGENTS.md) |
+| 325 | ✓ | [`benchmarks/runs/omc/CLAUDE.md`](benchmarks/runs/omc/CLAUDE.md) |
+| 326 | ✓ | [`benchmarks/runs/superpowers/AGENTS.md`](benchmarks/runs/superpowers/AGENTS.md) |
+| 327 | ✓ | [`benchmarks/runs/superpowers/CLAUDE.md`](benchmarks/runs/superpowers/CLAUDE.md) |
+| 328 | ✓ | [`benchmarks/runs/vanilla/AGENTS.md`](benchmarks/runs/vanilla/AGENTS.md) |
+| 329 | ✓ | [`benchmarks/runs/vanilla/CLAUDE.md`](benchmarks/runs/vanilla/CLAUDE.md) |
+| 330 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 331 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
+| 332 | ✓ | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
+| 333 | ✓ | [`cli/CLAUDE.md`](cli/CLAUDE.md) |
+| 334 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 335 | ✓ | [`web/docs/core-concepts/skills.md`](web/docs/core-concepts/skills.md) |
+| 336 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 337 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 338 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 339 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 340 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 341 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 342 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 343 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 344 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 345 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 346 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 347 | ✓ | [`web/static/llms.txt`](web/static/llms.txt) |
 
 ---
 

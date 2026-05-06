@@ -2,6 +2,39 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [0.8.8] - 2026-05-05 — Reliability + correctness: mod modifier, compact set_value, smart_click foreground OCR, invoke-element timeout
+
+A focused reliability release closing several real bugs surfaced by a production session (issue #71) and a thorough ultrareview of the v0.8.5 work. Two of the bugs were silent failures — the worst kind for an agent — and one was a hard hang in the standalone PowerShell scripts. Plus a routine round of major-version dependency bumps (express 5, commander 14, dotenv 17, sharp 0.34) and a lint cleanup pass.
+
+### Fixed
+
+- **`mod` modifier now resolves correctly on every platform.** The legacy `NativeDesktop` (which `ctx.desktop` binds to in the granular tool registry) had no `mod` translation — only the v2 `PlatformAdapter` did. Calling `computer({"action":"key","combo":"mod+s"})` either threw `Unknown key: "mod"` (Win/Linux) or silently dropped the modifier and typed a literal `s` (macOS). Three coordinated fixes:
+  - `src/keys.ts`: add `mod` to `KEY_ALIASES` resolved at module load to `Super` on darwin and `Control` elsewhere.
+  - `src/native-desktop.ts:707-712`: extend the `macKeyPress` modifier loop to treat `mod` as `command down`. The loop did direct string comparison, so the alias alone wasn't enough.
+  - `src/pipeline/playbooks/keys-blocklist.ts:14-22`: extend `normalizeCombo` so `mod+q` matches `cmd+q` on darwin (otherwise the safety gate would let `mod+q` quit-app through on macOS).
+- **Compact `accessibility({"action":"set_value", ...})` was broken.** `src/tools/compact.ts:93` delegated to `set_field_value`, but no granular tool by that name was registered (only the agent-internal palettes had it). Calls returned `{isError: true, text: "delegate not registered"}`. Registered the missing tool in `getA11yDepthTools()` mirroring `a11y_expand`/`a11y_toggle`. Tool count: 74 → 75. Schema snapshot regenerated.
+- **`smart_click` OCR matched text in background windows.** Full-screen OCR scoring iterated all elements and broke on the first exact match, so text in a non-focused window (e.g. Outlook visible behind a "Pick an account" dialog showing the same email) could win and cause a silent wrong-click. Refactored ranking into a `pickBest` helper that runs two passes: foreground-window first (using `activeWin.bounds`), full-screen only if foreground produced no match — with a `[WARNING: matched outside focused window]` annotation in the response so the agent has a signal to verify. From issue #71 review.
+- **`invoke-element.ps1` hung on React/Electron buttons that advertise InvokePattern but block on Invoke.** The legacy try/catch fallback chain (Invoke → Toggle → bounds) only fired when a pattern *threw*, not when one blocked indefinitely. Wrapped the pattern call in `System.Threading.Tasks.Task::Run` with a 2s `Wait(timeout)`. On timeout the script emits the same `success:false + clickPoint` JSON the existing catch produces. Direct callers of the script benefit; HTTP/MCP callers were already protected by `smart_click`'s 10s outer timeout. From issue #71.
+- **OpenClaw install metadata used `npm install -g clawdcursor`** but the package isn't published to npm (registry returns 404). OpenClaw following `metadata.openclaw.install` step 1 verbatim would abort before reaching `clawdcursor consent --accept`. Replaced with the documented `curl -fsSL https://clawdcursor.com/install.sh | bash` path that matches every other install surface.
+
+### Changed
+
+- **Major dependency bumps**, all CI-green across the cross-platform matrix:
+  - `express` 4.21.2 → 5.2.1 (major) + `@types/express` 4 → 5
+  - `commander` 12.1.0 → 14.0.3 (major)
+  - `dotenv` 16.x → 17.4.2 (major)
+  - `sharp` 0.33.5 → 0.34.5
+  - `eslint` group bumps within v10
+- **Lint hygiene** — cleared all 10 `@typescript-eslint/no-unused-vars` warnings the CI was surfacing as annotations (74 → 64 warnings). Trivial cleanup, no functional impact: dropped unused test imports (`path`, `afterEach`, `vi`, `beforeEach`, `VerifyResult`, `PipelineConfig`), removed the dead `makePipelineConfig` helper in verifiers.test.ts, renamed `step` to `_step` in `a11y-reasoner.ts:1079` (eslint config already allowed the `^_/u` prefix), and dropped unused error bindings on two `catch (e)` / `catch (err)` blocks.
+
+### Documentation
+
+- SKILL.md "What's new" expanded with the 0.8.8 section.
+- README "Latest Release" updated.
+- `docs/index.html` (homepage) bumped to v0.8.8 across title, meta tags, hero badge, agent-readable summary, and footer.
+
+---
+
 ## [0.8.7] - 2026-05-02 — Security hardening: direct-tool safety gate, version-string single-source, tooling bumps
 
 A security-focused patch release. The headline is a real behaviour change: every direct tool invocation — both the REST `/execute/:name` endpoint and the MCP `callTool` handler — now passes through a shared safety gate, so direct callers can no longer bypass the checks the agent loop already enforced. Plus: the version string is now single-sourced (no more `0.7.2` showing up in MCP metadata three releases late), and the dev tooling is current (TypeScript 6.0, ESLint 10).

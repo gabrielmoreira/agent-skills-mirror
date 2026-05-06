@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `iAmMccc/ai-essentials` — 26 default patterns, 1 followed patterns, 37 file(s) materialized.
+Mirror of `iAmMccc/ai-essentials` — 26 default patterns, 1 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `iAmMccc/ai-essentials` — 26 default patterns, 1 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 37 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,12 +90,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/smart-notes/SKILL.md`](skills/smart-notes/SKILL.md) |
 | 30 | ✓ | [`skills/spm-local/install.conf`](skills/spm-local/install.conf) |
 | 31 | ✓ | [`skills/spm-local/packages.json.example`](skills/spm-local/packages.json.example) |
-| 32 | ✓ | [`skills/spm-local/scripts/fetch-packages.sh`](skills/spm-local/scripts/fetch-packages.sh) |
-| 33 | ✓ | [`skills/spm-local/SKILL.md`](skills/spm-local/SKILL.md) |
-| 34 | ✓ | [`skills/ui-diff/install.conf`](skills/ui-diff/install.conf) |
-| 35 | ✓ | [`skills/ui-diff/README.md`](skills/ui-diff/README.md) |
-| 36 | ✓ | [`skills/ui-diff/SKILL.md`](skills/ui-diff/SKILL.md) |
-| 37 | → | [`README.md`](README.md) |
+| 32 | ✓ | [`skills/spm-local/README.md`](skills/spm-local/README.md) |
+| 33 | ✓ | [`skills/spm-local/scripts/fetch-packages.sh`](skills/spm-local/scripts/fetch-packages.sh) |
+| 34 | ✓ | [`skills/spm-local/SKILL.md`](skills/spm-local/SKILL.md) |
+| 35 | ✓ | [`skills/ui-diff/install.conf`](skills/ui-diff/install.conf) |
+| 36 | ✓ | [`skills/ui-diff/README.md`](skills/ui-diff/README.md) |
+| 37 | ✓ | [`skills/ui-diff/SKILL.md`](skills/ui-diff/SKILL.md) |
+| 38 | → | [`README.md`](README.md) |
 
 ---
 

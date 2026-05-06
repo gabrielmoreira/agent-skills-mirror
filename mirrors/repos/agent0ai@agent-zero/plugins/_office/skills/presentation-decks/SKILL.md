@@ -1,10 +1,14 @@
 ---
 name: presentation-decks
-description: Use when creating, opening, or editing PowerPoint-compatible PPTX presentations, slide decks, talks, briefing decks, or LibreOffice Impress files.
-version: "1.0.0"
+description: Use when creating, opening, or editing LibreOffice Impress ODP presentations, or PPTX decks only when PowerPoint compatibility is explicitly required.
+version: "1.1.0"
 author: "Agent Zero Core Team"
-tags: ["presentation", "pptx", "powerpoint", "slides", "deck", "impress"]
+tags: ["presentation", "odp", "opendocument", "pptx", "powerpoint", "slides", "deck", "impress"]
 triggers:
+  - "Impress"
+  - "ODP"
+  - "odp"
+  - "OpenDocument Presentation"
   - "PowerPoint"
   - "PPTX"
   - "pptx"
@@ -17,11 +21,11 @@ allowed_tools:
   - document_artifact
 ---
 
-# Presentation Decks
+# Impress Presentations
 
-Use PPTX when the user asks for PowerPoint, a presentation, slides, a deck, or an Impress-compatible artifact.
+Use ODP when the user asks for a presentation, slides, a deck, or an Impress artifact. Use PPTX only when the user asks for PowerPoint/PPTX compatibility or provides an existing `.pptx`.
 
-The canvas is user-owned UI. Creating or editing a PPTX must save the deck and return action buttons, but must not open the canvas automatically. Use Desktop/Impress only for explicit GUI requests, visual layout polish, or final visual confirmation.
+The canvas is user-owned UI. Creating or editing an ODP or PPTX must save the deck and return action buttons, but must not open the canvas automatically. Use Desktop/Impress only for explicit GUI requests, visual layout polish, or final visual confirmation.
 
 ## Workflow
 
@@ -33,7 +37,7 @@ Create:
   "tool_args": {
     "kind": "presentation",
     "title": "Roadmap",
-    "format": "pptx",
+    "format": "odp",
     "content": "Title Slide\n\n---\n\nNext Steps"
   }
 }
@@ -59,5 +63,5 @@ Practical rules:
 
 - Use `slides` arrays for structured decks and `---` separators for simple text-to-slide creation.
 - Keep slide text concise and scannable.
-- Do not create ODP in this workflow.
+- Treat PPTX as a compatibility export/request, not the default presentation format.
 - Do not open Impress/canvas automatically. The user can choose Open in canvas when they want to inspect or polish the deck visually.

@@ -2,7 +2,7 @@
 name: robots-txt
 description: When the user wants to configure, audit, or optimize robots.txt. Also use when the user mentions "robots.txt," "crawler rules," "block crawlers," "AI crawlers," "GPTBot," "allow/disallow," "disallow path," "crawl directives," "user-agent," "block Googlebot," "fix robots.txt," "robots.txt blocking," or "search engine crawling." For indexing, use indexing.
 metadata:
-  version: 1.1.1
+  version: 1.2.0
 ---
 
 # SEO Technical: robots.txt
@@ -84,22 +84,25 @@ Identify:
 
 ### AI Crawler Strategy
 
-robots.txt is effective for all measured AI crawlers ([Vercel/MERJ study](https://vercel.com/blog/the-rise-of-the-ai-crawler), 2024). Set rules per user-agent; check each vendor's docs for current tokens.
+robots.txt is effective for all measured AI crawlers. Set rules per user-agent; check each vendor's docs for current tokens.
 
-| User-agent | Purpose | Typical |
-|------------|---------|---------|
-| **OAI-SearchBot** | ChatGPT search | Allow |
-| **GPTBot** | OpenAI training | Disallow |
-| **Claude-SearchBot** | Claude search | Allow |
-| **ClaudeBot** | Anthropic training | Disallow |
-| **PerplexityBot** | Perplexity search | Allow |
-| **Google-Extended** | Gemini training | Disallow |
-| **CCBot** | Common Crawl (LLM training) | Disallow |
-| **Bytespider** | ByteDance | Disallow |
-| **Meta-ExternalAgent** | Meta | Disallow |
-| **AppleBot** | Apple (Siri, Spotlight); renders JS | Allow for indexing |
+| User-agent | Purpose | Typical | Notes |
+|------------|---------|---------|-------|
+| **OAI-SearchBot** | ChatGPT search | Allow | Respects robots.txt |
+| **GPTBot** | OpenAI training | Disallow | Respects robots.txt; shares crawl data with OAI-SearchBot if both allowed |
+| **ChatGPT-User** | User-initiated browsing | N/A | **No longer respects robots.txt** (Dec 2025); use server-side controls instead |
+| **Claude-SearchBot** | Claude search | Allow | Respects robots.txt |
+| **ClaudeBot** | Anthropic training | Disallow | Respects robots.txt |
+| **PerplexityBot** | Perplexity search | Allow | Respects robots.txt |
+| **Google-Extended** | Gemini training | Disallow | Respects robots.txt |
+| **CCBot** | Common Crawl (LLM training) | Disallow | Respects robots.txt |
+| **Bytespider** | ByteDance | Disallow | Respects robots.txt |
+| **Meta-ExternalAgent** | Meta | Disallow | Respects robots.txt |
+| **AppleBot** | Apple (Siri, Spotlight); renders JS | Allow for indexing | Respects robots.txt |
 
-**Allow vs Disallow**: Allow search/indexing bots (OAI-SearchBot, Claude-SearchBot, PerplexityBot); Disallow training-only bots (GPTBot, ClaudeBot, CCBot) if you don't want content used for model training. See **site-crawlability** for AI crawler optimization (SSR, URL management).
+**Allow vs Disallow**: Allow search/indexing bots (OAI-SearchBot, Claude-SearchBot, PerplexityBot); Disallow training-only bots (GPTBot, ClaudeBot, CCBot) if you don't want content used for model training.
+
+**Important — ChatGPT-User exemption**: As of December 2025, **ChatGPT-User** no longer respects robots.txt directives. OpenAI considers it a proxy for human-initiated browsing. If you need to block it, use server-side controls (WAF rules, IP rate-limiting), not robots.txt. See **site-crawlability** for AI crawler optimization (SSR, URL management).
 
 ### Clean-param (Yandex)
 

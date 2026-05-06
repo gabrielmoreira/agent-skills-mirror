@@ -2,7 +2,7 @@
 name: google-search-console
 description: When the user wants to analyze Google Search Console data, use the GSC API, or interpret search performance. Also use when the user mentions "GSC," "Search Console," "indexing report," "Core Web Vitals," "Enhancements," "Insights report," "search performance," "search queries," "search performance report," "URL inspection," "impressions," "CTR," "average position," "index coverage," "GSC data analysis," "Search Console API," or "searchanalytics.query." When the user wants to rewrite title tags (not only report on them), use title-tag. For meta description rewrites, use meta-description.
 metadata:
-  version: 1.5.0
+  version: 1.5.1
 ---
 
 # Analytics: Google Search Console
@@ -86,7 +86,7 @@ Pages with review stars, FAQ schema, or other rich snippets see 10-20% more clic
 
 **Location**: Performance ? Insights (or Overview)
 
-Simplified overview; replaces standalone Search Console Insights. Data from GSC only (no GA since Dec 2024).
+Simplified overview; replaces standalone Search Console Insights. Data from GSC only (GA data removed Dec 2024).
 
 | Card | Use |
 |------|-----|

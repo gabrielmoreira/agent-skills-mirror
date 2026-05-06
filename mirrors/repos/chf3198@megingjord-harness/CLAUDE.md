@@ -22,6 +22,7 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 @instructions/visual-qa-governance.instructions.md
 @instructions/playwright-mcp-low-resource.instructions.md
 @instructions/wiki-knowledge.instructions.md
+@instructions/hamr-routing.instructions.md
 
 ## Runtime Context
 

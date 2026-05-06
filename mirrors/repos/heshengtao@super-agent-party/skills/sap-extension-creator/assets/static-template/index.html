@@ -307,47 +307,72 @@ function getExtId() {
   return MY_EXT_ID;
 }
 
+/* ================================================================
+   MCP Tool Lifecycle
+   
+   STARTUP:  ws.onopen         → registerMcpTools()
+   RUNTIME:  ws.onmessage      → handleMcpCall() when AI calls a tool
+   SHUTDOWN: window.beforeunload → unregisterMcpTools()
+   
+   If your extension does NOT need to expose tools to the AI,
+   delete: registerMcpTools(), unregisterMcpTools(), handleMcpCall().
+   ================================================================ */
+
 /* ---- WebSocket ---- */
+let _closing = false;
+
 function initWS() {
   const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
   ws = new WebSocket(`${proto}//${location.host}/ws`);
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'get_messages' }));
-    const extId = getExtId();
-
-    // === Register MCP tools (optional) ===
-    // Remove or customize these tools for your extension
-    /*
-    ws.send(JSON.stringify({
-      type: 'register_node_extension_mcp',
-      data: {
-        ext_id: extId,
-        tools: [
-          {
-            name: `${extId}_example_tool`,
-            description: lang === 'zh' ? '一个示例工具' : 'An example tool',
-            parameters: {
-              type: 'object',
-              properties: {
-                message: { type: 'string', description: lang === 'zh' ? '消息内容' : 'Message content' }
-              },
-              required: ['message']
-            }
-          }
-        ]
-      }
-    }));
-    */
+    registerMcpTools();   // ← MCP: register tools on startup
   };
-  ws.onclose = () => setTimeout(initWS, 5000);
+  ws.onclose = () => {
+    // If the page is being closed (_closing=true), do NOT reconnect
+    if (!_closing) setTimeout(initWS, 5000);
+  };
   ws.onmessage = e => {
     try {
       const d = JSON.parse(e.data);
       if (d.type === 'messages_update' || d.type === 'broadcast_messages') render(d.data.messages);
-      if (d.type === 'call_mcp_tool') handleMcpCall(d.data);
-      if (d.type === 'mcp_registered') console.log('MCP registered');
+      if (d.type === 'call_mcp_tool') handleMcpCall(d.data);   // ← MCP: AI calls our tool
+      if (d.type === 'mcp_registered') console.log('[MCP] Tools registered successfully');
     } catch {}
   };
+}
+
+// --- Register MCP tools (called once on WebSocket open) ---
+function registerMcpTools() {
+  getExtId();
+  ws.send(JSON.stringify({
+    type: 'register_node_extension_mcp',
+    data: {
+      ext_id: MY_EXT_ID,
+      tools: [
+        // TODO: customize or remove this example tool
+        {
+          name: `${MY_EXT_ID}_example_tool`,
+          description: lang === 'zh' ? '示例工具：处理消息' : 'Example tool: process a message',
+          parameters: {
+            type: 'object',
+            properties: {
+              message: { type: 'string', description: lang === 'zh' ? '消息内容' : 'Message content' }
+            },
+            required: ['message']
+          }
+        }
+        // Add more tools here...
+      ]
+    }
+  }));
+}
+
+// --- Unregister MCP tools (called on page close) ---
+function unregisterMcpTools() {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'unregister_node_extension_mcp', data: { ext_id: MY_EXT_ID } }));
+  }
 }
 
 /* ---- Message Rendering ---- */
@@ -376,7 +401,8 @@ function render(list) {
   // If using Prism: Prism.highlightAllUnder(msgs);
 }
 
-/* ---- MCP Tool Handler (customize this) ---- */
+/* ---- MCP Tool Handler ---- */
+// The AI agent called a tool we registered.  Execute it & return the result.
 async function handleMcpCall(data) {
   const { ext_id, tool_name, tool_params, call_id } = data;
   if (ext_id !== MY_EXT_ID && !tool_name.includes(MY_EXT_ID)) return;
@@ -388,11 +414,15 @@ async function handleMcpCall(data) {
       try { params = JSON.parse(params); } catch(e) {}
     }
 
-    // TODO: handle your custom tools here
-    // if (tool_name.includes('_example_tool')) { ... }
+    // TODO: route to the correct tool handler based on tool_name
+    // if (tool_name === `${MY_EXT_ID}_example_tool`) {
+    //   // your logic here...
+    // }
+
     resultStr = `Tool ${tool_name} executed`;
   } catch(e) { resultStr = `Error: ${e.message}`; }
 
+  // Send the result back over WebSocket
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({
       type: 'mcp_tool_result',
@@ -412,7 +442,11 @@ function send() {
 function clear() {
   ws.send(JSON.stringify({ type: 'trigger_clear_message' }));
 }
-function closeWindow() { window.close(); }
+function closeWindow() {
+  _closing = true;
+  unregisterMcpTools();
+  window.close();
+}
 
 /* ---- Compact Mode ---- */
 function checkCompactMode() {
@@ -440,9 +474,8 @@ clearBtn.addEventListener('click', clear);
 function autoHeight() { input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px'; }
 
 window.addEventListener('beforeunload', () => {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: 'unregister_node_extension_mcp', data: { ext_id: MY_EXT_ID } }));
-  }
+  _closing = true;
+  unregisterMcpTools();   // ← MCP: unregister tools on shutdown
 });
 
 /* ---- Init ---- */

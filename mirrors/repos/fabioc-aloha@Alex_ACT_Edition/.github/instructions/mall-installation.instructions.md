@@ -141,8 +141,22 @@ Installing outside `local/` means `upgrade-self.cjs --apply` will **delete it**.
 
 ## MCP Server Configs
 
-When the Mall ships MCP configs, merge into the heir's `.mcp.json` at repo root. MCP configs are not edition-owned, so Edition upgrades never touch them.
+When the Mall ships MCP configs, merge into the heir's `.mcp.json` at workspace root. MCP configs are not edition-owned, so Edition upgrades never touch them.
+
+### Placement
+
+Prefer workspace-root `.mcp.json` over `.vscode/mcp.json`. Both work in VS Code 1.118+, but workspace-root is the cross-editor standard (works in Claude Code, Cursor, and other MCP-aware editors without adaptation).
+
+### Deduplication
+
+When the same server name appears at both user-level and workspace-level, workspace-level wins. This means a Mall-installed MCP config in the project's `.mcp.json` overrides any user-global config with the same server name, which is the intended behavior for project-specific tool servers.
 
 ## Scaffolds
 
 Scaffolds bootstrap new repos. They are not installed into existing projects. Use them via `cp -r` to start a new project.
+
+## Falsifiability
+
+- The `local/` path convention is wrong if Edition upgrades consistently clobber heir-installed plugins despite following this guide
+- The installation procedure is stale if Mall folder structure changes (e.g., plugin.json schema evolves) and this guide does not reflect the new paths
+- The knowledge-package vs plugin distinction adds no value if heirs report confusion about which to use, or install the wrong type >30% of the time

@@ -85,6 +85,33 @@ A soft-404 occurs when a page returns HTTP 200 but the content indicates the pag
 
 **noindex,follow vs noindex,nofollow**: Use `noindex,follow` for most cases—excludes from SERP but allows link equity. Use `noindex,nofollow` only for login (security), staging, or temporary test pages.
 
+## Page Removal Decision Framework
+
+When intentionally removing a page from the web, choose the method based on whether a relevant alternative exists and whether the page should remain accessible:
+
+| Scenario | Method | Rationale |
+|----------|--------|-----------|
+| Has a closely related replacement page | **301 redirect** | Preserves accumulated link signals and user flow |
+| Content merged into a new page | **301 redirect** | Direct old URL to the new canonical location |
+| Permanently deleted, no alternative | **410 Gone** | Explicitly signals permanent removal to search engines |
+| Deleted, uncertain if permanent | **404 Not Found** | Safe default; can reinstate later if needed |
+| Still accessible but should not be indexed | **noindex** | Page remains available to users; excluded from SERP |
+
+**Before removing**: Check the URL's search traffic, backlinks, internal links, and conversion value. If the page has value, consider updating or merging rather than removing.
+
+**Common mistakes**:
+- 404-ing pages that have relevant alternatives (wastes accumulated signals)
+- Redirecting all deleted pages to the homepage (breaks user intent)
+- Creating redirect chains (A → B → C) instead of direct redirects
+- Removing pages without cleaning up internal links pointing to them
+- Using `robots.txt` to block noindex pages (crawler must access the page to read the noindex directive)
+
+**Post-removal cleanup**:
+1. Remove deleted URLs from XML sitemap; update and resubmit
+2. Update internal links to point directly to the final URL (avoid relying on redirects)
+3. For 301 redirects, ensure the target URL is in the sitemap
+4. In GSC, use URL Inspection to verify important pages; use Removals tool for temporary quick-hide (not permanent — use proper HTTP status or noindex)
+
 ## Google Indexing API
 
 | Type | Typical use |

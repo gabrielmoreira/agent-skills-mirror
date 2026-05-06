@@ -681,3 +681,9 @@ Sincerely,
 - [knowledge-synthesis](../knowledge-synthesis/SKILL.md) — Literature synthesis
 - [dissertation-defense](../dissertation-defense/SKILL.md) — Dissertation-to-paper pipeline
 - [grant-writing](../grant-writing/SKILL.md) — Funding proposals
+
+## Falsifiability
+
+- This skill is not earning its tokens if drafts produced following its guidance fail peer review on structural grounds (section ordering, citation format, abstract structure) the skill explicitly addresses
+- Stale if citation style guidance conflicts with current APA/IEEE/Chicago style guides
+- Wrong if the academic conventions it documents are field-specific but presented as universal

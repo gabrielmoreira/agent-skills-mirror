@@ -2,7 +2,7 @@
 name: xml-sitemap
 description: When the user wants to create, audit, or optimize sitemap.xml. Also use when the user mentions "sitemap," "sitemap.xml," "sitemap index," "lastmod," "changefreq," "priority," "URL discovery," "URL discovery for search engines," "single source of truth," "URL config," "unify sitemap IndexNow," or "reduce duplicate maintenance." For IndexNow, use indexnow.
 metadata:
-  version: 1.0.1
+  version: 1.0.2
 ---
 
 # SEO Technical: Sitemap
@@ -51,7 +51,7 @@ Identify:
 
 ### lastmod (Critical)
 
-- **Must be accurate**: Reflect actual page modification time, not sitemap generation time. Google requires verifiability; Bing reports ~18% of sitemaps ignored due to lastmod errors.
+- **Must be accurate**: Reflect actual page modification time, not sitemap generation time. Google requires verifiability; Bing reports ~18% of sitemaps have incorrect lastmod values.
 - **Format**: W3C Datetime (`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SS+TZD`), e.g. `2025-01-15`, `2025-01-15T14:30:00+08:00`.
 - **Avoid**: Using `new Date()` for lastmod—causes all URLs to share the same timestamp; search engines may ignore.
 - **Apply when**: Content updates, structured data changes, or important link changes.

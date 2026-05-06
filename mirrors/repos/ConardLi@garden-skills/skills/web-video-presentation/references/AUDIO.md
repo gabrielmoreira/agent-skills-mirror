@@ -190,7 +190,7 @@ Auto 模式首次需要按一次 `Space` 启动（绕过浏览器自动播放限
 | `mmx: command not found` | `npm install -g mmx-cli`；npm 全局 bin 不在 PATH 时 `npm config get prefix` 看一下 |
 | `401 / unauthorized` | `mmx auth login --api-key sk-xxxxx` 重新登录 |
 | 中间断了几条没合成 | `npm run synthesize-audio` 重跑 —— 已存在文件会跳过 |
-| 中文音色不自然 | mmx 默认音色未必最佳；查 `mmx speech --help` 看 `--voice-id` 可选项，然后传 `--voice=<id>` |
+| 中文音色不自然 | mmx 默认音色未必最佳；查 `mmx speech --help` 看 `--voice` 可选项，然后传 `--voice=<id>` |
 | 整段合成被截断 | 单段过长（mmx 默认上限约 5000 字符）。在 narrations.ts 里把这条拆成两条（也意味着该 step 应该拆成两个 step） |
 | 浏览器没播音频 | Auto / Audio 模式下首次需要用户手势——确认你按了 SPACE 启动 Auto，或者点过页面 |
 | 音频 404 但 Auto 模式还能跑 | 找不到 mp3 时 useAudioPlayer 退化到字数估时（4 字/秒），保证预览不中断 |

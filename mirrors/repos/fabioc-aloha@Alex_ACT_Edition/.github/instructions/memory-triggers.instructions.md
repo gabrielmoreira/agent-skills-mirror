@@ -102,3 +102,9 @@ After extended work (estimate by conversation depth, not literal time):
 - **Handoff**: Triggers session continuity
 
 This instruction makes memory formation **proactive, not reactive**.
+
+## Would Revise If
+
+- Proactive memory formation creates noise: >50% of persisted memories are unused in subsequent sessions
+- Storage bloat: memory tiers grow past useful size without producing retrieval hits
+- The 3× pattern threshold is too low (triggers on coincidence) or too high (misses real patterns)

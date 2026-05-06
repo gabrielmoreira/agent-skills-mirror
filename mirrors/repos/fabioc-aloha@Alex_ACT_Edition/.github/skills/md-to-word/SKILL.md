@@ -493,3 +493,9 @@ node .github/muscles/md-to-word.cjs spec.md --watch
 | **md-to-html** | HTML output with same preprocessing |
 | **md-scaffold** | Templates for clean Markdown structure |
 | **book-publishing** | Pandoc PDF for print publishing |
+
+## Falsifiability
+
+- This skill is wrong if .docx files produced per its guidance fail to open or lose formatting on round-trip (Word → save → reopen)
+- The reference-doc approach is stale if Pandoc changes how --reference-doc applies styles in a major version
+- Not earning tokens if the user must manually fix the same structural or styling issues on every conversion

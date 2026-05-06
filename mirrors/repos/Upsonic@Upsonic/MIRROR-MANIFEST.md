@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Upsonic/Upsonic` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `Upsonic/Upsonic` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Upsonic/Upsonic` — 26 default patterns, 0 followed patterns, 11 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,16 +60,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/analyze_current/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/analyze_current/SKILL.md) |
-| 3 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/benchmark/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/benchmark/SKILL.md) |
-| 4 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/evaluate/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/evaluate/SKILL.md) |
-| 5 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/experiment_management/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/experiment_management/SKILL.md) |
-| 6 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/implement/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/implement/SKILL.md) |
-| 7 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/progress/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/progress/SKILL.md) |
-| 8 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/research/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/research/SKILL.md) |
-| 9 | ✓ | [`src/upsonic/skills/builtins/code-review/SKILL.md`](src/upsonic/skills/builtins/code-review/SKILL.md) |
-| 10 | ✓ | [`src/upsonic/skills/builtins/data-analysis/SKILL.md`](src/upsonic/skills/builtins/data-analysis/SKILL.md) |
-| 11 | ✓ | [`src/upsonic/skills/builtins/summarization/SKILL.md`](src/upsonic/skills/builtins/summarization/SKILL.md) |
+| 2 | ✓ | [`documents/ai/explanation/skills/skills.md`](documents/ai/explanation/skills/skills.md) |
+| 3 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/analyze_current/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/analyze_current/SKILL.md) |
+| 4 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/benchmark/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/benchmark/SKILL.md) |
+| 5 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/evaluate/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/evaluate/SKILL.md) |
+| 6 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/experiment_management/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/experiment_management/SKILL.md) |
+| 7 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/implement/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/implement/SKILL.md) |
+| 8 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/progress/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/progress/SKILL.md) |
+| 9 | ✓ | [`prebuilt_autonomous_agents/applied_scientist/skills/research/SKILL.md`](prebuilt_autonomous_agents/applied_scientist/skills/research/SKILL.md) |
+| 10 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/analyze_current/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/analyze_current/SKILL.md) |
+| 11 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/benchmark/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/benchmark/SKILL.md) |
+| 12 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/evaluate/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/evaluate/SKILL.md) |
+| 13 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/experiment_management/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/experiment_management/SKILL.md) |
+| 14 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/implement/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/implement/SKILL.md) |
+| 15 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/progress/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/progress/SKILL.md) |
+| 16 | ✓ | [`src/upsonic/prebuilt/applied_scientist/template/skills/research/SKILL.md`](src/upsonic/prebuilt/applied_scientist/template/skills/research/SKILL.md) |
+| 17 | ✓ | [`src/upsonic/skills/builtins/code-review/SKILL.md`](src/upsonic/skills/builtins/code-review/SKILL.md) |
+| 18 | ✓ | [`src/upsonic/skills/builtins/data-analysis/SKILL.md`](src/upsonic/skills/builtins/data-analysis/SKILL.md) |
+| 19 | ✓ | [`src/upsonic/skills/builtins/summarization/SKILL.md`](src/upsonic/skills/builtins/summarization/SKILL.md) |
 
 ---
 

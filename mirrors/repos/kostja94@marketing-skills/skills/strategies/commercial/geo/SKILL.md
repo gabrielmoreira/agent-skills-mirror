@@ -2,7 +2,7 @@
 name: generative-engine-optimization
 description: When the user wants to optimize for AI search visibility (ChatGPT, Claude, Perplexity, AI Overviews). Also use when the user mentions "GEO," "AEO," "generative engine optimization," "AI search visibility," "LLM optimization," "GitHub GEO," "Grokipedia," "optimize for ChatGPT," "AI Overviews," "Bing Copilot," "Yandex AI," "Perplexity optimization," "GEO strategy," or "AI search optimization." For third-party publishing strategy (which platforms to use), use parasite-seo. For GitHub repos, README, and Awesome lists, use github. For Medium.com only, use medium-posts. For Grokipedia edits, use grokipedia-recommendations. For traditional Google SERP strategy, use seo-strategy.
 metadata:
-  version: 1.3.0
+  version: 1.4.0
 ---
 
 # Strategies: GEO (Generative Engine Optimization)
@@ -44,15 +44,46 @@ All refer to the same goal: visibility in AI assistant responses.
 
 **Citation behavior**: AI Overview citations 20–35% higher CTR than equivalent organic. Copilot: shortest responses, fewest links (~3.13/response). Perplexity: prominent URL citations, high trackability. [Geneo](https://geneo.app/blog/chatgpt-vs-perplexity-vs-google-ai-overview-geo-comparison/), [GEO AIO](https://geoaiomarketing.com/how-bing-copilot-selects-sources-compared-to-perplexity/)
 
-## How GEO Works
+**Platform traffic context**: Among standalone AI tools, ChatGPT captures ~60%+ of independent Gen AI traffic, Gemini ~20%+, while Claude, Perplexity, and Grok each account for ~2-4%+. These tools reach users directly. SERP features (AI Overviews, Copilot) reach users through existing search flows rather than as independent destinations. Prioritize optimization effort proportionally.
 
-- **RAG (Retrieval-Augmented Generation)**: AI tools search first, then generate answers. Optimize for search result performance to influence AI responses.
-- **Search APIs**: Bing, Brave, etc. feed AI tools. SEO fundamentals still apply.
-- **Core model training**: Long, costly; not practical for most strategies. Focus on RAG.
+## How GEO Works (RAG & Search Supply)
 
-## Technical Crawlability (AI Crawlers)
+GEO operates through **RAG (Retrieval-Augmented Generation)**—AI tools retrieve content first, then generate answers. The retrieval supply type varies by platform and determines which content surfaces for citation.
 
-AI crawlers (GPTBot, ClaudeBot, PerplexityBot) do **not** execute JavaScript—critical content must be in initial HTML. See **rendering-strategies** for SSR, SSG, CSR; **site-crawlability** for AI crawler optimization; **robots-txt** for allow/block. [Vercel/MERJ study](https://vercel.com/blog/the-rise-of-the-ai-crawler) (2024)
+### Retrieval Supply Types
+
+| Type | Description | Platforms |
+|------|------------|-----------|
+| **Self-built index** | Platform maintains its own crawl and search index | Perplexity (200B+ URL index, PerplexityBot); ChatGPT (OAI-SearchBot index) |
+| **Bound search engine** | Platform uses a fixed first-party search API | Copilot (Bing); Google AI Overviews / AI Mode (Google Search + query fan-out) |
+| **Third-party API** | Platform contracts a third-party search API | Claude for Government (Brave Search API); smaller AI tools using Tavily, Exa, You.com |
+| **Hybrid** | Combination of self-built + external API | ChatGPT (OAI-SearchBot + possible search partners); Claude Web Search (supplier not publicly disclosed) |
+
+### Platform Retrieval & Implications
+
+| Platform | Primary Supply | Strategic Implication |
+|----------|---------------|----------------------|
+| **Google AI Overviews / AI Mode** | Google Search (query fan-out) | Strong traditional SEO + structured data is the most reliable path |
+| **Bing Copilot** | Bing index | Requires Bing indexing; LinkedIn signals for B2B visibility |
+| **ChatGPT (web search)** | OAI-SearchBot + partners | High-authority, frequently updated content favored; backlinks matter |
+| **Perplexity** | Proprietary crawl | Content freshness; semantic alignment; mid-tier sites have opportunity |
+| **Claude (web search)** | Not publicly disclosed | Focus on general crawlability and clear structured content |
+
+**Third-party search APIs** (Tavily, Exa, You.com, Brave Search API) feed smaller AI tools and custom agents. Content that is crawlable and indexed via standard web search reaches these APIs through their supply indexes. **Core model training** (long, costly, not widely actionable): focus on RAG optimization.
+
+## AI Crawlers & Discovery
+
+AI crawlers fall into three categories with different implications for content strategy:
+
+| Type | Purpose | Examples | Implication |
+|------|---------|---------|-------------|
+| **Training crawlers** | Gather data for model training | GPTBot, ClaudeBot, Google-Extended, Meta crawlers | Blocking via robots.txt prevents training data use; **does not** affect real-time search/retrieval by the same provider |
+| **Index/RAG crawlers** | Build search index for retrieval | OAI-SearchBot, PerplexityBot, Claude-SearchBot, Bytespider (Cohere), AppleBot | **Must allow** for RAG-based AI citation; critical for GEO |
+| **Real-time crawlers** | Fetch content on-demand at query time | ChatGPT-User (opt-in via web search) | Content must be accessible without a login; paywalls may block citation |
+
+**Content discovery**: "Push" submissions for general web content are primarily supported through Bing IndexNow. Google's Indexing API is limited to JobPosting and BroadcastEvent pages only (not general content). OpenAI, Anthropic, Perplexity, xAI, Meta, and DeepSeek do **not** offer public submission portals—their crawlers discover content through standard crawl and sitemaps only.
+
+AI crawlers generally do **not** execute JavaScript—critical content must be in initial HTML. See **rendering-strategies** for SSR, SSG, CSR; **site-crawlability** for AI crawler optimization; **robots-txt** for allow/block decisions. [Vercel/MERJ study](https://vercel.com/blog/the-rise-of-the-ai-crawler) (2024)
 
 ## Content Best Practices
 
@@ -65,7 +96,7 @@ AI crawlers (GPTBot, ClaudeBot, PerplexityBot) do **not** execute JavaScript—c
 
 ### Article-Level GEO
 
-For blog posts and articles, structure content for AI citation. Content with these elements is cited ~35% more frequently.
+For blog posts and articles, structure content for AI citation. Studies find content with TL;DR, structured formats, and clear answers is cited substantially more by AI engines.
 
 | Element | Guideline |
 |---------|-----------|
@@ -83,7 +114,7 @@ See **article-content** for content creation; **article-page-generator** for pag
 
 **GitHub**: Tier 2 technical authority; very high AI citation. See **github** for repos, README, Pages, gists, awesome lists.
 
-**YouTube**: Google prioritizes YouTube in search; YouTube citations in AI Overviews surged 25.21% (2025). Long-form instructional and visual-demo videos dominate. See **youtube-seo** for channel and video optimization; **video-optimization** for website-embedded video SEO.
+**YouTube**: Google prioritizes YouTube in search; YouTube citations in AI Overviews surged 25.21%. Long-form instructional and visual-demo videos dominate. See **youtube-seo** for channel and video optimization; **video-optimization** for website-embedded video SEO.
 
 **Grokipedia**: xAI's AI encyclopedia; ChatGPT, Perplexity, Copilot cite it. See **grokipedia-recommendations** for adding recommendations or links. Contribute genuinely useful content; avoid manipulative placement (Google Site Reputation Abuse policy).
 
@@ -93,7 +124,7 @@ See **article-content** for content creation; **article-page-generator** for pag
 
 ## Key Insight
 
-ChatGPT traffic converts ~6x higher than Google search. AI tool users often have clearer intent.
+ChatGPT traffic converts at significantly higher rates than Google search—studies report 2x to 9x uplift depending on industry. AI tool users often have clearer intent, but results vary by vertical.
 
 ## Output Format
 

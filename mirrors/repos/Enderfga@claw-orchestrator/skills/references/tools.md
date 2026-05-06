@@ -85,9 +85,9 @@ Dashboard view: all sessions with ready/busy/paused state, cost, context %, last
 
 ## Session Operations (5)
 
-### `session_status`
+### `coding_session_status`
 
-Detailed status: tokens, cost, context %, tool calls, uptime.
+Detailed status: tokens, cost, context %, tool calls, uptime. (Renamed from `session_status` in v3.2 to avoid collision with OpenClaw's built-in `session_status` tool.)
 
 | Parameter | Type | Required |
 |-----------|------|----------|
@@ -235,9 +235,9 @@ Returns `{ ok, text, goal }`.
 
 ## Agent Teams (3)
 
-### `agents_list`
+### `coding_agents_list`
 
-List agent definitions from `.claude/agents/` (project + global).
+List agent definitions from `.claude/agents/` (project + global). (Renamed from `agents_list` in v3.2 to avoid collision with OpenClaw's built-in `agents_list` tool.)
 
 | Parameter | Type |
 |-----------|------|

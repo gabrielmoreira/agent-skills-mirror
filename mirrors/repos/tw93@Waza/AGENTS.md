@@ -41,6 +41,9 @@ Before adding a capability, decide the layer deliberately:
 
 Examples: `verify-skills.sh` is a script; `rules/english.md` and `rules/chinese.md` are rules; `/think`, `/hunt`, `/check`, and `/health` are skills.
 
+- `rules/anti-patterns.md` owns cross-skill always-on behavioral guardrails (AI failure modes that apply regardless of active skill).
+- Per-skill gotchas stay in each `skills/*/SKILL.md` Gotchas table. A gotcha belongs in `rules/anti-patterns.md` only when it applies identically across all eight skills.
+
 ## Skill Design Rules
 
 - Put adaptive, judgment-heavy workflows in skills.

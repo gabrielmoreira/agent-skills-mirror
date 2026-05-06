@@ -160,3 +160,9 @@ Before writing markdown, plan for:
 
 - [markdown-mermaid](../markdown-mermaid/SKILL.md) — full markdown + Mermaid style guide
 - [markdown-mermaid § Mode Fragility](../markdown-mermaid/SKILL.md) — silent render failures
+
+## Falsifiability
+
+- This skill has failed if markdown produced after activation still fails markdownlint with the same violation classes the skill explicitly addresses
+- The rule set is stale if markdownlint releases new defaults this skill contradicts
+- Wrong if the formatting constraints reduce readability rather than improve it (user consistently overrides the prescribed style)

@@ -18,6 +18,7 @@ Always keep these constraints:
 - no borders or frames between cells
 - same asset identity across frames
 - same bounding box and same pixel scale across frames
+- raw sprite art must come from built-in `image_gen`, not Three.js, Canvas, SVG, HTML/CSS drawing, PIL shape drawing, procedural geometry, placeholder primitives, or code-rendered screenshots
 
 ## Style Rules
 
@@ -148,6 +149,19 @@ For a compact attack-only sheet, describe:
 - follow-through
 - recovery
 
+For controllable heroes, main characters, and fixed-cell game sprites, write attack body prompts as body-only:
+
+- no detached slash arc
+- no wide weapon trail
+- no muzzle flash
+- no projectile
+- no impact burst
+- no detached dust cloud
+- weapon remains close enough that the body bbox stays near idle/run size
+- body height and feet/bottom anchor match the accepted idle/run sheet
+
+If the attack needs a large slash arc, sword trail, muzzle flash, or hit spark, generate it as a separate `fx`, `projectile`, or `impact` sheet and layer it in the runtime.
+
 ### `hurt`
 
 For a hurt-only sheet, describe:
@@ -212,10 +226,11 @@ Avoid prompts like:
 
 For controllable heroes, main characters, and high-value player assets:
 
-1. Generate each action as its own sheet, usually `1x4` or the smallest useful row/sequence.
-2. Keep shooting body animation separate from projectile, muzzle flash, impact, and dust unless the FX is tightly attached.
+1. Generate each action as its own multi-row grid sheet, usually `2x2` for 4-frame actions, `2x3` for 6-frame actions, and `2x4`, `3x3`, `3x4`, or `4x4` for longer actions.
+2. Keep attack/shoot/cast body animation separate from projectile, muzzle flash, slash arc, weapon trail, impact, and dust unless the runtime explicitly supports wider per-action cells plus explicit origins.
 3. Process and visually QC each action independently for feet line, body center, scale, silhouette, and edge safety.
-4. Assemble a `4x4`, `5x5`, or custom engine atlas only after the separate action sheets pass QC.
+4. Reject a body action when the body appears more than about 10-15% smaller than idle/run because a wide FX bbox forced it to shrink.
+5. Assemble a `4x4`, `5x5`, or custom engine atlas only after the separate action sheets pass QC.
 
 Allowed raw multi-row sheets:
 

@@ -67,7 +67,7 @@ session_start({ name: "cursor-task", cwd: "/path/to/project", engine: "cursor" }
 session_send({ name: "myproject", message: "Fix the auth bug" })
 
 // 3. Check status / search history
-session_status({ name: "myproject" })
+coding_session_status({ name: "myproject" })
 session_grep({ name: "myproject", pattern: "error" })
 
 // 4. Stop when done
@@ -166,9 +166,9 @@ Both are async — start then poll status.
 | Category | Tools |
 |----------|-------|
 | Session Lifecycle | `session_start`, `session_send`, `session_stop`, `session_list`, `sessions_overview` |
-| Session Ops | `session_status`, `session_grep`, `session_compact`, `session_update_tools`, `session_switch_model` |
+| Session Ops | `coding_session_status`, `session_grep`, `session_compact`, `session_update_tools`, `session_switch_model` |
 | Inbox | `session_send_to`, `session_inbox`, `session_deliver_inbox` |
-| Teams | `agents_list`, `team_list`, `team_send` |
+| Teams | `coding_agents_list`, `team_list`, `team_send` |
 | Council | `council_start`, `council_status`, `council_abort`, `council_inject`, `council_review`, `council_accept`, `council_reject` |
 | Ultra | `ultraplan_start`, `ultraplan_status`, `ultrareview_start`, `ultrareview_status` |
 

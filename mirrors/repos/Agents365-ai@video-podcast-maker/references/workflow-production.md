@@ -7,6 +7,16 @@
 > **Previous phase:** See `workflow-script.md` for Pre-workflow + Startup + Steps 1-4.
 > **Next phase:** See `workflow-publish.md` for Steps 12-15 (subtitles, publish info, cleanup, shorts).
 
+## Contents
+
+- [Step 5: Collect Media Assets](#step-5-collect-media-assets)
+- [Step 6: Generate Publish Info (Part 1)](#step-6-generate-publish-info-part-1)
+- [Step 7: Generate Video Thumbnail](#step-7-generate-video-thumbnail)
+- [Step 8: Generate TTS Audio](#step-8-generate-tts-audio) — voice selection, SSML, chunk seams
+- [Step 9: Create Remotion Composition + Studio Preview](#step-9-create-remotion-composition--studio-preview)
+- [Step 10: Render 4K Video](#step-10-render-4k-video)
+- [Step 11: Mix with Background Music](#step-11-mix-with-background-music)
+
 ---
 
 ## Step 5: Collect Media Assets
@@ -61,6 +71,8 @@ npx remotion still src/remotion/index.ts Thumbnail3x4 videos/{name}/thumbnail_re
 ---
 
 ## Step 8: Generate TTS Audio
+
+> **Azure-specific gotchas:** if you're using `TTS_BACKEND=azure`, load **[azure-tts-pitfalls.md](azure-tts-pitfalls.md)** before picking a voice or style — covers Multilingual-variant phoneme behavior, SSML pitfalls, the style support matrix, and a triage checklist for hoarse/missing/glitchy audio. Worth ~30 seconds of reading time and saves a re-render.
 
 **Preference application:** `generate_tts.py` reads `user_prefs.tts.{backend, rate, voices.<backend>}` automatically. No manual env extraction needed. Precedence for each setting: env var > `user_prefs.json` > hardcoded default. The script logs which source it picked at startup.
 

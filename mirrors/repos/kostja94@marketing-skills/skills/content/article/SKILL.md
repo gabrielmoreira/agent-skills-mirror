@@ -2,7 +2,7 @@
 name: article-content
 description: When the user wants to write, generate, or create article body content—blog post body, long-form content, how-to guide, listicle. Also use when the user mentions "write article," "article content," "blog post content," "article body," "long-form content creation," "generate article," "article draft," "how-to guide content," "listicle content," "information gain," or "content density." For single post page structure, schema, and SEO metadata, use article-page-generator. For blog index/listing page, use blog-page-generator. For short ad, landing, or email copy, use copywriting.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
 ---
 
 # Content: Article Content
@@ -66,7 +66,7 @@ Article content rests on **four inputs**. See **article-page-generator** for ful
 
 ### TL;DR or Key Takeaways (GEO)
 
-Choose one; place after intro. Content with these elements is cited ~35% more by AI.
+Choose one; place after intro. Content with these elements tends to be cited more frequently by AI engines.
 
 | Format | Spec |
 |--------|------|

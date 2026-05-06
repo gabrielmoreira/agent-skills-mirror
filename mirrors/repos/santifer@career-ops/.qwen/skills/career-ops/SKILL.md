@@ -1,0 +1,1 @@
+cache/repos/github.com/santifer@career-ops/.qwen/skills/career-ops/../../../.agents/skills/career-ops/SKILL.md

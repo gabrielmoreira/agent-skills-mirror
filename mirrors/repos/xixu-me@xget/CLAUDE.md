@@ -96,7 +96,7 @@ npm run commitlint       # Validate the latest commit message
 - **`index.js`**: Runtime configuration with environment variable overrides
   - `TIMEOUT_SECONDS`: Request timeout (default: 30s)
   - `MAX_RETRIES`: Retry attempts (default: 3)
-  - `CACHE_DURATION`: Cache TTL (default: 1800s = 30 minutes)
+  - `CACHE_DURATION`: Fallback mutable cache TTL (default: 300s = 5 minutes)
   - `SECURITY.ALLOWED_METHODS`: HTTP methods (default: GET, HEAD)
 
 - **`platform-catalog.js`**: Platform base URL definitions
@@ -143,7 +143,7 @@ npm run commitlint       # Validate the latest commit message
 ### Caching Strategy
 
 - Uses Cloudflare Cache API for GET requests (200 OK only)
-- Cache TTL controlled by `CACHE_DURATION` config
+- Fallback mutable cache TTL controlled by `CACHE_DURATION` config
 - Skips cache for: Git operations, Docker operations, AI inference requests
 - Range requests: First checks for range-specific cache, falls back to full
   content cache
@@ -315,7 +315,7 @@ Configure in Cloudflare Workers dashboard or via `wrangler.toml`:
 
 - `TIMEOUT_SECONDS`: Override default timeout
 - `MAX_RETRIES`: Override retry count
-- `CACHE_DURATION`: Override cache TTL
+- `CACHE_DURATION`: Override fallback mutable cache TTL
 - `ALLOWED_METHODS`: Override allowed HTTP methods (comma-separated)
 - `ALLOWED_ORIGINS`: Override CORS origins (comma-separated)
 

@@ -29,11 +29,11 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-AZURE_SUBSCRIPTION_ID=<your-subscription-id>
-# For service principal auth (optional)
-AZURE_TENANT_ID=<tenant-id>
-AZURE_CLIENT_ID=<client-id>
-AZURE_CLIENT_SECRET=<client-secret>
+AZURE_SUBSCRIPTION_ID=<your-subscription-id> # Required: Azure subscription ID
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
+AZURE_TENANT_ID=<tenant-id> # For service principal auth (optional)
+AZURE_CLIENT_ID=<client-id> # For service principal auth (optional)
+AZURE_CLIENT_SECRET=<client-secret> # For service principal auth (optional)
 ```
 
 ## Authentication
@@ -43,8 +43,13 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.ApiManagement;
 
-// Always use DefaultAzureCredential
-var credential = new DefaultAzureCredential();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 var armClient = new ArmClient(credential);
 
 // Get subscription

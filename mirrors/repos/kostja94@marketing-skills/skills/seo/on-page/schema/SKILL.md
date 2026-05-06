@@ -2,7 +2,7 @@
 name: schema-markup
 description: When the user wants to add or optimize structured data (Schema.org, JSON-LD). Also use when the user mentions "schema," "structured data," "JSON-LD," "rich results," "rich snippets," "Google rich snippets," "featured snippet schema," "add schema to page," "missing structured data," "schema validation error," "Schema Markup Validator," "Google Rich Results Test," "FAQ schema," "Article schema," "Organization schema," "JobPosting," "HowTo," "Event," "SoftwareApplication," "BreadcrumbList," "WebSite," "Recipe," "Product," or "Dataset." For SERP feature types and zero-click patterns, use serp-features. For AI search visibility strategy (not markup), use generative-engine-optimization. For HowTo step sections (placement, copy, vs FAQ), use howto-section-generator.
 metadata:
-  version: 1.4.0
+  version: 1.5.0
 ---
 
 # SEO On-Page: Schema / Structured Data
@@ -28,15 +28,15 @@ Guides implementation of Schema.org structured data (JSON-LD) for rich snippets,
 
 **Practical implication**: Implement Schema.org markup for your content type. If Google doesn't show rich results for that type, Bing or AI systems may still use it. Always verify against [Google's developer docs](https://developers.google.com/search/docs) for Google-specific rich result eligibility.
 
-## Rich Results: Google Support (2025)
+## Rich Results: Google Support (2026)
 
-**High-impact types**: Product, Review snippets, HowTo (desktop), Article/News, Video, Recipe, LocalBusiness, Event, Breadcrumb, Sitelinks searchbox, JobPosting.
+**High-impact types**: Product, Review snippets, Article/News, Video, Recipe, LocalBusiness, Event, Breadcrumb, Sitelinks searchbox, JobPosting.
 
-**Limited or context-dependent**: HowTo (mobile), FAQ (government/health sites for many queries), Education Q&A, Course, SoftwareApplication, Speakable (news), DiscussionForumPosting.
+**Limited or context-dependent**: FAQ (government/health sites for many queries), Education Q&A, Course, SoftwareApplication, Speakable (news), DiscussionForumPosting.
 
-**Deprecated**: COVID data panels, some AMP-only formats, data-vocabulary.org.
+**Deprecated**: HowTo (fully removed for all devices as of Sep 2023), COVID data panels, some AMP-only formats, data-vocabulary.org.
 
-**Implementation**: JSON-LD preferred; include `@context`, `@type`, stable `@id`; ISO 8601 dates; match structured data to visible content. Validate with [Rich Results Test](https://search.google.com/test/rich-results). Rich results can increase CTR up to ~35% and improve AI citation. [AISO Hub](https://aiso-hub.com/insights/google-rich-results-types/), [Digital Applied](https://www.digitalapplied.com/blog/structured-data-seo-2026-rich-results-guide)
+**Implementation**: JSON-LD preferred; include `@context`, `@type`, stable `@id`; ISO 8601 dates; match structured data to visible content. Validate with [Rich Results Test](https://search.google.com/test/rich-results). Rich results can increase CTR up to ~35% and improve AI citation.
 
 ## Schema ↔ SERP Features ↔ Rich Results (Strongly Related)
 
@@ -52,7 +52,7 @@ Guides implementation of Schema.org structured data (JSON-LD) for rich snippets,
 | **FAQPage** | PAA, Featured Snippet | FAQ dropdown; Q&A-style snippet. Eligibility restricted for many sites (e.g. government/health) |
 | **BreadcrumbList** | Breadcrumbs | Path display in result |
 | **AggregateRating, Review** | Reviews / Stars | Star ratings |
-| **HowTo** | Featured Snippet (list) | Step-based snippet; desktop support; mobile may be limited |
+| **HowTo** | Formerly rich results (deprecated Sep 2023) | No longer generates Google rich results; Bing/AI may still use |
 | **Article** | In-Depth Articles, Snippet | Article rich result |
 | **VideoObject** | Video | Video thumbnail; see **video-optimization** |
 | **Product, Offer** | Shopping, Product | Product/shopping results |
@@ -90,7 +90,7 @@ Identify:
 | **FAQPage** | FAQ sections; triggers PAA-style results |
 | **Person** | Author info; pairs with Article |
 | **ImageObject** | Image metadata for rich results |
-| **HowTo** | Tutorials, step-by-step guides. **Note**: Google may have deprecated HowTo rich results (2023–2024); Schema.org still supports it; Bing/AI may use it |
+| **HowTo** | Tutorials, step-by-step guides. **Note**: Google fully deprecated HowTo rich results for all devices (Sep 2023); Bing/AI may still consume HowTo schema |
 
 ### Exclusive Types (Specific Scenarios)
 
@@ -138,7 +138,7 @@ Identify:
 | **Restaurant, local service, store locator** | **LocalBusiness** | Address, hours, NAP. For local SEO. |
 | **Case study, customer story page** | **CaseStudy** | Client, outcome, methodology. For B2B case studies. |
 | **FAQ page, product FAQ, support FAQ** | **FAQPage** | Question + acceptedAnswer pairs. Triggers PAA-style results. |
-| **Tutorial, how-to guide, step-by-step** | **HowTo** | Steps, tools, time. Note: Google may have deprecated rich results; Bing/AI may still use. |
+| **Tutorial, how-to guide, step-by-step** | **HowTo** | Steps, tools, time. **Note**: Google fully deprecated HowTo rich results (Sep 2023); Bing/AI may still consume the schema. Consider FAQPage as alternative |
 | **News article, press release** | **NewsArticle** | Use instead of Article for news. |
 | **Video page, podcast episode** | **VideoObject** / **PodcastEpisode** | For video/audio content. See **video-optimization** for VideoObject, thumbnail, key moments. |
 

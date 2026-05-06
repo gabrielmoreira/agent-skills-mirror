@@ -29,6 +29,20 @@ Identify:
 | **Hackernoon** | Dev, tech readers | Content distribution |
 | **Industry forums** | Niche verticals | Discount codes for leads; search "[industry] forum"; post event/activity promotion; see **discount-marketing-strategy** for code strategy |
 | **Reddit** | Subreddit-specific | See **reddit-posts**; 90/10 rule; 29+ posts for traction |
+| **Discourse (self-hosted forum)** | Community-specific | Owned forum; full SEO/GEO control; see Discourse SEO section below |
+
+## Discourse (Self-Hosted Forum) SEO
+
+If you run a Discourse forum (or similar self-hosted forum), SEO/GEO considerations differ from posting on third-party platforms:
+
+| Practice | Guideline |
+|----------|-----------|
+| **Guest access** | Allow anonymous reading for categories meant to attract traffic; login-only mode severely limits indexed pages |
+| **Topic structure** | First post carries SEO weight; write clear titles and substantive opening posts; avoid fragmented short topics |
+| **Sitemap & robots** | Discourse generates sitemaps automatically; monitor in GSC as a separate property (subdomain or subdirectory) |
+| **Content quality** | Merge duplicates, mark resolved threads, surface FAQ topics—forum-level quality signals affect crawl and citation |
+| **GEO** | Structured topic titles and well-formed opening posts are extractable by AI tools; forum format with timelines and accepted answers lends credibility |
+| **Subdomain vs subdirectory** | Discourse recommends subdomain for operational reasons; search engines do not inherently favor either for ranking—choose based on infrastructure, not SEO alone |
 
 ## Hacker News Launch
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,19 +69,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`dd-apm/linux-ssi/onboarding-summary/SKILL.md`](dd-apm/linux-ssi/onboarding-summary/SKILL.md) |
 | 9 | ✓ | [`dd-apm/linux-ssi/troubleshoot-ssi/SKILL.md`](dd-apm/linux-ssi/troubleshoot-ssi/SKILL.md) |
 | 10 | ✓ | [`dd-apm/linux-ssi/verify-ssi/SKILL.md`](dd-apm/linux-ssi/verify-ssi/SKILL.md) |
-| 11 | ✓ | [`dd-apm/SKILL.md`](dd-apm/SKILL.md) |
-| 12 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
-| 13 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
-| 14 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
-| 15 | ✓ | [`dd-llmo/eval-bootstrap/SKILL.md`](dd-llmo/eval-bootstrap/SKILL.md) |
-| 16 | ✓ | [`dd-llmo/eval-session-classify/SKILL.md`](dd-llmo/eval-session-classify/SKILL.md) |
-| 17 | ✓ | [`dd-llmo/eval-trace-rca/SKILL.md`](dd-llmo/eval-trace-rca/SKILL.md) |
-| 18 | ✓ | [`dd-llmo/experiment-analyzer/SKILL.md`](dd-llmo/experiment-analyzer/SKILL.md) |
-| 19 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 20 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 21 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 22 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 23 | ✓ | [`SKILL.md`](SKILL.md) |
+| 11 | ✓ | [`dd-apm/service-remapping/SKILL.md`](dd-apm/service-remapping/SKILL.md) |
+| 12 | ✓ | [`dd-apm/SKILL.md`](dd-apm/SKILL.md) |
+| 13 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
+| 14 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
+| 15 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
+| 16 | ✓ | [`dd-llmo/eval-bootstrap/SKILL.md`](dd-llmo/eval-bootstrap/SKILL.md) |
+| 17 | ✓ | [`dd-llmo/eval-session-classify/SKILL.md`](dd-llmo/eval-session-classify/SKILL.md) |
+| 18 | ✓ | [`dd-llmo/eval-trace-rca/SKILL.md`](dd-llmo/eval-trace-rca/SKILL.md) |
+| 19 | ✓ | [`dd-llmo/experiment-analyzer/SKILL.md`](dd-llmo/experiment-analyzer/SKILL.md) |
+| 20 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 21 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 22 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 23 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 24 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

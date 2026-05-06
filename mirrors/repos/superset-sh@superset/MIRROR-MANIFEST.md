@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,6 +79,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
 | 19 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
 | 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | ✓ | [`skills/superset/SKILL.md`](skills/superset/SKILL.md) |
 
 ---
 

@@ -67,6 +67,10 @@ Only attach the target component folder or package. Exclude `.git`, `node_module
 
 If question 1 is an app shell (Slack, Linear, Notion class), load the "App shell rules" section in `references/design-reference.md` and apply those constraints before proceeding.
 
+### Data dashboard exception
+
+If the surface is a dashboard, analytics view, or chart-heavy interface, also load `references/design-data-viz.md` for chart selection, number alignment, and product-benchmark rules. Skip when building marketing pages, landing pages, or generic components.
+
 State the chosen direction in one sentence, then load `references/design-reference.md` and check the tech stack conflicts table. Name the single CSS strategy before writing the first component.
 
 Summarize the direction as three lines before writing any code:

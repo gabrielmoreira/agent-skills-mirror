@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `pulumi/pulumi` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `pulumi/pulumi` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pulumi/pulumi` — 26 default patterns, 0 followed patterns, 6 file(s
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,9 +62,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`pkg/AGENTS.md`](pkg/AGENTS.md) |
-| 4 | ✓ | [`sdk/go/AGENTS.md`](sdk/go/AGENTS.md) |
-| 5 | ✓ | [`sdk/nodejs/AGENTS.md`](sdk/nodejs/AGENTS.md) |
-| 6 | ✓ | [`sdk/python/AGENTS.md`](sdk/python/AGENTS.md) |
+| 4 | ✓ | [`pkg/cmd/pulumi/neo/AGENTS.md`](pkg/cmd/pulumi/neo/AGENTS.md) |
+| 5 | ✓ | [`sdk/go/AGENTS.md`](sdk/go/AGENTS.md) |
+| 6 | ✓ | [`sdk/nodejs/AGENTS.md`](sdk/nodejs/AGENTS.md) |
+| 7 | ✓ | [`sdk/python/AGENTS.md`](sdk/python/AGENTS.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 16 followed patterns, 44 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 17 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 16 followed patterns, 44 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 44 |
+| Followed pats | 17 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 16 followed patterns, 44 file(
 - `rules/product-principles.md`
 - `rules/jotai-testing.md`
 - `rules/claude-github-workflows.md`
+- `rules/ui-styling.md`
 
 ## File Index
 
@@ -118,6 +119,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | → | [`rules/product-principles.md`](rules/product-principles.md) |
 | 43 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
 | 44 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 45 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
 
 ---
 

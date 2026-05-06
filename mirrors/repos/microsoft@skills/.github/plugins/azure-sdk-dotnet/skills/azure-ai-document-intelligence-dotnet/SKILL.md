@@ -25,21 +25,28 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-DOCUMENT_INTELLIGENCE_ENDPOINT=https://<resource-name>.cognitiveservices.azure.com/
-DOCUMENT_INTELLIGENCE_API_KEY=<your-api-key>
-BLOB_CONTAINER_SAS_URL=https://<storage>.blob.core.windows.net/<container>?<sas-token>
+DOCUMENT_INTELLIGENCE_ENDPOINT=https://<resource-name>.cognitiveservices.azure.com/  # Required: Document Intelligence endpoint
+DOCUMENT_INTELLIGENCE_API_KEY=<your-api-key>  # Only required for AzureKeyCredential auth
+BLOB_CONTAINER_SAS_URL=https://<storage>.blob.core.windows.net/<container>?<sas-token>  # Optional: blob container SAS URL for training data
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
 
-### Microsoft Entra ID (Recommended)
+### Microsoft Entra Token Credential
 
 ```csharp
 using Azure.Identity;
 using Azure.AI.DocumentIntelligence;
 
 string endpoint = Environment.GetEnvironmentVariable("DOCUMENT_INTELLIGENCE_ENDPOINT");
-var credential = new DefaultAzureCredential();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 var client = new DocumentIntelligenceClient(new Uri(endpoint), credential);
 ```
 

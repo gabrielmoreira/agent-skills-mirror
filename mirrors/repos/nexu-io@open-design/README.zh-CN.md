@@ -17,15 +17,17 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/nexu-io/open-design/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/nexu-io/open-design?style=flat-square&color=blueviolet&label=release&include_prereleases" /></a>
+  <a href="https://open-design.ai/"><img alt="下载客户端" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-%E5%AE%A2%E6%88%B7%E7%AB%AF-ff6b35?style=flat-square" /></a>
+  <a href="https://github.com/nexu-io/open-design/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/nexu-io/open-design?style=flat-square&color=blueviolet&label=release&include_prereleases&display_name=tag" /></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square" /></a>
   <a href="#支持的-coding-agent"><img alt="Agents" src="https://img.shields.io/badge/agents-10%20CLIs%20%2B%20BYOK%20proxy-black?style=flat-square" /></a>
   <a href="#design-system"><img alt="Design systems" src="https://img.shields.io/badge/design%20systems-72-orange?style=flat-square" /></a>
   <a href="#内置-skills"><img alt="Skills" src="https://img.shields.io/badge/skills-31-teal?style=flat-square" /></a>
-  <a href="QUICKSTART.md"><img alt="Quickstart" src="https://img.shields.io/badge/quickstart-3%20commands-green?style=flat-square" /></a>
+  <a href="https://discord.gg/qhbcCH8Am4"><img alt="Discord" src="https://img.shields.io/badge/discord-加入-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
+  <a href="QUICKSTART.zh-CN.md"><img alt="Quickstart" src="https://img.shields.io/badge/quickstart-3%20commands-green?style=flat-square" /></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <b>简体中文</b> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja-JP.md">日本語</a> · العربية · <a href="README.ru.md">Русский</a> · <a href="README.uk.md">Українська</a></p>
+<p align="center"><a href="README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <b>简体中文</b> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja-JP.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.uk.md">Українська</a></p>
 
 ---
 
@@ -62,7 +64,7 @@ OD 站在四个开源项目的肩膀上：
 | **持久化** | SQLite 在 `.od/app.sqlite`：projects · conversations · messages · tabs · 用户 templates。明天再开，todo 卡片和打开的文件都还在原位。 |
 | **生命周期** | 唯一入口 `pnpm tools-dev`（start / stop / run / status / logs / inspect / check）—— 用类型化 sidecar stamp 启动 daemon + web（+ desktop） |
 | **桌面端** | 可选 Electron 壳：渲染器 sandbox + sidecar IPC（STATUS / EVAL / SCREENSHOT / CONSOLE / CLICK / SHUTDOWN）—— 同一通道驱动 `tools-dev inspect desktop screenshot`，跑 E2E |
-| **部署目标** | 本地 `pnpm tools-dev` · Vercel Web 层 · 打包 Electron（`apps/packaged/` 占位中） |
+| **部署目标** | 本地 `pnpm tools-dev` · Vercel Web 层 · 打包好的 Electron 桌面端，支持 macOS（Apple Silicon）和 Windows（x64）—— 从 [open-design.ai](https://open-design.ai/) 或 [最新 release](https://github.com/nexu-io/open-design/releases) 直接下载 |
 | **License** | Apache-2.0 |
 
 [acd2]: https://github.com/VoltAgent/awesome-design-md
@@ -298,6 +300,15 @@ DISCOVERY 指令         （turn-1 表单、turn-2 品牌分支、TodoWrite、�
 
 ## Quickstart
 
+### 下载桌面端（无需构建）
+
+试用 Open Design 最快的方式是直接下载预编译的桌面端 —— 不用装 Node、不用 pnpm、不用 clone：
+
+- **[open-design.ai](https://open-design.ai/)** —— 官方下载页
+- **[GitHub releases](https://github.com/nexu-io/open-design/releases)**
+
+### 从源码运行
+
 ```bash
 git clone https://github.com/nexu-io/open-design.git
 cd open-design
@@ -310,7 +321,7 @@ pnpm tools-dev run web
 
 环境要求：Node `~24`，pnpm `10.33.x`。`nvm` / `fnm` 只是可选辅助工具，不是项目必需步骤；如果使用它们，先执行 `nvm install 24 && nvm use 24` 或 `fnm install 24 && fnm use 24`，再运行 `pnpm install`。
 
-桌面端/后台启动、固定端口重启，以及 media 生成派发器检查（`OD_BIN`、`OD_DAEMON_URL`、`apps/daemon/dist/cli.js`）见 [`QUICKSTART.md`](QUICKSTART.md)。
+桌面端/后台启动、固定端口重启，以及 media 生成派发器检查（`OD_BIN`、`OD_DAEMON_URL`、`apps/daemon/dist/cli.js`）见 [`QUICKSTART.zh-CN.md`](QUICKSTART.zh-CN.md)。
 
 第一次加载会：
 
@@ -338,7 +349,7 @@ Daemon 在仓库根下维护一个隐藏目录，里面所有内容都已 gitign
 | 完全清空，从零再来 | `pnpm tools-dev stop`，再 `rm -rf .od`，然后重新 `pnpm tools-dev run web` |
 | 换到别的位置 | 暂不支持 —— 路径是相对仓库根写死的 |
 
-完整文件地图、脚本、排错 → [`QUICKSTART.md`](QUICKSTART.md)。
+完整文件地图、脚本、排错 → [`QUICKSTART.zh-CN.md`](QUICKSTART.zh-CN.md)。
 
 ## 仓库结构
 
@@ -626,7 +637,7 @@ Daemon 启动时从 `PATH` 自动检测，无需配置。流式分发逻辑在 [
 | [GitHub Copilot CLI](https://github.com/features/copilot/cli) | `copilot` | `copilot-stream-json`（类型化事件） | `copilot -p <prompt> --allow-all-tools --output-format json [--model …] [--add-dir …]` |
 | [Hermes](https://github.com/eqlabs/hermes) | `hermes` | `acp-json-rpc`（Agent Client Protocol） | `hermes acp --accept-hooks` |
 | Kimi CLI | `kimi` | `acp-json-rpc` | `kimi acp` |
-| [Pi](https://github.com/mariozechner/pi-ai) | `pi` | `pi-rpc`（stdio JSON-RPC） | `pi --mode rpc --no-session [--model …] [--thinking …]`（prompt 走 RPC `prompt` 命令） |
+| [Pi](https://github.com/mariozechner/pi-ai) | `pi` | `pi-rpc`（stdio JSON-RPC） | `pi --mode rpc [--model …] [--thinking …]`（prompt 走 RPC `prompt` 命令） |
 | **多 provider BYOK** | n/a | SSE 归一化 | `POST /api/proxy/{provider}/stream` → Anthropic / OpenAI 兼容 / Azure OpenAI / Gemini；拒绝 loopback / link-local / RFC1918 |
 
 加一个新 CLI = 在 [`apps/daemon/src/agents.ts`](apps/daemon/src/agents.ts) 里加一项。流式格式从 `claude-stream-json` / `copilot-stream-json` / `json-event-stream`（搭配每 CLI 的 `eventParser`）/ `acp-json-rpc` / `pi-rpc` / `plain` 中选一个。
@@ -663,7 +674,7 @@ Daemon 启动时从 `PATH` 自动检测，无需配置。流式分发逻辑在 [
 - [ ] Vercel + 隧道部署食谱（Topology B）
 - [ ] 一行 `npx od init` 脚手架带 `DESIGN.md`
 - [ ] Skill 市场（`od skills install <github-repo>`）和 `od skill add | list | remove | test` CLI 表面（在 [`docs/skills-protocol.md`](docs/skills-protocol.md) 里有草案，daemon 实现尚未跟上）
-- [ ] `apps/packaged/` 出可分发 Electron 安装包
+- [x] `apps/packaged/` 出可分发 Electron 安装包 —— macOS（Apple Silicon）和 Windows（x64）下载已上线 [open-design.ai](https://open-design.ai/) 和 [GitHub releases 页面](https://github.com/nexu-io/open-design/releases)
 
 分阶段交付计划在 [`docs/roadmap.md`](docs/roadmap.md)。
 
@@ -697,7 +708,7 @@ Daemon 启动时从 `PATH` 自动检测，无需配置。流式分发逻辑在 [
   <img src="https://contrib.rocks/image?repo=nexu-io/open-design&cache_bust=2026-05-05" alt="Open Design 贡献者" />
 </a>
 
-第一次提 PR？欢迎从 [`good-first-issue`](https://github.com/nexu-io/open-design/labels/good-first-issue) 标签起步。
+第一次提 PR？欢迎从 [`good-first-issue`/`help-wanted`](https://github.com/nexu-io/open-design/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22%2C%22help+wanted%22) 标签起步。
 
 ## 仓库活跃度
 

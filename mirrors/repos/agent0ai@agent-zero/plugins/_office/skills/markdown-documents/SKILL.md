@@ -18,7 +18,7 @@ allowed_tools:
 
 # Markdown Documents
 
-Markdown is the default document format for normal writing, notes, reports, briefs, drafts, and collaborative text work unless the user explicitly asks for DOCX, XLSX, PPTX, or another binary Office-compatible format.
+Markdown is the default document format for normal writing, notes, reports, briefs, drafts, and collaborative text work unless the user explicitly asks for a binary office file. When they do ask for a LibreOffice office file, prefer ODF: ODT for Writer, ODS for Spreadsheet/Calc, and ODP for Presentation/Impress. Use DOCX, XLSX, or PPTX only for explicit Microsoft compatibility.
 
 The canvas is user-owned UI. Create or update the saved Markdown artifact, but never open the canvas automatically. The document message will provide explicit Download and Open in canvas actions.
 
@@ -45,7 +45,7 @@ Minimal create:
 
 Practical rules:
 
-- Prefer Markdown over DOCX for writing unless Word compatibility is explicitly needed.
+- Prefer Markdown over ODT/DOCX for writing unless a binary Writer/Word file is explicitly needed.
 - Keep agent-only cleanup simple: if the user asks to fix a typo, update the file and finish; do not force a canvas workflow.
 - Use clear headings and Markdown tables when they improve editability.
 - The custom Markdown editor is available when the user chooses Open in canvas.

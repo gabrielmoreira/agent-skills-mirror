@@ -225,3 +225,9 @@ For high-fidelity diagrams, pre-render to PNG and include as images.
 ---
 
 *Skill version: 2.0.0 | Last updated: 2026-04-14 | Category: document-conversion*
+
+## Falsifiability
+
+- This skill is wrong if generated .eml files fail to render correctly in Outlook or Thunderbird, or if MIME structure is rejected by mail servers
+- The header format is stale if RFC 5322 compliance requirements change or major mail clients alter their parsing
+- Not earning tokens if users must manually fix the same MIME issues on every conversion

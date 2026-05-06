@@ -2,7 +2,7 @@
 name: github
 description: When the user wants to use GitHub for SEO, parasite SEO, GEO, open source marketing, README optimization, or curated Awesome lists. Also use when the user mentions "GitHub," "GitHub SEO," "GitHub parasite SEO," "GitHub GEO," "awesome list," "GitHub README," "profile README," "pinned repositories," "Trending," "Explore," "repository name," "About section," "GitHub description," "GitHub topics," "Website field," "GitHub Pages," "github.io," "user site," "project site," "GitHub gist," "curated list," or "navigation list." Not for Medium or other non-GitHub platforms—use parasite-seo or medium-posts. For OSS business model, use open-source-strategy.
 metadata:
-  version: 1.3.0
+  version: 1.5.0
 ---
 
 # Platforms: GitHub
@@ -38,6 +38,39 @@ Guides GitHub for parasite SEO, GEO (AI citation), and curated list creation. Gi
 | **Per-repo README** | Root `README.md` on each repo’s **Code** tab | Product landing; install, proof, CTAs |
 
 Changing a normal repo README does **not** change the profile banner unless that content is the **profile README** repo or linked from it.
+
+### Profile README (`username/username`)
+
+**Not the same as a product repo README.** Optimize for **identity + navigation** in ~15–40 lines of rendered content unless the user explicitly wants a long-form CV. Official setup: [Managing your profile README](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme).
+
+| Principle | Do | Avoid |
+|-----------|-----|--------|
+| **Length** | Short, scannable sections; **omit ToC** unless the file is genuinely long | Applying “500–1,500 words typical for product repos” here |
+| **Headings** | `###` blocks (e.g. *What I do · Open source · Find me*) for fast eyeballing | Many nested `##` + long narrative without breaks |
+| **Links** | Each primary URL **once** in a **Find me / Connect** line (or badges **or** a slim table—not all three repeating the same destinations) | Duplicate site/LinkedIn/email in badges, tables, and prose |
+| **Repos block** | **Bold repo name** + **≤2 short lines** + at most **one** copy-paste command (e.g. `npx skills add …`) — same scan pattern popular profiles use for “flagship OSS” without cloning the repo’s full README | Full feature matrices, changelog, or install docs pasted into the profile file |
+| **Layout** | Optional **centered** header (`<div align="center">`) for **name + tagline + badges only**; body stays left-aligned markdown for readability | Center-wrapping the entire README |
+| **Optional widgets** | Compact Shields (flat style); optional [github-readme-stats](https://github.com/anuraghazra/github-readme-stats) / [star-history](https://star-history.com) — **third-party**, treat as **conversion/social proof**, not core SEO | Wall of `for-the-badge` badges when the same CTAs are repeated in text |
+
+**Minimal outline (typical profile):**
+
+1. Title + answer-first tagline (+ slim badge row).
+2. `### What I do` — identity, proof link(s), **without** repeating the same URLs again later.
+3. `### Open source` — bold repo links + pitches + optional one code fence.
+4. `### Find me` — single line of deduped links (site · bio · cases · social · email).
+5. `### Activity` (optional) — small **github-readme-stats** + **star-history**; **alt text** on `<img>`.
+
+Reference pattern (high-signal, low-noise): scan-first profiles such as [alchaincyf](https://github.com/alchaincyf) — short `###` blocks, bold product/repo names, one “find me” cluster.
+
+**Entity hub pattern:** When the person has a canonical site, lead with it in the **opening line** and mirror the same URL in **Pinned** / **profile About** (if used) so **site ↔ GitHub OSS** stay aligned for **entity-seo**.
+
+### Profile README checklist (short)
+
+- [ ] H1 + **one** answer-first tagline (keywords: role, stack, domain)
+- [ ] Canonical **outbound** links (site, social, email) **deduplicated**
+- [ ] **Pinned** repos (≤6) match the story told in the README
+- [ ] Optional: **Activity** section — group stats / star-history under one heading instead of scattering widgets
+- [ ] **Last updated** footnote for freshness (GEO signal)
 
 ## Repository home: layout map
 
@@ -108,10 +141,12 @@ flowchart LR
 
 ### README Structure & Components
 
+Targets **repository (project) READMEs** unless noted. **Profile README** overrides: shorter, fewer sections—see **Profile README (`username/username`)** above.
+
 | Section | Purpose | SEO/GEO |
 |---------|---------|---------|
 | **Title + tagline** | H1 + 1–2 sentence summary; keywords in first paragraph | Critical; first 100 words weighted |
-| **Table of contents** | Links to H2/H3; for READMEs >500 words | Navigation; crawlability |
+| **Table of contents** | Links to H2/H3; **for long repo READMEs** (often >500 words). **Usually skip on profile README** | Navigation; crawlability |
 | **Installation / Quick start** | Prerequisites; exact commands; copy-paste ready | Use-case clarity |
 | **Usage examples** | Code blocks; common scenarios | Citable; extractable |
 | **Screenshots / GIFs** | Demo, output; alt text required | Engagement; accessibility |
@@ -119,21 +154,21 @@ flowchart LR
 | **Contributing** | Link to CONTRIBUTING.md | Community signal |
 | **License** | Link to LICENSE | Completeness |
 
-**Word count**: No hard limit; 500–1,500 words typical for product repos. Lead with value; expand later.
+**Word count**: No hard limit; **500–1,500 words** typical for **product / library** repos. Lead with value; expand later. **Profile README**: prefer **dense brevity**—long-form belongs on the canonical site or in pinned repos’ own READMEs.
 
 ### README GEO / AI Citation
 
 | Practice | Guideline |
 |----------|-----------|
-| **Answer-first** | Direct answer in first 1–2 sentences (40–60 words) |
+| **Answer-first** | Direct answer in first 1–2 sentences (40–60 words); **profile README** may compress to **one punchy tagline under H1** if outbound links carry the rest |
 | **Short paragraphs** | 2–3 sentences max; extractable clarity |
-| **Question-style headings** | H2/H3 as questions where relevant |
+| **Question-style headings** | H2/H3 as questions where relevant (**repository READMEs**); on **profile README**, optional — clarity of **sections** matters more than question phrasing |
 | **Data inclusion** | Stats, numbers; cited content ~40% more likely to include data |
 | **Freshness** | Update regularly; ~76% of cited content updated within 30 days |
 
 **Entity signals**: Clear project name, author, maintainer; consistent identity. See **entity-seo**.
 
-### README Checklist
+### README Checklist — **repository (default)**
 
 - [ ] Project title with keywords
 - [ ] Concise description in first paragraph
@@ -143,6 +178,8 @@ flowchart LR
 - [ ] Badges; Contributing; License
 - [ ] Internal links to related docs/repos
 - [ ] 6–20 topics on repo
+
+*(For **profile** `username/username`, use the shorter **Profile README checklist** under Surfaces—not every row above applies.)*
 
 ## Parasite SEO on GitHub
 
@@ -205,6 +242,7 @@ flowchart LR
 |-----------|--------|------------------------|
 | **Product / library** | Installable software, SDK, CLI, service | Install, quickstart, proof (CI, license), support path |
 | **Curated / resource** | Awesome-style lists, indexes | Scope, curation bar, contribution rules |
+| **Personal profile hub** | Public **`username/username`** README on the profile | Identity + canonical links + **pinned** flagship repos; **no** duplication of full product READMEs |
 
 Match metrics to type: curated lists optimize for trust and backlinks; product repos optimize for adoption and issue quality.
 
@@ -265,6 +303,8 @@ Match metrics to type: curated lists optimize for trust and backlinks; product r
 | **Incomplete docs** | Lack of clear descriptions frustrates users |
 | **Generic titles** | Missing keywords reduces discoverability |
 | **Thin awesome lists** | Low-quality or uncurated items hurt credibility |
+| **Profile README = product README** | Pasting install/Contributing/screenshot-heavy templates on `username/username` — use the **profile** checklist |
+| **Link sprawl on profile** | Same homepage/social/email repeated in badges, tables, and long copy — consolidate |
 
 ## Output Format
 
@@ -272,7 +312,7 @@ Match metrics to type: curated lists optimize for trust and backlinks; product r
 - **Surface scope** (profile vs specific repository; README vs Pages)
 - **Repository name, About, Topics** (if optimizing metadata)
 - **Surface** (README, Pages, gist, awesome repo)
-- **README structure** (sections, word count, GEO practices if applicable)
+- **README structure** (sections, word count, GEO practices if applicable) — **if profile README**, cite **short** outline + deduped links + optional widgets per **Profile README** section above
 - **Optimization** (keywords, structure, links)
 - **Ready-to-use** copy or structure where applicable
 

@@ -4,6 +4,12 @@ For broad or ambiguous feature/product requests, use `product-brainstorming-plan
 
 Use `skill-evaluation-iteration` when testing, comparing, strengthening, or forward-testing skills.
 
+Use `agentskills-project-onboarding` when setting up AgentSkills in a new or
+existing repository, choosing a focused skillset or atomic skills, planning
+project agent instructions, deciding project versus user scope, recommending
+MCP presets, or verifying that AgentSkills routes correctly without installing
+unnecessary broad bundles.
+
 Use `skill-benchmark-design`, `scenario-test-authoring`,
 `before-after-evaluation`, `acceptance-criteria-mapper`,
 `prompt-regression-testing`, `skill-output-scoring`, and
@@ -98,9 +104,11 @@ Use `visual-ui-ux-audit`, `tailwind-design-system`, and `react-next-performance-
 
 Use `qa-test-strategy` and `release-launch-readiness` before public launches or high-risk deployments.
 
-Use `ticket-triage`, `reply-drafting`, `escalation-pack`, and
-`kb-from-resolution` for customer support triage, reviewed replies,
-escalations, and support knowledge drafts.
+Use `ticket-triage`, `reply-drafting`, `escalation-pack`,
+`kb-from-resolution`, and `customer-health-review` for customer support triage,
+reviewed replies, escalations, support knowledge drafts, account health
+reviews, QBR briefs, renewal risk, adoption plans, and customer success action
+plans.
 
 Use `issue-to-plan`, `pr-review`, `regression-check`, and `release-risk` for
 engineering issue planning, code review, regression coverage, and release

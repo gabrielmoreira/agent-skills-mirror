@@ -34,6 +34,20 @@ This skill enables agents to generate LinkedIn post copy optimized for engagemen
 
 **Why it matters for copy**: Match CTA and length to the **form** (e.g. a document deck vs a 5-line hot take). Do not treat a **short post** and an **Article** as interchangeable.
 
+## Platform Positioning
+
+LinkedIn is a professional network—its core value is career identity, B2B relationships, and professional content. Key differences from general social platforms:
+
+| Dimension | LinkedIn | Meta / X / TikTok |
+|-----------|----------|--------------------|
+| **Primary intent** | Job seeking, B2B networking, industry learning | Entertainment, social, discovery |
+| **Identity** | Real name + career history | Username or lifestyle persona |
+| **Content tone** | Professional, constructive | Casual, entertaining, opinion |
+| **B2B lead value** | High (job title + company targeting) | Low to medium |
+| **Algorithm signal** | Professional interest + network + editorial | Engagement, watch time, virality |
+
+**Prioritize LinkedIn when**: targeting B2B buyers, building professional authority, recruiting, or publishing industry thought leadership. For consumer brand awareness or entertainment, other platforms are often more effective.
+
 ## How the Feed Ranks (what to write for)
 
 - The feed is **not** a pure reverse-chronological friend list. It blends **1st-degree connections, follows, company/topic interest, and recommended “out of network”** content from the **Economic Graph**, plus ads. [How the Feed ranks content](https://www.linkedin.com/help/linkedin/answer/a9554004)
@@ -42,12 +56,61 @@ This skill enables agents to generate LinkedIn post copy optimized for engagemen
 
 **Writing implications**: Strong **first line** and **on-topic depth**; comments that add substance; avoid templates that look automated or “pod” coordinated.
 
-## Off-Site SEO and GEO (brief)
+## Off-Site Search Visibility (SEO & GEO)
 
-- **Short feed posts** are often **login-gated** for crawlers; do **not** assume every post is indexed on Google like a blog post.
-- **Public profile, Company Page, and Articles** (where public) are stronger for **name/company/role** style queries. Align **headline, about, and entity names** with your site and other public bios for **E-E-A-T**-style consistency.
-- **GEO** (AI/search answers): one clear, quotable line **who you help** + links to **evidence** (site, case study, talk) in profile or long-form, not only in DMs or groups.
-- For **link previews** on social: **open-graph**; for people/org **entities**: **entity-seo**; for **generative/AI search** strategy: **generative-engine-optimization**.
+LinkedIn content is visible to search engines on a **selective** basis—understand what gets indexed for SEO and cited for GEO.
+
+### What Google Indexes vs. What Is Login-Gated
+
+| Surface | Search Visibility | GEO (AI citation) Value |
+|---------|-----------------|-------------------------|
+| **Public profile** (Headline, About, Experience) | Indexed for name/company/role queries | Strong entity signal; citable paragraphs |
+| **Articles** (long-form editor) | Indexed when set to public | High; structured paragraphs with keywords |
+| **Company Page** | Indexed for brand queries | Medium; brand entity signals |
+| **Short feed posts** | **Login-gated**—not indexed | **Low**; cannot be cited if behind login |
+| **Newsletter issues** | Indexed if public; behind login if subscriber-only | Depends on visibility setting |
+
+### SEO Through LinkedIn
+
+- **Headline** is the most SEO-visible field on your profile—treat it as a title tag. Include primary keyword + value proposition (e.g. “B2B SaaS Marketing | Helping startups scale through content”).
+- **About section**: Write public-facing paragraphs with keywords and proof points. This is indexed and often appears in Google search snippets.
+- **Featured section**: Use to showcase key links (site, case studies, press). These appear on your public profile and add backlink value.
+- **Articles**: Long-form content on LinkedIn ranks independently on Google. Treat as secondary publication, not primary—repurpose site content with canonical or unique article.
+- **Consistency**: Align name, headline, and entity names across LinkedIn, your site, and other public bios. See **entity-seo** for `sameAs` alignment.
+
+### GEO Through LinkedIn
+
+- **Entity consistency**: Your LinkedIn profile is a high-authority entity source. AI search tools (ChatGPT, Perplexity, Google AI Overviews) can cite your LinkedIn profile when answering “who is [person]” or “what does [company] do” queries.
+- **Citable paragraphs**: Write your About section in answer-first format (40–60 words per block) so AI tools can extract and cite it directly.
+- **Evidence links**: Add links to your site, case studies, talks, and publications in Featured and About. AI tools cite external links as supporting references.
+- **Public articles**: Publish LinkedIn Articles on relevant topics; well-structured articles with data and citations increase the likelihood of AI citation.
+- **Limitation**: Short feed posts behind login walls are invisible to AI crawlers and search engines. Do not rely on feed posts for GEO.
+
+**Actionable checklist**:
+- [ ] Headline includes primary keyword + value proposition (treat as meta title)
+- [ ] About section written in answer-first format (quotable paragraphs)
+- [ ] Featured section showcases site, case studies, key publications
+- [ ] Entity names (name, company, role) consistent across LinkedIn and site
+- [ ] At least one public Article published on a relevant industry topic
+- [ ] LinkedIn profile URL uses custom alias (not default ID string)
+
+For implementation details: **open-graph** (link previews), **entity-seo** (people/org sameAs), **generative-engine-optimization** (cross-platform GEO).
+
+## Profile Modules for Discovery
+
+Key LinkedIn profile modules that affect search visibility and AI citation:
+
+| Module | SEO/GEO Value | Optimization |
+|--------|---------------|--------------|
+| **Headline** | Highest—indexed, appears in search snippets | Customize beyond job title; include keyword + audience + value |
+| **About** | High—indexed; citable for AI | Write in answer-first format; include proof points, external links |
+| **Featured** | Medium—showcases key links on public profile | Add site URL, case studies, press, portfolio |
+| **Experience (media)** | Low-medium—media attachments are indexed | Add relevant documents, links, images to each role |
+| **Skills & Endorsements** | Low—indexed but thin signal | Include relevant skills; endorsements add social proof |
+| **Articles** | High—indexed and rankable | Publish long-form content with keywords and data |
+| **Custom URL** | Indirect—clean URL improves shareability | Set to firstnamelastname or similar |
+
+For the full profile module inventory, see [LinkedIn help: Add sections to your profile](https://www.linkedin.com/help/linkedin/answer/a540837).
 
 ## Character Limits
 

@@ -20,7 +20,7 @@ Use this file when the user's wording leaves room for multiple valid asset plans
 - `single`: one static sprite
 - `idle`: looped breathing / stance / aura cycle
 - `cast`: spell or skill wind-up / release
-- `attack`: attack-only animation
+- `attack`: attack-only body animation; for controllable heroes/main characters, wide slash arcs and hit FX should be separate `fx`/`impact` sheets
 - `shoot`: ranged attack body action; projectile and muzzle flash should usually be separate assets
 - `jump`: airborne takeoff / rise / fall / landing action
 - `hurt`: damage reaction
@@ -49,7 +49,8 @@ Use this file when the user's wording leaves room for multiple valid asset plans
   - per form, choose only the needed sheets
 - `hero_action_bundle`
   - default: one sheet per action, often `idle` + `run` + `attack` or `shoot` + `jump`
-  - keep projectiles, muzzle flashes, impacts, and dust as separate assets unless tightly attached to the body action
+  - keep projectiles, muzzle flashes, slash arcs, weapon trails, impacts, and dust as separate assets unless the runtime supports wider per-action cells plus explicit origins
+  - body action sheets should preserve idle/run body scale; split wide FX rather than letting it shrink the body in a fixed cell
   - assemble an engine atlas only after each action passes QC
 - `engine_atlas`
   - delivery format only when it combines unrelated actions
@@ -83,6 +84,7 @@ Use this file when the user's wording leaves room for multiple valid asset plans
 
 - `"make a 4-direction main hero"` -> `player` + `player_sheet`
 - `"make a side-view hero with idle, run, shoot, and jump"` -> `player` + `hero_action_bundle`; generate one action sheet per action and keep projectile/impact assets separate
+- `"make a side-view hero melee attack"` -> `player` + `hero_action_bundle`; generate a body-only attack grid and separate slash/impact FX when the attack needs a wide arc
 - `"make a healer npc"` -> `npc` + `single_asset`, `role=healer`
 - `"make a healer npc walk sheet"` -> `npc` + `walk`
 - `"make a boss idle"` -> `creature` + `idle`; prefer `3x3`
@@ -109,7 +111,8 @@ Keep these mappings working:
 - use `align=center` for floating effects, projectiles, and detached FX
 - use `component_mode=largest` when raw sheets contain detached sparkles or edge debris
 - use `component_mode=all` when detached effects are an intentional part of the asset silhouette
-- for body-only controllable hero actions, prefer `component_mode=largest`; for projectile, impact, aura, or intentionally attached FX sheets, use `component_mode=all`
+- for body-only controllable hero actions, use `component_mode=largest`; for projectile, impact, aura, slash FX, or intentionally detached FX sheets, use `component_mode=all`
+- reject fixed-cell hero/player body actions when the body visibly shrinks compared with the accepted idle/run scale; split the wide FX or use a runtime with wider per-action cells and explicit origins
 - use a layout guide for prop packs, tileset-like atlases, fixed atlas rows, and non-directional 16-frame VFX-heavy action sequences; avoid making it the default for 4-direction walk sheets
 
 ## Output Shape

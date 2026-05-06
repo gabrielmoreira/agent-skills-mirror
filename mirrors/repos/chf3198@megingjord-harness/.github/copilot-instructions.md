@@ -81,3 +81,11 @@ Install tools via CLI as needed. Don’t ask permission.
 ## Team&Model Signing
 
 AI-authored baton artifacts, PR evidence, and governance docs must include human alias + structured `Team&Model` provenance.
+
+## HAMR Cross-Team Routing
+
+All governed provider calls route through HAMR (`https://hamr.chf3198.workers.dev`). Activate per-checkout: `npm run hamr:activate`. Canonical contract: `instructions/hamr-routing.instructions.md`. The Global Task Router (lane selection) and HAMR (cost/observability mechanics) are complementary — HAMR does not duplicate lane policy.
+
+## Skill Index
+
+Auto-derived from `skills/<name>/SKILL.md` frontmatter — see [`docs/skills-copilot.md`](../docs/skills-copilot.md). Regenerate via `node scripts/global/skill-views-derive.js`.

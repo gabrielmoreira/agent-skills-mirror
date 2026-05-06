@@ -1,6 +1,6 @@
 ---
 name: clawdcursor
-version: 0.8.7
+version: 0.8.8
 description: >
   The skill that gives AI agents eyes, hands, and a keyboard on a real desktop.
   When the user asks you to do something a human would normally do at their
@@ -27,7 +27,10 @@ metadata:
   openclaw:
     requires: {}
     install:
-      - npm install -g clawdcursor
+      # clawdcursor isn't published to the npm registry — `npm install -g clawdcursor`
+      # would 404. The documented installer clones the repo into ~/clawdcursor,
+      # runs npm install + build, and `npm link`s the global shim.
+      - curl -fsSL https://clawdcursor.com/install.sh | bash
       - clawdcursor consent --accept
     skill_dir: ~/.openclaw/workspace/skills/clawdcursor
 ---
@@ -67,7 +70,7 @@ metadata:
 > - MCP clients: add `"args": ["mcp", "--compact"]` to your config.
 > - REST clients: use `GET /tools?mode=compact` and `POST /execute/{compound}` with an `action` enum.
 >
-> Granular mode's 74 tools are kept for back-compat. Compact's 6 tools are ~12× smaller and reduce mis-tool-selection. Use granular only if your runtime MUST have every primitive as its own top-level schema.
+> Granular mode's 75 tools are kept for back-compat. Compact's 6 tools are ~12× smaller and reduce mis-tool-selection. Use granular only if your runtime MUST have every primitive as its own top-level schema.
 
 If you connect via MCP with `--compact`, or hit REST's compact mode, you get a
 single tool that takes the whole task:
@@ -196,9 +199,9 @@ Never self-approve actions on these surfaces. The safety layer elevates them to 
 
 | Mode | Command | Brain | Tools available |
 |------|---------|-------|-----------------|
-| `serve` | `clawdcursor serve` | **You** (REST client) | 74 granular + 6 compact via HTTP |
-| `mcp` | `clawdcursor mcp [--compact]` | **You** (MCP client) | 74 granular (default) or 6 compact (`--compact`) via stdio |
-| `start` | `clawdcursor start` | Built-in LLM pipeline | 74 granular + autonomous agent (submit a task, poll for completion) |
+| `serve` | `clawdcursor serve` | **You** (REST client) | 75 granular + 6 compact via HTTP |
+| `mcp` | `clawdcursor mcp [--compact]` | **You** (MCP client) | 75 granular (default) or 6 compact (`--compact`) via stdio |
+| `start` | `clawdcursor start` | Built-in LLM pipeline | 75 granular + autonomous agent (submit a task, poll for completion) |
 
 In `serve` and `mcp` modes: **you reason, clawdcursor acts.** There is no built-in LLM. You call tools, interpret results, decide next steps. In `start` mode: clawdcursor reasons AND acts — hand it a plain-English task and poll for completion.
 
@@ -220,7 +223,7 @@ In `serve` and `mcp` modes: **you reason, clawdcursor acts.** There is no built-
 }
 ```
 
-**Granular — 74 individual tools (power-user, back-compat, larger prompt budget):**
+**Granular — 75 individual tools (power-user, back-compat, larger prompt budget):**
 ```json
 {
   "mcpServers": {
@@ -242,7 +245,7 @@ All POST endpoints require `Authorization: Bearer <token>` — token at
 `~/.clawdcursor/token`.
 
 ```
-GET  /tools                  → 74 granular schemas (OpenAI function-calling)
+GET  /tools                  → 75 granular schemas (OpenAI function-calling)
 GET  /tools?mode=compact     → 6 compound schemas (recommended for LLMs)
 POST /execute/{name}         → run any tool by name — granular or compact
 GET  /health                 → {"status":"ok","version":"<x.y.z>"}
@@ -448,6 +451,15 @@ Per-OS setup notes:
 - **Changelog:** CHANGELOG.md
 
 ---
+
+**What's new in 0.8.8:**
+- **`mod` modifier now resolves correctly on every platform** — `computer({"action":"key","combo":"mod+s"})` (the canonical example all over SKILL.md) now invokes Cmd+S on macOS and Ctrl+S on Windows/Linux. Previously the legacy `NativeDesktop` had no `mod` translation, so the call either threw `Unknown key: "mod"` (Win/Linux) or silently typed a literal `s` (macOS). The safety blocklist also resolves `mod` correctly so `mod+q` blocks on macOS the same as `cmd+q`.
+- **Compact `accessibility({"action":"set_value", ...})` now actually works** — the compact dispatcher delegated to a `set_field_value` granular tool that wasn't registered, so calls returned `{isError: true}` with `delegate not registered`. Now registered in `getA11yDepthTools()` with the standard `name` / `value` / `processId` / `controlType` parameters. Tool count: 74 → 75.
+- **`smart_click` OCR no longer matches text in background windows** — full-screen OCR could match text behind the focused window (e.g. Outlook visible behind a "Pick an account" dialog showing the same email). Now prefers candidates inside the active window's bounds and falls through to full-screen with a `[WARNING: matched outside focused window]` annotation only if the foreground produced no match.
+- **`invoke-element.ps1` no longer hangs on web/Electron buttons** — React/Chromium buttons sometimes advertise UIA InvokePattern but block on `Invoke()` without throwing. The script now wraps the pattern call in a `Task.Run` with a 2s timeout and emits the bounds-fallback JSON the legacy catch already produced. Direct callers of the PowerShell script benefit; HTTP/MCP callers were already protected by `smart_click`'s 10s outer timeout.
+- **OpenClaw install metadata fixed** — the YAML frontmatter at the top of this file used to invoke `npm install -g clawdcursor` as step 1, but the package isn't published to the npm registry (404). Now uses the documented `curl -fsSL https://clawdcursor.com/install.sh | bash` path that matches the README and `install.sh`.
+- **Routine dependency hygiene** — express 4 → 5 (major), commander 12 → 14 (major), dotenv 16 → 17 (major), sharp 0.33 → 0.34, ESLint group bumps within v10. All passing CI on Ubuntu/macOS/Windows × Node 20/22.
+- **Lint hygiene** — cleared all 10 unused-vars warnings the CI was surfacing as annotations (74 → 64 warnings). Pure cleanup; no functional change.
 
 **What's new in 0.8.7:**
 - **Direct tool execution now goes through the safety gate** — every tool invocation via REST `/execute/:name` and MCP `callTool` now passes through a shared `safety-gate` module. Previously, direct tool calls bypassed the same safety checks the agent loop applied. Read-only tools, blocked tools, and confirm-tier tools all now resolve consistently regardless of the entry point.

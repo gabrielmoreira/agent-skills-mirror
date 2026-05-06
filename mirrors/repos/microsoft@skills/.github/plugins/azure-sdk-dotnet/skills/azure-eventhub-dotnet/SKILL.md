@@ -34,15 +34,12 @@ dotnet add package Azure.Storage.Blobs
 ## Environment Variables
 
 ```bash
-EVENTHUB_FULLY_QUALIFIED_NAMESPACE=<namespace>.servicebus.windows.net
-EVENTHUB_NAME=<event-hub-name>
-
-# For checkpointing (EventProcessorClient)
-BLOB_STORAGE_CONNECTION_STRING=<storage-connection-string>
-BLOB_CONTAINER_NAME=<checkpoint-container>
-
-# Alternative: Connection string auth (not recommended for production)
-EVENTHUB_CONNECTION_STRING=Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=...
+EVENTHUB_FULLY_QUALIFIED_NAMESPACE=<namespace>.servicebus.windows.net  # Required: Event Hubs fully qualified namespace
+EVENTHUB_NAME=<event-hub-name>  # Required: Event Hub name
+BLOB_STORAGE_CONNECTION_STRING=<storage-connection-string>  # Alternative to Entra ID auth
+BLOB_CONTAINER_NAME=<checkpoint-container>  # Required: checkpoint container name
+EVENTHUB_CONNECTION_STRING=Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=...  # Alternative to Entra ID auth
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
@@ -52,8 +49,13 @@ using Azure.Identity;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
 
-// Always use DefaultAzureCredential for production
-var credential = new DefaultAzureCredential();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 
 var fullyQualifiedNamespace = Environment.GetEnvironmentVariable("EVENTHUB_FULLY_QUALIFIED_NAMESPACE");
 var eventHubName = Environment.GetEnvironmentVariable("EVENTHUB_NAME");

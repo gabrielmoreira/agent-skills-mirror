@@ -48,8 +48,9 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-AZURE_MAPS_SUBSCRIPTION_KEY=<your-subscription-key>
-AZURE_MAPS_CLIENT_ID=<your-client-id>  # For Entra ID auth
+AZURE_MAPS_SUBSCRIPTION_KEY=<your-subscription-key>  # Only required for AzureKeyCredential auth
+AZURE_MAPS_CLIENT_ID=<your-client-id>  # Required: Azure Maps client ID
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
@@ -66,13 +67,19 @@ var credential = new AzureKeyCredential(subscriptionKey);
 var client = new MapsSearchClient(credential);
 ```
 
-### Microsoft Entra ID (Recommended for Production)
+### Microsoft Entra Token Credential
 
 ```csharp
 using Azure.Identity;
 using Azure.Maps.Search;
 
-var credential = new DefaultAzureCredential();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 var clientId = Environment.GetEnvironmentVariable("AZURE_MAPS_CLIENT_ID");
 
 var client = new MapsSearchClient(credential, clientId);

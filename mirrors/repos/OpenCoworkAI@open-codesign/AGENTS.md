@@ -85,6 +85,23 @@ Do not reintroduce a verifier subagent, snip tool, custom bash tool, custom list
 - Built-in skills use the agentskills-style `SKILL.md` format.
 - Skill and scaffold manifests should carry license and source metadata.
 
+### Resource Boundaries
+
+- Markdown skills in `apps/desktop/resources/templates/skills/*.md` are method rules. They tell the agent how to work; they do not copy files into a workspace.
+- Brand refs in `apps/desktop/resources/templates/brand-refs/*/DESIGN.md` are reference-only design systems loaded as `skill("brand:<slug>")`. Do not edit them for a project; translate adopted choices into the workspace `DESIGN.md`.
+- Scaffolds in `apps/desktop/resources/templates/scaffolds/**` are concrete starter/source assets copied by `scaffold(kind, destPath)`. They can be JSX, HTML, CSS, Markdown, or other text formats if the manifest describes them accurately.
+- Design-skill snippets in `apps/desktop/resources/templates/design-skills/*.jsx` are copyable JSX component patterns exposed through the virtual filesystem as `skills/<file>.jsx`. They are source snippets, not markdown skills and not brand authority.
+- Workspace `DESIGN.md` is the project-specific design-system baton. It is authoritative for the current design once present, and generated work should preserve or repair it rather than treating it as another preset.
+
+### Built-In Starters And Scaffolds
+
+- Treat starter/scaffold assets as product code, not prompt filler. Review the actual file contents as well as the manifest before changing or adding presets.
+- Keep source format and filename extension aligned. Full HTML documents must live as `.html`, JSX/React starters as `.jsx`, and CSS snippets as `.css`. The `scaffold()` tool should preserve the source extension when copying, but the preset asset itself should still be correctly named and described.
+- Built-in HTML starters should be self-contained and previewable in the current runtime. Do not add Reveal.js, React, Babel, Chart.js, or other CDN/runtime scripts to scaffold assets. If a starter needs runtime behavior, use local plain HTML/CSS/JS or an app-provided/lazy-loaded dependency with a clear license path.
+- Avoid weak placeholder copy such as "Deck title", "Page content", "Replace this", or "Point one". Use neutral, usable sample content and expose obvious replacement points through `TWEAK_DEFAULTS` when the starter is JSX.
+- Manifest descriptions should say when a starter is HTML or CSS and should call out extension-sensitive assets, especially files that agents might otherwise copy into `_starters/*.jsx`.
+- When touching `apps/desktop/resources/templates/scaffolds/**`, audit for extension/content mismatches, external network URLs, stale placeholder copy, and manifest drift. Add or update focused scaffold/runtime tests when the change affects copy paths, preview classification, or tool details.
+
 ## Stack and Conventions
 
 - Package manager: `pnpm` only. Never use `npm` or `yarn`.

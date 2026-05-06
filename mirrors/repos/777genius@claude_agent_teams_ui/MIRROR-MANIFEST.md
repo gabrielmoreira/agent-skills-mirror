@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 7 followed patterns, 16 file(s) materialized.
+Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 8 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 7 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 16 |
+| Followed pats | 8 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 7 followed 
 - `docs/FEATURE_ARCHITECTURE_STANDARD.md`
 - `docs/team-management/debugging-agent-teams.md`
 - `src/features/README.md`
+- `docs/research/gastown-paperclip-comparison-2026-05-05.md`
 - `.github/CONTRIBUTING.md`
 - `.github/CODE_OF_CONDUCT.md`
 - `.github/SECURITY.md`
@@ -78,9 +79,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
 | 12 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
 | 13 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 14 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 15 | → | [`README.md`](README.md) |
-| 16 | → | [`src/features/README.md`](src/features/README.md) |
+| 14 | → | [`docs/research/gastown-paperclip-comparison-2026-05-05.md`](docs/research/gastown-paperclip-comparison-2026-05-05.md) |
+| 15 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 16 | → | [`README.md`](README.md) |
+| 17 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

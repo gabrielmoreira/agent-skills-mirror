@@ -4,6 +4,15 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.129](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d109910)
+
+_+1,335 tokens_
+
+- **NEW:** System Prompt: Autonomous loop persistence guidance (CLAUDE_CODE_LOOP_PERSISTENT) — Adds timer-invocation guidance for autonomous work loops, including when to continue established work, maintain current PRs, broaden scope before stopping, and require clear authorization for irreversible actions.
+- **REMOVED:** Agent Prompt: Verification specialist — Removed the adversarial verification subagent prompt that required independent builds, tests, browser/API checks, and PASS/FAIL/PARTIAL verdicts without modifying the project.
+- **REMOVED:** Data: Background agent state classification examples — Removed the standalone background-agent state-classification examples data prompt.
+- Agent Prompt: Background agent state classifier — Expands notification-state classification with detailed done/working/blocked/failed boundaries, explicit marker rules, embedded examples, cron/re-poll handling, optional-offer vs delivery-gate distinctions, and lock-screen-oriented `detail`, `needs`, and `output.result` guidance.
+
 # [2.1.128](https://github.com/Piebald-AI/claude-code-system-prompts/commit/526c2d3)
 
 _+1,406 tokens_

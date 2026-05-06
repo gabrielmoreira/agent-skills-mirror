@@ -54,6 +54,10 @@ Two behavioral changes reduce manual output handling:
 
 These reduce the need for manual output capture patterns in 1.117+ environments. The redirect-to-file fallback remains valid for edge cases.
 
+## VS Code 1.118 Agentic Execution Sub-Tool
+
+The agentic execution sub-tool in 1.118 pre-filters terminal output before the agent sees it. This reduces noise (build warnings, progress bars, ANSI escapes) but means some output may be silently trimmed from the agent's view. The redirect-to-file fallback from "Output Capture Failures" above remains critical when full unfiltered output matters (e.g., parsing exact error messages, capturing full test results, or diagnosing encoding issues).
+
 ## Falsifier — Backtick Hazard
 
 The Backtick Hazard rule is load-bearing because the underlying defect is unfixed in VS Code through 1.118. Tracking issue: [microsoft/vscode#295620](https://github.com/microsoft/vscode/issues/295620) ("Copilot with Claude models fails to handle backticks with gh") — open, milestone *On Deck*, no scheduled fix. Adjacent terminal-tool work shipped in 1.118 ([PR #307960](https://github.com/microsoft/vscode/pull/307960) heredoc handling) does not address backtick interpretation in double-quoted arguments. Re-evaluate this rule when #295620 closes; until then, the temp-file pattern is mandatory.

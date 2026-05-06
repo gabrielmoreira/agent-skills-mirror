@@ -16,6 +16,10 @@ talking points, and follow-up checklists.
 Use `ops-bottleneck-review` for workflow constraints, bottleneck maps, process
 fixes, delegation opportunities, and owner operations action plans.
 
+Use `action-tracker` when owner decisions, vendor follow-ups, cash actions,
+pricing changes, or operations fixes need owners, deadlines, blockers, and
+follow-through.
+
 Use `metric-narrative`, `variance-commentary`, `pricing-packaging-strategy`, and
 `concise-technical-writing` when owner artifacts need metrics, variance,
 pricing context, or tighter writing.

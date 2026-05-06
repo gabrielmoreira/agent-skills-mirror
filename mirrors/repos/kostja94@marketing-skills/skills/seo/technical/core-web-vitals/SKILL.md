@@ -2,7 +2,7 @@
 name: core-web-vitals
 description: When the user wants to optimize Core Web Vitals, fix LCP, INP, or CLS issues. Also use when the user mentions "Core Web Vitals," "CWV," "LCP," "INP," "CLS," "FID," "page speed," "page performance," "Largest Contentful Paint," "Interaction to Next Paint," "Cumulative Layout Shift," or "Page Experience." For GSC CWV, use google-search-console.
 metadata:
-  version: 1.0.1
+  version: 1.0.2
 ---
 
 # SEO Technical: Core Web Vitals
@@ -14,7 +14,7 @@ Guides optimization of Core Web Vitals (CWV)—Google's user experience metrics 
 ## Scope (Technical SEO)
 
 - **LCP** (Largest Contentful Paint): Loading performance; time to render largest content element
-- **INP** (Interaction to Next Paint): Responsiveness; replaced FID in March 2024
+- **INP** (Interaction to Next Paint): Responsiveness; replaced FID on March 12, 2024
 - **CLS** (Cumulative Layout Shift): Visual stability; unexpected layout shifts
 
 ## Target Thresholds (75th percentile, field data)
@@ -52,7 +52,7 @@ LCP measures the time until the largest content element (image, video, or text b
 
 ## INP Optimization
 
-INP measures responsiveness—time from user interaction to next paint. Replaced FID in March 2024.
+INP measures responsiveness—time from user interaction to next paint. Replaced FID on March 12, 2024.
 
 | Cause | Fix |
 |-------|-----|

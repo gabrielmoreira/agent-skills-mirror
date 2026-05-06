@@ -28,9 +28,10 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-AZURE_SUBSCRIPTION_ID=<your-subscription-id>
-AZURE_RESOURCE_GROUP=<your-resource-group>
-AZURE_MYSQL_SERVER_NAME=<your-mysql-server>
+AZURE_SUBSCRIPTION_ID=<your-subscription-id>  # Required: Azure subscription ID
+AZURE_RESOURCE_GROUP=<your-resource-group>  # Required: resource group name
+AZURE_MYSQL_SERVER_NAME=<your-mysql-server>  # Required: MySQL Flexible Server name
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
@@ -41,7 +42,14 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.MySql;
 using Azure.ResourceManager.MySql.FlexibleServers;
 
-ArmClient client = new ArmClient(new DefaultAzureCredential());
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
+ArmClient client = new ArmClient(credential);
 ```
 
 ## Resource Hierarchy

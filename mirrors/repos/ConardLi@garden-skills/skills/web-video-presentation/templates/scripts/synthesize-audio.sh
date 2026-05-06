@@ -29,7 +29,7 @@ VOICE_ARG=""
 for arg in "$@"; do
   case "$arg" in
     --force) FORCE=true ;;
-    --voice=*) VOICE_ARG="--voice-id ${arg#--voice=}" ;;
+    --voice=*) VOICE_ARG="--voice ${arg#--voice=}" ;;
     *) echo "✗ unknown arg: $arg" >&2; exit 1 ;;
   esac
 done

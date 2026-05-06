@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 12 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,15 +62,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
-| 4 | ✓ | [`packages/desktop-electron/AGENTS.md`](packages/desktop-electron/AGENTS.md) |
-| 5 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
-| 6 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
-| 7 | ✓ | [`packages/opencode/src/server/routes/instance/AGENTS.md`](packages/opencode/src/server/routes/instance/AGENTS.md) |
-| 8 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
-| 9 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
-| 10 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
-| 11 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
-| 12 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
+| 4 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
+| 5 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
+| 6 | ✓ | [`packages/opencode/src/server/routes/instance/AGENTS.md`](packages/opencode/src/server/routes/instance/AGENTS.md) |
+| 7 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
+| 8 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
+| 9 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
+| 10 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 11 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
 
 ---
 

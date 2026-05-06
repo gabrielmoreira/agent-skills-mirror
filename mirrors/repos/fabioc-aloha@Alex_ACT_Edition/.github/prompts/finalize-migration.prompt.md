@@ -67,7 +67,7 @@ The script's triage table has a "review" bucket for files it couldn't confidentl
 ## Pass 4 — Verification
 
 1. Run `node .github/muscles/heir-doctor.cjs` — must exit 0.
-2. Run `node .github/scripts/upgrade-self.cjs` (dry-run) — confirm none of your newly-ported `local/` files appear in "would write" or "would delete". If they do, you put them in the wrong path.
+2. Run `node .github/scripts/upgrade-self.cjs` (dry-run) — confirm your `local/` files appear in the "heir-owned files to recover" count, not in the "relocations" list. If relocations include files you already placed in `local/`, something is mispathed.
 3. Spot-check a session: ask the AI a domain-specific question that the ported instructions should answer. Confirm the routing works.
 
 ## Pass 5 — Commit
@@ -89,4 +89,4 @@ Keep `.github-old-*/` in the commit. Delete it in a separate commit a week or tw
 - **Don't restore wholesale**: the snapshot is a reference, not a starting point. Most of it is replaced or obsolete.
 - **Don't restore agents or hooks**: Edition has no agent or hook primitive. Anything you depended on, port the *content* into a `prompts/local/*.prompt.md`.
 - **Don't keep old `inheritance:` frontmatter**: it's meaningless in Edition's path-based model and confuses readers.
-- **Don't skip Pass 4 verification**: silent path mistakes (missing `local/` segment) only surface on the next `upgrade-self.cjs` when Edition deletes your custom file.
+- **Don't skip Pass 4 verification**: silent path mistakes (missing `local/` segment) only surface on the next `upgrade-self.cjs` when your custom file gets relocated instead of recovered in-place.

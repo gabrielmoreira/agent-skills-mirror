@@ -148,7 +148,7 @@ Users may have multiple OneDrive accounts (personal + work). The `ai_memory_excl
 
 ## Configuration Reference
 
-`cognitive-config.json` fields (heir-owned, never overwritten on upgrade):
+`cognitive-config.json` fields (heir-owned, not overwritten on upgrade):
 
 | Field | Type | Default | Purpose |
 | --- | --- | --- | --- |
@@ -193,3 +193,9 @@ node .github/scripts/bootstrap-heir.cjs --ai-memory "<drive-name>" ...
 ```
 
 Overrides auto-selection during bootstrap. Persists to cognitive-config.json.
+
+## Falsifiability
+
+- This skill has failed if heirs report AI-Memory not loading, cross-project contamination, or irrelevant search results within 30 days of following the setup procedure
+- The folder structure convention is wrong if OneDrive sync conflicts corrupt the knowledge store on multi-device setups
+- The bootstrap sequence is stale if the cognitive-config.json schema changes and this skill references obsolete fields

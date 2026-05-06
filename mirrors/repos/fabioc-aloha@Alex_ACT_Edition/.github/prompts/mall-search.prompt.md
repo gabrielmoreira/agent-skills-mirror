@@ -36,5 +36,5 @@ Search the Plugin Mall catalog for plugins matching a query.
 ## Notes
 
 - Read-only: searching does not modify anything
-- The Mall has 282 plugins across 16 categories
 - Shape notation: `.S..` (skill), `.S.M` (skill+muscle), `ISP.` (trifecta), etc.
+- Plugin count and categories are derived from CATALOG.json at runtime

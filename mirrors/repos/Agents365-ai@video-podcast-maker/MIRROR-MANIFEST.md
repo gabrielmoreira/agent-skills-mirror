@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Agents365-ai/video-podcast-maker` — 26 default patterns, 8 followed patterns, 10 file(s) materialized.
+Mirror of `Agents365-ai/video-podcast-maker` — 26 default patterns, 7 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Agents365-ai/video-podcast-maker` — 26 default patterns, 8 followed
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 10 |
+| Followed pats | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `Agents365-ai/video-podcast-maker` — 26 default patterns, 8 followed
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `references/design-learning.md`
-- `references/workflow-steps.md`
 - `references/workflow-script.md`
 - `references/workflow-production.md`
 - `references/workflow-publish.md`
@@ -75,7 +74,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | → | [`references/workflow-production.md`](references/workflow-production.md) |
 | 8 | → | [`references/workflow-publish.md`](references/workflow-publish.md) |
 | 9 | → | [`references/workflow-script.md`](references/workflow-script.md) |
-| 10 | → | [`references/workflow-steps.md`](references/workflow-steps.md) |
 
 ---
 

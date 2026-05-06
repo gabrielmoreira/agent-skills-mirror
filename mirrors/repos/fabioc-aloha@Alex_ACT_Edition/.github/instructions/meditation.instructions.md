@@ -128,3 +128,9 @@ A meditation is complete when:
 - [ ] INDEX.md updated with new entries
 - [ ] Future Alex can pick up where we left off
 - [ ] No important insight lives only in context window
+
+## Would Revise If
+
+- Meditation rituals produce no actionable insights (skill extraction, pattern recognition, or architectural decisions) over a 90-day window
+- Chronicles accumulate without being referenced in subsequent sessions (write-only knowledge)
+- The time investment shows no measurable improvement in session continuity or decision quality

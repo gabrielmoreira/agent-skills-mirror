@@ -145,7 +145,7 @@ Re-evaluate at the 30-day mark; tune the recogniser or the reply format accordin
 
 ## Related
 
-- [`greeting-checkin.instructions.md`](../../instructions/greeting-checkin.instructions.md) — the always-on trigger
+- [`greeting-checkin.instructions.md`](../../instructions/greeting-checkin.instructions.md) — the activation trigger (fires on session greeting)
 - [`checkin.prompt.md`](../../prompts/checkin.prompt.md) — manual invocation
 - [`upgrade.prompt.md`](../../prompts/upgrade.prompt.md) — the action to take when an update is available
 - [`welcome.prompt.md`](../../prompts/welcome.prompt.md) — first-session orientation (different audience)

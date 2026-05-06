@@ -1,7 +1,7 @@
 ---
 name: baoyu-infographic
-description: Generate professional infographics with 21 layout types and 21 visual styles. Analyzes content, recommends layout×style combinations, and generates publication-ready infographics. Use when user asks to create "infographic", "信息图", "visual summary", "可视化", or "高密度信息大图".
-version: 1.57.1
+description: Generate professional infographics with 21 layout types and 22 visual styles. Analyzes content, recommends layout×style combinations, and generates publication-ready infographics. Use when user asks to create "infographic", "信息图", "visual summary", "可视化", or "高密度信息大图".
+version: 1.58.0
 metadata:
   openclaw:
     homepage: https://github.com/JimLiu/baoyu-skills#baoyu-infographic
@@ -84,7 +84,7 @@ Default behavior: **confirm before generation**.
 | Option | Values |
 |--------|--------|
 | `--layout` | 21 options (see Layout Gallery), default: bento-grid |
-| `--style` | 21 options (see Style Gallery), default: craft-handmade |
+| `--style` | 22 options (see Style Gallery), default: craft-handmade |
 | `--aspect` | Named: landscape (16:9), portrait (9:16), square (1:1). Custom: any W:H ratio (e.g., 3:4, 4:3, 2.35:1) |
 | `--lang` | en, zh, ja, etc. |
 | `--no-confirm` | Skip Step 4 only when the user explicitly requests direct generation without confirmation |
@@ -118,7 +118,7 @@ Default behavior: **confirm before generation**.
 
 Full definitions live at `references/layouts/<layout>.md`.
 
-## Style Gallery (21)
+## Style Gallery (22)
 
 | Style | Description |
 |-------|-------------|
@@ -143,6 +143,7 @@ Full definitions live at `references/layouts/<layout>.md`.
 | `morandi-journal` | Hand-drawn doodle, warm Morandi tones |
 | `retro-pop-grid` | 1970s retro pop art, Swiss grid, thick outlines |
 | `hand-drawn-edu` | Macaron pastels, hand-drawn wobble, stick figures |
+| `retro-popup-pop` | Retro popup collage, vintage UI, thick outlines, flat pop colors |
 
 Full definitions live at `references/styles/<style>.md`.
 
@@ -165,6 +166,7 @@ Full definitions live at `references/styles/<style>.md`.
 | Product Guide | `dense-modules` + `morandi-journal` |
 | Technical Guide | `dense-modules` + `pop-laboratory` |
 | Trendy Guide | `dense-modules` + `retro-pop-grid` |
+| Retro Pop Guide | `dense-modules` + `retro-popup-pop` |
 | Educational Diagram | `hub-spoke` + `hand-drawn-edu` |
 | Process Tutorial | `linear-progression` + `hand-drawn-edu` |
 
@@ -176,7 +178,7 @@ When the user's input contains these keywords, use the mapped layout as the lead
 
 | User Keyword | Layout | Recommended Styles | Default Aspect | Prompt Notes |
 |--------------|--------|--------------------|----------------|--------------|
-| 高密度信息大图 / high-density-info | `dense-modules` | `morandi-journal`, `pop-laboratory`, `retro-pop-grid` | portrait | — |
+| 高密度信息大图 / high-density-info | `dense-modules` | `morandi-journal`, `pop-laboratory`, `retro-pop-grid`, `retro-popup-pop` | portrait | — |
 | 信息图 / infographic | `bento-grid` | `craft-handmade` | landscape | Minimalist: clean canvas, ample whitespace, no complex background textures. Simple cartoon elements and icons only. |
 
 ## Output Structure

@@ -533,6 +533,111 @@ bun --filter api db:migrate   # Run migrations
 
 - `POST /polar` - Polar payment webhook (handles checkout, subscription lifecycle)
 
+### API Response Envelope
+
+All API responses follow a consistent envelope format produced by the `ok` and `fail` helpers in `apps/api/src/lib/response/`. Controllers must return responses through these helpers — never `c.json` directly.
+
+**Format:**
+
+```json
+{
+    "success": true,
+    "data": null,
+    "message": "Human-readable message.",
+    "code": 200,
+    "version": "0.0.31"
+}
+```
+
+| Field     | Type        | Description                                    |
+| --------- | ----------- | ---------------------------------------------- |
+| `success` | `boolean`   | Whether the request succeeded                  |
+| `data`    | `T \| null` | Response payload (`null` for side-effect-only) |
+| `message` | `string`    | Translated human-readable message              |
+| `code`    | `number`    | HTTP status code                               |
+| `version` | `string`    | API version from package.json (auto-bumped)    |
+
+**Helpers:**
+
+`ok(c, data, message?, code?)` — returns a success envelope.
+
+```typescript
+import { ok } from '@/lib/response'
+import { t } from '@openclaw/i18n'
+
+return ok(c, claws, t('api.clawsFetched'))
+return ok(c, null, t('api.clawDeleted'))
+return ok(c, { scheduled: true }, t('api.clawDeletionScheduled'))
+```
+
+`fail(c, message, code?, data?)` — returns an error envelope. The optional `data` parameter passes extra context (e.g., `retryAfter` for rate limits).
+
+```typescript
+import { fail } from '@/lib/response'
+import { t } from '@openclaw/i18n'
+
+return fail(c, t('api.clawNotFound'), 404)
+return fail(c, t('api.rateLimitExceeded'), 429, { retryAfter: 60 })
+```
+
+**Client handling:** the shared `RequestClient` in `packages/shared/` detects envelopes via duck-typing (all 5 fields present). On `success: true` it unwraps and returns `data` as `T`. On `success: false` it throws `Error` with the `message`. Client code stays clean:
+
+```typescript
+const claws = await api.getClaws()
+```
+
+`claws` is typed as `Claw[]` — the envelope is transparent.
+
+**Examples:**
+
+Success with data — `GET /agents → 200`
+
+```json
+{
+    "success": true,
+    "data": [{ "id": "abc", "name": "my-claw" }],
+    "message": "Claws fetched successfully.",
+    "code": 200,
+    "version": "0.0.31"
+}
+```
+
+Success without data — `POST /auth/send-otp → 200`
+
+```json
+{
+    "success": true,
+    "data": null,
+    "message": "Code sent successfully.",
+    "code": 200,
+    "version": "0.0.31"
+}
+```
+
+Error — `GET /agents/nonexistent → 404`
+
+```json
+{
+    "success": false,
+    "data": null,
+    "message": "Claw not found.",
+    "code": 404,
+    "version": "0.0.31"
+}
+```
+
+Error with extra data — `POST /auth/send-otp → 429`
+
+```json
+{
+    "success": false,
+    "data": { "retryAfter": 45 },
+    "message": "Too many requests. Please try again later.",
+    "code": 429,
+    "version": "0.0.31"
+}
+```
+
 ### Cloud Provider
 
 The Hetzner service implements the `CloudProvider` interface:

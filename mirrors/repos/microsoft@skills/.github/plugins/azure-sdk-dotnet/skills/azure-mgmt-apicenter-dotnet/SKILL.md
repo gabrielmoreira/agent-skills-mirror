@@ -26,9 +26,10 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-AZURE_SUBSCRIPTION_ID=<your-subscription-id>
-AZURE_RESOURCE_GROUP=<your-resource-group>
-AZURE_APICENTER_SERVICE_NAME=<your-apicenter-service>
+AZURE_SUBSCRIPTION_ID=<your-subscription-id>  # Required: Azure subscription ID
+AZURE_RESOURCE_GROUP=<your-resource-group>  # Required: resource group name
+AZURE_APICENTER_SERVICE_NAME=<your-apicenter-service>  # Required: API Center service name
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
@@ -38,7 +39,14 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.ApiCenter;
 
-ArmClient client = new ArmClient(new DefaultAzureCredential());
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
+ArmClient client = new ArmClient(credential);
 ```
 
 ## Resource Hierarchy

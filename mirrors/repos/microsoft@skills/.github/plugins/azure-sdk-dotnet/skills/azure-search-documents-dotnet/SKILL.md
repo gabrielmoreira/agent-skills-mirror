@@ -25,20 +25,26 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-SEARCH_ENDPOINT=https://<search-service>.search.windows.net
-SEARCH_INDEX_NAME=<index-name>
-# For API key auth (not recommended for production)
-SEARCH_API_KEY=<api-key>
+SEARCH_ENDPOINT=https://<search-service>.search.windows.net  # Required: search service endpoint
+SEARCH_INDEX_NAME=<index-name>  # Required: search index name
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
+SEARCH_API_KEY=<api-key>  # Only required for AzureKeyCredential auth
 ```
 
 ## Authentication
 
-**DefaultAzureCredential (preferred)**:
+**Microsoft Entra Token Credential**:
 ```csharp
 using Azure.Identity;
 using Azure.Search.Documents;
 
-var credential = new DefaultAzureCredential();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 var client = new SearchClient(
     new Uri(Environment.GetEnvironmentVariable("SEARCH_ENDPOINT")),
     Environment.GetEnvironmentVariable("SEARCH_INDEX_NAME"),

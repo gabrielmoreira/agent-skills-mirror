@@ -15,6 +15,9 @@ Use `account-based-marketing` and `competitive-market-research` for target
 account research, buying committees, competitor context, market evidence, and
 strategic account planning.
 
+Use `sales-pipeline-management` for pipeline stages, qualification, CRM hygiene,
+deal reviews, forecast accuracy, and revenue operating cadence.
+
 Use `sales-prospecting-outreach` for compliant outbound sequences, prospecting,
 reply handling, and approved outreach drafts. Use `sales-conversion-enablement`
 for discovery, call prep, demos, proposals, objections, and close plans.

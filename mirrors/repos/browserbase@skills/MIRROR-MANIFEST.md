@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 87 file(s) materialized.
+Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 87 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 87 |
+| Files         | 93 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -130,22 +130,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`skills/functions/LICENSE.txt`](skills/functions/LICENSE.txt) |
 | 70 | ✓ | [`skills/functions/REFERENCE.md`](skills/functions/REFERENCE.md) |
 | 71 | ✓ | [`skills/functions/SKILL.md`](skills/functions/SKILL.md) |
-| 72 | ✓ | [`skills/search/EXAMPLES.md`](skills/search/EXAMPLES.md) |
-| 73 | ✓ | [`skills/search/LICENSE.txt`](skills/search/LICENSE.txt) |
-| 74 | ✓ | [`skills/search/REFERENCE.md`](skills/search/REFERENCE.md) |
-| 75 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
-| 76 | ✓ | [`skills/ui-test/EXAMPLES.md`](skills/ui-test/EXAMPLES.md) |
-| 77 | ✓ | [`skills/ui-test/LICENSE.txt`](skills/ui-test/LICENSE.txt) |
-| 78 | ✓ | [`skills/ui-test/README.md`](skills/ui-test/README.md) |
-| 79 | ✓ | [`skills/ui-test/references/adversarial-patterns.md`](skills/ui-test/references/adversarial-patterns.md) |
-| 80 | ✓ | [`skills/ui-test/references/browser-recipes.md`](skills/ui-test/references/browser-recipes.md) |
-| 81 | ✓ | [`skills/ui-test/references/design-consistency.md`](skills/ui-test/references/design-consistency.md) |
-| 82 | ✓ | [`skills/ui-test/references/design-system.example.md`](skills/ui-test/references/design-system.example.md) |
-| 83 | ✓ | [`skills/ui-test/references/exploratory-testing.md`](skills/ui-test/references/exploratory-testing.md) |
-| 84 | ✓ | [`skills/ui-test/references/parallel-testing.md`](skills/ui-test/references/parallel-testing.md) |
-| 85 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
-| 86 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
-| 87 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
+| 72 | ✓ | [`skills/safe-browser/LICENSE.txt`](skills/safe-browser/LICENSE.txt) |
+| 73 | ✓ | [`skills/safe-browser/SKILL.md`](skills/safe-browser/SKILL.md) |
+| 74 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/.gitignore`](skills/safe-browser/templates/claude-agent-sdk/.gitignore) |
+| 75 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs`](skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs) |
+| 76 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package-lock.json`](skills/safe-browser/templates/claude-agent-sdk/package-lock.json) |
+| 77 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package.json`](skills/safe-browser/templates/claude-agent-sdk/package.json) |
+| 78 | ✓ | [`skills/search/EXAMPLES.md`](skills/search/EXAMPLES.md) |
+| 79 | ✓ | [`skills/search/LICENSE.txt`](skills/search/LICENSE.txt) |
+| 80 | ✓ | [`skills/search/REFERENCE.md`](skills/search/REFERENCE.md) |
+| 81 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
+| 82 | ✓ | [`skills/ui-test/EXAMPLES.md`](skills/ui-test/EXAMPLES.md) |
+| 83 | ✓ | [`skills/ui-test/LICENSE.txt`](skills/ui-test/LICENSE.txt) |
+| 84 | ✓ | [`skills/ui-test/README.md`](skills/ui-test/README.md) |
+| 85 | ✓ | [`skills/ui-test/references/adversarial-patterns.md`](skills/ui-test/references/adversarial-patterns.md) |
+| 86 | ✓ | [`skills/ui-test/references/browser-recipes.md`](skills/ui-test/references/browser-recipes.md) |
+| 87 | ✓ | [`skills/ui-test/references/design-consistency.md`](skills/ui-test/references/design-consistency.md) |
+| 88 | ✓ | [`skills/ui-test/references/design-system.example.md`](skills/ui-test/references/design-system.example.md) |
+| 89 | ✓ | [`skills/ui-test/references/exploratory-testing.md`](skills/ui-test/references/exploratory-testing.md) |
+| 90 | ✓ | [`skills/ui-test/references/parallel-testing.md`](skills/ui-test/references/parallel-testing.md) |
+| 91 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
+| 92 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
+| 93 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
 
 ---
 

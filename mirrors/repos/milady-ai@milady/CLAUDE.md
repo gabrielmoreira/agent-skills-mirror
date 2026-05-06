@@ -29,7 +29,8 @@ Desktop dev rationale (signals, Quit, `detached` children): `docs/apps/desktop-l
 
 Optional — link a local elizaOS source checkout for live package development:
 ```bash
-bun run setup:upstreams   # initializes repo-local ./eliza and links local @elizaos/* packages
+bun run eliza:local       # clone ./eliza, link local @elizaos/* packages, swap tsconfig to local-mode (alias: setup:upstreams)
+bun run eliza:packages    # rewrite manifests for npm @elizaos/* packages, restore packages-mode tsconfig
 ```
 
 ## Environment variables
@@ -111,13 +112,15 @@ scripts/
   dev-ui.mjs            Dev orchestrator (API + Vite)
   eliza/packages/app-core/scripts/run-node.mjs   CLI runner (spawns entry.js with NODE_PATH)
   run-repo-setup.mjs    Postinstall sequencer
-  setup-upstreams.mjs   Initialize repo-local upstreams and link @elizaos packages
+  eliza-source-mode.mjs Switch between `local` (repo-local ./eliza) and `packages` (npm @elizaos/*) modes; backed by disable-local-eliza-workspace.mjs + restore-local-eliza-workspace.mjs
+  lib/tsconfig-mode.mjs Apply scripts/templates/tsconfig.{packages,local}-mode.json on mode switches
+  setup-upstreams.mjs   Initialize repo-local upstreams and link @elizaos packages (called by eliza:local)
   patch-deps.mjs        Post-install patches for broken upstream exports
 ```
 
 ### App and plugin scaffold templates
 
-Two scaffolds live under the `eliza/` submodule and are copied + customized when the orchestrator handles `APP create` or `PLUGIN create`:
+Two scaffolds live in the elizaOS source tree (`eliza/templates/...` in local mode, or under the published `@elizaos/app-core` package in packages mode) and are copied + customized when the orchestrator handles `APP create` or `PLUGIN create`:
 
 - `eliza/templates/min-app/` — minimal Eliza app (Vite + React entry, runtime `Plugin` with one trivial action, `package.json` with the `elizaos.app` metadata block, vitest smoke test, hero image placeholder, `SCAFFOLD.md` with the sub-agent contract).
 - `eliza/templates/min-plugin/` — minimal Eliza runtime plugin (one action, one provider, `package.json` with the `elizaos.plugin` metadata block, vitest smoke test, `SCAFFOLD.md` with the sub-agent contract).
@@ -176,11 +179,18 @@ Cloud monetization is a first-class product constraint. App creators can earn th
 
 ## Dependencies on elizaOS
 
-All `@elizaos/*` packages use the `alpha` dist-tag. When developing locally, `bun run setup:upstreams` links packages from repo-local `./eliza` and `./plugins` so changes are picked up immediately. Set `MILADY_SKIP_LOCAL_UPSTREAMS=1` to use only npm-published versions.
+Milady builds against published `@elizaos/*` packages by default (`alpha` dist-tag). The `eliza/` directory is gitignored — a fresh clone has no local elizaOS checkout, and `bun install` resolves everything from npm.
 
-**`@elizaos/plugin-agent-orchestrator`:** Milady currently resolves this plugin from the repo-local `eliza/plugins/plugin-agent-orchestrator` submodule (nested under the `eliza/` submodule) via `workspace:*`. That submodule tracks upstream `alpha`, so updating the submodule updates the orchestrator used in local development checkouts. Set `MILADY_SKIP_LOCAL_UPSTREAMS=1` to force npm-published packages instead.
+Two source modes, switched by `bun run eliza:local` / `bun run eliza:packages` (full docs in [README — elizaOS source modes](README.md#elizaos-source-modes-eject--uneject)):
 
-All official elizaOS plugin repos live under [https://github.com/elizaOS-plugins](https://github.com/elizaOS-plugins). For plugin work, prefer adding the relevant plugin repo as a git submodule under `eliza/plugins/` (tracked in `eliza/.gitmodules`) so we keep a local checkout we can patch when needed, and depend on it via `workspace:*` so Milady resolves the local package directly during development. Publish new versions to npm when ready.
+- **`packages` (default):** `MILADY_ELIZA_SOURCE=packages`. Runtime resolves `@elizaos/*` from npm. Checked-in `tsconfig.json` matches [scripts/templates/tsconfig.packages-mode.json](scripts/templates/tsconfig.packages-mode.json). Enforced by [scripts/standalone-eliza-package-contract.test.ts](scripts/standalone-eliza-package-contract.test.ts).
+- **`local`:** `MILADY_ELIZA_SOURCE=local`. `bun run eliza:local` clones `eliza/` (default URL `https://github.com/milady-ai/eliza.git`), links workspace packages into `node_modules/@elizaos/*`, and swaps the root tsconfig to source-priority paths from [scripts/templates/tsconfig.local-mode.json](scripts/templates/tsconfig.local-mode.json). Use this when patching elizaOS upstream alongside Milady.
+
+`MILADY_SKIP_LOCAL_UPSTREAMS=1` is the legacy equivalent of `MILADY_ELIZA_SOURCE=packages` — still respected for back-compat. Other knobs: `MILADY_ELIZAOS_DIST_TAG`, `MILADY_ELIZAOS_VERSION`, `MILADY_ELIZA_GIT_URL`, `MILADY_ELIZA_BRANCH` (see [scripts/lib/eliza-package-mode.mjs](scripts/lib/eliza-package-mode.mjs)).
+
+**`@elizaos/plugin-agent-orchestrator`:** in packages mode, resolved from npm. In local mode, Milady resolves it from the repo-local `eliza/plugins/plugin-agent-orchestrator` checkout (nested under `eliza/`) via `workspace:*`. Updating the local checkout in local mode updates the orchestrator used in development.
+
+All official elizaOS plugin repos live under [https://github.com/elizaOS-plugins](https://github.com/elizaOS-plugins). For plugin work, prefer adding the plugin repo under `eliza/plugins/` in local mode and depending on it via `workspace:*`. Publish to npm when ready, then switch back to packages mode.
 
 ## File Operations
 

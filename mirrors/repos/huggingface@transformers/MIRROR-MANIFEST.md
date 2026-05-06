@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `huggingface/transformers` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
+Mirror of `huggingface/transformers` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `huggingface/transformers` — 26 default patterns, 1 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 6 |
+| Followed pats | 0 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `huggingface/transformers` — 26 default patterns, 1 followed pattern
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/source/en/modular_transformers.md`
+_None._
 
 ## File Index
 
@@ -64,7 +64,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | → | [`docs/source/en/modular_transformers.md`](docs/source/en/modular_transformers.md) |
 
 ---
 

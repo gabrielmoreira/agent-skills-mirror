@@ -142,3 +142,9 @@ Every adversarial review should produce:
 | Ignoring raised concerns | Wasted review | Track and respond to all |
 | Only reviewing when convenient | Skipping when rushed | High-stakes = mandatory review |
 | Defensive response | Treating challenge as attack | "Thank you, let me address that" |
+
+## Would Revise If
+
+- Adversarial review consistently fails to surface real weaknesses (protocol is decorative)
+- The protocol creates analysis paralysis that blocks shipping more than it prevents defects
+- A lighter-weight challenge method achieves equivalent defect-detection at lower cost

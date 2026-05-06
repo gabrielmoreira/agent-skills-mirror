@@ -260,6 +260,40 @@ English "It is X that..." structures should not be directly calqued.
 - Bad ZH: "重要的**是**用户体验" (是...的 calque)
 - Good ZH: "用户体验最重要"
 
+### 25. CJK Typography & Fragment Sentences
+
+English technical writing tolerates noun-only fragments ("Lint failed.", "Run conditions: X, Y, Z."). Korean and Japanese readers expect complete sentences with verbs in body text. AI translations calque the source's terse rhythm directly, producing reports that feel choppy and unfinished.
+
+**Body fragments (본문 안의 명사 종결) → 완전한 문장으로:**
+
+- Bad KO: "`ANTHROPIC_API_KEY` 미설정."
+- Good KO: "`ANTHROPIC_API_KEY`는 설정하지 않았고, OAuth로 대신 인증합니다."
+- Bad KO: "lint 실패."
+- Good KO: "lint가 실패했습니다." (standalone) / "결과: lint 실패" (라벨 안)
+- Bad KO: "anti-pattern 1개."
+- Good KO: "anti-pattern이 하나 발견되었습니다."
+
+**라벨/표 안의 fragment는 허용:**
+- 표 셀, 불릿 헤더, `key: value` 라벨 안의 fragment는 자연스럽습니다 ("실행 조건:", "Pass:")
+- 본문 줄거리(narrative) 안에 갑자기 등장하는 fragment만 풀어쓰기
+
+**Code span과 한글 조사 사이 공백:**
+
+한국어 출판·기술 글쓰기 관행은 inline code (`backtick`) 와 뒤따르는 한글 조사를 공백 없이 붙입니다. 영문식 띄어쓰기를 그대로 옮기면 시각적으로 어색합니다.
+
+- Bad: "`prompt` 로 5 개 하네스를 비교합니다"
+- Good: "`prompt`로 5개 하네스를 비교합니다"
+- Bad: "`oh-my-agent` 소스를 프로젝트에 시드"
+- Good: "`oh-my-agent` 소스를 프로젝트에 심습니다" (and avoid 영어 동사 음역, 룰 22 참조)
+
+**영어 동사의 한자어 음역 금지:**
+
+"시드", "로드", "발동", "진행" 같이 영어 동사를 한자어 명사로 박아 넣으면 행위가 사라지고 어색해집니다. 자연스러운 한국어 동사로 풀어주세요.
+
+- Bad KO: "skill 을 **로드**" → Good KO: "skill 을 **불러옵니다**"
+- Bad KO: "프로젝트에 **시드**" → Good KO: "프로젝트에 **심습니다**"
+- Bad KO: "`<HARD-GATE>` **발동**" → Good KO: "`<HARD-GATE>`가 **트리거됐습니다**" or "`<HARD-GATE>`가 **걸렸습니다**"
+
 ---
 
 ## Self-Check
@@ -279,3 +313,6 @@ Before finalizing any translation, scan for:
 - [ ] No over-nominalization (동사/형용사로 쓸 수 있는데 명사화)
 - [ ] No forced pronouns where omission is natural in target language
 - [ ] No cleft sentence calques from English
+- [ ] No body-text fragments (CJK 본문에 갑자기 등장하는 명사 종결) — 라벨·표 셀은 허용
+- [ ] CJK typography: inline code 와 한글 조사 사이 공백 없음
+- [ ] No English-verb 음역 (시드/로드/발동/진행 등) — 자연스러운 동사로 풀어쓰기

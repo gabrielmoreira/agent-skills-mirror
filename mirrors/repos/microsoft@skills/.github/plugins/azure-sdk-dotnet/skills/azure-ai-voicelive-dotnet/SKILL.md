@@ -26,23 +26,29 @@ dotnet add package NAudio                    # For audio capture/playback
 ## Environment Variables
 
 ```bash
-AZURE_VOICELIVE_ENDPOINT=https://<resource>.services.ai.azure.com/
-AZURE_VOICELIVE_MODEL=gpt-4o-realtime-preview
-AZURE_VOICELIVE_VOICE=en-US-AvaNeural
-# Optional: API key if not using Entra ID
-AZURE_VOICELIVE_API_KEY=<your-api-key>
+AZURE_VOICELIVE_ENDPOINT=https://<resource>.services.ai.azure.com/  # Required: Voice Live endpoint
+AZURE_VOICELIVE_MODEL=gpt-4o-realtime-preview  # Required: model deployment name
+AZURE_VOICELIVE_VOICE=en-US-AvaNeural  # Optional: Voice Live voice name
+AZURE_VOICELIVE_API_KEY=<your-api-key>  # Only required for AzureKeyCredential auth
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
 
-### Microsoft Entra ID (Recommended)
+### Microsoft Entra Token Credential
 
 ```csharp
 using Azure.Identity;
 using Azure.AI.VoiceLive;
 
 Uri endpoint = new Uri("https://your-resource.cognitiveservices.azure.com");
-DefaultAzureCredential credential = new DefaultAzureCredential();
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 VoiceLiveClient client = new VoiceLiveClient(endpoint, credential);
 ```
 

@@ -105,3 +105,9 @@ This file replaces three former worldview instructions:
 - `worldview-moral-psychology` → Foundation priority order, cross-cultural notes
 
 Cross-cultural manifestation tables and Haidt-citation depth dropped — preserved in Mall skill `skills/privacy/privacy-responsible-ai/` if needed.
+
+## Would Revise If
+
+- The ethical framework creates decision paralysis in practice (agents spend excessive tokens on moral reasoning for low-stakes choices)
+- Cultural context renders specific principles inapplicable across the heir fleet's deployment regions
+- A simpler set of ethical heuristics achieves equivalent outcomes with lower cognitive overhead

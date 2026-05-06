@@ -31,14 +31,12 @@ dotnet add package Microsoft.Azure.Messaging.EventGrid.CloudNativeCloudEvents
 ## Environment Variables
 
 ```bash
-# Topic/Domain endpoint
-EVENT_GRID_TOPIC_ENDPOINT=https://<topic-name>.<region>.eventgrid.azure.net/api/events
-EVENT_GRID_TOPIC_KEY=<access-key>
-
-# Namespace endpoint (for pull delivery)
-EVENT_GRID_NAMESPACE_ENDPOINT=https://<namespace>.<region>.eventgrid.azure.net
-EVENT_GRID_TOPIC_NAME=<topic-name>
-EVENT_GRID_SUBSCRIPTION_NAME=<subscription-name>
+EVENT_GRID_TOPIC_ENDPOINT=https://<topic-name>.<region>.eventgrid.azure.net/api/events  # Required: Event Grid topic or domain endpoint
+EVENT_GRID_TOPIC_KEY=<access-key>  # Only required for AzureKeyCredential auth
+EVENT_GRID_NAMESPACE_ENDPOINT=https://<namespace>.<region>.eventgrid.azure.net  # Optional: Event Grid namespace endpoint
+EVENT_GRID_TOPIC_NAME=<topic-name>  # Required: Event Grid topic name
+EVENT_GRID_SUBSCRIPTION_NAME=<subscription-name>  # Optional: Event Grid subscription name
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Client Hierarchy
@@ -74,15 +72,22 @@ EventGridPublisherClient client = new(
     new AzureKeyCredential("<access-key>"));
 ```
 
-### Microsoft Entra ID (Recommended)
+### Microsoft Entra Token Credential
 
 ```csharp
 using Azure.Identity;
 using Azure.Messaging.EventGrid;
 
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
 EventGridPublisherClient client = new(
     new Uri("https://mytopic.eastus-1.eventgrid.azure.net/api/events"),
-    new DefaultAzureCredential());
+    credential);
 ```
 
 ### SAS Token Authentication

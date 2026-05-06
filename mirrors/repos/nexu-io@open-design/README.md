@@ -17,15 +17,17 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/nexu-io/open-design/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/nexu-io/open-design?style=flat-square&color=blueviolet&label=release&include_prereleases" /></a>
+  <a href="https://open-design.ai/"><img alt="Download" src="https://img.shields.io/badge/download-open--design.ai-ff6b35?style=flat-square" /></a>
+  <a href="https://github.com/nexu-io/open-design/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/nexu-io/open-design?style=flat-square&color=blueviolet&label=release&include_prereleases&display_name=tag" /></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square" /></a>
   <a href="#supported-coding-agents"><img alt="Agents" src="https://img.shields.io/badge/agents-15%20CLIs%20%2B%20BYOK%20proxy-black?style=flat-square" /></a>
   <a href="#design-systems"><img alt="Design systems" src="https://img.shields.io/badge/design%20systems-72-orange?style=flat-square" /></a>
   <a href="#skills"><img alt="Skills" src="https://img.shields.io/badge/skills-31-teal?style=flat-square" /></a>
+  <a href="https://discord.gg/qhbcCH8Am4"><img alt="Discord" src="https://img.shields.io/badge/discord-join-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
   <a href="QUICKSTART.md"><img alt="Quickstart" src="https://img.shields.io/badge/quickstart-3%20commands-green?style=flat-square" /></a>
 </p>
 
-<p align="center"><b>English</b> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja-JP.md">日本語</a> · العربية · <a href="README.ru.md">Русский</a> · <a href="README.uk.md">Українська</a></p>
+<p align="center"><b>English</b> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja-JP.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.uk.md">Українська</a></p>
 
 ---
 
@@ -62,7 +64,7 @@ OD stands on four open-source shoulders:
 | **Persistence** | SQLite at `.od/app.sqlite`: projects · conversations · messages · tabs · saved templates. Reopen tomorrow, todo card and open files are exactly where you left them. |
 | **Lifecycle** | One entry point: `pnpm tools-dev` (start / stop / run / status / logs / inspect / check) — boots daemon + web (+ desktop) under typed sidecar stamps |
 | **Desktop** | Optional Electron shell with sandboxed renderer + sidecar IPC (STATUS / EVAL / SCREENSHOT / CONSOLE / CLICK / SHUTDOWN) — drives `tools-dev inspect desktop screenshot` for E2E |
-| **Deployable to** | Local (`pnpm tools-dev`) · Vercel web layer · packaged Electron (placeholder, in-flight) |
+| **Deployable to** | Local (`pnpm tools-dev`) · Vercel web layer · packaged Electron desktop app for macOS (Apple Silicon) and Windows (x64) — download from [open-design.ai](https://open-design.ai/) or the [latest release](https://github.com/nexu-io/open-design/releases) |
 | **License** | Apache-2.0 |
 
 [acd2]: https://github.com/VoltAgent/awesome-design-md
@@ -299,6 +301,15 @@ Every layer is composable. Every layer is a file you can edit. Read [`apps/web/s
 
 ## Quickstart
 
+### Download the desktop app (no build required)
+
+The fastest way to try Open Design is the prebuilt desktop app — no Node, no pnpm, no clone:
+
+- **[open-design.ai](https://open-design.ai/)** — official download page
+- **[GitHub releases](https://github.com/nexu-io/open-design/releases)**
+
+### Run from source
+
 ```bash
 git clone https://github.com/nexu-io/open-design.git
 cd open-design
@@ -337,7 +348,68 @@ The daemon owns one hidden folder at the repo root. Everything in it is gitignor
 |---|---|
 | Inspect what's in there | `ls -la .od && sqlite3 .od/app.sqlite '.tables'` |
 | Reset to a clean slate | `pnpm tools-dev stop`, `rm -rf .od`, run `pnpm tools-dev run web` again |
-| Move it elsewhere | not supported yet — the path is hard-coded relative to the repo |
+| Move it elsewhere | `OD_DATA_DIR=<absolute-or-relative-path> pnpm tools-dev run web` — the daemon resolves `~/` and anchors relative paths to the repo root. `OD_MEDIA_CONFIG_DIR=<dir>` narrows the override to just `media-config.json` if you want credentials in a separate location. |
+
+#### Migrating a pre-desktop-app `.od/` into the installed Desktop app
+
+If you ran the repo first and only later installed the packaged Desktop app, the two writers point at different roots:
+
+- Repo dev-server (`pnpm tools-dev start web`) writes to `<repo-root>/.od/`.
+- Installed Desktop app writes under `<appData>/Open Design/namespaces/<channel>/data/`, where `<appData>` is Electron's per-OS app-data base (everything before the `Open Design` segment that `app.getPath("userData")` already includes). The channel suffix is **platform-specific** — the release workflows append `-win`/`-linux`:
+
+  | Platform | `<appData>` (Electron `appData` base) | Stable channel | Beta channel |
+  |---|---|---|---|
+  | macOS | `~/Library/Application Support` | `release-stable` | `release-beta` |
+  | Windows | `%APPDATA%` (= `%USERPROFILE%\AppData\Roaming`) | `release-stable-win` | `release-beta-win` |
+  | Linux | `$XDG_CONFIG_HOME` (default `~/.config`) | `release-stable-linux` | `release-beta-linux` |
+
+  Example resolved paths:
+  - macOS beta: `~/Library/Application Support/Open Design/namespaces/release-beta/data/`
+  - Windows beta: `%APPDATA%\Open Design\namespaces\release-beta-win\data\`
+  - Linux beta: `~/.config/Open Design/namespaces/release-beta-linux/data/`
+
+  If unsure, inspect the packaged daemon log right after the app boots; it logs the resolved `daemonDataRoot`.
+
+> **⚠️ Do this in a clean state.** Migration replaces (not merges) the Desktop app's data dir with your repo `.od/`. Both writers must be fully stopped before copying — quit the Desktop app **and** stop the repo dev-server. SQLite-WAL needs to flush cleanly on both sides; if either daemon is still running it can write SQLite/WAL pages or project/artifact files mid-snapshot, leaving the staged copy inconsistent. If the Desktop app already has projects you care about, decide which side is authoritative before continuing — the steps below back up the Desktop's current `data/` to a sibling but do not merge.
+
+To carry your existing projects, SQLite, artifacts, and `media-config.json` over to the Desktop app:
+
+```bash
+set -euo pipefail
+# 1. Stop both writers so the source and target are quiescent.
+#    - Quit the Desktop app (Cmd+Q on macOS, File → Exit on Windows/Linux).
+#    - Stop the repo dev-server: `pnpm tools-dev stop` from the repo root.
+# 2. Set REPO and APP_DATA to your actual paths; the example below is macOS + beta.
+REPO="/path/to/open-design"
+APP_DATA="$HOME/Library/Application Support/Open Design/namespaces/release-beta/data"
+
+# 3. Preflight: see what (if anything) the Desktop app already has.
+ls "$APP_DATA/projects" 2>/dev/null && echo "↑ Desktop already has projects — confirm this is a replace, not a merge."
+
+# 4. Stage into a sibling first, then atomically swap into place. `set -e` plus
+#    the explicit rsync exit check guarantee a non-zero copy aborts before any
+#    `mv` runs, so the Desktop data dir cannot end up half-populated.
+STAGE="${APP_DATA}.staged-$(date +%F-%H%M)"
+mkdir -p "$STAGE"
+rsync -a --exclude='backup-*' "$REPO/.od/" "$STAGE/" || { echo "rsync failed — aborting before swap"; exit 1; }
+
+# 5. Backup the Desktop's current data, then promote the staged copy.
+mv "$APP_DATA" "${APP_DATA}.fresh-baseline-$(date +%F-%H%M)"
+mv "$STAGE" "$APP_DATA"
+
+# 6. Relaunch the Desktop app. The daemon applies forward schema changes on boot.
+```
+
+If anything looks wrong after relaunch, restore the original Desktop data by deleting `$APP_DATA` and renaming the `.fresh-baseline-*` directory back into place.
+
+> **⚠️ Schema migrations are forward-only.** The daemon applies `CREATE TABLE IF NOT EXISTS` / `ALTER TABLE` changes on boot; there is no version guard. After migrating, **do not** open the same data dir with an older repo checkout — unsupported columns or behavior mismatches can leave the workspace inconsistent. Back up `app.sqlite*` before the first launch with the new app.
+
+> **⚠️ Advanced: sharing one data dir between repo dev-server and Desktop app.** Pointing both at the same dir via `OD_DATA_DIR` is possible but **only safe one-at-a-time**. The daemon opens `app.sqlite` in WAL mode and writes uncoordinated files under `projects/` and `artifacts/`; running both writers concurrently can corrupt SQLite or clobber artifacts. Always stop the Desktop app before starting the dev-server, and stop the dev-server before opening the Desktop app:
+>
+> ```bash
+> OD_DATA_DIR="$HOME/Library/Application Support/Open Design/namespaces/release-beta/data" \
+>   pnpm tools-dev start web
+> ```
 
 Full file map, scripts, and troubleshooting → [`QUICKSTART.md`](QUICKSTART.md).
 
@@ -662,7 +734,7 @@ The whole machinery below is the [`huashu-design`](https://github.com/alchaincyf
 | Agent runtime | Bundled (Opus 4.7) | Bundled ([`pi-ai`][piai]) | **Delegated to user's existing CLI** |
 | Skills | Proprietary | 12 custom TS modules + `SKILL.md` | **31 file-based [`SKILL.md`][skill] bundles, droppable** |
 | Design system | Proprietary | `DESIGN.md` (v0.2 roadmap) | **`DESIGN.md` × 129 systems shipped** |
-| Provider flexibility | Anthropic only | 7+ via [`pi-ai`][piai] | **12 CLI adapters + OpenAI-compatible BYOK proxy** |
+| Provider flexibility | Anthropic only | 7+ via [`pi-ai`][piai] | **15 CLI adapters + OpenAI-compatible BYOK proxy** |
 | Init question form | ❌ | ❌ | **✅ Hard rule, turn 1** |
 | Direction picker | ❌ | ❌ | **✅ 5 deterministic directions** |
 | Live todo progress + tool stream | ❌ | ✅ | **✅** (UX pattern from open-codesign) |
@@ -705,7 +777,7 @@ Auto-detected from `PATH` on daemon boot. No config required. Streaming dispatch
 | Kilo | `kilo` | `acp-json-rpc` | `kilo acp` |
 | [Mistral Vibe CLI](https://github.com/mistralai/mistral-vibe) | `vibe-acp` | `acp-json-rpc` | `vibe-acp` |
 | DeepSeek TUI | `deepseek` | `plain` (raw stdout chunks) | `deepseek exec --auto [--model …] <prompt>` (prompt as positional arg) |
-| [Pi](https://github.com/mariozechner/pi-ai) | `pi` | `pi-rpc` (stdio JSON-RPC) | `pi --mode rpc --no-session [--model …] [--thinking …]` (prompt sent as RPC `prompt` command) |
+| [Pi](https://github.com/mariozechner/pi-ai) | `pi` | `pi-rpc` (stdio JSON-RPC) | `pi --mode rpc [--model …] [--thinking …]` (prompt sent as RPC `prompt` command) |
 | **Multi-provider BYOK** | n/a | SSE normalization | `POST /api/proxy/{provider}/stream` → Anthropic / OpenAI-compatible / Azure OpenAI / Gemini; SSRF-guarded against loopback / link-local / RFC1918 |
 
 Adding a new CLI is one entry in [`apps/daemon/src/agents.ts`](apps/daemon/src/agents.ts). Streaming format is one of `claude-stream-json`, `copilot-stream-json`, `json-event-stream` (with a per-CLI `eventParser`), `acp-json-rpc`, `pi-rpc`, or `plain`.
@@ -730,7 +802,7 @@ Long-form provenance write-up — what we take from each, what we deliberately d
 
 ## Roadmap
 
-- [x] Daemon + agent detection (12 CLI adapters) + skill registry + design-system catalog
+- [x] Daemon + agent detection (15 CLI adapters) + skill registry + design-system catalog
 - [x] Web app + chat + question form + 5-direction picker + todo progress + sandboxed preview
 - [x] 31 skills + 72 design systems + 5 visual directions + 5 device frames
 - [x] SQLite-backed projects · conversations · messages · tabs · templates
@@ -743,7 +815,7 @@ Long-form provenance write-up — what we take from each, what we deliberately d
 - [ ] Vercel + tunnel deployment recipe (Topology B)
 - [ ] One-command `npx od init` to scaffold a project with `DESIGN.md`
 - [ ] Skill marketplace (`od skills install <github-repo>`) and `od skill add | list | remove | test` CLI surface (drafted in [`docs/skills-protocol.md`](docs/skills-protocol.md), implementation pending)
-- [ ] Packaged Electron build out of `apps/packaged/`
+- [x] Packaged Electron build out of `apps/packaged/` — macOS (Apple Silicon) and Windows (x64) downloads on [open-design.ai](https://open-design.ai/) and the [GitHub releases page](https://github.com/nexu-io/open-design/releases)
 
 Phased delivery → [`docs/roadmap.md`](docs/roadmap.md).
 
@@ -777,7 +849,7 @@ Thanks to everyone who has helped move Open Design forward — through code, doc
   <img src="https://contrib.rocks/image?repo=nexu-io/open-design&cache_bust=2026-05-05" alt="Open Design contributors" />
 </a>
 
-If you've shipped your first PR — welcome. The [`good-first-issue`](https://github.com/nexu-io/open-design/labels/good-first-issue) label is the entry point.
+If you've shipped your first PR — welcome. The [`good-first-issue`/`help-wanted`](https://github.com/nexu-io/open-design/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22%2C%22help+wanted%22) label is the entry point.
 
 ## Repository activity
 

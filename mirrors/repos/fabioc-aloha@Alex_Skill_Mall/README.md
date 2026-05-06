@@ -6,7 +6,7 @@ The plugin marketplace for ACT (Artificial Critical Thinking) agents and heirs. 
 
 ## What's Here
 
-298 plugins organized into 16 categories, plus knowledge packages for on-demand reference material. Each plugin is a self-contained folder with a human-readable README, machine-readable manifest (`plugin.json`), brain artifact (`SKILL.md`), and optional instructions, prompts, or muscles.
+301 plugins organized into 16 categories, plus knowledge packages for on-demand reference material. Each plugin is a self-contained folder with a human-readable README, machine-readable manifest (`plugin.json`), brain artifact (`SKILL.md`), and optional instructions, prompts, or muscles.
 
 **Knowledge packages** (`knowledge/`) are reference material installed to `AI-Memory/knowledge/` instead of the brain. They cost zero tokens until consulted -- ideal for architecture planning, compliance audits, and other periodic tasks.
 
@@ -14,18 +14,18 @@ Install plugins into any ACT heir project without losing them to Edition upgrade
 
 | Metric | Value |
 | --- | --- |
-| Plugins | 283 |
+| Plugins | 301 |
 | Categories | 16 |
 | Shape types | 7 (see notation below) |
 | Install path | `.github/skills/local/` (or matching `local/` dirs) |
-| Primary consumer | Alex ACT Edition v1.0.0+ |
+| Primary consumer | Alex ACT Edition v1.2.0+ |
 | Also works with | GitHub Copilot, Claude, Cursor, Windsurf, any AI reading `.github/` |
 
 ## Quick Start
 
 ```bash
 # Clone the Mall
-git clone https://github.com/fabioc-aloha/Alex_ACT_Plugin_Mall.git
+git clone https://github.com/fabioc-aloha/Alex_Skill_Mall.git
 
 # Install a plugin to your project
 cp -r Alex_ACT_Plugin_Mall/plugins/converters/md-to-word/ \
@@ -49,7 +49,7 @@ Plugins install into `local/` paths so Edition upgrades never clobber them.
 
 Three axes for discovery: **category** (what domain), **shape** (how complex), **tier** (how specialized).
 
-### Categories (298 plugins)
+### Categories (301 plugins)
 
 | Category | Count | Coverage |
 | --- | --- | --- |
@@ -59,8 +59,8 @@ Three axes for discovery: **category** (what domain), **shape** (how complex), *
 | [Cloud & Infrastructure](plugins/cloud-infrastructure/) | 24 | Azure, Fabric, IaC, Bicep, deployment, cost optimization |
 | [Code Quality](plugins/code-quality/) | 25 | Code review, testing, audit patterns, refactoring, coverage, adversarial review |
 | [AI & Agents](plugins/ai-agents/) | 19 | MCP servers, agent design, RAG, prompt engineering, evals |
-| [Media & Graphics](plugins/media-graphics/) | 21 | Banners, SVG, slides, presentations, video, image handling, deck building |
-| [Data & Analytics](plugins/data-analytics/) | 23 | Power BI, KQL, Fabric, dashboards, data visualization, semantic models |
+| [Media & Graphics](plugins/media-graphics/) | 22 | Banners, SVG, slides, presentations, video, image handling, deck building |
+| [Data & Analytics](plugins/data-analytics/) | 25 | Power BI, KQL, Fabric, dashboards, data visualization, semantic models |
 | [Reasoning & Metacognition](plugins/reasoning-metacognition/) | 15 | ACT pass, hypothesis debugging, root cause, calibration |
 | [Platform & Tooling](plugins/platform-tooling/) | 14 | VS Code, cross-platform, Node.js, frontend patterns |
 | [Architecture & Patterns](plugins/architecture-patterns/) | 13 | Microservices, saga, API design, workflow orchestration |

@@ -154,7 +154,7 @@ If the plugin crashes without calling `stop()`, child CLI processes (claude, cod
 
 ## Stats & Monitoring
 
-Session stats are returned by `getStats()` and surfaced through `session_status`.
+Session stats are returned by `getStats()` and surfaced through `coding_session_status`.
 
 Fields added in plugin v2.13.0 (Claude CLI 2.1.111):
 

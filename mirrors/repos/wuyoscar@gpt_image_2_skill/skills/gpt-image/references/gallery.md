@@ -1,6 +1,6 @@
 # GPT Image 2 Prompt Gallery Index
 
-Routing index for the full prompt Scale / Reference Gallery. This is the canonical full catalog; README is a selected showcase. Do **not** load every category file by default. Pick the closest category below, then read only that file (or at most 2–3 neighboring files) plus `craft.md` when drafting prompts.
+Routing index for the full Reference Gallery. This is the canonical full catalog; README is a selected showcase. Do **not** load every category file by default. Pick the closest category below, then read only that file (or at most 2–3 neighboring files) plus `craft.md` when drafting prompts.
 
 Each `gallery-*.md` category file contains the concrete prompts, direct image previews, image paths, metadata, and attribution/source markers for that slice of the Gallery Atlas.
 
@@ -42,7 +42,7 @@ Each `gallery-*.md` category file contains the concrete prompts, direct image pr
 
 ## Loading policy
 
-- Start here to choose a category; do not read the whole Scale into context.
+- Start here to choose a category; do not read the whole Reference Gallery into context.
 - Read `craft.md` for general prompt-writing principles.
 - Read exactly one `gallery-*.md` category file for normal requests; read two or three only when the user asks for hybrid styles.
 - Preserve `Curated` versus `Author + Source` metadata when adapting examples into README/gallery entries.

@@ -14,11 +14,16 @@ product, success, or leadership review.
 Use `kb-from-resolution` after an issue is resolved and should become a KB
 article, FAQ, troubleshooting guide, known issue note, or internal runbook.
 
+Use `customer-health-review` for account health reviews, QBR briefs, renewal
+risk summaries, adoption plans, expansion signals, and customer success action
+plans.
+
 Use `customer-research-validation` when recurring tickets should become customer
 evidence, voice-of-customer themes, research questions, or product risks.
 
-Use `product-analytics-instrumentation` when support work needs metrics,
-tracking plans, event definitions, funnel evidence, or support quality signals.
+Use `retention-analysis` and `product-analytics-instrumentation` when support or
+success work needs retention, churn, renewal, usage, funnel, event, or support
+quality signals.
 
 Use `concise-technical-writing` to tighten customer replies, escalation
 summaries, KB drafts, and implementation notes.

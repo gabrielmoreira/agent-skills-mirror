@@ -1,10 +1,10 @@
 # GPT Image 2 Prompt Craft
 
-Cross-cutting principles distilled from the full 162-prompt Gallery Atlas. Use this file as the prompt-design checklist; use `gallery.md` as the routing index for the split concrete Scale/case atlas as `gallery-*.md` files.
+Cross-cutting principles distilled from the full 162-prompt Gallery Atlas. Use this file as the prompt-design checklist; use `gallery.md` as the routing index for the split concrete reference/case atlas as `gallery-*.md` files.
 
 ## Table of contents
 
-0. Use the Scale before writing from scratch
+0. Use the Reference Gallery before writing from scratch
 1. Exact text goes in quotes
 2. Put canvas, aspect ratio, and layout before subject
 3. JSON / config-style prompts are a core pattern
@@ -24,7 +24,7 @@ Cross-cutting principles distilled from the full 162-prompt Gallery Atlas. Use t
 17. Attribution and gallery metadata
 18. Safety and copyright notes
 
-## 0. Use the Scale before writing from scratch
+## 0. Use the Reference Gallery before writing from scratch
 
 Before drafting a prompt, open `gallery.md` as the category index, then read 3–8 nearby cases from the matching `gallery-<category>.md` file. The skill should not behave like a bare CLI wrapper: it should remix the repo's collected patterns.
 

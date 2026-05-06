@@ -5,9 +5,10 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-256-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-258-7c3aed)](./skills/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-面向中文 AI 开发者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 256 个技能**。
+面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 258 个技能**。
 
 ## 为什么值得收藏
 
@@ -24,7 +25,7 @@
 
 ## 适合谁
 
-- 中文 AI 开发者和自动化工作流使用者
+- AI 开发者、Agent 工作流构建者和自动化工具使用者
 - 想把常见任务沉淀为 Skills 的个人或团队
 - 正在使用 `Codex`、`Claude Code`、`Hermes Agent`、`OpenClaw` 等工具的工程师
 - 想搭建一个自己的高价值技能库、提示库、Agent 工作流库的人
@@ -240,7 +241,7 @@ python scripts/sync_codex_skills.py --source-root "E:\AI-codex\003-Commonly-used
 
 ### 给 AI 机器人看的规则
 
-仓库根目录新增了 [AGENTS.md](/Volumes/soft/13-openclaw%20安装部署/5-Commonly-used-high-value-skills/Commonly-used-high-value-skills/AGENTS.md)，明确约束如下：
+仓库根目录的 [AGENTS.md](./AGENTS.md) 明确约束如下：
 
 - `OpenClaw` 安装时必须使用 `openclaw-skills/`
 - `Codex`、`Claude Code`、`Hermes Agent` 等按原方式使用 `skills/`
@@ -293,10 +294,10 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 2. 打开对应技能的 `SKILL.md` 查看触发条件、操作流程和脚本说明。
 3. 若技能下含 `scripts/`、`references/`、`assets/`，优先复用现成内容。
 
-## 技能总览（按分类，16 类 / 256 技能）
+## 技能总览（按分类，16 类 / 258 技能）
 
 <a id="cat-developer-engineering"></a>
-### 1. 开发工程（developer-engineering，45）
+### 1. 开发工程（developer-engineering，47）
 
 - `agent-designer`：用于设计、拆分和评估多智能体协作系统。
 - `api-design-reviewer`：用于审查接口设计、命名一致性、边界和可维护性。
@@ -336,11 +337,13 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `schema`：数据库模式设计、迁移规划、索引策略和关系建模。
 - `skill-tester`：用于验证技能可用性、触发条件、输出质量和边界行为。
 - `supabase-postgres`：用于后端数据库开发、权限策略、实时订阅和边缘函数实践。
+- `supabase-postgres-best-practices`：用于编写、审查和优化 Postgres 查询、表结构与数据库配置。
 - `systematic-debugging`：用于按证据推进调试，构建最小复现并确认根因。
 - `tailwind-design-system`：用于搭建样式体系、组件规范、主题变量和视觉一致性。
 - `tech-debt-tracker`：用于识别技术债、记录影响、排序治理并跟踪改善进度。
 - `terraform-engineer`：用于基础设施即代码设计、模块化管理和状态治理。
 - `typescript-best-practices`：用于类型安全设计、复杂类型建模和常见反模式避免。
+- `vercel-react-best-practices`：用于按 Vercel 工程实践优化 React 与 Next.js 性能。
 - `web-artifacts-builder`：用于构建复杂网页制品、交互组件和可复用前端成果。
 - `webapp-testing`：用于测试本地网页应用，验证交互、页面状态和回归问题。
 
@@ -484,7 +487,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `twitter-reader`：用于读取社交平台帖子内容并提炼关键信息。
 
 <a id="cat-office-white-collar"></a>
-### 8. 办公与文档（office-white-collar，19）
+### 8. 办公与文档（office-white-collar，20）
 
 - `capture-screen`：用于在本机采集全屏、窗口或区域截图。
 - `doc`：用于读取、创建和编辑文字处理文档。
@@ -492,6 +495,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `docx`：用于处理文字处理文件的内容、样式和版式。
 - `excel-automation`：用于自动化处理电子表格、公式、格式和批量任务。
 - `gog`：用于自动化处理邮件、日历、网盘和在线文档办公流程。
+- `guizang-ppt-skill`：用于制作电子杂志与电子墨水风格的横向翻页网页 PPT。
 - `markdown-tools`：用于转换、合并、清理和格式化标记文档。
 - `meeting-minutes-taker`：用于把会议记录整理为结构化纪要、结论和行动项。
 - `mermaid-tools`：用于提取、生成和渲染流程图与结构图。
@@ -658,6 +662,10 @@ python3 scripts/skill_snapshot_template.py validate --snapshot /tmp/clawhub_skil
 python3 scripts/audit_skill_freshness.py --snapshot /tmp/clawhub_skills_snapshot.json
 ```
 
+## 许可证
+
+本仓库整体采用 [MIT License](./LICENSE)。其中外部导入的技能会保留各自上游许可证信息；新增外源技能必须通过 `scripts/audit_licenses.py` 校验。若高质量候选没有明确许可证，自动精选流程会生成原创 `in-house` MIT 重写版本并合入，但不会复制未知授权的上游正文。
+
 ---
 
-如果你希望，我可以在下一步继续补一版 `README.zh-CN.md`（面向中文）+ `README.en.md`（面向国际协作），并自动校验两份目录与技能数量一致。
+本仓库维护中文与英文两份 README，面向全球开发者协作。文档更新应保持目录结构、技能数量、安装说明和自动化校验结果一致。

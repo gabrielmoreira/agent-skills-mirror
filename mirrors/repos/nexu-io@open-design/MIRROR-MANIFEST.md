@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/open-design` — 26 default patterns, 15 followed patterns, 506 file(s) materialized.
+Mirror of `nexu-io/open-design` — 26 default patterns, 16 followed patterns, 512 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nexu-io/open-design` — 26 default patterns, 15 followed patterns, 5
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 506 |
+| Followed pats | 16 |
+| Files         | 512 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,7 @@ Mirror of `nexu-io/open-design` — 26 default patterns, 15 followed patterns, 5
 - `CONTRIBUTING.de.md`
 - `CONTRIBUTING.fr.md`
 - `CONTRIBUTING.zh-CN.md`
+- `QUICKSTART.zh-CN.md`
 - `TRANSLATIONS.md`
 - `QUICKSTART.de.md`
 - `QUICKSTART.fr.md`
@@ -459,126 +460,132 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 384 | ✓ | [`skills/kami-landing/SKILL.md`](skills/kami-landing/SKILL.md) |
 | 385 | ✓ | [`skills/kanban-board/example.html`](skills/kanban-board/example.html) |
 | 386 | ✓ | [`skills/kanban-board/SKILL.md`](skills/kanban-board/SKILL.md) |
-| 387 | ✓ | [`skills/magazine-poster/example.html`](skills/magazine-poster/example.html) |
-| 388 | ✓ | [`skills/magazine-poster/SKILL.md`](skills/magazine-poster/SKILL.md) |
-| 389 | ✓ | [`skills/meeting-notes/example.html`](skills/meeting-notes/example.html) |
-| 390 | ✓ | [`skills/meeting-notes/SKILL.md`](skills/meeting-notes/SKILL.md) |
-| 391 | ✓ | [`skills/mobile-app/assets/template.html`](skills/mobile-app/assets/template.html) |
-| 392 | ✓ | [`skills/mobile-app/example.html`](skills/mobile-app/example.html) |
-| 393 | ✓ | [`skills/mobile-app/references/checklist.md`](skills/mobile-app/references/checklist.md) |
-| 394 | ✓ | [`skills/mobile-app/references/layouts.md`](skills/mobile-app/references/layouts.md) |
-| 395 | ✓ | [`skills/mobile-app/SKILL.md`](skills/mobile-app/SKILL.md) |
-| 396 | ✓ | [`skills/mobile-onboarding/example.html`](skills/mobile-onboarding/example.html) |
-| 397 | ✓ | [`skills/mobile-onboarding/SKILL.md`](skills/mobile-onboarding/SKILL.md) |
-| 398 | ✓ | [`skills/motion-frames/example.html`](skills/motion-frames/example.html) |
-| 399 | ✓ | [`skills/motion-frames/SKILL.md`](skills/motion-frames/SKILL.md) |
-| 400 | ✓ | [`skills/open-design-landing-deck/example.html`](skills/open-design-landing-deck/example.html) |
-| 401 | ✓ | [`skills/open-design-landing-deck/inputs.example.json`](skills/open-design-landing-deck/inputs.example.json) |
-| 402 | ✓ | [`skills/open-design-landing-deck/README.md`](skills/open-design-landing-deck/README.md) |
-| 403 | ✓ | [`skills/open-design-landing-deck/schema.ts`](skills/open-design-landing-deck/schema.ts) |
-| 404 | ✓ | [`skills/open-design-landing-deck/scripts/compose.ts`](skills/open-design-landing-deck/scripts/compose.ts) |
-| 405 | ✓ | [`skills/open-design-landing-deck/SKILL.md`](skills/open-design-landing-deck/SKILL.md) |
-| 406 | ✓ | [`skills/open-design-landing/assets/about.png`](skills/open-design-landing/assets/about.png) |
-| 407 | ✓ | [`skills/open-design-landing/assets/capabilities.png`](skills/open-design-landing/assets/capabilities.png) |
-| 408 | ✓ | [`skills/open-design-landing/assets/cta.png`](skills/open-design-landing/assets/cta.png) |
-| 409 | ✓ | [`skills/open-design-landing/assets/hero.png`](skills/open-design-landing/assets/hero.png) |
-| 410 | ✓ | [`skills/open-design-landing/assets/image-manifest.json`](skills/open-design-landing/assets/image-manifest.json) |
-| 411 | ✓ | [`skills/open-design-landing/assets/imagegen-prompts.md`](skills/open-design-landing/assets/imagegen-prompts.md) |
-| 412 | ✓ | [`skills/open-design-landing/assets/lab-1.png`](skills/open-design-landing/assets/lab-1.png) |
-| 413 | ✓ | [`skills/open-design-landing/assets/lab-2.png`](skills/open-design-landing/assets/lab-2.png) |
-| 414 | ✓ | [`skills/open-design-landing/assets/lab-3.png`](skills/open-design-landing/assets/lab-3.png) |
-| 415 | ✓ | [`skills/open-design-landing/assets/lab-4.png`](skills/open-design-landing/assets/lab-4.png) |
-| 416 | ✓ | [`skills/open-design-landing/assets/lab-5.png`](skills/open-design-landing/assets/lab-5.png) |
-| 417 | ✓ | [`skills/open-design-landing/assets/method-1.png`](skills/open-design-landing/assets/method-1.png) |
-| 418 | ✓ | [`skills/open-design-landing/assets/method-2.png`](skills/open-design-landing/assets/method-2.png) |
-| 419 | ✓ | [`skills/open-design-landing/assets/method-3.png`](skills/open-design-landing/assets/method-3.png) |
-| 420 | ✓ | [`skills/open-design-landing/assets/method-4.png`](skills/open-design-landing/assets/method-4.png) |
-| 421 | ✓ | [`skills/open-design-landing/assets/testimonial.png`](skills/open-design-landing/assets/testimonial.png) |
-| 422 | ✓ | [`skills/open-design-landing/assets/work-1.png`](skills/open-design-landing/assets/work-1.png) |
-| 423 | ✓ | [`skills/open-design-landing/assets/work-2.png`](skills/open-design-landing/assets/work-2.png) |
-| 424 | ✓ | [`skills/open-design-landing/example.html`](skills/open-design-landing/example.html) |
-| 425 | ✓ | [`skills/open-design-landing/inputs.example.json`](skills/open-design-landing/inputs.example.json) |
-| 426 | ✓ | [`skills/open-design-landing/README.md`](skills/open-design-landing/README.md) |
-| 427 | ✓ | [`skills/open-design-landing/schema.ts`](skills/open-design-landing/schema.ts) |
-| 428 | ✓ | [`skills/open-design-landing/scripts/compose.ts`](skills/open-design-landing/scripts/compose.ts) |
-| 429 | ✓ | [`skills/open-design-landing/scripts/imagegen.ts`](skills/open-design-landing/scripts/imagegen.ts) |
-| 430 | ✓ | [`skills/open-design-landing/scripts/placeholder.ts`](skills/open-design-landing/scripts/placeholder.ts) |
-| 431 | ✓ | [`skills/open-design-landing/SKILL.md`](skills/open-design-landing/SKILL.md) |
-| 432 | ✓ | [`skills/open-design-landing/styles.css`](skills/open-design-landing/styles.css) |
-| 433 | ✓ | [`skills/pm-spec/example.html`](skills/pm-spec/example.html) |
-| 434 | ✓ | [`skills/pm-spec/SKILL.md`](skills/pm-spec/SKILL.md) |
-| 435 | ✓ | [`skills/pptx-html-fidelity-audit/references/audit-table-template.md`](skills/pptx-html-fidelity-audit/references/audit-table-template.md) |
-| 436 | ✓ | [`skills/pptx-html-fidelity-audit/references/font-discipline.md`](skills/pptx-html-fidelity-audit/references/font-discipline.md) |
-| 437 | ✓ | [`skills/pptx-html-fidelity-audit/references/layout-discipline.md`](skills/pptx-html-fidelity-audit/references/layout-discipline.md) |
-| 438 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/.gitignore`](skills/pptx-html-fidelity-audit/scripts/.gitignore) |
-| 439 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/extract_pptx.py`](skills/pptx-html-fidelity-audit/scripts/extract_pptx.py) |
-| 440 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/verify_layout.py`](skills/pptx-html-fidelity-audit/scripts/verify_layout.py) |
-| 441 | ✓ | [`skills/pptx-html-fidelity-audit/SKILL.md`](skills/pptx-html-fidelity-audit/SKILL.md) |
-| 442 | ✓ | [`skills/pricing-page/example.html`](skills/pricing-page/example.html) |
-| 443 | ✓ | [`skills/pricing-page/SKILL.md`](skills/pricing-page/SKILL.md) |
-| 444 | ✓ | [`skills/replit-deck/assets/template.html`](skills/replit-deck/assets/template.html) |
-| 445 | ✓ | [`skills/replit-deck/examples/example-atlas.html`](skills/replit-deck/examples/example-atlas.html) |
-| 446 | ✓ | [`skills/replit-deck/examples/example-bluehouse.html`](skills/replit-deck/examples/example-bluehouse.html) |
-| 447 | ✓ | [`skills/replit-deck/examples/example-helix.html`](skills/replit-deck/examples/example-helix.html) |
-| 448 | ✓ | [`skills/replit-deck/examples/example-holm.html`](skills/replit-deck/examples/example-holm.html) |
-| 449 | ✓ | [`skills/replit-deck/examples/README.md`](skills/replit-deck/examples/README.md) |
-| 450 | ✓ | [`skills/replit-deck/references/checklist.md`](skills/replit-deck/references/checklist.md) |
-| 451 | ✓ | [`skills/replit-deck/references/components.md`](skills/replit-deck/references/components.md) |
-| 452 | ✓ | [`skills/replit-deck/references/layouts.md`](skills/replit-deck/references/layouts.md) |
-| 453 | ✓ | [`skills/replit-deck/references/themes.md`](skills/replit-deck/references/themes.md) |
-| 454 | ✓ | [`skills/replit-deck/SKILL.md`](skills/replit-deck/SKILL.md) |
-| 455 | ✓ | [`skills/saas-landing/example.html`](skills/saas-landing/example.html) |
-| 456 | ✓ | [`skills/saas-landing/SKILL.md`](skills/saas-landing/SKILL.md) |
-| 457 | ✓ | [`skills/simple-deck/assets/template.html`](skills/simple-deck/assets/template.html) |
-| 458 | ✓ | [`skills/simple-deck/example.html`](skills/simple-deck/example.html) |
-| 459 | ✓ | [`skills/simple-deck/references/checklist.md`](skills/simple-deck/references/checklist.md) |
-| 460 | ✓ | [`skills/simple-deck/references/layouts.md`](skills/simple-deck/references/layouts.md) |
-| 461 | ✓ | [`skills/simple-deck/SKILL.md`](skills/simple-deck/SKILL.md) |
-| 462 | ✓ | [`skills/social-carousel/example.html`](skills/social-carousel/example.html) |
-| 463 | ✓ | [`skills/social-carousel/SKILL.md`](skills/social-carousel/SKILL.md) |
-| 464 | ✓ | [`skills/sprite-animation/example.html`](skills/sprite-animation/example.html) |
-| 465 | ✓ | [`skills/sprite-animation/SKILL.md`](skills/sprite-animation/SKILL.md) |
-| 466 | ✓ | [`skills/team-okrs/example.html`](skills/team-okrs/example.html) |
-| 467 | ✓ | [`skills/team-okrs/SKILL.md`](skills/team-okrs/SKILL.md) |
-| 468 | ✓ | [`skills/tweaks/assets/wrap.html`](skills/tweaks/assets/wrap.html) |
-| 469 | ✓ | [`skills/tweaks/example.html`](skills/tweaks/example.html) |
-| 470 | ✓ | [`skills/tweaks/SKILL.md`](skills/tweaks/SKILL.md) |
-| 471 | ✓ | [`skills/video-shortform/example.html`](skills/video-shortform/example.html) |
-| 472 | ✓ | [`skills/video-shortform/SKILL.md`](skills/video-shortform/SKILL.md) |
-| 473 | ✓ | [`skills/web-prototype-taste-brutalist/example.html`](skills/web-prototype-taste-brutalist/example.html) |
-| 474 | ✓ | [`skills/web-prototype-taste-brutalist/SKILL.md`](skills/web-prototype-taste-brutalist/SKILL.md) |
-| 475 | ✓ | [`skills/web-prototype-taste-editorial/example.html`](skills/web-prototype-taste-editorial/example.html) |
-| 476 | ✓ | [`skills/web-prototype-taste-editorial/SKILL.md`](skills/web-prototype-taste-editorial/SKILL.md) |
-| 477 | ✓ | [`skills/web-prototype-taste-soft/example.html`](skills/web-prototype-taste-soft/example.html) |
-| 478 | ✓ | [`skills/web-prototype-taste-soft/SKILL.md`](skills/web-prototype-taste-soft/SKILL.md) |
-| 479 | ✓ | [`skills/web-prototype/assets/template.html`](skills/web-prototype/assets/template.html) |
-| 480 | ✓ | [`skills/web-prototype/example.html`](skills/web-prototype/example.html) |
-| 481 | ✓ | [`skills/web-prototype/references/checklist.md`](skills/web-prototype/references/checklist.md) |
-| 482 | ✓ | [`skills/web-prototype/references/layouts.md`](skills/web-prototype/references/layouts.md) |
-| 483 | ✓ | [`skills/web-prototype/SKILL.md`](skills/web-prototype/SKILL.md) |
-| 484 | ✓ | [`skills/weekly-update/example.html`](skills/weekly-update/example.html) |
-| 485 | ✓ | [`skills/weekly-update/SKILL.md`](skills/weekly-update/SKILL.md) |
-| 486 | ✓ | [`skills/wireframe-sketch/example.html`](skills/wireframe-sketch/example.html) |
-| 487 | ✓ | [`skills/wireframe-sketch/SKILL.md`](skills/wireframe-sketch/SKILL.md) |
-| 488 | ✓ | [`specs/change/20260430-implement-maintainability-w2-w3/spec.md`](specs/change/20260430-implement-maintainability-w2-w3/spec.md) |
-| 489 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
-| 490 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
-| 491 | ✓ | [`tools/pack/README.md`](tools/pack/README.md) |
-| 492 | → | [`CONTRIBUTING.de.md`](CONTRIBUTING.de.md) |
-| 493 | → | [`CONTRIBUTING.fr.md`](CONTRIBUTING.fr.md) |
-| 494 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 495 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 496 | → | [`design-systems/README.md`](design-systems/README.md) |
-| 497 | → | [`docs/agent-adapters.md`](docs/agent-adapters.md) |
-| 498 | → | [`docs/references.md`](docs/references.md) |
-| 499 | → | [`docs/roadmap.md`](docs/roadmap.md) |
-| 500 | → | [`docs/skills-protocol.md`](docs/skills-protocol.md) |
-| 501 | → | [`QUICKSTART.de.md`](QUICKSTART.de.md) |
-| 502 | → | [`QUICKSTART.fr.md`](QUICKSTART.fr.md) |
-| 503 | → | [`QUICKSTART.md`](QUICKSTART.md) |
-| 504 | → | [`README.md`](README.md) |
-| 505 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 506 | → | [`TRANSLATIONS.md`](TRANSLATIONS.md) |
+| 387 | ✓ | [`skills/live-artifact/references/artifact-schema.md`](skills/live-artifact/references/artifact-schema.md) |
+| 388 | ✓ | [`skills/live-artifact/references/connector-policy.md`](skills/live-artifact/references/connector-policy.md) |
+| 389 | ✓ | [`skills/live-artifact/references/refresh-contract.md`](skills/live-artifact/references/refresh-contract.md) |
+| 390 | ✓ | [`skills/live-artifact/SKILL.md`](skills/live-artifact/SKILL.md) |
+| 391 | ✓ | [`skills/magazine-poster/example.html`](skills/magazine-poster/example.html) |
+| 392 | ✓ | [`skills/magazine-poster/SKILL.md`](skills/magazine-poster/SKILL.md) |
+| 393 | ✓ | [`skills/meeting-notes/example.html`](skills/meeting-notes/example.html) |
+| 394 | ✓ | [`skills/meeting-notes/SKILL.md`](skills/meeting-notes/SKILL.md) |
+| 395 | ✓ | [`skills/mobile-app/assets/template.html`](skills/mobile-app/assets/template.html) |
+| 396 | ✓ | [`skills/mobile-app/example.html`](skills/mobile-app/example.html) |
+| 397 | ✓ | [`skills/mobile-app/references/checklist.md`](skills/mobile-app/references/checklist.md) |
+| 398 | ✓ | [`skills/mobile-app/references/layouts.md`](skills/mobile-app/references/layouts.md) |
+| 399 | ✓ | [`skills/mobile-app/SKILL.md`](skills/mobile-app/SKILL.md) |
+| 400 | ✓ | [`skills/mobile-onboarding/example.html`](skills/mobile-onboarding/example.html) |
+| 401 | ✓ | [`skills/mobile-onboarding/SKILL.md`](skills/mobile-onboarding/SKILL.md) |
+| 402 | ✓ | [`skills/motion-frames/example.html`](skills/motion-frames/example.html) |
+| 403 | ✓ | [`skills/motion-frames/SKILL.md`](skills/motion-frames/SKILL.md) |
+| 404 | ✓ | [`skills/open-design-landing-deck/example.html`](skills/open-design-landing-deck/example.html) |
+| 405 | ✓ | [`skills/open-design-landing-deck/inputs.example.json`](skills/open-design-landing-deck/inputs.example.json) |
+| 406 | ✓ | [`skills/open-design-landing-deck/README.md`](skills/open-design-landing-deck/README.md) |
+| 407 | ✓ | [`skills/open-design-landing-deck/schema.ts`](skills/open-design-landing-deck/schema.ts) |
+| 408 | ✓ | [`skills/open-design-landing-deck/scripts/compose.ts`](skills/open-design-landing-deck/scripts/compose.ts) |
+| 409 | ✓ | [`skills/open-design-landing-deck/SKILL.md`](skills/open-design-landing-deck/SKILL.md) |
+| 410 | ✓ | [`skills/open-design-landing/assets/about.png`](skills/open-design-landing/assets/about.png) |
+| 411 | ✓ | [`skills/open-design-landing/assets/capabilities.png`](skills/open-design-landing/assets/capabilities.png) |
+| 412 | ✓ | [`skills/open-design-landing/assets/cta.png`](skills/open-design-landing/assets/cta.png) |
+| 413 | ✓ | [`skills/open-design-landing/assets/hero.png`](skills/open-design-landing/assets/hero.png) |
+| 414 | ✓ | [`skills/open-design-landing/assets/image-manifest.json`](skills/open-design-landing/assets/image-manifest.json) |
+| 415 | ✓ | [`skills/open-design-landing/assets/imagegen-prompts.md`](skills/open-design-landing/assets/imagegen-prompts.md) |
+| 416 | ✓ | [`skills/open-design-landing/assets/lab-1.png`](skills/open-design-landing/assets/lab-1.png) |
+| 417 | ✓ | [`skills/open-design-landing/assets/lab-2.png`](skills/open-design-landing/assets/lab-2.png) |
+| 418 | ✓ | [`skills/open-design-landing/assets/lab-3.png`](skills/open-design-landing/assets/lab-3.png) |
+| 419 | ✓ | [`skills/open-design-landing/assets/lab-4.png`](skills/open-design-landing/assets/lab-4.png) |
+| 420 | ✓ | [`skills/open-design-landing/assets/lab-5.png`](skills/open-design-landing/assets/lab-5.png) |
+| 421 | ✓ | [`skills/open-design-landing/assets/method-1.png`](skills/open-design-landing/assets/method-1.png) |
+| 422 | ✓ | [`skills/open-design-landing/assets/method-2.png`](skills/open-design-landing/assets/method-2.png) |
+| 423 | ✓ | [`skills/open-design-landing/assets/method-3.png`](skills/open-design-landing/assets/method-3.png) |
+| 424 | ✓ | [`skills/open-design-landing/assets/method-4.png`](skills/open-design-landing/assets/method-4.png) |
+| 425 | ✓ | [`skills/open-design-landing/assets/testimonial.png`](skills/open-design-landing/assets/testimonial.png) |
+| 426 | ✓ | [`skills/open-design-landing/assets/work-1.png`](skills/open-design-landing/assets/work-1.png) |
+| 427 | ✓ | [`skills/open-design-landing/assets/work-2.png`](skills/open-design-landing/assets/work-2.png) |
+| 428 | ✓ | [`skills/open-design-landing/example.html`](skills/open-design-landing/example.html) |
+| 429 | ✓ | [`skills/open-design-landing/inputs.example.json`](skills/open-design-landing/inputs.example.json) |
+| 430 | ✓ | [`skills/open-design-landing/README.md`](skills/open-design-landing/README.md) |
+| 431 | ✓ | [`skills/open-design-landing/schema.ts`](skills/open-design-landing/schema.ts) |
+| 432 | ✓ | [`skills/open-design-landing/scripts/compose.ts`](skills/open-design-landing/scripts/compose.ts) |
+| 433 | ✓ | [`skills/open-design-landing/scripts/imagegen.ts`](skills/open-design-landing/scripts/imagegen.ts) |
+| 434 | ✓ | [`skills/open-design-landing/scripts/placeholder.ts`](skills/open-design-landing/scripts/placeholder.ts) |
+| 435 | ✓ | [`skills/open-design-landing/SKILL.md`](skills/open-design-landing/SKILL.md) |
+| 436 | ✓ | [`skills/open-design-landing/styles.css`](skills/open-design-landing/styles.css) |
+| 437 | ✓ | [`skills/pm-spec/example.html`](skills/pm-spec/example.html) |
+| 438 | ✓ | [`skills/pm-spec/SKILL.md`](skills/pm-spec/SKILL.md) |
+| 439 | ✓ | [`skills/pptx-html-fidelity-audit/references/audit-table-template.md`](skills/pptx-html-fidelity-audit/references/audit-table-template.md) |
+| 440 | ✓ | [`skills/pptx-html-fidelity-audit/references/font-discipline.md`](skills/pptx-html-fidelity-audit/references/font-discipline.md) |
+| 441 | ✓ | [`skills/pptx-html-fidelity-audit/references/layout-discipline.md`](skills/pptx-html-fidelity-audit/references/layout-discipline.md) |
+| 442 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/.gitignore`](skills/pptx-html-fidelity-audit/scripts/.gitignore) |
+| 443 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/extract_pptx.py`](skills/pptx-html-fidelity-audit/scripts/extract_pptx.py) |
+| 444 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/verify_layout.py`](skills/pptx-html-fidelity-audit/scripts/verify_layout.py) |
+| 445 | ✓ | [`skills/pptx-html-fidelity-audit/SKILL.md`](skills/pptx-html-fidelity-audit/SKILL.md) |
+| 446 | ✓ | [`skills/pricing-page/example.html`](skills/pricing-page/example.html) |
+| 447 | ✓ | [`skills/pricing-page/SKILL.md`](skills/pricing-page/SKILL.md) |
+| 448 | ✓ | [`skills/replit-deck/assets/template.html`](skills/replit-deck/assets/template.html) |
+| 449 | ✓ | [`skills/replit-deck/examples/example-atlas.html`](skills/replit-deck/examples/example-atlas.html) |
+| 450 | ✓ | [`skills/replit-deck/examples/example-bluehouse.html`](skills/replit-deck/examples/example-bluehouse.html) |
+| 451 | ✓ | [`skills/replit-deck/examples/example-helix.html`](skills/replit-deck/examples/example-helix.html) |
+| 452 | ✓ | [`skills/replit-deck/examples/example-holm.html`](skills/replit-deck/examples/example-holm.html) |
+| 453 | ✓ | [`skills/replit-deck/examples/README.md`](skills/replit-deck/examples/README.md) |
+| 454 | ✓ | [`skills/replit-deck/references/checklist.md`](skills/replit-deck/references/checklist.md) |
+| 455 | ✓ | [`skills/replit-deck/references/components.md`](skills/replit-deck/references/components.md) |
+| 456 | ✓ | [`skills/replit-deck/references/layouts.md`](skills/replit-deck/references/layouts.md) |
+| 457 | ✓ | [`skills/replit-deck/references/themes.md`](skills/replit-deck/references/themes.md) |
+| 458 | ✓ | [`skills/replit-deck/SKILL.md`](skills/replit-deck/SKILL.md) |
+| 459 | ✓ | [`skills/saas-landing/example.html`](skills/saas-landing/example.html) |
+| 460 | ✓ | [`skills/saas-landing/SKILL.md`](skills/saas-landing/SKILL.md) |
+| 461 | ✓ | [`skills/simple-deck/assets/template.html`](skills/simple-deck/assets/template.html) |
+| 462 | ✓ | [`skills/simple-deck/example.html`](skills/simple-deck/example.html) |
+| 463 | ✓ | [`skills/simple-deck/references/checklist.md`](skills/simple-deck/references/checklist.md) |
+| 464 | ✓ | [`skills/simple-deck/references/layouts.md`](skills/simple-deck/references/layouts.md) |
+| 465 | ✓ | [`skills/simple-deck/SKILL.md`](skills/simple-deck/SKILL.md) |
+| 466 | ✓ | [`skills/social-carousel/example.html`](skills/social-carousel/example.html) |
+| 467 | ✓ | [`skills/social-carousel/SKILL.md`](skills/social-carousel/SKILL.md) |
+| 468 | ✓ | [`skills/sprite-animation/example.html`](skills/sprite-animation/example.html) |
+| 469 | ✓ | [`skills/sprite-animation/SKILL.md`](skills/sprite-animation/SKILL.md) |
+| 470 | ✓ | [`skills/team-okrs/example.html`](skills/team-okrs/example.html) |
+| 471 | ✓ | [`skills/team-okrs/SKILL.md`](skills/team-okrs/SKILL.md) |
+| 472 | ✓ | [`skills/tweaks/assets/wrap.html`](skills/tweaks/assets/wrap.html) |
+| 473 | ✓ | [`skills/tweaks/example.html`](skills/tweaks/example.html) |
+| 474 | ✓ | [`skills/tweaks/SKILL.md`](skills/tweaks/SKILL.md) |
+| 475 | ✓ | [`skills/video-shortform/example.html`](skills/video-shortform/example.html) |
+| 476 | ✓ | [`skills/video-shortform/SKILL.md`](skills/video-shortform/SKILL.md) |
+| 477 | ✓ | [`skills/web-prototype-taste-brutalist/example.html`](skills/web-prototype-taste-brutalist/example.html) |
+| 478 | ✓ | [`skills/web-prototype-taste-brutalist/SKILL.md`](skills/web-prototype-taste-brutalist/SKILL.md) |
+| 479 | ✓ | [`skills/web-prototype-taste-editorial/example.html`](skills/web-prototype-taste-editorial/example.html) |
+| 480 | ✓ | [`skills/web-prototype-taste-editorial/SKILL.md`](skills/web-prototype-taste-editorial/SKILL.md) |
+| 481 | ✓ | [`skills/web-prototype-taste-soft/example.html`](skills/web-prototype-taste-soft/example.html) |
+| 482 | ✓ | [`skills/web-prototype-taste-soft/SKILL.md`](skills/web-prototype-taste-soft/SKILL.md) |
+| 483 | ✓ | [`skills/web-prototype/assets/template.html`](skills/web-prototype/assets/template.html) |
+| 484 | ✓ | [`skills/web-prototype/example.html`](skills/web-prototype/example.html) |
+| 485 | ✓ | [`skills/web-prototype/references/checklist.md`](skills/web-prototype/references/checklist.md) |
+| 486 | ✓ | [`skills/web-prototype/references/layouts.md`](skills/web-prototype/references/layouts.md) |
+| 487 | ✓ | [`skills/web-prototype/SKILL.md`](skills/web-prototype/SKILL.md) |
+| 488 | ✓ | [`skills/weekly-update/example.html`](skills/weekly-update/example.html) |
+| 489 | ✓ | [`skills/weekly-update/SKILL.md`](skills/weekly-update/SKILL.md) |
+| 490 | ✓ | [`skills/wireframe-sketch/example.html`](skills/wireframe-sketch/example.html) |
+| 491 | ✓ | [`skills/wireframe-sketch/SKILL.md`](skills/wireframe-sketch/SKILL.md) |
+| 492 | ✓ | [`specs/2026-04-29-live-artifacts/spec.md`](specs/2026-04-29-live-artifacts/spec.md) |
+| 493 | ✓ | [`specs/change/20260430-implement-maintainability-w2-w3/spec.md`](specs/change/20260430-implement-maintainability-w2-w3/spec.md) |
+| 494 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
+| 495 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
+| 496 | ✓ | [`tools/pack/README.md`](tools/pack/README.md) |
+| 497 | → | [`CONTRIBUTING.de.md`](CONTRIBUTING.de.md) |
+| 498 | → | [`CONTRIBUTING.fr.md`](CONTRIBUTING.fr.md) |
+| 499 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 500 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 501 | → | [`design-systems/README.md`](design-systems/README.md) |
+| 502 | → | [`docs/agent-adapters.md`](docs/agent-adapters.md) |
+| 503 | → | [`docs/references.md`](docs/references.md) |
+| 504 | → | [`docs/roadmap.md`](docs/roadmap.md) |
+| 505 | → | [`docs/skills-protocol.md`](docs/skills-protocol.md) |
+| 506 | → | [`QUICKSTART.de.md`](QUICKSTART.de.md) |
+| 507 | → | [`QUICKSTART.fr.md`](QUICKSTART.fr.md) |
+| 508 | → | [`QUICKSTART.md`](QUICKSTART.md) |
+| 509 | → | [`QUICKSTART.zh-CN.md`](QUICKSTART.zh-CN.md) |
+| 510 | → | [`README.md`](README.md) |
+| 511 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 512 | → | [`TRANSLATIONS.md`](TRANSLATIONS.md) |
 
 ---
 

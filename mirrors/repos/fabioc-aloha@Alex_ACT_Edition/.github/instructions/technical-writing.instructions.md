@@ -164,4 +164,10 @@ Before publishing:
 4. **Read it on mobile** — does it still make sense?
 5. **Ask: "What question does this answer?"** — if unclear, rewrite
 
-> **Documentation is a product. Ship it with the same care as code.**
+> **Documentation is a product. Ship it with the same care as code.
+
+## Would Revise If
+
+- Teams consistently produce better documentation by ignoring these guidelines (evidence that the structure is constraining rather than enabling)
+- AI-native documentation patterns (e.g., conversational docs, interactive notebooks) supersede traditional structured prose for the target audience
+- The guidelines conflict with an established style guide adopted by the project (defer to the project's existing standard)**

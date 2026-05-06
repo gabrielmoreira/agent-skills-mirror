@@ -259,3 +259,16 @@ plotter.close()
 6. **Batch effects**: Use `batch_key` when the reference contains multiple
    batches or donors. Cell2location explicitly models batch-specific detection
    sensitivity, which improves signature estimation.
+7. **Tangram lowercases gene names**: `tangram.pp_adatas()` converts all
+   `var_names` to lowercase in-place (e.g., `Pou5f1` → `pou5f1`). This
+   causes downstream gene lookups to fail silently. After Tangram runs,
+   restore original casing from the reference:
+   ```python
+   case_map = {g.lower(): g for g in adata_ref.var_names}
+   adata_imputed.var_names = [case_map.get(g, g) for g in adata_imputed.var_names]
+   ```
+8. **Reference with Ensembl IDs in .raw**: Some references store raw counts
+   in `.raw.X` with Ensembl gene IDs while `.X` uses gene symbols. Since
+   spatial data uses gene symbols, you may need to recover counts from the
+   symbol-space `.X` via `np.expm1()` if it was log1p-normalized, rather
+   than using `.raw.X` with mismatched IDs.

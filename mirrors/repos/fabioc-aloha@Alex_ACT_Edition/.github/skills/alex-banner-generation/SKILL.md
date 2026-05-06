@@ -119,6 +119,12 @@ Don't ship PNGs unless required — they double the asset weight and can drift f
 
 ## Boundaries
 
-- The muscle never picks the watermark or writes the subtitle. That's an LLM/skill judgment.
-- The muscle never edits the source markdown. Embedding the banner in the doc is a separate step.
+- The muscle does not pick the watermark or write the subtitle — that is an LLM/skill judgment call.
+- The muscle does not edit the source markdown — embedding the banner in the doc is a separate step.
 - Custom colors / fonts / dimensions are not supported. If the user wants a non-template design, generate raw SVG manually rather than forking the muscle.
+
+## Falsifiability
+
+- This skill is wrong if banners are consistently rejected aesthetically by the user, or if the SVG pipeline renders incorrectly in >10% of target environments (GitHub, VS Code preview, browsers)
+- The template inventory is stale if the muscle adds new templates this skill does not document
+- The color/font constraints are arbitrary if users frequently need customization the skill forbids

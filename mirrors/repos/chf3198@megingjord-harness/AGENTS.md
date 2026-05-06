@@ -41,6 +41,16 @@ This repo is the **development workbench** for the DevEnv Ops Harness runtimes:
 - Repo-local overrides may tighten the format, but must not remove provenance.
 - See `instructions/team-model-signing.instructions.md`.
 
+## HAMR cross-team routing
+
+- All 3 teams route governed provider calls through HAMR (`https://hamr.chf3198.workers.dev`).
+- Activate per-checkout: `npm run hamr:activate`. Verify: `npm run hamr:sync-verify`.
+- Canonical contract: `instructions/hamr-routing.instructions.md`.
+
+## Skill index
+
+Auto-derived from `skills/<name>/SKILL.md` frontmatter — see [`docs/skills-agents.md`](docs/skills-agents.md). Regenerate via `node scripts/global/skill-views-derive.js`.
+
 ## Development → Deploy workflow
 
 ```

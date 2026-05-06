@@ -25,10 +25,11 @@ dotnet add package Azure.Identity
 ## Environment Variables
 
 ```bash
-PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project>
-MODEL_DEPLOYMENT_NAME=gpt-4o-mini
-AZURE_BING_CONNECTION_ID=<bing-connection-resource-id>
-AZURE_AI_SEARCH_CONNECTION_ID=<search-connection-resource-id>
+PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project>  # Required: Azure AI project endpoint
+MODEL_DEPLOYMENT_NAME=gpt-4o-mini  # Required: model deployment name
+AZURE_BING_CONNECTION_ID=<bing-connection-resource-id>  # Required: Bing connection resource ID
+AZURE_AI_SEARCH_CONNECTION_ID=<search-connection-resource-id>  # Required: Azure AI Search connection resource ID
+AZURE_TOKEN_CREDENTIALS=prod  # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
@@ -38,7 +39,14 @@ using Azure.AI.Agents.Persistent;
 using Azure.Identity;
 
 var projectEndpoint = Environment.GetEnvironmentVariable("PROJECT_ENDPOINT");
-PersistentAgentsClient client = new(projectEndpoint, new DefaultAzureCredential());
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+var credential = new DefaultAzureCredential(
+    DefaultAzureCredential.DefaultEnvironmentVariableName
+);
+// Or use a specific credential directly in production:
+// See https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#credential-classes
+// var credential = new ManagedIdentityCredential();
+PersistentAgentsClient client = new(projectEndpoint, credential);
 ```
 
 ## Client Hierarchy

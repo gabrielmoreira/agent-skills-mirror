@@ -2,12 +2,12 @@
 name: gtm-strategy
 description: When the user wants to plan go-to-market strategy, GTM framework, or market entry. Also use when the user mentions "GTM," "go-to-market," "market entry," "new market," "repositioning," "PLG," "sales-led," "product-led," "marketing-led," "ICP," "buyer persona," "GTM motion," or "market expansion." For launch checklist, use product-launch.
 metadata:
-  version: 1.1.1
+  version: 1.2.0
 ---
 
 # Strategies: Go-to-Market
 
-Guides go-to-market (GTM) strategy—the blueprint for launching or repositioning a product that aligns product, marketing, sales, and customer success around reaching and winning target customers. Organizations with documented GTM see ~10% higher success rates and 3× revenue growth; ~72% of B2B miss GTM targets in year 1, often due to execution gaps. Use this skill when planning GTM for product launch, new market entry, repositioning, or feature launch.
+Guides go-to-market (GTM) strategy—the blueprint for launching or repositioning a product that aligns product, marketing, sales, and customer success around reaching and winning target customers. Organizations with a defined GTM process see ~10pp higher launch success rates (63% vs 53%) and ~3× median revenue growth. However, ~72% of sales reps miss quota, often due to execution gaps. Use this skill when planning GTM for product launch, new market entry, repositioning, or feature launch.
 
 **When invoking**: On **first use**, if helpful, open with 1–2 sentences on what this skill covers and why it matters, then provide the main output. On **subsequent use** or when the user asks to skip, go directly to the main output.
 
@@ -51,7 +51,7 @@ Guides go-to-market (GTM) strategy—the blueprint for launching or repositionin
 | **ICP** | Company | Which organizations deliver best unit economics; firmographics (industry, size, revenue), technographics, problem intensity |
 | **Buyer persona** | Individual | Decision-makers within target companies; roles, goals, pain points, objections, preferred channels |
 
-**ICP impact**: Defined ICPs → ~68% higher conversion, ~50% lower CAC, ~30% shorter sales cycles. Include negative profiles (explicit disqualifiers) to protect pipeline quality.
+**ICP impact**: Companies with clearly defined ICPs see higher conversion rates and lower CAC. Include negative profiles (explicit disqualifiers) to protect pipeline quality.
 
 ## Market Analysis
 
