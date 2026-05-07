@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 47 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 47 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,38 +74,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/engineering/improve-codebase-architecture/INTERFACE-DESIGN.md`](skills/engineering/improve-codebase-architecture/INTERFACE-DESIGN.md) |
 | 14 | ✓ | [`skills/engineering/improve-codebase-architecture/LANGUAGE.md`](skills/engineering/improve-codebase-architecture/LANGUAGE.md) |
 | 15 | ✓ | [`skills/engineering/improve-codebase-architecture/SKILL.md`](skills/engineering/improve-codebase-architecture/SKILL.md) |
-| 16 | ✓ | [`skills/engineering/README.md`](skills/engineering/README.md) |
-| 17 | ✓ | [`skills/engineering/setup-matt-pocock-skills/domain.md`](skills/engineering/setup-matt-pocock-skills/domain.md) |
-| 18 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md) |
-| 19 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md) |
-| 20 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md) |
-| 21 | ✓ | [`skills/engineering/setup-matt-pocock-skills/SKILL.md`](skills/engineering/setup-matt-pocock-skills/SKILL.md) |
-| 22 | ✓ | [`skills/engineering/setup-matt-pocock-skills/triage-labels.md`](skills/engineering/setup-matt-pocock-skills/triage-labels.md) |
-| 23 | ✓ | [`skills/engineering/tdd/deep-modules.md`](skills/engineering/tdd/deep-modules.md) |
-| 24 | ✓ | [`skills/engineering/tdd/interface-design.md`](skills/engineering/tdd/interface-design.md) |
-| 25 | ✓ | [`skills/engineering/tdd/mocking.md`](skills/engineering/tdd/mocking.md) |
-| 26 | ✓ | [`skills/engineering/tdd/refactoring.md`](skills/engineering/tdd/refactoring.md) |
-| 27 | ✓ | [`skills/engineering/tdd/SKILL.md`](skills/engineering/tdd/SKILL.md) |
-| 28 | ✓ | [`skills/engineering/tdd/tests.md`](skills/engineering/tdd/tests.md) |
-| 29 | ✓ | [`skills/engineering/to-issues/SKILL.md`](skills/engineering/to-issues/SKILL.md) |
-| 30 | ✓ | [`skills/engineering/to-prd/SKILL.md`](skills/engineering/to-prd/SKILL.md) |
-| 31 | ✓ | [`skills/engineering/triage/AGENT-BRIEF.md`](skills/engineering/triage/AGENT-BRIEF.md) |
-| 32 | ✓ | [`skills/engineering/triage/OUT-OF-SCOPE.md`](skills/engineering/triage/OUT-OF-SCOPE.md) |
-| 33 | ✓ | [`skills/engineering/triage/SKILL.md`](skills/engineering/triage/SKILL.md) |
-| 34 | ✓ | [`skills/engineering/zoom-out/SKILL.md`](skills/engineering/zoom-out/SKILL.md) |
-| 35 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
-| 36 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
-| 37 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
-| 38 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
-| 39 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
-| 40 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
-| 41 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
-| 42 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
-| 43 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
-| 44 | ✓ | [`skills/productivity/caveman/SKILL.md`](skills/productivity/caveman/SKILL.md) |
-| 45 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
-| 46 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
-| 47 | ✓ | [`skills/productivity/write-a-skill/SKILL.md`](skills/productivity/write-a-skill/SKILL.md) |
+| 16 | ✓ | [`skills/engineering/prototype/LOGIC.md`](skills/engineering/prototype/LOGIC.md) |
+| 17 | ✓ | [`skills/engineering/prototype/SKILL.md`](skills/engineering/prototype/SKILL.md) |
+| 18 | ✓ | [`skills/engineering/prototype/UI.md`](skills/engineering/prototype/UI.md) |
+| 19 | ✓ | [`skills/engineering/README.md`](skills/engineering/README.md) |
+| 20 | ✓ | [`skills/engineering/setup-matt-pocock-skills/domain.md`](skills/engineering/setup-matt-pocock-skills/domain.md) |
+| 21 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md) |
+| 22 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md) |
+| 23 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md) |
+| 24 | ✓ | [`skills/engineering/setup-matt-pocock-skills/SKILL.md`](skills/engineering/setup-matt-pocock-skills/SKILL.md) |
+| 25 | ✓ | [`skills/engineering/setup-matt-pocock-skills/triage-labels.md`](skills/engineering/setup-matt-pocock-skills/triage-labels.md) |
+| 26 | ✓ | [`skills/engineering/tdd/deep-modules.md`](skills/engineering/tdd/deep-modules.md) |
+| 27 | ✓ | [`skills/engineering/tdd/interface-design.md`](skills/engineering/tdd/interface-design.md) |
+| 28 | ✓ | [`skills/engineering/tdd/mocking.md`](skills/engineering/tdd/mocking.md) |
+| 29 | ✓ | [`skills/engineering/tdd/refactoring.md`](skills/engineering/tdd/refactoring.md) |
+| 30 | ✓ | [`skills/engineering/tdd/SKILL.md`](skills/engineering/tdd/SKILL.md) |
+| 31 | ✓ | [`skills/engineering/tdd/tests.md`](skills/engineering/tdd/tests.md) |
+| 32 | ✓ | [`skills/engineering/to-issues/SKILL.md`](skills/engineering/to-issues/SKILL.md) |
+| 33 | ✓ | [`skills/engineering/to-prd/SKILL.md`](skills/engineering/to-prd/SKILL.md) |
+| 34 | ✓ | [`skills/engineering/triage/AGENT-BRIEF.md`](skills/engineering/triage/AGENT-BRIEF.md) |
+| 35 | ✓ | [`skills/engineering/triage/OUT-OF-SCOPE.md`](skills/engineering/triage/OUT-OF-SCOPE.md) |
+| 36 | ✓ | [`skills/engineering/triage/SKILL.md`](skills/engineering/triage/SKILL.md) |
+| 37 | ✓ | [`skills/engineering/zoom-out/SKILL.md`](skills/engineering/zoom-out/SKILL.md) |
+| 38 | ✓ | [`skills/in-progress/handoff/SKILL.md`](skills/in-progress/handoff/SKILL.md) |
+| 39 | ✓ | [`skills/in-progress/README.md`](skills/in-progress/README.md) |
+| 40 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
+| 41 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
+| 42 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
+| 43 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
+| 44 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
+| 45 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
+| 46 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
+| 47 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
+| 48 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
+| 49 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
+| 50 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
+| 51 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
+| 52 | ✓ | [`skills/productivity/caveman/SKILL.md`](skills/productivity/caveman/SKILL.md) |
+| 53 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
+| 54 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
+| 55 | ✓ | [`skills/productivity/write-a-skill/SKILL.md`](skills/productivity/write-a-skill/SKILL.md) |
 
 ---
 

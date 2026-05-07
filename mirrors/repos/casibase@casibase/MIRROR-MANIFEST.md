@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `casibase/casibase` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `casibase/casibase` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `casibase/casibase` — 26 default patterns, 0 followed patterns, 6 fi
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`mcp/tools.go`](mcp/tools.go) |
 | 5 | ✓ | [`mcp/toolset.go`](mcp/toolset.go) |
 | 6 | ✓ | [`mcp/util.go`](mcp/util.go) |
+| 7 | ✓ | [`skills/github/SKILL.md`](skills/github/SKILL.md) |
 
 ---
 

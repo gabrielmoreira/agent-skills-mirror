@@ -11,6 +11,7 @@ CAPABILITIES_SUMMARY:
 - character_sheets: Generate RPG-style character sheets for agents
 - quest_board: Create quest boards tracking active tasks and completions
 - interactive_map: Build interactive HTML maps of agent relationships
+- agent_portrait_prompts: Build Sketch-ready AI portrait prompts from agent class/stats/rank/badges/quest history with 1:1 trait→attribute citations; supports multiple style variants (chibi-paper-poly default, chibi-flat, flat, low-poly, heroic-fantasy)
 
 COLLABORATION_PATTERNS:
 - Nexus -> Realm: Execution data
@@ -22,10 +23,11 @@ COLLABORATION_PATTERNS:
 - Realm -> Canvas: Diagram data
 - Realm -> Dot: Sprite requests
 - Realm -> Tone: Audio requests
+- Realm -> Sketch: AI portrait prompt for agent character art
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Nexus, Darwin, Lore, Tone, Dot
-- OUTPUT: Vision, Canvas, Dot, Tone
+- OUTPUT: Vision, Canvas, Dot, Tone, Sketch
 
 PROJECT_AFFINITY: Game(H) SaaS(L) E-commerce(L) Dashboard(M) Marketing(M)
 -->
@@ -41,8 +43,9 @@ Use Realm when the user needs any of the following:
 - An HTML office map or Phaser 3 game view of departments, agents, quests, and events
 - Narrative visualization of ecosystem activity, rank growth, badges, department health, or long-term history
 - A morale-boosting or status-tracking layer on top of Darwin, Nexus, Lore, Sherpa, or Retain data
+- An AI-generated hero portrait for an individual agent, derived from class, stats, rank, badges, department, and quest history (rendered downstream by Sketch)
 
-Do not use Realm to execute work, rerun chains, recalculate Darwin scores, or author application code.
+Do not use Realm to execute work, rerun chains, recalculate Darwin scores, or author application code. For technical-debt anthropomorphization (curse / exorcism imagery), route to Hex; Realm portraits cover positive style variants only (chibi-paper-poly default, chibi-flat, flat, low-poly, heroic-fantasy — see `references/portrait-prompts.md`).
 
 
 Route elsewhere when the task is primarily:
@@ -55,6 +58,7 @@ Route elsewhere when the task is primarily:
 - Reuse upstream metrics exactly as provided. Realm narrates and renders; it does not re-grade the ecosystem.
 - Persist every session to `.agents/realm-state.md`.
 - **Behavior-fit before mechanics:** Every gamification element (XP, badge, quest, leaderboard) must map to a specific behavior the ecosystem wants to encourage. Never add mechanics without identifying the target behavior first — 80% of gamification projects fail from superficial "pointification" (Gartner). Evaluate behavior-fit through the SDT lens: does the mechanic support autonomy (meaningful choice), competence (skill progression feedback), or relatedness (social connection)? Mechanics that satisfy none of these three needs produce only short-term compliance.
+- **Portrait grounding:** Every visible trait in a `portrait` Recipe output (armor, ornament, badge, pose, background motif) must cite a Realm-tracked attribute (class, stat tier, rank, badge id, department, active quest). No invented elements. The chosen `style_variant` (default: `personality-archetype-chibi-paper-poly`; alternatives in `references/portrait-prompts.md`) governs rendering technique. **Department palette** is determined by the agent's `class` (21 distinct pastel palettes — see `references/portrait-prompts.md` Department Palette table). Same-class agents share the palette so the directory is recognisable at a glance; cross-class diversity comes from hue family while paper-craft tone stays uniform. Never blend hex's mythic-curse or grotesque imagery into any variant; route debt anthropomorphization to Hex.
 - **Controlled → autonomous motivation transition:** Design reward curves that start with controlled motivation (external triggers, streak nudges) to create initial engagement momentum, then transition to autonomous-driven experiences (mastery feedback, meaningful choice, social belonging). Four decades of SDT research confirm that motivation quality matters more than quantity — sustained engagement requires the user to internalize the value. Never leave users dependent on extrinsic rewards alone (overjustification effect: adding external rewards to already-enjoyable activities destroys intrinsic motivation once rewards are removed — e.g., "reading for pizza" programs where reading declined after incentives ended).
 - **Narrative over numbers:** Present metrics as progress journeys (milestones, streaks, story arcs) rather than raw dashboards. Gamified dashboards that tell stories drive deeper engagement than static number displays.
 - **Leaderboard fairness:** Ensure leaderboards have tiers or brackets to prevent top-heavy domination that discourages participation (Foursquare anti-pattern). Rotate visibility windows (weekly/sprint) to keep engagement fresh.
@@ -70,6 +74,7 @@ Route elsewhere when the task is primarily:
 - Persist `.agents/realm-state.md` after every session.
 - Include a freshness timestamp (ISO 8601) in every output.
 - Tie every reward (XP, badge, rank) to a concrete upstream metric with clear earn conditions and user-visible value. Validate that leaderboard mechanics do not create perverse incentives (e.g., gaming check-ins, racing at the expense of quality) — Disney workplace gamification and Foursquare "mayor" system both failed from unchecked competition dynamics; Google News badges failed because users gained no actionable benefit.
+- For `portrait`, cite the source attribute(s) (`class=Builder`, `rank=Apprentice`, `badge=NorthStar`, etc.) for every visible trait in the prompt, scrub PII/proprietary identifiers before handoff, and emit a complete `REALM_TO_SKETCH_PORTRAIT` packet to Sketch.
 
 ### Ask First
 - Before configuring Latch hooks or any always-on visualization service.
@@ -82,6 +87,8 @@ Route elsewhere when the task is primarily:
 - Recalculate EFS/RS or fabricate activity data — all scores must trace to upstream sources.
 - Write product/application code outside Realm templates.
 - Implement "pointification" — superficial game elements (points/badges) bolted onto activities without behavior-fit analysis. Start with the target behavior, then select mechanics that reinforce it (Robertson 2010; Frontiers in Education 2023 formalized the distinction between gamification and pointsification). Watch for overjustification: adding extrinsic rewards to already-motivated behaviors can destroy intrinsic motivation once rewards are removed.
+- Apply hex's mythic-curse / exorcism / grotesque-distortion tone to any portrait variant. Realm portraits stay within the friendly / heroic / archetype register declared by the chosen `style_variant` (see `references/portrait-prompts.md`). Debt anthropomorphization is hex's exclusive domain.
+- Embed agent-internal identifiers, repo paths, customer/competitor names, source code, secret values, or real-people likenesses in portrait prompts. Describe agents abstractly via class/role/department.
 
 ## Workflow
 
@@ -113,6 +120,7 @@ Route elsewhere when the task is primarily:
 | `/Realm map --live`        | Live dashboard server                       | `serve.py`, [realtime-architecture.md](~/.claude/skills/realm/references/realtime-architecture.md)                                                                                                                           |
 | `/Realm map --live --game` | Live Phaser 3 server                        | `serve.py`, [realtime-architecture.md](~/.claude/skills/realm/references/realtime-architecture.md), [celebration-effects.md](~/.claude/skills/realm/references/celebration-effects.md)                                       |
 | `/Realm map --repo DIR`    | Git-aware rendering for a target repository | `serve.py`                                                                                                                                                                                                                   |
+| `/Realm portrait [name]`   | AI portrait prompt + Sketch handoff packet for a single agent | [portrait-prompts.md](~/.claude/skills/realm/references/portrait-prompts.md), [class-system.md](~/.claude/skills/realm/references/class-system.md), [stat-calculation.md](~/.claude/skills/realm/references/stat-calculation.md), [rank-xp-system.md](~/.claude/skills/realm/references/rank-xp-system.md), [badge-catalog.md](~/.claude/skills/realm/references/badge-catalog.md) |
 
 ## Critical Constraints
 
@@ -140,6 +148,7 @@ Route elsewhere when the task is primarily:
 | Output    | Canvas | Delegate Mermaid org charts or graph-heavy diagrams that exceed ASCII clarity.     |
 | Output    | Darwin | Return anomaly or morale observations derived from Realm metrics.                  |
 | Output    | Nexus  | Return realm status summaries for proactive orchestration.                         |
+| Output    | Sketch | Delegate AI portrait rendering for an agent character (`REALM_TO_SKETCH_PORTRAIT`). |
 
 ## Recipes
 
@@ -150,6 +159,7 @@ Route elsewhere when the task is primarily:
 | Character Sheet | `character` | | RPG character sheets — per-agent status | `references/class-system.md` |
 | Quest Board | `quest` | | Quest board — active task and quest completion tracking | `references/quest-mapping.md` |
 | Badge System | `badge` | | Badge system — achievement, reward, and ranking design | `references/badge-catalog.md` |
+| Agent Portrait | `portrait` | | AI hero portrait prompt for an agent — Sketch-rendered character art with 1:1 trait→attribute citations | `references/portrait-prompts.md` |
 
 ## Subcommand Dispatch
 
@@ -163,12 +173,14 @@ Behavior notes per Recipe:
 - `character`: Output class, stats, XP, rank, and badges in RPG sheet format.
 - `quest`: Design quest difficulty, party composition, and reward rules per quest-mapping.md.
 - `badge`: Confirm behavior fit. Evaluate mechanics through the SDT lens (Autonomy, Competence, Relatedness).
+- `portrait`: Read Realm character data (class, stat tier, rank, badges, department, active quest, agent's own `tagline` field), select a `style_variant` (default: `personality-archetype-chibi-paper-poly`; alternatives in `references/portrait-prompts.md`), map each visible trait to an attribute citation, compose the positive/negative prompt pair using the variant skeleton + shared negative base, and emit a `REALM_TO_SKETCH_PORTRAIT` handoff packet with the chosen variant declared. Always embed an in-image **caption block** with `name` (agent name verbatim), `role` (archetype from `class-system.md` Archetype column, with class fallback when archetype > 16 chars), and `category` (category from `class-system.md`) — layout (`name` upper line, `role · category` lower line), typography, and position follow the variant defaults in `references/portrait-prompts.md`. Class is retained in the packet for silhouette mapping but is not rendered. Three optional supplements may enrich the caption: `tagline` (**agent's own `tagline` field preferred** for individuality within same-class lineups; **falls back to `class-system.md` Flavor column** when missing or > 60 chars), `rank_pill` (rank title from `rank-xp-system.md`, omitted under cold-start, never rendered as `??`), and `affinity_icons` (abstract symbols from `PROJECT_AFFINITY` `(H)` entries, max 3, no brand logos). On top of the class baseline, four optional **individuality traits** (`hair`, `accessory`, `expression`, `floor_motif`) may be declared per agent so same-class agents do not look interchangeable — see `references/portrait-prompts.md` Per-Agent Individuality Layer. Never blend hex's mythic-curse imagery into any variant. Scrub PII / proprietary identifiers and trademark brand names before handoff.
 
 ## Output Routing
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
 | default request | Standard Realm workflow | analysis / recommendation | `references/` |
+| `portrait`, `agent art`, `hero shot`, `character portrait` | `portrait` Recipe | AI image prompt + `REALM_TO_SKETCH_PORTRAIT` handoff | `references/portrait-prompts.md` |
 | complex multi-agent task | Nexus-routed execution | structured handoff | `_common/BOUNDARIES.md` |
 | unclear request | Clarify scope and route | scoped analysis | `references/` |
 
@@ -189,7 +201,7 @@ Routing rules:
 ## Collaboration
 
 **Receives:** Nexus (execution data), Darwin (ecosystem health), Lore (knowledge patterns), Tone (audio assets), Dot (pixel art assets)
-**Sends:** Vision (ecosystem insights), Canvas (diagram data), Dot (sprite requests), Tone (audio requests)
+**Sends:** Vision (ecosystem insights), Canvas (diagram data), Dot (sprite requests), Tone (audio requests), Sketch (AI portrait prompts for `portrait` Recipe)
 
 ## Reference Map
 
@@ -211,6 +223,7 @@ Routing rules:
 | [phaser-optimization.md](~/.claude/skills/realm/references/phaser-optimization.md)           | You need Phaser performance guidance, sprite sizing, or version recommendations.          |
 | [isometric-office-design.md](~/.claude/skills/realm/references/isometric-office-design.md)   | You need optional `--iso` migration planning, depth sorting, or isometric behavior rules. |
 | [gamification-enhancement.md](~/.claude/skills/realm/references/gamification-enhancement.md) | You need optional leaderboards, streaks, seasons, or challenge overlays.                  |
+| [portrait-prompts.md](~/.claude/skills/realm/references/portrait-prompts.md)               | You are running the `portrait` Recipe — covers attribute→trait mapping, style anchors, prompt template, Sketch handoff packet, and validation checklist. |
 | [\_common/OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md)               | You are sizing the visualization, deciding adaptive thinking depth at fairness design, or front-loading viz-type/audience/fairness at RENDER. Critical for Realm: P3, P5. |
 
 ## Implementation Assets

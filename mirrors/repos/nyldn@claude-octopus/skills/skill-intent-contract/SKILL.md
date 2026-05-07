@@ -1,8 +1,13 @@
 ---
 name: skill-intent-contract
-version: 1.0.0
 description: "Lock in user goals upfront and validate outputs against them — use to prevent scope drift"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Intent Contract System
 
@@ -17,7 +22,6 @@ The intent contract creates a **persistent record of user intent** that:
 
 This closes the loop between intention and delivery.
 
----
 
 ## Intent Contract Structure
 
@@ -67,7 +71,6 @@ What this should NOT be:
 - [ ] Builds on existing assets appropriately
 ```
 
----
 
 ## Implementation Instructions
 
@@ -237,7 +240,6 @@ Update the `Status` field in `.claude/session-intent.md`:
 - `completed` → all criteria met, boundaries respected
 - `incomplete` → some criteria not met, gaps identified
 
----
 
 ## Integration with Workflows
 
@@ -276,7 +278,6 @@ Update the `Status` field in `.claude/session-intent.md`:
 6. Present validation report
 ```
 
----
 
 ## Example Intent Contract
 
@@ -330,7 +331,6 @@ What this should NOT be:
 - [ ] Builds on existing assets appropriately
 ```
 
----
 
 ## Benefits
 
@@ -346,6 +346,5 @@ What this should NOT be:
 - Context for better decisions
 - Validation framework built-in
 
----
 
 **Ready to use!** Workflows can now create and validate against persistent intent contracts.

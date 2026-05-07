@@ -251,9 +251,9 @@ Reel receives recording requests from upstream agents, produces terminal recordi
 
 ## AUTORUN Support
 
-When Reel receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `recording_target`, `output_format`, and `constraints`, choose the correct output route, run the SCRIPT→SET→RECORD→DELIVER workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Reel-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -279,26 +279,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Reel
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Recording target: [CLI tool or command]
-  - Tool: [VHS | terminalizer | asciinema]
-  - Output format: [GIF | MP4 | WebM | SVG | .cast]
-  - File size: [optimized size]
-  - Duration: [recording duration]
-- Artifacts: [file paths or inline references]
-- Risks: [timing issues, environment dependencies, output quality]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

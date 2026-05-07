@@ -284,9 +284,9 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-When Lens receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `investigation_type`, `scope`, and `Constraints`, choose the correct investigation pattern, run the SCOPE→SURVEY→TRACE→CONNECT→REPORT workflow, produce the investigation report, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Lens-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -307,26 +307,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Lens
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Investigation type: [Existence | Flow | Structure | Data | Convention]
-  - Scope: [files/modules investigated]
-  - Confidence: [High | Medium | Low]
-  - Key discoveries: [main findings]
-  - Gaps: [What I didn't find]
-- Artifacts: [file paths or inline references]
-- Risks: [low confidence areas, incomplete investigation]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

@@ -102,11 +102,18 @@ The local binary name is always `matlab-mcp-core-server` (or `matlab-mcp-core-se
 
 ### 1b. Check for existing config
 
+Check for the config file at the current location first, then fall back to the legacy location:
+
+```bash
+cat ~/.matlab/agentic-toolkits/config.json 2>/dev/null
+```
+
+If not found, check the legacy location:
 ```bash
 cat ~/.matlab-agentic-toolkit/config.json 2>/dev/null
 ```
 
-If a config exists with valid paths, note the stored values as defaults for Phase 2.
+If a config exists (at either location) with valid paths, note the stored values as defaults for Phase 2. If only the legacy config exists, flag it for migration in Phase 3.
 
 ### 1c. Find MATLAB installations
 
@@ -122,7 +129,14 @@ Validate each: `test -x "$MATLAB_ROOT/bin/matlab"` and read version from `Versio
 
 ### 1d. Check for existing MCP server
 
-Check `~/.local/bin/matlab-mcp-core-server --version` and `which matlab-mcp-core-server`. If found, record path and version. Query latest from GitHub:
+Check for the binary at the current location first, then the legacy location:
+
+```bash
+~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server --version 2>/dev/null
+~/.local/bin/matlab-mcp-core-server --version 2>/dev/null
+```
+
+If found at either location, record path and version. If found only at the legacy location (`~/.local/bin/`), flag it for migration in Phase 3. Also query latest from GitHub:
 
 ```bash
 curl -sL https://api.github.com/repos/matlab/matlab-mcp-core-server/releases/latest | grep '"tag_name"' | head -1 | sed 's/.*"\(v[^"]*\)".*/\1/'
@@ -145,7 +159,11 @@ Check environment and CLI tools: `claude --version` (Claude Code), `codex --vers
 
 Read the platform-specific reference file and check for any items listed in its **Legacy Artifacts** section (if present). Record what was found — these will be shown in the plan and cleaned up during Phase 3.
 
-**Reference file resolution:** On re-runs (when `~/.matlab-agentic-toolkit/config.json` exists), resolve reference files from `toolkitRoot` in that config (e.g., `<toolkitRoot>/skills-catalog/toolkit/matlab-agentic-toolkit-setup/reference/<filename>`), not from the skill's base directory. This avoids reading stale cached versions when the skill is loaded from a plugin cache.
+**Reference file resolution:** On re-runs (when `~/.matlab/agentic-toolkits/config.json` or `~/.matlab-agentic-toolkit/config.json` exists), resolve reference files from the toolkit source path in that config. In the new schema, this is `toolkits.matlab.source` (when it is a local path rather than `"release"`). In the legacy schema, it is `toolkitRoot`. Example: `<source>/skills-catalog/toolkit/matlab-agentic-toolkit-setup/reference/<filename>`. This avoids reading stale cached versions when the skill is loaded from a plugin cache.
+
+### 1h. Detect legacy config location
+
+If a config was found at `~/.matlab-agentic-toolkit/config.json` but NOT at `~/.matlab/agentic-toolkits/config.json`, record that a migration is needed. The old config uses a flat schema that must be transformed to the multi-toolkit schema during Phase 3.
 
 ---
 
@@ -172,7 +190,7 @@ Agent platform:  Claude Code (detected)
 
 Proposed actions:
   MATLAB:        Use R2025b (/Applications/MATLAB_R2025b.app)
-  MCP server:    Download v0.7.0 to ~/.local/bin/matlab-mcp-core-server
+  MCP server:    Download v0.7.0 to ~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server
   Display mode:  desktop (full MATLAB desktop visible)
   Agent config:  Configure MCP server globally (available in all sessions)
   Migration:     (none)
@@ -184,7 +202,10 @@ Proceed with this plan? You can adjust any choice:
   - Configure a different agent: "use Codex" or "use Amp"
 ```
 
-The **Migration** row shows legacy artifacts found in Phase 1g. If none were found, show `(none)`. If artifacts were found, list what will be cleaned up, e.g., `Remove ~/.claude/.mcp.json (migrated to claude mcp add)`.
+The **Migration** row shows legacy artifacts found in Phase 1g, 1h, and 1d. If none were found, show `(none)`. Examples:
+- `Remove ~/.claude/.mcp.json (migrated to claude mcp add)`
+- `Migrate config from ~/.matlab-agentic-toolkit/ to ~/.matlab/agentic-toolkits/`
+- `Move binary from ~/.local/bin/ to ~/.matlab/agentic-toolkits/bin/`
 
 For non-Claude platforms, clearly note "EXPERIMENTAL — untested, provided as-is" and that manual fallback will be provided if automated setup fails.
 
@@ -197,7 +218,7 @@ For OpenAI Codex specifically, the plan must cover **both**:
 | Decision | Default | How to override |
 |----------|---------|-----------------|
 | Which MATLAB | Newest release found | User picks by number or provides a path |
-| MCP server | Download latest to `~/.local/bin/` | User says "use existing" or provides a path |
+| MCP server | Download latest to `~/.matlab/agentic-toolkits/bin/` | User says "use existing" or provides a path |
 | Display mode | `desktop` | User says "use nodesktop" |
 | Agent platform | Auto-detected | User says "use [platform]" |
 
@@ -219,19 +240,32 @@ Carry out the approved plan. Do NOT prompt the user during this phase — all de
 
 ### 3a. Install MCP server (if needed)
 
-Download using `curl` (preferred) or `wget` to `~/.local/bin/matlab-mcp-core-server`:
+If Phase 1d found the binary at the legacy location (`~/.local/bin/matlab-mcp-core-server`) and it is already at the latest version, **move** it instead of re-downloading:
 
 ```bash
-mkdir -p ~/.local/bin
-curl -sL -o ~/.local/bin/matlab-mcp-core-server \
+mkdir -p ~/.matlab/agentic-toolkits/bin
+mv ~/.local/bin/matlab-mcp-core-server ~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server
+```
+
+Otherwise, download using `curl` (preferred) or `wget`:
+
+```bash
+mkdir -p ~/.matlab/agentic-toolkits/bin
+curl -sL -o ~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server \
   "https://github.com/matlab/matlab-mcp-core-server/releases/download/${LATEST_TAG}/${ASSET_NAME}"
 ```
 
-Post-download: `chmod +x` (macOS/Linux), `xattr -d com.apple.quarantine` (macOS), `Unblock-File` (Windows). If macOS Gatekeeper blocks: System Settings > Privacy & Security > Allow Anyway.
+Post-download (or post-move): `chmod +x` (macOS/Linux), `xattr -d com.apple.quarantine` (macOS), `Unblock-File` (Windows). If macOS Gatekeeper blocks: System Settings > Privacy & Security > Allow Anyway.
 
-Verify: `~/.local/bin/matlab-mcp-core-server --version`
+Verify: `~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server --version`
 
 If download fails, provide the direct URL for manual download.
+
+**Clean up legacy binary:** If the binary was moved (not copied) from `~/.local/bin/`, no further cleanup is needed. If a fresh download was performed and an old binary still exists at `~/.local/bin/matlab-mcp-core-server`, remove it:
+
+```bash
+rm -f ~/.local/bin/matlab-mcp-core-server
+```
 
 ### 3b-migrate. Clean up legacy artifacts
 
@@ -283,28 +317,76 @@ Each reference file contains the exact config format, **global config path**, me
 2. The exact content that was written
 3. Whether the file was created new or an existing entry was updated
 
-### 3c. Save state
+### 3c. Migrate legacy config (if needed)
 
-Write configuration to `~/.matlab-agentic-toolkit/config.json`:
+If Phase 1h detected a legacy config at `~/.matlab-agentic-toolkit/config.json`, migrate it now:
+
+1. Read the old config
+2. Transform the flat schema to the multi-toolkit schema:
+   - `matlabRoot` → `matlab.root`
+   - `mcpServerVersion` → `mcpServerVersion`
+   - `mcpServerPath` → `mcpServerPath`
+   - `displayMode` → keep as-is (the new schema still supports this field)
+   - `configuredPlatforms: ["claude-code"]` → `configurations.global.claude_code.toolkits: ["matlab"]`
+   - `toolkitRoot` → `toolkits.matlab.source` (use `"local"` if it points to a git clone, `"release"` otherwise) and `toolkits.matlab.version` (use `setupSkillVersion` or `"unknown"`)
+3. Write the transformed config to the new location (see 3d below)
+4. Remove the old directory: `rm -rf ~/.matlab-agentic-toolkit`
+
+### 3d. Save state
+
+Write configuration to `~/.matlab/agentic-toolkits/config.json`:
 
 ```bash
-mkdir -p ~/.matlab-agentic-toolkit
+mkdir -p ~/.matlab/agentic-toolkits
 ```
 
 ```json
 {
-  "matlabRoot": "<MATLAB_ROOT>",
-  "toolkitRoot": "<TOOLKIT_ROOT>",
-  "mcpServerPath": "<FULL_PATH_TO_BINARY>",
+  "toolkits": {
+    "matlab": {
+      "version": "<TOOLKIT_VERSION_OR_CALVER_TAG>",
+      "source": "<SOURCE_PATH_OR_release>"
+    }
+  },
   "mcpServerVersion": "<VERSION>",
+  "mcpServerPath": "<FULL_PATH_TO_BINARY>",
+  "matlab": {
+    "root": "<MATLAB_ROOT>",
+    "version": "<MATLAB_RELEASE>"
+  },
   "displayMode": "<DISPLAY_MODE>",
-  "configuredPlatforms": ["<PLATFORM>"],
+  "configurations": {
+    "global": {
+      "<AGENT_KEY>": {
+        "toolkits": ["matlab"]
+      }
+    },
+    "projects": {}
+  },
   "setupSkillVersion": "<SKILL_VERSION>",
-  "lastSetup": "<ISO_8601_TIMESTAMP>"
+  "lastUpdated": "<ISO_8601_TIMESTAMP>"
 }
 ```
 
-The `setupSkillVersion` field records the skill `metadata.version` from the YAML front matter of this file. This allows future runs to detect when the skill has been updated and whether migration steps may apply.
+Notes on the schema:
+- **`toolkits`**: Each toolkit gets its own entry. When the Simulink Agentic Toolkit is installed alongside, it adds `"simulink"` here. Both toolkits share this config file.
+- **`source`**: The string `"release"` for GitHub release installs, or the local filesystem path for dev/clone installs.
+- **`configurations`**: Tracks which agent platforms are configured and which toolkits each is using. Agent keys use underscores (e.g., `claude_code`, `gemini_cli`).
+- **`setupSkillVersion`**: Records the skill `metadata.version` from the YAML front matter of this file. Allows future runs to detect updates.
+- **`mcpServerPath`**: Full absolute path to the binary (allows the binary location to be determined without assumptions).
+
+### 3e. Validate saved config
+
+After writing `config.json`, read it back and verify that paths are real:
+
+```bash
+cat ~/.matlab/agentic-toolkits/config.json
+test -d "<matlab.root>" && echo "OK: matlab root exists" || echo "FAIL: matlab root not found"
+test -x "<mcpServerPath>" && echo "OK: mcp server executable" || echo "FAIL: mcp server not found"
+test -d "<toolkits.*.source>" && echo "OK: toolkit source exists" || echo "FAIL: toolkit source not found"
+```
+
+Inspect the output: confirm the JSON is well-formed (matched braces, no trailing commas, no truncation) and that all three path checks pass. If anything fails, fix the config and re-validate before proceeding.
 
 ---
 
@@ -333,7 +415,7 @@ For non-Claude platforms, verify what we can:
 
 1. **Binary runs:**
    ```bash
-   ~/.local/bin/matlab-mcp-core-server --version
+   ~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server --version
    ```
 
 2. **Config file exists and contains the matlab entry:**
@@ -346,10 +428,10 @@ For non-Claude platforms, verify what we can:
    > If the agent can call `detect_matlab_toolboxes` or `evaluate_matlab_code`, setup was successful.
 
 If verification fails:
-1. Verify `matlab-mcp-core-server` is accessible (`which matlab-mcp-core-server`)
+1. Verify the binary exists and is executable: `test -x ~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server`
 2. Try running the server manually to diagnose:
    ```bash
-   ~/.local/bin/matlab-mcp-core-server --matlab-root <path> --matlab-display-mode desktop 2>&1 | head -20
+   ~/.matlab/agentic-toolkits/bin/matlab-mcp-core-server --matlab-root <path> --matlab-display-mode desktop 2>&1 | head -20
    ```
 3. Look for "Application startup complete" in the output
 
@@ -367,14 +449,14 @@ Present a final summary including: MATLAB version and location, MCP server versi
 
 ## Re-run Behavior
 
-When setup is run again: read existing config as defaults, run full discovery, present plan showing current vs. proposed state (e.g., "Upgrade v0.6.0 → v0.7.0"), execute only what changed, verify and report.
+When setup is run again: read existing config from `~/.matlab/agentic-toolkits/config.json` as defaults, run full discovery, present plan showing current vs. proposed state (e.g., "Upgrade v0.6.0 → v0.7.0"), execute only what changed, verify and report.
 
 ---
 
 ## Conventions
 
 - Use `bash` commands for all steps except verification (Phase 4 for Claude Code), which uses MATLAB MCP tools
-- Never modify files outside the toolkit directory, `~/.matlab-agentic-toolkit/`, and the platform's global config path
+- Never modify files outside the toolkit directory, `~/.matlab/agentic-toolkits/`, and the platform's global config path
 - Collect all information silently in Phase 1; present all decisions together in Phase 2
 - On failure, provide an actionable message — never show raw errors without context
 - For non-Claude platforms, always provide manual fallback instructions

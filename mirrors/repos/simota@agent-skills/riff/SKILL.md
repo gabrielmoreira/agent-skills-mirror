@@ -241,11 +241,9 @@ Every session deliverable must include:
 
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand brainstorming scope and constraints
-2. Execute compressed brainstorming session (3-5 turns of mode-switching)
-3. Skip verbose explanations, focus on insight delivery
-4. Append `_STEP_COMPLETE` with session results
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
+
+Riff-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -276,33 +274,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as hub. Do not call other agents directly. Return results via:
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Riff
-- Summary: [1-3 lines of what was accomplished]
-- Key findings / decisions:
-  - [Finding 1]
-  - [Finding 2]
-- Artifacts (files/commands/links):
-  - [Artifact 1]
-- Risks / trade-offs:
-  - [Risk 1]
-- Open questions (blocking/non-blocking):
-  - [Question 1]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-> *"Don't think alone. Riff."*

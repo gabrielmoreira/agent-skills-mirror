@@ -1,12 +1,15 @@
 ---
 name: flow-deliver
-version: 1.0.0
-description: "Multi-AI validation, scoring, and review using Codex and Gemini CLIs (Double Diamond Deliver phase). Use when: AUTOMATICALLY ACTIVATE when user requests validation, scoring, or review:. \"review X\" or \"validate Y\" or \"test Z\". \"score this\", \"quality check\", \"validate before shipping\""
+description: "Multi-AI validation, scoring, and review using Codex and Gemini CLIs (Double Diamond Deliver phase)"
 ---
 
-> This file is generated from a template. Edit the `.tmpl` file, not this file directly.
-> Run `scripts/gen-skill-docs.sh` to regenerate after changes.
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
 
+
+{{PREAMBLE}}
 
 ## Pre-Delivery: State Check
 
@@ -33,7 +36,6 @@ fi
   --status "in_progress"
 ```
 
----
 
 ## ⚠️ EXECUTION CONTRACT (MANDATORY - CANNOT SKIP)
 
@@ -73,48 +75,21 @@ When context_type is Dev, determine the **subtype** to inject domain-appropriate
 orchestrate.sh deliver "<user prompt>\n\nDomain-specific validation criteria:\n<supplement text>"
 ```
 
-**DO NOT PROCEED TO STEP 1c until context determined.** Context type (Dev vs Knowledge) and dev subtype determine which validation supplements to inject — wrong context produces a review that checks irrelevant criteria.
+**DO NOT PROCEED TO STEP 2 until context determined.** Context type (Dev vs Knowledge) and dev subtype determine which validation supplements to inject — wrong context produces a review that checks irrelevant criteria.
 
----
-
-### STEP 1c: Scope Drift Check (Dev context only — INFORMATIONAL)
-
-**For Dev context only.** Skip this step entirely for Knowledge context.
-
-Run the scope drift detection skill to compare the actual diff against stated intent before the full review:
-
-```bash
-# Load the scope drift skill
-# See: skills/skill-scope-drift/SKILL.md
-```
-
-1. **Gather intent** from TODOS.md, PR description, commit messages, and .octo/STATE.md
-2. **Gather the actual diff** via `git diff --stat` against the base branch
-3. **Compare** intent vs diff — flag scope creep (unrelated changes) and missing requirements (stated but undelivered)
-4. **Display** the structured scope drift report
-
-**This is informational — NEVER blocks the review.** Display the report and proceed to Step 2 regardless of the result. The report gives reviewers (both human and AI) awareness of potential drift before they begin detailed analysis.
-
-If no intent sources are found (no TODOS.md, no PR, no commit messages), skip this step silently.
-
----
 
 ### STEP 2: Display Visual Indicators (MANDATORY - BLOCKING)
 
-**MANDATORY: Run the centralized provider check BEFORE displaying the banner:**
+**MANDATORY: You MUST use the native shell command tool to run this provider check BEFORE displaying the banner. Do NOT skip it. Do NOT assume availability.**
 
 ```bash
 bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh"
 ```
 
-**Use the ACTUAL results. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
+**Use the ACTUAL results below. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
 
-**Validation:**
-- If ALL external CLI providers unavailable -> STOP, suggest: `/octo:setup`
-- If some unavailable -> Continue with available provider(s)
-- If multiple available -> Proceed normally
 
-**Display this banner BEFORE orchestrate.sh execution (list ALL providers from check output):**
+**Display this banner BEFORE orchestrate.sh execution:**
 
 **For Dev Context:**
 ```
@@ -122,11 +97,8 @@ bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh"
 ✅ [Dev] Deliver Phase: [Brief description of code review]
 
 Provider Availability:
-🔴 Codex CLI: [status from check] - Code quality analysis
-🟡 Gemini CLI: [status from check] - Security and edge cases
-🟢 Copilot CLI: [status from check] - GitHub integration
-🟣 Qwen CLI: [status from check] - Additional perspective
-🟤 OpenCode CLI: [status from check] - Multi-provider routing
+🔴 Codex CLI: ${codex_status} - Code quality analysis
+🟡 Gemini CLI: ${gemini_status} - Security and edge cases
 🔵 Claude: Available ✓ - Synthesis and recommendations
 
 💰 Estimated Cost: $0.02-0.08
@@ -149,7 +121,6 @@ Provider Availability:
 
 **DO NOT PROCEED TO STEP 3 until banner displayed.** The banner shows users which providers will run and what costs they'll incur — starting API calls without this visibility violates cost transparency.
 
----
 
 ### STEP 3: Read Prior State (MANDATORY - State Management)
 
@@ -200,11 +171,10 @@ fi
 
 **DO NOT PROCEED TO STEP 4 until state read.**
 
----
 
 ### STEP 4: Execute orchestrate.sh deliver (MANDATORY - Use Bash Tool)
 
-**You MUST execute this command via the Bash tool:**
+**You MUST execute this command via the native shell command tool:**
 
 ```bash
 ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh deliver "<user's validation request>"
@@ -216,7 +186,7 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh deliver "<user's validatio
 - ❌ Claiming you're "simulating" the workflow
 - ❌ Proceeding to Step 4 without running this command
 
-**You MUST use the Bash tool to invoke orchestrate.sh.**
+**You MUST use the native shell command tool to invoke orchestrate.sh.**
 
 #### What Users See During Execution (v7.16.0+)
 
@@ -233,7 +203,6 @@ These spinner verb updates happen automatically - orchestrate.sh calls `update_t
 
 **If NOT running in Claude Code v2.1.16+:** Progress indicators are silently skipped, no errors shown.
 
----
 
 ### STEP 5: Verify Execution (MANDATORY - Validation Gate)
 
@@ -259,7 +228,6 @@ cat "$VALIDATION_FILE"
 3. DO NOT proceed with presenting results
 4. DO NOT substitute with direct review — fallback to single-model review defeats the adversarial multi-provider validation that catches blind spots
 
----
 
 ### STEP 6: Update State (MANDATORY - Post-Execution)
 
@@ -275,10 +243,6 @@ validation_summary=$(head -30 "$VALIDATION_FILE" | grep -A 2 "## Summary\|Pass\|
 
 # Update final metrics (completion of full workflow)
 "${HOME}/.claude-octopus/plugin/scripts/state-manager.sh" update_metrics "phases_completed" "1"
-# Track actual providers used (dynamic — not hardcoded)
-for _provider in $(bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh" | grep ":available" | cut -d: -f1) claude; do
-  "${HOME}/.claude-octopus/plugin/scripts/state-manager.sh" update_metrics "provider" "$_provider"
-done
 
 # Display final state summary
 echo ""
@@ -288,7 +252,6 @@ echo "📊 Session Complete - Final Metrics:"
 
 **DO NOT PROCEED TO STEP 7 until state updated.**
 
----
 
 ### STEP 7: Present Validation Report & Post to PR (Only After Steps 1-6 Complete)
 
@@ -305,7 +268,6 @@ Read the validation file and present:
 
 **Include attribution:**
 ```
----
 *Multi-AI Validation powered by Claude Octopus*
 *Providers: 🔴 Codex | 🟡 Gemini | 🔵 Claude*
 *Full validation report: $VALIDATION_FILE*
@@ -333,7 +295,6 @@ if [[ -n "$PR_NUM" ]]; then
 
 ${REVIEW_SUMMARY}
 
----
 *Multi-AI validation by Claude Octopus (/octo:deliver)*
 *Providers: 🔴 Codex | 🟡 Gemini | 🔵 Claude*"
 
@@ -357,7 +318,6 @@ fi
   ```
 - If no PR or `gh` CLI unavailable, skips silently
 
----
 
 # Deliver Workflow - Deliver Phase ✅
 
@@ -407,17 +367,8 @@ Providers:
 🔵 Claude - Synthesis and recommendations
 ```
 
-| Indicator | Provider | Cost Source |
-|-----------|----------|-------------|
-| 🔴 | Codex CLI | User's OPENAI_API_KEY |
-| 🟡 | Gemini CLI | User's GEMINI_API_KEY |
-| 🟣 | Perplexity Sonar | User's PERPLEXITY_API_KEY |
-| 🔵 | Claude | Included with Claude Code |
+{{VISUAL_INDICATORS}}
 
-**This is NOT optional.** Users need to see which AI providers are active and understand they are being charged for external API calls (🔴 🟡).
-
-
----
 
 **Part of Double Diamond: DELIVER** (convergent thinking)
 
@@ -444,7 +395,6 @@ The **deliver** phase validates and reviews implementations using external CLI p
 
 This is the **convergent** phase for delivery - we ensure quality before shipping.
 
----
 
 ## When to Use Deliver
 
@@ -470,7 +420,6 @@ Use deliver when you need:
 - Requirement definition (use define-workflow)
 - Simple code/document reading (use Read tool)
 
----
 
 ## Visual Indicators
 
@@ -486,7 +435,6 @@ Providers:
 🔵 Claude - Synthesis and validation report
 ```
 
----
 
 ## How It Works
 
@@ -523,7 +471,6 @@ Results are saved to:
 
 Read the synthesis and present findings with quality scores to the user.
 
----
 
 ## Implementation Instructions
 
@@ -531,7 +478,7 @@ When this skill is invoked, follow the EXECUTION CONTRACT above exactly. The con
 
 1. **Blocking Step 1**: Detect work context (Dev vs Knowledge)
 2. **Blocking Step 2**: Check providers, display visual indicators
-3. **Blocking Step 3**: Execute orchestrate.sh deliver via Bash tool
+3. **Blocking Step 3**: Execute orchestrate.sh deliver via native shell command tool
 4. **Blocking Step 4**: Verify validation file exists
 5. **Step 5**: Present formatted validation report
 
@@ -623,7 +570,6 @@ After successful execution, present validation report with:
    Full validation report saved to: <validation file path>
    ```
 
----
 
 ## Example Usage
 
@@ -780,7 +726,6 @@ Claude:
 [Provides go/no-go decision with quality scores]
 ```
 
----
 
 ## Quality Gate Integration
 
@@ -799,23 +744,8 @@ Before running conceptual quality gates, detect and run the project's actual lin
 - Report pass/fail results alongside quality gate scores
 - If quality commands are discovered but not in CLAUDE.md, suggest adding them
 
-**Quality Dimensions**:
+{{QUALITY_GATES}}
 
-| Dimension | Weight | Criteria |
-|-----------|--------|----------|
-| **Code Quality** | 25% | Complexity, maintainability, documentation |
-| **Security** | 35% | OWASP compliance, auth, input validation |
-| **Best Practices** | 20% | Error handling, logging, testing |
-| **Completeness** | 20% | Feature completeness, edge cases |
-
-**Scoring Thresholds**:
-- **90-100**: Excellent - Ready for production
-- **75-89**: Good - Minor improvements recommended
-- **60-74**: Acceptable - Address warnings before deploy
-- **< 60**: Poor - Critical issues must be fixed
-
-
----
 
 ## Integration with Other Workflows
 
@@ -833,7 +763,6 @@ PROBE (Discover) → GRASP (Define) → TANGLE (Develop) → INK (Deliver)
 
 Or use ink standalone for validation of existing code.
 
----
 
 ## Validation Checklist
 
@@ -847,7 +776,6 @@ Before marking validation complete, ensure:
 - [ ] Next steps documented for user
 - [ ] Full validation report shared
 
----
 
 ## Cost Awareness
 
@@ -858,7 +786,6 @@ Before marking validation complete, ensure:
 
 Ink workflows typically cost $0.02-0.08 per validation depending on codebase size and complexity.
 
----
 
 ## Post-Validation: Documentation Sync
 
@@ -882,7 +809,6 @@ The doc-sync skill will:
 - The validation result was "no-go" (fix code first)
 - User explicitly requests to skip (`--no-docs` or declines when asked)
 
----
 
 ## Post-Delivery: Route to Ship
 
@@ -911,6 +837,5 @@ echo ""
 echo "📦 **Project ready! Run \`/octo:ship\` to finalize and archive.**"
 ```
 
----
 
 **Ready to validate!** This skill activates automatically when users request code review, validation, or quality checks.

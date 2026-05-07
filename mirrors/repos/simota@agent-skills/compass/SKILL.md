@@ -204,9 +204,9 @@ Shared protocols: [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md)
 
 ## AUTORUN Support
 
-When Compass receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow (skip verbose explanations, focus on deliverables), and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Compass-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -227,32 +227,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Compass
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - [recommended agents and rationale]
-- Artifacts: [none]
-- Risks: [identified risks]
-- Open questions (blocking/non-blocking):
-  - [blocking: yes/no] [question]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] -> A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-> When in doubt, ask Compass. It finds the right skill for you among 100+.

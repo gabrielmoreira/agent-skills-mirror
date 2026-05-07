@@ -414,33 +414,11 @@ Operational guidelines → `_common/OPERATIONAL.md`
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand platform, series position, tone, length.
-2. Execute FRAME → DRAFT → STRUCTURE → POLISH → PUBLISH workflow.
-3. Skip verbose explanations, focus on deliverable article.
-4. Append `_STEP_COMPLETE` with full details.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `FRAME → DRAFT → STRUCTURE → POLISH → PUBLISH` and emit `_STEP_COMPLETE`. Zine-specific Constraints in `_AGENT_CONTEXT`: `Platform`, `Series`, `Tone`, `Length`, `Language`.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Zine
-  Task: [Specific article task from Nexus, e.g. "Draft #09 Forge for 図鑑 series"]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain, e.g. Tome -> Zine]
-  Input: [Source draft / notes / learning doc / handoff content]
-  Constraints:
-    - Platform: [note | Zenn | Qiita | dev.to | cross-post]
-    - Series: [standalone | part-of-{series-name}-#NN | index-article]
-    - Tone: [first-person | teaching | opinionated | detached]
-    - Length: [short ~1500字 | standard 3000-5000字 | deep-dive 6000字+]
-    - Language: [Japanese | English | bilingual]
-  Expected_Output: [Full article + metadata + optional series index update + handoff]
-```
-
-### Output Format (_STEP_COMPLETE)
+Zine-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -448,93 +426,44 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     deliverable: [article path or inline Markdown]
-    artifact_type: "Article Draft" | "Article + Series Index Update" | "Cross-post Variants"
+    artifact_type: Article Draft | Article + Series Index Update | Cross-post Variants
     parameters:
-      platform: "[note | Zenn | Qiita | dev.to | cross-post]"
-      series_position: "[standalone | series-name-#NN | index]"
-      hook_type: "[contradiction | number | scene | question | stake]"
-      word_count: "[字数 or word count]"
-      tone: "[first-person | teaching | opinionated | detached]"
-      cta_type: "[subscribe | try | share | next-episode | discuss]"
-    files_changed:
-      - path: [file path, e.g. articles/forge.md]
-        type: [created | modified]
-        changes: [brief description]
-      - path: [index article path if series]
-        type: modified
-        changes: "Added #09 Forge to episode list; updated prev/next links"
+      platform: note | Zenn | Qiita | dev.to | cross-post
+      series_position: standalone | series-name-#NN | index
+      hook_type: contradiction | number | scene | question | stake
+      word_count: [字数 or word count]
+      tone: first-person | teaching | opinionated | detached
+      cta_type: subscribe | try | share | next-episode | discuss
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: ZINE_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - [Article Markdown file]
-    - [Platform metadata block]
-    - [Series index update diff if applicable]
-    - [Title candidates list if Growth handoff]
-  Risks:
-    - [LOW CONFIDENCE technical claims flagged for author verification]
-    - [Internal-detail-leak risk if retrospective — masked items listed]
-    - [Tonal drift from previous series episode if any]
+    Content: [Handoff content for next agent]
+  Risks: [LOW CONFIDENCE technical claims; internal-leak risk; tonal drift]
   Next: Growth | Prose | Stage | Canvas | Saga | Morph | DONE
-  Reason: [Why this next step, e.g. "SEO packaging for discoverability" | "Microcopy polish on CTAs" | "Slide conversion for upcoming talk"]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Zine
-- Summary: [1-3 lines describing article deliverable — platform, series position, length, hook type]
-- Key findings / decisions:
-  - Platform: [note | Zenn | Qiita | dev.to | cross-post]
-  - Series position: [standalone | {series}-#NN | index]
-  - Hook type: [contradiction | number | scene | question | stake]
-  - CTA: [subscribe | try | share | next-episode | discuss]
-  - Length: [字数 or word count]
-- Artifacts (files/commands/links):
-  - [Article Markdown path]
-  - [Series index update if applicable]
-  - [Platform metadata block]
-- Risks / trade-offs:
-  - [LOW CONFIDENCE technical claims]
-  - [Internal-leak masks applied]
-  - [Tonal continuity notes vs prior episode]
-- Open questions (blocking/non-blocking):
-  - [Any technical claims author must verify pre-publish]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [Agent] (reason — Growth for SEO / Prose for microcopy / Stage for slides / etc.)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Zine-specific findings to surface in handoff:
+- Platform + series position + hook type + CTA + length
+- LOW CONFIDENCE technical claims requiring author verification
+- Internal-leak masks applied; tonal continuity vs prior episode
 
 ---
 
 ## Output Language
 
-Internal reports, handoffs, and commentary follow the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Final article outputs follow the user's requested language for the target platform; platform defaults: Japanese for note/Qiita, English for dev.to, Japanese with English code comments for Zenn (bilingual acceptable).
+Internal reports, handoffs, and commentary follow CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Final article outputs follow the user's requested language for the target platform; platform defaults: Japanese for note/Qiita, English for dev.to, Japanese with English code comments for Zenn (bilingual acceptable).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

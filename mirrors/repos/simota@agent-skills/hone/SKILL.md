@@ -370,46 +370,20 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Hone
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Scope: [audit scope]
-  - Items checked: [count]
-  - PASS/WARN/FAIL: [counts]
-  - P0 proposals: [count and list]
-  - P1 proposals: [count]
-  - Sources consulted: [count by tier]
-- Artifacts: [report path or inline]
-- Risks: [stale docs, schema changes, false positives]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations:
-  - Trigger: [trigger name]
-  - Question: [question text]
-  - Options: [options]
-  - Recommended: [recommended option]
-- User Confirmations:
-  - Q: [question] → A: [answer]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Hone-specific findings to surface in handoff:
+- Scope + items checked + PASS/WARN/FAIL counts
+- P0 proposals (count + list) + P1 count
+- Sources consulted by tier; risks: stale docs, schema changes, false positives
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

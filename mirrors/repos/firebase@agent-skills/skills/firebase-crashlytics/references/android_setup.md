@@ -20,12 +20,12 @@ These changes are made to your Android project's Gradle files.
 
 ### Project-level `build.gradle.kts` (`<project>/build.gradle.kts`)
 
-Add the Crashlytics plugin to the `plugins` block:
+Add the latest version of the Crashlytics Gradle plugin to the `plugins` block. Fetch the [latest version from the Google Maven repository](https://maven.google.com/web/index.html?q=firebase-crashlytics-gradle#com.google.firebase:firebase-crashlytics-gradle) before adding this. 
 
 ```kotlin
 plugins {
     // ... other plugins
-    id("com.google.firebase.crashlytics") version "2.9.9" apply false
+    id("com.google.firebase.crashlytics") version "<latest_plugin_version>" apply false
 }
 ```
 
@@ -40,14 +40,14 @@ plugins {
     }
     ```
 
-2.  Add the Firebase Crashlytics dependency to the `dependencies` block. It is recommended to use the Firebase Bill of Materials (BoM) to manage SDK versions.
+2.  Add the Firebase Crashlytics dependency to the `dependencies` block. It is recommended to use the Firebase Bill of Materials (BoM) to manage SDK versions. Fetch the [latest version from the Google Maven repository](https://maven.google.com/web/index.html?q=firebase-bom#com.google.firebase:firebase-bom) before adding this.
 
     ```kotlin
     dependencies {
         // ... other dependencies
 
         // Import the Firebase BoM
-        implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+        implementation(platform("com.google.firebase:firebase-bom:<latest_bom_version>"))
 
         // Add the dependencies for the Crashlytics and Analytics
         implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -118,5 +118,5 @@ To verify that Crashlytics is correctly installed, you need to force a test cras
 
 ### Optional: Add custom debugging information
 
-Customize reports to help you better understand what's happening in your app and the circumstances around events reported to Crashlytics. See [Customize Crash Reports for Android](https://firebase.google.com/docs/crashlytics/android/customize-crash-reports).
+Customize reports to help you better understand what's happening in your app and the circumstances around events reported to Crashlytics. See [Customize Crash Reports for Android](https://firebase.google.com/docs/crashlytics/android/customize-crash-reports.md).
 

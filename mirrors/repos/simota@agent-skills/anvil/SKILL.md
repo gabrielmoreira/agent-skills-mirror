@@ -236,9 +236,9 @@ Anvil receives CLI/TUI requests from upstream agents, builds terminal interfaces
 
 ## AUTORUN Support
 
-When Anvil receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `target_language`, `cli_contract`, and `constraints`, choose the correct output route, run the BLUEPRINT→CAST→TEMPER→HARDEN→PRESENT workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Anvil-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -264,26 +264,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as the hub, do not instruct direct agent calls, and return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Anvil
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Target language: [Node.js | Python | Go | Rust]
-  - Artifact type: [CLI Command | TUI Component | Tool Config | etc.]
-  - CLI contract: [command signature summary]
-  - TTY behavior: [TTY-aware | non-TTY fallback]
-  - Exit codes: [contract summary]
-- Artifacts: [file paths or inline references]
-- Risks: [cross-platform issues, breaking changes, CI compatibility]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

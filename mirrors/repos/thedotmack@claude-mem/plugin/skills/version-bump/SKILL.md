@@ -48,7 +48,11 @@ description: Automated semantic versioning and release workflow for Claude Code 
     ```
     (Runs `node scripts/generate-changelog.js`, which pulls releases from the GitHub API and rewrites `CHANGELOG.md`.)
 10. **Sync changelog**: Commit and push the updated `CHANGELOG.md`.
-11. **Notify**: `npm run discord:notify vX.Y.Z` if applicable.
+11. **Notify**: Run the Discord notification from `~/Scripts/claude-mem/`, where the `.env` with Discord webhook details lives:
+    ```bash
+    cd ~/Scripts/claude-mem/ && npm run discord:notify vX.Y.Z
+    ```
+    Do this even when the release worktree does not have a local `.env`.
 12. **Finalize**: `git status` — working tree must be clean.
 
 ## Checklist
@@ -60,4 +64,5 @@ description: Automated semantic versioning and release workflow for Claude Code 
 - [ ] **`npm publish` succeeded and `npm view claude-mem@X.Y.Z version` confirms it** (so `npx claude-mem@X.Y.Z` resolves)
 - [ ] GitHub release created with notes
 - [ ] `CHANGELOG.md` updated and pushed
+- [ ] Discord notification run from `~/Scripts/claude-mem/`
 - [ ] `git status` shows clean tree

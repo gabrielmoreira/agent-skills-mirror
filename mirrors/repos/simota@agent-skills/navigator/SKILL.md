@@ -301,9 +301,9 @@ Console monitoring, network interception, performance metrics, coverage analysis
 
 ## AUTORUN Support
 
-When Navigator receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `target_url`, `selectors`, and `Constraints`, choose the correct execution approach, run the RECON→PLAN→EXECUTE→COLLECT→REPORT workflow, produce the task report, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Navigator-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -324,26 +324,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Navigator
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Target URL: [URL]
-  - Task type: [navigation | data collection | form | screenshot | video | HAR | bug reproduction]
-  - Steps completed: [count]
-  - Data collected: [format and count]
-  - Errors detected: [console/network error count]
-- Artifacts: [file paths or inline references]
-- Risks: [flaky selectors, rate limiting, auth issues]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

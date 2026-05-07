@@ -37,7 +37,8 @@
 | 触发 | 技能 |
 |------|------|
 | 消息含 http(s) URL / 任何网页链接 / PDF 路径 / "看一下这个", "读一下这个" | `skills/read/SKILL.md` |
-| 写作 / 改稿 / 润色 / 去 AI 味（中英文） | `skills/write/SKILL.md` |
+| 写作 / 改稿 / 润色 / 去 AI 味（中英文） / 推特推文 / 社交媒体文案 | `skills/write/SKILL.md` |
+| 文档审阅 / 白皮书 / release notes prose 审核 / "审稿" / "check this document" | `skills/write/SKILL.md` (Document Review Mode) |
 | 深度研究一个陌生领域 / 六阶段研究到成稿 / 一批材料沉淀成文章 | `skills/learn/SKILL.md` |
 
 ## Disambiguation（歧义消解）
@@ -52,7 +53,8 @@
 6. **截图审美 vs 截图回归**：截图里说"丑/不好看/不清晰"且是审美校准 → `/design`；截图证明以前好的现在坏了、渲染错、状态错、生成物错 → `/hunt`。
 7. **长文产出 vs 润色**：从零到成稿 → `/learn`；已有稿子要改 → `/write`。
 8. **判断 vs 调试**："判断一下" + 报错/异常/不工作 → `/hunt`（诊断问题）；"判断一下" + 有没有必要/该不该保留/值不值得 → `/think` Evaluation Mode（价值判断）。
-9. **兜底**：两个都模糊时读两个 SKILL.md 的 "Not for" 段，用排除法；还是模糊就问用户。
+9. **继续优化 vs 调试**："继续优化" / "优化代码" 不含报错或异常现象 → `/check`（代码质量改善）；有具体报错或回归 → `/hunt`。
+10. **兜底**：两个都模糊时读两个 SKILL.md 的 "Not for" 段，用排除法；还是模糊就问用户。
 
 ## Chaining（常见串联）
 

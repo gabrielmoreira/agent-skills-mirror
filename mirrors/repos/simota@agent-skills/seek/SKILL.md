@@ -531,29 +531,12 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Seek
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Engine: [selected engine]
-  - Strategy: [full-text / vector / hybrid]
-  - Embedding model: [model]
-  - Relevance target: [metric: threshold]
-  - Reranking: [approach]
-- Artifacts: [file paths or inline references]
-- Risks: [scaling concerns, latency risks, relevance gaps]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Seek-specific findings to surface in handoff:
+- Engine + strategy (full-text / vector / hybrid)
+- Embedding model + relevance target (metric: threshold)
+- Reranking approach + scaling/latency risks
 
 ---
 

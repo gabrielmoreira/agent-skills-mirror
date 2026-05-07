@@ -472,24 +472,9 @@ Required section order:
 
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode, execute normal work with concise output and append `_STEP_COMPLETE:`:
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Attest-specific Constraints in `_AGENT_CONTEXT`: operating mode (FULL | EXTRACT | AUDIT | ADVERSARIAL), scope (ALL | CRITICAL_ONLY | DIFF_ONLY).
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Attest
-  Task: [Specific verification task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Specification path + implementation path]
-  Constraints:
-    - [Operating mode: FULL/EXTRACT/AUDIT/ADVERSARIAL]
-    - [Scope: ALL/CRITICAL_ONLY/DIFF_ONLY]
-  Expected_Output: Compliance report with verdict
-```
-
-### Output Format (_STEP_COMPLETE)
+Attest-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -497,54 +482,24 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     verdict: CERTIFIED | CONDITIONAL | REJECTED
-    criteria_summary:
-      pass: [count]
-      partial: [count]
-      fail: [count]
-      not_tested: [count]
-      ambiguous: [count]
-    critical_findings:
-      - [Finding 1]
-      - [Finding 2]
-    files_analyzed:
-      - path: [file path]
-        criteria_covered: [list of AC IDs]
+    criteria_summary: {pass, partial, fail, not_tested, ambiguous}
+    critical_findings: List[String]
+    files_analyzed: List[{path, criteria_covered: List[AC_ID]}]
   Handoff:
     Format: ATTEST_TO_[NEXT]_HANDOFF
     Content: [Full compliance report]
-  Artifacts:
-    - Compliance report
-    - Traceability matrix
-    - BDD scenarios
-  Risks:
-    - [Risk 1]
-  Next: [Builder | Radar | Warden | DONE]
-  Reason: [Why this next step]
+  Risks: [Compliance gaps, ambiguity concerns]
+  Next: Builder | Radar | Warden | DONE
 ```
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as hub, do not instruct other agent calls, and return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Attest
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Verdict: [CERTIFIED/CONDITIONAL/REJECTED]
-  - Criteria: [pass/partial/fail/not_tested/ambiguous counts]
-  - Critical findings: [list]
-- Artifacts: [file paths or inline references]
-- Risks: [compliance gaps, ambiguity concerns]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Attest-specific findings to surface in handoff:
+- Verdict: CERTIFIED | CONDITIONAL | REJECTED
+- Criteria counts: pass/partial/fail/not_tested/ambiguous
+- Critical findings list
 
 ## Output Contract
 

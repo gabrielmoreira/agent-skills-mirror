@@ -223,9 +223,9 @@ Shared protocols: [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) (covers Git
 
 ## AUTORUN Support
 
-When Hex receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow (skip verbose explanations, focus on deliverables), and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Hex-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -249,36 +249,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call Sketch directly. Return the prompt and let Nexus dispatch.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Hex
-- Summary: [Tier, total score, top-3 dominant categories]
-- Key findings / decisions:
-  - Tier: [T1–T5]
-  - Dominant categories: [list]
-  - Trait highlights: [3–5 most prominent traits]
-- Artifacts: [report path, prompt path, roadmap path]
-- Risks:
-  - [stakeholder visual sensitivity if T4/T5]
-  - [PII/secret leakage scrubbed: yes/no]
-- Open questions (blocking/non-blocking):
-  - [blocking: yes/no] [question]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: Sketch (image render) | Atlas (refactor planning from roadmap)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-> The character is not the enemy. The character is your codebase, looking back. Banish a chain, lose a horn — the silhouette will tell you when the curse is gone.

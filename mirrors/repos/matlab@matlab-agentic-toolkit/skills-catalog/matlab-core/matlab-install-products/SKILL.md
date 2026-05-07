@@ -112,7 +112,9 @@ Step 3 — Run installation
   <Windows only: note that elevated permissions (UAC prompt) will be required>
 
 Step 4 — Verify
-  Confirm installation by checking for: <completion artifact path>
+  Confirm MATLAB binary exists: <completion artifact path>
+  Verify products via: <DESTINATION>/appdata/prodcontents.json
+  <if support packages requested> Verify support packages via: <SUPPORTPKGROOT>/appdata/prodcontents.json
   Delete working folder: <working folder>
 ```
 
@@ -357,13 +359,7 @@ See `reference/linux-macos-steps.md`. Summary: run `mpm install --inputfile=<pat
 
 This step defines **completion**. It is mandatory.
 Wait until the mpm process has exited. Do not proceed until it is done.
-If the completion artifact exists, the installation is complete. **STOP. Do not re-run Step 3.**
-On successful completion of Step 3, delete the entire working folder and its contents using the Bash tool:
-
-```bash
-rm -rf "C:/Users/<username>/AppData/Local/Temp/mpm-YYYYMMDD-HHMMSS"
-```
-If the artifact does not exist, stop and report failure.
+If the completion artifact does not exist, stop and report failure. **Do not re-run Step 3.**
 
 Completion artifacts (use the destination folder you set in the input file):
 - **Windows**: `<DESTINATION>\bin\matlab.exe`
@@ -374,6 +370,32 @@ Use the Bash tool with `test -f` to check existence. Do **not** use `powershell.
 
 ```bash
 test -f "<DESTINATION>/bin/matlab.exe" && echo "VERIFIED" || echo "NOT FOUND"
+```
+
+#### Per-item verification
+
+After confirming the MATLAB binary exists, verify each requested item was installed. Products and support packages are stored in **separate locations** with separate `prodcontents.json` files. Do not check one location for items that belong in the other.
+
+**Products** (items whose mpm identifier does NOT contain `Support_Package`):
+- Read `<DESTINATION>/appdata/prodcontents.json` using the Read tool.
+- This is a JSON object. Keys are product names with version and platform tokens (e.g. `"Simulink 25.1 win64"`).
+- For each requested product, check that a key exists whose name starts with the product's display name (strip the `product.` prefix and replace underscores with spaces). For example, `product.Signal_Processing_Toolbox` matches a key starting with `Signal Processing Toolbox`.
+
+**Support packages** (items whose mpm identifier contains `Support_Package`):
+- Derive the support package root based on platform:
+  - **Windows:** `C:\ProgramData\MATLAB\SupportPackages\<RELEASE>`
+  - **Linux:** `/usr/local/MATLAB/SupportPackages/<RELEASE>`
+  - **macOS:** `~/Library/Application Support/MathWorks/MATLAB/SupportPackages/<RELEASE>`
+- Read `<SUPPORTPKGROOT>/appdata/prodcontents.json` using the Read tool.
+- If the file does not exist, the support package installation failed. Report failure.
+- For each requested support package, check that a matching key exists (same name mapping as products above).
+
+Report **Verified** or **Not found** for each item. If any item is not found, stop and report which items failed.
+
+After all items are verified, delete the entire working folder and its contents using the Bash tool:
+
+```bash
+rm -rf "C:/Users/<username>/AppData/Local/Temp/mpm-YYYYMMDD-HHMMSS"
 ```
 
 ## Common Errors

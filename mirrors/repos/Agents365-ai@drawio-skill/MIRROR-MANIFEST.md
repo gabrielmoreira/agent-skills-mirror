@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 1 | ✓ | [`skills/drawio-skill/references/diagram-types.md`](skills/drawio-skill/references/diagram-types.md) |
+| 2 | ✓ | [`skills/drawio-skill/references/style-extraction.md`](skills/drawio-skill/references/style-extraction.md) |
+| 3 | ✓ | [`skills/drawio-skill/references/style-presets.md`](skills/drawio-skill/references/style-presets.md) |
+| 4 | ✓ | [`skills/drawio-skill/references/troubleshooting.md`](skills/drawio-skill/references/troubleshooting.md) |
+| 5 | ✓ | [`skills/drawio-skill/scripts/encode_drawio_url.py`](skills/drawio-skill/scripts/encode_drawio_url.py) |
+| 6 | ✓ | [`skills/drawio-skill/scripts/repair_png.py`](skills/drawio-skill/scripts/repair_png.py) |
+| 7 | ✓ | [`skills/drawio-skill/SKILL.md`](skills/drawio-skill/SKILL.md) |
+| 8 | ✓ | [`skills/drawio-skill/styles/built-in/corporate.json`](skills/drawio-skill/styles/built-in/corporate.json) |
+| 9 | ✓ | [`skills/drawio-skill/styles/built-in/default.json`](skills/drawio-skill/styles/built-in/default.json) |
+| 10 | ✓ | [`skills/drawio-skill/styles/built-in/handdrawn.json`](skills/drawio-skill/styles/built-in/handdrawn.json) |
+| 11 | ✓ | [`skills/drawio-skill/styles/schema.json`](skills/drawio-skill/styles/schema.json) |
 
 ---
 

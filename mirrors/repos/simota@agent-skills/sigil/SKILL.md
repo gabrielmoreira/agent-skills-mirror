@@ -300,37 +300,11 @@ Full templates -> `_common/AUTORUN.md`
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`:
-- Treat Nexus as the hub.
-- Do not instruct other agent calls.
-- Return results via `## NEXUS_HANDOFF`.
-
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Sigil
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Project stack: [detected stack]
-  - Skills generated: [count]
-  - Quality average: [score/12]
-  - Sync status: [synchronized/drift detected]
-- Artifacts: [file paths or inline references]
-- Risks: [quality concerns, convention ambiguity, ecosystem overlap]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
-Full format -> `_common/HANDOFF.md`
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
 
 ## Git Guidelines
 

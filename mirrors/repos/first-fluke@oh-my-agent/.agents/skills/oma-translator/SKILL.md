@@ -192,6 +192,7 @@ This stage is mandatory. Skipping any item is a bug, not a shortcut. Before prod
 **A. Mechanical checks (run before rubric, must all pass):**
 
 - **CJK em dash scan**: For Korean, Japanese, or Chinese targets, search the draft output for `—`. Every occurrence must be replaced with a comma, colon, parenthesis, or restructured sentence. Zero em dashes in the emitted output.
+- **Curly quote scan**: Search the draft output for `“`, `”`, `‘`, `’`. Replace with straight quotes (`"`, `'`) unless the source explicitly uses curly quotes, the target language convention requires them (e.g., Japanese 「」/『』, French «»), or the surrounding file format mandates them.
 - **Placeholder integrity**: Every `{name}`, `{{count}}`, `%s`, `<tag>`, and `` `code` `` from the source appears unchanged in the target.
 - **Structure parity**: Headings, list bullets, table rows, code blocks, and links match the source count and nesting.
 - **Register consistency**: One sentence-ending style throughout (don't mix `-ㅂ니다` with `-다`, formal with casual).
@@ -263,7 +264,9 @@ After completing Stage 1–4, continue with:
 
 **Stage 5: Critical Review**
 
-Re-read the translation against the source with fresh eyes. Produce a diagnostic review (no rewriting yet):
+Re-read the translation against the source with fresh eyes. Produce a diagnostic review (no rewriting yet).
+
+Start the review by explicitly answering this question first: **"What makes the draft below still feel obviously machine-translated or AI-generated?"** Write 3–7 short bullets naming the remaining tells (e.g., "register suddenly shifts to formal in the final paragraph", "the same connective construction repeats three times", "noun-ending fragments survive in body text outside label/cell positions", "a metaphor was kept literal where the target language would interpret it"). Then continue with the structured checklist:
 
 - **Accuracy**: Compare paragraph by paragraph — any facts, numbers, or qualifiers altered?
 - **Europeanized language**: Scan for unnecessary connectives, passive voice, noun pile-up, over-nominalization, forced pronouns (see `resources/anti-ai-patterns.md`)

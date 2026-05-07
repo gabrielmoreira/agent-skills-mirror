@@ -4,6 +4,33 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.132](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8a2ca22)
+
+_+6,720 tokens_
+
+- Agent Prompt: Onboarding guide draft share link workflow — Shares the draft onboarding guide before review, asks the review questions with the draft share URL, then updates the same share link after revisions.
+- **NEW:** Data: Managed Agents multiagent sessions — Adds reference documentation for coordinator rosters, per-agent threads, thread endpoints and streams, multiagent events, subagent tool permissions, and common multiagent pitfalls.
+- **NEW:** Data: Managed Agents outcomes — Adds reference documentation for `user.define_outcome` rubric-graded work loops, outcome evaluation events, deliverables, interrupts, and interaction rules.
+- **NEW:** Data: Managed Agents webhooks — Adds reference documentation for Console-registered Managed Agents webhooks, HMAC signature verification, payload envelopes, supported event types, retries, and delivery behavior.
+- **NEW:** System Prompt: Strict proactive schedule offer gate — Adds a default-deny gate for proactive `/schedule` offers, requiring a named future-obligation artifact, concrete timing, and no in-session follow-up path.
+- **REMOVED:** Tool Description: Schedule proactive offer guidance — Removed proactive scheduling-offer instructions from the schedule tool description; dedicated system prompts now govern when to offer `/schedule`.
+- Agent Prompt: Managed Agents onboarding flow — Updates the documented Managed Agents skill limit from 64 to 20 per agent.
+- Agent Prompt: Prompt Suggestion Generator v2 — Adds a safety rule to stay silent when suggestions could predict unsafe or sensitive actions, including legitimate security work.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Allows `CronCreate`, `CronDelete`, `CronList`, and `RemoteTrigger` actions for scheduling and managing Claude Code tasks.
+- Agent Prompt: Status line setup — Clarifies that status-line input tokens are current context-window tokens including cache reads and writes, while output tokens are from the most recent API response.
+- Data: Live documentation sources — Adds the Managed Agents webhooks documentation source URL.
+- Data: Managed Agents core concepts — Updates skill limits to 20 per agent and documents the top-level `multiagent` coordinator roster field.
+- Data: Managed Agents endpoint reference — Adds session thread APIs, MCP OAuth credential validation, multiagent agent schema, outcome definition examples, and updated tool and skill limits.
+- Data: Managed Agents events and steering — Adds `user.define_outcome`, webhook monitoring, outcome evaluation events, multiagent thread/message events, and interrupt behavior for active outcomes.
+- Data: Managed Agents overview — Expands Managed Agents coverage to include session threads, outcomes, multiagent coordination, and webhooks.
+- Data: Managed Agents tools and skills — Updates the documented Managed Agents skill limit from 64 to 20 per agent.
+- Skill: Building LLM-powered applications with Claude — Adds outcomes, multiagent sessions, and webhooks to the Managed Agents documentation reading guide.
+- System Prompt: Proactive schedule offer after natural future follow-up — Defines future follow-ups as work more than two hours out or unavailable in-session, lowers the confidence threshold to 75%, and preserves concrete one-time and recurring scheduling signals.
+
+#### [2.1.131](https://github.com/Piebald-AI/claude-code-system-prompts/commit/9d05435)
+
+<sub>_No changes to the system prompts in v2.1.131._</sub>
+
 # [2.1.129](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d109910)
 
 _+1,335 tokens_

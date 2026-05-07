@@ -372,15 +372,11 @@ Example:
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand document scope and jurisdiction
-2. Execute SCOPE → SCAN → ASSESS → REPORT → SUGGEST workflow
-3. Skip verbose explanations, focus on findings
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → SCAN → ASSESS → REPORT → SUGGEST` and emit `_STEP_COMPLETE`.
 
-### Output Format (_STEP_COMPLETE)
+Clause-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -388,60 +384,23 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     review_report:
-      - high_findings: [count]
-      - medium_findings: [count]
-      - low_findings: [count]
-      - missing_clauses: [list of missing clauses]
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
+      high_findings: [count]
+      medium_findings: [count]
+      low_findings: [count]
+      missing_clauses: List[String]
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: CLAUSE_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - Review report
-    - Proposed improvements list
-  Risks:
-    - [Summary of legal risks]
+    Content: [Handoff content for next agent]
+  Risks: [Summary of legal risks]
   Next: [NextAgent] | VERIFY | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
-
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Clause
-- Summary: 1-3 lines
-- Key findings / decisions:
-  - [Finding 1]
-  - [Finding 2]
-- Artifacts (files/commands/links):
-  - [Artifact 1]
-- Risks / trade-offs:
-  - [Risk 1]
-- Open questions (blocking/non-blocking):
-  - [Question 1]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`). Surface key clause findings, missing-clauses list, and jurisdiction-specific risks.
 
 ---
 

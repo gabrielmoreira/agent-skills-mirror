@@ -1,12 +1,15 @@
 ---
 name: flow-define
-version: 1.0.0
-description: "Multi-AI requirements scoping using Codex and Gemini CLIs (Double Diamond Define phase). Use when: AUTOMATICALLY ACTIVATE when user requests clarification or scoping:. \"define the requirements for X\". \"clarify the scope of Y\""
+description: "Multi-AI requirements scoping using Codex and Gemini CLIs (Double Diamond Define phase)"
 ---
 
-> This file is generated from a template. Edit the `.tmpl` file, not this file directly.
-> Run `scripts/gen-skill-docs.sh` to regenerate after changes.
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
 
+
+{{PREAMBLE}}
 
 ## Pre-Definition: State Check
 
@@ -33,7 +36,6 @@ fi
   --status "in_progress"
 ```
 
----
 
 ## ⚠️ EXECUTION CONTRACT (MANDATORY - CANNOT SKIP)
 
@@ -41,31 +43,24 @@ This skill uses **ENFORCED execution mode**. You MUST follow this exact sequence
 
 ### STEP 1: Display Visual Indicators (MANDATORY - BLOCKING)
 
-**MANDATORY: Run the centralized provider check BEFORE displaying the banner:**
+**MANDATORY: You MUST use the native shell command tool to run this provider check BEFORE displaying the banner. Do NOT skip it. Do NOT assume availability.**
 
 ```bash
 bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh"
 ```
 
-**Use the ACTUAL results. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
+**Use the ACTUAL results below. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
 
-**Validation:**
-- If ALL external CLI providers unavailable -> STOP, suggest: `/octo:setup`
-- If some unavailable -> Continue with available provider(s)
-- If multiple available -> Proceed normally
 
-**Display this banner BEFORE orchestrate.sh execution (list ALL providers from check output):**
+**Display this banner BEFORE orchestrate.sh execution:**
 
 ```
 🐙 **CLAUDE OCTOPUS ACTIVATED** - Multi-provider definition mode
 🎯 Define Phase: [Brief description of what you're defining/scoping]
 
 Provider Availability:
-🔴 Codex CLI: [status from check] - Technical requirements analysis
-🟡 Gemini CLI: [status from check] - Business context and constraints
-🟢 Copilot CLI: [status from check] - GitHub integration perspective
-🟣 Qwen CLI: [status from check] - Alternative analysis
-🟤 OpenCode CLI: [status from check] - Multi-provider routing
+🔴 Codex CLI: ${codex_status} - Technical requirements analysis
+🟡 Gemini CLI: ${gemini_status} - Business context and constraints
 🔵 Claude: Available ✓ - Consensus building and synthesis
 
 💰 Estimated Cost: $0.01-0.05
@@ -74,7 +69,6 @@ Provider Availability:
 
 **DO NOT PROCEED TO STEP 2 until banner displayed.** The banner shows users which providers will run and what costs they'll incur — starting API calls without this visibility violates cost transparency.
 
----
 
 ### STEP 2: Read Prior State (MANDATORY - State Management)
 
@@ -113,7 +107,6 @@ fi
 
 **DO NOT PROCEED TO STEP 3 until state read.**
 
----
 
 ### STEP 3: Phase Discussion - Capture User Vision (MANDATORY - Context Gathering)
 
@@ -203,11 +196,10 @@ echo "📋 Context captured and saved to .claude-octopus/context/define-context.
 
 **DO NOT PROCEED TO STEP 4 until context captured.** User vision (UX approach, priorities, out-of-scope items) scopes the multi-AI research — without it, providers research too broadly and the definition misses the user's actual intent.
 
----
 
 ### STEP 4: Execute orchestrate.sh define (MANDATORY - Use Bash Tool)
 
-**You MUST execute this command via the Bash tool:**
+**You MUST execute this command via the native shell command tool:**
 
 ```bash
 ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh define "<user's clarification request>"
@@ -219,7 +211,7 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh define "<user's clarificat
 - ❌ Claiming you're "simulating" the workflow
 - ❌ Proceeding to Step 3 without running this command
 
-**You MUST use the Bash tool to invoke orchestrate.sh.**
+**You MUST use the native shell command tool to invoke orchestrate.sh.**
 
 #### What Users See During Execution (v7.16.0+)
 
@@ -236,7 +228,6 @@ These spinner verb updates happen automatically - orchestrate.sh calls `update_t
 
 **If NOT running in Claude Code v2.1.16+:** Progress indicators are silently skipped, no errors shown.
 
----
 
 ### STEP 5: Verify Execution (MANDATORY - Validation Gate)
 
@@ -262,7 +253,6 @@ cat "$SYNTHESIS_FILE"
 3. DO NOT proceed with presenting results
 4. DO NOT substitute with direct analysis — fallback to single-model analysis defeats the purpose of multi-provider consensus and produces narrower requirements
 
----
 
 ### STEP 6: Update State (MANDATORY - Post-Execution)
 
@@ -290,15 +280,10 @@ fi
 
 # Update metrics
 "${HOME}/.claude-octopus/plugin/scripts/state-manager.sh" update_metrics "phases_completed" "1"
-# Track actual providers used (dynamic — not hardcoded)
-for _provider in $(bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh" | grep ":available" | cut -d: -f1) claude; do
-  "${HOME}/.claude-octopus/plugin/scripts/state-manager.sh" update_metrics "provider" "$_provider"
-done
 ```
 
 **DO NOT PROCEED TO STEP 7 until state updated.**
 
----
 
 ### STEP 7: Present Problem Definition (Only After Steps 1-6 Complete)
 
@@ -314,13 +299,11 @@ Read the synthesis file and present:
 
 **Include attribution:**
 ```
----
 *Multi-AI Problem Definition powered by Claude Octopus*
 *Providers: 🔴 Codex | 🟡 Gemini | 🔵 Claude*
 *Full problem definition: $SYNTHESIS_FILE*
 ```
 
----
 
 # Define Workflow - Define Phase 🎯
 
@@ -345,17 +328,8 @@ Providers:
 🔵 Claude - Consensus building and synthesis
 ```
 
-| Indicator | Provider | Cost Source |
-|-----------|----------|-------------|
-| 🔴 | Codex CLI | User's OPENAI_API_KEY |
-| 🟡 | Gemini CLI | User's GEMINI_API_KEY |
-| 🟣 | Perplexity Sonar | User's PERPLEXITY_API_KEY |
-| 🔵 | Claude | Included with Claude Code |
+{{VISUAL_INDICATORS}}
 
-**This is NOT optional.** Users need to see which AI providers are active and understand they are being charged for external API calls (🔴 🟡).
-
-
----
 
 **Part of Double Diamond: DEFINE** (convergent thinking)
 
@@ -382,7 +356,6 @@ The **define** phase clarifies and scopes problems using external CLI providers:
 
 This is the **convergent** phase after discovery - we narrow down from broad research to specific problem definition.
 
----
 
 ## When to Use Define
 
@@ -400,7 +373,6 @@ Use define when you need:
 - Code review and validation (use ink-workflow)
 - Simple questions Claude can answer
 
----
 
 ## Visual Indicators
 
@@ -416,7 +388,6 @@ Providers:
 🔵 Claude - Problem synthesis
 ```
 
----
 
 ## How It Works
 
@@ -445,14 +416,13 @@ Results are saved to:
 
 Read the synthesis and present clear, actionable requirements to the user.
 
----
 
 ## Implementation Instructions
 
 When this skill is invoked, follow the EXECUTION CONTRACT above exactly. The contract includes:
 
 1. **Blocking Step 1**: Display visual indicators with provider status
-2. **Blocking Step 2**: Execute orchestrate.sh define via Bash tool
+2. **Blocking Step 2**: Execute orchestrate.sh define via native shell command tool
 3. **Blocking Step 3**: Verify synthesis file exists
 4. **Step 4**: Present formatted problem definition
 
@@ -532,7 +502,6 @@ After successful execution, present problem definition with:
    Full problem definition saved to: <synthesis file path>
    ```
 
----
 
 ## Example Usage
 
@@ -666,7 +635,6 @@ Claude:
 Ready to build once requirements are confirmed.
 ```
 
----
 
 ## Integration with Other Workflows
 
@@ -684,7 +652,6 @@ PROBE (Discover) → GRASP (Define) → TANGLE (Develop) → INK (Deliver)
 
 Or use grasp standalone when requirements are unclear.
 
----
 
 ## Quality Checklist
 
@@ -699,7 +666,6 @@ Before completing grasp workflow, ensure:
 - [ ] Next steps recommended to user
 - [ ] Full problem definition shared
 
----
 
 ## Cost Awareness
 
@@ -710,7 +676,6 @@ Before completing grasp workflow, ensure:
 
 Grasp workflows typically cost $0.01-0.05 per task depending on complexity.
 
----
 
 ## Post-Definition: State Update
 
@@ -732,6 +697,5 @@ if [[ -f "$SYNTHESIS_FILE" ]]; then
 fi
 ```
 
----
 
 **Ready to define!** This skill activates automatically when users request requirement clarification or problem definition.

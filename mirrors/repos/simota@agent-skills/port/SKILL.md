@@ -332,96 +332,45 @@ Shared protocols: [`_common/OPERATIONAL.md`](../_common/OPERATIONAL.md)
 
 ## AUTORUN Support
 
-When Port receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `web_stack`, `target_platforms`, `parity_goal`, and `Constraints`, execute the standard workflow (skip verbose explanations, focus on deliverables), and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Port-specific Input fields in `_AGENT_CONTEXT`: `web_stack`, `target_platforms`, `parity_goal`, `constraints` (min-OS baseline, offline requirement, regulatory).
 
-### `_AGENT_CONTEXT` (input)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Port
-  Task: [Specific porting task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input:
-    web_stack: "[React | Vue | Svelte | Angular | Next | Nuxt | SvelteKit | ...]"
-    target_platforms: ["iOS", "Android"]
-    parity_goal: "[MVP | Full | Enhanced]"
-    constraints:
-      - "[Min-OS baseline]"
-      - "[Offline requirement]"
-      - "[Regulatory constraint]"
-  Expected_Output: "[Blueprint | Survey | Parity | Map | Roadmap | Risk]"
-```
-
-### `_STEP_COMPLETE` (output)
+Port-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
   Agent: Port
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
-    deliverable: "[blueprint path or inline]"
-    artifact_type: "[Blueprint | Survey | Parity Matrix | Architecture Map | Roadmap | Risk Matrix]"
+    deliverable: [blueprint path or inline]
+    artifact_type: Blueprint | Survey | Parity Matrix | Architecture Map | Roadmap | Risk Matrix
     parameters:
-      web_stack: "[detected stack]"
+      web_stack: [detected stack]
       target_platforms: ["iOS", "Android"]
       parity_summary: "Full=N Adapted=N Deferred=N Dropped=N"
-      offline_tier_default: "[T0 | T1 | T2 | T3]"
-      phase_count: "[N phases]"
-      ios_min: "[iOS NN]"
-      android_min: "[API NN]"
+      offline_tier_default: T0 | T1 | T2 | T3
+      phase_count: [N phases]
+      ios_min: [iOS NN]
+      android_min: [API NN]
   Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
+    completeness: complete | partial | blocked
+    quality_check: passed | flagged | skipped
   Handoffs:
-    - target: Native
-      content: "[per-platform implementation spec ref]"
-    - target: Scaffold
-      content: "[project skeleton spec ref]"
-    - target: Gateway
-      content: "[mobile API contract spec ref]"
-  Risks:
-    - "[high-impact risk and mitigation]"
+    - target: Native;    content: [per-platform implementation spec ref]
+    - target: Scaffold;  content: [project skeleton spec ref]
+    - target: Gateway;   content: [mobile API contract spec ref]
+  Risks: [High-impact risk and mitigation]
   Next: Native | Scaffold | Gateway | Schema | Launch | DONE
-  Reason: "[Why this next step]"
 ```
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`: treat Nexus as hub, do not instruct other agent calls directly, return all results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Port
-- Summary: [1-3 lines describing blueprint outcome]
-- Key findings / decisions:
-  - Web stack: [detected]
-  - iOS architecture: [SwiftUI + MVVM-C, min iOS NN]
-  - Android architecture: [Compose + MVVM/MVI, min API NN]
-  - Parity verdict mix: [Full=N Adapted=N Deferred=N Dropped=N]
-  - Offline tier baseline: [T0 | T1 | T2 | T3]
-  - Phase count: [N]
-- Artifacts:
-  - [Blueprint path]
-  - [Parity matrix path]
-  - [Roadmap path]
-- Risks / trade-offs:
-  - [Top 3 risks with probability × impact]
-- Open questions (blocking/non-blocking):
-  - [blocking: yes/no] [question]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [Native | Scaffold | Gateway | Schema | Launch] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Port-specific findings to surface in handoff:
+- Web stack detected; iOS arch (SwiftUI + MVVM-C, min iOS NN); Android arch (Compose + MVVM/MVI, min API NN)
+- Parity verdict mix: Full=N Adapted=N Deferred=N Dropped=N
+- Offline tier baseline + phase count
+- Top 3 risks with probability × impact
 
 ---
 

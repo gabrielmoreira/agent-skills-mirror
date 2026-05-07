@@ -25,9 +25,31 @@ SEO is the foundation that GEO builds on. See the geo-optimization skill for AI 
 
 **Crawlability:** XML sitemap up-to-date | robots.txt correct | no unintended noindex | canonical tags for duplicates | clean URLs | 301 redirects (no 404s) | HTTPS required
 
+**Mobile-first indexing:** Fully rolled out by Google since July 2024 — Google indexes exclusively the mobile version of pages. Ensure content, structured data, and internal links are identical on desktop and mobile. No mobile version = not indexed.
+
+**IndexNow:** Protocol to notify search engines (Bing, Yandex, Naver) directly when pages are created or updated. Free, faster indexation than waiting for a crawl. Implementation: generate a key via Bing Webmaster Tools and add a simple API call to your publishing workflow. WordPress: use the IndexNow plugin. *(Note: Google has its own crawl prioritization and does not use IndexNow.)*
+
 **Core Web Vitals:** LCP < 2.5s | INP < 200ms | CLS < 0.1 (source: web.dev/articles/vitals). For details: use a web performance optimization tool or skill.
 
-**Schema Markup:** LocalBusiness (business details) | Article (blog posts) | FAQPage (FAQs) | BreadcrumbList | Service | Person (author, E-E-A-T) | VideoObject (videos)
+**Schema Markup:** LocalBusiness (business details) | Article (blog posts) | BreadcrumbList | Service | Person (author, E-E-A-T) | VideoObject (videos)
+
+**Schema status (Feb 2026) — only use active types:**
+
+| Type | Status | Notes |
+|:-----|:-------|:------|
+| FAQPage | Restricted Aug 2023 | ONLY for government and healthcare; not for commercial sites |
+| HowTo | Removed Sep 2023 | No rich results — do not use |
+| SpecialAnnouncement | Expired Jul 2025 | Remove from existing markup |
+| ClaimReview | Expired Jun 2025 | Remove from existing markup |
+| Dataset | Expired end 2025 | No rich results anymore |
+
+**JSON-LD rendering:** Ensure JSON-LD is in the initial server-rendered HTML. JavaScript-injected structured data can be processed with a delay by Google — critical for Product and Offer markup. *(Source: Google JS SEO guidelines Dec 2025)*
+
+**JavaScript SEO — 4 critical rules (Dec 2025):**
+1. **Canonical conflict:** If the raw HTML has a different canonical than JavaScript injects, Google may use *both*. Ensure they are identical.
+2. **noindex via JavaScript:** If raw HTML contains `noindex` but JavaScript removes it, Google may still honor the raw HTML signal. Always send noindex in the initial server response.
+3. **Non-200 status codes:** Google does not render JavaScript on pages returning non-HTTP 200. Meta tags and structured data via JS are then invisible to Googlebot.
+4. **Structured data in JS:** Product and Offer markup via JS may be processed with a delay. Always embed time-sensitive structured data in server-rendered HTML.
 
 ## On-page SEO
 
@@ -75,11 +97,49 @@ Pillar (core topic)
 
 **Helpful Content test:** Does this article add something that doesn't already exist? (original data, unique case study, practical experience). Avoid interstitial pop-ups. If not: rewrite or remove.
 
+> **Myth-busting:** Word count is *not* a direct ranking factor (confirmed by Google). A 500-word article that fully answers the search query outranks a 2,000-word article that doesn't. Use length guidelines as minimums for topical coverage, not as a goal in themselves. The Flesch readability score is also *not* a ranking factor — Yoast deprioritized it in v19.3. Use readability as a quality indicator, not as an SEO metric.
+
 Writing guidelines (E-E-A-T, language, authorship): see the geo-optimization skill.
 
 ## Conversion (CRO)
 
 Findability is step 1, action is step 2. Every SEO page needs a logical next step (button, form, lead magnet). Social proof (reviews, logos) on landing pages reduces bounce rate.
+
+## Voice Search
+
+**90%+ of voice answers** come directly from Featured Snippets. Voice queries have a local intent in 46% of cases.
+
+| Check | Requirement |
+|:------|:------------|
+| TTFB | < 2 seconds (strongest selection signal) |
+| HTTPS | Required |
+| Featured Snippet | Direct answer within the first 40-55 words after an H-tag |
+| FAQ headings | Min. 3 H2/H3 headings as a question sentence |
+| `speakable` schema | Marks top answers for Google Assistant |
+| LocalBusiness schema | For local intent (address, phone, opening hours) |
+
+**Platform → index source:** Google Assistant → Google | Siri → **Bing** | Alexa → **Bing** | Cortana → Bing. Submit Siri- and Alexa-visible content also via **Bing Webmaster Tools**.
+
+**`speakable` schema (WordPress: add via JSON-LD in functions.php or SEO plugin):**
+```json
+{
+  "@type": "Article",
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".article-summary", "h2 + p"]
+  }
+}
+```
+
+*Source: Bhanunamikaze/Agentic-SEO-Skill*
+
+## Google AI Mode
+
+In May 2025, Google launched **AI Mode** as a separate tab in Google Search (available in 180+ countries). Unlike AI Overviews (above organic results), AI Mode offers a fully conversational search experience **without organic blue links**. AI citation is the only visibility mechanism within AI Mode.
+
+**Implication:** Treat AI citation as an independent KPI alongside traditional rankings and traffic. Monitor visibility in Google AI Mode, AI Overviews, ChatGPT, Perplexity, and Bing Copilot separately — not only via Search Console.
+
+*Source: Google I/O May 2025*
 
 ## Authority and external signals
 

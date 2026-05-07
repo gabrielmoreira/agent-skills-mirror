@@ -225,9 +225,9 @@ Key design points:
 
 ## AUTORUN Support
 
-When Shard receives `_AGENT_CONTEXT`, parse `project_type`, `tenant_scale`, `compliance`, `existing_schema`, and `Constraints`, choose the correct isolation strategy, run the ASSESS→STRATEGY→DESIGN→VERIFY→DOCUMENT workflow, produce the architecture doc, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Shard-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -249,27 +249,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Shard
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Isolation strategy: [recommended level with rationale]
-  - Tenant scale: [current → projected]
-  - RLS approach: [policy type]
-  - Routing: [method]
-  - Leakage risks: [N vectors assessed]
-  - Migration complexity: [Low | Medium | High]
-- Artifacts: [file paths or inline references]
-- Risks: [data leakage, migration complexity, cost escalation]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

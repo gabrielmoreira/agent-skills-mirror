@@ -4051,7 +4051,7 @@ Fine-tuning offers several notable benefits beyond what a base model or a purely
 
 Fine-tuning can do mostly everything RAG can - but not the other way around. During training, fine-tuning embeds external knowledge directly into the model. This allows the model to handle niche queries, summarize documents, and maintain context without relying on an outside retrieval system. That’s not to say RAG lacks advantages as it is excels at accessing up-to-date information from external databases. It is in fact possible to retrieve fresh data with fine-tuning as well, however it is better to combine RAG with fine-tuning for efficiency.
 
-#### Task-Specific Mastery
+#### Task Specific Mastery
 
 Fine-tuning deeply integrates domain knowledge into the model. This makes it highly effective at handling structured, repetitive, or nuanced queries, scenarios where RAG-alone systems often struggle. In other words, a fine-tuned model becomes a specialist in the tasks or content it was trained on.
 
@@ -4093,7 +4093,7 @@ Unsloth takes care of these complexities by automatically selecting the best par
 
 Instead of choosing between RAG and fine-tuning, consider using **both** together for the best results. Combining a retrieval system with a fine-tuned model brings out the strengths of each approach. Here’s why:
 
-* **Task-Specific Expertise** – Fine-tuning excels at specialized tasks or formats (making the model an expert in a specific area), while RAG keeps the model up-to-date with the latest external knowledge.
+* **Task Specific Expertise** – Fine-tuning excels at specialized tasks or formats (making the model an expert in a specific area), while RAG keeps the model up-to-date with the latest external knowledge.
 * **Better Adaptability** – A fine-tuned model can still give useful answers even if the retrieval component fails or returns incomplete information. Meanwhile, RAG ensures the system stays current without requiring you to retrain the model for every new piece of data.
 * **Efficiency** – Fine-tuning provides a strong foundational knowledge base within the model, and RAG handles dynamic or quickly-changing details without the need for exhaustive re-training from scratch. This balance yields an efficient workflow and reduces overall compute costs.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 54 file(s) materialized.
+Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 54 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,34 +85,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills/event-driven/skill.md`](skills/event-driven/skill.md) |
 | 25 | ✓ | [`skills/fastapi/skill.md`](skills/fastapi/skill.md) |
 | 26 | ✓ | [`skills/frontend/skill.md`](skills/frontend/skill.md) |
-| 27 | ✓ | [`skills/incident-response/skill.md`](skills/incident-response/skill.md) |
-| 28 | ✓ | [`skills/infrastructure-as-code/skill.md`](skills/infrastructure-as-code/skill.md) |
-| 29 | ✓ | [`skills/integration-testing/skill.md`](skills/integration-testing/skill.md) |
-| 30 | ✓ | [`skills/langgraph/skill.md`](skills/langgraph/skill.md) |
-| 31 | ✓ | [`skills/microservices/skill.md`](skills/microservices/skill.md) |
-| 32 | ✓ | [`skills/mongodb/skill.md`](skills/mongodb/skill.md) |
-| 33 | ✓ | [`skills/observability/skill.md`](skills/observability/skill.md) |
-| 34 | ✓ | [`skills/openai-agents/skill.md`](skills/openai-agents/skill.md) |
-| 35 | ✓ | [`skills/performance-testing/skill.md`](skills/performance-testing/skill.md) |
-| 36 | ✓ | [`skills/performance/skill.md`](skills/performance/skill.md) |
-| 37 | ✓ | [`skills/postgresql/skill.md`](skills/postgresql/skill.md) |
-| 38 | ✓ | [`skills/pydantic/skill.md`](skills/pydantic/skill.md) |
-| 39 | ✓ | [`skills/python/skill.md`](skills/python/skill.md) |
-| 40 | ✓ | [`skills/react/skill.md`](skills/react/skill.md) |
-| 41 | ✓ | [`skills/redis/skill.md`](skills/redis/skill.md) |
-| 42 | ✓ | [`skills/requirements-planning/skill.md`](skills/requirements-planning/skill.md) |
-| 43 | ✓ | [`skills/security/skill.md`](skills/security/skill.md) |
-| 44 | ✓ | [`skills/solution-testing/skill.md`](skills/solution-testing/skill.md) |
-| 45 | ✓ | [`skills/sqlalchemy/skill.md`](skills/sqlalchemy/skill.md) |
-| 46 | ✓ | [`skills/system-design/skill.md`](skills/system-design/skill.md) |
-| 47 | ✓ | [`skills/tailwind/skill.md`](skills/tailwind/skill.md) |
-| 48 | ✓ | [`skills/technical-documentation/skill.md`](skills/technical-documentation/skill.md) |
-| 49 | ✓ | [`skills/temporal/skill.md`](skills/temporal/skill.md) |
-| 50 | ✓ | [`skills/test-strategy/skill.md`](skills/test-strategy/skill.md) |
-| 51 | ✓ | [`skills/typescript/skill.md`](skills/typescript/skill.md) |
-| 52 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
-| 53 | ✓ | [`skills/websockets-sse/skill.md`](skills/websockets-sse/skill.md) |
-| 54 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 27 | ✓ | [`skills/general-temporal/skill.md`](skills/general-temporal/skill.md) |
+| 28 | ✓ | [`skills/incident-response/skill.md`](skills/incident-response/skill.md) |
+| 29 | ✓ | [`skills/infrastructure-as-code/skill.md`](skills/infrastructure-as-code/skill.md) |
+| 30 | ✓ | [`skills/integration-testing/skill.md`](skills/integration-testing/skill.md) |
+| 31 | ✓ | [`skills/langgraph/skill.md`](skills/langgraph/skill.md) |
+| 32 | ✓ | [`skills/microservices/skill.md`](skills/microservices/skill.md) |
+| 33 | ✓ | [`skills/mongodb/skill.md`](skills/mongodb/skill.md) |
+| 34 | ✓ | [`skills/observability/skill.md`](skills/observability/skill.md) |
+| 35 | ✓ | [`skills/openai-agents/skill.md`](skills/openai-agents/skill.md) |
+| 36 | ✓ | [`skills/performance-testing/skill.md`](skills/performance-testing/skill.md) |
+| 37 | ✓ | [`skills/performance/skill.md`](skills/performance/skill.md) |
+| 38 | ✓ | [`skills/postgresql/skill.md`](skills/postgresql/skill.md) |
+| 39 | ✓ | [`skills/promptbase/skill.md`](skills/promptbase/skill.md) |
+| 40 | ✓ | [`skills/pydantic/skill.md`](skills/pydantic/skill.md) |
+| 41 | ✓ | [`skills/python/skill.md`](skills/python/skill.md) |
+| 42 | ✓ | [`skills/react/skill.md`](skills/react/skill.md) |
+| 43 | ✓ | [`skills/redis/skill.md`](skills/redis/skill.md) |
+| 44 | ✓ | [`skills/requirements-planning/skill.md`](skills/requirements-planning/skill.md) |
+| 45 | ✓ | [`skills/security/skill.md`](skills/security/skill.md) |
+| 46 | ✓ | [`skills/solution-testing/skill.md`](skills/solution-testing/skill.md) |
+| 47 | ✓ | [`skills/sqlalchemy/skill.md`](skills/sqlalchemy/skill.md) |
+| 48 | ✓ | [`skills/system-design/skill.md`](skills/system-design/skill.md) |
+| 49 | ✓ | [`skills/tailwind/skill.md`](skills/tailwind/skill.md) |
+| 50 | ✓ | [`skills/technical-documentation/skill.md`](skills/technical-documentation/skill.md) |
+| 51 | ✓ | [`skills/temporal/skill.md`](skills/temporal/skill.md) |
+| 52 | ✓ | [`skills/test-strategy/skill.md`](skills/test-strategy/skill.md) |
+| 53 | ✓ | [`skills/typescript/skill.md`](skills/typescript/skill.md) |
+| 54 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
+| 55 | ✓ | [`skills/websockets-sse/skill.md`](skills/websockets-sse/skill.md) |
+| 56 | ✓ | [`skills/writing-plans/skill.md`](skills/writing-plans/skill.md) |
+| 57 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

@@ -5417,8 +5417,9 @@ The Rig → Cook → Run lifecycle:
 
 Search paths (in order):
   1. &lt;resolved-beads-dir&gt;/formulas/ (active project)
-  2. ~/.beads/formulas/ (user)
-  3. $GT_ROOT/.beads/formulas/ (orchestrator, if GT_ROOT set)
+  2. &lt;checkout-root&gt;/.beads/formulas/ (repo-local formulas)
+  3. ~/.beads/formulas/ (user)
+  4. $GT_ROOT/.beads/formulas/ (orchestrator, if GT_ROOT set)
 
 Commands:
   list   List available formulas from all search paths
@@ -5465,8 +5466,9 @@ List all formulas from search paths.
 
 Search paths (in order of priority):
   1. &lt;resolved-beads-dir&gt;/formulas/ (active project - highest priority)
-  2. ~/.beads/formulas/ (user)
-  3. $GT_ROOT/.beads/formulas/ (orchestrator, if GT_ROOT set)
+  2. &lt;checkout-root&gt;/.beads/formulas/ (repo-local formulas)
+  3. ~/.beads/formulas/ (user)
+  4. $GT_ROOT/.beads/formulas/ (orchestrator, if GT_ROOT set)
 
 Formulas in earlier paths shadow those with the same name in later paths.
 
@@ -6000,7 +6002,8 @@ Variable syntax (both work - we detect which side is the concrete value):
 
 Output locations (first writable wins):
   1. &lt;resolved-beads-dir&gt;/formulas/ (project-level, default)
-  2. ~/.beads/formulas/     (user-level, if project not writable)
+  2. &lt;checkout-root&gt;/.beads/formulas/ (repo-local formulas)
+  3. ~/.beads/formulas/     (user-level, if project not writable)
 
 Examples:
   bd mol distill bd-o5xe my-workflow
@@ -6133,8 +6136,9 @@ attempting to spawn work from a formula.
 
 Formula search paths (checked in order):
   1. &lt;resolved-beads-dir&gt;/formulas/ (active project)
-  2. ~/.beads/formulas/ (user level)
-  3. $GT_ROOT/.beads/formulas/ (orchestrator level, if GT_ROOT set)
+  2. &lt;checkout-root&gt;/.beads/formulas/ (repo-local formulas)
+  3. ~/.beads/formulas/ (user level)
+  4. $GT_ROOT/.beads/formulas/ (orchestrator level, if GT_ROOT set)
 
 Examples:
   bd mol seed mol-feature                 # Verify specific formula

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jeremylongshore/claude-code-plugins-plus-skills` — 26 default patterns, 1 followed patterns, 4862 file(s) materialized.
+Mirror of `jeremylongshore/claude-code-plugins-plus-skills` — 26 default patterns, 2 followed patterns, 4863 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `jeremylongshore/claude-code-plugins-plus-skills` — 26 default patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 4862 |
+| Followed pats | 2 |
+| Files         | 4863 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `jeremylongshore/claude-code-plugins-plus-skills` — 26 default patte
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `RELEASING.md`
+- `marketplace/DESIGN.md`
 
 ## File Index
 
@@ -4920,7 +4921,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4859 | ✓ | [`templates/skill-plugin/skills/example-skill/SKILL.md`](templates/skill-plugin/skills/example-skill/SKILL.md) |
 | 4860 | ✓ | [`tests/e2e/fixtures/test-plugin/skills/test-skill/SKILL.md`](tests/e2e/fixtures/test-plugin/skills/test-skill/SKILL.md) |
 | 4861 | ✓ | [`workspace/lab/schema-optimization/SKILL.md`](workspace/lab/schema-optimization/SKILL.md) |
-| 4862 | → | [`RELEASING.md`](RELEASING.md) |
+| 4862 | → | [`marketplace/DESIGN.md`](marketplace/DESIGN.md) |
+| 4863 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

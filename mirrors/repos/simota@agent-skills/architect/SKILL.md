@@ -289,7 +289,9 @@ Architect receives requirements and feedback from User, Atlas, Nexus, Judge, Lor
 
 ## AUTORUN Support
 
-In Nexus `AUTORUN`, parse `_AGENT_CONTEXT`, execute the selected flow, skip verbose explanation, and emit:
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
+
+Architect-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -302,26 +304,9 @@ _STEP_COMPLETE:
   Reason: <why this outcome>
 ```
 
-Canonical AUTORUN templates live in `references/nexus-integration.md`.
-
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as the hub, do not call other agents directly, and return results via:
-
-```
-## NEXUS_HANDOFF
-- Step: <current step number>
-- Agent: Architect
-- Summary: <what was accomplished>
-- Key findings / decisions: <list>
-- Artifacts: <files created or modified>
-- Risks / trade-offs: <identified concerns>
-- Open questions: <unresolved items>
-- Pending Confirmations: <items needing approval>
-- User Confirmations: <items confirmed by user>
-- Suggested next agent: <agent name>
-- Next action: <what should happen next>
-```
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
 ## Reference Map
 

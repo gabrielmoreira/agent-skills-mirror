@@ -1,5 +1,13 @@
 # VCO Changelog
 
+## v3.1.1 (2026-05-06)
+
+- Hardened the current routing release line around specialist execution lock enforcement, current-session execution accounting, and canonical-entry truth alignment for the latest `main` baseline.
+- Consolidated and simplified routing ownership across multiple packs, retired more stale compatibility surfaces, and stabilized the runtime-neutral verification baseline after the PR226/PR228 review cycle.
+- Refreshed the public release surface with source-neutral docs, practice demos, and clearer install-entry presentation while keeping governed release metadata, package versions, and dist manifests aligned at `3.1.1`.
+- Detailed release notes: `docs/releases/v3.1.1.md`.
+
+
 ## v3.1.0 (2026-04-25)
 
 - Rebuilt the public Vibe surface around one canonical `vibe` entry plus public `vibe-upgrade`, while demoting legacy want/how/do wrapper names to compatibility metadata only.

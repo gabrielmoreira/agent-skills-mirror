@@ -294,9 +294,9 @@ Radar receives bug reports, implementation changes, review findings, coverage ga
 
 ## AUTORUN Support
 
-When Radar receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Radar-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -320,26 +320,8 @@ _STEP_COMPLETE:
   Next: [recommended next agent or DONE]
   Reason: [Why this next step]
 ```
+
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Radar
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - [tests added/modified and why]
-  - [coverage changes and remaining gaps]
-  - [flaky tests fixed or identified]
-- Artifacts: [file paths or "none"]
-- Risks / trade-offs: [identified risks]
-- Open questions: [unresolved items needing clarification]
-- Pending Confirmations: [items awaiting other agent output]
-- User Confirmations: [items requiring user decision]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | DONE
-```

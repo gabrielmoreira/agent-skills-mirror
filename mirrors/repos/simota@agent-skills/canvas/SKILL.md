@@ -265,9 +265,9 @@ For Echo output, state the visualization type and the scoring or friction legend
 
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode: parse the `_AGENT_CONTEXT` block from the incoming message to extract task parameters, constraints, and prior-step outputs. Execute normal work, keep the response concise, then append `_STEP_COMPLETE:`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Canvas-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -287,25 +287,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`: treat Nexus as the hub, do not instruct other agent calls, and return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Canvas
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Diagram type: [type]
-  - Mode: [Standard | Reverse | C4 | Diff | Echo | Library]
-  - Format: [Mermaid | draw.io | ASCII]
-  - Node count: [number]
-- Artifacts: [file paths or inline references]
-- Risks: [complexity overflow, missing data, rendering issues]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

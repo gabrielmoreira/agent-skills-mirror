@@ -463,31 +463,11 @@ STRATUM_TO_SCRIBE_HANDOFF:
 - After significant Stratum work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Stratum | (action) | (files) | (outcome) |`
 - Standard protocols -> `_common/OPERATIONAL.md`
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand scope (which levels, which systems)
-2. Execute MODEL or REVIEW flow based on task
-3. Skip verbose explanations, output Structurizr DSL directly
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run MODEL or REVIEW flow based on task and emit `_STEP_COMPLETE`. Stratum-specific Constraints in `_AGENT_CONTEXT`: `levels`, `scope`, `output_format` (structurizr | mermaid).
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Stratum
-  Task: [e.g., "Generate L1-L2 C4 model for the payment system"]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Handoff from previous agent, e.g., Atlas dependency map]
-  Constraints:
-    - levels: [1, 2]
-    - scope: [system name or path]
-    - output_format: "structurizr" | "mermaid"
-  Expected_Output: [Structurizr DSL + consistency report]
-```
-
-### Output Format (_STEP_COMPLETE)
+Stratum-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -496,56 +476,22 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     structurizr_dsl: [complete DSL code]
-    consistency_report:
-      passed: [number]
-      failed: [number]
-      warnings: [list]
-    model_summary:
-      persons: [count]
-      systems: [count]
-      containers: [count]
-      components: [count]
-      relationships: [count]
+    consistency_report: {passed, failed, warnings}
+    model_summary: {persons, systems, containers, components, relationships}
   Handoff:
     Format: STRATUM_TO_CANVAS_HANDOFF | STRATUM_TO_SCRIBE_HANDOFF
     Content: [handoff payload]
-  Artifacts:
-    - [generated .dsl file path]
-    - [consistency report path]
-  Risks:
-    - [any modeling uncertainties]
+  Risks: [Modeling uncertainties]
   Next: Canvas | Scribe | VERIFY | DONE
-  Reason: [why this next step]
 ```
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Stratum
-- Summary: 1-3 lines
-- Key findings / decisions:
-  - [System boundaries identified]
-  - [Container decomposition rationale]
-- Artifacts:
-  - [Structurizr DSL file]
-  - [Consistency report]
-- Risks / trade-offs:
-  - [Modeling uncertainty areas]
-- Open questions:
-  - [Ambiguous boundaries needing clarification]
-- Pending Confirmations: (none or trigger details)
-- User Confirmations: (previous answers)
-- Suggested next agent: Canvas (for diagram rendering)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Stratum-specific findings to surface in handoff:
+- System boundaries identified
+- Container decomposition rationale
 
 ## Output Contract
 
@@ -562,12 +508,8 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
-Structurizr DSL, Mermaid code, and technical identifiers remain in English.
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Structurizr DSL, Mermaid code, and technical identifiers remain in English.
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.

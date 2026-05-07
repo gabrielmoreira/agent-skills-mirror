@@ -8,7 +8,7 @@ unlisted: true
 # Skills CLI Reference
 
 :::tip
-This page documents the low-level `n8nac skills` commands that AI agents use behind the scenes. As a user, you don't need to call these directly — the [Claude Plugin](/docs/usage/claude-plugin), [OpenClaw Plugin](/docs/usage/openclaw), and [VS Code Extension](/docs/usage/vscode-extension) invoke them automatically.
+This page documents the low-level `n8nac skills` commands that AI agents use behind the scenes. In normal usage, install the n8n-as-code skills for your agent, then ask the agent to initialize the workspace and perform n8n work for you.
 
 If you're a contributor or power user, the full reference is in [Contribution → Skills & AI Tools](/docs/contribution/skills).
 :::
@@ -22,9 +22,21 @@ The Skills CLI is designed to:
 - **Support AI context generation** for better workflow suggestions
 - **Access community workflows** - Search and download from 7000+ real-world workflows
 
-## 📦 Installation
+## 📦 Install Source
 
-The Skills CLI is available as an npm package and can be run directly with npx:
+Install the portable skills from the repository skills directory when you use a generic coding agent such as OpenCode, Codex, Hermes, or another skill-capable agent:
+
+```text
+https://github.com/EtienneLescot/n8n-as-code/tree/main/skills
+```
+
+If your agent asks for explicit skill paths, use `skills/n8n-manager` and `skills/n8n-architect`.
+
+The same skill content is also packaged on npm as [`@n8n-as-code/skills`](https://www.npmjs.com/package/@n8n-as-code/skills) for `n8nac` and runtime usage.
+
+After the skills are available, the agent can initialize the workspace itself: generate `AGENTS.md`, materialize local `.agents/skills`, configure workspace context, and call `n8nac skills` commands as needed.
+
+For debugging or advanced manual usage, the same tools are available through `n8nac skills`:
 
 ```bash
 # Run with n8nac skills (if installed globally)
@@ -37,7 +49,7 @@ npx n8nac skills <command>
 npm install -g n8nac
 ```
 
-Note: When you run `update-ai` from the main `n8nac`, ensure `n8nac` is available to the project (install locally with `npm install --save-dev n8nac`, install globally, or use `npx`). The VS Code extension is the only caller that generates the AGENTS.md and AI context files.
+You usually do not need to run these commands yourself; agents and facades invoke them as part of their workflow.
 
 ## 🛠️ Available Commands
 
@@ -137,8 +149,8 @@ n8nac skills validate workflow.json
 n8nac skills validate workflow.json --strict
 ```
 
-### `update-ai` - 🤖 Update AI Context
-Update AI Context (AGENTS.md and snippets).
+### `update-ai` - 🤖 Refresh AI Context
+Advanced context refresh command used by agents and facades when they initialize or refresh a workspace.
 
 ```bash
 n8nac skills update-ai
@@ -227,13 +239,15 @@ This includes:
 ## 🔄 Related Tools
 
 ### AI Context Generation
-The main CLI (`n8nac`) includes an `update-ai` command that generates comprehensive context files for AI assistants:
+Agent and facade setup can generate workspace context files for AI assistants. In normal usage, you install the skills or a facade and let the agent initialize or refresh the workspace.
+
+For advanced manual debugging, the equivalent CLI command is:
 
 ```bash
 n8nac update-ai
 ```
 
-This command creates:
+The generated context can include:
 - `.vscode/n8n.code-snippets` - Code snippets generated from n8n-nodes-index.json
 - `n8n-nodes-index.json` - Index of all available nodes
 - Documentation files for AI context

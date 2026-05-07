@@ -151,14 +151,26 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 
 ### Prediction Markets (Predexon)
 
-Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow** + Binance for crypto candles. 49 endpoints in 4 categories:
+Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow** + Binance for crypto candles. **48 endpoints exposed as 9 agent tools** (8 named ergonomic wrappers + 1 catch-all):
 
 - **Markets & trading** — events, markets list per venue, cross-venue search (`markets/search`), orderbooks, candlesticks (per-market and per-token), trades, positions, volume charts.
 - **Leaderboard & smart money** — global + per-market leaderboards, smart-money positioning, top holders, smart-activity feed.
 - **Wallet analytics** — full wallet profile, P&L time series, per-market breakdown, similar-wallet discovery, batch profiles, AND/OR filters.
 - **UMA oracle + wallet identity** — UMA optimistic-oracle resolution status (`uma/markets`, `uma/market/{conditionId}`); wallet identity labels (ENS / Lens / exchange / risk tags), bulk identity, on-chain cluster discovery.
 
-Pricing: `$0.001` per market-data call, `$0.005` per analytics / search / wallet call. See the `predexon` skill for the full reference; agent tools surface as `blockrun_predexon_*`.
+| Tool                              | Coverage                                                                                          | Price             |
+| --------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------- |
+| `blockrun_predexon_events`        | Live Polymarket events with current odds                                                          | $0.001 / call     |
+| `blockrun_predexon_markets`       | Search Polymarket markets by keyword                                                              | $0.001 / call     |
+| `blockrun_predexon_leaderboard`   | Top Polymarket traders ranked by profit                                                           | $0.001 / call     |
+| `blockrun_predexon_smart_money`   | Smart-money positions on a specific market                                                        | $0.005 / call     |
+| `blockrun_predexon_smart_activity`| Markets where smart money is currently active                                                     | $0.005 / call     |
+| `blockrun_predexon_wallet`        | Polymarket wallet profile (PnL, winrate, positions)                                               | $0.005 / call     |
+| `blockrun_predexon_wallet_pnl`    | Wallet P&L time series                                                                            | $0.005 / call     |
+| `blockrun_predexon_matching_markets` | Polymarket ↔ Kalshi market pairs (arb compare)                                                | $0.005 / call     |
+| `blockrun_predexon_endpoint_call` | Catch-all for the remaining 40 endpoints — orderbooks, candlesticks, top-holders, UMA oracle, wallet identity/cluster, Kalshi/Limitless/Opinion/Predict.Fun, dFlow, Binance Futures, cross-venue search. Takes `path` + `query`. | $0.001 / $0.005 / call |
+
+Pricing: `$0.001` per market-data call, `$0.005` per analytics / search / wallet call. See the `predexon` skill for the full endpoint reference.
 
 ## Example Output
 

@@ -249,9 +249,9 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-When Quest receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `genre`, `target_audience`, `platform`, `design_scope`, and `Constraints`, choose the correct output route, run the DISCOVER→FRAME→DESIGN→VALIDATE→DELIVER workflow, produce the design deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Quest-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -276,26 +276,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Quest
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Genre: [genre]
-  - Target persona: [persona]
-  - Core loop: [description]
-  - Frameworks: [used frameworks]
-  - Anti-pattern check: [result]
-- Artifacts: [file paths or inline references]
-- Risks: [balance concerns, scope risks, ethical flags]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

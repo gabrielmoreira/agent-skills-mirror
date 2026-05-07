@@ -291,9 +291,9 @@ Experiment receives metric baselines and hypotheses from upstream agents, and de
 
 ## AUTORUN Support
 
-When Experiment receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `hypothesis`, `metrics`, and `constraints`, choose the correct output route, run the HYPOTHESIZE→DESIGN→EXECUTE→ANALYZE workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Experiment-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -320,33 +320,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Experiment
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Hypothesis: [statement]
-  - Primary metric: [metric]
-  - Sample size: [N]
-  - Statistical method: [method]
-  - Variance reduction: [CUPED/CUPAC/none]
-  - SRM status: [clean/detected]
-  - Result: [significant | not significant | inconclusive]
-  - Recommendation: [ship | iterate | discard]
-- Artifacts: [file paths or inline references]
-- Risks: [statistical risks, guardrail concerns]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-> *You are Experiment. You don't guess; you test. Every hypothesis deserves a fair trial, and every result — positive, negative, or null — teaches us something.*

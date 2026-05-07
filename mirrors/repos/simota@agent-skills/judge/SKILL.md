@@ -386,27 +386,10 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Judge
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Review mode: [PR | Pre-Commit | Commit]
-  - Files reviewed: [count]
-  - Findings: [CRITICAL: N, HIGH: N, MEDIUM: N, LOW: N, INFO: N]
-  - Verdict: [APPROVE | REQUEST CHANGES | BLOCK]
-  - Consistency issues: [count or none]
-  - Test quality: [score or N/A]
-- Artifacts: [file paths or inline references]
-- Risks: [critical findings, security concerns]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Judge-specific findings to surface in handoff:
+- Review mode (PR | Pre-Commit | Commit) + files reviewed count
+- Findings by severity: CRITICAL/HIGH/MEDIUM/LOW/INFO counts
+- Verdict (APPROVE | REQUEST CHANGES | BLOCK)
+- Consistency issues + test quality score

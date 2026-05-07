@@ -1,6 +1,6 @@
 ---
 name: tophant-clawvault-installer
-version: 0.2.8
+version: 0.2.12
 description: Install, configure, test, and uninstall ClawVault AI security proxy
 homepage: https://github.com/tophant-ai/ClawVault
 user-invocable: true
@@ -39,10 +39,14 @@ Add `--json` to any command for machine-readable JSON output.
 
 ### /tophant-clawvault-installer install
 
-Install ClawVault. The script handles everything automatically: creates a Python virtual environment, installs from pinned package sources (`clawvault>=0.1.0,<1.0.0` with GitHub tag `v0.1.0` fallback), generates config, integrates OpenClaw proxy, and starts services. **No pip or system package manager needed.**
+Install ClawVault. The script creates a Python virtual environment, temporarily installs the latest GitHub repository code from `main` instead of PyPI or a fixed tag, generates config, writes OpenClaw gateway proxy config when the gateway service exists, and starts ClawVault services. By default it does **not** restart `openclaw-gateway`, because recent OpenClaw versions may disconnect or hang after a gateway restart. **No pip or system package manager needed.**
 
 ```bash
-# Recommended: one command does everything
+# Default: write OpenClaw gateway proxy config and start ClawVault web dashboard,
+# but do not restart openclaw-gateway.
+# ClawVault web dashboard starts at http://localhost:8766.
+# To activate OpenClaw proxy later, manually run:
+#   systemctl --user restart openclaw-gateway
 python3 SKILL_DIR/clawvault_manager.py install --mode quick --json
 
 # Interactive setup
@@ -54,7 +58,13 @@ python3 SKILL_DIR/clawvault_manager.py install --mode advanced --json
 # Install without starting services
 python3 SKILL_DIR/clawvault_manager.py install --mode quick --no-start --json
 
-# Skip OpenClaw proxy integration
+# Deprecated compatibility flag: proxy config is already written by default
+python3 SKILL_DIR/clawvault_manager.py install --mode quick --configure-gateway-proxy --json
+
+# Dangerous: restart gateway immediately; may disconnect or hang OpenClaw
+python3 SKILL_DIR/clawvault_manager.py install --mode quick --configure-gateway-proxy --restart-gateway --json
+
+# Skip OpenClaw proxy integration explicitly
 python3 SKILL_DIR/clawvault_manager.py install --mode quick --no-proxy --json
 ```
 
@@ -87,6 +97,14 @@ python3 SKILL_DIR/clawvault_manager.py test --category sensitive --json
 ```
 
 **Categories:** `all`, `sensitive`, `injection`, `commands`
+
+### /tophant-clawvault-installer unconfigure-proxy
+
+Remove ClawVault proxy environment variables from `openclaw-gateway.service` without restarting the gateway. Use this if OpenClaw conversations hang after proxy integration.
+
+```bash
+python3 SKILL_DIR/clawvault_manager.py unconfigure-proxy --json
+```
 
 ### /tophant-clawvault-installer uninstall
 

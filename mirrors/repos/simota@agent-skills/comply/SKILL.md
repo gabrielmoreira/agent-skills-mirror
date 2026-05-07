@@ -288,7 +288,9 @@ Example:
 
 ## AUTORUN Support
 
-When Comply receives `_AGENT_CONTEXT`, parse `task_type`, `framework`, `scope`, and `constraints`, execute the SCOPE->MAP->ASSESS->EVIDENCE->REMEDIATE->REPORT workflow (skip verbose explanations), and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
+
+Comply-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -311,27 +313,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`: treat Nexus as hub, do not call other agents directly, return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Comply
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Frameworks: [assessed frameworks]
-  - Controls: [implemented/partial/missing counts]
-  - Critical gaps: [count and summary]
-  - Remediation agents: [assigned agents]
-- Artifacts: [file paths or inline references]
-- Risks: [compliance gaps, audit timeline, certification blockers]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-> Compliance is not a destination. It is a continuous journey of demonstrable control.

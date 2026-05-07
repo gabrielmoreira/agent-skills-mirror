@@ -1,8 +1,23 @@
 ---
 name: skill-finish-branch
-version: 1.0.0
-description: "Wrap up a branch — run tests, create PR, merge or discard — use when implementation is done. Use when: AUTOMATICALLY ACTIVATE when user requests task completion with git operations:. \"commit and push\" or \"git commit and push\". \"complete all tasks and commit and push\""
+description: "Wrap up a branch — run tests, create PR, merge or discard — use when implementation is done"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
+
+## Execution Contract (MANDATORY - CANNOT SKIP)
+
+This generated Codex skill preserves an enforced workflow contract from the source skill.
+
+**PROHIBITED:**
+- Do not summarize, simulate, or skip the referenced workflow command when this skill requires execution.
+- Do not claim provider output or validation artifacts exist without checking the actual files or command output.
+- Do not continue silently when a required provider, command, or host capability is unavailable; report the unavailable dependency and use a supported fallback.
+
 
 # Finishing a Development Branch
 
@@ -10,63 +25,108 @@ description: "Wrap up a branch — run tests, create PR, merge or discard — us
 
 ## Overview
 
-Guide completion of development work with clear options and safe execution.
+Full ship pipeline: tests → multi-provider review → version bump → changelog → commit → push → PR.
 
-**Core principle:** Verify tests → Present options → Execute choice → Clean up.
+**Core principle:** Verify tests → Review diff → Bump version → Update changelog → Present options → Execute choice → Clean up.
 
----
 
 ## The Process
 
 ### Step 1: Verify Tests Pass
 
-**Before presenting options, verify tests pass:**
+**Before anything else, verify tests pass:**
 
 ```bash
-# Run project's test suite
-npm test        # JavaScript/TypeScript
-pytest          # Python
-cargo test      # Rust
-go test ./...   # Go
+# Detect and run project's test suite
+if [[ -f "package.json" ]]; then npm test
+elif [[ -f "pytest.ini" ]] || [[ -f "pyproject.toml" ]]; then pytest
+elif [[ -f "Cargo.toml" ]]; then cargo test
+elif [[ -f "go.mod" ]]; then go test ./...
+elif [[ -f "Makefile" ]] && grep -q '^test:' Makefile; then make test
+fi
 ```
 
-**If tests fail:**
-```
-❌ Tests failing (N failures). Must fix before completing:
-
-[Show failures]
-
-Cannot proceed with merge/PR until tests pass.
-```
-
-**STOP. Do not proceed to Step 2.**
+**If tests fail:** STOP. Show failures. Do not proceed.
 
 **If tests pass:** Continue to Step 2.
 
----
 
-### Step 2: Determine Base Branch
+### Step 2: Multi-Provider Diff Review
+
+**Run a quick multi-provider review of the changes before shipping.** This catches issues before they reach PR reviewers.
+
+```bash
+# Get the diff summary
+DIFF_STAT=$(git diff --stat $(git merge-base HEAD main)..HEAD)
+DIFF_FILES=$(git diff --name-only $(git merge-base HEAD main)..HEAD)
+```
+
+**Always run a quick review — this is automatic, not optional:**
+
+```bash
+# Quick review via orchestrate.sh (uses available providers)
+${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh spawn reviewer "Review this diff for bugs, security issues, and code quality problems. Be concise — only flag real issues, not style preferences.
+
+$(git diff $(git merge-base HEAD main)..HEAD | head -500)"
+```
+
+**If critical issues found:** Present them and ask whether to fix or ship anyway.
+**If clean:** Continue to Step 3. Show a brief `✓ Review clean — no issues found`.
+
+
+### Step 3: Determine Base Branch & Version
 
 ```bash
 # Identify the base branch
-git merge-base HEAD main 2>/dev/null || \
-git merge-base HEAD master 2>/dev/null || \
-git merge-base HEAD develop 2>/dev/null
+BASE_BRANCH=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}')
+[[ -z "$BASE_BRANCH" ]] && BASE_BRANCH="main"
+
+# Check for VERSION file
+VERSION_FILE=""
+for f in VERSION version.txt package.json; do
+  [[ -f "$f" ]] && VERSION_FILE="$f" && break
+done
 ```
 
-If unclear, ask: "This branch split from `main` - is that correct?"
 
----
+### Step 4: Version Bump & Changelog (Optional)
 
-### Step 3: Present Options
+**If a VERSION file or package.json exists**, offer to bump:
+
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "Version bump?",
+    header: "Version",
+    multiSelect: false,
+    options: [
+      {label: "Patch (Recommended)", description: "Bug fixes, minor changes (1.2.3 → 1.2.4)"},
+      {label: "Minor", description: "New features, backward compatible (1.2.3 → 1.3.0)"},
+      {label: "Major", description: "Breaking changes (1.2.3 → 2.0.0)"},
+      {label: "Skip", description: "Don't bump version"}
+    ]
+  }]
+})
+```
+
+**If bumping:** Update the version file and prepend a changelog entry summarizing the diff:
+
+```bash
+# Generate changelog entry from commits
+COMMITS=$(git log --oneline $(git merge-base HEAD $BASE_BRANCH)..HEAD)
+# Prepend to CHANGELOG.md if it exists
+```
+
+
+### Step 5: Present Options
 
 Present exactly these 4 options:
 
 ```markdown
-✅ Implementation complete. Tests passing. What would you like to do?
+✅ Ship ready. Tests passing. Review clean. What would you like to do?
 
-1. **Merge locally** - Merge back to <base-branch> on this machine
-2. **Create PR** - Push and create a Pull Request for review
+1. **Create PR** (Recommended) - Push and create a Pull Request for review
+2. **Merge locally** - Merge back to <base-branch> on this machine
 3. **Keep as-is** - Leave the branch, I'll handle it later
 4. **Discard** - Delete this work permanently
 
@@ -75,7 +135,6 @@ Which option? (1-4)
 
 **Keep options concise.** Don't add explanations unless asked.
 
----
 
 ### Step 4: Execute Choice
 
@@ -111,7 +170,6 @@ git branch -d $FEATURE_BRANCH
 Ready to push when you want: git push origin $BASE_BRANCH
 ```
 
----
 
 #### Option 2: Create PR
 
@@ -146,7 +204,6 @@ EOF
 Branch preserved for review process.
 ```
 
----
 
 #### Option 3: Keep As-Is
 
@@ -166,7 +223,6 @@ When ready, you can:
 
 **Do NOT clean up anything.**
 
----
 
 #### Option 4: Discard
 
@@ -205,7 +261,6 @@ git push origin --delete $FEATURE_BRANCH 2>/dev/null || true
 Work has been permanently discarded.
 ```
 
----
 
 ### Step 5: Cleanup (If Using Worktrees)
 
@@ -229,7 +284,6 @@ fi
 
 **For Option 3:** Keep worktree intact.
 
----
 
 ## Quick Reference
 
@@ -240,7 +294,6 @@ fi
 | 3. Keep as-is | - | - | Keep | - |
 | 4. Discard | - | - | Delete | ✓ |
 
----
 
 ## Integration with Claude Octopus
 
@@ -266,7 +319,6 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh ink "Validate before merge
 # If validation passes, proceed with finishing-branch
 ```
 
----
 
 ## Red Flags - Never Do
 
@@ -278,7 +330,6 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh ink "Validate before merge
 | Delete remote branch silently | Affects collaborators |
 | Proceed when tests fail | Corrupts main branch |
 
----
 
 ## Common Mistakes
 
@@ -289,7 +340,6 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh ink "Validate before merge
 | Deleting without confirmation | Require typed "discard" |
 | Cleaning up worktree on "keep" | Only cleanup for options 1, 2, 4 |
 
----
 
 ## The Bottom Line
 

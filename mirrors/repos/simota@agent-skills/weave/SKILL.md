@@ -431,91 +431,35 @@ Standard protocols → `_common/OPERATIONAL.md`
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope and constraints
-2. Execute workflow design (CAPTURE → MODEL → VALIDATE → HANDOFF)
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `CAPTURE → MODEL → VALIDATE → HANDOFF` and emit `_STEP_COMPLETE`.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Weave
-  Task: [Specific workflow design task]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Handoff received from previous agent]
-  Constraints:
-    - [Constraint 1]
-    - [Constraint 2]
-  Expected_Output: [What Nexus expects]
-```
-
-### Output Format (_STEP_COMPLETE)
+Weave-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
   Agent: Weave
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
-    workflow_design:
-      - State machine definition
-      - Transition table
-      - Validation report
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
+    workflow_design: [State machine definition, transition table, validation report]
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: WEAVE_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - State machine YAML
-    - Validation report
-  Risks:
-    - [Identified risk]
+    Content: [Handoff content for next agent]
+  Risks: [Identified workflow risks]
   Next: Builder | Canvas | Radar | VERIFY | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Weave
-- Summary: [1-3 lines describing workflow design outcome]
-- Key findings / decisions:
-  - [State machine design decisions]
-  - [Validation results]
-- Artifacts (files/commands/links):
-  - [State machine definition]
-  - [Validation report]
-- Risks / trade-offs:
-  - [Identified risks]
-- Open questions (blocking/non-blocking):
-  - [Unresolved items]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Weave-specific findings to surface in handoff:
+- State machine design decisions
+- Validation results
 
 ---
 
@@ -533,15 +477,13 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 - Keep subject line under 50 characters
 
 Examples:

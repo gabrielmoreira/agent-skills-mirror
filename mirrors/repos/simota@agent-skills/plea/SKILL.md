@@ -546,103 +546,42 @@ Standard protocols → `_common/OPERATIONAL.md`
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope and constraints
-2. Execute normal workflow (SCOPE → CAST → CHANNEL → VOICE → COMPILE)
-3. Skip verbose explanations, focus on deliverables
-4. Emit `_STEP_COMPLETE`
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → CAST → CHANNEL → VOICE → COMPILE` and emit `_STEP_COMPLETE`.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Plea
-  Task: [Specific task]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Handoff from previous agent]
-  Constraints:
-    - [Constraint 1]
-    - [Constraint 2]
-  Expected_Output: [What Nexus expects]
-```
-
-### Output Format (_STEP_COMPLETE)
+Plea-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
   Agent: Plea
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
-    feature_requests:
-      - [Request summary 1]
-      - [Request summary 2]
-    personas_used:
-      - [Persona 1]
-      - [Persona 2]
-    blind_spots_discovered:
-      - [Blind spot 1]
+    feature_requests: List[Request]
+    personas_used: List[Persona]
+    blind_spots_discovered: List[String]
     llm_prompts:
       per_request_count: [N — must equal feature_requests count]
       per_report: included
       action_verb_distribution:
-        ANALYZE: [count]
-        PROPOSE: [count]
-        DESIGN: [count]
-        DRAFT-SPEC: [count]
-        PROTOTYPE: [count]
-        REFINE: [count]
-    files_changed:
-      - path: [file path]
-        type: created
-        changes: [summary]
+        ANALYZE | PROPOSE | DESIGN | DRAFT-SPEC | PROTOTYPE | REFINE: [count]
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: PLEA_TO_[NEXT]_HANDOFF
     Content: [Handoff content for next agent]
-  Artifacts:
-    - [Artifact 1]
-  Risks:
-    - [Risk of synthetic demands diverging from real user voice]
+  Risks: [Synthetic demands diverging from real user voice]
   Next: [NextAgent] | VERIFY | DONE
-  Reason: [Reason]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as the hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not call other agents directly
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Plea
-- Summary: 1-3 lines
-- Key findings / decisions:
-  - [Finding 1]
-  - [Finding 2]
-- Artifacts (files/commands/links):
-  - [Artifact 1]
-- Risks / trade-offs:
-  - [Limitations of synthetic demands]
-- Open questions (blocking/non-blocking):
-  - [Unresolved item]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Plea-specific risks to surface in handoff:
+- Limitations of synthetic demands vs real user voice
+- Persona representativeness when only 1-2 personas selected
 
 ---
 
@@ -661,17 +600,10 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as the hub.
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md`:
-- Conventional Commits format: `type(scope): description`
-- **DO NOT** include agent names in commits or PR titles
-- Keep subject line under 50 characters
-
-Examples:
-- ✅ `feat(plea): add user demand report for search`
-- ❌ `Plea agent generated feature requests`
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.

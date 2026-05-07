@@ -289,9 +289,9 @@ When HARVEST scope includes 3+ independent source categories (e.g., agent journa
 
 ## AUTORUN Support
 
-When Lore receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `harvest_scope`, and `Constraints`, choose the correct workflow mode, run the HARVEST→SYNTHESIZE→CATALOG→PROPAGATE→AUDIT workflow, produce the knowledge deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Lore-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -312,26 +312,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Lore
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Patterns discovered: [count]
-  - Patterns promoted: [count]
-  - Contradictions: [count or none]
-  - Stale patterns: [count or none]
-  - Consumers notified: [agent list]
-- Artifacts: [file paths or inline references]
-- Risks: [contradictions, stale knowledge, gaps]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

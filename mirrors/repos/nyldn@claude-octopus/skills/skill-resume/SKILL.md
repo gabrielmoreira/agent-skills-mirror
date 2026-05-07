@@ -1,8 +1,13 @@
 ---
 name: skill-resume
-version: 1.0.0
-description: "Pick up where you left off from a previous session — use after context resets, compaction, or new conversations. Use when: AUTOMATICALLY ACTIVATE when user mentions:. \"resume\" or \"continue\" or \"pick up where I left off\". \"what was I doing\" or \"restore session\""
+description: "Pick up where you left off from a previous session — use after context resets, compaction, or new conversations"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Session Restoration
 
@@ -12,7 +17,6 @@ Restore context from a previous session and seamlessly continue the workflow whe
 
 **Core principle:** Check state → Load adaptive context → Display restoration summary → Route to appropriate action.
 
----
 
 ## When to Use
 
@@ -28,7 +32,6 @@ Restore context from a previous session and seamlessly continue the workflow whe
 - Checking current status only (use /octo:status)
 - Modifying state directly (use octo-state.sh)
 
----
 
 ## The Process
 
@@ -89,7 +92,6 @@ This will:
 
 **Stop here** - do not proceed to Phase 2.
 
----
 
 ### Phase 2: Read Current State
 
@@ -116,7 +118,6 @@ Extract these key values:
 - `status` - Workflow status (in_progress, blocked, complete, paused, etc.)
 - `last_updated` - Timestamp of last state modification
 
----
 
 ### Phase 3: Load Adaptive Context
 
@@ -142,7 +143,6 @@ The context returned includes:
 - Phase-specific plans and summaries
 - Codebase analysis (if brownfield project)
 
----
 
 ### Phase 4: Extract History and Blockers
 
@@ -178,7 +178,6 @@ sed -n '/^## Blockers/,/^## /p' .octo/STATE.md | head -n -1 | tail -n +2
 head -n 5 .octo/PROJECT.md | grep "^# " | head -1 | sed 's/^# //'
 ```
 
----
 
 ### Phase 5: Display Restoration Summary
 
@@ -215,7 +214,6 @@ head -n 5 .octo/PROJECT.md | grep "^# " | head -1 | sed 's/^# //'
 | 3 | Develop |
 | 4 | Deliver |
 
----
 
 ### Phase 6: Intelligent Routing
 
@@ -267,7 +265,6 @@ Continue validation and delivery.
 - Use `/octo:ship` to finalize delivery
 ```
 
----
 
 ## Example Outputs
 
@@ -285,7 +282,6 @@ There is no `.octo/` directory in this project, which means no previous session 
 Run `/octo:embrace [your project description]` to start a new project.
 ```
 
----
 
 ### Example 2: Successful Restoration (In Progress)
 
@@ -318,7 +314,6 @@ Continue requirements clarification.
 - Check `.octo/phases/phase2/` for requirements docs
 ```
 
----
 
 ### Example 3: Blocked Project Restoration
 
@@ -353,7 +348,6 @@ Review blockers first: `/octo:issues`
 3. Complete SSL certificate setup for payments subdomain
 ```
 
----
 
 ### Example 4: Paused Project Restoration
 
@@ -386,7 +380,6 @@ When ready to continue:
 3. Run `/octo:embrace` to resume workflow
 ```
 
----
 
 ## Best Practices
 
@@ -429,7 +422,6 @@ Status: blocked → "Review blockers first: /octo:issues"
 Status: blocked → "Continue working"
 ```
 
----
 
 ## Red Flags - Don't Do This
 
@@ -441,7 +433,6 @@ Status: blocked → "Continue working"
 | Skip history display | User loses continuity of what was done |
 | Use hardcoded context tier | Should adapt based on current status |
 
----
 
 ## Integration with Other Skills
 
@@ -467,7 +458,6 @@ User runs /octo:resume
 → User continues with /octo:develop (or appropriate phase skill)
 ```
 
----
 
 ## Quick Reference
 
@@ -479,7 +469,6 @@ User runs /octo:resume
 | "what was I doing" | Same as resume, emphasize history |
 | "restore session" | Same as resume |
 
----
 
 ## The Bottom Line
 
@@ -490,7 +479,6 @@ Otherwise → User loses previous context and wastes time re-discovering where t
 
 **Never restart from beginning if state exists. Restore context, show history, route intelligently.**
 
----
 
 ## Context Recovery After Compaction
 

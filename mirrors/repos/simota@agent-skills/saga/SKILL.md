@@ -358,107 +358,51 @@ Every deliverable must include:
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope and constraints
-2. Execute DISCOVER → FRAME → CRAFT → REFINE → DELIVER
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `DISCOVER → FRAME → CRAFT → REFINE → DELIVER` and emit `_STEP_COMPLETE`. Saga-specific Constraints in `_AGENT_CONTEXT`: target audience, framework preference, length/format constraints.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Saga
-  Task: [Specific narrative task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Handoff received from previous agent]
-  Constraints:
-    - [Target audience]
-    - [Framework preference]
-    - [Length/format constraints]
-  Expected_Output: [What Nexus expects]
-```
-
-### Output Format (_STEP_COMPLETE)
+Saga-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
   Agent: Saga
-  Task_Type: [use_case_story | product_narrative | pitch_story | customer_success | onboarding | scenario]
+  Task_Type: use_case_story | product_narrative | pitch_story | customer_success | onboarding | scenario
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
-    narrative:
-      - [Story content]
+    narrative: [Story content]
     framework_used: [Framework name]
     anti_pattern_check: [AP results]
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: SAGA_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - [Narrative document]
-    - [Story elements summary]
-  Risks:
-    - [Assumptions that need validation]
+    Content: [Handoff content for next agent]
+  Risks: [Assumptions needing validation]
   Next: [NextAgent] | VERIFY | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Saga
-- Summary: 1-3 lines
-- Key findings / decisions:
-  - [Narrative framework selected]
-  - [Key story elements identified]
-- Artifacts (files/commands/links):
-  - [Generated narrative]
-- Risks / trade-offs:
-  - [Assumptions needing validation]
-- Open questions (blocking/non-blocking):
-  - [Questions about audience/context]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Saga-specific findings to surface in handoff:
+- Narrative framework selected
+- Key story elements identified
+- Audience/context assumptions
 
 ---
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

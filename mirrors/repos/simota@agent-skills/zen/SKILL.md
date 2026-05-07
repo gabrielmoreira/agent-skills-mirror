@@ -282,9 +282,9 @@ Read `_common/SUBAGENT.md` section `MULTI_ENGINE` when this mode is requested.
 
 ## AUTORUN Support
 
-When Zen receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `target_files`, `mode` (Refactor or Review), and `constraints`, choose the correct output route, run the SURVEY→PLAN→APPLY→VERIFY→PRESENT workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Zen-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -309,28 +309,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as the hub. Do not instruct direct agent-to-agent calls. Return results through `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Zen
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Mode: [Refactor | Review]
-  - Scope tier: [Focused | Module | Project-wide]
-  - Target: [files or components]
-  - Smells detected: [list]
-  - Recipe applied: [name or N/A]
-  - Tests passed: [yes / no / N/A]
-  - Coverage delta: [+X% / 0% / N/A]
-- Artifacts: [file paths or inline references]
-- Risks: [behavior drift, test gaps, scope creep]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

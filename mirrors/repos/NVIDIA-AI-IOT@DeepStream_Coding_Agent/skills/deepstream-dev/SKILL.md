@@ -1,10 +1,11 @@
 ---
 name: deepstream-dev
 description: NVIDIA DeepStream SDK 9.0 development with Python pyservicemaker API. Use when building video analytics pipelines, GStreamer-based video processing, TensorRT inference integration, object detection/tracking, or Kafka/message broker integration.
+owner: NVIDIA CORPORATION
+service: deepstream
+version: 1.1.0
+reviewed: 2026-04-24
 license: CC-BY-4.0 AND Apache-2.0
-metadata:
-  author: NVIDIA CORPORATION
-  version: 1.0.0
 ---
 
 # DeepStream Development Skill
@@ -118,6 +119,7 @@ DeepStream uses NVIDIA Video Memory Manager (NVMM) for zero-copy GPU buffer tran
    - `d={300, 6}` → post-NMS (v10/v26+ style)
 
    **Symptom of mismatch**: If `cluster-mode: 2` is used with a post-NMS `[N, 6]` output, bounding boxes appear shifted by 45° or 135° from the actual objects (DeepStream's NMS incorrectly re-processes already-final coordinates).
+   If you see tilted or rotated boxes, also check the OBB / `rotation_angle` note in `references/nvinfer_config.md`: for non-OBB models, value-initialize `NvDsInferObjectDetectionInfo` with `obj{}` and keep `rotation_angle = 0`; plain `NvDsInferObjectDetectionInfo obj;` leaves fields uninitialized.
 
 14. **Virtual Environment Must Include pyservicemaker**: `pyservicemaker` is installed system-wide but is NOT accessible from a standard Python virtual environment. When a task requires a venv (e.g., for model download/conversion pip dependencies), **always install `pyservicemaker` and `pyyaml` inside the venv**. The venv setup in generated code and README must always include:
     ```bash
@@ -154,6 +156,7 @@ DeepStream uses NVIDIA Video Memory Manager (NVMM) for zero-copy GPU buffer tran
 | [references/tracker_config.md](references/tracker_config.md) | nvtracker config, NvDCF/IOU/DeepSORT/NvSORT |
 | [references/troubleshooting.md](references/troubleshooting.md) | Error messages and solutions |
 | [references/rest_api_dynamic.md](references/rest_api_dynamic.md) | REST API, dynamic source add/remove, nvmultiurisrcbin |
+| [references/metamux_config.md](references/metamux_config.md) | nvdsmetamux config, parallel multi-model inference, metadata merging, source ID filtering |
 | [references/docker_containers.md](references/docker_containers.md) | Docker images, Dockerfile examples, pyservicemaker install, container run commands |
 
 ## Quick Error Reference

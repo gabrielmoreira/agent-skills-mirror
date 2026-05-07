@@ -259,6 +259,8 @@ Response fields in `data`:
 
 ## Full Endpoint Reference
 
+All 48 endpoints are exposed as the **`blockrun_predexon_endpoint_call`** agent tool (params: `path`, `query`). The 8 named `blockrun_predexon_*` tools above wrap the most common ones for ergonomics; use `endpoint_call` for everything else.
+
 All endpoints are GET. Query params go in the URL.
 
 | Endpoint                                             | Price  | Key params                              |

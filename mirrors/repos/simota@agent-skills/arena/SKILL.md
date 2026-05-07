@@ -277,9 +277,9 @@ Learning from execution outcomes across sessions. Details: `references/execution
 
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode: parse `_AGENT_CONTEXT` (Role/Task/Task_Type/Mode/Chain/Input/Constraints/Expected_Output), auto-select paradigm (COMPETE/COLLABORATE) and mode (Quick/Solo/Team) from task characteristics, execute framework workflow, skip verbose explanations, and append `_STEP_COMPLETE:`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Arena-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -300,30 +300,7 @@ _STEP_COMPLETE:
   Reason: [Why this next step]
 ```
 
-Lightweight CALIBRATE (AT-01) runs automatically after completion. Full templates: `references/decision-templates.md`
-
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`: treat Nexus as hub, do not instruct other agent calls, return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Arena
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Paradigm: [COMPETE | COLLABORATE]
-  - Mode: [Solo | Team | Quick]
-  - Engines: [used engines]
-  - Winner: [selected variant or integration summary]
-  - AES: [score]
-- Artifacts: [file paths or inline references]
-- Risks: [engine failures, scope violations, quality concerns]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

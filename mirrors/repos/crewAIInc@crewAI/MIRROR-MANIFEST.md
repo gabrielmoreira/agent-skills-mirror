@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`lib/crewai/src/crewai/cli/templates/AGENTS.md`](lib/crewai/src/crewai/cli/templates/AGENTS.md) |
+| 1 | ✓ | [`lib/cli/src/crewai_cli/templates/AGENTS.md`](lib/cli/src/crewai_cli/templates/AGENTS.md) |
 | 2 | ✓ | [`lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md`](lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md) |
 | 3 | ✓ | [`lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md) |
 | 4 | ✓ | [`lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md) |

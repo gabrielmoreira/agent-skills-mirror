@@ -377,112 +377,51 @@ All subagents share the threat model (read-only) produced in the MODEL phase. Th
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope and constraints
-2. Execute SCOPE → MODEL → PLAN → EXECUTE → REPORT
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → MODEL → PLAN → EXECUTE → REPORT` and emit `_STEP_COMPLETE`. Breach-specific Constraints in `_AGENT_CONTEXT`: target scope, framework preference, authorization level.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Breach
-  Task: [Specific red team task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Handoff received from previous agent]
-  Constraints:
-    - [Target scope]
-    - [Framework preference]
-    - [Authorization level]
-  Expected_Output: [What Nexus expects]
-```
-
-### Output Format (_STEP_COMPLETE)
+Breach-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
   Agent: Breach
-  Task_Type: [threat_model | attack_scenario | ai_red_team | purple_team | full_assessment]
+  Task_Type: threat_model | attack_scenario | ai_red_team | purple_team | full_assessment
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
-    findings:
-      - id: "[FIND-XXX]"
-        severity: "[Critical/High/Medium/Low]"
-        title: "[Title]"
-    threat_model: "[Framework used and key threats]"
-    attack_scenarios: "[Count and coverage]"
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
+    findings: List[{id: "FIND-XXX", severity: Critical | High | Medium | Low, title}]
+    threat_model: [Framework used and key threats]
+    attack_scenarios: [Count and coverage]
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: BREACH_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - [Threat model document]
-    - [Assessment report]
-  Risks:
-    - [Untested attack surfaces]
+    Content: [Handoff content for next agent]
+  Risks: [Untested attack surfaces, scope limitations]
   Next: [NextAgent] | VERIFY | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Breach
-- Summary: 1-3 lines
-- Key findings / decisions:
-  - [Threat model framework applied]
-  - [Critical/High findings count]
-  - [Key attack vectors identified]
-- Artifacts (files/commands/links):
-  - [Assessment report]
-  - [Threat model]
-- Risks / trade-offs:
-  - [Untested surfaces]
-  - [Scope limitations]
-- Open questions (blocking/non-blocking):
-  - [Authorization questions]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Breach-specific findings to surface in handoff:
+- Threat model framework applied
+- Critical / High findings count + key attack vectors
+- Untested surfaces + authorization questions
 
 ---
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

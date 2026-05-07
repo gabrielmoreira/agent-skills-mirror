@@ -321,9 +321,9 @@ Do not parallelize EVOLVE or FUSE — these require sequential confidence recalc
 
 ## AUTORUN Support
 
-When Cast receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `mode`, `target_personas`, and `constraints`, choose the correct output route (CONJURE / FUSE / EVOLVE / AUDIT / DISTRIBUTE / SPEAK), run the corresponding workflow pipeline, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Cast-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -343,25 +343,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as the hub. Do not instruct other agent calls directly. Return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Cast
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Mode: [CONJURE | FUSE | EVOLVE | AUDIT | DISTRIBUTE | SPEAK]
-  - Personas: [count and names]
-  - Confidence: [range]
-  - Registry: [changes made]
-- Artifacts: [file paths or inline references]
-- Risks: [low confidence, stale data, coverage gaps]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

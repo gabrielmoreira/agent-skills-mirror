@@ -1,8 +1,13 @@
 ---
 name: skill-content-pipeline
-version: 1.0.0
-description: "Extract patterns and anatomy from URLs — use to reverse-engineer content strategies from live pages. Use when: Use PROACTIVELY when user wants to:. \"analyze this article\", \"analyze this content\". \"deconstruct this content\", \"break down this post\""
+description: "Extract patterns and anatomy from URLs — use to reverse-engineer content strategies from live pages"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Content Pipeline Skill
 
@@ -49,7 +54,6 @@ Multi-stage pipeline for deep content analysis. Transforms external content into
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
----
 
 ## Stage 1: URL Collection & Validation
 
@@ -93,7 +97,6 @@ Apply all rules from `skill-security-framing`:
 Please provide an alternative URL or paste the content directly.
 ```
 
----
 
 ## Stage 2: Content Fetching & Sanitization
 
@@ -145,7 +148,6 @@ Fetched At: [ISO timestamp]
 
 **Continue with successfully fetched content.**
 
----
 
 ## Stage 3: Pattern Deconstruction
 
@@ -234,7 +236,6 @@ Launch parallel analysis for each piece of content:
 - Distinctive phrases: [examples]
 ```
 
----
 
 ## Stage 4: Anatomy Guide Synthesis
 
@@ -255,7 +256,6 @@ You MUST return the anatomy guide in this exact format:
 ## Executive Summary
 [2-3 sentences describing what makes this content type effective]
 
----
 
 ## Core Structure Blueprint
 
@@ -283,7 +283,6 @@ You MUST return the anatomy guide in this exact format:
 **Template:**
 > [Fill-in-the-blank closing template]
 
----
 
 ## Psychological Playbook
 
@@ -308,7 +307,6 @@ Resolution: [emotion]
 2. [Second trust element]
 3. [Third trust element]
 
----
 
 ## Hook Library
 
@@ -320,7 +318,6 @@ Resolution: [emotion]
 | Statistic | [pattern] | [use case] | [example] |
 | Paradox | [pattern] | [use case] | [example] |
 
----
 
 ## Pacing & Flow Guide
 
@@ -336,7 +333,6 @@ Resolution: [emotion]
 |--------------|--------------|-------------|
 | [type] | [length] | [range] |
 
----
 
 ## Voice & Tone Calibration
 
@@ -358,7 +354,6 @@ Resolution: [emotion]
 ### Words to Avoid
 [List of off-brand vocabulary]
 
----
 
 ## Fill-in-the-Blank Template
 
@@ -384,7 +379,6 @@ Summary: ________________________________
 CTA: ________________________________
 ```
 
----
 
 ## Pre-Flight Checklist
 
@@ -399,7 +393,6 @@ Before publishing, verify:
 - [ ] Formatting aids readability
 ```
 
----
 
 ## Stage 5: Interview Question Generation
 
@@ -461,7 +454,6 @@ following the anatomy guide patterns.
 At minimum, I need answers to questions: 1, 3, 5, and 7.
 ```
 
----
 
 ## Stage 6: Output Generation
 
@@ -494,7 +486,6 @@ Would you like me to:
 - **C)** Deep-dive on any specific pattern
 ```
 
----
 
 ## Error Handling
 
@@ -545,7 +536,6 @@ The reference content uses different approaches for [element]:
 Both patterns are included in the guide.
 ```
 
----
 
 ## Integration
 
@@ -561,7 +551,6 @@ Can generate meta-prompts for content creation based on anatomy guide.
 ### With flow-discover
 Research phase can feed into content pipeline for pattern extraction.
 
----
 
 ## Related Skills
 

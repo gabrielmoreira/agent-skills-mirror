@@ -1,8 +1,13 @@
 ---
 name: skill-context-detection
-version: 1.0.0
-description: "Auto-detect work context (Dev vs Knowledge) for workflow tailoring"
+description: "Auto-detect work context (Dev vs Knowledge) — use to tailor workflows based on current task type"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Context Detection - Internal Skill
 
@@ -70,7 +75,6 @@ If signals are ambiguous or equal:
 - In a git repo with code files → Default to **Dev Context**
 - No code files detected → Default to **Knowledge Context**
 
----
 
 ## Context Output Format
 
@@ -88,7 +92,6 @@ Return detected context as a structured object for use by workflow skills:
 }
 ```
 
----
 
 ## How Workflow Skills Use Context
 
@@ -119,7 +122,6 @@ Return detected context as a structured object for use by workflow skills:
 | **Quality Gates** | OWASP, test coverage, maintainability | Evidence quality, clarity, actionability |
 | **Visual Banner** | `✅ [Dev] Deliver Phase: Code review` | `✅ [Knowledge] Deliver Phase: Document review` |
 
----
 
 ## Visual Indicator Update
 
@@ -147,7 +149,6 @@ Providers:
 🔵 Claude - Strategic synthesis
 ```
 
----
 
 ## Implementation in Workflow Skills
 
@@ -186,7 +187,6 @@ When this skill activates:
    - Apply context-specific quality gates
 ```
 
----
 
 ## Override Mechanism
 
@@ -205,7 +205,6 @@ Users can still explicitly set context when auto-detection is wrong:
 
 When explicit override is set, context detection respects it until user resets to "auto".
 
----
 
 ## Confidence Levels
 
@@ -216,7 +215,6 @@ When explicit override is set, context detection respects it until user resets t
 When confidence is "low", consider briefly mentioning the detected context to user:
 > "I detected this as a [dev/knowledge] task. If that's wrong, you can use `/octo:km` to override."
 
----
 
 ## Testing Context Detection
 
@@ -226,7 +224,6 @@ To verify context detection is working:
 2. In same repo, ask "octo research market opportunities" → Should detect **Knowledge Context**
 3. With `/octo:km on` set, ask "octo research API patterns" → Should use **Knowledge Context** (explicit override)
 
----
 
 ## Proactive Skill Suggestions
 
@@ -238,10 +235,10 @@ When detecting the user's work stage, surface relevant command suggestions:
 | Reviewing a plan or strategy | Consider `/octo:plan` for strategic planning |
 | Debugging errors or failures | Consider `/octo:debug` for systematic investigation |
 | Writing or running tests | Consider `/octo:tdd` for test-driven development |
-| Code review before merge | Consider `/octo:review` for multi-AI code review |
+| Code review before merge | Use Claude-native `/review` for ordinary review; suggest `/octo:review` for multi-AI escalation |
 | Ready to deploy or ship | Consider `/octo:deliver` for quality-gated delivery |
 | Researching a topic | Consider `/octo:research` for multi-source synthesis |
-| Working on security | Consider `/octo:security` for OWASP compliance audit |
+| Working on security | Use Claude-native `/security-review` for ordinary security review; suggest `/octo:security` for escalated OWASP or adversarial audit |
 
 ### Suggestion Format
 

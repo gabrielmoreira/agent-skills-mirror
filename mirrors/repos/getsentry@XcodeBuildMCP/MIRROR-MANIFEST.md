@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 36 file(s) materialized.
+Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 36 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,10 +92,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 31 | ✓ | [`example_projects/iOS_Calculator/AGENTS.md`](example_projects/iOS_Calculator/AGENTS.md) |
 | 32 | ✓ | [`example_projects/iOS/.cursor/rules/errors.mdc`](example_projects/iOS/.cursor/rules/errors.mdc) |
-| 33 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
-| 34 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
-| 35 | → | [`README.md`](README.md) |
-| 36 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
+| 33 | ✓ | [`example_projects/Weather/AGENTS.md`](example_projects/Weather/AGENTS.md) |
+| 34 | ✓ | [`example_projects/Weather/README.md`](example_projects/Weather/README.md) |
+| 35 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
+| 36 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
+| 37 | → | [`README.md`](README.md) |
+| 38 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
 
 ---
 

@@ -237,9 +237,9 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-When Mend receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `incident_id`, `severity`, `diagnosis`, and `Constraints`, choose the correct remediation mode, run the CLASSIFY→MATCH→EXECUTE→VERIFY→REPORT workflow, produce the remediation report, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Mend-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -264,27 +264,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Mend
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Safety tier: [T1 | T2 | T3 | T4]
-  - Pattern confidence: [percentage]
-  - Autonomy mode: [AUTO-REMEDIATE | GUIDED-REMEDIATE | INVESTIGATE | ESCALATE]
-  - Remediation actions: [summary]
-  - Verification result: [stage reached and outcome]
-  - Rollback: [triggered or not]
-- Artifacts: [file paths or inline references]
-- Risks: [remaining risks, incomplete verification]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

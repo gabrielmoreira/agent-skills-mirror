@@ -300,9 +300,9 @@ Read `_common/SUBAGENT.md` section `MULTI_ENGINE` when this mode is requested.
 
 ## AUTORUN Support
 
-When Sentinel receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `target_files`, and `constraints`, execute the SCAN→PRIORITIZE→FILTER→SECURE→VERIFY→PRESENT workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Sentinel-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -331,27 +331,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Sentinel
-- Summary: [1-3 lines describing what was scanned and what was found]
-- Key findings / decisions:
-  - Finding: [vulnerability type or "none found"]
-  - Severity: [CRITICAL | HIGH | MEDIUM | LOW | ENHANCEMENT | none]
-  - Confidence: [HIGH | MEDIUM | LOW]
-  - OWASP category: [e.g., A05:2025 – Injection | none]
-  - Fix applied: [true | false | partial]
-  - False positive note: [reason if suppressed | none]
-- Artifacts: [file paths or "none"]
-- Risks: [residual risk, regressions, suppressed findings]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

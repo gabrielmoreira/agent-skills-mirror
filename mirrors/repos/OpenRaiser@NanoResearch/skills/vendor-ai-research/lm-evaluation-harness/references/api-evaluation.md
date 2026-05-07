@@ -33,7 +33,7 @@ The lm-evaluation-harness supports evaluating API-based models through a unified
 ### Setup
 
 ```bash
-export OPENAI_API_KEY=sk-...
+export OPENAI_API_KEY=OPENAI_API_KEY_PLACEHOLDER
 ```
 
 ### Completion Models (Legacy)
@@ -118,7 +118,7 @@ print(f"Estimated cost: ${total_cost:.2f}")
 ### Setup
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+export ANTHROPIC_API_KEY=ANTHROPIC_API_KEY_PLACEHOLDER
 ```
 
 ### Completion Models (Legacy)
@@ -414,8 +414,8 @@ lm_eval --model openai-chat-completions \
 
 Check API key:
 ```bash
-echo $OPENAI_API_KEY  # Should print sk-...
-echo $ANTHROPIC_API_KEY  # Should print sk-ant-...
+echo $OPENAI_API_KEY  # Should print OPENAI_API_KEY_PLACEHOLDER
+echo $ANTHROPIC_API_KEY  # Should print ANTHROPIC_API_KEY_PLACEHOLDER
 ```
 
 ### "Rate limit exceeded"

@@ -455,28 +455,11 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, operate as the hub. Do not instruct direct agent-to-agent calls. Return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, operate as the hub. Do not instruct direct agent-to-agent calls. Return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Nexus
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Task type: [classification]
-  - Chain: [selected chain]
-  - Mode: [execution mode]
-  - Verification: [result]
-- Artifacts: [file paths or inline references]
-- Risks: [chain complexity, unresolved gaps, safety concerns]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Nexus-specific findings to surface in handoff:
+- Task type classification + selected chain + execution mode
+- Verification result + chain complexity / unresolved gaps / safety concerns
 
 ## Model Compatibility
 - **Scoring:** If weighted calculation is difficult, use simplified scoring in `context-scoring.md`.

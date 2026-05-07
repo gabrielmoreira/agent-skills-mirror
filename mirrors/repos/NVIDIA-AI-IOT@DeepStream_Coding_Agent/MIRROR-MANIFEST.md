@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA-AI-IOT/DeepStream_Coding_Agent` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `NVIDIA-AI-IOT/DeepStream_Coding_Agent` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA-AI-IOT/DeepStream_Coding_Agent` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,20 +59,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/deepstream-dev/references/best_practices.md`](skills/deepstream-dev/references/best_practices.md) |
-| 2 | ✓ | [`skills/deepstream-dev/references/buffer_apis.md`](skills/deepstream-dev/references/buffer_apis.md) |
-| 3 | ✓ | [`skills/deepstream-dev/references/docker_containers.md`](skills/deepstream-dev/references/docker_containers.md) |
-| 4 | ✓ | [`skills/deepstream-dev/references/gstreamer_plugins.md`](skills/deepstream-dev/references/gstreamer_plugins.md) |
-| 5 | ✓ | [`skills/deepstream-dev/references/kafka_messaging.md`](skills/deepstream-dev/references/kafka_messaging.md) |
-| 6 | ✓ | [`skills/deepstream-dev/references/media_extractor_advanced.md`](skills/deepstream-dev/references/media_extractor_advanced.md) |
-| 7 | ✓ | [`skills/deepstream-dev/references/nvinfer_config.md`](skills/deepstream-dev/references/nvinfer_config.md) |
-| 8 | ✓ | [`skills/deepstream-dev/references/rest_api_dynamic.md`](skills/deepstream-dev/references/rest_api_dynamic.md) |
-| 9 | ✓ | [`skills/deepstream-dev/references/service_maker_api.md`](skills/deepstream-dev/references/service_maker_api.md) |
-| 10 | ✓ | [`skills/deepstream-dev/references/tracker_config.md`](skills/deepstream-dev/references/tracker_config.md) |
-| 11 | ✓ | [`skills/deepstream-dev/references/troubleshooting.md`](skills/deepstream-dev/references/troubleshooting.md) |
-| 12 | ✓ | [`skills/deepstream-dev/references/use_cases_pipelines.md`](skills/deepstream-dev/references/use_cases_pipelines.md) |
-| 13 | ✓ | [`skills/deepstream-dev/references/utilities_config.md`](skills/deepstream-dev/references/utilities_config.md) |
-| 14 | ✓ | [`skills/deepstream-dev/SKILL.md`](skills/deepstream-dev/SKILL.md) |
+| 1 | ✓ | [`skills/deepstream-dev/.claude-plugin/plugin.json`](skills/deepstream-dev/.claude-plugin/plugin.json) |
+| 2 | ✓ | [`skills/deepstream-dev/evals/evals.json`](skills/deepstream-dev/evals/evals.json) |
+| 3 | ✓ | [`skills/deepstream-dev/references/best_practices.md`](skills/deepstream-dev/references/best_practices.md) |
+| 4 | ✓ | [`skills/deepstream-dev/references/buffer_apis.md`](skills/deepstream-dev/references/buffer_apis.md) |
+| 5 | ✓ | [`skills/deepstream-dev/references/docker_containers.md`](skills/deepstream-dev/references/docker_containers.md) |
+| 6 | ✓ | [`skills/deepstream-dev/references/gstreamer_plugins.md`](skills/deepstream-dev/references/gstreamer_plugins.md) |
+| 7 | ✓ | [`skills/deepstream-dev/references/kafka_messaging.md`](skills/deepstream-dev/references/kafka_messaging.md) |
+| 8 | ✓ | [`skills/deepstream-dev/references/media_extractor_advanced.md`](skills/deepstream-dev/references/media_extractor_advanced.md) |
+| 9 | ✓ | [`skills/deepstream-dev/references/metamux_config.md`](skills/deepstream-dev/references/metamux_config.md) |
+| 10 | ✓ | [`skills/deepstream-dev/references/nvinfer_config.md`](skills/deepstream-dev/references/nvinfer_config.md) |
+| 11 | ✓ | [`skills/deepstream-dev/references/rest_api_dynamic.md`](skills/deepstream-dev/references/rest_api_dynamic.md) |
+| 12 | ✓ | [`skills/deepstream-dev/references/service_maker_api.md`](skills/deepstream-dev/references/service_maker_api.md) |
+| 13 | ✓ | [`skills/deepstream-dev/references/tracker_config.md`](skills/deepstream-dev/references/tracker_config.md) |
+| 14 | ✓ | [`skills/deepstream-dev/references/troubleshooting.md`](skills/deepstream-dev/references/troubleshooting.md) |
+| 15 | ✓ | [`skills/deepstream-dev/references/use_cases_pipelines.md`](skills/deepstream-dev/references/use_cases_pipelines.md) |
+| 16 | ✓ | [`skills/deepstream-dev/references/utilities_config.md`](skills/deepstream-dev/references/utilities_config.md) |
+| 17 | ✓ | [`skills/deepstream-dev/SKILL.md`](skills/deepstream-dev/SKILL.md) |
 
 ---
 

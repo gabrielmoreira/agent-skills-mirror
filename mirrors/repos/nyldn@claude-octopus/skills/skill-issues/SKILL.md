@@ -1,8 +1,13 @@
 ---
 name: skill-issues
-version: 1.0.0
-description: "Track project blockers, bugs, and gaps across sessions — use when issues pile up or need triage. Use when: AUTOMATICALLY ACTIVATE when user mentions:. \"issue\" or \"issues\" or \"problem\". \"track this\" or \"remember this blocker\""
+description: "Track project blockers, bugs, and gaps across sessions — use when issues pile up or need triage"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Issue Tracking
 
@@ -12,7 +17,6 @@ Cross-session issue tracking for persistent problem management. Issues are store
 
 **Core principle:** Track → Resolve → Learn.
 
----
 
 ## When to Use
 
@@ -26,9 +30,8 @@ Cross-session issue tracking for persistent problem management. Issues are store
 **Do NOT use for:**
 - GitHub issue management (use gh CLI)
 - Git-tracked issues (use git commands)
-- Temporary todos (use TodoWrite)
+- Temporary todos (use task plan tool)
 
----
 
 ## Subcommands
 
@@ -58,7 +61,6 @@ Show all open issues in table format:
 3. Read and parse Open Issues section
 4. Display in table format
 
----
 
 ### 2. Add Issue
 
@@ -154,7 +156,6 @@ Add new row to Open Issues table:
 View with: /octo:issues show ISS-20260203-003
 ```
 
----
 
 ### 3. Resolve Issue
 
@@ -212,7 +213,6 @@ Please provide resolution notes:
 View with: /octo:issues show ISS-20260203-001
 ```
 
----
 
 ### 4. Show Issue Details
 
@@ -266,7 +266,6 @@ Search both Open and Resolved sections for issue ID.
 Use `/octo:issues list` to see all open issues.
 ```
 
----
 
 ## File Management
 
@@ -306,7 +305,6 @@ EXISTING=$(cat .octo/ISSUES.md)
 echo "$MODIFIED" > .octo/ISSUES.md
 ```
 
----
 
 ## ID Generation Algorithm
 
@@ -341,7 +339,6 @@ ISSUE_ID="ISS-${TODAY}-${NEXT_NUM}"
 echo "$ISSUE_ID"
 ```
 
----
 
 ## Severity Levels
 
@@ -352,7 +349,6 @@ echo "$ISSUE_ID"
 | **medium** | Should address | Performance degradation, UX issue |
 | **low** | Nice to fix | Minor bug, cosmetic issue |
 
----
 
 ## Integration with Other Skills
 
@@ -386,7 +382,6 @@ User: "implement fix for ISS-20260203-001"
 3. Link commit SHA in resolution notes
 ```
 
----
 
 ## Best Practices
 
@@ -422,7 +417,6 @@ Commit: abc123
 Fixed
 ```
 
----
 
 ## Common Patterns
 
@@ -459,7 +453,6 @@ Action:
 3. Offer to show details or resolve
 ```
 
----
 
 ## Red Flags - Don't Do This
 
@@ -471,7 +464,6 @@ Action:
 | Vague descriptions | Can't remember what issue was |
 | Resolve without notes | No record of what was done |
 
----
 
 ## Quick Reference
 
@@ -482,7 +474,6 @@ Action:
 | "resolve ISS-X" | Move to Resolved section | Issue resolved |
 | "show ISS-X" | Find and display details | Issue details |
 
----
 
 ## The Bottom Line
 

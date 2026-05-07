@@ -511,97 +511,38 @@ Every deliverable must include:
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope and constraints
-2. Execute ASSESS → DESIGN → BUILD → TEST → DEPLOY → HUNT
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `ASSESS → DESIGN → BUILD → TEST → DEPLOY → HUNT` and emit `_STEP_COMPLETE`.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Vigil
-  Task: [Specific detection engineering task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Handoff received from previous agent]
-  Constraints:
-    - [Detection domain]
-    - [Rule format preference]
-    - [ATT&CK scope]
-  Expected_Output: [What Nexus expects]
-```
-
-### Output Format (_STEP_COMPLETE)
+Vigil-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
   Agent: Vigil
-  Task_Type: [coverage_assessment | rule_design | threat_hunt | purple_team_blue | detection_pipeline]
+  Task_Type: coverage_assessment | rule_design | threat_hunt | purple_team_blue | detection_pipeline
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
-    rules_created:
-      - id: "[DET-XXX]"
-        technique: "[T-ID]"
-        format: "[Sigma/YARA/KQL]"
-    coverage_delta: "[+X techniques covered]"
-    hunting_hypotheses: "[Count]"
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
+    rules_created: List[{id: "DET-XXX", technique: "T-ID", format: "Sigma|YARA|KQL"}]
+    coverage_delta: "+X techniques covered"
+    hunting_hypotheses: [count]
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: VIGIL_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - [Detection rules]
-    - [Coverage report]
-  Risks:
-    - [Remaining coverage gaps]
+    Content: [Handoff content for next agent]
+  Risks: [Remaining coverage gaps, false positive concerns]
   Next: [NextAgent] | VERIFY | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Vigil
-- Summary: 1-3 lines
-- Key findings / decisions:
-  - [Detection domain and rule format]
-  - [Rules created and ATT&CK coverage delta]
-  - [Hunting hypotheses designed]
-- Artifacts (files/commands/links):
-  - [Detection rules]
-  - [Coverage report]
-- Risks / trade-offs:
-  - [Remaining gaps]
-  - [False positive concerns]
-- Open questions (blocking/non-blocking):
-  - [Log source availability]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Vigil-specific risks to surface in handoff:
+- Remaining ATT&CK coverage gaps and log-source availability
+- False-positive risk per rule format (Sigma/YARA/KQL)
 
 ---
 
@@ -620,17 +561,13 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
-Detection rule syntax (Sigma/YARA/KQL) remains in English.
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Detection rule syntax (Sigma/YARA/KQL) remains in English.
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

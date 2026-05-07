@@ -205,9 +205,9 @@ Pace baseline: 120-150 WPM (125 WPM default). Word budget = duration × WPM. 1 s
 
 ## AUTORUN Support
 
-When Stage receives `_AGENT_CONTEXT`, parse `task_type`, `topic`, `duration`, `framework`, `audience`, and `Constraints`, choose the correct narrative pattern, run the OUTLINE→ARC→DRAFT→THEME→NOTES→REVIEW workflow, produce the slide deck, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Stage-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -228,26 +228,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Stage
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Framework: [Marp | reveal.js | Slidev]
-  - Narrative pattern: [pattern name]
-  - Slide count: [N]
-  - Duration: [estimated time]
-  - Audience: [level]
-- Artifacts: [file paths or inline references]
-- Risks: [content density, timing, audience mismatch]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

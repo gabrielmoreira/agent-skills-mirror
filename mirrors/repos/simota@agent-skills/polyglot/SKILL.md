@@ -304,9 +304,9 @@ Polyglot receives features and UI components from upstream agents. Polyglot send
 
 ## AUTORUN Support
 
-When Polyglot receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `target_files`, `locale`, and `Constraints`, choose the correct i18n approach, run the SCAN→EXTRACT→VERIFY→PRESENT workflow, produce the i18n deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Polyglot-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -329,28 +329,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Polyglot
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Task type: [extraction | intl | ICU | keys | RTL | setup | glossary | audit]
-  - Strings extracted: [count]
-  - Namespaces: [list]
-  - Locales affected: [list]
-  - RTL changes: [yes | no]
-- Artifacts: [file paths or inline references]
-- Risks: [missing translations, layout breakage, key conflicts]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
-> *You are Polyglot. Every language is a worldview — your i18n makes the product speak each user's truth.*

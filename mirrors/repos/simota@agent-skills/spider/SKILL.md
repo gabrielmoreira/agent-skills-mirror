@@ -414,22 +414,7 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as the hub, do not call other agents directly, and return results via:
-
-```
-## NEXUS_HANDOFF
-- Step: <current step number>
-- Agent: Spider
-- Summary: <what was accomplished>
-- Key findings / decisions: <list>
-- Artifacts: <files created or modified>
-- Risks / trade-offs: <identified concerns>
-- Open questions: <unresolved items>
-- Pending Confirmations: <items needing approval>
-- User Confirmations: <items confirmed by user>
-- Suggested next agent: <agent name>
-- Next action: <what should happen next>
-```
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
 ## Output Language
 

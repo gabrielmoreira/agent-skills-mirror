@@ -487,33 +487,11 @@ Operational guidelines → `_common/OPERATIONAL.md`
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope, platform, and constraints
-2. Execute ANALYZE → MODEL → SPECIFY → VERIFY → HARDEN workflow
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `ANALYZE → MODEL → SPECIFY → VERIFY → HARDEN` and emit `_STEP_COMPLETE`. Tempo-specific Constraints in `_AGENT_CONTEXT`: `Platform`, `Timezone`, `SLA`, `DST_policy`, `Semantics`.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Tempo
-  Task: [Specific scheduling task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Requirements or handoff from previous agent]
-  Constraints:
-    - Platform: [GHA | EventBridge | K8s CronJob | Cloud Scheduler | Sidekiq | BullMQ | Celery | Temporal]
-    - Timezone: [IANA name or UTC]
-    - SLA: [tolerance for missed runs, max execution duration]
-    - DST_policy: [skip | defer | run-both | UTC-avoidance]
-    - Semantics: [at-least-once + idempotency | exactly-once | at-most-once]
-  Expected_Output: [Schedule spec + retry spec + platform config snippet]
-```
-
-### Output Format (_STEP_COMPLETE)
+Tempo-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -524,81 +502,32 @@ _STEP_COMPLETE:
     artifact_type: "Schedule Contract"
     parameters:
       cron_expression: "[cron string]"
-      platform: "[GHA | EventBridge | K8s CronJob | ...]"
+      platform: GHA | EventBridge | K8s CronJob | Cloud Scheduler | Sidekiq | BullMQ | Celery | Temporal
       timezone: "[IANA name]"
-      dst_policy: "[skip | defer | run-both | UTC]"
-      overlap_policy: "[skip | queue | concurrent]"
-      retry:
-        max_attempts: [N]
-        max_total_duration: "[e.g., 5m]"
-        backoff: "[exponential-full-jitter | decorrelated-jitter | fixed]"
-        retryable_on: "[5xx, 408, 429, network]"
-      idempotency:
-        key_formula: "[e.g., SHA256(user_id + invoice_id)]"
-        dedup_window: "[e.g., 24h]"
-        storage: "[redis-setex | db-unique-constraint]"
+      dst_policy: skip | defer | run-both | UTC
+      overlap_policy: skip | queue | concurrent
+      retry: {max_attempts, max_total_duration, backoff, retryable_on}
+      idempotency: {key_formula, dedup_window, storage}
       dlq_destination: "[queue name or 'none']"
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: TEMPO_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - [Schedule contract doc]
-    - [Platform config snippet]
-    - [Next-fire simulation output]
-    - [Test scenario matrix]
-  Risks:
-    - [DST policy assumptions]
-    - [Platform SLA caveats, e.g. GHA best-effort]
-    - [Idempotency key lifetime choices]
+    Content: [Handoff content for next agent]
+  Risks: [DST policy assumptions, platform SLA caveats, idempotency key lifetime]
   Next: Builder | Gear | Pipe | Weave | Beacon | Voyager | Judge | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Tempo
-- Summary: [1-3 lines describing schedule design]
-- Key findings / decisions:
-  - Cron: [expression] in [IANA TZ]
-  - DST policy: [skip | defer | run-both | UTC]
-  - Retry: [attempts × backoff formula, max duration]
-  - Idempotency: [key formula, dedup window]
-  - Overlap: [policy + lock mechanism]
-- Artifacts (files/commands/links):
-  - [Schedule contract doc path]
-  - [Platform config snippet]
-  - [Next-fire simulation]
-- Risks / trade-offs:
-  - [Platform SLA caveats]
-  - [Catchup bound assumptions]
-- Open questions (blocking/non-blocking):
-  - [DST policy if unresolved]
-  - [Catchup depth if unresolved]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Tempo-specific findings to surface in handoff:
+- Cron expression + IANA timezone
+- DST policy + overlap policy + lock mechanism
+- Retry attempts × backoff formula, max duration
+- Idempotency key formula + dedup window
 
 ---
 
@@ -616,16 +545,13 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

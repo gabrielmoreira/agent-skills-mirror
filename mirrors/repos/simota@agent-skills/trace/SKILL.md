@@ -269,7 +269,9 @@ Standard protocols → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode, first parse `_AGENT_CONTEXT` from the incoming message to extract task parameters, prior agent outputs, and chain position. Execute normal work (skip verbose explanations, focus on deliverables), then append:
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
+
+Trace-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -294,23 +296,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`: treat Nexus as hub, do not instruct other agent calls, return results via:
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Trace
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Analysis type: [session | frustration | persona | journey | ab_test]
-  - Personas analyzed: [count and names]
-  - Frustration score: [low | medium | high]
-  - Key insight: [primary finding]
-- Artifacts: [file paths or inline references]
-- Risks: [data gaps, sample size issues, privacy concerns]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

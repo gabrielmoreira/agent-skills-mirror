@@ -1,8 +1,13 @@
 ---
 name: skill-debug
-version: 1.0.0
-description: "Debug issues methodically — use when stuck on errors, test failures, or unexpected behavior. Use when: AUTOMATICALLY ACTIVATE when encountering bugs or failures:. \"fix this bug\" or \"debug Y\" or \"troubleshoot X\". \"why is X failing\" or \"why isn't X working\" or \"why doesn't X work\""
+description: "Debug issues methodically — use when stuck on errors, test failures, or unexpected behavior"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Systematic Debugging
 
@@ -16,7 +21,6 @@ description: "Debug issues methodically — use when stuck on errors, test failu
 
 **Systematic debugging finds root causes in 15-30 minutes. Random fixes waste 2-3 hours. Follow the process.**
 
----
 
 **Your first output line MUST be:** `🐙 **CLAUDE OCTOPUS ACTIVATED** - Systematic Debugging`
 
@@ -72,7 +76,6 @@ Random fixes waste time and create new bugs. Quick patches mask underlying issue
 
 **You MUST complete each phase before proceeding.**
 
----
 
 ## Phase 1: Root Cause Investigation
 
@@ -125,7 +128,6 @@ When error is deep in call stack:
 - Keep tracing up until you find the source
 - **Fix at source, not at symptom**
 
----
 
 ## Phase 2: Pattern Analysis
 
@@ -148,7 +150,6 @@ When error is deep in call stack:
 - What settings, config, environment?
 - What assumptions does it make?
 
----
 
 ## Phase 3: Hypothesis and Testing
 
@@ -175,7 +176,6 @@ When error is deep in call stack:
 - Don't pretend to know
 - Ask for help or research more
 
----
 
 ## Phase 4: Implementation
 
@@ -223,7 +223,6 @@ When error is deep in call stack:
 
 **Discuss with user before attempting more fixes. Do not attempt a 4th fix without explicit user approval.**
 
----
 
 ## Self-Regulation Score (Debug Fix Loops)
 
@@ -248,13 +247,11 @@ Report the score with each fix attempt:
 Fix attempt 2 | Self-regulation: 15% (1 revert, 0 unrelated files)
 ```
 
----
 
 ## Strategy Rotation
 
 After 2 failed fix attempts, stop and reconsider the root cause before trying another fix. If the strategy-rotation hook fires, it means you have been repeating a failing approach. Do not continue down the same path — return to Phase 1 and investigate from a different angle.
 
----
 
 ## Red Flags - STOP and Follow Process
 
@@ -268,7 +265,6 @@ If you catch yourself thinking:
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
----
 
 ## Common Rationalizations
 
@@ -280,7 +276,6 @@ If you catch yourself thinking:
 | "I see the problem" | Seeing symptoms ≠ understanding root cause. |
 | "One more attempt" | 3+ failures = architectural problem. |
 
----
 
 ## Platform Debugging
 
@@ -317,7 +312,6 @@ This ensures that during investigation (Phases 1-3), you cannot accidentally mod
 
 After debugging completes, remind the user to run `/octo:unfreeze` if needed, or remove the state file automatically.
 
----
 
 ## Integration with Claude Octopus
 
@@ -346,7 +340,6 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh probe "Investigate auth fa
 # Agent 4: Environment comparison
 ```
 
----
 
 ## Quick Reference
 
@@ -357,7 +350,6 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh probe "Investigate auth fa
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
 | **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
 
----
 
 ## The Bottom Line
 

@@ -1,12 +1,15 @@
 ---
 name: flow-develop
-version: 1.0.0
-description: "Multi-AI implementation using Codex and Gemini CLIs (Double Diamond Develop phase). Use when: AUTOMATICALLY ACTIVATE when user requests building or implementation:. \"build X\" or \"implement Y\" or \"create Z\". \"develop a feature for X\""
+description: "Multi-AI implementation using Codex and Gemini CLIs (Double Diamond Develop phase)"
 ---
 
-> This file is generated from a template. Edit the `.tmpl` file, not this file directly.
-> Run `scripts/gen-skill-docs.sh` to regenerate after changes.
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
 
+
+{{PREAMBLE}}
 
 ## Pre-Development: State Check
 
@@ -33,7 +36,6 @@ fi
   --status "in_progress"
 ```
 
----
 
 ## ⚠️ EXECUTION CONTRACT (MANDATORY - CANNOT SKIP)
 
@@ -107,24 +109,19 @@ orchestrate.sh develop "<user prompt>\n\nQuality requirements for this deliverab
 
 **DO NOT PROCEED TO STEP 2 until context determined.** Context type (Dev vs Knowledge) and dev subtype determine which quality supplements and design intelligence to inject — wrong context wastes provider credits on irrelevant analysis.
 
----
 
 ### STEP 2: Display Visual Indicators (MANDATORY - BLOCKING)
 
-**MANDATORY: Run the centralized provider check BEFORE displaying the banner:**
+**MANDATORY: You MUST use the native shell command tool to run this provider check BEFORE displaying the banner. Do NOT skip it. Do NOT assume availability.**
 
 ```bash
 bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh"
 ```
 
-**Use the ACTUAL results. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
+**Use the ACTUAL results below. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
 
-**Validation:**
-- If ALL external CLI providers unavailable -> STOP, suggest: `/octo:setup`
-- If some unavailable -> Continue with available provider(s)
-- If multiple available -> Proceed normally
 
-**Display this banner BEFORE orchestrate.sh execution (list ALL providers from check output):**
+**Display this banner BEFORE orchestrate.sh execution:**
 
 **For Dev Context:**
 ```
@@ -132,11 +129,8 @@ bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh"
 🛠️ [Dev] Develop Phase: [Brief description of what you're building]
 
 Provider Availability:
-🔴 Codex CLI: [status from check] - Code generation and patterns
-🟡 Gemini CLI: [status from check] - Alternative approaches
-🟢 Copilot CLI: [status from check] - GitHub integration
-🟣 Qwen CLI: [status from check] - Additional perspective
-🟤 OpenCode CLI: [status from check] - Multi-provider routing
+🔴 Codex CLI: ${codex_status} - Code generation and patterns
+🟡 Gemini CLI: ${gemini_status} - Alternative approaches
 🔵 Claude: Available ✓ - Integration and quality gates
 
 💰 Estimated Cost: $0.02-0.10
@@ -159,7 +153,6 @@ Provider Availability:
 
 **DO NOT PROCEED TO STEP 3 until banner displayed.** The banner shows users which providers will run and what costs they'll incur — starting API calls without this visibility violates cost transparency.
 
----
 
 ### STEP 3: Read Prior State (MANDATORY - State Management)
 
@@ -204,11 +197,10 @@ fi
 
 **DO NOT PROCEED TO STEP 4 until state read.**
 
----
 
 ### STEP 4: Execute orchestrate.sh develop (MANDATORY - Use Bash Tool)
 
-**You MUST execute this command via the Bash tool:**
+**You MUST execute this command via the native shell command tool:**
 
 ```bash
 ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh develop "<user's implementation request>"
@@ -220,7 +212,7 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh develop "<user's implement
 - ❌ Claiming you're "simulating" the workflow
 - ❌ Proceeding to Step 4 without running this command
 
-**You MUST use the Bash tool to invoke orchestrate.sh.**
+**You MUST use the native shell command tool to invoke orchestrate.sh.**
 
 #### What Users See During Execution (v7.16.0+)
 
@@ -237,7 +229,6 @@ These spinner verb updates happen automatically - orchestrate.sh calls `update_t
 
 **If NOT running in Claude Code v2.1.16+:** Progress indicators are silently skipped, no errors shown.
 
----
 
 ### STEP 5: Verify Execution (MANDATORY - Validation Gate)
 
@@ -263,7 +254,6 @@ cat "$SYNTHESIS_FILE"
 3. DO NOT proceed with presenting results
 4. DO NOT substitute with direct implementation — fallback to single-model implementation skips the multi-provider synthesis that catches design flaws early
 
----
 
 ### STEP 6: Update State (MANDATORY - Post-Execution)
 
@@ -290,15 +280,10 @@ fi
 
 # Update metrics
 "${HOME}/.claude-octopus/plugin/scripts/state-manager.sh" update_metrics "phases_completed" "1"
-# Track actual providers used (dynamic — not hardcoded)
-for _provider in $(bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh" | grep ":available" | cut -d: -f1) claude; do
-  "${HOME}/.claude-octopus/plugin/scripts/state-manager.sh" update_metrics "provider" "$_provider"
-done
 ```
 
 **DO NOT PROCEED TO STEP 7 until state updated.**
 
----
 
 ### STEP 7: Present Implementation Plan (Only After Steps 1-6 Complete)
 
@@ -313,13 +298,11 @@ Read the synthesis file and present:
 
 **Include attribution:**
 ```
----
 *Multi-AI Implementation powered by Claude Octopus*
 *Providers: 🔴 Codex | 🟡 Gemini | 🔵 Claude*
 *Full implementation plan: $SYNTHESIS_FILE*
 ```
 
----
 
 # Develop Workflow - Develop Phase 🛠️
 
@@ -369,17 +352,8 @@ Providers:
 🔵 Claude - Integration and quality review
 ```
 
-| Indicator | Provider | Cost Source |
-|-----------|----------|-------------|
-| 🔴 | Codex CLI | User's OPENAI_API_KEY |
-| 🟡 | Gemini CLI | User's GEMINI_API_KEY |
-| 🟣 | Perplexity Sonar | User's PERPLEXITY_API_KEY |
-| 🔵 | Claude | Included with Claude Code |
+{{VISUAL_INDICATORS}}
 
-**This is NOT optional.** Users need to see which AI providers are active and understand they are being charged for external API calls (🔴 🟡).
-
-
----
 
 **Part of Double Diamond: DEVELOP** (divergent thinking)
 
@@ -406,7 +380,6 @@ The **develop** phase generates multiple implementation approaches using externa
 
 This is the **divergent** phase for solutions - we explore different implementation paths before converging on the best approach.
 
----
 
 ## When to Use Develop
 
@@ -433,7 +406,6 @@ Use develop when you need:
 - Reading or exploring code (use Read tool)
 - Simple document edits (use Write tool)
 
----
 
 ## Visual Indicators
 
@@ -449,7 +421,6 @@ Providers:
 🔵 Claude - Integration and refinement
 ```
 
----
 
 ## How It Works
 
@@ -497,7 +468,6 @@ Results are saved to:
 
 After reviewing all perspectives, implement the final solution using Write/Edit tools.
 
----
 
 ## Implementation Instructions
 
@@ -505,7 +475,7 @@ When this skill is invoked, follow the EXECUTION CONTRACT above exactly. The con
 
 1. **Blocking Step 1**: Detect work context (Dev vs Knowledge)
 2. **Blocking Step 2**: Check providers, display visual indicators
-3. **Blocking Step 3**: Execute orchestrate.sh develop via Bash tool
+3. **Blocking Step 3**: Execute orchestrate.sh develop via native shell command tool
 4. **Blocking Step 4**: Verify synthesis file exists
 5. **Step 5**: Present implementation plan, get user confirmation
 6. **Step 6**: Implement the solution using Write/Edit tools
@@ -580,7 +550,6 @@ After successful execution, present implementation plan with:
    - Add tests if applicable
    - Document the implementation
 
----
 
 ## Example Usage
 
@@ -663,7 +632,6 @@ Claude:
 [Implements the endpoint after user confirmation]
 ```
 
----
 
 ## Quality Gates Integration
 
@@ -674,23 +642,8 @@ The tangle phase automatically runs quality checks via `.claude/hooks/quality-ga
 ./hooks/quality-gate.sh
 ```
 
-**Quality Dimensions**:
+{{QUALITY_GATES}}
 
-| Dimension | Weight | Criteria |
-|-----------|--------|----------|
-| **Code Quality** | 25% | Complexity, maintainability, documentation |
-| **Security** | 35% | OWASP compliance, auth, input validation |
-| **Best Practices** | 20% | Error handling, logging, testing |
-| **Completeness** | 20% | Feature completeness, edge cases |
-
-**Scoring Thresholds**:
-- **90-100**: Excellent - Ready for production
-- **75-89**: Good - Minor improvements recommended
-- **60-74**: Acceptable - Address warnings before deploy
-- **< 60**: Poor - Critical issues must be fixed
-
-
----
 
 ## Integration with Other Workflows
 
@@ -705,7 +658,6 @@ After tangle completes, you may continue to:
 
 Or use standalone for implementation tasks.
 
----
 
 ## Before Implementation Checklist
 
@@ -718,21 +670,6 @@ Before writing code, ensure:
 - [ ] Dependencies identified and available
 - [ ] Tests planned (if applicable)
 
----
-
-## Self-Regulation in Iterative Development
-
-When the develop phase runs iteratively (user requests multiple rounds of implementation, or the implementation requires fix-and-retry cycles), apply the self-regulation rules from `skill-iterative-loop`:
-
-1. **Track a WTF score** starting at 0%. Add penalties for reverts (+15%), touching unrelated files (+20%), fixes spanning >3 files (+5%), and fixes after the 15th attempt (+1% each). If configurable weights exist in `~/.claude-octopus/loop-config.conf`, use those instead.
-2. **Watch for stuck patterns** in a sliding window of the last 10 iterations. If the same error or file-change pattern repeats 3+ times, or an A→B→A→B cycle appears — announce the pattern on first detection, HALT on second.
-3. **Report the score** in each iteration: `Iteration N | Self-regulation: X% (reasons)`
-4. **If WTF score exceeds 20% or a pattern is detected twice** — STOP and ask the user whether to continue with a different approach or stop.
-5. **Hard cap: 50 iterations** regardless of score or progress.
-
-This prevents develop workflows from spinning without progress when orchestrate.sh results require iterative refinement.
-
----
 
 ## After Implementation: Auto Code Review & E2E Verification (MANDATORY)
 
@@ -745,7 +682,7 @@ This prevents develop workflows from spinning without progress when orchestrate.
 Agent(
   model: "sonnet",
   subagent_type: "feature-dev:code-reviewer",
-  run_in_background: true,
+  background execution: true,
   description: "Code review: post-develop",
   prompt: "Review the code changes from this development session. Focus on:
 1. Bugs, logic errors, security vulnerabilities
@@ -761,7 +698,7 @@ Check git diff for the changed files. Report only high-confidence issues."
 ```
 Agent(
   model: "sonnet",
-  run_in_background: true,
+  background execution: true,
   description: "E2E test: post-develop",
   prompt: "Run end-to-end verification of the development changes:
 1. Run the project's test suite (detect from package.json scripts, Makefile, or pyproject.toml)
@@ -781,7 +718,6 @@ Report: tests passed/failed, any integration issues found."
 
 WHY: The user should never have to manually request a code review after development work. Fresh-eyes review from a different model (Sonnet vs Opus) catches issues the implementer is blind to. Running tests automatically catches regressions before the user discovers them.
 
----
 
 ## After Implementation Checklist
 
@@ -800,7 +736,6 @@ After writing code, ensure:
 - [ ] User notified of completion with review findings
 - [ ] Suggest running ink-workflow for validation
 
----
 
 ## Cost Awareness
 
@@ -811,7 +746,6 @@ After writing code, ensure:
 
 Tangle workflows typically cost $0.02-0.10 per task depending on complexity and code length.
 
----
 
 ## Post-Development: Checkpoint
 
@@ -837,6 +771,5 @@ modified_files=$(git diff --name-only HEAD~1 2>/dev/null || echo "See git log")
   --history "Files modified: $modified_files"
 ```
 
----
 
 **Ready to build!** This skill activates automatically when users request implementation or building features.

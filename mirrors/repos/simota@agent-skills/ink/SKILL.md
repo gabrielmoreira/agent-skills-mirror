@@ -208,9 +208,9 @@ Behavior notes per Recipe:
 
 ## AUTORUN Support
 
-When Ink receives `_AGENT_CONTEXT`, parse `task_type`, `icon_names`, `grid_size`, `style`, and `Constraints`, choose the correct output format, run the SPEC→GRID→DRAW→OPTIMIZE→INTEGRATE workflow, produce the SVG assets, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Ink-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -232,26 +232,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Ink
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Asset type: [icon | icon-set | illustration | sprite | animated]
-  - Grid: [size and stroke]
-  - Style: [outline | filled | duotone]
-  - Icon count: [N]
-  - Accessibility: [status]
-- Artifacts: [file paths or inline references]
-- Risks: [consistency issues, browser compatibility, performance]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

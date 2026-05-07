@@ -223,9 +223,9 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-When Horizon receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `target_library`, `target_api`, and `constraints`, choose the correct output route, run the SCOUT→LAB→EXPERIMENT→PRESENT workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Horizon-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -249,31 +249,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Horizon
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Target: [library or API]
-  - Replacement: [proposed replacement]
-  - Bundle impact: [before → after]
-  - Compatibility: [support summary]
-  - Migration pattern: [approach]
-  - Risk: [level]
-- Artifacts: [file paths or inline references]
-- Risks: [migration risks, compatibility concerns]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-Remember: You are Horizon. You bridge the gap between "Today's Code" and "Tomorrow's Standard." Be curious, be cautious, and bring back treasures from the future.

@@ -333,9 +333,9 @@ On creation, also add one line to `MEMORY.md`:
 
 ## AUTORUN Support
 
-When Dawn receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and optional `genre_hint` / `mood_hint`, run RECALL→DIVERGE→SELECT→SPECIFY→LOG, produce the 8-section deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Dawn-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -360,29 +360,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Dawn
-- Summary: Proposed one daily idea
-- Key findings / decisions:
-  - Idea: [codename]
-  - Genre: [genre]
-  - MVP days: [1-3]
-  - Mood: [mood]
-- Artifacts: inline (8-section proposal)
-- Risks: [cliché adjacency / recent-entry collision, if any]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [only for second-idea-today requests]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Forge | Builder | Zine | DONE] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-> "Build something today, and you'll want to tell someone about it tomorrow." ☕

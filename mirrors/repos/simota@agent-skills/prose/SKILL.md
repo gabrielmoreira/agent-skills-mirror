@@ -283,9 +283,9 @@ Prose receives copy direction and context from upstream agents. Prose sends vali
 
 ## AUTORUN Support
 
-When Prose receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `mode`, `ui_context`, and `Constraints`, choose the correct operating mode, run the AUDIT→DRAFT→REVIEW→DELIVER workflow, produce the copy deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Prose-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -306,28 +306,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Prose
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Mode: [CRAFT | AUDIT | VOICE | ONBOARD | A11Y | DESIGN | DISCLOSE]
-  - Copy items: [count]
-  - Voice alignment: [aligned | new framework | framework update]
-  - Accessibility coverage: [ARIA labels, alt text count]
-  - Translation ready: [yes | no]
-- Artifacts: [file paths or inline references]
-- Risks: [voice inconsistency, accessibility gaps, translation issues]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
-> *You are Prose. Every word you place is a decision about what the user experiences at their most confused, frustrated, or uncertain moment. Write with that weight.*

@@ -1,7 +1,7 @@
 ---
 name: hunt
 description: "Finds root cause of errors, crashes, regressions, screenshot-reported defects, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
-when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, 以前是好的, 回归, 截图回归, 继续优化, 反复修不好, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace"
+when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, 以前是好的, 回归, 截图回归, 判断错误原因, 判断为什么报错, 反复修不好, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace"
 metadata:
   version: "3.19.0"
 ---
@@ -37,9 +37,17 @@ Rationalization warning: "I'll just try this" means no hypothesis, write it firs
 
 ## Bisect Mode
 
-Activate when the symptom is "used to work, now broken" or "broke after an update".
+Activate when: "以前是好的", "之前是好的", "used to work", "上一次提交还是对的", "broke after update", or the user remembers a specific good commit or version.
 
-Find the last-known-good tag (`git tag --sort=-version:refname | head -5`), define a non-interactive pass/fail test command, run `git bisect start / bad / good <tag>`, let bisect drive without jumping ahead, read large files once and reference from notes rather than re-reading at each step, and when bisect names the culprit commit read only that diff to identify the specific line that introduced the regression.
+1. Find candidate good tag: `git tag --sort=-version:refname | head -10` or ask the user for the last known-good commit.
+2. Define a non-interactive pass/fail test command before starting bisect. Bisect is worthless without a reproducible check.
+3. Run: `git bisect start && git bisect bad HEAD && git bisect good <tag-or-hash>`
+4. At each step bisect checks out a commit. Run the test command. Mark: `git bisect good` or `git bisect bad`.
+5. Let bisect drive. Do not jump ahead or skip commits unless explicitly asked.
+6. When bisect names the culprit commit, read only that diff. Identify the specific line that introduced the regression.
+7. Run `git bisect reset` when done.
+
+Read large files once and reference from notes rather than re-reading at each bisect step.
 
 ## Repeated Regression / Screenshot Reference Mode
 
@@ -65,15 +73,14 @@ Use logs as a scalpel, not as noise. Before adding a log, write the question it 
 
 > "If this log prints X before Y, hypothesis A is still possible; if it does not, hypothesis A is wrong."
 
-Good logging flow:
+Load `references/logging-techniques.md` for the full logging playbook: binary-search instrumentation, discriminating log content, boundary-first placement, timing bug logging, and removal discipline.
 
-1. Place the first log at the boundary where the symptom should become explainable: request handler, state setter, cache read/write, render branch, async callback, build pass, or external tool boundary.
-2. Log the minimum discriminating facts: timestamp or sequence number, input key, selected branch, old/new state, error code, and correlation id. Do not dump whole objects, secrets, tokens, personal data, or huge payloads.
-3. If the expected log is missing, move upstream. If it appears with the wrong values, inspect that boundary. If it appears correctly, move downstream. This is binary search over the execution path.
-4. For timing bugs, log ordering and identity, not just values: event id, source, start/end, stale/current version, and thread/task/queue when available.
-5. Remove temporary logs before finishing, or gate useful diagnostics behind an existing debug flag/logger level. Do not leave `console.log`, `print`, or noisy tracing in shipped paths unless the project already keeps debug instrumentation there.
+Quick rules:
+1. Place the first log at the midpoint of the execution path, not at the symptom. Binary search from there.
+2. Log discriminating facts only: sequence number, input key, branch taken, old/new state, error code.
+3. Remove temporary logs before finishing. Gate persistent diagnostics behind the project's debug flag.
 
-If adding logs changes the behavior, treat that as evidence of a timing, lifecycle, buffering, or concurrency problem. Do not dismiss it as "just logging side effects."
+If adding logs changes the behavior, treat that as evidence of a timing, lifecycle, or concurrency problem.
 
 ## Gotchas
 
@@ -140,15 +147,9 @@ Status: **blocked**
 
 ## Rendering Bug Mode
 
-Activate when: "PDF looks wrong", "page break issue", "font not rendering", or broken PDF output
+Activate when: "PDF looks wrong", "page break issue", "font not rendering", broken PDF output, or print layout wrong.
 
-Diagnosis checklist:
-- **WeasyPrint bugs**: `rgba()` causes double-rectangle bug (use solid hex), `page-break-inside: avoid` ignored (use explicit breaks)
-- **Font loading**: Check @font-face paths, CORS headers, file format support
-- **Page overflow**: Calculate content height vs page height, suggest line-height/padding reduction
-- **Browser print CSS**: Confirm `@media print` rules, `@page` margins, orphan/widow control
-
-Static analysis first (CSS review), then reproduce if needed.
+Load `references/rendering-debug.md` for the full diagnosis checklist (WeasyPrint quirks, font loading, page overflow, browser print CSS). Static analysis first, then reproduce if needed.
 
 ## IME / Unicode Issues
 

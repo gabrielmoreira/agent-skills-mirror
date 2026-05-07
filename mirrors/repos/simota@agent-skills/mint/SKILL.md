@@ -380,30 +380,11 @@ Standard protocols -> `_common/OPERATIONAL.md`
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand data generation scope and constraints
-2. Execute normal work (factory design, fixture generation, seed creation)
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run factory design / fixture generation / seed creation and emit `_STEP_COMPLETE`. Mint-specific Constraints in `_AGENT_CONTEXT`: library constraints, volume constraints.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Mint
-  Task: [Specific data generation task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Schema definitions, test requirements, etc.]
-  Constraints:
-    - [Library constraints]
-    - [Volume constraints]
-  Expected_Output: [Factories, fixtures, seed scripts]
-```
-
-### Output Format (_STEP_COMPLETE)
+Mint-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -413,75 +394,36 @@ _STEP_COMPLETE:
     factories: [Factory descriptions]
     fixtures: [Fixture file descriptions]
     seed_scripts: [Seed script descriptions]
-    files_changed:
-      - path: [file path]
-        type: created
-        changes: [description]
+    files_changed: List[{path, type: created, changes}]
   Handoff:
     Format: MINT_TO_[NEXT]_HANDOFF
     Content: [Factories, fixtures, usage docs]
-  Artifacts: [Generated files]
-  Risks: [Data integrity risks if any]
-  Next: [Radar | Voyager | Builder | VERIFY | DONE]
-  Reason: [Why this next step]
+  Risks: [Data integrity, anonymization fidelity vs privacy, volume vs generation time]
+  Next: Radar | Voyager | Builder | VERIFY | DONE
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Mint
-- Summary: [1-3 lines describing data generation outcome]
-- Key findings / decisions:
-  - [Schema constraints discovered]
-  - [Factory pattern chosen]
-  - [Edge cases identified]
-- Artifacts (files/commands/links):
-  - [Factory files]
-  - [Fixture files]
-  - [Seed scripts]
-- Risks / trade-offs:
-  - [Data volume vs generation time]
-  - [Anonymization fidelity vs privacy]
-- Open questions (blocking/non-blocking):
-  - [Unresolved schema ambiguities]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] -> A: [User's answer]
-- Suggested next agent: [Radar | Voyager] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Mint-specific findings to surface in handoff:
+- Schema constraints discovered + factory pattern chosen
+- Edge cases identified
+- Anonymization fidelity vs privacy trade-off
 
 ---
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
-- ✅ `feat(test-data): add user factory with traits`
-- ✅ `fix(fixtures): resolve FK ordering in seed script`
-- ❌ `feat: Mint creates user factory`
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

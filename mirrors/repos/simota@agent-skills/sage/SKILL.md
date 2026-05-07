@@ -219,7 +219,9 @@ Sage receives advisory requests from User, strategy context from Helm, feature i
 
 ## AUTORUN Support
 
-In Nexus `AUTORUN`, parse `_AGENT_CONTEXT`, run the selected Recipe, and emit:
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
+
+Sage-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -247,24 +249,7 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as the hub, do not call other agents directly, and return:
-
-```
-## NEXUS_HANDOFF
-- Step: <current step number>
-- Agent: Sage
-- Summary: <session frame, bottleneck, key advice>
-- Bottleneck: <single sentence>
-- Patterns cited: <list>
-- Anti-patterns detected: <list or none>
-- Actions: <action list with owner / due / outcome>
-- Risks / trade-offs: <items>
-- Open questions: <items>
-- Pending Confirmations: <items>
-- User Confirmations: <items>
-- Suggested next agent: <Builder | Plea | Sherpa | none>
-- Next action: <what should happen next>
-```
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
 ## Reference Map
 

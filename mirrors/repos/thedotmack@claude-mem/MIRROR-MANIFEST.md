@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,21 +59,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
-| 4 | ✓ | [`openclaw/skills/do/SKILL.md`](openclaw/skills/do/SKILL.md) |
-| 5 | ✓ | [`openclaw/skills/make-plan/SKILL.md`](openclaw/skills/make-plan/SKILL.md) |
-| 6 | ✓ | [`plugin/skills/do/SKILL.md`](plugin/skills/do/SKILL.md) |
-| 7 | ✓ | [`plugin/skills/how-it-works/SKILL.md`](plugin/skills/how-it-works/SKILL.md) |
-| 8 | ✓ | [`plugin/skills/knowledge-agent/SKILL.md`](plugin/skills/knowledge-agent/SKILL.md) |
-| 9 | ✓ | [`plugin/skills/learn-codebase/SKILL.md`](plugin/skills/learn-codebase/SKILL.md) |
-| 10 | ✓ | [`plugin/skills/make-plan/SKILL.md`](plugin/skills/make-plan/SKILL.md) |
-| 11 | ✓ | [`plugin/skills/mem-search/SKILL.md`](plugin/skills/mem-search/SKILL.md) |
-| 12 | ✓ | [`plugin/skills/pathfinder/SKILL.md`](plugin/skills/pathfinder/SKILL.md) |
-| 13 | ✓ | [`plugin/skills/smart-explore/SKILL.md`](plugin/skills/smart-explore/SKILL.md) |
-| 14 | ✓ | [`plugin/skills/timeline-report/SKILL.md`](plugin/skills/timeline-report/SKILL.md) |
-| 15 | ✓ | [`plugin/skills/version-bump/SKILL.md`](plugin/skills/version-bump/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
+| 5 | ✓ | [`openclaw/skills/do/SKILL.md`](openclaw/skills/do/SKILL.md) |
+| 6 | ✓ | [`openclaw/skills/make-plan/SKILL.md`](openclaw/skills/make-plan/SKILL.md) |
+| 7 | ✓ | [`plugin/skills/babysit/SKILL.md`](plugin/skills/babysit/SKILL.md) |
+| 8 | ✓ | [`plugin/skills/do/SKILL.md`](plugin/skills/do/SKILL.md) |
+| 9 | ✓ | [`plugin/skills/how-it-works/SKILL.md`](plugin/skills/how-it-works/SKILL.md) |
+| 10 | ✓ | [`plugin/skills/knowledge-agent/SKILL.md`](plugin/skills/knowledge-agent/SKILL.md) |
+| 11 | ✓ | [`plugin/skills/learn-codebase/SKILL.md`](plugin/skills/learn-codebase/SKILL.md) |
+| 12 | ✓ | [`plugin/skills/make-plan/SKILL.md`](plugin/skills/make-plan/SKILL.md) |
+| 13 | ✓ | [`plugin/skills/mem-search/SKILL.md`](plugin/skills/mem-search/SKILL.md) |
+| 14 | ✓ | [`plugin/skills/pathfinder/SKILL.md`](plugin/skills/pathfinder/SKILL.md) |
+| 15 | ✓ | [`plugin/skills/smart-explore/SKILL.md`](plugin/skills/smart-explore/SKILL.md) |
+| 16 | ✓ | [`plugin/skills/timeline-report/SKILL.md`](plugin/skills/timeline-report/SKILL.md) |
+| 17 | ✓ | [`plugin/skills/version-bump/SKILL.md`](plugin/skills/version-bump/SKILL.md) |
 
 ---
 

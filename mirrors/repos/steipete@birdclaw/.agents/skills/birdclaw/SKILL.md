@@ -30,10 +30,45 @@ sqlite3 ~/.birdclaw/birdclaw.sqlite "pragma quick_check;"
 Match the depth of read to the task:
 
 - **Single fact / one tweet lookup** → SQL probe is fine.
+- **DM identity lookup ("who is the X person?", "blacksmith guy")** → start with `birdclaw whois <query> --context 4 --no-xurl-fallback --json`. This searches local DMs, adds surrounding context, resolves archive numeric profiles from the persistent cache and `bird`, and avoids `xurl` unless you explicitly allow it.
+- **DM search with context** → use `birdclaw search dms <query> --context 4 --resolve-profiles --expand-urls --no-xurl-fallback --json` when adjacent messages, profile names, or expanded `t.co` links matter.
 - **Year vibe / theme summary** → CLI with `--originals-only --hide-low-quality`, full year, `--limit 20000`. One year at a time.
 - **Life summary, biography, "movie script of my life", multi-year arc** → CLI per year across the full archive range, `--originals-only --hide-low-quality`, `--limit 20000` per year. Expect to ingest **50k+ tweets** total. Do NOT shortcut this with a top-N `like_count desc` SQL query — that yields only viral peaks and misses the everyday texture, recurring themes, and emotional tone the task needs.
 
 Top-liked SQL slices are for spot-checking, not for vibe work. A 30-row `order by like_count desc` is the wrong tool for any task that asks for arc, narrative, or "what was X like."
+
+## DM Identity Search
+
+Prefer cached local-first commands before web/API:
+
+```bash
+birdclaw whois blacksmith --context 4 --no-xurl-fallback --json
+```
+
+```bash
+birdclaw search dms "blacksmith" --context 4 --resolve-profiles --expand-urls --no-xurl-fallback --json
+```
+
+Caching model:
+
+- profile resolution reads local `profiles`, then `sync_cache`, then `bird user`
+- `xurl` is the last fallback; pass `--no-xurl-fallback` when avoiding X API spend matters
+- failed profile lookups are cached briefly to avoid repeated live calls
+- URL expansion reads `sync_cache` first; use `--refresh-url-cache` only when stale links matter
+- resolved profiles preserve bio, profile URL, location, verification type, structured URL entities, raw profile JSON, and X affiliation badge metadata when available
+- inspect `profileEvidence` in `whois --json` to separate `affiliation`, `bio_handle`, `bio_domain`, `bio_company`, `profile_url`, `profile_bio_url`, `profile_history`, `dm_context`, and `expanded_url` matches
+
+How the richer identity evidence works:
+
+- `bird user --json` is the preferred profile hydrator because it can expose X GraphQL profile URL entities and highlighted-label affiliations without using the paid X API.
+- Birdclaw stores profile metadata on `profiles`, active organization/badge edges in `profile_affiliations`, profile-change history in `profile_snapshots`, and extracted bio identity hints in `profile_bio_entities`; backups include all four shards.
+- When X only gives a highlighted-label badge such as "Vercel" plus an org handle, Birdclaw first stores a deterministic synthetic org id, then resolves the handle through `bird` on a fresh profile hydration and rewrites the edge to the real local organization profile id when available.
+- Bio entity extraction is first-class: bios/profile URLs/affiliations yield `@handle`, domain, and company-phrase rows. This is why `whois "blacksmith guy"` can rank someone from `@useblacksmith` and `blacksmith.sh` even if the exact phrase was not in the DM text.
+- Profile snapshots are deduplicated by identity fields and affiliations. If a hydrated profile changes from "currently Vercel" to another bio/affiliation, `whois` can surface old matching values as `profile_history`.
+- `whois` scores profile bio/name/handle matches, profile URL and bio URL matches, affiliation matches, bio entity matches, profile-history matches, DM context, and expanded `t.co` URLs separately. Prefer the typed `profileEvidence` array over reading the free-form `reasons` text when an agent needs to explain why someone matched.
+- A cached rerun should show profile resolution from `local`/`sync_cache` and URL expansions from `cache`; use refresh flags only when current profile/bio/link evidence matters.
+
+Use `--expand-urls` when `t.co` links are evidence. It may touch the network on cache miss, but it is not an X API call.
 
 ## Year Analysis
 

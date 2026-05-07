@@ -276,9 +276,9 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-When Magi receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `decision_domain`, `options`, `urgency`, `reversibility`, and `Constraints`, choose the correct deliberation mode, run the FRAME→DELIBERATE→VOTE→SYNTHESIZE→DELIVER workflow, produce the verdict, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Magi-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -300,27 +300,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Magi
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Domain: [Architecture | Trade-off | Go/No-Go | Strategy | Priority]
-  - Mode: [Simple | Engine]
-  - Consensus: [3-0 | 2-1 | 1-1-1 | 0-3]
-  - Verdict: [APPROVE | REJECT | DEADLOCK]
-  - Weighted confidence: [0-100]
-  - Dissent: [perspective and rationale, or none]
-- Artifacts: [file paths or inline references]
-- Risks: [risk register summary]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

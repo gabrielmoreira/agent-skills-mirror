@@ -272,9 +272,9 @@ Behavior notes per Recipe:
 
 ## AUTORUN Support
 
-When Crypt receives `_AGENT_CONTEXT`, parse `crypto_need`, `threat_model`, `compliance`, `existing_crypto`, and `Constraints`, choose the correct design approach, run the THREAT→SELECT→DESIGN→VERIFY→DOCUMENT workflow, produce the specification, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Crypt-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -296,27 +296,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Crypt
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Design type: [encryption | signature | password | key-mgmt | e2ee | tls | audit]
-  - Algorithms: [selected algorithms]
-  - Key management: [rotation schedule and KMS]
-  - Anti-patterns: [N found, N fixed]
-  - Quantum status: [vulnerable components flagged]
-  - Compliance: [applicable standards]
-- Artifacts: [file paths or inline references]
-- Risks: [deprecated algorithms, missing rotation, quantum vulnerability]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

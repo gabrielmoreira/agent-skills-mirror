@@ -227,7 +227,7 @@ from peft import PeftModel
 # Load model with multiple adapters
 model = AutoPeftModelForCausalLM.from_pretrained("./base-adapter")
 model.load_adapter("./style-adapter", adapter_name="style")
-model.load_adapter("./task-adapter", adapter_name="task")
+model.load_adapter("./task_adapter", adapter_name="task")
 
 # Combine adapters (weighted sum)
 model.add_weighted_adapter(

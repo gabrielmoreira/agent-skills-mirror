@@ -274,9 +274,9 @@ Use `_common/SUBAGENT.md` `MULTI_ENGINE` when the user explicitly wants parallel
 
 ## AUTORUN Support
 
-When Spark receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `target_persona`, `product_context`, and `constraints`, choose the correct output route, run the IGNITE→SYNTHESIZE→SPECIFY→VERIFY→PRESENT workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Spark-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -302,26 +302,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Spark
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Feature name: [proposed feature]
-  - Target persona: [persona name]
-  - RICE score: [calculated score]
-  - Impact-Effort: [quadrant]
-  - Validation strategy: [method]
-- Artifacts: [file paths or inline references]
-- Risks: [scope creep, persona mismatch, feasibility gaps]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

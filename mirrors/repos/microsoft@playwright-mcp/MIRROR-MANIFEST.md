@@ -51,7 +51,7 @@ Mirror of `microsoft/playwright-mcp` — 26 default patterns, 1 followed pattern
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `.claude/skills/release-notes.md`
+- `.claude/skills/release.md`
 
 ## File Index
 
@@ -60,7 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | → | [`.claude/skills/release-notes.md`](.claude/skills/release-notes.md) |
+| 2 | → | [`.claude/skills/release.md`](.claude/skills/release.md) |
 
 ---
 

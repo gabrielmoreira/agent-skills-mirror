@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
+Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 93 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 93 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -152,6 +152,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 91 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
 | 92 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
 | 93 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
+| 94 | ✓ | [`skills/what-antibot/EXAMPLES.md`](skills/what-antibot/EXAMPLES.md) |
+| 95 | ✓ | [`skills/what-antibot/LICENSE.txt`](skills/what-antibot/LICENSE.txt) |
+| 96 | ✓ | [`skills/what-antibot/package.json`](skills/what-antibot/package.json) |
+| 97 | ✓ | [`skills/what-antibot/REFERENCE.md`](skills/what-antibot/REFERENCE.md) |
+| 98 | ✓ | [`skills/what-antibot/scripts/detect.mjs`](skills/what-antibot/scripts/detect.mjs) |
+| 99 | ✓ | [`skills/what-antibot/SKILL.md`](skills/what-antibot/SKILL.md) |
 
 ---
 

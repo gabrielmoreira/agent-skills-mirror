@@ -301,9 +301,9 @@ Researcher receives research direction and data from upstream agents, conducts s
 
 ## AUTORUN Support
 
-When Researcher receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `study_mode`, `research_questions`, and `constraints`, choose the correct output route, run the DEFINE→DESIGN→ANALYZE→SYNTHESIZE→HANDOFF workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Researcher-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -329,26 +329,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Researcher
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Study mode: [study design | analysis | continuous | AI-assisted | calibration]
-  - Methodology: [interview | usability | survey | diary | mixed]
-  - Sample size: [count]
-  - Confidence: [high | medium | low]
-  - Key insights: [top findings]
-- Artifacts: [file paths or inline references]
-- Risks: [bias risks, sample limitations, generalizability gaps]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

@@ -355,38 +355,13 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Haul
-- Summary: [1-3 lines — batch outcome, match quality, license posture]
-- Key findings / decisions:
-  - Batch ID: [id]
-  - Recipe: [catalog | lookup | refresh | reverse | brand | audit]
-  - Products delivered / requested: [n / m]
-  - Sources queried: [list]
-  - Match score distribution: [auto-accept / review / reject counts]
-  - Dedup collisions: [count]
-  - Quality failures: [count]
-  - License classification: [canonical / marketplace / fair-use / unknown breakdown]
-- Artifacts: [.haul/{batch-id}/ paths]
-- Risks: [low-confidence matches, license unknowns, source ToS edge cases]
-- Open questions (blocking/non-blocking):
-  - [blocking: yes/no] [question]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [Showcase | Funnel | Pixel | Saga | Stage | Atelier | Cloak | Canvas] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Haul-specific findings to surface in handoff:
+- Batch ID + recipe + products delivered/requested + sources queried
+- Match score distribution (auto-accept / review / reject counts)
+- Dedup collisions + quality failures + license classification (canonical / marketplace / fair-use / unknown)
+- Risks: low-confidence matches, license unknowns, source ToS edge cases
 
 ---
 

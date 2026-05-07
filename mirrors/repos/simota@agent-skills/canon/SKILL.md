@@ -298,9 +298,9 @@ When a full compliance audit spans 3+ standard domains (e.g., Security + A11y + 
 
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode: parse `_AGENT_CONTEXT` from the input to extract task parameters (target standards, scope, compliance level thresholds). Execute normal work (skip verbose explanations, focus on deliverables), then append `_STEP_COMPLETE:`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Canon-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -321,25 +321,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`: treat Nexus as hub, do not instruct other agent calls, return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Canon
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Standards assessed: [list]
-  - Compliance: [compliant/partial/non-compliant counts]
-  - Critical findings: [count and summary]
-  - Remediation agents: [assigned agents]
-- Artifacts: [file paths or inline references]
-- Risks: [compliance gaps, legal concerns, cost implications]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

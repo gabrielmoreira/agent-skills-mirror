@@ -1,8 +1,23 @@
 ---
 name: skill-claw
-version: 1.0.0
-description: "OpenClaw instance administration — manage hosts across macOS, Ubuntu/Debian, Docker, OCI, and Proxmox. Use when: AUTOMATICALLY ACTIVATE when user asks about:. \"manage openclaw\" or \"openclaw status\" or \"openclaw health\". \"update openclaw\" or \"upgrade openclaw\" or \"openclaw doctor\""
+description: "OpenClaw instance administration — manage hosts across macOS, Ubuntu/Debian, Docker, OCI, and Proxmox"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
+
+## Execution Contract (MANDATORY - CANNOT SKIP)
+
+This generated Codex skill preserves an enforced workflow contract from the source skill.
+
+**PROHIBITED:**
+- Do not summarize, simulate, or skip the referenced workflow command when this skill requires execution.
+- Do not claim provider output or validation artifacts exist without checking the actual files or command output.
+- Do not continue silently when a required provider, command, or host capability is unavailable; report the unavailable dependency and use a supported fallback.
+
 
 # OpenClaw Instance Administration
 
@@ -16,7 +31,6 @@ DETECT PLATFORM FIRST. DIAGNOSE BEFORE CHANGING. VERIFY AFTER EVERY ACTION.
 
 Never assume the OS or hosting environment. Never make changes without checking current state. Never claim success without verification.
 
----
 
 ## When to Use
 
@@ -38,7 +52,6 @@ Never assume the OS or hosting environment. Never make changes without checking 
 - Designing cloud architecture from scratch (use cloud-architect persona)
 - Application-level code debugging (use `/octo:debug`)
 
----
 
 ## The Process
 
@@ -73,7 +86,6 @@ curl -s -m 2 http://169.254.169.254/opc/v2/instance/ -H "Authorization: Bearer O
 - **OCI**: ARM architecture, VCN security, Tailscale, systemd
 - **Proxmox**: qm/pct, vzdump, ZFS, LXC bind mounts
 
----
 
 ### Phase 2: Assess Current State
 
@@ -171,7 +183,6 @@ zpool status 2>/dev/null
 pvecm status 2>/dev/null
 ```
 
----
 
 ### Phase 3: Execute the Requested Action
 
@@ -235,7 +246,6 @@ Route to the appropriate workflow based on user intent:
 9. Firewall: only required ports open (SSH, Tailscale UDP 41641)
 10. Use Anthropic Opus 4.6 as agent model (best prompt injection resistance)
 
----
 
 ### Phase 4: Verify Outcome
 
@@ -257,7 +267,6 @@ openclaw security audit
 
 **Report** the before/after state and any remaining issues.
 
----
 
 ## Key File Paths
 
@@ -270,7 +279,6 @@ openclaw security audit
 | `~/Library/LaunchAgents/com.openclaw.gateway.plist` | macOS launchd service |
 | `~/.config/systemd/user/openclaw-gateway.service` | Linux systemd user service |
 
----
 
 ## OpenClaw CLI Quick Reference
 
@@ -295,7 +303,6 @@ openclaw plugins list|install|doctor      # Plugins
 openclaw cron status|list|add|edit|rm     # Scheduled jobs
 ```
 
----
 
 ## Tailscale Management
 
@@ -340,7 +347,6 @@ openclaw channels info <channel> [--dm-list|--detailed]
 | Need CI/CD pipeline for deployment | Hand off to deployment-engineer persona |
 | OpenClaw extension development | Hand off to plugin-dev skills |
 
----
 
 ## Red Flags — Don't Do This
 

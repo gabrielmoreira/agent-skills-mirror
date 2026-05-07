@@ -407,34 +407,14 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not spawn delegates directly. Return work via `## NEXUS_HANDOFF`. Include the proposed delegate plan and `DESIGN_INTENT_HANDOFF` drafts so Nexus can execute the fan-out itself.
+When input contains `## NEXUS_ROUTING`, do not spawn delegates directly. Return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`); include the proposed delegate plan and `DESIGN_INTENT_HANDOFF` drafts so Nexus can execute the fan-out.
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: atelier
-- Summary: [1-3 lines — pipeline plan + artifact bundle shape]
-- Key findings / decisions:
-  - Direction source: [Vision direction.md | user brief]
-  - Design system: [reused | refreshed | first-run] at .agents/design-system/<slug>.json
-  - Delegate plan: [ordered list with parallel/serial flags]
-  - Operation layers per delegate: [mapping]
-- Artifacts: [cache path, handoff bundle paths, or "pending execution"]
-- Risks: [fan-out size, token drift, missing direction, WCAG risk]
-- Open questions:
-  - [blocking: yes/no] [question]
-- Pending Confirmations:
-  - Trigger: [e.g., refresh-design-system, paid-API]
-  - Question: [question]
-  - Options: [options]
-  - Recommended: [option]
-- User Confirmations:
-  - Q: [prior question] → A: [answer]
-- Suggested next agent: [Frame | Muse | Forge | Artisan | Showcase | Nexus]
-- Next action: CONTINUE | VERIFY | DONE
-```
+Atelier-specific findings to surface in handoff:
+- Direction source (Vision direction.md | user brief)
+- Design system: reused | refreshed | first-run at `.agents/design-system/<slug>.json`
+- Delegate plan (ordered list with parallel/serial flags)
+- Operation layers per delegate
+- Risks: fan-out size, token drift, missing direction, WCAG risk
 
 ---
 

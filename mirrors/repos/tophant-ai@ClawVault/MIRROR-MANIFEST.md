@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,16 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/tophant-clawvault-installer/clawvault_manager.py`](skills/tophant-clawvault-installer/clawvault_manager.py) |
-| 2 | ✓ | [`skills/tophant-clawvault-installer/README.md`](skills/tophant-clawvault-installer/README.md) |
-| 3 | ✓ | [`skills/tophant-clawvault-installer/SECURITY.md`](skills/tophant-clawvault-installer/SECURITY.md) |
-| 4 | ✓ | [`skills/tophant-clawvault-installer/skill.json`](skills/tophant-clawvault-installer/skill.json) |
-| 5 | ✓ | [`skills/tophant-clawvault-installer/SKILL.md`](skills/tophant-clawvault-installer/SKILL.md) |
-| 6 | ✓ | [`skills/tophant-clawvault-operator/clawvault_ops.py`](skills/tophant-clawvault-operator/clawvault_ops.py) |
-| 7 | ✓ | [`skills/tophant-clawvault-operator/README.md`](skills/tophant-clawvault-operator/README.md) |
-| 8 | ✓ | [`skills/tophant-clawvault-operator/SECURITY.md`](skills/tophant-clawvault-operator/SECURITY.md) |
-| 9 | ✓ | [`skills/tophant-clawvault-operator/skill.json`](skills/tophant-clawvault-operator/skill.json) |
-| 10 | ✓ | [`skills/tophant-clawvault-operator/SKILL.md`](skills/tophant-clawvault-operator/SKILL.md) |
+| 1 | ✓ | [`skills/tophant-clawvault-installer/_meta.json`](skills/tophant-clawvault-installer/_meta.json) |
+| 2 | ✓ | [`skills/tophant-clawvault-installer/clawvault_manager.py`](skills/tophant-clawvault-installer/clawvault_manager.py) |
+| 3 | ✓ | [`skills/tophant-clawvault-installer/README.md`](skills/tophant-clawvault-installer/README.md) |
+| 4 | ✓ | [`skills/tophant-clawvault-installer/SECURITY.md`](skills/tophant-clawvault-installer/SECURITY.md) |
+| 5 | ✓ | [`skills/tophant-clawvault-installer/skill.json`](skills/tophant-clawvault-installer/skill.json) |
+| 6 | ✓ | [`skills/tophant-clawvault-installer/SKILL.md`](skills/tophant-clawvault-installer/SKILL.md) |
+| 7 | ✓ | [`skills/tophant-clawvault-operator/clawvault_ops.py`](skills/tophant-clawvault-operator/clawvault_ops.py) |
+| 8 | ✓ | [`skills/tophant-clawvault-operator/README.md`](skills/tophant-clawvault-operator/README.md) |
+| 9 | ✓ | [`skills/tophant-clawvault-operator/SECURITY.md`](skills/tophant-clawvault-operator/SECURITY.md) |
+| 10 | ✓ | [`skills/tophant-clawvault-operator/skill.json`](skills/tophant-clawvault-operator/skill.json) |
+| 11 | ✓ | [`skills/tophant-clawvault-operator/SKILL.md`](skills/tophant-clawvault-operator/SKILL.md) |
 
 ---
 

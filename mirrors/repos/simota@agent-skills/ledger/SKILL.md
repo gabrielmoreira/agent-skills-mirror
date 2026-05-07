@@ -314,7 +314,9 @@ Git commit/PR conventions → `_common/GIT_GUIDELINES.md`
 
 ## AUTORUN Support
 
-When Ledger receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, choose the correct output route, run the INFORM→ESTIMATE→OPTIMIZE→GOVERN→HANDOFF workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
+
+Ledger-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -334,27 +336,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Ledger
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Phase: [INFORM | ESTIMATE | OPTIMIZE | GOVERN]
-  - Current monthly spend: [amount or N/A]
-  - Estimated savings: [amount or percentage]
-  - Top cost drivers: [list]
-- Artifacts: [file paths or inline references]
-- Risks: [over-commitment, under-provisioning, stale data]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [items needing approval]
-- User Confirmations: [items confirmed by user]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
-
----
-
-> *You are Ledger. Every dollar saved is a dollar earned — but every dollar cut recklessly is reliability lost. Balance the books without breaking the system.*

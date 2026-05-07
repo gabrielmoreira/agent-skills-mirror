@@ -1,8 +1,13 @@
 ---
 name: octopus-architecture
-version: 1.0.0
-description: "System architecture and API design with multi-AI consensus"
+description: "System architecture and API design with multi-AI consensus — use for design reviews and new subsystems"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 ## ⚠️ EXECUTION CONTRACT (MANDATORY - CANNOT SKIP)
 
@@ -10,26 +15,22 @@ This skill uses **ENFORCED execution mode**. You MUST follow this exact sequence
 
 ### STEP 1: Display Visual Indicators (MANDATORY - BLOCKING)
 
-**MANDATORY: Run the centralized provider check BEFORE displaying the banner:**
+**Check provider availability:**
 
 ```bash
-bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh"
+command -v codex &> /dev/null && codex_status="Available ✓" || codex_status="Not installed ✗"
+command -v gemini &> /dev/null && gemini_status="Available ✓" || gemini_status="Not installed ✗"
 ```
 
-**Use the ACTUAL results. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
-
-**Display this banner BEFORE orchestrate.sh execution (list ALL providers from check output):**
+**Display this banner BEFORE orchestrate.sh execution:**
 
 ```
 🐙 **CLAUDE OCTOPUS ACTIVATED** - Architecture design mode
 🏗️ Architecture: [Brief description of system to design]
 
 Provider Availability:
-🔴 Codex CLI: [status from check] - Backend architecture patterns
-🟡 Gemini CLI: [status from check] - Alternative approaches
-🟢 Copilot CLI: [status from check] - GitHub integration
-🟣 Qwen CLI: [status from check] - Additional perspective
-🟤 OpenCode CLI: [status from check] - Multi-provider routing
+🔴 Codex CLI: ${codex_status} - Backend architecture patterns
+🟡 Gemini CLI: ${gemini_status} - Alternative approaches
 🔵 Claude: Available ✓ - Synthesis and recommendations
 
 💰 Estimated Cost: $0.02-0.08
@@ -37,17 +38,16 @@ Provider Availability:
 ```
 
 **Validation:**
-- If ALL external CLI providers unavailable → STOP, suggest: `/octo:setup`
-- If some unavailable → Continue with available provider(s)
-- If multiple available → Proceed normally
+- If BOTH Codex and Gemini unavailable → STOP, suggest: `/octo:setup`
+- If ONE unavailable → Continue with available provider(s)
+- If BOTH available → Proceed normally
 
 **DO NOT PROCEED TO STEP 2 until banner displayed.**
 
----
 
 ### STEP 2: Execute orchestrate.sh spawn (MANDATORY - Use Bash Tool)
 
-**You MUST execute this command via the Bash tool:**
+**You MUST execute this command via the native shell command tool:**
 
 ```bash
 ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh spawn backend-architect "<user's architecture request>"
@@ -59,9 +59,8 @@ ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh spawn backend-architect "<
 - ❌ Claiming you're "simulating" the workflow
 - ❌ Proceeding to Step 3 without running this command
 
-**This is NOT optional. You MUST use the Bash tool to invoke orchestrate.sh.**
+**This is NOT optional. You MUST use the native shell command tool to invoke orchestrate.sh.**
 
----
 
 ### STEP 3: Verify Execution (MANDATORY - Validation Gate)
 
@@ -84,7 +83,6 @@ echo "✅ VALIDATION PASSED: Architecture design completed"
 3. DO NOT proceed with presenting results
 4. DO NOT substitute with direct design
 
----
 
 ### STEP 4: Present Results (Only After Steps 1-3 Complete)
 
@@ -92,12 +90,10 @@ Present the architecture design from the persona execution.
 
 **Include attribution:**
 ```
----
 *Multi-AI Architecture Design powered by Claude Octopus*
 *Providers: 🔴 Codex | 🟡 Gemini | 🔵 Claude*
 ```
 
----
 
 # Architecture Skill
 

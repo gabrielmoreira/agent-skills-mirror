@@ -209,9 +209,9 @@ Forge receives concepts and direction from upstream agents, builds rapid prototy
 
 ## AUTORUN Support
 
-When Forge receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `hypothesis`, `stack`, and `constraints`, choose the correct output route, run the SCAFFOLD→STRIKE→COOL→PRESENT workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Forge-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -239,26 +239,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Forge
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Hypothesis: [what was tested]
-  - Strategy: [Throwaway | Evolutionary]
-  - Quality level: [L0-L3]
-  - Decision: [ADOPT | ITERATE | DISCARD]
-  - Known debt: [items]
-- Artifacts: [file paths or inline references]
-- Risks: [prototype risks, mock assumptions]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

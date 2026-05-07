@@ -36,7 +36,6 @@ Follow these steps in order (adjust depth by difficulty).
   4. Feature components (compose UI + logic)
   5. Page components (route-level)
   6. Tests (unit + integration)
-- Use `resources/component-template.tsx` as reference
 - Follow `resources/tailwind-rules.md` for styling
 
 ## Step 4: Verify

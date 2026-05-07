@@ -153,7 +153,7 @@ SecretStorage is secure but inaccessible to external tools (CLI, PowerShell scri
 const result = await vscode.window.showWarningMessage(
   `${SERVICE} API Key not configured. Set your API key to use ${FEATURE}.`,
   "Configure API Key",
-  "Get API Key", 
+  "Get API Key",
   "Continue Anyway"
 );
 
@@ -195,7 +195,7 @@ const tokenCache: Map<string, string | null> = new Map();
 // Async init (on activation)
 async function initSecretsManager(context: vscode.ExtensionContext) {
     secretStorage = context.secrets;
-    
+
     // Pre-load all tokens into cache
     for (const config of Object.values(TOKEN_CONFIGS)) {
         const token = await secretStorage.get(config.key);
@@ -296,10 +296,10 @@ VS Code SecretStorage is inaccessible to PowerShell scripts, CLI tools, and CI/C
 async function exportSecretsToEnv(): Promise<void> {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     if (!workspaceFolder) return;
-    
+
     const envPath = path.join(workspaceFolder.uri.fsPath, '.env');
     const secrets: string[] = [];
-    
+
     // Collect cached secrets
     for (const [key, value] of tokenCache.entries()) {
         if (value) {
@@ -311,12 +311,12 @@ async function exportSecretsToEnv(): Promise<void> {
             }
         }
     }
-    
+
     if (secrets.length === 0) {
         vscode.window.showWarningMessage('No secrets to export');
         return;
     }
-    
+
     // Read existing .env, replace the AI assistant section
     let content = '';
     if (fs.existsSync(envPath)) {
@@ -326,11 +326,11 @@ async function exportSecretsToEnv(): Promise<void> {
             /\n?# the AI assistant Secrets Export[\s\S]*?(?=\n#|$)/g, ''
         ).trim();
     }
-    
+
     // Append new section
     const section = `\n\n# the AI assistant Secrets Export (auto-generated)\n${secrets.join('\n')}`;
     fs.writeFileSync(envPath, content + section, 'utf-8');
-    
+
     vscode.window.showInformationMessage(
         `Exported ${secrets.length} secret(s) to .env`
     );
@@ -439,4 +439,3 @@ if (Test-Path .env) {
 
 - [VS Code SecretStorage API](https://code.visualstudio.com/api/references/vscode-api#SecretStorage)
 - [VS Code Extension Samples - SecretStorage](https://github.com/microsoft/vscode-extension-samples/tree/main/secrets-sample)
-- [Keytar (deprecated, replaced by SecretStorage)](https://github.com/atom/node-keytar)

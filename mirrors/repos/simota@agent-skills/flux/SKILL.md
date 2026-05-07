@@ -412,42 +412,24 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Flux
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Cynefin domain: [Clear | Complicated | Complex | Chaotic]
-  - Work mode: [DEEP | RAPID | LENS]
-  - Frameworks applied: [list]
-  - Reframed statements: [count]
-  - Key insight: [most significant reframing]
-  - Blind spots detected: [list]
-- Artifacts: [file paths or inline references]
-- Risks: [reframing risks or limitations]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Flux-specific findings to surface in handoff:
+- Cynefin domain + work mode (DEEP/RAPID/LENS)
+- Frameworks applied + reframed statements count
+- Key insight (most significant reframing) + blind spots detected
 
 ---
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles.
+See `_common/GIT_GUIDELINES.md`.
 
 ---
 

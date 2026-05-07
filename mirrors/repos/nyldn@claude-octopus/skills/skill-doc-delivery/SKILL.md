@@ -1,8 +1,13 @@
 ---
 name: skill-doc-delivery
-version: 1.0.0
-description: "Convert markdown to DOCX, PPTX, XLSX office documents. Use when: AUTOMATICALLY ACTIVATE when user requests:. Export knowledge work to office formats (e.g., \"export to Word\", \"create PowerPoint\", \"convert to DOCX\"). Generate professional documents from research (e.g., \"create presentation from this synthesis\")"
+description: "Convert markdown to DOCX, PPTX, XLSX, PDF office documents — use when you need exportable deliverables"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Document Delivery for Knowledge Workers
 
@@ -349,6 +354,5 @@ For questions about:
 - **Document-skills capabilities** → See /document-skills:* skills
 - **Styling and formatting** → Ask for best practices by format
 
----
 
 *Document delivery skill for claude-octopus v7.3.0+*

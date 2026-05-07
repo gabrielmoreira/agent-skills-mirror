@@ -364,11 +364,9 @@ After each task, add a row to `.agents/PROJECT.md`:
 
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand target changes and audience
-2. Execute SCOPE → EXTRACT → ANALYZE → COMPOSE → REVIEW
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → EXTRACT → ANALYZE → COMPOSE → REVIEW` and emit `_STEP_COMPLETE`.
+
+Tome-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -376,47 +374,30 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     summary: [Generated document overview]
-    artifact_type: "[learning_doc | glossary | decision_record | tutorial | learning_series | incremental_doc]"
+    artifact_type: learning_doc | glossary | decision_record | tutorial | learning_series | incremental_doc
     parameters:
-      target_ref: "[commit hash / PR number / branch]"
-      audience_level: "[beginner | intermediate | advanced]"
-      audience_detection: "[explicit | auto (confidence)]"
-      output_format: "[format used]"
-      files_analyzed: "[count]"
-      inference_count: "[count of inferences made]"
-      quality_scorecard: "[A/B/C per axis summary]"
-    files_changed:
-      - path: [file path]
-        type: created | modified
-        changes: [brief description]
-  Artifacts:
-    - [Generated learning document]
-  Risks:
-    - [Accuracy risks related to inference]
+      target_ref: [commit hash / PR number / branch]
+      audience_level: beginner | intermediate | advanced
+      audience_detection: explicit | auto (confidence)
+      output_format: [format used]
+      files_analyzed: [count]
+      inference_count: [count]
+      quality_scorecard: [A/B/C per axis]
+    files_changed: List[{path, type, changes}]
+  Risks: [Accuracy risks related to inference]
   Next: [NextAgent] | VERIFY | DONE
-  Reason: [Why this status and next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, operate as hub node. Do not instruct other agent calls. Return via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Tome
-- Summary: [Learning document generation overview]
-- Key findings / decisions:
-  - [Design decisions discovered]
-  - [Terms and concepts extracted]
-  - [Quality Scorecard summary]
-- Artifacts: [Generated file list]
-- Risks: [Accuracy risk from inference-based descriptions]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Tome-specific findings to surface in handoff:
+- Design decisions discovered + terms/concepts extracted
+- Quality Scorecard summary
+- Accuracy risk from inference-based descriptions
 
 ---
 

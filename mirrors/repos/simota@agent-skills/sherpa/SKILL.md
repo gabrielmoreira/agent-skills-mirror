@@ -370,26 +370,8 @@ _STEP_COMPLETE:
 ```
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Sherpa
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - [domain-specific items]
-- Artifacts: [file paths or "none"]
-- Risks / trade-offs:
-  - [identified risks]
-- Open questions:
-  - [blocking or non-blocking questions]
-- Pending Confirmations:
-  - [decisions awaiting confirmation]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE
-```
+Sherpa-specific findings to surface in handoff:
+- Decomposition outcome: total steps, completed/remaining, weather (Clear/Cloudy/Stormy/Dangerous)
+- Risk assessment + replan triggers

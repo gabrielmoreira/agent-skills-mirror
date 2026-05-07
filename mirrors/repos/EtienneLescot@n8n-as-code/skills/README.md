@@ -7,14 +7,20 @@ Portable n8n-as-code skills for agents that can read `SKILL.md` files.
 - `n8n-manager`: instance, runtime, tunnel, auth, project, credential, and workflow presentation management.
 - `n8n-architect`: workflow authoring, sync, node schemas, validation, push/pull, and context-root workflow operations.
 
-Install both skills in your agent runtime, or use the copies generated in a context root by `n8nac update-ai`:
+Install the skills in your agent runtime from this repository directory:
+
+```
+https://github.com/EtienneLescot/n8n-as-code/tree/main/skills
+```
+
+This directory contains both required skills:
 
 ```
 skills/n8n-manager/SKILL.md
 skills/n8n-architect/SKILL.md
 ```
 
-Generic skill installers can install directly from the repository root and discover the `skills/*/SKILL.md` directories. Installers that require an explicit subpath can use:
+Generic skill installers can discover the `skills/*/SKILL.md` directories. Installers that require an explicit subpath can use:
 
 ```
 skills/n8n-manager

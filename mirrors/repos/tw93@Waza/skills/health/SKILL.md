@@ -36,18 +36,17 @@ Pick one. Apply only that tier's requirements.
 Run the collection script in summary mode first. Do not interpret yet.
 
 ```bash
+# Resolve collect-data.sh from canonical locations (no personal home-dir paths).
 HEALTH_SCRIPT="${CLAUDE_SKILL_DIR:+$CLAUDE_SKILL_DIR/scripts/collect-data.sh}"
 if [ ! -f "${HEALTH_SCRIPT:-}" ]; then
   for candidate in \
     "./skills/health/scripts/collect-data.sh" \
-    "$HOME/.claude/skills/waza/skills/health/scripts/collect-data.sh" \
-    "$HOME/.agents/skills/waza/skills/health/scripts/collect-data.sh" \
-    "$HOME/.agents/skills/health/scripts/collect-data.sh"; do
+    "$(npx skills path tw93/Waza 2>/dev/null)/skills/health/scripts/collect-data.sh"; do
     [ -f "$candidate" ] && HEALTH_SCRIPT="$candidate" && break
   done
 fi
 if [ ! -f "${HEALTH_SCRIPT:-}" ]; then
-  echo "health collect-data.sh not found"
+  echo "health collect-data.sh not found; set CLAUDE_SKILL_DIR or reinstall: npx skills add tw93/Waza -a claude-code -g -y"
   exit 1
 fi
 bash "$HEALTH_SCRIPT"

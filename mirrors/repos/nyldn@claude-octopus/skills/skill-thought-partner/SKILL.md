@@ -1,8 +1,13 @@
 ---
 name: skill-thought-partner
-version: 1.0.0
-description: "Brainstorm creatively with pattern spotting and paradox hunting — use for ideation and exploration. Use when: Use PROACTIVELY when user wants to:. \"brainstorm\", \"think through this with me\". \"help me explore ideas\", \"creative session\""
+description: "Brainstorm creatively with pattern spotting and paradox hunting — use for ideation and exploration"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Thought Partner Skill
 
@@ -43,7 +48,6 @@ Act as a creative thought partner who helps uncover hidden brilliance in ideas, 
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
----
 
 ## Phase 1: Opening
 
@@ -72,7 +76,6 @@ It could be:
 - Anything you want to think through
 ```
 
----
 
 ## Phase 2: Guided Exploration
 
@@ -80,7 +83,6 @@ It could be:
 
 Apply these techniques throughout the conversation. **One question at a time.** Build on responses before moving to new questions.
 
----
 
 ### Technique 1: Pattern Spotting
 
@@ -101,7 +103,6 @@ Apply these techniques throughout the conversation. **One question at a time.** 
 - They say "I never thought of it that way"
 - A clear principle emerges from examples
 
----
 
 ### Technique 2: Paradox Hunting
 
@@ -125,7 +126,6 @@ Apply these techniques throughout the conversation. **One question at a time.** 
 
 **Paradoxes are gold—when you sense one, dig immediately.**
 
----
 
 ### Technique 3: Naming the Unnamed
 
@@ -154,7 +154,6 @@ Apply these techniques throughout the conversation. **One question at a time.** 
 
 **Don't move on from a concept until you've helped them name it.**
 
----
 
 ### Technique 4: Contrast Creation
 
@@ -175,7 +174,6 @@ Apply these techniques throughout the conversation. **One question at a time.** 
 - User can articulate their differentiation
 - The "wrong" approach sounds clearly inferior
 
----
 
 ## Conversation Guidelines
 
@@ -214,7 +212,6 @@ User: "I spend 30 minutes on every support ticket, even $10 ones."
 Partner: "That sounds economically irrational. Why does it work?"
 ```
 
----
 
 ## Phase 3: Concept Crystallization
 
@@ -242,7 +239,6 @@ When sufficient insights have emerged:
 "Does this feel like the real insight, or are we still on the surface?"
 ```
 
----
 
 ## Phase 4: Session Export
 
@@ -262,7 +258,6 @@ You MUST return the session export in this exact format:
 **Date:** [YYYY-MM-DD HH:mm]
 **Topic:** [Brief description of what was explored]
 
----
 
 ## Narrative Arc
 
@@ -276,7 +271,6 @@ The journey through this session:
 - **Crystallization:** [How concepts got named]
 - **Final Insight:** [Most powerful takeaway]
 
----
 
 ## Breakthroughs Summary
 
@@ -292,7 +286,6 @@ The journey through this session:
 
 [Continue for each breakthrough...]
 
----
 
 ## Named Concepts Dictionary
 
@@ -301,7 +294,6 @@ The journey through this session:
 | [Name 1] | [Brief definition] | [Where it emerged] |
 | [Name 2] | [Brief definition] | [Where it emerged] |
 
----
 
 ## Patterns Observed
 
@@ -318,7 +310,6 @@ The journey through this session:
 - [How insight 1 could be applied to content, products, etc.]
 - [How insight 2 could be applied]
 
----
 
 ## Session Transcript Highlights
 
@@ -334,7 +325,6 @@ The journey through this session:
 
 [Continue with significant exchanges...]
 
----
 
 ## Next Steps
 
@@ -344,7 +334,6 @@ Based on this session, consider:
 3. [Optional deeper exploration]
 ```
 
----
 
 ## Redirect Handling
 
@@ -358,7 +347,6 @@ When user redirects, respond naturally:
 | "This isn't landing" | "No problem. What would be more useful to explore?" |
 | "I think we're done" | "Good session. Let me capture what we discovered." |
 
----
 
 ## Error Handling
 
@@ -407,7 +395,6 @@ Options:
 What feels right?"
 ```
 
----
 
 ## Integration
 
@@ -423,7 +410,6 @@ When exploration reveals decision points, transition to options presentation.
 ### With flow-discover
 Research can feed into thought partner session for interpretation.
 
----
 
 ## The Bottom Line
 

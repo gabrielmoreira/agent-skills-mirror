@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 77 file(s) materialized.
+Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 4 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 7
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 77 |
+| Followed pats | 4 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,6 @@ Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 7
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `.specify/memory/constitution.md`
 - `docs/claude/architecture.md`
 - `docs/claude/style.md`
 - `docs/claude/release.md`
@@ -135,11 +134,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-version-split/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-version-split/SKILL.md) |
 | 71 | ✓ | [`Unity-MCP-Plugin/CLAUDE.md`](Unity-MCP-Plugin/CLAUDE.md) |
 | 72 | ✓ | [`Unity-MCP-Server/CLAUDE.md`](Unity-MCP-Server/CLAUDE.md) |
-| 73 | → | [`.specify/memory/constitution.md`](.specify/memory/constitution.md) |
-| 74 | → | [`docs/claude/architecture.md`](docs/claude/architecture.md) |
-| 75 | → | [`docs/claude/documentation-sync.md`](docs/claude/documentation-sync.md) |
-| 76 | → | [`docs/claude/release.md`](docs/claude/release.md) |
-| 77 | → | [`docs/claude/style.md`](docs/claude/style.md) |
+| 73 | → | [`docs/claude/architecture.md`](docs/claude/architecture.md) |
+| 74 | → | [`docs/claude/documentation-sync.md`](docs/claude/documentation-sync.md) |
+| 75 | → | [`docs/claude/release.md`](docs/claude/release.md) |
+| 76 | → | [`docs/claude/style.md`](docs/claude/style.md) |
 
 ---
 

@@ -474,103 +474,41 @@ Standard protocols → `_common/OPERATIONAL.md`
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope and constraints
-2. Execute DETECT → SCAFFOLD → IMPLEMENT → ADAPT → VERIFY
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `DETECT → SCAFFOLD → IMPLEMENT → ADAPT → VERIFY` and emit `_STEP_COMPLETE`. Native-specific Constraints in `_AGENT_CONTEXT`: `target_platforms`, `ios_baseline`, `android_baseline`, `target_sdk`, `offline_tier`.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Native
-  Task: [Specific mobile task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Handoff received from previous agent]
-  Constraints:
-    - target_platforms: ["iOS", "Android"]
-    - ios_baseline: "iOS 17"
-    - android_baseline: "API 28"
-    - target_sdk: "35"
-    - offline_tier: "T1"
-  Expected_Output: [What Nexus expects]
-```
-
-### Output Format (_STEP_COMPLETE)
+Native-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
   Agent: Native
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
-    implementation:
-      - [Feature implemented per platform]
-      - [Liquid Glass / M3 Expressive adoption notes]
-    files_changed:
-      - path: [file path]
-        type: [created / modified / deleted]
-        changes: [brief description]
+    implementation: [Feature per platform; Liquid Glass / M3 Expressive notes]
+    files_changed: List[{path, type, changes}]
   Privacy_Compliance:
-    privacy_manifest: "[complete | partial | n/a]"
-    data_safety: "[complete | partial | n/a]"
-    ai_disclosure_ui: "[present | n/a]"
+    privacy_manifest: complete | partial | n/a
+    data_safety: complete | partial | n/a
+    ai_disclosure_ui: present | n/a
   Handoff:
     Format: NATIVE_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - [Component / screen files]
-    - [Navigation config]
-    - [Privacy Manifest / Data Safety drafts]
-  Risks:
-    - [Platform-specific risks]
-    - [Store-review risks]
+    Content: [Handoff content for next agent]
+  Risks: [Platform-specific risks, store-review risks]
   Next: [NextAgent] | VERIFY | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Native
-- Summary: [1-3 lines describing outcome]
-- Key findings / decisions:
-  - Platform(s): [iOS | Android | both]
-  - iOS architecture: [SwiftUI + MVVM-C, min iOS NN, Liquid Glass yes/no]
-  - Android architecture: [Compose + MVVM/MVI, min API NN, targetSdk NN]
-  - Offline tier: [T0 | T1 | T2 | T3]
-  - Auth: [Passkey + fallback]
-- Artifacts (files/commands/links):
-  - [Created/modified files]
-  - [Privacy Manifest / Data Safety drafts]
-- Risks / trade-offs:
-  - [Platform-specific risks]
-  - [Store-compliance concerns]
-- Open questions (blocking/non-blocking):
-  - [Unresolved items]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [AgentName] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Native-specific findings to surface in handoff:
+- Platform(s): iOS | Android | both
+- iOS architecture: SwiftUI + MVVM-C, min iOS, Liquid Glass yes/no
+- Android architecture: Compose + MVVM/MVI, min API, targetSdk
+- Offline tier: T0 | T1 | T2 | T3; Auth: Passkey + fallback
 
 ---
 
@@ -589,18 +527,13 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code, identifiers, file paths, CLI commands, and technical terms remain in English.
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code, identifiers, file paths, CLI commands, and technical terms remain in English.
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
-- **DO NOT include agent names** in commits or PR titles
-- Keep subject line under 50 characters
-- ✅ `feat(cart): add offline sync for mobile`
-- ❌ `Native agent implements cart offline sync`
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

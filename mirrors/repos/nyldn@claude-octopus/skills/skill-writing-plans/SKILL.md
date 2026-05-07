@@ -1,8 +1,13 @@
 ---
 name: skill-writing-plans
-version: 1.0.0
-description: "Zero-context implementation plans with bite-sized tasks. Use when: Use when you have a spec or requirements for a multi-step task.. Auto-invoke when user says \"plan how to implement X\", \"create implementation plan\", . \"break down this feature into tasks\"."
+description: "Create zero-context implementation plans with bite-sized tasks — use for multi-step feature planning"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Writing Plans
 
@@ -16,7 +21,6 @@ description: "Zero-context implementation plans with bite-sized tasks. Use when:
 
 **The user asked for a plan, not an implementation. Write the plan first.**
 
----
 
 **Your first output line MUST be:** `🐙 **CLAUDE OCTOPUS ACTIVATED** - Implementation Planning`
 
@@ -28,7 +32,6 @@ Document everything: which files to touch, complete code, how to test, how to ve
 
 **Principles:** DRY. YAGNI. TDD. Frequent commits.
 
----
 
 ## Plan Document Structure
 
@@ -45,7 +48,6 @@ Document everything: which files to touch, complete code, how to test, how to ve
 
 **Estimated Time:** [X tasks × 5 min = Y minutes]
 
----
 
 ## Prerequisites
 
@@ -54,7 +56,6 @@ Document everything: which files to touch, complete code, how to test, how to ve
 - [ ] [Files that must exist]
 ```
 
----
 
 ## Task Granularity
 
@@ -67,7 +68,6 @@ Document everything: which files to touch, complete code, how to test, how to ve
 | "Implement minimal code to pass" | "Add the feature" |
 | "Commit with message" | "Finish the feature" |
 
----
 
 ## Task Template
 
@@ -130,10 +130,8 @@ git add tests/exact/path/to/test.spec.ts exact/path/to/new-file.ts
 git commit -m "feat(component): add specific functionality"
 ```
 
----
 ```
 
----
 
 ## Example: Complete Task
 
@@ -215,7 +213,6 @@ git commit -m "feat(validators): add email validation with tests"
 ```
 ```
 
----
 
 ## Integration with Claude Octopus
 
@@ -266,7 +263,6 @@ mkdir -p docs/plans
 # docs/plans/2026-01-17-user-authentication.md
 ```
 
----
 
 ## Checklist for Good Plans
 
@@ -277,7 +273,6 @@ mkdir -p docs/plans
 - [ ] TDD: test before implementation
 - [ ] Commit after each task
 
----
 
 ## Common Mistakes
 
@@ -290,7 +285,6 @@ mkdir -p docs/plans
 | Large tasks (30+ min) | Break into 2-5 min steps |
 | No verification | Add "Run X, expect Y" |
 
----
 
 ## When to Create Plans
 
@@ -303,7 +297,6 @@ mkdir -p docs/plans
 | Complex refactoring | Yes |
 | Config change | No |
 
----
 
 ## Related Skills
 
@@ -311,7 +304,6 @@ mkdir -p docs/plans
 - **verification-before-completion** - Verify each step
 - **finishing-branch** - After all tasks complete
 
----
 
 ## The Bottom Line
 

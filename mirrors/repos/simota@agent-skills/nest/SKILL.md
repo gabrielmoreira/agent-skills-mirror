@@ -266,23 +266,7 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, return results via:
-
-```
-## NEXUS_HANDOFF
-- Step: <current step number>
-- Agent: Nest
-- Summary: <what was accomplished>
-- Key findings / decisions: <list>
-- Artifacts: <files created or modified>
-- Metrics: token_cost_delta, discovery_score, cache_topology_score
-- Risks / trade-offs: <identified concerns>
-- Open questions: <unresolved items>
-- Pending Confirmations: <items needing approval>
-- User Confirmations: <items confirmed by user>
-- Suggested next agent: <Grove | Hone | Sigil>
-- Next action: CONTINUE | VERIFY | DONE
-```
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
 ## Reference Map
 

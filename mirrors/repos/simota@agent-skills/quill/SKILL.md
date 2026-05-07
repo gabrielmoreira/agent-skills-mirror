@@ -248,9 +248,9 @@ When documenting 3+ independent modules simultaneously, spawn parallel subagents
 
 ## AUTORUN Support
 
-When Quill receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `mode`, `target_files`, and `Constraints`, choose the correct documentation approach, run the READ→INSCRIBE→WRITE→VERIFY→PRESENT workflow, produce the documentation deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Quill-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -272,26 +272,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Quill
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Task type: [documentation | types | readme | api-docs | coverage-audit | comments | changelog]
-  - Files changed: [count]
-  - Coverage delta: [before → after]
-  - Any types removed: [count]
-  - Quality score: [Completeness/Accuracy/Readability/Maintainability]
-- Artifacts: [file paths or inline references]
-- Risks: [stale docs, broken links, incomplete coverage]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

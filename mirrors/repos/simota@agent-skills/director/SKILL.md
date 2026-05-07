@@ -231,7 +231,9 @@ Point-to-point handoff templates (outside Nexus Hub Mode): see `references/hando
 
 ## AUTORUN Support
 
-In Nexus AUTORUN mode: execute `Script → Stage → Shoot → Deliver`, skip verbose explanations, parse `_AGENT_CONTEXT` (Role/Task/Mode/Chain/Input/Constraints/Expected_Output), and emit:
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
+
+Director-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -250,23 +252,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, return results via `## NEXUS_HANDOFF`:
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Director
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Demo type: [type]
-  - Duration: [seconds]
-  - Quality score: [X/65]
-  - Platform variants: [list]
-- Artifacts: [file paths or inline references]
-- Risks: [quality concerns, sensitive data exposure]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Open questions: [blocking / non-blocking]
-- Suggested next agent: [Showcase | Quill | Growth] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

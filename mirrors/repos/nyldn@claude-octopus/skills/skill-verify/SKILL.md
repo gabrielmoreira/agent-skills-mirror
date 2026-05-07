@@ -1,242 +1,126 @@
 ---
 name: skill-verify
-version: 1.0.0
-description: "Verify claims with actual evidence before declaring success — use to prevent false completion. Use when: Use when about to claim work is complete, fixed, or passing.. Auto-invoke before: commits, PRs, task completion, moving to next task.. ALWAYS use before expressing satisfaction (\"Done!\", \"Fixed!\", \"All passing!\")."
+description: "Evidence before claims — run verification commands before declaring work complete, fixed, or passing"
 ---
 
-# Verification Before Completion
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
 
-**Your first output line MUST be:** `🐙 **CLAUDE OCTOPUS ACTIVATED** - Verification Gate`
+
+# Verification Gate
 
 ## The Iron Law
 
-<HARD-GATE>
+```
 NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
-</HARD-GATE>
-
-Claiming work is complete without verification is dishonesty, not efficiency.
-
-**If you haven't run the verification command in this message, you cannot claim it passes.**
-
----
-
-## The Gate Function
-
-```
-BEFORE claiming any status or expressing satisfaction:
-
-1. IDENTIFY → What command proves this claim?
-2. RUN      → Execute the FULL command (fresh, complete)
-3. READ     → Full output, check exit code, count failures
-4. VERIFY   → Does output confirm the claim?
-               - If NO: State actual status with evidence
-               - If YES: State claim WITH evidence
-5. CLAIM    → ONLY THEN make the claim
-
-Skip any step = lying, not verifying
 ```
 
----
+If you haven't run the verification command in this turn, you cannot claim it passes.
 
-## What Requires Verification
+## The Gate
+
+Before claiming any success or expressing satisfaction:
+
+1. **IDENTIFY** — What command proves this claim?
+2. **RUN** — Execute the full command (fresh, not cached)
+3. **READ** — Full output, check exit code, count failures
+4. **VERIFY** — Does output actually confirm the claim?
+5. **ONLY THEN** — State the claim WITH evidence
+
+Skip any step = the claim is unverified.
+
+## What Counts as Evidence
 
 | Claim | Requires | NOT Sufficient |
 |-------|----------|----------------|
-| "Tests pass" | Test output showing 0 failures | Previous run, "should pass" |
-| "Linter clean" | Linter output showing 0 errors | Partial check, extrapolation |
-| "Build succeeds" | Build command exit code 0 | Linter passing |
-| "Bug fixed" | Original symptom no longer occurs | "Code changed" |
-| "Regression test works" | Red-green cycle verified | Test passes once |
-| "Requirements met" | Line-by-line checklist | Tests passing |
+| Tests pass | Test command output showing 0 failures | Previous run, "should pass" |
+| Build succeeds | Build command exit 0 | Linter passing |
+| Bug fixed | Reproduce original symptom: now passes | "Code changed, should work" |
+| Regression test works | Red (fail without fix) → Green (pass with fix) | Test passes once |
+| Subagent completed task | `git diff` shows expected changes | Subagent says "done" |
+| Requirements met | Line-by-line checklist against spec | Tests passing |
+| Provider dispatch worked | Output contains expected content | No error ≠ success |
 
----
+## Red Flags — STOP and Verify
+
+If you catch yourself thinking any of these, STOP:
+
+| Thought | What to do instead |
+|---------|-------------------|
+| "Should work now" | Run the verification |
+| "I'm confident" | Confidence ≠ evidence |
+| "Just this once" | No exceptions |
+| "The linter passed" | Linter ≠ tests ≠ build |
+| "The agent said it worked" | Verify independently |
+| "It's a small change" | Small changes cause big bugs |
+
+## Multi-Provider Context
+
+In Claude Octopus workflows, verification is especially critical because:
+
+- **Provider outputs can be hallucinated** — Codex/Gemini/Copilot may claim success without evidence
+- **Consensus ≠ correctness** — three models agreeing doesn't mean they're right
+- **Synthesis files may be stale** — check timestamps, don't assume freshness
+- **orchestrate.sh exit code 0 ≠ quality** — the script ran, but did it produce good output?
+
+After any multi-provider workflow:
+```bash
+# Verify synthesis file exists and is recent
+ls -la ~/.claude-octopus/results/*-synthesis-*.md | tail -1
+
+# Verify it has content (not just headers)
+wc -l ~/.claude-octopus/results/*-synthesis-*.md | tail -1
+```
+
+## When to Apply
+
+**ALWAYS before:**
+- Committing code
+- Creating PRs
+- Marking tasks complete
+- Moving to next workflow phase
+- Reporting results to user
+- Claiming a bug is fixed
+
+**In orchestrate.sh workflows:**
+- After `probe` (discover) — verify synthesis file exists
+- After `grasp` (define) — verify consensus score meets threshold
+- After `tangle` (develop) — verify tests pass, not just that code was written
+- After `ink` (deliver) — verify review actually ran, not just that it was dispatched
 
 ## Examples
 
 ### Correct: Evidence-Based Claim
 ```
-Running tests...
 $ npm test
-
   ✓ user.create() saves to database (45ms)
   ✓ user.create() validates email (12ms)
-  ✓ user.create() hashes password (23ms)
+  Tests: 2 passed, 2 total
 
-Tests: 3 passed, 3 total
-Time: 0.8s
-
-All 3 tests pass. Ready for review.
+All 2 tests pass. ← Claim backed by output.
 ```
 
 ### Incorrect: Claim Without Evidence
 ```
-I've implemented the user creation feature. It should work now.
-The tests should pass.
+I've implemented the feature. It should work now. The tests should pass.
+← No test was run. "Should" is not evidence.
 ```
 
 ### Correct: Regression Test Red-Green
 ```
-1. Write test:
-   test('rejects empty email', () => { ... })
-
-2. Run test (should FAIL):
-   $ npm test
-   FAIL: expected 'Email required', got undefined
-   ✓ Test fails as expected
-
-3. Implement fix
-
-4. Run test (should PASS):
-   $ npm test
-   PASS: 1/1
-   ✓ Test passes
-
-5. Revert fix temporarily:
-   $ git stash
-   $ npm test
-   FAIL: expected 'Email required', got undefined
-   ✓ Confirms test catches the bug
-
-6. Restore fix:
-   $ git stash pop
-   $ npm test
-   PASS: 1/1
-
-Red-green cycle verified. Regression test is valid.
+1. Write test → run → FAIL (expected, proves test detects the bug)
+2. Implement fix → run → PASS (proves fix works)
+3. Revert fix → run → FAIL (proves test isn't false-positive)
+4. Restore fix → run → PASS (final confirmation)
 ```
 
----
+## Integration with Other Skills
 
-## Red Flags - STOP
-
-If you catch yourself:
-- Using "should", "probably", "seems to"
-- Expressing satisfaction before verification ("Great!", "Done!")
-- About to commit/push/PR without running tests
-- Trusting that previous run is still valid
-- Thinking "just this once"
-
-**ALL of these mean: STOP. Run verification first.**
-
----
-
-## Common Rationalizations
-
-| Excuse | Reality |
-|--------|---------|
-| "Should work now" | RUN the verification. |
-| "I'm confident" | Confidence ≠ evidence. |
-| "Just this once" | No exceptions. |
-| "Linter passed" | Linter ≠ tests ≠ build. |
-| "I'm tired" | Exhaustion ≠ excuse. |
-| "Partial check is enough" | Partial proves nothing. |
-
----
-
-## Verification Commands by Type
-
-### Tests
-```bash
-# Run and capture output
-npm test                  # JavaScript/TypeScript
-pytest                    # Python
-cargo test                # Rust
-go test ./...             # Go
-
-# Expected: "X passed, 0 failed"
-```
-
-### Build
-```bash
-npm run build             # Node.js
-cargo build --release     # Rust
-go build ./...            # Go
-
-# Expected: Exit code 0, no errors
-```
-
-### Linting
-```bash
-npm run lint              # ESLint
-ruff check .              # Python
-cargo clippy              # Rust
-
-# Expected: 0 errors (warnings OK)
-```
-
-### Type Checking
-```bash
-npm run typecheck         # TypeScript
-mypy .                    # Python
-cargo check               # Rust
-
-# Expected: 0 errors
-```
-
----
-
-## Integration with Claude Octopus
-
-### Quality Gates
-
-Octopus workflows have built-in quality gates:
-
-| Workflow | Verification Point |
-|----------|-------------------|
-| `tangle` | 75% success threshold before proceeding |
-| `ink` | Full test suite before delivery |
-| `squeeze` | Red team validation before clearance |
-
-### Before Octopus Phase Transitions
-
-```bash
-# Before moving from tangle → ink
-${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh preflight
-
-# Verifies:
-# - All agents completed
-# - Quality gate passed
-# - No errors in logs
-```
-
-### Before PR Creation
-
-```bash
-# Full verification before PR
-npm test && npm run lint && npm run build
-
-# Then create PR with evidence
-gh pr create --body "$(cat <<'EOF'
-## Verification
-- Tests: 42/42 passing
-- Lint: 0 errors
-- Build: Success
-EOF
-)"
-```
-
----
-
-## Checklist Before Claiming Complete
-
-- [ ] Ran test command in THIS session
-- [ ] Read FULL output (not just summary)
-- [ ] Exit code was 0
-- [ ] No failures, errors, or warnings
-- [ ] No skipped tests that matter
-- [ ] Evidence included in claim
-
-**Missing any checkbox? Do not claim completion.**
-
----
-
-## The Bottom Line
-
-```
-Claiming success → Verification evidence exists in this message
-Otherwise → Not verified
-```
-
-**Run the command. Read the output. THEN claim the result.**
-
-No shortcuts for verification. This is non-negotiable.
+This skill is referenced by:
+- `flow-develop.md` — verification gate after implementation
+- `flow-deliver.md` — verification gate before delivery
+- `skill-code-review.md` — verify review findings before reporting
+- `skill-tdd.md` — red-green cycle requires evidence at each step
+- `skill-factory.md` — autonomous pipeline must verify at every phase

@@ -272,9 +272,9 @@ Bolt receives performance tasks from upstream agents, identifies and implements 
 
 ## AUTORUN Support
 
-When Bolt receives `_AGENT_CONTEXT`, parse `task_type`, `description`, `domain`, `baseline_metric`, and `constraints`, choose the correct output route, run the PROFILE→SELECT→OPTIMIZE→VERIFY→PRESENT workflow, produce the deliverable, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Bolt-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -299,26 +299,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`: treat Nexus as hub, do not instruct other agent calls, return results via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Bolt
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Domain: [frontend | backend | network | infrastructure]
-  - Optimization: [what was optimized]
-  - Baseline: [before metric]
-  - Result: [after metric]
-  - Improvement: [percentage]
-- Artifacts: [file paths or inline references]
-- Risks: [regression risk, edge cases, readability impact]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```

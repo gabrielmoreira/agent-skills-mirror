@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `adriannoes/awesome-vibe-coding` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
+Mirror of `adriannoes/awesome-vibe-coding` — 26 default patterns, 0 followed patterns, 102 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `adriannoes/awesome-vibe-coding` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 78 |
+| Files         | 102 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,49 +94,73 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`cursor-and-claude/skills/finishing-a-development-branch/SKILL.md`](cursor-and-claude/skills/finishing-a-development-branch/SKILL.md) |
 | 34 | ✓ | [`cursor-and-claude/skills/frontend-design/SKILL.md`](cursor-and-claude/skills/frontend-design/SKILL.md) |
 | 35 | ✓ | [`cursor-and-claude/skills/harness/SKILL.md`](cursor-and-claude/skills/harness/SKILL.md) |
-| 36 | ✓ | [`cursor-and-claude/skills/react-best-practices/SKILL.md`](cursor-and-claude/skills/react-best-practices/SKILL.md) |
-| 37 | ✓ | [`cursor-and-claude/skills/react-native-skills/AGENTS.md`](cursor-and-claude/skills/react-native-skills/AGENTS.md) |
-| 38 | ✓ | [`cursor-and-claude/skills/react-native-skills/SKILL.md`](cursor-and-claude/skills/react-native-skills/SKILL.md) |
-| 39 | ✓ | [`cursor-and-claude/skills/react-view-transitions/AGENTS.md`](cursor-and-claude/skills/react-view-transitions/AGENTS.md) |
-| 40 | ✓ | [`cursor-and-claude/skills/react-view-transitions/SKILL.md`](cursor-and-claude/skills/react-view-transitions/SKILL.md) |
-| 41 | ✓ | [`cursor-and-claude/skills/receiving-code-review/SKILL.md`](cursor-and-claude/skills/receiving-code-review/SKILL.md) |
-| 42 | ✓ | [`cursor-and-claude/skills/requesting-code-review/SKILL.md`](cursor-and-claude/skills/requesting-code-review/SKILL.md) |
-| 43 | ✓ | [`cursor-and-claude/skills/subagent-driven-development/SKILL.md`](cursor-and-claude/skills/subagent-driven-development/SKILL.md) |
-| 44 | ✓ | [`cursor-and-claude/skills/systematic-debugging/SKILL.md`](cursor-and-claude/skills/systematic-debugging/SKILL.md) |
-| 45 | ✓ | [`cursor-and-claude/skills/test-driven-development/SKILL.md`](cursor-and-claude/skills/test-driven-development/SKILL.md) |
-| 46 | ✓ | [`cursor-and-claude/skills/update-changelog/SKILL.md`](cursor-and-claude/skills/update-changelog/SKILL.md) |
-| 47 | ✓ | [`cursor-and-claude/skills/using-git-worktrees/SKILL.md`](cursor-and-claude/skills/using-git-worktrees/SKILL.md) |
-| 48 | ✓ | [`cursor-and-claude/skills/using-superpowers/SKILL.md`](cursor-and-claude/skills/using-superpowers/SKILL.md) |
-| 49 | ✓ | [`cursor-and-claude/skills/vercel-cli-with-tokens/SKILL.md`](cursor-and-claude/skills/vercel-cli-with-tokens/SKILL.md) |
-| 50 | ✓ | [`cursor-and-claude/skills/verification-before-completion/SKILL.md`](cursor-and-claude/skills/verification-before-completion/SKILL.md) |
-| 51 | ✓ | [`cursor-and-claude/skills/visual-content/api-flow-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/api-flow-diagram-creator/SKILL.md) |
-| 52 | ✓ | [`cursor-and-claude/skills/visual-content/architecture-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/architecture-diagram-creator/SKILL.md) |
-| 53 | ✓ | [`cursor-and-claude/skills/visual-content/ascii-art-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/ascii-art-diagram-creator/SKILL.md) |
-| 54 | ✓ | [`cursor-and-claude/skills/visual-content/chart-js-config-creator/SKILL.md`](cursor-and-claude/skills/visual-content/chart-js-config-creator/SKILL.md) |
-| 55 | ✓ | [`cursor-and-claude/skills/visual-content/d2-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/d2-diagram-creator/SKILL.md) |
-| 56 | ✓ | [`cursor-and-claude/skills/visual-content/data-visualization-helper/SKILL.md`](cursor-and-claude/skills/visual-content/data-visualization-helper/SKILL.md) |
-| 57 | ✓ | [`cursor-and-claude/skills/visual-content/database-schema-visualizer/SKILL.md`](cursor-and-claude/skills/visual-content/database-schema-visualizer/SKILL.md) |
-| 58 | ✓ | [`cursor-and-claude/skills/visual-content/graphviz-dot-generator/SKILL.md`](cursor-and-claude/skills/visual-content/graphviz-dot-generator/SKILL.md) |
-| 59 | ✓ | [`cursor-and-claude/skills/visual-content/infographic-outline-creator/SKILL.md`](cursor-and-claude/skills/visual-content/infographic-outline-creator/SKILL.md) |
-| 60 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-class-diagram-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-class-diagram-generator/SKILL.md) |
-| 61 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-er-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-er-diagram-creator/SKILL.md) |
-| 62 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-flowchart-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-flowchart-generator/SKILL.md) |
-| 63 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-gantt-chart-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-gantt-chart-generator/SKILL.md) |
-| 64 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-sequence-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-sequence-diagram-creator/SKILL.md) |
-| 65 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-state-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-state-diagram-creator/SKILL.md) |
-| 66 | ✓ | [`cursor-and-claude/skills/visual-content/mindmap-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mindmap-generator/SKILL.md) |
-| 67 | ✓ | [`cursor-and-claude/skills/visual-content/network-diagram-generator/SKILL.md`](cursor-and-claude/skills/visual-content/network-diagram-generator/SKILL.md) |
-| 68 | ✓ | [`cursor-and-claude/skills/visual-content/org-chart-creator/SKILL.md`](cursor-and-claude/skills/visual-content/org-chart-creator/SKILL.md) |
-| 69 | ✓ | [`cursor-and-claude/skills/visual-content/plantuml-diagram-generator/SKILL.md`](cursor-and-claude/skills/visual-content/plantuml-diagram-generator/SKILL.md) |
-| 70 | ✓ | [`cursor-and-claude/skills/visual-content/plotly-chart-generator/SKILL.md`](cursor-and-claude/skills/visual-content/plotly-chart-generator/SKILL.md) |
-| 71 | ✓ | [`cursor-and-claude/skills/visual-content/presentation-slide-outliner/SKILL.md`](cursor-and-claude/skills/visual-content/presentation-slide-outliner/SKILL.md) |
-| 72 | ✓ | [`cursor-and-claude/skills/visual-content/process-flow-generator/SKILL.md`](cursor-and-claude/skills/visual-content/process-flow-generator/SKILL.md) |
-| 73 | ✓ | [`cursor-and-claude/skills/visual-content/svg-icon-generator/SKILL.md`](cursor-and-claude/skills/visual-content/svg-icon-generator/SKILL.md) |
-| 74 | ✓ | [`cursor-and-claude/skills/visual-content/technical-diagram-analyzer/SKILL.md`](cursor-and-claude/skills/visual-content/technical-diagram-analyzer/SKILL.md) |
-| 75 | ✓ | [`cursor-and-claude/skills/visual-content/user-journey-mapper/SKILL.md`](cursor-and-claude/skills/visual-content/user-journey-mapper/SKILL.md) |
-| 76 | ✓ | [`cursor-and-claude/skills/web-design-guidelines/SKILL.md`](cursor-and-claude/skills/web-design-guidelines/SKILL.md) |
-| 77 | ✓ | [`cursor-and-claude/skills/writing-plans/SKILL.md`](cursor-and-claude/skills/writing-plans/SKILL.md) |
-| 78 | ✓ | [`cursor-and-claude/skills/writing-skills/SKILL.md`](cursor-and-claude/skills/writing-skills/SKILL.md) |
+| 36 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/diagnose/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/diagnose/SKILL.md) |
+| 37 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/grill-with-docs/ADR-FORMAT.md`](cursor-and-claude/skills/matt-pocock/engineering/grill-with-docs/ADR-FORMAT.md) |
+| 38 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/grill-with-docs/CONTEXT-FORMAT.md`](cursor-and-claude/skills/matt-pocock/engineering/grill-with-docs/CONTEXT-FORMAT.md) |
+| 39 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/grill-with-docs/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/grill-with-docs/SKILL.md) |
+| 40 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/improve-codebase-architecture/INTERFACE-DESIGN.md`](cursor-and-claude/skills/matt-pocock/engineering/improve-codebase-architecture/INTERFACE-DESIGN.md) |
+| 41 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/improve-codebase-architecture/LANGUAGE.md`](cursor-and-claude/skills/matt-pocock/engineering/improve-codebase-architecture/LANGUAGE.md) |
+| 42 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/improve-codebase-architecture/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/improve-codebase-architecture/SKILL.md) |
+| 43 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/tdd/deep-modules.md`](cursor-and-claude/skills/matt-pocock/engineering/tdd/deep-modules.md) |
+| 44 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/tdd/interface-design.md`](cursor-and-claude/skills/matt-pocock/engineering/tdd/interface-design.md) |
+| 45 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/tdd/mocking.md`](cursor-and-claude/skills/matt-pocock/engineering/tdd/mocking.md) |
+| 46 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/tdd/refactoring.md`](cursor-and-claude/skills/matt-pocock/engineering/tdd/refactoring.md) |
+| 47 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/tdd/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/tdd/SKILL.md) |
+| 48 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/tdd/tests.md`](cursor-and-claude/skills/matt-pocock/engineering/tdd/tests.md) |
+| 49 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/to-issues/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/to-issues/SKILL.md) |
+| 50 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/to-prd/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/to-prd/SKILL.md) |
+| 51 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/triage/AGENT-BRIEF.md`](cursor-and-claude/skills/matt-pocock/engineering/triage/AGENT-BRIEF.md) |
+| 52 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/triage/OUT-OF-SCOPE.md`](cursor-and-claude/skills/matt-pocock/engineering/triage/OUT-OF-SCOPE.md) |
+| 53 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/triage/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/triage/SKILL.md) |
+| 54 | ✓ | [`cursor-and-claude/skills/matt-pocock/engineering/zoom-out/SKILL.md`](cursor-and-claude/skills/matt-pocock/engineering/zoom-out/SKILL.md) |
+| 55 | ✓ | [`cursor-and-claude/skills/matt-pocock/misc/git-guardrails-claude-code/SKILL.md`](cursor-and-claude/skills/matt-pocock/misc/git-guardrails-claude-code/SKILL.md) |
+| 56 | ✓ | [`cursor-and-claude/skills/matt-pocock/misc/setup-pre-commit/SKILL.md`](cursor-and-claude/skills/matt-pocock/misc/setup-pre-commit/SKILL.md) |
+| 57 | ✓ | [`cursor-and-claude/skills/matt-pocock/productivity/caveman/SKILL.md`](cursor-and-claude/skills/matt-pocock/productivity/caveman/SKILL.md) |
+| 58 | ✓ | [`cursor-and-claude/skills/matt-pocock/productivity/grill-me/SKILL.md`](cursor-and-claude/skills/matt-pocock/productivity/grill-me/SKILL.md) |
+| 59 | ✓ | [`cursor-and-claude/skills/matt-pocock/productivity/write-a-skill/SKILL.md`](cursor-and-claude/skills/matt-pocock/productivity/write-a-skill/SKILL.md) |
+| 60 | ✓ | [`cursor-and-claude/skills/react-best-practices/SKILL.md`](cursor-and-claude/skills/react-best-practices/SKILL.md) |
+| 61 | ✓ | [`cursor-and-claude/skills/react-native-skills/AGENTS.md`](cursor-and-claude/skills/react-native-skills/AGENTS.md) |
+| 62 | ✓ | [`cursor-and-claude/skills/react-native-skills/SKILL.md`](cursor-and-claude/skills/react-native-skills/SKILL.md) |
+| 63 | ✓ | [`cursor-and-claude/skills/react-view-transitions/AGENTS.md`](cursor-and-claude/skills/react-view-transitions/AGENTS.md) |
+| 64 | ✓ | [`cursor-and-claude/skills/react-view-transitions/SKILL.md`](cursor-and-claude/skills/react-view-transitions/SKILL.md) |
+| 65 | ✓ | [`cursor-and-claude/skills/receiving-code-review/SKILL.md`](cursor-and-claude/skills/receiving-code-review/SKILL.md) |
+| 66 | ✓ | [`cursor-and-claude/skills/requesting-code-review/SKILL.md`](cursor-and-claude/skills/requesting-code-review/SKILL.md) |
+| 67 | ✓ | [`cursor-and-claude/skills/subagent-driven-development/SKILL.md`](cursor-and-claude/skills/subagent-driven-development/SKILL.md) |
+| 68 | ✓ | [`cursor-and-claude/skills/systematic-debugging/SKILL.md`](cursor-and-claude/skills/systematic-debugging/SKILL.md) |
+| 69 | ✓ | [`cursor-and-claude/skills/test-driven-development/SKILL.md`](cursor-and-claude/skills/test-driven-development/SKILL.md) |
+| 70 | ✓ | [`cursor-and-claude/skills/update-changelog/SKILL.md`](cursor-and-claude/skills/update-changelog/SKILL.md) |
+| 71 | ✓ | [`cursor-and-claude/skills/using-git-worktrees/SKILL.md`](cursor-and-claude/skills/using-git-worktrees/SKILL.md) |
+| 72 | ✓ | [`cursor-and-claude/skills/using-superpowers/SKILL.md`](cursor-and-claude/skills/using-superpowers/SKILL.md) |
+| 73 | ✓ | [`cursor-and-claude/skills/vercel-cli-with-tokens/SKILL.md`](cursor-and-claude/skills/vercel-cli-with-tokens/SKILL.md) |
+| 74 | ✓ | [`cursor-and-claude/skills/verification-before-completion/SKILL.md`](cursor-and-claude/skills/verification-before-completion/SKILL.md) |
+| 75 | ✓ | [`cursor-and-claude/skills/visual-content/api-flow-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/api-flow-diagram-creator/SKILL.md) |
+| 76 | ✓ | [`cursor-and-claude/skills/visual-content/architecture-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/architecture-diagram-creator/SKILL.md) |
+| 77 | ✓ | [`cursor-and-claude/skills/visual-content/ascii-art-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/ascii-art-diagram-creator/SKILL.md) |
+| 78 | ✓ | [`cursor-and-claude/skills/visual-content/chart-js-config-creator/SKILL.md`](cursor-and-claude/skills/visual-content/chart-js-config-creator/SKILL.md) |
+| 79 | ✓ | [`cursor-and-claude/skills/visual-content/d2-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/d2-diagram-creator/SKILL.md) |
+| 80 | ✓ | [`cursor-and-claude/skills/visual-content/data-visualization-helper/SKILL.md`](cursor-and-claude/skills/visual-content/data-visualization-helper/SKILL.md) |
+| 81 | ✓ | [`cursor-and-claude/skills/visual-content/database-schema-visualizer/SKILL.md`](cursor-and-claude/skills/visual-content/database-schema-visualizer/SKILL.md) |
+| 82 | ✓ | [`cursor-and-claude/skills/visual-content/graphviz-dot-generator/SKILL.md`](cursor-and-claude/skills/visual-content/graphviz-dot-generator/SKILL.md) |
+| 83 | ✓ | [`cursor-and-claude/skills/visual-content/infographic-outline-creator/SKILL.md`](cursor-and-claude/skills/visual-content/infographic-outline-creator/SKILL.md) |
+| 84 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-class-diagram-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-class-diagram-generator/SKILL.md) |
+| 85 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-er-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-er-diagram-creator/SKILL.md) |
+| 86 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-flowchart-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-flowchart-generator/SKILL.md) |
+| 87 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-gantt-chart-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-gantt-chart-generator/SKILL.md) |
+| 88 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-sequence-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-sequence-diagram-creator/SKILL.md) |
+| 89 | ✓ | [`cursor-and-claude/skills/visual-content/mermaid-state-diagram-creator/SKILL.md`](cursor-and-claude/skills/visual-content/mermaid-state-diagram-creator/SKILL.md) |
+| 90 | ✓ | [`cursor-and-claude/skills/visual-content/mindmap-generator/SKILL.md`](cursor-and-claude/skills/visual-content/mindmap-generator/SKILL.md) |
+| 91 | ✓ | [`cursor-and-claude/skills/visual-content/network-diagram-generator/SKILL.md`](cursor-and-claude/skills/visual-content/network-diagram-generator/SKILL.md) |
+| 92 | ✓ | [`cursor-and-claude/skills/visual-content/org-chart-creator/SKILL.md`](cursor-and-claude/skills/visual-content/org-chart-creator/SKILL.md) |
+| 93 | ✓ | [`cursor-and-claude/skills/visual-content/plantuml-diagram-generator/SKILL.md`](cursor-and-claude/skills/visual-content/plantuml-diagram-generator/SKILL.md) |
+| 94 | ✓ | [`cursor-and-claude/skills/visual-content/plotly-chart-generator/SKILL.md`](cursor-and-claude/skills/visual-content/plotly-chart-generator/SKILL.md) |
+| 95 | ✓ | [`cursor-and-claude/skills/visual-content/presentation-slide-outliner/SKILL.md`](cursor-and-claude/skills/visual-content/presentation-slide-outliner/SKILL.md) |
+| 96 | ✓ | [`cursor-and-claude/skills/visual-content/process-flow-generator/SKILL.md`](cursor-and-claude/skills/visual-content/process-flow-generator/SKILL.md) |
+| 97 | ✓ | [`cursor-and-claude/skills/visual-content/svg-icon-generator/SKILL.md`](cursor-and-claude/skills/visual-content/svg-icon-generator/SKILL.md) |
+| 98 | ✓ | [`cursor-and-claude/skills/visual-content/technical-diagram-analyzer/SKILL.md`](cursor-and-claude/skills/visual-content/technical-diagram-analyzer/SKILL.md) |
+| 99 | ✓ | [`cursor-and-claude/skills/visual-content/user-journey-mapper/SKILL.md`](cursor-and-claude/skills/visual-content/user-journey-mapper/SKILL.md) |
+| 100 | ✓ | [`cursor-and-claude/skills/web-design-guidelines/SKILL.md`](cursor-and-claude/skills/web-design-guidelines/SKILL.md) |
+| 101 | ✓ | [`cursor-and-claude/skills/writing-plans/SKILL.md`](cursor-and-claude/skills/writing-plans/SKILL.md) |
+| 102 | ✓ | [`cursor-and-claude/skills/writing-skills/SKILL.md`](cursor-and-claude/skills/writing-skills/SKILL.md) |
 
 ---
 

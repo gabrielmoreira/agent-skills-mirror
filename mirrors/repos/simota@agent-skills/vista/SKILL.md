@@ -346,26 +346,14 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as the hub, do not call other agents directly, and return:
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-```
-## NEXUS_HANDOFF
-- Step: <current step number>
-- Agent: Vista
-- Summary: <recipe + scope + headline finding in 1-3 lines>
-- Source: <artifact paths, time window, parser versions>
-- Sample size: <tests / runs / files>
-- Visualizations: <list with format, markdown_path, html_path, language=ja>
-- Top findings: <top-3 with named anti-patterns>
-- Risk-weighted gaps: <top-5>
-- Limitations: <parse errors, missing data, sample-size warnings>
-- Risks / trade-offs: <items>
-- Open questions: <items>
-- Pending Confirmations: <items>
-- User Confirmations: <items>
-- Suggested next agent: <Radar | Voyager | Siege | Judge | Sherpa | Canvas | Pulse | none>
-- Next action: CONTINUE | VERIFY | DONE
-```
+Vista-specific findings to surface in handoff:
+- Source: artifact paths, time window, parser versions
+- Sample size: tests / runs / files
+- Visualizations: list with format, markdown_path, html_path, language=ja
+- Top findings (top-3 with named anti-patterns), risk-weighted gaps (top-5)
+- Limitations: parse errors, missing data, sample-size warnings
 
 ## Reference Map
 

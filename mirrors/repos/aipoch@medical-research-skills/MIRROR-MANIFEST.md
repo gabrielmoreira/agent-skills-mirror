@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aipoch/medical-research-skills` — 26 default patterns, 0 followed patterns, 519 file(s) materialized.
+Mirror of `aipoch/medical-research-skills` — 26 default patterns, 0 followed patterns, 518 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aipoch/medical-research-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 519 |
+| Files         | 518 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -282,302 +282,301 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 221 | ✓ | [`scientific-skills/Data Analysis/gtars/SKILL.md`](scientific-skills/Data%20Analysis/gtars/SKILL.md) |
 | 222 | ✓ | [`scientific-skills/Data Analysis/heatmap-beautifier/SKILL.md`](scientific-skills/Data%20Analysis/heatmap-beautifier/SKILL.md) |
 | 223 | ✓ | [`scientific-skills/Data Analysis/histolab/SKILL.md`](scientific-skills/Data%20Analysis/histolab/SKILL.md) |
-| 224 | ✓ | [`scientific-skills/Data Analysis/imaging-data-commons/SKILL.md`](scientific-skills/Data%20Analysis/imaging-data-commons/SKILL.md) |
-| 225 | ✓ | [`scientific-skills/Data Analysis/lab-budget-forecaster/SKILL.md`](scientific-skills/Data%20Analysis/lab-budget-forecaster/SKILL.md) |
-| 226 | ✓ | [`scientific-skills/Data Analysis/lamindb/SKILL.md`](scientific-skills/Data%20Analysis/lamindb/SKILL.md) |
-| 227 | ✓ | [`scientific-skills/Data Analysis/lipinski-rule-filter/SKILL.md`](scientific-skills/Data%20Analysis/lipinski-rule-filter/SKILL.md) |
-| 228 | ✓ | [`scientific-skills/Data Analysis/matchms/SKILL.md`](scientific-skills/Data%20Analysis/matchms/SKILL.md) |
-| 229 | ✓ | [`scientific-skills/Data Analysis/matplotlib/SKILL.md`](scientific-skills/Data%20Analysis/matplotlib/SKILL.md) |
-| 230 | ✓ | [`scientific-skills/Data Analysis/mechanism-flowchart/SKILL.md`](scientific-skills/Data%20Analysis/mechanism-flowchart/SKILL.md) |
-| 231 | ✓ | [`scientific-skills/Data Analysis/meta-abstract-screener/SKILL.md`](scientific-skills/Data%20Analysis/meta-abstract-screener/SKILL.md) |
-| 232 | ✓ | [`scientific-skills/Data Analysis/meta-baujat-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-baujat-plot/SKILL.md) |
-| 233 | ✓ | [`scientific-skills/Data Analysis/meta-criteria-generator/SKILL.md`](scientific-skills/Data%20Analysis/meta-criteria-generator/SKILL.md) |
-| 234 | ✓ | [`scientific-skills/Data Analysis/meta-feasibility-analyzer/SKILL.md`](scientific-skills/Data%20Analysis/meta-feasibility-analyzer/SKILL.md) |
-| 235 | ✓ | [`scientific-skills/Data Analysis/meta-forest-binary-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-forest-binary-plot/SKILL.md) |
-| 236 | ✓ | [`scientific-skills/Data Analysis/meta-forest-continuous-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-forest-continuous-plot/SKILL.md) |
-| 237 | ✓ | [`scientific-skills/Data Analysis/meta-forest-model-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-forest-model-plot/SKILL.md) |
-| 238 | ✓ | [`scientific-skills/Data Analysis/meta-funnel-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-funnel-plot/SKILL.md) |
-| 239 | ✓ | [`scientific-skills/Data Analysis/meta-picos-generator/SKILL.md`](scientific-skills/Data%20Analysis/meta-picos-generator/SKILL.md) |
-| 240 | ✓ | [`scientific-skills/Data Analysis/meta-radial-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-radial-plot/SKILL.md) |
-| 241 | ✓ | [`scientific-skills/Data Analysis/meta-rob2-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-rob2-plot/SKILL.md) |
-| 242 | ✓ | [`scientific-skills/Data Analysis/meta-screening-fulltext/SKILL.md`](scientific-skills/Data%20Analysis/meta-screening-fulltext/SKILL.md) |
-| 243 | ✓ | [`scientific-skills/Data Analysis/meta-sensitivity-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-sensitivity-plot/SKILL.md) |
-| 244 | ✓ | [`scientific-skills/Data Analysis/meta-title-generator/SKILL.md`](scientific-skills/Data%20Analysis/meta-title-generator/SKILL.md) |
-| 245 | ✓ | [`scientific-skills/Data Analysis/metabolomics-workbench-database/SKILL.md`](scientific-skills/Data%20Analysis/metabolomics-workbench-database/SKILL.md) |
-| 246 | ✓ | [`scientific-skills/Data Analysis/metagenomic-krona-chart/SKILL.md`](scientific-skills/Data%20Analysis/metagenomic-krona-chart/SKILL.md) |
-| 247 | ✓ | [`scientific-skills/Data Analysis/motif-logo-generator/SKILL.md`](scientific-skills/Data%20Analysis/motif-logo-generator/SKILL.md) |
-| 248 | ✓ | [`scientific-skills/Data Analysis/neoantigen-predictor/SKILL.md`](scientific-skills/Data%20Analysis/neoantigen-predictor/SKILL.md) |
-| 249 | ✓ | [`scientific-skills/Data Analysis/neurokit2/SKILL.md`](scientific-skills/Data%20Analysis/neurokit2/SKILL.md) |
-| 250 | ✓ | [`scientific-skills/Data Analysis/neuropixels-analysis/SKILL.md`](scientific-skills/Data%20Analysis/neuropixels-analysis/SKILL.md) |
-| 251 | ✓ | [`scientific-skills/Data Analysis/outcome-extraction-for-clinical-trials/SKILL.md`](scientific-skills/Data%20Analysis/outcome-extraction-for-clinical-trials/SKILL.md) |
-| 252 | ✓ | [`scientific-skills/Data Analysis/outlier-detection-handler/SKILL.md`](scientific-skills/Data%20Analysis/outlier-detection-handler/SKILL.md) |
-| 253 | ✓ | [`scientific-skills/Data Analysis/pathml/SKILL.md`](scientific-skills/Data%20Analysis/pathml/SKILL.md) |
-| 254 | ✓ | [`scientific-skills/Data Analysis/pathology-roi-selector/SKILL.md`](scientific-skills/Data%20Analysis/pathology-roi-selector/SKILL.md) |
-| 255 | ✓ | [`scientific-skills/Data Analysis/phylogenetic-tree-styler/SKILL.md`](scientific-skills/Data%20Analysis/phylogenetic-tree-styler/SKILL.md) |
-| 256 | ✓ | [`scientific-skills/Data Analysis/preclinical-pkpd-analyst/SKILL.md`](scientific-skills/Data%20Analysis/preclinical-pkpd-analyst/SKILL.md) |
-| 257 | ✓ | [`scientific-skills/Data Analysis/probast-quality-assessment-for-prediction-model-studies/SKILL.md`](scientific-skills/Data%20Analysis/probast-quality-assessment-for-prediction-model-studies/SKILL.md) |
-| 258 | ✓ | [`scientific-skills/Data Analysis/protocol-deviation-classifier/SKILL.md`](scientific-skills/Data%20Analysis/protocol-deviation-classifier/SKILL.md) |
-| 259 | ✓ | [`scientific-skills/Data Analysis/pseudotime-trajectory-viz/SKILL.md`](scientific-skills/Data%20Analysis/pseudotime-trajectory-viz/SKILL.md) |
-| 260 | ✓ | [`scientific-skills/Data Analysis/pydeseq2/SKILL.md`](scientific-skills/Data%20Analysis/pydeseq2/SKILL.md) |
-| 261 | ✓ | [`scientific-skills/Data Analysis/pydicom/SKILL.md`](scientific-skills/Data%20Analysis/pydicom/SKILL.md) |
-| 262 | ✓ | [`scientific-skills/Data Analysis/pyopenms-skill/SKILL.md`](scientific-skills/Data%20Analysis/pyopenms-skill/SKILL.md) |
-| 263 | ✓ | [`scientific-skills/Data Analysis/pysam/SKILL.md`](scientific-skills/Data%20Analysis/pysam/SKILL.md) |
-| 264 | ✓ | [`scientific-skills/Data Analysis/quadas-c-assessment-for-diagnostic-accuracy-studies/SKILL.md`](scientific-skills/Data%20Analysis/quadas-c-assessment-for-diagnostic-accuracy-studies/SKILL.md) |
-| 265 | ✓ | [`scientific-skills/Data Analysis/quality-assessment/SKILL.md`](scientific-skills/Data%20Analysis/quality-assessment/SKILL.md) |
-| 266 | ✓ | [`scientific-skills/Data Analysis/quapas-quality-assessment-for-prognosis-studies/SKILL.md`](scientific-skills/Data%20Analysis/quapas-quality-assessment-for-prognosis-studies/SKILL.md) |
-| 267 | ✓ | [`scientific-skills/Data Analysis/rct-bias-assessment-rob2/SKILL.md`](scientific-skills/Data%20Analysis/rct-bias-assessment-rob2/SKILL.md) |
-| 268 | ✓ | [`scientific-skills/Data Analysis/rowan/SKILL.md`](scientific-skills/Data%20Analysis/rowan/SKILL.md) |
-| 269 | ✓ | [`scientific-skills/Data Analysis/sanger-chromatogram-qa/SKILL.md`](scientific-skills/Data%20Analysis/sanger-chromatogram-qa/SKILL.md) |
-| 270 | ✓ | [`scientific-skills/Data Analysis/scanpy/SKILL.md`](scientific-skills/Data%20Analysis/scanpy/SKILL.md) |
-| 271 | ✓ | [`scientific-skills/Data Analysis/scikit-bio/SKILL.md`](scientific-skills/Data%20Analysis/scikit-bio/SKILL.md) |
-| 272 | ✓ | [`scientific-skills/Data Analysis/scikit-survival/SKILL.md`](scientific-skills/Data%20Analysis/scikit-survival/SKILL.md) |
-| 273 | ✓ | [`scientific-skills/Data Analysis/scrna-cell-type-annotator/SKILL.md`](scientific-skills/Data%20Analysis/scrna-cell-type-annotator/SKILL.md) |
-| 274 | ✓ | [`scientific-skills/Data Analysis/scvi-tools/SKILL.md`](scientific-skills/Data%20Analysis/scvi-tools/SKILL.md) |
-| 275 | ✓ | [`scientific-skills/Data Analysis/seaborn/SKILL.md`](scientific-skills/Data%20Analysis/seaborn/SKILL.md) |
-| 276 | ✓ | [`scientific-skills/Data Analysis/sequence-alignment/SKILL.md`](scientific-skills/Data%20Analysis/sequence-alignment/SKILL.md) |
-| 277 | ✓ | [`scientific-skills/Data Analysis/singlecell-portal/SKILL.md`](scientific-skills/Data%20Analysis/singlecell-portal/SKILL.md) |
-| 278 | ✓ | [`scientific-skills/Data Analysis/smiles-de-salter/SKILL.md`](scientific-skills/Data%20Analysis/smiles-de-salter/SKILL.md) |
-| 279 | ✓ | [`scientific-skills/Data Analysis/spatial-transcriptomics-mapper/SKILL.md`](scientific-skills/Data%20Analysis/spatial-transcriptomics-mapper/SKILL.md) |
-| 280 | ✓ | [`scientific-skills/Data Analysis/statistical-analysis-advisor/SKILL.md`](scientific-skills/Data%20Analysis/statistical-analysis-advisor/SKILL.md) |
-| 281 | ✓ | [`scientific-skills/Data Analysis/statistical-analysis/SKILL.md`](scientific-skills/Data%20Analysis/statistical-analysis/SKILL.md) |
-| 282 | ✓ | [`scientific-skills/Data Analysis/study-design-scale-selector/SKILL.md`](scientific-skills/Data%20Analysis/study-design-scale-selector/SKILL.md) |
-| 283 | ✓ | [`scientific-skills/Data Analysis/survival-analysis-km/SKILL.md`](scientific-skills/Data%20Analysis/survival-analysis-km/SKILL.md) |
-| 284 | ✓ | [`scientific-skills/Data Analysis/survival-curve-risk-table/SKILL.md`](scientific-skills/Data%20Analysis/survival-curve-risk-table/SKILL.md) |
-| 285 | ✓ | [`scientific-skills/Data Analysis/table-1-generator/SKILL.md`](scientific-skills/Data%20Analysis/table-1-generator/SKILL.md) |
-| 286 | ✓ | [`scientific-skills/Data Analysis/TorchDrug-English/SKILL.md`](scientific-skills/Data%20Analysis/TorchDrug-English/SKILL.md) |
-| 287 | ✓ | [`scientific-skills/Data Analysis/toxicity-structure-alert/SKILL.md`](scientific-skills/Data%20Analysis/toxicity-structure-alert/SKILL.md) |
-| 288 | ✓ | [`scientific-skills/Data Analysis/upset-plot-converter/SKILL.md`](scientific-skills/Data%20Analysis/upset-plot-converter/SKILL.md) |
-| 289 | ✓ | [`scientific-skills/Data Analysis/variant-pathogenicity-predictor/SKILL.md`](scientific-skills/Data%20Analysis/variant-pathogenicity-predictor/SKILL.md) |
-| 290 | ✓ | [`scientific-skills/Data Analysis/volcano-plot-labeler/SKILL.md`](scientific-skills/Data%20Analysis/volcano-plot-labeler/SKILL.md) |
-| 291 | ✓ | [`scientific-skills/Data Analysis/volcano-plot-script/SKILL.md`](scientific-skills/Data%20Analysis/volcano-plot-script/SKILL.md) |
-| 292 | ✓ | [`scientific-skills/Data Analysis/western-blot-quantifier/SKILL.md`](scientific-skills/Data%20Analysis/western-blot-quantifier/SKILL.md) |
-| 293 | ✓ | [`scientific-skills/Evidence Insight/acronym-unpacker/SKILL.md`](scientific-skills/Evidence%20Insight/acronym-unpacker/SKILL.md) |
-| 294 | ✓ | [`scientific-skills/Evidence Insight/alphafold-db/SKILL.md`](scientific-skills/Evidence%20Insight/alphafold-db/SKILL.md) |
-| 295 | ✓ | [`scientific-skills/Evidence Insight/arboreto/SKILL.md`](scientific-skills/Evidence%20Insight/arboreto/SKILL.md) |
-| 296 | ✓ | [`scientific-skills/Evidence Insight/arxiv-database/SKILL.md`](scientific-skills/Evidence%20Insight/arxiv-database/SKILL.md) |
-| 297 | ✓ | [`scientific-skills/Evidence Insight/bio-ontology-mapper/SKILL.md`](scientific-skills/Evidence%20Insight/bio-ontology-mapper/SKILL.md) |
-| 298 | ✓ | [`scientific-skills/Evidence Insight/biogrid-orcs/SKILL.md`](scientific-skills/Evidence%20Insight/biogrid-orcs/SKILL.md) |
-| 299 | ✓ | [`scientific-skills/Evidence Insight/biopython-entrez/SKILL.md`](scientific-skills/Evidence%20Insight/biopython-entrez/SKILL.md) |
-| 300 | ✓ | [`scientific-skills/Evidence Insight/biorxiv-database/SKILL.md`](scientific-skills/Evidence%20Insight/biorxiv-database/SKILL.md) |
-| 301 | ✓ | [`scientific-skills/Evidence Insight/blockbuster-therapy-predictor/SKILL.md`](scientific-skills/Evidence%20Insight/blockbuster-therapy-predictor/SKILL.md) |
-| 302 | ✓ | [`scientific-skills/Evidence Insight/brenda-database/SKILL.md`](scientific-skills/Evidence%20Insight/brenda-database/SKILL.md) |
-| 303 | ✓ | [`scientific-skills/Evidence Insight/cellosaurus-api/SKILL.md`](scientific-skills/Evidence%20Insight/cellosaurus-api/SKILL.md) |
-| 304 | ✓ | [`scientific-skills/Evidence Insight/cellxgene-census/SKILL.md`](scientific-skills/Evidence%20Insight/cellxgene-census/SKILL.md) |
-| 305 | ✓ | [`scientific-skills/Evidence Insight/chea-api/SKILL.md`](scientific-skills/Evidence%20Insight/chea-api/SKILL.md) |
-| 306 | ✓ | [`scientific-skills/Evidence Insight/chembl-database/SKILL.md`](scientific-skills/Evidence%20Insight/chembl-database/SKILL.md) |
-| 307 | ✓ | [`scientific-skills/Evidence Insight/citation-chasing-mapping/SKILL.md`](scientific-skills/Evidence%20Insight/citation-chasing-mapping/SKILL.md) |
-| 308 | ✓ | [`scientific-skills/Evidence Insight/citation-management/SKILL.md`](scientific-skills/Evidence%20Insight/citation-management/SKILL.md) |
-| 309 | ✓ | [`scientific-skills/Evidence Insight/citation-network/SKILL.md`](scientific-skills/Evidence%20Insight/citation-network/SKILL.md) |
-| 310 | ✓ | [`scientific-skills/Evidence Insight/clinical-study-info-extractor/SKILL.md`](scientific-skills/Evidence%20Insight/clinical-study-info-extractor/SKILL.md) |
-| 311 | ✓ | [`scientific-skills/Evidence Insight/clinicaltrials-db/SKILL.md`](scientific-skills/Evidence%20Insight/clinicaltrials-db/SKILL.md) |
-| 312 | ✓ | [`scientific-skills/Evidence Insight/clinicaltrials-gov-parser/SKILL.md`](scientific-skills/Evidence%20Insight/clinicaltrials-gov-parser/SKILL.md) |
-| 313 | ✓ | [`scientific-skills/Evidence Insight/clinpgx-database/SKILL.md`](scientific-skills/Evidence%20Insight/clinpgx-database/SKILL.md) |
-| 314 | ✓ | [`scientific-skills/Evidence Insight/clinvar-database/SKILL.md`](scientific-skills/Evidence%20Insight/clinvar-database/SKILL.md) |
-| 315 | ✓ | [`scientific-skills/Evidence Insight/comparison-table-gen/SKILL.md`](scientific-skills/Evidence%20Insight/comparison-table-gen/SKILL.md) |
-| 316 | ✓ | [`scientific-skills/Evidence Insight/competitor-trial-monitor/SKILL.md`](scientific-skills/Evidence%20Insight/competitor-trial-monitor/SKILL.md) |
-| 317 | ✓ | [`scientific-skills/Evidence Insight/concept-explainer/SKILL.md`](scientific-skills/Evidence%20Insight/concept-explainer/SKILL.md) |
-| 318 | ✓ | [`scientific-skills/Evidence Insight/cosmic-database/SKILL.md`](scientific-skills/Evidence%20Insight/cosmic-database/SKILL.md) |
-| 319 | ✓ | [`scientific-skills/Evidence Insight/cross-disciplinary-bridge-finder/SKILL.md`](scientific-skills/Evidence%20Insight/cross-disciplinary-bridge-finder/SKILL.md) |
-| 320 | ✓ | [`scientific-skills/Evidence Insight/crossref-database/SKILL.md`](scientific-skills/Evidence%20Insight/crossref-database/SKILL.md) |
-| 321 | ✓ | [`scientific-skills/Evidence Insight/ctd-api/SKILL.md`](scientific-skills/Evidence%20Insight/ctd-api/SKILL.md) |
-| 322 | ✓ | [`scientific-skills/Evidence Insight/diffdock-molecular-docking/SKILL.md`](scientific-skills/Evidence%20Insight/diffdock-molecular-docking/SKILL.md) |
-| 323 | ✓ | [`scientific-skills/Evidence Insight/drug-interaction-checker/SKILL.md`](scientific-skills/Evidence%20Insight/drug-interaction-checker/SKILL.md) |
-| 324 | ✓ | [`scientific-skills/Evidence Insight/drugbank-database/SKILL.md`](scientific-skills/Evidence%20Insight/drugbank-database/SKILL.md) |
-| 325 | ✓ | [`scientific-skills/Evidence Insight/emerging-topic-scout/SKILL.md`](scientific-skills/Evidence%20Insight/emerging-topic-scout/SKILL.md) |
-| 326 | ✓ | [`scientific-skills/Evidence Insight/ena-database/SKILL.md`](scientific-skills/Evidence%20Insight/ena-database/SKILL.md) |
-| 327 | ✓ | [`scientific-skills/Evidence Insight/encode-api/SKILL.md`](scientific-skills/Evidence%20Insight/encode-api/SKILL.md) |
-| 328 | ✓ | [`scientific-skills/Evidence Insight/encori-api/SKILL.md`](scientific-skills/Evidence%20Insight/encori-api/SKILL.md) |
-| 329 | ✓ | [`scientific-skills/Evidence Insight/ensembl-database/SKILL.md`](scientific-skills/Evidence%20Insight/ensembl-database/SKILL.md) |
-| 330 | ✓ | [`scientific-skills/Evidence Insight/fda-database/SKILL.md`](scientific-skills/Evidence%20Insight/fda-database/SKILL.md) |
-| 331 | ✓ | [`scientific-skills/Evidence Insight/fda-guideline-search/SKILL.md`](scientific-skills/Evidence%20Insight/fda-guideline-search/SKILL.md) |
-| 332 | ✓ | [`scientific-skills/Evidence Insight/funding-trend-forecaster/SKILL.md`](scientific-skills/Evidence%20Insight/funding-trend-forecaster/SKILL.md) |
-| 333 | ✓ | [`scientific-skills/Evidence Insight/gene-database/SKILL.md`](scientific-skills/Evidence%20Insight/gene-database/SKILL.md) |
-| 334 | ✓ | [`scientific-skills/Evidence Insight/gene-info/SKILL.md`](scientific-skills/Evidence%20Insight/gene-info/SKILL.md) |
-| 335 | ✓ | [`scientific-skills/Evidence Insight/geo-search-api/SKILL.md`](scientific-skills/Evidence%20Insight/geo-search-api/SKILL.md) |
-| 336 | ✓ | [`scientific-skills/Evidence Insight/gget/SKILL.md`](scientific-skills/Evidence%20Insight/gget/SKILL.md) |
-| 337 | ✓ | [`scientific-skills/Evidence Insight/grant-funding-scout/SKILL.md`](scientific-skills/Evidence%20Insight/grant-funding-scout/SKILL.md) |
-| 338 | ✓ | [`scientific-skills/Evidence Insight/grant-gantt-chart-gen/SKILL.md`](scientific-skills/Evidence%20Insight/grant-gantt-chart-gen/SKILL.md) |
-| 339 | ✓ | [`scientific-skills/Evidence Insight/gwas-database/SKILL.md`](scientific-skills/Evidence%20Insight/gwas-database/SKILL.md) |
-| 340 | ✓ | [`scientific-skills/Evidence Insight/hgnc-api/SKILL.md`](scientific-skills/Evidence%20Insight/hgnc-api/SKILL.md) |
-| 341 | ✓ | [`scientific-skills/Evidence Insight/hmdb-database/SKILL.md`](scientific-skills/Evidence%20Insight/hmdb-database/SKILL.md) |
-| 342 | ✓ | [`scientific-skills/Evidence Insight/ib-summarizer/SKILL.md`](scientific-skills/Evidence%20Insight/ib-summarizer/SKILL.md) |
-| 343 | ✓ | [`scientific-skills/Evidence Insight/jaspar-api/SKILL.md`](scientific-skills/Evidence%20Insight/jaspar-api/SKILL.md) |
-| 344 | ✓ | [`scientific-skills/Evidence Insight/journal-impact-factor-trend/SKILL.md`](scientific-skills/Evidence%20Insight/journal-impact-factor-trend/SKILL.md) |
-| 345 | ✓ | [`scientific-skills/Evidence Insight/journal-latest-issue/SKILL.md`](scientific-skills/Evidence%20Insight/journal-latest-issue/SKILL.md) |
-| 346 | ✓ | [`scientific-skills/Evidence Insight/journal-matchmaker/SKILL.md`](scientific-skills/Evidence%20Insight/journal-matchmaker/SKILL.md) |
-| 347 | ✓ | [`scientific-skills/Evidence Insight/journal-skills/SKILL.md`](scientific-skills/Evidence%20Insight/journal-skills/SKILL.md) |
-| 348 | ✓ | [`scientific-skills/Evidence Insight/kegg-api/SKILL.md`](scientific-skills/Evidence%20Insight/kegg-api/SKILL.md) |
-| 349 | ✓ | [`scientific-skills/Evidence Insight/kegg-database/SKILL.md`](scientific-skills/Evidence%20Insight/kegg-database/SKILL.md) |
-| 350 | ✓ | [`scientific-skills/Evidence Insight/key-takeaways/SKILL.md`](scientific-skills/Evidence%20Insight/key-takeaways/SKILL.md) |
-| 351 | ✓ | [`scientific-skills/Evidence Insight/keyword-velocity-tracker/SKILL.md`](scientific-skills/Evidence%20Insight/keyword-velocity-tracker/SKILL.md) |
-| 352 | ✓ | [`scientific-skills/Evidence Insight/literature-close-read/SKILL.md`](scientific-skills/Evidence%20Insight/literature-close-read/SKILL.md) |
-| 353 | ✓ | [`scientific-skills/Evidence Insight/literature-experiment-extract/SKILL.md`](scientific-skills/Evidence%20Insight/literature-experiment-extract/SKILL.md) |
-| 354 | ✓ | [`scientific-skills/Evidence Insight/literature-extensive-read/SKILL.md`](scientific-skills/Evidence%20Insight/literature-extensive-read/SKILL.md) |
-| 355 | ✓ | [`scientific-skills/Evidence Insight/literature-filtering/SKILL.md`](scientific-skills/Evidence%20Insight/literature-filtering/SKILL.md) |
-| 356 | ✓ | [`scientific-skills/Evidence Insight/medchem/SKILL.md`](scientific-skills/Evidence%20Insight/medchem/SKILL.md) |
-| 357 | ✓ | [`scientific-skills/Evidence Insight/methodology-extractor/SKILL.md`](scientific-skills/Evidence%20Insight/methodology-extractor/SKILL.md) |
-| 358 | ✓ | [`scientific-skills/Evidence Insight/open-access-scout/SKILL.md`](scientific-skills/Evidence%20Insight/open-access-scout/SKILL.md) |
-| 359 | ✓ | [`scientific-skills/Evidence Insight/open-source-license-check/SKILL.md`](scientific-skills/Evidence%20Insight/open-source-license-check/SKILL.md) |
-| 360 | ✓ | [`scientific-skills/Evidence Insight/open-targets-db/SKILL.md`](scientific-skills/Evidence%20Insight/open-targets-db/SKILL.md) |
-| 361 | ✓ | [`scientific-skills/Evidence Insight/openalex-db/SKILL.md`](scientific-skills/Evidence%20Insight/openalex-db/SKILL.md) |
-| 362 | ✓ | [`scientific-skills/Evidence Insight/patent-claim-mapper/SKILL.md`](scientific-skills/Evidence%20Insight/patent-claim-mapper/SKILL.md) |
-| 363 | ✓ | [`scientific-skills/Evidence Insight/patent-landscape/SKILL.md`](scientific-skills/Evidence%20Insight/patent-landscape/SKILL.md) |
-| 364 | ✓ | [`scientific-skills/Evidence Insight/pathway-introduction-expert/SKILL.md`](scientific-skills/Evidence%20Insight/pathway-introduction-expert/SKILL.md) |
-| 365 | ✓ | [`scientific-skills/Evidence Insight/pdb-database/SKILL.md`](scientific-skills/Evidence%20Insight/pdb-database/SKILL.md) |
-| 366 | ✓ | [`scientific-skills/Evidence Insight/pdf-extract-experimental-materials/SKILL.md`](scientific-skills/Evidence%20Insight/pdf-extract-experimental-materials/SKILL.md) |
-| 367 | ✓ | [`scientific-skills/Evidence Insight/phenotype-introduction/SKILL.md`](scientific-skills/Evidence%20Insight/phenotype-introduction/SKILL.md) |
-| 368 | ✓ | [`scientific-skills/Evidence Insight/pubchem-database-skill/SKILL.md`](scientific-skills/Evidence%20Insight/pubchem-database-skill/SKILL.md) |
-| 369 | ✓ | [`scientific-skills/Evidence Insight/pubmed-search-specialist/SKILL.md`](scientific-skills/Evidence%20Insight/pubmed-search-specialist/SKILL.md) |
-| 370 | ✓ | [`scientific-skills/Evidence Insight/pubmed-topic-recommend/SKILL.md`](scientific-skills/Evidence%20Insight/pubmed-topic-recommend/SKILL.md) |
-| 371 | ✓ | [`scientific-skills/Evidence Insight/pytdc/SKILL.md`](scientific-skills/Evidence%20Insight/pytdc/SKILL.md) |
-| 372 | ✓ | [`scientific-skills/Evidence Insight/rare-disease-hpo-mapper/SKILL.md`](scientific-skills/Evidence%20Insight/rare-disease-hpo-mapper/SKILL.md) |
-| 373 | ✓ | [`scientific-skills/Evidence Insight/reactome-skill/SKILL.md`](scientific-skills/Evidence%20Insight/reactome-skill/SKILL.md) |
-| 374 | ✓ | [`scientific-skills/Evidence Insight/reagent-substitute-scout/SKILL.md`](scientific-skills/Evidence%20Insight/reagent-substitute-scout/SKILL.md) |
-| 375 | ✓ | [`scientific-skills/Evidence Insight/reference-finder/SKILL.md`](scientific-skills/Evidence%20Insight/reference-finder/SKILL.md) |
-| 376 | ✓ | [`scientific-skills/Evidence Insight/reference-search/SKILL.md`](scientific-skills/Evidence%20Insight/reference-search/SKILL.md) |
-| 377 | ✓ | [`scientific-skills/Evidence Insight/research-article-weekly/SKILL.md`](scientific-skills/Evidence%20Insight/research-article-weekly/SKILL.md) |
-| 378 | ✓ | [`scientific-skills/Evidence Insight/research-hotspot-analysis/SKILL.md`](scientific-skills/Evidence%20Insight/research-hotspot-analysis/SKILL.md) |
-| 379 | ✓ | [`scientific-skills/Evidence Insight/research-paper-downloader/SKILL.md`](scientific-skills/Evidence%20Insight/research-paper-downloader/SKILL.md) |
-| 380 | ✓ | [`scientific-skills/Evidence Insight/retraction-watcher/SKILL.md`](scientific-skills/Evidence%20Insight/retraction-watcher/SKILL.md) |
-| 381 | ✓ | [`scientific-skills/Evidence Insight/scholar-evaluation/SKILL.md`](scientific-skills/Evidence%20Insight/scholar-evaluation/SKILL.md) |
-| 382 | ✓ | [`scientific-skills/Evidence Insight/scientific-podcast-summary/SKILL.md`](scientific-skills/Evidence%20Insight/scientific-podcast-summary/SKILL.md) |
-| 383 | ✓ | [`scientific-skills/Evidence Insight/scite-database/SKILL.md`](scientific-skills/Evidence%20Insight/scite-database/SKILL.md) |
-| 384 | ✓ | [`scientific-skills/Evidence Insight/sds-msds-risk-scanner/SKILL.md`](scientific-skills/Evidence%20Insight/sds-msds-risk-scanner/SKILL.md) |
-| 385 | ✓ | [`scientific-skills/Evidence Insight/semantic-scholar-database/SKILL.md`](scientific-skills/Evidence%20Insight/semantic-scholar-database/SKILL.md) |
-| 386 | ✓ | [`scientific-skills/Evidence Insight/smart-journal-monitor/SKILL.md`](scientific-skills/Evidence%20Insight/smart-journal-monitor/SKILL.md) |
-| 387 | ✓ | [`scientific-skills/Evidence Insight/string-database/SKILL.md`](scientific-skills/Evidence%20Insight/string-database/SKILL.md) |
-| 388 | ✓ | [`scientific-skills/Evidence Insight/systematic-review-screener/SKILL.md`](scientific-skills/Evidence%20Insight/systematic-review-screener/SKILL.md) |
-| 389 | ✓ | [`scientific-skills/Evidence Insight/target-novelty-scorer/SKILL.md`](scientific-skills/Evidence%20Insight/target-novelty-scorer/SKILL.md) |
-| 390 | ✓ | [`scientific-skills/Evidence Insight/translational-gap-analyzer/SKILL.md`](scientific-skills/Evidence%20Insight/translational-gap-analyzer/SKILL.md) |
-| 391 | ✓ | [`scientific-skills/Evidence Insight/uniprot-database/SKILL.md`](scientific-skills/Evidence%20Insight/uniprot-database/SKILL.md) |
-| 392 | ✓ | [`scientific-skills/Evidence Insight/unstructured-medical-text-miner/SKILL.md`](scientific-skills/Evidence%20Insight/unstructured-medical-text-miner/SKILL.md) |
-| 393 | ✓ | [`scientific-skills/Evidence Insight/variant-annotation/SKILL.md`](scientific-skills/Evidence%20Insight/variant-annotation/SKILL.md) |
-| 394 | ✓ | [`scientific-skills/Evidence Insight/venue-templates/SKILL.md`](scientific-skills/Evidence%20Insight/venue-templates/SKILL.md) |
-| 395 | ✓ | [`scientific-skills/Evidence Insight/zinc-database/SKILL.md`](scientific-skills/Evidence%20Insight/zinc-database/SKILL.md) |
-| 396 | ✓ | [`scientific-skills/Other/academic-cv-generator/SKILL.md`](scientific-skills/Other/academic-cv-generator/SKILL.md) |
-| 397 | ✓ | [`scientific-skills/Other/academic-norm-review/SKILL.md`](scientific-skills/Other/academic-norm-review/SKILL.md) |
-| 398 | ✓ | [`scientific-skills/Other/academic-poster-generator/SKILL.md`](scientific-skills/Other/academic-poster-generator/SKILL.md) |
-| 399 | ✓ | [`scientific-skills/Other/adaptyv/SKILL.md`](scientific-skills/Other/adaptyv/SKILL.md) |
-| 400 | ✓ | [`scientific-skills/Other/api-design-principles/SKILL.md`](scientific-skills/Other/api-design-principles/SKILL.md) |
-| 401 | ✓ | [`scientific-skills/Other/article-format-adjustment/SKILL.md`](scientific-skills/Other/article-format-adjustment/SKILL.md) |
-| 402 | ✓ | [`scientific-skills/Other/benchling-integration/SKILL.md`](scientific-skills/Other/benchling-integration/SKILL.md) |
-| 403 | ✓ | [`scientific-skills/Other/bib-formatter/SKILL.md`](scientific-skills/Other/bib-formatter/SKILL.md) |
-| 404 | ✓ | [`scientific-skills/Other/bibliography/SKILL.md`](scientific-skills/Other/bibliography/SKILL.md) |
-| 405 | ✓ | [`scientific-skills/Other/biodbnet-api/SKILL.md`](scientific-skills/Other/biodbnet-api/SKILL.md) |
-| 406 | ✓ | [`scientific-skills/Other/bmi-bsa-calculator/SKILL.md`](scientific-skills/Other/bmi-bsa-calculator/SKILL.md) |
-| 407 | ✓ | [`scientific-skills/Other/brainstorming/SKILL.md`](scientific-skills/Other/brainstorming/SKILL.md) |
-| 408 | ✓ | [`scientific-skills/Other/buffer-calculator/SKILL.md`](scientific-skills/Other/buffer-calculator/SKILL.md) |
-| 409 | ✓ | [`scientific-skills/Other/chart-style-unifier/SKILL.md`](scientific-skills/Other/chart-style-unifier/SKILL.md) |
-| 410 | ✓ | [`scientific-skills/Other/chemical-storage-sorter/SKILL.md`](scientific-skills/Other/chemical-storage-sorter/SKILL.md) |
-| 411 | ✓ | [`scientific-skills/Other/chemical-structure-converter/SKILL.md`](scientific-skills/Other/chemical-structure-converter/SKILL.md) |
-| 412 | ✓ | [`scientific-skills/Other/clinic-sample-size/SKILL.md`](scientific-skills/Other/clinic-sample-size/SKILL.md) |
-| 413 | ✓ | [`scientific-skills/Other/clinical-reports/SKILL.md`](scientific-skills/Other/clinical-reports/SKILL.md) |
-| 414 | ✓ | [`scientific-skills/Other/co2-tank-monitor/SKILL.md`](scientific-skills/Other/co2-tank-monitor/SKILL.md) |
-| 415 | ✓ | [`scientific-skills/Other/cold-chain-risk-calculator/SKILL.md`](scientific-skills/Other/cold-chain-risk-calculator/SKILL.md) |
-| 416 | ✓ | [`scientific-skills/Other/conference-tweet-generator/SKILL.md`](scientific-skills/Other/conference-tweet-generator/SKILL.md) |
-| 417 | ✓ | [`scientific-skills/Other/conflict-of-interest-checker/SKILL.md`](scientific-skills/Other/conflict-of-interest-checker/SKILL.md) |
-| 418 | ✓ | [`scientific-skills/Other/content-proofreading/SKILL.md`](scientific-skills/Other/content-proofreading/SKILL.md) |
-| 419 | ✓ | [`scientific-skills/Other/datamol/SKILL.md`](scientific-skills/Other/datamol/SKILL.md) |
-| 420 | ✓ | [`scientific-skills/Other/date-calculator/SKILL.md`](scientific-skills/Other/date-calculator/SKILL.md) |
-| 421 | ✓ | [`scientific-skills/Other/dicom-anonymizer/SKILL.md`](scientific-skills/Other/dicom-anonymizer/SKILL.md) |
-| 422 | ✓ | [`scientific-skills/Other/docx-feedback-tracker/SKILL.md`](scientific-skills/Other/docx-feedback-tracker/SKILL.md) |
-| 423 | ✓ | [`scientific-skills/Other/dpi-upscaler-checker/SKILL.md`](scientific-skills/Other/dpi-upscaler-checker/SKILL.md) |
-| 424 | ✓ | [`scientific-skills/Other/ebm-calculator/SKILL.md`](scientific-skills/Other/ebm-calculator/SKILL.md) |
-| 425 | ✓ | [`scientific-skills/Other/equipment-maintenance-log/SKILL.md`](scientific-skills/Other/equipment-maintenance-log/SKILL.md) |
-| 426 | ✓ | [`scientific-skills/Other/experiment-detail-comparator/SKILL.md`](scientific-skills/Other/experiment-detail-comparator/SKILL.md) |
-| 427 | ✓ | [`scientific-skills/Other/expert-interview-generator/SKILL.md`](scientific-skills/Other/expert-interview-generator/SKILL.md) |
-| 428 | ✓ | [`scientific-skills/Other/expert-interview-topics/SKILL.md`](scientific-skills/Other/expert-interview-topics/SKILL.md) |
-| 429 | ✓ | [`scientific-skills/Other/file-management/SKILL.md`](scientific-skills/Other/file-management/SKILL.md) |
-| 430 | ✓ | [`scientific-skills/Other/file-search/SKILL.md`](scientific-skills/Other/file-search/SKILL.md) |
-| 431 | ✓ | [`scientific-skills/Other/file-security-toolkit/SKILL.md`](scientific-skills/Other/file-security-toolkit/SKILL.md) |
-| 432 | ✓ | [`scientific-skills/Other/fulltext-fetcher/SKILL.md`](scientific-skills/Other/fulltext-fetcher/SKILL.md) |
-| 433 | ✓ | [`scientific-skills/Other/hippocrates/SKILL.md`](scientific-skills/Other/hippocrates/SKILL.md) |
-| 434 | ✓ | [`scientific-skills/Other/html-to-pdf/SKILL.md`](scientific-skills/Other/html-to-pdf/SKILL.md) |
-| 435 | ✓ | [`scientific-skills/Other/id-photo-tool/SKILL.md`](scientific-skills/Other/id-photo-tool/SKILL.md) |
-| 436 | ✓ | [`scientific-skills/Other/image-ocr/SKILL.md`](scientific-skills/Other/image-ocr/SKILL.md) |
-| 437 | ✓ | [`scientific-skills/Other/image-processing/SKILL.md`](scientific-skills/Other/image-processing/SKILL.md) |
-| 438 | ✓ | [`scientific-skills/Other/imagegenskill/SKILL.md`](scientific-skills/Other/imagegenskill/SKILL.md) |
-| 439 | ✓ | [`scientific-skills/Other/iso-13485-certification/SKILL.md`](scientific-skills/Other/iso-13485-certification/SKILL.md) |
-| 440 | ✓ | [`scientific-skills/Other/journal-recommender/SKILL.md`](scientific-skills/Other/journal-recommender/SKILL.md) |
-| 441 | ✓ | [`scientific-skills/Other/knowledge-base-search/SKILL.md`](scientific-skills/Other/knowledge-base-search/SKILL.md) |
-| 442 | ✓ | [`scientific-skills/Other/kv-design/SKILL.md`](scientific-skills/Other/kv-design/SKILL.md) |
-| 443 | ✓ | [`scientific-skills/Other/lab-inventory-predictor/SKILL.md`](scientific-skills/Other/lab-inventory-predictor/SKILL.md) |
-| 444 | ✓ | [`scientific-skills/Other/Lab-Prep-Calculations/SKILL.md`](scientific-skills/Other/Lab-Prep-Calculations/SKILL.md) |
-| 445 | ✓ | [`scientific-skills/Other/lab-result-interpretation/SKILL.md`](scientific-skills/Other/lab-result-interpretation/SKILL.md) |
-| 446 | ✓ | [`scientific-skills/Other/learning-tutoring/SKILL.md`](scientific-skills/Other/learning-tutoring/SKILL.md) |
-| 447 | ✓ | [`scientific-skills/Other/literature-management/SKILL.md`](scientific-skills/Other/literature-management/SKILL.md) |
-| 448 | ✓ | [`scientific-skills/Other/literature-statistics/SKILL.md`](scientific-skills/Other/literature-statistics/SKILL.md) |
-| 449 | ✓ | [`scientific-skills/Other/literatureimages-interpretation/SKILL.md`](scientific-skills/Other/literatureimages-interpretation/SKILL.md) |
-| 450 | ✓ | [`scientific-skills/Other/market-research-report-generator/SKILL.md`](scientific-skills/Other/market-research-report-generator/SKILL.md) |
-| 451 | ✓ | [`scientific-skills/Other/markitdown/SKILL.md`](scientific-skills/Other/markitdown/SKILL.md) |
-| 452 | ✓ | [`scientific-skills/Other/medical-case-interpreter/SKILL.md`](scientific-skills/Other/medical-case-interpreter/SKILL.md) |
-| 453 | ✓ | [`scientific-skills/Other/medical-case-report-generator/SKILL.md`](scientific-skills/Other/medical-case-report-generator/SKILL.md) |
-| 454 | ✓ | [`scientific-skills/Other/medical-unit-converter/SKILL.md`](scientific-skills/Other/medical-unit-converter/SKILL.md) |
-| 455 | ✓ | [`scientific-skills/Other/medication-reconciliation/SKILL.md`](scientific-skills/Other/medication-reconciliation/SKILL.md) |
-| 456 | ✓ | [`scientific-skills/Other/meeting-assistant/SKILL.md`](scientific-skills/Other/meeting-assistant/SKILL.md) |
-| 457 | ✓ | [`scientific-skills/Other/meeting-minutes-generator/SKILL.md`](scientific-skills/Other/meeting-minutes-generator/SKILL.md) |
-| 458 | ✓ | [`scientific-skills/Other/meta-search-builder/SKILL.md`](scientific-skills/Other/meta-search-builder/SKILL.md) |
-| 459 | ✓ | [`scientific-skills/Other/microscopy-scale-bar-adder/SKILL.md`](scientific-skills/Other/microscopy-scale-bar-adder/SKILL.md) |
-| 460 | ✓ | [`scientific-skills/Other/mindmap-helper/SKILL.md`](scientific-skills/Other/mindmap-helper/SKILL.md) |
-| 461 | ✓ | [`scientific-skills/Other/mindmap/SKILL.md`](scientific-skills/Other/mindmap/SKILL.md) |
-| 462 | ✓ | [`scientific-skills/Other/multi-panel-figure-assembler/SKILL.md`](scientific-skills/Other/multi-panel-figure-assembler/SKILL.md) |
-| 463 | ✓ | [`scientific-skills/Other/multi-source-news-writer/SKILL.md`](scientific-skills/Other/multi-source-news-writer/SKILL.md) |
-| 464 | ✓ | [`scientific-skills/Other/note-summarizer/SKILL.md`](scientific-skills/Other/note-summarizer/SKILL.md) |
-| 465 | ✓ | [`scientific-skills/Other/paper-tweet-generator/SKILL.md`](scientific-skills/Other/paper-tweet-generator/SKILL.md) |
-| 466 | ✓ | [`scientific-skills/Other/patient-consent-simplifier/SKILL.md`](scientific-skills/Other/patient-consent-simplifier/SKILL.md) |
-| 467 | ✓ | [`scientific-skills/Other/pdf-extract/SKILL.md`](scientific-skills/Other/pdf-extract/SKILL.md) |
-| 468 | ✓ | [`scientific-skills/Other/pdf-ppt/SKILL.md`](scientific-skills/Other/pdf-ppt/SKILL.md) |
-| 469 | ✓ | [`scientific-skills/Other/pdf-processor/SKILL.md`](scientific-skills/Other/pdf-processor/SKILL.md) |
-| 470 | ✓ | [`scientific-skills/Other/pdf-to-ppt-pack/SKILL.md`](scientific-skills/Other/pdf-to-ppt-pack/SKILL.md) |
-| 471 | ✓ | [`scientific-skills/Other/plan-generator/SKILL.md`](scientific-skills/Other/plan-generator/SKILL.md) |
-| 472 | ✓ | [`scientific-skills/Other/plotly/SKILL.md`](scientific-skills/Other/plotly/SKILL.md) |
-| 473 | ✓ | [`scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md`](scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md) |
-| 474 | ✓ | [`scientific-skills/Other/poster-designer/SKILL.md`](scientific-skills/Other/poster-designer/SKILL.md) |
-| 475 | ✓ | [`scientific-skills/Other/ppt/SKILL.md`](scientific-skills/Other/ppt/SKILL.md) |
-| 476 | ✓ | [`scientific-skills/Other/pptx-posters/SKILL.md`](scientific-skills/Other/pptx-posters/SKILL.md) |
-| 477 | ✓ | [`scientific-skills/Other/PPTX-Skill/SKILL.md`](scientific-skills/Other/PPTX-Skill/SKILL.md) |
-| 478 | ✓ | [`scientific-skills/Other/reagent-expiry-alert/SKILL.md`](scientific-skills/Other/reagent-expiry-alert/SKILL.md) |
-| 479 | ✓ | [`scientific-skills/Other/reproducibility-check/SKILL.md`](scientific-skills/Other/reproducibility-check/SKILL.md) |
-| 480 | ✓ | [`scientific-skills/Other/resubmission-deadline-tracker/SKILL.md`](scientific-skills/Other/resubmission-deadline-tracker/SKILL.md) |
-| 481 | ✓ | [`scientific-skills/Other/result-figure-consistencycheck/SKILL.md`](scientific-skills/Other/result-figure-consistencycheck/SKILL.md) |
-| 482 | ✓ | [`scientific-skills/Other/schedule-management/SKILL.md`](scientific-skills/Other/schedule-management/SKILL.md) |
-| 483 | ✓ | [`scientific-skills/Other/sci-paper-reviewer/SKILL.md`](scientific-skills/Other/sci-paper-reviewer/SKILL.md) |
-| 484 | ✓ | [`scientific-skills/Other/science-popularization-article/SKILL.md`](scientific-skills/Other/science-popularization-article/SKILL.md) |
-| 485 | ✓ | [`scientific-skills/Other/scientific-schematics/SKILL.md`](scientific-skills/Other/scientific-schematics/SKILL.md) |
-| 486 | ✓ | [`scientific-skills/Other/search-pubmed/SKILL.md`](scientific-skills/Other/search-pubmed/SKILL.md) |
-| 487 | ✓ | [`scientific-skills/Other/shift-handover-summarizer/SKILL.md`](scientific-skills/Other/shift-handover-summarizer/SKILL.md) |
-| 488 | ✓ | [`scientific-skills/Other/short-video-script-generator/SKILL.md`](scientific-skills/Other/short-video-script-generator/SKILL.md) |
-| 489 | ✓ | [`scientific-skills/Other/slide-deck-images/SKILL.md`](scientific-skills/Other/slide-deck-images/SKILL.md) |
-| 490 | ✓ | [`scientific-skills/Other/soft-article-writer/SKILL.md`](scientific-skills/Other/soft-article-writer/SKILL.md) |
-| 491 | ✓ | [`scientific-skills/Other/spreadsheet-ops/SKILL.md`](scientific-skills/Other/spreadsheet-ops/SKILL.md) |
-| 492 | ✓ | [`scientific-skills/Other/symptom-checker-triage/SKILL.md`](scientific-skills/Other/symptom-checker-triage/SKILL.md) |
-| 493 | ✓ | [`scientific-skills/Other/task-reminder/SKILL.md`](scientific-skills/Other/task-reminder/SKILL.md) |
-| 494 | ✓ | [`scientific-skills/Other/text-format-organizer/SKILL.md`](scientific-skills/Other/text-format-organizer/SKILL.md) |
-| 495 | ✓ | [`scientific-skills/Other/text-to-technical-roadmap/SKILL.md`](scientific-skills/Other/text-to-technical-roadmap/SKILL.md) |
-| 496 | ✓ | [`scientific-skills/Other/time-zone-planner/SKILL.md`](scientific-skills/Other/time-zone-planner/SKILL.md) |
-| 497 | ✓ | [`scientific-skills/Other/treatment-plans/SKILL.md`](scientific-skills/Other/treatment-plans/SKILL.md) |
-| 498 | ✓ | [`scientific-skills/Other/uspto-database/SKILL.md`](scientific-skills/Other/uspto-database/SKILL.md) |
-| 499 | ✓ | [`scientific-skills/Other/vector-text-fixer/SKILL.md`](scientific-skills/Other/vector-text-fixer/SKILL.md) |
-| 500 | ✓ | [`scientific-skills/Other/virtual-patient-roleplay/SKILL.md`](scientific-skills/Other/virtual-patient-roleplay/SKILL.md) |
-| 501 | ✓ | [`scientific-skills/Other/waste-disposal-guide/SKILL.md`](scientific-skills/Other/waste-disposal-guide/SKILL.md) |
-| 502 | ✓ | [`scientific-skills/Other/word-read-write/SKILL.md`](scientific-skills/Other/word-read-write/SKILL.md) |
-| 503 | ✓ | [`scientific-skills/Protocol Design/basic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/basic-research-design/SKILL.md) |
-| 504 | ✓ | [`scientific-skills/Protocol Design/clinic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/clinic-research-design/SKILL.md) |
-| 505 | ✓ | [`scientific-skills/Protocol Design/dual-disease-transcriptomic-ml-planner/SKILL.md`](scientific-skills/Protocol%20Design/dual-disease-transcriptomic-ml-planner/SKILL.md) |
-| 506 | ✓ | [`scientific-skills/Protocol Design/esm/SKILL.md`](scientific-skills/Protocol%20Design/esm/SKILL.md) |
-| 507 | ✓ | [`scientific-skills/Protocol Design/faers-multi-drug-soc-planner/SKILL.md`](scientific-skills/Protocol%20Design/faers-multi-drug-soc-planner/SKILL.md) |
-| 508 | ✓ | [`scientific-skills/Protocol Design/hypogenic/SKILL.md`](scientific-skills/Protocol%20Design/hypogenic/SKILL.md) |
-| 509 | ✓ | [`scientific-skills/Protocol Design/hypothesis-generation/SKILL.md`](scientific-skills/Protocol%20Design/hypothesis-generation/SKILL.md) |
-| 510 | ✓ | [`scientific-skills/Protocol Design/INPLASY-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/INPLASY-registration-helper/SKILL.md) |
-| 511 | ✓ | [`scientific-skills/Protocol Design/meta-protocol-writer/SKILL.md`](scientific-skills/Protocol%20Design/meta-protocol-writer/SKILL.md) |
-| 512 | ✓ | [`scientific-skills/Protocol Design/network-tox-docking-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/network-tox-docking-research-planner/SKILL.md) |
-| 513 | ✓ | [`scientific-skills/Protocol Design/non-tumor-ml-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/non-tumor-ml-research-planner/SKILL.md) |
-| 514 | ✓ | [`scientific-skills/Protocol Design/prospero-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/prospero-registration-helper/SKILL.md) |
-| 515 | ✓ | [`scientific-skills/Protocol Design/protocol-standardization/SKILL.md`](scientific-skills/Protocol%20Design/protocol-standardization/SKILL.md) |
-| 516 | ✓ | [`scientific-skills/Protocol Design/research-grants/SKILL.md`](scientific-skills/Protocol%20Design/research-grants/SKILL.md) |
-| 517 | ✓ | [`scientific-skills/Protocol Design/research-proposal-generator/SKILL.md`](scientific-skills/Protocol%20Design/research-proposal-generator/SKILL.md) |
-| 518 | ✓ | [`scientific-skills/Protocol Design/two-sample-mr-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/two-sample-mr-research-planner/SKILL.md) |
-| 519 | ✓ | [`skill-auditor/SKILL.md`](skill-auditor/SKILL.md) |
+| 224 | ✓ | [`scientific-skills/Data Analysis/lab-budget-forecaster/SKILL.md`](scientific-skills/Data%20Analysis/lab-budget-forecaster/SKILL.md) |
+| 225 | ✓ | [`scientific-skills/Data Analysis/lamindb/SKILL.md`](scientific-skills/Data%20Analysis/lamindb/SKILL.md) |
+| 226 | ✓ | [`scientific-skills/Data Analysis/lipinski-rule-filter/SKILL.md`](scientific-skills/Data%20Analysis/lipinski-rule-filter/SKILL.md) |
+| 227 | ✓ | [`scientific-skills/Data Analysis/matchms/SKILL.md`](scientific-skills/Data%20Analysis/matchms/SKILL.md) |
+| 228 | ✓ | [`scientific-skills/Data Analysis/matplotlib/SKILL.md`](scientific-skills/Data%20Analysis/matplotlib/SKILL.md) |
+| 229 | ✓ | [`scientific-skills/Data Analysis/mechanism-flowchart/SKILL.md`](scientific-skills/Data%20Analysis/mechanism-flowchart/SKILL.md) |
+| 230 | ✓ | [`scientific-skills/Data Analysis/meta-abstract-screener/SKILL.md`](scientific-skills/Data%20Analysis/meta-abstract-screener/SKILL.md) |
+| 231 | ✓ | [`scientific-skills/Data Analysis/meta-baujat-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-baujat-plot/SKILL.md) |
+| 232 | ✓ | [`scientific-skills/Data Analysis/meta-criteria-generator/SKILL.md`](scientific-skills/Data%20Analysis/meta-criteria-generator/SKILL.md) |
+| 233 | ✓ | [`scientific-skills/Data Analysis/meta-feasibility-analyzer/SKILL.md`](scientific-skills/Data%20Analysis/meta-feasibility-analyzer/SKILL.md) |
+| 234 | ✓ | [`scientific-skills/Data Analysis/meta-forest-binary-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-forest-binary-plot/SKILL.md) |
+| 235 | ✓ | [`scientific-skills/Data Analysis/meta-forest-continuous-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-forest-continuous-plot/SKILL.md) |
+| 236 | ✓ | [`scientific-skills/Data Analysis/meta-forest-model-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-forest-model-plot/SKILL.md) |
+| 237 | ✓ | [`scientific-skills/Data Analysis/meta-funnel-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-funnel-plot/SKILL.md) |
+| 238 | ✓ | [`scientific-skills/Data Analysis/meta-picos-generator/SKILL.md`](scientific-skills/Data%20Analysis/meta-picos-generator/SKILL.md) |
+| 239 | ✓ | [`scientific-skills/Data Analysis/meta-radial-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-radial-plot/SKILL.md) |
+| 240 | ✓ | [`scientific-skills/Data Analysis/meta-rob2-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-rob2-plot/SKILL.md) |
+| 241 | ✓ | [`scientific-skills/Data Analysis/meta-screening-fulltext/SKILL.md`](scientific-skills/Data%20Analysis/meta-screening-fulltext/SKILL.md) |
+| 242 | ✓ | [`scientific-skills/Data Analysis/meta-sensitivity-plot/SKILL.md`](scientific-skills/Data%20Analysis/meta-sensitivity-plot/SKILL.md) |
+| 243 | ✓ | [`scientific-skills/Data Analysis/meta-title-generator/SKILL.md`](scientific-skills/Data%20Analysis/meta-title-generator/SKILL.md) |
+| 244 | ✓ | [`scientific-skills/Data Analysis/metabolomics-workbench-database/SKILL.md`](scientific-skills/Data%20Analysis/metabolomics-workbench-database/SKILL.md) |
+| 245 | ✓ | [`scientific-skills/Data Analysis/metagenomic-krona-chart/SKILL.md`](scientific-skills/Data%20Analysis/metagenomic-krona-chart/SKILL.md) |
+| 246 | ✓ | [`scientific-skills/Data Analysis/motif-logo-generator/SKILL.md`](scientific-skills/Data%20Analysis/motif-logo-generator/SKILL.md) |
+| 247 | ✓ | [`scientific-skills/Data Analysis/neoantigen-predictor/SKILL.md`](scientific-skills/Data%20Analysis/neoantigen-predictor/SKILL.md) |
+| 248 | ✓ | [`scientific-skills/Data Analysis/neurokit2/SKILL.md`](scientific-skills/Data%20Analysis/neurokit2/SKILL.md) |
+| 249 | ✓ | [`scientific-skills/Data Analysis/neuropixels-analysis/SKILL.md`](scientific-skills/Data%20Analysis/neuropixels-analysis/SKILL.md) |
+| 250 | ✓ | [`scientific-skills/Data Analysis/outcome-extraction-for-clinical-trials/SKILL.md`](scientific-skills/Data%20Analysis/outcome-extraction-for-clinical-trials/SKILL.md) |
+| 251 | ✓ | [`scientific-skills/Data Analysis/outlier-detection-handler/SKILL.md`](scientific-skills/Data%20Analysis/outlier-detection-handler/SKILL.md) |
+| 252 | ✓ | [`scientific-skills/Data Analysis/pathml/SKILL.md`](scientific-skills/Data%20Analysis/pathml/SKILL.md) |
+| 253 | ✓ | [`scientific-skills/Data Analysis/pathology-roi-selector/SKILL.md`](scientific-skills/Data%20Analysis/pathology-roi-selector/SKILL.md) |
+| 254 | ✓ | [`scientific-skills/Data Analysis/phylogenetic-tree-styler/SKILL.md`](scientific-skills/Data%20Analysis/phylogenetic-tree-styler/SKILL.md) |
+| 255 | ✓ | [`scientific-skills/Data Analysis/preclinical-pkpd-analyst/SKILL.md`](scientific-skills/Data%20Analysis/preclinical-pkpd-analyst/SKILL.md) |
+| 256 | ✓ | [`scientific-skills/Data Analysis/probast-quality-assessment-for-prediction-model-studies/SKILL.md`](scientific-skills/Data%20Analysis/probast-quality-assessment-for-prediction-model-studies/SKILL.md) |
+| 257 | ✓ | [`scientific-skills/Data Analysis/protocol-deviation-classifier/SKILL.md`](scientific-skills/Data%20Analysis/protocol-deviation-classifier/SKILL.md) |
+| 258 | ✓ | [`scientific-skills/Data Analysis/pseudotime-trajectory-viz/SKILL.md`](scientific-skills/Data%20Analysis/pseudotime-trajectory-viz/SKILL.md) |
+| 259 | ✓ | [`scientific-skills/Data Analysis/pydeseq2/SKILL.md`](scientific-skills/Data%20Analysis/pydeseq2/SKILL.md) |
+| 260 | ✓ | [`scientific-skills/Data Analysis/pydicom/SKILL.md`](scientific-skills/Data%20Analysis/pydicom/SKILL.md) |
+| 261 | ✓ | [`scientific-skills/Data Analysis/pyopenms-skill/SKILL.md`](scientific-skills/Data%20Analysis/pyopenms-skill/SKILL.md) |
+| 262 | ✓ | [`scientific-skills/Data Analysis/pysam/SKILL.md`](scientific-skills/Data%20Analysis/pysam/SKILL.md) |
+| 263 | ✓ | [`scientific-skills/Data Analysis/quadas-c-assessment-for-diagnostic-accuracy-studies/SKILL.md`](scientific-skills/Data%20Analysis/quadas-c-assessment-for-diagnostic-accuracy-studies/SKILL.md) |
+| 264 | ✓ | [`scientific-skills/Data Analysis/quality-assessment/SKILL.md`](scientific-skills/Data%20Analysis/quality-assessment/SKILL.md) |
+| 265 | ✓ | [`scientific-skills/Data Analysis/quapas-quality-assessment-for-prognosis-studies/SKILL.md`](scientific-skills/Data%20Analysis/quapas-quality-assessment-for-prognosis-studies/SKILL.md) |
+| 266 | ✓ | [`scientific-skills/Data Analysis/rct-bias-assessment-rob2/SKILL.md`](scientific-skills/Data%20Analysis/rct-bias-assessment-rob2/SKILL.md) |
+| 267 | ✓ | [`scientific-skills/Data Analysis/rowan/SKILL.md`](scientific-skills/Data%20Analysis/rowan/SKILL.md) |
+| 268 | ✓ | [`scientific-skills/Data Analysis/sanger-chromatogram-qa/SKILL.md`](scientific-skills/Data%20Analysis/sanger-chromatogram-qa/SKILL.md) |
+| 269 | ✓ | [`scientific-skills/Data Analysis/scanpy/SKILL.md`](scientific-skills/Data%20Analysis/scanpy/SKILL.md) |
+| 270 | ✓ | [`scientific-skills/Data Analysis/scikit-bio/SKILL.md`](scientific-skills/Data%20Analysis/scikit-bio/SKILL.md) |
+| 271 | ✓ | [`scientific-skills/Data Analysis/scikit-survival/SKILL.md`](scientific-skills/Data%20Analysis/scikit-survival/SKILL.md) |
+| 272 | ✓ | [`scientific-skills/Data Analysis/scrna-cell-type-annotator/SKILL.md`](scientific-skills/Data%20Analysis/scrna-cell-type-annotator/SKILL.md) |
+| 273 | ✓ | [`scientific-skills/Data Analysis/scvi-tools/SKILL.md`](scientific-skills/Data%20Analysis/scvi-tools/SKILL.md) |
+| 274 | ✓ | [`scientific-skills/Data Analysis/seaborn/SKILL.md`](scientific-skills/Data%20Analysis/seaborn/SKILL.md) |
+| 275 | ✓ | [`scientific-skills/Data Analysis/sequence-alignment/SKILL.md`](scientific-skills/Data%20Analysis/sequence-alignment/SKILL.md) |
+| 276 | ✓ | [`scientific-skills/Data Analysis/singlecell-portal/SKILL.md`](scientific-skills/Data%20Analysis/singlecell-portal/SKILL.md) |
+| 277 | ✓ | [`scientific-skills/Data Analysis/smiles-de-salter/SKILL.md`](scientific-skills/Data%20Analysis/smiles-de-salter/SKILL.md) |
+| 278 | ✓ | [`scientific-skills/Data Analysis/spatial-transcriptomics-mapper/SKILL.md`](scientific-skills/Data%20Analysis/spatial-transcriptomics-mapper/SKILL.md) |
+| 279 | ✓ | [`scientific-skills/Data Analysis/statistical-analysis-advisor/SKILL.md`](scientific-skills/Data%20Analysis/statistical-analysis-advisor/SKILL.md) |
+| 280 | ✓ | [`scientific-skills/Data Analysis/statistical-analysis/SKILL.md`](scientific-skills/Data%20Analysis/statistical-analysis/SKILL.md) |
+| 281 | ✓ | [`scientific-skills/Data Analysis/study-design-scale-selector/SKILL.md`](scientific-skills/Data%20Analysis/study-design-scale-selector/SKILL.md) |
+| 282 | ✓ | [`scientific-skills/Data Analysis/survival-analysis-km/SKILL.md`](scientific-skills/Data%20Analysis/survival-analysis-km/SKILL.md) |
+| 283 | ✓ | [`scientific-skills/Data Analysis/survival-curve-risk-table/SKILL.md`](scientific-skills/Data%20Analysis/survival-curve-risk-table/SKILL.md) |
+| 284 | ✓ | [`scientific-skills/Data Analysis/table-1-generator/SKILL.md`](scientific-skills/Data%20Analysis/table-1-generator/SKILL.md) |
+| 285 | ✓ | [`scientific-skills/Data Analysis/TorchDrug-English/SKILL.md`](scientific-skills/Data%20Analysis/TorchDrug-English/SKILL.md) |
+| 286 | ✓ | [`scientific-skills/Data Analysis/toxicity-structure-alert/SKILL.md`](scientific-skills/Data%20Analysis/toxicity-structure-alert/SKILL.md) |
+| 287 | ✓ | [`scientific-skills/Data Analysis/upset-plot-converter/SKILL.md`](scientific-skills/Data%20Analysis/upset-plot-converter/SKILL.md) |
+| 288 | ✓ | [`scientific-skills/Data Analysis/variant-pathogenicity-predictor/SKILL.md`](scientific-skills/Data%20Analysis/variant-pathogenicity-predictor/SKILL.md) |
+| 289 | ✓ | [`scientific-skills/Data Analysis/volcano-plot-labeler/SKILL.md`](scientific-skills/Data%20Analysis/volcano-plot-labeler/SKILL.md) |
+| 290 | ✓ | [`scientific-skills/Data Analysis/volcano-plot-script/SKILL.md`](scientific-skills/Data%20Analysis/volcano-plot-script/SKILL.md) |
+| 291 | ✓ | [`scientific-skills/Data Analysis/western-blot-quantifier/SKILL.md`](scientific-skills/Data%20Analysis/western-blot-quantifier/SKILL.md) |
+| 292 | ✓ | [`scientific-skills/Evidence Insight/acronym-unpacker/SKILL.md`](scientific-skills/Evidence%20Insight/acronym-unpacker/SKILL.md) |
+| 293 | ✓ | [`scientific-skills/Evidence Insight/alphafold-db/SKILL.md`](scientific-skills/Evidence%20Insight/alphafold-db/SKILL.md) |
+| 294 | ✓ | [`scientific-skills/Evidence Insight/arboreto/SKILL.md`](scientific-skills/Evidence%20Insight/arboreto/SKILL.md) |
+| 295 | ✓ | [`scientific-skills/Evidence Insight/arxiv-database/SKILL.md`](scientific-skills/Evidence%20Insight/arxiv-database/SKILL.md) |
+| 296 | ✓ | [`scientific-skills/Evidence Insight/bio-ontology-mapper/SKILL.md`](scientific-skills/Evidence%20Insight/bio-ontology-mapper/SKILL.md) |
+| 297 | ✓ | [`scientific-skills/Evidence Insight/biogrid-orcs/SKILL.md`](scientific-skills/Evidence%20Insight/biogrid-orcs/SKILL.md) |
+| 298 | ✓ | [`scientific-skills/Evidence Insight/biopython-entrez/SKILL.md`](scientific-skills/Evidence%20Insight/biopython-entrez/SKILL.md) |
+| 299 | ✓ | [`scientific-skills/Evidence Insight/biorxiv-database/SKILL.md`](scientific-skills/Evidence%20Insight/biorxiv-database/SKILL.md) |
+| 300 | ✓ | [`scientific-skills/Evidence Insight/blockbuster-therapy-predictor/SKILL.md`](scientific-skills/Evidence%20Insight/blockbuster-therapy-predictor/SKILL.md) |
+| 301 | ✓ | [`scientific-skills/Evidence Insight/brenda-database/SKILL.md`](scientific-skills/Evidence%20Insight/brenda-database/SKILL.md) |
+| 302 | ✓ | [`scientific-skills/Evidence Insight/cellosaurus-api/SKILL.md`](scientific-skills/Evidence%20Insight/cellosaurus-api/SKILL.md) |
+| 303 | ✓ | [`scientific-skills/Evidence Insight/cellxgene-census/SKILL.md`](scientific-skills/Evidence%20Insight/cellxgene-census/SKILL.md) |
+| 304 | ✓ | [`scientific-skills/Evidence Insight/chea-api/SKILL.md`](scientific-skills/Evidence%20Insight/chea-api/SKILL.md) |
+| 305 | ✓ | [`scientific-skills/Evidence Insight/chembl-database/SKILL.md`](scientific-skills/Evidence%20Insight/chembl-database/SKILL.md) |
+| 306 | ✓ | [`scientific-skills/Evidence Insight/citation-chasing-mapping/SKILL.md`](scientific-skills/Evidence%20Insight/citation-chasing-mapping/SKILL.md) |
+| 307 | ✓ | [`scientific-skills/Evidence Insight/citation-management/SKILL.md`](scientific-skills/Evidence%20Insight/citation-management/SKILL.md) |
+| 308 | ✓ | [`scientific-skills/Evidence Insight/citation-network/SKILL.md`](scientific-skills/Evidence%20Insight/citation-network/SKILL.md) |
+| 309 | ✓ | [`scientific-skills/Evidence Insight/clinical-study-info-extractor/SKILL.md`](scientific-skills/Evidence%20Insight/clinical-study-info-extractor/SKILL.md) |
+| 310 | ✓ | [`scientific-skills/Evidence Insight/clinicaltrials-db/SKILL.md`](scientific-skills/Evidence%20Insight/clinicaltrials-db/SKILL.md) |
+| 311 | ✓ | [`scientific-skills/Evidence Insight/clinicaltrials-gov-parser/SKILL.md`](scientific-skills/Evidence%20Insight/clinicaltrials-gov-parser/SKILL.md) |
+| 312 | ✓ | [`scientific-skills/Evidence Insight/clinpgx-database/SKILL.md`](scientific-skills/Evidence%20Insight/clinpgx-database/SKILL.md) |
+| 313 | ✓ | [`scientific-skills/Evidence Insight/clinvar-database/SKILL.md`](scientific-skills/Evidence%20Insight/clinvar-database/SKILL.md) |
+| 314 | ✓ | [`scientific-skills/Evidence Insight/comparison-table-gen/SKILL.md`](scientific-skills/Evidence%20Insight/comparison-table-gen/SKILL.md) |
+| 315 | ✓ | [`scientific-skills/Evidence Insight/competitor-trial-monitor/SKILL.md`](scientific-skills/Evidence%20Insight/competitor-trial-monitor/SKILL.md) |
+| 316 | ✓ | [`scientific-skills/Evidence Insight/concept-explainer/SKILL.md`](scientific-skills/Evidence%20Insight/concept-explainer/SKILL.md) |
+| 317 | ✓ | [`scientific-skills/Evidence Insight/cosmic-database/SKILL.md`](scientific-skills/Evidence%20Insight/cosmic-database/SKILL.md) |
+| 318 | ✓ | [`scientific-skills/Evidence Insight/cross-disciplinary-bridge-finder/SKILL.md`](scientific-skills/Evidence%20Insight/cross-disciplinary-bridge-finder/SKILL.md) |
+| 319 | ✓ | [`scientific-skills/Evidence Insight/crossref-database/SKILL.md`](scientific-skills/Evidence%20Insight/crossref-database/SKILL.md) |
+| 320 | ✓ | [`scientific-skills/Evidence Insight/ctd-api/SKILL.md`](scientific-skills/Evidence%20Insight/ctd-api/SKILL.md) |
+| 321 | ✓ | [`scientific-skills/Evidence Insight/diffdock-molecular-docking/SKILL.md`](scientific-skills/Evidence%20Insight/diffdock-molecular-docking/SKILL.md) |
+| 322 | ✓ | [`scientific-skills/Evidence Insight/drug-interaction-checker/SKILL.md`](scientific-skills/Evidence%20Insight/drug-interaction-checker/SKILL.md) |
+| 323 | ✓ | [`scientific-skills/Evidence Insight/drugbank-database/SKILL.md`](scientific-skills/Evidence%20Insight/drugbank-database/SKILL.md) |
+| 324 | ✓ | [`scientific-skills/Evidence Insight/emerging-topic-scout/SKILL.md`](scientific-skills/Evidence%20Insight/emerging-topic-scout/SKILL.md) |
+| 325 | ✓ | [`scientific-skills/Evidence Insight/ena-database/SKILL.md`](scientific-skills/Evidence%20Insight/ena-database/SKILL.md) |
+| 326 | ✓ | [`scientific-skills/Evidence Insight/encode-api/SKILL.md`](scientific-skills/Evidence%20Insight/encode-api/SKILL.md) |
+| 327 | ✓ | [`scientific-skills/Evidence Insight/encori-api/SKILL.md`](scientific-skills/Evidence%20Insight/encori-api/SKILL.md) |
+| 328 | ✓ | [`scientific-skills/Evidence Insight/ensembl-database/SKILL.md`](scientific-skills/Evidence%20Insight/ensembl-database/SKILL.md) |
+| 329 | ✓ | [`scientific-skills/Evidence Insight/fda-database/SKILL.md`](scientific-skills/Evidence%20Insight/fda-database/SKILL.md) |
+| 330 | ✓ | [`scientific-skills/Evidence Insight/fda-guideline-search/SKILL.md`](scientific-skills/Evidence%20Insight/fda-guideline-search/SKILL.md) |
+| 331 | ✓ | [`scientific-skills/Evidence Insight/funding-trend-forecaster/SKILL.md`](scientific-skills/Evidence%20Insight/funding-trend-forecaster/SKILL.md) |
+| 332 | ✓ | [`scientific-skills/Evidence Insight/gene-database/SKILL.md`](scientific-skills/Evidence%20Insight/gene-database/SKILL.md) |
+| 333 | ✓ | [`scientific-skills/Evidence Insight/gene-info/SKILL.md`](scientific-skills/Evidence%20Insight/gene-info/SKILL.md) |
+| 334 | ✓ | [`scientific-skills/Evidence Insight/geo-search-api/SKILL.md`](scientific-skills/Evidence%20Insight/geo-search-api/SKILL.md) |
+| 335 | ✓ | [`scientific-skills/Evidence Insight/gget/SKILL.md`](scientific-skills/Evidence%20Insight/gget/SKILL.md) |
+| 336 | ✓ | [`scientific-skills/Evidence Insight/grant-funding-scout/SKILL.md`](scientific-skills/Evidence%20Insight/grant-funding-scout/SKILL.md) |
+| 337 | ✓ | [`scientific-skills/Evidence Insight/grant-gantt-chart-gen/SKILL.md`](scientific-skills/Evidence%20Insight/grant-gantt-chart-gen/SKILL.md) |
+| 338 | ✓ | [`scientific-skills/Evidence Insight/gwas-database/SKILL.md`](scientific-skills/Evidence%20Insight/gwas-database/SKILL.md) |
+| 339 | ✓ | [`scientific-skills/Evidence Insight/hgnc-api/SKILL.md`](scientific-skills/Evidence%20Insight/hgnc-api/SKILL.md) |
+| 340 | ✓ | [`scientific-skills/Evidence Insight/hmdb-database/SKILL.md`](scientific-skills/Evidence%20Insight/hmdb-database/SKILL.md) |
+| 341 | ✓ | [`scientific-skills/Evidence Insight/ib-summarizer/SKILL.md`](scientific-skills/Evidence%20Insight/ib-summarizer/SKILL.md) |
+| 342 | ✓ | [`scientific-skills/Evidence Insight/jaspar-api/SKILL.md`](scientific-skills/Evidence%20Insight/jaspar-api/SKILL.md) |
+| 343 | ✓ | [`scientific-skills/Evidence Insight/journal-impact-factor-trend/SKILL.md`](scientific-skills/Evidence%20Insight/journal-impact-factor-trend/SKILL.md) |
+| 344 | ✓ | [`scientific-skills/Evidence Insight/journal-latest-issue/SKILL.md`](scientific-skills/Evidence%20Insight/journal-latest-issue/SKILL.md) |
+| 345 | ✓ | [`scientific-skills/Evidence Insight/journal-matchmaker/SKILL.md`](scientific-skills/Evidence%20Insight/journal-matchmaker/SKILL.md) |
+| 346 | ✓ | [`scientific-skills/Evidence Insight/journal-skills/SKILL.md`](scientific-skills/Evidence%20Insight/journal-skills/SKILL.md) |
+| 347 | ✓ | [`scientific-skills/Evidence Insight/kegg-api/SKILL.md`](scientific-skills/Evidence%20Insight/kegg-api/SKILL.md) |
+| 348 | ✓ | [`scientific-skills/Evidence Insight/kegg-database/SKILL.md`](scientific-skills/Evidence%20Insight/kegg-database/SKILL.md) |
+| 349 | ✓ | [`scientific-skills/Evidence Insight/key-takeaways/SKILL.md`](scientific-skills/Evidence%20Insight/key-takeaways/SKILL.md) |
+| 350 | ✓ | [`scientific-skills/Evidence Insight/keyword-velocity-tracker/SKILL.md`](scientific-skills/Evidence%20Insight/keyword-velocity-tracker/SKILL.md) |
+| 351 | ✓ | [`scientific-skills/Evidence Insight/literature-close-read/SKILL.md`](scientific-skills/Evidence%20Insight/literature-close-read/SKILL.md) |
+| 352 | ✓ | [`scientific-skills/Evidence Insight/literature-experiment-extract/SKILL.md`](scientific-skills/Evidence%20Insight/literature-experiment-extract/SKILL.md) |
+| 353 | ✓ | [`scientific-skills/Evidence Insight/literature-extensive-read/SKILL.md`](scientific-skills/Evidence%20Insight/literature-extensive-read/SKILL.md) |
+| 354 | ✓ | [`scientific-skills/Evidence Insight/literature-filtering/SKILL.md`](scientific-skills/Evidence%20Insight/literature-filtering/SKILL.md) |
+| 355 | ✓ | [`scientific-skills/Evidence Insight/medchem/SKILL.md`](scientific-skills/Evidence%20Insight/medchem/SKILL.md) |
+| 356 | ✓ | [`scientific-skills/Evidence Insight/methodology-extractor/SKILL.md`](scientific-skills/Evidence%20Insight/methodology-extractor/SKILL.md) |
+| 357 | ✓ | [`scientific-skills/Evidence Insight/open-access-scout/SKILL.md`](scientific-skills/Evidence%20Insight/open-access-scout/SKILL.md) |
+| 358 | ✓ | [`scientific-skills/Evidence Insight/open-source-license-check/SKILL.md`](scientific-skills/Evidence%20Insight/open-source-license-check/SKILL.md) |
+| 359 | ✓ | [`scientific-skills/Evidence Insight/open-targets-db/SKILL.md`](scientific-skills/Evidence%20Insight/open-targets-db/SKILL.md) |
+| 360 | ✓ | [`scientific-skills/Evidence Insight/openalex-db/SKILL.md`](scientific-skills/Evidence%20Insight/openalex-db/SKILL.md) |
+| 361 | ✓ | [`scientific-skills/Evidence Insight/patent-claim-mapper/SKILL.md`](scientific-skills/Evidence%20Insight/patent-claim-mapper/SKILL.md) |
+| 362 | ✓ | [`scientific-skills/Evidence Insight/patent-landscape/SKILL.md`](scientific-skills/Evidence%20Insight/patent-landscape/SKILL.md) |
+| 363 | ✓ | [`scientific-skills/Evidence Insight/pathway-introduction-expert/SKILL.md`](scientific-skills/Evidence%20Insight/pathway-introduction-expert/SKILL.md) |
+| 364 | ✓ | [`scientific-skills/Evidence Insight/pdb-database/SKILL.md`](scientific-skills/Evidence%20Insight/pdb-database/SKILL.md) |
+| 365 | ✓ | [`scientific-skills/Evidence Insight/pdf-extract-experimental-materials/SKILL.md`](scientific-skills/Evidence%20Insight/pdf-extract-experimental-materials/SKILL.md) |
+| 366 | ✓ | [`scientific-skills/Evidence Insight/phenotype-introduction/SKILL.md`](scientific-skills/Evidence%20Insight/phenotype-introduction/SKILL.md) |
+| 367 | ✓ | [`scientific-skills/Evidence Insight/pubchem-database-skill/SKILL.md`](scientific-skills/Evidence%20Insight/pubchem-database-skill/SKILL.md) |
+| 368 | ✓ | [`scientific-skills/Evidence Insight/pubmed-search-specialist/SKILL.md`](scientific-skills/Evidence%20Insight/pubmed-search-specialist/SKILL.md) |
+| 369 | ✓ | [`scientific-skills/Evidence Insight/pubmed-topic-recommend/SKILL.md`](scientific-skills/Evidence%20Insight/pubmed-topic-recommend/SKILL.md) |
+| 370 | ✓ | [`scientific-skills/Evidence Insight/pytdc/SKILL.md`](scientific-skills/Evidence%20Insight/pytdc/SKILL.md) |
+| 371 | ✓ | [`scientific-skills/Evidence Insight/rare-disease-hpo-mapper/SKILL.md`](scientific-skills/Evidence%20Insight/rare-disease-hpo-mapper/SKILL.md) |
+| 372 | ✓ | [`scientific-skills/Evidence Insight/reactome-skill/SKILL.md`](scientific-skills/Evidence%20Insight/reactome-skill/SKILL.md) |
+| 373 | ✓ | [`scientific-skills/Evidence Insight/reagent-substitute-scout/SKILL.md`](scientific-skills/Evidence%20Insight/reagent-substitute-scout/SKILL.md) |
+| 374 | ✓ | [`scientific-skills/Evidence Insight/reference-finder/SKILL.md`](scientific-skills/Evidence%20Insight/reference-finder/SKILL.md) |
+| 375 | ✓ | [`scientific-skills/Evidence Insight/reference-search/SKILL.md`](scientific-skills/Evidence%20Insight/reference-search/SKILL.md) |
+| 376 | ✓ | [`scientific-skills/Evidence Insight/research-article-weekly/SKILL.md`](scientific-skills/Evidence%20Insight/research-article-weekly/SKILL.md) |
+| 377 | ✓ | [`scientific-skills/Evidence Insight/research-hotspot-analysis/SKILL.md`](scientific-skills/Evidence%20Insight/research-hotspot-analysis/SKILL.md) |
+| 378 | ✓ | [`scientific-skills/Evidence Insight/research-paper-downloader/SKILL.md`](scientific-skills/Evidence%20Insight/research-paper-downloader/SKILL.md) |
+| 379 | ✓ | [`scientific-skills/Evidence Insight/retraction-watcher/SKILL.md`](scientific-skills/Evidence%20Insight/retraction-watcher/SKILL.md) |
+| 380 | ✓ | [`scientific-skills/Evidence Insight/scholar-evaluation/SKILL.md`](scientific-skills/Evidence%20Insight/scholar-evaluation/SKILL.md) |
+| 381 | ✓ | [`scientific-skills/Evidence Insight/scientific-podcast-summary/SKILL.md`](scientific-skills/Evidence%20Insight/scientific-podcast-summary/SKILL.md) |
+| 382 | ✓ | [`scientific-skills/Evidence Insight/scite-database/SKILL.md`](scientific-skills/Evidence%20Insight/scite-database/SKILL.md) |
+| 383 | ✓ | [`scientific-skills/Evidence Insight/sds-msds-risk-scanner/SKILL.md`](scientific-skills/Evidence%20Insight/sds-msds-risk-scanner/SKILL.md) |
+| 384 | ✓ | [`scientific-skills/Evidence Insight/semantic-scholar-database/SKILL.md`](scientific-skills/Evidence%20Insight/semantic-scholar-database/SKILL.md) |
+| 385 | ✓ | [`scientific-skills/Evidence Insight/smart-journal-monitor/SKILL.md`](scientific-skills/Evidence%20Insight/smart-journal-monitor/SKILL.md) |
+| 386 | ✓ | [`scientific-skills/Evidence Insight/string-database/SKILL.md`](scientific-skills/Evidence%20Insight/string-database/SKILL.md) |
+| 387 | ✓ | [`scientific-skills/Evidence Insight/systematic-review-screener/SKILL.md`](scientific-skills/Evidence%20Insight/systematic-review-screener/SKILL.md) |
+| 388 | ✓ | [`scientific-skills/Evidence Insight/target-novelty-scorer/SKILL.md`](scientific-skills/Evidence%20Insight/target-novelty-scorer/SKILL.md) |
+| 389 | ✓ | [`scientific-skills/Evidence Insight/translational-gap-analyzer/SKILL.md`](scientific-skills/Evidence%20Insight/translational-gap-analyzer/SKILL.md) |
+| 390 | ✓ | [`scientific-skills/Evidence Insight/uniprot-database/SKILL.md`](scientific-skills/Evidence%20Insight/uniprot-database/SKILL.md) |
+| 391 | ✓ | [`scientific-skills/Evidence Insight/unstructured-medical-text-miner/SKILL.md`](scientific-skills/Evidence%20Insight/unstructured-medical-text-miner/SKILL.md) |
+| 392 | ✓ | [`scientific-skills/Evidence Insight/variant-annotation/SKILL.md`](scientific-skills/Evidence%20Insight/variant-annotation/SKILL.md) |
+| 393 | ✓ | [`scientific-skills/Evidence Insight/venue-templates/SKILL.md`](scientific-skills/Evidence%20Insight/venue-templates/SKILL.md) |
+| 394 | ✓ | [`scientific-skills/Evidence Insight/zinc-database/SKILL.md`](scientific-skills/Evidence%20Insight/zinc-database/SKILL.md) |
+| 395 | ✓ | [`scientific-skills/Other/academic-cv-generator/SKILL.md`](scientific-skills/Other/academic-cv-generator/SKILL.md) |
+| 396 | ✓ | [`scientific-skills/Other/academic-norm-review/SKILL.md`](scientific-skills/Other/academic-norm-review/SKILL.md) |
+| 397 | ✓ | [`scientific-skills/Other/academic-poster-generator/SKILL.md`](scientific-skills/Other/academic-poster-generator/SKILL.md) |
+| 398 | ✓ | [`scientific-skills/Other/adaptyv/SKILL.md`](scientific-skills/Other/adaptyv/SKILL.md) |
+| 399 | ✓ | [`scientific-skills/Other/api-design-principles/SKILL.md`](scientific-skills/Other/api-design-principles/SKILL.md) |
+| 400 | ✓ | [`scientific-skills/Other/article-format-adjustment/SKILL.md`](scientific-skills/Other/article-format-adjustment/SKILL.md) |
+| 401 | ✓ | [`scientific-skills/Other/benchling-integration/SKILL.md`](scientific-skills/Other/benchling-integration/SKILL.md) |
+| 402 | ✓ | [`scientific-skills/Other/bib-formatter/SKILL.md`](scientific-skills/Other/bib-formatter/SKILL.md) |
+| 403 | ✓ | [`scientific-skills/Other/bibliography/SKILL.md`](scientific-skills/Other/bibliography/SKILL.md) |
+| 404 | ✓ | [`scientific-skills/Other/biodbnet-api/SKILL.md`](scientific-skills/Other/biodbnet-api/SKILL.md) |
+| 405 | ✓ | [`scientific-skills/Other/bmi-bsa-calculator/SKILL.md`](scientific-skills/Other/bmi-bsa-calculator/SKILL.md) |
+| 406 | ✓ | [`scientific-skills/Other/brainstorming/SKILL.md`](scientific-skills/Other/brainstorming/SKILL.md) |
+| 407 | ✓ | [`scientific-skills/Other/buffer-calculator/SKILL.md`](scientific-skills/Other/buffer-calculator/SKILL.md) |
+| 408 | ✓ | [`scientific-skills/Other/chart-style-unifier/SKILL.md`](scientific-skills/Other/chart-style-unifier/SKILL.md) |
+| 409 | ✓ | [`scientific-skills/Other/chemical-storage-sorter/SKILL.md`](scientific-skills/Other/chemical-storage-sorter/SKILL.md) |
+| 410 | ✓ | [`scientific-skills/Other/chemical-structure-converter/SKILL.md`](scientific-skills/Other/chemical-structure-converter/SKILL.md) |
+| 411 | ✓ | [`scientific-skills/Other/clinic-sample-size/SKILL.md`](scientific-skills/Other/clinic-sample-size/SKILL.md) |
+| 412 | ✓ | [`scientific-skills/Other/clinical-reports/SKILL.md`](scientific-skills/Other/clinical-reports/SKILL.md) |
+| 413 | ✓ | [`scientific-skills/Other/co2-tank-monitor/SKILL.md`](scientific-skills/Other/co2-tank-monitor/SKILL.md) |
+| 414 | ✓ | [`scientific-skills/Other/cold-chain-risk-calculator/SKILL.md`](scientific-skills/Other/cold-chain-risk-calculator/SKILL.md) |
+| 415 | ✓ | [`scientific-skills/Other/conference-tweet-generator/SKILL.md`](scientific-skills/Other/conference-tweet-generator/SKILL.md) |
+| 416 | ✓ | [`scientific-skills/Other/conflict-of-interest-checker/SKILL.md`](scientific-skills/Other/conflict-of-interest-checker/SKILL.md) |
+| 417 | ✓ | [`scientific-skills/Other/content-proofreading/SKILL.md`](scientific-skills/Other/content-proofreading/SKILL.md) |
+| 418 | ✓ | [`scientific-skills/Other/datamol/SKILL.md`](scientific-skills/Other/datamol/SKILL.md) |
+| 419 | ✓ | [`scientific-skills/Other/date-calculator/SKILL.md`](scientific-skills/Other/date-calculator/SKILL.md) |
+| 420 | ✓ | [`scientific-skills/Other/dicom-anonymizer/SKILL.md`](scientific-skills/Other/dicom-anonymizer/SKILL.md) |
+| 421 | ✓ | [`scientific-skills/Other/docx-feedback-tracker/SKILL.md`](scientific-skills/Other/docx-feedback-tracker/SKILL.md) |
+| 422 | ✓ | [`scientific-skills/Other/dpi-upscaler-checker/SKILL.md`](scientific-skills/Other/dpi-upscaler-checker/SKILL.md) |
+| 423 | ✓ | [`scientific-skills/Other/ebm-calculator/SKILL.md`](scientific-skills/Other/ebm-calculator/SKILL.md) |
+| 424 | ✓ | [`scientific-skills/Other/equipment-maintenance-log/SKILL.md`](scientific-skills/Other/equipment-maintenance-log/SKILL.md) |
+| 425 | ✓ | [`scientific-skills/Other/experiment-detail-comparator/SKILL.md`](scientific-skills/Other/experiment-detail-comparator/SKILL.md) |
+| 426 | ✓ | [`scientific-skills/Other/expert-interview-generator/SKILL.md`](scientific-skills/Other/expert-interview-generator/SKILL.md) |
+| 427 | ✓ | [`scientific-skills/Other/expert-interview-topics/SKILL.md`](scientific-skills/Other/expert-interview-topics/SKILL.md) |
+| 428 | ✓ | [`scientific-skills/Other/file-management/SKILL.md`](scientific-skills/Other/file-management/SKILL.md) |
+| 429 | ✓ | [`scientific-skills/Other/file-search/SKILL.md`](scientific-skills/Other/file-search/SKILL.md) |
+| 430 | ✓ | [`scientific-skills/Other/file-security-toolkit/SKILL.md`](scientific-skills/Other/file-security-toolkit/SKILL.md) |
+| 431 | ✓ | [`scientific-skills/Other/fulltext-fetcher/SKILL.md`](scientific-skills/Other/fulltext-fetcher/SKILL.md) |
+| 432 | ✓ | [`scientific-skills/Other/hippocrates/SKILL.md`](scientific-skills/Other/hippocrates/SKILL.md) |
+| 433 | ✓ | [`scientific-skills/Other/html-to-pdf/SKILL.md`](scientific-skills/Other/html-to-pdf/SKILL.md) |
+| 434 | ✓ | [`scientific-skills/Other/id-photo-tool/SKILL.md`](scientific-skills/Other/id-photo-tool/SKILL.md) |
+| 435 | ✓ | [`scientific-skills/Other/image-ocr/SKILL.md`](scientific-skills/Other/image-ocr/SKILL.md) |
+| 436 | ✓ | [`scientific-skills/Other/image-processing/SKILL.md`](scientific-skills/Other/image-processing/SKILL.md) |
+| 437 | ✓ | [`scientific-skills/Other/imagegenskill/SKILL.md`](scientific-skills/Other/imagegenskill/SKILL.md) |
+| 438 | ✓ | [`scientific-skills/Other/iso-13485-certification/SKILL.md`](scientific-skills/Other/iso-13485-certification/SKILL.md) |
+| 439 | ✓ | [`scientific-skills/Other/journal-recommender/SKILL.md`](scientific-skills/Other/journal-recommender/SKILL.md) |
+| 440 | ✓ | [`scientific-skills/Other/knowledge-base-search/SKILL.md`](scientific-skills/Other/knowledge-base-search/SKILL.md) |
+| 441 | ✓ | [`scientific-skills/Other/kv-design/SKILL.md`](scientific-skills/Other/kv-design/SKILL.md) |
+| 442 | ✓ | [`scientific-skills/Other/lab-inventory-predictor/SKILL.md`](scientific-skills/Other/lab-inventory-predictor/SKILL.md) |
+| 443 | ✓ | [`scientific-skills/Other/Lab-Prep-Calculations/SKILL.md`](scientific-skills/Other/Lab-Prep-Calculations/SKILL.md) |
+| 444 | ✓ | [`scientific-skills/Other/lab-result-interpretation/SKILL.md`](scientific-skills/Other/lab-result-interpretation/SKILL.md) |
+| 445 | ✓ | [`scientific-skills/Other/learning-tutoring/SKILL.md`](scientific-skills/Other/learning-tutoring/SKILL.md) |
+| 446 | ✓ | [`scientific-skills/Other/literature-management/SKILL.md`](scientific-skills/Other/literature-management/SKILL.md) |
+| 447 | ✓ | [`scientific-skills/Other/literature-statistics/SKILL.md`](scientific-skills/Other/literature-statistics/SKILL.md) |
+| 448 | ✓ | [`scientific-skills/Other/literatureimages-interpretation/SKILL.md`](scientific-skills/Other/literatureimages-interpretation/SKILL.md) |
+| 449 | ✓ | [`scientific-skills/Other/market-research-report-generator/SKILL.md`](scientific-skills/Other/market-research-report-generator/SKILL.md) |
+| 450 | ✓ | [`scientific-skills/Other/markitdown/SKILL.md`](scientific-skills/Other/markitdown/SKILL.md) |
+| 451 | ✓ | [`scientific-skills/Other/medical-case-interpreter/SKILL.md`](scientific-skills/Other/medical-case-interpreter/SKILL.md) |
+| 452 | ✓ | [`scientific-skills/Other/medical-case-report-generator/SKILL.md`](scientific-skills/Other/medical-case-report-generator/SKILL.md) |
+| 453 | ✓ | [`scientific-skills/Other/medical-unit-converter/SKILL.md`](scientific-skills/Other/medical-unit-converter/SKILL.md) |
+| 454 | ✓ | [`scientific-skills/Other/medication-reconciliation/SKILL.md`](scientific-skills/Other/medication-reconciliation/SKILL.md) |
+| 455 | ✓ | [`scientific-skills/Other/meeting-assistant/SKILL.md`](scientific-skills/Other/meeting-assistant/SKILL.md) |
+| 456 | ✓ | [`scientific-skills/Other/meeting-minutes-generator/SKILL.md`](scientific-skills/Other/meeting-minutes-generator/SKILL.md) |
+| 457 | ✓ | [`scientific-skills/Other/meta-search-builder/SKILL.md`](scientific-skills/Other/meta-search-builder/SKILL.md) |
+| 458 | ✓ | [`scientific-skills/Other/microscopy-scale-bar-adder/SKILL.md`](scientific-skills/Other/microscopy-scale-bar-adder/SKILL.md) |
+| 459 | ✓ | [`scientific-skills/Other/mindmap-helper/SKILL.md`](scientific-skills/Other/mindmap-helper/SKILL.md) |
+| 460 | ✓ | [`scientific-skills/Other/mindmap/SKILL.md`](scientific-skills/Other/mindmap/SKILL.md) |
+| 461 | ✓ | [`scientific-skills/Other/multi-panel-figure-assembler/SKILL.md`](scientific-skills/Other/multi-panel-figure-assembler/SKILL.md) |
+| 462 | ✓ | [`scientific-skills/Other/multi-source-news-writer/SKILL.md`](scientific-skills/Other/multi-source-news-writer/SKILL.md) |
+| 463 | ✓ | [`scientific-skills/Other/note-summarizer/SKILL.md`](scientific-skills/Other/note-summarizer/SKILL.md) |
+| 464 | ✓ | [`scientific-skills/Other/paper-tweet-generator/SKILL.md`](scientific-skills/Other/paper-tweet-generator/SKILL.md) |
+| 465 | ✓ | [`scientific-skills/Other/patient-consent-simplifier/SKILL.md`](scientific-skills/Other/patient-consent-simplifier/SKILL.md) |
+| 466 | ✓ | [`scientific-skills/Other/pdf-extract/SKILL.md`](scientific-skills/Other/pdf-extract/SKILL.md) |
+| 467 | ✓ | [`scientific-skills/Other/pdf-ppt/SKILL.md`](scientific-skills/Other/pdf-ppt/SKILL.md) |
+| 468 | ✓ | [`scientific-skills/Other/pdf-processor/SKILL.md`](scientific-skills/Other/pdf-processor/SKILL.md) |
+| 469 | ✓ | [`scientific-skills/Other/pdf-to-ppt-pack/SKILL.md`](scientific-skills/Other/pdf-to-ppt-pack/SKILL.md) |
+| 470 | ✓ | [`scientific-skills/Other/plan-generator/SKILL.md`](scientific-skills/Other/plan-generator/SKILL.md) |
+| 471 | ✓ | [`scientific-skills/Other/plotly/SKILL.md`](scientific-skills/Other/plotly/SKILL.md) |
+| 472 | ✓ | [`scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md`](scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md) |
+| 473 | ✓ | [`scientific-skills/Other/poster-designer/SKILL.md`](scientific-skills/Other/poster-designer/SKILL.md) |
+| 474 | ✓ | [`scientific-skills/Other/ppt/SKILL.md`](scientific-skills/Other/ppt/SKILL.md) |
+| 475 | ✓ | [`scientific-skills/Other/pptx-posters/SKILL.md`](scientific-skills/Other/pptx-posters/SKILL.md) |
+| 476 | ✓ | [`scientific-skills/Other/PPTX-Skill/SKILL.md`](scientific-skills/Other/PPTX-Skill/SKILL.md) |
+| 477 | ✓ | [`scientific-skills/Other/reagent-expiry-alert/SKILL.md`](scientific-skills/Other/reagent-expiry-alert/SKILL.md) |
+| 478 | ✓ | [`scientific-skills/Other/reproducibility-check/SKILL.md`](scientific-skills/Other/reproducibility-check/SKILL.md) |
+| 479 | ✓ | [`scientific-skills/Other/resubmission-deadline-tracker/SKILL.md`](scientific-skills/Other/resubmission-deadline-tracker/SKILL.md) |
+| 480 | ✓ | [`scientific-skills/Other/result-figure-consistencycheck/SKILL.md`](scientific-skills/Other/result-figure-consistencycheck/SKILL.md) |
+| 481 | ✓ | [`scientific-skills/Other/schedule-management/SKILL.md`](scientific-skills/Other/schedule-management/SKILL.md) |
+| 482 | ✓ | [`scientific-skills/Other/sci-paper-reviewer/SKILL.md`](scientific-skills/Other/sci-paper-reviewer/SKILL.md) |
+| 483 | ✓ | [`scientific-skills/Other/science-popularization-article/SKILL.md`](scientific-skills/Other/science-popularization-article/SKILL.md) |
+| 484 | ✓ | [`scientific-skills/Other/scientific-schematics/SKILL.md`](scientific-skills/Other/scientific-schematics/SKILL.md) |
+| 485 | ✓ | [`scientific-skills/Other/search-pubmed/SKILL.md`](scientific-skills/Other/search-pubmed/SKILL.md) |
+| 486 | ✓ | [`scientific-skills/Other/shift-handover-summarizer/SKILL.md`](scientific-skills/Other/shift-handover-summarizer/SKILL.md) |
+| 487 | ✓ | [`scientific-skills/Other/short-video-script-generator/SKILL.md`](scientific-skills/Other/short-video-script-generator/SKILL.md) |
+| 488 | ✓ | [`scientific-skills/Other/slide-deck-images/SKILL.md`](scientific-skills/Other/slide-deck-images/SKILL.md) |
+| 489 | ✓ | [`scientific-skills/Other/soft-article-writer/SKILL.md`](scientific-skills/Other/soft-article-writer/SKILL.md) |
+| 490 | ✓ | [`scientific-skills/Other/spreadsheet-ops/SKILL.md`](scientific-skills/Other/spreadsheet-ops/SKILL.md) |
+| 491 | ✓ | [`scientific-skills/Other/symptom-checker-triage/SKILL.md`](scientific-skills/Other/symptom-checker-triage/SKILL.md) |
+| 492 | ✓ | [`scientific-skills/Other/task-reminder/SKILL.md`](scientific-skills/Other/task-reminder/SKILL.md) |
+| 493 | ✓ | [`scientific-skills/Other/text-format-organizer/SKILL.md`](scientific-skills/Other/text-format-organizer/SKILL.md) |
+| 494 | ✓ | [`scientific-skills/Other/text-to-technical-roadmap/SKILL.md`](scientific-skills/Other/text-to-technical-roadmap/SKILL.md) |
+| 495 | ✓ | [`scientific-skills/Other/time-zone-planner/SKILL.md`](scientific-skills/Other/time-zone-planner/SKILL.md) |
+| 496 | ✓ | [`scientific-skills/Other/treatment-plans/SKILL.md`](scientific-skills/Other/treatment-plans/SKILL.md) |
+| 497 | ✓ | [`scientific-skills/Other/uspto-database/SKILL.md`](scientific-skills/Other/uspto-database/SKILL.md) |
+| 498 | ✓ | [`scientific-skills/Other/vector-text-fixer/SKILL.md`](scientific-skills/Other/vector-text-fixer/SKILL.md) |
+| 499 | ✓ | [`scientific-skills/Other/virtual-patient-roleplay/SKILL.md`](scientific-skills/Other/virtual-patient-roleplay/SKILL.md) |
+| 500 | ✓ | [`scientific-skills/Other/waste-disposal-guide/SKILL.md`](scientific-skills/Other/waste-disposal-guide/SKILL.md) |
+| 501 | ✓ | [`scientific-skills/Other/word-read-write/SKILL.md`](scientific-skills/Other/word-read-write/SKILL.md) |
+| 502 | ✓ | [`scientific-skills/Protocol Design/basic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/basic-research-design/SKILL.md) |
+| 503 | ✓ | [`scientific-skills/Protocol Design/clinic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/clinic-research-design/SKILL.md) |
+| 504 | ✓ | [`scientific-skills/Protocol Design/dual-disease-transcriptomic-ml-planner/SKILL.md`](scientific-skills/Protocol%20Design/dual-disease-transcriptomic-ml-planner/SKILL.md) |
+| 505 | ✓ | [`scientific-skills/Protocol Design/esm/SKILL.md`](scientific-skills/Protocol%20Design/esm/SKILL.md) |
+| 506 | ✓ | [`scientific-skills/Protocol Design/faers-multi-drug-soc-planner/SKILL.md`](scientific-skills/Protocol%20Design/faers-multi-drug-soc-planner/SKILL.md) |
+| 507 | ✓ | [`scientific-skills/Protocol Design/hypogenic/SKILL.md`](scientific-skills/Protocol%20Design/hypogenic/SKILL.md) |
+| 508 | ✓ | [`scientific-skills/Protocol Design/hypothesis-generation/SKILL.md`](scientific-skills/Protocol%20Design/hypothesis-generation/SKILL.md) |
+| 509 | ✓ | [`scientific-skills/Protocol Design/INPLASY-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/INPLASY-registration-helper/SKILL.md) |
+| 510 | ✓ | [`scientific-skills/Protocol Design/meta-protocol-writer/SKILL.md`](scientific-skills/Protocol%20Design/meta-protocol-writer/SKILL.md) |
+| 511 | ✓ | [`scientific-skills/Protocol Design/network-tox-docking-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/network-tox-docking-research-planner/SKILL.md) |
+| 512 | ✓ | [`scientific-skills/Protocol Design/non-tumor-ml-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/non-tumor-ml-research-planner/SKILL.md) |
+| 513 | ✓ | [`scientific-skills/Protocol Design/prospero-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/prospero-registration-helper/SKILL.md) |
+| 514 | ✓ | [`scientific-skills/Protocol Design/protocol-standardization/SKILL.md`](scientific-skills/Protocol%20Design/protocol-standardization/SKILL.md) |
+| 515 | ✓ | [`scientific-skills/Protocol Design/research-grants/SKILL.md`](scientific-skills/Protocol%20Design/research-grants/SKILL.md) |
+| 516 | ✓ | [`scientific-skills/Protocol Design/research-proposal-generator/SKILL.md`](scientific-skills/Protocol%20Design/research-proposal-generator/SKILL.md) |
+| 517 | ✓ | [`scientific-skills/Protocol Design/two-sample-mr-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/two-sample-mr-research-planner/SKILL.md) |
+| 518 | ✓ | [`skill-auditor/SKILL.md`](skill-auditor/SKILL.md) |
 
 ---
 

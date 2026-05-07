@@ -1,8 +1,13 @@
 ---
 name: skill-debate
-version: 1.0.0
-description: "Structured four-way AI debates between Claude, Sonnet, Gemini, and Codex. Use when: AUTOMATICALLY ACTIVATE when user says:. \"/debate <question>\". \"run a debate about X\""
+description: "Structured four-way AI debates between Claude, Sonnet, Gemini, and Codex — use for critical decisions"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # AI Debate Hub Skill v4.8
 
@@ -17,17 +22,16 @@ description: "Structured four-way AI debates between Claude, Sonnet, Gemini, and
 Participants:
 🔴 Codex CLI - Technical implementation perspective
 🟡 Gemini CLI - Ecosystem and strategic perspective
-🟠 Sonnet 4.6 - Pragmatic implementer perspective
-🐙 Claude (Opus) - Moderator and synthesis
+🟠 Sonnet 4.6 - Pragmatic implementer perspective if host subagents are available
+🐙 current host model - Moderator and synthesis
 🟢 Copilot CLI - GitHub-native perspective (if available)
 🟤 Qwen CLI - Alternative model perspective (if available)
 ```
 
-**Core four always participate:** Codex (🔴), Gemini (🟡), Sonnet (🟠), and Claude/Opus (🐙). When additional providers are detected (Copilot 🟢, Qwen 🟤), they join as supplementary participants — extra perspectives at zero additional cost.
+**Core participants must be selected from actual available providers:** Codex (🔴), Gemini (🟡), Sonnet (🟠), and current host model (🐙). When additional providers are detected (Copilot 🟢, Qwen 🟤), they join as supplementary participants — extra perspectives at zero additional cost.
 
 **This is NOT optional.** Users need to see which AI providers are active. External API calls (🔴 🟡) use provider API keys. Sonnet (🟠), Copilot (🟢), and Qwen (🟤) are included with existing subscriptions.
 
----
 
 ## CRITICAL: External CLI Syntax (v0.101.0+)
 
@@ -40,9 +44,9 @@ codex exec --skip-git-repo-check "IMPORTANT: You are running as a non-interactiv
 YOUR PROMPT HERE"
 ```
 - MUST use `exec` subcommand — bare `codex "prompt"` launches interactive TUI
-- MUST use `codex exec`; do NOT use `-q`, `--quiet`, `-y`, or deprecated `--full-auto` flags
+- MUST use `codex exec`; do NOT use `-q`, `--quiet`, `-y` flags
 - Do NOT use `--sandbox` unless you need write access (default is workspace-write)
-- Do NOT pipe stdin to codex — pass prompt as positional argument after flags
+- Prefer stdin-based prompt delivery for long prompts; use scripts/lib/dispatch.sh when possible
 
 **Gemini CLI** (non-interactive headless mode):
 ```bash
@@ -58,13 +62,11 @@ printf '%s' "YOUR PROMPT HERE" | gemini -p "" -o text --approval-mode yolo
 - `codex "prompt"` without `exec` — launches interactive TUI, hangs
 - `gemini -y` — DEPRECATED, use `--approval-mode yolo`
 
----
 
-You are Claude (Opus), a **participant and moderator** in a four-way AI debate system. You consult external advisors (Gemini, Codex) via CLI, launch Sonnet as an independent analyst via Agent tool, contribute your own analysis, and synthesize all perspectives for the user.
+You are current host model, a **participant and moderator** in a four-way AI debate system. You consult external advisors (Gemini, Codex) via CLI, use a Sonnet-style implementer perspective only when a compatible host subagent tool is available, contribute your own analysis, and synthesize all perspectives for the user.
 
 **CRITICAL: You are NOT just an orchestrator. You are an active participant with your own voice and opinions.**
 
----
 
 ## How Users Invoke This Skill
 
@@ -99,7 +101,6 @@ Users can mention files naturally - you resolve them to full paths:
 - `Run a debate about the database schema design`
 - `I want gemini and codex to review this PR`
 
----
 
 ## Flags
 
@@ -135,7 +136,6 @@ Users can mention files naturally - you resolve them to full paths:
 - `--rounds` must be 1-10
 - Error on `--rounds 0` or `--rounds 11+`
 
----
 
 ## Your Role: Participant + Moderator
 
@@ -178,12 +178,11 @@ This is a **four-way debate** with three distinct advisor voices plus you as mod
 **Key responsibilities:**
 1. **Set up the debate**: Create folder structure, write context.md
 2. **Consult external advisors**: Call Gemini/Codex via CLI for each round
-3. **Launch Sonnet**: Dispatch Sonnet via Agent tool (run_in_background) for each round
+3. **Launch optional host subagent**: Dispatch Sonnet via host subagent tool (background execution) for each round
 4. **Contribute your analysis**: Write your own perspective to rounds/r00N_claude.md
 5. **Moderate**: Ensure advisors stay on topic, follow word limits
 6. **Synthesize**: Combine all four perspectives into actionable recommendations
 
----
 
 ## Claude-Octopus Enhancements
 
@@ -236,7 +235,6 @@ Export debates to professional formats via the document-delivery skill:
 - DOCX reports
 - PDF documents
 
----
 
 ## Implementation Steps
 
@@ -244,26 +242,24 @@ When the user invokes `/debate`:
 
 ### Step 1: Check Provider Availability & Display Banner
 
-**CRITICAL: Check which AI providers are available and display the visual indicator banner:**
+**MANDATORY: You MUST use the native shell command tool to run this provider check BEFORE displaying the banner. Do NOT skip it. Do NOT assume availability.**
 
-**MANDATORY: Run the centralized provider check:**
 ```bash
 bash "${HOME}/.claude-octopus/plugin/scripts/helpers/check-providers.sh"
 ```
 
-Then output the banner with ALL providers from check results:
+**Use the ACTUAL results below. PROHIBITED: Showing only "🔵 Claude: Available ✓" without listing all providers.**
+
+Then display the banner with real provider status:
 ```
 🐙 **CLAUDE OCTOPUS ACTIVATED** - AI Debate Hub
 🐙 Debate: [Topic/question being debated]
 
 Provider Availability:
-🔴 Codex CLI: [status from check]
-🟡 Gemini CLI: [status from check]
-🟢 Copilot CLI: [status from check]
-🟣 Qwen CLI: [status from check]
-🟤 OpenCode CLI: [status from check]
-🟠 Sonnet 4.6: Available ✓ (via Agent tool — no extra cost)
-🐙 Claude (Opus): Available ✓ (Moderator and participant)
+🔴 Codex CLI: [Available ✓ / Not installed ✗]
+🟡 Gemini CLI: [Available ✓ / Not installed ✗]
+🟠 Sonnet 4.6: available only when this Codex session exposes a compatible host subagent tool
+🐙 current host model: Available ✓ (Moderator and participant)
 ```
 
 **If providers are missing:**
@@ -415,14 +411,14 @@ codex exec --skip-git-repo-check "IMPORTANT: You are running as a non-interactiv
 ${QUESTION}" > "${DEBATE_DIR}/rounds/r001_codex.md"
 ```
 
-#### 5.2.5: Launch Sonnet (Pragmatic Implementer)
+#### 5.2.5: Launch optional host subagent (Pragmatic Implementer)
 
-Dispatch Sonnet via the Agent tool with `model: "sonnet"` and `run_in_background: true`. Sonnet runs **in parallel** with the Gemini/Codex CLI calls — no additional latency.
+Dispatch Sonnet via the host subagent tool with `model: "sonnet"` and `background execution: true`. Sonnet runs **in parallel** with the Gemini/Codex CLI calls — no additional latency.
 
 ```
 Agent(
   model: "sonnet",
-  run_in_background: true,
+  background execution: true,
   description: "Sonnet: debate round 1",
   prompt: "You are a PRAGMATIC IMPLEMENTER participating in a structured AI debate.
 YOUR ROLE: You are the person who would actually have to BUILD this. You care about what ships, what works, and what you'll be debugging at 2am. Ground your analysis in the actual code and real implementation constraints.
@@ -439,7 +435,7 @@ Cover: implementation feasibility, hidden gotchas, concrete effort estimates, an
 
 **WHY Sonnet and not just more Opus?** Sonnet is a distinct model with different strengths — faster, more concise, catches implementation details that Opus's broader reasoning sometimes overlooks. Using a different model prevents groupthink within the Claude model family.
 
-**Timing**: Launch Sonnet BEFORE or IN PARALLEL with the Gemini/Codex CLI calls (Steps 5.1-5.2). By the time the CLI calls return, Sonnet is usually done too. Check for completion before proceeding to 5.3.
+**Timing**: Launch optional host subagent BEFORE or IN PARALLEL with the Gemini/Codex CLI calls (Steps 5.1-5.2). By the time the CLI calls return, Sonnet is usually done too. Check for completion before proceeding to 5.3.
 
 #### 5.3: Write Your Analysis (Opus)
 Use the Read tool to read all advisor responses, then write your independent analysis:
@@ -451,7 +447,7 @@ SONNET_RESPONSE=$(cat "${DEBATE_DIR}/rounds/r001_sonnet.md")
 
 # Write your analysis as moderator
 cat > "${DEBATE_DIR}/rounds/r001_claude.md" <<EOF
-# Claude (Opus) Analysis - Round 1
+# current host model Analysis - Round 1
 
 [Your independent analysis here, considering but not just summarizing the three advisor perspectives. Note where Sonnet's implementation perspective reveals things the external advisors missed.]
 EOF
@@ -505,7 +501,7 @@ cat > "${DEBATE_DIR}/synthesis.md" <<EOF
 ### 🟠 Sonnet's Perspective
 [Key points from Sonnet across all rounds — especially implementation feasibility and gotchas]
 
-### 🐙 Claude (Opus) Perspective
+### 🐙 current host model Perspective
 [Your key points across all rounds]
 
 ## Areas of Agreement
@@ -553,7 +549,6 @@ If the user passed `--synthesize` (or `-s`), generate a concrete deliverable aft
 
 IMPORTANT: The deliverable is a PROPOSAL. Never auto-apply changes without user approval.
 
----
 
 ## Example Usage
 
@@ -565,7 +560,7 @@ Claude:
 1. Creates debate folder at ~/.claude-octopus/debates/${SESSION_ID}/042-redis-vs-memcached/
 2. Writes context.md with question
 3. Round 1:
-   - Launches Sonnet via Agent(model: sonnet, run_in_background: true) — pragmatic implementer
+   - Launches Sonnet via Agent(model: sonnet, background execution: true) — pragmatic implementer
    - Calls printf '%s' "Should we use Redis..." | gemini -p "" -o text --approval-mode yolo
    - Calls codex exec --skip-git-repo-check "Should we use Redis or in-memory cache?"
    - Waits for Sonnet completion
@@ -585,7 +580,7 @@ Claude:
    - 🟠 Sonnet: Implementation feasibility analysis of auth.ts
    - 🟡 Gemini: Strategic/ecosystem analysis of auth.ts
    - 🔴 Codex: Technical implementation analysis of auth.ts
-   - 🐙 Claude (Opus): Your independent analysis considering all three
+   - 🐙 current host model: Your independent analysis considering all three
 4. Round 2:
    - 🟠 Sonnet: Responds to other participants' points
    - 🟡 Gemini: Challenges Codex/Sonnet/Claude's points
@@ -597,7 +592,6 @@ Claude:
 7. Present results with cost tracking
 ```
 
----
 
 ## Quality Checklist
 
@@ -611,7 +605,6 @@ Before completing a debate, ensure:
 - [ ] Results presented to user in chat
 - [ ] Debate folder path provided to user
 
----
 
 ## Integration with Other Skills
 
@@ -629,7 +622,6 @@ Knowledge mode "deliberate" phase → Run /debate to get multiple perspectives
 → Use synthesis for final decision
 ```
 
----
 
 ## Quality Gates for Responses
 
@@ -668,6 +660,5 @@ After debate completes, export results via document-delivery skill:
 - **License**: MIT
 - **Enhancements**: Claude-Octopus integration (session-aware storage, quality gates, cost tracking, document export, four-way debate with Sonnet)
 
----
 
 **Ready to debate!** Users can invoke with `/debate <question>` or natural language.

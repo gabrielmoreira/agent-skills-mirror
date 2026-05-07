@@ -264,33 +264,44 @@ English "It is X that..." structures should not be directly calqued.
 
 English technical writing tolerates noun-only fragments ("Lint failed.", "Run conditions: X, Y, Z."). Korean and Japanese readers expect complete sentences with verbs in body text. AI translations calque the source's terse rhythm directly, producing reports that feel choppy and unfinished.
 
-**Body fragments (본문 안의 명사 종결) → 완전한 문장으로:**
+**Body fragments (noun-ending sentences in body text) → rewrite as full sentences:**
 
 - Bad KO: "`ANTHROPIC_API_KEY` 미설정."
 - Good KO: "`ANTHROPIC_API_KEY`는 설정하지 않았고, OAuth로 대신 인증합니다."
 - Bad KO: "lint 실패."
-- Good KO: "lint가 실패했습니다." (standalone) / "결과: lint 실패" (라벨 안)
+- Good KO: "lint가 실패했습니다." (standalone) / "결과: lint 실패" (inside a label)
 - Bad KO: "anti-pattern 1개."
 - Good KO: "anti-pattern이 하나 발견되었습니다."
 
-**라벨/표 안의 fragment는 허용:**
-- 표 셀, 불릿 헤더, `key: value` 라벨 안의 fragment는 자연스럽습니다 ("실행 조건:", "Pass:")
-- 본문 줄거리(narrative) 안에 갑자기 등장하는 fragment만 풀어쓰기
+**Tailing negation calque (do not directly translate English trailing negation fragments):**
 
-**Code span과 한글 조사 사이 공백:**
+English commonly tacks short negation fragments onto the end of a sentence ("..., no guessing", "..., no wasted motion"). Calquing this into CJK produces awkward noun-ending fragments ("..., 추측 없이", "..., 낭비 없이"). In body text, expand the fragment into a full clause.
 
-한국어 출판·기술 글쓰기 관행은 inline code (`backtick`) 와 뒤따르는 한글 조사를 공백 없이 붙입니다. 영문식 띄어쓰기를 그대로 옮기면 시각적으로 어색합니다.
+- Bad EN→KO: "선택된 항목에서 옵션이 나옵니다, 추측 없이."
+- Good KO: "선택된 항목에서 바로 옵션을 가져오므로 사용자가 추측할 필요가 없습니다."
+- Bad EN→KO: "한 번에 처리합니다, 낭비 없이."
+- Good KO: "낭비되는 동작 없이 한 번에 처리합니다."
+
+Inside label/table-cell positions, short negation fragments are acceptable (e.g., `결과: 추측 불필요`).
+
+**Fragments are allowed inside label/table positions:**
+- Fragments are natural inside table cells, bullet headers, and `key: value` labels (e.g., `실행 조건:`, `Pass:`).
+- Only rewrite fragments that appear abruptly inside narrative body text.
+
+**Spacing between code spans and Korean particles:**
+
+Korean publishing and technical-writing convention attaches the trailing particle directly to an inline code span (`backtick`) with no space. Calquing the English convention of spacing around inline code looks visually broken in Korean.
 
 - Bad: "`prompt` 로 5 개 하네스를 비교합니다"
 - Good: "`prompt`로 5개 하네스를 비교합니다"
 - Bad: "`oh-my-agent` 소스를 프로젝트에 시드"
-- Good: "`oh-my-agent` 소스를 프로젝트에 심습니다" (and avoid 영어 동사 음역, 룰 22 참조)
+- Good: "`oh-my-agent` 소스를 프로젝트에 심습니다" (also avoid Sino-Korean noun transliteration of English verbs — see the next sub-rule)
 
-**영어 동사의 한자어 음역 금지:**
+**No Sino-Korean noun transliteration of English verbs:**
 
-"시드", "로드", "발동", "진행" 같이 영어 동사를 한자어 명사로 박아 넣으면 행위가 사라지고 어색해집니다. 자연스러운 한국어 동사로 풀어주세요.
+Pinning English verbs into Korean as Sino-Korean nouns ("시드", "로드", "발동", "진행") strips out the action and reads as jargon. Unpack them into natural Korean verbs.
 
-- Bad KO: "skill 을 **로드**" → Good KO: "skill 을 **불러옵니다**"
+- Bad KO: "skill을 **로드**" → Good KO: "skill을 **불러옵니다**"
 - Bad KO: "프로젝트에 **시드**" → Good KO: "프로젝트에 **심습니다**"
 - Bad KO: "`<HARD-GATE>` **발동**" → Good KO: "`<HARD-GATE>`가 **트리거됐습니다**" or "`<HARD-GATE>`가 **걸렸습니다**"
 
@@ -310,9 +321,9 @@ Before finalizing any translation, scan for:
 - [ ] No unnecessary connectives where context already implies the relationship
 - [ ] No passive voice where active voice is more natural in target language
 - [ ] No long modifier chains (3+) stacked before a noun — break into clauses
-- [ ] No over-nominalization (동사/형용사로 쓸 수 있는데 명사화)
+- [ ] No over-nominalization (verbs/adjectives turned into nouns where unnecessary)
 - [ ] No forced pronouns where omission is natural in target language
 - [ ] No cleft sentence calques from English
-- [ ] No body-text fragments (CJK 본문에 갑자기 등장하는 명사 종결) — 라벨·표 셀은 허용
-- [ ] CJK typography: inline code 와 한글 조사 사이 공백 없음
-- [ ] No English-verb 음역 (시드/로드/발동/진행 등) — 자연스러운 동사로 풀어쓰기
+- [ ] No body-text fragments (noun-ending sentences appearing abruptly in CJK body text) — labels and table cells are exempt
+- [ ] CJK typography: no space between inline code and a trailing Korean particle
+- [ ] No Sino-Korean transliteration of English verbs (e.g., 시드 / 로드 / 발동 / 진행) — unpack into natural Korean verbs

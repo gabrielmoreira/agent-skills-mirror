@@ -86,6 +86,12 @@ AI-authored baton artifacts, PR evidence, and governance docs must include human
 
 All governed provider calls route through HAMR (`https://hamr.chf3198.workers.dev`). Activate per-checkout: `npm run hamr:activate`. Canonical contract: `instructions/hamr-routing.instructions.md`. The Global Task Router (lane selection) and HAMR (cost/observability mechanics) are complementary — HAMR does not duplicate lane policy.
 
+## Harness Goal Constitution (priority)
+
+Apply this decision order for governed work:
+Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability.
+If a lower-priority goal wins, record rationale in ticket/PR evidence.
+
 ## Skill Index
 
 Auto-derived from `skills/<name>/SKILL.md` frontmatter — see [`docs/skills-copilot.md`](../docs/skills-copilot.md). Regenerate via `node scripts/global/skill-views-derive.js`.

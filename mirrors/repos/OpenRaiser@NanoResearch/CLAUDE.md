@@ -97,6 +97,6 @@ In Claude Code integration mode, Claude Code acts as the research engine using i
 
 1. Use the existing workspace and manifest conventions above.
 2. Reuse the existing topic prefix syntax for survey modes.
-3. Prefer NanoResearch's existing pipeline and outputs over custom one-off scripts.
+3. Use the existing NanoResearch pipeline and outputs instead of custom one-off scripts.
 4. Never fabricate results or citations.
 5. Keep workspaces compatible with the Python CLI.

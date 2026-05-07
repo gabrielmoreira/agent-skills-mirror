@@ -465,33 +465,11 @@ Example:
 
 ---
 
-## AUTORUN Support (Nexus Autonomous Mode)
+## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode:
-1. Parse `_AGENT_CONTEXT` to understand task scope, runtime target, and input trust level
-2. Execute ANALYZE → GRAMMAR → IMPLEMENT → HARDEN → DOCUMENT workflow
-3. Skip verbose explanations, focus on deliverables
-4. Append `_STEP_COMPLETE` with full details
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `ANALYZE → GRAMMAR → IMPLEMENT → HARDEN → DOCUMENT` and emit `_STEP_COMPLETE`. Grok-specific Constraints in `_AGENT_CONTEXT`: runtime target, input trust level, engine preference, grammar class, error-message quality target.
 
-### Input Format (_AGENT_CONTEXT)
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Grok
-  Task: [Specific grammar/regex/DSL/AST task from Nexus]
-  Mode: AUTORUN
-  Chain: [Previous agents in chain]
-  Input: [Sample text, informal grammar, regex, or handoff from previous agent]
-  Constraints:
-    - [Runtime target (Node / Go / Rust / Python / Java / browser)]
-    - [Input trust level (trusted / untrusted)]
-    - [Engine preference if any]
-    - [Grammar class if known]
-    - [Error-message quality target]
-  Expected_Output: [Grammar spec / regex + audit / DSL design / AST transform plan]
-```
-
-### Output Format (_STEP_COMPLETE)
+Grok-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -499,74 +477,31 @@ _STEP_COMPLETE:
   Status: SUCCESS | PARTIAL | BLOCKED | FAILED
   Output:
     deliverable: [artifact path or inline grammar/regex]
-    artifact_type: "Grammar Spec | Regex Audit | DSL Design | AST Transform Plan"
+    artifact_type: Grammar Spec | Regex Audit | DSL Design | AST Transform Plan
     parameters:
-      grammar_class: "[regular | LL(k) | LR(1) | LALR | PEG | Earley | GLR]"
-      engine_choice: "[RE2 | PCRE | ECMAScript | Oniguruma | hand-written | tree-sitter | ANTLR4 | Chevrotain | ...]"
-      redos_complexity: "[O(n) | O(n*m) | O(n^2) | exponential | n/a]"
-      ambiguities_resolved: "[count]"
-      test_corpus_size:
-        positive: "[count]"
-        negative: "[count]"
-        worst_case: "[count]"
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
+      grammar_class: regular | LL(k) | LR(1) | LALR | PEG | Earley | GLR
+      engine_choice: RE2 | PCRE | ECMAScript | Oniguruma | hand-written | tree-sitter | ANTLR4 | Chevrotain
+      redos_complexity: O(n) | O(n*m) | O(n^2) | exponential | n/a
+      ambiguities_resolved: [count]
+      test_corpus_size: {positive, negative, worst_case}
+    files_changed: List[{path, type, changes}]
   Handoff:
     Format: GROK_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Artifacts:
-    - [Grammar specification file]
-    - [Regex audit report]
-    - [Test corpus]
-    - [Error-recovery spec]
-  Risks:
-    - [Ambiguities tolerated via ordered choice / GLR]
-    - [Regex features requiring non-linear engine]
-    - [Unicode edge cases not fully covered]
+    Content: [Handoff content for next agent]
+  Risks: [Ambiguities tolerated; non-linear regex engine requirements; Unicode edge cases]
   Next: Builder | Radar | Sentinel | Canon | Atlas | Judge | Shift | DONE
-  Reason: [Why this next step]
 ```
 
 ---
 
 ## Nexus Hub Mode
 
-When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-- Do not instruct other agent calls
-- Always return results to Nexus (append `## NEXUS_HANDOFF` at output end)
-- Include all required handoff fields
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Grok
-- Summary: [1-3 lines describing grammar/pattern/DSL/AST output]
-- Key findings / decisions:
-  - Grammar class: [regular/LL/LR/PEG/Earley/GLR]
-  - Engine/generator: [choice + reason]
-  - ReDoS complexity: [class + worst-case input if regex]
-  - Ambiguities: [count resolved / count accepted]
-- Artifacts (files/commands/links):
-  - [Grammar spec file]
-  - [Test corpus file]
-  - [Regex audit report]
-- Risks / trade-offs:
-  - [Ambiguities accepted, engine limitations, Unicode gaps]
-- Open questions (blocking/non-blocking):
-  - [Ambiguous rules requiring user decision]
-- Pending Confirmations:
-  - Trigger: [INTERACTION_TRIGGER name if any]
-  - Question: [Question for user]
-  - Options: [Available options]
-  - Recommended: [Recommended option]
-- User Confirmations:
-  - Q: [Previous question] → A: [User's answer]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
+Grok-specific findings to surface in handoff:
+- Grammar class + engine/generator + reason
+- ReDoS complexity class + worst-case input (if regex)
+- Ambiguities: count resolved vs count accepted
 
 ---
 
@@ -584,14 +519,13 @@ When user input contains `## NEXUS_ROUTING`, treat Nexus as hub.
 
 ## Output Language
 
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
+Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
 
 ---
 
-## Git Commit & PR Guidelines
+## Git Guidelines
 
-Follow `_common/GIT_GUIDELINES.md` for commit messages and PR titles:
-- Use Conventional Commits format: `type(scope): description`
+See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 - **DO NOT include agent names** in commits or PR titles
 - Keep subject line under 50 characters
 

@@ -1,8 +1,13 @@
 ---
 name: skill-decision-support
-version: 1.0.0
-description: "Present options with trade-offs for informed decision-making. Use when: AUTOMATICALLY ACTIVATE when user requests options or choices:. \"fix or provide options\" or \"fix them or provide me options\". \"give me options\" or \"what are my options\""
+description: "Present options with trade-offs for informed decision-making — use when choosing between approaches"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # Decision Support & Options Presentation
 
@@ -12,7 +17,6 @@ Structured approach to presenting options and alternatives with clear trade-offs
 
 **Core principle:** Understand context → Generate options → Analyze trade-offs → Present clearly → Support choice.
 
----
 
 ## When to Use
 
@@ -29,7 +33,6 @@ Structured approach to presenting options and alternatives with clear trade-offs
 - Simple yes/no questions
 - Already-decided approaches
 
----
 
 ## The Process
 
@@ -55,7 +58,6 @@ Use AskUserQuestion if needed to understand:
 - Timeline constraints
 - Budget/resource constraints
 
----
 
 ### Phase 2: Generate Options
 
@@ -83,7 +85,6 @@ For each option, understand:
 - What the outcome looks like
 - What could go wrong
 
----
 
 ### Phase 3: Trade-off Analysis
 
@@ -112,7 +113,6 @@ For each option, analyze:
 **Best for:** [when this option makes sense]
 ```
 
----
 
 ### Phase 4: Present Options
 
@@ -123,7 +123,6 @@ For each option, analyze:
 
 **Context:** [Brief summary of why this decision is needed]
 
----
 
 ## Option 1: [Conservative/Proven Approach] ⭐ (Recommended)
 
@@ -145,19 +144,16 @@ For each option, analyze:
 **Timeline:** [estimate]
 **Risk Level:** Low/Medium/High
 
----
 
 ## Option 2: [Alternative Approach]
 
 [Same structure as Option 1]
 
----
 
 ## Option 3: [Another Alternative]
 
 [Same structure as Option 1]
 
----
 
 ## Recommendation
 
@@ -170,7 +166,6 @@ For each option, analyze:
 
 **This option is best because:** [summary of key advantage relative to context]
 
----
 
 ## Quick Comparison
 
@@ -182,7 +177,6 @@ For each option, analyze:
 | Timeline | [time] | [time] | [time] |
 | Best for | [scenario] | [scenario] | [scenario] |
 
----
 
 **Which option would you like to proceed with?**
 ```
@@ -195,7 +189,6 @@ For each option, analyze:
 4. **Make comparison easy** (use consistent structure)
 5. **Support with reasoning** (explain why recommendation makes sense)
 
----
 
 ### Phase 5: Support the Choice
 
@@ -232,7 +225,6 @@ If user asks for more info on a specific option:
 **Would you like to proceed with this option?**
 ```
 
----
 
 ## Common Patterns
 
@@ -327,7 +319,6 @@ Best for: Small projects, prototypes, simple applications
 Would you like to proceed with TypeScript, or would JavaScript be better for your needs?
 ```
 
----
 
 ## Integration with Other Skills
 
@@ -354,7 +345,6 @@ Bug could be fixed multiple ways?
 → Use skill-debug to implement chosen fix systematically
 ```
 
----
 
 ## Best Practices
 
@@ -409,7 +399,6 @@ I can also:
 - Prototype a solution to test viability
 ```
 
----
 
 ## Red Flags - Don't Do This
 
@@ -422,7 +411,6 @@ I can also:
 | Ignore stated constraints | Wasting user's time |
 | Present obviously bad options as viable | Undermines trust |
 
----
 
 ## Quick Reference
 
@@ -433,7 +421,6 @@ I can also:
 | "help me decide" | Clarify decision factors → Compare approaches → Recommend with reasoning |
 | "show alternatives" | Generate alternatives → Analyze pros/cons → Present structured comparison |
 
----
 
 ## The Bottom Line
 

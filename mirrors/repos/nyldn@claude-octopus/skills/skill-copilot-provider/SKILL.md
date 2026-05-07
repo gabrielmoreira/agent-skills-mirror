@@ -1,8 +1,13 @@
 ---
 name: skill-copilot-provider
-version: 1.0.0
-description: "GitHub Copilot CLI as optional zero-cost provider via copilot -p programmatic mode. Use when: AUTOMATICALLY ACTIVATE when user says:. \"copilot provider\" or \"add copilot\" or \"github copilot\" or \"use copilot\""
+description: "GitHub Copilot CLI as optional zero-cost provider via copilot -p programmatic mode"
 ---
+
+> **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
+> Cross-reference commands use installed skill names in Codex rather than `/octo:*` slash commands.
+> Use the active Codex shell and subagent tools. Do not claim a provider, model, or host subagent is available until the current session exposes it.
+> For host tool equivalents, see `skills/blocks/codex-host-adapter.md`.
+
 
 # GitHub Copilot Provider Skill
 
@@ -18,7 +23,6 @@ premium request against your subscription quota.
 
 **Agent types:** `copilot` (general), `copilot-research` (research-focused)
 
----
 
 ## Detection
 
@@ -33,7 +37,6 @@ fi
 **Graceful degradation:** When Copilot CLI is unavailable or unauthenticated, silently skip.
 Other providers continue to operate normally.
 
----
 
 ## Authentication
 
@@ -65,7 +68,6 @@ If `gh auth login` is already configured, Copilot CLI will use it automatically.
 
 **Note:** Classic PATs (`ghp_*`) are NOT supported. Use fine-grained PATs (`github_pat_*`).
 
----
 
 ## Available Roles
 
@@ -81,7 +83,6 @@ If `gh auth login` is already configured, Copilot CLI will use it automatically.
 copilot -p "<prompt>" --no-ask-user
 ```
 
----
 
 ## Provider Indicators
 
@@ -102,7 +103,6 @@ Indicator legend:
 - 🟣 = Perplexity
 - 🔵 = Claude
 
----
 
 ## Doctor Integration
 
@@ -116,7 +116,6 @@ Providers:
 When unauthenticated: `⚠ Copilot CLI installed but not authenticated`
 When missing: `ℹ Copilot CLI not installed (optional)`
 
----
 
 ## Integration Notes
 
@@ -127,7 +126,6 @@ When missing: `ℹ Copilot CLI not installed (optional)`
 5. **Model selection** — Copilot CLI selects the model internally (default: Claude Sonnet 4.5, configurable via `/model`)
 6. **Multi-model access** — Copilot subscription includes access to Claude, GPT, and Gemini models
 
----
 
 ## Example Workflows
 

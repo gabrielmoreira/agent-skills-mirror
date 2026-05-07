@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 79 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 83 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 79 |
+| Files         | 83 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,77 +67,81 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.agents/features/app-connections.md`](.agents/features/app-connections.md) |
 | 7 | ✓ | [`.agents/features/audit-logs.md`](.agents/features/audit-logs.md) |
 | 8 | ✓ | [`.agents/features/authentication.md`](.agents/features/authentication.md) |
-| 9 | ✓ | [`.agents/features/custom-domains.md`](.agents/features/custom-domains.md) |
-| 10 | ✓ | [`.agents/features/ee-authentication.md`](.agents/features/ee-authentication.md) |
-| 11 | ✓ | [`.agents/features/ee-overview.md`](.agents/features/ee-overview.md) |
-| 12 | ✓ | [`.agents/features/ee-platform.md`](.agents/features/ee-platform.md) |
-| 13 | ✓ | [`.agents/features/ee-projects.md`](.agents/features/ee-projects.md) |
-| 14 | ✓ | [`.agents/features/egress-proxy.md`](.agents/features/egress-proxy.md) |
-| 15 | ✓ | [`.agents/features/event-destinations.md`](.agents/features/event-destinations.md) |
-| 16 | ✓ | [`.agents/features/file-storage.md`](.agents/features/file-storage.md) |
-| 17 | ✓ | [`.agents/features/flow-runs.md`](.agents/features/flow-runs.md) |
-| 18 | ✓ | [`.agents/features/flows.md`](.agents/features/flows.md) |
-| 19 | ✓ | [`.agents/features/folders.md`](.agents/features/folders.md) |
-| 20 | ✓ | [`.agents/features/global-connections.md`](.agents/features/global-connections.md) |
-| 21 | ✓ | [`.agents/features/GLOSSARY.md`](.agents/features/GLOSSARY.md) |
-| 22 | ✓ | [`.agents/features/human-input.md`](.agents/features/human-input.md) |
-| 23 | ✓ | [`.agents/features/knowledge-base.md`](.agents/features/knowledge-base.md) |
-| 24 | ✓ | [`.agents/features/license-keys.md`](.agents/features/license-keys.md) |
-| 25 | ✓ | [`.agents/features/managed-auth.md`](.agents/features/managed-auth.md) |
-| 26 | ✓ | [`.agents/features/mcp.md`](.agents/features/mcp.md) |
-| 27 | ✓ | [`.agents/features/oauth-apps.md`](.agents/features/oauth-apps.md) |
-| 28 | ✓ | [`.agents/features/pieces.md`](.agents/features/pieces.md) |
-| 29 | ✓ | [`.agents/features/platform-copilot.md`](.agents/features/platform-copilot.md) |
-| 30 | ✓ | [`.agents/features/platform.md`](.agents/features/platform.md) |
-| 31 | ✓ | [`.agents/features/projects.md`](.agents/features/projects.md) |
-| 32 | ✓ | [`.agents/features/scim.md`](.agents/features/scim.md) |
-| 33 | ✓ | [`.agents/features/secret-managers.md`](.agents/features/secret-managers.md) |
-| 34 | ✓ | [`.agents/features/signing-keys.md`](.agents/features/signing-keys.md) |
-| 35 | ✓ | [`.agents/features/store-entry.md`](.agents/features/store-entry.md) |
-| 36 | ✓ | [`.agents/features/tables.md`](.agents/features/tables.md) |
-| 37 | ✓ | [`.agents/features/templates.md`](.agents/features/templates.md) |
-| 38 | ✓ | [`.agents/features/triggers.md`](.agents/features/triggers.md) |
-| 39 | ✓ | [`.agents/features/user-invitations.md`](.agents/features/user-invitations.md) |
-| 40 | ✓ | [`.agents/features/users.md`](.agents/features/users.md) |
-| 41 | ✓ | [`.agents/features/webhooks.md`](.agents/features/webhooks.md) |
-| 42 | ✓ | [`.agents/rules/mintlify.md`](.agents/rules/mintlify.md) |
-| 43 | ✓ | [`.agents/skills/add-endpoint/SKILL.md`](.agents/skills/add-endpoint/SKILL.md) |
-| 44 | ✓ | [`.agents/skills/add-entity/SKILL.md`](.agents/skills/add-entity/SKILL.md) |
-| 45 | ✓ | [`.agents/skills/add-feature/SKILL.md`](.agents/skills/add-feature/SKILL.md) |
-| 46 | ✓ | [`.agents/skills/agent-browser/references/authentication.md`](.agents/skills/agent-browser/references/authentication.md) |
-| 47 | ✓ | [`.agents/skills/agent-browser/references/commands.md`](.agents/skills/agent-browser/references/commands.md) |
-| 48 | ✓ | [`.agents/skills/agent-browser/references/profiling.md`](.agents/skills/agent-browser/references/profiling.md) |
-| 49 | ✓ | [`.agents/skills/agent-browser/references/proxy-support.md`](.agents/skills/agent-browser/references/proxy-support.md) |
-| 50 | ✓ | [`.agents/skills/agent-browser/references/session-management.md`](.agents/skills/agent-browser/references/session-management.md) |
-| 51 | ✓ | [`.agents/skills/agent-browser/references/snapshot-refs.md`](.agents/skills/agent-browser/references/snapshot-refs.md) |
-| 52 | ✓ | [`.agents/skills/agent-browser/references/video-recording.md`](.agents/skills/agent-browser/references/video-recording.md) |
-| 53 | ✓ | [`.agents/skills/agent-browser/SKILL.md`](.agents/skills/agent-browser/SKILL.md) |
-| 54 | ✓ | [`.agents/skills/agent-browser/templates/authenticated-session.sh`](.agents/skills/agent-browser/templates/authenticated-session.sh) |
-| 55 | ✓ | [`.agents/skills/agent-browser/templates/capture-workflow.sh`](.agents/skills/agent-browser/templates/capture-workflow.sh) |
-| 56 | ✓ | [`.agents/skills/agent-browser/templates/form-automation.sh`](.agents/skills/agent-browser/templates/form-automation.sh) |
-| 57 | ✓ | [`.agents/skills/db-migration/SKILL.md`](.agents/skills/db-migration/SKILL.md) |
-| 58 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
-| 59 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
-| 60 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
-| 61 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
-| 62 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
-| 63 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
-| 64 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
-| 65 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
-| 66 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
-| 67 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
-| 68 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
-| 69 | ✓ | [`.agents/skills/ubiquitous-language/SKILL.md`](.agents/skills/ubiquitous-language/SKILL.md) |
-| 70 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
-| 71 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 72 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 73 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
-| 74 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 75 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 76 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
-| 77 | ✓ | [`packages/shared/CLAUDE.md`](packages/shared/CLAUDE.md) |
-| 78 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 79 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 9 | ✓ | [`.agents/features/chat.md`](.agents/features/chat.md) |
+| 10 | ✓ | [`.agents/features/custom-domains.md`](.agents/features/custom-domains.md) |
+| 11 | ✓ | [`.agents/features/ee-authentication.md`](.agents/features/ee-authentication.md) |
+| 12 | ✓ | [`.agents/features/ee-overview.md`](.agents/features/ee-overview.md) |
+| 13 | ✓ | [`.agents/features/ee-platform.md`](.agents/features/ee-platform.md) |
+| 14 | ✓ | [`.agents/features/ee-projects.md`](.agents/features/ee-projects.md) |
+| 15 | ✓ | [`.agents/features/egress-proxy.md`](.agents/features/egress-proxy.md) |
+| 16 | ✓ | [`.agents/features/event-destinations.md`](.agents/features/event-destinations.md) |
+| 17 | ✓ | [`.agents/features/file-storage.md`](.agents/features/file-storage.md) |
+| 18 | ✓ | [`.agents/features/flow-runs.md`](.agents/features/flow-runs.md) |
+| 19 | ✓ | [`.agents/features/flows.md`](.agents/features/flows.md) |
+| 20 | ✓ | [`.agents/features/folders.md`](.agents/features/folders.md) |
+| 21 | ✓ | [`.agents/features/global-connections.md`](.agents/features/global-connections.md) |
+| 22 | ✓ | [`.agents/features/GLOSSARY.md`](.agents/features/GLOSSARY.md) |
+| 23 | ✓ | [`.agents/features/human-input.md`](.agents/features/human-input.md) |
+| 24 | ✓ | [`.agents/features/knowledge-base.md`](.agents/features/knowledge-base.md) |
+| 25 | ✓ | [`.agents/features/license-keys.md`](.agents/features/license-keys.md) |
+| 26 | ✓ | [`.agents/features/managed-auth.md`](.agents/features/managed-auth.md) |
+| 27 | ✓ | [`.agents/features/mcp.md`](.agents/features/mcp.md) |
+| 28 | ✓ | [`.agents/features/oauth-apps.md`](.agents/features/oauth-apps.md) |
+| 29 | ✓ | [`.agents/features/pieces.md`](.agents/features/pieces.md) |
+| 30 | ✓ | [`.agents/features/platform-copilot.md`](.agents/features/platform-copilot.md) |
+| 31 | ✓ | [`.agents/features/platform.md`](.agents/features/platform.md) |
+| 32 | ✓ | [`.agents/features/projects.md`](.agents/features/projects.md) |
+| 33 | ✓ | [`.agents/features/scim.md`](.agents/features/scim.md) |
+| 34 | ✓ | [`.agents/features/secret-managers.md`](.agents/features/secret-managers.md) |
+| 35 | ✓ | [`.agents/features/signing-keys.md`](.agents/features/signing-keys.md) |
+| 36 | ✓ | [`.agents/features/store-entry.md`](.agents/features/store-entry.md) |
+| 37 | ✓ | [`.agents/features/tables.md`](.agents/features/tables.md) |
+| 38 | ✓ | [`.agents/features/templates.md`](.agents/features/templates.md) |
+| 39 | ✓ | [`.agents/features/triggers.md`](.agents/features/triggers.md) |
+| 40 | ✓ | [`.agents/features/user-invitations.md`](.agents/features/user-invitations.md) |
+| 41 | ✓ | [`.agents/features/users.md`](.agents/features/users.md) |
+| 42 | ✓ | [`.agents/features/webhooks.md`](.agents/features/webhooks.md) |
+| 43 | ✓ | [`.agents/rules/mintlify.md`](.agents/rules/mintlify.md) |
+| 44 | ✓ | [`.agents/skills/add-endpoint/SKILL.md`](.agents/skills/add-endpoint/SKILL.md) |
+| 45 | ✓ | [`.agents/skills/add-entity/SKILL.md`](.agents/skills/add-entity/SKILL.md) |
+| 46 | ✓ | [`.agents/skills/add-feature/SKILL.md`](.agents/skills/add-feature/SKILL.md) |
+| 47 | ✓ | [`.agents/skills/agent-browser/references/authentication.md`](.agents/skills/agent-browser/references/authentication.md) |
+| 48 | ✓ | [`.agents/skills/agent-browser/references/commands.md`](.agents/skills/agent-browser/references/commands.md) |
+| 49 | ✓ | [`.agents/skills/agent-browser/references/profiling.md`](.agents/skills/agent-browser/references/profiling.md) |
+| 50 | ✓ | [`.agents/skills/agent-browser/references/proxy-support.md`](.agents/skills/agent-browser/references/proxy-support.md) |
+| 51 | ✓ | [`.agents/skills/agent-browser/references/session-management.md`](.agents/skills/agent-browser/references/session-management.md) |
+| 52 | ✓ | [`.agents/skills/agent-browser/references/snapshot-refs.md`](.agents/skills/agent-browser/references/snapshot-refs.md) |
+| 53 | ✓ | [`.agents/skills/agent-browser/references/video-recording.md`](.agents/skills/agent-browser/references/video-recording.md) |
+| 54 | ✓ | [`.agents/skills/agent-browser/SKILL.md`](.agents/skills/agent-browser/SKILL.md) |
+| 55 | ✓ | [`.agents/skills/agent-browser/templates/authenticated-session.sh`](.agents/skills/agent-browser/templates/authenticated-session.sh) |
+| 56 | ✓ | [`.agents/skills/agent-browser/templates/capture-workflow.sh`](.agents/skills/agent-browser/templates/capture-workflow.sh) |
+| 57 | ✓ | [`.agents/skills/agent-browser/templates/form-automation.sh`](.agents/skills/agent-browser/templates/form-automation.sh) |
+| 58 | ✓ | [`.agents/skills/db-migration/SKILL.md`](.agents/skills/db-migration/SKILL.md) |
+| 59 | ✓ | [`.agents/skills/design/README.md`](.agents/skills/design/README.md) |
+| 60 | ✓ | [`.agents/skills/design/SKILL.md`](.agents/skills/design/SKILL.md) |
+| 61 | ✓ | [`.agents/skills/grill-me/SKILL.md`](.agents/skills/grill-me/SKILL.md) |
+| 62 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
+| 63 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
+| 64 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
+| 65 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
+| 66 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
+| 67 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
+| 68 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
+| 69 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
+| 70 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
+| 71 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
+| 72 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
+| 73 | ✓ | [`.agents/skills/ubiquitous-language/SKILL.md`](.agents/skills/ubiquitous-language/SKILL.md) |
+| 74 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
+| 75 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 76 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 77 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
+| 78 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 79 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 80 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 81 | ✓ | [`packages/shared/CLAUDE.md`](packages/shared/CLAUDE.md) |
+| 82 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 83 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

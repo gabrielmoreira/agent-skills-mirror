@@ -119,6 +119,7 @@ Compute and state before finalizing an approach:
 | `dsp.SOSFilter` | Streaming IIR via `SystemObject=true` |
 | `designMultirateFIR()` | Multirate decimator/interpolator design |
 | `ifir()` | Interpolated FIR for narrow transitions at constant rate |
+| `cost()` | MPIS (MultiplicationsPerInputSample) on DSP System objects |
 | `kaiserord()`, `firpmord()` | FIR order estimation |
 
 ## Conventions

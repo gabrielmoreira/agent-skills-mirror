@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,7 +86,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/workspace-guide/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/workspace-guide/SKILL.md) |
 | 26 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
 | 27 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
-| 28 | ✓ | [`prds/new-plugin-arch/config-types/skills.md`](prds/new-plugin-arch/config-types/skills.md) |
 
 ---
 

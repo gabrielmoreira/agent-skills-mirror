@@ -236,9 +236,9 @@ Main Fossil agent owns CROSS-REF, CATALOG, and ASSESS phases (sequential synthes
 
 ## AUTORUN Support
 
-When Fossil receives `_AGENT_CONTEXT`, parse `investigation_scope`, `target_modules`, `migration_context`, and `Constraints`, choose the correct analysis strategy, run the SCOPE→DIG→CROSS-REF→CATALOG→ASSESS workflow, produce the rule catalog, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
 
-### `_STEP_COMPLETE`
+Fossil-specific `_STEP_COMPLETE.Output` schema:
 
 ```yaml
 _STEP_COMPLETE:
@@ -263,25 +263,5 @@ _STEP_COMPLETE:
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
+When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
-### `## NEXUS_HANDOFF`
-
-```text
-## NEXUS_HANDOFF
-- Step: [X/Y]
-- Agent: Fossil
-- Summary: [1-3 lines]
-- Key findings / decisions:
-  - Rules extracted: [N] (HIGH: [N], MEDIUM: [N], LOW: [N], SPECULATIVE: [N])
-  - Migration risks: [N] items flagged
-  - Untested rules: [N]
-  - Key discoveries: [most significant findings]
-- Artifacts: [file paths or inline references]
-- Risks: [untested logic, contradictory rules, incomplete coverage]
-- Open questions: [blocking / non-blocking]
-- Pending Confirmations: [Trigger/Question/Options/Recommended]
-- User Confirmations: [received confirmations]
-- Suggested next agent: [Agent] (reason)
-- Next action: CONTINUE | VERIFY | DONE
-```
