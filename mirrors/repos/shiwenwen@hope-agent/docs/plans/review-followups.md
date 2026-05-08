@@ -30,6 +30,64 @@
 
 ## Open
 
+### F-071 跨 channel 推广 `json_str_at` 微 helper
+
+- **来源**：2026-05-08 F-070 `/simplify` review
+- **现象**：[`channel/feishu/ws_event.rs::event_str_at`](../../crates/ha-core/src/channel/feishu/ws_event.rs) 抽出了 `pointer(path).and_then(|v| v.as_str()).unwrap_or_default().to_string()` 的 micro-helper，但其它 channel 仍在内联同款链：[`googlechat/webhook.rs`](../../crates/ha-core/src/channel/googlechat/webhook.rs) CARD_CLICKED 分支 4 处、[`slack/socket.rs::handle_interactive_payload`](../../crates/ha-core/src/channel/slack/socket.rs) 4 处、[`qqbot/gateway.rs`](../../crates/ha-core/src/channel/qqbot/gateway.rs) INTERACTION_CREATE 分支 ~6 处、[`line/webhook.rs::handle_message_event`](../../crates/ha-core/src/channel/line/webhook.rs) 多处
+- **为什么留**：F-070 主题是 `slash:` 回调路由统一，跨 channel 推广 micro-helper 是独立的样板清理；本期改 5 个 channel 已扩散面够大
+- **改的话要做什么**：把 `event_str_at` 移到 [`crate::util`](../../crates/ha-core/src/util.rs) 命名为 `json_str_at(value: &serde_json::Value, path: &str) -> String`（保留 owned-String 形态，consumer 多直接进 `MsgContext` field）；feishu 改用统一入口；跨 5 个 channel 的内联点逐个替换。各点都很机械，可以一次性 `/simplify` 收掉
+- **影响面**：纯样板减少；行为零变化
+- **触发时机建议**：下次任一 channel 的 webhook / gateway 解析层重构时，或独立 sweep PR
+
+### F-068 `ChannelConversation.chat_type: String` 端到端类型化
+
+- **来源**：2026-05-07 F-066 `/simplify` review
+- **现象**：[`channel/db.rs:31`](../../crates/ha-core/src/channel/db.rs) 的 `ChannelConversation.chat_type` 是 `String`，`row_to_conversation` 把 SQLite `TEXT` 列读出来仍然是 `String`，调用方（[`channel/worker/dispatcher.rs`](../../crates/ha-core/src/channel/worker/dispatcher.rs)、[`chat_engine/im_mirror.rs`](../../crates/ha-core/src/chat_engine/im_mirror.rs)）每次手动 `ChatType::from_lowercase(&attach.chat_type)` 转回 enum；写入侧通过 `chat_type_str(&ChatType)` 反向序列化。已有 [`ChatType`](../../crates/ha-core/src/channel/types.rs#L56) `#[serde(rename_all = "lowercase")]` enum
+- **为什么留**：F-066 scope 限于 GUI ↔ IM live mirror，DB 层 schema/接口动起来扩散面太大
+- **改的话要做什么**：`ChannelConversation.chat_type: ChatType`；`row_to_conversation` 用 `ChatType::from_lowercase` 解析；写路径用 `chat_type_str` 序列化（或给 `ChatType` 加 `FromSql/ToSql` impl 走 rusqlite 标准路径）。SQLite 列保持 `TEXT`，schema 不变
+- **影响面**：纯 stringly-typed 代码债，零行为变化
+- **触发时机建议**：下次动 `channel_conversations` schema / `ChannelConversation` 字段时
+
+### F-069 `resolve_session_im_target` helper for plugin/account/conversation 三联解析
+
+- **来源**：2026-05-07 F-066 `/simplify` review
+- **现象**：3 处生产代码做几乎相同的 `session_id → ChannelConversation → ChannelAccountConfig → Arc<dyn ChannelPlugin>` 解析样板（含 channel_db / cached_config / registry 三个 globals + `find_account` + `get_plugin`）：[`channel/worker/approval.rs:183`](../../crates/ha-core/src/channel/worker/approval.rs)、[`channel/worker/ask_user.rs:294`](../../crates/ha-core/src/channel/worker/ask_user.rs)、[`chat_engine/im_mirror.rs::attach_im_live_mirror`](../../crates/ha-core/src/chat_engine/im_mirror.rs)。每处 25-30 行
+- **为什么留**：F-066 scope 已改 im_mirror，approval / ask_user 两处旧代码不在主题；统一抽 helper 应当跨这 3 处一次性收
+- **改的话要做什么**：在 `channel/db.rs`（或新 `channel/helpers.rs`）加 `pub(crate) fn resolve_session_im_target(session_id: &str) -> Option<(ChannelConversation, ChannelAccountConfig, Arc<dyn ChannelPlugin>)>`；3 个 call site 收敛到 helper，warn 日志统一在 helper 内
+- **影响面**：纯代码重复
+- **触发时机建议**：下次动 approval / ask_user worker 或新增第 4 处需要 plugin 解析的 session lookup 时
+
+### F-063 `/sessions` 搜索：picker 期 `list_agents()` / `list_sessions(None)` 仍是全量 IO
+
+- **来源**：2026-05-07 `/sessions` 搜索能力 PR / `/simplify` review
+- **现象**：[`crates/ha-core/src/slash_commands/handlers/session.rs::handle_sessions`](../../crates/ha-core/src/slash_commands/handlers/session.rs) 每次调用都跑：
+  1. [`agent_loader::list_agents`](../../crates/ha-core/src/agent_loader.rs#L359) — 读全部 agent.json + 每个 agent 一次 SQLite `count(memory)`，但 picker 只用 `id → name` 映射
+  2. `list_sessions(None)` — 拉全部 SessionMeta 行；no-query 路径接着 `take(30)` 丢弃后续
+- **为什么留**：`/sessions` 是用户手动触发，非热点。当前 ≤ 10 agents、≤ 1k sessions 量级感觉不到延迟
+- **改的话要做什么**：
+  - `agent_loader` 加轻量 `list_agent_names() -> HashMap<String, String>` 跳过 memory_count（参照已有 `list_agent_ids` at `agent_loader.rs:429`）
+  - no-query 分支换 `list_sessions_paged(None, All, Some(SESSION_PICKER_LIMIT_OVERFETCH), None, None)` —— 注意 `list_sessions_paged` 不在 SQL 层过滤 `is_cron` / `parent_session_id`，得 over-fetch 后再 filter+truncate（如 limit=100 给 cron/subagent 留头）
+- **影响面**：纯性能；当前不会引发 bug
+- **触发时机建议**：有用户报告 1k+ sessions 库下 `/sessions` 卡顿时；或重构 `list_sessions_paged` 加入 type filter 时一并处理
+
+### F-064 Project emoji+name 拼接在 `channel/worker/slash.rs` 仍有两处内联
+
+- **来源**：2026-05-07 `/sessions` 搜索能力 PR / `/simplify` review
+- **现象**：本期已在 [`Project::display_label()`](../../crates/ha-core/src/project/types.rs) 抽出 emoji+name 格式化 helper，并在 `slash_commands/handlers/session.rs::build_picker_item` 用上。但 [`channel/worker/slash.rs:534-537`](../../crates/ha-core/src/channel/worker/slash.rs)（项目按钮 label）和 [`channel/worker/slash.rs:852-855`](../../crates/ha-core/src/channel/worker/slash.rs)（项目 picker text fallback）仍内联同一格式
+- **为什么留**：两处是 pre-existing 代码、与 `/sessions` PR 主题无关，同 PR 改会扩散 diff
+- **改的话要做什么**：把两处内联换成 `project.display_label()`（注意：那两处用的是 `ProjectPickerItem`，不是 `Project`，可能要在 `ProjectPickerItem` 上挂同名 helper 或 builder 时套）
+- **影响面**：纯代码重复
+- **触发时机建议**：下一次动 channel slash worker 项目 picker 渲染时
+
+### F-065 `/sessions` 消息内容 FTS 搜索还有重复显示问题（GUI）
+
+- **来源**：2026-05-07 `/sessions` 搜索能力 PR
+- **现象**：[`src/components/chat/ChatScreen.tsx`](../../src/components/chat/ChatScreen.tsx) 的 `case "showSessionPicker"` 把 `result.content`（Rust 端组装好的 markdown body）push 一遍，再用 `action.sessions` 自己拼一遍 markdown push 第二遍 —— 用户看到两条几乎一样的 event 消息。`showProjectPicker` 同款问题（pre-existing）
+- **为什么留**：本期是搜索功能 PR，重构事件渲染契约不在主题
+- **改的话要做什么**：要么 `result.content` 在 picker action 时不 push；要么 action handler 不再自拼 markdown（直接信任 `result.content`）。后者更彻底但要 i18n 在 server 端做
+- **影响面**：UX 视觉冗余，但不影响功能
+- **触发时机建议**：做 picker UI / event 消息系统重构时一并处理
+
 ### F-057 IM channel 主动消息 / 媒体能力补完（跨 channel）
 
 - **来源**：2026-05-05 IM channel 全量审计 + 2026-05-06 codex review 回归
@@ -686,11 +744,74 @@
 - **影响面**：纯位置 / 命名规范问题，无 bug
 - **触发时机建议**：如果未来要在非 React / 非 i18next 上下文（CLI / Node script）复用 transfer formatter 再说
 
+### F-063 `format_token_count` vs `slash_commands::handlers::context::format_row` 两份 token formatter
+
+- **来源**：2026-05-07 IM attach catch-up + GUI 一对多 / 一对一 / im_mirror 重构 PR `/simplify` review（reuse agent 标记）
+- **现象**：[`slash_commands/handlers/utility.rs::format_token_count`](../../crates/ha-core/src/slash_commands/handlers/utility.rs) 把 token 数 ≥1k 折成 `Nk` 字符串；[`slash_commands/handlers/context/format_row`](../../crates/ha-core/src/slash_commands/handlers/context.rs)（如存在等价）和 `dashboard/insights.rs` 等地方各自实现自己的 token / byte 格式化，逻辑相似但散在各处
+- **为什么留**：当前每处用法的精度需求略不同（utility 用 `(t/1000).round()` 整数 k；某些地方要保留一位小数），抽通用 util 需要先对齐"几位小数 / 是否带空格 / 是否走 i18n"等表面看起来无关紧要但其实容易撞口径的细节；本期 PR 主题是 attach 子系统，不动这个软债务
+- **改的话要做什么**：
+  - 在 `crate::util` 或 `crate::format` 加 `format_token_count(n: u64, opts: TokenFormatOpts) -> String`
+  - 把 utility.rs / context.rs / insights.rs / 前端 `formatBytes` 对齐口径
+  - 同步更新单测覆盖边界（999 vs 1000 / 1499 vs 1500 / 1_000_000 等）
+- **影响面**：纯代码卫生，无 bug
+- **触发时机建议**：下次有人为某个 token 显示口径漂移（例如 `/status` 显示 `1k` 但 `/usage` 显示 `1.0k`）开 issue 时一并清理
+
+### F-064 `ChannelCancelRegistry::is_active` vs `stream_seq::is_active` 语义重叠
+
+- **来源**：2026-05-07 IM attach catch-up + GUI 一对多 / 一对一 / im_mirror 重构 PR `/simplify` review
+- **现象**：attach catch-up 的"in-flight" hint 走 [`ChannelCancelRegistry::is_active`](../../crates/ha-core/src/channel/cancel.rs) —— 只覆盖 channel-source 在跑的会话；但同 session 也可能有 desktop / http 在跑的 turn（`stream_seq::is_active` 才能命中），catch-up 用户切到 IM 时如果 desktop 端正在等回复，hint 不会出现
+- **为什么留**：当前生产路径 catch-up 主要发生在 IM 用户主动 `/session <id>` 接管（多半是 channel turn），desktop 在跑还要主动切 IM 的 case 极少；扩到 `stream_seq::is_active` 覆盖更全的 source 集需要权衡 hint 文案（"a desktop reply is being generated"还是统一"reply is being generated"）
+- **改的话要做什么**：
+  - [`channel/attach_sync.rs::deliver_attach_catchup`](../../crates/ha-core/src/channel/attach_sync.rs) 用 `stream_seq::is_active(session_id)` OR 替代 `get_channel_cancels().is_active`
+  - 评估 hint 文案是否需要按 source 分支
+- **影响面**：罕见 case 下 hint 缺失（用户视觉略晚得知有回复在路上）
+- **触发时机建议**：下次重构 catch-up / 实现 GUI ↔ IM live mirror 时一起做（live mirror 也要查 stream 状态）
+
+### F-065 `NewMessage.source` 为 `Option<String>` 而非 `ChatSource` enum
+
+- **来源**：2026-05-07 IM attach catch-up + GUI 一对多 / 一对一 / im_mirror 重构 PR `/simplify` review
+- **现象**：[`session::NewMessage`](../../crates/ha-core/src/session/types.rs) 的 `source: Option<String>` 是字符串字段，写入时用 `ChatSource::as_str().to_string()`，读取时手写 `matches!(s.as_deref(), Some("desktop") | Some("http"))`。理论上 `Option<ChatSource>`（Copy enum）在内存里到 SQL 边界 stringify 一次更纯净，类型系统也能保证 source 字符串永远合法
+- **为什么留**：14+ 处 callsite（NewMessage::with_source、append_message、quote::build_user_quote_prefix 之前依赖、各种 helper 单测构造）都要改字段类型；本期 PR 改造已经动了 quote.rs 的 source 比较，直接改 enum 会让 PR diff 翻倍且与本期主题无关
+- **改的话要做什么**：
+  - `NewMessage.source: Option<ChatSource>`，写入侧 `Display` impl 已能转字符串
+  - SessionMessage 同步（如果有）
+  - 所有读 source 的地方改 enum match
+- **影响面**：纯类型安全 + 可读性。当前 source 字符串若拼错只在 runtime 静默不当 desktop / http 处理，没显式 error
+- **触发时机建议**：跨 PR 的 SessionMessage / NewMessage 字段类型清理时（同时还有 F-029 permission_mode / F-032 plan_mode 也想改 enum）一起做
+
+### F-066 `handover` catch-up 在 ha-server / src-tauri 两处重复 lookup-plugin-then-call
+
+- **来源**：2026-05-07 IM attach catch-up + GUI 一对多 / 一对一 / im_mirror 重构 PR `/simplify` review
+- **现象**：[`crates/ha-server/src/routes/channel.rs`](../../crates/ha-server/src/routes/channel.rs) 和 [`src-tauri/src/commands/channel.rs`](../../src-tauri/src/commands/channel.rs) 的 handover 路径分别走："channel_db.attach_session → registry.get_plugin → channel_account 查 cfg → deliver_attach_catchup" 这套序列，两处几乎逐行复制
+- **为什么留**：本期 PR `attach_sync.rs` 已经聚焦在 catch-up 的"渲染 + 发送"层，把 lookup 抽到 ha-core 单一 helper 涉及 attach / detach / handover 三条入口都改一遍；本期没动 attach / detach 入口，单抽 handover 的 lookup 价值有限
+- **改的话要做什么**：
+  - 在 [`crates/ha-core/src/channel/attach_sync.rs`](../../crates/ha-core/src/channel/attach_sync.rs) 加 `pub async fn handover_with_catchup(ctx: HandoverCtx) -> Result<()>` 之类的 helper，一站式做完 attach + plugin lookup + catch-up
+  - ha-server / src-tauri 两层薄壳直接调一行
+- **影响面**：纯代码卫生 + 防漂移；当前 ha-server / src-tauri 两边手写出现细微行为分歧（例如错误日志 category）
+- **触发时机建议**：与 E1 spawn 改造（catch-up 转 spawn 后台）合并时改最干净；或下次有人为 handover bug 同时改两个入口时
+
 ---
 
 ## Closed
 
 > 已修复条目移到此处，附 commit hash + 关闭日期。保留以便后续 grep。
+
+### F-070 非 Telegram / 飞书 channel 的 `slash:` callback 全部 silent drop
+
+- **关闭于**：2026-05-08
+- **如何关闭**：抽 [`channel/worker/slash_callback.rs::inject_slash_callback`](../../crates/ha-core/src/channel/worker/slash_callback.rs) channel-agnostic helper（签名 `(channel_id, account_id, chat_id, thread_id, sender_id, message_id, rest, inbound_tx, source)`），用 `channel_db.get_chat_type` lookup + `Dm` fallback 复刻 Feishu 健壮性。**7 个支持按钮的渠道全部走同一 helper**：
+  - 新接 Discord ([`gateway.rs::INTERACTION_CREATE`](../../crates/ha-core/src/channel/discord/gateway.rs))、Slack ([`socket.rs::handle_interactive_payload`](../../crates/ha-core/src/channel/slack/socket.rs))、QQ Bot ([`gateway.rs::INTERACTION_CREATE`](../../crates/ha-core/src/channel/qqbot/gateway.rs))、LINE ([`webhook.rs::postback`](../../crates/ha-core/src/channel/line/webhook.rs))、Google Chat ([`webhook.rs::CARD_CLICKED`](../../crates/ha-core/src/channel/googlechat/webhook.rs))
+  - Feishu [`ws_event.rs::inject_slash_callback`](../../crates/ha-core/src/channel/feishu/ws_event.rs) 改为 thin wrapper delegate 到 helper
+  - Telegram 删除 `convert_callback_query`，改为 [`polling.rs::inject_slash_callback_from_query`](../../crates/ha-core/src/channel/telegram/polling.rs) 复用 helper
+- **附带 fix**：QQ Bot `INTERACTION_CREATE` 之前完全没 ack，Tencent 5s 内不收到 `PUT /interactions/{id}/responses` 视为失败可能重发同一事件——本 PR 加 [`QqBotApi::ack_interaction`](../../crates/ha-core/src/channel/qqbot/api.rs) 并在 `INTERACTION_CREATE` 入口 fire-and-forget spawn ack（与 Discord type=6 ack 模式对齐）
+- **附带清理**：Discord 把 ask_user / slash 路径的 type=6 ack 抽成 [`gateway.rs::ack_component_interaction`](../../crates/ha-core/src/channel/discord/gateway.rs) 共享 helper
+- **影响面**：用户在 Discord / Slack / QQ Bot / LINE / Google Chat 中发无参 `/think` `/permission` 等命令，按下选项按钮可正常工作（之前 silent drop）
+
+### F-066 GUI ↔ IM live 双向流式镜像（Sink fan-out）
+
+- **关闭于**：2026-05-07
+- **如何关闭**：新增 [`channel/worker/pipeline.rs`](../../crates/ha-core/src/channel/worker/pipeline.rs) 抽 `DeliveryTarget / spawn_stream_pipeline / await_stream_pipeline / deliver_rounds` 四件套，inbound dispatcher 与 [`chat_engine/im_mirror.rs`](../../crates/ha-core/src/chat_engine/im_mirror.rs)（`attach_im_live_mirror` / `finalize_im_live_mirror`）共用同一套 spawn / drain / dispatch 路径。live mirror 起始把 `ChannelStreamSink` 注册到 `SinkRegistry`，引擎 `emit_stream_event` fan-out hook 转发每帧到 IM 流式预览任务；收尾按 `ImReplyMode` 调 `deliver_rounds`。详见 [`docs/architecture/chat-engine.md`](../architecture/chat-engine.md) 「GUI ↔ IM live 流式镜像」节
+- **附带清理**：删 `chat_engine/context.rs::relay_to_channel` 及其 desktop 调用（与新 finalize 重复 send）、未消费的 `channel_db.has_attached`
 
 ### F-044 / F-045 / F-046 / F-047 react-virtuoso 迁移期登记的 4 条 followup 全部失效
 

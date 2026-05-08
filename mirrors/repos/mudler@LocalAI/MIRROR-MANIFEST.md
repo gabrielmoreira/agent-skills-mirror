@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 15 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,11 +69,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
 | 9 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
 | 10 | ✓ | [`.agents/localai-assistant-mcp.md`](.agents/localai-assistant-mcp.md) |
-| 11 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 12 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 11 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
+| 12 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
+| 13 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

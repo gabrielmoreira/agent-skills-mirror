@@ -636,43 +636,126 @@ CREATE TABLE channel_conversations (
 
 ---
 
-## Project 绑定与 IM 禁用命令
+## Session 路由 + Project / IM 禁用命令
 
-### Project.bound_channel — 项目认领 IM 渠道
+### Session 路由(无项目反向认领)
 
-项目侧通过 `Project.bound_channel: Option<{channel_id, account_id}>` 单向认领一个 IM channel account。绑定后，该 (channel, account) 下的所有 IM 入站消息在新建会话时自动归属到该项目。
+`Project.bound_channel` 反向认领模型已废弃(Phase A1)。IM 入站消息**不再自动归属项目** —— 创建出来的 session `project_id` 默认为 `NULL`,由用户在该 chat 内主动 `/project <id>` 显式归属。
 
-- **写入 contract（双层 patch）**：`UpdateProjectInput.bound_channel` 是 `Option<Option<BoundChannel>>` —— 字段缺省（`None`）= 不变，`Some(None)` = 解绑，`Some(Some(...))` = 设置/换绑
-- **唯一性约束**：同一 (channel_id, account_id) 同时只允许被一个未归档项目认领。DB 索引兜底，写入冲突时返回错误，前端「绑定 IM Channel」select 也据此过滤掉已被占用的 account
-- **会话路由**：[`channel/db.rs::resolve_or_create_session`](../../crates/ha-core/src/channel/db.rs) 在创建新会话前查 `projects WHERE bound_channel_id = ? AND bound_channel_account_id = ? AND archived = 0`，命中即把 `project_id` 注入 `create_session_with_project`，并按 5 级 agent 解析链覆盖 `agent_id`：
+- **入口**:[`channel/db.rs::resolve_or_create_session`](../../crates/ha-core/src/channel/db.rs) 不再查 `projects` 表,新会话以 `project_id = NULL` 创建。`/project <id>` 在 IM 模式下发 `AssignProject` action,被 channel slash dispatcher 翻译为 `SessionDB::set_session_project` UPDATE 当前 session 的 `project_id`,**不创建新 session**。
+- **agent 解析**:统一入口 [`agent::resolver::resolve_default_agent_id_full`](../../crates/ha-core/src/agent/resolver.rs),7 级链:
 
   ```
-  显式参数 → project.default_agent_id → channel_account.agent_id → AppConfig.default_agent_id → "default"
+  显式 → project.default_agent_id → topic.agent_id → group.agent_id
+       → tg_channel.agent_id → channel_account.agent_id
+       → AppConfig.default_agent_id → "default"
   ```
 
-  统一入口 [`crate::agent::resolver::resolve_default_agent_id`](../../crates/ha-core/src/agent/resolver.rs)（`_with_source` 版本带 tag 给 `/status` 显示命中位置）
+  channel worker 的私有 5 级解析(topic > group > channel > account > global)已删除——单一 helper。`AgentSource` 标签覆盖每个层级,`/status` 末尾输出 Agent Source 命中位置。
 
-- **`/status` 输出**：项目会话尾部追加项目摘要段并标注 Agent Source 来源（command / project / channel-account / app-config / default）
+### `channel_conversations` Attach 模型
+
+**1:1 attach（双向）**:每个 (channel, account, chat, thread) 任意时刻只能 attach 到一个 session（`uq_channel_conv_chat`,`COALESCE(thread_id, '')` 避开 SQLite NULL ≠ NULL 切多行问题）;**且**每个 session 任意时刻只能被一个 IM chat attach（`uq_channel_conv_session`)。
+
+新 chat 通过 `/session <id>` 或 handover 接管时,目标 session 上的旧 attach 被**物理 detach**(不再保留 observer),并通过 `channel:session_evicted` 事件向被踢的 chat 发"会话被另一个 endpoint 接管"系统消息。被踢的 chat 后续再发消息走 inbound `resolve_or_create_session` 自动新建 session。
+
+- **列**:`source` (`inbound`|`attach`|`handover`) / `attached_at`
+- **helpers**([`channel/db.rs`](../../crates/ha-core/src/channel/db.rs)):
+  - `attach_session(...)` —— 先 `collect_evictees` + `delete_evictees` 把目标 session 上其他 chat 物理 detach,再 UPDATE/INSERT 当前 chat 到目标 session;最后 emit eviction 事件
+  - `update_session(...)` —— `/new` `/agent` 在 IM 内换 session 用,语义同 `attach_session`,只是更轻量
+  - `detach_session(...)` —— 删除 attach 行(`/session exit` 用);1:1 下不需要 promote next
+  - `get_conversation_by_session(session_id)` —— 取 session 的唯一 attach 行(若有);live mirror / `relay` / `/status` / cron / approval / ask_user 均通过此 helper 查 session 的 IM 入口
+- **events**:`channel:session_evicted { channelId, accountId, chatId, threadId, sessionId }` —— [`channel/worker/eviction_watcher.rs`](../../crates/ha-core/src/channel/worker/eviction_watcher.rs) 订阅后调对应 plugin 的 `send_message` 发硬编码英文带 emoji 的"this chat has been taken over by another endpoint"通知;`ChannelAccountConfig.notify_session_eviction`(默认 `true`) 可静音
+- **migration**:`migrate()` 检测旧 schema(无 `source` 列或还有 `is_primary` 列)直接 DROP TABLE 重建;IM worker 在下一条入站消息时重新创建对应行(按 user feedback「破坏性改动直接 drop,不留兼容路径」)
+
+### GUI ↔ IM live 流式镜像
+
+**实现**([`chat_engine/im_mirror.rs`](../../crates/ha-core/src/chat_engine/im_mirror.rs)):desktop / HTTP 触发的 turn 在 `run_chat_engine` 起始调 `attach_im_live_mirror(session_id, source)`,查 `get_conversation_by_session(session_id)` 拿到 session 的 IM attach(1:1 后 0 或 1 个),拿对应 account 的 `im_reply_mode()` / `show_thinking()` + plugin `capabilities()`,spawn `spawn_channel_stream_task` 起 IM 流式预览任务,把 `ChannelStreamSink` 注册到 [`SinkRegistry`](../../crates/ha-core/src/chat_engine/sink_registry.rs)。引擎 `emit_stream_event` 末尾的 fan-out hook 在每帧把 streaming event 转发到 IM 流式预览任务,IM 用户实时看到 typewriter / per-round 边界 finalize / 媒体投递。
+
+turn 收尾走 `finalize_im_live_mirror`:drop SinkHandle → 等 stream task 处理完 buffered 事件 → drain `RoundTextAccumulator` → 复用 dispatcher 的 [`deliver_split` / `deliver_final_only` / `deliver_preview_merged`](../../crates/ha-core/src/channel/worker/dispatcher.rs)(已解耦 `MsgContext`,接受 `chat_id / thread_id / reply_to_message_id: Option<&str>` 三参显式形态),按 `ImReplyMode`(`split / preview / final`)渲染——与 IM 入站 turn 完全对称。
+
+**两个通道独立走自己的发送通路**:GUI 永远走 Tauri IPC stream / HTTP `chat:stream_delta` 广播,不受 `imReplyMode` 影响;`imReplyMode` 仅决定 IM 端的呈现形态(IM 入站 + GUI 镜像两侧共用同一份配置,行为对称)。
+
+**错误 / 取消路径**:engine 走 Err 不调 finalize,`ImLiveMirrorState` Drop 自动卸载 sink(RAII),stream task 收到 channel-close 后 drain 自然结束,IM 端保留半截 preview——与 IM 入站 cancel 行为一致(半截 preview 本身就是 turn 中止的视觉信号)。
+
+**source filter**:`Subagent / ParentInjection / Channel / Cron` 直接 no-op(IM 入站自己有完整流式管线;subagent / cron 不应外溢到 IM)。
+
+**镜像消息加 user 引用前缀**([`chat_engine/quote.rs::build_user_quote_prefix`](../../crates/ha-core/src/chat_engine/quote.rs)):`finalize_im_live_mirror` 在调 `deliver_rounds` 之前,把触发该轮的 user 原文拼成 markdown blockquote,prepend 到传给 dispatcher 的 final response 文本。`attach_im_live_mirror` 入参带 `Option<LastUserSnapshot>`(owned `source / text / attachment_count`,引擎层从 `ChatSource::as_str()` / `message` / `attachments.len()` 直接构造),通过 `ImLiveMirrorState` 一直带到 finalize。契约:
+
+- 按 `source` 决定是否注入。`desktop` / `http` → 注入;其它 source 在 attach 阶段就已被过滤,这里再次防御性 skip。
+- 引用渲染规则:
+  - 第一行加 `> 💬 ` 前缀,后续行加 `> ` 前缀,user 文本超过 240 字符按 `truncate_description` 截断 + `…`。
+  - user 消息有附件时附加一行 `> [📎 N attachments]`(N 来自 `attach_im_live_mirror` 入参的 `attachment_count`)。
+  - 引用块与 assistant 正文之间空一行。
+- **不写回 `sessions.context_json` / `messages` 表**:引用只在镜像 chunk 拼接,assistant 消息持久化为干净版本,后续 turn 的 LLM 上下文不被引用块污染。
+- **覆盖范围**:quote 加在 `deliver_rounds` 的 `response` 参数上,实际由 `deliver_split / deliver_final_only / deliver_preview_merged` 决定何时露出——`Final` 模式 + rounds 为空 / `Split` 末轮 fallback 兜底场景中,引用前缀直接出现;live 流式预览阶段(已发完的 round)无法回插。
+
+> 历史:本能力之前是 follow-up F-066(详见 [`docs/plans/review-followups.md`](../plans/review-followups.md));旧版 `attach_im_mirrors` / `finalize_im_mirrors` 走「turn 末尾一次性 send_message」,与 src-tauri `chat.rs` 的 `relay_to_channel` 还存在 double-send。F-066 落地后 live mirror 完整接管 IM 投递,`relay_to_channel` 已删除。
+
+### Attach catch-up:接管已有会话立刻看到上一轮
+
+入口 [`channel/attach_sync.rs::deliver_attach_catchup`](../../crates/ha-core/src/channel/attach_sync.rs)。两条 attach 路径(IM `/session <id>` slash + GUI `/handover` HTTP / Tauri command)在 `attach_session` 成功 + `channel:primary_changed` emit 之后、回执「已接管」消息之前各调一次。
+
+契约:
+
+- **回填内容 = 最近一轮已完成的 assistant final text + 该轮 tool_result 媒体**(语义对应 `ImReplyMode::Final` 的 dispatcher 路径)。回填消息走 `plugin.markdown_to_native()` → `plugin.chunk_message()` → `plugin.send_message()`,不带 `reply_to_message_id`(没有 inbound 可回复);媒体走 `deliver_media_to_chat`(与 dispatcher 共用)。
+- **跳过条件**:新会话 / 无 assistant 消息 / 最近一轮无 text 也无 media。
+- **In-flight 提示**:`globals::get_channel_cancels()` 此刻仍持锁(意味着原触发端的 turn 还在跑)时,回填末尾追加一条「⏳ A reply is being generated and will arrive shortly.」系统提示。当前 in-flight turn 的真正 live 推送靠 GUI → IM mirror,不在 catch-up 范围。
+- **best-effort**:catch-up 失败只 `app_warn!`,不影响 attach 成功本身。db helper(`attach_session`)保持纯净——catch-up 是消息层行为,在 worker / route 层完成。
+
+### Slash 命令
+
+| 命令 | 行为 | IM 行为 |
+|---|---|---|
+| `/sessions` | 用户对话 session picker(过滤 cron / subagent / incognito) | inline buttons,callback `slash:session <id>` |
+| `/session [<id>\|exit]` | 无参显示 session info(含 IM attach 行,1:1);`<id>` attach;`exit` detach | attach 调 `attach_session(..., source="attach")`,踢掉旧 chat 并发驱逐通知;detach 调 `detach_session` |
+| `/projects` | 列所有未归档项目 | inline buttons,callback `slash:project <id>` |
+| `/project <name>` | 模糊匹配后切项目 | 发 `AssignProject` —— UPDATE `sessions.project_id`,**不创建新 session**;GUI 模式发 `EnterProject` 创建新 session 进入 |
+| `/handover <ch:acc:chat[:thread]>` | GUI 把当前 session 推到 IM chat | 不下发菜单;实际入口 GUI Handover dialog,slash 给 power user / 脚本 |
+
+`/status` 末尾追加 **Attached IM Channel** 段,显示该 session 的 IM attach 行(1:1,0 或 1 行) —— channel / chat 标识 + `attached_at`。
+
+### 按钮回调路由(7 渠道单一真相源)
+
+支持按钮的 7 个渠道(Telegram / Feishu / Discord / Slack / QQ Bot / LINE / Google Chat)对**无参 slash 命令**会弹 `arg_options` picker([`channel/worker/slash.rs`](../../crates/ha-core/src/channel/worker/slash.rs)),按钮 `callback_data = "slash:cmd arg"`。
+
+**统一入口**:[`channel/worker/slash_callback.rs::inject_slash_callback`](../../crates/ha-core/src/channel/worker/slash_callback.rs) ——
+签名 `(channel_id, account_id, chat_id, thread_id, sender_id, message_id, rest, inbound_tx, source)`。helper 内部用 `channel_db.get_chat_type` 查 `channel_conversations` (arg-picker 按钮永远在一条真实 inbound `/cmd` 之后,行已存在),缺行 fallback `Dm` (与 `ChatType::from_lowercase` 一致)。每个渠道在自己的 button-callback 入口先 `strip_prefix("slash:")`,再调 helper:
+
+| 渠道 | callback 入口 | chat_id 拼法 |
+|---|---|---|
+| Telegram | [`polling.rs::inject_slash_callback_from_query`](../../crates/ha-core/src/channel/telegram/polling.rs) | `msg.chat.id.0` |
+| Feishu | [`ws_event.rs::inject_slash_callback`](../../crates/ha-core/src/channel/feishu/ws_event.rs) (thin wrapper) | `context.open_chat_id` |
+| Discord | [`gateway.rs::INTERACTION_CREATE` type=3](../../crates/ha-core/src/channel/discord/gateway.rs) | `d.channel_id` |
+| Slack | [`socket.rs::handle_interactive_payload`](../../crates/ha-core/src/channel/slack/socket.rs) | `payload.channel.id` (含 thread_ts) |
+| QQ Bot | [`gateway.rs::INTERACTION_CREATE`](../../crates/ha-core/src/channel/qqbot/gateway.rs) | `c2c:{openid}` / `group:{openid}` / `channel:{id}` (与 `convert_*_message` 一致) |
+| LINE | [`webhook.rs::postback`](../../crates/ha-core/src/channel/line/webhook.rs) | group→`groupId` / room→`roomId` / DM→`userId` |
+| Google Chat | [`webhook.rs::CARD_CLICKED`](../../crates/ha-core/src/channel/googlechat/webhook.rs) | `space.name` (含 message thread.name) |
+
+**ack 协议**:Discord 用 type=6 DEFERRED_UPDATE_MESSAGE([`gateway.rs::ack_component_interaction`](../../crates/ha-core/src/channel/discord/gateway.rs)),QQ Bot 用 `PUT /interactions/{id}/responses` `code:0`([`QqBotApi::ack_interaction`](../../crates/ha-core/src/channel/qqbot/api.rs))——两者都是 fire-and-forget spawn,不阻塞 dispatcher。Slack / LINE / Google Chat 通过 webhook HTTP 200 响应自动 ack;Feishu / Telegram 通过各自原生路径 ack。
+
+非 `slash:` 前缀的 callback (`approval:` / `ask_user:`) 走 [`worker::ask_user::try_dispatch_interactive_callback`](../../crates/ha-core/src/channel/worker/ask_user.rs) 老路径,不变。
 
 ### IM 渠道禁用命令
 
-部分桌面专属斜杠命令在 IM 渠道里既不下发菜单也不执行。**入口**：[`crates/ha-core/src/slash_commands/registry.rs::IM_DISABLED_COMMANDS`](../../crates/ha-core/src/slash_commands/registry.rs)。
+**入口**:[`slash_commands/registry.rs::IM_DISABLED_COMMANDS`](../../crates/ha-core/src/slash_commands/registry.rs)。
 
 ```rust
-pub const IM_DISABLED_COMMANDS: &[&str] = &["project", "agent"];
+pub const IM_DISABLED_COMMANDS: &[&str] = &["agent", "handover"];
 ```
 
-| 命令 | 禁用原因 | 引入 commit |
-|---|---|---|
-| `/agent` | IM dispatcher 每条入站消息都从 channel-account / topic / group 配置重算 `agent_id`（[`channel/worker/dispatcher.rs`](../../crates/ha-core/src/channel/worker/dispatcher.rs)），不读 `sessions.agent_id`。允许 `/agent` 会让会话标签和实际运行 agent 永久漂移——`/agent` 切完后回复「Switched to X」，下一条入站消息又被 channel-account 配置拉回原 agent，是幻觉切换。改 IM agent 应去「设置 → IM Channel → account → Agent」或 topic/group override | `48fa4986` |
-| `/project` | IM session 已绑定 channel-account，不能再被另一个项目认领；项目 ↔ IM channel 关系由项目侧 `bound_channel` 字段单向维护（0..1 ↔ 0..1），不允许从 IM 内部反向切换 | `0fe6ec0a` |
+| 命令 | 禁用原因 |
+|---|---|
+| `/agent` | IM dispatcher 每条入站消息都从 channel-account / topic / group 配置重算 `agent_id`,不读 `sessions.agent_id`。允许 `/agent` 会让会话标签和实际运行 agent 永久漂移(`/agent` 切完后回复「Switched to X」,下一条入站消息又被 channel-account 配置拉回原 agent,幻觉切换)。改 IM agent 应去「设置 → IM Channel → account → Agent」或 topic/group override |
+| `/handover` | GUI 端专用——把当前 chat 的 session 推给当前 chat 自己没有意义;IM 端等价操作是 `/session <id>` |
 
-**双层防御**：
+`/project` 不再禁用——Phase A1 删除项目反向认领后,IM 端 `/project` 改为"把当前 session 归该项目"语义,与任何唯一性约束都不冲突。
 
-1. **同步阶段过滤** —— Discord Application Commands、Telegram bot menu、Slack slash 同步阶段都先过 `IM_DISABLED_COMMANDS`，禁用命令不下发到平台菜单
-2. **handler 自检** —— 用户硬键入 `/project xxx` 或 `/agent xxx` 仍能到达分发器，[`handlers/project.rs`](../../crates/ha-core/src/slash_commands/handlers/project.rs) 与 [`handlers/agent.rs`](../../crates/ha-core/src/slash_commands/handlers/agent.rs) 入口检测 `session.channel_info.is_some()` 直接返回 `DisplayOnly` 提示「在 IM 渠道不可用」，不会走到模糊匹配 / 实际切换
+**双层防御**:
 
-新增此类命令时同时改两处：(1) `IM_DISABLED_COMMANDS` 常量让 IM 同步阶段不下发菜单；(2) handler 内自检 `session.channel_info`，处理用户绕过菜单硬键入的情况。
+1. **同步阶段过滤** —— Discord / Telegram / Slack 同步前过 `IM_DISABLED_COMMANDS`
+2. **handler 自检** —— 仅 `/agent` handler 仍按 `session.channel_info.is_some()` 拒绝执行;`/project` handler 改为按 channel_info 走 `EnterProject`(GUI) vs `AssignProject`(IM) 分支
+
 
 ---
 
@@ -716,7 +799,7 @@ pub fn spawn_dispatcher(
 |------|------|------|
 | `split`（默认） | 每 round 的 narration 与该 round 工具产生的媒体按时序作为独立消息发送（narration → 该 round media → 下一 round narration → ...）。**流式渠道每 round 都是真正的流式打字机**——stream task 在 `tool_call → text_delta` 边界把当前 preview finalize 掉、把该 round 媒体发完，再为下一 round 起一条全新 preview，每 round 用户都看到 typewriter；非流式渠道每条 narration 一次性。 | 所有 |
 | `final` | 丢弃中间 round narration，只发最后 round 的 text + 末尾发所有媒体。不启用流式预览。 | 所有 |
-| `preview` | 流式渠道用 stream preview transport（Telegram edit · Feishu cardkit · Telegram DM Draft）渲染合并文本——单条不断增长的消息，媒体末尾发。非流式渠道无 preview 可用，自动降级等同 `final`。 | 仅流式有差异 |
+| `preview` | 流式渠道用 stream preview transport（Telegram edit · Feishu cardkit · Telegram DM Draft）渲染合并文本——单条不断增长的消息，跨 tool round 的相邻 narration 之间插入一个 `\n`，媒体末尾发。非流式渠道无 preview 可用，自动降级等同 `final`。 | 仅流式有差异 |
 
 #### 实现：`RoundTextAccumulator` + state machine
 
@@ -762,7 +845,7 @@ let preview_transport = match reply_mode {
 
 - `deliver_split`：跳过 `stream_outcome.finalized_rounds` 已经在 stream task 里发掉的 round，再处理剩下的（流式渠道下通常只剩"还没 finalize"的最后 round；非流式渠道下是全部 round）。pre-final round `send_message(text)` + `deliver_media(round.medias)`；最后 round 走 `send_final_reply`（finalize 当前 preview handle + canonical chunk-or-card + 媒体 fan-out）。
 - `deliver_final_only`：取 `rounds.last().text` + 合并所有 `medias`，一次 `send_final_reply`。
-- `deliver_preview_merged`：把 drained rounds 的 `r.text` **空字符串 concat**（`rounds.iter().map(|r| r.text.as_str()).collect::<String>()`）+ 合并所有 `medias`，走 `send_final_reply`。round_texts state machine 是 sink 转给 stream task `accumulated` 的 byte-exact 镜像，concat 出来的字符串就是用户在流式期间看到的最后一帧逐字节相同 —— 不能用 `engine_result.response`（不含 thinking blockquote、`/reason on` 时会被 final commit 抹掉）也不能用 `join("\n\n")`（show_thinking=false 时会比预览多插空行）。仅当 rounds 全空时回退 `engine_result.response`。
+- `deliver_preview_merged`：用 `append_preview_round_text` 合并 drained rounds 的 `r.text`：同一 round 内 byte-exact `push_str`，跨 tool round 且边界两侧没有现成换行时插入一个 `\n`，再合并所有 `medias` 走 `send_final_reply`。round_texts state machine 是 sink 转给 stream task `accumulated` 的镜像，最终字符串必须跟用户在流式期间看到的最后一帧一致 —— 不能用 `engine_result.response`（不含 thinking blockquote、`/reason on` 时会被 final commit 抹掉），也不能无条件 `join("\n\n")`（show_thinking=false 时会比预览多插空行）。仅当 rounds 全空时回退 `engine_result.response`。
 
 `deliver_media_to_chat` 是 `send_final_reply` / split-streaming 共用的媒体投递函数——`partition_media_by_channel` 后逐个 `send_message(media)`，不支持的 MIME 走 `build_media_fallback_lines` 转下载链接（每条间 50ms 节流，避开 Telegram / LINE 单聊速率限制）。
 
@@ -828,7 +911,7 @@ show_thinking 跟 reply mode 正交，都在 round 文本层面工作：
 
 - **Split**：每 round 的 `RoundOutput.text` 已自带 `> 💭 **Thinking**\n> ...\n\n<answer>`；split mode delivery 把 round.text 当 narration 发，thinking blockquote 自然带过去。流式渠道下 stream task 的 per-round preview 也能实时打字机显示 thinking
 - **Final**：`deliver_final_only` 取 `rounds.last().text`，最后 round 若有 thinking 也带过去
-- **Preview**：`deliver_preview_merged` 把所有 round.text 空字符串 concat（见上节"Dispatcher 分发"末尾）—— concat 结果跟 stream `accumulated` byte-exact 一致，避免 commit 时 thinking 块被 `engine_result.response` 抹掉
+- **Preview**：`deliver_preview_merged` 用 `append_preview_round_text` 合并所有 round.text（同 round 原样追加，跨 tool round 补一个 `\n`）——结果跟 stream `accumulated` 一致，避免 commit 时 thinking 块被 `engine_result.response` 抹掉
 
 **默认 off**：保持升级前行为，老用户不会突然看到 reasoning 块挤到 IM 消息里。
 
@@ -1127,6 +1210,46 @@ Socket Mode 信封格式：`{envelope_id, type, payload}`，收到后立即 ACK 
 - **创建期失败**（cardkit create 或 send_card_message 任一报错）：本轮丢弃 cardkit，把 `preview_transport` 写回 `Message`，本轮累计文本走旧 `send_message_preview`，后续轮按 Message 路径继续
 - **中后期失败**（`update_card_element` 报任何错，含 sequence 冲突）：进入 `card_session.broken=true`，后续 interval tick **不再发预览**；`send_final_reply` 在收尾时识别 `PreviewHandle::Card { broken: true, .. }`，跳过 cardkit close，发一条新 text 消息（带 `reply_to_message_id`）作为完整交付
 - **不做 sequence 重试**：300317 通常说明本地 sequence 与服务端不同步，直接 broken 比无谓重试更稳
+
+### 按钮卡片：schema 2.0 内联（ask_user / approval）
+
+ask_user / approval 按钮也走 schema 2.0，但**不**走 cardkit API——按钮卡片是一次性、不需要后续 update 元素，所以直接把 schema 2.0 卡片 JSON 字符串化塞进 `POST /open-apis/im/v1/messages` 的 `content` 字段（`msg_type=interactive`）。一次 API call 完成。
+
+**端点**：复用 [`FeishuApi::send_interactive_card`](../../crates/ha-core/src/channel/feishu/api.rs)（同一个 helper 之前服务于 schema 1.0 卡片，现在 caller 切到 schema 2.0 卡片 JSON）。
+
+**卡片骨架**：见 [`mod.rs::build_button_card_v2`](../../crates/ha-core/src/channel/feishu/mod.rs)。
+
+```json
+{
+  "schema": "2.0",
+  "config": {"streaming_mode": false},
+  "body": {
+    "elements": [
+      {"tag": "markdown", "content": "<提示文本>"},
+      {"tag": "column_set", "horizontal_align": "left", "columns": [
+        {"tag": "column", "width": "auto", "elements": [{
+          "tag": "button",
+          "text": {"tag": "plain_text", "content": "✅ Allow Once"},
+          "type": "primary",
+          "behaviors": [{
+            "type": "callback",
+            "value": {"hope_callback": "approval:<request_id>:allow_once"}
+          }]
+        }]}
+      ]}
+    ]
+  }
+}
+```
+
+**回调路径**：用户点击按钮触发 `card.action.trigger` WS 事件；[`ws_event.rs::extract_hope_callback`](../../crates/ha-core/src/channel/feishu/ws_event.rs) 从 `event.action.value.hope_callback` 取出字符串，按前缀分两条路：
+
+- `slash:<cmd> <arg>`（无参 slash 命令的 arg picker，如 `/think` / `/permission`）→ [`inject_slash_callback`](../../crates/ha-core/src/channel/feishu/ws_event.rs) 从 envelope（`context.open_chat_id` / `operator.open_id` / `context.open_message_id`）合成一条 `text="/cmd arg"` 的 inbound `MsgContext`，丢回 `inbound_tx`，让 worker 走正常 slash 分发——和 [`telegram/polling.rs::convert_callback_query`](../../crates/ha-core/src/channel/telegram/polling.rs) 一致的回环。`chat_type` 通过 [`ChannelDB::get_chat_type`](../../crates/ha-core/src/channel/db.rs) 用 chat_id 反查既有 `channel_conversations` 行恢复（picker 按钮总是先于真实 `/cmd` inbound 出现，行已存在）；查不到回退 `Dm`（与 [`ChatType::from_lowercase`](../../crates/ha-core/src/channel/types.rs) 默认一致），避免 DM 用户按钮点击被误判为 Group 后走 mention-gating 或 wildcard group agent 路由
+- `approval:` / `ask_user:` → [`try_dispatch_interactive_callback`](../../crates/ha-core/src/channel/worker/ask_user.rs) 直接进 worker 内部的审批 / ask_user state machine
+
+**关键约束**：
+- `behaviors[callback].value` 必须是 object，且 key/value 都是 string——schema 2.0 callback value 不支持裸字符串
+- 接收侧只解 object → `hope_callback` 单一路径，不再兼容 schema 1.0 的字符串 fallback。解不出时打 `app_warn!`，避免 silent drop
 
 ---
 

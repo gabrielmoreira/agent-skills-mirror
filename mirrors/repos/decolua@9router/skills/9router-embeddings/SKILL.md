@@ -7,10 +7,12 @@ description: Generate vector embeddings via 9Router /v1/embeddings using OpenAI 
 
 Requires `NINEROUTER_URL` (and `NINEROUTER_KEY` if auth enabled). See https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router/SKILL.md for setup.
 
-## Discover models
+## Discover
 
 ```bash
 curl $NINEROUTER_URL/v1/models/embedding | jq '.data[].id'
+# Per-model dimensions
+curl "$NINEROUTER_URL/v1/models/info?id=openai/text-embedding-3-small"
 ```
 
 ## Endpoint

@@ -7,13 +7,18 @@ description: Text-to-speech via 9Router /v1/audio/speech using OpenAI / ElevenLa
 
 Requires `NINEROUTER_URL` (and `NINEROUTER_KEY` if auth enabled). See https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router/SKILL.md for setup.
 
-## Discover voices
+## Discover
 
 ```bash
+# 1) List models
 curl $NINEROUTER_URL/v1/models/tts | jq '.data[].id'
+# 2) Per-model metadata (params, voicesUrl if voice-by-id)
+curl "$NINEROUTER_URL/v1/models/info?id=el/eleven_multilingual_v2"
+# 3) List voices (elevenlabs, edge-tts, deepgram, inworld, local-device). Optional ?lang=vi
+curl "$NINEROUTER_URL/v1/audio/voices?provider=edge-tts&lang=vi" | jq '.data[].model'
 ```
 
-`model` = voice ID (e.g. `openai/tts-1`, `el/eleven_multilingual_v2`, `edge-tts/en-US-AriaNeural`).
+`model` field in `/v1/audio/speech` = voice ID directly (e.g. `edge-tts/vi-VN-HoaiMyNeural`, `el/<voice_id>`, or `openai/tts-1` model+default voice).
 
 ## Endpoint
 

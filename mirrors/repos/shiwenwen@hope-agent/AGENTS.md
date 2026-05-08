@@ -197,15 +197,21 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 - **`ImReplyMode` 三态对所有渠道生效**（`ChannelAccountConfig.settings.imReplyMode`，默认 `split`，[`channel/types.rs`](crates/ha-core/src/channel/types.rs)）：
   - `split`（默认）：每 round 的 narration + 媒体按时序作为独立消息发送；**流式渠道每 round 都是真打字机**——stream task 在 `tool_call → text_delta` 边界把当前 preview finalize 掉、按 transport 收尾、把该 round 媒体发完，再为下一 round 起一条全新 preview，每 round 用户都看到 typewriter；非流式渠道每条 narration 一次性
   - `final`：丢弃中间 round narration，只发最后 round 的 text + 末尾发所有媒体；不启用流式预览
-  - `preview`：流式渠道用 preview transport 渲染合并文本（旧行为）；非流式渠道降级为 `final`
+  - `preview`：流式渠道用 preview transport 渲染合并文本（旧行为），跨 tool round 的相邻 narration 之间插入一个换行；非流式渠道降级为 `final`
 
   实现要点：
   - **stream task transport 由 mode 决定**——dispatcher 在 spawn stream task 之前算 `account.im_reply_mode()`，`Preview | Split` 都调 `select_stream_preview_transport`（`Split` + 非流式渠道返 `None` 时 stream task drain events、`finalized_rounds=0`），仅 `Final` 强制传 `None`
   - **round 边界 + 媒体归组**靠 `ChannelStreamSink::round_texts: RoundTextAccumulator<RoundOutput { text, medias }>`（[`chat_engine/types.rs`](crates/ha-core/src/chat_engine/types.rs)）。state machine：`text_delta → current.text`；`tool_call → close round`（idempotent，多 tool_call 同 round 只关一次）；`tool_result(media) → 挂到刚关闭的 round`
   - **stream task per-round finalize**（split + 流式渠道，[`worker/streaming.rs`](crates/ha-core/src/channel/worker/streaming.rs) `finalize_split_round`）：边界检测靠 `event.contains("\"type\":\"tool_call\"")` + `extract_text_delta`；按 transport 收尾——Message reset `preview_message_id` / Card `close_card_stream` / Draft `send_message` 把草稿落地——再从 `round_texts.completed[idx].medias` 取媒体走 `deliver_media_to_chat`。返给 dispatcher 的 `StreamPreviewOutcome.finalized_rounds` 记录已发 round 数
-  - **dispatcher** 在 [`channel/worker/dispatcher.rs`](crates/ha-core/src/channel/worker/dispatcher.rs) 按 mode 调 `deliver_split` / `deliver_final_only` / `deliver_preview_merged` 三选一；`deliver_split` 跳过 `rounds[..finalized_rounds]`（stream task 已发），剩余 round 走 `send_message(text)` + `deliver_media`，最后 round 通过 `send_final_reply` 走 finalize 路径
+  - **dispatcher** 在 [`channel/worker/dispatcher.rs`](crates/ha-core/src/channel/worker/dispatcher.rs) 按 mode 调 `deliver_split` / `deliver_final_only` / `deliver_preview_merged` 三选一；`deliver_split` 跳过 `rounds[..finalized_rounds]`（stream task 已发），剩余 round 走 `send_message(text)` + `deliver_media`，最后 round 通过 `send_final_reply` 走 finalize 路径；`deliver_preview_merged` 与 stream task 共用 preview round 拼接规则，跨 tool round 补一个 `\n`，保证 live preview 与最终定稿一致
 - **配置入口**：GUI（`EditAccountDialog` 三选项 Select，`preview` 选到非流式 channel 时 hint「will degrade to Final」）+ `/imreply [split|final|preview]` 斜杠命令
 - **`ChannelStreamSink` 短路条件用 `contains` 不能用 `starts_with`**：`emit_tool_result` 走 `serde_json::json!({...})` + 默认 `BTreeMap`，键按字母序输出（`call_id` 永远在前），任何 anchor 在 `{"type":...` 的 fast-path 都不会触发。`media_items` / `tool_result` / `text_delta` / `tool_call` 检测都用 `event.contains(...)`，rarer-needle-first
+- **`channel_conversations` 1:1 attach（双向）**：每个 (channel, account, chat, thread) 在任意时刻只关联一个 session（`uq_channel_conv_chat`），且每个 session 在任意时刻只能被一个 IM chat attach（`uq_channel_conv_session`）。新 chat 通过 `/session <id>` 或 handover 接管时，目标 session 上的旧 attach **物理 detach** 并通过 `channel:session_evicted` 事件发"会话被接管"系统消息——不再保留 observer 行。helper 入口 [`channel/db.rs`](crates/ha-core/src/channel/db.rs)：`attach_session` / `detach_session` / `update_session` / `get_conversation_by_session`，**不要直接写 `channel_conversations`**。
+- **`source` 字段**：`inbound`（IM 入站新建）/ `attach`（`/session <id>` 显式接管）/ `handover`（GUI handover 或 `/handover` 推到该 chat）。
+- **GUI ↔ IM live 流式镜像**：desktop / HTTP 触发的 turn 通过 [`chat_engine/im_mirror.rs`](crates/ha-core/src/chat_engine/im_mirror.rs) `attach_im_live_mirror` 把 `ChannelStreamSink` 注册到 [`SinkRegistry`](crates/ha-core/src/chat_engine/sink_registry.rs)，引擎 `emit_stream_event` 末尾的 fan-out hook 在每帧把 streaming event 转发到 IM 流式预览任务。turn 收尾走 `finalize_im_live_mirror`：drop SinkHandle → drain `RoundTextAccumulator` → 复用 dispatcher 的 `deliver_split` / `deliver_final_only` / `deliver_preview_merged`，按 IM account 的 `ImReplyMode`（`split / preview / final`）渲染——与 IM 入站 turn 完全对称。**两个通道独立走自己的发送通路**：GUI 永远走 Tauri IPC stream / HTTP `chat:stream_delta` 广播，不受 `imReplyMode` 影响；`imReplyMode` 仅决定 IM 端的呈现形态。错误 / 取消路径走 RAII drop，IM 端保留半截 preview，与入站 cancel 行为一致。`source ∈ {Subagent, ParentInjection, Channel, Cron}` 直接 no-op（IM 入站自己有完整流式管线，subagent/cron 不应外溢到 IM）。
+
+- **新 slash 命令**：`/sessions`（picker 用户对话 session，过滤 cron / subagent / incognito）、`/session [<id>|exit]`（info / attach / detach）、`/projects`（picker）、`/handover <ch:acc:chat[:thread]>`（GUI 端推送，IM 不可见）。`IM_DISABLED_COMMANDS` 仅含 `agent` / `handover`。
+- **`channel:session_evicted` 事件**：`attach_session` / `update_session` 在 1:1 接管把旧 chat 物理 detach 之后，对每个被踢的 chat emit 一次此事件，payload `{ channelId, accountId, chatId, threadId, sessionId }`。[`channel/worker/eviction_watcher.rs`](crates/ha-core/src/channel/worker/eviction_watcher.rs) 订阅后调对应 plugin 的 `send_message` 发"this chat has been taken over by another endpoint"通知；`ChannelAccountConfig.notify_session_eviction`（默认 `true`）可静音。
 
 ### Dashboard / Recap / Learning
 
@@ -235,11 +241,11 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 - 记忆优先级 Project > Agent > Global
 - **默认工作目录合并**：优先级 `session > project > 不注入`，**lazy resolve**；唯一入口 [`session/helpers.rs::effective_session_working_dir`](crates/ha-core/src/session/helpers.rs)，写校验入口 [`util.rs::canonicalize_working_dir`](crates/ha-core/src/util.rs)
 - 删除级联：unassign → 删 `projects` + `project_files`（FK） → `rm -rf projects/{id}/` → 删项目记忆（跨 db 单独执行）
-- **绑定 IM Channel**：`Project.bound_channel` 让一个项目认领 (channel, account)，channel worker 创建会话时反查注入；同一 (channel, account) 只能被一个项目认领
+- **IM 路由（无反向认领）**：项目不再认领 (channel, account)。要把 IM 中的会话归项目，从该 chat 内 `/project <id>`（或 picker）显式触发；`AssignProject` action 在 channel worker 内 UPDATE `sessions.project_id`，不再通过 channel→project 反查。**`Project.bound_channel` 已删除，不要重新引入**。
 
 ### Agent 解析链（默认 Agent）
 
-5 级：**显式参数 → `project.default_agent_id` → `channel_account.agent_id` → `AppConfig.default_agent_id` → 硬编码 `"default"`**。统一 helper：[`agent/resolver.rs::resolve_default_agent_id`](crates/ha-core/src/agent/resolver.rs)（带来源 tag 版本给 `/status`）。
+7 级（首个非空胜出）：**显式参数 → `project.default_agent_id` → `topic.agent_id` → `group.agent_id` → `tg_channel.agent_id` → `channel_account.agent_id` → `AppConfig.default_agent_id` → 硬编码 `"default"`**。统一入口 [`agent/resolver.rs::resolve_default_agent_id_full`](crates/ha-core/src/agent/resolver.rs)；无 IM 上下文的 desktop / HTTP 用 `resolve_default_agent_id` 包装（只传 project + channel_account）。**channel worker 不得自写解析链** —— Phase A5 已折叠到 resolver 单一真相源。
 
 ### 本地 LLM 助手
 

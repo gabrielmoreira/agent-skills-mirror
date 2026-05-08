@@ -151,7 +151,7 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 
 ### Prediction Markets (Predexon)
 
-Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow** + Binance for crypto candles. **48 endpoints exposed as 9 agent tools** (8 named ergonomic wrappers + 1 catch-all):
+Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow** + Binance for crypto candles. **57 endpoints (Predexon v2) exposed as 9 agent tools** (8 named ergonomic wrappers + 1 catch-all):
 
 - **Markets & trading** — events, markets list per venue, cross-venue search (`markets/search`), orderbooks, candlesticks (per-market and per-token), trades, positions, volume charts.
 - **Leaderboard & smart money** — global + per-market leaderboards, smart-money positioning, top holders, smart-activity feed.
@@ -168,7 +168,7 @@ Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion
 | `blockrun_predexon_wallet`        | Polymarket wallet profile (PnL, winrate, positions)                                               | $0.005 / call     |
 | `blockrun_predexon_wallet_pnl`    | Wallet P&L time series                                                                            | $0.005 / call     |
 | `blockrun_predexon_matching_markets` | Polymarket ↔ Kalshi market pairs (arb compare)                                                | $0.005 / call     |
-| `blockrun_predexon_endpoint_call` | Catch-all for the remaining 40 endpoints — orderbooks, candlesticks, top-holders, UMA oracle, wallet identity/cluster, Kalshi/Limitless/Opinion/Predict.Fun, dFlow, Binance Futures, cross-venue search. Takes `path` + `query`. | $0.001 / $0.005 / call |
+| `blockrun_predexon_endpoint_call` | Catch-all for the remaining 49 endpoints — orderbooks, candlesticks, top-holders, UMA oracle, wallet identity/cluster, Kalshi/Limitless/Opinion/Predict.Fun, dFlow, Binance Futures, cross-venue search, sports, canonical markets. Takes `path` + optional `method`/`query`/`body`. | $0.001 / $0.005 / call |
 
 Pricing: `$0.001` per market-data call, `$0.005` per analytics / search / wallet call. See the `predexon` skill for the full endpoint reference.
 

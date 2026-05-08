@@ -3,9 +3,9 @@
 ## Purpose
 
 SNMP profiles are one catalog with explicit projections for their consumers.
-Regular SNMP metric collection and SNMP topology use the same profile loading,
-matching, inheritance, metadata, and tag machinery, but they consume different
-profile views.
+Regular SNMP metric collection, SNMP topology, and SNMP licensing use the same
+profile loading, matching, inheritance, metadata, and tag machinery, but they
+consume different profile views.
 
 ## Consumers
 
@@ -13,20 +13,29 @@ The supported profile consumers are:
 
 - `metrics` - regular SNMP charted metrics and virtual metrics.
 - `topology` - SNMP topology observations.
+- `licensing` - typed SNMP network-device license rows.
 
-Profile metadata fields and top-level `metric_tags` default to both consumers.
+Profile metadata fields and top-level `metric_tags` default to all consumers.
 They may narrow their visibility with:
 
 ```yaml
 consumers: [metrics]
 consumers: [topology]
+consumers: [licensing]
 ```
+
+Metadata resource `id_tags` do not carry `consumers` today. They inherit the
+metadata defaults used by charted metrics and topology and are not included in a
+licensing-only projection.
 
 Metric rows under top-level `metrics:` are regular metric rows. They are
 metrics-only.
 
 Topology rows live under top-level `topology:` and must declare a closed
 `kind`.
+
+Licensing rows live under top-level `licensing:` and emit typed license rows,
+not chart metrics and not hidden underscore-prefixed metrics.
 
 ## Topology Rows
 
@@ -80,6 +89,60 @@ The closed topology kind set is:
 - `arp_entry`
 - `arp_legacy_entry`
 
+## Licensing Rows
+
+Licensing rows are row-centric because one license row can aggregate identity,
+descriptors, state, timers, and usage signals:
+
+```yaml
+licensing:
+  - id: vendor-license-group
+    table:
+      OID: 1.3.6.1.4.1.example.1
+      name: vendorLicenseTable
+    identity:
+      id: { index: 1 }
+      name:
+        symbol:
+          OID: 1.3.6.1.4.1.example.1.2
+          name: vendorLicenseName
+    state:
+      symbol:
+        OID: 1.3.6.1.4.1.example.1.3
+        name: vendorLicenseState
+      mapping:
+        1: "0"
+        2: "1"
+        3: "2"
+    signals:
+      expiry:
+        timestamp:
+          symbol:
+            OID: 1.3.6.1.4.1.example.1.4
+            name: vendorLicenseExpiry
+          format: snmp_dateandtime
+```
+
+Scalar-only licensing rows are allowed. If a scalar row combines multiple
+scalar signal OIDs into one license row, it must declare an explicit `id:` so
+the grouping is stable. Otherwise scalar structural identity defaults to the
+single scalar signal OID.
+
+`from: <oid>` lets a typed licensing value read a sibling OID directly. For
+table rows, `from` must be a peer column under the same table OID. For scalar
+rows, schema validation only checks OID syntax and the row's explicit identity
+rules; there is no cross-profile reference path in profile validation.
+
+Supported licensing signal fields are:
+
+- state severity: `state`
+- timers: `expiry`, `authorization`, `certificate`, `grace`
+- usage: `used`, `capacity`, `available`, `percent`
+
+Timer signals may declare exactly one of the shorthand timer value,
+`timestamp`, or `remaining`. Sentinel policies are closed names and are
+evaluated by the typed licensing producer before runtime consumers see the row.
+
 ## Resolve And Projection
 
 `ddsnmp.Catalog.Resolve()` resolves profiles by `sysObjectID`, `sysDescr`, and
@@ -100,14 +163,26 @@ semantics. The topology collector uses manual-profile augment semantics.
 - drops `virtual_metrics`;
 - filters metadata and top-level metric tags by `consumers`.
 
+`ResolvedProfileSet.Project(licensing)` returns the licensing view:
+
+- keeps `licensing`;
+- drops regular `metrics`;
+- drops `topology`;
+- drops `virtual_metrics`;
+- filters metadata and top-level metric tags by `consumers`.
+
+The regular SNMP collector uses `Project(metrics, licensing)` so one SNMP pass
+can produce charted metrics and typed license rows. Single-consumer projections
+remain pure.
+
 `ProjectedView.FilterByKind()` is a topology view filter. VLAN-context topology
 uses it with the VLAN-scopable kind set instead of hardcoded topology mixin
 filenames.
 
 ## Inheritance And Merge Rules
 
-Profile inheritance must merge `topology:` rows in addition to `metrics:`,
-`virtual_metrics`, metadata, global metric tags, and static tags.
+Profile inheritance must merge `topology:` and `licensing:` rows in addition to
+`metrics:`, `virtual_metrics`, metadata, global metric tags, and static tags.
 
 Topology row identity is:
 
@@ -124,7 +199,33 @@ identity are load errors.
 
 Cross-profile deduplication runs after profile matching because it depends on
 matched-profile specificity. It must deduplicate both regular metrics and
-topology rows in the resolved matched set.
+topology/licensing rows in the resolved matched set.
+
+Runtime licensing row structural identity is:
+
+```text
+origin profile id + table OID + row index
+origin profile id + scalar signal OID
+origin profile id + explicit scalar group id
+```
+
+`origin profile id` is the logical profile file that declared the licensing row,
+including mixin-origin rows after `extends:` merge. It is not the root matched
+profile name and not an absolute workstation path. Repeated `(structural
+identity, signal kind)` entries are load errors unless a valid inheritance
+override handles them.
+
+Profile inheritance merge identity is the pre-collection form of that identity:
+
+```text
+table OID
+scalar signal OID
+explicit scalar group id
+```
+
+Derived `licensing:` rows with the same merge identity replace inherited rows.
+This keeps intentional `extends:` overrides valid while duplicate signal kinds
+inside one resolved profile remain load errors.
 
 ## Delivery
 
@@ -133,9 +234,18 @@ Regular metrics are emitted through `ProfileMetrics.Metrics`.
 Topology rows are emitted through `ProfileMetrics.TopologyMetrics` and carry
 `Metric.TopologyKind`.
 
+Licensing rows are emitted through `ProfileMetrics.LicenseRows` and carry
+typed grouped fields for identity, descriptors, state, timers, usage, tags,
+origin profile id, table OID, row key, and structural id.
+
 `ProfileMetrics.HiddenMetrics` remains a generic delivery container for
-underscore-prefixed non-topology metrics. SNMP topology must not depend on
-hidden metrics.
+underscore-prefixed non-topology and non-licensing metrics. SNMP topology and
+SNMP licensing must not depend on hidden metrics.
+
+Licensing row counts are reported through `Stats.Metrics.Licensing`. Ordinary
+`Stats.Metrics.Tables` and `Stats.Metrics.Rows` remain regular chart-metric
+table counters. Licensing timing and processing failures use their own
+licensing fields in timing and processing-error stats.
 
 Top-level `metric_tags` on topology projections are profile/device labels. They
 are applied through topology profile-tag ingestion and are not topology row
@@ -148,5 +258,19 @@ Profile validation rejects:
 - unknown topology kinds;
 - underscore-prefixed topology row value symbol names;
 - regular metric chart/export-only fields on topology row value symbols;
+- unknown licensing signal, sentinel, and state policy names;
+- licensing rows without state or signals;
+- scalar licensing rows that group multiple scalar signal OIDs without an
+  explicit `id`;
+- scalar licensing rows with only literal values and no explicit `id`;
+- repeated licensing signal kinds for the same structural identity;
+- licensing table `from` OIDs outside the row table;
+- underscore-prefixed licensing value names;
+- regular metric chart/export-only fields, transforms, scale factors, and
+  constant-value hacks on licensing row value symbols;
+- `extract_value`, `match_pattern`, or `match_value` on licensing row value
+  symbols;
+- timer slots that set both timestamp-style and remaining-style values;
+- unsupported licensing value formats;
 - invalid `consumers` values;
 - virtual metrics whose sources resolve to topology rows.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,6 +93,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`libs/cli/examples/skills/langgraph-docs/SKILL.md`](libs/cli/examples/skills/langgraph-docs/SKILL.md) |
 | 33 | ✓ | [`libs/cli/examples/skills/skill-creator/SKILL.md`](libs/cli/examples/skills/skill-creator/SKILL.md) |
 | 34 | ✓ | [`libs/cli/examples/skills/web-research/SKILL.md`](libs/cli/examples/skills/web-research/SKILL.md) |
+| 35 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
 
 ---
 

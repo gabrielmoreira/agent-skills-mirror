@@ -154,6 +154,23 @@ In Korean, em dashes are rare. Use:
 - Commas or restructured sentences instead
 - Parentheses for asides
 
+### 14a. Mechanical Punctuation Swap (Anti-Pattern)
+
+When source uses an `X — Y and Z` em-dash pattern and the target language doesn't use em dash naturally in that position, **AI tends to swap the em dash for `:` / `(` / parens and call it done**. This is not translation — it's punctuation substitution that preserves source-language structure.
+
+Example failure (Korean):
+- Source: `Documentation drift checks — broken refs and diff-affected docs`
+- ❌ Lazy swap: `문서 drift 체크: 깨진 참조와 diff 영향받는 docs` (em dash → colon, structure unchanged, "체크"/"diff 영향받는" Konglish)
+- ✅ Restructured: `참조 무결성 검사, 변경 영향 문서 식별` (matches sibling style: comma-coordinated noun phrases, native vocabulary)
+
+The em dash separator implies a definitional `definiendum — definiens` structure that may map to:
+- Coordinated noun phrases joined by commas / `및` / `와/과`
+- Relative clauses (target-language pre-nominal modifiers)
+- Separate sentences
+- A different grammatical pivot entirely
+
+Run the **Sibling-pattern match** check (Stage 4 mechanical) before emitting: if siblings use commas and your draft uses `:`, BLOCK and revise.
+
 ### 15. Title Case in Headings
 
 AI capitalizes all main words in headings. This is an English convention. Korean/Japanese headings should not mimic this pattern — just write naturally.

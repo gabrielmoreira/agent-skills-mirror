@@ -177,6 +177,21 @@ Read: `references/debugging.md`
 Common failure areas:
 - `references/debugging.md` — all symptom/cause/fix tables (install, config page, Grid, InputBag, ImageManager, lotr steps)
 
+## PrestaShop 9 Core Documentation
+
+The following files are downloaded from the official PrestaShop repository by
+`lotr --install` and placed in `ps9-core-ai/` next to this SKILL.md.
+Read them for deep understanding of PS9 core architecture, conventions, and patterns.
+
+- **`ps9-core-ai/CONTEXT.md`** — Root AI context for the PS9 codebase: project-wide coding
+  standards, architecture layers (Core/Adapter/Bundle/Legacy), CQRS pattern, branching
+  policy, and the full index of domain and component contexts.
+- **`ps9-core-ai/STRUCTURE.md`** — Architecture of the `.ai/` folder itself: how contexts,
+  skills, and pointer files are organized and how AI tools discover them.
+
+> Source: [`PrestaShop/PrestaShop@develop/.ai`](https://github.com/PrestaShop/PrestaShop/tree/develop/.ai)
+> Refreshed by running: `vendor/websenso/prestashop-module-devtools/bin/lotr --install`
+
 ## Escalation
 
 - [PrestaShop 9 Module Creation](https://devdocs.prestashop-project.org/9/modules/creation/)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jabrena/cursor-rules-java` — 26 default patterns, 0 followed patterns, 230 file(s) materialized.
+Mirror of `jabrena/cursor-rules-java` — 26 default patterns, 0 followed patterns, 250 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jabrena/cursor-rules-java` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 230 |
+| Files         | 250 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -207,88 +207,108 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 146 | ✓ | [`skills/143-java-functional-exception-handling/SKILL.md`](skills/143-java-functional-exception-handling/SKILL.md) |
 | 147 | ✓ | [`skills/144-java-data-oriented-programming/references/144-java-data-oriented-programming.md`](skills/144-java-data-oriented-programming/references/144-java-data-oriented-programming.md) |
 | 148 | ✓ | [`skills/144-java-data-oriented-programming/SKILL.md`](skills/144-java-data-oriented-programming/SKILL.md) |
-| 149 | ✓ | [`skills/151-java-performance-jmeter/references/151-java-performance-jmeter.md`](skills/151-java-performance-jmeter/references/151-java-performance-jmeter.md) |
-| 150 | ✓ | [`skills/151-java-performance-jmeter/SKILL.md`](skills/151-java-performance-jmeter/SKILL.md) |
-| 151 | ✓ | [`skills/161-java-profiling-detect/references/161-java-profiling-detect.md`](skills/161-java-profiling-detect/references/161-java-profiling-detect.md) |
-| 152 | ✓ | [`skills/161-java-profiling-detect/SKILL.md`](skills/161-java-profiling-detect/SKILL.md) |
-| 153 | ✓ | [`skills/162-java-profiling-analyze/references/162-java-profiling-analyze.md`](skills/162-java-profiling-analyze/references/162-java-profiling-analyze.md) |
-| 154 | ✓ | [`skills/162-java-profiling-analyze/SKILL.md`](skills/162-java-profiling-analyze/SKILL.md) |
-| 155 | ✓ | [`skills/163-java-profiling-refactor/references/163-java-profiling-refactor.md`](skills/163-java-profiling-refactor/references/163-java-profiling-refactor.md) |
-| 156 | ✓ | [`skills/163-java-profiling-refactor/SKILL.md`](skills/163-java-profiling-refactor/SKILL.md) |
-| 157 | ✓ | [`skills/164-java-profiling-verify/references/164-java-profiling-verify.md`](skills/164-java-profiling-verify/references/164-java-profiling-verify.md) |
-| 158 | ✓ | [`skills/164-java-profiling-verify/SKILL.md`](skills/164-java-profiling-verify/SKILL.md) |
-| 159 | ✓ | [`skills/170-java-documentation/references/170-java-documentation.md`](skills/170-java-documentation/references/170-java-documentation.md) |
-| 160 | ✓ | [`skills/170-java-documentation/SKILL.md`](skills/170-java-documentation/SKILL.md) |
-| 161 | ✓ | [`skills/180-java-observability-logging/references/180-java-observability-logging.md`](skills/180-java-observability-logging/references/180-java-observability-logging.md) |
-| 162 | ✓ | [`skills/180-java-observability-logging/SKILL.md`](skills/180-java-observability-logging/SKILL.md) |
-| 163 | ✓ | [`skills/200-agents-md/references/200-agents-md.md`](skills/200-agents-md/references/200-agents-md.md) |
-| 164 | ✓ | [`skills/200-agents-md/SKILL.md`](skills/200-agents-md/SKILL.md) |
-| 165 | ✓ | [`skills/301-frameworks-spring-boot-core/references/301-frameworks-spring-boot-core.md`](skills/301-frameworks-spring-boot-core/references/301-frameworks-spring-boot-core.md) |
-| 166 | ✓ | [`skills/301-frameworks-spring-boot-core/SKILL.md`](skills/301-frameworks-spring-boot-core/SKILL.md) |
-| 167 | ✓ | [`skills/302-frameworks-spring-boot-rest/references/302-frameworks-spring-boot-rest.md`](skills/302-frameworks-spring-boot-rest/references/302-frameworks-spring-boot-rest.md) |
-| 168 | ✓ | [`skills/302-frameworks-spring-boot-rest/SKILL.md`](skills/302-frameworks-spring-boot-rest/SKILL.md) |
-| 169 | ✓ | [`skills/303-frameworks-spring-boot-validation/references/303-frameworks-spring-boot-validation.md`](skills/303-frameworks-spring-boot-validation/references/303-frameworks-spring-boot-validation.md) |
-| 170 | ✓ | [`skills/303-frameworks-spring-boot-validation/SKILL.md`](skills/303-frameworks-spring-boot-validation/SKILL.md) |
-| 171 | ✓ | [`skills/304-frameworks-spring-boot-security/references/304-frameworks-spring-boot-security.md`](skills/304-frameworks-spring-boot-security/references/304-frameworks-spring-boot-security.md) |
-| 172 | ✓ | [`skills/304-frameworks-spring-boot-security/SKILL.md`](skills/304-frameworks-spring-boot-security/SKILL.md) |
-| 173 | ✓ | [`skills/311-frameworks-spring-jdbc/references/311-frameworks-spring-jdbc.md`](skills/311-frameworks-spring-jdbc/references/311-frameworks-spring-jdbc.md) |
-| 174 | ✓ | [`skills/311-frameworks-spring-jdbc/SKILL.md`](skills/311-frameworks-spring-jdbc/SKILL.md) |
-| 175 | ✓ | [`skills/312-frameworks-spring-data-jdbc/references/312-frameworks-spring-data-jdbc.md`](skills/312-frameworks-spring-data-jdbc/references/312-frameworks-spring-data-jdbc.md) |
-| 176 | ✓ | [`skills/312-frameworks-spring-data-jdbc/SKILL.md`](skills/312-frameworks-spring-data-jdbc/SKILL.md) |
-| 177 | ✓ | [`skills/313-frameworks-spring-db-migrations-flyway/references/313-frameworks-spring-db-migrations-flyway.md`](skills/313-frameworks-spring-db-migrations-flyway/references/313-frameworks-spring-db-migrations-flyway.md) |
-| 178 | ✓ | [`skills/313-frameworks-spring-db-migrations-flyway/SKILL.md`](skills/313-frameworks-spring-db-migrations-flyway/SKILL.md) |
-| 179 | ✓ | [`skills/321-frameworks-spring-boot-testing-unit-tests/references/321-frameworks-spring-boot-testing-unit-tests.md`](skills/321-frameworks-spring-boot-testing-unit-tests/references/321-frameworks-spring-boot-testing-unit-tests.md) |
-| 180 | ✓ | [`skills/321-frameworks-spring-boot-testing-unit-tests/SKILL.md`](skills/321-frameworks-spring-boot-testing-unit-tests/SKILL.md) |
-| 181 | ✓ | [`skills/322-frameworks-spring-boot-testing-integration-tests/references/322-frameworks-spring-boot-testing-integration-tests.md`](skills/322-frameworks-spring-boot-testing-integration-tests/references/322-frameworks-spring-boot-testing-integration-tests.md) |
-| 182 | ✓ | [`skills/322-frameworks-spring-boot-testing-integration-tests/SKILL.md`](skills/322-frameworks-spring-boot-testing-integration-tests/SKILL.md) |
-| 183 | ✓ | [`skills/323-frameworks-spring-boot-testing-acceptance-tests/references/323-frameworks-spring-boot-testing-acceptance-tests.md`](skills/323-frameworks-spring-boot-testing-acceptance-tests/references/323-frameworks-spring-boot-testing-acceptance-tests.md) |
-| 184 | ✓ | [`skills/323-frameworks-spring-boot-testing-acceptance-tests/SKILL.md`](skills/323-frameworks-spring-boot-testing-acceptance-tests/SKILL.md) |
-| 185 | ✓ | [`skills/401-frameworks-quarkus-core/references/401-frameworks-quarkus-core.md`](skills/401-frameworks-quarkus-core/references/401-frameworks-quarkus-core.md) |
-| 186 | ✓ | [`skills/401-frameworks-quarkus-core/SKILL.md`](skills/401-frameworks-quarkus-core/SKILL.md) |
-| 187 | ✓ | [`skills/402-frameworks-quarkus-rest/references/402-frameworks-quarkus-rest.md`](skills/402-frameworks-quarkus-rest/references/402-frameworks-quarkus-rest.md) |
-| 188 | ✓ | [`skills/402-frameworks-quarkus-rest/SKILL.md`](skills/402-frameworks-quarkus-rest/SKILL.md) |
-| 189 | ✓ | [`skills/403-frameworks-quarkus-validation/references/403-frameworks-quarkus-validation.md`](skills/403-frameworks-quarkus-validation/references/403-frameworks-quarkus-validation.md) |
-| 190 | ✓ | [`skills/403-frameworks-quarkus-validation/SKILL.md`](skills/403-frameworks-quarkus-validation/SKILL.md) |
-| 191 | ✓ | [`skills/404-frameworks-quarkus-security/references/404-frameworks-quarkus-security.md`](skills/404-frameworks-quarkus-security/references/404-frameworks-quarkus-security.md) |
-| 192 | ✓ | [`skills/404-frameworks-quarkus-security/SKILL.md`](skills/404-frameworks-quarkus-security/SKILL.md) |
-| 193 | ✓ | [`skills/411-frameworks-quarkus-jdbc/references/411-frameworks-quarkus-jdbc.md`](skills/411-frameworks-quarkus-jdbc/references/411-frameworks-quarkus-jdbc.md) |
-| 194 | ✓ | [`skills/411-frameworks-quarkus-jdbc/SKILL.md`](skills/411-frameworks-quarkus-jdbc/SKILL.md) |
-| 195 | ✓ | [`skills/412-frameworks-quarkus-panache/references/412-frameworks-quarkus-panache.md`](skills/412-frameworks-quarkus-panache/references/412-frameworks-quarkus-panache.md) |
-| 196 | ✓ | [`skills/412-frameworks-quarkus-panache/SKILL.md`](skills/412-frameworks-quarkus-panache/SKILL.md) |
-| 197 | ✓ | [`skills/413-frameworks-quarkus-db-migrations-flyway/references/413-frameworks-quarkus-db-migrations-flyway.md`](skills/413-frameworks-quarkus-db-migrations-flyway/references/413-frameworks-quarkus-db-migrations-flyway.md) |
-| 198 | ✓ | [`skills/413-frameworks-quarkus-db-migrations-flyway/SKILL.md`](skills/413-frameworks-quarkus-db-migrations-flyway/SKILL.md) |
-| 199 | ✓ | [`skills/421-frameworks-quarkus-testing-unit-tests/references/421-frameworks-quarkus-testing-unit-tests.md`](skills/421-frameworks-quarkus-testing-unit-tests/references/421-frameworks-quarkus-testing-unit-tests.md) |
-| 200 | ✓ | [`skills/421-frameworks-quarkus-testing-unit-tests/SKILL.md`](skills/421-frameworks-quarkus-testing-unit-tests/SKILL.md) |
-| 201 | ✓ | [`skills/422-frameworks-quarkus-testing-integration-tests/references/422-frameworks-quarkus-testing-integration-tests.md`](skills/422-frameworks-quarkus-testing-integration-tests/references/422-frameworks-quarkus-testing-integration-tests.md) |
-| 202 | ✓ | [`skills/422-frameworks-quarkus-testing-integration-tests/SKILL.md`](skills/422-frameworks-quarkus-testing-integration-tests/SKILL.md) |
-| 203 | ✓ | [`skills/423-frameworks-quarkus-testing-acceptance-tests/references/423-frameworks-quarkus-testing-acceptance-tests.md`](skills/423-frameworks-quarkus-testing-acceptance-tests/references/423-frameworks-quarkus-testing-acceptance-tests.md) |
-| 204 | ✓ | [`skills/423-frameworks-quarkus-testing-acceptance-tests/SKILL.md`](skills/423-frameworks-quarkus-testing-acceptance-tests/SKILL.md) |
-| 205 | ✓ | [`skills/501-frameworks-micronaut-core/references/501-frameworks-micronaut-core.md`](skills/501-frameworks-micronaut-core/references/501-frameworks-micronaut-core.md) |
-| 206 | ✓ | [`skills/501-frameworks-micronaut-core/SKILL.md`](skills/501-frameworks-micronaut-core/SKILL.md) |
-| 207 | ✓ | [`skills/502-frameworks-micronaut-rest/references/502-frameworks-micronaut-rest.md`](skills/502-frameworks-micronaut-rest/references/502-frameworks-micronaut-rest.md) |
-| 208 | ✓ | [`skills/502-frameworks-micronaut-rest/SKILL.md`](skills/502-frameworks-micronaut-rest/SKILL.md) |
-| 209 | ✓ | [`skills/503-frameworks-micronaut-validation/references/503-frameworks-micronaut-validation.md`](skills/503-frameworks-micronaut-validation/references/503-frameworks-micronaut-validation.md) |
-| 210 | ✓ | [`skills/503-frameworks-micronaut-validation/SKILL.md`](skills/503-frameworks-micronaut-validation/SKILL.md) |
-| 211 | ✓ | [`skills/504-frameworks-micronaut-security/references/504-frameworks-micronaut-security.md`](skills/504-frameworks-micronaut-security/references/504-frameworks-micronaut-security.md) |
-| 212 | ✓ | [`skills/504-frameworks-micronaut-security/SKILL.md`](skills/504-frameworks-micronaut-security/SKILL.md) |
-| 213 | ✓ | [`skills/511-frameworks-micronaut-jdbc/references/511-frameworks-micronaut-jdbc.md`](skills/511-frameworks-micronaut-jdbc/references/511-frameworks-micronaut-jdbc.md) |
-| 214 | ✓ | [`skills/511-frameworks-micronaut-jdbc/SKILL.md`](skills/511-frameworks-micronaut-jdbc/SKILL.md) |
-| 215 | ✓ | [`skills/512-frameworks-micronaut-data/references/512-frameworks-micronaut-data.md`](skills/512-frameworks-micronaut-data/references/512-frameworks-micronaut-data.md) |
-| 216 | ✓ | [`skills/512-frameworks-micronaut-data/SKILL.md`](skills/512-frameworks-micronaut-data/SKILL.md) |
-| 217 | ✓ | [`skills/513-frameworks-micronaut-db-migrations-flyway/references/513-frameworks-micronaut-db-migrations-flyway.md`](skills/513-frameworks-micronaut-db-migrations-flyway/references/513-frameworks-micronaut-db-migrations-flyway.md) |
-| 218 | ✓ | [`skills/513-frameworks-micronaut-db-migrations-flyway/SKILL.md`](skills/513-frameworks-micronaut-db-migrations-flyway/SKILL.md) |
-| 219 | ✓ | [`skills/521-frameworks-micronaut-testing-unit-tests/references/521-frameworks-micronaut-testing-unit-tests.md`](skills/521-frameworks-micronaut-testing-unit-tests/references/521-frameworks-micronaut-testing-unit-tests.md) |
-| 220 | ✓ | [`skills/521-frameworks-micronaut-testing-unit-tests/SKILL.md`](skills/521-frameworks-micronaut-testing-unit-tests/SKILL.md) |
-| 221 | ✓ | [`skills/522-frameworks-micronaut-testing-integration-tests/references/522-frameworks-micronaut-testing-integration-tests.md`](skills/522-frameworks-micronaut-testing-integration-tests/references/522-frameworks-micronaut-testing-integration-tests.md) |
-| 222 | ✓ | [`skills/522-frameworks-micronaut-testing-integration-tests/SKILL.md`](skills/522-frameworks-micronaut-testing-integration-tests/SKILL.md) |
-| 223 | ✓ | [`skills/523-frameworks-micronaut-testing-acceptance-tests/references/523-frameworks-micronaut-testing-acceptance-tests.md`](skills/523-frameworks-micronaut-testing-acceptance-tests/references/523-frameworks-micronaut-testing-acceptance-tests.md) |
-| 224 | ✓ | [`skills/523-frameworks-micronaut-testing-acceptance-tests/SKILL.md`](skills/523-frameworks-micronaut-testing-acceptance-tests/SKILL.md) |
-| 225 | ✓ | [`skills/701-technologies-openapi/references/701-technologies-openapi.md`](skills/701-technologies-openapi/references/701-technologies-openapi.md) |
-| 226 | ✓ | [`skills/701-technologies-openapi/SKILL.md`](skills/701-technologies-openapi/SKILL.md) |
-| 227 | ✓ | [`skills/702-technologies-wiremock/references/702-technologies-wiremock.md`](skills/702-technologies-wiremock/references/702-technologies-wiremock.md) |
-| 228 | ✓ | [`skills/702-technologies-wiremock/SKILL.md`](skills/702-technologies-wiremock/SKILL.md) |
-| 229 | ✓ | [`skills/703-technologies-fuzzing-testing/references/703-technologies-fuzzing-testing.md`](skills/703-technologies-fuzzing-testing/references/703-technologies-fuzzing-testing.md) |
-| 230 | ✓ | [`skills/703-technologies-fuzzing-testing/SKILL.md`](skills/703-technologies-fuzzing-testing/SKILL.md) |
+| 149 | ✓ | [`skills/145-java-refactoring-high-performance/references/145-refactoring-high-performance-java-code-syntax.md`](skills/145-java-refactoring-high-performance/references/145-refactoring-high-performance-java-code-syntax.md) |
+| 150 | ✓ | [`skills/145-java-refactoring-high-performance/references/145-refactoring-high-performance-java-cpu.md`](skills/145-java-refactoring-high-performance/references/145-refactoring-high-performance-java-cpu.md) |
+| 151 | ✓ | [`skills/145-java-refactoring-high-performance/references/145-refactoring-high-performance-java-memory-allocation.md`](skills/145-java-refactoring-high-performance/references/145-refactoring-high-performance-java-memory-allocation.md) |
+| 152 | ✓ | [`skills/145-java-refactoring-high-performance/SKILL.md`](skills/145-java-refactoring-high-performance/SKILL.md) |
+| 153 | ✓ | [`skills/151-java-performance-jmeter/references/151-java-performance-jmeter.md`](skills/151-java-performance-jmeter/references/151-java-performance-jmeter.md) |
+| 154 | ✓ | [`skills/151-java-performance-jmeter/SKILL.md`](skills/151-java-performance-jmeter/SKILL.md) |
+| 155 | ✓ | [`skills/161-java-profiling-detect/references/161-java-profiling-detect.md`](skills/161-java-profiling-detect/references/161-java-profiling-detect.md) |
+| 156 | ✓ | [`skills/161-java-profiling-detect/SKILL.md`](skills/161-java-profiling-detect/SKILL.md) |
+| 157 | ✓ | [`skills/162-java-profiling-analyze/references/162-java-profiling-analyze.md`](skills/162-java-profiling-analyze/references/162-java-profiling-analyze.md) |
+| 158 | ✓ | [`skills/162-java-profiling-analyze/SKILL.md`](skills/162-java-profiling-analyze/SKILL.md) |
+| 159 | ✓ | [`skills/163-java-profiling-refactor/references/163-java-profiling-refactor.md`](skills/163-java-profiling-refactor/references/163-java-profiling-refactor.md) |
+| 160 | ✓ | [`skills/163-java-profiling-refactor/SKILL.md`](skills/163-java-profiling-refactor/SKILL.md) |
+| 161 | ✓ | [`skills/164-java-profiling-verify/references/164-java-profiling-verify.md`](skills/164-java-profiling-verify/references/164-java-profiling-verify.md) |
+| 162 | ✓ | [`skills/164-java-profiling-verify/SKILL.md`](skills/164-java-profiling-verify/SKILL.md) |
+| 163 | ✓ | [`skills/170-java-documentation/references/170-java-documentation.md`](skills/170-java-documentation/references/170-java-documentation.md) |
+| 164 | ✓ | [`skills/170-java-documentation/SKILL.md`](skills/170-java-documentation/SKILL.md) |
+| 165 | ✓ | [`skills/181-java-observability-logging/references/181-java-observability-logging.md`](skills/181-java-observability-logging/references/181-java-observability-logging.md) |
+| 166 | ✓ | [`skills/181-java-observability-logging/SKILL.md`](skills/181-java-observability-logging/SKILL.md) |
+| 167 | ✓ | [`skills/182-java-observability-metrics-micrometer/references/182-java-observability-metrics-micrometer.md`](skills/182-java-observability-metrics-micrometer/references/182-java-observability-metrics-micrometer.md) |
+| 168 | ✓ | [`skills/182-java-observability-metrics-micrometer/SKILL.md`](skills/182-java-observability-metrics-micrometer/SKILL.md) |
+| 169 | ✓ | [`skills/183-observability-tracing-opentelemetry/references/183-observability-tracing-opentelemetry.md`](skills/183-observability-tracing-opentelemetry/references/183-observability-tracing-opentelemetry.md) |
+| 170 | ✓ | [`skills/183-observability-tracing-opentelemetry/SKILL.md`](skills/183-observability-tracing-opentelemetry/SKILL.md) |
+| 171 | ✓ | [`skills/200-agents-md/references/200-agents-md.md`](skills/200-agents-md/references/200-agents-md.md) |
+| 172 | ✓ | [`skills/200-agents-md/SKILL.md`](skills/200-agents-md/SKILL.md) |
+| 173 | ✓ | [`skills/301-frameworks-spring-boot-core/references/301-frameworks-spring-boot-core.md`](skills/301-frameworks-spring-boot-core/references/301-frameworks-spring-boot-core.md) |
+| 174 | ✓ | [`skills/301-frameworks-spring-boot-core/SKILL.md`](skills/301-frameworks-spring-boot-core/SKILL.md) |
+| 175 | ✓ | [`skills/302-frameworks-spring-boot-rest/references/302-frameworks-spring-boot-rest.md`](skills/302-frameworks-spring-boot-rest/references/302-frameworks-spring-boot-rest.md) |
+| 176 | ✓ | [`skills/302-frameworks-spring-boot-rest/SKILL.md`](skills/302-frameworks-spring-boot-rest/SKILL.md) |
+| 177 | ✓ | [`skills/303-frameworks-spring-boot-validation/references/303-frameworks-spring-boot-validation.md`](skills/303-frameworks-spring-boot-validation/references/303-frameworks-spring-boot-validation.md) |
+| 178 | ✓ | [`skills/303-frameworks-spring-boot-validation/SKILL.md`](skills/303-frameworks-spring-boot-validation/SKILL.md) |
+| 179 | ✓ | [`skills/304-frameworks-spring-boot-security/references/304-frameworks-spring-boot-security.md`](skills/304-frameworks-spring-boot-security/references/304-frameworks-spring-boot-security.md) |
+| 180 | ✓ | [`skills/304-frameworks-spring-boot-security/SKILL.md`](skills/304-frameworks-spring-boot-security/SKILL.md) |
+| 181 | ✓ | [`skills/311-frameworks-spring-jdbc/references/311-frameworks-spring-jdbc.md`](skills/311-frameworks-spring-jdbc/references/311-frameworks-spring-jdbc.md) |
+| 182 | ✓ | [`skills/311-frameworks-spring-jdbc/SKILL.md`](skills/311-frameworks-spring-jdbc/SKILL.md) |
+| 183 | ✓ | [`skills/312-frameworks-spring-data-jdbc/references/312-frameworks-spring-data-jdbc.md`](skills/312-frameworks-spring-data-jdbc/references/312-frameworks-spring-data-jdbc.md) |
+| 184 | ✓ | [`skills/312-frameworks-spring-data-jdbc/SKILL.md`](skills/312-frameworks-spring-data-jdbc/SKILL.md) |
+| 185 | ✓ | [`skills/313-frameworks-spring-db-migrations-flyway/references/313-frameworks-spring-db-migrations-flyway.md`](skills/313-frameworks-spring-db-migrations-flyway/references/313-frameworks-spring-db-migrations-flyway.md) |
+| 186 | ✓ | [`skills/313-frameworks-spring-db-migrations-flyway/SKILL.md`](skills/313-frameworks-spring-db-migrations-flyway/SKILL.md) |
+| 187 | ✓ | [`skills/314-frameworks-spring-kafka/references/314-frameworks-spring-kafka.md`](skills/314-frameworks-spring-kafka/references/314-frameworks-spring-kafka.md) |
+| 188 | ✓ | [`skills/314-frameworks-spring-kafka/SKILL.md`](skills/314-frameworks-spring-kafka/SKILL.md) |
+| 189 | ✓ | [`skills/315-frameworks-spring-mongodb/references/315-frameworks-spring-mongodb.md`](skills/315-frameworks-spring-mongodb/references/315-frameworks-spring-mongodb.md) |
+| 190 | ✓ | [`skills/315-frameworks-spring-mongodb/SKILL.md`](skills/315-frameworks-spring-mongodb/SKILL.md) |
+| 191 | ✓ | [`skills/321-frameworks-spring-boot-testing-unit-tests/references/321-frameworks-spring-boot-testing-unit-tests.md`](skills/321-frameworks-spring-boot-testing-unit-tests/references/321-frameworks-spring-boot-testing-unit-tests.md) |
+| 192 | ✓ | [`skills/321-frameworks-spring-boot-testing-unit-tests/SKILL.md`](skills/321-frameworks-spring-boot-testing-unit-tests/SKILL.md) |
+| 193 | ✓ | [`skills/322-frameworks-spring-boot-testing-integration-tests/references/322-frameworks-spring-boot-testing-integration-tests.md`](skills/322-frameworks-spring-boot-testing-integration-tests/references/322-frameworks-spring-boot-testing-integration-tests.md) |
+| 194 | ✓ | [`skills/322-frameworks-spring-boot-testing-integration-tests/SKILL.md`](skills/322-frameworks-spring-boot-testing-integration-tests/SKILL.md) |
+| 195 | ✓ | [`skills/323-frameworks-spring-boot-testing-acceptance-tests/references/323-frameworks-spring-boot-testing-acceptance-tests.md`](skills/323-frameworks-spring-boot-testing-acceptance-tests/references/323-frameworks-spring-boot-testing-acceptance-tests.md) |
+| 196 | ✓ | [`skills/323-frameworks-spring-boot-testing-acceptance-tests/SKILL.md`](skills/323-frameworks-spring-boot-testing-acceptance-tests/SKILL.md) |
+| 197 | ✓ | [`skills/401-frameworks-quarkus-core/references/401-frameworks-quarkus-core.md`](skills/401-frameworks-quarkus-core/references/401-frameworks-quarkus-core.md) |
+| 198 | ✓ | [`skills/401-frameworks-quarkus-core/SKILL.md`](skills/401-frameworks-quarkus-core/SKILL.md) |
+| 199 | ✓ | [`skills/402-frameworks-quarkus-rest/references/402-frameworks-quarkus-rest.md`](skills/402-frameworks-quarkus-rest/references/402-frameworks-quarkus-rest.md) |
+| 200 | ✓ | [`skills/402-frameworks-quarkus-rest/SKILL.md`](skills/402-frameworks-quarkus-rest/SKILL.md) |
+| 201 | ✓ | [`skills/403-frameworks-quarkus-validation/references/403-frameworks-quarkus-validation.md`](skills/403-frameworks-quarkus-validation/references/403-frameworks-quarkus-validation.md) |
+| 202 | ✓ | [`skills/403-frameworks-quarkus-validation/SKILL.md`](skills/403-frameworks-quarkus-validation/SKILL.md) |
+| 203 | ✓ | [`skills/404-frameworks-quarkus-security/references/404-frameworks-quarkus-security.md`](skills/404-frameworks-quarkus-security/references/404-frameworks-quarkus-security.md) |
+| 204 | ✓ | [`skills/404-frameworks-quarkus-security/SKILL.md`](skills/404-frameworks-quarkus-security/SKILL.md) |
+| 205 | ✓ | [`skills/411-frameworks-quarkus-jdbc/references/411-frameworks-quarkus-jdbc.md`](skills/411-frameworks-quarkus-jdbc/references/411-frameworks-quarkus-jdbc.md) |
+| 206 | ✓ | [`skills/411-frameworks-quarkus-jdbc/SKILL.md`](skills/411-frameworks-quarkus-jdbc/SKILL.md) |
+| 207 | ✓ | [`skills/412-frameworks-quarkus-panache/references/412-frameworks-quarkus-panache.md`](skills/412-frameworks-quarkus-panache/references/412-frameworks-quarkus-panache.md) |
+| 208 | ✓ | [`skills/412-frameworks-quarkus-panache/SKILL.md`](skills/412-frameworks-quarkus-panache/SKILL.md) |
+| 209 | ✓ | [`skills/413-frameworks-quarkus-db-migrations-flyway/references/413-frameworks-quarkus-db-migrations-flyway.md`](skills/413-frameworks-quarkus-db-migrations-flyway/references/413-frameworks-quarkus-db-migrations-flyway.md) |
+| 210 | ✓ | [`skills/413-frameworks-quarkus-db-migrations-flyway/SKILL.md`](skills/413-frameworks-quarkus-db-migrations-flyway/SKILL.md) |
+| 211 | ✓ | [`skills/414-frameworks-quarkus-kafka/references/414-frameworks-quarkus-kafka.md`](skills/414-frameworks-quarkus-kafka/references/414-frameworks-quarkus-kafka.md) |
+| 212 | ✓ | [`skills/414-frameworks-quarkus-kafka/SKILL.md`](skills/414-frameworks-quarkus-kafka/SKILL.md) |
+| 213 | ✓ | [`skills/415-frameworks-quarkus-mongodb/references/415-frameworks-quarkus-mongodb.md`](skills/415-frameworks-quarkus-mongodb/references/415-frameworks-quarkus-mongodb.md) |
+| 214 | ✓ | [`skills/415-frameworks-quarkus-mongodb/SKILL.md`](skills/415-frameworks-quarkus-mongodb/SKILL.md) |
+| 215 | ✓ | [`skills/421-frameworks-quarkus-testing-unit-tests/references/421-frameworks-quarkus-testing-unit-tests.md`](skills/421-frameworks-quarkus-testing-unit-tests/references/421-frameworks-quarkus-testing-unit-tests.md) |
+| 216 | ✓ | [`skills/421-frameworks-quarkus-testing-unit-tests/SKILL.md`](skills/421-frameworks-quarkus-testing-unit-tests/SKILL.md) |
+| 217 | ✓ | [`skills/422-frameworks-quarkus-testing-integration-tests/references/422-frameworks-quarkus-testing-integration-tests.md`](skills/422-frameworks-quarkus-testing-integration-tests/references/422-frameworks-quarkus-testing-integration-tests.md) |
+| 218 | ✓ | [`skills/422-frameworks-quarkus-testing-integration-tests/SKILL.md`](skills/422-frameworks-quarkus-testing-integration-tests/SKILL.md) |
+| 219 | ✓ | [`skills/423-frameworks-quarkus-testing-acceptance-tests/references/423-frameworks-quarkus-testing-acceptance-tests.md`](skills/423-frameworks-quarkus-testing-acceptance-tests/references/423-frameworks-quarkus-testing-acceptance-tests.md) |
+| 220 | ✓ | [`skills/423-frameworks-quarkus-testing-acceptance-tests/SKILL.md`](skills/423-frameworks-quarkus-testing-acceptance-tests/SKILL.md) |
+| 221 | ✓ | [`skills/501-frameworks-micronaut-core/references/501-frameworks-micronaut-core.md`](skills/501-frameworks-micronaut-core/references/501-frameworks-micronaut-core.md) |
+| 222 | ✓ | [`skills/501-frameworks-micronaut-core/SKILL.md`](skills/501-frameworks-micronaut-core/SKILL.md) |
+| 223 | ✓ | [`skills/502-frameworks-micronaut-rest/references/502-frameworks-micronaut-rest.md`](skills/502-frameworks-micronaut-rest/references/502-frameworks-micronaut-rest.md) |
+| 224 | ✓ | [`skills/502-frameworks-micronaut-rest/SKILL.md`](skills/502-frameworks-micronaut-rest/SKILL.md) |
+| 225 | ✓ | [`skills/503-frameworks-micronaut-validation/references/503-frameworks-micronaut-validation.md`](skills/503-frameworks-micronaut-validation/references/503-frameworks-micronaut-validation.md) |
+| 226 | ✓ | [`skills/503-frameworks-micronaut-validation/SKILL.md`](skills/503-frameworks-micronaut-validation/SKILL.md) |
+| 227 | ✓ | [`skills/504-frameworks-micronaut-security/references/504-frameworks-micronaut-security.md`](skills/504-frameworks-micronaut-security/references/504-frameworks-micronaut-security.md) |
+| 228 | ✓ | [`skills/504-frameworks-micronaut-security/SKILL.md`](skills/504-frameworks-micronaut-security/SKILL.md) |
+| 229 | ✓ | [`skills/511-frameworks-micronaut-jdbc/references/511-frameworks-micronaut-jdbc.md`](skills/511-frameworks-micronaut-jdbc/references/511-frameworks-micronaut-jdbc.md) |
+| 230 | ✓ | [`skills/511-frameworks-micronaut-jdbc/SKILL.md`](skills/511-frameworks-micronaut-jdbc/SKILL.md) |
+| 231 | ✓ | [`skills/512-frameworks-micronaut-data/references/512-frameworks-micronaut-data.md`](skills/512-frameworks-micronaut-data/references/512-frameworks-micronaut-data.md) |
+| 232 | ✓ | [`skills/512-frameworks-micronaut-data/SKILL.md`](skills/512-frameworks-micronaut-data/SKILL.md) |
+| 233 | ✓ | [`skills/513-frameworks-micronaut-db-migrations-flyway/references/513-frameworks-micronaut-db-migrations-flyway.md`](skills/513-frameworks-micronaut-db-migrations-flyway/references/513-frameworks-micronaut-db-migrations-flyway.md) |
+| 234 | ✓ | [`skills/513-frameworks-micronaut-db-migrations-flyway/SKILL.md`](skills/513-frameworks-micronaut-db-migrations-flyway/SKILL.md) |
+| 235 | ✓ | [`skills/514-frameworks-micronaut-kafka/references/514-frameworks-micronaut-kafka.md`](skills/514-frameworks-micronaut-kafka/references/514-frameworks-micronaut-kafka.md) |
+| 236 | ✓ | [`skills/514-frameworks-micronaut-kafka/SKILL.md`](skills/514-frameworks-micronaut-kafka/SKILL.md) |
+| 237 | ✓ | [`skills/515-frameworks-micronaut-mongodb/references/515-frameworks-micronaut-mongodb.md`](skills/515-frameworks-micronaut-mongodb/references/515-frameworks-micronaut-mongodb.md) |
+| 238 | ✓ | [`skills/515-frameworks-micronaut-mongodb/SKILL.md`](skills/515-frameworks-micronaut-mongodb/SKILL.md) |
+| 239 | ✓ | [`skills/521-frameworks-micronaut-testing-unit-tests/references/521-frameworks-micronaut-testing-unit-tests.md`](skills/521-frameworks-micronaut-testing-unit-tests/references/521-frameworks-micronaut-testing-unit-tests.md) |
+| 240 | ✓ | [`skills/521-frameworks-micronaut-testing-unit-tests/SKILL.md`](skills/521-frameworks-micronaut-testing-unit-tests/SKILL.md) |
+| 241 | ✓ | [`skills/522-frameworks-micronaut-testing-integration-tests/references/522-frameworks-micronaut-testing-integration-tests.md`](skills/522-frameworks-micronaut-testing-integration-tests/references/522-frameworks-micronaut-testing-integration-tests.md) |
+| 242 | ✓ | [`skills/522-frameworks-micronaut-testing-integration-tests/SKILL.md`](skills/522-frameworks-micronaut-testing-integration-tests/SKILL.md) |
+| 243 | ✓ | [`skills/523-frameworks-micronaut-testing-acceptance-tests/references/523-frameworks-micronaut-testing-acceptance-tests.md`](skills/523-frameworks-micronaut-testing-acceptance-tests/references/523-frameworks-micronaut-testing-acceptance-tests.md) |
+| 244 | ✓ | [`skills/523-frameworks-micronaut-testing-acceptance-tests/SKILL.md`](skills/523-frameworks-micronaut-testing-acceptance-tests/SKILL.md) |
+| 245 | ✓ | [`skills/701-technologies-openapi/references/701-technologies-openapi.md`](skills/701-technologies-openapi/references/701-technologies-openapi.md) |
+| 246 | ✓ | [`skills/701-technologies-openapi/SKILL.md`](skills/701-technologies-openapi/SKILL.md) |
+| 247 | ✓ | [`skills/702-technologies-wiremock/references/702-technologies-wiremock.md`](skills/702-technologies-wiremock/references/702-technologies-wiremock.md) |
+| 248 | ✓ | [`skills/702-technologies-wiremock/SKILL.md`](skills/702-technologies-wiremock/SKILL.md) |
+| 249 | ✓ | [`skills/703-technologies-fuzzing-testing/references/703-technologies-fuzzing-testing.md`](skills/703-technologies-fuzzing-testing/references/703-technologies-fuzzing-testing.md) |
+| 250 | ✓ | [`skills/703-technologies-fuzzing-testing/SKILL.md`](skills/703-technologies-fuzzing-testing/SKILL.md) |
 
 ---
 

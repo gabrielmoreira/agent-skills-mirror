@@ -51,6 +51,7 @@ Frontmatter is YAML between two `---` fences. Recognized keys (all parsed by `cr
 | `name` | recommended | Falls back to the directory name if absent |
 | `description` | recommended | Surfaced verbatim in the system prompt + `/skills` listing |
 | `whenToUse` *or* `when_to_use` | optional | Trigger criteria; rendered as `Trigger: …` in "full" mode |
+| `model` | optional | Recommended default model — single string or inline array. Triggers a per-turn auto-switch via `skills_state::request_model` when the user has an API key for the named provider. See §11 below. |
 | anything else | optional | Ignored by the loader; useful as documentation for skill authors |
 
 `{skill_dir}` in the body is substituted with the **canonical absolute path** to the skill directory at load time (`skills.rs:196`), so script references resolve regardless of CWD.
@@ -625,3 +626,106 @@ CWD-mutating tests use a `with_cwd(dir, closure)` helper (`skills.rs::tests`) ba
 | dev-plan/06 P2 | `130` | `SkillList` + `SkillSearch` tools + `skills_listing_strategy` config |
 | Skill polish | `131` | Interpreter auto-detection + `requirements.txt` auto-surfacing |
 | M6.14 | `132` | CWD survival, project priority, zip timeout (regression tests included) |
+
+---
+
+## 14. Skill-recommended model (`model:` frontmatter)
+
+Skills that assume capabilities not every model has — vision (OCR a namecard, parse a receipt image), long context (summarise a 200-page PDF), structured output (XLSX cell formulas) — encode a default-model recommendation in the frontmatter. When the user has an API key for the recommended provider, the agent silently swaps for the duration of the turn the skill was invoked in. When they don't, the skill body gets a one-line note explaining the recommendation and proceeds with the user's current model.
+
+### YAML accepted forms
+
+```yaml
+model: claude-sonnet-4-6                     # → SkillModelSpec::Single
+model: [claude-sonnet-4-6, gpt-4o]           # → SkillModelSpec::Priority
+model: ["claude-sonnet-4-6", 'gpt-4o']       # → quoted items unwrapped
+```
+
+The simple line-based frontmatter parser at `memory.rs:749` only knows `key: value` (string), so `parse_skill_model` (`skills.rs`) post-processes the raw value: detects `[...]` syntax, splits on commas, trims quotes/whitespace, collapses single-element arrays back to `Single`. Fully empty arrays produce `None`.
+
+### End-to-end flow
+
+```
+SkillTool::call(name="namecard-to-excel")
+   │
+   │ skill.model = Some(SkillModelSpec::Priority([claude-sonnet-4-6, gpt-4o]))
+   ▼
+crate::skills_state::request_model(&spec)
+   │
+   │ Worker-registered resolver runs:
+   │   for candidate in spec.candidates() {
+   │       if ProviderKind::detect(candidate)?.has_key_available() {
+   │           override_handle.lock() = Some(candidate);
+   │           skills_state::mark_swap_active();
+   │           events_tx.send(ViewEvent::SkillModelNote(...));
+   │           return Switched(candidate);
+   │       }
+   │   }
+   │   events_tx.send(ViewEvent::SkillModelNote(warn));
+   │   return KeptCurrent { recommended: spec.candidates()[0] };
+   ▼
+SkillTool body returned with appended note
+   │
+   ▼
+Agent::run_turn iteration N+1 reads `model_override` slot fresh:
+   let active_model = model_override.lock().clone().unwrap_or(model);
+   ▼
+provider.stream(req with active_model=claude-sonnet-4-6)  ← swap takes effect
+   ▼
+... iterations continue with overridden model ...
+   ▼
+Done yields → Agent clears model_override slot → drive_turn_stream sees
+              skills_state::take_swap_active() == true → emits
+              ViewEvent::SkillModelNote("[model → <baseline> (skill ended)]")
+```
+
+### Components
+
+| Layer | File | What it does |
+|---|---|---|
+| Type | `skills.rs::SkillModelSpec` | `#[serde(untagged)]` enum with `Single(String)` + `Priority(Vec<String>)` variants |
+| Parser | `skills.rs::parse_skill_model` | Post-processor turning the raw frontmatter string into `Option<SkillModelSpec>` |
+| Field | `skills.rs::SkillDef::model` | `Option<SkillModelSpec>` populated by `parse_skill` from the frontmatter map |
+| Broadcaster | `skills_state.rs` | `set_resolver` / `request_model` mirror of `plan_state` pattern; `mark_swap_active` / `take_swap_active` AtomicBool flag for revert signaling |
+| Agent slot | `agent.rs::Agent::model_override` | `Arc<Mutex<Option<String>>>` read fresh at the top of every iteration's request build |
+| Override clear | `agent.rs` Done-yield sites | Both natural-stop and max-iterations paths clear `model_override` before yielding `AgentEvent::Done` |
+| Worker resolver | `shared_session.rs` | Registers closure that probes `ProviderKind::has_key_available`, writes to override slot, emits `ViewEvent::SkillModelNote` |
+| Key probe | `providers/mod.rs::ProviderKind::has_key_available` | True iff `api_key_env()` is None (no auth required) OR env var set OR `secrets::get(provider_name)` returns Some |
+| IPC | `event_render.rs` | `ViewEvent::SkillModelNote(String)` → `chat_skill_model_note` envelope |
+| Frontend | `ChatView.tsx` | Renders the note as a muted system bubble (same path as `chat_slash_output`) |
+
+### Per-turn semantics
+
+The override is scoped to a single `run_turn` invocation:
+
+- **Skill A invoked mid-turn → swap to X (mark_swap_active flag set).**
+- **Same turn, skill B invoked → swap to Y (resolver overwrites override slot).**
+- **Done yields → agent clears slot → worker emits revert note → next user prompt starts from baseline.**
+
+`/model` switches the user types explicitly are unaffected because they happen between turns, not during the override-active window.
+
+### Failure modes
+
+- **No resolver registered (CLI surface)** — `request_model` returns `NoResolver`. SkillTool appends nothing to the body; user keeps current model. CLI is intentionally untouched: no GUI = no chat surface for the swap notes anyway.
+- **Spec has candidates but none have keys** — resolver emits a warning note, returns `KeptCurrent { recommended }`. SkillTool appends a "you don't have a key for that provider" line to the body so the model can mention it.
+- **Mutex poisoning on the override Arc** — agent's `unwrap_or` on a poisoned lock falls back to the baseline model; same posture as `plan_state::fire`'s recovery.
+
+### Test surface
+
+| File | Test | Covers |
+|---|---|---|
+| `skills.rs::tests` | `parse_skill_model_handles_single_string` | Single-form parse |
+| `skills.rs::tests` | `parse_skill_model_handles_inline_array` | Priority-form parse |
+| `skills.rs::tests` | `parse_skill_model_strips_quotes_in_array` | Quoted-item handling |
+| `skills.rs::tests` | `parse_skill_model_single_element_array_collapses_to_single` | `[a]` → `Single(a)` |
+| `skills.rs::tests` | `parse_skill_model_empty_returns_none` | Empty inputs → None |
+| `skills.rs::tests` | `parse_skill_picks_up_model_frontmatter_single` | End-to-end frontmatter discovery (single) |
+| `skills.rs::tests` | `parse_skill_picks_up_model_frontmatter_array` | End-to-end (array) |
+| `skills.rs::tests` | `parse_skill_without_model_field_yields_none` | Backward compat — skills without `model:` parse as before |
+
+The agent-side override read + clear is exercised indirectly by every existing run_turn test via the `model_override = Arc::new(Mutex::new(None))` default in `Agent::new`.
+
+### Cross-references
+
+- [`subagent.md`](subagent.md) — `AgentDef::model` is a parallel concept for subagents; both fields shape per-call model selection but at different timing scales (subagent = whole subagent invocation, skill = single turn).
+- [`compaction.md`](compaction.md) — the override is read by the same `run_turn` that builds compaction-eligible history; compaction sees `req.messages` only, not the model name, so the override is invisible to the compactor.

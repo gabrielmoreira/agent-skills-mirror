@@ -7,10 +7,12 @@ description: Speech-to-text via 9Router /v1/audio/transcriptions using OpenAI Wh
 
 Requires `NINEROUTER_URL` (and `NINEROUTER_KEY` if auth enabled). See https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router/SKILL.md for setup.
 
-## Discover models
+## Discover
 
 ```bash
 curl $NINEROUTER_URL/v1/models/stt | jq '.data[].id'
+# Per-model params (language, response_format, prompt, temperature support)
+curl "$NINEROUTER_URL/v1/models/info?id=openai/whisper-1"
 ```
 
 `model` = STT model ID (e.g. `openai/whisper-1`, `groq/whisper-large-v3`, `deepgram/nova-3`, `gemini/gemini-2.5-flash`).

@@ -57,7 +57,7 @@ Key design docs:
 
 ### Commands
 - `uv sync` — install all dependencies
-- `uv run pytest` — run tests (coverage enforced `--cov-fail-under=25`)
+- `uv run pytest` — run tests (excludes `integration` and `requires_api` markers by default)
 - `uv run pytest -m unit` / `-m integration` / `-m slow` — run by marker
 - `uv run black ace/ tests/ examples/` — format code
 - `uv run mypy ace/` — type check
@@ -93,3 +93,7 @@ Key design docs:
 | `ACELangChain` | LangChain | Wrap chains/agents with learning |
 | `ACEBrowserUse` | browser-use | Browser automation with learning |
 | `ACEClaudeCode` | Claude Code CLI | Coding tasks with learning |
+
+NEVER USE FALLBACKS OR IMPLEMENT THINGS I NEVER ASKED FOR. 
+
+Keep your answers concise and to the point. If you don't know something, say you don't know instead of making assumptions or fabricating information. Always ask clarifying questions if the user's request is ambiguous or lacks necessary details.

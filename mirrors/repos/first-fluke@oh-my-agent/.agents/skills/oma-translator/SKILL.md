@@ -191,11 +191,12 @@ This stage is mandatory. Skipping any item is a bug, not a shortcut. Before prod
 
 **A. Mechanical checks (run before rubric, must all pass):**
 
-- **CJK em dash scan**: For Korean, Japanese, or Chinese targets, search the draft output for `—`. Every occurrence must be replaced with a comma, colon, parenthesis, or restructured sentence. Zero em dashes in the emitted output.
+- **CJK em dash scan**: For Korean, Japanese, or Chinese targets, search the draft output for `—`. Every occurrence must be **structurally restructured** — never simply substituted with `:` / `(` / `,`. Em dash usually signals a definitional `X — Y` pattern that maps to coordinated noun phrases, relative clauses, or separate sentences in CJK. Zero em dashes AND zero mechanical-substitution survivors in the emitted output. (See anti-AI rule 17.)
 - **Curly quote scan**: Search the draft output for `“`, `”`, `‘`, `’`. Replace with straight quotes (`"`, `'`) unless the source explicitly uses curly quotes, the target language convention requires them (e.g., Japanese 「」/『』, French «»), or the surrounding file format mandates them.
 - **Placeholder integrity**: Every `{name}`, `{{count}}`, `%s`, `<tag>`, and `` `code` `` from the source appears unchanged in the target.
 - **Structure parity**: Headings, list bullets, table rows, code blocks, and links match the source count and nesting.
 - **Register consistency**: One sentence-ending style throughout (don't mix `-ㅂ니다` with `-다`, formal with casual).
+- **Sibling-pattern match (when applicable)**: If the target lives in a context that already contains target-language siblings (markdown table rows, locale file with sibling values, glossary entries, list items in a doc), read at least 3 siblings and identify (a) separator style — comma vs `및`/`와`/`과` vs em dash vs colon vs newline, (b) action-verb form — noun-phrase fragments vs full verb phrases vs imperative, (c) loanword density, (d) register and sentence-ending style. Your draft MUST match the dominant pattern. If the draft uses a separator/verb form/register absent from siblings, BLOCK and revise. Example failure: siblings use comma-separated noun phrases without colons; your draft uses `X: Y and Z` colon syntax. → revise to comma form.
 
 If any mechanical check fails, revise and re-run. Do not proceed to the rubric until all pass.
 
@@ -218,6 +219,16 @@ If any mechanical check fails, revise and re-run. Do not proceed to the rubric u
 **D. Figurative language handling:**
 13. Were all metaphors/idioms handled per the classify decision (interpret/substitute/retain)?
 14. Do figurative expressions read naturally in the target language, not as literal calques?
+
+**E. Pre-emit gate (must answer in writing before output):**
+
+Before emitting the translation, write 1–2 sentences answering each:
+
+1. **"Why is Stage 5 reflection ON or OFF for this content?"** — must cite the specific classification rule from the "When to run Stage 5–7" section. If the target qualifies for both ON and OFF lists (e.g., README table cell — short string AND documentation), default ON wins.
+2. **"Does my draft match the sibling patterns in the target context?"** — must reference at least one specific sibling and the matched (or unmatched) pattern dimension.
+3. **"Is any source-language structural artifact (em dash, colon-after-X, parentheses-after-noun) merely substituted rather than restructured?"** — must answer No, with evidence.
+
+If any answer is missing, hand-wavy, or "I think so" without evidence, run Stage 5 anyway before emitting.
 
 ### Translator's Notes Guidelines
 
@@ -252,9 +263,20 @@ Default ON for:
 - Translation review mode
 
 Default OFF (Stage 4 verification only) for:
-- Single short UI string (< 10 words) with established glossary
+- Single short UI string (< 10 words) **in a UI locale file** (i18n keys, `.arb`, `.json`, `messages/`) with established glossary
 - Batch UI key translations where each value is independent and < 1 sentence
 - User explicitly requests "fast translation", "skip reflection", or "직역"
+
+**Tie-breaker rule**: When a target qualifies for BOTH ON and OFF categories, default ON wins. Common conflict cases:
+
+| Situation | Why both | Resolution |
+|---|---|---|
+| README table cell (short AND documentation) | <10 words but lives in `README*.md` | ON — README is documentation |
+| CHANGELOG line entry | <10 words but lives in changelog | ON — changelog is documentation |
+| Skill description in registry | short noun phrase but commits to git-tracked source | ON — any git-tracked text |
+| Tooltip in i18n file | <10 words AND in `messages/` | OFF — UI string in locale file |
+
+Reflection cost is acceptable; post-merge revision cost is not.
 
 When in doubt, run reflection. The cost is roughly 1.5–2× tokens; the quality gain on body-text fragments and Europeanized patterns is large.
 

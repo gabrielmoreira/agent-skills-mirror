@@ -1,6 +1,5 @@
 package ai.koog.agents.features.longtermmemory.aws.dsl
 
-import ai.koog.agents.core.annotation.ExperimentalAgentsApi
 import ai.koog.agents.features.longtermmemory.aws.AgentcoreCompositeSearchStrategy
 import ai.koog.agents.features.longtermmemory.aws.AgentcoreCompositeSearchStrategy.AgentcoreSearchSubrequest
 import ai.koog.agents.features.longtermmemory.aws.AgentcoreNamespaceResolver
@@ -11,6 +10,7 @@ import ai.koog.agents.features.longtermmemory.aws.augmentation.AgentcorePromptAu
 import ai.koog.agents.longtermmemory.feature.LongTermMemory
 import ai.koog.agents.longtermmemory.retrieval.augmentation.PromptAugmenter
 import ai.koog.agents.longtermmemory.retrieval.augmentation.SystemPromptAugmenter
+import ai.koog.agents.longtermmemory.retrieval.search.SearchStrategy
 import aws.sdk.kotlin.services.bedrockagentcore.BedrockAgentCoreClient
 
 /**
@@ -48,7 +48,6 @@ public annotation class AgentcoreLtmDsl
  * @param memoryId the AgentCore memory store identifier.
  * @param block DSL block appending one or more retrieval subrequests.
  */
-@ExperimentalAgentsApi
 public fun LongTermMemory.RetrievalSettingsBuilder.agentcore(
     client: BedrockAgentCoreClient,
     memoryId: String,
@@ -283,7 +282,7 @@ public class AgentcoreRetrievalBuilder internal constructor(
 
     internal data class Configured(
         val storage: AgentcoreSearchStorage,
-        val searchStrategy: ai.koog.agents.longtermmemory.retrieval.SearchStrategy,
+        val searchStrategy: SearchStrategy,
         val namespace: String?,
         val promptAugmenter: PromptAugmenter,
     )

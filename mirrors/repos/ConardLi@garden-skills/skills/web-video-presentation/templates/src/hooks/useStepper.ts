@@ -24,17 +24,44 @@ export interface StepperState {
 const clamp = (n: number, lo: number, hi: number) =>
   Math.max(lo, Math.min(hi, n));
 
+/**
+ * Clamp a (possibly stale) cursor to the current chapter list. Persisted
+ * cursors can outlive structural changes — fewer chapters, fewer steps,
+ * a different scaffolded project sharing the same dev-server origin — so
+ * we always re-validate before handing one to React.
+ */
+function sanitize(cursor: Cursor, chapters: ChapterDef[]): Cursor {
+  if (chapters.length === 0) return { chapter: 0, step: 0 };
+  const chapter = clamp(cursor.chapter | 0, 0, chapters.length - 1);
+  const stepCount = chapters[chapter]!.narrations.length;
+  const step = clamp(cursor.step | 0, 0, Math.max(0, stepCount - 1));
+  return { chapter, step };
+}
+
 export function useStepper(chapters: ChapterDef[]): StepperState {
   const [cursor, setCursor] = useState<Cursor>(() => {
-    if (typeof window === "undefined") return { chapter: 0, step: 0 };
+    const fallback = { chapter: 0, step: 0 };
+    if (typeof window === "undefined") return fallback;
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) return sanitize(JSON.parse(raw), chapters);
     } catch {
       /* ignore */
     }
-    return { chapter: 0, step: 0 };
+    return fallback;
   });
+
+  // Re-sanitize if the chapter list shape changes after mount (e.g. HMR
+  // updates `chapters.ts`) — keeps a stale persisted cursor from leaking
+  // into a render where it's now out of range.
+  useEffect(() => {
+    setCursor((cur) => {
+      const next = sanitize(cur, chapters);
+      return next.chapter === cur.chapter && next.step === cur.step
+        ? cur
+        : next;
+    });
+  }, [chapters]);
 
   useEffect(() => {
     try {

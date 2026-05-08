@@ -35,21 +35,24 @@ internal/
     types.go           # daemon request/response types, disconnect, approval messages
     events.go          # EventBus ring buffer for daemon/SSE subscribers
     session_cwd.go     # cloud-source scratch CWD allocator (ephemeral per-session tmp dir)
+    readtracker_cache.go # per-session ReadTracker cache; entries released via SessionManager.OnSessionClose
   agent/
-    loop.go            # AgentLoop.Run() — core agentic loop
-    tools.go           # Tool interface, ToolRegistry, filtering, schemas
-    partition.go       # read-only batching, executeBatches
-    spill.go           # large tool result spill-to-disk
-    deferred.go        # deferred tool loading (tool_search)
-    statecache.go      # state-aware tool result cache keyed by read/write state
-    resultshape.go     # tree result shaping and stable change summaries
-    microcompact.go    # Tier 2 semantic compaction for large native tool results
-    delta.go           # DeltaProvider interface, TemporalDelta (date rollover)
-    loopdetect.go      # stuck-loop detectors
-    readtracker.go     # read-before-edit enforcement
-    approval_cache.go  # per-turn approval caching
-    normalize.go       # response normalization
-    skill_discovery.go # Per-turn small-model skill matching (discoverRelevantSkills)
+    loop.go              # AgentLoop.Run() — core agentic loop
+    tools.go             # Tool interface, ToolRegistry, filtering, schemas
+    partition.go         # read-only batching, executeBatches
+    spill.go             # per-result spill (>50K) and per-turn 200K aggregate cap (rune-counted)
+    toolresult_budget.go # persisted query-time tool_result replacement state (Replacements + Seen)
+    context_bloat.go     # buildContextBloatSuggestion: tool_result_bloat run-status nudges
+    deferred.go          # deferred tool loading (tool_search)
+    statecache.go        # state-aware tool result cache keyed by read/write state
+    resultshape.go       # tree result shaping and stable change summaries
+    microcompact.go      # Tier 2 semantic compaction for large native tool results
+    delta.go             # DeltaProvider interface, TemporalDelta (date rollover)
+    loopdetect.go        # stuck-loop detectors
+    readtracker.go       # read-before-edit enforcement + same-range file_read dedup
+    approval_cache.go    # per-turn approval caching
+    normalize.go         # response normalization
+    skill_discovery.go   # Per-turn small-model skill matching (discoverRelevantSkills)
   agents/
     loader.go          # LoadAgent, ListAgents, ParseAgentMention
     api.go             # daemon-side agent CRUD
@@ -80,11 +83,14 @@ internal/
   instructions/
     loader.go          # instructions, memory, custom commands
   tools/
-    register.go        # local + MCP + gateway tool registration
+    register.go        # local + MCP + gateway tool registration; RegisterPublishTool for publish_to_web
     schedule.go        # schedule_create/list/update/remove tools
     session_search.go  # session_search tool
     mcp_tool.go        # MCPTool adapter
     server.go          # ServerTool adapter (gateway tools)
+    publish_to_web.go  # publish_to_web tool (path/extension guards + purpose validation; uses internal/uploads)
+  uploads/
+    client.go          # POST /api/v1/uploads multipart streaming client (typed errors, retry/backoff). Reuses GatewayClient.HTTPClient().
   skills/
     registry.go        # skill metadata
     loader.go          # skill loading
@@ -104,7 +110,8 @@ internal/
     server.go          # MCP server
     chrome.go          # Playwright Chrome profile/CDP lifecycle management
   runstatus/
-    runstatus.go       # user-facing run state/error classification
+    runstatus.go       # user-facing run state/error classification (Code constants, friendlyMessages, FriendlyMessageFromError)
+    parse.go           # gateway *client.APIError → (Code, Detail) extractor; disambiguates the four 429 sub-shapes
   schedule/
     schedule.go        # schedule CRUD, atomic writes, validation
     launchd_darwin.go  # plist generation, launchctl
@@ -173,18 +180,25 @@ Unknown tools are denied by default. The always-ask gate runs BEFORE the allowli
 ### Daemon Architecture
 
 - Daemon connects to Shannon Cloud via WebSocket, receives channel messages, and runs the agent loop locally.
-- Route keys are computed as:
-  - `agent:<name>` for agent-scoped sessions
+- WS handshake advertises daemon version (`X-ShanClaw-Daemon-Version`) and an opt-in capability list (`X-ShanClaw-Capabilities`) on the HTTP upgrade. Cloud gates optional protocol features on capability presence so older daemons aren't subjected to flows they can't honor. Add a capability token in the same PR that ships the feature.
+- `delivery_ack` capability: after `SendReply` succeeds, daemon emits a `delivery_ack` envelope with the inbound `MessageID` so Cloud can drop the message from its replay buffer. Un-acked messages (crash, network drop pre-reply, ctx cancel) are replayed on reconnect.
+- Route keys are computed as (precedence: top wins):
   - `session:<id>` for explicit session resume
-  - `default:<source>:<channel>` for routed channel sessions
+  - `default:<source>:<thread>` (or `agent:<name>:<source>:<thread>`) for messaging platforms with a thread
+  - `default:<source>:<channel>:<sender>` (or `agent:<name>:<source>:<channel>:<sender>`) for messaging platforms without a thread but with a sender — splits per-user so concurrent senders in a shared channel don't collide on one session
+  - `agent:<name>` for agent-scoped sessions
+  - `default:<source>:<channel>` legacy fallback (no thread, no sender)
 - Routed managers are long-lived. Ephemeral runs (for example bypass/heartbeat paths) use short-lived managers.
 - Output formatting uses profiles, not per-channel syntax:
   - `markdown` is the default
   - `plain` is used for cloud-distributed channels where Shannon Cloud owns final rendering
 - Tool status `running` is emitted at actual execution start, not during approval/permission checks.
-- Large tool results spill to `~/.shannon/tmp/` and are cleaned up:
-  - per-run in daemon and TUI
-  - on manager close in one-shot mode
+- **Tool result sizing**: three layered caps protect the context window.
+  - **Per-result spill**: any single tool result over its policy threshold (default 50K runes; `grep` ~20K; `file_read` is unlimited at the budget layer and falls back to the 50K spill threshold) is written to `~/.shannon/tmp/tool_result_<session>_<call_id>.txt` and replaced inline with a 2K rune preview plus the file path. Cleaned up per-run in daemon/TUI, on manager close in one-shot mode.
+  - **Per-turn 200K aggregate cap**: when the SUM of all parallel tool results in a turn exceeds 200K runes, the largest results are spilled until the total drops back under the cap.
+  - **Persisted budget state**: query-time replacement bookkeeping (`ToolResultReplacements` + `ToolResultSeen` on the session) survives across turns. Mid-turn checkpoints persist via `applyTurnState`; final and hard-error save paths copy the maps explicitly so fast turns and crashed turns also retain dedup state.
+  - **Bloat nudge**: `OnRunStatus("tool_result_bloat", …)` is emitted when a single tool's per-turn output exceeds the bloat threshold; surfaces to SSE/Desktop subscribers without forcing compaction.
+- **file_read dedup**: `internal/agent/readtracker.go` records `(path, offset, limit, mtime, size)` per successful read. The daemon owns one tracker per session via `internal/daemon/readtracker_cache.go`, registered through `SessionManager.OnSessionClose` so per-session state is released on session switch, manager close, and explicit delete.
 - **Session sync** (`internal/sync/`): uploads local session JSON to Shannon Cloud once per day (opt-in via `sync.enabled`). Single entry point `sync.Run`; called from the daemon ticker and the `shan sessions sync` CLI; flock + atomic marker write serialize concurrent callers. Per-session ACK with persistent `marker.failed` bookkeeping; permanent reasons (`size_limit_exceeded`, `load_error`) stay forever and self-heal on session edit.
 - **Memory client** (`internal/memory/`, Phase 2.3): daemon owns sidecar lifecycle (spawn / health / restart / shutdown) and the 24h bundle pull loop. Tool `memory_recall` (`internal/tools/memory.go`) delegates to `memory.Service.Query` via UDS; falls back to `session_search` + MEMORY.md whenever `Service.Status() != Ready`. CLI/TUI use `memory.AttachPolicy` (probe-only, never spawn) and connect via `memory.NewServiceAttached`. Privacy invariant: the resolved API key bytes never reach disk or audit logs (only `sha256[:16]` fingerprint in `<bundle_root>/.tenant_fingerprint`).
 
@@ -244,7 +258,7 @@ Source-routed TTL: channels/TUI get 1h, one-shot/subagent paths get 5m (fail-che
 - **Deferred tool loading**: when the toolset is large and includes deferred sources, MCP/gateway tools are exposed as summaries until the model loads schemas through `tool_search`.
 - **Memory staleness**: dated memory headings get freshness annotations like `[today]` and `[N days ago]`.
 - **System reminders**: short reminder blocks are appended to high-signal tool results (`file_read`, `file_write`, `file_edit`, `bash`) to reinforce key instructions in long sessions.
-- **Disk spill**: very large tool outputs are written to disk and replaced in context with a short preview plus a readable path.
+- **Disk spill + aggregate cap**: see "Tool result sizing" above — single results over policy spill to disk; the per-turn 200K aggregate cap clamps the worst case across parallel tools.
 
 ### Anti-Hallucination
 
@@ -293,4 +307,5 @@ E2E tests in `test/e2e/` split into offline (no API) and live (`SHANNON_E2E_LIVE
 
 - Session: `session_search` when a session manager is present
 - Cloud: `cloud_delegate` when gateway/cloud access is enabled
+- Cloud: `publish_to_web` when `cloud.enabled` AND `api_key` is configured. Always requires user approval; `purpose` arg is mandatory and shown during the approval prompt. Path blocklist and extension allowlist enforced client-side; never used for backup/sync.
 - Meta: `tool_search` in deferred mode only

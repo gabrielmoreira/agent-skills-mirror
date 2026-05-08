@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ggml-org/llama.cpp` — 26 default patterns, 26 followed patterns, 72 file(s) materialized.
+Mirror of `ggml-org/llama.cpp` — 26 default patterns, 27 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ggml-org/llama.cpp` — 26 default patterns, 26 followed patterns, 72
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 26 |
-| Files         | 72 |
+| Followed pats | 27 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,6 +76,7 @@ Mirror of `ggml-org/llama.cpp` — 26 default patterns, 26 followed patterns, 72
 - `tools/cli/README.md`
 - `tools/completion/README.md`
 - `docs/android.md`
+- `docs/multi-gpu.md`
 - `docs/development/token_generation_performance_tips.md`
 
 ## File Index
@@ -147,15 +148,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 61 | → | [`docs/development/token_generation_performance_tips.md`](docs/development/token_generation_performance_tips.md) |
 | 62 | → | [`docs/docker.md`](docs/docker.md) |
 | 63 | → | [`docs/install.md`](docs/install.md) |
-| 64 | → | [`docs/multimodal.md`](docs/multimodal.md) |
-| 65 | → | [`grammars/README.md`](grammars/README.md) |
-| 66 | → | [`README.md`](README.md) |
-| 67 | → | [`tools/cli/README.md`](tools/cli/README.md) |
-| 68 | → | [`tools/completion/README.md`](tools/completion/README.md) |
-| 69 | → | [`tools/perplexity/README.md`](tools/perplexity/README.md) |
-| 70 | → | [`tools/quantize/README.md`](tools/quantize/README.md) |
-| 71 | → | [`tools/server/README-dev.md`](tools/server/README-dev.md) |
-| 72 | → | [`tools/server/README.md`](tools/server/README.md) |
+| 64 | → | [`docs/multi-gpu.md`](docs/multi-gpu.md) |
+| 65 | → | [`docs/multimodal.md`](docs/multimodal.md) |
+| 66 | → | [`grammars/README.md`](grammars/README.md) |
+| 67 | → | [`README.md`](README.md) |
+| 68 | → | [`tools/cli/README.md`](tools/cli/README.md) |
+| 69 | → | [`tools/completion/README.md`](tools/completion/README.md) |
+| 70 | → | [`tools/perplexity/README.md`](tools/perplexity/README.md) |
+| 71 | → | [`tools/quantize/README.md`](tools/quantize/README.md) |
+| 72 | → | [`tools/server/README-dev.md`](tools/server/README-dev.md) |
+| 73 | → | [`tools/server/README.md`](tools/server/README.md) |
 
 ---
 

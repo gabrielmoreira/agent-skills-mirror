@@ -7,10 +7,12 @@ description: Web search via 9Router /v1/search using Tavily / Exa / Brave / Serp
 
 Requires `NINEROUTER_URL` (and `NINEROUTER_KEY` if auth enabled). See https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router/SKILL.md for setup.
 
-## Discover providers
+## Discover
 
 ```bash
 curl $NINEROUTER_URL/v1/models/web | jq '.data[] | select(.kind=="webSearch") | .id'
+# Per-provider params (searchTypes, maxResults, required options like cx for google-pse)
+curl "$NINEROUTER_URL/v1/models/info?id=tavily/search"
 ```
 
 IDs end in `/search` (e.g. `tavily/search`). Combos (`owned_by:"combo"`) chain providers with auto-fallback.

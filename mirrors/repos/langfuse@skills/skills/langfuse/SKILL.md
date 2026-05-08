@@ -1,6 +1,18 @@
 ---
 name: langfuse
 description: Interact with Langfuse and access its documentation. Use when needing to (1) query or modify Langfuse data programmatically via the CLI — traces, prompts, datasets, scores, sessions, and any other API resource, (2) look up Langfuse documentation, concepts, integration guides, or SDK usage, or (3) understand how any Langfuse feature works. This skill covers CLI-based API access (via npx) and multiple documentation retrieval methods.
+allowed-tools:
+  - WebFetch(domain:langfuse.com)
+  - Bash(curl *langfuse.com/*)
+  - Bash(npx langfuse-cli api __schema *)
+  - Bash(npx langfuse-cli api * --help *)
+  - Bash(npx langfuse-cli api * list *)
+  - Bash(npx langfuse-cli api * get *)
+  - Bash(bunx langfuse-cli api __schema *)
+  - Bash(bunx langfuse-cli api * --help *)
+  - Bash(bunx langfuse-cli api * list *)
+  - Bash(bunx langfuse-cli api * get *)
+  - Read(~/.claude/skills/langfuse/references/**)
 ---
 
 # Langfuse
@@ -53,7 +65,7 @@ export LANGFUSE_SECRET_KEY=sk-lf-...
 export LANGFUSE_HOST=https://cloud.langfuse.com # example for EU cloud. For US cloud it's us.cloud.langfuse.com, and can also be a self-hosted URL. The server must always be specified in order to access Langfuse.
 ```
 
-If not set, ask the user for their API keys (found in Langfuse UI → Settings → API Keys).
+If not set, ask the user to set them in their shell or a `.env` file (do not ask them to paste keys into chat for security reasons). Keys are found in Langfuse UI → Settings → API Keys.
 
 ### Detailed CLI Reference
 

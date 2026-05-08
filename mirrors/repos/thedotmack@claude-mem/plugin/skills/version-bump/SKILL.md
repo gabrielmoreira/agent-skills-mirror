@@ -28,7 +28,7 @@ description: Automated semantic versioning and release workflow for Claude Code 
 
 1.  **Update**: Increment the version string in every path above. Do NOT touch `CHANGELOG.md` — it's regenerated.
 2.  **Verify**: `git grep -n "\"version\": \"<NEW>\""` — confirm all seven files match. `git grep -n "\"version\": \"<OLD>\""` — should return zero hits.
-3.  **Build**: `npm run build` to regenerate artifacts.
+3.  **Build and sync**: `npm run build-and-sync` to regenerate artifacts, sync the local marketplace copy, restart the worker, and clear the queue. Do not use plain `npm run build` for release validation because it can leave the local marketplace/worker out of sync.
 4.  **Commit**: `git add -A && git commit -m "chore: bump version to X.Y.Z"`.
 5.  **Tag**: `git tag -a vX.Y.Z -m "Version X.Y.Z"`.
 6.  **Push**: `git push origin main && git push origin vX.Y.Z`.
@@ -36,7 +36,7 @@ description: Automated semantic versioning and release workflow for Claude Code 
     ```bash
     npm publish
     ```
-    The `prepublishOnly` script re-runs `npm run build` automatically. Confirm publish succeeded:
+    The `prepublishOnly` script re-runs the package build automatically. After publish, run `npm run build-and-sync` again if the publish build touched local artifacts. Confirm publish succeeded:
     ```bash
     npm view claude-mem@X.Y.Z version   # should print X.Y.Z
     ```
@@ -59,7 +59,7 @@ description: Automated semantic versioning and release workflow for Claude Code 
 
 - [ ] All seven config files have matching versions
 - [ ] `git grep` for old version returns zero hits
-- [ ] `npm run build` succeeded
+- [ ] `npm run build-and-sync` succeeded
 - [ ] Git tag created and pushed
 - [ ] **`npm publish` succeeded and `npm view claude-mem@X.Y.Z version` confirms it** (so `npx claude-mem@X.Y.Z` resolves)
 - [ ] GitHub release created with notes

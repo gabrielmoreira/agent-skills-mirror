@@ -66,7 +66,20 @@ pub trait EventSink: Send + Sync + 'static {
 
 - **`ChannelSink`**（定义在 `src-tauri/src/commands/chat.rs`）— 包裹 `tauri::ipc::Channel<String>`，用于桌面模式 UI 直连。事件直接推送到 Tauri WebView 前端
 - **`NoopEventSink`**（定义在 `crates/ha-core/src/chat_engine/types.rs`）— 丢弃所有事件。HTTP 模式、Cron 定时任务、subagent fork-and-forget 等"没有实时 UI 消费方"的入口共用此 sink；真正的浏览器流式输出由 Chat Engine 的 `chat:stream_delta` EventBus 双写路径推到 `/ws/events`
-- **`ChannelStreamSink`**（定义在 `crates/ha-core/src/chat_engine/types.rs`）— 双路输出：(1) 通过 `EventBus` 发布 `channel:stream_delta` 事件推送到前端实时展示；(2) 通过 `mpsc::Sender` 转发到后台任务，驱动 IM 渠道的渐进式消息编辑（如 Telegram 消息实时更新）
+- **`ChannelStreamSink`**（定义在 `crates/ha-core/src/chat_engine/types.rs`）— 双路输出：(1) 通过 `EventBus` 发布 `channel:stream_delta` 事件推送到前端实时展示；(2) 通过 `mpsc::Sender` 转发到后台任务，驱动 IM 渠道的渐进式消息编辑（如 Telegram 消息实时更新）。`is_primary: Arc<AtomicBool>` gate 决定 (2) 是否真发到 IM——secondary observer 仅走 (1) 让 UI 渲染，不真发回 IM channel。Mid-turn 可 toggle。
+
+### GUI ↔ IM live 流式镜像 (SinkRegistry fan-out)
+
+GUI / HTTP 入口的 turn 在 IM attach 那一侧走 live 流式镜像：IM 用户实时看到 typewriter / per-round 边界 finalize / 媒体投递,与 IM 入站 turn 对称。实现走 [`crates/ha-core/src/chat_engine/im_mirror.rs`](../../crates/ha-core/src/chat_engine/im_mirror.rs):
+
+- `attach_im_live_mirror(session_id, source)` —— `Desktop` / `Http` source 才返非空 state；通过 `channel_db.get_conversation_by_session(session_id)` 拿到 1:1 attach 行,获取对应 `ChannelAccountConfig.im_reply_mode()` / `show_thinking()` + plugin `capabilities()`,spawn `channel::worker::streaming::spawn_channel_stream_task`,把 `ChannelStreamSink` 注册到 [`SinkRegistry`](../../crates/ha-core/src/chat_engine/sink_registry.rs)。`emit_stream_event` 末尾的 `sink_registry().emit(session_id, &payload)` fan-out 把每帧 streaming event 转发到 IM 流式预览任务。
+- `finalize_im_live_mirror(state, response)` —— drop SinkHandle(RAII 卸载 sink → 关闭 event_tx → stream task drain 后 EOF),`.await` stream task 拿 `StreamPreviewOutcome`(含 `PreviewHandle` + `finalized_rounds`),drain `RoundTextAccumulator`,按 `ImReplyMode` 复用 dispatcher 的 [`deliver_split` / `deliver_final_only` / `deliver_preview_merged`](../../crates/ha-core/src/channel/worker/dispatcher.rs)(已解耦 `MsgContext`,接受 `chat_id / thread_id / reply_to_message_id: Option<&str>` 三参显式形态)。
+
+**两个通道独立走自己的发送通路**:GUI 永远走 Tauri IPC stream / HTTP `chat:stream_delta` 广播,不受 `imReplyMode` 影响;`imReplyMode` 仅决定 IM 端的呈现形态。
+
+主 `event_sink`(GUI 的 `ChannelSink` / HTTP 的 `NoopEventSink`)**不入 SinkRegistry**——每消费方恰好收一次事件,SinkRegistry 只承载 fan-out 到 IM 的次级 sink。
+
+错误 / 取消路径:engine 走 Err 不调 finalize,`ImLiveMirrorState` Drop 自动卸载 sink,IM 端保留半截 preview 与 IM 入站 cancel 行为一致。`source ∈ {Subagent, ParentInjection, Channel, Cron}` 在 attach 入口直接 no-op。
 
 ### ChatEngineParams
 
@@ -371,7 +384,7 @@ graph TB
 | **Failover** | `classify_error()` + `retry_delay_ms()` | 错误分类和退避计算 |
 | **Context Compact** | `emergency_compact()` | ContextOverflow 时紧急压缩 |
 | **Memory Extract** | `run_extraction()` | 自动记忆提取 |
-| **Channel** | `relay_to_channel()` | IM Channel 消息中继（context.rs） |
+| **Channel** | `attach_im_live_mirror()` + `finalize_im_live_mirror()` | desktop / HTTP turn → IM live 流式镜像（im_mirror.rs，复用 dispatcher 投递路径） |
 | **Plan Mode** | `plan_agent_mode` + `plan_mode_allow_paths` | 透传到 Agent 限制工具和路径 |
 
 ## 文件清单

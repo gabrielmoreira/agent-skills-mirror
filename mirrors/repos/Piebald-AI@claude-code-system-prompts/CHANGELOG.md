@@ -4,6 +4,14 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.133](https://github.com/Piebald-AI/claude-code-system-prompts/commit/72ca448)
+
+_+121 tokens_
+
+- **NEW:** Tool Description: Bash (prefer dedicated tools bullet) — Adds guidance to prefer dedicated read/search tools over Bash for commands such as find, grep, and cat unless explicitly instructed or after verifying no dedicated tool can do the task.
+- System Reminder: Thinking frequency tuning — Narrows the reminder framing to thinking-block suppression, clarifying that harness reminders may ask the agent to respond without a thinking block.
+- Tool Description: EnterWorktree — Documents the `worktree.baseRef` setting for new worktrees, including the default `fresh` behavior from `origin/<default-branch>` and the `head` option from current local HEAD.
+
 # [2.1.132](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8a2ca22)
 
 _+6,720 tokens_

@@ -60,12 +60,14 @@ Caching model:
 
 How the richer identity evidence works:
 
-- `bird user --json` is the preferred profile hydrator because it can expose X GraphQL profile URL entities and highlighted-label affiliations without using the paid X API.
+- `bird profiles ... --json` is the preferred batch profile hydrator when several archive profile IDs need refreshing; `bird user --profile-only --json` is the single-profile fallback. Both can expose X GraphQL profile URL entities and highlighted-label affiliations without using the paid X API.
 - Birdclaw stores profile metadata on `profiles`, active organization/badge edges in `profile_affiliations`, profile-change history in `profile_snapshots`, and extracted bio identity hints in `profile_bio_entities`; backups include all four shards.
+- Birdclaw also keeps a derived `identity_search_index` for fast local whois lookups. It is rebuilt from profile/bio/affiliation/history data and should not be treated as source-of-truth evidence.
 - When X only gives a highlighted-label badge such as "Vercel" plus an org handle, Birdclaw first stores a deterministic synthetic org id, then resolves the handle through `bird` on a fresh profile hydration and rewrites the edge to the real local organization profile id when available.
 - Bio entity extraction is first-class: bios/profile URLs/affiliations yield `@handle`, domain, and company-phrase rows. This is why `whois "blacksmith guy"` can rank someone from `@useblacksmith` and `blacksmith.sh` even if the exact phrase was not in the DM text.
 - Profile snapshots are deduplicated by identity fields and affiliations. If a hydrated profile changes from "currently Vercel" to another bio/affiliation, `whois` can surface old matching values as `profile_history`.
-- `whois` scores profile bio/name/handle matches, profile URL and bio URL matches, affiliation matches, bio entity matches, profile-history matches, DM context, and expanded `t.co` URLs separately. Prefer the typed `profileEvidence` array over reading the free-form `reasons` text when an agent needs to explain why someone matched.
+- `whois` scores profile bio/name/handle matches, profile URL and bio URL matches, affiliation matches, bio entity matches, profile-history matches, DM context, and expanded `t.co` URLs separately. It ranks current affiliation and bio identity evidence above plain domains, distinguishes ecosystem labels such as "GitHub Star" from staff/company matches, and buckets human output into likely affiliated, ecosystem, profile/link, DM-context, and other matches.
+- Use `--current-affiliation <org>` for strict active badge matches, `--affiliation <org>` for active/bio/history affiliation evidence, and `--exclude-domain-only` when a query like "GitHub people" should ignore accounts that only have `github.com` links.
 - A cached rerun should show profile resolution from `local`/`sync_cache` and URL expansions from `cache`; use refresh flags only when current profile/bio/link evidence matters.
 
 Use `--expand-urls` when `t.co` links are evidence. It may touch the network on cache miss, but it is not an X API call.

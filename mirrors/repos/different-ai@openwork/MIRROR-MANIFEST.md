@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,20 +72,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.opencode/skills/solidjs-patterns/SKILL.md`](.opencode/skills/solidjs-patterns/SKILL.md) |
 | 12 | ✓ | [`.opencode/skills/tauri-solidjs/SKILL.md`](.opencode/skills/tauri-solidjs/SKILL.md) |
 | 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/agent-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/agent-creator/SKILL.md) |
-| 15 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/command-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/command-creator/SKILL.md) |
-| 16 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/get-started/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/get-started/SKILL.md) |
-| 17 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/plugin-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/plugin-creator/SKILL.md) |
-| 18 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/skill-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/skill-creator/SKILL.md) |
-| 19 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/workspace-guide/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_65a41c1c5f7f/config/.opencode/skills/openwork-managed/workspace-guide/SKILL.md) |
-| 20 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/agent-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/agent-creator/SKILL.md) |
-| 21 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/command-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/command-creator/SKILL.md) |
-| 22 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/get-started/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/get-started/SKILL.md) |
-| 23 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/plugin-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/plugin-creator/SKILL.md) |
-| 24 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/skill-creator/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/skill-creator/SKILL.md) |
-| 25 | ✓ | [`apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/workspace-guide/SKILL.md`](apps/server-v2/.openwork-server-v2-test/workspaces/ws_a2a55cab8c07/config/.opencode/skills/openwork-managed/workspace-guide/SKILL.md) |
-| 26 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 27 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 14 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 15 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 
 ---
 

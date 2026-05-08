@@ -7,10 +7,12 @@ description: Fetch URL → markdown / text / HTML via 9Router /v1/web/fetch usin
 
 Requires `NINEROUTER_URL` (and `NINEROUTER_KEY` if auth enabled). See https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router/SKILL.md for setup.
 
-## Discover providers
+## Discover
 
 ```bash
 curl $NINEROUTER_URL/v1/models/web | jq '.data[] | select(.kind=="webFetch") | .id'
+# Per-provider params
+curl "$NINEROUTER_URL/v1/models/info?id=firecrawl/fetch"
 ```
 
 IDs end in `/fetch` (e.g. `firecrawl/fetch`, `jina/fetch`). `fetch-combo` chains providers with auto-fallback.

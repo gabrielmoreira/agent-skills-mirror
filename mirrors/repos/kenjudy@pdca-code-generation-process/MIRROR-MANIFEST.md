@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,6 +75,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-2/eval-podcast-production/with_skill/outputs/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-2/eval-podcast-production/with_skill/outputs/SKILL.md) |
 | 15 | ✓ | [`claude-skill/pdca-scaffold/SKILL.md`](claude-skill/pdca-scaffold/SKILL.md) |
 | 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 17 | ✓ | [`scaffolded-skills/daily-retro-pdca/SKILL.md`](scaffolded-skills/daily-retro-pdca/SKILL.md) |
 
 ---
 

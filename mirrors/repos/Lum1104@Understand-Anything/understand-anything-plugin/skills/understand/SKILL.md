@@ -259,9 +259,9 @@ Fill in batch-specific parameters below and dispatch:
 > <batchImportData JSON>
 > ```
 >
-> Files to analyze in this batch:
-> 1. `<path>` (<sizeLines> lines, fileCategory: `<fileCategory>`)
-> 2. `<path>` (<sizeLines> lines, fileCategory: `<fileCategory>`)
+> Files to analyze in this batch (every entry MUST be passed through to `batchFiles` with all four fields — `path`, `language`, `sizeLines`, `fileCategory`):
+> 1. `<path>` (<sizeLines> lines, language: `<language>`, fileCategory: `<fileCategory>`)
+> 2. `<path>` (<sizeLines> lines, language: `<language>`, fileCategory: `<fileCategory>`)
 > ...
 
 After ALL batches complete, run the merge-and-normalize script bundled with this skill (located next to this SKILL.md file — use the skill directory path, not the project root):

@@ -63,7 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 5 | ✓ | [`mem0-plugin/skills/mem0-codex/SKILL.md`](mem0-plugin/skills/mem0-codex/SKILL.md) |
+| 5 | ✓ | [`mem0-plugin/skills/mem0-mcp/SKILL.md`](mem0-plugin/skills/mem0-mcp/SKILL.md) |
 | 6 | ✓ | [`mem0-plugin/skills/mem0/references/api-reference.md`](mem0-plugin/skills/mem0/references/api-reference.md) |
 | 7 | ✓ | [`mem0-plugin/skills/mem0/references/integration-patterns.md`](mem0-plugin/skills/mem0/references/integration-patterns.md) |
 | 8 | ✓ | [`mem0-plugin/skills/mem0/references/sdk-guide.md`](mem0-plugin/skills/mem0/references/sdk-guide.md) |

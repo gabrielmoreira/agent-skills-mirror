@@ -7,10 +7,12 @@ description: Generate images via 9Router /v1/images/generations using OpenAI / G
 
 Requires `NINEROUTER_URL` (and `NINEROUTER_KEY` if auth enabled). See https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router/SKILL.md for setup.
 
-## Discover models
+## Discover
 
 ```bash
 curl $NINEROUTER_URL/v1/models/image | jq '.data[].id'
+# Per-model params/options (size enum, quality enum, capabilities like edit)
+curl "$NINEROUTER_URL/v1/models/info?id=openai/dall-e-3"
 ```
 
 ## Endpoint

@@ -89,3 +89,34 @@
 .pb-pip-on {
   background: var(--accent);
 }
+
+.pb-github {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity var(--dur-base) var(--ease-quart),
+    transform var(--dur-base) var(--ease-quart),
+    color var(--dur-quick);
+}
+.pb-github:hover {
+  color: var(--accent);
+}
+.pb-hover:hover .pb-github {
+  opacity: 1;
+  transform: translateY(0);
+}
+.pb-github svg {
+  display: block;
+}

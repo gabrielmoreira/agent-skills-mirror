@@ -14,7 +14,7 @@ crates/ha-core/src/slash_commands/
 ├── registry.rs     # 命令注册表（所有内置命令定义）
 └── handlers/       # 命令处理器（12 个子文件）
     ├── mod.rs      # dispatch 分发入口
-    ├── session.rs  # 会话类命令
+    ├── session.rs  # 会话类命令（含 /sessions / /session / /handover）
     ├── model.rs    # 模型类命令
     ├── memory.rs   # 记忆类命令
     ├── agent.rs    # Agent 类命令
@@ -23,11 +23,11 @@ crates/ha-core/src/slash_commands/
     ├── recap.rs    # /recap 深度复盘
     ├── context.rs  # /context 上下文窗口明细
     ├── awareness.rs # /awareness 行为感知开关
-    ├── project.rs  # /project 项目切换（IM 渠道禁用）
-    └── utility.rs  # 工具类命令
+    ├── project.rs  # /project / /projects 项目切换 / 选择
+    └── utility.rs  # 工具类命令（含 /imreply / /reason）
 ```
 
-> **命令规模**：内置 26 条 + 动态技能命令（运行时合并）。
+> **命令规模**：内置 32 条 + 动态技能命令（运行时合并）。
 
 ### 处理流程
 
@@ -110,8 +110,12 @@ sequenceDiagram
 | `/compact` | 无 | 压缩当前会话上下文（触发渐进式压缩） | `Compact` |
 | `/stop` | 无 | 停止当前流式回复 | `StopStream` |
 | `/rename` | `<title>` 必需 | 重命名当前会话标题 | `DisplayOnly` |
-| `/plan` | `[exit\|show\|approve\|pause\|resume]` | 进入/管理计划模式（详见下方） | 多种 |
-| `/project` | `[name]` 可选 | 无参：弹出项目选择器（桌面端 markdown 列表 + sidebar 项目树）；有参：模糊匹配项目名进入并在该项目下新建会话。**IM 渠道禁用**（详见下方） | `ShowProjectPicker` 或 `EnterProject` |
+| `/plan` | `[enter\|exit\|show\|approve]` | 进入/管理计划模式（详见下方） | 多种 |
+| `/project` | `[name]` 可选 | 无参：弹出项目选择器（桌面端 markdown 列表 + sidebar 项目树）；有参：模糊匹配项目名进入并在该项目下新建会话。**IM 渠道**：`AssignProject`（不创建新 session，UPDATE 当前 chat 的 `sessions.project_id`） | `ShowProjectPicker` / `EnterProject` / `AssignProject` |
+| `/projects` | 无 | 列出所有未归档项目（与 `/project` 无参等价，独立条目方便记忆） | `ShowProjectPicker` |
+| `/sessions` | `[query]` 可选 | 弹出会话选择器（用户对话 session，过滤 cron / subagent / incognito）。带参时模糊匹配标题 + 命中消息内容 FTS 高亮片段；最近活跃排序 | `ShowSessionPicker` |
+| `/session` | `[<id>\|exit]` 可选 | **桌面**：无参/`<id>` 切换会话（`EnterSession`）；**IM**：无参显示当前 attach 状态、`<id>` 把当前 chat 物理 attach 到目标 session（旧 chat 收 `channel:session_evicted` 通知）、`exit` detach | `EnterSession` / `AttachToSession` / `DetachFromSession` |
+| `/handover` | `[channel:account:chat[:thread]]` 可选 | **GUI 专用**：把当前 session push 到指定 IM chat（1:1 attach；目标 chat 上的旧 session 被驱逐）。无参时弹 Handover 选择器；IM 渠道菜单不展示也拒绝执行 | `HandoverToChannel` |
 
 ### 🤖 Model — 模型控制
 
@@ -119,11 +123,11 @@ sequenceDiagram
 |---|---|---|---|
 | `/model` | `[name]` 可选 | 无参数：列出所有可用模型（标记当前活跃模型）；有参数：模糊匹配切换模型 | `SwitchModel` 或 `DisplayOnly` |
 | `/models` | 无 | 列出所有可用模型（与 `/model` 无参等价，独立条目方便记忆） | `DisplayOnly` |
-| `/think` | `<level>` 必需 | 设置推理思考强度 | `SetEffort` |
+| `/thinking` | `<level>` 必需 | 设置推理思考强度。`/think` 是静默别名（仅 dispatch 接受，菜单不展示，详见下方） | `SetEffort` |
 
 **`/model` 模糊匹配优先级**：精确 ID → 精确名称 → 前缀匹配 → 包含匹配。歧义时列出所有候选项。
 
-**`/think` 可选值**：
+**`/thinking` 可选值**：
 
 | 值 | 说明 |
 |---|---|
@@ -203,31 +207,33 @@ sequenceDiagram
 
 ## `/plan` 子命令详解
 
-计划模式（Plan Mode）是一个六态状态机，`/plan` 命令控制状态转换（详见 [Plan Mode 架构文档](plan-mode.md)）：
+计划模式（Plan Mode）是一个五态状态机，`/plan` 命令控制状态转换（详见 [Plan Mode 架构文档](plan-mode.md)）：
 
 ```mermaid
 stateDiagram-v2
     [*] --> Off
     Off --> Planning : /plan 或 /plan enter
-    Planning --> Review : AI 生成计划完成
-    Review --> Planning : /plan（再次进入）
+    Planning --> Review : submit_plan
+    Review --> Planning : /plan（修订）
     Review --> Executing : /plan approve<br>（创建 Git 检查点）
-    Executing --> Paused : /plan pause
-    Paused --> Executing : /plan resume
-    Executing --> Off : /plan exit<br>（清理 Git 检查点）
-    Paused --> Off : /plan exit<br>（清理 Git 检查点）
+    Executing --> Completed : 全部 task 终态
+    Executing --> Planning : 再次进入 plan mode（修订）
+    Completed --> Planning : 再次进入 plan mode（修订）
+    Planning --> Off : /plan exit
     Review --> Off : /plan exit
+    Executing --> Off : /plan exit<br>（清理 Git 检查点）
+    Completed --> Off : /plan exit
 
     note right of Review : /plan show 可在任意状态查看计划
 ```
+
+> **没有 Paused 状态**——长时间挂起就 `/plan exit` 退出，需要时再 re-entry。详见 [plan-mode.md](plan-mode.md)。
 
 | 子命令 | 说明 | 前置状态 | Action |
 |---|---|---|---|
 | `/plan` 或 `/plan enter` | 进入计划模式 | 任意 | `EnterPlanMode` |
 | `/plan show` | 显示当前计划内容 | 任意 | `ShowPlan` |
 | `/plan approve` | 批准计划，开始执行（创建 Git 检查点） | Review | `ApprovePlan` |
-| `/plan pause` | 暂停执行中的计划 | Executing | `PausePlan` |
-| `/plan resume` | 恢复暂停的计划 | Paused | `ResumePlan` |
 | `/plan exit` | 退出计划模式，清理 Git 检查点 | 任意 | `ExitPlanMode` |
 
 ---
@@ -292,29 +298,30 @@ stateDiagram-v2
 | 用法 | 行为 | Action |
 |---|---|---|
 | `/project` | 列出全部未归档项目，桌面端弹「项目选择器」（markdown 列表 + 项目名 / emoji / 会话数 / 描述），用户继续键入 `/project <name>` 进入；同时 sidebar 项目树本来就可视，可选直接点 | `ShowProjectPicker { projects }` |
-| `/project <name>` | 模糊匹配（精确名 → 精确 id → 前缀 → 包含；歧义/无果直接报错） | `EnterProject { project_id }` |
+| `/project <name>` | 模糊匹配（精确名 → 精确 id → 前缀 → 包含；歧义/无果直接报错） | 桌面/HTTP: `EnterProject { project_id }`；IM: `AssignProject { project_id }` |
 
-**前端处理**（[ChatScreen.tsx:861-884](src/components/chat/ChatScreen.tsx#L861-L884)）：
+**前端处理**（[ChatScreen.tsx](../../src/components/chat/ChatScreen.tsx) `handleCommandAction`）：
 
 - `ShowProjectPicker`：渲染为 event 气泡 markdown 列表，附 `> /project <项目名>` 提示框
-- `EnterProject`：调 `handleNewChatInProject(project_id)` —— 在该项目下**新建会话**（agent 走 5 级解析链，详见 AGENTS.md「Agent 解析链」）；同步把 `draftIncognito` 关掉（项目与无痕互斥）
+- `EnterProject`：调 `handleNewChatInProject(project_id)` —— 在该项目下**新建会话**（agent 走 7 级解析链，详见 AGENTS.md「Agent 解析链」）；同步把 `draftIncognito` 关掉（项目与无痕互斥）
 
-**IM 渠道禁用**：
+**IM 渠道行为（Phase A1 后）**：
 
-- 注册表常量 `IM_DISABLED_COMMANDS = &["project"]`（[registry.rs:6](../../crates/ha-core/src/slash_commands/registry.rs#L6)）让命令从 IM slash 菜单（Discord / Telegram / Slack 同步阶段）剔除
-- handler 进入时再 self-check `session.channel_info.is_some()` —— 用户硬键入 `/project xxx` 也会直接返回 `DisplayOnly` 提示「在 IM 渠道不可用」，不会走到模糊匹配
-- 双层防御原因：IM session 已经绑定到 channel-account，不能再认领项目（项目 ↔ IM channel 是 0..1 ↔ 0..1，由项目侧 `bound_channel` 字段单向绑定，详见 AGENTS.md「绑定 IM Channel」）
+- `/project` **不再** 在 `IM_DISABLED_COMMANDS` 里（仅 `/agent` / `/handover` 仍然禁用）。`handler` 检测 `session.channel_info.is_some()` 后切换分支：发 `AssignProject` action,channel slash dispatcher 调 `SessionDB::set_session_project` UPDATE 现有 `sessions.project_id`，**不创建新 session**
+- 项目反向认领（旧 `Project.bound_channel`）已删除：IM 入站消息不再自动归项目，路由由 IM 端 `/project` 显式触发
 
 ---
 
 ## IM 渠道禁用清单
 
-部分桌面专属命令在 IM 渠道里既不显示菜单也不响应执行。**入口**：`crates/ha-core/src/slash_commands/registry.rs::IM_DISABLED_COMMANDS`。
+部分桌面专属命令在 IM 渠道里既不显示菜单也不响应执行。**入口**：`crates/ha-core/src/slash_commands/registry.rs::IM_DISABLED_COMMANDS`，目前 = `["agent", "handover"]`。
 
 | 命令 | 禁用原因 |
 |---|---|
-| `/project` | IM session 已绑定 channel-account，不能再被项目认领 |
 | `/agent` | IM dispatcher 每条入站消息从 channel-account / topic / group 配置重算 agent_id（[`channel/worker/dispatcher.rs::resolved_agent_id`](../../crates/ha-core/src/channel/worker/dispatcher.rs)），不读 `sessions.agent_id`。允许 `/agent` 会让会话标签和实际运行 agent 永久漂移——`/agent` 切完后回复「Switched to X」，下一轮入站消息又被 channel-account 配置拉回原 agent，是幻觉切换。改 IM agent 应去「设置 → IM Channel → account → Agent」或 topic/group override |
+| `/handover` | 「把当前 session 推到 IM chat」是 GUI 专属语义。在 IM 内部触发只会把 chat 自己的 session 推回自己，无意义。IM 端要切会话用 `/session <id>`（attach 已存在 session）或 `/sessions` 选择 |
+
+> **`/project` 已不在此列**——Phase A1 把 Project ↔ IM 反向认领删除后，IM 内 `/project <id>` 改走 `AssignProject` action 直接 UPDATE 当前 session 的 `project_id`，语义合理因此放行。
 
 新增此类命令时同时改两处：(1) `IM_DISABLED_COMMANDS` 常量 让 IM 同步阶段不下发菜单；(2) handler 内自检 `session.channel_info`，处理用户绕过菜单硬键入的情况。
 
@@ -329,7 +336,7 @@ stateDiagram-v2
 | `/imreply [split\|final\|preview]` | `ChannelAccountConfig.settings.imReplyMode` | 详见 [im-channel.md §IM 回复模式](im-channel.md) |
 | `/reason [on\|off]` | `ChannelAccountConfig.settings.showThinking` | 详见 [im-channel.md §Thinking 显示](im-channel.md) |
 
-**静默 dispatch 别名**：`handlers::dispatch` match arm 接受多个名字（`"reason" \| "reasoning"`），但只有 canonical name 进 [`registry::all_commands`](../../crates/ha-core/src/slash_commands/registry.rs) 与 IM 菜单。`/reasoning` 是 `/reason` 的别名 —— 用户输入两者都能触发，但菜单只展示 `/reason`，避免视觉冗余。
+**静默 dispatch 别名**：`handlers::dispatch` match arm 接受多个名字（如 `"thinking" \| "think"`、`"reason" \| "reasoning"`），但只有 canonical name 进 [`registry::all_commands`](../../crates/ha-core/src/slash_commands/registry.rs) 与 IM 菜单。`/think` 是 `/thinking` 的别名，`/reasoning` 是 `/reason` 的别名 —— 用户输入两者都能触发，但菜单只展示 canonical 命令，避免视觉冗余。
 
 **reserved 集合契约**：所有静默别名必须登记进 [`slash_commands::SILENT_BUILTIN_ALIASES`](../../crates/ha-core/src/slash_commands/mod.rs)；`builtin_command_names()` 把别名一并塞进 `HashSet<String>`，[`resolve_skill_command_names`](../../crates/ha-core/src/slash_commands/mod.rs) 用这个集合判断 skill 是否需要 `_skill` 后缀。漏登记 → 同名 skill 会被 dispatch 静默遮蔽（match arm 优先于 `_ => handle_skill_command`）。新增静默别名时务必更新 `SILENT_BUILTIN_ALIASES`。
 
@@ -349,7 +356,7 @@ Telegram (`setMyCommands`) 和 Discord (Application Commands API) 的命令菜�
 
 **菜单内容**与 GUI / `/help` 完全一致——走同一个 [`slash_commands::im_menu_entries`](../../crates/ha-core/src/slash_commands/mod.rs) 入口，包含：
 
-- `registry::all_commands()` 内置命令，过滤 `IM_DISABLED_COMMANDS`（`/agent` / `/project`）
+- `registry::all_commands()` 内置命令，过滤 `IM_DISABLED_COMMANDS`（`/agent` / `/handover`）
 - 用户可调用 skill 命令（`get_invocable_skills` + `resolve_skill_command_names`，命名冲突走 `_skill` / `_N` 后缀）
 - 100 条硬上限：Telegram 和 Discord 都把全局命令上限定在 100，超出尾部截断（仍可硬键入触发，只是不进菜单），并 `app_warn!`
 
@@ -369,7 +376,7 @@ Telegram (`setMyCommands`) 和 Discord (Application Commands API) 的命令菜�
 | `PassThrough` | 将消息传递给 LLM 处理 | `/search`, 技能命令 | ✅ 以转换后的指令作为 LLM 输入 | — |
 | `DisplayOnly` | 仅显示内容，无副作用 | `/help`, `/status`, `/usage`, `/memories` 等 | ✅ 直接回复 content | — |
 | `SwitchModel` | 切换活跃模型 | `/model <name>` | ✅ 调用 `set_active_model_core` 持久化切换 | `slash:model_switched` |
-| `SetEffort` | 设置推理强度 | `/think <level>` | ✅ 调用 `set_reasoning_effort_core` 写入 AppState | `slash:effort_changed` |
+| `SetEffort` | 设置推理强度 | `/thinking <level>`（别名 `/think <level>`） | ✅ 调用 `set_reasoning_effort_core` 写入 AppState | `slash:effort_changed` |
 | `SetToolPermission` | 设置工具权限模式 | `/permission <mode>` | ⚡ 返回"不适用"提示（Channel 固定 auto-approve） | — |
 | `ExportFile` | 下载导出文件 | `/export` | ✅ 自动写入 `~/.hope-agent/exports/` 并回复路径 | — |
 | `StopStream` | 停止流式输出 | `/stop` | ✅ 通过 `ChannelCancelRegistry` 取消活跃流 | — |
@@ -382,16 +389,20 @@ Telegram (`setMyCommands`) 和 Discord (Application Commands API) 的命令菜�
 | `ExitPlanMode` | 退出计划模式 | `/plan exit` | ✅ DB 状态已持久化 + Git 检查点清理 | `slash:plan_changed` |
 | `ApprovePlan` | 批准并开始执行计划 | `/plan approve` | ✅ DB 状态已持久化 + Git 检查点创建 | `slash:plan_changed` |
 | `ShowPlan` | 在面板中显示计划 | `/plan show` | ✅ 将 plan 内容作为回复返回 | `slash:plan_changed` |
-| `PausePlan` | 暂停计划执行 | `/plan pause` | ✅ DB 状态已持久化 + 回复确认 | `slash:plan_changed` |
-| `ResumePlan` | 恢复计划执行 | `/plan resume` | ✅ DB 状态已持久化 + 回复确认 | `slash:plan_changed` |
-| `ShowProjectPicker` | 渲染项目选择器（markdown 列表） | `/project`（无参） | 🚫 命令 IM 禁用，不会到达此 action | — |
-| `EnterProject` | 进入项目并在该项目下新建会话 | `/project <name>` | 🚫 命令 IM 禁用，不会到达此 action | — |
+| `ShowProjectPicker` | 渲染项目选择器（markdown 列表） | `/project`（无参）/ `/projects` | ✅ IM 渠道渲染为 inline buttons（一项目一行） | — |
+| `EnterProject` | 进入项目并在该项目下**新建会话** | `/project <name>` | ⚡ IM 改用 `AssignProject`，不会到达此 action | — |
+| `AssignProject` | 把当前 chat 的 session UPDATE `project_id` 到目标项目（不创建新 session） | `/project <name>`（IM 渠道） | ✅ 直接调用 `SessionDB::set_session_project` | — |
+| `ShowSessionPicker` | 渲染会话选择器（用户对话 session，过滤 cron / subagent / incognito） | `/sessions [query]` | ✅ IM 渠道渲染为 inline buttons | — |
+| `EnterSession` | 切换桌面活跃会话；IM 上等价 `AttachToSession` | `/session <id>` | ⚡ IM 改用 `AttachToSession`，不会到达此 action | — |
+| `AttachToSession` | 把当前 IM chat 物理 attach 到目标 session（旧 attach 驱逐 + 发 `channel:session_evicted` 通知） | `/session <id>`（IM 渠道） | ✅ 写 `channel_conversations` 表 | — |
+| `DetachFromSession` | 把当前 IM chat 从其 session detach（桌面 no-op） | `/session exit` | ✅ 删 `channel_conversations` 行 | — |
+| `HandoverToChannel` | 把当前 session push 到指定 IM chat（1:1 attach；目标 chat 旧 session 驱逐） | `/handover <ch:acc:chat[:thread]>` | 🚫 命令 IM 禁用，不会到达此 action | — |
 
 > **前端事件说明**：Channel 执行状态变更类命令后，会通过 `EventBus` 发送 `slash:*` 事件通知前端 UI 同步更新（如模型选择器、effort 指示器、消息列表等）。桌面模式通过 Tauri `handle.emit()` 转发到 WebView，HTTP 模式通过 WebSocket 推送。前端在 `ChatScreen.tsx` 中统一监听这些事件。
 >
-> **⚡ 标注说明**：`/permission` 在 Channel 中不适用，因为 Channel 对话固定使用 auto-approve 模式，不需要交互式权限审批。
+> **⚡ 标注说明**：(1) `/permission` 在 Channel 中不适用，Channel 对话固定使用 auto-approve；(2) `EnterProject` / `EnterSession` 在 IM 中被替换为 `AssignProject` / `AttachToSession`（语义不同），不会到达原 action。
 >
-> **🚫 标注说明**：`ShowProjectPicker` / `EnterProject` 在 Channel 中**完全不会到达**——`/project` 在 `IM_DISABLED_COMMANDS` 列表里，slash 同步阶段就被剔除；handler 还会再用 `session.channel_info` 自检兜底。
+> **🚫 标注说明**：`HandoverToChannel` 的源命令 `/handover` 在 `IM_DISABLED_COMMANDS` 列表里，slash 同步阶段就被剔除；handler 还会再用 `session.channel_info` 自检兜底。
 
 ---
 
@@ -406,14 +417,14 @@ Telegram (`setMyCommands`) 和 Discord (Application Commands API) 的命令菜�
 - 用户输入 `/<cmd>` 后回车或点击命令 → 展开选项子菜单
 - 键盘方向键在选项间导航，回车执行选定选项
 - Escape / 左箭头 返回命令列表
-- 仍可手动输入参数（如 `/think high`）跳过子菜单
+- 仍可手动输入参数（如 `/thinking high`）跳过子菜单
 
 ### IM 渠道 (Telegram)
 
 Channel 对有 `arg_options` 的命令提供 inline keyboard 按钮：
 
-- 用户发送无参数的命令（如 `/think`）→ 返回选项按钮，每个选项一行
-- 按钮 `callback_data` 格式：`slash:<command> <option>`（如 `slash:think high`）
+- 用户发送无参数的命令（如 `/thinking`）→ 返回选项按钮，每个选项一行
+- 按钮 `callback_data` 格式：`slash:<command> <option>`（如 `slash:thinking high`）
 - 用户点击按钮 → Telegram 发送 `CallbackQuery` → `polling.rs` 转换为 `/<command> <option>` 文本
 - `dispatch_slash_for_channel` 正常执行命令
 
@@ -428,12 +439,15 @@ Channel 对有 `arg_options` 的命令提供 inline keyboard 按钮：
 
 | 命令 | 选项 |
 |---|---|
-| `/think` | `off`, `low`, `medium`, `high`, `xhigh` |
-| `/plan` | `enter`, `exit`, `show`, `approve`, `pause`, `resume` |
+| `/thinking` | `off`, `low`, `medium`, `high`, `xhigh` |
+| `/plan` | `enter`, `exit`, `show`, `approve` |
 | `/permission` | `default`, `smart`, `yolo` |
 | `/awareness` | `on`, `off`, `mode structured`, `mode llm`, `mode off`, `status` |
 | `/team` | `create`, `status`, `pause`, `resume`, `dissolve` |
 | `/recap` | `--full`, `--range=7d`, `--range=30d` |
+| `/imreply` | `split`, `final`, `preview` |
+| `/reason` | `on`, `off` |
+| `/session` | `exit`（只有 `exit` 是固定字面量；`<id>` 是任意 session id） |
 
 ---
 
@@ -446,11 +460,15 @@ Channel 对有 `arg_options` 的命令提供 inline keyboard 按钮：
 | `/compact` | Session | 无 | 否 | 压缩上下文 |
 | `/stop` | Session | 无 | 否 | 停止当前回复 |
 | `/rename` | Session | `<title>` | 是 | 重命名对话 |
-| `/plan` | Session | `[子命令]` | 是 | 计划模式 |
-| `/project` | Session | `[name]` | 否 | 进入/选择项目（IM 禁用） |
+| `/plan` | Session | `[enter\|exit\|show\|approve]` | 是 | 计划模式 |
+| `/project` | Session | `[name]` | 否 | 进入/选择项目（IM 改走 `AssignProject`） |
+| `/projects` | Session | 无 | 否 | 列出所有项目（≡ `/project` 无参） |
+| `/sessions` | Session | `[query]` | 否 | 弹出会话选择器（可选搜索） |
+| `/session` | Session | `[<id>\|exit]` | 否 | 显示/切换/退出当前会话（IM: attach/detach） |
+| `/handover` | Session | `[ch:acc:chat[:thread]]` | 是 | 把当前 session 推到 IM chat（**GUI 专用**） |
 | `/model` | Model | `[name]` | 否 | 切换/列出模型 |
 | `/models` | Model | 无 | 否 | 列出所有可用模型 |
-| `/think` | Model | `<level>` | 否 | 设置思考强度 |
+| `/thinking` | Model | `<level>` | 否 | 设置思考强度（`/think` 静默别名） |
 | `/remember` | Memory | `<text>` | 否 | 保存记忆 |
 | `/forget` | Memory | `<query>` | 否 | 删除记忆 |
 | `/memories` | Memory | 无 | 否 | 列出记忆 |
@@ -467,3 +485,5 @@ Channel 对有 `arg_options` 的命令提供 inline keyboard 按钮：
 | `/context` | Utility | 无 | 是 | 上下文窗口占用明细 |
 | `/recap` | Utility | `[--full\|--range=Nd]` | 否 | 生成深度复盘报告 |
 | `/awareness` | Utility | `[on\|off\|mode <x>\|status]` | 否 | 行为感知开关 |
+| `/imreply` | Utility | `[split\|final\|preview]` | 是（IM） | 设置 IM 回复模式（**IM 专用**） |
+| `/reason` | Utility | `[on\|off]` | 是（IM） | IM 输出是否包含模型 thinking（**IM 专用**） |

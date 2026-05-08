@@ -165,6 +165,8 @@ The body contains step-by-step instructions. Use secondary markdown files in `re
 
 **Important:** When including non-markdown content (configuration files, scripts, templates, linter configs, etc.), create them as separate files in `assets/` rather than embedding them directly in markdown. Reference these files from your markdown using relative links (e.g., `[View config](assets/example.yml)`). This keeps markdown files clean, makes assets reusable, and allows proper syntax highlighting when the files are viewed separately.
 
+Polanyi's paradox: most operational knowledge is tacit and resists explicit description. The skills that work aren't the ones with the most rules, they're the ones that capture a posture. Markdown is the iceberg's tip.
+
 ### Token budgets
 
 - **~100 tokens per description** — loaded at startup for all skills

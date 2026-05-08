@@ -1,3 +1,5 @@
+<!-- markdownlint-disable-file -->
+
 # Monitor anything with Netdata
 
 **850+ integrations. Zero configuration. Deploy anywhere.**
@@ -583,3 +585,25 @@ Need a dedicated integration? [Submit a feature request](https://github.com/netd
 | [TCP/UDP Endpoints](https://github.com/netdata/netdata/blob/master/src/go/plugin/go.d/collector/portcheck/integrations/tcp-udp_endpoints.md) | Collector for monitoring service availability and response time. |
 | [Uptimerobot](https://github.com/netdata/netdata/blob/master/src/go/plugin/go.d/collector/prometheus/integrations/uptimerobot.md) | Monitor UptimeRobot website uptime monitoring metrics for efficient website availability tracking and management. |
 | [X.509 certificate](https://github.com/netdata/netdata/blob/master/src/go/plugin/go.d/collector/x509check/integrations/x.509_certificate.md) | This collectors monitors x509 certificates expiration time and revocation status. |
+
+### Network Flows
+
+| Integration | Description |
+|-------------|-------------|
+| [AWS IP Ranges](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/aws_ip_ranges.md) | Annotate network flows with AWS service and region labels from AWS public IP ranges. |
+| [Azure IP Ranges](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/azure_ip_ranges.md) | Annotate network flows with Azure service and region labels from Azure Service Tags. |
+| [bio-rd / RIPE RIS](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/bio-rd_-_ripe_ris.md) | Enrich network flows with BGP routing context received from bio-rd / RIPE RIS over gRPC. |
+| [BMP (BGP Monitoring Protocol)](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/bmp_bgp_monitoring_protocol.md) | Enrich network flows with BGP next-hop, AS path, communities, and routing context received directly from routers. |
+| [Classifiers](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/classifiers.md) | Annotate network flows with exporter and interface labels derived from reusable classification rules. |
+| [Custom MMDB Database](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/custom_mmdb_database.md) | Enrich network flows with ASN, geographic, or internal network context from operator-built MMDB databases. |
+| [DB-IP IP Intelligence](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/db-ip_ip_intelligence.md) | Enrich network flows with ASN and geographic context from DB-IP Lite MMDB databases. |
+| [Decapsulation](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/decapsulation.md) | Enrich network flows with inner source and destination endpoints from VXLAN or SRv6 encapsulated traffic. |
+| [GCP IP Ranges](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/gcp_ip_ranges.md) | Annotate network flows with Google ownership, service, and scope labels from Google public IP ranges. |
+| [Generic JSON-over-HTTP IPAM](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/generic_json-over-http_ipam.md) | Annotate network flows with network-identity labels from any JSON-over-HTTP IPAM or CMDB endpoint. |
+| [IPFIX](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/ipfix.md) | Collect network flow records from IPFIX (NetFlow v10) exporters. |
+| [IPtoASN](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/iptoasn.md) | Enrich network flows with public ASN and country context from IPtoASN BGP-derived datasets. |
+| [MaxMind GeoIP / GeoLite2](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/maxmind_geoip_-_geolite2.md) | Enrich network flows with ASN and geographic context from MaxMind GeoIP / GeoLite2 MMDB databases. |
+| [NetBox](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/netbox.md) | Annotate network flows with tenant, site, role, VRF, and description metadata from NetBox. |
+| [NetFlow](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/netflow.md) | Collect network flow records from NetFlow v5, v7, and v9 exporters such as routers, switches, and firewalls. |
+| [sFlow](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/sflow.md) | Collect sampled network flow records from sFlow v5 agents. |
+| [Static Metadata](https://github.com/netdata/netdata/blob/master/src/crates/netflow-plugin/integrations/static_metadata.md) | Annotate network flows with operator-defined labels for exporters, interfaces, networks, and sampling rates. |

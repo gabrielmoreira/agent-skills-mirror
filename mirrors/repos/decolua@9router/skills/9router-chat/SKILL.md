@@ -12,10 +12,12 @@ Requires `NINEROUTER_URL` (and `NINEROUTER_KEY` if auth enabled). See https://ra
 - `POST $NINEROUTER_URL/v1/chat/completions` — OpenAI format
 - `POST $NINEROUTER_URL/v1/messages` — Anthropic format
 
-## Discover models
+## Discover
 
 ```bash
 curl $NINEROUTER_URL/v1/models | jq '.data[].id'
+# Per-model metadata (contextWindow, params)
+curl "$NINEROUTER_URL/v1/models/info?id=openai/gpt-4o"
 ```
 
 Combos (e.g. `vip`, `mycodex`) auto-fallback through multiple providers.

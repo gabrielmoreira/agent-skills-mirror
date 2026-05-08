@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modu-ai/moai-adk` — 26 default patterns, 0 followed patterns, 136 file(s) materialized.
+Mirror of `modu-ai/moai-adk` — 26 default patterns, 0 followed patterns, 137 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modu-ai/moai-adk` — 26 default patterns, 0 followed patterns, 136 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 136 |
+| Files         | 137 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -169,32 +169,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 108 | ✓ | [`internal/template/templates/.claude/skills/moai-platform-auth/SKILL.md`](internal/template/templates/.claude/skills/moai-platform-auth/SKILL.md) |
 | 109 | ✓ | [`internal/template/templates/.claude/skills/moai-platform-chrome-extension/SKILL.md`](internal/template/templates/.claude/skills/moai-platform-chrome-extension/SKILL.md) |
 | 110 | ✓ | [`internal/template/templates/.claude/skills/moai-platform-deployment/SKILL.md`](internal/template/templates/.claude/skills/moai-platform-deployment/SKILL.md) |
-| 111 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-ci-watch/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-ci-watch/SKILL.md) |
-| 112 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-ddd/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-ddd/SKILL.md) |
-| 113 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-design-context/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-design-context/SKILL.md) |
-| 114 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-design-import/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-design-import/SKILL.md) |
-| 115 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-gan-loop/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-gan-loop/SKILL.md) |
-| 116 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-loop/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-loop/references/examples.md) |
-| 117 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-loop/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-loop/references/reference.md) |
-| 118 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-loop/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-loop/SKILL.md) |
-| 119 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-project/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-project/references/examples.md) |
-| 120 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-project/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-project/references/reference.md) |
-| 121 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-project/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-project/SKILL.md) |
-| 122 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-spec/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-spec/references/examples.md) |
-| 123 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-spec/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-spec/references/reference.md) |
-| 124 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-spec/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-spec/SKILL.md) |
-| 125 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-tdd/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-tdd/references/examples.md) |
-| 126 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-tdd/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-tdd/references/reference.md) |
-| 127 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-tdd/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-tdd/SKILL.md) |
-| 128 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-testing/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-testing/references/examples.md) |
-| 129 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-testing/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-testing/references/reference.md) |
-| 130 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-testing/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-testing/SKILL.md) |
-| 131 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-worktree/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-worktree/references/examples.md) |
-| 132 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-worktree/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-worktree/references/reference.md) |
-| 133 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-worktree/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-worktree/SKILL.md) |
-| 134 | ✓ | [`internal/template/templates/.claude/skills/moai/references/reference.md`](internal/template/templates/.claude/skills/moai/references/reference.md) |
-| 135 | ✓ | [`internal/template/templates/.claude/skills/moai/SKILL.md`](internal/template/templates/.claude/skills/moai/SKILL.md) |
-| 136 | ✓ | [`internal/template/templates/CLAUDE.md`](internal/template/templates/CLAUDE.md) |
+| 111 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-ci-autofix/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-ci-autofix/SKILL.md) |
+| 112 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-ci-watch/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-ci-watch/SKILL.md) |
+| 113 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-ddd/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-ddd/SKILL.md) |
+| 114 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-design-context/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-design-context/SKILL.md) |
+| 115 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-design-import/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-design-import/SKILL.md) |
+| 116 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-gan-loop/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-gan-loop/SKILL.md) |
+| 117 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-loop/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-loop/references/examples.md) |
+| 118 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-loop/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-loop/references/reference.md) |
+| 119 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-loop/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-loop/SKILL.md) |
+| 120 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-project/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-project/references/examples.md) |
+| 121 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-project/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-project/references/reference.md) |
+| 122 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-project/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-project/SKILL.md) |
+| 123 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-spec/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-spec/references/examples.md) |
+| 124 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-spec/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-spec/references/reference.md) |
+| 125 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-spec/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-spec/SKILL.md) |
+| 126 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-tdd/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-tdd/references/examples.md) |
+| 127 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-tdd/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-tdd/references/reference.md) |
+| 128 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-tdd/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-tdd/SKILL.md) |
+| 129 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-testing/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-testing/references/examples.md) |
+| 130 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-testing/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-testing/references/reference.md) |
+| 131 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-testing/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-testing/SKILL.md) |
+| 132 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-worktree/references/examples.md`](internal/template/templates/.claude/skills/moai-workflow-worktree/references/examples.md) |
+| 133 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-worktree/references/reference.md`](internal/template/templates/.claude/skills/moai-workflow-worktree/references/reference.md) |
+| 134 | ✓ | [`internal/template/templates/.claude/skills/moai-workflow-worktree/SKILL.md`](internal/template/templates/.claude/skills/moai-workflow-worktree/SKILL.md) |
+| 135 | ✓ | [`internal/template/templates/.claude/skills/moai/references/reference.md`](internal/template/templates/.claude/skills/moai/references/reference.md) |
+| 136 | ✓ | [`internal/template/templates/.claude/skills/moai/SKILL.md`](internal/template/templates/.claude/skills/moai/SKILL.md) |
+| 137 | ✓ | [`internal/template/templates/CLAUDE.md`](internal/template/templates/CLAUDE.md) |
 
 ---
 

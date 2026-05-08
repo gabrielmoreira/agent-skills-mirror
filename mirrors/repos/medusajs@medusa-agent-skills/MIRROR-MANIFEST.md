@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `medusajs/medusa-agent-skills` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `medusajs/medusa-agent-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `medusajs/medusa-agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,13 +61,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`plugins/ecommerce-storefront/skills/storefront-best-practices/SKILL.md`](plugins/ecommerce-storefront/skills/storefront-best-practices/SKILL.md) |
 | 2 | ✓ | [`plugins/learn-medusa/skills/learning-medusa/SKILL.md`](plugins/learn-medusa/skills/learning-medusa/SKILL.md) |
-| 3 | ✓ | [`plugins/medusa-dev/skills/building-admin-dashboard-customizations/SKILL.md`](plugins/medusa-dev/skills/building-admin-dashboard-customizations/SKILL.md) |
-| 4 | ✓ | [`plugins/medusa-dev/skills/building-storefronts/SKILL.md`](plugins/medusa-dev/skills/building-storefronts/SKILL.md) |
-| 5 | ✓ | [`plugins/medusa-dev/skills/building-with-medusa/SKILL.md`](plugins/medusa-dev/skills/building-with-medusa/SKILL.md) |
-| 6 | ✓ | [`plugins/medusa-dev/skills/creating-internal-agents/SKILL.md`](plugins/medusa-dev/skills/creating-internal-agents/SKILL.md) |
-| 7 | ✓ | [`plugins/medusa-dev/skills/db-generate/SKILL.md`](plugins/medusa-dev/skills/db-generate/SKILL.md) |
-| 8 | ✓ | [`plugins/medusa-dev/skills/db-migrate/SKILL.md`](plugins/medusa-dev/skills/db-migrate/SKILL.md) |
-| 9 | ✓ | [`plugins/medusa-dev/skills/new-user/SKILL.md`](plugins/medusa-dev/skills/new-user/SKILL.md) |
+| 3 | ✓ | [`plugins/medusa-cloud/skills/using-medusa-cloud/SKILL.md`](plugins/medusa-cloud/skills/using-medusa-cloud/SKILL.md) |
+| 4 | ✓ | [`plugins/medusa-dev/skills/building-admin-dashboard-customizations/SKILL.md`](plugins/medusa-dev/skills/building-admin-dashboard-customizations/SKILL.md) |
+| 5 | ✓ | [`plugins/medusa-dev/skills/building-storefronts/SKILL.md`](plugins/medusa-dev/skills/building-storefronts/SKILL.md) |
+| 6 | ✓ | [`plugins/medusa-dev/skills/building-with-medusa/SKILL.md`](plugins/medusa-dev/skills/building-with-medusa/SKILL.md) |
+| 7 | ✓ | [`plugins/medusa-dev/skills/creating-internal-agents/SKILL.md`](plugins/medusa-dev/skills/creating-internal-agents/SKILL.md) |
+| 8 | ✓ | [`plugins/medusa-dev/skills/db-generate/SKILL.md`](plugins/medusa-dev/skills/db-generate/SKILL.md) |
+| 9 | ✓ | [`plugins/medusa-dev/skills/db-migrate/SKILL.md`](plugins/medusa-dev/skills/db-migrate/SKILL.md) |
+| 10 | ✓ | [`plugins/medusa-dev/skills/new-user/SKILL.md`](plugins/medusa-dev/skills/new-user/SKILL.md) |
 
 ---
 

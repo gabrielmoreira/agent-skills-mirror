@@ -36,21 +36,24 @@ internal/
     events.go          # EventBus ring buffer for daemon/SSE subscribers
     attachment.go      # Download remote file attachments (Slack/Feishu) → file_ref pipeline
     session_cwd.go     # Cloud-source scratch CWD allocator (ephemeral, per-session tmp dir)
+    readtracker_cache.go # Per-session ReadTracker cache; entries released via SessionManager.OnSessionClose
   agent/
-    loop.go            # AgentLoop.Run() — core agentic loop, SwitchAgent()
-    tools.go           # Tool interface, ToolRegistry, FilterByAllow/Deny, Schemas()
-    partition.go       # partitionToolCalls (read-only batching), executeBatches
-    spill.go           # Disk spill for large tool results (>50K → temp file + preview)
-    deferred.go        # Deferred tool loading (tool_search schema merging)
-    statecache.go      # state-aware tool result cache keyed by read/write state
-    resultshape.go     # tree result shaping and stable change summaries
-    microcompact.go    # Tier 2 semantic compaction for large native tool results
-    delta.go           # DeltaProvider interface, TemporalDelta (date rollover detection)
-    loopdetect.go      # 9 stuck-loop detectors (dupExempt for use_skill, IsError-aware dup, silent-below-15 for repeatable+result-only)
-    readtracker.go     # read-before-edit enforcement
-    approval_cache.go  # per-turn approval caching
-    normalize.go       # response normalization
-    skill_discovery.go # Per-turn small-model skill matching (discoverRelevantSkills)
+    loop.go              # AgentLoop.Run() — core agentic loop, SwitchAgent()
+    tools.go             # Tool interface, ToolRegistry, FilterByAllow/Deny, Schemas()
+    partition.go         # partitionToolCalls (read-only batching), executeBatches
+    spill.go             # Per-result spill (>50K → temp file + preview) and per-turn 200K aggregate cap (rune-counted)
+    toolresult_budget.go # Persisted query-time tool_result replacement state (Replacements + Seen) shared across turns
+    context_bloat.go     # buildContextBloatSuggestion: surfaces "tool_result_bloat" run-status nudges
+    deferred.go          # Deferred tool loading (tool_search schema merging)
+    statecache.go        # state-aware tool result cache keyed by read/write state
+    resultshape.go       # tree result shaping and stable change summaries
+    microcompact.go      # Tier 2 semantic compaction for large native tool results
+    delta.go             # DeltaProvider interface, TemporalDelta (date rollover detection)
+    loopdetect.go        # 9 stuck-loop detectors (dupExempt for use_skill, IsError-aware dup, silent-below-15 for repeatable+result-only)
+    readtracker.go       # read-before-edit enforcement + same-range file_read dedup
+    approval_cache.go    # per-turn approval caching
+    normalize.go         # response normalization
+    skill_discovery.go   # Per-turn small-model skill matching (discoverRelevantSkills)
   agents/
     loader.go          # LoadAgent (config.yaml, commands/, _attached.yaml), ListAgents, ParseAgentMention
     api.go             # Agent CRUD operations for daemon API
@@ -105,7 +108,8 @@ internal/
     server.go          # MCP server (JSON-RPC 2.0 over stdio)
     chrome.go          # Playwright Chrome profile/CDP lifecycle management
   runstatus/
-    runstatus.go       # user-facing run state/error classification
+    runstatus.go       # user-facing run state/error classification (Code constants, friendlyMessages, FriendlyMessageFromError)
+    parse.go           # gateway *client.APIError → (Code, Detail) extractor; parse429 disambiguates the four 429 sub-shapes (quota / credits / throttle / upstream)
   skills/
     registry.go        # Skill struct (Anthropic spec), SkillMeta DTO, SecretSpec, RequiredSecrets()
     loader.go          # LoadSkills from SKILL.md dirs (source-order merge; usually global > bundled)
@@ -113,16 +117,18 @@ internal/
     activated.go       # ActivatedSet + context helpers for scoping secret injection per-run
     validate.go        # ValidateSkillName (Anthropic spec regex)
   tools/
-    register.go        # RegisterLocalTools, RegisterAll, CompleteRegistration, ApplyToolFilter
+    register.go        # RegisterLocalTools, RegisterAll, CompleteRegistration, ApplyToolFilter, RegisterPublishTool
     # Tool files: file_read, file_write, file_edit, glob, grep, bash,
     # directory_list, think, http, system_info, clipboard, notify, process,
     # applescript, accessibility, ghostty, browser, screenshot, computer,
-    # wait (wait_for), cloud_delegate, imaging (helper), pinchtab (legacy),
-    # safe_path, skill (use_skill), memory_append
+    # wait (wait_for), cloud_delegate, publish_to_web, imaging (helper),
+    # pinchtab (legacy), safe_path, skill (use_skill), memory_append
     schedule.go        # schedule_create/list/update/remove tools
     session_search.go  # session_search tool (FTS5 keyword search)
     mcp_tool.go        # MCPTool adapter
     server.go          # ServerTool adapter (gateway remote tools)
+  uploads/
+    client.go          # POST /api/v1/uploads multipart streaming client (typed errors + retry/backoff). Used by publish_to_web tool. Reuses GatewayClient.HTTPClient() — does not own its own *http.Client.
   tui/
     app.go             # Bubbletea Model — Init/Update/View, slash commands
     doctor.go          # TUI diagnostic checks
@@ -185,6 +191,8 @@ Three-layer system for triggering `use_skill`:
 
 **Skill allowed-tools enforcement** uses execution-time denial (`loop.go`), NOT schema filtering. The tools array stays full for the entire `Run()` to preserve Anthropic prompt cache stability. Blocked tools receive an error `ToolResult` with `[skill restriction]` message. A `<system-reminder>` hint is also appended to the `use_skill` result for soft guidance.
 
+**Framework-level skill exemption** (`agent.SkillExempt` interface, opt-in): `think`, `tool_search`, `use_skill` always run regardless of the active skill's allowed-tools. Reserved for pure-infrastructure tools with zero I/O — restricting them would only force the model to substitute plan text into assistant messages or lock it out of skill switching. **Do NOT add `SkillExempt()` to tools with side effects** (file/network/publish/bash) — those must remain skill-restrictable so authors of confidential-context skills can lock them out.
+
 ### Permission Model
 ```
 hard-block constants → denied_commands → compound-command splitting (incl. bare & and (...) subshells) → always-ask (alwaysAskPrefixes + git-push dangerous-flag/refspec scan) → allowed_commands (literal/glob + token-prefix family fallback) → default safe → RequiresApproval + SafeChecker
@@ -193,14 +201,21 @@ Unknown tools → denied by default (fail-safe). The always-ask gate runs BEFORE
 
 ### Daemon Architecture (Production Path)
 - Daemon connects to Shannon Cloud via WebSocket, receives channel messages, runs agent loop locally.
-- **Session routing**: `SessionCache` with per-route locking. Route key = `agent:<name>`, `session:<id>`, or `default:<source>:<channel>`. Web/webhook/cron/schedule sources bypass routing (always fresh). Routed managers are long-lived; ephemeral managers (heartbeat, bypass) get `defer Close()`.
+- **WS handshake & capabilities**: on connect, daemon sends `User-Agent: shanclaw/<version> (<os>; <arch>)`, `X-ShanClaw-Daemon-Version: <semver>` (sourced from `cmd.Version` → `daemon.Version` at startup; `dev` for local builds), and — when `daemon.Capabilities` is non-empty — `X-ShanClaw-Capabilities: <token>,<token>` listing optional protocol features the daemon honors. Cloud reads these on the WS upgrade handler to gate features that would otherwise break older daemons. Headers are additive: empty / absent header = legacy mode. Add a capability token in the same PR that lands the feature it advertises — advertising before implementing causes Cloud to activate flows the daemon cannot satisfy.
+- **`delivery_ack` capability** (advertised by default): after a `MsgTypeMessage` reaches a terminal state — `SendReply` succeeded, regardless of agent-loop outcome — the daemon emits a `MsgTypeDeliveryAck` envelope with the inbound `MessageID` (top-level, no payload). Cloud uses this to drop the message from its 5-min replay buffer; un-acked messages (daemon crashed mid-loop, network drop before reply, ctx cancel before terminal state) are replayed on the next reconnect. Reply-failure paths intentionally skip the ack — the user wasn't informed yet, so replay is correct. Implementation: `client.go:sendDeliveryAck` called immediately after `SendReply` in the success branch of `handleMessage`.
+- **Session routing**: `SessionCache` with per-route locking. `ComputeRouteKey` precedence (top wins): `session:<id>` → messaging+thread `default:<source>:<thread>` (or `agent:<name>:<source>:<thread>`) → messaging+sender `default:<source>:<channel>:<sender>` (or `agent:<name>:<source>:<channel>:<sender>`, splits per-user when no thread is present so concurrent senders in a shared channel don't collide) → `agent:<name>` → `default:<source>:<channel>`. Web/webhook/cron/schedule sources bypass routing (always fresh). Routed managers are long-lived; ephemeral managers (heartbeat, bypass) get `defer Close()`.
 - **Output format profiles**: `outputFormatForSource()` maps `req.Source` to `"markdown"` (default) or `"plain"` (cloud-distributed channels: slack, line, feishu, lark, telegram, webhook). Cloud owns final channel rendering — ShanClaw outputs neutral text for those paths.
 - **Tool status events**: `OnToolCall("running")` fires at actual execution start (inside `executeBatches`, after semaphore acquire), not during permission checks.
-- **Disk spill**: Tool results >50K chars written to `~/.shannon/tmp/`, replaced with 2K preview + file path in context. Cleaned up per-run (daemon/TUI) or on manager close (one-shot).
+- **Tool result sizing** (`internal/agent/spill.go` + `toolresult_budget.go` + `context_bloat.go`): three layered caps protect the context window.
+  - **Per-result spill**: any single tool result over its `MaxResultSizeChars` policy (default 50K runes; `grep` ~20K; `file_read` is `UnlimitedToolResultSizeChars` and falls back to the 50K spill threshold) is written to `~/.shannon/tmp/tool_result_<session>_<call_id>.txt` and replaced inline with a 2K rune preview plus the file path. Cleaned up per-run (daemon/TUI) or on manager close (one-shot).
+  - **Per-turn aggregate cap (200K runes)**: `applyAggregateCap` mirrors CC's `MAX_TOOL_RESULTS_PER_MESSAGE_CHARS`. When the SUM of all parallel tool results in a turn exceeds 200K, the largest results are spilled until the total drops back under the cap. Counted in runes via `utf8.RuneCountInString` so multibyte content (CJK/emoji) is measured fairly.
+  - **Persisted budget state** (`ToolResultReplacements` + `ToolResultSeen` on `session.Session`): query-time replacement bookkeeping survives across turns and resumes. Saved by `applyTurnState` at mid-turn checkpoints AND by both terminal save paths (final save + hard-error save) — a fast turn that finishes before the first checkpoint must still persist these maps, otherwise dedup state is lost on resume.
+  - **Bloat nudge**: `buildContextBloatSuggestion` emits `OnRunStatus("tool_result_bloat", …)` when a single tool's per-turn output exceeds the bloat threshold; surfaces to SSE/Desktop subscribers without forcing compaction.
+- **file_read dedup**: `internal/agent/readtracker.go` records `(path, offset, limit, mtime, size)` on each successful read. Re-reading the same range returns a short "unchanged since last read" stub. The daemon owns one tracker per session via `internal/daemon/readtracker_cache.go`, registered through `SessionManager.OnSessionClose` so per-session state is released on session switch, manager close, and explicit delete.
 - **Skill secrets**: `SecretsStore` (`internal/skills/secrets.go`) manages per-skill API keys. Values stored in **macOS Keychain** (encrypted; service = `com.shannon.skill.<name>`, account = env var name) via `zalando/go-keyring` (pure Go, no CGo; passes password via stdin not argv so `ps` cannot observe values). A plaintext index file `~/.shannon/secrets-index.json` tracks which key names are configured per skill so `ConfiguredKeys()` can answer without triggering Keychain access prompts. Skills declare required env vars via ClawHub metadata — three interchangeable parent aliases: `metadata.openclaw.requires.env` / `metadata.clawdbot.requires.env` / `metadata.clawdis.requires.env`. Daemon exposes `PUT/DELETE /skills/{name}/secrets` for CRUD (all three write handlers call `auditHTTPOp` with key names only, never values); `GET /skills` returns `required_secrets` + `configured_secrets` (values never exposed). **Runtime injection is env-var-only, scoped to active skills**: secrets never enter the prompt body or session transcript. `AgentLoop.Run` initializes a per-run `skills.ActivatedSet` in context; `use_skill` registers the skill name when invoked; `BashTool.Run` reads the set via context and fetches only those skills' secrets from `SecretsStore` on each invocation, injecting as child-process env vars. A skill loaded but never activated contributes no env vars to bash. Secrets cleaned up on skill deletion.
 - **Turn phase tracker** (`internal/agent/phase.go`): explicit state machine for `AgentLoop.Run`. Every blocking boundary calls `tracker.Enter(phase)` or `tracker.EnterTransient(phase)()`. Only `PhaseAwaitingLLM` and `PhaseForceStop` are idle-counted (watched by the watchdog). Fail-closed: forgotten transient restore and `Enter`-inside-transient mark the tracker `invalid`; observers self-disable. Panics under `testing.Testing()` or `SHANNON_PHASE_STRICT=1`, logs otherwise.
 - **Idle watchdog** (`internal/agent/watchdog.go`): observer goroutine. Fires `OnRunStatus("idle_soft", …)` after `agent.idle_soft_timeout_secs` (default 90) in an idle-counted phase. Cancels ctx with `ErrHardIdleTimeout` via `context.WithCancelCause` after `agent.idle_hard_timeout_secs` (default 0 = disabled; flip to 540 after dogfood). Dedups soft fire by tracker `seq`, re-arms on every phase transition. `completeWithRetry` prefers `context.Cause(ctx)` over `ctx.Err()`. `isSoftRunError` in the runner includes `ErrHardIdleTimeout` so the partial transcript is persisted (not replaced by a friendly error stub). Daemon emits `EventRunStatus` to SSE/Desktop subscribers via `daemonEventHandler.OnRunStatus`.
-- **Mid-turn checkpoint**: `AgentLoop.SetCheckpointFunc(func(ctx) error)` fires at three phase-exit boundaries (after each `executeBatches`, after successful reactive compaction, before `runForceStopTurn`), gated by `tracker.TakeDirty()`. Agent-side `SetCheckpointMinInterval(2s)` debounce; failed save (callback returns error) leaves dirty set and skips the time stamp so the next fire retries. Runner uses `captureTurnBaseline` + `applyTurnMessages` + `applyTurnUsage` — the SAME helpers run from the normal final save AND the hard-error save so a turn is never persisted twice via different paths. `session.Session.InProgress` is set mid-turn, cleared on final save; a non-zero flag on reload indicates a crash-recovered session with a partial transcript.
+- **Mid-turn checkpoint**: `AgentLoop.SetCheckpointFunc(func(ctx) error)` fires at three phase-exit boundaries (after each `executeBatches`, after successful reactive compaction, before `runForceStopTurn`), gated by `tracker.TakeDirty()`. Agent-side `SetCheckpointMinInterval(2s)` debounce; failed save (callback returns error) leaves dirty set and skips the time stamp so the next fire retries. Runner uses `captureTurnBaseline` + `applyTurnMessages` + `applyTurnUsage` — the SAME helpers run from the normal final save AND the hard-error save so a turn is never persisted twice via different paths. The mid-turn checkpoint additionally calls `applyTurnState` (which persists `ToolResultReplacements` + `ToolResultSeen`); the final and hard-error save paths copy those two maps explicitly from `loop` so a fast turn that finishes before any checkpoint fires still ends up with the budget bookkeeping on disk. `session.Session.InProgress` is set mid-turn, cleared on final save; a non-zero flag on reload indicates a crash-recovered session with a partial transcript.
 - **Playwright `file://` preview bridge** (`internal/tools/filepreview.go`): loopback HTTP server rewrites `browser_navigate(file://…)` → `http://127.0.0.1/<token>/<name>`. Fail-closed allowlist via `AllowRoot(dir)` / `AllowFile(path)`, both symlink-resolved via `filepath.EvalSymlinks`. Daemon populates per-run from effective CWD + user-attached paths so browser reach never exceeds `permissions.CheckFilePath`. Uses `http.ServeContent` (not `http.ServeFile`) to avoid the `index.html` internal redirect. Defense-in-depth: `r.RemoteAddr` loopback check in the handler.
 - **Session sync** (`internal/sync/`): uploads local session JSON to Shannon Cloud once per day (opt-in via `sync.enabled`). Single entry point `sync.Run`; called from daemon ticker and `shan sessions sync` CLI; flock + atomic marker write serialize concurrent callers. Per-session ACK with persistent `marker.failed` bookkeeping; permanent reasons (`size_limit_exceeded`, `load_error`) stay forever and self-heal on session edit.
 - **Memory client** (`internal/memory/`, Phase 2.3): daemon owns sidecar lifecycle (spawn / health / restart / shutdown) and the 24h bundle pull loop. Tool `memory_recall` (`internal/tools/memory.go`) delegates to `memory.Service.Query` via UDS; falls back to `session_search` + MEMORY.md whenever `Service.Status() != Ready`. CLI/TUI use `memory.AttachPolicy` (probe-only, never spawn) and connect via `memory.NewServiceAttached`. Privacy invariant: the resolved API key bytes never reach disk or audit logs (only `sha256[:16]` fingerprint in `<bundle_root>/.tenant_fingerprint`).
@@ -304,4 +319,5 @@ E2E tests in `test/e2e/` are split into offline (no API, runs in CI) and live (n
 **Conditional (registered outside `RegisterLocalTools`):**
 - session_search — added when a session manager is available
 - cloud_delegate — added when `cloud.enabled: true`
+- publish_to_web — added when `cloud.enabled: true` AND `cfg.APIKey != ""`. Lives in `internal/tools/publish_to_web.go`; HTTP plumbing in `internal/uploads/client.go` (multipart streaming via `io.Pipe`, 3-attempt retry on `ErrTransient`, sentinel errors for 401/400/413/500-s3_unconfigured/transient). Always requires approval (`RequiresApproval=true`, `IsSafeArgs=false`). Tool-side guards: required `purpose` arg shown to user during approval; path-segment blocklist (`.env`/`.ssh`/`credentials`/…); basename suffix blocklist (`.pem`/`.key`/…); extension allowlist (default html/md/txt/pdf/png/jpg/svg/csv/json/mp4/…). Allowlist extensible via `cloud.publish_allowed_extensions: [".go", ...]`; **denylist is not user-configurable by design**. Registered alongside `cloud_delegate` at all 5 call sites (`cmd/daemon.go`, `cmd/root.go`, `internal/tui/app.go`, `internal/daemon/server.go` reload paths).
 - tool_search — added in deferred mode when tool count > 30 (lives in `internal/agent/deferred.go`, not `tools/`)
