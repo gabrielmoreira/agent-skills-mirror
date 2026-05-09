@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1445
+Total skills: 1450
 
 ## architecture (95)
 
@@ -190,7 +190,7 @@ Total skills: 1445
 | `whatsapp-automation` | Automate WhatsApp Business tasks via Rube MCP (Composio): send messages, manage templates, upload media, and handle contacts. Always search tools first for c... | whatsapp | whatsapp, automation, automate, business, tasks, via, rube, mcp, composio, send, messages, upload |
 | `wordpress-centric-high-seo-optimized-blogwriting-skill` | Create long-form, high-quality, SEO-optimized blog posts ready for WordPress with truth boxes and FAQ schema. | writing, blog, seo, content, wordpress | writing, blog, seo, content, wordpress, centric, high, optimized, blogwriting, skill, long, form |
 
-## data-ai (278)
+## data-ai (281)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -382,10 +382,12 @@ Total skills: 1445
 | `maxia` | Connect to MAXIA AI-to-AI marketplace on Solana. Discover, buy, sell AI services. Earn USDC. 13 MCP tools, A2A protocol, DeFi yields, sentiment analysis, rug... | solana, crypto, marketplace, ai-agents, mcp, defi, usdc, web3, a2a | solana, crypto, marketplace, ai-agents, mcp, defi, usdc, web3, a2a, maxia, connect, ai |
 | `mlops-engineer` | Build comprehensive ML pipelines, experiment tracking, and model registries with MLflow, Kubeflow, and modern MLOps tools. | mlops | mlops, engineer, ml, pipelines, experiment, tracking, model, registries, mlflow, kubeflow |
 | `mmx-cli` | Use mmx to generate text, images, video, speech, and music via the MiniMax AI platform. Use when the user wants to create media content, chat with MiniMax mo... | mmx, cli | mmx, cli, generate, text, images, video, speech, music, via, minimax, ai, platform |
+| `mock-hunter` | Audit a live web page in five phases (catalog, click, trace, classify, report) to identify mock data, hardcoded values, LLM-generated metrics, and broken end... | testing, qa, playwright, mock-detection, web-audit, ai-testing, vibe-coding, claude-code | testing, qa, playwright, mock-detection, web-audit, ai-testing, vibe-coding, claude-code, mock, hunter, audit, live |
 | `molykit` | CRITICAL: Use for MolyKit AI chat toolkit. Triggers on: BotClient, OpenAI, SSE streaming, AI chat, molykit, PlatformSend, spawn(), ThreadToken, cross-platfor... | molykit | molykit, critical, ai, chat, toolkit, triggers, botclient, openai, sse, streaming, platformsend, spawn |
 | `monte-carlo-push-ingestion` | Expert guide for pushing metadata, lineage, and query logs to Monte Carlo from any data warehouse. | data-observability, ingestion, monte-carlo, pycarlo, metadata | data-observability, ingestion, monte-carlo, pycarlo, metadata, monte, carlo, push, pushing, lineage, query, logs |
 | `monte-carlo-validation-notebook` | Generates SQL validation notebooks for dbt PR changes with before/after comparison queries. | data-observability, validation, dbt, monte-carlo, sql-notebook | data-observability, validation, dbt, monte-carlo, sql-notebook, monte, carlo, notebook, generates, sql, notebooks, pr |
 | `moyu` | Anti-over-engineering guardrail that activates when an AI coding agent expands scope, adds abstractions, or changes files the user did not request. | moyu | moyu, anti, engineering, guardrail, activates, ai, coding, agent, expands, scope, adds, abstractions |
+| `multi-agent-architect` | Design and optimize production-grade multi-agent systems with LangGraph, LangChain, and DeepAgents for complex AI workflows. | langgraph, langchain, multi-agent, orchestration, deepagents, rag, tool-calling | langgraph, langchain, multi-agent, orchestration, deepagents, rag, tool-calling, multi, agent, architect, optimize, grade |
 | `n8n-expression-syntax` | Validate n8n expression syntax and fix common errors. Use when writing n8n expressions, using {{}} syntax, accessing $json/$node variables, troubleshooting e... | n8n, expression, syntax | n8n, expression, syntax, validate, fix, common, errors, writing, expressions, accessing, json, node |
 | `nanobanana-ppt-skills` | AI-powered PPT generation with document analysis and styled images | nanobanana, ppt, skills | nanobanana, ppt, skills, ai, powered, generation, document, analysis, styled, images |
 | `neon-postgres` | Expert patterns for Neon serverless Postgres, branching, connection pooling, and Prisma/Drizzle integration | neon, postgres | neon, postgres, serverless, branching, connection, pooling, prisma, drizzle, integration |
@@ -452,6 +454,7 @@ Total skills: 1445
 | `travel-health-analyzer` | 分析旅行健康数据、评估目的地健康风险、提供疫苗接种建议、生成多语言紧急医疗信息卡片。支持WHO/CDC数据集成的专业级旅行健康风险评估。 | travel, health, analyzer | travel, health, analyzer, who, cdc |
 | `trigger-dev` | Trigger.dev expert for background jobs, AI workflows, and reliable async execution with excellent developer experience and TypeScript-first design. | trigger, dev | trigger, dev, background, jobs, ai, reliable, async, execution, excellent, developer, experience, typescript |
 | `uniprot-database` | Direct REST API access to UniProt. Protein searches, FASTA retrieval, ID mapping, Swiss-Prot/TrEMBL. For Python workflows with multiple databases, prefer bio... | uniprot, database | uniprot, database, direct, rest, api, access, protein, searches, fasta, retrieval, id, mapping |
+| `unity-ai-game-creator` | Transform raw game ideas into complete Unity projects with AI-powered asset generation, scene blueprints, music/SFX prompts, and step-by-step development pro... | unity, game-development, ai-generation, asset-pipeline, scene-design, music-generation, game-design-document | unity, game-development, ai-generation, asset-pipeline, scene-design, music-generation, game-design-document, ai, game, creator, transform, raw |
 | `unity-ecs-patterns` | Production patterns for Unity's Data-Oriented Technology Stack (DOTS) including Entity Component System, Job System, and Burst Compiler. | unity, ecs | unity, ecs, data, oriented, technology, stack, dots, including, entity, component, job, burst |
 | `unslop` | Post-process AI-generated text through the unslop CLI to strip AI writing patterns before publishing | writing, content-quality, ai-writing, text-processing, cli, publishing | writing, content-quality, ai-writing, text-processing, cli, publishing, unslop, post, process, ai, generated, text |
 | `uxui-principles` | Evaluate interfaces against 168 research-backed UX/UI principles, detect antipatterns, and inject UX context into AI coding sessions. | ux, ui, design, evaluation, principles, antipatterns, accessibility | ux, ui, design, evaluation, principles, antipatterns, accessibility, uxui, evaluate, interfaces, against, 168 |
@@ -685,7 +688,7 @@ Total skills: 1445
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
-## general (348)
+## general (350)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -700,6 +703,7 @@ Total skills: 1445
 | `angular-best-practices` | Angular performance optimization and best practices guide. Use when writing, reviewing, or refactoring Angular code for optimal performance, bundle size, and... | angular, best, practices | angular, best, practices, performance, optimization, writing, reviewing, refactoring, code, optimal, bundle, size |
 | `angular-migration` | Master AngularJS to Angular migration, including hybrid apps, component conversion, dependency injection changes, and routing migration. | angular, migration | angular, migration, angularjs, including, hybrid, apps, component, conversion, dependency, injection, changes, routing |
 | `antigravity-design-expert` | Core UI/UX engineering skill for building highly interactive, spatial, weightless, and glassmorphism-based web interfaces using GSAP and 3D CSS. | antigravity | antigravity, core, ui, ux, engineering, skill, building, highly, interactive, spatial, weightless, glassmorphism |
+| `aomi-transact` | Build natural-language crypto/DeFi agents and EVM MCP plugins (Claude Code, Cursor, Codex, Gemini). Aomi turns prompts into wallet-signed txs on Ethereum, Ba... | defi, wallet, account-abstraction, cli, eip-712, onchain, agent, intent | defi, wallet, account-abstraction, cli, eip-712, onchain, agent, intent, aomi, transact, natural, language |
 | `apify-actorization` | Actorization converts existing software into reusable serverless applications compatible with the Apify platform. Actors are programs packaged as Docker imag... | apify, actorization | apify, actorization, converts, existing, software, reusable, serverless, applications, compatible, platform, actors, programs |
 | `apify-lead-generation` | Scrape leads from multiple platforms using Apify Actors. | apify, lead, generation | apify, lead, generation, scrape, leads, multiple, platforms, actors |
 | `apify-trend-analysis` | Discover and track emerging trends across Google Trends, Instagram, Facebook, YouTube, and TikTok to inform content strategy. | apify, trend | apify, trend, analysis, discover, track, emerging, trends, google, instagram, facebook, youtube, tiktok |
@@ -954,6 +958,7 @@ Total skills: 1445
 | `requesting-code-review` | Use when completing tasks, implementing major features, or before merging to verify work meets requirements | requesting, code | requesting, code, review, completing, tasks, implementing, major, features, before, merging, verify, work |
 | `returns-reverse-logistics` | Codified expertise for returns authorisation, receipt and inspection, disposition decisions, refund processing, fraud detection, and warranty claims management. | returns, reverse, logistics | returns, reverse, logistics, codified, expertise, authorisation, receipt, inspection, disposition, decisions, refund, processing |
 | `reverse-engineer` | Expert reverse engineer specializing in binary analysis, disassembly, decompilation, and software analysis. Masters IDA Pro, Ghidra, radare2, x64dbg, and mod... | reverse | reverse, engineer, specializing, binary, analysis, disassembly, decompilation, software, masters, ida, pro, ghidra |
+| `rich-elicitation` | Asks clarifying questions in multiple rounds before starting ambiguous tasks. Fires when 2+ task dimensions each have 3+ viable answers. | elicitation, clarifying-questions, ambiguity, multi-round, prompt-engineering | elicitation, clarifying-questions, ambiguity, multi-round, prompt-engineering, rich, asks, clarifying, questions, multiple, rounds, before |
 | `robius-matrix-integration` | CRITICAL: Use for Matrix SDK integration with Makepad. Triggers on: Matrix SDK, sliding sync, MatrixRequest, timeline, matrix-sdk, matrix client, robrix, mat... | robius, matrix, integration | robius, matrix, integration, critical, sdk, makepad, triggers, sliding, sync, matrixrequest, timeline, client |
 | `sam-altman` | Agente que simula Sam Altman — CEO da OpenAI, ex-presidente da Y Combinator, arquiteto da era AGI. | persona, startups, agi, yc, fundraising | persona, startups, agi, yc, fundraising, sam, altman, agente, que, simula, ceo, da |
 | `satori` | Clinically informed wisdom companion blending psychology and philosophy into a structured thinking partner | mental-health, psychology, wisdom, philosophy, ifs, stoicism, jungian, conversation | mental-health, psychology, wisdom, philosophy, ifs, stoicism, jungian, conversation, satori, clinically, informed, companion |

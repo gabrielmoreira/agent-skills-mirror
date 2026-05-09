@@ -30,6 +30,20 @@ Turn a fuzzy or risky coding request into a durable, execution-ready plan for Co
    - Any unresolved `HIGH` risk: include `controlflow-assumption-verifier` regardless of raw size
 12. Sanity-check the finished artifact against [references/controlflow-portability.md](references/controlflow-portability.md) so the plan stays faithful to ControlFlow structure without depending on Codex-incompatible runtime magic.
 
+## Spec Capture Handoff
+
+When requirements, acceptance criteria, scope boundaries, or verification gates are not already explicit, use `controlflow-spec` before this skill. Treat the saved spec as the requirements handoff: carry its `spec_path`, in-scope and out-of-scope boundaries, acceptance criteria, constraints, success metrics, and open risks into the plan. If spec capture is unnecessary, state why the task is clear enough to plan directly.
+
+## Anti-Rationalization Table
+
+| Pattern | Why It Fails | Required Action |
+| ------- | ------------ | --------------- |
+| Skip spec capture, plan from chat memory | Chat history can omit accepted boundaries, exclusions, and proof of completion. | Run `controlflow-spec` or cite the existing spec artifact before planning. |
+| Skip `risk_review` because the tier feels low | Small-looking work can still carry high semantic, security, data, or contract risk. | Fill the semantic risk categories and route extra review when risk warrants it. |
+| Decompose phases before reading the repository | Phase boundaries can target the wrong files, tests, or ownership surfaces. | Map likely files, tests, commands, and dependencies before phase decomposition. |
+| Treat unclear acceptance criteria as implementation detail | Executors cannot prove completion against implied intent. | Ask, record a bounded assumption, or stop before `READY_FOR_EXECUTION`. |
+| Mark the plan ready without review handoff | Non-trivial plans need adversarial review before execution begins. | Include the strict review route and artifact destination in the handoff. |
+
 ## Mandatory Output Contract
 
 - Prefer structured text over raw JSON.

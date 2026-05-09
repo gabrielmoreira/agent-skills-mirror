@@ -59,30 +59,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`api-skill/AI-Based-API/SKILL.md`](api-skill/AI-Based-API/SKILL.md) |
-| 2 | ✓ | [`api-skill/API Analyzer/SKILL.md`](api-skill/API%20Analyzer/SKILL.md) |
-| 3 | ✓ | [`api-skill/API Designer/SKILL.md`](api-skill/API%20Designer/SKILL.md) |
-| 4 | ✓ | [`api-skill/API Documentation/SKILL.md`](api-skill/API%20Documentation/SKILL.md) |
-| 5 | ✓ | [`api-skill/API Health Monitoring/SKILL.md`](api-skill/API%20Health%20Monitoring/SKILL.md) |
-| 6 | ✓ | [`api-skill/API Inference From Files/SKILL.md`](api-skill/API%20Inference%20From%20Files/SKILL.md) |
-| 7 | ✓ | [`api-skill/API-Compliance/SKILL.md`](api-skill/API-Compliance/SKILL.md) |
-| 8 | ✓ | [`api-skill/API-Integration-Helper/SKILL.md`](api-skill/API-Integration-Helper/SKILL.md) |
-| 9 | ✓ | [`api-skill/API-Mocking/SKILL.md`](api-skill/API-Mocking/SKILL.md) |
-| 10 | ✓ | [`api-skill/API-Ratelimit-Helper/SKILL.md`](api-skill/API-Ratelimit-Helper/SKILL.md) |
-| 11 | ✓ | [`api-skill/API-SDK Generator/SKILL.md`](api-skill/API-SDK%20Generator/SKILL.md) |
-| 12 | ✓ | [`api-skill/API-Security-Patterns/SKILL.md`](api-skill/API-Security-Patterns/SKILL.md) |
-| 13 | ✓ | [`api-skill/API-To-Test Case Generator/SKILL.md`](api-skill/API-To-Test%20Case%20Generator/SKILL.md) |
-| 14 | ✓ | [`api-skill/API-Versioning-Helper/SKILL.md`](api-skill/API-Versioning-Helper/SKILL.md) |
+| 1 | ✓ | [`api-skill/ai-based-api/SKILL.md`](api-skill/ai-based-api/SKILL.md) |
+| 2 | ✓ | [`api-skill/api-analyzer/SKILL.md`](api-skill/api-analyzer/SKILL.md) |
+| 3 | ✓ | [`api-skill/api-compliance/SKILL.md`](api-skill/api-compliance/SKILL.md) |
+| 4 | ✓ | [`api-skill/api-designer/SKILL.md`](api-skill/api-designer/SKILL.md) |
+| 5 | ✓ | [`api-skill/api-documentation/SKILL.md`](api-skill/api-documentation/SKILL.md) |
+| 6 | ✓ | [`api-skill/api-health-monitoring/SKILL.md`](api-skill/api-health-monitoring/SKILL.md) |
+| 7 | ✓ | [`api-skill/api-inference-from-files/SKILL.md`](api-skill/api-inference-from-files/SKILL.md) |
+| 8 | ✓ | [`api-skill/api-integration-helper/SKILL.md`](api-skill/api-integration-helper/SKILL.md) |
+| 9 | ✓ | [`api-skill/api-mocking/SKILL.md`](api-skill/api-mocking/SKILL.md) |
+| 10 | ✓ | [`api-skill/api-ratelimit-helper/SKILL.md`](api-skill/api-ratelimit-helper/SKILL.md) |
+| 11 | ✓ | [`api-skill/api-sdk-generator/SKILL.md`](api-skill/api-sdk-generator/SKILL.md) |
+| 12 | ✓ | [`api-skill/api-security-patterns/SKILL.md`](api-skill/api-security-patterns/SKILL.md) |
+| 13 | ✓ | [`api-skill/api-to-testcase-generator/SKILL.md`](api-skill/api-to-testcase-generator/SKILL.md) |
+| 14 | ✓ | [`api-skill/api-versioning-helper/SKILL.md`](api-skill/api-versioning-helper/SKILL.md) |
 | 15 | ✓ | [`api-skill/graphql-grpc-helper/SKILL.md`](api-skill/graphql-grpc-helper/SKILL.md) |
-| 16 | ✓ | [`api-skill/Newman/newman-cicd-helper/SKILL.md`](api-skill/Newman/newman-cicd-helper/SKILL.md) |
-| 17 | ✓ | [`api-skill/Newman/newman-report-analyzer/SKILL.md`](api-skill/Newman/newman-report-analyzer/SKILL.md) |
-| 18 | ✓ | [`api-skill/Newman/newman-script-helper/SKILL.md`](api-skill/Newman/newman-script-helper/SKILL.md) |
-| 19 | ✓ | [`api-skill/OpenAPI-Spec-Generator/SKILL.md`](api-skill/OpenAPI-Spec-Generator/SKILL.md) |
-| 20 | ✓ | [`api-skill/Popular-API-Fetcher/SKILL.md`](api-skill/Popular-API-Fetcher/SKILL.md) |
-| 21 | ✓ | [`api-skill/Postman/postman-collection-generator/SKILL.md`](api-skill/Postman/postman-collection-generator/SKILL.md) |
-| 22 | ✓ | [`api-skill/Postman/postman-openapi-converter/SKILL.md`](api-skill/Postman/postman-openapi-converter/SKILL.md) |
-| 23 | ✓ | [`api-skill/Postman/postman-testcase-generator/SKILL.md`](api-skill/Postman/postman-testcase-generator/SKILL.md) |
-| 24 | ✓ | [`api-skill/Postman/postman-to-newman/SKILL.md`](api-skill/Postman/postman-to-newman/SKILL.md) |
+| 16 | ✓ | [`api-skill/newman/newman-cicd-helper/SKILL.md`](api-skill/newman/newman-cicd-helper/SKILL.md) |
+| 17 | ✓ | [`api-skill/newman/newman-report-analyzer/SKILL.md`](api-skill/newman/newman-report-analyzer/SKILL.md) |
+| 18 | ✓ | [`api-skill/newman/newman-script-helper/SKILL.md`](api-skill/newman/newman-script-helper/SKILL.md) |
+| 19 | ✓ | [`api-skill/openapi-spec-generator/SKILL.md`](api-skill/openapi-spec-generator/SKILL.md) |
+| 20 | ✓ | [`api-skill/popular-api-fetcher/SKILL.md`](api-skill/popular-api-fetcher/SKILL.md) |
+| 21 | ✓ | [`api-skill/postman/postman-collection-generator/SKILL.md`](api-skill/postman/postman-collection-generator/SKILL.md) |
+| 22 | ✓ | [`api-skill/postman/postman-openapi-converter/SKILL.md`](api-skill/postman/postman-openapi-converter/SKILL.md) |
+| 23 | ✓ | [`api-skill/postman/postman-testcase-generator/SKILL.md`](api-skill/postman/postman-testcase-generator/SKILL.md) |
+| 24 | ✓ | [`api-skill/postman/postman-to-newman/SKILL.md`](api-skill/postman/postman-to-newman/SKILL.md) |
 | 25 | ✓ | [`appium-skill/SKILL.md`](appium-skill/SKILL.md) |
 | 26 | ✓ | [`behat-skill/SKILL.md`](behat-skill/SKILL.md) |
 | 27 | ✓ | [`behave-skill/SKILL.md`](behave-skill/SKILL.md) |

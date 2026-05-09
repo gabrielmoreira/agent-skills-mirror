@@ -25,6 +25,20 @@ This is the recommended entry point when you want ControlFlow-Codex to behave li
 7. Review completed implementation with `controlflow-review`.
 8. Use `controlflow-memory-hygiene` throughout long-running work when repo memory or persistent notes need discipline.
 
+## Verification Story
+
+Every phase claim needs evidence. A completion note should cite the command output, artifact path, review result, test result, or documented skip reason that proves the claim. Do not mark a phase complete from confidence, local intuition, or unstated manual inspection alone.
+
+## Anti-Rationalization Table
+
+| Pattern | Why It Fails | Required Action |
+| ------- | ------------ | --------------- |
+| Skip Plan Review because confidence is high | Confidence is not an adversarial check and misses hidden assumptions. | Run the required review pipeline for the tier and risk profile. |
+| Mark a phase complete without verification evidence | Later phases inherit claims that cannot be audited or reproduced. | Attach the specific test, command, artifact, or explicit skip rationale. |
+| Approve your own plan implicitly | Planning errors need independent pressure before execution begins. | Save the required review artifacts before orchestration. |
+| Treat the workflow as one long implementation run | Without gates, scope drift and failed assumptions surface too late. | Move through planning, review, execution, and final review as separate states. |
+| Ignore artifact drift because code passes | Passing code can still violate accepted scope, rollback, or lifecycle requirements. | Update lifecycle sections and decision logs at every phase boundary. |
+
 ## Default Artifact Set
 
 - `plans/<task-slug>-plan.md`

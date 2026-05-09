@@ -108,7 +108,7 @@ Long-form docs for specific features. Read the relevant file before making chang
 
 | Feature | Doc |
 |---------|-----|
-| Tracks — frontmatter directives that keep a note's body auto-updated (cron / window / once / event / multi-trigger), section-placement model, sidebar UI, Copilot skill, prompts catalog | `apps/x/TRACKS.md` |
+| Live Notes — single `live:` frontmatter block (one objective + optional cron / windows / eventMatchCriteria) that turns a note into a self-updating artifact, panel UI, Copilot skill, prompts catalog | `apps/x/LIVE_NOTE.md` |
 | Analytics — PostHog event catalog, person properties, use-case taxonomy, how to add a new event | `apps/x/ANALYTICS.md` |
 
 ## Common Tasks

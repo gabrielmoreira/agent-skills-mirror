@@ -81,6 +81,32 @@ For ad-hoc queries from skills or scripts, use the in-tree wrapper rather than t
 | `scripts/init-first-agent.ts` | Bootstrap the first DM-wired agent (used by `/init-first-agent` skill) |
 | `migrate-v2.sh` + `setup/migrate-v2/` | v1→v2 migration. Standalone script: `bash migrate-v2.sh`. Seeds DB, copies groups/sessions, installs channels, builds container, offers service switchover, then hands off to `/migrate-from-v1` skill for owner setup and CLAUDE.md cleanup. See [docs/migration-dev.md](docs/migration-dev.md). |
 
+## Admin CLI (`ncl`)
+
+`ncl` queries and modifies the central DB — agent groups, messaging groups, wirings, users, roles, and more. On the host it connects via Unix socket (`src/cli/socket-server.ts`); inside containers it uses the session DB transport (`container/agent-runner/src/cli/ncl.ts`).
+
+```
+ncl <resource> <verb> [<id>] [--flags]
+ncl <resource> help
+ncl help
+```
+
+| Resource | Verbs | What it is |
+|----------|-------|------------|
+| groups | list, get, create, update, delete | Agent groups (workspace, personality, container config) |
+| messaging-groups | list, get, create, update, delete | A single chat/channel on one platform |
+| wirings | list, get, create, update, delete | Links a messaging group to an agent group (session mode, triggers) |
+| users | list, get, create, update | Platform identities (`<channel>:<handle>`) |
+| roles | list, grant, revoke | Owner / admin privileges (global or scoped to an agent group) |
+| members | list, add, remove | Unprivileged access gate for an agent group |
+| destinations | list, add, remove | Where an agent group can send messages |
+| sessions | list, get | Active sessions (read-only) |
+| user-dms | list | Cold-DM cache (read-only) |
+| dropped-messages | list | Messages from unregistered senders (read-only) |
+| approvals | list, get | Pending approval requests (read-only) |
+
+Key files: `src/cli/dispatch.ts` (dispatcher + approval handler), `src/cli/crud.ts` (generic CRUD registration), `src/cli/resources/` (per-resource definitions).
+
 ## Channels and Providers (skill-installed)
 
 Trunk does not ship any specific channel adapter or non-default agent provider. The codebase is the registry/infra; the actual adapters and providers live on long-lived sibling branches and get copied in by skills:

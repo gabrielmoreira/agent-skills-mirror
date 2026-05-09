@@ -790,6 +790,47 @@
 - **影响面**：纯代码卫生 + 防漂移；当前 ha-server / src-tauri 两边手写出现细微行为分歧（例如错误日志 category）
 - **触发时机建议**：与 E1 spawn 改造（catch-up 转 spawn 后台）合并时改最干净；或下次有人为 handover bug 同时改两个入口时
 
+### F-072 把 `FailoverReason` 从引擎一路 plumb 到 dispatcher，去掉 `last_reason` / `last_is_codex_auth` engine 状态
+
+- **来源**：2026-05-08 IM 友好错误 PR `/simplify` review（agent #1 finding #3）
+- **现象**：`run_chat_engine` 在 `Err` 收尾时已经知道 `FailoverReason` 和 `is_codex_auth`，但函数返回类型是 `Result<_, String>`，类型化的判定被丢掉。结果是：
+  - engine.rs 多了两个并行 mutable: [`last_reason: Option<FailoverReason>`](../../crates/ha-core/src/chat_engine/engine.rs) 和 `last_is_codex_auth: bool`，5 处 `last_error =` 必须配对维护
+  - dispatcher.rs:611 `Err(e) => let reason = classify_error(&raw)` 在 IM-inbound 路径**第二次**做分类（engine 内部已经分类过一次）
+- **为什么留**：本期 PR 主题是 IM 错误 UX；改 `run_chat_engine` 的返回签名要触及 ha-server / src-tauri / 所有内部 caller；超出范围
+- **改的话要做什么**：
+  - 把 `Result<ChatEngineResult, String>` 改成 `Result<ChatEngineResult, ChatEngineError>`，其中 `ChatEngineError { message: String, reason: FailoverReason, is_codex_auth: bool }`
+  - 所有调用点 `.map_err(|e| e.to_string())` 或保留类型化（dispatcher / im_mirror / ha-server route / src-tauri command）
+  - 删 engine.rs 的 `last_reason` / `last_is_codex_auth` mutable 状态；删 dispatcher.rs 的 `classify_error(&raw)` 重复调用
+- **影响面**：纯代码卫生 + 类型安全提升；当前 5 处配对赋值容易漏改
+- **触发时机建议**：下次大动 chat_engine API 时；或独立 ergonomics 重构 PR
+
+### F-073 `provider.api_type.is_codex()` helper 全量迁移
+
+- **来源**：2026-05-08 IM 友好错误 PR `/simplify` review（agent #1 finding #4）
+- **现象**：`impl ApiType { pub fn is_codex(&self) -> bool }` 已加在 [`provider/types.rs`](../../crates/ha-core/src/provider/types.rs)，本期只迁移了 PR 触及的 2 处调用（engine.rs Exhausted arm、dispatcher.rs `primary_provider_is_codex`）。仍有 7+ 处内联 `p.api_type == ApiType::Codex` / `matches!(api_type, ApiType::Codex)` 散落在：
+  - [`engine.rs:175`](../../crates/ha-core/src/chat_engine/engine.rs)（`chain_needs_codex` 判断）
+  - [`channel/worker/slash.rs:599`](../../crates/ha-core/src/channel/worker/slash.rs)
+  - [`agent/mod.rs:212,233,270,314`](../../crates/ha-core/src/agent/mod.rs)
+  - [`failover/executor.rs:173`](../../crates/ha-core/src/failover/executor.rs)
+  - [`provider/crud.rs:193,516`](../../crates/ha-core/src/provider/crud.rs)
+  - [`provider/helpers.rs:248`](../../crates/ha-core/src/provider/helpers.rs)
+- **为什么留**：本期 PR 不动这些路径；机械替换扩散到 5+ 文件超出 IM 错误 UX 范围
+- **改的话要做什么**：sed-style 全量替换 + `cargo check`，纯样板
+- **影响面**：纯可读性；行为零变化
+- **触发时机建议**：下次 provider 模块独立重构 / cleanup PR；或被本 helper 引到的下一个 issue 时顺手扫掉
+
+### F-074 NSIS 重新加回 SimplifiedChinese installer 语言
+
+- **来源**：2026-05-09 v0.1.0 release run 25567046354 Windows 失败诊断
+- **现象**：[`src-tauri/tauri.conf.json`](../../src-tauri/tauri.conf.json) `bundle.windows.nsis.languages` 临时去掉了 `SimplifiedChinese`，只保留 `English`。原因是 GitHub `windows-latest` runner 上 tauri 自动下载的 NSIS 包不含 `SimplifiedChinese.nlf`，bundling 阶段报 "Can't open language file - SimplifiedChinese.nlf"
+- **为什么留**：v0.1.0 release blocker；先打通中英文用户都能装的英文 installer，installer UI 语言不影响应用本身的 i18n（应用内 12 种语言完整）
+- **改的话要做什么**：两个方向二选一：
+  - **方案 A（workflow 层）**：在 [`.github/workflows/release.yml`](../../.github/workflows/release.yml) Windows job 加 step pre-stage 完整 NSIS 到 `%LOCALAPPDATA%\tauri\NSIS`（覆盖 tauri 自动下载的精简版），需注意 NSCurl plugin 是 tauri 自定义补丁，要保留
+  - **方案 B（env 层）**：用 `NSIS_DIR` 环境变量指向 chocolatey 装的完整 NSIS（`C:\Program Files (x86)\NSIS`），需先验证 tauri-bundler 是否真的 respect `NSIS_DIR` + 验证 NSCurl plugin 可用性
+  - 两方案验证完成后把 `tauri.conf.json` 的 `languages` 改回 `["English", "SimplifiedChinese"]`
+- **影响面**：当前 Windows 中文用户首次安装 / 卸载 installer UI 是英文（一次性体验，应用内仍是中文）
+- **触发时机建议**：v0.1.1 或下一次动 windows release packaging 时
+
 ---
 
 ## Closed

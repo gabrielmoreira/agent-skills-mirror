@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SynaLinks/synalinks-skills` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `SynaLinks/synalinks-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SynaLinks/synalinks-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`synalinks/SKILL.md`](synalinks/SKILL.md) |
+| 1 | ✓ | [`synalinks-agents/SKILL.md`](synalinks-agents/SKILL.md) |
+| 2 | ✓ | [`synalinks-control-flow/SKILL.md`](synalinks-control-flow/SKILL.md) |
+| 3 | ✓ | [`synalinks-core/SKILL.md`](synalinks-core/SKILL.md) |
+| 4 | ✓ | [`synalinks-datasets/SKILL.md`](synalinks-datasets/SKILL.md) |
+| 5 | ✓ | [`synalinks-knowledge/SKILL.md`](synalinks-knowledge/SKILL.md) |
+| 6 | ✓ | [`synalinks-modules/SKILL.md`](synalinks-modules/SKILL.md) |
+| 7 | ✓ | [`synalinks-optimizers/SKILL.md`](synalinks-optimizers/SKILL.md) |
+| 8 | ✓ | [`synalinks-programs/SKILL.md`](synalinks-programs/SKILL.md) |
+| 9 | ✓ | [`synalinks-providers/SKILL.md`](synalinks-providers/SKILL.md) |
+| 10 | ✓ | [`synalinks-rewards/SKILL.md`](synalinks-rewards/SKILL.md) |
+| 11 | ✓ | [`synalinks-training/SKILL.md`](synalinks-training/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `noobnooc/noobnooc` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `noobnooc/noobnooc` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `noobnooc/noobnooc` — 26 default patterns, 0 followed patterns, 3 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`skills/better-codex/agents/openai.yaml`](skills/better-codex/agents/openai.yaml) |
 | 2 | ✓ | [`skills/better-codex/SKILL.md`](skills/better-codex/SKILL.md) |
 | 3 | ✓ | [`skills/README.md`](skills/README.md) |
+| 4 | ✓ | [`skills/wtf/agents/openai.yaml`](skills/wtf/agents/openai.yaml) |
+| 5 | ✓ | [`skills/wtf/SKILL.md`](skills/wtf/SKILL.md) |
 
 ---
 

@@ -25,10 +25,13 @@ content. If this file already exists, instead append to the existing JSON:
 ```
 
 This will use the default database with the Standard edition. To use a different
-database, specify the database ID and location. You can check the list of
-available databases using `npx -y firebase-tools@latest
-firestore:databases:list`. If the database does not exist, it will be created
-when you deploy:
+database, specify the database ID and location:
+1.  Run `npx -y firebase-tools@latest firestore:locations` to get the list of locations.
+2.  Ask the user which location to use, suggesting colocation if other parts of the app already have a region selected.
+
+You can check the list of available databases using `npx -y firebase-tools@latest firestore:databases:list`.
+
+If the database does not exist, it will be created when you deploy with the specified configuration:
 
 ```json
 {
@@ -36,7 +39,7 @@ when you deploy:
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json",
     "database": "my-database-id",
-    "location": "us-central1"
+    "location": "<selected-location>"
   }
 }
 ```

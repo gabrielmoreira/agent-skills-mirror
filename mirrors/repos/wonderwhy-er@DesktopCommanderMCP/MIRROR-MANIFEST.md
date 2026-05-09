@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wonderwhy-er/DesktopCommanderMCP` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `wonderwhy-er/DesktopCommanderMCP` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wonderwhy-er/DesktopCommanderMCP` — 26 default patterns, 0 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`plugins/claude/skills/desktop-commander-overview/SKILL.md`](plugins/claude/skills/desktop-commander-overview/SKILL.md) |
 | 2 | ✓ | [`plugins/cursor/skills/desktop-commander-overview/SKILL.md`](plugins/cursor/skills/desktop-commander-overview/SKILL.md) |
+| 3 | ✓ | [`skills/desktop-commander-overview/SKILL.md`](skills/desktop-commander-overview/SKILL.md) |
 
 ---
 

@@ -278,6 +278,8 @@ This script reads all `batch-*.json` files from `$PROJECT_ROOT/.understand-anyth
 - Drops dangling edges referencing missing nodes
 - Logs all corrections and dropped items to stderr
 
+The merge script also runs a `tested_by` linker that canonicalizes test-coverage edges in two passes. **Pass 1** walks LLM-emitted `tested_by` edges and flips inverted ones in place (the LLM systematically emits `test → production` because it sees the import only when analyzing the test file); semantically broken edges (test↔test, prod↔prod, orphan endpoints) are dropped. **Pass 2** supplements with path-convention pairings (`X.ts` ↔ `X.test.ts`, JS/TS `__tests__/` and `<dir>/test/` walk-out, Python in-package `tests/`, Go `_test.go` sibling, Maven/Gradle `src/test/...` ↔ `src/main/...`, .NET `<svc>/tests/` ↔ `<svc>/src/...` and `<App>.Tests/` ↔ `<App>/`). Production nodes that end up sourcing any `tested_by` edge get a `"tested"` tag. All resulting edges run `production → test`.
+
 Output: `$PROJECT_ROOT/.understand-anything/intermediate/assembled-graph.json`
 
 Include the script's warnings in `$PHASE_WARNINGS` for the reviewer.

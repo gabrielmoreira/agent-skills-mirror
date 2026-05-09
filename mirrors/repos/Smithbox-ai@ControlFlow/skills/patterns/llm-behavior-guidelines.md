@@ -7,7 +7,7 @@ Behavioral guardrails to prevent systematic agent anti-patterns in multi-agent w
 ## Applicable Agents
 
 | Agent | Principles to Apply |
-|-------|-------------------|
+| ----- | ------------------- |
 | CoreImplementer-subagent | All 4 |
 | UIImplementer-subagent | All 4 |
 | CodeReviewer-subagent | Simplicity First, Surgical Changes (audit focus) |
@@ -22,6 +22,7 @@ Behavioral guardrails to prevent systematic agent anti-patterns in multi-agent w
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
 Before implementing any non-trivial task:
+
 - State your assumptions explicitly. If uncertain, ask via `NEEDS_INPUT`.
 - If multiple valid interpretations exist, present them — don't pick silently.
 - If a simpler approach exists, say so and push back when warranted.
@@ -35,9 +36,9 @@ Before implementing any non-trivial task:
 
 Agent silently assumes: JSON format, all records, no pagination, authenticated users only — and implements 200 lines without surfacing any of these decisions.
 
-### ✅ Correct behavior
+### ✅ Correct behavior - Clarification
 
-```
+```text
 Before implementing, I need to clarify:
 1. Format: JSON, CSV, or caller's choice? (affects schema)
 2. Scope: All records or filtered? (affects performance risk — see data_volume)
@@ -72,7 +73,7 @@ class PreferenceManager:
         # 120 lines of pluggable infrastructure for a single column update
 ```
 
-### ✅ Correct behavior
+### ✅ Correct behavior - Minimal Solution
 
 ```python
 # Minimum code that solves the problem
@@ -89,12 +90,14 @@ Add cache, validation, and events only when those requirements are explicit and 
 **Touch only what you must. Clean up only your own mess.**
 
 When editing existing files:
+
 - Do not "improve" adjacent code, comments, or formatting.
 - Do not refactor things that aren't broken.
 - Match existing style — even if you'd do it differently.
 - If you notice unrelated dead code, **mention it in the execution report** — do not delete it.
 
 When your changes create orphans (unused imports, variables, functions YOUR changes made dead):
+
 - Remove only the orphans your changes created.
 - Do not remove pre-existing dead code unless explicitly asked.
 
@@ -108,7 +111,7 @@ When your changes create orphans (unused imports, variables, functions YOUR chan
 
 Agent fixes the null check **and** reformats 3 functions, renames a parameter, and removes an "obviously dead" helper — none of which were in scope.
 
-### ✅ Correct behavior
+### ✅ Correct behavior - Scoped Fix
 
 Fix the null check. In the execution report note: "Observed potentially unused helper `formatOrderLegacy()` in the same file — recommend a cleanup task if confirmed dead."
 
@@ -121,7 +124,7 @@ Fix the null check. In the execution report note: "Observed potentially unused h
 Transform imperative task descriptions into verifiable goals before starting work:
 
 | Instead of... | Transform to... |
-|--------------|-----------------|
+| ------------ | --------------- |
 | "Add validation" | "Write tests for invalid inputs, then make them pass" |
 | "Fix the bug" | "Write a test that reproduces it, then make it pass" |
 | "Refactor X" | "Ensure all existing tests pass before and after" |
@@ -129,7 +132,7 @@ Transform imperative task descriptions into verifiable goals before starting wor
 
 For multi-step phases, state a brief plan with explicit verification:
 
-```
+```text
 1. [Step] → verify: [check]
 2. [Step] → verify: [check]
 3. [Step] → verify: [check]
@@ -145,7 +148,7 @@ Strong success criteria allow the agent to loop independently without constant c
 
 No measurable criterion. The agent cannot determine when it is done, and CodeReviewer cannot evaluate completion.
 
-### ✅ Correct behavior
+### ✅ Correct behavior - Verifiable Goal
 
 > Phase task: "Add JWT expiry validation to `AuthMiddleware` → verify: `npm test auth` passes with a new test case for expired tokens"
 
@@ -159,10 +162,21 @@ A bounded list of specific anti-patterns that waste context tokens in agent file
 
 ---
 
+## Anti-Rationalization Table
+
+| Pattern | Why It Fails | Required Action |
+| ------- | ------------ | --------------- |
+| Assume the missing requirement because the likely answer is obvious | The assumption becomes hidden design input and may invalidate the handoff. | Surface the assumption or return `NEEDS_INPUT` when it changes scope, behavior, or file set. |
+| Add an abstraction because future tasks might need it | Untested flexibility increases maintenance cost and can mask the simple solution. | Build only the requested behavior, then note future options separately. |
+| Clean up adjacent code while editing nearby lines | Extra edits make review harder and can create scope drift unrelated to the assignment. | Limit changes to the delegated scope and report unrelated observations. |
+| Skip verification because the edit is prompt-only or documentation-only | Text changes still affect agent behavior, schema drift, and eval fixtures. | Run the smallest relevant gate and the required suite for the phase. |
+
+---
+
 ## Summary Decision Table
 
 | Situation | Action |
-|-----------|--------|
+| --------- | ------ |
 | Multiple valid task interpretations | Present options, return `NEEDS_INPUT` |
 | Tempted to add untasked feature | Don't. Note it in execution report instead |
 | Noticed adjacent code smell | Note in execution report; don't touch it |

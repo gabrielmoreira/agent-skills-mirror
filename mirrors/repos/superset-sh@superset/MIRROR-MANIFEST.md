@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,11 +75,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 15 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
 | 16 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
-| 17 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
-| 18 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 19 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 21 | ✓ | [`skills/superset/SKILL.md`](skills/superset/SKILL.md) |
+| 17 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/superset/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/superset/SKILL.md/route.ts) |
+| 18 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
+| 19 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 20 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 22 | ✓ | [`skills/superset/SKILL.md`](skills/superset/SKILL.md) |
 
 ---
 

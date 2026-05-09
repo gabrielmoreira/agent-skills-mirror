@@ -1,6 +1,6 @@
 ---
 name: chainlink-ccip-skill
-description: "Handle Chainlink CCIP requests including cross-chain token transfers, cross-chain messaging, fund bridging, sender and receiver contract development, message status lookup, route connectivity checks, supported token discovery, and CCT setup. Use this skill whenever the user mentions CCIP, Chainlink cross-chain, cross-chain token bridges on Chainlink, or wants to move tokens or data between blockchains using Chainlink infrastructure, even if they do not say 'CCIP' explicitly."
+description: "Handle Chainlink CCIP requests including cross-chain token transfers, cross-chain messaging, fund bridging, sender and receiver contract development, message status lookup, route connectivity checks, supported token discovery, and CCT standard. Use this skill whenever the user mentions CCIP, Chainlink cross-chain, cross-chain token bridges on Chainlink, or wants to move tokens or data between blockchains using Chainlink infrastructure, even if they do not say 'CCIP' explicitly."
 license: MIT
 compatibility: Designed for AI agents that implement https://agentskills.io/specification, including Claude Code, Cursor Composer, and Codex-style workflows.
 allowed-tools: Read WebFetch Write Edit Bash

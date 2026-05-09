@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mikeyobrien/ralph-orchestrator` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
+Mirror of `mikeyobrien/ralph-orchestrator` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mikeyobrien/ralph-orchestrator` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 52 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,16 +101,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`crates/ralph-core/tests/fixtures/skills/complex-test-skill/SKILL.md`](crates/ralph-core/tests/fixtures/skills/complex-test-skill/SKILL.md) |
 | 41 | ✓ | [`docs/advanced/architecture.md`](docs/advanced/architecture.md) |
 | 42 | ✓ | [`prompts/WEB_PROMPT.md`](prompts/WEB_PROMPT.md) |
-| 43 | ✓ | [`skills/ralph-hats/agents/openai.yaml`](skills/ralph-hats/agents/openai.yaml) |
-| 44 | ✓ | [`skills/ralph-hats/references/commands.md`](skills/ralph-hats/references/commands.md) |
-| 45 | ✓ | [`skills/ralph-hats/references/examples.md`](skills/ralph-hats/references/examples.md) |
-| 46 | ✓ | [`skills/ralph-hats/references/schema.md`](skills/ralph-hats/references/schema.md) |
-| 47 | ✓ | [`skills/ralph-hats/SKILL.md`](skills/ralph-hats/SKILL.md) |
-| 48 | ✓ | [`skills/ralph-loop/agents/openai.yaml`](skills/ralph-loop/agents/openai.yaml) |
-| 49 | ✓ | [`skills/ralph-loop/references/commands.md`](skills/ralph-loop/references/commands.md) |
-| 50 | ✓ | [`skills/ralph-loop/references/diagnostics.md`](skills/ralph-loop/references/diagnostics.md) |
-| 51 | ✓ | [`skills/ralph-loop/SKILL.md`](skills/ralph-loop/SKILL.md) |
-| 52 | ✓ | [`skills/README.md`](skills/README.md) |
+| 43 | ✓ | [`skills/ralph-docs/agents/openai.yaml`](skills/ralph-docs/agents/openai.yaml) |
+| 44 | ✓ | [`skills/ralph-docs/references/common-questions.md`](skills/ralph-docs/references/common-questions.md) |
+| 45 | ✓ | [`skills/ralph-docs/references/contributing.md`](skills/ralph-docs/references/contributing.md) |
+| 46 | ✓ | [`skills/ralph-docs/references/llms-txt-map.md`](skills/ralph-docs/references/llms-txt-map.md) |
+| 47 | ✓ | [`skills/ralph-docs/SKILL.md`](skills/ralph-docs/SKILL.md) |
+| 48 | ✓ | [`skills/ralph-hats/agents/openai.yaml`](skills/ralph-hats/agents/openai.yaml) |
+| 49 | ✓ | [`skills/ralph-hats/references/commands.md`](skills/ralph-hats/references/commands.md) |
+| 50 | ✓ | [`skills/ralph-hats/references/examples.md`](skills/ralph-hats/references/examples.md) |
+| 51 | ✓ | [`skills/ralph-hats/references/schema.md`](skills/ralph-hats/references/schema.md) |
+| 52 | ✓ | [`skills/ralph-hats/SKILL.md`](skills/ralph-hats/SKILL.md) |
+| 53 | ✓ | [`skills/ralph-loop/agents/openai.yaml`](skills/ralph-loop/agents/openai.yaml) |
+| 54 | ✓ | [`skills/ralph-loop/references/commands.md`](skills/ralph-loop/references/commands.md) |
+| 55 | ✓ | [`skills/ralph-loop/references/diagnostics.md`](skills/ralph-loop/references/diagnostics.md) |
+| 56 | ✓ | [`skills/ralph-loop/SKILL.md`](skills/ralph-loop/SKILL.md) |
+| 57 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

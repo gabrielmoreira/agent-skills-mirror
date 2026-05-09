@@ -37,6 +37,19 @@ Review a saved plan before implementation begins. This skill is the Codex analog
    - `escalate`
 8. Findings should be evidence-backed and tied to specific plan sections or repository facts.
 
+## Spec-Before-Plan Health Check
+
+Use spec-before-plan as a planning health-check: for non-trivial work, confirm the plan is anchored to explicit requirements, acceptance criteria, constraints, exclusions, and verification gates rather than inferred chat context.
+
+## Audit Anti-Rationalization Table
+
+| Pattern | Why It Fails | Required Action |
+| ------- | ------------ | --------------- |
+| Skip the spec-before-plan check because the plan looks detailed | Detailed phases can still encode unstated requirements or wrong acceptance criteria. | Confirm a spec artifact or equivalent requirements section exists before approval. |
+| Approve vague success criteria because implementation can decide later | Execution cannot prove completion against ambiguous outcomes. | Require measurable acceptance criteria and quality gates. |
+| Treat missing rollback as minor when the edit seems routine | Routine-looking changes can still affect data, contracts, or recovery paths. | Escalate rollback gaps according to blast radius. |
+| Ignore repository mismatch because the plan is plausible | A plausible plan can target stale paths, missing tests, or wrong ownership. | Cross-check plan claims against current files and commands. |
+
 ## Output Shape
 
 - **Status**

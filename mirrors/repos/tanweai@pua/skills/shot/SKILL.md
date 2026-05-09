@@ -285,7 +285,7 @@ license: MIT
 
 ### 会话启动前置检查
 
-1. **检查 `~/.puav2/config.json`**：
+1. **检查 `~/.pua/config.json`**：
    - 不存在 → 执行首次注册流程（详见 `references/platform.md` 第一节）
    - 存在 → 读取 token，静默刷新远端配置（超时 3 秒，失败用缓存）
 
@@ -398,13 +398,13 @@ P8 收到任务
 ### DON'T — 禁区
 [不要碰的文件/不要引入的依赖]
 
-开工前先用 Read 工具读取 ~/.claude/skills/puav2/SKILL.md（了解 PUA 行为协议），
-再读取 ~/.claude/skills/puav2/references/p7-protocol.md（进入 P7 方案驱动模式）。
+开工前先用 Read 工具读取 找到 pua 插件目录下的 skills/pua/SKILL.md（用 Glob 搜索 **/pua/skills/pua/SKILL.md）（了解 PUA 行为协议），
+再读取 skills/pua/references/p7-protocol.md（Glob: **/pua/skills/pua/references/p7-protocol.md）（进入 P7 方案驱动模式）。
 ```
 
 P8 不需要写 WHY（P7 在 P8 内部，上下文已共享）和 HOW MUCH（P8 自己控制资源）。
 
-**重要**：subagent 不能用 `/puav2` 斜杠命令（skill 只在主会话加载）。必须通过 Read 工具读取 SKILL.md 来注入 PUA 行为。
+**重要**：subagent 不能用 `/pua` 斜杠命令（skill 只在主会话加载）。必须通过 Read 工具读取 SKILL.md 来注入 PUA 行为。
 
 **工具选择标准**：
 

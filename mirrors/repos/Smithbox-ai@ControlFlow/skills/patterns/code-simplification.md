@@ -1,0 +1,69 @@
+# Code Simplification
+
+## Purpose
+
+Use this skill when working code needs to become easier to understand, review, or maintain without changing observable behavior. Simplification is not a license to rewrite; it is a disciplined refactor with a narrow boundary and proof that behavior stayed the same.
+
+## Chesterton's Fence
+
+Do not remove or rewrite code you cannot explain. Before touching a suspicious branch, helper, abstraction, or guard, establish why it exists and whether that reason still applies.
+
+Minimum understanding checklist:
+
+- What behavior does this code protect or provide?
+- Who calls it, and what depends on its current side effects or errors?
+- Which tests, fixtures, schemas, docs, or historical commits explain its purpose?
+- Is it compensating for a platform, data, migration, or compatibility constraint?
+- What would fail if it were removed?
+
+If the answer is unknown, gather more context or stop. Deleting a fence without understanding it is not simplification; it is guesswork.
+
+## Rule Of 500
+
+Keep simplification reviewable. If the expected refactor would touch more than about 500 changed lines, more than a small set of closely related files, or more than one reviewable concern, split it into smaller phases or use a mechanical transformation with separate validation.
+
+Use these bounds:
+
+- One behavioral surface or simplification theme per change.
+- Prefer small file sets with obvious ownership and dependency boundaries.
+- Keep mechanical renames, formatting, and behavior-preserving refactors separate from feature or bug work.
+- If the diff grows past the original intent, stop and report the new scope instead of quietly expanding it.
+
+## Behavior Preservation
+
+Simplification must not change observable behavior unless a separate requirement says so. Inputs, outputs, side effects, error behavior, ordering, persistence, generated artifacts, and public contracts must remain equivalent.
+
+Before editing, identify the baseline checks that describe current behavior. Run the same checks after the edit. For risky code, add characterization coverage before refactoring so the intended preservation is explicit.
+
+## Refactor Heuristics
+
+| Signal | Prefer |
+| ------ | ------ |
+| Deep nesting or repeated negative conditions | Guard clauses or named predicates that keep the main path readable. |
+| A helper with a useful domain name | Keep it, even if inlining would reduce line count. |
+| A wrapper that adds no policy, naming, validation, or abstraction value | Inline it after confirming callers do not rely on it as a boundary. |
+| Duplicated logic across nearby code | Extract only when the shared behavior is truly the same concept. |
+| Comments explaining what obvious code does | Remove or replace with clearer code. Keep comments that explain why. |
+
+## Anti-Rationalization Table
+
+| Pattern | Why It Fails | Required Action |
+| ------- | ------------ | --------------- |
+| "It's just dead code" | Unused-looking code may be reached by configuration, generated inputs, migration paths, or external callers. | Prove it is unreachable with search, tests, or ownership evidence before removal. |
+| "A quick rewrite is faster than understanding" | Rewrites trade known behavior for unknown regressions and noisy review. | Understand the current contract, then make the smallest behavior-preserving change. |
+| "Fewer lines means simpler" | Dense code can be harder to inspect, debug, and modify. | Optimize for comprehension and reviewability, not line count. |
+| "I'll clean up nearby code while I'm here" | Drive-by refactors expand blast radius and obscure the requested change. | Keep the diff within the assigned surface; note unrelated cleanup separately. |
+| "Tests are unnecessary because behavior should not change" | Refactors fail silently when no baseline proves behavior stayed fixed. | Run existing checks before and after; add characterization tests when risk is real. |
+
+## Stop Conditions
+
+Abandon or re-scope the simplification attempt when:
+
+- You cannot explain why the current code exists.
+- Behavior changes are required to make the simplification work.
+- Tests are absent and the risk is too high to characterize quickly.
+- The diff exceeds the Rule of 500 boundary or crosses unrelated ownership areas.
+- The simplified version is harder to read, harder to review, or inconsistent with local conventions.
+- A new dependency, schema change, or migration would be needed to complete the refactor.
+
+When a stop condition triggers, leave the working behavior intact and report the blocker, evidence gathered, and a narrower follow-up option.

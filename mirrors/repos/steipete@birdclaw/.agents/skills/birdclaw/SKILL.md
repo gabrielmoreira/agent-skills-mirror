@@ -1,6 +1,6 @@
 ---
 name: birdclaw
-description: Use for X/Twitter archive search, yearly vibe summaries, weird tweets, and quality filters.
+description: "X/Twitter archive search: yearly vibes, odd tweets, quality filters."
 ---
 
 # Birdclaw

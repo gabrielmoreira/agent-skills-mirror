@@ -15,12 +15,15 @@ Code review an Azure DevOps pull request.
 
 | Input            | Required | Description                                              |
 | ---------------- | -------- | -------------------------------------------------------- |
-| `prId`           | ✅        | Pull request ID (e.g. `12345`)                           |
-| `organization`   | ✅        | Azure DevOps organization name (e.g. `myorg`)            |
-| `project`        | ✅        | Project name or ID                                       |
-| `repo`           | ✅        | Repository name or ID                                    |
+| `prUrl`          | ✅*       | Full PR URL (e.g. `https://dev.azure.com/org/project/_git/repo/pullrequest/12345`) |
+| `prId`           | ✅*       | Pull request ID (e.g. `12345`)                           |
+| `organization`   | ✅*       | Azure DevOps organization name (e.g. `myorg`)            |
+| `project`        | ✅*       | Project name or ID                                       |
+| `repo`           | ✅*       | Repository name or ID                                    |
 
-If any required input is missing, ask the user before proceeding.
+\* Either provide `prUrl` (all inputs will be extracted from it), or provide all of `prId`, `organization`, `project`, and `repo` individually.
+
+If any required input cannot be determined, ask the user before proceeding.
 
 ---
 
@@ -32,13 +35,34 @@ Provide a structured code review for a given Azure DevOps PR, including validati
 
 ## Workflow
 
+### 0. Parse Inputs
+
+If the user provides a full PR URL (e.g. `https://dev.azure.com/myorg/My%20Project/_git/my-repo/pullrequest/12345`), extract:
+
+* `organization` — the first path segment after `dev.azure.com` (e.g. `myorg`)
+* `project` — the second path segment, **URL-decoded** (e.g. `My Project` from `My%20Project`)
+* `repo` — the path segment after `_git/` (e.g. `my-repo`)
+* `prId` — the path segment after `pullrequest/` (e.g. `12345`)
+
+Then configure the CLI defaults so every subsequent command uses these values without relying on auto-detection:
+
+```powershell
+az devops configure --defaults `
+  organization="https://dev.azure.com/{organization}" `
+  project="{project}"
+```
+
+Use `--detect false` on every `az` command from this point on. Never rely on `--detect true` — it fails when the working directory is not a clone of that exact repository.
+
+---
+
 ### 1. Check Eligibility
 
 Run:
 
-```bash
-az repos pr show --id {prId} --detect true
-````
+```powershell
+az repos pr show --id {prId} --detect false
+```
 
 Ensure the PR:
 
@@ -46,8 +70,8 @@ Ensure the PR:
 * Is **not a draft**
 * Has **not already been reviewed by you** — check with:
 
-```bash
-az repos pr reviewer list --id {prId} --detect true
+```powershell
+az repos pr reviewer list --id {prId} --detect false
 ```
 
 If `isRequired: false` and the reviewer entry has `vote != 0`, a review has already been cast. Skip if so.
@@ -75,13 +99,13 @@ Search in:
 
 1. Get target branch:
 
-```bash
-az repos pr show --id {prId} --detect true --query "targetRefName" -o tsv
+```powershell
+az repos pr show --id {prId} --detect false --query "targetRefName" -o tsv
 ```
 
 2. Checkout PR branch:
 
-```bash
+```powershell
 az repos pr checkout --id {prId}
 ```
 
@@ -93,8 +117,8 @@ git diff origin/{targetBranch}...HEAD
 
 #### Optional: Check Policy Status
 
-```bash
-az repos pr policy list --id {prId} --detect true --output table
+```powershell
+az repos pr policy list --id {prId} --detect false --output table
 ```
 
 Note any failing required policies in your review summary. Do not block or abort the review due to policy failures — just surface them to the user.
@@ -180,11 +204,11 @@ REVIEW_EOF
 
 Post:
 
-```bash
-az devops invoke --area git --resource pullRequestThreads \
-  --route-parameters project={project} repositoryId={repo} pullRequestId={pr} \
-  --http-method POST --api-version 7.1-preview \
-  --detect true --in-file /tmp/review-thread.json
+```powershell
+az devops invoke --area git --resource pullRequestThreads `
+  --route-parameters project="{project}" repositoryId="{repo}" pullRequestId="{prId}" `
+  --http-method POST --api-version 7.1-preview `
+  --detect false --in-file /tmp/review-thread.json
 ```
 
 #### Line Number Rules
@@ -225,10 +249,10 @@ $labels = @("ai-reviewed") + ($modelIds | ForEach-Object { "ai-model-$_" })
 
 Retrieve IDs:
 
-```bash
-PROJECT_ID=$(az repos pr show --id {prId} --detect true --query "repository.project.id" -o tsv)
-REPOSITORY_ID=$(az repos pr show --id {prId} --detect true --query "repository.id" -o tsv)
-ORGANIZATION="{organization}"
+```powershell
+$prInfo    = az repos pr show --id {prId} --detect false | ConvertFrom-Json
+$projectId = $prInfo.repository.project.id
+$repoId    = $prInfo.repository.id
 ```
 
 Get token:

@@ -41,7 +41,8 @@
 - `2026/3/27`: 🎬 AIGC-Claw 正式发布，支持从想法到视频生成全流程自动化，用户可随时介入调整。  
 - `2026/4/6`: 🎭 AIGC-Claw 推出第二版，针对短剧进行优化。  
 - `2026/4/9`: ♾️ AIGC-Claw 推出第三版，新增无限续写，剧情可自定义。
-- `2026/4/29`: 🧩 新增静态短视频、动作迁移、数字人口播三个 Pipeline，并支持一键安装。
+- `2026/4/29`: 🧩 新增文艺短视频、动作迁移、数字人口播三个 Pipeline，并支持一键安装。
+- `2026/5/8`: ⚙️ 支持通过 WebUI 配置 API 与默认模型，支持一键安装。
 
 
 ## 📖 项目介绍
@@ -54,13 +55,13 @@ AIGC-Claw 是一个面向创意视频生产的 AI 导演系统。**你只需要�
 
 它不是单点式的文生视频工具，而是一条覆盖 **剧本策划 → 角色/场景设计 → 分镜规划 → 参考图生成 → 视频生成 → 后期剪辑** 的全流程生产线。相比只给你一个黑盒结果的闭源视频生成框架，AIGC-Claw是一个真正可协作的 AI 导演团队：前一阶段决定后一阶段，所有关键节点都能可视化、可编辑、可继续生成。
 
-除主流程外，AIGC-Claw 也提供三个一次性 Pipeline，用于更轻量、更直接的视频生成任务：静态短视频、动作迁移和数字人口播。Pipeline 任务会实时推送进度与产物，生成结果和历史记录会在本地保留，便于继续查看、删除和复用。
+除主流程外，AIGC-Claw 也提供三个一次性 Pipeline，用于更轻量、更直接的视频生成任务：文艺短视频、动作迁移和数字人口播。Pipeline 任务会实时推送进度与产物，生成结果和历史记录会在本地保留，便于继续查看、删除和复用。
 
 ## 🧩 新增 Pipeline
 
 | Pipeline | 前端入口 | 说明 |
 |---|---|---|
-| **静态短视频** | 侧边栏「静态短视频」 | 支持「创作灵感 / 完整文案」两种输入。系统按句号切分旁白，为每个片段生成配图与语音，再合成为静态图文短视频；可选添加标题和字幕。 |
+| **文艺短视频** | 侧边栏「文艺短视频」 | 支持「图片拼接 / 动态视频」和「创作灵感 / 完整文案」两组模式。系统按句号切分旁白，为每个片段生成配图与语音；图片拼接模式合成图文短视频，动态视频模式继续调用图生视频模型生成片段；可选添加标题和字幕。 |
 | **动作迁移** | 侧边栏「动作迁移」 | 输入参考图片、动作视频和提示词，调用支持动作迁移能力的视频模型生成结果视频。 |
 | **数字人口播** | 侧边栏「数字人口播」 | 输入人物图和口播文案，生成分句语音与数字人视频片段；多片段生成时会使用上一段尾帧衔接下一段，并用生成语音替换最终视频音轨。 |
 
@@ -248,7 +249,7 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
 | 🎬 **从创意到成片的全流程生成** | 一条链路打通剧本、角色、分镜、参考图、视频片段与后期剪辑，把零散生成能力升级为完整视频生产工作流。 |
 | 🖼️ **分镜驱动的可控创作** | 通过结构化剧本、分镜规划与参考图生成，让角色一致性、镜头表达和画面风格更稳定、更可控。 |
 | ✍️ **可修改、可续写、可继续生成** | 支持剧情 / 分镜智能续写，也支持角色、参考图、视频阶段修改后重新生成，避免每次都从头开始。 |
-| 🧩 **轻量 Pipeline 任务** | 支持静态短视频、动作迁移、数字人口播三类一次性任务，适合快速生成图文短视频、动作迁移视频和口播视频。 |
+| 🧩 **轻量 Pipeline 任务** | 支持文艺短视频、动作迁移、数字人口播三类一次性任务，适合快速生成图文/动态短视频、动作迁移视频和口播视频。 |
 | 🏷️ **模型能力标签筛选** | 后端统一在 `models/config_model.py` 登记模型信息，并按文本、图像、视频、TTS、动作迁移等能力标签筛选可用模型。 |
 | 📡 **实时任务状态和产物管理** | Pipeline 前端通过事件订阅获取进度和产物，历史记录按功能分区展示，并支持同步删除任务元数据和产物文件夹。 |
 | 📲 **本地部署、多端协作、产物留存** | 支持 Web 界面、微信 / 飞书协作、OpenClaw Skill 集成，并对剧本、图片、视频片段和最终成片进行全链路留存。 |
@@ -277,7 +278,7 @@ cd AIGC-Claw\aigc-director\aigc-claw
 install.bat
 ```
 
-安装脚本会检查 Python、Node.js、npm 和 ffmpeg，安装后端与前端依赖，复制 `backend/.env.example` 为 `backend/.env`，并执行前端构建。安装完成后，先在 `backend/.env` 中填入模型服务 API Key，然后启动服务：
+安装脚本会检查 Python、Node.js、npm 和 ffmpeg，安装后端与前端依赖，复制 `backend/config.yaml.example` 为 `backend/config.yaml`，并执行前端构建。安装完成后，先在 `backend/config.yaml` 中填入模型服务 API Key，并确认 `models` 中的主流程默认模型；也可以启动前端后通过侧边栏底部「设置」页面修改这些配置。配置完成后启动服务：
 
 ```bash
 # 启动后端
@@ -310,9 +311,10 @@ cd aigc-director/aigc-claw/backend
 # 安装后端依赖
 uv sync
 
-# 配置环境变量
-cp .env.example .env
-# 编辑 .env 填入 API Key
+# 配置后端 YAML
+cp config.yaml.example config.yaml
+# 编辑 config.yaml 填入 API Key，并确认主流程默认模型
+# 也可以启动前端后在「设置」页面修改
 
 # 启动后端
 uv run python api_server.py
@@ -375,28 +377,84 @@ clawhub install aigc-director
 - **Node.js**: 18+
 - **npm**: 9+
 
-### 后端环境变量
+### 后端配置
 
-在 `aigc-claw/backend/.env` 中配置：
+后端配置统一保存在 `aigc-claw/backend/config.yaml`，采用小写、层级化 YAML 结构。可直接编辑该文件，也可以在前端侧边栏底部进入「设置」页面修改。
 
-```bash
-# LLM 配置
-LLM_MODEL=deepseek-v3.2
-VLM_MODEL=qwen3.6-plus
+- `api_providers` 保存各模型服务平台的密钥、接口地址和代理开关。
+- `models` 保存**主流程**首页使用的默认模型。前端创建项目时会先读取这些默认值，再把具体模型参数传给后端；后端不会再为主流程自动兜底选择模型，缺少模型参数会直接报错。
+- Pipeline（文艺短视频、动作迁移、数字人口播）不使用这里的主流程默认模型，需要在对应 Pipeline 页面单独选择模型。
 
-# 图像生成
-IMAGE_T2I_MODEL=wan2.7-image
-IMAGE_IT2I_MODEL=wan2.7-image
+### 前端设置页面
 
-# 视频生成
-VIDEO_MODEL=wan2.7-i2v
-VIDEO_RATIO=16:9
+启动前后端后，可以在 Web 前端左侧边栏底部进入「设置」页面，无需手动编辑 YAML，也可以完成常用配置：
 
-# API Keys
-DASHSCOPE_API_KEY=your_key
-ARK_API_KEY=your_key
-DEEPSEEK_API_KEY=your_key
+- 填写或更新 OpenAI、Gemini、DeepSeek、DashScope、火山方舟 ARK、Kling 等平台的 API Key / Access Key / Secret Key。
+- 修改各 provider 的 `base_url`、`enable_proxy`，以及公共代理地址 `api_providers.common.proxy`。
+- 选择主流程默认模型，包括 `llm`、`vlm`、`image_t2i`、`image_it2i`、`video`、`video_ratio` 和 `eval`。
+- 保存后会写回 `backend/config.yaml`。API Key、代理和默认模型会被后续新建项目读取；`server.host`、`server.port` 等服务启动参数需要重启后端后完全生效。
+
+```yaml
+project_name: AIGC-Claw
+
+server:
+  host: 127.0.0.1
+  port: 8000
+  debug: false
+
+api_providers:
+  common:
+    print_model_input: false
+    proxy: ''
+  openai:
+    api_key: your_openai_key
+    base_url: https://api.openai.com/v1
+    enable_proxy: false
+  gemini:
+    api_key: your_gemini_key
+    base_url: https://generativelanguage.googleapis.com/v1beta
+    enable_proxy: false
+  deepseek:
+    api_key: your_deepseek_key
+    base_url: https://api.deepseek.com/v1
+    enable_proxy: false
+  dashscope:
+    api_key: your_dashscope_key
+    base_url: https://dashscope.aliyuncs.com/api/v1
+    enable_proxy: false
+  ark:
+    api_key: your_ark_key
+    base_url: https://ark.cn-beijing.volces.com/api/v3
+    enable_proxy: false
+  kling:
+    access_key: your_kling_access_key
+    secret_key: your_kling_secret_key
+    enable_proxy: false
+
+models:
+  llm: qwen3.5-plus
+  vlm: qwen3.5-plus
+  image_t2i: doubao-seedream-5-0-260128
+  image_it2i: doubao-seedream-5-0-260128
+  video: wan2.7-i2v
+  video_ratio: '16:9'
+  eval: qwen3.5-plus
 ```
+
+`api_providers.common.proxy` 是唯一的代理地址。每个 provider 通过 `enable_proxy` 决定是否启用该代理，默认关闭，避免同一进程内不同模型调用互相污染。`server.host` / `server.port` 等服务启动参数保存后需要重启后端才会完全生效；API Key、代理配置和 `models` 中的主流程默认模型会被新的项目创建和模型调用读取。
+
+### 密钥与模型对应关系
+
+| 平台 | 配置字段 | 常用用途 |
+|:---:|:---|:---|
+| **OpenAI** | `api_providers.openai.api_key` / `base_url` | GPT 文本、视觉模型和 OpenAI 图像模型 |
+| **Gemini** | `api_providers.gemini.api_key` / `base_url` | Gemini 文本、视觉模型 |
+| **DeepSeek** | `api_providers.deepseek.api_key` / `base_url` | DeepSeek 文本模型 |
+| **DashScope** | `api_providers.dashscope.api_key` / `base_url` | 通义千问、通义万相、Wan 图像/视频等 |
+| **火山方舟 ARK** | `api_providers.ark.api_key` / `base_url` | Seedream 图像、Seedance 视频等 |
+| **Kling** | `api_providers.kling.access_key` / `secret_key` / `base_url` | 可灵视频生成 |
+
+只需要填写你实际选择模型所需的平台密钥。例如主流程默认图像模型是 `doubao-seedream-*` 时，需要配置 `ark.api_key`；默认视频模型是 `wan*` 时，需要配置 `dashscope.api_key`。如果在 Pipeline 页面选择了不同模型，也要确保对应平台的密钥已经填写。
 
 ### 可用模型
 

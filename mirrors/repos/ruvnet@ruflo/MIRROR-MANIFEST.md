@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/ruflo` — 26 default patterns, 0 followed patterns, 328 file(s) materialized.
+Mirror of `ruvnet/ruflo` — 26 default patterns, 0 followed patterns, 329 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/ruflo` — 26 default patterns, 0 followed patterns, 328 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 328 |
+| Files         | 329 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -297,96 +297,97 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 236 | ✓ | [`plugins/ruflo-core/skills/discover-plugins/SKILL.md`](plugins/ruflo-core/skills/discover-plugins/SKILL.md) |
 | 237 | ✓ | [`plugins/ruflo-core/skills/init-project/SKILL.md`](plugins/ruflo-core/skills/init-project/SKILL.md) |
 | 238 | ✓ | [`plugins/ruflo-core/skills/ruflo-doctor/SKILL.md`](plugins/ruflo-core/skills/ruflo-doctor/SKILL.md) |
-| 239 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-benchmark/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-benchmark/SKILL.md) |
-| 240 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-booster-edit/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-booster-edit/SKILL.md) |
-| 241 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-booster-route/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-booster-route/SKILL.md) |
-| 242 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-budget-check/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-budget-check/SKILL.md) |
-| 243 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-compact-context/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-compact-context/SKILL.md) |
-| 244 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-conversation/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-conversation/SKILL.md) |
-| 245 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-export/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-export/SKILL.md) |
-| 246 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-federation/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-federation/SKILL.md) |
-| 247 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-optimize/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-optimize/SKILL.md) |
-| 248 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-report/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-report/SKILL.md) |
-| 249 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-summary/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-summary/SKILL.md) |
-| 250 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-track/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-track/SKILL.md) |
-| 251 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-trend/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-trend/SKILL.md) |
-| 252 | ✓ | [`plugins/ruflo-daa/skills/cognitive-pattern/SKILL.md`](plugins/ruflo-daa/skills/cognitive-pattern/SKILL.md) |
-| 253 | ✓ | [`plugins/ruflo-daa/skills/daa-agent/SKILL.md`](plugins/ruflo-daa/skills/daa-agent/SKILL.md) |
-| 254 | ✓ | [`plugins/ruflo-ddd/skills/ddd-aggregate/SKILL.md`](plugins/ruflo-ddd/skills/ddd-aggregate/SKILL.md) |
-| 255 | ✓ | [`plugins/ruflo-ddd/skills/ddd-context/SKILL.md`](plugins/ruflo-ddd/skills/ddd-context/SKILL.md) |
-| 256 | ✓ | [`plugins/ruflo-ddd/skills/ddd-validate/SKILL.md`](plugins/ruflo-ddd/skills/ddd-validate/SKILL.md) |
-| 257 | ✓ | [`plugins/ruflo-docs/skills/api-docs/SKILL.md`](plugins/ruflo-docs/skills/api-docs/SKILL.md) |
-| 258 | ✓ | [`plugins/ruflo-docs/skills/doc-gen/SKILL.md`](plugins/ruflo-docs/skills/doc-gen/SKILL.md) |
-| 259 | ✓ | [`plugins/ruflo-federation/skills/federation-audit/SKILL.md`](plugins/ruflo-federation/skills/federation-audit/SKILL.md) |
-| 260 | ✓ | [`plugins/ruflo-federation/skills/federation-init/SKILL.md`](plugins/ruflo-federation/skills/federation-init/SKILL.md) |
-| 261 | ✓ | [`plugins/ruflo-federation/skills/federation-status/SKILL.md`](plugins/ruflo-federation/skills/federation-status/SKILL.md) |
-| 262 | ✓ | [`plugins/ruflo-goals/skills/deep-research/SKILL.md`](plugins/ruflo-goals/skills/deep-research/SKILL.md) |
-| 263 | ✓ | [`plugins/ruflo-goals/skills/dossier-collect/SKILL.md`](plugins/ruflo-goals/skills/dossier-collect/SKILL.md) |
-| 264 | ✓ | [`plugins/ruflo-goals/skills/goal-plan/SKILL.md`](plugins/ruflo-goals/skills/goal-plan/SKILL.md) |
-| 265 | ✓ | [`plugins/ruflo-goals/skills/horizon-track/SKILL.md`](plugins/ruflo-goals/skills/horizon-track/SKILL.md) |
-| 266 | ✓ | [`plugins/ruflo-goals/skills/research-synthesize/SKILL.md`](plugins/ruflo-goals/skills/research-synthesize/SKILL.md) |
-| 267 | ✓ | [`plugins/ruflo-intelligence/skills/intelligence-route/SKILL.md`](plugins/ruflo-intelligence/skills/intelligence-route/SKILL.md) |
-| 268 | ✓ | [`plugins/ruflo-intelligence/skills/intelligence-transfer/SKILL.md`](plugins/ruflo-intelligence/skills/intelligence-transfer/SKILL.md) |
-| 269 | ✓ | [`plugins/ruflo-intelligence/skills/neural-train/SKILL.md`](plugins/ruflo-intelligence/skills/neural-train/SKILL.md) |
-| 270 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-anomalies/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-anomalies/SKILL.md) |
-| 271 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-firmware/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-firmware/SKILL.md) |
-| 272 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-fleet/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-fleet/SKILL.md) |
-| 273 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-register/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-register/SKILL.md) |
-| 274 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-witness-verify/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-witness-verify/SKILL.md) |
-| 275 | ✓ | [`plugins/ruflo-jujutsu/skills/diff-analyze/SKILL.md`](plugins/ruflo-jujutsu/skills/diff-analyze/SKILL.md) |
-| 276 | ✓ | [`plugins/ruflo-jujutsu/skills/git-workflow/SKILL.md`](plugins/ruflo-jujutsu/skills/git-workflow/SKILL.md) |
-| 277 | ✓ | [`plugins/ruflo-knowledge-graph/skills/kg-extract/SKILL.md`](plugins/ruflo-knowledge-graph/skills/kg-extract/SKILL.md) |
-| 278 | ✓ | [`plugins/ruflo-knowledge-graph/skills/kg-traverse/SKILL.md`](plugins/ruflo-knowledge-graph/skills/kg-traverse/SKILL.md) |
-| 279 | ✓ | [`plugins/ruflo-loop-workers/skills/cron-schedule/SKILL.md`](plugins/ruflo-loop-workers/skills/cron-schedule/SKILL.md) |
-| 280 | ✓ | [`plugins/ruflo-loop-workers/skills/loop-worker/SKILL.md`](plugins/ruflo-loop-workers/skills/loop-worker/SKILL.md) |
-| 281 | ✓ | [`plugins/ruflo-market-data/skills/market-ingest/SKILL.md`](plugins/ruflo-market-data/skills/market-ingest/SKILL.md) |
-| 282 | ✓ | [`plugins/ruflo-market-data/skills/market-pattern/SKILL.md`](plugins/ruflo-market-data/skills/market-pattern/SKILL.md) |
-| 283 | ✓ | [`plugins/ruflo-migrations/skills/migrate-create/SKILL.md`](plugins/ruflo-migrations/skills/migrate-create/SKILL.md) |
-| 284 | ✓ | [`plugins/ruflo-migrations/skills/migrate-validate/SKILL.md`](plugins/ruflo-migrations/skills/migrate-validate/SKILL.md) |
-| 285 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-backtest/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-backtest/SKILL.md) |
-| 286 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-portfolio/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-portfolio/SKILL.md) |
-| 287 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-regime/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-regime/SKILL.md) |
-| 288 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-risk/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-risk/SKILL.md) |
-| 289 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-signal/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-signal/SKILL.md) |
-| 290 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-train/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-train/SKILL.md) |
-| 291 | ✓ | [`plugins/ruflo-observability/skills/observe-metrics/SKILL.md`](plugins/ruflo-observability/skills/observe-metrics/SKILL.md) |
-| 292 | ✓ | [`plugins/ruflo-observability/skills/observe-trace/SKILL.md`](plugins/ruflo-observability/skills/observe-trace/SKILL.md) |
-| 293 | ✓ | [`plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md) |
-| 294 | ✓ | [`plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md) |
-| 295 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md) |
-| 296 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-search/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-search/SKILL.md) |
-| 297 | ✓ | [`plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md`](plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md) |
-| 298 | ✓ | [`plugins/ruflo-ruvector/skills/vector-embed/SKILL.md`](plugins/ruflo-ruvector/skills/vector-embed/SKILL.md) |
-| 299 | ✓ | [`plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md`](plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md) |
-| 300 | ✓ | [`plugins/ruflo-ruvector/skills/vector-setup/SKILL.md`](plugins/ruflo-ruvector/skills/vector-setup/SKILL.md) |
-| 301 | ✓ | [`plugins/ruflo-ruvllm/skills/chat-format/SKILL.md`](plugins/ruflo-ruvllm/skills/chat-format/SKILL.md) |
-| 302 | ✓ | [`plugins/ruflo-ruvllm/skills/llm-config/SKILL.md`](plugins/ruflo-ruvllm/skills/llm-config/SKILL.md) |
-| 303 | ✓ | [`plugins/ruflo-rvf/skills/rvf-manage/SKILL.md`](plugins/ruflo-rvf/skills/rvf-manage/SKILL.md) |
-| 304 | ✓ | [`plugins/ruflo-rvf/skills/session-persist/SKILL.md`](plugins/ruflo-rvf/skills/session-persist/SKILL.md) |
-| 305 | ✓ | [`plugins/ruflo-security-audit/skills/dependency-check/SKILL.md`](plugins/ruflo-security-audit/skills/dependency-check/SKILL.md) |
-| 306 | ✓ | [`plugins/ruflo-security-audit/skills/security-scan/SKILL.md`](plugins/ruflo-security-audit/skills/security-scan/SKILL.md) |
-| 307 | ✓ | [`plugins/ruflo-sparc/skills/sparc-implement/SKILL.md`](plugins/ruflo-sparc/skills/sparc-implement/SKILL.md) |
-| 308 | ✓ | [`plugins/ruflo-sparc/skills/sparc-refine/SKILL.md`](plugins/ruflo-sparc/skills/sparc-refine/SKILL.md) |
-| 309 | ✓ | [`plugins/ruflo-sparc/skills/sparc-spec/SKILL.md`](plugins/ruflo-sparc/skills/sparc-spec/SKILL.md) |
-| 310 | ✓ | [`plugins/ruflo-swarm/skills/monitor-stream/SKILL.md`](plugins/ruflo-swarm/skills/monitor-stream/SKILL.md) |
-| 311 | ✓ | [`plugins/ruflo-swarm/skills/swarm-init/SKILL.md`](plugins/ruflo-swarm/skills/swarm-init/SKILL.md) |
-| 312 | ✓ | [`plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md`](plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md) |
-| 313 | ✓ | [`plugins/ruflo-testgen/skills/test-gaps/SKILL.md`](plugins/ruflo-testgen/skills/test-gaps/SKILL.md) |
-| 314 | ✓ | [`plugins/ruflo-wasm/skills/wasm-agent/SKILL.md`](plugins/ruflo-wasm/skills/wasm-agent/SKILL.md) |
-| 315 | ✓ | [`plugins/ruflo-wasm/skills/wasm-gallery/SKILL.md`](plugins/ruflo-wasm/skills/wasm-gallery/SKILL.md) |
-| 316 | ✓ | [`plugins/ruflo-workflows/skills/workflow-create/SKILL.md`](plugins/ruflo-workflows/skills/workflow-create/SKILL.md) |
-| 317 | ✓ | [`plugins/ruflo-workflows/skills/workflow-run/SKILL.md`](plugins/ruflo-workflows/skills/workflow-run/SKILL.md) |
-| 318 | ✓ | [`ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md`](ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md) |
-| 319 | ✓ | [`ruflo/src/ruvocal/CLAUDE.md`](ruflo/src/ruvocal/CLAUDE.md) |
-| 320 | ✓ | [`v3/@claude-flow/browser/skills/browser/SKILL.md`](v3/@claude-flow/browser/skills/browser/SKILL.md) |
-| 321 | ✓ | [`v3/@claude-flow/cli/CLAUDE.md`](v3/@claude-flow/cli/CLAUDE.md) |
-| 322 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
-| 323 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
-| 324 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
-| 325 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
-| 326 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
-| 327 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
-| 328 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
+| 239 | ✓ | [`plugins/ruflo-core/skills/witness/SKILL.md`](plugins/ruflo-core/skills/witness/SKILL.md) |
+| 240 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-benchmark/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-benchmark/SKILL.md) |
+| 241 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-booster-edit/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-booster-edit/SKILL.md) |
+| 242 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-booster-route/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-booster-route/SKILL.md) |
+| 243 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-budget-check/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-budget-check/SKILL.md) |
+| 244 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-compact-context/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-compact-context/SKILL.md) |
+| 245 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-conversation/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-conversation/SKILL.md) |
+| 246 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-export/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-export/SKILL.md) |
+| 247 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-federation/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-federation/SKILL.md) |
+| 248 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-optimize/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-optimize/SKILL.md) |
+| 249 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-report/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-report/SKILL.md) |
+| 250 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-summary/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-summary/SKILL.md) |
+| 251 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-track/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-track/SKILL.md) |
+| 252 | ✓ | [`plugins/ruflo-cost-tracker/skills/cost-trend/SKILL.md`](plugins/ruflo-cost-tracker/skills/cost-trend/SKILL.md) |
+| 253 | ✓ | [`plugins/ruflo-daa/skills/cognitive-pattern/SKILL.md`](plugins/ruflo-daa/skills/cognitive-pattern/SKILL.md) |
+| 254 | ✓ | [`plugins/ruflo-daa/skills/daa-agent/SKILL.md`](plugins/ruflo-daa/skills/daa-agent/SKILL.md) |
+| 255 | ✓ | [`plugins/ruflo-ddd/skills/ddd-aggregate/SKILL.md`](plugins/ruflo-ddd/skills/ddd-aggregate/SKILL.md) |
+| 256 | ✓ | [`plugins/ruflo-ddd/skills/ddd-context/SKILL.md`](plugins/ruflo-ddd/skills/ddd-context/SKILL.md) |
+| 257 | ✓ | [`plugins/ruflo-ddd/skills/ddd-validate/SKILL.md`](plugins/ruflo-ddd/skills/ddd-validate/SKILL.md) |
+| 258 | ✓ | [`plugins/ruflo-docs/skills/api-docs/SKILL.md`](plugins/ruflo-docs/skills/api-docs/SKILL.md) |
+| 259 | ✓ | [`plugins/ruflo-docs/skills/doc-gen/SKILL.md`](plugins/ruflo-docs/skills/doc-gen/SKILL.md) |
+| 260 | ✓ | [`plugins/ruflo-federation/skills/federation-audit/SKILL.md`](plugins/ruflo-federation/skills/federation-audit/SKILL.md) |
+| 261 | ✓ | [`plugins/ruflo-federation/skills/federation-init/SKILL.md`](plugins/ruflo-federation/skills/federation-init/SKILL.md) |
+| 262 | ✓ | [`plugins/ruflo-federation/skills/federation-status/SKILL.md`](plugins/ruflo-federation/skills/federation-status/SKILL.md) |
+| 263 | ✓ | [`plugins/ruflo-goals/skills/deep-research/SKILL.md`](plugins/ruflo-goals/skills/deep-research/SKILL.md) |
+| 264 | ✓ | [`plugins/ruflo-goals/skills/dossier-collect/SKILL.md`](plugins/ruflo-goals/skills/dossier-collect/SKILL.md) |
+| 265 | ✓ | [`plugins/ruflo-goals/skills/goal-plan/SKILL.md`](plugins/ruflo-goals/skills/goal-plan/SKILL.md) |
+| 266 | ✓ | [`plugins/ruflo-goals/skills/horizon-track/SKILL.md`](plugins/ruflo-goals/skills/horizon-track/SKILL.md) |
+| 267 | ✓ | [`plugins/ruflo-goals/skills/research-synthesize/SKILL.md`](plugins/ruflo-goals/skills/research-synthesize/SKILL.md) |
+| 268 | ✓ | [`plugins/ruflo-intelligence/skills/intelligence-route/SKILL.md`](plugins/ruflo-intelligence/skills/intelligence-route/SKILL.md) |
+| 269 | ✓ | [`plugins/ruflo-intelligence/skills/intelligence-transfer/SKILL.md`](plugins/ruflo-intelligence/skills/intelligence-transfer/SKILL.md) |
+| 270 | ✓ | [`plugins/ruflo-intelligence/skills/neural-train/SKILL.md`](plugins/ruflo-intelligence/skills/neural-train/SKILL.md) |
+| 271 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-anomalies/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-anomalies/SKILL.md) |
+| 272 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-firmware/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-firmware/SKILL.md) |
+| 273 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-fleet/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-fleet/SKILL.md) |
+| 274 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-register/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-register/SKILL.md) |
+| 275 | ✓ | [`plugins/ruflo-iot-cognitum/skills/iot-witness-verify/SKILL.md`](plugins/ruflo-iot-cognitum/skills/iot-witness-verify/SKILL.md) |
+| 276 | ✓ | [`plugins/ruflo-jujutsu/skills/diff-analyze/SKILL.md`](plugins/ruflo-jujutsu/skills/diff-analyze/SKILL.md) |
+| 277 | ✓ | [`plugins/ruflo-jujutsu/skills/git-workflow/SKILL.md`](plugins/ruflo-jujutsu/skills/git-workflow/SKILL.md) |
+| 278 | ✓ | [`plugins/ruflo-knowledge-graph/skills/kg-extract/SKILL.md`](plugins/ruflo-knowledge-graph/skills/kg-extract/SKILL.md) |
+| 279 | ✓ | [`plugins/ruflo-knowledge-graph/skills/kg-traverse/SKILL.md`](plugins/ruflo-knowledge-graph/skills/kg-traverse/SKILL.md) |
+| 280 | ✓ | [`plugins/ruflo-loop-workers/skills/cron-schedule/SKILL.md`](plugins/ruflo-loop-workers/skills/cron-schedule/SKILL.md) |
+| 281 | ✓ | [`plugins/ruflo-loop-workers/skills/loop-worker/SKILL.md`](plugins/ruflo-loop-workers/skills/loop-worker/SKILL.md) |
+| 282 | ✓ | [`plugins/ruflo-market-data/skills/market-ingest/SKILL.md`](plugins/ruflo-market-data/skills/market-ingest/SKILL.md) |
+| 283 | ✓ | [`plugins/ruflo-market-data/skills/market-pattern/SKILL.md`](plugins/ruflo-market-data/skills/market-pattern/SKILL.md) |
+| 284 | ✓ | [`plugins/ruflo-migrations/skills/migrate-create/SKILL.md`](plugins/ruflo-migrations/skills/migrate-create/SKILL.md) |
+| 285 | ✓ | [`plugins/ruflo-migrations/skills/migrate-validate/SKILL.md`](plugins/ruflo-migrations/skills/migrate-validate/SKILL.md) |
+| 286 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-backtest/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-backtest/SKILL.md) |
+| 287 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-portfolio/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-portfolio/SKILL.md) |
+| 288 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-regime/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-regime/SKILL.md) |
+| 289 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-risk/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-risk/SKILL.md) |
+| 290 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-signal/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-signal/SKILL.md) |
+| 291 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-train/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-train/SKILL.md) |
+| 292 | ✓ | [`plugins/ruflo-observability/skills/observe-metrics/SKILL.md`](plugins/ruflo-observability/skills/observe-metrics/SKILL.md) |
+| 293 | ✓ | [`plugins/ruflo-observability/skills/observe-trace/SKILL.md`](plugins/ruflo-observability/skills/observe-trace/SKILL.md) |
+| 294 | ✓ | [`plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md) |
+| 295 | ✓ | [`plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md) |
+| 296 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md) |
+| 297 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-search/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-search/SKILL.md) |
+| 298 | ✓ | [`plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md`](plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md) |
+| 299 | ✓ | [`plugins/ruflo-ruvector/skills/vector-embed/SKILL.md`](plugins/ruflo-ruvector/skills/vector-embed/SKILL.md) |
+| 300 | ✓ | [`plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md`](plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md) |
+| 301 | ✓ | [`plugins/ruflo-ruvector/skills/vector-setup/SKILL.md`](plugins/ruflo-ruvector/skills/vector-setup/SKILL.md) |
+| 302 | ✓ | [`plugins/ruflo-ruvllm/skills/chat-format/SKILL.md`](plugins/ruflo-ruvllm/skills/chat-format/SKILL.md) |
+| 303 | ✓ | [`plugins/ruflo-ruvllm/skills/llm-config/SKILL.md`](plugins/ruflo-ruvllm/skills/llm-config/SKILL.md) |
+| 304 | ✓ | [`plugins/ruflo-rvf/skills/rvf-manage/SKILL.md`](plugins/ruflo-rvf/skills/rvf-manage/SKILL.md) |
+| 305 | ✓ | [`plugins/ruflo-rvf/skills/session-persist/SKILL.md`](plugins/ruflo-rvf/skills/session-persist/SKILL.md) |
+| 306 | ✓ | [`plugins/ruflo-security-audit/skills/dependency-check/SKILL.md`](plugins/ruflo-security-audit/skills/dependency-check/SKILL.md) |
+| 307 | ✓ | [`plugins/ruflo-security-audit/skills/security-scan/SKILL.md`](plugins/ruflo-security-audit/skills/security-scan/SKILL.md) |
+| 308 | ✓ | [`plugins/ruflo-sparc/skills/sparc-implement/SKILL.md`](plugins/ruflo-sparc/skills/sparc-implement/SKILL.md) |
+| 309 | ✓ | [`plugins/ruflo-sparc/skills/sparc-refine/SKILL.md`](plugins/ruflo-sparc/skills/sparc-refine/SKILL.md) |
+| 310 | ✓ | [`plugins/ruflo-sparc/skills/sparc-spec/SKILL.md`](plugins/ruflo-sparc/skills/sparc-spec/SKILL.md) |
+| 311 | ✓ | [`plugins/ruflo-swarm/skills/monitor-stream/SKILL.md`](plugins/ruflo-swarm/skills/monitor-stream/SKILL.md) |
+| 312 | ✓ | [`plugins/ruflo-swarm/skills/swarm-init/SKILL.md`](plugins/ruflo-swarm/skills/swarm-init/SKILL.md) |
+| 313 | ✓ | [`plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md`](plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md) |
+| 314 | ✓ | [`plugins/ruflo-testgen/skills/test-gaps/SKILL.md`](plugins/ruflo-testgen/skills/test-gaps/SKILL.md) |
+| 315 | ✓ | [`plugins/ruflo-wasm/skills/wasm-agent/SKILL.md`](plugins/ruflo-wasm/skills/wasm-agent/SKILL.md) |
+| 316 | ✓ | [`plugins/ruflo-wasm/skills/wasm-gallery/SKILL.md`](plugins/ruflo-wasm/skills/wasm-gallery/SKILL.md) |
+| 317 | ✓ | [`plugins/ruflo-workflows/skills/workflow-create/SKILL.md`](plugins/ruflo-workflows/skills/workflow-create/SKILL.md) |
+| 318 | ✓ | [`plugins/ruflo-workflows/skills/workflow-run/SKILL.md`](plugins/ruflo-workflows/skills/workflow-run/SKILL.md) |
+| 319 | ✓ | [`ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md`](ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md) |
+| 320 | ✓ | [`ruflo/src/ruvocal/CLAUDE.md`](ruflo/src/ruvocal/CLAUDE.md) |
+| 321 | ✓ | [`v3/@claude-flow/browser/skills/browser/SKILL.md`](v3/@claude-flow/browser/skills/browser/SKILL.md) |
+| 322 | ✓ | [`v3/@claude-flow/cli/CLAUDE.md`](v3/@claude-flow/cli/CLAUDE.md) |
+| 323 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
+| 324 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
+| 325 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
+| 326 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
+| 327 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
+| 328 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
+| 329 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
 
 ---
 

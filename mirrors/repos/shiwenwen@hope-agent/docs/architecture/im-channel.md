@@ -359,13 +359,13 @@ Worker Dispatcher (worker.rs)
     ├── 1. 查找 ChannelAccountConfig
     ├── 2. check_access() 权限校验
     ├── 3. resolve_or_create_session() 查找/创建会话
-    ├── 4. append_message(user_msg) 保存用户消息
-    ├── 5. send_typing() 发送输入中指示器
-    ├── 5a. [斜杠命令拦截] is_slash_command(user_text)?
+    ├── 4. send_typing() 发送输入中指示器
+    ├── 5. [斜杠命令预拦截] is_slash_command(user_text)?
     │       ├── YES → dispatch_slash_for_channel()
-    │       │           ├── Reply 类 (help/status/new/clear/...) → 直接回复，跳过 LLM，return
+    │       │           ├── Reply 类 (help/status/clear/model/...) → command/result 落 event，直接回复，跳过 LLM，return
     │       │           └── PassThrough 类 (技能调用/search) → 替换为转换后指令，继续 ↓
     │       └── NO  → 继续 ↓
+    ├── 5b. append_message(user_msg) 保存真实对话用户消息
     ├── 6. chat_engine::run_chat_engine() 共享聊天引擎
     │       ├── 构建 Agent（model chain + failover）
     │       ├── 恢复会话历史 (restore_agent_context)
@@ -690,6 +690,8 @@ turn 收尾走 `finalize_im_live_mirror`:drop SinkHandle → 等 stream task 处
 - **不写回 `sessions.context_json` / `messages` 表**:引用只在镜像 chunk 拼接,assistant 消息持久化为干净版本,后续 turn 的 LLM 上下文不被引用块污染。
 - **覆盖范围**:quote 加在 `deliver_rounds` 的 `response` 参数上,实际由 `deliver_split / deliver_final_only / deliver_preview_merged` 决定何时露出——`Final` 模式 + rounds 为空 / `Split` 末轮 fallback 兜底场景中,引用前缀直接出现;live 流式预览阶段(已发完的 round)无法回插。
 
+mirror 与入站共享同一份 chunk 管道(`send_text_chunks` → `markdown_to_native` → `chunk_message`),三种 `ImReplyMode` 的路径覆盖详见本节末尾[消息分段(chunking)契约](#消息分段chunking契约)表。
+
 > 历史:本能力之前是 follow-up F-066(详见 [`docs/plans/review-followups.md`](../plans/review-followups.md));旧版 `attach_im_mirrors` / `finalize_im_mirrors` 走「turn 末尾一次性 send_message」,与 src-tauri `chat.rs` 的 `relay_to_channel` 还存在 double-send。F-066 落地后 live mirror 完整接管 IM 投递,`relay_to_channel` 已删除。
 
 ### Attach catch-up:接管已有会话立刻看到上一轮
@@ -718,6 +720,8 @@ turn 收尾走 `finalize_im_live_mirror`:drop SinkHandle → 等 stream task 处
 ### 按钮回调路由(7 渠道单一真相源)
 
 支持按钮的 7 个渠道(Telegram / Feishu / Discord / Slack / QQ Bot / LINE / Google Chat)对**无参 slash 命令**会弹 `arg_options` picker([`channel/worker/slash.rs`](../../crates/ha-core/src/channel/worker/slash.rs)),按钮 `callback_data = "slash:cmd arg"`。
+
+不支持按钮的 5 个渠道(WeChat / iMessage / IRC / Signal / WhatsApp)上,**`args_optional=false` + 有 `arg_options`** 的命令(`/thinking` / `/permission` / `/plan`)无参时会回一段 `Usage: /cmd <placeholder>` + 选项列表的文本提示,代替 handler 默认的 `Invalid X: \`\`` 错误,让用户能直接看到合法值并复制粘贴。`args_optional=true` 的命令(`/imreply` / `/sessions` / `/recap` / `/team` / `/awareness` / `/reason` 等)在这些渠道上保持原有 handler 路径不变 —— 它们的 handler 自带"无参 = 显示当前状态 / picker"分支。Skill 命令统一按 `args_optional=true` 处理(skill 默认无参可跑,不拦)。
 
 **统一入口**:[`channel/worker/slash_callback.rs::inject_slash_callback`](../../crates/ha-core/src/channel/worker/slash_callback.rs) ——
 签名 `(channel_id, account_id, chat_id, thread_id, sender_id, message_id, rest, inbound_tx, source)`。helper 内部用 `channel_db.get_chat_type` 查 `channel_conversations` (arg-picker 按钮永远在一条真实 inbound `/cmd` 之后,行已存在),缺行 fallback `Dm` (与 `ChatType::from_lowercase` 一致)。每个渠道在自己的 button-callback 入口先 `strip_prefix("slash:")`,再调 helper:
@@ -781,7 +785,7 @@ pub fn spawn_dispatcher(
 **关键设计决策：**
 
 - **并发处理**：每条入站消息在独立 `tokio::spawn` 中处理，不阻塞其他消息
-- **斜杠命令拦截**：在调用 LLM 之前，`dispatch_slash_for_channel()` 检测以 `/` 开头的消息并转发给 `slash_commands::handlers::dispatch()`。`Reply` 类命令（`/help`、`/new`、`/clear`、`/model`、`/status` 等）直接回复并跳过 LLM；`PassThrough` 类命令（技能调用、`/search`）将转换后的指令作为 `engine_message` 交给 LLM（详见 [斜杠命令系统](slash-commands.md)）
+- **斜杠命令拦截**：在调用 LLM 和写入 user turn 之前，`dispatch_slash_for_channel()` 检测以 `/` 开头的消息并转发给 `slash_commands::handlers::dispatch()`。`Reply` 类命令（`/help`、`/clear`、`/model`、`/status` 等）把原始 slash 与结果落为 `messages.role="event"`（command event 带 `displayAs="user"` 供 GUI 渲染成用户气泡），直接回复并跳过 LLM；`PassThrough` 类命令（技能调用、`/search`）将转换后的指令作为 `engine_message` 交给 LLM，并按真实对话 user turn 落库（详见 [斜杠命令系统](slash-commands.md)）
 - **共享 ChatEngine**：调用 `chat_engine::run_chat_engine()` — 与 UI 聊天使用完全相同的 Agent 执行引擎，拥有相同的能力：流式输出、会话历史恢复、工具事件持久化、Failover 降级、Context compaction、Token 跟踪、异步记忆提取
 - **EventSink 抽象**：UI 聊天在桌面通过 `ChannelSink`（Tauri Channel）推流，在 HTTP 模式通过 `chat:stream_delta` EventBus 推到 `/ws/events`；IM 聊天通过 `ChannelStreamSink`（EventBus）推流到前端 + 累积 text_delta 发送 `channel:stream_delta` 事件
 - **每个渠道可绑定独立 Agent**：`ChannelAccountConfig.agent_id` 字段支持每个渠道账户绑定不同 Agent，未设置时回退到全局默认
@@ -862,13 +866,41 @@ stream task 是真正的"按 round 切"执行者。`spawn_channel_stream_task` �
 - **末段 round（model 以 tool_call 结束）**：stream end 时若 `in_tool_phase=true`，再 finalize 一次（最后 round 没有后续 narration），dispatcher 会看到 `finalized_rounds == rounds.len()` 而早返回
 - **末段 round（model 以 narration 结束）**：preview 留开，dispatcher `send_final_reply` 接力 finalize 最后那条 preview
 
-非流式渠道下 `preview_transport=None`，stream task 仅 drain events、`finalized_rounds=0`，`deliver_split` 走老路径——pre-final round 一次性 `send_message`、final round `send_final_reply`。
+非流式渠道下 `preview_transport=None`，stream task 仅 drain events、`finalized_rounds=0`，`deliver_split` 走整段 round —— pre-final round 走 `send_text_chunks`、final round 走 `send_final_reply`，两条路都过 `markdown_to_native + chunk_message`。
 
 #### 配置入口
 
 - **GUI**：`Settings → Channels → 编辑账号 → IM Reply Mode` 下拉，三选项；选中 `preview` 而 channel 不支持流式预览时显示 hint「will degrade to Final」，但仍允许保存——避免阻塞用户。读 / 写 helper 在 [`src/components/settings/channel-panel/types.ts`](../../src/components/settings/channel-panel/types.ts) (`readImReplyMode` / `channelSupportsStreamPreview`)。
 - **IM 内**：`/imreply [split|final|preview]` 斜杠命令（[`slash_commands/handlers/utility.rs`](../../crates/ha-core/src/slash_commands/handlers/utility.rs) `handle_imreply`）。任何 channel 都可设置；桌面 / web session 拒绝（无 channel_info）。无参打印当前 mode + 三态说明。
 - **持久化**：`ChannelAccountConfig.settings.imReplyMode`，`im_reply_mode()` / `set_im_reply_mode()` helper（[`channel/types.rs`](../../crates/ha-core/src/channel/types.rs)）。账号级配置，跨重启持久。
+
+#### 消息分段（chunking）契约
+
+**统一管道**：所有 IM 出站文本（含入站回复、GUI mirror、catch-up、slash handler 直回、错误回复、media URL fallback）必须走 [`send_text_chunks`](../../crates/ha-core/src/channel/worker/dispatcher.rs)：`markdown_to_native(markdown)` → `chunk_message(native_text)` → 逐块 `plugin.send_message(chunk)`，第 0 块带 `reply_to_message_id`、最后一块挂 `buttons`（如有）。**禁止直接 `plugin.send_message(text=...)`** —— 新出站点必须复用 `send_text_chunks` 入口，否则长文本（model 在 tool 调用之间的解说、附件 URL 列表、`/recap` 输出等）会被平台拒绝 / 截断。
+
+**三模式 × 路径覆盖**：
+
+| 模式 | 路径 | 入口函数 | chunk 处理 |
+|---|---|---|---|
+| Final（任何渠道） | 末段定稿 | `send_final_reply` | ✓ Card 直写或 `send_text_chunks` |
+| Preview（流式渠道） | 单一 growing message + 末段定稿 | preview transport（cardkit ~100k / Message edit / Draft）+ `send_final_reply` | ✓ oversize 时 fallback `send_text_chunks` |
+| Preview（非流式） | 自动降级 = Final | 同 Final | ✓ |
+| Split + 流式渠道 | per-round preview finalize | `finalize_split_round` → `preview_carried_full_text` 判定 → `send_text_chunks` fallback | ✓ |
+| Split + 流式渠道 | 末段 round | `send_final_reply` | ✓ |
+| Split + 非流式渠道 | pre-final round | `send_text_chunks` | ✓ |
+| Split + 非流式渠道 | 末段 round | `send_final_reply` | ✓ |
+| GUI mirror（任何模式） | 用户引用前缀 | `send_text_chunks` | ✓ |
+| GUI mirror（任何模式） | turn 收尾 | 复用 `deliver_split / deliver_final_only / deliver_preview_merged` | ✓ |
+| Attach catch-up | 历史 round 回填 | `send_text_chunks` | ✓ |
+| Slash handler 直回 / engine 错误回复 / media URL fallback | 三种小路径 | `send_text_chunks` | ✓ |
+| Eviction notice / catch-up in-flight 提示 / approval / ask_user / cron | 固定模板，文本受控 | `plugin.send_message` raw | — 输入恒短，不需 chunk |
+
+**两个 byte 上限的语义区分**（不要混淆）：
+
+- `capabilities.streaming_preview_max_bytes`（[`channel/types.rs`](../../crates/ha-core/src/channel/types.rs)）：流式 preview 阶段「这条 preview 还塞得下整段 native_text 吗？」的判定阈值。比平台真实上限留 ~25% headroom（Telegram 3200 / Slack 3200 / Discord 1500）防 in-flight delta 撞临界。`build_stream_preview_payload` / `preview_carried_full_text` 用它决定要不要 fallback chunk-send。
+- `chunk_message` 内部 limit：chunk-send 一刀切多大，贴平台真实上限（Telegram 4096 / Slack 4000 / Discord 2000 / WhatsApp 65536 / IRC 512）。各渠道在 [`channel/<plugin>/mod.rs`](../../crates/ha-core/src/channel/) 里覆写；不覆写时默认走 `streaming_preview_max_bytes`（保守但安全）。
+- **不要把两者改成同一个值** —— preview 阶段的 headroom 是为防 in-flight 累积撞临界，chunk-send 是定稿一次性切，可以贴满。
+- `chunk_text` 默认实现按 UTF-8 byte 切（不是 char），`max_len` 单位 byte。`markdown_to_native` 在 chunk 之前执行，HTML / mrkdwn escape 膨胀后的 byte 数被 chunk 自身的 byte ceiling 兜底（4096 byte ≤ Telegram 4096 char 限制，CJK 还宽松得多）。新 plugin 加 native 渲染时不需要为 chunk size 单独考虑膨胀。
 
 ### Thinking 显示：`show_thinking` 与 `/reason`
 

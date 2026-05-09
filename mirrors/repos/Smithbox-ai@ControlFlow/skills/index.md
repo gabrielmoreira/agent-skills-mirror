@@ -17,6 +17,9 @@ Reusable domain-specific patterns for agent consumption. Planner selects relevan
 | Domain | Skill File | Applicable Agents | Keywords |
 | -------- | ----------- | ------------------- | ---------- |
 | Testing | `skills/patterns/tdd-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent | test, TDD, coverage, assertion, spec |
+| Spec-Driven Development | `skills/patterns/spec-driven-development.md` | Planner, CoreImplementer-subagent, UIImplementer-subagent | spec, requirements, scope, acceptance-criteria, before-planning |
+| Debugging Discipline | `skills/patterns/debugging-discipline.md` | CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent, BrowserTester-subagent | debug, triage, stop-the-line, root-cause, regression |
+| Code Simplification | `skills/patterns/code-simplification.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent | simplify, refactor, chesterton, dead-code, behavior-preservation |
 | Error Handling | `skills/patterns/error-handling-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent | error, exception, retry, fallback, boundary |
 | Security | `skills/patterns/security-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, PlanAuditor-subagent | auth, input validation, injection, XSS, CSRF, secrets |
 | Performance | `skills/patterns/performance-patterns.md` | CoreImplementer-subagent, UIImplementer-subagent, CodeReviewer-subagent, PlanAuditor-subagent | query, N+1, pagination, cache, batch, index |

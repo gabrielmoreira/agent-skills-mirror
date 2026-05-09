@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 14 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,12 +67,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.cursor/skills/skill-creator/scripts/quick_validate.py`](.cursor/skills/skill-creator/scripts/quick_validate.py) |
 | 7 | ✓ | [`.cursor/skills/skill-creator/SKILL.md`](.cursor/skills/skill-creator/SKILL.md) |
 | 8 | ✓ | [`skills/langfuse/references/cli.md`](skills/langfuse/references/cli.md) |
-| 9 | ✓ | [`skills/langfuse/references/instrumentation.md`](skills/langfuse/references/instrumentation.md) |
-| 10 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
-| 11 | ✓ | [`skills/langfuse/references/sdk-upgrade.md`](skills/langfuse/references/sdk-upgrade.md) |
-| 12 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
-| 13 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
-| 14 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
+| 9 | ✓ | [`skills/langfuse/references/error-analysis.md`](skills/langfuse/references/error-analysis.md) |
+| 10 | ✓ | [`skills/langfuse/references/instrumentation.md`](skills/langfuse/references/instrumentation.md) |
+| 11 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
+| 12 | ✓ | [`skills/langfuse/references/sdk-upgrade.md`](skills/langfuse/references/sdk-upgrade.md) |
+| 13 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
+| 14 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
+| 15 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
 
 ---
 

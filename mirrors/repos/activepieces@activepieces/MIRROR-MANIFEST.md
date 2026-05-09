@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 83 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 83 |
+| Files         | 93 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,28 +120,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`.agents/skills/design/README.md`](.agents/skills/design/README.md) |
 | 60 | ✓ | [`.agents/skills/design/SKILL.md`](.agents/skills/design/SKILL.md) |
 | 61 | ✓ | [`.agents/skills/grill-me/SKILL.md`](.agents/skills/grill-me/SKILL.md) |
-| 62 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
-| 63 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
-| 64 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
-| 65 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
-| 66 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
-| 67 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
-| 68 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
-| 69 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
-| 70 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
-| 71 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
-| 72 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
-| 73 | ✓ | [`.agents/skills/ubiquitous-language/SKILL.md`](.agents/skills/ubiquitous-language/SKILL.md) |
-| 74 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
-| 75 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 76 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 77 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
-| 78 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 79 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 80 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
-| 81 | ✓ | [`packages/shared/CLAUDE.md`](packages/shared/CLAUDE.md) |
-| 82 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 83 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 62 | ✓ | [`.agents/skills/mcp-builder/LICENSE.txt`](.agents/skills/mcp-builder/LICENSE.txt) |
+| 63 | ✓ | [`.agents/skills/mcp-builder/reference/evaluation.md`](.agents/skills/mcp-builder/reference/evaluation.md) |
+| 64 | ✓ | [`.agents/skills/mcp-builder/reference/mcp_best_practices.md`](.agents/skills/mcp-builder/reference/mcp_best_practices.md) |
+| 65 | ✓ | [`.agents/skills/mcp-builder/reference/node_mcp_server.md`](.agents/skills/mcp-builder/reference/node_mcp_server.md) |
+| 66 | ✓ | [`.agents/skills/mcp-builder/reference/python_mcp_server.md`](.agents/skills/mcp-builder/reference/python_mcp_server.md) |
+| 67 | ✓ | [`.agents/skills/mcp-builder/scripts/connections.py`](.agents/skills/mcp-builder/scripts/connections.py) |
+| 68 | ✓ | [`.agents/skills/mcp-builder/scripts/evaluation.py`](.agents/skills/mcp-builder/scripts/evaluation.py) |
+| 69 | ✓ | [`.agents/skills/mcp-builder/scripts/example_evaluation.xml`](.agents/skills/mcp-builder/scripts/example_evaluation.xml) |
+| 70 | ✓ | [`.agents/skills/mcp-builder/scripts/requirements.txt`](.agents/skills/mcp-builder/scripts/requirements.txt) |
+| 71 | ✓ | [`.agents/skills/mcp-builder/SKILL.md`](.agents/skills/mcp-builder/SKILL.md) |
+| 72 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
+| 73 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
+| 74 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
+| 75 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
+| 76 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
+| 77 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
+| 78 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
+| 79 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
+| 80 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
+| 81 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
+| 82 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
+| 83 | ✓ | [`.agents/skills/ubiquitous-language/SKILL.md`](.agents/skills/ubiquitous-language/SKILL.md) |
+| 84 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
+| 85 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 86 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 87 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
+| 88 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 89 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 90 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 91 | ✓ | [`packages/shared/CLAUDE.md`](packages/shared/CLAUDE.md) |
+| 92 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 93 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

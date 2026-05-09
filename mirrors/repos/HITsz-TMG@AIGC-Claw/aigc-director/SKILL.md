@@ -1,6 +1,6 @@
 ﻿---
 name: aigc-director
-description: AI 视频生成全流程：通过 6 个阶段（剧本→角色/场景设计→分镜→参考图→视频生成→后期剪辑）将用户想法转化为完整视频。支持临时工作台（单独调用 LLM、VLM、文生图、图生图、视频生成）和一次性短流程 Pipeline（静态短视频、动作迁移、数字人口播）。触发词：视频生成、AI视频、AIGC、创作视频、制作视频、AI画图、静态短视频、动作迁移、数字人口播。
+description: AI 视频生成全流程：通过 6 个阶段（剧本→角色/场景设计→分镜→参考图→视频生成→后期剪辑）将用户想法转化为完整视频。支持临时工作台（单独调用 LLM、VLM、文生图、图生图、视频生成）和一次性短流程 Pipeline（文艺短视频、动作迁移、数字人口播）。触发词：视频生成、AI视频、AIGC、创作视频、制作视频、AI画图、文艺短视频、静态短视频、动作迁移、数字人口播。
 license: MIT License
 metadata:
   author: Lychee
@@ -53,7 +53,7 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 > - `script/` - 剧本产物
 > - `image/` - 图片产物（角色、场景、参考图）
 > - `video/` - 视频产物
-> - `task/<task_id>/` - Pipeline 产物（静态短视频、动作迁移、数字人口播）
+> - `task/<task_id>/` - Pipeline 产物（文艺短视频、动作迁移、数字人口播）
 >
 > **Pipeline 元数据目录**：`aigc-claw/backend/code/data/tasks/<task_id>.json`
 
@@ -95,8 +95,8 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 | 用户说 | 处理 |
 |--------|------|
 | "生成图片" | 临时工作台 (sandbox) |
-| "生成视频" | 必须先询问：长视频(六阶段工作流)、静态短视频、动作迁移、数字人口播，还是临时工作台视频？ |
-| "静态短视频" / "图文短视频" / "旁白配图视频" | Pipeline：静态短视频，参考 `references/pipelines/static_short_video.md` |
+| "生成视频" | 必须先询问：长视频(六阶段工作流)、文艺短视频、动作迁移、数字人口播，还是临时工作台视频？ |
+| "文艺短视频" / "静态短视频" / "图文短视频" / "旁白配图视频" | Pipeline：文艺短视频，参考 `references/pipelines/static_short_video.md` |
 | "动作迁移" / "把动作迁到人物上" | Pipeline：动作迁移，参考 `references/pipelines/action_transfer.md` |
 | "数字人口播" / "口播视频" / "商品口播" | Pipeline：数字人口播，参考 `references/pipelines/digital_human.md` |
 | "分析图片" | 临时工作台 (sandbox) |
@@ -108,7 +108,7 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 ```
 1. 检查后端运行状态 → 未运行则参考 start_backend.md 启动 → 等待3秒 → 再次检查
 2. 检查前端运行状态 → 未运行则参考 start_frontend.md 启动 → 等待5秒 → 再次检查
-3. 检查 API Key 配置 → 读取 .env 文件，确认所需 API Key 已配置
+3. 检查 API Key 配置 → 读取 `aigc-claw/backend/config.yaml`，确认所需 API Key 已配置
 4. 参考 create_project.md，询问用户剧情与集数相关配置（停点0），确认无误后接着确认生成参数选项（停点1）。全部确认完毕后 → 创建项目
 5. 参考 create_script.md 执行剧本生成 → 停点2
 6. 参考 create_character.md 执行角色设计 → 停点3
@@ -123,7 +123,7 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 
 ### 4. 执行一次性 Pipeline
 
-当用户明确选择静态短视频、动作迁移或数字人口播时，不走六阶段停点流程，而是创建 Pipeline 任务：
+当用户明确选择文艺短视频、动作迁移或数字人口播时，不走六阶段停点流程，而是创建 Pipeline 任务：
 
 ```
 1. 检查后端运行状态
@@ -144,27 +144,27 @@ aigc-director/                    ← OpenClaw 调用的 skill 根目录
 在创建项目前，必须检查用户选择的模型对应的 API Key 是否已配置：
 
 ```bash
-# 读取 .env 文件检查配置
-cat aigc-claw/backend/.env | grep -E "API_KEY|KEY"
+# 读取 config.yaml 检查配置
+sed -n '1,120p' aigc-claw/backend/config.yaml
 
 # 必需的配置（根据选择的模型）
-# LLM: DASHSCOPE_API_KEY / DEEPSEEK_API_KEY / OPENAI_API_KEY / GEMINI_API_KEY
-# 图片: ARK_API_KEY / DASHSCOPE_API_KEY
-# 视频: DASHSCOPE_API_KEY / VOLC_ACCESS_KEY / KLING_ACCESS_KEY
+# LLM: models.llm.api_key 或 api_providers.deepseek/openai/gemini/dashscope.api_key
+# 图片: api_providers.ark.api_key 或 api_providers.dashscope.api_key
+# 视频: api_providers.dashscope.api_key / api_providers.ark.api_key / api_providers.kling.access_key + secret_key
 ```
 
 如果 API Key 未配置，需要提醒用户：
 1. 告知缺少哪个平台的 API Key
 2. 提供获取方式
-3. 配置位置（`aigc-claw/backend/.env` 文件）
+3. 配置位置（`aigc-claw/backend/config.yaml` 文件，或前端侧边栏底部「设置」页面）
 4. 等待用户配置完成后才能继续
 
-| 平台 | API Key 变量 | 获取链接 |
+| 平台 | config.yaml 字段 | 获取链接 |
 |------|--------------|----------|
-| DeepSeek | `DEEPSEEK_API_KEY` | https://platform.deepseek.com/api_keys |
-| 阿里云 DashScope | `DASHSCOPE_API_KEY` | https://bailian.console.aliyun.com/cn-beijing/?tab=home#/home |
-| 字节火山方舟 | `ARK_API_KEY` 或 `VOLC_ACCESS_KEY`/`VOLC_SECRET_KEY` | https://www.volcengine.com/product/ark |
-| 快手可灵 Kling | `KLING_ACCESS_KEY`/`KLING_SECRET_KEY` | https://klingai.com/cn/dev |
+| DeepSeek | `api_providers.deepseek.api_key` | https://platform.deepseek.com/api_keys |
+| 阿里云 DashScope | `api_providers.dashscope.api_key` 或 `models.llm.api_key` | https://bailian.console.aliyun.com/cn-beijing/?tab=home#/home |
+| 字节火山方舟 | `api_providers.ark.api_key` | https://www.volcengine.com/product/ark |
+| 快手可灵 Kling | `api_providers.kling.access_key` / `api_providers.kling.secret_key` | https://klingai.com/cn/dev |
 
 ---
 
@@ -305,7 +305,7 @@ send_to_user(f"📊 查看详情：{frontend_url}")
 | [generate_video.md](references/sandbox/generate_video.md) | 短视频生成 API | 用户要求生成15秒内视频时 |
 | **pipelines/** | 一次性短流程 Pipeline | |
 | [overview.md](references/pipelines/overview.md) | Pipeline 总览、任务状态、模型能力筛选 | 用户选择任一 Pipeline 时先读 |
-| [static_short_video.md](references/pipelines/static_short_video.md) | 静态短视频 Pipeline | 用户要求静态短视频/旁白配图短视频时 |
+| [static_short_video.md](references/pipelines/static_short_video.md) | 文艺短视频 Pipeline | 用户要求文艺短视频/静态短视频/旁白配图短视频时 |
 | [action_transfer.md](references/pipelines/action_transfer.md) | 动作迁移 Pipeline | 用户要求动作迁移时 |
 | [digital_human.md](references/pipelines/digital_human.md) | 数字人口播 Pipeline | 用户要求数字人口播/口播视频时 |
 | **send_message/** | 消息发送 | |

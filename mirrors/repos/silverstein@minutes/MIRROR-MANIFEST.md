@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `silverstein/minutes` — 26 default patterns, 0 followed patterns, 100 file(s) materialized.
+Mirror of `silverstein/minutes` — 26 default patterns, 2 followed patterns, 102 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `silverstein/minutes` — 26 default patterns, 0 followed patterns, 10
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 100 |
+| Followed pats | 2 |
+| Files         | 102 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `silverstein/minutes` — 26 default patterns, 0 followed patterns, 10
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/PRE-COMMIT.md`
+- `docs/RELEASE.md`
 
 ## File Index
 
@@ -159,6 +160,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 98 | ✓ | [`tooling/skills/goldens/opencode/minutes-brief/SKILL.md`](tooling/skills/goldens/opencode/minutes-brief/SKILL.md) |
 | 99 | ✓ | [`tooling/skills/goldens/opencode/minutes-debrief/SKILL.md`](tooling/skills/goldens/opencode/minutes-debrief/SKILL.md) |
 | 100 | ✓ | [`tooling/skills/goldens/opencode/minutes-prep/SKILL.md`](tooling/skills/goldens/opencode/minutes-prep/SKILL.md) |
+| 101 | → | [`docs/PRE-COMMIT.md`](docs/PRE-COMMIT.md) |
+| 102 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
 
 ---
 

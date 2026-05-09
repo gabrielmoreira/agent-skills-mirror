@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 9 followed patterns, 22 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 17 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 9 followed patterns, 22 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 22 |
+| Followed pats | 17 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,14 +51,22 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 9 followed patterns, 22 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/product.md`
 - `docs/architecture.md`
+- `docs/data-model.md`
+- `docs/glossary.md`
 - `docs/coding-standards.md`
-- `docs/testing.md`
-- `docs/development.md`
-- `docs/release.md`
-- `docs/custom-providers.md`
-- `docs/android.md`
 - `docs/design.md`
+- `docs/unistyles.md`
+- `docs/file-icons.md`
+- `docs/providers.md`
+- `docs/custom-providers.md`
+- `docs/development.md`
+- `docs/testing.md`
+- `docs/mobile-testing.md`
+- `docs/ad-hoc-daemon-testing.md`
+- `docs/android.md`
+- `docs/release.md`
 - `SECURITY.md`
 
 ## File Index
@@ -80,15 +88,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`skills/paseo-loop/SKILL.md`](skills/paseo-loop/SKILL.md) |
 | 12 | ✓ | [`skills/paseo-orchestrate/SKILL.md`](skills/paseo-orchestrate/SKILL.md) |
 | 13 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
-| 14 | → | [`docs/android.md`](docs/android.md) |
-| 15 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 16 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
-| 17 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
-| 18 | → | [`docs/design.md`](docs/design.md) |
-| 19 | → | [`docs/development.md`](docs/development.md) |
-| 20 | → | [`docs/release.md`](docs/release.md) |
-| 21 | → | [`docs/testing.md`](docs/testing.md) |
-| 22 | → | [`SECURITY.md`](SECURITY.md) |
+| 14 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
+| 15 | → | [`docs/android.md`](docs/android.md) |
+| 16 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 17 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
+| 18 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
+| 19 | → | [`docs/data-model.md`](docs/data-model.md) |
+| 20 | → | [`docs/design.md`](docs/design.md) |
+| 21 | → | [`docs/development.md`](docs/development.md) |
+| 22 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 23 | → | [`docs/glossary.md`](docs/glossary.md) |
+| 24 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 25 | → | [`docs/product.md`](docs/product.md) |
+| 26 | → | [`docs/providers.md`](docs/providers.md) |
+| 27 | → | [`docs/release.md`](docs/release.md) |
+| 28 | → | [`docs/testing.md`](docs/testing.md) |
+| 29 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 30 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

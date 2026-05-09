@@ -3024,9 +3024,10 @@ Show the status of the Dolt engine for the current project.
 In embedded mode, reports that the Dolt engine runs in-process and shows
 the on-disk data directory. For beads-managed (local) servers, displays
 PID, port, and data directory from the local PID file. For externally-
-hosted servers (dolt_mode=server with a remote dolt_server_host), pings
-the configured endpoint via SQL and reports reachability, server version,
-and database.
+managed servers — either a remote dolt_server_host or a local server
+managed outside bd (dolt.auto-start: false, e.g. an orchestrator-shared
+sql-server) — pings the configured endpoint via SQL and reports
+reachability, server version, and database.
 
 ```
 bd dolt status
@@ -3468,7 +3469,7 @@ Automatically detects if MCP server is active and adapts output:
 - MCP mode: Brief workflow reminders (~50 tokens)
 - CLI mode: Full command reference (~1-2k tokens)
 
-Designed for Claude Code hooks (SessionStart, PreCompact) to prevent
+Designed for Claude Code, Gemini CLI, and Codex SessionStart hooks to prevent
 agents from forgetting bd workflow after context compaction.
 
 Config options:
@@ -3490,6 +3491,7 @@ bd prime [flags]
 ```
       --export          Output default content (ignores PRIME.md override)
       --full            Force full CLI output (ignore MCP detection)
+      --hook-json       Wrap output in the SessionStart hook JSON envelope (Claude Code, Gemini CLI, Codex)
       --mcp             Force MCP mode (minimal output)
       --memories-only   Output only persistent memories for compact hook contexts
       --stealth         Stealth mode (no git operations, flush only)

@@ -4,9 +4,26 @@
 
 Status: completed
 
+Reopened 2026-05-08 after a user report found at least one
+`metadata.yaml` Learn URL that no longer matches the published Learn route:
+`https://learn.netdata.cloud/docs/network-flows/visualization/summary-sankey`
+should point to the current Sankey/table page. This regression covers auditing
+all `metadata.yaml` Learn links, repairing source metadata, regenerating
+integration artifacts, and recording durable validation.
+The regression was repaired and revalidated on 2026-05-08; see
+`## Regression - 2026-05-08 - Metadata Learn Links`.
+
 Reopened 2026-05-07 after the netlify deploy preview for learn PR #2852 surfaced major content errors that the prior validation pass missed. The closure on 2026-05-07 (Status: completed) was premature: the docs contained multiple statements that contradicted the source code, generic flow-monitoring advice imported from research notes that did not apply to Netdata, and several invented behaviours. The regression was repaired and revalidated by 2026-05-08; see the `## Regression - 2026-05-07` section and closeout notes at the end of this file.
 
 Reopened 2026-05-08 after PR #22449 review and CI reported additional issues after the SOW had been marked completed and moved to `done/`. The open items are tracked in `## Regression - 2026-05-08` and include automated review threads, `yamllint`, `check-documentation`, Codacy triage, a code-only review subagent requested by the user, and a new user-requested local Learn preview skill/workflow.
+
+Reopened 2026-05-08 after the merged integration artifacts broke downstream
+publishing contracts for the website and in-app integrations. The flow
+integration schema delegates to collector metadata, but the flow renderer did
+not render the collector-style `metrics` and `alerts` sections, leaving raw
+objects/arrays in `integrations.json` and `integrations.js`.
+The regression was repaired and revalidated on 2026-05-08; see
+`## Regression - 2026-05-08 - Flow Integration Section Rendering`.
 
 ## Requirements
 
@@ -2876,3 +2893,313 @@ Repairs:
 - **SOW lifecycle**: SOW 14 repair is complete; status is `completed`, and
   the file is moved back to `.agents/sow/done/` in the same commit as the
   repair.
+
+## Regression - 2026-05-08 - Flow Integration Section Rendering
+
+### What broke
+
+The merged network-flow integration artifacts expose `metrics` as a JSON object
+and `alerts` as a JSON array for `integration_type: flows` entries. Downstream
+surfaces expect rendered markdown strings for integration content sections.
+
+Evidence:
+
+- `integrations/schemas/flows.json` delegates to `collector.json`, so flow
+  metadata legitimately contains collector-style `metrics` and `alerts`.
+- `integrations/gen_integrations.py` `FLOWS_RENDER_KEYS` rendered only
+  `overview`, `related_resources`, `setup`, and `troubleshooting`, leaving
+  `metrics` and `alerts` in their source YAML shape.
+- The website PR generated from the merged artifacts failed production-pinned
+  Hugo `0.140.0` because `themes/tailwind/layouts/partials/integration-tabs.html`
+  calls `markdownify` on `.integration.metrics`.
+- The in-app integrations renderer in cloud-frontend adds tabs for truthy
+  `metrics` and `alerts`, while its Markdoc wrapper parses only string input.
+  The result would be blank Metrics and Alerts tabs after the next data sync.
+- The cloud-frontend integration link checker calls `.match()` on markdown
+  fields, so raw objects/arrays in `metrics`/`alerts` can break that check too.
+
+### Why previous validation missed it
+
+The earlier closeout validated the Netdata integrations generator and local
+Learn ingest/build, but did not validate the website Hugo renderer or the
+cloud-frontend integrations consumer against the newly introduced
+`integration_type: flows` artifacts. `gen_integrations.py` itself accepted the
+raw structured fields because they are schema-valid before rendering.
+
+### Repair plan
+
+Render flow `metrics` and `alerts` through the same markdown templates used by
+collector integrations. This keeps the source metadata schema unchanged and
+restores the downstream contract: content sections in `integrations.json` and
+`integrations.js` are markdown strings.
+
+### Validation plan
+
+- Run `python3 integrations/gen_integrations.py`.
+- Verify all `flows` entries in `integrations/integrations.json` have string
+  `metrics` and string `alerts`.
+- Run `python3 integrations/gen_docs_integrations.py`.
+- Run `python3 integrations/gen_doc_collector_page.py`.
+- Rebuild the website PR artifacts with the repaired generated
+  `integrations.json` and production-pinned Hugo `0.140.0`.
+- Verify cloud-frontend's current renderer and link checker receive strings
+  for `flows` `metrics` and `alerts`.
+
+### Artifact updates needed
+
+- **Code**: update `integrations/gen_integrations.py` flow render keys.
+- **Generated artifacts**: regenerate `integrations/integrations.json`,
+  `integrations/integrations.js`, per-integration markdown, and
+  `src/collectors/COLLECTORS.md` if the generator changes them.
+- **Runtime project skills**: update `integrations-lifecycle` if the durable
+  downstream contract was not already documented clearly enough.
+- **Specs**: no product behavior change is expected; this repairs generated
+  publishing artifacts.
+- **End-user/operator docs**: no content change is expected beyond generated
+  artifacts.
+
+### Repair completed
+
+`integrations/gen_integrations.py` now renders the flow `alerts`, `metrics`,
+and `functions` sections through the standard templates, matching the
+collector-like schema that `flows.json` delegates to.
+
+### Validation evidence
+
+- `python3 integrations/gen_integrations.py` passed.
+- `python3 integrations/gen_docs_integrations.py` passed.
+- `python3 integrations/gen_doc_collector_page.py` passed.
+- Flow artifact type check passed: every `integration_type: flows` entry in
+  `integrations/integrations.json` has string `metrics`, string `alerts`, and
+  string `functions`.
+- Non-deploy markdown-field type check passed: no non-deploy integration emits
+  raw object or array values for `overview`, `setup`, `troubleshooting`,
+  `alerts`, `metrics`, `functions`, or `related_resources`.
+- Website validation passed in a temporary copy of PR #1212 using the repaired
+  `integrations.json` and production-pinned Hugo `0.140.0`: `hugo --gc
+  --minify` built 3141 pages successfully.
+- Cloud-frontend compatibility check passed against the repaired
+  `integrations.json`: all flow markdown fields inspected by
+  `scripts/checkIntegrations.js` were strings, and `getMarkdownUrls()` extracted
+  52 markdown URLs without throwing.
+- `git diff --check` passed.
+- `.agents/sow/audit.sh` exited 2 because of a pre-existing unrelated
+  sensitive-pattern warning in
+  `.agents/skills/mirror-netdata-repos/SKILL.md`; SOW status/directory
+  consistency passed and SOW 14 reports `completed` in `.agents/sow/done/`.
+
+### Artifact maintenance gate
+
+- **AGENTS.md**: no update needed; this does not change repo-wide workflow.
+- **Runtime project skills**: updated `integrations-lifecycle` with the
+  downstream markdown-string contract and the new-integration-type validation
+  checklist.
+- **Specs**: no update needed; product behavior and public data semantics did
+  not change.
+- **End-user/operator docs**: no hand-authored user docs changed; this repairs
+  generated publishing artifacts.
+- **End-user/operator skills**: no update needed; no operator workflow changed.
+- **SOW lifecycle**: SOW 14 reopened as a regression, status returned to
+  `completed`, and the file is moved back to `.agents/sow/done/` in the same
+  commit as the repair.
+
+### Follow-up mapping
+
+No deferred follow-up remains for this regression. The website integration PR
+must be regenerated after this repair reaches `netdata/master`; that is the
+normal downstream propagation path rather than a separate source-code TODO.
+
+## Regression - 2026-05-08 - Metadata Learn Links
+
+### What broke
+
+User reported that `src/crates/netflow-plugin/metadata.yaml` links the Sankey
+visualization guidance to
+`https://learn.netdata.cloud/docs/network-flows/visualization/summary-sankey`,
+but the actual Learn page is
+`https://learn.netdata.cloud/docs/network-flows/visualization/sankey-and-table`.
+
+### Evidence
+
+- `src/crates/netflow-plugin/metadata.yaml` contains absolute
+  `https://learn.netdata.cloud/docs/...` links in user-facing metadata
+  rendered into integration pages.
+- `.agents/skills/learn-site-structure/mapping.md` says inter-page links should
+  use repo-relative `/docs/... .md` paths where possible, because Learn ingest
+  rewrites them to the final route.
+- The prior validation checked generated integration rendering and downstream
+  builds, but did not crawl/validate every Learn URL embedded in
+  `metadata.yaml`.
+
+### Why previous validation missed it
+
+- Build validation proves markdown renders, but does not prove every external
+  absolute Learn URL resolves to the intended current page.
+- The broken link returns a routing/publishing problem only when clicked or
+  link-checked against Learn, not during metadata schema validation.
+
+### Pre-Implementation Gate
+
+Status: ready
+
+Problem / root-cause model:
+
+- Network Flow metadata contains hard-coded Learn URLs that drifted from the
+  current Learn route names. The concrete example is the Sankey visualization
+  page rename from `summary-sankey` to `sankey-and-table`.
+- Other `metadata.yaml` files also contain Learn URLs, including repeated
+  Virtual Node links in Go collector configuration descriptions. They need a
+  full audit, not a single replacement.
+
+Evidence reviewed:
+
+- User-reported broken URL and current target URL.
+- `rg` scan of all `metadata.yaml` files for `learn.netdata.cloud/docs` and
+  `/docs/...` links.
+- `learn-site-structure` skill mapping rules for source-relative links and
+  Learn URL computation.
+- `integrations-lifecycle` skill rules that `metadata.yaml` is the source of
+  truth for generated integration pages.
+
+Affected contracts and surfaces:
+
+- `metadata.yaml` source files that render into integration pages.
+- Generated `integrations/*.md`, `integrations/integrations.json`,
+  `integrations/integrations.js`, and `src/collectors/COLLECTORS.md` if source
+  metadata changes affect rendered artifacts.
+- Learn and website integration pages that expose these links to users.
+
+Existing patterns to reuse:
+
+- Prefer `/docs/... .md` source-relative links when the target is a source doc
+  in this repository and Learn ingest can rewrite it.
+- Keep absolute links only when required by metadata schema fields or when
+  linking to a page not represented as a source-relative doc path.
+- Run the integrations generators after metadata edits.
+
+Risk and blast radius:
+
+- Documentation/integration metadata only.
+- Incorrect replacements could break GitHub browsing or generated integration
+  links, so every changed target must be verified against source docs and/or
+  published Learn.
+- No runtime collector behavior is changed.
+
+Sensitive data handling plan:
+
+- Link audit uses public documentation URLs and repository paths only.
+- No credentials, customer data, IP addresses, or proprietary incident details
+  are needed or recorded.
+
+Implementation plan:
+
+1. Extract every Learn-related URL from `metadata.yaml` files.
+2. Validate targets against the Learn source map and published Learn responses.
+3. Replace proven-broken hard-coded Learn URLs with correct source-relative doc
+   links where possible.
+4. Update the integrations/learn skills with a durable link-audit workflow if
+   the current skills do not already document this audit.
+5. Regenerate integration artifacts and run focused validation.
+
+Validation plan:
+
+- Re-run the `metadata.yaml` Learn-link extraction after edits.
+- Validate changed links against source files and published Learn routes.
+- Run `python3 integrations/gen_integrations.py`.
+- Run `python3 integrations/gen_docs_integrations.py`.
+- Run `python3 integrations/gen_doc_collector_page.py`.
+- Run `git diff --check`.
+- Run `.agents/sow/audit.sh` and record any unrelated pre-existing findings.
+
+Artifact updates needed:
+
+- **Code**: no runtime code expected.
+- **Metadata**: update source `metadata.yaml` links proven wrong.
+- **Generated artifacts**: update generated integrations if generator output
+  changes.
+- **Runtime project skills**: add/update link-audit guidance if absent.
+- **Specs**: no product contract change expected.
+- **End-user/operator docs**: generated integration docs may change.
+
+### Repair completed
+
+Repaired the proven-broken Learn targets:
+
+- `src/crates/netflow-plugin/metadata.yaml:147`,
+  `src/crates/netflow-plugin/metadata.yaml:285`, and
+  `src/crates/netflow-plugin/metadata.yaml:423` now link Validation and Data
+  Quality to
+  `https://learn.netdata.cloud/docs/network-flows/validation-and-data-quality`.
+- `src/crates/netflow-plugin/metadata.yaml:159` now links Sankey and Table to
+  `https://learn.netdata.cloud/docs/network-flows/visualization/sankey-and-table`.
+- `src/crates/netflow-plugin/metadata.yaml:161` now links Maps and Globe to
+  `https://learn.netdata.cloud/docs/network-flows/visualization/maps-and-globe`.
+- `src/crates/netflow-plugin/metadata.yaml:542` now links Enrichment Intel
+  Downloader to
+  `https://learn.netdata.cloud/docs/network-flows/enrichment-intel-downloader`.
+- `src/go/plugin/go.d/collector/snmp/metadata.yaml:243` now links the config
+  directory section to
+  `https://learn.netdata.cloud/docs/netdata-agent/configuration#locate-your-config-directory`.
+
+Regenerated the committed per-integration markdown files affected by those
+metadata changes:
+
+- `src/crates/netflow-plugin/integrations/netflow.md`
+- `src/crates/netflow-plugin/integrations/ipfix.md`
+- `src/crates/netflow-plugin/integrations/sflow.md`
+- `src/crates/netflow-plugin/integrations/db-ip_ip_intelligence.md`
+- `src/go/plugin/go.d/collector/snmp/integrations/snmp_devices.md`
+
+Added `integrations-lifecycle` how-to
+`.agents/skills/integrations-lifecycle/how-tos/auditing-metadata-learn-links.md`
+and indexed it in
+`.agents/skills/integrations-lifecycle/how-tos/INDEX.md`.
+
+### Validation evidence
+
+- Absolute Learn URL audit after repair found 12 unique
+  `https://learn.netdata.cloud/docs/...` targets in `metadata.yaml`; every
+  target returned HTTP 200.
+- Fragment validation passed for:
+  - `https://learn.netdata.cloud/docs/netdata-agent/configuration#locate-your-config-directory`
+  - `https://learn.netdata.cloud/docs/netdata-agent/configuration/organize-systems-metrics-and-alerts#virtual-nodes`
+- Source-relative metadata link audit passed: all `/docs/...` and relative
+  markdown links in `metadata.yaml` resolve to source files.
+- Same-failure search passed: no exact stale targets remain in the edited
+  source metadata or generated integration markdown for `summary-sankey`,
+  `maps-globe`, `network-flows/intel-downloader`, exact
+  `network-flows/validation`, or `the-netdata-config-directory`.
+- `python3 integrations/gen_integrations.py` passed.
+- `python3 integrations/gen_docs_integrations.py` passed.
+- `python3 integrations/gen_doc_collector_page.py` passed.
+- `git diff --check` passed.
+- `.agents/sow/audit.sh` exited 2 because of the pre-existing unrelated
+  sensitive-pattern warning in
+  `.agents/skills/mirror-netdata-repos/SKILL.md`; status/directory consistency
+  was otherwise checked during the in-progress state.
+
+### Artifact maintenance gate
+
+- **AGENTS.md**: no update needed; repository-wide workflow did not change.
+- **Runtime project skills**: updated `integrations-lifecycle` with a reusable
+  metadata Learn-link audit how-to.
+- **Specs**: no update needed; this changes documentation links, not product
+  behavior or data contracts.
+- **End-user/operator docs**: generated integration markdown updated from the
+  source metadata.
+- **End-user/operator skills**: no update needed; no public AI skill workflow
+  changed.
+- **SOW lifecycle**: SOW 14 reopened as a regression, will be returned to
+  `Status: completed` and moved back to `.agents/sow/done/` in the same commit
+  as the repair.
+
+### Sensitive data gate
+
+Only public Learn URLs and repository paths were recorded. No secrets,
+credentials, bearer tokens, SNMP communities, customer data, personal data,
+private endpoints, or proprietary incident details were used or written.
+
+### Follow-up mapping
+
+No deferred follow-up remains for this regression. The downstream website and
+Learn integration refresh should follow the normal post-merge generation paths.

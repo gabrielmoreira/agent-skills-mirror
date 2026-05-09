@@ -32,6 +32,24 @@ Run a plan with explicit state, disciplined gates, bounded retries, and mandator
 11. Save plan-review artifacts under `plans/artifacts/<task-slug>/`.
 12. Keep artifacts local and concise; use Markdown notes rather than raw JSON status dumps.
 
+## Stop-the-Line Guidance
+
+Stop the phase before starting the next one when verification fails, a plan assumption proves false, a security/data/contract risk appears, or required approval is missing. Retry only when the failure is transient or narrowly fixable within the approved scope and a concrete diagnosis is recorded. Replan the affected phase when the fix changes files, dependencies, acceptance criteria, phase order, or blast radius.
+
+## Change Sizing Heuristic
+
+Use roughly 100 changed lines per phase as a soft reviewability target. Split phases that mix unrelated concerns, cross many ownership boundaries, or would force reviewers to reason about too much state at once. Document exceptions for mechanical fixture, generated, or documentation-heavy edits where the verification story remains clear.
+
+## Anti-Rationalization Table
+
+| Pattern | Why It Fails | Required Action |
+| ------- | ------------ | --------------- |
+| Continue after a failed phase because the next phase looks independent | Later work can hide or compound the invalid state from the failed phase. | Stop, classify the failure, and either retry, replan locally, or escalate. |
+| Retry the same command repeatedly without a new diagnosis | Blind retries consume retry budget and obscure root cause. | Record the cause being tested and change only the smallest relevant variable. |
+| Merge several phases because the edits are nearby | Review and verification lose signal when unrelated outcomes share one gate. | Keep phases near the soft size target or split by behavior boundary. |
+| Treat plan-review findings as advisory noise | Known plan defects become implementation defects. | Resolve blocking findings or revise the plan before execution. |
+| Parallelize work with overlapping write sets | Concurrent edits can collide and invalidate verification evidence. | Serialize overlapping phases or split ownership so write sets are disjoint. |
+
 ## Adaptation Notes
 
 - ControlFlow's original Orchestrator assumed a larger fixed subagent roster and tighter tool contracts than Codex guarantees.

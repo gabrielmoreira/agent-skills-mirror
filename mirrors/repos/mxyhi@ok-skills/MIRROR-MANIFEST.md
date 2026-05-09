@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 58 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 58 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 58 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,29 +94,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`improve-codebase-architecture/INTERFACE-DESIGN.md`](improve-codebase-architecture/INTERFACE-DESIGN.md) |
 | 34 | ✓ | [`improve-codebase-architecture/LANGUAGE.md`](improve-codebase-architecture/LANGUAGE.md) |
 | 35 | ✓ | [`improve-codebase-architecture/SKILL.md`](improve-codebase-architecture/SKILL.md) |
-| 36 | ✓ | [`migrate-to-shoehorn/SKILL.md`](migrate-to-shoehorn/SKILL.md) |
-| 37 | ✓ | [`minimax-docx/SKILL.md`](minimax-docx/SKILL.md) |
-| 38 | ✓ | [`minimax-pdf/SKILL.md`](minimax-pdf/SKILL.md) |
-| 39 | ✓ | [`minimax-xlsx/SKILL.md`](minimax-xlsx/SKILL.md) |
-| 40 | ✓ | [`opencli/opencli-adapter-author/SKILL.md`](opencli/opencli-adapter-author/SKILL.md) |
-| 41 | ✓ | [`opencli/opencli-autofix/SKILL.md`](opencli/opencli-autofix/SKILL.md) |
-| 42 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
-| 43 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
-| 44 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
-| 45 | ✓ | [`opensrc/SKILL.md`](opensrc/SKILL.md) |
-| 46 | ✓ | [`planning-with-files/examples.md`](planning-with-files/examples.md) |
-| 47 | ✓ | [`planning-with-files/reference.md`](planning-with-files/reference.md) |
-| 48 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
-| 49 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
-| 50 | ✓ | [`shader-dev/SKILL.md`](shader-dev/SKILL.md) |
-| 51 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
-| 52 | ✓ | [`tdd/deep-modules.md`](tdd/deep-modules.md) |
-| 53 | ✓ | [`tdd/interface-design.md`](tdd/interface-design.md) |
-| 54 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
-| 55 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
-| 56 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
-| 57 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
-| 58 | ✓ | [`yeet/SKILL.md`](yeet/SKILL.md) |
+| 36 | ✓ | [`karpathy-guidelines/SKILL.md`](karpathy-guidelines/SKILL.md) |
+| 37 | ✓ | [`migrate-to-shoehorn/SKILL.md`](migrate-to-shoehorn/SKILL.md) |
+| 38 | ✓ | [`minimax-docx/SKILL.md`](minimax-docx/SKILL.md) |
+| 39 | ✓ | [`minimax-pdf/SKILL.md`](minimax-pdf/SKILL.md) |
+| 40 | ✓ | [`minimax-xlsx/SKILL.md`](minimax-xlsx/SKILL.md) |
+| 41 | ✓ | [`opencli/opencli-adapter-author/SKILL.md`](opencli/opencli-adapter-author/SKILL.md) |
+| 42 | ✓ | [`opencli/opencli-autofix/SKILL.md`](opencli/opencli-autofix/SKILL.md) |
+| 43 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
+| 44 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
+| 45 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
+| 46 | ✓ | [`opensrc/SKILL.md`](opensrc/SKILL.md) |
+| 47 | ✓ | [`planning-with-files/examples.md`](planning-with-files/examples.md) |
+| 48 | ✓ | [`planning-with-files/reference.md`](planning-with-files/reference.md) |
+| 49 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
+| 50 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
+| 51 | ✓ | [`shader-dev/SKILL.md`](shader-dev/SKILL.md) |
+| 52 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
+| 53 | ✓ | [`tdd/deep-modules.md`](tdd/deep-modules.md) |
+| 54 | ✓ | [`tdd/interface-design.md`](tdd/interface-design.md) |
+| 55 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
+| 56 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
+| 57 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
+| 58 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 59 | ✓ | [`yeet/SKILL.md`](yeet/SKILL.md) |
 
 ---
 

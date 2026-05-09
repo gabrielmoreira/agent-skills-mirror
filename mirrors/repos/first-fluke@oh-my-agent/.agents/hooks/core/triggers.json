@@ -117,6 +117,15 @@
           "zautomatyzuj",
           "wszystko naraz"
         ]
+      },
+      "patterns": {
+        "*": [
+          "\\b(build|create|make|develop|implement|scaffold)\\s+(?:me\\s+)?(?:an?|the)\\s+(?:[\\w-]+\\s+){0,3}(app|api|service|server|cli|tool|website|dashboard|system|feature|backend|frontend|prototype|mvp|bot)\\b",
+          "\\bi\\s+want\\s+(?:a|an)\\s+(?:[\\w-]+\\s+){0,3}(app|api|service|server|cli|tool|website|dashboard|system|feature|backend|frontend|prototype|mvp|bot)\\b"
+        ],
+        "ko": [
+          "(앱|API|서비스|서버|CLI|도구|웹사이트|대시보드|시스템|기능|백엔드|프론트엔드|프로토타입|MVP|봇)\\s*(?:을|를|이|가)?\\s*(?:만들어\\s*(?:주세요|줘|줄래)?|구현해\\s*(?:주세요|줘|줄래)?|개발해\\s*(?:주세요|줘|줄래)?|만들자|구현하자|개발하자)"
+        ]
       }
     },
     "ultrawork": {
@@ -1531,6 +1540,138 @@
           "makieta"
         ]
       }
+    },
+    "docs": {
+      "persistent": false,
+      "keywords": {
+        "*": ["oma-docs", "doc-refs", "docs verify", "docs sync"],
+        "en": [
+          "verify docs",
+          "verify documentation",
+          "check docs",
+          "check documentation",
+          "docs drift",
+          "documentation drift",
+          "broken docs",
+          "broken doc links",
+          "stale docs",
+          "stale documentation",
+          "sync docs",
+          "sync documentation",
+          "update docs after change",
+          "patch docs",
+          "doc verify",
+          "doc sync"
+        ],
+        "ko": [
+          "문서 검증",
+          "문서 검증해줘",
+          "문서 점검",
+          "문서 점검해줘",
+          "문서 드리프트",
+          "문서 동기화",
+          "문서 동기화해줘",
+          "문서 싱크",
+          "문서 싱크 맞춰",
+          "문서 싱크 맞춰줘",
+          "깨진 문서 링크",
+          "깨진 문서",
+          "오래된 문서",
+          "낡은 문서",
+          "문서 갱신",
+          "문서 업데이트",
+          "docs 검증",
+          "docs 싱크",
+          "docs 동기화"
+        ],
+        "ja": [
+          "ドキュメント検証",
+          "ドキュメント点検",
+          "ドキュメントドリフト",
+          "ドキュメント同期",
+          "ドキュメントを同期",
+          "壊れたドキュメントリンク",
+          "古いドキュメント",
+          "ドキュメント更新",
+          "docsを検証",
+          "docsを同期"
+        ],
+        "zh": [
+          "文档校验",
+          "文档检查",
+          "文档漂移",
+          "文档同步",
+          "同步文档",
+          "失效文档链接",
+          "陈旧文档",
+          "更新文档",
+          "docs 校验",
+          "docs 同步"
+        ],
+        "es": [
+          "verificar documentación",
+          "comprobar documentación",
+          "deriva de documentación",
+          "sincronizar documentación",
+          "enlaces rotos en documentación",
+          "documentación obsoleta",
+          "actualizar documentación"
+        ],
+        "fr": [
+          "vérifier la documentation",
+          "contrôler la documentation",
+          "dérive de documentation",
+          "synchroniser la documentation",
+          "liens cassés dans la documentation",
+          "documentation obsolète",
+          "mettre à jour la documentation"
+        ],
+        "de": [
+          "Doku verifizieren",
+          "Dokumentation prüfen",
+          "Dokumentations-Drift",
+          "Doku synchronisieren",
+          "kaputte Doku-Links",
+          "veraltete Dokumentation",
+          "Doku aktualisieren"
+        ],
+        "pt": [
+          "verificar documentação",
+          "checar documentação",
+          "drift de documentação",
+          "sincronizar documentação",
+          "links quebrados na documentação",
+          "documentação desatualizada",
+          "atualizar documentação"
+        ],
+        "ru": [
+          "проверить документацию",
+          "верифицировать документацию",
+          "дрейф документации",
+          "синхронизировать документацию",
+          "битые ссылки в документации",
+          "устаревшая документация",
+          "обновить документацию"
+        ],
+        "nl": [
+          "documentatie verifiëren",
+          "documentatie controleren",
+          "documentatie-drift",
+          "documentatie synchroniseren",
+          "kapotte documentatielinks",
+          "verouderde documentatie",
+          "documentatie bijwerken"
+        ],
+        "pl": [
+          "zweryfikuj dokumentację",
+          "sprawdź dokumentację",
+          "dryf dokumentacji",
+          "zsynchronizuj dokumentację",
+          "zepsute linki w dokumentacji",
+          "przestarzała dokumentacja",
+          "zaktualizuj dokumentację"
+        ]
+      }
     }
   },
   "skills": {
@@ -2445,22 +2586,41 @@
     }
   },
   "informationalPatterns": {
-    "en": [
+    "*": [
       "what is",
       "what are",
       "how to",
       "how does",
+      "how do",
+      "how can",
+      "how would",
       "explain",
       "describe",
       "tell me about",
       "keyword",
       "false positive",
+      "false-positive",
       "detected",
       "detector",
-      "뭐야",
-      "무엇",
-      "是什么",
-      "とは"
+      "fires when",
+      "trigger when",
+      "auto-trigger",
+      "auto trigger",
+      "what triggers",
+      "should we trigger",
+      "if we trigger",
+      "trigger logic",
+      "trigger mechanism",
+      "should we",
+      "should i",
+      "should you",
+      "could we",
+      "would you",
+      "what if",
+      "what about",
+      "why build",
+      "why create",
+      "why make"
     ],
     "ko": [
       "뭐야",
@@ -2471,7 +2631,20 @@
       "알려줘",
       "키워드",
       "감지",
-      "오탐"
+      "오탐",
+      "트리거",
+      "발동",
+      "메타",
+      "트리거하면",
+      "트리거 해주면",
+      "트리거해야",
+      "키워드 나오면",
+      "왜 만들",
+      "어떻게 만들",
+      "어떨까",
+      "하면 좋을",
+      "한다면",
+      "할까요"
     ],
     "ja": [
       "とは",

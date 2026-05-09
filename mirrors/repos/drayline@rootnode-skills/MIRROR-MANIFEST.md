@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `drayline/rootnode-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `drayline/rootnode-skills` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `drayline/rootnode-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,33 +59,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`rootnode-anti-pattern-detection/SKILL.md`](rootnode-anti-pattern-detection/SKILL.md) |
-| 2 | ✓ | [`rootnode-behavioral-tuning/SKILL.md`](rootnode-behavioral-tuning/SKILL.md) |
-| 3 | ✓ | [`rootnode-block-selection/SKILL.md`](rootnode-block-selection/SKILL.md) |
-| 4 | ✓ | [`rootnode-cc-design/SKILL.md`](rootnode-cc-design/SKILL.md) |
-| 5 | ✓ | [`rootnode-context-budget/SKILL.md`](rootnode-context-budget/SKILL.md) |
-| 6 | ✓ | [`rootnode-critic-gate/SKILL.md`](rootnode-critic-gate/SKILL.md) |
-| 7 | ✓ | [`rootnode-domain-agentic-context/SKILL.md`](rootnode-domain-agentic-context/SKILL.md) |
-| 8 | ✓ | [`rootnode-domain-business-strategy/SKILL.md`](rootnode-domain-business-strategy/SKILL.md) |
-| 9 | ✓ | [`rootnode-domain-content-communications/SKILL.md`](rootnode-domain-content-communications/SKILL.md) |
-| 10 | ✓ | [`rootnode-domain-research-analysis/SKILL.md`](rootnode-domain-research-analysis/SKILL.md) |
-| 11 | ✓ | [`rootnode-domain-software-engineering/SKILL.md`](rootnode-domain-software-engineering/SKILL.md) |
-| 12 | ✓ | [`rootnode-full-stack-audit/SKILL.md`](rootnode-full-stack-audit/SKILL.md) |
-| 13 | ✓ | [`rootnode-global-audit/SKILL.md`](rootnode-global-audit/SKILL.md) |
-| 14 | ✓ | [`rootnode-handoff-trigger-check/SKILL.md`](rootnode-handoff-trigger-check/SKILL.md) |
-| 15 | ✓ | [`rootnode-identity-blocks/SKILL.md`](rootnode-identity-blocks/SKILL.md) |
-| 16 | ✓ | [`rootnode-memory-optimization/SKILL.md`](rootnode-memory-optimization/SKILL.md) |
-| 17 | ✓ | [`rootnode-mode-router/SKILL.md`](rootnode-mode-router/SKILL.md) |
-| 18 | ✓ | [`rootnode-output-blocks/SKILL.md`](rootnode-output-blocks/SKILL.md) |
-| 19 | ✓ | [`rootnode-profile-builder/SKILL.md`](rootnode-profile-builder/SKILL.md) |
-| 20 | ✓ | [`rootnode-project-audit/SKILL.md`](rootnode-project-audit/SKILL.md) |
-| 21 | ✓ | [`rootnode-project-brief/SKILL.md`](rootnode-project-brief/SKILL.md) |
-| 22 | ✓ | [`rootnode-prompt-compilation/SKILL.md`](rootnode-prompt-compilation/SKILL.md) |
-| 23 | ✓ | [`rootnode-prompt-validation/SKILL.md`](rootnode-prompt-validation/SKILL.md) |
-| 24 | ✓ | [`rootnode-reasoning-blocks/SKILL.md`](rootnode-reasoning-blocks/SKILL.md) |
-| 25 | ✓ | [`rootnode-repo-hygiene/SKILL.md`](rootnode-repo-hygiene/SKILL.md) |
-| 26 | ✓ | [`rootnode-session-handoff/SKILL.md`](rootnode-session-handoff/SKILL.md) |
-| 27 | ✓ | [`rootnode-skill-builder/SKILL.md`](rootnode-skill-builder/SKILL.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`rootnode-anti-pattern-detection/SKILL.md`](rootnode-anti-pattern-detection/SKILL.md) |
+| 3 | ✓ | [`rootnode-behavioral-tuning/SKILL.md`](rootnode-behavioral-tuning/SKILL.md) |
+| 4 | ✓ | [`rootnode-block-selection/SKILL.md`](rootnode-block-selection/SKILL.md) |
+| 5 | ✓ | [`rootnode-cc-design/SKILL.md`](rootnode-cc-design/SKILL.md) |
+| 6 | ✓ | [`rootnode-context-budget/SKILL.md`](rootnode-context-budget/SKILL.md) |
+| 7 | ✓ | [`rootnode-critic-gate/SKILL.md`](rootnode-critic-gate/SKILL.md) |
+| 8 | ✓ | [`rootnode-domain-agentic-context/SKILL.md`](rootnode-domain-agentic-context/SKILL.md) |
+| 9 | ✓ | [`rootnode-domain-business-strategy/SKILL.md`](rootnode-domain-business-strategy/SKILL.md) |
+| 10 | ✓ | [`rootnode-domain-content-communications/SKILL.md`](rootnode-domain-content-communications/SKILL.md) |
+| 11 | ✓ | [`rootnode-domain-research-analysis/SKILL.md`](rootnode-domain-research-analysis/SKILL.md) |
+| 12 | ✓ | [`rootnode-domain-software-engineering/SKILL.md`](rootnode-domain-software-engineering/SKILL.md) |
+| 13 | ✓ | [`rootnode-full-stack-audit/SKILL.md`](rootnode-full-stack-audit/SKILL.md) |
+| 14 | ✓ | [`rootnode-global-audit/SKILL.md`](rootnode-global-audit/SKILL.md) |
+| 15 | ✓ | [`rootnode-handoff-trigger-check/SKILL.md`](rootnode-handoff-trigger-check/SKILL.md) |
+| 16 | ✓ | [`rootnode-identity-blocks/SKILL.md`](rootnode-identity-blocks/SKILL.md) |
+| 17 | ✓ | [`rootnode-memory-optimization/SKILL.md`](rootnode-memory-optimization/SKILL.md) |
+| 18 | ✓ | [`rootnode-mode-router/SKILL.md`](rootnode-mode-router/SKILL.md) |
+| 19 | ✓ | [`rootnode-output-blocks/SKILL.md`](rootnode-output-blocks/SKILL.md) |
+| 20 | ✓ | [`rootnode-profile-builder/SKILL.md`](rootnode-profile-builder/SKILL.md) |
+| 21 | ✓ | [`rootnode-project-audit/SKILL.md`](rootnode-project-audit/SKILL.md) |
+| 22 | ✓ | [`rootnode-project-brief/SKILL.md`](rootnode-project-brief/SKILL.md) |
+| 23 | ✓ | [`rootnode-prompt-compilation/SKILL.md`](rootnode-prompt-compilation/SKILL.md) |
+| 24 | ✓ | [`rootnode-prompt-validation/SKILL.md`](rootnode-prompt-validation/SKILL.md) |
+| 25 | ✓ | [`rootnode-reasoning-blocks/SKILL.md`](rootnode-reasoning-blocks/SKILL.md) |
+| 26 | ✓ | [`rootnode-repo-hygiene/SKILL.md`](rootnode-repo-hygiene/SKILL.md) |
+| 27 | ✓ | [`rootnode-session-handoff/SKILL.md`](rootnode-session-handoff/SKILL.md) |
+| 28 | ✓ | [`rootnode-skill-builder/SKILL.md`](rootnode-skill-builder/SKILL.md) |
 
 ---
 

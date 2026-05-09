@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 111 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 111 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 111 |
+| Files         | 113 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -158,18 +158,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 97 | ✓ | [`agents/hermes/config/write-config.ts`](agents/hermes/config/write-config.ts) |
 | 98 | ✓ | [`agents/hermes/config/yaml.ts`](agents/hermes/config/yaml.ts) |
 | 99 | ✓ | [`agents/hermes/decode-proxy.py`](agents/hermes/decode-proxy.py) |
-| 100 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
-| 101 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
-| 102 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
-| 103 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |
-| 104 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
-| 105 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
-| 106 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
-| 107 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
-| 108 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
-| 109 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
-| 110 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
-| 111 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 100 | ✓ | [`agents/hermes/discord-facade.py`](agents/hermes/discord-facade.py) |
+| 101 | ✓ | [`agents/hermes/discord-preload/sitecustomize.py`](agents/hermes/discord-preload/sitecustomize.py) |
+| 102 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
+| 103 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
+| 104 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
+| 105 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |
+| 106 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
+| 107 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
+| 108 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
+| 109 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
+| 110 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
+| 111 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 112 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
+| 113 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

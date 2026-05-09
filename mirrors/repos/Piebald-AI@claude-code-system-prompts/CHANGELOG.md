@@ -4,6 +4,20 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.137](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a5758c4)
+
+<sub>_No changes to the system prompts in v2.1.137._</sub>
+
+# [2.1.136](https://github.com/Piebald-AI/claude-code-system-prompts/commit/5db109e)
+
+_+525 tokens_
+
+- **NEW:** System Prompt: Action safety and truthful reporting — Requires confirmation for irreversible or outward-facing actions unless durably authorized, asks agents to inspect targets before deleting or overwriting them, and emphasizes faithful reporting of skipped steps, failed tests, and verified outcomes.
+- Agent Prompt: Auto mode rule reviewer — Adds `hard_deny` as a fourth custom-rule category for unconditional security-boundary blocks, and narrows `soft_deny` to destructive or irreversible actions that clear user intent can authorize.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Splits blocking logic into unconditional hard blocks and user-authorizable soft blocks, updates the default rule, and makes user intent unable to clear hard-block security boundaries.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Moves data exfiltration into hard-block rules, adds hard-block coverage for safety-check bypasses, and treats agent-guessed external services or download sources as untrusted.
+- Tool Description: Edit — Restores the line-number prefix format to a template variable while preserving the guidance to exclude line prefixes from edit strings.
+
 # [2.1.133](https://github.com/Piebald-AI/claude-code-system-prompts/commit/72ca448)
 
 _+121 tokens_

@@ -32,8 +32,8 @@ Hook-enabled agents (Claude, Gemini) use the `minimal` profile because `bd prime
 | `windsurf` | `.windsurf/rules/beads.md` | Rules file |
 | `cody` | `.cody/rules/beads.md` | Rules file |
 | `kilocode` | `.kilocode/rules/beads.md` | Rules file |
-| `claude` | `~/.claude/settings.json` + `CLAUDE.md` | SessionStart/PreCompact hooks + minimal section |
-| `gemini` | `~/.gemini/settings.json` + `GEMINI.md` | SessionStart/PreCompress hooks + minimal section |
+| `claude` | `~/.claude/settings.json` + `CLAUDE.md` | SessionStart hook + minimal section |
+| `gemini` | `~/.gemini/settings.json` + `GEMINI.md` | SessionStart hook + minimal section |
 | `factory` | `AGENTS.md` | Marked section |
 | `codex` | `.agents/skills/beads/SKILL.md` + `AGENTS.md` | Beads agent skill + generated skill guidance |
 | `mux` | `AGENTS.md` | Marked section |
@@ -248,8 +248,7 @@ bd setup claude --stealth
 ### What Gets Installed
 
 **Global installation** (`~/.claude/settings.json`):
-- `SessionStart` hook: Runs `bd prime` when a new session starts
-- `PreCompact` hook: Runs `bd prime` before context compaction
+- `SessionStart` hook: Runs `bd prime --hook-json` when a session starts, resumes, clears, or restarts after compaction
 
 **Project installation** (`.claude/settings.local.json`):
 - Same hooks, but only active for this project
@@ -284,8 +283,8 @@ bd setup claude --project --stealth
 
 ### How It Works
 
-The hooks call `bd prime` which:
-1. Outputs workflow context for Claude to read
+The hook calls `bd prime --hook-json` which:
+1. Outputs workflow context wrapped in the SessionStart JSON envelope Claude Code expects
 2. Prints persistent memories near the top so hook-output previews do not hide them
 3. Starts with a truncation warning telling agents to read the full persisted hook output when the host caps previews
 4. Ensures Claude always knows how to use beads
@@ -297,7 +296,7 @@ This is more context-efficient than MCP tools (~1-2k tokens vs 10-50k for MCP sc
 
 ## Gemini CLI
 
-Gemini CLI integration uses hooks to automatically inject beads workflow context at session start and before context compression.
+Gemini CLI integration uses a SessionStart hook to automatically inject beads workflow context when a session opens.
 
 ### Installation
 
@@ -315,8 +314,7 @@ bd setup gemini --stealth
 ### What Gets Installed
 
 **Global installation** (`~/.gemini/settings.json`):
-- `SessionStart` hook: Runs `bd prime` when a new session starts
-- `PreCompress` hook: Runs `bd prime` before context compression
+- `SessionStart` hook: Runs `bd prime --hook-json` when a new session starts, wrapped in the JSON envelope Gemini's hook contract requires
 
 **Project installation** (`.gemini/settings.json`):
 - Same hooks, but only active for this project
@@ -359,7 +357,7 @@ The hooks call `bd prime` which:
 
 For low-token hooks that only need durable project facts, use `bd prime --memories-only`.
 
-This works identically to Claude Code integration, using Gemini CLI's hook system (SessionStart and PreCompress events).
+This works similarly to Claude Code integration, using Gemini CLI's hook system (SessionStart event). Unlike Claude Code, Gemini requires hook stdout to be valid JSON — `bd prime --hook-json` wraps the markdown in the required envelope.
 
 ## Cursor IDE
 

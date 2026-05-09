@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MemTensor/MemOS` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `MemTensor/MemOS` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MemTensor/MemOS` — 26 default patterns, 0 followed patterns, 9 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,11 +63,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`apps/memos-local-openclaw/skill/browserwing-admin/SKILL.md`](apps/memos-local-openclaw/skill/browserwing-admin/SKILL.md) |
 | 3 | ✓ | [`apps/memos-local-openclaw/skill/browserwing-executor/SKILL.md`](apps/memos-local-openclaw/skill/browserwing-executor/SKILL.md) |
 | 4 | ✓ | [`apps/memos-local-openclaw/skill/memos-memory-guide/SKILL.md`](apps/memos-local-openclaw/skill/memos-memory-guide/SKILL.md) |
-| 5 | ✓ | [`apps/memos-local-plugin/AGENTS.md`](apps/memos-local-plugin/AGENTS.md) |
-| 6 | ✓ | [`apps/openwork-memos-integration/apps/desktop/skills/ask-user-question/SKILL.md`](apps/openwork-memos-integration/apps/desktop/skills/ask-user-question/SKILL.md) |
-| 7 | ✓ | [`apps/openwork-memos-integration/apps/desktop/skills/dev-browser/SKILL.md`](apps/openwork-memos-integration/apps/desktop/skills/dev-browser/SKILL.md) |
-| 8 | ✓ | [`apps/openwork-memos-integration/apps/desktop/skills/safe-file-deletion/SKILL.md`](apps/openwork-memos-integration/apps/desktop/skills/safe-file-deletion/SKILL.md) |
-| 9 | ✓ | [`apps/openwork-memos-integration/CLAUDE.md`](apps/openwork-memos-integration/CLAUDE.md) |
+| 5 | ✓ | [`apps/openwork-memos-integration/apps/desktop/skills/ask-user-question/SKILL.md`](apps/openwork-memos-integration/apps/desktop/skills/ask-user-question/SKILL.md) |
+| 6 | ✓ | [`apps/openwork-memos-integration/apps/desktop/skills/dev-browser/SKILL.md`](apps/openwork-memos-integration/apps/desktop/skills/dev-browser/SKILL.md) |
+| 7 | ✓ | [`apps/openwork-memos-integration/apps/desktop/skills/safe-file-deletion/SKILL.md`](apps/openwork-memos-integration/apps/desktop/skills/safe-file-deletion/SKILL.md) |
+| 8 | ✓ | [`apps/openwork-memos-integration/CLAUDE.md`](apps/openwork-memos-integration/CLAUDE.md) |
 
 ---
 

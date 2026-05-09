@@ -80,10 +80,12 @@ sequenceDiagram
         SC->>Core: 执行 core 函数 (set_active_model_core 等)
         SC->>FE: emit("slash:model_switched", ...)
         SC-->>W: Reply { content }
+        Note over W: command/result 写入 messages.event，不进入 LLM 上下文
         W->>CH: send_message(content)
         CH-->>U: 显示命令结果
     else action = Reply 类 (NewSession/SwitchAgent/DisplayOnly 等)
         SC-->>W: Reply { content }
+        Note over W: 普通控制命令写 event；新会话类命令跳过旧 transcript
         W->>CH: send_message(content)
         CH-->>U: 显示命令结果
     end
@@ -373,8 +375,8 @@ Telegram (`setMyCommands`) 和 Discord (Application Commands API) 的命令菜�
 | `NewSession` | 切换到新创建的会话 | `/new` | ✅ 更新 channel_db 映射到新 session | — |
 | `SessionCleared` | 会话消息已清空 | `/clear` | ✅ DB 已清理 + 回复确认 | `slash:session_cleared` |
 | `SwitchAgent` | 切换 Agent 并创建新会话 | `/agent <name>` | 🚫 命令 IM 禁用，不会到达此 action | — |
-| `PassThrough` | 将消息传递给 LLM 处理 | `/search`, 技能命令 | ✅ 以转换后的指令作为 LLM 输入 | — |
-| `DisplayOnly` | 仅显示内容，无副作用 | `/help`, `/status`, `/usage`, `/memories` 等 | ✅ 直接回复 content | — |
+| `PassThrough` | 将消息传递给 LLM 处理 | `/search`, 技能命令 | ✅ 以转换后的指令作为 LLM 输入；原始 slash 作为用户可见 user turn 落库 | — |
+| `DisplayOnly` | 仅显示内容，无副作用 | `/help`, `/status`, `/usage`, `/memories` 等 | ✅ command/result 落 `event`，直接回复 content，不进入 LLM 上下文 | — |
 | `SwitchModel` | 切换活跃模型 | `/model <name>` | ✅ 调用 `set_active_model_core` 持久化切换 | `slash:model_switched` |
 | `SetEffort` | 设置推理强度 | `/thinking <level>`（别名 `/think <level>`） | ✅ 调用 `set_reasoning_effort_core` 写入 AppState | `slash:effort_changed` |
 | `SetToolPermission` | 设置工具权限模式 | `/permission <mode>` | ⚡ 返回"不适用"提示（Channel 固定 auto-approve） | — |
@@ -419,14 +421,22 @@ Telegram (`setMyCommands`) 和 Discord (Application Commands API) 的命令菜�
 - Escape / 左箭头 返回命令列表
 - 仍可手动输入参数（如 `/thinking high`）跳过子菜单
 
-### IM 渠道 (Telegram)
+### IM 渠道（按 `supports_buttons` 分流）
 
-Channel 对有 `arg_options` 的命令提供 inline keyboard 按钮：
+入口 [`channel/worker/slash.rs::dispatch_slash_for_channel`](../../crates/ha-core/src/channel/worker/slash.rs)，无参短路按 `supports_buttons × args_optional` 矩阵分流：
+
+**支持按钮的 7 个渠道**（Telegram / Feishu / Discord / Slack / QQ Bot / LINE / Google Chat）—— inline keyboard：
 
 - 用户发送无参数的命令（如 `/thinking`）→ 返回选项按钮，每个选项一行
 - 按钮 `callback_data` 格式：`slash:<command> <option>`（如 `slash:thinking high`）
-- 用户点击按钮 → Telegram 发送 `CallbackQuery` → `polling.rs` 转换为 `/<command> <option>` 文本
+- 用户点击按钮 → 各渠道走自己的 button-callback 入口 → 统一 helper `inject_slash_callback` 把 `slash:cmd arg` 翻成 inbound `/cmd arg` 消息
 - `dispatch_slash_for_channel` 正常执行命令
+
+**不支持按钮的 5 个渠道**（WeChat / iMessage / IRC / Signal / WhatsApp）—— 文本 Usage hint：
+
+- `args_optional=false` + 有 `arg_options`（`/thinking` / `/permission` / `/plan`）：回 `Usage: /<cmd> <placeholder>` + `Options:` 列表（`render_options_help_text`），用户复制粘贴选项作为下一条消息。代替 handler 默认的 `Invalid X: \`\`` 错误。
+- `args_optional=true` 命令（`/imreply` / `/sessions` / `/recap` / `/team` / `/awareness` / `/reason` 等）：fall-through 到 handler 自带的"无参 = 显示当前状态 / picker"分支，**不**插入 Usage hint（避免覆盖 handler 的自定义无参语义）。
+- skill 命令：统一按 `args_optional=true` 处理（skill 默认无参可跑，不拦）。
 
 **特殊处理 — `/model` 无参数**：
 

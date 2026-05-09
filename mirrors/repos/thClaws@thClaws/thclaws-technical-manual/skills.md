@@ -729,3 +729,91 @@ The agent-side override read + clear is exercised indirectly by every existing r
 
 - [`subagent.md`](subagent.md) — `AgentDef::model` is a parallel concept for subagents; both fields shape per-call model selection but at different timing scales (subagent = whole subagent invocation, skill = single turn).
 - [`compaction.md`](compaction.md) — the override is read by the same `run_turn` that builds compaction-eligible history; compaction sees `req.messages` only, not the model name, so the override is invisible to the compactor.
+
+---
+
+## 15. settings.json overrides for built-in skills
+
+Built-in skills (currently just `extract-and-save`; `dream` is the parallel built-in for the agent-def side) ship a default `model:` recommendation in their embedded SKILL.md. Users can override that recommendation from `settings.json` without forking the entire skill body — useful when the embedded default needs an API key the user doesn't have, or when the user has a strong preference for a different model.
+
+### YAML / JSON shape
+
+```jsonc
+// .thclaws/settings.json (project) or ~/.config/thclaws/settings.json (user)
+{
+  "extract_save_skill_models": "claude-sonnet-4-6"
+}
+
+// or priority list — first model the user has a key for wins
+{
+  "extract_save_skill_models": ["claude-sonnet-4-6", "gpt-4o", "gemini-2.5-pro"]
+}
+
+// camelCase alias also accepted
+{
+  "extractSaveSkillModels": "gpt-4o"
+}
+```
+
+The value type is the same `SkillModelSpec` enum used in SKILL.md frontmatter — `#[serde(untagged)]` accepts either a string or an array.
+
+### Resolution chain
+
+`SkillTool::call` (`skills.rs`) resolves the effective spec:
+
+```rust
+let effective_spec = crate::skills_state::skill_override(name)
+    .or_else(|| skill.model.clone());
+```
+
+Translation: the settings.json override (per skill name) wins; otherwise the embedded SKILL.md frontmatter is used; otherwise no recommendation fires (model stays at the user's current selection).
+
+### Naming convention: per-skill named fields
+
+Each built-in skill that needs settings tunability declares its OWN typed field on `AppConfig` / `ProjectConfig`:
+
+| Skill | Settings field | Notes |
+|---|---|---|
+| `extract-and-save` | `extract_save_skill_models` | Vision-capable model for image OCR |
+| (future) `tts` | `tts_skill_models` | Voice-capable model for speech synthesis |
+| (future) `transcribe` | `transcribe_skill_models` | Audio-capable model for transcription |
+
+The alternative would be a single generic `skill_models: HashMap<String, SkillModelSpec>` keyed by skill name. We chose per-skill named fields for three reasons:
+
+1. **Discoverability in `settings.json`** — typing `tts_` in an editor with JSON Schema autocomplete surfaces the right field; a generic map shows nothing useful.
+2. **Field-name conveys intent** — `tts_skill_models` documents the skill's purpose; `skill_models["tts"]` doesn't.
+3. **Type-checked at compile time** — adding a new built-in skill means adding a field, which the compiler enforces is wired up in `Default::default` and `apply_to`. A map could silently lack the entry.
+
+### Internal plumbing
+
+The runtime stays generic — only the user-facing config layer is per-skill-named:
+
+```
+ProjectConfig::extract_save_skill_models  (settings.json layer)
+        │
+        │ apply_to() merges into
+        ▼
+AppConfig::extract_save_skill_models      (resolved runtime config)
+        │
+        │ at worker init, mapped to the generic
+        ▼
+skills_state::set_skill_overrides({"extract-and-save": spec})
+        │
+        │ SkillTool::call consults via
+        ▼
+skills_state::skill_override(name) → Option<SkillModelSpec>
+```
+
+Adding a new built-in skill that needs an override is three lines:
+1. Add `<name>_skill_models: Option<SkillModelSpec>` to `AppConfig` + `ProjectConfig` (+ Default + apply_to).
+2. In `shared_session.rs`'s "Per-skill model overrides" block: insert the field's value into the overrides map under the canonical skill name.
+3. Document the field in user-manual ch12.
+
+### Test surface
+
+| File | Test | Covers |
+|---|---|---|
+| `config.rs::tests` | `extract_save_skill_models_accepts_string_and_array` | settings.json deserialization (single, priority, camelCase alias, absent) |
+| `config.rs::tests` | `extract_save_skill_models_merges_into_app_config` | `ProjectConfig::apply_to` propagates the override |
+| `skills.rs::tests` | `skills_state_override_round_trip` | `set_skill_overrides` / `skill_override` work end-to-end |
+| `skills.rs::tests` | `skills_state_override_priority_list_round_trip` | Priority-list shape survives the round trip |

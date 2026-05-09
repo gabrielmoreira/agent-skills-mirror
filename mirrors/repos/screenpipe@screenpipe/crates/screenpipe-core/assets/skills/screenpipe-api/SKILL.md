@@ -1,11 +1,11 @@
 ---
 name: screenpipe-api
-description: Query the user's screen recordings, audio, UI elements, and usage analytics via the local Screenpipe REST API at localhost:3030. Use when the user asks about their screen activity, meetings, apps, productivity, media export, retranscription, or connected services.
+description: Query the user's data via the local screenpipe REST API at localhost:3030 — screen recordings, audio, UI elements, usage analytics, and the user's persistent memory store. Use when the user asks about their screen activity, meetings, apps, productivity, media export, retranscription, connected services, OR when they ask to save / remember / store / note information so it can be retrieved later (POST /memories — survives across sessions and is queryable by Claude/external agents via the same API).
 ---
 
 # Screenpipe API
 
-Local REST API at `http://localhost:3030`. Full reference (60+ endpoints): https://docs.screenpi.pe/llms-full.txt
+Local REST API at `http://localhost:3030`. 
 
 ## Authentication
 
@@ -15,13 +15,7 @@ Local REST API at `http://localhost:3030`. Full reference (60+ endpoints): https
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/..."
 ```
 
-The `$SCREENPIPE_LOCAL_API_KEY` env var is already set in your environment. Without it you get 403. The only exception is `/health` (no auth needed).
-
-> ⚠️ **Use `$SCREENPIPE_LOCAL_API_KEY` — not `$SCREENPIPE_API_KEY`.** They are different env vars for different APIs:
-> - `SCREENPIPE_LOCAL_API_KEY` (short `sp-<uuid>`) authenticates to `localhost:3030` (this skill).
-> - `SCREENPIPE_API_KEY` (long JWT) authenticates to `https://api.screenpi.pe` (cloud LLM, not this skill).
->
-> Sending the JWT to `localhost:3030` will return `unauthorized` and lead you down a dead-end debugging path. If you only see one of these env vars, use that one — but if `SCREENPIPE_LOCAL_API_KEY` is missing, the local server will reject every request you make regardless. Don't substitute the JWT for it.
+The `$SCREENPIPE_LOCAL_API_KEY` env var is already set in your environment. Without it you get 403. Endpoints that skip auth: `/health`, `/ws/health`, `/audio/device/status`, `/connections/oauth/callback`, `/frames/*`, `/notify`, `/pipes/store/*`.
 
 ## Context Window Protection
 
@@ -40,8 +34,8 @@ curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `q` | string | No | Keywords. Do NOT use for audio searches — transcriptions are noisy, q filters too aggressively. |
-| `content_type` | string | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`. Screen text is primarily captured via the OS accessibility tree (`accessibility`); OCR is a fallback for apps without accessibility support (games, remote desktops). Use `all` unless you need a specific modality. |
-| `limit` | integer | No | Max 1-20. Default: 10 |
+| `content_type` | string | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`. Screen text is primarily captured via the OS accessibility tree (`accessibility`); OCR is a fallback for apps without accessibility support (videos, games, remote desktops). Use `all` unless you need a specific modality. |
+| `limit` | integer | No | Default: 20. Keep small (≤20) to protect context. |
 | `offset` | integer | No | Pagination. Default: 0 |
 | `start_time` | ISO 8601 or relative | **Yes** | Accepts `2024-01-15T10:00:00Z` or `16h ago`, `2d ago`, `30m ago` |
 | `end_time` | ISO 8601 or relative | No | Defaults to now. Accepts `now`, `1h ago` |
@@ -74,11 +68,9 @@ Decision tree:
 ### Critical Rules
 
 1. **ALWAYS include `start_time`** — queries without time bounds WILL timeout
-2. **Start with 1-2 hour ranges** — expand only if no results
-3. **Use `app_name`** when user mentions a specific app
-4. **Keep `limit` low** (5-10) initially
-5. **"recent"** = 30 min. **"today"** = since midnight. **"yesterday"** = yesterday's range
-6. If timeout, narrow the time range
+2. **Use `app_name`** when user mentions a specific app (this is string contains)
+3. **"recent"** = 30 min. **"today"** = since midnight. **"yesterday"** = yesterday's range
+4. If timeout, narrow the time range
 
 ### Response Format
 
@@ -87,13 +79,11 @@ Decision tree:
   "data": [
     {"type": "OCR", "content": {"frame_id": 12345, "text": "...", "timestamp": "...", "app_name": "Chrome", "window_name": "..."}},
     {"type": "Audio", "content": {"chunk_id": 678, "transcription": "...", "timestamp": "...", "speaker": {"name": "John"}}},
-    {"type": "UI", "content": {"id": 999, "text": "Clicked 'Submit'", "timestamp": "...", "app_name": "Safari"}}
+    {"type": "Input", "content": {"id": 999, "text": "Clicked 'Submit'", "timestamp": "...", "app_name": "Safari"}}
   ],
   "pagination": {"limit": 10, "offset": 0, "total": 42}
 }
 ```
-
-> **Note**: The `"OCR"` type label is used for all screen text results, including text captured via the accessibility tree. Most screen text comes from accessibility, not OCR.
 
 ---
 
@@ -176,7 +166,7 @@ Fields: `start_time`, `end_time` (or `frame_ids` array), `fps` (default 1.0). Ma
 
 FPS guidelines: 5min→1.0, 30min→0.5, 1h→0.2, 2h+→0.1
 
-Returns `{"file_path": "...", "frame_count": N, "duration_secs": N}`. Show path as inline code block for playback.
+Returns `{"file_path": "...", "frame_count": N, "duration_secs": N, "file_size_bytes": N}`. Show path as inline code block for playback.
 
 ### Audio & ffmpeg
 
@@ -200,7 +190,7 @@ curl -X POST http://localhost:3030/audio/retranscribe \
   -d '{"start": "1h ago", "end": "now"}'
 ```
 
-Optional: `engine` (`whisper-large-v3-turbo`|`whisper-large-v3`|`deepgram`|`qwen3-asr`), `vocabulary` (array of `{"word": "...", "replacement": "..."}` for bias/replacement), `prompt` (topic context for Whisper).
+Optional: `engine` (one of `deepgram`, `screenpipe-cloud`, `whisper-large`, `whisper-large-v3-turbo`, `whisper-large-v3-turbo-quantized`, `qwen3-asr`, `parakeet`, `parakeet-mlx`, `openai-compatible`), `vocabulary` (array of `{"word": "...", "replacement": "..."}` for bias/replacement), `prompt` (topic context for Whisper).
 
 Keep ranges short (1h max). Show old vs new transcription.
 
@@ -453,7 +443,7 @@ curl -X DELETE http://localhost:3030/memories/1
 
 Parameters for `GET /memories`: `q` (FTS search), `source`, `tags`, `min_importance`, `start_time`, `end_time`, `limit`, `offset`.
 
-Memories also appear in `/search?content_type=memory`.
+Use `/memories` directly — `/search` does not currently surface `content_type=memory` results.
 
 ### Creating Memories
 

@@ -5,13 +5,6 @@ description: "Create SEO-optimized marketing content with a consistent brand voi
 
 # Content Creator — Strategic Hub
 
-This skill is the **upstream source** for all content. Here you determine the angle, do keyword research, and write brand-consistent text. Publishing to WordPress can be automated via the REST API (see workflow below).
-
-```
-Content Creator (this skill)      →  WordPress REST API / CMS
-Angle, copy, SEO, voice              HTML blocks, meta tags, publishing
-```
-
 ## Core workflow — from idea to publication
 
 | Step | What                          | Skill/tool                              |

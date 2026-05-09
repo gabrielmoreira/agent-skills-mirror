@@ -2,7 +2,7 @@
 repo: rtk-ai/rtk
 repoUrl: https://github.com/rtk-ai/rtk.git
 refType: branch
-ref: master
+ref: develop
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 13 followed patterns, 50 file(s)
 |---------------|-------|
 | Repo          | `rtk-ai/rtk` |
 | Ref Type      | `branch` |
-| Ref           | `master` |
+| Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 13 |
 | Files         | 50 |

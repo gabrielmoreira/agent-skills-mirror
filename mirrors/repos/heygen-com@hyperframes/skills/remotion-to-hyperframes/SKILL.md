@@ -1,6 +1,6 @@
 ---
 name: remotion-to-hyperframes
-description: Translate an existing Remotion (React-based) video composition into a HyperFrames HTML composition. Use ONLY when the user explicitly asks to port, convert, migrate, translate, or rewrite a Remotion composition as HyperFrames — for example "port my Remotion project to HyperFrames", "convert this Remotion code to HyperFrames", "migrate from Remotion", "translate this Remotion comp", or "rewrite this as HyperFrames HTML". Do NOT use when (a) the user is authoring a NEW HyperFrames composition, even if they have or are A/B-testing a similar Remotion video; (b) the user mentions Remotion in passing without asking for migration; (c) the user shares Remotion code as reference material rather than asking for a translation; (d) the user asks for "the same video as my Remotion one" without explicitly asking to migrate the source — treat that as a fresh HyperFrames build. When in doubt, default to authoring a native HyperFrames composition with the `hyperframes` skill instead. Skill detects unsupported patterns (useState, useEffect with side effects, async calculateMetadata, third-party React component libraries, `@remotion/lambda` features) and recommends the runtime interop escape hatch instead of attempting a lossy translation.
+description: Translate an existing Remotion (React-based) video composition into a HyperFrames HTML composition. Use ONLY when the user explicitly asks to port, convert, migrate, translate, or rewrite a Remotion composition as HyperFrames (e.g. "port my Remotion project to HyperFrames"). Do NOT use when (a) authoring a NEW HyperFrames composition (even if A/B-testing a Remotion video); (b) Remotion is mentioned in passing; (c) Remotion code is shared as reference, not for translation; (d) the user wants "the same video as my Remotion one" without explicitly asking to migrate the source — treat as a fresh HyperFrames build. When in doubt, default to the `hyperframes` skill. Detects unsupported patterns (useState, useEffect side effects, async calculateMetadata, third-party React component libraries, `@remotion/lambda`) and recommends the runtime interop escape hatch instead of a lossy translation.
 ---
 
 # Remotion to HyperFrames
@@ -10,6 +10,25 @@ description: Translate an existing Remotion (React-based) video composition into
 Translate Remotion (React-based) video compositions into HyperFrames (HTML + GSAP) compositions. Most Remotion idioms have direct HyperFrames equivalents — the translation is mechanical for ~80% of typical compositions. This skill encodes the mapping and guards against the lossy 20% by refusing to translate patterns that don't fit HF's seek-driven model and recommending the runtime interop pattern from [PR #214](https://github.com/heygen-com/hyperframes/pull/214) instead.
 
 The skill ships with a **tiered test corpus** (T1–T4, 4 fixtures total) that grades translations against measured SSIM thresholds. Don't translate without running the eval — a translation that "looks right" but renders 0.05 SSIM lower than the validated baseline is silently wrong.
+
+## When to use
+
+**Use this skill ONLY when the user explicitly asks to migrate from Remotion.** Example trigger phrases:
+
+- "port my Remotion project to HyperFrames"
+- "convert this Remotion code to HyperFrames"
+- "migrate from Remotion"
+- "translate this Remotion comp"
+- "rewrite this as HyperFrames HTML"
+
+**Do NOT use this skill when:**
+
+- (a) The user is authoring a **new** HyperFrames composition, even if they have or are A/B-testing a similar Remotion video.
+- (b) The user mentions Remotion in passing without asking for migration.
+- (c) The user shares Remotion code as reference material rather than asking for a translation.
+- (d) The user asks for "the same video as my Remotion one" without explicitly asking to migrate the source — treat that as a fresh HyperFrames build.
+
+When in doubt, default to authoring a native HyperFrames composition with the `hyperframes` skill instead.
 
 ## Workflow
 

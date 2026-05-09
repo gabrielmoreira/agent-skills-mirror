@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `addyosmani/agent-skills` — 26 default patterns, 14 followed patterns, 45 file(s) materialized.
+Mirror of `addyosmani/agent-skills` — 26 default patterns, 14 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `addyosmani/agent-skills` — 26 default patterns, 14 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 14 |
-| Files         | 45 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,36 +87,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/debugging-and-error-recovery/SKILL.md`](skills/debugging-and-error-recovery/SKILL.md) |
 | 14 | ✓ | [`skills/deprecation-and-migration/SKILL.md`](skills/deprecation-and-migration/SKILL.md) |
 | 15 | ✓ | [`skills/documentation-and-adrs/SKILL.md`](skills/documentation-and-adrs/SKILL.md) |
-| 16 | ✓ | [`skills/frontend-ui-engineering/SKILL.md`](skills/frontend-ui-engineering/SKILL.md) |
-| 17 | ✓ | [`skills/git-workflow-and-versioning/SKILL.md`](skills/git-workflow-and-versioning/SKILL.md) |
-| 18 | ✓ | [`skills/idea-refine/examples.md`](skills/idea-refine/examples.md) |
-| 19 | ✓ | [`skills/idea-refine/frameworks.md`](skills/idea-refine/frameworks.md) |
-| 20 | ✓ | [`skills/idea-refine/refinement-criteria.md`](skills/idea-refine/refinement-criteria.md) |
-| 21 | ✓ | [`skills/idea-refine/scripts/idea-refine.sh`](skills/idea-refine/scripts/idea-refine.sh) |
-| 22 | ✓ | [`skills/idea-refine/SKILL.md`](skills/idea-refine/SKILL.md) |
-| 23 | ✓ | [`skills/incremental-implementation/SKILL.md`](skills/incremental-implementation/SKILL.md) |
-| 24 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
-| 25 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
-| 26 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
-| 27 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
-| 28 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
-| 29 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
-| 30 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 31 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
-| 32 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 33 | → | [`docs/copilot-setup.md`](docs/copilot-setup.md) |
-| 34 | → | [`docs/cursor-setup.md`](docs/cursor-setup.md) |
-| 35 | → | [`docs/gemini-cli-setup.md`](docs/gemini-cli-setup.md) |
-| 36 | → | [`docs/getting-started.md`](docs/getting-started.md) |
-| 37 | → | [`docs/opencode-setup.md`](docs/opencode-setup.md) |
-| 38 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
-| 39 | → | [`docs/windsurf-setup.md`](docs/windsurf-setup.md) |
-| 40 | → | [`README.md`](README.md) |
-| 41 | → | [`references/accessibility-checklist.md`](references/accessibility-checklist.md) |
-| 42 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
-| 43 | → | [`references/performance-checklist.md`](references/performance-checklist.md) |
-| 44 | → | [`references/security-checklist.md`](references/security-checklist.md) |
-| 45 | → | [`references/testing-patterns.md`](references/testing-patterns.md) |
+| 16 | ✓ | [`skills/doubt-driven-development/SKILL.md`](skills/doubt-driven-development/SKILL.md) |
+| 17 | ✓ | [`skills/frontend-ui-engineering/SKILL.md`](skills/frontend-ui-engineering/SKILL.md) |
+| 18 | ✓ | [`skills/git-workflow-and-versioning/SKILL.md`](skills/git-workflow-and-versioning/SKILL.md) |
+| 19 | ✓ | [`skills/idea-refine/examples.md`](skills/idea-refine/examples.md) |
+| 20 | ✓ | [`skills/idea-refine/frameworks.md`](skills/idea-refine/frameworks.md) |
+| 21 | ✓ | [`skills/idea-refine/refinement-criteria.md`](skills/idea-refine/refinement-criteria.md) |
+| 22 | ✓ | [`skills/idea-refine/scripts/idea-refine.sh`](skills/idea-refine/scripts/idea-refine.sh) |
+| 23 | ✓ | [`skills/idea-refine/SKILL.md`](skills/idea-refine/SKILL.md) |
+| 24 | ✓ | [`skills/incremental-implementation/SKILL.md`](skills/incremental-implementation/SKILL.md) |
+| 25 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
+| 26 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
+| 27 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
+| 28 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
+| 29 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
+| 30 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
+| 31 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 32 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
+| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 34 | → | [`docs/copilot-setup.md`](docs/copilot-setup.md) |
+| 35 | → | [`docs/cursor-setup.md`](docs/cursor-setup.md) |
+| 36 | → | [`docs/gemini-cli-setup.md`](docs/gemini-cli-setup.md) |
+| 37 | → | [`docs/getting-started.md`](docs/getting-started.md) |
+| 38 | → | [`docs/opencode-setup.md`](docs/opencode-setup.md) |
+| 39 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 40 | → | [`docs/windsurf-setup.md`](docs/windsurf-setup.md) |
+| 41 | → | [`README.md`](README.md) |
+| 42 | → | [`references/accessibility-checklist.md`](references/accessibility-checklist.md) |
+| 43 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
+| 44 | → | [`references/performance-checklist.md`](references/performance-checklist.md) |
+| 45 | → | [`references/security-checklist.md`](references/security-checklist.md) |
+| 46 | → | [`references/testing-patterns.md`](references/testing-patterns.md) |
 
 ---
 

@@ -11,6 +11,13 @@ description: "Multi-AI research using Codex and Gemini CLIs (Double Diamond Disc
 
 {{PREAMBLE}}
 
+## Compaction-Resistant Contract
+
+- Dispatch MUST go through background agents that call `${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh probe-single`; direct single-model research is not a valid substitute.
+- Use the dynamic fleet from `build-fleet.sh`; the plugin can route across Codex, Gemini, Copilot, Qwen, OpenCode, Ollama, Perplexity, OpenRouter, Cursor Agent, and Claude depending on local availability.
+- Before synthesis, run `${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh agent-summary` and use only providers reported as `ok`, `degraded`, or `timeout` with usable output.
+- For `standard` and `deep` research, require at least 2 usable provider outputs unless fewer providers are installed; failed/rejected providers are reported as gaps, not cited as evidence.
+
 ## Pre-Discovery: Project Initialization
 
 Before starting discovery:
@@ -172,7 +179,7 @@ fi
 
 ### STEP 3.5: Parse Intensity & Build Agent Fleet (MANDATORY)
 
-**Parse the `intensity` parameter from the skill args.** The args string may start with `[intensity=quick|standard|deep]`. If no intensity is specified, default to `"standard"` (backward compatible with `/octo:embrace` which doesn't pass intensity).
+**Parse the `breadth` and `intensity` parameters from the skill args.** The args string may start with `[breadth=light|standard|exhaustive]` and/or `[intensity=quick|standard|deep]`. If only breadth is specified, map `light -> quick`, `standard -> standard`, and `exhaustive -> deep`. If neither is specified, default to `"standard"` (backward compatible with `/octo:embrace` which doesn't pass intensity).
 
 **Build the fleet dynamically using `build-fleet.sh`** — this is the single source of truth for provider-to-perspective assignment. It detects ALL available providers (codex, gemini, copilot, qwen, opencode, ollama, perplexity, openrouter) and assigns perspectives with model family diversity enforcement.
 
@@ -243,6 +250,14 @@ After the command completes, read the result file path that was printed and retu
 - If some agents fail/timeout, proceed with successful results
 
 **For each completed agent, collect its output** (the result file contents returned by the agent).
+
+Run the status table before synthesis:
+
+```bash
+"${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" agent-summary
+```
+
+Only cite providers with usable output (`ok`, `degraded`, or timeout with partial content). Failed provider output, context-limit errors, and empty outputs are evidence of coverage gaps only.
 
 
 ### STEP 6: Synthesize In-Conversation (MANDATORY - Claude Synthesizes)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cafe3310/public-agent-skills` — 26 default patterns, 0 followed patterns, 248 file(s) materialized.
+Mirror of `cafe3310/public-agent-skills` — 26 default patterns, 0 followed patterns, 253 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cafe3310/public-agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 248 |
+| Files         | 253 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -292,21 +292,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 231 | ✓ | [`skills/skill-creator/scripts/run_loop.py`](skills/skill-creator/scripts/run_loop.py) |
 | 232 | ✓ | [`skills/skill-creator/scripts/utils.py`](skills/skill-creator/scripts/utils.py) |
 | 233 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 234 | ✓ | [`skills/tech-to-marketing-brief/references/jira_agile_spec.md`](skills/tech-to-marketing-brief/references/jira_agile_spec.md) |
-| 235 | ✓ | [`skills/tech-to-marketing-brief/references/marketing_campaign_planning.md`](skills/tech-to-marketing-brief/references/marketing_campaign_planning.md) |
-| 236 | ✓ | [`skills/tech-to-marketing-brief/references/social_media_brand_voice.md`](skills/tech-to-marketing-brief/references/social_media_brand_voice.md) |
-| 237 | ✓ | [`skills/tech-to-marketing-brief/SKILL.md`](skills/tech-to-marketing-brief/SKILL.md) |
-| 238 | ✓ | [`skills/text-watermark-fountain/FOR_HUMAN.md`](skills/text-watermark-fountain/FOR_HUMAN.md) |
-| 239 | ✓ | [`skills/text-watermark-fountain/scripts/decode.py`](skills/text-watermark-fountain/scripts/decode.py) |
-| 240 | ✓ | [`skills/text-watermark-fountain/scripts/encode.py`](skills/text-watermark-fountain/scripts/encode.py) |
-| 241 | ✓ | [`skills/text-watermark-fountain/scripts/lt_code.py`](skills/text-watermark-fountain/scripts/lt_code.py) |
-| 242 | ✓ | [`skills/text-watermark-fountain/SKILL.md`](skills/text-watermark-fountain/SKILL.md) |
-| 243 | ✓ | [`skills/use-claude-plugin/SKILL.md`](skills/use-claude-plugin/SKILL.md) |
-| 244 | ✓ | [`skills/weekly-report-writer/assets/weekly_report.md.template`](skills/weekly-report-writer/assets/weekly_report.md.template) |
-| 245 | ✓ | [`skills/weekly-report-writer/references/agents.md.example`](skills/weekly-report-writer/references/agents.md.example) |
-| 246 | ✓ | [`skills/weekly-report-writer/SKILL.md`](skills/weekly-report-writer/SKILL.md) |
-| 247 | ✓ | [`skills/wx-emoji-maker/scripts/run.sh`](skills/wx-emoji-maker/scripts/run.sh) |
-| 248 | ✓ | [`skills/wx-emoji-maker/SKILL.md`](skills/wx-emoji-maker/SKILL.md) |
+| 234 | ✓ | [`skills/subject-learning-assistant/references/ref_kb.yaml`](skills/subject-learning-assistant/references/ref_kb.yaml) |
+| 235 | ✓ | [`skills/subject-learning-assistant/references/ref_prompt.md`](skills/subject-learning-assistant/references/ref_prompt.md) |
+| 236 | ✓ | [`skills/subject-learning-assistant/scripts/index.html`](skills/subject-learning-assistant/scripts/index.html) |
+| 237 | ✓ | [`skills/subject-learning-assistant/scripts/server.py`](skills/subject-learning-assistant/scripts/server.py) |
+| 238 | ✓ | [`skills/subject-learning-assistant/SKILL.md`](skills/subject-learning-assistant/SKILL.md) |
+| 239 | ✓ | [`skills/tech-to-marketing-brief/references/jira_agile_spec.md`](skills/tech-to-marketing-brief/references/jira_agile_spec.md) |
+| 240 | ✓ | [`skills/tech-to-marketing-brief/references/marketing_campaign_planning.md`](skills/tech-to-marketing-brief/references/marketing_campaign_planning.md) |
+| 241 | ✓ | [`skills/tech-to-marketing-brief/references/social_media_brand_voice.md`](skills/tech-to-marketing-brief/references/social_media_brand_voice.md) |
+| 242 | ✓ | [`skills/tech-to-marketing-brief/SKILL.md`](skills/tech-to-marketing-brief/SKILL.md) |
+| 243 | ✓ | [`skills/text-watermark-fountain/FOR_HUMAN.md`](skills/text-watermark-fountain/FOR_HUMAN.md) |
+| 244 | ✓ | [`skills/text-watermark-fountain/scripts/decode.py`](skills/text-watermark-fountain/scripts/decode.py) |
+| 245 | ✓ | [`skills/text-watermark-fountain/scripts/encode.py`](skills/text-watermark-fountain/scripts/encode.py) |
+| 246 | ✓ | [`skills/text-watermark-fountain/scripts/lt_code.py`](skills/text-watermark-fountain/scripts/lt_code.py) |
+| 247 | ✓ | [`skills/text-watermark-fountain/SKILL.md`](skills/text-watermark-fountain/SKILL.md) |
+| 248 | ✓ | [`skills/use-claude-plugin/SKILL.md`](skills/use-claude-plugin/SKILL.md) |
+| 249 | ✓ | [`skills/weekly-report-writer/assets/weekly_report.md.template`](skills/weekly-report-writer/assets/weekly_report.md.template) |
+| 250 | ✓ | [`skills/weekly-report-writer/references/agents.md.example`](skills/weekly-report-writer/references/agents.md.example) |
+| 251 | ✓ | [`skills/weekly-report-writer/SKILL.md`](skills/weekly-report-writer/SKILL.md) |
+| 252 | ✓ | [`skills/wx-emoji-maker/scripts/run.sh`](skills/wx-emoji-maker/scripts/run.sh) |
+| 253 | ✓ | [`skills/wx-emoji-maker/SKILL.md`](skills/wx-emoji-maker/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/.agents/skills/research-and-write/SKILL.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/.agents/skills/research-and-write/SKILL.md) |
+| 2 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/.agents/skills/research/SKILL.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/.agents/skills/research/SKILL.md) |
+| 3 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/.agents/skills/write-post/SKILL.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/.agents/skills/write-post/SKILL.md) |
+| 4 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/AGENTS.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/AGENTS.md) |
+| 5 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/CLAUDE.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/CLAUDE.md) |
+| 6 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.agents/skills/implement-universal/SKILL.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.agents/skills/implement-universal/SKILL.md) |
+| 7 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.claude/skills/implement/SKILL.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.claude/skills/implement/SKILL.md) |
+| 8 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/AGENTS.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/AGENTS.md) |
+| 9 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/CLAUDE.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/CLAUDE.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

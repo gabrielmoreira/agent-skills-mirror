@@ -1,12 +1,12 @@
 ---
 name: chainlink-ace-skill
-description: "Handle Chainlink ACE (Automated Compliance Engine) work using the public smartcontractkit/chainlink-ace repository and official docs.chain.link ACE Platform docs: audited ACE core contracts, managed Platform/Beta scope, Coordinator API, Reporting API, Policy Management, PolicyEngine, PolicyProtected, policy chains, custom policies, extractors, mappers, Cross-Chain Identity, CCIDs, credential registries, KYC/AML credentials, regulated tokens, ERC-20 and ERC-3643 compliance token examples, Foundry setup, upgrade guidance, and BUSL licensing. Use this skill whenever the user mentions ACE, Automated Compliance Engine, ACE Platform, chainlink-ace, Chainlink compliance, policy enforcement, PolicyEngine, PolicyProtected, Coordinator API, Reporting API, CCID, credential registries, KYC/AML credentials, sanctions screening, regulated tokens, ERC-3643 compliance, or onchain compliance rules, even if they do not explicitly say 'ACE'."
+description: "Handle Chainlink ACE (Automated Compliance Engine) work using the public smartcontractkit/chainlink-ace repository and official docs.chain.link ACE Platform docs. Use for audited ACE core contracts, managed Platform/Beta scope, Coordinator API, Reporting API, Policy Management, PolicyEngine, PolicyProtected, policy chains, custom policies, extractors, mappers, Cross-Chain Identity (CCIDs), credential registries, KYC/AML credentials, sanctions screening, regulated tokens, ERC-20 and ERC-3643 compliance token examples, upgrade guidance, and BUSL licensing. Trigger on any mention of ACE, Automated Compliance Engine, chainlink-ace, Chainlink compliance, policy enforcement, ERC-3643, or onchain compliance rules, even if the user does not explicitly say 'ACE'."
 license: MIT
 compatibility: Designed for AI agents that implement https://agentskills.io/specification, including Claude Code, Cursor Composer, and Codex-style workflows.
 allowed-tools: Read WebFetch Write Edit Bash
 metadata:
   purpose: Chainlink ACE core contracts and managed Platform developer onboarding, compliance architecture, product scope, and reference guidance
-  version: "0.0.3"
+  version: "0.0.4"
 ---
 
 # Chainlink ACE Skill

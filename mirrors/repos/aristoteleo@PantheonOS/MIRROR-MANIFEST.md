@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
+Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 71 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -130,6 +130,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md) |
 | 70 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md) |
 | 71 | ✓ | [`pantheon/factory/templates/skills/paper_writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/SKILL.md) |
+| 72 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_slides.md`](pantheon/factory/templates/skills/presentation/marp_slides.md) |
+| 73 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_template.md`](pantheon/factory/templates/skills/presentation/marp_template.md) |
+| 74 | ✓ | [`pantheon/factory/templates/skills/presentation/SKILL.md`](pantheon/factory/templates/skills/presentation/SKILL.md) |
 
 ---
 
