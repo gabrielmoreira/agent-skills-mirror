@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/engineering-skills/../../../engineering-team/skills/engineering-skills/SKILL.md

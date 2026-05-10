@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 17 followed patterns, 30 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 18 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 17 followed patterns, 30 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 17 |
-| Files         | 30 |
+| Followed pats | 18 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 17 followed patterns, 30 fil
 
 - `docs/product.md`
 - `docs/architecture.md`
+- `docs/agent-lifecycle.md`
 - `docs/data-model.md`
 - `docs/glossary.md`
 - `docs/coding-standards.md`
@@ -79,32 +80,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
 | 4 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 5 | ✓ | [`public-docs/skills.md`](public-docs/skills.md) |
-| 6 | ✓ | [`skills/paseo-advisor/SKILL.md`](skills/paseo-advisor/SKILL.md) |
-| 7 | ✓ | [`skills/paseo-committee/SKILL.md`](skills/paseo-committee/SKILL.md) |
-| 8 | ✓ | [`skills/paseo-epic/references/roles.md`](skills/paseo-epic/references/roles.md) |
-| 9 | ✓ | [`skills/paseo-epic/SKILL.md`](skills/paseo-epic/SKILL.md) |
-| 10 | ✓ | [`skills/paseo-handoff/SKILL.md`](skills/paseo-handoff/SKILL.md) |
-| 11 | ✓ | [`skills/paseo-loop/SKILL.md`](skills/paseo-loop/SKILL.md) |
-| 12 | ✓ | [`skills/paseo-orchestrate/SKILL.md`](skills/paseo-orchestrate/SKILL.md) |
-| 13 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
-| 14 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
-| 15 | → | [`docs/android.md`](docs/android.md) |
-| 16 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 17 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
-| 18 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
-| 19 | → | [`docs/data-model.md`](docs/data-model.md) |
-| 20 | → | [`docs/design.md`](docs/design.md) |
-| 21 | → | [`docs/development.md`](docs/development.md) |
-| 22 | → | [`docs/file-icons.md`](docs/file-icons.md) |
-| 23 | → | [`docs/glossary.md`](docs/glossary.md) |
-| 24 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 25 | → | [`docs/product.md`](docs/product.md) |
-| 26 | → | [`docs/providers.md`](docs/providers.md) |
-| 27 | → | [`docs/release.md`](docs/release.md) |
-| 28 | → | [`docs/testing.md`](docs/testing.md) |
-| 29 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 30 | → | [`SECURITY.md`](SECURITY.md) |
+| 5 | ✓ | [`public-docs/custom-providers.md`](public-docs/custom-providers.md) |
+| 6 | ✓ | [`public-docs/skills.md`](public-docs/skills.md) |
+| 7 | ✓ | [`skills/paseo-advisor/SKILL.md`](skills/paseo-advisor/SKILL.md) |
+| 8 | ✓ | [`skills/paseo-committee/SKILL.md`](skills/paseo-committee/SKILL.md) |
+| 9 | ✓ | [`skills/paseo-epic/references/roles.md`](skills/paseo-epic/references/roles.md) |
+| 10 | ✓ | [`skills/paseo-epic/SKILL.md`](skills/paseo-epic/SKILL.md) |
+| 11 | ✓ | [`skills/paseo-handoff/SKILL.md`](skills/paseo-handoff/SKILL.md) |
+| 12 | ✓ | [`skills/paseo-loop/SKILL.md`](skills/paseo-loop/SKILL.md) |
+| 13 | ✓ | [`skills/paseo-orchestrate/SKILL.md`](skills/paseo-orchestrate/SKILL.md) |
+| 14 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
+| 15 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
+| 16 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
+| 17 | → | [`docs/android.md`](docs/android.md) |
+| 18 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 19 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
+| 20 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
+| 21 | → | [`docs/data-model.md`](docs/data-model.md) |
+| 22 | → | [`docs/design.md`](docs/design.md) |
+| 23 | → | [`docs/development.md`](docs/development.md) |
+| 24 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 25 | → | [`docs/glossary.md`](docs/glossary.md) |
+| 26 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 27 | → | [`docs/product.md`](docs/product.md) |
+| 28 | → | [`docs/providers.md`](docs/providers.md) |
+| 29 | → | [`docs/release.md`](docs/release.md) |
+| 30 | → | [`docs/testing.md`](docs/testing.md) |
+| 31 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 32 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -251,8 +251,9 @@ Behavior notes per Recipe:
 | `DSL`, `fluent API`, `tagged template`, `embedded language` | DSL architecture | Internal/external DSL design + vocabulary | `references/dsl-design.md` |
 | `AST`, `codemod`, `jscodeshift`, `babel plugin`, `ts-morph` | AST transform design | Node types + visitor plan + roundtrip strategy | `references/ast-transforms.md` |
 | `grammar audit`, `parser review`, `ambiguity` | Grammar audit | Conflict report + refactor proposal | `references/parser-generators.md` |
-| `lexer`, `tokenizer`, `indentation`, `layout rule` | Tokenizer design | Lexer modes + context rules | `references/parser-generators.md` |
-| `error message`, `diagnostic`, `parse error UX` | Error recovery plan | Recovery strategy + diagnostic template | `references/parser-generators.md` |
+| `lexer`, `tokenizer`, `indentation`, `layout rule` | Tokenizer design | Lexer modes + context rules | `references/lexer-design.md` |
+| `error message`, `diagnostic`, `parse error UX` | Error recovery plan | Recovery strategy + diagnostic template | `references/error-recovery.md` |
+| `incremental`, `LSP`, `editor reparse`, `tree-sitter incremental` | Incremental parser architecture | Edit-aware reparse spec | `references/incremental-parsing.md` |
 | unclear pattern-related request | Grammar + regex dual-track analysis | Decision memo routing to regex or parser | `references/parser-generators.md` |
 
 ## Regex Safety
@@ -421,6 +422,9 @@ Sentinel verifies ReDoS resistance in context of the full untrusted-input path.
 | `references/parser-generators.md` | Selecting a parser generator; evaluating trade-offs; grammar class identification |
 | `references/dsl-design.md` | Designing an internal or external DSL; choosing between fluent API, template literal, YAML, etc. |
 | `references/ast-transforms.md` | AST node design; codemod strategy; visitor-pattern selection; roundtrip-safe transforms |
+| `references/lexer-design.md` | Standalone tokenizer/lexer design — separation rationale, off-side rule (INDENT/DEDENT), context-sensitive tokens, hand-written vs generator (re2c, flex, ANTLR lexer, logos), trivia handling |
+| `references/error-recovery.md` | Parser error-recovery and diagnostic-message design — panic-mode, phrase-level, error productions, multi-span diagnostics, expected-token reporting |
+| `references/incremental-parsing.md` | Incremental reparse architecture for IDE/LSP — edit-aware state, dirty-subtree tracking, tree-sitter-style GLR, Roslyn red-green trees, rust-analyzer Rowan/salsa |
 | `references/handoffs.md` | Packaging deliverables for Builder, Radar, Sentinel, Canon, Atlas, Judge, or Shift |
 | `_common/OPUS_47_AUTHORING.md` | Calibrating grammar spec verbosity; adaptive thinking at ambiguity-resolution points. Critical for Grok: P3, P5 |
 

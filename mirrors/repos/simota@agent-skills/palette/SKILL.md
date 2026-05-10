@@ -13,7 +13,7 @@ CAPABILITIES_SUMMARY:
 - responsive_adaptation: Optimize layouts across device sizes
 - ai_interface_ux: Review AI-powered UI elements for trust, transparency, and accessible interaction — including agentic AI patterns (Intent Preview, Action Audit, Escalation Pathway)
 - usability_benchmarking: SUS scoring, SEQ measurement, task success rate evaluation
-- wcag3_preview: WCAG 3.0 awareness (0-4 scoring system, Bronze/Silver/Gold tiers, cognitive disability expansion — finalization 2028+, not yet a compliance target but informs design decisions)
+- wcag3_preview: WCAG 3.0 awareness (0-4 scoring system, Bronze/Silver/Gold tiers, cognitive disability expansion — finalization 2028+, not yet a compliance target but informs design decisions; APCA contrast was removed from the WCAG 3.0 draft in July 2023 — continue to use WCAG 2.2 AA contrast targets)
 - popover_api_patterns: Native Popover API accessibility patterns (popover attribute, popovertarget, top layer, light dismiss, built-in focus management) replacing custom modal/tooltip aria implementations
 - calm_ui_evaluation: Calm UI / Cognitive Clarity evaluation framework — information density, visual noise, operation steps, attention load assessment
 - adaptive_ui_evaluation: Adaptive UI cognitive load evaluation — progressive disclosure evolution, expert/beginner mode patterns, dynamic UI complexity adjustment
@@ -48,7 +48,7 @@ UX engineer for usability, interaction quality, recovery design, and accessibili
 - Use Palette for WCAG 2.2 gap analysis — especially the nine new success criteria (focus appearance, dragging movements, target size minimum 24×24px, consistent help, accessible authentication, redundant entry).
 - Use Palette for EAA / ADA Title II compliance readiness — audit against EN 301 549 (EU) or WCAG 2.1 AA (US federal) and identify gaps before enforcement deadlines. eCommerce faces highest litigation risk (70% of 2025 ADA lawsuits targeted e-commerce; UsableNet 2025).
 - Use Palette for agentic AI interface review — evaluate Intent Preview (pre-action consent), Explainable Rationale, Confidence Signals, Action Audit & Undo, and Escalation Pathways for autonomous agent UIs (Smashing Magazine 2026).
-- Use Palette for WCAG 3.0 readiness assessment — evaluate current conformance against the APCA contrast model (Lightness Contrast: LC ≥ 60 for body text, ≥ 45 for large headlines) and Bronze/Silver/Gold conformance structure while WCAG 3.0 remains a Working Draft (W3C March 2026 draft; final Recommendation expected 2028–2030).
+- Use Palette for WCAG 3.0 readiness assessment — evaluate current conformance against the Bronze/Silver/Gold tiered scoring model in the WCAG 3.0 Working Draft (substantially complete draft early 2026; final Recommendation expected 2028–2030). Note: APCA contrast was removed from the WCAG 3.0 draft as of July 2023 and is not present in subsequent drafts; continue to use WCAG 2.2 AA contrast ratios (4.5:1 normal text / 3:1 large text or UI components) as the actionable target. [Source: W3C — W3C Accessibility Guidelines (WCAG) 3.0, Working Draft (https://www.w3.org/TR/wcag-3.0/)]
 
 Route elsewhere when the task is primarily:
 - a task better handled by another agent per `_common/BOUNDARIES.md`
@@ -308,6 +308,9 @@ Palette receives UX direction and testing results from upstream agents. Palette 
 | `references/keyboard-navigation-patterns.md` | You need tab-order rules, focus-ring requirements, shortcut-system design, roving tabindex, or focus-trap patterns. |
 | `references/mobile-touch-patterns.md` | You need thumb-zone layout, tap-target sizing, gesture affordances, haptic vocabulary, safe-area, or keyboard-avoidance guidance. |
 | `references/forms-ux-patterns.md` | You are deciding field order, validation timing, error-voice direction, progressive disclosure, multi-step flow, or autofill/password-manager cooperation. |
+| `references/error-states.md` | You are designing error UX as a system — failure classification (validation/permission/server/network), message hierarchy, recovery paths, inline vs toast vs page placement, retry/undo, post-error empty-state handoff. |
+| `references/empty-states.md` | You are designing empty states — first-use, zero-results, post-clear, post-error variants with onboarding cues, templates, and primary-action vs invitation-copy decisions. |
+| `references/loading-states.md` | You need latency-band strategy (skeleton ≤1s, spinner 1–10s, determinate progress >10s, optimistic UI for retries), perceived-speed tactics, and skeleton-vs-spinner-vs-shimmer choice. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the review report, deciding adaptive thinking depth at REVIEW, or front-loading scope tier at SCAN. Critical for Palette: P3, P5. |
 
 ## Operational

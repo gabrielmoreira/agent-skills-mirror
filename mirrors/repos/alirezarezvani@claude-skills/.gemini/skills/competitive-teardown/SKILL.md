@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/competitive-teardown/../../../product-team/skills/competitive-teardown/SKILL.md

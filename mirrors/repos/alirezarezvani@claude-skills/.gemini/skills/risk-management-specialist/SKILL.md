@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/risk-management-specialist/../../../ra-qm-team/skills/risk-management-specialist/SKILL.md

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/contract-and-proposal-writer/../../../business-growth/skills/contract-and-proposal-writer/SKILL.md

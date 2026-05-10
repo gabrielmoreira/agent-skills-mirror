@@ -309,6 +309,9 @@ Do not parallelize EVOLVE or FUSE — these require sequential confidence recalc
 | `references/speak-engine.md` | You are using `SPEAK`, selecting engines, or handling TTS fallback. |
 | `references/persona-validation.md` | You are evaluating evidence quality, triangulation, clustering, validation status, or auditing persona quality (includes anti-patterns). |
 | `references/persona-governance.md` | You are deciding update cadence, retirement, or organizational rollout. |
+| `references/archetype-mapping.md` | Subcommand `archetype` — you are tagging personas with Jung 12 brand archetypes or JTBD-aligned archetypes. |
+| `references/segmentation-methods.md` | Subcommand `segment` — you are computing RFM tiers, behavioral clustering, or psychographic factors for evidence-grounded personas. |
+| `references/persona-bias-audit.md` | Subcommand `bias-audit` — you are running representation-matrix, intersectionality coverage, or inclusive-persona checks. |
 | `_common/AI_PERSONA_RISKS.md` | AI generation, human review, or bias/ethics risk is involved. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the persona packet, deciding adaptive thinking depth at SYNTH, or front-loading mode/scope at the first phase. Critical for Cast: P3, P5. |
 

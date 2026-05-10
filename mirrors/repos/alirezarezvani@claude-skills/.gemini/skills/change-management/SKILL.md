@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/change-management/../../../c-level-advisor/skills/change-management/SKILL.md

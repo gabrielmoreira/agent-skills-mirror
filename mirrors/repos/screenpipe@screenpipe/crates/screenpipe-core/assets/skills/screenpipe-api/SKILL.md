@@ -258,7 +258,7 @@ Common patterns: `GROUP BY date(timestamp)` (daily), `GROUP BY strftime('%H:00',
 ## 8. Connections — `GET /connections`
 
 ```bash
-# List all integrations (Telegram, Slack, Discord, Email, Todoist, Teams)
+# List all integrations (Telegram, Slack, Discord, Email, Todoist, Teams, 40+)
 curl http://localhost:3030/connections
 
 # Get credentials for a connected service
@@ -281,7 +281,7 @@ the exact endpoint and body shape. Read it before guessing.
 
 ### Browser Control — `owned-default`
 
-You have an embedded browser you can drive directly. Three intent verbs;
+You have an embedded browser you can drive directly, for the user it will displayed inside the chat. Three intent verbs;
 reach for `/eval` only when the first two aren't enough.
 
 ```bash

@@ -1,1 +1,1 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skills-status/../../../engineering/autoresearch-agent/skills/status/SKILL.md
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skills-status/../../../engineering/agenthub/skills/status/SKILL.md

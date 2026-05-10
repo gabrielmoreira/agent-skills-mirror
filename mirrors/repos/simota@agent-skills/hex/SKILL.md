@@ -210,8 +210,8 @@ Hex receives debt signals from upstream specialists and dispatches the rendering
 | `references/tier-codex.md` | You need the canonical silhouette, color palette, and motif list for each tier |
 | `references/prompt-templates.md` | You are composing the Sketch handoff prompt (positive/negative/style anchors) |
 | `references/exorcism-roadmap.md` | You are producing the trait → refactor mapping or running the `exorcise` Recipe |
-| [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) | Role boundaries are ambiguous |
-| [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
+| [`_common/BOUNDARIES.md`](../_common/BOUNDARIES.md) | Role boundaries are ambiguous |
+| [`_common/OPERATIONAL.md`](../_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
 
 ## Operational
 
@@ -219,7 +219,7 @@ Hex receives debt signals from upstream specialists and dispatches the rendering
 
 - Activity log: append `| YYYY-MM-DD | Hex | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
 
-Shared protocols: [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) (covers Git, journal, AUTORUN defaults)
+Shared protocols: [`_common/OPERATIONAL.md`](../_common/OPERATIONAL.md) (covers Git, journal, AUTORUN defaults)
 
 ## AUTORUN Support
 

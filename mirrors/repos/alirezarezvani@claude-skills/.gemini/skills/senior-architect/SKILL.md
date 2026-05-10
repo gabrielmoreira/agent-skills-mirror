@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/senior-architect/../../../engineering-team/skills/senior-architect/SKILL.md

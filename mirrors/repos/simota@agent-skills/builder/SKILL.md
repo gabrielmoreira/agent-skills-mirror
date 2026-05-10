@@ -69,7 +69,7 @@ Route elsewhere when the task is primarily:
 
 ## Core Contract
 
-- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. Both TS 6.0 (final JS-based release, March 2026) and tsgo (Go-native TS 7.0) default `strict: true` in `tsc --init` but do NOT fold these additional flags into the `--strict` umbrella; keep all four explicit. For new projects, ensure zero TS 6.0 deprecation warnings — tsgo hard-removes deprecated options (`target: es5`, `moduleResolution: "node"`, `baseUrl` without `paths`, `esModuleInterop: false`).
+- Use TypeScript strict mode (`strict: true` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noPropertyAccessFromIndexSignature`) with no `any` — types are the first line of defense. Both TS 6.x (the final JS-based release series) and tsgo (the Go-native rewrite that will ship as TS 7.0 once it reaches feature parity) default `strict: true` in `tsc --init` but do NOT fold these additional flags into the `--strict` umbrella; keep all four explicit. For new projects, ensure zero TS 6.x deprecation warnings — tsgo hard-removes deprecated options (`target: es5`, `moduleResolution: "node"`, `baseUrl` without `paths`, `esModuleInterop: false`). [Source: Microsoft TypeScript Blog — A 10x Faster TypeScript (native-port post)](https://devblogs.microsoft.com/typescript/typescript-native-port/)
 - Define interfaces and types before writing implementation code.
 - Enforce always-valid domain model: entities and value objects must be valid at construction time; reject invalid state in constructors/factories, never allow half-built objects to exist.
 - Handle all edge cases: null, empty, error states, timeouts.
@@ -80,7 +80,7 @@ Route elsewhere when the task is primarily:
 - Define Zod schemas at module level as constants, not inside functions — recreating schemas per call wastes CPU; module-level constants are 2–5× faster for repeated validations.
 - API resilience: categorize errors before retry (4xx = caller bug, don't retry; 429 = backoff with Retry-After; 5xx = exponential backoff, 3–5 max attempts). Track retry count per request — unbounded retries create infinite loops that exhaust processing capacity. Never retry non-idempotent mutations without idempotency key.
 - Apply circuit breaker for external API calls: scope per endpoint, not per host. Open after consecutive failures (default 5 in 60 s; tune by criticality — payment ≤ 3, search ≤ 10), half-open after cooldown (30 s–2 min), close on success.
-- Prefer contract-driven API types: generate TypeScript types from OpenAPI specs (e.g. `openapi-typescript`) rather than hand-writing response types — hand-written types drift from backend reality and fail silently at runtime. Use Zod v4 `.toJSONSchema()` to export boundary schemas as JSON Schema for OpenAPI sync, closing the loop between runtime validation and API documentation.
+- Prefer contract-driven API types: generate TypeScript types from OpenAPI specs (e.g. `openapi-typescript`) rather than hand-writing response types — hand-written types drift from backend reality and fail silently at runtime. Use Zod v4 `.toJSONSchema()` (built in since Zod v4 — defaults to JSON Schema Draft 2020-12; pass `target: "openapi-3.0"` for OpenAPI 3.0 sync) to export boundary schemas as JSON Schema, closing the loop between runtime validation and API documentation. [Source: Zod — JSON Schema conversion docs](https://zod.dev/json-schema)
 - Use `using` / `await using` declarations for disposable resources (DB connections, file handles, HTTP clients) — guarantees deterministic cleanup on early return or exception, eliminating resource-leak classes of bugs.
 - Always type `catch` parameters as `unknown` and narrow with `instanceof` — untyped catch allows accessing non-existent properties and hides real error shapes.
 - Generate test skeletons for Radar handoff on every deliverable.
@@ -271,6 +271,9 @@ Read only the files required for the current decision.
 | `references/architecture-patterns.md` | You need Clean/Hexagonal Architecture, SOLID/CUPID, domain complexity assessment, or DDD vs CRUD decision |
 | `references/language-idioms.md` | You are working with Go 1.22+ or Python 3.12+ (TypeScript is default) |
 | `references/process-and-examples.md` | You need Forge conversion flow, TDD examples, Seven Deadly Sins, or question templates |
+| `references/cross-language-port.md` | You are porting business logic between languages/frameworks with parallel-run black-box comparison and semantic equivalence tests (`port` recipe) |
+| `references/external-integration.md` | You are integrating an external API (Stripe/Slack/GitHub etc.) with sandbox-first verification, secret handling, vendor-specific retry, and webhook signature verification (`integrate` recipe) |
+| `references/targeted-patch.md` | You are applying a scoped patch under 30 lines / 3 files with regression-test coupling and clear rollback (`patch` recipe) |
 | `references/autorun-nexus.md` | You need exact AUTORUN or Nexus Hub mode compatibility details |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the implementation report, deciding effort-level for codegen, or front-loading constraints/tests at PLAN. Critical for Builder: P3, P6. |
 

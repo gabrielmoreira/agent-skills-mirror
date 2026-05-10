@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,7 +68,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.claude/skills/implement/SKILL.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.claude/skills/implement/SKILL.md) |
 | 8 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/AGENTS.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/AGENTS.md) |
 | 9 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/CLAUDE.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/CLAUDE.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`agents/langchain_data_agent_poc/agent.py`](agents/langchain_data_agent_poc/agent.py) |
+| 11 | ✓ | [`agents/langchain_data_agent_poc/app.py`](agents/langchain_data_agent_poc/app.py) |
+| 12 | ✓ | [`agents/langchain_data_agent_poc/config.py`](agents/langchain_data_agent_poc/config.py) |
+| 13 | ✓ | [`agents/langchain_data_agent_poc/data/customers.csv`](agents/langchain_data_agent_poc/data/customers.csv) |
+| 14 | ✓ | [`agents/langchain_data_agent_poc/data/orders.csv`](agents/langchain_data_agent_poc/data/orders.csv) |
+| 15 | ✓ | [`agents/langchain_data_agent_poc/data/products.csv`](agents/langchain_data_agent_poc/data/products.csv) |
+| 16 | ✓ | [`agents/langchain_data_agent_poc/data/support_tickets.csv`](agents/langchain_data_agent_poc/data/support_tickets.csv) |
+| 17 | ✓ | [`agents/langchain_data_agent_poc/dataset.py`](agents/langchain_data_agent_poc/dataset.py) |
+| 18 | ✓ | [`agents/langchain_data_agent_poc/env.example`](agents/langchain_data_agent_poc/env.example) |
+| 19 | ✓ | [`agents/langchain_data_agent_poc/main.py`](agents/langchain_data_agent_poc/main.py) |
+| 20 | ✓ | [`agents/langchain_data_agent_poc/pyproject.toml`](agents/langchain_data_agent_poc/pyproject.toml) |
+| 21 | ✓ | [`agents/langchain_data_agent_poc/README.md`](agents/langchain_data_agent_poc/README.md) |
+| 22 | ✓ | [`agents/langchain_data_agent_poc/sql_safety.py`](agents/langchain_data_agent_poc/sql_safety.py) |
+| 23 | ✓ | [`agents/langchain_data_agent_poc/visualization.py`](agents/langchain_data_agent_poc/visualization.py) |
+| 24 | ✓ | [`agents/nebius_travel_planner/agent.py`](agents/nebius_travel_planner/agent.py) |
+| 25 | ✓ | [`agents/nebius_travel_planner/app.py`](agents/nebius_travel_planner/app.py) |
+| 26 | ✓ | [`agents/nebius_travel_planner/env.example`](agents/nebius_travel_planner/env.example) |
+| 27 | ✓ | [`agents/nebius_travel_planner/main.py`](agents/nebius_travel_planner/main.py) |
+| 28 | ✓ | [`agents/nebius_travel_planner/pyproject.toml`](agents/nebius_travel_planner/pyproject.toml) |
+| 29 | ✓ | [`agents/nebius_travel_planner/README.md`](agents/nebius_travel_planner/README.md) |
+| 30 | ✓ | [`agents/nebius_travel_planner/requirements.txt`](agents/nebius_travel_planner/requirements.txt) |
+| 31 | ✓ | [`agents/nebius_travel_planner/tools.py`](agents/nebius_travel_planner/tools.py) |
+| 32 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

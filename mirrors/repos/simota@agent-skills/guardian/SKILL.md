@@ -261,6 +261,9 @@ Additional sections as needed (use canonical headings from `references/output-te
 | `references/pr-quality-scoring.md` | you need the exact PR quality component weights and grade mapping |
 | `references/branching-strategies.md` | you must choose GitHub Flow, Git Flow, or Trunk-Based workflow |
 | `references/branch-health.md` | you are evaluating stale, risky, or conflict-prone branches |
+| `references/history-audit.md` | you are running the `audit` recipe — read-only diagnosis of WIP/fixup residue, Conventional Commits violations, atomicity, and size deviation in a commit-history range |
+| `references/history-reshape.md` | you are running the `reshape` recipe — squash-import a development branch onto a fresh base and re-split into atomic commits with backup-branch protocol |
+| `references/pr-split-strategy.md` | you are running the `split` recipe — decompose an M+ branch into stacked PRs (10–15 min review each) with dependency order, file boundaries, and tool selection (Graphite/ghstack/git-town/jj) |
 | `references/code-review-guide.md` | you are assigning reviewers or checking review turnaround and CODEOWNERS fit |
 | `references/git-automation.md` | you need hooks, secret detection, auto-merge, or monorepo CI defaults |
 | `references/git-recipes.md` | you need concrete Git or `gh` command recipes |

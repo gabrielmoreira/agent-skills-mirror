@@ -53,6 +53,24 @@ pnpm test                                                                    # C
 - **长任务收尾例外**：跨多文件多模块 / 完整 plan / 跨 crate 重构这类阶段性收尾时，可主动跑必要项，跑前说一句"改动较大，跑一下 X 收尾"
 - **commit / push 前 / 用户明确要求**：直接按指示跑
 
+## 分支与发布
+
+> 实操流程（PR 工作流、tag 推送、cherry-pick backport、避坑速查）见 [`docs/release-process.md`](docs/release-process.md)。本节仅列契约面。
+
+`main` 承载下一个 minor 版本的开发，已发布的 minor 版本对应一条 `release/X.Y` 维护分支用于 patch 修复。两条分支之间**只允许 cherry-pick，不允许 merge**——`merge main → release/X.Y` 会把未发布功能拖入维护分支。
+
+### 工作流
+
+- **修 bug**：从 `release/X.Y` 切 `fix/X.Y-<topic>`，PR base 选 `release/X.Y`；合并并发版后 cherry-pick 回 `main` 再单独发 PR
+- **新功能**：从 `main` 切 `feat/<topic>`，PR base 选 `main`
+- **新 minor 发版**：`main` 上 `pnpm version X.Y.0` 打 tag，再 `git branch release/X.Y vX.Y.0 && git push -u origin release/X.Y`，CI 与 protection 通过 ruleset 通配符自动覆盖
+
+### CI 与 branch protection
+
+- [`.github/workflows/lint.yml`](.github/workflows/lint.yml) 与 [`rust.yml`](.github/workflows/rust.yml) 触发条件包含 `[main, "release/**"]`
+- GitHub ruleset `main-branch-protection` 的 `conditions.ref_name.include` 覆盖 `~DEFAULT_BRANCH` + `refs/heads/release/**`：必须 PR、必跑 8 项 status check、禁 force push、禁删分支、`enforce_admins: true`
+- 修改 workflow 的 job 名或 matrix 时需同步通过 `gh api` 更新 ruleset 的 `required_status_checks` context 列表
+
 ## 项目结构
 
 ```
@@ -245,7 +263,9 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 
 ### Agent 解析链（默认 Agent）
 
-7 级（首个非空胜出）：**显式参数 → `project.default_agent_id` → `topic.agent_id` → `group.agent_id` → `tg_channel.agent_id` → `channel_account.agent_id` → `AppConfig.default_agent_id` → 硬编码 `"default"`**。统一入口 [`agent/resolver.rs::resolve_default_agent_id_full`](crates/ha-core/src/agent/resolver.rs)；无 IM 上下文的 desktop / HTTP 用 `resolve_default_agent_id` 包装（只传 project + channel_account）。**channel worker 不得自写解析链** —— Phase A5 已折叠到 resolver 单一真相源。
+7 级（首个非空胜出）：**显式参数 → `project.default_agent_id` → `topic.agent_id` → `group.agent_id` → `tg_channel.agent_id` → `channel_account.agent_id` → `AppConfig.default_agent_id` → 硬编码 `DEFAULT_AGENT_ID`（`"ha-main"`，定义在 [`agent_loader.rs`](crates/ha-core/src/agent_loader.rs)）**。统一入口 [`agent/resolver.rs::resolve_default_agent_id_full`](crates/ha-core/src/agent/resolver.rs)；无 IM 上下文的 desktop / HTTP 用 `resolve_default_agent_id` 包装（只传 project + channel_account）。**channel worker 不得自写解析链** —— Phase A5 已折叠到 resolver 单一真相源。
+
+**遗留 `"default"` 自动重命名**：升级到使用 `"ha-main"` 的版本时，启动期 [`agent/migration.rs`](crates/ha-core/src/agent/migration.rs) 一次性把磁盘目录（`agents/default/` / `default-home/` / `plans/default/`）、`agents/*/agent.json` 里的 `subagents.allowedAgents` / `deniedAgents`、SQLite agent_id 列（sessions / team_members / teams / subagent_runs / projects / async_tool_jobs / canvas_projects / logs）、`memories.scope_agent_id`（`scope_type='agent'` 的行）、`cron_jobs.payload_json` 内嵌的 agent_id 全部 rename 到 `"ha-main"`，再改写 `config.json`（`default_agent_id` / `recap.analysisAgent` / channel 各级 agent_id），落 sentinel `~/.hope-agent/.agent-id-renamed` 后续启动短路。每步独立 idempotent，崩溃可恢复；当 `agents/default/` 与 `agents/ha-main/` 同时存在（用户手动建过 ha-main）时迁移整体放弃，不写 sentinel、不动 DB / config，下次启动重试。**入口契约**：`init_runtime` 必须早于 `ensure_default_agent()`——后者会预创空 `agents/ha-main/` 模板，吞掉 rename。新增字面量 agent id 一律走 `crate::agent_loader::DEFAULT_AGENT_ID`（前端走 `@/types/tools` 的 `DEFAULT_AGENT_ID` / `isMainAgent`），不要重新引入 `"default"` 硬编码。
 
 ### 本地 LLM 助手
 
@@ -364,6 +384,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `ski
 - **架构文档强制**：子系统边界 / 数据流 / 持久化格式 / 跨模块 contract 改动须更新对应 `docs/architecture/`；新增架构级能力（新子系统 / 协议层）须同 PR 新建文档并登记到 `docs/README.md`
 - **README 双语同步**：根目录 `README.md`（中文）+ `README.en.md`（英文），任一改动同次提交同步另一份
 - **Release Notes 双语同步**：每版本 `vX.Y.Z.md` + `vX.Y.Z.en.md`，顶部互加 `简体中文 · English` 切换链接
+- **CHANGELOG entry 单行**：每条 changelog 一句话讲用户感知 + `(#PR)` 引用，**不放**文件路径 / 数据结构 / 单测数 / 实现取舍——那些写 PR description 或 [`docs/architecture/`](docs/architecture/)。涉及契约 / 红线变更可加一行用户操作影响（如「首次启动自动迁移」），仍不展开实现。Release notes 可以稍长一段，但同样面向用户视角而不是实现叙事
 
 ### Review Followups 登记（强制）
 

@@ -77,7 +77,7 @@ Route elsewhere when the task is primarily:
 - Apply Detection-as-Code (DaC) principles: detection logic is testable, repeatable, and integrated with development workflows — not UI-driven manual processes. Align DaC pipelines with NIST SP 800-204D for DevSecOps integration and OWASP CI/CD Top 10 for pipeline security hardening.
 - Use Sigma Specification v2.1+ as the default rule format — leverage correlation rules for multi-event detection sequences, new modifiers (cidr, regex, time extraction) for precision filtering, and Sigma Filters for centralized false-positive exclusion rules that apply across multiple detections. Use pySigma/sigma-cli as the conversion and validation toolchain.
 - Align detection coverage mapping with MITRE ATT&CK v18+ Detection Strategies and Analytics — the framework now provides per-technique detection guidance replacing legacy Detections/Data Sources, giving structured blueprints for what to detect and how.
-- Plan for ATT&CK v19 (releasing 2026-04-28). v19 splits Defense Evasion (TA0005) into two tactics: **Stealth** (inherits TA0005, covers masquerading/obfuscation/hiding like T1036, T1027, T1218, T1564) and **Impair Defenses** (net-new tactic ID, covers actively disabling security controls). Technique T1562 (Impair Defenses) is retired as a technique and elevated to tactic. Any rule, dashboard, or report that references TA0005 alone without Stealth vs Impair Defenses distinction will create tactic-level blind spots post-release. Audit all T1562-parent detections; sub-techniques are being realigned.
+- ATT&CK v19 (released 2026-04-28) splits Defense Evasion (TA0005) into two tactics: **Stealth** (inherits TA0005, covers masquerading/obfuscation/hiding like T1036, T1027, T1218, T1564) and **Impair Defenses** (net-new tactic ID, covers actively disabling security controls). Technique T1562 (Impair Defenses) is retired as a technique and elevated to tactic. Any rule, dashboard, or report that still references TA0005 alone without the Stealth vs Impair Defenses distinction has tactic-level blind spots — audit all T1562-parent detections and realign sub-techniques to the new tactic mapping.
 - Harden Detection-as-Code CI/CD pipelines with GitHub Actions 2026 supply-chain controls: pin every third-party action to a **full commit SHA** (never mutable branch/tag), use **OIDC** for cloud authentication (never long-lived static secrets), set **job-level `permissions:`** to least-privilege (default `contents: read`), never use `pull_request_target` to execute untrusted PR code, enable secret scanning + push protection, and sign deployment artifacts with Sigstore/Cosign.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read existing rule catalog, ATT&CK technique mappings, telemetry sources, and FP history at SURVEY — rule quality depends on grounding in actual log schema and environmental context), P5 (think step-by-step at sub-technique mapping (T1059.001 vs T1059), FP threshold calibration by severity, Sigma v2.1 correlation vs filter selection, and DaC pipeline design)** as critical for Vigil. P2 recommended: calibrated detection package preserving ATT&CK IDs, FP mitigation guidance, SLA alignment (MTTD/MTTA/MTTR), and test evidence. P1 recommended: front-load target platform, detection scope, and analyst load budget at SURVEY.
 
@@ -110,7 +110,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Ignore false positive rates when recommending rules.
 - Import community Sigma/YARA rules without environment-specific tuning — log source differences, naming conventions, and threshold mismatches cause false negatives in production.
 - Ship detection pipelines with unpinned actions, `pull_request_target` + untrusted code checkout, or workflow-level write permissions — these are top GitHub Actions supply-chain exploitation vectors, and a compromised detection pipeline can push attacker-controlled rules to production SIEMs (silent blinding of the Blue Team).
-- Leave TA0005 rule references un-audited after 2026-04-28 — post-v19, a rule tagged only `attack.defense_evasion` covers only Stealth behaviors; defense-impairment attacks (tool tampering, EDR kill) become a tactic-level blind spot.
+- Leave TA0005 rule references un-audited after the v19 release (2026-04-28) — a rule tagged only `attack.defense_evasion` now covers only Stealth behaviors; defense-impairment attacks (tool tampering, EDR kill) become a tactic-level blind spot.
 
 ---
 
@@ -183,7 +183,7 @@ questions:
 | **Endpoint** | Sysmon, EDR telemetry, Windows Event Log, auditd | Sigma, YARA | MITRE ATT&CK Enterprise | `references/detection-patterns.md` |
 | **Network** | Zeek, Suricata, DNS logs, proxy logs | Sigma, Suricata rules | MITRE ATT&CK Network | `references/detection-patterns.md` |
 | **Cloud** | CloudTrail, GCP Audit, Azure Activity, K8s audit | Sigma, platform-native | MITRE ATT&CK Cloud | `references/detection-patterns.md` |
-| **AI/LLM** | Application logs, token metrics, guardrail logs | Custom rules, Sigma | MITRE ATLAS, OWASP LLM Top 10 | `references/ai-detection.md` |
+| **AI/LLM** | Application logs, token metrics, guardrail logs | Custom rules, Sigma | MITRE ATLAS, OWASP LLM Top 10 | `references/detection-patterns.md` |
 
 ---
 

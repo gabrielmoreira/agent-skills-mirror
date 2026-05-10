@@ -27,15 +27,16 @@ For TRIVIAL fixes with clear inputs and expected output, proceed directly to pla
 | Key Constraints | Technical, governance, security, compatibility, schedule, source-use, or verification constraints that shape the solution. |
 | Success Metrics | The evidence that will be used to judge completion, such as passing commands, schema checks, performance targets, or review gates. |
 
-## Anti-Rationalization Table
+## Anti-Rationalization Deltas
 
-| Pattern | Why It Fails | Required Action |
-| ------- | ------------ | --------------- |
-| Skip the spec because requirements feel obvious | Obvious requirements often hide unspoken scope and acceptance assumptions. | Write a short spec with scope, acceptance criteria, and constraints. |
-| Treat the implementation plan as the spec | A plan explains how to build, but it may not prove what should be built or what is excluded. | Capture objectives and boundaries before sequencing tasks. |
-| Fill missing requirements with agent assumptions | Silent assumptions become downstream review failures and rework. | Mark assumptions explicitly and route unresolved questions through the owning agent. |
-| Leave success criteria as broad intent | Reviewers cannot verify phrases like "better" or "cleaner" without observable checks. | Rewrite each success claim as a test, gate, metric, or artifact requirement. |
-| Delay the spec until after implementation | A post-hoc document records what happened; it does not prevent building the wrong thing. | Spec first, then plan, then execute against the accepted boundary. |
+Apply the canonical Anti-Rationalization Table in `skills/patterns/llm-behavior-guidelines.md` for silent assumptions and generic scope rationalizations. For spec work, also enforce these local deltas:
+
+| Pattern | Required Action |
+| ------- | --------------- |
+| Skip the spec because requirements feel obvious | Write a short spec with scope, acceptance criteria, and constraints. |
+| Treat the implementation plan as the spec | Capture objectives and boundaries before sequencing tasks. |
+| Leave success criteria as broad intent | Rewrite each success claim as a test, gate, metric, or artifact requirement. |
+| Delay the spec until after implementation | Spec first, then plan, then execute against the accepted boundary. |
 
 ## Handoff To Planner
 

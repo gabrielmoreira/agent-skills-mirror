@@ -262,4 +262,6 @@ Use VERIFICATION_PARALLEL to run security scan + SLO check + load test concurren
 | `references/feature-flag-pitfalls.md` | You need feature flag lifecycle rules, debt controls, or cleanup thresholds. |
 | `references/versioning-pitfalls.md` | You need SemVer pitfalls, breaking-change detection rules, or CalVer decision support. |
 | `references/rollback-anti-patterns.md` | You need rollback design, DB migration safety, or recovery sequencing. |
+| `references/hotfix-workflow.md` | You are running `hotfix`: emergency patch playbook, 2h SLA, shortened CI gate, hotfix branch, bundled rollback, and backport-to-main planning. |
+| `references/canary-rollout.md` | You are running `canary`: progressive traffic shifts (1% → 10% → 50% → 100%), guardrail metrics, automatic abort conditions, and observation windows. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the release plan, deciding adaptive thinking depth at rollout staging, or front-loading release type/scope/risk at PLAN. Critical for Launch: P3, P5. |

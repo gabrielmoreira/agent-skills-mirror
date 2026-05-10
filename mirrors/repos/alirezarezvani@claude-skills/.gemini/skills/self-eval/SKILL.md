@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/self-eval/../../../engineering/skills/self-eval/SKILL.md

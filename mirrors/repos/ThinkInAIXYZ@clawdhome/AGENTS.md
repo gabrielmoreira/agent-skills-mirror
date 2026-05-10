@@ -1,3 +1,1 @@
-# AGENTS.md
-
-See [CLAUDE.md](CLAUDE.md) for full project guidance.
+cache/repos/github.com/ThinkInAIXYZ@clawdhome/CLAUDE.md

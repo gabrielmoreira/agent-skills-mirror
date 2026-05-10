@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kurone-kito/idd-skill` — 26 default patterns, 1 followed patterns, 25 file(s) materialized.
+Mirror of `kurone-kito/idd-skill` — 26 default patterns, 1 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kurone-kito/idd-skill` — 26 default patterns, 1 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 25 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,15 +75,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`.github/instructions/idd-work.instructions.md`](.github/instructions/idd-work.instructions.md) |
 | 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 17 | ✓ | [`docs/idd-helper-scripts.md`](docs/idd-helper-scripts.md) |
-| 18 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 19 | ✓ | [`idd-template/docs/idd-helper-scripts.md`](idd-template/docs/idd-helper-scripts.md) |
-| 20 | ✓ | [`skills/issue-authoring/agents/openai.yaml`](skills/issue-authoring/agents/openai.yaml) |
-| 21 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
-| 22 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
-| 23 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
-| 24 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
-| 25 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
+| 17 | ✓ | [`docs/idd-comment-minimization.md`](docs/idd-comment-minimization.md) |
+| 18 | ✓ | [`docs/idd-helper-scripts.md`](docs/idd-helper-scripts.md) |
+| 19 | ✓ | [`docs/idd-review-policy-profiles.md`](docs/idd-review-policy-profiles.md) |
+| 20 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 21 | ✓ | [`idd-template/docs/idd-comment-minimization.md`](idd-template/docs/idd-comment-minimization.md) |
+| 22 | ✓ | [`idd-template/docs/idd-helper-scripts.md`](idd-template/docs/idd-helper-scripts.md) |
+| 23 | ✓ | [`idd-template/docs/idd-review-policy-profiles.md`](idd-template/docs/idd-review-policy-profiles.md) |
+| 24 | ✓ | [`skills/issue-authoring/agents/openai.yaml`](skills/issue-authoring/agents/openai.yaml) |
+| 25 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
+| 26 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
+| 27 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
+| 28 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
+| 29 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
 
 ---
 

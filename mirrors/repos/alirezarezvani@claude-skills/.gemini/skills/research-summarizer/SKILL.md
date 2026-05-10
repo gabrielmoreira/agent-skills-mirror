@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/research-summarizer/../../../product-team/research-summarizer/skills/research-summarizer/SKILL.md

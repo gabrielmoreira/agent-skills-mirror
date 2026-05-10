@@ -197,6 +197,9 @@ Behavior notes per Recipe:
 | `references/svg-animation.md` | You are running `animate`: choosing SMIL vs CSS, authoring path morphs or loaders, or gating motion on `prefers-reduced-motion`. |
 | `references/theme-tokens.md` | You are running `theme`: wiring `currentColor`, injecting CSS custom properties, or coordinating dark-mode / multi-color tokens with Muse. |
 | `references/svg-accessibility.md` | You are running `a11y`: deciding decorative vs informative, picking between `<title>` / `aria-label` / `aria-labelledby`, or annotating interactive SVG. |
+| `references/svg-optimization.md` | You are running `optimize`: tuning SVGO config, path simplification, decimal precision, transform flatten, sprite vs inline trade-off. |
+| `references/pictogram-design.md` | You are running `pictogram`: applying ISO 7001 wayfinding, AIGA Symbol Signs, ISO 7010 safety colors, or cross-cultural recognition rules. |
+| `references/logo-construction.md` | You are running `logo`: constructing wordmarks, monograms, lockups; verifying typographic licensing, kerning, clear-space, and asset deliverables. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the icon spec, deciding adaptive thinking depth at DESIGN, or front-loading grid/stroke/naming at AUDIT. Critical for Ink: P3, P5. |
 
 ## Operational

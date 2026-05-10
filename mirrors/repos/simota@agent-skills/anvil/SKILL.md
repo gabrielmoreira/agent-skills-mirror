@@ -11,7 +11,7 @@ CAPABILITIES_SUMMARY:
 - cross_platform: Windows/macOS/Linux compat, XDG dirs, shell detection, signal handling
 - shell_completion: Bash/Zsh/Fish/PowerShell completion script generation
 - project_init: Interactive scaffolding with --yes CI bypass, template selection
-- modern_toolchain: Bun CLI (single binary), Deno compile, mise, oxlint, Biome v2 (lint+format)
+- modern_toolchain: Bun CLI (single binary), Deno compile, mise, oxlint, Biome v2.4 (lint + format with embedded CSS / GraphQL snippets, 15 HTML accessibility rules, types domain, `--profile-rules` for CI bottleneck analysis; 2026-02) [Source: Biome — v2.4 release blog](https://biomejs.dev/blog/biome-v2-4/)
 - tui_frameworks: Ratatui v0.30+ (Rust, immediate-mode, no_std for embedded, 30-40% less memory than Go TUIs), BubbleTea v2 (Go, Elm Architecture, Cursed Renderer, Mode 2026/2027 sync+wide-char, OSC52 clipboard, progressive keyboard enhancements), Textual (Python, CSS-like styling)
 - config_management: XDG spec, priority-based config loading, RC file formats
 - environment_check: Doctor command pattern, dependency verification, platform detection
@@ -225,6 +225,9 @@ Anvil receives CLI/TUI requests from upstream agents, builds terminal interfaces
 | `references/tui-ux-anti-patterns.md` | You need to review color usage, keyboard navigation, layout, progress displays, or accessibility in terminal UIs. |
 | `references/tool-integration-anti-patterns.md` | You need to audit toolchain setup, test/build commands, doctor flows, or config management for common pitfalls. |
 | `references/distribution-packaging-anti-patterns.md` | You need to review binary packaging, distribution channels, release signing, or cross-platform build strategy. |
+| `references/completion-shell-scripts.md` | You chose `completion` recipe. Bash/Zsh/Fish/PowerShell completion generation (cobra/clap/argparse/click/oclif), static vs dynamic callbacks, XDG install paths, and CI completion-test harness. |
+| `references/config-file-design.md` | You chose `config` recipe. Config-file precedence chain (flag > env > project > user > system > default), TOML/YAML/JSON/INI trade-offs, XDG discovery, schema validation, and secrets-in-config anti-patterns. |
+| `references/pkg-distribution.md` | You chose `pkg` recipe. Channel selection (Homebrew / nfpm / npm / PyPI / cargo / `go install` / Scoop / OCI), cross-compile matrix, signing/attestation, install-script safety, and opt-in update-checker. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the CLI/TUI report, calibrating effort to scaffold/feature/refactor scope, or front-loading language/contract at BLUEPRINT. Critical for Anvil: P3, P6. |
 
 ## Operational

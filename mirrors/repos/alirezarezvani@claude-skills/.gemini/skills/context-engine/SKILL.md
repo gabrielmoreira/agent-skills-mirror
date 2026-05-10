@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/context-engine/../../../c-level-advisor/skills/context-engine/SKILL.md

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/google-workspace-cli/../../../engineering-team/google-workspace-cli/skills/google-workspace-cli/SKILL.md

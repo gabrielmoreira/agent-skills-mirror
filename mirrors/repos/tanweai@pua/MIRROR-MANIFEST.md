@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tanweai/pua` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `tanweai/pua` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tanweai/pua` — 26 default patterns, 0 followed patterns, 77 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,22 +120,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`skills/pua/references/methodology-huawei.md`](skills/pua/references/methodology-huawei.md) |
 | 60 | ✓ | [`skills/pua/references/methodology-jd.md`](skills/pua/references/methodology-jd.md) |
 | 61 | ✓ | [`skills/pua/references/methodology-meituan.md`](skills/pua/references/methodology-meituan.md) |
-| 62 | ✓ | [`skills/pua/references/methodology-netflix.md`](skills/pua/references/methodology-netflix.md) |
-| 63 | ✓ | [`skills/pua/references/methodology-pinduoduo.md`](skills/pua/references/methodology-pinduoduo.md) |
-| 64 | ✓ | [`skills/pua/references/methodology-router.md`](skills/pua/references/methodology-router.md) |
-| 65 | ✓ | [`skills/pua/references/methodology-tencent.md`](skills/pua/references/methodology-tencent.md) |
-| 66 | ✓ | [`skills/pua/references/methodology-tesla.md`](skills/pua/references/methodology-tesla.md) |
-| 67 | ✓ | [`skills/pua/references/methodology-xiaomi.md`](skills/pua/references/methodology-xiaomi.md) |
-| 68 | ✓ | [`skills/pua/references/p10-protocol.md`](skills/pua/references/p10-protocol.md) |
-| 69 | ✓ | [`skills/pua/references/p7-protocol.md`](skills/pua/references/p7-protocol.md) |
-| 70 | ✓ | [`skills/pua/references/p9-protocol.md`](skills/pua/references/p9-protocol.md) |
-| 71 | ✓ | [`skills/pua/references/platform.md`](skills/pua/references/platform.md) |
-| 72 | ✓ | [`skills/pua/references/survey.md`](skills/pua/references/survey.md) |
-| 73 | ✓ | [`skills/pua/references/teardown-protocol.md`](skills/pua/references/teardown-protocol.md) |
-| 74 | ✓ | [`skills/pua/SKILL.md`](skills/pua/SKILL.md) |
-| 75 | ✓ | [`skills/shot/SKILL.md`](skills/shot/SKILL.md) |
-| 76 | ✓ | [`skills/yes/SKILL.md`](skills/yes/SKILL.md) |
-| 77 | ✓ | [`vscode/copilot-instructions.md`](vscode/copilot-instructions.md) |
+| 62 | ✓ | [`skills/pua/references/methodology-microsoft.md`](skills/pua/references/methodology-microsoft.md) |
+| 63 | ✓ | [`skills/pua/references/methodology-netflix.md`](skills/pua/references/methodology-netflix.md) |
+| 64 | ✓ | [`skills/pua/references/methodology-pinduoduo.md`](skills/pua/references/methodology-pinduoduo.md) |
+| 65 | ✓ | [`skills/pua/references/methodology-router.md`](skills/pua/references/methodology-router.md) |
+| 66 | ✓ | [`skills/pua/references/methodology-tencent.md`](skills/pua/references/methodology-tencent.md) |
+| 67 | ✓ | [`skills/pua/references/methodology-tesla.md`](skills/pua/references/methodology-tesla.md) |
+| 68 | ✓ | [`skills/pua/references/methodology-xiaomi.md`](skills/pua/references/methodology-xiaomi.md) |
+| 69 | ✓ | [`skills/pua/references/p10-protocol.md`](skills/pua/references/p10-protocol.md) |
+| 70 | ✓ | [`skills/pua/references/p7-protocol.md`](skills/pua/references/p7-protocol.md) |
+| 71 | ✓ | [`skills/pua/references/p9-protocol.md`](skills/pua/references/p9-protocol.md) |
+| 72 | ✓ | [`skills/pua/references/platform.md`](skills/pua/references/platform.md) |
+| 73 | ✓ | [`skills/pua/references/survey.md`](skills/pua/references/survey.md) |
+| 74 | ✓ | [`skills/pua/references/teardown-protocol.md`](skills/pua/references/teardown-protocol.md) |
+| 75 | ✓ | [`skills/pua/SKILL.md`](skills/pua/SKILL.md) |
+| 76 | ✓ | [`skills/shot/SKILL.md`](skills/shot/SKILL.md) |
+| 77 | ✓ | [`skills/yes/SKILL.md`](skills/yes/SKILL.md) |
+| 78 | ✓ | [`vscode/copilot-instructions.md`](vscode/copilot-instructions.md) |
 
 ---
 

@@ -66,7 +66,7 @@ Route elsewhere when:
 
 - Treat workflows as production code — every change is reviewed, tested, and versioned.
 - Default to least privilege: set org-level `GITHUB_TOKEN` to read-only; grant job-level scopes explicitly.
-- Pin all third-party actions to full commit SHA. Mutable references (tags, branches) are non-deterministic and the #1 supply-chain attack vector (CVE-2025-30066 impacted 23K+ repos; TeamPCP campaign March 2026 compromised trivy-action via 75 force-pushed tags and propagated across 40+ npm packages in a coordinated multi-ecosystem supply-chain attack).
+- Pin all third-party actions to full commit SHA. Mutable references (tags, branches) are non-deterministic and the #1 supply-chain attack vector (CVE-2025-30066 impacted 23K+ repos; TeamPCP campaign March 2026 force-pushed 76 of 77 tags in `aquasecurity/trivy-action` plus all 7 tags in `setup-trivy`, redirecting trusted version refs to credential-stealer payloads and spreading laterally to Checkmarx KICS, LiteLLM, and Telnyx Actions).
 - Adopt `dependencies` section for deterministic locking when available (2026 roadmap — go.mod-style lockfile for workflows).
 - Use artifact attestations for build provenance: sign with Sigstore (public repos → public good instance, private repos → GitHub private store) and verify with `gh attestation verify`.
 - Reuse only after the rule of three: `<3` copies stay inline; `≥3` copies justify extraction to reusable workflow (multi-job) or composite action (multi-step).
@@ -83,7 +83,7 @@ Shared agent boundaries -> `_common/BOUNDARIES.md`
 
 ### Always
 
-- SHA-pin every third-party action to full commit hash (tags are mutable — trivy-action attack force-pushed 75 tags in one incident).
+- SHA-pin every third-party action to full commit hash (tags are mutable — trivy-action attack force-pushed 76 of 77 tags in one incident).
 - Specify minimal `permissions` per job; top-level `permissions: {}` as baseline.
 - Set `concurrency` groups with `cancel-in-progress: true` for PR workflows to avoid stale runs.
 - Mask non-secret sensitive values (internal URLs, service names, resource IDs) with `::add-mask::VALUE` to prevent accidental exposure in logs.

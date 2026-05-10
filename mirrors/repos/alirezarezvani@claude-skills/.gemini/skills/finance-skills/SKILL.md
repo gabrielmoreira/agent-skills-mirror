@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/finance-skills/../../../finance/skills/finance-skills/SKILL.md

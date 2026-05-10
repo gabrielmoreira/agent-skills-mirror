@@ -458,6 +458,9 @@ Required section order:
 | `references/traceability-advanced.md` | You need bidirectional traceability, gap analysis, coverage optimization, or regulated audit support. |
 | `references/llm-verification-guardrails.md` | You need LLM capability limits, evidence-first guardrails, prompt strategies, or hallucination prevention rules. |
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing an Attest-specific action verb (CLOSE-GAP / RECONCILE-SPEC / BREAKING-CLOSE / INVESTIGATE-FURTHER / WAIVE), or deciding whether to suppress for verification-only / Scribe-Accord rewrite / pending stakeholder / full conformance. |
+| `references/gherkin-authoring.md` | You are running the `gherkin` recipe — authoring `.feature` files (Background, Scenario Outline, Examples, Tags) with step-definition stubs for Cucumber-JVM/JS, SpecFlow, Behave, or pytest-bdd. |
+| `references/property-based-testing.md` | You are running the `property` recipe — generalizing spec invariants into properties (idempotency, round-trip, monotonicity) and producing framework-specific code (Hypothesis, fast-check, jqwik, proptest, ScalaCheck). |
+| `references/test-oracle-design.md` | You are running the `oracle` recipe — selecting test oracle patterns (golden master, metamorphic, differential, model-based, consistency oracle) per criterion. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the verification report, deciding adaptive thinking depth at VERIFY, or front-loading mode/scope at INGEST. Critical for Attest: P2, P5. |
 

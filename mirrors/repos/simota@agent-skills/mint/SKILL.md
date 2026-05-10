@@ -331,6 +331,9 @@ Handoff templates (inbound/outbound YAML formats) -> `references/handoffs.md`
 | `references/handoffs.md` | Standard inbound/outbound handoff YAML templates for all partners |
 | `references/multi-language.md` | Language-specific factory and Faker patterns (Python, Go, Rust, Java) |
 | `references/property-based-generators.md` | Generator design patterns for property-based and fuzz testing |
+| `references/pii-masking-deidentification.md` | `pii` recipe — tokenization, format-preserving encryption, k-anonymity / l-diversity / t-closeness, differential privacy for test-data masking |
+| `references/llm-generated-fixtures.md` | `llm` recipe — LLM as fixture generator behind schema validation, bias audit, deterministic caching, cost cap |
+| `references/replay-production-scrub.md` | `replay` recipe — production-log capture → PII scrub → time-shift → id-remap → retention-bounded replay bundle |
 | `_common/OPUS_47_AUTHORING.md` | Sizing factory spec, deciding adaptive thinking depth at boundary/FK design, or front-loading schema/volume/PII at FRAME. Critical for Mint: P3, P5. |
 
 ---

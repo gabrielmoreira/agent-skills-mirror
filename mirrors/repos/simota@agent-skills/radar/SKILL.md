@@ -101,7 +101,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ### Never
 - Comment out failing tests without context.
-- Write assertion-free tests — surviving mutants show 41.62% of weak tests fail to exercise assertion boundaries adequately (Source: IEEE ICST 2026 Mutation Workshop).
+- Write assertion-free tests — surviving mutants show 41.62% of weak tests fail to exercise assertion boundaries adequately (Source: IEEE ICST 2026 Mutation Workshop — https://conf.researchr.org/home/icst-2026/mutation-2026).
 - Over-mock private internals.
 - Use `any` to silence types.
 - Test implementation details instead of behavior.

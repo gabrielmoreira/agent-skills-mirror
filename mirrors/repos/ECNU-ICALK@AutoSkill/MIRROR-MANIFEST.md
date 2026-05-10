@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ECNU-ICALK/AutoSkill` — 26 default patterns, 0 followed patterns, 3421 file(s) materialized.
+Mirror of `ECNU-ICALK/AutoSkill` — 26 default patterns, 0 followed patterns, 3423 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ECNU-ICALK/AutoSkill` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3421 |
+| Files         | 3423 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -3480,6 +3480,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3419 | ✓ | [`SkillBank/Users/u45/weixin-official-account-article-generation-zh/SKILL.md`](SkillBank/Users/u45/weixin-official-account-article-generation-zh/SKILL.md) |
 | 3420 | ✓ | [`SkillBank/Users/u6/auto-skill-lifecycle-handling/SKILL.md`](SkillBank/Users/u6/auto-skill-lifecycle-handling/SKILL.md) |
 | 3421 | ✓ | [`SkillBank/Users/u6/word-compatible-technical-article-writing/SKILL.md`](SkillBank/Users/u6/word-compatible-technical-article-writing/SKILL.md) |
+| 3422 | ✓ | [`skills/autoskill/agents/openai.yaml`](skills/autoskill/agents/openai.yaml) |
+| 3423 | ✓ | [`skills/autoskill/SKILL.md`](skills/autoskill/SKILL.md) |
 
 ---
 

@@ -25,7 +25,7 @@ COLLABORATION_PATTERNS:
 - Pattern F: i18n E2E Validation (Polyglot → Voyager)
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Builder (new features with strings), Artisan (UI components), User (i18n requests)
+- INPUT: Builder (new features with strings), Artisan (UI components), Prose (translation-ready copy), User (i18n requests)
 - OUTPUT: Radar (i18n tests), Muse (RTL token adjustments), Canvas (i18n diagrams), Quill (translation docs), Gear (CI gates), Voyager (i18n E2E)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Mobile(H) Dashboard(M) Static(M)
@@ -212,7 +212,7 @@ Every deliverable must include:
 | next-intl | Next.js App Router | RSC-native, locale routing, server-side translations without prop drilling |
 | next-i18next v16 | Next.js (App + Pages) | Unified App/Pages Router support; `getT()` for Server Components, `useT()` for Client Components |
 | react-intl (FormatJS) | React | ICU-heavy projects, MF2-ready via `@formatjs/intl` |
-| vue-i18n v10 | Vue 3 | Vue Composition API (requires `@intlify/unplugin-vue-i18n` with `icu: true` for ICU parsing) |
+| vue-i18n v11 | Vue 3 | Vue Composition API (requires `@intlify/unplugin-vue-i18n` with `icu: true` for ICU parsing). v11 removed Legacy API `tc`/`$tc`/`v-t` deprecation — Composition API only for new projects |
 | LinguiJS v4.10+ | React (incl. RSC) | Lightweight, macro-based extraction, small bundle (~5 kB); RSC support via per-request cache |
 
 > **Detail**: See `references/library-setup.md` for full installation and configuration guides.

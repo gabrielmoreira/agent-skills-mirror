@@ -16,15 +16,16 @@ metadata:
 
 ## **Priority: P1 (OPERATIONAL)**
 
-
 - **Async Gaps**: Check `if (context.mounted)` before using `BuildContext` after `await`.
 - **Composition**: Extract complex UI into small widgets. Avoid deep nesting or large helper methods.
 - **Layout**:
- - Spacing: Use `Gap(n)` or `SizedBox` over `Padding` for simple gaps.
- - Empty UI: Use `const SizedBox.shrink()`.
- - Intrinsic: Avoid `IntrinsicWidth/Height`; use `Stack` + `FractionallySizedBox` for overlays.
-- **Optimization**: Use `ColoredBox`/`Padding`/`DecoratedBox` instead of `Container` when possible.
-- **Themes**: Use extensions for `Theme.of(context)` access.
+  - Spacing: Prefer `spacing` parameter on `Row`/`Column` (Flutter 3.10+) over inserting `SizedBox`/`Gap` between children.
+  - Fallback: Use `Gap(n)` or `SizedBox` only when `spacing` cannot express the layout (e.g., conditional gaps).
+  - Empty UI: Use `const SizedBox.shrink()`.
+  - Intrinsic: Avoid `IntrinsicWidth/Height`; use `Stack` + `FractionallySizedBox` for overlays.
+  - Spacing: Use `Gap(n)` or `SizedBox` over `Padding` for simple gaps.
+  - Optimization: Use `ColoredBox`/`Padding`/`DecoratedBox` instead of `Container` when possible.
+  - Themes: Use extensions for `Theme.of(context)` access.
 
 ## Anti-Patterns
 

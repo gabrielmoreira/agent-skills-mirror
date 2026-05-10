@@ -833,6 +833,86 @@
 
 ---
 
+### F-075 飞书入站事件 `event.clone()` 每条 fan-out 一次
+
+- **来源**：2026-05-09 v0.2.0 飞书完整对齐 `/simplify` review (Efficiency Agent HIGH #2/#3)
+- **现象**：[`channel/feishu/inbound_events.rs`](../../crates/ha-core/src/channel/feishu/inbound_events.rs) 的 `parse_read_receipt_list` (≈line 165) 与 `parse_user_added_or_deleted` (≈line 220) 在 `.map()` 内对每条受体 / 每个用户 `event.clone()`，扁平化 fan-out 出 N 个 `InboundEvent` 时 deep clone N 次。读回执批量带 100 个 `message_id` = 100 次 `serde_json::Value` deep clone；50 人入群同理。
+- **为什么留**：`EventCommon.raw: Value` 是字段定义；改成 `Arc<Value>` 是 type-level 改造，会触动 6 variants 的所有受用方（dispatcher log handlers / 未来 B.2 业务行为）。当前 v0.2.0 非消息事件 dispatcher log-only，clone 成本只是 CPU + 内存峰值，无 user-visible bug。Phase B.2 接业务行为时会顺手做这次改造（届时 raw 也可能根本不需要，可以 drop）。
+- **改的话要做什么**：
+  - `channel/types.rs::EventCommon.raw` 改 `Arc<serde_json::Value>`
+  - 6 variants 的所有 emit / read 站点跟着改（3 dispatcher log_* + 1 inbound_events.rs + 1 inbound_events 测试 + 1 序列化 contract）
+  - 或者：`take last on iter()` 模式只让最后一条 move 不 clone，其余 clone — 省一次但不解决 N-1 问题
+- **影响面**：纯性能 / 内存。读回执 100 条批量场景下 ~100KB - 1MB 临时分配；正常 1-2 条场景无感知。
+
+### F-076 飞书 `auth_cache` 用 `Mutex` 而非 `RwLock`
+
+- **来源**：2026-05-09 v0.2.0 飞书完整对齐 `/simplify` review (Efficiency Agent MEDIUM #4)
+- **现象**：[`tools/feishu/mod.rs::auth_cache`](../../crates/ha-core/src/tools/feishu/mod.rs) 用 `tokio::sync::Mutex<HashMap<String, (CredsSnapshot, Arc<FeishuAuth>)>>`；缓存命中（hot path）只读 + creds 比较 + `Arc::clone`，但所有并发 `feishu_*` tool 串行通过 mutex。
+- **为什么留**：当前预期并发上限 5-10 ≤ tool calls；实战未观察到 lock contention。改 `RwLock` + 写路径 double-check 是 30 行的小重构，但当前没有用户痛点。
+- **改的话要做什么**：换 `RwLock`；命中走 `read().get(...).cloned()`；miss 走 `write()` + 二次 check 防 race。
+- **影响面**：性能。LLM 启用 deferred-tools + 同时 fan-out 10+ feishu 调用时显著；常规场景无感。
+
+### F-077 飞书 `inbound_media::materialize_inbound` 串行下载多媒体
+
+- **来源**：2026-05-09 v0.2.0 飞书完整对齐 `/simplify` review (Efficiency Agent MEDIUM #5)
+- **现象**：[`channel/feishu/ws_event.rs::handle_message_event`](../../crates/ha-core/src/channel/feishu/ws_event.rs) 在 `for p in &parsed { materialize_inbound(...).await }` 串行下载每条 inbound media。飞书 `media` msg_type 单条消息可能含 video + cover image 两个 file_key，串行下载累计延迟。
+- **为什么留**：飞书单条消息典型只有 1 个媒体（image / file / sticker / 单 audio），串行延迟 < 500ms 用户无感。`media` 消息类型是少数场景。drop-in 替换 `futures::future::join_all` 即可，但当前没痛点。
+- **改的话要做什么**：`futures::future::join_all(parsed.iter().map(|p| materialize_inbound(...)))`，再 `filter_map(Option::Some)` 过滤失败；现有 import / signature 全够。
+- **影响面**：延迟。多媒体场景每条额外 ~500ms-2s；典型场景无差异。
+
+### F-078 飞书业务 tool 6+ 参数函数签名应改 builder / request struct
+
+- **来源**：2026-05-09 v0.2.0 飞书完整对齐 `/simplify` review (Code Quality Agent MEDIUM #7)
+- **现象**：[`channel/feishu/api_bitable.rs::bitable_list_records`](../../crates/ha-core/src/channel/feishu/api_bitable.rs) 6 个位置参数（`app_token, table_id, view_id?, filter?, page_token?, page_size?`），同形 `bitable_search_records` / `calendar_list_events` / `contact_search_users_by_department` / `bitable_list_views`。tools 层 `execute_*` 也跟着传 5+ 个参数。
+- **为什么留**：调用都在同一文件 + 当期已有 type-safe `Option<&str>`，foot-gun 风险低；改成 `BitableListReq { ... }` 涉及 4-5 个文件 ~80 行。
+- **改的话要做什么**：每个 list/search 类方法引入 `XxxRequest` 结构（builder 风格更佳），api_*.rs + tools/feishu/*.rs execute_* 跟着改。
+- **影响面**：可读性。当前 6 个 `None` / `Some(...)` 顺序错了编译过不了，但 review 时容易看错。
+
+### F-079 飞书 `parent_type` 写死 `"explorer"` — 不能上传到 docx 内嵌图片
+
+- **来源**：2026-05-09 v0.2.0 飞书完整对齐 `/simplify` review (Code Quality Agent MEDIUM #8)
+- **现象**：[`tools/feishu/drive.rs::execute_upload_media`](../../crates/ha-core/src/tools/feishu/drive.rs) 调 API 时硬编码 `parent_type = "explorer"`。Feishu API 支持 `explorer` / `docx_image` / `sheet_image` / `bitable_image` / `vc_virtual_background` / `slides_image` 等多种 parent_type。
+- **为什么留**：90% 用例是 drive folder upload，`explorer` 够用；上传到 docx 内嵌图片是少数场景，需要 LLM 知道 parent_type 含义且配合 docx 块创建流程。当前没有用户反馈。
+- **改的话要做什么**：tool schema 加可选 `parent_type` 字段（默认 `"explorer"`），api_drive.rs 已经接受 `parent_type` 参数，只需透传。或者引入 `enum DriveParentType { Explorer, DocxImage, ... }`。
+- **影响面**：功能盲点。想上传图片到 docx 块的 LLM 走不通；当前无人触发。
+
+### F-080 飞书业务 tool 名常量分散在每个 `tools/feishu/<module>.rs`
+
+- **来源**：2026-05-09 v0.2.0 飞书完整对齐 `/simplify` review (Code Quality Agent MEDIUM #6)
+- **现象**：现有非飞书 tool 名常量都集中在 [`tools/mod.rs`](../../crates/ha-core/src/tools/mod.rs) 的 `pub const TOOL_*` 块；新增 35 个 `feishu_*` tool 散落在 `tools/feishu/<module>.rs` 各自 `pub const TOOL_DOCX_CREATE` 等，dispatcher 通过 `super::feishu::docx::TOOL_*` 跨模块引用。两套约定共存。
+- **为什么留**：把 35 个常量集中到 `tools/mod.rs` 让该文件膨胀很多（且后续 v0.3 加更多 feishu_* tool 还会膨胀）；当前每模块自治反而更模块化。`permission::rules::extract_path_arg` 已经按 review 改成走常量引用而非字符串字面量（F-079 同期修复），跨模块引用模式实证可行。
+- **改的话要做什么**：要么集中到 `tools/mod.rs`（与 read/write 风格一致），要么从 `tools/feishu/mod.rs` 显式 re-export 所有 `TOOL_*` 常量给 dispatcher 用单一短前缀。两选一。
+- **影响面**：风格一致性，无功能影响。
+
+### F-081 飞书 `inbound-temp/` 缺 GC，长期累积可能撑爆磁盘
+
+- **来源**：2026-05-09 v0.2.0 飞书入站媒体 review P2 后续讨论
+- **现象**：[`channel/feishu/inbound_media.rs`](../../crates/ha-core/src/channel/feishu/inbound_media.rs) 把入站附件落在 `~/.hope-agent/channels/feishu/inbound-temp/`，由 [`channel/worker/media.rs::convert_inbound_media_to_attachments`](../../crates/ha-core/src/channel/worker/media.rs) 复制一份到 session attachments dir 喂给 LLM。源文件**永远留在 `inbound-temp/`**，没有 GC——长期跑下来同一个用户群里发的图片、视频、PDF 全部累计在这个目录里，最终撑爆磁盘。`INBOUND_DOWNLOAD_MAX_BYTES = 512 MiB` 单文件 cap 防不住"100 个 100 MB 文件 = 10 GB"的累计形态。
+- **为什么留**：本期讨论里把磁盘防御明确从单文件 cap 解耦——cap 只做 sanity tripwire（防 multi-GB 异常 body），磁盘 GC 该在专门的层做。本期不动 GC 是因为：①还没见过用户实际撞这个问题；②正确的方案需要决定 GC 策略（按 mtime 滚动 / 总大小水位 / 按 session 生命周期挂钩 / 按账号配额），不是改一个 cap 能解决的。
+- **改的话要做什么**：要么 ①入站后立刻 move（而非 copy）到 session attachments dir，下载层文件随 session 删除一起清；要么 ②给 `inbound-temp/` 加独立 GC 任务（轮询 mtime > 7 天 / 总大小 > N GB 触发清理）；要么 ③`materialize_inbound` 写完后只用临时文件做 mid-step，等 `convert_inbound_media_to_attachments` 复制成功后立即 delete 源文件。①与现有 1:1 attach 模型不冲突，最简洁。
+- **影响面**：长期运行的 IM bot 磁盘占用单调增长，但不立刻致命；有大量入站附件的租户可能在几周到几个月后撞 ENOSPC。其它 channel（telegram / discord / etc.）的 inbound-temp/ 等价目录也都没有 GC，是同类问题——本期只就飞书登记，将来若动 GC 该是 channel-agnostic 设计。
+
+### F-082 IM 入站附件路径 12 渠道一致性 hardening（飞书模板外推）
+
+- **来源**：2026-05-09 v0.2.0 飞书入站媒体 review P2 后续盘点 12 渠道现状
+- **现象**：飞书这次把入站附件做成「parse 轻量 ref → 入队 → ack → dispatcher gating → `materialize_pending_media` chunk-streaming 到磁盘 → 512 MiB cap → 失败清理」一整套之后，回头看其它 11 个渠道，行为差异很大、问题各不相同：
+  - **eager-download 阻塞 dispatch（同飞书 review 前的毛病）**：
+    - **Telegram** [`telegram/polling.rs::download_inbound_media_to_temp`](../../crates/ha-core/src/channel/telegram/polling.rs) 在 polling loop 内同步 `bot.download_file(&mut dst)` 拉完才发 `MsgContext`——非 mention 群消息也下载，且没 size cap（teloxide 内部是流式 `&mut File` 的，不至于 OOM，但磁盘 / 时延无界）
+    - **WeChat** [`wechat/media.rs::download_plain_media`](../../crates/ha-core/src/channel/wechat/media.rs) 比飞书旧版还激进：`response.bytes()` 全量到 `Vec<u8>` → AES-128 解密 → `save_inbound_bytes`，单条 100 MB 的群文件吃 100 MB RSS + 解密峰值再翻倍，dispatch 全程被阻塞
+  - **URL pass-through（"做了一半"，下游 LLM 能不能用全看运气）**：
+    - **Discord** [`discord/gateway.rs`](../../crates/ha-core/src/channel/discord/gateway.rs) 直接把 CDN URL 喂 LLM——可以工作但 URL **24h 过期**，超时后 LLM 走 `web_fetch` 会拿到 410；session 中段引用旧附件就失效
+    - **Slack** [`slack/socket.rs::parse_slack_files`](../../crates/ha-core/src/channel/slack/socket.rs) 给的是 `url_private` / `url_private_download`，**需要 `Authorization: Bearer xoxb-…`**，模型 `web_fetch` 没这个 token → 实际上拿到的是个废链接
+    - **Signal** [`signal/client.rs::extract_media`](../../crates/ha-core/src/channel/signal/client.rs) 干脆 `file_url: None`，只给 attachment id —— 模型完全看不到内容
+  - **完全没接（6 渠道）**：Google Chat / iMessage / IRC（协议本身不传媒体，跳过） / LINE / QQ Bot / WhatsApp 入站全 drop——用户发图 agent 看不到
+- **为什么留**：本期 PR scope 是「飞书完整对齐」，跨 channel 的入站附件统一是独立工作量，且每个 channel 的下载语义不同（Discord 公开 CDN / Slack 需 token / Signal 走 signal-cli `--receive-attachments` / WeChat 要 AES-128 解密 / Telegram 走 teloxide），不可能一个 PR 全做完。飞书这次的实现刚好成了模板，但外推应该按 channel 各自一个 follow-up PR 推。
+- **改的话要做什么**：分阶段做。
+  - **阶段 1（高优）**：把飞书现有的 deferred + chunk-streaming + size-cap 三件套抽成 channel-agnostic helper（`channel/inbound_media_common.rs::stream_to_disk(url, headers, dest, cap) -> Result<u64>` + `embed_pending_refs/take_pending_refs` 已经 generic 了），让 Telegram / WeChat 迁过去——`materialize_pending_media` trait 已经存在，直接 override 即可
+  - **阶段 2（中优）**：Slack 改成 server-side 下载（用 bot token 下载 + 写盘）；Signal 改用 signal-cli `--receive-attachments` 让 daemon 自己落盘再读路径；Discord 可选——CDN URL 24h 内能用，要不要 server-side 下载是产品决策（落盘永久 vs URL 短期）
+  - **阶段 3（低优）**：Google Chat / LINE / QQ Bot / WhatsApp / iMessage 补入站媒体解析。这些渠道用户量小、协议各异，按反馈推
+- **影响面**：当前线上能稳定接收图片 / 文件的只有飞书（修复后）+ Telegram + WeChat + Discord（CDN URL 临时窗口内）；Slack / Signal 用户发图 LLM 实际拿不到；6 渠道完全看不到。所有 eager-download 渠道在 mention gating 关闭的群里都会无差别下载非 @bot 的附件——飞书 review P1 揭示的"群里 @ 别人也下载"问题在 Telegram / WeChat 上同样存在。
+
+---
+
 ## Closed
 
 > 已修复条目移到此处，附 commit hash + 关闭日期。保留以便后续 grep。

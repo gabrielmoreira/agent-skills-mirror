@@ -172,7 +172,12 @@ Node.js version from `.nvmrc` and pnpm 10+.
 
 ### E2E and Broad Validation
 
-- When a change touches real browser-extension runtime behavior, cross-page flows, permissions, service worker behavior, extension build output, or UI layering issues that are hard to verify reliably with lower-level tests, consider adding a Playwright E2E test for self-verification.
+- Do not add Playwright E2E coverage mechanically for every feature commit. Prefer Vitest or Testing Library for pure functions, protocol adapters, formatting/parsing logic, copy-only changes, style-only changes, and isolated component state.
+- For any new or materially changed user-facing behavior, make an explicit E2E decision before handoff: add/update an E2E test, identify the existing E2E flow that already covers the risk, or state why lower-level tests are the right coverage layer.
+- Bias toward adding or updating Playwright E2E coverage when the main risk only appears in a real extension browser context. This includes core workflows such as account management, key management, bookmarks, model sync, API credential profiles, notifications, imports/exports, and managed-site operations; cross-entrypoint behavior across popup, options, sidepanel, background, content scripts, runtime messages, tabs, windows, or extension storage; navigation, hash routing, lazy-loaded entrypoints, first-load behavior, and deep links; browser APIs or permissions such as notifications, downloads, clipboard, context menus, tab/window handling, optional permissions, service workers, or extension build output; and interaction risks involving dialogs, popovers, floating layers, drag/drop, toasts, or confirm flows.
+- Add or update E2E coverage for regressions that lower-level tests previously missed, especially when the failure involved browser runtime behavior, entrypoint integration, persisted state, or a complete user task.
+- For larger PRs that add a user-visible workflow, prefer one stable happy-path E2E scenario over many narrow UI assertions.
+- Final handoffs for user-facing behavior changes should include the E2E decision and the validation actually run.
 - Temporary E2E tests created only for self-verification should be deleted before handoff by default. Keep them only when they are deterministic, reusable, and provide clear long-term regression value; if retention is genuinely ambiguous, explain the tradeoff and ask before keeping them.
 - If the change can invalidate unused-file, export, or dependency analysis, broaden validation to include `pnpm knip`; use `pnpm run validate:push` when you want the full local pre-push-equivalent gate instead of assembling `compile` + `knip` manually.
 

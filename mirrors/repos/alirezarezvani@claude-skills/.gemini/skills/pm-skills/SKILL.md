@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/pm-skills/../../../project-management/skills/pm-skills/SKILL.md

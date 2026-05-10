@@ -416,8 +416,14 @@ SCOUT_TO_TRAIL_HANDOFF:
 | `references/reproduction-templates.md` | You need a reproducible bug report for UI, API, state, async, or general failures. |
 | `references/git-bisect.md` | The issue is likely a regression and you need commit-level isolation. |
 | `references/modern-rca-methodology.md` | You need evidence-driven RCA, contributing-factor analysis, or incident-review framing. |
+| `references/5whys-rca.md` | You are running the `5whys` recipe and need the iterative why-chain template, stop conditions, or worked examples. |
+| `references/fishbone-6m.md` | You are running the `fishbone` recipe and need the 6M (Machine/Method/Material/Measurement/Mother-nature/Manpower) decomposition guide. |
+| `references/timeline-reconstruction.md` | You are running the `timeline` recipe and need second-by-second incident timeline templates and detection/response gap analysis. |
 | `references/debugging-anti-patterns.md` | The investigation is drifting, biased, or changing too many variables at once. |
 | `references/observability-debugging.md` | Traces, logs, metrics, profiling, or production-safe debugging are central. |
+| `references/perf-investigation.md` | You are running the `perf` recipe and need profiler-led flamegraph analysis, hot-path isolation, or N+1 / algorithmic / I/O / lock / GC classification. |
+| `references/memory-investigation.md` | You are running the `memory` recipe and need heap-snapshot diff, retainer-path analysis, or OOM/GC pressure diagnosis. |
+| `references/flake-investigation.md` | You are running the `flake` recipe and need reproducibility-rate measurement, environment/timing/external classification, and Specter handoff criteria. |
 | `references/advanced-reproduction-triage.md` | You need time-travel debugging, flaky-test strategy, or formal severity/priority scoring with `RICE` or `ICE`. |
 | `references/frontend-debugging.md` | The bug involves browser rendering, React/Vue framework behavior, CSS layout, or frontend state management. |
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Scout-specific action verb, or deciding whether to suppress the prompt for a Sentinel/Specter handoff or investigation-only scope. |

@@ -51,7 +51,7 @@ def _sample_candidate(ticker: str = "XYZ", grade: str = "A") -> dict:
             "session_low": 71.30,
         },
         invalidation_checks_passed=True,
-        earnings_within_days=None,
+        earnings_meta=None,
         market_cap_usd=1_850_000_000,
     )
 
@@ -70,6 +70,9 @@ class TestTopLevelSchema:
             "phase",
             "generated_at",
             "as_of",
+            "run_date",
+            "market_data_as_of",
+            "warnings",
             "data_source",
             "data_latency_sec",
             "mode",
@@ -122,7 +125,7 @@ class TestTopLevelSchema:
             warnings=[],
             key_levels={},
             invalidation_checks_passed=True,
-            earnings_within_days=None,
+            earnings_meta=None,
             market_cap_usd=2_000_000_000,
         )
         report = build_json_report(
@@ -145,7 +148,14 @@ class TestCandidateSchema:
             "metrics",
             "key_levels",
             "invalidation_checks_passed",
+            "last_earnings_date",
+            "next_earnings_date",
+            "trading_days_since_earnings",
+            "earnings_within_days",
+            "earnings_blackout_days",
+            "earnings_in_blackout_window",
             "earnings_within_2d",
+            "market_data_as_of",
             "market_cap_usd",
         ):
             assert key in c, f"missing candidate key {key!r}"
@@ -186,10 +196,16 @@ class TestCandidateSchema:
             warnings=[],
             key_levels={},
             invalidation_checks_passed=False,
-            earnings_within_days=1,
+            earnings_meta={
+                "last_earnings_date": None,
+                "next_earnings_date": "2026-05-01",
+                "trading_days_since_earnings": None,
+                "earnings_within_days": 1,
+            },
             market_cap_usd=2_000_000_000,
         )
         assert soon["earnings_within_2d"] is True
+        assert soon["earnings_in_blackout_window"] is True  # default blackout=2
         # earnings_within_days = 5 → flag is False
         far = render_candidate(
             ticker="FAR",
@@ -200,10 +216,37 @@ class TestCandidateSchema:
             warnings=[],
             key_levels={},
             invalidation_checks_passed=True,
-            earnings_within_days=5,
+            earnings_meta={
+                "last_earnings_date": None,
+                "next_earnings_date": "2026-05-05",
+                "trading_days_since_earnings": None,
+                "earnings_within_days": 5,
+            },
             market_cap_usd=2_000_000_000,
         )
         assert far["earnings_within_2d"] is False
+        assert far["earnings_in_blackout_window"] is False
+        # With a wider configured blackout, the same 5 days does fall in the window.
+        wider = render_candidate(
+            ticker="WIDER",
+            composite_result=composite,
+            component_scores_raw={},
+            raw_metrics={},
+            state_caps=[],
+            warnings=[],
+            key_levels={},
+            invalidation_checks_passed=True,
+            earnings_meta={
+                "last_earnings_date": None,
+                "next_earnings_date": "2026-05-05",
+                "trading_days_since_earnings": None,
+                "earnings_within_days": 5,
+            },
+            earnings_blackout_days=7,
+            market_cap_usd=2_000_000_000,
+        )
+        assert wider["earnings_within_2d"] is False  # legacy field still literal ≤2
+        assert wider["earnings_in_blackout_window"] is True  # configured threshold ≤7
 
 
 class TestSerialization:

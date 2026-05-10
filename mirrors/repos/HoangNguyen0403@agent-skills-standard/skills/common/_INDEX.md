@@ -21,7 +21,7 @@
 | common-session-retrospective | `**/*.spec.ts`, `**/*.test.ts`, `SKILL.md`, `AGENTS.md`, `+common/common-learning-log` | retrospective, self-learning, improve skills, session review, correction, rework |
 | **common-skill-creator** | `SKILL.md`, `evals/evals.json` | create skill, audit skill, trigger rate, optimize description |
 | **common-tdd** | `**/*.test.ts`, `**/*.spec.ts`, `**/*_test.go`, `**/*Test.java`, `**/*_test.dart`, `**/*_spec.rb` | tdd, unit test, write test, red green refactor, failing test, test coverage |
-| **common-workflow-writing** | `.agent/workflows/*.md`, `SKILL.md` | create workflow, write workflow, new skill, new workflow |
+| **common-workflow-writing** | `.agents/workflows/*.md`, `SKILL.md` | create workflow, write workflow, new skill, new workflow |
 
 ## Keyword Match (only when user's request mentions these)
 
@@ -34,6 +34,7 @@
 | common-documentation | comment, docstring, readme, documentation |
 | **common-git-collaboration** | commit, branch, merge, pull-request, git |
 | **common-llm-security** | LLM security, prompt injection, agent security, RAG security, AI security, openai, anthropic, langchain, LLM review |
+| common-mobile-visual-testing | visual test, mobile test, verify ui, dark mode test, accessibility audit, behavioral test, visual regression, localization test |
 | **common-owasp** | security review, OWASP, broken access control, IDOR, BOLA, injection, broken auth, API review, authorization, access control |
 | **common-performance-engineering** | performance, optimize, profile, scalability, latency, throughput, memory leak, bottleneck |
 | **common-protocol-enforcement** | verify done, protocol check, self-scan, pre-write audit, task complete, audit violations, retrospective, scan, red-team |
@@ -41,5 +42,6 @@
 | common-store-changelog | generate changelog, app store notes, play store release, what's new, release notes, version notes, store release |
 | **common-system-design** | architecture, design, system, scalability, microservice, module boundary, coupling |
 | **common-ui-design** | build a page, create a component, design a dashboard, landing page, UI for, build a layout, make it look good, improve the design, build UI, create interface, design screen |
+| common-web-visual-testing | web test, browser test, responsive audit, verify web ui, cross-browser check, web accessibility |
 
 > Load matched skills: `<SKILLS>/common/<skill>/SKILL.md`. Load ALL that match — the tier model already filters irrelevant ones.

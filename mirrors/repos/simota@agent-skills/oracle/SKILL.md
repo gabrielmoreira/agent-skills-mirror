@@ -217,6 +217,8 @@ Routing rules:
 | [evaluation-observability.md](~/.claude/skills/oracle/references/evaluation-observability.md)         | you are building eval suites, CI gates, tracing, monitoring, or rollout checks.                          |
 | [cost-optimization.md](~/.claude/skills/oracle/references/cost-optimization.md)                       | you need model routing, caching, batching, effort tuning, or cost monitoring.                            |
 | [llm-production-anti-patterns.md](~/.claude/skills/oracle/references/llm-production-anti-patterns.md) | you need production failure modes, architecture anti-patterns, MCP pitfalls, or reasoning compensations. |
+| [agent-design.md](~/.claude/skills/oracle/references/agent-design.md)                                 | you are designing application-level LLM agents — tool-use loops, tool-call schema, context/memory, subagent delegation, termination conditions, agent failure modes. |
+| [embedding-strategy.md](~/.claude/skills/oracle/references/embedding-strategy.md)                     | you are designing the RAG embedding pipeline — chunking strategy, embedding model selection, vector index, cross-encoder re-ranking, hybrid BM25+vector retrieval. |
 | [OPUS_47_AUTHORING.md](~/.claude/skills/_common/OPUS_47_AUTHORING.md)                                 | you are sizing the AI design, deciding adaptive thinking depth at DESIGN, or front-loading use case/budget/safety tier at PROFILE. Critical for Oracle: P3, P5. |
 
 ## Operational

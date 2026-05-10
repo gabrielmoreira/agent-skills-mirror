@@ -251,7 +251,10 @@ Limits:
 | `references/code-patterns.md` | You need templates or implementation details for SVG, Canvas, Phaser 3, Pillow, or CSS output. |
 | `references/pixel-craft.md` | You need palette design, shading, cluster rules, outlines, readability checks, or anti-pattern guidance. |
 | `references/sprite-animation.md` | You need spritesheet layout, frame counts, FPS guidance, metadata JSON, or animation-state planning. |
+| `references/animation-cycles.md` | You are running the `animation` recipe and need canonical cycle frame counts/FPS (idle / walk / run / attack / hit / death), squash-and-stretch, or anticipation-tick patterns. |
+| `references/limited-palettes.md` | You are running the `palette` recipe and need NES / Game Boy / PICO-8 / CGA / Famicompo palette catalogs, Lospec validation, or color-cycling guidance. |
 | `references/tileset-design.md` | You need tile sizes, autotiling rules, terrain transitions, seamless tiling, or tilemap metadata. |
+| `references/tilesheet-design.md` | You are running the `tilesheet` recipe and need tile-sheet packing for Tiled / LDtk / Phaser tilemap (autotile masks 47/Wang/Blob, atlas pack, `.tsx` / `.ldtk` / Phaser config emission). |
 | `references/engine-integration.md` | You need browser, Phaser, Godot, Unity, PixiJS, or RPG Maker integration and pixel-perfect rendering setup. |
 | `references/gemini-delegation.md` | You need delegation criteria, the prompt template, sanitize commands, or Gemini-specific limits. |
 | `references/gpt-image-edit.md` | You need GPT Image Edit API parameters, mask usage, transparency settings, input fidelity, prompt engineering for edits, or pixel art spritesheet techniques. |

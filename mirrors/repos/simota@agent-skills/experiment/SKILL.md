@@ -280,6 +280,9 @@ Experiment receives metric baselines and hypotheses from upstream agents, and de
 | `references/guardrail-metrics.md` | You need 4-layer metric taxonomy (primary/secondary/counter/guardrail), non-inferiority margin design, stop/ship trigger matrices, Type II handling on underpowered guardrails, or Netflix/Microsoft ExP/Airbnb/Booking portfolio patterns. |
 | `references/switchback-design.md` | You need switchback rotation window selection, block randomization, carryover washout, Bojinov HAC / block-bootstrap variance, or DoorDash/Uber/Lyft/Airbnb marketplace precedent. |
 | `references/feature-flag-experiments.md` | You need flag-driven experiment assignment, 1/5/25/50/100% staged ramp design, kill-switch triggers and rehearsal, flag-vs-experiment separation, or decommission handoff to Launch. |
+| `references/srm-detection.md` | You are running `srm` — need chi-squared test (p < 0.001 threshold), segment-level decomposition (device/region/tenure/traffic source), bucket-mismatch and assignment-bug root causes. |
+| `references/sequential-testing.md` | You are running `sequential` — need anytime-valid sequential testing (mSPRT, confidence sequences, group sequential α-spending: Pocock / O'Brien-Fleming / Lan-DeMets) for valid early stopping. |
+| `references/bayesian-ab.md` | You are running `bayesian` — need prior specification, posterior updating, credible intervals, ROPE, probability-to-beat, and expected-loss decision rule. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the experiment report, deciding adaptive thinking depth at method selection, or front-loading randomization unit/MDE/OEC at INTAKE. Critical for Experiment: P3, P5. |
 
 ## Operational

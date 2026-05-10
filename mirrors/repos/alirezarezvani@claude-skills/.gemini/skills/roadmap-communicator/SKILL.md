@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/roadmap-communicator/../../../product-team/skills/roadmap-communicator/SKILL.md

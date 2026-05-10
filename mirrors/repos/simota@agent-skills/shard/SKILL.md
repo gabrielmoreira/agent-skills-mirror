@@ -176,7 +176,7 @@ Request → [Auth Middleware] → tenant_id extracted
 
 Key design points:
 - Extract tenant_id at the edge (auth middleware).
-- Propagate via request-scoped context (not global state). In async runtimes, use language-native async context (e.g., Python `contextvars`, Node.js `AsyncLocalStorage`, Go `context.Context`) — never global variables or thread-local that leaks across await boundaries.
+- Propagate via request-scoped context (not global state). In async runtimes, use language-native async context (e.g., Python `contextvars`, Node.js `AsyncLocalStorage`, Go `context.Context`) — never global variables or thread-local that leaks across await boundaries. [Source: Node.js docs — Asynchronous context tracking (https://nodejs.org/api/async_context.html)]
 - Enforce at the database layer (RLS or query filter) as final guard.
 - Log tenant_id in every audit entry.
 - Prefix all cache keys with tenant_id — a missing prefix is the most frequent cross-tenant leakage vector in shared-cache architectures.

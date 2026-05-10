@@ -374,8 +374,11 @@ Stage owns slide pacing (WPM-calibrated), visual design, reveal.js/Marp output.
 |-----------|---------------|
 | `references/article-patterns.md` | Choosing article structure; need skeleton for Problem-Tension-Insight-Solution-CTA / Tutorial / Listicle / Retrospective / Deep-dive / Announcement |
 | `references/hook-design.md` | Writing the opening 100-300 characters; need hook patterns (contradiction / number / scene / question / stake) and anti-patterns to cut |
+| `references/headline-patterns.md` | Generating title/headline variants; need CTR-tested formulas (number / curiosity / promise / contrarian / how-to / question), platform-specific length budgets, A/B candidate ranking |
 | `references/platform-optimization.md` | Tuning output for note / Zenn / Qiita / dev.to; need per-platform length, metadata, tags, discoverability rules |
 | `references/series-management.md` | Managing multi-episode series; need index article design, cross-link strategy, cadence, naming, anthology planning |
+| `references/content-repurposing.md` | Cross-platform repurposing; need canonical → note/Zenn/Qiita/dev.to/X-thread/LinkedIn variants, atomic asset extraction, hub-and-spoke + canonical_url strategy |
+| `references/interview-format.md` | Reshaping Q&A material — interview transcripts, podcast episodes, AMA threads, lightning talks — into Q&A articles with voice preservation and narrative re-sequencing |
 | `references/handoffs.md` | Packaging deliverables for Growth / Prose / Stage / Canvas / Saga / Morph; need handoff templates per downstream agent |
 | `_common/OPUS_47_AUTHORING.md` | Deciding whether to read widely at FRAME, how deeply to think at STRUCTURE and hook design. Critical for Zine: P3, P5 |
 

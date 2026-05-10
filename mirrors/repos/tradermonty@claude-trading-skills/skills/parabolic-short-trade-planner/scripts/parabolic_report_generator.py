@@ -30,7 +30,9 @@ def render_candidate(
     warnings: list[str],
     key_levels: dict,
     invalidation_checks_passed: bool,
-    earnings_within_days: int | None,
+    earnings_meta: dict | None = None,
+    earnings_blackout_days: int = 2,
+    market_data_as_of: str | None = None,
     market_cap_usd: float | None,
 ) -> dict:
     """Build one candidate dict in the v1.0 schema shape.
@@ -38,10 +40,23 @@ def render_candidate(
     ``components`` is rendered as **weighted** sub-scores so the values sum
     to the composite ``score``. The ``component_breakdown`` from the scorer
     is the source of truth.
+
+    ``earnings_meta`` carries the four earnings fields (last/next dates,
+    ``trading_days_since_earnings`` in TRADING days,
+    ``earnings_within_days`` in CALENDAR days). ``earnings_blackout_days``
+    is the configured threshold (CLI ``--exclude-earnings-within-days``)
+    used to compute ``earnings_in_blackout_window`` here. The legacy
+    ``earnings_within_2d`` field is kept (literal ≤2 calendar-day check)
+    for backward compatibility with older readers.
     """
     components_weighted = {
         name: bd["weighted_score"] for name, bd in composite_result["component_breakdown"].items()
     }
+    meta = earnings_meta or {}
+    earnings_within_days = meta.get("earnings_within_days")
+    earnings_in_blackout_window = (
+        earnings_within_days is not None and earnings_within_days <= earnings_blackout_days
+    )
     earnings_within_2d = earnings_within_days is not None and earnings_within_days <= 2
     return {
         "ticker": ticker,
@@ -54,7 +69,18 @@ def render_candidate(
         "metrics": raw_metrics,
         "key_levels": key_levels,
         "invalidation_checks_passed": invalidation_checks_passed,
-        "earnings_within_2d": earnings_within_2d,
+        # Earnings metadata block. Units are intentionally split:
+        # ``earnings_within_days`` is CALENDAR days to the next earnings
+        # event (forward, used by the hard blackout); ``trading_days_since_earnings``
+        # is TRADING days since the last event (backward, used by the soft warning).
+        "last_earnings_date": meta.get("last_earnings_date"),
+        "next_earnings_date": meta.get("next_earnings_date"),
+        "trading_days_since_earnings": meta.get("trading_days_since_earnings"),
+        "earnings_within_days": earnings_within_days,
+        "earnings_blackout_days": earnings_blackout_days,
+        "earnings_in_blackout_window": earnings_in_blackout_window,
+        "earnings_within_2d": earnings_within_2d,  # legacy fixed-name field
+        "market_data_as_of": market_data_as_of,
         "market_cap_usd": market_cap_usd,
     }
 
@@ -65,19 +91,49 @@ def build_json_report(
     mode: str,
     universe: str,
     as_of: str,
+    run_date: str | None = None,
     data_source: str = "FMP",
     data_latency_sec: int = 0,
     generated_at: str | None = None,
 ) -> dict:
     """Top-level JSON report. ``candidates`` is a list of dicts shaped by
-    :func:`render_candidate`."""
+    :func:`render_candidate`.
+
+    Date semantics:
+
+    * ``as_of`` — Phase 2 planning date (= CLI ``--as-of`` / today). This
+      contract is consumed by ``generate_pre_market_plan.py`` for plan IDs
+      and SSR state filenames; never mutate.
+    * ``run_date`` — same value as ``as_of`` (the planning date), surfaced
+      under a distinct key for forward-compat readability.
+    * ``generated_at`` — wallclock ISO-8601 timestamp.
+    * ``market_data_as_of`` — derived from the candidates' per-symbol
+      values: ``None`` when no candidates, the unique date when all share
+      one, or ``max(...)`` with a top-level
+      ``warnings: ["mixed_market_data_as_of"]`` annotation when mixed.
+    """
     a_count = sum(1 for c in candidates if c.get("rank") == "A")
+    md_dates = sorted(
+        {c.get("market_data_as_of") for c in candidates if c.get("market_data_as_of")}
+    )
+    if not md_dates:
+        market_data_as_of: str | None = None
+        report_warnings: list[str] = []
+    elif len(md_dates) == 1:
+        market_data_as_of = md_dates[0]
+        report_warnings = []
+    else:
+        market_data_as_of = md_dates[-1]
+        report_warnings = ["mixed_market_data_as_of"]
     return {
         "schema_version": SCHEMA_VERSION,
         "skill": SKILL_NAME,
         "phase": PHASE,
         "generated_at": generated_at or _now_iso(),
         "as_of": as_of,
+        "run_date": run_date if run_date is not None else as_of,
+        "market_data_as_of": market_data_as_of,
+        "warnings": report_warnings,
         "data_source": data_source,
         "data_latency_sec": data_latency_sec,
         "mode": mode,

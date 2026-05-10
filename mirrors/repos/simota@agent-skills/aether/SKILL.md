@@ -267,6 +267,9 @@ Every deliverable must include:
 | `references/avatar-control.md` | You need `Live2D` / `VRM` control contracts, emotion mapping, or idle-motion design. |
 | `references/obs-streaming.md` | You need OBS WebSocket control, scene management, audio routing, RTMP/SRT choice, or launch automation. |
 | `references/lip-sync-expression.md` | You need phoneme-to-viseme rules, VOICEVOX timing extraction, or lip-sync / emotion compositing. |
+| `references/latency-budget.md` | You chose `latency` recipe. End-to-end latency budgeting, per-stage targets, and bottleneck audit for the Chat → LLM → TTS → Avatar → OBS pipeline. |
+| `references/content-safety.md` | You chose `safety` recipe. Chat NG-word filtering, prompt-injection defense, persona-drift detection, output moderation, and age-rating compliance. |
+| `references/aituber-monetization.md` | You chose `monetize` recipe. Super Chat / Bits / membership / sponsorship integration with persona consistency and tax / disclosure compliance. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the pipeline spec, deciding adaptive thinking depth at latency-budget allocation, or front-loading platform/avatar/SLO at PLAN. Critical for Aether: P3, P5. |
 
 ## Collaboration

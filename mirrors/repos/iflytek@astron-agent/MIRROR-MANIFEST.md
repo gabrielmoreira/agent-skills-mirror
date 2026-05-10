@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `iflytek/astron-agent` — 26 default patterns, 2 followed patterns, 7 file(s) materialized.
+Mirror of `iflytek/astron-agent` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `iflytek/astron-agent` — 26 default patterns, 2 followed patterns, 7
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 7 |
+| Followed pats | 0 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,7 @@ Mirror of `iflytek/astron-agent` — 26 default patterns, 2 followed patterns, 7
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/PROJECT_MODULES_zh.md`
-- `docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md`
+_None._
 
 ## File Index
 
@@ -63,10 +62,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`console/frontend/CLAUDE.md`](console/frontend/CLAUDE.md) |
-| 4 | ✓ | [`docs/CONFIGURATION_zh.md`](docs/CONFIGURATION_zh.md) |
-| 5 | ✓ | [`docs/DEPLOYMENT_GUIDE_zh.md`](docs/DEPLOYMENT_GUIDE_zh.md) |
-| 6 | → | [`docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md`](docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md) |
-| 7 | → | [`docs/PROJECT_MODULES_zh.md`](docs/PROJECT_MODULES_zh.md) |
 
 ---
 

@@ -126,6 +126,21 @@ Example finding:
   ```
 ````
 
+## Release And Distribution Validation
+
+When a PR touches `.github/workflows/release.yml`, `.github/workflows/packaging-smoke.yml`, `packaging/**`, release notes, or package-manager manifests, review it as a release-path change. Do not stop at YAML syntax or local manifest shape.
+
+Check these paths explicitly when relevant:
+
+- `packaging/update-shas.sh` must derive version, release URLs, checksums, and release dates from the actual published release or current workflow input. It must not depend on `github.ref_name` when the workflow can run from `workflow_dispatch` on `main`.
+- Post-release jobs must run both for stable tag pushes and for non-draft manual dispatches that publish or overwrite release assets. If a workflow can overwrite release files, the packaging/Homebrew/Scoop/winget sync jobs must also run on that path.
+- `packaging/homebrew/Casks/open-codesign.rb`, `packaging/scoop/bucket/open-codesign.json`, `packaging/winget/**`, and `packaging/flatpak/**` must match the current release assets and `SHA256SUMS.txt`. Hash drift in any public install channel is a **Blocker** because users will get checksum failures or install the wrong artifact.
+- Homebrew and Scoop downstream repos are separate public install sources. If the PR changes generated manifests or release assets, check whether the workflow or release process updates `OpenCoworkAI/homebrew-tap` and `OpenCoworkAI/scoop-bucket`; otherwise call out the gap.
+- winget manifests should match the schema version used by the published package series and include fields required by winget validation, especially `ReleaseDate` in installer manifests when previous published versions have it. Installer URLs and `InstallerSha256` must match the current GitHub Release assets, not stale assets from an earlier rerun.
+- For release PRs, compare `SHA256SUMS.txt`, attached assets, in-repo manifests, external channel manifests, and workflow triggers as one system. A fix that updates only one channel while leaving another channel stale is incomplete.
+
+If the validation context is unavailable in the public checkout, say exactly what could not be verified and treat the risk conservatively. Do not claim a release/distribution PR is safe unless the artifact/checksum/update path is internally consistent.
+
 ## Severity And Noise Control
 
 Use severity to reflect merge risk, not personal taste:

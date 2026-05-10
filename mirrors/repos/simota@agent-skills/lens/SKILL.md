@@ -268,6 +268,10 @@ Every deliverable must include:
 | `references/search-strategies.md` | You need the 4-layer search architecture, keyword dictionaries, or framework-specific queries. |
 | `references/output-formats.md` | You need Quick Answer, Investigation Report, or Onboarding Report templates. |
 | `references/complexity-assessment.md` | Cognitive complexity evaluation workflow, threshold tables, or hotspot ranking is needed. |
+| `references/dependency-graph.md` | `dependency` subcommand: madge/dpdm/pydeps tooling, fan-in/fan-out analysis, transitive closure, circular dependency classification, package boundary leakage detection. |
+| `references/change-hotspot.md` | `hotspot` subcommand: git churn × cognitive complexity heatmap, bug-correlation, ranked refactor prioritization. |
+| `references/code-evolution.md` | `evolution` subcommand: file lifespan, author concentration (bus factor), abstraction churn, conceptual drift detection across commits. |
+| `references/investigation-budget.md` | Size-based budget allocation (Small/Medium/Large/XLarge), phase-specific token limits, and escalation triggers when investigation scope is unclear or large. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Scout, unified confidence scale, or stall protocol is needed. |
 | `_common/OPUS_47_AUTHORING.md` | You are choosing tool-use eagerness during SURVEY/TRACE, deciding adaptive thinking depth at SCOPE, or sizing the report. Critical for Lens: P3, P5. |
 

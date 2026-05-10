@@ -1,6 +1,6 @@
 ---
 name: chinese-code-review
-description: 中文代码审查规范——在保持专业严谨的同时，用符合国内团队文化的方式给出有效反馈
+description: 中文 review 沟通参考——话术模板、分级标注（必须修复/建议修改/仅供参考）、国内团队常见反模式应对。仅在用户显式 /chinese-code-review 时调用，不要根据上下文自动触发。
 ---
 
 # 中文代码审查规范

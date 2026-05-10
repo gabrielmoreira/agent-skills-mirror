@@ -283,6 +283,8 @@ Routing rules:
 | [ai-powered-e2e-testing.md](references/ai-powered-e2e-testing.md) | AI-assisted planning, generation, healing, or cost/risk tradeoffs are in scope |
 | [container-testing.md](references/container-testing.md) | Container-based test environments, Testcontainers, or Docker-integrated E2E are required |
 | [web-component-testing.md](references/web-component-testing.md) | Shadow DOM, Lit, Stencil, or Web Component testing is required |
+| [api-e2e-testing.md](references/api-e2e-testing.md) | User-journey E2E through an API-only interface (Playwright `APIRequestContext` chains, mock-vs-real backend toggle, contract-test follow-up) |
+| [component-testing.md](references/component-testing.md) | Component tests in a real browser (Playwright Component Testing, Cypress Component Testing, Storybook Interactions) |
 | [OPUS_47_AUTHORING.md](../_common/OPUS_47_AUTHORING.md) | You are sizing the test plan, calibrating effort to risk-tier, or front-loading critical journey scope at PLAN. Critical for Voyager: P3, P6. |
 
 ## Operational

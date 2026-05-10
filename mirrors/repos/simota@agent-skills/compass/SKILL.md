@@ -101,7 +101,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Recommend Skill | `recommend` | ✓ | Recommend best-fit skill for the task (cache-first; falls back to full catalog) | `.claude/compass-cache.md` (if present) OR `references/catalog.md`, `references/patterns.md`, `references/recipes-directory.md` |
 | Catalog Listing | `catalog` | | Full catalog of all skills (cache bypassed) | `references/catalog.md`, `references/recipes-directory.md` |
 | Onboarding Guide | `onboard` | | Orientation for new users | `references/examples.md`, `references/recipes-directory.md` |
-| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all 131 skills | `references/recipes-directory.md` |
+| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all 136 skills | `references/recipes-directory.md` |
 | Init Cache | `init` | | Generate `.claude/compass-cache.md` for the current repository — scan signals (manifests, file mix, conventions), score skills, write Top-N slim cache. Reduces recommend-time context ~95%. | `references/cache-recipes.md`, `references/cache-format.md`, `references/catalog.md` |
 | Refresh Cache | `refresh` | | Force-regenerate `.claude/compass-cache.md` with before/after diff (added / removed / affinity-changed skills). Use after catalog upgrades, framework changes, or TTL expiry. | `references/cache-recipes.md`, `references/cache-format.md`, `references/catalog.md` |
 
@@ -144,7 +144,7 @@ For beginners, present the ecosystem as 5 intuitive domains:
 | **Design** | Atlas, Schema, Gateway | `/atlas 依存関係を分析して` |
 | **Operate** | Pipe, Scaffold, Beacon | `/pipe GitHub Actionsワークフロー作って` |
 
-Full 23-category, 100+ agent catalog: `references/catalog.md`.
+Full 23-category, 136-agent catalog: `references/catalog.md`.
 Recommendation and comparison output formats: `references/patterns.md` Output Formats section.
 
 ## Output Requirements
@@ -189,9 +189,9 @@ Every deliverable must include:
 | `references/examples.md` | You need onboarding scenarios or concrete examples |
 | `references/cache-format.md` | You are running `init` / `refresh`, validating a cache file, or interpreting cache invalidation rules / affinity scale / universal inclusions |
 | `references/cache-recipes.md` | You are executing `init` or `refresh` and need the SCAN→SIZE→SCORE→PICK→WRITE→REPORT procedure, signal extraction sources, signal→skill mapping table, or top-N sizing formula |
-| [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) | Role boundaries are ambiguous |
-| [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) | Shared operational defaults |
-| [`_common/OPUS_47_AUTHORING.md`](_common/OPUS_47_AUTHORING.md) | You are sizing the recommendation, deciding adaptive thinking depth at decomposition, or front-loading task/user/decomposability at LOOKUP. Critical for Compass: P3, P5. |
+| `_common/BOUNDARIES.md` | Role boundaries are ambiguous |
+| `_common/OPERATIONAL.md` | Shared operational defaults |
+| `_common/OPUS_47_AUTHORING.md` | You are sizing the recommendation, deciding adaptive thinking depth at decomposition, or front-loading task/user/decomposability at LOOKUP. Critical for Compass: P3, P5. |
 
 ## Operational
 
@@ -200,7 +200,7 @@ Every deliverable must include:
 - Activity log: append `| YYYY-MM-DD | Compass | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
 - Follow `_common/GIT_GUIDELINES.md`.
 
-Shared protocols: [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md)
+Shared protocols: `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

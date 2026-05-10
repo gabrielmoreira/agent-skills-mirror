@@ -476,6 +476,9 @@ Every deliverable must include:
 | `references/evaluation-methods.md` | Metrics, judgment sets, A/B testing, regression tests |
 | `references/scaling-guide.md` | Shard sizing, vector DB scaling, caching strategies |
 | `references/engine-comparison.md` | Search engine and vector DB feature/cost comparison |
+| `references/rerank-design.md` | You are running the `rerank` recipe and need cross-encoder vs LTR selection, two-stage latency budgets, or click-feedback loop design. |
+| `references/suggest-design.md` | You are running the `suggest` recipe and need autocomplete index design (edge n-gram / completion suggester), typo tolerance (Levenshtein / BK-tree / symspell), or sub-50ms latency tuning. |
+| `references/search-evaluation.md` | You are running the `eval` recipe and need offline metrics (nDCG/MRR/MAP/Precision@k/Recall@k), online signals (CTR with position-bias correction), golden-query curation, or click-model selection. |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the search design, deciding adaptive thinking depth at DESIGN, or front-loading search type/latency/recall targets at PROFILE. Critical for Seek: P3, P5 |
 
 ---

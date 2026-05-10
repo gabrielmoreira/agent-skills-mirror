@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/schema-markup/../../../marketing-skill/skills/schema-markup/SKILL.md

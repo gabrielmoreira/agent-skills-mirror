@@ -90,11 +90,11 @@ Use this **before** falling back to venue-specific list endpoints when the user 
 
 These three smaller venues now expose a markets list (not just orderbooks).
 
-| Venue       | Endpoint                                  |
-| ----------- | ----------------------------------------- |
-| Limitless   | `GET /v1/pm/limitless/markets`            |
-| Opinion     | `GET /v1/pm/opinion/markets`              |
-| Predict.Fun | `GET /v1/pm/predictfun/markets`           |
+| Venue       | Endpoint                        |
+| ----------- | ------------------------------- |
+| Limitless   | `GET /v1/pm/limitless/markets`  |
+| Opinion     | `GET /v1/pm/opinion/markets`    |
+| Predict.Fun | `GET /v1/pm/predictfun/markets` |
 
 Common params: `limit`, `offset`, `search`, `status` (open/closed/resolved)
 
@@ -263,76 +263,76 @@ All 57 endpoints (Predexon v2 spec) are exposed as the **`blockrun_predexon_endp
 
 All endpoints are GET unless marked **POST**. Query params go in the URL; POST takes a JSON body. Responses are raw upstream JSON (no `{ data: ... }` wrapper).
 
-| Endpoint                                             | Price  | Key params                              |
-| ---------------------------------------------------- | ------ | --------------------------------------- |
-| **Cross-venue canonical (v2)** | | |
-| `/v1/pm/markets`                                     | $0.001 | filtering, sorting, pagination          |
-| `/v1/pm/markets/listings`                            | $0.001 | flattened venue listings                |
-| `/v1/pm/outcomes/{predexon_id}`                      | $0.001 | resolve canonical outcome → venues      |
-| **Sports (v2)** | | |
-| `/v1/pm/sports/categories`                           | $0.001 | —                                       |
-| `/v1/pm/sports/markets`                              | $0.001 | grouped by game                         |
-| `/v1/pm/sports/markets/{game_id}`                    | $0.001 | single game with all venue outcomes     |
-| `/v1/pm/sports/outcomes/{predexon_id}`               | $0.001 | equivalent outcomes across venues       |
-| **Polymarket — Tier 1** | | |
-| `/v1/pm/polymarket/events`                           | $0.001 | `limit`, `offset`, `tag`                |
-| `/v1/pm/polymarket/events/keyset`                    | $0.001 | cursor-based pagination                 |
-| `/v1/pm/polymarket/markets`                          | $0.001 | `search`, `limit`, `offset`             |
-| `/v1/pm/polymarket/markets/keyset`                   | $0.001 | cursor-based pagination                 |
-| `/v1/pm/polymarket/crypto-updown`                    | $0.001 | —                                       |
-| `/v1/pm/polymarket/leaderboard`                      | $0.001 | `limit`, `offset`                       |
-| `/v1/pm/polymarket/leaderboard/market/{conditionId}` | $0.001 | `limit`                                 |
-| `/v1/pm/polymarket/market/{conditionId}/top-holders` | $0.001 | `limit`                                 |
-| `/v1/pm/polymarket/cohorts/stats`                    | $0.001 | —                                       |
-| `/v1/pm/polymarket/positions`                        | $0.001 | `wallet`, `limit`                       |
-| `/v1/pm/polymarket/trades`                           | $0.001 | `wallet`, `limit`, `start_ts`, `end_ts` |
-| `/v1/pm/polymarket/activity`                         | $0.001 | `user`                                  |
-| `/v1/pm/polymarket/orderbooks`                       | $0.001 | `tokenId`, `limit`                      |
-| `/v1/pm/polymarket/market-price/{tokenId}`           | $0.001 | `startTs`, `endTs`                      |
-| `/v1/pm/polymarket/candlesticks/{conditionId}`       | $0.001 | `period`, `limit`                       |
-| `/v1/pm/polymarket/candlesticks/token/{tokenId}`     | $0.001 | `period`, `limit`                       |
-| `/v1/pm/polymarket/volume-chart/{conditionId}`       | $0.001 | —                                       |
-| `/v1/pm/polymarket/markets/{tokenId}/volume`         | $0.001 | cumulative volume                       |
-| `/v1/pm/polymarket/markets/{conditionId}/open_interest` | $0.001 | open interest history             |
-| `/v1/pm/polymarket/uma/markets`                      | $0.001 | `state`, `limit`, `offset`              |
-| `/v1/pm/polymarket/uma/market/{conditionId}`         | $0.001 | —                                       |
-| **Polymarket — Tier 2 wallet analytics** | | |
-| `/v1/pm/polymarket/wallet/{wallet}`                  | $0.005 | —                                       |
-| `/v1/pm/polymarket/wallet/{wallet}/markets`          | $0.005 | `limit`                                 |
-| `/v1/pm/polymarket/wallet/{wallet}/similar`          | $0.005 | —                                       |
-| `/v1/pm/polymarket/wallet/pnl/{wallet}`              | $0.005 | —                                       |
-| `/v1/pm/polymarket/wallet/positions/{wallet}`        | $0.005 | —                                       |
-| `/v1/pm/polymarket/wallet/volume-chart/{wallet}`     | $0.005 | —                                       |
-| `/v1/pm/polymarket/wallets/profiles`                 | $0.005 | `wallets` (comma-separated)             |
-| `/v1/pm/polymarket/wallets/filter`                   | $0.005 | `conditionId`, `side`                   |
-| `/v1/pm/polymarket/market/{conditionId}/smart-money` | $0.005 | `limit`                                 |
-| `/v1/pm/polymarket/markets/smart-activity`           | $0.005 | `limit`                                 |
-| **Polymarket — Wallet identity (v2 path shapes)** | | |
-| `/v1/pm/polymarket/wallet/identity/{wallet}`         | $0.005 | path param (was `?wallet=` in v1)       |
-| **POST** `/v1/pm/polymarket/wallet/identities`       | $0.005 | body: `{addresses: [..]}` (≤200)        |
-| `/v1/pm/polymarket/wallet/{address}/cluster`         | $0.005 | path param (was `?wallet=` in v1)       |
-| **Kalshi (Tier 1)** | | |
-| `/v1/pm/kalshi/markets`                              | $0.001 | `search`, `limit`                       |
-| `/v1/pm/kalshi/trades`                               | $0.001 | `limit`                                 |
-| `/v1/pm/kalshi/orderbooks`                           | $0.001 | `marketId`                              |
-| **Limitless / Opinion / Predict.Fun (Tier 1)** | | |
-| `/v1/pm/limitless/markets`                           | $0.001 | `search`, `limit`, `offset`, `status`   |
-| `/v1/pm/limitless/orderbooks`                        | $0.001 | `marketId`                              |
-| `/v1/pm/opinion/markets`                             | $0.001 | `search`, `limit`, `offset`, `status`   |
-| `/v1/pm/opinion/orderbooks`                          | $0.001 | `marketId`                              |
-| `/v1/pm/predictfun/markets`                          | $0.001 | `search`, `limit`, `offset`, `status`   |
-| `/v1/pm/predictfun/orderbooks`                       | $0.001 | `marketId`                              |
-| **dFlow** | | |
-| `/v1/pm/dflow/trades`                                | $0.001 | `wallet`, `limit`                       |
-| `/v1/pm/dflow/wallet/positions/{wallet}`             | $0.005 | —                                       |
-| `/v1/pm/dflow/wallet/pnl/{wallet}`                   | $0.005 | —                                       |
-| **Binance Futures (Tier 2)** | | |
-| `/v1/pm/binance/candles/{symbol}`                    | $0.005 | `interval`, `limit`                     |
-| `/v1/pm/binance/ticks/{symbol}`                      | $0.005 | `limit`                                 |
-| **Matching (Tier 2)** | | |
-| `/v1/pm/matching-markets`                            | $0.005 | `limit`, `offset`                       |
-| `/v1/pm/matching-markets/pairs`                      | $0.005 | —                                       |
-| `/v1/pm/markets/search`                              | $0.005 | `q` (required), `limit`, `offset`, `venue` |
+| Endpoint                                                | Price  | Key params                                 |
+| ------------------------------------------------------- | ------ | ------------------------------------------ |
+| **Cross-venue canonical (v2)**                          |        |                                            |
+| `/v1/pm/markets`                                        | $0.001 | filtering, sorting, pagination             |
+| `/v1/pm/markets/listings`                               | $0.001 | flattened venue listings                   |
+| `/v1/pm/outcomes/{predexon_id}`                         | $0.001 | resolve canonical outcome → venues         |
+| **Sports (v2)**                                         |        |                                            |
+| `/v1/pm/sports/categories`                              | $0.001 | —                                          |
+| `/v1/pm/sports/markets`                                 | $0.001 | grouped by game                            |
+| `/v1/pm/sports/markets/{game_id}`                       | $0.001 | single game with all venue outcomes        |
+| `/v1/pm/sports/outcomes/{predexon_id}`                  | $0.001 | equivalent outcomes across venues          |
+| **Polymarket — Tier 1**                                 |        |                                            |
+| `/v1/pm/polymarket/events`                              | $0.001 | `limit`, `offset`, `tag`                   |
+| `/v1/pm/polymarket/events/keyset`                       | $0.001 | cursor-based pagination                    |
+| `/v1/pm/polymarket/markets`                             | $0.001 | `search`, `limit`, `offset`                |
+| `/v1/pm/polymarket/markets/keyset`                      | $0.001 | cursor-based pagination                    |
+| `/v1/pm/polymarket/crypto-updown`                       | $0.001 | —                                          |
+| `/v1/pm/polymarket/leaderboard`                         | $0.001 | `limit`, `offset`                          |
+| `/v1/pm/polymarket/leaderboard/market/{conditionId}`    | $0.001 | `limit`                                    |
+| `/v1/pm/polymarket/market/{conditionId}/top-holders`    | $0.001 | `limit`                                    |
+| `/v1/pm/polymarket/cohorts/stats`                       | $0.001 | —                                          |
+| `/v1/pm/polymarket/positions`                           | $0.001 | `wallet`, `limit`                          |
+| `/v1/pm/polymarket/trades`                              | $0.001 | `wallet`, `limit`, `start_ts`, `end_ts`    |
+| `/v1/pm/polymarket/activity`                            | $0.001 | `user`                                     |
+| `/v1/pm/polymarket/orderbooks`                          | $0.001 | `tokenId`, `limit`                         |
+| `/v1/pm/polymarket/market-price/{tokenId}`              | $0.001 | `startTs`, `endTs`                         |
+| `/v1/pm/polymarket/candlesticks/{conditionId}`          | $0.001 | `period`, `limit`                          |
+| `/v1/pm/polymarket/candlesticks/token/{tokenId}`        | $0.001 | `period`, `limit`                          |
+| `/v1/pm/polymarket/volume-chart/{conditionId}`          | $0.001 | —                                          |
+| `/v1/pm/polymarket/markets/{tokenId}/volume`            | $0.001 | cumulative volume                          |
+| `/v1/pm/polymarket/markets/{conditionId}/open_interest` | $0.001 | open interest history                      |
+| `/v1/pm/polymarket/uma/markets`                         | $0.001 | `state`, `limit`, `offset`                 |
+| `/v1/pm/polymarket/uma/market/{conditionId}`            | $0.001 | —                                          |
+| **Polymarket — Tier 2 wallet analytics**                |        |                                            |
+| `/v1/pm/polymarket/wallet/{wallet}`                     | $0.005 | —                                          |
+| `/v1/pm/polymarket/wallet/{wallet}/markets`             | $0.005 | `limit`                                    |
+| `/v1/pm/polymarket/wallet/{wallet}/similar`             | $0.005 | —                                          |
+| `/v1/pm/polymarket/wallet/pnl/{wallet}`                 | $0.005 | —                                          |
+| `/v1/pm/polymarket/wallet/positions/{wallet}`           | $0.005 | —                                          |
+| `/v1/pm/polymarket/wallet/volume-chart/{wallet}`        | $0.005 | —                                          |
+| `/v1/pm/polymarket/wallets/profiles`                    | $0.005 | `wallets` (comma-separated)                |
+| `/v1/pm/polymarket/wallets/filter`                      | $0.005 | `conditionId`, `side`                      |
+| `/v1/pm/polymarket/market/{conditionId}/smart-money`    | $0.005 | `limit`                                    |
+| `/v1/pm/polymarket/markets/smart-activity`              | $0.005 | `limit`                                    |
+| **Polymarket — Wallet identity (v2 path shapes)**       |        |                                            |
+| `/v1/pm/polymarket/wallet/identity/{wallet}`            | $0.005 | path param (was `?wallet=` in v1)          |
+| **POST** `/v1/pm/polymarket/wallet/identities`          | $0.005 | body: `{addresses: [..]}` (≤200)           |
+| `/v1/pm/polymarket/wallet/{address}/cluster`            | $0.005 | path param (was `?wallet=` in v1)          |
+| **Kalshi (Tier 1)**                                     |        |                                            |
+| `/v1/pm/kalshi/markets`                                 | $0.001 | `search`, `limit`                          |
+| `/v1/pm/kalshi/trades`                                  | $0.001 | `limit`                                    |
+| `/v1/pm/kalshi/orderbooks`                              | $0.001 | `marketId`                                 |
+| **Limitless / Opinion / Predict.Fun (Tier 1)**          |        |                                            |
+| `/v1/pm/limitless/markets`                              | $0.001 | `search`, `limit`, `offset`, `status`      |
+| `/v1/pm/limitless/orderbooks`                           | $0.001 | `marketId`                                 |
+| `/v1/pm/opinion/markets`                                | $0.001 | `search`, `limit`, `offset`, `status`      |
+| `/v1/pm/opinion/orderbooks`                             | $0.001 | `marketId`                                 |
+| `/v1/pm/predictfun/markets`                             | $0.001 | `search`, `limit`, `offset`, `status`      |
+| `/v1/pm/predictfun/orderbooks`                          | $0.001 | `marketId`                                 |
+| **dFlow**                                               |        |                                            |
+| `/v1/pm/dflow/trades`                                   | $0.001 | `wallet`, `limit`                          |
+| `/v1/pm/dflow/wallet/positions/{wallet}`                | $0.005 | —                                          |
+| `/v1/pm/dflow/wallet/pnl/{wallet}`                      | $0.005 | —                                          |
+| **Binance Futures (Tier 2)**                            |        |                                            |
+| `/v1/pm/binance/candles/{symbol}`                       | $0.005 | `interval`, `limit`                        |
+| `/v1/pm/binance/ticks/{symbol}`                         | $0.005 | `limit`                                    |
+| **Matching (Tier 2)**                                   |        |                                            |
+| `/v1/pm/matching-markets`                               | $0.005 | `limit`, `offset`                          |
+| `/v1/pm/matching-markets/pairs`                         | $0.005 | —                                          |
+| `/v1/pm/markets/search`                                 | $0.005 | `q` (required), `limit`, `offset`, `venue` |
 
 ---
 

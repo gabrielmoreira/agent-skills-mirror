@@ -45,15 +45,15 @@ Before editing, identify the baseline checks that describe current behavior. Run
 | Duplicated logic across nearby code | Extract only when the shared behavior is truly the same concept. |
 | Comments explaining what obvious code does | Remove or replace with clearer code. Keep comments that explain why. |
 
-## Anti-Rationalization Table
+## Anti-Rationalization Deltas
 
-| Pattern | Why It Fails | Required Action |
-| ------- | ------------ | --------------- |
-| "It's just dead code" | Unused-looking code may be reached by configuration, generated inputs, migration paths, or external callers. | Prove it is unreachable with search, tests, or ownership evidence before removal. |
-| "A quick rewrite is faster than understanding" | Rewrites trade known behavior for unknown regressions and noisy review. | Understand the current contract, then make the smallest behavior-preserving change. |
-| "Fewer lines means simpler" | Dense code can be harder to inspect, debug, and modify. | Optimize for comprehension and reviewability, not line count. |
-| "I'll clean up nearby code while I'm here" | Drive-by refactors expand blast radius and obscure the requested change. | Keep the diff within the assigned surface; note unrelated cleanup separately. |
-| "Tests are unnecessary because behavior should not change" | Refactors fail silently when no baseline proves behavior stayed fixed. | Run existing checks before and after; add characterization tests when risk is real. |
+Apply the canonical Anti-Rationalization Table in `skills/patterns/llm-behavior-guidelines.md` for scope drift, adjacent cleanup, verification skips, and speculative abstractions. For simplification work, also enforce these local deltas:
+
+| Pattern | Required Action |
+| ------- | --------------- |
+| "It's just dead code" | Prove it is unreachable with search, tests, or ownership evidence before removal. |
+| "A quick rewrite is faster than understanding" | Explain the current contract, then make the smallest behavior-preserving change. |
+| "Fewer lines means simpler" | Optimize for comprehension and reviewability, not line count. |
 
 ## Stop Conditions
 

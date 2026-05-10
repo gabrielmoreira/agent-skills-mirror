@@ -44,7 +44,7 @@ function getApiKey(): string | null {
 }
 
 export function buildMinimaxUrl(): string {
-  const base = (process.env.MINIMAX_BASE_URL || "https://api.minimax.io").replace(/\/+$/g, "");
+  const base = (process.env.MINIMAX_BASE_URL || "https://api.minimaxi.com").replace(/\/+$/g, "");
   return base.endsWith("/v1") ? `${base}/image_generation` : `${base}/v1/image_generation`;
 }
 
@@ -197,7 +197,7 @@ export async function generateImage(
 ): Promise<Uint8Array> {
   const apiKey = getApiKey();
   if (!apiKey) {
-    throw new Error("MINIMAX_API_KEY is required. Get one from https://platform.minimax.io/");
+    throw new Error("MINIMAX_API_KEY is required. Get one from https://platform.minimaxi.com/");
   }
 
   const body = await buildRequestBody(prompt, model, args);

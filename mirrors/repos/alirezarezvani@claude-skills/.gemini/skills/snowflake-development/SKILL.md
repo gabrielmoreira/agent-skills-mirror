@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/snowflake-development/../../../engineering-team/snowflake-development/skills/snowflake-development/SKILL.md

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,17 +61,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`skills/claw-orchestrator/SKILL.md`](skills/claw-orchestrator/SKILL.md) |
-| 3 | ✓ | [`skills/references/claude-cli-tracking.md`](skills/references/claude-cli-tracking.md) |
-| 4 | ✓ | [`skills/references/cli.md`](skills/references/cli.md) |
-| 5 | ✓ | [`skills/references/council.md`](skills/references/council.md) |
-| 6 | ✓ | [`skills/references/getting-started.md`](skills/references/getting-started.md) |
-| 7 | ✓ | [`skills/references/inbox.md`](skills/references/inbox.md) |
-| 8 | ✓ | [`skills/references/multi-engine.md`](skills/references/multi-engine.md) |
-| 9 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
-| 10 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
-| 11 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
-| 12 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
-| 13 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 3 | ✓ | [`skills/references/autoloop.md`](skills/references/autoloop.md) |
+| 4 | ✓ | [`skills/references/claude-cli-tracking.md`](skills/references/claude-cli-tracking.md) |
+| 5 | ✓ | [`skills/references/cli.md`](skills/references/cli.md) |
+| 6 | ✓ | [`skills/references/council.md`](skills/references/council.md) |
+| 7 | ✓ | [`skills/references/getting-started.md`](skills/references/getting-started.md) |
+| 8 | ✓ | [`skills/references/inbox.md`](skills/references/inbox.md) |
+| 9 | ✓ | [`skills/references/multi-engine.md`](skills/references/multi-engine.md) |
+| 10 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
+| 11 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
+| 12 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
+| 13 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
+| 14 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
 
 ---
 

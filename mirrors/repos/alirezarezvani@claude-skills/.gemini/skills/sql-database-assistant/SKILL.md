@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/sql-database-assistant/../../../engineering/skills/sql-database-assistant/SKILL.md

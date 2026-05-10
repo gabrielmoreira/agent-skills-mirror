@@ -263,6 +263,9 @@ Use `_common/SUBAGENT.md` `MULTI_ENGINE` when the user explicitly wants parallel
 | `references/feature-ideation-anti-patterns.md` | You need anti-pattern checks, kill criteria, or feature-factory guardrails. |
 | `references/lean-validation-techniques.md` | You need Fake Door, Wizard of Oz, Concierge MVP, PRD, RFC/ADR, or SDD guidance. |
 | `references/outcome-roadmapping-alignment.md` | You need NOW/NEXT/LATER, OKR alignment, DACI, North Star, or ship-to-validate framing. |
+| `references/opportunity-sizing.md` | You need TAM/SAM/SOM sizing, reach × impact × confidence in RICE-compatible units, WTP signal tiers, or OST placement (the `opportunity` recipe). |
+| `references/kill-criteria-sunset.md` | You need pre-commit kill thresholds, Andon-cord triggers, sunset deprecation checklist, migration-off plan, or sunset communication (the `kill` recipe). |
+| `references/feature-retrospective.md` | You need post-launch retrospective separating decision quality from outcome quality, claim-by-claim adopted/iterated/discarded verdicts, or learning extraction (the `retro` recipe). |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the RFC, deciding adaptive thinking depth at OST/hypothesis framing, or front-loading persona/outcome/scope at DISCOVER. Critical for Spark: P3, P5. |
 
 ## Operational

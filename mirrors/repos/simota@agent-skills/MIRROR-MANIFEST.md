@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `simota/agent-skills` — 26 default patterns, 3 followed patterns, 140 file(s) materialized.
+Mirror of `simota/agent-skills` — 26 default patterns, 0 followed patterns, 137 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `simota/agent-skills` — 26 default patterns, 3 followed patterns, 14
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 140 |
+| Followed pats | 0 |
+| Files         | 137 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,9 +51,7 @@ Mirror of `simota/agent-skills` — 26 default patterns, 3 followed patterns, 14
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `_common/BOUNDARIES.md`
-- `_common/OPERATIONAL.md`
-- `_common/OPUS_47_AUTHORING.md`
+_None._
 
 ## File Index
 
@@ -198,9 +196,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 135 | ✓ | [`weave/SKILL.md`](weave/SKILL.md) |
 | 136 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
 | 137 | ✓ | [`zine/SKILL.md`](zine/SKILL.md) |
-| 138 | → | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) |
-| 139 | → | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) |
-| 140 | → | [`_common/OPUS_47_AUTHORING.md`](_common/OPUS_47_AUTHORING.md) |
 
 ---
 

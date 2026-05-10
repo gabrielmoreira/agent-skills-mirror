@@ -207,6 +207,9 @@ Every deliverable must include:
 | `references/monorepo-guide.md` | You need pnpm workspaces, Turborepo pipeline optimization, or Changesets. |
 | `references/troubleshooting.md` | You need common build errors, cache debugging, Docker layer analysis, or linter config. |
 | `references/nexus-integration.md` | You need AUTORUN support, Nexus Hub Mode, or handoff formats. |
+| `references/alert-configuration.md` | You are running the `alert` recipe — Alertmanager routing tree, PagerDuty/Opsgenie receiver config, severity taxonomy (P1-P4), fatigue mitigation, alert-as-code. |
+| `references/secrets-management.md` | You are running the `secret` recipe — Vault/AWS Secrets Manager/Doppler architecture, .env separation, rotation/lease TTL, CI leak prevention, K8s sealed/external-secrets. |
+| `references/kubernetes-config.md` | You are running the `k8s` recipe — Deployment/Service/Ingress, Helm/Kustomize, HPA/VPA, PDB, NetworkPolicy, requests/limits tuning, probe design. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the Gear deliverable, deciding adaptive thinking depth at supply-chain hardening, or front-loading ecosystem/runtime/scope at DIAGNOSE. Critical for Gear: P3, P5. |
 
 ## Operational

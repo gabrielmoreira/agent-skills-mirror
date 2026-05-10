@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/sample-skill/../../../engineering/skills/skill-tester/assets/sample-skill/SKILL.md

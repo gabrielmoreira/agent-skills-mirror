@@ -72,12 +72,13 @@ Use helpers for noisy plumbing, not for hiding the facts that make a case meanin
 
 Default to the smallest test that can prove the behavior. Larger tests are valuable when the behavior only exists across a real boundary, but they should not replace focused unit or contract coverage for logic that can be checked cheaply.
 
-## Test Anti-Rationalization Table
+## Test Anti-Rationalization Deltas
 
-| Pattern | Why It Fails | Required Action |
-| ------- | ------------ | --------------- |
-| Test the implementation directly | The test can pass while the public behavior is broken, and it becomes fragile during refactors. | Assert through the behavior boundary the caller actually uses. |
-| Skip tests because the change is small | Small changes still create regressions, especially in validators, prompts, and edge cases. | Add the smallest meaningful guard or explain the verified existing coverage. |
-| Mock everything | Over-mocking proves interactions with doubles instead of behavior in the system. | Use real code or lightweight fakes unless the dependency is slow, unstable, or unsafe. |
-| Test passes locally so it's fine | Local success can miss order dependence, schema drift, and broader regressions. | Run the targeted test and the required suite for the change scope. |
-| Assert only that nothing throws | The test may ignore the output, state change, or contract that actually matters. | Assert the observable result that would fail if the behavior regressed. |
+Apply the canonical Anti-Rationalization Table in `skills/patterns/llm-behavior-guidelines.md` for broad scope and verification excuses. For tests, also enforce these local deltas:
+
+| Pattern | Required Action |
+| ------- | --------------- |
+| Test the implementation directly | Assert through the behavior boundary the caller actually uses. |
+| Skip tests because the change is small | Add the smallest meaningful guard or explain the verified existing coverage. |
+| Mock everything | Use real code or lightweight fakes unless the dependency is slow, unstable, or unsafe. |
+| Assert only that nothing throws | Assert the observable result that would fail if the behavior regressed. |

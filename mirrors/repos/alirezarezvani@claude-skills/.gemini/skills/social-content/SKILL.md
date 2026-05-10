@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/social-content/../../../marketing-skill/skills/social-content/SKILL.md

@@ -29,6 +29,7 @@ Execute by naming the workflow in your prompt. Keywords are auto-detected via ho
 | brainstorm | `brainstorm.md` | Design-first ideation |
 | review | `review.md` | QA audit |
 | debug | `debug.md` | Root cause + minimal fix |
+| deepsec | `deepsec.md` | Drive `oma-deepsec` end-to-end (setup / scan / pr-review / matchers / triage) |
 | scm | `scm.md` | SCM + Git operations + Conventional Commits |
 
 To execute: read and follow `.agents/workflows/{name}.md` step by step.
@@ -52,17 +53,17 @@ Read the relevant file from `.agents/rules/` when working on matching code.
 
 | Rule | File | Scope |
 |------|------|-------|
-| debug | `.agents/rules/debug.md` | on request |
-| quality | `.agents/rules/quality.md` | on request |
-| i18n-guide | `.agents/rules/i18n-guide.md` | always |
 | backend | `.agents/rules/backend.md` | on request |
-| frontend | `.agents/rules/frontend.md` | **/*.{tsx,jsx,css,scss} |
-| design | `.agents/rules/design.md` | on request |
 | commit | `.agents/rules/commit.md` | on request |
-| infrastructure | `.agents/rules/infrastructure.md` | **/*.{tf,tfvars,hcl} |
-| dev-workflow | `.agents/rules/dev-workflow.md` | on request |
-| mobile | `.agents/rules/mobile.md` | **/*.{dart,swift,kt} |
 | database | `.agents/rules/database.md` | **/*.{sql,prisma} |
+| debug | `.agents/rules/debug.md` | on request |
+| design | `.agents/rules/design.md` | on request |
+| dev-workflow | `.agents/rules/dev-workflow.md` | on request |
+| frontend | `.agents/rules/frontend.md` | **/*.{tsx,jsx,css,scss} |
+| i18n-guide | `.agents/rules/i18n-guide.md` | always |
+| infrastructure | `.agents/rules/infrastructure.md` | **/*.{tf,tfvars,hcl} |
+| mobile | `.agents/rules/mobile.md` | **/*.{dart,swift,kt} |
+| quality | `.agents/rules/quality.md` | on request |
 
 <!-- OMA:END -->
 

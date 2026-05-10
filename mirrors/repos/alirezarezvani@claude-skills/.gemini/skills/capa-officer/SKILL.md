@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/capa-officer/../../../ra-qm-team/skills/capa-officer/SKILL.md

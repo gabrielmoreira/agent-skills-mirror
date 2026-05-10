@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/database-schema-designer/../../../engineering/skills/database-schema-designer/SKILL.md

@@ -190,6 +190,16 @@ Two flag groups:
   CSV. All four flags already exist on `screen_parabolic.py` —
   the runbook does not need a source patch.
 
+> Earnings-aware behavior: in addition to the forward-looking hard
+> blackout above, `--earnings-catalyst-window-days` (default 10 trading
+> days) attaches a **soft** `recent_earnings_catalyst` warning to any
+> candidate that reported earnings within the window. Smoke runs leave
+> this at the default — the warning is informational and does not gate
+> survival. To suppress it for a regression diff against pre-earnings-fix
+> output, set a **negative value** (e.g. `-1`): the screener compares
+> `trading_days_since_earnings <= window`, so `0` still fires for same-day
+> earnings while a negative window can never match.
+
 Expected: `candidates` length ≥ 1 (near-certain on 8–10 mega-caps with
 all gates relaxed). If 0, the rejection logic itself is buggy or the
 relaxed CSV is stale (re-curate the CSV — see Pitfall #5).

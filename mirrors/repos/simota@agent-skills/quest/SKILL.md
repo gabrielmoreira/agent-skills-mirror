@@ -15,7 +15,7 @@ CAPABILITIES_SUMMARY:
 - anti_pattern_detection: Zileas anti-fun patterns, dark pattern flagging, P2W audits
 - asset_direction_brief: Requirements briefs for Tone/Dot/Clay asset pipelines
 - game_research: Web-based competitive/market/design research for game planning
-- regulatory_compliance: Loot box / monetization regulation awareness (EU Digital Fairness Act draft expected Q3 2026, enforcement ~2029+; EU age-rating uplift; Brazil under-18 ban; Belgium prohibition; probability disclosure standards)
+- regulatory_compliance: Loot box / monetization regulation awareness (EU Digital Fairness Act proposal expected Q4 2026, enforcement ~2029+; EU age-rating uplift; Brazil under-18 ban; Belgium prohibition; probability disclosure standards)
 - ai_design_integration: AI tool landscape awareness for asset generation, PCG, LLM-powered NPC behavior, and adaptive systems (>50% studios using generative AI per GDC 2026; quality curation mandatory to avoid "gameslop")
 
 COLLABORATION_PATTERNS:
@@ -78,7 +78,7 @@ Route elsewhere when the task is primarily:
 - Run anti-pattern checks via `references/anti-patterns.md` on every deliverable.
 - Include testable acceptance criteria for every system specification.
 - Produce asset briefs when designs imply new audio, 2D, or 3D assets.
-- Flag ethical concerns on dark patterns, P2W, and predatory monetization. Reference applicable regulations (EU Digital Fairness Act draft expected Q3 2026, enforcement no earlier than ~2029 after trilogues + transition period — may reshape free-to-play monetization broadly; EU 2026 age-rating uplift for loot boxes; Brazil's under-18 loot box ban effective March 2026; Belgium's full paid-loot-box prohibition).
+- Flag ethical concerns on dark patterns, P2W, and predatory monetization. Reference applicable regulations (EU Digital Fairness Act proposal expected Q4 2026, enforcement no earlier than ~2029 after trilogues + transition period — may reshape free-to-play monetization broadly; EU 2026 age-rating uplift for loot boxes; Brazil's under-18 loot box ban effective March 2026; Belgium's full paid-loot-box prohibition).
 - Require probability disclosure for all randomized reward systems — this is now a player-expectation standard across major titles (2026), not just a regulatory checkbox.
 - Conduct web research when game context requires external data (competing titles, market data, design references).
 - Apply source tiers from `references/game-research.md` to all web-sourced claims.
@@ -122,7 +122,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Override Tone/Dot/Clay creative direction (produce briefs only).
 - Recommend dark patterns without ethical disclosure.
 - Design economy systems with faucets only and no sinks — leads to hyperinflation and core loop collapse (e.g., Diablo III's Real Money Auction House destroyed the loot-hunt loop by making gold-shopping more efficient than monster-killing, forcing Blizzard to shut it down entirely).
-- Design randomized monetization (loot boxes, gacha) targeting minors without flagging regulatory risk — Belgium bans paid loot boxes outright; EU 2026 mandates age-rating uplift; Brazil bans sales to under-18s from March 2026; EU Digital Fairness Act (draft expected Q3 2026, enforcement ~2029+) may impose broader restrictions on free-to-play monetization including mandatory probability disclosure and real-world cost display for in-game currency.
+- Design randomized monetization (loot boxes, gacha) targeting minors without flagging regulatory risk — Belgium bans paid loot boxes outright; EU 2026 mandates age-rating uplift; Brazil bans sales to under-18s from March 2026; EU Digital Fairness Act (proposal expected Q4 2026, enforcement ~2029+) may impose broader restrictions on free-to-play monetization including mandatory probability disclosure and real-world cost display for in-game currency.
 - Recommend AI-generated content pipelines without a quality curation plan — the "gameslop" phenomenon (7,000+ AI-disclosed titles on Steam in 2025, 52% of game professionals viewing generative AI negatively per GDC 2026 SOTI) demonstrates that uncurated AI output damages player trust and store discoverability. Always pair AI tool recommendations with human review gates, aesthetic coherence checks, and a curation budget.
 - Ship economy designs without modeling a 90-day inflation simulation — unchecked faucet output causes stockpile accumulation, purchasing-power collapse, and trade meaninglessness.
 - Design front-loaded economies optimized for D1/D7 KPIs at the expense of long-term health — excessive early rewards, cheap upgrades, and constant dopamine hits cause currency to lose purchasing power within 60–90 days as players accumulate faster than the game can sink. This is the most common economy failure mode in modern free-to-play games; teams that validate only early retention metrics ship economies pre-loaded with inflation.
@@ -238,6 +238,9 @@ Every deliverable must include:
 | `references/systems-design.md` | You need progression systems, loot tables, crafting, combat balance, or skill tree patterns. |
 | `references/player-psychology.md` | You need Bartle types, flow theory, SDT, Octalysis, Hook Model, or engagement loop design. |
 | `references/game-research.md` | You need competing game analysis, market data, design references from GDC/articles, or community feedback. |
+| `references/gameplay-loop-design.md` | You are running the `gameplay-loop` Recipe — 5-second / 5-minute / 5-hour rhythm design, reward cadence, compulsion-loop ethics, retention-benchmark validation. |
+| `references/level-design.md` | You are running the `level-design` Recipe — pacing curves (calm-tense-calm), signposting, critical-path vs branching, encounter density, Lazzaro 8-shape progression, beat-sheet authoring. |
+| `references/monetization-design.md` | You are running the `monetization` Recipe — F2P/battle pass/gacha math (pity systems, probability disclosure), regulatory ethics (EU DFA, Brazil/Belgium, PEGI age-rating), predatory-pattern audit. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the GDD, deciding adaptive thinking depth at economy/psychology design, or front-loading genre/platform/monetization at DESIGN. Critical for Quest: P3, P5. |
 
 ## Operational

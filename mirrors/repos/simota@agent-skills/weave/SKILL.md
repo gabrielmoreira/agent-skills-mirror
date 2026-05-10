@@ -410,6 +410,9 @@ WEAVE_TO_BUILDER_HANDOFF:
 | `references/event-driven-workflows.md` | Event Sourcing / CQRS / Process Manager / Outbox / DLQ / idempotency patterns |
 | `references/examples.md` | Output examples for order flow, travel-booking Saga, expense approval, subscription, and more |
 | `references/handoffs.md` | All handoff templates (Inbound: User / Scribe / Atlas / Nexus; Outbound: Builder / Canvas / Radar / Scribe / Judge) |
+| `references/retry-state-machine.md` | Retry state-machine design — exponential backoff, jitter (full / equal / decorrelated), max-attempt cap, DLQ as terminal state, retriable-vs-non-retriable error classification, idempotency-key contract |
+| `references/timeout-ttl-design.md` | TTL / deadline / expiry state design — per-state timeout from business SLA, deadline propagation, grace-period transitions, soft-vs-hard timeout, stuck-state recovery |
+| `references/compensation-transactions.md` | Saga per-forward-step compensation — idempotency keys, LIFO ordering, compensation-of-compensation, failure-of-compensation escalation |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the design document, deciding adaptive thinking depth at VALIDATE/engine selection, or front-loading use case/scale/engine requirements at CAPTURE. Critical for Weave: P3, P5. |
 
 ---

@@ -480,10 +480,11 @@ Choose the action that matches your role:
 | Pattern | Name | Flow | Purpose |
 |---------|------|------|---------|
 | **A** | Persona Pipeline | Cast → Plea → Spark | Personas to demands to proposals |
-| **B** | Demand-Validation | Plea ↔ Echo | Demand generation ↔ existing flow verification |
-| **C** | Reality Calibration | Voice → Plea | Calibrate synthetic demands with real feedback |
-| **D** | Requirement Enrichment | Plea → Accord | Integrate demands into spec packages |
-| **E** | Priority Advocacy | Plea → Rank | Feed user-felt urgency into priority scoring |
+| **B** | Priority Advocacy | Plea → Rank | Feed user-felt urgency into priority scoring |
+| **C** | Demand-Validation | Plea ↔ Echo | Demand generation ↔ existing flow verification |
+| **D** | Reality Calibration | Voice → Plea | Calibrate synthetic demands with real feedback |
+| **E** | Requirement Enrichment | Plea → Accord | Integrate demands into spec packages |
+| **F** | Research Grounding | Researcher → Plea | Generate demands grounded in real research findings |
 
 ### Handoff Patterns
 

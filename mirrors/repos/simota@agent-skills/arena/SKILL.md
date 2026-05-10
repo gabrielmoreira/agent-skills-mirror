@@ -11,7 +11,7 @@ CAPABILITIES_SUMMARY:
 - variant_management: Git branch isolation (arena/variant-{engine}) · comparative_evaluation (Correctness 40% / Quality 25% / Perf 15% / Safety 15% / Simplicity 5%)
 - automated_review: codex review for quality/safety · hybrid_selection (combine best elements when no winner)
 - team_orchestration: Agent Teams API parallel execution with subagent proxies
-- engine_optimization: codex (speed/algorithms, 192K context, sandbox-first), gemini (creativity/broad context, 1M context, Deep Think mode, Search grounding)
+- engine_optimization: codex (speed / algorithms, 192K context, sandbox-first; Codex CLI is a Rust-native rewrite delivered 2025-06 leading Terminal-Bench 2.0 at 77.3%), gemini (creativity / broad context, 1M context, Deep Think mode, Search grounding) [Source: Morph LLM — Terminal-Bench 2.0 Leaderboard](https://www.morphllm.com/terminal-bench-2)
 - quality_maximization: Competition-driven (COMPETE, ensemble consensus selection) / integration-driven (COLLABORATE)
 - self_competition: Same engine N-variants via approach hints / model variants / prompt verbosity · multi_variant_matrix (engine × approach)
 - auto_mode_selection: Auto Quick/Solo/Team · task_decomposition (engine-appropriate subtasks) · integration_workflow (merge with conflict resolution)

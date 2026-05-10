@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/competitive-intel/../../../c-level-advisor/skills/competitive-intel/SKILL.md

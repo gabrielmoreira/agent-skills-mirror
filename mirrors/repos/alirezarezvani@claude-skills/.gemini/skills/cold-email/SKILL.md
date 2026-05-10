@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cold-email/../../../marketing-skill/skills/cold-email/SKILL.md

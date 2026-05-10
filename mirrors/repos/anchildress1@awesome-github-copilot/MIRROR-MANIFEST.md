@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `anchildress1/awesome-github-copilot` — 26 default patterns, 1 followed patterns, 14 file(s) materialized.
+Mirror of `anchildress1/awesome-github-copilot` — 26 default patterns, 1 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anchildress1/awesome-github-copilot` — 26 default patterns, 1 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 14 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,7 +72,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`skills/eslint-plugin-configuring/reference/eslint-plugin-configs.md`](skills/eslint-plugin-configuring/reference/eslint-plugin-configs.md) |
 | 12 | ✓ | [`skills/eslint-plugin-configuring/reference/validation.md`](skills/eslint-plugin-configuring/reference/validation.md) |
 | 13 | ✓ | [`skills/eslint-plugin-configuring/SKILL.md`](skills/eslint-plugin-configuring/SKILL.md) |
-| 14 | → | [`docs/status-badge-lifecycle.md`](docs/status-badge-lifecycle.md) |
+| 14 | ✓ | [`skills/generate-commit-message/SKILL.md`](skills/generate-commit-message/SKILL.md) |
+| 15 | ✓ | [`skills/test-writer/SKILL.md`](skills/test-writer/SKILL.md) |
+| 16 | → | [`docs/status-badge-lifecycle.md`](docs/status-badge-lifecycle.md) |
 
 ---
 

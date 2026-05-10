@@ -162,14 +162,16 @@ A bounded list of specific anti-patterns that waste context tokens in agent file
 
 ---
 
-## Anti-Rationalization Table
+## Anti-Rationalization Table (Canonical)
 
-| Pattern | Why It Fails | Required Action |
-| ------- | ------------ | --------------- |
-| Assume the missing requirement because the likely answer is obvious | The assumption becomes hidden design input and may invalidate the handoff. | Surface the assumption or return `NEEDS_INPUT` when it changes scope, behavior, or file set. |
-| Add an abstraction because future tasks might need it | Untested flexibility increases maintenance cost and can mask the simple solution. | Build only the requested behavior, then note future options separately. |
-| Clean up adjacent code while editing nearby lines | Extra edits make review harder and can create scope drift unrelated to the assignment. | Limit changes to the delegated scope and report unrelated observations. |
-| Skip verification because the edit is prompt-only or documentation-only | Text changes still affect agent behavior, schema drift, and eval fixtures. | Run the smallest relevant gate and the required suite for the phase. |
+This is the shared contract for recurring rationalizations in ControlFlow skills. Skill-local anti-rationalization sections should keep only role-specific deltas and point here for the generic rule.
+
+| Pattern | Required Action |
+| ------- | --------------- |
+| Assume the missing requirement because the likely answer is obvious | Surface the assumption or return `NEEDS_INPUT` when it changes scope, behavior, or file set. |
+| Add an abstraction because future tasks might need it | Build only the requested behavior; record future options outside the implementation. |
+| Clean up adjacent code while editing nearby lines | Limit changes to delegated scope and report unrelated observations. |
+| Skip verification because the edit seems low-risk | Run the smallest relevant gate plus any suite required for the phase. |
 
 ---
 

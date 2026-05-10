@@ -265,6 +265,9 @@ When auditing observability for 4+ services, spawn 2–3 Explore subagents to sc
 | `references/incident-learning-postmortem.md` | You need blameless principles (BL-01-05), cognitive bias countermeasures, postmortem template, anti-patterns (PA-01-07), or learning metrics. |
 | `references/llm-observability.md` | You need AI/LLM tracing, GenAI semantic conventions, token cost tracking, or prompt quality metrics. |
 | `references/platform-observability.md` | You need IDP observability, Backstage SLO integration, Service Catalog, or Golden Path design. |
+| `references/golden-signals.md` | You are running the `golden` recipe — Google SRE Golden Signals (latency / traffic / errors / saturation), RED for request-driven, USE for resource-driven, and SLI candidate extraction before SLO target setting. |
+| `references/logging-design.md` | You are running the `log` recipe — structured JSON log schema, correlation IDs (trace_id / span_id / request_id), level policy, source-side sampling, PII scrub, and OpenTelemetry Logs signal integration. |
+| `references/toil-reduction.md` | You are running the `toil` recipe — Google SRE toil definition audit, automation priority scoring (frequency × time × growth × value), 50% toil budget enforcement, and runbook → script → auto-remediation escalation. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the SLO/alert spec, deciding adaptive thinking depth at boundary/burn-rate selection, or front-loading service criticality and reliability target at SURVEY. Critical for Beacon: P3, P5. |
 
 ## Operational

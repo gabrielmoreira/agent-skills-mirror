@@ -264,6 +264,12 @@ Gateway receives data models, implementation needs, and security requirements fr
 | `references/versioning-governance-anti-patterns.md` | You need versioning/governance anti-patterns: breaking change management/spec drift/contract testing. |
 | `references/graphql-spec-anti-patterns.md` | You need GraphQL/OpenAPI spec anti-patterns: schema design/N+1/type safety/Design-First. |
 | `references/ai-api-patterns.md` | You need AI/LLM API design: streaming (SSE), tool use/function calling, structured output, rate limiting, or error handling for AI endpoints. |
+| `references/rest-api-design.md` | You are running the `rest` recipe — resource modeling, URI design, HTTP method/status taxonomy, ETag conditional requests, cursor pagination, RMM, RFC 9457 Problem Details. |
+| `references/graphql-design.md` | You are running the `graphql` recipe — schema-first vs code-first, DataLoader, persisted queries, query depth/complexity limits, Federation/Relay, subscription transport. |
+| `references/webhook-design.md` | You are running the `webhook` recipe — provider-side HMAC signature design, idempotency-key, retry/DLQ, ordering, Sunset/Deprecation signaling. |
+| `references/api-auth-patterns.md` | You are running the `auth` recipe — OAuth 2.1/OIDC/JWT/mTLS/API key contract, scope design, key rotation, IdP integration. |
+| `references/rate-limit-patterns.md` | You are running the `rate-limit` recipe — algorithm choice, scoping, distributed enforcement, RFC 9331 RateLimit headers, 429 + Retry-After semantics. |
+| `references/deprecation-policy.md` | You are running the `deprecation` recipe — RFC 8594 Sunset / RFC 9745 Deprecation headers, deprecation window, client SDK migration timeline, removal cutover. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the API spec, deciding adaptive thinking depth at DESIGN, or front-loading consumer profile/version policy at SCAN. Critical for Gateway: P3, P5. |
 
 ## Operational

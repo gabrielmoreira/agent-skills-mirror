@@ -13,7 +13,7 @@ CAPABILITIES_SUMMARY:
 - reverse_feedback: Refine Guidelines from implementation feedback and code regression prevention
 - figma_structure_analysis: Analyze Figma file structure for Auto Layout, naming, hierarchy
 - code_connect_integration: Leverage Code Connect (CLI and UI) mappings and "Add instructions for MCP" to link Figma components with codebase implementations for higher-fidelity Make output
-- credit_budget_optimization: Optimize credit allocation across model tiers (default vs Claude Opus 4.6) based on task complexity
+- credit_budget_optimization: Optimize credit allocation across model tiers (default vs Claude Sonnet 4.6 vs Claude Opus 4.7 vs Gemini 3 Flash/3.1 Pro) based on task complexity
 - make_kit_awareness: Leverage Make kit ecosystem including auto-generated guidelines from design packages as a starting point
 - design_debt_detection: Detect unnamed layers, detached instances, inconsistent naming that degrade Make output
 - make_template_management: Create and manage Make templates as reusable starting points alongside Make kits
@@ -57,7 +57,7 @@ Use Loom when the task is to:
 - prepare MCP-aware Guidelines that leverage Figma Variables, design tokens, component properties, and Code Connect mappings
 - leverage Make kit auto-generated guidelines as a starting point and refine with codebase-specific rules
 - create or update Make templates for reusable starting points that complement Make kits
-- optimize credit budget across model tiers (Claude Opus 4.6 consumes significantly more credits than default models)
+- optimize credit budget across model tiers (Claude Opus 4.7 consumes substantially more credits than default models per Figma's documented model selection)
 
 Use `Muse` for token authority, `Frame` for Figma/MCP extraction, and `Artisan` for Make-to-production feedback.
 
@@ -204,7 +204,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Expect "vanilla" output from Make — explicitly prompt for brand identity, custom typography, and unique visual style to avoid the watered-down LLM-average look.
 - Guard against code regression: when enough functionality exists, each new feature prompt risks overwriting previous behaviors. Use explicit "preserve existing" constraints.
 - When a prompt fails, rephrase with spatial instructions — "move this element down 20 pixels" is more effective than "vertically align these two elements".
-- Budget prompts carefully — Professional ≈ 3,000, Organization ≈ 3,500, Enterprise ≈ 4,250 credits/seat/month (enforced since March 2026). Add-on packs: 5,000/$120, 7,500/$180, 10,000/$240/month. Pay-as-you-go: $0.03/credit with configurable spending limit. Claude Opus 4.6 consumes significantly more credits than default models; select model tier based on task complexity.
+- Budget prompts carefully — Professional ≈ 3,000, Organization ≈ 3,500, Enterprise ≈ 4,250 credits/seat/month (enforced since March 2026). Add-on packs: 5,000/$120, 7,500/$180, 10,000/$240/month. Pay-as-you-go: $0.03/credit with configurable spending limit. Available models include the Figma default plus Gemini 3 Flash, Gemini 3.1 Pro, Claude Sonnet 4.6, and Claude Opus 4.7. Per Figma's model documentation, non-default model credit consumption "may vary significantly" — Claude Opus 4.7 specifically uses substantially more credits per task than other available options. Select model tier based on task complexity.
 - Clean input frames before prompting: remove unnamed layers, ensure consistent naming, apply proper Auto Layout — dirty input degrades output quality.
 - Leverage Code Connect to link Figma components to codebase implementations — Make generates more accurate code when it can reference existing patterns.
 - Use Figma MCP Remote Access for CI/pipeline-driven Guidelines generation without requiring a desktop app.

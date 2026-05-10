@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/atlassian-templates/../../../project-management/skills/atlassian-templates/SKILL.md

@@ -135,7 +135,8 @@ Todos os agentes compartilham fundamentos comuns de `.agents/skills/_shared/`. E
 | **`vendor-detection.md`** | Protocolo para detectar o ambiente de execução atual (Claude Code, Codex CLI, Gemini CLI, Antigravity, CLI Fallback). Usa verificações de marcadores: Agent tool = Claude Code, apply_patch = Codex, @-syntax = Gemini. | No início do workflow |
 | **`session-metrics.md`** | Pontuação de Dívida de Clarificação (CD) e rastreamento de métricas de sessão. Define tipos de eventos (clarify +10, correct +25, redo +40), limiares (CD >= 50 = RCA, CD >= 80 = pausa) e pontos de integração. | Durante sessões de orquestração |
 | **`common-checklist.md`** | Checklist universal de qualidade aplicado na verificação final de tarefas Complexas (além dos checklists específicos do agente). | Etapa de Verificação de tarefas Complexas |
-| **`lessons-learned.md`** | Repositório de aprendizados de sessões passadas, auto-gerado a partir de violações de Dívida de Clarificação e experimentos descartados. Organizado por seção de domínio. | Referenciado após erros e no fim da sessão |
+| **`lessons-learned.md`** | Repositório de aprendizados de sessões passadas, auto-gerado a partir de violações de Dívida de Clarificação e experimentos descartados. Organizado por seção de domínio. Inclui Lições de Avaliação de QA para rastrear pontos cegos do avaliador. | Referenciado após erros e no fim da sessão |
+| **`evaluator-tuning.md`** | Protocolo semi-automatizado de tuning de prompt de QA. Rastreia eventos de Evaluation Accuracy (EA), aciona tuning quando EA >= 30, gera sugestões de patch para checklists e protocolos de execução de QA. Inclui log de tuning e reforço positivo a partir de eventos `good_catch`. | Quando `oma retro` detecta violação do limiar de EA |
 | **`api-contracts/`** | Diretório contendo template de contrato de API e contratos gerados. `template.md` define o formato por endpoint (method, path, schemas de request/response, auth, erros). | Quando trabalho cross-boundary é planejado |
 
 ### Recursos de Runtime (`.agents/skills/_shared/runtime/`)
@@ -303,3 +304,93 @@ Quando o orquestrador compõe prompts para subagentes, inclui apenas recursos re
 5. Serena Memory Protocol (modo CLI)
 
 Esta composição direcionada evita carregar recursos desnecessários, maximizando o contexto disponível do subagente para trabalho real.
+
+---
+
+## Dívida de Clarificação e Métricas de Sessão (Aprofundado)
+
+A Dívida de Clarificação (CD) mede o custo de requisitos pouco claros durante uma sessão. O orquestrador rastreia cada correção do usuário e a pontua:
+
+| Tipo de Evento | Pontos | Descrição |
+|----------------|--------|-----------|
+| `clarify` | +10 | Pergunta simples de clarificação (esperada para incerteza MEDIUM) |
+| `correct` | +25 | Mal-entendido de intenção exigindo mudança de direção |
+| `redo` | +40 | Violação de escopo/charter exigindo rollback e reinício |
+| `blocked` | +0 | Agente parou corretamente e perguntou (bom comportamento — não penalizado) |
+
+**Modificadores:** Charter não lido (+15), violação de allowlist (+20), mesmo erro repetido (x1.5).
+
+**Limiares e enforcement:**
+- **CD >= 50** → Entrada RCA obrigatória adicionada a `lessons-learned.md`
+- **CD >= 80** → Sessão interrompida, usuário deve re-especificar requisitos
+- **`redo` >= 2** → Orquestrador pausa e solicita confirmação explícita de escopo
+- **CD >= 30 em 3 sessões consecutivas para o mesmo agente** → Revisão do template de prompt do agente
+
+O log de sessão é mantido em `.serena/memories/session-metrics.md` com linhas por evento (turno, agente, tipo de evento, pontos, detalhe) e uma seção de resumo.
+
+---
+
+## Evaluator Accuracy e Tuning de QA
+
+Agentes de QA melhoram através de erros de julgamento rastreados. Diferente de CD (em tempo real), Evaluator Accuracy (EA) é retrospectivo — a maioria dos erros é descoberta após o fim da sessão.
+
+**Tipos de eventos EA:**
+
+| Evento | Pontos | Quando Descoberto |
+|--------|--------|-------------------|
+| `false_negative` | +30 | Próxima sessão ou produção — bug que QA perdeu |
+| `false_positive` | +15 | Durante a sessão — agente de implementação refuta com sucesso o achado de QA |
+| `severity_mismatch` | +10 | Durante a sessão ou retro — severidade errada atribuída |
+| `missed_stub` | +20 | Verificação em runtime captura feature apenas de display |
+| `good_catch` | -10 | QA capturou um bug não óbvio (sinal de recompensa positiva) |
+
+**EA é calculado em uma janela móvel de 3 sessões.** Limiares:
+- **EA >= 30** → `oma retro` sinaliza padrões de QA para revisão (tuning sugerido)
+- **EA >= 50** → Tuning obrigatório: atualizar `execution-protocol.md` do QA
+- **`false_negative` >= 3** na janela → Adicionar padrão de detecção a `checklist.md` do QA
+- **`good_catch` >= 5** na janela → Documentar e propagar padrão bem-sucedido
+
+O loop completo de tuning é definido em `evaluator-tuning.md`: sessões acumulam eventos EA → limiar aciona `oma retro` → relatório categoriza erros e sugere patches → usuário revisa e aprova → patches aplicados ao checklist/protocolo do QA → validação ao longo das próximas 3 sessões.
+
+---
+
+## Decomposição em Sprints para Tarefas Complexas
+
+Tarefas complexas (4+ arquivos, decisões de arquitetura) usam execução baseada em sprints em vez de uma única execução longa:
+
+1. **Decomponha** em 2-4 sprints focados em features, cada um testável independentemente
+2. **Mire** 5-8 turnos por sprint
+3. **Sprint Gate** após cada sprint:
+   - Entregável do sprint completo?
+   - Lint/teste passa?
+   - Se o sprint levou 2x os turnos esperados → escreva checkpoint, informe o usuário
+4. **Continue** para o próximo sprint na aprovação do gate
+
+**Exemplo:** A tarefa "JWT auth + CRUD API + tests" decompõe em:
+- Sprint 1: Modelo de usuário + endpoints de auth (register/login)
+- Sprint 2: Endpoints CRUD + validação
+- Sprint 3: Testes + tratamento de erros
+
+**Recuperação de avaliação errada de dificuldade:** Se uma tarefa começou como Simples mas se prova mais complexa, o agente eleva para o protocolo Médio ou Complexo no meio da execução e registra a mudança no progresso.
+
+---
+
+## Protocolo de Reset de Contexto
+
+Agentes de longa duração degradam em qualidade conforme o contexto enche. O Orquestrador (não o próprio agente) monitora isso e aciona resets.
+
+**Condições de gatilho (Orquestrador verifica durante o monitoramento):**
+
+| Condição | Detecção | Ação |
+|----------|----------|------|
+| Esgotamento do orçamento de turnos | Agente consumiu >= 80% dos turnos esperados E critérios de aceitação < 50% completos | Reset de Contexto |
+| Estagnação de progresso | Sem atualização do arquivo de progresso por 3+ ciclos consecutivos de monitoramento | Reset de Contexto |
+| Saída superficial | Arquivo de resultado contém marcadores de stub ou placeholders TODO | Re-spawn com instrução explícita |
+
+**Procedimento de reset:**
+1. **Checkpoint** — Salvar o estado atual do agente (itens completos, itens restantes, decisões-chave)
+2. **Terminar** — Parar a execução atual do agente
+3. **Re-spawnar** — Iniciar um agente fresco com o checkpoint como contexto
+4. **Retomar** — Novo agente lê o checkpoint, continua apenas a partir dos itens restantes
+
+Para agentes standalone (sem Orquestrador), o Sprint Gate em `difficulty-guide.md` serve como rede de segurança — se um sprint leva 2x os turnos esperados, o agente escreve um checkpoint e informa o usuário.

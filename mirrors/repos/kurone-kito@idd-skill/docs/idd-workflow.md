@@ -36,7 +36,7 @@ you are reading this guide first, start at step 1.
 | File                                                       | Role                                                                   |
 | ---------------------------------------------------------- | ---------------------------------------------------------------------- |
 | `.github/instructions/idd-overview.instructions.md`        | Shared definitions, command sets, routing table, critique-pass mapping |
-| `.github/instructions/idd-discover.instructions.md`        | Find the next viable issue to start                                    |
+| `.github/instructions/idd-discover.instructions.md`        | Find the next viable issue and audit completed roadmaps                |
 | `.github/instructions/idd-claim.instructions.md`           | Run claim pre-checks and claim verification                            |
 | `.github/instructions/idd-work.instructions.md`            | Create the worktree, plan, implement, and self-review                  |
 | `.github/instructions/idd-pr-submit.instructions.md`       | Rebase, validate, push, open the PR, and wait for CI                   |
@@ -48,6 +48,8 @@ you are reading this guide first, start at step 1.
 | `.github/instructions/idd-pre-merge.instructions.md`       | F1–F2: resolve conflicts and verify all pre-merge conditions           |
 | `.github/instructions/idd-merge.instructions.md`           | F3–F5: execute the merge, clean up, and loop back to discover          |
 | `.github/instructions/idd-resume.instructions.md`          | Recover after a crash, timeout, or handoff                             |
+| `docs/idd-review-policy-profiles.md`                       | PR review policy profiles and customization surfaces                   |
+| `docs/idd-comment-minimization.md`                         | Post-merge comment minimization policy, commands, and experiment notes |
 
 ## Artifact taxonomy and ownership
 
@@ -67,20 +69,46 @@ ownership boundaries explicit:
   and usage. They should avoid duplicating long operational rules that
   belong in `.github/instructions/`.
 - **Native skill bundles**: `SKILL.md` bundles, when present, are
-  separate agent-native helpers such as `skills/issue-authoring/`. They
-  may reference the workflow docs and schemas, but they should not
-  duplicate or replace the exported IDD instruction template.
+  separate agent-native helpers such as `skills/issue-authoring/`. The
+  canonical source bundle in this repository stays under that path; when
+  adopters install it elsewhere, they should place the bundle in the
+  agent-specific skill directory their runtime reads. They may reference
+  the workflow docs and schemas, but they should not duplicate or
+  replace the exported IDD instruction template.
 
-Use `skills/issue-authoring/` when you need pre-IDD issue drafting or
-decomposition. Use `.github/instructions/*.instructions.md` after the
-issue set is approved and the normal Discover -> Claim -> Work loop
-should start. The canonical contract and schema for the native bundle
-live in `docs/issue-authoring-skill.md`.
+Use `skills/issue-authoring/` as the canonical source bundle when you
+need pre-IDD issue drafting or decomposition. Install copies of that
+bundle into the agent-specific skill directory your runtime reads, then
+use `.github/instructions/*.instructions.md` after the issue set is
+approved and the normal Discover -> Claim -> Work loop should start. The
+canonical contract and schema for the native bundle live in
+`docs/issue-authoring-skill.md`.
 
 The IDD workflow distributed from this repository is therefore an
 instruction template first. Native skills can sit beside it as helpers,
 but the synchronization contract for the portable workflow remains
 between the live `.github/instructions/` files and `idd-template/`.
+
+When an operator gives exactly one issue target, Discover can verify that
+target directly before Claim. The shortcut avoids broad roadmap
+enumeration, but it still applies targeted readiness checks and the A4
+viability gate before the normal A5 claim safety checks.
+
+## Roadmap completion audits
+
+Discover owns roadmap-level state. After it finds an open roadmap, it
+can audit whether all explicitly referenced child work is complete
+before selecting the next issue. Passing audits post a concise evidence
+summary and close the roadmap; failing audits either add/link
+autonomous follow-up issues or route human-dependent gaps to an explicit
+blocked or needs-decision state. Roadmap-level side effects still use a
+temporary claim on the roadmap issue itself, so concurrent agents do not
+close or edit the same roadmap at the same time.
+
+This audit intentionally lives before A2 rather than in F4. F4 is
+limited to the PR that just merged and the local cleanup for that child
+issue. F5 then loops back to Discover, where roadmap completion can be
+checked with the broader parent context.
 
 ## Copilot review instruction scope
 
@@ -101,6 +129,13 @@ Some older project text may still use "skill files" as shorthand for
 instructions, but the native skill bundle and execution instructions are
 related rather than interchangeable surfaces.
 
+## Review Policy Profiles
+
+The execution loop is cross-agent, while PR review policy is a
+repository choice. See
+[IDD review policy profiles](idd-review-policy-profiles.md) before
+customizing the default Copilot advisory behavior.
+
 ## Default PR policy: Copilot advisory review
 
 The core IDD flow is cross-agent, but this repository's distributed
@@ -113,8 +148,13 @@ in later PR phases.
   review state.
 - This dependency is on GitHub's review integration, not on every local
   agent using Copilot as its CLI.
-- Adopters who do not want that default PR policy should edit
-  `idd-review-fix.instructions.md` and `idd-merge.instructions.md`.
+- Adopters who do not want that default PR policy should choose another
+  review policy profile and follow
+  [IDD review policy profiles](idd-review-policy-profiles.md) for the
+  complete edit surface.
+- At minimum, update `idd-review-fix.instructions.md`,
+  `idd-pre-merge.instructions.md`, and `idd-merge.instructions.md`;
+  some profiles, such as `external-bot`, require additional files.
 
 Non-Copilot agents can still drive the workflow end to end, but they
 should expect those later phases to interact with Copilot as a GitHub
@@ -122,11 +162,17 @@ reviewer because that is part of this repository's current PR policy.
 
 ## Optional helper scripts
 
-The current workflow does not require helper scripts. Shell / `gh` /
-`jq` snippets in `.github/instructions/*.instructions.md` remain the
-canonical portable path for adopters.
+The current workflow does not require helper scripts for pre-merge
+gates. Shell / `gh` / `jq` snippets in
+`.github/instructions/*.instructions.md` remain the canonical portable
+path for adopters.
 
 See [IDD helper script evaluation](idd-helper-scripts.md) for the
-current inventory of high-friction query patterns, the reason helper
-scripts are not adopted yet, and the criteria for reconsidering optional
-read-only helpers later.
+current inventory of high-friction query patterns, the narrow
+post-merge cleanup helper that is adopted in this source repository, and
+the criteria for reconsidering additional optional helpers later.
+
+See [IDD comment minimization](idd-comment-minimization.md) for the
+post-merge cleanup helper, GraphQL fallback command shape, and merged-PR
+experiment for hiding completed feedback and stale operational markers
+without deleting the audit trail.

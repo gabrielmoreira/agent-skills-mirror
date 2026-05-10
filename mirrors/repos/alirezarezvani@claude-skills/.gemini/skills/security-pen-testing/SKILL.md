@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/security-pen-testing/../../../engineering-team/skills/security-pen-testing/SKILL.md

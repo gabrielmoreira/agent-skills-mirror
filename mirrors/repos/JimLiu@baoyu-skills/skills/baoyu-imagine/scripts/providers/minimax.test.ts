@@ -61,8 +61,11 @@ function makeArgs(overrides: Partial<CliArgs> = {}): CliArgs {
   };
 }
 
-test("MiniMax URL builder normalizes /v1 suffixes", (t) => {
-  useEnv(t, { MINIMAX_BASE_URL: "https://api.minimax.io" });
+test("MiniMax URL builder uses documented default and normalizes /v1 suffixes", (t) => {
+  useEnv(t, { MINIMAX_BASE_URL: null });
+  assert.equal(buildMinimaxUrl(), "https://api.minimaxi.com/v1/image_generation");
+
+  process.env.MINIMAX_BASE_URL = "https://api.minimax.io";
   assert.equal(buildMinimaxUrl(), "https://api.minimax.io/v1/image_generation");
 
   process.env.MINIMAX_BASE_URL = "https://proxy.example.com/custom/v1/";

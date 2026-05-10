@@ -123,7 +123,7 @@ Route elsewhere when:
 - Feature requires a custom native module beyond standard SDKs (e.g., third-party SDK with no Privacy Manifest).
 - iOS minimum version: iOS 17 default; iOS 16 acceptable; iOS 26+ if Liquid Glass / Foundation Models are required. iOS 15 needs explicit justification.
 - Android minimum API: API 28 default; API 31+ if Material You / SplashScreen / Photo Picker are required.
-- targetSdk 36 (Android) timing — when to migrate before Google Play mandate.
+- targetSdk 36 (Android) timing — Google Play mandates targetSdk 36 by 2026-08-31 for new apps and updates. Plan migration before that deadline.
 
 ```yaml
 questions:
@@ -223,7 +223,7 @@ DETECT → SCAFFOLD → IMPLEMENT → ADAPT → VERIFY
 | Build | Xcode 26 + xcodebuild + Swift Package Manager (Xcode 26 + iOS 26 SDK required from **2026-04-28**) | Gradle + Kotlin DSL + AGP; **16KB native libs required since 2025-11-01** |
 | CI | Xcode Cloud / Fastlane / GitHub Actions | Gradle + Fastlane / GitHub Actions |
 | Min-OS default | iOS 17 (recommended); iOS 16 acceptable | API 28 (Android 9) default; API 31+ if Material You / Photo Picker / SplashScreen API mandatory |
-| targetSdk (Android) | — | **35** mandatory since 2025-08-31; plan **36** during 2026 (edge-to-edge enforced, predictive back default ON, large-screen forced sw 600dp+) |
+| targetSdk (Android) | — | **35** mandatory since 2025-08-31; **36** mandatory by **2026-08-31** for new apps and updates on Google Play (edge-to-edge enforced, predictive back default ON, large-screen forced sw 600dp+); Wear OS / Android TV remain at API 35 |
 
 ---
 

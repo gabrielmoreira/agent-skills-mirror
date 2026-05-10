@@ -7,7 +7,7 @@ description: Songwriting agent for Suno AI that composes lyrics with metatags an
 CAPABILITIES_SUMMARY:
 - lyric_composition: Genre-aware songwriting with narrative arc, rhyme, meter, and emotional depth
 - suno_formatting: Metatag injection, structure tags, and constraint compliance across Suno V4/V4.5/V5/V5.5
-- style_prompt_design: Priority-weighted or conversational style prompt crafting (5-8 tags or prose, up to 1,000 chars on V4.5+)
+- style_prompt_design: Priority-weighted or conversational style prompt crafting (5-8 tags or prose; V4 = 200 char limit, V4.5 / V5 / V5.5 = 1,000 char limit per Suno API docs)
 - vocal_direction: Vocal style, gender, range, effect, and ad-lib tag selection
 - genre_adaptation: Genre-specific templates, idioms, and structural conventions (1,200+ genres)
 - iterative_refinement: Feedback-driven lyric revision with A/B variant generation

@@ -135,10 +135,8 @@ These guidelines are working if there are fewer unnecessary changes in diffs, fe
 - Before implementation, first confirm the target module, upstream and downstream dependencies, and the verification approach.
 - Prefer official SDKs when writing code.
 - Do not focus only on whether the feature works. It must also satisfy the corresponding language module's formatting, linting, type checking, static analysis, and testing requirements.
-- If the work is a bug fix, unit tests and integration tests are not required. If it is a complete feature request, unit tests are mandatory, and integration tests should also be added when feasible.
 - If it is a complete feature request or a complex bug, add logs at key points as much as reasonably possible to help with troubleshooting, but do not add excessive logging.
 
 ## Key Workflow Expectations
 
-1. If unit tests or integration tests are involved, assign the test scenarios and test code to a new subagent for execution. The subagent should report test results back to the main agent. If tests fail, the main agent should fix the issue and hand testing back to the subagent. Repeat this loop for up to 5 rounds. If tests still do not pass after 5 rounds, inform the user. In addition, if any local environment issue appears during testing, ask the user whether local dependencies should be installed. After the user agrees, install the required local environment automatically and continue testing.
-2. After the feature work and testing are completed, ask the user whether the local branch needs to be pushed. If the user requires a push, start a new subagent to execute the .codex\skills\astron-agent-pr-publishskill. After the push is completed, then ask the user whether the project needs to be redeployed. If the user confirms redeployment is needed, start a new subagent to execute the .codex/skills/astron-agent-server-deployskill.
+1. After the feature work and testing are completed, ask the user whether the local branch needs to be pushed. If the user requires a push, start a new subagent to execute the .codex\skills\astron-agent-pr-publish skill. After the push is completed, then ask the user whether the project needs to be redeployed. If the user confirms redeployment is needed, start a new subagent to execute the .codex\skills\astron-agent-server-deploy skill.

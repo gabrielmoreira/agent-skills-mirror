@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/runbook-generator/../../../engineering/skills/runbook-generator/SKILL.md

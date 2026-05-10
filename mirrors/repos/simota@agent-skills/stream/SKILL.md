@@ -238,6 +238,9 @@ Deliver:
 | `references/event-streaming-anti-patterns.md` | You need event-streaming anti-pattern IDs `ES-01..07`, Kafka ops guardrails, or outbox rules. |
 | `references/dbt-warehouse-anti-patterns.md` | You need warehouse anti-pattern IDs `DW-01..07`, layer rules, or semantic-layer thresholds. |
 | `references/data-observability-anti-patterns.md` | You need observability anti-pattern IDs `DO-01..07`, five-pillar thresholds, or data-contract guidance. |
+| `references/change-data-capture.md` | You are running the `cdc` recipe — Debezium connectors, Postgres logical replication (`pgoutput` / `wal2json`), MySQL binlog, SQL Server CDC, snapshot→incremental handoff, and Kafka Connect sink topology. |
+| `references/reverse-etl.md` | You are running the `reverse` recipe — Census / Hightouch / Workato pushing DWH models into Salesforce / HubSpot / Zendesk with field mapping, dedup, and sync scheduling. |
+| `references/data-quality.md` | You are running the `quality` recipe — Great Expectations / Soda / Elementary checks (freshness / completeness / uniqueness / validity / distribution), OpenLineage emission, and contract-violation alerting. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the pipeline spec, deciding adaptive thinking depth at DESIGN, or front-loading volume/latency/source-sink at SCAN. Critical for Stream: P3, P5. |
 
 ## AUTORUN Support

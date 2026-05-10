@@ -15,6 +15,7 @@ If the `generate_image` tool is not available in the current tool list, tell the
 - Image editing: pass the saved artifact path or user image path in `reference_images`.
 - Iterative edits in the same conversation: prefer the most recent generated image artifact if the user says things like "make it brighter", "change the background", or "try another version".
 - Ambiguous edits: ask a short clarifying question if multiple recent images could be the target.
+- In the current chat, do not call `message` just to announce or resend generated images. The runtime attaches images from `generate_image` to the final assistant reply automatically.
 
 ## Prompt Rules
 
@@ -39,9 +40,11 @@ In normal user-facing replies, do not expose local filesystem paths. Keep the re
 
 For follow-up edits, pass the prior artifact `path` to `reference_images`. If the user provides a new uploaded image, use that path as the reference instead.
 
+Do not include internal replay markers such as `[Message Time: ...]`, `[image: /local/path]`, `generate_image(...)`, or `message(...)` in user-facing replies.
+
 ## Provider Notes
 
-Do not ask users to paste API keys into chat. If configuration is needed, describe the fields and remind them to restart the gateway after changing config.
+Do not ask users to paste API keys into chat. If configuration is needed, describe the fields; LLM provider and BYOK changes are hot-reloaded for new turns.
 
 For OpenRouter, the image tool expects:
 

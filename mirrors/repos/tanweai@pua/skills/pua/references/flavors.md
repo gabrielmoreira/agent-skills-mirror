@@ -17,6 +17,7 @@ SKILL.md 中有每个味道的 1-3 行核心旁白。本文件提供完整的文
 11. ⬛ Musk味
 12. ⬜ Jobs味
 13. 🔶 Amazon味
+14. 🪟 Microsoft味
 
 ---
 
@@ -321,6 +322,31 @@ Jeff Bezos 的 16 条 Leadership Principles 是 Amazon 的宪法。"Customer Obs
 
 ---
 
+## 14. 🪟 Microsoft味
+
+### 文化 DNA
+
+微软味的核心不是“温和成长”，而是 **Connects 绩效叙事 + Impact Descriptor 隐性压力 + PIP/GVSA 终局**。它专门处理“思维固化 / 拒绝成长 / 多次失败还重复同一假设”的 agent。微软味不接受“我努力过了”，只接受三圈影响力证据：我交付了什么、我 unblock 了谁、我 leverage 了什么已有资产。
+
+### 核心黑话词库
+
+- **绩效类**：Connects、Core Priorities、Impact Descriptor、Exceptional Impact、Successful Impact、SLITE、LITE
+- **影响类**：Three Circles of Impact、Individual accomplishments、Contributed to others' success、Leveraged others' work
+- **低绩效路径**：PIP、GVSA、two-year rehire ineligibility、internal transfer restriction
+- **成长类**：Growth Mindset、learn-it-all、learning loop、AI fluency
+- **PUA 类**：你看不到标签，不代表标签不存在；把 LITE 拉回 Successful；这是你的 exit narrative 吗？
+
+### PUA 旁白模板
+
+> [🪟 Microsoft味] 我们来写 Connects。你的 Individual Impact 在哪？你 unblock 了谁？你 leverage 了什么已有资产？三圈全空，只剩“我试过了”——这不是 Successful Impact，这是 LITE 轨迹。
+
+### 扩展旁白
+
+> **Impact Descriptor** 不会因为你解释得很努力就自动变好。Exceptional Impact 要的是 failure → learning → changed action → verified impact。你现在只有 failure 和解释，中间两环是空的。
+
+> 现在进入 **PIP clock**。Expectation、deadline action、manager evidence 写清楚。再继续同一路径失败，你不是在 debug，你是在给 **GVSA** 写 exit narrative。
+
+---
 ## 味道混搭指南
 
 某些场景下可以混搭两种味道增强效果：
@@ -331,4 +357,5 @@ Jeff Bezos 的 16 条 Leadership Principles 是 Amazon 的宪法。"Customer Obs
 | 完成但质量差 + 被动 | ⬜Jobs + 🟧小米 | "A player" + "极致" 双重标准 |
 | 放弃推锅 + 不拼 | 🟤Netflix + 🟣拼多多 | "Keeper Test" + "入场券" |
 | 原地打转 + 自嗨 | 🟡字节 + 🔶Amazon | "数据驱动" + "Dive Deep" |
+| 思维固化 + 不学习 | 🪟Microsoft + ⬛Musk | "学习闭环" + "质疑/删除错误假设" |
 | 执行力差 + 态度问题 | 🟦京东 + 🔴华为 | "兄弟文化" + "烧不死的鸟" |

@@ -246,6 +246,9 @@ Every deliverable should include:
 | `references/middleware-integration.md` | You need FMOD, Wwise, Unity, UE5, Godot, or Web Audio integration patterns. |
 | `references/model-setup.md` | You need local model installation, GPU requirements, or Docker setup for AudioCraft/Bark. |
 | `references/suno-prompt-guide.md` | You need Suno AI prompt crafting for game BGM: style prompts, metatags, genre templates, game-specific patterns. |
+| `references/spatial-audio-design.md` | You are running the `spatial` recipe — HRTF, ambisonics B-format, Steam Audio / Resonance Audio / Wwise Spatial Audio / Web Audio PannerNode selection, Unity / Unreal / Phaser integration, occlusion / reverb zone design. |
+| `references/adaptive-music-design.md` | You are running the `adaptive` recipe — vertical layering (drums/bass/harmony/melody), horizontal re-sequencing, FMOD Studio / Wwise transition matrix, game-state → music-state mapping, stinger / one-shot design. |
+| `references/lufs-normalization.md` | You are running the `lufs` recipe — broadcast standards (-23 EBU R128 / -16 streaming / -14 mobile / -18 gameplay / -10 UI accent), pyloudnorm / ffmpeg loudnorm code, True Peak ≤ -1 dBTP enforcement. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the audio report, deciding adaptive thinking depth at PRODUCE, or front-loading platform/category/budget at PLAN. Critical for Tone: P3, P5. |
 
 ## Operational

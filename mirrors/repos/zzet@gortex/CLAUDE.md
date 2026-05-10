@@ -36,13 +36,14 @@ Gortex is running as an MCP server. You MUST use graph queries instead of file r
 | `Read` to check a function signature  | `get_symbol` (signature is in `meta.signature`) |
 | 5-10 calls to explore for a task      | `smart_context` (one call)               |
 
-### Token Economy (GCX1 compact wire format)
+### Token Economy (wire format)
 
-For any list-shaped response, pass `format: "gcx"` to get the [GCX1 compact wire format](docs/wire-format.md) instead of JSON. Round-trippable, tokenizer-aware, **median −27.4% tiktoken savings** on the benchmark.
+Order of preference: **gcx > toon > json**. For known clients (claude-code, cursor, vscode, zed, aider, kilocode, opencode, openclaw, codex) Gortex serves `gcx` automatically when a request omits the `format` arg — explicit `format` always wins.
 
 | Instead of...                         | You MUST use...                          |
 |---------------------------------------|------------------------------------------|
-| Default JSON on multi-row responses   | Pass `format: "gcx"` on `search_symbols`, `find_usages`, `analyze`, `contracts`, `batch_symbols`, `get_callers` / `get_call_chain` / `get_dependencies` / `get_dependents` / `find_implementations`, `get_file_summary`, `get_editing_context`, `smart_context` |
+| Default JSON on multi-row responses   | Rely on the per-session default (gcx) for known clients, or pass `format: "gcx"` explicitly on `search_symbols`, `find_usages`, `analyze`, `contracts`, `batch_symbols`, `get_callers` / `get_call_chain` / `get_dependencies` / `get_dependents` / `find_implementations`, `get_file_summary`, `get_editing_context`, `smart_context` |
+| GCX-blind tooling needing tabular text| Pass `format: "toon"` — TOON is the second-tier fallback (lossy but ~10–15% smaller than JSON) |
 | Parsing compact text output           | Use `@gortex/wire` (npm) or the Go `github.com/gortexhq/gcx-go` package (MIT) — both decode GCX back to structured rows |
 | Reading `compact: true` output        | Prefer `format: "gcx"` — lossy text is being phased out; GCX is round-trippable and tokenizer-optimised |
 
@@ -86,6 +87,10 @@ The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
 | Tracing config-key readers            | `analyze` with `kind: "config_readers"` — config_key nodes grouped by EdgeReadsConfig |
 | Tracing event/log emitters            | `analyze` with `kind: "event_emitters"` — events grouped by EdgeEmits, `level` filter optional |
 | Mapping the error surface             | `analyze` with `kind: "error_surface"` — function/method nodes with their EdgeThrows targets |
+| Surveying stdlib / module-cache reach | `analyze` with `kind: "external_calls"` — KindModule nodes grouped by call/symbol counts; pass `id` for per-symbol detail, `module_kind` for stdlib/module_cache filter |
+| Listing every HTTP/gRPC/WS route      | `analyze` with `kind: "routes"` — handler→route pairs from the EdgeHandlesRoute graph layer; `method`, `path`, `type` filters (`type` ∈ http/grpc/ws/graphql/topic) |
+| Mapping ORM models to tables          | `analyze` with `kind: "models"` — class→table edges from EdgeModelsTable across gorm / SQLAlchemy / Django / ActiveRecord / JPA / TypeORM / Ecto; `orm`, `table`, `model` filters |
+| Walking the component tree            | `analyze` with `kind: "components"` — parent↔child fan-in/out from EdgeRendersChild (JSX/TSX + Phoenix HEEx); pass `id` for per-component child list |
 | Checking if the index is stale        | `index_health` — health score, parse failures, stale files |
 | Wondering what changed this session   | `get_symbol_history` — modification counts, flags churning (3+ edits) |
 | Hydrating blame / coverage / releases | `gortex enrich blame|coverage|releases|all` (CLI) — bulk-stamps the graph for the `stale_*`, `coverage_*`, `ownership`, and `releases` analyzers |
@@ -97,6 +102,8 @@ The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
 | Reading files to learn a pattern      | `suggest_pattern`                        |
 | Manually scaffolding from a pattern   | `scaffold` — generates code, wiring, and test stubs from an example |
 | Read→Edit roundtrip for one symbol    | `edit_symbol` — edit source by ID, no Read needed |
+| Read→Edit roundtrip for any file      | `edit_file` — string-replace any file by absolute or repo-relative path; atomic write, auto-reindex; pass `dry_run` to preview |
+| Read→Write roundtrip for new files    | `write_file` — create or overwrite any file with given content; creates parent dirs; pass `dry_run` to preview |
 | Manual find-and-replace for renames   | `rename_symbol` — coordinated rename across all references |
 | Sequencing multi-file edits yourself  | `batch_edit` — applies edits in dependency order, re-indexes between steps |
 | Reading a diff without graph context  | `diff_context` — enriches git diff with callers, callees, community, risk |
@@ -117,6 +124,16 @@ The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
 |---------------------------------------|------------------------------------------|
 | Manually tracking API routes/services | `contracts` (default `action: "list"`) — lists HTTP, gRPC, GraphQL, topic, WebSocket, env, OpenAPI; filter by `repo`, `project`, or `ref` |
 | Guessing if APIs match across repos   | `contracts` with `action: "check"` — detects orphan providers/consumers and mismatches; scope with `repo` / `project` / `ref` |
+
+### CPG-lite Dataflow
+
+The `flow_between` and `taint_paths` MCP tools answer **"where does this value flow?"** by walking three new edge kinds — `value_flow` (intra-procedural), `arg_of` (caller arg → callee param), and `returns_to` (callee → assignment). The Go extractor builds these at index time and the resolver post-pass lifts inter-procedural placeholders to actual param node IDs.
+
+| Instead of...                         | You MUST use...                          |
+|---------------------------------------|------------------------------------------|
+| Hand-tracing a value through helper functions | `flow_between` — ranked dataflow paths between two symbol IDs; pass `max_depth` (default 8) and `max_paths` (default 10); supports `format: "gcx"` |
+| Grepping for sources / sinks         | `taint_paths` — pattern-driven sweep returning every flow from a matching source to a matching sink. Pattern syntax: bare token = case-insensitive substring on name; `exact:Foo` = exact match; `path:dir/` = file-path prefix; `kind:method` = node-kind filter; combine clauses with spaces (AND). Sinks expand functions to their params automatically. |
+| Reading callers to verify a refactor | `flow_between` from the changed return symbol to a downstream consumer's param to find every consumer site, including those reached through helper functions. |
 
 ### Config Hygiene
 
@@ -159,4 +176,5 @@ The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
 - Calls / structure: `calls`, `imports`, `defines`, `implements`, `extends`, `references`, `member_of`, `instantiates`, `provides`, `consumes`, `composes`, `aliases`, `typed_as`, `returns`, `captures`, `param_of`
 - Concurrency: `spawns` (goroutine/async/promise), `sends` / `recvs` (channels)
 - Mutation: `reads` / `writes` (fields), `reads_config` / `writes_config`
+- Dataflow (CPG-lite, `flow_between` / `taint_paths`): `value_flow` (intra-procedural assignment / return / range), `arg_of` (caller arg → callee param), `returns_to` (callee → assignment LHS)
 - Metadata: `annotated` (decorators), `emits` (events), `throws` (errors), `queries` (SQL), `reads_col` / `writes_col`, `toggles_flag`, `depends_on_module`, `matches` (fixtures), `generated_by`, `tests` (test → tested symbol), `covered_by`, `owns` (CODEOWNERS), `authored`, `licensed_as`

@@ -1,6 +1,8 @@
 # Galyarder Framework: Workforce & Agent Directory
 
-The Galyarder workforce consists of **40 specialized agents** organized into 8 high-integrity departments. Every agent enforces the 1-Man Army Global Protocols to ensure deterministic, zero-slop mission execution.
+The Galyarder workforce consists of **40 specialized agents** mapped across 8 logical high-integrity departments. Every agent enforces the 1-Man Army Global Protocols to ensure deterministic, zero-slop mission execution.
+
+Framework extension source lives in `agents/`, `skills/`, `commands/`, `personas/`, and `integrations/`. Department names below are routing taxonomy labels for agents and workflows; `galyarder scaffold` may still create `docs/departments/*` inside user projects as the Digital HQ output surface.
 
 ## Executive Department
 Strategic oversight, master orchestration, and capital management.
@@ -67,3 +69,9 @@ Memory preservation and visual logic mapping.
 
 ---
 © 2026 Galyarder Labs. Galyarder Framework. Engineering. Marketing. Distribution.
+
+<!-- This section is maintained by the coding agent via lore (https://github.com/BYK/loreai) -->
+## Long-term Knowledge
+
+For long-term knowledge entries managed by [lore](https://github.com/BYK/loreai) (gotchas, patterns, decisions, architecture), see [`.lore.md`](.lore.md) in the project root.
+<!-- End lore-managed section -->

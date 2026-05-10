@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/tech-stack-evaluator/../../../engineering-team/skills/tech-stack-evaluator/SKILL.md

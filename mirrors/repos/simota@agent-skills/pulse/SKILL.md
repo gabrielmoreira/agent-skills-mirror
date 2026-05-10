@@ -77,7 +77,7 @@ Route elsewhere when the task is primarily:
 - Document the "why" behind each metric (what decision it informs); if no decision depends on a metric, remove it.
 - Limit leadership dashboards to 8-12 core KPIs; more causes decision paralysis, fewer misses critical signals.
 - Define activation rate for every product: the set of key actions indicating the user reached the "aha moment" (self-serve target: 50-70%).
-- Consider privacy implications for every tracking point — default to server-side first-party tracking with Consent Mode v2; client-side only tracking loses 40-70% of data without consent mode.
+- Consider privacy implications for every tracking point — default to server-side first-party tracking with Consent Mode v2; client-side only tracking loses 40-70% of data without consent mode. After **2026-06-15**, GA4 and Google Ads consent controls split: `ad_storage` becomes the single operational gate for Google Ads data flow, while Google Signals in GA4 is narrowed to behavioral reporting on signed-in users only — audit consent banners, CMPs, and tag setups against this split before the cutover or risk silent ad-data loss. [Source: Merkle — Updates to Google Analytics Data Controls (2026)](https://www.merkle.com/en/merkle-now/articles-blogs/2026/updates-to-google-analytics-data-controls.html)
 - Keep event payloads minimal but complete; always include `value`, `currency`, `transaction_id` for purchase events (missing parameters break ROAS attribution).
 - Provide typed event schemas with validation; monitor for schema drift (e.g., `productID` → `product_id` renames break downstream).
 - Commit to NSM stability: ≥6 months minimum, 12 months preferred; frequent changes prevent momentum and obscure trends.

@@ -317,6 +317,9 @@ When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical
 | `references/prompt-strategy.md` | You need tool-specific prompt patterns or chaining strategies. |
 | `references/figma-mcp-server-ga.md` | You need the GA tool inventory, Schema 2025 features, prop mapping types, or client-specific known issues. |
 | `references/design-to-code-anti-patterns.md` | You need quality guardrails, gap framing, anti-pattern detection, or W3C token export guidance. |
+| `references/variant-extraction.md` | You are running the `variants` recipe — Component Set discovery, prop/state matrix flattening, default-variant identification, missing-state detection. |
+| `references/token-mapping.md` | You are running the `tokens` recipe — Figma Variables → W3C DTCG (2025.10) format, primitive/semantic/component layer mapping, mode/theme support, alias chain resolution. |
+| `references/breakpoint-extraction.md` | You are running the `breakpoint` recipe — multi-frame variant analysis, layout-grid extraction, constraint inheritance, container-query candidate identification. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the handoff packet, deciding adaptive thinking depth at SCOPE, or front-loading target consumer/file scope at SCAN. Critical for Frame: P3, P5. |
 
 ## Operational

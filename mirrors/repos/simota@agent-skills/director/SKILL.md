@@ -219,6 +219,9 @@ Point-to-point handoff templates (outside Nexus Hub Mode): see `references/hando
 | `references/implementation-patterns.md` | You need Playwright scene patterns, auth setup, overlays, performance overlays, before/after comparisons, AI narration, persona-aware demos, ARIA validation, or complete demo examples. |
 | `references/handoff-formats.md` | You need point-to-point handoff templates for Forge/Voyager/Vision/Echo → Director or Director → Showcase/Quill/Growth outside Nexus Hub Mode. |
 | `references/checklist.md` | You need pre-recording, post-recording, pre-delivery, quick-check, or quality-score gates. |
+| `references/voiceover-design.md` | You are running the `voiceover` recipe and need SSML pacing (150-160 WPM), voice selection (ElevenLabs/OpenAI TTS), de-essing, breathing pauses, or -16 LUFS normalization. |
+| `references/captions-design.md` | You are running the `captions` recipe and need SRT/WebVTT authoring rules, WCAG 1.2.2 timing, reading speed (160-180 WPM), or forced/closed/open variant selection. |
+| `references/thumbnail-design.md` | You are running the `thumbnail` recipe and need per-platform variants (YouTube/LinkedIn/X/Product Hunt), A/B variant patterns, or contrast/typography rules. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the demo package, deciding adaptive thinking depth at scenario/overlay design, or front-loading purpose/audience/duration at PLAN. Critical for Director: P3, P5. |
 
 ## Operational

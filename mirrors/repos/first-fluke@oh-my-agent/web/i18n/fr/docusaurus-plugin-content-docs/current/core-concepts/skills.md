@@ -303,3 +303,93 @@ Lorsque l'orchestrateur compose les prompts pour les sous-agents, il n'inclut qu
 5. Serena Memory Protocol (CLI mode)
 
 Cette composition ciblée évite le chargement de ressources inutiles, maximisant le contexte disponible du sous-agent pour le travail effectif.
+
+---
+
+## Dette de clarification et métriques de session (analyse approfondie)
+
+La Dette de clarification (Clarification Debt, CD) mesure le coût des exigences floues au cours d'une session. L'orchestrateur enregistre chaque correction utilisateur et lui attribue un score :
+
+| Type d'événement | Points | Description |
+|------------------|--------|-------------|
+| `clarify` | +10 | Question de clarification simple (attendue pour une incertitude MEDIUM) |
+| `correct` | +25 | Malentendu d'intention nécessitant un changement de direction |
+| `redo` | +40 | Violation de périmètre ou de charte nécessitant un retour en arrière et un redémarrage |
+| `blocked` | +0 | L'agent s'est correctement arrêté pour poser une question (bon comportement, non pénalisé) |
+
+**Modificateurs :** charte non lue (+15), violation de la liste blanche (+20), même erreur répétée (×1,5).
+
+**Seuils et application :**
+- **CD ≥ 50** → entrée RCA obligatoire ajoutée à `lessons-learned.md`
+- **CD ≥ 80** → session interrompue, l'utilisateur doit re-spécifier les exigences
+- **`redo` ≥ 2** → l'orchestrateur met en pause et demande une confirmation explicite du périmètre
+- **CD ≥ 30 sur 3 sessions consécutives pour le même agent** → revue du modèle de prompt de l'agent
+
+Le journal de session est conservé dans `.serena/memories/session-metrics.md` avec une ligne par événement (tour, agent, type d'événement, points, détail) et une section de synthèse.
+
+---
+
+## Précision de l'évaluateur et ajustement QA
+
+Les agents QA s'améliorent grâce au suivi des erreurs de jugement. Contrairement à la CD (en temps réel), la Précision de l'évaluateur (Evaluator Accuracy, EA) est rétrospective : la plupart des erreurs sont découvertes après la fin de la session.
+
+**Types d'événements EA :**
+
+| Événement | Points | Quand on le découvre |
+|-----------|--------|----------------------|
+| `false_negative` | +30 | Session suivante ou en production — bug que la QA a manqué |
+| `false_positive` | +15 | En cours de session — l'agent d'implémentation conteste avec succès une remarque QA |
+| `severity_mismatch` | +10 | En cours de session ou en rétrospective — mauvaise sévérité attribuée |
+| `missed_stub` | +20 | La vérification d'exécution détecte une fonctionnalité purement visuelle |
+| `good_catch` | -10 | La QA a détecté un bug non évident (signal de récompense positif) |
+
+**L'EA est calculée sur une fenêtre glissante de 3 sessions.** Seuils :
+- **EA ≥ 30** → `oma retro` signale les schémas QA pour revue (ajustement suggéré)
+- **EA ≥ 50** → ajustement requis : mettre à jour `execution-protocol.md` de la QA
+- **`false_negative` ≥ 3** sur la fenêtre → ajouter un schéma de détection à `checklist.md` de la QA
+- **`good_catch` ≥ 5** sur la fenêtre → documenter et propager le schéma efficace
+
+La boucle complète d'ajustement est définie dans `evaluator-tuning.md` : les sessions accumulent des événements EA → un seuil déclenche `oma retro` → le rapport classe les erreurs et propose des correctifs → l'utilisateur revoit et approuve → les correctifs sont appliqués à `checklist.md` ou au protocole de la QA → validation sur les 3 sessions suivantes.
+
+---
+
+## Décomposition en sprints pour les tâches complexes
+
+Les tâches complexes (4 fichiers et plus, décisions d'architecture) reposent sur une exécution par sprints plutôt que sur une exécution longue unique :
+
+1. **Décomposer** en 2 à 4 sprints centrés sur une fonctionnalité, chacun testable de manière indépendante
+2. **Viser** 5 à 8 tours par sprint
+3. **Sprint Gate** après chaque sprint :
+   - Le livrable du sprint est-il complet ?
+   - Le lint et les tests passent-ils ?
+   - Si le sprint a pris deux fois plus de tours que prévu → écrire un checkpoint et informer l'utilisateur
+4. **Continuer** vers le sprint suivant si le gate est validé
+
+**Exemple :** la tâche « Authentification JWT + API CRUD + tests » se décompose en :
+- Sprint 1 : modèle utilisateur + endpoints d'authentification (register/login)
+- Sprint 2 : endpoints CRUD + validation
+- Sprint 3 : tests + gestion des erreurs
+
+**Récupération en cas de mauvaise estimation de difficulté :** si une tâche commencée en Simple s'avère plus complexe, l'agent passe au protocole Medium ou Complex en cours d'exécution et consigne le changement dans son fichier de progression.
+
+---
+
+## Protocole de réinitialisation du contexte
+
+Les agents qui s'exécutent longtemps perdent en qualité à mesure que leur contexte se remplit. C'est l'orchestrateur (et non l'agent lui-même) qui surveille cette dégradation et déclenche les réinitialisations.
+
+**Conditions de déclenchement (vérifiées par l'orchestrateur pendant la surveillance) :**
+
+| Condition | Détection | Action |
+|-----------|-----------|--------|
+| Épuisement du budget de tours | L'agent a consommé ≥ 80 % des tours prévus ET les critères d'acceptation sont remplis à moins de 50 % | Réinitialisation du contexte |
+| Stagnation de la progression | Aucune mise à jour du fichier de progression sur 3 cycles de surveillance consécutifs | Réinitialisation du contexte |
+| Sortie superficielle | Le fichier de résultat contient des marqueurs de stub ou des placeholders TODO | Re-spawn avec une instruction explicite |
+
+**Procédure de réinitialisation :**
+1. **Checkpoint** — sauvegarder l'état courant de l'agent (éléments terminés, restants, décisions clés)
+2. **Terminer** — arrêter l'exécution de l'agent en cours
+3. **Re-spawn** — démarrer un nouvel agent avec le checkpoint comme contexte
+4. **Reprendre** — le nouvel agent lit le checkpoint et ne traite que les éléments restants
+
+Pour les agents autonomes (sans orchestrateur), le Sprint Gate défini dans `difficulty-guide.md` joue le rôle de filet de sécurité : si un sprint prend deux fois plus de tours que prévu, l'agent écrit un checkpoint et informe l'utilisateur.

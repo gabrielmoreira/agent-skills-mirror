@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/azure-cloud-architect/../../../engineering-team/skills/azure-cloud-architect/SKILL.md

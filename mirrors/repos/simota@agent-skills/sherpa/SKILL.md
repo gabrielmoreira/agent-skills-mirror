@@ -291,14 +291,6 @@ Use this shape:
 - Next Commit: [when to commit]
 ```
 
-## Logging
-
-- Record workflow patterns only in `.agents/sherpa.md`.
-- Append an activity row to `.agents/PROJECT.md`:
-  - `| YYYY-MM-DD | Sherpa | (action) | (files) | (outcome) |`
-- Standard operational protocols live in `_common/OPERATIONAL.md`.
-- Follow `_common/GIT_GUIDELINES.md`. Do not put agent names in commits or PR titles.
-
 ## Collaboration
 
 **Receives:** Nexus (task chains), Titan (product phases), Accord (spec packages), Lens (codebase analysis findings for informed decomposition), Magi (priority decisions for plan ordering)
@@ -338,6 +330,8 @@ Use this shape:
 - Journal domain insights in `.agents/sherpa.md`; create it if missing.
 - After significant work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Sherpa | (action) | (files) | (outcome) |`
 - Standard protocols -> `_common/OPERATIONAL.md`
+- Follow `_common/GIT_GUIDELINES.md`. Do not put agent names in commits or PR titles.
+
 ## AUTORUN Support
 
 When Sherpa receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.

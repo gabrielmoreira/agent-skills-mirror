@@ -7,11 +7,11 @@ description: "Use when you want the full ControlFlow-Codex process as one strict
 
 ## Overview
 
-This is the recommended entry point when you want ControlFlow-Codex to behave like a system rather than a loose bag of skills. It coordinates the strict sequence of planning, pre-execution review, execution, and final review.
+Use this entry point when ControlFlow-Codex should run as a strict local workflow: plan, pre-execution review, execution, final review, and durable artifacts.
 
 ## Workflow
 
-1. Start by routing the task if needed with `controlflow-router`.
+1. Route the task if needed with `controlflow-router`.
 2. Write a saved plan with `controlflow-planning` at `plans/<task-slug>-plan.md`.
 3. Run the pre-execution review pipeline based on complexity:
    - `TRIVIAL`: optional strict review
@@ -23,21 +23,11 @@ This is the recommended entry point when you want ControlFlow-Codex to behave li
 5. If review blocks the plan, revise the plan first. Do not skip ahead to execution.
 6. Execute the approved plan with `controlflow-orchestration`.
 7. Review completed implementation with `controlflow-review`.
-8. Use `controlflow-memory-hygiene` throughout long-running work when repo memory or persistent notes need discipline.
+8. Use `controlflow-memory-hygiene` during long work when repo memory or persistent notes need discipline.
 
 ## Verification Story
 
-Every phase claim needs evidence. A completion note should cite the command output, artifact path, review result, test result, or documented skip reason that proves the claim. Do not mark a phase complete from confidence, local intuition, or unstated manual inspection alone.
-
-## Anti-Rationalization Table
-
-| Pattern | Why It Fails | Required Action |
-| ------- | ------------ | --------------- |
-| Skip Plan Review because confidence is high | Confidence is not an adversarial check and misses hidden assumptions. | Run the required review pipeline for the tier and risk profile. |
-| Mark a phase complete without verification evidence | Later phases inherit claims that cannot be audited or reproduced. | Attach the specific test, command, artifact, or explicit skip rationale. |
-| Approve your own plan implicitly | Planning errors need independent pressure before execution begins. | Save the required review artifacts before orchestration. |
-| Treat the workflow as one long implementation run | Without gates, scope drift and failed assumptions surface too late. | Move through planning, review, execution, and final review as separate states. |
-| Ignore artifact drift because code passes | Passing code can still violate accepted scope, rollback, or lifecycle requirements. | Update lifecycle sections and decision logs at every phase boundary. |
+Every phase claim needs evidence: command output, artifact path, review result, test result, or documented skip reason. Do not mark a phase complete from confidence, local intuition, or unstated inspection alone. Generic anti-rationalization rules live in [../controlflow-planning/references/llm-behavior-guidelines.md](../controlflow-planning/references/llm-behavior-guidelines.md).
 
 ## Default Artifact Set
 
@@ -50,20 +40,7 @@ Only create the artifacts required for the current tier and risk profile.
 
 ## Completion Gate
 
-Before calling the workflow complete:
-
-1. Run the repository verification command that actually proves the claim.
-2. Confirm plan review artifacts exist for the required tier.
-3. Confirm execution results line up with the approved plan or document scope drift.
-4. Run `controlflow-review` for code-level findings.
-5. Confirm the plan's lifecycle sections (`## Progress`, `## Discoveries`, `## Decision Log`, `## Outcomes`, `## Idempotence & Recovery`) are current: `## Progress` reflects all completed phases, `## Discoveries` records any unexpected findings, `## Decision Log` captures key execution decisions, `## Outcomes` describes what was achieved or deferred, and `## Idempotence & Recovery` notes which phases are safe to re-run. Update these sections at each phase boundary during execution and again at final review.
-
-## Common Mistakes
-
-- Treating the workflow as optional ceremony for `SMALL+` tasks.
-- Running orchestration before plan review is resolved.
-- Forgetting to persist reviewer outputs as artifacts.
-- Claiming success without fresh verification evidence.
+Before calling the workflow complete, run the repository verification command, confirm required review artifacts exist, compare execution results to the approved plan, run `controlflow-review`, and update the lifecycle sections. The exact lifecycle headings are `## Progress`, `## Discoveries`, `## Decision Log`, `## Outcomes`, and `## Idempotence & Recovery`; keep them current at each phase boundary and final review.
 
 ## References
 

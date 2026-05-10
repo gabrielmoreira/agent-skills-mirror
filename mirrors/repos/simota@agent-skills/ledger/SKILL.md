@@ -298,6 +298,9 @@ Spawn condition: task covers 3+ workflow phases with independent data sources. S
 | `references/reserved-savings-plans.md` | `ri-sp` subcommand: AWS RI / SP / GCP CUD / Azure RI vendor comparison, coverage targets per workload class, break-even thresholds, expiration ladder, anti-patterns |
 | `references/ai-gpu-cost.md` | `gpu-cost` subcommand: GPU SKU pricing (H100/H200/A100/L40S/T4), training vs inference profile, spot+checkpoint cadence rule, quantization cost-vs-quality, $/1K-token unitization |
 | `references/cost-tagging-strategy.md` | `tagging` subcommand: mandatory tag schema, AWS/GCP/Azure enforcement comparison, showback/chargeback model selection, untagged-resource SLA ladder |
+| `references/finops-framework.md` | `finops-framework` subcommand: FinOps Foundation Framework Crawl/Walk/Run maturity across 22 capabilities, persona map, phase-appropriate tooling |
+| `references/unit-economics.md` | `unit-economics` subcommand: per-customer/transaction/feature cost attribution, COGS decomposition, gross/contribution margin, fixed vs variable separation |
+| `references/greenops-sustainability.md` | `greenops` subcommand: carbon-aware scheduling, embodied+operational CO2e, SCI (ISO/IEC 21031), region-carbon choice, FinOps × GreenOps trade-off matrix |
 | `references/handoff-formats.md` | Inter-agent handoff YAML templates (inbound/outbound) |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the cost report, deciding adaptive thinking depth at commitment strategy, or front-loading cloud scope/timeframe/decision at INTAKE. Critical for Ledger: P3, P5. |
 

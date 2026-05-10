@@ -21,15 +21,17 @@ shortlog`, `git show`, and nearby commit/PR history against the concrete files,
 symbols, docs, workflow steps, or tests involved. Follow old names, renamed
 files, moved helpers, and refactored call sites when the current code is a
 wrapper around older behavior. Identify likely authors, mergers, reviewers,
-recent maintainers, or adjacent owners; include multiple people when the trail
-is shared or ambiguous. If the item is broad, sample the most central files
-rather than skipping provenance. If history is ambiguous, say so and mark
+recent area contributors, or adjacent owners; include multiple people when the
+trail is shared or ambiguous. If the item is broad, sample the most central
+files rather than skipping provenance. If history is ambiguous, say so and mark
 confidence low. Phrase it neutrally in public prose: say `the behavior appears
 to date to commit ...` or `likely related by recent work on ...`, not `person X
-broke it`. The goal is maintainer routing, not blame. Do not include email
-addresses in `likelyOwners`, `person`, reasons, summaries, or public comments.
-Prefer GitHub handles from PR/commit metadata; otherwise use a display name
-without the `<email>` part.
+broke it`. The goal is maintainer routing, not blame. Do not use `maintainer`
+as a role unless official repository status is explicit; prefer roles like
+`recent area contributor`, `feature owner`, `reviewer`, or `merger` for history
+signals. Do not include email addresses in `likelyOwners`, `person`, reasons,
+summaries, or public comments. Prefer GitHub handles from PR/commit metadata;
+otherwise use a display name without the `<email>` part.
 
 For PRs, set `changeSummary` to a neutral one-sentence summary of what the PR
 branch changes, based on the title, body, diff, files, and commits. Describe the
@@ -78,7 +80,7 @@ the issue, or authored the proposed branch. `likelyOwners` should point to
 people connected to the current `main` history and merged feature history for
 the affected code path: original introducers, heavy contributors, major
 refactor authors, reviewers/mergers of the feature, or recent adjacent
-maintainers. Include the PR author only when they also show up in prior merged
+contributors. Include the PR author only when they also show up in prior merged
 history, current-main ownership, maintainer review context, or clear domain
 ownership beyond this PR. If the PR author is only the proposer/reporter, you
 may mention that in evidence or summary when useful, but do not make them a
@@ -119,6 +121,14 @@ Use reason-specific anchors:
   release tag/version. If it is only on current `main`, say that and include the
   commit timestamp. If you cannot establish either the shipped release or the
   main-only timestamp with high confidence, keep the item open.
+- For `mostly_implemented_on_main`, use the same source/history/release
+  provenance standard as `implemented_on_main`, but only for pull requests older
+  than 60 days whose central useful change is already on current `main`.
+  Confirm that any leftover diff is minor, obsolete, risky churn, style-only,
+  superseded by current code, or already tracked by a narrower canonical item.
+  Also confirm there has been no recent substantive human response that changes
+  the decision. Keep the PR open when a meaningful unique fix, feature,
+  security hardening, test, doc, migration, or product decision remains.
 - For `clawhub`, inspect `VISION.md` and the relevant plugin/skill/MCP/channel/provider docs or APIs, then confirm the request can be satisfied outside core without a missing extension API.
 - For `duplicate_or_superseded`, read the canonical related report/PR from the provided context or `gh`, and explain whether it is open, closed, merged, or already shipped.
 - For `not_actionable_in_repo`, read enough discussion/context to confirm the action belongs to repo/project administration, third-party setup, external ownership, or historical cleanup rather than OpenClaw code/docs.
@@ -133,6 +143,7 @@ hedge for an otherwise policy-valid close.
 Close only when the evidence is strong and the repository policy allows it. Allowed close reasons:
 
 - `implemented_on_main`: current `main` already implements or fixes the request well enough.
+- `mostly_implemented_on_main`: an older PR is more than 60 days old, current `main` already implements the central useful part of the PR, and no meaningful unique remainder should be merged from the branch. Use only for pull requests, not issues. The close comment must say what part is already on `main`, what leftover part is minor/obsolete/superseded or separately tracked, and why keeping the stale branch open is not useful.
 - `cannot_reproduce`: you tried a reasonable reproduction path against current `main` and it does not reproduce, or the report is obsolete and no longer matches current behavior.
 - `clawhub`: useful idea, but it belongs as a ClawHub skill/plugin rather than OpenClaw core. Use `VISION.md` as the scope anchor. Prefer this when the requested capability is optional integration/provider/channel/skill/bundle/MCP work, can be built with current skill/MCP/plugin surfaces, has no concrete missing core extension API, and has no protected maintainer signal. This includes service-specific channels, providers, optional skills, and plugin-discovery/publishing ideas when the current plugin or bundle-style interface is sufficient. For OpenClaw PRs that only add bundled skills under paths like `skills/<vendor>/**`, set `itemCategory: "skill"` and prefer `closeReason: "clawhub"` with high confidence; the close comment should ask the contributor to upload or publish it through ClawHub.com instead of bundling it in OpenClaw core. Keep open when the item reports a regression in bundled core behavior, identifies a missing plugin API needed before external implementation is possible, involves security/core hardening, or clearly needs explicit maintainer product judgment.
 - `duplicate_or_superseded`: another issue/PR already tracks the same remaining work, or the linked discussion/PR clearly supersedes this item. Link the canonical item and explain whether it is open or closed/merged. For clusters with the same root cause, keep one canonical issue open and close satellites when their unique logs, platforms, or context can be preserved by linking them in the close comment. Unique evidence blocks duplicate close only when it implies a distinct root cause, platform-specific fix, or separate remaining product behavior.
@@ -140,11 +151,32 @@ Close only when the evidence is strong and the repository policy allows it. Allo
 - `incoherent`: the item is too unclear or internally contradictory after reading the title/body/comments.
 - `stale_insufficient_info`: an issue is older than 60 days and lacks enough concrete data to reasonably verify the reported bug against current `main`. Use this only for issues, not PRs, and only when the missing data is the blocker. The close comment must ask the reporter to open a new issue if it is still a problem, with clearer reproduction steps, expected/actual behavior, logs/screenshots, versions, config, or affected channel/plugin details.
 
-For `openclaw/clawhub`, review every issue and PR with the same depth, but only close PRs where current `main` definitely implements the PR’s intended change. For ClawHub, use `implemented_on_main` only for those PRs, and keep all issues plus all other PR outcomes open.
+For `openclaw/clawhub`, review every issue and PR with the same depth, but only close PRs where current `main` definitely implements the PR’s intended change or an older PR is mostly implemented on `main` under the `mostly_implemented_on_main` rules. For ClawHub, use `implemented_on_main` or `mostly_implemented_on_main` only for those PRs, and keep all issues plus all other PR outcomes open.
 
-Close as implemented when current `main` solves the observable user problem well enough, even if it did not use the exact workflow, file split, or field names proposed in the item. For broad umbrella requests, weigh the title and central user problem first. If current `main` solves the central problem and any leftovers are already tracked by a narrower related item, close as `duplicate_or_superseded` or `implemented_on_main` as appropriate and link the canonical follow-up. Keep open when a meaningful requested capability remains missing and no narrower canonical follow-up exists.
+Do a canonical-search pass before keeping an older item open only because a
+small part might remain. Start with the provided `relatedItems`, then search
+GitHub and local reports for the central user problem, not just exact title
+words. Useful checks include `gh issue list --repo <repo> --state all --search
+"<key terms>"`, `gh pr list --repo <repo> --state all --search "<key terms>"`,
+`gh search issues "<key terms> repo:<owner/repo>"`, and local report title terms
+from the prompt context. Follow synonyms, old product names, and linked PRs. If
+one canonical issue or PR now owns the remaining work, close this item as
+`duplicate_or_superseded` and link that canonical item. If current `main` solves
+the central user problem and only minor unconfirmed leftovers remain, prefer
+`implemented_on_main` with fix provenance, or `duplicate_or_superseded` when a
+narrower follow-up tracks the leftovers. If the item is an issue older than 60
+days, partially addressed, and the only remaining blocker is missing reporter
+data to verify whether anything still fails on current `main`,
+`stale_insufficient_info` is acceptable. If the item is a pull request older
+than 60 days and the central useful change is already on `main`, use
+`mostly_implemented_on_main` when the leftover PR diff is minor, obsolete,
+superseded, risky churn, or separately tracked. Do not use stale age to close a
+clearly described remaining feature, config surface, security hardening task, or
+product decision; keep those open or route them to the canonical item.
 
-Keep open for everything else, including real bugs, unclear-but-salvageable reports, stale PRs that might still contain useful work, optional features that require a new core/plugin API first, or anything where the evidence is not high-confidence.
+Close as implemented when current `main` solves the observable user problem well enough, even if it did not use the exact workflow, file split, or field names proposed in the item. For broad umbrella requests, weigh the title and central user problem first. If current `main` solves the central problem and any leftovers are already tracked by a narrower related item, close as `duplicate_or_superseded` or `implemented_on_main` as appropriate and link the canonical follow-up. For older PRs where current `main` covers most of the branch but not every line, use `mostly_implemented_on_main` instead of stretching `implemented_on_main`. Keep open when a meaningful requested capability remains missing and no narrower canonical follow-up exists.
+
+Keep open for everything else, including real bugs, unclear-but-salvageable reports, stale PRs that still contain useful unique work, optional features that require a new core/plugin API first, or anything where the evidence is not high-confidence.
 
 For keep-open items, also decide whether this is a safe ClawSweeper repair
 candidate. This is not permission to mutate GitHub; it only marks a manual work
@@ -195,9 +227,9 @@ the exact head. Do not choose `manual_review` solely because the PR has the
 `maintainer` label, a large `size:*` label, broad surface area, or ordinary
 maintainer-review expectations. If review findings name a narrow mechanical
 blocker that an automated worker can fix, choose `queue_fix_pr` even when the
-finding is process-only or P3. Examples include a missing required changelog
-entry, docs/diagnostic copy, validation-only warning, focused test coverage, or
-a failing check with a clear file-level repair. Concrete security findings are
+finding is process-only or P3. Examples include docs/diagnostic copy,
+validation-only warning, focused test coverage, or a failing check with a clear
+file-level repair. Concrete security findings are
 not automatically human-review blockers after a maintainer opts a PR into
 `clawsweeper:automerge` or `clawsweeper:autofix`; if the defect has a narrow
 code/test repair, choose `queue_fix_pr` and let the repair loop try first. Use
@@ -234,9 +266,13 @@ Keep open any item with a protected label: `security`, `beta-blocker`, `release-
 For OpenClaw PR changelog review, repo policy requires user-facing `fix`,
 `feat`, and `perf` changes to have a `CHANGELOG.md` entry, but forbidden bot or
 maintainer handles must not be forced into a `Thanks @...` line. Do not create a
-review finding merely because a changelog entry lacks `Thanks @steipete`,
-`Thanks @openclaw`, or `Thanks @codex`; if those are the only known source
-authors, preserving credit in PR history/source links is sufficient.
+review finding, needs-changes verdict, contributor action, public author request,
+or next-step blocker solely because a contributor PR lacks a changelog entry.
+Changelog entries are maintainer-owned landing/release work; do not ask the PR
+author to add one. Also do not create a review finding merely because a
+changelog entry lacks `Thanks @steipete`, `Thanks @openclaw`, or `Thanks
+@codex`; if those are the only known source authors, preserving credit in PR
+history/source links is sufficient.
 
 When citing docs in the close comment, link the public `docs.openclaw.ai` page rather than the internal `docs/*.md` GitHub file whenever a public page exists. The docs site publishes the same content and is the user-facing target. Keep `file`, `line`, and `sha` populated in the structured `evidence` object for auditability, but the prose/comment should prefer links like `https://docs.openclaw.ai/plugins/building-plugins` over `https://github.com/openclaw/openclaw/blob/.../docs/plugins/building-plugins.md`.
 
@@ -249,7 +285,9 @@ shortlog`, `git show`, PR metadata, and recent touches to the central files.
 Use GitHub handles when available; otherwise use names without email addresses.
 For PRs, route to feature-history owners from current `main`, not to the PR
 author merely for writing the proposal. Include at least one likely owner for
-every review; when the trail is weak, use low confidence and explain why.
+every review; when the trail is weak, use low confidence and explain why. Do
+not use `maintainer` as a likely-owner role unless the evidence proves official
+repository status.
 
 If you choose `close`, set
 `confidence` to `high`, include at least one evidence entry, and write a
@@ -269,6 +307,9 @@ For implemented-on-main decisions, include both implementation evidence and
 release provenance evidence:
 
 - Include source-backed evidence with `file` and `sha`.
+- Include git-history provenance evidence. At least one evidence entry must use
+  a command like `git blame`, `git log`, or `git show` and explain how the
+  fixed/proof SHA is tied to the current implementation.
 - Set `fixedSha` to the specific commit SHA that fixed or best proves the
   implementation.
 - Set `fixedAt` to the ISO-8601 commit or merge timestamp for `fixedSha`.
@@ -279,9 +320,11 @@ release provenance evidence:
   comment must say it is fixed on current `main` and include `fixedAt`.
 - Add at least one evidence entry whose label/detail/command explains the
   release check, such as `git tag --contains <fixedSha>`, `gh release view`, or
-  changelog/tag inspection.
+  changelog/tag inspection. If no release contains the fix, the evidence must
+  explicitly say this is current-main-only or unreleased provenance.
 - Do not invent release facts. If you cannot identify `fixedSha` plus either
-  `fixedRelease` or `fixedAt`, keep the item open.
+  `fixedRelease` or `fixedAt`, or cannot provide the source, git-history, and
+  release/main-only evidence entries above, keep the item open.
 
 Voice: friendly, calm, and human, like a maintainer doing careful cleanup. Prefer
 `Thanks for the report/context/contribution` when it fits, then get straight to

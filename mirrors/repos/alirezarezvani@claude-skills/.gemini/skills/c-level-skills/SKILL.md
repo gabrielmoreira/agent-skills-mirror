@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/c-level-skills/../../../c-level-advisor/skills/c-level-skills/SKILL.md

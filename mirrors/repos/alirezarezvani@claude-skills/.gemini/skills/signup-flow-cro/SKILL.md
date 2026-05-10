@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/signup-flow-cro/../../../marketing-skill/skills/signup-flow-cro/SKILL.md

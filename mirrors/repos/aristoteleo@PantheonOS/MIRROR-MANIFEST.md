@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
+Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 74 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -129,10 +129,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/openst_computational.md) |
 | 69 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/openst/SKILL.md) |
 | 70 | ✓ | [`pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md`](pantheon/factory/templates/skills/omics/upstream_processing/SKILL.md) |
-| 71 | ✓ | [`pantheon/factory/templates/skills/paper_writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/SKILL.md) |
-| 72 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_slides.md`](pantheon/factory/templates/skills/presentation/marp_slides.md) |
-| 73 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_template.md`](pantheon/factory/templates/skills/presentation/marp_template.md) |
-| 74 | ✓ | [`pantheon/factory/templates/skills/presentation/SKILL.md`](pantheon/factory/templates/skills/presentation/SKILL.md) |
+| 71 | ✓ | [`pantheon/factory/templates/skills/paper_writing/latex_cn.md`](pantheon/factory/templates/skills/paper_writing/latex_cn.md) |
+| 72 | ✓ | [`pantheon/factory/templates/skills/paper_writing/latex_en.md`](pantheon/factory/templates/skills/paper_writing/latex_en.md) |
+| 73 | ✓ | [`pantheon/factory/templates/skills/paper_writing/report_academic.md`](pantheon/factory/templates/skills/paper_writing/report_academic.md) |
+| 74 | ✓ | [`pantheon/factory/templates/skills/paper_writing/report_standard.md`](pantheon/factory/templates/skills/paper_writing/report_standard.md) |
+| 75 | ✓ | [`pantheon/factory/templates/skills/paper_writing/SKILL.md`](pantheon/factory/templates/skills/paper_writing/SKILL.md) |
+| 76 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_slides.md`](pantheon/factory/templates/skills/presentation/marp_slides.md) |
+| 77 | ✓ | [`pantheon/factory/templates/skills/presentation/marp_template.md`](pantheon/factory/templates/skills/presentation/marp_template.md) |
+| 78 | ✓ | [`pantheon/factory/templates/skills/presentation/SKILL.md`](pantheon/factory/templates/skills/presentation/SKILL.md) |
 
 ---
 

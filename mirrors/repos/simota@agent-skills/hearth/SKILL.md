@@ -253,7 +253,10 @@ Every deliverable must include:
 | `references/shell-configs.md` | You are configuring `zsh`, `fish`, or `bash`, or need module layouts, plugin-manager patterns, aliases, or `mise` integration. |
 | `references/terminal-configs.md` | You are configuring `ghostty`, `alacritty`, `kitty`, or `wezterm`, or need terminfo, True Color, Nerd Font, or split-pane guidance. |
 | `references/editor-configs.md` | You are configuring `neovim`, `vim`, or `Zed`, or need plugin layout, `lazy.nvim`, `vim.pack`, or Neovim 0.12+ guidance. |
+| `references/vscode-editor-config.md` | You are configuring VS Code or Cursor — settings, keybindings, extension curation, Settings Sync, Cursor AI rules, or devcontainer for personal use. |
 | `references/tmux-starship.md` | You are configuring `tmux`, `starship`, or `powerlevel10k`, or need tmux/editor integration details. |
+| `references/git-personal-config.md` | You are configuring `~/.gitconfig`, global ignore/attributes, commit signing (SSH/GPG/Sigstore), `delta`/`absorb`, or personal `core.hooksPath`. |
+| `references/shellfn-functions-env.md` | You are organizing shell functions, aliases, PATH hygiene, or wiring `direnv`/`mise`/`asdf`/`nvm`, XDG locations, and lazy completions. |
 | `references/dotfile-management.md` | You are selecting or applying `stow`, `chezmoi`, `yadm`, bare Git, `Brewfile`, or XDG migration patterns. |
 | `references/shell-config-anti-patterns.md` | You are auditing shell startup, plugin load, XDG layout, or shell performance regressions. |
 | `references/editor-terminal-anti-patterns.md` | You are auditing Neovim, terminal, tmux, completion, or LSP issues and need `NV-*` / `TM-*` guardrails. |

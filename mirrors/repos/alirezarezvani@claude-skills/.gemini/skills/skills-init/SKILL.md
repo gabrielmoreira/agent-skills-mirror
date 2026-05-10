@@ -1,1 +1,1 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skills-init/../../../engineering/agenthub/skills/init/SKILL.md
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skills-init/../../../engineering-team/playwright-pro/skills/init/SKILL.md

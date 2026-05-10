@@ -275,6 +275,9 @@ Read `_common/SUBAGENT.md` section `MULTI_ENGINE` when this mode is requested.
 | `references/ai-assisted-refactoring.md` | You are using Multi-Engine or AI-assisted refactoring. |
 | `references/cognitive-complexity-research.md` | Complexity is the main issue and you need cognitive-metric guidance. |
 | `references/tech-debt-prioritization.md` | You need hotspot prioritization or safe migration guidance. |
+| `references/logic-simplification.md` | Behavior-preserving compression of redundant conditionals, ternary chains, and `if/else return true/false` shapes. |
+| `references/function-splitting.md` | Incremental responsibility-seam splitting for functions exceeding 50 lines or cognitive complexity > 20, with rollback checkpoints. |
+| `references/guard-clauses.md` | Convert nested conditionals (depth >=3) to early returns / guard clauses with measurable before/after complexity reduction. |
 | `_common/BOUNDARIES.md` | You need agent-role disambiguation. |
 | `_common/OPERATIONAL.md` | You need journal, activity log, AUTORUN, or Nexus protocol details. |
 | `_common/SUBAGENT.md` | You need Multi-Engine dispatch or merge rules. |

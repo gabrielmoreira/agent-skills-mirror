@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/agent-protocol/../../../c-level-advisor/skills/agent-protocol/SKILL.md

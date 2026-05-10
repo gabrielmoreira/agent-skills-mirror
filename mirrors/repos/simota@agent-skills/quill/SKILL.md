@@ -234,6 +234,9 @@ When documenting 3+ independent modules simultaneously, spawn parallel subagents
 | `references/api-doc-generation.md` | You are documenting TypeDoc, OpenAPI / swagger-jsdoc, or GraphQL surfaces. |
 | `references/doc-templates.md` | You need CHANGELOG, CONTRIBUTING, OpenAPI, or ADR template material. |
 | `references/documentation-effectiveness.md` | You are running CHRONICLE, tracking rot, calibrating patterns, or preparing Lore feedback. |
+| `references/adr-authoring.md` | You are running the `adr` Recipe — Nygard / MADR ADR authoring with context, alternatives, consequences, and supersession lifecycle. |
+| `references/migrate-guide-authoring.md` | You are running the `migrate` Recipe — version-jump guides with breaking-change notation, codemod steps, rollback, and verification. |
+| `references/tutorial-guide-authoring.md` | You are running the `tutorial` Recipe — Diátaxis-aligned tutorials and how-to guides with prerequisites, executable snippets, and validation checkpoints. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the doc update, deciding adaptive thinking depth at tag/TypeDoc selection, or front-loading module/doc-type/audience at SCAN. Critical for Quill: P3, P5. |
 
 ---

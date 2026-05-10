@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/nanobot` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `HKUDS/nanobot` — 26 default patterns, 5 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 0 followed patterns, 12 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 12 |
+| Followed pats | 5 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,11 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 0 followed patterns, 12 file(
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.agent/design.md`
+- `.agent/security.md`
+- `.agent/gotchas.md`
+- `CONTRIBUTING.md`
+- `COMMUNICATION.md`
 
 ## File Index
 
@@ -59,18 +63,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`nanobot/skills/clawhub/SKILL.md`](nanobot/skills/clawhub/SKILL.md) |
-| 2 | ✓ | [`nanobot/skills/cron/SKILL.md`](nanobot/skills/cron/SKILL.md) |
-| 3 | ✓ | [`nanobot/skills/github/SKILL.md`](nanobot/skills/github/SKILL.md) |
-| 4 | ✓ | [`nanobot/skills/image-generation/SKILL.md`](nanobot/skills/image-generation/SKILL.md) |
-| 5 | ✓ | [`nanobot/skills/memory/SKILL.md`](nanobot/skills/memory/SKILL.md) |
-| 6 | ✓ | [`nanobot/skills/my/SKILL.md`](nanobot/skills/my/SKILL.md) |
-| 7 | ✓ | [`nanobot/skills/skill-creator/SKILL.md`](nanobot/skills/skill-creator/SKILL.md) |
-| 8 | ✓ | [`nanobot/skills/summarize/SKILL.md`](nanobot/skills/summarize/SKILL.md) |
-| 9 | ✓ | [`nanobot/skills/tmux/SKILL.md`](nanobot/skills/tmux/SKILL.md) |
-| 10 | ✓ | [`nanobot/skills/update-setup/SKILL.md`](nanobot/skills/update-setup/SKILL.md) |
-| 11 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
-| 12 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`nanobot/skills/clawhub/SKILL.md`](nanobot/skills/clawhub/SKILL.md) |
+| 3 | ✓ | [`nanobot/skills/cron/SKILL.md`](nanobot/skills/cron/SKILL.md) |
+| 4 | ✓ | [`nanobot/skills/github/SKILL.md`](nanobot/skills/github/SKILL.md) |
+| 5 | ✓ | [`nanobot/skills/image-generation/SKILL.md`](nanobot/skills/image-generation/SKILL.md) |
+| 6 | ✓ | [`nanobot/skills/memory/SKILL.md`](nanobot/skills/memory/SKILL.md) |
+| 7 | ✓ | [`nanobot/skills/my/SKILL.md`](nanobot/skills/my/SKILL.md) |
+| 8 | ✓ | [`nanobot/skills/skill-creator/SKILL.md`](nanobot/skills/skill-creator/SKILL.md) |
+| 9 | ✓ | [`nanobot/skills/summarize/SKILL.md`](nanobot/skills/summarize/SKILL.md) |
+| 10 | ✓ | [`nanobot/skills/tmux/SKILL.md`](nanobot/skills/tmux/SKILL.md) |
+| 11 | ✓ | [`nanobot/skills/update-setup/SKILL.md`](nanobot/skills/update-setup/SKILL.md) |
+| 12 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
+| 13 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
+| 14 | → | [`.agent/design.md`](.agent/design.md) |
+| 15 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
+| 16 | → | [`.agent/security.md`](.agent/security.md) |
+| 17 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
+| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

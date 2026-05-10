@@ -328,6 +328,42 @@ When translating multiple strings (e.g., UI keys):
 5. **Keep key structure** — only translate values, never keys
 6. **Match length roughly** for UI strings (avoid 3x longer translations that break layout)
 
+### Diff-Sync Mode (patch existing translation against source diff)
+
+Use when the English source has changed and one or more existing target-language translations need to be brought back in sync. Triggered by `oma-docs` v2 multilingual sync, manual i18n catch-up after a docs PR, or any "the source moved, the translation didn't" scenario.
+
+**Inputs**:
+- A unified diff of the English source (`/tmp/oma-en-diff.patch` or git diff snippet)
+- One or more target-language file paths (existing translations of the same source)
+- Optional: per-locale glossary or terminology hints
+
+**Stages override**:
+1. **PREPARE** — Read the diff. Identify added, modified, removed sections.
+2. **ACQUIRE** — Read each target file. Map source positions to target positions by **heading anchors and surrounding context**, not by line number (line numbers will not match across translations).
+3. **REASON** — For each diff hunk, decide:
+   - *Added section*: translate fresh, splice in at the equivalent position
+   - *Modified text*: localize the modification, replace target equivalent
+   - *Removed text*: delete the target equivalent
+   - *Touched-but-cosmetic* (whitespace, formatting): skip — don't churn translation
+4. **ACT** — Apply patches via Edit tool. Match the existing translation's register, terminology, and voice (re-read at least 3 sibling sections in the target file before writing).
+5. **VERIFY** — Run Stage 4 mechanical checks (em-dash, placeholder integrity, structure parity) AND ensure no untouched sections were modified.
+
+**Hard rules for diff-sync**:
+- **Touch only what the diff touched.** Other sections of the target file must remain byte-identical. If you find drift outside the diff, flag it but do NOT auto-fix in the same patch.
+- **Preserve structural fidelity.** The target file's heading hierarchy, table count, list structure must match the post-patch source.
+- **No line-number assumptions.** Always navigate by heading text and anchor, never by absolute line.
+- **Code/regex/identifiers in English.** Per i18n-guide rules — code blocks, JSON keys, file paths, regex patterns, workflow names, system markers like `[OMA WORKFLOW: ...]` stay verbatim.
+
+**Output format (per target file)**:
+```
+Target: <path>
+Sections updated: <list of heading paths>
+Sections skipped: <list with reason — e.g. "no semantic change">
+Ambiguities resolved: <terminology decisions made>
+```
+
+**Parallelization**: When multiple target locales need the same source diff, dispatch one agent per locale in parallel. Each agent gets the same diff but different target-file path. No coordination needed since target files are disjoint.
+
 ### Output Format
 
 ### Single text

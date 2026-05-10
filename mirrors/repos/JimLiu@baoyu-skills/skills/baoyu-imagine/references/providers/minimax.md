@@ -24,6 +24,6 @@ Read when the user picks `--provider minimax` or sets `default_model.minimax`. D
 
 ## Official References
 
-- [Image Generation Guide](https://platform.minimax.io/docs/guides/image-generation)
-- [Text-to-Image API](https://platform.minimax.io/docs/api-reference/image-generation-t2i)
-- [Image-to-Image API](https://platform.minimax.io/docs/api-reference/image-generation-i2i)
+- [Image Generation Guide](https://platform.minimaxi.com/docs/guides/image-generation)
+- [Text-to-Image API](https://platform.minimaxi.com/docs/api-reference/image-generation-t2i)
+- [Image-to-Image API](https://platform.minimaxi.com/docs/api-reference/image-generation-i2i)

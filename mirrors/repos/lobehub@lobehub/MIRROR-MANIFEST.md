@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 100 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 98 fil
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 98 |
+| Files         | 100 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -144,19 +144,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 83 | ✓ | [`.agents/skills/version-release/reference/changelog-example/db-migration.md`](.agents/skills/version-release/reference/changelog-example/db-migration.md) |
 | 84 | ✓ | [`.agents/skills/version-release/reference/changelog-example/hotfix.md`](.agents/skills/version-release/reference/changelog-example/hotfix.md) |
 | 85 | ✓ | [`.agents/skills/version-release/reference/changelog-example/weekly-release.md`](.agents/skills/version-release/reference/changelog-example/weekly-release.md) |
-| 86 | ✓ | [`.agents/skills/version-release/reference/patch-release-scenarios.md`](.agents/skills/version-release/reference/patch-release-scenarios.md) |
-| 87 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
-| 88 | ✓ | [`.agents/skills/zustand/references/action-patterns.md`](.agents/skills/zustand/references/action-patterns.md) |
-| 89 | ✓ | [`.agents/skills/zustand/references/slice-organization.md`](.agents/skills/zustand/references/slice-organization.md) |
-| 90 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
-| 91 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
-| 92 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 93 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 94 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
-| 95 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 96 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
-| 97 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 98 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 86 | ✓ | [`.agents/skills/version-release/reference/minor-release.md`](.agents/skills/version-release/reference/minor-release.md) |
+| 87 | ✓ | [`.agents/skills/version-release/reference/patch-release-scenarios.md`](.agents/skills/version-release/reference/patch-release-scenarios.md) |
+| 88 | ✓ | [`.agents/skills/version-release/reference/release-notes-style.md`](.agents/skills/version-release/reference/release-notes-style.md) |
+| 89 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
+| 90 | ✓ | [`.agents/skills/zustand/references/action-patterns.md`](.agents/skills/zustand/references/action-patterns.md) |
+| 91 | ✓ | [`.agents/skills/zustand/references/slice-organization.md`](.agents/skills/zustand/references/slice-organization.md) |
+| 92 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
+| 93 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
+| 94 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 95 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 96 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
+| 97 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 98 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
+| 99 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
+| 100 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
 
 ---
 

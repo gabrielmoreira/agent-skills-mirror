@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/code-to-prd/../../../product-team/code-to-prd/skills/code-to-prd/SKILL.md

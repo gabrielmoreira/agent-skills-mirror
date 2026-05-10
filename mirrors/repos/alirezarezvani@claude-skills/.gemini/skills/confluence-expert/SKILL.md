@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/confluence-expert/../../../project-management/skills/confluence-expert/SKILL.md

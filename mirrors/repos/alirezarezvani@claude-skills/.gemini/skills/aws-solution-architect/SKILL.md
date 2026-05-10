@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/aws-solution-architect/../../../engineering-team/skills/aws-solution-architect/SKILL.md

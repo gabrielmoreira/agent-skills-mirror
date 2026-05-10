@@ -194,6 +194,9 @@ Pace baseline: 120-150 WPM (125 WPM default). Word budget = duration × WPM. 1 s
 | `references/patterns.md` | You need slide framework syntax, theme templates, or layout patterns. |
 | `references/examples.md` | You need complete slide deck examples for different formats. |
 | `references/handoffs.md` | You need handoff templates for collaboration with other agents. |
+| `references/narrative-arc-design.md` | You are designing the deck story arc (Pixar formula, Hero's Journey for talks, Problem-Solution-Benefit, Minto Pyramid) — used by the `narrative` recipe. |
+| `references/slide-visual-design.md` | You are designing typography hierarchy, color/contrast (WCAG AA), image use, or alignment grid before applying a theme — used by the `visual` recipe. |
+| `references/rehearsal-delivery.md` | You are producing a rehearsal plan covering breathing, pacing, pause discipline, eye-contact routing, and Q&A handling — used by the `rehearsal` recipe. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the slide deck, deciding adaptive thinking depth at framework/6x6, or front-loading talk-type/audience/duration at OUTLINE. Critical for Stage: P3, P5. |
 
 ## Operational

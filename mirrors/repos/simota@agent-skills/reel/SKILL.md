@@ -240,6 +240,9 @@ Reel receives recording requests from upstream agents, produces terminal recordi
 | `references/tape-templates.md` | You need reusable .tape templates (quickstart, feature, before-after, interactive, error, workflow). |
 | `references/output-optimization.md` | You need format comparison, GIF/MP4/WebM/SVG optimization. |
 | `references/ci-integration.md` | You need GitHub Actions workflows, caching, or matrix recording. |
+| `references/gif-optimization.md` | You are running the `optimize` recipe and need gifsicle palette tuning, Bayer dither, frame-drop analysis, or ffmpeg 2-pass VP9/AV1 encoding. |
+| `references/terminal-theme-design.md` | You are running the `theme` recipe and need font choice (JetBrains Mono / FiraCode), size scaling, WCAG contrast, or Dracula / Solarized / One Dark palette guidance. |
+| `references/audio-narration-overlay.md` | You are running the `narration` recipe and need TTS overlay design, ffmpeg sidechain ducking, LUFS matching, or subtitle sync for WCAG 1.2.2. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the demo package, deciding adaptive thinking depth at tape/format selection, or front-loading CLI/purpose/format at PLAN. Critical for Reel: P3, P5. |
 
 ## Operational

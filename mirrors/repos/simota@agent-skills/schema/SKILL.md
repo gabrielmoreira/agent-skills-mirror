@@ -287,6 +287,11 @@ Schema receives data requirements and architectural context from upstream agents
 | `references/postgresql17-features.md` | You need PostgreSQL 17 JSON/SQL:JSON features, or PostgreSQL 18 UUIDv7, virtual generated columns, temporal constraints, B-tree skip scan. |
 | `references/multi-tenant-patterns.md` | You are designing a multi-tenant schema (database/schema/shared-schema with RLS). |
 | `references/advanced-patterns.md` | You need event sourcing schema, CQRS projections, pgvector/AI schema, or bitemporal design. |
+| `references/migration-rollback.md` | You are designing reverse-operation DDL, dual-write windows, backfill scripts, or destructive-change alternatives (`rollback` recipe). |
+| `references/partition-strategies.md` | You are designing range/list/hash/time-based partitioning, pruning, maintenance, or staged migration from existing tables (`partition` recipe). |
+| `references/audit-log-schema.md` | You are designing append-only audit-log tables — actor/action/before-after image, retention, WORM, HMAC chain (`audit-log` recipe). |
+| `references/event-sourcing-schema.md` | You are designing event store, projections, snapshots, outbox pattern, or aggregate boundaries (`event-sourcing` recipe). |
+| `references/soft-delete-patterns.md` | You are designing logical deletion (deleted_at / status / tombstone), partial unique indexes, FK cascade, or GDPR right-to-erasure pathway (`soft-delete` recipe). |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the schema/migration spec, deciding adaptive thinking depth at PLAN, or front-loading DB version/multi-tenant flag at AUDIT. Critical for Schema: P3, P5. |
 
 ## AUTORUN Support

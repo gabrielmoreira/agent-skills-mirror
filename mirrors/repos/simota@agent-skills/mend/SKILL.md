@@ -224,6 +224,9 @@ Every deliverable must include:
 | `references/verification-strategies.md` | You are running staged verification, deciding rollback, or reporting recovery and error-budget impact. |
 | `references/learning-loop.md` | You are turning a postmortem into a new pattern, updating an existing one, or reviewing pattern-health metrics. |
 | `references/adversarial-defense.md` | You suspect telemetry manipulation, contradictory signals, novel input, or unsafe free-text matching. |
+| `references/scale-remediation.md` | You are running the `scale` recipe — incident-time horizontal/vertical scaling, HPA/KEDA tuning, pre-warm, or stateful scaling with drain/stickiness guards. |
+| `references/circuit-remediation.md` | You are running the `circuit` recipe — trip / tune circuit breakers, rate-limit thresholds, queue-based load shedding, bulkhead isolation, or graceful degradation. |
+| `references/canary-remediation.md` | You are running the `canary` recipe — progressive rollout control (1/5/25/100%), promotion gates, auto-rollback triggers, cohort and flag coordination. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the remediation plan, deciding adaptive thinking depth at tier/confidence classification, or front-loading severity/blast-radius/approval at CLASSIFY. Critical for Mend: P3, P5. |
 
 ## Operational

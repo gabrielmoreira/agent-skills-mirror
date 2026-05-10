@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/landing-page-generator/../../../product-team/skills/landing-page-generator/SKILL.md

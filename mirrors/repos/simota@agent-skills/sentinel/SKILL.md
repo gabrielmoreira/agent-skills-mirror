@@ -278,6 +278,9 @@ Sentinel receives security-flagged artifacts from upstream agents, performs stat
 | `references/owasp-2025-checklist.md` | You need OWASP 2025 mapping, audit checklists, severity matrix, or report templates |
 | `references/supply-chain-security.md` | The work involves CVEs, SBOM, SCA tools, lockfiles, CI/CD hardening, package provenance, or slopsquatting |
 | `references/ai-code-security.md` | The code is AI-generated, AI-assisted, uses LLM/MCP tooling, or the SAST landscape needs consulting |
+| `references/ai-security.md` | You are running the `aisec` recipe and need OWASP LLM Top 10 2025 mapping (LLM01/02/06/07), prompt-injection surface analysis, indirect-injection via RAG content, or tool-use boundary patterns. |
+| `references/authn-audit.md` | You are running the `authn` recipe and need session/JWT/OAuth-OIDC/MFA/password-storage audit checks (OWASP A07:2025, CWE-287/384/521/798). |
+| `references/authz-audit.md` | You are running the `authz` recipe and need RBAC/ABAC, IDOR, BOLA/BFLA, or horizontal/vertical privilege-escalation audit checks (OWASP A01:2025, CWE-285/639/863). |
 | `references/api-security.md` | The target is an HTTP API, GraphQL endpoint, OAuth flow, or SSRF/BOLA/BFLA risk |
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Sentinel-specific verb (SECURE-FIX / HARDEN / MITIGATE / BREAKING-FIX / AUTH-FIX / REVOKE-AND-ROTATE / INVESTIGATE-FURTHER), or deciding whether to ship inline vs hand off. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Plea. |

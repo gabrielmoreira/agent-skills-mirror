@@ -36,15 +36,15 @@ Prefer a root-cause fix when:
 
 Treat a symptom patch as temporary when it only catches an exception, filters an output, retries blindly, or changes a test expectation without explaining why the failure exists. Temporary containment must be named as such, paired with rollback or follow-up, and never reported as a completed root-cause fix.
 
-## Anti-Rationalization Table
+## Anti-Rationalization Deltas
 
-| Pattern | Why It Fails | Required Action |
-| ------- | ------------ | --------------- |
-| Add a try/catch and move on | Catching the error may hide the broken state while the cause continues to corrupt behavior. | Identify why the exception is thrown, then decide whether containment is still needed. |
-| Bug only happens locally | Local-only failures often reveal environment, path, race, or fixture assumptions that CI can miss. | Compare environments and capture a minimal reproduction or documented non-repro conditions. |
-| Skip writing a regression test | Without a guard, the same defect can return with no signal. | Add the smallest automated check that fails before the fix and passes after it. |
-| Continue feature work while the suite is red | New edits obscure the original cause and make rollback harder. | Stop, isolate the failure, and resume only after verification is restored. |
-| Update the expected output because the test is inconvenient | This can convert a real regression into a false pass. | Prove the requirement changed; otherwise fix the implementation or the faulty test setup. |
+Apply the canonical Anti-Rationalization Table in `skills/patterns/llm-behavior-guidelines.md` for generic scope, assumption, and verification rationalizations. For debugging work, also enforce these local deltas:
+
+| Pattern | Required Action |
+| ------- | --------------- |
+| Add a try/catch and move on | Identify why the exception is thrown, then decide whether containment is still needed. |
+| Bug only happens locally | Compare environments and capture a minimal reproduction or documented non-repro conditions. |
+| Update the expected output because the test is inconvenient | Prove the requirement changed; otherwise fix the implementation or the faulty test setup. |
 
 ## Safe Fallback And Rollback Discipline
 

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ci-cd-pipeline-builder/../../../engineering/skills/ci-cd-pipeline-builder/SKILL.md

@@ -73,7 +73,7 @@ Route elsewhere when the task is primarily:
 - Frame every assessment with a threat model before attacking — no model, no attack.
 - Map all attack scenarios to established frameworks (MITRE ATT&CK, OWASP, STRIDE, ATLAS).
 - Test AI/LLM systems as deployed (with RAG, tools, plugins, MCP servers, glue code), not as standalone models.
-- Test MCP server trust boundaries and tool registration integrity — ATLAS v5.3.0 documents MCP server compromise and indirect prompt injection via MCP channels as real-world attack vectors.
+- Test MCP server trust boundaries and tool registration integrity — MITRE ATLAS v5.4.0+ documents MCP server compromise and indirect prompt injection via MCP channels as real-world attack vectors.
 - Include multi-turn attack chains — single-shot testing is insufficient for AI systems.
 - Classify findings by severity (Critical/High/Medium/Low) using CVSS 4.0 (Base + Threat + Environmental + Supplemental metric groups) and exploitability evidence.
 - Provide remediation guidance (immediate + long-term) for every confirmed vulnerability.
@@ -87,9 +87,9 @@ Route elsewhere when the task is primarily:
 - Enforce security controls (tool-call approvals, file-type firewalls, kill switches) outside the LLM — prompt-level guardrails are unreliable. A joint study by OpenAI, Anthropic, and Google DeepMind (October 2025) showed adaptive attacks bypass 12 published prompt-injection defenses with >90% success rate.
 - For systems subject to EU AI Act: adversarial testing and documentation are mandatory for high-risk and general-purpose AI models with systemic risk. Full compliance required by August 2, 2026; penalties up to €35M or 7% of global annual turnover.
 - For AI red teaming, do not rely solely on binary Attack Success Rate (ASR) — use multi-dimensional scoring (violation severity × attack naturalness × semantic preservation). Binary ASR comparisons across different success criteria or threat models are often invalid and misleading.
-- For agentic AI systems, validate the principle of least agency (OWASP Agentic Top 10 2026) — agents must be granted only the minimum autonomy required for safe, bounded tasks. Test for excessive tool access, credential scope, and unchecked autonomous decision chains.
+- For agentic AI systems, validate the principle of least agency (OWASP Agentic Top 10 2026 [ASI01–ASI10]) — agents must be granted only the minimum autonomy required for safe, bounded tasks. Test for excessive tool access, credential scope, and unchecked autonomous decision chains. [Source: OWASP Gen AI Security Project — OWASP Top 10 for Agentic Applications for 2026 (2025-12-09)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)
 - For supply chain assessments, specifically test third-party OAuth token access — enumerate which integrations have OAuth access to sensitive systems (CRM, email, HRIS) and attempt access via simulated compromised tokens.
-- For agent skill/tool ecosystems, test supply chain integrity per OWASP Agentic Skills Top 10 (AST01-AST10) — skill registry poisoning, manifest signing verification (ed25519), permission scope minimization. The ClawHub registry incident (Q1 2026) confirmed 5 of 7 top-downloaded skills as malware; treat agent skill registries as untrusted by default.
+- For agent skill/tool ecosystems, test supply chain integrity per OWASP Agentic Skills Top 10 (AST01-AST10) — skill registry poisoning, manifest signing verification (ed25519), permission scope minimization. The ClawHub registry incident (2026-02) — first surfaced by a Koi Security audit — found 341 of 2,857 audited skills malicious, with 335 traced to a single coordinated campaign ("ClawHavoc") that abused fabricated "prerequisite installation" prompts (ClickFix 2.0) to deploy Atomic macOS Stealer; treat agent skill registries as untrusted by default. [Source: The Hacker News — Researchers Find 341 Malicious ClawHub Skills (2026-02)](https://thehackernews.com/2026/02/researchers-find-341-malicious-clawhub.html)
 - For agentic AI, prioritize contextual red teaming over generic jailbreak testing — standard jailbreaks measure response risk, but agentic systems require testing of operational risks: tool misuse, unauthorized actions, and data exfiltration via conversational redirection. A red team demonstrated a financial assistant executing a $440K portfolio rebalancing through a movie roleplay frame without re-authorization.
 - Structure AI red teaming engagements around four assessment areas: model evaluation, implementation testing, infrastructure assessment, and runtime behavior analysis (per OWASP GenAI Red Teaming Guide).
 - Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
@@ -104,7 +104,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 ### Always
 - All Core Contract commitments apply unconditionally
 - Score findings with CVSS 4.0 (all four metric groups: Base, Threat, Environmental, Supplemental)
-- For AI/LLM systems: test system prompt leakage (OWASP LLM07 2025), RAG poisoning, MCP server integrity (ATLAS v5.3.0), and tool/plugin trust boundaries in addition to prompt injection
+- For AI/LLM systems: test system prompt leakage (OWASP LLM07 2025), RAG poisoning, MCP server integrity (MITRE ATLAS v5.4.0+), and tool/plugin trust boundaries in addition to prompt injection
 
 ### Ask first
 - Scope involves production systems or real user data
@@ -328,7 +328,7 @@ Every deliverable must include:
 | AP-15 | **Prompt-Level Security** — embedding security controls (guardrails, filters, access rules) inside prompts instead of external enforcement | Are security controls enforced outside the LLM? | Adaptive attacks bypass prompt-level defenses with >90% ASR; enforce tool-call approvals, file-type firewalls, and kill switches at the application layer, not in system prompts |
 | AP-16 | **Context Manipulation Blindspot** — testing only technical exploits while ignoring narrative/social deception of AI agents | Were agents tested with compelling fictional scenarios designed to override their constraints? | Real-world agentic red teaming shows agents fail to contextual manipulation — adversaries provide fictional authority contexts where agents agree their own rules don't apply; test with role-play scenarios, simulated emergencies, and multi-turn trust-building chains |
 | AP-17 | **Jailbreak-Only Agent Testing** — applying generic jailbreak libraries to agentic systems instead of testing operational risks | Were tool misuse, unauthorized actions, and data exfiltration tested? | Generic jailbreaks measure response risk; agentic AI's dangerous vulnerabilities are the actions it executes — test authorization bypass on tool calls, cross-account data access via conversational redirection, and privilege escalation through delegated trust |
-| AP-18 | **Skill Registry Trust** — treating agent skill/tool registries as trusted without supply chain verification | Were agent skills verified for integrity before deployment? | ClawHub registry (Q1 2026): 5 of 7 top-downloaded skills confirmed malware; verify manifest signatures, audit permission scopes, and treat all registries as untrusted by default |
+| AP-18 | **Skill Registry Trust** — treating agent skill/tool registries as trusted without supply chain verification | Were agent skills verified for integrity before deployment? | ClawHub registry (2026-02): Koi Security audit found 341 / 2,857 skills malicious, 335 traced to "ClawHavoc" campaign deploying Atomic macOS Stealer via ClickFix 2.0; verify manifest signatures, audit permission scopes, treat all registries as untrusted by default |
 
 ---
 

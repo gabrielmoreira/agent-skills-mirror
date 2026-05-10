@@ -86,8 +86,10 @@ export async function resolveConfig(): Promise<ResolvedConfig> {
 
 const SKILL_DIR_CANDIDATES = [
   "skills",
+  ".agents/skills",
   ".claude/skills",
   ".cursor/skills",
+  ".codex/skills",
   ".gemini/skills",
   ".kiro/skills",
   ".windsurf/skills",

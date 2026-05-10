@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/product-manager-toolkit/../../../product-team/skills/product-manager-toolkit/SKILL.md

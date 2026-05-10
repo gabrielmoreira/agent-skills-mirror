@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `denoland/deno` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `denoland/deno` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `denoland/deno` — 26 default patterns, 0 followed patterns, 2 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/fmt/SKILL.md`](.claude/skills/fmt/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/issue-triage/SKILL.md`](.claude/skills/issue-triage/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/lint-all/SKILL.md`](.claude/skills/lint-all/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/lint-js/SKILL.md`](.claude/skills/lint-js/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/node-compat/SKILL.md`](.claude/skills/node-compat/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
+| 7 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

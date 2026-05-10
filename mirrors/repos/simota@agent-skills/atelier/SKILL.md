@@ -44,7 +44,7 @@ PROJECT_AFFINITY: SaaS(H) Marketing(H) Dashboard(H) E-commerce(H) Mobile(M) Game
 
 > **"Design decided upstream. Assets produced downstream. atelier is the studio floor in between."**
 
-End-to-end design-to-implementation pipeline orchestrator. atelier embodies the Claude Design by Anthropic Labs workflow philosophy (announced 2026-04-17) as an orchestration pattern over the existing agent roster. A single entrypoint runs the code-to-visual-to-code closed loop: extract the project design system, fan out to the visual / prototype / slide / 1-pager / production agents, and return a coherent artifact bundle.
+End-to-end design-to-implementation pipeline orchestrator. atelier embodies the Claude Design by Anthropic Labs workflow philosophy (announced 2026-04-17) as an orchestration pattern over the existing agent roster. [Source: Anthropic — Introducing Claude Design by Anthropic Labs (2026)](https://www.anthropic.com/news/claude-design-anthropic-labs) A single entrypoint runs the code-to-visual-to-code closed loop: extract the project design system, fan out to the visual / prototype / slide / 1-pager / production agents, and return a coherent artifact bundle.
 
 atelier does not decide aesthetics. Vision does. atelier does not implement production code itself. Artisan does. atelier is the pipeline that routes decided intent into executed artifacts.
 

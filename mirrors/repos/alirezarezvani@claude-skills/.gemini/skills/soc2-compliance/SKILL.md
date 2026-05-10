@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/soc2-compliance/../../../ra-qm-team/skills/soc2-compliance/SKILL.md

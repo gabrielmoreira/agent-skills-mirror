@@ -1,119 +1,142 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project Overview
 
-## 项目概述
+Astron Agent is an enterprise-grade Agentic Workflow development platform. It includes the console frontend and backend, multiple core microservices, a plugin system, and deployment and infrastructure configuration. The repository uses a multi-language, multi-module structure. The primary languages are TypeScript, Java, Python, and Go.
 
-Astron Agent 是一个企业级 Agentic Workflow 开发平台,采用微服务架构,整合了 AI 工作流编排、模型管理、AI 工具、RPA 自动化和团队协作功能。
+## Repository Structure
 
-### 技术栈概览
+### Console
 
-- **前端**: TypeScript + React 18 + Vite + Ant Design (位于 `console/frontend/`)
-- **控制台后端**: Java 21 + Spring Boot 3.5.4 (位于 `console/backend/`)
-- **核心微服务**: Python 3.11+ + FastAPI (位于 `core/` 目录)
-- **租户服务**: Go 1.23 + Gin (位于 `core/tenant/`)
-- **基础设施**: MySQL, Redis, Kafka, MinIO
+- `console/frontend`
+  - React 18 + TypeScript + Vite frontend application
+  - Responsible for the console UI, agent creation, chat interface, workflow visualization, model management, plugin marketplace, and related features
+- `console/backend`
+  - Java Spring Boot backend
+  - Responsible for console REST APIs, SSE, authentication, management capabilities, and business aggregation
+  - Main submodules:
+    - `hub`
+    - `toolkit`
+    - `commons`
 
-## 项目架构
+### Core Microservices
 
-### 目录结构
+- `core/agent`
+  - Python FastAPI service
+  - Responsible for the agent execution engine, Chat/CoT/CoT Process Agent, plugin invocation, and session context handling
+- `core/workflow`
+  - Python FastAPI service
+  - Responsible for workflow orchestration, execution, debugging, versioning, and event handling
+- `core/knowledge`
+  - Python FastAPI service
+  - Responsible for the knowledge base, document processing, vectorization, retrieval, and RAG integration
+- `core/memory`
+  - Python module
+  - Responsible for conversation history, short-term and long-term memory, and session persistence
+- `core/tenant`
+  - Go service
+  - Responsible for multi-tenancy, space isolation, organization management, and resource quota management
+- `core/plugin`
+  - Plugin capability directory
+  - Includes plugin services such as `aitools`, `rpa`, and `link`
+- `core/common`
+  - Python shared capability module
+  - Responsible for abstractions around authentication, logging, observability, databases, cache, message queues, object storage, and other infrastructure concerns
 
-```
-astron-agent/
-├── console/                    # 控制台模块
-│   ├── frontend/              # React 前端 (TypeScript)
-│   └── backend/               # Spring Boot 后端 (Java)
-│       ├── hub/               # 主 API 服务
-│       ├── toolkit/           # 工具模块
-│       └── commons/           # 公共模块
-├── core/                      # 核心微服务
-│   ├── agent/                 # Agent 服务 (Python FastAPI)
-│   ├── workflow/              # 工作流服务 (Python FastAPI)
-│   ├── knowledge/             # 知识库服务 (Python FastAPI)
-│   ├── memory/                # 内存数据库服务 (Python)
-│   ├── tenant/                # 租户服务 (Go Gin)
-│   ├── common/                # 公共模块 (Python)
-│   └── plugin/                # 插件系统
-│       ├── aitools/           # AI 工具插件
-│       ├── rpa/               # RPA 插件
-│       └── link/              # 链接插件
-├── docker/                    # Docker 配置
-├── docs/                      # 文档
-├── helm/                      # Kubernetes Helm Charts
-└── makefiles/                 # Makefile 工具链
-```
+### Other Directories
 
-### 核心架构模式
+- `docs`
+  - Project documentation, deployment, configuration, and module descriptions
+  - For architectural understanding, refer first to `docs/PROJECT_MODULES_zh.md`
+- `docker`
+  - Docker Compose and related infrastructure configuration
+- `helm`
+  - Helm Charts and Kubernetes deployment configuration
 
-#### 1. 微服务通信
+## Typical Communication Flows
 
-- **Frontend → Backend**: HTTP/REST + SSE (服务端推送)
-- **Backend → Core Services**: HTTP/REST API
-- **Core Services ↔ Core Services**: Kafka 事件驱动 (异步)
-- **数据持久化**: MySQL (关系数据) + Redis (缓存/会话)
-- **文件存储**: MinIO (对象存储)
+- Frontend -> Console Backend: HTTP/REST, SSE
+- Console Backend -> Core Services: HTTP/REST
+- Core Services -> Core Services: Kafka event-driven communication
 
-#### 2. Kafka 事件主题
+## Behavioral Guidelines to Reduce Common LLM Coding Mistakes
 
-- `workflow-events`: 工作流事件
-- `knowledge-events`: 知识库事件
-- `agent-events`: Agent 事件
+Merge these with project-specific instructions as needed.
 
-#### 3. Python 服务架构 (DDD)
+Tradeoff: These guidelines prioritize caution over speed. Use judgment for trivial tasks.
 
-所有 Python 微服务遵循领域驱动设计 (DDD):
+### 1. Think Before Coding
 
-```
-service/
-├── api/                       # API 层 (FastAPI 路由)
-├── service/                   # 服务层 (业务逻辑)
-├── domain/                    # 领域层 (领域模型)
-├── repository/                # 仓储层 (数据访问)
-└── main.py                    # 服务入口
-```
+Do not assume. Do not hide confusion. Surface tradeoffs.
 
-#### 4. 公共模块 (core/common)
+Before implementing:
 
-为所有 Python 服务提供统一的基础设施:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them instead of choosing silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Identify what is confusing and ask.
 
-- 认证和审计系统 (MetrologyAuth)
-- 可观测性支持 (OpenTelemetry)
-- 数据库、缓存、消息队列连接管理
-- 统一日志系统
-- OSS 对象存储集成
+### 2. Simplicity First
 
-## 部署
+Write the minimum code that solves the problem. Nothing speculative.
 
-### Docker Compose 部署 (推荐快速开始)
+- Do not add features beyond what was asked.
+- Do not add abstractions for single-use code.
+- Do not add "flexibility" or "configurability" that was not requested.
+- Do not add error handling for impossible scenarios.
+- If you write 200 lines and the same result could be achieved in 50, rewrite it.
+- Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
-```bash
-cd docker/astronAgent
-cp .env.example .env
-vim .env                        # 配置环境变量
+### 3. Surgical Changes
 
-# 启动所有服务 (包括 Casdoor 认证)
-docker compose -f docker-compose-with-auth.yaml up -d
+Touch only what you must. Clean up only your own mess.
 
-# 访问地址
-# - 前端: http://localhost/
-# - Casdoor 管理: http://localhost:8000 (admin/123)
-```
+When editing existing code:
 
-## 重要注意事项
+- Do not "improve" adjacent code, comments, or formatting.
+- Do not refactor things that are not broken.
+- Match the existing style, even if you would normally do it differently.
+- If you notice unrelated dead code, mention it. Do not delete it.
 
-### 开发约定
+When your changes create orphans:
 
-1. **禁止直接推送到 main/develop 分支** - 必须通过分支开发 + PR 流程
+- Remove imports, variables, or functions that become unused because of your changes.
+- Do not remove pre-existing dead code unless asked.
+- Use this test: every changed line should trace directly to the user's request.
 
-### 模块间依赖
+### 4. Goal-Driven Execution
 
-- **Common Module** 被所有 Python 服务依赖,修改时需谨慎
-- **Agent Service** 被 Workflow 服务调用
-- **Knowledge Service** 为 Agent 和 Workflow 提供 RAG 能力
-- **Tenant Service** 为所有服务提供租户上下文
+Define success criteria. Iterate until verified.
 
-## 相关文档
+Turn tasks into verifiable goals:
 
-- [项目模块说明](docs/PROJECT_MODULES_zh.md) - 详细架构说明
-- [部署指南](docs/DEPLOYMENT_GUIDE_WITH_AUTH_zh.md) - 完整部署步骤
-- [前端开发指南](console/frontend/CLAUDE.md) - 前端特定指南
+- "Add validation" -> "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" -> "Write a test that reproduces it, then make it pass"
+- "Refactor X" -> "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+
+1. [Step] -> verify: [check]
+2. [Step] -> verify: [check]
+3. [Step] -> verify: [check]
+
+Strong success criteria allow you to work independently in a loop. Weak criteria such as "make it work" require constant clarification.
+
+These guidelines are working if there are fewer unnecessary changes in diffs, fewer rewrites caused by overcomplication, and more clarifying questions before implementation rather than after mistakes.
+
+## Modification Recommendations
+
+- Before making changes, first identify the target module. Do not modify shared layers directly before understanding the call chain.
+- If a change involves multiple services, make the call chain and dependency direction explicit.
+- If Kafka, Redis, MinIO, or authentication is involved, evaluate the impact on other services first.
+
+## Important Notes
+
+- Before implementation, first confirm the target module, upstream and downstream dependencies, and the verification approach.
+- Prefer official SDKs when writing code.
+- Do not focus only on whether the feature works. It must also satisfy the corresponding language module's formatting, linting, type checking, static analysis, and testing requirements.
+- If it is a complete feature request or a complex bug, add logs at key points as much as reasonably possible to help with troubleshooting, but do not add excessive logging.
+
+## Key Workflow Expectations
+
+1. After the feature work and testing are completed, ask the user whether the local branch needs to be pushed. If the user requires a push, start a new subagent to execute the .claude\skills\astron-agent-pr-publish skill. After the push is completed, then ask the user whether the project needs to be redeployed. If the user confirms redeployment is needed, start a new subagent to execute the .claude\skills\astron-agent-server-deploy skill.

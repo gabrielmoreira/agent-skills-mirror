@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/competitor-alternatives/../../../marketing-skill/skills/competitor-alternatives/SKILL.md

@@ -271,7 +271,7 @@ Read `references/timezone-safety.md` for the full discipline.
 
 | Library | State | Recommendation |
 |---------|-------|----------------|
-| **Temporal API** (`ZonedDateTime`, `Instant`) | ECMAScript Stage 3; polyfill `@js-temporal/polyfill` | New TS/JS code — preferred long-term |
+| **Temporal API** (`ZonedDateTime`, `Instant`) | ECMAScript **Stage 4** (advanced 2026-03, in ES2026 spec); shipping in Firefox 139 / Chrome 144 / Node 26; polyfill `@js-temporal/polyfill` for older runtimes [Source: Socket — TC39 Advances Temporal to Stage 4](https://socket.dev/blog/tc39-advances-temporal-to-stage-4) | New TS/JS code — preferred long-term |
 | **Luxon** (`DateTime.setZone`, `.toUTC`) | Mature, IANA-aware | Excellent for current production JS/TS |
 | **date-fns-tz** (`formatInTimeZone`, `zonedTimeToUtc`) | Function-based companion to date-fns | Good when already on date-fns |
 | **Moment.js** | Maintenance mode since 2020 | Do NOT use in new code; migrate to Luxon |
@@ -337,7 +337,7 @@ Brief matrix; details in `references/cron-patterns.md` and `references/retry-str
 |----------|------------|----------|-------|-----|-------------|
 | **GitHub Actions** | 5-field Unix | UTC only | Manual in workflow | None native — log + issue | Manual |
 | **AWS EventBridge** | 6-field `cron(...)` | UTC or local via rule | Lambda retry (2 default) + async DLQ | SQS DLQ | Request-ID based |
-| **K8s CronJob** | 5-field Unix | UTC (cluster) or spec.timeZone (v1.25+ beta) | `backoffLimit` | Failed-job history + external | Manual |
+| **K8s CronJob** | 5-field Unix | UTC (cluster) or spec.timeZone (stable since v1.27; embedded Go tzdata fallback) | `backoffLimit` | Failed-job history + external | Manual |
 | **Cloud Scheduler** (GCP) | 5-field Unix + `timeZone` | Any IANA | Retry config on Job | Pub/Sub DLQ | Manual |
 | **Sidekiq** (Ruby) | cron-parser via sidekiq-cron | Any IANA | Built-in exp backoff (25 retries) | Morgue queue | `sidekiq_options lock: :until_executed` |
 | **BullMQ** (Node) | cron via repeat option | Any IANA | `attempts` + `backoff: exponential` | `failed` list | Custom via job ID |

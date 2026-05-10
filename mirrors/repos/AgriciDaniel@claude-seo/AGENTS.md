@@ -1,12 +1,13 @@
-# Claude SEO — Multi-Platform Agent Instructions
+# Claude SEO: Multi-Platform Agent Instructions
 
 > For **Cursor**, **Cursor Cloud Agents**, **Google Antigravity**, and **Gemini CLI**.
 > Claude Code users: see `CLAUDE.md` instead.
 
 ## Overview
 
-Claude SEO is a Tier 4 SEO analysis skill with 20 core sub-skills (+ 3 extensions),
-15 core subagents (+ 2 extension agents, 17 total), and 30 Python execution scripts.
+Claude SEO is a Tier 4 SEO analysis skill with 25 sub-skills (21 core + 1 orchestrator +
+1 framework integration + 2 extension mirrors), 18 sub-agents (15 core + 1 framework
+integration + 2 extension mirrors), and 30 Python execution scripts.
 
 ## Quick Reference
 
@@ -65,9 +66,9 @@ DATAFORSEO_USERNAME=user DATAFORSEO_PASSWORD=pass python scripts/dataforseo_merc
 ```
 
 **Cursor Cloud gotchas:**
-- SSL certificates may not resolve for some domains — investigate the certificate issue rather than disabling verification
-- PATH may not include Python venv — use full path: `~/.claude/skills/seo/.venv/bin/python`
-- Screenshots save to `/tmp/` not CWD — check absolute paths
+- SSL certificates may not resolve for some domains. Investigate the certificate issue rather than disabling verification.
+- PATH may not include Python venv. Use full path: `~/.claude/skills/seo/.venv/bin/python`
+- Screenshots save to `/tmp/` not CWD. Check absolute paths.
 
 ## Using with Google Antigravity
 
@@ -81,7 +82,7 @@ bash install.sh
 ## Architecture
 
 ```
-skills/                    # 23 skills (auto-discovered)
+skills/                    # 25 sub-skills (auto-discovered)
   seo/SKILL.md            # Main orchestrator + routing
   seo-cluster/            # Semantic clustering (v1.9.0)
   seo-sxo/                # Search Experience Optimization (v1.9.0)

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/rag-architect/../../../engineering/skills/rag-architect/SKILL.md

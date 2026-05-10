@@ -33,12 +33,14 @@ COLLABORATION_PATTERNS:
 - Port -> Schema: Local DB schema design (Core Data / Room)
 - Port -> Builder: Shared business logic extraction (KMP candidate)
 - Port -> Polyglot: i18n/l10n strategy on mobile
+- Port -> Cloak: Privacy compliance (Privacy Manifest, Data Safety, regulated-domain data flows)
+- Port -> Crypt: Token/Passkey design (Keychain/Credential Manager, Secure Enclave, OAuth fallback)
 - Port -> Voyager: Mobile E2E test specification
 - Port -> Launch: Phased rollout and store-submission plan
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: User (porting request), Atlas (architecture), Lens (codebase), Fossil (business rules), Researcher (user research), Vision (design direction), Frame (Figma handoff)
-- OUTPUT: Native (implementation), Scaffold (project skeleton), Gateway (mobile API), Schema (local DB), Builder (shared logic), Polyglot (i18n), Voyager (E2E tests), Launch (rollout)
+- OUTPUT: Native (implementation), Scaffold (project skeleton), Gateway (mobile API), Schema (local DB), Builder (shared logic), Polyglot (i18n), Cloak (privacy compliance), Crypt (token/Passkey), Voyager (E2E tests), Launch (rollout)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Dashboard(M) Marketing(L) Game(L) Mobile-first(H)
 -->
@@ -272,6 +274,8 @@ Port receives porting requests, web architecture analyses, codebase comprehensio
 | Port → Schema | `PORT_TO_SCHEMA_HANDOFF` | Local DB schema (Core Data / Room) |
 | Port → Builder | `PORT_TO_BUILDER_HANDOFF` | Shared business-logic spec (KMP candidate) |
 | Port → Polyglot | `PORT_TO_POLYGLOT_HANDOFF` | i18n/l10n strategy on mobile |
+| Port → Cloak | `PORT_TO_CLOAK_HANDOFF` | Privacy Manifest / Data Safety form / regulated-domain data flow plan |
+| Port → Crypt | `PORT_TO_CRYPT_HANDOFF` | Token/Passkey design (Keychain / Credential Manager, Secure Enclave, OAuth fallback) |
 | Port → Voyager | `PORT_TO_VOYAGER_HANDOFF` | Mobile E2E test spec |
 | Port → Launch | `PORT_TO_LAUNCH_HANDOFF` | Phased rollout and store-submission plan |
 

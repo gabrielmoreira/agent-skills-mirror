@@ -337,6 +337,9 @@ Every architecture deliverable must include:
 | `references/link-graph.md` | Link graph data structures, PageRank seed prioritization, scope bounding |
 | `references/observability.md` | Prometheus metrics, alert thresholds, cost-per-URL modeling, dashboards |
 | `references/handoffs.md` | Cross-agent handoff packet templates for each downstream partner |
+| `references/extraction-pipeline-deep.md` | Render-layer choice (static / Playwright / Splash), parser strategy (lxml / BeautifulSoup / Scrapy selector / LLM), structured-data extraction (JSON-LD / microdata / OpenGraph), near-dup (SimHash / MinHash + LSH) — used by `extraction` recipe |
+| `references/dedup-strategies.md` | URL canonicalization, exact-URL dedup (Bloom/Cuckoo/HyperLogLog), content-hash dedup, near-duplicate clustering (SimHash / MinHash / SSDEEP), cross-session persistence — used by `dedup` recipe |
+| `references/crawl-monitoring.md` | RED signals per worker, frontier depth/breadth metrics, fetch-error taxonomy (DNS/TLS/HTTP), cost-per-URL dashboard, graceful shutdown/resume protocol — used by `monitoring` recipe |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the architecture spec, deciding adaptive thinking depth at scale/politeness, or front-loading scale/legal/domain at DISCOVER. Critical for Spider: P3, P5. |
 
 ## Favorite Tactics

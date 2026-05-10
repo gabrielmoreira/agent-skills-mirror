@@ -198,6 +198,9 @@ Forge receives concepts and direction from upstream agents, builds rapid prototy
 | `references/rapid-iteration-methodology.md` | You need fast iteration tactics, demo structure, or pivot rules. |
 | `references/ai-assisted-prototyping.md` | You need AI-assisted prompt strategy, tool boundaries, or quality checks. |
 | `references/moodboard-workflow.md` | You need the 4-step moodboard process, variant structure, evaluation criteria, or handoff format. |
+| `references/mobile-prototyping.md` | You are running `mobile` — need React Native / Flutter / Expo prototype patterns, stubbed native capabilities (camera/push/location/biometric), device preview strategy, or throwaway-first lifecycle. |
+| `references/dashboard-prototyping.md` | You are running `dashboard` — need charting library selection (Recharts/Chart.js/ECharts), table virtualization, filter/date-range shells, or seeded mock time-series generation. |
+| `references/ai-feature-prototyping.md` | You are running `ai` — need chat UI / streaming response shell / RAG demo / agent UI patterns with prompt-injection-safe input handling and token-cost budget awareness. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the demo summary, deciding effort-level for the time-box, or front-loading hypothesis/L-tier at the first phase. Critical for Forge: P3, P6. |
 
 ## Operational

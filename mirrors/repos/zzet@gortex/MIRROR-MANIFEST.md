@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zzet/gortex` — 26 default patterns, 1 followed patterns, 2 file(s) materialized.
+Mirror of `zzet/gortex` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `zzet/gortex` — 26 default patterns, 1 followed patterns, 2 file(s) 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 2 |
+| Followed pats | 0 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `zzet/gortex` — 26 default patterns, 1 followed patterns, 2 file(s) 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/wire-format.md`
+_None._
 
 ## File Index
 
@@ -60,7 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | → | [`docs/wire-format.md`](docs/wire-format.md) |
 
 ---
 

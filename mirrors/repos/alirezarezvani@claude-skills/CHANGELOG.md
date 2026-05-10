@@ -5,6 +5,32 @@ All notable changes to the Claude Skills Library will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] — Skill Expansion Phase 1+2+3
+
+### Added — Engineering POWERFUL
+
+- **feature-flags-architect** — End-to-end feature-flag discipline. Detects stale flags as debt (`flag_debt_scanner.py`), generates phased rollout plans across ring/linear/log/cohort strategies (`rollout_planner.py`), and audits every flag for documented kill switch (`kill_switch_audit.py`). 4 references on flag taxonomy, provider comparison (LaunchDarkly / GrowthBook / Statsig / Unleash / Flipt / DIY), rollout strategies, and lifecycle. Ships standalone plugin AND in the engineering-advanced-skills bundle. New `/flag-cleanup` slash command.
+- **kubernetes-operator** — End-to-end Kubernetes Operator discipline. Validates CRDs against operator-pattern best practices (`crd_validator.py`), lints Go reconcile functions for anti-patterns like `time.Sleep`, spec mutation, missing requeue, finalizer imbalance (`reconcile_lint.py`), and scores operators against OperatorHub Capability Levels 1-5 (`operator_capability_audit.py`). 4 references on operator pattern, CRD design, reconcile loop patterns, and framework comparison (controller-runtime / kubebuilder / operator-sdk / metacontroller / KOPF). Asset templates for production CRD YAML and Go controller skeleton (both pass linters). New `/operator-audit` slash command. NOT a generic k8s skill — specifically the Operator pattern. Self-tested: linters caught 4 real bugs in their own asset templates during build.
+- **chaos-engineering** — End-to-end chaos engineering discipline. Generates structured experiment plans with hypothesis + steady-state + blast-radius + abort-criteria (`experiment_designer.py`), computes blast radius with GREEN/YELLOW/RED risk score against monthly error budget (`blast_radius_calculator.py`), and produces blameless postmortems with blame-language detection (`experiment_postmortem.py`). 4 references on the 4 founding principles + 5th abort-criteria principle, hypothesis/steady-state/abort design, the 7-attack taxonomy (latency / error / resource / network-partition / dependency / time / infrastructure), and tooling landscape (Chaos Toolkit / Chaos Mesh / Litmus / Gremlin / AWS FIS / DIY). Templates for plans and postmortems. New `/chaos-experiment` slash command. Composes explicitly with feature-flags-architect (kill switches as abort triggers) and kubernetes-operator (operators are common chaos targets). Karpathy complexity 95/100 — best score in the new portfolio.
+
+### Added — Repo infrastructure
+
+- **scripts/sync_skill_bundles.py** — mirror standalone plugin payloads into their domain-bundled location; `--check` exits 1 on drift, `--sync` rewrites the mirror. Locks in the dual-publish invariant for every new skill.
+- **scripts/check_plugin_json.py** — strict ClawHub schema validator (exactly 8 fields, semver, `author{name,url}`, `skills` as string or array — bare `"./"` rejected per Claude Code v2.1.107+). Verified against all 31 existing plugin.json files.
+
+### Changed
+
+- **Total skills:** 235 → 238 (+3 new engineering POWERFUL skills)
+- **Python tools:** 314 → 325
+- **References:** 435 → 447
+- **Slash commands:** 27 → 30
+- **engineering-advanced-skills** plugin: v2.3.3 → v2.4.2
+- **marketplace.json**: `feature-flags-architect`, `kubernetes-operator`, and `chaos-engineering` registered as standalone plugins
+
+### Fixed
+
+- `tests/test_skill_integrity.py::TestScriptDirectories::test_scripts_dirs_have_python_files` — was rejecting valid skills shipping `.mjs`/`.js`/`.ts`/`.sh` scripts (e.g., `full-page-screenshot`). Now accepts any executable script extension while keeping the "scripts/ dir is non-empty" intent.
+
 ## [2.2.0] - 2026-03-31
 
 ### Added — Security Skills Suite & Self-Eval

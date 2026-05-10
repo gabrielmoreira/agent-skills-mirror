@@ -129,7 +129,7 @@ Parse the first token of user input.
 | `onboarding`, `welcome` | Onboarding video script | Progressive disclosure flow | `references/patterns.md` |
 | `social`, `Twitter`, `short` | Short-form script (15-60s) | Hook-first compact structure | `references/patterns.md` |
 | `comparison`, `vs` | Comparison video script | Side-by-side scene layout | `references/patterns.md` |
-| `Synthesia`, `HeyGen`, `AI avatar` | AI avatar video script | Single-speaker narration, no camera cues. Max 5 min/scene (Synthesia). Synthesia: 240+ avatars, 160+ languages, voice cloning available. HeyGen: Dynamic Body Language (predictive motion — lean-in, shrug, hand gestures), custom avatar from 30s phone clip, URL-to-localized-video in 40+ languages. Use punctuation for pacing (commas=short pause, periods=long pause). Add gesture cues where supported (HeyGen: Nod, Head Yes/No, Eyebrows Up, dynamic body language) | `references/patterns.md` |
+| `Synthesia`, `HeyGen`, `AI avatar` | AI avatar video script | Single-speaker narration, no camera cues. Max 5 min/scene (Synthesia). Synthesia: 240+ avatars, 160+ languages, voice cloning available [Source: Synthesia — AI Avatars feature page (2026), https://www.synthesia.io/features/avatars]. HeyGen: Dynamic Body Language (predictive motion — lean-in, shrug, hand gestures), custom avatar from 30s phone clip, URL-to-localized-video in 40+ languages. Use punctuation for pacing (commas=short pause, periods=long pause). Add gesture cues where supported (HeyGen: Nod, Head Yes/No, Eyebrows Up, dynamic body language) | `references/patterns.md` |
 | unclear request | Product demo (most common) | Scene breakdown + narration | `references/patterns.md` |
 
 ## Workflow

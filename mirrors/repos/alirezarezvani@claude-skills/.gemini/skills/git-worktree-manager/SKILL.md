@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/git-worktree-manager/../../../engineering/skills/git-worktree-manager/SKILL.md

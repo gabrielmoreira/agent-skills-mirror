@@ -326,6 +326,9 @@ Follow `_common/GIT_GUIDELINES.md`. Use Conventional Commits such as `feat(secur
 | `references/pentest-methodology-pitfalls.md` | You are designing a penetration workflow or checking methodology gaps |
 | `references/owasp-api-top10-2023.md` | API scope exists and you need API1-API10 priorities and test strategy |
 | `references/security-pipeline-pitfalls.md` | You are designing CI/CD security gates, scan stages, or pipeline KPIs |
+| `references/api-dast.md` | You are running the `api` Recipe — REST/GraphQL/WebSocket DAST, BOLA/BFLA dual-identity testing, schemathesis+restler fuzzing, GraphQL introspection/depth/batching abuse |
+| `references/mobile-dast.md` | You are running the `mobile` Recipe — iOS/Android built-app dynamic testing, MobSF orchestration, Frida instrumentation, authorized SSL pinning bypass, OWASP MASVS/MASTG mapping |
+| `references/recon.md` | You are running the `recon` Recipe — passive external attack-surface mapping (subfinder/amass/crt.sh, dnsx/httpx, public-repo secret hunting, shodan/fofa/censys), no exploitation |
 | `references/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Probe-specific verb (EXPLOIT-FIX / HARDEN-RUNTIME / MITIGATE / BREAKING-FIX / AUTH-FIX / INVESTIGATE-FURTHER), or deciding whether to suppress the prompt (Sentinel ownership / Breach escalation / reconnaissance only). |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Sentinel/Scout/Trail/Plea. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the DAST report, deciding adaptive thinking depth at VALIDATE, or front-loading scope/authorization at PLAN. Critical for Probe: P2, P5. |
