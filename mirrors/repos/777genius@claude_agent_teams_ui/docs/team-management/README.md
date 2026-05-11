@@ -22,6 +22,7 @@
 | [openclaw-agent-teams-integration.md](./openclaw-agent-teams-integration.md) | How to connect OpenClaw or another outside AI through Agent Teams MCP and REST control API           |
 | [research-worktrees.md](./research-worktrees.md)                             | Git worktrees + teams, запуск Claude процессов из UI (Phase 2)                                       |
 | [task-queue-derived-agenda-plan.md](./task-queue-derived-agenda-plan.md)     | Подробный rollout-plan по разделению queue/inventory, derived actionOwner и phased agenda/delta sync |
+| [debugging-agent-teams.md](./debugging-agent-teams.md)                       | Runtime debugging runbook, включая `CLAUDE_TEAM_TEAMMATE_MODE=tmux` для pane-backed teammate debug   |
 
 ## Ключевые решения
 

@@ -1,20 +1,14 @@
-#!/usr/bin/env node
 /**
  * Preline Theme Generator
- * 
- * Generates a complete theme CSS file from a simple config.
- * 
- * Usage:
- *   node generate-theme.js config.json [output.css]
- *   node generate-theme.js config.yaml [output.css]
- * 
- * Or programmatically:
+ *
+ * Core library for generating a complete theme CSS file from config.
+ *
+ * Use `run-theme-generator.js` for CLI execution. Import this file when you
+ * need the generator programmatically:
+ *
  *   const { generateTheme } = require('./generate-theme.js');
  *   const css = generateTheme(config);
  */
-
-const fs = require('fs');
-const path = require('path');
 
 // ============================================
 // COLOR CONVERSION UTILITIES
@@ -77,6 +71,49 @@ function oklchToHex(l, c, h) {
   };
 
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+/**
+ * Convert sRGB channel value to linear space
+ * @param {number} channel - 0-255
+ * @returns {number}
+ */
+function srgbChannelToLinear(channel) {
+  const normalized = channel / 255;
+
+  if (normalized <= 0.04045) {
+    return normalized / 12.92;
+  }
+
+  return Math.pow((normalized + 0.055) / 1.055, 2.4);
+}
+
+/**
+ * Relative luminance per WCAG
+ * @param {{r: number, g: number, b: number}} rgb
+ * @returns {number}
+ */
+function getRelativeLuminance(rgb) {
+  const r = srgbChannelToLinear(rgb.r);
+  const g = srgbChannelToLinear(rgb.g);
+  const b = srgbChannelToLinear(rgb.b);
+
+  return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+}
+
+/**
+ * WCAG contrast ratio between two colors
+ * @param {{r: number, g: number, b: number}} colorA
+ * @param {{r: number, g: number, b: number}} colorB
+ * @returns {number}
+ */
+function getContrastRatio(colorA, colorB) {
+  const luminanceA = getRelativeLuminance(colorA);
+  const luminanceB = getRelativeLuminance(colorB);
+  const lighter = Math.max(luminanceA, luminanceB);
+  const darker = Math.min(luminanceA, luminanceB);
+
+  return (lighter + 0.05) / (darker + 0.05);
 }
 
 /**
@@ -228,69 +265,114 @@ function generateGrayPalette(name, hue) {
   ).join('\n');
 }
 
+function getBrandShadeOklch(style, hue, shade) {
+  const chromaByStyle = {
+    vibrant: {
+      50: 0.08, 100: 0.10, 200: 0.12, 300: 0.14, 400: 0.16,
+      500: 0.14, 600: 0.12, 700: 0.10, 800: 0.08, 900: 0.06, 950: 0.05
+    },
+    soft: {
+      50: 0.012, 100: 0.020, 200: 0.035, 300: 0.055, 400: 0.075,
+      500: 0.085, 600: 0.080, 700: 0.070, 800: 0.055, 900: 0.040, 950: 0.030
+    }
+  };
+
+  return {
+    l: calculateLightness(shade),
+    c: chromaByStyle[style][shade],
+    h: hue,
+  };
+}
+
+function getThemeGrayShadeOklch(hue, shade) {
+  const grayScale = {
+    50: { l: 98, c: 0.002 },
+    100: { l: 95.5, c: 0.004 },
+    200: { l: 89.7, c: 0.008 },
+    300: { l: 82.7, c: 0.012 },
+    400: { l: 73, c: 0.018 },
+    500: { l: 62.5, c: 0.020 },
+    600: { l: 52.8, c: 0.016 },
+    700: { l: 41.4, c: 0.012 },
+    800: { l: 26.9, c: 0.006 },
+    900: { l: 20.5, c: 0.004 },
+    950: { l: 14.1, c: 0.002 },
+  };
+
+  return {
+    ...grayScale[shade],
+    h: hue,
+  };
+}
+
+function oklchColorToRgb(color) {
+  return oklchToRgb(color.l / 100, color.c, color.h);
+}
+
+function getWorstContrast(candidate, backgrounds) {
+  return Math.min(...backgrounds.map((background) => getContrastRatio(candidate, background)));
+}
+
+function pickContrastingForegroundValue(candidates, backgrounds) {
+  const evaluated = candidates.map((candidate) => ({
+    value: candidate.value,
+    worstContrast: getWorstContrast(candidate.rgb, backgrounds),
+  }));
+
+  evaluated.sort((left, right) => right.worstContrast - left.worstContrast);
+
+  return evaluated[0].value;
+}
+
 // ============================================
 // CHART & MAP TOKEN GENERATION
 // ============================================
 
-/**
- * Generate harmonious chart colors based on primary hue
- * Returns array of {hue, lightness, chroma} for 10 chart colors
- */
-function generateChartColorScheme(primaryHue) {
-  // Use color theory: analogous + complementary + split-complementary
-  return [
-    { hue: primaryHue, l: 55, c: 0.14 },                    // Primary
-    { hue: (primaryHue + 30) % 360, l: 60, c: 0.12 },       // Analogous 1
-    { hue: (primaryHue + 330) % 360, l: 58, c: 0.12 },      // Analogous 2
-    { hue: (primaryHue + 180) % 360, l: 55, c: 0.13 },      // Complementary
-    { hue: (primaryHue + 150) % 360, l: 60, c: 0.11 },      // Split-comp 1
-    { hue: (primaryHue + 210) % 360, l: 58, c: 0.11 },      // Split-comp 2
-    { hue: (primaryHue + 60) % 360, l: 62, c: 0.10 },       // Triadic 1
-    { hue: (primaryHue + 300) % 360, l: 56, c: 0.10 },      // Triadic 2
-    { hue: (primaryHue + 90) % 360, l: 60, c: 0.09 },       // Tetradic 1
-    { hue: (primaryHue + 270) % 360, l: 58, c: 0.09 },      // Tetradic 2
-  ];
+function buildChartSeriesTokens(series) {
+  return series.map((item, index) => {
+    const num = index + 1;
+    return `
+  --chart-${num}: ${item.base};
+  --chart-colors-chart-${num}: ${item.base};
+  --chart-colors-chart-${num}-inverse: ${item.inverse};
+  --chart-colors-chart-${num}-hex: ${item.base};
+  --chart-colors-chart-${num}-hex-inverse: ${item.inverse};`;
+  }).join('');
 }
 
-/**
- * Generate chart tokens for light mode
- */
-function generateChartTokensLight(name, hue) {
+function generateChartTokensLight(name) {
   const g = `--color-${name}-gray`;
-  const b = `--color-${name}`;
-  const colors = generateChartColorScheme(hue);
+  const series = [
+    { base: 'var(--color-primary-50)', inverse: 'var(--color-primary-100)' },
+    { base: 'var(--color-primary-200)', inverse: 'var(--color-primary-300)' },
+    { base: 'var(--color-primary-400)', inverse: 'var(--color-primary-500)' },
+    { base: 'var(--color-primary-700)', inverse: 'var(--color-primary-500)' },
+    { base: 'var(--color-primary-900)', inverse: 'var(--color-primary-700)' },
+    { base: 'var(--color-sky-600)', inverse: 'var(--color-sky-400)' },
+    { base: 'var(--color-emerald-600)', inverse: 'var(--color-emerald-400)' },
+    { base: 'var(--color-violet-600)', inverse: 'var(--color-violet-400)' },
+    { base: 'var(--color-rose-500)', inverse: 'var(--color-rose-300)' },
+    { base: `var(${g}-300)`, inverse: `var(${g}-500)` },
+  ];
 
-  let tokens = `
+  return `
   /* ============================================ */
   /* CHARTS (Apexcharts)                          */
   /* ============================================ */
-  /* NOTE: -hex tokens use valid hex for Apexcharts compatibility */
   
-  --chart-colors-background-inverse: var(${g}-900);
-  --chart-colors-foreground: var(${g}-700);
+  --chart-colors-background: var(--background-plain);
+  --chart-colors-background-inverse: var(--inverse);
+  --chart-colors-chart-inverse: var(--background-1);
+  --chart-colors-foreground: var(--foreground);
+  --chart-colors-foreground-inverse: var(--foreground-inverse);
   
-  --chart-primary: var(${b}-500);
-  --chart-colors-primary: var(${b}-500);
-  --chart-colors-primary-inverse: var(${b}-300);
-  --chart-colors-primary-hex: ${oklchToHex(55, 0.14, hue)};
-  --chart-colors-primary-hex-inverse: ${oklchToHex(75, 0.12, hue)};
-`;
-
-  // Generate chart-1 through chart-10
-  colors.forEach((color, i) => {
-    const num = i + 1;
-    const hex = oklchToHex(color.l, color.c, color.hue);
-    const hexInverse = oklchToHex(color.l + 20, color.c * 0.9, color.hue);
-
-    tokens += `
-  --chart-${num}: oklch(${color.l}% ${color.c} ${color.hue});
-  --chart-colors-chart-${num}: oklch(${color.l}% ${color.c} ${color.hue});
-  --chart-colors-chart-${num}-inverse: oklch(${color.l + 20}% ${color.c * 0.9} ${color.hue});
-  --chart-colors-chart-${num}-hex: ${hex};
-  --chart-colors-chart-${num}-hex-inverse: ${hexInverse};`;
-  });
-
-  tokens += `
+  --chart-primary: var(--color-primary-600);
+  --chart-colors-primary: var(--color-primary-600);
+  --chart-colors-primary-inverse: var(--color-primary-300);
+  --chart-colors-primary-hex: var(--color-primary-600);
+  --chart-colors-primary-hex-inverse: var(--color-primary-300);` +
+    buildChartSeriesTokens(series) +
+    `
   
   --chart-colors-candlestick-upward: var(--color-green-500);
   --chart-colors-candlestick-upward-inverse: var(--color-green-400);
@@ -304,19 +386,53 @@ function generateChartTokensLight(name, hue) {
   --chart-colors-yaxis-labels: var(${g}-500);
   --chart-colors-yaxis-labels-inverse: var(${g}-400);
   
-  --chart-colors-grid-border: var(${g}-200);
+  --chart-colors-grid-border: var(--border);
   --chart-colors-grid-border-inverse: var(${g}-700);
-  --chart-colors-bar-ranges: var(${g}-200);
+  --chart-colors-bar-ranges: var(--surface-1);
   --chart-colors-bar-ranges-inverse: var(${g}-700);`;
-
-  return tokens;
 }
 
-/**
- * Generate map tokens
- */
-function generateMapTokens(name, hue) {
-  const b = `--color-${name}`;
+function generateChartTokensDark(name, grayVar, darkModePrimaryProfile) {
+  const primaryShade = darkModePrimaryProfile.primaryShade;
+  const interactionShade = darkModePrimaryProfile.interactionShade;
+  const companionShade = primaryShade >= 500 ? 300 : 200;
+  const series = [
+    { base: 'var(--color-primary-200)', inverse: 'var(--color-primary-300)' },
+    { base: 'var(--color-primary-300)', inverse: 'var(--color-primary-400)' },
+    { base: 'var(--color-primary-400)', inverse: `var(--color-primary-${primaryShade})` },
+    { base: `var(--color-primary-${primaryShade})`, inverse: `var(--color-primary-${interactionShade})` },
+    { base: `var(--color-primary-${companionShade})`, inverse: `var(--color-primary-${primaryShade})` },
+    { base: 'var(--color-sky-400)', inverse: 'var(--color-sky-300)' },
+    { base: 'var(--color-emerald-400)', inverse: 'var(--color-emerald-300)' },
+    { base: 'var(--color-violet-400)', inverse: 'var(--color-violet-300)' },
+    { base: 'var(--color-rose-400)', inverse: 'var(--color-rose-300)' },
+    { base: `var(${grayVar}-300)`, inverse: `var(${grayVar}-500)` },
+  ];
+
+  return `
+  /* CHARTS - dark mode adjustments */
+  --chart-colors-background: var(--background);
+  --chart-colors-background-inverse: var(${grayVar}-100);
+  --chart-colors-chart-inverse: var(--background-1);
+  --chart-colors-foreground: var(${grayVar}-300);
+  --chart-colors-foreground-inverse: var(--color-white);
+
+  --chart-primary: var(--color-primary-${primaryShade});
+  --chart-colors-primary: var(--color-primary-${primaryShade});
+  --chart-colors-primary-inverse: var(--color-primary-${companionShade});
+  --chart-colors-primary-hex: var(--color-primary-${primaryShade});
+  --chart-colors-primary-hex-inverse: var(--color-primary-${companionShade});` +
+    buildChartSeriesTokens(series) +
+    `
+
+  --chart-colors-labels: var(${grayVar}-400);
+  --chart-colors-xaxis-labels: var(${grayVar}-400);
+  --chart-colors-yaxis-labels: var(${grayVar}-400);
+  --chart-colors-grid-border: var(--border);
+  --chart-colors-bar-ranges: var(--surface);`;
+}
+
+function generateMapTokens(name) {
   const g = `--color-${name}-gray`;
 
   return `
@@ -324,13 +440,13 @@ function generateMapTokens(name, hue) {
   /* MAPS (jsvectormap)                           */
   /* ============================================ */
   
-  --map-colors-primary: var(${b}-500);
-  --map-colors-primary-inverse: var(${b}-400);
-  --map-colors-default: var(${g}-200);
+  --map-colors-primary: var(--color-primary-500);
+  --map-colors-primary-inverse: var(--color-primary-300);
+  --map-colors-default: var(--surface-1);
   --map-colors-default-inverse: var(${g}-700);
-  --map-colors-highlight: var(${b}-300);
-  --map-colors-highlight-inverse: var(${b}-500);
-  --map-colors-border: var(${g}-300);
+  --map-colors-highlight: var(--color-primary-300);
+  --map-colors-highlight-inverse: var(--color-primary-500);
+  --map-colors-border: var(--border-line-3);
   --map-colors-border-inverse: var(${g}-600);`;
 }
 
@@ -338,45 +454,73 @@ function generateMapTokens(name, hue) {
 // HELPER FUNCTIONS
 // ============================================
 
-/**
- * Check if brand hue is in the "light" range that needs dark foreground for contrast
- * Light brand colors: yellow, lime, light cyan
- */
-function isLightBrandHue(hue) {
-  const lightBrandHues = [
-    [50, 110],   // Yellow to lime range
-    [160, 195],  // Light cyan/teal range
-  ];
-  return lightBrandHues.some(([min, max]) => hue >= min && hue <= max);
+function getPrimaryForegroundForLightMode(name, hue, style) {
+  const backgrounds = [600, 700]
+    .map((shade) => getBrandShadeOklch(style, hue, shade))
+    .map(oklchColorToRgb);
+  const darkText = oklchColorToRgb(getThemeGrayShadeOklch(hue, 900));
+
+  return pickContrastingForegroundValue([
+    { value: 'var(--color-white)', rgb: { r: 255, g: 255, b: 255 } },
+    { value: `var(--color-${name}-gray-900)`, rgb: darkText },
+  ], backgrounds);
 }
 
-/**
- * Determine switch color for dark mode based on brand lightness
- */
-function getSwitchColorForDarkMode(hue, grayVar) {
-  if (isLightBrandHue(hue)) {
-    return `var(${grayVar}-800)`;
-  }
-  return `var(--color-white)`;
-}
+function getDarkModePrimaryProfile(name, hue, style, grayVar) {
+  const white = { r: 255, g: 255, b: 255 };
+  const darkText = oklchColorToRgb(getThemeGrayShadeOklch(hue, 900));
+  const minimumUiContrast = 3;
+  const profiles = [
+    {
+      key: 'white',
+      foregroundValue: 'var(--color-white)',
+      switchValue: 'var(--color-white)',
+      primaryShade: 500,
+      interactionShade: 600,
+      checkedShade: 500,
+      backgrounds: [500, 600].map((shade) => oklchColorToRgb(getBrandShadeOklch(style, hue, shade))),
+      foregroundRgb: white,
+    },
+    {
+      key: 'dark',
+      foregroundValue: `var(${grayVar}-900)`,
+      switchValue: `var(${grayVar}-800)`,
+      primaryShade: 400,
+      interactionShade: 500,
+      checkedShade: 400,
+      backgrounds: [400, 500].map((shade) => oklchColorToRgb(getBrandShadeOklch(style, hue, shade))),
+      foregroundRgb: darkText,
+    },
+  ].map((profile) => ({
+    ...profile,
+    worstContrast: getWorstContrast(profile.foregroundRgb, profile.backgrounds),
+  }));
 
-/**
- * Determine primary foreground color for dark mode based on brand lightness
- */
-function getPrimaryForegroundForDarkMode(hue, grayVar) {
-  if (isLightBrandHue(hue)) {
-    return `var(${grayVar}-900)`;
+  const preferredWhiteProfile = profiles.find((profile) =>
+    profile.key === 'white' && profile.worstContrast >= minimumUiContrast
+  );
+
+  if (preferredWhiteProfile) {
+    return preferredWhiteProfile;
   }
-  return `var(--color-white)`;
+
+  const acceptableProfiles = profiles.filter((profile) => profile.worstContrast >= minimumUiContrast);
+  if (acceptableProfiles.length > 0) {
+    acceptableProfiles.sort((left, right) => right.worstContrast - left.worstContrast);
+    return acceptableProfiles[0];
+  }
+
+  profiles.sort((left, right) => right.worstContrast - left.worstContrast);
+  return profiles[0];
 }
 
 // ============================================
 // THEME SECTION GENERATORS
 // ============================================
 
-function generateLightModeTokens(name, hue) {
+function generateLightModeTokens(name, hue, style) {
   const g = `--color-${name}-gray`;
-  const b = `--color-${name}`;
+  const primaryForeground = getPrimaryForegroundForLightMode(name, hue, style);
 
   return `
   /* ============================================ */
@@ -390,7 +534,7 @@ function generateLightModeTokens(name, hue) {
   --foreground: var(${g}-800);
   --foreground-inverse: var(--color-white);
   
-  --inverse: var(${g}-800);
+  --inverse: var(--color-primary-950);
   
   /* ============================================ */
   /* BORDERS (Full Scale)                         */
@@ -411,22 +555,22 @@ function generateLightModeTokens(name, hue) {
   /* PRIMARY RAMP (Full 11-shade scale)           */
   /* ============================================ */
   
-  --primary-50: var(${b}-50);
-  --primary-100: var(${b}-100);
-  --primary-200: var(${b}-200);
-  --primary-300: var(${b}-300);
-  --primary-400: var(${b}-400);
-  --primary-500: var(${b}-500);
-  --primary-600: var(${b}-600);
-  --primary-700: var(${b}-700);
-  --primary-800: var(${b}-800);
-  --primary-900: var(${b}-900);
-  --primary-950: var(${b}-950);
+  --primary-50: var(--color-${name}-50);
+  --primary-100: var(--color-${name}-100);
+  --primary-200: var(--color-${name}-200);
+  --primary-300: var(--color-${name}-300);
+  --primary-400: var(--color-${name}-400);
+  --primary-500: var(--color-${name}-500);
+  --primary-600: var(--color-${name}-600);
+  --primary-700: var(--color-${name}-700);
+  --primary-800: var(--color-${name}-800);
+  --primary-900: var(--color-${name}-900);
+  --primary-950: var(--color-${name}-950);
   
   /* PRIMARY STATES */
   --primary: var(--color-primary-600);
   --primary-line: transparent;
-  --primary-foreground: var(--color-white);
+  --primary-foreground: ${primaryForeground};
   --primary-hover: var(--color-primary-700);
   --primary-focus: var(--color-primary-700);
   --primary-active: var(--color-primary-700);
@@ -447,12 +591,12 @@ function generateLightModeTokens(name, hue) {
   /* LAYER                                        */
   /* ============================================ */
   
-  --layer: var(--color-white);
-  --layer-line: var(${g}-200);
-  --layer-foreground: var(${g}-800);
-  --layer-hover: var(${g}-50);
-  --layer-focus: var(${g}-50);
-  --layer-active: var(${g}-50);
+  --layer: var(--background-plain);
+  --layer-line: var(--border);
+  --layer-foreground: var(--foreground);
+  --layer-hover: var(--background-1);
+  --layer-focus: var(--background-1);
+  --layer-active: var(--background-1);
   
   /* ============================================ */
   /* SURFACE                                      */
@@ -495,169 +639,169 @@ function generateLightModeTokens(name, hue) {
   /* NAVBAR                                       */
   /* ============================================ */
   
-  --navbar: var(--color-white);
-  --navbar-line: var(${g}-200);
-  --navbar-divider: var(${g}-200);
-  --navbar-nav-foreground: var(${g}-800);
-  --navbar-nav-hover: var(${g}-100);
-  --navbar-nav-focus: var(${g}-100);
-  --navbar-nav-active: var(${g}-100);
-  --navbar-nav-list-divider: var(${g}-200);
-  --navbar-inverse: var(--color-primary-950);
+  --navbar: var(--background-plain);
+  --navbar-line: var(--border);
+  --navbar-divider: var(--border);
+  --navbar-nav-foreground: var(--foreground);
+  --navbar-nav-hover: var(--muted-hover);
+  --navbar-nav-focus: var(--muted-hover);
+  --navbar-nav-active: var(--muted-hover);
+  --navbar-nav-list-divider: var(--border);
+  --navbar-inverse: var(--inverse);
   
-  --navbar-1: var(${g}-50);
-  --navbar-1-line: var(${g}-200);
-  --navbar-1-divider: var(${g}-200);
-  --navbar-1-nav-foreground: var(${g}-800);
-  --navbar-1-nav-hover: var(${g}-200);
-  --navbar-1-nav-focus: var(${g}-200);
-  --navbar-1-nav-active: var(${g}-200);
-  --navbar-1-nav-list-divider: var(${g}-200);
+  --navbar-1: var(--background-1);
+  --navbar-1-line: var(--border);
+  --navbar-1-divider: var(--border);
+  --navbar-1-nav-foreground: var(--foreground);
+  --navbar-1-nav-hover: var(--surface-1);
+  --navbar-1-nav-focus: var(--surface-1);
+  --navbar-1-nav-active: var(--surface-1);
+  --navbar-1-nav-list-divider: var(--border);
   
-  --navbar-2: var(${g}-100);
+  --navbar-2: var(--background-2);
   --navbar-2-line: transparent;
-  --navbar-2-divider: var(${g}-300);
-  --navbar-2-nav-foreground: var(${g}-800);
-  --navbar-2-nav-hover: var(${g}-200);
-  --navbar-2-nav-focus: var(${g}-200);
-  --navbar-2-nav-active: var(${g}-200);
-  --navbar-2-nav-list-divider: var(${g}-200);
+  --navbar-2-divider: var(--border-line-3);
+  --navbar-2-nav-foreground: var(--foreground);
+  --navbar-2-nav-hover: var(--surface-1);
+  --navbar-2-nav-focus: var(--surface-1);
+  --navbar-2-nav-active: var(--surface-1);
+  --navbar-2-nav-list-divider: var(--border);
   
   /* ============================================ */
   /* SIDEBAR                                      */
   /* ============================================ */
   
-  --sidebar: var(--color-white);
-  --sidebar-line: var(${g}-200);
-  --sidebar-divider: var(${g}-200);
-  --sidebar-nav-foreground: var(${g}-800);
-  --sidebar-nav-hover: var(${g}-100);
-  --sidebar-nav-focus: var(${g}-100);
-  --sidebar-nav-active: var(${g}-100);
-  --sidebar-nav-list-divider: var(${g}-200);
-  --sidebar-inverse: var(--color-primary-950);
+  --sidebar: var(--background-plain);
+  --sidebar-line: var(--border);
+  --sidebar-divider: var(--border);
+  --sidebar-nav-foreground: var(--foreground);
+  --sidebar-nav-hover: var(--muted-hover);
+  --sidebar-nav-focus: var(--muted-hover);
+  --sidebar-nav-active: var(--muted-hover);
+  --sidebar-nav-list-divider: var(--border);
+  --sidebar-inverse: var(--inverse);
   
-  --sidebar-1: var(${g}-50);
-  --sidebar-1-line: var(${g}-200);
-  --sidebar-1-divider: var(${g}-200);
-  --sidebar-1-nav-foreground: var(${g}-800);
-  --sidebar-1-nav-hover: var(${g}-200);
-  --sidebar-1-nav-focus: var(${g}-200);
-  --sidebar-1-nav-active: var(${g}-200);
-  --sidebar-1-nav-list-divider: var(${g}-200);
+  --sidebar-1: var(--background-1);
+  --sidebar-1-line: var(--border);
+  --sidebar-1-divider: var(--border);
+  --sidebar-1-nav-foreground: var(--foreground);
+  --sidebar-1-nav-hover: var(--surface-1);
+  --sidebar-1-nav-focus: var(--surface-1);
+  --sidebar-1-nav-active: var(--surface-1);
+  --sidebar-1-nav-list-divider: var(--border);
   
-  --sidebar-2: var(${g}-100);
+  --sidebar-2: var(--background-2);
   --sidebar-2-line: transparent;
-  --sidebar-2-divider: var(${g}-200);
-  --sidebar-2-nav-foreground: var(${g}-800);
-  --sidebar-2-nav-hover: var(${g}-200);
-  --sidebar-2-nav-focus: var(${g}-200);
-  --sidebar-2-nav-active: var(${g}-200);
-  --sidebar-2-nav-list-divider: var(${g}-200);
+  --sidebar-2-divider: var(--border);
+  --sidebar-2-nav-foreground: var(--foreground);
+  --sidebar-2-nav-hover: var(--surface-1);
+  --sidebar-2-nav-focus: var(--surface-1);
+  --sidebar-2-nav-active: var(--surface-1);
+  --sidebar-2-nav-list-divider: var(--border);
   
   /* ============================================ */
   /* CARD                                         */
   /* ============================================ */
   
-  --card: var(--color-white);
-  --card-line: var(${g}-200);
-  --card-divider: var(${g}-200);
-  --card-header: var(${g}-200);
-  --card-footer: var(${g}-200);
-  --card-inverse: var(--color-primary-950);
+  --card: var(--background-plain);
+  --card-line: var(--border);
+  --card-divider: var(--border);
+  --card-header: var(--background-2);
+  --card-footer: var(--background-2);
+  --card-inverse: var(--inverse);
   
   /* ============================================ */
   /* DROPDOWN                                     */
   /* ============================================ */
   
-  --dropdown: var(--color-white);
-  --dropdown-1: var(--color-white);
+  --dropdown: var(--background-plain);
+  --dropdown-1: var(--background-plain);
   --dropdown-line: transparent;
-  --dropdown-divider: var(${g}-200);
-  --dropdown-header: var(${g}-200);
-  --dropdown-footer: var(${g}-200);
-  --dropdown-item-foreground: var(${g}-800);
-  --dropdown-item-hover: var(${g}-100);
-  --dropdown-item-focus: var(${g}-100);
-  --dropdown-item-active: var(${g}-100);
-  --dropdown-inverse: var(${g}-900);
+  --dropdown-divider: var(--border);
+  --dropdown-header: var(--background-2);
+  --dropdown-footer: var(--background-2);
+  --dropdown-item-foreground: var(--foreground);
+  --dropdown-item-hover: var(--muted-hover);
+  --dropdown-item-focus: var(--muted-hover);
+  --dropdown-item-active: var(--muted-hover);
+  --dropdown-inverse: var(--inverse);
   
   /* ============================================ */
   /* SELECT                                       */
   /* ============================================ */
   
-  --select: var(--color-white);
-  --select-1: var(--color-white);
+  --select: var(--background-plain);
+  --select-1: var(--background-plain);
   --select-line: transparent;
-  --select-item-foreground: var(${g}-800);
-  --select-item-hover: var(${g}-100);
-  --select-item-focus: var(${g}-100);
-  --select-item-active: var(${g}-100);
-  --select-inverse: var(${g}-900);
+  --select-item-foreground: var(--foreground);
+  --select-item-hover: var(--muted-hover);
+  --select-item-focus: var(--muted-hover);
+  --select-item-active: var(--muted-hover);
+  --select-inverse: var(--inverse);
   
   /* ============================================ */
   /* OVERLAY                                      */
   /* ============================================ */
   
-  --overlay: var(--color-white);
+  --overlay: var(--background-plain);
   --overlay-line: transparent;
-  --overlay-divider: var(${g}-200);
-  --overlay-header: var(${g}-200);
-  --overlay-footer: var(${g}-200);
-  --overlay-inverse: var(${g}-900);
+  --overlay-divider: var(--border);
+  --overlay-header: var(--background-2);
+  --overlay-footer: var(--background-2);
+  --overlay-inverse: var(--inverse);
   
   /* ============================================ */
   /* POPOVER                                      */
   /* ============================================ */
   
-  --popover: var(--color-white);
-  --popover-line: var(${g}-100);
+  --popover: var(--background-plain);
+  --popover-line: var(--border-line-1);
   
   /* ============================================ */
   /* TOOLTIP                                      */
   /* ============================================ */
   
-  --tooltip: var(${g}-900);
-  --tooltip-foreground: var(--color-white);
+  --tooltip: var(--inverse);
+  --tooltip-foreground: var(--foreground-inverse);
   --tooltip-line: transparent;
   
   /* ============================================ */
   /* TABLE                                        */
   /* ============================================ */
   
-  --table-line: var(${g}-200);
+  --table-line: var(--border);
   
   /* ============================================ */
   /* SWITCH                                       */
   /* ============================================ */
   
-  --switch: var(--color-white);
+  --switch: var(--background-plain);
   
   /* ============================================ */
   /* FOOTER                                       */
   /* ============================================ */
   
-  --footer: var(--color-white);
-  --footer-line: var(${g}-200);
-  --footer-inverse: var(${g}-900);
+  --footer: var(--background-plain);
+  --footer-line: var(--border);
+  --footer-inverse: var(--inverse);
   
   /* ============================================ */
   /* SCROLLBAR                                    */
   /* ============================================ */
   
-  --scrollbar-track: var(${g}-100);
-  --scrollbar-thumb: var(${g}-300);
+  --scrollbar-track: var(--background-1);
+  --scrollbar-thumb: var(--surface-2);
   --scrollbar-track-inverse: transparent;
-  --scrollbar-thumb-inverse: var(--color-white);` +
-    generateChartTokensLight(name, hue) +
-    generateMapTokens(name, hue);
+  --scrollbar-thumb-inverse: var(--foreground-inverse);` +
+    generateChartTokensLight(name) +
+    generateMapTokens(name);
 }
 
-function generateDarkModeTokens(name, tailwindGray, useCustomGray = false, hue = 0) {
+function generateDarkModeTokens(name, tailwindGray, useCustomGray = false, hue = 0, style = 'vibrant') {
   const g = useCustomGray ? `--color-${name}-gray` : `--color-${tailwindGray}`;
-  const b = `--color-${name}`;
-  const switchColor = getSwitchColorForDarkMode(hue, g);
-  const primaryForeground = getPrimaryForegroundForDarkMode(hue, g);
+  const darkModePrimaryProfile = getDarkModePrimaryProfile(name, hue, style, g);
+  const switchColor = darkModePrimaryProfile.switchValue;
+  const primaryForeground = darkModePrimaryProfile.foregroundValue;
 
   return `
   /* ============================================ */
@@ -667,11 +811,12 @@ function generateDarkModeTokens(name, tailwindGray, useCustomGray = false, hue =
   /* BACKGROUNDS */
   --background: var(${g}-800);
   --background-1: var(${g}-900);
-  --background-2: var(${g}-900);
+  --background-2: var(${g}-950);
   --background-plain: var(${g}-800);
   
   /* TEXT */
   --foreground: var(${g}-200);
+  --foreground-inverse: var(--color-white);
   
   --inverse: var(${g}-950);
   
@@ -688,23 +833,25 @@ function generateDarkModeTokens(name, tailwindGray, useCustomGray = false, hue =
   --border-line-8: var(${g}-100);
   
   /* PRIMARY STATES */
-  --primary: var(${b}-400);
+  --primary: var(--color-primary-${darkModePrimaryProfile.primaryShade});
+  --primary-line: transparent;
   --primary-foreground: ${primaryForeground};
-  --primary-hover: var(${b}-500);
-  --primary-focus: var(${b}-500);
-  --primary-active: var(${b}-500);
-  --primary-checked: var(${b}-400);
+  --primary-hover: var(--color-primary-${darkModePrimaryProfile.interactionShade});
+  --primary-focus: var(--color-primary-${darkModePrimaryProfile.interactionShade});
+  --primary-active: var(--color-primary-${darkModePrimaryProfile.interactionShade});
+  --primary-checked: var(--color-primary-${darkModePrimaryProfile.checkedShade});
   
   /* SECONDARY */
   --secondary: var(--color-white);
+  --secondary-line: transparent;
   --secondary-foreground: var(${g}-800);
   --secondary-hover: var(${g}-100);
   --secondary-focus: var(${g}-100);
   --secondary-active: var(${g}-100);
   
   /* LAYER */
-  --layer: var(${g}-800);
-  --layer-line: var(${g}-700);
+  --layer: var(--background);
+  --layer-line: var(--border);
   --layer-foreground: var(--color-white);
   --layer-hover: var(${g}-700);
   --layer-focus: var(${g}-700);
@@ -717,6 +864,7 @@ function generateDarkModeTokens(name, tailwindGray, useCustomGray = false, hue =
   --surface-3: var(${g}-600);
   --surface-4: var(${g}-500);
   --surface-5: var(${g}-400);
+  --surface-line: transparent;
   --surface-foreground: var(${g}-200);
   --surface-hover: var(${g}-600);
   --surface-focus: var(${g}-600);
@@ -738,105 +886,105 @@ function generateDarkModeTokens(name, tailwindGray, useCustomGray = false, hue =
   --destructive-focus: var(--color-red-600);
   
   /* NAVBAR */
-  --navbar: var(${g}-800);
-  --navbar-line: var(${g}-700);
-  --navbar-divider: var(${g}-700);
-  --navbar-nav-foreground: var(${g}-200);
-  --navbar-nav-hover: var(${g}-700);
-  --navbar-nav-focus: var(${g}-700);
-  --navbar-nav-active: var(${g}-700);
-  --navbar-nav-list-divider: var(${g}-700);
-  --navbar-inverse: var(${b}-950);
+  --navbar: var(--background);
+  --navbar-line: var(--border);
+  --navbar-divider: var(--border);
+  --navbar-nav-foreground: var(--foreground);
+  --navbar-nav-hover: var(--muted-hover);
+  --navbar-nav-focus: var(--muted-hover);
+  --navbar-nav-active: var(--muted-hover);
+  --navbar-nav-list-divider: var(--border);
+  --navbar-inverse: var(--inverse);
   
-  --navbar-1: var(${g}-900);
-  --navbar-1-line: var(${g}-700);
-  --navbar-1-divider: var(${g}-700);
-  --navbar-1-nav-foreground: var(${g}-200);
-  --navbar-1-nav-hover: var(${g}-700);
-  --navbar-1-nav-focus: var(${g}-700);
-  --navbar-1-nav-active: var(${g}-700);
-  --navbar-1-nav-list-divider: var(${g}-700);
+  --navbar-1: var(--background-1);
+  --navbar-1-line: var(--border);
+  --navbar-1-divider: var(--border);
+  --navbar-1-nav-foreground: var(--foreground);
+  --navbar-1-nav-hover: var(--surface);
+  --navbar-1-nav-focus: var(--surface);
+  --navbar-1-nav-active: var(--surface);
+  --navbar-1-nav-list-divider: var(--border);
   
-  --navbar-2: var(${g}-900);
+  --navbar-2: var(--background-2);
   --navbar-2-line: transparent;
-  --navbar-2-divider: var(${g}-700);
-  --navbar-2-nav-foreground: var(${g}-200);
-  --navbar-2-nav-hover: var(${g}-800);
-  --navbar-2-nav-focus: var(${g}-800);
-  --navbar-2-nav-active: var(${g}-800);
-  --navbar-2-nav-list-divider: var(${g}-800);
+  --navbar-2-divider: var(--border);
+  --navbar-2-nav-foreground: var(--foreground);
+  --navbar-2-nav-hover: var(--surface);
+  --navbar-2-nav-focus: var(--surface);
+  --navbar-2-nav-active: var(--surface);
+  --navbar-2-nav-list-divider: var(--border);
   
   /* SIDEBAR */
-  --sidebar: var(${g}-800);
-  --sidebar-line: var(${g}-700);
-  --sidebar-divider: var(${g}-700);
-  --sidebar-nav-foreground: var(${g}-200);
-  --sidebar-nav-hover: var(${g}-700);
-  --sidebar-nav-focus: var(${g}-700);
-  --sidebar-nav-active: var(${g}-700);
-  --sidebar-nav-list-divider: var(${g}-700);
-  --sidebar-inverse: var(${b}-950);
+  --sidebar: var(--background);
+  --sidebar-line: var(--border);
+  --sidebar-divider: var(--border);
+  --sidebar-nav-foreground: var(--foreground);
+  --sidebar-nav-hover: var(--muted-hover);
+  --sidebar-nav-focus: var(--muted-hover);
+  --sidebar-nav-active: var(--muted-hover);
+  --sidebar-nav-list-divider: var(--border);
+  --sidebar-inverse: var(--inverse);
   
-  --sidebar-1: var(${g}-900);
-  --sidebar-1-line: var(${g}-700);
-  --sidebar-1-divider: var(${g}-700);
-  --sidebar-1-nav-foreground: var(${g}-200);
-  --sidebar-1-nav-hover: var(${g}-700);
-  --sidebar-1-nav-focus: var(${g}-700);
-  --sidebar-1-nav-active: var(${g}-700);
-  --sidebar-1-nav-list-divider: var(${g}-700);
+  --sidebar-1: var(--background-1);
+  --sidebar-1-line: var(--border);
+  --sidebar-1-divider: var(--border);
+  --sidebar-1-nav-foreground: var(--foreground);
+  --sidebar-1-nav-hover: var(--surface);
+  --sidebar-1-nav-focus: var(--surface);
+  --sidebar-1-nav-active: var(--surface);
+  --sidebar-1-nav-list-divider: var(--border);
   
-  --sidebar-2: var(${g}-900);
+  --sidebar-2: var(--background-2);
   --sidebar-2-line: transparent;
-  --sidebar-2-divider: var(${g}-800);
-  --sidebar-2-nav-foreground: var(${g}-200);
-  --sidebar-2-nav-hover: var(${g}-800);
-  --sidebar-2-nav-focus: var(${g}-800);
-  --sidebar-2-nav-active: var(${g}-800);
-  --sidebar-2-nav-list-divider: var(${g}-800);
+  --sidebar-2-divider: var(--border);
+  --sidebar-2-nav-foreground: var(--foreground);
+  --sidebar-2-nav-hover: var(--surface);
+  --sidebar-2-nav-focus: var(--surface);
+  --sidebar-2-nav-active: var(--surface);
+  --sidebar-2-nav-list-divider: var(--border);
   
   /* CARD */
-  --card: var(${g}-800);
-  --card-line: var(${g}-700);
-  --card-divider: var(${g}-700);
-  --card-header: var(${g}-700);
-  --card-footer: var(${g}-700);
-  --card-inverse: var(${g}-900);
+  --card: var(--background);
+  --card-line: var(--border);
+  --card-divider: var(--border);
+  --card-header: var(--surface);
+  --card-footer: var(--surface);
+  --card-inverse: var(--inverse);
   
   /* DROPDOWN */
-  --dropdown: var(${g}-900);
-  --dropdown-1: var(${g}-950);
+  --dropdown: var(--background-1);
+  --dropdown-1: var(--background-2);
   --dropdown-line: transparent;
-  --dropdown-divider: var(${g}-800);
-  --dropdown-header: var(${g}-700);
-  --dropdown-footer: var(${g}-700);
-  --dropdown-item-foreground: var(${g}-200);
-  --dropdown-item-hover: var(${g}-800);
-  --dropdown-item-focus: var(${g}-800);
-  --dropdown-item-active: var(${g}-800);
-  --dropdown-inverse: var(${g}-900);
+  --dropdown-divider: var(--border);
+  --dropdown-header: var(--surface);
+  --dropdown-footer: var(--surface);
+  --dropdown-item-foreground: var(--foreground);
+  --dropdown-item-hover: var(--muted-hover);
+  --dropdown-item-focus: var(--muted-hover);
+  --dropdown-item-active: var(--muted-hover);
+  --dropdown-inverse: var(--inverse);
   
   /* SELECT */
-  --select: var(${g}-900);
-  --select-1: var(${g}-950);
+  --select: var(--background-1);
+  --select-1: var(--background-2);
   --select-line: transparent;
-  --select-item-foreground: var(${g}-200);
-  --select-item-hover: var(${g}-800);
-  --select-item-focus: var(${g}-800);
-  --select-item-active: var(${g}-800);
-  --select-inverse: var(${g}-900);
+  --select-item-foreground: var(--foreground);
+  --select-item-hover: var(--muted-hover);
+  --select-item-focus: var(--muted-hover);
+  --select-item-active: var(--muted-hover);
+  --select-inverse: var(--inverse);
   
   /* OVERLAY */
-  --overlay: var(${g}-800);
+  --overlay: var(--background);
   --overlay-line: transparent;
-  --overlay-divider: var(${g}-700);
-  --overlay-header: var(${g}-700);
-  --overlay-footer: var(${g}-700);
-  --overlay-inverse: var(${g}-900);
+  --overlay-divider: var(--border);
+  --overlay-header: var(--surface);
+  --overlay-footer: var(--surface);
+  --overlay-inverse: var(--inverse);
   
   /* POPOVER */
-  --popover: var(${g}-900);
-  --popover-line: var(${g}-700);
+  --popover: var(--background-1);
+  --popover-line: var(--border);
   
   /* TOOLTIP */
   --tooltip: var(--color-white);
@@ -844,34 +992,29 @@ function generateDarkModeTokens(name, tailwindGray, useCustomGray = false, hue =
   --tooltip-line: transparent;
   
   /* TABLE */
-  --table-line: var(${g}-700);
+  --table-line: var(--border);
   
   /* SWITCH */
   --switch: ${switchColor};
   
   /* FOOTER */
-  --footer: var(${g}-800);
-  --footer-line: var(${g}-700);
-  --footer-inverse: var(${g}-900);
+  --footer: var(--background);
+  --footer-line: var(--border);
+  --footer-inverse: var(--inverse);
   
   /* SCROLLBAR */
-  --scrollbar-track: var(${g}-700);
-  --scrollbar-thumb: var(${g}-500);
-  --scrollbar-track-inverse: var(${g}-500);
-  --scrollbar-thumb-inverse: var(${g}-700);
-  
-  /* CHARTS - dark mode adjustments */
-  --chart-colors-background-inverse: var(${g}-100);
-  --chart-colors-foreground: var(${g}-300);
-  --chart-colors-labels: var(${g}-400);
-  --chart-colors-xaxis-labels: var(${g}-400);
-  --chart-colors-yaxis-labels: var(${g}-400);
-  --chart-colors-grid-border: var(${g}-700);
-  --chart-colors-bar-ranges: var(${g}-700);
+  --scrollbar-track: var(--surface);
+  --scrollbar-thumb: var(--surface-3);
+  --scrollbar-track-inverse: var(--surface-4);
+  --scrollbar-thumb-inverse: var(--surface-2);` +
+    generateChartTokensDark(name, g, darkModePrimaryProfile) +
+    `
   
   /* MAPS - dark mode adjustments */
-  --map-colors-default: var(${g}-700);
-  --map-colors-border: var(${g}-600);`;
+  --map-colors-default: var(--surface);
+  --map-colors-default-inverse: var(--surface-2);
+  --map-colors-border: var(--border-line-3);
+  --map-colors-border-inverse: var(--border-line-4);`;
 }
 
 // ============================================
@@ -946,38 +1089,20 @@ function generateTheme(config) {
   const brandPalette = generateBrandPalette(name, hue, style);
   const grayPalette = generateGrayPalette(name, hue);
   const fontTokens = generateFontTokens(config);
-  const lightTokens = generateLightModeTokens(name, hue);
-  const darkTokens = generateDarkModeTokens(name, darkGray, useCustomDarkGray, hue);
+  const lightTokens = generateLightModeTokens(name, hue, style);
+  const darkTokens = generateDarkModeTokens(name, darkGray, useCustomDarkGray, hue, style);
 
-  // Generate timestamp
-  const now = new Date();
-  const timestamp = now.toISOString().split('T')[0];
-
-  return `@import "tailwindcss";
-@import "./theme.css";
-
-/* ============================================== */
-/* Theme: ${displayName}                          */
-/* Generated: ${timestamp}                        */
-/* Hue: ${hue} | Style: ${style}                  */
-/* ============================================== */
+  return `/* ------------------------------ */
+/* ---------- ${displayName} ----------- */
+/* ------------------------------ */
 
 @theme ${themeName} inline {
-  /* ============================================ */
-  /* CUSTOM COLOR PALETTES                        */
-  /* ============================================ */
-  
-  /* -------------------------------------------- */
-  /* BRAND PALETTE (${style})                     */
-  /* -------------------------------------------- */
-  
+  /* Brand palette (${style}) */
 ${brandPalette}
-  
-  /* -------------------------------------------- */
-  /* GRAY PALETTE (bell curve chroma)             */
-  /* -------------------------------------------- */
-  
+
+  /* Gray palette */
 ${grayPalette}
+
 }
 
 :root[data-theme="${themeName}"],
@@ -985,183 +1110,10 @@ ${grayPalette}
 ${fontTokens}${lightTokens}
 }
 
-/* ============================================== */
-/* DARK MODE OVERRIDES                            */
-/* ============================================== */
-
 [data-theme="${themeName}"].dark {
 ${darkTokens}
 }
 `;
-}
-
-// ============================================
-// CLI INTERFACE
-// ============================================
-
-function parseConfig(filepath) {
-  const content = fs.readFileSync(filepath, 'utf8');
-  const ext = path.extname(filepath).toLowerCase();
-
-  if (ext === '.json') {
-    const parsed = JSON.parse(content);
-    // Remove comment fields
-    delete parsed._comment;
-    return parsed;
-  } else if (ext === '.yaml' || ext === '.yml') {
-    // Improved YAML parser with better error handling
-    const config = {};
-    const lines = content.split('\n');
-    let currentSection = null;
-    let lineNum = 0;
-
-    for (const line of lines) {
-      lineNum++;
-      const trimmed = line.trim();
-
-      // Skip empty lines and comments
-      if (!trimmed || trimmed.startsWith('#')) continue;
-
-      // Check for section (no leading space, ends with colon, no value)
-      if (!line.startsWith(' ') && trimmed.endsWith(':') && !trimmed.includes(': ')) {
-        currentSection = trimmed.slice(0, -1);
-        config[currentSection] = {};
-        continue;
-      }
-
-      // Parse key: value
-      const colonIndex = trimmed.indexOf(':');
-      if (colonIndex === -1) {
-        console.warn(`Warning: Line ${lineNum} has no colon, skipping: ${trimmed}`);
-        continue;
-      }
-
-      const key = trimmed.slice(0, colonIndex).trim();
-      let value = trimmed.slice(colonIndex + 1).trim();
-
-      // Remove inline comments
-      const commentIndex = value.indexOf('#');
-      if (commentIndex > 0) {
-        value = value.slice(0, commentIndex).trim();
-      }
-
-      // Parse value type
-      const parsedValue = parseYamlValue(value);
-
-      // Add to config
-      if (line.startsWith('  ') && currentSection) {
-        config[currentSection][key] = parsedValue;
-      } else {
-        currentSection = null;
-        config[key] = parsedValue;
-      }
-    }
-
-    // Flatten nested config to expected format
-    return {
-      name: config.name,
-      hue: config.brand?.hue ?? config.hue,
-      primaryColor: config.brand?.primaryColor ?? config.primaryColor,
-      style: config.brand?.style ?? config.style ?? 'vibrant',
-      useCustomDarkGray: config.darkMode?.useCustomGray ?? config.useCustomDarkGray ?? false,
-      tailwindGray: config.darkMode?.tailwindGray ?? config.tailwindGray ?? 'neutral',
-      fontSans: config.typography?.fontSans ?? config.fontSans,
-      fontSerif: config.typography?.fontSerif ?? config.fontSerif,
-      fontMono: config.typography?.fontMono ?? config.fontMono,
-    };
-  }
-
-  throw new Error(`Unsupported config format: ${ext}. Use .json or .yaml`);
-}
-
-function parseYamlValue(value) {
-  if (value === 'true') return true;
-  if (value === 'false') return false;
-  if (value === '' || value === 'null') return null;
-  if (/^-?\d+$/.test(value)) return parseInt(value, 10);
-  if (/^-?\d+\.\d+$/.test(value)) return parseFloat(value);
-  // Remove surrounding quotes
-  if ((value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))) {
-    return value.slice(1, -1);
-  }
-  return value;
-}
-
-// CLI execution
-if (require.main === module) {
-  const args = process.argv.slice(2);
-
-  if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
-    console.log(`
-Preline Theme Generator v1.0
-
-Usage:
-  node generate-theme.js <config-file> [output-file]
-  npx preline-theme-generator <config-file> [output-file]
-
-Arguments:
-  config-file    JSON or YAML config file (required)
-  output-file    Output CSS file path (optional, prints to stdout if omitted)
-
-Config format (JSON):
-{
-  "name": "my-theme",
-  "hue": 200,                    // OR "primaryColor": "#2F6BFF"
-  "style": "vibrant",            // or "soft"
-  "useCustomDarkGray": false,
-  "tailwindGray": "neutral",     // neutral, stone, zinc, slate
-  "fontSans": "Inter, sans-serif"  // optional
-}
-
-Config format (YAML):
-name: my-theme
-brand:
-  hue: 200                       # OR primaryColor: "#2F6BFF"
-  style: vibrant
-darkMode:
-  useCustomGray: false
-  tailwindGray: neutral
-typography:
-  fontSans: Inter, sans-serif    # optional
-
-Examples:
-  node generate-theme.js config.json
-  node generate-theme.js ocean.yaml ../themes/ocean.css
-`);
-    process.exit(0);
-  }
-
-  const configPath = args[0];
-  const outputPath = args[1];
-
-  try {
-    if (!fs.existsSync(configPath)) {
-      console.error(`Error: Config file not found: ${configPath}`);
-      process.exit(1);
-    }
-
-    const config = parseConfig(configPath);
-    const css = generateTheme(config);
-
-    if (outputPath) {
-      // Ensure output directory exists
-      const outputDir = path.dirname(outputPath);
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-      }
-      fs.writeFileSync(outputPath, css);
-      console.log(`✓ Generated theme: ${outputPath}`);
-      console.log(`  Name: theme-${config.name}`);
-      console.log(`  Hue: ${config.hue || hexToHue(config.primaryColor)}`);
-      console.log(`  Style: ${config.style || 'vibrant'}`);
-    } else {
-      console.log(css);
-    }
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
-  }
 }
 
 module.exports = {

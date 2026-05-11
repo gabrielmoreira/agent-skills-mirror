@@ -125,24 +125,26 @@ grep -r "config" internal/config/
 | 文件 | 位置 | 格式 |
 |------|------|------|
 | `VERSION` | 文件内容 | `x.y.z` |
+| `package.json` | `"version"` 字段 | `x.y.z` |
 | `.claude-plugin/marketplace.json` | plugin version / owner / author | `x.y.z` / 当前维护者身份 |
 | `platforms/openclaw/md2wechat/SKILL.md` | `metadata.openclaw.install` | 使用 `@latest` go 模块，发布后自动生效 |
 | `CHANGELOG.md` | 新版本章节标题 | `## [x.y.z] - YYYY-MM-DD` |
 | `CHANGELOG.md` | 版本历史表格 | 新增一行 |
 
 ```bash
-# 快速检查版本号一致性
+# 快速检查版本号一致性（等价于 quality-gates step 0）
 echo "=== 版本号检查 ==="
-echo "VERSION: $(cat VERSION)"
-echo ".claude-plugin: $(grep '\"version\"' .claude-plugin/marketplace.json | head -1)"
-echo "openclaw install: $(grep '@latest\|module.*md2wechat' platforms/openclaw/md2wechat/SKILL.md | head -1)"
-echo "CHANGELOG.md: $(grep '## \[' CHANGELOG.md | head -1)"
+echo "VERSION:      $(cat VERSION)"
+echo "package.json: $(node -e "process.stdout.write(require('./package.json').version)")"
+echo "marketplace:  $(sed -n 's/.*"version": "\([0-9][^"]*\)".*/\1/p' .claude-plugin/marketplace.json | head -1)"
+echo "CHANGELOG:    $(grep -m1 '^## \[' CHANGELOG.md | sed 's/^## \[\([^]]*\)\].*/\1/')"
 ```
 
 > **说明**：OpenClaw SKILL.md 使用 `@latest` go 模块安装，无固定版本 URL，每次发布 go 模块后自动生效。
 
 **强制规则：**
-- 发版前必须显式审校 `.claude-plugin/marketplace.json`
+- 发版前先运行 `bash scripts/quality-gates.sh`（step 0 会在 < 1s 内检查所有版本字段，发现漂移立即 fail）
+- 发版前必须显式审校 `package.json`、`.claude-plugin/marketplace.json`
 - 发版前必须显式审校 `skills/md2wechat/SKILL.md` 与 `platforms/openclaw/md2wechat/SKILL.md`
 - 发版前必须显式审校 `scripts/install.sh`、`scripts/install-openclaw.sh`、`platforms/openclaw/md2wechat/SKILL.md`
 - 如果这些文件中的版本、下载 URL、命令示例、维护者信息没有同步，本次发布不能算完成
@@ -473,3 +475,5 @@ clawhub search "md2wechat"              # 验证发布
 4. **始终**检查版本号一致性
 5. **优先**考虑用户阅读和使用体验
 6. **禁止**在 git commit 中包含 `Co-Authored-By: Claude` 签名 - 提交信息必须简洁，只写实质性内容
+7. `docs/superpowers/` 目录存本地、不提交远程（已在 `.gitignore` 中排除）
+8. Brand Profile 文件：`~/.config/md2wechat/brand.md`（Markdown 格式，非 YAML），由 `brand init` 初始化，Agent 读取但 CLI 不解析

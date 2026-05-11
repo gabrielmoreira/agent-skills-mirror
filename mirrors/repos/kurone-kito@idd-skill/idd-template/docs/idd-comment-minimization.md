@@ -9,6 +9,113 @@ Minimization is UI cleanup. It preserves the audit trail and must never
 replace review triage, conversation resolution, CI, advisory wait, or
 merge gates.
 
+## Live Status Digest Contract
+
+A live status digest is an editable, human-facing issue or pull request
+comment that summarizes the current IDD run. It is UI state only. It
+must never replace trusted operational markers, review state, CI state,
+branch protection, or GitHub issue and pull request state as workflow
+evidence.
+
+The first line of every current digest comment is this stable marker:
+
+```html
+<!-- idd-live-status: current -->
+```
+
+At most one current digest may exist per issue or pull request. Agents
+find the digest by searching comments on that issue or PR for the marker
+above. The marker is an identifier, not authority: a digest posted by an
+untrusted actor or a digest whose text disagrees with trusted markers is
+ignored for workflow decisions and repaired only after the authoritative
+state has been re-read.
+
+Each digest should contain these fields in a compact, editable form:
+
+| Field              | Meaning                                                             |
+| ------------------ | ------------------------------------------------------------------- |
+| `Phase`            | The current IDD phase or resume route                               |
+| `Claim`            | Active claim owner and claim age, or `none`                         |
+| `Branch`           | Current work branch or `none`                                       |
+| `Last checked`     | ISO 8601 time when the digest was last refreshed from trusted state |
+| `Open blockers`    | Human decision, CI, review, dependency, or claim blocker summary    |
+| `Next action`      | The next expected agent, maintainer, CI, or reviewer action         |
+| `Authoritative by` | The marker, CI, review, issue, or PR evidence the summary came from |
+
+Only the current claim owner should update the digest during normal IDD
+execution, and only after the claim revalidation gate passes. Maintainers
+may repair a digest outside an active claim, but that repair does not
+claim workflow ownership. Roadmap-audit digests follow the same rule:
+the roadmap-audit claim gates edits to the roadmap issue digest only,
+not child issue execution.
+
+If the digest is missing during resume, recreate it from the parsed
+claim state, PR state, CI state, and review activity after the resume
+route is known. If the digest is stale, update the existing marked
+comment from that same authoritative state. If multiple marked digest
+comments exist, do not delete, minimize, or guess which one is
+authoritative during an unattended run; preserve the audit history,
+report the duplicate URLs, and use trusted markers and GitHub state for
+all workflow decisions until a repair path selects one current digest.
+
+## Live Status Digest Helper
+
+In the idd-skill source repository, the helper is available; use dry-run
+first. In adopter repositories, see the [Fallback GraphQL](#fallback-graphql)
+section unless the helper scripts were explicitly installed.
+
+```sh
+node scripts/live-status-digest.mjs --issue <issue-number> --dry-run \
+  --phase "<phase>" \
+  --claim "<agent-id> / <claim-id>" \
+  --branch "<branch-name>" \
+  --open-blockers "<blocker-summary>" \
+  --next-action "<next-action>" \
+  --authoritative-by "<trusted-evidence>"
+```
+
+Use `--pr <pr-number>` for pull request digests. If `--last-checked`
+is omitted, the helper writes the current UTC time. The helper emits
+stable JSON by default; add `--format table` for terminal inspection or
+`--include-body` when reviewing the rendered Markdown.
+
+Apply mode is explicit and claim-checked:
+
+```sh
+node scripts/live-status-digest.mjs --issue <issue-number> --apply \
+  --claim-issue <issue-number> --claim-id <claim-id> \
+  --phase "<phase>" \
+  --claim "<agent-id> / <claim-id>" \
+  --branch "<branch-name>" \
+  --open-blockers "<blocker-summary>" \
+  --next-action "<next-action>" \
+  --authoritative-by "<trusted-evidence>"
+```
+
+During ordinary IDD execution, pass the active issue and claim id so the
+helper re-reads the claim before mutating. Maintainer-led repairs outside
+an active claim may use `--skip-claim-check`, but routine agents should
+not. The helper creates a digest when none exists, updates the single
+current digest when one exists, and reports `noop` when the current
+digest already matches the requested fields.
+
+If multiple marked digests exist, the helper exits non-zero and reports
+their URLs plus a repair path. It does not choose between duplicates,
+delete comments, minimize comments, or edit immutable operational
+markers.
+
+The JSON report includes these fields:
+
+| Field        | Purpose                                                      |
+| ------------ | ------------------------------------------------------------ |
+| `mode`       | `dry-run` or `apply`                                         |
+| `action`     | `create`, `update`, `noop`, or `duplicate`                   |
+| `canApply`   | Whether apply mode may mutate without duplicate repair       |
+| `commentId`  | Current or newly written digest comment ID, when known       |
+| `url`        | Direct link to the digest comment, when known                |
+| `duplicates` | Duplicate marked digest comments that block unattended edits |
+| `repairPath` | Human repair guidance for duplicate marked digests           |
+
 ## Timing
 
 Run minimization only after one of these is true:
@@ -124,8 +231,10 @@ Always skip candidates when any of these are true:
 
 ## Dry Run Shape
 
-When the repository-local helper is available, start with a dry-run
-report:
+In the idd-skill source repository, the helper is available; start with
+a dry-run. In adopter repositories, see the
+[Fallback GraphQL](#fallback-graphql) section unless the helper scripts
+were explicitly installed.
 
 ```sh
 node scripts/audit-pr-cleanup.mjs --pr <pr-number> --dry-run --format table

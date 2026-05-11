@@ -8,10 +8,15 @@ This phase includes a repository-specific GitHub Copilot advisory review
 gate. Even when another local agent is driving the workflow, follow it
 because the dependency is on GitHub review state, not on the local CLI.
 
+The merge-gate timing defaults referenced by F2 are named in
+[IDD policy constants](../../docs/policy-constants.md). Use that inventory
+for the canonical values, not as a behavior override.
+
 Before any F-phase mutating action, apply the shared claim revalidation
 gate. The active claim must still use your current `{claim-id}`.
 
-When all F2 conditions are satisfied, proceed to `idd-merge.instructions.md`.
+When all F2 conditions are satisfied, proceed to
+`idd-merge-handoff.instructions.md`.
 
 ## F1 — Final conflict resolution
 
@@ -34,11 +39,39 @@ If `mergeable` is `CONFLICTING` or `mergeStateStatus` is `BEHIND` or
 4. Push (use `--force-with-lease` if you rebased).
 5. If the HEAD changed (new commits were added): return to
    `idd-review-snapshot.instructions.md` (E1) to re-evaluate reviews.
+   Before returning, update the PR live status digest with
+   `Phase: F1 rebased`, the new HEAD in `Authoritative by`, and
+   `Next action: E1 review snapshot`.
 
 ## F2 — Pre-merge condition check
 
 Verify **all** of the following. If any condition is not met, follow the
 bracketed action:
+
+Before running F3, record explicit F2 evidence for this pass. At
+minimum, capture:
+
+1. Activity-universe snapshot evidence:
+   `{head-SHA}`, `{max-activity-updatedAt|none}`,
+   `{total-item-count}`, `{latest-ci-completed-at|none}`.
+2. Unresolved-thread evidence: total unresolved thread count, the
+   non-awaiting-reviewer unresolved count used by the gate, and whether
+   any AMD (`**Awaiting maintainer decision**`) threads remain.
+3. Unreplied regular-comment evidence: the count of non-IDD-agent
+   comments that still lack a later IDD-agent reply.
+4. Reviewer-state evidence: latest `CHANGES_REQUESTED` status for human,
+   required, and CODEOWNER reviewers, plus required approval/CODEOWNER
+   satisfaction status.
+5. Advisory-wait evidence: current AW outcome (`SATISFIED`/`WAIT`/etc),
+   marker presence (`EARLIEST_SAME_HEAD_AT`), and whether the current
+   state satisfies the advisory gate for merge.
+6. CI evidence: required-check generation state and pass/fail status for
+   all required checks on the current PR HEAD.
+
+Do not treat "one bot says clean" as sufficient evidence. The checklist
+must cover the full activity universe (human reviewers plus advisory bot
+surfaces such as Copilot, CodeRabbit, Codex connectors, and CI bots) and
+must align with every F2 condition below.
 
 - **Review currency** (live re-fetch required, freshness gate): read the
   most recent `<!-- review-watermark: {agent-id} {claim-id} … -->`
@@ -54,8 +87,13 @@ bracketed action:
   takeover, and same-claim watermarks from untrusted authors must be
   ignored and reported as suspicious context when they affect routing.
   Then fetch the activity universe snapshot (same scope as E1 Step 1)
-  and the current CI state for the HEAD SHA. Return to E1 if **any** of
-  the following is true:
+  and the current CI state for the HEAD SHA. In the idd-skill source
+  repository, you may optionally use the read-only helper
+  `node scripts/review-activity-snapshot.mjs --pr {pr-number}` and pass
+  trusted marker actors with
+  `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`; the
+  instruction rules remain canonical. Return to E1 if **any** of the
+  following is true:
   - The current PR HEAD SHA differs from the stored `{head-SHA}` (a new
     push occurred after E1's snapshot, even if the watermark comment was
     posted later).
@@ -161,11 +199,23 @@ bracketed action:
   CI advisory bot comments are handled earlier in the PATH B triage flow
   (E4-E7) and are excluded from this gate.
 
+When any F2 condition routes to a hold/stop or back to E1/E14, update
+the PR live status digest after the blocking evidence is recorded and
+before stopping or returning. Set `Phase` to the failing F2 check,
+`Open blockers` to the concrete unmet condition, `Next action` to the
+required reviewer, CI, advisory, maintainer, or agent action, and
+`Authoritative by` to the F2 evidence fetched in this pass. If every F2
+condition is satisfied, do **not** edit the digest before F3; carry the
+F2 snapshot forward unchanged so the final F3 freshness check can use
+the same activity universe.
+
 Note: `required_approvals` is fetched at runtime from the ruleset. The
 practical blockers are `CHANGES_REQUESTED` states and missing CODEOWNER
 approvals only. When all conditions above are satisfied, record the
 live-fetch result as the **F2 snapshot**: the current PR HEAD SHA
 (`{f2-head-SHA}`), the highest `updatedAt` across all fetched items
 (`{f2-max-activity-updatedAt}`, written as `none` if the snapshot is
-empty), and the total item count (`{f2-total-item-count}`). Carry all
-three values into F3. Then proceed to `idd-merge.instructions.md`.
+empty), the total item count (`{f2-total-item-count}`), and the latest
+CI pass `completedAt` for HEAD (`{f2-latest-ci-completed-at|none}`).
+Carry all four values into the handoff phase. Then proceed to
+`idd-merge-handoff.instructions.md`.

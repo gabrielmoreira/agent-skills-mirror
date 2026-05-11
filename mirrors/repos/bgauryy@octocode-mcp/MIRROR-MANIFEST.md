@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bgauryy/octocode-mcp` — 26 default patterns, 0 followed patterns, 307 file(s) materialized.
+Mirror of `bgauryy/octocode-mcp` — 26 default patterns, 0 followed patterns, 329 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bgauryy/octocode-mcp` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 307 |
+| Files         | 329 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -365,7 +365,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 304 | ✓ | [`skills/octocode-roast/SKILL.md`](skills/octocode-roast/SKILL.md) |
 | 305 | ✓ | [`skills/octocode-search-skill/INSTALL_REFERENCE.md`](skills/octocode-search-skill/INSTALL_REFERENCE.md) |
 | 306 | ✓ | [`skills/octocode-search-skill/SKILL.md`](skills/octocode-search-skill/SKILL.md) |
-| 307 | ✓ | [`skills/README.md`](skills/README.md) |
+| 307 | ✓ | [`skills/octocode-slides/README.md`](skills/octocode-slides/README.md) |
+| 308 | ✓ | [`skills/octocode-slides/references/01-brief.md`](skills/octocode-slides/references/01-brief.md) |
+| 309 | ✓ | [`skills/octocode-slides/references/02-research.md`](skills/octocode-slides/references/02-research.md) |
+| 310 | ✓ | [`skills/octocode-slides/references/03-outline.md`](skills/octocode-slides/references/03-outline.md) |
+| 311 | ✓ | [`skills/octocode-slides/references/04-design.md`](skills/octocode-slides/references/04-design.md) |
+| 312 | ✓ | [`skills/octocode-slides/references/05-implementation.md`](skills/octocode-slides/references/05-implementation.md) |
+| 313 | ✓ | [`skills/octocode-slides/references/06-review.md`](skills/octocode-slides/references/06-review.md) |
+| 314 | ✓ | [`skills/octocode-slides/references/animation.md`](skills/octocode-slides/references/animation.md) |
+| 315 | ✓ | [`skills/octocode-slides/references/design-system.md`](skills/octocode-slides/references/design-system.md) |
+| 316 | ✓ | [`skills/octocode-slides/references/html-templates.md`](skills/octocode-slides/references/html-templates.md) |
+| 317 | ✓ | [`skills/octocode-slides/references/image-generation.md`](skills/octocode-slides/references/image-generation.md) |
+| 318 | ✓ | [`skills/octocode-slides/references/resources.md`](skills/octocode-slides/references/resources.md) |
+| 319 | ✓ | [`skills/octocode-slides/references/slide-rules.md`](skills/octocode-slides/references/slide-rules.md) |
+| 320 | ✓ | [`skills/octocode-slides/references/wireframes.md`](skills/octocode-slides/references/wireframes.md) |
+| 321 | ✓ | [`skills/octocode-slides/scripts/animation.js`](skills/octocode-slides/scripts/animation.js) |
+| 322 | ✓ | [`skills/octocode-slides/scripts/base.css`](skills/octocode-slides/scripts/base.css) |
+| 323 | ✓ | [`skills/octocode-slides/scripts/base.html`](skills/octocode-slides/scripts/base.html) |
+| 324 | ✓ | [`skills/octocode-slides/scripts/generate_image.py`](skills/octocode-slides/scripts/generate_image.py) |
+| 325 | ✓ | [`skills/octocode-slides/scripts/navbridge.js`](skills/octocode-slides/scripts/navbridge.js) |
+| 326 | ✓ | [`skills/octocode-slides/scripts/presenter.js`](skills/octocode-slides/scripts/presenter.js) |
+| 327 | ✓ | [`skills/octocode-slides/scripts/slide.html`](skills/octocode-slides/scripts/slide.html) |
+| 328 | ✓ | [`skills/octocode-slides/SKILL.md`](skills/octocode-slides/SKILL.md) |
+| 329 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

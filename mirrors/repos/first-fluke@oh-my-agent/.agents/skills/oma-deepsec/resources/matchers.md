@@ -1,4 +1,4 @@
-# Matchers — author project-specific entry-point coverage
+# Matchers: author project-specific entry-point coverage
 
 The default matcher set covers common CWE shapes (SQL injection, SSRF, path traversal, …) and a handful of popular framework shapes (Next.js, Prisma, Express, Hono, FastAPI, Django, Laravel, Rails, Gin/Echo/Fiber/Chi, …). It will miss patterns specific to your codebase: an internal RPC framework, a less common language, a custom auth helper, a non-default route layout. Custom matchers fill those gaps.
 
@@ -12,7 +12,7 @@ scan (fast, wide) → process (AI, slow + expensive) → revalidate → write be
 
 - A revalidated true-positive needs a matcher to catch siblings on future scans.
 - A cluster of `other-*` slugs in `bunx deepsec metrics` points at a real category deepsec has no name for.
-- The target repo has **entry points the default matchers do not see**. Check `https://github.com/vercel-labs/deepsec/blob/main/docs/supported-tech.md` first — the framework may already be covered.
+- The target repo has **entry points the default matchers do not see**. Check `https://github.com/vercel-labs/deepsec/blob/main/docs/supported-tech.md` first; the framework may already be covered.
 - You have an **organization-specific** pattern (internal auth helper, internal SDK call, custom middleware).
 
 ## Where matchers live
@@ -43,7 +43,7 @@ export default defineConfig({
 });
 ```
 
-Slugs are unique. **If your slug collides with a built-in, your matcher wins** — useful for swapping in a tighter org-specific version.
+Slugs are unique. **If your slug collides with a built-in, your matcher wins.** This is useful for swapping in a tighter org-specific version.
 
 If a matcher is genuinely reusable across orgs (a CWE shape or a public-framework shape), consider upstreaming to https://github.com/vercel-labs/deepsec instead.
 
@@ -66,14 +66,14 @@ Open the **parent repo** (the codebase being scanned) in your coding agent so it
 > I want to add custom matchers to deepsec for this repo. deepsec is already installed at `.deepsec/node_modules/deepsec/` and `.deepsec/data/<projectId>/` has at least one scan + process pass.
 >
 > **Read these first to understand the contract:**
-> - `.deepsec/node_modules/deepsec/dist/config.d.ts` — the `MatcherPlugin` interface and the `regexMatcher` helper signature
-> - `.deepsec/node_modules/deepsec/dist/samples/webapp/matchers/webapp-debug-flag.ts` — small `normal`-tier matcher
-> - `.deepsec/node_modules/deepsec/dist/samples/webapp/matchers/webapp-route-no-rate-limit.ts` — slightly larger matcher with a negative pre-check
-> - `.deepsec/node_modules/deepsec/dist/samples/webapp/deepsec.config.ts` — how the inline plugin wires matchers into the config
+> - `.deepsec/node_modules/deepsec/dist/config.d.ts` defines the `MatcherPlugin` interface and the `regexMatcher` helper signature.
+> - `.deepsec/node_modules/deepsec/dist/samples/webapp/matchers/webapp-debug-flag.ts` is a small `normal`-tier matcher.
+> - `.deepsec/node_modules/deepsec/dist/samples/webapp/matchers/webapp-route-no-rate-limit.ts` is a slightly larger matcher with a negative pre-check.
+> - `.deepsec/node_modules/deepsec/dist/samples/webapp/deepsec.config.ts` shows how the inline plugin wires matchers into the config.
 >
 > **Then do the analysis:**
 > 1. Walk `.deepsec/data/<projectId>/files/` and look at what the default matchers already cover. Note which `vulnSlug`s show up in `candidates[]` and where the AI's `findings[]` ended up landing after revalidation.
-> 2. Compare against the **target repository** (root above `.deepsec/`). Identify the **major entry points**: public HTTP handlers, RPC entry points, queue consumers, cron jobs, CLI commands — anything that takes untrusted input from the outside. Walk route/handler/api directories and framework config files (`next.config.*`, `wrangler.toml`, `serverless.yml`, `Procfile`, `main.go`, `app.py`, …) to figure out the entry-point shape.
+> 2. Compare against the **target repository** (root above `.deepsec/`). Identify the **major entry points**: public HTTP handlers, RPC entry points, queue consumers, cron jobs, CLI commands, anything that takes untrusted input from the outside. Walk route/handler/api directories and framework config files (`next.config.*`, `wrangler.toml`, `serverless.yml`, `Procfile`, `main.go`, `app.py`, …) to figure out the entry-point shape.
 > 3. Decide which entry points the default matchers **do not reach**. Common gaps:
 >    - Frameworks deepsec does not ship a glob for (Hono, Elysia, Cloudflare Workers, Bun, Deno, FastAPI, Rails controllers, Go `chi`/`gin`, internal RPC).
 >    - Languages with thin built-in coverage (Go, Python, Ruby, Lua, shell, Terraform, SQL).
@@ -87,7 +87,7 @@ Open the **parent repo** (the codebase being scanned) in your coding agent so it
 > 5. Wire the new matchers into the inline plugin in `.deepsec/deepsec.config.ts` (create the plugin if it does not exist yet).
 > 6. Run `bunx deepsec scan --matchers <slug1>,<slug2>,…` from `.deepsec/` and report how many candidates each matcher fired. Open 3 candidates per matcher to spot-check the regex is not producing obvious false positives.
 >
-> Bias toward `precise` when you can describe the bug exactly. Use `noisy` deliberately when the goal is **entry-point coverage** — you would rather the AI look at every `**/api/**/route.ts` than rely on a regex to predict which ones are vulnerable.
+> Bias toward `precise` when you can describe the bug exactly. Use `noisy` deliberately when the goal is **entry-point coverage**: you would rather the AI look at every `**/api/**/route.ts` than rely on a regex to predict which ones are vulnerable.
 >
 > Generalize the *shape* of the pattern, not specific identifiers. If the repo's auth helper is `requireSession()`, the matcher should catch any handler that does not call any session/auth helper, not the literal string `requireSession`.
 
@@ -129,7 +129,7 @@ Set `filePatterns` tightly. A noisy matcher with `**/*.{ts,tsx}` wedges the scan
 
 ## Worked example: covering missing entry points (FastAPI)
 
-A team scans a FastAPI service. After a `process` pass, `data/<id>/files/` shows the default matchers fired plenty on `requirements.txt` and a few `*.sql` files but barely touched `app/routers/*.py`, where the actual HTTP handlers live — the default glob set is tilted toward TypeScript/Next.js.
+A team scans a FastAPI service. After a `process` pass, `data/<id>/files/` shows the default matchers fired plenty on `requirements.txt` and a few `*.sql` files but barely touched `app/routers/*.py`, where the actual HTTP handlers live. The default glob set is tilted toward TypeScript/Next.js.
 
 1. **Inspect coverage.** Walk `data/<id>/files/app/routers/`. Most `FileRecord`s have empty `candidates[]`; the AI never picks them up.
 2. **Identify entry points.** Each router decorates handlers with `@router.get("/…")`, `@router.post("/…")`, etc. The team's convention: authenticated handlers depend on a `current_user: User = Depends(get_current_user)` parameter.

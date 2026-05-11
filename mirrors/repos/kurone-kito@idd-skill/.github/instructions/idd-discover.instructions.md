@@ -1,12 +1,13 @@
-# IDD — Discover Phase (A0-T–A4)
+# IDD — Discover Phase (A0-T–A4.5)
 
 Read this file when starting a new task. It covers finding and selecting
 the next issue to work on, including an operator-provided exact issue
-target. After selecting or verifying a target, read
-`idd-claim.instructions.md` to claim it.
+target, pre-claim suitability filtering, and claim handoff. After
+selecting a suitable candidate, read `idd-claim.instructions.md` to
+claim it.
 
 **Abort conditions**: A0-T, A1, A3 (default; see decision tree).
-**Early stop condition**: A0-T or A4 (no claim made — see below).
+**Early stop condition**: A0-T, A4, or A4.5 (no claim made — see below).
 
 ## A0-T — Explicit issue target shortcut
 
@@ -44,7 +45,9 @@ failed criterion and stop without claiming. Do not fall back to another
 issue unless the operator explicitly asks for normal discovery in the
 same run.
 
-If all checks pass, the target is selected. Continue directly to
+If all checks pass, the target is selected. Continue to
+`idd-discover.instructions.md` **A4.5** for suitability triage. A4.5
+follows the same standards as roadmap paths. If A4.5 passes, proceed to
 `idd-claim.instructions.md` A5. A5 claim-state, open-PR, takeover,
 branch-collision, and claim-verification rules remain unchanged.
 
@@ -59,6 +62,17 @@ Read the **issue-scope** value from the Project commands table in
 
 ## A0-O — Discover orphan issues
 
+Read the **orphan-first-policy** value from the Project commands table
+in `idd-overview.instructions.md` before any repo-wide orphan issue
+search.
+
+- If `orphan-first-policy` is `public-disabled`, first determine the
+  repository visibility. If the repository is public, skip A0-O without
+  searching open issues and proceed to A1. If visibility cannot be
+  determined, treat it as public and fail safely to A1. For private or
+  internal repositories, continue with A0-O.
+- For `none` and `maintainer-approved`, continue with A0-O.
+
 Search all open issues in the repository. Collect every issue whose
 body satisfies **all** of the following:
 
@@ -71,12 +85,38 @@ body satisfies **all** of the following:
   issue is open (apply the same fail-safe as A3: if a reference cannot
   be resolved, treat as blocked).
 
-If at least one orphan issue is found: pass the collected set directly
-to **A4** (viability gate). Skip A1–A3 entirely.
+Apply the configured policy before passing A0-O candidates to A4:
 
-If no orphan issues are found: fall back to the roadmap path. Proceed
-to **A1** and continue with the normal A1 → A1.5 → A2 → A3 → A4
-sequence.
+- `none` (the default): apply no extra orphan-first approval gate.
+- `maintainer-approved`: keep only candidates that have at least one
+  current maintainer approval signal:
+  - the `idd:ready` label, only when repository policy reserves that
+    label to maintainer approval actors;
+  - an issue author who is a repository owner or collaborator with
+    Write, Maintain, or Admin permission, verified with the collaborator
+    permission API; do not treat organization `MEMBER` association alone
+    as approval;
+  - a visible comment from a maintainer approval actor whose trimmed
+    body is exactly `IDD ready` or contains `IDD ready` as a standalone
+    line. The approval comment must be newer than the latest issue
+    title/body edit and any generated-plan update; if freshness cannot
+    be determined, require a fresh approval comment or a reserved label.
+- `public-disabled`: for private or internal repositories, behave the
+  same as `none`.
+
+A maintainer approval actor is a human repository owner or collaborator
+with Write, Maintain, or Admin permission. Do not reuse the trusted
+marker actor set for this approval gate, and do not count automation or
+the current agent unless repository policy explicitly grants that actor
+maintainer approval authority.
+
+If at least one orphan issue remains after the configured policy is
+applied: pass the remaining set directly to **A4** (viability gate).
+Skip A1–A3 entirely.
+
+If no orphan issues remain after the configured policy is applied: fall
+back to the roadmap path. Proceed to **A1** and continue with the normal
+A1 → A1.5 → A2 → A3 → A4 sequence.
 
 The A3 decision tree (abort / ask operator in unattended mode) is
 reached when the active discovery path(s) produce zero results: when
@@ -152,6 +192,13 @@ A1.5 can publish roadmap-level GitHub side effects before a child task
 issue is selected. Before any such side effect, coordinate on the
 roadmap issue itself:
 
+Treat `stale` and `non-stale` in this section using the
+`claim-stale-age` policy default from `docs/policy-constants.md`
+(distributed default: `24 h`).
+
+- Roadmap claim ownership gates roadmap-side mutations only. Do not
+  treat a non-stale roadmap claim as a global lock over A2/A3 child
+  discovery or child A5 checks.
 - Run the A5 claim-state, open-PR, and branch-collision checks against
   the roadmap issue. Do not apply A5's assignee or project
   `not started` readiness gate to roadmap-audit claims; roadmap
@@ -176,6 +223,9 @@ roadmap issue itself:
 - If the roadmap remains open and no PR branch will continue from the
   audit, release the roadmap-audit claim before returning to A2 or
   stopping.
+- Example: when another agent holds a non-stale roadmap claim, do not
+  mutate that roadmap in A1.5, but continue to A2/A3 and allow child
+  issues that pass readiness and A5 to proceed.
 
 Immediately before posting any completion summary, creating follow-up
 issues, editing the roadmap body, changing labels, or closing the
@@ -253,6 +303,11 @@ touch issues outside the roadmap traversal graph:
   `idd-skill-blocked-by` dependency markers (see A3
   below). The result is used solely to determine blocked status and is
   not added to the A2 candidate set.
+- **A4.5 only**: a narrow duplicate/reuse search for the candidate
+  selected in A4 Step 2 (title match, body-content, or fuzzy match to
+  detect known open or closed issues that supersede or duplicate it).
+  The result is used solely to determine duplicate status for the
+  selected candidate and is not added to any candidate set.
 
 **Prohibited in all other contexts** — the following must not be used in
 any phase except as listed above, or when A3 step 4 explicit opt-in
@@ -357,9 +412,276 @@ If **no issue** survives the gate: report the full list of discarded
 issues with the criterion or criteria each failed, then **stop** — do
 not post `unclaimed-by` because no claim was made. This is not an abort.
 
+### Step 1.5 — Active-claim pre-scan
+
+**Purpose**: Reduce thundering-herd collisions in scale-out deployments by
+identifying and skipping issues that are already claimed by other sessions.
+
+Before selecting from the surviving viable issues, perform an
+**active-claim pre-scan** to eliminate candidates with concurrent claims:
+
+1. **Identify scan scope**: From the viable survivors (ordered by ascending
+   issue number), define the scan set as the **top 10 candidates** (or fewer
+   if fewer than 10 viable candidates exist).
+
+2. **Scan each candidate for active claims**: For each issue in the scan set,
+   in ascending issue number order:
+
+   - **Fetch the issue** and parse its comments using the shared claim-state
+     rules (defined in `idd-claim.instructions.md`).
+   - **Detect active non-stale claims**: Use the `claim-stale-age` policy
+     default from `docs/policy-constants.md` (distributed default: `24 h`).
+     An issue has an **active non-stale claim** if:
+     - A trusted `claimed-by` comment exists, and
+     - That comment's GitHub `created_at` timestamp is **less than** the
+       `claim-stale-age` threshold (e.g., created less than 24 hours ago), and
+     - The comment matches the `claimed-by` format defined in
+       `idd-claim.instructions.md`.
+
+   - **Remove claimed candidates**: If an active non-stale claim is detected,
+     **mark this candidate as ineligible** and proceed to the next issue in
+     the scan set.
+
+   - **Skip stale or unclaimed candidates**: If the latest `claimed-by`
+     comment is stale (≥ 24 h old) or no claim exists, this candidate
+     **remains eligible**.
+
+3. **Determine selection candidate**: After scanning the top 10:
+
+   - **If at least one eligible (unclaimed) candidate remains** in the scan
+     set: proceed to **Step 2** and select the lowest-numbered eligible
+     candidate.
+
+   - **If all top 10 are claimed**: the scan set is fully saturated with
+     concurrent work. Proceed to **Step 2** with the **next batch**: scan
+     candidates 11–20, then 21–30, and so on, until an unclaimed candidate
+     is found or the viable candidate set is exhausted.
+
+   - **If the entire viable candidate set is exhausted** (all issues up to the
+     highest viable candidate are claimed): report that all viable issues are
+     currently claimed by other sessions, then stop. Do not post
+     `unclaimed-by` because no claim was made. This is not an abort; the
+     session may retry Discover later if new viable candidates appear or
+     claims become stale.
+
+**Rationale**: Active-claim pre-scans eliminate known collisions
+deterministically and reduce wasted claim-post-recheck cycles, improving
+scale-out efficiency when multiple sessions start simultaneously.
+
 ### Step 2 — Select
 
-Among the surviving viable issues, pick the one with the **lowest issue
-number**.
+Among the surviving viable and unclaimed issues (after Step 1.5), pick the
+one with the **lowest issue number**.
 
-After picking, continue to `idd-claim.instructions.md`.
+After picking, proceed to **A4.5**.
+
+## A4.5 — Pre-Claim Issue-Suitability Triage
+
+**Position**: After A4 (viability), before A5 (claim)\
+**Scope**: Applies to explicit-target, roadmap, and orphan-first candidates\
+**Purpose**: Filter incoherent, unsafe, duplicated, or out-of-scope issues
+
+This gate evaluates whether an issue is **suitable for autonomous
+execution** independent of the current run's context. Where A4 asks "can
+we do this NOW?", A4.5 asks "SHOULD we do this at all?"
+
+### Seven Suitability Checks
+
+For the candidate picked in A4 Step 2, evaluate the following checks in
+order. Stop and fail on the first check that is not satisfied.
+
+#### Check 1: Repository Fit
+
+Does the issue describe work scoped to this repository?
+
+- **Pass**: Work is entirely within this repository's scope; no external
+  system coordination needed
+- **Fail**: Issue crosses repository boundaries, requires external system
+  access, or is out-of-scope for this repository
+- **Outcome on fail**: `out-of-scope`
+
+#### Check 2: Issue Coherence
+
+Is the issue body coherent and well-structured?
+
+- **Pass**: Title and description are clear; body structure is
+  interpretable; intent can be restated safely
+- **Fail**: Body is malformed, contradictory, incomplete, or intent is
+  impossible to parse reliably
+- **Outcome on fail**: `unclear`
+
+#### Check 3: Trust/Safety
+
+Can the agent safely interpret and execute this issue without undue
+trust or safety risk?
+
+- **Pass**: Issue body and comments contain only trusted input; no code
+  injection risk in markers; no safety concern apparent
+- **Fail**: Untrusted input risk (e.g., embedded code in markers without
+  escaping), ambiguous safety concern, or requires human judgment on
+  safety
+- **Outcome on fail**: `invalid`
+
+#### Check 4: Duplicate or Superseded Work
+
+Is this work a duplicate of an existing open issue, closed issue,
+merged PR, or draft PR? Is it superseded by paused work marked with
+`status:blocked-by-human` or `status:needs-decision`?
+
+- **Pass**: No duplicate or superseded work detected; this issue
+  represents novel work
+- **Fail**: Issue duplicates an existing open or closed issue, is
+  superseded by newer work, or the work was already completed or is in
+  progress (including draft PRs)
+- **Outcome on fail**: `duplicate`
+
+#### Check 5: Actionability
+
+Does the issue describe concrete, actionable work?
+
+- **Pass**: Issue specifies clear acceptance criteria, actionable steps,
+  or verifiable outcomes
+- **Fail**: Issue is too vague, aspirational, blocked by human decision,
+  or lacks concrete direction
+- **Outcome on fail**: `needs-decision`
+
+#### Check 6: Autonomy (Suitability Perspective)
+
+Can the agent complete this work without external coordination beyond
+those already checked in A4?
+
+- **Note**: A4 already checks "no external coordination required"; A4.5
+  re-confirms in context of suitability
+- **Pass**: No additional coordination, approvals, or stakeholder
+  sign-offs required beyond what A4 evaluated
+- **Fail**: Issue requires maintainer approval before work can proceed,
+  stakeholder coordination, or external availability gate
+- **Outcome on fail**: `blocked-by-human`
+
+#### Check 7: Verifiability (Suitability Perspective)
+
+Can success be verified independently by the agent?
+
+- **Note**: A4 checks "clear verification"; A4.5 re-confirms the issue
+  does not require subjective approval
+- **Pass**: Success is verifiable through automated tests, CI, lint, or
+  concrete objective criteria
+- **Fail**: Success depends on maintainer opinion, UX judgment call, or
+  external stakeholder sign-off
+- **Outcome on fail**: `needs-decision`
+
+### Failure Outcomes
+
+When an issue fails any suitability check, classify it into one of six
+stable outcomes. Then remove the failing candidate from the A4 survivor
+set and return to A4 Step 2 to try the next-lowest-numbered candidate.
+Report each failure before continuing. Stop when the survivor set is
+empty (no suitable issue found this run) or when an `invalid` outcome
+occurs (trust/safety concerns require human review before continuing):
+
+| Outcome            | Meaning                        | Next Steps                     |
+| ------------------ | ------------------------------ | ------------------------------ |
+| `unclear`          | Issue needs clarification      | Report, try next candidate     |
+| `needs-decision`   | Requires maintainer decision   | Report, try next candidate     |
+| `blocked-by-human` | Requires human coordination    | Report, try next candidate     |
+| `duplicate`        | Duplicate or superseded work   | Report, try next candidate     |
+| `out-of-scope`     | Outside repository scope       | Report, try next candidate     |
+| `invalid`          | Trust/safety concern or defect | Report and stop (do not retry) |
+
+### Mutation Policy
+
+**A4.5 is a triage gate, not an execution claim.** The gate determines
+readiness but does NOT automatically apply labels or post claims.
+
+**Read-only approach** (recommended):
+
+- Agent evaluates all seven checks
+- If any check fails, agent reports the failure outcome and stops
+- NO implementation claim comment is posted
+- NO branch or worktree is created
+- NO labels are applied
+- A5 is never reached
+
+**Optional labeled approach** (if policy permits):
+
+- Agent MAY optionally apply a transient `triage:{outcome}` label to
+  document the rejection reason
+- Label must NOT masquerade as an implementation claim
+- Label is intended as a diagnostic aid for humans reviewing rejected
+  candidates
+- Labeled approach still stops at A4.5; A5 is never reached
+
+**Permitted and prohibited mutations**:
+
+- **Permitted**: Agents may post a single diagnostic comment explaining
+  the A4.5 rejection outcome, prefixed with **"A4.5 suitability gate
+  rejection"** to distinguish from claim or work-in-progress markers.
+- **Prohibited**: Agents must NOT post implementation claim comments,
+  create branches or worktrees, close issues unilaterally, or modify
+  roadmap structures or relationships. Do NOT apply other labels except
+  the optional `triage:{outcome}` label in the labeled approach above.
+- **Linking**: Issues may be linked as related context (e.g., "Related
+  to #NNN which addresses similar work") in diagnostic comments, but
+  must NOT be treated as duplicates without explicit human confirmation
+  first.
+
+### Coordination Rule
+
+A4.5 rejections must clearly indicate they are **triage decisions**, not
+implementation work:
+
+- Do NOT post claim comments or claim markers
+- Do NOT create branches or worktrees
+- Do NOT post operational markers (review-watermark, review-baseline,
+  etc.)
+- If posting a label, use a `triage:` prefix to distinguish from
+  implementation state
+- Any diagnostic comments MUST state clearly: "A4.5 suitability gate
+  rejection" to distinguish from claim or work-in-progress
+
+### Decision Flow
+
+```text
+Candidates = A4 survivor set (sorted by ascending issue number)
+Loop: Pick lowest-numbered candidate from Candidates
+  → Run Check 1 (Repository Fit)
+    → PASS → Run Check 2
+    → FAIL → Classify as out-of-scope → Report, remove from Candidates, loop
+  → Run Check 2 (Coherence)
+    → PASS → Run Check 3
+    → FAIL → Classify as unclear → Report, remove from Candidates, loop
+  → Run Check 3 (Trust/Safety)
+    → PASS → Run Check 4
+    → FAIL → Classify as invalid → Report and STOP (do not retry)
+  → Run Check 4 (Duplicates)
+    → PASS → Run Check 5
+    → FAIL → Classify as duplicate → Report, remove from Candidates, loop
+  → Run Check 5 (Actionability)
+    → PASS → Run Check 6
+    → FAIL → Classify as needs-decision → Report, remove from Candidates, loop
+  → Run Check 6 (Autonomy)
+    → PASS → Run Check 7
+    → FAIL → Classify as blocked-by-human → Report, remove from Candidates, loop
+  → Run Check 7 (Verifiability)
+    → PASS → Proceed to A5 (claim)
+    → FAIL → Classify as needs-decision → Report, remove from Candidates, loop
+Candidates empty → STOP (no suitable issue found this run)
+```
+
+### Edge Cases
+
+**Malformed markers or body**: If the issue body contains unparseable
+structured data (e.g., corrupted marker), treat it as **Check 2
+(Coherence) failure** → `unclear`. Report the parsing error so a human
+can correct the issue.
+
+**Timeout on duplicate detection**: If duplicate detection (Check 4)
+times out or becomes expensive, fall back to exact title match only. If
+exact match is not found, PASS the check and continue.
+
+**Agent-specific limitations**: All seven checks should be agent-agnostic
+(work for Copilot, Claude, Codex, Gemini). If an agent cannot reliably
+perform a check, document that limitation and treat as a PASS so work is
+not blocked by agent capability limits.
+
+After A4.5, proceed to `idd-claim.instructions.md`.

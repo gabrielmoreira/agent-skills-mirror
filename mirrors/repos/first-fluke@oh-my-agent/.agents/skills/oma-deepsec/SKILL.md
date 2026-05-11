@@ -1,7 +1,7 @@
 ---
 name: oma-deepsec
 description: >
-  Drive Vercel's `deepsec` agent-powered vulnerability scanner end-to-end —
+  Drive Vercel's `deepsec` agent-powered vulnerability scanner end-to-end:
   installing the `.deepsec/` workspace, bootstrapping `INFO.md`, running
   cost-aware `scan` / `process` / `triage` / `revalidate` / `export` passes,
   gating PRs with `process --diff`, writing custom matchers, and triaging
@@ -9,18 +9,18 @@ description: >
   repo for vulnerabilities, runs into `pnpm deepsec` / `bunx deepsec`
   commands, wants a CI-based PR security review, sees a `.deepsec/`
   directory, or asks about `INFO.md` / matchers / `process --diff` /
-  `revalidate` — even when the tool name is not spoken. Deepsec scans are
+  `revalidate`, even when the tool name is not spoken. Deepsec scans are
   expensive (a single full scan can cost hundreds to tens of thousands of
   dollars) so the skill exists in part to keep the user from getting
   surprised.
 ---
 
-# Deepsec — Agent-Powered Vulnerability Scanner Driver
+# Deepsec: Agent-Powered Vulnerability Scanner Driver
 
 ## Scheduling
 
 ### Goal
-Operate Vercel's `deepsec` security scanner inside a target repository safely and cost-consciously: bootstrap the `.deepsec/` workspace, write a tight `INFO.md`, run the right scan/process/triage/revalidate/export sequence, gate PRs in CI via `process --diff`, and grow project-specific matchers — surfacing real, revalidated findings without runaway spend.
+Operate Vercel's `deepsec` security scanner inside a target repository safely and cost-consciously: bootstrap the `.deepsec/` workspace, write a tight `INFO.md`, run the right scan/process/triage/revalidate/export sequence, gate PRs in CI via `process --diff`, and grow project-specific matchers, surfacing real, revalidated findings without runaway spend.
 
 ### Intent signature
 - User mentions `deepsec`, "deep security scan", `bunx deepsec`, `pnpm deepsec`, `npx deepsec`.
@@ -85,12 +85,12 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 2. Resolve `intent` from the user prompt; if ambiguous (e.g. "scan this repo"), default to `setup` then `scan` (calibration mode).
 3. Estimate scale: count source files (rough `rg --files | wc -l` excluding `node_modules`, `.git`, `dist`) to forecast cost before any AI pass.
 4. Check for an AI credential in `.env.local` or shell env; if none, route to credential setup before any `process` / `revalidate` / `triage` call.
-5. **Confirm agent choice with the user before the first paid call.** If `agent_choice` is not already in the prompt and `deepsec.config.ts` does not pin a `defaultAgent`, ask: `claude` (`claude-opus-4-7`, default — strongest reasoning, most expensive) vs `codex` (`gpt-5.5` — runs in a strict sandbox, cheaper, grep-heavy). Note that the two backends can be mixed via `--reinvestigate` and findings dedupe across agents. Skip the question if the user has already named an agent or has explicitly delegated the decision ("just pick reasonable defaults").
+5. **Confirm agent choice with the user before the first paid call.** If `agent_choice` is not already in the prompt and `deepsec.config.ts` does not pin a `defaultAgent`, ask whether to run `claude` (`claude-opus-4-7`, the default; strongest reasoning, most expensive) or `codex` (`gpt-5.5`; runs in a strict sandbox, cheaper, grep-heavy). The two backends can be mixed via `--reinvestigate` and findings dedupe across agents. Skip the question if the user has already named an agent or has explicitly delegated the decision ("just pick reasonable defaults").
 
 ### Scenes
 1. **PREPARE**: Resolve intent, repo root, credential, budget cap, severity floor, agent choice. Refuse to run blind on a repo of unknown scale.
 2. **ACQUIRE**: Read `.deepsec/deepsec.config.ts`, `data/<id>/project.json`, `INFO.md`, last `runs/` entries, and target-repo signals (`README`, `AGENTS.md`/`CLAUDE.md`, framework configs, route directories) needed to author or verify `INFO.md`.
-3. **REASON**: Pick the smallest pass that answers the user's question — `scan` only, `--limit 50` calibration, full `process`, `process --diff`, matcher author loop, or troubleshoot-only. Always state cost forecast and stopping condition before AI passes.
+3. **REASON**: Pick the smallest pass that answers the user's question. Options include `scan` only, a `--limit 50` calibration, a full `process`, `process --diff`, a matcher-authoring loop, or troubleshoot-only. Always state cost forecast and stopping condition before AI passes.
 4. **ACT**: Run the planned commands from inside `.deepsec/`. For matchers, write per-slug files and wire the inline plugin. For PR mode, scaffold the two-job CI workflow.
 5. **VERIFY**: Use `deepsec status`, the run's `RunMeta`, exit code (`0` clean, `1` findings produced, other = error), candidate counts, and (when present) the `--comment-out` markdown to confirm output.
 6. **FINALIZE**: Summarize findings by severity and verdict, list dollar cost and wall time, name files written, and call out follow-ups (revalidate `HIGH+`, write matchers for missed entry points, persist `data/` between CI runs).
@@ -109,7 +109,7 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 |---------|----------|
 | `Missing AI credentials for --agent claude` / `codex` | Pick a credential mode (gateway key / OIDC / direct / subscription) per `resources/config.md` and write `.env.local`. |
 | `401 Unauthorized` from gateway | OIDC: re-run `vercel env pull` (12 h expiry). API key: regenerate. Confirm `.env.local` is in the cwd deepsec runs from. |
-| `Stopped: AI Gateway credits exhausted` | Top up via the printed URL; re-run the same command — files already done are skipped. |
+| `Stopped: AI Gateway credits exhausted` | Top up via the printed URL; re-run the same command, files already done are skipped. |
 | `Stopped: Claude Pro/Max subscription exhausted` | Switch to AI Gateway; subscriptions don't carry full scans. |
 | Persistent refusal on a single file (>5% of batches) | Add the path to `data/<id>/config.json:ignorePaths`, or run that file alone with `--batch-size 1`. |
 | FP rate too high on `HIGH+` | Run `revalidate --min-severity HIGH`; tighten `INFO.md`'s threat model and FP notes; bias matchers to `precise`. |
@@ -143,12 +143,12 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 | Stop on budget breach | `TERMINATE` | Refuse unbounded `process` without calibration |
 
 ### Tools and instruments
-- **Package manager**: `bun` / `bunx` (preferred) — `pnpm`, `npm`, `yarn` are interchangeable.
+- **Package manager**: `bun` / `bunx` (preferred), `pnpm`, `npm`, `yarn` are interchangeable.
 - **CLI commands**: `deepsec init`, `init-project`, `scan`, `process`, `process --diff`, `triage`, `revalidate`, `enrich`, `report`, `export`, `metrics`, `status`, `sandbox <cmd>`.
 - **Diff sources for PR mode**: `--diff <ref|range>`, `--diff-staged`, `--diff-working`, `--files <csv>`, `--files-from <path>` (or `-` for stdin).
 - **Inspection**: `jq` over `data/<id>/files/**/*.json` for ad-hoc severity / TP queries.
 - **Credentials**: `AI_GATEWAY_API_KEY`, `VERCEL_OIDC_TOKEN`, `ANTHROPIC_AUTH_TOKEN` / `ANTHROPIC_BASE_URL`, `OPENAI_API_KEY` / `OPENAI_BASE_URL`, `claude login`, `codex login`.
-- **Resource files** under `resources/` for setup, scanning, PR review, matchers, triage, config — load on demand.
+- **Resource files** under `resources/` for setup, scanning, PR review, matchers, triage, config, load on demand.
 
 ### Canonical workflow path
 1. **Bootstrap** (one time per repo):
@@ -164,7 +164,7 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
    skim `README` / `AGENTS.md` / `CLAUDE.md` and a handful of representative
    files, and replace each section of `data/<id>/INFO.md` (50-100 lines,
    3-5 examples per section, no line numbers, no generic CWE rehash).
-2. **Calibrate before any full pass** (deepsec docs recommend `--limit 50 --concurrency 5` as the calibration starting point — `getting-started.md`, `vercel-setup.md`, `faq.md`):
+2. **Calibrate before any full pass.** The deepsec docs (`getting-started.md`, `vercel-setup.md`, `faq.md`) recommend `--limit 50 --concurrency 5` as the calibration starting point.
    ```bash
    bunx deepsec scan
    bunx deepsec status
@@ -199,7 +199,7 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 | `LOCAL_FS` | `.deepsec/deepsec.config.ts`, `.deepsec/.env.local`, `.deepsec/matchers/`, `.deepsec/data/<id>/{project.json,INFO.md,config.json,files/,runs/,reports/}`, generated `findings/`, `comment.md`, CI workflow files. |
 | `PROCESS` | `bunx deepsec scan|process|triage|revalidate|export|metrics|status|sandbox`, `bun install`, optional `vercel link` / `vercel env pull`. |
 | `NETWORK` | Anthropic / OpenAI via Vercel AI Gateway (default) or direct provider endpoints; optional Vercel Sandbox microVM control plane. |
-| `CREDENTIALS` | `AI_GATEWAY_API_KEY`, `VERCEL_OIDC_TOKEN`, `ANTHROPIC_AUTH_TOKEN`, `OPENAI_API_KEY`, `VERCEL_TOKEN` / `VERCEL_TEAM_ID` / `VERCEL_PROJECT_ID`, `claude` / `codex` subscription tokens. Read-only consumption — never echo secrets back to the user or commit them. |
+| `CREDENTIALS` | `AI_GATEWAY_API_KEY`, `VERCEL_OIDC_TOKEN`, `ANTHROPIC_AUTH_TOKEN`, `OPENAI_API_KEY`, `VERCEL_TOKEN` / `VERCEL_TEAM_ID` / `VERCEL_PROJECT_ID`, `claude` / `codex` subscription tokens. Consume read-only; never echo secrets back to the user or commit them. |
 | `MEMORY` | User-stated budget cap, severity floor, and stop conditions for the current session. |
 
 ### Preconditions
@@ -212,8 +212,8 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 ### Effects and side effects
 - Creates `.deepsec/` (config, lockfile, scaffolding) and `.deepsec/data/<id>/` (gitignored) inside the target repo.
 - Writes `.env.local` (never commit) and may run `vercel link` / `vercel env pull` (writes `.vercel/project.json` + token).
-- Spawns long-running AI processes that **cost real money** — single full scans range from $25 to over $1,200 per the official cost guide and can climb to tens of thousands on very large repos.
-- Reads source code; sends snippets to the configured LLM (gateway = zero retention; direct provider = subject to that provider's policy). Never exfiltrates secrets — gateway key stays outside the worker sandbox in `sandbox` mode.
+- Spawns long-running AI processes that **cost real money**. Single full scans range from $25 to over $1,200 per the official cost guide and can climb to tens of thousands on very large repos.
+- Reads source code; sends snippets to the configured LLM (gateway = zero retention; direct provider = subject to that provider's policy). Never exfiltrates secrets; the gateway key stays outside the worker sandbox in `sandbox` mode.
 - May write `.github/workflows/deepsec.yml` (or analogue) when the user asks for a CI gate.
 - Edits `deepsec.config.ts` and adds `.deepsec/matchers/*.ts` when authoring matchers.
 - Does not commit, push, or open PRs unless the user explicitly authorizes a separate commit step (route via `oma-scm`).
@@ -222,7 +222,7 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 1. **Never launch an unbounded `process` on a repo whose size you have not measured.** Always run a calibration pass first when file count is unknown or > 500 (deepsec docs recommend `--limit 50 --concurrency 5`; defer to a user-named value if given).
 2. **State cost and stopping condition before any AI pass.** Use the published bands (100 files ≈ $25-60, 500 ≈ $130-300, 2,000 ≈ $500-1,200; ×2-3 swing).
 3. **Resume, do not reset.** After any network / quota / Ctrl-C interruption, re-run the same command. Never delete `data/<id>/` to "start clean" without explicit user instruction.
-4. **`INFO.md` stays short and project-specific.** 50-100 lines, 3-5 examples per section, name primitives but no line numbers, skip generic CWE categories — built-in matchers cover those.
+4. **`INFO.md` stays short and project-specific.** 50-100 lines, 3-5 examples per section. Name primitives but no line numbers. Skip generic CWE categories; built-in matchers cover those.
 5. **For PR/CI gates, keep PR-controlled code in a no-write job.** Never grant `pull-requests: write` to a job that executes PR-controlled `pnpm install` / config-loading. Use the two-job pattern in `resources/pr-review.md`.
 6. **Pin actions to full SHAs** in production CI; major-version tags are for examples only.
 7. **Never silently drop refusals.** If the agent reports `refused: true`, log it, retry with the other backend, or add the file to `ignorePaths` only when reproducible.
@@ -231,7 +231,7 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 10. **Treat deepsec like an agent with shell access.** Recommend `sandbox` for prompt-injection-prone repos (vendored code, untrusted deps).
 11. **Findings need verdicts.** For any HIGH+ surfaced to the user, prefer `revalidate`-tagged verdicts (`true-positive` / `false-positive` / `fixed` / `uncertain`) over raw `process` output.
 12. **Do not invent CLI flags.** Anything beyond `resources/scanning.md`'s flag list must be checked against `--help` first.
-13. **Ask agent choice before the first paid call.** If the user has not named an agent (`claude` vs `codex`) and `deepsec.config.ts` does not pin `defaultAgent`, ask once with the trade-off clearly stated. Do not also bargain over budget or severity — handle those via the upstream calibration recommendation (`--limit 50 --concurrency 5` per deepsec docs) and the user-stated `severity_floor`.
+13. **Ask agent choice before the first paid call.** If the user has not named an agent (`claude` vs `codex`) and `deepsec.config.ts` does not pin `defaultAgent`, ask once with the trade-off clearly stated. Do not also bargain over budget or severity; those are handled via the upstream calibration recommendation (`--limit 50 --concurrency 5` per deepsec docs) and the user-stated `severity_floor`.
 
 ## References
 - Workspace install + `INFO.md` bootstrap: `resources/setup.md`
@@ -241,7 +241,7 @@ Operate Vercel's `deepsec` security scanner inside a target repository safely an
 - Reading findings, severities, triage / revalidation verdicts, FP cuts: `resources/triage.md`
 - `deepsec.config.ts` reference, env vars, plugin order, AI Gateway / Vercel Sandbox auth: `resources/config.md`
 - Upstream docs (load only when a resource file points at one):
-  - https://github.com/vercel-labs/deepsec — repo + README
-  - https://github.com/vercel-labs/deepsec/tree/main/docs — `getting-started`, `reviewing-changes`, `writing-matchers`, `configuration`, `models`, `plugins`, `architecture`, `data-layout`, `vercel-setup`, `supported-tech`, `faq`
+  - Repo + README: https://github.com/vercel-labs/deepsec
+  - Per-topic docs at https://github.com/vercel-labs/deepsec/tree/main/docs (`getting-started`, `reviewing-changes`, `writing-matchers`, `configuration`, `models`, `plugins`, `architecture`, `data-layout`, `vercel-setup`, `supported-tech`, `faq`)
 - Shared context loading: `../_shared/core/context-loading.md`
 - Shared quality principles: `../_shared/core/quality-principles.md`

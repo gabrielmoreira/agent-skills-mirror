@@ -82,18 +82,32 @@ are installed:
 - **Manual `git worktree add` or WorkTrunk without a hook**: `cd` into
   the newly created worktree, then run **install-deps**.
 
+`install-deps` must remain safe to rerun during retries, takeovers, and
+recreated worktrees without manual cleanup.
+
 ## B2 — Create and refine plan
 
 Draft an implementation plan and post it as an issue comment. Then run a
 critique pass to review the plan for correctness and concreteness (see
 `idd-overview.instructions.md` for per-agent implementation). Post the
 refined final plan as a follow-up or update to the same issue comment.
+After the final plan comment is posted and claim ownership is
+re-validated, update the issue live status digest: `Phase` is `B2
+planned`, `Open blockers` is `none` unless the plan found a blocker,
+`Next action` is `B3 implement`, and `Authoritative by` points to the
+plan comment and verified claim.
 
 ## B3 — Implement
 
 Implement the plan. Before each commit, run **fix-validate**.
 
 Keep commits atomic — one logical change per commit.
+
+If B3 or C must stop for a hold, use the shared Hold / suspend rules in
+`idd-overview.instructions.md` and update the issue digest with the
+blocking condition before stopping. Do not use the digest as the only
+record of unfinished work; material decisions still need issue comments
+or commits.
 
 ---
 
@@ -113,7 +127,13 @@ Run a critique pass on this branch's diff. Ask it to check whether the
 implementation is correct, whether the issue's requirements are
 satisfied, whether adequate test coverage exists, and whether any other
 problems exist. See `idd-overview.instructions.md` for per-agent
-implementation.
+implementation. The distributed defaults for the C-phase skip and loop
+guards are listed in `docs/policy-constants.md`.
+
+After each critique loop decision, update the issue digest only if the
+next action changes materially: for example, `C accepted fixes` before
+C5, `C clean` before moving to PR submission, or a hold state when
+guardrails stop the loop.
 
 ### C2 — Check for issues
 

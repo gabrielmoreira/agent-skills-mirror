@@ -1,6 +1,6 @@
 # Hedging guide for academic English
 
-Academic writing requires calibrated certainty — neither overclaiming nor excessive caution.
+Academic writing requires calibrated certainty: neither overclaiming nor excessive caution.
 
 ## Evidence-to-hedge mapping
 

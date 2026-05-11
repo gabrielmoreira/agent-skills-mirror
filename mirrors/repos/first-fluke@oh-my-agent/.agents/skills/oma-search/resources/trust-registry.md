@@ -10,7 +10,7 @@ Uses heuristic pattern matching + Tranco domain ranking for validation.
 | verified | 0.85-0.95 | ★★★★ | Official documentation, vendor sites, standards bodies |
 | community | 0.50-0.70 | ★★★ | User-generated, curated platforms |
 | external | 0.20-0.49 | ★★ | Third-party content sources |
-| unknown | — | — | Cannot determine trust level |
+| unknown | (none) | (none) | Cannot determine trust level |
 
 ## Scoring Rules
 

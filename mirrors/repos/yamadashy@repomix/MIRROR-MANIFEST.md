@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yamadashy/repomix` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `yamadashy/repomix` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yamadashy/repomix` — 26 default patterns, 0 followed patterns, 32 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,17 +80,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.agents/commands/git/pr-review.md`](.agents/commands/git/pr-review.md) |
 | 20 | ✓ | [`.agents/commands/git/release-note-generate.md`](.agents/commands/git/release-note-generate.md) |
 | 21 | ✓ | [`.agents/rules/base.md`](.agents/rules/base.md) |
-| 22 | ✓ | [`.claude/skills/agent-memory/SKILL.md`](.claude/skills/agent-memory/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/contextual-commit/SKILL.md`](.claude/skills/contextual-commit/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/repomix-explorer/SKILL.md`](.claude/skills/repomix-explorer/SKILL.md) |
-| 25 | ✓ | [`.cursor/rules/base.mdc`](.cursor/rules/base.mdc) |
-| 26 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 27 | ✓ | [`.github/instructions/base.instructions.md`](.github/instructions/base.instructions.md) |
-| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 29 | ✓ | [`browser/.claude/skills/browser-extension-developer/SKILL.md`](browser/.claude/skills/browser-extension-developer/SKILL.md) |
-| 30 | ✓ | [`browser/CLAUDE.md`](browser/CLAUDE.md) |
-| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 32 | ✓ | [`website/.claude/skills/website-maintainer/SKILL.md`](website/.claude/skills/website-maintainer/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/agent-carnet/references/cookbook.md`](.agents/skills/agent-carnet/references/cookbook.md) |
+| 23 | ✓ | [`.agents/skills/agent-carnet/references/frontmatter.md`](.agents/skills/agent-carnet/references/frontmatter.md) |
+| 24 | ✓ | [`.agents/skills/agent-carnet/SKILL.md`](.agents/skills/agent-carnet/SKILL.md) |
+| 25 | ✓ | [`.claude/skills/contextual-commit/SKILL.md`](.claude/skills/contextual-commit/SKILL.md) |
+| 26 | ✓ | [`.claude/skills/repomix-explorer/SKILL.md`](.claude/skills/repomix-explorer/SKILL.md) |
+| 27 | ✓ | [`.cursor/rules/base.mdc`](.cursor/rules/base.mdc) |
+| 28 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 29 | ✓ | [`.github/instructions/base.instructions.md`](.github/instructions/base.instructions.md) |
+| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 31 | ✓ | [`browser/.claude/skills/browser-extension-developer/SKILL.md`](browser/.claude/skills/browser-extension-developer/SKILL.md) |
+| 32 | ✓ | [`browser/CLAUDE.md`](browser/CLAUDE.md) |
+| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 34 | ✓ | [`website/.claude/skills/website-maintainer/SKILL.md`](website/.claude/skills/website-maintainer/SKILL.md) |
 
 ---
 

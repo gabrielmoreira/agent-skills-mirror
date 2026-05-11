@@ -9,9 +9,13 @@ review step. Even when another local agent is driving the workflow,
 follow it because the dependency is on GitHub review state, not on the
 local CLI.
 
+The advisory-review timing defaults used by E14 are named in
+[IDD policy constants](../../docs/policy-constants.md). Refer there when
+you need the values, but keep the phase logic here unchanged.
+
 Apply the shared claim revalidation gate before E9, before the E12 push,
-and before each E13/E14 GitHub side effect (reply, resolve, reviewer
-request, or hold comment).
+and before each E13/E14/E15 GitHub side effect (reply, resolve,
+reviewer request, hold comment, or digest update).
 
 ## E9 — Fix accepted issues
 
@@ -23,7 +27,9 @@ Commit fixes atomically — one logical change per commit.
 
 Run a critique pass to verify that the fixes in E9 address the root
 causes and are correct (see `idd-overview.instructions.md` for per-agent
-implementation). Keep an E10 pass count for the current E9 fix batch.
+implementation). The distributed defaults for the E10 guardrails are
+listed in `docs/policy-constants.md`. Keep an E10 pass count for the
+current E9 fix batch.
 
 If the critique pass finds additional issues, fix them, commit
 atomically, and run E10 again while the findings are converging.
@@ -77,6 +83,15 @@ unambiguous:
   can reopen the thread and add a new reply, which will re-surface it in
   the next E1 pass.
 - **Regular comments**: reply only; do not resolve.
+
+After E13 replies and resolutions are complete, upsert the PR live
+status digest before E14 if the next route is still review-fix or CI
+wait. Set `Phase` to `E13 feedback replied`, `Open blockers` to any
+remaining reviewer, advisory, or CI wait, `Next action` to E14 or E15,
+and `Authoritative by` to the accepted feedback replies, resolved
+threads, current HEAD, and verified claim. Because E15 returns to E1
+after CI, this digest edit is safe activity; do not use it to bypass the
+next E1 snapshot.
 
 ## E14 — Re-review request
 
@@ -141,6 +156,12 @@ per PR** (this is a process limit, not a GitHub-enforced constraint).
 
 Copilot and CI advisory bot comments are advisory; unanswered ones do
 not block merge.
+
+Whenever E14 posts a Copilot request marker, recovery marker, or hold
+comment, update the digest after that side effect with the current
+advisory state. Use the marker or hold comment as `Authoritative by`,
+set `Open blockers` to the advisory wait or hold reason, and set
+`Next action` to polling, E15, or maintainer action.
 
 **Active polling loop** (applies when `COPILOT_PENDING` is `"true"`, or
 immediately after posting a marker in the **REQUEST_NEEDED** or
@@ -215,3 +236,9 @@ proceeding to F — do not skip triage.
 - **On cancelled / timed_out / infra**: re-push or rerun CI once; if it
   cancels or times out again, post a hold comment and stop (do not
   loop). On success after the rerun, **return to E1**.
+
+When E15 stops on a CI hold, re-validate the claim and then update the
+digest with `Phase: E15 hold`, the failing or missing checks in
+`Open blockers`, and the maintainer or rerun expectation in
+`Next action`. On CI success, do not edit the digest before returning to
+E1; let the next E1/F pass refresh review currency first.

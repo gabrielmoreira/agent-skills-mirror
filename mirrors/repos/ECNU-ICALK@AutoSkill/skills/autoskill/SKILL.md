@@ -1,13 +1,15 @@
 ---
 name: autoskill
-description: Manage local Agent Skill files as an installable skill manager. Proactively and periodically detect reusable skill material during or after meaningful sessions; run non-blocking extraction checks; offer candidate skill titles or accept a user-supplied topic when extraction direction is ambiguous; preserve the appropriate output language; search local and external skill ecosystems for similar skills; score candidates by evidence, recurrence, and value; fully draft proposed skills or diffs before asking for approval; then, after explicit user approval, discard, improve, merge, or create `SKILL.md` folders.
+description: Manage personal local Agent Skill files as an installable skill manager. Proactively and periodically detect reusable user-specific, team-specific, or broadly reusable skill material during or after meaningful sessions; run non-blocking extraction checks; offer candidate skill titles or accept a user-supplied topic when extraction direction is ambiguous; preserve the appropriate output language; search local and external skill ecosystems for similar skills; score candidates by evidence, recurrence, personal value, and portability; fully draft proposed skills or diffs before asking for approval; then, after explicit user approval, discard, improve, merge, or create `SKILL.md` folders.
 ---
 
 # Local Skill File Manager
 
 ## Purpose
 
-Maintain the user's local skill files as a lightweight self-improving memory system. This skill does not depend on project-specific code, servers, vector stores, databases, or storage layouts. It operates only on ordinary local skill folders:
+Maintain the user's personal local skill files as a lightweight self-improving memory system. The default goal is not to produce marketplace-ready generic skills; it is to preserve reusable behavior that helps this user, this team, or this workspace in future sessions. A good candidate may encode personal workflow preferences, project conventions, style contracts, tool choices, or review gates that would not be useful to other users, as long as it is reusable for the intended owner and approved.
+
+This skill does not depend on project-specific code, servers, vector stores, databases, or storage layouts. It operates only on ordinary local skill folders:
 
 ```text
 <skill-root>/
@@ -40,6 +42,8 @@ Local skills can influence future agent behavior and may include executable scri
 - Do not add surprising capabilities, hidden network access, credential handling, data exfiltration, or destructive commands.
 - If a skill adds scripts or tool integrations, make their purpose visible in `SKILL.md`.
 - When editing a skill that may be shared with a team, preserve organization policies and ask before changing security-sensitive behavior.
+- Treat each candidate as `personal` by default; mark it `team` or `public` only when the evidence supports that broader audience.
+- Do not publish, recommend as broadly reusable, or remove personal scope from a user-specific skill without explicit user approval.
 - Before the first persistent learning note or skill write in a new local convention, tell the user what path would be written and ask for approval.
 - Do not silently modify this `autoskill` manager itself during routine maintenance. Improve it only when the user explicitly asks to improve this skill.
 
@@ -57,7 +61,7 @@ Before writing anything, identify where local skills live.
 
 Use a three-layer trigger policy:
 
-1. Silent scan: after each substantive user turn, briefly ask whether the turn contains a reusable rule, correction, workflow, preference, failure, or skill-quality issue.
+1. Silent scan: after each substantive user turn, briefly ask whether the turn contains a reusable personal preference, rule, correction, workflow, failure, or skill-quality issue.
 2. Extraction check: when a trigger below fires, classify the experience, assign evidence and value, search for similar skills, and test it against the extraction boundary.
 3. Write/update: only edit local skill files after the candidate passes the boundary, the target skill root is clear, and the user approves the exact change.
 
@@ -97,6 +101,7 @@ User confirmation is required before any skill file is created, updated, deleted
 For `create`, show before writing:
 
 - proposed skill name and target path
+- intended audience: `personal`, `team`, or `public`, plus portability limits
 - why the candidate passed the reusable-skill boundary
 - evidence level, recurrence signal, priority, and value signal
 - similar skills checked and why this is not a duplicate
@@ -191,6 +196,7 @@ When a learning note or improvement rationale is needed, use a compact structure
 ```text
 type: error | correction | best_practice | knowledge_gap | preference
 status: candidate | deferred | approved | applied | discarded
+audience: personal | team | public
 summary: one sentence
 source: user_feedback | command_error | task_result | review
 context: task family, relevant files/tools, and what happened
@@ -222,6 +228,7 @@ Extract when all tests pass:
 
 - User-evidenced: each major rule comes from user instructions, corrections, confirmations, or stable preferences.
 - Reusable: the rule applies to future tasks of the same kind after removing case-specific details.
+- Owner-valuable: the rule improves future behavior for the user, team, or workspace even if it is not generally useful to strangers.
 - Non-obvious: the skill captures workflow, policy, constraints, tool usage, format, or quality checks that a general assistant may not infer reliably.
 - Actionable: another agent can follow the skill without reading the original conversation.
 - Worth saving: storing it improves future behavior more than it increases skill-library noise.
@@ -237,6 +244,7 @@ Do not extract when any test fails:
 - The candidate only reflects what the assistant happened to do successfully once.
 - The apparent pattern comes from silence, politeness, or lack of user correction rather than evidence.
 - The candidate would make an existing skill broader without improving a concrete future behavior.
+- The candidate frames a personal or project-specific preference as a universal best practice without labeling its intended audience.
 
 Decision line: this-instance content -> do not extract; reusable method, preference, workflow, output contract, tool rule, or quality gate -> consider extraction.
 
@@ -267,6 +275,7 @@ When extraction is warranted, form one candidate skill at a time:
 
 - `name`: lowercase letters, digits, and hyphens; short and capability-specific.
 - `description`: state what the skill does and exactly when it should be used; this is the primary trigger surface.
+- `audience`: `personal`, `team`, or `public`; default to `personal` for user-specific reuse.
 - `instructions`: concise imperative guidance for future agents.
 - `triggers`: 3-5 phrases a user might say that should invoke the skill.
 - `resources`: optional scripts, references, or assets only when they materially improve reuse.
@@ -297,7 +306,7 @@ rg -n "<keyword|task|output-type>" <skill-root>
 
 3. Inspect likely local matches: frontmatter `name`/`description`, workflow, triggers, resources, and success criteria. Compare by task family, trigger, tools, failure mode, output contract, and audience.
 4. If a local `skill-finder`, `find-skills`, or equivalent discovery tool is installed, use it to broaden the local/external search. Treat results as similarity evidence, not an automatic merge/install decision.
-5. When external ecosystem search is requested or duplication risk is high, check well-known sources before creating a new skill:
+5. When external ecosystem search is requested, duplication risk is high, or the candidate is meant to be public, check well-known sources before creating a new skill. For personal skills, external search is evidence for avoiding duplicates, not a popularity test:
    - browse `https://skills.sh/` or its leaderboard for popular/battle-tested options
    - run `npx skills find <query>` with the best 1-2 queries
    - try alternate terms when the first query misses, e.g. `deploy` vs `deployment` or `pr review` vs `code review`
@@ -337,7 +346,7 @@ Choose one outcome.
 - The candidate passes the extraction boundary.
 - No local skill covers the same capability.
 - Its job-to-be-done, deliverable, audience, tool context, workflow, or success criteria materially differ from existing skills.
-- It is likely to be reused enough to justify a new skill folder.
+- It is likely to be reused by the intended user, team, or public audience enough to justify a new skill folder.
 - It has a clear trigger surface and does not depend on the original session context.
 
 Prefer `discard` over creating vague skills. Prefer `improve` for skill-quality failures. Prefer `merge` over creating duplicate skills. Prefer `create` only for a distinct reusable capability.
@@ -487,4 +496,4 @@ Borrow these skill-creator principles:
 
 ## Completion Note
 
-After managing local skills, report the decision, target path or "no file changed", title/topic selected if any, approval status, reuse-boundary reason, similar skills checked, validation run, changed sections/files for updates, and whether maintenance completed synchronously or was deferred.
+After managing local skills, report the decision, target path or "no file changed", intended audience and portability limits, title/topic selected if any, approval status, reuse-boundary reason, similar skills checked, validation run, changed sections/files for updates, and whether maintenance completed synchronously or was deferred.

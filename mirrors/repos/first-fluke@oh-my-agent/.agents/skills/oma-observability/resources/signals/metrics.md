@@ -44,8 +44,8 @@ Use for: requests_total, errors_total, bytes_sent_total
 Never use for: values that can decrease (use UpDownCounter)
 ```
 
-Sync variant: `counter.Add(ctx, delta, attrs...)` — caller increments explicitly.
-Async variant: `ObservableCounter` — callback provides absolute cumulative value.
+Sync variant: `counter.Add(ctx, delta, attrs...)`; caller increments explicitly.
+Async variant: `ObservableCounter`; callback provides absolute cumulative value.
 
 ### 2.2 UpDownCounter
 
@@ -57,7 +57,7 @@ Never use for: strictly increasing values (use Counter)
 ```
 
 Sync variant: `upDownCounter.Add(ctx, delta, attrs...)` where delta is positive or negative.
-Async variant: `ObservableUpDownCounter` — callback provides current value.
+Async variant: `ObservableUpDownCounter`; callback provides current value.
 
 ### 2.3 Gauge
 
@@ -68,7 +68,7 @@ Use for: cpu_usage, memory_used_bytes, temperature_celsius, cache_hit_ratio
 ```
 
 Sync variant: `gauge.Record(ctx, value, attrs...)`.
-Async variant: `ObservableGauge` — preferred for values read from an external source (OS, hardware sensor).
+Async variant: `ObservableGauge`; preferred for values read from an external source (OS, hardware sensor).
 
 ### 2.4 Histogram
 
@@ -80,7 +80,7 @@ Prefer over Summary for all new instrumentation
 ```
 
 Sync variant only: `histogram.Record(ctx, value, attrs...)`.
-Configure explicit bucket boundaries per instrument to control cardinality. Default OTel SDK buckets: `[0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000]` (milliseconds — override for seconds-based metrics).
+Configure explicit bucket boundaries per instrument to control cardinality. Default OTel SDK buckets: `[0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000]` (milliseconds; override for seconds-based metrics).
 
 ### 2.5 Summary (not recommended for new code)
 
@@ -185,7 +185,7 @@ Four signals for monitoring any request-serving system:
 | Errors | `sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)` |
 | Duration | `histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))` |
 
-### 4.3 USE Method (resource-level — CPU, memory, disk)
+### 4.3 USE Method (resource-level: CPU, memory, disk)
 
 | Signal | PromQL sketch |
 |--------|---------------|
@@ -216,7 +216,7 @@ Cross-ref `../boundaries/slo.md` for SLO target definitions, error-budget burn-r
 
 ### 4.5 Healthcheck Endpoints and Metrics
 
-Kubernetes readiness and liveness probes (`/readyz`, `/healthz`) are HTTP checks — they are not metrics themselves. However, the underlying health state MUST be exposed as a metric so that dashboards and SLO computation can consume it continuously:
+Kubernetes readiness and liveness probes (`/readyz`, `/healthz`) are HTTP checks; they are not metrics themselves. However, the underlying health state MUST be exposed as a metric so that dashboards and SLO computation can consume it continuously:
 
 ```promql
 # Health metric emitted by application (1 = healthy, 0 = unhealthy)
@@ -394,14 +394,14 @@ count({job="my-service"}) > 4000
 | Label | Reason |
 |-------|--------|
 | `user.id` | Unbounded; one series per user |
-| `request.id` | One series per request — instant explosion |
+| `request.id` | One series per request; instant explosion |
 | `trace.id` | One series per trace |
 | `http.url` (raw) | Query strings are unbounded |
 | `error.message` | Free-text; unbounded cardinality |
 
 ### 9.3 Tenant Cap
 
-`tenant.id` label is allowed with a hard cap: top-N explicit tenants (e.g., 1000), all others mapped to label value `"other"`. Never create a new metric name per tenant — this bypasses TSDB cardinality controls entirely (anti-pattern listed in Section 12).
+`tenant.id` label is allowed with a hard cap: top-N explicit tenants (e.g., 1000), all others mapped to label value `"other"`. Never create a new metric name per tenant; this bypasses TSDB cardinality controls entirely (anti-pattern listed in Section 12).
 
 ---
 

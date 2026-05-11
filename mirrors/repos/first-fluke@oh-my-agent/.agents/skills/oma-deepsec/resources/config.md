@@ -1,4 +1,4 @@
-# Configuration — `deepsec.config.ts`, env vars, plugins, models
+# Configuration: `deepsec.config.ts`, env vars, plugins, models
 
 deepsec reads `deepsec.config.{ts,mjs,js,cjs}` from the current working directory, walking up. The CLI inherits whatever the file declares.
 
@@ -34,7 +34,7 @@ For a fully-worked example exercising every common field (`infoMarkdown`, `promp
 |---|---|---|---|
 | `id` | `string` | yes | Used as `--project-id` and the data directory name. |
 | `root` | `string` | yes | Absolute or relative path to the codebase. |
-| `githubUrl` | `string` | no | `https://github.com/owner/repo/blob/branch` — for clickable links in exports. Auto-detected from `git remote` if omitted. |
+| `githubUrl` | `string` | no | `https://github.com/owner/repo/blob/branch` for clickable links in exports. Auto-detected from `git remote` if omitted. |
 | `infoMarkdown` | `string` | no | Repo context injected into AI prompts. Overrides `data/<id>/INFO.md` if both are set. |
 | `promptAppend` | `string` | no | Free-form text appended to the system prompt for this project. |
 | `priorityPaths` | `string[]` | no | Path prefixes to process first. |
@@ -72,8 +72,8 @@ plugins: [genericPlugin(), orgPlugin()]
 
 | Slot | Behavior |
 |---|---|
-| `matchers`, `notifiers`, `agents` | **Additive** — both plugins' contributions stack. |
-| `ownership`, `people`, `executor` | **Last-write-wins** — `orgPlugin()`'s provider replaces `genericPlugin()`'s. |
+| `matchers`, `notifiers`, `agents` | **Additive.** Both plugins' contributions stack. |
+| `ownership`, `people`, `executor` | **Last-write-wins.** `orgPlugin()`'s provider replaces `genericPlugin()`'s. |
 
 A monorepo gating example:
 
@@ -179,7 +179,7 @@ The Sandbox SDK reads these directly from `process.env` at `Sandbox.create()` ti
 |---|---|---|
 | `Missing AI credentials for --agent claude|codex` | No credential present. | Set `AI_GATEWAY_API_KEY=vck_…` in `.env.local`, or `claude login` / `codex login`. |
 | `401 Unauthorized` on `process` / `revalidate` | Credential present but rejected. | OIDC: `vercel env pull` (12 h expiry). API key: regenerate in dashboard. Confirm `.env.local` is in cwd. |
-| `Stopped: Vercel AI Gateway credits exhausted` | Gateway balance is $0. | Top up at the printed URL; re-run the same command — it resumes. |
+| `Stopped: Vercel AI Gateway credits exhausted` | Gateway balance is $0. | Top up at the printed URL, then re-run the same command; it resumes. |
 | `Stopped: Anthropic API credits exhausted` | Direct Anthropic out of credits. | Top up at console.anthropic.com, or switch to the gateway. |
 | `Stopped: OpenAI API quota exhausted` | Direct OpenAI out of quota. | Top up in the OpenAI dashboard, or switch to the gateway. |
 | `Stopped: Claude Pro/Max subscription exhausted` | Hit weekly / 5-hour cap. | Switch to AI Gateway. |

@@ -1,11 +1,17 @@
----
-name: preline-theme-generator-examples
-description: Example inputs and expected outputs for generating Preline themes (full token coverage, data-theme activation only).
----
-
 # Examples — Preline Theme Generator
 
+These examples are palette-and-structure references, not literal final-output templates.
+
+Important: examples below are structural references. Final delivered theme files should follow `docs/final-output-style.md` and should never require edits to any companion project file.
+
 These examples define what "good output" looks like.
+
+## Contents
+
+- [Example 1 — Calm teal SaaS theme](#example-1--calm-teal-saas-theme-full-theme-clean)
+- [Example 2 — Retro sharp corners](#example-2--retro-sharp-corners-behavior-change-must-be-scoped)
+- [Example 3 — Theme-scoped font token](#example-3--theme-scoped-font-token-no-mapping-changes)
+- [Example 4 — Brand match with exact primary color](#example-4--brand-match-with-exact-primary-color)
 
 ## Example 1 — Calm teal SaaS theme (full theme, clean)
 
@@ -27,8 +33,6 @@ These examples define what "good output" looks like.
 ### Output (truncated)
 
 ```css
-@import "./theme.css";
-
 /* ------------------------------ */
 /* -------- Seafoam ------------- */
 /* ------------------------------ */
@@ -55,6 +59,7 @@ These examples define what "good output" looks like.
   --color-seafoam-gray-800: oklch(34.6% 0.008 180);
   --color-seafoam-gray-900: oklch(30.6% 0.005 180);
   --color-seafoam-gray-950: oklch(20.1% 0.003 180);
+
 }
 
 :root[data-theme="theme-seafoam"],
@@ -74,9 +79,9 @@ These examples define what "good output" looks like.
   --primary-foreground: var(--color-white);
   --primary-hover: var(--color-primary-700);
   
-  /* Components use custom gray */
-  --navbar: var(--color-white);
-  --navbar-line: var(--color-seafoam-gray-200);
+  /* Components prefer assigned semantic tokens */
+  --navbar: var(--background-plain);
+  --navbar-line: var(--border);
   /* ... */
 }
 
@@ -86,8 +91,8 @@ These examples define what "good output" looks like.
   --background-1: var(--color-zinc-900);
   --foreground: var(--color-zinc-200);
   
-  --primary: var(--color-seafoam-400);
-  --primary-foreground: var(--color-zinc-900); /* Light brand = dark foreground */
+  --primary: var(--color-primary-400);
+  --primary-foreground: var(--color-zinc-900); /* Contrast-selected because the generated light-brand states are too light for white */
   /* ... */
 }
 ```
@@ -173,9 +178,9 @@ These examples define what "good output" looks like.
 - Script converts hex to hue automatically
 - Primary ramp derived coherently from the brand hue
 - `--primary-foreground` readable (white on this blue)
-- Chart tokens include hex values: `--chart-colors-primary-hex: #2F6BFF;`
+- Chart `-hex` tokens remain variable-based placeholders in generated source
 
-### Output (chart section showing hex tokens)
+### Output (chart section showing variable-based chart tokens)
 
 ```css
 :root[data-theme="theme-brand-x"],
@@ -183,13 +188,13 @@ These examples define what "good output" looks like.
   /* ... other tokens ... */
   
   /* CHARTS */
-  --chart-primary: var(--color-brand-x-500);
-  --chart-colors-primary: var(--color-brand-x-500);
-  --chart-colors-primary-hex: #2F6BFF;
-  --chart-colors-primary-hex-inverse: #5A8FFF;
+  --chart-primary: var(--color-primary-500);
+  --chart-colors-primary: var(--color-primary-500);
+  --chart-colors-primary-hex: var(--color-primary-500);
+  --chart-colors-primary-hex-inverse: var(--color-primary-300);
   
-  --chart-1: var(--color-brand-x-500);
-  --chart-colors-chart-1-hex: #2F6BFF;
+  --chart-1: var(--color-primary-500);
+  --chart-colors-chart-1-hex: var(--color-primary-500);
   /* ... */
 }
 ```

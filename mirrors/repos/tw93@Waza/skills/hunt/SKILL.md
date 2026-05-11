@@ -3,7 +3,7 @@ name: hunt
 description: "Finds root cause of errors, crashes, regressions, screenshot-reported defects, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
 when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, 以前是好的, 回归, 截图回归, 判断错误原因, 判断为什么报错, 反复修不好, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace"
 metadata:
-  version: "3.19.0"
+  version: "3.20.0"
 ---
 
 # Hunt: Diagnose Before You Fix
@@ -24,6 +24,16 @@ Good progress: a log line matches the hypothesis, you can predict the next error
 Hypothesis quality gate: before acting on a hypothesis, list all observable symptoms (not just the one the user reported first). The hypothesis must explain every symptom; if it only covers some, it is a symptom-level guess, not a root cause. For timing-dependent issues (flicker, intermittent failure, race condition), reproduce reliably before diagnosing.
 
 Rationalization warning: "I'll just try this" means no hypothesis, write it first. "I'm confident" means run an instrument that proves it. "Probably the same issue" means re-read the execution path from scratch. "It works on my machine" means enumerate every env difference before dismissing. "One more restart" means read the last error verbatim; never restart more than twice without new evidence.
+
+## Durable Context Preflight
+
+Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+
+Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
+
+Map memory types before using them: `decision`, `preference`, and `principle` describe diagnostic constraints; `pattern` and `learning` can seed hypotheses; `fact` must be verified against current state before it affects diagnosis. Current code, logs, repro steps, tests, environment versions, and remote state override memory.
+
+For `/hunt`, durable context is hypothesis fuel only. It never replaces a fresh root-cause sentence, a reproducible symptom list, or evidence from the current state.
 
 ## Hard Rules
 

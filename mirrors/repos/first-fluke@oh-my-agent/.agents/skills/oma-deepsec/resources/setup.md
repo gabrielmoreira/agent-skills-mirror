@@ -1,4 +1,4 @@
-# Setup — install `.deepsec/` and bootstrap `INFO.md`
+# Setup: install `.deepsec/` and bootstrap `INFO.md`
 
 ## 1. Install the workspace
 
@@ -36,7 +36,7 @@ Open `.deepsec/.env.local` and pick **one**:
 | Mode | When | Set |
 |---|---|---|
 | AI Gateway API key | Anywhere, simplest | `AI_GATEWAY_API_KEY=vck_…` from the Vercel AI Gateway API Keys page |
-| Vercel OIDC token | Already linked to a Vercel project (or using Sandbox) | `npx vercel link && npx vercel env pull` writes `VERCEL_OIDC_TOKEN` (12 h expiry — re-pull on auth errors) |
+| Vercel OIDC token | Already linked to a Vercel project (or using Sandbox) | `npx vercel link && npx vercel env pull` writes `VERCEL_OIDC_TOKEN` (12 h expiry; re-pull on auth errors) |
 | Direct Anthropic | BYOK / bypass gateway | `ANTHROPIC_AUTH_TOKEN=sk-ant-…` + `ANTHROPIC_BASE_URL=https://api.anthropic.com` |
 | Direct OpenAI | Codex backend, BYOK | `OPENAI_API_KEY=sk-…` (+ `OPENAI_BASE_URL` only for proxies) |
 | Subscription | Local-only evaluation | `claude login` and/or `codex login` already done; non-sandbox runs reuse the session, no token needed |
@@ -56,7 +56,7 @@ If the second call returns `Missing AI credentials` or `401`, see `config.md` §
 
 ## 4. Write `INFO.md` (do not skip)
 
-`INFO.md` is what makes deepsec project-aware. It is injected into the AI prompt for every batch — vague content here means vague findings.
+`INFO.md` is what makes deepsec project-aware. It is injected into the AI prompt for every batch, so vague content here means vague findings.
 
 ### Recommended: agent-driven write-up
 
@@ -64,26 +64,26 @@ Open the **parent repo** (the codebase you scanned, **not** `.deepsec/`) in your
 
 > Read `.deepsec/node_modules/deepsec/SKILL.md` to understand the tool. Then read `.deepsec/data/<id>/SETUP.md` and follow it: skim this repo's README, any `AGENTS.md` / `CLAUDE.md`, and a handful of representative code files, then replace each section of `.deepsec/data/<id>/INFO.md`.
 >
-> Keep it SHORT — target 50–100 lines total. Pick 3–5 examples per section, not exhaustive enumeration. Name primitives (auth helpers, middleware) but no line numbers. Skip generic CWE categories — built-in matchers cover those. Cover only what is project-specific. `INFO.md` is injected into every scan batch; verbose context dilutes signal.
+> Keep it SHORT: target 50–100 lines total. Pick 3–5 examples per section, not exhaustive enumeration. Name primitives (auth helpers, middleware) but no line numbers. Skip generic CWE categories; built-in matchers cover those. Cover only what is project-specific. `INFO.md` is injected into every scan batch; verbose context dilutes signal.
 
 ### Manual write-up
 
-The processor auto-loads `data/<id>/INFO.md` from the workspace's data dir. Edit it directly — no extra wiring needed in `deepsec.config.ts`. Even a single tight paragraph noticeably improves the AI's output.
+The processor auto-loads `data/<id>/INFO.md` from the workspace's data dir. Edit it directly; no extra wiring is needed in `deepsec.config.ts`. Even a single tight paragraph noticeably improves the AI's output.
 
 ### What goes in `INFO.md`
 
 Project-specific only:
 
-- **What the codebase does** — a few sentences.
-- **Auth shape** — names of helpers / middleware / decorators that gate access (`requireSession`, `Depends(get_current_user)`, etc.). Name them, do not quote them.
-- **Threat model** — which surfaces matter (public HTTP, internal RPC, queue consumers, cron, CLI), which are out of scope.
-- **Known FP sources** — patterns the AI tends to over-flag in this repo.
-- **Project-specific primitives** — internal SDK calls, custom validators, codified secret-loading paths.
-- **Out of scope** — directories or file types the AI should ignore.
+- **What the codebase does** in a few sentences.
+- **Auth shape**: names of helpers / middleware / decorators that gate access (`requireSession`, `Depends(get_current_user)`, etc.). Name them, do not quote them.
+- **Threat model**: which surfaces matter (public HTTP, internal RPC, queue consumers, cron, CLI) and which are out of scope.
+- **Known FP sources**: patterns the AI tends to over-flag in this repo.
+- **Project-specific primitives**: internal SDK calls, custom validators, codified secret-loading paths.
+- **Out of scope**: directories or file types the AI should ignore.
 
 ### What stays out
 
-- Generic CWE category descriptions — built-in matchers cover those.
+- Generic CWE category descriptions; built-in matchers cover those.
 - Exhaustive enumeration. Pick 3–5 representative examples per section.
 - Line numbers. They drift; the AI re-reads files anyway.
 - Boilerplate intro paragraphs.

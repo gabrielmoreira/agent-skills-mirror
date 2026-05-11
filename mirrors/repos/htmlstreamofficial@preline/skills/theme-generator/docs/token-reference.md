@@ -1,13 +1,20 @@
----
-name: preline-theme-generator-token-reference
-description: Complete reference of all Preline theme tokens, their purposes, naming patterns, and default values for both light and dark modes.
----
-
 # Preline Theme Token Reference
 
 This document provides the complete reference for all semantic tokens available in Preline themes. Use this when generating themes to ensure comprehensive coverage.
 
 ---
+
+## Contents
+
+- [Overview](#overview)
+- [Core token groups](#core-token-groups)
+- [Component preset patterns](#component-preset-patterns)
+- [Full token reference by category](#full-token-reference-by-category)
+- [Custom color palettes](#custom-color-palettes)
+- [Default values reference](#default-values-reference)
+- [Theme-scoped overrides](#theme-scoped-overrides)
+- [Color format guidelines](#color-format-guidelines)
+- [Quick token count summary](#quick-token-count-summary)
 
 ## Overview
 
@@ -352,22 +359,22 @@ This pattern applies to: navbar, sidebar, and similar navigation components.
 
 ### 18. Charts (Apexcharts)
 
-Important: Apexcharts does NOT support oklch color format. Keep `-hex` tokens as valid hex values.
+Important: keep chart `-hex` tokens variable-based in generated theme source. Do not hardcode literal hex or oklch values into the final theme file.
 
 ```css
 /* Primary chart color */
 --chart-primary
 --chart-colors-primary
 --chart-colors-primary-inverse
---chart-colors-primary-hex          /* Must be hex */
---chart-colors-primary-hex-inverse  /* Must be hex */
+--chart-colors-primary-hex
+--chart-colors-primary-hex-inverse
 
 /* Chart palette (1-10) */
 --chart-1 through --chart-10
 --chart-colors-chart-1 through --chart-colors-chart-10
 --chart-colors-chart-1-inverse through --chart-colors-chart-10-inverse
---chart-colors-chart-1-hex through --chart-colors-chart-10-hex           /* Must be hex */
---chart-colors-chart-1-hex-inverse through --chart-colors-chart-10-hex-inverse /* Must be hex */
+--chart-colors-chart-1-hex through --chart-colors-chart-10-hex
+--chart-colors-chart-1-hex-inverse through --chart-colors-chart-10-hex-inverse
 
 /* Chart backgrounds */
 --chart-colors-background
@@ -561,7 +568,7 @@ These are useful for creating warm or soft-toned themes instead of using standar
 
   /* Sidebar follows same pattern as navbar */
   /* Card, Dropdown, Select, Overlay, Popover, Tooltip, Table, Switch, Footer, Scrollbar */
-  /* See theme.css for complete default values */
+  /* See the project's existing base Preline theme source for complete default values */
 }
 ```
 
@@ -642,7 +649,7 @@ These are useful for creating warm or soft-toned themes instead of using standar
 
   /* Components shift to neutral-800/900 backgrounds */
   /* Nav items shift to neutral-700 hover states */
-  /* See theme.css for complete dark mode values */
+  /* See the project's existing base Preline theme source for complete dark mode values */
 }
 ```
 
@@ -671,7 +678,7 @@ When creating a theme, override values under theme-scoped selectors:
 
 - For most tokens: use Tailwind color variables `var(--color-<color>-<shade>)`
 - For oklch colors: acceptable for standard tokens
-- For chart `-hex` tokens: MUST use valid hex values (for example, `#2563eb`)
+- For chart `-hex` tokens: keep them as stable variable references in generated source
 - For custom colors: can use hex, rgb, hsl, or oklch
 
 ---

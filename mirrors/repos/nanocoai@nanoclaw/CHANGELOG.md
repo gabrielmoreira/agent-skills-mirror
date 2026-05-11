@@ -4,6 +4,12 @@ All notable changes to NanoClaw will be documented in this file.
 
 For detailed release notes, see the [full changelog on the documentation site](https://docs.nanoclaw.dev/changelog).
 
+## [2.0.54] - 2026-05-10
+
+- **Per-group model and effort overrides.** Agent groups can now run a specific Claude model and effort level, set via `ncl groups config update --model <model> --effort <level>`. Defaults to the host-configured model when unset.
+- **Claude Code 2.1.128.** Container claude-code bumped from 2.1.116 to 2.1.128.
+- CLI help text improvements for `ncl groups config` and `ncl groups restart`.
+
 ## [2.0.48] - 2026-05-09
 
 - **Container config moved to DB.** Per-agent-group container runtime config (provider, model, packages, MCP servers, mounts, skills) now lives in the `container_configs` table instead of `groups/<folder>/container.json`. Existing filesystem configs are backfilled automatically on startup. Managed via `ncl groups config get/update` and `config add-mcp-server/remove-mcp-server/add-package/remove-package`.

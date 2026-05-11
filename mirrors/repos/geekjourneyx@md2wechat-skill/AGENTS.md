@@ -136,6 +136,8 @@ Coverage guidance:
 2. Keep install scripts, release notes, changelog, and release assets aligned.
 3. If the repository does not yet provide a workflow or release gate, document the gap instead of inventing it.
 4. Release work is not complete until these are explicitly re-audited and aligned:
+   - `VERSION`
+   - `package.json`
    - `.claude-plugin/marketplace.json`
    - `skills/md2wechat/SKILL.md`
    - `platforms/openclaw/md2wechat/SKILL.md`
@@ -143,7 +145,8 @@ Coverage guidance:
    - `scripts/install-openclaw.sh`
    - `docs/INSTALL.md`
    - `docs/FAQ.md`
-5. If any of the files above still carry an old version, stale release URL, stale maintainer identity, or outdated command examples, block the release and fix them before tagging.
+5. Run `bash scripts/quality-gates.sh` before declaring release work done. Step 0 checks VERSION / package.json / marketplace.json / CHANGELOG in under 1 second and fails fast if any are misaligned.
+6. If any of the files above still carry an old version, stale release URL, stale maintainer identity, or outdated command examples, block the release and fix them before tagging.
 
 ## Documentation Discipline
 
@@ -222,3 +225,11 @@ The repository should fail closed on prompt drift: missing primary use case, def
 
 1. Ask for approval before commands that require network access or writing outside the workspace.
 2. If a command fails because of sandboxing, rerun it with the required escalation instead of working around it.
+
+## Local-Only Artifacts
+
+`docs/superpowers/` (plans, specs, scratch notes) is gitignored and must never be committed to the remote repository. Keep all superpowers working files local only.
+
+## Brand Profile
+
+The Brand Profile lives at `~/.config/md2wechat/brand.md` (Markdown format, not YAML). Initialize with `md2wechat brand init`. Agents read it for style context; the CLI does not parse it. Never commit brand.md to the repository.

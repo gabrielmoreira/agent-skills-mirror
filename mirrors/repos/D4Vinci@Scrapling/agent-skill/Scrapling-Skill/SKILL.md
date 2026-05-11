@@ -1,7 +1,7 @@
 ---
 name: scrapling-official
 description: Scrape web pages using Scrapling with anti-bot bypass (like Cloudflare Turnstile), stealth headless browsing, spiders framework, adaptive scraping, and JavaScript rendering. Use when asked to scrape, crawl, or extract data from websites; web_fetch fails; the site has anti-bot protections; write Python code to scrape/crawl; or write spiders.
-version: "0.4.7"
+version: "0.4.8"
 license: Complete terms in LICENSE.txt
 metadata:
   homepage: "https://scrapling.readthedocs.io/en/latest/index.html"
@@ -40,7 +40,7 @@ Blazing fast crawls with real-time stats and streaming. Built by Web Scrapers fo
 
 Create a virtual Python environment through any way available, like `venv`, then inside the environment do:
 
-`pip install "scrapling[all]>=0.4.7"`
+`pip install "scrapling[all]>=0.4.8"`
 
 Then do this to download all the browsers' dependencies:
 
@@ -305,6 +305,25 @@ QuotesSpider(crawldir="./crawl_data").start()
 Press Ctrl+C to pause gracefully - progress is saved automatically. Later, when you start the spider again, pass the same `crawldir`, and it will resume from where it stopped.
 
 While iterating on a spider's `parse()` logic, set `development_mode = True` on the spider class to cache responses to disk on the first run and replay them on subsequent runs - so you can re-run the spider as many times as you want without re-hitting the target servers. The cache lives in `.scrapling_cache/{spider.name}/` by default and can be overridden with `development_cache_dir`. Don't ship a spider with this enabled.
+
+For rules-based crawls (follow links matching a regex), use `CrawlSpider` instead of writing the link-extraction loop yourself:
+```python
+from scrapling.spiders import CrawlSpider, CrawlRule, LinkExtractor
+
+class BlogCrawler(CrawlSpider):
+    name = "blog"
+    start_urls = ["https://example.com"]
+
+    def rules(self):
+        return [
+            CrawlRule(LinkExtractor(allow=r"/posts/"), callback=self.parse_post),
+            CrawlRule(LinkExtractor(allow=r"/page/\d+/")),  # follow pagination, no callback
+        ]
+
+    async def parse_post(self, response):
+        yield {"title": response.css("h1::text").get()}
+```
+For sitemap-driven crawls, use `SitemapSpider` with the same `rules()` API. It fetches `sitemap_urls`, descends into sitemap indexes, and dispatches each URL through your rules. Put a `robots.txt` URL directly in `sitemap_urls` and the spider extracts each `Sitemap:` directive from it automatically. See `references/spiders/generic-templates.md` for the full reference, including `LinkExtractor`'s allow/deny/restrict_css/canonicalize options.
 
 ### Advanced Parsing & Navigation
 ```python

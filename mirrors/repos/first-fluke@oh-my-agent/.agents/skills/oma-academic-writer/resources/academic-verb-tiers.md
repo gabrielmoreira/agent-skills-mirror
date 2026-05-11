@@ -2,7 +2,7 @@
 
 Ranked by frequency in a corpus of academic papers. Higher tiers are more universally appropriate; lower tiers are more specialised.
 
-Source: `src/_ingredients/verbs.md` — top 437 verbs from academic corpus.
+Source: `src/_ingredients/verbs.md` (top 437 verbs from academic corpus).
 
 ## Banned verbs (generic / low-level)
 
@@ -40,7 +40,7 @@ These verbs lack precision and register in academic writing. Never use them as t
 | take | adopt, assume, undertake, acquire, embrace |
 | become | emerge, evolve, develop, transition, transform |
 
-## Tier 1 — universal academic verbs (frequency rank 1–30)
+## Tier 1: universal academic verbs (frequency rank 1–30)
 
 These are safe in any academic context. Use liberally.
 
@@ -69,13 +69,13 @@ These are safe in any academic context. Use liberally.
 | combine | 46 | Integration, synthesis, merging |
 | design | 47 | Creation, planning, structuring |
 | execute | 48 | Implementation, carrying out procedures |
-| leverage | 50 | Strategic use (use sparingly — borderline AI word) |
+| leverage | 50 | Strategic use (use sparingly; borderline AI word) |
 | generalise | 52 | Abstraction, broad application |
 | study | 54 | Investigation, research, examination |
 | utilise | 55 | Application (prefer "employ" or "use" in less formal contexts) |
 | solve | 56 | Resolution, addressing problems |
 
-## Tier 2 — strong academic verbs (frequency rank 31–80)
+## Tier 2: strong academic verbs (frequency rank 31–80)
 
 Excellent for adding precision and variety.
 
@@ -114,7 +114,7 @@ Excellent for adding precision and variety.
 | serve | 132 | Function, role fulfillment |
 | process | 133 | Handling, transformation, treatment |
 
-## Tier 3 — precision verbs (frequency rank 81–200)
+## Tier 3: precision verbs (frequency rank 81–200)
 
 For nuanced, specific claims. Excellent for adding sophistication without over-reaching.
 
@@ -129,7 +129,7 @@ For nuanced, specific claims. Excellent for adding sophistication without over-r
 | align | 155 | Agreement, correspondence, matching |
 | define | 156 | Specification, delimitation, characterisation |
 | interpret | 161 | Meaning extraction, analysis, reading data |
-| enhance | 162 | Improvement (use carefully — borderline AI word) |
+| enhance | 162 | Improvement (use carefully; borderline AI word) |
 | affect | 165 | Influence, impact on outcomes |
 | ensure | 174 | Guaranteeing, securing, confirming |
 | deploy | 177 | Implementation, putting into operation |
@@ -147,7 +147,7 @@ For nuanced, specific claims. Excellent for adding sophistication without over-r
 | recognise | 292 | Acknowledging, identifying, accepting |
 | categorise | 293 | Classification, grouping, sorting |
 | retain | 294 | Keeping, preserving, maintaining |
-| highlight | 297 | Drawing attention (use sparingly — borderline AI word) |
+| highlight | 297 | Drawing attention (use sparingly; borderline AI word) |
 | validate | 321 | Confirming, verifying, proving correct |
 | constrain | 326 | Limiting, restricting, bounding |
 | visualise | 329 | Representing graphically, depicting |
@@ -173,9 +173,9 @@ For nuanced, specific claims. Excellent for adding sophistication without over-r
 
 ## Usage notes
 
-1. **Tier 1 verbs** are always safe — use these as your default vocabulary
-2. **Tier 2 verbs** add precision — use 3–5 per paragraph for variety
-3. **Tier 3 verbs** add sophistication — use 1–2 per paragraph to avoid overly dense prose
-4. **Borderline AI words** (leverage, enhance, highlight, showcase) — limit to 1 per page maximum; prefer alternatives
-5. **Match verb to evidence strength** — "demonstrate" > "suggest" > "may indicate" in confidence
-6. **Prefer single verbs over phrasal verbs** — "investigate" not "look into", "improve" not "make better"
+1. **Tier 1 verbs** are always safe; use these as your default vocabulary
+2. **Tier 2 verbs** add precision; use 3–5 per paragraph for variety
+3. **Tier 3 verbs** add sophistication; use 1–2 per paragraph to avoid overly dense prose
+4. **Borderline AI words** (leverage, enhance, highlight, showcase): limit to 1 per page maximum; prefer alternatives
+5. **Match verb to evidence strength**: "demonstrate" > "suggest" > "may indicate" in confidence
+6. **Prefer single verbs over phrasal verbs**: "investigate" not "look into", "improve" not "make better"

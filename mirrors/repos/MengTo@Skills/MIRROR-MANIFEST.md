@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 30 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,30 +65,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`agent-skills/web-design/animation-on-scroll/SKILL.md`](agent-skills/web-design/animation-on-scroll/SKILL.md) |
 | 5 | ✓ | [`agent-skills/web-design/animation-systems/SKILL.md`](agent-skills/web-design/animation-systems/SKILL.md) |
 | 6 | ✓ | [`agent-skills/web-design/beautiful-shadows/SKILL.md`](agent-skills/web-design/beautiful-shadows/SKILL.md) |
-| 7 | ✓ | [`agent-skills/web-design/cobejs/SKILL.md`](agent-skills/web-design/cobejs/SKILL.md) |
-| 8 | ✓ | [`agent-skills/web-design/container-lines/SKILL.md`](agent-skills/web-design/container-lines/SKILL.md) |
-| 9 | ✓ | [`agent-skills/web-design/corner-diagonals/SKILL.md`](agent-skills/web-design/corner-diagonals/SKILL.md) |
-| 10 | ✓ | [`agent-skills/web-design/css-alpha-masking/SKILL.md`](agent-skills/web-design/css-alpha-masking/SKILL.md) |
-| 11 | ✓ | [`agent-skills/web-design/css-border-gradient/SKILL.md`](agent-skills/web-design/css-border-gradient/SKILL.md) |
-| 12 | ✓ | [`agent-skills/web-design/dither-background/SKILL.md`](agent-skills/web-design/dither-background/SKILL.md) |
-| 13 | ✓ | [`agent-skills/web-design/framed-grid-layout/SKILL.md`](agent-skills/web-design/framed-grid-layout/SKILL.md) |
-| 14 | ✓ | [`agent-skills/web-design/globe-gl/SKILL.md`](agent-skills/web-design/globe-gl/SKILL.md) |
-| 15 | ✓ | [`agent-skills/web-design/globe-particles/SKILL.md`](agent-skills/web-design/globe-particles/SKILL.md) |
-| 16 | ✓ | [`agent-skills/web-design/gsap/SKILL.md`](agent-skills/web-design/gsap/SKILL.md) |
-| 17 | ✓ | [`agent-skills/web-design/landing-page/SKILL.md`](agent-skills/web-design/landing-page/SKILL.md) |
-| 18 | ✓ | [`agent-skills/web-design/masked-reveal/SKILL.md`](agent-skills/web-design/masked-reveal/SKILL.md) |
-| 19 | ✓ | [`agent-skills/web-design/matterjs/SKILL.md`](agent-skills/web-design/matterjs/SKILL.md) |
-| 20 | ✓ | [`agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md`](agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md) |
-| 21 | ✓ | [`agent-skills/web-design/pricing-page/SKILL.md`](agent-skills/web-design/pricing-page/SKILL.md) |
-| 22 | ✓ | [`agent-skills/web-design/progressive-blur/SKILL.md`](agent-skills/web-design/progressive-blur/SKILL.md) |
-| 23 | ✓ | [`agent-skills/web-design/skeuomorphic-ui/SKILL.md`](agent-skills/web-design/skeuomorphic-ui/SKILL.md) |
-| 24 | ✓ | [`agent-skills/web-design/tailwindcss/SKILL.md`](agent-skills/web-design/tailwindcss/SKILL.md) |
-| 25 | ✓ | [`agent-skills/web-design/threejs/SKILL.md`](agent-skills/web-design/threejs/SKILL.md) |
-| 26 | ✓ | [`agent-skills/web-design/unicorn-studio/SKILL.md`](agent-skills/web-design/unicorn-studio/SKILL.md) |
-| 27 | ✓ | [`agent-skills/web-design/vantajs/SKILL.md`](agent-skills/web-design/vantajs/SKILL.md) |
-| 28 | ✓ | [`agent-skills/web-design/webgl-3d-object/SKILL.md`](agent-skills/web-design/webgl-3d-object/SKILL.md) |
-| 29 | ✓ | [`agent-skills/web-design/webgl-laser/SKILL.md`](agent-skills/web-design/webgl-laser/SKILL.md) |
-| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`agent-skills/web-design/cinematic-gsap-lenis-motion-system/SKILL.md`](agent-skills/web-design/cinematic-gsap-lenis-motion-system/SKILL.md) |
+| 8 | ✓ | [`agent-skills/web-design/cinematic-scroll-storytelling/SKILL.md`](agent-skills/web-design/cinematic-scroll-storytelling/SKILL.md) |
+| 9 | ✓ | [`agent-skills/web-design/cobejs/SKILL.md`](agent-skills/web-design/cobejs/SKILL.md) |
+| 10 | ✓ | [`agent-skills/web-design/container-lines/SKILL.md`](agent-skills/web-design/container-lines/SKILL.md) |
+| 11 | ✓ | [`agent-skills/web-design/corner-diagonals/SKILL.md`](agent-skills/web-design/corner-diagonals/SKILL.md) |
+| 12 | ✓ | [`agent-skills/web-design/css-alpha-masking/SKILL.md`](agent-skills/web-design/css-alpha-masking/SKILL.md) |
+| 13 | ✓ | [`agent-skills/web-design/css-border-gradient/SKILL.md`](agent-skills/web-design/css-border-gradient/SKILL.md) |
+| 14 | ✓ | [`agent-skills/web-design/dither-background/SKILL.md`](agent-skills/web-design/dither-background/SKILL.md) |
+| 15 | ✓ | [`agent-skills/web-design/framed-grid-layout/SKILL.md`](agent-skills/web-design/framed-grid-layout/SKILL.md) |
+| 16 | ✓ | [`agent-skills/web-design/globe-gl/SKILL.md`](agent-skills/web-design/globe-gl/SKILL.md) |
+| 17 | ✓ | [`agent-skills/web-design/globe-particles/SKILL.md`](agent-skills/web-design/globe-particles/SKILL.md) |
+| 18 | ✓ | [`agent-skills/web-design/gsap/SKILL.md`](agent-skills/web-design/gsap/SKILL.md) |
+| 19 | ✓ | [`agent-skills/web-design/landing-page/SKILL.md`](agent-skills/web-design/landing-page/SKILL.md) |
+| 20 | ✓ | [`agent-skills/web-design/masked-reveal/SKILL.md`](agent-skills/web-design/masked-reveal/SKILL.md) |
+| 21 | ✓ | [`agent-skills/web-design/matterjs/SKILL.md`](agent-skills/web-design/matterjs/SKILL.md) |
+| 22 | ✓ | [`agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md`](agent-skills/web-design/mesh-gradient-dark-blue-clean/SKILL.md) |
+| 23 | ✓ | [`agent-skills/web-design/pricing-page/SKILL.md`](agent-skills/web-design/pricing-page/SKILL.md) |
+| 24 | ✓ | [`agent-skills/web-design/progressive-blur/SKILL.md`](agent-skills/web-design/progressive-blur/SKILL.md) |
+| 25 | ✓ | [`agent-skills/web-design/skeuomorphic-ui/SKILL.md`](agent-skills/web-design/skeuomorphic-ui/SKILL.md) |
+| 26 | ✓ | [`agent-skills/web-design/staggered-word-reveal/SKILL.md`](agent-skills/web-design/staggered-word-reveal/SKILL.md) |
+| 27 | ✓ | [`agent-skills/web-design/tailwindcss/SKILL.md`](agent-skills/web-design/tailwindcss/SKILL.md) |
+| 28 | ✓ | [`agent-skills/web-design/threejs/SKILL.md`](agent-skills/web-design/threejs/SKILL.md) |
+| 29 | ✓ | [`agent-skills/web-design/unicorn-studio/SKILL.md`](agent-skills/web-design/unicorn-studio/SKILL.md) |
+| 30 | ✓ | [`agent-skills/web-design/vantajs/SKILL.md`](agent-skills/web-design/vantajs/SKILL.md) |
+| 31 | ✓ | [`agent-skills/web-design/webgl-3d-object/SKILL.md`](agent-skills/web-design/webgl-3d-object/SKILL.md) |
+| 32 | ✓ | [`agent-skills/web-design/webgl-laser/SKILL.md`](agent-skills/web-design/webgl-laser/SKILL.md) |
+| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

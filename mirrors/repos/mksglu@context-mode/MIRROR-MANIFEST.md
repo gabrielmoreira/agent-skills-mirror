@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 50
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,29 +59,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`configs/antigravity/GEMINI.md`](configs/antigravity/GEMINI.md) |
-| 3 | ✓ | [`configs/claude-code/CLAUDE.md`](configs/claude-code/CLAUDE.md) |
-| 4 | ✓ | [`configs/codex/AGENTS.md`](configs/codex/AGENTS.md) |
-| 5 | ✓ | [`configs/gemini-cli/GEMINI.md`](configs/gemini-cli/GEMINI.md) |
-| 6 | ✓ | [`configs/jetbrains-copilot/copilot-instructions.md`](configs/jetbrains-copilot/copilot-instructions.md) |
-| 7 | ✓ | [`configs/kilo/AGENTS.md`](configs/kilo/AGENTS.md) |
-| 8 | ✓ | [`configs/openclaw/AGENTS.md`](configs/openclaw/AGENTS.md) |
-| 9 | ✓ | [`configs/opencode/AGENTS.md`](configs/opencode/AGENTS.md) |
-| 10 | ✓ | [`configs/pi/AGENTS.md`](configs/pi/AGENTS.md) |
-| 11 | ✓ | [`configs/vscode-copilot/copilot-instructions.md`](configs/vscode-copilot/copilot-instructions.md) |
-| 12 | ✓ | [`configs/zed/AGENTS.md`](configs/zed/AGENTS.md) |
-| 13 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 14 | ✓ | [`llms.txt`](llms.txt) |
-| 15 | ✓ | [`skills/context-mode-ops/agent-teams.md`](skills/context-mode-ops/agent-teams.md) |
-| 16 | ✓ | [`skills/context-mode-ops/communication.md`](skills/context-mode-ops/communication.md) |
-| 17 | ✓ | [`skills/context-mode-ops/marketing.md`](skills/context-mode-ops/marketing.md) |
-| 18 | ✓ | [`skills/context-mode-ops/release.md`](skills/context-mode-ops/release.md) |
-| 19 | ✓ | [`skills/context-mode-ops/review-pr.md`](skills/context-mode-ops/review-pr.md) |
-| 20 | ✓ | [`skills/context-mode-ops/SKILL.md`](skills/context-mode-ops/SKILL.md) |
-| 21 | ✓ | [`skills/context-mode-ops/tdd.md`](skills/context-mode-ops/tdd.md) |
-| 22 | ✓ | [`skills/context-mode-ops/triage-issue.md`](skills/context-mode-ops/triage-issue.md) |
-| 23 | ✓ | [`skills/context-mode-ops/validation.md`](skills/context-mode-ops/validation.md) |
+| 1 | ✓ | [`.claude/skills/context-mode-ops/agent-teams.md`](.claude/skills/context-mode-ops/agent-teams.md) |
+| 2 | ✓ | [`.claude/skills/context-mode-ops/communication.md`](.claude/skills/context-mode-ops/communication.md) |
+| 3 | ✓ | [`.claude/skills/context-mode-ops/marketing.md`](.claude/skills/context-mode-ops/marketing.md) |
+| 4 | ✓ | [`.claude/skills/context-mode-ops/release.md`](.claude/skills/context-mode-ops/release.md) |
+| 5 | ✓ | [`.claude/skills/context-mode-ops/review-pr.md`](.claude/skills/context-mode-ops/review-pr.md) |
+| 6 | ✓ | [`.claude/skills/context-mode-ops/SKILL.md`](.claude/skills/context-mode-ops/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/context-mode-ops/tdd.md`](.claude/skills/context-mode-ops/tdd.md) |
+| 8 | ✓ | [`.claude/skills/context-mode-ops/triage-issue.md`](.claude/skills/context-mode-ops/triage-issue.md) |
+| 9 | ✓ | [`.claude/skills/context-mode-ops/validation.md`](.claude/skills/context-mode-ops/validation.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`configs/antigravity/GEMINI.md`](configs/antigravity/GEMINI.md) |
+| 12 | ✓ | [`configs/claude-code/CLAUDE.md`](configs/claude-code/CLAUDE.md) |
+| 13 | ✓ | [`configs/codex/AGENTS.md`](configs/codex/AGENTS.md) |
+| 14 | ✓ | [`configs/gemini-cli/GEMINI.md`](configs/gemini-cli/GEMINI.md) |
+| 15 | ✓ | [`configs/jetbrains-copilot/copilot-instructions.md`](configs/jetbrains-copilot/copilot-instructions.md) |
+| 16 | ✓ | [`configs/kilo/AGENTS.md`](configs/kilo/AGENTS.md) |
+| 17 | ✓ | [`configs/openclaw/AGENTS.md`](configs/openclaw/AGENTS.md) |
+| 18 | ✓ | [`configs/opencode/AGENTS.md`](configs/opencode/AGENTS.md) |
+| 19 | ✓ | [`configs/pi/AGENTS.md`](configs/pi/AGENTS.md) |
+| 20 | ✓ | [`configs/vscode-copilot/copilot-instructions.md`](configs/vscode-copilot/copilot-instructions.md) |
+| 21 | ✓ | [`configs/zed/AGENTS.md`](configs/zed/AGENTS.md) |
+| 22 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 23 | ✓ | [`llms.txt`](llms.txt) |
 | 24 | ✓ | [`skills/context-mode/references/anti-patterns.md`](skills/context-mode/references/anti-patterns.md) |
 | 25 | ✓ | [`skills/context-mode/references/patterns-javascript.md`](skills/context-mode/references/patterns-javascript.md) |
 | 26 | ✓ | [`skills/context-mode/references/patterns-python.md`](skills/context-mode/references/patterns-python.md) |
@@ -92,23 +92,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`skills/ctx-purge/SKILL.md`](skills/ctx-purge/SKILL.md) |
 | 32 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
 | 33 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
-| 34 | ✓ | [`skills/diagnose/scripts/hitl-loop.template.sh`](skills/diagnose/scripts/hitl-loop.template.sh) |
-| 35 | ✓ | [`skills/diagnose/SKILL.md`](skills/diagnose/SKILL.md) |
-| 36 | ✓ | [`skills/grill-me/SKILL.md`](skills/grill-me/SKILL.md) |
-| 37 | ✓ | [`skills/grill-with-docs/ADR-FORMAT.md`](skills/grill-with-docs/ADR-FORMAT.md) |
-| 38 | ✓ | [`skills/grill-with-docs/CONTEXT-FORMAT.md`](skills/grill-with-docs/CONTEXT-FORMAT.md) |
-| 39 | ✓ | [`skills/grill-with-docs/SKILL.md`](skills/grill-with-docs/SKILL.md) |
-| 40 | ✓ | [`skills/improve-codebase-architecture/DEEPENING.md`](skills/improve-codebase-architecture/DEEPENING.md) |
-| 41 | ✓ | [`skills/improve-codebase-architecture/INTERFACE-DESIGN.md`](skills/improve-codebase-architecture/INTERFACE-DESIGN.md) |
-| 42 | ✓ | [`skills/improve-codebase-architecture/LANGUAGE.md`](skills/improve-codebase-architecture/LANGUAGE.md) |
-| 43 | ✓ | [`skills/improve-codebase-architecture/SKILL.md`](skills/improve-codebase-architecture/SKILL.md) |
-| 44 | ✓ | [`skills/tdd/deep-modules.md`](skills/tdd/deep-modules.md) |
-| 45 | ✓ | [`skills/tdd/interface-design.md`](skills/tdd/interface-design.md) |
-| 46 | ✓ | [`skills/tdd/mocking.md`](skills/tdd/mocking.md) |
-| 47 | ✓ | [`skills/tdd/refactoring.md`](skills/tdd/refactoring.md) |
-| 48 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
-| 49 | ✓ | [`skills/tdd/tests.md`](skills/tdd/tests.md) |
-| 50 | ✓ | [`skills/UPSTREAM-CREDITS.md`](skills/UPSTREAM-CREDITS.md) |
 
 ---
 

@@ -1,8 +1,12 @@
 # IDD — Merge Execution Phase (F3–F5)
 
-Read this file after `idd-pre-merge.instructions.md` (F2) satisfies all
-pre-merge conditions. It covers executing the merge (F3), cleanup (F4),
-and looping back to discover (F5).
+Read this file only after `idd-merge-handoff.instructions.md` routes the
+current claim to the autonomous merge path. It covers executing the
+merge (F3), cleanup (F4), and looping back to discover (F5).
+
+The final merge-gate timing defaults are named in
+[IDD policy constants](../../docs/policy-constants.md). Use that inventory
+when you need the canonical values; the merge logic itself stays here.
 
 Before any mutating action in F3, apply the shared claim revalidation
 gate. The active claim must still use your current `{claim-id}`.
@@ -13,13 +17,31 @@ gate. The active claim must still use your current `{claim-id}`.
    your current `{claim-id}`. If the active claim is missing, released,
    or held by a different `{claim-id}` (even under the same agent ID),
    the claim was lost — report this and stop.
-2. Immediately before executing the merge command, do one final live
+2. Defensive route check: re-read the repository's recorded merge policy.
+   If the recorded policy is missing, treat it as
+   `fully_autonomous_merge` (distributed default). Then apply:
+   - `fully_autonomous_merge`: continue.
+   - `separate_merge_agent`: continue only when repository documentation
+     explicitly records that the **current session** is the designated
+     merge-capable actor and the documented resume condition is
+     satisfied; otherwise route to
+     `idd-merge-handoff.instructions.md` and stop.
+   - `human_merge` or unknown policy: route to
+     `idd-merge-handoff.instructions.md` and stop.
+3. Immediately before executing the merge command, do one final live
    fetch using the **exact same activity-universe scope as E1 Step 1**
    (all review threads, review bodies, and regular PR comments,
    excluding trusted agent operational marker comments only). Compare
    against the F2 snapshot carried forward from
    `idd-pre-merge.instructions.md`. Return to E1 if **any** of the
    following is true:
+
+   In the idd-skill source repository, you may optionally use the read-only
+   helper `node scripts/review-activity-snapshot.mjs --pr {pr-number}`
+   and pass trusted marker actors with
+   `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"` to
+   compute the same activity metrics; the written gate rules remain
+   canonical.
 
    - The current PR HEAD SHA differs from `{f2-head-SHA}`.
    - `{f2-max-activity-updatedAt}` is `none` and the final fetch is
@@ -28,6 +50,18 @@ gate. The active claim must still use your current `{claim-id}`.
      `updatedAt` is strictly newer than `{f2-max-activity-updatedAt}`.
    - The total item count of the final fetch exceeds
      `{f2-total-item-count}`.
+   - The current latest CI pass `completedAt` for the current PR HEAD
+     differs from `{f2-latest-ci-completed-at}` (a new CI run completed
+     after F2's snapshot; if `{f2-latest-ci-completed-at}` is `none`,
+     any current CI pass triggers re-evaluation).
+
+   From that same final fetch, compute `F3_UNRESOLVED_ACTIONABLE_COUNT`
+   using the exact F2 unresolved-thread rule and exceptions
+   (non-awaiting-reviewer unresolved threads only; awaiting-reviewer
+   classification must follow F2 verbatim, including AMD exclusion and
+   conversation-resolution exception handling). If
+   `F3_UNRESOLVED_ACTIONABLE_COUNT > 0`, stop and return to E1. Do not
+   execute `gh pr merge` in this pass.
 
    Execute the merge immediately after this final fetch **and the claim
    re-validation and advisory state revalidation below**, with no other
@@ -64,7 +98,7 @@ gate. The active claim must still use your current `{claim-id}`.
        the first condition in F2). F2 will reuse the existing same-HEAD
        marker — do not post a new one.
 
-3. Merge the PR using a **merge commit**, binding to the validated SHA
+4. Merge the PR using a **merge commit**, binding to the validated SHA
    to prevent a race where a new push lands after the F3 freshness check
    but before the merge executes:
 
@@ -73,7 +107,13 @@ gate. The active claim must still use your current `{claim-id}`.
    ```
 
    Do not use squash merge or rebase merge.
-4. If merge fails:
+   After the merge succeeds and claim ownership is re-validated, upsert
+   the PR live status digest with `Phase: F3 merged`,
+   `Open blockers: none`, `Next action: F4 cleanup then F5 discover`,
+   and `Authoritative by` pointing to the merge commit and matched head
+   SHA. This post-merge digest update is not a merge gate and must not
+   happen before the successful merge command.
+5. If merge fails:
    - Base branch updated or conflict → return to
      `idd-pre-merge.instructions.md` F1
    - CI condition no longer met → return to
@@ -93,9 +133,26 @@ gate. The active claim must still use your current `{claim-id}`.
      `**Awaiting maintainer decision**` reply → post a hold comment and
      stop.
 
+   When a merge failure routes to F1, D4, E1, or a hold, update the
+   digest after recording the failure evidence. Set `Phase` to
+   `F3 blocked`, summarize the GitHub merge error or unresolved thread
+   class in `Open blockers`, and set `Next action` to the routed phase
+   or maintainer action.
+
+   If the merge failure path resolves or acknowledges awaiting-reviewer
+   threads and restarts F2, do not update the digest before restarting
+   F2. That PR activity would invalidate the F2 restart and force an E1
+   snapshot even though E1 intentionally has no actionable
+   awaiting-reviewer item. Let the restarted F2 pass record blockers if
+   it finds one.
+
 ## F4 — Cleanup
 
-1. Run best-effort merged-PR comment cleanup when credentials permit.
+1. Confirm the post-merge digest update above exists or repair it after
+   re-validating the claim. Do not minimize the digest as an
+   operational marker unless a future cleanup policy explicitly supports
+   digest retirement.
+2. Run best-effort merged-PR comment cleanup when credentials permit.
    This cleanup is never a merge gate and must not run before F3
    succeeds. If cleanup fails, record the failure only if it is useful
    for a later audit, then continue with local cleanup.
@@ -126,8 +183,11 @@ gate. The active claim must still use your current `{claim-id}`.
      decisions, active holds, failed-CI context still needed by
      maintainers, non-operational human discussion, or any content that
      still participates in active F2/F3 gates.
-   - When `scripts/audit-pr-cleanup.mjs` is available, run it first in
-     dry-run mode so eligible and skipped candidates are visible:
+   - In the idd-skill source repository, `scripts/audit-pr-cleanup.mjs`
+     is available; run it first in dry-run mode so eligible and skipped
+     candidates are visible. In adopter repositories, skip to the
+     GitHub GraphQL step below unless the helper scripts were explicitly
+     installed.
 
      ```sh
      node scripts/audit-pr-cleanup.mjs --pr <pr-number> --dry-run --format table
@@ -142,17 +202,17 @@ gate. The active claim must still use your current `{claim-id}`.
        --claim-issue <issue-number> --claim-id <claim-id> --format table
      ```
 
-   - If the helper is unavailable, use GitHub GraphQL `minimizeComment`
+   - Otherwise, use GitHub GraphQL `minimizeComment`
      with node IDs. Check `viewerCanMinimize` and `isMinimized` before
      minimizing; skip already-minimized comments and comments the viewer
      cannot minimize. Re-validate the active claim before each mutation.
 
    See `docs/idd-comment-minimization.md` for the helper report shape,
    fallback GraphQL commands, and experiment notes.
-2. Delete the local worktree and local branch.
-3. Update the local `main` branch.
-4. If GitHub auto-delete is disabled: delete the remote branch too.
-   (Worktrunk may be used for steps 2–4.)
+3. Delete the local worktree and local branch.
+4. Update the local `main` branch.
+5. If GitHub auto-delete is disabled: delete the remote branch too.
+   (Worktrunk may be used for steps 3–5.)
 
 ## F5 — Loop
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 38 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,27 +76,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`.agents/skills/frontend-code-review/references/code-quality.md`](.agents/skills/frontend-code-review/references/code-quality.md) |
 | 16 | ✓ | [`.agents/skills/frontend-code-review/references/performance.md`](.agents/skills/frontend-code-review/references/performance.md) |
 | 17 | ✓ | [`.agents/skills/frontend-code-review/SKILL.md`](.agents/skills/frontend-code-review/SKILL.md) |
-| 18 | ✓ | [`.agents/skills/frontend-query-mutation/agents/openai.yaml`](.agents/skills/frontend-query-mutation/agents/openai.yaml) |
-| 19 | ✓ | [`.agents/skills/frontend-query-mutation/references/contract-patterns.md`](.agents/skills/frontend-query-mutation/references/contract-patterns.md) |
-| 20 | ✓ | [`.agents/skills/frontend-query-mutation/references/runtime-rules.md`](.agents/skills/frontend-query-mutation/references/runtime-rules.md) |
-| 21 | ✓ | [`.agents/skills/frontend-query-mutation/SKILL.md`](.agents/skills/frontend-query-mutation/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/frontend-testing/assets/component-test.template.tsx`](.agents/skills/frontend-testing/assets/component-test.template.tsx) |
-| 23 | ✓ | [`.agents/skills/frontend-testing/assets/hook-test.template.ts`](.agents/skills/frontend-testing/assets/hook-test.template.ts) |
-| 24 | ✓ | [`.agents/skills/frontend-testing/assets/utility-test.template.ts`](.agents/skills/frontend-testing/assets/utility-test.template.ts) |
-| 25 | ✓ | [`.agents/skills/frontend-testing/references/async-testing.md`](.agents/skills/frontend-testing/references/async-testing.md) |
-| 26 | ✓ | [`.agents/skills/frontend-testing/references/checklist.md`](.agents/skills/frontend-testing/references/checklist.md) |
-| 27 | ✓ | [`.agents/skills/frontend-testing/references/common-patterns.md`](.agents/skills/frontend-testing/references/common-patterns.md) |
-| 28 | ✓ | [`.agents/skills/frontend-testing/references/domain-components.md`](.agents/skills/frontend-testing/references/domain-components.md) |
-| 29 | ✓ | [`.agents/skills/frontend-testing/references/mocking.md`](.agents/skills/frontend-testing/references/mocking.md) |
-| 30 | ✓ | [`.agents/skills/frontend-testing/references/workflow.md`](.agents/skills/frontend-testing/references/workflow.md) |
-| 31 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
-| 32 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 33 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
-| 34 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 35 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
-| 36 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
-| 37 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 38 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 18 | ✓ | [`.agents/skills/frontend-testing/assets/component-test.template.tsx`](.agents/skills/frontend-testing/assets/component-test.template.tsx) |
+| 19 | ✓ | [`.agents/skills/frontend-testing/assets/hook-test.template.ts`](.agents/skills/frontend-testing/assets/hook-test.template.ts) |
+| 20 | ✓ | [`.agents/skills/frontend-testing/assets/utility-test.template.ts`](.agents/skills/frontend-testing/assets/utility-test.template.ts) |
+| 21 | ✓ | [`.agents/skills/frontend-testing/references/async-testing.md`](.agents/skills/frontend-testing/references/async-testing.md) |
+| 22 | ✓ | [`.agents/skills/frontend-testing/references/checklist.md`](.agents/skills/frontend-testing/references/checklist.md) |
+| 23 | ✓ | [`.agents/skills/frontend-testing/references/common-patterns.md`](.agents/skills/frontend-testing/references/common-patterns.md) |
+| 24 | ✓ | [`.agents/skills/frontend-testing/references/domain-components.md`](.agents/skills/frontend-testing/references/domain-components.md) |
+| 25 | ✓ | [`.agents/skills/frontend-testing/references/mocking.md`](.agents/skills/frontend-testing/references/mocking.md) |
+| 26 | ✓ | [`.agents/skills/frontend-testing/references/workflow.md`](.agents/skills/frontend-testing/references/workflow.md) |
+| 27 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
+| 28 | ✓ | [`.agents/skills/how-to-write-component/SKILL.md`](.agents/skills/how-to-write-component/SKILL.md) |
+| 29 | ✓ | [`.agents/skills/tailwind-css-rules/SKILL.md`](.agents/skills/tailwind-css-rules/SKILL.md) |
+| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 31 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
+| 32 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 33 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
+| 34 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
+| 35 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 36 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

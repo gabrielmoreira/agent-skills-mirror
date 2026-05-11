@@ -39,6 +39,7 @@ When working on a site type:
 - **Claude Code Hub (`claude-code-hub`)** is not One-API/New-API compatible; it uses dedicated admin/provider integration in `src/services/apiService/claudeCodeHub/` plus a managed-site provider in `src/services/managedSites/providers/claudeCodeHub.ts`.
 - **AnyRouter (`anyrouter`)** and **WONG公益站 (`wong-gongyi`)** have custom check-in handling.
 - **Sub2API (`sub2api`)** is not One-API/New-API compatible; it has a different auth model and API surface.
+- **AIHubMix (`AIHubMix`)** is an account-only site type with dedicated overrides in `src/services/apiService/aihubmix/`. Always use `https://aihubmix.com` as the API origin, including accounts imported from `console.aihubmix.com`. Auto-detect may use logged-in web endpoints (`/call/usr/self`, `/call/usr/tkn`) to obtain the account access token, but saved accounts should operate as access-token accounts. Token-authenticated AIHubMix API requests send raw `Authorization: <access_token>` without a `Bearer` prefix. AIHubMix does not support revealing a saved API key after creation; list/detail/search responses may contain masked keys, and `resolveApiTokenKey` must not fall back to common `/api/token/{id}/key` behavior.
 
 ### Managed Sites
 
@@ -59,6 +60,7 @@ Do not assume `one-hub` or every New-API-like deployment is a managed site witho
 - Compatible user-id headers are handled in `src/services/apiService/common/utils.ts` and related helpers.
 - AxonHub keeps its own admin integration under `src/services/apiService/axonHub/` and managed-site provider logic under `src/services/managedSites/providers/axonHub.ts`.
 - Claude Code Hub keeps its own admin/provider integration under `src/services/apiService/claudeCodeHub/` and managed-site provider logic under `src/services/managedSites/providers/claudeCodeHub.ts`.
+- AIHubMix keeps account-only API overrides under `src/services/apiService/aihubmix/`; do not alias it to `new-api` or add managed-site/provider integration unless upstream support is explicitly verified.
 - Some adapter directories under `src/services/apiService/` are provider-specific integrations rather than `siteType` values, so check `src/constants/siteType.ts` before documenting behavior.
 
 ### Default Upstream References
@@ -73,8 +75,15 @@ When the user names a backend without a deployment URL or fork, treat these as t
 - AxonHub: `https://github.com/looplj/axonhub`
 - Claude Code Hub: `https://github.com/ding113/claude-code-hub`
 - Sub2API: `https://github.com/Wei-Shaw/sub2api`
+- AIHubMix API docs: `https://docs.aihubmix.com/en/api/Cli` and `https://docs.aihubmix.com/en/api/Models-API`
 
 If the user's reported behavior differs from upstream, ask for the exact deployment, fork, or version before concluding the repo is wrong.
+
+### External Backend References in Code
+
+- When implementation behavior depends on external upstream documentation or verified backend behavior, add a concise code comment near the adapter logic that records the source and the specific contract being relied on.
+- This is required when the source determines protocol fields, authentication format, unsupported capabilities, compatibility boundaries, one-time secrets, endpoint selection, or deliberate non-fallback behavior.
+- Prefer a short URL or upstream repository reference plus the relevant contract summary. Do not add broad comments for ordinary implementation details that are already obvious from local types or tests.
 
 ## Build, Test, and Development Commands
 
@@ -173,10 +182,12 @@ Node.js version from `.nvmrc` and pnpm 10+.
 ### E2E and Broad Validation
 
 - Do not add Playwright E2E coverage mechanically for every feature commit. Prefer Vitest or Testing Library for pure functions, protocol adapters, formatting/parsing logic, copy-only changes, style-only changes, and isolated component state.
+- Before adding or expanding Playwright coverage, first ask whether the same regression can be covered by a targeted Vitest test. If the behavior is limited to hook state, component rendering, form validation, filtering/search/sorting, formatting, copy, or a mocked service call, use Vitest by default instead of E2E.
+- Do not use E2E to exhaustively cover UI state matrices. For pages with many filters, tabs, empty states, sort modes, or control variants, keep those combinations in Vitest and reserve E2E for one representative browser-level path.
 - For any new or materially changed user-facing behavior, make an explicit E2E decision before handoff: add/update an E2E test, identify the existing E2E flow that already covers the risk, or state why lower-level tests are the right coverage layer.
-- Bias toward adding or updating Playwright E2E coverage when the main risk only appears in a real extension browser context. This includes core workflows such as account management, key management, bookmarks, model sync, API credential profiles, notifications, imports/exports, and managed-site operations; cross-entrypoint behavior across popup, options, sidepanel, background, content scripts, runtime messages, tabs, windows, or extension storage; navigation, hash routing, lazy-loaded entrypoints, first-load behavior, and deep links; browser APIs or permissions such as notifications, downloads, clipboard, context menus, tab/window handling, optional permissions, service workers, or extension build output; and interaction risks involving dialogs, popovers, floating layers, drag/drop, toasts, or confirm flows.
+- Bias toward adding or updating Playwright E2E coverage only when the main risk appears in a real extension browser context. This includes cross-entrypoint behavior across popup, options, sidepanel, background, content scripts, runtime messages, tabs, windows, or extension storage; navigation, hash routing, lazy-loaded entrypoints, first-load behavior, and deep links; browser APIs or permissions such as notifications, downloads, clipboard, context menus, tab/window handling, optional permissions, service workers, or extension build output; complete critical workflows whose failure would not be visible in component tests; and interaction risks involving dialogs, popovers, floating layers, drag/drop, toasts, or confirm flows.
 - Add or update E2E coverage for regressions that lower-level tests previously missed, especially when the failure involved browser runtime behavior, entrypoint integration, persisted state, or a complete user task.
-- For larger PRs that add a user-visible workflow, prefer one stable happy-path E2E scenario over many narrow UI assertions.
+- For larger PRs that add a user-visible workflow, prefer one stable happy-path E2E scenario over many narrow UI assertions. If an existing E2E already boots the relevant entrypoint and exercises a representative path, extend Vitest coverage for additional states instead of adding another browser scenario.
 - Final handoffs for user-facing behavior changes should include the E2E decision and the validation actually run.
 - Temporary E2E tests created only for self-verification should be deleted before handoff by default. Keep them only when they are deterministic, reusable, and provide clear long-term regression value; if retention is genuinely ambiguous, explain the tradeoff and ask before keeping them.
 - If the change can invalidate unused-file, export, or dependency analysis, broaden validation to include `pnpm knip`; use `pnpm run validate:push` when you want the full local pre-push-equivalent gate instead of assembling `compile` + `knip` manually.

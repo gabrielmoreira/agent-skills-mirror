@@ -180,6 +180,10 @@ async function copyHtmlFromBrowser(cdp: CdpConnection, htmlFilePath: string, con
   }, { sessionId });
   await sleep(300);
 
+  console.log('[wechat] Activating HTML tab for copy...');
+  await cdp.send('Target.activateTarget', { targetId });
+  await sleep(300);
+
   console.log('[wechat] Copying content...');
   await sendCopy(cdp, sessionId);
   await sleep(1000);
@@ -189,6 +193,11 @@ async function copyHtmlFromBrowser(cdp: CdpConnection, htmlFilePath: string, con
 }
 
 async function pasteFromClipboardInEditor(session: ChromeSession): Promise<void> {
+  console.log('[wechat] Activating editor tab for paste...');
+  if (session.targetId) {
+    await session.cdp.send('Target.activateTarget', { targetId: session.targetId });
+    await sleep(300);
+  }
   console.log('[wechat] Pasting content...');
   await sendPaste(session.cdp, session.sessionId);
   await sleep(1000);

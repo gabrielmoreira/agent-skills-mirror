@@ -20,7 +20,7 @@
 //   async-trait = "0.1"
 
 // ============================================================
-// error.rs — Centralized error type
+// error.rs: Centralized error type
 // ============================================================
 
 use axum::{
@@ -74,7 +74,7 @@ impl IntoResponse for AppError {
 }
 
 // ============================================================
-// models/resource.rs — Domain model + request/response types
+// models/resource.rs: Domain model + request/response types
 // ============================================================
 
 use chrono::{DateTime, Utc};
@@ -135,7 +135,7 @@ pub struct PaginatedResponse<T: Serialize> {
 }
 
 // ============================================================
-// extractors/auth.rs — JWT extractor as Axum FromRequestParts
+// extractors/auth.rs: JWT extractor as Axum FromRequestParts
 // ============================================================
 
 use axum::{
@@ -188,7 +188,7 @@ impl<S: Send + Sync> FromRequestParts<S> for AuthUser {
 }
 
 // ============================================================
-// repositories/resource_repository.rs — DB access layer
+// repositories/resource_repository.rs: DB access layer
 // ============================================================
 
 use sqlx::PgPool;
@@ -315,7 +315,7 @@ impl ResourceRepository {
 }
 
 // ============================================================
-// services/resource_service.rs — Business logic layer
+// services/resource_service.rs: Business logic layer
 // ============================================================
 
 use validator::Validate;
@@ -401,7 +401,7 @@ impl ResourceService {
 }
 
 // ============================================================
-// handlers/resource.rs — HTTP layer (thin wrappers)
+// handlers/resource.rs: HTTP layer (thin wrappers)
 // ============================================================
 
 use axum::{
@@ -481,7 +481,7 @@ pub async fn delete_resource(
 }
 
 // ============================================================
-// main.rs — Router wiring and server startup
+// main.rs: Router wiring and server startup
 // ============================================================
 
 use axum::{routing, Router};
@@ -525,7 +525,7 @@ async fn main() -> anyhow::Result<()> {
 }
 
 // ============================================================
-// tests/resource_integration.rs — Integration tests
+// tests/resource_integration.rs: Integration tests
 // ============================================================
 
 #[cfg(test)]

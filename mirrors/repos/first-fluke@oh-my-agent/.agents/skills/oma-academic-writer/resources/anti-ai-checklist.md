@@ -33,7 +33,7 @@ Additionally, align with, crucial, delve, emphasize/emphasizing, enduring, enhan
 | a vital/crucial/pivotal role | an important role / a role in |
 | underscores/highlights its importance | shows / indicates |
 | reflects broader trends | relates to |
-| symbolizing its enduring legacy | — (delete unless legacy is the subject) |
+| symbolizing its enduring legacy | (delete unless legacy is the subject) |
 | setting the stage for | preceding / leading to |
 | key turning point | a change / a shift |
 | indelible mark | lasting effect |
@@ -111,7 +111,7 @@ Additionally, align with, crucial, delve, emphasize/emphasizing, enduring, enhan
 
 - [ ] No negative parallelisms used for rhetorical effect alone
 - [ ] No triple adjective/noun lists without substantive expansion
-- [ ] Terminology is consistent — no synonym cycling
+- [ ] Terminology is consistent (no synonym cycling)
 - [ ] All "from X to Y" constructions have a meaningful scale
 
 ## 6. Formatting Artefacts
@@ -164,12 +164,12 @@ Additionally, align with, crucial, delve, emphasize/emphasizing, enduring, enhan
 
 | Phrase | Action |
 |--------|--------|
-| It is important to note | Delete — state the point directly |
+| It is important to note | Delete; state the point directly |
 | It should be noted that | Delete |
 | Worth noting | Delete |
 | In summary | Transition naturally |
 | In conclusion | Transition naturally |
-| Overall | Usually unnecessary — delete or restructure |
+| Overall | Usually unnecessary; delete or restructure |
 | As mentioned earlier | Delete or use a specific cross-reference |
 | As discussed above | Delete or use a specific cross-reference |
 
@@ -209,12 +209,12 @@ Additionally, align with, crucial, delve, emphasize/emphasizing, enduring, enhan
 - If 5+ consecutive sentences all fall within the same narrow word-count range (e.g., all 20–25 words), flag for revision
 - Insert a short sentence (≤10 words) to break metronomic patterns
 - Combine two short sentences into one complex one if the pattern is monotonously short
-- Read the paragraph aloud — if it feels metronomic, vary it
+- Read the paragraph aloud; if it feels metronomic, vary it
 
 ### Paragraph length variation
 
 - Vary paragraph length naturally: 2–8 sentences per paragraph
-- Uniform 4–5 sentence paragraphs signal AI — avoid this pattern
+- Uniform 4–5 sentence paragraphs signal AI; avoid this pattern
 - Short paragraphs (2–3 sentences) create emphasis
 - Longer paragraphs (6–8 sentences) develop complex arguments
 - Never have 4+ consecutive paragraphs of the same length (±1 sentence)
@@ -251,17 +251,17 @@ Additionally, align with, crucial, delve, emphasize/emphasizing, enduring, enhan
 
 Run all checks in sequence:
 
-1. [ ] Vocabulary clustering — no 3+ flagged words per paragraph
-2. [ ] Inflated significance — proportional to evidence
+1. [ ] Vocabulary clustering: no 3+ flagged words per paragraph
+2. [ ] Inflated significance: proportional to evidence
 3. [ ] No superficial -ing analysis
-4. [ ] Natural copula usage — "is/are" used where appropriate
+4. [ ] Natural copula usage: "is/are" used where appropriate
 5. [ ] No banned structural patterns
-6. [ ] Clean formatting — no artefacts (bold, em dash, colon, tables)
+6. [ ] Clean formatting: no artefacts (bold, em dash, colon, tables)
 7. [ ] No meta-commentary
 8. [ ] Varied sentence openers
-9. [ ] Rhythm & paragraph length — no metronomic patterns or uniform blocks
+9. [ ] Rhythm & paragraph length: no metronomic patterns or uniform blocks
 10. [ ] Zero chatbot artefacts
-11. [ ] Natural sentence flow — colons and em dashes not substituting for proper subordination/coordination
-12. [ ] Claim-evidence alignment — every major claim has cited support
+11. [ ] Natural sentence flow: colons and em dashes not substituting for proper subordination/coordination
+12. [ ] Claim-evidence alignment: every major claim has cited support
 
 **Result: PASS only if all 12 checks clear.**

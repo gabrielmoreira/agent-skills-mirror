@@ -1,4 +1,4 @@
-# Triage — read findings, cut false positives, prioritize work
+# Triage: read findings, cut false positives, prioritize work
 
 ## Severity vocabulary
 
@@ -8,13 +8,13 @@
 | `HIGH` | Real vulnerability, likely exploitable in this codebase's context. |
 | `MEDIUM` | Conditional vulnerability or one with significant attacker prerequisites. |
 | `LOW` | Defense-in-depth gap, or correctness issue with weak security framing. |
-| `HIGH_BUG` / `BUG` | Real bug that the agent declined to call a vulnerability — typically correctness with security-adjacent risk. |
+| `HIGH_BUG` / `BUG` | Real bug the agent declined to call a vulnerability; typically correctness with security-adjacent risk. |
 
 `triage` adds a `priority` field on top of severity:
 
 | Priority | Trigger |
 |---|---|
-| `P0` | Drop everything — exploit is trivial and impact is critical. |
+| `P0` | Drop everything; the exploit is trivial and the impact is critical. |
 | `P1` | This sprint. |
 | `P2` | Backlog. |
 | `skip` | Not worth fixing (nuance, intended behavior, false alarm). |
@@ -24,9 +24,9 @@
 Do not show the user raw `process` output for HIGH+ findings. The right pipeline is:
 
 1. `bunx deepsec process` (or `process --diff` for PR mode).
-2. `bunx deepsec triage --severity HIGH` — buckets P0/P1/P2, ~$0.01 / finding.
-3. `bunx deepsec revalidate --min-severity HIGH` — reads the code + git history, emits a verdict (~comparable cost to `process`, cuts FP rate by 50%+).
-4. `bunx deepsec export --format md-dir --out ./findings` — surface to the user.
+2. `bunx deepsec triage --severity HIGH` to bucket findings into P0/P1/P2 (~$0.01 / finding).
+3. `bunx deepsec revalidate --min-severity HIGH` re-reads the code and git history, then emits a verdict. The cost is comparable to `process`, and FP rate drops by 50%+.
+4. `bunx deepsec export --format md-dir --out ./findings` to surface results to the user.
 
 `revalidate` verdicts:
 
@@ -52,7 +52,7 @@ Models occasionally refuse to investigate a candidate (exploit-shaped source, co
 
 Handling:
 
-- A refused batch produces no false negatives — affected files stay `pending`. Re-run `--reinvestigate` against the **other** backend (Claude ↔ Codex) to pick up the dropped sites. Findings dedupe across agents.
+- A refused batch produces no false negatives. Affected files stay `pending`, so re-run `--reinvestigate` against the **other** backend (Claude ↔ Codex) to pick up the dropped sites. Findings dedupe across agents.
 - If a single file consistently triggers refusals (>5 % of batches), add it to `data/<id>/config.json:ignorePaths`, **or** run that file alone with `--batch-size 1` so a refusal does not take an otherwise-fine batch down with it.
 - Never silently drop a refusal. Document it in the user-facing summary.
 
@@ -77,7 +77,7 @@ findings/
 └── BUG/
 ```
 
-Each file contains: severity, title, `vulnSlug`, file path with line numbers, description, recommendation, confidence, triage verdict (if run), revalidation verdict (if run), `analysisHistory` summary. Use these as inputs to issue tracker tickets — the structure is friendly to GitHub Issues / Linear / Jira import scripts.
+Each file contains: severity, title, `vulnSlug`, file path with line numbers, description, recommendation, confidence, triage verdict (if run), revalidation verdict (if run), and an `analysisHistory` summary. Use these as inputs to issue tracker tickets; the structure is friendly to GitHub Issues / Linear / Jira import scripts.
 
 ## When to *not* surface a finding
 
@@ -90,7 +90,7 @@ For everything else: surface it, with verdict, recommendation, and the file path
 
 ## Hand-off
 
-Route by **the layer of the vulnerable file**, judged from each finding's `filePath` + `vulnSlug` + `revalidation.verdict` against the project's own signals (`data/<id>/tech.json`, `INFO.md`, `priorityPaths`, and the actual directory structure). No baked-in slug or path enumeration — deepsec evolves its matcher set, and project layout varies. Trust the artifact at runtime.
+Route by **the layer of the vulnerable file**, judged from each finding's `filePath` + `vulnSlug` + `revalidation.verdict` against the project's own signals: `data/<id>/tech.json`, `INFO.md`, `priorityPaths`, and the actual directory structure. Do not bake a slug or path enumeration into this skill. Deepsec evolves its matcher set and project layouts vary, so trust the artifact at runtime.
 
 | Layer of the vulnerable file | Specialist |
 |---|---|
@@ -102,19 +102,6 @@ Route by **the layer of the vulnerable file**, judged from each finding's `fileP
 | CI / workflow / supply chain | `oma-dev-workflow` |
 | Documentation drift surfaced by the run | `oma-docs` |
 
-**Ambiguity → `oma-debug` first.** When the layer is not obvious from the artifact (shared / isomorphic / utility code, `other-*` slug, multi-layer fix, `revalidation.verdict === "uncertain"`, or `BUG` / `HIGH_BUG` non-security correctness without an obvious owner), route to `oma-debug` for a **triage pass, not a fix**. Its job is to pin the exact file:line and re-route to the right specialist with a layer-tagged finding — or fix inline only when the change is a single isolated line and the diagnosis is confident. Record the second-hop owner in the run summary.
+**Ambiguity → `oma-debug` first.** Route to `oma-debug` whenever the layer is not obvious from the artifact: shared / isomorphic / utility code, an `other-*` slug, a fix that would touch multiple layers, `revalidation.verdict === "uncertain"`, or `BUG` / `HIGH_BUG` non-security correctness without an obvious owner. The hop is **triage, not fix**: pin the exact file:line and re-route to the right specialist with a layer-tagged finding. Fix inline only when the change is a single isolated line and the diagnosis is confident. Record the second-hop owner in the run summary.
 
 Attach to every routed item: file path, severity, `vulnSlug`, revalidation verdict, recommendation, and the export markdown path.
-
-| Layer of the vulnerable file | Route to | Typical finding shapes |
-|---|---|---|
-| Backend / server / API | `oma-backend` | SQLi, SSRF, command injection, auth bypass, JWT issues, IDOR, CSRF on API, insecure deserialization, hardcoded server secrets, insecure file upload, path traversal |
-| Frontend / web client | `oma-frontend` | XSS, `dangerouslySetInnerHTML` with untrusted HTML, JSON-in-script escapes, `postMessage` origin, open redirect, Next.js Server Action exposure, middleware-only auth bypass, search-param trust, client-side secret leak |
-| Mobile / native client | `oma-mobile` | insecure local storage (SharedPreferences / NSUserDefaults / AsyncStorage plaintext), hardcoded API keys, cleartext HTTP / missing cert pinning / ATS exception, deeplink / URL scheme without validation, WebView JS bridge / file:// / mixed content, Android Intent / iOS URL scheme injection, permission overreach, biometric / keychain misuse, PII in logs |
-| IaC / cloud / network | `oma-tf-infra` | Terraform IAM wildcard, public S3, open security groups, missing encryption-at-rest, GitHub Actions privilege escalation, OIDC misconfig, Dockerfile mutable base |
-| Database / data model | `oma-db` | raw SQL via interpolation, ORM `raw`/`unsafe` APIs, mass-assignment, missing constraints, sensitive-column exposure, weak DB-layer password hashing, enumeration-friendly index design |
-| CI / workflow / supply chain | `oma-dev-workflow` | `pull-requests: write` on PR-code job, unpinned actions, secrets in PR triggers, npm postinstall risk |
-| Shared / isomorphic / utility code where the layer is ambiguous, or `BUG` / `HIGH_BUG` non-security correctness | `oma-debug` | needs reproduction + regression test |
-| Documentation drift surfaced by the run | `oma-docs` | stale env vars, removed flags, broken refs |
-
-For each routed item, attach: file path, severity, `vulnSlug`, revalidation verdict, recommendation, and the export markdown path.

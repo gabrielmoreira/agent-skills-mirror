@@ -104,6 +104,8 @@ Requires `gh` (GitHub) or `glab` (GitLab) CLI to be installed and authenticated.
 
 **Forks:** The local branch uses the PR/MR's branch name directly (e.g., `feature-fix`), so `git push` works normally. If a local branch with that name already exists tracking something else, rename it first.
 
+**Gitea (experimental):** `pr:` is also compatible with Gitea via the `tea` CLI. Set `[forge] platform = "gitea"` in `.config/wt.toml` to opt in; worktrunk also auto-detects Gitea when the remote host contains `gitea` or when `tea login add` has been run for the host.
+
 ## When wt switch fails
 
 - **Branch doesn't exist** — Use `--create`, or check `wt list --branches`

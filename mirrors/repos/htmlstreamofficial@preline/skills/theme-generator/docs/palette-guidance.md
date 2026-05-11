@@ -1,6 +1,18 @@
 # Palette guidance
 
-## Hue reference (for step 1)
+Use this file for color-direction heuristics only.
+
+Important: references below to custom palettes like `--color-<name>-*` or `--color-<name>-gray-*` describe draft palette exploration and shared-palette design patterns. They do NOT override `docs/final-output-style.md`, which defines how the final `<name>.css` file should be structured.
+
+## Contents
+
+- [Hue reference](#hue-reference-for-workflow-normalization)
+- [Mood and palette guidance](#mood-and-palette-guidance)
+- [Accessibility and contrast guidelines](#accessibility-and-contrast-guidelines-wcag)
+- [Palette types](#palette-types)
+- [Custom gray palettes](#custom-gray-palettes-neutral-matching)
+
+## Hue reference (for workflow normalization)
 
 | Color | Hue Range | Tailwind Gray |
 |-------|-----------|---------------|
@@ -58,8 +70,19 @@ OKLCH lightness thresholds:
 | Primary button text | Check against primary-500/600 | Check against primary-400 |
 
 Readable primary foreground:
-- Most hues (blue, purple, red, orange): use white (L: 100%)
-- Light hues (yellow 50-110 degrees, light cyan 160-195): use dark gray (L <= 20%)
+- Do not decide from hue alone.
+- Compare candidate text colors against the actual generated primary shades used by the theme.
+- For light mode, check the generated `primary-600` and `primary-700` states.
+- For dark mode, check the generated `primary-400` and `primary-500` states.
+- Choose the text color with the stronger worst-case contrast across those states.
+- White usually wins for medium or dark primaries; dark gray should only be used when the generated brand states are genuinely light.
+- In dark mode, it is valid to shift the primary button one step deeper (for example `500/600` instead of `400/500`) when that keeps white text readable and better matches the design system.
+
+Readable inverse and decorative accents:
+- `--foreground-inverse` is not just for neutral inverse surfaces. In Preline it is also used on vivid utility colors such as red/orange badges and chips.
+- In dark mode, prefer keeping `--foreground-inverse` white unless contrast checks prove a darker value is still safe across those saturated utility colors.
+- Do not let dark mode inherit very deep brand steps for decorative tokens such as `--chart-5` when those tokens are likely to appear in gradient text or accent UI.
+- For dark decorative/chart tokens, prefer mid-to-light brand steps that stay clearly visible on dark backgrounds.
 
 Quick check: If |L_text - L_background| >= 50%, contrast is likely sufficient for body text.
 

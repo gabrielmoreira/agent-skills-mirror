@@ -43,6 +43,15 @@ Do not exclude marker-shaped comments from untrusted authors. Keep them
 in the snapshot/List A and report them as suspicious context when they
 affect a decision.
 
+In the idd-skill source repository, you may optionally use the read-only helper
+`node scripts/review-activity-snapshot.mjs --pr {pr-number}` to compute
+`{head-SHA}`, `{max-activity-updatedAt}`, `{total-item-count}`, and CI
+completion timestamps. Pass trusted marker actors with
+`--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`. The
+helper is convenience only; this instruction remains canonical and any
+mismatch must be resolved in favor of this specification. In adopter
+repositories, use the portable gh/jq/API procedure instead.
+
 Additionally, fetch the **current CI state** for `{head-SHA}`:
 `gh pr checks {pr-number} --json name,state,completedAt`. Record the
 `completedAt` of the most recently completed successful (or
@@ -98,6 +107,14 @@ watermark comments from any other claim or from untrusted authors.
 Legacy watermarks without `{claim-id}` are not resumable across a
 restart or takeover; if no trusted same-claim watermark exists, rerun E1
 from scratch.
+
+Do not create or edit the PR live status digest after posting this
+watermark unless the next route is to E1, to an F3 blocked reroute that
+leaves the F2 restart path (F1/D4), to a hold/stop, or to post-merge
+cleanup. The F3 awaiting-reviewer restart-F2 path skips digest edits so
+that F2 can restart without self-invalidating review currency. A digest
+edit after the watermark is new PR activity for review-currency purposes
+and would require a fresh E1 snapshot before F2 can pass.
 
 **Step 3 — Filter into List A.** From the snapshot, select and combine
 into **List A**. Record the source URL for each item.

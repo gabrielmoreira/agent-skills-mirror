@@ -1,12 +1,12 @@
 ---
-description: Documentation drift detection and sync via `oma-docs` — verify mode finds broken refs in docs/**/*.md, sync mode proposes patches for docs affected by a git diff.
+description: Documentation drift detection and sync via `oma-docs`. Verify mode finds broken refs in docs/**/*.md, sync mode proposes patches for docs affected by a git diff.
 ---
 
-# MANDATORY RULES — VIOLATION IS FORBIDDEN
+# MANDATORY RULES: VIOLATION IS FORBIDDEN
 
 - **Response language follows `language` setting in `.agents/oma-config.yaml` if configured.**
 - **NEVER skip steps.** Execute from Step 1 in order.
-- **Never auto-apply sync patches.** Sync mode is always interactive — `[y]` confirm required per doc.
+- **Never auto-apply sync patches.** Sync mode is always interactive: `[y]` confirm required per doc.
 - **Never modify `.agents/`.** SSOT protection applies in all modes.
 - **Follow the host-LLM contract** in `.agents/skills/oma-docs/SKILL.md`: the CLI emits structured data; this workflow performs natural-language synthesis, severity grouping, and patch drafting on top of the JSON output.
 
@@ -33,7 +33,7 @@ Run `oma docs verify` (drift check) or `oma docs sync` (propose patches for a gi
 
 Capture optional arguments from the prompt:
 - **verify**: glob path (e.g. `docs/**/*.md`, `cli/README.md`), `--no-urls`, `--urls-sync`, `--report-file <path>`.
-- **sync**: git diff range (default: staged → fallback `HEAD~1..HEAD`).
+- **sync**: git diff range (default: staged, fallback `HEAD~1..HEAD`).
 
 ---
 
@@ -74,8 +74,8 @@ oma docs verify --urls-sync --json
 ```
 
 Exit codes:
-- `0` — clean.
-- `1` — broken refs found in core check (URL drift does NOT affect this exit code; see `docs/generated/url-drift.json`).
+- `0`: clean.
+- `1`: broken refs found in core check (URL drift does NOT affect this exit code; see `docs/generated/url-drift.json`).
 
 ---
 
@@ -103,13 +103,13 @@ The CLI emits a list of `{ doc, changedFiles, matchedRefs }` entries. **Do not a
 Read the JSON drift report and:
 
 1. Group findings by severity / kind:
-   - **CRITICAL** — broken `file` refs in critical paths (CLAUDE.md, top-level READMEs, install docs).
-   - **HIGH** — broken `cli`, `script`, `env`, `config` refs anywhere in `docs/`.
-   - **MEDIUM** — broken `file` refs in deeper documentation sections.
-   - **LOW** — URL drift surfaced in `docs/generated/url-drift.json` (when present).
+   - **CRITICAL**: broken `file` refs in critical paths (CLAUDE.md, top-level READMEs, install docs).
+   - **HIGH**: broken `cli`, `script`, `env`, `config` refs anywhere in `docs/`.
+   - **MEDIUM**: broken `file` refs in deeper documentation sections.
+   - **LOW**: URL drift surfaced in `docs/generated/url-drift.json` (when present).
 2. For each finding, suggest a concrete fix (renamed path, missing CLI install, removed env var, etc.).
 3. Prioritize fixes for files most central to the project.
-4. If the user asks for a natural-language summary, generate it from the JSON — never from cached prose.
+4. If the user asks for a natural-language summary, generate it from the JSON, never from cached prose.
 
 ### Sync mode
 
@@ -117,7 +117,7 @@ For each candidate doc:
 
 1. Read the doc itself.
 2. Read `git diff` for the listed `changedFiles`.
-3. Draft a unified-diff patch reflecting the code change. Keep the patch minimal — only update text that the diff actually invalidates.
+3. Draft a unified-diff patch reflecting the code change. Keep the patch minimal: only update text that the diff actually invalidates.
 4. Present each patch to the user with the prompt template:
 
    ```

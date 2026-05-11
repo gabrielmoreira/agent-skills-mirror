@@ -52,6 +52,34 @@ Primary launch and OpenCode secondary lanes are different paths.
 
 When a launch hangs at `Prepared communication channels for X/Y members`, check whether `Y` incorrectly includes secondary OpenCode members. The filesystem monitor should wait for `effectiveMembers`, not every requested member.
 
+## Teammate Runtime Debug Mode
+
+Desktop launches use the app-managed process backend by default. That is the supported default for
+normal app launches because the app owns the process lifecycle, runtime logs, cleanup, and bootstrap
+evidence.
+
+For local debugging, force pane-backed teammates through `tmux`:
+
+```bash
+CLAUDE_TEAM_TEAMMATE_MODE=tmux pnpm dev
+```
+
+For a single launch from the UI, add this to custom CLI args:
+
+```bash
+--teammate-mode tmux
+```
+
+Expected behavior:
+- `tmux` mode should remove `CLAUDE_TEAM_FORCE_PROCESS_TEAMMATES` from the launch env.
+- The desktop app should pass `--teammate-mode tmux` to the runtime CLI.
+- The orchestrator should report `backend_type: "tmux"` and `tmux_pane_id` like `%1`.
+- If `tmux` is unavailable, the launch dialog should block explicit tmux mode with a tmux readiness message.
+
+Use this mode to inspect interactive CLI behavior, terminal prompts, and pane output. Do not treat it
+as equivalent to the process backend for recovery semantics; persisted pane IDs can help discovery,
+but app restart does not make old panes a fully app-owned runtime again.
+
 ## Member State Meanings
 
 Common `launch-state.json` cases:

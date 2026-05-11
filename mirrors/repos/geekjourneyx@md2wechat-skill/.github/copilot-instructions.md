@@ -81,6 +81,17 @@ md2wechat layout validate --file article.md --json     # validate syntax in file
 
 The 4 `serves` values that every module is mapped to: `attention` | `readability` | `memorability` | `conversion`.
 
+### Brand Profile
+Users can define a personal/brand style guide at `~/.config/md2wechat/brand.md` (Markdown format):
+```bash
+md2wechat brand init      # initialize default brand.md
+md2wechat brand show      # display current brand profile
+```
+The file is read by agents for voice/style context; it is not parsed by the CLI. It is a private local file — never commit it to the repository.
+
+### Local-Only Artifacts
+`docs/superpowers/` (plans, specs, working notes) is gitignored and must never be committed. Keep all superpowers files local.
+
 ### E2E Rendering Smoke Test (required before every release)
 
 Before tagging or releasing, verify that advanced layout syntax renders correctly through the real API:
@@ -149,11 +160,20 @@ Priority: CLI contract tests → confirmation-vs-execution consistency → block
 ### Version Consistency
 All of these must stay aligned on release:
 - `VERSION` file
+- `package.json`
 - `.claude-plugin/marketplace.json`
 - `platforms/openclaw/md2wechat/SKILL.md` (install URLs)
 - `CHANGELOG.md`
 
-Quick check: `echo "VERSION: $(cat VERSION)" && grep '"version"' .claude-plugin/marketplace.json | head -1`
+Quick check (equivalent to quality-gates step 0):
+```bash
+echo "VERSION:      $(cat VERSION)"
+echo "package.json: $(node -e "process.stdout.write(require('./package.json').version)")"
+echo "marketplace:  $(sed -n 's/.*"version": "\([0-9][^"]*\)".*/\1/p' .claude-plugin/marketplace.json | head -1)"
+echo "CHANGELOG:    $(grep -m1 '^## \[' CHANGELOG.md | sed 's/^## \[\([^]]*\)\].*/\1/')"
+```
+
+`bash scripts/quality-gates.sh` runs this as step 0 (fail-fast, < 1 second) before lint/test.
 
 ### Documentation Sync
 Any change to CLI commands, flags, JSON output shape, providers, themes, or prompts must also update:

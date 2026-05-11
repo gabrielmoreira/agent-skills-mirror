@@ -17,6 +17,8 @@ For new features:
 
 - Treat regressions in agent team messaging, task lifecycle, session parsing, code review UI, and provider/runtime detection as high priority.
 - For team launch hangs, OpenCode `registered`/`bootstrap unconfirmed`, missing teammate replies, or suspicious task logs, follow [docs/team-management/debugging-agent-teams.md](docs/team-management/debugging-agent-teams.md) before changing code.
+- For launch failures, first inspect the newest artifact pack under `~/.claude/teams/<team>/launch-failure-artifacts/latest.json`, then open its `manifest.json`. The manifest includes `classification`, `bootstrapTransportBreadcrumb`, launch diagnostics, member spawn statuses, and redacted copies/tails of launch-state, bootstrap-state, bootstrap-journal, CLI logs, progress trace, and runtime adapter trace.
+- When running live smoke tests, keep cleanup narrow: stop only the smoke-owned team/run and launch-owned process teammates. Do not kill shared OpenCode hosts, unrelated tmux panes, or user teams while trying to clean stale smoke artifacts.
 - Verify new medium and large features follow `docs/FEATURE_ARCHITECTURE_STANDARD.md`, especially cross-process boundaries and public feature entrypoints.
 - Check that Electron main, preload, renderer, and shared code keep their responsibilities separate and use the documented path aliases.
 - Flag changes that manually concatenate agent block markers instead of using `wrapAgentBlock(text)`.

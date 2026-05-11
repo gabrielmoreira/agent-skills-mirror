@@ -1,7 +1,7 @@
 ---
 name: baoyu-post-to-x
-description: Posts content and articles to X (Twitter). Supports regular posts with images/videos and X Articles (long-form Markdown). In Codex, prefers the bundled Chrome Computer Use when available and falls back to real Chrome CDP scripts otherwise. Use when user asks to "post to X", "tweet", "publish to Twitter", or "share on X".
-version: 1.57.0
+description: Posts content and articles to X (Twitter). Supports regular posts with images/videos and X Articles (long-form Markdown). In Codex, honor explicit requests for the Codex Chrome plugin/@chrome by using the Chrome Extension workflow; otherwise use Chrome Computer Use when available and fall back to real Chrome CDP scripts only when allowed. Use when user asks to "post to X", "tweet", "publish to Twitter", or "share on X".
+version: 1.57.1
 metadata:
   openclaw:
     homepage: https://github.com/JimLiu/baoyu-skills#baoyu-post-to-x
@@ -13,9 +13,12 @@ metadata:
 
 # Post to X (Twitter)
 
-Posts text, images, videos, and long-form articles to X via real Chrome browser (bypasses anti-bot detection).
+Posts text, images, videos, and long-form articles to X via a real Chrome browser.
 
-In Codex, first try the bundled **Chrome Computer Use** path. Use the CDP scripts only when Chrome Computer Use is not available or the user explicitly asks for the script/CDP workflow.
+In Codex, do not conflate these browser paths:
+- **Codex Chrome plugin / `@chrome` / Chrome Extension**: use the bundled `chrome:Chrome` skill and its Node REPL browser client. This is required whenever the user says "Codex Chrome plugin", "Codex 自带的 Chrome 插件", `@chrome`, or similar.
+- **Chrome Computer Use**: use `mcp__computer_use__.*` against the visible Google Chrome UI only when the user asks for Computer Use or no Chrome-plugin preference is stated and Computer Use is available.
+- **CDP script mode**: use only as a fallback when the selected mode is unavailable or the user explicitly asks for CDP/script mode.
 
 ## Script Directory
 
@@ -41,15 +44,49 @@ In Codex, first try the bundled **Chrome Computer Use** path. Use the CDP script
 
 ## Execution Mode Selection (Required)
 
-Before choosing a workflow, detect whether Codex Chrome Computer Use is enabled:
+Choose exactly one mode before interacting with X:
 
-1. If Computer Use tools are already visible, call `get_app_state` for app `Google Chrome`. In Codex these may be surfaced as `mcp__computer_use__.*`; use the exact available tool names.
-2. If they are not visible and `tool_search` is available, search for `computer-use get_app_state click press_key drag scroll Google Chrome`, then call `get_app_state` for app `Google Chrome`.
-3. If `get_app_state` succeeds, use **Chrome Computer Use Mode** below.
-4. If Computer Use tools are unavailable or `get_app_state` fails, use **CDP Script Mode**.
-5. If the user explicitly says to use Chrome Computer Use, do not fall back to CDP, Playwright, or the in-app Browser without telling the user and getting approval.
+1. If the user explicitly asks for the Codex Chrome plugin, `@chrome`, the Chrome extension, or "Codex 自带的 Chrome 插件", use **Codex Chrome Plugin Mode**. Do not call Computer Use first.
+2. If the user explicitly asks for Chrome Computer Use, use **Chrome Computer Use Mode**. Do not fall back to CDP, Playwright, the in-app Browser, or the Chrome plugin without telling the user and getting approval.
+3. If the user explicitly asks for CDP/script mode, use **CDP Script Mode**.
+4. Otherwise, prefer **Chrome Computer Use Mode** for regular posts, video posts, and quote tweets. For Markdown **X Articles with local content images**, prefer **CDP Script Mode** because placeholder selection and image-block verification are more reliable than manual DraftJS selection through Computer Use.
 
-When Chrome Computer Use Mode is active, all X UI actions must go through the Codex Computer Use tools against the user's real Google Chrome. Shell commands are still allowed for preprocessing Markdown and copying local files to the system clipboard.
+Never use the in-app Browser for X publishing workflows.
+
+## Codex Chrome Plugin Mode
+
+Use this mode whenever the user requests the Codex Chrome plugin, `@chrome`, or the Chrome Extension path. This uses the user's real Chrome profile and X login through the bundled Chrome plugin, not Computer Use and not CDP.
+
+**Setup**
+1. Load the `chrome:Chrome` skill before browser work.
+2. Use `tool_search` for `node_repl js` if the Node REPL `js` tool is not already visible.
+3. Initialize the Chrome browser client exactly as the Chrome skill specifies, then run a lightweight call such as `browser.user.openTabs()` to verify the extension connection.
+4. If the first lightweight call fails, wait 2 seconds and retry once. If it still fails, follow the Chrome skill's extension checks and recovery steps. If checks pass but communication still fails, ask the user before opening a new Chrome window. Do not switch to Computer Use or CDP silently.
+
+**General rules**
+- Use the Chrome plugin's `browser.tabs.*`, `tab.playwright.*`, `tab.cua.*`, and file chooser APIs for X UI actions.
+- Shell commands are allowed for Markdown preprocessing and clipboard preparation.
+- If a file upload fails with `Not allowed`, tell the user: `To enable file upload, go to chrome://extensions in Chrome, click Details under the Codex extension, and enable "Allow access to file URLs." See https://developers.openai.com/codex/app/chrome-extension#upload-files for details.`
+- If the Chrome plugin reports `native pipe is closed`, retry the lightweight browser call once after 2 seconds, then run the Chrome skill health checks. If Chrome is running, the extension is enabled, and the native host manifest is correct, ask permission to open a new Chrome window and retry. Do not keep sending browser actions through the broken pipe.
+- Never click `Publish`, `Post`, or any externally visible submit action without explicit final confirmation from the user in the current conversation.
+
+**X Articles**
+1. Convert Markdown and keep the image map:
+   ```bash
+   ${BUN_X} {baseDir}/scripts/md-to-html.ts article.md --save-html /tmp/x-article-body.html > /tmp/x-article.json
+   ```
+2. Read the JSON output for `title`, `coverImage`, and `contentImages` (`placeholder` → `localPath`).
+3. Open or create the article draft at `https://x.com/compose/articles`.
+4. Upload the cover with the Chrome plugin file chooser flow. If upload is blocked by extension permissions, stop and report the exact permission fix above.
+5. Fill the title, then copy rich HTML:
+   ```bash
+   ${BUN_X} {baseDir}/scripts/copy-to-clipboard.ts html --file /tmp/x-article-body.html
+   ```
+6. Paste into the article body with a real paste keystroke through the Chrome plugin. On macOS use `Meta+V`.
+7. Verify the editor text contains the article body and `XIMGPH_` placeholders. Do not rely on `tab.clipboard.readText()` as proof of the system clipboard after shell clipboard writes; on macOS verify with `pbpaste` if needed.
+8. For each `contentImages` item in placeholder order, copy the image with `copy-to-clipboard.ts image <localPath>`, select the exact placeholder text, paste with the Chrome plugin, and verify the placeholder is gone and an image block appeared.
+9. Open Preview and verify title, cover, body, links, and images.
+10. Ask for explicit confirmation before clicking `Publish`.
 
 ## Preferences (EXTEND.md)
 
@@ -100,14 +137,14 @@ Checks: Chrome, profile isolation, Bun, Accessibility, clipboard, paste keystrok
 
 ---
 
-## Chrome Computer Use Mode (Codex Preferred)
+## Chrome Computer Use Mode
 
-Use this mode whenever Codex can control `Google Chrome` with Computer Use. This uses the user's existing Chrome window, cookies, login, extensions, and X session.
+Use this mode when the user explicitly asks for Chrome Computer Use, or when no Chrome-plugin preference is stated and Codex can control `Google Chrome` with Computer Use. This uses the user's existing Chrome window, cookies, login, extensions, and X session.
 
 **General rules**:
 - Start each assistant turn that controls Chrome by calling `get_app_state` for `Google Chrome`.
 - Prefer element-index actions when available; use coordinates only for editor text selection or drag selection.
-- Do not use the in-app Browser, Playwright, or CDP for X UI actions in this mode.
+- Do not use the in-app Browser, the Chrome plugin, Playwright, or CDP for X UI actions in this mode unless the user approves a mode change.
 - Never click `Publish`, `Post`, or any externally visible submit action without an explicit final confirmation from the user in the current conversation.
 
 **Regular posts**:
@@ -155,15 +192,15 @@ Use this mode whenever Codex can control `Google Chrome` with Computer Use. This
 8. Open Preview and verify title, cover, body, links, and images.
 9. Ask for explicit confirmation before clicking `Publish`.
 
-If Computer Use selection or paste becomes unreliable, stop and report the blocker instead of switching to CDP silently.
+If Computer Use selection or paste becomes unreliable, stop and report the blocker instead of switching to the Chrome plugin or CDP silently.
 
 ---
 
 ## CDP Script Mode (Fallback)
 
-Use the script sections below only when Chrome Computer Use is unavailable, unreliable, or explicitly not requested. These scripts launch or reuse a real Chrome instance via CDP and keep the browser open for review.
+Use the script sections below only when the selected browser-control mode is unavailable, unreliable, or explicitly not requested. These scripts launch or reuse a real Chrome instance via CDP and keep the browser open for review.
 
-Do not use CDP Script Mode when the user explicitly requires Chrome Computer Use unless the user approves the fallback after you explain the blocker.
+Do not use CDP Script Mode when the user explicitly requires the Codex Chrome plugin or Chrome Computer Use unless the user approves the fallback after you explain the blocker.
 
 ---
 
@@ -188,7 +225,7 @@ ${BUN_X} {baseDir}/scripts/x-browser.ts "Hello!" --image ./photo.png
 
 **Note**: Script opens browser with content filled in. User reviews and publishes manually.
 
-**Chrome Computer Use preferred**: In Codex, if Chrome Computer Use is enabled, use the visible Chrome UI workflow in **Chrome Computer Use Mode** instead of running `x-browser.ts`.
+**Codex mode note**: If the user explicitly requested the Codex Chrome plugin, use **Codex Chrome Plugin Mode**. Otherwise, if Chrome Computer Use is enabled, use **Chrome Computer Use Mode** instead of running `x-browser.ts`.
 
 ---
 
@@ -209,7 +246,7 @@ ${BUN_X} {baseDir}/scripts/x-video.ts "Check this out!" --video ./clip.mp4
 
 **Note**: Script opens browser with content filled in. User reviews and publishes manually.
 
-**Chrome Computer Use preferred**: In Codex, if Chrome Computer Use is enabled, use the visible Chrome UI workflow in **Chrome Computer Use Mode** instead of running `x-video.ts`.
+**Codex mode note**: If the user explicitly requested the Codex Chrome plugin, use **Codex Chrome Plugin Mode**. Otherwise, if Chrome Computer Use is enabled, use **Chrome Computer Use Mode** instead of running `x-video.ts`.
 
 **Limits**: Regular 140s max, Premium 60min. Processing: 30-60s.
 
@@ -232,7 +269,7 @@ ${BUN_X} {baseDir}/scripts/x-quote.ts https://x.com/user/status/123 "Great insig
 
 **Note**: Script opens browser with content filled in. User reviews and publishes manually.
 
-**Chrome Computer Use preferred**: In Codex, if Chrome Computer Use is enabled, use the visible Chrome UI workflow in **Chrome Computer Use Mode** instead of running `x-quote.ts`.
+**Codex mode note**: If the user explicitly requested the Codex Chrome plugin, use **Codex Chrome Plugin Mode**. Otherwise, if Chrome Computer Use is enabled, use **Chrome Computer Use Mode** instead of running `x-quote.ts`.
 
 ---
 
@@ -254,7 +291,7 @@ ${BUN_X} {baseDir}/scripts/x-article.ts article.md --cover ./cover.jpg
 
 **Frontmatter**: `title`, `cover_image` supported in YAML front matter.
 
-**Chrome Computer Use preferred**: In Codex, if Chrome Computer Use is enabled, follow **Chrome Computer Use Mode** above instead of running `x-article.ts`.
+**Codex mode note**: If the user explicitly requested the Codex Chrome plugin, follow **Codex Chrome Plugin Mode** above. If the user explicitly requested Chrome Computer Use, follow **Chrome Computer Use Mode**. Otherwise, for Markdown articles with local content images, use `x-article.ts` in **CDP Script Mode** so placeholders can be selected programmatically and the post-composition check can verify image count and remaining `XIMGPH_` text.
 
 **CDP fallback note**: The script opens browser with article filled in. User reviews and publishes manually unless `--submit` is used.
 
@@ -283,7 +320,7 @@ pkill -f "Chrome.*remote-debugging-port" 2>/dev/null; pkill -f "Chromium.*remote
 ## Notes
 
 - First run: manual login required (session persists)
-- In Chrome Computer Use Mode, use the user's existing Chrome session and do not launch a separate CDP profile
+- In Codex Chrome Plugin Mode and Chrome Computer Use Mode, use the user's existing Chrome session and do not launch a separate CDP profile
 - CDP scripts only fill content into the browser by default; user must review and publish manually unless `--submit` is explicitly used
 - Cross-platform: macOS, Linux, Windows
 

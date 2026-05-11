@@ -43,8 +43,8 @@ Deactivate: say "workflow done".
 
 ## Rules
 
-1. **Do not modify `.agents/` files** — SSOT protection
-2. Workflows execute via keyword detection or explicit naming — never self-initiated
+1. **Do not modify `.agents/` files** (SSOT protection).
+2. Workflows execute via keyword detection or explicit naming, never self-initiated.
 3. Response language follows `.agents/oma-config.yaml`
 
 ## Project Rules
@@ -67,13 +67,13 @@ Read the relevant file from `.agents/rules/` when working on matching code.
 
 <!-- OMA:END -->
 
-## Source Repo — Additional Rules
+## Source Repo: Additional Rules
 
 > This section applies only to the oh-my-agent source repository itself.
 
 - `.agents/` modifications are allowed (this IS the source repo)
-- `bun run test` — CLI tests (vitest)
-- `bun run lint` — Lint
-- `bun run build` — CLI build
+- `bun run test` runs CLI tests (vitest).
+- `bun run lint` runs the linter.
+- `bun run build` builds the CLI.
 - commitlint: conventional commits required (build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test)
 - Commit Co-Author: `First Fluke <our.first.fluke@gmail.com>`

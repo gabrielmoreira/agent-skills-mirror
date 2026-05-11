@@ -55,7 +55,7 @@ sum(rate(http_request_duration_seconds_bucket{le="0.3"}[28d]))
 
 ## 5. OpenSLO Spec
 
-Source: <https://openslo.com> — community-driven, not CNCF. Vendor-neutral YAML adopted by Sloth, Pyrra, Nobl9.
+Source: <https://openslo.com>; community-driven, not CNCF. Vendor-neutral YAML adopted by Sloth, Pyrra, Nobl9.
 
 ```yaml
 apiVersion: openslo.com/v1
@@ -168,7 +168,7 @@ suppresses false positives from transient spikes.
 | < 25% | Reliability sprint |
 | 0% (exhausted) | Freeze deploys until budget recovers |
 
-Cross-ref `release.md` — Flagger and Argo Rollouts use the SLI error rate as canary promotion gate;
+Cross-ref `release.md`; Flagger and Argo Rollouts use the SLI error rate as canary promotion gate;
 the same threshold enforces budget-aware deployment freeze.
 
 ---
@@ -207,7 +207,7 @@ the same threshold enforces budget-aware deployment freeze.
 
 ## References
 
-- Google SRE Workbook — Alerting on SLOs: <https://sre.google/workbook/alerting-on-slos/>
+- Google SRE Workbook: Alerting on SLOs: <https://sre.google/workbook/alerting-on-slos/>
 - OpenSLO specification: <https://openslo.com>
 - Sloth: <https://github.com/slok/sloth>
 - Pyrra: <https://github.com/pyrra-dev/pyrra>

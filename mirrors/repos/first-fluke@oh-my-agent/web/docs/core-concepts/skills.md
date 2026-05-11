@@ -1,11 +1,11 @@
 ---
 title: Skills
-description: Complete guide to the oh-my-agent two-layer skill architecture — SKILL.md design, on-demand resource loading, every shared resource explained, conditional protocols, per-skill resource types, vendor execution protocols, token savings math, and skill routing mechanics.
+description: Complete guide to the oh-my-agent two-layer skill architecture, covering SKILL.md design, on-demand resource loading, every shared resource explained, conditional protocols, per-skill resource types, vendor execution protocols, token savings math, and skill routing mechanics.
 ---
 
 # Skills
 
-Skills are structured knowledge packages that give each agent its domain expertise. They are not just prompts — they contain execution protocols, tech stack references, code templates, error playbooks, quality checklists, and few-shot examples, organized in a two-layer architecture designed for token efficiency.
+Skills are structured knowledge packages that give each agent its domain expertise. They are not just prompts. They contain execution protocols, tech stack references, code templates, error playbooks, quality checklists, and few-shot examples, organized in a two-layer architecture designed for token efficiency.
 
 ---
 
@@ -16,11 +16,11 @@ Skills are structured knowledge packages that give each agent its domain experti
 Every skill has a `SKILL.md` file at its root. This is always loaded into the context window when the skill is referenced. It contains:
 
 - **YAML frontmatter** with `name` and `description` (used for routing and display)
-- **When to use / When NOT to use** — explicit activation conditions
-- **Core rules** — the 5-15 most critical constraints for the domain
-- **Architecture overview** — how code should be structured
-- **Library list** — approved dependencies and their purposes
-- **References** — pointers to Layer 2 resources (never loaded automatically)
+- **When to use / When NOT to use**: explicit activation conditions
+- **Core rules**: the 5-15 most critical constraints for the domain
+- **Architecture overview**: how code should be structured
+- **Library list**: approved dependencies and their purposes
+- **References**: pointers to Layer 2 resources (never loaded automatically)
 
 Example frontmatter:
 
@@ -31,7 +31,7 @@ description: Frontend specialist for React, Next.js, TypeScript with FSD-lite ar
 ---
 ```
 
-The description field is critical — it contains the routing keywords that the skill routing system uses to match tasks to agents.
+The description field is critical because it contains the routing keywords that the skill routing system uses to match tasks to agents.
 
 ### Layer 2: resources/ (loaded on-demand)
 
@@ -149,7 +149,7 @@ All agents share common foundations from `.agents/skills/_shared/`. These are or
 | **`execution-protocols/codex.md`** | Codex CLI-specific execution patterns. |
 | **`execution-protocols/qwen.md`** | Qwen CLI-specific execution patterns. |
 
-Vendor-specific execution protocols are injected automatically by `oma agent:spawn` — agents do not need to manually load them.
+Vendor-specific execution protocols are injected automatically by `oma agent:spawn`. Agents do not need to manually load them.
 
 ### Conditional Resources (`.agents/skills/_shared/conditional/`)
 
@@ -218,7 +218,7 @@ Consider a 5-agent orchestration session (pm, backend, frontend, mobile, qa):
 
 **Savings: approximately 72-75%**
 
-On flash-tier models (128K context), this is the difference between having 108K tokens available for work versus 125K tokens — a significant margin for complex tasks.
+On flash-tier models (128K context), this is the difference between having 108K tokens available for work versus 125K tokens, a significant margin for complex tasks.
 
 ---
 
@@ -300,7 +300,7 @@ When the orchestrator composes prompts for subagents, it includes only task-rele
 1. Agent SKILL.md's Core Rules section
 2. `execution-protocol.md`
 3. Resources matching the specific task type (from the maps above)
-4. `error-playbook.md` (always included — recovery is essential)
+4. `error-playbook.md` (always included; recovery is essential)
 5. Serena Memory Protocol (CLI mode)
 
 This targeted composition avoids loading unnecessary resources, maximizing the subagent's available context for actual work.
@@ -316,7 +316,7 @@ Clarification Debt (CD) measures the cost of unclear requirements during a sessi
 | `clarify` | +10 | Simple clarification question (expected for MEDIUM uncertainty) |
 | `correct` | +25 | Intent misunderstanding requiring direction change |
 | `redo` | +40 | Scope/charter violation requiring rollback and restart |
-| `blocked` | +0 | Agent correctly stopped and asked (good behavior — not penalized) |
+| `blocked` | +0 | Agent correctly stopped and asked (good behavior, not penalized) |
 
 **Modifiers:** Charter not read (+15), allowlist violation (+20), same error repeated (x1.5).
 
@@ -332,15 +332,15 @@ The session log is maintained in `.serena/memories/session-metrics.md` with per-
 
 ## Evaluator Accuracy & QA Tuning
 
-QA agents improve through tracked judgment errors. Unlike CD (real-time), Evaluator Accuracy (EA) is retrospective — most errors are discovered after the session ends.
+QA agents improve through tracked judgment errors. Unlike CD (real-time), Evaluator Accuracy (EA) is retrospective. Most errors are discovered after the session ends.
 
 **EA event types:**
 
 | Event | Points | When Discovered |
 |-------|--------|-----------------|
-| `false_negative` | +30 | Next session or production — bug that QA missed |
-| `false_positive` | +15 | During session — impl agent successfully disputes QA finding |
-| `severity_mismatch` | +10 | During session or retro — wrong severity assigned |
+| `false_negative` | +30 | Next session or production (bug that QA missed) |
+| `false_positive` | +15 | During session (impl agent successfully disputes QA finding) |
+| `severity_mismatch` | +10 | During session or retro (wrong severity assigned) |
 | `missed_stub` | +20 | Runtime verification catches display-only feature |
 | `good_catch` | -10 | QA caught a non-obvious bug (positive reward signal) |
 
@@ -388,9 +388,9 @@ Long-running agents degrade in quality as context fills up. The Orchestrator (no
 | Shallow output | Result file contains stub markers or TODO placeholders | Re-spawn with explicit instruction |
 
 **Reset procedure:**
-1. **Checkpoint** — Save agent's current state (completed items, remaining items, key decisions)
-2. **Terminate** — Stop the current agent run
-3. **Re-spawn** — Start a fresh agent with the checkpoint as context
-4. **Resume** — New agent reads checkpoint, continues from remaining items only
+1. **Checkpoint**: Save agent's current state (completed items, remaining items, key decisions)
+2. **Terminate**: Stop the current agent run
+3. **Re-spawn**: Start a fresh agent with the checkpoint as context
+4. **Resume**: New agent reads checkpoint, continues from remaining items only
 
-For standalone agents (no Orchestrator), the Sprint Gate in `difficulty-guide.md` serves as the safety net — if a sprint takes 2x expected turns, the agent writes a checkpoint and informs the user.
+For standalone agents (no Orchestrator), the Sprint Gate in `difficulty-guide.md` serves as the safety net. If a sprint takes 2x expected turns, the agent writes a checkpoint and informs the user.

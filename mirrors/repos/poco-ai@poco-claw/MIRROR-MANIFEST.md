@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `poco-ai/poco-claw` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `poco-ai/poco-claw` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `poco-ai/poco-claw` — 26 default patterns, 0 followed patterns, 9 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`backend/assets/skills/pptx-generator/SKILL.md`](backend/assets/skills/pptx-generator/SKILL.md) |
 | 8 | ✓ | [`backend/assets/skills/skill-creator/SKILL.md`](backend/assets/skills/skill-creator/SKILL.md) |
 | 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`specs/AGENTS.md`](specs/AGENTS.md) |
 
 ---
 

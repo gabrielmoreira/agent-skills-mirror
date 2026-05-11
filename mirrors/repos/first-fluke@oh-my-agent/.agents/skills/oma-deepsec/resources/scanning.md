@@ -1,4 +1,4 @@
-# Scanning — `scan` → `process` → `triage` → `revalidate` → `export`
+# Scanning: `scan` → `process` → `triage` → `revalidate` → `export`
 
 All commands run from inside `.deepsec/`. `bunx deepsec …` is interchangeable with `pnpm deepsec …`, `npm exec deepsec …`, `yarn deepsec …`.
 
@@ -52,7 +52,7 @@ For a cheaper backend:
 bunx deepsec process --agent codex --model gpt-5.5
 ```
 
-Codex runs in a strict read-only sandbox, fast at grep-heavy investigations. Mix backends within a project — re-process unconvincing findings with the other agent; findings dedupe across agents.
+Codex runs in a strict read-only sandbox and is fast at grep-heavy investigations. Backends mix freely within a project: re-process unconvincing findings with the other agent, and findings dedupe across agents.
 
 ### Resume after interruption
 
@@ -118,12 +118,12 @@ jq -s 'map(.analysisHistory[].costUsd // 0) | add' data/<id>/files/**/*.json
 jq -r 'select(.status=="pending") | .filePath' data/<id>/files/**/*.json
 ```
 
-For richer queries prefer `bunx deepsec export --format json` — its filters match the rest of the CLI.
+For richer queries, prefer `bunx deepsec export --format json`. Its filters match the rest of the CLI.
 
 ## Cron / scheduled CI
 
 ```bash
-# Sunday cron — full scan
+# Sunday cron: full scan
 bunx deepsec scan
 bunx deepsec process --concurrency 5
 bunx deepsec revalidate --min-severity HIGH

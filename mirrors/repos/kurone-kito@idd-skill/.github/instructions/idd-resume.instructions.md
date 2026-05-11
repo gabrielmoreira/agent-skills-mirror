@@ -4,6 +4,26 @@ Use this file when taking over a crashed or rate-limited session with no
 prior session context. Read `idd-overview.instructions.md` for shared
 definitions (claim format, stale threshold, abort, hold).
 
+Resume stale checks use the `claim-stale-age` policy default from
+`docs/policy-constants.md` (distributed default: `24 h`).
+
+## Step 0 — Route stalled-session recovery
+
+Before Step 1, decide whether this is a stalled-session case:
+
+- If the issue is already closed, or the corresponding PR is already
+  merged, skip stalled-session routing and continue to Step 1 cleanup
+  behavior.
+- If a non-owned active claim exists, run
+  `idd-resume-stall.instructions.md` first.
+- Use only externally observable evidence (trusted claim heartbeat
+  timestamps, PR head movement, remote branch tip movement, review/
+  comment activity, and CI timestamps).
+- Quiet-window evidence does not bypass the shared stale threshold:
+  takeover remains disallowed until the non-owned active claim is stale.
+- If stalled-session routing returns hold/inconclusive, stop.
+- Otherwise continue with Step 1.
+
 ## Context to gather first
 
 Before routing, collect all of the following:
@@ -15,14 +35,31 @@ Before routing, collect all of the following:
    unclaimed. Also record the latest released branch, if any. The
    shared rules ignore marker-shaped comments from untrusted authors;
    record their URLs as suspicious context when they affect routing.
-2. **Open PR** — check for an open PR that closes/references this issue.
-3. **Local worktrees** — run `git worktree list`.
-4. **Local branch** — check whether the branch named in the claim
+2. **Open PR and current head** — check for an open PR that
+   closes/references this issue. Record the current PR HEAD SHA.
+3. **Issue/PR activity recency** — snapshot issue comments, review
+   threads, review bodies, and regular PR comments, then record the
+   latest `updatedAt` across that universe. When an open PR exists,
+   include PR `createdAt`/`updatedAt` as additional recency signals.
+4. **PR HEAD movement evidence** — define a baseline before comparison:
+   use the latest trusted same-claim `review-watermark`/`review-baseline`
+   marker SHA when available; otherwise use the current PR HEAD SHA
+   captured in step 2 as the baseline. Then confirm whether commits were
+   added after that baseline from PR timeline/activity.
+5. **CI transition state** — record current CI states for the PR HEAD,
+   the latest completed CI transition `completedAt` (any terminal
+   outcome), and the latest successful CI pass `completedAt` (or `none`).
+6. **Local worktrees** — run `git worktree list`.
+7. **Local branch** — check whether the branch named in the claim
    comment exists locally.
-5. **Dirty/clean** — run `git status` in the worktree (if it exists).
-6. **Unpushed commits** — run `git log @{u}..HEAD` in the worktree. If
+8. **Dirty/clean** — run `git status` in the worktree (if it exists).
+9. **Unpushed commits** — run `git log @{u}..HEAD` in the worktree. If
    no upstream is configured, treat all local commits as unpushed.
-7. **Current HEAD SHA** — run `git rev-parse HEAD`.
+10. **Current local HEAD SHA** — run `git rev-parse HEAD`.
+11. **Live status digest state** — record whether the issue or PR has
+    zero, one, or multiple comments whose first line is
+    `<!-- idd-live-status: current -->`. Do not use digest text to route
+    resume; it is repairable UI state only.
 
 ## Step 1 — Identify the issue and claim state
 
@@ -61,15 +98,40 @@ Otherwise, determine claim state from the parsed active claim:
   `{claim-id}` whose `supersedes:` value is the current active claim's
   `{claim-id}`, then continue to Step 2.
 
+When Step 1 performs a re-claim or stale takeover, claim verification
+must follow A5 race-safe verification from
+`idd-claim.instructions.md`: wait 5–10 seconds after posting
+`claimed-by`, re-read and parse the full claim stream chronologically,
+apply the same-second lexicographic `{claim-id}` tie-breaker, and fail
+verification if a later trusted competing `claimed-by` with a different
+`{claim-id}` appears.
+
 A branch left by a stale or released claim is inheritable. An open PR or
 remote branch may be reused when it matches the branch recorded in the
 stale active claim you are taking over, or in the latest released claim.
 
 If the active or inherited branch field starts with `roadmap-audit/`,
 the claim is an A1.5 roadmap-audit coordination claim, not a work branch.
+This coordination claim does not lock unrelated child-issue execution.
 After the re-claim or takeover is verified, do not create a branch or
 worktree and do not use the Step 2 worktree table. Re-run A1.5 for that
 roadmap issue, then follow A1.5's close, release, or stop behavior.
+Treat child issue claims independently; roadmap-audit claim presence
+alone must not block child issue execution.
+
+After Step 1 establishes the route and verifies any current-session
+claim, repair a missing or stale live status digest from the parsed
+claim state, PR state, CI state, and review activity when doing so is
+safe under the claim revalidation gate. If multiple marked digests
+exist, preserve them, report their URLs, and continue routing from
+trusted markers and GitHub state rather than digest text.
+For a successful stale takeover or legacy migration, the digest belongs
+to the new verified `{claim-id}` only after that claim is active; include
+the superseded or migrated claim marker in `Authoritative by` and do not
+reuse prior-claim review-watermark or review-baseline comments. For
+non-owned, non-stale claims, do not edit the digest; stalled-session
+handling records evidence in session logs only unless the claim becomes
+yours.
 
 ## Step 2 — Locate or restore branch and worktree
 
@@ -77,6 +139,14 @@ When any row below requires creating a worktree, follow the B1
 **Worktree creation** sub-procedure. B1 Step 3 covers when to run
 **install-deps** (depends on whether WorkTrunk's pre-start hook is
 configured).
+
+**Important**: The `{branch}` field in the table below refers to the branch
+name from the current active claim (or inheritable claim in recovery scenarios).
+This branch value must be used verbatim when creating or restoring worktrees.
+The heartbeat branch invariant (rule 3.5 in `idd-overview.instructions.md`)
+requires that heartbeat comments preserve the original branch field exactly. If
+you encounter anomalous heartbeats with a different branch field, ignore that
+branch value and use the currently active claim's branch instead.
 
 | PR exists?     | Remote branch? | Local state                           | Action                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | -------------- | -------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -94,13 +164,22 @@ configured).
 | No             | No             | Worktree clean, unpushed              | Resume from D1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | No             | No             | Worktree clean, no unpushed           | Resume from B2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
+After Step 2 chooses a route, refresh the digest only when the route
+materially changes what a human should expect next. Examples:
+`Phase: resume -> B3` for dirty worktree recovery, `Phase: resume -> D1`
+for unpushed clean commits, or `Phase: resume -> F1` when CI and review
+state are already clear. The `Authoritative by` field should cite the
+claim marker, PR/branch evidence, CI status, and review snapshot used for
+the routing decision.
+
 ## Step 3 — Determine PR and CI/review state
 
 Read the PR's current CI and review status:
 
 | Condition                                                                          | Action                                                         |
 | ---------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Required CI checks not yet generated                                               | Wait for generation, then apply D4 logic                       |
+| Required CI checks not yet generated, no reviews yet                               | Wait for generation, then apply D4 logic                       |
+| Required CI checks not yet generated, reviews exist                                | Wait for generation, then apply E15 logic                      |
 | CI `queued` or `in_progress`, no reviews yet (first push)                          | Apply D4 CI logic (`idd-ci.instructions.md`, on-success → E1)  |
 | CI `queued` or `in_progress`, reviews exist (post-fix push)                        | Apply E15 CI logic (`idd-ci.instructions.md`, on-success → E1) |
 | CI `failure` / `cancelled` / `timed_out`, no reviews yet                           | Apply D4 failure/cancelled branch                              |

@@ -193,7 +193,7 @@ export const CurrentUser = createParamDecorator(
 );
 
 // ---------------------------------------------------------------------------
-// resources.controller.ts  (Router layer — NO business logic here)
+// resources.controller.ts  (Router layer: NO business logic here)
 // ---------------------------------------------------------------------------
 
 import {

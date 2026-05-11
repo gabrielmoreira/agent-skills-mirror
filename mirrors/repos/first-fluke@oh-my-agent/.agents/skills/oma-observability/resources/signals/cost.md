@@ -23,11 +23,11 @@ Cost is the 6th signal in the `oma-observability` skill (design decision D4: cos
 - Cardinality rules specific to cost labels
 
 **Out of scope:**
-- Full FinOps strategy: procurement, Reserved Instances / Savings Plans, commitment analysis, contract negotiation — see [FinOps Foundation framework](https://www.finops.org/framework/)
-- Full LLM observability (prompt versioning, evals, model routing economics) — see Langfuse, Arize Phoenix, LangSmith
-- Cluster cost optimization (rightsizing, spot orchestration) — see Kubecost commercial tier or CloudZero
+- Full FinOps strategy: procurement, Reserved Instances / Savings Plans, commitment analysis, contract negotiation; see [FinOps Foundation framework](https://www.finops.org/framework/)
+- Full LLM observability (prompt versioning, evals, model routing economics); see Langfuse, Arize Phoenix, LangSmith
+- Cluster cost optimization (rightsizing, spot orchestration): see Kubecost commercial tier or CloudZero
 
-**Distinct boundary with `../boundaries/multi-tenant.md §Cost Attribution`:** that file uses cost as a _routing signal_ (tenant chargeback, showback, residency). This file defines cost as a _telemetry signal_ — what to collect, how to attribute it, and how to store it. Cross-reference is mandatory.
+**Distinct boundary with `../boundaries/multi-tenant.md §Cost Attribution`:** that file uses cost as a _routing signal_ (tenant chargeback, showback, residency). This file defines cost as a _telemetry signal_; what to collect, how to attribute it, and how to store it. Cross-reference is mandatory.
 
 ---
 
@@ -44,7 +44,7 @@ Cost differs from metrics, logs, and traces in three structural ways:
 
 Unit economics is the motivation: understanding `$ per request`, `$ per tenant`, and `$ per feature` requires correlating cloud billing data with application-level telemetry. Neither data source alone is sufficient.
 
-FinOps Foundation identifies cost visibility as a foundational practice across three phases: Inform → Optimize → Operate. The Inform phase is entirely an observability problem — cost data must be collected, attributed, and surfaced before optimization can occur.
+FinOps Foundation identifies cost visibility as a foundational practice across three phases: Inform → Optimize → Operate. The Inform phase is entirely an observability problem; cost data must be collected, attributed, and surfaced before optimization can occur.
 
 ---
 
@@ -117,7 +117,7 @@ Three allocation categories: compute (CPU + RAM), storage (PVC), and network (eg
 | Feature | Custom pod label (`feature.name`) | `feature_name` |
 | Per-request (LLM) | `gen_ai.cost.total_usd` span attribute | trace attribute, not metric label |
 
-**Tenant attribution** is the primary B2B SaaS use case: tag every pod with `tenant.id` at deploy time and OpenCost aggregates cost by that label automatically. Cross-ref `../boundaries/multi-tenant.md §Cost Attribution` for chargeback and showback patterns. **Feature attribution** uses a custom pod label (`feature.name`); cross-ref `../boundaries/release.md` for A/B cost comparison. **Per-request attribution** for LLM workloads uses span attributes only — writing cost to a metric label at request granularity causes a cardinality explosion (see Section 10).
+**Tenant attribution** is the primary B2B SaaS use case: tag every pod with `tenant.id` at deploy time and OpenCost aggregates cost by that label automatically. Cross-ref `../boundaries/multi-tenant.md §Cost Attribution` for chargeback and showback patterns. **Feature attribution** uses a custom pod label (`feature.name`); cross-ref `../boundaries/release.md` for A/B cost comparison. **Per-request attribution** for LLM workloads uses span attributes only; writing cost to a metric label at request granularity causes a cardinality explosion (see Section 10).
 
 ---
 
@@ -143,7 +143,7 @@ sum by (tenant_id) (
 )
 ```
 
-> **Dependency**: the query joins against `kube_namespace_labels` from kube-state-metrics. `kube-state-metrics` by default does NOT expose custom namespace labels (only a small allowlist). To surface `tenant_id`, run kube-state-metrics with `--metric-labels-allowlist=namespaces=[tenant_id,tenant_tier]` (or via Helm `metricLabelsAllowlist`). Without this flag, the query silently returns empty — a common production pitfall.
+> **Dependency**: the query joins against `kube_namespace_labels` from kube-state-metrics. `kube-state-metrics` by default does NOT expose custom namespace labels (only a small allowlist). To surface `tenant_id`, run kube-state-metrics with `--metric-labels-allowlist=namespaces=[tenant_id,tenant_tier]` (or via Helm `metricLabelsAllowlist`). Without this flag, the query silently returns empty; a common production pitfall.
 
 **Per-namespace cost (current rate, USD/hr):**
 
@@ -237,7 +237,7 @@ Follow the same principles as metric labels (cross-ref `../meta-observability.md
 |------|-----------|-----------|
 | `tenant.id` allowed as metric label with top-N cap (≤ 1000) | OpenCost metrics | Bounded tenant count; use `"other"` bucket for overflow |
 | `namespace` and `workload` always allowed | OpenCost metrics | Bounded by cluster size |
-| `gen_ai.cost.total_usd` as span attribute only — never as metric label | LLM spans | One series per request = cardinality explosion |
+| `gen_ai.cost.total_usd` as span attribute only; never as metric label | LLM spans | One series per request = cardinality explosion |
 | `feature.name` allowed as pod label; allowed as metric label with cap | OpenCost workload attribution | Feature set is bounded; gate new features through label allowlist |
 | `request.id` never as metric label for cost | Any | Unbounded cardinality; use trace attribute only |
 
@@ -260,7 +260,7 @@ Cross-ref `../vendor-categories.md §FinOps / Cost` for full selection guidance.
 
 ---
 
-## 12. Matrix Cells — Cost Column
+## 12. Matrix Cells: Cost Column
 
 Quick navigation for cost-column cells in `../matrix.md`:
 

@@ -3,7 +3,7 @@ name: check
 description: "Reviews code diffs and release-ready changes after implementation, executes approved implementation plans, extracts project-specific constraints from repository context, auto-fixes safe issues, and drives approved release, publish, push, release-reaction, and issue/PR follow-through. Also triages issues and PRs when the user mentions them. Not for exploring ideas, debugging, or document prose review."
 when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review"
 metadata:
-  version: "3.22.0"
+  version: "3.23.0"
 ---
 
 # Check: Review Before You Ship
@@ -43,6 +43,16 @@ Before reviewing, extract project constraints from repository context:
 5. If project docs or CI name a verification command, prefer that over auto-detection.
 
 For the context shape, see `references/project-context.md`.
+
+## Durable Context Preflight
+
+Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+
+Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
+
+Map memory types before using them: `decision`, `preference`, and `principle` are private task constraints; `pattern` and `learning` are review checklists; `fact` must be verified against current state before it affects the review. Current code, diff, public docs, CI, tests, and remote state override memory.
+
+For `/check`, durable memory can explain user intent and preferred follow-through, but public project rules still come from README files, manifests, CI workflows, release docs, the diff, and explicit instructions in the current thread. Never cite private memory as a public project requirement.
 
 ## Get the Diff
 

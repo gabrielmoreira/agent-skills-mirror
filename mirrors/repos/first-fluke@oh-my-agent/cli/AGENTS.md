@@ -43,8 +43,8 @@ Deactivate: say "workflow done".
 
 ## Rules
 
-1. **Do not modify `.agents/` files** — SSOT protection
-2. Workflows execute via keyword detection or explicit naming — never self-initiated
+1. **Do not modify `.agents/` files** (SSOT protection).
+2. Workflows execute via keyword detection or explicit naming, never self-initiated.
 3. Response language follows `.agents/oma-config.yaml`
 
 ## CLI Command Domains
@@ -54,7 +54,7 @@ Deactivate: say "workflow done".
 | agent | `commands/agent/` | Agent spawn, dispatch, and review |
 | bridge | `commands/bridge/` | MCP HTTP-stdio bridge |
 | doctor | `commands/doctor/` | Health checks and repair |
-| docs | `commands/docs/` | Documentation drift detection — verify references and propose updates for diff-affected docs (issue #326, design 008) |
+| docs | `commands/docs/` | Documentation drift detection: verify references and propose updates for diff-affected docs (issue #326, design 008) |
 | image | `commands/image/` | Image generation via Codex and Pollinations |
 | install | `commands/install/` | First-time project installation |
 | link | `commands/link/` | Symlink management for multi-CLI setups |

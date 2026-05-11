@@ -10,7 +10,7 @@ description: >
   outlining, claim-evidence mapping, and rubric enforcement on assignments.
 ---
 
-# Academic Writer — Publication-Grade English Prose Specialist
+# Academic Writer: Publication-Grade English Prose Specialist
 
 ## Scheduling
 
@@ -55,12 +55,12 @@ Produce, revise, and audit publication-grade academic English prose so that ever
 - `review` mode: PASS/FAIL Compliance Report across Sentence Structure, Verb Quality, Anti-AI, Specificity, Hedging, Paragraph Clarity, Rhythm/Burstiness, Claim-Evidence Alignment, plus recommended fixes
 
 ### Dependencies
-- `resources/anti-ai-checklist.md` — banned vocabulary, banned structural patterns, sentence-level checks
-- `resources/sentence-structure-reference.md` — four sentence types, length targets, common errors
-- `resources/academic-verb-tiers.md` — banned generic verbs and tiered academic-corpus replacements
-- `resources/hedging-guide.md` — calibrated certainty expressions matched to evidence strength
-- `../_shared/core/context-loading.md` — task-relevant resource loading
-- `../_shared/core/quality-principles.md` — shared quality bar
+- `resources/anti-ai-checklist.md`: banned vocabulary, banned structural patterns, sentence-level checks
+- `resources/sentence-structure-reference.md`: four sentence types, length targets, common errors
+- `resources/academic-verb-tiers.md`: banned generic verbs and tiered academic-corpus replacements
+- `resources/hedging-guide.md`: calibrated certainty expressions matched to evidence strength
+- `../_shared/core/context-loading.md`: task-relevant resource loading
+- `../_shared/core/quality-principles.md`: shared quality bar
 
 ### Control-flow features
 - Mode branching: `draft` vs `revise` vs `review` produce different output formats and pass sequences
@@ -78,11 +78,11 @@ Produce, revise, and audit publication-grade academic English prose so that ever
 4. Index `resources/` and pre-select the verb tier and sentence mix targets for the section.
 
 ### Scenes
-1. **PREPARE** — load rubric, existing draft, source data; record quoted constraints; pick sentence mix and 2–3 anchor verbs per paragraph.
-2. **ACQUIRE** — read `resources/sentence-structure-reference.md`, `academic-verb-tiers.md`, and `hedging-guide.md` only for the patterns relevant to the current section.
-3. **ACT** — write or revise prose with the four protocols enforced simultaneously: Sentence Structure (4 types, varied length, varied openers), Verb (no banned generic verbs as main verbs; prefer tier-1/2 academic verbs), Hedging (match strength to evidence), and Topic-Support-Conclude paragraphing.
-4. **VERIFY** — audit against `resources/anti-ai-checklist.md` (vocabulary clusters, structural patterns, sentence-level checks); apply reverse outlining and build the Claim-Evidence Map; weaken or remove unsupported claims.
-5. **FINALIZE** — read-aloud test, cohesion check, specificity audit, word-count verification, paragraph-length variation, rhythm check; emit per the mode's output format.
+1. **PREPARE**: load rubric, existing draft, source data; record quoted constraints; pick sentence mix and 2–3 anchor verbs per paragraph.
+2. **ACQUIRE**: read `resources/sentence-structure-reference.md`, `academic-verb-tiers.md`, and `hedging-guide.md` only for the patterns relevant to the current section.
+3. **ACT**: write or revise prose with the four protocols enforced simultaneously: Sentence Structure (4 types, varied length, varied openers), Verb (no banned generic verbs as main verbs; prefer tier-1/2 academic verbs), Hedging (match strength to evidence), and Topic-Support-Conclude paragraphing.
+4. **VERIFY**: audit against `resources/anti-ai-checklist.md` (vocabulary clusters, structural patterns, sentence-level checks); apply reverse outlining and build the Claim-Evidence Map; weaken or remove unsupported claims.
+5. **FINALIZE**: read-aloud test, cohesion check, specificity audit, word-count verification, paragraph-length variation, rhythm check; emit per the mode's output format.
 
 ### Transitions
 - If a rubric line is ambiguous → quote it back to the user and ask for interpretation; do not infer combined rules.

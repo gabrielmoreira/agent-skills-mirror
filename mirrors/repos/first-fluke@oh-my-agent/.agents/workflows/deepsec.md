@@ -1,15 +1,15 @@
 ---
-description: Drive the `oma-deepsec` skill end-to-end — install `.deepsec/`, calibrate cost, run the right scan/process/triage/revalidate/export pass, gate PRs with `process --diff`, write custom matchers, and route findings to follow-up specialists.
+description: Drive the `oma-deepsec` skill end-to-end. Installs `.deepsec/`, calibrates cost, runs the right scan/process/triage/revalidate/export pass, gates PRs with `process --diff`, writes custom matchers, and routes findings to follow-up specialists.
 ---
 
-# MANDATORY RULES — VIOLATION IS FORBIDDEN
+# MANDATORY RULES: VIOLATION IS FORBIDDEN
 
 - **Response language follows `language` setting in `.agents/oma-config.yaml` if configured.**
 - **NEVER skip steps.** Execute from Step 1 in order.
 - **Do NOT modify product source code in this workflow.** Findings that need code edits hand off to `oma-debug` / `oma-backend` / `oma-frontend` / `oma-mobile` / `oma-tf-infra` / `oma-db` in Step 5.
 - **Read the skill before acting.** Step 1 mandates loading `.agents/skills/oma-deepsec/SKILL.md` and only the resource files needed for the resolved intent.
 - **Calibrate before any unbounded `process`.** Deepsec docs (`getting-started.md`, `vercel-setup.md`, `faq.md`) recommend `--limit 50 --concurrency 5`. Defer to a user-named value if given.
-- **Resume, do not reset.** On any interruption (Ctrl-C, network blip, quota stop), re-run the same command — never delete `data/<id>/` to "start clean" without explicit user instruction.
+- **Resume, do not reset.** On any interruption (Ctrl-C, network blip, quota stop), re-run the same command. Never delete `data/<id>/` to "start clean" without explicit user instruction.
 
 ---
 
@@ -19,7 +19,7 @@ description: Drive the `oma-deepsec` skill end-to-end — install `.deepsec/`, c
 
 ## Step 1: Load the skill
 
-Read `.agents/skills/oma-deepsec/SKILL.md` in full. Do **not** preload all `resources/*.md` — load only what the resolved intent in Step 2 requires:
+Read `.agents/skills/oma-deepsec/SKILL.md` in full. Do **not** preload all `resources/*.md`. Load only what the resolved intent in Step 2 requires:
 
 | Intent | Resource(s) to read |
 |--------|--------------------|
@@ -30,7 +30,7 @@ Read `.agents/skills/oma-deepsec/SKILL.md` in full. Do **not** preload all `reso
 | `triage` | `resources/triage.md` (+ `resources/scanning.md` if `revalidate` has not run yet) |
 | `config` / `troubleshoot` | `resources/config.md` |
 
-Confirm whether `.deepsec/` already exists at the target repo root. If yes, treat the run as **incremental** — never re-`init`.
+Confirm whether `.deepsec/` already exists at the target repo root. If yes, treat the run as **incremental**, never re-`init`.
 
 ---
 
@@ -38,13 +38,13 @@ Confirm whether `.deepsec/` already exists at the target repo root. If yes, trea
 
 Resolve `intent` from the user prompt into exactly one of:
 
-- `setup` — first-time install, `.env.local` credential, populate `INFO.md`.
-- `scan` — calibration → full `process` → triage → revalidate → export pipeline.
-- `pr-review` — `process --diff` direct mode + CI gating workflow.
-- `matchers` — author project-specific matchers; close entry-point gaps.
-- `triage` — read existing findings, cut FPs, prioritize, hand off.
-- `config` — edit `deepsec.config.ts`, env vars, plugins, model defaults.
-- `troubleshoot` — diagnose missing credentials, quota stops, refusals, sandbox auth.
+- `setup`: first-time install, `.env.local` credential, populate `INFO.md`.
+- `scan`: calibration → full `process` → triage → revalidate → export pipeline.
+- `pr-review`: `process --diff` direct mode plus CI gating workflow.
+- `matchers`: author project-specific matchers and close entry-point gaps.
+- `triage`: read existing findings, cut FPs, prioritize, hand off.
+- `config`: edit `deepsec.config.ts`, env vars, plugins, model defaults.
+- `troubleshoot`: diagnose missing credentials, quota stops, refusals, sandbox auth.
 
 If the user's request implies multiple intents (typical for a fresh repo: `setup` → `scan`), execute them sequentially in that order.
 
@@ -64,11 +64,11 @@ Skip this step if **any** of these is true:
 Otherwise ask exactly one question with the trade-off stated:
 
 > deepsec supports two agent backends. Which would you like to use?
-> - **`claude`** (`claude-opus-4-7`) — strongest reasoning on auth shapes and cross-file flows. Most expensive.
-> - **`codex`** (`gpt-5.5`) — runs in a strict read-only sandbox, fast at grep-heavy investigations. Cheaper.
+> - **`claude`** (`claude-opus-4-7`): strongest reasoning on auth shapes and cross-file flows. Most expensive.
+> - **`codex`** (`gpt-5.5`): runs in a strict read-only sandbox, fast at grep-heavy investigations. Cheaper.
 > Both can be mixed later via `--reinvestigate`; findings dedupe across agents.
 
-Do not also bargain over `--limit`, `--concurrency`, or severity floor — those are handled by the calibration rule in Step 4 and the user-stated severity floor.
+Do not also bargain over `--limit`, `--concurrency`, or severity floor; those are handled by the calibration rule in Step 4 and the user-stated severity floor.
 
 ---
 
@@ -94,7 +94,7 @@ bunx deepsec scan --limit 20         # cheap, no AI calls
 bunx deepsec process --limit 5       # exercises the gateway
 ```
 
-Then write `data/<id>/INFO.md` per `resources/setup.md` § 4 — 50–100 lines, project-specific only, 3–5 examples per section, no line numbers, no generic CWE rehash. **You MUST get user confirmation on `INFO.md`** before continuing.
+Then write `data/<id>/INFO.md` per `resources/setup.md` § 4: 50–100 lines, project-specific only, 3–5 examples per section, no line numbers, no generic CWE rehash. **You MUST get user confirmation on `INFO.md`** before continuing.
 
 ### Step 4B: `scan`
 
@@ -123,7 +123,7 @@ Then write `data/<id>/INFO.md` per `resources/setup.md` § 4 — 50–100 lines,
    bunx deepsec metrics
    ```
 
-If a run halts on quota / credit / Ctrl-C, **re-run the same command** after the printed remediation — files already done are skipped. Never `rm -rf data/<id>/`.
+If a run halts on quota / credit / Ctrl-C, **re-run the same command** after the printed remediation. Files already done are skipped. Never `rm -rf data/<id>/`.
 
 ### Step 4C: `pr-review`
 
@@ -164,8 +164,8 @@ Follow `resources/matchers.md` workflow:
 
 Pipeline per `resources/triage.md`:
 
-1. `bunx deepsec triage --severity HIGH` — bucket P0/P1/P2/skip (~$0.01 / finding).
-2. `bunx deepsec revalidate --min-severity HIGH` — `true-positive` / `false-positive` / `fixed` / `uncertain` verdicts (cuts FP rate by 50%+).
+1. `bunx deepsec triage --severity HIGH` to bucket P0/P1/P2/skip (~$0.01 / finding).
+2. `bunx deepsec revalidate --min-severity HIGH` to attach `true-positive` / `false-positive` / `fixed` / `uncertain` verdicts (cuts FP rate by 50%+).
 3. Filter the export to verdict `true-positive` (and `uncertain` for human review). Suppress `false-positive` and matched-`fixed`.
 4. Note recurring FP shapes for the next `INFO.md` revision; bias matchers toward `precise` if the FP is regex-level.
 
@@ -190,7 +190,7 @@ Produce a short report in the user's response language:
 - Stop conditions hit: <none | quota | refusal | user halt>
 
 ## Findings (severity ≥ <floor>)
-- <severity> · <vulnSlug> · <filePath>:<line> — <title>  [<verdict>]
+- <severity> · <vulnSlug> · <filePath>:<line> · <title>  [<verdict>]
 …
 
 ## Follow-ups
@@ -201,7 +201,7 @@ Then **route follow-ups** by finding shape (do not implement code yourself):
 
 Route by **the layer of the vulnerable file**, not by "is it a bug". The agent makes the layer call from each finding's `filePath` + `vulnSlug` + `revalidation.verdict`, with `data/<id>/tech.json`, `INFO.md`, `priorityPaths`, and the project's actual directory structure as project-specific signals.
 
-Do **not** maintain a global slug→layer or path-glob enumeration in this workflow — deepsec adds matchers continuously and the project layout varies. Trust the artifact at runtime.
+Do **not** maintain a global slug→layer or path-glob enumeration in this workflow. Deepsec adds matchers continuously and project layout varies, so trust the artifact at runtime.
 
 | Layer of the vulnerable file | Specialist |
 |---|---|
@@ -212,9 +212,9 @@ Do **not** maintain a global slug→layer or path-glob enumeration in this workf
 | Database / data model | `oma-db` |
 | CI / workflow / supply chain | `oma-dev-workflow` (or this workflow's PR-review pattern for the deepsec gate itself) |
 | Documentation drift surfaced by the run | `oma-docs` |
-| New entry-point gap — cluster of `other-*` slugs, framework deepsec does not glob | re-enter Step 4D (`matchers`) |
+| New entry-point gap (a cluster of `other-*` slugs or a framework deepsec does not glob) | re-enter Step 4D (`matchers`) |
 
-**Ambiguity → `oma-debug` first.** When the layer is not obvious from the artifact — shared / isomorphic / utility code, `other-*` slug, fix would touch multiple layers, `revalidation.verdict === "uncertain"`, or `BUG` / `HIGH_BUG` non-security correctness without an obvious owner — route to `oma-debug` first. Its job in that hop is **triage, not fix**: pin the exact file:line and re-route to the correct specialist with a layer-tagged finding (or fix inline only when the change is a single isolated line and the diagnosis is confident). The deepsec run summary must record the second-hop owner so the user sees who finally took the work.
+**Ambiguity → `oma-debug` first.** Route to `oma-debug` whenever the layer is not obvious from the artifact: shared / isomorphic / utility code, an `other-*` slug, a fix that would touch multiple layers, `revalidation.verdict === "uncertain"`, or `BUG` / `HIGH_BUG` non-security correctness without an obvious owner. The hop is **triage, not fix**: pin the exact file:line and re-route to the correct specialist with a layer-tagged finding, or fix inline only when the change is a single isolated line and the diagnosis is confident. The deepsec run summary must record the second-hop owner so the user sees who finally took the work.
 
 For each routed item, include: file path, severity, `vulnSlug`, revalidation verdict, and the export markdown path.
 
@@ -236,6 +236,6 @@ Do not loop back to Step 1 unless the user re-invokes the workflow with a new in
 
 - Do NOT echo or commit credentials (`vck_…`, `sk-ant-…`, `sk-…`, OIDC tokens). `.env.local` is gitignored.
 - Do NOT grant `pull-requests: write` to any CI job that runs PR-controlled code.
-- Do NOT silently drop a refusal (`refused: true`) — log it, retry with the other backend, or add the path to `data/<id>/config.json:ignorePaths` only when reproducible.
+- Do NOT silently drop a refusal (`refused: true`). Log it, retry with the other backend, or add the path to `data/<id>/config.json:ignorePaths` only when the refusal reproduces.
 - Do NOT invent CLI flags. Anything beyond `resources/scanning.md`'s flag list must be checked against `--help` first.
 - Do NOT modify `.agents/` files unless the user is editing the OMA source repo itself.

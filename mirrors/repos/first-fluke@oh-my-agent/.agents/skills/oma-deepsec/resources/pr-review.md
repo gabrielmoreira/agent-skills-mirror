@@ -1,4 +1,4 @@
-# PR review — `process --diff` for CI gating
+# PR review: `process --diff` for CI gating
 
 Use direct mode when you want a fast, scoped read of the files changed in a PR rather than a whole-repo audit.
 
@@ -12,7 +12,7 @@ bunx deepsec process --diff origin/main
 |---|---|---|
 | Resolve files | `--diff` / `--diff-staged` / `--diff-working` / `--files` / `--files-from` | POSIX-relative file list under `rootPath` |
 | Scoped scan | Only the listed files | Candidates as **prompt signals** (best-effort) |
-| Always-process | The same listed files | AI findings, even on files no matcher hit |
+| Always-process | The same listed files | AI findings, including files no matcher hit |
 
 Files with no regex hits still get a record and still get investigated as a holistic review.
 
@@ -45,7 +45,7 @@ You do not need to run `deepsec init` first. With a direct-mode flag, `process` 
 2. Otherwise derive the id from the resolved root's basename.
 3. Write `data/<id>/project.json` if absent.
 
-Auto-creation is one-line and non-destructive — never modifies your `deepsec.config.ts`.
+Auto-creation is one-line and non-destructive. It never modifies your `deepsec.config.ts`.
 
 ## Exit codes (gating contract)
 
@@ -141,12 +141,12 @@ jobs:
 ### Why the split
 
 - **`analyze`** runs PR-controlled code (the user's `pnpm install`, their config, their source) with the AI gateway secret in scope but **no write permissions on the repo**.
-- **`comment`** has `pull-requests: write` but never runs any PR code — it consumes only the sanitized `comment.md` artifact.
+- **`comment`** has `pull-requests: write` but never runs any PR code; it consumes only the sanitized `comment.md` artifact.
 - A malicious PR cannot combine "execute arbitrary code" with "write to the repository" in a single privileged step.
 
 ## Threat-model notes
 
-- **Do not grant `pull-requests: write` to a job that runs PR code.** A PR can add arbitrary code to its own `package.json` postinstall scripts or to a project config the CLI loads — both run before any of your steps.
+- **Do not grant `pull-requests: write` to a job that runs PR code.** A PR can add arbitrary code to its own `package.json` postinstall scripts or to a project config the CLI loads. Both run before any of your steps.
 - **Pin actions to full SHAs in production.** The example uses major-version tags for readability. Swap each tag for the action's full commit SHA so a compromised tag cannot pivot into your secret-bearing job. (See GitHub's hardening guide.)
 - **Same-repo-only gate** (`if: github.event.pull_request.head.repo.full_name == github.repository`) skips fork PRs, which already do not receive secrets under `pull_request`. Pure UX cleanup.
 - **The AI gateway secret still flows through PR code** in `analyze`. The `author_association` / same-repo gate is what prevents that from being a vulnerability. For defense-in-depth, run `analyze` only after a label is applied:
@@ -156,7 +156,7 @@ jobs:
 
 ## Cost notes
 
-Wide diffs are expensive — every file pays for an AI investigation.
+Wide diffs are expensive: every file pays for an AI investigation.
 
 - For PRs against `main`, scope to the merge base (`origin/main`), **not** the entire branch ancestry.
 - Drop generated / fixture files via `--files-from`:
@@ -169,5 +169,5 @@ Wide diffs are expensive — every file pays for an AI investigation.
 
 ## When NOT to use direct mode
 
-- **Initial sweep of a large repo** — full `scan` + `process` orders by noise tier, parallelizes better, and benefits from whole-repo signal in matcher gating. Direct mode is for incremental review.
-- **Revalidating existing findings** — use `revalidate` with its own filters.
+- **Initial sweep of a large repo.** Full `scan` + `process` orders by noise tier, parallelizes better, and benefits from whole-repo signal in matcher gating. Direct mode is for incremental review.
+- **Revalidating existing findings.** Use `revalidate` with its own filters.

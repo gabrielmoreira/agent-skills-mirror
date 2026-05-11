@@ -8,12 +8,18 @@ verification.
 ## Pre-checks (all four must pass)
 
 Re-fetch the issue immediately before running these checks.
+All A5 checks are target-issue local: claims on related roadmap or
+child issues do not block this check unless they appear on the selected
+issue itself.
 
 **(a) Assignee and project status** — The issue must have no assignee
 set. If the project is in use, the project status must be "not started".
 
 **(b) Claim state** — Re-read the issue and parse the **active claim**
 using the shared claim-state rules:
+
+Use the `claim-stale-age` policy default from `docs/policy-constants.md`
+for these stale checks (distributed default: `24 h`).
 
 - No active claim → unclaimed, proceed.
 - Active claim already uses a `{claim-id}` that this current session had
@@ -22,7 +28,9 @@ using the shared claim-state rules:
   first learned by parsing the current issue comments is not enough.
 - Any other active claim whose latest valid `claimed-by` comment has
   GitHub `created_at` < 24 h → claimed by another live session, even
-  when the `agent-id` matches. Go back to A3.
+  when the `agent-id` matches. Return to Discover using the same
+  selection mode that produced this target (orphan-first: continue the
+  A0-O capable path; roadmap mode: continue the A3-ready path).
 - Any other active claim whose latest valid `claimed-by` comment has
   GitHub `created_at` ≥ 24 h → stale, proceed with takeover.
 
@@ -39,8 +47,10 @@ Otherwise, use the latest trusted legacy `claimed-by` comment as a
 **migration-only** decision input:
 
 - Latest trusted legacy claim has GitHub `created_at` < 24 h → claimed
-  by another live session, even when the `agent-id` matches. Go back to
-  A3.
+  by another live session, even when the `agent-id` matches. Return to
+  Discover using the same selection mode that produced this target
+  (orphan-first: continue the A0-O capable path; roadmap mode: continue
+  the A3-ready path).
 - Latest trusted legacy claim has GitHub `created_at` ≥ 24 h → stale,
   proceed and replace it with a new-format claim.
 
@@ -65,6 +75,55 @@ convention: `issue/<number>-<slug>` where `<slug>` is 2–5 lowercase
 hyphenated words describing the issue (e.g. `issue/<number>-<slug>`). No
 remote branch with that name may exist, unless it matches the `branch`
 field in an inheritable claim comment as defined in (c) above.
+
+Before posting a claim, also perform a **scoped issue-wide branch pattern
+check** to detect concurrent sessions working on the same issue with
+different slug variants. This is the fast-path collision detection that
+catches parallel-session concurrency before a new claim comment is posted.
+
+1. **Local worktree scan**: Check whether any local worktree matches the
+   pattern `issue/<number>-*`:
+
+   ```sh
+   git worktree list | grep "issue/<number>-"
+   ```
+
+2. **Remote branch scan** (scoped Refs API, not repo-wide):
+   Query the Refs API with the issue-number prefix only, to stay within
+   the scope invariant defined in idd-overview.instructions.md:
+
+   ```sh
+   gh api "repos/{owner}/{repo}/git/matching-refs/heads/issue/<number>-" \
+     --jq '.[].ref'
+   ```
+
+3. **Collision action tree**:
+
+   - **If no local worktree or remote branch matches `issue/<number>-*`**:
+     Proceed to claim posting (the safe, single-session path).
+
+   - **If a match is found and corresponds to an inheritable claim** (i.e.,
+     its `branch` field matches one of the branches in an inheritable claim
+     comment as defined in (c) above):
+     Proceed to claim posting. The branch is expected.
+
+   - **If a match is found, does NOT correspond to an inheritable claim,
+     AND an active non-stale claim on this issue references that branch**:
+     Treat as **claimed by a concurrent session** running in parallel. Do
+     not post a new claim. Instead, **return to Discover** using the same
+     selection mode that produced this target (orphan-first: continue the
+     A0-O capable path; roadmap mode: continue the A3-ready path), and
+     select the **next eligible issue**. This is the scale-out path that
+     allows multiple sessions to work on different issues when one issue
+     has concurrent claims.
+
+   - **If a match is found, does NOT correspond to an inheritable claim,
+     AND no active claim references that branch**:
+     Document the branch name and post a **hold note** to the issue: "_A5
+     pre-check (d) detected an unexpected branch `issue/<number>-*`
+     without an active claim. Possible orphaned branch from a crashed or
+     stale session. Stopping for operator review._" Stop and wait for
+     operator input. Do not post a claim or continue the workflow.
 
 ## Claim execution
 
@@ -99,11 +158,52 @@ of the body, followed by the visible note:
 _{agent-id}: issue claim — IDD automation marker. Do not edit._
 ```
 
+### Heartbeat posting
+
+When posting a heartbeat (i.e., when the issue is already claimed by this current
+session and you are extending the active claim's stale clock), copy the
+`{branch}` field **verbatim** from the original `claimed-by` comment. Do not
+recompute or derive a new branch name. The heartbeat's `{claim-id}` and
+`{agent-id}` must match the original claim exactly. The branch field must also
+match exactly to satisfy the heartbeat branch invariant (rule 3.5 in
+`idd-overview.instructions.md`).
+
 ## Claim verification
 
-Re-read the issue immediately and parse the active claim. Verify that
-the active claim now uses **your** `{claim-id}`. If it does not, go back
-to A3.
+After posting `claimed-by`, wait 5–10 seconds to let GitHub eventual
+consistency settle. Then re-read the full issue comment stream and parse
+the active claim in chronological order using the shared claim-state
+rules. Apply all race-safe checks below:
+
+1. Build the same-second contender set from trusted `claimed-by` markers
+   that share your claim event's `created_at` second and have different
+   `{claim-id}` values.
+2. If that set has two or more contenders, the winner is the
+   lexicographically earlier `{claim-id}` (case-sensitive ASCII compare).
+   This race-safe tie-break extends the shared parsing rules for this
+   verification step.
+3. Verify that the active claim now uses **your** `{claim-id}` after the
+   same-second tie-break is applied.
+4. Verify no trusted competing `claimed-by` with a different
+   `{claim-id}` appears in a strictly later `created_at` second than
+   your claim event.
+
+If any check fails, treat the claim as contested. Return to Discover
+using the same selection mode that produced this target and pick the
+next eligible issue (orphan-first: continue the A0-O capable path;
+roadmap mode: continue the A3-ready path). Do not retry the same issue.
+For explicit-target A0-T runs, report the contested claim and stop
+unless the operator has explicitly switched to normal discovery.
 
 Once verified, record this `{claim-id}` as your current claim token for
-the rest of the workflow, then continue to `idd-work.instructions.md`.
+the rest of the workflow.
+
+After claim verification, upsert the issue live status digest when there
+is exactly one marked digest or none. Use the verified `claimed-by`
+comment as the authority: set `Phase` to `A5 claimed`, `Claim` to the
+current `{agent-id}` / `{claim-id}`, `Branch` to the verified branch,
+`Open blockers` to `none`, and `Next action` to `B1 create branch and
+worktree`. If multiple marked digests exist, report their URLs and
+continue from the verified claim without editing a digest.
+
+Then continue to `idd-work.instructions.md`.

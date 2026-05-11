@@ -34,7 +34,7 @@ Two independent clauses connected by a coordinating conjunction (FANBOYS: for, a
 
 One independent clause + one dependent clause (introduced by a subordinating conjunction: as, because, although, when, while, if, since, after, before, unless, until, whereas).
 
-**Use for:** Causal reasoning, conditional statements, temporal ordering — the backbone of academic analysis.
+**Use for:** Causal reasoning, conditional statements, temporal ordering (the backbone of academic analysis).
 
 **Examples:**
 
@@ -68,7 +68,7 @@ Two or more independent clauses + one or more dependent clauses.
    - Medium: 16–25 words (for flow)
    - Long: 26–40 words (for depth)
 3. Each paragraph should contain at least 3 of the 4 sentence types
-4. Vary paragraph length (2–8 sentences) — uniform blocks signal AI
+4. Vary paragraph length (2–8 sentences); uniform blocks signal AI
 
 > For detailed burstiness detection, semicolon limits, and paragraph length variation rules, see `anti-ai-checklist.md` §9.
 
@@ -98,7 +98,7 @@ A sentence missing subject, verb, or complete thought.
 | Missing verb | "Significantly, one particular form of Western Australian finch." | "Significantly, one particular form of Western Australian finch has decreased in numbers." |
 | Incomplete thought | "In a recent article about loss of habitat due to climate change." | "In a recent article about loss of habitat due to climate change, Australian animals were shown to be particularly vulnerable." |
 
-**Watch out for:** Sentences beginning with so, as, because, who, which, that — these are often incomplete.
+**Watch out for:** Sentences beginning with so, as, because, who, which, that, since these are often incomplete.
 
 ### Run-on sentences
 
@@ -136,11 +136,11 @@ Every sentence must be fully understandable when read in isolation. If a sentenc
 
 ## Quick reference: conjunction inventory
 
-### Coordinating (FANBOYS) — for compound sentences
+### Coordinating (FANBOYS): for compound sentences
 
 for, and, nor, but, or, yet, so
 
-### Subordinating — for complex sentences
+### Subordinating: for complex sentences
 
 **Cause/reason:** because, since, as, given that, owing to the fact that
 **Contrast:** although, though, even though, whereas, while, whilst
@@ -149,6 +149,6 @@ for, and, nor, but, or, yet, so
 **Purpose:** so that, in order that
 **Result:** so ... that, such ... that
 
-### Transitional phrases (non-AI) — for sentence openers
+### Transitional phrases (non-AI): for sentence openers
 
 By contrast, More specifically, In parallel, To this end, From a different perspective, On closer examination, Upon further analysis, In quantitative terms, At the aggregate level, Within this framework, Across all conditions
