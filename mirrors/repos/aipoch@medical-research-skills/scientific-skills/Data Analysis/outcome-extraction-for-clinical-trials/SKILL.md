@@ -2,9 +2,10 @@
 name: outcome-extraction-for-clinical-trials
 description: Clinical research outcome extraction for meta-analysis. Use when users need to extract outcome measures (binary, continuous, or survival data) from clinical research papers for systematic review and meta-analysis. Handles both database lookup by PMID and real-time LLM extraction.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Clinical Outcome Extraction
 
 Extract structured outcome data from clinical research papers for meta-analysis.

@@ -93,6 +93,6 @@ Scaffold a new vault config from the current active config as a template.
 7. Confirm:
    ```
    Created: ~/.obsidian-wiki/config.<name>
-   Run `/wiki-switch <name>` to activate it.
+   Run `/wiki-switch <name>` to activate it, then run `wiki-setup` to initialise the new vault.
    ```
    Do not switch automatically — let the user decide when to activate.

@@ -11,10 +11,26 @@ The Semantic Dictionary is itself queryable as a Grail table: `dt.semantic_dicti
 | Column | Type | Description |
 |--------|------|-------------|
 | `name` | string | The fully qualified field name (e.g., `service.name`, `k8s.pod.uid`) |
-| `type` | string | The field's data type (`string`, `long`, `double`, `boolean`, `timestamp`, `duration`, `uid`, `ipAddress`, `string[]`, `record`, etc.) |
+| `type` | string | The field's data type (`string`, `long`, `double`, `boolean`, `timestamp`, `duration`, `uid`, `ipAddress`, `binary`, `timeframe`, `smartscapeId`, `string[]`, `array`, `record`, `record[]` , etc.) |
 | `stability` | string | The stability level: `stable`, `experimental`, or `deprecated` |
 | `description` | string | Human-readable description of what the field represents |
 | `tags` | string[] | Semantic tags assigned to the field (e.g., `entity-id`, `permission`, `primary-field`, `smartscape-id`, `sensitive-spans`, `sensitive-user-events`) |
+| `unit` | string | The unit of measurement for the field (e.g., `kBy`, `zl`); null when no unit applies |
+| `supported_values` | string[] | Enumerated set of allowed values for fields with a fixed value set (e.g., `span.kind` supports `internal`, `server`, `client`, `producer`, `consumer`) |
+| `examples` | string[] | Example values illustrating typical field content (e.g., `"Rome"` for `actor.geo.city.name`) |
+
+### The `dt.semantic_dictionary.models` Table
+
+Data models describe predefined schemas for Grail data objects — which fields belong together and how they map to Grail tables. Each row represents one model definition. The table exposes these columns:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `name` | string | The model name (e.g., `audit_event`, `bizevents`, `dt.smartscape.host`) |
+| `description` | string | Human-readable description of what the model represents |
+| `data_object` | string | The Grail table this model maps to (e.g., `spans`, `logs`, `events`, `smartscape.nodes`, `dt.system.events`) |
+| `fields` | string[] | Ordered list of field names that belong to this model |
+| `relationships` | string[] | Entity relationships (e.g., `uses[dt.smartscape.aws_s3_bucket]`, `runs_on[dt.entity.host]`) |
+| `smartscape_node_name` | string | The field used as display name for Smartscape nodes (e.g., `aws.resource.name`, `k8s.cluster.name`); null for non-entity models |
 
 ### Namespace Lookup Queries
 
@@ -29,6 +45,30 @@ fetch dt.semantic_dictionary.fields
 Replace `<namespace_prefix>` with the target namespace (e.g., `aws`, `azure`, `k8s`, `http`, `db`, `dt.rum`, etc.).
 
 Many namespaces have **sub-namespaces** (e.g., `k8s.pod.*`, `http.request.*`). Drill into them with the same pattern: `filter startsWith(name, "k8s.pod.")`. **Always use these queries** to discover fields beyond what is listed below.
+
+### Model Lookup Queries
+
+To find all models for a specific Grail data object:
+
+```dql
+fetch dt.semantic_dictionary.models
+| filter data_object == "spans"
+```
+
+To find a model by name and see its fields:
+
+```dql
+fetch dt.semantic_dictionary.models
+| filter name == "audit_event"
+```
+
+To list all Grail data objects that have models defined:
+
+```dql
+fetch dt.semantic_dictionary.models
+| summarize modelCount = count(), by: {data_object}
+| sort modelCount desc
+```
 
 ## Stability Levels
 
@@ -65,9 +105,9 @@ Core fields available across all data types:
 #### Azure (azure.*)
 
 Key Azure fields:
-- `azure.subscription` - Azure subscription ID (stable, primary-field)
+- `azure.subscription` - Azure subscription ID (stable, primary-field, permission)
 - `azure.location` - Geographical location (stable, primary-field)
-- `azure.resource.group` - Resource group name (stable, primary-field)
+- `azure.resource.group` - Resource group name (stable, primary-field, permission)
 - `azure.resource.id` - Unique immutable identifier for the Azure resource (experimental)
 - `azure.tenant.id` - Azure tenant identifier (experimental)
 - `azure.vm.name` - Virtual machine name (experimental)

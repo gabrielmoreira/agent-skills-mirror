@@ -4,6 +4,7 @@ description: Designs a structured real-world evidence study using EHR, claims, o
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Real-World Evidence Study Designer
 

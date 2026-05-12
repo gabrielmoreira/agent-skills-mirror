@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 8 followed patterns, 43 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 8 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/gh-aw` — 26 default patterns, 8 followed patterns, 43 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 43 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,17 +98,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`skills/http-mcp-headers/SKILL.md`](skills/http-mcp-headers/SKILL.md) |
 | 31 | ✓ | [`skills/javascript-refactoring/SKILL.md`](skills/javascript-refactoring/SKILL.md) |
 | 32 | ✓ | [`skills/messages/SKILL.md`](skills/messages/SKILL.md) |
-| 33 | ✓ | [`skills/reporting/SKILL.md`](skills/reporting/SKILL.md) |
-| 34 | ✓ | [`skills/skillz-integration/SKILL.md`](skills/skillz-integration/SKILL.md) |
-| 35 | ✓ | [`skills/temporary-id-safe-output/SKILL.md`](skills/temporary-id-safe-output/SKILL.md) |
-| 36 | → | [`.github/aw/agentic-chat.md`](.github/aw/agentic-chat.md) |
-| 37 | → | [`.github/aw/runbooks/workflow-health.md`](.github/aw/runbooks/workflow-health.md) |
-| 38 | → | [`DICTATION.md`](DICTATION.md) |
-| 39 | → | [`scratchpad/cli-command-patterns.md`](scratchpad/cli-command-patterns.md) |
-| 40 | → | [`scratchpad/go-type-patterns.md`](scratchpad/go-type-patterns.md) |
-| 41 | → | [`scratchpad/testing.md`](scratchpad/testing.md) |
-| 42 | → | [`scratchpad/validation-refactoring.md`](scratchpad/validation-refactoring.md) |
-| 43 | → | [`scratchpad/yaml-version-gotchas.md`](scratchpad/yaml-version-gotchas.md) |
+| 33 | ✓ | [`skills/otel-queries/SKILL.md`](skills/otel-queries/SKILL.md) |
+| 34 | ✓ | [`skills/reporting/SKILL.md`](skills/reporting/SKILL.md) |
+| 35 | ✓ | [`skills/skillz-integration/SKILL.md`](skills/skillz-integration/SKILL.md) |
+| 36 | ✓ | [`skills/temporary-id-safe-output/SKILL.md`](skills/temporary-id-safe-output/SKILL.md) |
+| 37 | → | [`.github/aw/agentic-chat.md`](.github/aw/agentic-chat.md) |
+| 38 | → | [`.github/aw/runbooks/workflow-health.md`](.github/aw/runbooks/workflow-health.md) |
+| 39 | → | [`DICTATION.md`](DICTATION.md) |
+| 40 | → | [`scratchpad/cli-command-patterns.md`](scratchpad/cli-command-patterns.md) |
+| 41 | → | [`scratchpad/go-type-patterns.md`](scratchpad/go-type-patterns.md) |
+| 42 | → | [`scratchpad/testing.md`](scratchpad/testing.md) |
+| 43 | → | [`scratchpad/validation-refactoring.md`](scratchpad/validation-refactoring.md) |
+| 44 | → | [`scratchpad/yaml-version-gotchas.md`](scratchpad/yaml-version-gotchas.md) |
 
 ---
 

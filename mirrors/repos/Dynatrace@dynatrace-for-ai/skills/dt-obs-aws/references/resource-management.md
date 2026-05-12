@@ -46,7 +46,7 @@ Find completely untagged resources:
 
 ```dql
 smartscapeNodes "AWS_*"
-| filter isNull(tags)
+| filter tags == record()
 | fields type, name, aws.resource.id, aws.account.id, aws.region
 ```
 
@@ -79,7 +79,7 @@ smartscapeNodes "AWS_*"
 
 Find resources by tag value:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_*"
 | filter tags[`<TAG_NAME>`] == "<TAG_VALUE>"
 | summarize count = count(), by: {type, aws.region}

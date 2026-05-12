@@ -2,9 +2,10 @@
 name: smiles-de-salter
 description: Analyze data with `smiles-de-salter` using a reproducible workflow, explicit validation, and structured outputs for review-ready interpretation.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # SMILES De-salter
 
 ID: 176

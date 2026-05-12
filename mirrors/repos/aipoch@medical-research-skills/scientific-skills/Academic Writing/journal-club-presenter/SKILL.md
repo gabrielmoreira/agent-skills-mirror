@@ -2,9 +2,10 @@
 name: journal-club-presenter
 description: Generate journal club slides with background, critique, and discussion.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Journal Club Presenter
 
 Paper presentation slide generator.

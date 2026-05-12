@@ -2,9 +2,10 @@
 name: arxiv-database
 description: Search and retrieve scientific preprints from arXiv; use it when you need to find papers by keyword/author/category, fetch metadata (abstract, DOI, PDF URL), or download PDFs for offline reading.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # ArXiv Database Skill
 
 ## When to Use

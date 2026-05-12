@@ -2,7 +2,7 @@
 name: biopython-structure
 description: Use Bio.PDB to parse and analyze protein structures (PDB/mmCIF) for structural bioinformatics tasks; use when you need structure parsing, geometry calculations, or structural comparison/superposition.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

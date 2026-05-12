@@ -2,7 +2,7 @@
 name: literature-management
 description: Import local literature into a managed library; trigger when you need offline deduplication, tagging, and a searchable index.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

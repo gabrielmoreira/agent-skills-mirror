@@ -4,6 +4,7 @@ description: Checks consistency across title, abstract, methods, results, figure
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Consistency Checker Across Manuscript
 

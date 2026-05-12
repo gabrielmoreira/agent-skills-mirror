@@ -2,9 +2,10 @@
 name: cold-chain-risk-calculator
 description: Calculate temperature excursion risks for cold chain transport. Assesses route risk, packaging suitability, and monitoring requirements for biological samples and pharmaceuticals requiring controlled-temperature shipping.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Cold Chain Risk Calculator
 
 Assess temperature excursion risk for cold chain transport routes. Evaluates packaging type, transit duration, and route conditions to produce a structured JSON risk score and mitigation recommendations.

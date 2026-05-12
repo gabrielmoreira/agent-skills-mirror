@@ -4,6 +4,7 @@ description: Converts existing manuscript content into LaTeX format aligned with
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # LaTeX Manuscript Format Converter
 

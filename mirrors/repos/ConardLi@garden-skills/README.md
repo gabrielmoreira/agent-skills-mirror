@@ -39,7 +39,7 @@
 [![Skills count](https://img.shields.io/badge/skills-4-orange?style=flat-square)](#skills-gallery)
 [![Spec](https://img.shields.io/badge/spec-SKILL.md-black?style=flat-square)](https://agentskills.io)
 
-[English](./README.md) · [中文文档](./README.zh-CN.md)
+[English](./README.md) · [中文文档](./README.zh-CN.md) · [日本語](./README.ja-JP.md)
 
 </div>
 
@@ -71,7 +71,7 @@ Highlights:
 - Theme-token architecture with multiple visual languages, from `paper-press` to `terminal-green`
 - Scaffolded Vite + React + TypeScript project with reusable stage primitives and recording guidance
 
-Links: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.1.3 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.1.3/web-video-presentation-1.1.3.zip)<!-- DOWNLOAD:web-video-presentation:end -->
+Links: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skills/web-video-presentation/SKILL.md) · <!-- DOWNLOAD:web-video-presentation:start -->[Download v1.1.5 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-video-presentation-v1.1.5/web-video-presentation-1.1.5.zip)<!-- DOWNLOAD:web-video-presentation:end -->
 
 ---
 

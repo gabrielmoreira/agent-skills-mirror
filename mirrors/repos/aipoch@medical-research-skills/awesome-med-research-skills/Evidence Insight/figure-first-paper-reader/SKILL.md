@@ -4,6 +4,7 @@ description: Reads a paper figure by figure before re-integrating the full narra
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Figure-First Paper Reader
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `firebase/agent-skills` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
+Mirror of `firebase/agent-skills` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `firebase/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 112 |
+| Files         | 115 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -165,12 +165,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 104 | ✓ | [`skills/firebase-hosting-basics/references/configuration.md`](skills/firebase-hosting-basics/references/configuration.md) |
 | 105 | ✓ | [`skills/firebase-hosting-basics/references/deploying.md`](skills/firebase-hosting-basics/references/deploying.md) |
 | 106 | ✓ | [`skills/firebase-hosting-basics/SKILL.md`](skills/firebase-hosting-basics/SKILL.md) |
-| 107 | ✓ | [`skills/firebase-security-rules-auditor/SKILL.md`](skills/firebase-security-rules-auditor/SKILL.md) |
-| 108 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore`](skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore) |
-| 109 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved) |
-| 110 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift) |
-| 111 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift) |
-| 112 | ✓ | [`skills/xcode-project-setup/SKILL.md`](skills/xcode-project-setup/SKILL.md) |
+| 107 | ✓ | [`skills/firebase-remote-config-basics/references/android_setup.md`](skills/firebase-remote-config-basics/references/android_setup.md) |
+| 108 | ✓ | [`skills/firebase-remote-config-basics/references/ios_setup.md`](skills/firebase-remote-config-basics/references/ios_setup.md) |
+| 109 | ✓ | [`skills/firebase-remote-config-basics/SKILL.md`](skills/firebase-remote-config-basics/SKILL.md) |
+| 110 | ✓ | [`skills/firebase-security-rules-auditor/SKILL.md`](skills/firebase-security-rules-auditor/SKILL.md) |
+| 111 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore`](skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore) |
+| 112 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved) |
+| 113 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift) |
+| 114 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift) |
+| 115 | ✓ | [`skills/xcode-project-setup/SKILL.md`](skills/xcode-project-setup/SKILL.md) |
 
 ---
 

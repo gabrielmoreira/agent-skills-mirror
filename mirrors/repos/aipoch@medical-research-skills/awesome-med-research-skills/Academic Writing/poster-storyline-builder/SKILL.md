@@ -4,6 +4,7 @@ description: Reorganizes a paper into a storyline suitable for scientific poster
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Poster Layout Planner
 

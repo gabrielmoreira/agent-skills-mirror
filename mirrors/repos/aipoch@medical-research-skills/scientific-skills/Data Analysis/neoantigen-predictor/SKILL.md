@@ -2,9 +2,10 @@
 name: neoantigen-predictor
 description: Predict neoantigens that may be recognized by the immune system based.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Neoantigen Predictor
 
 Predicts patient-specific neoantigen candidate peptides with high immunogenicity based on HLA typing and tumor mutation profiles, providing target screening for tumor immunotherapy.

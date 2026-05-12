@@ -2,9 +2,10 @@
 name: lay-summary-gen
 description: Converts complex medical abstracts into plain language summaries for.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Lay Summary Gen
 
 Generates plain-language summaries of medical research for non-expert audiences.

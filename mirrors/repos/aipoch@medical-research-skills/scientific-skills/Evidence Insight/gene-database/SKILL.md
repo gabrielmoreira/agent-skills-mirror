@@ -2,7 +2,7 @@
 name: gene-database
 description: Query the NCBI Gene database via E-utilities and the NCBI Datasets API; use it when you need to search genes by symbol/ID and retrieve annotations (RefSeq, GO, location, phenotype) for single or batch gene lists.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

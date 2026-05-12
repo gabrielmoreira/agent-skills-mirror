@@ -2,9 +2,10 @@
 name: encori-api
 description: "Access ENCORI (StarBase) database for miRNA-target, RNA-RNA, and other regulatory data. Invoke when user asks to search ENCORI or retrieve regulatory interactions."
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 ## When to Use
 
 - Use this skill when the request matches its documented task boundary.

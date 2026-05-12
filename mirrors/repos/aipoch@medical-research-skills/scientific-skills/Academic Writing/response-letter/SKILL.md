@@ -2,7 +2,7 @@
 name: response-letter
 description: Helps organize reviewer comments and generate a standardized Word (.docx) response letter that maps each change to its exact location (page/paragraph/line). Use when revising a manuscript, replying to peer-review feedback, or preparing internal review responses.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

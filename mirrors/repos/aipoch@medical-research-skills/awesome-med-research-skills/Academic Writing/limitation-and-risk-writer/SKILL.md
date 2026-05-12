@@ -4,6 +4,7 @@ description: Acknowledges limitations in sample, design, measurement, and valida
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Study Limitations Drafter
 

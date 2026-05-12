@@ -3,7 +3,7 @@
 Everything you need to add a skill, cut a release, or hack on the tooling
 behind this monorepo.
 
-[English](./CONTRIBUTING.md) · [中文文档](./CONTRIBUTING.zh-CN.md)
+[English](./CONTRIBUTING.md) · [中文文档](./CONTRIBUTING.zh-CN.md) · [日本語](./CONTRIBUTING.ja-JP.md)
 
 ---
 
@@ -76,8 +76,8 @@ tooling is pure ESM Node, zero deps.
 ├── website/                             ← standalone showcase websites
 │
 ├── package.json                         ← maintainer scripts (no runtime deps)
-├── README.md / README.zh-CN.md          ← user-facing collection index
-└── CONTRIBUTING.md / CONTRIBUTING.zh-CN.md ← this file
+├── README.md / README.zh-CN.md / README.ja-JP.md ← user-facing collection index
+└── CONTRIBUTING.md / CONTRIBUTING.zh-CN.md / CONTRIBUTING.ja-JP.md ← this file
 ```
 
 ---
@@ -92,6 +92,7 @@ Every skill in this repo follows the same minimal shape:
 ├── manifest.json       ← required: name / version / category / description / compat
 ├── README.md           ← English docs for humans (this is what GitHub renders)
 ├── README.zh-CN.md     ← Chinese docs for humans
+├── README.ja-JP.md     ← Japanese docs for humans
 ├── references/         ← optional: docs the agent loads on-demand
 ├── scripts/            ← optional: deterministic executable code
 └── assets/             ← optional: templates, fonts, icons used in outputs
@@ -145,7 +146,7 @@ For the full SKILL.md spec, see [agentskills.io](https://agentskills.io) and the
    Start with `version: "0.1.0"` if it's experimental, or `1.0.0` if you're
    confident it's ready.
 2. Append the inline DOWNLOAD marker to the end of the new skill's "Links:" /
-   "链接：" row in both `README.md` and `README.zh-CN.md` (preceded by ` · `):
+   "链接：" row in every localized root README (preceded by ` · `):
    ```markdown
    Links: [README](...) · [SKILL.md](...) · <!-- DOWNLOAD:<new-name>:start --><!-- DOWNLOAD:<new-name>:end -->
    ```
@@ -281,7 +282,7 @@ Two workflows, both small:
 ### [`validate-skills.yml`](./.github/workflows/validate-skills.yml)
 
 Runs on every PR and every push to `main` that touches `skills/**`,
-`scripts/release/**`, or either README. It runs `npm run validate`, which:
+`scripts/release/**`, or any localized README. It runs `npm run validate`, which:
 
 - lints every `manifest.json` and skill folder structure
 - smoke-packs every skill (no upload)
@@ -295,7 +296,7 @@ Triggered by pushing a tag matching `<skill>-v<semver>`. It:
 2. Packs `skills/<name>/` into `<name>-<version>.zip` + `.sha256`.
 3. Generates release notes from `git log` since the previous tag of that skill.
 4. Creates a GitHub Release with the zip + sha256 attached.
-5. Re-renders the inline `Download v<version> .zip` link in both READMEs
+5. Re-renders the inline `Download v<version> .zip` link in localized READMEs
    and commits the change back to `main` as `github-actions[bot]`.
 
 Both workflows use the same `npm run *` commands you can run locally — single

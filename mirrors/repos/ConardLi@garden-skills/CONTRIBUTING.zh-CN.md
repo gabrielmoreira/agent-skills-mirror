@@ -2,7 +2,7 @@
 
 新增 Skill、发版、改 release 工具链——你需要知道的都在这。
 
-[English](./CONTRIBUTING.md) · [中文文档](./CONTRIBUTING.zh-CN.md)
+[English](./CONTRIBUTING.md) · [中文文档](./CONTRIBUTING.zh-CN.md) · [日本語](./CONTRIBUTING.ja-JP.md)
 
 ---
 
@@ -74,8 +74,8 @@ npm run validate  # 跑一遍和 PR CI 完全一样的检查
 ├── website/                             ← 独立展示网站
 │
 ├── package.json                         ← 维护者脚本（无运行时依赖）
-├── README.md / README.zh-CN.md          ← 用户向集合首页
-└── CONTRIBUTING.md / CONTRIBUTING.zh-CN.md ← 本文件
+├── README.md / README.zh-CN.md / README.ja-JP.md ← 用户向集合首页
+└── CONTRIBUTING.md / CONTRIBUTING.zh-CN.md / CONTRIBUTING.ja-JP.md ← 本文件
 ```
 
 ---
@@ -90,6 +90,7 @@ npm run validate  # 跑一遍和 PR CI 完全一样的检查
 ├── manifest.json       ← 必需：name / version / category / description / compat
 ├── README.md           ← 给人看的英文文档（GitHub 渲染的就是它）
 ├── README.zh-CN.md     ← 给人看的中文文档
+├── README.ja-JP.md     ← 给人看的日文文档
 ├── references/         ← 可选：Agent 按需加载的扩展文档
 ├── scripts/            ← 可选：确定性的可执行代码
 └── assets/             ← 可选：模板、字体、图标等输出物素材
@@ -141,7 +142,7 @@ description: 用一句话清楚说明这个 Skill 是干什么的、什么时候
 
 1. 创建 `skills/<new-name>/`，至少要有 `SKILL.md` + `manifest.json`。
    实验性的可以用 `version: "0.1.0"` 起步，比较成熟的就直接 `1.0.0`。
-2. 在 `README.md` 和 `README.zh-CN.md` 里新 Skill 的"链接：" / "Links:" 行末尾
+2. 在所有根目录多语言 README 里新 Skill 的"链接：" / "Links:" 行末尾
    追加 inline DOWNLOAD marker（前面加 ` · ` 保持视觉一致）：
    ```markdown
    链接：[README](...) · [SKILL.md](...) · <!-- DOWNLOAD:<new-name>:start --><!-- DOWNLOAD:<new-name>:end -->
@@ -271,7 +272,7 @@ npm run validate      # CI 在每个 PR 跑的全套（list + pack:all + readme:
 
 ### [`validate-skills.yml`](./.github/workflows/validate-skills.yml)
 
-每个 PR、以及 main 上任何动到 `skills/**` / `scripts/release/**` / 两份 README
+每个 PR、以及 main 上任何动到 `skills/**` / `scripts/release/**` / 任一多语言 README
 的 push，都会跑。它跑的是 `npm run validate`，等价于：
 
 - lint 每个 `manifest.json` + skill 文件夹结构
@@ -286,7 +287,7 @@ push 一个 `<skill>-v<semver>` 格式的 tag 时触发。流程：
 2. 把 `skills/<name>/` 打成 `<name>-<version>.zip` + `.sha256`。
 3. 基于该 Skill 上一个 tag 之后的 `git log` 自动生成 release notes。
 4. 创建一个带 zip + sha256 的 GitHub Release。
-5. 重写两份 README 里这个 Skill 的 `下载 v<版本> .zip` 链接，以
+5. 重写多语言 README 里这个 Skill 的 `下载 v<版本> .zip` 链接，以
    `github-actions[bot]` 身份 commit 回 `main`。
 
 两个 workflow 跑的是和你本地完全一样的 `npm run *` 命令——单一事实来源。

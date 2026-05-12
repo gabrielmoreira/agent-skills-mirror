@@ -10,7 +10,8 @@ When DAVIS detects a problem, use `smartscape.affected_entity.ids` to query logs
 
 | Field | Description | Usage |
 |-------|-------------|-------|
-| `smartscape.affected_entity.ids` | Array of entity IDs directly impacted | Use in subqueries to filter logs/metrics |
+| `smartscape.affected_entity.ids` | Array of entity IDs directly impacted | Use in subqueries to filter logs/metrics/events/traces |
+| `affected_entity_ids` | Array of classic entity IDs directly impacted | Use in subqueries to filter logs/metrics/events/traces |
 | `root_cause_entity_id` | Entity ID identified as root cause | Focus investigation on this entity |
 | `dt.davis.event_ids` | Underlying Davis event IDs | Query dt.davis.events for details |
 | `event.start` / `event.end` | Problem timeframe | Define log query time window |
@@ -21,13 +22,30 @@ When DAVIS detects a problem, use `smartscape.affected_entity.ids` to query logs
 
 ```dql
 fetch logs
-| filter dt.source_entity in [
+| filter dt.smartscape_source.id in [
     fetch dt.davis.problems
     | filter display_id == "P-12345678"
     | fields smartscape.affected_entity.ids
-]
+  ] or dt.source_entity in [
+    fetch dt.davis.problems
+    | filter display_id == "P-12345678"
+    | fields affected_entity_ids
+  ]
 | sort timestamp desc
 | limit 100
+```
+
+## Problem-to-Alert-Events Correlation
+
+### Basic Pattern
+
+```dql
+fetch dt.davis.events
+| filter event.id in [ 
+  fetch dt.davis.problems
+  | filter display_id == "P-12345678"
+  | fieldsKeep dt.davis.event_ids
+  ]
 ```
 
 ### Active Problems with Recent Logs
@@ -36,11 +54,15 @@ Find logs from entities affected by currently active problems:
 
 ```dql
 fetch logs, from:now() - 1h
-| filter dt.source_entity in [
+| filter dt.smartscape_source.id in [
     fetch dt.davis.problems, from:now() - 1h
     | filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
     | fields smartscape.affected_entity.ids
-]
+  ] or dt.source_entity in [
+    fetch dt.davis.problems, from:now() - 1h
+    | filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
+    | fields affected_entity_ids
+  ]
 | filter in(loglevel, {"ERROR", "WARN"})
 | fields timestamp, dt.source_entity, loglevel, content
 | limit 200
@@ -53,10 +75,14 @@ Get error logs from a specific problem:
 ```dql
 fetch logs, from:now() - 2h
 | filter loglevel == "ERROR"
-| filter dt.source_entity in [
-    fetch dt.davis.problems
+| filter dt.smartscape_source.id in [
+   fetch dt.davis.problems
     | filter display_id == "P-12345678"
     | fields smartscape.affected_entity.ids
+  ] or dt.source_entity in [
+    fetch dt.davis.problems
+    | filter display_id == "P-12345678"
+    | fields affected_entity_ids
 ]
 | sort timestamp desc
 | limit 100
@@ -68,11 +94,17 @@ Identify common error patterns across problem-affected entities:
 
 ```dql
 fetch logs, from:now() - 4h
-| filter dt.source_entity in [
+| filter dt.smartscape_source.id in [
     fetch dt.davis.problems, from:now() - 4h
     | filter not(dt.davis.is_duplicate)
     | filter event.category == "ERROR"
-    | fields smartscape.affected_entity.ids
+    | fields smartscape.affected_entity.ids 
+]
+    or dt.source_entity in [
+        fetch dt.davis.problems, from:now() - 4h
+        | filter not(dt.davis.is_duplicate)
+        | filter event.category == "ERROR"
+        | fields affected_entity_ids
 ]
 | filter loglevel == "ERROR"
 | summarize error_count=count(), by:{content}
@@ -94,10 +126,11 @@ fetch dt.davis.problems
     fetch logs
     | filter in(loglevel, {"ERROR", "WARN"})
     | fields content, timestamp, dt.source_entity, loglevel
+    | limit 100
 ], on:{left[smartscape.affected_entity.ids] == right[dt.source_entity]}
 | fieldsAdd time_offset = timestamp - problem_start
 | sort timestamp asc
-| fields timestamp, time_offset, loglevel, content
+| fields timestamp, time_offset, right.loglevel, right.content
 ```
 
 ### Before and After Problem Start
@@ -114,10 +147,15 @@ fetch dt.davis.problems
 ```dql
 // Query logs from 10 minutes before to 10 minutes after
 fetch logs, from:now() - 1h
-| filter dt.source_entity in [
+| filter dt.smartscape_source.id in [
     fetch dt.davis.problems
     | filter display_id == "P-12345678"
     | fields smartscape.affected_entity.ids
+]
+    or dt.source_entity in [
+        fetch dt.davis.problems
+        | filter display_id == "P-12345678"
+        | fields affected_entity_ids
 ]
 | filter timestamp >= (problem_start - 10m) and timestamp <= (problem_start + 10m)
 | sort timestamp asc
@@ -132,10 +170,15 @@ Find shared error messages affecting multiple problems:
 ```dql
 fetch logs, from:now() - 2h
 | filter loglevel == "ERROR"
-| filter dt.source_entity in [
+| filter dt.smartscape_source.id in [
     fetch dt.davis.problems, from:now() - 2h
     | filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
     | fields smartscape.affected_entity.ids
+]
+    or dt.source_entity in [
+        fetch dt.davis.problems, from:now() - 2h
+        | filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
+        | fields affected_entity_ids
 ]
 | summarize problems_affected = countDistinct(dt.source_entity), by:{content}
 | filter problems_affected > 1
@@ -188,8 +231,28 @@ fetch dt.davis.problems, from:now() - 2h
     | filter event.type == "DEPLOYMENT"
 ], on:{left[smartscape.affected_entity.ids] == right[dt.smartscape.service]}
 | fieldsAdd time_since_deployment = problem_start - timestamp
-| filter time_since_deployment > 0 and time_since_deployment < 30m
+| filter time_since_deployment > 0m and time_since_deployment < 30m
 | fields display_id, event.name, time_since_deployment
+```
+
+### K8S or Technology Correlation
+
+Check if active problems correlate with K8S deployment:
+
+```dql
+fetch dt.davis.problems, from:now() - 24h
+| filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
+| fieldsAdd e = arraytoString(smartscape.affected_entity.ids, delimiter:",")
+| filter matchesPhrase(arraytoString(smartscape.affected_entity.ids, delimiter:","), "K8S_DEPLOYMENT-")
+```
+
+Check if active problems correlate with AWS S3 buckets:
+
+```dql
+fetch dt.davis.problems, from:now() - 24h
+| filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
+| fieldsAdd e = arraytoString(smartscape.affected_entity.ids, delimiter:",")
+| filter matchesPhrase(arraytoString(smartscape.affected_entity.ids, delimiter:","), "AWS_S3_BUCKET-")
 ```
 
 ## Root Cause Correlation
@@ -200,31 +263,21 @@ Focus on logs from the identified root cause entity:
 
 ```dql
 fetch logs, from:now() - 1h
-| filter dt.source_entity in [
-    fetch dt.davis.problems, from:now() - 1h
-    | filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
-    | filter isNotNull(root_cause_entity_id)
-    | fields root_cause_entity_id
+    | filter dt.smartscape_source.id in [
+        fetch dt.davis.problems, from:now() - 1h
+        | filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
+        | filter isNotNull(root_cause_entity_id)
+        | fields root_cause_entity_id
+    ]
+    or dt.source_entity in [
+        fetch dt.davis.problems, from:now() - 1h
+        | filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
+        | filter isNotNull(root_cause_entity_id)
+        | fields root_cause_entity_id
 ]
 | filter loglevel == "ERROR"
 | sort timestamp desc
 | limit 50
-```
-
-### Infrastructure Root Cause with Service Logs
-
-When infrastructure causes service problems, correlate both:
-
-```dql
-fetch dt.davis.problems, from:now() - 2h
-| filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
-| filter matchesPhrase(root_cause_entity_id, "HOST-")
-| fields display_id, root_cause_entity_id, smartscape.affected_entity.ids
-// Query logs from affected services, not the host itself
-| join [
-    fetch logs
-    | filter in(loglevel, {"ERROR", "WARN"})
-], on:{left[smartscape.affected_entity.ids] == right[dt.source_entity]}
 ```
 
 ## Best Practices
@@ -232,26 +285,30 @@ fetch dt.davis.problems, from:now() - 2h
 ### Query Optimization
 
 1. **Match time ranges**: Use same time window for problems and logs
-   ```dql
+   ```dql-snippet
    // ✅ CORRECT - Time ranges aligned
    fetch logs, from:now() - 1h
-   | filter dt.source_entity in [
+   | filter dt.smartscape_source.id in [
        fetch dt.davis.problems, from:now() - 1h
        | fields smartscape.affected_entity.ids
+   ] or dt.source_entity in [
+       fetch dt.davis.problems, from:now() - 1h
+       | fields affected_entity_ids
    ]
+   | limit 100
    ```
 
 2. **Filter early**: Apply `loglevel` filters before joins
-   ```dql
+   ```dql-snippet
    fetch logs, from:now() - 1h
    | filter loglevel == "ERROR"  // Filter before correlation
-   | filter dt.source_entity in [...]
+    | filter dt.smartscape_source.id in [...] or dt.source_entity in [...]
    ```
 
 3. **Limit results**: Always use `limit` to prevent excessive data
-   ```dql
+   ```dql-snippet
    fetch logs
-   | filter dt.source_entity in [...]
+    | filter dt.smartscape_source.id in [...] or dt.source_entity in [...]
    | limit 200  // Reasonable limit
    ```
 
@@ -270,9 +327,13 @@ fetch dt.davis.problems, from:now() - 2h
 ```dql
 // ❌ WRONG - Missing time range alignment
 fetch logs, from:now() - 1h
-| filter dt.source_entity in [
+| filter dt.smartscape_source.id in [
     fetch dt.davis.problems  // No time range
     | fields smartscape.affected_entity.ids
+]
+    or dt.source_entity in [
+        fetch dt.davis.problems  // No time range
+        | fields affected_entity_ids
 ]
 ```
 
@@ -285,10 +346,15 @@ fetch dt.davis.problems
 ```dql
 // ✅ CORRECT - Time ranges aligned and duplicates filtered
 fetch logs, from:now() - 1h
-| filter dt.source_entity in [
+| filter dt.smartscape_source.id in [
     fetch dt.davis.problems, from:now() - 1h
     | filter not(dt.davis.is_duplicate)
     | fields smartscape.affected_entity.ids
+]
+    or dt.source_entity in [
+        fetch dt.davis.problems, from:now() - 1h
+        | filter not(dt.davis.is_duplicate)
+        | fields affected_entity_ids
 ]
 ```
 
@@ -300,25 +366,6 @@ fetch logs, from:now() - 1h
 4. **Log timestamps may be slightly off**: Expand time window by 5-10 minutes
 
 ## Advanced Patterns
-
-### Multi-Layer Correlation
-
-Correlate problems → events → logs in a single query:
-
-```dql-snippet
-fetch dt.davis.problems, from:now() - 1h
-| filter not(dt.davis.is_duplicate) and event.status == "ACTIVE"
-| fields display_id, event.start, dt.davis.event_ids, smartscape.affected_entity.ids
-| join [
-    fetch dt.davis.events
-], on:{left[dt.davis.event_ids] == right[event.id]}
-| join [
-    fetch logs
-    | filter loglevel == "ERROR"
-    | fields content, timestamp, dt.source_entity
-], on:{left[smartscape.affected_entity.ids] == right[dt.source_entity]}
-| fields display_id, event.name, event.description, timestamp, content
-```
 
 ### Problem Frequency vs Log Volume
 

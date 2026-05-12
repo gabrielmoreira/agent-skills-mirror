@@ -2,9 +2,10 @@
 name: bio-ontology-mapper
 description: Map unstructured biomedical text to standardized ontologies (SNOMED CT.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Bio-Ontology Mapper
 
 ## When to Use

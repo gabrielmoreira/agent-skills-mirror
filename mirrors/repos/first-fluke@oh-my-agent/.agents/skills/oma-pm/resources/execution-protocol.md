@@ -10,7 +10,7 @@
 4. **Check lessons**: read cross-domain section in `../../_shared/core/lessons-learned.md`
 5. **If governance, risk, or formal planning matters**: read `resources/iso-planning.md`
 
-**⚠️ Intelligent Escalation**: When uncertain, escalate early. Don't blindly proceed.
+**Intelligent Escalation**: When uncertain, escalate early. Don't blindly proceed.
 
 Follow these steps in order (adjust depth by difficulty).
 

@@ -2,7 +2,7 @@
 name: clinicaltrials-db
 description: Query the ClinicalTrials.gov API v2 to search for clinical trials, retrieve detailed study protocols, and analyze recruitment status; use when you need to find trials by condition/drug, export results, or verify study details by NCT ID.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

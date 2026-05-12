@@ -4,8 +4,8 @@ description: "Rewrites scene descriptions using professional cinematography lang
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, seedance-pro, content-filter, prompt, director, flagged]
-  version: 1.1.0
-  updated: 2026-05-03
+  version: 1.2.0
+  updated: 2026-05-11
   parent: higgsfield
 ---
 
@@ -235,6 +235,229 @@ rain behind her), identity anchor (bracketed block, verbatim), prior clip as
 secondary memory ("following her glance back"), immediate continuation (steps
 fully into the corridor — the next frame action), no action repeat (the glance
 is referenced, not re-performed).
+
+---
+
+## Working Modes vs Prompt Modes — Two Taxonomies
+
+The Seedance 2.0 Prompt Modes section above names five things the
+platform exposes: Reference-Based / Continuation / Expand Shot / Edit
+Shot / Transformation. These are platform mechanisms — different pathways
+through which Seedance accepts a prompt. The Reference Roles and Working
+Modes sections below name two adjacent concepts that the platform
+vocabulary does not surface:
+
+- **Working modes** — user intent. What you are trying to DO with the
+  craft when you sit down to write the prompt.
+- **Prompt modes** — platform mechanism. Which of the 5 input pathways
+  Seedance accepts the prompt through.
+- **Reference roles** — what each reference inside the prompt represents.
+  A semantic-role layer, distinct from the input-modality use-case
+  patterns catalogued in `../higgsfield-cinema/SKILL.md` § @ Reference
+  Patterns for Cinema Studio 3.0 (which lists `@Image1` / `@Video1` /
+  `@Audio1` patterns by scenario, not by semantic role).
+
+These three taxonomies are peers, not hierarchical. A single Seedance
+shot pulls from all three: a working-mode intent picks a prompt mode;
+references inside the prompt play specific roles.
+
+### The "Continuation" Word Collision
+
+"Continuation" names something in both taxonomies:
+
+- **Continuation working mode** = user intent — "I am picking up where
+  the previous shot left off."
+- **Continuation prompt mode** = platform mechanism — the specific
+  Seedance input pathway that extends a prior generation forward in time
+  (see the Seedance 2.0 Prompt Modes section above).
+
+A user in Continuation working mode almost always uses Continuation
+prompt mode — the intent and the mechanism line up. But Bridging working
+mode can also reach for Continuation prompt mode (when the bridge
+anchors on the last frame of the upstream shot), and Repair working mode
+can reach for Continuation prompt mode (when the repair is a re-shoot
+starting from the same last frame as the failed clip). The names
+overlap; the meanings don't.
+
+In this skill, section context disambiguates: if the surrounding content
+is in the Working Modes section, "Continuation" means the intent; if in
+the Seedance 2.0 Prompt Modes section or the Continuation Prompt Formula
+section, "Continuation" means the mechanism. If still ambiguous, the
+longer forms — "Continuation working mode" and "Continuation prompt
+mode" — are always available.
+
+### Working Mode → Prompt Mode Mapping
+
+| Working mode  | Typical prompt mode(s)                | Reference roles in play                |
+|---------------|---------------------------------------|----------------------------------------|
+| Exploration   | Reference-Based, or pure T2V          | Character (optional)                   |
+| Continuation  | Continuation                          | Character + Last-Frame                 |
+| Bridging      | Reference-Based or Continuation       | Character + Last-Frame + Environment   |
+| Repair        | Edit Shot, or fresh Reference-Based   | Character + (failed-shot reference)    |
+
+Not a strict mapping. One working mode routes through one or more prompt
+modes depending on what the shot needs; the table anchors the typical
+case without claiming a 1:1 bijection.
+
+---
+
+## Reference Roles
+
+Seedance prompts use references — `@Image`, `@Video`, and `@Audio` — to
+lock specific properties across shots. Each reference plays one of four
+roles depending on what it locks. This is a semantic-role taxonomy: what
+the reference IS FOR in the prompt. It sits alongside (not on top of)
+the input-modality use-case patterns in `../higgsfield-cinema/SKILL.md`
+§ @ Reference Patterns for Cinema Studio 3.0, which catalogs concrete
+prompt patterns by file type.
+
+If a property has to read consistently across multiple shots, assign it
+to a reference role. If it only matters for one shot, write it inline.
+
+### Character
+
+Locks main-character identity across shots — face, build, distinguishing
+marks. Almost always an image reference; for highest consistency, use
+the Soul ID character sheet documented in
+`../higgsfield-soul/SKILL.md` § Character Sheet Creation.
+
+Pattern in a Seedance prompt:
+
+```
+@Image1 as the main character. [Identity block verbatim.] [Action the
+subject performs.] ...
+```
+
+### Last-Frame
+
+Anchors the start of a new clip to a specific frame from the previous
+one. The role tells the model where to begin rendering from. Used in
+Continuation prompt mode and inside Bridging working mode. For the full
+five-rule construction pattern, see the Continuation Prompt Formula
+section above.
+
+Pattern in a Seedance prompt:
+
+```
+Continuing from the prior clip — [short description of what the camera
+sees in the final frame of the prior clip]. [New action that follows.]
+```
+
+### Environment
+
+Locks the world and setting across shots — architecture, light quality,
+ambient particulates, weather state. The role tells the model the
+specific space the action takes place in, separate from any character
+in that space. Pairs with `../higgsfield-cinema/SKILL.md` § Location
+Reference Sheets when the same environment recurs across enough shots
+to earn a sheet.
+
+Pattern in a Seedance prompt:
+
+```
+@Image1 as the environment. [Subject + action.] [Lighting / atmospheric
+cues consistent with the environment reference.]
+```
+
+### Prop
+
+Locks specific recurring objects — a hero costume piece, a signature
+weapon, a branded product, a vehicle that appears across multiple shots.
+The role tells the model that this specific object — not a generic
+instance of its category — must read identically across cuts.
+
+Pattern in a Seedance prompt:
+
+```
+@Image1 as the prop. [Subject interacts with the prop.] [Camera
+behavior.] [How the prop appears in the new shot — same geometry and
+material as the reference.]
+```
+
+### Load-Bearing Rule
+
+**References support memory, but text defines action.** The references
+in a Seedance prompt carry the persistent properties that read
+consistently across shots; the prompt text directs what happens in this
+specific generation. References cannot drive new action; text cannot
+replace what the references carry. Both layers stay in their lanes.
+
+Sibling formulation of the v3.7.1 camera-side rule ("Prompt wins on
+action, reference wins on texture and world feel" — see
+`../higgsfield-camera/SKILL.md` § Video Reference — What It Reads, and
+What It Can't, § Load-Bearing Rule). Same underlying principle from
+different surfaces. The camera-side rule names the WIN order in case of
+conflict; the Seedance-side rule names the LANES each side covers.
+
+---
+
+## Working Modes
+
+Working modes is a user-intent layer above the platform mechanism. It
+names what you are trying to DO when you sit down to write a Seedance
+prompt — independent of which prompt mode you eventually route through.
+See the disambiguation section above for the relationship between
+working modes (intent) and prompt modes (mechanism). The mapping table
+there shows the typical routes.
+
+### Exploration
+
+Open-ended discovery. No prior shot to anchor on; no constraint to
+match. You're generating to find out what the shot wants to be. Short
+prompts work here — the model has space to bring its own interpretation.
+Typically routes through Reference-Based prompt mode (with a single
+character anchor) or pure text-to-video (no references at all).
+
+### Continuation
+
+Picking up where a previous shot left off. The prior clip is the anchor;
+the new clip continues from its final frame. Working mode and prompt
+mode line up: Continuation working mode almost always routes through
+Continuation prompt mode. See the Continuation Prompt Formula section
+above for the five-rule construction.
+
+### Bridging
+
+Connecting two existing shots that don't currently flow. The shots
+themselves work; the cut between them feels wrong — spatial geography
+is unclear, or the emotional energy mismatches, or the camera character
+jumps. Bridging uses references from both ends — the last frame of the
+upstream shot and the first frame of the downstream shot — to navigate
+the middle. Typically routes through Continuation prompt mode (when the
+upstream last-frame is the dominant anchor) or Reference-Based (when
+both ends carry equal weight). Common reference role configuration:
+Character + Last-Frame + Environment.
+
+### Repair
+
+Fixing a failed shot. Distinct from regenerating with a tweaked prompt —
+Repair acknowledges that the failed clip is data: it shows you what the
+model interpreted wrong, and that interpretation needs to be addressed
+directly. Typically routes through Edit Shot prompt mode (when the
+failure is local — a wrong jacket color, a missing prop) or a fresh
+Reference-Based generation with corrective prompt text (when the failure
+is structural — wrong action beat, drifted identity). Pair with the
+Iteration Rule in `../higgsfield-prompt/SKILL.md` § The Iteration Rule
+when iterating on the corrective prompt.
+
+### Decision Tree — Picking a Working Mode
+
+The mode you reach for is downstream of what you're noticing in your
+work. Diagnose by symptom, then pick the mode that fits:
+
+| What you're seeing | Working mode | Why |
+|---|---|---|
+| Blank page, no anchors yet | Exploration | No prior shot to continue or bridge from; freeform discovery first. |
+| Strong shot that needs a follow | Continuation | The shot earned a sequel; pick up where it left off. |
+| Two strong shots that don't connect | Bridging | The shots work; the seam between them doesn't. |
+| Strong shot but the feeling is weak | Continuation (with role swap) | Re-shoot the same beat with a different reference role carrying the weight — e.g. close-up where the original was wide. |
+| Spatial logic feels off mid-sequence | Bridging (with geography clarification) | The sequence needs a beat that re-establishes who is where. |
+| Failed shot you keep generating around | Repair | Stop iterating on the prompt. Target the failure directly. |
+
+The decision tree is symptom-first, not mode-first. The mode is the
+treatment; the symptom in your work is the diagnostic. If you find
+yourself reaching for a mode without naming what symptom drove the
+choice, that's a signal to step back.
 
 ---
 

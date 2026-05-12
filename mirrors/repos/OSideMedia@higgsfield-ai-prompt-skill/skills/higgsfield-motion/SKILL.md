@@ -8,7 +8,7 @@ user-invocable: true
 metadata:
   tags: [higgsfield, motion, presets, VFX, transformation, transitions, effects]
   version: 3.0.0
-  updated: 2026-04-06
+  updated: 2026-05-11
   parent: higgsfield
 ---
 
@@ -225,6 +225,12 @@ Reference @Video1 for movement choreography.
 A swordsman draws his blade explosively, cutting through three bamboo stalks in rapid succession.
 Stalks topple, leaves scatter, blade gleams in the sunlight.
 ```
+
+> **Capability boundary:** For what `@Video` reference reads reliably vs. less reliably
+> across world / texture / camera character / production feel — and what it can't do at
+> all — see `../higgsfield-camera/SKILL.md` § Video Reference — What It Reads, and What
+> It Can't. The action-specific guidance above remains the primary method for fight
+> and chase scenes.
 
 ### One Action Per Shot Rule
 

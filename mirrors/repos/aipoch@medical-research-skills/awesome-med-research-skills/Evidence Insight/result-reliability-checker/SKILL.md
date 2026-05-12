@@ -4,6 +4,7 @@ description: Assesses whether study results are trustworthy by auditing design i
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Result Reliability Checker
 

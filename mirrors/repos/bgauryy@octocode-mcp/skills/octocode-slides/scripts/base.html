@@ -442,6 +442,20 @@ function go(idx) {
   allFrames[current].setAttribute('data-active', '');
   allCells[current].classList.add('is-active');
 
+  // ── Transfer focus to the newly active slide ────────────────────────────
+  // Without this, focus stays on the last-clicked iframe. Two failure modes:
+  //   1. Stale animation.js on the old (invisible) slide silently consumes
+  //      keystrokes — the user sees nothing happen.
+  //   2. Stale navbridge on the old slide forwards keys straight to the parent
+  //      (passthrough:true), bypassing the new slide's animation.js entirely.
+  // requestAnimationFrame lets the opacity transition start before we steal
+  // focus; the try/catch handles the initial go(0) call before iframes load.
+  ;(function (f) {
+    requestAnimationFrame(function () {
+      try { if (f.contentWindow) f.contentWindow.focus(); } catch (_) {}
+    });
+  })(allFrames[current]);
+
   const slide = playable[current];
   const pct = ((current + 1) / total) * 100;
   bar.style.width     = pct + '%';
@@ -494,6 +508,32 @@ function handleKey(e) {
   if (inOverview) {
     if (e.key === 'Escape' || e.key === 'g' || e.key === 'G') closeOverview();
     return;
+  }
+
+  // ── Step-animation routing ──────────────────────────────────────────────
+  // When the parent window has focus (initial load, browser chrome refocus,
+  // overview close, or other parent-level interaction), nav keys fire here
+  // directly and bypass animation.js inside the iframe entirely. Fix: forward
+  // those keys into the active iframe so
+  // animation.js can intercept them in capture phase. animation.js consumes the
+  // key (stopImmediatePropagation) if a step is pending; navbridge inside the
+  // iframe then posts back only once all steps are exhausted, at which point
+  // the message handler below calls handleKey with passthrough:true and normal
+  // slide navigation resumes.
+  // passthrough:true is set only by the message handler — it marks a reply from
+  // navbridge meaning "nothing left to consume, please advance/retreat."
+  if (!e.passthrough) {
+    var _stepKeys = { ArrowRight: 1, ArrowDown: 1, ' ': 1, ArrowLeft: 1, ArrowUp: 1 };
+    if (_stepKeys[e.key]) {
+      var _af = stage.querySelector('.slide-frame[data-active]');
+      if (_af) {
+        try { _af.contentWindow.postMessage({ type: 'octocode-slides:key', key: e.key }, '*'); }
+        catch (_) {}
+      }
+      showHud();
+      if (e.preventDefault) e.preventDefault();
+      return;
+    }
   }
 
   let handled = true;
@@ -552,7 +592,9 @@ window.addEventListener('message', function (event) {
   var data = event.data;
   if (!data || typeof data !== 'object') return;
   if (data.type === 'octocode-slides:nav' && data.key) {
-    handleKey({ key: data.key, preventDefault: function () {} });
+    // passthrough:true tells handleKey this reply came from navbridge inside the
+    // iframe — animation.js had nothing left to consume, so navigate normally.
+    handleKey({ key: data.key, passthrough: true, preventDefault: function () {} });
   } else if (data.type === 'octocode-slides:activity') {
     showHud();
   } else if (data.type === 'octocode-slides:presenter-goto') {

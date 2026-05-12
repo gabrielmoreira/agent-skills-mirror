@@ -4,6 +4,7 @@ description: Designs studies for predicting treatment response or resistance in 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Treatment Response Predictor Planner
 

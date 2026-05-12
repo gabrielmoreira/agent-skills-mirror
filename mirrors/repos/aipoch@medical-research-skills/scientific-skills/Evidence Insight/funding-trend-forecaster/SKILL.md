@@ -2,9 +2,10 @@
 name: funding-trend-forecaster
 description: Analyze funding abstracts and project metadata to identify topic shifts and forecast near-term grant priorities.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Skill: Funding Trend Forecaster
 
 **ID:** 200  

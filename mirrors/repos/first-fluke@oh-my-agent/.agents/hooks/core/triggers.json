@@ -1707,6 +1707,14 @@
           "zaktualizuj dokumentację"
         ]
       }
+    },
+    "recap": {
+      "persistent": false,
+      "keywords": {
+        "*": ["recap"],
+        "ko": ["리캡"],
+        "ja": ["リキャップ"]
+      }
     }
   },
   "skills": {

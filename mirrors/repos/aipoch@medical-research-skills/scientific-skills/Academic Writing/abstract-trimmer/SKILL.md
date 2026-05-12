@@ -2,9 +2,10 @@
 name: abstract-trimmer
 description: Precision editing tool that reduces abstract word count through intelligent compression techniques, maintaining scientific rigor while meeting strict journal and conference requirements.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Abstract Trimmer
 
 Precision editing tool that reduces abstract word count through intelligent compression techniques, maintaining scientific rigor while meeting strict journal and conference requirements.

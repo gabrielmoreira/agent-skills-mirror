@@ -2,9 +2,10 @@
 name: research-proposal-generator
 description: Generates a comprehensive research proposal design based on input literature, including hypothesis, mechanism verification, and budget. Use when the user wants to design a research project from a paper.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Research Proposal Generator
 
 This skill analyzes a given literature text (paper) and generates a complete research proposal design, including scientific hypothesis, research outline, detailed experimental design, budget, and yearly plan.

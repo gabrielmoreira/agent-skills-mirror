@@ -2,7 +2,7 @@
 name: article-format-adjustment
 description: Adjust academic paper formatting and convert between DOCX/LaTeX/Markdown when you need to meet a journal or school template requirement.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

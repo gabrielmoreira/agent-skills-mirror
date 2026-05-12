@@ -2,9 +2,10 @@
 name: grant-funding-scout
 description: NIH funding trend analysis to identify high-priority research areas.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Grant Funding Scout
 
 **⚠️ Note: This is a demonstration/illustrative version using mock data for educational purposes. For production use, integration with real funding databases (NIH RePORTER, NSF Award Search, etc.) is required.**

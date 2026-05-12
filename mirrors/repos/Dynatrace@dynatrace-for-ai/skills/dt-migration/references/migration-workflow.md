@@ -4,6 +4,7 @@
 
 - [Purpose](#purpose)
 - [Required Input](#required-input)
+- [Query Purpose Gate](#query-purpose-gate)
 - [Step-by-Step Process](#step-by-step-process)
 - [Core Rules](#core-rules)
 - [Signal and Event Rules](#signal-and-event-rules)
@@ -23,6 +24,14 @@ This reference is based on the source prompt pack and keeps the same migration o
 The minimum required input is the classic DQL query.
 
 Infer the intent, timeframe, relationships, output shape, and likely Smartscape replacements from the query itself. If something cannot be confirmed from the mapping references, state the assumption explicitly.
+
+## Query Purpose Gate
+
+Before mapping types, determine what role entities play in the query.
+
+- **Entities serve only as a filter on mass data** (timeseries, logs, metrics) — the real output is metric values, log records, or trace spans, and the entity condition merely narrows which data to include. Load [mass-data-filtering-strategy.md](mass-data-filtering-strategy.md) and complete all steps — including the mandatory `fieldsSnapshot` discovery (Step 2) and equivalence verification (Step 4). Do not write the migrated query before running `fieldsSnapshot`. Return here only if you need entity-type mapping or relationship traversal to complete a Smartscape subquery.
+
+- **Entities are the primary output** — the query lists, counts, or describes entities. This is a pure entity list query. Continue with the Step-by-Step Process below.
 
 ## Step-by-Step Process
 
@@ -91,11 +100,11 @@ Infer the intent, timeframe, relationships, output shape, and likely Smartscape 
 ## Traverse Guidance
 
 - Multiple targets:
-  ```dql
-  | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_VM, GCP_VM_INSTANCE}
+  ```dql-snippet
+  | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_MICROSOFT_COMPUTE_VIRTUALMACHINES, GCP_COMPUTE_GOOGLEAPIS_COM_INSTANCE}
   ```
 - Multiple edge types:
-  ```dql
+  ```dql-snippet
   | traverse {runs_on, belongs_to}, {AWS_AVAILABILITY_ZONE, AZURE_REGION}
   ```
 - Chained traversal:
@@ -123,7 +132,7 @@ Use `lookup` when you must preserve entities even if the traversal has no match.
 smartscapeNodes HOST
 | lookup [
     smartscapeNodes HOST
-    | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_VM, GCP_VM_INSTANCE}, direction:forward
+    | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_MICROSOFT_COMPUTE_VIRTUALMACHINES, GCP_COMPUTE_GOOGLEAPIS_COM_INSTANCE}, direction:forward
     | traverse {runs_on, belongs_to}, {AWS_AVAILABILITY_ZONE, AZURE_REGION, GCP_ZONE}, direction:forward, fieldsKeep:name
     | fieldsAdd dataCenter = id, dataCenterName = name, host_id = dt.traverse.history[0][id]
     | fields host_id, dataCenter, dataCenterName
@@ -140,6 +149,7 @@ Every final translation should include:
 1. the Smartscape DQL in a code block
 2. a **Mapping Resolution** section
 3. open assumptions, if any
+4. **verification evidence** — for Situation 1/2 migrations (mass data), include which `fieldsSnapshot` queries were run, the selected approach with rationale, and the result of the equivalence check (row count comparison, output shape match)
 
 Suggested format:
 
@@ -152,6 +162,11 @@ Applied mappings:
 
 Applied edge mappings:
 - CONTAINER runs_on HOST
+
+## Verification
+- fieldsSnapshot on metrics confirmed `k8s.namespace.name` as enriched dimension
+- Approach: direct dimension filter (Check 1)
+- Probe: migrated query returned 42 rows over last 5m, matching original
 ```
 
 ## When to Load More References

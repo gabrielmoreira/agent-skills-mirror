@@ -4,6 +4,7 @@ description: Matches your study to appropriate journals based on topic, design, 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Journal Matchmaker
 

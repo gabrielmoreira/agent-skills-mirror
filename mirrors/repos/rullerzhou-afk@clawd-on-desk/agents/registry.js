@@ -12,6 +12,7 @@ const kimiCli = require("./kimi-cli");
 const opencode = require("./opencode");
 const pi = require("./pi");
 const openclaw = require("./openclaw");
+const hermes = require("./hermes");
 
 const AGENTS = [
   claudeCode,
@@ -25,6 +26,7 @@ const AGENTS = [
   opencode,
   pi,
   openclaw,
+  hermes,
 ];
 const AGENT_MAP = new Map(AGENTS.map((a) => [a.id, a]));
 

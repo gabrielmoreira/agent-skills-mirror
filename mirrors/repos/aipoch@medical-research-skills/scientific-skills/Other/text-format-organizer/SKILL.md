@@ -2,7 +2,7 @@
 name: text-format-organizer
 description: A local text formatting organizer for biomedical/academic writing; use it when you need to clean whitespace/line endings while preserving Markdown structures or when normalizing .docx/.md/.txt before submission or proofreading.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

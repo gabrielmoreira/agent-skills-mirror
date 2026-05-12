@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 33 file(s) materialized.
+Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `transformerlab/transformerlab-app` — 26 default patterns, 5 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 33 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,27 +75,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.agents/skills/agent-browser/templates/capture-workflow.sh`](.agents/skills/agent-browser/templates/capture-workflow.sh) |
 | 11 | ✓ | [`.agents/skills/agent-browser/templates/form-automation.sh`](.agents/skills/agent-browser/templates/form-automation.sh) |
 | 12 | ✓ | [`.agents/skills/lab-autoresearch/SKILL.md`](.agents/skills/lab-autoresearch/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/transformerlab-cli/references/autoresearch.md`](.agents/skills/transformerlab-cli/references/autoresearch.md) |
-| 14 | ✓ | [`.agents/skills/transformerlab-cli/references/commands.md`](.agents/skills/transformerlab-cli/references/commands.md) |
-| 15 | ✓ | [`.agents/skills/transformerlab-cli/references/troubleshooting.md`](.agents/skills/transformerlab-cli/references/troubleshooting.md) |
-| 16 | ✓ | [`.agents/skills/transformerlab-cli/references/workflows.md`](.agents/skills/transformerlab-cli/references/workflows.md) |
-| 17 | ✓ | [`.agents/skills/transformerlab-cli/SKILL.md`](.agents/skills/transformerlab-cli/SKILL.md) |
-| 18 | ✓ | [`.agents/skills/transformerlab-cli/templates/provider-health-check.sh`](.agents/skills/transformerlab-cli/templates/provider-health-check.sh) |
-| 19 | ✓ | [`.agents/skills/transformerlab-cli/templates/queue-and-monitor.sh`](.agents/skills/transformerlab-cli/templates/queue-and-monitor.sh) |
-| 20 | ✓ | [`.agents/skills/transformerlab-cli/templates/setup-and-login.sh`](.agents/skills/transformerlab-cli/templates/setup-and-login.sh) |
-| 21 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 22 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 23 | ✓ | [`docs/task-execution/01-task-creation.md`](docs/task-execution/01-task-creation.md) |
-| 24 | ✓ | [`docs/task-execution/02-task-data-model.md`](docs/task-execution/02-task-data-model.md) |
-| 25 | ✓ | [`docs/task-execution/03-job-dispatch.md`](docs/task-execution/03-job-dispatch.md) |
-| 26 | ✓ | [`docs/task-execution/04-compute-providers.md`](docs/task-execution/04-compute-providers.md) |
-| 27 | ✓ | [`docs/task-execution/05-job-lifecycle.md`](docs/task-execution/05-job-lifecycle.md) |
-| 28 | ✓ | [`transformerlab-docs/for-teams/advanced-install/authentication.md`](transformerlab-docs/for-teams/advanced-install/authentication.md) |
-| 29 | → | [`docs/Auth.md`](docs/Auth.md) |
-| 30 | → | [`docs/backend.md`](docs/backend.md) |
-| 31 | → | [`docs/cli.md`](docs/cli.md) |
-| 32 | → | [`docs/frontend.md`](docs/frontend.md) |
-| 33 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
+| 13 | ✓ | [`.agents/skills/react-doctor/SKILL.md`](.agents/skills/react-doctor/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/transformerlab-cli/references/autoresearch.md`](.agents/skills/transformerlab-cli/references/autoresearch.md) |
+| 15 | ✓ | [`.agents/skills/transformerlab-cli/references/commands.md`](.agents/skills/transformerlab-cli/references/commands.md) |
+| 16 | ✓ | [`.agents/skills/transformerlab-cli/references/troubleshooting.md`](.agents/skills/transformerlab-cli/references/troubleshooting.md) |
+| 17 | ✓ | [`.agents/skills/transformerlab-cli/references/workflows.md`](.agents/skills/transformerlab-cli/references/workflows.md) |
+| 18 | ✓ | [`.agents/skills/transformerlab-cli/SKILL.md`](.agents/skills/transformerlab-cli/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/transformerlab-cli/templates/provider-health-check.sh`](.agents/skills/transformerlab-cli/templates/provider-health-check.sh) |
+| 20 | ✓ | [`.agents/skills/transformerlab-cli/templates/queue-and-monitor.sh`](.agents/skills/transformerlab-cli/templates/queue-and-monitor.sh) |
+| 21 | ✓ | [`.agents/skills/transformerlab-cli/templates/setup-and-login.sh`](.agents/skills/transformerlab-cli/templates/setup-and-login.sh) |
+| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 24 | ✓ | [`docs/task-execution/01-task-creation.md`](docs/task-execution/01-task-creation.md) |
+| 25 | ✓ | [`docs/task-execution/02-task-data-model.md`](docs/task-execution/02-task-data-model.md) |
+| 26 | ✓ | [`docs/task-execution/03-job-dispatch.md`](docs/task-execution/03-job-dispatch.md) |
+| 27 | ✓ | [`docs/task-execution/04-compute-providers.md`](docs/task-execution/04-compute-providers.md) |
+| 28 | ✓ | [`docs/task-execution/05-job-lifecycle.md`](docs/task-execution/05-job-lifecycle.md) |
+| 29 | ✓ | [`transformerlab-docs/for-teams/advanced-install/authentication.md`](transformerlab-docs/for-teams/advanced-install/authentication.md) |
+| 30 | → | [`docs/Auth.md`](docs/Auth.md) |
+| 31 | → | [`docs/backend.md`](docs/backend.md) |
+| 32 | → | [`docs/cli.md`](docs/cli.md) |
+| 33 | → | [`docs/frontend.md`](docs/frontend.md) |
+| 34 | → | [`docs/task-execution/README.md`](docs/task-execution/README.md) |
 
 ---
 

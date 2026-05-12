@@ -2,9 +2,10 @@
 name: scrna-cell-type-annotator
 description: Auto-annotate cell clusters from single-cell RNA data using marker genes.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # ScRNA Cell Type Annotator
 
 Single-cell cluster identification.

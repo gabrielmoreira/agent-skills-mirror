@@ -4,6 +4,7 @@ description: Organizes the evidence and competitive landscape around a drug, tar
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Drug / Target Evidence Landscape
 

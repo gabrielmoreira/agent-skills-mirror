@@ -190,9 +190,9 @@ List all listening ports and process counts:
 smartscapeNodes "PROCESS"
 | fieldsAdd process.listen_ports, dt.process_group.detected_name
 | filter isNotNull(process.listen_ports) and arraySize(process.listen_ports) > 0
-| expand port = process.listen_ports
-| summarize process_count = countDistinct(id), by: {port}
-| sort toLong(port) asc
+| expand listen_port = process.listen_ports
+| summarize process_count = countDistinct(id), by: {listen_port}
+| sort toLong(listen_port) asc
 ```
 
 **Use Case:** Network security auditing and port inventory.
@@ -205,13 +205,13 @@ Identify services on standard ports:
 smartscapeNodes "PROCESS"
 | fieldsAdd process.listen_ports, dt.process_group.detected_name
 | filter isNotNull(process.listen_ports)
-| expand port = process.listen_ports
-| filter toLong(port) <= 1024
+| expand listen_port = process.listen_ports
+| filter toLong(listen_port) <= 1024
 | summarize
     process_count = countDistinct(id),
     services = collectDistinct(dt.process_group.detected_name),
-    by: {port}
-| sort toLong(port) asc
+    by: {listen_port}
+| sort toLong(listen_port) asc
 ```
 
 **Standard Ports:**
@@ -235,8 +235,8 @@ Find all processes listening on a specific port:
 ```dql
 smartscapeNodes "PROCESS"
 | fieldsAdd process.listen_ports, dt.process_group.detected_name, name
-| expand port = process.listen_ports
-| filter port == "443"
+| expand listen_port = process.listen_ports
+| filter listen_port == "443"
 | limit 50
 ```
 
@@ -249,12 +249,12 @@ Identify ports with multiple different process types:
 ```dql
 smartscapeNodes "PROCESS"
 | fieldsAdd process.listen_ports, dt.process_group.detected_name
-| expand port = process.listen_ports
+| expand listen_port = process.listen_ports
 | summarize
     process_count = countDistinct(id),
     process_types = countDistinct(dt.process_group.detected_name),
     services = collectDistinct(dt.process_group.detected_name),
-    by: {port}
+    by: {listen_port}
 | filter process_types > 1
 | sort process_types desc, process_count desc
 ```
@@ -268,12 +268,12 @@ Identify HTTP/HTTPS services:
 ```dql
 smartscapeNodes "PROCESS"
 | fieldsAdd process.listen_ports, dt.process_group.detected_name
-| expand port = process.listen_ports
-| filter in(port, {80, 443, 8080, 8443, 3000, 4000, 5000, 9090})
+| expand listen_port = process.listen_ports
+| filter in(listen_port, {80, 443, 8080, 8443, 3000, 4000, 5000, 9090})
 | summarize
     process_count = countDistinct(id),
-    by: {port, dt.process_group.detected_name}
-| sort toLong(port) asc
+    by: {listen_port, dt.process_group.detected_name}
+| sort toLong(listen_port) asc
 ```
 
 ### Database Ports
@@ -283,12 +283,12 @@ Find all database services:
 ```dql
 smartscapeNodes "PROCESS"
 | fieldsAdd process.listen_ports, dt.process_group.detected_name
-| expand port = process.listen_ports
-| filter in(port, {3306, 5432, 1521, 1433, 27017, 6379, 9042, 7000})
+| expand listen_port = process.listen_ports
+| filter in(listen_port, {3306, 5432, 1521, 1433, 27017, 6379, 9042, 7000})
 | summarize
     process_count = countDistinct(id),
-    by: {port, dt.process_group.detected_name}
-| sort toLong(port) asc
+    by: {listen_port, dt.process_group.detected_name}
+| sort toLong(listen_port) asc
 ```
 
 **Port Mapping:**

@@ -2,9 +2,10 @@
 name: target-novelty-scorer
 description: Score the novelty of biological targets through literature mining and.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Target Novelty Scorer
 
 ID: 177

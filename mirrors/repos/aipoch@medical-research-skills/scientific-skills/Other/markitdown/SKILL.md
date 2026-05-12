@@ -2,7 +2,7 @@
 name: markitdown
 description: Convert files and Office documents into clean Markdown when you need LLM-friendly, token-efficient text (e.g., for summarization, search, RAG ingestion, or dataset preparation).
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

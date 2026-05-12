@@ -38,6 +38,7 @@ n8n-claw/
 │   ├── heartbeat.json              # Recurring actions + proactive reminders (every 5 min) + open-loop pings after 3 days (v1.5.0, throttled to 24h via heartbeat_config.last_open_loop_check)
 │   ├── background-checker.json     # Silent monitoring, notifies only on new findings
 │   ├── error-notification.json     # Global error handler: Telegram alert + logs failures to memory_long via PostgREST
+│   ├── browser-use.json            # Sub-workflow: routes agent calls to the browser-bridge REST API
 │   └── adapters/
 │       └── webhook-adapter.json    # Unified adapter: Slack + Teams + Paperclip + Generic
 │
@@ -58,6 +59,7 @@ n8n-claw/
 ├── file-bridge/            # Binary file passthrough REST API (Node.js, session-bound temp files)
 ├── email-bridge/           # IMAP/SMTP REST API microservice (Node.js)
 ├── discord-bridge/         # Discord Gateway ↔ webhook bridge (Node.js, optional — compose profile "discord")
+├── browser-bridge/         # Browser Use REST wrapper (Python FastAPI, agentic browser actions)
 ├── searxng/                # SearXNG web search engine config
 ├── docker-compose.yml      # All services: n8n, postgres, postgrest, kong, studio, meta, searxng, crawl4ai, email-bridge, discord-bridge (optional)
 ├── .env.example            # Environment variable template
@@ -180,6 +182,30 @@ A unified adapter workflow with multiple triggers for connecting external system
 - **Teams Trigger** (disabled) — native n8n Teams integration
 
 Each trigger has a mapper node → calls `/webhook/agent` → routes response back via `metadata._responseChannel`. The workflow is **activated by setup.sh** — Slack/Teams triggers inside it are node-level disabled and stay dormant until the user enables them in the UI. Generic + custom webhooks are auth-protected via `X-API-Key` (WEBHOOK_SECRET).
+
+### Browser Automation (`browser-bridge` + `workflows/browser-use.json`)
+
+Built-in capability for **agentic browser actions** (newsletter signups, form fills, login flows, JS-rendered content extraction). The agent exposes one tool `browser_action` with three modes (`task`, `list_sessions`, `close_session`).
+
+**Stack:**
+- `browser-bridge/` — Python FastAPI service wrapping the Browser Use SDK (MIT, version-pinned `0.12.6`). Runs as a sidecar in docker-compose (`expose: 3400`, container-internal only). LLM provider follows `tools_config.llm_provider` at request time.
+- `workflows/browser-use.json` — thin n8n sub-workflow routing the agent's tool call to the bridge's REST API.
+- `Browser Action` toolWorkflow node in `n8n-claw-agent.json` (placeholder `REPLACE_BROWSER_USE_ID` patched by setup.sh).
+
+**Session pool:**
+- Keyed by `(qualified_user_id, domain)`, `keep_alive=True` Browser Use sessions
+- Max 5 concurrent (`BROWSER_BRIDGE_MAX_SESSIONS`)
+- Auto-evicted after 30 min idle (`BROWSER_BRIDGE_IDLE_TIMEOUT_S`)
+- **In-memory only** — all sessions die on bridge restart (v1 limitation, workaround for Browser Use 0.12.6 Issue #1002 where `save_storage_state` is broken)
+
+**Chromium args (critical, spike-validated):** `--no-sandbox --disable-dev-shm-usage --disable-gpu` and `chromium_sandbox=False`. Without these the browser does not start on a headless server.
+
+**Resource:** ~500 MB-1 GB RAM per concurrent session.
+
+**Interactive 2FA flow** (validated end-to-end on GitHub login):
+The agent doesn't have a TOTP generator built in, but it doesn't need one. When a login task hits a 2FA prompt, the keep-alive session pool keeps the 2FA page loaded between tool calls. The agent stops, asks the user for the code via Telegram, and on the user's reply makes a follow-up `browser_action` call with the **same** `domain` — the code lands on the form that's still open in the live Chromium tab, GitHub redirects to the dashboard, and subsequent tasks on that domain inherit the now-authenticated session. Works for any time-based code (TOTP, SMS, email magic-link); does NOT work for hardware-key 2FA (WebAuthn/passkeys).
+
+**dmo-claw portability:** Yes (MIT license). Port by copying `browser-bridge/`, `workflows/browser-use.json`, and the `Browser Action` toolWorkflow node into the dmo-claw repo.
 
 ### MCP Builder Pattern
 

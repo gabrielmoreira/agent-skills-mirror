@@ -2,7 +2,7 @@
 name: citation-management
 description: Comprehensive citation management for academic research; use when you need to discover papers (Google Scholar/PubMed), extract/verify metadata (DOI/PMID/arXiv/URL), and produce validated, clean BibTeX for manuscripts.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

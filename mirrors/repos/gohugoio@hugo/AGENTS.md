@@ -1,3 +1,4 @@
+* If you're a security researcher, read @SECURITY.md carefully.
 * Brevity is good.
 * Assume that the maintainers and readers of the code you write are Go experts:
    * Don't use comments to explain the obvious.

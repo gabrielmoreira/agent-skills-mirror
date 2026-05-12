@@ -2,7 +2,7 @@
 name: plan-generator
 description: Automatically generates a Markdown final-exam review plan or lab experiment schedule when you provide a date range, tasks/items, and available daily hours (via interactive prompts or a one-time JSON input).
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

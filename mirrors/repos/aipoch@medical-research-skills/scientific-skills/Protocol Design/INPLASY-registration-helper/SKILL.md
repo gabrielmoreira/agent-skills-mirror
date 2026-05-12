@@ -2,9 +2,10 @@
 name: inplasy-registration-helper
 description: Assists researchers in generating INPLASY registration content for meta-analyses from a title and optional protocol. Use when the user wants to draft a INPLASY registration form.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # PROSPERO Registration Helper
 
 This skill helps researchers draft a PROSPERO registration form for a meta-analysis. It generates the required fields based on a study title and an optional protocol.

@@ -2,7 +2,7 @@
 name: academic-abstract-refiner
 description: Refines long medical academic texts into SCI-style unstructured Chinese and English abstracts; use when you need to condense drafts/reports/summaries into bilingual abstracts and generate Summary_Report.md.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

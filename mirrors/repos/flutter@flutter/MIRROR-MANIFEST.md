@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 14 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,19 +60,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/rules/dart-editing.md`](.agents/rules/dart-editing.md) |
-| 2 | ✓ | [`.agents/skills/dart-log-failure-parser/SKILL.md`](.agents/skills/dart-log-failure-parser/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/find-release/SKILL.md`](.agents/skills/find-release/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/flutter-pr-checks-finder/SKILL.md`](.agents/skills/flutter-pr-checks-finder/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
-| 6 | ✓ | [`.agents/skills/rebuilding-flutter-tool/scripts/rebuild.sh`](.agents/skills/rebuilding-flutter-tool/scripts/rebuild.sh) |
-| 7 | ✓ | [`.agents/skills/rebuilding-flutter-tool/SKILL.md`](.agents/skills/rebuilding-flutter-tool/SKILL.md) |
-| 8 | ✓ | [`.agents/skills/upgrade-browser/scripts/fetch_versions.dart`](.agents/skills/upgrade-browser/scripts/fetch_versions.dart) |
-| 9 | ✓ | [`.agents/skills/upgrade-browser/SKILL.md`](.agents/skills/upgrade-browser/SKILL.md) |
-| 10 | ✓ | [`dev/a11y_assessments/GEMINI.md`](dev/a11y_assessments/GEMINI.md) |
-| 11 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
-| 12 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
-| 13 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
-| 14 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
+| 2 | ✓ | [`.agents/skills/dart_skills_lint_ignore.json`](.agents/skills/dart_skills_lint_ignore.json) |
+| 3 | ✓ | [`.agents/skills/dart-log-failure-parser/SKILL.md`](.agents/skills/dart-log-failure-parser/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/find-release/SKILL.md`](.agents/skills/find-release/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/flutter-pr-checks-finder/SKILL.md`](.agents/skills/flutter-pr-checks-finder/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 7 | ✓ | [`.agents/skills/rebuilding-flutter-tool/scripts/rebuild.dart`](.agents/skills/rebuilding-flutter-tool/scripts/rebuild.dart) |
+| 8 | ✓ | [`.agents/skills/rebuilding-flutter-tool/SKILL.md`](.agents/skills/rebuilding-flutter-tool/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/upgrade-browser/scripts/fetch_versions.dart`](.agents/skills/upgrade-browser/scripts/fetch_versions.dart) |
+| 10 | ✓ | [`.agents/skills/upgrade-browser/SKILL.md`](.agents/skills/upgrade-browser/SKILL.md) |
+| 11 | ✓ | [`dev/a11y_assessments/GEMINI.md`](dev/a11y_assessments/GEMINI.md) |
+| 12 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
+| 13 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
+| 14 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
+| 15 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
 
 ---
 

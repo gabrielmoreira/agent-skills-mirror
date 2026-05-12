@@ -10,6 +10,8 @@ Event queries for problem timeline analysis. Use these during incident investiga
 | `<PROBLEM_END>` | Problem end timestamp (e.g., `now()`) |
 | `<ROOT_CAUSE_ENTITY_ID>` | Dynatrace entity ID of the affected resource (e.g., `AWS_EC2_INSTANCE-ABC123`) |
 | `<AWS_INSTANCE_ID>` | AWS resource ID of the affected resource (e.g., `i-0abc1234def56789`) |
+| `<AWS_RESOURCE_NAME>` | AWS resource name or logical resource ID (e.g., `my-web-server-asg`) |
+| `<CLOUD_ALERT_EVENT_TYPE>` | Davis event type to filter (e.g., `RESOURCE_CONTENTION_EVENT`, `AVAILABILITY_EVENT`) |
 
 ---
 
@@ -76,7 +78,7 @@ fetch events, from: <PROBLEM_START - 1h>, to: <PROBLEM_END + 1h>
 
 Check for CloudFormation events related to the specific resource:
 
-```dql
+```dql-template
 fetch events
 | filter source == "aws.cloudformation"
 | parse data, "JSON:jsonData"
@@ -94,3 +96,124 @@ fetch events
 - Stack updates that completed shortly before the problem started
 - Failed stack operations that may have left resources in a degraded state
 - Resource replacements (e.g., instance replaced due to a launch template change)
+
+---
+
+## CloudTrail API Events
+
+Query AWS CloudTrail events to audit API calls. Use this during security investigations or to correlate infrastructure changes with problems.
+
+```dql
+fetch events
+| filter event.type == "AWS API Call via CloudTrail"
+| fields timestamp, event.type, data
+| sort timestamp desc
+| limit 50
+```
+
+Scope to a problem time window for incident analysis:
+
+```dql-template
+fetch events, from: <PROBLEM_START - 1h>, to: <PROBLEM_END + 1h>
+| filter event.type == "AWS API Call via CloudTrail"
+| fields timestamp, event.type, data
+| sort timestamp desc
+```
+
+**What to look for:**
+
+- API calls that modify infrastructure (RunInstances, TerminateInstances, ModifyDBInstance, etc.)
+- API calls from unexpected IAM users or roles
+- Failed API calls (error codes) that might indicate permission issues
+
+---
+
+## EC2 Instance State Changes
+
+Track EC2 instance launches and terminations. These events correlate with Auto Scaling activity, spot instance interruptions, or manual instance management.
+
+```dql
+fetch events
+| filter event.type == "EC2 Instance Launch Successful"
+    or event.type == "EC2 Instance Terminate Successful"
+| fields timestamp, event.type, data
+| sort timestamp desc
+| limit 50
+```
+
+Scope to a problem time window:
+
+```dql-template
+fetch events, from: <PROBLEM_START - 1h>, to: <PROBLEM_END + 1h>
+| filter event.type == "EC2 Instance Launch Successful"
+    or event.type == "EC2 Instance Terminate Successful"
+| fields timestamp, event.type, data
+| sort timestamp desc
+```
+
+**What to look for:**
+
+- Instance terminations shortly before a problem (capacity reduction)
+- Rapid launch/terminate cycles (instance instability)
+- Launches in unexpected regions or availability zones
+
+---
+
+## Cloud Alert Events (Davis)
+
+Davis automatically detects anomalies on AWS resources monitored through the cloud integration. These events cover resource contention, availability issues, performance degradation, and errors.
+
+```dql
+fetch events
+| filter event.provider == "CLOUD_ALERT" and event.kind == "DAVIS_EVENT"
+| fields timestamp, event.type, event.name, dt.smartscape_source.id, aws.resource.name, data
+| sort timestamp desc
+| limit 50
+```
+
+Filter by a specific event type:
+
+```dql-template
+fetch events
+| filter event.provider == "CLOUD_ALERT" and event.kind == "DAVIS_EVENT"
+| filter event.type == "<CLOUD_ALERT_EVENT_TYPE>"
+| fields timestamp, event.type, event.name, dt.smartscape_source.id, aws.resource.name, data
+| sort timestamp desc
+| limit 50
+```
+
+Scope to a specific affected entity:
+
+```dql-template
+fetch events, from: <PROBLEM_START - 1h>, to: <PROBLEM_END + 1h>
+| filter event.provider == "CLOUD_ALERT" and event.kind == "DAVIS_EVENT"
+| filter dt.smartscape_source.id == toSmartscapeId("<ROOT_CAUSE_ENTITY_ID>")
+| fields timestamp, event.type, event.name, data
+| sort timestamp desc
+```
+
+**What to look for:**
+
+- RESOURCE_CONTENTION_EVENT — CPU, memory, or I/O saturation
+- AVAILABILITY_EVENT — service or resource unreachable
+- PERFORMANCE_EVENT — latency or throughput degradation
+- ERROR_EVENT — error rate anomalies
+
+---
+
+## Event Discovery
+
+Use this query to discover all available event sources and types in your environment. This helps identify which AWS services are forwarding events to Dynatrace.
+
+```dql
+fetch events, from:-30d
+| summarize count = count(), by: {event.kind, event.type, event.provider}
+| sort count desc
+| limit 50
+```
+
+**What to look for:**
+
+- New event sources that have started reporting recently
+- Event types with high volume that may indicate recurring issues
+- Missing event sources that should be configured but are not present

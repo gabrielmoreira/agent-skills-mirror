@@ -2,7 +2,7 @@
 name: cellxgene-census
 description: Programmatically query the CZ CELLxGENE Census (61M+ cells) when you need cross-tissue, disease, or cell-type expression data for population-scale queries and reference atlas comparisons.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

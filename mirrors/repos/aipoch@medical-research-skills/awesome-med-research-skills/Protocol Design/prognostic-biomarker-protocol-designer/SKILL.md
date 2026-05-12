@@ -4,6 +4,7 @@ description: Designs discovery, modeling, and validation workflows for prognosti
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Prognostic Biomarker Protocol Designer
 

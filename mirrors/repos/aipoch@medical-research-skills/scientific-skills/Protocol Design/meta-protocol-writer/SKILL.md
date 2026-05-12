@@ -2,9 +2,10 @@
 name: meta-protocol-writer
 description: Generates a PROSPERO-compliant Meta-analysis protocol based on Title and PICOS. Use when the user wants to write a protocol for a systematic review or meta-analysis.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Meta Protocol Writer
 
 This skill helps users generate a standard protocol for PROSPERO registration (without the registration number) for a Meta-analysis or Systematic Review.

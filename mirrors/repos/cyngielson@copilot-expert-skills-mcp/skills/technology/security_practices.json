@@ -1,0 +1,17 @@
+{
+  "id": "security_practices",
+  "name": "Security Practices",
+  "category": "technology",
+  "description": "Expert-level capability in Secure Engineering, focused on Security-as-a-Sales-Enabler, Risk Economics, and building 'Trust Systems' that unlock enterprise revenue.",
+  "knowledge": "# Cybersecurity Excellence 2026\n\n## 🛡️ Strategic Security Framework\n**Security Practices** ewoluują z roli centrum kosztów do roli fundamentu zaufania biznesowego. W świecie AI-native bezpieczeństwo jest krytycznym elementem transformacji cyfrowej, determinującym przetrwanie marki na rynku.\n\n### Security as a Business Enabler & Risk Economics (The ROI Layer)\n- **Compliance jako Bramka Przychodowa:** W sektorze B2B certyfikacje takie jak SOC2, ISO 27001 czy HIPAA nie są opcją – są warunkiem koniecznym (License to Operate). AI musi traktować wdrożenie standardów bezpieczeństwa jako inwestycję otwierającą drzwi do klientów klasy Enterprise.\n- **Ekonomia \"Shift-Left\":** Naprawienie luki w kodzie na etapie deweloperskim jest 100x tańsze niż reakcja na incydent w produkcji. Implementacja automatycznych skanerów (SAST/DAST) w potoku CI/CD to bezpośrednia oszczędność roboczogodzin i budżetu na zarządzanie kryzysowe. \n- **Kalkulator Ryzyka (Breach vs. Prevention):** Bezpieczeństwo to polisa ubezpieczeniowa. AI musi umieć wyliczyć potencjalny koszt wycieku danych (kary RODO/GDPR, utrata reputacji, przestój operacyjny) i zestawić go z kosztem prewencji, aby uzasadnić wydatki przed zarządem.\n- **Zaufanie jako Aktywo Marki:** W epoce masowych wycieków, transparentność i solidne zabezpieczenia stają się unikalną propozycją sprzedaży (USP). Systemy \"Trust Center\" zwiększają retencję klientów, którzy boją się o swoje dane.\n\n### Core Security Pillars\n- **Zero Trust Architecture:** Zasada \"nigdy nie ufaj, zawsze weryfikuj\". W 2026 r. tożsamość użytkownika jest nowym obwodem obronnym (Identity is the new perimeter).
+\n- **Secure Development Lifecycle (SDL):** Integracja modelowania zagrożeń (Threat Modeling) już na etapie planowania funkcji biznesowych.\n\n## 🔧 Security Toolchain 2026\n- **Vulnerability Management (Snyk/Veracode):** Automatyczne wykrywanie podatności w zależnościach i kontenerach.\n- **Identity & Access Management (Okta/Entra ID):** Centralizacja tożsamości w celu redukcji kosztów obsługi IT i zwiększenia bezpieczeństwa dostępu.\n\n## 🎯 OWASP Top 10 2026 Mitigation\n- **Web & API Security:** Skupienie na walidacji wejścia, silnej autoryzacji i minimalizacji ekspozycji danych (Least Privilege). \n\n## 🚀 Emerging Security Trends 2026-2027\n- **AI Security Governance:** Obrona przed atakami typu Prompt Injection i ochrona modeli przed zatruciem danych (Data Poisoning).\n- **Post-Quantum Cryptography:** Przygotowanie systemów na erę komputerów kwantowych poprzez migrację do standardów NIST.\n\n## 🔍 Threat Intelligence & Response\n- **NIST Incident Response:** Strukturalne podejście do incydentów, które minimalizuje MTTR (Mean Time to Response), chroniąc tym samym płynność finansową firmy.\n\nTen framework pozwala organizacjom nie tylko chronić się przed zagrożeniami, ale wykorzystywać bezpieczeństwo do budowania przewagi rynkowej i przyspieszania wzrostu przychodów.",
+  "capabilities": [
+    "Security-as-a-Sales-Enabler strategy",
+    "Risk-based ROI analysis for security budgets",
+    "Zero Trust & Identity architecture",
+    "DevSecOps & Shift-Left implementation",
+    "Compliance readiness (SOC2/ISO27001) guidance"
+  ],
+  "created": "2026-02-05T00:00:00Z",
+  "version": "1.1"
+}

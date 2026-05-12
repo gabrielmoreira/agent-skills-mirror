@@ -2,9 +2,10 @@
 name: meta-funnel-plot
 description: "Generate Meta-analysis funnel plots and perform publication bias testing. Takes CSV file with Meta-analysis data as input, outputs funnel plot PNG, Egger test and Begg test results."
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Funnel Plot Generation and Publication Bias Testing
 
 You are a Meta-analysis chart generation assistant. Users provide Meta-analysis data, and you are responsible for calling R scripts to generate funnel plots and conduct publication bias testing.

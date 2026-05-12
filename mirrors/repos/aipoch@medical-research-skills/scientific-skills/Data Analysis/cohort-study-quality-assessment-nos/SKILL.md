@@ -2,9 +2,10 @@
 name: cohort-study-quality-assessment-nos
 description: Evaluates the quality of cohort studies using the Newcastle-Ottawa Scale (NOS). Use when the user provides a cohort study article or text and needs a quality assessment report.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Cohort Study Quality Assessment (NOS)
 
 This skill evaluates the quality of a cohort study based on the Newcastle-Ottawa Scale (NOS). It analyzes Selection, Comparability, and Outcome categories and generates a scored report.

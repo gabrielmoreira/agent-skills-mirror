@@ -160,8 +160,8 @@ When source uses an `X — Y and Z` em-dash pattern and the target language does
 
 Example failure (Korean):
 - Source: `Documentation drift checks — broken refs and diff-affected docs`
-- ❌ Lazy swap: `문서 drift 체크: 깨진 참조와 diff 영향받는 docs` (em dash → colon, structure unchanged, "체크"/"diff 영향받는" Konglish)
-- ✅ Restructured: `참조 무결성 검사, 변경 영향 문서 식별` (matches sibling style: comma-coordinated noun phrases, native vocabulary)
+- Lazy swap: `문서 drift 체크: 깨진 참조와 diff 영향받는 docs` (em dash → colon, structure unchanged, "체크"/"diff 영향받는" Konglish)
+- Restructured: `참조 무결성 검사, 변경 영향 문서 식별` (matches sibling style: comma-coordinated noun phrases, native vocabulary)
 
 The em dash separator implies a definitional `definiendum — definiens` structure that may map to:
 - Coordinated noun phrases joined by commas / `및` / `와/과`

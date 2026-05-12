@@ -2,7 +2,7 @@
 name: latex-posters
 description: Creates academic-poster writing packages for LaTeX using beamerposter, tikzposter, or baposter. Use when a user needs poster-ready section copy, figure plans, captions, and package-specific layout decisions for conference or thesis posters.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

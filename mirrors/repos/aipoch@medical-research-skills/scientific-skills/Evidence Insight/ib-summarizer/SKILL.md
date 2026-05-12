@@ -2,9 +2,10 @@
 name: ib-summarizer
 description: Summarize core safety information from Investigator's Brochures for clinical.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # IB Summarizer
 
 ## When to Use

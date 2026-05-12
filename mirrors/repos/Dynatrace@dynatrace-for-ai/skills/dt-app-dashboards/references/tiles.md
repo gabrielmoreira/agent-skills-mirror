@@ -1,328 +1,184 @@
 # Dashboard Tiles
 
-Each tile displays content or data visualization. Tiles are stored in the
-`tiles` object with numeric string keys.
+Tiles are stored in `content.tiles` as an object map with string keys.
 
 ## Tile Types
 
-Dynatrace dashboards support four tile types: **data**, **code**,
-**markdown**, and **slo**.
-
 ### Markdown Tiles
 
-Markdown tiles display formatted text content. They are typically used for
-headers, descriptions, and documentation within the dashboard.
-
 ```json
-{
-  "1": {
-    "type": "markdown",
-    "content": "# Section Header"
-  }
-}
+{ "type": "markdown", "content": "# Section Header" }
 ```
-
-**Properties:**
-
-- `type`: Set to `"markdown"` (required)
-- `content`: Markdown-formatted text content
 
 ### Data Tiles
 
-Data tiles execute DQL queries and visualize results. These are the primary
-tiles for displaying metrics, logs, and other observability data.
-
 ```json
 {
-  "19": {
-    "type": "data",
-    "title": "Tile Display Name",
-    "query": "timeseries avg(metric), by:{dimension}",
-    "visualization": "lineChart",
-    "visualizationSettings": {},
-    "querySettings": {}
-  }
+  "type": "data", "title": "Tile Name",
+  "query": "timeseries avg(metric), by:{dimension}",
+  "visualization": "lineChart",
+  "visualizationSettings": {},
+  "querySettings": {}
 }
 ```
 
-**Properties:**
-
-- `type`: Set to `"data"` (required)
-- `title`: Display title for the tile (shown at top of tile)
-- `description`: Optional tile description
-- `query`: DQL query executed against Grail
-- `visualization`: Chart type for rendering (see Visualization Types below)
-- `visualizationSettings`: Visual formatting options (colors, legends, axes)
-- `querySettings`: Query execution parameters
-- `customLinkSettings`: Custom link configuration
-- `queryConfig`: Query configuration
-- `davisCopilot`: Davis Copilot configuration
-- `davis`: Davis AI configuration
-- `timeframe`: Tile-specific timeframe settings
-- `segments`: Tile-specific segment settings
+Optional properties: `description`, `customLinkSettings`, `davis`,
+`davisCopilot`, `timeframe`, `segments`.
 
 ### Code Tiles
 
-Code tiles execute JavaScript code and display custom visualizations.
-
 ```json
-{
-  "5": {
-    "type": "code",
-    "title": "Custom Visualization",
-    "input": "// JavaScript code here",
-    "visualization": "lineChart",
-    "visualizationSettings": {}
-  }
-}
+{ "type": "code", "title": "Custom", "input": "// JS code",
+  "visualization": "lineChart", "visualizationSettings": {} }
 ```
-
-**Properties:**
-
-- `type`: Set to `"code"` (required)
-- `title`: Display title for the tile
-- `description`: Optional tile description
-- `input`: Code input (JavaScript or other language)
-- `visualization`: Visualization type for code tile output
-- `visualizationSettings`: Visual formatting options
-- `customLinkSettings`: Custom link configuration
 
 ### SLO Tiles
 
-SLO tiles display Service Level Objective metrics and status.
-
 ```json
-{
-  "8": {
-    "type": "slo",
-    "title": "Payment Service SLO",
-    "input": "slo-identifier-or-query",
-    "visualizationSettings": {}
-  }
-}
+{ "type": "slo", "title": "SLO Name", "input": "slo-id",
+  "visualizationSettings": {} }
 ```
 
-**Properties:**
+## Visualization Types and Required Field Types
 
-- `type`: Set to `"slo"` (required)
-- `title`: Display title for the tile
-- `description`: Optional tile description
-- `input`: SLO identifier or query
-- `visualizationSettings`: Visualization-specific settings for SLO display
+Each visualization requires specific field types in the query result. If the
+query produces wrong types, the tile renders blank or errors. The field types
+below correspond to DQL output types: `timestamp`, `timeframe`, `long`,
+`double`, `duration`, `string`, `numericArray` (array of long/double — the
+output of `timeseries`/`makeTimeseries` value columns).
 
-## Common Tile Properties
-
-### All Tile Types
-
-- `type`: Tile type - must be one of: `"markdown"`, `"data"`, `"code"`, or
-  `"slo"` (required)
-
-## Visualization Types
-
-Data tiles support various visualization types through the `visualization`
-property. The visualization type determines which `visualizationSettings` are
-available and how the query results are rendered.
+**Legend:** R = required, O = optional, C = conditional.
 
 ### Time-Series Charts
 
-These visualizations **require a time dimension** in the query result. Use
-`timeseries` or `makeTimeseries` DQL commands to produce suitable data.
+**`lineChart`**, **`areaChart`**, **`barChart`**: Display metric data over time.
 
-- `lineChart`: Line chart — plots values over time; optional categorical
-  split via `by:{}`. Supports thresholds.
-- `areaChart`: Area chart — filled area under line over time; optional
-  categorical split via `by:{}`. Supports thresholds.
-- `barChart`: Bar chart (time-series) — vertical bars over time; optional
-  categorical split via `by:{}`. Supports thresholds.
-- `bandChart`: Band chart — displays upper and lower bounds over time
-  (e.g., min/max/avg bands). **Requires time dimension** and at least two
-  numeric value columns for the band range. Supports thresholds.
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Time | timestamp, timeframe | 1 | R |
+| Interval | duration | 1 | C — required when Values is numericArray |
+| Values | long, double, duration, numericArray | 1+ | R |
+| Names | any | 1+ | O |
 
-**Required query result field types (lineChart, areaChart, barChart):**
+When the query uses `timeseries` or `makeTimeseries`, values are numericArrays
+and the `interval` field (duration) must be present. If you pipe through
+`| fields` after `timeseries`, always include `interval` and `timeframe`.
 
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Time | `timestamp`, `timeframe` | exactly 1 |
-| Interval | `duration` | exactly 1 (required when Values are numeric arrays from `timeseries`) |
-| Values | `long`, `double`, `duration`, numeric `array` | 1 or more |
-| Names (Optional, possibly several fields) | any | optional (0 or more) |
-
-> **WARNING — `interval` field and timeseries visualizations:** When Values
-> are numeric arrays produced by `timeseries`, the Dynatrace visualization
-> engine requires the `interval` field (type `duration`) to interpret those
-> arrays as plottable time-series data points. Without `interval`, the
-> visualization classifies numeric arrays as unsuitable for the Values slot
-> and shows **"Data not suitable"**. This is specific to line, area, bar,
-> and band chart visualizations — other visualizations like `table` are
-> unaffected. If you use `| fields` after `timeseries`, always include
-> `interval` in the field list, or use `| fieldsAdd` instead to avoid
-> stripping any fields.
-
-**Required query result field types (bandChart):**
-
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Time | `timestamp`, `timeframe` | exactly 1 |
-| Interval | `duration` | exactly 1 (required when Values are numeric arrays from `timeseries`) |
-| Values | `long`, `double`, `duration`, numeric `array` | 1 or more |
-| Names (Optional, possibly several fields) | any | optional (0 or more) |
-| Band min values | numeric `array` (e.g. timeseries metric column) | exactly 1 |
-| Band max values | numeric `array` (e.g. timeseries metric column) | exactly 1 |
+**`bandChart`**: Same as above plus two additional required numericArray slots
+for band min and band max values.
 
 ### Categorical Charts
 
-These visualizations work with **categorical (non-time) data**. Typically
-produced by `summarize ... by:{field}` queries.
+**`categoricalBarChart`**, **`pieChart`**, **`donutChart`**: Show values
+grouped by categories.
 
-- `categoricalBarChart`: Categorical bar chart — groups by a non-time
-  field. **No time dimension**; requires a categorical field and a numeric
-  value. Supports thresholds.
-- `pieChart`: Pie chart — proportional slices. Requires a categorical field
-  (categories) and a numeric field (values).
-- `donutChart`: Donut chart — like pie chart with a hollow center. Requires
-  a categorical field (categories) and a numeric field (values).
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Values | long, double, duration | 1+ | R |
+| Categories | any | 1+ | R |
 
-**Required query result field types (categoricalBarChart, pieChart, donutChart):**
+Typical query pattern: `summarize <agg>, by:{category}`.
 
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Values | `long`, `double`, `duration` | 1 or more |
-| Categories | any | 1 or more |
+**`barChart` vs `categoricalBarChart`:** `barChart` is a **time-series** chart
+requiring a timestamp/timeframe axis. For "values per category" (e.g. request
+count per service), use `categoricalBarChart`. If you use `barChart` with
+`summarize ... by:{category}` (no time axis), the tile will fail validation.
 
-### Single Value & Gauge
+**Timeseries data in categorical charts:** If you need to show summarized
+metrics (not over time), first convert the timeseries arrays to scalars using
+array functions (`arrayAvg`, `arraySum`, etc.), then use
+`categoricalBarChart`.
 
-These visualizations display **one or a few numeric values**. Queries should
-return a single record with a numeric field, or a small number of records.
+### Single Value / Gauge
 
-- `singleValue`: Single value — displays one prominent number with optional
-  label, icon, and color thresholds. Query should return a single record
-  with a numeric field. Supports thresholds.
-- `meterBar`: Meter bar — horizontal bar showing a value within a min/max
-  range. Requires a single numeric value. Configure `minValue` and
-  `maxValue` in settings.
-- `gauge`: Gauge — semicircular dial showing a value within a min/max
-  range. Requires a single numeric value. Configure `minValue` and
-  `maxValue` in settings.
+**`singleValue`**: Displays a single metric.
 
-**Required query result field types (singleValue):**
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Single value | any | 1 | R |
+| Sparkline | numericArray | 1 | O |
 
-| Slot | Accepted DQL types | Count | Required |
-|------|--------------------|-------|----------|
-| Single value | any | exactly 1 | yes |
-| Sparkline | numeric `array` | exactly 1 | no (optional) |
+**`meterBar`**, **`gauge`**: Display a numeric value on a scale.
 
-**Required query result field types (meterBar):**
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Meter/Gauge value | long, double, duration | 1 | R |
 
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Meter value | `long`, `double`, `duration` | exactly 1 |
+Configure `minValue`/`maxValue` in `visualizationSettings`.
 
-**Required query result field types (gauge):**
+### Tabular
 
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Gauge value | `long`, `double`, `duration` | exactly 1 |
+**`table`**, **`raw`**, **`recordList`**: Any data shape. No field-type
+requirements.
 
-### Tabular & Raw
+### Distribution / Status
 
-These visualizations display **records as rows** and work with any query
-result shape.
+**`histogram`**: Shows distribution of values.
 
-- `table`: Table — tabular display of query results. Works with any data
-  shape. Supports column formatting and sorting.
-- `raw`: Raw — displays the raw JSON result of the query. Works with any
-  data shape. Useful for debugging.
-- `recordList`: Record list — lists individual records in a card-like
-  format. Works with any data shape. Useful for log entries or event lists.
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Range | range (object with start/end) | 1 | R |
+| Values | long, double, duration | 1 | R |
+| Names | any | 1+ | O |
 
-### Distribution & Status
+**`honeycomb`**: Grid of colored cells.
 
-- `histogram`: Histogram — shows frequency distribution of values. Requires
-  numeric data that can be binned into ranges. Data mapping: range (bin
-  width), values (count/frequency), names (series). Supports thresholds.
-- `honeycomb`: Honeycomb — grid of hexagonal cells for status overview.
-  Each cell represents an entity. Requires a value field (numeric or
-  string) and a names field for cell labels. Good for host/service status
-  views.
-
-**Required query result field types (histogram):**
-
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Range | field with `start` and `end` (range object) | exactly 1 |
-| Values | `long`, `double`, `duration` | exactly 1 |
-| Names (Optional, possibly several fields) | any | optional (0 or more) |
-
-**Required query result field types (honeycomb):**
-
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Values | `long`, `double`, `duration` | exactly 1 |
-| Names (Optional, possibly several fields) | any | optional (0 or more) |
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Values | long, double, duration | 1 | R |
+| Names | any | 1+ | O |
 
 ### Geographic Maps
 
-These visualizations display **location-based data** on a map.
+**`choroplethMap`**: Colored regions on a map.
 
-- `choroplethMap`: Choropleth map — colors regions on a world/country map.
-  **Requires a string field with ISO 3166 country/subdivision codes** and a
-  numeric or string field for color value.
-- `dotMap`: Dot map — places dots on a map. **Requires `latitude` and
-  `longitude` numeric fields**. Optional radius and color value fields.
-- `connectionMap`: Connection map — draws lines between points on a map.
-  **Requires `latitude` and `longitude` numeric fields** for each point.
-  Optional color value field.
-- `bubbleMap`: Bubble map — places sized bubbles on a map. **Requires
-  `latitude` and `longitude` numeric fields** and a **numeric radius value
-  field**. Optional color value field.
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Country/subdivision code | string (ISO 3166) | 1 | R |
+| Color value | long, double, duration, string | 1 | R |
 
-**Required query result field types (choroplethMap):**
+**`dotMap`**, **`connectionMap`**: Points on a map.
 
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| Country/subdivision code | `string` (ISO 3166 codes) | exactly 1 |
-| Color value | `long`, `double`, `duration`, `string` | exactly 1 |
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Latitude | long, double, duration | 1 | R |
+| Longitude | long, double, duration | 1 | R |
+| Color value | long, double, duration, string | 1 | O |
 
-**Required query result field types (dotMap, connectionMap):**
+**`bubbleMap`**: Sized circles on a map.
 
-| Slot | Accepted DQL types | Count | Required |
-|------|--------------------|-------|----------|
-| Latitude | `long`, `double`, `duration` | exactly 1 | yes |
-| Longitude | `long`, `double`, `duration` | exactly 1 | yes |
-| Color value | `long`, `double`, `duration`, `string` | exactly 1 | no (optional) |
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| Latitude | long, double, duration | 1 | R |
+| Longitude | long, double, duration | 1 | R |
+| Radius value | long, double, duration | 1 | R |
+| Color value | long, double, duration, string | 1 | O |
 
-**Required query result field types (bubbleMap):**
+### Matrix / Correlation
 
-| Slot | Accepted DQL types | Count | Required |
-|------|--------------------|-------|----------|
-| Latitude | `long`, `double`, `duration` | exactly 1 | yes |
-| Longitude | `long`, `double`, `duration` | exactly 1 | yes |
-| Radius value | `long`, `double`, `duration` | exactly 1 | yes |
-| Color value | `long`, `double`, `duration`, `string` | exactly 1 | no (optional) |
+**`heatmap`**: 2D grid with colored cells.
 
-### Matrix & Correlation
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| X-axis | timeframe, range, string | 1 | R |
+| Y-axis | timeframe, range, string | 1 | R |
+| Values | long, double, duration, string | 1 | R |
 
-- `heatmap`: Heatmap — two-dimensional matrix with color-coded cells.
-  X-axis and Y-axis each accept numeric (range with start/end), time
-  (timeseries/makeTimeseries), or string (categorical) fields. Requires a
-  numeric or string value field for cell color. Use `summarize` with
-  `by:{}` or `timeseries`/`makeTimeseries` to produce suitable data.
-- `scatterplot`: Scatterplot — plots individual data points on X/Y axes.
-  X-axis accepts timeframe, numeric, or categorical fields. Y-axis accepts
-  numeric or categorical fields. Optional names field for series grouping.
+`bin(timestamp, ...)` returns `timestamp` — heatmap axes do **not** accept
+`timestamp`. Wrap with `toString()`: `by:{x = toString(bin(timestamp, 1h))}`.
 
-**Required query result field types (heatmap):**
+**`scatterplot`**: X/Y point chart.
 
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| X-axis | `timeframe`, range (object with `start`/`end`), `string` | exactly 1 |
-| Y-axis | `timeframe`, range (object with `start`/`end`), `string` | exactly 1 |
-| Values | `long`, `double`, `duration`, `string` | exactly 1 |
+| Slot | Accepted types | Count | Req |
+|------|---------------|-------|-----|
+| X-axis | timeframe, long, double, duration, string | 1 | R |
+| Y-axis | long, double, duration, string | 1 | R |
+| Names | any | 1+ | O |
 
-**Required query result field types (scatterplot):**
+## Visualization Settings
 
-| Slot | Accepted DQL types | Count |
-|------|--------------------|-------|
-| X-axis | `timeframe`, `long`, `double`, `duration`, `string` | exactly 1 |
-| Y-axis | `long`, `double`, `duration`, `string` | exactly 1 |
-| Names (Optional, possibly several fields) | any | optional (0 or more) |
+See [assets/visualization-settings.reference.jsonc](../assets/visualization-settings.reference.jsonc)
+for the complete per-visualization settings reference.
+
+Common settings across visualizations: `legend`, `tooltip`, `zoom`,
+`unitsOverrides`, `coloring`, `thresholds`, `colorModeType`.

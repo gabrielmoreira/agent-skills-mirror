@@ -2,9 +2,10 @@
 name: medical-case-interpreter
 description: Generates compliant medical case report articles for WeChat.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 ## When to Use
 
 - Use this skill when the request matches its documented task boundary.

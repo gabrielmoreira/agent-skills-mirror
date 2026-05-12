@@ -4,6 +4,7 @@ description: Builds clear, executable, and auditable inclusion and exclusion cri
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Inclusion-Exclusion Criteria Builder
 

@@ -97,7 +97,22 @@ Follow this checklist for every release. Do not skip steps.
 
 ```bash
 npm run build && npm run lint && npm run format:check && npm run test   # Must all pass
+
+# Tarball + leak sweep (added after the 3.5.0-3.5.4 incident, see git history)
+npm pack --dry-run                                                       # Inspect file list
+grep -rEn '<personal-or-internal-string>' src configs skills bin scripts README.md CHANGELOG.md package.json  # Tree
+git log --all -p -S '<personal-or-internal-string>'                      # History
 ```
+
+The `build` script must clean `dist/` first (it does: `rm -rf dist && tsc && ...`).
+Without that, source-tree refactors leave stale paths in the tarball and ship
+content the new source already removed.
+
+**Hard rule on leak-fix releases**: if the patch is sanitising something
+previously hard-coded, the commit message / CHANGELOG entry / release title /
+release body **must NOT name what was leaked**, list affected versions, or
+include words like "security" / "🔒" / "hard-coded" / "sanitize". Frame as a
+bland refactor. The CHANGELOG entry ships in the tarball — same treatment.
 
 ### 2. Version bump
 

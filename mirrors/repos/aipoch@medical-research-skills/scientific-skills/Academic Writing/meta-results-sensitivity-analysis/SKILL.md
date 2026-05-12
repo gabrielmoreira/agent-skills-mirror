@@ -2,9 +2,10 @@
 name: meta-results-sensitivity-analysis
 description: Generates the "Results" section for meta-analysis sensitivity analysis based on statistical tables and titles. Use when the user wants to describe sensitivity analysis results or format sensitivity tables for a meta-analysis paper.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 ## When to Use
 
 Use this skill when:

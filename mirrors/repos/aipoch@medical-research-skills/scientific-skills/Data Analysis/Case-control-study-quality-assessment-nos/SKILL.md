@@ -2,9 +2,10 @@
 name: case-control-study-quality-assessment-nos
 description: Clinical Research Bias Assessment - Case-Control Study (NOS) v2.3.0. Use when you need to assess the bias of a case-control study using the Newcastle-Ottawa Scale (NOS) criteria, or when evaluating the quality of a medical paper.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Clinical Research Bias Assessment (NOS)
 
 This skill evaluates the quality of case-control studies based on the Newcastle-Ottawa Scale (NOS).

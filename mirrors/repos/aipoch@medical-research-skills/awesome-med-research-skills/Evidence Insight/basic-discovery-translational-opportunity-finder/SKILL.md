@@ -4,6 +4,7 @@ description: Finds translational opportunities that connect basic-research disco
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Basic Discovery Translational Opportunity Finder
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `RooCodeInc/Roo-Code` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
+Mirror of `RooCodeInc/Roo-Code` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `RooCodeInc/Roo-Code` — 26 default patterns, 1 followed patterns, 5 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 5 |
+| Followed pats | 0 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `RooCodeInc/Roo-Code` — 26 default patterns, 1 followed patterns, 5 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `packages/evals/ADDING-EVALS.md`
+_None._
 
 ## File Index
 
@@ -63,7 +63,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.roo/skills/roo-conflict-resolution/SKILL.md`](.roo/skills/roo-conflict-resolution/SKILL.md) |
 | 3 | ✓ | [`.roo/skills/roo-translation/SKILL.md`](.roo/skills/roo-translation/SKILL.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | → | [`packages/evals/ADDING-EVALS.md`](packages/evals/ADDING-EVALS.md) |
 
 ---
 

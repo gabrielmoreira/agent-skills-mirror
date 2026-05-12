@@ -2,9 +2,10 @@
 name: emerging-topic-scout
 description: A real-time monitoring system for identifying "incubation period" research hotspots in biological and medical sciences before they are defined by mainstream journals.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Emerging Topic Scout
 
 A real-time monitoring system for identifying "incubation period" research hotspots in biological and medical sciences before they are defined by mainstream journals.

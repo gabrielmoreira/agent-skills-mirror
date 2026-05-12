@@ -2,9 +2,10 @@
 name: variant-annotation
 description: Query and annotate gene variants from ClinVar and dbSNP databases. \n\.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Variant Annotation
 
 Query and interpret gene variant clinical significance from ClinVar and dbSNP databases with ACMG guideline support.

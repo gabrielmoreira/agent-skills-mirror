@@ -2,9 +2,10 @@
 name: matplotlib
 description: A low-level plotting library for comprehensive customization. Use when fine-grained control over every plot element is needed, creating new types of charts, or integrating into specific scientific workflows. Can export to PNG/PDF/SVG for publication. For quick statistical charts, use seaborn; for interactive charts, use plotly; for journal-style, publication-ready multi-panel charts, use scientific-visualization.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Matplotlib
 
 ## When to Use

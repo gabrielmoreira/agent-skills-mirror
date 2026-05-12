@@ -4,6 +4,28 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.139](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d8c2b6c)
+
+_+2,248 tokens_
+
+- **NEW:** Data: Claude Platform on AWS reference — Reference documentation for using the Claude Developer Platform through AWS infrastructure, including AnthropicAWS clients, required region and workspace configuration, SigV4 authentication, and short-term API keys.
+- Agent Prompt: Conversation summarization — Adds requirement to note security-relevant instructions or constraints (sensitive files, forbidden operations, credential handling rules) and preserve them verbatim in the summary so they remain in effect after compaction.
+- Agent Prompt: Recent Message Summarization — Same security-relevant instructions preservation requirement added to the recent-portion summarization flow.
+- Data: Live documentation sources — Adds WebFetch URLs for Claude Platform on AWS and its required IAM actions documentation.
+- Skill: Building LLM-powered applications with Claude — Reframes cloud-provider access so Claude Platform on AWS is treated as Anthropic-operated with same-day API parity and full Managed Agents support, while Bedrock, Vertex, and Foundry remain Claude API + tool use only.
+- Skill: Dynamic pacing loop execution — Reorders steps so the brief confirmation (task ran, monitor as wake signal, fallback delay choice) is written as text before the schedule-wakeup call ends the turn.
+- Skill: /insights report output — Removes the trailing additional-message block from the shareable report response.
+- Skill: /loop self-pacing mode — Same reordering as dynamic pacing loop: confirm self-pacing, monitor wake signal, and fallback delay as text before the schedule-wakeup call.
+- Skill: Model migration guide — Adds a Claude Platform on AWS section noting it uses bare first-party model IDs and that the full rename table and breaking-change sections apply verbatim, distinct from Bedrock.
+- System Prompt: Auto mode — Drops the "Auto Mode Active" header and reframes destructive-action guidance generically rather than auto-mode-specific.
+- System Prompt: Harness instructions — Removes the standalone note that automatic context compaction will trigger when conversations grow long.
+- System Prompt: Memory instructions — Replaces 3–4 word titles with short kebab-case slugs, nests `type` under a `metadata` block, and introduces `[[their-name]]` cross-links between related memories.
+- System Prompt: Partial compaction instructions — Adds the same security-relevant instructions preservation requirement so sensitive-file rules, forbidden operations, and credential handling carry across partial compactions.
+- System Reminder: Output style active — Lets an output style supply its own per-turn reminder text, falling back to the default "follow the specific guidelines" wording.
+- System Reminder: Task tools reminder — Removes the instruction telling Claude to never mention the reminder to the user.
+- System Reminder: TodoWrite reminder — Removes the instruction telling Claude to never mention the reminder to the user.
+- Tool Description: PowerShell — Adds a substantial reference table mapping Unix commands (head, tail, which, touch, wc, mkdir -p, rm -rf, ln -s, chmod, 2>/dev/null, inline VAR=x, bash control flow) to their PowerShell equivalents, and clarifies that `-ErrorAction SilentlyContinue` still causes exit 1 unless promoted to terminating and caught.
+
 #### [2.1.138](https://github.com/Piebald-AI/claude-code-system-prompts/commit/30f3aef)
 
 <sub>_No changes to the system prompts in v2.1.138._</sub>

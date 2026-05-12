@@ -11,6 +11,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes yet._
 
+## [11.1.0] - 2026-05-11 - "Trace Audits, YouTube Ingest, and Reasoning Harnesses"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #582, #583, #584, and #586 through the maintainer squash-merge workflow, including fork-run approval, PR body normalization, source-credit fixes, branch conflict refreshes, and generated-state syncs on `main`. It refreshes the X/Twitter scraper skill, adds local session auditing with agenttrace, adds single-video YouTube transcript ingestion, and adds an Ejentum MCP reasoning-harness workflow.
+
+## New Skills
+
+- **agenttrace-session-audit** - local AI coding-agent session audits for token and cost spikes, tool failures, retry loops, latency gaps, anomalies, health scores, and session diffs.
+- **ingest-youtube** - YouTube video transcript ingestion into markdown vaults with yt-dlp metadata, VTT cleanup, idempotent vault writes, and capture-seed stubs.
+- **ejentum-reasoning-harness** - MCP-based cognitive harness workflow for reasoning, code review, anti-deception checks, and memory-drift analysis.
+
+## Improvements
+
+- **x-twitter-scraper refresh** - updates the existing skill to the current Xquik public API surface and TweetClaw plugin path.
+- **source provenance and credits** - adds README community credits for agenttrace, ai-brain-starter, and ejentum-mcp, with license provenance for the new externally sourced skills.
+- **generated artifact sync** - refreshes catalog, skill index, plugin mirrors, web assets, package metadata, and visible skill counts to `1,453+`.
+
+## Who should care
+
+- **Maintainers and power users** get trace-level visibility into local AI coding sessions before retrying or comparing runs.
+- **Knowledge-base builders** get a source-normalized YouTube transcript ingest path for markdown vault workflows.
+- **Agent workflow designers** get MCP-backed reasoning harnesses for higher-risk reasoning, coding, honesty, and memory-drift tasks.
+- **Social and automation users** get fresher X/Twitter scraper guidance aligned with the current source API and plugin ecosystem.
+
+## Credits
+
+- **[@kriptoburak](https://github.com/kriptoburak)** for PR #582 (`x-twitter-scraper` refresh).
+- **[@luoyuctl](https://github.com/luoyuctl)** for PR #583 (`agenttrace-session-audit`).
+- **[@adelaidasofia](https://github.com/adelaidasofia)** for PR #584 (`ingest-youtube`).
+- **[@ejentum](https://github.com/ejentum)** for PR #586 (`ejentum-reasoning-harness`).
+
 ## [11.0.0] - 2026-05-08 - "Agent Execution, Game Planning, and Skill Writer References"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

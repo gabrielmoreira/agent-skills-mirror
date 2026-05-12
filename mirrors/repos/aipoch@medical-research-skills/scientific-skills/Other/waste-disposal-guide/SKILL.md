@@ -2,9 +2,10 @@
 name: waste-disposal-guide
 description: Guide for disposing specific chemical wastes into the correct colored waste containers, with safety precautions and regulatory compliance notes.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Waste Disposal Guide
 
 Guide for disposing specific chemical wastes into the correct colored waste containers.

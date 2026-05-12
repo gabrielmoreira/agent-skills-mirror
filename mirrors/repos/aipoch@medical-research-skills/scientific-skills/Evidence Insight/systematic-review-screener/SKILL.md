@@ -2,9 +2,10 @@
 name: systematic-review-screener
 description: Automated abstract screening tool for systematic literature reviews with PRISMA workflow support.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Systematic Review Screener
 
 Automated abstract screening tool for systematic literature reviews with PRISMA workflow support.

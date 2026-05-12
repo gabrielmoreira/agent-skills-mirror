@@ -2,9 +2,10 @@
 name: residency-interview-prep
 description: Mock interview preparation tool for residency Match interviews. Generates.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Residency Interview Prep
 
 Residency interview preparation assistant for the NRMP Match process.

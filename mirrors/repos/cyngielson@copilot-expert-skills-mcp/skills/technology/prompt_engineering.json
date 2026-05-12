@@ -1,0 +1,18 @@
+{
+  "id": "prompt_engineering",
+  "name": "Prompt Engineering",
+  "category": "technology",
+  "description": "Techniques for designing prompts for LLMs, chains, and robust prompt patterns.",
+  "persuasion_risk": "medium",
+  "manipulation_related": true,
+  "recommended_guardrails": [
+    "avoid_deceptive_prompts",
+    "ethics_review",
+    "protect_pii"
+  ],
+  "knowledge": "# Ultimate Prompt Engineering Mastery 2026\n\n## 🚀 Core Foundations\n**Prompt Engineering** transforms from simple instruction writing to **Agentic AI Orchestration** - the #1 skill dominating 2026 according to IBM, QA, and industry leaders.\n\n### Strategic Framework\n1. **Multi-Agent System Design**\n   - Chain-of-Thought (CoT) reasoning patterns\n   - Tree-of-Thought for complex problem solving\n   - ReAct frameworks (Reasoning + Acting)\n   - Constitutional AI principles for safety\n\n2. **Production Prompt Architecture**\n   - Few-shot learning with domain examples\n   - Instruction tuning for specific tasks\n   - Context window optimization (up to 2M+ tokens)\n   - Token economy & cost optimization\n\n## 🔧 Dominant Tools & Frameworks 2026\n- **LangChain/LangSmith**: Multi-agent orchestration & debugging\n- **AutoGen/CrewAI**: Autonomous agent teams\n- **DSPy**: Automatic prompt optimization\n- **Anthropic Constitutional AI**: Safety-first prompt design\n- **OpenAI API/Azure OpenAI**: Enterprise integration\n- **Cohere Command-R**: RAG-optimized prompting\n\n## 📊 Critical Use Cases\n### Enterprise Applications\n- **Customer Service Agents**: Multi-turn conversations with real-time data\n- **Code Generation**: AI pair programming with context awareness\n- **Document Processing**: Legal/financial document analysis\n- **Workflow Automation**: End-to-end business process automation\n\n### Advanced Patterns\n- **RAG-Enhanced Prompting**: Combining retrieval with generation\n- **Function Calling**: Tool use and API integration\n- **Multi-Modal Prompting**: Text + image + audio processing\n- **Prompt Injection Defense**: Security-first prompt design\n\n## 🛡 Safety & Ethics Framework\n- **Bias Mitigation**: Demographic parity in outputs\n- **Hallucination Detection**: Fact verification patterns\n- **Privacy Protection**: PII detection and masking\n- **EU AI Act Compliance**: Transparency and auditability\n\n## 📈 2026-2027 Trends\n- **Specialized AI Chips**: Custom hardware for agent workloads (IBM analog AI)\n- **Open Source Reasoning**: DeepSeek-R1 style models dominating\n- **Agentic Workflows**: 30% of routine tasks automated (Gartner)\n- **Emotional AI**: Sentiment-aware and empathetic interfaces\n\n## Performance Optimization\n- **Token Efficiency**: Reduce costs by 60-80% through smart prompting\n- **Latency Optimization**: Parallel processing and batching\n- **Quality Metrics**: BLEU, ROUGE, custom evaluation frameworks\n- **A/B Testing**: Systematic prompt performance measurement\n\n## Practical Implementation\n1. **Start Small**: Single-task agents before complex workflows\n2. **Monitor Everything**: Track token usage, quality, safety metrics\n3. **Version Control**: Git-based prompt management\n4. **Human-in-Loop**: Gradual autonomy increase with oversight\n\nThis knowledge represents the cutting-edge of 2026 prompt engineering - from basic instruction writing to orchestrating autonomous AI agents that transform business operations.",
+  "capabilities": ["Prompt template design","Safety patterns","Cost optimization"],
+  "ethical_considerations": "Avoid prompts that encourage deception, privacy breaches, or targeted manipulation.",
+  "created": "2026-02-05T00:00:00Z",
+  "version": "1.0"
+}

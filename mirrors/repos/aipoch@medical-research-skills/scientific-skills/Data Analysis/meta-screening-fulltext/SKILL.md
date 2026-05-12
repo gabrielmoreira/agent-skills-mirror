@@ -2,9 +2,10 @@
 name: meta-screening-fulltext
 description: Screen full-text papers against inclusion/exclusion criteria, with optional PubMed metadata check using PMID. Use when the user needs to evaluate a paper for a meta-analysis.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Paper Screening (Full Text + PubMed)
 
 This skill screens a medical paper to determine if it should be included in a meta-analysis based on PICO criteria. It can optionally fetch metadata (Title/Abstract) from PubMed if a PMID is provided.

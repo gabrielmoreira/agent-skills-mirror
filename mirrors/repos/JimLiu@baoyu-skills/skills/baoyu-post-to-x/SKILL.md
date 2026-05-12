@@ -1,7 +1,7 @@
 ---
 name: baoyu-post-to-x
 description: Posts content and articles to X (Twitter). Supports regular posts with images/videos and X Articles (long-form Markdown). In Codex, honor explicit requests for the Codex Chrome plugin/@chrome by using the Chrome Extension workflow; otherwise use Chrome Computer Use when available and fall back to real Chrome CDP scripts only when allowed. Use when user asks to "post to X", "tweet", "publish to Twitter", or "share on X".
-version: 1.57.1
+version: 1.57.2
 metadata:
   openclaw:
     homepage: https://github.com/JimLiu/baoyu-skills#baoyu-post-to-x
@@ -49,7 +49,7 @@ Choose exactly one mode before interacting with X:
 1. If the user explicitly asks for the Codex Chrome plugin, `@chrome`, the Chrome extension, or "Codex 自带的 Chrome 插件", use **Codex Chrome Plugin Mode**. Do not call Computer Use first.
 2. If the user explicitly asks for Chrome Computer Use, use **Chrome Computer Use Mode**. Do not fall back to CDP, Playwright, the in-app Browser, or the Chrome plugin without telling the user and getting approval.
 3. If the user explicitly asks for CDP/script mode, use **CDP Script Mode**.
-4. Otherwise, prefer **Chrome Computer Use Mode** for regular posts, video posts, and quote tweets. For Markdown **X Articles with local content images**, prefer **CDP Script Mode** because placeholder selection and image-block verification are more reliable than manual DraftJS selection through Computer Use.
+4. Otherwise, prefer **Chrome Computer Use Mode**. For Markdown **X Articles with local content images**, use the tested X editor flow: insert each body image from the toolbar (`Insert` -> `Media` -> dialog icon button `Add photos or video`) at its placeholder, then delete the placeholder text. Use CDP Script Mode only when the selected browser-control mode is unavailable or the UI upload/selection flow is unreliable.
 
 Never use the in-app Browser for X publishing workflows.
 
@@ -65,7 +65,7 @@ Use this mode whenever the user requests the Codex Chrome plugin, `@chrome`, or 
 
 **General rules**
 - Use the Chrome plugin's `browser.tabs.*`, `tab.playwright.*`, `tab.cua.*`, and file chooser APIs for X UI actions.
-- Shell commands are allowed for Markdown preprocessing and clipboard preparation.
+- Shell commands are allowed for Markdown preprocessing and rich-HTML clipboard preparation. For X Article body images, do not rely on image clipboard paste; use the editor's `Insert` -> `Media` upload flow.
 - If a file upload fails with `Not allowed`, tell the user: `To enable file upload, go to chrome://extensions in Chrome, click Details under the Codex extension, and enable "Allow access to file URLs." See https://developers.openai.com/codex/app/chrome-extension#upload-files for details.`
 - If the Chrome plugin reports `native pipe is closed`, retry the lightweight browser call once after 2 seconds, then run the Chrome skill health checks. If Chrome is running, the extension is enabled, and the native host manifest is correct, ask permission to open a new Chrome window and retry. Do not keep sending browser actions through the broken pipe.
 - Never click `Publish`, `Post`, or any externally visible submit action without explicit final confirmation from the user in the current conversation.
@@ -84,7 +84,13 @@ Use this mode whenever the user requests the Codex Chrome plugin, `@chrome`, or 
    ```
 6. Paste into the article body with a real paste keystroke through the Chrome plugin. On macOS use `Meta+V`.
 7. Verify the editor text contains the article body and `XIMGPH_` placeholders. Do not rely on `tab.clipboard.readText()` as proof of the system clipboard after shell clipboard writes; on macOS verify with `pbpaste` if needed.
-8. For each `contentImages` item in placeholder order, copy the image with `copy-to-clipboard.ts image <localPath>`, select the exact placeholder text, paste with the Chrome plugin, and verify the placeholder is gone and an image block appeared.
+8. For each `contentImages` item in placeholder order:
+   - Locate the visible placeholder text (`XIMGPH_N`) and click it to place the caret there.
+   - Open the toolbar menu `Insert` -> `Media`.
+   - In the modal, click the icon button with `aria-label="Add photos or video"`; do not click the text/dropzone or hidden file input.
+   - Use the file chooser to upload that image's `localPath`.
+   - After the image appears, if `XIMGPH_N` remains above it, select exactly that placeholder and press `Delete` first. Use `Backspace` only if `Delete` fails and the selected text is confirmed to be exactly the placeholder.
+   - Verify the placeholder count for that `XIMGPH_N` is `0`.
 9. Open Preview and verify title, cover, body, links, and images.
 10. Ask for explicit confirmation before clicking `Publish`.
 
@@ -183,16 +189,16 @@ Use this mode when the user explicitly asks for Chrome Computer Use, or when no 
    ```
 5. Paste into the article body with Computer Use.
 6. For each `contentImages` entry in placeholder order:
-   - Copy the image with `copy-to-clipboard.ts image <localPath>`.
-   - Select the exact visible placeholder text such as `XIMGPH_3`.
-   - Paste with Computer Use (`super+v`/`control+v`).
-   - Wait until the X header no longer says `Uploading media...`.
-   - If the placeholder remains, reselect the exact placeholder text and press `BackSpace`. Never press `BackSpace` unless the app state confirms the selected text is exactly that placeholder.
+   - Locate the exact visible placeholder text such as `XIMGPH_3` and click it to set the insertion point.
+   - Open the toolbar `Insert` dropdown, choose `Media`, then click the modal's icon button labeled `Add photos or video`.
+   - Use the native file picker to choose the image's `localPath`.
+   - Wait until the image block appears and any upload activity is finished.
+   - If the placeholder remains above the inserted image, reselect exactly that placeholder text and press `Delete` first. Use `Backspace` only if `Delete` fails and the selected text is confirmed to be exactly the placeholder.
 7. Verify no `XIMGPH_` placeholders remain and the expected images appear.
 8. Open Preview and verify title, cover, body, links, and images.
 9. Ask for explicit confirmation before clicking `Publish`.
 
-If Computer Use selection or paste becomes unreliable, stop and report the blocker instead of switching to the Chrome plugin or CDP silently.
+If Computer Use selection, toolbar upload, or file-picker control becomes unreliable, stop and report the blocker instead of switching to the Chrome plugin or CDP silently.
 
 ---
 
@@ -291,7 +297,7 @@ ${BUN_X} {baseDir}/scripts/x-article.ts article.md --cover ./cover.jpg
 
 **Frontmatter**: `title`, `cover_image` supported in YAML front matter.
 
-**Codex mode note**: If the user explicitly requested the Codex Chrome plugin, follow **Codex Chrome Plugin Mode** above. If the user explicitly requested Chrome Computer Use, follow **Chrome Computer Use Mode**. Otherwise, for Markdown articles with local content images, use `x-article.ts` in **CDP Script Mode** so placeholders can be selected programmatically and the post-composition check can verify image count and remaining `XIMGPH_` text.
+**Codex mode note**: If the user explicitly requested the Codex Chrome plugin, follow **Codex Chrome Plugin Mode** above. If the user explicitly requested Chrome Computer Use, follow **Chrome Computer Use Mode**. Otherwise, prefer Chrome Computer Use; for Markdown articles with local content images, use the toolbar `Insert` -> `Media` image-upload workflow before falling back to `x-article.ts` in **CDP Script Mode**.
 
 **CDP fallback note**: The script opens browser with article filled in. User reviews and publishes manually unless `--submit` is used.
 

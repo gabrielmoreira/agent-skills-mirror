@@ -2,7 +2,7 @@
 name: image-ocr
 description: Extract text from images with Tesseract OCR; use it when you need to recognize text from PNG/JPEG/TIFF/BMP images, select a language model, or run OCR via natural-language requests (e.g., "Interpret the image at C:\path\image.png").
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

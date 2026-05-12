@@ -2,7 +2,7 @@
 name: zinc-database
 description: Access the ZINC (230M+ purchasable compounds) database when you need to look up compounds by ZINC ID/SMILES, run similarity/analog searches, or download 3D ready-to-dock structures for virtual screening and drug discovery.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

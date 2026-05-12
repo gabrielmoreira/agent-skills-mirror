@@ -2,7 +2,7 @@
 name: kegg-database
 description: Direct access to KEGG via the REST API for academic-only pathway/gene/compound/drug queries; use when you need precise HTTP-level control or targeted KEGG ID mapping.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

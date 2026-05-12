@@ -4,6 +4,7 @@ description: Builds background-gap-objective logic for biomedical manuscript int
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Introduction Logic Builder
 

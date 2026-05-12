@@ -4,6 +4,7 @@ description: Designs internal, external, temporal, and functional validation str
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Validation Strategy Designer
 

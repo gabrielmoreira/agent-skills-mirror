@@ -196,7 +196,7 @@ Agent completes work
 [3] Cross-Review: QA agent reviews the changes
     ↓ FAIL → Agent receives review feedback, fixes, back to [1]
     ↓ PASS
-Accept result ✓
+Accept result
 ```
 
 ### Step Details
@@ -207,7 +207,7 @@ Before requesting external review, the implementation agent must:
 - Verify only planned files were modified (diff scope check)
 - Fix any mechanical failures (compile errors, test failures)
 
-⚠️ **Quality judgment is NOT performed in this step.**
+**Quality judgment is NOT performed in this step.**
 Design quality, architecture alignment, and acceptance criteria satisfaction
 are evaluated exclusively in [3] Cross-Review by the QA agent.
 Reason: Self-evaluation bias causes agents to consistently overrate their own output

@@ -1,25 +1,24 @@
 ---
 name: dt-obs-hosts
-description: Host and process metrics including CPU, memory, disk, network, containers, and process-level telemetry. Monitor infrastructure health and resource utilization.
+description: >-
+  Host and process metrics including CPU, memory, disk, network, containers, and process-level
+  telemetry. Use when analyzing infrastructure health, resource utilization, process consumption,
+  or host discovery. Also use when building timeseries queries for host metrics that feed into
+  analytical workflows like anomaly detection, forecasting, or seasonality analysis.
+  Trigger: "show hosts", "CPU usage", "memory utilization", "disk space", "high CPU",
+  "host with most free disk", "top hosts by CPU", "top processes by memory",
+  "Linux hosts in AWS", "what databases are running", "infrastructure costs by cost center",
+  "hosts running EOL Java", "container monitoring", "listening ports",
+  "process resource consumption", "CPU forecast", "memory anomaly", "host seasonality".
+  Do NOT use for explaining existing queries, product documentation questions,
+  Kubernetes pod/workload queries (use dt-obs-kubernetes), AWS cloud resource inventory
+  (use dt-obs-aws), or service-level metrics (use dt-obs-services).
 license: Apache-2.0
 ---
 
 # Infrastructure Hosts Skill
 
 Monitor and manage host and process infrastructure including CPU, memory, disk, network, and technology inventory.
-
-## What This Skill Does
-
-- Discover and inventory hosts across cloud and on-premise environments
-- Monitor host resource utilization (CPU, memory, disk, network)
-- Track process resource consumption and lifecycle
-- Analyze container and Kubernetes infrastructure
-- Discover services via listening ports
-- Manage technology stack versions and compliance
-- Attribute infrastructure costs by cost center and product
-- Validate data quality and metadata completeness
-- Plan capacity and detect resource saturation
-- Correlate infrastructure health across layers
 
 ## When to Use This Skill
 
@@ -36,6 +35,10 @@ Use this skill when the user needs to:
 - **Quality:** "Check data completeness for AWS hosts"
 - **Optimize:** "Find rightsizing candidates based on utilization"
 
+---
+> **Cross-source join required:** If the query must combine host data with logs or other
+> telemetry sources (e.g. "show logs from Linux hosts with their IP addresses") → also read
+> `dt-dql-essentials/references/smartscape-topology-navigation.md` before writing the query.
 ---
 
 ## Core Concepts
@@ -97,8 +100,26 @@ timeseries {
 
 **High utilization threshold:** 80% warning, 90% critical
 
-→ For detailed CPU analysis, see [references/host-metrics.md](#cpu-monitoring)  
-→ For memory breakdown, see [references/host-metrics.md](#memory-monitoring)
+**Key CPU Metrics:**
+- `dt.host.cpu.usage` — Total CPU utilization (0-100%)
+- `dt.host.cpu.idle` — CPU idle time (inverse of usage; useful for anomaly detection)
+- `dt.host.cpu.user` — CPU time in user mode
+- `dt.host.cpu.system` — CPU time in kernel mode
+- `dt.host.cpu.iowait` — CPU waiting for I/O (Linux only)
+
+→ For detailed CPU analysis, see [references/host-metrics.md](references/host-metrics.md#cpu-monitoring)  
+→ For memory breakdown, see [references/host-metrics.md](references/host-metrics.md#memory-monitoring)
+
+#### Disk Free Space — Find Hosts with Most/Least Free Disk
+
+```dql
+timeseries disk_used_pct = avg(dt.host.disk.used.percent), by: {dt.smartscape.host}
+| fieldsAdd host_name = getNodeName(dt.smartscape.host)
+| fieldsAdd avg_disk_used = arrayAvg(disk_used_pct),
+    free_pct = 100 - arrayAvg(disk_used_pct)
+| sort free_pct desc
+| limit 10
+```
 
 ### 3. Process Resource Analysis
 
@@ -115,8 +136,8 @@ timeseries {
 | limit 20
 ```
 
-→ For process I/O analysis, see [references/process-monitoring.md](#process-io)  
-→ For process network metrics, see [references/process-monitoring.md](#process-network)
+→ For process I/O analysis, see [references/process-monitoring.md](references/process-monitoring.md#process-io)  
+→ For process network metrics, see [references/process-monitoring.md](references/process-monitoring.md#process-network)
 
 ### 4. Technology Stack Inventory
 
@@ -133,7 +154,7 @@ smartscapeNodes "PROCESS"
 
 **Common Technologies:** Java, Node.js, Python, .NET, databases, web servers, messaging systems
 
-→ For version compliance checks, see [references/inventory-discovery.md](#technology-inventory)
+→ For version compliance checks, see [references/inventory-discovery.md](references/inventory-discovery.md#technology-inventory)
 
 ### 5. Service Discovery via Ports
 
@@ -143,15 +164,15 @@ Map listening ports to services for security and inventory.
 smartscapeNodes "PROCESS"
 | fieldsAdd process.listen_ports, dt.process_group.detected_name
 | filter isNotNull(process.listen_ports) and arraySize(process.listen_ports) > 0
-| expand port = process.listen_ports
-| summarize process_count = count(), by: {port, dt.process_group.detected_name}
-| sort toLong(port) asc
+| expand listen_port = process.listen_ports
+| summarize process_count = count(), by: {listen_port, dt.process_group.detected_name}
+| sort toLong(listen_port) asc
 | limit 50
 ```
 
 **Well-known ports:** 80 (HTTP), 443 (HTTPS), 22 (SSH), 3306 (MySQL), 5432 (PostgreSQL)
 
-→ For comprehensive port mapping, see [references/inventory-discovery.md](#port-discovery)
+→ For comprehensive port mapping, see [references/inventory-discovery.md](references/inventory-discovery.md#port-discovery)
 
 ### 6. Container and Kubernetes Monitoring
 
@@ -168,8 +189,8 @@ smartscapeNodes "CONTAINER"
 
 **Note:** Container image names/versions NOT available in smartscape.
 
-→ For K8s version tracking, see [references/container-monitoring.md](#kubernetes-versions)  
-→ For container lifecycle, see [references/container-monitoring.md](#container-inventory)
+→ For K8s version tracking, see [references/container-monitoring.md](references/container-monitoring.md#kubernetes-versions)  
+→ For container lifecycle, see [references/container-monitoring.md](references/container-monitoring.md#container-inventory)
 
 ### 7. Cost Attribution and Chargeback
 
@@ -188,7 +209,7 @@ smartscapeNodes "HOST"
 | sort total_cores desc
 ```
 
-→ For product-level cost tracking, see [references/inventory-discovery.md](#cost-attribution)
+→ For product-level cost tracking, see [references/inventory-discovery.md](references/inventory-discovery.md#cost-attribution)
 
 ### 8. Infrastructure Health Correlation
 
@@ -209,7 +230,116 @@ timeseries {
 
 **Health scoring:** Critical if any resource >90%, warning if >80%
 
-→ For multi-resource saturation detection, see [references/host-metrics.md](#resource-saturation)
+→ For multi-resource saturation detection, see [references/host-metrics.md](references/host-metrics.md#resource-saturation)
+
+---
+
+## Response Construction
+
+When the user asks for data retrieval or a DQL query (e.g., "show me top hosts by
+CPU"), **include the DQL query in the response** alongside the results. Users want to
+see and reuse the query — it is the deliverable, not just a means to get results.
+
+When the user asks for analysis (anomaly detection, forecasting, seasonality), the
+analysis results are the deliverable. Focus on presenting findings clearly:
+- **Prioritize metric-level findings** over data collection artifacts. If an analysis
+  tool reports data gaps alongside actual anomalies, lead with the metric behavior
+  the user asked about and mention gaps only as supplementary context.
+- **Include host names** (not just IDs) using `getNodeName(dt.smartscape.host)` or the
+  `get-entity-name` tool.
+- **State the timeframe** analyzed and the tools/parameters used.
+
+---
+
+## Analytical Workflows
+
+Host metric queries often serve as inputs to analytical tools (anomaly detection,
+forecasting, seasonality analysis). This skill helps construct the right DQL query;
+the actual analysis is performed by dedicated tools.
+
+### Anomaly Detection and Pattern Analysis
+
+When users ask about "unusual behavior", "anomalies", "spikes", or "sudden changes"
+in host metrics, the workflow is:
+
+1. **Construct the timeseries query** using this skill's patterns
+2. **Pass it to the appropriate analysis tool** (anomaly detector, novelty detection)
+
+**Choosing between detectors:**
+- **`adaptive-anomaly-detector`** — use when the user asks about *magnitude*: "spikes",
+  "abrupt changes", "values that went above normal", "sudden jumps". It answers "did this
+  metric cross an unexpected threshold?" and reports alert durations and peak values.
+- **`timeseries-novelty-detection`** — use when the user asks about *behavioral change*:
+  "unusual patterns", "something changed", "trends", "new behavior". It answers "did the
+  shape of the signal change?" without implying a specific threshold was crossed.
+
+**Response format for anomaly results:** Include both the host **name** (resolved via
+`getNodeName(dt.smartscape.host)` or `get-entity-name`) and the host **entity ID** alongside timestamps and values.
+Entity IDs alone are opaque to users; names alone prevent follow-up queries.
+
+**Novelty type selection rule:** When using novelty detection, set
+`analysisNoveltyType` to only `[SPIKE, CHANGE_IN_VALUES, TREND_IN_VALUES]` by default.
+**EXCLUDE** `GAP_WITH_MISSING_VALUES` and `CHANGE_IN_MISSING_VALUES` unless the user
+explicitly asks about data gaps or monitoring coverage. Data gaps are infrastructure
+issues, not metric behavior anomalies — reporting them when the user asks about CPU
+or memory patterns is incorrect.
+
+Queries for analysis tools should use simple `timeseries` format with a single
+aggregated metric and appropriate time range:
+
+```dql
+timeseries avg(dt.host.cpu.idle), by: {dt.smartscape.host}
+```
+
+```dql
+timeseries avg(dt.host.memory.usage), by: {dt.smartscape.host}
+```
+
+Avoid adding filters or field transformations that reduce the data — the analysis
+tools work best with complete timeseries data.
+
+
+### Forecasting
+
+When users ask to "predict", "forecast", or "estimate future" host metrics:
+
+1. **Construct the timeseries query** with sufficient historical data (e.g., 7d for
+   short-term, 30d for longer predictions)
+2. **Pass to the forecasting tool** with the desired forecast horizon
+
+The **forecast horizon** (how far ahead to predict) and the **historical window** (how much
+past data the model trains on) are independent. A request like "forecast the next 2 hours"
+sets the horizon to 2h — it says nothing about the lookback. Always use at least 7 days of
+historical data regardless of how short the forecast horizon is. Too few training data points
+cause the forecast model to fail and fall back to raw historical values.
+
+```dql
+timeseries avg(dt.host.cpu.usage), by: {dt.smartscape.host}
+```
+
+### Seasonality Detection
+
+When users ask about "seasonality", "weekly patterns", or "recurring behavior":
+
+1. **Use a longer time range** (at least 14d for weekly, 30d+ for monthly)
+2. **Pass to the seasonal baseline anomaly detector**
+
+**Response format for seasonal analysis:** When presenting results, include:
+- Whether seasonal anomalies were detected (yes/no)
+- The analysis timeframe and parameters used
+- For each affected host: host name (not just ID), timestamps of violations, violation
+  counts, baseline values vs actual values, and upper/lower bounds
+- Organize results by host if multiple hosts are involved
+
+### Scope Boundary — Service-Level vs Host-Level Metrics
+
+This skill covers **host and process infrastructure metrics only**. If the user asks
+about service-level metrics (request rate, response time, error rate, service calls per
+minute, throughput), use `dt-obs-services` instead — even when the question involves
+forecasting or anomaly detection of those metrics.
+
+**Redirect these to `dt-obs-services`:** "service calls per minute", "request rate",
+"response time by service", "error rate by endpoint", "service throughput forecast".
 
 ---
 
@@ -290,54 +420,38 @@ timeseries cpu = avg(dt.host.cpu.usage), by: {dt.smartscape.host}
 - `k8s.namespace.name`, `k8s.node.name`, `k8s.pod.name`
 - `k8s.workload.name`, `k8s.workload.kind`
 
-→ For multi-cloud analysis, see [references/inventory-discovery.md](#multi-cloud-hosts)
+→ For multi-cloud analysis, see [references/inventory-discovery.md](references/inventory-discovery.md#multi-cloud-hosts)
 
 ---
 
 ## Best Practices
 
-### Alerting
-1. Use percentiles (p95, p99) for latency metrics
-2. Use `max()` for resource limits
-3. Use `avg()` for utilization trends
-4. Set multi-level thresholds (warning at 80%, critical at 90%)
-
-### Time Windows
-- **Real-time:** 5-15 minute windows
-- **Trends:** 24 hours to 7 days
-- **Capacity planning:** 30-90 days
-
-### Query Optimization
-1. Use filters early in the pipeline
-2. Limit results with `| limit N`
-3. Use specific entity types in smartscapeNodes
+1. Use percentiles (p95, p99) for latency; `max()` for limits; `avg()` for trends
+2. Set multi-level thresholds (warning 80%, critical 90%)
+3. Filter early in the pipeline; limit results with `| limit N`
 4. Aggregate before enrichment (lookup)
+5. Use `getNodeName(dt.smartscape.host)` for human-readable host names; `getNodeName(dt.smartscape.process)` for processes
+6. Convert bytes to GB: `/ 1024 / 1024 / 1024`; round with `round(value, decimals: 1)`
 
-### Data Quality
-1. Validate metadata completeness (target >90%)
-2. Check for duplicate host names
-3. Ensure cost tag coverage
-4. Monitor data freshness (lifetime.end)
+**Time windows:** Real-time: 5-15 min | Trends: 1-7 days | Capacity planning: 30-90 days
+
+### Limitations
+- `dt.host.cpu.iowait` available on Linux only
+- Generic `tags` field NOT populated in smartscape (use specific tag namespaces)
+- Container image names NOT available in smartscape
 
 ---
 
-## Limitations and Notes
+## Troubleshooting
 
-### Smartscape Limitations
-- Container image names/versions NOT available in smartscape
-- Generic `tags` field NOT populated (use specific tag namespaces)
-- Process metadata varies by process type
-
-### Platform-Specific
-- `dt.host.cpu.iowait` available on Linux only
-- AIX has specific CPU metrics (entitlement, physc)
-- Inode metrics available on Linux only
-
-### Best Practices
-- Use `getNodeName()` to get human-readable names
-- Convert bytes to GB for readability: `/ 1024 / 1024 / 1024`
-- Round aggregated values: `round(value, decimals: 1)`
-- Use `isNotNull()` checks before array operations
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| No hosts returned from `smartscapeNodes "HOST"` | Missing time range or OneAgent not deployed | Verify OneAgent is installed; add a time range to the query |
+| `tags` field always empty | Generic `tags` not populated in smartscape | Use specific tag namespaces: `tags:azure[*]`, `tags:environment`, `dt.cost.costcenter` |
+| Memory values in bytes are unreadable | Raw metric unit is bytes | Divide by `1024 / 1024 / 1024` and use `round(value, decimals: 1)` |
+| `dt.host.cpu.iowait` returns no data | Metric is Linux-only | Check `os.type`; iowait is unavailable on Windows, AIX, Solaris |
+| Container image names missing | Not available in smartscape | Use `k8s.object` parsing for image details; see dt-obs-kubernetes skill |
+| `process.software_technologies` is empty | Process not monitored by deep injection | Verify OneAgent deep monitoring is enabled for the process group |
 
 ---
 

@@ -2,9 +2,10 @@
 name: reagent-substitute-scout
 description: Find validated alternative reagents based on literature citation data.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Skill: Reagent Substitute Scout (ID: 108)
 
 ## When to Use

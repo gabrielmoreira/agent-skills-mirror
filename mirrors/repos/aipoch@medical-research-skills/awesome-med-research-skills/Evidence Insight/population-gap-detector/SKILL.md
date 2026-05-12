@@ -4,6 +4,7 @@ description: Detects overlooked, underrepresented, weakly resolved, or poorly va
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Population Gap Detector
 

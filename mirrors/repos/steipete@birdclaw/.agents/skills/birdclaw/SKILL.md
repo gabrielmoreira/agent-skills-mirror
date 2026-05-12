@@ -18,7 +18,7 @@ Prefer:
 Check basic health/freshness before analysis:
 
 ```bash
-birdclaw db stats --json
+birdclaw --json db stats
 ```
 
 ```bash
@@ -54,7 +54,7 @@ Caching model:
 - profile resolution reads local `profiles`, then `sync_cache`, then `bird user`
 - `xurl` is the last fallback; pass `--no-xurl-fallback` when avoiding X API spend matters
 - failed profile lookups are cached briefly to avoid repeated live calls
-- URL expansion reads `sync_cache` first; use `--refresh-url-cache` only when stale links matter
+- URL expansion reads `sync_cache` first and mirrors results into persistent `url_expansions`; use `--refresh-url-cache` only when stale links matter
 - resolved profiles preserve bio, profile URL, location, verification type, structured URL entities, raw profile JSON, and X affiliation badge metadata when available
 - inspect `profileEvidence` in `whois --json` to separate `affiliation`, `bio_handle`, `bio_domain`, `bio_company`, `profile_url`, `profile_bio_url`, `profile_history`, `dm_context`, and `expanded_url` matches
 
@@ -71,6 +71,25 @@ How the richer identity evidence works:
 - A cached rerun should show profile resolution from `local`/`sync_cache` and URL expansions from `cache`; use refresh flags only when current profile/bio/link evidence matters.
 
 Use `--expand-urls` when `t.co` links are evidence. It may touch the network on cache miss, but it is not an X API call.
+
+## Link Search
+
+Use the persistent link index when looking for remembered shared tweets, videos, or `t.co` expansions:
+
+```bash
+birdclaw links backfill
+```
+
+```bash
+birdclaw --json search links "the work" --source dm --media video --limit 50
+```
+
+Notes:
+
+- `links backfill` indexes tweet/DM URL occurrences and expands missing/error/miss `t.co` rows; use `--refresh-url-cache` to force re-expansion.
+- Default backfill indexes `t.co`; add `--all-urls` only when non-shortened links matter.
+- `search links` matches short URLs, expanded URLs, linked tweet text/author, and source tweet/DM text.
+- Link source-of-truth is `url_expansions` + `link_occurrences`; both are included in Git-friendly backups under `data/links/`.
 
 ## Year Analysis
 
@@ -136,12 +155,24 @@ Useful SQL sketch for rule tuning:
 
 ```bash
 sqlite3 ~/.birdclaw/birdclaw.sqlite "
-select id, created_at, favorite_count, full_text
+select id, created_at, like_count, text
 from tweets
 where created_at >= '2020-01-01' and created_at < '2021-01-01'
 order by random()
 limit 50;"
 ```
+
+## Git Backup
+
+Use backup sync when asked to preserve or restore the local archive via GitHub:
+
+```bash
+birdclaw --json backup sync --repo ~/Projects/backup-birdclaw --remote https://github.com/steipete/backup-birdclaw.git
+```
+
+Included source-of-truth shards: accounts, profiles, profile affiliations/snapshots/bio entities, tweets, tweet collections, timeline edges, DMs, blocks, mutes, AI scores, tweet actions, and link index rows.
+
+Not backed up intentionally: `sync_cache`, `identity_search_index`, FTS tables/shadow tables, local SQLite files, and `config.json`. URL expansion cache rows are persisted into backed `url_expansions`.
 
 ## Verification
 
@@ -149,6 +180,12 @@ After query/filter changes, run focused tests first:
 
 ```bash
 pnpm test src/lib/queries.test.ts src/cli.test.ts src/routes/api/query.test.ts
+```
+
+After link-index or backup changes:
+
+```bash
+pnpm test src/lib/url-expansion.test.ts src/lib/link-index.test.ts src/lib/backup.test.ts
 ```
 
 Then run the broader release-relevant gate:

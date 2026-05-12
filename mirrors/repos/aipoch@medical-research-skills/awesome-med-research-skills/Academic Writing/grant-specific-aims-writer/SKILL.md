@@ -4,6 +4,7 @@ description: Writes Specific Aims pages for grant applications. Use when draftin
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Grant Proposal Assistant
 

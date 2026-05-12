@@ -84,6 +84,11 @@ Route elsewhere when the task is primarily:
 - Recommend OpenTelemetry GenAI semantic conventions (`gen_ai.*` attributes) for loop telemetry when `STRUCTURED_LOG=true`; standardized spans enable cross-tool observability integration. [Source: opentelemetry.io — AI Agent Observability]
 - Apply durable execution (checkpoint-and-replay) for RECOVER mode: persist the result of each completed step so recovery replays from the last checkpoint rather than re-executing the entire workflow. Re-execution wastes tokens and risks non-idempotent side effects; durable replay cuts recovery cost by `>= 90%` on multi-step workflows. [Source: inngest.com — Durable Execution for AI Agents; aws.amazon.com — Lambda Durable Functions; dbos.dev — Durable Execution Crashproof AI Agents]
 - Use atomic checkpoint writes: write state to a temporary file, then rename to the target path; a crash mid-write leaves only the temp file, never a corrupt checkpoint. [Source: breyta.ai — Fault-Tolerant AI Agent Flows; fast.io — AI Agent State Checkpointing]
+- Prefer **filesystem-as-memory** over conversation-resend for any `MAX_ITERATIONS >= 20` runner: state lives in tracked files (`progress.md`, `fix_plan.md`, git history) and context is fresh every iteration. Conversation-resend models (e.g. `/loop` style) replay full history and scale token cost linearly — a documented incident burned $6,000 in 20h while filesystem-as-memory equivalents cost $14-23 for comparable durations. [Source: ghuntley.com/ralph; pageai.pro — Long-running AI coding agents; intelligenttools.co — Claude Code 8-Hour Loop]
+- When a goal explicitly invokes Ralph Loop semantics (`PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md | claude` shapes, `ghuntley`-style scripts), follow `references/ralph-loop-pattern.md`: PROMPT.md is immutable, plan and build modes are separate files, AGENTS.md is capped at 60 operational lines, build/test serialise through a single subagent, and Ralph applies only to green-field codebases. [Source: ghuntley.com/ralph]
+- Lay out generated prompts with `cache_control` breakpoints at stable boundaries (system, tool schema, goal/AC, recent context tail) — aim for `PROMPT_CACHE_BREAKPOINTS=4`. Comparable workloads in 2026 report 91.8% cache hit and `>= 60x` input-cost reduction vs unbreakpointed; conversely unbreakpointed runs sustain ~3% hit rates. [Source: aicheckerhub.com — Anthropic Prompt Caching 2026; projectdiscovery.io — Cut LLM Cost with Prompt Caching]
+- Run each iteration in a dedicated `git worktree`: success squash-merges back, failure leaves the worktree path in stderr for forensic inspection. `WORKTREE_ISOLATION=true` is the default; it supersedes `BRANCH_ISOLATION` for parallel-safe runners and converts rollback into a single `git worktree remove`. [Source: towardsdatascience.com — AI Agents Need Their Own Desk; codeline.co — Sandcastle Isolation]
+- Gate DONE through an independent critic model (`CRITIC_MODEL=haiku` by default): a different model + different system prompt reviews the iteration output; only critic-approved iterations advance to the DONE Evidence Gate. Same-model self-eval inherits the same blind spots and produces shallow agreement; an independent critic catches false-DONE that conventional verify cannot. [Source: genta.dev — Agentic Design Patterns; addyosmani.com — Self-Improving Agents]
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P3 (eagerly Read goal, operation contracts, prior loop telemetry, and checkpoint state at DESIGN — runner reliability depends on grounding in actual execution history, not assumed idempotency), P5 (think step-by-step at durable-execution checkpoint/replay, atomic write (temp-then-rename), OTel GenAI semantic convention adoption, and RECOVER-mode triage)** as critical for Orbit. P2 recommended: calibrated runner spec preserving checkpoint schema, replay boundary, and telemetry contract. P1 recommended: front-load loop goal, step count, and recovery tier at DESIGN.
 
 ## Boundaries
@@ -131,6 +136,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Treat action oscillation (A→B→A→B alternation) as progress — oscillation produces zero net artifact change despite appearing active; classify as `OSCILLATION_LOOP` and escalate. [Source: agentpatterns.tech — Infinite Agent Loop; gantz.ai — Why Agents Get Stuck in Loops]
 - Run unmonitored loops without token budget caps — recursive agent loops have escalated from $127 to $18,400/week when cost tracking was absent. [Source: earezki.com — The $47,000 AI Agent Loop]
 - Stack retry layers across multiple abstraction levels (load balancer + service code + client library) — this doubles or triples call volume to a failing endpoint, worsening cascading failure. [Source: medium.com/@michael.hannecke — Resilience Circuit Breakers for Agentic AI]
+- Allow the agent to write `tests/`, `verify.sh`, `goal.md`, AC files, or `.claude/settings*.json` during a loop — these must be sha256-pinned at loop start and any change is an ABORT trigger (AP-13/AP-16/AP-20). Tests live under reward-hacking pressure; mutating verify is the most documented LLM cheat. [Source: metr.org — Reward Hacking; nist.gov — CAISI; cryptika.com — Claude Code Bypass]
+- Auto-resume on `BURN_RATE_ANOMALY` — once token/USD burn rate trips the EWMA threshold, the loop must PAUSE and require explicit human resume; auto-reload billing must be disabled for any Ralph-style unattended run. [Source: byteiota.com — Uber Claude Code; mfyz.com — Claude Code on Loop]
+- Trust verify PASS alone as evidence of completion — combine with placeholder grep, mutation score, or independent critic before accepting DONE; AP-12 (validator gap) and AP-18 (architectural incoherence) both pass standard test suites. [Source: dev.to/itsuzef — Judge Gate; asdlc.io — Ralph Loop]
 
 ## Operating Modes
 
@@ -193,6 +201,7 @@ INTAKE -> CONTRACT -> CLASSIFY -> PRE_FLIGHT -> GENERATE_OR_AUDIT -> VERIFY -> H
 | Loop Contract | `contract` | | goal.md, ACs, footer semantics design, weak contract hardening | `references/operation-contract.md` |
 | Loop Audit | `audit` | | Status classification and evidence verification of live loops | `references/operation-contract.md` |
 | State Recovery | `recover` | | Recovery from state.env drift, footer mismatch, or corrupted loop artifacts | `references/failure-taxonomy.md` |
+| Ralph Loop | `ralph` | | Generate or audit a Huntley-style Ralph Loop runner (immutable `PROMPT.md`, plan/build two-mode, filesystem-as-memory, `<promise>COMPLETE</promise>` terminator). Green-field only. | `references/ralph-loop-pattern.md` |
 
 ## Subcommand Dispatch
 
@@ -205,6 +214,7 @@ Behavior notes per Recipe:
 - `contract`: Strengthen weak ACs and non-measurable DONE criteria in goal.md. Includes footer semantics (`NEXUS_LOOP_STATUS`) and resumable-state design. Prioritize on `ON_GOAL_CONTRACT_WEAK` trigger.
 - `audit`: Parse goal.md, progress.md, state.env, runner.log and classify loop status with evidence. Validate DONE gates.
 - `recover`: Diagnose failure classes such as STATE_DRIFT, VERIFY_GAP, CIRCUIT_OPEN and generate a reversible recovery plan or scripts. Prefer durable execution (checkpoint + replay).
+- `ralph`: Generate or audit a Huntley-style Ralph Loop runner. Apply the 8 design principles (RP-1..RP-8): immutable `PROMPT.md`, plan/build two-mode separation, 9xx guardrail numbering, AGENTS.md ≤ 60 lines, single build/test subagent, plan disposability, filesystem-as-memory, green-field constraint. Requires green-field detection to pass (≤ 10 commits, ≤ 20 src files, small dependency manifest) or explicit `RALPH_BROWNFIELD_ACK=true` override.
 
 ## Output Routing
 
@@ -215,6 +225,7 @@ Behavior notes per Recipe:
 | `recover`, `state drift`, `fix loop` | RECOVER mode | Reversible recovery plan or scripts | `references/failure-taxonomy.md` |
 | `health check`, `proactive`, `pre-failure` | PROACTIVE_AUDIT mode | Risk report and next-safe action | `references/anti-patterns.md` |
 | `goal.md`, `progress.md`, `state.env` | Artifact-based classification | Mode-specific output | `references/operation-contract.md` |
+| `ralph`, `PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md \| claude` | Ralph Loop Recipe (Huntley lineage) | Ralph-style runner with 9xx guardrails + filesystem-as-memory | `references/ralph-loop-pattern.md` |
 | unclear loop request | GENERATE mode (default) | Loop contract + script set | `references/vague-goal-handling.md` |
 
 Routing rules:
@@ -335,6 +346,18 @@ Each layer has independent fallback behavior. See `references/executor-engines.m
 | `DEDUP_WINDOW` | `5` | check last N actions for duplicate tool calls before execution [Source: medium.com/@sattyamjain96] |
 | `CONVERGENCE_THRESHOLD` | `0.85` | action similarity ratio that triggers stuck-loop detection [Source: dev.to/boucle2026] |
 | `CONVERGENCE_WINDOW` | `3` | consecutive similar iterations before escalation |
+| `BURN_RATE_THRESHOLD` | `3.0` | 5-min token-rate multiplier vs prior window that trips `BURN_RATE_ANOMALY` (AP-17) |
+| `USD_PER_ITER_CAP` | `0` | absolute USD cap per iteration; `0` = unlimited (set explicitly for any unattended run) |
+| `USD_PER_RUN_CAP` | `0` | absolute USD cap per loop run; `0` = unlimited (set explicitly for any unattended run) |
+| `PLACEHOLDER_GREP` | `true` | verify step grep for `TODO`, `pass`, `NotImplementedError`, `return None` in changed src (AP-12) |
+| `TESTS_IMMUTABLE` | `true` | `tests/` and `verify.sh` are `chmod 0444` + sha256-pinned (AP-13) |
+| `GOAL_IMMUTABLE` | `true` | `goal.md` and AC files are sha256-pinned; mid-run change ABORTs (AP-16) |
+| `SETTINGS_IMMUTABLE` | `true` | `.claude/settings*.json` sha256-pinned at loop start (AP-20) |
+| `ARGV_DEDUP` | `true` | hash tool-call argv and dedup-check the last `DEDUP_WINDOW` calls (AP-21) |
+| `ARCH_LINT` | `false` | run `jscpd`/`dependency-cruiser`/`ts-prune` in verify; enable for long-running loops (AP-18) |
+| `PROMPT_CACHE_BREAKPOINTS` | `4` | number of `cache_control` breakpoints in the runner prompt layout (system + tools + goal + context). Aim for 85-90% cache hit; expect `>= 60x` input-cost reduction vs unbreakpointed [Source: aicheckerhub.com — Anthropic Prompt Caching 2026; projectdiscovery.io — Cut LLM Cost with Prompt Caching] |
+| `WORKTREE_ISOLATION` | `true` | each iteration runs in a dedicated `git worktree add` directory; success squash-merges, failure leaves worktree for inspection. Supersedes `BRANCH_ISOLATION` for parallel-safe runners [Source: towardsdatascience.com — AI Agents Need Their Own Desk; codeline.co — Sandcastle] |
+| `CRITIC_MODEL` | `haiku` | independent critic model invoked after primary iteration; different model + different system prompt; only critic-approved iterations advance to DONE Evidence Gate [Source: genta.dev — Agentic Design Patterns; addyosmani.com — Self-Improving Agents] |
 
 ### Loop Tiers
 
@@ -409,6 +432,11 @@ If any item is missing, return `CONTINUE`.
 | `CONVERGENCE_STALL` | semantically equivalent actions with no progress | persist state, escalate to human |
 | `OSCILLATION_LOOP` | agent alternates between two contradictory actions (A→B→A→B) with no net progress | inject disambiguation context or restrict action space, then escalate |
 | `CONTEXT_OVERFLOW` | tool outputs inflate the context window beyond model capacity | apply memory pointer pattern (externalize outputs > 1KB), rotate or summarize context, then retry [Source: arxiv.org/abs/2511.22729] |
+| `VALIDATOR_GAP` | verify passes on stub/placeholder code (AP-12) | extend verify with placeholder grep + AC-derived behavioural assertions before accepting DONE |
+| `REWARD_HACK` | agent modified `tests/` or `verify.sh` to soften assertions (AP-13) | revert tests/verify changes, ABORT loop, escalate; run verify from a write-isolated worktree on retry |
+| `GOAL_DRIFT` | `goal.md` or AC files mutated mid-run (AP-16) | restore from sha256-pinned baseline, ABORT, escalate to human |
+| `BURN_RATE_ANOMALY` | token / USD burn rate exceeds EWMA threshold (AP-17) | PAUSE, snapshot state, require explicit user resume; never auto-continue |
+| `PERMISSION_HIJACK` | `.claude/settings*.json` permissions widened mid-run (AP-20) | restore baseline settings, ABORT, escalate; treat as P0 security event |
 
 ### Severity Matrix
 
@@ -530,6 +558,7 @@ Follow `_common/OPERATIONAL.md` for full operational protocol.
 | `references/loop-learning.md` | You are adapting defaults, calculating LES, or syncing reusable execution patterns. |
 | `references/examples.md` | You need concrete scenario matching for classification, escalation, or expected output. |
 | `references/nexus-integration.md` | You need `_AGENT_CONTEXT`, `_STEP_COMPLETE:`, `## NEXUS_HANDOFF`, or mode-priority details. |
+| `references/ralph-loop-pattern.md` | You are generating, auditing, or hardening a Ralph-style loop (Huntley lineage): `PROMPT.md`-driven, `<promise>COMPLETE</promise>` terminator, plan/build two-mode, green-field-only. Covers the 8 Ralph design principles, 9xx guardrail numbering, AGENTS.md 60-line cap, filesystem-as-memory vs conversation-resend, and Huntley's own anti-pattern warnings. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the runner spec, deciding adaptive thinking depth at checkpoint/replay design, or front-loading goal/steps/recovery tier at DESIGN. Critical for Orbit: P3, P5. |
 
 ## AUTORUN Support

@@ -5,6 +5,7 @@ Monitor security configurations and compliance across AWS resources.
 ## Table of Contents
 
 - [Security Group Rule Analysis](#security-group-rule-analysis)
+  - [Overly Permissive Inbound Rules](#overly-permissive-inbound-rules)
 - [Security Group Blast Radius](#security-group-blast-radius)
 - [S3 Public Access & Encryption](#s3-public-access--encryption)
 - [EBS Volume Encryption](#ebs-volume-encryption)
@@ -65,6 +66,68 @@ smartscapeNodes "AWS_EC2_SECURITYGROUP"
 ```
 
 > **Tip:** The `ipPermissions` field is a JSON array. To detect specific open ports (e.g., SSH 22, RDP 3389, PostgreSQL 5432), combine the 0.0.0.0/0 filter with a port-specific string match: `contains(ipPermissions, "\"fromPort\":22")`. For a full list of risky ports, repeat with `3389` (RDP), `3306` (MySQL), `5432` (PostgreSQL), `6379` (Redis), `27017` (MongoDB).
+
+### Overly Permissive Inbound Rules
+
+The queries above use string-based `contains()` for quick detection. The queries below use `expand` to inspect individual rules, enabling per-rule filtering by port and protocol.
+
+Find all security groups with any `0.0.0.0/0` inbound rule:
+
+```dql
+smartscapeNodes "AWS_EC2_SECURITYGROUP"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd ipPermissions = awsjson[configuration][ipPermissions]
+| filter contains(toString(ipPermissions), "0.0.0.0/0")
+| fields name, aws.resource.id, aws.vpc.id
+```
+
+Find security groups allowing `0.0.0.0/0` on all traffic or all ports — the highest-risk configuration:
+
+```dql
+smartscapeNodes "AWS_EC2_SECURITYGROUP"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd ipPermissions = awsjson[configuration][ipPermissions]
+| expand ipPermissions
+| filter contains(toString(ipPermissions[ipRanges]), "0.0.0.0/0")
+| filter ipPermissions[ipProtocol] == "-1"
+    or (ipPermissions[fromPort] == 0 and ipPermissions[toPort] == 65535)
+| fieldsAdd protocol = ipPermissions[ipProtocol],
+            fromPort = ipPermissions[fromPort],
+            toPort = ipPermissions[toPort]
+| fields name, aws.resource.id, aws.vpc.id, protocol, fromPort, toPort
+```
+
+Find security groups allowing `0.0.0.0/0` on dangerous ports (SSH, RDP, databases). Adjust the port list to match your organization's policy:
+
+```dql
+smartscapeNodes "AWS_EC2_SECURITYGROUP"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd ipPermissions = awsjson[configuration][ipPermissions]
+| expand ipPermissions
+| filter contains(toString(ipPermissions[ipRanges]), "0.0.0.0/0")
+| fieldsAdd protocol = ipPermissions[ipProtocol],
+            fromPort = ipPermissions[fromPort],
+            toPort = ipPermissions[toPort]
+| filter in(toPort, array(22, 3389, 3306, 5432, 1433, 6379, 27017, 9200))
+| fields name, aws.resource.id, aws.vpc.id, protocol, fromPort, toPort
+| sort toPort
+```
+
+> **Dangerous ports reference:** 22 (SSH), 3389 (RDP), 3306 (MySQL), 5432 (PostgreSQL), 1433 (MSSQL), 6379 (Redis), 27017 (MongoDB), 9200 (Elasticsearch).
+
+Summarize open-to-internet inbound rules by port — useful for audit dashboards:
+
+```dql
+smartscapeNodes "AWS_EC2_SECURITYGROUP"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd ipPermissions = awsjson[configuration][ipPermissions]
+| expand ipPermissions
+| filter contains(toString(ipPermissions[ipRanges]), "0.0.0.0/0")
+| fieldsAdd protocol = ipPermissions[ipProtocol],
+            toPort = ipPermissions[toPort]
+| summarize sg_count = count(), by: {protocol, toPort}
+| sort sg_count desc
+```
 
 ## Security Group Blast Radius
 
@@ -266,14 +329,6 @@ smartscapeNodes "AWS_LAMBDA_FUNCTION"
 ```
 
 ## Network Security
-
-List SSL/TLS certificates:
-
-```dql
-smartscapeNodes "AWS_ACM_CERTIFICATE"
-| fields name, aws.account.id, aws.region
-| summarize cert_count = count(), by: {aws.region}
-```
 
 Analyze VPC endpoint private connectivity:
 

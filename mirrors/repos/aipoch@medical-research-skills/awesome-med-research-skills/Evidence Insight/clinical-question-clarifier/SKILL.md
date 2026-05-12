@@ -4,6 +4,7 @@ description: Clarifies a vague clinical or biomedical research idea into a struc
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Clinical Question Clarifier
 

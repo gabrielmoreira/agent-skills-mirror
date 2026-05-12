@@ -111,7 +111,7 @@ Focus on specific critical services:
 fetch dt.davis.problems, from:now() - 24h
 | filter not(dt.davis.is_duplicate)
 | expand dt.smartscape.service
-| filter dt.smartscape.service == "SERVICE-CRITICAL-APP"
+| filter dt.smartscape.service == toSmartscapeId("SERVICE-CRITICAL-APP")
 | fields
     event.start,
     display_id,
@@ -395,7 +395,7 @@ fetch dt.davis.problems
 ```dql
 // ✅ CORRECT - Check array contains
 fetch dt.davis.problems
-| filter in("SERVICE-ABC", dt.smartscape.service)
+| filter in(toSmartscapeId("SERVICE-ABC"), dt.smartscape.service)
 ```
 
 ```dql

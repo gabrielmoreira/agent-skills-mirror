@@ -2,7 +2,7 @@
 name: pdf-extract-experimental-materials
 description: Extract experimental materials and instrument information from PDFs (or PDF-derived text/Markdown) into three CSV tables; use when a paper/report contains sections like Materials and Methods, Key Resources Table, Reagents, Antibodies, Consumables, Software, Equipment, Instruments, or Reagent Preparation.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

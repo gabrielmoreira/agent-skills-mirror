@@ -2,9 +2,10 @@
 name: comparison-table-gen
 description: Auto-generates comparison tables for concepts, drugs, or study results.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Comparison Table Gen
 
 Generates comparison tables for medical content.

@@ -438,11 +438,11 @@ Identify processes by listening ports:
 smartscapeNodes "PROCESS"
 | fieldsAdd name, process.listen_ports, dt.process_group.detected_name
 | filter isNotNull(process.listen_ports) and arraySize(process.listen_ports) > 0
-| expand port = process.listen_ports
+| expand listen_port = process.listen_ports
 | summarize
     process_count = countDistinct(id),
-    by: {port, dt.process_group.detected_name}
-| sort toLong(port) asc
+    by: {listen_port, dt.process_group.detected_name}
+| sort toLong(listen_port) asc
 ```
 
 **Use Case:** Discover port conflicts or identify services by standard ports (80, 443, 3306, etc.).

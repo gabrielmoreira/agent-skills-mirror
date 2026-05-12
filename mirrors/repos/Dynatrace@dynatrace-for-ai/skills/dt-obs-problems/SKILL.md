@@ -1,12 +1,41 @@
 ---
 name: dt-obs-problems
-description: Problem entities, root cause analysis (RCA), impact assessment, and problem correlation. Query and analyze Dynatrace-detected problems and incidents.
+description: >-
+  DAVIS problem analysis including root cause identification, impact assessment,
+  and correlation with other telemetry. Use when querying or investigating detected problems.
+  Trigger: "active problems", "root cause analysis", "problem impact", "affected users",
+  "list problems", "P-12345 details", "recurring problems", "problem history",
+  "problem trending", "blast radius", "which entity caused the problem",
+  "problems affecting Kubernetes", "problems by service".
+  Do NOT use for explaining existing queries, product documentation questions, generic
+  log searching, distributed tracing, or host-level resource monitoring.
 license: Apache-2.0
 ---
 
 # Problem Analysis Skill
 
 Analyze Dynatrace AI-detected problems including root cause identification, impact assessment, and correlation with logs and metrics.
+
+---
+
+## Use Cases
+
+### 1. Active Problem Triage
+- **Goal:** List and prioritize currently active problems
+- **Trigger:** "active problems", "what problems are open", "current issues", "availability issues"
+- **Done:** Prioritized list of active problems with category, user impact, and display IDs
+
+### 2. Root Cause Investigation
+- **Goal:** Identify the root cause entity for a specific problem
+- **Trigger:** "root cause of P-12345", "what caused this problem", "which entity is the root cause"
+- **Done:** Root cause entity identified with affected entity list and blast radius
+
+### 3. Problem Trending
+- **Goal:** Analyze problem patterns over time to identify recurring issues
+- **Trigger:** "recurring problems", "problem history", "problem trends last 30 days"
+- **Done:** Trend data showing problem frequency, recurring root causes, and resolution times
+
+---
 
 ## Overview
 
@@ -166,24 +195,9 @@ fetch dt.davis.problems
 ```dql
 fetch dt.davis.problems, from:now() - 7d
 | filter not(dt.davis.is_duplicate)
-| filter in(dt.entity.service, "SERVICE-XXXXXXXXX") or in(dt.smartscape.service, toSmartscapeId("SERVICE-XXXXXXXXX"))
+| filter in(dt.smartscape.service, toSmartscapeId("SERVICE-XXXXXXXXX"))
 | summarize problems = count(), by: {event.category, event.status}
 ```
-
-### Important: Entity Filter DO and DON'T
-
-- **DO** use array-safe filters and include both deprecated and Smartscape service fields when filtering by service ID:
-
-    ```dql
-    | filter in(dt.entity.service, "SERVICE-00E66996F1555897") or in(dt.smartscape.service, toSmartscapeId("SERVICE-00E66996F1555897"))
-    ```
-
-- **DON'T** use scalar equality on service fields or only one field variant:
-
-    ```dql
-    // Wrong: not array-safe and misses Smartscape-only matches
-    | filter dt.entity.service == "SERVICE-00E66996F1555897"
-    ```
 
 ## Root Cause Analysis Patterns
 
@@ -267,6 +281,27 @@ fetch dt.davis.problems, from:now() - 24h
 | sort problem_count desc
 ```
 
+### Cause Category vs. Root Cause Entity
+
+These are different questions — pick the right approach:
+
+- **"What causes problems?"** / **"most common cause"** → Summarize by `event.category`
+  (SLOWDOWN, ERROR, RESOURCE, AVAILABILITY, CUSTOM). Explain what triggers each category.
+- **"Which entity causes problems?"** / **"root cause entity"** → Group by
+  `root_cause_entity_name`. Lists specific services, hosts, or apps.
+
+**Cause category breakdown** (use when asked about common causes, patterns, or types):
+
+```dql
+fetch dt.davis.problems, from:now() - 30d
+| filter not(dt.davis.is_duplicate)
+| summarize problem_count = count(), by: {event.category}
+| sort problem_count desc
+```
+
+Then for each category, explain what triggers it using the Problem Categories table and
+cite specific entities from the tenant data as examples.
+
 ## Problem Trending and Pattern Analysis
 
 Track problem trends over time, identify recurring issues, and analyze resolution performance.
@@ -287,6 +322,73 @@ Track problem trends over time, identify recurring issues, and analyze resolutio
 - **Impact trending**: Track user impact changes over time
 
 See `references/problem-trending.md` for complete query patterns and best practices.
+
+## Cross-Domain Problem Queries
+
+### Problems Associated with Kubernetes Clusters
+
+Use `affected_entity_ids` or `dt.smartscape_source.id` to find problems related to Kubernetes:
+
+```dql
+fetch dt.davis.problems, from:now() - 7d
+| filter not(dt.davis.is_duplicate)
+| filter matchesPhrase(dt.smartscape_source.id, "KUBERNETES_CLUSTER")
+    OR matchesPhrase(dt.smartscape_source.id, "K8S_")
+| fields event.start, display_id, event.name, event.category, event.status,
+    dt.smartscape_source.id, affected_entity_ids
+| sort event.start desc
+```
+
+Alternative: expand affected entities and filter for K8s entity types:
+
+```dql
+fetch dt.davis.problems, from:now() - 7d
+| filter not(dt.davis.is_duplicate)
+| expand entity_id = affected_entity_ids
+| filter matchesPhrase(entity_id, "KUBERNETES_CLUSTER")
+    OR matchesPhrase(entity_id, "K8S_")
+| fields event.start, display_id, event.name, event.category, entity_id
+| sort event.start desc
+```
+
+### Simple Problem Listing
+
+List all problems from the last 24 hours (common request):
+
+```dql
+fetch dt.davis.problems, from:now() - 24h
+| filter not(dt.davis.is_duplicate)
+| fields event.start, event.end, display_id, event.name, event.category, event.status
+| sort event.start desc
+```
+
+## Response Construction
+
+### Problem Cause Summaries
+
+When summarizing problem causes, categories, or patterns, provide a **comprehensive
+breakdown** across all standard categories present in the data: AVAILABILITY, ERROR,
+SLOWDOWN, RESOURCE, and CUSTOM. For each category found:
+
+1. **Category name** and count of problems
+2. **What triggers it** — brief explanation (e.g., RESOURCE = CPU/memory/disk threshold
+   exceeded; AVAILABILITY = service or entity became unreachable)
+3. **Specific examples** from the tenant's data (affected entity names, problem IDs)
+
+Do not stop after the first two categories — users expect the full picture. Reference
+the Problem Categories table above for trigger descriptions.
+
+### Analysis Results
+
+When presenting query results:
+- Include **entity names** (not just IDs) — but choose the efficient method:
+  - **Few entities (< 5):** `get-entity-name` calls are fine
+  - **Many entities:** Use `query-problems` tool which returns names directly, or
+    include `root_cause_entity_name` / `entityName()` in the DQL query to resolve
+    names inline. Avoid calling `get-entity-name` in a loop for 10+ entities —
+    this can exhaust the tool call limit and return no answer at all.
+- Provide **actionable recommendations** aligned to the identified causes
+- Organize by frequency or impact for easy prioritization
 
 ## Best Practices
 
@@ -324,12 +426,41 @@ fetch dt.davis.problems, from:now() - 4h
 fetch dt.davis.problems
 ```
 
-## Related Documentation
+## Troubleshooting
 
-- **references/problem-trending.md**: Problem trending and timeseries analysis patterns
-- **references/problem-correlation.md**: Correlating problems with logs and other telemetry
-- **references/impact-analysis.md**: Business and technical impact assessment
-- **references/problem-merging.md**: When and why DAVIS merges events into problems
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| No problems returned | Using `event.status == "OPEN"` | Use `"ACTIVE"` or `"CLOSED"` — `"OPEN"` does not exist |
+| Duplicate problems in results | Missing deduplication filter | Add `filter not(dt.davis.is_duplicate)` immediately after fetch |
+| Wrong field name (`title`, `status`, `severity`) | SQL-like naming | Use `event.name`, `event.status`, `event.category` — see field name table above |
+| `root_cause_entity_id` is null | Not all problems have identified root causes | Add `filter isNotNull(root_cause_entity_id)` when querying root causes |
+| Query scans too much data / times out | Missing time range | Always specify `from:now() - <duration>` on the fetch command |
+| `affected_entity_ids` is empty array | Problem has no mapped affected entities | Check `dt.smartscape.service` or `dt.smartscape_source.id` as alternatives |
+
+## When to Load References
+
+### Load [problem-trending.md](references/problem-trending.md) when:
+- Analyzing problem frequency over time
+- Detecting recurring problems on a schedule
+- Calculating resolution time trends and P95 durations
+- Comparing problem creation rates by category
+
+### Load [problem-correlation.md](references/problem-correlation.md) when:
+- Correlating problems with logs or other telemetry
+- Investigating events that preceded a problem
+- Linking problems to deployment or config changes
+
+### Load [impact-analysis.md](references/impact-analysis.md) when:
+- Assessing business impact (affected users, services)
+- Calculating blast radius for a root cause entity
+- Prioritizing problems by technical and user impact
+
+## References
+
+- [problem-trending.md](references/problem-trending.md) — Problem trending and timeseries analysis patterns
+- [problem-correlation.md](references/problem-correlation.md) — Correlating problems with logs and other telemetry
+- [impact-analysis.md](references/impact-analysis.md) — Business and technical impact assessment
+- [problem-merging.md](references/problem-merging.md) — When and why DAVIS merges events into problems
 
 ## Related Skills
 

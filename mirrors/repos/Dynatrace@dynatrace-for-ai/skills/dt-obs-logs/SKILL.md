@@ -1,6 +1,14 @@
 ---
 name: dt-obs-logs
-description: Log queries, filtering, pattern analysis, and log correlation. Search and analyze application and infrastructure logs.
+description: >-
+  Log querying, filtering, pattern analysis, and error rate calculation. Use when searching
+  application or infrastructure logs, analyzing error patterns, or correlating log data.
+  Trigger: "show error logs", "search logs for keyword", "log error rate", "recent errors",
+  "logs from last hour", "find log entries", "top error messages", "log patterns",
+  "parse JSON logs", "logs by process group", "log trends over time",
+  "log entry counts per minute".
+  Do NOT use for explaining existing queries, product documentation questions,
+  distributed tracing or span analysis (use dt-obs-tracing).
 license: Apache-2.0
 ---
 
@@ -16,8 +24,13 @@ Query, filter, and analyze Dynatrace log data using DQL for troubleshooting and 
 - Analyzing log patterns and trends
 - Grouping and aggregating log data by dimensions
 
-## When to Use This Skill
+> **Cross-source join required:** If the query must combine logs with host attributes
+> (OS type, hostname, IP address, cloud provider) → also read
+> `dt-dql-essentials/references/smartscape-topology-navigation.md` before writing the query.
 
+---
+
+## Use Cases
 Use this skill when users want to:
 - Find specific log entries (e.g., "show me error logs from the last hour")
 - Filter logs by severity, process group, or content
@@ -119,7 +132,7 @@ fetch logs, from:now() - 2h
 
 ### Filtering
 - `filter status == "ERROR"` - Filter by status level
-- `in(status, "ERROR", "FATAL", "WARN")` - Multi-status filter
+- `in(status, {"ERROR", "FATAL", "WARN"})` - Multi-status filter (use curly braces for literal sets)
 - `contains(content, "keyword")` - Simple substring search
 - `matchesPhrase(content, "exact phrase")` - Full-text phrase search
 
@@ -240,6 +253,16 @@ fetch logs, from:now() - 4h
 - Full-text search (`matchesPhrase`) may have performance implications on large datasets
 - Entity names require proper OneAgent monitoring for resolution
 - Time ranges should be reasonable (avoid unbounded queries)
+
+## Troubleshooting
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| No logs returned | Missing time range or too narrow | Widen `from:` window; verify log ingestion is active |
+| `getNodeName()` returns null | OneAgent not monitoring the entity or entity not yet resolved | Verify OneAgent is deployed and entity is discovered; use `dt.process_group.detected_name` as a reliable alternative |
+| `matchesPhrase()` slow on large data | Full-text search without pre-filtering | Add `filter status == "ERROR"` before `matchesPhrase()` |
+| Wrong field name `log.level` | Common mistake | Use `loglevel` (no dot) for severity; see dt-dql-essentials |
+| Empty `content` field | Log line was empty or not ingested | Check log source configuration in OneAgent |
 
 ## Related Skills
 

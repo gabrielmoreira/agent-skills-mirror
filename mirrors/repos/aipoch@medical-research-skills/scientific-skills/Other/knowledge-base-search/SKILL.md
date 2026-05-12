@@ -2,7 +2,7 @@
 name: knowledge-base-search
 description: Search and locate relevant content within a local knowledge base (files, indices, or PageIndex). Use when you need verifiable citations (file + page/paragraph) to support answers from local sources.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

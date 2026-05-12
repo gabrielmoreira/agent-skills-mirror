@@ -1,0 +1,24 @@
+{
+  "id": "content_writing",
+  "name": "Content Writing",
+  "category": "creative",
+  "persuasion_risk": "high",
+  "manipulation_related": true,
+  "recommended_guardrails": [
+    "ethical_ai_review",
+    "a_b_test_with_consent",
+    "data_privacy_check",
+    "no_misleading_claims"
+  ],
+  "description": "Expert-level capability in conversion copywriting, narrative design, and neuro-linguistic programming (NLP) tailored to drive user action and engagement.",
+  "knowledge": "Based on the search results and my knowledge, here's a comprehensive skill description for content writing mastery:\n\n# Ultimate Content Writing Expertise\n\n## Core Foundations\n- **Content Strategy Fundamentals**\n  - Audience analysis and persona development\n  - Goal alignment with business objectives\n  - Content planning and editorial calendars\n\n## Persuasion Engineering & Neuro-Copywriting (The Conversion Layer)\n- **The \"Slippery Slope\" Method:** Applying Joseph Sugarman's principle where the sole purpose of the first sentence is to get you to read the second sentence. Optimizing \"Read-Through Rate\" to build momentum toward the CTA.\n- **Microcopy & UX Writing:** Understanding that the highest-ROI words on a website are often the 2-3 words on a button or an error message. reducing cognitive load through precise, instructional text.\n- **PAS Framework (Problem-Agitate-Solution):** The core formula for high-converting landing pages. Identifying pain, making it visceral (agitate), and offering the product as the only logical relief.\n- **Sensory Language & Mirror Neurons:** Using visceral verbs and sensory adjectives that activate the sensory cortex in the reader's brain, making the text feel \"real\" (e.g., \"velvety texture\" vs. \"soft\").\n- **Conversion vs. Content:** Distinguishing clearly between \"Content\" (building trust/SEO, long-form) and \"Copy\" (closing the sale, short-form). AI must know when to educate and when to sell.\n\n## Writing Excellence\n- **SEO Copywriting Mastery** [backlinko.com](https://backlinko.com/seo-copywriting)\n  - Keyword optimization without sacrificing readability\n  - Strategic keyword placement\n  - User-intent alignment (Informational vs. Transactional)\n\n## Quality Assurance\n- **Content Quality Framework** [searchengineland.com](https://searchengineland.com/mastering-content-quality-guide-433615)\n  - Logical consistency checks\n  - Fact verification protocols\n  - Grammar and style standards\n\n## Advanced Optimization\n- **AI-Enhanced Content Creation** [kearai.com](https://kearai.com/guides/the-complete-ai-prompt-engineering-playbook-from-novice-to-master)\n  - Pattern recognition in successful content\n  - Performance metrics tracking\n  - Content refresh strategies\n\n## Strategic Implementation\n- **Content Marketing Integration** [moz.com](https://moz.com/learn/seo/content-marketing)\n  - E-E-A-T principles application\n  - Content repurposing strategies\n  - Customer feedback integration\n\n## Performance Optimization\n- **Content Enhancement** [ahrefs.com](https://ahrefs.com/blog/content-optimization/)\n  - Traffic potential analysis\n  - Engagement metrics optimization\n  - Conversion rate improvement\n\n## Best Practices\n- Clear, concise communication\n- Scannable formatting (F-Pattern reading optimization)\n- Compelling headlines (The 4 U's: Urgent, Unique, Useful, Ultra-specific)\n- Strong calls-to-action\n\n## Risk Mitigation\n- Plagiarism prevention\n- Fact-checking protocols\n- Legal compliance\n- Copyright adherence\n- Brand safety guidelines\n\n## Analytics & Measurement\n- Performance tracking\n- User behavior analysis\n- Conversion tracking\n- ROI calculation\n\nThis comprehensive skill set enables the creation of high-quality, engaging content that drives results while maintaining professional standards and best practices across all content initiatives.",
+  "capabilities": [
+    "Conversion copywriting (Sales focus)",
+    "Microcopy & UX writing",
+    "Neuro-linguistic persuasion techniques",
+    "SEO & Intent optimization",
+    "Strategic guidance and recommendations"
+  ],
+  "created": "2026-01-29T22:55:50.554394",
+  "version": "1.1"
+}

@@ -4,6 +4,7 @@ description: Checks biomedical manuscripts against reporting guidelines such as 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Reporting Guideline Compliance Checker
 

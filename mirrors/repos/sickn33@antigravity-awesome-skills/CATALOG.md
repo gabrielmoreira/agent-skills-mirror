@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1450
+Total skills: 1453
 
 ## architecture (95)
 
@@ -688,7 +688,7 @@ Total skills: 1450
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
-## general (350)
+## general (351)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -859,6 +859,7 @@ Total skills: 1450
 | `identity-mirror` | One sentence - what this skill does and when to invoke it | identity, mirror | identity, mirror, one, sentence, what, skill, does, invoke |
 | `ilya-sutskever` | Agente que simula Ilya Sutskever — co-fundador da OpenAI, ex-Chief Scientist, fundador da SSI. Use quando quiser perspectivas sobre: AGI safety-first, consci... | persona, agi, safety, scaling-laws, openai | persona, agi, safety, scaling-laws, openai, ilya, sutskever, agente, que, simula, co, fundador |
 | `infinite-gratitude` | Multi-agent research skill for parallel research execution (10 agents, battle-tested with real case studies). | infinite, gratitude | infinite, gratitude, multi, agent, research, skill, parallel, execution, 10, agents, battle, tested |
+| `ingest-youtube` | Pull a YouTube video transcript into a queryable markdown vault with yt-dlp subtitle discovery, VTT cleanup, metadata frontmatter, and capture-seed stubs. | ingest, youtube | ingest, youtube, pull, video, transcript, queryable, markdown, vault, yt, dlp, subtitle, discovery |
 | `interactive-portfolio` | Expert in building portfolios that actually land jobs and clients - not just showing work, but creating memorable experiences. Covers developer portfolios, d... | interactive, portfolio | interactive, portfolio, building, portfolios, actually, land, jobs, clients, just, showing, work, creating |
 | `internal-comms-anthropic` | To write internal communications, use this skill for: | internal, comms, anthropic | internal, comms, anthropic, write, communications, skill |
 | `internal-comms-community` | To write internal communications, use this skill for: | internal, comms, community | internal, comms, community, write, communications, skill |
@@ -1050,6 +1051,7 @@ Total skills: 1450
 | `acceptance-orchestrator` | Use when a coding task should be driven end-to-end from issue intake through implementation, review, deployment, and acceptance verification with minimal hum... | acceptance, orchestrator | acceptance, orchestrator, coding, task, should, driven, issue, intake, through, review, deployment, verification |
 | `agent-evaluation` | Testing and benchmarking LLM agents including behavioral testing, capability assessment, reliability metrics, and production monitoring—where even top agents... | agent, evaluation | agent, evaluation, testing, benchmarking, llm, agents, including, behavioral, capability, assessment, reliability, metrics |
 | `agentflow` | Orchestrate autonomous AI development pipelines through your Kanban board (Asana, GitHub Projects, Linear). Manages multi-worker Claude Code dispatch, determ... | agentflow | agentflow, orchestrate, autonomous, ai, development, pipelines, through, kanban, board, asana, github, linear |
+| `agenttrace-session-audit` | Audit local AI coding-agent sessions with agenttrace for cost, tool failures, latency, anomalies, health, diffs, and CI gates. | ai-coding, observability, cost-tracking, session-analysis | ai-coding, observability, cost-tracking, session-analysis, agenttrace, session, audit, local, ai, coding, agent, sessions |
 | `airflow-dag-patterns` | Build production Apache Airflow DAGs with best practices for operators, sensors, testing, and deployment. Use when creating data pipelines, orchestrating wor... | airflow, dag | airflow, dag, apache, dags, operators, sensors, testing, deployment, creating, data, pipelines, orchestrating |
 | `api-testing-observability-api-mock` | You are an API mocking expert specializing in realistic mock services for development, testing, and demos. Design mocks that simulate real API behavior and e... | api, observability, mock | api, observability, mock, testing, mocking, specializing, realistic, development, demos, mocks, simulate, real |
 | `apify-brand-reputation-monitoring` | Scrape reviews, ratings, and brand mentions from multiple platforms using Apify Actors. | apify, brand, reputation, monitoring | apify, brand, reputation, monitoring, scrape, reviews, ratings, mentions, multiple, platforms, actors |
@@ -1178,7 +1180,6 @@ Total skills: 1450
 | `vercel-deployment` | Expert knowledge for deploying to Vercel with Next.js | vercel, deployment | vercel, deployment, knowledge, deploying, next, js |
 | `whatsapp-cloud-api` | Integracao com WhatsApp Business Cloud API (Meta). Mensagens, templates, webhooks HMAC-SHA256, automacao de atendimento. Boilerplates Node.js e Python. | messaging, whatsapp, meta, webhooks | messaging, whatsapp, meta, webhooks, cloud, api, integracao, com, business, mensagens, hmac, sha256 |
 | `workflow-automation` | Workflow automation is the infrastructure that makes AI agents reliable. Without durable execution, a network hiccup during a 10-step payment flow means lost... |  | automation, infrastructure, makes, ai, agents, reliable, without, durable, execution, network, hiccup, during |
-| `x-twitter-scraper` | X (Twitter) data platform skill — tweet search, user lookup, follower extraction, engagement metrics, giveaway draws, monitoring, webhooks, 19 extraction too... | twitter, x-api, scraping, mcp, social-media, data-extraction, giveaway, monitoring, webhooks | twitter, x-api, scraping, mcp, social-media, data-extraction, giveaway, monitoring, webhooks, scraper, data, platform |
 
 ## security (174)
 
@@ -1359,7 +1360,7 @@ Total skills: 1450
 | `xss-html-injection` | Execute comprehensive client-side injection vulnerability assessments on web applications to identify XSS and HTML injection flaws, demonstrate exploitation ... | xss, html, injection | xss, html, injection, execute, client, side, vulnerability, assessments, web, applications, identify, flaws |
 | `zeroize-audit` | Detects missing zeroization of sensitive data in source code and identifies zeroization removed by compiler optimizations, with assembly-level analysis, and ... | zeroize, audit | zeroize, audit, detects, missing, zeroization, sensitive, data, source, code, identifies, removed, compiler |
 
-## testing (31)
+## testing (32)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1371,6 +1372,7 @@ Total skills: 1450
 | `debugger` | Debugging specialist for errors, test failures, and unexpected behavior. Use proactively when encountering any issues. | debugger | debugger, debugging, errors, test, failures, unexpected, behavior, proactively, encountering, any, issues |
 | `dependency-upgrade` | Master major dependency version upgrades, compatibility analysis, staged upgrade strategies, and comprehensive testing approaches. | dependency, upgrade | dependency, upgrade, major, version, upgrades, compatibility, analysis, staged, testing, approaches |
 | `doc-coauthoring` | This skill provides a structured workflow for guiding users through collaborative document creation. Act as an active guide, walking users through three stag... | doc, coauthoring | doc, coauthoring, skill, provides, structured, guiding, users, through, collaborative, document, creation, act |
+| `ejentum-reasoning-harness` | MCP server exposing four cognitive harness modes (reasoning, code, anti-deception, memory). Each call returns an engineered scaffold (failure pattern, proced... | ejentum, reasoning, harness | ejentum, reasoning, harness, mcp, server, exposing, four, cognitive, modes, code, anti, deception |
 | `evaluation` | Build evaluation frameworks for agent systems. Use when testing agent performance systematically, validating context engineering choices, or measuring improv... | evaluation | evaluation, frameworks, agent, testing, performance, systematically, validating, context, engineering, choices, measuring, improvements |
 | `ffuf-web-fuzzing` | Expert guidance for ffuf web fuzzing during penetration testing, including authenticated fuzzing with raw requests, auto-calibration, and result analysis | ffuf, web, fuzzing | ffuf, web, fuzzing, guidance, during, penetration, testing, including, authenticated, raw, requests, auto |
 | `idor-testing` | Provide systematic methodologies for identifying and exploiting Insecure Direct Object Reference (IDOR) vulnerabilities in web applications. | idor | idor, testing, provide, systematic, methodologies, identifying, exploiting, insecure, direct, object, reference, vulnerabilities |
@@ -1395,7 +1397,7 @@ Total skills: 1450
 | `wiki-qa` | Answer repository questions grounded entirely in source code evidence. Use when user asks a question about the codebase, user wants to understand a specific ... | wiki, qa | wiki, qa, answer, repository, questions, grounded, entirely, source, code, evidence, user, asks |
 | `windows-privilege-escalation` | Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements. | windows, privilege, escalation | windows, privilege, escalation, provide, systematic, methodologies, discovering, exploiting, vulnerabilities, during, penetration, testing |
 
-## workflow (99)
+## workflow (100)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1495,6 +1497,7 @@ Total skills: 1450
 | `web-scraper` | Web scraping inteligente multi-estrategia. Extrai dados estruturados de paginas web (tabelas, listas, precos). Paginacao, monitoramento e export CSV/JSON. | scraping, data-extraction, automation, csv | scraping, data-extraction, automation, csv, web, scraper, inteligente, multi, estrategia, extrai, dados, estruturados |
 | `webflow-automation` | Automate Webflow CMS collections, site publishing, page management, asset uploads, and ecommerce orders via Rube MCP (Composio). Always search tools first fo... | webflow | webflow, automation, automate, cms, collections, site, publishing, page, asset, uploads, ecommerce, orders |
 | `wrike-automation` | Automate Wrike project management via Rube MCP (Composio): create tasks/folders, manage projects, assign work, and track progress. Always search tools first ... | wrike | wrike, automation, automate, via, rube, mcp, composio, tasks, folders, assign, work, track |
+| `x-twitter-scraper` | X/Twitter automation skill for tweet search, follower export, media download, posting, replies, DMs, webhooks, MCP, SDKs, and the TweetClaw OpenClaw plugin. | twitter, x-api, tweet-search, twitter-api, twitter-scraper, follower-export, automation, mcp, sdk, webhooks, openclaw, tweetclaw | twitter, x-api, tweet-search, twitter-api, twitter-scraper, follower-export, automation, mcp, sdk, webhooks, openclaw, tweetclaw |
 | `zendesk-automation` | Automate Zendesk tasks via Rube MCP (Composio): tickets, users, organizations, replies. Always search tools first for current schemas. | zendesk | zendesk, automation, automate, tasks, via, rube, mcp, composio, tickets, users, organizations, replies |
 | `zoho-crm-automation` | Automate Zoho CRM tasks via Rube MCP (Composio): create/update records, search contacts, manage leads, and convert leads. Always search tools first for curre... | zoho, crm | zoho, crm, automation, automate, tasks, via, rube, mcp, composio, update, records, search |
 | `zoom-automation` | Automate Zoom meeting creation, management, recordings, webinars, and participant tracking via Rube MCP (Composio). Always search tools first for current sch... | zoom | zoom, automation, automate, meeting, creation, recordings, webinars, participant, tracking, via, rube, mcp |

@@ -4,6 +4,7 @@ description: Writes the full Introduction section of a biomedical manuscript bas
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Introduction Section Writer
 

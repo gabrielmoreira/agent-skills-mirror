@@ -2,9 +2,10 @@
 name: competitor-trial-monitor
 description: Monitor competitor clinical trial progress and alert on market risks.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Competitor Trial Monitor (ID: 178)
 
 Monitor competitor clinical trial progress and alert on market risks.

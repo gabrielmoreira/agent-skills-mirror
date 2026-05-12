@@ -21,6 +21,8 @@ Keep the same pattern when adding more examples:
 - [Example 009: filter by tags and host group](#example-009-filter-by-tags-and-host-group)
 - [Example 010: multi-cloud datacenter traversal with missing relationship handling](#example-010-multi-cloud-datacenter-traversal-with-missing-relationship-handling)
 - [Example 011: container plus affected-entity mapping](#example-011-container-plus-affected-entity-mapping)
+- [Example 012: mass data migration end-to-end with fieldsSnapshot](#example-012-mass-data-migration-end-to-end-with-fieldssnapshot)
+- [Example 013: `timeseries filter` with tag-based entity sub-query](#example-013-timeseries-filter-with-tag-based-entity-sub-query)
 
 ## Example 001: `classicEntitySelector` filter without relationships
 
@@ -52,11 +54,11 @@ smartscapeNodes HOST
 ```dql
 fetch dt.entity.host
 | fieldsAdd runs[dt.entity.service_instance]
-| expand runs[dt.entity.service_instance]
+| expand service_instance = runs[dt.entity.service_instance]
 | fields
     id,
     entity.name,
-    `runs[dt.entity.service_instance]`
+    service_instance
 ```
 
 **Smartscape sketch**
@@ -67,7 +69,7 @@ smartscapeEdges runs_on
 | fields
     id = target_id,
     entity.name = getNodeName(target_id),
-    `runs[dt.entity.service_instance]` = source_id
+    service_instance = source_id
 ```
 
 **Notes**
@@ -191,6 +193,7 @@ timeseries avg(dt.host.cpu.usage),
 **Notes**
 
 - migrate the signal dimension and replace classic tag access with `getNodeField()`
+- use unquoted key syntax for tag-map access: `...[Dtp_Capability]`; quoted keys in this pattern cause a DQL syntax error
 
 ## Example 008: AWS DynamoDB table field projection
 
@@ -248,6 +251,7 @@ timeseries series = avg(dt.host.cpu.usage),
 **Notes**
 
 - host group remains a host field, not a traversed entity
+- use unquoted key syntax for tag-map access: `...[Dtp_Capability]` and `...[Dtp_Tier]`; quoted keys in this pattern cause a DQL syntax error
 
 ## Example 010: multi-cloud datacenter traversal with missing relationship handling
 
@@ -277,7 +281,7 @@ fetch dt.entity.host
 smartscapeNodes HOST
 | lookup [
     smartscapeNodes HOST
-    | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_VM, GCP_VM_INSTANCE}, direction:forward
+    | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_MICROSOFT_COMPUTE_VIRTUALMACHINES,  GCP_COMPUTE_GOOGLEAPIS_COM_INSTANCE}, direction:forward
     | traverse runs_on, {AWS_AVAILABILITY_ZONE, AZURE_REGION, GCP_ZONE}, direction:forward
     | fields dt.smartscape.host = dt.traverse.history[-2][id], dataCenter = id, dataCenterName = name
   ], sourceField:id, lookupField:dt.smartscape.host, fields:{ dataCenter, dataCenterName }
@@ -342,3 +346,97 @@ smartscapeNodes CONTAINER
 - `container_group_instance` maps to `CONTAINER`
 - `container_group` remains unsupported as a standalone entity
 - event fields become Smartscape event fields
+
+## Example 012: mass data migration end-to-end with fieldsSnapshot
+
+This example demonstrates the full mass-data-filtering-strategy.md workflow including field discovery and verification.
+
+**Input**
+
+```dql
+timeseries avg(dt.host.cpu.idle),
+  filter:{ in(dt.entity.host, classicEntitySelector("type(HOST),tag(Dtp_Tier:segment-indexer-traces),hostGroupName(dtp-dev101-grail)")) },
+  by:{ dt.entity.host }
+```
+
+**Step 1 — Resolve conditions**
+
+Two conditions extracted from the `classicEntitySelector`:
+- `tag(Dtp_Tier:segment-indexer-traces)` — resolved via auto-tagging rule config. The rule targets entity type HOST with condition key `HOST_TAGS` referencing a primary tag. Mapped field: tag `Dtp_Tier` with value `segment-indexer-traces`.
+- `hostGroupName(dtp-dev101-grail)` — maps to `dt.host_group.id` on HOST node or as enriched dimension.
+
+**Step 2 — Discover available fields**
+
+Mass data discovery:
+
+```bash
+dtctl query 'fieldsSnapshot metrics, by:{metric.key} | filter metric.key == "dt.host.cpu.idle" | fields field' --plain
+```
+
+Output includes: `dt.entity.host`, `dt.smartscape.host`, `dt.host_group.id`, `host.name`, ... (but NOT `Dtp_Tier` or `host.group.name`)
+
+Node discovery:
+
+```bash
+dtctl query 'fieldsSnapshot smartscape.nodes, by:{node.type} | filter node.type == "HOST" | fields field' --plain
+```
+
+Output includes: `host.group.name`, `tags`, `name`, `cloud.provider`, ...
+
+**Step 3 — Select approach**
+
+- `dt.host_group.id` is an enriched dimension on the metric -> **Check 1 applies** for the host group condition.
+- `Dtp_Tier` tag is NOT an enriched dimension, but `dt.smartscape.host` exists and `tags` is available on the HOST node -> **Check 2 applies** for the tag condition.
+
+Both conditions can be expressed as inline filters using a mix of direct dimension filter and `getNodeField`.
+
+**Migrated query**
+
+```dql
+timeseries avg(dt.host.cpu.idle),
+  filter:{
+    dt.host_group.id == "dtp-dev101-grail"
+    AND getNodeField(dt.smartscape.host, "tags")[Dtp_Tier] == "segment-indexer-traces"
+  },
+  by:{ dt.smartscape.host }
+/* Original: timeseries avg(dt.host.cpu.idle), filter:{ in(dt.entity.host, classicEntitySelector("type(HOST),tag(Dtp_Tier:segment-indexer-traces),hostGroupName(dtp-dev101-grail)")) }, by:{ dt.entity.host } */
+```
+
+**Step 4 — Verification**
+
+- Output shape: original had `timeframe`, `interval`, `avg(dt.host.cpu.idle)`, `dt.entity.host`. Migrated has same structure with `dt.smartscape.host` replacing `dt.entity.host`.
+- Probe: ran migrated query over last 5 minutes, returned 3 time series matching expected hosts.
+- Host group condition confirmed via `dt.host_group.id` enriched dimension; tag condition confirmed via `getNodeField` on `dt.smartscape.host`.
+
+**Mapping Resolution**
+
+- `dt.entity.host` dimension -> `dt.smartscape.host`
+- `hostGroupName(X)` -> `dt.host_group.id` (enriched dimension, Check 1)
+- `tag(Dtp_Tier:X)` -> `getNodeField(dt.smartscape.host, "tags")[Dtp_Tier]` (Check 2)
+
+**Notes**
+
+- Combines Check 1 (direct dimension) and Check 2 (getNodeField) in the same query when conditions map to different field types
+- `fieldsSnapshot` discovery was mandatory to confirm `dt.host_group.id` is enriched but `Dtp_Tier` is not
+
+## Example 013: `timeseries filter` with tag-based entity sub-query
+
+**Input**
+
+```dql
+timeseries usage=avg(dt.host.cpu.usage),
+  filter: { in(dt.entity.host, classicEntitySelector("type(host),tags(\"BF\")")) }
+```
+
+**Smartscape sketch**
+
+```dql
+timeseries usage=avg(dt.host.cpu.usage),
+  filter: { dt.smartscape.host in [smartscapeNodes "HOST" | filter tags ~ "BF" | fields id] }
+```
+
+**Notes**
+
+- `dt.entity.host` → `dt.smartscape.host` (standard dimension migration)
+- `in(dt.entity.host, classicEntitySelector(...))` → `dt.smartscape.host in [...]`: the `in()` function does not accept execution blocks — use the `in` **operator** (`field in [execution block]`) when the right-hand side is a sub-query
+- `tags("BF")` in the classic selector matches hosts tagged with `BF`; in Smartscape, `tags ~ "BF"` uses substring matching on the serialized tag string, which also matches tags whose key or value *contains* `BF` — use an exact match if needed: ``tags[`BF`] == <value>`` or ``isNotNull(tags[`BF`]``

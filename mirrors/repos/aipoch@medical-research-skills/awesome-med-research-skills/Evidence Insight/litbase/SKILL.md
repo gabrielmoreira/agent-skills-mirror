@@ -18,6 +18,7 @@ metadata:
     - statistical-analysis-plan-writer
     - protocol-writer
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # LitBase
 

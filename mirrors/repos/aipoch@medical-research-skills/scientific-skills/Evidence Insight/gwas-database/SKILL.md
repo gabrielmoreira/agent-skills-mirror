@@ -2,7 +2,7 @@
 name: gwas-database
 description: Query the NHGRI-EBI GWAS Catalog to retrieve SNP–trait associations, study metadata, and (when available) summary statistics when you need evidence for a variant, trait/disease, gene, or genomic region.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

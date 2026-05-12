@@ -2,7 +2,7 @@
 name: anndata
 description: Data structure for annotated matrices in single-cell analysis; use when reading/writing .h5ad (or zarr) and exchanging data with the scverse ecosystem.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

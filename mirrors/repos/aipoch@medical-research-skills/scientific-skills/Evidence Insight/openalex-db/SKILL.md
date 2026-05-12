@@ -2,7 +2,7 @@
 name: openalex-db
 description: Access the OpenAlex database (240M+ scholarly works) for bibliometric analysis, literature search, and citation tracking; use when you need to query works/authors/institutions/concepts without an API key.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

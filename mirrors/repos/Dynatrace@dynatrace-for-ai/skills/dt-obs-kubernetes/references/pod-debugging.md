@@ -33,13 +33,13 @@ smartscapeNodes K8S_POD
 | parse k8s.object, "JSON:config"
 | expand container = config[`status`][`containerStatuses`]
 | fieldsAdd
-    name = container[`name`],
+    container_name = container[`name`],
     restart_count = container[`restartCount`],
     exit_code = container[`lastState`][`terminated`][`exitCode`],
     reason = container[`lastState`][`terminated`][`reason`]
 | filter isNotNull(exit_code) and restart_count > 0
 | sort restart_count desc
-| fields k8s.cluster.name, k8s.namespace.name, k8s.pod.name, name,
+| fields k8s.cluster.name, k8s.namespace.name, k8s.pod.name, container_name,
     restart_count, exit_code, reason
 ```
 
@@ -96,11 +96,11 @@ smartscapeNodes K8S_POD
 | parse k8s.object, "JSON:config"
 | expand container = config[`status`][`containerStatuses`]
 | fieldsAdd
-    name = container[`name`],
+    container_name = container[`name`],
     image = container[`image`],
     reason = container[`state`][`waiting`][`reason`]
 | filter in(reason, array("ImagePullBackOff", "ErrImagePull", "InvalidImageName"))
-| fields k8s.cluster.name, k8s.namespace.name, k8s.pod.name, name, image, reason
+| fields k8s.cluster.name, k8s.namespace.name, k8s.pod.name, container_name, image, reason
 ```
 
 ## K8s-Scoped Log Queries

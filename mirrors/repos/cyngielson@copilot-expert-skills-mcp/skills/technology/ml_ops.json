@@ -1,0 +1,16 @@
+{
+  "id": "ml_ops",
+  "name": "MLOps",
+  "category": "technology",
+  "description": "Expert-level capability in AI Business Engineering, focusing on escaping 'Pilot Purgatory', managing AI Unit Economics, and automated value-protection via drift detection.",
+  "knowledge": "# MLOps Production Excellence 2026\n\n## 🎯 Strategic Framework\n**MLOps** to fundament rentownej sztucznej inteligencji. W 2026 roku dyrektorzy finansowi (CFO) wymagają twardych dowodów na zwrot z inwestycji w ciągu 6 miesięcy. MLOps to „kotłownia”, która zamienia obietnice w mierzalne zyski.\n\n### AI Business Engineering & Unit Economics (The ROI Layer)\n- **Escaping Pilot Purgatory:** Przejście od prototypu do produkcji w mniej niż 12 miesięcy. AI musi priorytetyzować gotowe komponenty i integracje, które skracają *time-to-value*.\n- **AI Unit Economics:** Mierzenie kosztu pojedynczej decyzji lub transakcji wykonanej przez model. AI musi wiedzieć, czy koszt GPU i inferencji nie przewyższa marży wygenerowanej przez działanie modelu.\n- **Value Protection via Drift Detection:** Model, który traci celność, to model, który traci pieniądze. Rozróżnianie **Data Drift** (zmiana danych wejściowych) od **Concept Drift** (zmiana zachowań rynkowych, np. nowe trendy zakupowe) jest kluczowe dla ochrony marży. \n- **Automated Retraining ROI:** Automatyczne douczanie modelu nie jest celem samym w sobie – to mechanizm utrzymania obietnicy biznesowej w zmieniającym się świecie.\n\n## 🔧 Production Toolchain 2026\n- **Feature Stores (Feast/Tecton):** Centralne repozytorium cech, które zapobiega dublowaniu pracy inżynierów i zapewnia spójność danych między treningiem a produkcją.\n- **Model Registry (MLflow):** „Katalog produktów” dla AI. Każdy model musi mieć swoją „kartę produktu” (Model Card) z dokumentacją ryzyk i wydajności.\n\n## 📊 Critical Production Challenges\n- **MLOps Maturity Model:** Przejście od poziomu 0 (manualne skrypty) do poziomu 4 (w pełni zautomatyzowane, samo-naprawiające się potoki). \n- **Explainability (XAI):** W branżach regulowanych (finanse, medycyna) model musi umieć „wyjaśnić” swoją decyzję, aby przejść audyt zgodności z EU AI Act.\n\n## 🚀 2026-2027 Trends\n- **Agentic MLOps:** Autonomiczne agenty monitorujące inne modele i podejmujące decyzje o ich wycofaniu lub aktualizacji bez ingerencji człowieka.\n- **Edge MLOps:** Przenoszenie inferencji na urządzenia końcowe, aby drastycznie obniżyć koszty chmury i poprawić prywatność danych.\n\n## Implementation Strategy\n1. **KPI-First Approach:** Zacznij od zdefiniowania, jaki wskaźnik biznesowy (np. redukcja churnu o 5%) ma poprawić MLOps.\n2. **Monitoring Dashboard:** Pierwszym krokiem nie jest nowy model, ale dashboard pokazujący, ile obecny model zarabia (lub traci) każdego dnia.",
+  "capabilities": [
+    "AI Unit Economics analysis (Cost per Decision)",
+    "Drift-to-ROI impact assessment",
+    "MLOps Maturity roadmap design",
+    "Automated retraining pipeline orchestration",
+    "Compliance-ready model governance"
+  ],
+  "created": "2026-02-05T00:00:00Z",
+  "version": "1.1"
+}

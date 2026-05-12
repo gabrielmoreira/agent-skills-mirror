@@ -2,7 +2,7 @@
 name: api-design-principles
 description: Principles and checklists for designing and reviewing REST and GraphQL APIs; use when defining or evaluating API contracts (endpoints/schemas), naming, error models, pagination, versioning, and REST vs. GraphQL trade-offs.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

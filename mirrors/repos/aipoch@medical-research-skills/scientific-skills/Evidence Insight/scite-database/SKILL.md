@@ -2,9 +2,10 @@
 name: scite-database
 description: Access Scite.ai Smart Citations to classify how a paper is cited (supporting, contrasting, mentioning) and assess scientific claims; use it when you need to evaluate a paper’s reliability or its acceptance in the literature.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Scite Database Skill
 
 This skill provides access to Scite.ai **Smart Citations** data. Given a paper DOI, it summarizes how the paper is cited by others—specifically whether citations are **supporting**, **contrasting**, or **mentioning**—to help you evaluate the strength and reception of scientific claims.

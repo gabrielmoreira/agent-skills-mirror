@@ -50,10 +50,10 @@ To scope ownership queries to a specific AWS service, replace `"AWS_*"` with the
 
 For service-specific queries, you can also select detail fields instead of summarizing:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_RDS_DBCLUSTER"
-| filter isNotNull(tags[Owner])
-| fields name, aws.resource.id, tags[Owner], aws.region
+| filter isNotNull(tags[`<TAG_NAME>`])
+| fields name, aws.resource.id, tags[`<TAG_NAME>`], aws.region
 ```
 
 ## Multi-Account Resource Summary

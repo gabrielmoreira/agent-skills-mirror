@@ -10,7 +10,7 @@ description: >-
 
 # Fireworks Tech Graph
 
-Generate production-quality SVG technical diagrams exported as PNG via `rsvg-convert`.
+Generate production-quality SVG technical diagrams exported as PNG via `cairosvg` (recommended), `rsvg-convert`, or `puppeteer`.
 
 ## Install Source
 
@@ -91,8 +91,8 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 5. **Map nodes to shapes** — use Shape Vocabulary below
 6. **Check icon needs** — load `references/icons.md` for known products
 7. **Write SVG** with adaptive strategy (see SVG Generation Strategy below)
-8. **Validate**: Run `rsvg-convert file.svg -o /dev/null 2>&1` to check syntax
-9. **Export PNG**: `rsvg-convert -w 1920 file.svg -o file.png`
+8. **Validate**: Run `python3 -c "import xml.etree.ElementTree as ET; ET.parse('file.svg')"` to check XML syntax
+9. **Export PNG**: Use `cairosvg` (recommended). See **SVG → PNG Conversion** section below for full method comparison
 10. **Report** the generated file paths
 11. **(Optional) Visual self-review** — if your runtime can read images, load the exported PNG back and inspect it. Syntactic validity does not guarantee visual correctness: arrows may cross through component interiors, labels may collide with lifelines or other labels, boxes may overlap, alt-frame text may sit on top of a message, or a legend may cover content. If you see any of these, revise the SVG and re-export; repeat until the rendered image is clean. Common fixes:
     - Route arrows through gaps between boxes, not through box interiors
@@ -348,7 +348,7 @@ When two arrows must cross each other, ALWAYS use jump-over arcs to prevent visu
 ## SVG Technical Rules
 
 - ViewBox: `0 0 960 600` default; `0 0 960 800` tall; `0 0 1200 600` wide
-- Fonts: embed via `<style>font-family: ...</style>` — no external `@import` (breaks rsvg-convert)
+- Fonts: embed via `<style>font-family: ...</style>` — no external `@import` (cairosvg / rsvg-convert cannot fetch external URLs)
 - `<defs>`: arrow markers, gradients, filters, clip paths
 - Text: minimum 12px, prefer 13-14px labels, 11px sub-labels, 16-18px titles
 - All arrows: `<marker>` with `markerEnd`, sized `markerWidth="10" markerHeight="7"`
@@ -390,7 +390,9 @@ EOF
 
 **Validation** (run after generation):
 ```bash
-rsvg-convert file.svg -o /tmp/test.png 2>&1 && echo "✓ Valid" && rm /tmp/test.png
+python3 -c "import xml.etree.ElementTree as ET; ET.parse('file.svg')" && echo "✓ Valid XML"
+# Or use cairosvg as a render-time check:
+python3 -c "import cairosvg; cairosvg.svg2png(url='file.svg', write_to='/tmp/test.png')" && echo "✓ Renders" && rm /tmp/test.png
 ```
 
 **If using `generate-from-template.py`**:
@@ -410,7 +412,123 @@ rsvg-convert file.svg -o /tmp/test.png 2>&1 && echo "✓ Valid" && rm /tmp/test.
 
 - **Default**: `./[derived-name].svg` and `./[derived-name].png` in current directory
 - **Custom**: user specifies path with `--output /path/` or `输出到 /path/`
-- **PNG export**: `rsvg-convert -w 1920 file.svg -o file.png` (1920px = 2x retina)
+- **PNG export**: see **SVG → PNG Conversion** below
+
+## SVG → PNG Conversion
+
+### Method Comparison
+
+| Tool | Install | Render Quality | Notes |
+|------|---------|----------------|-------|
+| `rsvg-convert` | System (often preinstalled) | ⚠️ Fair | Drops some CSS styles and `<foreignObject>` elements — missing borders/text on complex SVGs |
+| **`cairosvg` (recommended)** | `pip install cairosvg` | ✅ Good | Solid CSS support; clearly better than rsvg-convert |
+| `puppeteer` (headless Chrome) | `npm install puppeteer` | ✅✅ Best | Real browser engine; 100% fidelity but heavy (Node + Chromium) |
+
+### Recommended: cairosvg (Python one-liner)
+
+```bash
+# Single file (2x resolution for retina/docs)
+python3 -c "import cairosvg; cairosvg.svg2png(url='input.svg', write_to='output.png', scale=2)"
+
+# Batch convert all SVGs in a directory
+python3 -c "
+import cairosvg, os, glob
+d = 'docs/00-core'
+for svg in sorted(glob.glob(os.path.join(d, '*.svg'))):
+    png = svg.replace('.svg', '.png')
+    cairosvg.svg2png(url=svg, write_to=png, scale=2)
+    print(f'Done: {os.path.basename(svg)} -> {os.path.basename(png)}')
+"
+```
+
+> `scale=2` produces 2x resolution PNG, ideal for high-DPI screens and embedded docs.
+
+### Fallback: rsvg-convert (simple but may drop styles)
+
+```bash
+# Single file
+rsvg-convert -w 1920 file.svg -o file.png
+
+# Batch (not recommended — complex SVGs may lose elements)
+for f in docs/00-core/*.svg; do rsvg-convert -o "${f%.svg}.png" "$f"; done
+
+# 2x resolution
+for f in docs/00-core/*.svg; do rsvg-convert -z 2 -o "${f%.svg}.png" "$f"; done
+```
+
+### Highest Fidelity: puppeteer (headless Chrome)
+
+```bash
+npm install puppeteer  # auto-downloads Chromium
+node svg2png.js [directory]
+```
+
+<details>
+<summary>svg2png.js — full puppeteer script</summary>
+
+```javascript
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+const path = require('path');
+
+(async () => {
+  const dir = process.argv[2] || '.';
+  const svgFiles = fs.readdirSync(dir).filter(f => f.endsWith('.svg'));
+
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+
+  for (const file of svgFiles) {
+    const svgPath = path.resolve(dir, file);
+    const pngPath = svgPath.replace(/\.svg$/, '.png');
+    const svgContent = fs.readFileSync(svgPath, 'utf-8');
+
+    const wMatch = svgContent.match(/width="(\d+)/);
+    const hMatch = svgContent.match(/height="(\d+)/);
+    const vbMatch = svgContent.match(/viewBox="[^"]*\s(\d+)\s(\d+)"/);
+
+    let width = wMatch ? parseInt(wMatch[1]) : (vbMatch ? parseInt(vbMatch[1]) : 1200);
+    let height = hMatch ? parseInt(hMatch[1]) : (vbMatch ? parseInt(vbMatch[2]) : 800);
+
+    const scale = 2;
+    const page = await browser.newPage();
+    await page.setViewport({ width, height, deviceScaleFactor: scale });
+
+    const html = `<!DOCTYPE html>
+<html><head><style>
+  body { margin: 0; padding: 0; background: transparent; }
+  img { display: block; }
+</style></head>
+<body>
+  <img src="data:image/svg+xml;base64,${Buffer.from(svgContent).toString('base64')}" width="${width}" height="${height}" />
+</body></html>`;
+
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    await page.screenshot({ path: pngPath, type: 'png', omitBackground: true });
+    await page.close();
+
+    console.log(`Done: ${file} -> ${path.basename(pngPath)} (${width}x${height} @${scale}x)`);
+  }
+
+  await browser.close();
+})();
+```
+
+</details>
+
+### Gotchas (lessons learned)
+
+- `rsvg-convert` renders SVGs containing `<foreignObject>`, CSS `filter`, or complex `<style>` blocks **incompletely** — missing borders / missing text are the typical symptoms
+- `cairosvg` (built on Cairo) has much better CSS support than rsvg and is sufficient for most cases
+- If the SVG was generated by a browser (D3.js, Mermaid, etc.), only headless Chrome (puppeteer) renders it 100% faithfully
+
+### Picking a Method
+
+1. **Default** → `cairosvg` (pip install once, one-line conversion, good fidelity)
+2. **No Python available** → `rsvg-convert` (acceptable for simple flat-color diagrams)
+3. **Browser-generated SVG or pixel-perfect required** → `puppeteer`
 
 ## Styles
 

@@ -2,7 +2,7 @@
 name: non-tumor-ml-research-planner
 description: Generates complete non-tumor biomedical machine learning research designs from a user-provided research direction. Always use this skill when users want to plan bioinformatics + ML papers for non-cancer diseases (metabolic, cardiovascular, kidney, inflammatory, autoimmune, infectious, neurological, endocrine, wound healing, chronic multifactor), design diagnostic biomarker studies, combine GEO datasets with feature selection and ML modeling, or generate Lite/Standard/Advanced/Publication+ workload plans. Trigger for:"non-tumor ML study", "bioinformatics paper outside oncology", "key genes and diagnostic model for a disease", "pyroptosis/ferroptosis/senescence/autophagy + disease", "GEO datasets + machine learning", "RF + LASSO diagnostic model", "DEG + feature selection + validation", "immune infiltration + biomarker", "non-cancer biomarker paper". Trigger even for casual phrasings like "I want to study X using machine learning", "help me design a non-tumor bioinformatics paper", or "how do I build a diagnostic model for disease Y".
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

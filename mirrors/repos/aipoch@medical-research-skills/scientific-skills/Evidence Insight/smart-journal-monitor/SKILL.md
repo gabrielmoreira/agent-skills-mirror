@@ -2,9 +2,10 @@
 name: smart-journal-monitor
 description: Use smart journal monitor for evidence insight workflows that need structured execution, explicit assumptions, and clear output boundaries.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Smart Journal Monitor (RSS+AI)
 
 Personalized research digest from top journals.

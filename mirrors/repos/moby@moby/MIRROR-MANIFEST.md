@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 267 file(s) materialized.
+Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 268 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 267 file(s) 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 267 |
+| Files         | 268 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -312,24 +312,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 247 | ✓ | [`vendor/go.uber.org/zap/README.md`](vendor/go.uber.org/zap/README.md) |
 | 248 | ✓ | [`vendor/go.yaml.in/yaml/v2/README.md`](vendor/go.yaml.in/yaml/v2/README.md) |
 | 249 | ✓ | [`vendor/go.yaml.in/yaml/v3/README.md`](vendor/go.yaml.in/yaml/v3/README.md) |
-| 250 | ✓ | [`vendor/golang.org/x/oauth2/CONTRIBUTING.md`](vendor/golang.org/x/oauth2/CONTRIBUTING.md) |
-| 251 | ✓ | [`vendor/golang.org/x/oauth2/README.md`](vendor/golang.org/x/oauth2/README.md) |
-| 252 | ✓ | [`vendor/golang.org/x/sys/unix/README.md`](vendor/golang.org/x/sys/unix/README.md) |
-| 253 | ✓ | [`vendor/golang.org/x/term/CONTRIBUTING.md`](vendor/golang.org/x/term/CONTRIBUTING.md) |
-| 254 | ✓ | [`vendor/golang.org/x/term/README.md`](vendor/golang.org/x/term/README.md) |
-| 255 | ✓ | [`vendor/google.golang.org/grpc/CONTRIBUTING.md`](vendor/google.golang.org/grpc/CONTRIBUTING.md) |
-| 256 | ✓ | [`vendor/google.golang.org/grpc/README.md`](vendor/google.golang.org/grpc/README.md) |
-| 257 | ✓ | [`vendor/gopkg.in/yaml.v3/README.md`](vendor/gopkg.in/yaml.v3/README.md) |
-| 258 | ✓ | [`vendor/pgregory.net/rapid/CONTRIBUTING.md`](vendor/pgregory.net/rapid/CONTRIBUTING.md) |
-| 259 | ✓ | [`vendor/pgregory.net/rapid/README.md`](vendor/pgregory.net/rapid/README.md) |
-| 260 | ✓ | [`vendor/resenje.org/singleflight/README.md`](vendor/resenje.org/singleflight/README.md) |
-| 261 | ✓ | [`vendor/sigs.k8s.io/yaml/CONTRIBUTING.md`](vendor/sigs.k8s.io/yaml/CONTRIBUTING.md) |
-| 262 | ✓ | [`vendor/sigs.k8s.io/yaml/README.md`](vendor/sigs.k8s.io/yaml/README.md) |
-| 263 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 264 | → | [`docs/contributing/README.md`](docs/contributing/README.md) |
-| 265 | → | [`project/REVIEWING.md`](project/REVIEWING.md) |
-| 266 | → | [`README.md`](README.md) |
-| 267 | → | [`TESTING.md`](TESTING.md) |
+| 250 | ✓ | [`vendor/golang.org/x/net/http2/README.md`](vendor/golang.org/x/net/http2/README.md) |
+| 251 | ✓ | [`vendor/golang.org/x/oauth2/CONTRIBUTING.md`](vendor/golang.org/x/oauth2/CONTRIBUTING.md) |
+| 252 | ✓ | [`vendor/golang.org/x/oauth2/README.md`](vendor/golang.org/x/oauth2/README.md) |
+| 253 | ✓ | [`vendor/golang.org/x/sys/unix/README.md`](vendor/golang.org/x/sys/unix/README.md) |
+| 254 | ✓ | [`vendor/golang.org/x/term/CONTRIBUTING.md`](vendor/golang.org/x/term/CONTRIBUTING.md) |
+| 255 | ✓ | [`vendor/golang.org/x/term/README.md`](vendor/golang.org/x/term/README.md) |
+| 256 | ✓ | [`vendor/google.golang.org/grpc/CONTRIBUTING.md`](vendor/google.golang.org/grpc/CONTRIBUTING.md) |
+| 257 | ✓ | [`vendor/google.golang.org/grpc/README.md`](vendor/google.golang.org/grpc/README.md) |
+| 258 | ✓ | [`vendor/gopkg.in/yaml.v3/README.md`](vendor/gopkg.in/yaml.v3/README.md) |
+| 259 | ✓ | [`vendor/pgregory.net/rapid/CONTRIBUTING.md`](vendor/pgregory.net/rapid/CONTRIBUTING.md) |
+| 260 | ✓ | [`vendor/pgregory.net/rapid/README.md`](vendor/pgregory.net/rapid/README.md) |
+| 261 | ✓ | [`vendor/resenje.org/singleflight/README.md`](vendor/resenje.org/singleflight/README.md) |
+| 262 | ✓ | [`vendor/sigs.k8s.io/yaml/CONTRIBUTING.md`](vendor/sigs.k8s.io/yaml/CONTRIBUTING.md) |
+| 263 | ✓ | [`vendor/sigs.k8s.io/yaml/README.md`](vendor/sigs.k8s.io/yaml/README.md) |
+| 264 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 265 | → | [`docs/contributing/README.md`](docs/contributing/README.md) |
+| 266 | → | [`project/REVIEWING.md`](project/REVIEWING.md) |
+| 267 | → | [`README.md`](README.md) |
+| 268 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

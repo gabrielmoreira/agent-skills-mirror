@@ -4,6 +4,7 @@ description: Explains why studies on the same biomedical topic reach different o
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Contradictory Findings Resolver
 

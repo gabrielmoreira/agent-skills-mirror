@@ -4,6 +4,7 @@ description: Generates complete Mendelian randomization study designs from a use
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Mendelian Randomization Protocol Designer
 

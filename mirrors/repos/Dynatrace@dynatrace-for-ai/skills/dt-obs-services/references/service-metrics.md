@@ -442,7 +442,7 @@ timeseries {
     mesh_p95 = percentile(dt.service.request.service_mesh.response_time, 95)
   }, by: {dt.service.name}
 | fieldsAdd direct_p95_ms = direct_p95[] / 1000, mesh_p95_ms = mesh_p95[] / 1000
-| fieldsAdd mesh_overhead = mesh_p95_ms - direct_p95_ms
+| fieldsAdd mesh_overhead = mesh_p95_ms[] - direct_p95_ms[]
 | filter arrayAvg(mesh_overhead) > 0
 | sort mesh_overhead desc
 ```

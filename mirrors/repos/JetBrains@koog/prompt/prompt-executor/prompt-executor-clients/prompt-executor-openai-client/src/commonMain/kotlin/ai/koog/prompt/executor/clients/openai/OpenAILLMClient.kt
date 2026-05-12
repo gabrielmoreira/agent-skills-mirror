@@ -2,6 +2,7 @@ package ai.koog.prompt.executor.clients.openai
 
 import ai.koog.agents.core.tools.ToolDescriptor
 import ai.koog.http.client.KoogHttpClient
+import ai.koog.http.client.ktor.KtorKoogHttpClient
 import ai.koog.prompt.dsl.ModerationCategory
 import ai.koog.prompt.dsl.ModerationCategoryResult
 import ai.koog.prompt.dsl.ModerationResult
@@ -96,7 +97,7 @@ public class OpenAIClientSettings(
  *
  * @param settings The base URL and timeouts for the OpenAI API, defaults to "https://api.openai.com" and 900 s
  * @param httpClient A fully configured [KoogHttpClient] for making API requests. Use the secondary constructor
- *   to create a Ktor-backed client configured with an API key.
+ *   that accepts an API key and a [KoogHttpClient.Factory] to create a client with standard defaults.
  * @param clock Clock instance used for tracking response metadata timestamps.
  */
 @OptIn(ExperimentalAtomicApi::class)
@@ -117,6 +118,25 @@ public open class OpenAILLMClient @JvmOverloads constructor(
     public constructor(
         apiKey: String,
         settings: OpenAIClientSettings = OpenAIClientSettings(),
+        httpClientFactory: KoogHttpClient.Factory,
+        clock: KoogClock = KoogClock.System,
+        toolsConverter: OpenAICompatibleToolDescriptorSchemaGenerator = OpenAICompatibleToolDescriptorSchemaGenerator(),
+    ) : this(
+        settings = settings,
+        httpClient = createConfiguredHttpClient(
+            apiKey = apiKey,
+            settings = settings,
+            httpClientFactory = httpClientFactory,
+            clientName = OPENAI_CLIENT_NAME
+        ),
+        clock = clock,
+        toolsConverter = toolsConverter
+    )
+
+    @JvmOverloads
+    public constructor(
+        apiKey: String,
+        settings: OpenAIClientSettings = OpenAIClientSettings(),
         baseClient: HttpClient = HttpClient(),
         clock: KoogClock = KoogClock.System,
         toolsConverter: OpenAICompatibleToolDescriptorSchemaGenerator = OpenAICompatibleToolDescriptorSchemaGenerator(),
@@ -125,8 +145,7 @@ public open class OpenAILLMClient @JvmOverloads constructor(
         httpClient = createConfiguredHttpClient(
             apiKey = apiKey,
             settings = settings,
-            logger = staticLogger,
-            baseClient = baseClient,
+            httpClientFactory = KtorKoogHttpClient.Factory(baseClient),
             clientName = OPENAI_CLIENT_NAME
         ),
         clock = clock,

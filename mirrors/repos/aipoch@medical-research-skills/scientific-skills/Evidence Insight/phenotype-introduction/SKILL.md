@@ -2,9 +2,10 @@
 name: phenotype-introduction
 description: "Expert system for generating comprehensive biomedical phenotype introductions with structured academic content. Use when users request detailed explanations of cellular phenotypes including concept, mechanism, regulation, and detection methods in Chinese academic writing."
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Phenotype Introduction
 
 ## When to Use

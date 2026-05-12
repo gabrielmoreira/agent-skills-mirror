@@ -2,7 +2,7 @@
 # Generated: 2026-04-23 | Session: session-20260423-141500
 # Claude roles omit effort (cli-session managed).
 #
-# ⚠ This file is a single source of truth (SSOT) shipped with oh-my-agent.
+# This file is a single source of truth (SSOT) shipped with oh-my-agent.
 # Do NOT edit it directly. To customize behavior, use one of:
 #   - .agents/oma-config.yaml                (agent_cli_mapping, session.quota_cap)
 #   - .agents/config/models.yaml             (add or override model slugs)

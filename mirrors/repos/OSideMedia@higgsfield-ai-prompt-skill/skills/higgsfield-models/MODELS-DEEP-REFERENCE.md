@@ -273,6 +273,12 @@ Example use case: A watercolor-style fantasy warrior emerging from mist.
 
 #### The Rule of 12 — Asset Budget
 
+> **Sourcing:** The 9-image / 3-video / 3-audio limit is per official Seedance launch
+> materials from ByteDance (`seed.bytedance.com`). Single canonical citation for the
+> term; the four brief mentions of "Rule of 12" elsewhere (in `higgsfield-audio/SKILL.md`,
+> `higgsfield-models/SKILL.md`, and twice more in this file below) are uses of this
+> now-sourced term.
+
 The defining feature of Seedance 2.0 is its multimodal input system. Every generation can accept up to **12 total assets**:
 
 | Asset type | Max count | Limit |

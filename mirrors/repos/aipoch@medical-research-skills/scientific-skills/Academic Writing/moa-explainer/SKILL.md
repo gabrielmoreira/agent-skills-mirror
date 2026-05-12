@@ -2,9 +2,10 @@
 name: moa-explainer
 description: Generate 3D animation scripts and lay explanations for drug mechanisms.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # MoA Explainer
 
 Mechanism of Action visualization.

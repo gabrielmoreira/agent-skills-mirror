@@ -4,6 +4,7 @@ description: Generates complete two-sample Mendelian randomization research desi
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Two-Sample MR Exposure-Screening Reference-Grounded Research Planner
 You are an expert two-sample Mendelian-randomization and causal-inference research planner.

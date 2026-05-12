@@ -1,6 +1,15 @@
 ---
 name: dt-obs-aws
-description: AWS cloud resources including EC2, RDS, Lambda, ECS/EKS, VPC networking, load balancers, databases, serverless, messaging, and cost optimization. Monitor AWS infrastructure, analyze resource usage, optimize costs, and ensure security compliance.
+description: >-
+  AWS cloud resource monitoring including EC2, RDS, Lambda, ECS/EKS, VPC networking, load balancers,
+  S3, DynamoDB, SQS/SNS, and cost optimization. Use when analyzing AWS infrastructure, resource
+  inventory, security compliance, capacity planning, or cost savings.
+  Trigger: "show EC2 instances", "find RDS databases", "VPC resources", "AWS cost optimization",
+  "Lambda functions", "ECS services", "security groups", "unattached EBS volumes",
+  "AWS load balancer topology", "publicly accessible databases", "AWS dashboards".
+  Do NOT use for explaining existing queries, product documentation questions,
+  generic host CPU/memory metrics (use dt-obs-hosts), application-level tracing
+  (use dt-obs-tracing), or log analysis (use dt-obs-logs).
 license: Apache-2.0
 ---
 
@@ -12,23 +21,18 @@ Monitor and analyze AWS resources using Dynatrace Smartscape and DQL. Query AWS 
 
 Use this skill when the user needs to work with AWS resources in Dynatrace. Load the reference file for the task type:
 
-| Task | File to load |
-|---|---|
-| Inventory and topology queries | (no additional file — use core patterns above) |
-| Query AWS metric timeseries (CPU, errors, latency) | Load `references/metrics-performance.md` |
-| VPC topology, security groups, subnet analysis | Load `references/vpc-networking-security.md` |
-| RDS, DynamoDB, ElastiCache investigation | Load `references/database-monitoring.md` |
-| Lambda, ECS, EKS investigation | Load `references/serverless-containers.md` |
-| ALB/NLB topology, API Gateway | Load `references/load-balancing-api.md` |
-| SQS, SNS, EventBridge, MSK | Load `references/messaging-event-streaming.md` |
-| Unattached resources, tag compliance, lifecycle | Load `references/resource-management.md` |
-| Cost savings, unused resources | Load `references/cost-optimization.md` |
-| Capacity headroom, subnet IP, ASG limits | Load `references/capacity-planning.md` |
-| Security audit, encryption, public access | Load `references/security-compliance.md` |
-| SG rule analysis (0.0.0.0/0, open ports) | Load `references/security-compliance.md` |
-| S3 public access, bucket encryption | Load `references/security-compliance.md` |
-| EBS volume encryption audit | Load `references/security-compliance.md` |
-| Cost allocation, chargeback, ownership | Load `references/resource-ownership.md` |
+- **Inventory:** "Show me all EC2 instances in us-east-1"
+- **Network:** "Find all resources in VPC vpc-abc123"
+- **Database:** "List all RDS instances with Multi-AZ enabled"
+- **Serverless:** "Show Lambda functions with VPC access"
+- **Cost:** "Find unattached EBS volumes for cost savings"
+- **Security:** "Identify publicly accessible databases"
+- **Compliance:** "Find resources missing Environment tags"
+- **Capacity:** "Analyze subnet IP utilization"
+- **Troubleshoot:** "Map load balancer to instances through target groups"
+- **Problem Analysis:** "What changed before this AWS problem?" / "What events affected this resource?"
+- **Workload Context:** "Is this instance behind a load balancer, in an EKS cluster, or managed by ECS?"
+- **Events:** "Have there been any recent events in AWS affecting this resource?"
 
 ---
 
@@ -59,6 +63,17 @@ All AWS entities include:
 - `aws.security_group.id` - Security group IDs (array)
 - `tags` - Resource tags (use `tags[TagName]`)
 
+### AWS Fields on Logs and Bizevents
+
+AWS-originated **logs** (`fetch logs`) carry these fields — no exploration needed:
+- `aws.region`, `aws.account.id`, `aws.service`, `aws.log_group`, `aws.log_stream`
+- Plus standard log fields: `content`, `loglevel`, `timestamp`, `k8s.*`, `dt.smartscape.*`
+
+AWS-originated **bizevents** (`fetch bizevents`) carry:
+- `aws.region`, `aws.account.id`, `event.type`, `event.provider`
+
+Use `filter isNotNull(aws.region)` to scope to AWS-originated records.
+
 ### Relationship Types
 
 AWS entities use these relationship types:
@@ -68,97 +83,152 @@ AWS entities use these relationship types:
 - `is_part_of` - Composition (e.g., instance in cluster)
 - `belongs_to` - Aggregation (e.g., service belongs to cluster)
 - `balances` - Load balancing (e.g., target group balances instances)
-- `balanced_by` - Reverse of balances
+- `balanced_by` - Inverse load-balancing relationship (e.g., load balancer balanced by target group)
 
-### AWS Metric Naming Convention
+### AWS Metric Key Naming Convention
 
-Dynatrace ingests AWS metrics and exposes them using this naming pattern:
+Dynatrace ingests AWS CloudWatch metrics using this pattern:
 
 ```
 cloud.aws.<service>.<MetricName>.By.<DimensionName>
 ```
 
-The `<service>` is the lowercase AWS service name, `<MetricName>` is the original CloudWatch metric name (case-preserved), and `<DimensionName>` is the CloudWatch dimension used for splitting.
+The `<service>` is the lowercase AWS service name, `<MetricName>` is the CloudWatch metric name (case-preserved), and `<DimensionName>` is the CloudWatch dimension.
 
-**EC2 examples:**
+Examples: `cloud.aws.ec2.CPUUtilization.By.InstanceId`, `cloud.aws.lambda.Invocations.By.FunctionName`, `cloud.aws.rds.CPUUtilization.By.DBInstanceIdentifier`
 
-| CloudWatch metric | Dynatrace metric key |
-|---|---|
-| `CPUUtilization` (by InstanceId) | `cloud.aws.ec2.CPUUtilization.By.InstanceId` |
-| `StatusCheckFailed` (by InstanceId) | `cloud.aws.ec2.StatusCheckFailed.By.InstanceId` |
-| `NetworkIn` (by InstanceId) | `cloud.aws.ec2.NetworkIn.By.InstanceId` |
-| `DiskReadOps` (by InstanceId) | `cloud.aws.ec2.DiskReadOps.By.InstanceId` |
+Use `timeseries`, not `fetch`, for these metrics. Group by `dt.smartscape_source.id` to split by entity.
 
-**Other service examples:**
-
-| CloudWatch metric | Dynatrace metric key |
-|---|---|
-| RDS `CPUUtilization` (by DBInstanceIdentifier) | `cloud.aws.rds.CPUUtilization.By.DBInstanceIdentifier` |
-| Lambda `Invocations` (by FunctionName) | `cloud.aws.lambda.Invocations.By.FunctionName` |
-| SQS `ApproximateNumberOfMessagesVisible` (by QueueName) | `cloud.aws.sqs.ApproximateNumberOfMessagesVisible.By.QueueName` |
-| ELB `RequestCount` (by LoadBalancer) | `cloud.aws.elasticloadbalancingv2.RequestCount.By.LoadBalancer` |
-
-To query a metric:
-
-```dql-template
-timeseries cpu = avg(cloud.aws.ec2.CPUUtilization.By.InstanceId),
-           by: {dt.smartscape_source.id},
-  from: now()-1h
-| limit 10
-```
-
-**Important:** Never refer to these as "CloudWatch alerts" or "CloudWatch metrics" in output. Dynatrace monitors AWS resources natively through its AWS integration — these are **Dynatrace metrics** ingested from AWS.
+→ See [references/metrics-performance.md](references/metrics-performance.md) for the complete metric catalog by service with DQL query templates.
 
 ---
 
-## Query Patterns
+## Key Workflows
 
-All AWS queries build on four core patterns. Master these and adapt them to any entity type.
+### 1. AWS Resource Discovery
 
-### Pattern 1: Resource Discovery
+Get all AWS resources by type:
 
-List resources by type, filter by account/region/VPC/tags, summarize counts:
-
-```dql-template
+```dql
 smartscapeNodes "AWS_*"
-| filter aws.account.id == "<AWS_ACCOUNT_ID>" and aws.region == "<AWS_REGION>"
 | summarize count = count(), by: {type}
 | sort count desc
 ```
 
-To list a specific type, replace `"AWS_*"` with the entity type (e.g., `"AWS_EC2_INSTANCE"`). Add `| fields name, aws.account.id, aws.region, ...` to select specific columns. Use `tags[TagName]` for tag-based filtering.
+Filter by account and region:
 
-### Pattern 2: Configuration Parsing
+```dql
+smartscapeNodes "AWS_*"
+| filter aws.account.id == "123456789012" and aws.region == "us-east-1"
+| fields type, name, aws.resource.id
+```
 
-Parse `aws.object` JSON for detailed configuration fields:
+Using tags for filtering:
 
-```dql-template
+```dql
+smartscapeNodes "AWS_*"
+| filter tags[Environment] == "production"
+| summarize count = count(), by: {type, aws.region}
+```
+
+→ For complete resource inventory patterns, see [references/resource-management.md](references/resource-management.md)
+
+### 2. VPC Networking Analysis
+
+List all VPCs:
+
+```dql
+smartscapeNodes "AWS_EC2_VPC"
+| fields name, aws.account.id, aws.region, aws.vpc.id
+```
+
+Find resources in a VPC:
+
+```dql
+smartscapeNodes "AWS_*"
+| filter aws.vpc.id == "vpc-0be61db7c5d2d1bd1"
+| summarize resource_count = count(), by: {type, aws.subnet.id}
+| sort resource_count desc
+```
+
+Analyze security group usage:
+
+```dql
+smartscapeNodes "AWS_EC2_INSTANCE"
+| filter contains(aws.security_group.id, "sg-abc123")
+| fields name, aws.resource.id, aws.vpc.id, aws.subnet.id
+```
+
+→ For VPC networking, see [references/vpc-networking-security.md](references/vpc-networking-security.md)  
+→ For security group patterns, see [references/security-compliance.md](references/security-compliance.md)
+
+### 3. Database Monitoring
+
+List all RDS instances:
+
+```dql
+smartscapeNodes "AWS_RDS_DBINSTANCE"
+| fields name, aws.account.id, aws.region, aws.vpc.id, aws.availability_zone
+```
+
+Find Multi-AZ databases:
+
+```dql
+smartscapeNodes "AWS_RDS_DBINSTANCE"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd multiAZ = awsjson[configuration][multiAZ]
+| filter multiAZ == true
+| fields name, aws.resource.id, aws.region
+```
+
+Group by engine type:
+
+```dql
 smartscapeNodes "AWS_RDS_DBINSTANCE"
 | parse aws.object, "JSON:awsjson"
 | fieldsAdd engine = awsjson[configuration][engine]
 | summarize db_count = count(), by: {engine, aws.region}
+| sort db_count desc
 ```
 
-Common configuration fields by service:
-- **EC2:** `instanceType`, `state[name]`, `networkInterfaces[0][association][publicIp]`
-- **RDS:** `engine`, `multiAZ`, `publiclyAccessible`, `storageEncrypted`, `dbInstanceClass`, `storageType`
-- **EBS:** `volumeType`, `size`, `state`
-- **Lambda:** `runtime`, `memorySize`
-- **LB:** `scheme`, `dnsName`
-- **KMS:** `keyState`, `keyUsage`
-- **ASG:** `minSize`, `maxSize`, `desiredCapacity`
-- **Subnet:** `availableIpAddressCount`, `cidrBlock`
-- **S3:** `versioningConfiguration[status]`
-- **SG:** `securityGroups` (array, use `arraySize()` to count)
+→ For database monitoring, see [references/database-monitoring.md](references/database-monitoring.md)
 
-### Pattern 3: Relationship Traversal
+### 4. Serverless and Container Workloads
 
-Follow relationships between resources:
+List Lambda functions:
 
-```dql-template
+```dql
+smartscapeNodes "AWS_LAMBDA_FUNCTION"
+| fields name, aws.account.id, aws.region, aws.vpc.id
+```
+
+Find ECS services in a cluster:
+
+```dql
+smartscapeNodes "AWS_ECS_SERVICE"
+| traverse "belongs_to", "AWS_ECS_CLUSTER"
+| fields name, aws.resource.id, aws.region
+```
+
+List EKS clusters:
+
+```dql
+smartscapeNodes "AWS_EKS_CLUSTER"
+| fields name, aws.account.id, aws.region, aws.vpc.id
+```
+
+→ For serverless, see [references/serverless-containers.md](references/serverless-containers.md)  
+→ For containers, see [references/serverless-containers.md](references/serverless-containers.md)
+
+### 5. Load Balancer Topology
+
+Complete load balancer to instance mapping:
+
+```dql
 smartscapeNodes "AWS_ELASTICLOADBALANCINGV2_LOADBALANCER"
 | parse aws.object, "JSON:awsjson"
 | fieldsAdd dnsName = awsjson[configuration][dnsName], scheme = awsjson[configuration][scheme]
+| filter scheme == "internet-facing"
 | traverse "balanced_by", "AWS_ELASTICLOADBALANCINGV2_TARGETGROUP", direction:backward, fieldsKeep:{dnsName, id}
 | fieldsAdd targetGroupName = aws.resource.name
 | traverse "balances", "AWS_EC2_INSTANCE", fieldsKeep: {targetGroupName, id}
@@ -167,63 +237,92 @@ smartscapeNodes "AWS_ELASTICLOADBALANCINGV2_LOADBALANCER"
             targetGroupId = dt.traverse.history[-1][id]
 ```
 
-Key traversal pairs:
-- **LB → Target Groups:** `traverse "balanced_by", "AWS_ELASTICLOADBALANCINGV2_TARGETGROUP", direction:backward`
-- **Target Group → Instances:** `traverse "balances", "AWS_EC2_INSTANCE"`
-- **Target Group → Lambda Function:** `traverse "balances", "AWS_LAMBDA_FUNCTION"`
-- **ECS Service → Cluster:** `traverse "belongs_to", "AWS_ECS_CLUSTER"`
-- **ECS Service → Task Def:** `traverse "uses", "AWS_ECS_TASKDEFINITION"`
-- **RDS Instance → Cluster:** `traverse "is_part_of", "AWS_RDS_DBCLUSTER"`
-- **RDS Cluster → KMS Key:** `traverse "uses", "AWS_KMS_KEY"`
-- **Instance → SG:** `traverse "uses", "AWS_EC2_SECURITYGROUP"`
-- **Instance → Availability Zone:** `traverse "runs_on", "AWS_AVAILABILITY_ZONE"`
-- **Instance → Subnet:** `traverse "is_attached_to", "AWS_EC2_SUBNET"`
-- **Instance → VPC:** `traverse "is_attached_to", "AWS_EC2_VPC"`
-- **Instance → Volume:** `traverse "is_attached_to", "AWS_EC2_VOLUME", direction: backward`
-- **Lambda Function → IAM Role:** `traverse "uses", "AWS_IAM_ROLE"`
-- **Lambda Function → Api Gateway V2:** `traverse "uses", "AWS_APIGATEWAYV2_INTEGRATION", direction: backward`
-- **Instance → HOST:** `traverse "runs_on", "HOST", direction: backward`
-- **SG blast radius:** query instances, traverse to SGs, `summarize count(), by: {sg.name}`
-- Use `fieldsKeep` to carry fields through traversals, `dt.traverse.history[-N]` to access ancestor fields
+→ For load balancing, see [references/load-balancing-api.md](references/load-balancing-api.md)
 
-### Pattern 4: Tag-Based Ownership
+### 6. Cost Optimization
 
-Group resources by any tag for ownership/chargeback:
+Find unattached EBS volumes:
 
-```dql-template
+```dql
+smartscapeNodes "AWS_EC2_VOLUME"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd state = awsjson[configuration][state]
+| filter state == "available"
+| fields name, aws.resource.id, aws.availability_zone, aws.account.id
+```
+
+Analyze EBS costs by type:
+
+```dql
+smartscapeNodes "AWS_EC2_VOLUME"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd volumeType = awsjson[configuration][volumeType],
+            size = awsjson[configuration][size],
+            state = awsjson[configuration][state]
+| summarize total_volumes = count(), total_size_gb = sum(size), by: {volumeType, state}
+| sort total_size_gb desc
+```
+
+→ For cost optimization, see [references/cost-optimization.md](references/cost-optimization.md)
+
+### 7. Security and Compliance
+
+Find publicly accessible databases:
+
+```dql
+smartscapeNodes "AWS_RDS_DBINSTANCE"
+| parse aws.object, "JSON:awsjson"
+| fieldsAdd publiclyAccessible = awsjson[configuration][publiclyAccessible]
+| filter publiclyAccessible == true
+| fields name, aws.resource.id, aws.vpc.id, aws.account.id
+```
+
+Security group blast radius:
+
+```dql
+smartscapeNodes "AWS_EC2_INSTANCE"
+| traverse "uses", "AWS_EC2_SECURITYGROUP"
+| summarize instance_count = count(), by: {aws.resource.name, aws.vpc.id}
+| sort instance_count desc
+| limit 20
+```
+
+→ For security, see [references/security-compliance.md](references/security-compliance.md)
+
+### 8. Resource Ownership and Tagging
+
+Find untagged resources:
+
+```dql
 smartscapeNodes "AWS_*"
-| filter isNotNull(tags[<TAG_NAME>])
-| summarize resource_count = count(), by: {tags[<TAG_NAME>], type}
+| filter isNull(tags)
+| fields type, name, aws.resource.id, aws.account.id, aws.region
+```
+
+Cost allocation by cost center:
+
+```dql
+smartscapeNodes "AWS_*"
+| filter isNotNull(tags[CostCenter])
+| summarize resource_count = count(), by: {tags[CostCenter], type}
 | sort resource_count desc
 ```
 
-Replace `CostCenter` with any tag: `Owner`, `Team`, `Project`, `Environment`, `Application`, `Department`, `BusinessUnit`. Replace `"AWS_*"` with a specific type to scope to one service.
-
-Find untagged resources: `| filter arraySize(tags) == 0`
+→ For resource ownership, see [references/resource-ownership.md](references/resource-ownership.md)
 
 ---
 
-## Reference Guide
+## Common Query Patterns
 
-Load reference files for detailed queries when the core patterns above need service-specific adaptation.
-
-| Reference | When to load                                                     | Key content |
-|---|------------------------------------------------------------------|---|
-| [vpc-networking-security.md](references/vpc-networking-security.md) | VPC topology, security groups, subnets, NAT, VPN, peering        | VPC resource mapping, SG blast radius, public IP detection |
-| [database-monitoring.md](references/database-monitoring.md) | RDS, DynamoDB, ElastiCache, Redshift                             | Multi-AZ checks, engine distribution, subnet groups, dependencies |
-| [serverless-containers.md](references/serverless-containers.md) | Lambda, ECS, EKS, App Runner                                     | VPC-attached functions, service-to-cluster mapping, container networking |
-| [load-balancing-api.md](references/load-balancing-api.md) | ALB/NLB topology, API Gateway, CloudFront                        | LB→TG→Instance traversal, listener config, API stage management |
-| [messaging-event-streaming.md](references/messaging-event-streaming.md) | SQS, SNS, EventBridge, Kinesis, MSK                              | Queue/topic inventory, streaming analysis, name pattern matching |
-| [resource-management.md](references/resource-management.md) | Resource audits, tag compliance, lifecycle                       | Unattached resources, deleted resources, tag coverage analysis |
-| [cost-optimization.md](references/cost-optimization.md) | Cost savings, unused resources, sizing                           | EBS costs, instance types, runtime distribution, snapshot analysis |
-| [capacity-planning.md](references/capacity-planning.md) | Capacity analysis, scaling, IP utilization                       | ASG headroom, subnet IP counts, ECS desired vs running |
-| [security-compliance.md](references/security-compliance.md) | Security audits, encryption, public access                       | SG rule analysis (0.0.0.0/0, open ports), S3 public access block, EBS encryption, SG blast radius, public DB/LB detection, IAM roles |
-| [resource-ownership.md](references/resource-ownership.md) | Chargeback, ownership, cost allocation                           | Tag-based grouping, multi-account summaries |
-| [events.md](references/events.md) | Load to check Auto Scaling, Health, and CloudFormation events | CloudFormation, Auto Scaling, AWS Health events |
-| [workload-detection.md](references/workload-detection.md) | Load to determine orchestration context and resolution path      | LB, ASG, ECS, EKS, Batch detection for blast radius analysis |
-| [metrics-performance.md](references/metrics-performance.md) | Load to query metric timeseries for a specific resource          | DQL timeseries patterns for EC2, Lambda, RDS, SQS, ELB, ECS, DynamoDB |
+| Pattern | Template |
+|---------|----------|
+| **Discovery** | `smartscapeNodes "AWS_*" \| fieldsAdd <attrs> \| filter <cond> \| summarize <agg>` |
+| **Config parsing** | `smartscapeNodes "AWS_<T>" \| parse aws.object, "JSON:awsjson" \| fieldsAdd f = awsjson[configuration][field]` |
+| **Traversal** | `smartscapeNodes "AWS_<SRC>" \| traverse "<rel>", "AWS_<TGT>"` |
+| **Multi-type** | `smartscapeNodes "AWS_T1", "AWS_T2" \| filter <cond> \| summarize count(), by: {type}` |
 
 ---
+
 
 ## Best Practices
 
@@ -243,11 +342,14 @@ Load reference files for detailed queries when the core patterns above need serv
 1. Security group IDs are arrays - use `contains()` or `expand`
 2. Parse `aws.object` for detailed security context
 3. Check `publiclyAccessible`, `storageEncrypted`, and similar flags
+4. Validate IAM role assumptions
 
 ### Tagging Strategy
-1. Use `tags[TagName]` for filtering
-2. Check `arraySize(tags)` for untagged resources
-3. Track tag coverage with summarize operations
+1. Use `tags[TagName]` for filtering by specific tag value
+2. `tags` is a JSON object, not an array — use `isNull(tags)` for untagged resources, **never** `arraySize(tags)`
+3. Use `isNull(tags[TagName])` to find resources missing a specific tag
+4. Implement consistent tag naming conventions
+5. Track tag coverage with summarize operations
 
 ---
 
@@ -270,3 +372,110 @@ Load reference files for detailed queries when the core patterns above need serv
 - Handle null values gracefully with `isNotNull()` and `isNull()`
 - Combine region and account filters for large environments
 - Use `countDistinct()` for unique resource counts
+
+---
+
+## When to Load References
+
+This skill uses **progressive disclosure**. Start here for 80% of use cases. Load reference files for detailed specifications when needed.
+
+### Load vpc-networking-security.md when:
+- Analyzing VPC topology and connectivity
+- Investigating security group configurations
+- Finding resources by security group
+- Troubleshooting network interface issues
+
+### Load database-monitoring.md when:
+- Managing RDS instances and clusters
+- Analyzing database engine distributions
+- Checking Multi-AZ configurations
+- Monitoring cache clusters
+
+### Load serverless-containers.md when:
+- Working with Lambda functions
+- Analyzing ECS/EKS deployments
+- Investigating container networking
+- Planning serverless migrations
+
+### Load load-balancing-api.md when:
+- Mapping load balancer topologies
+- Analyzing target group health
+- Working with API Gateway
+- Configuring CloudFront
+
+### Load messaging-event-streaming.md when:
+- Managing SQS queues and SNS topics
+- Analyzing EventBridge event buses
+- Working with Kinesis or MSK
+- Monitoring Step Functions
+
+### Load resource-management.md when:
+- Conducting resource audits
+- Analyzing tag compliance
+- Finding unattached resources
+- Planning regional distribution
+
+### Load cost-optimization.md when:
+- Identifying cost savings opportunities
+- Analyzing storage costs
+- Finding unused resources
+- Optimizing instance types
+
+### Load capacity-planning.md when:
+- Planning capacity expansions
+- Analyzing resource utilization
+- Monitoring subnet IP usage
+- Sizing auto-scaling groups
+
+### Load security-compliance.md when:
+- Conducting security audits
+- Checking encryption status
+- Analyzing IAM roles
+- Finding public resources
+
+### Load resource-ownership.md when:
+- Implementing chargeback
+- Tracking resource ownership
+- Allocating costs by team
+- Managing multi-account environments
+
+### Load events.md when:
+- Investigating what changed before or during a problem
+- Checking for recent CloudFormation stack deployments
+- Reviewing AWS Auto Scaling activity (scale-in/scale-out)
+- Checking AWS Health service events affecting a resource
+
+### Load workload-detection.md when:
+- Determining how an EC2 instance is orchestrated (ECS, EKS, Batch, ASG, standalone)
+- Following a resolution path that depends on the workload pattern
+- Understanding the blast radius of an instance failure
+
+### Check health alerts when:
+- Verifying whether Dynatrace health alerts are configured for an AWS resource type
+- Confirming alert coverage before or after a problem
+
+Use `dtctl` to query the `builtin:health-experience.cloud-alert` settings schema. Replace `CpuUtilization` with the metric name relevant to the resource type being investigated:
+
+```bash
+dtctl get settings --schema builtin:health-experience.cloud-alert -o json --plain \
+  | jq '[.[] | select(.value.alertKey | test("CpuUtilization"))]'
+```
+
+---
+
+## References
+
+- [vpc-networking-security.md](references/vpc-networking-security.md) - VPC infrastructure, security groups, and network connectivity
+- [database-monitoring.md](references/database-monitoring.md) - RDS, DynamoDB, ElastiCache, and Redshift monitoring
+- [serverless-containers.md](references/serverless-containers.md) - Lambda, ECS, EKS, and App Runner workloads
+- [load-balancing-api.md](references/load-balancing-api.md) - Load balancers, API Gateway, and CloudFront
+- [messaging-event-streaming.md](references/messaging-event-streaming.md) - SQS, SNS, EventBridge, Kinesis, and MSK
+- [resource-management.md](references/resource-management.md) - Resource inventory and lifecycle management
+- [cost-optimization.md](references/cost-optimization.md) - Cost savings and spending optimization
+- [capacity-planning.md](references/capacity-planning.md) - Capacity analysis and growth planning
+- [security-compliance.md](references/security-compliance.md) - Security configurations and compliance monitoring
+- [resource-ownership.md](references/resource-ownership.md) - Cost allocation and ownership tracking
+- [events.md](references/events.md) - AWS AutoScaling, Health, and CloudFormation events for problem timeline analysis
+- [workload-detection.md](references/workload-detection.md) - Identify how an EC2 instance is orchestrated (LB, ASG, ECS, EKS, Batch)
+
+---

@@ -1,0 +1,78 @@
+{
+  "version": "7",
+  "defaultTimeframe": {
+    "from": "now()-2h",
+    "to": "now()"
+  },
+  "defaultSegments": [],
+  "sections": [
+    {
+      "id": "01536f9b-e20b-41aa-b546-f288ec054f4d",
+      "type": "dql",
+      "title": "Table Visualization Section ",
+      "showTitle": false,
+      "drilldownPath": [],
+      "filterSegments": [],
+      "previousFilterSegments": [],
+      "state": {
+        "input": {
+          "timeframe": {
+            "from": "now()-2h",
+            "to": "now()"
+          },
+          "value": "fetch logs \n| summarize count(), by:{loglevel, dt.system.bucket, dt.smartscape.host}"
+        },
+        "visualizationSettings": {
+          "chartSettings": {}
+        },
+        "querySettings": {
+          "maxResultRecords": 1000,
+          "defaultScanLimitGbytes": 500,
+          "maxResultMegaBytes": 1,
+          "defaultSamplingRatio": 10,
+          "enableSampling": false
+        },
+        "davis": {
+          "includeLogs": true,
+          "davisVisualization": {
+            "isAvailable": true
+          }
+        }
+      }
+    },
+    {
+      "id": "1a282acd-4508-47da-af98-1540a2f5a6a3",
+      "type": "dql",
+      "title": "Chart Visualization Section",
+      "showTitle": false,
+      "drilldownPath": [],
+      "filterSegments": [],
+      "previousFilterSegments": [],
+      "state": {
+        "input": {
+          "timeframe": {
+            "from": "now()-2h",
+            "to": "now()"
+          },
+          "value": "timeseries avg(dt.host.cpu.idle), by:{dt.smartscape.host}"
+        },
+        "visualizationSettings": {
+          "chartSettings": {}
+        },
+        "querySettings": {
+          "maxResultRecords": 1000,
+          "defaultScanLimitGbytes": 500,
+          "maxResultMegaBytes": 1,
+          "defaultSamplingRatio": 10,
+          "enableSampling": false
+        },
+        "davis": {
+          "includeLogs": true,
+          "davisVisualization": {
+            "isAvailable": true
+          }
+        }
+      }
+    }
+  ]
+}

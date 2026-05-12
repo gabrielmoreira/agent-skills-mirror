@@ -4,6 +4,7 @@ description: Plans sample size estimation logic, power assumptions, feasibility 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Sample Size and Power Planning Assistant
 

@@ -17,6 +17,8 @@ Use this skill when the user asks to turn a board light on or off, change an LED
 
 Run exactly one script with `lua_run_script` after reading `board_hardware_info`.
 
+You MUST pass args when using `lua_run_script` to control the light, as specified in the input schema shown below in the section `LED Strip Script Args Schema` and `GPIO Light Script Args Schema`.
+
 If `lua_run_script` returns an error, report that error directly to the user.
 Do not retry, change arguments, or run another light script in the same turn unless the user explicitly asks.
 

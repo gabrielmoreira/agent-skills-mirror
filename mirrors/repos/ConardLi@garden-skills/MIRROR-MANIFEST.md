@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ConardLi/garden-skills` — 26 default patterns, 4 followed patterns, 188 file(s) materialized.
+Mirror of `ConardLi/garden-skills` — 26 default patterns, 6 followed patterns, 190 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ConardLi/garden-skills` — 26 default patterns, 4 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 188 |
+| Followed pats | 6 |
+| Files         | 190 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,8 +53,10 @@ Mirror of `ConardLi/garden-skills` — 26 default patterns, 4 followed patterns,
 
 - `README.zh-CN.md`
 - `README.md`
+- `README.ja-JP.md`
 - `CONTRIBUTING.zh-CN.md`
 - `CONTRIBUTING.md`
+- `CONTRIBUTING.ja-JP.md`
 
 ## File Index
 
@@ -246,10 +248,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 182 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/tokens.css`](skills/web-video-presentation/themes/warm-keynote/tokens.css) |
 | 183 | ✓ | [`website/gpt-image2-website/README.md`](website/gpt-image2-website/README.md) |
 | 184 | ✓ | [`website/web-design-website/README.md`](website/web-design-website/README.md) |
-| 185 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 186 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 187 | → | [`README.md`](README.md) |
-| 188 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 185 | → | [`CONTRIBUTING.ja-JP.md`](CONTRIBUTING.ja-JP.md) |
+| 186 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 187 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 188 | → | [`README.ja-JP.md`](README.ja-JP.md) |
+| 189 | → | [`README.md`](README.md) |
+| 190 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

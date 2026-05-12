@@ -1,0 +1,16 @@
+{
+  "id": "ci_cd",
+  "name": "CI/CD",
+  "category": "technology",
+  "description": "Expert-level capability in Software Delivery Performance (DORA Metrics), balancing 'Zero-Config' deployments for startups vs. rigorous compliance pipelines for enterprise.",
+  "knowledge": "# CI/CD Pipeline Excellence 2026\n\n## 🚀 Modern CI/CD Strategic Foundation\n**CI/CD** is not just about automation; it is the **logistics of revenue**. The goal is to minimize the \"Lead Time for Changes\" (time from code commit to customer usage). \n\n### Deployment Economics & The \"DevOps Tax\"\n- **The Monolith Advantage:** As you noted, for 90% of businesses, a simple pipeline (`Build -> SSH SCP -> Docker Restart`) is superior because it has near-zero maintenance cost. AI must resist the urge to over-engineer pipelines for simple architectures.\n- **Golden Paths (PaaS vs. Custom):** Recommending \"No-Ops\" platforms (Vercel, Railway, Neon) for early-stage projects to eliminate the \"DevOps Tax\" (billable hours spent on infrastructure instead of product features).\n- **DORA Metrics as Business KPIs:** Measuring success not by \"uptime\", but by:\n  1. **Deployment Frequency** (Velocity)\n  2. **Lead Time for Changes** (Agility)\n  3. **Change Failure Rate** (Quality)\n  4. **Time to Restore Service** (Resilience)\n\n## 🔧 CI/CD Platform Ecosystem 2026\n### Pipeline Architecture Patterns\n- **Simple/Monolith Pipeline:** \n  - Checkout -> Test (Fast) -> Build Docker -> Push Registry -> Webhook to VPS. \n- **Enterprise/GitOps Pipeline (ArgoCD):** \n  - Using Git as the \"Single Source of Truth\". No manual changes on the server allowed. If the server crashes, the pipeline rebuilds it automatically from the Git state.\n\n## 🔒 Security & Secrets Management (DevSecOps)\n- **Supply Chain Security:** In 2026, you are responsible for the code you write AND the libraries you use. Automated SBOM (Software Bill of Materials) generation is mandatory for enterprise contracts.\n- **Secrets Rotation:** Never hardcoding API keys. Using Vault or Cloud Secret Managers to inject credentials only at runtime.\n\n## 🚀 Advanced Deployment Strategies\n- **Feature Flags (Decoupling Deploy from Release):** Putting code on production *before* it is visible to users. This allows \"Dark Launches\" and testing on 1% of users without a risky \"Big Bang\" deployment.\n- **Blue-Green & Canary:** Strategies for high-traffic apps where even 1 second of downtime costs thousands of dollars. AI must know *when* this investment is justified (ROI).\n\n## 📊 Testing Automation\n### Comprehensive Test Strategy\n- **The Test Pyramid:** Prioritizing fast Unit Tests over slow E2E tests. AI should advise against \"Test Hoarding\" (keeping old, slow tests that provide no value).\n\nThis comprehensive CI/CD framework enables organizations to achieve deployment excellence, scaling from a single VPS script to complex banking-grade orchestration based on business needs.",
+  "capabilities": [
+    "DORA Metrics optimization",
+    "DevOps ROI analysis (PaaS vs. DIY)",
+    "Feature Flag strategy",
+    "Supply Chain Security (SBOM) implementation",
+    "Pipeline simplification for Monoliths"
+  ],
+  "created": "2026-02-05T00:00:00Z",
+  "version": "1.1"
+}

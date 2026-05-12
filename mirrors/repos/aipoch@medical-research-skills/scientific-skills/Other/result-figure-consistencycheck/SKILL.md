@@ -2,7 +2,7 @@
 name: result-figure-consistencycheck
 description: Checks consistency between paper result descriptions and figure legends (text-only) when the input is a PDF-to-Markdown full text containing page breaks (e.g., `## Page XX`) and legend text; outputs a Markdown consistency report and a UTF-8 CSV issue list.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

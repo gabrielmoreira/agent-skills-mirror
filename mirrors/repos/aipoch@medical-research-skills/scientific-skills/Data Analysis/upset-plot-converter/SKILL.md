@@ -2,9 +2,10 @@
 name: upset-plot-converter
 description: Convert complex Venn diagrams with more than 4 sets to clearer Upset.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Upset Plot Converter
 
 Convert complex Venn diagrams (more than 4 sets) to clearer Upset Plots.

@@ -4,6 +4,7 @@ description: Condenses a full study into conference-submission abstract format. 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Conference Abstract Adaptor
 

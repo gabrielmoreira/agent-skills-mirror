@@ -4,6 +4,7 @@ description: Structures research progress into focused and actionable slides for
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Slide Deck for Lab Meeting
 

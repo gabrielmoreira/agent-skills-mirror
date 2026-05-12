@@ -5,7 +5,7 @@ description: 把一篇文章或口播稿，做成"看起来像视频"的点击�
 
 # Web Video Presentation
 
-把一篇文章或口播稿，一步步做成可录屏的"伪装成网页的视频"，可选合成
+把一篇文章或口播稿，一步步做成可录屏的"伪装成视频的网页"，可选合成
 口播音频。产出物 = Vite + React + TS 项目 + 按章节切分的音频。
 
 ## 适用场景
@@ -200,7 +200,7 @@ Phase 2.4 的"实现单章"会重复 N 次 —— 每次都要回看核心约束
      ★ <推荐 1：nameZh (id)> — 因为 <bestFor 命中>；<descriptionZh 摘要>
      ★ <推荐 2 / 推荐 3>
      其它可选：<剩余主题，nameZh + 一句话>
-     也可以让我帮你做新主题（详见 themes/THEMES.md）。
+     也可以让我帮你做新主题（详见 references/THEMES.md）。
 
   4. 真素材怎么准备？粗看本视频要的图：<列粗略清单>
      a) 我从 <现有素材路径> 帮你挑   b) 你自己提供   c) 全部 placeholder
@@ -232,11 +232,11 @@ Phase 2.4 的"实现单章"会重复 N 次 —— 每次都要回看核心约束
 ### 2.1 脚手架
 
 ```bash
-bash .cursor/skills/web-video-presentation/scripts/scaffold.sh \
+bash <path-to-web-video-presentation>/scripts/scaffold.sh \
   ./presentation \
   --theme=<用户选的主题 id>
 
-bash .cursor/skills/web-video-presentation/scripts/scaffold.sh --list-themes
+bash <path-to-web-video-presentation>/scripts/scaffold.sh --list-themes
 ```
 
 > 自定义主题 → 先按 [`references/THEMES.md`](references/THEMES.md)
@@ -437,4 +437,3 @@ Part 8「常见反馈速查」。**关键**：先定位是哪一层（节奏 / �
 | [`references/RECORDING.md`](references/RECORDING.md) | Phase 4 才读 | 录屏工具 + 后期合成 |
 | [`themes/`](themes) | Checkpoint Plan / Phase 1.2 时翻 | 内置主题（每个含 `theme.json` + `tokens.css`） |
 | [`scripts/scaffold.sh`](scripts/scaffold.sh) | Phase 2.1 跑一次 | 一键项目脚手架 |
-

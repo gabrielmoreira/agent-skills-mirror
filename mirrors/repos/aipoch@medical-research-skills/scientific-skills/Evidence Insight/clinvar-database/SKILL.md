@@ -2,7 +2,7 @@
 name: clinvar-database
 description: Utilities for querying the NCBI ClinVar database to retrieve variant records, clinical significance, and phenotype relationships; use when searching variants by gene/condition/significance, interpreting Pathogenic/Benign/VUS classifications, or annotating VCF files with ClinVar annotations.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

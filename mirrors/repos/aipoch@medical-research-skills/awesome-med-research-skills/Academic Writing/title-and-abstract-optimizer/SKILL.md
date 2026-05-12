@@ -4,6 +4,7 @@ description: Optimizes manuscript titles and abstracts for information density, 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Title and Abstract Optimizer
 

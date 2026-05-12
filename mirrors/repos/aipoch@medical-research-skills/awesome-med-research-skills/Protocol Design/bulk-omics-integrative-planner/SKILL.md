@@ -4,6 +4,7 @@ description: Designs complete integrated research plans for bulk transcriptomics
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Bulk Omics Integrative Planner
 

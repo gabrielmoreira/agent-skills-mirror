@@ -11,6 +11,8 @@ As fragments emerge from either side of the conversation, append them to a singl
 
 If the user did not pass a path, ask once where to save the document, then remember it for the rest of the session.
 
+Capture fragments from the very first thing the user says, including the initial prompt.
+
 On first write, put a single H1 at the top with a working title (it can change later) and nothing else — no metadata, no TOC, no date.
 
 </what-to-do>
@@ -32,19 +34,6 @@ Fragments are deliberately heterogeneous. Examples of what could be a fragment:
 - A complaint, a confession, a punchline.
 
 The novelist's diary is the model: years of unstructured noticings that later get mined for raw material. Fragments are noticings.
-
-## How the session feels
-
-Like a grilling session, with fragments as a by-product. The shape:
-
-- Start by asking what the user is circling around. Let them ramble.
-- Catch fragments from their words. When they say something quotable, capture it verbatim or slightly sharpened.
-- Generate candidate fragments back at them. Try things on. Offer two or three versions of the same idea and let them pick or reject.
-- When something lands, append it. When it doesn't, drop it.
-- Press for more. Excavate. "You said X — say it three different ways." "What's the version of that you wouldn't say in public?" "What's the example that made you believe this in the first place?"
-- Push on quality. The article will only be as good as its fragments. If a fragment is mushy, propose a sharper rewrite before appending.
-
-Blue-sky generously, but apply pressure to deepen and tighten. Do not rush to outline. Do not group. Do not propose a structure. If the user starts asking about structure, redirect: "We're still mining. Structure comes later."
 
 ## File format
 
@@ -82,14 +71,5 @@ Append silently. Don't ask permission for each fragment. Mention what you added 
 Before every write: re-read the file from disk. The user may have edited, reordered, or deleted fragments between turns — preserve their changes. Never overwrite the file; only append (or, if the user asks, edit a specific fragment in place).
 
 The user can say "cut the last one", "rewrite that one sharper", "merge those two" at any time. Treat those as first-class instructions.
-
-## Out of scope
-
-- Outlines, section plans, paragraph structure, transitions.
-- Deciding the article's thesis, argument, or audience.
-- Producing prose that reads as finished writing.
-- Linking fragments together with connective tissue.
-
-If the user is ready for any of that, the session is over and a different tool takes over. Do not name or recommend that tool — just stop.
 
 </supporting-info>

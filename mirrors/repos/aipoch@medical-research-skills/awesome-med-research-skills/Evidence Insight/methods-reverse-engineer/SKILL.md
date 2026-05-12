@@ -4,6 +4,7 @@ description: Reverse-engineers the methods section of a biomedical paper into a 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Methods Reverse Engineer
 

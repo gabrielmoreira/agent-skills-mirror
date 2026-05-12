@@ -2,9 +2,10 @@
 name: peer-review-response-drafter
 description: Assist in drafting professional peer review response letters. Trigger.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Peer Review Response Drafter
 
 Assist researchers in crafting professional, polite, and effective responses to peer reviewer comments for academic journal submissions.

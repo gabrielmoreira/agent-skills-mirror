@@ -2,9 +2,10 @@
 name: toxicity-structure-alert
 description: Analyze data with `toxicity-structure-alert` using a reproducible workflow, explicit validation, and structured outputs for review-ready interpretation.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Toxicity Structure Alert (Skill ID: 141)
 
 Identify potential toxic structural alerts in drug molecules.

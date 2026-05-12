@@ -2,9 +2,10 @@
 name: cross-disciplinary-bridge-finder
 description: Use when identifying collaboration opportunities across fields, finding experts in complementary disciplines, translating methodologies between scientific domains, or building interdisciplinary research teams. Identifies synergies between scientific disciplines, matches researchers with complementary expertise, and facilitates cross-domain collaborations. Supports interdisciplinary grant applications and innovative research team formation.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Cross-Disciplinary Research Collaboration Finder
 
 ## When to Use

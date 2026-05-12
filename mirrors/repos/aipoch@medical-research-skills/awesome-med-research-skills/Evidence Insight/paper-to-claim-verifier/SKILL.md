@@ -4,6 +4,7 @@ description: Verifies whether a scientific or biomedical claim is actually suppo
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Paper-to-Claim Verifier
 

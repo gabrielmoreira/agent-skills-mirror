@@ -186,7 +186,7 @@ timeseries {cnt=sum(dt.service.request.count), timestamp=start(), timestamp_end=
 ### How to get last timestamp when data was present in timeseries?
 
 ```dql
-timeseries { d=sum(dt.service.request.count),  timestamp=start() }, filter: dt.smartscape.service == "SERVICE-0A596770A52979EB"
+timeseries { d=sum(dt.service.request.count),  timestamp=start() }, filter: dt.smartscape.service == toSmartscapeId("SERVICE-0A596770A52979EB")
 | fieldsAdd timestamp = arrayLast(iCollectArray(if (isNotNull(d[]), timestamp[] )))
 ```
 
@@ -195,7 +195,7 @@ timeseries { d=sum(dt.service.request.count),  timestamp=start() }, filter: dt.s
 * Answer: It is possible, but only with 1m accuracy. Timestamps of individual contributions
 
 ```dql
-timeseries { d=sum(dt.service.request.count),  timestamp=start() }, filter: dt.smartscape.service == "SERVICE-0A596770A52979EB", interval:1m
+timeseries { d=sum(dt.service.request.count),  timestamp=start() }, filter: dt.smartscape.service == toSmartscapeId("SERVICE-0A596770A52979EB"), interval:1m
 | fieldsAdd timestamp = arrayLast(iCollectArray(if (isNotNull(d[]), timestamp[] )))
 ```
 

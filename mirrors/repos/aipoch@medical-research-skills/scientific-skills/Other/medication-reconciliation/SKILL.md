@@ -2,9 +2,10 @@
 name: medication-reconciliation
 description: Compare patient pre-admission medication lists with inpatient orders to automatically identify omitted or duplicated medications and improve medication safety.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Medication Reconciliation
 
 Compare patient pre-admission medication lists with inpatient orders to automatically identify omitted or duplicated medications and improve medication safety.

@@ -2,9 +2,10 @@
 name: meta-search-builder
 description: Medical literature search strategy generator. Given a user's natural-language description (e.g., meta-analysis topic, PICOS elements, research question), automatically extract medical entities (disease, intervention, population, outcomes) and generate professional search queries for seven major databases (PubMed, Cochrane, Embase, Web of Science, CNKI, Wanfang, VIP). Useful for developing search strategies for systematic reviews and meta-analyses.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Medical Literature Search Strategy Generator
 
 ## When to Use

@@ -2,7 +2,7 @@
 name: geopandas
 description: A Python library for reading, writing, and analyzing geospatial vector data; use it when you need spatial operations (buffer/overlay/join), CRS reprojection, or map visualization on formats like Shapefile/GeoJSON/GeoPackage or PostGIS.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

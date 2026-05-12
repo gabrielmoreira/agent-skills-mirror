@@ -65,7 +65,7 @@
 随时列出可用主题：
 
 ```bash
-bash .cursor/skills/web-video-presentation/scripts/scaffold.sh --list-themes
+bash <path-to-web-video-presentation>/scripts/scaffold.sh --list-themes
 ```
 
 ---
@@ -90,7 +90,7 @@ bash scripts/scaffold.sh ./talk --theme=newsroom
 切换 = 一次文件覆盖：
 
 ```bash
-cp .cursor/skills/web-video-presentation/themes/newsroom/tokens.css \
+cp <path-to-web-video-presentation>/themes/newsroom/tokens.css \
    presentation/src/styles/tokens.css
 ```
 
@@ -217,7 +217,7 @@ CSS"领域 —— 在那里解决，别扩主题契约。
 | 精炼 / 安静 / 印刷                  | `monochrome-print` |
 
 ```bash
-cd .cursor/skills/web-video-presentation/themes
+cd <path-to-web-video-presentation>/themes
 cp -r monochrome-print my-theme
 ```
 

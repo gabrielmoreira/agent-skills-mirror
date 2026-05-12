@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,7 +72,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`apps/skills/plannotator-last/SKILL.md`](apps/skills/plannotator-last/SKILL.md) |
 | 12 | ✓ | [`apps/skills/plannotator-review/SKILL.md`](apps/skills/plannotator-review/SKILL.md) |
 | 13 | ✓ | [`apps/skills/plannotator-setup-goal/SKILL.md`](apps/skills/plannotator-setup-goal/SKILL.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | ✓ | [`apps/skills/plannotator-visual-explainer/SKILL.md`](apps/skills/plannotator-visual-explainer/SKILL.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

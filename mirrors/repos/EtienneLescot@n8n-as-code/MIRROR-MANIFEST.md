@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EtienneLescot/n8n-as-code` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `EtienneLescot/n8n-as-code` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EtienneLescot/n8n-as-code` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,16 +63,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`docs/docs/contribution/skills.md`](docs/docs/contribution/skills.md) |
 | 3 | ✓ | [`docs/docs/usage/skills.md`](docs/docs/usage/skills.md) |
 | 4 | ✓ | [`packages/skills/src/agent-skills/n8n-architect/SKILL.md`](packages/skills/src/agent-skills/n8n-architect/SKILL.md) |
-| 5 | ✓ | [`packages/skills/src/agent-skills/n8n-manager/SKILL.md`](packages/skills/src/agent-skills/n8n-manager/SKILL.md) |
-| 6 | ✓ | [`plugins/claude/n8n-as-code/skills/n8n-architect/SKILL.md`](plugins/claude/n8n-as-code/skills/n8n-architect/SKILL.md) |
-| 7 | ✓ | [`plugins/claude/n8n-as-code/skills/n8n-manager/SKILL.md`](plugins/claude/n8n-as-code/skills/n8n-manager/SKILL.md) |
-| 8 | ✓ | [`plugins/cursor/n8n-as-code/skills/n8n-architect/SKILL.md`](plugins/cursor/n8n-as-code/skills/n8n-architect/SKILL.md) |
-| 9 | ✓ | [`plugins/cursor/n8n-as-code/skills/n8n-manager/SKILL.md`](plugins/cursor/n8n-as-code/skills/n8n-manager/SKILL.md) |
-| 10 | ✓ | [`plugins/openclaw/n8n-as-code/skills/n8n-architect/SKILL.md`](plugins/openclaw/n8n-as-code/skills/n8n-architect/SKILL.md) |
-| 11 | ✓ | [`plugins/openclaw/n8n-as-code/skills/n8n-manager/SKILL.md`](plugins/openclaw/n8n-as-code/skills/n8n-manager/SKILL.md) |
-| 12 | ✓ | [`skills/n8n-architect/SKILL.md`](skills/n8n-architect/SKILL.md) |
-| 13 | ✓ | [`skills/n8n-manager/SKILL.md`](skills/n8n-manager/SKILL.md) |
-| 14 | ✓ | [`skills/README.md`](skills/README.md) |
+| 5 | ✓ | [`plugins/claude/n8n-as-code/skills/n8n-architect/SKILL.md`](plugins/claude/n8n-as-code/skills/n8n-architect/SKILL.md) |
+| 6 | ✓ | [`plugins/cursor/n8n-as-code/skills/n8n-architect/SKILL.md`](plugins/cursor/n8n-as-code/skills/n8n-architect/SKILL.md) |
+| 7 | ✓ | [`plugins/openclaw/n8n-as-code/skills/n8n-architect/SKILL.md`](plugins/openclaw/n8n-as-code/skills/n8n-architect/SKILL.md) |
+| 8 | ✓ | [`skills/n8n-architect/SKILL.md`](skills/n8n-architect/SKILL.md) |
+| 9 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

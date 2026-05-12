@@ -57,6 +57,36 @@ Centered slide types (`title`, `section`, `quote`, `closing`) automatically cent
 
 ---
 
+## Naming convention — classes and IDs
+
+Every element targeted by animation, JS control, or external overrides must have a precise, unambiguous selector. Vague class names collide across slides when scripts run in `index.html` context or when a future deck reuses a component.
+
+### Class rules for repetitive components
+
+| Pattern | Use | Example |
+|---------|-----|---------|
+| `{component}-list` | Wrapping container for a group | `bullets`, `agenda-list`, `stat-grid`, `timeline` |
+| `{component}-item` | Individual member of a list | `stat-item`, `tl-item`, `bar-row` |
+| `{component}-{part}` | Named sub-part of an item | `stat-value`, `stat-label`, `tl-dot`, `tl-label`, `bar-label` |
+| `{context}-col {context}-{role}` | Layout column scoped to a slide type | `cmp-col cmp-before` · `col two-col-left` · `col two-col-right` |
+| `{slide-type}-{role}` | Unique element within one slide type | `closing-links`, `image-caption`, `chart-insight`, `code-caption` |
+
+**Never use bare, context-free class names** — `col`, `item`, `panel`, `row` alone — as the sole identifier. Always pair them with a context qualifier (e.g. `col two-col-left`) so animation selectors stay unambiguous across a multi-slide deck.
+
+### ID rules
+
+Assign `id` only when:
+
+- An animation counter needs a direct DOM target (`document.getElementById(...)` in `onUpdate`)
+- A chart or diagram library initializes by element ID
+- JS needs a reliable, unique anchor (focus management, presenter note jump target)
+
+**Format: `{slide-slug}-{role}`** — e.g. `id="stats-kpi-1"`, `id="perf-chart"`, `id="timeline-root"`.
+
+Never use bare numeric IDs (`id="1"`) or generic IDs (`id="chart"`, `id="kpi"`). They collide when a slide is scripted from the parent `index.html` or reused across decks.
+
+---
+
 ## Slide file shell
 
 Every `slides/slug.html` uses this shell. Slides fill the iframe 100%×100% — the stage in `index.html` handles all scaling. Add CDN `<link>` / `<script>` tags inside `<head>` only when the slide needs them.
@@ -169,13 +199,14 @@ Header above, smart-flex body below.
     <h2 class="title fade-in">{{Heading}}</h2>
   </header>
   <main class="slide-content slide-content--grid-2">
-    <div class="col slide-up delay-1">
-      <h3 class="col-heading">{{Left}}</h3>
-      <ul><li>{{Point}}</li><li>{{Point}}</li></ul>
+    <!-- `col` keeps base.css styling; `two-col-left` gives animation/JS a precise target -->
+    <div class="col two-col-left slide-up delay-1">
+      <h3 class="col-heading two-col-heading">{{Left heading}}</h3>
+      <ul class="two-col-bullets"><li>{{Point}}</li><li>{{Point}}</li></ul>
     </div>
-    <div class="col slide-up delay-2">
-      <h3 class="col-heading">{{Right}}</h3>
-      <ul><li>{{Point}}</li><li>{{Point}}</li></ul>
+    <div class="col two-col-right slide-up delay-2">
+      <h3 class="col-heading two-col-heading">{{Right heading}}</h3>
+      <ul class="two-col-bullets"><li>{{Point}}</li><li>{{Point}}</li></ul>
     </div>
   </main>
 </div>
@@ -321,16 +352,17 @@ Use for 1–3 key metrics. Add a Motion counter animation when numbers should co
   </header>
   <main class="slide-content">
     <div class="stat-grid">
+      <!-- id="{slide-slug}-kpi-{n}" — required for animation counter targeting -->
       <div class="stat-item pop-in delay-1">
-        <span class="stat-value" id="kpi1">{{Number or symbol}}</span>
+        <span class="stat-value" id="{{slide-slug}}-kpi-1">{{Number or symbol}}</span>
         <span class="stat-label">{{Label}}</span>
       </div>
       <div class="stat-item pop-in delay-2">
-        <span class="stat-value" id="kpi2">{{Number or symbol}}</span>
+        <span class="stat-value" id="{{slide-slug}}-kpi-2">{{Number or symbol}}</span>
         <span class="stat-label">{{Label}}</span>
       </div>
       <div class="stat-item pop-in delay-3">
-        <span class="stat-value" id="kpi3">{{Number or symbol}}</span>
+        <span class="stat-value" id="{{slide-slug}}-kpi-3">{{Number or symbol}}</span>
         <span class="stat-label">{{Label}}</span>
       </div>
     </div>
@@ -484,11 +516,12 @@ Use these `<script type="module">` blocks at the bottom of a slide's `<body>`. T
 ```html
 <script type="module">
   import { animate } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
+  // Use the slide-slug-scoped ID from the stats template (e.g. 'results-kpi-1')
   animate(0, {{TARGET_NUMBER}}, {
     duration: 1.4,
     easing: [0.22, 1, 0.36, 1],
     onUpdate(v) {
-      document.getElementById('kpi').textContent =
+      document.getElementById('{{slide-slug}}-kpi-1').textContent =
         Math.round(v).toLocaleString();
     }
   });
@@ -603,8 +636,9 @@ Key rules for the manifest:
 
 The parent `index.html` uses a **single `handleKey()` function** as the sole navigation handler:
 
-- When the **parent window** has focus → `document.addEventListener('keydown', handleKey, true)` fires directly.
-- When the **iframe** has focus (user clicked inside a slide) → `js/navbridge.js` inside the slide posts `{ type: 'octocode-slides:nav', key }` and the parent's `window.addEventListener('message', ...)` calls `handleKey()`.
+- When the **parent window** has focus → `document.addEventListener('keydown', handleKey, true)` fires directly. Step-aware nav keys (`→`, `↓`, Space, `←`, `↑`) are first posted into the active iframe as `{ type: 'octocode-slides:key', key }`, so `animation.js` can reveal or hide a step before slide navigation happens.
+- When the **iframe** has focus (user clicked inside a slide) → `js/navbridge.js` inside the slide posts `{ type: 'octocode-slides:nav', key }` only after the slide has no step left to consume in that direction.
+- The parent's message listener calls `handleKey({ key, passthrough: true })`; `passthrough:true` means the key already passed through the active iframe and should now advance or retreat the deck.
 
 Do NOT attach a second `keydown` listener to the iframe — that would double-fire and advance two slides per key press.
 
@@ -613,9 +647,11 @@ window.addEventListener('message', function (event) {
   var data = event.data;
   if (!data || typeof data !== 'object') return;
   if (data.type === 'octocode-slides:nav' && data.key) {
-    handleKey({ key: data.key, preventDefault: function () {} });
+    handleKey({ key: data.key, passthrough: true, preventDefault: function () {} });
   } else if (data.type === 'octocode-slides:activity') {
     showHud();
+  } else if (data.type === 'octocode-slides:presenter-goto') {
+    go(clampIndex(data.index));
   }
 });
 ```

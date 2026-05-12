@@ -2,9 +2,10 @@
 name: meeting-assistant
 description: Extracts key meeting information in chronological order and outputs decisions and action items; use when you need meeting minutes, action tracking, or project sync notes from transcripts or raw notes.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Meeting Assistant
 
 ## When to Use

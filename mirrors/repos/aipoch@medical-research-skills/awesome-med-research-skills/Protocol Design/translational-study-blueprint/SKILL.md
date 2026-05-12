@@ -4,6 +4,7 @@ description: Designs a translational blueprint for moving a biomedical finding t
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Translational Study Blueprint
 

@@ -1,40 +1,39 @@
 ---
 name: dt-migration
-description: Migrate Dynatrace classic and Gen2 entity-based DQL, topology navigation, and classic entity selectors to Smartscape equivalents. Use this skill when users want to convert classic entities to Smartscape nodes, rewrite entityName, entityAttr, or classicEntitySelector patterns, or map old relationships to Smartscape traversal.
+description: Migrate Dynatrace classic and Gen2 entity-based DQL to Smartscape equivalents. Covers three scenarios. (1) mass data queries filtered by classic entity conditions — migrate to direct dimension filters first, Smartscape only as fallback; (2) mass data queries using entity subqueries for filtering — same dimension-first strategy; (3) pure entity list queries — migrate fetch dt.entity.* to smartscapeNodes. Also handles entityName, entityAttr, classicEntitySelector, and classic relationship patterns.
 license: Apache-2.0
 ---
 
 # Smartscape Migration Skill
 
-This skill helps migrate Dynatrace classic and Gen2 entity-based DQL queries and query patterns to Smartscape-based equivalents.
-
-Use it to:
-
-- convert classic entity types to Smartscape node types
-- rewrite classic entity DQL into Smartscape DQL
-- migrate `entityName()`, `entityAttr()`, `classicEntitySelector()`, and classic relationship patterns
-- explain how classic entity concepts map to Smartscape nodes, edges, fields, and IDs
+This skill migrates Dynatrace classic and Gen2 entity-based DQL queries and query patterns to Smartscape-based equivalents.
 
 Load the **dt-dql-essentials** skill before writing final DQL so the translated query also follows current DQL syntax rules.
 
 This skill focuses on Smartscape-oriented DQL migration only. It does not cover asset-level migration workflows.
 
-## Use Cases
+## Query Purpose Classification
 
-Load this skill when the user wants to:
+**Start here.** The correct migration strategy depends on what the query is actually trying to do — not just which classic constructs it uses.
 
-| Use case | What to do |
-| --- | --- |
-| Convert a classic entity query to Smartscape | Follow the migration workflow, use the mapping table, then load the relevant detailed references |
-| Migrate `classicEntitySelector(...)` to Smartscape | Start from the constrained side, convert selector filters to node filters, and replace relationship selectors with `traverse` |
-| Understand what a classic entity became in Smartscape | Check the entity mapping table and special cases before translating literally |
-| Rewrite classic DQL functions such as `entityName()` or `entityAttr()` | Use the DQL construct guidance and function migration reference |
-| Migrate classic topology navigation | Replace relationship fields and selectors with `smartscapeNodes`, `smartscapeEdges`, `traverse`, or `references` |
-| Translate signal or event queries using `dt.entity.*` dimensions | Rewrite every entity dimension to the correct `dt.smartscape.*` field and adjust related helpers |
+There are three distinct situations:
+
+| # | Situation | Classic anti-pattern | Migration strategy |
+| --- | --- | --- | --- |
+| 1 | Mass data query filtered by entity conditions | `classicEntitySelector(...)` inline in `filter:` of a timeseries, logs, or metrics query | Resolve entity conditions to raw data dimensions first. Smartscape is a fallback, not the default. |
+| 2 | Mass data query using entity subquery for filtering | `fetch dt.entity.*` inside `in [...]`, `lookup [...]`, or `join [...]` to filter the outer mass data query | Same dimension-first strategy. Rewrite as raw dimension filter or `in [smartscapeNodes ...]` subquery. |
+| 3 | Pure entity list query | `fetch dt.entity.*` used standalone or as the primary result source | `smartscapeNodes` is the only valid path. No raw dimension alternative exists. |
+
+**Decision:**
+
+- **Situations 1 or 2** — load [references/mass-data-filtering-strategy.md](references/mass-data-filtering-strategy.md) and complete **all steps** including field discovery (Step 2) and equivalence verification (Step 4). Do not skip the `fieldsSnapshot` gates — they determine which approach is viable. Only fall back to the Migration Workflow below when the entity-type mapping or relationship traversal is needed to complete a Smartscape subquery.
+- **Situation 3** — continue with the Migration Workflow and entity mapping table below.
+
+> Note: Situation 3 has a sub-case where `classicEntitySelector` is used to filter the entities returned by `fetch dt.entity.*`. This is rare and follows the same `smartscapeNodes` path — resolve the selector conditions using [references/mass-data-filtering-strategy.md](references/mass-data-filtering-strategy.md) Step 1B, then apply them as node filters in `smartscapeNodes`.
 
 ## Migration Workflow
 
-Follow this order:
+Follow this order for **Situation 3** (pure entity list queries) and for constructing Smartscape subqueries in Situations 1 and 2:
 
 1. Identify the classic input pattern:
    - `fetch dt.entity.*`
@@ -83,7 +82,7 @@ These classic constructs usually need explicit rewriting:
 | --- | --- | --- |
 | `entityName(x)` | `name` or `getNodeName(x)` | Prefer `name` when querying nodes directly |
 | `entityAttr(x, "...")` | direct node field or `getNodeField(x, "...")` | Prefer direct fields when available |
-| `classicEntitySelector(...)` | node filters plus `traverse` | Start from the constrained side |
+| `classicEntitySelector(...)` | node filters plus `traverse` | Start from the constrained side; for mass data queries see mass-data-filtering-strategy.md first |
 | `dt.entity.*` in signal queries | `dt.smartscape.*` | Applies to `by`, `filter`, `fieldsAdd`, `expand`, and related clauses |
 | `belongs_to[...]`, `runs[...]`, `instance_of[...]` | `traverse` or `references[...]` | `references` works only for static edges |
 | classic entity ID filters | Smartscape `id` | Do not reuse classic IDs blindly |
@@ -125,6 +124,9 @@ Each guide explains:
 ## References
 
 - [references/README.md](references/README.md) — Reference index and reading guide
+- [references/mass-data-filtering-strategy.md](references/mass-data-filtering-strategy.md) — **Start here for Situations 1 and 2.** Mandatory steps: resolve conditions, run fieldsSnapshot discovery, select approach, write query, verify equivalence
+- [references/auto-tagging-field-mapping.md](references/auto-tagging-field-mapping.md) — Maps auto-tagging rule condition keys to semantic dictionary fields (mass data and Smartscape node attributes)
+- [references/entity-selector-predicates.md](references/entity-selector-predicates.md) — Full predicate vocabulary for `classicEntitySelector` expressions
 - [references/migration-workflow.md](references/migration-workflow.md) — End-to-end migration process and output expectations
 - [references/type-mappings.md](references/type-mappings.md) — Full classic-to-Smartscape type and field mappings
 - [references/dql-function-migration.md](references/dql-function-migration.md) — How to migrate classic DQL functions and patterns

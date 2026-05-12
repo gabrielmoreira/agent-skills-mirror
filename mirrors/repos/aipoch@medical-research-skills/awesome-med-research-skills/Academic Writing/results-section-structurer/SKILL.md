@@ -4,6 +4,7 @@ description: Organizes biomedical figures, analyses, and result blocks into a cl
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Results Section Structurer
 

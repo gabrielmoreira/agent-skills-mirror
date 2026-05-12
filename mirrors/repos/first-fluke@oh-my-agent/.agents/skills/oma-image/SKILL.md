@@ -212,9 +212,9 @@ Supported vendors:
 
 | Vendor | Support | How |
 |--------|---------|-----|
-| `codex` (gpt-image-2) | ✅ | Passes `-i <path>` to `codex exec` |
-| `gemini` (2.5-flash-image) | ✅ | Inlines base64 `inlineData` parts in request |
-| `pollinations` | ❌ | Rejected with exit code 4 (requires URL hosting; see PR #2 roadmap) |
+| `codex` (gpt-image-2) | PASS | Passes `-i <path>` to `codex exec` |
+| `gemini` (2.5-flash-image) | PASS | Inlines base64 `inlineData` parts in request |
+| `pollinations` | N/A | Rejected with exit code 4 (requires URL hosting; see PR #2 roadmap) |
 
 **Paths**: absolute or relative to `$CWD`. Host CLIs usually expose attached images via:
 - **Claude Code**: `~/.claude/image-cache/<session>/N.png` (surfaced in system messages as `[Image: source: <path>]`)

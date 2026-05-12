@@ -2,9 +2,10 @@
 name: biogrid-orcs
 description: "Accesses BioGRID ORCS CRISPR screen data (organisms, screens, scores). Invoke when user needs to search CRISPR screens, get vocabulary, or retrieve gene scores."
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # BioGRID ORCS Skill
 
 This skill allows querying the BioGRID ORCS (Open Repository of CRISPR Screens) REST API.

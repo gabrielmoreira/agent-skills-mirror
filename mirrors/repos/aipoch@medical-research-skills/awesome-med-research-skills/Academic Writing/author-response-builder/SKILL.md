@@ -4,6 +4,7 @@ description: Turns reviewer comments into structured, professional point-by-poin
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Author Response Builder
 

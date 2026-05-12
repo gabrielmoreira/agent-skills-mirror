@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/awesome-claude-code-toolkit` — 26 default patterns, 0 followed patterns, 174 file(s) materialized.
+Mirror of `rohitg00/awesome-claude-code-toolkit` — 26 default patterns, 0 followed patterns, 176 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/awesome-claude-code-toolkit` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 174 |
+| Files         | 176 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -196,43 +196,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 135 | ✓ | [`agents/specialized-domains/seo-specialist.md`](agents/specialized-domains/seo-specialist.md) |
 | 136 | ✓ | [`agents/specialized-domains/voice-assistant.md`](agents/specialized-domains/voice-assistant.md) |
 | 137 | ✓ | [`skills/accessibility-wcag/SKILL.md`](skills/accessibility-wcag/SKILL.md) |
-| 138 | ✓ | [`skills/api-design-patterns/SKILL.md`](skills/api-design-patterns/SKILL.md) |
-| 139 | ✓ | [`skills/authentication-patterns/SKILL.md`](skills/authentication-patterns/SKILL.md) |
-| 140 | ✓ | [`skills/aws-cloud-patterns/SKILL.md`](skills/aws-cloud-patterns/SKILL.md) |
-| 141 | ✓ | [`skills/ci-cd-pipelines/SKILL.md`](skills/ci-cd-pipelines/SKILL.md) |
-| 142 | ✓ | [`skills/claude-memory-kit/SKILL.md`](skills/claude-memory-kit/SKILL.md) |
-| 143 | ✓ | [`skills/continuous-learning/SKILL.md`](skills/continuous-learning/SKILL.md) |
-| 144 | ✓ | [`skills/data-engineering/SKILL.md`](skills/data-engineering/SKILL.md) |
-| 145 | ✓ | [`skills/database-optimization/SKILL.md`](skills/database-optimization/SKILL.md) |
-| 146 | ✓ | [`skills/deep-dive/SKILL.md`](skills/deep-dive/SKILL.md) |
-| 147 | ✓ | [`skills/devops-automation/SKILL.md`](skills/devops-automation/SKILL.md) |
-| 148 | ✓ | [`skills/django-patterns/SKILL.md`](skills/django-patterns/SKILL.md) |
-| 149 | ✓ | [`skills/docker-best-practices/SKILL.md`](skills/docker-best-practices/SKILL.md) |
-| 150 | ✓ | [`skills/frontend-excellence/SKILL.md`](skills/frontend-excellence/SKILL.md) |
-| 151 | ✓ | [`skills/git-advanced/SKILL.md`](skills/git-advanced/SKILL.md) |
-| 152 | ✓ | [`skills/golang-idioms/SKILL.md`](skills/golang-idioms/SKILL.md) |
-| 153 | ✓ | [`skills/graphql-design/SKILL.md`](skills/graphql-design/SKILL.md) |
-| 154 | ✓ | [`skills/kubernetes-operations/SKILL.md`](skills/kubernetes-operations/SKILL.md) |
-| 155 | ✓ | [`skills/llm-integration/SKILL.md`](skills/llm-integration/SKILL.md) |
-| 156 | ✓ | [`skills/manage-skills/SKILL.md`](skills/manage-skills/SKILL.md) |
-| 157 | ✓ | [`skills/mcp-development/SKILL.md`](skills/mcp-development/SKILL.md) |
-| 158 | ✓ | [`skills/microservices-design/SKILL.md`](skills/microservices-design/SKILL.md) |
-| 159 | ✓ | [`skills/mobile-development/SKILL.md`](skills/mobile-development/SKILL.md) |
-| 160 | ✓ | [`skills/monitoring-observability/SKILL.md`](skills/monitoring-observability/SKILL.md) |
-| 161 | ✓ | [`skills/nextjs-mastery/SKILL.md`](skills/nextjs-mastery/SKILL.md) |
-| 162 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
-| 163 | ✓ | [`skills/postgres-optimization/SKILL.md`](skills/postgres-optimization/SKILL.md) |
-| 164 | ✓ | [`skills/prompt-engineering/SKILL.md`](skills/prompt-engineering/SKILL.md) |
-| 165 | ✓ | [`skills/python-best-practices/SKILL.md`](skills/python-best-practices/SKILL.md) |
-| 166 | ✓ | [`skills/react-patterns/SKILL.md`](skills/react-patterns/SKILL.md) |
-| 167 | ✓ | [`skills/redis-patterns/SKILL.md`](skills/redis-patterns/SKILL.md) |
-| 168 | ✓ | [`skills/rust-systems/SKILL.md`](skills/rust-systems/SKILL.md) |
-| 169 | ✓ | [`skills/security-hardening/SKILL.md`](skills/security-hardening/SKILL.md) |
-| 170 | ✓ | [`skills/springboot-patterns/SKILL.md`](skills/springboot-patterns/SKILL.md) |
-| 171 | ✓ | [`skills/tdd-mastery/SKILL.md`](skills/tdd-mastery/SKILL.md) |
-| 172 | ✓ | [`skills/testing-strategies/SKILL.md`](skills/testing-strategies/SKILL.md) |
-| 173 | ✓ | [`skills/typescript-advanced/SKILL.md`](skills/typescript-advanced/SKILL.md) |
-| 174 | ✓ | [`skills/websocket-realtime/SKILL.md`](skills/websocket-realtime/SKILL.md) |
+| 138 | ✓ | [`skills/agentkit-seo/SKILL.md`](skills/agentkit-seo/SKILL.md) |
+| 139 | ✓ | [`skills/api-design-patterns/SKILL.md`](skills/api-design-patterns/SKILL.md) |
+| 140 | ✓ | [`skills/authentication-patterns/SKILL.md`](skills/authentication-patterns/SKILL.md) |
+| 141 | ✓ | [`skills/aws-cloud-patterns/SKILL.md`](skills/aws-cloud-patterns/SKILL.md) |
+| 142 | ✓ | [`skills/ci-cd-pipelines/SKILL.md`](skills/ci-cd-pipelines/SKILL.md) |
+| 143 | ✓ | [`skills/claude-memory-kit/SKILL.md`](skills/claude-memory-kit/SKILL.md) |
+| 144 | ✓ | [`skills/continuous-learning/SKILL.md`](skills/continuous-learning/SKILL.md) |
+| 145 | ✓ | [`skills/data-engineering/SKILL.md`](skills/data-engineering/SKILL.md) |
+| 146 | ✓ | [`skills/database-optimization/SKILL.md`](skills/database-optimization/SKILL.md) |
+| 147 | ✓ | [`skills/deep-dive/SKILL.md`](skills/deep-dive/SKILL.md) |
+| 148 | ✓ | [`skills/devops-automation/SKILL.md`](skills/devops-automation/SKILL.md) |
+| 149 | ✓ | [`skills/django-patterns/SKILL.md`](skills/django-patterns/SKILL.md) |
+| 150 | ✓ | [`skills/docker-best-practices/SKILL.md`](skills/docker-best-practices/SKILL.md) |
+| 151 | ✓ | [`skills/frontend-excellence/SKILL.md`](skills/frontend-excellence/SKILL.md) |
+| 152 | ✓ | [`skills/git-advanced/SKILL.md`](skills/git-advanced/SKILL.md) |
+| 153 | ✓ | [`skills/golang-idioms/SKILL.md`](skills/golang-idioms/SKILL.md) |
+| 154 | ✓ | [`skills/graphql-design/SKILL.md`](skills/graphql-design/SKILL.md) |
+| 155 | ✓ | [`skills/kubernetes-operations/SKILL.md`](skills/kubernetes-operations/SKILL.md) |
+| 156 | ✓ | [`skills/llm-integration/SKILL.md`](skills/llm-integration/SKILL.md) |
+| 157 | ✓ | [`skills/manage-skills/SKILL.md`](skills/manage-skills/SKILL.md) |
+| 158 | ✓ | [`skills/mcp-development/SKILL.md`](skills/mcp-development/SKILL.md) |
+| 159 | ✓ | [`skills/microservices-design/SKILL.md`](skills/microservices-design/SKILL.md) |
+| 160 | ✓ | [`skills/mobile-development/SKILL.md`](skills/mobile-development/SKILL.md) |
+| 161 | ✓ | [`skills/monitoring-observability/SKILL.md`](skills/monitoring-observability/SKILL.md) |
+| 162 | ✓ | [`skills/nextjs-mastery/SKILL.md`](skills/nextjs-mastery/SKILL.md) |
+| 163 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
+| 164 | ✓ | [`skills/postgres-optimization/SKILL.md`](skills/postgres-optimization/SKILL.md) |
+| 165 | ✓ | [`skills/prompt-engineering/SKILL.md`](skills/prompt-engineering/SKILL.md) |
+| 166 | ✓ | [`skills/python-best-practices/SKILL.md`](skills/python-best-practices/SKILL.md) |
+| 167 | ✓ | [`skills/react-patterns/SKILL.md`](skills/react-patterns/SKILL.md) |
+| 168 | ✓ | [`skills/redis-patterns/SKILL.md`](skills/redis-patterns/SKILL.md) |
+| 169 | ✓ | [`skills/rust-systems/SKILL.md`](skills/rust-systems/SKILL.md) |
+| 170 | ✓ | [`skills/security-hardening/SKILL.md`](skills/security-hardening/SKILL.md) |
+| 171 | ✓ | [`skills/springboot-patterns/SKILL.md`](skills/springboot-patterns/SKILL.md) |
+| 172 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
+| 173 | ✓ | [`skills/tdd-mastery/SKILL.md`](skills/tdd-mastery/SKILL.md) |
+| 174 | ✓ | [`skills/testing-strategies/SKILL.md`](skills/testing-strategies/SKILL.md) |
+| 175 | ✓ | [`skills/typescript-advanced/SKILL.md`](skills/typescript-advanced/SKILL.md) |
+| 176 | ✓ | [`skills/websocket-realtime/SKILL.md`](skills/websocket-realtime/SKILL.md) |
 
 ---
 

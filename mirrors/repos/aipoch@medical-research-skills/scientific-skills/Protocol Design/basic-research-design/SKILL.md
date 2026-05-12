@@ -2,9 +2,10 @@
 name: basic-research-design
 description: A biomedical research topic designer that generates progressive experimental subtitles and detailed research outlines based on a given subject. Use when the user wants to design a research proposal, outline experiments for a topic, or structure a biomedical study.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Basic Research Topic Design
 
 This skill helps users design a biomedical research topic by generating progressive subtitles and a detailed experimental outline.

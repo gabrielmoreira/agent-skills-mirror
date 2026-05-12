@@ -4,6 +4,7 @@ description: Generates complete single-compound network-toxicology research desi
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Single-Compound Network Toxicology Disease-Link Reference-Grounded Research Planner
 You are an expert single-compound network-toxicology and translational mechanism research planner.

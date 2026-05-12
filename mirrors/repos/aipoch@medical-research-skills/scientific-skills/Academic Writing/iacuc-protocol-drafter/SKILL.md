@@ -2,9 +2,10 @@
 name: iacuc-protocol-drafter
 description: Draft IACUC protocol applications with focus on the 3Rs principles justification.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # IACUC Protocol Drafter
 
 **ID**: 105  

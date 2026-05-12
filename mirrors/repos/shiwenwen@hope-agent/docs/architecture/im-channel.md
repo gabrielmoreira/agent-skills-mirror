@@ -20,6 +20,7 @@
   - [入站流程](#入站流程)
   - [出站流程](#出站流程)
   - [完整时序图](#完整时序图)
+  - [入站附件 deferred materialize 模式](#入站附件-deferred-materialize-模式)
 - [模块拆分](#模块拆分)
 - [Channel Registry（注册表）](#channel-registry注册表)
 - [会话管理](#会话管理)
@@ -359,8 +360,11 @@ Worker Dispatcher (worker.rs)
     ├── 1. 查找 ChannelAccountConfig
     ├── 2. check_access() 权限校验
     ├── 2c. mention/access gating 通过后调用 materialize_pending_media()
-    │       └── 飞书：把 ws_event 阶段挂到 raw["_hopePendingMedia"] 的轻量 ref
-    │           真正下载到本地（其它渠道默认 no-op，下载已在 plugin 内同步完成）
+    │       └── 支持媒体的 11 个渠道（除纯文本 iMessage / IRC）共用 deferred 模式：
+    │           plugin 在 webhook / gateway / polling 阶段只挂轻量 ref 到
+    │           raw["_hopePendingMedia"]（同步、无 I/O），gating 通过后才走
+    │           inbound_media_common::stream_to_disk 真正下载，详见「入站附件
+    │           deferred materialize 模式」一节
     ├── 3. resolve_or_create_session() 查找/创建会话
     ├── 4. send_typing() 发送输入中指示器
     ├── 5. [斜杠命令预拦截] is_slash_command(user_text)?
@@ -462,6 +466,62 @@ sequenceDiagram
         TG-->>User: 显示 Bot 回复
     end
 ```
+
+### 入站附件 deferred materialize 模式
+
+所有支持媒体的 11 个渠道（除纯文本的 iMessage / IRC）共用同一套 deferred materialize 管道：plugin 在 webhook / gateway / polling 阶段**只解析**媒体引用，**不发起任何 I/O**，把轻量 ref 透传给 dispatcher；只有 mention + access gating 双双通过后，dispatcher 才调 `ChannelPlugin::materialize_pending_media()` 走真正的下载。这避免了三类问题：
+
+1. **Webhook ack 超时**：飞书 / Google Chat / LINE / QQ Bot / WhatsApp 都要求 secs 级 ack，把下载塞进 webhook handler 会拖死返回
+2. **群组流量浪费**：mention gating 关闭的群里非 @bot 的附件不应该消耗带宽 / 磁盘
+3. **RSS 失控**：100 MB 文件不应该让进程 RSS 涨 100 MB+
+
+#### 共用骨架：`channel/inbound_media_common.rs`
+
+| API | 作用 |
+|---|---|
+| `embed_pending_refs<T: Serialize>(raw, refs)` | plugin 端把 `ParsedMediaRef<T>` 挂到 `MsgContext.raw["_hopePendingMedia"]`（envelope key 私有） |
+| `take_pending_refs<T: DeserializeOwned>(msg) -> Vec<T>` | dispatcher 端在 `materialize_pending_media` 里取回并清除 ref |
+| `stream_to_disk(builder, dest, cap_bytes)` | chunk-by-chunk 流式落盘 / Content-Length + mid-stream 双重 cap 检查 / 失败自动 `abort_partial_download` / 错误响应体读取上限 8 KiB |
+| `inbound_temp_path(channel_id, stem, ext)` | `~/.hope-agent/channels/<id>/inbound-temp/<ts>-<safe-stem>.<ext>`，路径分隔符 / 冒号在文件名层兜底 |
+| `ext_for(file_name, &media_type)` | 优先用 filename 后缀（ASCII alphanumeric ≤ 8 字符），fallback MediaType→默认扩展名 |
+| `media_type_from_mime(mime, voice_for_ogg_opus)` | MIME → MediaType 统一分类，flag 控制 audio/ogg \| audio/opus 是否归 Voice |
+| `INBOUND_DOWNLOAD_MAX_BYTES = 512 MiB` | 跨渠道统一 cap，平台 image / file / video 上限（30 / 100 / 200 MiB）的安全余量 |
+
+每渠道的 `ParsedMediaRef` 是各自的 struct（auth header / 下载 URL / 解密 key 形态各不同），但都通过 `serde_json` 透传 `MsgContext.raw`。dispatcher 端不区分渠道，只调 `plugin.materialize_pending_media()` 即可。
+
+#### 各渠道的差异点
+
+| 渠道 | 协议入口 | Auth | 备注 |
+|---|---|---|---|
+| **Feishu** | `im/v1/messages/{id}/resources/{key}` (im_lark_only) | `Bearer <tenant_access_token>` | 共用骨架的参考实现 |
+| **Telegram** | `/file/bot{TOKEN}/{file.path}`（Bot API） | URL 含 token | Bot::with_client 保留 proxy / timeout |
+| **Slack** | `url_private` / `url_private_download`（files.slack.com） | `Bearer xoxb-...` | host 必须 `*.slack.com` 锁定，否则 LLM 拿到登录 HTML |
+| **Discord** | CDN URL（公开签名） | 无需 auth | server-side 落盘以躲 24h CDN 失效 |
+| **Google Chat** | `media.download` REST | OAuth2 access_token | 仅处理 `UPLOADED_CONTENT`；`DRIVE_FILE` 暂不支持 |
+| **LINE** | `api-data.line.me/v2/bot/message/{id}/content` | `Bearer <channel access token>` | 与 push API 不同 host |
+| **QQ Bot** | Tencent CDN（4 host 白名单） | URL 含 signature，无 header | `*.gtimg.cn` / `*.qpic.cn` / `*.qq.com` |
+| **WhatsApp** | bridge 转发 attachments（向后兼容扩展） | bridge 内部 | `BridgeMessage.attachments` 字段 `#[serde(default)]`，老 bridge 仍可工作 |
+| **WeChat** | encrypt CDN + AES-128-ECB | URL 含 `encrypt_query_param`，密钥来自 message item | 见下文 streaming 解密 |
+| **Signal** | 不走 HTTP — signal-cli 已落盘 | — | `<data-dir>/attachments/<id>` 复制到 inbound-temp（**copy 不 move**，daemon 自己管 GC） |
+
+#### WeChat AES streaming（commit 14）
+
+WeChat 的特殊性是密文必须经 AES-128-ECB + PKCS#7 解密。旧实现 `response.bytes()` + `decrypt(&buf)` 在内存里同时持有密文 + 明文两份 buffer，100 MB 文件 → ≥ 200 MB 峰值 RSS。F-082 改成磁盘缓冲二段法：
+
+```
+Stage 1  stream_to_disk(url → <ts>-<msg>.enc)        // 16 KiB read / 64 KiB write buffer
+Stage 2  spawn_blocking → OpenSSL Crypter::update    // 16 KiB 增量解密
+         .enc → <ts>-<msg>.<ext>                     //   crypter.pad(true) 处理 PKCS#7
+Stage 3  abort_partial_download(.enc)                // 强制删中间文件
+```
+
+ECB 块独立可流式，PKCS#7 unpad 由 `Crypter::finalize` 在尾块处理。**RSS 与文件大小完全解耦**，1 MB / 100 MB / 1 GB 增量都是几十 KB 级别。中间文件失败会自动 cleanup（两段任一失败都先删 `.enc` 再删 `.<ext>`）。
+
+#### SSRF 策略
+
+- **用户控制 URL** → 必经 `security::ssrf::check_url`：Slack（host pin 仅是补强）/ Discord（公开 CDN 但允许任意 origin 嵌入）/ QQ Bot / WhatsApp（bridge 转发的 URL 来自外部）
+- **官方固定 host** → 跳过 SSRF 检查：Feishu / Google Chat / LINE / Telegram / WeChat（CDN URL 由平台签）
+- 新接渠道**严禁自写 IP 校验**——共用入口 `stream_to_disk` 不内置 SSRF，调用前自行 check
 
 ---
 
@@ -670,6 +730,21 @@ CREATE TABLE channel_conversations (
   - `get_conversation_by_session(session_id)` —— 取 session 的唯一 attach 行(若有);live mirror / `relay` / `/status` / cron / approval / ask_user 均通过此 helper 查 session 的 IM 入口
 - **events**:`channel:session_evicted { channelId, accountId, chatId, threadId, sessionId }` —— [`channel/worker/eviction_watcher.rs`](../../crates/ha-core/src/channel/worker/eviction_watcher.rs) 订阅后调对应 plugin 的 `send_message` 发硬编码英文带 emoji 的"this chat has been taken over by another endpoint"通知;`ChannelAccountConfig.notify_session_eviction`(默认 `true`) 可静音
 - **migration**:`migrate()` 检测旧 schema(无 `source` 列或还有 `is_primary` 列)直接 DROP TABLE 重建;IM worker 在下一条入站消息时重新创建对应行(按 user feedback「破坏性改动直接 drop,不留兼容路径」)
+
+### Startup back-online notice
+
+每次进程冷启 / 升级 / launchd/systemd 自动拉起 / 崩溃恢复后,在 IM 端给最近活跃的对话发一条简短系统通知,让用户感知"服务回来了,可以继续发消息"。
+
+- **实现**:[`channel/worker/startup_watcher.rs`](../../crates/ha-core/src/channel/worker/startup_watcher.rs) `spawn_startup_notifier(registry)`,由 [`app_init.rs::spawn_channel_listeners`](../../crates/ha-core/src/app_init.rs) 在三模式(desktop / server / acp)统一入口的末尾调一次。**不订阅 EventBus**,直接在 spawn 内 sleep 3s 等 `start_watchdog::spawn_loop` 完成首轮 `start_account`,再扫一次最近活跃对话,逐 chat 发送。
+- **运行时门**(全部满足才发送):
+  - `runtime_lock::is_primary()` —— 同机 desktop + server 双开时只让 Primary 进程发,Secondary skip
+  - `AppConfig.startup_notification.enabled`(默认 `true`)—— 全局开关,GUI 在通知设置面板
+  - `HOPE_AGENT_CRASH_COUNT >= crash_loop_threshold`(默认 `3`)—— guardian 传入的崩溃计数器满足时整批静音,避免 crash-loop 风暴
+- **最近活跃对话查询**:[`ChannelDB::list_recent_active_conversations(window_secs, limit)`](../../crates/ha-core/src/channel/db.rs) JOIN `channel_conversations × sessions`,过滤 `incognito=0 && is_cron=0 && parent_session_id IS NULL`,按 `cc.updated_at DESC` 排序。**SQL 候选池与发送上限解耦**:SQL `LIMIT` 用内部常量 `CANDIDATE_HARD_CAP=500`(只是防御性大池子);真正的发送数上限 `cfg.global_max`(默认 30) 在 worker 应用层遍历时按 spawn 计数应用——cooldown / silenced / 缺账号 / 缺插件 这些 filter **不消耗** `global_max` 预算,所以前 30 条全在 cooldown 也不会饿死后面可发的 chat。每个 (channel, account, chat, thread) 在表中是唯一行(`uq_channel_conv_chat`),同一 bot 在 1 单聊 + N 群聊里各自都各收到一条。
+- **账号 readiness 等待**:每个 send task 进入 JoinSet 后先 poll [`registry.health(account_id).is_running`](../../crates/ha-core/src/channel/registry.rs),最多等 `ACCOUNT_READY_WAIT_SECS=30`(2s 间隔)。覆盖 OAuth-y 慢握手(Lark / Slack)+ watchdog 首轮失败稍后恢复的场景。超时则当作发送失败(不写 `mark_notified`,下次重启可补发)。
+- **去重**:per-chat sentinel [`startup_state.json`](../../crates/ha-core/src/channel/worker/startup_state.rs) 在 `~/.hope-agent/` 下记录 `last_notified[<ch>:<acc>:<chat>:<thread>] -> RFC3339`;30 min cooldown 内同一 chat 不重复(`cooldown_secs`)。复用 [`platform::write_secure_file`](../../crates/ha-core/src/platform/mod.rs)(tmp + fsync + 0600 + rename),prune 7 天前 entry 防文件膨胀。
+- **per-account 静音**:`ChannelAccountConfig.notify_startup`(默认 `true`),与 `notify_session_eviction` 同款。GUI 在「Channels → 编辑账号」对话框。
+- **文案**:硬编码英文带 emoji,与 `eviction_watcher` 一致(IM 服务器不带收件人 locale,backend 翻译会选错语言)。文本「📡 Hope Agent is back online. If you were waiting on a reply, send your last message again.」
 
 ### GUI ↔ IM live 流式镜像
 

@@ -5,7 +5,7 @@ user-invocable: true
 metadata:
   tags: [higgsfield, prompt, MCSLA, formula, text-to-video, image-to-video]
   version: 3.2.0
-  updated: 2026-05-03
+  updated: 2026-05-11
   parent: higgsfield
 ---
 
@@ -305,6 +305,13 @@ result, the prompt may need a structural rewrite, not iteration.
 ## Seedance 2.0 Prompting Best Practices
 
 These best practices apply to Cinema Studio 3.0's generation engine (Business/Team plan) and complement the MCSLA formula above. They are not a replacement — use MCSLA as the primary framework, then apply these refinements.
+
+> For the user-intent layer that sits above MCSLA — what working mode
+> you're in (Exploration / Continuation / Bridging / Repair) and how each
+> routes through Seedance's prompt modes — see
+> `../higgsfield-seedance/SKILL.md` § Working Modes. The disambiguation
+> between working modes and prompt modes lives in the same file,
+> immediately above.
 
 ### Intent over Precision
 

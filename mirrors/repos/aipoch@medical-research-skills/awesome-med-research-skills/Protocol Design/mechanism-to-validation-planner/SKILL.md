@@ -4,6 +4,7 @@ description: Extends a mechanistic or association-level biomedical finding into 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Mechanism-to-Validation Planner
 

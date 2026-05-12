@@ -22,7 +22,7 @@ smartscapeNodes "AWS_EC2_VPC"
 
 Get all resources in a VPC grouped by type:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_*"
 | filter aws.vpc.id == "<VPC_ID>"
 | summarize resource_count = count(), by: {type, aws.subnet.id}
@@ -41,7 +41,7 @@ smartscapeNodes "AWS_EC2_INSTANCE"
 
 Locate all resources using a specific security group:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_EC2_INSTANCE"
 | filter contains(aws.security_group.id, "<EC2_SECURITY_GROUP>")
 | fields name, aws.resource.id, aws.vpc.id, aws.subnet.id
@@ -70,7 +70,7 @@ smartscapeNodes "AWS_EC2_INSTANCE"
 
 Find EC2 instances in a specific VPC:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_EC2_INSTANCE"
 | filter aws.vpc.id == "<VPC_ID>"
 | fields name, aws.resource.id, aws.subnet.id, aws.availability_zone

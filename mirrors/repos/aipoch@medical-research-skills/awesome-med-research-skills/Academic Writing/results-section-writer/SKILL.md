@@ -4,6 +4,7 @@ description: Writes the full Results section of a biomedical manuscript from a s
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Results Section Writer
 

@@ -30,11 +30,11 @@ Install the portable skills from the repository skills directory when you use a 
 https://github.com/EtienneLescot/n8n-as-code/tree/main/skills
 ```
 
-If your agent asks for explicit skill paths, use `skills/n8n-manager` and `skills/n8n-architect`.
+If your agent asks for an explicit skill path, use `skills/n8n-architect`.
 
 The same skill content is also packaged on npm as [`@n8n-as-code/skills`](https://www.npmjs.com/package/@n8n-as-code/skills) for `n8nac` and runtime usage.
 
-After the skills are available, the agent can initialize the workspace itself: generate `AGENTS.md`, materialize local `.agents/skills`, configure workspace context, and call `n8nac skills` commands as needed.
+After the skills are available, the agent can initialize the workspace itself: create or select an `n8nac env` environment, generate `AGENTS.md`, materialize local `.agents/skills`, and call `n8nac skills` commands as needed.
 
 For debugging or advanced manual usage, the same tools are available through `n8nac skills`:
 
@@ -216,7 +216,7 @@ The Skills CLI is designed to be used by AI coding assistants to:
 # AI Assistant workflow for generating n8n workflow code
 1. User asks: "Create a workflow that reads from Google Sheets"
 2. AI reads AGENTS.md and the local .agents/skills files if present
-3. AI runs: npx --yes n8nac workspace status --json
+3. AI runs: npx --yes n8nac env status --json
 4. AI runs: npx --yes n8nac skills search "google sheets"
 5. AI gets node schemas: npx --yes n8nac skills node-info googleSheets
 6. AI generates accurate TypeScript workflow code with proper parameters

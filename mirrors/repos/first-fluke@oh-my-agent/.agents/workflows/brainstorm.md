@@ -86,7 +86,7 @@ Groupthink and authority bias hide real gaps. A blind round, where each perspect
    - **Tier 2**: enhancement, should resolve or explicitly defer
    - **Tier 3**: nice-to-have, defer to next version
 
-4. **Check for suppressed compromises**: for each prior design decision where a reviewer voted `⚠️→✅`, verify the objection was answered on principle (regulatory, consumer, architectural) rather than overridden by majority. Restore any principled objection that was suppressed.
+4. **Check for suppressed compromises**: for each prior design decision where a reviewer voted `PARTIAL→PASS`, verify the objection was answered on principle (regulatory, consumer, architectural) rather than overridden by majority. Restore any principled objection that was suppressed.
 
 5. **Resolve Tier 1 issues** by updating Step 4 design with either new sections in existing files, new files, or explicit out-of-scope declarations.
 

@@ -7,8 +7,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, camera, movement, dolly, crane, FPV, orbit, shot]
-  version: 3.0.0
-  updated: 2026-04-06
+  version: 3.1.0
+  updated: 2026-05-11
   parent: higgsfield
 ---
 
@@ -249,6 +249,85 @@ Genre: Drama. A woman sits alone at a café table, stirring her coffee absently.
 She notices someone through the window and her expression shifts from sadness to surprise.
 ```
 (No camera instruction needed — Smart mode will select genre-appropriate drama camera work.)
+
+---
+
+## Video Reference — What It Reads, and What It Can't
+
+The repo documents `@Video` reference usage in several places (Camera Transfer above,
+`higgsfield-motion` for action choreography, `higgsfield-style` for grade carryover,
+`higgsfield-audio` for voice timbre, `higgsfield-cinema` for the Motion/Camera Sheet).
+The capability boundary — what a video reference reads reliably, where it falls short,
+and what it cannot do at all — is documented once here and applies across all those
+use cases.
+
+### What It Reads Reliably
+
+A `@Video` reference reliably carries these properties from the source clip into the
+generation:
+
+- **World design** — the overall environment, set construction, lighting logic, color
+  palette, atmosphere.
+- **Material and texture** — how surfaces look (wet wood, rope, water behavior, fabric
+  weight).
+- **Physics and motion style** — how objects move, how water behaves, the weight and
+  energy of action.
+- **Camera character** — the overall feel of how the camera operates, its proximity to
+  subjects, its movement vocabulary.
+- **Production quality level** — high-budget vs. low-budget feel, the overall cinematic
+  register.
+- **Color grade** — tonal treatment, contrast, saturation level.
+- **Weather and environmental conditions** — storm intensity, rain density, fog, light
+  quality.
+
+### What It Reads Less Reliably
+
+These properties carry across inconsistently. Don't depend on them when designing the
+prompt:
+
+- **Frame-accurate action continuation** — asking the model to pick up exactly where
+  the last frame ended is unreliable. The reference understands the energy and world of
+  what was happening, not the precise final position of every element.
+- **Exact character identity** — use an image reference for character identity locks,
+  not a video reference. Video references read world and energy better than face or
+  costume precision.
+- **Specific dialogue or audio** — voice character can carry over but exact vocal
+  performance is not guaranteed.
+
+### Four Reference Patterns by Purpose
+
+Make the reference's job explicit in the prompt. Pick the pattern that matches what you
+want the reference to do:
+
+| Purpose | Pattern |
+|---|---|
+| World continuity | `@Video1 — use for world continuity: same set construction, same lighting logic, same atmosphere, same production quality level` |
+| Action energy continuity | `@Video1 — use for action energy continuity: same event still in progress, same intensity of impact, same physical weight and momentum` |
+| Camera character + production feel | `@Video1 — use for camera character and production feel: same cinematic register, same operator presence, same overall quality` |
+| Voice + performance style | `@Video1 — use for character voice and performance style: same vocal character, same delivery register, same performance energy` |
+
+The pattern works because it tells the model which axis of the reference matters and
+lets the rest of the prompt drive the new content.
+
+### Hard Limits
+
+These are not "less reliable" — they are things a video reference cannot do at all:
+
+- **Cannot continue a specific action from the last frame.** If the reference clip
+  ends on a wave hitting a ship, the new clip will not automatically start with that
+  wave still hitting. The reference supplies world context; write the new clip's
+  opening action from scratch.
+- **Cannot override your prompt.** The reference informs the generation — it does not
+  replace prompt instructions. Where prompt and reference conflict, the prompt
+  generally wins on action and the reference wins on texture and world feel.
+- **Cannot supply character identity alone.** Always pair a video reference with an
+  image reference if character consistency matters.
+
+### Load-Bearing Rule
+
+**Prompt wins on action, reference wins on texture and world feel.** Write the prompt
+for what happens; let the reference carry how it looks. Pair with an image reference
+when character identity must hold.
 
 ---
 

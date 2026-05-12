@@ -2,9 +2,10 @@
 name: pysam
 description: Genomic file toolkit. For reading/writing SAM/BAM/CRAM alignment files, VCF/BCF variant files, FASTA/FASTQ sequences, extracting regions, calculating coverage, suitable for NGS data processing pipelines.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Pysam
 
 ## When to Use

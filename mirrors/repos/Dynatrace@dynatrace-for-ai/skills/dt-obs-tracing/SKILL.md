@@ -1,6 +1,15 @@
 ---
 name: dt-obs-tracing
-description: Distributed traces, spans, service dependencies, performance analysis, and failure detection. Query trace data, analyze request flows, and investigate span-level details.
+description: >-
+  Distributed traces, spans, service dependencies, and request flow analysis. Use when
+  investigating span-level details, failures, performance bottlenecks, or trace correlation.
+  Trigger: "trace analysis", "slow requests", "failed spans", "service dependencies",
+  "distributed trace", "span details", "HTTP status codes in traces", "database query spans",
+  "messaging spans", "gRPC calls", "Lambda cold starts", "trace ID lookup",
+  "exception analysis", "correlate logs and traces", "request attributes".
+  Do NOT use for explaining existing queries, product documentation or configuration questions,
+  service-level RED metrics (use dt-obs-services), log searching (use dt-obs-logs),
+  or problem analysis (use dt-obs-problems).
 license: Apache-2.0
 ---
 
@@ -9,6 +18,27 @@ license: Apache-2.0
 ## Overview
 
 Distributed traces in Dynatrace consist of spans - building blocks representing units of work. With Traces in Grail, every span is accessible via DQL with full-text searchability on all attributes. This skill covers trace fundamentals, common analysis patterns, and span-type specific queries.
+
+---
+
+## Use Cases
+
+### 1. Investigate Slow Requests
+- **Goal:** Find and diagnose requests exceeding a latency threshold
+- **Trigger:** "slow requests", "high latency", "p99 response time", "find traces over 5 seconds"
+- **Done:** List of slow traces with duration, endpoint, service, and trace IDs for drilldown
+
+### 2. Analyze Request Failures
+- **Goal:** Identify failed requests, failure reasons, and exception patterns
+- **Trigger:** "failed spans", "HTTP 500 errors", "exception analysis", "failure rate by service"
+- **Done:** Failure breakdown by reason (HTTP code, exception, gRPC status) with exemplar traces
+
+### 3. Map Service Dependencies
+- **Goal:** Understand service-to-service communication patterns and external API calls
+- **Trigger:** "service dependencies", "what services does X call", "outgoing HTTP calls"
+- **Done:** Dependency map showing call counts, latency, and error rates between services
+
+---
 
 ## Core Concepts
 
@@ -55,6 +85,12 @@ Spans reference services via Smartscape node IDs and the detected service name `
 fetch spans
 | summarize spans=count(), by: { dt.smartscape.service, dt.service.name }
 ```
+
+**Node functions**:
+- `getNodeName(dt.smartscape.service)` - Adds `dt.smartscape.service.name` field with the human-readable service name
+- `getNodeField(dt.smartscape.service, "attribute_name")` - Access specific node attributes
+
+**📖 Learn more**: See [Entity Lookups](references/entity-lookups.md) for advanced entity selectors, infrastructure correlation, and hardware analysis.
 
 ### Sampling and Extrapolation
 
@@ -168,8 +204,6 @@ fetch spans, from:now() - 2h
 
 ### Duration Buckets with Exemplars
 
-Group requests into duration buckets with example traces:
-
 ```dql
 fetch spans, from:now() - 24h
 | filter http.route == "/api/v1/storage/findByISBN"
@@ -265,9 +299,9 @@ fetch spans
 
 ## Service Dependencies
 
-### Service Communication
+### Service-to-Service Analysis
 
-Analyze incoming and outgoing service communication:
+Analyze service communication patterns:
 
 ```dql
 fetch spans, from:now() - 1h
@@ -349,18 +383,11 @@ Find traces spanning multiple services:
 fetch spans, from:now() - 1h
 | summarize {
     services = collectDistinct(dt.service.name),
-    trace_root = takeMin(record(
-        root_detection_helper = coalesce(if(request.is_root_span, 1), 2),
-        endpoint.name
-      ))
+    trace_root = takeMin(record(root_detection_helper = coalesce(if(request.is_root_span, 1), 2), endpoint.name))
 }, by: { trace.id }
 | fieldsAdd service_count = arraySize(services)
 | filter service_count > 1
-| fields
-    endpoint = trace_root[endpoint.name],
-    service_count,
-    services = toString(services),
-    trace.id
+| fields endpoint = trace_root[endpoint.name], service_count, services = toString(services), trace.id
 | sort service_count desc
 | limit 50
 ```
@@ -378,150 +405,24 @@ fetch spans
 | makeTimeseries sum(request_attribute.PaidAmount)
 ```
 
-**Field pattern**: `request_attribute.<name>`
+**Field patterns**: `request_attribute.<name>`, `captured_attribute.<name>` (always arrays)
 
-For attributes with special characters, use backticks:
-```dql
-fetch spans
-| filter isNotNull(`request_attribute.My Customer ID`)
-```
-
-### Captured Attributes
-
-Access attributes captured from method parameters (always as arrays):
-
-```dql
-fetch spans
-| filter isNotNull(captured_attribute.BookID_purchased)
-| fields trace.id, span.id, code.namespace, code.function, captured_attribute.BookID_purchased
-| limit 1
-```
-
-**Field pattern**: `captured_attribute.<name>`
-
-### Request ID Aggregation
-
-Aggregate all spans belonging to a single request using `request.id` (OneAgent traces only):
-
-```dql
-fetch spans
-| filter isNotNull(request.id)
-| summarize {
-    spans = count(),
-    client_spans = countIf(span.kind == "client"),
-    request_root = takeMin(record(
-        root_detection_helper = coalesce(if(request.is_root_span, 1), 2),
-        start_time, endpoint.name, duration
-      ))
-}, by: { trace.id, request.id }
-| fieldsFlatten request_root
-| fields
-    start_time = request_root.start_time,
-    endpoint = request_root.endpoint.name,
-    response_time = request_root.duration,
-    spans,
-    client_spans
-| limit 100
-```
-
-**📖 Learn more**: See [Request Attributes](references/request-attributes.md) for complete patterns on request attributes, captured attributes, and request-level aggregation.
+→ [Request Attributes](references/request-attributes.md) — full patterns for request attributes, captured attributes, and request ID aggregation
 
 ## Span Types
 
-### HTTP Spans
+| Span Type | Detection | Key Fields | Reference |
+|-----------|-----------|------------|-----------|
+| HTTP server (incoming) | `span.kind == "server" and isNotNull(http.request.method)` | `http.route`, `http.request.method`, `http.response.status_code` | [http-spans.md](references/http-spans.md) |
+| HTTP client (outgoing) | `span.kind == "client" and isNotNull(http.request.method)` | `server.address`, `server.port` | [http-spans.md](references/http-spans.md) |
+| Database | `span.kind == "client" and isNotNull(db.system)` | `db.system`, `db.namespace`, `db.statement` | [database-spans.md](references/database-spans.md) |
+| Messaging | `isNotNull(messaging.system)` | `messaging.system`, `messaging.destination.name`, `messaging.operation.type` | [messaging-spans.md](references/messaging-spans.md) |
+| RPC / gRPC | `isNotNull(rpc.system)` | `rpc.system`, `rpc.service`, `rpc.method`, `rpc.grpc.status_code` | [rpc-spans.md](references/rpc-spans.md) |
+| Serverless / FaaS | `isNotNull(faas.name) and span.kind == "server"` | `faas.name`, `faas.trigger.type`, `cloud.provider` | [serverless-spans.md](references/serverless-spans.md) |
 
-HTTP spans capture web requests and API calls:
+**⚠️ Database spans**: Can be aggregated (one span = multiple calls). Always use `aggregation.count` extrapolation for accurate operation counts.
 
-**Server-side** (incoming requests):
-```dql
-fetch spans
-| filter span.kind == "server" and isNotNull(http.request.method)
-| summarize
-    requests = count(),
-    avg_duration = avg(duration),
-  by: { http.request.method, http.route }
-| sort requests desc
-```
-
-**Client-side** (outgoing calls):
-```dql
-fetch spans
-| filter span.kind == "client" and isNotNull(http.request.method)
-| summarize
-    calls = count(),
-    avg_duration = avg(duration),
-  by: { server.address, http.request.method }
-| sort calls desc
-```
-
-**📖 Learn more**: See [HTTP Span Analysis](references/http-spans.md) for status codes, payload analysis, and client IP tracking.
-
-### Database Spans
-
-Database operations appear as client spans with `db.*` attributes:
-
-```dql
-fetch spans
-| filter span.kind == "client" and isNotNull(db.system) and isNotNull(db.namespace)
-| summarize {
-    spans=count(),
-    avg_duration=avg(duration)
-  }, by: { dt.service.name, db.system, db.namespace }
-| sort spans desc
-```
-
-**⚠️ Important**: Database spans can be aggregated (one span = multiple calls). Always use extrapolation for accurate counts.
-
-**📖 Learn more**: See [Database Span Analysis](references/database-spans.md) for extrapolated counts and slow query detection.
-
-### Messaging Spans
-
-Messaging spans capture Kafka, RabbitMQ, SQS operations:
-
-```dql
-fetch spans
-| filter isNotNull(messaging.system)
-| summarize
-    spans = count(),
-    messages = sum(coalesce(messaging.batch.message_count, 1)),
-  by: { messaging.system, messaging.destination.name, messaging.operation.type }
-| sort messages desc
-```
-
-**📖 Learn more**: See [Messaging Span Analysis](references/messaging-spans.md) for throughput, latency, and failure patterns.
-
-### RPC Spans
-
-RPC spans cover gRPC, SOAP, and other RPC frameworks:
-
-```dql
-fetch spans
-| filter isNotNull(rpc.system)
-| summarize
-    calls = count(),
-    avg_duration = avg(duration),
-  by: { rpc.system, rpc.service, rpc.method }
-| sort calls desc
-```
-
-**📖 Learn more**: See [RPC Span Analysis](references/rpc-spans.md) for gRPC status codes and service dependencies.
-
-### Serverless Spans
-
-FaaS spans capture Lambda, Azure Functions, and GCP Cloud Functions:
-
-```dql
-fetch spans
-| filter isNotNull(faas.name) and span.kind == "server"
-| summarize
-    invocations = count(),
-    avg_duration = avg(duration),
-    p99_duration = percentile(duration, 99),
-  by: { faas.name, cloud.provider }
-| sort invocations desc
-```
-
-**📖 Learn more**: See [Serverless Span Analysis](references/serverless-spans.md) for cold start analysis and trigger types.
+**📖 Detailed patterns per span type:** See the reference files above.
 
 ## Advanced Topics
 
@@ -543,74 +444,40 @@ fetch spans
 
 **💡 Tip**: Use `iAny()` to check conditions within span event arrays.
 
-### Logs and Traces Correlation
-
-Join logs with traces using trace IDs:
-
-```dql
-fetch spans, from:now() - 30m
-| join [ fetch logs | fieldsAdd trace.id = toUid(trace_id) ]
-  , on: { trace.id }
-  , fields: { content, loglevel }
-| fields start_time, trace.id, span.id, loglevel, content
-| limit 100
-```
-
-**📖 Learn more**: See [Logs Correlation](references/logs-correlation.md) for filtering traces by log content and finding logs for failed requests.
-
-### Network Analysis
-
-Analyze IP addresses, DNS resolution, and client geography:
-
-```dql
-fetch spans, from:now() - 24h
-| filter isNotNull(client.ip)
-| fieldsAdd client.ip = toIp(client.ip)
-| fieldsAdd client.subnet = ipMask(client.ip, 24)
-| summarize {
-    requests=count(),
-    unique_clients=countDistinct(client.ip)
-  }, by: { client.subnet, endpoint.name }
-| sort requests desc
-```
-
-**📖 Learn more**: See [Network Analysis](references/networking-analysis.md) for server address resolution and communication mapping.
+→ [Logs Correlation](references/logs-correlation.md) — joining logs and traces, filtering traces by log content
+→ [Network Analysis](references/networking-analysis.md) — client IPs, DNS resolution, subnet analysis
 
 ## Best Practices
 
-### Query Optimization
+| Area | Rule |
+|------|------|
+| **Filtering** | Apply `request.is_root_span == true` and endpoint filters first |
+| **Sampling** | Use `samplingRatio` (e.g., `100` = read 1%) for performance |
+| **Percentiles** | Use p95/p99 over averages for performance analysis |
+| **Root spans** | Use `request.is_root_span == true` for end-to-end analysis |
+| **Trace grouping** | Group by `trace.id` for complete trace metrics |
+| **Request grouping** | Group by `request.id` for OneAgent-only request metrics |
+| **Extrapolation** | Always apply multiplicity for accurate operation counts |
+| **Exemplars** | Use `takeAny(record(start_time, trace.id))` to enable UI drilldown |
 
-- **Filter early**: Apply `request.is_root_span == true` and endpoint filters first
-- **Use `samplingRatio`**: Reduce data volume for better performance (e.g., `samplingRatio:100` reads 1%)
-- **Limit results**: Always use `limit` for exploratory queries
-- **Percentiles over averages**: Use p95/p99 for performance insights
+---
 
-### Node Lookups
+## Troubleshooting
 
-- **Use `getNodeName()`**: Simplest way to add service names
-- **Prefer subqueries**: Use Smartscape node filters and `traverse` for filtering
-- **Cache node info**: Store node lookups in fields for reuse
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| Duration values seem wrong (too large) | `duration` is in nanoseconds, not milliseconds | Divide by `1000000` or compare with `5s` (DQL duration literal) |
+| Span counts don't match expected request volume | Sampling or aggregation not accounted for | Use multiplicity extrapolation — see Sampling and Extrapolation reference |
+| `getNodeName(dt.smartscape.service)` returns null | Service not yet resolved or OneAgent not monitoring | Verify OneAgent monitors the service; entity resolution may have a short delay |
+| `request.is_root_span` filter returns nothing | Querying OpenTelemetry-only traces without OneAgent | Use `isNull(span.parent_id)` as fallback for root span detection |
+| `trace.id` filter returns no results | Trace ID not converted to UID format | Use `filter trace.id == toUid("abc123...")` for string-based trace IDs |
+| Database span counts are too low | Database spans are aggregated (one span = N calls) | Always use `aggregation.count` extrapolation for database operation counts |
 
-### Aggregation Patterns
+## Related Skills
 
-- **Request roots**: Use `request.is_root_span == true` for end-to-end analysis
-- **Trace-level**: Group by `trace.id` for complete trace metrics
-- **Request-level**: Group by `request.id` for request metrics (OneAgent traces only)
-- **Always extrapolate**: Use multiplicity for accurate operation counts
-
-### Trace Exemplars
-
-Include example traces for drilldown:
-
-```dql-snippet
-| summarize {
-    count(),
-    trace=takeAny(record(start_time, trace.id))
-  }, by: { grouping_field }
-| fields ..., trace.id=trace[trace.id], start_time=trace[start_time]
-```
-
-This enables "Open With" functionality in Dynatrace UI.
+- **dt-dql-essentials** — Core DQL syntax for querying trace data
+- **dt-app-dashboards** — Embed trace queries in dashboards
+- **dt-migration** — Smartscape entity model and relationship navigation
 
 ---
 
@@ -630,11 +497,3 @@ Detailed documentation for specific topics:
 - **[Serverless Span Analysis](references/serverless-spans.md)** - Lambda, Azure Functions, cold start analysis
 - **[Logs Correlation](references/logs-correlation.md)** - Joining logs and traces, correlation patterns
 - **[Network Analysis](references/networking-analysis.md)** - IP addresses, DNS resolution, communication mapping
-
----
-
-## Related Skills
-
-- **dt-dql-essentials** - Core DQL syntax for querying trace data
-- **dt-app-dashboards** - Embed trace queries in dashboards
-- **dt-migration** - Smartscape entity model and relationship navigation

@@ -1,6 +1,16 @@
 ---
 name: dt-obs-services
-description: Service metrics, RED metrics (Rate, Errors, Duration), and runtime-specific telemetry for .NET, Java, Node.js, Python, PHP, and Go applications.
+description: >-
+  Service performance monitoring with RED metrics (Rate, Errors, Duration) and runtime-specific
+  telemetry for Java, .NET, Node.js, Python, PHP, and Go. Use when analyzing service health,
+  SLA compliance, or runtime issues.
+  Trigger: "service response time", "error rate", "throughput", "SLA compliance",
+  "service mesh overhead", "JVM GC", "Java heap", "Node.js event loop", ".NET CLR",
+  "Python threads", "PHP OPcache", "Go goroutines", "service performance",
+  "p95 latency", "request failures", "database response time by name".
+  Do NOT use for explaining existing queries, product documentation questions,
+  infrastructure metrics (use dt-obs-hosts), log analysis (use dt-obs-logs),
+  or distributed tracing workflows (use dt-obs-tracing).
 license: Apache-2.0
 ---
 
@@ -175,10 +185,49 @@ Technology-specific runtime performance and resource usage metrics.
 - Log analysis (use logs skills)
 - Distributed tracing workflows (use traces/spans skills)
 - Database performance (use database skills)
+- Product documentation or how-to configuration questions → use `ask-dynatrace-docs`
 
 ---
 
 ## Agent Instructions
+
+### Act First, Refine Later
+
+When a user asks for analysis — threshold checks, anomaly detection, performance
+comparisons — **proceed immediately** with sensible defaults. Do not ask the user
+for parameter values you can reasonably assume.
+
+Why this matters: analysis tools (e.g., `static-threshold-analyzer`) require specific
+inputs like threshold values and service scope. The user expects results, not a
+parameter interview. Pick reasonable defaults, state them clearly in the response,
+and let the user refine.
+
+**Default values when not specified:**
+
+| Parameter | Default | Rationale |
+|-----------|---------|-----------|
+| Response time threshold | 1000 ms (= 1,000,000 µs in the metric's base unit) | Common SLA boundary |
+| Service scope | All services | Show the most relevant violations |
+| Timeframe | From the request, or last 30 min for threshold checks, 2h for general analysis | Matches typical operational windows |
+
+**Example: threshold violation request**
+1. Use `create-dql` to build a timeseries query for `avg(dt.service.request.response_time)` grouped by `dt.smartscape.service`
+2. Pass the query to `static-threshold-analyzer` with threshold = 1000000 (µs), alertCondition = ABOVE
+3. Resolve entity IDs to names using `get-entity-name`
+4. Present violations with service names, timestamps, values, and duration
+
+**Reading user phrasing:** Phrases like "the fixed threshold", "a threshold", or "the limit"
+name the *type of analysis* — static threshold check — not a specific number the user expects
+you to already know. "Fixed" distinguishes a static cutoff from a dynamic or seasonal baseline.
+When you see these phrases, apply the 1000 ms default from the table above and present
+results — the user can then refine if the default doesn't match their intent.
+
+### Scope Boundary
+
+This skill covers **service performance metrics and runtime monitoring only**. If the
+user asks a product documentation or configuration question (e.g., "How do I add custom
+sensors?", "How do I configure service detection?"), use `ask-dynatrace-docs` instead —
+this skill does not contain configuration how-tos.
 
 ### Understanding User Intent
 
@@ -259,6 +308,18 @@ Technology-specific runtime performance and resource usage metrics.
 ### Workflow: Runtime Troubleshooting
 1. Identify technology stack → Load runtime-specific reference
 2. Check memory/GC metrics → threads/goroutines → runtime features
+
+---
+
+## Troubleshooting
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| Response time values look too large | Metric is in microseconds | Divide by 1000 to convert to milliseconds |
+| No data for service mesh metrics | Service mesh not configured | Verify mesh sidecar injection is enabled |
+| Runtime metrics missing | Wrong technology or no OneAgent | Confirm the runtime is supported and OneAgent is active |
+| `dt.smartscape.service` returns SmartscapeId, not name | Need entity name resolution | Use `getNodeName(dt.smartscape.service)` |
+| Error rate always zero | Using wrong failure metric | Use `dt.service.request.failure_count`, not custom fields |
 
 ---
 

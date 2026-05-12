@@ -4,6 +4,7 @@ description: Quickly judges whether a biomedical paper is worth deep reading by 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # High-Value Paper Screener
 

@@ -2,9 +2,10 @@
 name: fda-guideline-search
 description: Search FDA industry guidelines by therapeutic area or topic.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # FDA Guideline Search
 
 Quickly search and retrieve FDA industry guidelines by therapeutic area.

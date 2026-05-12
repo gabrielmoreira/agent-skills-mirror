@@ -345,7 +345,14 @@ Prompt Files:
 
 ### 5.2 Select Generation Skill
 
-Check available skills. If multiple, ask user.
+Follow the `## Image Generation Tools` rule at the top of `SKILL.md`. Concretely:
+
+- If `imagegen` is in your available-skills list (Codex), use it — invoke via the `Skill` tool with `skill: "imagegen"`.
+- Else if the EXTEND.md pin is available, use it.
+- Else if exactly one non-native backend is installed, use it.
+- Else, ask the user.
+
+**Do not generate SVG, HTML, or any code-based vector as a substitute for the raster image.** If no raster backend can be resolved, ask the user how to proceed.
 
 ### 5.3 Process References ⚠️ REQUIRED if references saved in Step 1.0
 

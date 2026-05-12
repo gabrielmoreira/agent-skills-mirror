@@ -28,10 +28,17 @@ plannotator/
 │   │   ├── index.html
 │   │   ├── index.tsx
 │   │   └── vite.config.ts
-│   └── vscode-extension/         # VS Code extension — opens plans in editor tabs
-│       ├── bin/                   # Router scripts (open-in-vscode, xdg-open)
-│       ├── src/                   # extension.ts, cookie-proxy.ts, ipc-server.ts, panel-manager.ts, editor-annotations.ts, vscode-theme.ts
-│       └── package.json           # Extension manifest (publisher: backnotprop)
+│   ├── vscode-extension/         # VS Code extension — opens plans in editor tabs
+│   │   ├── bin/                   # Router scripts (open-in-vscode, xdg-open)
+│   │   ├── src/                   # extension.ts, cookie-proxy.ts, ipc-server.ts, panel-manager.ts, editor-annotations.ts, vscode-theme.ts
+│   │   └── package.json           # Extension manifest (publisher: backnotprop)
+│   └── skills/                    # Agent skills (agentskills.io format)
+│       ├── plannotator-review/          # Lightweight: opens review UI
+│       ├── plannotator-annotate/        # Lightweight: opens annotate UI
+│       ├── plannotator-last/            # Lightweight: annotates last message
+│       ├── plannotator-compound/        # Research analysis agent (map-reduce over denied plans)
+│       ├── plannotator-setup-goal/      # Goal package scaffolder for /goal workflows
+│       └── plannotator-visual-explainer/ # Visual HTML generator (plans, diagrams, PR explainers) with Plannotator theming
 ├── packages/
 │   ├── server/                   # Shared server implementation
 │   │   ├── index.ts              # startPlannotatorServer(), handleServerReady()
@@ -119,6 +126,10 @@ claude --plugin-dir ./apps/hook
 | `JINA_API_KEY` | Optional Jina Reader API key for higher rate limits (500 RPM vs 20 RPM unauthenticated). Free keys include 10M tokens. |
 | `PLANNOTATOR_VERIFY_ATTESTATION` | **Read by the install scripts only**, not by the runtime binary. Set to `1` / `true` to have `scripts/install.sh` / `install.ps1` / `install.cmd` run `gh attestation verify` on every install. Off by default. Can also be set persistently via `~/.plannotator/config.json` (`{ "verifyAttestation": true }`) or per-invocation via `--verify-attestation`. Requires `gh` installed and authenticated. |
 
+**Config-only settings (`~/.plannotator/config.json`)**: Some settings have no env-var equivalent and are toggled by editing the config file directly:
+
+- `pfmReminder` (`true` / `false`, default `false`) — when enabled, a Plannotator Flavored Markdown reminder is injected at plan-time describing the renderer's extensions (code-file links, callouts, tables, diagrams, task lists, hex swatches, wiki-links). Lets the planning agent enrich plans with PFM features without having to discover them. Composes cleanly with the compound-skill improvement hook. Supported across all three runtimes: Claude Code (`improve-context` PreToolUse hook in `apps/hook/server/index.ts`), OpenCode (`experimental.chat.system.transform` in `apps/opencode-plugin/index.ts`), and Pi (`before_agent_start` in `apps/pi-extension/index.ts`).
+
 **Legacy:** `SSH_TTY` and `SSH_CONNECTION` are still detected when `PLANNOTATOR_REMOTE` is unset. Set `PLANNOTATOR_REMOTE=1` / `true` to force remote mode or `0` / `false` to force local mode.
 
 **Devcontainer/SSH usage:**
@@ -172,7 +183,7 @@ OpenCode/Pi: event handler intercepts command
         ↓
 Input type detected:
   .md/.mdx   → file read from disk
-  .html/.htm → file read, converted to markdown via Turndown
+  .html/.htm → file read, converted to markdown via Turndown (or rendered as-is with --render-html)
   https://   → fetched via Jina Reader (default) or fetch+Turndown (--no-jina)
   folder/    → file browser opened, files converted on demand
         ↓
@@ -271,7 +282,7 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 
 | Endpoint              | Method | Purpose                                    |
 | --------------------- | ------ | ------------------------------------------ |
-| `/api/plan`           | GET    | Returns `{ plan, origin, mode: "annotate", filePath, sourceInfo?, gate }` |
+| `/api/plan`           | GET    | Returns `{ plan, origin, mode: "annotate", filePath, sourceInfo?, gate, renderAs?, rawHtml? }` |
 | `/api/feedback`       | POST   | Submit annotations (body: feedback, annotations) |
 | `/api/approve`        | POST   | Approve without feedback (review-gate UX, `--gate`) |
 | `/api/exit`           | POST   | Close session without feedback |
@@ -424,6 +435,9 @@ interface SharePayload {
   a: ShareableAnnotation[]; // Compact annotations
   g?: ShareableImage[]; // Global attachments
   d?: (string | null)[]; // diffContext per annotation, parallel to `a`
+  s?: (string | undefined)[]; // source per annotation (external tool identifier), parallel to `a`
+  h?: string; // Raw HTML content (--render-html mode)
+  r?: 'html'; // Render mode flag (omitted = markdown)
 }
 
 type ShareableAnnotation =
@@ -487,6 +501,8 @@ bun run build:vscode     # VS Code extension bundle
 bun run package:vscode   # Package .vsix for marketplace
 bun run build            # Build hook + opencode (main targets)
 ```
+
+**Important: Tailwind `@source` paths.** When creating new directories that contain `.tsx` files with Tailwind classes, add a matching `@source` entry to the app's `index.css`. Tailwind only generates CSS for classes it finds in scanned files — missing paths means classes appear in the DOM but have no effect.
 
 **Important: Build order matters.** The hook build (`build:hook`) copies pre-built HTML from `apps/review/dist/`. If you change UI code in `packages/ui/`, `packages/editor/`, or `packages/review-editor/`, you **must** rebuild the review app first, then the hook:
 

@@ -2,7 +2,7 @@
 name: uniprot-database
 description: Direct REST API access to UniProt for protein search, entry retrieval, and identifier mapping; use when you need programmatic UniProtKB queries or cross-database ID conversion.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

@@ -4,6 +4,7 @@ description: Checks whether manuscript references are accurately matched to clai
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Reference Integrity Checker
 

@@ -1,6 +1,6 @@
 ---
 name: etherscan-api
-description: This skill should be used when the user asks to "check ETH balance", "query ERC-20 balance", "get wallet balance", "check token holdings", "query Etherscan", or mentions Etherscan API, blockchain balance queries, or multi-chain balance lookups.
+description: This skill should be used when the user asks to "check ETH balance", "query ERC-20 balance", "get wallet balance", "check token holdings", "find first funding transaction", "trace fund origin", "who funded this address", "query Etherscan", or mentions Etherscan API, blockchain balance queries, multi-chain balance lookups, or wallet provenance tracing.
 ---
 
 # Etherscan API V2
@@ -12,8 +12,9 @@ Query blockchain data using Etherscan's unified API V2. This skill covers:
 - Native ETH balance queries
 - ERC-20 token balance queries (single contract on every plan; full holdings on PRO)
 - Transaction history queries (normal, internal, ERC-20/ERC-721/ERC-1155 transfers)
+- First-funding lookup for an address (PRO `fundedby` with a 2-call free-tier fallback)
 - Multi-chain support via the `chainid` parameter
-- Auto-detection of free vs PRO so PRO-only endpoints are used when available
+- Auto-detection of Free vs Lite vs PRO so paid-only chains and PRO-only endpoints are used when available
 
 **Scope:** Read-only account queries. For other Etherscan API features, consult the fallback documentation.
 
@@ -35,7 +36,7 @@ If the environment variable is missing, inform the user and halt execution.
 
 ### Plan Detection
 
-Run the detection helper **once per session** and cache the result. It maps `getapilimit` → plan tier and probes a PRO endpoint to disambiguate Free from Lite:
+Run the detection helper **once per session** and cache the result. It maps `getapilimit` → plan tier and probes a Base balance call to disambiguate Free from Lite:
 
 ```bash
 ./scripts/detect-plan.sh
@@ -44,16 +45,20 @@ Run the detection helper **once per session** and cache the result. It maps `get
 Output (key=value lines):
 
 ```
-plan=free
+plan=lite
 credit_limit=100000
 credits_used=4
 credits_available=99996
 limit_interval=daily
 interval_expiry=14:38:10
 pro_endpoints=false
+paid_chains=true
 ```
 
-`plan` is one of `free`, `lite_with_pro`, `standard`, `advanced`, `professional`, `pro_plus`, `enterprise`, `unknown`. `pro_endpoints=true` means PRO-only actions (`addresstokenbalance`, `balancehistory`, `tokenholderlist`, daily-stats endpoints, etc.) are callable.
+`plan` is one of `free`, `lite`, `standard`, `advanced`, `professional`, `pro_plus`, `enterprise`, `unknown`. Two boolean fields gate behavior:
+
+- `paid_chains=true` — paid-only chains (Base, OP, Avalanche, BNB) are queryable. True for Lite and all higher tiers.
+- `pro_endpoints=true` — PRO-only actions (`addresstokenbalance`, `balancehistory`, `tokenholderlist`, `fundedby`, daily-stats endpoints, etc.) are callable. True for Standard and higher; **false on Lite**.
 
 **Manual detection** (if the script is unavailable):
 
@@ -62,18 +67,18 @@ curl -s "https://api.etherscan.io/v2/api?chainid=1&module=getapilimit&action=get
 # → {"status":"1","message":"OK","result":{"creditsUsed":1,"creditsAvailable":99999,"creditLimit":100000,"limitInterval":"daily","intervalExpiryTimespan":"07:20:05"}}
 ```
 
-| `creditLimit` | Plan         | PRO endpoints         |
-| ------------- | ------------ | --------------------- |
-| 100,000       | Free or Lite | No (probe to confirm) |
-| 200,000       | Standard     | Yes                   |
-| 500,000       | Advanced     | Yes                   |
-| 1,000,000     | Professional | Yes                   |
-| 1,500,000     | Pro Plus     | Yes                   |
-| > 1,500,000   | Enterprise   | Yes                   |
+| `creditLimit` | Plan         | Paid-only chains | PRO endpoints |
+| ------------- | ------------ | ---------------- | ------------- |
+| 100,000       | Free or Lite | Probe to confirm | No            |
+| 200,000       | Standard     | Yes              | Yes           |
+| 500,000       | Advanced     | Yes              | Yes           |
+| 1,000,000     | Professional | Yes              | Yes           |
+| 1,500,000     | Pro Plus     | Yes              | Yes           |
+| > 1,500,000   | Enterprise   | Yes              | Yes           |
 
-Free and Lite both report `creditLimit: 100000`. Lite raises rate-limit-per-second (5 vs 3) but does **not** unlock PRO endpoints — those start at Standard. Confirm by attempting a PRO call; the failure response is `"Sorry, it looks like you are trying to access an API Pro endpoint."`.
+Free and Lite both report `creditLimit: 100000`. Lite ($49/mo) raises rate-limit-per-second (5 vs 3) **and unlocks every supported chain** (Base, OP, Avalanche, BNB), but does **not** add PRO endpoints — those start at Standard. To disambiguate, attempt a paid-chain balance call (e.g., `chainid=8453`): status=1 → Lite, status=0 → Free. To probe PRO instead, the failure response is `"Sorry, it looks like you are trying to access an API Pro endpoint."`.
 
-`getapilimit` itself consumes 1 credit (plus 1 more for the PRO probe), so do not re-run mid-session.
+`getapilimit` itself consumes 1 credit (plus 1 more for the paid-chain probe), so do not re-run mid-session.
 
 ## Chain Inference
 
@@ -296,6 +301,78 @@ date -u -d "@1693526400" --iso-8601=seconds
 date -u -r 1693526400 +"%Y-%m-%dT%H:%M:%SZ"
 ```
 
+## First Funding Transaction
+
+Identify the earliest transaction that sent native value to an address — useful for fund-origin tracing, provenance, or compliance checks. Cost is **1 API call** (PRO) or **2 API calls** (fallback).
+
+### Preferred: `fundedby` (PRO endpoint)
+
+Returns the address, tx hash, block, timestamp, and value of the transaction that first funded an EOA. Single call, structured response.
+
+| Parameter | Required | Default | Description                         |
+| --------- | -------- | ------- | ----------------------------------- |
+| `chainid` | No       | `1`     | Chain ID (see chains.md)            |
+| `module`  | Yes      | -       | Set to `account`                    |
+| `action`  | Yes      | -       | Set to `fundedby`                   |
+| `address` | Yes      | -       | EOA address (contracts unsupported) |
+| `apikey`  | Yes      | -       | API key from `$ETHERSCAN_API_KEY`   |
+
+```bash
+curl -s "https://api.etherscan.io/v2/api?chainid=1&module=account&action=fundedby&address=0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97&apikey=$ETHERSCAN_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "block": 53708500,
+    "timeStamp": "1708349932",
+    "fundingAddress": "0x6969174fd72466430a46e18234d0b530c9fd5f49",
+    "fundingTxn": "0xbc0ca4a67eb1555920552246409626cd60df01314dd2bcdb99718b506d9c9946",
+    "value": "1000000000000000"
+  }
+}
+```
+
+**Requirements & limits:**
+
+- PRO endpoint — requires Standard plan or higher (`pro_endpoints=true` from plan detection).
+- Throttled to **2 calls/second** regardless of paid tier.
+- **EOA only.** Contract addresses return an error; use the fallback below.
+
+### Fallback: scan ASC normal + internal transactions
+
+When `pro_endpoints=false` (free/Lite) or the address is a contract, scan both transaction lists ascending and pick the earliest qualifying incoming entry. Two API calls per address.
+
+```bash
+# Earliest normal txs involving the address
+curl -s "https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address=0x...&startblock=0&endblock=999999999&page=1&offset=10&sort=asc&apikey=$ETHERSCAN_API_KEY"
+
+# Earliest internal txs involving the address
+curl -s "https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlistinternal&address=0x...&startblock=0&endblock=999999999&page=1&offset=10&sort=asc&apikey=$ETHERSCAN_API_KEY"
+```
+
+For each response, pick the first entry where **all** of the following hold:
+
+- `to.toLowerCase() == address.toLowerCase()` — incoming, not outgoing.
+- `value` (in wei) is greater than `0` — actual funding, not a zero-value call.
+- `isError == "0"` (omit this filter for internal txs, which use `isError` differently or not at all).
+
+The funding tx is whichever match has the lower `blockNumber`; break ties by `transactionIndex` (normal txs) or by list order (internal txs).
+
+**Why both lists:** An address may be funded externally (normal tx) or internally (contract sent ETH — common for CEX withdrawals routed through proxy/router contracts, contract deployments with non-zero `msg.value`, or SELFDESTRUCT refunds). Checking only `txlist` will miss internally-funded addresses.
+
+**Why `offset=10`, not `1`:** A `txlist` query returns every tx involving the address, including outgoing ones. The very first entry is occasionally outgoing (e.g., the address was internally pre-funded), so fetch a small window and scan for the first incoming match.
+
+**Edge cases:**
+
+- **No qualifying entry in the first 10** — extend with `offset=100` and `page=1`, or paginate further. In practice, > 10 outgoing-before-incoming is exceedingly rare.
+- **Genesis allocation** — pre-mined balances do not appear in either list. The address shows a balance with no funding tx; report this explicitly.
+- **Token-only funding** — `fundedby` and this fallback only consider native value. If the address was bootstrapped with ERC-20 transfers alone (rare for EOAs since gas is needed), repeat the fallback against `tokentx`.
+
 ## Multi-Chain Usage
 
 Specify the `chainid` parameter to query different blockchains.
@@ -369,7 +446,7 @@ Decisions in this section depend on the cached output of `./scripts/detect-plan.
 
 ### Paid-Only Chains
 
-Four chain families (8 chains total, mainnet + testnet) require any paid Etherscan plan. Data endpoints (balance, txlist, logs, etc.) will fail when `plan=free`:
+Four chain families (8 chains total, mainnet + testnet) require any paid Etherscan plan. **Lite ($49/mo) is sufficient** — it grants access to every supported chain at the same 100,000 daily-credit limit as Free. Data endpoints (balance, txlist, logs, etc.) fail only when `plan=free` (i.e., `paid_chains=false`):
 
 | Chain             | Chain ID   |
 | ----------------- | ---------- |
@@ -384,25 +461,25 @@ Four chain families (8 chains total, mainnet + testnet) require any paid Ethersc
 
 **Exception:** `module=contract` endpoints (`getsourcecode`, `getabi`, etc.) work on **all** chains for every plan including free. The paid-plan requirement applies only to data endpoints.
 
-If `plan=free` and the user requests a data query on the chains above, halt and inform them a paid plan is required.
+If `paid_chains=false` (i.e., `plan=free`) and the user requests a data query on the chains above, halt and inform them upgrading to Lite or higher is required.
 
 ### PRO-Only Endpoints
 
 When `pro_endpoints=true`, the following actions become available (non-exhaustive — see `https://docs.etherscan.io/api-pro/api-pro` for the full list):
 
-| Module       | Action(s)                                                                   | Use case                           |
-| ------------ | --------------------------------------------------------------------------- | ---------------------------------- |
-| `account`    | `addresstokenbalance`, `addresstokennftbalance`, `balancehistory`           | Full holdings, historical balances |
-| `token`      | `tokenholderlist`, `tokeninfo`, `tokensupplyhistory`, `tokenbalancehistory` | Token analytics                    |
-| `block`      | `dailyavgblocksize`, `dailyblkcount`, `dailyblockrewards`, etc.             | Daily block stats                  |
-| `stats`      | `dailytxnfee`, `dailynewaddress`, `dailynetutilization`, etc.               | Network-wide daily metrics         |
-| `gastracker` | `dailyavggaslimit`, `dailygasused`, `dailyavggasprice`                      | Daily gas metrics                  |
+| Module       | Action(s)                                                                     | Use case                                                 |
+| ------------ | ----------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `account`    | `addresstokenbalance`, `addresstokennftbalance`, `balancehistory`, `fundedby` | Full holdings, historical balances, first-funding lookup |
+| `token`      | `tokenholderlist`, `tokeninfo`, `tokensupplyhistory`, `tokenbalancehistory`   | Token analytics                                          |
+| `block`      | `dailyavgblocksize`, `dailyblkcount`, `dailyblockrewards`, etc.               | Daily block stats                                        |
+| `stats`      | `dailytxnfee`, `dailynewaddress`, `dailynetutilization`, etc.                 | Network-wide daily metrics                               |
+| `gastracker` | `dailyavggaslimit`, `dailygasused`, `dailyavggasprice`                        | Daily gas metrics                                        |
 
 When `pro_endpoints=false` (free or Lite), prefer the non-PRO equivalents listed in this skill or fall back to per-token loops.
 
 ### All Plans
 
-All other supported chains — Ethereum, Polygon, Arbitrum One, Linea, Blast, Mantle, Unichain, Gnosis, Celo, Fraxtal, Moonbeam, Moonriver, opBNB, Sonic, Sei, Monad, Berachain, Abstract, ApeChain, World, Katana, HyperEVM, MegaETH, Memecore, Plasma, Stable, Taiko, BitTorrent, XDC, and their testnets — are available on every plan including free.
+All other supported chains — Ethereum, Polygon, Arbitrum One, Linea, Blast, Mantle, Unichain, Gnosis, Celo, Fraxtal, Moonbeam, Moonriver, opBNB, Sonic, Sei, Monad, Berachain, Abstract, ApeChain, World, Katana, HyperEVM, MegaETH, Memecore, Plasma, Stable, Taiko, BitTorrent, XDC, and their testnets — are available on every plan including Free. On Lite and higher, the paid-only chains above also become available.
 
 See `./references/chains.md` for the full list with chain IDs.
 

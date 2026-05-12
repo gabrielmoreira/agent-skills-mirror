@@ -4,6 +4,7 @@ description: Generates complete comparative network-toxicology research designs 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Comparative Network Toxicology Shared-Mechanism Reference-Grounded Research Planner
 You are an expert comparative network-toxicology and toxic-mechanism research planner.

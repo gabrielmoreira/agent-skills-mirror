@@ -1,6 +1,15 @@
 ---
 name: dt-dql-essentials
-description: REQUIRED before generating any DQL queries. Provides critical syntax rules, common pitfalls, and patterns. Load this skill BEFORE writing DQL to avoid syntax errors.
+description: >-
+  Core DQL syntax rules, common pitfalls, and query patterns. Load this skill when you need
+  to write, build, or fix a DQL query — it prevents syntax errors and guides correct usage.
+  Covers fetch commands, data models, field namespaces, time alignment, entity patterns,
+  metric discovery, and smartscape topology navigation.
+  Trigger: "write a DQL query", "build me a query", "DQL syntax", "how do I query
+  logs/spans/metrics in Dynatrace", "create a timeseries", "fix my DQL",
+  "fetch logs", "smartscapeNodes", "query optimization".
+  Do NOT use for explaining an existing query or answering Dynatrace product questions —
+  those do not require query-construction guidance.
 license: Apache-2.0
 ---
 
@@ -10,20 +19,25 @@ DQL is a pipeline-based query language. Queries chain commands with `|` to filte
 
 ______________________________________________________________________
 
-## Use Cases
+## When to Load References
 
-| Use case                                                                                                           | Reference                                                                                    |
-|--------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
-| Useful expressions in DQL                                                                                          | [references/useful-expressions.md](references/useful-expressions.md)                         |
-| Smartscape topology navigation syntax and patterns                                                                 | [references/smartscape-topology-navigation.md](references/smartscape-topology-navigation.md) |
-| Dynatrace Semantic Dictionary: field namespaces, data models, stability levels, query patterns, and best practices | [references/semantic-dictionary.md](references/semantic-dictionary.md)                       |
-| Various applications of summarize and makeTimeseries commands                                                      | [references/summarization.md](references/summarization.md)                                   |
-| Operators (in, time alignment `@`)                                                                                  | [references/operators.md](references/operators.md)                                           |
-| Array and timeseries manipulation (creation, modifications, use in filters) using DQL                              | [references/iterative-expressions.md](references/iterative-expressions.md)                   |
-| Query optimization (filter early, time ranges, field selection, performance)                                       | [references/optimization.md](references/optimization.md)                                     |
+Before working on specific tasks, load the relevant reference:
 
+| Task                                                                          | Required Reading                                                                             |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Field names, namespaces, data models, stability levels, query patterns        | [references/semantic-dictionary.md](references/semantic-dictionary.md)                       |
+| Query optimization (filter early, time ranges, field selection, performance)  | [references/optimization.md](references/optimization.md)                                     |
+| Smartscape topology navigation for discovering relationships between entities | [references/smartscape-topology-navigation.md](references/smartscape-topology-navigation.md) |
+| `summarize` and `makeTimeseries` patterns (bucketing, calendar months)        | [references/summarization.md](references/summarization.md)                                   |
+| Array and timeseries manipulation (`arrayFilter`, `collectArray`, iterative)  | [references/iterative-expressions.md](references/iterative-expressions.md)                   |
+| Conditional logic (`if/else` chains), `coalesce`, string/date helpers         | [references/useful-expressions.md](references/useful-expressions.md)                         |
+| `in` operator (subquery), full `@` time alignment unit table                  | [references/operators.md](references/operators.md)                                           |
+
+______________________________________________________________________
 
 ## DQL Reference Index
+
+Use this index to route from a function group (e.g. time functions, conversions) to its detailed spec, or from a function name to its spec file.
 
 | Description | Items |
 |-------------|-------|
@@ -51,132 +65,244 @@ ______________________________________________________________________
 | [Functions — String](references/dql/dql-functions-string.md) | `concat`, `contains`, `decodeBase16ToBinary`, `decodeBase16ToString`, `decodeBase64ToBinary`, `decodeBase64ToString`, `decodeUrl`, `encodeBase16`, `encodeBase64`, `encodeUrl`, `endsWith`, `escape`, `getCharacter`, `indexOf`, `lastIndexOf`, `levenshteinDistance`, `like`, `lower`, `matchesPattern`, `matchesPhrase`, `matchesRegex`, `matchesValue`, `punctuation`, `replacePattern`, `replaceString`, `splitByPattern`, `splitString`, `startsWith`, `stringLength`, `substring`, `trim`, `unescape`, `unescapeHtml`, `upper` |
 | [Functions — Time](references/dql/dql-functions-time.md) | `formatTimestamp`, `getDayOfMonth`, `getDayOfWeek`, `getDayOfYear`, `getHour`, `getMinute`, `getMonth`, `getSecond`, `getWeekOfYear`, `getYear`, `now`, `unixMillisFromTimestamp`, `unixNanosFromTimestamp`, `unixSecondsFromTimestamp` |
 | [Functions — Time series aggregation for metrics](references/dql/dql-functions-timeseries.md) | `avg`, `count`, `countDistinct`, `end`, `max`, `median`, `min`, `percentRank`, `percentile`, `start`, `sum` |
+
 ______________________________________________________________________
 
 ## Syntax Pitfalls
 
-| ❌ Wrong                                      | ✅ Right                        | Issue                                                                |
-| --------------------------------------------- | ------------------------------- | -------------------------------------------------------------------- |
-| `filter field in ["a", "b"]`                  | `filter in(field, "a", "b")`    | No array literal syntax                                              |
-| `by: severity, status`                        | `by: {severity, status}`        | Multiple grouping fields require curly braces                        |
-| `contains(toLowercase(field), "err")`         | `contains(lower(field), "err")`  or `contains(field, "err", caseSensitive: false)`       | There's no function for `toLowerCase` in DQL |
-| `filter name == "*serv*9*"`                   | `filter contains(name, "serv")` | Mid-string wildcards not allowed; use `contains()`                   |
-| `matchesValue(field, "prod")` on string field | `contains(field, "prod")`       | `matchesValue()` is for array fields only                            |
-| `toLowercase(field)`                          | `lower(field)`                  | The correct function in DQL is called `lower`                        |
-| `arrayAvg(field[])` or `arraySum(field[])`    | `arrayAvg(field)` or `field[]`  | `field[]` = element-wise (array→array); `arrayAvg(field)` = collapse to scalar. Never mix both. |
-| `my_field` after `lookup` or `join`           | `lookup.my_field` / `right.my_field` | `lookup` prefixes fields with `lookup.`; `join` prefixes right-side fields with `right.` |
-| Chained `lookup` losing fields                | `fieldsRename` between lookups       | Each `lookup` **removes all existing `lookup.*` fields**. Rename after each lookup to preserve results (see below) |
-| `substring(field, 0, 200)`                    | `substring(field, from: 0, to: 200)` | DQL functions use **named parameters** — positional args cause `TOO_MANY_POSITIONAL_PARAMETERS` |
-| `filter log.level == "ERROR"`                 | `filter loglevel == "ERROR"`        | Log severity field is `loglevel` (no dot) — `log.level` does not exist                          |
-| `sort count() desc`                           | ``sort `count()` desc``              | fields with special characters must use backticks                |
+| ❌ Wrong | ✅ Right | Issue |
+| --- | --- | --- |
+| `filter field in ["a", "b"]` | `filter in(field, {"a", "b"})` | `[` and `]` wrap sub-queries in DQL but do not wrap **static** array literals. Use `{}` or `array()` for static values. |
+| `filter: { in(field, [sub-query]) }` (e.g. in `timeseries filter:`) | `filter: { field in [sub-query] }` | `in()` does not accept execution blocks as arguments. When the right-hand side is a sub-query (execution block), use the `in` operator: `field in [execution block]`. |
+| `by: severity, status` | `by: {severity, status}` | List of fields must be grouped by curly braces in `by:` clauses (`summarize`, `makeTimeseries`, etc.). |
+| `contains(toLowercase(field), "err")` | `contains(field, "err", false)` | Don't wrap in `lower()` for case-insensitive matching. `contains()` has a built-in third positional `caseSensitive` parameter (default `true`). |
+| `filter name == "*serv*9*"` | `filter matchesValue(name, "*serv*") and matchesValue(name, "*9*")` | `==` does not support wildcards. `matchesValue()` supports `*` wildcards but only at the beginning and/or end of the pattern—split mid-string wildcard intent into multiple calls combined with `and`. |
+| `matchesValue(field, "prod")` on string field | `contains(field, "prod")` | Without wildcards, `matchesValue()` performs an exact (case-insensitive) match — it will not find `"production"`. Use `contains()` for substring matching (or `matchesValue(field, "*prod*")` for wildcard matching). |
+| `toLowercase(field)` | `lower(field)` | The function is `lower()`, not `toLowercase()`. Only type-casting functions use the `to` prefix (`toString()`, `toLong()`, etc.). |
+| `arrayAvg(field[])` or `arraySum(field[])` | `arrayAvg(field)` or `field[]` | `field[]` = element-wise iterative expression (array→array); `arrayAvg(field)` = collapse to scalar (array→single value). Never mix both — `arrayAvg(field[])` is semantically wrong. |
+| `my_field` after `lookup` or `join` | `lookup.my_field` / `right.my_field` | `lookup` prefixes added fields with `lookup.` by default (configurable via `prefix:`). `join` prefixes right-side fields with `right.`. |
+| `substring(field, 0, 200)` | `substring(field, from: 0, to: 200)` | The first parameter (expression) is positional, but `from:` and `to:` are named optional parameters and must include their names. |
+| `filter host = "A"` | `filter host == "A"` | DQL uses `==` for equality comparison, not `=`. Single `=` is assignment (e.g., in `fieldsAdd`, summarize aliases). |
+| `fetch logs, from: toTimestamp('2026-01-01')` | `fetch logs, from: -24h` | `from:` / `to:` accept duration literals (e.g., `-24h`, `-7d`) or `now()` expressions — not `toTimestamp()`. For absolute ranges use `timeframe: "start/end"` (ISO 8601). |
+| `filter log.level == "ERROR"` | `filter loglevel == "ERROR"` | Log severity field is `loglevel` (no dot) — `log.level` does not exist. |
+| `sort count() desc` | `` sort `count()` desc `` | Fields with special characters (like parentheses) must be wrapped in backticks. |
+| `length(field)` | `stringLength(field)` | DQL string length function is `stringLength` — there is no `length()`. |
+| `metrics dt.host.cpu.usage` | `timeseries avg(dt.host.cpu.usage)` | `metrics` loads metric metadata, not values — use `timeseries` for data. |
+| `join [...], on:{left.a.b == right.a.b}` | `` join [...], on:{left[`a.b`] == right[`a.b`]} `` | Dotted field names in join/lookup conditions require bracket notation with backticks. |
+| `fieldsSummary` (no arguments) | `fieldsSummary field1, field2` | `fieldsSummary` requires at least one field parameter. |
+| `timeseries` with `percentile`/`median`/`percentRank` — no results | Add `rollup: avg` (or `min`/`max`/`sum`) to the `timeseries` command | These three functions **require `rollup:`** on gauge/count metrics — without it the query silently returns empty. |
+| `` lookup [...], fields: {`dotted.name`} `` | `lookup [...], fields: {dotted.name}` | Do not backtick field names inside the `fields:` parameter of `lookup` — causes PARSE_ERROR. |
+| `data record(key: "val")` | `data record(key = "val")` | `record()` uses `=` for named fields, not `:` — `:` is for command parameters like `rollup:`. |
+| `getNodeField(dt.smartscape.host, "tags")["tag.key"]` | `getNodeField(dt.smartscape.host, "tags")[tag.key]` | In this tag-map access pattern, bracket keys must use unquoted identifier syntax; quoted keys cause a parse error. |
+| `by: {dt.entity.host}` or `dt.entity.*` | `by: {dt.smartscape.host}` or `dt.smartscape.*` | `dt.entity.*` is **deprecated** — always use `dt.smartscape.*` in new queries. |
 
 ______________________________________________________________________
 
 ## Fetch Command → Data Model
 
-Each data model has a specific fetch command — using the wrong one returns no results.
+DQL queries start with `fetch <data_object>` or `timeseries`. There is **no `fetch dt.metric`** — metrics use `timeseries`.
 
 | Fetch Command | Data Model | Key Fields / Notes |
 |---------------|------------|--------------------|
 | `fetch spans` | Distributed tracing | `span.*`, `service.*`, `http.*`, `db.*`, `code.*`, `exception.*` |
 | `fetch logs` | Log events | `log.*`, `k8s.*`, `host.*` — message body is `content`, severity is `loglevel` (NOT `log.level`) |
-| `fetch events` | Davis / infra events | `event.*`, `dt.smartscape.*` |
+| `fetch events` | DAVIS / infra events | `event.*`, `dt.smartscape.*` |
 | `fetch bizevents` | Business events | `event.*`, custom fields |
-| `fetch securityEvents` | Security events | `vulnerability.*`, `event.*` |
-| `fetch usersessions` | RUM sessions | `dt.rum.*`, `browser.*`, `geo.*` |
-| `timeseries` | Metrics | NOT `fetch` — uses `timeseries avg(metric.key)` syntax |
+| `fetch security.events` | Security events | `vulnerability.*`, `event.*` |
+| `fetch user.sessions` | RUM sessions | `dt.rum.*`, `browser.*`, `geo.*` |
+| `fetch user.events` | RUM individual events | page views, clicks, requests, errors |
+| `fetch user.replays` | Session replay recordings | |
+| `fetch application.snapshots` | Application snapshots | |
+| `fetch dt.davis.events` | Davis-detected events | |
+| `fetch dt.davis.problems` | Davis-detected problems | |
+| `timeseries avg(metric.key)` | Metrics | NOT `fetch` — hyphenated keys need backticks: `` timeseries sum(`my.metric-name`) `` |
+| `smartscapeNodes "HOST"` | Topology | NOT `fetch` — types: `HOST`, `SERVICE`, `K8S_CLUSTER`, etc. |
 
-Legacy compatibility: `dt.entity.*` still works in older queries, but it is deprecated. Use `dt.smartscape.*` and `smartscapeNodes` for all new queries.
+`dt.entity.*` is deprecated — use `dt.smartscape.*` and `smartscapeNodes` for new queries.
 
-Metric-key note: keys containing **hyphens** are parsed as subtraction. Use backticks, for example: ``timeseries sum(`my.metric-name`)``.
+Discover all available data objects: `fetch dt.system.data_objects | fields name, display_name, type`
 
-→ Full field namespace reference: [references/semantic-dictionary.md](references/semantic-dictionary.md)
+→ [references/semantic-dictionary.md](references/semantic-dictionary.md) for full field namespaces
 
 ______________________________________________________________________
 
-## Data Objects
+## `samplingRatio` Parameter
 
-DQL queries start with `fetch <data_object>` or `timeseries`. There is **no `fetch dt.metric`** or `fetch dt.metrics` — metrics are queried with `timeseries`.
+`fetch` supports a `samplingRatio:` parameter to reduce the volume of data read — useful for improving query performance on large datasets.
 
-**Core data objects for `fetch`:**
-
-| Data Object | Description |
-| --- | --- |
-| `logs` | Log entries |
-| `spans` | Distributed traces / spans |
-| `events` | Platform events |
-| `bizevents` | Business events |
-| `user.events` | RUM individual events (page views, clicks, requests, errors) |
-| `user.sessions` | RUM session-level aggregates |
-| `user.replays` | Session replay recordings |
-| `security.events` | Security events |
-| `application.snapshots` | Application snapshots |
-| `dt.smartscape.<type>` | Smartscape entity fields (e.g., `dt.smartscape.host`, `dt.smartscape.service`) |
-| `dt.davis.problems` | DAVIS-detected problems |
-| `dt.davis.events` | DAVIS events |
-
-**Metrics** — use `timeseries`, not `fetch`:
 ```dql
-timeseries cpu = avg(dt.host.cpu.usage), by: {dt.smartscape.host}
+fetch spans, samplingRatio:100   // reads ~1% of data
 ```
 
-**Topology** — use `smartscapeNodes`, not `fetch`:
-```dql
-smartscapeNodes "HOST"
-```
+**Allowed values:** depend on the concrete data object and range from `1`, `10`, `100`, `1000`, `10000` to `100000`, the highest level only available for `logs` and `spans`.
 
-**Discover available data objects:**
+
+Sampling is **hierarchical** for `spans`, `user.events` and `user.sessions`: a record included at a higher ratio (e.g. `100`) is guaranteed to also appear at lower ratios (e.g. `10`, `1`), but not vice versa. This means results at different ratios are  subsets of each other. All other non-metric data objects are sampled independently per record, so results at different ratios are not subsets.
+
+The actual ratio applied is accessible via the `dt.system.sampling_ratio` field. Use it to extrapolate sampled counts back to true totals:
+
 ```dql
-fetch dt.system.data_objects | fields name, display_name, type
+fetch logs, samplingRatio:10
+| summarize count_extrapolated = sum(dt.system.sampling_ratio)
 ```
 
 ______________________________________________________________________
 
 ## Metric Discovery
 
-To search for available metrics by keyword, use `metric.series`:
+To search for available metrics by keyword, use the command `metrics`:
 
 ```dql
-fetch metric.series, from: now() - 1h
+metrics from: now() - 1h
 | filter contains(metric.key, "replay")
 | summarize count(), by: {metric.key}
 | sort `count()` desc
 ```
 
-There is **no `fetch dt.metric`** or `fetch dt.metrics` — those data objects do not exist.
+There is **no `fetch dt.metric`** or `fetch dt.metrics` or `fetch dt.system.metrics` — those data objects do not exist.
 
 ______________________________________________________________________
 
-## Entity Field Patterns
+## Timeseries Aggregation Functions
 
-Entity fields in DQL are scoped to specific entity types — not universal like SQL columns.
+The `timeseries` command supports only these aggregation functions:
 
-- `entity.id` **does not exist** — use a typed field such as `dt.smartscape.host`.
+| Function | Description |
+|----------|-------------|
+| `sum` | Sum of metric data points per time slot |
+| `avg` | Average of metric data points per time slot |
+| `min` | Minimum of metric data points per time slot |
+| `max` | Maximum of metric data points per time slot |
+| `count` | Count of metric data points per time slot |
+| `percentile(metric, N)` | Nth percentile per time slot. **Requires `rollup:`** — see below. |
+| `median(metric)` | 50th percentile per time slot (= `percentile(metric, 50)`). **Requires `rollup:`**. |
+| `percentRank(metric, value)` | Percentile rank of a value per time slot. **Requires `rollup:`**. |
+| `countDistinct(metric)` | Approximate distinct count per time slot (cardinality metrics only; does NOT accept `rollup:`). |
 
-| Entity             | ID field                       |
-| ------------------ | ------------------------------ |
-| Host               | `dt.smartscape.host`           |
-| Service            | `dt.smartscape.service`        |
-| Process            | `dt.smartscape.process`        |
-| Kubernetes cluster | `dt.smartscape.k8s_cluster`    |
+Helpers (use alongside an aggregation): `start()`, `end()`.
 
-- For topology traversal and relationships, use `smartscapeNodes` instead of `fetch`.
+**Not supported by `timeseries`:** `countIf`, `collectArray`, `stddev`, `variance`, `takeAny`, `takeFirst`, `takeLast` — use `summarize` or `makeTimeseries`.
+
+### The `rollup:` parameter
+
+Metrics are pre-aggregated at ingest time. `rollup:` controls how raw data points are combined per time slot. Required for `percentile`, `median`, `percentRank` — without it the query silently returns no results. `avg`/`min`/`max`/`sum`/`count` work without `rollup:`.
+
+Single aggregation — `rollup:` at command level. Multiple aggregations in `{}` — `rollup:` must go **inside each function call** (command-level `rollup:` causes `UNKNOWN_PARAMETER_DEFINED`):
+
+```dql
+timeseries p90 = percentile(dt.process.handles.file_descriptors_percent_used, 90), rollup: avg
+```
+
+```dql
+timeseries {
+  p90 = percentile(dt.process.handles.file_descriptors_percent_used, 90, rollup: avg),
+  med = median(dt.process.handles.file_descriptors_percent_used, rollup: avg),
+  avg_val = avg(dt.process.handles.file_descriptors_percent_used)
+}, by: {dt.smartscape.host}
+```
+
+Values: `avg` (gauges), `min`, `max`, `sum` (counters), `total`.
+
+### Timeseries-to-scalar conversion
+
+There are two ways to collapse a timeseries to a scalar. Prefer the `scalar:true` parameter when you only need the single aggregated value — it is more efficient because no array is materialized. Fall back to array functions when you need both the full series and a derived scalar in the same query.
+
+**Preferred: `scalar:true` on the aggregation function**
+
+Pass `scalar:true` to any timeseries aggregation function. The result field contains a single value instead of an array, and no intermediate array is allocated:
+
+```dql
+timeseries avg_cpu = avg(dt.host.cpu.usage, scalar:true), by:{dt.smartscape.host}
+```
+
+```dql
+timeseries {
+  avg_cpu = avg(dt.host.cpu.usage, scalar:true),
+  max_cpu = max(dt.host.cpu.usage, scalar:true)
+}, by:{dt.smartscape.host}
+```
+
+**Fallback: array functions in `fieldsAdd`**
+
+When you need the full time series array alongside a derived scalar, use array functions in a subsequent `| fieldsAdd`:
+
+| Function | Description |
+|----------|-------------|
+| `arrayAvg(arr)` | Average of all values in the array |
+| `arraySum(arr)` | Sum of all values |
+| `arrayMin(arr)` | Minimum value |
+| `arrayMax(arr)` | Maximum value |
+| `arrayMedian(arr)` | Median value |
+| `arrayPercentile(arr, N)` | Nth percentile (0–100) |
+| `arrayLast(arr)` | Last non-null value (latest data point) |
+| `arrayFirst(arr)` | First non-null value (earliest data point) |
+
+```dql
+timeseries cpu = avg(dt.host.cpu.usage), by:{dt.smartscape.host}
+| fieldsAdd avg_cpu = arrayAvg(cpu), max_cpu = arrayMax(cpu)
+```
 
 ______________________________________________________________________
 
-## Smartscape Entity Patterns
+## Time Alignment (@-operator)
 
-Use `smartscapeNodes` for topology queries. Node types are uppercase strings and differ from field names.
+The `@` operator aligns timestamps to a boundary — agents often get this wrong.
 
-| Entity      | Field name                      | `smartscapeNodes` type |
-| ----------- | ------------------------------- | ---------------------- |
-| Host        | `dt.smartscape.host`            | `"HOST"`               |
-| Service     | `dt.smartscape.service`         | `"SERVICE"`            |
-| K8s cluster | `dt.smartscape.k8s_cluster`     | `"K8S_CLUSTER"`        |
+| Expression   | Meaning                                                     |
+| ------------ | ----------------------------------------------------------- |
+| `now()@h`    | Current time, aligned to the hour boundary                  |
+| `now()@d`    | Midnight today                                              |
+| `now()@w1`   | Monday this week                                            |
+| `now()-2h@h` | 2 hours ago, aligned to the hour (offset first, then align) |
+
+**Rules:**
+
+- Order: offset before alignment — `now()-2h@h`, not `now()@h-2h`
+- No space between `@` and the unit — `now()@h` not `now() @h`
+- `m` = minutes, `M` = months — do not confuse them
+
+→ [references/dql/dql-functions-timeseries.md](references/dql/dql-functions-timeseries.md) for the full list of `timeseries` aggregations and `rollup:` rules
+→ [references/dql/dql-functions-array.md](references/dql/dql-functions-array.md) for `arrayAvg` / `arrayMax` / `arrayPercentile` / … spec
+
+______________________________________________________________________
+
+## Entity & Smartscape Patterns
+
+Entity fields are scoped per type — `entity.id` does not exist. Use `smartscapeNodes` for topology queries.
+
+| Entity      | ID field in data             | `smartscapeNodes` type |
+| ----------- | ---------------------------- | ---------------------- |
+| Host        | `dt.smartscape.host`         | `"HOST"`               |
+| Service     | `dt.smartscape.service`      | `"SERVICE"`            |
+| Process     | `dt.smartscape.process`      | `"PROCESS"`            |
+| K8s cluster | `dt.smartscape.k8s_cluster`  | `"K8S_CLUSTER"`        |
 
 Use `toSmartscapeId()` for ID conversion from strings (required!).
 
 → [references/smartscape-topology-navigation.md](references/smartscape-topology-navigation.md)
+
+______________________________________________________________________
+
+## makeTimeseries Command
+
+`makeTimeseries` builds a time-bucketed series from event data (logs, spans, bizevents). Unlike `timeseries` (which queries pre-ingested metrics), `makeTimeseries` aggregates data in a pipeline.
+
+**Do not pipe `timeseries` directly into `makeTimeseries`** — it fails with `INVALID_IMPLICIT_TIME_DEFAULT`. To re-aggregate metric data, use `start()` + expand (see [references/summarization.md](references/summarization.md)).
+
+```dql
+fetch logs
+| makeTimeseries
+    total = count(),
+    errors = countIf(loglevel == "ERROR"),
+    interval: 5m,
+    by: {k8s.cluster.name}
+| fieldsAdd error_rate = errors / total * 100
+```
+
+Key parameters: `interval:`, `by:{}`, `from:`/`to:`, `bins:`, `time:` (timestamp field), `spread:` (for `count`/`countIf` only), `nonempty:`.
+
+→ [references/summarization.md](references/summarization.md) for full `makeTimeseries` patterns and `summarize` bucketing
+→ [references/iterative-expressions.md](references/iterative-expressions.md) for timeseries array manipulation
 
 ______________________________________________________________________
 
@@ -195,78 +321,74 @@ ______________________________________________________________________
 
 ## Chained Lookup Pattern
 
-Each `lookup` command **removes all existing fields starting with `lookup.`** before adding new ones. When chaining multiple lookups, use `fieldsRename` after each to preserve the result:
 
+Each `lookup` command without a `fields` parameter **removes all existing fields starting with the prefix (default: `lookup.`)** before adding new ones. When chaining multiple lookups, use `fields` parameter or custom prefixes to preserve the result:
+
+**Option 1 (default)**: the desired fields are known.
 ```dql
 fetch bizevents
 // Step 1: First lookup — enrich orders with product info
 | lookup [fetch bizevents
     | filter event.type == "product_catalog"
     | fields product_id, category],
-  sourceField: product_id, lookupField: product_id
+  sourceField: product_id, lookupField: product_id, fields: {product_id, product_category = category}
 
-// Step 2: Rename BEFORE next lookup — or lookup.category gets wiped
-| fieldsRename product_category = lookup.category
-
-// Step 3: Second lookup — lookup.* is now clean for new results
+// Step 2: Second lookup — specify fields with a different name
 | lookup [fetch bizevents
     | filter event.type == "warehouse_stock"
     | fields category, warehouse_region],
-  sourceField: product_category, lookupField: category
+  sourceField: product_category, lookupField: category, fields: {warehouse_region, warehouse_category = category}
 
-// Both product_category and lookup.warehouse_region are available
 ```
+All 4 lookup fields product_id, product_category, warehouse_region, and warehouse_category are available.
+Without the `fields:{...}` parameter, the fields would be prefixed with `lookup.` and the second lookup command would delete the fields added by the first lookup.
 
-**Without the `fieldsRename`, the second `lookup` silently drops the first lookup's results — producing empty fields and collapsed aggregations.**
+**Option 2**: keep all fields from the lookup.
+```dql
+fetch bizevents
+// Step 1: First lookup — enrich orders with product info
+| lookup [fetch bizevents
+    | filter event.type == "product_catalog"
+    | fields product_id, category],
+  sourceField: product_id, lookupField: product_id, prefix: "product."
+
+// Step 2: Second lookup — specify fields with a different prefix
+| lookup [fetch bizevents
+    | filter event.type == "warehouse_stock"
+    | fields category, warehouse_region],
+  sourceField: product_category, lookupField: category, prefix: "warehouse."
+
+```
+The new fields are: `product.product_id`, `product.category`, `warehouse.category`, `warehouse.warehouse_region`.
+All fields starting with `product.` or `warehouse.` are removed from the original source.
+Without the dedicated `prefix`, both `lookup` commands would use the same prefix (`lookup.`) and the second `lookup` drops the first lookup's results — producing empty fields.
 
 ______________________________________________________________________
 
 ## makeTimeseries Command
 
-`makeTimeseries` converts event-based data (logs, spans, bizevents) into a time-bucketed metric series. It is **not** the same as the `timeseries` command — `timeseries` queries pre-ingested metric data; `makeTimeseries` builds a series from signals in a pipeline.
+`makeTimeseries` builds a time-bucketed series from event data (logs, spans, bizevents). Unlike `timeseries` (which queries pre-ingested metrics), `makeTimeseries` aggregates data in a pipeline.
 
-**Basic syntax:**
-
-```dql
-fetch logs
-| makeTimeseries count = count(), by: {loglevel}, interval: 5m
-```
-
-**Key parameters:**
-
-| Parameter        | Required | Description                                                          |
-| ---------------- | -------- | -------------------------------------------------------------------- |
-| `<agg> = <expr>` | Yes      | Aggregation to compute per bucket (e.g. `count()`, `avg(duration)`) |
-| `interval:`      | No       | Bucket size — e.g. `1m`, `5m`, `1h`                                 |
-| `by:`            | No       | Optional grouping dimensions (same `{}` syntax as `summarize`)       |
-| `from:` / `to:`  | No       | Explicit time range; defaults to the query timeframe                 |
-| `bins:`          | No       | Number of time buckets (alternative to `interval:`)                  |
-| `time:`          | No       | Field to use as the timestamp; defaults to `timestamp`               |
-| `spread:`        | No       | Timeframe expression for bucket calculation; alternative to `time:`, only works with `count` or `countIf` |
-| `nonempty:`      | No       | Boolean; when `true`, fills missing time buckets with null instead of omitting them |
-
-→ Full formal parameter specification: [references/dql/dql-commands.md](references/dql/dql-commands.md)
-
-**Example — error rate timeseries from logs:**
+**Do not pipe `timeseries` directly into `makeTimeseries`** — it fails with `INVALID_IMPLICIT_TIME_DEFAULT`. To re-aggregate metric data, use `start()` + expand (see [references/summarization.md](references/summarization.md)).
 
 ```dql
 fetch logs
 | makeTimeseries
-    total = count(),
-    errors = countIf(loglevel == "ERROR"),
+    {total = count(),
+    errors = countIf(loglevel == "ERROR")},
     interval: 5m,
     by: {k8s.cluster.name}
-| fieldsAdd error_rate = errors / total * 100
+| fieldsAdd error_rate = errors[] * 100.0 / total[]
 ```
 
-**Example — entity existence timeline using `spread:`:**
+Key parameters: `interval:`, `by:{}`, `from:`/`to:`, `bins:`, `time:` (timestamp field), `spread:` (for `count`/`countIf` only), `nonempty:`. → [references/dql/dql-commands.md](references/dql/dql-commands.md) for full spec.
+
+Entity existence timeline using `spread:`:
 
 ```dql
 smartscapeNodes "HOST"
 | makeTimeseries concurrently_existing_hosts = count(), spread: lifetime
 ```
-
-`spread: lifetime` distributes each host's count across the timeframe it existed, producing a series that shows how many hosts were alive at any point in time.
 
 → [references/iterative-expressions.md](references/iterative-expressions.md) for timeseries array manipulation
 
@@ -292,6 +414,8 @@ from:now()@M                    // this month so far, till now
 ```dql-snippet
 from:now()-2h@h                 // go back 2 hours, then align to hour boundary
 ```
+
+See [references/operators.md](references/operators.md) for the full `@` alignment-unit table (including `m` vs. `M`, week-day variants `w1`–`w7`, and factor rules like `@3h`).
 
 ### Absolute timestamps
 
@@ -322,15 +446,12 @@ ______________________________________________________________________
     - ❌ Avoid using `formatTimestamp` for extracting time components.
     - ❌ Avoid converting timestamps and durations to double/long and using division, modulo, and constants expressing time units as nanoseconds.
 
-______________________________________________________________________
-
 ## References
 
 - **[references/useful-expressions.md](references/useful-expressions.md)** — Useful expressions in DQL
 - **[references/semantic-dictionary.md](references/semantic-dictionary.md)** — Dynatrace Semantic Dictionary: field namespaces, data models, stability levels, query patterns, and best practices
 - **[references/summarization.md](references/summarization.md)** — Various applications of summarize and makeTimeseries commands
-- **[references/operators.md](references/operators.md)** — Operators: `in` comparison and `@` time alignment
 - **[references/iterative-expressions.md](references/iterative-expressions.md)** — Array and timeseries manipulation (creation, modifications, use in filters) using DQL
 - **[references/smartscape-topology-navigation.md](references/smartscape-topology-navigation.md)** — Smartscape topology navigation syntax and patterns
 - **[references/optimization.md](references/optimization.md)** — DQL query optimization: filter placement, time ranges, field selection, and performance best practices
-- **[references/dql/](references/dql/)** — Formal DQL 1.0 specification: commands, functions, data types, and parameter types
+- **[references/operators.md](references/operators.md)** — `in` operator (subquery syntax) and full `@` time alignment unit reference

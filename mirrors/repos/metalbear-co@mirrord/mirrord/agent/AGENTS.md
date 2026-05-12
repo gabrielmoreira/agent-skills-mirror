@@ -1,0 +1,1 @@
+cache/repos/github.com/metalbear-co@mirrord/mirrord/agent/CLAUDE.md

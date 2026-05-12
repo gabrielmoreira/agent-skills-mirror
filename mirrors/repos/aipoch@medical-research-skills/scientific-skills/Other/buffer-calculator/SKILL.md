@@ -2,7 +2,7 @@
 name: buffer-calculator
 description: Calculate precise buffer recipes with accurate mass and volume measurements for molecular biology and biochemistry. Supports PBS, RIPA, and TAE with concentration scaling, stock solution preparation, pH adjustment guidance, and step-by-step protocols.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

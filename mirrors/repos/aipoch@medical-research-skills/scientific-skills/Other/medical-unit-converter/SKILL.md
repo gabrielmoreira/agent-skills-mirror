@@ -2,9 +2,10 @@
 name: medical-unit-converter
 description: Convert medical laboratory values between units (mg/dL to mmol/L, etc.) with formula transparency and clinical reference ranges. Supports glucose, cholesterol, creatinine, and hemoglobin conversions.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Medical Unit Converter
 
 Convert laboratory values between clinical units with formula transparency and reference range context. Supports glucose, cholesterol, creatinine, and hemoglobin.

@@ -2,9 +2,10 @@
 name: adverse-event-narrative
 description: 1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work. 2. Validate that the request matches the documented scope and stop early if the task would require unsupported as.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Adverse Event Narrative Generator
 
 ## When to Use

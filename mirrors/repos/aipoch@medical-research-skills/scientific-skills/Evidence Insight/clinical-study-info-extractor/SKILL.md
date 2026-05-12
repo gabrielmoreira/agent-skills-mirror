@@ -2,9 +2,10 @@
 name: clinical-study-info-extractor
 description: Batch extracts and verifies structured information (PMID, title, abstract, methodology, results, etc.) from clinical research literature using PMIDs. Use when the user wants to extract details from specific PMIDs.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Clinical Study Info Extractor
 
 This skill extracts structured information from clinical study literature based on provided PMIDs. It performs a search, parses the results, and uses LLM extraction with strict quality rules to produce a consolidated Markdown table.

@@ -4,14 +4,18 @@ Use these references with `SKILL.md`.
 
 ## Read This First
 
-1. Start with [`../SKILL.md`](../SKILL.md) for scope, use cases, and the compact mapping table.
-2. Load [`migration-workflow.md`](migration-workflow.md) for the step-by-step migration process.
-3. Then choose the most relevant deep reference for the task at hand.
+1. Start with [`../SKILL.md`](../SKILL.md) for scope, use cases, and the Query Purpose Classification — this determines which path to take.
+2. For mass data queries filtered by entity conditions (Situations 1 and 2), load [`mass-data-filtering-strategy.md`](mass-data-filtering-strategy.md) before anything else.
+3. For pure entity list queries (Situation 3), load [`migration-workflow.md`](migration-workflow.md) for the step-by-step migration process.
+4. Then choose the most relevant deep reference for the task at hand.
 
 ## Reference Map
 
 | File | When to use |
 | --- | --- |
+| [`mass-data-filtering-strategy.md`](mass-data-filtering-strategy.md) | The query filters mass data (timeseries/logs/metrics) by entity conditions — primary strategy guide for Situations 1 and 2 |
+| [`auto-tagging-field-mapping.md`](auto-tagging-field-mapping.md) | Resolving a `tag(X)` filter from an auto-tagging rule — maps rule condition keys to semantic dictionary fields |
+| [`entity-selector-predicates.md`](entity-selector-predicates.md) | Looking up an unfamiliar predicate inside a `classicEntitySelector(...)` string |
 | [`migration-workflow.md`](migration-workflow.md) | You need the end-to-end migration process, validation checklist, and output structure |
 | [`type-mappings.md`](type-mappings.md) | You need the full classic-to-Smartscape entity and field mapping tables |
 | [`dql-function-migration.md`](dql-function-migration.md) | You need to migrate `entityName()`, `entityAttr()`, selectors, relationship fields, signal dimensions, or ID filters |

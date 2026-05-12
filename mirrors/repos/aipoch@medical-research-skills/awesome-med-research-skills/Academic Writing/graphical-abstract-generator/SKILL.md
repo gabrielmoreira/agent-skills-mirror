@@ -4,6 +4,7 @@ description: Converts a biomedical study storyline into a graphical abstract and
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Graphical Abstract Generator
 

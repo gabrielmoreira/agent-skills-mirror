@@ -2,7 +2,7 @@
 name: network-tox-docking-research-planner
 description: Generates complete network toxicology + molecular docking research designs from a user-provided toxicant and disease/phenotype. Always use this skill when users want to investigate how an environmental toxicant, endocrine disruptor, heavy metal, food contaminant, pharmaceutical residue, or consumer product chemical may contribute to a disease through shared molecular targets, hub genes, pathways, and docking evidence. Trigger for:"network toxicology study", "toxicology mechanism paper", "target prediction + PPI + docking", "environmental pollutant and disease mechanism", "hub genes and docking for toxicant", "Lite/Standard/Advanced toxicology plan", "CTD + SwissTargetPrediction + GeneCards + STRING", "CB-Dock2 docking study", "triclosan/BPA/cadmium/PFAS + disease". Also triggers for Chinese phrasings:"网络毒理学研究设计"、"毒物机制论文"、"靶点预测+PPI+对接"、"环境污染物与疾病机制". Trigger even for casual phrasings like "I want to study how chemical X affects disease Y" or "help me design a toxicology paper". Always output four workload configurations (Lite / Standard / Advanced / Publication+) with a recommended primary plan, step-by-step workflow, figure plan, validation strategy, minimal executable version, and publication upgrade path.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

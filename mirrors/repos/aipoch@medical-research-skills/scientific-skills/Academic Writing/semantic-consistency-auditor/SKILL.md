@@ -2,9 +2,10 @@
 name: semantic-consistency-auditor
 description: Use semantic consistency auditor for academic writing workflows that need structured execution, explicit assumptions, and clear output boundaries.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Skill: Semantic Consistency Auditor
 
 **ID:** 212  

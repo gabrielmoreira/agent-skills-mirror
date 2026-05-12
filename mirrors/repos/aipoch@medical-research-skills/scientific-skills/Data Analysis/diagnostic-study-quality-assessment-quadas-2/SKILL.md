@@ -2,9 +2,10 @@
 name: diagnostic-study-quality-assessment-quadas-2
 description: Analyzes clinical diagnostic accuracy studies for bias using the QUADAS-2 tool. Use when Claude needs to assess the quality, risk of bias, or applicability of diagnostic accuracy studies (e.g., "Assess this paper using QUADAS-2").
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Clinical Study Bias Assessment (QUADAS-2)
 
 This skill evaluates clinical diagnostic accuracy studies for bias and applicability concerns using the Quality Assessment of Diagnostic Accuracy Studies-2 (QUADAS-2) tool.

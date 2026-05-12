@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,30 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`claude_skills/all-plan/SKILL.md`](claude_skills/all-plan/SKILL.md) |
-| 2 | ✓ | [`claude_skills/ask/SKILL.md`](claude_skills/ask/SKILL.md) |
-| 3 | ✓ | [`claude_skills/autonew/SKILL.md`](claude_skills/autonew/SKILL.md) |
-| 4 | ✓ | [`claude_skills/continue/SKILL.md`](claude_skills/continue/SKILL.md) |
-| 5 | ✓ | [`claude_skills/file-op/SKILL.md`](claude_skills/file-op/SKILL.md) |
-| 6 | ✓ | [`claude_skills/pend/SKILL.md`](claude_skills/pend/SKILL.md) |
-| 7 | ✓ | [`claude_skills/ping/SKILL.md`](claude_skills/ping/SKILL.md) |
-| 8 | ✓ | [`claude_skills/review/SKILL.md`](claude_skills/review/SKILL.md) |
-| 9 | ✓ | [`claude_skills/tp/SKILL.md`](claude_skills/tp/SKILL.md) |
-| 10 | ✓ | [`claude_skills/tr/SKILL.md`](claude_skills/tr/SKILL.md) |
-| 11 | ✓ | [`codex_skills/all-plan/SKILL.md`](codex_skills/all-plan/SKILL.md) |
-| 12 | ✓ | [`codex_skills/ask/SKILL.md`](codex_skills/ask/SKILL.md) |
-| 13 | ✓ | [`codex_skills/file-op/SKILL.md`](codex_skills/file-op/SKILL.md) |
-| 14 | ✓ | [`codex_skills/pend/SKILL.md`](codex_skills/pend/SKILL.md) |
-| 15 | ✓ | [`codex_skills/ping/SKILL.md`](codex_skills/ping/SKILL.md) |
-| 16 | ✓ | [`droid_skills/all-plan/SKILL.md`](droid_skills/all-plan/SKILL.md) |
-| 17 | ✓ | [`droid_skills/ask/SKILL.md`](droid_skills/ask/SKILL.md) |
-| 18 | ✓ | [`droid_skills/pend/SKILL.md`](droid_skills/pend/SKILL.md) |
-| 19 | ✓ | [`droid_skills/ping/SKILL.md`](droid_skills/ping/SKILL.md) |
-| 20 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
-| 21 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
-| 22 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
-| 23 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
-| 24 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
+| 1 | ✓ | [`claude_skills/ask/SKILL.md`](claude_skills/ask/SKILL.md) |
+| 2 | ✓ | [`codex_skills/ask/SKILL.md`](codex_skills/ask/SKILL.md) |
+| 3 | ✓ | [`dev_tools/skills/ccb-github/SKILL.md`](dev_tools/skills/ccb-github/SKILL.md) |
+| 4 | ✓ | [`droid_skills/ask/SKILL.md`](droid_skills/ask/SKILL.md) |
+| 5 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
+| 6 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
+| 7 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
+| 8 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
+| 9 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
 
 ---
 

@@ -4,6 +4,7 @@ description: Identifies the real underlying study design used in a medical or bi
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Study Design Identifier
 

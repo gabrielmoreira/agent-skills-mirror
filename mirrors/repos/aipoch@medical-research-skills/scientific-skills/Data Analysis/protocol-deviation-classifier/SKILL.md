@@ -2,9 +2,10 @@
 name: protocol-deviation-classifier
 description: Determine whether an incident in a clinical trial is a "major deviation.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Protocol Deviation Classifier
 
 Clinical trial protocol deviation classification tool, based on GCP and ICH E6 guidelines, automatically determines whether deviations belong to "major deviations" or "minor deviations".

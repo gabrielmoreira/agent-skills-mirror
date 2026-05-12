@@ -2,9 +2,10 @@
 name: rct-bias-assessment-rob2
 description: Automates Risk of Bias 2 (ROB2) assessment for RCT papers by analyzing text against specific domains and synthesizing a report. Use when you need to assess the quality of a clinical trial paper or evaluate risk of bias.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # RCT Bias Assessment (ROB2)
 
 This skill assesses the risk of bias in Randomized Controlled Trials (RCTs) using the ROB2 tool. It analyzes the text for specific domains (Randomization, Deviations, Missing Data, Measurement, Reported Result) and synthesizes an overall judgement.

@@ -7,15 +7,15 @@
 #   bash scripts/scaffold.sh --list-themes
 #
 # 例子：
-#   bash .cursor/skills/web-video-presentation/scripts/scaffold.sh ./presentation
-#   bash .cursor/skills/web-video-presentation/scripts/scaffold.sh ./talk --theme=paper-press
-#   bash .cursor/skills/web-video-presentation/scripts/scaffold.sh --list-themes
+#   bash <path-to-web-video-presentation>/scripts/scaffold.sh ./presentation
+#   bash <path-to-web-video-presentation>/scripts/scaffold.sh ./talk --theme=paper-press
+#   bash <path-to-web-video-presentation>/scripts/scaffold.sh --list-themes
 #
 # 跑完后，看 SKILL.md "Phase 2.4 实现单章" + references/CHAPTER-CRAFT.md
 # 了解每章怎么写。卡壳时翻 references/EXAMPLES/ 找完整章节 anchor。
 #
 # 之后切换主题，覆盖一个文件即可：
-#   cp .cursor/skills/web-video-presentation/themes/<id>/tokens.css \
+#   cp <path-to-web-video-presentation>/themes/<id>/tokens.css \
 #      <project>/src/styles/tokens.css
 # ─────────────────────────────────────────────────────────────
 set -euo pipefail
@@ -26,7 +26,7 @@ THEMES_DIR="$SKILL_DIR/themes"
 DEFAULT_THEME="midnight-press"
 
 list_themes() {
-  echo "可用主题（来自 $THEMES_DIR）:"
+  echo "可用主题（来自 ${THEMES_DIR}）:"
   echo
   for dir in "$THEMES_DIR"/*/; do
     [[ -d "$dir" ]] || continue
@@ -39,7 +39,7 @@ list_themes() {
     desc=$(grep -E '"descriptionZh"' "$meta" | head -n1 | sed -E 's/.*"descriptionZh":[[:space:]]*"([^"]+)".*/\1/')
     printf "  • %-18s %s\n      %s\n\n" "$id" "$name" "$desc"
   done
-  echo "用 --theme=<id> 选定一个。默认：$DEFAULT_THEME。"
+  echo "用 --theme=<id> 选定一个。默认：${DEFAULT_THEME}。"
 }
 
 # ── 解析参数 ──
@@ -69,7 +69,7 @@ THEME_DIR="$THEMES_DIR/$THEME"
 THEME_TOKENS="$THEME_DIR/tokens.css"
 
 if [[ ! -d "$THEME_DIR" || ! -f "$THEME_TOKENS" ]]; then
-  echo "✗ 找不到主题 '$THEME'。可用主题：" >&2
+  echo "✗ 找不到主题 '${THEME}'。可用主题：" >&2
   echo >&2
   for dir in "$THEMES_DIR"/*/; do
     [[ -d "$dir" ]] || continue
@@ -79,7 +79,7 @@ if [[ ! -d "$THEME_DIR" || ! -f "$THEME_TOKENS" ]]; then
 fi
 
 if [[ -d "$TARGET" && -n "$(ls -A "$TARGET" 2>/dev/null || true)" ]]; then
-  echo "✗ 目标目录 '$TARGET' 已存在且非空，已中止。" >&2
+  echo "✗ 目标目录 '${TARGET}' 已存在且非空，已中止。" >&2
   exit 1
 fi
 
@@ -187,7 +187,7 @@ cat <<EOF
   1. cd $TARGET
   2. npm run dev      # 默认 http://localhost:5174（被占会自动换端口）
 
-当前主题：$THEME（见 .theme）
+当前主题：${THEME}（见 .theme）
 
 然后：
 

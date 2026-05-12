@@ -4,6 +4,7 @@ description: Designs retrospective or prospective clinical cohort study protocol
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Clinical Cohort Protocol Designer
 

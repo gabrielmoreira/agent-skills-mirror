@@ -4,6 +4,7 @@ description: Composes a Discussion around key findings, mechanisms, clinical rel
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Discussion Section Architect
 

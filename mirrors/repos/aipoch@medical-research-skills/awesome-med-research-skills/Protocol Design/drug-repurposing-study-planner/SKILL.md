@@ -4,6 +4,7 @@ description: Design evidence-discovery and validation workflows for drug repurpo
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Drug Repurposing Study Planner
 

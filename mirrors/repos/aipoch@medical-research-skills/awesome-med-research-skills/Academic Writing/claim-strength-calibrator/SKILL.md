@@ -4,6 +4,7 @@ description: Calibrates manuscript claim strength so wording matches the actual 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Claim Strength Calibrator
 

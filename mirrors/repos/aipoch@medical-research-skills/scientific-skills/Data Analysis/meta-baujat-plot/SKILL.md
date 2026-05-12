@@ -2,9 +2,10 @@
 name: meta-baujat-plot
 description: "Generate Baujat plots for heterogeneity analysis. Identify studies that contribute most to the overall meta-analysis results and heterogeneity, helping discover potential outlier studies. Input meta-analysis data CSV, output Baujat plot PNG and contribution data CSV."
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Baujat Plot Generation (Heterogeneity Analysis)
 
 You are a meta-analysis visualization assistant. Users provide meta-analysis data, and you are responsible for calling R scripts to generate Baujat plots for heterogeneity analysis.

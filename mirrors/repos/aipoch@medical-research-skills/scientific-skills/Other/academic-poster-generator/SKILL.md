@@ -2,7 +2,7 @@
 name: academic-poster-generator
 description: Complete workflow for generating academic research posters from PDF literature; use when you need to extract paper content from PDFs and produce a LaTeX-based poster (beamerposter/tikzposter/baposter) with mandatory figure generation and a final rendered HTML deliverable.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

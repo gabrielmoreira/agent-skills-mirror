@@ -2,7 +2,7 @@
 name: ena-database
 description: Access the European Nucleotide Archive (ENA) via REST APIs and FTP/Aspera to search and retrieve sequences, raw reads (FASTQ), assemblies, and metadata when you have accession IDs or need metadata-driven discovery for genomics pipelines.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

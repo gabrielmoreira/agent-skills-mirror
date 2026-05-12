@@ -4,6 +4,7 @@ description:  Converts an audited medical research gap into a complete, structur
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Medical Research Gap-to-Study Planner
 

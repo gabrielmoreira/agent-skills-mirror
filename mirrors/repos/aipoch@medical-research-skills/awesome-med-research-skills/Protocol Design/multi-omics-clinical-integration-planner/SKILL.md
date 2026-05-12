@@ -4,6 +4,7 @@ description: Designs complete research plans that integrate clinical variables w
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Multi-Omics Clinical Integration Planner
 

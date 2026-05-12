@@ -2,9 +2,10 @@
 name: research-article-weekly
 description: Generates a weekly academic literature report based on keywords using PubMed. Use when the user wants to track recent research progress on a specific topic, automatically retrieving, classifying, and summarizing relevant papers from the last 7 days.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Research Article Weekly
 
 This skill generates a weekly report of academic literature for a given keyword. It searches PubMed for articles published in the last 7 days, classifies them into generic research categories (Fundamental, Applied, Methodology, Review, Other), and produces a summarized report. This tool is domain-agnostic and adapts to any research field indexed in PubMed.

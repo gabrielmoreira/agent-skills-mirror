@@ -4,6 +4,7 @@ description: Writes complete, publication-grade figure legends that can stand on
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Figure Legend Generator
 

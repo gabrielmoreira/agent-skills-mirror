@@ -1,0 +1,23 @@
+{
+  "id": "social_media_marketing",
+  "name": "Social Media Marketing",
+  "category": "creative",
+  "persuasion_risk": "high",
+  "manipulation_related": true,
+  "recommended_guardrails": [
+    "ethical_ai_review",
+    "ad_transparency",
+    "no_microtargeting_without_consent"
+  ],
+  "description": "Expert-level capability in turning social platforms into revenue engines via Social SEO, Algorithm Engineering, and the Paid/Organic Flywheel.",
+  "knowledge": "Based on the search results and current best practices, here's a comprehensive skill description for social media marketing expertise:\n\n# Ultimate Social Media Marketing Expert Skill Definition 2026\n\n## Core Foundations\n- **The Shift to Entertainment:** Social Graphs (who you follow) are dead. Interest Graphs (what you watch) are king. Brands must compete with Netflix, not just other brands.\n- **7-11-4 Rule:** Buyers need ~7 hours of interaction across 11 touchpoints in 4 different places before making decisions. Social Media is the \"glue\" that holds these touchpoints together.\n\n## Social Commerce & Algorithm Engineering (The Viral Engine)\n- **Social SEO (Search Optimization):** Optimizing captions, on-screen text, and spoken audio because Gen Z uses TikTok/Instagram as their primary search engine instead of Google. \n- **The Hook-Retain-Reward Loop:** Engineering short-form video retention. The \"Hook\" (0-3s) stops the scroll, \"Retain\" (3-15s) delivers value/story, \"Reward\" (15s+) gives the payoff/CTA. Average View Duration (AVD) is the only metric that matters for virality.\n- **Paid/Organic Flywheel:** The strategy of using organic posts as a \"testing ground\" for creatives. If a post goes viral organically, *then* you put ad spend behind it (Spark Ads). Never boost a post that failed organically.\n- **Renting Trust (Creator Economy):** Understanding that people trust people, not logos. Whitelisting Creator accounts (running ads from *their* handle, not the brand's) to bypass \"Banner Blindness\" and lower CPA.\n- **Dark Social Attribution:** Acknowledging that 80% of sharing happens in DMs (Slack, WhatsApp, Discord) where tracking pixels can't see. Measuring lift through \"Self-Reported Attribution\" (\"How did you hear about us?\").\n\n## Strategic Framework\n- **Goal Setting & Measurement**\n  - Focus on meaningful metrics (Shares, Saves, Click-Throughs) over vanity metrics (Likes, Views).\n  - ROI tracking and business outcome alignment.\n\n## Content Architecture\n- **Content Calendar Management**\n  - **The Pillar Strategy:** repurposing one \"Hero Asset\" (e.g., Podcast) into 20 micro-assets (Clips, Quotes, Threads).\n  - Cross-platform content distribution (Contextual adaptation, not just copy-paste).\n\n## Platform Mastery\n- **Platform-Specific Optimization**\n  - **LinkedIn:** B2B Authority & Personal Branding (Founder-led sales).\n  - **TikTok/Reels:** Interest-based discovery & raw authenticity.\n  - **YouTube:** Long-form education & search intent capture.\n\n## Technical Optimization\n- **Content Performance**\n  - **Safe Zones:** Ensuring UI elements (buttons, captions) don't cover critical visual info.\n  - **Native Features:** Using trending audio and in-app editing to signal \"nativeness\" to the algorithm.\n\n## Analytics & Measurement\n- **Performance Tracking**\n  - Multi-channel attribution\n  - Engagement metrics analysis (Watch time vs. drop-off rate)\n\n## Automation & Scaling\n- **Process Optimization**\n  - Workflow automation (Zapier/Make integrations for lead capture from social forms).\n\nThis skill definition reflects the 2026 landscape where AI-native strategies and video content dominate, while maintaining focus on authentic engagement and measurable business outcomes.",
+  "capabilities": [
+    "Social SEO & Search Optimization",
+    "Short-form video retention engineering",
+    "Paid/Organic Flywheel strategy",
+    "Creator economy & UGC management",
+    "Dark social attribution logic"
+  ],
+  "created": "2026-01-29T22:57:36.087105",
+  "version": "1.1"
+}

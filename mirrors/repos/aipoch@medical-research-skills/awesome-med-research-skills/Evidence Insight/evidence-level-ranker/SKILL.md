@@ -4,6 +4,7 @@ description: Ranks papers by evidence family, methodological quality tier, valid
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Evidence Level Ranker | 证据等级排序器
 

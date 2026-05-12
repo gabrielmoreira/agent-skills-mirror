@@ -2,7 +2,7 @@
 name: diffdock-molecular-docking
 description: Diffusion-based molecular docking to predict 3D ligand–protein binding poses (blind docking) with confidence scoring; use when you need pose prediction for drug discovery or virtual screening.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

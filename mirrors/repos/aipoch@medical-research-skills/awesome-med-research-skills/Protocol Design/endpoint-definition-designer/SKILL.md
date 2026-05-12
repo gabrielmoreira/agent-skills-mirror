@@ -4,6 +4,7 @@ description: Designs primary, secondary, and exploratory endpoints for biomedica
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Endpoint Definition Designer
 

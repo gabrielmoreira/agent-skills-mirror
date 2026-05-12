@@ -2,9 +2,10 @@
 name: western-blot-quantifier
 description: Automatically identify Western Blot gel bands, perform densitometric analysis, and calculate normalized values relative to loading controls.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Western Blot Quantifier
 
 Automatically identify Western Blot gel bands, perform densitometric analysis, and calculate normalized values relative to loading controls.

@@ -4,6 +4,7 @@ description: Identifies translationally meaningful paths for bioinformatics find
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Bioinformatics Translational Opportunity Finder
 

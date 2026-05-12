@@ -2,9 +2,10 @@
 name: medical-research-literature-reader-pro
 description: A medical-research-native literature reading skill for users with clinical, bioinformatics, translational, and basic experimental backgrounds. Use this skill whenever a user wants to read, analyze, critique, or interpret a medical or scientific paper — whether they provide a PDF, abstract, DOI, PMID, or just a title. Triggers include requests like "analyze this paper", "critique this study", "is this a strong paper?", "give me similar studies", "prepare me for journal club", "help me understand this bioinformatics paper", "what are the weaknesses here?", or "turn this into a mind map". Also activate for any downstream deliverables such as journal club kits, comparison tables, PI decision briefs, replication starters, or follow-up experiment designs. Do NOT treat as a generic summarizer — this skill performs structured evidence-type classification, track-specific critical appraisal, interpretation-boundary judgment, and research-grade follow-up generation.
 version: 1.0.0 
-author: AIPOCH 
+author: AIPOCH
 license: MIT
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Medical Research Literature Reader Pro
 

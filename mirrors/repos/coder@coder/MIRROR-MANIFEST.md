@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 12 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `coder/coder` — 26 default patterns, 0 followed patterns, 29 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 29 |
+| Followed pats | 12 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,18 @@ Mirror of `coder/coder` — 26 default patterns, 0 followed patterns, 29 file(s)
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.claude/docs/WORKFLOWS.md`
+- `.claude/docs/OBSERVABILITY.md`
+- `.claude/docs/DEV_ISOLATION.md`
+- `.claude/docs/AGENT_FAILURES.md`
+- `.claude/docs/GO.md`
+- `.claude/docs/TESTING.md`
+- `.claude/docs/DATABASE.md`
+- `.claude/docs/OAUTH2.md`
+- `.claude/docs/ARCHITECTURE.md`
+- `.claude/docs/TROUBLESHOOTING.md`
+- `.claude/docs/DOCS_STYLE_GUIDE.md`
+- `.claude/docs/PR_STYLE_GUIDE.md`
 
 ## File Index
 
@@ -59,35 +70,49 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/deep-review/nit-reviewer-prompt.md`](.agents/skills/deep-review/nit-reviewer-prompt.md) |
-| 2 | ✓ | [`.agents/skills/deep-review/references/react.md`](.agents/skills/deep-review/references/react.md) |
-| 3 | ✓ | [`.agents/skills/deep-review/references/typescript.md`](.agents/skills/deep-review/references/typescript.md) |
-| 4 | ✓ | [`.agents/skills/deep-review/roles/concurrency-reviewer.md`](.agents/skills/deep-review/roles/concurrency-reviewer.md) |
-| 5 | ✓ | [`.agents/skills/deep-review/roles/contract-auditor.md`](.agents/skills/deep-review/roles/contract-auditor.md) |
-| 6 | ✓ | [`.agents/skills/deep-review/roles/database-reviewer.md`](.agents/skills/deep-review/roles/database-reviewer.md) |
-| 7 | ✓ | [`.agents/skills/deep-review/roles/duplication-checker.md`](.agents/skills/deep-review/roles/duplication-checker.md) |
-| 8 | ✓ | [`.agents/skills/deep-review/roles/edge-case-analyst.md`](.agents/skills/deep-review/roles/edge-case-analyst.md) |
-| 9 | ✓ | [`.agents/skills/deep-review/roles/frontend-reviewer.md`](.agents/skills/deep-review/roles/frontend-reviewer.md) |
-| 10 | ✓ | [`.agents/skills/deep-review/roles/go-architect.md`](.agents/skills/deep-review/roles/go-architect.md) |
-| 11 | ✓ | [`.agents/skills/deep-review/roles/modernization-reviewer.md`](.agents/skills/deep-review/roles/modernization-reviewer.md) |
-| 12 | ✓ | [`.agents/skills/deep-review/roles/performance-analyst.md`](.agents/skills/deep-review/roles/performance-analyst.md) |
-| 13 | ✓ | [`.agents/skills/deep-review/roles/product-reviewer.md`](.agents/skills/deep-review/roles/product-reviewer.md) |
-| 14 | ✓ | [`.agents/skills/deep-review/roles/security-reviewer.md`](.agents/skills/deep-review/roles/security-reviewer.md) |
-| 15 | ✓ | [`.agents/skills/deep-review/roles/structural-analyst.md`](.agents/skills/deep-review/roles/structural-analyst.md) |
-| 16 | ✓ | [`.agents/skills/deep-review/roles/style-reviewer.md`](.agents/skills/deep-review/roles/style-reviewer.md) |
-| 17 | ✓ | [`.agents/skills/deep-review/roles/test-auditor.md`](.agents/skills/deep-review/roles/test-auditor.md) |
-| 18 | ✓ | [`.agents/skills/deep-review/SKILL.md`](.agents/skills/deep-review/SKILL.md) |
-| 19 | ✓ | [`.agents/skills/deep-review/structural-reviewer-prompt.md`](.agents/skills/deep-review/structural-reviewer-prompt.md) |
-| 20 | ✓ | [`.agents/skills/pull-requests/SKILL.md`](.agents/skills/pull-requests/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/refine-plan/SKILL.md`](.agents/skills/refine-plan/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
-| 24 | ✓ | [`.cursorrules`](.cursorrules) |
-| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`aibridge/AGENTS.md`](aibridge/AGENTS.md) |
-| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 29 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/coder-agents-review/SKILL.md`](.agents/skills/coder-agents-review/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/deep-review/nit-reviewer-prompt.md`](.agents/skills/deep-review/nit-reviewer-prompt.md) |
+| 3 | ✓ | [`.agents/skills/deep-review/references/react.md`](.agents/skills/deep-review/references/react.md) |
+| 4 | ✓ | [`.agents/skills/deep-review/references/typescript.md`](.agents/skills/deep-review/references/typescript.md) |
+| 5 | ✓ | [`.agents/skills/deep-review/roles/concurrency-reviewer.md`](.agents/skills/deep-review/roles/concurrency-reviewer.md) |
+| 6 | ✓ | [`.agents/skills/deep-review/roles/contract-auditor.md`](.agents/skills/deep-review/roles/contract-auditor.md) |
+| 7 | ✓ | [`.agents/skills/deep-review/roles/database-reviewer.md`](.agents/skills/deep-review/roles/database-reviewer.md) |
+| 8 | ✓ | [`.agents/skills/deep-review/roles/duplication-checker.md`](.agents/skills/deep-review/roles/duplication-checker.md) |
+| 9 | ✓ | [`.agents/skills/deep-review/roles/edge-case-analyst.md`](.agents/skills/deep-review/roles/edge-case-analyst.md) |
+| 10 | ✓ | [`.agents/skills/deep-review/roles/frontend-reviewer.md`](.agents/skills/deep-review/roles/frontend-reviewer.md) |
+| 11 | ✓ | [`.agents/skills/deep-review/roles/go-architect.md`](.agents/skills/deep-review/roles/go-architect.md) |
+| 12 | ✓ | [`.agents/skills/deep-review/roles/modernization-reviewer.md`](.agents/skills/deep-review/roles/modernization-reviewer.md) |
+| 13 | ✓ | [`.agents/skills/deep-review/roles/performance-analyst.md`](.agents/skills/deep-review/roles/performance-analyst.md) |
+| 14 | ✓ | [`.agents/skills/deep-review/roles/product-reviewer.md`](.agents/skills/deep-review/roles/product-reviewer.md) |
+| 15 | ✓ | [`.agents/skills/deep-review/roles/security-reviewer.md`](.agents/skills/deep-review/roles/security-reviewer.md) |
+| 16 | ✓ | [`.agents/skills/deep-review/roles/structural-analyst.md`](.agents/skills/deep-review/roles/structural-analyst.md) |
+| 17 | ✓ | [`.agents/skills/deep-review/roles/style-reviewer.md`](.agents/skills/deep-review/roles/style-reviewer.md) |
+| 18 | ✓ | [`.agents/skills/deep-review/roles/test-auditor.md`](.agents/skills/deep-review/roles/test-auditor.md) |
+| 19 | ✓ | [`.agents/skills/deep-review/SKILL.md`](.agents/skills/deep-review/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/deep-review/structural-reviewer-prompt.md`](.agents/skills/deep-review/structural-reviewer-prompt.md) |
+| 21 | ✓ | [`.agents/skills/pull-requests/SKILL.md`](.agents/skills/pull-requests/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/refine-plan/SKILL.md`](.agents/skills/refine-plan/SKILL.md) |
+| 23 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
+| 25 | ✓ | [`.cursorrules`](.cursorrules) |
+| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 27 | ✓ | [`aibridge/AGENTS.md`](aibridge/AGENTS.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | ✓ | [`docs/admin/templates/template-permissions.md`](docs/admin/templates/template-permissions.md) |
+| 30 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 31 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 32 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
+| 33 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
+| 34 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
+| 35 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
+| 36 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
+| 37 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
+| 38 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
+| 39 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
+| 40 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
+| 41 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
+| 42 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
+| 43 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
 
 ---
 

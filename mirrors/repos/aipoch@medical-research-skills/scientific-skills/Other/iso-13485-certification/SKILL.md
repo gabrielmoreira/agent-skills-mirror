@@ -2,7 +2,7 @@
 name: iso-13485-certification
 description: A toolkit for preparing ISO 13485:2016 certification documentation for medical device QMS. Use when you need to perform a documentation gap analysis, draft or update a Quality Manual, create required procedures/work instructions, build Medical Device Files (MDF), interpret ISO 13485 clauses, or identify missing documents for certification (often triggered by ISO 13485, QMS certification, FDA QMSR, EU MDR, or quality system documentation requests).
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

@@ -2,7 +2,7 @@
 name: brainstorming
 description: Creative exploration and brainstorming; use it when you need to clarify goals/constraints, explore multiple options, and converge on a direction before implementation.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

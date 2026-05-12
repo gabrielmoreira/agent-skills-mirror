@@ -1,0 +1,23 @@
+"id": "growth_hacking",
+  "name": "Growth Hacking",
+  "category": "business",
+  "persuasion_risk": "high",
+  "manipulation_related": true,
+  "recommended_guardrails": [
+    "ethical_ai_review",
+    "consent_for_experiments",
+    "avoid_dark_patterns"
+  ],
+  "description": "Expert-level growth hacking knowledge focused on rapid scaling, deep customer retention mechanics, and revenue maximization.",
+  "knowledge": "Based on the search results and best practices, I'll create a comprehensive skill description for growth hacking expertise:\n\n# Ultimate Growth Hacking Mastery\n\n## Core Foundations\n- As defined by [neilpatel.com](https://neilpatel.com/what-is-growth-hacking/), growth hacking emerged in 2010 when Sean Ellis coined the term while seeking specialists focused purely on driving growth\n- Core principle: A growth hacker's \"true north\" is growth - all other metrics are secondary\n- Focus on creating scalable, repeatable processes for systematic growth experimentation\n\n## Key Differentiators\nAccording to [amplitude.com](https://amplitude.com/explore/digital-marketing/growth-marketing-guide), growth hacking differs from traditional marketing through:\n- Hyper-focused metrics and data-driven decision making\n- Rapid experimentation and iteration\n- Direct customer acquisition focus vs broad awareness\n- Custom-built targeted approaches\n- Revenue and user growth as primary KPIs\n\n## Strategic Framework\nAs outlined by [kearai.com](https://kearai.com/guides/the-complete-ai-prompt-engineering-playbook-from-novice-to-master):\n1. Product-Market Fit Validation\n2. Target Audience Definition\n3. Acquisition Strategy\n4. Activation Optimization \n5. Retention Engineering\n6. Revenue Maximization\n7. Referral System Design\n8. Continuous Product Evolution\n\n## Retention & Revenue Engineering (Loyalty & Sales Focus)\n- **The Hook Model:** Implementing Nir Eyal's 'Trigger, Action, Variable Reward, Investment' loop to build habit-forming products.\n- **Psychological Pricing:** Utilizing anchoring, decoy effects, and scarcity to increase Average Order Value (AOV).\n- **Churn Prevention:** Predictive modeling to identify at-risk users and trigger automated re-engagement workflows.\n- **Community Moats:** Building defensive barriers through high user engagement and emotional investment (cult-like following).\n- **Upsell/Cross-sell Logic:** Designing friction-free pathways for upgrading user value (LTV expansion).\n\n## Advanced Techniques\n- Cross-channel growth experimentation\n- Behavioral psychology implementation\n- Network effect optimization\n- Viral coefficient engineering\n- North Star Metric identification\n- Cohort analysis mastery\n- A/B testing at scale\n- Funnel optimization\n\n## Modern Applications\nFrom [aniket.cc](https://aniket.cc/growth-hacking-techniques-for-web3-startups-accelerating-adoption-and-user-engagement/), emerging areas include:\n- Web3 growth strategies\n- Decentralized community building\n- Token economics design\n- Cross-chain user acquisition\n- Blockchain analytics integration\n\n## Core Competencies\n- Data-driven decision making\n- Rapid experimentation frameworks\n- Technical marketing automation\n- User psychology understanding\n- Analytics implementation\n- Conversion optimization\n- Customer journey mapping\n- Growth modeling\n\n## Risk Management\n- Attribution modeling accuracy\n- Channel saturation awareness\n- Compliance consideration\n- Sustainable growth patterns\n- Brand safety maintenance\n- Customer trust preservation\n\nThe ultimate growth hacker combines these elements into a systematic approach for driving explosive but sustainable growth through constant experimentation, measurement, and optimization.\n\nRemember: Growth hacking is not about individual \"hacks\" but building scalable systems for consistent growth acceleration.",
+  "capabilities": [
+    "Advanced growth hacking expertise",
+    "Customer loyalty & habit formation strategies",
+    "Revenue maximization & pricing psychology",
+    "Best practices implementation",
+    "Problem-solving and optimization",
+    "Strategic guidance and recommendations"
+  ],
+  "created": "2026-01-29T22:55:03.305586",
+  "version": "1.1"
+}

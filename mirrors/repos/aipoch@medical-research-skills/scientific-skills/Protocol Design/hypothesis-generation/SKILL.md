@@ -2,9 +2,10 @@
 name: hypothesis-generation
 description: Structured scientific hypothesis formulation from observations; use when you have experimental observations or preliminary data and need testable hypotheses with predictions, mechanisms, and validation experiments.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Hypothesis Generation (Scientific)
 
 ## When to Use

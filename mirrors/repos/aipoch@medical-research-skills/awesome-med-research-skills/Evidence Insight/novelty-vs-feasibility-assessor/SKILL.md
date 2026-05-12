@@ -4,6 +4,7 @@ description: Assesses whether a medical research topic is worth starting now by 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Novelty vs Feasibility Assessor
 

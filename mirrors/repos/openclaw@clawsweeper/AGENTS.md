@@ -37,6 +37,8 @@ not split reports into issue/PR subtrees.
   monitoring/debugging how ClawSweeper workflows operate on that PR. Do not fix
   foreign PR branches directly; ClawSweeper repair/automerge workflows own those
   branch edits.
+- OpenClaw changelog entries are maintainer/ClawSweeper-owned landing work. Do
+  not ask contributor PR authors to edit `CHANGELOG.md`.
 - When referencing GitHub issues or PRs in user-facing output, always include
   the full GitHub URL, not only `#12345`.
 

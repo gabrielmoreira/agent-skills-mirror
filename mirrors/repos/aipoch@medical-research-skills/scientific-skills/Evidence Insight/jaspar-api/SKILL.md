@@ -2,9 +2,10 @@
 name: jaspar-api
 description: Access JASPAR database for transcription factor binding profiles (matrices), collections, and species via REST API. Use when user wants to search for transcription factors, retrieve matrix details (PFM/PWM), infer profiles from protein sequences, or explore JASPAR collections.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # JASPAR API
 
 This skill provides access to the JASPAR database (https://jaspar.elixir.no/).

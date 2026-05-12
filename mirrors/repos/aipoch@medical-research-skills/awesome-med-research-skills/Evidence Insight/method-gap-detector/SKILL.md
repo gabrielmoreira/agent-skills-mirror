@@ -4,6 +4,7 @@ description: Detects methodological gaps across study design, analysis, validati
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Method Gap Detector
 

@@ -2,9 +2,10 @@
 name: gene-info
 description: "Retrieves comprehensive gene information including PubMed publication counts, NCBI summaries, and Ensembl transcript data. Supports batch processing and file input. Invoke when the user asks for gene details, publication statistics, or needs to analyze a list of genes."
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 ## When to Use
 
 - Use this skill when the request matches its documented task boundary.

@@ -4,6 +4,7 @@ description: Improves medical English precision without changing the underlying 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Medical English Precision Editor
 

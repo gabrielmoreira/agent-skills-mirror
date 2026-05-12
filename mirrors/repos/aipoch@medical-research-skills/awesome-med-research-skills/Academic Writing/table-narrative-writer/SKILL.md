@@ -4,6 +4,7 @@ description: Converts biomedical table content into clear manuscript or presenta
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Table Narrative Writer
 

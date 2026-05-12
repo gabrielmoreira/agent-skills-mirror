@@ -2,9 +2,10 @@
 name: graphical-abstract-wizard
 description: Generate graphical abstract layout recommendations based on paper abstracts.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Graphical Abstract Wizard
 
 This Skill analyzes academic paper abstracts and generates graphical abstract layout recommendations, including element suggestions, visual arrangements, and AI art prompts for Midjourney and DALL-E.

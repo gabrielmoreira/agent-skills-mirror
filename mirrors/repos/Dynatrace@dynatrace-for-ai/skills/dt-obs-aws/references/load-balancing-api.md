@@ -95,7 +95,7 @@ smartscapeNodes "AWS_ELASTICLOADBALANCINGV2_LOADBALANCER"
 
 Filter LBs by VPC:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_ELASTICLOADBALANCINGV2_LOADBALANCER"
 | filter aws.vpc.id == "<VPC_ID>"
 | fields name, aws.resource.id, aws.subnet.id

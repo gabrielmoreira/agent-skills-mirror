@@ -4,6 +4,7 @@ description: Designs QTL colocalization studies that connect eQTL, pQTL, sQTL, o
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # QTL Colocalization Study Planner
 

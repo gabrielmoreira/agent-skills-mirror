@@ -1,9 +1,10 @@
 # IDD — Claim Phase (A5)
 
-Read this file after picking an issue (A4), after verifying an explicit
-issue target (A0-T), or after a successful re-claim decision in the
-resume phase. It covers the four pre-checks, claim execution, and claim
-verification.
+Read this file after `idd-suitability.instructions.md` (A4.5) passes for
+the selected issue — whether selected via A4 or verified through an
+explicit issue target (A0-T) — or after a successful re-claim decision
+in the resume phase. It covers the four pre-checks, claim execution, and
+claim verification.
 
 ## Pre-checks (all four must pass)
 
@@ -71,10 +72,24 @@ comment. An inheritable claim comment is either:
 Check both linked issues and closing keywords in PR bodies.
 
 **(d) Branch collision** — Compute the branch name using the IDD naming
-convention: `issue/<number>-<slug>` where `<slug>` is 2–5 lowercase
-hyphenated words describing the issue (e.g. `issue/<number>-<slug>`). No
-remote branch with that name may exist, unless it matches the `branch`
-field in an inheritable claim comment as defined in (c) above.
+convention: `issue/<number>-<slug>`. Generate `<slug>` deterministically
+from the issue title so parallel sessions converge on the same branch
+name:
+
+1. Convert the issue title to lowercase.
+2. Replace every character outside ASCII `a-z` and `0-9` with `-`.
+3. Split on `-`, drop empty tokens, then remove only whole-token matches
+   from this fixed stop-word set: `a`, `an`, `the`, `and`, `or`, `in`,
+   `for`, `to`, `with`, `from`.
+4. Rejoin the remaining tokens with single `-`.
+5. If the slug is longer than 40 characters, cut it to the first
+   40 characters. If that cut ends mid-token and there is a `-` before
+   character 40, trim back to the last such `-`; if there is no `-`,
+   keep the hard 40-character cut. Then strip any trailing `-`.
+6. If the result is empty, use `task`.
+
+No remote branch with that name may exist, unless it matches the
+`branch` field in an inheritable claim comment as defined in (c) above.
 
 Before posting a claim, also perform a **scoped issue-wide branch pattern
 check** to detect concurrent sessions working on the same issue with
@@ -139,8 +154,8 @@ Determine `{branch-name}`:
   claim, the last-released trusted `claimed-by`, or the trusted legacy
   claim being migrated). Do not compute a new name.
 - **Fresh claim**: compute a new name using the IDD naming convention:
-  `issue/<number>-<slug>` where `<slug>` is 2–5 lowercase hyphenated
-  words describing the issue.
+  `issue/<number>-<slug>` where `<slug>` follows the deterministic title
+  normalization algorithm from pre-check (d).
 
 Generate a fresh `{claim-id}`. Determine `{prior-claim-id}`:
 
@@ -166,7 +181,7 @@ session and you are extending the active claim's stale clock), copy the
 recompute or derive a new branch name. The heartbeat's `{claim-id}` and
 `{agent-id}` must match the original claim exactly. The branch field must also
 match exactly to satisfy the heartbeat branch invariant (rule 3.5 in
-`idd-overview.instructions.md`).
+this file's Claim-state parsing section).
 
 ## Claim verification
 
@@ -207,3 +222,75 @@ worktree`. If multiple marked digests exist, report their URLs and
 continue from the verified claim without editing a digest.
 
 Then continue to `idd-work.instructions.md`.
+
+## Claim-state parsing
+
+To determine the current active claim, read issue comments
+chronologically and apply these rules:
+
+1. Start with **no active claim**.
+2. Ignore any `claimed-by` or `unclaimed-by` marker whose GitHub comment
+   author is not a trusted marker actor.
+3. A `claimed-by` whose `{agent-id}` AND `{claim-id}` both match the
+   current active claim is a candidate **heartbeat**. Before recognizing
+   it as a heartbeat, apply rule 3.5.
+   3.5. **Heartbeat branch invariant**: A heartbeat candidate is recognized
+   only when the `{branch}` field exactly matches the `{branch}` field of
+   the currently active claim. If `{branch}` differs, treat the comment as
+   **anomalous** — do not refresh the stale clock. The comment does not
+   update any claim state. When an anomalous heartbeat affects a routing
+   decision (e.g., in resume or worktree selection), surface it as a
+   warning. The **detecting session** continues with its own verified claim
+   unchanged; no corrective comment is required.
+4. A `claimed-by` with a **new** `{claim-id}` becomes the active claim
+   only if either:
+   - there is no active claim AND its `supersedes:` value is `none`, or
+   - its `supersedes:` value exactly matches the current active claim's
+     `{claim-id}`, and the current active claim is already **stale** at
+     the new comment's GitHub `created_at` timestamp.
+5. An `unclaimed-by` releases the claim only if its `{agent-id}` AND
+   `{claim-id}` both match the current active claim. Otherwise ignore it
+   as a stale release from a superseded session.
+6. Any `claimed-by` whose `{claim-id}` matches the active claim but
+   whose `{agent-id}` differs, or whose `{claim-id}` was already
+   superseded, or whose `supersedes:` value does not match the current
+   active claim when one exists, is ignored as a stale or invalid event.
+
+Same-agent restarts never silently inherit or supersede an active
+non-stale claim. If the current session already recorded and verified
+the active `{claim-id}` before this check, continue with that same token
+and use heartbeats; do not post a fresh takeover claim. If the session
+cannot prove ownership of the active `{claim-id}`, the active claim is
+treated as owned by another live session until it is released or stale,
+even when `{agent-id}` matches.
+
+## Legacy claim migration
+
+Older issues may still contain the legacy claim format:
+
+```html
+<!-- claimed-by: {agent-id} {ISO8601-timestamp} branch: {branch-name} -->
+```
+
+and the matching legacy release format:
+
+```html
+<!-- unclaimed-by: {agent-id} {ISO8601-timestamp} -->
+```
+
+Treat trusted legacy comments as **migration-only** inputs:
+
+- If an issue has no trusted new-format `claimed-by` comments yet, first
+  check whether the latest trusted legacy `claimed-by` comment is
+  followed by a later trusted legacy `unclaimed-by` comment from the
+  same agent. If so, treat the issue as **unclaimed**; skip directly to
+  posting a fresh new-format claim with `supersedes: none`.
+- Otherwise, use the latest trusted legacy claim to decide branch reuse
+  and staleness. A matching legacy agent ID is not enough to prove same
+  live-session ownership.
+- Then immediately post a new-format `claimed-by` comment with a fresh
+  `{claim-id}` and visible note before any further side effects.
+- Use `supersedes: none` for that one-time migration claim, because the
+  legacy format has no `{claim-id}` to reference.
+- After a new-format claim exists, ignore all legacy claim and unclaim
+  comments for active-claim parsing and revalidation.

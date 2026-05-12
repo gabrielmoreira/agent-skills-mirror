@@ -4,6 +4,7 @@ description: Plans confounder control, variable adjustment logic, and bias mitig
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Confounder and Bias Control Planner
 

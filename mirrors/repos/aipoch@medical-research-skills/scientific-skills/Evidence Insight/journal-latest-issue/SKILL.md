@@ -2,7 +2,7 @@
 name: journal-latest-issue
 description: Retrieve the latest journal issue's table of contents and abstracts from URL/DOI/PMID/RSS/TOC sources, then generate Chinese key points locally (no external translation APIs) when a new issue needs quick review and archiving.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

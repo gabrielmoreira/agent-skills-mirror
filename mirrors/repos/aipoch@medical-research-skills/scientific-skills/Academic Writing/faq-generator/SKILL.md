@@ -2,9 +2,10 @@
 name: faq-generator
 description: Generates FAQ lists from complex medical policies or protocols. Trigger when user provides medical documents, policies, or protocols and requests FAQ generation, patient education materials, or simplified explanations.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # FAQ Generator
 
 Creates FAQ lists from medical documents.

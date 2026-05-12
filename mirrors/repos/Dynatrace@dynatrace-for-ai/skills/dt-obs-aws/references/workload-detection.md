@@ -56,7 +56,7 @@ smartscapeNodes "AWS_EC2_INSTANCE"
 
 Determine if the instance is part of an Auto Scaling Group and check current capacity vs configured limits.
 
-```dql
+```dql-template
 smartscapeNodes "AWS_EC2_INSTANCE"
 | filter id == toSmartscapeId("<WORKLOAD_EC2_INSTANCE>")
 | traverse "*", "AWS_AUTOSCALING_AUTOSCALINGGROUP", direction:"backward"

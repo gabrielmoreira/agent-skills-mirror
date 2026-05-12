@@ -4,6 +4,7 @@ description:  Generates complete FAERS pharmacovigilance study designs for multi
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Active-Comparator Single-SOC FAERS Safety Comparison Research Planner
 

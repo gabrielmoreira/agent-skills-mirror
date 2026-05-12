@@ -82,7 +82,7 @@ smartscapeNodes "AWS_RDS_DBINSTANCE"
 
 Find what security groups a specific database uses:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_RDS_DBINSTANCE"
 | filter aws.resource.id == "<AWS_RDS_DBINSTANCE_ID>"
 | traverse "uses", "AWS_EC2_SECURITYGROUP"
@@ -93,7 +93,7 @@ smartscapeNodes "AWS_RDS_DBINSTANCE"
 
 Find all databases in a specific VPC:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_RDS_DBINSTANCE", "AWS_ELASTICACHE_CACHECLUSTER", "AWS_REDSHIFT_CLUSTER"
 | filter aws.vpc.id == "<VPC_ID>"
 | fields type, name, aws.resource.id, aws.subnet.id

@@ -6,6 +6,7 @@
 
 ## General rules
 * `makeTimeseries` accepts timeframe from `from:` and `to:` or from `timeframe:` parameters, but if they are not present timeframe is inherited from query providing data. In case time values from expression/field provided in `time:` parameter is outside from this inherited timeframe, data will be ignored. For such cases providing proper timeframe is necessary.      
+* `bin(timestamp, <interval>)` returns a `timestamp`, not a `timeframe` or `string`. If downstream processing requires a different type, apply an explicit conversion — e.g. `toString(bin(timestamp, 1h))` for a string representation.
 
 ## Examples
 

@@ -1,10 +1,11 @@
-# IDD — Discover Phase (A0-T–A4.5)
+# IDD — Discover Phase (A0-T–A4)
 
 Read this file when starting a new task. It covers finding and selecting
 the next issue to work on, including an operator-provided exact issue
-target, pre-claim suitability filtering, and claim handoff. After
-selecting a suitable candidate, read `idd-claim.instructions.md` to
-claim it.
+target, roadmap-audit handoff, candidate selection, and handoff to A4.5
+and claim. After selecting a viable candidate (A4), run suitability triage via
+`idd-suitability.instructions.md` (A4.5), then proceed to
+`idd-claim.instructions.md` to claim it.
 
 **Abort conditions**: A0-T, A1, A3 (default; see decision tree).
 **Early stop condition**: A0-T, A4, or A4.5 (no claim made — see below).
@@ -46,10 +47,11 @@ issue unless the operator explicitly asks for normal discovery in the
 same run.
 
 If all checks pass, the target is selected. Continue to
-`idd-discover.instructions.md` **A4.5** for suitability triage. A4.5
-follows the same standards as roadmap paths. If A4.5 passes, proceed to
-`idd-claim.instructions.md` A5. A5 claim-state, open-PR, takeover,
-branch-collision, and claim-verification rules remain unchanged.
+[`idd-suitability.instructions.md`](idd-suitability.instructions.md)
+for suitability triage. A4.5 follows the same standards as roadmap
+paths. If A4.5 passes, proceed to `idd-claim.instructions.md` A5.
+A5 claim-state, open-PR, takeover, branch-collision, and
+claim-verification rules remain unchanged.
 
 ## A0 — Check issue-scope setting
 
@@ -142,119 +144,11 @@ repo-wide and label-based queries are prohibited.
 
 ## A1.5 — Audit completed roadmaps
 
-After A1 selects an open roadmap, inspect whether the roadmap appears
-complete before enumerating more work. This step belongs in Discover
-because Discover owns roadmap selection and global readiness. F4 remains
-scoped to the just-merged PR and local cleanup while holding only the
-child issue claim; it must not close a parent roadmap as a side effect.
-F5 still loops back here, so the next Discover pass can evaluate parent
-roadmap state after child PRs merge.
-
-Run the completion audit only when the selected roadmap has explicit
-child work such as task-list issue references or GitHub sub-issue
-relationships. If the roadmap has no explicit child work, report that
-it is childless or malformed and continue to A2; do not close it based
-on absence of candidates.
-
-Fetch the selected roadmap, its explicit child references, transitive
-descendants, GitHub sub-issue children, and linked or closing PR evidence
-for those child issues. Use the same outbound traversal sources as A2,
-including closed umbrella children, so open descendants cannot be hidden
-behind a closed direct child. This step must not use repo-wide search to
-add unrelated work to the roadmap. The only repo-wide search allowed in
-A1.5 is a narrow duplicate/reuse check for a specific autonomous gap
-before creating a follow-up issue; use those results only to link
-existing gap work or avoid creating a duplicate, not to widen A2
-candidates.
-
-- If the roadmap itself has `status:blocked-by-human` or
-  `status:needs-decision`, report the blocker and stop before A2. Do not
-  continue selecting child issues under a blocked roadmap.
-- If any referenced child or descendant issue is open, inaccessible, or
-  unresolved, report the provenance path and reason, then continue to
-  A2.
-- If any referenced child or descendant has an open linked or closing PR
-  that is not merged or otherwise obsolete, treat that child work as
-  unresolved, report the PR, and continue to A2.
-- If any open or unresolved child or descendant has
-  `status:blocked-by-human` or `status:needs-decision`, report the
-  blocker and continue to A2 or stop according to the normal
-  ready-to-start rules. Do not treat stale blocker labels on closed
-  children as audit blockers when their referenced descendants are
-  resolved.
-- If all referenced child and descendant work is closed or otherwise
-  complete, compare the roadmap success criteria against the closed child
-  issues, linked merged PRs, task-list state, follow-up comments, and the
-  current repository state where feasible. Do not infer completion from
-  checkbox state alone.
-
-A1.5 can publish roadmap-level GitHub side effects before a child task
-issue is selected. Before any such side effect, coordinate on the
-roadmap issue itself:
-
-Treat `stale` and `non-stale` in this section using the
-`claim-stale-age` policy default from `docs/policy-constants.md`
-(distributed default: `24 h`).
-
-- Roadmap claim ownership gates roadmap-side mutations only. Do not
-  treat a non-stale roadmap claim as a global lock over A2/A3 child
-  discovery or child A5 checks.
-- Run the A5 claim-state, open-PR, and branch-collision checks against
-  the roadmap issue. Do not apply A5's assignee or project
-  `not started` readiness gate to roadmap-audit claims; roadmap
-  ownership and project status may represent parent coordination rather
-  than task readiness. If an active non-stale claim uses any
-  `{claim-id}` other than one already recorded by this current session
-  before this check and now verified, do not mutate the roadmap; report
-  the claim and continue to A2 or stop according to the normal
-  ready-to-start rules. A matching agent ID alone is not ownership
-  proof, and neither is a token first learned by parsing the current
-  roadmap comments.
-- If the roadmap is unclaimed or stale, post and verify a normal
-  `claimed-by` comment for the roadmap issue using a
-  `roadmap-audit/<number>-<slug>` branch field. This is a logical
-  coordination name, not a work branch, and it does not require creating
-  a branch or worktree unless the audit also needs git changes.
-- If the active roadmap claim already uses this current session's
-  previously recorded and verified `{claim-id}`, continue with that same
-  claim and do not post a new claim.
-- Re-validate that roadmap claim before every roadmap comment, follow-up
-  issue creation, body edit, label change, or close action.
-- If the roadmap remains open and no PR branch will continue from the
-  audit, release the roadmap-audit claim before returning to A2 or
-  stopping.
-- Example: when another agent holds a non-stale roadmap claim, do not
-  mutate that roadmap in A1.5, but continue to A2/A3 and allow child
-  issues that pass readiness and A5 to proceed.
-
-Immediately before posting any completion summary, creating follow-up
-issues, editing the roadmap body, changing labels, or closing the
-roadmap, re-fetch the roadmap and child state and confirm the audit
-input still matches the evidence.
-
-Apply one outcome:
-
-- **Audit passes**: post an `IDD roadmap completion audit` comment with
-  a concise evidence summary, then close the roadmap. No child task
-  issue is claimed. Return to A1 and select the next open roadmap, if
-  any.
-- **Autonomous gaps found**: create or link follow-up issues using the
-  repository's issue-authoring rules, update the roadmap task list with
-  those links, and continue to A2 so the new work can be discovered.
-  Before creating a new issue, run the narrow A1.5 duplicate/reuse check
-  for that gap and link a matching existing issue instead. New follow-up
-  issue bodies must reference the roadmap (for example `Refs #NNN`) so a
-  later audit can rediscover them. After creating a follow-up issue,
-  update the roadmap task list with that link before creating another.
-  If the roadmap update fails or the roadmap claim is lost after issue
-  creation, create no more issues; report the created issue link so the
-  next audit can link it before considering duplicates.
-- **Non-autonomous gaps found**: comment with the decision or human
-  blocker, apply `status:needs-decision` or `status:blocked-by-human`
-  when those labels exist, and do not close the roadmap. Stop before A2
-  after reporting a non-autonomous gap, even if the repository does not
-  have the blocker labels, so the same unattended run cannot select
-  child work under a roadmap that needs human input.
+After A1 selects an open roadmap, read
+`idd-roadmap-audit.instructions.md` before continuing to A2. That file
+owns the full A1.5 completion audit, roadmap-side claim rules, and the
+close/link/stop outcomes that can occur before child-issue enumeration
+resumes here.
 
 ## A2 — Enumerate sub-issues
 
@@ -473,215 +367,59 @@ scale-out efficiency when multiple sessions start simultaneously.
 Among the surviving viable and unclaimed issues (after Step 1.5), pick the
 one with the **lowest issue number**.
 
-After picking, proceed to **A4.5**.
+After picking, proceed to **A4.5** (`idd-suitability.instructions.md`).
 
 ## A4.5 — Pre-Claim Issue-Suitability Triage
 
-**Position**: After A4 (viability), before A5 (claim)\
-**Scope**: Applies to explicit-target, roadmap, and orphan-first candidates\
-**Purpose**: Filter incoherent, unsafe, duplicated, or out-of-scope issues
+Read [`idd-suitability.instructions.md`](idd-suitability.instructions.md)
+for the full suitability triage protocol: seven checks, failure outcomes,
+mutation policy, coordination rules, decision flow, and edge cases.
 
-This gate evaluates whether an issue is **suitable for autonomous
-execution** independent of the current run's context. Where A4 asks "can
-we do this NOW?", A4.5 asks "SHOULD we do this at all?"
+## Roadmap markers
 
-### Seven Suitability Checks
+Two hidden HTML comment markers are used in issue bodies to support the
+discover phase:
 
-For the candidate picked in A4 Step 2, evaluate the following checks in
-order. Stop and fail on the first check that is not satisfied.
+- **Roadmap identity** (`idd-skill-roadmap-id`): placed in the roadmap
+  issue body. A3 uses this marker to resolve `blocked-by` dependency
+  lookups. A1 identifies the roadmap by its `roadmap` label or umbrella
+  structure — not by this marker.
+- **Sequential dependency** (`idd-skill-blocked-by`): placed in an
+  issue body to express a hard dependency — this issue **cannot start
+  until** the roadmap with the matching `roadmap-id` is closed.
 
-#### Check 1: Repository Fit
+**Do not use `idd-skill-blocked-by` to group sub-tasks under an active
+roadmap.** Sub-tasks that should be worked on while the roadmap is open
+belong in the roadmap's task list as `- [ ] #NNN` entries. The
+`blocked-by` marker is reserved for issues that must wait for a
+separate, prior roadmap to close before they can start (cross-phase
+sequential dependency). Using it for grouping causes A3 to block every
+sub-task for the entire lifetime of the roadmap.
 
-Does the issue describe work scoped to this repository?
+## Scope invariant (detailed query allowlist)
 
-- **Pass**: Work is entirely within this repository's scope; no external
-  system coordination needed
-- **Fail**: Issue crosses repository boundaries, requires external system
-  access, or is out-of-scope for this repository
-- **Outcome on fail**: `out-of-scope`
+Agents must not widen issue-selection scope beyond what the roadmap
+explicitly references (directly or transitively) without explicit
+operator instruction. Specifically:
 
-#### Check 2: Issue Coherence
-
-Is the issue body coherent and well-structured?
-
-- **Pass**: Title and description are clear; body structure is
-  interpretable; intent can be restated safely
-- **Fail**: Body is malformed, contradictory, incomplete, or intent is
-  impossible to parse reliably
-- **Outcome on fail**: `unclear`
-
-#### Check 3: Trust/Safety
-
-Can the agent safely interpret and execute this issue without undue
-trust or safety risk?
-
-- **Pass**: Issue body and comments contain only trusted input; no code
-  injection risk in markers; no safety concern apparent
-- **Fail**: Untrusted input risk (e.g., embedded code in markers without
-  escaping), ambiguous safety concern, or requires human judgment on
-  safety
-- **Outcome on fail**: `invalid`
-
-#### Check 4: Duplicate or Superseded Work
-
-Is this work a duplicate of an existing open issue, closed issue,
-merged PR, or draft PR? Is it superseded by paused work marked with
-`status:blocked-by-human` or `status:needs-decision`?
-
-- **Pass**: No duplicate or superseded work detected; this issue
-  represents novel work
-- **Fail**: Issue duplicates an existing open or closed issue, is
-  superseded by newer work, or the work was already completed or is in
-  progress (including draft PRs)
-- **Outcome on fail**: `duplicate`
-
-#### Check 5: Actionability
-
-Does the issue describe concrete, actionable work?
-
-- **Pass**: Issue specifies clear acceptance criteria, actionable steps,
-  or verifiable outcomes
-- **Fail**: Issue is too vague, aspirational, blocked by human decision,
-  or lacks concrete direction
-- **Outcome on fail**: `needs-decision`
-
-#### Check 6: Autonomy (Suitability Perspective)
-
-Can the agent complete this work without external coordination beyond
-those already checked in A4?
-
-- **Note**: A4 already checks "no external coordination required"; A4.5
-  re-confirms in context of suitability
-- **Pass**: No additional coordination, approvals, or stakeholder
-  sign-offs required beyond what A4 evaluated
-- **Fail**: Issue requires maintainer approval before work can proceed,
-  stakeholder coordination, or external availability gate
-- **Outcome on fail**: `blocked-by-human`
-
-#### Check 7: Verifiability (Suitability Perspective)
-
-Can success be verified independently by the agent?
-
-- **Note**: A4 checks "clear verification"; A4.5 re-confirms the issue
-  does not require subjective approval
-- **Pass**: Success is verifiable through automated tests, CI, lint, or
-  concrete objective criteria
-- **Fail**: Success depends on maintainer opinion, UX judgment call, or
-  external stakeholder sign-off
-- **Outcome on fail**: `needs-decision`
-
-### Failure Outcomes
-
-When an issue fails any suitability check, classify it into one of six
-stable outcomes. Then remove the failing candidate from the A4 survivor
-set and return to A4 Step 2 to try the next-lowest-numbered candidate.
-Report each failure before continuing. Stop when the survivor set is
-empty (no suitable issue found this run) or when an `invalid` outcome
-occurs (trust/safety concerns require human review before continuing):
-
-| Outcome            | Meaning                        | Next Steps                     |
-| ------------------ | ------------------------------ | ------------------------------ |
-| `unclear`          | Issue needs clarification      | Report, try next candidate     |
-| `needs-decision`   | Requires maintainer decision   | Report, try next candidate     |
-| `blocked-by-human` | Requires human coordination    | Report, try next candidate     |
-| `duplicate`        | Duplicate or superseded work   | Report, try next candidate     |
-| `out-of-scope`     | Outside repository scope       | Report, try next candidate     |
-| `invalid`          | Trust/safety concern or defect | Report and stop (do not retry) |
-
-### Mutation Policy
-
-**A4.5 is a triage gate, not an execution claim.** The gate determines
-readiness but does NOT automatically apply labels or post claims.
-
-**Read-only approach** (recommended):
-
-- Agent evaluates all seven checks
-- If any check fails, agent reports the failure outcome and stops
-- NO implementation claim comment is posted
-- NO branch or worktree is created
-- NO labels are applied
-- A5 is never reached
-
-**Optional labeled approach** (if policy permits):
-
-- Agent MAY optionally apply a transient `triage:{outcome}` label to
-  document the rejection reason
-- Label must NOT masquerade as an implementation claim
-- Label is intended as a diagnostic aid for humans reviewing rejected
-  candidates
-- Labeled approach still stops at A4.5; A5 is never reached
-
-**Permitted and prohibited mutations**:
-
-- **Permitted**: Agents may post a single diagnostic comment explaining
-  the A4.5 rejection outcome, prefixed with **"A4.5 suitability gate
-  rejection"** to distinguish from claim or work-in-progress markers.
-- **Prohibited**: Agents must NOT post implementation claim comments,
-  create branches or worktrees, close issues unilaterally, or modify
-  roadmap structures or relationships. Do NOT apply other labels except
-  the optional `triage:{outcome}` label in the labeled approach above.
-- **Linking**: Issues may be linked as related context (e.g., "Related
-  to #NNN which addresses similar work") in diagnostic comments, but
-  must NOT be treated as duplicates without explicit human confirmation
-  first.
-
-### Coordination Rule
-
-A4.5 rejections must clearly indicate they are **triage decisions**, not
-implementation work:
-
-- Do NOT post claim comments or claim markers
-- Do NOT create branches or worktrees
-- Do NOT post operational markers (review-watermark, review-baseline,
-  etc.)
-- If posting a label, use a `triage:` prefix to distinguish from
-  implementation state
-- Any diagnostic comments MUST state clearly: "A4.5 suitability gate
-  rejection" to distinguish from claim or work-in-progress
-
-### Decision Flow
-
-```text
-Candidates = A4 survivor set (sorted by ascending issue number)
-Loop: Pick lowest-numbered candidate from Candidates
-  → Run Check 1 (Repository Fit)
-    → PASS → Run Check 2
-    → FAIL → Classify as out-of-scope → Report, remove from Candidates, loop
-  → Run Check 2 (Coherence)
-    → PASS → Run Check 3
-    → FAIL → Classify as unclear → Report, remove from Candidates, loop
-  → Run Check 3 (Trust/Safety)
-    → PASS → Run Check 4
-    → FAIL → Classify as invalid → Report and STOP (do not retry)
-  → Run Check 4 (Duplicates)
-    → PASS → Run Check 5
-    → FAIL → Classify as duplicate → Report, remove from Candidates, loop
-  → Run Check 5 (Actionability)
-    → PASS → Run Check 6
-    → FAIL → Classify as needs-decision → Report, remove from Candidates, loop
-  → Run Check 6 (Autonomy)
-    → PASS → Run Check 7
-    → FAIL → Classify as blocked-by-human → Report, remove from Candidates, loop
-  → Run Check 7 (Verifiability)
-    → PASS → Proceed to A5 (claim)
-    → FAIL → Classify as needs-decision → Report, remove from Candidates, loop
-Candidates empty → STOP (no suitable issue found this run)
-```
-
-### Edge Cases
-
-**Malformed markers or body**: If the issue body contains unparseable
-structured data (e.g., corrupted marker), treat it as **Check 2
-(Coherence) failure** → `unclear`. Report the parsing error so a human
-can correct the issue.
-
-**Timeout on duplicate detection**: If duplicate detection (Check 4)
-times out or becomes expensive, fall back to exact title match only. If
-exact match is not found, PASS the check and continue.
-
-**Agent-specific limitations**: All seven checks should be agent-agnostic
-(work for Copilot, Claude, Codex, Gemini). If an agent cannot reliably
-perform a check, document that limitation and treat as a PASS so work is
-not blocked by agent capability limits.
-
-After A4.5, proceed to `idd-claim.instructions.md`.
+- A single explicit issue target provided by the operator in the current
+  run is explicit operator instruction for that one issue only. Use the
+  A0-T path; do not use the target as permission to search for alternate
+  issues.
+- Repo-wide searches (`gh issue list`, `gh search`, label-based queries)
+  are permitted only in **A1** (to locate the roadmap itself), in
+  **A0-T** for the scoped body-content lookup needed to resolve the
+  explicit target's `idd-skill-blocked-by` markers, in
+  **A0-O** when `issue-scope` is `orphan-first` (body-content filter to
+  find issues lacking `idd-skill-roadmap-id` and
+  `idd-skill-blocked-by` markers), and for the scoped
+  `idd-skill-roadmap-id` body-content lookup required by A3's
+  dependency-marker check. A1.5 may also run a narrow repo-wide
+  duplicate/reuse check for a specific autonomous gap before creating a
+  follow-up issue; the result may only prevent a duplicate or link an
+  existing issue back to the selected roadmap, not expand the candidate
+  set.
+- After a zero-result report at A3, an operator may grant a one-time
+  opt-in for the current run, specifying an alternate scope.
+- Opt-in must be granted interactively during the current run. Prior or
+  standing instructions do not count as opt-in.

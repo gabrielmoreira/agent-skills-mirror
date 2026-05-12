@@ -4,6 +4,7 @@ description: Maps whether a biomedical research topic, subtopic, or study angle 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Medical Topic Saturation and Whitespace Checker
 

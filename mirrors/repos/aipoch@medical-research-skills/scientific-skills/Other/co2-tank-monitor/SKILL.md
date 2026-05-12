@@ -2,7 +2,7 @@
 name: co2-tank-monitor
 description: IoT monitoring simulation to predict CO2 tank depletion and prevent weekend gas outages in cell culture facilities. Monitors cylinder pressure, calculates consumption rates, provides early warnings, and supports automated scheduling via cron.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

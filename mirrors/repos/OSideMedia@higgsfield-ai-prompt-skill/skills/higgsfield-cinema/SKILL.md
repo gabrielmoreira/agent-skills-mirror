@@ -4,8 +4,8 @@ description: "Guides users through professional filmmaking workflows in Higgsfie
 user-invocable: true
 metadata:
   tags: [higgsfield, cinema-studio, multi-shot, storyboard, popcorn, hero-frame, optical, elements, director-panel, speed-ramp, soul-cast, color-grading]
-  version: 3.2.0
-  updated: 2026-05-03
+  version: 3.3.0
+  updated: 2026-05-11
   parent: higgsfield
 ---
 
@@ -618,8 +618,9 @@ Reference sheets aren't only for faces and rooms. The underlying principle is
 narrower than "character or location" — a reference sheet is any asset built
 once to **lock a specific property** of the production. Each sheet type fixes a
 different axis of the work: identity, architecture, motion behavior, wardrobe,
-or palette. If a property has to read consistently across multiple shots, give
-it its own sheet. If it only matters for one shot, write it inline and move on.
+palette, or product. If a property has to read consistently across multiple
+shots, give it its own sheet. If it only matters for one shot, write it inline
+and move on.
 
 **When a sheet pays for itself:** if a property will appear in three or more
 shots, the sheet is cheaper than re-describing it every time and dramatically
@@ -689,6 +690,149 @@ color appears in every shot regardless of subject. Pairs naturally with the
 Soul Hex color system and curated moodboards in
 `../higgsfield-moodboard/SKILL.md`.
 
+### Product Reference Sheet
+
+When a product reappears across multiple shots — a hero SKU in a brand
+campaign, a recurring prop in a narrative piece, a single item shot from a
+dozen angles for ecommerce — give it the same asset-first treatment as a
+character or location. Generate the product once as a multi-view reference
+sheet, then call it in subsequent shots. Re-describing the product inside
+each scene prompt is the root cause of "every shot reinterprets the
+product": branding shifts, materials drift, geometry rearranges, and the
+hero stops feeling like a single object.
+
+The Product Reference Sheet uses a 7-part prompt scaffold. Each part fixes
+one axis of the product's identity. Build the parts in order — the locks
+come first, then composition, then surface treatment, then capture
+parameters, then negative space.
+
+**1. Identity Lock** — what the product *is*. Geometry, scale, color
+values, defining proportions, distinguishing physical features. The same
+discipline as a character sheet's identity block, applied to an object.
+
+**2. Branding Lock** — placement, scale, color, and treatment of every
+brand element on the product: logos, wordmarks, tags, stitched labels,
+embossed marks. Specify position relative to product geometry (centered
+front panel, left sleeve, lower right corner) and rendering style
+(embroidered, screen-printed, embossed, foil-stamped).
+
+**3. Layout** — the multi-view grid. Standard Product Reference Sheet
+layout covers eight orthographic views plus macro close-ups:
+
+| View | What it locks |
+|------|---------------|
+| Front | Primary read — branding placement, overall silhouette |
+| Back | Reverse details, secondary branding, construction seams |
+| Left side | Profile geometry, depth on the left |
+| Right side | Profile geometry, depth on the right |
+| Top | Top-down silhouette, crown / lid / opening geometry |
+| Bottom | Underside details, base / sole / footprint |
+| 3-quarter | Hero angle — combines front and side reads |
+| Macro close-ups | Branding detail / material weave / construction join / any product-specific detail that earns its own frame |
+
+Eight views vs. the Five-View Location Sheet's five — products need more
+orthographic angles than locations because the camera is closer and the
+geometry is the subject, not the environment. Macro close-ups are the
+product analogue of the location sheet's close-up environmental-details
+view, scaled up to one per product-specific concern.
+
+**4. Background** — `#DCDCDC` light gray, shadowless lighting, no
+gradients, no reflections. Studio product-photo convention: the
+background contributes zero visual information so the product reads as
+the only subject. Specify all four constraints — `#DCDCDC` alone without
+the shadowless + no-gradients + no-reflections trio still leaves the
+model room to add atmospheric noise.
+
+**5. Realism** — the Material Realism block. Reusable template populated
+per material; six axes that together make a surface read tactile and
+physically grounded rather than rendered-flat:
+
+- **Raised structure** — what stands proud of the base surface and by
+  how much
+- **Tight density** — how packed the surface elements are per unit area
+- **Visible direction** — the directionality of grain, weave, thread, or
+  flow across the surface
+- **Micro shadowing** — the small shadows cast by raised elements into
+  the surface valleys
+- **Surface compression following form** — how the material deforms where
+  it meets seams, edges, or attached elements
+- **Curvature integration** — how the surface and its texture follow the
+  product's overall geometry rather than sitting on top of it
+
+Populate the six axes with material-specific vocabulary. Embroidery,
+leather, knit, satin, brushed metal, and suede each have their own value
+set; the six axes stay constant.
+
+**6. Camera** — default product reference package: **Canon EOS R5 +
+RF 100mm f/2.8L Macro IS USM, f/8, ISO 100**. The 100mm macro lens at
+f/8 holds the whole product in sharp focus from front-most edge to
+back-most edge across all eight views; ISO 100 keeps sensor noise out
+of the gray background. Substitute only when a specific shot needs a
+different read — e.g. shallow depth of field for a hero brand-detail
+macro (f/4), or a wider focal length for an oversized product
+(RF 50mm).
+
+**7. Restrictions** — the content-fidelity block. The Product Reference
+Sheet's job is to capture the actual product, not a stylized or
+reinterpreted version. This block tells the model what NOT to do with
+the source: don't redesign, don't reinterpret branding, don't beautify,
+don't add styling. Frame composition discipline (no environmental
+context, no props) is enforced here as part of the same content-fidelity
+intent; the background/lighting constraints from Section 4 handle their
+own scope and don't repeat here.
+
+- No redesign
+- No stylization
+- No brand reinterpretation
+- No added elements
+- No alternate branding
+- No additional logos
+- No text overlays
+- No props
+- No environment
+- No lighting effects
+- No smoothing or beautification
+- No beauty retouching
+
+The Product Reference Sheet locks the product; narrative use of the
+product happens in downstream scene prompts that call this sheet as a
+reference.
+
+#### Hat — Worked Example
+
+A black baseball cap with an embroidered logo, set up as a Product
+Reference Sheet:
+
+- **Identity Lock** — six-panel baseball cap, black cotton twill, curved
+  brim, adjustable strap closure, pre-curved crown, eyelets on each
+  panel
+- **Branding Lock** — embroidered wordmark centered on the front panel,
+  white thread, 4cm wide, positioned 3cm above the brim seam
+- **Layout** — front / back / left / right / top / bottom / 3-quarter,
+  plus macro close-ups of the embroidered wordmark, the panel seams,
+  and the strap closure
+- **Background** — `#DCDCDC` light gray, shadowless lighting, no
+  gradients, no reflections
+- **Realism (Material Realism populated for embroidery):**
+  - Raised structure — raised thread structure, thread sitting proud of
+    the cotton twill base
+  - Tight density — tight stitch density across each letterform
+  - Visible direction — visible thread direction following each letter's
+    stroke path
+  - Micro shadowing — micro shadowing in the stitch valleys between
+    thread rows
+  - Surface compression following form — fabric compression around the
+    stitching where the thread tension pulls the twill in
+  - Curvature integration — embroidery curvature following the
+    pre-curved front panel rather than sitting flat
+- **Camera** — Canon EOS R5, RF 100mm f/2.8L Macro IS USM, f/8, ISO 100
+- **Restrictions** — no redesign, no stylization, no brand
+  reinterpretation, no added elements, no smoothing or beautification
+
+For leather / knit / satin / brushed metal / suede hero products, swap
+the Material Realism block's embroidery vocabulary for the material's
+own value set on each of the six axes — the scaffold is identical.
+
 ### The Reference Sheet Family
 
 | Sheet | Locks | Lives in |
@@ -698,6 +842,7 @@ Soul Hex color system and curated moodboards in
 | Motion / Camera | Camera path or motion rhythm reused across shots | This section |
 | Outfit / Material | Wardrobe — fabric, color, fit, motion behavior | This section |
 | Palette / Mood | Color and tonal mood across the whole project | This section + `../higgsfield-moodboard/SKILL.md` |
+| Product | Product geometry, branding placement, material/surface, multi-view layout | This section |
 
 Build the sheets the project actually needs. A short ad with one character in
 one outfit doesn't need an Outfit Sheet. A 15-shot music video with three

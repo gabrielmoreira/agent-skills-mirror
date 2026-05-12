@@ -2,9 +2,10 @@
 name: meta-feasibility-analyzer
 description: Analyzes the feasibility of a proposed Meta-analysis topic by searching for existing Meta-analyses and Clinical Trials on PubMed/ClinicalTrials.gov. Use when you need to evaluate if a topic is viable for a new Meta-analysis.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Meta Feasibility Analyzer
 
 This skill evaluates the feasibility of conducting a new Meta-analysis on a given topic (title). It checks for existing Meta-analyses and available Clinical Trials to determine if there is a gap or sufficient new evidence.

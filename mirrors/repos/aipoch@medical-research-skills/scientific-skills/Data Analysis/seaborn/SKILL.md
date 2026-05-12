@@ -2,7 +2,7 @@
 name: seaborn
 description: Statistical visualization library integrated with pandas; use it when you need fast EDA of distributions, relationships, and categorical comparisons (e.g., box/violin/pair plots and heatmaps) with strong default aesthetics on top of matplotlib.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

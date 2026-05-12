@@ -2,7 +2,7 @@
 name: dual-disease-transcriptomic-ml-planner
 description: Generates complete dual-disease transcriptomic + machine learning research designs from a user-provided disease pair. Use when users want to identify shared DEGs, common hub genes, cross-disease biomarkers, or shared molecular mechanisms between two diseases using public GEO data. Triggers:"shared biomarker study for two diseases", "dual-disease transcriptomic ML paper", "identify common DEGs between disease A and B", "cross-disease hub gene discovery", "shared DEG + PPI + ROC design", "immune infiltration shared biomarker", or "I want to study disease X and Y together". Always outputs four workload configurations (Lite / Standard / Advanced / Publication+) with a recommended primary plan, step-by-step workflow, figure plan, validation strategy, minimal executable version, and publication upgrade path.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 

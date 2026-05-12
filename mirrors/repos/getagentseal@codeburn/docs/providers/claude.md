@@ -25,6 +25,17 @@ JSONL, one event per line, per session file. Sessions live under `<project>/<ses
 
 `createSessionParser` returns an empty async generator (`claude.ts:101-105`). Claude is a special case: `src/parser.ts` reads Claude JSONL files directly with full turn grouping, dedup of streaming message IDs, and MCP tool inventory extraction. The provider object exists only so `discoverSessions` can return Claude session sources alongside the others.
 
+## Pricing
+
+Claude Code reports total cache-write tokens in `usage.cache_creation_input_tokens`.
+When available, it also splits those writes by duration in
+`usage.cache_creation.ephemeral_5m_input_tokens` and
+`usage.cache_creation.ephemeral_1h_input_tokens`. CodeBurn keeps the existing
+aggregate cache-write token total for reports, but prices the 1-hour portion at
+2x base input cost (1.6x the 5-minute cache-write rate exposed by LiteLLM).
+If the split fields are missing, the parser falls back to the legacy behavior
+and prices every cache write at the 5-minute rate.
+
 ## Caching
 
 None at the provider level. The daily aggregation cache (`src/daily-cache.ts`) reuses prior computed days.

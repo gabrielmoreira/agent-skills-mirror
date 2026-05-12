@@ -25,11 +25,30 @@ Use [GitHub Discussions](https://github.com/AgriciDaniel/claude-seo/discussions)
 
 ### Development Setup
 
+#### Option A: Local install
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/claude-seo.git
 cd claude-seo
 bash install.sh
 ```
+
+#### Option B: GitHub Codespaces / VS Code Dev Containers
+
+A `.devcontainer/devcontainer.json` is included so you can develop without any
+local setup. Two paths:
+
+- **GitHub Codespaces**: click **Code -> Codespaces -> Create codespace on
+  main** on the repo's GitHub page. You get a fully provisioned Python 3.12
+  environment with `requirements.txt` installed and Playwright + Chromium
+  ready, in about 60 seconds.
+- **VS Code Remote Containers**: with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+  installed, clone the repo locally then run **Dev Containers: Reopen in
+  Container** from the command palette.
+
+Both paths use the same image (`mcr.microsoft.com/devcontainers/python:3.12`)
+and post-create command (`pip install -r requirements.txt && playwright
+install chromium`). No additional setup needed for either.
 
 ### Guidelines
 

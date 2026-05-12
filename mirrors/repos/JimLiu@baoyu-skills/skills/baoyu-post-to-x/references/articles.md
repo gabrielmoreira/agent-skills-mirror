@@ -183,12 +183,12 @@ JSON output:
    - Press `Meta+V` on macOS or `Control+V` on Windows/Linux through the Chrome plugin.
    - Verify the article body appeared and contains `XIMGPH_` placeholders. On macOS, use `pbpaste` to verify shell-written system clipboard contents if paste is suspicious; `tab.clipboard.readText()` may not reflect the system clipboard after shell writes.
 10. **Insert Images**: for each `contentImages` item in placeholder order:
-   - Run `copy-to-clipboard.ts image <localPath>`.
-   - Select the exact placeholder text (`XIMGPH_N`) in the editor.
-   - Press `Meta+V`/`Control+V` with the Chrome plugin.
-   - Wait for X to finish uploading media.
-   - If `XIMGPH_N` remains above the inserted image, reselect that exact text and press `BackSpace`.
-   - Do not press `BackSpace` unless the selected text is exactly the placeholder.
+   - Locate the exact visible placeholder text (`XIMGPH_N`) and click it to put the insertion point there.
+   - Open the editor toolbar dropdown `Insert` and choose `Media`.
+   - In the `Insert` modal, click the icon button with `aria-label="Add photos or video"`; do not click the "Choose a file or drag it here" text/dropzone or hidden file input.
+   - Use the Chrome plugin file chooser flow to upload that image's `localPath`.
+   - Wait until the image block appears. If `XIMGPH_N` remains above the image, select exactly that placeholder and press `Delete` first; use `Backspace` only if `Delete` fails and the selected text is confirmed to be exactly the placeholder.
+   - Verify that placeholder's count is `0` before continuing.
 11. **Verify**:
    - Inspect the editor for `XIMGPH_` residue.
    - Confirm the expected number of image blocks is visible.
@@ -211,12 +211,12 @@ If the Chrome plugin reports `native pipe is closed`, retry one lightweight brow
    - Click the article body.
    - Press `super+v` on macOS or `control+v` on Windows/Linux with Computer Use.
 9. **Insert Images**: for each `contentImages` item in placeholder order:
-   - Run `copy-to-clipboard.ts image <localPath>`.
-   - Select the exact placeholder text (`XIMGPH_N`) in the editor.
-   - Press `super+v`/`control+v` with Computer Use.
-   - Wait for X to finish uploading media.
-   - If `XIMGPH_N` remains above the inserted image, reselect the exact text and press `BackSpace`.
-   - Do not press `BackSpace` unless the Computer Use state confirms the selected text is exactly the placeholder.
+   - Locate the exact visible placeholder text (`XIMGPH_N`) and click it to put the insertion point there.
+   - Open the editor toolbar dropdown `Insert`, choose `Media`, then click the icon button with `aria-label="Add photos or video"` inside the modal.
+   - Use the native file picker to choose that image's `localPath`.
+   - Wait until the image block appears and upload activity is complete.
+   - If `XIMGPH_N` remains above the inserted image, reselect exactly that placeholder text and press `Delete` first; use `Backspace` only if `Delete` fails and the Computer Use state confirms the selected text is exactly the placeholder.
+   - Confirm that placeholder is gone before continuing.
 10. **Verify**:
    - Inspect the Computer Use state for `XIMGPH_` residue.
    - Confirm the expected number of image blocks is visible.
@@ -232,11 +232,12 @@ If the Chrome plugin reports `native pipe is closed`, retry one lightweight brow
 5. **Upload Cover**: Use file input for cover image
 6. **Fill Title**: Type title into title field
 7. **Paste Content**: Copy HTML to clipboard, paste into editor
-8. **Insert Images**: For each placeholder (reverse order):
-   - Find placeholder text in editor
-   - Select the placeholder
-   - Copy image to clipboard
-   - Paste to replace selection
+8. **Insert Images**: For each placeholder in placeholder order:
+   - Find and click the placeholder text in the editor
+   - Use `Insert` -> `Media`
+   - Click the modal's icon button labeled `Add photos or video`
+   - Upload the matching image file
+   - Delete the leftover placeholder text with `Delete` after the image appears
 9. **Post-Composition Check** (automatic):
    - Scan editor for remaining `XIMGPH_` placeholders
    - Compare expected vs actual image count
@@ -265,12 +266,12 @@ Claude:
 
 - **No create button**: Ensure X Premium subscription is active
 - **Cover upload fails**: Check file path and format (PNG, JPEG)
-- **Images not inserting**: Verify placeholders exist in pasted content
+- **Images not inserting**: Verify placeholders exist in pasted content; use `Insert` -> `Media` -> modal icon button `Add photos or video`, not image clipboard paste, the dropzone text, or the hidden file input.
 - **Content not pasting**: Check HTML clipboard: `${BUN_X} {baseDir}/scripts/copy-to-clipboard.ts html --file /tmp/test.html`
 - **Chrome plugin `native pipe is closed`**: retry once after 2 seconds, then run Chrome skill checks; ask before opening a new Chrome window if checks pass.
 - **Chrome plugin upload `Not allowed`**: enable file URL access for the Codex Chrome Extension in `chrome://extensions` → Details.
 - **Computer Use unavailable**: Use the CDP fallback script, unless the user explicitly required Chrome Computer Use.
-- **Placeholder remains after paste**: Select only the placeholder text and press BackSpace after upload completes.
+- **Placeholder remains after upload**: Select only the placeholder text and press `Delete` after upload completes. Use `Backspace` only if `Delete` fails and the selection is exactly the placeholder.
 
 ## How It Works
 
@@ -284,12 +285,14 @@ Claude:
 2. The Codex Chrome plugin publishes through the user's real Chrome session when explicitly requested:
    - Uses the user's active Chrome profile and logged-in X session
    - Uses the Chrome Extension browser client rather than Computer Use or CDP
-   - Uses `copy-to-clipboard.ts` for rich HTML and image clipboard payloads
+   - Uses `copy-to-clipboard.ts` for rich HTML body paste
+   - Inserts body images through X's toolbar `Insert` -> `Media` modal and its `Add photos or video` icon button
    - Keeps the final publish click under user confirmation
 
 3. Chrome Computer Use publishes through the user's visible Chrome UI:
    - Uses the user's active Chrome profile and logged-in X session
-   - Uses `copy-to-clipboard.ts` for rich HTML and image clipboard payloads
+   - Uses `copy-to-clipboard.ts` for rich HTML body paste
+   - Inserts body images through X's toolbar `Insert` -> `Media` modal and its `Add photos or video` icon button
    - Uses real keystrokes (`super+v`/`control+v`) through Codex Computer Use
    - Keeps the final publish click under user confirmation
 

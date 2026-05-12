@@ -4,6 +4,7 @@ description: Collects candidate biomedical literature across multiple databases,
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Multi-Database Literature Collector
 

@@ -2,9 +2,10 @@
 name: soft-article-writer
 description: Generates high-quality promotional soft articles with structured outlines, tailored introductions, and optimized titles based on product info and hot topics. Use when you need to write promotional content, "soft articles" (), or marketing copy that integrates product highlights with current trends, news, or industry insights.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 ## When to Use
 
 - Use this skill when the request matches its documented task boundary.

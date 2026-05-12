@@ -2,9 +2,10 @@
 name: gene-structure-mapper
 description: Use gene structure mapper for data analysis workflows that need structured execution, explicit assumptions, and clear output boundaries.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Gene Structure Mapper
 
 Visualize gene structure with exons and introns.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,14 +69,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
 | 9 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
 | 10 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
-| 11 | ✓ | [`agents/kimi-cli.js`](agents/kimi-cli.js) |
-| 12 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
-| 13 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
-| 14 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
-| 15 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
-| 16 | ✓ | [`agents/pi.js`](agents/pi.js) |
-| 17 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`agents/hermes.js`](agents/hermes.js) |
+| 12 | ✓ | [`agents/kimi-cli.js`](agents/kimi-cli.js) |
+| 13 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
+| 14 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
+| 15 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
+| 16 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
+| 17 | ✓ | [`agents/pi.js`](agents/pi.js) |
+| 18 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

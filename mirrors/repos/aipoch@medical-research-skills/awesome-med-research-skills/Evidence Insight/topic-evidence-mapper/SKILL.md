@@ -4,6 +4,7 @@ description: Rapidly maps the evidence landscape around a medical topic by organ
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Topic Evidence Mapper
 

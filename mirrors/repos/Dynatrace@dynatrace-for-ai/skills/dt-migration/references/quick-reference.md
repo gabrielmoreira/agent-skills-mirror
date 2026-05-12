@@ -16,15 +16,15 @@ Use this page as a compact cheat sheet during Smartscape migration.
 ## Traversal tips
 
 - Multiple target types:
-  ```dql
-  | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_VM, GCP_VM_INSTANCE}
+  ```dql-snippet
+  | traverse runs_on, {AWS_EC2_INSTANCE, AZURE_MICROSOFT_COMPUTE_VIRTUALMACHINES, GCP_COMPUTE_GOOGLEAPIS_COM_INSTANCE}
   ```
 - Multiple edge types:
-  ```dql
+  ```dql-snippet
   | traverse {runs_on, belongs_to}, {AWS_AVAILABILITY_ZONE, AZURE_REGION}
   ```
 - Preserve source fields through traversal:
-  ```dql
+  ```dql-snippet
   | traverse runs_on, HOST, direction:forward, fieldsKeep:name
   ```
 - Starting node after traversal:
@@ -37,6 +37,14 @@ Use this page as a compact cheat sheet during Smartscape migration.
 - `dt.source_entity.type` → `dt.smartscape_source.type`
 
 ## Common gotchas
+
+### Mass data migrations require fieldsSnapshot before approach selection
+
+Run `fieldsSnapshot` on both the mass data source and the smartscape node type before choosing direct dimension filter, getNodeField, or smartscapeNodes subquery. See [mass-data-filtering-strategy.md](mass-data-filtering-strategy.md) Step 2.
+
+### Always verify equivalence
+
+Run the migrated query with a short timeframe. Confirm non-empty results and matching output shape. See [mass-data-filtering-strategy.md](mass-data-filtering-strategy.md) Step 4.
 
 ### `getNodeName()` takes no `type:` argument
 

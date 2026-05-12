@@ -80,14 +80,14 @@ fetch spans
 | filter isNotNull(dt.smartscape.host) and isNotNull(dt.smartscape.service) and isNotNull(dt.process_group.id)
 
 // Add host information including hardware
-| fieldsAdd getNodeName(dt.smartscape.host),
+| fieldsAdd host_name = getNodeName(dt.smartscape.host),
             getNodeField(dt.smartscape.host, "bitness"),
             getNodeField(dt.smartscape.host, "additionalSystemInfo")
 
 // Flatten system info
 | fieldsFlatten dt.smartscape.host.additionalSystemInfo
 
-| fieldsAdd getNodeName(dt.smartscape.service)
+| fieldsAdd service_name = getNodeName(dt.smartscape.service)
 
 // Add process group detected name and technologies (process_group is not a Smartscape node)
 | fieldsAdd dt.process_group.detected_name

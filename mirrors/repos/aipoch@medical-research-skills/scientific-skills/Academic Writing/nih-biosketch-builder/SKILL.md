@@ -2,9 +2,10 @@
 name: nih-biosketch-builder
 description: Generate NIH Biosketch documents compliant with the 2022 OMB-approved.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # NIH Biosketch Builder
 
 **ID**: 101  

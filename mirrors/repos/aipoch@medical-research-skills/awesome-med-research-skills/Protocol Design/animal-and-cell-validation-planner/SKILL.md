@@ -4,6 +4,7 @@ description: Designs cell-based and animal-based validation plans that translate
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Animal and Cell Validation Planner
 

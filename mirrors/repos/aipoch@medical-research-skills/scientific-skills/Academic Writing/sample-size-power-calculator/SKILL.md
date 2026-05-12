@@ -2,9 +2,10 @@
 name: sample-size-power-calculator
 description: Advanced sample size and power calculations for complex study designs including survival analysis, clustered designs, and multiple comparisons.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Sample Size & Power Calculator (Advanced)
 
 Advanced sample size and power calculations for complex study designs including survival analysis, clustered designs, and multiple comparisons.

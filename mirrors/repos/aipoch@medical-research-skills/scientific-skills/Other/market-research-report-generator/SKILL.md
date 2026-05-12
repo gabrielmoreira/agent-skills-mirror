@@ -2,9 +2,10 @@
 name: market-research-report-generator
 description: Generates professional market research reports by analyzing business intent, decision levels, and conducting multi-source data retrieval (Web, PubMed, Clinical Trials).
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Market Research Report Generator
 
 This skill generates comprehensive market research reports based on a topic and optional requirements. It follows a strict workflow: Intent Analysis -> Decision Level Analysis -> Question Generation -> Data Collection -> Report Synthesis.

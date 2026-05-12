@@ -1,0 +1,24 @@
+{
+  "id": "copywriting",
+  "name": "Copywriting",
+  "category": "creative",
+  "persuasion_risk": "high",
+  "manipulation_related": true,
+  "recommended_guardrails": [
+    "ethical_ai_review",
+    "legal_compliance_check",
+    "include_transparency_statement",
+    "no_dark_patterns"
+  ],
+  "description": "Expert-level capability in Direct Response Copywriting, behavioral economics, and high-conversion sales narratives designed to overcome objections and close deals.",
+  "knowledge": "Based on the search results and comprehensive knowledge, here's a complete skill description for copywriting mastery:\n\n# Ultimate Copywriting Mastery Framework\n\n## Core Foundations\n- **The Essential Truth**: Copywriting is NOT creative writing; it is **Salesmanship in Print**. Its sole purpose is to drive a specific, measurable commercial action.\n- **Primary Goal**: Bridge the gap between what audiences want and what products/services deliver.\n- **Key Principle**: Effective communication is about understanding patterns and structuring information strategically.\n\n## Direct Response & Revenue Engineering (The Sales Engine)\n- **The \"Rule of One\":** Great copy focuses on One Reader, One Big Idea, One Promise, and One Call to Action. Diluting focus lowers conversion.\n- **Risk Reversal Architecture:** The offer is more important than the copy. AI must know how to structure guarantees (e.g., \"110% money-back,\" \"Pay only after ROI\") to make saying \"No\" mathematically irrational for the buyer.\n- **Objection Jiu-Jitsu:** Instead of ignoring objections (price, trust, timing), effective copy raises them *first* and neutralizes them (e.g., \"You might think this is expensive, but compared to hiring an employee...\").\n- **The \"Grand Slam\" Offer:** Packaging the product not as a commodity, but as an irresistible bundle of value, bonuses, and scarcity (Alex Hormozi's framework).\n- **Loss Aversion Framing:** Leveraging the psychological fact that humans fear losing $100 twice as much as they enjoy gaining $100. Framing the *cost of inaction* (what happens if you *don't* buy).\n\n## Strategic Framework\n1. **Research & Discovery** ([copyschool.co](https://copyschool.co/resources/conversion-copywriting-process/))\n   - Audit existing materials and competitor content\n   - Mine reviews and testimonials for voice-of-customer data (stealing the customer's exact words)\n\n2. **Value Proposition Development** ([unbounce.com](https://unbounce.com/landing-page-copywriting))\n   - Identify core audience needs\n   - Frame benefits over features\n   - Create compelling unique selling propositions\n\n3. **Content Architecture**\n   - Headline formulation using \"The 4 U's\" (Urgent, Unique, Useful, Ultra-specific)\n   - Strategic subheading placement (The Skimmer's Hook)\n   - Call-to-action positioning\n\n## Advanced Techniques\n1. **Persuasion Elements** ([digitalmarketer.com](https://www.digitalmarketer.com/certifications/copywriting-mastery/))\n   - **Emotional Trigger Identification:** Selling to the \"Lizard Brain\" (Greed, Fear, Pride, Lust, Sloth).\n   - **Social Proof Integration:** Using testimonials not just as praise, but as specific proof of outcome.\n\n2. **SEO Integration** ([backlinko.com](https://backlinko.com/seo-copywriting))\n   - Keyword optimization without sacrificing readability\n   - User experience signal optimization\n\n## Optimization Framework\n1. **Content Testing**\n   - A/B testing methodologies\n   - Conversion rate optimization\n\n2. **Quality Assurance**\n   - Editorial guidelines compliance\n   - Brand voice consistency\n\n## Production Excellence\n1. **Delivery Standards**\n   - Clear information hierarchy\n   - Scannable content structure\n\n2. **Performance Metrics**\n   - Conversion tracking\n   - ROI analysis\n\nThis framework represents a comprehensive approach to professional copywriting that balances persuasion, optimization, and measurable results while maintaining focus on both user needs and business objectives.",
+  "capabilities": [
+    "Direct response copywriting",
+    "Objection handling & risk reversal",
+    "Behavioral economics application",
+    "Offer structuring (Grand Slam Offers)",
+    "Strategic guidance and recommendations"
+  ],
+  "created": "2026-01-29T22:58:01.952284",
+  "version": "1.1"
+}

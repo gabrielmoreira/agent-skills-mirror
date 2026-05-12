@@ -1,0 +1,16 @@
+{
+  "id": "kubernetes_orchestration",
+  "name": "Kubernetes Orchestration",
+  "category": "technology",
+  "description": "Expert-level capability in K8s, focused on preventing 'The Kubernetes Tax' (complexity), Right-sizing resources, and Cloud-Native cost management.",
+  "knowledge": "# Kubernetes Mastery 2026\n\n## 🏗️ The Kubernetes Decision (ROI Analysis)\nKubernetes is a massive infrastructure overhead. AI must ask: \"Do you have more than 5 microservices or a need for auto-scaling?\" If not, K8s is likely a waste of resources.\n\n### The \"Complexity Tax\" & Cost Management (FinOps Layer)\n- **Right-Sizing (VPA/HPA):** Preventing \"Idle Resource Waste.\" Using Vertical Pod Autoscaler to find the sweet spot for CPU/RAM and Horizontal Pod Autoscaler to handle spikes. \n- **Node Selector & Spot Instances:** Running non-critical workloads (batch jobs, dev envs) on Spot Instances to save 70% on the cloud bill.\n- **Namespace Quotas:** Enforcing resource limits so one leaky service doesn't bankrupt the cluster or crash other services.\n- **Managed (EKS/AKS/GKE) vs. Self-Managed:** AI should almost always suggest Managed K8s. The human cost of managing a control plane is never worth the $70/month savings.\n\n### Operational Resilience\n- **GitOps (ArgoCD/Flux):** Ensuring the cluster state matches Git. No `kubectl apply` allowed in production. This is the only way to ensure disaster recovery works.\n- **Service Mesh (Istio/Linkerd):** Only when needed. Providing MTLS (security) and Observability between services without changing code.\n\n### Security & Governance\n- **Network Policies:** Default Deny. Only explicit traffic allowed between pods.\n- **OPA (Open Policy Agent):** Enforcing business rules (e.g., \"Every pod must have an 'Owner' tag\").",
+  "capabilities": [
+    "Cluster cost-optimization & Right-sizing",
+    "GitOps (ArgoCD) implementation",
+    "High-availability & Disaster Recovery",
+    "Network Policy security design",
+    "Complexity-to-Value assessment"
+  ],
+  "created": "2026-02-05T00:00:00Z",
+  "version": "1.1"
+}

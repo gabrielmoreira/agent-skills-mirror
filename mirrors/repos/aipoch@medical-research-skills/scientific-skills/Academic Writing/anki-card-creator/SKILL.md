@@ -2,9 +2,10 @@
 name: anki-card-creator
 description: Use anki-card-creator for academic writing workflows that need structured execution, explicit assumptions, and clear output boundaries for study-card generation.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Anki Card Creator
 
 Structured flashcard generation for medical study content.

@@ -2,9 +2,10 @@
 name: resubmission-deadline-tracker
 description: Track manuscript resubmission deadlines and automatically generate phase-appropriate task breakdowns for academic researchers based on remaining time.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Resubmission Deadline Tracker
 
 Track manuscript resubmission deadlines and generate actionable task schedules based on remaining time.

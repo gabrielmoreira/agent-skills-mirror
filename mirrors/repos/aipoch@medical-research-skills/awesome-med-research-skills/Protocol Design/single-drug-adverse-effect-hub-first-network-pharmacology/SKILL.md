@@ -4,6 +4,7 @@ description: Generates complete reference-grounded single-drug adverse-effect ne
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Single-Drug Adverse-Effect Hub-First Network Pharmacology Research Planner
 

@@ -294,7 +294,7 @@ Read only the files required for the current recipe.
 
 ### Proposal Log (required)
 
-After every proposal, append one row to `/Users/simota/.claude/projects/-Users-simota--claude-skills/memory/dawn_log.md` in this format:
+After every proposal, append one row to `dawn_log.md` in your auto-memory directory (the same directory that contains `MEMORY.md`, revealed in your system context) in this format:
 
 ```
 | YYYY-MM-DD | idea-name | genre | tech-layer | mood |

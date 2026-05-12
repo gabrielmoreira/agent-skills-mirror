@@ -39,7 +39,7 @@ smartscapeNodes "AWS_EVENTS_EVENTBUS"
 
 Find MSK clusters in a specific VPC:
 
-```dql
+```dql-template
 smartscapeNodes "AWS_MSK_CLUSTER"
 | filter aws.vpc.id == "<VPC_ID>"
 | fields name, aws.resource.id, aws.subnet.id
@@ -51,7 +51,7 @@ Find queues or topics by name pattern using `matchesPhrase`:
 
 ```dql
 smartscapeNodes "AWS_SQS_QUEUE"
-| filter contains(name, "sqs")
+| filter contains(name, "Sqs")
 | fields name, aws.resource.id, aws.region
 ```
 

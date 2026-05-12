@@ -21,9 +21,103 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
+import { VENDORS } from "./constants.ts";
 import { resolveGitRoot } from "./fs-utils.ts";
 import { makePromptOutput } from "./hook-output.ts";
 import type { ModeState, Vendor } from "./types.ts";
+
+// ── Unicode normalization ─────────────────────────────────────
+
+/**
+ * Normalize text for keyword matching.
+ * NFKC converts fullwidth Latin characters produced by CJK IMEs
+ * (e.g. ｐａｒａｌｌｅｌ → parallel) to their ASCII equivalents,
+ * then lowercases the result.
+ *
+ * Placed here so that Task 3 (KEYWORD_SKIP_PREDICATES) and any
+ * future layers can import and reuse the same normalization path.
+ */
+export function normalizeForMatching(text: string): string {
+  return text.normalize("NFKC").toLowerCase();
+}
+
+// ── CLI Invocation Guard ──────────────────────────────────────
+
+/**
+ * Brands that count as CLI invocations: Oma plus the host LLM CLIs declared
+ * in `VENDORS` (claude, codex, cursor, gemini, qwen). The vendor list is
+ * the single source of truth for hook-supported runtimes; pulling from it
+ * here keeps the brand set in sync when a new vendor is added.
+ *
+ * Third-party harnesses (omc, omx, omo) are intentionally NOT included: they
+ * are separate projects, not host CLIs a user would invoke from an Oma
+ * session. opencode is also not a supported vendor in this codebase.
+ */
+const CLI_INVOCATION_BRANDS = ["oma", ...VENDORS] as const;
+const CLI_INVOCATION_SIGNALS = [
+  "agent",
+  "auto",
+  "exec",
+  "run",
+  "spawn",
+  String.raw`--\S+`,
+  String.raw`\S+:\S+`,
+] as const;
+
+const BRANDS_RE_SOURCE = CLI_INVOCATION_BRANDS.join("|");
+const SIGNALS_RE_SOURCE = CLI_INVOCATION_SIGNALS.join("|");
+
+/**
+ * Matches CLI invocations at the start of the prompt.
+ *
+ * All brand names require an explicit CLI signal after the brand. Brand-only
+ * prefixes are NOT treated as CLI invocations because every brand name can
+ * appear in natural-language usage ('claude, review this code', 'oma
+ * 프로젝트의 brainstorm 알려줘', 'cursor in the editor moves'). Requiring
+ * an explicit signal avoids false-positive skips on conversational prompts.
+ *
+ * Two accepted invocation shapes:
+ *
+ *   1. Slash form: '/oma:brainstorm', '/claude:exec'. The leading slash
+ *      plus brand-colon prefix is a definitive CLI marker. Matches
+ *      '/<brand>:'.
+ *
+ *   2. Bare form: '<brand>\s+<signal>' where <signal> is one of the
+ *      enumerated subcommand verbs (agent / auto / exec / run / spawn),
+ *      a --flag, or a colon-namespaced subcommand ('agent:spawn').
+ *      Examples: 'oma agent:spawn brainstorm', 'claude --help',
+ *      'codex exec --workflow ralph', 'gemini agent', 'cursor agent',
+ *      'qwen run'.
+ */
+export const CLI_INVOCATION_AT_START = new RegExp(
+  `^\\s*(?:\\/(?:${BRANDS_RE_SOURCE}):|(?:${BRANDS_RE_SOURCE})\\s+(?:${SIGNALS_RE_SOURCE}))`,
+  "i",
+);
+
+/**
+ * Per-workflow skip predicates. A workflow listed here will be skipped when
+ * its predicate returns true for the (already-normalized) cleaned text.
+ * The map is intentionally empty at boot — populate it to add workflow-specific
+ * overrides without restructuring the matching loop.
+ */
+export const KEYWORD_SKIP_PREDICATES: Record<
+  string,
+  (text: string) => boolean
+> = {};
+
+/**
+ * Default predicate: skip ALL workflow triggers when the prompt starts with a
+ * CLI invocation of `oma` or one of the host LLM CLIs in `VENDORS`. Applies
+ * to every workflow unless an explicit per-workflow predicate in
+ * KEYWORD_SKIP_PREDICATES overrides it.
+ *
+ * The regex is applied to the NFKC-lowercased `cleaned` text produced by
+ * normalizeForMatching. All brand names are ASCII so NFKC has no effect on
+ * them; the `^\s*` start-anchor is unaffected by normalization.
+ */
+export function shouldSkipAllWorkflows(text: string): boolean {
+  return CLI_INVOCATION_AT_START.test(text);
+}
 
 // ── Guard 1: UserPromptSubmit-only trigger ────────────────────
 // Hook event names that represent genuine user input (not agent responses)
@@ -266,7 +360,7 @@ export function buildPatterns(
     if (cjkScripts.includes(lang) || /[^\p{ASCII}]/u.test(kw)) {
       return new RegExp(escaped, "i");
     }
-    return new RegExp(`\\b${escaped}\\b`, "i");
+    return new RegExp(`(?:^|[^\\w-])${escaped}(?:$|[^\\w-])`, "i");
   });
 }
 
@@ -310,7 +404,7 @@ function buildInformationalPatterns(
   }
   return patterns.map((p) => {
     if (/[^\p{ASCII}]/u.test(p)) return new RegExp(escapeRegex(p), "i");
-    return new RegExp(`\\b${escapeRegex(p)}\\b`, "i");
+    return new RegExp(`(?:^|[^\\w-])${escapeRegex(p)}(?:$|[^\\w-])`, "i");
   });
 }
 
@@ -530,8 +624,10 @@ export function isDeactivationRequest(prompt: string, lang: string): boolean {
     ...(DEACTIVATION_PHRASES.en ?? []),
     ...(lang !== "en" ? (DEACTIVATION_PHRASES[lang] ?? []) : []),
   ];
-  const lower = prompt.toLowerCase();
-  return phrases.some((phrase) => lower.includes(phrase.toLowerCase()));
+  const normalized = normalizeForMatching(prompt);
+  return phrases.some((phrase) =>
+    normalized.includes(normalizeForMatching(phrase)),
+  );
 }
 
 export function deactivateAllPersistentModes(
@@ -591,7 +687,11 @@ async function main() {
   // Guard 2: Strip code blocks, inline code, and pasted system-echo blocks
   // before scanning for keywords. System echo stripping prevents oma's own
   // hook outputs (when pasted back into the prompt) from re-triggering.
-  const cleaned = stripSystemEchoes(stripCodeBlocks(prompt));
+  // NFKC normalization collapses fullwidth Latin from CJK IMEs onto ASCII
+  // so keyword regexes cannot be silently bypassed by ｐａｒａｌｌｅｌ-style input.
+  const cleaned = normalizeForMatching(
+    stripSystemEchoes(stripCodeBlocks(prompt)),
+  );
   const excluded = new Set(config.excludedWorkflows);
 
   // Guard 3: Load reinforcement suppression state
@@ -602,6 +702,16 @@ async function main() {
 
   for (const [workflow, def] of Object.entries(config.workflows)) {
     if (excluded.has(workflow)) continue;
+
+    // Global CLI-invocation guard: prompts that start with a CLI invocation
+    // of `oma` or a `VENDORS` entry are tool invocations, not natural-language
+    // workflow requests. Skip silently to avoid false-positive matches.
+    if (shouldSkipAllWorkflows(cleaned)) continue;
+
+    // Per-workflow override: if a predicate is registered for this specific
+    // workflow, evaluate it and skip just this workflow when it returns true.
+    const workflowPredicate = KEYWORD_SKIP_PREDICATES[workflow];
+    if (workflowPredicate?.(cleaned)) continue;
 
     // Analytical questions should never trigger persistent workflows
     if (analytical && def.persistent) continue;

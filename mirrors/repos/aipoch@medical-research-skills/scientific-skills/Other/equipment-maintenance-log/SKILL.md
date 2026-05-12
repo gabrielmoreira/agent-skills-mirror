@@ -2,9 +2,10 @@
 name: equipment-maintenance-log
 description: Track lab equipment calibration dates and send maintenance reminders for pipettes, balances, centrifuges, and other instruments. Validates date formats and supports update/delete operations.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Equipment Maintenance Log
 
 Track calibration dates for pipettes, balances, centrifuges and send maintenance reminders.

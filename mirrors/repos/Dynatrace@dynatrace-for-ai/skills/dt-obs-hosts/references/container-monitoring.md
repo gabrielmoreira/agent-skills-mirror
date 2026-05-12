@@ -138,7 +138,7 @@ Identify ephemeral containers that terminated quickly:
 smartscapeNodes "CONTAINER"
 | fieldsAdd name, lifetime, k8s.pod.name
 | filter isNotNull(lifetime[end])
-| fieldsAdd lifespan_minutes = duration(lifetime[start], lifetime[end])
+| fieldsAdd lifespan_minutes = toDuration(timeframe(from: lifetime[start], to: lifetime[end]))
 | filter lifespan_minutes < 10m
 | sort lifespan_minutes asc
 | limit 50

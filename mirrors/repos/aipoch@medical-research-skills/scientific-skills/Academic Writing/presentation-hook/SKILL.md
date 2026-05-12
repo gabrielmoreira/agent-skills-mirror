@@ -2,9 +2,10 @@
 name: presentation-hook
 description: Creates engaging opening statements and powerful closings for medical.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Presentation Hook
 
 Crafts presentation openings and closings.

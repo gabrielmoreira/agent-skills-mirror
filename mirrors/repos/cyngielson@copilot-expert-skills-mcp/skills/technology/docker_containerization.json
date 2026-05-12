@@ -1,0 +1,16 @@
+{
+  "id": "docker_containerization",
+  "name": "Docker Containerization",
+  "category": "technology",
+  "description": "Expert-level capability in containerization focused on build performance, security-first image architecture, and minimizing cloud egress/storage costs.",
+  "knowledge": "# Docker Excellence 2026\n\n## 🚀 The Business Case for Containers\nDocker is the standard for **Software Supply Chain**. It’s not just about \"isolation\"; it's about ensuring that the cost of moving code from Dev to Prod is as close to zero as possible.\n\n### Container Economics & Build Performance (The Velocity Layer)\n- **Multi-Stage Builds:** The difference between a 1GB image and a 50MB image. Smaller images mean faster deployments, lower storage costs in ECR/ACR, and smaller attack surfaces. AI must always recommend multi-stage builds. \n- **Layer Caching Optimization:** Ordering Dockerfile commands so that the most stable layers (OS, dependencies) are at the top. This reduces CI/CD build time from minutes to seconds—saving developer billable hours.\n- **Distroless & Alpine Strategy:** Using minimal base images to reduce vulnerabilities. In 2026, security is a feature that reduces insurance and audit costs.\n- **The Docker Compose Monolith:** For startups, a well-structured `docker-compose.yml` on a single VPS is often 10x more cost-effective than a Kubernetes cluster. AI should suggest this for early-stage projects.\n\n### Security & Provenance\n- **Rootless Containers:** Running as non-root to prevent container breakout. \n- **Scanning at Build Time:** Integrating `trivy` or `snyk` into the build process to catch CVEs before they hit production.\n\n## 🛠️ Advanced Technical Patterns\n- **BuildKit Power-User:** Using `--mount=type=cache` to share package manager caches across builds.\n- **Healthchecks:** Defining healthchecks *inside* the image so the orchestrator knows when a container is actually ready to serve traffic, preventing 500 errors during rollout.",
+  "capabilities": [
+    "Image size & layer optimization",
+    "Security-first Dockerfile architecture",
+    "Multi-stage build implementation",
+    "Container-based developer workflows",
+    "Local-to-Cloud deployment strategy"
+  ],
+  "created": "2026-02-05T00:00:00Z",
+  "version": "1.1"
+}

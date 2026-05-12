@@ -4,6 +4,7 @@ description: Designs primary aims, secondary aims, and testable hypotheses from 
 license: MIT
 author: AIPOCH
 ---
+> **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Aim and Hypothesis Designer
 

@@ -2,9 +2,10 @@
 name: lamindb
 description: This skill is applicable when using LaminDB. LaminDB is an open-source data framework for biology that makes data queryable, traceable, reproducible, and FAIR-compliant. It is suitable for managing biological datasets (scRNA-seq, spatial transcriptomics, flow cytometry, etc.), tracking computational workflows, curating and validating data with biological ontologies, building data lakes, or ensuring data lineage and reproducibility in biological research. It covers data management, annotation, ontologies (genes, cell types, diseases, tissues), schema validation, integration with workflow managers (Nextflow, Snakemake) and MLOps platforms (W&B, MLflow), and deployment strategies.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # LaminDB
 
 ## When to Use

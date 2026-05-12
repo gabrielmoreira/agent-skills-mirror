@@ -2,9 +2,10 @@
 name: scanpy
 description: Standard single-cell RNA-seq analysis pipeline. For quality control (QC), normalization, dimensionality reduction (PCA/UMAP/t-SNE), clustering, differential expression analysis, and visualization. Best suited for exploratory single-cell transcriptomics analysis using established workflows. For deep learning models, use scvi-tools; for data format issues, use anndata.
 license: MIT
-author: aipoch
+author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
+
 # Scanpy: Single-Cell Analysis
 
 ## When to Use
