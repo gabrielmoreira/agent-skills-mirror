@@ -1,10 +1,10 @@
 ---
 name: image_generate
-description: 根据文本描述生成配图素材（非封面场景）。
+description: 仅在用户显式使用 @配图/@修图/@重绘/@image，或已明确确认调用画图功能后，根据文本描述生成配图素材（非封面场景）。
 allowed-tools: lime_create_image_generation_task
 metadata:
   lime_argument_hint: 输入主题、画面主体、风格、构图、数量、尺寸。
-  lime_when_to_use: 用户需要普通配图、插图或概念图时使用；封面需求优先交给 cover_generate。
+  lime_when_to_use: 用户显式使用 @配图/@修图/@重绘/@image，或在普通对话中已确认“调用画图/现在生成”时使用；封面需求优先交给 cover_generate。
   lime_version: 1.3.3
   lime_execution_mode: prompt
   lime_surface: workbench
@@ -20,9 +20,12 @@ metadata:
 ## 执行规则
 
 - 先判断是否属于封面需求；封面需求请转 `cover_generate`。
+- 普通聊天里如果用户只是给出视觉提示词、设计海报 brief、完善画面描述，但没有显式 `@配图/@修图/@重绘/@image` 或明确确认“现在调用画图功能”，不要调用本 Skill；也不要改写成 HTML/CSS/SVG/Markdown 草图或长方案，应先用一句话询问是否开始生成。
 - 当前已经进入 `@配图/@修图/@重绘 -> image_skill_launch -> Skill(image_generate)` 主链，不要先调用 `ToolSearch`、`WebSearch`、`Read`、`Glob`、`Grep` 去“找技能”或“确认工具”。
 - 不要搜索 “Skill image_generate”、“lime media image generate --json”、“lime_create_image_generation_task” 之类目录信息；当前上下文已经明确要求执行图片任务。
 - 提示词必须包含主体、场景、风格，不要空泛。
+- 如果结构化上下文提供 `persona_context`，聊天输出必须服从其中的单条消息、短确认和隐藏运行时细节约束。
+- 如果结构化上下文提供 `taste_context`，应结合其中的 `memory_sources`、`style_keywords`、`reference_summaries`、`avoid_keywords` 和 `cold_start_policy` 优化工具参数；这层只影响 prompt/style/reference，不要在聊天区解释内部来源。
 - 若调用方在结构化上下文里提供了 `image_task`，必须优先复用其中的 `mode`、`reference_images`、`target_output_*`、`session_id`、`project_id`、`content_id`、`entry_source`、`requested_target`、`executor_mode`、`outer_model`、`runtime_contract`、`modality_contract_key`、`routing_slot`、`slot_id`、`anchor_*` 等字段，不要擅自丢失。
 - 若 `image_task.runtime_contract.layered_design` 存在，说明这是 `LayeredDesignDocument -> canvas:design -> DesignCanvas` 的图层生成任务；必须原样透传 `runtime_contract.layered_design`、`target_output_id`、`target_output_ref_id` 和 `slot_id`，不要改写成 `poster_generate`、`canvas:poster`、脚本生成或 markdown 配图流程。
 - 若上下文已提供 `provider_id` 或 `model`，提交任务时也要原样透传，不要降级成匿名默认值。
@@ -36,15 +39,12 @@ metadata:
 - 分镜题材由用户要求决定，可以是电影、动漫、短视频、广告等；应根据主题生成对应的逐格语义，而不是写死某一种题材模板。
 - 若 `image_task` 已经提供 `storyboard_slots`，必须原样透传且保持顺序；若尚未提供而 `layout_hint=storyboard_3x3`，需要先补齐与 `count` 对齐的逐格 `storyboard_slots` 再创建任务。
 - 不要通过 `Bash` 拼接 `lime media image generate --json`、`lime task create image --json` 或任何 `/tmp/lime_task_image_*.json` 临时任务文件。
-- `lime_create_image_generation_task` 返回后，应依赖同一份图片任务文件契约推进执行与结果回填；不要另起一套 markdown“提交成功”假产物。
+- `lime_create_image_generation_task` 返回后，应依赖同一份图片任务文件契约推进执行与结果回填；不要另起一套 markdown“提交成功”假产物，也不要输出独立的任务递交摘要。
 - 调用 `lime_create_image_generation_task` 时不要传 `outputPath`，不要把任务写成 markdown 文稿。
-- `payload` 中至少包含：`prompt`、`style`、`size`、`count`、`usage`；如有上下文，还应携带 `mode`、`provider_id`、`model`、`executor_mode`、`outer_model`、`reference_images`、`storyboard_slots`、`target_output_id`、`target_output_ref_id`、`session_id`、`project_id`、`content_id`、`entry_source`、`requested_target`、`runtime_contract`、`modality_contract_key`、`routing_slot`、`slot_id`、`anchor_hint`、`anchor_section_title`、`anchor_text`。
+- `payload` 中至少包含：`prompt`、`style`、`size`、`count`、`usage`；如有上下文，还应携带 `mode`、`provider_id`、`model`、`executor_mode`、`outer_model`、`reference_images`、`storyboard_slots`、`target_output_id`、`target_output_ref_id`、`session_id`、`project_id`、`content_id`、`entry_source`、`requested_target`、`runtime_contract`、`modality_contract_key`、`routing_slot`、`slot_id`、`anchor_hint`、`anchor_section_title`、`anchor_text`、`persona_context`、`presentation`、`taste_context`。
 
-## 输出格式（固定）
+## 输出规则（固定）
 
-仅输出任务提交摘要（不要再写 `<write_file>`）：
+工具调用成功后，不要再输出“任务类型 / 任务 ID / 任务文件 / 状态”这类递交摘要；Lime 会在同一条 assistant 消息里展示工具调用、任务进度和图片结果。若确实需要补充文字，只用一句自然说明，不重复 task_id、path 或排队模板。
 
-- 任务类型：image_generate
-- 任务 ID：{task_id}
-- 任务文件：{path}
-- 状态：{status}
+聊天输出必须极简自然：工具前最多保留 `presentation.assistant_intro` 和 `presentation.process_lines` 这类短过程；结果态优先使用 `presentation.completion_caption` / `presentation.result_captions`；不要输出任务表格、任务 ID、任务文件、排队说明、Image Workbench/图片工作台文案，也不要拆成第二条 assistant 回复。

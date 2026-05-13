@@ -70,7 +70,7 @@ When starting a new project, exploring ruflo capabilities, or wondering which pl
 | **ruflo-jujutsu** | PR review, merge decisions, diff risk scoring | Diff analysis, risk classification, reviewer recommendations |
 | **ruflo-docs** | After API changes, before releases | Doc generation, drift detection, API documentation |
 | **ruflo-ruvllm** | Local LLM inference, custom model configs | RuVLLM integration, MicroLoRA fine-tuning, chat formatting |
-| **ruflo-wasm** | Sandboxed code execution, untrusted workloads | WASM agent sandboxing, community gallery |
+| **ruflo-agent** | Sandboxed code execution, untrusted workloads | WASM agent sandboxing, community gallery |
 | **ruflo-plugin-creator** | Building new ruflo plugins | Scaffold structure, validate frontmatter, test MCP references |
 | **ruflo-migrations** | Database schema changes | Sequential migration numbering, up/down pairs, dry-run, rollback validation |
 | **ruflo-observability** | Logging, tracing, metrics correlation | Structured JSON logging, distributed tracing, agent-to-app telemetry correlation |

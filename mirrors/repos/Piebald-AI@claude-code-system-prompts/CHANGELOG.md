@@ -4,6 +4,16 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.140](https://github.com/Piebald-AI/claude-code-system-prompts/commit/0082871)
+
+_+622 tokens_
+
+- **NEW:** Tool Description: Agent (simple usage notes) — Simplified usage notes for the Agent tool covering when to delegate, fork behavior, resumption, worktree isolation, background execution, parallel launches, and context restrictions.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Expands the Self-Modification rule from a vague description to an explicit list of agent-config paths (`.claude/settings*.json`, `CLAUDE.md`, `CLAUDE.local.md`, `.claude.json`, `.claude/rules/`, `.claude/hooks/`, `.claude/commands/`, `.claude/agents/`, `.claude/skills/`, `.claude/output-styles/`, `.claude/workflows/`, `.claude/routines/`, `.claude/scheduled_tasks.json`, `.claude/loop.md`, `.mcp.json`), and carves out exceptions so files under `.claude/worktrees/<name>/` are treated as ordinary project files and a project-specific `.claude/` subdirectory outside the listed paths is not Self-Modification on its own.
+- Agent Prompt: Worker fork — Minor wording cleanup: drops "in your system prompt" from the "default to forking" reference so the rule applies generically to parent guidance.
+- Tool Description: Snooze (delay and reason guidance) — Adds an explicit warning not to schedule short-interval wakeups to poll for harness-tracked background work (since the agent is re-invoked automatically when it finishes); instead use a long 1200s+ fallback heartbeat. Reframes the under-5-minute cache window as appropriate for actively polling external state the harness can't notify about (CI runs, deploys, remote queues), and updates the example from a bun build to a CI run.
+- Tool Description: Write (read existing file first) — Rewrites the description into a "When to use" format that names creating a new file or fully replacing a previously-read file as the use cases, and points at the edit tool for partial changes.
+
 # [2.1.139](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d8c2b6c)
 
 _+2,248 tokens_

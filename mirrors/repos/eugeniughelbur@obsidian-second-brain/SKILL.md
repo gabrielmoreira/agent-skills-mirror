@@ -102,7 +102,7 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes — across all 31 commands — must follow `references/ai-first-rules.md`:
+The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes — across all 32 commands — must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** — each note explains itself; don't rely on backlinks alone
 2. **"For future Claude" preamble** — 2-3 sentence summary so Claude can decide relevance in 10 seconds
@@ -1062,6 +1062,54 @@ A background agent that fires automatically whenever Claude compacts the convers
 **Debugging:** The agent logs to `/tmp/obsidian-bg-agent.log`. Check there if updates aren't appearing.
 
 **Safety:** The agent never deletes, archives, or merges anything. It only adds or updates. If the summary has nothing vault-worthy, it exits without touching the vault.
+
+---
+
+## Write-Time AI-First Validator (PostToolUse Hook)
+
+A non-blocking validator that fires after every `Write` or `Edit` on a markdown file inside the configured vault. It warns when the file fails the AI-first rule (missing required frontmatter, missing `## For future Claude` preamble, broken YAML) and surfaces the warning back to Claude on stderr so the agent can repair the note in the same turn.
+
+**What it checks:**
+1. The file has frontmatter delimiters (`--- ... ---`)
+2. No tabs in frontmatter (YAML requires spaces)
+3. Required AI-first fields present: `date:`, `type:`, `tags:`, `ai-first: true`
+4. The body contains a `## For future Claude` preamble (rule #2 of [`references/ai-first-rules.md`](references/ai-first-rules.md))
+
+**What it skips:**
+- Files outside `OBSIDIAN_VAULT_PATH`
+- Files under `raw/`, `templates/`, `_export/`, `.obsidian/`, `.git/`, `.trash/`
+
+**Setup:**
+
+1. Make the script executable (one-time):
+   ```bash
+   chmod +x ~/.claude/skills/obsidian-second-brain/hooks/validate-ai-first.sh
+   ```
+
+2. `OBSIDIAN_VAULT_PATH` must already be set in `~/.claude/settings.json` (the background agent setup above covers this).
+
+3. Add the `PostToolUse` hook to `~/.claude/settings.json`:
+   ```json
+   {
+     "hooks": {
+       "PostToolUse": [
+         {
+           "matcher": "Write|Edit",
+           "hooks": [
+             {
+               "type": "command",
+               "command": "bash ~/.claude/skills/obsidian-second-brain/hooks/validate-ai-first.sh"
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
+
+**Behavior:** Non-blocking. If a write fails the AI-first rule, Claude sees the warning text on stderr (with one line per missing requirement) and can re-write the file in the same conversation turn to fix it. The original write is NOT reverted.
+
+**Other platforms (Codex CLI / Gemini CLI / OpenCode):** The hook script ships in `dist/<platform>/hooks/` for all four platform builds, but each platform's hook system differs. Wiring it up beyond Claude Code is left to the platform's own configuration. See [`hooks/validate-ai-first.hook.yaml`](hooks/validate-ai-first.hook.yaml) for the platform-neutral spec.
 
 ---
 

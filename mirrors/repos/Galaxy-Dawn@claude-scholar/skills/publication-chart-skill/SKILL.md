@@ -132,6 +132,18 @@ Classify the request along these axes:
 
 Do not jump into plotting code before the communication target is clear.
 
+Before plotting research results, lock the evidence contract:
+- primary scientific claim,
+- unit of analysis,
+- primary metric and metric direction,
+- whether repeated rows are independent,
+- missing cells or incomplete comparison blocks,
+- error-bar basis: subject, subject-task, fold, seed, run, or bootstrap sample,
+- whether exact values need a companion table,
+- whether the current evidence allows a winner/significance claim.
+
+If these are unclear, ask or produce an audit recommendation instead of a polished figure. Do not create a paper-ready plot while the unit of analysis, missing-cell handling, or error-bar basis is unresolved.
+
 ### 2. Choose the representation
 
 Choose the representation based on the scientific claim, not novelty or visual flair.

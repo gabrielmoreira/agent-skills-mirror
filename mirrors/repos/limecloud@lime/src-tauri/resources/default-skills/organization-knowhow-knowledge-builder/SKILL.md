@@ -3,14 +3,13 @@ name: organization-knowhow-knowledge-builder
 description: 将团队 SOP、交付流程、角色职责、项目复盘、FAQ、决策边界和升级机制，整理成符合 Agent Knowledge v0.6 document-first 标准、可被 AI 安全调用的组织经验知识库。适用于用户要求“整理组织知识库”“沉淀团队 SOP”“把交付经验变成项目资料”“维护组织 know-how”的场景。
 license: Apache-2.0
 allowed-tools: list_directory, read_file
-compatibility:
-  agentKnowledge: ">=0.6.0"
+compatibility: Agent Knowledge >=0.6.0
 metadata:
-  lime_version: 1.0.0
+  lime_version: 1.0.1
   lime_execution_mode: prompt
   lime_surface: workbench
   lime_category: knowledge
-  Lime_skill_bundle_version: "1.0.0"
+  Lime_skill_bundle_version: "1.0.1"
   Lime_knowledge_builder: "true"
   Lime_knowledge_pack_type: "organization-knowhow"
   Lime_knowledge_template: "organization-knowhow"

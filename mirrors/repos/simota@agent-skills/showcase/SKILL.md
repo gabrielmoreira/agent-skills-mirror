@@ -276,6 +276,7 @@ Showcase receives components and design context from upstream agents. Showcase s
 | `references/storybook-interactions.md` | Play function authoring, `@storybook/test` API, addon-vitest integration, Interactions panel debugging |
 | `references/mdx-docs.md` | MDX 3 + Storybook 10 Doc Blocks, Autodocs vs hand-authored MDX trade-off, multi-page docs structure |
 | `references/react-cosmos.md` | Cosmos 6+ fixtures, decorator chains, multi-instance props, Storybook vs Cosmos decision tree |
+| `_common/UX_TRENDS_2026.md` | You need 2025-2026 component catalogue context — token-layer linkage (§1), framework state (React 19.2 / Svelte 5 / Vue 3.6, §3), and case studies for Radix Themes 3.0 / Primer / Polaris Unified. Read §1 Design and §3 Frontend. |
 | `_common/OPUS_47_AUTHORING.md` | Sizing the story plan, deciding adaptive thinking depth at PLAN, or front-loading target component/coverage tier at SCAN. Critical for Showcase: P3, P5 |
 
 ## Operational

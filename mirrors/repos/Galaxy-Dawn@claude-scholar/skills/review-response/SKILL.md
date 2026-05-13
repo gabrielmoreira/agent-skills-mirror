@@ -84,14 +84,16 @@ When the rebuttal task involves:
 - structuring multi-point responses,
 - or learning from strong prior paper/review writing,
 
-read this file before drafting:
+read the active installed writing memory before drafting:
 
-- `~/.claude/skills/ml-paper-writing/references/knowledge/paper-miner-writing-memory.md`
+- `~/.claude/skills/ml-paper-writing/references/knowledge/paper-miner-writing-memory.md` on Claude Code installs
+- the equivalent installed skill-home path on Codex/OpenCode branches
+- otherwise skip this optional memory and continue with the local review-response references
 
 ### Default read order for rebuttal work
 
 1. reviewer comments and paper context
-2. `paper-miner-writing-memory.md`
+2. optional `paper-miner-writing-memory.md` if available
 3. `references/response-strategies.md`
 4. `references/rebuttal-templates.md`
 5. `references/tone-guidelines.md`
@@ -103,6 +105,17 @@ Read narrowly:
 - use `Writing patterns mined` only when the response needs stronger rhetorical structure.
 
 Do not quote the memory mechanically. Use it to improve structure, clarity, restraint, and professionalism.
+
+## Evidence anchor rule
+
+Every response row must include one of:
+- paper location,
+- result table / figure / analysis artifact,
+- citation / Evidence Record ID,
+- planned experiment with status,
+- `unresolved` if no evidence exists yet.
+
+Do not claim "we added experiments" or "the results show" without naming the artifact. If an objection has multiple atomic points, split it and cover each point separately.
 
 ## Reference Documents
 

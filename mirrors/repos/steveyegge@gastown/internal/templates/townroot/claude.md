@@ -18,20 +18,24 @@ Symptoms: `bd` commands hang/timeout, "connection refused", "database not found"
 query latency > 5s, unexpected empty results.
 
 **BEFORE restarting Dolt, collect diagnostics.** Dolt hangs are hard to
-reproduce. A blind restart destroys the evidence. Always:
+reproduce. A blind restart destroys the evidence. Always use non-fatal
+diagnostics:
 
 ```bash
-# 1. Capture goroutine dump (safe — does not kill the process)
-kill -QUIT $(cat ~/gt/.dolt-data/dolt.pid)  # Dumps stacks to Dolt's stderr log
+# 1. Capture process metadata and recent logs without signaling Dolt
+{{cmd}} dolt dump 2>&1 | tee /tmp/dolt-hang-$(date +%s).log
 
 # 2. Capture server status while it's still (mis)behaving
-{{cmd}} dolt status 2>&1 | tee /tmp/dolt-hang-$(date +%s).log
+{{cmd}} dolt status 2>&1 | tee /tmp/dolt-status-$(date +%s).log
 
 # 3. THEN escalate with the evidence
 {{cmd}} escalate -s HIGH "Dolt: <describe symptom>"
 ```
 
 **Do NOT just `{{cmd}} dolt stop && {{cmd}} dolt start` without steps 1-2.**
+**Do NOT use `kill -QUIT` for routine diagnostics.** Dolt 1.86.5 terminates
+`sql-server` after SIGQUIT; only use it if the current Dolt version has been
+verified not to exit on that signal.
 
 **Escalation path** (any agent can do this):
 ```bash

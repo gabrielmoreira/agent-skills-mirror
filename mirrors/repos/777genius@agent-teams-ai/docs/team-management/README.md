@@ -28,6 +28,8 @@
 
 ⚠️ `docs/iterations/*` - это исторические planning notes. Они полезны для контекста, но не являются source-of-truth для текущего поведения продукта. Актуальный контракт review flow описан в этом файле и в [kanban-design.md](./kanban-design.md).
 
+⚠️ `agent-attachments-*.md` (architecture plan + phase 1-5 plans) - это исторические дизайн-документы для feature attachments. Фактическая реализация в `src/features/agent-attachments/` может отличаться от описанной архитектуры. Для актуального состояния см. код в `src/features/agent-attachments/core/domain/` и тесты.
+
 ### 1. Messaging: Inbox-файлы
 
 Единственный способ общаться с **запущенными** тиммейтами. SDK и CLI создают новые сессии, а не подключаются к существующим. Подробности: [research-messaging.md](./research-messaging.md)
@@ -106,7 +108,7 @@ Kanban-позиция (REVIEW, APPROVED) хранится в `kanban-state.json`
 
 ## Открытые вопросы
 
-- **FileWatcher расширение**: FileWatcher.ts уже 900+ строк — добавление teams/tasks watchers нетривиально, требует отдельного спайка
+- **FileWatcher расширение**: FileWatcher.ts уже 1243 строк — добавление teams/tasks watchers нетривиально, требует отдельного спайка
 - **Windows atomic rename**: `fs.renameSync` на Windows бросает `EXDEV`/`EBUSY` при кросс-устройственном rename — нужна обёртка
 - **leadSessionId интеграция**: config.json содержит `leadSessionId`, но интеграция с session viewer (переход к сессии лида) — открытый вопрос
 - **Hard Interrupt**: сообщения доставляются между turns (1-30с задержка). В будущем нужен способ прервать mid-turn

@@ -22,6 +22,17 @@ Use this skill in the following order unless the task is unusually narrow:
 
 Google Scholar may still help with manual discovery, but it is **not** the canonical verification authority in this skill. Default verification should use programmatic sources such as Semantic Scholar, CrossRef, and arXiv.
 
+## Claim ledger gate
+
+Before a project plan, experiment note, or literature summary becomes manuscript prose:
+- identify the Claim Candidate or Evidence Record that supports the sentence,
+- preserve allowed wording and forbidden stronger wording,
+- keep project plans as hypotheses unless experiment artifacts or verified papers support them,
+- do not turn related-work motivation into evidence for the paper's own result,
+- mark unsupported claims as `[CLAIM NEEDS EVIDENCE]` instead of polishing them.
+
+If the repo context is clear enough for a first draft, still apply this gate before stating contributions, results, related-work contrasts, or rebuttal-facing claims.
+
 ## Core Philosophy: Collaborative Writing
 
 **Paper writing is collaborative, but Claude should be proactive in delivering drafts.**
@@ -167,9 +178,11 @@ Then verify and retrieve BibTeX using the citation workflow below.
 **Be proactive—deliver a complete draft rather than asking permission for each section.**
 
 If the repo provides clear results and the contribution is apparent:
-1. Write the full first draft end-to-end
-2. Present the complete draft for feedback
-3. Iterate based on scientist's response
+1. Check the claim ledger gate for contribution and result claims
+2. Write the full first draft end-to-end only for supported claims
+3. Mark unsupported or speculative claims explicitly
+4. Present the complete draft for feedback
+5. Iterate based on scientist's response
 
 If genuinely uncertain about framing or major claims:
 1. Draft what you can confidently

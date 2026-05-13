@@ -296,7 +296,7 @@ Behavior notes per Recipe:
 
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
-| `landing page`, `LP`, `one page site` | LP pipeline (Frame/Muse → Forge → Artisan → Showcase) | Production LP code + stories + tokens | `references/onboarding.md` (if present) |
+| `landing page`, `LP`, `one page site` | LP pipeline (Frame/Muse → Forge → Artisan → Showcase) | Production LP code + stories + tokens | — |
 | `extract tokens`, `codebase design system` | ONBOARDING + Muse normalization | Persisted design system + token report | — |
 | `pitch deck + assets + 1-pager` | Parallel Stage/Ink/Morph bundle | Deck + assets + 1-pager export | — |
 | `Figma to code`, `design to implementation` | Frame → Muse → Artisan → Showcase | Production code + catalog | — |
@@ -367,6 +367,7 @@ Every atelier deliverable must include:
 | `_common/design-system-registry.md` | You need the registry contract for `.agents/design-system/{project}.json` persistence |
 | `_common/parametric-output.md` | You need the parametric-slider output convention downstream agents parse |
 | `_common/GIT_GUIDELINES.md` | You are authoring commits or PRs touching atelier pipeline artifacts |
+| `_common/UX_TRENDS_2026.md` | You need cross-domain 2025-2026 evidence to orchestrate Vision / Muse / Frame / Forge / Artisan / Showcase / Echo handoffs. Covers tokens (DTCG, OKLCH/P3), motion (`linear()`, View Transitions), IA (agentic UX, NN/g), and frontend (RSC, Tailwind v4, INP) in one file. Read all three sections. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing delegate prompts, deciding per-delegate model effort, or front-loading acceptance criteria |
 
 ## Operational

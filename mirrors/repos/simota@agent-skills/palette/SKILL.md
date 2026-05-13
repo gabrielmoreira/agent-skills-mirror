@@ -311,6 +311,7 @@ Palette receives UX direction and testing results from upstream agents. Palette 
 | `references/error-states.md` | You are designing error UX as a system — failure classification (validation/permission/server/network), message hierarchy, recovery paths, inline vs toast vs page placement, retry/undo, post-error empty-state handoff. |
 | `references/empty-states.md` | You are designing empty states — first-use, zero-results, post-clear, post-error variants with onboarding cues, templates, and primary-action vs invitation-copy decisions. |
 | `references/loading-states.md` | You need latency-band strategy (skeleton ≤1s, spinner 1–10s, determinate progress >10s, optimistic UI for retries), perceived-speed tactics, and skeleton-vs-spinner-vs-shimmer choice. |
+| `_common/UX_TRENDS_2026.md` | You need 2025-2026 usability and navigation evidence — NN/g navigation guidelines, hamburger / split-button anti-patterns, WCAG 2.2 AA baseline, agentic UX patterns. Read §2 IA and §1 Design a11y. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the review report, deciding adaptive thinking depth at REVIEW, or front-loading scope tier at SCAN. Critical for Palette: P3, P5. |
 
 ## Operational

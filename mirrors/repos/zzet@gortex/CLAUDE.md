@@ -20,6 +20,18 @@ go test -race ./...                 # all test packages must pass
 
 Gortex is running as an MCP server. You MUST use graph queries instead of file reads whenever possible. This saves thousands of tokens per task.
 
+### Optional: delegate research to a local agent
+
+When the daemon is built with `-tags llama` and `llm.model` is set in `.gortex.yaml` (or via the `GORTEX_LLM_MODEL` env var), the `ask` MCP tool is registered. It runs a grammar-constrained agent locally that uses gortex tools to research one question and returns a synthesized answer — useful when you'd otherwise issue many `search_symbols` / `get_callers` / `contracts` calls.
+
+| When you'd otherwise...               | Consider...                              |
+|---------------------------------------|------------------------------------------|
+| Run many calls to answer one open-ended question | `ask` (one call, ~5-30s, ~200-400 token answer) |
+| Trace a request across repos (consumer → contract → handler → downstream) | `ask` with `chain: true` |
+| Look up a single known fact | Skip `ask` — direct tools are faster |
+
+If `ask` isn't in `tools/list`, gortex was built without `-tags llama` or `llm.model` is unset. Fall through to direct tools.
+
 ### Navigation and Reading
 
 | Instead of...                         | You MUST use...                          |

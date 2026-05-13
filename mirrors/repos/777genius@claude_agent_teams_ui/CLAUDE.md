@@ -28,6 +28,7 @@ Always use pnpm (not npm/yarn) for this project.
 Workspace membership is canonical in `pnpm-workspace.yaml`; do not re-add root `package.json.workspaces`, because npm subproject installs in Codex Cloud must treat nested packages as standalone projects.
 Do NOT run `pnpm lint:fix` unless the user explicitly asks for it — it interferes with agents running in parallel.
 When running build/typecheck/test commands, pipe through `tail -20` to avoid flooding the context window (e.g. `pnpm typecheck 2>&1 | tail -20`).
+- Hard guardrails: [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md)
 
 - `pnpm install` - Install dependencies
 - `pnpm dev` - Dev server with hot reload

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 0 followed patterns, 715 file(s) materialized.
+Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 1 followed patterns, 716 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 0 followe
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 715 |
+| Followed pats | 1 |
+| Files         | 716 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 0 followe
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `workflows/README.md`
 
 ## File Index
 
@@ -774,6 +774,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 713 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_client_historical.py`](skills/vcp-screener/scripts/tests/test_fmp_client_historical.py) |
 | 714 | ✓ | [`skills/vcp-screener/scripts/tests/test_vcp_screener.py`](skills/vcp-screener/scripts/tests/test_vcp_screener.py) |
 | 715 | ✓ | [`skills/vcp-screener/SKILL.md`](skills/vcp-screener/SKILL.md) |
+| 716 | → | [`workflows/README.md`](workflows/README.md) |
 
 ---
 

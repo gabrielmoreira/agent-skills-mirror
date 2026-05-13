@@ -3,12 +3,11 @@ name: knowledge_builder
 description: 兼容旧版 Agent Knowledge 编译流程的 deprecated 兜底 Builder。仅用于未知或历史 pack 类型；标准 persona / data pack 必须优先委托内置专用 Builder Skill。
 license: Apache-2.0
 allowed-tools: list_directory, read_file
-compatibility:
-  agentKnowledge: ">=0.6.0"
+compatibility: Agent Knowledge >=0.6.0
 metadata:
   lime_argument_hint: 输入知识包类型、pack name、项目根目录、来源目录或粘贴资料，并说明目标使用场景。
   lime_when_to_use: 用户需要把个人、品牌产品、组织流程、项目资料或增长策略整理成可确认的 Agent Knowledge 知识包时使用。
-  lime_version: 1.2.0
+  lime_version: 1.2.1
   lime_execution_mode: prompt
   lime_surface: workbench
   lime_category: knowledge

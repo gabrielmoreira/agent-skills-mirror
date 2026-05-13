@@ -189,6 +189,21 @@ Port env vars (never hardcoded — the dev orchestrator auto-shifts to the next 
 - Auto-training defaults: 100 trajectories per task, 12h cooldown. Adjust via `/api/training/auto/config` or Settings → Auto-Training.
 - The privacy filter at `eliza/apps/app-training/src/core/privacy-filter.ts` is mandatory on every write path that touches real user trajectories — both the nightly export cron and the on-demand training orchestrator run it before any JSONL is written.
 
+## Background execution
+
+Scheduled tasks (`heartbeats`, workflow triggers, autonomy ticks) share a single scheduler. Treat the items below as load-bearing facts when working on triggers, mobile background, or anything that fires "later":
+
+- **Canonical scheduler:** `ScheduledTaskRunner` in `packages/core/src/services/task-scheduler.ts` — single source of truth after the post-Wave-2 consolidation. Older per-feature timers (workflow `TimerHeartbeatService`, etc.) have been collapsed onto this one runner. New code MUST schedule through it; do not introduce parallel timers.
+- **Serverless seam:** when `runtime.serverless = true`, the runner skips its own internal timer and waits to be ticked by the host. `@elizaos/plugin-background-runner` sets this flag and drives `runDueTasks()` from OS-level wakes (BGTaskScheduler / WorkManager). Desktop / server hosts leave `serverless = false` and the runner ticks on its own.
+- **Execution profiles** (Wave 4): each scheduled task is tagged with one of:
+  - `foreground` — must run while the app is in foreground (UI thread access, push surfaces).
+  - `bg-light-30s` — safe to run inside an iOS BGAppRefreshTask's ~30s budget; preferred default for short prompts.
+  - `bg-heavy-fgs` — needs the longer wake budget (iOS BGProcessingTask) or an Android foreground service. Surfaces a persistent notification on Android.
+  - `notify-only` — fires a local notification instead of running anything; the task body runs when the user taps in.
+- **Mobile reality:** iOS background wakes are opportunistic — typically once per ~1-4 hours, ~30s budget per wake. Android WorkManager has a 15-minute floor on periodic work and can defer further under Doze / App Standby; the FGS profile is the only way to guarantee persistence short of the user opening the app. Force-quit on either platform halts background wakes until the user reopens the app. These constraints are surfaced to users by `packages/ui/src/components/pages/HeartbeatForm.tsx` (cadence warning) and `HeartbeatsView.tsx` (long-running host banner).
+- **Host capability detection:** `plugins/plugin-workflow/src/utils/host-capabilities.ts` is the canonical detection (engine-side); `packages/ui/src/utils/host-capabilities.ts` mirrors it for UI banners. The workflow engine refuses activation of nodes whose `requires` set the current host can't satisfy and emits an actionable error pointing at the remediation (paired Eliza Cloud, `plugin-tunnel`, or running on a server).
+- **Plugin wiring:** `plugins/plugin-background-runner/INSTALL.md` is the operator-level checklist for the native side (Info.plist identifiers, WorkManager unique work name, capacitor.config.ts block, `/api/internal/wake` device-secret contract). `docs/background-execution.md` is the user-facing one-pager.
+
 ## App and plugin primitives
 
 The runtime exposes two unified action surfaces — `APP` and `PLUGIN` — that replace the older single-purpose actions. New code MUST call `APP` / `PLUGIN`. Legacy actions (`LAUNCH_APP`, `RELAUNCH_APP`, `LIST_APPS`, `INSTALL_PLUGIN`, `UNINSTALL_PLUGIN`, `EJECT_PLUGIN`, `SYNC_PLUGINS`, `REINJECT_PLUGINS`, `LIST_PLUGINS`, `SEARCH_PLUGINS`, `CORE_STATUS`, etc.) remain as similes but are no longer canonical.
@@ -260,6 +275,56 @@ What good changes look like: fewer codepaths, fewer special cases, fewer fallbac
 Remove on sight: unused code, near-duplicate types, legacy / migration leftovers, AI slop and fake TODO implementations, comments describing churn, "temporary" fallbacks that became permanent, broad `try/catch` that just swallows or replaces errors with defaults, `any` / `unknown` / unsafe casts used to avoid thinking.
 
 Constraints: do not preserve bad patterns "for compat" without a documented, verified live caller. Do not add abstractions unless they reduce total complexity. Do not DRY code that should remain separate because the domains differ. Do not centralize unlike concepts. Do not hide uncertainty with fallback values. Do not keep both old and new paths unless a live migration explicitly requires it.
+
+## QA & Testing Protocol
+
+### Required test coverage for any onboarding-touching change
+- Any PR that touches `packages/ui/src/onboarding/**`, `packages/ui/src/state/onboarding-*`, `packages/ui/src/components/onboarding/**`, `packages/app-core/src/api/*onboarding*`, `packages/app-core/src/api/auth-bootstrap-routes.ts`, `packages/app-core/src/api/auth-pairing-compat-routes.ts`, or `plugins/plugin-elizacloud/src/onboarding.ts` MUST ship with:
+  1. A unit test for any state-machine change in `flow.ts`
+  2. A Playwright spec entry in `packages/app/test/ui-smoke/onboarding-*.spec.ts` covering the new path
+  3. A contract test if API shape changed
+  4. A visual snapshot baseline if UI rendering changed
+
+### Test lanes
+- `TEST_LANE=pr` (default in CI) — mocked APIs, no real cloud spend. Excludes `*.real.test.ts` and `*.real.e2e.test.ts`. Runs on every PR.
+- `TEST_LANE=post-merge` — live APIs, full suite. Runs on develop after merge.
+- `MILADY_DESKTOP_QA=1` — opt-in for desktop-stack assertions that require a running `bun run dev:desktop` instance.
+- `ELIZA_LIVE_TEST=1` — gates the live onboarding test in `packages/app-core/test/app/onboarding-companion.live.e2e.test.ts`. Requires a real provider API key.
+
+### Dev observability for QA harnesses
+- `GET /api/dev/stack` returns canonical port/path/renderer-URL discovery. Use this from any QA harness instead of hardcoding 31337/2138.
+- `GET /api/dev/cursor-screenshot` returns a PNG of the Electrobun desktop (OS-level capture). Use this for visual regression of native desktop chrome.
+- `GET /api/dev/console-log?maxLines=400` returns aggregated dev logs (Vite + API + Electrobun child).
+- `bun run desktop:stack-status -- --json` is the single-shot status probe for an entire dev stack.
+
+### Surfaces and how to test each
+| Surface | Primary harness | Visual proof | Failure modes to cover |
+|---|---|---|---|
+| Web (browser) | Playwright in `packages/app/test/ui-smoke/` | Playwright screenshot | Provider auth failure, validation errors, resume from partial state |
+| Desktop (Electrobun) | Playwright + `/api/dev/cursor-screenshot` | OS-level screenshot via dev endpoint | First-launch pre-seed, pairing token TTL, reset-via-query-param |
+| Mobile (Capacitor) | iOS sim + Android emulator (local dev only) | `scripts/qa/mobile-screenshot-walkthrough.mjs` via computer-use MCP | Deep-link entry, Android local-agent pre-seed, permission prompts |
+| Cloud pairing | Mocked cloud endpoints in `plugins/plugin-elizacloud/__tests__/onboarding-failures.test.ts` | API trace, fixture replay | availability=false, auth timeout, provisioning timeout, token revocation |
+
+### Required commands before claiming an onboarding-touching change is done
+```bash
+bun run verify                            # typecheck + lint
+bun run test                              # unit + contract
+bun run --cwd packages/app test:e2e       # Playwright UI smoke (includes onboarding-full-flow.spec.ts)
+bun run desktop:stack-status -- --json    # if changes touched desktop
+```
+
+For changes that touched cloud pairing, additionally run with `TEST_LANE=post-merge` against the staging cloud (do NOT run live cloud tests from CI unless explicitly gated).
+
+### Manual QA — when automation can't reach
+See [docs/QA-onboarding.md](docs/QA-onboarding.md) for the full manual walkthrough matrix per surface. The TL;DR: AI agents can drive web/desktop via Playwright and mobile via the computer-use MCP. For native iOS/Android first-launch dialogs (permission grants, biometric prompts) computer-use is required — Playwright cannot reach those.
+
+### Evidence requirements
+Every reported QA pass must include either:
+- A green test run output, OR
+- A captured screenshot from `/api/dev/cursor-screenshot` or computer-use, OR
+- A network trace from `GET /api/dev/console-log` for backend-only changes.
+
+A bare "I clicked through and it worked" is not acceptable evidence.
 
 ## Git workflow
 

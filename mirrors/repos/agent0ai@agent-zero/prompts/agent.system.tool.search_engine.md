@@ -1,7 +1,16 @@
 ### search_engine
 find live news, prices, and other real-time web data
-arg: `query` (text search query)
+arg: `query` (keyword-based text search query)
 returns urls, titles, and descriptions
+
+query rules:
+- use keywords, names, exact phrases, model/version numbers, dates, and domains
+- do not write a natural-language question or sentence
+- omit filler words like "what", "who", "can you tell me", "find information about"
+- use 3-10 high-signal terms; add alternatives only when they improve recall
+- bad: "What is the latest LiteLLM release and what changed?"
+- good: "LiteLLM latest release notes changelog"
+
 example:
 ~~~json
 {
@@ -9,7 +18,7 @@ example:
   "headline": "Searching the web",
   "tool_name": "search_engine",
   "tool_args": {
-    "query": "latest LiteLLM release notes"
+    "query": "LiteLLM latest release notes changelog"
   }
 }
 ~~~

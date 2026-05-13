@@ -153,6 +153,8 @@ Node.js version from `.nvmrc` and pnpm 10+.
 
 - The minimum validation bar is the repo's `pre-commit`-equivalent validation flow when available; if no such flow exists, fall back to `pnpm lint` plus the repo's affected-file or related-test validation command for the touched files.
 - In this repo, the default staged validation entrypoint is `pnpm run validate:staged`; do not treat bare `pnpm lint-staged` as the full pre-commit flow because it skips the separate staged i18n guard.
+- When using `pnpm run validate:staged` to validate current edits, stage only the task-scoped files you intentionally modified first. If staging cannot be done safely because the index contains unrelated or ambiguous user work, do not report a no-staged-files skip as a passing validation; run an appropriate unstaged-safe alternative and explain the limitation.
+- Do not treat standalone Prettier checks as correctness validation. For small scoped commits, run the focused behavioral/type validation needed for the change, stage only task-scoped files, and rely on the pre-commit `validate:staged` hook to apply staged Prettier/ESLint cleanup. Run standalone Prettier only when formatting itself is the task, no commit will be created, a hook failed because of formatting, or a large task-scoped diff needs pre-formatting to reduce review noise; in those cases prefer `prettier --write` over `prettier --check`.
 - Do not treat `pnpm knip` as the default minimum for every task. Add it when changes can affect the module/dependency graph, such as `package.json` or lockfile edits, `knip.ts` edits, file moves/renames/deletions, new or removed exports/barrels, or dynamic wiring changes that may leave dead files, exports, or dependencies behind.
 - When the repo defines a `pre-commit` validation flow, prefer running the equivalent `pre-commit` checks directly without creating a commit instead of assembling a hand-picked validation command set.
 
@@ -176,6 +178,7 @@ Node.js version from `.nvmrc` and pnpm 10+.
 
 - Start with the repo-defined `pre-commit`, affected-file, or `related` validation flow for the touched files, then broaden only if the change is cross-cutting.
 - For TS/TSX edits in this repo, treat `pnpm run validate:staged` / the Husky `pre-commit` path as the default affected validation flow and prefer `vitest related --run` style checks over a manually assembled test file list.
+- A successful `validate:staged` run only validates the files that were staged for that run. If the command reports that no staged files were found, treat that as no coverage for the current diff rather than a successful validation of the edits.
 - When adding or reshaping shared exports, provider/context modules, public test utilities, runtime constant sets, or other structural wiring, prefer `pnpm run validate:push` before handoff instead of manually assembling `compile` + `knip`.
 - Do not default to `pnpm run validate:push` for every small change; use it when the change is structural, cross-cutting, or likely to affect type/dependency/export analysis beyond the touched file.
 

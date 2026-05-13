@@ -38,7 +38,7 @@ From the CCB repo root, run the bundled checker before and after release work:
 CHECKER="dev_tools/skills/ccb-github/scripts/check_release_state.py"
 
 python "$CHECKER" --phase prepare --repo SeemSeam/claude_codex_bridge
-python "$CHECKER" --phase published --repo SeemSeam/claude_codex_bridge
+python "$CHECKER" --phase published --repo SeemSeam/claude_codex_bridge --wait-seconds 1800
 ```
 
 The checker is read-only. It catches mechanical drift, but still manually inspect the top of `README.md` and `README_zh.md` because stale "What's New" prose can be semantically wrong even when version numbers are correct.
@@ -51,12 +51,12 @@ python "$CHECKER" --phase dev --repo SeemSeam/claude_codex_bridge --wait-seconds
 
 `--phase dev` checks that the worktree is clean, the branch is pushed, the current commit's required GitHub workflows are green, and the change set is classified as development-only vs package/release-impacting.
 
-`--phase published` checks both release state and homepage state: GitHub latest release, release assets, `SHA256SUMS`, release workflows, branch validation workflows, and README/README_zh as rendered from the repository default branch.
+`--phase published` checks both release state and homepage state: GitHub latest release, release assets, `SHA256SUMS`, release workflows, branch validation workflows, and README/README_zh as rendered from the repository default branch. Use `--wait-seconds 1800` immediately after tagging so the checker waits for `Release Artifacts` and uploaded assets instead of reporting transient failures.
 
 ## Decision Tree
 
 - Before tagging: run `--phase prepare`; fix every FAIL before creating a tag.
-- After pushing a tag or creating a release: run `--phase published`; fix every FAIL before reporting success.
+- After pushing a tag or creating a release: run `--phase published --wait-seconds 1800`; fix every FAIL before reporting success.
 - After an interruption: run both phases, then follow the recovery runbook below from the first failing state.
 - During README-only maintenance: still run `--phase prepare` so version badges, release notes, install URLs, and memory wording stay aligned.
 - During normal development: run `--phase dev --wait-seconds 900` after commit/push; if it reports runtime/package changes, decide whether a real release is needed.
@@ -140,7 +140,7 @@ Use this when the latest release exists but GitHub's repository homepage is stal
 5. Wait for default-branch `Tests`, `CCBD Real Platform Smoke`, and `Cross-Platform Compatibility Test`.
 6. Run:
    ```bash
-   python dev_tools/skills/ccb-github/scripts/check_release_state.py --phase published --repo SeemSeam/claude_codex_bridge
+   python dev_tools/skills/ccb-github/scripts/check_release_state.py --phase published --repo SeemSeam/claude_codex_bridge --wait-seconds 1800
    ```
 
 Do not create a new release tag for README-only homepage maintenance unless runtime/package contents changed and the user explicitly wants a new release.
@@ -161,7 +161,7 @@ Use this order:
 4. Create and push tag `vX.Y.Z` from the intended release commit.
 5. Create the GitHub Release page for `vX.Y.Z`.
 6. Let `Release Artifacts` upload assets.
-7. Confirm `Release Artifacts` is green for the tag or a valid `workflow_dispatch` recovery, and confirm branch validation workflows for the release commit are green or consciously accepted as warnings:
+7. Confirm `Release Artifacts` is green for the tag or a valid `workflow_dispatch` recovery on the release tag commit, and confirm branch validation workflows for the release commit are green or consciously accepted as warnings:
    - `Tests`
    - `CCBD Real Platform Smoke`
    - `Cross-Platform Compatibility Test`
@@ -174,7 +174,7 @@ Use this order:
    gh api 'repos/SeemSeam/claude_codex_bridge/contents/README.md?ref=main' --jq .content | base64 -d | rg 'version-|vX.Y.Z'
    ```
 
-The current workflow expects the Release page to exist before uploading assets. If `Release Artifacts` fails with `release not found`, create the Release and rerun the workflow.
+The current workflow expects the Release page to exist before uploading assets. If `Release Artifacts` fails with `release not found`, create the Release and rerun the workflow. When using manual `workflow_dispatch`, select the release tag/ref or otherwise ensure the run's `headSha` matches the release tag commit; the checker does not accept unrelated manual runs.
 
 The published checker must pass after this sequence. It verifies local push state, tag presence, GitHub latest release, release assets, `SHA256SUMS`, default-branch README, and whether the default branch contains the release tag.
 
@@ -183,7 +183,7 @@ The published checker must pass after this sequence. It verifies local push stat
 Use the checker output first; each FAIL includes a suggested fix. Common cases:
 
 - Release page missing: create it with `gh release create vX.Y.Z --repo SeemSeam/claude_codex_bridge --title vX.Y.Z --notes-file <notes-file>`, then rerun `Release Artifacts`.
-- Release Artifacts recovered through `workflow_dispatch`: run it with input `tag=vX.Y.Z`; the checker accepts this but warns if the workflow head SHA does not match the release tag.
+- Release Artifacts recovered through `workflow_dispatch`: run it on the release tag/ref or otherwise ensure the run `headSha` matches the tag commit; unrelated manual runs are not accepted.
 - Release assets missing: rerun the `Release Artifacts` workflow for the tag, then verify `ccb-linux-x86_64.tar.gz`, `ccb-macos-universal.tar.gz`, and `SHA256SUMS`.
 - Tag missing locally or remotely: stop and confirm the intended release commit before creating or pushing the tag.
 - Tag SHA mismatch: do not force-push automatically; inspect the tag and ask for explicit maintainer approval before rewriting release history.
@@ -200,7 +200,7 @@ Run:
 ```bash
 gh release view vX.Y.Z --repo SeemSeam/claude_codex_bridge --json tagName,url,assets
 gh run list --repo SeemSeam/claude_codex_bridge --limit 10
-python dev_tools/skills/ccb-github/scripts/check_release_state.py --phase published --repo SeemSeam/claude_codex_bridge
+python dev_tools/skills/ccb-github/scripts/check_release_state.py --phase published --repo SeemSeam/claude_codex_bridge --wait-seconds 1800
 git status --short --branch
 ```
 

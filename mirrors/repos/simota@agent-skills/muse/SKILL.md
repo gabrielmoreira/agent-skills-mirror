@@ -247,6 +247,7 @@ Muse receives design direction and token extraction from upstream agents. Muse s
 | `references/motion-tokens.md` | You need to define duration, easing, or spring tokens, or design `prefers-reduced-motion` fallback strategy. |
 | `references/elevation-tokens.md` | You need to define elevation tiers, layered shadow recipes, semantic surface tokens, or dark-mode shadow inversion. |
 | `references/radius-tokens.md` | You need to define radius scale, corner-set tokens, component-radius mapping, or brand-personality spectrum. |
+| `_common/UX_TRENDS_2026.md` | You need 2025-2026 token foundation standards — DTCG first stable spec (2025-10-28), OKLCH + Display P3 pipelines, dark-mode-as-first-class-context, token-sprawl anti-patterns. Read §1 Design. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the token spec, deciding adaptive thinking depth at STRUCTURE, or front-loading token category/scope at AUDIT. Critical for Muse: P3, P5. |
 
 ## Operational

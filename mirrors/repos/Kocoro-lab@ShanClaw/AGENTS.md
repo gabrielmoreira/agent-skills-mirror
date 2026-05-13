@@ -1,8 +1,8 @@
-# ShanClaw — Project Guide
+# Kocoro — Project Guide
 
 ## What This Is
 
-Go CLI tool (`shan`) — the runtime for Shannon AI agents. The primary production stack is **daemon + ShanClaw Desktop + Shannon Cloud**: the daemon connects to Cloud via WebSocket, receives channel messages, runs the agent loop locally with full tool access, and streams results back. ShanClaw also supports interactive TUI, one-shot CLI, MCP server mode, and local scheduled tasks.
+Go CLI tool (`shan`) — the runtime for Shannon AI agents. The primary production stack is **daemon + Kocoro Desktop + Shannon Cloud**: the daemon connects to Cloud via WebSocket, receives channel messages, runs the agent loop locally with full tool access, and streams results back. Kocoro also supports interactive TUI, one-shot CLI, MCP server mode, and local scheduled tasks.
 
 ## Tech Stack
 
@@ -49,6 +49,7 @@ internal/
     attachment.go      # remote attachment download -> file_ref pipeline
     session_cwd.go     # cloud-source scratch CWD allocator (ephemeral per-session tmp dir)
     readtracker_cache.go # per-session ReadTracker cache; entries released via SessionManager.OnSessionClose
+    suggestion_handler.go # GET /suggestion + POST /accept, validateSuggestionRoute, atomic persist on accept
   agent/
     loop.go              # AgentLoop.Run() — core agentic loop
     tools.go             # Tool interface, ToolRegistry, filtering, schemas
@@ -75,6 +76,9 @@ internal/
     cachemetric.go       # per-run cache stats accumulator
     usage.go             # per-run usage aggregation
     warmset.go           # deferred schema warm-set tracking
+    suggestion.go        # SUGGESTION_PROMPT, FilterSuggestion, ShouldGenerateSuggestion, GenerateSuggestion(/WithUsage)
+    suggestion_state.go  # SuggestionState — per-session latest suggestion text + accepted timestamp
+    forkedrequest.go     # BuildForkedRequest primitive + ForkOptions (byte-equality cache contract)
   agents/
     loader.go          # LoadAgent, ListAgents, ParseAgentMention
     api.go             # daemon-side agent CRUD
@@ -187,7 +191,7 @@ Skills in `builtinSkills` (`internal/skills/api.go`) are content-addressed-overl
 User edits to either are wiped on next startup — fork under a different skill name to customize.
 
 ### Kocoro Skill Co-Maintenance
-The `kocoro` bundled skill (`internal/skills/bundled/skills/kocoro/`) is a platform configuration assistant. Its SKILL.md and reference files (`references/*.md`) describe daemon API endpoints, config fields, and workflows. Kocoro is the AI's only source of truth for ShanClaw's HTTP surface — missing docs cause it to hallucinate workarounds. **Adding a new endpoint or feature counts as a trigger, not only modifying existing ones**; any `mux.HandleFunc(...)` in `internal/daemon/server.go` must have a matching reference entry. See CLAUDE.md for the full mapping.
+The `kocoro` bundled skill (`internal/skills/bundled/skills/kocoro/`) is a platform configuration assistant. Its SKILL.md and reference files (`references/*.md`) describe daemon API endpoints, config fields, and workflows. Kocoro is the AI's only source of truth for the daemon HTTP surface — missing docs cause it to hallucinate workarounds. **Adding a new endpoint or feature counts as a trigger, not only modifying existing ones**; any `mux.HandleFunc(...)` in `internal/daemon/server.go` must have a matching reference entry. See CLAUDE.md for the full mapping.
 
 ### Agent Names
 
@@ -238,6 +242,8 @@ Unknown tools are denied by default. The always-ask gate runs BEFORE the allowli
 - **file_read dedup**: `internal/agent/readtracker.go` records `(path, offset, limit, mtime, size)` per successful read. The daemon owns one tracker per session via `internal/daemon/readtracker_cache.go`, registered through `SessionManager.OnSessionClose` so per-session state is released on session switch, manager close, and explicit delete.
 - **Session sync** (`internal/sync/`): uploads local session JSON to Shannon Cloud once per day (opt-in via `sync.enabled`). Single entry point `sync.Run`; called from the daemon ticker and the `shan sessions sync` CLI; flock + atomic marker write serialize concurrent callers. Per-session ACK with persistent `marker.failed` bookkeeping; permanent reasons (`size_limit_exceeded`, `load_error`) stay forever and self-heal on session edit.
 - **Memory client** (`internal/memory/`, Phase 2.3): daemon owns sidecar lifecycle (spawn / health / restart / shutdown) and the 24h bundle pull loop. Tool `memory_recall` (`internal/tools/memory.go`) delegates to `memory.Service.Query` via UDS; falls back to `session_search` + MEMORY.md whenever `Service.Status() != Ready`. CLI/TUI use `memory.AttachPolicy` (probe-only, never spawn) and connect via `memory.NewServiceAttached`. Privacy invariant: the resolved API key bytes never reach disk or audit logs (only `sha256[:16]` fingerprint in `<bundle_root>/.tenant_fingerprint`).
+- **Implicit episodic preflight** (`internal/agent/preflight.go` + `internal/tools/memory_preflight.go`): before the first main-model call on a memory-relevant turn, `agent.MemoryPreflightFunc` (wired via `tools.NewMemoryPreflight`) runs a small-tier helper that compiles `memory.QueryIntent`s via forced `tool_use` (`compile_memory_intents`), the sidecar resolves them, and a `<private_memory>` block is injected into the in-flight user message via `injectPrivateMemoryContext`. The block is never persisted to the session transcript, never replayed, and stripped from compaction summary inputs at every `GenerateSummary` call site via `stripPrivateMemoryForSummary`. User-derived body content runs through `prompt.SanitizeUserBlock` before the envelope is wrapped (defense in depth — same pattern as `<user_instructions>`). Audit event `memory_preflight` records a content-free trace (`attempted` / `helper_used` / `intents_count` / `results_count` / `context_injected` / `outcome` / `error_class` / `http_status`); query text, anchors, relation labels, and recalled content are never logged.
+- **Prompt suggestion** (`internal/agent/suggestion.go`): forked LLM call after each main turn produces a 2-12 word ghost-text suggestion. **CACHE SAFETY INVARIANT**: the forked `CompletionRequest` is byte-equal to the main turn except for two appended messages (just-completed assistant reply + SuggestionPrompt) + `SkipCacheWrite: true` + `ForkedKind` (debug-only, `json:"-"`). Any other field divergence (`thinking.budget_tokens`, `max_tokens`, `tools` order) fragments the Anthropic prompt cache. Per-session state in `internal/agent/suggestion_state.go` (text + accepted-at + generation counter); lifecycle hooked from `internal/daemon/runner.go:fireSuggestionAfterRun` (post-`RunAgent` success, fire-and-forget). Gated by `agent.prompt_suggestion.enabled` + `cache_cold_threshold_tokens` + `min_turns` + last-turn error state via `ShouldGenerateSuggestion`. HTTP API: `GET /agents/{name}/sessions/{id}/suggestion` (or `/sessions/{id}/...` for default agent) + `POST` /accept. Accept returns the suggestion text for Desktop to fill the input — user still presses Enter, normal POST /message handles persistence.
 
 ### Turn Lifecycle
 
@@ -324,7 +330,7 @@ E2E tests in `test/e2e/` split into offline (no API) and live (`SHANNON_E2E_LIVE
 ## Building & Releasing
 
 - GoReleaser: `.goreleaser.yaml`
-- npm package: `@kocoro/shanclaw`
+- npm package: `@kocoro/kocoro` (previously `@kocoro/shanclaw`, deprecated post-v0.1.7)
 - Versioning is PATCH-only by default unless explicitly directed otherwise
 - Release flow: tag → push tag → CI builds and publishes
 - `docs/` is gitignored — documentation lives locally only
@@ -334,6 +340,8 @@ E2E tests in `test/e2e/` split into offline (no API) and live (`SHANNON_E2E_LIVE
 ### Core Local Tools
 
 - File ops: `file_read`, `file_write`, `file_edit`, `glob`, `grep`, `directory_list`
+- Archive: `archive_inspect` (read-only, no approval), `archive_extract` (requires approval) — supports `.zip / .tar / .tar.gz / .tgz`; atomic staging-dir + rename; rejects encrypted, symlink, absolute-path, setuid, device entries; caps 50 MB/entry, 200 MB total, 500 entries
+- Documents: `pdf_to_text`, `docx_to_text`, `xlsx_to_text`, `pptx_to_text` — read-only convenience extractors. Each prefers an external tool (poppler `pdftotext`, `pandoc`, `xlsx2csv`) and falls back to unzip + raw-XML strip when that tool is missing; PDF has no fallback and suggests uploading the file for cloud's native document block. Fixed-argv exec (no shell), 60s timeout per call, output capped at 100K runes with a `[Truncated: ...]` marker. See `internal/tools/doc_extract.go`.
 - Shell/system: `bash`, `system_info`, `process`, `http`, `think`
 - macOS GUI: `accessibility`, `applescript`, `screenshot`, `computer`, `clipboard`, `notify`, `browser`, `wait_for`, `ghostty`
 - Schedule: `schedule_create`, `schedule_list`, `schedule_update`, `schedule_remove`

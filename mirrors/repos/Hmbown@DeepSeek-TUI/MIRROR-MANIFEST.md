@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hmbown/DeepSeek-TUI` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Hmbown/DeepSeek-TUI` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Hmbown/DeepSeek-TUI` — 26 default patterns, 0 followed patterns, 2 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`crates/tui/assets/skills/skill-creator/SKILL.md`](crates/tui/assets/skills/skill-creator/SKILL.md) |
+| 3 | ✓ | [`crates/tui/assets/skills/v4-best-practices/SKILL.md`](crates/tui/assets/skills/v4-best-practices/SKILL.md) |
 
 ---
 

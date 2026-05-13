@@ -38,6 +38,18 @@ Skills are knowledge packages that teach agents specific abilities — like read
 - Response: `{"slug": "string", "name": "string", "description": "string", "install_source": "marketplace"}`
 - Notes: Downloads and installs from the marketplace. Use the slug from GET /skills/marketplace. The response `name` is the frontmatter display label (may differ from the slug, e.g. slug `xiaohongshu-mcp-skills` with name `xiaohongshu`).
 
+### Upload a skill from a ZIP file
+- Method: POST
+- Path: /skills/upload?force=true
+- Body: `multipart/form-data`; field `file` = ZIP payload (max 50 MB compressed, 200 MB uncompressed)
+- Response 201: `{"name": "...", "slug": "...", "description": "...", "install_source": "local"}`
+- Response 409: `{"error": "skill_already_exists", "existing_name": "...", "existing_description": "...", "existing_prompt": "...", "new_description": "...", "new_prompt": "..."}`
+- Response 403: `{"error": "skill_is_builtin"}` — returned when the ZIP targets an auto-installed builtin (`kocoro`, `kocoro-generative-ui`). `force=true` does NOT override this; the builtin guard is unconditional because `EnsureBuiltinSkills` would wipe any override on the next daemon restart.
+- Response 400: `{"error": "invalid multipart form: ..."}` — returned when the multipart body is malformed or the `file` field is missing. Distinct from 413 (which means body exceeded 50 MB).
+- Response 413: zip exceeds 50 MB compressed or 200 MB uncompressed
+- Response 422: invalid skill payload (missing SKILL.md, malformed frontmatter, invalid name)
+- Notes: GitHub/Finder-style ZIPs (single top-level directory) are auto-unwrapped, and `__MACOSX` metadata directories are ignored. The slug is derived from the SKILL.md frontmatter `name` field. Use `force=true` to overwrite an existing user-installed skill (does not apply to builtins). The 409 body includes both existing and new descriptions/prompts so the frontend can render a side-by-side compare sheet. `install_source` is set to `local` to distinguish uploads from `bundled` / `marketplace` installs.
+
 ### Update a custom skill
 - Method: PUT
 - Path: /skills/{slug}

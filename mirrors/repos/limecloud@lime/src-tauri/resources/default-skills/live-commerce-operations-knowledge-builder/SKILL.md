@@ -3,14 +3,13 @@ name: live-commerce-operations-knowledge-builder
 description: 将直播排期、货盘节奏、场控流程、主播话术、互动机制、异常预案和复盘指标等资料，整理成符合 Agent Knowledge v0.6 document-first 标准、可被 AI 安全调用的运营类知识库。适用于用户要求“整理直播运营知识库”“沉淀运营 SOP”“把运营资料变成项目资料”“维护运营知识库”的场景。
 license: Apache-2.0
 allowed-tools: list_directory, read_file
-compatibility:
-  agentKnowledge: ">=0.6.0"
+compatibility: Agent Knowledge >=0.6.0
 metadata:
-  lime_version: 1.0.0
+  lime_version: 1.0.1
   lime_execution_mode: prompt
   lime_surface: workbench
   lime_category: knowledge
-  Lime_skill_bundle_version: "1.0.0"
+  Lime_skill_bundle_version: "1.0.1"
   Lime_knowledge_builder: "true"
   Lime_knowledge_pack_type: "live-commerce-operations"
   Lime_knowledge_template: "live-commerce-operations"

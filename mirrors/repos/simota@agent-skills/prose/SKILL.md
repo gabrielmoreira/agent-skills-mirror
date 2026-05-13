@@ -271,6 +271,7 @@ Prose receives copy direction and context from upstream agents. Prose sends vali
 | `references/empty-state-copy.md` | You need zero-data UI copy with 3-type classification (first-use / user-cleared / search-no-results), educational + promotional CTA design. |
 | `references/notification-copy.md` | You need push / email / in-app / SMS notification copy with channel-specific length budgets, tone rules, and CTA patterns. |
 | `references/status-progress-copy.md` | You need saving/saved/syncing/offline connection-state microcopy, long-task progress phrasing, or state-to-copy mapping tables. |
+| `_common/UX_TRENDS_2026.md` | You need 2025-2026 voice / IA evidence — agentic UX copy (Intent Preview, Variable Autonomy, Graceful Escalation), `llms.txt` patterns, command-palette and JTBD-driven labels. Read §2 IA. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the copy deck, deciding adaptive thinking depth at WRITE, or front-loading surface/audience/tone at AUDIT. Critical for Prose: P3, P5. |
 
 ## Operational

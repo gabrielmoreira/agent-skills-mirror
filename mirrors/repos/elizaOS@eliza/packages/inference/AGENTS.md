@@ -117,11 +117,12 @@ hosted under the `elizaos` HuggingFace org under `eliza-1-<tier>`.
 
 | Tier            | Tagline                       | Text  | Voice          | Vision | Context  | DFlash | Quant default                   |
 | --------------- | ----------------------------- | ----- | -------------- | ------ | -------- | ------ | ------------------------------- |
-| `0_6b`     | low-RAM phones, CPU fallback  | 0.6B  | OmniVoice 0.6B | no     | 32k      | yes    | TurboQuant Q3 + Polar Q4 KV     |
-| `1_7b`   | modern phones                 | 1.7B  | OmniVoice 0.6B | no     | 32k–64k  | yes    | TurboQuant Q3/Q4 + QJL K-cache  |
-| `9b`    | laptops, 24GB phones, 48GB Mac| ~9B   | OmniVoice 1.7B | mmproj | 64k–128k | yes    | TurboQuant Q4 + QJL + Polar     |
-| `27b`       | 96GB+ Mac, high-VRAM desktop  | 27B   | OmniVoice 1.7B | mmproj | 128k–256k| yes    | TurboQuant Q4 + QJL + Polar     |
-| `27b-256k`   | server / workstation          | 27B   | OmniVoice 1.7B | mmproj | up to max| yes    | CUDA TurboQuant + QJL + Polar   |
+| `0_6b`       | low-RAM phones, CPU fallback   | 0.6B  | OmniVoice 0.6B | no     | 32k      | yes    | TurboQuant Q3 + Polar Q4 KV     |
+| `1_7b`         | modern phones                  | 1.7B    | OmniVoice 0.6B | no     | 32k–64k  | yes    | TurboQuant Q3/Q4 + QJL K-cache  |
+| `4b`         | flagship phones, small desktops| 4B    | OmniVoice 0.6B | mmproj | 64k      | yes    | TurboQuant Q4 + QJL + Polar     |
+| `9b`         | laptops, 24GB phones, 48GB Mac | ~9B   | OmniVoice 1.7B | mmproj | 64k–128k | yes    | TurboQuant Q4 + QJL + Polar     |
+| `27b`        | 96GB+ Mac, high-VRAM desktop   | 27B   | OmniVoice 1.7B | mmproj | 128k–256k| yes    | TurboQuant Q4 + QJL + Polar     |
+| `27b-256k`  | server / workstation           | 27B   | OmniVoice 1.7B | mmproj | up to max| yes    | CUDA TurboQuant + QJL + Polar   |
 
 Context-length variants (32k / 64k / 128k / 256k) are *not* separate
 tiers — they are dimensions inside a tier. A tier's manifest lists which
@@ -298,75 +299,11 @@ mic / file → ASR → text tokens
 - We do not run text and voice in two processes communicating over IPC.
   That regresses memory and adds a 1–10ms scheduling tax per turn.
 - We do not run a "TTS-only mode" that skips DFlash. DFlash is always
-  on (auto-detected from the managed `llama-server` binary — there is no
-  "enable DFlash" setting). If the user disables speculative decoding for
-  debugging, that is the single developer-only kill-switch
-  `ELIZA_DFLASH_DISABLE=1` (`MILADY_DFLASH_DISABLE=1` is a back-compat
-  alias); it is not a user setting, and it MUST log a loud warning every
-  turn.
+  on. If the user disables speculative decoding for debugging, that is
+  a developer-only flag (`ELIZA_DFLASH_DISABLE=1`), it is not a user
+  setting, and it MUST log a loud warning every turn.
 - We do not split voice into "fast TTS" and "high-quality TTS" tiers.
   One voice model per tier, fused, optimized.
-
-### Cross-platform runtime paths (the voice pipeline must run everywhere)
-
-The §4 graph is the same on every platform; the *runtime path* differs:
-
-- **Desktop / server (Linux, Windows, macOS — any GPU: CUDA / ROCm /
-  Vulkan / Metal / CPU):** the spawned fork `llama-server`. The `*-fused`
-  build serves `/v1/audio/speech` in the same process as `/completion` +
-  the DFlash loop (`dflash-server.ts` prefers it over the stock +
-  `llama-omnivoice-server` two-process path).
-- **iOS / Android:** the **in-process FFI path** —
-  `@elizaos/llama-cpp-capacitor`'s `LlamaCpp.xcframework` (iOS) /
-  `@elizaos/plugin-aosp-local-inference`'s `compile-libllama.mjs` →
-  `libllama.so` (Android), driven by `aosp-llama-adapter.ts` /
-  `aosp-dflash-adapter.ts`. The voice bridge takes the in-process text
-  runner via `LocalInferenceEngine.runVoiceTurn({ textRunner })` (the
-  adapter's `voiceTextRunner()` adapts its libllama-backed `--spec-type
-  dflash` server onto the `DflashTextRunner` contract). The mic + audio
-  sink go through the Capacitor `Microphone` plugin + a native
-  `AudioTrack` / `AVAudioEngine` sink (both feed a `PushMicSource` /
-  `PcmRingBuffer`); the Silero VAD runs on `onnxruntime-mobile` / the
-  Capacitor ONNX bridge instead of `onnxruntime-node`. Building the iOS
-  fused lib needs a `ios-arm64-metal-fused` target (the Capacitor
-  framework otherwise carries the `omnivoice_*` symbols); building the
-  Android fused libs needs `android-arm64-{cpu,vulkan}-fused`. These
-  builds require an Xcode / Android-Studio (NDK) host respectively.
-
-### Reduced-optimization local mode — "works everywhere regardless of GPU"
-
-§3 requires the TurboQuant/QJL/PolarQuant/DFlash kernels on every bundle
-and forbids a "kernels-missing fallback build". When a backend genuinely
-can't dispatch a required kernel yet (ROCm/HIP — the custom kernels
-aren't HIP-ported; or `turbo3_tcq` as a generic K/V cache type — it has a
-block layout in `ggml-common.h` but no ggml type-traits entry in
-`ggml.c`), there is an **opt-in, loudly-warned, non-publishable** escape
-hatch so the voice pipeline still *runs* on that backend:
-
-- **Runtime:** `MILADY_LOCAL_ALLOW_STOCK_KV=1` — `backend.ts`'s
-  `BackendDispatcher.load()` and `dflash-server.ts`'s
-  `resolveCacheTypeForBackend()` load the model with stock `f16` KV
-  instead of hard-refusing on a missing kernel, with a loud one-time
-  warning (`warnReducedOptimizationLocalMode`). The default (no env var)
-  still hard-refuses.
-- **Build:** `ELIZA_DFLASH_ALLOW_REDUCED_KERNELS=1` (or
-  `MILADY_LOCAL_ALLOW_STOCK_KV=1`) — `build-llama-cpp-dflash.mjs`'s
-  `writeCapabilities()` writes `publishable: false` +
-  `reducedOptimizationLocalMode: true` and `return`s instead of throwing.
-  The default still throws (the §3 contract).
-
-This is NOT a default and NOT publishable: `defaultEligible` bundles
-still require the verified kernels per backend
-(`eliza-1.manifest.json` `kernels.verifiedBackends`), and the
-recommendation engine still refuses a `defaultEligible: false` bundle as
-a default. The reconciliation with the "works everywhere regardless of
-GPU" directive: the build dispatches the kernels on every backend where
-it can (Metal: all 5; CUDA: fork binary; Vulkan: source-patched + a
-runtime-dispatch-evidence file; CPU: turbo3/turbo4 via `tbq3_0`/`tbq4_0`
-plus the `--cache-type-k/v` whitelist extended with `qjl1_256`/`q4_polar`
-by `patchServerKvCacheTypeNames`), and the reduced mode is the
-loudly-flagged hatch for the rest. Cross-platform support matrix:
-[`docs/voice-interactive.md`](../../docs/voice-interactive.md#cross-platform-voice-support-matrix).
 
 ---
 

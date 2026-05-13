@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ConardLi/garden-skills` — 26 default patterns, 6 followed patterns, 190 file(s) materialized.
+Mirror of `ConardLi/garden-skills` — 26 default patterns, 6 followed patterns, 192 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ConardLi/garden-skills` — 26 default patterns, 6 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 190 |
+| Files         | 192 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -179,81 +179,83 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 113 | ✓ | [`skills/web-design-engineer/README.md`](skills/web-design-engineer/README.md) |
 | 114 | ✓ | [`skills/web-design-engineer/README.zh-CN.md`](skills/web-design-engineer/README.zh-CN.md) |
 | 115 | ✓ | [`skills/web-design-engineer/references/advanced-patterns.md`](skills/web-design-engineer/references/advanced-patterns.md) |
-| 116 | ✓ | [`skills/web-design-engineer/SKILL.md`](skills/web-design-engineer/SKILL.md) |
-| 117 | ✓ | [`skills/web-video-presentation/manifest.json`](skills/web-video-presentation/manifest.json) |
-| 118 | ✓ | [`skills/web-video-presentation/README.md`](skills/web-video-presentation/README.md) |
-| 119 | ✓ | [`skills/web-video-presentation/README.zh-CN.md`](skills/web-video-presentation/README.zh-CN.md) |
-| 120 | ✓ | [`skills/web-video-presentation/references/AUDIO.md`](skills/web-video-presentation/references/AUDIO.md) |
-| 121 | ✓ | [`skills/web-video-presentation/references/CHAPTER-CRAFT.md`](skills/web-video-presentation/references/CHAPTER-CRAFT.md) |
-| 122 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/case-tech-review/outline-snippet.md`](skills/web-video-presentation/references/EXAMPLES/case-tech-review/outline-snippet.md) |
-| 123 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/case-tech-review/README.md`](skills/web-video-presentation/references/EXAMPLES/case-tech-review/README.md) |
-| 124 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.css`](skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.css) |
-| 125 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.tsx`](skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.tsx) |
-| 126 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/hook-chapter/README.md`](skills/web-video-presentation/references/EXAMPLES/hook-chapter/README.md) |
-| 127 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.css`](skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.css) |
-| 128 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.tsx`](skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.tsx) |
-| 129 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/list-reveal/README.md`](skills/web-video-presentation/references/EXAMPLES/list-reveal/README.md) |
-| 130 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/README.md`](skills/web-video-presentation/references/EXAMPLES/README.md) |
-| 131 | ✓ | [`skills/web-video-presentation/references/OUTLINE-FORMAT.md`](skills/web-video-presentation/references/OUTLINE-FORMAT.md) |
-| 132 | ✓ | [`skills/web-video-presentation/references/RECORDING.md`](skills/web-video-presentation/references/RECORDING.md) |
-| 133 | ✓ | [`skills/web-video-presentation/references/SCRIPT-STYLE.md`](skills/web-video-presentation/references/SCRIPT-STYLE.md) |
-| 134 | ✓ | [`skills/web-video-presentation/references/THEMES.md`](skills/web-video-presentation/references/THEMES.md) |
-| 135 | ✓ | [`skills/web-video-presentation/scripts/scaffold.sh`](skills/web-video-presentation/scripts/scaffold.sh) |
-| 136 | ✓ | [`skills/web-video-presentation/SKILL.md`](skills/web-video-presentation/SKILL.md) |
-| 137 | ✓ | [`skills/web-video-presentation/templates/index.html`](skills/web-video-presentation/templates/index.html) |
-| 138 | ✓ | [`skills/web-video-presentation/templates/scripts/extract-narrations.ts`](skills/web-video-presentation/templates/scripts/extract-narrations.ts) |
-| 139 | ✓ | [`skills/web-video-presentation/templates/scripts/synthesize-audio.sh`](skills/web-video-presentation/templates/scripts/synthesize-audio.sh) |
-| 140 | ✓ | [`skills/web-video-presentation/templates/src/App.tsx`](skills/web-video-presentation/templates/src/App.tsx) |
-| 141 | ✓ | [`skills/web-video-presentation/templates/src/chapters/01-example/Example.css`](skills/web-video-presentation/templates/src/chapters/01-example/Example.css) |
-| 142 | ✓ | [`skills/web-video-presentation/templates/src/chapters/01-example/Example.tsx`](skills/web-video-presentation/templates/src/chapters/01-example/Example.tsx) |
-| 143 | ✓ | [`skills/web-video-presentation/templates/src/chapters/01-example/narrations.ts`](skills/web-video-presentation/templates/src/chapters/01-example/narrations.ts) |
-| 144 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoStartGate.css`](skills/web-video-presentation/templates/src/components/AutoStartGate.css) |
-| 145 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoStartGate.tsx`](skills/web-video-presentation/templates/src/components/AutoStartGate.tsx) |
-| 146 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoToggle.css`](skills/web-video-presentation/templates/src/components/AutoToggle.css) |
-| 147 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoToggle.tsx`](skills/web-video-presentation/templates/src/components/AutoToggle.tsx) |
-| 148 | ✓ | [`skills/web-video-presentation/templates/src/components/MaskReveal.tsx`](skills/web-video-presentation/templates/src/components/MaskReveal.tsx) |
-| 149 | ✓ | [`skills/web-video-presentation/templates/src/components/ProgressBar.css`](skills/web-video-presentation/templates/src/components/ProgressBar.css) |
-| 150 | ✓ | [`skills/web-video-presentation/templates/src/components/ProgressBar.tsx`](skills/web-video-presentation/templates/src/components/ProgressBar.tsx) |
-| 151 | ✓ | [`skills/web-video-presentation/templates/src/components/Stage.tsx`](skills/web-video-presentation/templates/src/components/Stage.tsx) |
-| 152 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useAudioPlayer.ts`](skills/web-video-presentation/templates/src/hooks/useAudioPlayer.ts) |
-| 153 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useAutoMode.ts`](skills/web-video-presentation/templates/src/hooks/useAutoMode.ts) |
-| 154 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useStageScale.ts`](skills/web-video-presentation/templates/src/hooks/useStageScale.ts) |
-| 155 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useStepper.ts`](skills/web-video-presentation/templates/src/hooks/useStepper.ts) |
-| 156 | ✓ | [`skills/web-video-presentation/templates/src/main.tsx`](skills/web-video-presentation/templates/src/main.tsx) |
-| 157 | ✓ | [`skills/web-video-presentation/templates/src/registry/chapters.ts`](skills/web-video-presentation/templates/src/registry/chapters.ts) |
-| 158 | ✓ | [`skills/web-video-presentation/templates/src/registry/types.ts`](skills/web-video-presentation/templates/src/registry/types.ts) |
-| 159 | ✓ | [`skills/web-video-presentation/templates/src/styles/animations.css`](skills/web-video-presentation/templates/src/styles/animations.css) |
-| 160 | ✓ | [`skills/web-video-presentation/templates/src/styles/base.css`](skills/web-video-presentation/templates/src/styles/base.css) |
-| 161 | ✓ | [`skills/web-video-presentation/templates/src/styles/fonts.css`](skills/web-video-presentation/templates/src/styles/fonts.css) |
-| 162 | ✓ | [`skills/web-video-presentation/templates/vite.config.ts`](skills/web-video-presentation/templates/vite.config.ts) |
-| 163 | ✓ | [`skills/web-video-presentation/themes/bauhaus-bold/theme.json`](skills/web-video-presentation/themes/bauhaus-bold/theme.json) |
-| 164 | ✓ | [`skills/web-video-presentation/themes/bauhaus-bold/tokens.css`](skills/web-video-presentation/themes/bauhaus-bold/tokens.css) |
-| 165 | ✓ | [`skills/web-video-presentation/themes/blueprint/theme.json`](skills/web-video-presentation/themes/blueprint/theme.json) |
-| 166 | ✓ | [`skills/web-video-presentation/themes/blueprint/tokens.css`](skills/web-video-presentation/themes/blueprint/tokens.css) |
-| 167 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/theme.json`](skills/web-video-presentation/themes/chalk-garden/theme.json) |
-| 168 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/tokens.css`](skills/web-video-presentation/themes/chalk-garden/tokens.css) |
-| 169 | ✓ | [`skills/web-video-presentation/themes/midnight-press/theme.json`](skills/web-video-presentation/themes/midnight-press/theme.json) |
-| 170 | ✓ | [`skills/web-video-presentation/themes/midnight-press/tokens.css`](skills/web-video-presentation/themes/midnight-press/tokens.css) |
-| 171 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/theme.json`](skills/web-video-presentation/themes/monochrome-print/theme.json) |
-| 172 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/tokens.css`](skills/web-video-presentation/themes/monochrome-print/tokens.css) |
-| 173 | ✓ | [`skills/web-video-presentation/themes/newsroom/theme.json`](skills/web-video-presentation/themes/newsroom/theme.json) |
-| 174 | ✓ | [`skills/web-video-presentation/themes/newsroom/tokens.css`](skills/web-video-presentation/themes/newsroom/tokens.css) |
-| 175 | ✓ | [`skills/web-video-presentation/themes/paper-press/theme.json`](skills/web-video-presentation/themes/paper-press/theme.json) |
-| 176 | ✓ | [`skills/web-video-presentation/themes/paper-press/tokens.css`](skills/web-video-presentation/themes/paper-press/tokens.css) |
-| 177 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/theme.json`](skills/web-video-presentation/themes/sunset-zine/theme.json) |
-| 178 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/tokens.css`](skills/web-video-presentation/themes/sunset-zine/tokens.css) |
-| 179 | ✓ | [`skills/web-video-presentation/themes/terminal-green/theme.json`](skills/web-video-presentation/themes/terminal-green/theme.json) |
-| 180 | ✓ | [`skills/web-video-presentation/themes/terminal-green/tokens.css`](skills/web-video-presentation/themes/terminal-green/tokens.css) |
-| 181 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/theme.json`](skills/web-video-presentation/themes/warm-keynote/theme.json) |
-| 182 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/tokens.css`](skills/web-video-presentation/themes/warm-keynote/tokens.css) |
-| 183 | ✓ | [`website/gpt-image2-website/README.md`](website/gpt-image2-website/README.md) |
-| 184 | ✓ | [`website/web-design-website/README.md`](website/web-design-website/README.md) |
-| 185 | → | [`CONTRIBUTING.ja-JP.md`](CONTRIBUTING.ja-JP.md) |
-| 186 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 187 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 188 | → | [`README.ja-JP.md`](README.ja-JP.md) |
-| 189 | → | [`README.md`](README.md) |
-| 190 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 116 | ✓ | [`skills/web-design-engineer/references/critique-guide.md`](skills/web-design-engineer/references/critique-guide.md) |
+| 117 | ✓ | [`skills/web-design-engineer/references/design-directions.md`](skills/web-design-engineer/references/design-directions.md) |
+| 118 | ✓ | [`skills/web-design-engineer/SKILL.md`](skills/web-design-engineer/SKILL.md) |
+| 119 | ✓ | [`skills/web-video-presentation/manifest.json`](skills/web-video-presentation/manifest.json) |
+| 120 | ✓ | [`skills/web-video-presentation/README.md`](skills/web-video-presentation/README.md) |
+| 121 | ✓ | [`skills/web-video-presentation/README.zh-CN.md`](skills/web-video-presentation/README.zh-CN.md) |
+| 122 | ✓ | [`skills/web-video-presentation/references/AUDIO.md`](skills/web-video-presentation/references/AUDIO.md) |
+| 123 | ✓ | [`skills/web-video-presentation/references/CHAPTER-CRAFT.md`](skills/web-video-presentation/references/CHAPTER-CRAFT.md) |
+| 124 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/case-tech-review/outline-snippet.md`](skills/web-video-presentation/references/EXAMPLES/case-tech-review/outline-snippet.md) |
+| 125 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/case-tech-review/README.md`](skills/web-video-presentation/references/EXAMPLES/case-tech-review/README.md) |
+| 126 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.css`](skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.css) |
+| 127 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.tsx`](skills/web-video-presentation/references/EXAMPLES/hook-chapter/chapter.tsx) |
+| 128 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/hook-chapter/README.md`](skills/web-video-presentation/references/EXAMPLES/hook-chapter/README.md) |
+| 129 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.css`](skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.css) |
+| 130 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.tsx`](skills/web-video-presentation/references/EXAMPLES/list-reveal/chapter.tsx) |
+| 131 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/list-reveal/README.md`](skills/web-video-presentation/references/EXAMPLES/list-reveal/README.md) |
+| 132 | ✓ | [`skills/web-video-presentation/references/EXAMPLES/README.md`](skills/web-video-presentation/references/EXAMPLES/README.md) |
+| 133 | ✓ | [`skills/web-video-presentation/references/OUTLINE-FORMAT.md`](skills/web-video-presentation/references/OUTLINE-FORMAT.md) |
+| 134 | ✓ | [`skills/web-video-presentation/references/RECORDING.md`](skills/web-video-presentation/references/RECORDING.md) |
+| 135 | ✓ | [`skills/web-video-presentation/references/SCRIPT-STYLE.md`](skills/web-video-presentation/references/SCRIPT-STYLE.md) |
+| 136 | ✓ | [`skills/web-video-presentation/references/THEMES.md`](skills/web-video-presentation/references/THEMES.md) |
+| 137 | ✓ | [`skills/web-video-presentation/scripts/scaffold.sh`](skills/web-video-presentation/scripts/scaffold.sh) |
+| 138 | ✓ | [`skills/web-video-presentation/SKILL.md`](skills/web-video-presentation/SKILL.md) |
+| 139 | ✓ | [`skills/web-video-presentation/templates/index.html`](skills/web-video-presentation/templates/index.html) |
+| 140 | ✓ | [`skills/web-video-presentation/templates/scripts/extract-narrations.ts`](skills/web-video-presentation/templates/scripts/extract-narrations.ts) |
+| 141 | ✓ | [`skills/web-video-presentation/templates/scripts/synthesize-audio.sh`](skills/web-video-presentation/templates/scripts/synthesize-audio.sh) |
+| 142 | ✓ | [`skills/web-video-presentation/templates/src/App.tsx`](skills/web-video-presentation/templates/src/App.tsx) |
+| 143 | ✓ | [`skills/web-video-presentation/templates/src/chapters/01-example/Example.css`](skills/web-video-presentation/templates/src/chapters/01-example/Example.css) |
+| 144 | ✓ | [`skills/web-video-presentation/templates/src/chapters/01-example/Example.tsx`](skills/web-video-presentation/templates/src/chapters/01-example/Example.tsx) |
+| 145 | ✓ | [`skills/web-video-presentation/templates/src/chapters/01-example/narrations.ts`](skills/web-video-presentation/templates/src/chapters/01-example/narrations.ts) |
+| 146 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoStartGate.css`](skills/web-video-presentation/templates/src/components/AutoStartGate.css) |
+| 147 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoStartGate.tsx`](skills/web-video-presentation/templates/src/components/AutoStartGate.tsx) |
+| 148 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoToggle.css`](skills/web-video-presentation/templates/src/components/AutoToggle.css) |
+| 149 | ✓ | [`skills/web-video-presentation/templates/src/components/AutoToggle.tsx`](skills/web-video-presentation/templates/src/components/AutoToggle.tsx) |
+| 150 | ✓ | [`skills/web-video-presentation/templates/src/components/MaskReveal.tsx`](skills/web-video-presentation/templates/src/components/MaskReveal.tsx) |
+| 151 | ✓ | [`skills/web-video-presentation/templates/src/components/ProgressBar.css`](skills/web-video-presentation/templates/src/components/ProgressBar.css) |
+| 152 | ✓ | [`skills/web-video-presentation/templates/src/components/ProgressBar.tsx`](skills/web-video-presentation/templates/src/components/ProgressBar.tsx) |
+| 153 | ✓ | [`skills/web-video-presentation/templates/src/components/Stage.tsx`](skills/web-video-presentation/templates/src/components/Stage.tsx) |
+| 154 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useAudioPlayer.ts`](skills/web-video-presentation/templates/src/hooks/useAudioPlayer.ts) |
+| 155 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useAutoMode.ts`](skills/web-video-presentation/templates/src/hooks/useAutoMode.ts) |
+| 156 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useStageScale.ts`](skills/web-video-presentation/templates/src/hooks/useStageScale.ts) |
+| 157 | ✓ | [`skills/web-video-presentation/templates/src/hooks/useStepper.ts`](skills/web-video-presentation/templates/src/hooks/useStepper.ts) |
+| 158 | ✓ | [`skills/web-video-presentation/templates/src/main.tsx`](skills/web-video-presentation/templates/src/main.tsx) |
+| 159 | ✓ | [`skills/web-video-presentation/templates/src/registry/chapters.ts`](skills/web-video-presentation/templates/src/registry/chapters.ts) |
+| 160 | ✓ | [`skills/web-video-presentation/templates/src/registry/types.ts`](skills/web-video-presentation/templates/src/registry/types.ts) |
+| 161 | ✓ | [`skills/web-video-presentation/templates/src/styles/animations.css`](skills/web-video-presentation/templates/src/styles/animations.css) |
+| 162 | ✓ | [`skills/web-video-presentation/templates/src/styles/base.css`](skills/web-video-presentation/templates/src/styles/base.css) |
+| 163 | ✓ | [`skills/web-video-presentation/templates/src/styles/fonts.css`](skills/web-video-presentation/templates/src/styles/fonts.css) |
+| 164 | ✓ | [`skills/web-video-presentation/templates/vite.config.ts`](skills/web-video-presentation/templates/vite.config.ts) |
+| 165 | ✓ | [`skills/web-video-presentation/themes/bauhaus-bold/theme.json`](skills/web-video-presentation/themes/bauhaus-bold/theme.json) |
+| 166 | ✓ | [`skills/web-video-presentation/themes/bauhaus-bold/tokens.css`](skills/web-video-presentation/themes/bauhaus-bold/tokens.css) |
+| 167 | ✓ | [`skills/web-video-presentation/themes/blueprint/theme.json`](skills/web-video-presentation/themes/blueprint/theme.json) |
+| 168 | ✓ | [`skills/web-video-presentation/themes/blueprint/tokens.css`](skills/web-video-presentation/themes/blueprint/tokens.css) |
+| 169 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/theme.json`](skills/web-video-presentation/themes/chalk-garden/theme.json) |
+| 170 | ✓ | [`skills/web-video-presentation/themes/chalk-garden/tokens.css`](skills/web-video-presentation/themes/chalk-garden/tokens.css) |
+| 171 | ✓ | [`skills/web-video-presentation/themes/midnight-press/theme.json`](skills/web-video-presentation/themes/midnight-press/theme.json) |
+| 172 | ✓ | [`skills/web-video-presentation/themes/midnight-press/tokens.css`](skills/web-video-presentation/themes/midnight-press/tokens.css) |
+| 173 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/theme.json`](skills/web-video-presentation/themes/monochrome-print/theme.json) |
+| 174 | ✓ | [`skills/web-video-presentation/themes/monochrome-print/tokens.css`](skills/web-video-presentation/themes/monochrome-print/tokens.css) |
+| 175 | ✓ | [`skills/web-video-presentation/themes/newsroom/theme.json`](skills/web-video-presentation/themes/newsroom/theme.json) |
+| 176 | ✓ | [`skills/web-video-presentation/themes/newsroom/tokens.css`](skills/web-video-presentation/themes/newsroom/tokens.css) |
+| 177 | ✓ | [`skills/web-video-presentation/themes/paper-press/theme.json`](skills/web-video-presentation/themes/paper-press/theme.json) |
+| 178 | ✓ | [`skills/web-video-presentation/themes/paper-press/tokens.css`](skills/web-video-presentation/themes/paper-press/tokens.css) |
+| 179 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/theme.json`](skills/web-video-presentation/themes/sunset-zine/theme.json) |
+| 180 | ✓ | [`skills/web-video-presentation/themes/sunset-zine/tokens.css`](skills/web-video-presentation/themes/sunset-zine/tokens.css) |
+| 181 | ✓ | [`skills/web-video-presentation/themes/terminal-green/theme.json`](skills/web-video-presentation/themes/terminal-green/theme.json) |
+| 182 | ✓ | [`skills/web-video-presentation/themes/terminal-green/tokens.css`](skills/web-video-presentation/themes/terminal-green/tokens.css) |
+| 183 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/theme.json`](skills/web-video-presentation/themes/warm-keynote/theme.json) |
+| 184 | ✓ | [`skills/web-video-presentation/themes/warm-keynote/tokens.css`](skills/web-video-presentation/themes/warm-keynote/tokens.css) |
+| 185 | ✓ | [`website/gpt-image2-website/README.md`](website/gpt-image2-website/README.md) |
+| 186 | ✓ | [`website/web-design-website/README.md`](website/web-design-website/README.md) |
+| 187 | → | [`CONTRIBUTING.ja-JP.md`](CONTRIBUTING.ja-JP.md) |
+| 188 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 189 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 190 | → | [`README.ja-JP.md`](README.ja-JP.md) |
+| 191 | → | [`README.md`](README.md) |
+| 192 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

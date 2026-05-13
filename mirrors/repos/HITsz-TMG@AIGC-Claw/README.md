@@ -70,6 +70,27 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
 ## 📺 AIGC-Claw 示例（全流程自动化）
 ## 🎬 视频生成演示 (Demo Gallery)
 
+### 🔊 微短剧：deepseek-v4 震撼发布
+使用 deepseek-v4 + gpt-image-2 + happy-horse-1.0 生成
+
+<div align="center">
+<table align="center" border="0" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse; margin:0 auto;">
+  <tr>
+    <td align="center" valign="top" width="30%" style="border:none;">
+      <video src="https://github.com/user-attachments/assets/627e961e-bd0e-449c-987e-9bae34b669c7" controls width="100%" preload="none"></video>
+      <br><b>▶️ 破壁之锤</b>
+    </td>
+    <td align="center" valign="top" width="30%" style="border:none;">
+      <a href="https://github.com/user-attachments/assets/ebb47cb8-fa9f-4557-b70c-ff6368ee0b6c" target="_blank">
+        <img src="https://github.com/user-attachments/assets/40e3efa4-9923-48ce-bde8-3c7d0f1b6a16" alt="deepseek-v4 封面" width="100%" />
+      </a>
+      <br><b>▶️ 破壁之锤（原画质）</b>
+    </td>
+  </tr>
+</table>
+</div>
+
+
 ### 📱 系列一：程序员被裁后利用 openclaw 收购原公司 (写实 短剧)
 > 共 8 集，跌宕起伏的逆袭之路（首次生成 6 集 + 续写 2 集）
 
@@ -77,25 +98,25 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
   <tr>
     <td align="center" valign="top" width="25%">
       <a href="https://github.com/user-attachments/assets/1d095b82-3a72-4acc-9ca1-3ff4a6189232">
-        <img src="https://github.com/user-attachments/assets/8d25f5a5-05dd-4253-8c47-712c949878d0" width="100%" alt="点击播放 第 1 集">
+        <img src="https://github.com/user-attachments/assets/47b1621e-5c5a-4cb1-9c51-dcf723ac5fda" width="100%" alt="点击播放 第 1 集">
       </a>
       <br><b>▶️ 第 1 集</b><br>被优化
     </td>
     <td align="center" valign="top" width="25%">
       <a href="https://github.com/user-attachments/assets/489c5343-6345-4bce-81dc-bf6012b9c1cf">
-        <img src="https://github.com/user-attachments/assets/24f783f5-7a76-4ffc-ab3e-264e2ce2a198" width="100%" alt="点击播放 第 2 集">
+        <img src="https://github.com/user-attachments/assets/b0dd3781-b767-45c2-9fe2-3dc7421fbf80" width="100%" alt="点击播放 第 2 集">
       </a>
       <br><b>▶️ 第 2 集</b><br>深夜启程 首单突破
     </td>
     <td align="center" valign="top" width="25%">
       <a href="https://github.com/user-attachments/assets/359809cf-678b-429c-bafa-55ff50fd3277">
-        <img src="https://github.com/user-attachments/assets/7a21ad67-9e70-4ace-936a-593f55e3e576" width="100%" alt="点击播放 第 3 集">
+        <img src="https://github.com/user-attachments/assets/fcfd191c-61f9-484f-a036-ce717620c827" width="100%" alt="点击播放 第 3 集">
       </a>
       <br><b>▶️ 第 3 集</b><br>AI获投 旧主危机
     </td>
     <td align="center" valign="top" width="25%">
       <a href="https://github.com/user-attachments/assets/5561a04a-5ab3-4099-bc63-2fdbcc48f8e9">
-        <img src="https://github.com/user-attachments/assets/393fe76e-134b-461b-82e9-8956ce65321f" width="100%" alt="点击播放 第 4 集">
+        <img src="https://github.com/user-attachments/assets/14a535da-b0eb-4b4b-8039-517bac692696" width="100%" alt="点击播放 第 4 集">
       </a>
       <br><b>▶️ 第 4 集</b><br>收购星耀
     </td>
@@ -103,25 +124,25 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
   <tr>
     <td align="center" valign="top">
       <a href="https://github.com/user-attachments/assets/ae4c3618-1990-4ff5-ad85-e09f23b08f7d">
-        <img src="https://github.com/user-attachments/assets/405cf7ba-2cee-46c8-9579-a312cf634c02" width="100%" alt="点击播放 第 5 集">
+        <img src="https://github.com/user-attachments/assets/e2d7fbae-d945-461f-be2f-5eb781337cac" width="100%" alt="点击播放 第 5 集">
       </a>
       <br><b>▶️ 第 5 集</b><br>收购清算 新生
     </td>
     <td align="center" valign="top">
       <a href="https://github.com/user-attachments/assets/4ddbb725-34d8-478b-97bc-5d7143f73101">
-        <img src="https://github.com/user-attachments/assets/de9210e4-6f07-487b-9f09-77dc9078cce4" width="100%" alt="点击播放 第 6 集">
+        <img src="https://github.com/user-attachments/assets/02a8f7d4-04c9-460e-9ba1-07d594ffcd24" width="100%" alt="点击播放 第 6 集">
       </a>
       <br><b>▶️ 第 6 集</b><br>新生 回望
     </td>
     <td align="center" valign="top">
       <a href="https://github.com/user-attachments/assets/1c1e5970-aaea-44ba-b041-5d551905bfde">
-        <img src="https://github.com/user-attachments/assets/a3ff09bc-b2cb-4f73-8905-ca08ab6c8de1" width="100%" alt="点击播放 第 7 集">
+        <img src="https://github.com/user-attachments/assets/053be420-20e8-423e-8379-f1d1554546c5" width="100%" alt="点击播放 第 7 集">
       </a>
       <br><b>▶️ 第 7 集</b><br>技术反噬
     </td>
     <td align="center" valign="top">
       <a href="https://github.com/user-attachments/assets/e56e6784-6e49-4891-b0bc-a32308dd2145">
-        <img src="https://github.com/user-attachments/assets/fd3ad96f-5cab-4d6e-8af8-5b3fb0ba32af" width="100%" alt="点击播放 第 8 集">
+        <img src="https://github.com/user-attachments/assets/19a50fcd-0a5a-4649-bb63-c7867e945d46" width="100%" alt="点击播放 第 8 集">
       </a>
       <br><b>▶️ 第 8 集</b><br>坚守伦理 共渡难关
     </td>
@@ -138,13 +159,13 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
   <tr>
     <td align="center" valign="top" width="50%">
       <a href="https://github.com/user-attachments/assets/1ffe7b06-73e9-44cd-ad3f-afced5239f97">
-        <img src="https://github.com/user-attachments/assets/23bd1ad9-800d-4b17-92be-a59f4f0f110f" width="100%" alt="点击播放 第 1 集">
+        <img src="https://github.com/user-attachments/assets/e1328cf7-23fe-48d8-9ae6-a7beeae6dda9" width="100%" alt="点击播放 第 1 集">
       </a>
       <br><b>▶️ 第 1 集</b><br>最后一课
     </td>
     <td align="center" valign="top" width="50%">
       <a href="https://github.com/user-attachments/assets/7547e5d3-872c-4344-8727-ee2be109797d">
-        <img src="https://github.com/user-attachments/assets/f82f318d-75a0-4bfa-ae7c-a701d8e7726d" width="100%" alt="点击播放 第 2 集">
+        <img src="https://github.com/user-attachments/assets/65bc3866-6405-4033-97b2-54de42a61402" width="100%" alt="点击播放 第 2 集">
       </a>
       <br><b>▶️ 第 2 集</b><br>清扫计划
     </td>
@@ -152,13 +173,13 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
   <tr>
     <td align="center" valign="top">
       <a href="https://github.com/user-attachments/assets/affed408-4df7-4ce7-9681-8f4ed45a6fcf">
-        <img src="https://github.com/user-attachments/assets/0cb75e05-790e-4275-bcc0-50024dd97114" width="100%" alt="点击播放 第 3 集">
+        <img src="https://github.com/user-attachments/assets/81acd075-e4f1-4621-b2dc-b2d87ed83b81" width="100%" alt="点击播放 第 3 集">
       </a>
       <br><b>▶️ 第 3 集</b><br>临终托付
     </td>
     <td align="center" valign="top">
       <a href="https://github.com/user-attachments/assets/dc7a85a8-6912-4443-a995-3d8f3ca30bc8">
-        <img src="https://github.com/user-attachments/assets/56ecb510-3515-4a0c-ba51-364dd6b070b9" width="100%" alt="点击播放 第 4 集">
+        <img src="https://github.com/user-attachments/assets/738c539e-8f90-47f5-9983-f3ac35d3d385" width="100%" alt="点击播放 第 4 集">
       </a>
       <br><b>▶️ 第 4 集</b><br>生死问答
     </td>
@@ -166,7 +187,7 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
   <tr>
     <td align="center" valign="top">
       <a href="https://github.com/user-attachments/assets/1fb889c5-0e2b-40fa-a438-7399322ada47">
-        <img src="https://github.com/user-attachments/assets/0511bc7f-a380-4f31-8a77-e1d384787e40" width="100%" alt="点击播放 第 5 集">
+        <img src="https://github.com/user-attachments/assets/ce4a1ac4-7308-43ba-a803-fc77b9b9561e" width="100%" alt="点击播放 第 5 集">
       </a>
       <br><b>▶️ 第 5 集</b><br>文明之光
     </td>

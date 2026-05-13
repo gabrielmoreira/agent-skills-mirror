@@ -16,18 +16,24 @@ This document defines the default architecture for medium and large features in 
 
 ```text
 src/features/<feature-name>/
+  index.ts
   contracts/
+    index.ts
   core/
     domain/
     application/
   main/
+    index.ts
     composition/
+    application/
     adapters/
       input/
       output/
     infrastructure/
   preload/
+    index.ts
   renderer/
+    index.ts
 ```
 
 Use this template by default when a feature:
@@ -37,7 +43,28 @@ Use this template by default when a feature:
 - needs its own transport bridge or integration surface
 - is expected to grow with new providers, sources, or presentation flows
 
+`index.ts` and `main/application/` are optional. Add them only when they have a
+clear public or runtime-orchestration role.
+
 ## Layer Responsibilities
+
+### `index.ts`
+
+Optional root public barrel for the feature.
+
+Use it for:
+
+- stable type re-exports from `contracts/`
+- small pure facades that are intentionally shared across layers
+- feature factories when the root barrel is intentionally main-owned and
+  imported only from main-process code
+
+Not allowed:
+
+- accidental wildcard exports from implementation folders
+- mixing browser-safe exports with main-only exports without making process
+  ownership obvious
+- replacing the layer entrypoints when callers need a process-specific surface
 
 ### `contracts/`
 
@@ -113,6 +140,24 @@ Responsibilities:
 - translate transport input into use case calls
 - keep transport concerns out of use cases
 
+### `main/application/`
+
+Optional main-process application services.
+
+Use this only when code is too runtime-aware for `core/application`, but is not a
+transport adapter or low-level infrastructure helper.
+
+Examples:
+
+- main-only readers that orchestrate runtime services
+- process-aware tracking or coordination helpers
+
+Not allowed:
+
+- IPC or HTTP handler registration
+- renderer or preload dependencies
+- pure domain policy that belongs in `core/domain`
+
 ### `main/adapters/output/`
 
 Driven adapters that implement application ports.
@@ -185,12 +230,16 @@ Responsibilities:
 
 Outside the feature, import only:
 
+- `@features/<feature>` when the feature owns a deliberate root public barrel
 - `@features/<feature>/contracts`
 - `@features/<feature>/main`
 - `@features/<feature>/preload`
 - `@features/<feature>/renderer`
 
 Do not deep-import feature internals from app shell or from other features.
+Layer entrypoints should be explicit `index.ts` files that export only supported
+surface area. Focused tests may import internals when they are testing that unit
+directly, but production integration code should not.
 
 ### Core isolation
 
@@ -207,8 +256,11 @@ Do not deep-import feature internals from app shell or from other features.
 
 `core/application` must not import:
 
-- `main/*`
-- `renderer/*`
+- `@features/<feature>/main/**`
+- `@features/<feature>/renderer/**`
+- `@main/*`
+- `@renderer/*`
+- `@preload/*`
 - Electron APIs
 - Fastify
 - child process modules
@@ -266,16 +318,35 @@ If the feature still owns meaningful pure semantics or projection rules, keep
 `core/` and skip only the process layers you do not need.
 
 Example:
+
 - `src/features/agent-graph` keeps `core/domain` and `renderer`, but does not add fake `main/` or `preload/` folders because the transport boundary lives elsewhere.
+
+## Current Feature Shape Examples
+
+Use these local examples before inventing a new variant:
+
+- `src/features/recent-projects` - full cross-process reference with
+  `contracts`, `core`, `main`, `preload`, and `renderer`.
+- `src/features/member-work-sync` - full cross-process feature with a root
+  public barrel and broader main-process infrastructure.
+- `src/features/member-log-stream` - full cross-process feature that uses
+  `main/application/` for main-only runtime orchestration.
+- `src/features/agent-graph` - thin renderer integration with `core/domain` and
+  `renderer`, no fake process layers.
+- `src/features/codex-model-catalog` and `src/features/team-runtime-lanes` -
+  process-limited features that omit renderer or preload layers when they do not
+  own that boundary.
+
 ## Definition Of Done For A Reference Feature
 
 A feature is reference-quality when:
 
-- structure matches the canonical template
+- structure matches the full or thin template chosen for the feature
 - core is side-effect free
 - app shell imports only public entrypoints
 - renderer UI is dumb and presentational
-- at least the main domain and application rules are tested
+- at least the main domain and application rules are tested when those layers
+  exist
 - architecture is enforced by lint rules
 - feature has a concise standard or plan doc if it introduces a new pattern
 

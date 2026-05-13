@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 7 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,11 +61,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`desktop/CLAUDE.md`](desktop/CLAUDE.md) |
-| 3 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md) |
-| 4 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md) |
-| 5 | ✓ | [`runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md`](runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md) |
-| 6 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md) |
-| 7 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md) |
+| 3 | ✓ | [`runtime/harnesses/src/embedded-skills/app-builder/SKILL.md`](runtime/harnesses/src/embedded-skills/app-builder/SKILL.md) |
+| 4 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md) |
+| 5 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md) |
+| 6 | ✓ | [`runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md`](runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md) |
+| 7 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md) |
+| 8 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md) |
 
 ---
 

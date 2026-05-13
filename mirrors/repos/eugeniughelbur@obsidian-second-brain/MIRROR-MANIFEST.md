@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eugeniughelbur/obsidian-second-brain` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `eugeniughelbur/obsidian-second-brain` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `eugeniughelbur/obsidian-second-brain` — 26 default patterns, 0 foll
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 1 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `eugeniughelbur/obsidian-second-brain` — 26 default patterns, 0 foll
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `references/ai-first-rules.md`
 
 ## File Index
 
@@ -62,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`llms.txt`](llms.txt) |
 | 3 | ✓ | [`SKILL.md`](SKILL.md) |
+| 4 | → | [`references/ai-first-rules.md`](references/ai-first-rules.md) |
 
 ---
 

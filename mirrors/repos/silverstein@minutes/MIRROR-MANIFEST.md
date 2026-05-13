@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `silverstein/minutes` — 26 default patterns, 2 followed patterns, 102 file(s) materialized.
+Mirror of `silverstein/minutes` — 26 default patterns, 2 followed patterns, 106 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `silverstein/minutes` — 26 default patterns, 2 followed patterns, 10
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 102 |
+| Files         | 106 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -150,18 +150,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 88 | ✓ | [`.opencode/skills/minutes-weekly/SKILL.md`](.opencode/skills/minutes-weekly/SKILL.md) |
 | 89 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 90 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 91 | ✓ | [`site/public/llms.txt`](site/public/llms.txt) |
-| 92 | ✓ | [`tooling/skills/goldens/claude/minutes-brief/SKILL.md`](tooling/skills/goldens/claude/minutes-brief/SKILL.md) |
-| 93 | ✓ | [`tooling/skills/goldens/claude/minutes-debrief/SKILL.md`](tooling/skills/goldens/claude/minutes-debrief/SKILL.md) |
-| 94 | ✓ | [`tooling/skills/goldens/claude/minutes-prep/SKILL.md`](tooling/skills/goldens/claude/minutes-prep/SKILL.md) |
-| 95 | ✓ | [`tooling/skills/goldens/codex/minutes-brief/SKILL.md`](tooling/skills/goldens/codex/minutes-brief/SKILL.md) |
-| 96 | ✓ | [`tooling/skills/goldens/codex/minutes-debrief/SKILL.md`](tooling/skills/goldens/codex/minutes-debrief/SKILL.md) |
-| 97 | ✓ | [`tooling/skills/goldens/codex/minutes-prep/SKILL.md`](tooling/skills/goldens/codex/minutes-prep/SKILL.md) |
-| 98 | ✓ | [`tooling/skills/goldens/opencode/minutes-brief/SKILL.md`](tooling/skills/goldens/opencode/minutes-brief/SKILL.md) |
-| 99 | ✓ | [`tooling/skills/goldens/opencode/minutes-debrief/SKILL.md`](tooling/skills/goldens/opencode/minutes-debrief/SKILL.md) |
-| 100 | ✓ | [`tooling/skills/goldens/opencode/minutes-prep/SKILL.md`](tooling/skills/goldens/opencode/minutes-prep/SKILL.md) |
-| 101 | → | [`docs/PRE-COMMIT.md`](docs/PRE-COMMIT.md) |
-| 102 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 91 | ✓ | [`docs/DESKTOP-CONTEXT-RUNTIME-CHECKLIST.md`](docs/DESKTOP-CONTEXT-RUNTIME-CHECKLIST.md) |
+| 92 | ✓ | [`docs/DESKTOP-DEVELOPMENT.md`](docs/DESKTOP-DEVELOPMENT.md) |
+| 93 | ✓ | [`docs/RELEASE-CHANNELS.md`](docs/RELEASE-CHANNELS.md) |
+| 94 | ✓ | [`docs/RELEASE-WINDOWS.md`](docs/RELEASE-WINDOWS.md) |
+| 95 | ✓ | [`site/public/llms.txt`](site/public/llms.txt) |
+| 96 | ✓ | [`tooling/skills/goldens/claude/minutes-brief/SKILL.md`](tooling/skills/goldens/claude/minutes-brief/SKILL.md) |
+| 97 | ✓ | [`tooling/skills/goldens/claude/minutes-debrief/SKILL.md`](tooling/skills/goldens/claude/minutes-debrief/SKILL.md) |
+| 98 | ✓ | [`tooling/skills/goldens/claude/minutes-prep/SKILL.md`](tooling/skills/goldens/claude/minutes-prep/SKILL.md) |
+| 99 | ✓ | [`tooling/skills/goldens/codex/minutes-brief/SKILL.md`](tooling/skills/goldens/codex/minutes-brief/SKILL.md) |
+| 100 | ✓ | [`tooling/skills/goldens/codex/minutes-debrief/SKILL.md`](tooling/skills/goldens/codex/minutes-debrief/SKILL.md) |
+| 101 | ✓ | [`tooling/skills/goldens/codex/minutes-prep/SKILL.md`](tooling/skills/goldens/codex/minutes-prep/SKILL.md) |
+| 102 | ✓ | [`tooling/skills/goldens/opencode/minutes-brief/SKILL.md`](tooling/skills/goldens/opencode/minutes-brief/SKILL.md) |
+| 103 | ✓ | [`tooling/skills/goldens/opencode/minutes-debrief/SKILL.md`](tooling/skills/goldens/opencode/minutes-debrief/SKILL.md) |
+| 104 | ✓ | [`tooling/skills/goldens/opencode/minutes-prep/SKILL.md`](tooling/skills/goldens/opencode/minutes-prep/SKILL.md) |
+| 105 | → | [`docs/PRE-COMMIT.md`](docs/PRE-COMMIT.md) |
+| 106 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
 
 ---
 

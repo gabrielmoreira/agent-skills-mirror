@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 149 file(s) materialized.
+Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 150 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 149 |
+| Files         | 150 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -199,15 +199,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 138 | ✓ | [`skills/remotion-to-hyperframes/SKILL.md`](skills/remotion-to-hyperframes/SKILL.md) |
 | 139 | ✓ | [`skills/tailwind/SKILL.md`](skills/tailwind/SKILL.md) |
 | 140 | ✓ | [`skills/three/SKILL.md`](skills/three/SKILL.md) |
-| 141 | ✓ | [`skills/waapi/SKILL.md`](skills/waapi/SKILL.md) |
-| 142 | ✓ | [`skills/website-to-hyperframes/references/step-1-capture.md`](skills/website-to-hyperframes/references/step-1-capture.md) |
-| 143 | ✓ | [`skills/website-to-hyperframes/references/step-2-design.md`](skills/website-to-hyperframes/references/step-2-design.md) |
-| 144 | ✓ | [`skills/website-to-hyperframes/references/step-3-script.md`](skills/website-to-hyperframes/references/step-3-script.md) |
-| 145 | ✓ | [`skills/website-to-hyperframes/references/step-4-storyboard.md`](skills/website-to-hyperframes/references/step-4-storyboard.md) |
-| 146 | ✓ | [`skills/website-to-hyperframes/references/step-5-vo.md`](skills/website-to-hyperframes/references/step-5-vo.md) |
-| 147 | ✓ | [`skills/website-to-hyperframes/references/step-6-build.md`](skills/website-to-hyperframes/references/step-6-build.md) |
-| 148 | ✓ | [`skills/website-to-hyperframes/references/step-7-validate.md`](skills/website-to-hyperframes/references/step-7-validate.md) |
-| 149 | ✓ | [`skills/website-to-hyperframes/SKILL.md`](skills/website-to-hyperframes/SKILL.md) |
+| 141 | ✓ | [`skills/typegpu/SKILL.md`](skills/typegpu/SKILL.md) |
+| 142 | ✓ | [`skills/waapi/SKILL.md`](skills/waapi/SKILL.md) |
+| 143 | ✓ | [`skills/website-to-hyperframes/references/step-1-capture.md`](skills/website-to-hyperframes/references/step-1-capture.md) |
+| 144 | ✓ | [`skills/website-to-hyperframes/references/step-2-design.md`](skills/website-to-hyperframes/references/step-2-design.md) |
+| 145 | ✓ | [`skills/website-to-hyperframes/references/step-3-script.md`](skills/website-to-hyperframes/references/step-3-script.md) |
+| 146 | ✓ | [`skills/website-to-hyperframes/references/step-4-storyboard.md`](skills/website-to-hyperframes/references/step-4-storyboard.md) |
+| 147 | ✓ | [`skills/website-to-hyperframes/references/step-5-vo.md`](skills/website-to-hyperframes/references/step-5-vo.md) |
+| 148 | ✓ | [`skills/website-to-hyperframes/references/step-6-build.md`](skills/website-to-hyperframes/references/step-6-build.md) |
+| 149 | ✓ | [`skills/website-to-hyperframes/references/step-7-validate.md`](skills/website-to-hyperframes/references/step-7-validate.md) |
+| 150 | ✓ | [`skills/website-to-hyperframes/SKILL.md`](skills/website-to-hyperframes/SKILL.md) |
 
 ---
 

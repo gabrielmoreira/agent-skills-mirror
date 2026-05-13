@@ -15,6 +15,7 @@ CAPABILITIES_SUMMARY:
 - pseudo_localization: Pseudo-locale generation, CI integration, layout clipping detection
 - coverage_tracking: Translation coverage metrics, unused key detection, CI quality gates
 - continuous_localization: TMS integration via MCP, OTA edge delivery, edge localization (CDN-level locale routing), AI-powered translation pipeline design
+- mobile_string_resources: iOS String Catalogs (`.xcstrings`, Xcode 15+, default for new iOS 17+ projects) and Android `strings.xml` + `plurals.xml` + `arrays.xml` + `LocaleConfig` (per-app language preferences, Android 13+) — extraction, ICU pluralization mapping, and translator-context (`comment` / `<!-- translator comment -->`) wiring
 
 COLLABORATION_PATTERNS:
 - Pattern A: Feature i18n (Builder → Polyglot → Radar)
@@ -23,10 +24,11 @@ COLLABORATION_PATTERNS:
 - Pattern D: UI Extraction (Artisan → Polyglot → Radar)
 - Pattern E: i18n CI Gates (Polyglot → Gear)
 - Pattern F: i18n E2E Validation (Polyglot → Voyager)
+- Pattern G: Mobile i18n (Native → Polyglot → Native; iOS String Catalogs / Android strings.xml extraction and translation, then back to Native for build integration)
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Builder (new features with strings), Artisan (UI components), Prose (translation-ready copy), User (i18n requests)
-- OUTPUT: Radar (i18n tests), Muse (RTL token adjustments), Canvas (i18n diagrams), Quill (translation docs), Gear (CI gates), Voyager (i18n E2E)
+- INPUT: Builder (new features with strings), Artisan (UI components), Prose (translation-ready copy), Native (iOS Swift / Android Kotlin UI strings, untranslated `.xcstrings` / `strings.xml`), User (i18n requests)
+- OUTPUT: Radar (i18n tests), Muse (RTL token adjustments), Canvas (i18n diagrams), Quill (translation docs), Gear (CI gates), Voyager (i18n E2E), Native (translated `.xcstrings` / `strings.xml`, per-locale `Localizable` resources, LocaleConfig for Android per-app language preferences)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Mobile(H) Dashboard(M) Static(M)
 -->
@@ -56,9 +58,11 @@ Use Polyglot when the user needs:
 - edge localization architecture (CDN-level locale detection and locale-specific content serving)
 - translation coverage tracking and CI quality gates
 - scaling strategy for large projects (500+ keys, 6+ locales)
+- native mobile i18n: iOS String Catalogs (`.xcstrings`, Xcode 15+) extraction from Swift `String(localized:)` / `LocalizedStringKey`, Android `strings.xml` / `plurals.xml` extraction from Compose `stringResource()` and Kotlin code, per-app language preferences via Android `LocaleConfig` (API 33+) and iOS per-app language settings
 
 Route elsewhere when the task is primarily:
 - UI component implementation: `Builder` or `Artisan`
+- native iOS Swift / Android Kotlin UI implementation: `Native` (Polyglot extracts strings and produces translated resources; Native wires them into the native build)
 - design token or style system changes: `Muse`
 - documentation writing: `Quill`
 - test writing for i18n: `Radar`
@@ -134,6 +138,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Pluralization | `pluralize` | | CLDR plural categories, ICU plural/selectordinal branches, per-locale category coverage, plural-branch testing | `references/pluralize-cldr-rules.md` |
 | Locale Negotiation | `locale` | | BCP 47 parsing, Accept-Language negotiation, fallback chain, user-override persistence, geolocation defaults | `references/locale-negotiation.md` |
 | Translation Workflow | `translate` | | TMS integration (Lokalise/Crowdin/Phrase/Smartling), translation memory, translator briefing, placeholder/HTML QA, release workflow | `references/translate-tms-workflow.md` |
+| Mobile i18n | `mobile` | | iOS String Catalogs (`.xcstrings`) and Android `strings.xml` / `plurals.xml` / `LocaleConfig` extraction, ICU plural mapping, xliff exchange with TMS, per-app language preferences | `references/library-setup.md` |
 
 Behavior notes:
 - **extract** (default): SCAN → EXTRACT → VERIFY → PRESENT; hardcoded strings become `t()` calls with semantic nested keys; load `library-setup.md`.
@@ -143,6 +148,7 @@ Behavior notes:
 - **pluralize**: CLDR plural-rule implementation, ICU `plural` / `selectordinal` branch authoring per locale (Arabic 6 / Polish 4 / English 2 / Japanese 1 forms), fallback strategy, and branch-coverage testing; load `pluralize-cldr-rules.md`. For source-language copy authoring use Prose; for framework-specific translation hooks (`t()` call sites, `<Plural>` components) use Artisan; for spec-level L10n requirements use Accord.
 - **locale**: BCP 47 parsing and canonicalization, `Accept-Language` negotiation, fallback chain design (`zh-Hant-HK → zh-Hant → zh → default`), user-override persistence (cookie / user record), geolocation-inferred defaults vs explicit user choice; load `locale-negotiation.md`. For source-language copy use Prose; for framework middleware / RSC locale wiring use Artisan; for supported-locale SLA and spec requirements use Accord.
 - **translate**: TMS integration (Lokalise / Crowdin / Phrase / Smartling), translation-memory reuse strategy, source-string change detection, translator briefing (description / max length / screenshots), QA gates (placeholder parity, HTML tag integrity, ICU syntax, coverage), and release workflow; load `translate-tms-workflow.md`. For source copy authoring use Prose; for extractor output format wiring use Artisan; for locale-coverage SLA use Accord.
+- **mobile**: iOS / Android native i18n. iOS: extract Swift `String(localized:)` / `LocalizedStringKey` / `Text("...")` into `.xcstrings` (Xcode 15+ default for new iOS 17+ projects, supports CLDR plural categories natively); migrate legacy `Localizable.strings` + `.stringsdict` to a single String Catalog. Android: extract Kotlin / Compose `stringResource(R.string.*)` and `pluralStringResource()` into `res/values/strings.xml` + `res/values/plurals.xml` + `res/values/arrays.xml`; wire `LocaleConfig` (`res/xml/locales_config.xml`, Android 13+ / API 33+) for per-app language preferences in system Settings. Use xliff exchange (`xcodebuild -exportLocalizations` on iOS; Android Studio Translations Editor / `xliff-tools` on Android) to feed Lokalise / Crowdin / Phrase / Smartling. Return translated resources to `Native` for build integration via `NATIVE_TO_POLYGLOT_HANDOFF` / `POLYGLOT_TO_NATIVE_HANDOFF`. For React Native / Flutter / Kotlin Multiplatform / Compose Multiplatform: out of scope for this skill (per Native's contract); use the relevant cross-platform i18n library through `Builder` / `Artisan` instead.
 
 ## Subcommand Dispatch
 
@@ -157,6 +163,7 @@ Parse the first token of user input and activate the matching Recipe. If the tok
 | `pluralize` | Pluralization |
 | `locale` | Locale Negotiation |
 | `translate` | Translation Workflow |
+| `mobile` | Mobile i18n |
 | _(no match)_ | String Extraction (default) |
 
 ---
@@ -179,6 +186,9 @@ Parse the first token of user input and activate the matching Recipe. If the tok
 | `edge localization`, `CDN locale`, `region routing` | Edge localization architecture | CDN locale detection config + edge-served locale bundles | `references/library-setup.md` |
 | `AI translation`, `machine translation`, `glossary` | AI-powered translation pipeline | Glossary-locked MT config + human review workflow | `references/library-setup.md` |
 | `scaling`, `500+ keys`, `merge conflicts` | Large-project i18n strategy | TMS integration + namespace splitting + unused key detection | `references/library-setup.md` |
+| `iOS`, `Swift`, `xcstrings`, `String Catalog`, `Localizable` | iOS native i18n | `.xcstrings` extraction + CLDR plurals + xliff exchange | `references/library-setup.md` |
+| `Android`, `Kotlin`, `Compose`, `strings.xml`, `plurals.xml`, `LocaleConfig` | Android native i18n | `strings.xml` / `plurals.xml` extraction + `LocaleConfig` per-app language | `references/library-setup.md` |
+| `mobile i18n`, `native localization`, `app localization` | Native mobile i18n (both platforms) | iOS String Catalogs + Android strings.xml in parallel | `references/library-setup.md` |
 | unclear i18n request | String extraction (default) | Extracted translation files | `references/library-setup.md` |
 
 Routing rules:
@@ -214,6 +224,9 @@ Every deliverable must include:
 | react-intl (FormatJS) | React | ICU-heavy projects, MF2-ready via `@formatjs/intl` |
 | vue-i18n v11 | Vue 3 | Vue Composition API (requires `@intlify/unplugin-vue-i18n` with `icu: true` for ICU parsing). v11 removed Legacy API `tc`/`$tc`/`v-t` deprecation — Composition API only for new projects |
 | LinguiJS v4.10+ | React (incl. RSC) | Lightweight, macro-based extraction, small bundle (~5 kB); RSC support via per-request cache |
+| iOS String Catalogs (`.xcstrings`) | Swift / SwiftUI (Xcode 15+) | Default for new iOS 17+ projects; JSON-backed, supports CLDR plural categories natively, auto-extracted from `String(localized:)` / `LocalizedStringKey`; replaces legacy `Localizable.strings` + `.stringsdict` pairs |
+| Android `strings.xml` + `plurals.xml` + `LocaleConfig` | Kotlin / Jetpack Compose | Resource-based localization with `stringResource()` / `pluralStringResource()`; `LocaleConfig` (`res/xml/locales_config.xml`) enables per-app language preferences in system Settings (Android 13+ / API 33+) |
+| `xliff` / `xlf` exchange | iOS / Android cross-TMS | Standard interchange via `xcodebuild -exportLocalizations` (iOS) and Android Studio Translations Editor export; route into Lokalise / Crowdin / Phrase / Smartling |
 
 > **Detail**: See `references/library-setup.md` for full installation and configuration guides.
 
@@ -265,12 +278,14 @@ Polyglot receives features and UI components from upstream agents. Polyglot send
 | Builder → Polyglot | `BUILDER_TO_POLYGLOT` | New features with strings for i18n extraction |
 | Artisan → Polyglot | `ARTISAN_TO_POLYGLOT` | UI components for string extraction |
 | Prose → Polyglot | `PROSE_TO_POLYGLOT` | Translation-ready copy for localization |
+| Native → Polyglot | `NATIVE_TO_POLYGLOT` | iOS Swift / Android Kotlin UI strings (untranslated `.xcstrings` / `strings.xml`) for extraction and ICU plural mapping |
 | Polyglot → Radar | `POLYGLOT_TO_RADAR` | i18n tests for validation |
 | Polyglot → Muse | `POLYGLOT_TO_MUSE` | RTL token adjustments |
 | Polyglot → Canvas | `POLYGLOT_TO_CANVAS` | i18n architecture diagrams |
 | Polyglot → Quill | `POLYGLOT_TO_QUILL` | Translation documentation |
 | Polyglot → Gear | `POLYGLOT_TO_GEAR` | CI pseudo-localization and coverage gate setup |
 | Polyglot → Voyager | `POLYGLOT_TO_VOYAGER` | E2E tests for locale switching and RTL rendering |
+| Polyglot → Native | `POLYGLOT_TO_NATIVE` | Translated `.xcstrings` / `strings.xml` / `plurals.xml`, `LocaleConfig` for Android per-app language preferences, and Native build integration notes |
 
 ### Overlap Boundaries
 
@@ -279,6 +294,7 @@ Polyglot receives features and UI components from upstream agents. Polyglot send
 | Prose | i18n extraction and localization of existing copy | UX copy writing and voice design |
 | Builder | i18n layer for feature strings | Feature implementation |
 | Artisan | i18n extraction from UI components | UI component code |
+| Native | iOS String Catalogs / Android strings.xml extraction, ICU plural mapping, xliff exchange, translated resource files | Native Swift/SwiftUI / Kotlin/Compose implementation, resource file integration into Xcode / Gradle build, runtime locale switching, `LocaleConfig` registration |
 | Gear | i18n CI gates (coverage, pseudo-locale) | Build/deploy pipeline |
 | Voyager | i18n E2E scenarios (locale switch, RTL) | E2E test framework |
 

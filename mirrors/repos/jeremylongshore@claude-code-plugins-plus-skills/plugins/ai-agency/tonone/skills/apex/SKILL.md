@@ -5,8 +5,6 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch, Task, T
 version: 0.9.1
 author: tonone-ai <hello@tonone.ai>
 license: MIT
-tags: ["ai-agency", "tonone"]
-compatibility: "Designed for Claude Code"
 ---
 
 # Apex — Engineering Lead

@@ -33,26 +33,42 @@ you are reading this guide first, start at step 1.
 
 ## IDD file map
 
-| File                                                       | Role                                                                                |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `.github/instructions/idd-overview.instructions.md`        | Shared definitions, command sets, routing table, critique-pass mapping              |
-| `.github/instructions/idd-discover.instructions.md`        | Find the next viable issue, route roadmap audits, audit suitability, and start work |
-| `.github/instructions/idd-roadmap-audit.instructions.md`   | A1.5: audit roadmap completion and run roadmap-side coordination before A2          |
-| `.github/instructions/idd-claim.instructions.md`           | Run claim pre-checks and claim verification                                         |
-| `.github/instructions/idd-work.instructions.md`            | Create the worktree, plan, implement, and self-review                               |
-| `.github/instructions/idd-pr-submit.instructions.md`       | Rebase, validate, push, open the PR, and wait for CI                                |
-| `.github/instructions/idd-ci.instructions.md`              | Shared CI polling helper used by later phases                                       |
-| `.github/instructions/idd-advisory-wait.instructions.md`   | Shared Copilot advisory-wait protocol (E14, F2, F3)                                 |
-| `.github/instructions/idd-review-snapshot.instructions.md` | E1–E3: fetch activity snapshot, run critique, check if List A is empty              |
-| `.github/instructions/idd-review-triage.instructions.md`   | E4–E8: classify items, score, record dispositions                                   |
-| `.github/instructions/idd-review-fix.instructions.md`      | Fix accepted review items and push follow-up commits                                |
-| `.github/instructions/idd-pre-merge.instructions.md`       | F1–F2: resolve conflicts and verify all pre-merge conditions                        |
-| `.github/instructions/idd-merge-handoff.instructions.md`   | F2.5: resolve merge-policy handoff vs autonomous merge routing                      |
-| `.github/instructions/idd-merge.instructions.md`           | F3–F5: execute the merge, clean up, and loop back to discover                       |
-| `.github/instructions/idd-resume.instructions.md`          | Route resume into crash, stalled, stale-takeover, or clean continuation             |
-| `.github/instructions/idd-resume-stall.instructions.md`    | Handle stalled-session recovery with a dedicated safety gate                        |
-| `docs/idd-review-policy-profiles.md`                       | PR review policy profiles and customization surfaces                                |
-| `docs/idd-comment-minimization.md`                         | Live status digest contract and post-merge comment minimization policy              |
+| File                                                       | Role                                                                                 |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `.github/instructions/idd-overview.instructions.md`        | Shared definitions, command sets, routing table, critique-pass mapping               |
+| `.github/instructions/idd-discover.instructions.md`        | A0-T–A4.5: find a viable issue, route roadmap audits, run suitability, and hand off  |
+| `.github/instructions/idd-roadmap-audit.instructions.md`   | A1.5: audit roadmap completion and run roadmap-side coordination before A2           |
+| `.github/instructions/idd-claim.instructions.md`           | A5: run claim pre-checks and claim verification                                      |
+| `.github/instructions/idd-work.instructions.md`            | B1-B3 + C1-C6: create worktree, plan, implement, and self-review                     |
+| `.github/instructions/idd-pr-submit.instructions.md`       | D1-D4: rebase, validate, push, open PR, and wait for CI                              |
+| `.github/instructions/idd-ci.instructions.md`              | D4/E15 helper: shared CI polling helper used by later phases                         |
+| `.github/instructions/idd-advisory-wait.instructions.md`   | AW1-AW5 helper: shared Copilot advisory-wait protocol (E14, F2, F3)                  |
+| `.github/instructions/idd-review-snapshot.instructions.md` | E1–E3: fetch activity snapshot, run critique, check if ReviewItems_snapshot is empty |
+| `.github/instructions/idd-review-triage.instructions.md`   | E4–E8: classify items, score, and record dispositions                                |
+| `.github/instructions/idd-review-fix.instructions.md`      | E9-E15: fix accepted review items and push follow-up commits                         |
+| `.github/instructions/idd-pre-merge.instructions.md`       | F1–F2: resolve conflicts and verify all pre-merge conditions                         |
+| `.github/instructions/idd-merge-handoff.instructions.md`   | F2.5: resolve merge-policy handoff vs autonomous merge routing                       |
+| `.github/instructions/idd-merge.instructions.md`           | F3–F5: execute the merge, clean up, and loop back to discover                        |
+| `.github/instructions/idd-resume.instructions.md`          | Resume Step 0-3: route crash, stalled, stale-takeover, or clean continuation         |
+| `.github/instructions/idd-resume-stall.instructions.md`    | Resume S1-S5: handle stalled-session recovery with a dedicated safety gate           |
+| `docs/idd-review-policy-profiles.md`                       | PR review policy profiles and customization surfaces                                 |
+| `docs/idd-comment-minimization.md`                         | Live status digest contract and post-merge comment minimization policy               |
+
+## ReviewItems_snapshot lifecycle
+
+`ReviewItems_snapshot` is the immutable collection created from E1's
+activity-universe fetch.
+
+| Phase | Operation                                                                                                   | State     |
+| ----- | ----------------------------------------------------------------------------------------------------------- | --------- |
+| E1    | Fetch threads/reviews/comments, exclude trusted operational markers, and freeze the current item universe   | created   |
+| E2    | Run critique pass and append newly found findings to the same snapshot scope                                | extended  |
+| E3    | Evaluate empty/non-empty routing based on the frozen snapshot plus E2 findings                              | evaluated |
+| E4-E8 | Classify, score, disposition, and verify each snapshot item (PATH A/PATH B) without redefining the snapshot | triaged   |
+| E9    | Fix Accepted PATH A items that were selected from the snapshot                                              | actioned  |
+
+The name intentionally emphasizes snapshot semantics: E1-E3 builds and
+gates on a time-locked view, while E4-E8 triages that view.
 
 ## Artifact taxonomy and ownership
 
@@ -102,6 +118,18 @@ target directly before Claim. The shortcut avoids broad roadmap
 enumeration, but it still applies targeted readiness checks, the A4
 viability gate, and the A4.5 suitability gate before the normal A5 claim
 safety checks.
+
+## Issue-author approval contract
+
+Repositories may also keep a secure-by-default issue-author approval
+gate ahead of Claim. The distributed discover and claim instructions
+already enforce this behavior: explicit-target runs stop before claim
+when the selected issue lacks the required approval, and discovery keeps
+underprivileged unapproved issues in an approval-needed fallback bucket
+instead of treating them as ready to start. Approval actors are a
+repository-local policy choice and remain distinct from trusted
+operational marker actors; CODEOWNERS mismatch does not replace this
+pre-start gate.
 
 ## Suitability policy handoff
 
@@ -291,12 +319,14 @@ reviewer because that is part of this repository's current PR policy.
 
 ## Optional helper scripts
 
-This source repository currently ships four optional helper scripts:
+This source repository currently ships the following optional helper scripts:
 
 - `scripts/review-activity-snapshot.mjs` (read-only E/F activity and CI
   snapshot metrics)
 - `scripts/advisory-wait-state.mjs` (read-only advisory-wait evidence
   and AW outcome reporting)
+- `scripts/pre-merge-readiness.mjs` (read-only F2/F3 readiness evidence
+  collection)
 - `scripts/live-status-digest.mjs` (issue or PR live status digest
   dry-run and claim-checked upsert)
 - `scripts/audit-pr-cleanup.mjs` (post-merge cleanup audit and optional

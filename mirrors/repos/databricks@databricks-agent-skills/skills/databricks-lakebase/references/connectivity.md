@@ -11,7 +11,7 @@
 
 ## Connection Patterns (Python)
 
-> **JavaScript/TypeScript Databricks Apps** using AppKit get Lakebase connectivity fully auto-injected via `createLakebasePool()` — see the **`databricks-apps`** skill.
+> **JavaScript/TypeScript Databricks Apps** using AppKit get Lakebase connectivity via the `lakebase()` plugin — see the **`databricks-apps`** skill's [Lakebase guide](../../databricks-apps/references/appkit/lakebase.md).
 
 ### Pattern 1: Direct Connection (Scripts/Notebooks)
 
@@ -130,6 +130,19 @@ conn = psycopg.connect(
 ```
 
 For production apps, combine with Pattern 2's token refresh loop and SQLAlchemy pooling. For the full app development workflow (scaffolding, tRPC, schema init), use the **`databricks-apps`** skill.
+
+### Pattern 5: Off-Platform Apps (TypeScript/Node.js)
+
+For apps running outside Databricks (external servers, local dev, CI/CD), use the `@databricks/lakebase` package — it works standalone without AppKit and handles OAuth token refresh, SSL, and connection pooling automatically.
+
+```typescript
+import { createLakebasePool } from "@databricks/lakebase";
+
+const pool = createLakebasePool({ host, database, endpoint });
+const { rows } = await pool.query("SELECT * FROM my_table LIMIT 10");
+```
+
+For full configuration, auth chain, and SSL details, run `npm view @databricks/lakebase readme`.
 
 ## Best Practices
 

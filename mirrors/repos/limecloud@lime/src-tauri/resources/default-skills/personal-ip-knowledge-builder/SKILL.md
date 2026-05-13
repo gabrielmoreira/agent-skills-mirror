@@ -3,14 +3,13 @@ name: personal-ip-knowledge-builder
 description: 将访谈稿、聊天记录、简历、公开内容、业务资料、案例和既有 DOCX/Markdown 文档，提炼成可被 AI 长期调用的个人 IP 知识库。适用于用户要求“生成个人知识库”“整理成个人 IP 成品知识库”“为创始人/专家/讲师/主播/顾问建立AI知识库”“把资料变成个人IP底层提示词/写作风格库/故事素材库/话术库”的场景。
 license: Apache-2.0
 allowed-tools: list_directory, read_file
-compatibility:
-  agentKnowledge: ">=0.6.0"
+compatibility: Agent Knowledge >=0.6.0
 metadata:
-  lime_version: 1.0.0
+  lime_version: 1.0.1
   lime_execution_mode: prompt
   lime_surface: workbench
   lime_category: knowledge
-  Lime_skill_bundle_version: "1.0.0"
+  Lime_skill_bundle_version: "1.0.1"
   Lime_knowledge_builder: "true"
   Lime_knowledge_pack_type: "personal-profile"
   Lime_knowledge_template: "personal-ip"

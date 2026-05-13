@@ -94,6 +94,10 @@ const result = await trpc.queryModel.query({ prompt: userInput });
 const answer = result.choices?.[0]?.message?.content;
 ```
 
+For streaming and advanced patterns, see `npx @databricks/appkit docs ./docs/plugins/model-serving.md`.
+
+AppKit integrates with **Model Serving endpoints**. AI Gateway (beta) endpoints are not directly supported — use the underlying Model Serving endpoint name instead. AI Gateway features (rate limits, usage tracking) can be configured on Model Serving endpoints via the `databricks-model-serving` skill.
+
 ## Troubleshooting
 
 | Error | Cause | Solution |

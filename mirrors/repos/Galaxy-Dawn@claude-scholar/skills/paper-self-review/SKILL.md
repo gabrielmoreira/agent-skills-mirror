@@ -1,6 +1,6 @@
 ---
 name: paper-self-review
-description: This skill should be used when the user asks to "review paper quality", "check paper completeness", "validate paper structure", "self-review before submission", or mentions systematic paper quality checking. Provides comprehensive quality assurance checklist for academic papers.
+description: This skill should be used when the user asks to "review paper quality", "check paper completeness", "validate paper structure", "self-review before submission", "audit claims", "check overclaiming", "verify whether results support claims", or mentions systematic paper quality checking. Provides comprehensive quality assurance checklist for academic papers.
 version: 0.1.0
 ---
 
@@ -35,7 +35,18 @@ Check the completeness and accuracy of citations:
 - Are key related works cited?
 - Do citations accurately reflect the original content?
 
-### 4. Figure/Table Quality
+### 4. Research Claim Audit
+
+Check whether the paper's claims are supported by the available evidence:
+- Are the main claims supported by results, citations, or analysis artifacts?
+- Are speculative observations clearly marked as tentative?
+- Does the paper avoid stronger wording than the evidence allows?
+- Are negative results, limitations, and missing baselines presented honestly?
+- Do conclusions stay inside the tested scope?
+
+This audit does not replace `results-analysis` for statistics or `citation-verification` for bibliographic verification. It checks whether paper claims correctly use the available evidence.
+
+### 5. Figure/Table Quality
 
 Evaluate the quality and effectiveness of figures and tables:
 - Do all figures/tables have clear titles and captions?
@@ -43,7 +54,7 @@ Evaluate the quality and effectiveness of figures and tables:
 - Are figures/tables clear and readable?
 - Do formats comply with journal/conference requirements?
 
-### 5. Writing Clarity
+### 6. Writing Clarity
 
 Check writing clarity and readability:
 - Is the language concise and clear?
@@ -61,6 +72,8 @@ Paper Quality Checklist:
 - [ ] Introduction clearly states research motivation
 - [ ] Method is reproducible
 - [ ] Results support conclusions
+- [ ] Main claims are supported by named evidence
+- [ ] Over-strong claims are weakened or removed
 - [ ] Discussion addresses limitations
 - [ ] All figures/tables have captions
 - [ ] Citations are complete and accurate
@@ -86,16 +99,32 @@ Start with the overall structure, checking if all sections are complete and logi
 ### Step 2: Content Review
 Dive into each section, checking content accuracy and completeness.
 
-### Step 3: Citation Check
+### Step 3: Research Claim Audit
+Check whether each major claim is supported by the evidence available in the draft, analysis bundle, citations, or project notes.
+
+Use this output shape:
+
+```md
+## Claim Audit
+
+Claim:
+Verdict: keep | weaken | revise | remove
+Evidence used:
+Missing evidence:
+Overclaim risk:
+Suggested wording:
+```
+
+### Step 4: Citation Check
 Verify the completeness and accuracy of all citations.
 
-### Step 4: Figure/Table Review
+### Step 5: Figure/Table Review
 Check the quality and captions of all figures and tables.
 
-### Step 5: Writing Quality
+### Step 6: Writing Quality
 Review language expression and writing clarity.
 
-### Step 6: Final Checklist
+### Step 7: Final Checklist
 Use the quality checklist for final verification.
 
 ## Best Practices

@@ -126,7 +126,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 ### Phase Details
 
 **SCAN** collects:
-- YAML frontmatter presence and content (F1)
+- YAML frontmatter presence and content (F1) — also reject any key outside `name:` / `description:`, and check the body for an explicit capability declaration; escalate `permissions:` / `trust:` / `capabilities:` style custom keys to `chain` as P0 supply-chain risk
 - Language distribution in body vs description (L1)
 - HTML comment blocks: CAPABILITIES_SUMMARY, COLLABORATION_PATTERNS, PROJECT_AFFINITY (H1-H3)
 - Section headings and their content completeness (S1-S9)
@@ -165,6 +165,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Fix Violations | `fix` | | Automated fix proposals for violations (Quest-exemplar snippet generation) | `references/fix-templates.md` |
 | Research Best Practices | `research` | | Research emerging best practices via web search (self-evolution EVOLVE phase) | `references/web-sources.md`, `references/self-evolution.md` |
 | Checklist Application | `checklist` | | Evaluate a specific checklist item (single-item focus) | `references/normalization-checklist.md` |
+| Staleness Audit | `staleness` | | Detect outdated references in claude-skills itself (archived OSS / EOL runtimes / superseded versions / broken internal links / unannotated benchmarks / cross-skill drift). Different scope from `audit` — `audit` checks SKILL.md format; `staleness` checks whether the *facts cited* are still current. | `references/staleness-detection.md` |
 
 ## Subcommand Dispatch
 
@@ -177,6 +178,7 @@ Behavior notes per Recipe:
 - `fix`: Generate concrete fix snippets for FAIL/PARTIAL items. Quest section reference required. Do not edit SKILL.md directly.
 - `research`: Web search with T1-T4 source tier classification. Self-update at Safety Level A/B. Strictly respect the change budget (3 per session).
 - `checklist`: Evaluate only the specified item (F1, L1, H1-H3, S1-S9, A1-A2) with narrowed scope.
+- `staleness`: Run the 10-category staleness scan (SD-1 archived OSS / SD-2 superseded version / SD-3 EOL runtime / SD-4 broken internal link / SD-5 single-year benchmark / SD-6 old standard / SD-7 single-CVE window / SD-8 deprecated API name / SD-9 cross-skill drift / SD-10 dangling optional pointer) against `*/SKILL.md` and `*/references/*.md` from the repo root. Apply the 7 false-positive guard rules before emitting findings (migration-guide context, min-version baseline, historical anchor, migration-target side, feature-support boundary, CVE registry, deliberate cross-skill repetition). Emit the YAML envelope from `references/staleness-detection.md` § 5; hand the finding list to Builder for the actual edits and Guardian for PR composition. Never edit files directly — Gauge produces reports, not patches.
 
 ## Output Routing
 
@@ -187,6 +189,7 @@ Behavior notes per Recipe:
 | `fix`, `recommend`, `snippet` | Fix plan generation | Fix plan with snippets | `references/fix-templates.md` |
 | `evolve`, `update`, `best practices`, `calibrate` | Self-evolution cycle | Evolution log | `references/web-sources.md`, `references/self-evolution.md` |
 | `detect`, `pattern`, `detection` | Detection pattern review | Pattern analysis | `references/detection-patterns.md` |
+| `staleness`, `outdated`, `superseded`, `EOL`, `archived`, `prune` | Staleness audit on claude-skills itself | Staleness audit report (YAML envelope with P0-P3 findings) | `references/staleness-detection.md` |
 | `drift`, `regression`, `degraded` | Compliance drift analysis | Drift report with delta scores | `references/normalization-checklist.md` |
 | `false positive`, `noise`, `calibrate` | Rule calibration review | FP/FN analysis per rule | `references/detection-patterns.md` |
 | unclear compliance request | Full 16-item scan | Compliance report | `references/normalization-checklist.md` |
@@ -235,6 +238,7 @@ Every deliverable must include:
 | `references/web-sources.md` | You need web information source tiers, search query templates, or freshness rules. |
 | `references/self-evolution.md` | You need safety levels, evolution triggers, change budget, or rollback procedures. |
 | `references/official-standards.md` | You need official Anthropic standards for frontmatter validation, troubleshooting common issues, or comparing ecosystem checklist against official spec during CLASSIFY or RECOMMEND. |
+| `references/staleness-detection.md` | You are running `gauge staleness` and need the 10-category detection catalog, grep commands, false-positive guard rules, severity matrix, output YAML envelope, or the 90-day catalog self-update protocol. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the compliance report, deciding adaptive thinking depth at CLASSIFY, or front-loading scan scope at SCAN. Critical for Gauge: P2, P5. |
 
 ## Operational

@@ -1,51 +1,77 @@
 # obsidian-second-brain
 
-> A Claude Code skill that turns any Obsidian vault into a self-rewriting second brain. An evolution of Karpathy's LLM Wiki pattern (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): every source updates existing pages instead of just appending, contradictions reconcile automatically, and 4 scheduled agents maintain the vault while you sleep. 31 slash commands span vault management, thinking tools, scheduled agents, and a research toolkit (live X posts via Grok, web research via Perplexity, YouTube transcripts).
+> A cross-CLI skill that turns any Obsidian vault into a self-rewriting second brain. Runs in Claude Code, OpenAI Codex CLI, Google Gemini CLI, and OpenCode from one platform-neutral source via a build-time adapter pattern. An evolution of Karpathy's LLM Wiki pattern (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): every source updates existing pages instead of just appending, contradictions reconcile automatically, and 4 scheduled agents maintain the vault while you sleep. 32 commands span vault management, thinking tools, scheduled agents, and a research toolkit (live X posts via Grok, web research via Perplexity, YouTube transcripts), plus a write-time AI-first validator hook and a `/create-command` interview flow for user-built extensions.
 
 ## What this is
 
-obsidian-second-brain is an open-source Claude Code skill (MIT license) for Obsidian users who use Claude as their primary interface to their own knowledge. It treats the vault as a knowledge base optimized for AI retrieval rather than human reading. Every note follows an AI-first design rule: self-contained context, "For future Claude" preamble, rich machine-readable frontmatter, recency markers per claim, sources preserved verbatim, mandatory wikilinks, and confidence levels.
+obsidian-second-brain is an open-source skill (MIT license) for Obsidian users who use an AI CLI as their primary interface to their own knowledge. It treats the vault as a knowledge base optimized for AI retrieval rather than human reading. Every note follows an AI-first design rule: self-contained context, "For future Claude" preamble, rich machine-readable frontmatter, recency markers per claim, sources preserved verbatim, mandatory wikilinks, and confidence levels.
+
+The skill is platform-neutral. The same 32 commands run in Claude Code (slash commands + `CLAUDE.md`), OpenAI Codex CLI (`AGENTS.md` + `.codex/commands/`), Google Gemini CLI (`GEMINI.md` + `.gemini/commands/`), and OpenCode (`AGENTS.md` + `.opencode/commands/`). One codebase compiles into all four via `bash scripts/build.sh`.
 
 Owner: Eugeniu Ghelbur. AI Automation Engineer at Single Grain.
 
 ## Why people use it
 
-- Claude sessions start from zero every time. This skill solves that by storing context in the Obsidian vault and letting Claude read, write, and reason over it across sessions.
+- Claude sessions start from zero every time. This skill solves that by storing context in the Obsidian vault and letting the AI read, write, and reason over it across sessions.
 - Notes accumulate unconnected. This skill propagates every write across people, projects, kanban boards, and daily notes automatically.
 - Research findings get lost. The research toolkit (5 commands) saves every X read, X pulse, web research, and YouTube extraction directly to the vault as structured notes.
-- Vaults are usually optimized for humans browsing in Obsidian. This skill treats the vault as an AI knowledge graph: future-Claude is the primary reader.
+- Vaults are usually optimized for humans browsing in Obsidian. This skill treats the vault as an AI knowledge graph: future-Claude (or future-Codex/Gemini) is the primary reader.
+- Different AI users use different CLIs. The same vault works whether the user is on Claude Code, Codex CLI, Gemini CLI, or OpenCode — no rewriting commands per platform.
 
 ## How this extends Karpathy's LLM Wiki pattern
 
 Andrej Karpathy described an LLM Wiki pattern: drop sources into a folder, have an LLM read them, create wiki pages, and cross-reference entities and concepts so future questions are answered from the wiki rather than a fresh search. Reference: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 
-obsidian-second-brain implements this pattern and extends it on five axes:
+obsidian-second-brain implements this pattern and extends it on six axes:
 
 1. New sources rewrite existing pages instead of appending. When you ingest a YouTube video about a person already in your vault, the person's page gets updated. Stale claims get replaced. The vault stays current automatically.
 2. Contradictions get reconciled, not just flagged. The /obsidian-reconcile command finds conflicts between notes and resolves them by checking sources, dates, and confidence levels.
 3. Patterns get surfaced without prompting. The /obsidian-synthesize command scans the vault for unnamed recurring themes and writes synthesis pages on its own.
 4. Maintenance is scheduled, not manual. 4 scheduled agents run nightly close, weekly review, contradiction sweep, and vault-health check.
 5. Notes are written for AI retrieval. Every note has a "For future Claude" preamble, machine-readable frontmatter, mandatory wikilinks, and recency markers per claim. Karpathy's pattern produces human-readable wiki pages; this produces AI-first notes.
+6. Write-time enforcement. A `PostToolUse` hook (`validate-ai-first.sh`) inspects every Write or Edit on a markdown file inside the vault and warns when the AI-first rule is broken (missing frontmatter fields, missing preamble, broken YAML). The vault stays AI-first because every write is checked, not because the AI remembers all seven rules every time.
 
-If Karpathy's LLM Wiki is a knowledge base you maintain with an LLM, obsidian-second-brain is a knowledge base that maintains itself.
+If Karpathy's LLM Wiki is a knowledge base you maintain with an LLM, obsidian-second-brain is a knowledge base that maintains itself across multiple AI CLIs.
 
 ## Long-form deep dive
 
 The complete analysis of how this skill extends Karpathy's pattern, including the AI-First Vault Principle, comparison against existing implementations (rohitg00's LLM Wiki v2 from 2026-03, Penfield Labs' typed-link extension), and an engineering retrospective covering three bugs shipped in the first version of /research-deep:
 
-- "I rebuilt Karpathy's LLM Wiki. Here's what's missing from the original." (2026-04-29). https://ghelburlabs.substack.com/p/i-rebuilt-karpathys-llm-wiki-heres
+- "I rebuilt Karpathy's LLM Wiki. Here's what's missing from the original." (2026-04-29). https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres
 
-## The 31 commands
+## The 32 commands (organized by category)
 
-Operations (21): obsidian-save, obsidian-ingest, obsidian-synthesize, obsidian-reconcile, obsidian-export, obsidian-daily, obsidian-log, obsidian-task, obsidian-person, obsidian-decide, obsidian-capture, obsidian-find, obsidian-recap, obsidian-review, obsidian-board, obsidian-project, obsidian-health, obsidian-adr, obsidian-visualize, obsidian-learn, obsidian-init.
+**Vault (11)** — daily writing, capture, find, kanban, recall:
+obsidian-board, obsidian-capture, obsidian-daily, obsidian-find, obsidian-log, obsidian-person, obsidian-project, obsidian-recap, obsidian-save, obsidian-task, obsidian-world.
 
-Thinking (4): obsidian-challenge, obsidian-emerge, obsidian-connect, obsidian-graduate.
+**Thinking (10)** — synthesis, decisions, learning, reviews:
+obsidian-adr, obsidian-challenge, obsidian-connect, obsidian-decide, obsidian-emerge, obsidian-graduate, obsidian-learn, obsidian-reconcile, obsidian-review, obsidian-synthesize.
 
-Context (1): obsidian-world.
+**Research (6)** — bring external sources into the vault:
+obsidian-ingest, research, research-deep, x-pulse, x-read, youtube. Powered by xAI Grok (X + Live Search), Perplexity Sonar (web with citations), and youtube-transcript-api.
 
-Research (5, new in v0.5): x-read, x-pulse, research, research-deep, youtube.
+**Meta (5)** — vault setup, health, structure, tooling:
+obsidian-export, obsidian-health, obsidian-init, obsidian-visualize, create-command.
 
-Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 1 background agent that runs on Claude Code's PostCompact hook.
+Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 2 hook scripts (`obsidian-bg-agent.sh` for PostCompact session propagation, `validate-ai-first.sh` for write-time AI-first enforcement).
+
+## Multi-platform architecture
+
+The repo is structured around a build-time adapter pattern:
+
+- `commands/` — 32 platform-neutral source files with frontmatter declaring `description`, `category` (vault/thinking/research/meta), and `triggers_en` (natural-language trigger phrases). The schema is extensible to other languages via `triggers_es`, `triggers_it`, `triggers_fr`, `triggers_de`, `triggers_pt`, `triggers_ru`, `triggers_ja`.
+- `adapters/lib.sh` — shared parsing, path rewriting, tool-name neutralization, grouped routing-table emission, multilingual trigger emission.
+- `adapters/claude-code/adapter.sh` — identity copy (Claude Code's slash-command format matches the source).
+- `adapters/codex-cli/adapter.sh` — emits `AGENTS.md` with auto-generated routing table grouped by category and trigger phrase reference grouped by language. Commands go under `.codex/commands/`.
+- `adapters/gemini-cli/adapter.sh` — emits `GEMINI.md` with the same structure. Commands under `.gemini/commands/`.
+- `adapters/opencode/adapter.sh` — emits `AGENTS.md`. Commands under `.opencode/commands/`.
+- `scripts/build.sh` — orchestrator. Run with `--platform <name>` for one platform or no argument for all four.
+
+Output goes to `dist/<platform>/` (gitignored). Each `dist/<platform>/INSTALL.md` documents the install path for that CLI.
+
+## /create-command interview flow
+
+`/create-command` lets users build new commands without editing markdown. It runs a 9-phase conversation: intent, naming (kebab-case, validates no collision), category, trigger phrases, behavior steps, AI-first compliance gate, external API declaration, file generation, confirm + next steps. The generated `commands/<name>.md` lands AI-first-compliant by construction and flows through every adapter automatically. Closes the contribution loop: anyone can extend the skill without learning the frontmatter schema.
 
 ## Stack
 
@@ -55,6 +81,7 @@ Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 1 backgroun
 - youtube-transcript-api for free transcript extraction
 - YouTube Data API v3 (free tier, optional) for video metadata + comments
 - API keys stored Mac-locally at `~/.config/obsidian-second-brain/.env` with permissions 600
+- bash 3.x compatible adapters (no associative arrays, no bashisms)
 
 ## The AI-first vault rule
 
@@ -70,33 +97,50 @@ The single most important design principle. Every note Claude writes must satisf
 
 The rule lives in `_CLAUDE.md` Section 0 of every vault using this skill, and in `references/ai-first-rules.md` (the canonical specification with frontmatter schemas and preamble templates per note type).
 
+A `PostToolUse` hook (`hooks/validate-ai-first.sh`) enforces this at write time: it fires after every Write/Edit on a markdown file inside `OBSIDIAN_VAULT_PATH` and warns on missing fields or preamble. The original write is not reverted; the warning surfaces on stderr so the AI can repair the note in the same turn.
+
 ## Releases
 
+- v0.7.0 (2026-05-13): Multi-platform. 4 CLIs (Claude Code, Codex CLI, Gemini CLI, OpenCode) from one source via build-time adapter pattern. Command categorization with grouped dispatcher tables. Multilingual trigger schema (EN populated). Write-time AI-first validator hook. /create-command interview flow. https://github.com/eugeniughelbur/obsidian-second-brain/releases
 - v0.6.0 (2026-04-26): Phase 2. AI-first rule wired into all 26 existing commands. New canonical spec at references/ai-first-rules.md. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.6.0
 - v0.5.0 (2026-04-26): Phase 1. Research toolkit added. Five new commands. New layer in the architecture. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.5.0
 
 ## Install
 
+### Claude Code (default)
+
 ```bash
 git clone https://github.com/eugeniughelbur/obsidian-second-brain ~/.claude/skills/obsidian-second-brain
-bash ~/.claude/skills/obsidian-second-brain/install.sh
+bash ~/.claude/skills/obsidian-second-brain/scripts/setup.sh "/path/to/your/vault"
 ```
 
-Then run `/obsidian-init` in Claude Code to bootstrap your vault's `_CLAUDE.md`.
+### Codex CLI / Gemini CLI / OpenCode
+
+```bash
+git clone https://github.com/eugeniughelbur/obsidian-second-brain
+cd obsidian-second-brain
+bash scripts/build.sh --platform codex-cli   # or gemini-cli, or opencode
+cp -R dist/codex-cli/. /path/to/your/vault/
+```
+
+Then start your CLI from the vault root. Each build produces a platform-specific dispatcher (`AGENTS.md` or `GEMINI.md`) with an auto-generated routing table mapping natural-language triggers to command files.
 
 ## Common questions
 
 ### How does this compare to Karpathy's LLM Wiki pattern?
-This skill is an evolution of Karpathy's pattern. Karpathy's wiki appends new pages and cross-references on ingest. This skill rewrites existing pages, reconciles contradictions automatically (`/obsidian-reconcile`), surfaces unnamed patterns into synthesis pages (`/obsidian-synthesize`), runs 4 scheduled maintenance agents, and writes notes in an AI-first format optimized for future-Claude retrieval rather than human reading. See https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f for Karpathy's original gist.
+This skill is an evolution of Karpathy's pattern. Karpathy's wiki appends new pages and cross-references on ingest. This skill rewrites existing pages, reconciles contradictions automatically (`/obsidian-reconcile`), surfaces unnamed patterns into synthesis pages (`/obsidian-synthesize`), runs 4 scheduled maintenance agents, writes notes in an AI-first format optimized for future-Claude retrieval rather than human reading, and runs across 4 different AI CLIs from one codebase. See https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f for Karpathy's original gist.
 
 ### What is a Claude Code skill?
-A Claude Code skill is a reusable behavior package for Anthropic's Claude Code CLI. It bundles slash commands, scripts, references, and operating instructions that Claude loads automatically. Skills give Claude domain expertise without prompt-engineering each session.
+A Claude Code skill is a reusable behavior package for Anthropic's Claude Code CLI. It bundles slash commands, scripts, references, and operating instructions that Claude loads automatically. Skills give Claude domain expertise without prompt-engineering each session. This particular skill also compiles to non-Claude CLIs (Codex CLI, Gemini CLI, OpenCode) via the adapter pattern.
+
+### Does this work with Codex CLI, Gemini CLI, or OpenCode?
+Yes. Run `bash scripts/build.sh --platform <name>` to compile the source for that CLI. The build emits a platform-specific dispatcher file (`AGENTS.md` for Codex / OpenCode, `GEMINI.md` for Gemini) with an auto-generated routing table that maps natural-language triggers to command files. Commands are stored under `.codex/commands/`, `.gemini/commands/`, or `.opencode/commands/` depending on the platform.
 
 ### Does this work with Obsidian Sync?
 Yes. The skill writes to your vault as standard markdown files. Obsidian Sync, iCloud, Syncthing, and Git-based sync all work without modification.
 
 ### Do I need API keys to use this?
-No. The original 26 vault commands work without any API keys. Only the 5 research commands (x-read, x-pulse, research, research-deep, youtube) require API keys for xAI Grok, Perplexity, and optionally YouTube Data API v3. Without keys, those commands degrade gracefully.
+No. The 27 vault commands work without any API keys. Only the 5 research commands (x-read, x-pulse, research, research-deep, youtube) require API keys for xAI Grok, Perplexity, and optionally YouTube Data API v3. Without keys, those commands degrade gracefully.
 
 ### How is this different from Notion AI or Mem?
 Notion AI and Mem are closed-source SaaS products that own your data. This skill stores everything as plain markdown in your local Obsidian vault, with no vendor lock-in. The AI is on top of your data, not behind it.
@@ -109,6 +153,9 @@ Yes. The skill never deletes or modifies notes destructively without explicit co
 
 ### What does /research-deep do that /research doesn't?
 `/research` runs a single Perplexity query and returns a dossier. `/research-deep` scans your vault first, identifies what you already know about the topic, spawns 3-5 targeted follow-up searches to fill only the gaps, and produces a delta report (what's new, what's confirmed, contradictions to resolve). Vault-first means you stop re-researching what's already in your notes.
+
+### What does /create-command do?
+Lets the user scaffold a new obsidian-second-brain command via interview. Zero markdown editing. A 9-phase conversation collects intent, name, category, trigger phrases, behavior steps, AI-first compliance status, and external API needs, then writes a fully-formed `commands/<name>.md` file. The new command flows automatically into all 4 platform builds on the next `bash scripts/build.sh`.
 
 ### What do the research commands cost?
 Approximate per-call costs as of 2026-04: /x-read ~$0.05, /x-pulse ~$0.13, /research ~$0.04, /research-deep ~$0.40-$0.80, /youtube ~$0.04. Costs are tracked per call in `~/.research-toolkit/usage.log`. No hard caps; user is trusted to monitor.

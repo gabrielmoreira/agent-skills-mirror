@@ -41,7 +41,7 @@
 5. **高风险 GUI 改动必须做最小冒烟** - 涉及 GUI 壳、DevBridge、Workspace、主路径时执行 `npm run verify:gui-smoke`
 6. **Playwright 续测优先稳定桌面 Chrome 会话** - 真实交互验证优先复用已有 Lime 页签；需要新启浏览器时走持久化 Chrome 上下文，避免本地桌面出现自动化横幅或 `--no-sandbox` 安全横幅，细则见 `docs/aiprompts/playwright-e2e.md`
 7. **用户可见 UI 改动必须补稳定回归** - 优先补现有 `*.test.tsx` 或 snapshot 断言
-8. **新增用户可见文案必须走 current i18n** - 新功能的按钮、标题、空态、toast、confirm、prompt、placeholder、aria/title 与错误提示必须使用 key-based resources；legacy DOM Patch 只作迁移兜底，不得作为新功能事实源
+8. **用户可见文案必须全球本地化** - 新增或改动的按钮、标题、空态、toast、confirm、prompt、placeholder、aria/title、错误提示、导出 Markdown / copy prompt / artifact title 等 presentation 文案，必须覆盖 Lime current 五语言 `zh-CN / zh-TW / en-US / ja-JP / ko-KR`；前端走 key-based resources，Rust / Tauri 导出走 locale copy service；禁止只做中文 / 英文双语兜底，除非路线图明确写出临时例外和退出条件
 9. **配置与依赖改动要成组更新** - schema、校验器、消费者、文档、锁文件保持同步
 10. **Rust 变更先小测后全量** - 先跑受影响 crate / 模块 / 定向测试；新增模块尽量控制在 `500 LoC` 内，文件接近 `800 LoC` 时优先拆新模块
 11. **Harness Engine 只认单一事实源** - handoff / evidence / replay / analysis / review / GUI 统一消费 `agent_runtime_export_evidence_pack`；`requestTelemetry` 需要按 `session/thread/turn` 真实关联导出，无匹配请求时输出空摘要，不再保留伪 `unlinked`

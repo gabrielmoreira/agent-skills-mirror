@@ -218,7 +218,7 @@ Outcome:
 
 ### Floating no-backdrop modals
 
-Use `.modal-floating` on the outer `.modal` when a modal should behave like a floating utility panel instead of a blocking dialog. This is for special live surfaces such as the browser panel where the user should keep seeing and interacting with the chat or dashboard behind the panel.
+Use `.modal-floating` on the outer `.modal` when a modal should behave like a floating utility panel instead of a blocking dialog. This is for special live surfaces where the user should keep seeing and interacting with the chat or dashboard behind the panel. The Browser now primarily lives in the Canvas, Agent Zero's right-side workspace for live surfaces, but its floating/windowed surface follows the same non-blocking modal contract.
 
 Working contract:
 

@@ -54,7 +54,9 @@ If not logged in, authenticate using OAuth (opens browser):
 apify login
 ```
 
-If browser login isn't available (headless environment or CI), ensure the `APIFY_TOKEN` environment variable is exported. The CLI reads it automatically - no explicit login needed. If the user doesn't have a token, generate one at https://console.apify.com/settings/integrations.
+If browser login isn't available (headless environment or CI), ensure the `APIFY_TOKEN` environment variable is exported (note: the variable is `APIFY_TOKEN`, not `APIFY_API_TOKEN`). The CLI reads it automatically - no explicit login needed. If the user doesn't have a token, generate one at https://console.apify.com/settings/integrations.
+
+> **Apify platform environment:** When the Actor runs on the Apify platform, `APIFY_TOKEN` is auto-injected as an environment variable and the Apify SDK reads it automatically — you do not need to pass it explicitly. Locally, `apify login` stores credentials in `~/.apify` and the SDK uses them.
 
 > **Security note:** Avoid passing tokens as command-line arguments (e.g. `apify login -t <token>`).
 > Arguments are visible in process listings and may be recorded in shell history.
@@ -198,14 +200,39 @@ Other options: **Rental** (monthly subscription) or **Free** (open source).
 - [ ] `README.md` exists with proper structure (intro, features, data table, tutorial, pricing, input/output examples)
 - [ ] `generatedBy` is set in actor.json meta section
 
-## Apify MCP tools
+## MCP tools
 
-If MCP server is configured, use these tools for documentation:
+### Apify MCP
+
+If the Apify MCP server is configured, use these tools for documentation:
 
 - `search-apify-docs` - Search documentation
 - `fetch-apify-docs` - Get full doc pages
 
 Otherwise, the MCP Server url: `https://mcp.apify.com/?tools=docs`.
+
+### Playwright MCP (debugging)
+
+The Playwright MCP server is a useful tool for debugging Actors that interact with the web - it lets the agent drive a real browser to inspect pages, capture selectors, and reproduce issues.
+
+Install with the Claude Code CLI:
+
+```bash
+claude mcp add playwright npx @playwright/mcp@latest
+```
+
+Or add it manually to your MCP config:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    }
+  }
+}
+```
 
 ## Resources
 

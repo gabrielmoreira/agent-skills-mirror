@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `laravel/agent-skills` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `laravel/agent-skills` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `laravel/agent-skills` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`laravel-cloud/skills/deploying-laravel-cloud/SKILL.md`](laravel-cloud/skills/deploying-laravel-cloud/SKILL.md) |
 | 2 | ✓ | [`laravel-nightwatch/skills/configure-nightwatch/reference.md`](laravel-nightwatch/skills/configure-nightwatch/reference.md) |
 | 3 | ✓ | [`laravel-nightwatch/skills/configure-nightwatch/SKILL.md`](laravel-nightwatch/skills/configure-nightwatch/SKILL.md) |
+| 4 | ✓ | [`laravel/skills/starter-kit-upgrade/SKILL.md`](laravel/skills/starter-kit-upgrade/SKILL.md) |
 
 ---
 

@@ -212,6 +212,7 @@ Every deliverable must include:
 | `references/heuristic-evaluation.md` | You are running a Nielsen-10 or domain-extended heuristic expert review and need evaluator panels, severity scoring, and anti-patterns. |
 | `references/sus-scoring.md` | You need SUS item set, scoring formula, benchmark mapping, minimum-detectable-difference curves, or variant selection (UMUX-Lite / UEQ / CASTLE). |
 | `references/think-aloud-protocol.md` | You are moderating or coding a concurrent / retrospective think-aloud session and need prompt discipline, intervention rules, and transcript categories. |
+| `_common/UX_TRENDS_2026.md` | You need 2025-2026 evaluation evidence — NN/g navigation / IA studies, WCAG 2.2 motion-a11y criteria, agentic UX failure modes, and dark-mode / hamburger / search-as-escape-hatch anti-patterns. Read §2 IA and §1 Design a11y. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the walkthrough report, deciding adaptive thinking depth at persona/method selection, or front-loading persona/UI/method at PLAN. Critical for Echo: P3, P5. |
 
 ## Operational

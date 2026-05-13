@@ -87,9 +87,8 @@ marker being authored by a trusted actor, and the GitHub server
 
 ## Repository-local IDD policy
 
-For repository-local configuration (trusted-marker-logins,
-maintainer-approval-actors, collaborator-authored-markers, and example
-policy blocks), see `docs/customization.md`.
+Repository-local actor policy and any forced-handoff settings live in
+`docs/customization.md`.
 
 ## Claim-state parsing
 
@@ -130,7 +129,9 @@ push, rebase, reply, resolve, reviewer request, merge), re-read the
 issue and parse the active claim using the rules in
 `idd-claim.instructions.md`. The active claim must still use your
 current `{claim-id}`. If it does not, the claim was lost. Stop, do not
-post further operational comments, and report the handoff or race.
+post further operational comments, and report the handoff or race. If
+loss came from handoff, the displaced session must not push,
+comment, resolve reviews, request reviewers, or merge.
 
 A1.5 roadmap completion audit side effects use the roadmap issue itself
 as the claim target (see `idd-roadmap-audit.instructions.md`). Even
@@ -261,12 +262,14 @@ When a phase refers to a named command set, run the corresponding
 commands. **Adapt this section when applying this workflow to a
 different project.**
 
-If `.github/idd/config.json` exists and is valid per the canonical schema at
+If `.github/idd/config.json` exists and validates against the canonical
+schema at
 <https://kurone-kito.github.io/idd-skill/schemas/policy.schema.json>, its `commands`
-object provides the authoritative command values and overrides the table
-values below. Its policy fields (`mergePolicy`, `reviewPolicy`, etc.) are
-the machine-readable equivalent of the repository's recorded policy
-decisions.
+object overrides the table below. Policy fields such as
+`skipIssueAuthorApprovalGate` and `maintainerApprovalActorPolicy` are
+the recorded machine-readable policy. Absent values keep the gate
+enabled and default approval actors to
+`owners-and-maintainers-only`.
 
 | Name                    | Commands                                                                                                                                     |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -277,17 +280,15 @@ decisions.
 | **issue-scope**         | `roadmap`                                                                                                                                    |
 | **orphan-first-policy** | `none`                                                                                                                                       |
 
-Rows whose values are not shell syntax, such as **issue-scope** and
-**orphan-first-policy**, are workflow settings. Read them literally
-instead of executing them.
+Non-shell rows such as **issue-scope** and **orphan-first-policy** are
+workflow settings. Read them literally, not as commands.
 
-`pre-push-validate` intentionally omits auto-fix — all code should
-already pass lint at the push step. If lint fails, run **fix-validate**
-first, commit, then re-run **pre-push-validate**.
+`pre-push-validate` omits auto-fix. If lint fails, run
+**fix-validate**, commit, then re-run **pre-push-validate**.
 
-If **fix-validate** or **post-fix-validate** produces file changes
-(auto-fixes), stage and commit those changes before any push, rebase, or
-next step that requires no uncommitted changes.
+If **fix-validate** or **post-fix-validate** changes files, stage and
+commit them before any push, rebase, or step that requires a clean
+tree.
 
 `install-deps` must be idempotent. Re-running it in fresh, reused, or
 recreated worktrees must not require manual cleanup and should not leave
@@ -313,7 +314,7 @@ file that matches your current situation.
 | PR open, CI running, reviews exist            | `idd-review-snapshot.instructions.md` (E1–E3)                         |
 | PR open, CI passed, no reviews yet            | `idd-review-snapshot.instructions.md` (E3 empty-list → merge)         |
 | PR open, CI passed, reviews pending           | `idd-review-snapshot.instructions.md`                                 |
-| Snapshot done, List A non-empty               | `idd-review-triage.instructions.md` (E4–E8)                           |
+| Snapshot done, ReviewItems_snapshot non-empty | `idd-review-triage.instructions.md` (E4–E8)                           |
 | Review feedback accepted, pushing fixes       | `idd-review-fix.instructions.md`                                      |
 | Ready for pre-merge gate check                | `idd-pre-merge.instructions.md`                                       |
 | All pre-merge conditions satisfied            | `idd-merge-handoff.instructions.md` (F2.5)                            |

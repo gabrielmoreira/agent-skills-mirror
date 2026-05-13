@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 8 followed patterns, 44 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 8 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/gh-aw` — 26 default patterns, 8 followed patterns, 44 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 44 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,48 +68,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.github/aw/skills.md`](.github/aw/skills.md) |
 | 2 | ✓ | [`.github/skills/agentic-workflows/SKILL.md`](.github/skills/agentic-workflows/SKILL.md) |
-| 3 | ✓ | [`.github/skills/debugging-workflows/SKILL.md`](.github/skills/debugging-workflows/SKILL.md) |
-| 4 | ✓ | [`.github/skills/documentation/SKILL.md`](.github/skills/documentation/SKILL.md) |
-| 5 | ✓ | [`.github/skills/jqschema/SKILL.md`](.github/skills/jqschema/SKILL.md) |
-| 6 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
-| 9 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
-| 10 | ✓ | [`SKILL.md`](SKILL.md) |
-| 11 | ✓ | [`skills/console-rendering/SKILL.md`](skills/console-rendering/SKILL.md) |
-| 12 | ✓ | [`skills/custom-agents/SKILL.md`](skills/custom-agents/SKILL.md) |
-| 13 | ✓ | [`skills/developer/SKILL.md`](skills/developer/SKILL.md) |
-| 14 | ✓ | [`skills/documentation/SKILL.md`](skills/documentation/SKILL.md) |
-| 15 | ✓ | [`skills/error-messages/SKILL.md`](skills/error-messages/SKILL.md) |
-| 16 | ✓ | [`skills/error-pattern-safety/SKILL.md`](skills/error-pattern-safety/SKILL.md) |
-| 17 | ✓ | [`skills/error-recovery-patterns/SKILL.md`](skills/error-recovery-patterns/SKILL.md) |
-| 18 | ✓ | [`skills/gh-agent-session/SKILL.md`](skills/gh-agent-session/SKILL.md) |
-| 19 | ✓ | [`skills/gh-agent-task/SKILL.md`](skills/gh-agent-task/SKILL.md) |
-| 20 | ✓ | [`skills/github-copilot-agent-tips-and-tricks/SKILL.md`](skills/github-copilot-agent-tips-and-tricks/SKILL.md) |
-| 21 | ✓ | [`skills/github-discussion-query/query-discussions.py`](skills/github-discussion-query/query-discussions.py) |
-| 22 | ✓ | [`skills/github-discussion-query/query-discussions.sh`](skills/github-discussion-query/query-discussions.sh) |
-| 23 | ✓ | [`skills/github-discussion-query/SKILL.md`](skills/github-discussion-query/SKILL.md) |
-| 24 | ✓ | [`skills/github-issue-query/query-issues.sh`](skills/github-issue-query/query-issues.sh) |
-| 25 | ✓ | [`skills/github-issue-query/SKILL.md`](skills/github-issue-query/SKILL.md) |
-| 26 | ✓ | [`skills/github-mcp-server/SKILL.md`](skills/github-mcp-server/SKILL.md) |
-| 27 | ✓ | [`skills/github-pr-query/query-prs.sh`](skills/github-pr-query/query-prs.sh) |
-| 28 | ✓ | [`skills/github-pr-query/SKILL.md`](skills/github-pr-query/SKILL.md) |
-| 29 | ✓ | [`skills/github-script/SKILL.md`](skills/github-script/SKILL.md) |
-| 30 | ✓ | [`skills/http-mcp-headers/SKILL.md`](skills/http-mcp-headers/SKILL.md) |
-| 31 | ✓ | [`skills/javascript-refactoring/SKILL.md`](skills/javascript-refactoring/SKILL.md) |
-| 32 | ✓ | [`skills/messages/SKILL.md`](skills/messages/SKILL.md) |
-| 33 | ✓ | [`skills/otel-queries/SKILL.md`](skills/otel-queries/SKILL.md) |
-| 34 | ✓ | [`skills/reporting/SKILL.md`](skills/reporting/SKILL.md) |
-| 35 | ✓ | [`skills/skillz-integration/SKILL.md`](skills/skillz-integration/SKILL.md) |
-| 36 | ✓ | [`skills/temporary-id-safe-output/SKILL.md`](skills/temporary-id-safe-output/SKILL.md) |
-| 37 | → | [`.github/aw/agentic-chat.md`](.github/aw/agentic-chat.md) |
-| 38 | → | [`.github/aw/runbooks/workflow-health.md`](.github/aw/runbooks/workflow-health.md) |
-| 39 | → | [`DICTATION.md`](DICTATION.md) |
-| 40 | → | [`scratchpad/cli-command-patterns.md`](scratchpad/cli-command-patterns.md) |
-| 41 | → | [`scratchpad/go-type-patterns.md`](scratchpad/go-type-patterns.md) |
-| 42 | → | [`scratchpad/testing.md`](scratchpad/testing.md) |
-| 43 | → | [`scratchpad/validation-refactoring.md`](scratchpad/validation-refactoring.md) |
-| 44 | → | [`scratchpad/yaml-version-gotchas.md`](scratchpad/yaml-version-gotchas.md) |
+| 3 | ✓ | [`.github/skills/awf-release-integrator/SKILL.md`](.github/skills/awf-release-integrator/SKILL.md) |
+| 4 | ✓ | [`.github/skills/console-rendering/SKILL.md`](.github/skills/console-rendering/SKILL.md) |
+| 5 | ✓ | [`.github/skills/custom-agents/SKILL.md`](.github/skills/custom-agents/SKILL.md) |
+| 6 | ✓ | [`.github/skills/debugging-workflows/SKILL.md`](.github/skills/debugging-workflows/SKILL.md) |
+| 7 | ✓ | [`.github/skills/developer/SKILL.md`](.github/skills/developer/SKILL.md) |
+| 8 | ✓ | [`.github/skills/documentation/SKILL.md`](.github/skills/documentation/SKILL.md) |
+| 9 | ✓ | [`.github/skills/error-messages/SKILL.md`](.github/skills/error-messages/SKILL.md) |
+| 10 | ✓ | [`.github/skills/error-pattern-safety/SKILL.md`](.github/skills/error-pattern-safety/SKILL.md) |
+| 11 | ✓ | [`.github/skills/error-recovery-patterns/SKILL.md`](.github/skills/error-recovery-patterns/SKILL.md) |
+| 12 | ✓ | [`.github/skills/gh-agent-session/SKILL.md`](.github/skills/gh-agent-session/SKILL.md) |
+| 13 | ✓ | [`.github/skills/gh-agent-task/SKILL.md`](.github/skills/gh-agent-task/SKILL.md) |
+| 14 | ✓ | [`.github/skills/github-copilot-agent-tips-and-tricks/SKILL.md`](.github/skills/github-copilot-agent-tips-and-tricks/SKILL.md) |
+| 15 | ✓ | [`.github/skills/github-discussion-query/SKILL.md`](.github/skills/github-discussion-query/SKILL.md) |
+| 16 | ✓ | [`.github/skills/github-issue-query/SKILL.md`](.github/skills/github-issue-query/SKILL.md) |
+| 17 | ✓ | [`.github/skills/github-mcp-server/SKILL.md`](.github/skills/github-mcp-server/SKILL.md) |
+| 18 | ✓ | [`.github/skills/github-pr-query/SKILL.md`](.github/skills/github-pr-query/SKILL.md) |
+| 19 | ✓ | [`.github/skills/github-script/SKILL.md`](.github/skills/github-script/SKILL.md) |
+| 20 | ✓ | [`.github/skills/http-mcp-headers/SKILL.md`](.github/skills/http-mcp-headers/SKILL.md) |
+| 21 | ✓ | [`.github/skills/javascript-refactoring/SKILL.md`](.github/skills/javascript-refactoring/SKILL.md) |
+| 22 | ✓ | [`.github/skills/jqschema/SKILL.md`](.github/skills/jqschema/SKILL.md) |
+| 23 | ✓ | [`.github/skills/messages/SKILL.md`](.github/skills/messages/SKILL.md) |
+| 24 | ✓ | [`.github/skills/otel-queries/SKILL.md`](.github/skills/otel-queries/SKILL.md) |
+| 25 | ✓ | [`.github/skills/reporting/SKILL.md`](.github/skills/reporting/SKILL.md) |
+| 26 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
+| 27 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
+| 28 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
+| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 30 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
+| 31 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
+| 32 | ✓ | [`SKILL.md`](SKILL.md) |
+| 33 | → | [`.github/aw/agentic-chat.md`](.github/aw/agentic-chat.md) |
+| 34 | → | [`.github/aw/runbooks/workflow-health.md`](.github/aw/runbooks/workflow-health.md) |
+| 35 | → | [`DICTATION.md`](DICTATION.md) |
+| 36 | → | [`scratchpad/cli-command-patterns.md`](scratchpad/cli-command-patterns.md) |
+| 37 | → | [`scratchpad/go-type-patterns.md`](scratchpad/go-type-patterns.md) |
+| 38 | → | [`scratchpad/testing.md`](scratchpad/testing.md) |
+| 39 | → | [`scratchpad/validation-refactoring.md`](scratchpad/validation-refactoring.md) |
+| 40 | → | [`scratchpad/yaml-version-gotchas.md`](scratchpad/yaml-version-gotchas.md) |
 
 ---
 

@@ -264,6 +264,19 @@ const data = await page.fetchJson(`${BASE}/api/list`, {
 
 它固定 `credentials: 'include'`，带 timeout，HTTP 非 2xx / 非 JSON 会抛统一 runtime error。adapter 里不用再手写 `page.evaluate(fetch(...))`；如果你需要额外包一层业务语义，按 [`typed-errors.md`](./typed-errors.md) 映射到 `CommandExecutionError` / `AuthRequiredError` / `EmptyResultError`。
 
+### 页面内 DOM 逻辑用 `page.evaluate(fn, ...args)`
+
+新 adapter 优先写函数形式，外部变量通过参数传入：
+
+```javascript
+const href = await page.evaluate((selector) => {
+  const link = document.querySelector(selector);
+  return link ? link.getAttribute('href') : null;
+}, 'a[data-testid="profile"]');
+```
+
+`fn` 在浏览器页面上下文执行，不能读取 Node 侧闭包变量；参数必须能被 `JSON.stringify` 序列化。字符串形式 `page.evaluate('document.title')` 仍可用于简单表达式和既有代码，但不要再写依赖隐式 auto-IIFE 的模板字符串函数。
+
 ### HTML 不走 browser fetch
 
 三个坑，踩一个就重写：

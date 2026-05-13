@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Galaxy-Dawn/claude-scholar` — 26 default patterns, 0 followed patterns, 358 file(s) materialized.
+Mirror of `Galaxy-Dawn/claude-scholar` — 26 default patterns, 0 followed patterns, 359 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Galaxy-Dawn/claude-scholar` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 358 |
+| Files         | 359 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -336,87 +336,88 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 275 | ✓ | [`skills/research-ideation/references/gap-analysis-guide.md`](skills/research-ideation/references/gap-analysis-guide.md) |
 | 276 | ✓ | [`skills/research-ideation/references/literature-search-strategies.md`](skills/research-ideation/references/literature-search-strategies.md) |
 | 277 | ✓ | [`skills/research-ideation/references/method-selection-guide.md`](skills/research-ideation/references/method-selection-guide.md) |
-| 278 | ✓ | [`skills/research-ideation/references/research-planning.md`](skills/research-ideation/references/research-planning.md) |
-| 279 | ✓ | [`skills/research-ideation/references/research-question-formulation.md`](skills/research-ideation/references/research-question-formulation.md) |
-| 280 | ✓ | [`skills/research-ideation/references/zotero-integration-guide.md`](skills/research-ideation/references/zotero-integration-guide.md) |
-| 281 | ✓ | [`skills/research-ideation/SKILL.md`](skills/research-ideation/SKILL.md) |
-| 282 | ✓ | [`skills/results-analysis/examples/example-analysis-report.md`](skills/results-analysis/examples/example-analysis-report.md) |
-| 283 | ✓ | [`skills/results-analysis/examples/example-figure-catalog.md`](skills/results-analysis/examples/example-figure-catalog.md) |
-| 284 | ✓ | [`skills/results-analysis/examples/example-stats-appendix.md`](skills/results-analysis/examples/example-stats-appendix.md) |
-| 285 | ✓ | [`skills/results-analysis/references/analysis-depth.md`](skills/results-analysis/references/analysis-depth.md) |
-| 286 | ✓ | [`skills/results-analysis/references/common-pitfalls.md`](skills/results-analysis/references/common-pitfalls.md) |
-| 287 | ✓ | [`skills/results-analysis/references/figure-interpretation.md`](skills/results-analysis/references/figure-interpretation.md) |
-| 288 | ✓ | [`skills/results-analysis/references/statistical-methods.md`](skills/results-analysis/references/statistical-methods.md) |
-| 289 | ✓ | [`skills/results-analysis/references/statistical-reporting.md`](skills/results-analysis/references/statistical-reporting.md) |
-| 290 | ✓ | [`skills/results-analysis/references/visualization-best-practices.md`](skills/results-analysis/references/visualization-best-practices.md) |
-| 291 | ✓ | [`skills/results-analysis/SKILL.md`](skills/results-analysis/SKILL.md) |
-| 292 | ✓ | [`skills/results-analysis/USAGE.md`](skills/results-analysis/USAGE.md) |
-| 293 | ✓ | [`skills/results-report/examples/example-results-report.md`](skills/results-report/examples/example-results-report.md) |
-| 294 | ✓ | [`skills/results-report/references/decision-oriented-analysis.md`](skills/results-report/references/decision-oriented-analysis.md) |
-| 295 | ✓ | [`skills/results-report/references/EVIDENCE-PROPAGATION.md`](skills/results-report/references/EVIDENCE-PROPAGATION.md) |
-| 296 | ✓ | [`skills/results-report/references/figure-interpretation.md`](skills/results-report/references/figure-interpretation.md) |
-| 297 | ✓ | [`skills/results-report/references/report-naming.md`](skills/results-report/references/report-naming.md) |
-| 298 | ✓ | [`skills/results-report/references/report-structure.md`](skills/results-report/references/report-structure.md) |
-| 299 | ✓ | [`skills/results-report/references/statistical-completeness.md`](skills/results-report/references/statistical-completeness.md) |
-| 300 | ✓ | [`skills/results-report/SKILL.md`](skills/results-report/SKILL.md) |
-| 301 | ✓ | [`skills/review-response/references/rebuttal-templates.md`](skills/review-response/references/rebuttal-templates.md) |
-| 302 | ✓ | [`skills/review-response/references/response-strategies.md`](skills/review-response/references/response-strategies.md) |
-| 303 | ✓ | [`skills/review-response/references/review-classification.md`](skills/review-response/references/review-classification.md) |
-| 304 | ✓ | [`skills/review-response/references/successful-cases.md`](skills/review-response/references/successful-cases.md) |
-| 305 | ✓ | [`skills/review-response/references/tone-guidelines.md`](skills/review-response/references/tone-guidelines.md) |
-| 306 | ✓ | [`skills/review-response/SKILL.md`](skills/review-response/SKILL.md) |
-| 307 | ✓ | [`skills/skill-development/references/checklist.md`](skills/skill-development/references/checklist.md) |
-| 308 | ✓ | [`skills/skill-development/references/integrity-checks.md`](skills/skill-development/references/integrity-checks.md) |
-| 309 | ✓ | [`skills/skill-development/references/skill-creator-original.md`](skills/skill-development/references/skill-creator-original.md) |
-| 310 | ✓ | [`skills/skill-development/SKILL.md`](skills/skill-development/SKILL.md) |
-| 311 | ✓ | [`skills/skill-improver/examples/improvement-plan-example.md`](skills/skill-improver/examples/improvement-plan-example.md) |
-| 312 | ✓ | [`skills/skill-improver/examples/update-report-example.md`](skills/skill-improver/examples/update-report-example.md) |
-| 313 | ✓ | [`skills/skill-improver/references/error-handling.md`](skills/skill-improver/references/error-handling.md) |
-| 314 | ✓ | [`skills/skill-improver/references/merge-strategies.md`](skills/skill-improver/references/merge-strategies.md) |
-| 315 | ✓ | [`skills/skill-improver/references/plan-format.md`](skills/skill-improver/references/plan-format.md) |
-| 316 | ✓ | [`skills/skill-improver/references/supported-updates.md`](skills/skill-improver/references/supported-updates.md) |
-| 317 | ✓ | [`skills/skill-improver/scripts/backup-skill.sh`](skills/skill-improver/scripts/backup-skill.sh) |
-| 318 | ✓ | [`skills/skill-improver/scripts/verify-update.sh`](skills/skill-improver/scripts/verify-update.sh) |
-| 319 | ✓ | [`skills/skill-improver/SKILL.md`](skills/skill-improver/SKILL.md) |
-| 320 | ✓ | [`skills/skill-quality-reviewer/references/batch-review-template.md`](skills/skill-quality-reviewer/references/batch-review-template.md) |
-| 321 | ✓ | [`skills/skill-quality-reviewer/references/examples-bad.md`](skills/skill-quality-reviewer/references/examples-bad.md) |
-| 322 | ✓ | [`skills/skill-quality-reviewer/references/examples-good.md`](skills/skill-quality-reviewer/references/examples-good.md) |
-| 323 | ✓ | [`skills/skill-quality-reviewer/references/scoring-criteria.md`](skills/skill-quality-reviewer/references/scoring-criteria.md) |
-| 324 | ✓ | [`skills/skill-quality-reviewer/scripts/extract-yaml.sh`](skills/skill-quality-reviewer/scripts/extract-yaml.sh) |
-| 325 | ✓ | [`skills/skill-quality-reviewer/scripts/skill-audit.py`](skills/skill-quality-reviewer/scripts/skill-audit.py) |
-| 326 | ✓ | [`skills/skill-quality-reviewer/SKILL.md`](skills/skill-quality-reviewer/SKILL.md) |
-| 327 | ✓ | [`skills/ui-ux-pro-max/data/ui-reasoning.csv`](skills/ui-ux-pro-max/data/ui-reasoning.csv) |
-| 328 | ✓ | [`skills/ui-ux-pro-max/references/USAGE.md`](skills/ui-ux-pro-max/references/USAGE.md) |
-| 329 | ✓ | [`skills/ui-ux-pro-max/scripts/search.py`](skills/ui-ux-pro-max/scripts/search.py) |
-| 330 | ✓ | [`skills/ui-ux-pro-max/SKILL.md`](skills/ui-ux-pro-max/SKILL.md) |
-| 331 | ✓ | [`skills/uv-package-manager/SKILL.md`](skills/uv-package-manager/SKILL.md) |
-| 332 | ✓ | [`skills/verification-loop/examples/example-verification-report.md`](skills/verification-loop/examples/example-verification-report.md) |
-| 333 | ✓ | [`skills/verification-loop/references/REPORT-TEMPLATE.md`](skills/verification-loop/references/REPORT-TEMPLATE.md) |
-| 334 | ✓ | [`skills/verification-loop/references/STACK-DETECTION.md`](skills/verification-loop/references/STACK-DETECTION.md) |
-| 335 | ✓ | [`skills/verification-loop/SKILL.md`](skills/verification-loop/SKILL.md) |
-| 336 | ✓ | [`skills/web-design-reviewer/references/framework-fixes.md`](skills/web-design-reviewer/references/framework-fixes.md) |
-| 337 | ✓ | [`skills/web-design-reviewer/references/visual-checklist.md`](skills/web-design-reviewer/references/visual-checklist.md) |
-| 338 | ✓ | [`skills/web-design-reviewer/SKILL.md`](skills/web-design-reviewer/SKILL.md) |
-| 339 | ✓ | [`skills/webapp-testing/examples/console_logging.py`](skills/webapp-testing/examples/console_logging.py) |
-| 340 | ✓ | [`skills/webapp-testing/examples/element_discovery.py`](skills/webapp-testing/examples/element_discovery.py) |
-| 341 | ✓ | [`skills/webapp-testing/examples/static_html_automation.py`](skills/webapp-testing/examples/static_html_automation.py) |
-| 342 | ✓ | [`skills/webapp-testing/LICENSE.txt`](skills/webapp-testing/LICENSE.txt) |
-| 343 | ✓ | [`skills/webapp-testing/scripts/with_server.py`](skills/webapp-testing/scripts/with_server.py) |
-| 344 | ✓ | [`skills/webapp-testing/SKILL.md`](skills/webapp-testing/SKILL.md) |
-| 345 | ✓ | [`skills/writing-anti-ai/examples/chinese.md`](skills/writing-anti-ai/examples/chinese.md) |
-| 346 | ✓ | [`skills/writing-anti-ai/examples/english.md`](skills/writing-anti-ai/examples/english.md) |
-| 347 | ✓ | [`skills/writing-anti-ai/references/patterns-chinese.md`](skills/writing-anti-ai/references/patterns-chinese.md) |
-| 348 | ✓ | [`skills/writing-anti-ai/references/patterns-english.md`](skills/writing-anti-ai/references/patterns-english.md) |
-| 349 | ✓ | [`skills/writing-anti-ai/references/phrases-to-cut.md`](skills/writing-anti-ai/references/phrases-to-cut.md) |
-| 350 | ✓ | [`skills/writing-anti-ai/references/wikipedia-source.md`](skills/writing-anti-ai/references/wikipedia-source.md) |
-| 351 | ✓ | [`skills/writing-anti-ai/SKILL.md`](skills/writing-anti-ai/SKILL.md) |
-| 352 | ✓ | [`skills/zotero-obsidian-bridge/examples/example-collection-inventory.md`](skills/zotero-obsidian-bridge/examples/example-collection-inventory.md) |
-| 353 | ✓ | [`skills/zotero-obsidian-bridge/references/COLLECTION-INVENTORY-SCHEMA.md`](skills/zotero-obsidian-bridge/references/COLLECTION-INVENTORY-SCHEMA.md) |
-| 354 | ✓ | [`skills/zotero-obsidian-bridge/references/LOCAL-ZOTERO-FALLBACK.md`](skills/zotero-obsidian-bridge/references/LOCAL-ZOTERO-FALLBACK.md) |
-| 355 | ✓ | [`skills/zotero-obsidian-bridge/references/PAPER-NOTE-SCHEMA.md`](skills/zotero-obsidian-bridge/references/PAPER-NOTE-SCHEMA.md) |
-| 356 | ✓ | [`skills/zotero-obsidian-bridge/references/WORKFLOW.md`](skills/zotero-obsidian-bridge/references/WORKFLOW.md) |
-| 357 | ✓ | [`skills/zotero-obsidian-bridge/scripts/verify_paper_notes.py`](skills/zotero-obsidian-bridge/scripts/verify_paper_notes.py) |
-| 358 | ✓ | [`skills/zotero-obsidian-bridge/SKILL.md`](skills/zotero-obsidian-bridge/SKILL.md) |
+| 278 | ✓ | [`skills/research-ideation/references/research-contract.md`](skills/research-ideation/references/research-contract.md) |
+| 279 | ✓ | [`skills/research-ideation/references/research-planning.md`](skills/research-ideation/references/research-planning.md) |
+| 280 | ✓ | [`skills/research-ideation/references/research-question-formulation.md`](skills/research-ideation/references/research-question-formulation.md) |
+| 281 | ✓ | [`skills/research-ideation/references/zotero-integration-guide.md`](skills/research-ideation/references/zotero-integration-guide.md) |
+| 282 | ✓ | [`skills/research-ideation/SKILL.md`](skills/research-ideation/SKILL.md) |
+| 283 | ✓ | [`skills/results-analysis/examples/example-analysis-report.md`](skills/results-analysis/examples/example-analysis-report.md) |
+| 284 | ✓ | [`skills/results-analysis/examples/example-figure-catalog.md`](skills/results-analysis/examples/example-figure-catalog.md) |
+| 285 | ✓ | [`skills/results-analysis/examples/example-stats-appendix.md`](skills/results-analysis/examples/example-stats-appendix.md) |
+| 286 | ✓ | [`skills/results-analysis/references/analysis-depth.md`](skills/results-analysis/references/analysis-depth.md) |
+| 287 | ✓ | [`skills/results-analysis/references/common-pitfalls.md`](skills/results-analysis/references/common-pitfalls.md) |
+| 288 | ✓ | [`skills/results-analysis/references/figure-interpretation.md`](skills/results-analysis/references/figure-interpretation.md) |
+| 289 | ✓ | [`skills/results-analysis/references/statistical-methods.md`](skills/results-analysis/references/statistical-methods.md) |
+| 290 | ✓ | [`skills/results-analysis/references/statistical-reporting.md`](skills/results-analysis/references/statistical-reporting.md) |
+| 291 | ✓ | [`skills/results-analysis/references/visualization-best-practices.md`](skills/results-analysis/references/visualization-best-practices.md) |
+| 292 | ✓ | [`skills/results-analysis/SKILL.md`](skills/results-analysis/SKILL.md) |
+| 293 | ✓ | [`skills/results-analysis/USAGE.md`](skills/results-analysis/USAGE.md) |
+| 294 | ✓ | [`skills/results-report/examples/example-results-report.md`](skills/results-report/examples/example-results-report.md) |
+| 295 | ✓ | [`skills/results-report/references/decision-oriented-analysis.md`](skills/results-report/references/decision-oriented-analysis.md) |
+| 296 | ✓ | [`skills/results-report/references/EVIDENCE-PROPAGATION.md`](skills/results-report/references/EVIDENCE-PROPAGATION.md) |
+| 297 | ✓ | [`skills/results-report/references/figure-interpretation.md`](skills/results-report/references/figure-interpretation.md) |
+| 298 | ✓ | [`skills/results-report/references/report-naming.md`](skills/results-report/references/report-naming.md) |
+| 299 | ✓ | [`skills/results-report/references/report-structure.md`](skills/results-report/references/report-structure.md) |
+| 300 | ✓ | [`skills/results-report/references/statistical-completeness.md`](skills/results-report/references/statistical-completeness.md) |
+| 301 | ✓ | [`skills/results-report/SKILL.md`](skills/results-report/SKILL.md) |
+| 302 | ✓ | [`skills/review-response/references/rebuttal-templates.md`](skills/review-response/references/rebuttal-templates.md) |
+| 303 | ✓ | [`skills/review-response/references/response-strategies.md`](skills/review-response/references/response-strategies.md) |
+| 304 | ✓ | [`skills/review-response/references/review-classification.md`](skills/review-response/references/review-classification.md) |
+| 305 | ✓ | [`skills/review-response/references/successful-cases.md`](skills/review-response/references/successful-cases.md) |
+| 306 | ✓ | [`skills/review-response/references/tone-guidelines.md`](skills/review-response/references/tone-guidelines.md) |
+| 307 | ✓ | [`skills/review-response/SKILL.md`](skills/review-response/SKILL.md) |
+| 308 | ✓ | [`skills/skill-development/references/checklist.md`](skills/skill-development/references/checklist.md) |
+| 309 | ✓ | [`skills/skill-development/references/integrity-checks.md`](skills/skill-development/references/integrity-checks.md) |
+| 310 | ✓ | [`skills/skill-development/references/skill-creator-original.md`](skills/skill-development/references/skill-creator-original.md) |
+| 311 | ✓ | [`skills/skill-development/SKILL.md`](skills/skill-development/SKILL.md) |
+| 312 | ✓ | [`skills/skill-improver/examples/improvement-plan-example.md`](skills/skill-improver/examples/improvement-plan-example.md) |
+| 313 | ✓ | [`skills/skill-improver/examples/update-report-example.md`](skills/skill-improver/examples/update-report-example.md) |
+| 314 | ✓ | [`skills/skill-improver/references/error-handling.md`](skills/skill-improver/references/error-handling.md) |
+| 315 | ✓ | [`skills/skill-improver/references/merge-strategies.md`](skills/skill-improver/references/merge-strategies.md) |
+| 316 | ✓ | [`skills/skill-improver/references/plan-format.md`](skills/skill-improver/references/plan-format.md) |
+| 317 | ✓ | [`skills/skill-improver/references/supported-updates.md`](skills/skill-improver/references/supported-updates.md) |
+| 318 | ✓ | [`skills/skill-improver/scripts/backup-skill.sh`](skills/skill-improver/scripts/backup-skill.sh) |
+| 319 | ✓ | [`skills/skill-improver/scripts/verify-update.sh`](skills/skill-improver/scripts/verify-update.sh) |
+| 320 | ✓ | [`skills/skill-improver/SKILL.md`](skills/skill-improver/SKILL.md) |
+| 321 | ✓ | [`skills/skill-quality-reviewer/references/batch-review-template.md`](skills/skill-quality-reviewer/references/batch-review-template.md) |
+| 322 | ✓ | [`skills/skill-quality-reviewer/references/examples-bad.md`](skills/skill-quality-reviewer/references/examples-bad.md) |
+| 323 | ✓ | [`skills/skill-quality-reviewer/references/examples-good.md`](skills/skill-quality-reviewer/references/examples-good.md) |
+| 324 | ✓ | [`skills/skill-quality-reviewer/references/scoring-criteria.md`](skills/skill-quality-reviewer/references/scoring-criteria.md) |
+| 325 | ✓ | [`skills/skill-quality-reviewer/scripts/extract-yaml.sh`](skills/skill-quality-reviewer/scripts/extract-yaml.sh) |
+| 326 | ✓ | [`skills/skill-quality-reviewer/scripts/skill-audit.py`](skills/skill-quality-reviewer/scripts/skill-audit.py) |
+| 327 | ✓ | [`skills/skill-quality-reviewer/SKILL.md`](skills/skill-quality-reviewer/SKILL.md) |
+| 328 | ✓ | [`skills/ui-ux-pro-max/data/ui-reasoning.csv`](skills/ui-ux-pro-max/data/ui-reasoning.csv) |
+| 329 | ✓ | [`skills/ui-ux-pro-max/references/USAGE.md`](skills/ui-ux-pro-max/references/USAGE.md) |
+| 330 | ✓ | [`skills/ui-ux-pro-max/scripts/search.py`](skills/ui-ux-pro-max/scripts/search.py) |
+| 331 | ✓ | [`skills/ui-ux-pro-max/SKILL.md`](skills/ui-ux-pro-max/SKILL.md) |
+| 332 | ✓ | [`skills/uv-package-manager/SKILL.md`](skills/uv-package-manager/SKILL.md) |
+| 333 | ✓ | [`skills/verification-loop/examples/example-verification-report.md`](skills/verification-loop/examples/example-verification-report.md) |
+| 334 | ✓ | [`skills/verification-loop/references/REPORT-TEMPLATE.md`](skills/verification-loop/references/REPORT-TEMPLATE.md) |
+| 335 | ✓ | [`skills/verification-loop/references/STACK-DETECTION.md`](skills/verification-loop/references/STACK-DETECTION.md) |
+| 336 | ✓ | [`skills/verification-loop/SKILL.md`](skills/verification-loop/SKILL.md) |
+| 337 | ✓ | [`skills/web-design-reviewer/references/framework-fixes.md`](skills/web-design-reviewer/references/framework-fixes.md) |
+| 338 | ✓ | [`skills/web-design-reviewer/references/visual-checklist.md`](skills/web-design-reviewer/references/visual-checklist.md) |
+| 339 | ✓ | [`skills/web-design-reviewer/SKILL.md`](skills/web-design-reviewer/SKILL.md) |
+| 340 | ✓ | [`skills/webapp-testing/examples/console_logging.py`](skills/webapp-testing/examples/console_logging.py) |
+| 341 | ✓ | [`skills/webapp-testing/examples/element_discovery.py`](skills/webapp-testing/examples/element_discovery.py) |
+| 342 | ✓ | [`skills/webapp-testing/examples/static_html_automation.py`](skills/webapp-testing/examples/static_html_automation.py) |
+| 343 | ✓ | [`skills/webapp-testing/LICENSE.txt`](skills/webapp-testing/LICENSE.txt) |
+| 344 | ✓ | [`skills/webapp-testing/scripts/with_server.py`](skills/webapp-testing/scripts/with_server.py) |
+| 345 | ✓ | [`skills/webapp-testing/SKILL.md`](skills/webapp-testing/SKILL.md) |
+| 346 | ✓ | [`skills/writing-anti-ai/examples/chinese.md`](skills/writing-anti-ai/examples/chinese.md) |
+| 347 | ✓ | [`skills/writing-anti-ai/examples/english.md`](skills/writing-anti-ai/examples/english.md) |
+| 348 | ✓ | [`skills/writing-anti-ai/references/patterns-chinese.md`](skills/writing-anti-ai/references/patterns-chinese.md) |
+| 349 | ✓ | [`skills/writing-anti-ai/references/patterns-english.md`](skills/writing-anti-ai/references/patterns-english.md) |
+| 350 | ✓ | [`skills/writing-anti-ai/references/phrases-to-cut.md`](skills/writing-anti-ai/references/phrases-to-cut.md) |
+| 351 | ✓ | [`skills/writing-anti-ai/references/wikipedia-source.md`](skills/writing-anti-ai/references/wikipedia-source.md) |
+| 352 | ✓ | [`skills/writing-anti-ai/SKILL.md`](skills/writing-anti-ai/SKILL.md) |
+| 353 | ✓ | [`skills/zotero-obsidian-bridge/examples/example-collection-inventory.md`](skills/zotero-obsidian-bridge/examples/example-collection-inventory.md) |
+| 354 | ✓ | [`skills/zotero-obsidian-bridge/references/COLLECTION-INVENTORY-SCHEMA.md`](skills/zotero-obsidian-bridge/references/COLLECTION-INVENTORY-SCHEMA.md) |
+| 355 | ✓ | [`skills/zotero-obsidian-bridge/references/LOCAL-ZOTERO-FALLBACK.md`](skills/zotero-obsidian-bridge/references/LOCAL-ZOTERO-FALLBACK.md) |
+| 356 | ✓ | [`skills/zotero-obsidian-bridge/references/PAPER-NOTE-SCHEMA.md`](skills/zotero-obsidian-bridge/references/PAPER-NOTE-SCHEMA.md) |
+| 357 | ✓ | [`skills/zotero-obsidian-bridge/references/WORKFLOW.md`](skills/zotero-obsidian-bridge/references/WORKFLOW.md) |
+| 358 | ✓ | [`skills/zotero-obsidian-bridge/scripts/verify_paper_notes.py`](skills/zotero-obsidian-bridge/scripts/verify_paper_notes.py) |
+| 359 | ✓ | [`skills/zotero-obsidian-bridge/SKILL.md`](skills/zotero-obsidian-bridge/SKILL.md) |
 
 ---
 

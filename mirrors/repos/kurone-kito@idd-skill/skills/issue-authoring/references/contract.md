@@ -158,6 +158,38 @@ Choose the smallest safe output shape:
 - **Stable non-ready buckets**: some work is deferred, blocked by a
   human, waiting on a decision, or outside the repository scope.
 
+When the repository keeps the broader issue-author approval gate,
+surface the same post-publication approval step for orphan issues,
+roadmaps, and sub-issues whenever the issue author is not
+self-authorizing under the repository's
+`maintainer-approval-actors` policy. The distributed `idd:ready` label
+is accepted by presence, while standalone `IDD ready` comments from a
+maintainer approval actor must stay fresh against the latest issue
+content and generated-plan update (or an equivalent draft-stability
+signal). Until that approval condition is satisfied, route the draft to
+the
+approval-needed fallback bucket instead of the normal ready-to-start
+set.
+
+## Dependency minimization
+
+Encode a dependency edge only when it reflects a true correctness,
+availability, or ordering constraint.
+
+- keep independent sibling tasks as roadmap task-list entries, with
+  short sequencing or parallelization notes when that helps reviewers or
+  later agents
+- use visible or sequential dependency markers only when the issue
+  cannot start safely until the dependency resolves
+- do not create an artificial serial chain when sibling tasks could be
+  reviewed and verified independently
+- do not split one natural, cohesive change into artificial sibling
+  issues only to widen parallel execution
+
+When an issue keeps a dependency edge, justify each dependency edge in
+the surrounding issue body and confirm that the split still preserves
+natural cohesion.
+
 ## Required dependency encoding
 
 - Roadmap identity via `<!-- <marker-prefix>-roadmap-id: ... -->`
@@ -199,6 +231,7 @@ Validation expectations:
 - every active child issue is referenced from the roadmap body
 - the roadmap explains why multiple issues exist
 - sequencing and blocking are explicit
+- each dependency edge is justified and preserves natural cohesion
 
 ### Child issue under a roadmap
 
@@ -211,7 +244,10 @@ Validation expectations:
 Validation expectations:
 
 - the issue is referenced from its parent roadmap task list
-- it can be claimed independently without owning the whole roadmap
+- acceptance criteria are locally verifiable
+- any dependency marker is resolvable, intentionally chosen, and
+  justified
+- the issue can be claimed independently without absorbing sibling work
 
 ## A4.5 Suitability Gate Alignment
 

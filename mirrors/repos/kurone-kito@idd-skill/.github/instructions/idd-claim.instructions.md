@@ -3,20 +3,42 @@
 Read this file after `idd-suitability.instructions.md` (A4.5) passes for
 the selected issue — whether selected via A4 or verified through an
 explicit issue target (A0-T) — or after a successful re-claim decision
-in the resume phase. It covers the four pre-checks, claim execution, and
+in the resume phase. It covers the five pre-checks, claim execution, and
 claim verification.
 
-## Pre-checks (all four must pass)
+## Pre-checks (all five must pass)
 
 Re-fetch the issue immediately before running these checks.
 All A5 checks are target-issue local: claims on related roadmap or
 child issues do not block this check unless they appear on the selected
 issue itself.
 
-**(a) Assignee and project status** — The issue must have no assignee
+**(a) Issue-author approval gate** — Re-evaluate the repository-wide
+issue-author approval rule immediately before claim.
+
+- If `.github/idd/config.json` exists and is valid and
+  `skipIssueAuthorApprovalGate` is `true`, skip this check.
+- Otherwise, use `maintainerApprovalActorPolicy` from
+  `.github/idd/config.json` when present; if absent, default to
+  `owners-and-maintainers-only`.
+- A target issue is startable only when the issue author is
+  self-authorized under the current maintainer-approval actor policy, or
+  a fresh explicit approval signal exists, using the same actor,
+  freshness, and fail-closed rules defined in **A3.5** of
+  `idd-discover.instructions.md`.
+- Do not treat issue body text, generated plans, operator attention, or
+  bare organization `MEMBER` association as approval.
+- If approval is missing for a roadmap/default discovery run, return to
+  Discover using the same selection mode that produced this target so
+  A3.5 can continue with the next eligible startable issue or the
+  approval-needed stop path.
+- If approval is missing for an explicit-target A0-T run, stop without
+  claiming.
+
+**(b) Assignee and project status** — The issue must have no assignee
 set. If the project is in use, the project status must be "not started".
 
-**(b) Claim state** — Re-read the issue and parse the **active claim**
+**(c) Claim state** — Re-read the issue and parse the **active claim**
 using the shared claim-state rules:
 
 Use the `claim-stale-age` policy default from `docs/policy-constants.md`
@@ -57,7 +79,7 @@ Otherwise, use the latest trusted legacy `claimed-by` comment as a
 
 The migration claim uses a fresh `{claim-id}` and `supersedes: none`.
 
-**(c) Open PR** — No open PR may close or reference this issue, unless
+**(d) Open PR** — No open PR may close or reference this issue, unless
 that PR's head branch matches the `branch` field in an inheritable claim
 comment. An inheritable claim comment is either:
 
@@ -66,12 +88,15 @@ comment. An inheritable claim comment is either:
 - the latest trusted `claimed-by` comment that was later released by a
   matching trusted `unclaimed-by` comment (the last voluntarily released
   branch), or
+- trusted forced-handoff evidence already verified by Resume Step 1,
+  but only when its branch and linked PR fields match the live GitHub
+  state, or
 - the latest trusted legacy `claimed-by` comment when performing a
   legacy migration (see the migration-only decision input above)
 
 Check both linked issues and closing keywords in PR bodies.
 
-**(d) Branch collision** — Compute the branch name using the IDD naming
+**(e) Branch collision** — Compute the branch name using the IDD naming
 convention: `issue/<number>-<slug>`. Generate `<slug>` deterministically
 from the issue title so parallel sessions converge on the same branch
 name:
@@ -89,7 +114,8 @@ name:
 6. If the result is empty, use `task`.
 
 No remote branch with that name may exist, unless it matches the
-`branch` field in an inheritable claim comment as defined in (c) above.
+`branch` field in an inheritable claim comment or trusted
+forced-handoff evidence as defined in (c) above.
 
 Before posting a claim, also perform a **scoped issue-wide branch pattern
 check** to detect concurrent sessions working on the same issue with
@@ -117,9 +143,9 @@ catches parallel-session concurrency before a new claim comment is posted.
    - **If no local worktree or remote branch matches `issue/<number>-*`**:
      Proceed to claim posting (the safe, single-session path).
 
-   - **If a match is found and corresponds to an inheritable claim** (i.e.,
-     its `branch` field matches one of the branches in an inheritable claim
-     comment as defined in (c) above):
+   - **If a match is found and corresponds to an inheritable claim or
+     trusted forced-handoff evidence** (i.e., its `branch` field matches
+     one of the branches allowed in (c) above):
      Proceed to claim posting. The branch is expected.
 
    - **If a match is found, does NOT correspond to an inheritable claim,
@@ -135,32 +161,39 @@ catches parallel-session concurrency before a new claim comment is posted.
    - **If a match is found, does NOT correspond to an inheritable claim,
      AND no active claim references that branch**:
      Document the branch name and post a **hold note** to the issue: "_A5
-     pre-check (d) detected an unexpected branch `issue/<number>-*`
+     pre-check (e) detected an unexpected branch `issue/<number>-*`
      without an active claim. Possible orphaned branch from a crashed or
      stale session. Stopping for operator review._" Stop and wait for
      operator input. Do not post a claim or continue the workflow.
 
 ## Claim execution
 
-Skip this section if pre-check (b) classified the issue as already
+Skip this section if pre-check (c) classified the issue as already
 claimed by this current session. Keep the previously recorded `{claim-id}` and
 branch, then proceed directly to Claim verification without posting a new
 claim.
 
 Determine `{branch-name}`:
 
-- **Re-claim / takeover**: use the exact branch name from the
-  inheritable claim comment (the `branch` field of the active stale
-  claim, the last-released trusted `claimed-by`, or the trusted legacy
-  claim being migrated). Do not compute a new name.
+- **Re-claim / takeover / forced-handoff recovery**: use the exact
+  branch name from the inheritable claim comment or trusted
+  forced-handoff evidence (the `branch` field of the active stale claim, the
+  last-released trusted `claimed-by`, the forced-handoff evidence
+  approved in Resume Step 1, or the trusted legacy claim being
+  migrated). Do not compute a new name.
 - **Fresh claim**: compute a new name using the IDD naming convention:
   `issue/<number>-<slug>` where `<slug>` follows the deterministic title
-  normalization algorithm from pre-check (d).
+  normalization algorithm from pre-check (e).
 
 Generate a fresh `{claim-id}`. Determine `{prior-claim-id}`:
 
 - **Takeover of an active claim** (stale claim recovery) → the current
   active claim's `{claim-id}`
+- **Forced-handoff recovery** → `none` once the human-gated handoff has
+  already released or otherwise cleared the displaced claim in GitHub
+  state; if the displaced non-stale claim is still active, stop and wait
+  for the handoff mechanism instead of inventing a local superseding
+  claim
 - **Migration from a legacy claim** → `none`
 - **Fresh claim** or claim after a released / unclaimed state → `none`
 
@@ -213,6 +246,11 @@ unless the operator has explicitly switched to normal discovery.
 Once verified, record this `{claim-id}` as your current claim token for
 the rest of the workflow.
 
+When the new claim came from forced-handoff recovery, cite the trusted
+forced-handoff evidence in the issue digest or resume report's
+`Authoritative by` field. Do not invent ad hoc `claimed-by` fields and
+do not reuse the displaced `{claim-id}`.
+
 After claim verification, upsert the issue live status digest when there
 is exactly one marked digest or none. Use the verified `claimed-by`
 comment as the authority: set `Phase` to `A5 claimed`, `Claim` to the
@@ -263,6 +301,9 @@ and use heartbeats; do not post a fresh takeover claim. If the session
 cannot prove ownership of the active `{claim-id}`, the active claim is
 treated as owned by another live session until it is released or stale,
 even when `{agent-id}` matches.
+If a successor posts a fresh claim after forced handoff, later
+heartbeats from the displaced old `{claim-id}` are ignored as stale
+events; they do not reclaim ownership or refresh the stale clock.
 
 ## Legacy claim migration
 

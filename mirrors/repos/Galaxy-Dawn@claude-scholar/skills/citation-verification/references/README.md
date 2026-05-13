@@ -4,7 +4,7 @@
 
 本目录中的文件提供**背景知识和参考信息**，用于理解引用验证的原理和常见问题。
 
-**重要**: 这些文件不是主要工作流的一部分。实际的引用验证使用 WebSearch 和 Google Scholar。
+**重要**: 这些文件不是主要工作流的一部分。实际的引用验证优先使用 arXiv、DOI/CrossRef、Semantic Scholar、publisher metadata 和 Zotero metadata。Google Scholar 只能作为人工发现或 fallback。
 
 ## 文件说明
 
@@ -39,15 +39,15 @@
 - 理解API验证的原理
 - 参考高级用例的实现
 
-**何时参考**: 当需要了解API验证方法时（注意：主要工作流使用 WebSearch）
+**何时参考**: 当需要了解API验证方法时。当前主要工作流应优先使用这些 programmatic / canonical sources。
 
 ## 主要工作流
 
 **实际的引用验证应该使用 `ml-paper-writing` skill 中的 Citation Workflow：**
 
-1. 使用 WebSearch 查找论文
-2. 在 Google Scholar 上验证
-3. 从 Google Scholar 获取 BibTeX
+1. 查找 DOI、arXiv ID、publisher page 或 verified Zotero item
+2. 用 CrossRef、arXiv、Semantic Scholar、publisher metadata 或 Zotero metadata 验证
+3. 从 programmatic/canonical source 获取 BibTeX
 4. 验证声明（如需要）
 5. 添加到 bibliography
 
@@ -57,9 +57,10 @@
 
 **对于日常论文写作**:
 - ✅ 使用 `ml-paper-writing` skill 的 Citation Workflow
-- ✅ 使用 WebSearch 和 Google Scholar
+- ✅ 使用 arXiv、DOI/CrossRef、Semantic Scholar、publisher metadata 和 Zotero metadata
+- ✅ 必要时用 Google Scholar 做人工发现，但不要把它作为 canonical authority
 - ✅ 参考这些文件了解背景知识
-- ❌ 不要使用API方法作为主要工作流
+- ❌ 不要从记忆或未经验证的 Google Scholar 条目生成最终 BibTeX
 
 **对于理解验证原理**:
 - 阅读 `common-errors.md` 了解常见错误

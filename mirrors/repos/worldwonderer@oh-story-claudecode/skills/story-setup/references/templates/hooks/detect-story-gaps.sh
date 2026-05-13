@@ -1,6 +1,8 @@
 #!/bin/bash
 # detect-story-gaps.sh — 检测写作项目中的 5 项缺口
 # 设计原则：无缺口时完全静默，不输出任何内容，避免污染 context
+# 注意：本脚本有独立的短篇项目检测逻辑（find 正文/ 目录并去重），
+# 不使用 lib/common.sh 的 discover_book_dir（该函数只找单个目录）
 set -euo pipefail
 
 OUTPUT=""
@@ -55,15 +57,6 @@ for BOOK_DIR in ${BOOK_DIRS[@]+"${BOOK_DIRS[@]}"}; do
     BOOK_OUTPUT+="[WARN] $BOOK_NAME: $CHAPTER_COUNT chapters but only $SETTING_COUNT setting files. Consider adding more settings.\n"
   fi
 
-  # 3. 拆文未完成
-  PROGRESS=""
-  if [ -d "拆文库" ]; then
-    PROGRESS=$(find "拆文库" -name "_progress.md" 2>/dev/null | head -1 || true)
-  fi
-  if [ -n "$PROGRESS" ]; then
-    BOOK_OUTPUT+="[WARN] Incomplete analysis: $PROGRESS. Run /story-long-analyze to continue.\n"
-  fi
-
   # 4. 未关闭的伏笔线索
   if [ -f "$BOOK_DIR/追踪/伏笔.md" ]; then
     # 正则依赖 artifact-protocols.md 中的伏笔格式定义，格式变更时需同步更新
@@ -73,9 +66,15 @@ for BOOK_DIR in ${BOOK_DIRS[@]+"${BOOK_DIRS[@]}"}; do
     fi
   fi
 
-  # 5. 大纲缺失
-  if [ -d "$BOOK_DIR/正文" ] && [ ! -d "$BOOK_DIR/大纲" ]; then
-    BOOK_OUTPUT+="[WARN] $BOOK_NAME: 正文/ exists but 大纲/ is missing. Consider creating an outline first.\n"
+  # 5. 大纲缺失（按项目类型区分判定）
+  if [ -d "$BOOK_DIR/正文" ]; then
+    # 长篇判定：有 追踪/ 视为长篇，要求 大纲/ 目录
+    if [ -d "$BOOK_DIR/追踪" ] && [ ! -d "$BOOK_DIR/大纲" ]; then
+      BOOK_OUTPUT+="[WARN] $BOOK_NAME: 正文/ exists but 大纲/ is missing. Consider creating an outline first.\n"
+    # 短篇判定：无 追踪/ 视为短篇，要求 小节大纲.md 单文件
+    elif [ ! -d "$BOOK_DIR/追踪" ] && [ ! -f "$BOOK_DIR/小节大纲.md" ]; then
+      BOOK_OUTPUT+="[WARN] $BOOK_NAME: 正文/ exists but 小节大纲.md is missing. Consider creating an outline first.\n"
+    fi
   fi
 
   # 仅在有问题时输出该书目的信息
@@ -84,6 +83,18 @@ for BOOK_DIR in ${BOOK_DIRS[@]+"${BOOK_DIRS[@]}"}; do
     HAS_WARNINGS=true
   fi
 done
+
+# 3. 全局拆文未完成检测（项目级，非书目级）
+GLOBAL_PROGRESS_OUTPUT=""
+if [ -d "拆文库" ]; then
+  while IFS= read -r -d '' progress_file; do
+    GLOBAL_PROGRESS_OUTPUT+="[WARN] Incomplete analysis: $progress_file. Run /story-long-analyze to continue.\n"
+  done < <(find "拆文库" -name "_progress.md" -print0 2>/dev/null || true)
+fi
+if [ -n "$GLOBAL_PROGRESS_OUTPUT" ]; then
+  OUTPUT+="$GLOBAL_PROGRESS_OUTPUT"
+  HAS_WARNINGS=true
+fi
 
 # 仅在有警告时输出
 if [ "$HAS_WARNINGS" = true ]; then

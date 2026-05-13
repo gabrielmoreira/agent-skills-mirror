@@ -9,16 +9,28 @@ Complete programmatic access to Google NotebookLM—including capabilities not e
 
 ## Installation
 
-**From PyPI (Recommended):**
+**From PyPI (Recommended for AI agents — Python-version-aware):**
 ```bash
-pip install notebooklm-py
+pip install "notebooklm-py[browser]"   # mandatory; errors must propagate
+
+# [cookies] (rookiepy) is optional and known to FAIL TO BUILD on Python 3.13+.
+# Skip it deliberately on 3.13+ rather than swallowing the error — that lets
+# *real* install failures (typos, network, PyPI outages) surface for the agent.
+if python -c "import sys; sys.exit(0 if sys.version_info < (3, 13) else 1)"; then
+    pip install "notebooklm-py[cookies]"   # errors propagate
+else
+    echo "Skipping [cookies] on Python 3.13+ (rookiepy unavailable). Use 'notebooklm login' interactively."
+fi
 ```
+
+> Full install matrix (extras, headless servers, contributor flow): [Installation guide on GitHub](https://github.com/teng-lin/notebooklm-py/blob/main/docs/installation.md).
 
 **From GitHub (use latest release tag, NOT main branch):**
 ```bash
 # Get the latest release tag (using curl)
 LATEST_TAG=$(curl -s https://api.github.com/repos/teng-lin/notebooklm-py/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
-pip install "git+https://github.com/teng-lin/notebooklm-py@${LATEST_TAG}"
+# Includes [browser] so the interactive `notebooklm login` flow works.
+pip install "notebooklm-py[browser] @ git+https://github.com/teng-lin/notebooklm-py@${LATEST_TAG}"
 ```
 
 ⚠️ **DO NOT install from main branch** (`pip install git+https://github.com/teng-lin/notebooklm-py`). The main branch may contain unreleased/unstable changes. Always use PyPI or a specific release tag, unless you are testing unreleased features.
@@ -69,11 +81,15 @@ For automated environments, multiple accounts, or parallel agent workflows:
 
 ## Agent Setup Verification
 
-Before starting workflows, verify the CLI is ready:
+Before starting workflows, verify auth is in place. **Use `--test --json` (not bare `--json`)** — bare `--json` only proves the cookie file parses; `--test` makes a network call and proves the cookies still authenticate against Google.
 
-1. `notebooklm status` → Should show "Authenticated as: email@..."
-2. `notebooklm list --json` → Should return valid JSON (even if empty notebooks list)
-3. If either fails → Run `notebooklm login`
+1. `notebooklm auth check --test --json` → require BOTH `"status": "ok"` AND `"checks.token_fetch": true`. Bare `"status": "ok"` (without `--test`) is a false-positive trap — a stale cookie file passes the parse check.
+2. `notebooklm list --json` → expect valid JSON (may be empty for new accounts).
+3. **If auth fails or is missing → run `notebooklm login` first.** This is the primary auth path: opens a browser, the user signs in to Google once, and the resulting `storage_state.json` is reused on every subsequent run. Works on any environment with a display.
+   - For headless contexts where opening a browser is not feasible, use `notebooklm login --browser-cookies <browser>` instead — extracts the user's already-logged-in cookies from Chrome/Firefox/etc. (requires the `[cookies]` extra; rookiepy may not install on Python 3.13+).
+   - Re-run step 1 after login to confirm.
+
+> **Note:** `notebooklm status` reports *context state* (selected notebook); do not use it to verify auth.
 
 ## When This Skill Activates
 
@@ -147,9 +163,11 @@ Before starting workflows, verify the CLI is ready:
 | Wait for source processing | `notebooklm source wait <source_id>` |
 | Web research (fast) | `notebooklm source add-research "query"` |
 | Web research (deep) | `notebooklm source add-research "query" --mode deep --no-wait` |
+| Web research (query from file) | `notebooklm source add-research --prompt-file research_query.txt --mode deep` |
 | Check research status | `notebooklm research status` |
 | Wait for research | `notebooklm research wait --import-all` |
 | Chat | `notebooklm ask "question"` |
+| Chat (long prompt from file) | `notebooklm ask --prompt-file question.txt` |
 | Chat (specific sources) | `notebooklm ask "question" -s src_id1 -s src_id2` |
 | Chat (with references) | `notebooklm ask "question" --json` |
 | Chat (save answer as note) | `notebooklm ask "question" --save-as-note` |
@@ -161,6 +179,7 @@ Before starting workflows, verify the CLI is ready:
 | Get source fulltext | `notebooklm source fulltext <source_id>` |
 | Get source guide | `notebooklm source guide <source_id>` |
 | Generate podcast | `notebooklm generate audio "instructions"` |
+| Generate (long prompt from file) | `notebooklm generate audio --prompt-file instructions.txt` |
 | Generate podcast (JSON) | `notebooklm generate audio --json` |
 | Generate podcast (specific sources) | `notebooklm generate audio -s src_id1 -s src_id2` |
 | Generate video | `notebooklm generate video "instructions"` |
@@ -256,6 +275,7 @@ All generate commands support:
 - `--language` to set output language (defaults to configured language or 'en')
 - `--json` for machine-readable output (returns `task_id` and `status`)
 - `--retry N` to automatically retry on rate limits with exponential backoff
+- `--prompt-file PATH` to read description/query from a file (mutually exclusive with positional argument; use for long prompts)
 
 | Type | Command | Options | Download |
 |------|---------|---------|----------|
@@ -426,7 +446,7 @@ notebooklm source add-research "topic" --mode deep --import-all
 **JSON output:** Use `--json` flag for machine-readable output:
 ```bash
 notebooklm list --json
-notebooklm auth check --json
+notebooklm auth check --test --json   # use --test for network-validated auth (see § Agent Setup Verification)
 notebooklm source list --json
 notebooklm artifact list --json
 ```
@@ -438,7 +458,7 @@ notebooklm artifact list --json
 {"notebooks": [{"index": 1, "id": "...", "title": "...", "is_owner": true, "created_at": "..."}], "count": 1}
 ```
 
-`notebooklm auth check --json`:
+`notebooklm auth check --test --json` (use `--test` to drive the network token-fetch — bare `--json` would leave `"token_fetch": null`):
 ```json
 {"status": "ok", "checks": {"storage_exists": true, "json_valid": true, "cookies_present": true, "sid_cookie": true, "token_fetch": true}, "details": {"storage_path": "...", "auth_source": "file", "cookies_found": ["SID", "HSID", "..."], "cookie_domains": [".google.com"]}}
 ```
@@ -490,6 +510,20 @@ All commands use consistent exit codes:
 - `source wait` returns 1 if source not found or processing failed
 - `artifact wait` returns 2 if timeout reached before completion
 - `generate` returns 1 if rate limited (check stderr for details)
+
+## Long Prompts
+
+When a prompt or query exceeds shell command-line length limits, use `--prompt-file` to read it from a file:
+
+```bash
+notebooklm ask --prompt-file ./long_question.txt
+notebooklm generate report --prompt-file ./custom_report_prompt.txt
+notebooklm source add-research --prompt-file ./research_query.txt --mode deep
+```
+
+`--prompt-file` is mutually exclusive with the positional text argument. The file is read as UTF-8 with trailing whitespace stripped. Supported on: `ask`, all `generate` subcommands (except `mind-map`), and `source add-research`.
+
+> **Note:** `--prompt-file` reads a *prompt/query text file*, not a source document. To upload a file as a notebook source, use `source add ./file.pdf`.
 
 ## Known Limitations
 

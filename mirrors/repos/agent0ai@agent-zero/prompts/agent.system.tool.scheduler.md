@@ -1,27 +1,16 @@
 ### scheduler
-manage saved tasks and schedules
-rules:
-- before `scheduler:create_*` or `scheduler:run_task`, inspect existing tasks with `scheduler:find_task_by_name` or `scheduler:list_tasks`
-- do not manually run a task just because it is scheduled or planned unless user asks to run now
-- do not create recursive task prompts that schedule more tasks
-methods:
-- `scheduler:list_tasks`: optional `state[]`, `type[]`, `next_run_within`, `next_run_after`
-- `scheduler:find_task_by_name`: `name`
-- `scheduler:show_task`: `uuid`
-- `scheduler:run_task`: `uuid`, optional `context`
-- `scheduler:delete_task`: `uuid`
-- `scheduler:create_scheduled_task`: `name`, `system_prompt`, `prompt`, optional `attachments[]`, `schedule{minute,hour,day,month,weekday}`, optional `dedicated_context`
-- `scheduler:create_adhoc_task`: `name`, `system_prompt`, `prompt`, optional `attachments[]`, optional `dedicated_context`
-- `scheduler:create_planned_task`: `name`, `system_prompt`, `prompt`, optional `attachments[]`, `plan[]` iso datetimes like `2025-04-29T18:25:00`, optional `dedicated_context`
-- `scheduler:wait_for_task`: `uuid`; works for dedicated-context tasks
-example:
-~~~json
-{
-  "thoughts": ["I should check for an existing task before I create or run anything."],
-  "headline": "Looking up scheduled task",
-  "tool_name": "scheduler:find_task_by_name",
-  "tool_args": {
-    "name": "daily backup"
-  }
-}
-~~~
+Manage saved tasks and schedules. For complex task work, load skill `scheduled-tasks`.
+
+Actions: `list_tasks`, `find_task_by_name`, `show_task`, `run_task`, `update_task`, `delete_task`, `create_scheduled_task`, `create_adhoc_task`, `create_planned_task`, `wait_for_task`.
+
+Common args: `action`, `name`, `uuid`, `system_prompt`, `prompt`, `attachments`, `schedule`, `timezone`, `plan`, `dedicated_context`.
+
+Rules:
+- Before `create_*`, `update_task`, `delete_task`, or `run_task`, inspect existing tasks with `find_task_by_name` or `list_tasks`.
+- Do not run scheduled/planned tasks unless the user asks to run now.
+- Do not create recursive task prompts that schedule more tasks.
+- New tasks use a dedicated context unless `dedicated_context` is `false`.
+- Use `create_scheduled_task` for recurring/cron tasks; `schedule` must be cron fields, not an ISO datetime.
+- For one planned date/time, use `create_planned_task` with `plan: ["YYYY-MM-DDTHH:MM:SS"]`.
+- Use IANA timezones like `Europe/Rome`; include timezone when the user names a timezone.
+- For "tomorrow at 9:15 Rome time", scheduled shape is `schedule: {"minute":"15","hour":"9","day":"11","month":"5","weekday":"*","timezone":"Europe/Rome"}`.

@@ -5,8 +5,6 @@ allowed-tools: [Bash(uv*), Bash(ruff*), Read, Glob]
 version: 1.0.0
 author: ykotik
 license: MIT
-tags: ["productivity", "cli-power-skills"]
-compatibility: "Designed for Claude Code"
 ---
 
 # Python Tooling

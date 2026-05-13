@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 21 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,7 +79,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 21 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
+| 21 | ✓ | [`docs/source/elastic/examples.md`](docs/source/elastic/examples.md) |
+| 22 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
 
 ---
 

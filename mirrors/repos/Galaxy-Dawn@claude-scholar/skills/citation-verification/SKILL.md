@@ -9,7 +9,7 @@ version: 0.1.0
 
 A reference guide for citation verification in academic paper writing, providing verification principles and best practices.
 
-**Core Principle**: Proactively verify every citation during the writing process using WebSearch and Google Scholar.
+**Core Principle**: Proactively verify every citation during the writing process using programmatic or canonical scholarly sources first: arXiv, DOI/CrossRef, Semantic Scholar, publisher landing pages, and Zotero metadata. Google Scholar is useful for manual discovery, but it is not the canonical verification authority.
 
 ## Core Problems
 
@@ -29,7 +29,7 @@ These issues can lead to:
 
 ## Verification Principles
 
-This skill provides verification principles based on WebSearch and Google Scholar:
+This skill provides verification principles based on canonical scholarly metadata and claim-level checking:
 
 ### 1. Proactive Verification (Verify During Writing)
 
@@ -39,19 +39,21 @@ This skill provides verification principles based on WebSearch and Google Schola
 - Confirm the paper exists on Google Scholar
 - Add to bibliography only after verification passes
 
-### 2. Google Scholar Verification
+### 2. Canonical Metadata Verification
 
-**Why Google Scholar**:
-- Most comprehensive academic literature coverage
-- Provides citation count (credibility indicator)
-- Directly provides BibTeX format
-- Free and no API required
+Preferred authority order:
+1. DOI / publisher landing page
+2. arXiv ID or arXiv landing page
+3. CrossRef
+4. Semantic Scholar
+5. Zotero metadata imported from a verified identifier
+6. Google Scholar only for manual discovery or fallback lookup
 
 **Verification steps**:
-1. WebSearch query: `"site:scholar.google.com [paper title] [first author]"`
-2. Confirm the paper appears in results
-3. Check citation count (abnormally low counts may indicate issues)
-4. Click "Cite" to get BibTeX
+1. Find a DOI, arXiv ID, publisher URL, or verified Zotero item.
+2. Confirm title, first author, year, venue, and identifier.
+3. Fetch BibTeX from CrossRef, arXiv, publisher metadata, Zotero, or another programmatic source when possible.
+4. If only Google Scholar can find the item, mark it as manual verification and do not treat the BibTeX as final until metadata is checked elsewhere.
 
 ### 3. Information Matching Verification
 
@@ -77,9 +79,9 @@ This skill provides verification principles based on WebSearch and Google Schola
 ```
 Need a citation during writing
     ↓
-WebSearch to find the paper
+Find DOI / arXiv ID / publisher page / verified Zotero item
     ↓
-Google Scholar to verify existence
+Verify metadata with CrossRef / arXiv / Semantic Scholar / publisher / Zotero
     ↓
 Confirm paper details
     ↓
@@ -133,11 +135,11 @@ Step 5: Add to bibliography
 
 ### Handling Verification Failures
 
-**If the paper cannot be found on Google Scholar**:
+**If the paper cannot be verified through canonical sources**:
 
 1. **Check spelling** - Is the title or author name correct?
 2. **Try different queries** - Use different keyword combinations
-3. **Find alternative sources** - Try arXiv, DOI
+3. **Find alternative sources** - Try arXiv, DOI, CrossRef, Semantic Scholar, publisher pages, or Zotero
 4. **Mark as pending** - Use `[CITATION NEEDED]` marker
 5. **Notify the user** - Clearly state the citation cannot be verified
 

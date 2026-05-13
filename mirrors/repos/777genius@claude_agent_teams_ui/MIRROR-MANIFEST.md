@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 8 followed patterns, 17 file(s) materialized.
+Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 9 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 8 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 17 |
+| Followed pats | 9 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 8 followed 
 - `README.md`
 - `docs/FEATURE_ARCHITECTURE_STANDARD.md`
 - `docs/team-management/debugging-agent-teams.md`
+- `AGENT_CRITICAL_GUARDRAILS.md`
 - `src/features/README.md`
 - `docs/research/gastown-paperclip-comparison-2026-05-05.md`
 - `.github/CONTRIBUTING.md`
@@ -74,15 +75,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`landing/docs/iterations/README.md`](landing/docs/iterations/README.md) |
 | 7 | ✓ | [`landing/README.md`](landing/README.md) |
 | 8 | ✓ | [`src/features/agent-graph/README.md`](src/features/agent-graph/README.md) |
-| 9 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
-| 10 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
-| 11 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 12 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 13 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 14 | → | [`docs/research/gastown-paperclip-comparison-2026-05-05.md`](docs/research/gastown-paperclip-comparison-2026-05-05.md) |
-| 15 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 16 | → | [`README.md`](README.md) |
-| 17 | → | [`src/features/README.md`](src/features/README.md) |
+| 9 | ✓ | [`src/features/CLAUDE.md`](src/features/CLAUDE.md) |
+| 10 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
+| 11 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
+| 12 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 13 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 14 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
+| 15 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
+| 16 | → | [`docs/research/gastown-paperclip-comparison-2026-05-05.md`](docs/research/gastown-paperclip-comparison-2026-05-05.md) |
+| 17 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 18 | → | [`README.md`](README.md) |
+| 19 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

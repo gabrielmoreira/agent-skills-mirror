@@ -33,7 +33,7 @@ This skill provides comprehensive, accurate guidance for extending and building 
 - Build **API Endpoints** for the Web UI
 - Create **Agent Profiles** (subordinates) with custom prompts
 - Understand and extend the **Prompt System**
-- Create **Skills** (see the dedicated `create-skill` skill for the full wizard)
+- Create **Skills** (see the dedicated `build-skill` skill for the full wizard)
 - Work with **Projects** and workspace configuration
 
 > **Path convention:** Throughout this guide, `/a0/` refers to the framework root — this is `/a0/` inside Docker, or your local repository root in development. All paths are relative to this root.
@@ -41,7 +41,7 @@ This skill provides comprehensive, accurate guidance for extending and building 
 > [!IMPORTANT]
 > **Plugins are the primary way to extend Agent Zero.** Most new tools, extensions, and prompts should be packaged as plugins. For all plugin tasks (create, review, manage, debug, contribute), load the `a0-plugin-router` skill which routes to the appropriate specialist. This guide covers the underlying framework patterns that plugins build upon.
 
-Related skills: `a0-plugin-router` (plugin tasks) | `create-skill` (skill creation wizard) | `a0-create-plugin` | `a0-review-plugin` | `a0-manage-plugin` | `a0-contribute-plugin` | `a0-debug-plugin`
+Related skills: `a0-plugin-router` (plugin tasks) | `build-skill` (skill creation wizard) | `a0-create-plugin` | `a0-review-plugin` | `a0-manage-plugin` | `a0-contribute-plugin` | `a0-debug-plugin`
 
 ---
 
@@ -631,7 +631,7 @@ The agent interacts with skills through JSON tool calls:
 {"tool_name": "skills_tool:load", "tool_args": {"skill_name": "my-skill"}}
 ```
 
-> For the complete skill creation wizard — including SKILL.md format, frontmatter fields, directory structure, best practices, and examples — load the `create-skill` skill.
+> For the complete skill creation wizard — including SKILL.md format, frontmatter fields, directory structure, best practices, and examples — load the `build-skill` skill.
 
 ---
 

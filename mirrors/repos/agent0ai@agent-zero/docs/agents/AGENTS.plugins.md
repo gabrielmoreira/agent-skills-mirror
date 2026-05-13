@@ -1,6 +1,6 @@
 # Agent Zero - Plugins Guide
 
-This guide covers the Python Backend and Frontend WebUI plugin architecture. Use this as the definitive reference for building and extending Agent Zero.
+This guide covers the Python Backend and Frontend Web UI plugin architecture. Use this as the definitive reference for building and extending Agent Zero.
 
 ---
 
@@ -13,7 +13,7 @@ Agent Zero uses a convention-over-configuration plugin model where runtime capab
 1. Backend discovery (python/helpers/plugins.py): Resolves roots (usr/plugins/ first, then plugins/) and builds the effective set of plugins.
 2. Path resolution (python/helpers/subagents.py): Injects plugin paths into the agent's search space for prompts, tools, and configurations.
 3. Python extensions (python/helpers/extension.py): Executes named lifecycle hooks from `extensions/python/<point>/` and implicit `@extensible` hooks from `extensions/python/_functions/<module>/<qualname>/<start|end>/`.
-4. WebUI extensions (webui/js/extensions.js): Injects HTML/JS contributions into core UI breakpoints (x-extension).
+4. Web UI extensions (webui/js/extensions.js): Injects HTML/JS contributions into core UI breakpoints (x-extension).
 
 ---
 
@@ -330,7 +330,7 @@ Both routes surface Plugin Index entries inside Agent Zero. The Plugin Hub suppo
 
 ## 9. See Also
 
-- `docs/developer/plugins.md` for the developer-facing plugin lifecycle and publishing guide
+- `docs/developer/plugins.md` for the compact plugin starting point and sharing checklist
 - `plugins/README.md` for the bundled-vs-user plugin directory overview and quick links
 - `skills/a0-plugin-router/SKILL.md` for the agent-facing entry point that routes plugin tasks to the right specialist skill
 - `AGENTS.md` for the main framework guide

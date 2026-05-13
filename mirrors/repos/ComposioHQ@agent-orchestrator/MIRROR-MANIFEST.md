@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`skills/agent-orchestrator/references/config.md`](skills/agent-orchestrator/references/config.md) |
 | 6 | ✓ | [`skills/agent-orchestrator/SKILL.md`](skills/agent-orchestrator/SKILL.md) |
-| 7 | ✓ | [`skills/release-notes/ao-weekly-release/run.py`](skills/release-notes/ao-weekly-release/run.py) |
-| 8 | ✓ | [`skills/release-notes/ao-weekly-release/SKILL.md`](skills/release-notes/ao-weekly-release/SKILL.md) |
-| 9 | ✓ | [`skills/social-media/SKILL.md`](skills/social-media/SKILL.md) |
+| 7 | ✓ | [`skills/bug-triage/scripts/push_fix_to_github.py`](skills/bug-triage/scripts/push_fix_to_github.py) |
+| 8 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
+| 9 | ✓ | [`skills/README.md`](skills/README.md) |
+| 10 | ✓ | [`skills/release-notes/ao-weekly-release/run.py`](skills/release-notes/ao-weekly-release/run.py) |
+| 11 | ✓ | [`skills/release-notes/ao-weekly-release/SKILL.md`](skills/release-notes/ao-weekly-release/SKILL.md) |
+| 12 | ✓ | [`skills/social-media/SKILL.md`](skills/social-media/SKILL.md) |
 
 ---
 

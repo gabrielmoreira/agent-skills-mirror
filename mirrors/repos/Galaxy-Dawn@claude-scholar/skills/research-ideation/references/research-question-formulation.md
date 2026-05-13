@@ -178,3 +178,33 @@
 | 中 | 高 | 高 | 可以考虑 |
 | 低 | * | * | 重新考虑 |
 
+## 4. 支持与证伪检查
+
+每个研究问题都必须说明什么结果会支持它，什么结果会削弱或推翻它。
+
+### 4.1 必填字段
+
+```md
+Question:
+Hypothesis:
+Current evidence:
+Missing evidence:
+What would support it:
+What would falsify it:
+Minimal next action:
+Decision: explore | read more | run experiment | stop
+```
+
+### 4.2 决策含义
+
+- `explore`：问题可能有价值，但还缺少基本文献或问题边界。
+- `read more`：需要先补关键相关工作、baseline、dataset 或 metric。
+- `run experiment`：问题、假设、支持证据和最小实验已经足够明确。
+- `stop`：重要性、新颖性、可行性或证据边界不足，不建议继续投入。
+
+### 4.3 写作要求
+
+- 不要只写“值得研究”；必须说明为什么值得研究。
+- 不要只写“需要更多实验”；必须说明最小下一步实验是什么。
+- 不要只写“有文献支持”；必须列出当前证据和缺失证据。
+- 不要把探索性问题写成已经验证的结论。

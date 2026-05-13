@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:0f2c77d2856357641da63b3d22458c4d6dca96d9`
+**Shape snapshot:** `sha1:02dfff0781049699630654be4ef73505cd84d6a4`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -29,7 +29,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 ## At a Glance
 
-- **181** active API routes across **48** categories
+- **183** active API routes across **48** categories
 - **4** required + **119** optional environment variables
 - **73** database tables
 
@@ -42,6 +42,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `GET` `/api/actions/[actionId]/artifacts`
 - `GET` `/api/actions/[actionId]/graph`
 - `GET` `/api/actions/[actionId]/messages`
+- `GET, POST` `/api/actions/[actionId]/outcome`
 - `GET` `/api/actions/[actionId]/trace`
 - `GET` `/api/actions/costs`
 - `GET, POST` `/api/actions/loops`
@@ -123,6 +124,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `GET` `/api/cron/learning-episodes-backfill`
 - `GET` `/api/cron/learning-recommendations`
 - `GET` `/api/cron/memory-maintenance`
+- `GET` `/api/cron/outcome-sweep`
 - `GET` `/api/cron/policy-suggestions`
 - `GET` `/api/cron/reset-meters`
 - `POST` `/api/cron/routing-maintenance`
@@ -364,8 +366,8 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 68 file(s)
-- **`DATABASE_URL`** - referenced in 83 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 71 file(s)
+- **`DATABASE_URL`** - referenced in 85 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
 
@@ -684,6 +686,10 @@ Per-org settings stored in the `settings` table. Set via `PUT /api/settings/:key
 - `PREDICTIVE_RISK_ENABLED`
 - `PREDICTIVE_RISK_THRESHOLD`
 
+### docs/architecture/durable-execution-finality.md.
+
+- `DASHCLAW_OUTCOME_TIMEOUT_MINUTES`
+
 ## Realtime & Webhook Events
 
 Every mutation that Mission Control reflects and every webhook delivery is keyed on these event strings. Subscribe via `GET /api/events` (SSE) or register a webhook with the matching `events: [...]` array.
@@ -716,6 +722,7 @@ These are the `type` strings emitted through `fireWebhooksForOrg` and `deliverNa
 - `green_insufficient`
 - `integration_health_changed`
 - `integration_mismatch`
+- `lost_confirmation`
 - `mcp_degraded`
 - `stale_action`
 - `test`

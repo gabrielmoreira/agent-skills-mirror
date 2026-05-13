@@ -21,8 +21,8 @@ Sources/Papers/ -> Knowledge/ -> Writing/ -> Maps/literature.canvas
 - `Knowledge/Method Taxonomy.md`
 - `Knowledge/Research Gaps.md`
 - `Knowledge/Claim Map.md`
-- `Writing/related-work-draft.md`
-- `Writing/comparison-matrix.md`
+- `Writing/related-work-draft.md` only after promoted claims pass the evidence gate
+- `Writing/comparison-matrix.md` only after promoted claims pass the evidence gate
 - `Maps/literature.canvas`
 
 ## Rules
@@ -31,6 +31,8 @@ Sources/Papers/ -> Knowledge/ -> Writing/ -> Maps/literature.canvas
 - literature synthesis does not live inside source notes
 - every synthesis note must link its supporting source notes
 - every research gap must carry evidence
+- every promoted claim must carry an Evidence Record ID, source type, claim strength, allowed wording, and forbidden stronger wording when it may flow into writing or rebuttal
+- weak paper notes, abstract-only pages, and webpage placeholders may update coverage or `To-Read`, but they cannot support `Knowledge` or `Writing` conclusions
 - default graph output is `Maps/literature.canvas`
 - do not generate extra canvases unless explicitly requested
 

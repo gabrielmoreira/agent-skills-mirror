@@ -24,6 +24,8 @@ This skill handles format and artifact concerns only.
 - `.base` is explicit-only
 - `Maps/` contains derived artifacts only
 - link repair should strengthen existing canonical notes, not create note sprawl
+- literature canvas edges must preserve evidence strength when the source notes provide it
+- do not create stable-looking claim edges from abstract-only, webpage-placeholder, or unsupported notes
 
 ## Read next
 

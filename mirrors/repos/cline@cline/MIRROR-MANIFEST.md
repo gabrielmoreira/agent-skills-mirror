@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 29 file(s) materialized.
+Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 29 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 29 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,31 +64,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
-| 5 | ✓ | [`locales/ar-sa/CODE_OF_CONDUCT.md`](locales/ar-sa/CODE_OF_CONDUCT.md) |
-| 6 | ✓ | [`locales/ar-sa/CONTRIBUTING.md`](locales/ar-sa/CONTRIBUTING.md) |
-| 7 | ✓ | [`locales/de/CODE_OF_CONDUCT.md`](locales/de/CODE_OF_CONDUCT.md) |
-| 8 | ✓ | [`locales/de/CONTRIBUTING.md`](locales/de/CONTRIBUTING.md) |
-| 9 | ✓ | [`locales/es/CODE_OF_CONDUCT.md`](locales/es/CODE_OF_CONDUCT.md) |
-| 10 | ✓ | [`locales/es/CONTRIBUTING.md`](locales/es/CONTRIBUTING.md) |
-| 11 | ✓ | [`locales/ja/CODE_OF_CONDUCT.md`](locales/ja/CODE_OF_CONDUCT.md) |
-| 12 | ✓ | [`locales/ja/CONTRIBUTING.md`](locales/ja/CONTRIBUTING.md) |
-| 13 | ✓ | [`locales/ko/CODE_OF_CONDUCT.md`](locales/ko/CODE_OF_CONDUCT.md) |
-| 14 | ✓ | [`locales/ko/CONTRIBUTING.md`](locales/ko/CONTRIBUTING.md) |
-| 15 | ✓ | [`locales/pt-BR/CODE_OF_CONDUCT.md`](locales/pt-BR/CODE_OF_CONDUCT.md) |
-| 16 | ✓ | [`locales/pt-BR/CONTRIBUTING.md`](locales/pt-BR/CONTRIBUTING.md) |
-| 17 | ✓ | [`locales/zh-cn/CODE_OF_CONDUCT.md`](locales/zh-cn/CODE_OF_CONDUCT.md) |
-| 18 | ✓ | [`locales/zh-cn/CONTRIBUTING.md`](locales/zh-cn/CONTRIBUTING.md) |
-| 19 | ✓ | [`locales/zh-tw/CODE_OF_CONDUCT.md`](locales/zh-tw/CODE_OF_CONDUCT.md) |
-| 20 | ✓ | [`locales/zh-tw/CONTRIBUTING.md`](locales/zh-tw/CONTRIBUTING.md) |
-| 21 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
-| 22 | ✓ | [`sdk/apps/cli/.agents/skills/opentui/SKILL.md`](sdk/apps/cli/.agents/skills/opentui/SKILL.md) |
-| 23 | ✓ | [`sdk/apps/cli/.cline/skills/publish-cli/SKILL.md`](sdk/apps/cli/.cline/skills/publish-cli/SKILL.md) |
-| 24 | ✓ | [`sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
-| 25 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
-| 26 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
-| 27 | ✓ | [`src/core/prompts/system-prompt/CONTRIBUTING.md`](src/core/prompts/system-prompt/CONTRIBUTING.md) |
-| 28 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 29 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 5 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
+| 6 | ✓ | [`sdk/apps/cli/.agents/skills/opentui/SKILL.md`](sdk/apps/cli/.agents/skills/opentui/SKILL.md) |
+| 7 | ✓ | [`sdk/apps/cli/.cline/skills/publish-cli/SKILL.md`](sdk/apps/cli/.cline/skills/publish-cli/SKILL.md) |
+| 8 | ✓ | [`sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
+| 9 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
+| 10 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
+| 11 | ✓ | [`src/core/prompts/system-prompt/CONTRIBUTING.md`](src/core/prompts/system-prompt/CONTRIBUTING.md) |
+| 12 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

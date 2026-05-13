@@ -9,6 +9,8 @@
 - headline: short headline summary of the response
 - tool_name: use tool name
 - tool_args: key value pairs tool arguments
+- `tool_name` must be one listed tool name, never an action name such as `read`, `write`, `terminal`, or `multi`
+- To do two operations, call one tool now, then call the next tool after the first result
 
 - No text output before or after the JSON object
 

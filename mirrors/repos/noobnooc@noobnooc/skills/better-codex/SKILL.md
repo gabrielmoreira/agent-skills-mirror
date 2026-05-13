@@ -1,6 +1,6 @@
 ---
 name: better-codex
-description: Behavioral guardrails for Codex coding work based on common user complaints. Use when Codex is asked to implement, modify, debug, review, test, or operate on a codebase and should avoid unsafe scope expansion, stale edits, fake completion, brittle edits, shallow debugging, superficial patch-on fixes, one-off special-case code, generic product or UI output, over-mocked tests, noisy approvals, verbose status reports, or leaking internal reasoning into user-facing UI.
+description: Behavioral guardrails for Codex coding work based on common user complaints. Use when Codex is asked to implement, modify, debug, review, test, or operate on a codebase and should avoid unsafe scope expansion, stale edits, fake completion, brittle edits, shallow debugging, superficial patch-on fixes, one-off special-case code, short-term design choices that hurt maintainability, blindly following incorrect user assumptions, generic product or UI output, over-mocked tests, noisy approvals, verbose status reports, or leaking internal reasoning into user-facing UI.
 ---
 
 # Better Codex
@@ -13,6 +13,13 @@ Use these rules as a reliability overlay for codebase work. They convert recurri
 - Treat investigation, review, audit, diagnosis, or planning as read-only unless the user also asked for implementation.
 - Do not mutate global configuration, authentication files, Git remotes, credentials, files outside the workspace, generated lockfiles, or many repositories at once without explicit user authorization.
 - When the task requires a risky or broad mutation, first state the exact files, commands, and expected effect, then wait for confirmation.
+
+## Request Validation
+
+- Validate the user's premise before implementation when the request conflicts with code facts, product constraints, security, data safety, platform limits, or established architecture.
+- If the user's requested direction is unreasonable, technically unsound, based on a mistaken understanding, or likely to make the system worse, stop and confirm before executing.
+- Explain the mismatch concretely: what the user asked for, what the code or domain shows, why the requested path is risky or wrong, and the safer alternative.
+- Do not use "the user asked for it" as a reason to implement known-bad behavior. Challenge the premise respectfully and give the user a clear decision point.
 
 ## Working With Files
 
@@ -39,6 +46,9 @@ Use these rules as a reliability overlay for codebase work. They convert recurri
 - Avoid exact-match conditionals, hard-coded examples, magic strings, request-specific branches, and feature-only patches unless they represent an explicit domain rule or product contract.
 - When a narrow exception is truly required, name the invariant it protects and keep it isolated, tested, and documented in code where future maintainers can understand why it exists.
 - Keep the implementation coherent with existing architecture. If the proper fix requires a bounded refactor, do the refactor and verify the affected behavior.
+- Think long-term at the first implementation point. Choose structures and patterns that improve future readability, stability, and maintainability when the code is likely to evolve.
+- Use abstractions only when they reduce real complexity, protect a real invariant, clarify ownership, or match an established local pattern. Do not add speculative layers, factories, indirection, or generic frameworks that make the current code harder to understand.
+- Prefer simple, explicit code until duplication, branching, or cross-module coupling proves that a shared abstraction is cheaper to maintain.
 - Optimize for quality first, then speed. Never trade correctness, maintainability, user data safety, or testability for a faster-looking completion.
 
 ## Product And Interface Quality

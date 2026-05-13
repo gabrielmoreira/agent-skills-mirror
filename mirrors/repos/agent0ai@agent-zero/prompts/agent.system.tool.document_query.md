@@ -1,5 +1,6 @@
 ### document_query
 read local or remote documents or answer questions about them
+prefer this over text_editor when the user says "check/read this document" or asks a question about a document path/url, even for Markdown files
 args:
 - `document`: url path or list of them
 - `queries`: optional list of questions

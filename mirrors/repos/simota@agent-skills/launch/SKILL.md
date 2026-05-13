@@ -14,6 +14,7 @@ CAPABILITIES_SUMMARY:
 - go_nogo_gates: Define release criteria and Go/No-Go decision frameworks
 - hotfix_fast_path: Emergency patch release workflow with shortened CI gates, mandatory rollback readiness, and post-incident backport plan
 - canary_orchestration: Progressive traffic-shifting (1% → 10% → 50% → 100%) with automatic guardrail monitoring and halt triggers
+- mobile_app_store_release: TestFlight phased release (iOS) and Google Play staged rollout (Android) orchestration; store-compliance gate (Privacy Manifest / Data Safety / 5.1.2(i) AI disclosure / Sign in with Apple); server-driven feature flags as primary mobile rollback path
 
 COLLABORATION_PATTERNS:
 - Guardian -> Launch: Release commit/tag strategy
@@ -22,20 +23,22 @@ COLLABORATION_PATTERNS:
 - Harvest -> Launch: PR history for CHANGELOG
 - Beacon -> Launch: SLO/SLI baselines for Go/No-Go gates
 - Sentinel -> Launch: Security scan results for release criteria
+- Native -> Launch: Mobile store-submission artifacts (IPA/AAB, Privacy Manifest, Data Safety) and per-store staged-rollout plan
 - Launch -> Guardian: Tagging/branch
 - Launch -> Gear: Deployment execution
 - Launch -> Triage: Incident playbook
 - Launch -> Canvas: Timeline visualization
 - Launch -> Quill: Documentation
 - Launch -> Experiment: Feature flag metric evaluation
+- Launch -> Native: Store-compliance feedback (rejection signals, phased-release halt triggers, server-driven flag activation)
 - Magi -> Launch: Release Go/No-Go verdicts
 - Darwin -> Launch: Release timing lifecycle alignment
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Guardian, Builder, Gear, Harvest, Beacon, Sentinel, Magi (Go/No-Go verdicts), Darwin (lifecycle alignment)
-- OUTPUT: Guardian, Gear, Triage, Canvas, Quill, Experiment
+- INPUT: Guardian, Builder, Gear, Harvest, Beacon, Sentinel, Native (mobile release artifacts), Magi (Go/No-Go verdicts), Darwin (lifecycle alignment)
+- OUTPUT: Guardian, Gear, Triage, Canvas, Quill, Experiment, Native (store-compliance feedback)
 
-PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(L)
+PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Mobile(H) Dashboard(M) Marketing(L)
 -->
 # Launch
 
@@ -53,6 +56,7 @@ Use Launch when the task requires any of the following:
 - Define production readiness checklists with measurable thresholds.
 - Automate release workflows with tools like `semantic-release`, `release-please`, `git-cliff`, or `changesets`.
 - Plan rollback drills or rehearsals to validate recovery procedures.
+- Plan mobile app store releases — TestFlight phased release (iOS), Google Play staged rollout (Android), per-store compliance gating, and server-driven flag-based rollback for pure-native builds handed off from `Native`.
 
 Route elsewhere when the task is primarily:
 
@@ -61,6 +65,7 @@ Route elsewhere when the task is primarily:
 - Incident response or post-incident recovery → `Triage`
 - A/B test design or statistical significance evaluation → `Experiment`
 - SLO/SLI definition or observability setup → `Beacon`
+- Mobile feature implementation (Swift/SwiftUI or Kotlin/Compose) → `Native`
 
 ## Core Contract
 
@@ -141,12 +146,14 @@ Route elsewhere when the task is primarily:
 | Input | `Harvest` | CHANGELOG or notes need PR / commit history context. |
 | Input | `Beacon` | SLO/SLI baselines and observability readiness for Go/No-Go gates. |
 | Input | `Sentinel` | Security scan results needed for release criteria validation. |
+| Input | `Native` | Mobile store-submission artifacts, Privacy Manifest / Data Safety completeness, per-store staged-rollout plan. |
 | Output | `Guardian` | Tagging, release commit shaping, branch naming, or cherry-pick flow is needed. |
 | Output | `Gear` | Deployment execution, rollout automation, or environment action is required. |
 | Output | `Triage` | Incident playbook, rollback triggers, or hotfix response is needed. |
 | Output | `Canvas` | Timeline, release calendar, or rollout visualization is useful. |
 | Output | `Quill` | CHANGELOG, README, or docs need downstream publication. |
 | Output | `Experiment` | Feature flag metric evaluation or A/B test integration during rollout. |
+| Output | `Native` | Store-compliance feedback, phased-release halt triggers, server-driven flag-disable signals during mobile rollout. |
 
 ## Recipes
 
@@ -159,6 +166,7 @@ Route elsewhere when the task is primarily:
 | Feature Flag | `flag` | | Feature flag management and staged rollout design | `references/feature-flag-pitfalls.md` |
 | Hotfix Release | `hotfix` | | Emergency patch release (shortened CI / hotfix branch / 2h SLA / rollback bundled / backport to main) | `references/hotfix-workflow.md` |
 | Canary Rollout | `canary` | | Staged traffic rollout (1%->10%->50%->100%) with automatic guardrails and abort conditions | `references/canary-rollout.md` |
+| Mobile Release | `mobile` | | iOS / Android store release: TestFlight phased release (1%/10%/50%/100% over 7d), Play staged rollout (5%/20%/50%/100%), store-compliance gate, server-driven flag rollback path | `references/mobile-release.md` |
 
 ## Subcommand Dispatch
 Parse the first token of user input.
@@ -173,6 +181,7 @@ Behavior notes per Recipe:
 - `flag`: Feature flag design, staged rollout plan (canary/blue-green), and pitfall mitigations.
 - `hotfix`: Emergency patch release only. Generate an emergency playbook including 2h SLA, shortened CI (smoke only), hotfix branch, bundled rollback procedure, and backport plan to main. Include production impact, RCA, and similar-regression prevention.
 - `canary`: Design staged traffic shifts (e.g., 1% -> 10% -> 50% -> 100%). Specify guardrail metrics (error rate / p95 / SLO burn / business metric), automatic abort conditions, and observation window at each stage.
+- `mobile`: Mobile app store release plan. Validate the `NATIVE_TO_LAUNCH_HANDOFF` payload (build artifacts, Privacy Manifest / Data Safety completeness, store-compliance items), design the per-store staged-rollout schedule (TestFlight Internal → External → App Review → Phased Release on iOS; Play Internal → Closed → Open → Production Staged Rollout on Android), wire server-driven feature flags as primary kill-switch (mobile rollback is slower than web), define halt + hotfix triggers (crash-free < 99.85%, App Review rejection, P0 store-policy regression), and produce per-store release notes. Treat App Review / Play Review as a Go/No-Go gate the team cannot accelerate — bake submission lead time into the plan. Return `LAUNCH_TO_NATIVE_HANDOFF` with rollout decisions and any flag-disable triggers Native must wire.
 
 ## Output Routing
 
@@ -241,8 +250,8 @@ When input contains `## NEXUS_ROUTING`, do not call other agents directly. Retur
 
 ## Collaboration
 
-**Receives:** Guardian (release commit/tag strategy), Builder (feature completion), Gear (deployment readiness), Harvest (PR history for CHANGELOG), Beacon (SLO/SLI baselines for Go/No-Go), Sentinel (security scan results)
-**Sends:** Guardian (tagging/branch), Gear (deployment execution), Triage (incident playbook), Canvas (timeline visualization), Quill (documentation), Experiment (feature flag metric evaluation)
+**Receives:** Guardian (release commit/tag strategy), Builder (feature completion), Gear (deployment readiness), Harvest (PR history for CHANGELOG), Beacon (SLO/SLI baselines for Go/No-Go), Sentinel (security scan results), Native (mobile store-submission artifacts and per-store rollout plan)
+**Sends:** Guardian (tagging/branch), Gear (deployment execution), Triage (incident playbook), Canvas (timeline visualization), Quill (documentation), Experiment (feature flag metric evaluation), Native (store-compliance feedback, phased-release halt triggers, server-driven flag activation)
 
 **Agent Teams Pattern (Specialist Team, 2-3 workers):**
 When a release involves parallel-ready phases (e.g., CHANGELOG generation + deployment preparation + monitoring setup), spawn specialists via Agent tool:
@@ -250,6 +259,69 @@ When a release involves parallel-ready phases (e.g., CHANGELOG generation + depl
 - `deploy-preparer` (sonnet): owns deployment instructions and rollback scripts — coordinates with Gear for pipeline config. `exclusive_write: deploy/*, rollback/*`
 - `release-assessor` (sonnet, optional): owns Go/No-Go checklist and risk assessment — coordinates with Beacon/Sentinel for baselines. `exclusive_write: release-plan.md`
 Use VERIFICATION_PARALLEL to run security scan + SLO check + load test concurrently during Evaluate phase. Merge: All-pass gate.
+
+## Mobile Release Handoff
+
+When pure-native iOS or Android releases flow from `Native`, Launch operates as the store-release gate. The `mobile` Recipe activates this contract.
+
+### Incoming: `NATIVE_TO_LAUNCH_HANDOFF`
+
+```yaml
+NATIVE_TO_LAUNCH_HANDOFF:
+  app_version: "[semver]"
+  platforms: ["iOS", "Android"]
+  store_compliance_notes: ["[Compliance items verified]"]
+  privacy_manifest_complete: true | false
+  data_safety_complete: true | false
+  build_artifacts: ["[IPA/AAB paths]"]
+  release_notes: "[User-facing changelog]"
+  rollout_plan:
+    ios: "TestFlight Internal → External → App Review → Phased Release"
+    android: "Play Internal → Closed → Open → Production Staged Rollout"
+  feature_flags: ["[server-driven flags wired for kill-switch]"]
+```
+
+Validate completeness on receipt — reject the handoff and route back to Native if any of the following are missing or `false`:
+- `privacy_manifest_complete` (iOS submissions are auto-rejected without `PrivacyInfo.xcprivacy` Required Reasons API declarations)
+- `data_safety_complete` (Google Play blocks submission across all tracks including Internal Testing)
+- `feature_flags` (mobile lacks instant rollback; flags are the primary kill-switch)
+- 5.1.2(i) AI disclosure UI when the app invokes third-party AI
+
+### Outgoing: `LAUNCH_TO_NATIVE_HANDOFF`
+
+```yaml
+LAUNCH_TO_NATIVE_HANDOFF:
+  release_decision: "GO | NO_GO | CONDITIONAL"
+  rollout_schedule:
+    ios:
+      testflight_internal: "[YYYY-MM-DD]"
+      testflight_external: "[YYYY-MM-DD]"
+      app_review_submit: "[YYYY-MM-DD]"
+      phased_release: "1%/10%/50%/100% over 7d starting [YYYY-MM-DD]"
+    android:
+      play_internal: "[YYYY-MM-DD]"
+      play_closed: "[YYYY-MM-DD]"
+      play_open: "[YYYY-MM-DD]"
+      production_staged: "5%/20%/50%/100% over [N]d starting [YYYY-MM-DD]"
+  halt_triggers:
+    - "crash_free_sessions < 99.85% for 1h"
+    - "App Review rejection or Play policy strike"
+    - "P0 store-policy regression (Privacy Manifest / Data Safety / IAP)"
+    - "[domain-specific KPI threshold]"
+  flag_disable_signals:
+    - flag: "[server-driven flag name]"
+      condition: "[when to disable]"
+      action: "[what Native should wire as fallback]"
+  rollback_path: "flag_disable (< 1 min) → halt phased release / pause staged rollout → hotfix submission"
+  next_owner: "Native"
+```
+
+Mobile-specific Go/No-Go items beyond the standard scored checklist:
+- App Review / Play Review lead time included in the schedule (typically 24-72h; never assumed faster)
+- Phased Release / Staged Rollout configured per-store with halt automation, not manual checking
+- Server-driven feature flags verified live in production before submission (flags ship dark)
+- Crash-free sessions baseline captured from prior version (≥ 99.85% target)
+- Hotfix submission path tested (TestFlight expedited review request or Play Internal → Production fast-track)
 
 ## Reference Map
 
@@ -264,4 +336,5 @@ Use VERIFICATION_PARALLEL to run security scan + SLO check + load test concurren
 | `references/rollback-anti-patterns.md` | You need rollback design, DB migration safety, or recovery sequencing. |
 | `references/hotfix-workflow.md` | You are running `hotfix`: emergency patch playbook, 2h SLA, shortened CI gate, hotfix branch, bundled rollback, and backport-to-main planning. |
 | `references/canary-rollout.md` | You are running `canary`: progressive traffic shifts (1% → 10% → 50% → 100%), guardrail metrics, automatic abort conditions, and observation windows. |
+| `references/mobile-release.md` | You are running `mobile`: TestFlight phased release / Play staged rollout, store-compliance gating, App Review / Play Review lead-time planning, server-driven feature flag rollback path, and hotfix submission flow. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the release plan, deciding adaptive thinking depth at rollout staging, or front-loading release type/scope/risk at PLAN. Critical for Launch: P3, P5. |

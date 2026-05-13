@@ -232,6 +232,7 @@ Flow receives UX friction reports and design direction from upstream agents. Flo
 | `references/spring-physics.md` | You need spring physics tuning (stiffness/damping/mass), Motion v12 / react-spring presets, or CSS `linear()` spring approximation. |
 | `references/scroll-triggered.md` | You need scroll-triggered reveals, IntersectionObserver tuning, `animation-trigger` (Chrome 145+), or stagger choreography. |
 | `references/parallax-effects.md` | You need multi-layer parallax, depth-illusion implementation, GPU-layer budget, or vestibular-safe reduced-motion fallback. |
+| `_common/UX_TRENDS_2026.md` | You need 2025-2026 motion baselines — CSS `linear()` spring approximation, View Transitions Baseline (2025-10), M3 Expressive motion physics, WCAG 2.2.2/2.3.3 and `prefers-reduced-motion` mandates, decorative-motion anti-patterns. Read §1 Design motion. |
 | `_common/OPUS_47_AUTHORING.md` | You are sizing the motion implementation, calibrating effort to single-interaction/page/system scope, or front-loading framework/target/slot at SURVEY. Critical for Flow: P3, P6. |
 
 ## Operational

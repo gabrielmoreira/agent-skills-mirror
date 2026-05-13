@@ -70,7 +70,7 @@ Route elsewhere when the task is primarily:
 - Calculate `Health Score` before improvement work and before/after self-modification.
 - Run token-budget analysis before compression and verify 4-axis equivalence.
 - Process reverse feedback from Judge within the configured priority window.
-- Run `INTROSPECT` after every design task and record self-modifications in `SELF_EVOLUTION_LOG`.
+- When running the `EVOLVE` recipe (Architect self-improvement only), follow `INTROSPECT → DIAGNOSE → PRESCRIBE → MUTATE → VERIFY → PERSIST` and record the outcome per `references/self-evolution.md` (ST-01 Lightweight after every design task; journal to `.agents/architect.md`).
 - Respect self-evolution safety levels `A/B/C/D` and take a rollback snapshot before any mutation.
 - Design context architecture first, prompt wording second. Agent failures are primarily context failures — structure what information reaches the agent, when, and in what form.
 - Require formal topology for every multi-agent design. Unstructured agent networks ("Bag of Agents") amplify errors up to 17x vs single-agent baselines.
@@ -92,7 +92,7 @@ Route elsewhere when the task is primarily:
 Agent role boundaries -> `_common/BOUNDARIES.md`
 
 ### Always
-- Follow all Core Contract commitments (ENVISION, Health Score, validation, INTROSPECT, self-evolution safety).
+- Follow all Core Contract commitments (ENVISION, Health Score, validation, EVOLVE workflow, self-evolution safety).
 - Run the Value-First Checklist before drafting any new agent.
 
 ### Ask First

@@ -30,6 +30,8 @@ When the task is to create or redesign paper-ready figures/tables themselves, re
 
 Do not replace strict analysis with confident prose. If the analysis bundle is missing, first identify the blocker and request or produce the missing bundle.
 
+Hard gate: do not write a complete report when `analysis-report.md`, `stats-appendix.md`, `figure-catalog.md`, provenance, or the primary comparison question is missing. In that case, write only a blocker summary and route back to `results-analysis`.
+
 ## Default output
 
 The default report is an **internal research report**, not manuscript prose.
@@ -112,6 +114,7 @@ Minimum required inputs:
 - actual figures, if available
 
 If these are missing, either generate them first with `results-analysis` or explicitly state which claims cannot be supported.
+Do not turn loose CSV/Markdown artifacts into a polished report unless the strict analysis bundle has already validated unit of analysis, primary metric, and claim wording.
 
 ### 3. Write the report as a decision object
 
@@ -169,6 +172,7 @@ The report must end with operational decisions, for example:
 - The report must include negative results when they matter.
 - The report must separate stable conclusion from tentative interpretation.
 - The report must say what changed in project belief and what should happen next.
+- The report must preserve Claim Candidate wording and must not promote `speculative` or `observed` claims into decisive conclusions.
 
 ## Reference files
 

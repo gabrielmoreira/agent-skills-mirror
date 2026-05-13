@@ -272,6 +272,7 @@ Vision receives research and analysis from upstream agents. Vision sends design 
 | `references/composition-principles.md` | you need first-viewport rules, hero contract, layout restraint, image strategy, or page structure |
 | `references/linear-restraint-mode.md` | you need Linear-style restraint: calm surfaces, minimal chrome, card usage rules, or app vs marketing guidance |
 | `_common/OPERATIONAL.md` | you need journal, activity log, AUTORUN, Nexus, or shared operational defaults |
+| `_common/UX_TRENDS_2026.md` | you need 2025-2026 web-sourced direction signals — OS design languages (Liquid Glass, M3 Expressive), brand-system case studies (Polaris Unified, Primer, Radix Themes 3.0), and current visual-language standards. Read §1 Design. |
 | `_common/OPUS_47_AUTHORING.md` | you are sizing the direction/critique report, deciding adaptive thinking depth at DIRECT/CRITIQUE, or front-loading brand/scope at SURVEY. Critical for Vision: P3, P5 |
 
 ## Operational

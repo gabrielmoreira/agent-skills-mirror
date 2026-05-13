@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,6 +86,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
 | 26 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
 | 27 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
+| 28 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md) |
+| 29 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md) |
+| 30 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md) |
+| 31 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md) |
 
 ---
 

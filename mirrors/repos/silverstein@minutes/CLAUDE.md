@@ -96,7 +96,7 @@ Native hotkey sanity check:
 ./scripts/diagnose-desktop-hotkey.sh "$HOME/Applications/Minutes Dev.app"
 ```
 
-See [docs/DESKTOP-DEVELOPMENT.md](/Users/silverbook/Sites/minutes/docs/DESKTOP-DEVELOPMENT.md) for the full workflow.
+See [docs/DESKTOP-DEVELOPMENT.md](/docs/DESKTOP-DEVELOPMENT.md) for the full workflow.
 
 For dictation shortcut work:
 

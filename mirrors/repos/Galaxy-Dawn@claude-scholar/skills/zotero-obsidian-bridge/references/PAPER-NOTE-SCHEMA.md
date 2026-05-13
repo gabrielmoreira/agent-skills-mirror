@@ -18,6 +18,8 @@ url: "https://doi.org/..."
 citekey: "author2026paper"
 zotero_key: "ABCDEFGH"
 status: read
+source_type: full paper
+claim_strength: observed
 keywords:
   - subject-invariance
   - contrastive-learning
@@ -56,6 +58,8 @@ updated: 2026-03-16T00:00:00Z
 
 ## Evidence
 
+Use the shared Evidence Record shape from `research-ideation/references/research-contract.md`.
+
 ## Strengths
 
 ## Limitation
@@ -78,4 +82,4 @@ updated: 2026-03-16T00:00:00Z
 - Keep `Direct relevance to repo` concrete and actionable.
 - Prefer one durable canonical note per paper; update in place instead of making sibling notes.
 - If the user asked for a full collection pass, normalize the schema across the entire covered set before closing the task.
-- Treat Zotero `webpage` items as acceptable inputs when attachment text or fulltext is still available and useful.
+- Treat Zotero `webpage` items as weak-source inputs by default. If they are abstract-only or placeholder pages, set `source_type: webpage placeholder` or `source_type: abstract-only`, keep `status: to-read`, and do not use them to support `Knowledge`, manuscript, or rebuttal claims.

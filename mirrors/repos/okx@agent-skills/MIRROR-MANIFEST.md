@@ -2,12 +2,12 @@
 repo: okx/agent-skills
 repoUrl: https://github.com/okx/agent-skills.git
 refType: branch
-ref: master
+ref: github-main
 ---
 
 # Mirror Manifest
 
-Mirror of `okx/agent-skills` — 26 default patterns, 5 followed patterns, 42 file(s) materialized.
+Mirror of `okx/agent-skills` — 26 default patterns, 4 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `okx/agent-skills` — 26 default patterns, 5 followed patterns, 42 fi
 |---------------|-------|
 | Repo          | `okx/agent-skills` |
 | Ref Type      | `branch` |
-| Ref           | `master` |
+| Ref           | `github-main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 42 |
+| Followed pats | 4 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `okx/agent-skills` — 26 default patterns, 5 followed patterns, 42 fi
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `README.zh-CN.md`
 - `CONTRIBUTING.md`
 - `REVIEWING.md`
 - `SECURITY.md`
@@ -102,9 +101,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`skills/README.zh-CN.md`](skills/README.zh-CN.md) |
 | 38 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 39 | → | [`README.md`](README.md) |
-| 40 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 41 | → | [`REVIEWING.md`](REVIEWING.md) |
-| 42 | → | [`SECURITY.md`](SECURITY.md) |
+| 40 | → | [`REVIEWING.md`](REVIEWING.md) |
+| 41 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

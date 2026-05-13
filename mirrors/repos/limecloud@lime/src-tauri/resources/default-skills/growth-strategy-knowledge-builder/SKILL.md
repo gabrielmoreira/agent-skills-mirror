@@ -3,14 +3,13 @@ name: growth-strategy-knowledge-builder
 description: 将增长目标、指标体系、渠道策略、实验计划、复盘结论、资源约束和停止条件，整理成符合 Agent Knowledge v0.6 document-first 标准、可被 AI 安全调用的增长策略知识库。适用于用户要求“整理增长知识库”“沉淀增长策略”“把增长计划变成项目资料”“维护增长实验资料包”的场景。
 license: Apache-2.0
 allowed-tools: list_directory, read_file
-compatibility:
-  agentKnowledge: ">=0.6.0"
+compatibility: Agent Knowledge >=0.6.0
 metadata:
-  lime_version: 1.0.0
+  lime_version: 1.0.1
   lime_execution_mode: prompt
   lime_surface: workbench
   lime_category: knowledge
-  Lime_skill_bundle_version: "1.0.0"
+  Lime_skill_bundle_version: "1.0.1"
   Lime_knowledge_builder: "true"
   Lime_knowledge_pack_type: "growth-strategy"
   Lime_knowledge_template: "growth-strategy"

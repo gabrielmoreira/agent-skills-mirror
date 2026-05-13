@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `itsmostafa/aws-agent-skills` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `itsmostafa/aws-agent-skills` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `itsmostafa/aws-agent-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,32 +71,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/cognito/SKILL.md`](skills/cognito/SKILL.md) |
 | 11 | ✓ | [`skills/dynamodb/query-patterns.md`](skills/dynamodb/query-patterns.md) |
 | 12 | ✓ | [`skills/dynamodb/SKILL.md`](skills/dynamodb/SKILL.md) |
-| 13 | ✓ | [`skills/ec2/instance-management.md`](skills/ec2/instance-management.md) |
-| 14 | ✓ | [`skills/ec2/SKILL.md`](skills/ec2/SKILL.md) |
-| 15 | ✓ | [`skills/ecs/SKILL.md`](skills/ecs/SKILL.md) |
-| 16 | ✓ | [`skills/ecs/task-definitions.md`](skills/ecs/task-definitions.md) |
-| 17 | ✓ | [`skills/eks/cluster-setup.md`](skills/eks/cluster-setup.md) |
-| 18 | ✓ | [`skills/eks/SKILL.md`](skills/eks/SKILL.md) |
-| 19 | ✓ | [`skills/eventbridge/event-patterns.md`](skills/eventbridge/event-patterns.md) |
-| 20 | ✓ | [`skills/eventbridge/SKILL.md`](skills/eventbridge/SKILL.md) |
-| 21 | ✓ | [`skills/iam/best-practices.md`](skills/iam/best-practices.md) |
-| 22 | ✓ | [`skills/iam/policies.md`](skills/iam/policies.md) |
-| 23 | ✓ | [`skills/iam/SKILL.md`](skills/iam/SKILL.md) |
-| 24 | ✓ | [`skills/lambda/debugging.md`](skills/lambda/debugging.md) |
-| 25 | ✓ | [`skills/lambda/deployment.md`](skills/lambda/deployment.md) |
-| 26 | ✓ | [`skills/lambda/SKILL.md`](skills/lambda/SKILL.md) |
-| 27 | ✓ | [`skills/rds/administration.md`](skills/rds/administration.md) |
-| 28 | ✓ | [`skills/rds/SKILL.md`](skills/rds/SKILL.md) |
-| 29 | ✓ | [`skills/s3/security.md`](skills/s3/security.md) |
-| 30 | ✓ | [`skills/s3/SKILL.md`](skills/s3/SKILL.md) |
-| 31 | ✓ | [`skills/secrets-manager/rotation-strategies.md`](skills/secrets-manager/rotation-strategies.md) |
-| 32 | ✓ | [`skills/secrets-manager/SKILL.md`](skills/secrets-manager/SKILL.md) |
-| 33 | ✓ | [`skills/sns/notification-patterns.md`](skills/sns/notification-patterns.md) |
-| 34 | ✓ | [`skills/sns/SKILL.md`](skills/sns/SKILL.md) |
-| 35 | ✓ | [`skills/sqs/messaging-patterns.md`](skills/sqs/messaging-patterns.md) |
-| 36 | ✓ | [`skills/sqs/SKILL.md`](skills/sqs/SKILL.md) |
-| 37 | ✓ | [`skills/step-functions/SKILL.md`](skills/step-functions/SKILL.md) |
-| 38 | ✓ | [`skills/step-functions/workflow-patterns.md`](skills/step-functions/workflow-patterns.md) |
+| 13 | ✓ | [`skills/ec2/evals/evals.json`](skills/ec2/evals/evals.json) |
+| 14 | ✓ | [`skills/ec2/instance-management.md`](skills/ec2/instance-management.md) |
+| 15 | ✓ | [`skills/ec2/SKILL.md`](skills/ec2/SKILL.md) |
+| 16 | ✓ | [`skills/ecs/SKILL.md`](skills/ecs/SKILL.md) |
+| 17 | ✓ | [`skills/ecs/task-definitions.md`](skills/ecs/task-definitions.md) |
+| 18 | ✓ | [`skills/eks/cluster-setup.md`](skills/eks/cluster-setup.md) |
+| 19 | ✓ | [`skills/eks/SKILL.md`](skills/eks/SKILL.md) |
+| 20 | ✓ | [`skills/eventbridge/event-patterns.md`](skills/eventbridge/event-patterns.md) |
+| 21 | ✓ | [`skills/eventbridge/SKILL.md`](skills/eventbridge/SKILL.md) |
+| 22 | ✓ | [`skills/iam/best-practices.md`](skills/iam/best-practices.md) |
+| 23 | ✓ | [`skills/iam/policies.md`](skills/iam/policies.md) |
+| 24 | ✓ | [`skills/iam/SKILL.md`](skills/iam/SKILL.md) |
+| 25 | ✓ | [`skills/lambda/debugging.md`](skills/lambda/debugging.md) |
+| 26 | ✓ | [`skills/lambda/deployment.md`](skills/lambda/deployment.md) |
+| 27 | ✓ | [`skills/lambda/SKILL.md`](skills/lambda/SKILL.md) |
+| 28 | ✓ | [`skills/rds/administration.md`](skills/rds/administration.md) |
+| 29 | ✓ | [`skills/rds/SKILL.md`](skills/rds/SKILL.md) |
+| 30 | ✓ | [`skills/s3/security.md`](skills/s3/security.md) |
+| 31 | ✓ | [`skills/s3/SKILL.md`](skills/s3/SKILL.md) |
+| 32 | ✓ | [`skills/secrets-manager/rotation-strategies.md`](skills/secrets-manager/rotation-strategies.md) |
+| 33 | ✓ | [`skills/secrets-manager/SKILL.md`](skills/secrets-manager/SKILL.md) |
+| 34 | ✓ | [`skills/sns/notification-patterns.md`](skills/sns/notification-patterns.md) |
+| 35 | ✓ | [`skills/sns/SKILL.md`](skills/sns/SKILL.md) |
+| 36 | ✓ | [`skills/sqs/messaging-patterns.md`](skills/sqs/messaging-patterns.md) |
+| 37 | ✓ | [`skills/sqs/SKILL.md`](skills/sqs/SKILL.md) |
+| 38 | ✓ | [`skills/step-functions/SKILL.md`](skills/step-functions/SKILL.md) |
+| 39 | ✓ | [`skills/step-functions/workflow-patterns.md`](skills/step-functions/workflow-patterns.md) |
 
 ---
 

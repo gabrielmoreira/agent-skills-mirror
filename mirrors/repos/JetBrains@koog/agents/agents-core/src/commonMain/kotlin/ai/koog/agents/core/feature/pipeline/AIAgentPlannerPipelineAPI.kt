@@ -10,6 +10,7 @@ import ai.koog.agents.core.feature.handler.planner.PlanCreationCompletedContext
 import ai.koog.agents.core.feature.handler.planner.PlanCreationStartingContext
 import ai.koog.agents.core.feature.handler.planner.StepExecutionCompletedContext
 import ai.koog.agents.core.feature.handler.planner.StepExecutionStartingContext
+import ai.koog.serialization.TypeToken
 
 /**
  * Platform-agnostic API for planner agent pipelines, extending the base pipeline API
@@ -33,7 +34,9 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
         executionInfo: AgentExecutionInfo,
         context: AIAgentContext,
         state: Any,
+        stateType: TypeToken?,
         plan: Any?,
+        planType: TypeToken?,
         stepIndex: Int,
     )
 
@@ -44,7 +47,9 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
      * @param executionInfo The execution information for the plan creation event;
      * @param context The context of the plan creation;
      * @param state The current state;
-     * @param plan The plan that completed creation;
+     * @param plan The previous plan, or `null` if this is the first plan;
+     * @param stepIndex The index of the step in the plan;
+     * @param updatedPlan The newly built plan.
      */
     @InternalAgentsApi
     public suspend fun onPlanCreationCompleted(
@@ -52,8 +57,11 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
         executionInfo: AgentExecutionInfo,
         context: AIAgentContext,
         state: Any,
-        plan: Any,
+        stateType: TypeToken?,
+        plan: Any?,
+        planType: TypeToken?,
         stepIndex: Int,
+        updatedPlan: Any,
     )
 
     /**
@@ -72,7 +80,9 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
         executionInfo: AgentExecutionInfo,
         context: AIAgentContext,
         state: Any,
+        stateType: TypeToken?,
         plan: Any,
+        planType: TypeToken?,
         stepIndex: Int
     )
 
@@ -92,7 +102,9 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
         executionInfo: AgentExecutionInfo,
         context: AIAgentContext,
         state: Any,
+        stateType: TypeToken?,
         plan: Any,
+        planType: TypeToken?,
         stepIndex: Int,
     )
 
@@ -111,7 +123,9 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
         executionInfo: AgentExecutionInfo,
         context: AIAgentContext,
         state: Any,
+        stateType: TypeToken?,
         plan: Any,
+        planType: TypeToken?,
         stepIndex: Int,
     )
 
@@ -123,6 +137,7 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
      * @param context The context of the plan execution;
      * @param state The current state;
      * @param plan The plan being evaluated for completion;
+     * @param stepIndex The index of the step in the plan;
      * @param isCompleted The result of the completion check.
      */
     @InternalAgentsApi
@@ -131,9 +146,11 @@ public interface AIAgentPlannerPipelineAPI : AIAgentPipelineAPI {
         executionInfo: AgentExecutionInfo,
         context: AIAgentContext,
         state: Any,
+        stateType: TypeToken?,
         plan: Any,
-        isCompleted: Boolean,
+        planType: TypeToken?,
         stepIndex: Int,
+        isCompleted: Boolean,
     )
 
     //endregion Trigger Planner Handlers

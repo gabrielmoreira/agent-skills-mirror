@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TencentEdgeOne/awesome-website-prompts-and-skills` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `TencentEdgeOne/awesome-website-prompts-and-skills` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TencentEdgeOne/awesome-website-prompts-and-skills` — 26 default pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`prompts/luxury-jewelry-ecommerce-website.md`](prompts/luxury-jewelry-ecommerce-website.md) |
-| 2 | ✓ | [`skills/ai-saas-skill/README.md`](skills/ai-saas-skill/README.md) |
-| 3 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md) |
-| 4 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md) |
-| 5 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md) |
-| 6 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md) |
-| 7 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md) |
+| 1 | ✓ | [`prompts/drama-ai.md`](prompts/drama-ai.md) |
+| 2 | ✓ | [`prompts/lumina-walls.md`](prompts/lumina-walls.md) |
+| 3 | ✓ | [`prompts/luxury-jewelry-ecommerce-website.md`](prompts/luxury-jewelry-ecommerce-website.md) |
+| 4 | ✓ | [`prompts/luxury-perfume.md`](prompts/luxury-perfume.md) |
+| 5 | ✓ | [`prompts/pawsome.md`](prompts/pawsome.md) |
+| 6 | ✓ | [`prompts/start-somewhere.md`](prompts/start-somewhere.md) |
+| 7 | ✓ | [`skills/ai-saas-skill/README.md`](skills/ai-saas-skill/README.md) |
+| 8 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/customization.md) |
+| 9 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/env-setup.md) |
+| 10 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/template-setup.md) |
+| 11 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/references/user-prompt-intake.md) |
+| 12 | ✓ | [`skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md`](skills/ai-saas-skill/skills/edgeone-pages-saas/SKILL.md) |
 
 ---
 

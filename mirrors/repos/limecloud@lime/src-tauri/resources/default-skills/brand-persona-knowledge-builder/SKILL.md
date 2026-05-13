@@ -3,14 +3,13 @@ name: brand-persona-knowledge-builder
 description: 将品牌定位、价值观、受众画像、语气风格、内容样例、危机回应和表达禁区，整理成符合 Agent Knowledge v0.6 document-first 标准、可被 AI 安全调用的品牌人设知识库。适用于用户要求“整理品牌人设”“沉淀品牌口吻”“把品牌资料变成可复用语气库”“维护品牌 persona pack”的场景。
 license: Apache-2.0
 allowed-tools: list_directory, read_file
-compatibility:
-  agentKnowledge: ">=0.6.0"
+compatibility: Agent Knowledge >=0.6.0
 metadata:
-  lime_version: 1.0.0
+  lime_version: 1.0.1
   lime_execution_mode: prompt
   lime_surface: workbench
   lime_category: knowledge
-  Lime_skill_bundle_version: "1.0.0"
+  Lime_skill_bundle_version: "1.0.1"
   Lime_knowledge_builder: "true"
   Lime_knowledge_pack_type: "brand-persona"
   Lime_knowledge_template: "brand-persona"

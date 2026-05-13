@@ -13,17 +13,20 @@ CAPABILITIES_SUMMARY:
 - cross_document_consistency: Consistency check across multiple legal documents
 - jurisdiction_awareness: Apply jurisdiction-specific requirements
 - tokushoho_review: Specified Commercial Transactions Act notation check (Japan)
+- mobile_store_disclosures: App Store / Google Play required disclosure wording — DSA Trader Status statement (EU, mandatory 2024-10-16 for new submissions, 2025-02-17 for existing apps), DMA Anti-Steering / external-purchase-link / Core Technology Fee disclosure (EU, post-EC €500M fine 2025-04-23), App Store Guideline 5.1.2(i) third-party-AI provider-named consent wording, Google Play AI-Generated Content visible-label requirements, EU Accessibility Act service-description statements
 
 COLLABORATION_PATTERNS:
 - User -> Clause: Legal document review request
 - Comply -> Clause: Reflect regulatory requirements into legal documents
-- Cloak -> Clause: Align privacy implementation with policy documents
+- Cloak -> Clause: Align privacy implementation with policy documents (incl. 5.1.2(i) consent-UI wording, Privacy Manifest disclosures)
+- Native -> Clause: Mobile app store disclosure wording requests (DSA Trader / DMA / 5.1.2(i) consent screen / Tokushoho for in-app purchase)
 - Clause -> Builder: Consent-flow and similar implementation instructions
+- Clause -> Native: Approved disclosure wording for in-app legal screens, app store metadata fields, and consent UIs
 - Clause -> Prose: Plain-language rewrite of user-facing legal text
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: User (review requests), Comply (regulatory requirements), Cloak (privacy requirements), Scribe (legal requirements extracted from specs)
-- OUTPUT: Builder (implementation instructions), Prose (text rewrites), Scribe (legal spec documentation)
+- INPUT: User (review requests), Comply (regulatory requirements), Cloak (privacy requirements), Native (mobile disclosure wording requests), Scribe (legal requirements extracted from specs)
+- OUTPUT: Builder (implementation instructions), Native (approved in-app disclosure wording), Prose (text rewrites), Scribe (legal spec documentation)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Mobile-App(H) Marketing(M) Game(L)
 -->
@@ -175,6 +178,16 @@ Key check areas:
 - Special sales conditions
 - Disclosure of quantity / term / total amount on the final confirmation screen for subscription sales
 
+### Mobile App Store Disclosures
+
+Key check areas:
+- **DSA Trader Status** (EU): trader address / phone / email disclosed and verified in App Store Connect / Play Console (mandatory for new submissions since 2024-10-16; existing apps removed from EU stores 2025-02-17 if not confirmed). Validate that the disclosed entity matches the ToS / Privacy Policy operator.
+- **DMA Anti-Steering / external-purchase / Core Technology Fee** (EU iOS): external-purchase-link presence, in-app messaging that other channels exist, and CTF disclosure if applicable. Apple was fined €500M by the European Commission on 2025-04-23 (Article 5(4) DMA breach); CTF unification is scheduled for 2026-01-01. Review the in-app copy and policy text against the current Apple Developer DMA compliance terms.
+- **App Store Guideline 5.1.2(i)** (iOS): third-party AI consent screen must name the provider (e.g., "OpenAI", "Google Gemini"), describe the data shared, and offer an explicit accept/decline. A privacy-policy link or generic "service providers" wording is rejected (effective 2025-11-13). On-device inference (Foundation Models / Gemini Nano / Core ML) is exempt. Review wording and policy paragraph that backs it.
+- **Google Play AI-Generated Content labeling**: visible-label requirement on generative outputs, in-app user-report / flag mechanism, and safeguards against harmful content (effective 2024, strengthened 2025-01). Review the labeling text and the in-app reporting policy.
+- **EU Accessibility Act service description** (EU mobile apps in EC / banking / transit booking / messaging): accessibility statement, conformance level (WCAG 2.1 AA / EN 301 549), feedback mechanism, alternative-format availability (effective 2025-06-28; existing services until 2028-06-28). Review wording in privacy/accessibility statement.
+- **In-App Purchase / Sign in with Apple** statements: if the app uses third-party social login, ToS must reflect Sign in with Apple availability (Guideline 4.8). IAP T&C alignment with App Store / Play billing rules.
+
 ---
 
 ## Risk Assessment Framework
@@ -226,11 +239,17 @@ Key check areas:
 | Telecommunications Business Act | Secrecy of communications, rules on external transmission of user information | Telecom-adjacent services |
 | Payment Services Act | Prepaid payment instruments, crypto assets | Payments / points |
 
-### EU (GDPR)
+### EU (GDPR + DSA + DMA + EAA)
 
 Key requirements: explicit lawful basis, DPO appointment, DPIA, data portability, right to be forgotten, 72-hour breach notification.
 
 2025 Digital Omnibus Package trend: Article 22 protection for automated decision-making is relaxed for non-sensitive data (automated decisions are allowed without explicit consent, but the rights to information, to object, and to human intervention remain).
+
+**DSA (Digital Services Act)** — Trader status disclosure became mandatory for new app store submissions on 2024-10-16 and for existing apps on 2025-02-17. App Store Connect and Play Console require verified trader address / phone / email; non-compliant apps are removed from EU stores. Review that the disclosed entity matches the ToS / Privacy Policy operator.
+
+**DMA (Digital Markets Act)** — Apple was fined €500M by the European Commission on 2025-04-23 for Article 5(4) breach (App Store anti-steering); Meta was simultaneously fined for "Consent or Pay" advertising. For EU iOS apps: external-purchase-link allowance, in-app information about alternative channels, Core Technology Fee disclosure where applicable (CTF unification scheduled 2026-01-01). Validate that ToS / in-app copy aligns with Apple's current DMA terms.
+
+**EAA (European Accessibility Act, EN 301 549)** — Effective 2025-06-28 for EU-distributed mobile apps in EC / banking / transit booking / messaging. WCAG 2.1 AA conformance mandatory; existing services have until 2028-06-28. Accessibility statement, feedback mechanism, alternative-format availability must appear in privacy/accessibility policy. Major modifications collapse the existing-service grace period.
 
 ### United States
 
@@ -259,6 +278,7 @@ Legal-readability checks: are technical terms explained, are clauses concrete, a
 | DPA Review | `dpa` | | Data Processing Agreement review (GDPR Art. 28, sub-processor chain, SCC, Schrems II TIA) | `references/dpa-review.md` |
 | EULA Review | `eula` | | End User License Agreement review (license type, IP, warranty/indemnity, jurisdiction overrides) | `references/eula-review.md` |
 | Cookie Consent | `cookie` | | Cookie banner and cookie policy review (ePrivacy, GDPR consent, IAB TCF v2.2, categorization) | `references/cookie-consent.md` |
+| App Store Disclosures | `appstore` | | DSA Trader / DMA Anti-Steering / 5.1.2(i) third-party-AI consent / Sign in with Apple / Google Play AI labeling / EAA accessibility statement wording review for mobile apps | `references/legal-checklists.md` |
 
 ## Subcommand Dispatch
 
@@ -271,6 +291,7 @@ Parse the first token of user input.
 - `dpa`: Identify role pairing (controller/processor/sub-processor) and transfer geography first. Walk Art. 28(3) mandatory clauses, SCC module selection, Schrems II Transfer Impact Assessment, and audit-rights scope. Hand implementation gaps (sub-processor list page, breach SLA pipeline, encryption-key custody) to Cloak; framework mapping (SOC2 vendor management, ISO 27001 supplier relationships, HIPAA BAA equivalence) to Comply; codebase verification of DPA-promised controls to Canon.
 - `eula`: Identify license type (perpetual / subscription / SaaS / embedded SDK / OSS / dual) and governing-law jurisdiction first. Walk grant scope, restrictions (including AI-training clauses), IP ownership, warranty/indemnity, and OSS notices. Apply jurisdiction-specific enforceability tests (US unconscionability, EU UCTD/Software Directive Art. 6 interoperability carve-out, Japan Consumer Contract Act). Hand telemetry implementation to Cloak; OSS-license codebase audit to Canon; license-key/audit-log endpoints to Builder.
 - `cookie`: Identify target jurisdictions (EU/UK/CH/CA/CO/JP/etc.) and CMP/TCF participation first. Walk banner UX (equal Reject-All prominence, no pre-ticked, no cookie wall, withdraw path), per-cookie categorization (strictly necessary / functional / analytics / marketing), and policy-vs-scanner diff. Verify per-jurisdiction logic (EU opt-in, US-state opt-out + GPC honoring, JP APPI personally-referable-info rule). Hand CMP integration and conditional script loading to Cloak; runtime verification to Canon `gdpr`; banner copy plain-language pass to Prose.
+- `appstore`: Mobile app store disclosure review. Identify target stores (iOS / Android), jurisdictions (EU triggers DSA + DMA + EAA), and feature scope (third-party AI usage / external purchase / IAP / generative content). Walk: (1) DSA Trader Status alignment between App Store Connect / Play Console and ToS operator; (2) DMA external-purchase wording and CTF disclosure for EU iOS; (3) 5.1.2(i) third-party-AI consent screen — must be provider-named (e.g., "OpenAI"), describe shared data, offer explicit accept/decline; on-device inference (Foundation Models / Gemini Nano) exempt; (4) Sign in with Apple language when third-party SSO present (Guideline 4.8); (5) Google Play AI-Generated Content visible-label policy alignment and in-app reporting/flag mechanism; (6) EAA accessibility statement wording. Hand consent-UI implementation to Native via Cloak; flow-level legal text plain-language pass to Prose; codebase verification to Comply / Canon. Cite specific deadlines (2025-11-13 5.1.2(i), 2025-02-17 DSA enforcement, 2026-01-01 CTF unification, 2025-06-28 EAA).
 
 ## Output Routing
 
@@ -282,6 +303,11 @@ Parse the first token of user input.
 | `GDPR`, `APPI` | Statute-specific compliance check | `references/legal-checklists.md` |
 | `pre-launch`, `ローンチ前` | Comprehensive review across all documents | `references/patterns.md` |
 | `consistency`, `整合性` | Cross-document consistency check | `references/patterns.md` |
+| `DSA`, `digital services act`, `trader status` | DSA trader-status disclosure check | `references/legal-checklists.md` |
+| `DMA`, `digital markets act`, `anti-steering`, `external purchase` | DMA anti-steering / external-purchase wording review (EU iOS) | `references/legal-checklists.md` |
+| `5.1.2(i)`, `app store AI disclosure`, `third-party AI consent screen` | 5.1.2(i) consent-screen wording review | `references/legal-checklists.md` |
+| `EAA`, `EU Accessibility Act`, `EN 301 549 statement` | EAA accessibility statement wording | `references/legal-checklists.md` |
+| `app store metadata`, `play console metadata`, `store disclosure` | Mobile app store disclosure suite (DSA / DMA / 5.1.2(i) / Sign in with Apple / EAA) | `references/legal-checklists.md` |
 
 ---
 

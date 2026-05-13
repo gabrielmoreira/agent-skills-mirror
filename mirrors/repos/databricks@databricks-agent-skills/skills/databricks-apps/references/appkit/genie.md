@@ -145,6 +145,8 @@ function GeniePage() {
 
 Update smoke tests if headings or routes changed, then `databricks apps validate`.
 
+For advanced Genie plugin usage, see `npx @databricks/appkit docs ./docs/plugins/genie.md`.
+
 ## Frontend
 
 **For full component API**: run `npx @databricks/appkit docs "GenieChat"`.
