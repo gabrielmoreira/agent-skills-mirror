@@ -25,7 +25,7 @@ The search queries target repositories that contain:
 - **MCP integrations** — `.mcp/**`, `mcp/**` directories.
 - **Prompt collections** — `prompts/**`, `prompt/**`.
 
-Non-GitHub sources (e.g. docs.stripe.com, open.feishu.cn, smithery.ai) are **not** indexed by this tool and should be consulted separately.
+Non-GitHub sources (e.g. docs.stripe.com, open.feishu.cn/document/home/index, smithery.ai) are **not** indexed by this tool and should be consulted separately.
 
 ## How to run
 
@@ -157,7 +157,7 @@ Example of adding a new query:
 - **Private repos** — only public repos are visible.
 - **Fork and archive exclusion** — `fork:false archived:false` is recommended but means forked skill collections are skipped.
 - **Star threshold** — repos below the star threshold will not appear even if highly relevant. Tune per query.
-- **Non-GitHub sources** — docs.stripe.com, open.feishu.cn, smithery.ai and other non-GitHub skill sources are outside the scope of this tool.
+- **Non-GitHub sources** — docs.stripe.com, open.feishu.cn/document/home/index, smithery.ai and other non-GitHub skill sources are outside the scope of this tool.
 
 ## How to evaluate discovery coverage
 

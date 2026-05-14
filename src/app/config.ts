@@ -72,6 +72,8 @@ export const REAL_SEARCH_QUERIES = [
   "topic:claude-code fork:false archived:false",
   "topic:agent-skills fork:false archived:false",
   "topic:copilot-skills fork:false archived:false",
+  "topic:hermes-agent fork:false archived:false",
+  "topic:hermes-plugin fork:false archived:false",
 
   // 10) instruction/plugin-style repos — copilot instructions,
   //     claude plugins, ai-tools, and similar patterns that don't
