@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hmbown/DeepSeek-TUI` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Hmbown/DeepSeek-TUI` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Hmbown/DeepSeek-TUI` — 26 default patterns, 0 followed patterns, 3 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`crates/tui/assets/skills/skill-creator/SKILL.md`](crates/tui/assets/skills/skill-creator/SKILL.md) |
-| 3 | ✓ | [`crates/tui/assets/skills/v4-best-practices/SKILL.md`](crates/tui/assets/skills/v4-best-practices/SKILL.md) |
+| 2 | ✓ | [`crates/tui/assets/skills/delegate/SKILL.md`](crates/tui/assets/skills/delegate/SKILL.md) |
+| 3 | ✓ | [`crates/tui/assets/skills/documents/SKILL.md`](crates/tui/assets/skills/documents/SKILL.md) |
+| 4 | ✓ | [`crates/tui/assets/skills/feishu/SKILL.md`](crates/tui/assets/skills/feishu/SKILL.md) |
+| 5 | ✓ | [`crates/tui/assets/skills/mcp-builder/SKILL.md`](crates/tui/assets/skills/mcp-builder/SKILL.md) |
+| 6 | ✓ | [`crates/tui/assets/skills/pdf/SKILL.md`](crates/tui/assets/skills/pdf/SKILL.md) |
+| 7 | ✓ | [`crates/tui/assets/skills/plugin-creator/SKILL.md`](crates/tui/assets/skills/plugin-creator/SKILL.md) |
+| 8 | ✓ | [`crates/tui/assets/skills/presentations/SKILL.md`](crates/tui/assets/skills/presentations/SKILL.md) |
+| 9 | ✓ | [`crates/tui/assets/skills/skill-creator/SKILL.md`](crates/tui/assets/skills/skill-creator/SKILL.md) |
+| 10 | ✓ | [`crates/tui/assets/skills/skill-installer/SKILL.md`](crates/tui/assets/skills/skill-installer/SKILL.md) |
+| 11 | ✓ | [`crates/tui/assets/skills/spreadsheets/SKILL.md`](crates/tui/assets/skills/spreadsheets/SKILL.md) |
+| 12 | ✓ | [`crates/tui/assets/skills/v4-best-practices/SKILL.md`](crates/tui/assets/skills/v4-best-practices/SKILL.md) |
 
 ---
 

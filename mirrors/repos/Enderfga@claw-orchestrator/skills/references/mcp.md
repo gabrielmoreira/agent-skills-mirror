@@ -1,6 +1,6 @@
 # MCP integration
 
-Claw Orchestrator ships a Model Context Protocol (MCP) server (`clawo-mcp`) so any MCP-compatible host can drive its 41 tools.
+Claw Orchestrator ships a Model Context Protocol (MCP) server (`clawo-mcp`) so any MCP-compatible host can drive its 55 tools.
 
 This document covers:
 
@@ -229,7 +229,7 @@ The engines themselves (`claude`, `codex`, `gemini`, `agent`, `opencode`) must a
 
 ## Tool filtering
 
-41 tools is a lot for a small context window. Reduce noise either at the host level (most hosts have an `include` / `exclude` filter — see Hermes example above) or at the server level via `CLAWO_MCP_TOOLS`:
+55 tools is a lot for a small context window. Reduce noise either at the host level (most hosts have an `include` / `exclude` filter — see Hermes example above) or at the server level via `CLAWO_MCP_TOOLS`:
 
 ```bash
 CLAWO_MCP_TOOLS="session_start,session_send,session_stop,council_start,council_status" clawo-mcp

@@ -134,7 +134,6 @@ These guidelines are working if there are fewer unnecessary changes in diffs, fe
 
 - Before implementation, first confirm the target module, upstream and downstream dependencies, and the verification approach.
 - Prefer official SDKs when writing code.
-- Do not focus only on whether the feature works. It must also satisfy the corresponding language module's formatting, linting, type checking, static analysis, and testing requirements.
 - If it is a complete feature request or a complex bug, add logs at key points as much as reasonably possible to help with troubleshooting, but do not add excessive logging.
 
 ## Key Workflow Expectations

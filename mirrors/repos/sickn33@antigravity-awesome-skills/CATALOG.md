@@ -2,9 +2,9 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1453
+Total skills: 1459
 
-## architecture (95)
+## architecture (96)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -99,12 +99,13 @@ Total skills: 1453
 | `ux-flow` | Design user flows and screen structure using StyleSeed UX patterns such as progressive disclosure, hub-and-spoke navigation, and information pyramids. | ux, flows, navigation, product-design, styleseed | ux, flows, navigation, product-design, styleseed, flow, user, screen, structure, such, progressive, disclosure |
 | `wcag-audit-patterns` | Comprehensive guide to auditing web content against WCAG 2.2 guidelines with actionable remediation strategies. | wcag, audit | wcag, audit, auditing, web, content, against, guidelines, actionable, remediation |
 | `web3-testing` | Master comprehensive testing strategies for smart contracts using Hardhat, Foundry, and advanced testing patterns. | web3 | web3, testing, smart, contracts, hardhat, foundry |
+| `wechat-official-account-strategist` | Grow WeChat Official Accounts (微信公众号) with high-conversion content strategy, title formulas, article architecture, and Mini-Program integration. | wechat, chinese-market, content-strategy, marketing, 公众号, 微信 | wechat, chinese-market, content-strategy, marketing, 公众号, 微信, official, account, strategist, grow, accounts, high |
 | `wordpress-theme-development` | WordPress theme development workflow covering theme architecture, template hierarchy, custom post types, block editor support, responsive design, and WordPre... | wordpress, theme | wordpress, theme, development, covering, architecture, hierarchy, custom, post, types, block, editor, responsive |
 | `workflow-orchestration-patterns` | Master workflow orchestration architecture with Temporal, covering fundamental design decisions, resilience patterns, and best practices for building reliabl... |  | orchestration, architecture, temporal, covering, fundamental, decisions, resilience, building, reliable, distributed |
 | `workflow-patterns` | Use this skill when implementing tasks according to Conductor's TDD workflow, handling phase checkpoints, managing git commits for tasks, or understanding th... |  | skill, implementing, tasks, according, conductor, tdd, handling, phase, checkpoints, managing, git, commits |
 | `zapier-make-patterns` | No-code automation democratizes workflow building. Zapier and Make (formerly Integromat) let non-developers automate business processes without writing code.... | zapier, make | zapier, make, no, code, automation, democratizes, building, formerly, integromat, let, non, developers |
 
-## business (81)
+## business (82)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -189,6 +190,7 @@ Total skills: 1453
 | `warren-buffett` | Agente que simula Warren Buffett — o maior investidor do seculo XX e XXI, CEO da Berkshire Hathaway, discipulo de Benjamin Graham e socio intelectual de Char... | persona, investing, value-investing, business | persona, investing, value-investing, business, warren, buffett, agente, que, simula, maior, investidor, do |
 | `whatsapp-automation` | Automate WhatsApp Business tasks via Rube MCP (Composio): send messages, manage templates, upload media, and handle contacts. Always search tools first for c... | whatsapp | whatsapp, automation, automate, business, tasks, via, rube, mcp, composio, send, messages, upload |
 | `wordpress-centric-high-seo-optimized-blogwriting-skill` | Create long-form, high-quality, SEO-optimized blog posts ready for WordPress with truth boxes and FAQ schema. | writing, blog, seo, content, wordpress | writing, blog, seo, content, wordpress, centric, high, optimized, blogwriting, skill, long, form |
+| `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 
 ## data-ai (281)
 
@@ -688,7 +690,7 @@ Total skills: 1453
 | `zod-validation-expert` | Expert in Zod — TypeScript-first schema validation. Covers parsing, custom errors, refinements, type inference, and integration with React Hook Form, Next.js... | zod, validation | zod, validation, typescript, first, schema, covers, parsing, custom, errors, refinements, type, inference |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
-## general (351)
+## general (353)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -905,6 +907,7 @@ Total skills: 1453
 | `multi-advisor` | Conselho de especialistas — consulta multiplos agentes do ecossistema em paralelo para analise multi-perspectiva de qualquer topico. Ativa personas, especial... | multi-agent, advisory, parallel-analysis, synthesis | multi-agent, advisory, parallel-analysis, synthesis, multi, advisor, conselho, de, especialistas, consulta, multiplos, agentes |
 | `n8n-validation-expert` | Expert guide for interpreting and fixing n8n validation errors. | n8n, validation | n8n, validation, interpreting, fixing, errors |
 | `new-rails-project` | Create a new Rails project | new, rails | new, rails |
+| `news-sentiment-engine` | Multi-source RSS news aggregation with Claude-powered sentiment analysis and structured briefing output | news, rss, sentiment-analysis, briefing, research | news, rss, sentiment-analysis, briefing, research, sentiment, engine, multi, source, aggregation, claude, powered |
 | `nft-standards` | Master ERC-721 and ERC-1155 NFT standards, metadata best practices, and advanced NFT features. | nft, standards | nft, standards, erc, 721, 1155, metadata, features |
 | `nosql-expert` | Expert guidance for distributed NoSQL databases (Cassandra, DynamoDB). Focuses on mental models, query-first modeling, single-table design, and avoiding hot ... | nosql | nosql, guidance, distributed, databases, cassandra, dynamodb, mental, models, query, first, modeling, single |
 | `notebooklm` | Interact with Google NotebookLM to query documentation with Gemini's source-grounded answers. Each question opens a fresh browser session, retrieves the answ... | notebooklm | notebooklm, interact, google, query, documentation, gemini, source, grounded, answers, each, question, opens |
@@ -923,6 +926,7 @@ Total skills: 1453
 | `odoo-xml-views-builder` | Expert at building Odoo XML views: Form, List, Kanban, Search, Calendar, and Graph. Generates correct XML for Odoo 14-17 with proper visibility syntax. | odoo, xml, views, builder | odoo, xml, views, builder, building, form, list, kanban, search, calendar, graph, generates |
 | `onboarding-cro` | You are an expert in user onboarding and activation. Your goal is to help users reach their "aha moment" as quickly as possible and establish habits that lea... | onboarding, cro | onboarding, cro, user, activation, goal, users, reach, aha, moment, quickly, possible, establish |
 | `onboarding-psychologist` | One sentence - what this skill does and when to invoke it | onboarding, psychologist | onboarding, psychologist, one, sentence, what, skill, does, invoke |
+| `options-flow-analyzer` | Real vs lottery call separation for options P/C ratio analysis — prevents signal inversion from deep OTM noise | options, sentiment-analysis, trading, polygon, market-analysis | options, sentiment-analysis, trading, polygon, market-analysis, flow, analyzer, real, vs, lottery, call, separation |
 | `oral-health-analyzer` | 分析口腔健康数据、识别口腔问题模式、评估口腔健康状况、提供个性化口腔健康建议。支持与营养、慢性病、用药等其他健康数据的关联分析。 | oral, health, analyzer | oral, health, analyzer |
 | `orchestrate-batch-refactor` | Plan and execute large refactors with dependency-aware work packets and parallel analysis. | orchestrate, batch, refactor | orchestrate, batch, refactor, plan, execute, large, refactors, dependency, aware, work, packets, parallel |
 | `oss-hunter` | Automatically hunt for high-impact OSS contribution opportunities in trending repositories. | oss, hunter | oss, hunter, automatically, hunt, high, impact, contribution, opportunities, trending, repositories |
@@ -1044,7 +1048,7 @@ Total skills: 1453
 | `youtube-summarizer` | Extract transcripts from YouTube videos and generate comprehensive, detailed summaries using intelligent analysis frameworks | video, summarization, transcription, youtube, content-analysis | video, summarization, transcription, youtube, content-analysis, summarizer, extract, transcripts, videos, generate, detailed, summaries |
 | `zipai-optimizer` | Adaptive token optimizer: intelligent filtering, surgical output, ambiguity-first, context-window-aware, VCS-aware, MCP-aware. | zipai, optimizer | zipai, optimizer, adaptive, token, intelligent, filtering, surgical, output, ambiguity, first, context, window |
 
-## infrastructure (132)
+## infrastructure (133)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1140,6 +1144,7 @@ Total skills: 1453
 | `machine-learning-ops-ml-pipeline` | Design and implement a complete ML pipeline for: $ARGUMENTS | machine, learning, ops, ml, pipeline | machine, learning, ops, ml, pipeline, complete, arguments |
 | `makepad-deployment` | CRITICAL: Use for Makepad packaging and deployment. Triggers on: deploy, package, APK, IPA, 打包, 部署, cargo-packager, cargo-makepad, WASM, Android, iOS, distri... | makepad, deployment | makepad, deployment, critical, packaging, triggers, deploy, package, apk, ipa, cargo, packager, wasm |
 | `manifest` | Install and configure the Manifest observability plugin for your agents. Use when setting up telemetry, configuring API keys, or troubleshooting the plugin. | manifest | manifest, install, configure, observability, plugin, agents, setting, up, telemetry, configuring, api, keys |
+| `mcp-tool-developer` | Build Model Context Protocol (MCP) servers and tools from scratch. Full-stack MCP development with TypeScript/Python, testing, deployment, and registry publi... | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol, developer, model, context, protocol, servers |
 | `microservices-patterns` | Master microservices architecture patterns including service boundaries, inter-service communication, data management, and resilience patterns for building d... | microservices | microservices, architecture, including, boundaries, inter, communication, data, resilience, building, distributed |
 | `mise-configurator` | Generate production-ready mise.toml setups for local development, CI/CD pipelines, and toolchain standardization. | mise, devops, ci-cd, toolchain, runtimes, automation | mise, devops, ci-cd, toolchain, runtimes, automation, configurator, generate, toml, setups, local, development |
 | `ml-engineer` | Build production ML systems with PyTorch 2.x, TensorFlow, and modern ML frameworks. Implements model serving, feature engineering, A/B testing, and monitoring. | ml | ml, engineer, pytorch, tensorflow, frameworks, implements, model, serving, feature, engineering, testing, monitoring |
@@ -1181,7 +1186,7 @@ Total skills: 1453
 | `whatsapp-cloud-api` | Integracao com WhatsApp Business Cloud API (Meta). Mensagens, templates, webhooks HMAC-SHA256, automacao de atendimento. Boilerplates Node.js e Python. | messaging, whatsapp, meta, webhooks | messaging, whatsapp, meta, webhooks, cloud, api, integracao, com, business, mensagens, hmac, sha256 |
 | `workflow-automation` | Workflow automation is the infrastructure that makes AI agents reliable. Without durable execution, a network hiccup during a 10-step payment flow means lost... |  | automation, infrastructure, makes, ai, agents, reliable, without, durable, execution, network, hiccup, during |
 
-## security (174)
+## security (175)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1342,6 +1347,7 @@ Total skills: 1453
 | `temporal-golang-pro` | Use when building durable distributed systems with Temporal Go SDK. Covers deterministic workflow rules, mTLS worker configs, and advanced patterns. | temporal, golang | temporal, golang, pro, building, durable, distributed, go, sdk, covers, deterministic, rules, mtls |
 | `threat-mitigation-mapping` | Map identified threats to appropriate security controls and mitigations. Use when prioritizing security investments, creating remediation plans, or validatin... | threat, mitigation, mapping | threat, mitigation, mapping, map, identified, threats, appropriate, security, controls, mitigations, prioritizing, investments |
 | `threat-modeling-expert` | Expert in threat modeling methodologies, security architecture review, and risk assessment. Masters STRIDE, PASTA, attack trees, and security requirement ext... | threat, modeling | threat, modeling, methodologies, security, architecture, review, risk, assessment, masters, stride, pasta, attack |
+| `tokenwise` | Measurement-driven model router for Claude Code. Routes Haiku/Sonnet/Opus per task class, logs every routed task with real $ numbers, and A/B tests cheaper t... | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement, tokenwise, driven |
 | `top-web-vulnerabilities` | Provide a comprehensive, structured reference for the 100 most critical web application vulnerabilities organized by category. This skill enables systematic ... | top, web, vulnerabilities | top, web, vulnerabilities, provide, structured, reference, 100, most, critical, application, organized, category |
 | `trust-calibrator` | One sentence - what this skill does and when to invoke it | trust, calibrator | trust, calibrator, one, sentence, what, skill, does, invoke |
 | `ui-review` | Review UI code for StyleSeed design-system compliance, accessibility, mobile ergonomics, spacing discipline, and implementation quality. | ui, review, design-system, accessibility, styleseed | ui, review, design-system, accessibility, styleseed, code, compliance, mobile, ergonomics, spacing, discipline, quality |
@@ -1497,7 +1503,7 @@ Total skills: 1453
 | `web-scraper` | Web scraping inteligente multi-estrategia. Extrai dados estruturados de paginas web (tabelas, listas, precos). Paginacao, monitoramento e export CSV/JSON. | scraping, data-extraction, automation, csv | scraping, data-extraction, automation, csv, web, scraper, inteligente, multi, estrategia, extrai, dados, estruturados |
 | `webflow-automation` | Automate Webflow CMS collections, site publishing, page management, asset uploads, and ecommerce orders via Rube MCP (Composio). Always search tools first fo... | webflow | webflow, automation, automate, cms, collections, site, publishing, page, asset, uploads, ecommerce, orders |
 | `wrike-automation` | Automate Wrike project management via Rube MCP (Composio): create tasks/folders, manage projects, assign work, and track progress. Always search tools first ... | wrike | wrike, automation, automate, via, rube, mcp, composio, tasks, folders, assign, work, track |
-| `x-twitter-scraper` | X/Twitter automation skill for tweet search, follower export, media download, posting, replies, DMs, webhooks, MCP, SDKs, and the TweetClaw OpenClaw plugin. | twitter, x-api, tweet-search, twitter-api, twitter-scraper, follower-export, automation, mcp, sdk, webhooks, openclaw, tweetclaw | twitter, x-api, tweet-search, twitter-api, twitter-scraper, follower-export, automation, mcp, sdk, webhooks, openclaw, tweetclaw |
+| `x-twitter-scraper` | X/Twitter automation skill for tweet search, follower export, posting, DMs, webhooks, MCP, SDKs, Hermes Tweet, and TweetClaw. | twitter, x-api, tweet-search, twitter-api, twitter-scraper, follower-export, automation, mcp, sdk, webhooks, hermes-agent, hermes-tweet, openclaw, tweetclaw | twitter, x-api, tweet-search, twitter-api, twitter-scraper, follower-export, automation, mcp, sdk, webhooks, hermes-agent, hermes-tweet |
 | `zendesk-automation` | Automate Zendesk tasks via Rube MCP (Composio): tickets, users, organizations, replies. Always search tools first for current schemas. | zendesk | zendesk, automation, automate, tasks, via, rube, mcp, composio, tickets, users, organizations, replies |
 | `zoho-crm-automation` | Automate Zoho CRM tasks via Rube MCP (Composio): create/update records, search contacts, manage leads, and convert leads. Always search tools first for curre... | zoho, crm | zoho, crm, automation, automate, tasks, via, rube, mcp, composio, update, records, search |
 | `zoom-automation` | Automate Zoom meeting creation, management, recordings, webinars, and participant tracking via Rube MCP (Composio). Always search tools first for current sch... | zoom | zoom, automation, automate, meeting, creation, recordings, webinars, participant, tracking, via, rube, mcp |

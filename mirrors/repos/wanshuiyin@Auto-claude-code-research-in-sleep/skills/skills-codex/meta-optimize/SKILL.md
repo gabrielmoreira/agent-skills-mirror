@@ -127,7 +127,7 @@ Send each patch to GPT-5.4 xhigh for adversarial review:
 
 ```text
 spawn_agent:
-  model: gpt-5.4
+  model: gpt-5.5
   reasoning_effort: xhigh
   message: |
     You are reviewing a proposed optimization to an ARIS SKILL.md file.

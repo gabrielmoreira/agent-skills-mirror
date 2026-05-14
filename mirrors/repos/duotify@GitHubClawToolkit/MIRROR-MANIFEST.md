@@ -223,9 +223,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 162 | ✓ | [`templates/copilot-gemini-api/.agents/skills/google-stitch/SKILL.md`](templates/copilot-gemini-api/.agents/skills/google-stitch/SKILL.md) |
 | 163 | ✓ | [`templates/copilot-gemini-api/AGENTS.md`](templates/copilot-gemini-api/AGENTS.md) |
 | 164 | ✓ | [`templates/default/AGENTS.md`](templates/default/AGENTS.md) |
-| 165 | ✓ | [`templates/line-bot/AGENTS.md`](templates/line-bot/AGENTS.md) |
-| 166 | ✓ | [`templates/pi-byok/AGENTS.md`](templates/pi-byok/AGENTS.md) |
-| 167 | ✓ | [`templates/will-qwen3.6/AGENTS.md`](templates/will-qwen3.6/AGENTS.md) |
+| 165 | ✓ | [`templates/duotify/AGENTS.md`](templates/duotify/AGENTS.md) |
+| 166 | ✓ | [`templates/line-bot/AGENTS.md`](templates/line-bot/AGENTS.md) |
+| 167 | ✓ | [`templates/pi-byok/AGENTS.md`](templates/pi-byok/AGENTS.md) |
 
 ---
 

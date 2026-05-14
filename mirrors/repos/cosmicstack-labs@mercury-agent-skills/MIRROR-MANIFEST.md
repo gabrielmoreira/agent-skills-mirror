@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 followed patterns, 121 file(s) materialized.
+Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 followed patterns, 122 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cosmicstack-labs/mercury-agent-skills` — 26 default patterns, 1 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 121 |
+| Files         | 122 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -174,12 +174,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 113 | ✓ | [`categories/shop-restaurant/social-post/SKILL.md`](categories/shop-restaurant/social-post/SKILL.md) |
 | 114 | ✓ | [`categories/shop-restaurant/staff-scheduler/SKILL.md`](categories/shop-restaurant/staff-scheduler/SKILL.md) |
 | 115 | ✓ | [`categories/shop-restaurant/table-manager/SKILL.md`](categories/shop-restaurant/table-manager/SKILL.md) |
-| 116 | ✓ | [`categories/testing-qa/accessibility-testing/SKILL.md`](categories/testing-qa/accessibility-testing/SKILL.md) |
-| 117 | ✓ | [`categories/testing-qa/api-testing/SKILL.md`](categories/testing-qa/api-testing/SKILL.md) |
-| 118 | ✓ | [`categories/testing-qa/e2e-testing/SKILL.md`](categories/testing-qa/e2e-testing/SKILL.md) |
-| 119 | ✓ | [`categories/testing-qa/performance-testing/SKILL.md`](categories/testing-qa/performance-testing/SKILL.md) |
-| 120 | ✓ | [`categories/testing-qa/test-strategy/SKILL.md`](categories/testing-qa/test-strategy/SKILL.md) |
-| 121 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 116 | ✓ | [`categories/shop-restaurant/zomato-order/SKILL.md`](categories/shop-restaurant/zomato-order/SKILL.md) |
+| 117 | ✓ | [`categories/testing-qa/accessibility-testing/SKILL.md`](categories/testing-qa/accessibility-testing/SKILL.md) |
+| 118 | ✓ | [`categories/testing-qa/api-testing/SKILL.md`](categories/testing-qa/api-testing/SKILL.md) |
+| 119 | ✓ | [`categories/testing-qa/e2e-testing/SKILL.md`](categories/testing-qa/e2e-testing/SKILL.md) |
+| 120 | ✓ | [`categories/testing-qa/performance-testing/SKILL.md`](categories/testing-qa/performance-testing/SKILL.md) |
+| 121 | ✓ | [`categories/testing-qa/test-strategy/SKILL.md`](categories/testing-qa/test-strategy/SKILL.md) |
+| 122 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

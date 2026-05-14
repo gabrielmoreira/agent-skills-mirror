@@ -1,15 +1,15 @@
 ---
-description: "Short alias for /save-session-note — append a quick observation to AI-Memory/notes.md"
+description: "Short alias for /save-session-note — write a quick pending-action note to repo-root SESSION-HANDOFF.md"
 mode: agent
-lastReviewed: 2026-04-30
+lastReviewed: 2026-05-13
 ---
 
 # Note
 
-Alias for `/save-session-note`. Follow the same protocol — capture a short note to user-scope `AI-Memory/notes.md` so it survives across sessions and projects.
+Alias for `/save-session-note`. Follow the same protocol — capture a short note to repo-root `SESSION-HANDOFF.md` so pending actions remain visible on the project root.
 
 See `.github/prompts/save-session-note.prompt.md` for the full steps.
 
 ## Quick Form
 
-If the user's request already includes the note text, skip the "what should I capture?" question and write it directly. Resolve AI-Memory root, append timestamped line, strip per `cross-project-isolation.instructions.md`, confirm.
+If the user's request already includes the note text, skip the "what should I capture?" question and write it directly. Resolve repo root, append checkbox item to `SESSION-HANDOFF.md`, optionally mirror to AI-Memory with stripping, confirm.

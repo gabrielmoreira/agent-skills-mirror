@@ -6,7 +6,7 @@
 ![macOS](https://img.shields.io/badge/macOS-blue) ![WSL2](https://img.shields.io/badge/WSL2-blue) ![Linux](https://img.shields.io/badge/Linux-blue) ![Windows](https://img.shields.io/badge/Windows-blue) ![MSYS2](https://img.shields.io/badge/MSYS2-blue) ![SSH](https://img.shields.io/badge/SSH-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-![Claude Code](https://img.shields.io/badge/Claude_Code-hook-ffab01) ![Amp](https://img.shields.io/badge/Amp-adapter-ffab01) ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-adapter-ffab01) ![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-adapter-ffab01) ![Codex](https://img.shields.io/badge/Codex-adapter-ffab01) ![Cursor](https://img.shields.io/badge/Cursor-adapter-ffab01) ![OpenCode](https://img.shields.io/badge/OpenCode-adapter-ffab01) ![Kilo CLI](https://img.shields.io/badge/Kilo_CLI-adapter-ffab01) ![Kiro](https://img.shields.io/badge/Kiro-adapter-ffab01) ![Windsurf](https://img.shields.io/badge/Windsurf-adapter-ffab01) ![Antigravity](https://img.shields.io/badge/Antigravity-adapter-ffab01) ![OpenClaw](https://img.shields.io/badge/OpenClaw-adapter-ffab01)
+![Claude Code](https://img.shields.io/badge/Claude_Code-hook-ffab01) ![Amp](https://img.shields.io/badge/Amp-adapter-ffab01) ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-adapter-ffab01) ![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-adapter-ffab01) ![Codex](https://img.shields.io/badge/Codex-adapter-ffab01) ![Cursor](https://img.shields.io/badge/Cursor-adapter-ffab01) ![OpenCode](https://img.shields.io/badge/OpenCode-adapter-ffab01) ![Kilo CLI](https://img.shields.io/badge/Kilo_CLI-adapter-ffab01) ![Kiro](https://img.shields.io/badge/Kiro-adapter-ffab01) ![Windsurf](https://img.shields.io/badge/Windsurf-adapter-ffab01) ![Antigravity](https://img.shields.io/badge/Antigravity-adapter-ffab01) ![OpenClaw](https://img.shields.io/badge/OpenClaw-adapter-ffab01) ![oh-my-pi](https://img.shields.io/badge/oh--my--pi-adapter-ffab01)
 
 **AI 코딩 에이전트가 관심을 요청할 때 게임 캐릭터 음성 + 시각 오버레이 알림을 재생하거나, MCP를 통해 에이전트가 직접 효과음을 선택할 수 있습니다.**
 
@@ -327,8 +327,9 @@ peon-ping은 훅을 지원하는 모든 에이전트 기반 IDE에서 동작합�
 | **Kilo CLI** | 어댑터 | `curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/kilo.sh \| bash` ([설정](#kilo-cli-설정)) |
 | **Kiro** | 어댑터 | `~/.kiro/agents/peon-ping.json`에 `adapters/kiro.sh` 훅 추가 ([설정](#kiro-설정)) |
 | **Windsurf** | 어댑터 | `~/.codeium/windsurf/hooks.json`에 `adapters/windsurf.sh` 훅 추가 ([설정](#windsurf-설정)) |
-| **Google Antigravity** | 어댑터 | `bash ~/.claude/hooks/peon-ping/adapters/antigravity.sh` (`fswatch` 필요: `brew install fswatch`) |
+| **Google Antigravity** | 어댑터 | `bash ~/.claude/hooks/peon-ping/adapters/antigravity.sh` (`fswatch` 필요: `brew install fswatch`). 헤드리스 / macOS LaunchAgent 사용 시에는 `bash adapters/antigravity-py.sh --install` (Python `watchdog` 기반, 25초 유휴 임계값, `pip3 install watchdog` 필요)도 사용할 수 있습니다. |
 | **OpenClaw** | 어댑터 | OpenClaw 스킬에서 `adapters/openclaw.sh <event>` 호출. 모든 CESP 카테고리와 Claude Code 이벤트명 지원. |
+| **oh-my-pi (omp)** | 어댑터 | `bash adapters/omp.sh` ([설정](#oh-my-pi-omp-설정)) |
 
 ### Amp 설정
 
@@ -585,6 +586,35 @@ curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/ki
 ```
 
 `preToolUse`/`postToolUse`는 의도적으로 제외했습니다 — 모든 도구 호출마다 실행되어 너무 시끄럽습니다.
+
+### oh-my-pi (omp) 설정
+
+[oh-my-pi](https://github.com/can1357/oh-my-pi)（`omp`）용 네이티브 TypeScript 확장으로, [CESP v1.0](https://github.com/PeonPing/openpeon) 표준을 완전히 준수합니다. omp의 `ExtensionAPI` 생명주기 이벤트를 구독하고 `peon.sh`를 통해 라우팅하여 omp 사용자가 peon-ping의 모든 기능을 사용할 수 있게 합니다: 사운드 팩, 데스크톱 알림, 트레이너 알림, 모바일 푸시, SSH/devcontainer 릴레이, 탭 제목 업데이트.
+
+**빠른 설치:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/omp.sh | bash
+```
+
+설치 프로그램이 `peon-ping.ts`와 `package.json`을 `~/.omp/agent/extensions/peon-ping/`에 복사합니다. 이후 omp를 재시작하세요.
+
+**이벤트 매핑:**
+
+| omp 이벤트                             | peon-ping 이벤트      |
+|----------------------------------------|-----------------------|
+| `session_start`                        | `SessionStart`        |
+| `turn_start`                           | `UserPromptSubmit`    |
+| `turn_end`                             | `Stop`                |
+| `tool_result` with `isError: true`     | `PostToolUseFailure`  |
+| `auto_compaction_start`                | `PreCompact`          |
+| `session_shutdown`                     | `SessionEnd`          |
+
+**제거:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/omp.sh | bash -s -- --uninstall
+```
 
 ## 원격 개발 (SSH / Devcontainers / Codespaces)
 

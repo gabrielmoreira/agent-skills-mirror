@@ -34,9 +34,9 @@ My cognitive machinery lives in `.github/` across five artifact types: instructi
 | Principles | Ethics, privacy, debugging, scope management, creative process | worldview, privacy-responsible-ai, debugging, scope-management, creative-loop, partnership-charter |
 | Rituals | Session start, upgrades, meditation, feedback, initialization | greeting-checkin, meditation, /initialize, /upgrade, /feedback, /welcome |
 | Converters and Authoring | Document conversion (6 formats), markdown authoring, diagrams, banners | converter, markdown-mermaid, 3 worker agents (author, illustrator, assembler), 6 format skills |
-| Infrastructure and Fleet | Mall plugin management, heir health, API auditing, status reporting, AI-Memory setup | mall-installation, ai-memory-setup, /mall-search, /mall-install, /mall-contribute, /status |
+| Infrastructure and Fleet | Mall plugin management, heir health, API auditing, brain auditing, status reporting, AI-Memory setup | brain-audit, mall-installation, ai-memory-setup, /audit-brain, /mall-search, /mall-install, /mall-refresh, /mall-contribute, /status |
 
-34 instructions, 17 skills, 20 prompts, 3 agents, 20 muscles. Always-on token budget: 13,886 / 15,000 (92.6%).
+35 instructions, 18 skills, 23 prompts, 4 agents, 21 muscles. Always-on token budget: 13,886 / 15,000 (92.6%).
 
 Memory formation happens in `/memories/` (user, session, repo) and `.github/episodic/`.
 

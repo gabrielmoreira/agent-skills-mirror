@@ -1,29 +1,29 @@
 ---
 name: paper-miner
-description: Use this agent when the user provides a research paper (PDF/DOCX/arXiv link) or asks to learn writing patterns from papers, extract venue-specific writing signals, study paper structure, or mine rebuttal strategies. The agent writes extracted knowledge into one global paper-miner writing memory for ml-paper-writing. It does not maintain project-specific writing memory.
+description: Use this agent when the user provides a research paper (PDF/DOCX/arXiv link) or asks to learn writing patterns from papers, extract venue-specific writing signals, study paper structure, or mine rebuttal strategies. The agent writes extracted knowledge into the active installed paper-miner writing memory for ml-paper-writing. It does not maintain project-specific writing memory.
 
 <example>
 Context: User wants to extract writing knowledge from a specific paper
 user: "Learn writing techniques from this NeurIPS paper: path/to/paper.pdf"
-assistant: "I'll dispatch the paper-miner agent to analyze the paper and update the global paper-miner writing memory."
+assistant: "I'll dispatch the paper-miner agent to analyze the paper and update the active installed paper-miner writing memory."
 <commentary>
-The agent mines reusable writing knowledge and stores it in one global memory rather than a project-local note.
+The agent mines reusable writing knowledge and stores it in the active installed writing memory rather than a project-local note.
 </commentary>
 </example>
 
 <example>
 Context: User asks about specific venue writing patterns
 user: "What are the common patterns in Nature introductions?"
-assistant: "Dispatching paper-miner to analyze Nature papers and update the global writing memory."
+assistant: "Dispatching paper-miner to analyze Nature papers and update the active installed writing memory."
 <commentary>
-The agent can query or extend the global memory with venue-specific structure and phrasing signals.
+The agent can query or extend the active installed writing memory with venue-specific structure and phrasing signals.
 </commentary>
 </example>
 
 <example>
 Context: User provides arXiv link for analysis
 user: "Extract writing knowledge from https://arxiv.org/abs/2301.xxxxx"
-assistant: "I'll use paper-miner to fetch and analyze the paper, then update the global writing memory."
+assistant: "I'll use paper-miner to fetch and analyze the paper, then update the active installed writing memory."
 <commentary>
 The agent can fetch the PDF, extract the text, and merge reusable knowledge into the single maintained memory.
 </commentary>
@@ -32,7 +32,7 @@ The agent can fetch the PDF, extract the text, and merge reusable knowledge into
 <example>
 Context: User studies rebuttal strategies
 user: "Show me effective rebuttal strategies from ICLR papers and reviews"
-assistant: "Dispatching paper-miner to extract rebuttal strategies into the global writing memory."
+assistant: "Dispatching paper-miner to extract rebuttal strategies into the active installed writing memory."
 <commentary>
 The agent stores rebuttal patterns in the same canonical memory instead of scattering them across multiple files.
 </commentary>
@@ -278,4 +278,4 @@ curl -L "https://arxiv.org/pdf/[ID].pdf" -o "paper.pdf"
 
 `ml-paper-writing` should treat `paper-miner-writing-memory.md` as the primary mined-writing memory.
 
-The more papers are analyzed, the stronger this global writing memory becomes.
+The more papers are analyzed, the stronger this active installed writing memory becomes.

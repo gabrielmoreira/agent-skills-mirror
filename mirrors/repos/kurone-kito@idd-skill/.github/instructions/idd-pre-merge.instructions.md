@@ -74,6 +74,10 @@ minimum, capture:
    state satisfies the advisory gate for merge.
 6. CI evidence: required-check generation state and pass/fail status for
    all required checks on the current PR HEAD.
+7. E7 disposition evidence: whether each actionable PATH A item and
+   advisory PATH B item has a fresh `**Accepted**`/`**Rejected**`
+   disposition marker, plus the exact missing-thread and
+   missing-regular-comment blocker items when incomplete.
 
 Do not treat "one bot says clean" as sufficient evidence. The checklist
 must cover the full activity universe (human reviewers plus advisory bot
@@ -98,14 +102,19 @@ must align with every F2 condition below.
   minimize, or otherwise unmark open-PR operational markers during this
   recovery; if no trusted same-claim watermark exists for the successor
   claim, return to E1 and rebuild review state there.
-  To collect this evidence, either use the documented merge-gate helper
-  reference in
+  When helper runtime is enabled, prefer the documented merge-gate
+  helper reference in
   [`docs/idd-helper-scripts.md`](../../docs/idd-helper-scripts.md#stable-helper-evidence-outputs)
-  (in the idd-skill source repository or adopters that explicitly
-  installed the same helpers) or fetch the activity universe snapshot
-  (same scope as E1 Step 1) and the current CI state for the HEAD SHA
-  directly. The instruction rules remain canonical. Return to E1 if
-  **any** of the
+  to collect this evidence. Consume helper evidence from
+  `reviewCurrency` (including `comparisonRoute`), `threads`,
+  `unrepliedComments`, `reviewerStates`, `advisoryWait`, `ci`, `claim`,
+  and optional `dispositionEvidence`.
+  Helpers remain read-only evidence collectors: if helper execution
+  fails, output is invalid JSON, required sections are missing, or live
+  GitHub state disagrees with helper output, discard helper output and
+  fetch the activity universe snapshot (same scope as E1 Step 1) plus
+  current CI state for the HEAD SHA directly. The instruction rules
+  remain canonical. Return to E1 if **any** of the
   following is true:
   - The current PR HEAD SHA differs from the stored `{head-SHA}` (a new
     push occurred after E1's snapshot, even if the watermark comment was
@@ -142,22 +151,25 @@ must align with every F2 condition below.
        **AW4** and stop.
      - **REQUEST_NEEDED** → return to E14 to request Copilot review and
        post a fresh marker. Do not post a new request in F2.
-     - **WAIT** (`COPILOT_PENDING` is `"true"`, elapsed < 30 min) →
-       wait for the remainder of the applicable window (poll every 2
-       min), refreshing `EARLIEST_SAME_HEAD_AT` per **AW2** at each
-       iteration and applying **AW5** if the marker disappears. Then
-       **go back to the first condition in F2** (the 'Review currency'
-       check) to re-evaluate all conditions.
-     - **WAIT** (`COPILOT_PENDING` is `"false"`, elapsed < 10 min) →
-       wait for the remainder of the 10-minute window (same polling
-       rules). Then **go back to the first condition in F2**.
+     - **WAIT** (`COPILOT_PENDING` is `"true"`, elapsed <
+       `PENDING_WINDOW_MINUTES` min) → wait for the remainder of the
+       applicable window (poll every `POLL_INTERVAL_MINUTES` min),
+       refreshing `EARLIEST_SAME_HEAD_AT` per **AW2** at each iteration
+       and applying **AW5** if the marker disappears. Then **go back to
+       the first condition in F2** (the 'Review currency' check) to
+       re-evaluate all conditions.
+     - **WAIT** (`COPILOT_PENDING` is `"false"`, elapsed <
+       `SETTLED_WINDOW_MINUTES` min) → wait for the remainder of the
+       settled window (same polling rules). Then **go back to the first
+       condition in F2**.
 
   GitHub removes a reviewer from `requested_reviewers` when they submit
   a review OR when the request is manually cancelled — either counts as
   no longer pending for merge purposes.
 - **CI**: Current PR head SHA has all required CI checks generated and
-  all passing (→ run CI wait per `idd-ci.instructions.md`, on-success →
-  re-evaluate F2)
+  all passing (→ run CI wait per `idd-ci.instructions.md` using the
+  same resolved `ciWait.runningTimeout`, `ciWait.generationTimeout`, and
+  `ciWait.rerunPolicy` values; on-success → re-evaluate F2)
 - **Required reviews**: Required approvals count is satisfied and all
   CODEOWNER approvals are obtained. If approvals are absent but there
   are no open actionable review items (ReviewItems_snapshot is empty), do **not**
@@ -211,6 +223,14 @@ must align with every F2 condition below.
   E1's regular-comment filter for non-advisory discussion. Copilot and
   CI advisory bot comments are handled earlier in the PATH B triage flow
   (E4-E7) and are excluded from this gate.
+- **E7 disposition evidence complete**: If helper evidence includes a
+  `dispositionEvidence` section, require
+  `dispositionEvidence.route == "proceed"` and
+  `dispositionEvidence.blockingCount == 0`. If either check fails, route
+  to E1/E4 with the missing-thread or missing-comment evidence reported
+  from that section. This gate consumes the `pre-merge-readiness`
+  `dispositionEvidence` shape only; do not substitute E7 verifier fields
+  (`passed`, `items[]`) here.
 
 When any F2 condition routes to a hold/stop or back to E1/E14, update
 the PR live status digest after the blocking evidence is recorded and

@@ -15,7 +15,9 @@ This usually runs for hours, often overnight. By the time agents are working, yo
 
 ## Prerequisites
 
-Read the **paseo** skill — it carries the surface (worktrees, agents, waiting, scheduling, preferences). Every agent you spawn reads it too.
+This is a Paseo skill. Load the **paseo** skill first — it carries the surface (worktrees, agents, waiting, scheduling, preferences). Every agent you spawn reads it too.
+
+**Do not use your own subagents.** All agents in this skill are Paseo agents, spawned through the Paseo MCP. Your harness's native subagent stack is not in play here.
 
 The role and phase-type vocabulary lives in the roles reference shipped with this skill (`references/roles.md`).
 
@@ -180,7 +182,7 @@ The final check before deliver audits every bullet here.
 - [ ] **Phase N+2** · deliver · <commit | PR + merge | cherry-pick>
 ```
 
-Phase types: `refactor`, `implement`, `verify`, `gate`, `deliver`. Verify variants written inline: `verify · unslop`, `verify · qa`, `verify · spec`, `verify · review`. See the roles reference.
+Phase types: `refactor`, `implement`, `verify`, `gate`, `deliver`. Verify variants written inline: `verify · qa`, `verify · spec`, `verify · review`. See the roles reference.
 
 Status markers: `[ ]` not started, `[~]` in progress, `[x]` done, `[!]` blocked.
 
@@ -285,10 +287,10 @@ Never push to main directly. Never force-push without explicit permission. Never
 ### Mode B — worktree → PR + merge
 
 1. **Commit cleanly in the worktree.** One tidy commit per logical change. Match repo style.
-2. **Rebase if behind main.** Spawn an agent that loads the rebase skill. Provider from `impl`. Tell it to rebase onto origin/main, resolve conflicts by intent (never blanket-accept one side), confirm typecheck and tests still pass, do not push.
+2. **Rebase if behind main.** Spawn an agent. Provider from `impl`. Tell it to rebase onto origin/main, resolve conflicts by intent (never blanket-accept one side), confirm typecheck and tests still pass, do not push.
 3. **Push the branch** — `git -C <worktree> push -u origin <branch-from-frontmatter>`.
 4. **Open the PR** — `gh pr create` with summary from plan Objective + Phases and test plan from acceptance lines. Capture URL → frontmatter `pr:`. Status → `pr-open`.
-5. **Monitor CI.** Either watch directly (`gh pr checks <n> --watch`), or spawn a fix-build agent that loads the fix-build skill. Provider from `impl`. Tell it to drive the PR to green: when checks fail, read failure logs, fix, push, repeat. Don't merge — your call.
+5. **Monitor CI.** Either watch directly (`gh pr checks <n> --watch`), or spawn an agent to babysit the build. Provider from `impl`. Tell it to drive the PR to green: when checks fail, read failure logs, fix, push, repeat. Don't merge — your call.
    When green: append Notes, frontmatter `status: ready-to-merge`.
 6. **Merge** when green — ask the user (`AskUserQuestion`: squash / rebase / merge / wait). Read repo convention from recent merged PRs (`gh pr list --state merged -L 5 --json mergeCommit,title`).
    ```bash

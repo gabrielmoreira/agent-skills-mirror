@@ -10,6 +10,10 @@ This is an intentionally longer reference. It is not meant to replace the main w
 - you need to verify that a specific factual claim really comes from the cited paper,
 - or you need to clean and standardize a bibliography in a more disciplined way.
 
+> **Quick map**: pre-search filter → `Pre-Search Verification Protocol` (this
+> file); submission-time bibliography audit → [`/citation-audit`](../citation-audit/SKILL.md);
+> numerical-claim audit → [`/paper-claim-audit`](../paper-claim-audit/SKILL.md).
+
 ## Contents
 
 - [Why Citation Verification Matters](#why-citation-verification-matters)
@@ -97,6 +101,97 @@ Google Scholar is not the default verification backbone here. Do not treat “I 
 4. VALIDATE -> confirm the claim you cite is really supported by the paper
 5. ADD      -> add the entry to the bibliography with clean keys and formatting
 ```
+
+### Pre-Search Verification Protocol
+
+This is the **fast filter** that runs between Step 1 (SEARCH) and Step 2 (full
+VERIFY). It catches LLM-hallucinated references at search time — before
+fabricated arXiv IDs / DOIs / titles propagate into idea-creator, novelty-check,
+landscape surveys, or downstream writing.
+
+The protocol is implemented by `tools/verify_papers.py` (helper resolution
+chain `.aris/tools/` → `tools/` → `$ARIS_REPO/tools/` per
+`wiki-helper-resolution.md`). The script is called by `/research-lit` (Step
+1.5, mandatory), and is referenced by `/idea-creator` and `/novelty-check` as
+a required filter on cited papers.
+
+**Three-layer fallback:**
+
+1. **arXiv API batch verify** — `arxiv.org/api/query?id_list=...` confirms up
+   to 40 arXiv IDs per request. Cheapest, most authoritative; always run first
+   when arXiv IDs are present.
+2. **CrossRef DOI lookup** — `api.crossref.org/works/{doi}` confirms the DOI
+   resolves. Run when arXiv ID is absent or arXiv check returned `unverified`.
+3. **Semantic Scholar fuzzy title search** — `api.semanticscholar.org/graph/v1/paper/search`
+   with normalized fuzzy match (default threshold 0.6 word overlap, max(words1, words2)).
+   Run only when no arXiv ID and (no DOI **or** DOI failed verification).
+
+**Per-paper status (one of four):**
+
+- `verified` — at least one layer confirmed existence
+- `unverified` — all applicable layers ran cleanly and found no match
+- `verify_pending` — any layer hit a transient failure (timeout, 5xx, rate
+  limit) and no earlier layer verified; **do NOT count against hallucination
+  rate**
+- `error` — the input entry itself was malformed (no arXiv, no DOI, no title)
+
+**Top-level verdict** (aligns loosely with `assurance-contract.md`):
+
+- `PASS` — hallucination rate ≤ threshold (default 0.20) and no pending
+- `WARN` — hallucination rate > threshold or any pending
+- `BLOCKED` — input/output/cache prerequisites missing
+- `ERROR` — tool itself crashed
+
+**Retention rule (over silent removal).** Unverified papers must remain in
+downstream output tagged `[UNVERIFIED]` so the user can audit what was
+filtered. Silent removal hides search-quality problems. Verified papers are
+tagged `✅` with the verification method (`arxiv` / `crossref` / `s2` /
+`s2_fallback_from_doi`).
+
+**High-hallucination warning.** When more than 20 % of terminal results
+(verified + unverified, excluding pending) come back `unverified`, surface
+`high_hallucination_rate` to the user. This is a signal that the search query
+or upstream source is producing fabricated entries — re-run with narrower
+terms before continuing.
+
+**Caching.** Default cache scope is per-project at
+`<project>/.aris/cache/verify_papers.json` with 30-day TTL. Cache keys use
+canonical identifier priority: `arxiv:{id_without_version}` →
+`doi:{lowercase}` → `title:{sha1_of_normalized_title}[:16]`. The cache value
+preserves all known identifiers so the same paper found through different
+search paths reconciles correctly.
+
+**CrossRef User-Agent.** Set `ARIS_VERIFY_EMAIL` to your institutional email
+to reduce CrossRef rate-limit risk. Default is a placeholder
+(`aris-research@anonymous.local`) — fine for low-volume use, but CrossRef
+prefers a real contact for higher polite-pool throughput.
+
+**When NOT to use this protocol.** This is search-time filtering, not
+submission-time auditing. It does not replace `/citation-audit` (which checks
+already-written `.bib` entries against DBLP/CrossRef metadata + cite-context)
+or `/paper-claim-audit` (which verifies numerical claims against raw result
+files). Run pre-search verification on candidate lists; run the audit skills
+before submission.
+
+**Invocation contract** (callers — `/research-lit`, `/idea-creator`,
+`/novelty-check` — must follow):
+
+```bash
+python3 <tools_dir>/verify_papers.py --input candidate_papers.json --output verified_papers.json
+```
+
+`candidate_papers.json` schema:
+
+```json
+[
+  {"id": "p1", "arxiv_id": "2307.03172", "doi": null, "title": "Lost in the Middle"},
+  {"id": "p2", "arxiv_id": null, "doi": "10.1145/...", "title": null},
+  {"id": "p3", "arxiv_id": null, "doi": null, "title": "Some Paper Title"}
+]
+```
+
+`verified_papers.json` schema (top-level `verdict` + per-paper `status` —
+see helper docstring for the full envelope).
 
 ### Step 1: Search
 

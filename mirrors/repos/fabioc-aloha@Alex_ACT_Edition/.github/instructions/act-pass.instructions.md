@@ -74,3 +74,13 @@ For high-stakes operations, the markers should appear before the action is taken
 | Pass after the action is taken | Pass must run before commit — post-hoc is theatre |
 | Skipping Step 4 (disconfirmers) on trimmed pass | Step 4 is load-bearing; if you skip it, you're confirming, not testing |
 | Hiding the pass in internal reasoning | Tenet IX requires visible markers in the output |
+
+## Would Revise If
+
+Revisit this pass structure if any of the following occur within a quarter:
+
+- Medium/high-stakes decisions pass the protocol but still produce repeated avoidable regressions
+- Trimmed-pass outputs repeatedly miss disconfirmers that later invalidate the chosen approach
+- Full-pass usage drops to near-zero on clearly high-stakes operations (ritual becoming decorative)
+
+Track these in `docs/ledgers/curation-log.md` tagged `[ACT-PASS-DRIFT]`.

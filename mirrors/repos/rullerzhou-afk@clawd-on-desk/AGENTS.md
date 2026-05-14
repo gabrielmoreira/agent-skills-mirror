@@ -46,7 +46,7 @@ bash test-oneshot-gate.sh [state] [seconds]
 ```
 
 正常启动时，Clawd 只会为已启用的 agent 自动同步 Claude / Codex / Gemini / Cursor / CodeBuddy / Kiro / Kimi hooks、opencode / OpenClaw plugins 和 Pi extension。禁用 agent 会跳过启动同步并屏蔽事件/权限入口，但不会卸载用户已有 hooks / plugins / extensions；从 Settings 重新启用时会对该 agent 做一次 integration sync。手动安装命令主要用于调试、重装或远程部署。
-Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/guides/copilot-setup.md`。
+Copilot CLI 是唯一在本地启动时不会自动同步 hooks 的受支持 agent；本地需手动配置 `~/.copilot/hooks/hooks.json`，远程 SSH 部署 (`scripts/remote-deploy.sh`) 会自动写入。详见 `docs/guides/copilot-setup.md`。
 
 ## Read These Docs
 
@@ -124,7 +124,7 @@ Copilot CLI 是唯一仍需手动配置 hooks 的受支持 agent；见 `docs/gui
 - OpenClaw 通过 `~/.openclaw/openclaw.json` plugin 路径做 state-only 集成；Phase 1 不做 permission bubble / terminal focus，主要支持本地 `openclaw tui --local`
 - HTTP 服务端口范围固定为 `127.0.0.1:23333-23337`；运行时端口写入 `~/.clawd/runtime.json`
 - 注册 Claude Code hook 时只能追加，不能覆盖用户已有 hook 数组
-- Copilot CLI 是唯一不自动同步的 agent；仅支持手动配置 `~/.copilot/hooks/hooks.json`
+- Copilot CLI 是唯一在本地启动时不自动同步的 agent；本地需手动配置 `~/.copilot/hooks/hooks.json`，远程 SSH 部署 (`scripts/remote-deploy.sh` 调用 `hooks/copilot-install.js --remote`) 自动写入
 - 禁用 agent 不应卸载 hooks / plugins / extensions：只停止对应 monitor、清理 session / bubble、让 HTTP hook 入口快速 fallback；重新启用才触发一次 integration sync
 - Kiro 的 `sessionId="default"` 会复用；session alias key 必须按 cwd scope 区分，同时保留旧 `local|kiro-cli|default` 只读 fallback
 - Windows NSIS release 必须产出明确架构的 x64 / ARM64 安装包：`win.artifactName` 保留 `${arch}`，`nsis.buildUniversalInstaller` 保持 `false`

@@ -31,6 +31,12 @@ you are reading this guide first, start at step 1.
 | Claude Code             | `CLAUDE.md`                       | None from `.github/instructions/` by default                                                                                                                       | `.github/instructions/idd-overview.instructions.md` and the routed phase file |
 | Gemini CLI              | `GEMINI.md`                       | None from `.github/instructions/`                                                                                                                                  | `.github/instructions/idd-overview.instructions.md` and the routed phase file |
 
+During onboarding, create or update `CLAUDE.md`, `AGENTS.md`, and
+`GEMINI.md` so each non-Copilot agent listed above has a stable first
+file to read. GitHub Copilot remains an update-if-present surface via
+`.github/copilot-instructions.md`. Skipping creation of a missing root
+entry file should be an explicit operator choice, not the default.
+
 ## IDD file map
 
 | File                                                       | Role                                                                                 |
@@ -113,6 +119,17 @@ with [IDD policy constants](policy-constants.md). It names the claim,
 advisory, CI, and critique-loop defaults and points to the instruction
 files that own each value.
 
+When helper support is enabled, the discover and suitability phases may
+use the helper-backed evidence collectors first, but the Markdown
+instruction files remain the final authority whenever helper output is
+missing or disagrees.
+
+During onboarding, create or update `CLAUDE.md`, `AGENTS.md`, and
+`GEMINI.md` so each non-Copilot agent listed above has a stable first
+file to read. GitHub Copilot remains an update-if-present surface via
+`.github/copilot-instructions.md`. Skipping creation of a missing root
+entry file should be an explicit operator choice, not the default.
+
 When an operator gives exactly one issue target, Discover can verify that
 target directly before Claim. The shortcut avoids broad roadmap
 enumeration, but it still applies targeted readiness checks, the A4
@@ -143,8 +160,8 @@ for labels, comment-and-stop defaults, and close boundaries:
 - high-confidence `duplicate`, `invalid`, and `out-of-scope` outcomes
   are read-only by default and require explicit A4.5 mutation-policy
   customization before close/label side effects;
-- `idd:ready` approval ownership is separate from trusted marker actor
-  authority for operational claim/review markers.
+- configured ready-label approval ownership is separate from trusted
+  marker actor authority for operational claim/review markers.
 
 ## Roadmap completion audits
 
@@ -321,12 +338,18 @@ reviewer because that is part of this repository's current PR policy.
 
 This source repository currently ships the following optional helper scripts:
 
+- `scripts/resume-claim-routing.mjs` (read-only Resume Step 1 claim
+  routing evidence)
+- `scripts/resume-route-selection.mjs` (read-only Resume Step 3 route
+  selection evidence)
 - `scripts/review-activity-snapshot.mjs` (read-only E/F activity and CI
   snapshot metrics)
 - `scripts/advisory-wait-state.mjs` (read-only advisory-wait evidence
   and AW outcome reporting)
 - `scripts/pre-merge-readiness.mjs` (read-only F2/F3 readiness evidence
   collection)
+- `scripts/review-disposition-verify.mjs` (read-only E7 disposition
+  verification evidence)
 - `scripts/live-status-digest.mjs` (issue or PR live status digest
   dry-run and claim-checked upsert)
 - `scripts/audit-pr-cleanup.mjs` (post-merge cleanup audit and optional
@@ -334,7 +357,10 @@ This source repository currently ships the following optional helper scripts:
 
 Shell / `gh` / `jq` snippets in
 `.github/instructions/*.instructions.md` remain the canonical portable
-path for adopters, and the helper scripts are convenience layers only.
+path for repositories that stay on `instructions-only`. When helper
+runtime is enabled, these shipped helpers are the preferred evidence
+collection path, while live GitHub checks and written gate rules remain
+authoritative.
 
 See [IDD helper script evaluation](idd-helper-scripts.md) for the
 current inventory of high-friction query patterns, the adopted helper

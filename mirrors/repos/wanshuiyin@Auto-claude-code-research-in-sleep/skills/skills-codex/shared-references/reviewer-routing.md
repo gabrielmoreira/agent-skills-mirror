@@ -18,7 +18,7 @@ Single-round review:
 
 ```text
 spawn_agent:
-  model: gpt-5.4
+  model: gpt-5.5
   reasoning_effort: xhigh
   message: |
     [role + task]
@@ -29,7 +29,7 @@ Multi-round review:
 
 ```text
 spawn_agent:
-  model: gpt-5.4
+  model: gpt-5.5
   reasoning_effort: xhigh
   message: |
     [initial review prompt]

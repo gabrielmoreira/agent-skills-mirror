@@ -6,6 +6,10 @@
   AIGC-Claw: AI 创意视频生成员工
 </h2>
 
+<p align="center">
+  <b>简体中文</b> | <a href="./README_EN.md">English</a>
+</p>
+
 <h4 align="center">
   <img src="https://img.shields.io/badge/Version-1.0.0-blue.svg" alt="Version">
   <a href="https://github.com/HITsz-TMG/AIGC-Claw/blob/main/LICENSE">
@@ -29,7 +33,7 @@
 
 <div align="center">
 
-🌐 [**English README**](./README_EN.md)  📺 [**Bilibili**](https://space.bilibili.com/2031891503?spm_id_from=333.1007.0.0)  ▶️ [**YouTube**](https://www.youtube.com/@imryanxu)  📖 [**集成指南**](#方式三openclaw-自动配置)   🦀 [**ClawHub**](https://clawhub.ai/hit-cxf/aigc-director) 
+📺 [**Bilibili**](https://space.bilibili.com/2031891503?spm_id_from=333.1007.0.0)  ▶️ [**YouTube**](https://www.youtube.com/@imryanxu)  📖 [**集成指南**](#方式三openclaw-自动配置)   🦀 [**ClawHub**](https://clawhub.ai/hit-cxf/aigc-director) 
 
 <a href="https://trendshift.io/repositories/24295" target="_blank"><img src="https://trendshift.io/api/badge/repositories/24295" alt="HITsz-TMG%2FAIGC-Claw | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -43,6 +47,7 @@
 - `2026/4/9`: ♾️ AIGC-Claw 推出第三版，新增无限续写，剧情可自定义。
 - `2026/4/29`: 🧩 新增文艺短视频、动作迁移、数字人口播三个 Pipeline，并支持一键安装。
 - `2026/5/8`: ⚙️ 支持通过 WebUI 配置 API 与默认模型，支持一键安装。
+- `2026/5/13`: 🎞️ 文艺短视频接入 Pixelle-Video 的 HTML 模版。
 
 
 ## 📖 项目介绍
@@ -281,6 +286,8 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
 
 ### 方式一：一键安装（推荐）
 
+**Linux / MacOS 安装**：
+
 ```bash
 # 1. 克隆项目
 git clone https://github.com/HITsz-TMG/AIGC-Claw.git
@@ -290,13 +297,24 @@ cd AIGC-Claw
 cd aigc-director/aigc-claw
 chmod +x install.sh
 ./install.sh
+
+# 3. 返回项目根目录
+cd ../..
 ```
 
-Windows 用户可在 PowerShell 或 CMD 中执行：
+**Windows 安装**：
 
 ```bat
-cd AIGC-Claw\aigc-director\aigc-claw
+# 1. 克隆项目
+git clone https://github.com/HITsz-TMG/AIGC-Claw.git
+cd AIGC-Claw
+
+# 2. 进入应用目录并执行安装脚本
+cd aigc-director\aigc-claw
 install.bat
+
+# 3. 返回项目根目录
+cd ../..
 ```
 
 安装脚本会检查 Python、Node.js、npm 和 ffmpeg，安装后端与前端依赖，复制 `backend/config.yaml.example` 为 `backend/config.yaml`，并执行前端构建。安装完成后，先在 `backend/config.yaml` 中填入模型服务 API Key，并确认 `models` 中的主流程默认模型；也可以启动前端后通过侧边栏底部「设置」页面修改这些配置。配置完成后启动服务：
@@ -495,6 +513,8 @@ models:
 ## 🙏 致谢
 
 AIGC-Claw 的想法和设计受到了 [AutoResearchClaw](https://github.com/aiming-lab/AutoResearchClaw)、[huobao-drama](https://github.com/chatfire-AI/huobao-drama)、[LibTV](https://www.liblib.tv/) 与 [libtv-skills](https://github.com/libtv-labs/libtv-skills) 的启发。
+
+Pixelle-Video：AIGC-Claw 借鉴了文艺短视频、动作迁移、数字人口播三个 Pipeline，以及通过 HTML 模版精细控制图片、视频的文本。
 
 
 

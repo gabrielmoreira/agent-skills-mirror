@@ -6,8 +6,8 @@ description: "Consolidate session learning into permanent architecture — extra
 tier: core
 applyTo: '**/*meditat*,**/*consolidat*'
 inheritance: inheritable
-currency: 2026-04-30
-lastReviewed: 2026-04-30
+currency: 2026-05-13
+lastReviewed: 2026-05-13
 ---
 
 # Meditation
@@ -81,10 +81,12 @@ Skip the chronicle for short sessions or when nothing new emerged.
 
 ### 5. Handoff (when ending a session)
 
-If the user is closing the thread, write to `/memories/session/<topic>-handoff.md`:
+If the user is closing the thread, write to repo-root `SESSION-HANDOFF.md`:
 
 ```markdown
-# Session Handoff — <Topic>
+# Session Handoff
+
+Last updated: YYYY-MM-DD HH:MM
 
 ## Just shipped
 - [SHAs / files / outcomes]
@@ -93,7 +95,7 @@ If the user is closing the thread, write to `/memories/session/<topic>-handoff.m
 - [Specific next step + file paths]
 
 ## Pending queue
-- [Ordered todos]
+- [ ] [Ordered todos]
 
 ## Resume point
 - [Where to pick up]

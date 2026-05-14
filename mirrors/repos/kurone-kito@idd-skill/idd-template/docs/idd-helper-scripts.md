@@ -8,20 +8,173 @@ directly instead of re-evaluating the same suggestion from scratch.
 
 In the idd-skill source repository, the following optional helpers were adopted:
 
+**Discover & Claim Phase Helpers (Phase 1):**
+
+- `scripts/discover-orphan-filter.mjs` for A0-O orphan issue detection and
+  filtering (referenced in
+  [kurone-kito/idd-skill#390](https://github.com/kurone-kito/idd-skill/issues/390))
+- `scripts/discover-readiness-check.mjs` for A3 readiness criterion
+  evaluation (referenced in
+  [kurone-kito/idd-skill#391](https://github.com/kurone-kito/idd-skill/issues/391))
+- `scripts/discover-viability-gate.mjs` for A4 viability gate evaluation
+  across limited scope, clear verification, and autonomous completion
+  criteria (referenced in
+  [kurone-kito/idd-skill#505](https://github.com/kurone-kito/idd-skill/issues/505))
+- `scripts/suitability-triage.mjs` for A4.5 seven-check suitability
+  evaluation (referenced in
+  [kurone-kito/idd-skill#392](https://github.com/kurone-kito/idd-skill/issues/392))
+- `scripts/claim-approval-gate.mjs` for A5(a) issue-author approval
+  verification; A5(d) open-PR conflict checks remain manual by design
+  (referenced in
+  [kurone-kito/idd-skill#393](https://github.com/kurone-kito/idd-skill/issues/393))
+- `scripts/resume-claim-routing.mjs` for Resume Step 1 claim-state
+  evaluation and takeover routing (referenced in
+  [kurone-kito/idd-skill#394](https://github.com/kurone-kito/idd-skill/issues/394))
+- `scripts/resume-route-selection.mjs` for Resume Step 3 PR/CI/review
+  state routing (referenced in
+  [kurone-kito/idd-skill#395](https://github.com/kurone-kito/idd-skill/issues/395))
+
+**Review & Merge Phase Helpers:**
+
 - `scripts/review-activity-snapshot.mjs` for read-only E/F review
   activity and CI snapshot metrics
 - `scripts/advisory-wait-state.mjs` for read-only advisory-wait evidence
   collection and AW outcome reporting
+- `scripts/ci-wait-policy.mjs` for read-only CI wait policy resolution
+  and rerun-budget decisions
 - `scripts/pre-merge-readiness.mjs` for read-only F2/F3 readiness
   evidence collection
 - `scripts/live-status-digest.mjs` for issue or PR live status digest
   discovery, rendering, dry-run, and claim-checked upsert
 - `scripts/audit-pr-cleanup.mjs` for post-merge comment cleanup auditing
+- `scripts/review-disposition-verify.mjs` for read-only E7 disposition
+  marker presence verification across PATH A and PATH B items
+
+**Operator Recovery Helpers:**
+
+- `scripts/force-handoff.mjs` for the interactive TTY-only
+  `idd-force-handoff` operator facade that drives issue input, optional
+  PR confirmation from live branch state, and final `y/N` consent
+- `scripts/forced-handoff-marker.mjs` for low-level forced-handoff
+  marker rendering and inspection when maintainers need the canonical
+  payload without the interactive facade
+
+**Post-Merge Audit Helpers:**
+
+- `scripts/cleanup-hygiene-report.mjs` for post-merge cleanup hygiene
+  metrics aggregation and trend reporting (referenced in
+  [kurone-kito/idd-skill#438](https://github.com/kurone-kito/idd-skill/issues/438))
+
+**Utility and Diagnostic Commands:**
+
+The following commands are shipped alongside the issue-loop helpers but are
+not phase helpers. They are support utilities and are distinguished here so
+future inventory reviews do not need to re-infer their role from code.
+
+- `scripts/idd-doctor.mjs` (`idd-doctor`) — onboarding and configuration
+  diagnostics; reads repository config and helper runtime wiring, reports
+  gaps without mutating any state.
+- `scripts/helper-runtime-manifest.mjs` (`idd-helper-bundle-manifest`) —
+  import helper and manifest inspector; emits machine-readable helper wiring
+  for `package-manager`, `vendored-node`, and `ephemeral-npx` profiles.
+- `scripts/phase-id-resolver.mjs` (`idd-phase-id-resolver`) — phase ID
+  normalization utility; resolves canonical phase IDs from aliases and
+  validates token format.
+
+### Cleanup Hygiene Report Metrics
+
+The cleanup-hygiene-report.mjs helper generates an auditable snapshot of
+PR cleanup status across merged pull requests. It tracks cleanup success
+metrics and trends over time using a versioned schema.
+
+**Metric Schema (version 1.0):**
+
+- **Summary metrics** — overall cleanup status:
+  - `totalMergedPRs`: Total number of merged pull requests in the
+    measurement window (integer)
+  - `clean`: Count of PRs with zero minimization candidates (integer)
+  - `needsApply`: Count of PRs with one or more unaddressed candidates
+    (integer)
+  - `cleanPercentage`: Ratio of clean PRs relative to total merged
+    (formula: `clean / totalMergedPRs * 100`, range: 0.0–100.0)
+
+- **Candidates breakdown** (`candidatesByClassifier`) — classification of
+  minimization candidates:
+  - `thresholdMissing`: Candidates below the automation threshold (integer)
+  - `skippedWithReason`: Candidates with a documented skip reason
+    (integer; reasons: review-thread-unresolved, operational-marker-present,
+    held-by-maintainer)
+  - `applied`: Successfully minimized comments (integer)
+  - `failed`: Minimization attempts that failed (integer)
+
+- **Top skip reasons** — most common reasons for deferring cleanup:
+  - Array of objects with `reason` (string) and `count` (integer) fields
+  - Tracked reasons: "review-thread-unresolved", "operational-marker-present",
+    "held-by-maintainer"
+  - Interpretation: helps identify process blockers and coordination needs
+
+- **Trends** — time-sliced metrics for pattern detection:
+  - **Recent** (7-day rolling window):
+    - `days`: 7 (fixed window width)
+    - `startDate`: timestamp of 7 days ago (ISO 8601)
+    - `endDate`: current timestamp (ISO 8601)
+    - `metrics`: summary counts (totalMergedPRs, clean, needsApply)
+    - Use case: detect acute changes or spike patterns in cleanup health
+  - **Historical** (before the 7-day window):
+    - `beforeDate`: timestamp matching recent window start (ISO 8601)
+    - `metrics`: aggregated summary counts
+    - Use case: establish baseline trends for longer-term analysis
+
+**Interpretation guidance:**
+
+- A `cleanPercentage` of 100% indicates no PR comments require cleanup
+  attention (either all comments were addressed or no comment minimization
+  candidates were detected).
+- `topSkipReasons` with high counts may indicate system-level issues
+  (e.g., unresolved review threads prevent cleanup even when comments
+  could be minimized).
+- Recent vs historical comparison shows whether cleanup discipline is
+  improving or declining over time.
+- `candidatesByClassifier` breakdown helps distinguish between items that
+  were below automation threshold, intentionally deferred, successfully
+  cleaned, or failed during cleanup.
 
 The canonical workflow remains the portable shell / `gh` / `jq`
 instructions embedded in `.github/instructions/*.instructions.md`. The
 helpers are convenience layers only; written decision tables and phase
 rules remain authoritative when outputs diverge.
+
+For discover and suitability, use the adopted helpers first when helper
+support is enabled, then fall back to the portable instructions if a
+helper is unavailable or its output does not match the written rules.
+
+### Discover Viability Gate Contract
+
+`scripts/discover-viability-gate.mjs` evaluates the A4 viability gate for
+one or more issues.
+
+- **Inputs**: `--issue <number>` (repeatable) or `--issues <n1,n2,...>`,
+  with optional `--csv`, `--owner <owner>`, and `--repo <repo>`.
+- **JSON output**:
+  - `viable`: `[{ number: number, title: string }]`
+  - `discarded`: `[{ number: number, title: string,`
+    `failedCriteria: string[], criteria?: [{ id: string, name: string,`
+    `result: "pass" | "fail", evidence: string }] }]`
+  - `summary`: `{ total: number, viableCount: number,`
+    `discardedCount: number, discardedByCriterion: Record<string, number> }`
+- **Error conditions**: missing issue arguments or unknown flags throw;
+  loader or GitHub failures surface as errors; not-found or non-open
+  issues are reported in `discarded` with `failedCriteria` instead of
+  crashing.
+- **Example**:
+
+  ```json
+  {
+    "viable": [{ "number": 123, "title": "trim helper docs" }],
+    "discarded": [{ "number": 124, "title": "rewrite workflow", "failedCriteria": ["limited_scope", "autonomous_completion"] }],
+    "summary": { "total": 2, "viableCount": 1, "discardedCount": 1, "discardedByCriterion": { "limited_scope": 1, "autonomous_completion": 1 } }
+  }
+  ```
 
 The exported template remains portable without a `scripts/` directory.
 Adopters can copy the helper separately when they want the same
@@ -47,19 +200,19 @@ selected from one of these profiles:
 
 ## Import-Time Selection Order
 
-Helper runtime choice is an import-time policy decision. Apply this order
-only after a maintainer or import flow has explicitly opted into helper
-support. If helper support was not requested, keep `instructions-only`.
+Helper runtime choice is an import-time policy decision. Use repository
+evidence to decide whether helper support should be proposed for
+operator confirmation. If helper support is not confirmed, keep
+`instructions-only`.
 
-1. If helper support has not been requested, use `instructions-only`.
-2. Otherwise, if the repository already has a supported package manager
-   project, select `package-manager`.
-3. Otherwise, if Node.js is available and the import flow is allowed to
-   copy helper files, select `vendored-node`.
-4. Otherwise, if Node.js is available and a published or otherwise
-   resolvable helper command exists for one-shot execution, select
+1. If supported `packageManager` metadata or exactly one supported
+   lockfile is present, propose `package-manager`.
+2. Otherwise, if Node.js is available and the import flow is allowed to
+   copy helper files, propose `vendored-node`.
+3. Otherwise, if Node.js is available and a published or otherwise
+   resolvable helper command exists for one-shot execution, propose
    `ephemeral-npx`.
-5. Otherwise, use `instructions-only`.
+4. Otherwise, use `instructions-only`.
 
 This selection order exists to keep helper support optional without
 turning every adopter into a Node.js-first repository. The written
@@ -72,7 +225,14 @@ Use `idd-helper-bundle-manifest` as the canonical import helper for these
 profiles. It is published from this source repository as both
 `scripts/helper-runtime-manifest.mjs` and the package bin
 `idd-helper-bundle-manifest`, so adopters can inspect one machine-readable
-manifest instead of hand-maintaining helper file lists.
+manifest instead of hand-maintaining helper file lists. The manifest's
+top-level `recommendation` field uses the same package-manager evidence
+class as onboarding: supported `packageManager` metadata or exactly one
+supported lockfile can recommend `package-manager`; ambiguous
+package-manager signals can still recommend `vendored-node`; otherwise
+it stays fail-closed at `instructions-only` and never treats bare
+`package.json` presence as enough evidence to assume npm or a real
+Node.js helper path.
 
 - `package-manager`: run the manifest from the target repository root and
   let it detect npm, pnpm, or yarn (or pass `--package-manager` if
@@ -98,6 +258,36 @@ scripts to add or remove for that transition.
 
 The adopted helper boundaries are intentionally narrow:
 
+- `claim-approval-gate.mjs` is read-only, evaluates only the A5(a)
+  issue-author approval gate, and emits machine-readable approval
+  evidence
+- it resolves collaborator permission, ready-label freshness, and
+  approval-comment freshness under repository policy, then fails closed
+  when ambiguity remains
+- it does not claim issues, inspect A5(d) open-PR conflicts, or bypass
+  the written claim rules; live PR conflict checks remain manual until a
+  stable contract can cover inheritable-branch and linked-issue
+  exceptions
+
+- `force-handoff.mjs` is intentionally operator-facing and interactive;
+  it asks for the issue number before any mutation, derives whether PR
+  input is required from live open PR state on the active claim branch,
+  previews the generated marker and successor IDs, and posts only after
+  an explicit `y` confirmation
+- it must fail closed outside a TTY and is not available to autopilot
+  or unattended agent contexts
+- it does not replace the forced-handoff policy contract; it is the
+  recommended maintainer workflow for producing canonical evidence under
+  that contract
+
+- `forced-handoff-marker.mjs` is a lower-level render and inspection
+  helper that can plan or emit the canonical marker body for a specific
+  issue, claim, branch, and optional PR context
+- it is useful for audited debugging and manual inspection, but normal
+  maintainer recovery should prefer `idd-force-handoff`
+- it does not authorize handoff on its own; the same human-gated policy
+  and live-claim validation rules still apply
+
 - `review-activity-snapshot.mjs` is read-only, emits machine-readable
   metrics, and does not evaluate accept/reject dispositions or merge
   decisions
@@ -109,6 +299,13 @@ The adopted helper boundaries are intentionally narrow:
   posts markers, or mutates PR state
 - it does not replace the advisory-wait decision table; it only reduces
   command-copy variance when collecting canonical AW evidence
+
+- `ci-wait-policy.mjs` is read-only, resolves `ciWait.*` defaults from
+  `.github/idd/config.json`, and can evaluate whether the current rerun
+  count still permits an automatic rerun
+- it does not poll CI, rerun workflows, or replace the CI decision
+  table; it only reduces config-copy variance when callers need the
+  shared CI wait defaults
 
 - `pre-merge-readiness.mjs` is read-only, emits machine-readable F2/F3
   evidence including review currency, unresolved-thread state,
@@ -138,13 +335,124 @@ The adopted helper boundaries are intentionally narrow:
 - direct GraphQL fallback commands remain documented in
   `docs/idd-comment-minimization.md`
 
+- `review-disposition-verify.mjs` is read-only, takes a JSON array of
+  ReviewItems_snapshot items, and emits per-item verification evidence
+- it checks E7 disposition requirements: decision recorded, marker
+  present and matching, and thread resolution correct per path and type
+- it never posts replies, resolves threads, or mutates any GitHub state
+- thread-resolution checks are gated on `type === "review_thread"`;
+  non-thread items must have `threadResolved: null`, not `true`/`false`
+- PATH A AMD items must have the thread unresolved; PATH A Rejected and
+  PATH B items must have review threads resolved
+- PATH A Accepted items pass without a marker (reply is handled in
+  review-fix, not triage)
+- written E7 rules in `idd-review-triage.instructions.md` remain
+  authoritative; this helper only reduces command-copy variance when
+  confirming marker presence before triage exits
+
 ## Stable Helper Evidence Outputs
+
+### Operator forced-handoff helpers
+
+- Command: `node scripts/force-handoff.mjs`
+- Published bin: `idd-force-handoff`
+- Contract:
+  - interactive TTY only
+  - asks for issue input before any mutation
+  - asks for PR input only when a live open PR exists on the active
+    claim branch and PR-scoped evidence is required
+  - prints the generated successor IDs and marker preview before the
+    final confirmation
+  - posts nothing unless the final confirmation is exactly `y`
+
+- Command: `node scripts/forced-handoff-marker.mjs --issue <number> --plan ...`
+- Published bin: `idd-forced-handoff-marker`
+- Stable contract:
+  [`schemas/forced-handoff-marker.schema.json`](../schemas/forced-handoff-marker.schema.json)
+- Intended use:
+  - render or inspect canonical forced-handoff marker payloads
+  - support audited debugging or manual review of the exact body
+  - stay distinct from the interactive operator facade above
+
+The references in this subsection apply only when a repository
+explicitly installs the matching helpers and records a human-gated
+forced-handoff policy. Repositories that stay on the default disabled
+policy must not expose either helper as an active recovery path.
 
 The references in this section apply only when a repository explicitly
 installs the matching helper scripts. Repositories that stay on the
 default `instructions-only` profile keep using the written shell /
 `gh` / `jq` procedures in the phase instructions and do not need a
 `scripts/` directory.
+
+### A4 viability gate
+
+- Command: `node scripts/discover-viability-gate.mjs --issue <number>`
+  (repeatable; or `--issues <n1,n2,...>`)
+- Optional CSV output: append `--csv` flag
+- Stable output schema (JSON mode):
+
+  ```json
+  {
+    "viable": [{ "number": 123, "title": "..." }],
+    "discarded": [
+      { "number": 124, "title": "...", "failedCriteria": ["limited_scope"] }
+    ],
+    "summary": {
+      "total": 2,
+      "viableCount": 1,
+      "discardedCount": 1,
+      "discardedByCriterion": { "limited_scope": 1 }
+    }
+  }
+  ```
+
+- Stable fields consumed by A4: `viable[].number`, `discarded[].number`,
+  `discarded[].failedCriteria`, and `summary.viableCount`
+- The helper evaluates the three A4 viability criteria (limited scope, clear
+  verification, autonomous completion) against fetched issue bodies; it does
+  not post claims or mutate any state
+
+### Claim approval evidence
+
+- Source repo / vendored-node command:
+  `node scripts/claim-approval-gate.mjs --issue <issue-number>`
+- Package-manager / ephemeral-npx command: use the
+  profile-selected `idd:claim-approval-gate` command from the helper
+  runtime manifest wiring above
+- Optional freshness override: append
+  `--generated-plan-updated-at <ISO8601>` when the caller already has
+  authoritative generated-plan freshness evidence to reuse
+- Stable fields consumed by the instructions: `approved`, `reason`,
+  `gateEnabled`, `policy.skipIssueAuthorApprovalGate`,
+  `policy.maintainerApprovalActorPolicy`, `policy.approvalSignals`,
+  `checks`, and `timelineAvailable`
+- `checks` remain stable by `id`: `gate_enabled`,
+  `author_self_authorized`, `ready_label_present`,
+  `ready_comment_fresh`, and `ambiguity_guard`
+- the helper is intentionally scoped to A5(a); A5(d) open-PR conflict
+  checks stay on the written live GitHub path because inheritable-branch
+  and linked-issue exceptions do not yet have a supported helper
+  contract
+
+### Resume claim and route evidence
+
+- Claim routing command:
+  `node scripts/resume-claim-routing.mjs --issue <issue-number>`
+- Stable fields consumed by resume instructions: `state`, `action`,
+  `reason`, `active_claim`, `claim_id_checked`, `stale_age_ms`, `now`,
+  `warnings`, and `evidence`
+- Stable enums:
+  - `state`:
+    `unclaimed|already_owned|stale|non_inheritable|disputed`
+  - `action`: `re_claim|takeover|keep|stop`
+
+- Step 3 route command:
+  `node scripts/resume-route-selection.mjs --issue <issue-number>`
+- Stable fields consumed by resume instructions: `route`, `reason`,
+  `state`, and `evidence`
+- Stable enum:
+  - `route`: `D1|D4|E1|E15|F1|F2|stop`
 
 ### Advisory-wait evidence
 
@@ -154,11 +462,33 @@ default `instructions-only` profile keep using the written shell /
 - Stable fields consumed by the instructions: `prHeadSha`,
   `lastCopilotCommit`, `copilotPending`,
   `copilotPendingCoversHead`, `outcome`, `f3Outcome`,
-  `earliestSameHeadAt`, `requestMarkerCount`, and
+  `earliestSameHeadAt`, `requestMarkerCount`, `requestCap`,
+  `pendingWindowMinutes`, `settledWindowMinutes`,
+  `pollIntervalMinutes`, `capExhaustedRoute`, and
   `trustedMarkerSummary`
+
+### CI wait policy resolution
+
+- Source repo / vendored-node command:
+  `node scripts/ci-wait-policy.mjs`
+- Package-manager / ephemeral-npx command: use the
+  profile-selected `idd:ci-wait-policy` command from the helper runtime
+  manifest wiring above
+- Optional rerun-budget evaluation: append
+  `--rerun-count <count>` to the selected command
+- Stable fields consumed by instructions or helpers:
+  `policy.runningTimeout`, `policy.runningTimeoutMs`,
+  `policy.generationTimeout`, `policy.generationTimeoutMs`,
+  `policy.rerunPolicy`, and optional `rerunDecision.action` /
+  `rerunDecision.reason`
+- it remains read-only; the command does not poll CI, rerun workflows,
+  or post any GitHub comment
 
 ### Merge-gate evidence
 
+- When helper runtime is enabled, these commands are the preferred
+  evidence collection path for E1/F2/F3 review-currency and merge-gate
+  checks.
 - Snapshot command: `node scripts/review-activity-snapshot.mjs`
   with `--pr <pr-number>` and
   `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`
@@ -176,7 +506,77 @@ default `instructions-only` profile keep using the written shell /
   [`pre-merge-readiness.schema.json`][pre-merge-readiness-schema]
 - Stable sections consumed by the instructions: `reviewCurrency`,
   `threads`, `unrepliedComments`, `reviewerStates`,
-  `advisoryWait`, `ci`, and `claim`
+  `advisoryWait` (including the effective advisory policy fields), `ci`,
+  `claim`, and optional `dispositionEvidence`
+- `reviewCurrency.comparisonRoute` remains advisory evidence only. Agents
+  must still apply written instruction checks against live GitHub state.
+- Fail closed: if helper execution fails, output is invalid JSON,
+  required fields/sections are missing, or helper evidence conflicts with
+  live GitHub state, discard helper output and use the portable manual
+  fetch path.
+
+### E7 disposition verification
+
+- Preferred command when helper runtime is enabled:
+  `idd-review-disposition-verify --items '<json>'`
+- Source repository equivalent:
+  `node scripts/review-disposition-verify.mjs --items '<json>'`
+- Input: JSON array of ReviewItems_snapshot items, each with `id`,
+  `path` (`"A"` or `"B"`), `type`, `decision`, `markerReply`, and
+  `threadResolved`
+- Output schema (stable fields):
+
+  ```json
+  {
+    "passed": true,
+    "summary": "All 3 items verified.",
+    "totalCount": 3,
+    "passedCount": 3,
+    "failedCount": 0,
+    "items": [{
+      "id": "...",
+      "path": "A",
+      "checks": {
+        "decisionRecorded": true,
+        "markerPresent": true,
+        "markerMatchesDecision": true,
+        "threadResolutionCorrect": true
+      },
+      "passed": true,
+      "issues": []
+    }]
+  }
+  ```
+
+- Stable fields consumed at E7: `passed`, `items[].passed`,
+  `items[].checks`, and `items[].issues`
+- Read-only boundary: the helper never posts replies, resolves threads,
+  or performs any E6 mutation.
+- Fail closed: if execution fails, output is invalid JSON, required
+  fields are missing, or output conflicts with observed triage evidence,
+  discard helper output and apply written E7 checks directly.
+
+### S2 quiet-window evidence
+
+- When helper runtime is enabled, Resume/S2 should call the
+  profile-selected `idd-stalled-session-quiet-check --pr <pr-number>`
+  command first. `node scripts/stalled-session-quiet-check.mjs --pr
+  <pr-number>` is the vendored equivalent.
+- Optional parameters: `--now <ISO8601>`, `--quiet-window-ms <ms>`,
+  `--claim-created-at <ISO8601>`, and `--policy <path>`
+- Stable fields consumed by the instructions: `quiet_window_met`,
+  `quiet_window_ms`, `window_start`, `now`, `latest_activity`,
+  `latest_activity_type`, `reason`, and `evidence`
+  (`activity_count_in_window`, `blocking_activities`,
+  `has_heartbeat_in_window`, `has_ci_running`,
+  `has_pr_head_movement`, `has_branch_tip_movement`)
+- `ci-running` activities always break the quiet window regardless
+  of their timestamp; all other types are checked against
+  `window_start = now - quiet_window_ms`
+- Before takeover, re-run the helper against live GitHub state and pair
+  it with the written Resume/S2-S4 checks for the same active claim,
+  stale-threshold gating, closed/merged guards, and A5 race-safe claim
+  verification. `quiet_window_met = true` alone is never sufficient.
 
 ## Friction Inventory
 
@@ -184,12 +584,14 @@ The workflow areas most likely to benefit from optional helpers are:
 
 | Candidate                       | Status             | Helper level                       | Mutation risk | Canonical fallback path                                                | Drift risk                                                                               | Estimated payoff / byte reduction                                       |
 | ------------------------------- | ------------------ | ---------------------------------- | ------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| A4 viability gate               | Adopted helper     | Read-only evaluator                | Low           | A4 viability criteria table in `idd-discover.instructions.md`          | Low — criteria are deterministic pattern matches against issue body text                 | Low to medium — roughly 100 to 200 bytes of repeated A4 criterion prose |
 | Claim-state parsing             | Reserve candidate  | Read-only parser                   | Low           | Claim rules in `.github/instructions/idd-overview.instructions.md`     | High — claim parsing is subtle and any divergence would create false ownership decisions | Medium — roughly 200 to 400 bytes of repeated marker-parsing prose      |
 | Review activity snapshots       | Adopted helper     | Read-only evidence collector       | Low           | E1/F2/F3 activity-universe fetches via `gh` / GitHub API               | Medium — helper output must keep matching the review-currency rules exactly              | High — roughly 600 to 900 bytes of repeated multi-surface fetch prose   |
 | Live status digest edits        | Adopted helper     | Dry-run by default, explicit apply | Medium        | Phase-specific digest discovery and update flow                        | Medium — digest text must remain UI-only and never look authoritative                    | Medium — roughly 300 to 500 bytes of repeated digest-upsert prose       |
 | Advisory-wait state             | Adopted helper     | Read-only evidence collector       | Low           | `.github/instructions/idd-advisory-wait.instructions.md`               | Medium — helper must expose evidence without hiding the canonical decision table         | Very high — roughly 900 to 1400 bytes of repeated AW command prose      |
 | Pre-merge readiness             | Adopted helper     | Read-only evidence collector       | Low           | `.github/instructions/idd-pre-merge.instructions.md` and F3 live fetch | Medium — helper must stay evidence-only and preserve the written merge gates             | Very high — roughly 1200 to 1800 bytes of repeated merge-evidence prose |
 | Post-merge cleanup candidates   | Adopted helper     | Dry-run by default, explicit apply | High          | GraphQL minimize-comment fallback flow                                 | Medium — minimization safety still depends on exact review/marker rules                  | Medium — roughly 400 to 700 bytes of repeated GraphQL audit prose       |
+| E7 disposition verification     | Adopted helper     | Read-only evidence verifier        | Low           | E7 verification steps in `idd-review-triage.instructions.md`           | Low — verification logic is deterministic and path/type rules are stable                 | Low to medium — roughly 150 to 300 bytes of repeated E7 pre-exit checks |
 | Branch protection/ruleset reads | Deferred candidate | Read-only API adapter              | Low           | Direct ruleset / branch-protection API reads                           | Medium — repository support varies and incomplete coverage could create false confidence | Low to medium — roughly 150 to 300 bytes of repeated ruleset prose      |
 
 ### Ranked roadmap candidate list for the source roadmap

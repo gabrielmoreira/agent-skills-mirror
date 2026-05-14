@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Canner/WrenAI` — 26 default patterns, 2 followed patterns, 39 file(s) materialized.
+Mirror of `Canner/WrenAI` — 26 default patterns, 2 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Canner/WrenAI` — 26 default patterns, 2 followed patterns, 39 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 39 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,26 +79,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`docs/core/README.md`](docs/core/README.md) |
 | 18 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
 | 19 | ✓ | [`sdk/wren-langchain/README.md`](sdk/wren-langchain/README.md) |
-| 20 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
-| 21 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
-| 22 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
-| 23 | ✓ | [`skills/check-versions.sh`](skills/check-versions.sh) |
-| 24 | ✓ | [`skills/index.json`](skills/index.json) |
-| 25 | ✓ | [`skills/install.sh`](skills/install.sh) |
-| 26 | ✓ | [`skills/README.md`](skills/README.md) |
-| 27 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
-| 28 | ✓ | [`skills/versions.json`](skills/versions.json) |
-| 29 | ✓ | [`skills/wren-dlt-connector/evals/evals.json`](skills/wren-dlt-connector/evals/evals.json) |
-| 30 | ✓ | [`skills/wren-dlt-connector/references/dlt_sources.md`](skills/wren-dlt-connector/references/dlt_sources.md) |
-| 31 | ✓ | [`skills/wren-dlt-connector/scripts/introspect_dlt.py`](skills/wren-dlt-connector/scripts/introspect_dlt.py) |
-| 32 | ✓ | [`skills/wren-dlt-connector/SKILL.md`](skills/wren-dlt-connector/SKILL.md) |
-| 33 | ✓ | [`skills/wren-generate-mdl/SKILL.md`](skills/wren-generate-mdl/SKILL.md) |
-| 34 | ✓ | [`skills/wren-onboarding/SKILL.md`](skills/wren-onboarding/SKILL.md) |
-| 35 | ✓ | [`skills/wren-usage/references/memory.md`](skills/wren-usage/references/memory.md) |
-| 36 | ✓ | [`skills/wren-usage/references/wren-sql.md`](skills/wren-usage/references/wren-sql.md) |
-| 37 | ✓ | [`skills/wren-usage/SKILL.md`](skills/wren-usage/SKILL.md) |
-| 38 | → | [`core/wren/README.md`](core/wren/README.md) |
-| 39 | → | [`README.md`](README.md) |
+| 20 | ✓ | [`sdk/wren-pydantic/README.md`](sdk/wren-pydantic/README.md) |
+| 21 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
+| 22 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 23 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
+| 24 | ✓ | [`skills/check-versions.sh`](skills/check-versions.sh) |
+| 25 | ✓ | [`skills/index.json`](skills/index.json) |
+| 26 | ✓ | [`skills/install.sh`](skills/install.sh) |
+| 27 | ✓ | [`skills/README.md`](skills/README.md) |
+| 28 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
+| 29 | ✓ | [`skills/versions.json`](skills/versions.json) |
+| 30 | ✓ | [`skills/wren-dlt-connector/evals/evals.json`](skills/wren-dlt-connector/evals/evals.json) |
+| 31 | ✓ | [`skills/wren-dlt-connector/references/dlt_sources.md`](skills/wren-dlt-connector/references/dlt_sources.md) |
+| 32 | ✓ | [`skills/wren-dlt-connector/scripts/introspect_dlt.py`](skills/wren-dlt-connector/scripts/introspect_dlt.py) |
+| 33 | ✓ | [`skills/wren-dlt-connector/SKILL.md`](skills/wren-dlt-connector/SKILL.md) |
+| 34 | ✓ | [`skills/wren-generate-mdl/SKILL.md`](skills/wren-generate-mdl/SKILL.md) |
+| 35 | ✓ | [`skills/wren-onboarding/SKILL.md`](skills/wren-onboarding/SKILL.md) |
+| 36 | ✓ | [`skills/wren-usage/references/memory.md`](skills/wren-usage/references/memory.md) |
+| 37 | ✓ | [`skills/wren-usage/references/wren-sql.md`](skills/wren-usage/references/wren-sql.md) |
+| 38 | ✓ | [`skills/wren-usage/SKILL.md`](skills/wren-usage/SKILL.md) |
+| 39 | → | [`core/wren/README.md`](core/wren/README.md) |
+| 40 | → | [`README.md`](README.md) |
 
 ---
 

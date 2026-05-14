@@ -6,7 +6,7 @@
 ![macOS](https://img.shields.io/badge/macOS-blue) ![WSL2](https://img.shields.io/badge/WSL2-blue) ![Linux](https://img.shields.io/badge/Linux-blue) ![Windows](https://img.shields.io/badge/Windows-blue) ![MSYS2](https://img.shields.io/badge/MSYS2-blue) ![SSH](https://img.shields.io/badge/SSH-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-![Claude Code](https://img.shields.io/badge/Claude_Code-hook-ffab01) ![Amp](https://img.shields.io/badge/Amp-adapter-ffab01) ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-adapter-ffab01) ![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-adapter-ffab01) ![Codex](https://img.shields.io/badge/Codex-adapter-ffab01) ![Cursor](https://img.shields.io/badge/Cursor-adapter-ffab01) ![OpenCode](https://img.shields.io/badge/OpenCode-adapter-ffab01) ![Kilo CLI](https://img.shields.io/badge/Kilo_CLI-adapter-ffab01) ![Kiro](https://img.shields.io/badge/Kiro-adapter-ffab01) ![Kimi Code](https://img.shields.io/badge/Kimi_Code-adapter-ffab01) ![Windsurf](https://img.shields.io/badge/Windsurf-adapter-ffab01) ![Antigravity](https://img.shields.io/badge/Antigravity-adapter-ffab01) ![OpenClaw](https://img.shields.io/badge/OpenClaw-adapter-ffab01) ![Rovo Dev CLI](https://img.shields.io/badge/Rovo_Dev_CLI-adapter-ffab01) ![DeepAgents](https://img.shields.io/badge/DeepAgents-adapter-ffab01)
+![Claude Code](https://img.shields.io/badge/Claude_Code-hook-ffab01) ![Amp](https://img.shields.io/badge/Amp-adapter-ffab01) ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-adapter-ffab01) ![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-adapter-ffab01) ![Codex](https://img.shields.io/badge/Codex-adapter-ffab01) ![Cursor](https://img.shields.io/badge/Cursor-adapter-ffab01) ![OpenCode](https://img.shields.io/badge/OpenCode-adapter-ffab01) ![Kilo CLI](https://img.shields.io/badge/Kilo_CLI-adapter-ffab01) ![Kiro](https://img.shields.io/badge/Kiro-adapter-ffab01) ![Kimi Code](https://img.shields.io/badge/Kimi_Code-adapter-ffab01) ![Windsurf](https://img.shields.io/badge/Windsurf-adapter-ffab01) ![Antigravity](https://img.shields.io/badge/Antigravity-adapter-ffab01) ![OpenClaw](https://img.shields.io/badge/OpenClaw-adapter-ffab01) ![Rovo Dev CLI](https://img.shields.io/badge/Rovo_Dev_CLI-adapter-ffab01) ![DeepAgents](https://img.shields.io/badge/DeepAgents-adapter-ffab01) ![oh-my-pi](https://img.shields.io/badge/oh--my--pi-adapter-ffab01)
 
 **AIコーディングエージェントが注意を必要とする時に、ゲームキャラクターのボイスライン＋ビジュアルオーバーレイ通知を再生 — またはMCPでエージェント自身にサウンドを選ばせることも可能。**
 
@@ -620,11 +620,12 @@ peon-ping はフックをサポートする任意のエージェント型 IDE �
 | **Kilo CLI** | アダプター | `bash adapters/kilo.sh` / `powershell adapters/kilo.ps1`（[セットアップ](#kilo-cli-セットアップ)） |
 | **Kiro** | アダプター | `adapters/kiro.sh`（または `.ps1`）を指すフックエントリを追加（[セットアップ](#kiro-セットアップ)） |
 | **Windsurf** | アダプター | `adapters/windsurf.sh`（または `.ps1`）を指すフックエントリを追加（[セットアップ](#windsurf-セットアップ)） |
-| **Google Antigravity** | アダプター | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1` |
+| **Google Antigravity** | アダプター | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1`。ヘッドレス / macOS LaunchAgent 用途には `bash adapters/antigravity-py.sh --install`（Python `watchdog` ベース、25 秒のアイドル閾値、`pip3 install watchdog` が必要）もあります。 |
 | **Kimi Code** | アダプター | `bash adapters/kimi.sh --install` / `powershell adapters/kimi.ps1 -Install`（[セットアップ](#kimi-code-セットアップ)） |
 | **OpenClaw** | アダプター | OpenClaw スキルから `adapters/openclaw.sh <event>`（または `openclaw.ps1`）を呼び出し |
 | **Rovo Dev CLI** | アダプター | `~/.rovodev` が存在する場合 `install.sh` が自動登録、または `~/.rovodev/config.yml` にフックを手動追加（[セットアップ](#rovo-dev-cli-セットアップ)） |
 | **DeepAgents** | アダプター | `bash adapters/deepagents.sh` / `powershell adapters/deepagents.ps1`（[セットアップ](#deepagents-セットアップ)） |
+| **oh-my-pi (omp)** | アダプター | `bash adapters/omp.sh`（[セットアップ](#oh-my-pi-omp-セットアップ)） |
 
 > **Windows:** すべてのアダプターにネイティブ PowerShell（`.ps1`）バージョンがあります。Windows インストーラー（`install.ps1`）はそれらを `~/.claude/hooks/peon-ping/adapters/` にコピーします。ファイルシステムウォッチャー（Amp、Antigravity、Kimi）は fswatch/inotifywait の代わりに .NET `FileSystemWatcher` を使用 — 追加の依存関係は不要。
 
@@ -1024,6 +1025,35 @@ curl -fsSL peonping.com/install | bash -s -- --kimi
 - エージェントのターン完了 → 完了サウンド（*"Work, work."*、*"Job's done!"*）
 - コンテキスト圧縮 → トークン制限サウンド
 - サブエージェント起動 → サブエージェント追跡
+
+### oh-my-pi (omp) セットアップ
+
+[oh-my-pi](https://github.com/can1357/oh-my-pi)（`omp`）用のネイティブ TypeScript 拡張。[CESP v1.0](https://github.com/PeonPing/openpeon) に完全準拠。omp の `ExtensionAPI` ライフサイクルイベントを購読し、`peon.sh` を通じてルーティングします。omp ユーザーが peon-ping のすべての機能を利用できます：サウンドパック、デスクトップ通知、トレーナーリマインダー、モバイルプッシュ、SSH/devcontainer リレー、タブタイトル更新。
+
+**クイックインストール：**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/omp.sh | bash
+```
+
+インストーラーは `peon-ping.ts` と `package.json` を `~/.omp/agent/extensions/peon-ping/` にコピーします。その後 omp を再起動してください。
+
+**イベントマッピング：**
+
+| omp イベント                           | peon-ping イベント    |
+|----------------------------------------|-----------------------|
+| `session_start`                        | `SessionStart`        |
+| `turn_start`                           | `UserPromptSubmit`    |
+| `turn_end`                             | `Stop`                |
+| `tool_result` with `isError: true`     | `PostToolUseFailure`  |
+| `auto_compaction_start`                | `PreCompact`          |
+| `session_shutdown`                     | `SessionEnd`          |
+
+**アンインストール：**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/omp.sh | bash -s -- --uninstall
+```
 
 ## リモート開発（SSH / Devcontainers / Codespaces）
 

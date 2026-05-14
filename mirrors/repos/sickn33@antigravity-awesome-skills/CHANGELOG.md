@@ -11,6 +11,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes yet._
 
+## [11.2.0] - 2026-05-13 - "Market Intelligence, Token Routing, and Chinese Growth Skills"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release merges PRs #587, #588, #589, #590, and #591 through the maintainer workflow. It adds measurement-driven model routing, Chinese market strategy skills, MCP tool-building guidance, options-flow analysis, RSS news sentiment briefings, and a refreshed Hermes Tweet path for the X/Twitter scraper.
+
+## New Skills
+
+- **tokenwise** - measurement-driven Claude Code model routing with local cost logs, A/B validation, and guarded Haiku/Sonnet/Opus task routing.
+- **mcp-tool-developer** - end-to-end MCP server and tool development guidance across schema design, TypeScript/Python implementation, testing, deployment, and registry publishing.
+- **wechat-official-account-strategist** - WeChat Official Account content strategy, publishing cadence, topic planning, and growth guidance.
+- **xiaohongshu-content-strategist** - Xiaohongshu content planning, SEO-style discovery, visual hooks, and China-market creator workflows.
+- **options-flow-analyzer** - real-versus-lottery options flow analysis that filters deep OTM noise from raw put/call ratios.
+- **news-sentiment-engine** - multi-source RSS news aggregation and Claude-powered sentiment briefing workflow.
+
+## Improvements
+
+- **x-twitter-scraper refresh** - documents the Hermes Tweet plugin path alongside the existing X/Twitter scraping guidance.
+- **overlap cleanup** - resolves the duplicate `options-flow-analyzer` PR overlap by keeping the richer release-ready metadata, usage, and limitations coverage.
+- **generated artifact sync** - refreshes catalog, skill index, plugin mirrors, web assets, package metadata, and visible skill counts to `1,459+`.
+
+## Who should care
+
+- **Claude Code users** get a practical cost-routing skill for measuring and reducing model spend.
+- **Market and research users** get options-flow filtering plus structured news sentiment briefings.
+- **China-market operators** get platform-specific WeChat and Xiaohongshu strategy workflows.
+- **MCP builders** get a focused skill for designing, testing, and shipping tool servers.
+- **Maintainers** get a cleaned-up five-PR batch with synced contributors, generated assets, and release validation.
+
+## Credits
+
+- **[@memurcie](https://github.com/memurcie)** for PR #587 (`tokenwise`).
+- **[@kriptoburak](https://github.com/kriptoburak)** for PR #588 (`x-twitter-scraper` Hermes Tweet path).
+- **[@demo112](https://github.com/demo112)** for PR #589 (`mcp-tool-developer`, `wechat-official-account-strategist`, `xiaohongshu-content-strategist`).
+- **[@tellmefrankie](https://github.com/tellmefrankie)** for PRs #590 and #591 (`options-flow-analyzer`, `news-sentiment-engine`).
+
 ## [11.1.0] - 2026-05-11 - "Trace Audits, YouTube Ingest, and Reasoning Harnesses"
 
 > Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.

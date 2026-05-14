@@ -81,9 +81,13 @@ For translatable entities with Grid: read `references/entity-doctrine.md`
 Read: `references/services-split.md`
 
 Key rules:
-- Repository services only in `config/common.yml` (Doctrine-level, no `PrestaShopBundle` deps)
+- `config/services.yml` is loaded by **both** kernels — import only `common.yml` here
+- `config/admin/services.yml` is loaded by admin kernel only — import `../common.yml` + admin components (never `common.yml` without the `../` prefix)
+- Repository services only in `config/common.yml` components (Doctrine-level, no `PrestaShopBundle` deps)
 - All `PrestaShopBundle`-dependent services go in `config/admin/services.yml`
 - Always split into component sub-folders under `config/components/` — never one flat `services.yml`
+- **All component yml files must declare `_defaults: public: true`** — required for `$this->get('service.id')` to work in both front and admin module class contexts
+- **Never point `config/services.yml` at `admin/services.yml`** — this loads admin-only services into the front kernel, breaking container compilation and making all `$this->get()` calls fail silently
 
 ### 4) Security (mandatory)
 

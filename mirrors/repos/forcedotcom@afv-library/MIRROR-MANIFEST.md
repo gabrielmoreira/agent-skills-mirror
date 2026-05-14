@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns, 167 file(s) materialized.
+Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns, 174 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `forcedotcom/afv-library` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 167 |
+| Files         | 174 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -141,91 +141,98 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 80 | ✓ | [`skills/developing-agentforce/references/scoring-rubric.md`](skills/developing-agentforce/references/scoring-rubric.md) |
 | 81 | ✓ | [`skills/developing-agentforce/references/version-history.md`](skills/developing-agentforce/references/version-history.md) |
 | 82 | ✓ | [`skills/developing-agentforce/SKILL.md`](skills/developing-agentforce/SKILL.md) |
-| 83 | ✓ | [`skills/generating-apex-test/assets/test-class-template.cls`](skills/generating-apex-test/assets/test-class-template.cls) |
-| 84 | ✓ | [`skills/generating-apex-test/assets/test-data-factory-template.cls`](skills/generating-apex-test/assets/test-data-factory-template.cls) |
-| 85 | ✓ | [`skills/generating-apex-test/CREDITS.md`](skills/generating-apex-test/CREDITS.md) |
-| 86 | ✓ | [`skills/generating-apex-test/references/assertion-patterns.md`](skills/generating-apex-test/references/assertion-patterns.md) |
-| 87 | ✓ | [`skills/generating-apex-test/references/async-testing.md`](skills/generating-apex-test/references/async-testing.md) |
-| 88 | ✓ | [`skills/generating-apex-test/references/mocking-patterns.md`](skills/generating-apex-test/references/mocking-patterns.md) |
-| 89 | ✓ | [`skills/generating-apex-test/references/test-data-factory.md`](skills/generating-apex-test/references/test-data-factory.md) |
-| 90 | ✓ | [`skills/generating-apex-test/SKILL.md`](skills/generating-apex-test/SKILL.md) |
-| 91 | ✓ | [`skills/generating-apex/assets/abstract.cls`](skills/generating-apex/assets/abstract.cls) |
-| 92 | ✓ | [`skills/generating-apex/assets/batch.cls`](skills/generating-apex/assets/batch.cls) |
-| 93 | ✓ | [`skills/generating-apex/assets/domain.cls`](skills/generating-apex/assets/domain.cls) |
-| 94 | ✓ | [`skills/generating-apex/assets/dto.cls`](skills/generating-apex/assets/dto.cls) |
-| 95 | ✓ | [`skills/generating-apex/assets/exception.cls`](skills/generating-apex/assets/exception.cls) |
-| 96 | ✓ | [`skills/generating-apex/assets/interface.cls`](skills/generating-apex/assets/interface.cls) |
-| 97 | ✓ | [`skills/generating-apex/assets/invocable.cls`](skills/generating-apex/assets/invocable.cls) |
-| 98 | ✓ | [`skills/generating-apex/assets/queueable.cls`](skills/generating-apex/assets/queueable.cls) |
-| 99 | ✓ | [`skills/generating-apex/assets/rest-resource.cls`](skills/generating-apex/assets/rest-resource.cls) |
-| 100 | ✓ | [`skills/generating-apex/assets/schedulable.cls`](skills/generating-apex/assets/schedulable.cls) |
-| 101 | ✓ | [`skills/generating-apex/assets/selector.cls`](skills/generating-apex/assets/selector.cls) |
-| 102 | ✓ | [`skills/generating-apex/assets/service.cls`](skills/generating-apex/assets/service.cls) |
-| 103 | ✓ | [`skills/generating-apex/assets/trigger.cls`](skills/generating-apex/assets/trigger.cls) |
-| 104 | ✓ | [`skills/generating-apex/assets/utility.cls`](skills/generating-apex/assets/utility.cls) |
-| 105 | ✓ | [`skills/generating-apex/CREDITS.md`](skills/generating-apex/CREDITS.md) |
-| 106 | ✓ | [`skills/generating-apex/references/AccountDeduplicationBatch.cls`](skills/generating-apex/references/AccountDeduplicationBatch.cls) |
-| 107 | ✓ | [`skills/generating-apex/references/AccountSelector.cls`](skills/generating-apex/references/AccountSelector.cls) |
-| 108 | ✓ | [`skills/generating-apex/references/AccountService.cls`](skills/generating-apex/references/AccountService.cls) |
-| 109 | ✓ | [`skills/generating-apex/SKILL.md`](skills/generating-apex/SKILL.md) |
-| 110 | ✓ | [`skills/generating-custom-application/SKILL.md`](skills/generating-custom-application/SKILL.md) |
-| 111 | ✓ | [`skills/generating-custom-field/SKILL.md`](skills/generating-custom-field/SKILL.md) |
-| 112 | ✓ | [`skills/generating-custom-lightning-type/SKILL.md`](skills/generating-custom-lightning-type/SKILL.md) |
-| 113 | ✓ | [`skills/generating-custom-object/SKILL.md`](skills/generating-custom-object/SKILL.md) |
-| 114 | ✓ | [`skills/generating-custom-tab/SKILL.md`](skills/generating-custom-tab/SKILL.md) |
-| 115 | ✓ | [`skills/generating-flexipage/SKILL.md`](skills/generating-flexipage/SKILL.md) |
-| 116 | ✓ | [`skills/generating-flow/SKILL.md`](skills/generating-flow/SKILL.md) |
-| 117 | ✓ | [`skills/generating-lightning-app/SKILL.md`](skills/generating-lightning-app/SKILL.md) |
-| 118 | ✓ | [`skills/generating-list-view/SKILL.md`](skills/generating-list-view/SKILL.md) |
-| 119 | ✓ | [`skills/generating-permission-set/SKILL.md`](skills/generating-permission-set/SKILL.md) |
-| 120 | ✓ | [`skills/generating-ui-bundle-features/SKILL.md`](skills/generating-ui-bundle-features/SKILL.md) |
-| 121 | ✓ | [`skills/generating-ui-bundle-metadata/implementation/csp-metadata-format.md`](skills/generating-ui-bundle-metadata/implementation/csp-metadata-format.md) |
-| 122 | ✓ | [`skills/generating-ui-bundle-metadata/SKILL.md`](skills/generating-ui-bundle-metadata/SKILL.md) |
-| 123 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-custom-site.md`](skills/generating-ui-bundle-site/docs/configure-metadata-custom-site.md) |
-| 124 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-bundle.md`](skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-bundle.md) |
-| 125 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-config.md`](skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-config.md) |
-| 126 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience.md`](skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience.md) |
-| 127 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-network.md`](skills/generating-ui-bundle-site/docs/configure-metadata-network.md) |
-| 128 | ✓ | [`skills/generating-ui-bundle-site/docs/update-site-urls.md`](skills/generating-ui-bundle-site/docs/update-site-urls.md) |
-| 129 | ✓ | [`skills/generating-ui-bundle-site/SKILL.md`](skills/generating-ui-bundle-site/SKILL.md) |
-| 130 | ✓ | [`skills/generating-validation-rule/SKILL.md`](skills/generating-validation-rule/SKILL.md) |
-| 131 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/constraints.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/constraints.md) |
-| 132 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/examples.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/examples.md) |
-| 133 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/style-tokens.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/style-tokens.md) |
-| 134 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/troubleshooting.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/troubleshooting.md) |
-| 135 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/SKILL.md`](skills/implementing-ui-bundle-agentforce-conversation-client/SKILL.md) |
-| 136 | ✓ | [`skills/implementing-ui-bundle-file-upload/SKILL.md`](skills/implementing-ui-bundle-file-upload/SKILL.md) |
-| 137 | ✓ | [`skills/observing-agentforce/apex/AgentforceOptimizeService.cls`](skills/observing-agentforce/apex/AgentforceOptimizeService.cls) |
-| 138 | ✓ | [`skills/observing-agentforce/apex/AgentforceOptimizeService.cls-meta.xml`](skills/observing-agentforce/apex/AgentforceOptimizeService.cls-meta.xml) |
-| 139 | ✓ | [`skills/observing-agentforce/references/improve-reference.md`](skills/observing-agentforce/references/improve-reference.md) |
-| 140 | ✓ | [`skills/observing-agentforce/references/issue-classification.md`](skills/observing-agentforce/references/issue-classification.md) |
-| 141 | ✓ | [`skills/observing-agentforce/references/reproduce-reference.md`](skills/observing-agentforce/references/reproduce-reference.md) |
-| 142 | ✓ | [`skills/observing-agentforce/references/stdm-queries.md`](skills/observing-agentforce/references/stdm-queries.md) |
-| 143 | ✓ | [`skills/observing-agentforce/references/stdm-schema.md`](skills/observing-agentforce/references/stdm-schema.md) |
-| 144 | ✓ | [`skills/observing-agentforce/SKILL.md`](skills/observing-agentforce/SKILL.md) |
-| 145 | ✓ | [`skills/searching-media/SKILL.md`](skills/searching-media/SKILL.md) |
-| 146 | ✓ | [`skills/switching-org/SKILL.md`](skills/switching-org/SKILL.md) |
-| 147 | ✓ | [`skills/testing-agentforce/assets/basic-test-spec.yaml`](skills/testing-agentforce/assets/basic-test-spec.yaml) |
-| 148 | ✓ | [`skills/testing-agentforce/assets/guardrail-test-spec.yaml`](skills/testing-agentforce/assets/guardrail-test-spec.yaml) |
-| 149 | ✓ | [`skills/testing-agentforce/assets/standard-test-spec.yaml`](skills/testing-agentforce/assets/standard-test-spec.yaml) |
-| 150 | ✓ | [`skills/testing-agentforce/references/action-execution.md`](skills/testing-agentforce/references/action-execution.md) |
-| 151 | ✓ | [`skills/testing-agentforce/references/batch-testing.md`](skills/testing-agentforce/references/batch-testing.md) |
-| 152 | ✓ | [`skills/testing-agentforce/references/preview-testing.md`](skills/testing-agentforce/references/preview-testing.md) |
-| 153 | ✓ | [`skills/testing-agentforce/references/test-report-format.md`](skills/testing-agentforce/references/test-report-format.md) |
-| 154 | ✓ | [`skills/testing-agentforce/references/troubleshooting.md`](skills/testing-agentforce/references/troubleshooting.md) |
-| 155 | ✓ | [`skills/testing-agentforce/SKILL.md`](skills/testing-agentforce/SKILL.md) |
-| 156 | ✓ | [`skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md) |
-| 157 | ✓ | [`skills/uplifting-components-to-slds2/references/common-patterns.md`](skills/uplifting-components-to-slds2/references/common-patterns.md) |
-| 158 | ✓ | [`skills/uplifting-components-to-slds2/references/examples.md`](skills/uplifting-components-to-slds2/references/examples.md) |
-| 159 | ✓ | [`skills/uplifting-components-to-slds2/references/migration-checklist.md`](skills/uplifting-components-to-slds2/references/migration-checklist.md) |
-| 160 | ✓ | [`skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md) |
-| 161 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md`](skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md) |
-| 162 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md`](skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md) |
-| 163 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md`](skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md) |
-| 164 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md`](skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md) |
-| 165 | ✓ | [`skills/uplifting-components-to-slds2/SKILL.md`](skills/uplifting-components-to-slds2/SKILL.md) |
-| 166 | ✓ | [`skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh`](skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh) |
-| 167 | ✓ | [`skills/using-ui-bundle-salesforce-data/SKILL.md`](skills/using-ui-bundle-salesforce-data/SKILL.md) |
+| 83 | ✓ | [`skills/developing-datacloud-code-extension/references/quick-reference.md`](skills/developing-datacloud-code-extension/references/quick-reference.md) |
+| 84 | ✓ | [`skills/developing-datacloud-code-extension/references/README.md`](skills/developing-datacloud-code-extension/references/README.md) |
+| 85 | ✓ | [`skills/developing-datacloud-code-extension/SKILL.md`](skills/developing-datacloud-code-extension/SKILL.md) |
+| 86 | ✓ | [`skills/generating-apex-test/assets/test-class-template.cls`](skills/generating-apex-test/assets/test-class-template.cls) |
+| 87 | ✓ | [`skills/generating-apex-test/assets/test-data-factory-template.cls`](skills/generating-apex-test/assets/test-data-factory-template.cls) |
+| 88 | ✓ | [`skills/generating-apex-test/CREDITS.md`](skills/generating-apex-test/CREDITS.md) |
+| 89 | ✓ | [`skills/generating-apex-test/references/assertion-patterns.md`](skills/generating-apex-test/references/assertion-patterns.md) |
+| 90 | ✓ | [`skills/generating-apex-test/references/async-testing.md`](skills/generating-apex-test/references/async-testing.md) |
+| 91 | ✓ | [`skills/generating-apex-test/references/mocking-patterns.md`](skills/generating-apex-test/references/mocking-patterns.md) |
+| 92 | ✓ | [`skills/generating-apex-test/references/test-data-factory.md`](skills/generating-apex-test/references/test-data-factory.md) |
+| 93 | ✓ | [`skills/generating-apex-test/SKILL.md`](skills/generating-apex-test/SKILL.md) |
+| 94 | ✓ | [`skills/generating-apex/assets/abstract.cls`](skills/generating-apex/assets/abstract.cls) |
+| 95 | ✓ | [`skills/generating-apex/assets/batch.cls`](skills/generating-apex/assets/batch.cls) |
+| 96 | ✓ | [`skills/generating-apex/assets/domain.cls`](skills/generating-apex/assets/domain.cls) |
+| 97 | ✓ | [`skills/generating-apex/assets/dto.cls`](skills/generating-apex/assets/dto.cls) |
+| 98 | ✓ | [`skills/generating-apex/assets/exception.cls`](skills/generating-apex/assets/exception.cls) |
+| 99 | ✓ | [`skills/generating-apex/assets/interface.cls`](skills/generating-apex/assets/interface.cls) |
+| 100 | ✓ | [`skills/generating-apex/assets/invocable.cls`](skills/generating-apex/assets/invocable.cls) |
+| 101 | ✓ | [`skills/generating-apex/assets/queueable.cls`](skills/generating-apex/assets/queueable.cls) |
+| 102 | ✓ | [`skills/generating-apex/assets/rest-resource.cls`](skills/generating-apex/assets/rest-resource.cls) |
+| 103 | ✓ | [`skills/generating-apex/assets/schedulable.cls`](skills/generating-apex/assets/schedulable.cls) |
+| 104 | ✓ | [`skills/generating-apex/assets/selector.cls`](skills/generating-apex/assets/selector.cls) |
+| 105 | ✓ | [`skills/generating-apex/assets/service.cls`](skills/generating-apex/assets/service.cls) |
+| 106 | ✓ | [`skills/generating-apex/assets/trigger.cls`](skills/generating-apex/assets/trigger.cls) |
+| 107 | ✓ | [`skills/generating-apex/assets/utility.cls`](skills/generating-apex/assets/utility.cls) |
+| 108 | ✓ | [`skills/generating-apex/CREDITS.md`](skills/generating-apex/CREDITS.md) |
+| 109 | ✓ | [`skills/generating-apex/references/AccountDeduplicationBatch.cls`](skills/generating-apex/references/AccountDeduplicationBatch.cls) |
+| 110 | ✓ | [`skills/generating-apex/references/AccountSelector.cls`](skills/generating-apex/references/AccountSelector.cls) |
+| 111 | ✓ | [`skills/generating-apex/references/AccountService.cls`](skills/generating-apex/references/AccountService.cls) |
+| 112 | ✓ | [`skills/generating-apex/SKILL.md`](skills/generating-apex/SKILL.md) |
+| 113 | ✓ | [`skills/generating-custom-application/SKILL.md`](skills/generating-custom-application/SKILL.md) |
+| 114 | ✓ | [`skills/generating-custom-field/SKILL.md`](skills/generating-custom-field/SKILL.md) |
+| 115 | ✓ | [`skills/generating-custom-lightning-type/SKILL.md`](skills/generating-custom-lightning-type/SKILL.md) |
+| 116 | ✓ | [`skills/generating-custom-object/SKILL.md`](skills/generating-custom-object/SKILL.md) |
+| 117 | ✓ | [`skills/generating-custom-tab/SKILL.md`](skills/generating-custom-tab/SKILL.md) |
+| 118 | ✓ | [`skills/generating-flexipage/SKILL.md`](skills/generating-flexipage/SKILL.md) |
+| 119 | ✓ | [`skills/generating-flow/SKILL.md`](skills/generating-flow/SKILL.md) |
+| 120 | ✓ | [`skills/generating-lightning-app/SKILL.md`](skills/generating-lightning-app/SKILL.md) |
+| 121 | ✓ | [`skills/generating-list-view/SKILL.md`](skills/generating-list-view/SKILL.md) |
+| 122 | ✓ | [`skills/generating-permission-set/SKILL.md`](skills/generating-permission-set/SKILL.md) |
+| 123 | ✓ | [`skills/generating-ui-bundle-features/SKILL.md`](skills/generating-ui-bundle-features/SKILL.md) |
+| 124 | ✓ | [`skills/generating-ui-bundle-metadata/implementation/csp-metadata-format.md`](skills/generating-ui-bundle-metadata/implementation/csp-metadata-format.md) |
+| 125 | ✓ | [`skills/generating-ui-bundle-metadata/SKILL.md`](skills/generating-ui-bundle-metadata/SKILL.md) |
+| 126 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-custom-site.md`](skills/generating-ui-bundle-site/docs/configure-metadata-custom-site.md) |
+| 127 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-bundle.md`](skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-bundle.md) |
+| 128 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-config.md`](skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience-config.md) |
+| 129 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience.md`](skills/generating-ui-bundle-site/docs/configure-metadata-digital-experience.md) |
+| 130 | ✓ | [`skills/generating-ui-bundle-site/docs/configure-metadata-network.md`](skills/generating-ui-bundle-site/docs/configure-metadata-network.md) |
+| 131 | ✓ | [`skills/generating-ui-bundle-site/docs/update-site-urls.md`](skills/generating-ui-bundle-site/docs/update-site-urls.md) |
+| 132 | ✓ | [`skills/generating-ui-bundle-site/SKILL.md`](skills/generating-ui-bundle-site/SKILL.md) |
+| 133 | ✓ | [`skills/generating-validation-rule/SKILL.md`](skills/generating-validation-rule/SKILL.md) |
+| 134 | ✓ | [`skills/getting-datacloud-schema/references/README.md`](skills/getting-datacloud-schema/references/README.md) |
+| 135 | ✓ | [`skills/getting-datacloud-schema/scripts/get_dlo_schema.py`](skills/getting-datacloud-schema/scripts/get_dlo_schema.py) |
+| 136 | ✓ | [`skills/getting-datacloud-schema/scripts/get_dmo_schema.py`](skills/getting-datacloud-schema/scripts/get_dmo_schema.py) |
+| 137 | ✓ | [`skills/getting-datacloud-schema/SKILL.md`](skills/getting-datacloud-schema/SKILL.md) |
+| 138 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/constraints.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/constraints.md) |
+| 139 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/examples.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/examples.md) |
+| 140 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/style-tokens.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/style-tokens.md) |
+| 141 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/references/troubleshooting.md`](skills/implementing-ui-bundle-agentforce-conversation-client/references/troubleshooting.md) |
+| 142 | ✓ | [`skills/implementing-ui-bundle-agentforce-conversation-client/SKILL.md`](skills/implementing-ui-bundle-agentforce-conversation-client/SKILL.md) |
+| 143 | ✓ | [`skills/implementing-ui-bundle-file-upload/SKILL.md`](skills/implementing-ui-bundle-file-upload/SKILL.md) |
+| 144 | ✓ | [`skills/observing-agentforce/apex/AgentforceOptimizeService.cls`](skills/observing-agentforce/apex/AgentforceOptimizeService.cls) |
+| 145 | ✓ | [`skills/observing-agentforce/apex/AgentforceOptimizeService.cls-meta.xml`](skills/observing-agentforce/apex/AgentforceOptimizeService.cls-meta.xml) |
+| 146 | ✓ | [`skills/observing-agentforce/references/improve-reference.md`](skills/observing-agentforce/references/improve-reference.md) |
+| 147 | ✓ | [`skills/observing-agentforce/references/issue-classification.md`](skills/observing-agentforce/references/issue-classification.md) |
+| 148 | ✓ | [`skills/observing-agentforce/references/reproduce-reference.md`](skills/observing-agentforce/references/reproduce-reference.md) |
+| 149 | ✓ | [`skills/observing-agentforce/references/stdm-queries.md`](skills/observing-agentforce/references/stdm-queries.md) |
+| 150 | ✓ | [`skills/observing-agentforce/references/stdm-schema.md`](skills/observing-agentforce/references/stdm-schema.md) |
+| 151 | ✓ | [`skills/observing-agentforce/SKILL.md`](skills/observing-agentforce/SKILL.md) |
+| 152 | ✓ | [`skills/searching-media/SKILL.md`](skills/searching-media/SKILL.md) |
+| 153 | ✓ | [`skills/switching-org/SKILL.md`](skills/switching-org/SKILL.md) |
+| 154 | ✓ | [`skills/testing-agentforce/assets/basic-test-spec.yaml`](skills/testing-agentforce/assets/basic-test-spec.yaml) |
+| 155 | ✓ | [`skills/testing-agentforce/assets/guardrail-test-spec.yaml`](skills/testing-agentforce/assets/guardrail-test-spec.yaml) |
+| 156 | ✓ | [`skills/testing-agentforce/assets/standard-test-spec.yaml`](skills/testing-agentforce/assets/standard-test-spec.yaml) |
+| 157 | ✓ | [`skills/testing-agentforce/references/action-execution.md`](skills/testing-agentforce/references/action-execution.md) |
+| 158 | ✓ | [`skills/testing-agentforce/references/batch-testing.md`](skills/testing-agentforce/references/batch-testing.md) |
+| 159 | ✓ | [`skills/testing-agentforce/references/preview-testing.md`](skills/testing-agentforce/references/preview-testing.md) |
+| 160 | ✓ | [`skills/testing-agentforce/references/test-report-format.md`](skills/testing-agentforce/references/test-report-format.md) |
+| 161 | ✓ | [`skills/testing-agentforce/references/troubleshooting.md`](skills/testing-agentforce/references/troubleshooting.md) |
+| 162 | ✓ | [`skills/testing-agentforce/SKILL.md`](skills/testing-agentforce/SKILL.md) |
+| 163 | ✓ | [`skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/color-hooks-decision-guide.md) |
+| 164 | ✓ | [`skills/uplifting-components-to-slds2/references/common-patterns.md`](skills/uplifting-components-to-slds2/references/common-patterns.md) |
+| 165 | ✓ | [`skills/uplifting-components-to-slds2/references/examples.md`](skills/uplifting-components-to-slds2/references/examples.md) |
+| 166 | ✓ | [`skills/uplifting-components-to-slds2/references/migration-checklist.md`](skills/uplifting-components-to-slds2/references/migration-checklist.md) |
+| 167 | ✓ | [`skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md`](skills/uplifting-components-to-slds2/references/non-color-hooks-decision-guide.md) |
+| 168 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md`](skills/uplifting-components-to-slds2/references/rule-lwc-token-to-slds-hook.md) |
+| 169 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md`](skills/uplifting-components-to-slds2/references/rule-no-deprecated-tokens-slds1.md) |
+| 170 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md`](skills/uplifting-components-to-slds2/references/rule-no-hardcoded-values.md) |
+| 171 | ✓ | [`skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md`](skills/uplifting-components-to-slds2/references/rule-no-slds-class-overrides.md) |
+| 172 | ✓ | [`skills/uplifting-components-to-slds2/SKILL.md`](skills/uplifting-components-to-slds2/SKILL.md) |
+| 173 | ✓ | [`skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh`](skills/using-ui-bundle-salesforce-data/scripts/graphql-search.sh) |
+| 174 | ✓ | [`skills/using-ui-bundle-salesforce-data/SKILL.md`](skills/using-ui-bundle-salesforce-data/SKILL.md) |
 
 ---
 

@@ -42,6 +42,7 @@ Do not try to auto-install. Host sandbox + network policy may block it; leaving 
 - **Baseline is a worktree, not a main commit.** `evo init` creates `.evo/` but nothing in main changes. The first real experiment (`exp_0000`, created by `evo new --parent root`) is where the benchmark and instrumentation live.
 - **Ask the user as little as possible.** Every question is a beat of friction. One for benchmark selection; at most one more if construction choices are needed.
 - **Relay the dashboard URL verbatim when it prints.** This is the user's window into the run.
+- **Infra setup is not user-invocable.** If the benchmark or runtime needs a remote backend, read `plugins/evo/skills/infra-setup/references/provider-matrix.md` for the provider summary and setup/auth steps.
 
 ## 1. Explore the repo
 
@@ -101,7 +102,7 @@ For cases 2 and 3, ask once:
 
 > "I can wire up the benchmark in one of two ways:
 >
-> 1. **SDK mode** -- install the SDK (Python: `pip install evo-hq-agent` / Node: `npm install @evo-hq/evo-agent`). Richer per-task logs, ~5 lines of user code.
+> 1. **SDK mode** -- install the evo agent SDK with this project's package manager/runtime (for example `uv add --dev evo-hq-agent`, `python -m pip install evo-hq-agent`, or `npm install @evo-hq/evo-agent`). Richer per-task logs, ~5 lines of user code.
 > 2. **Inline mode** -- paste a ~30-line helper directly into the benchmark. Zero new dependencies. Same data contract."
 
 Pass the answer to `evo init` via `--instrumentation-mode <sdk|inline>` in step 7. **Never install packages without this confirmation.** If you skip the question (case 1), still pass the detected mode to `evo init` so optimize/subagent runs see a consistent value.
@@ -149,12 +150,18 @@ build/
 ## 7. Initialize the workspace
 
 ```bash
-evo init --target <file> --benchmark "<command using {worktree} and {target}>" --metric <max|min> \
+evo init --name "<short project name>" \
+  --target <file> --benchmark "<command using {worktree} and {target}>" --metric <max|min> \
   --host <claude-code|codex|opencode|openclaw|hermes|generic> \
-  --instrumentation-mode <sdk|inline> [--gate "<gate command>"]
+  --instrumentation-mode <sdk|inline> [--gate "<gate command>"] \
+  [--commit-strategy <all|tracked-only>]
 ```
 
 **`--host` is required.** Pass the host runtime you (the orchestrator) are running under. Allowed values: `claude-code`, `codex`, `opencode`, `openclaw`, `hermes`, `generic`. This is recorded in `.evo/meta.json` and read by `evo dispatch` (the optional fork-cache spawner). On `claude-code`, dispatch is available; on every other host evo's child-spawn falls back to your host's native parallel-Task primitive (no behavior change vs today). Pick the value matching the runtime you invoked `discover` from. Use `evo host set <value>` later if you change runtimes.
+
+**`--name` should be a short human-readable project label** for dashboard display, chosen from the repository/product context. Existing workspaces without a name fall back to the repo directory name; do not hand-edit config just to migrate them.
+
+**`--commit-strategy` is optional.** Default is `all`. Override with `--commit-strategy tracked-only` only when you want the stricter shisa-kanko flow where new files must be staged explicitly and acknowledged at `evo run` time.
 
 **Placeholder semantics.** Benchmark and gate commands support two placeholders, resolved lazily at run time by `evo run` / gate evaluation:
 
@@ -167,13 +174,21 @@ Example for a benchmark written at `{worktree}/benchmark.py` that will be commit
 
 ```bash
 evo init \
+  --name "ARC AGI solver" \
   --target agent/solve.py \
   --benchmark "python3 {worktree}/benchmark.py --target {target}" \
   --metric max \
   --host claude-code
 ```
 
-If the project uses a specific interpreter (poetry, pipenv, a venv), qualify it: `"poetry run python {worktree}/benchmark.py ..."`, `".venv/bin/python {worktree}/benchmark.py ..."`, etc.
+Use the same runtime entry point the project already uses, but make sure the command does not assume uncommitted runtime state exists inside the worktree. Worktrees are git checkouts; untracked directories such as local virtualenvs, build caches, and downloaded models are usually not present there. If the benchmark needs setup or a package-manager runner, configure evo's runtime recipe instead of baking local paths into the benchmark command:
+
+```bash
+evo config runtime set --prepare "uv sync" --before-run "make reset-test-state" --prefix "uv run"
+evo config runtime show
+```
+
+`prepare` and `before-run` execute in the experiment workspace. `prefix` is prepended to benchmark and gate commands.
 
 `evo init` creates `.evo/`, the synthetic `root` node, and auto-starts the dashboard. It prints a line like:
 
@@ -182,6 +197,16 @@ Dashboard live: http://127.0.0.1:8080 (pid 12345)
 ```
 
 **Relay that line back to the user verbatim.** If port 8080 is busy, evo auto-increments -- show whatever port prints. The URL is how the user watches the run.
+
+**Runtime environment.** If the benchmark needs keys or other runtime variables, configure them through evo rather than copying `.env` into worktrees or hand-editing `config.json`:
+
+```bash
+evo env load .env --all
+evo env load .env --allow KEY1,KEY2
+evo env show
+```
+
+Values are resolved fresh by the orchestrator on each `evo run`. Config stores dotenv source metadata and key names, not secret values. The benchmark and gates receive the resolved env; gates do not receive `EVO_*` artifact variables.
 
 ## 8. Set up gates
 
@@ -257,38 +282,18 @@ The wire protocol is the same either way: `task_<id>.json` written to `$EVO_TRAC
 
 ### 10c. Cheap validation run
 
-Before the full baseline, validate the toolchain with the cheapest possible end-to-end run (single task, smallest split, dry-run flag -- whatever is fastest).
-
-**Important: run this from the main repo root, not from inside the worktree.** The validation writes traces to `.evo/validate/`, which must resolve to the workspace's `.evo/` at the main repo root. If you run from the worktree, the relative path creates `<worktree>/.evo/validate/` and those artifacts get staged into the experiment commit when you run `git add` later.
-
-**Resolve `{worktree}`, `{target}`, and the validator script path yourself before running.** Evo substitutes `{worktree}` / `{target}` only inside `evo run`, not in a plain shell. The validation here is a plain shell call, so build the command with concrete absolute paths:
-
-- `WORKTREE` = the worktree path returned by `evo new`
-- `TARGET` = `$WORKTREE/<relative target path, e.g. agent/solve.py>`
-- `VALIDATOR` = `<absolute path to this skill dir>/scripts/validate_result.py` -- resolve by taking the absolute path of this `SKILL.md`'s directory and appending `scripts/validate_result.py`
+Before the full baseline, validate the toolchain with the cheapest possible end-to-end run (single task, smallest split, dry-run flag -- whatever is fastest). Run the check from the main repo root:
 
 ```bash
-# from main repo root
-WORKTREE="<...>"
-TARGET="$WORKTREE/<...>"
-VALIDATOR="<...>/scripts/validate_result.py"
-
-mkdir -p .evo/validate
-ATTEMPT="$(mktemp -d .evo/validate/run-XXXXXX)"
-mkdir -p "$ATTEMPT/traces"
-
-EVO_TRACES_DIR="$ATTEMPT/traces" \
-EVO_RESULT_PATH="$ATTEMPT/result.json" \
-EVO_EXPERIMENT_ID=validate \
-  python3 "$WORKTREE/benchmark.py" --target "$TARGET" \
-  >"$ATTEMPT/stdout.log" 2>"$ATTEMPT/stderr.log"
-
-python3 "$VALIDATOR" "$ATTEMPT/result.json"
+evo run exp_0000 --check
+evo gate check exp_0000
 ```
 
-Adapt the benchmark invocation (interpreter, args) to whatever you stored with `evo init`. The non-negotiable part is that the resulting bash command contains no literal `{worktree}`, `{target}`, or relative-script paths -- expand all of them to absolute paths before the shell runs the line. Each invocation gets a fresh attempt subdir, so re-running on failure is safe.
+`--check` runs the configured benchmark and gates and writes artifacts to a fresh check directory, but does **not** commit, evaluate, or consume retry budget. It uses evo's real placeholder substitution, runtime env resolution, remote workspace routing, and absolute `EVO_RESULT_PATH` / `EVO_TRACES_DIR` paths, so do not hand-roll a `mktemp` wrapper. Inspect the check artifacts with `evo show exp_0000` (the latest check appears under `attempts`).
 
-The validator asserts `result.json` exists, is non-empty, and is a JSON object with a numeric `score`. Also verify:
+Use `evo gate check <exp_id>` when only gate wiring changed or when you need to validate inherited gates without running the benchmark. It writes a `gate_check.json` artifact under the same checks directory and also does not mutate experiment state.
+
+The check asserts `result.json` exists, is non-empty, and is a JSON object with a numeric `score`. Also verify:
 
 - All dependencies resolve and the command completes.
 - Traces appear in `$EVO_TRACES_DIR` (if applicable).
@@ -334,7 +339,7 @@ evo run exp_0000
 
 If gates failed, `evo run` exits non-zero and leaves the experiment in a failed state. Fix the benchmark or target inside the worktree, commit, then `evo run exp_0000` again.
 
-**If `evo run` fails with a path error** (typically: `benchmark.py` not found), the stored benchmark command in `.evo/run_0000/config.json` is missing the `{worktree}` placeholder. Fix by re-initializing: `evo discard exp_0000 --reason "benchmark command missing {worktree}"` then re-run step 7 with the correct `--benchmark` string. Hand-editing `config.json` works but is technical debt.
+**If `evo run` fails with a path error** (typically: `benchmark.py` not found), the stored benchmark command is missing the `{worktree}` placeholder. Confirm with `evo config get benchmark`, then fix it in place: `evo config set benchmark "<correct command>"`. Re-run `evo run exp_0000` if attempts remain; otherwise `evo discard exp_0000 --reason "..."` and re-allocate.
 
 ## 12. Write `.evo/project.md`
 
@@ -367,11 +372,15 @@ End the skill by reporting in chat:
 ## Inspection commands (for debugging, reference only)
 
 ```bash
-evo get <id>                        # full experiment detail with scores
+evo show <id>                       # full state of one experiment (attempts, diffs, annotations, notes)
+evo config show                     # redacted workspace configuration
+evo config runtime show             # runtime prepare/before-run/prefix recipe
+evo env show                        # redacted runtime env metadata
 evo traces <id> <task>              # per-task trace
 evo annotate <id> <task> "analysis" # record failure analysis
-evo scratchpad                      # full state: tree, best path, frontier, annotations, diffs, gates
+evo scratchpad                      # bounded state summary
 evo gate list <id>                  # effective gates at a node (inherited)
+evo gate check <id>                 # run effective gates without benchmark or state mutation
 ```
 
 ## Rules

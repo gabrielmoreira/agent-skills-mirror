@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Donchitos/Claude-Code-Game-Studios` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `Donchitos/Claude-Code-Game-Studios` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Donchitos/Claude-Code-Game-Studios` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -131,11 +131,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`.claude/skills/test-setup/SKILL.md`](.claude/skills/test-setup/SKILL.md) |
 | 71 | ✓ | [`.claude/skills/ux-design/SKILL.md`](.claude/skills/ux-design/SKILL.md) |
 | 72 | ✓ | [`.claude/skills/ux-review/SKILL.md`](.claude/skills/ux-review/SKILL.md) |
-| 73 | ✓ | [`CCGS Skill Testing Framework/CLAUDE.md`](CCGS%20Skill%20Testing%20Framework/CLAUDE.md) |
-| 74 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 75 | ✓ | [`design/CLAUDE.md`](design/CLAUDE.md) |
-| 76 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 77 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 73 | ✓ | [`.claude/skills/vertical-slice/SKILL.md`](.claude/skills/vertical-slice/SKILL.md) |
+| 74 | ✓ | [`CCGS Skill Testing Framework/CLAUDE.md`](CCGS%20Skill%20Testing%20Framework/CLAUDE.md) |
+| 75 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 76 | ✓ | [`design/CLAUDE.md`](design/CLAUDE.md) |
+| 77 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 78 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
 
 ---
 

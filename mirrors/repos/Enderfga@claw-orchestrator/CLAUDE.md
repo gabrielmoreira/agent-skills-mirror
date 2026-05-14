@@ -11,7 +11,7 @@ support. Key source files:
 
 | File | Purpose |
 |------|---------|
-| `src/index.ts` | Plugin entry — registers all 35 canonical tools |
+| `src/index.ts` | Plugin entry — registers all 39 canonical tools |
 | `src/session-manager.ts` | Core orchestrator — session lifecycle, council, ultraplan/ultrareview |
 | `src/base-oneshot-session.ts` | Abstract base class for one-shot (process-per-send) engines |
 | `src/persistent-session.ts` | Claude Code CLI wrapper (spawn, JSON protocol, stream parsing) |
@@ -43,7 +43,7 @@ npm run test           # Vitest unit tests (src/__tests__/)
 
 Integration test (requires all 3 CLIs installed and authenticated):
 ```bash
-npx tsx test-integration.ts
+npx tsx scripts/test-integration.ts
 ```
 
 ## Conventions
@@ -57,7 +57,7 @@ npx tsx test-integration.ts
 ## Testing
 
 - Unit tests live in `src/__tests__/*.test.ts` (vitest, no external dependencies)
-- `test-integration.ts` is a manual smoke test requiring live CLIs — not part of CI
+- `scripts/test-integration.ts` is a manual smoke test requiring live CLIs — not part of CI
 - Tests are excluded from TypeScript compilation (tsconfig.json exclude) so they don't ship in dist/
 
 ## Documentation
@@ -169,7 +169,7 @@ Current tested versions (update on each release):
 
 | Engine | CLI | Tested Version | Invocation |
 |--------|-----|---------------|------------|
-| Claude | `claude` | 2.1.126 | Persistent subprocess, `--output-format stream-json` |
+| Claude | `claude` | 2.1.140 | Persistent subprocess, `--output-format stream-json` |
 | Codex | `codex` | 0.128.0 | `codex exec --sandbox workspace-write --skip-git-repo-check --json -C <dir>` (or `codex app-server --listen stdio://` for /goal) |
 | Gemini | `gemini` | 0.36.0 | `gemini -p <msg> --output-format stream-json --yolo/--sandbox` |
 | Cursor | `agent` | 2026.03.30 | `agent -p <msg> --force --trust --output-format stream-json --workspace <dir>` |

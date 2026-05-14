@@ -75,7 +75,7 @@ Key lessons extracted from successful rebuttal cases:
 - "Easily applicable" and "scalable" are important strengths
 - **Strategy**: Emphasize practical benefits and scalability in the rebuttal
 
-## Integration with paper-miner global writing memory
+## Integration with active installed writing memory
 
 When the rebuttal task involves:
 - tone calibration,

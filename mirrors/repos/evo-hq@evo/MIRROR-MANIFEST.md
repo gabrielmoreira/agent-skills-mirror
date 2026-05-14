@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `evo-hq/evo` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `evo-hq/evo` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `evo-hq/evo` — 26 default patterns, 0 followed patterns, 4 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`plugins/evo/skills/discover/SKILL.md`](plugins/evo/skills/discover/SKILL.md) |
-| 3 | ✓ | [`plugins/evo/skills/optimize/SKILL.md`](plugins/evo/skills/optimize/SKILL.md) |
-| 4 | ✓ | [`plugins/evo/skills/subagent/SKILL.md`](plugins/evo/skills/subagent/SKILL.md) |
+| 3 | ✓ | [`plugins/evo/skills/infra-setup/SKILL.md`](plugins/evo/skills/infra-setup/SKILL.md) |
+| 4 | ✓ | [`plugins/evo/skills/optimize/SKILL.md`](plugins/evo/skills/optimize/SKILL.md) |
+| 5 | ✓ | [`plugins/evo/skills/subagent/SKILL.md`](plugins/evo/skills/subagent/SKILL.md) |
 
 ---
 

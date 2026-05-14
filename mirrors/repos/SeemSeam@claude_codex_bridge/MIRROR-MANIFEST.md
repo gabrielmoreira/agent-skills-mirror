@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
 | 8 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
 | 9 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
+| 10 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
+| 11 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
 
 ---
 

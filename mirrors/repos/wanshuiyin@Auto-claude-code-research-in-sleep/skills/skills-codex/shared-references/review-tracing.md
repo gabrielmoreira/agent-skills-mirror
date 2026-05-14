@@ -55,7 +55,7 @@ Do not trace purely informational agent calls that are not acting as reviewers.
   "purpose": "round-1-review",
   "timestamp": "2026-04-15T14:31:00+08:00",
   "tool": "spawn_agent",
-  "model": "gpt-5.4",
+  "model": "gpt-5.5",
   "reasoning_effort": "xhigh",
   "files_referenced": ["paper/sections/3_method.tex", "results/table1.csv"],
   "prompt": "<full prompt text>"
@@ -72,7 +72,7 @@ Do not trace purely informational agent calls that are not acting as reviewers.
   "purpose": "round-1-review",
   "timestamp": "2026-04-15T14:33:00+08:00",
   "agent_id": "019d8fe0-b25d-...",
-  "model": "gpt-5.4",
+  "model": "gpt-5.5",
   "duration_ms": 142000,
   "status": "ok"
 }

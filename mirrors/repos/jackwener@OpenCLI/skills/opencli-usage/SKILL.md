@@ -134,7 +134,7 @@ opencli gh pr list --limit 5   # passthrough; stdio is inherited, exit code prop
 opencli docker ps
 ```
 
-Built-in entries live in `src/external-clis.yaml`; user overrides and additions in `~/.opencli/external-clis.yaml`. Commonly shipped: `gh`, `docker`, `vercel`, `lark-cli`, `dws`, `wecom-cli`, `obsidian`, `tg-cli`, `discord-cli`, `wx-cli`.
+Built-in entries live in `src/external-clis.yaml`; user overrides and additions in `~/.opencli/external-clis.yaml`. Commonly shipped: `gh`, `docker`, `vercel`, `lark-cli`, `dws`, `wecom-cli`, `obsidian`, `tg`, `discord`, `wx`.
 
 ## Shell completion
 

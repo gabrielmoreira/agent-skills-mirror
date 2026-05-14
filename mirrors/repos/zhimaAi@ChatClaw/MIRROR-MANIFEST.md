@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhimaAi/ChatClaw` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `zhimaAi/ChatClaw` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhimaAi/ChatClaw` — 26 default patterns, 0 followed patterns, 29 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,19 +75,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`.cursor/rules/windows-focus-api.mdc`](.cursor/rules/windows-focus-api.mdc) |
 | 15 | ✓ | [`.cursor/skills/i18n-check/scripts/__pycache__/fill_frontend.cpython-310.pyc`](.cursor/skills/i18n-check/scripts/__pycache__/fill_frontend.cpython-310.pyc) |
 | 16 | ✓ | [`.cursor/skills/i18n-check/scripts/apply_en_translations.py`](.cursor/skills/i18n-check/scripts/apply_en_translations.py) |
-| 17 | ✓ | [`.cursor/skills/i18n-check/scripts/compare_backend.py`](.cursor/skills/i18n-check/scripts/compare_backend.py) |
-| 18 | ✓ | [`.cursor/skills/i18n-check/scripts/compare_frontend.py`](.cursor/skills/i18n-check/scripts/compare_frontend.py) |
-| 19 | ✓ | [`.cursor/skills/i18n-check/scripts/export_translations.py`](.cursor/skills/i18n-check/scripts/export_translations.py) |
-| 20 | ✓ | [`.cursor/skills/i18n-check/scripts/fill_backend.py`](.cursor/skills/i18n-check/scripts/fill_backend.py) |
-| 21 | ✓ | [`.cursor/skills/i18n-check/scripts/fill_frontend.py`](.cursor/skills/i18n-check/scripts/fill_frontend.py) |
-| 22 | ✓ | [`.cursor/skills/i18n-check/scripts/format_backend.py`](.cursor/skills/i18n-check/scripts/format_backend.py) |
-| 23 | ✓ | [`.cursor/skills/i18n-check/scripts/format_frontend.py`](.cursor/skills/i18n-check/scripts/format_frontend.py) |
-| 24 | ✓ | [`.cursor/skills/i18n-check/scripts/import_translations.py`](.cursor/skills/i18n-check/scripts/import_translations.py) |
-| 25 | ✓ | [`.cursor/skills/i18n-check/scripts/translate_with_ai.py`](.cursor/skills/i18n-check/scripts/translate_with_ai.py) |
-| 26 | ✓ | [`.cursor/skills/i18n-check/SKILL.md`](.cursor/skills/i18n-check/SKILL.md) |
-| 27 | ✓ | [`.cursor/skills/readme-from-docx/reference.md`](.cursor/skills/readme-from-docx/reference.md) |
-| 28 | ✓ | [`.cursor/skills/readme-from-docx/SKILL.md`](.cursor/skills/readme-from-docx/SKILL.md) |
-| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 17 | ✓ | [`.cursor/skills/i18n-check/scripts/auto_translate.py`](.cursor/skills/i18n-check/scripts/auto_translate.py) |
+| 18 | ✓ | [`.cursor/skills/i18n-check/scripts/batch_import.py`](.cursor/skills/i18n-check/scripts/batch_import.py) |
+| 19 | ✓ | [`.cursor/skills/i18n-check/scripts/compare_backend.py`](.cursor/skills/i18n-check/scripts/compare_backend.py) |
+| 20 | ✓ | [`.cursor/skills/i18n-check/scripts/compare_frontend.py`](.cursor/skills/i18n-check/scripts/compare_frontend.py) |
+| 21 | ✓ | [`.cursor/skills/i18n-check/scripts/export_translations.py`](.cursor/skills/i18n-check/scripts/export_translations.py) |
+| 22 | ✓ | [`.cursor/skills/i18n-check/scripts/fill_backend.py`](.cursor/skills/i18n-check/scripts/fill_backend.py) |
+| 23 | ✓ | [`.cursor/skills/i18n-check/scripts/fill_frontend.py`](.cursor/skills/i18n-check/scripts/fill_frontend.py) |
+| 24 | ✓ | [`.cursor/skills/i18n-check/scripts/format_backend.py`](.cursor/skills/i18n-check/scripts/format_backend.py) |
+| 25 | ✓ | [`.cursor/skills/i18n-check/scripts/format_frontend.py`](.cursor/skills/i18n-check/scripts/format_frontend.py) |
+| 26 | ✓ | [`.cursor/skills/i18n-check/scripts/generate_translation_prompts.py`](.cursor/skills/i18n-check/scripts/generate_translation_prompts.py) |
+| 27 | ✓ | [`.cursor/skills/i18n-check/scripts/get_cjk_translations.py`](.cursor/skills/i18n-check/scripts/get_cjk_translations.py) |
+| 28 | ✓ | [`.cursor/skills/i18n-check/scripts/import_all_translations.py`](.cursor/skills/i18n-check/scripts/import_all_translations.py) |
+| 29 | ✓ | [`.cursor/skills/i18n-check/scripts/import_bn_bd.py`](.cursor/skills/i18n-check/scripts/import_bn_bd.py) |
+| 30 | ✓ | [`.cursor/skills/i18n-check/scripts/import_cjk_translations.py`](.cursor/skills/i18n-check/scripts/import_cjk_translations.py) |
+| 31 | ✓ | [`.cursor/skills/i18n-check/scripts/import_en_us.py`](.cursor/skills/i18n-check/scripts/import_en_us.py) |
+| 32 | ✓ | [`.cursor/skills/i18n-check/scripts/import_translations.py`](.cursor/skills/i18n-check/scripts/import_translations.py) |
+| 33 | ✓ | [`.cursor/skills/i18n-check/scripts/load_baseline.py`](.cursor/skills/i18n-check/scripts/load_baseline.py) |
+| 34 | ✓ | [`.cursor/skills/i18n-check/scripts/translate_with_ai.py`](.cursor/skills/i18n-check/scripts/translate_with_ai.py) |
+| 35 | ✓ | [`.cursor/skills/i18n-check/scripts/translate_with_deep.py`](.cursor/skills/i18n-check/scripts/translate_with_deep.py) |
+| 36 | ✓ | [`.cursor/skills/i18n-check/SKILL.md`](.cursor/skills/i18n-check/SKILL.md) |
+| 37 | ✓ | [`.cursor/skills/readme-from-docx/reference.md`](.cursor/skills/readme-from-docx/reference.md) |
+| 38 | ✓ | [`.cursor/skills/readme-from-docx/SKILL.md`](.cursor/skills/readme-from-docx/SKILL.md) |
+| 39 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

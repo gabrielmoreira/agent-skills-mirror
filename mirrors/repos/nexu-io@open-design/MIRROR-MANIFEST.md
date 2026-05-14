@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 297 file(s) materialized.
+Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 298 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nexu-io/open-design` — 26 default patterns, 0 followed patterns, 29
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 297 |
+| Files         | 298 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -282,80 +282,81 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 221 | ✓ | [`skills/hatch-pet/scripts/record_imagegen_result.py`](skills/hatch-pet/scripts/record_imagegen_result.py) |
 | 222 | ✓ | [`skills/hatch-pet/scripts/render_animation_videos.py`](skills/hatch-pet/scripts/render_animation_videos.py) |
 | 223 | ✓ | [`skills/hatch-pet/scripts/render_animation_videos.sh`](skills/hatch-pet/scripts/render_animation_videos.sh) |
-| 224 | ✓ | [`skills/hatch-pet/scripts/validate_atlas.py`](skills/hatch-pet/scripts/validate_atlas.py) |
-| 225 | ✓ | [`skills/hatch-pet/SKILL.md`](skills/hatch-pet/SKILL.md) |
-| 226 | ✓ | [`skills/html-ppt-retro-quarterly-review/assets/template.html`](skills/html-ppt-retro-quarterly-review/assets/template.html) |
-| 227 | ✓ | [`skills/html-ppt-retro-quarterly-review/example.html`](skills/html-ppt-retro-quarterly-review/example.html) |
-| 228 | ✓ | [`skills/html-ppt-retro-quarterly-review/references/checklist.md`](skills/html-ppt-retro-quarterly-review/references/checklist.md) |
-| 229 | ✓ | [`skills/html-ppt-retro-quarterly-review/SKILL.md`](skills/html-ppt-retro-quarterly-review/SKILL.md) |
-| 230 | ✓ | [`skills/image-enhancer/SKILL.md`](skills/image-enhancer/SKILL.md) |
-| 231 | ✓ | [`skills/imagegen/SKILL.md`](skills/imagegen/SKILL.md) |
-| 232 | ✓ | [`skills/imagen/SKILL.md`](skills/imagen/SKILL.md) |
-| 233 | ✓ | [`skills/login-flow/example.html`](skills/login-flow/example.html) |
-| 234 | ✓ | [`skills/login-flow/references/checklist.md`](skills/login-flow/references/checklist.md) |
-| 235 | ✓ | [`skills/login-flow/SKILL.md`](skills/login-flow/SKILL.md) |
-| 236 | ✓ | [`skills/marketing-psychology/SKILL.md`](skills/marketing-psychology/SKILL.md) |
-| 237 | ✓ | [`skills/minimax-docx/SKILL.md`](skills/minimax-docx/SKILL.md) |
-| 238 | ✓ | [`skills/minimax-pdf/SKILL.md`](skills/minimax-pdf/SKILL.md) |
-| 239 | ✓ | [`skills/nanobanana-ppt/SKILL.md`](skills/nanobanana-ppt/SKILL.md) |
-| 240 | ✓ | [`skills/paywall-upgrade-cro/SKILL.md`](skills/paywall-upgrade-cro/SKILL.md) |
-| 241 | ✓ | [`skills/pdf/SKILL.md`](skills/pdf/SKILL.md) |
-| 242 | ✓ | [`skills/pixelbin-media/SKILL.md`](skills/pixelbin-media/SKILL.md) |
-| 243 | ✓ | [`skills/plan-design-review/SKILL.md`](skills/plan-design-review/SKILL.md) |
-| 244 | ✓ | [`skills/platform-design/SKILL.md`](skills/platform-design/SKILL.md) |
-| 245 | ✓ | [`skills/pptx-generator/SKILL.md`](skills/pptx-generator/SKILL.md) |
-| 246 | ✓ | [`skills/pptx-html-fidelity-audit/references/audit-table-template.md`](skills/pptx-html-fidelity-audit/references/audit-table-template.md) |
-| 247 | ✓ | [`skills/pptx-html-fidelity-audit/references/font-discipline.md`](skills/pptx-html-fidelity-audit/references/font-discipline.md) |
-| 248 | ✓ | [`skills/pptx-html-fidelity-audit/references/layout-discipline.md`](skills/pptx-html-fidelity-audit/references/layout-discipline.md) |
-| 249 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/.gitignore`](skills/pptx-html-fidelity-audit/scripts/.gitignore) |
-| 250 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/extract_pptx.py`](skills/pptx-html-fidelity-audit/scripts/extract_pptx.py) |
-| 251 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/verify_layout.py`](skills/pptx-html-fidelity-audit/scripts/verify_layout.py) |
-| 252 | ✓ | [`skills/pptx-html-fidelity-audit/SKILL.md`](skills/pptx-html-fidelity-audit/SKILL.md) |
-| 253 | ✓ | [`skills/pptx/SKILL.md`](skills/pptx/SKILL.md) |
-| 254 | ✓ | [`skills/README.md`](skills/README.md) |
-| 255 | ✓ | [`skills/release-notes-one-pager/assets/template.html`](skills/release-notes-one-pager/assets/template.html) |
-| 256 | ✓ | [`skills/release-notes-one-pager/example.html`](skills/release-notes-one-pager/example.html) |
-| 257 | ✓ | [`skills/release-notes-one-pager/references/checklist.md`](skills/release-notes-one-pager/references/checklist.md) |
-| 258 | ✓ | [`skills/release-notes-one-pager/references/layouts.md`](skills/release-notes-one-pager/references/layouts.md) |
-| 259 | ✓ | [`skills/release-notes-one-pager/SKILL.md`](skills/release-notes-one-pager/SKILL.md) |
-| 260 | ✓ | [`skills/remotion/SKILL.md`](skills/remotion/SKILL.md) |
-| 261 | ✓ | [`skills/replicate/SKILL.md`](skills/replicate/SKILL.md) |
-| 262 | ✓ | [`skills/screenshot/SKILL.md`](skills/screenshot/SKILL.md) |
-| 263 | ✓ | [`skills/screenshots-marketing/SKILL.md`](skills/screenshots-marketing/SKILL.md) |
-| 264 | ✓ | [`skills/shadcn-ui/SKILL.md`](skills/shadcn-ui/SKILL.md) |
-| 265 | ✓ | [`skills/shader-dev/SKILL.md`](skills/shader-dev/SKILL.md) |
-| 266 | ✓ | [`skills/slack-gif-creator/SKILL.md`](skills/slack-gif-creator/SKILL.md) |
-| 267 | ✓ | [`skills/slides/SKILL.md`](skills/slides/SKILL.md) |
-| 268 | ✓ | [`skills/sora/SKILL.md`](skills/sora/SKILL.md) |
-| 269 | ✓ | [`skills/speech/SKILL.md`](skills/speech/SKILL.md) |
-| 270 | ✓ | [`skills/stitch-loop/SKILL.md`](skills/stitch-loop/SKILL.md) |
-| 271 | ✓ | [`skills/swiftui-design/SKILL.md`](skills/swiftui-design/SKILL.md) |
-| 272 | ✓ | [`skills/swiss-creative-mode-template/assets/template.html`](skills/swiss-creative-mode-template/assets/template.html) |
-| 273 | ✓ | [`skills/swiss-creative-mode-template/example.html`](skills/swiss-creative-mode-template/example.html) |
-| 274 | ✓ | [`skills/swiss-creative-mode-template/references/checklist.md`](skills/swiss-creative-mode-template/references/checklist.md) |
-| 275 | ✓ | [`skills/swiss-creative-mode-template/SKILL.md`](skills/swiss-creative-mode-template/SKILL.md) |
-| 276 | ✓ | [`skills/swiss-user-research-video-template/assets/template.html`](skills/swiss-user-research-video-template/assets/template.html) |
-| 277 | ✓ | [`skills/swiss-user-research-video-template/example.html`](skills/swiss-user-research-video-template/example.html) |
-| 278 | ✓ | [`skills/swiss-user-research-video-template/references/checklist.md`](skills/swiss-user-research-video-template/references/checklist.md) |
-| 279 | ✓ | [`skills/swiss-user-research-video-template/SKILL.md`](skills/swiss-user-research-video-template/SKILL.md) |
-| 280 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
-| 281 | ✓ | [`skills/theme-factory/SKILL.md`](skills/theme-factory/SKILL.md) |
-| 282 | ✓ | [`skills/threejs/SKILL.md`](skills/threejs/SKILL.md) |
-| 283 | ✓ | [`skills/ui-skills/SKILL.md`](skills/ui-skills/SKILL.md) |
-| 284 | ✓ | [`skills/ui-ux-pro-max/SKILL.md`](skills/ui-ux-pro-max/SKILL.md) |
-| 285 | ✓ | [`skills/venice-audio-music/SKILL.md`](skills/venice-audio-music/SKILL.md) |
-| 286 | ✓ | [`skills/venice-audio-speech/SKILL.md`](skills/venice-audio-speech/SKILL.md) |
-| 287 | ✓ | [`skills/venice-image-edit/SKILL.md`](skills/venice-image-edit/SKILL.md) |
-| 288 | ✓ | [`skills/venice-image-generate/SKILL.md`](skills/venice-image-generate/SKILL.md) |
-| 289 | ✓ | [`skills/venice-video/SKILL.md`](skills/venice-video/SKILL.md) |
-| 290 | ✓ | [`skills/video-downloader/SKILL.md`](skills/video-downloader/SKILL.md) |
-| 291 | ✓ | [`skills/web-artifacts-builder/SKILL.md`](skills/web-artifacts-builder/SKILL.md) |
-| 292 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
-| 293 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
-| 294 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
-| 295 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
-| 296 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
-| 297 | ✓ | [`tools/pr/AGENTS.md`](tools/pr/AGENTS.md) |
+| 224 | ✓ | [`skills/hatch-pet/scripts/test_generate_pet_images.py`](skills/hatch-pet/scripts/test_generate_pet_images.py) |
+| 225 | ✓ | [`skills/hatch-pet/scripts/validate_atlas.py`](skills/hatch-pet/scripts/validate_atlas.py) |
+| 226 | ✓ | [`skills/hatch-pet/SKILL.md`](skills/hatch-pet/SKILL.md) |
+| 227 | ✓ | [`skills/html-ppt-retro-quarterly-review/assets/template.html`](skills/html-ppt-retro-quarterly-review/assets/template.html) |
+| 228 | ✓ | [`skills/html-ppt-retro-quarterly-review/example.html`](skills/html-ppt-retro-quarterly-review/example.html) |
+| 229 | ✓ | [`skills/html-ppt-retro-quarterly-review/references/checklist.md`](skills/html-ppt-retro-quarterly-review/references/checklist.md) |
+| 230 | ✓ | [`skills/html-ppt-retro-quarterly-review/SKILL.md`](skills/html-ppt-retro-quarterly-review/SKILL.md) |
+| 231 | ✓ | [`skills/image-enhancer/SKILL.md`](skills/image-enhancer/SKILL.md) |
+| 232 | ✓ | [`skills/imagegen/SKILL.md`](skills/imagegen/SKILL.md) |
+| 233 | ✓ | [`skills/imagen/SKILL.md`](skills/imagen/SKILL.md) |
+| 234 | ✓ | [`skills/login-flow/example.html`](skills/login-flow/example.html) |
+| 235 | ✓ | [`skills/login-flow/references/checklist.md`](skills/login-flow/references/checklist.md) |
+| 236 | ✓ | [`skills/login-flow/SKILL.md`](skills/login-flow/SKILL.md) |
+| 237 | ✓ | [`skills/marketing-psychology/SKILL.md`](skills/marketing-psychology/SKILL.md) |
+| 238 | ✓ | [`skills/minimax-docx/SKILL.md`](skills/minimax-docx/SKILL.md) |
+| 239 | ✓ | [`skills/minimax-pdf/SKILL.md`](skills/minimax-pdf/SKILL.md) |
+| 240 | ✓ | [`skills/nanobanana-ppt/SKILL.md`](skills/nanobanana-ppt/SKILL.md) |
+| 241 | ✓ | [`skills/paywall-upgrade-cro/SKILL.md`](skills/paywall-upgrade-cro/SKILL.md) |
+| 242 | ✓ | [`skills/pdf/SKILL.md`](skills/pdf/SKILL.md) |
+| 243 | ✓ | [`skills/pixelbin-media/SKILL.md`](skills/pixelbin-media/SKILL.md) |
+| 244 | ✓ | [`skills/plan-design-review/SKILL.md`](skills/plan-design-review/SKILL.md) |
+| 245 | ✓ | [`skills/platform-design/SKILL.md`](skills/platform-design/SKILL.md) |
+| 246 | ✓ | [`skills/pptx-generator/SKILL.md`](skills/pptx-generator/SKILL.md) |
+| 247 | ✓ | [`skills/pptx-html-fidelity-audit/references/audit-table-template.md`](skills/pptx-html-fidelity-audit/references/audit-table-template.md) |
+| 248 | ✓ | [`skills/pptx-html-fidelity-audit/references/font-discipline.md`](skills/pptx-html-fidelity-audit/references/font-discipline.md) |
+| 249 | ✓ | [`skills/pptx-html-fidelity-audit/references/layout-discipline.md`](skills/pptx-html-fidelity-audit/references/layout-discipline.md) |
+| 250 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/.gitignore`](skills/pptx-html-fidelity-audit/scripts/.gitignore) |
+| 251 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/extract_pptx.py`](skills/pptx-html-fidelity-audit/scripts/extract_pptx.py) |
+| 252 | ✓ | [`skills/pptx-html-fidelity-audit/scripts/verify_layout.py`](skills/pptx-html-fidelity-audit/scripts/verify_layout.py) |
+| 253 | ✓ | [`skills/pptx-html-fidelity-audit/SKILL.md`](skills/pptx-html-fidelity-audit/SKILL.md) |
+| 254 | ✓ | [`skills/pptx/SKILL.md`](skills/pptx/SKILL.md) |
+| 255 | ✓ | [`skills/README.md`](skills/README.md) |
+| 256 | ✓ | [`skills/release-notes-one-pager/assets/template.html`](skills/release-notes-one-pager/assets/template.html) |
+| 257 | ✓ | [`skills/release-notes-one-pager/example.html`](skills/release-notes-one-pager/example.html) |
+| 258 | ✓ | [`skills/release-notes-one-pager/references/checklist.md`](skills/release-notes-one-pager/references/checklist.md) |
+| 259 | ✓ | [`skills/release-notes-one-pager/references/layouts.md`](skills/release-notes-one-pager/references/layouts.md) |
+| 260 | ✓ | [`skills/release-notes-one-pager/SKILL.md`](skills/release-notes-one-pager/SKILL.md) |
+| 261 | ✓ | [`skills/remotion/SKILL.md`](skills/remotion/SKILL.md) |
+| 262 | ✓ | [`skills/replicate/SKILL.md`](skills/replicate/SKILL.md) |
+| 263 | ✓ | [`skills/screenshot/SKILL.md`](skills/screenshot/SKILL.md) |
+| 264 | ✓ | [`skills/screenshots-marketing/SKILL.md`](skills/screenshots-marketing/SKILL.md) |
+| 265 | ✓ | [`skills/shadcn-ui/SKILL.md`](skills/shadcn-ui/SKILL.md) |
+| 266 | ✓ | [`skills/shader-dev/SKILL.md`](skills/shader-dev/SKILL.md) |
+| 267 | ✓ | [`skills/slack-gif-creator/SKILL.md`](skills/slack-gif-creator/SKILL.md) |
+| 268 | ✓ | [`skills/slides/SKILL.md`](skills/slides/SKILL.md) |
+| 269 | ✓ | [`skills/sora/SKILL.md`](skills/sora/SKILL.md) |
+| 270 | ✓ | [`skills/speech/SKILL.md`](skills/speech/SKILL.md) |
+| 271 | ✓ | [`skills/stitch-loop/SKILL.md`](skills/stitch-loop/SKILL.md) |
+| 272 | ✓ | [`skills/swiftui-design/SKILL.md`](skills/swiftui-design/SKILL.md) |
+| 273 | ✓ | [`skills/swiss-creative-mode-template/assets/template.html`](skills/swiss-creative-mode-template/assets/template.html) |
+| 274 | ✓ | [`skills/swiss-creative-mode-template/example.html`](skills/swiss-creative-mode-template/example.html) |
+| 275 | ✓ | [`skills/swiss-creative-mode-template/references/checklist.md`](skills/swiss-creative-mode-template/references/checklist.md) |
+| 276 | ✓ | [`skills/swiss-creative-mode-template/SKILL.md`](skills/swiss-creative-mode-template/SKILL.md) |
+| 277 | ✓ | [`skills/swiss-user-research-video-template/assets/template.html`](skills/swiss-user-research-video-template/assets/template.html) |
+| 278 | ✓ | [`skills/swiss-user-research-video-template/example.html`](skills/swiss-user-research-video-template/example.html) |
+| 279 | ✓ | [`skills/swiss-user-research-video-template/references/checklist.md`](skills/swiss-user-research-video-template/references/checklist.md) |
+| 280 | ✓ | [`skills/swiss-user-research-video-template/SKILL.md`](skills/swiss-user-research-video-template/SKILL.md) |
+| 281 | ✓ | [`skills/taste-skill/SKILL.md`](skills/taste-skill/SKILL.md) |
+| 282 | ✓ | [`skills/theme-factory/SKILL.md`](skills/theme-factory/SKILL.md) |
+| 283 | ✓ | [`skills/threejs/SKILL.md`](skills/threejs/SKILL.md) |
+| 284 | ✓ | [`skills/ui-skills/SKILL.md`](skills/ui-skills/SKILL.md) |
+| 285 | ✓ | [`skills/ui-ux-pro-max/SKILL.md`](skills/ui-ux-pro-max/SKILL.md) |
+| 286 | ✓ | [`skills/venice-audio-music/SKILL.md`](skills/venice-audio-music/SKILL.md) |
+| 287 | ✓ | [`skills/venice-audio-speech/SKILL.md`](skills/venice-audio-speech/SKILL.md) |
+| 288 | ✓ | [`skills/venice-image-edit/SKILL.md`](skills/venice-image-edit/SKILL.md) |
+| 289 | ✓ | [`skills/venice-image-generate/SKILL.md`](skills/venice-image-generate/SKILL.md) |
+| 290 | ✓ | [`skills/venice-video/SKILL.md`](skills/venice-video/SKILL.md) |
+| 291 | ✓ | [`skills/video-downloader/SKILL.md`](skills/video-downloader/SKILL.md) |
+| 292 | ✓ | [`skills/web-artifacts-builder/SKILL.md`](skills/web-artifacts-builder/SKILL.md) |
+| 293 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 294 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
+| 295 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
+| 296 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
+| 297 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
+| 298 | ✓ | [`tools/pr/AGENTS.md`](tools/pr/AGENTS.md) |
 
 ---
 

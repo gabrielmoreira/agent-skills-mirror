@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `block/goose` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `block/goose` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `block/goose` — 26 default patterns, 0 followed patterns, 17 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,23 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/code-review/SKILL.md`](.agents/skills/code-review/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/create-app-e2e-test/SKILL.md`](.agents/skills/create-app-e2e-test/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/edge-case-finder/references/edge-case-categories.md`](.agents/skills/edge-case-finder/references/edge-case-categories.md) |
-| 5 | ✓ | [`.agents/skills/edge-case-finder/SKILL.md`](.agents/skills/edge-case-finder/SKILL.md) |
-| 6 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`documentation/AGENTS.md`](documentation/AGENTS.md) |
-| 10 | ✓ | [`documentation/CLAUDE.md`](documentation/CLAUDE.md) |
-| 11 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
-| 12 | ✓ | [`ui/goose2/AGENTS.md`](ui/goose2/AGENTS.md) |
-| 13 | ✓ | [`ui/goose2/CLAUDE.md`](ui/goose2/CLAUDE.md) |
-| 14 | ✓ | [`ui/goose2/src/shared/ui/AGENTS.md`](ui/goose2/src/shared/ui/AGENTS.md) |
-| 15 | ✓ | [`ui/goose2/src/shared/ui/CLAUDE.md`](ui/goose2/src/shared/ui/CLAUDE.md) |
-| 16 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
-| 17 | ✓ | [`ui/text/CLAUDE.md`](ui/text/CLAUDE.md) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`documentation/AGENTS.md`](documentation/AGENTS.md) |
+| 5 | ✓ | [`documentation/CLAUDE.md`](documentation/CLAUDE.md) |
+| 6 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
+| 7 | ✓ | [`ui/goose2/AGENTS.md`](ui/goose2/AGENTS.md) |
+| 8 | ✓ | [`ui/goose2/CLAUDE.md`](ui/goose2/CLAUDE.md) |
+| 9 | ✓ | [`ui/goose2/src/shared/ui/AGENTS.md`](ui/goose2/src/shared/ui/AGENTS.md) |
+| 10 | ✓ | [`ui/goose2/src/shared/ui/CLAUDE.md`](ui/goose2/src/shared/ui/CLAUDE.md) |
+| 11 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
+| 12 | ✓ | [`ui/text/CLAUDE.md`](ui/text/CLAUDE.md) |
 
 ---
 

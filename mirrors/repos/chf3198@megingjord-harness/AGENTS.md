@@ -41,6 +41,16 @@ This repo is the **development workbench** for the DevEnv Ops Harness runtimes:
 - Repo-local overrides may tighten the format, but must not remove provenance.
 - See `instructions/team-model-signing.instructions.md`.
 
+## Review guidelines
+
+- In Codex PR reviews, treat ticket lifecycle, baton order, signer
+  fidelity, isolated worktrees, and runtime-home edits as release-blocking
+  governance risks.
+- Verify governed changes include matching docs, research, wiki, or drift
+  notes when behavior or operator workflow changes.
+- When Codex behavior is uncertain, use official OpenAI Codex docs instead of
+  inferring from Claude or Copilot compatibility.
+
 ## HAMR cross-team routing
 
 - All 3 teams route governed provider calls through HAMR (`https://hamr.chf3198.workers.dev`).

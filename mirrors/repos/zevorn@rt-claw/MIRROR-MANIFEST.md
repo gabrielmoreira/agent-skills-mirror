@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zevorn/rt-claw` — 26 default patterns, 1 followed patterns, 8 file(s) materialized.
+Mirror of `zevorn/rt-claw` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zevorn/rt-claw` — 26 default patterns, 1 followed patterns, 8 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 8 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/build-test/SKILL.md`](.claude/skills/build-test/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/diagnose/SKILL.md`](.claude/skills/diagnose/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/new-module/SKILL.md`](.claude/skills/new-module/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/platform-port/SKILL.md`](.claude/skills/platform-port/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/sync-docs/SKILL.md`](.claude/skills/sync-docs/SKILL.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | → | [`docs/en/coding-style.md`](docs/en/coding-style.md) |
+| 1 | ✓ | [`.agents/README.md`](.agents/README.md) |
+| 2 | ✓ | [`.agents/skills/rt-claw-build/SKILL.md`](.agents/skills/rt-claw-build/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/rt-claw-code-explorer/SKILL.md`](.agents/skills/rt-claw-code-explorer/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/rt-claw-diagnose/SKILL.md`](.agents/skills/rt-claw-diagnose/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/rt-claw-docs-sync/SKILL.md`](.agents/skills/rt-claw-docs-sync/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/rt-claw-new-module/SKILL.md`](.agents/skills/rt-claw-new-module/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/rt-claw-osal-review/SKILL.md`](.agents/skills/rt-claw-osal-review/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/rt-claw-platform-port/SKILL.md`](.agents/skills/rt-claw-platform-port/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/rt-claw-precommit/SKILL.md`](.agents/skills/rt-claw-precommit/SKILL.md) |
+| 10 | ✓ | [`.agents/skills/rt-claw-testing/SKILL.md`](.agents/skills/rt-claw-testing/SKILL.md) |
+| 11 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 15 | → | [`docs/en/coding-style.md`](docs/en/coding-style.md) |
 
 ---
 

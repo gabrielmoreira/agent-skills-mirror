@@ -37,6 +37,12 @@ PASEO_DEV_RESET_HOME=1 npm run dev            # clear and reseed the derived wor
 
 In any worktree-style or portless setup, never assume default ports.
 
+### Desktop renderer profiling
+
+`npm run dev:desktop` starts Electron with Chromium remote debugging enabled on
+`http://127.0.0.1:9223` so renderer CPU profiles can be captured through CDP.
+Override the port with `PASEO_ELECTRON_REMOTE_DEBUGGING_PORT` when `9223` is busy.
+
 ### Daemon logs
 
 Check `$PASEO_HOME/daemon.log` for daemon logs. The default level is `info`; set

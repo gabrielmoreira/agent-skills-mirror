@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 5 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,8 +62,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`web/.claude/skills/crossposting/SKILL.md`](web/.claude/skills/crossposting/SKILL.md) |
 | 3 | ✓ | [`web/.claude/skills/geo-fundamentals/SKILL.md`](web/.claude/skills/geo-fundamentals/SKILL.md) |
-| 4 | ✓ | [`web/.claude/skills/social-content/SKILL.md`](web/.claude/skills/social-content/SKILL.md) |
-| 5 | ✓ | [`web/blog/CLAUDE.md`](web/blog/CLAUDE.md) |
+| 4 | ✓ | [`web/.claude/skills/notion-to-blog/SKILL.md`](web/.claude/skills/notion-to-blog/SKILL.md) |
+| 5 | ✓ | [`web/.claude/skills/social-content/SKILL.md`](web/.claude/skills/social-content/SKILL.md) |
+| 6 | ✓ | [`web/blog/CLAUDE.md`](web/blog/CLAUDE.md) |
 
 ---
 

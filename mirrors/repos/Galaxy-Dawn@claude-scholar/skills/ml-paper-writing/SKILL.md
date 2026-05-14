@@ -313,15 +313,15 @@ For detailed literature research guidance:
 
 ---
 
-## Knowledge Base: Paper-Miner Global Writing Memory
+## Knowledge Base: Paper-Miner Installed Writing Memory
 
-This skill consumes a **single canonical writing memory** maintained by `paper-miner`:
+This skill consumes the **active installed writing memory** maintained by `paper-miner`:
 
 - `references/knowledge/paper-miner-writing-memory.md`
 
-This memory is **global**, not project-specific.
+This memory belongs to the active installed skill home, not to the source checkout copy.
 
-Even when `paper-miner` is invoked while working inside a specific repository, it still writes mined writing knowledge only into this one global memory. It does **not** maintain project-local writing memory.
+Even when `paper-miner` is invoked while working inside a specific repository, it still writes mined writing knowledge only into the active installed skill memory. It does **not** maintain project-local writing memory unless the user explicitly requests that.
 
 ### Canonical memory structure
 
@@ -354,7 +354,7 @@ ml-paper-writing reuses that memory later
 
 ### When to use this memory
 
-Use the global paper-miner memory when you need:
+Use the active installed paper-miner memory when you need:
 - structure inspiration for intros, methods, results, or discussion,
 - reusable transition phrases or framing templates,
 - venue-facing writing signals,
@@ -385,7 +385,7 @@ Read narrowly, not exhaustively:
 
 ### Contribution rule
 
-Every paper mined by `paper-miner` should improve the same global memory.
+Every paper mined by `paper-miner` should improve the same active installed memory.
 
 Do not scatter newly mined knowledge across multiple maintained files.
 Do not create project-specific paper-miner memory.

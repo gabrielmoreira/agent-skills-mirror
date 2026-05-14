@@ -1,6 +1,6 @@
 # Paper-Miner Writing Memory
 
-This is the **canonical global writing memory** maintained by `paper-miner`.
+This is the **active installed writing memory** maintained by `paper-miner`.
 
 It stores reusable academic writing knowledge mined from papers across venues and projects.
 

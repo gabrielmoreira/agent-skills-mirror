@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 11 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`agents/ceo/AGENTS.md`](agents/ceo/AGENTS.md) |
-| 4 | ✓ | [`agents/ceo/HEARTBEAT.md`](agents/ceo/HEARTBEAT.md) |
-| 5 | ✓ | [`agents/ceo/SOUL.md`](agents/ceo/SOUL.md) |
-| 6 | ✓ | [`agents/ceo/TOOLS.md`](agents/ceo/TOOLS.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 9 | ✓ | [`graphify-pilot/CLAUDE.md`](graphify-pilot/CLAUDE.md) |
-| 10 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
-| 11 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`agents/ceo/AGENTS.md`](agents/ceo/AGENTS.md) |
+| 5 | ✓ | [`agents/ceo/HEARTBEAT.md`](agents/ceo/HEARTBEAT.md) |
+| 6 | ✓ | [`agents/ceo/SOUL.md`](agents/ceo/SOUL.md) |
+| 7 | ✓ | [`agents/ceo/TOOLS.md`](agents/ceo/TOOLS.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`examples/codex-review-agent/AGENTS.md`](examples/codex-review-agent/AGENTS.md) |
+| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 11 | ✓ | [`graphify-pilot/CLAUDE.md`](graphify-pilot/CLAUDE.md) |
+| 12 | ✓ | [`plugins/dashclaw/skills/dashclaw-governance/SKILL.md`](plugins/dashclaw/skills/dashclaw-governance/SKILL.md) |
+| 13 | ✓ | [`plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md`](plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md) |
+| 14 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
+| 15 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
 
 ---
 

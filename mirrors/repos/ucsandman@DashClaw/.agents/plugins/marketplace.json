@@ -1,0 +1,20 @@
+{
+  "name": "dashclaw-local",
+  "interface": {
+    "displayName": "DashClaw Local"
+  },
+  "plugins": [
+    {
+      "name": "dashclaw",
+      "source": {
+        "source": "local",
+        "path": "./plugins/dashclaw"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

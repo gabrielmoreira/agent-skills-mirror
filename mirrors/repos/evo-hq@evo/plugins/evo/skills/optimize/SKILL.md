@@ -10,9 +10,12 @@ Run the `evo` optimization loop. Each round, the orchestrator writes structured 
 
 This skill runs on any host that implements the Agent Skills spec. When the body uses generic phrases, apply the host's best-fit equivalent:
 
-- **"spawn N subagents in parallel"** -- use your host's parallel-subagent or background-task tool if you have one (e.g. `Agent` with `run_in_background`, `spawn_agent` + `wait_agent`, `spawn_agents_on_csv` for batch). Respect the host's concurrency cap -- if N exceeds it, run in batches. If the host has no parallel-subagent tool, run them serially and note the reduced round width in the final summary.
+- **"spawn N subagents in parallel"** -- use your host's parallel-subagent tool. Two delivery shapes:
+  - *Background+notify* (`claude-code` / `codex` / `hermes` / `openclaw`): fire-and-forget; the runtime delivers a completion notification at a later turn when each subagent finishes. Per host: `claude-code` -> wrap each spawn in `Bash(run_in_background=true)` so the runtime notifies on completion; `codex` -> non-blocking subagent; `hermes` -> `terminal(background=true)`; `openclaw` -> `sessions_spawn deliver:false`.
+  - *Batch parallel* (`opencode`): fire N `task` calls in ONE assistant message; they run concurrently in child sessions; all tool_results return together when the slowest finishes. Plan all parallel work (including non-task tools) in that one message — opencode cannot interleave reasoning across turns while subagents run.
+  Respect the host's concurrency cap; batch if N exceeds it.
 - **Slash commands shown in user-facing copy** (e.g. `/evo:optimize`) -- translate to your host's mention syntax when speaking to the user (e.g. `$evo optimize` on Codex -- plugin namespace then skill name, separated by a space).
-- **`evo dispatch` (optimization subagents only, host-specific).** On `claude-code`, the optimization subagents in step 5 are launched via `evo dispatch run --background` instead of the host's parallel-Task tool. This shares an explorer's KV cache across siblings of the same parent (~99% prefix reuse). On every other host (`codex`, `opencode`, `openclaw`, `hermes`, `generic`), `evo dispatch` is unsupported and exits 2 with guidance -- step 5 stays on the host's parallel-Task primitive there. The scan sub-agents in step 3 always use the host's parallel-Task tool regardless of host (they don't allocate experiments, so fork-cache doesn't apply).
+- **`evo dispatch` (optimization subagents only, host-specific).** On `claude-code`, the optimization subagents in step 5 are launched via `evo dispatch run` wrapped in `Bash(run_in_background=true)` — the dispatch blocks until its child finishes, the bash tool runs in the background, and the runtime delivers a completion notification per subagent at later turn boundaries. This shares an explorer's KV cache across siblings of the same parent (~99% prefix reuse). On every other host (`codex`, `opencode`, `openclaw`, `hermes`, `generic`), `evo dispatch` is unsupported and exits 2 with guidance -- step 5 stays on the host's parallel-Task primitive there. The scan sub-agents in step 3 always use the host's parallel-Task tool regardless of host (they don't allocate experiments, so fork-cache doesn't apply).
 
 ## Configuration
 
@@ -21,6 +24,33 @@ These defaults can be overridden via arguments: `/optimize [subagents=N] [budget
 - **subagents**: number of parallel subagents per round (default: 5)
 - **budget**: max iterations each subagent can run within its branch (default: 5)
 - **stall**: consecutive rounds with no improvement before auto-stopping (default: 5)
+
+**Pool mode (if active).** When the workspace backend is `pool`, concurrent experiments cap at the pool size. Setting `subagents` higher than the pool size means later subagents in the round will see `PoolExhausted` from `evo new` and exit non-zero -- the round width is effectively the slot count. Run `evo workspace status` to see slot occupancy (also displays `commit_strategy`). Reduce `subagents` to the pool size if exhaustion is recurring. Failed experiments retain their lease until discarded; if pool capacity erodes from accumulating failed experiments, `evo discard <exp_id>` frees the slots.
+
+Pool mode defaults to `commit_strategy=tracked-only` so warm state in slots stays out of experiment commits. Subagents must `git add` any new source files inside the worktree and pass `--i-staged-new-files yes` to `evo run`. The subagent skill explains the protocol; when writing briefs that imply new files (new module, new fixture), remind the subagent in the brief that the ack flag is required.
+
+**Remote-backend mode.** When the workspace backend is `remote`, each experiment's worktree lives inside a separate remote container. Subagents use `evo bash / read / write / edit / glob / grep --exp-id <id>` instead of native `Bash`/`Read`/`Write`/`Edit` tools. **Every brief you write to a subagent in remote mode MUST start by stating the exp_id explicitly:** `"Your experiment id is exp_NNNN. Pass --exp-id exp_NNNN on every evo command."` This is the only thing that prevents one subagent from accidentally operating on another's container. evo CLI hard-errors if `--exp-id` is missing, but it can't catch a subagent that confidently passes the wrong id; the brief is the discipline.
+
+Remote `evo run <exp_id>` is also the recovery command. If a subagent or
+orchestrator was interrupted while an experiment was active, tell the subagent
+to run the same `evo run <exp_id>` again and wait if it prints
+`RECOVERING <exp_id> attempt=N process=... state=...`. That means evo is
+reattaching to the existing remote process and finalizing the original attempt;
+starting a new experiment or discarding the active one is only appropriate after
+evo reports the attempt is unrecoverable.
+
+For expensive benchmarks, design recovery around `EVO_CHECKPOINT_DIR`, not
+process checkpoint/restore. evo mirrors checkpoint files into
+`attempts/NNN/checkpoints/` during remote runs and writes `attempt_state.json`
+for phase-level recovery. If the remote container itself dies, arbitrary process
+memory is gone; the benchmark must know how to continue from its checkpoint
+files or the attempt should be treated as `remote_infra_failure`.
+
+**Infra setup is not user-invocable.** If a remote provider is missing SDKs, auth, or setup details, read `plugins/evo/skills/infra-setup/references/provider-matrix.md`. It summarizes what each provider actually needs and replaces the old per-provider prompt files.
+
+**Runtime recipe/env.** Benchmark runtime is evo configuration, not something subagents should rediscover or copy into worktrees. Use `evo config runtime show` for prepare/before-run/prefix and `evo env show` for redacted env sources. If a run fails because expected runtime setup or env is missing, report it as setup failure or configure it from the orchestrator; do not patch benchmark code to bake in secrets or local paths. Use `evo run <exp_id> --check` for non-committing wiring validation; do not invent ad-hoc validation wrappers.
+
+**CLI reference.** If you are unsure which command to use, read `plugins/evo/skills/references/cli-quick-reference.md`. It is the canonical command map; this skill only repeats the high-frequency commands.
 
 ## Prerequisites
 
@@ -51,6 +81,8 @@ Orchestrator (this agent):
 
 Both layers read traces; the depth differs. The orchestrator scans for cross-cutting patterns (which failures are common, which branches plateau) -- enough to pick N non-overlapping briefs. Subagents read their pointer traces in depth, enough to commit to a concrete edit. Structured briefs are what prevent parallel subagents from duplicating each other's work.
 
+**Session lineage.** Dispatching a child of a committed experiment forks the parent experiment's own session, not a separately-warmed explorer. The child inherits the parent's full transcript -- reads, edits, benchmark output -- so the prefix cache carries through generations. Explorer warming runs only for children of root, where the parent has no session.
+
 **Trace instrumentation style**: `.evo/meta.json`'s `instrumentation_mode` records `sdk` vs `inline`. Subagents must stay consistent with it (see `skills/subagent/SKILL.md` for details).
 
 ## The Loop
@@ -64,14 +96,26 @@ Repeat until interrupted or stall limit reached:
 **Step 0.1 (one-time auto-migration): ensure the workspace knows what runtime you are.** Run `evo host show`. If it prints `<not set>`, the workspace pre-dates the host signature field — declare your runtime now: `evo host set <one of: claude-code, codex, opencode, openclaw, hermes, generic>`. You know what runtime you're operating in (your system prompt, env vars like `CLAUDECODE=1`, your own self-identity); pick the matching value. If genuinely unsure, use `generic`. Do not ask the user — this is a one-time silent migration. Subsequent rounds skip this step (`evo host show` returns the recorded value). After this, on `claude-code` the dispatch fork-cache becomes available (step 5a); other runtimes get no behavior change.
 
 ```bash
-evo scratchpad          # full state: tree, best path, frontier, annotations, diffs, gates, what-not-to-try
-evo frontier            # explorable nodes ranked by the configured strategy (JSON envelope: {strategy, nodes[{id,score,rank,...}], generated_at})
+evo scratchpad          # bounded state summary (tree, frontier, awaiting decision, gates, annotations, what-not-to-try, notes)
 evo status              # one-line summary
+evo frontier            # explorable nodes ranked by the configured strategy (JSON envelope: {strategy, nodes[{id,score,rank,...}], generated_at})
+evo show <id>           # full state of one node (attempts, diffs, annotations, notes, effective gates) -- the cleanest one-node getter
+evo awaiting            # evaluated nodes awaiting commit/discard decision
+evo discards [--like <text>]  # discarded nodes; useful for "have we tried this before"
+evo notes               # all notes (per-node + workspace), recent first
 evo annotations         # all annotations (filterable with --task/--exp)
 evo path <id>           # root-to-node chain with scores
-evo diff <id>           # diff vs parent
-evo diff <id> <other>   # diff between any two experiments
+evo diff <id> [<other>] # diff vs parent (or between two experiments)
 evo gate list <id>      # effective gates for a node (inherited from ancestors)
+evo gate check <id>     # run effective gates without benchmark or state mutation
+evo infra log           # recorded infra/strategy events (epoch bumps, harness changes)
+
+# Settings (read)
+evo config show               # everything; use the next three for narrower views
+evo config get <field>        # one field
+evo config backend show       # current execution backend + provider config
+evo config runtime show       # runtime prepare/before-run/prefix recipe
+evo env show                  # redacted runtime env metadata
 ```
 
 ### 2. Analyze state and do structural aggregation
@@ -85,7 +129,7 @@ From the scratchpad, frontier, traces, and annotations, determine:
 
 **Read the "Awaiting Decision" section of the scratchpad.** Evaluated nodes (ran, bad outcome, not yet discarded) are a cross-agent signal: if three subagents in the last round produced evaluated nodes that all failed the same gate, surface the pattern -- maybe the gate is too tight, maybe the approach has a shared flaw. Either tell the next round to avoid it, or propose a brief that attacks it directly. Without this cross-cutting read, each subagent rediscovers the same wall independently.
 
-**Structural pass.** For the evaluated nodes this round, load their `outcome.json` files into Python and aggregate: co-occurring `gate_failures`, shared zero-score task IDs in `benchmark.result.tasks`, recurring substrings across `error` fields.
+**Structural pass.** For the evaluated nodes this round, load their `outcome.json` files into Python and aggregate: co-occurring `gate_failures`, shared zero-score task IDs in `benchmark.result.tasks`, recurring substrings across `error` fields. (Bulk-reading attempt artifacts under `.evo/run_*/experiments/<exp>/attempts/<NNN>/` is the right tool for this — `evo show <id>` is for one-node introspection, not batch aggregation.)
 
 **Emit intersections explicitly.** After computing the per-pattern sets (call them A, B, ...), MUST emit each pairwise intersection `A ∩ B` as a distinct pattern entry whenever at least 2 experiments exhibit both. Intersections carry different strategic implications from their components (compound failures warrant different briefs than single-failure clusters) and do not reconstruct from sub-agent summaries -- this is a parent-level aggregation that must happen inline.
 
@@ -158,23 +202,28 @@ The mechanism depends on the host recorded by `evo init` / step 0.1's migration 
 
 On `claude-code`, dispatch one child per brief. Each call allocates a new experiment under `<parent>`, ensures an explorer session for that parent is warm (lazy on first dispatch), and forks a child via `claude -p --resume <SID> --fork-session`.
 
-```bash
-# Fan out N children in parallel
-for brief in <each brief>:
-  evo dispatch run \
-    --parent <parent_id> \
-    -m "<brief: objective + boundaries + pointer traces, formatted as you wrote it>" \
-    --budget <budget> \
-    [--explore-context "<focus hint, only on the first dispatch of the round>"] \
-    --background
+```
+# Fan out N children. One Bash(run_in_background=true) call per brief.
+# Each call's bash blocks until `evo dispatch run` returns (i.e. that
+# child has committed/failed), then exits — at which point claude code
+# delivers a <task-notification> with the dispatch's final stdout
+# (status + score + outcome JSON). Notifications arrive at later turn
+# boundaries, one per subagent, as each finishes.
 
-# Block until all complete
-evo dispatch wait
+for brief in <each brief>:
+  Bash(
+    command =
+      'evo dispatch run --parent <parent_id> '
+      '-m "<brief: objective + boundaries + pointer traces>" '
+      '--budget <budget> '
+      '[--explore-context "<focus hint, first dispatch of the round only>"]',
+    run_in_background = True,
+  )
 ```
 
 The `--explore-context` flag is shared per parent (it shapes the explorer's read pass) -- pass it on the first dispatch from a given parent in a round, omit on subsequent ones. If you need a different focus mid-round, pass `--refresh-explorer` to force a rebuild.
 
-Each child inherits the explorer's transcript (worker protocol from `subagent/SKILL.md` + the parent's code reads), and its first user message is just the brief + budget. You don't pass the protocol again per child -- that's what the explorer's KV cache is for.
+Each child inherits its lineage source's transcript -- the parent experiment's own session if that parent has one, the explorer's session for children of root. The first user message is the brief + budget; for lineage forks, evo prepends a short notice that the parent's work is closed and the protocol may need re-reading if it was summarized during compaction. You don't repeat the protocol per child -- that's what the inherited KV cache is for.
 
 #### 5b. all other hosts → host's parallel-Task primitive (existing path)
 
@@ -182,11 +231,16 @@ Spawn all subagents in a **single batch** using your host's parallel-subagent to
 
 Pick a faster model for straightforward briefs and a stronger model for harder ones requiring deeper trace analysis, if your host exposes per-call model selection.
 
-Each subagent prompt must include:
-- An instruction to read `skills/subagent/SKILL.md` and follow its protocol
+Each subagent prompt MUST start with the literal sentence:
+
+> "First, read `skills/subagent/SKILL.md` and follow its protocol exactly. Allocate your experiment via `evo new --parent <id>`, edit inside the returned worktree, evaluate via `evo run <exp_id>`. Do not skip these steps even if the brief looks simple."
+
+Then append:
 - The four-field brief verbatim (objective, parent, boundaries/anti-patterns, pointer traces)
 - The iteration budget
 - A one-paragraph scratchpad summary (current best score, frontier nodes, recent failures) for context
+
+The opening sentence is non-negotiable — without it small models often skip the evo CLI and edit files directly, which produces no committed experiments and breaks the round.
 
 ### 6. Collect results and update state
 
@@ -205,6 +259,23 @@ Prune dead branches where 3+ children all regressed:
   ```bash
   evo prune <exp_id> --reason "exhausted: N children all regressed"
   ```
+
+`evo prune` accepts `committed` or `evaluated` nodes. Use it when you want
+to mark a lineage exhausted while preserving the result for later review or
+reference. Prune keeps the git commit alive (anchored at `refs/evo-anchor/<run>/<exp>`)
+so the node can be restored if needed. **Never `evo discard` a committed
+node** — it would orphan the branch ref and risk losing the commit.
+
+If a previously-pruned (or discarded-then-restored) node is worth revisiting:
+  ```bash
+  evo restore <exp_id>
+  ```
+Flips status back to committed; recreates the regular branch from the anchor
+ref so future `evo new --parent <id>` works. For discarded nodes whose commit
+is no longer reachable in git (rare; needs `git gc --prune=now` after the
+discard), restore errors and points at `experiments/<id>/attempts/NNN/diff.patch`
+for manual replay.
+
 Update notes with cross-cutting learnings:
   ```bash
   evo set <exp_id> --note "key insight from round N"
@@ -232,7 +303,7 @@ Go back to step 1.
 
 ## Resetting the eval epoch
 
-`evo infra -m "<reason>" --breaking` bumps `current_eval_epoch` and blocks
+`evo infra event -m "<reason>" --breaking` bumps `current_eval_epoch` and blocks
 non-root `evo run` calls until a new root baseline commits. Old experiments
 stay in the tree but are excluded from frontier and best-score lookups via
 their epoch tag.
@@ -243,7 +314,7 @@ Don't use it for single bad experiments (`evo discard`) or one tight gate
 (relax the gate at the relevant node).
 
 Recovery:
-1. `evo infra -m "<reason>" --breaking`
+1. `evo infra event -m "<reason>" --breaking`
 2. Fix the harness in the baseline worktree (or branch a fresh root).
 3. `evo new --parent root -m "v2 baseline: <what changed>"`
 4. `evo run <new_exp_id>` -- commits, flips the block off, establishes the

@@ -39,3 +39,4 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 - Do not share this checkout with Copilot or Codex while Claude Code is active.
 - Use a dedicated worktree + branch for Claude Code work and merge via PR.
 - See `research/concurrent-agent-worktrees-2026-04-24.md`.
+- New worktrees auto-link `node_modules` from main checkout via `scripts/worktree-session-start.sh` — no manual `npm install` needed (per #1378). For pre-existing worktrees missing `node_modules`, run `npm run worktree:bootstrap`.

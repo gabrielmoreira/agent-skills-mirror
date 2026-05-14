@@ -40,10 +40,12 @@ Convergence guardrails:
   finding, narrows a remaining finding's root cause or scope, or yields
   a materially new fix direction. Reworded duplicate findings do not
   count.
-- If the same Accepted findings recur for 3 consecutive E10 passes
-  without meaningful progress, stop the auto-loop. Post a hold comment
-  on the PR summarizing the repeated findings and attempted fixes, and
-  wait for a maintainer decision before more E10 iterations.
+- If the same Accepted findings recur for
+  `critiqueLoop.e10NoProgressHoldAfter` consecutive E10 passes
+  (distributed default: `3`) without meaningful progress, stop the
+  auto-loop. Post a hold comment on the PR summarizing the repeated
+  findings and attempted fixes, and wait for a maintainer decision
+  before more E10 iterations.
 - Do not use this stop condition to bypass serious issues: unresolved
   High or Medium findings remain blockers until fixed or explicitly
   redirected by a maintainer.
@@ -105,8 +107,10 @@ gh pr edit {pr-number} --add-reviewer {reviewer-login}
 
 **Copilot**: after every push, regardless of any reviewer's state,
 request a Copilot re-review if Copilot has not yet reviewed the current
-HEAD SHA. Subject to a **workflow cap of 30 Copilot re-review requests
-per PR** (this is a process limit, not a GitHub-enforced constraint).
+HEAD SHA. Subject to the configured Copilot re-review request cap
+(`REQUEST_CAP` from helper output or `.github/idd/config.json`
+`advisoryWait.requestCap`; default 30). This is a process limit, not a
+GitHub-enforced constraint.
 
 1. Fetch `PR_HEAD_SHA`:
 
@@ -123,14 +127,17 @@ per PR** (this is a process limit, not a GitHub-enforced constraint).
    - **RECOVERY_NEEDED** (`COPILOT_PENDING` is `"true"`, no same-head
      marker): post the recovery marker from **AW3-R**. Do not request
      another Copilot review.
-   - **CAP_EXHAUSTED** (`REQUEST_MARKER_COUNT` ≥ 30, no same-head
-     marker) →
-     skip the advisory wait entirely; proceed directly to E15.
+   - **CAP_EXHAUSTED** (`REQUEST_MARKER_COUNT` ≥ `REQUEST_CAP`, no
+     same-head marker) →
+     if `CAP_EXHAUSTED_ROUTE` is `hold`, post the hold comment from
+     **AW4** and stop. Otherwise (`phase-specific`, the default), skip
+     the advisory wait entirely and proceed directly to E15.
    - **REQUEST_NEEDED** (`COPILOT_PENDING` is `"false"`, or
      `COPILOT_PENDING` is `"true"` but current-head coverage is not
-     proven; request cap < 30): request Copilot review and immediately
-     post a plain-text marker. If `COPILOT_PENDING` is `"true"` in this
-     branch, first remove the stale/unproven pending reviewer request:
+     proven; request cap < `REQUEST_CAP`): request Copilot review and
+     immediately post a plain-text marker. If `COPILOT_PENDING` is
+     `"true"` in this branch, first remove the stale/unproven pending
+     reviewer request:
 
      ```sh
      gh pr edit {pr-number} --remove-reviewer "@copilot"
@@ -183,7 +190,7 @@ the `createdAt` of the latest
 a trusted marker actor. If no trusted same-claim watermark exists, stop
 and return to E1 to create one.
 
-Poll every 2 minutes:
+Poll every `POLL_INTERVAL_MINUTES` minutes:
 
 1. Re-fetch `PR_HEAD_SHA`:
 
@@ -215,9 +222,12 @@ not advisory; they remain under the hold/escalation path above.
 
 ## E15 — Wait for CI
 
-Use `idd-ci.instructions.md` for the polling mechanics and timing. The
-outcome paths below are authoritative and override the shared helper's
-generic outcomes for this phase:
+Use `idd-ci.instructions.md` for the polling mechanics and timing. E15
+reuses the same resolved `ciWait.runningTimeout`,
+`ciWait.generationTimeout`, and `ciWait.rerunPolicy` values; omitted
+keys preserve the distributed defaults. The outcome paths below are
+authoritative and override the shared helper's generic outcomes for this
+phase:
 
 **While polling**: if new review threads or comments arrive during the
 CI wait, note them. After CI resolves (any outcome), return to E1 before
@@ -227,15 +237,20 @@ proceeding to F — do not skip triage.
 - **On failure / code-caused**: fix, run **fix-validate**, commit
   atomically, then return to E11
 - **On failure / infra-flaky or pre-existing** (failure also present on
-  `main`, unrelated to this branch): rerun once; if it persists, post a
-  hold comment on the PR documenting the pre-existing failure and stop.
-  A maintainer must resolve or bypass the failing check; do not
-  auto-continue or treat as passed without human confirmation.
+  `main`, unrelated to this branch): apply `ciWait.rerunPolicy`
+  (default `rerun-once`). If it authorizes the current rerun, rerun
+  once and resume polling. If the failure persists after that rerun, or
+  if the policy is `hold`, post a hold comment on the PR documenting the
+  pre-existing failure and stop. A maintainer must resolve or bypass the
+  failing check; do not auto-continue or treat as passed without human
+  confirmation.
 - **On cancelled / timed_out / code-caused**: fix, run **fix-validate**,
   commit, return to E11
-- **On cancelled / timed_out / infra**: re-push or rerun CI once; if it
-  cancels or times out again, post a hold comment and stop (do not
-  loop). On success after the rerun, **return to E1**.
+- **On cancelled / timed_out / infra**: apply `ciWait.rerunPolicy`.
+  Re-push or rerun CI only when the policy authorizes the current rerun;
+  if the route recurs after that rerun, or if the policy is `hold`,
+  post a hold comment and stop (do not loop). On success after the
+  rerun, **return to E1**.
 
 When E15 stops on a CI hold, re-validate the claim and then update the
 digest with `Phase: E15 hold`, the failing or missing checks in

@@ -108,6 +108,7 @@ src/notebooklm/
 ├── _chat.py             # ChatAPI
 ├── _research.py         # ResearchAPI
 ├── _notes.py            # NotesAPI
+├── notebooklm_cli.py    # Entry-point assembler — imports + registers cli/ groups
 ├── rpc/                 # RPC protocol layer
 │   ├── types.py         # Method IDs and enums
 │   ├── encoder.py       # Request encoding
@@ -223,3 +224,7 @@ gh pr view <PR_NUMBER> --json state,mergeStateStatus,mergeable
 - All CI checks pass
 - All review comments are addressed
 - `mergeStateStatus` is `CLEAN`
+
+### Requesting a Claude review on a PR
+
+Automatic Claude review on every PR is disabled. To request a review, comment `@claude review` on the PR — the `.github/workflows/claude.yml` workflow will pick it up.

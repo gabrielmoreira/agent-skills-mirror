@@ -25,7 +25,7 @@ Generate or edit images through ClawRouter. Payment is automatic via x402.
 
 **Shortcuts:**
 
-- Slash: `/imagegen <prompt> [--model=<alias>] [--size=1024x1024] [--n=1]`
+- Slash: `/cr-imagegen <prompt> [--model=<alias>] [--size=1024x1024] [--n=1]` (`/imagegen` still accepted in chat for backward compatibility)
 - Partner tool: `blockrun_image_generation` (LLM-callable) / `blockrun_image_edit` (inpainting)
 
 ---

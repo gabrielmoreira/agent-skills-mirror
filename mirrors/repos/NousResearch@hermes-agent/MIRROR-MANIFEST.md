@@ -62,7 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`optional-skills/autonomous-ai-agents/blackbox/SKILL.md`](optional-skills/autonomous-ai-agents/blackbox/SKILL.md) |
 | 3 | ✓ | [`optional-skills/autonomous-ai-agents/honcho/SKILL.md`](optional-skills/autonomous-ai-agents/honcho/SKILL.md) |
-| 4 | ✓ | [`optional-skills/blockchain/base/SKILL.md`](optional-skills/blockchain/base/SKILL.md) |
+| 4 | ✓ | [`optional-skills/blockchain/evm/SKILL.md`](optional-skills/blockchain/evm/SKILL.md) |
 | 5 | ✓ | [`optional-skills/blockchain/hyperliquid/SKILL.md`](optional-skills/blockchain/hyperliquid/SKILL.md) |
 | 6 | ✓ | [`optional-skills/blockchain/solana/SKILL.md`](optional-skills/blockchain/solana/SKILL.md) |
 | 7 | ✓ | [`optional-skills/communication/one-three-one-rule/SKILL.md`](optional-skills/communication/one-three-one-rule/SKILL.md) |

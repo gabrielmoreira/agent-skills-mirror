@@ -2,12 +2,13 @@
 
 This document tracks which Claude Code CLI version Claw Orchestrator is currently synced to, and which features have been integrated.
 
-## Currently tracked: **Claude Code CLI 2.1.126** (as of 2026-05-04, plugin v2.14.2)
+## Currently tracked: **Claude Code CLI 2.1.140** (as of 2026-05-13, plugin v4.1.0)
 
 ## Sync history
 
 | Plugin Version | Claude CLI Version | Date | Notable integrations |
 |---|---|---|---|
+| v4.1.0 | 2.1.140 | 2026-05-13 | `claude_goal_set` / `claude_goal_clear` / `claude_goal_status` tools (wrap CLI 2.1.139 `/goal` slash command), `plugin_details` tool (wraps `claude plugin details`, 2.1.139), `pluginUrl` config (maps to `--plugin-url`, 2.1.129). Skipped items that are user-controlled via `--settings` (worktree.baseRef, autoMode.hard_deny, skillOverrides, sandbox.bwrapPath / socatPath, parentSettingsBehavior) or auto-set by the CLI (`CLAUDE_CODE_SESSION_ID`, `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN`, `CLAUDE_CODE_FORCE_SYNC_OUTPUT` — all TTY-only). Hook `args: string[]`, `continueOnBlock`, hook input `effort.level`, subagent `x-claude-code-agent-id` headers are CLI-internal — no wrapper change needed. |
 | v2.14.2 | 2.1.126 | 2026-05-04 | `bedrockServiceTier` (Bedrock service-tier env, 2.1.122), `project_purge` tool (wraps `claude project purge`, 2.1.126); skipped passive-only items (OTel numeric attr, `invocation_trigger`, `/v1/models` gateway discovery, PowerShell shell changes) |
 | v2.14.0 | 2.1.121 | 2026-04-28 | `forkSubagent` (fork subagent env), `enableToolSearch` (Vertex AI tool search env), `otelLogUserPrompts` / `otelLogRawApiBodies` (OTEL logging toggles), `xhigh` effort level (Opus 4.7), `stats.pluginErrors` capture from `system/init` |
 | v2.13.0 | 2.1.111 | 2026-04-16 | Hook events, permission delegation, prompt cache optimization (exclude-dynamic-sections + 1H cache), debug control, `--from-pr`, MCP channels, `system/api_retry` event tracking |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `streamlit/agent-skills` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `streamlit/agent-skills` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `streamlit/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 22 |
+| Followed pats | 1 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `streamlit/agent-skills` — 26 default patterns, 0 followed patterns,
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
 
 ## File Index
 
@@ -63,24 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`developing-with-streamlit/SKILL.md`](developing-with-streamlit/SKILL.md) |
-| 5 | ✓ | [`developing-with-streamlit/skills/building-streamlit-chat-ui/SKILL.md`](developing-with-streamlit/skills/building-streamlit-chat-ui/SKILL.md) |
-| 6 | ✓ | [`developing-with-streamlit/skills/building-streamlit-custom-components-v2/SKILL.md`](developing-with-streamlit/skills/building-streamlit-custom-components-v2/SKILL.md) |
-| 7 | ✓ | [`developing-with-streamlit/skills/building-streamlit-dashboards/SKILL.md`](developing-with-streamlit/skills/building-streamlit-dashboards/SKILL.md) |
-| 8 | ✓ | [`developing-with-streamlit/skills/building-streamlit-multipage-apps/SKILL.md`](developing-with-streamlit/skills/building-streamlit-multipage-apps/SKILL.md) |
-| 9 | ✓ | [`developing-with-streamlit/skills/choosing-streamlit-selection-widgets/SKILL.md`](developing-with-streamlit/skills/choosing-streamlit-selection-widgets/SKILL.md) |
-| 10 | ✓ | [`developing-with-streamlit/skills/connecting-streamlit-to-snowflake/SKILL.md`](developing-with-streamlit/skills/connecting-streamlit-to-snowflake/SKILL.md) |
-| 11 | ✓ | [`developing-with-streamlit/skills/creating-streamlit-themes/SKILL.md`](developing-with-streamlit/skills/creating-streamlit-themes/SKILL.md) |
-| 12 | ✓ | [`developing-with-streamlit/skills/displaying-streamlit-data/SKILL.md`](developing-with-streamlit/skills/displaying-streamlit-data/SKILL.md) |
-| 13 | ✓ | [`developing-with-streamlit/skills/improving-streamlit-design/SKILL.md`](developing-with-streamlit/skills/improving-streamlit-design/SKILL.md) |
-| 14 | ✓ | [`developing-with-streamlit/skills/optimizing-streamlit-performance/SKILL.md`](developing-with-streamlit/skills/optimizing-streamlit-performance/SKILL.md) |
-| 15 | ✓ | [`developing-with-streamlit/skills/organizing-streamlit-code/SKILL.md`](developing-with-streamlit/skills/organizing-streamlit-code/SKILL.md) |
-| 16 | ✓ | [`developing-with-streamlit/skills/setting-up-streamlit-environment/SKILL.md`](developing-with-streamlit/skills/setting-up-streamlit-environment/SKILL.md) |
-| 17 | ✓ | [`developing-with-streamlit/skills/using-streamlit-cli/SKILL.md`](developing-with-streamlit/skills/using-streamlit-cli/SKILL.md) |
-| 18 | ✓ | [`developing-with-streamlit/skills/using-streamlit-custom-components/SKILL.md`](developing-with-streamlit/skills/using-streamlit-custom-components/SKILL.md) |
-| 19 | ✓ | [`developing-with-streamlit/skills/using-streamlit-layouts/SKILL.md`](developing-with-streamlit/skills/using-streamlit-layouts/SKILL.md) |
-| 20 | ✓ | [`developing-with-streamlit/skills/using-streamlit-markdown/SKILL.md`](developing-with-streamlit/skills/using-streamlit-markdown/SKILL.md) |
-| 21 | ✓ | [`developing-with-streamlit/skills/using-streamlit-session-state/SKILL.md`](developing-with-streamlit/skills/using-streamlit-session-state/SKILL.md) |
-| 22 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 
