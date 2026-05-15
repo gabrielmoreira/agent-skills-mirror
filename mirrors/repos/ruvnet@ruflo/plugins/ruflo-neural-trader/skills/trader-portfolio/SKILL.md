@@ -8,7 +8,7 @@ Optimize portfolio allocation using neural-trader's portfolio engine.
 
 Steps:
 1. Ensure neural-trader is available:
-   `npm ls neural-trader 2>/dev/null || npm install neural-trader`
+   `npm ls neural-trader 2>/dev/null || npm install --ignore-scripts neural-trader`
 2. Load current portfolio:
    `mcp__claude-flow__memory_search({ query: "current portfolio holdings", namespace: "trading-portfolio" })`
 3. Run portfolio optimization:

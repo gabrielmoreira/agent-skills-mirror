@@ -73,7 +73,7 @@ npx promptfoo view
 
 ### CI (GitHub Actions)
 
-The `eval.yml` workflow runs the smoke tier automatically on PRs that touch skill or eval files. It uses `CI_ANTHROPIC_API_KEY` and `CI_OPENAI_API_KEY` secrets (separate from dev keys to avoid contention). Full suite can be triggered manually via workflow dispatch.
+The `eval.yml` workflow runs the smoke tier automatically on PRs that touch skill or eval files. It uses `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` secrets. Full suite can be triggered manually via workflow dispatch.
 
 ### When to run evals
 

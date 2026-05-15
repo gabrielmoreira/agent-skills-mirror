@@ -61,7 +61,10 @@ This skill is for research triage only. It does not infer causality, rank therap
 3. Query public data sources.
 4. Normalise results into a structured evidence object.
 5. Write JSON and Markdown outputs.
-6. Write file checksums for reproducibility.
+6. Write reproducibility bundle:
+   - `reproducibility/checksums.sha256` — SHA-256 hashes of all output files
+   - `reproducibility/environment.yml` — pinned Conda/pip environment
+   - `ro-crate-metadata.json` — RO-Crate 1.1 provenance record (run params, outputs, script)
 
 # CLI Reference
 

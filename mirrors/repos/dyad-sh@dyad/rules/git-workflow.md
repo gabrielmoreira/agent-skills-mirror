@@ -14,6 +14,8 @@ git push --force-with-lease -u origin HEAD
 
 This overrides the branch's tracking remote. Always check which remote `origin` points to (`git remote -v`) — for bot workspaces, `origin` is typically the bot's fork, not the upstream repo.
 
+When creating a new worktree branch from `upstream/main` with `git worktree add -b <branch> <path> upstream/main`, Git may set the new branch's upstream to `upstream/main`. Before using push helpers that push to the tracked remote, run `git branch --unset-upstream` or set the upstream to the actual feature branch to avoid treating `main` as the branch target.
+
 If a PR's head branch is on another user's fork and `gh pr view --json maintainerCanModify` returns `false`, bot accounts cannot push fixes to that PR head even if review threads can be resolved. A fallback push to the base repo publishes the commit but does **not** update the original fork PR; call this out in the PR summary and ask the PR author or a maintainer to apply the published commit.
 
 ## `gh pr create` branch detection
@@ -143,6 +145,8 @@ If broker-backed commands fail with `Unexpected token '<', "<!DOCTYPE "... is no
 
 ## Rebase workflow and conflict resolution
 
+If `git fetch --all` fails on a contributor remote with `would clobber existing tag`, but the output shows `Fetching upstream` completed first, do not treat the rebase as blocked. Run `git fetch upstream` to confirm the base remote is current, then rebase onto `upstream/main`.
+
 ### Handling unstaged changes during rebase
 
 If `git rebase` fails with "You have unstaged changes" (common with spurious `package-lock.json` changes):
@@ -169,6 +173,8 @@ The stashed changes will be automatically merged back after the rebase completes
 - **React component wrapper conflicts**: When rebasing UI changes that conflict on wrapper div classes (e.g., `flex items-start space-x-2` vs `flex items-end gap-1`), keep the newer styling from the incoming commit but preserve any functional components (like dialogs or modals) that exist in HEAD but not in the incoming change
 - **Refactoring conflicts**: When incoming commits refactor code (e.g., extracting inline logic into helper functions), and HEAD has new features in the same area, integrate HEAD's features into the new structure. Example: if incoming code moves streaming logic to `runSingleStreamPass()` and HEAD adds mid-turn compaction to the inline code, add compaction support to the new function rather than keeping the old inline version
 - **Snapshot file conflicts (e.g., `e2e-tests/snapshots/*.txt`, `*.snap`)**: When a rebase conflicts on a snapshot, neither side may match what the rebased code actually produces (e.g., upstream changed the system prompt, your branch added new tools). Resolve quickly with `git checkout --theirs <file>` to unblock the rebase, then **regenerate snapshots after the rebase completes**: `npm test -- -u` for vitest snapshots, and re-run the affected E2E spec with `--update-snapshots` for E2E `.txt`/`.yml` snapshots. The system-prompt snapshot in `src/__tests__/__snapshots__/local_agent_prompt.test.ts.snap` and the matching E2E snapshots often drift together — after rebasing, expect to update both.
+- **Tests pinning specific prose**: A test that asserts on exact wording added by your branch (e.g., `expect(contents).toContain("REQUIRED")` for a phrase introduced in your AI rules patcher) will silently start asserting against text that was rebased away when upstream reworded the same section. After resolving the prose conflict, search for tests that reference the removed phrase (`grep "REQUIRED" *.test.ts`) and either delete the now-redundant assertion or update it to match the merged wording — the rebase itself does not surface this.
+- **Inverse of refactoring conflicts (incoming commit adds a feature in the old structure)**: When your branch extracted a helper (e.g., moved Nitro setup into `src/ipc/utils/nitro_setup.ts`) and an upstream commit later added a new step to the inline code (e.g., `addNitroToViteConfig` patching `vite.config.ts` from `enable_nitro.ts`), don't just take "ours" for the conflict. Port upstream's new step into your helper so the new feature still runs — otherwise the rebase silently drops upstream's feature for every caller of the helper.
 
 ## Rebasing with uncommitted changes
 
@@ -197,3 +203,7 @@ When rebasing causes conflicts in the `engines` field of `package.json` (e.g., n
 ## Resolving package-lock.json version conflicts after a release bump
 
 When rebasing past an upstream release tag, `package-lock.json` may conflict only on the two top-level `"version"` fields (e.g., `0.45.0` vs your branch's older `0.45.0-beta.1`). The lockfile's dependency tree is otherwise identical to upstream. Resolve by taking upstream's tree (`git checkout --ours package-lock.json` when rebasing onto upstream — `ours` is the rebase target during a `git rebase`), then manually edit the two `"version"` entries to match the current `package.json` version. Running `npm install` afterward is unnecessary just for this; only do it if a real dependency change requires regeneration.
+
+## Re-run `npm install` after taking either side of a `package-lock.json` conflict
+
+If a `package-lock.json` conflict during rebase isn't a pure version-bump and you resolve it by taking one side wholesale (`git checkout --ours package-lock.json` or `--theirs`), run `npm install` before `npm run ts` / tests. Otherwise `node_modules` still reflects the _pre-rebase_ lockfile, and tsc fails with `Cannot find module '<pkg>'` for any dependency that was added upstream during the rebase window. Symptom: typecheck errors on packages you never touched in your branch.

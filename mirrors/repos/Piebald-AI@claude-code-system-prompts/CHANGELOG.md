@@ -4,6 +4,25 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.142](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d325d10)
+
+_+1,080 tokens_
+
+- **NEW:** Tool Description: SendUserFile — Describes the SendUserFile tool for surfacing generated deliverable files to the user, with optional captions and normal or proactive status.
+- Agent Prompt: Coding session title generator — Wraps the session content in `<session>` tags and tells the model to treat it as data, not follow links or instructions inside it, and not state inabilities. If the content is just a URL or reference, it should describe what the user is asking about (e.g. "Review Slack thread") rather than refuse. Adds a "Bad (refusal)" example.
+- Agent Prompt: Managed Agents onboarding flow — Adds a "Console escape hatch" instruction telling the runtime code to print the session's Console URL right after `sessions.create()` so users can watch the session in the UI while iterating, defaulting the workspace slug to `default`.
+- Agent Prompt: /rename auto-generate session name — Wraps the conversation content in `<conversation>` tags and instructs the model to treat it as data to summarize, not instructions to follow.
+- Data: Live documentation sources — Adds a WebFetch URL for the Amazon Bedrock documentation page, covering the AnthropicBedrockMantle client, `anthropic.`-prefixed model IDs, auth paths, feature availability, and regions.
+- Data: Managed Agents core concepts — Adds a "Watch it live in Console" tip pointing at `https://platform.claude.com/workspaces/{workspace}/sessions/{session.id}`, with `default` as the fallback workspace slug, and asks generated code for locally-iterating users to include the `print`/`console.log` of that link.
+- Skill: Create verifier skills — Swaps the hardcoded TodoWrite tool reference for one that resolves to either TaskCreate or TodoWrite depending on whether the tasks feature is enabled.
+- Skill: Model migration guide — Adds an Amazon Bedrock model IDs section explaining that Bedrock clients use the same Messages API and breaking changes but require an `anthropic.` provider prefix on model IDs, with a rename table for `claude-opus-4-7` and `claude-haiku-4-5`. Notes that `code_execution_*` tool versions and Task Budgets are first-party-only and should be skipped for Bedrock, and warns that the legacy `InvokeModel`/`Converse` Bedrock integration with ARN-versioned IDs is out of scope.
+
+# [2.1.141](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4fc1324)
+
+_+4 tokens_
+
+- System Reminder: Output style active — Sources the per-turn reminder from a separate turn-reminder object rather than reading it directly off the output-style config, keeping the same "follow the specific guidelines" fallback wording.
+
 # [2.1.140](https://github.com/Piebald-AI/claude-code-system-prompts/commit/0082871)
 
 _+622 tokens_

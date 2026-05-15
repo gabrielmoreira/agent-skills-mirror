@@ -260,6 +260,16 @@ Before working on any task, read `codemap.md` to understand:
 
 For deep work on a specific folder, also read that folder's `codemap.md`.
 
+## Debugging Issues
+### OpenCode
+Log files are written to:
+macOS/Linux: ~/.local/share/opencode/log/
+Windows: Press WIN+R and paste %USERPROFILE%\.local\share\opencode\log
+Log files are named with timestamps (e.g., 2025-01-09T123456.log) and the most recent 10 log files are kept.
+You can set the log level with the --log-level command-line option to get more detailed debug information. For example, opencode --log-level DEBUG.
+### Plugin
+~/.local/share/opencode/oh-my-opencode-slim.<timestamp>.log
+
 ## Cloned Dependency Source
 
 Read-only dependency source repositories are available under

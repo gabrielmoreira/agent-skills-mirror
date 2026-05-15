@@ -8,7 +8,7 @@ Generate trading signals using neural-trader's anomaly detection engine.
 
 Steps:
 1. Ensure neural-trader is available:
-   `npm ls neural-trader 2>/dev/null || npm install neural-trader`
+   `npm ls neural-trader 2>/dev/null || npm install --ignore-scripts neural-trader`
 2. Scan for signals:
    ```bash
    npx neural-trader --signal scan --symbols <TICKERS>

@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:2ae0e246e40dd8fb03c09c84b483542040c5a8e9`
+**Shape snapshot:** `sha1:ff8fe2ae94728448c14ef4d58a483183e66d5780`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -29,9 +29,9 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 ## At a Glance
 
-- **203** active API routes across **50** categories
-- **4** required + **120** optional environment variables
-- **81** database tables
+- **211** active API routes across **52** categories
+- **4** required + **121** optional environment variables
+- **84** database tables
 
 ## API Surface
 
@@ -186,6 +186,13 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `GET, POST` `/api/guard`
 - `GET` `/api/guard/decisions`
 
+### `handoffs`
+
+- `POST` `/api/handoffs`
+- `GET` `/api/handoffs/[id]`
+- `POST` `/api/handoffs/[id]/consume`
+- `GET` `/api/handoffs/latest`
+
 ### `health`
 
 - `GET` `/api/health`
@@ -255,10 +262,6 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `DELETE, GET, PATCH` `/api/model-strategies/[strategyId]`
 - `POST` `/api/model-strategies/[strategyId]/complete`
 
-### `monetization`
-
-- `GET` `/api/monetization/verified-integrations-count`
-
 ### `operations`
 
 - `GET` `/api/operations/feed`
@@ -310,6 +313,12 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `DELETE, PATCH` `/api/scoring/risk-templates/[templateId]`
 - `GET, POST` `/api/scoring/score`
 
+### `secrets`
+
+- `GET, POST` `/api/secrets`
+- `DELETE, PATCH` `/api/secrets/[id]`
+- `GET` `/api/secrets/rotation-due`
+
 ### `security`
 
 - `GET, POST` `/api/security/prompt-injection`
@@ -343,6 +352,11 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 ### `signals`
 
 - `GET` `/api/signals`
+
+### `skills`
+
+- `POST` `/api/skills/scan`
+- `GET` `/api/skills/scans/[id]`
 
 ### `stream`
 
@@ -393,7 +407,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 These must be set — DashClaw will fail to start without them.
 
 - **`DASHCLAW_API_KEY`** - referenced in 71 file(s)
-- **`DATABASE_URL`** - referenced in 86 file(s)
+- **`DATABASE_URL`** - referenced in 87 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
 
@@ -422,6 +436,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_AGENT_ID` *(undocumented)*
 - `DASHCLAW_ALERTS_DISCORD` *(undocumented)*
 - `DASHCLAW_ALERTS_TELEGRAM` *(undocumented)*
+- `DASHCLAW_ALLOWED_ISSUER` *(undocumented)*
 - `DASHCLAW_API_KEY_ORG` *(undocumented)*
 - `DASHCLAW_BASE_URL` *(undocumented)*
 - `DASHCLAW_CLOSED_ENROLLMENT` *(undocumented)*
@@ -430,6 +445,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_DISABLE_RATE_LIMIT` *(undocumented)*
 - `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
 - `DASHCLAW_HOSTED` *(undocumented)*
+- `DASHCLAW_JWT_AUDIENCE` *(undocumented)*
 - `DASHCLAW_LOCAL_ADMIN_PASSWORD` *(undocumented)*
 - `DASHCLAW_MAX_ORG_ATTACHMENT_BYTES` *(undocumented)*
 - `DASHCLAW_MODE` *(undocumented)*
@@ -465,7 +481,6 @@ These have fallbacks or only activate specific features.
 - `HOSTED_TRIAL_ACTION_CAP` *(undocumented)*
 - `HOSTED_TRIAL_DAYS` *(undocumented)*
 - `INTEGRATION_DATABASE_URL` *(undocumented)*
-- `MEMORY_DIR` *(undocumented)*
 - `MOONSHOT_API_KEY` *(undocumented)*
 - `NEXTAUTH_URL`
 - `NEXT_PUBLIC_APP_URL` *(undocumented)*
@@ -524,7 +539,7 @@ These have fallbacks or only activate specific features.
 
 ## Database Tables
 
-All 81 tables defined in `schema/schema.js` (Drizzle ORM):
+All 84 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -542,6 +557,7 @@ All 81 tables defined in `schema/schema.js` (Drizzle ORM):
 - `code_optimal_file_manifests`
 - `code_projects`
 - `code_session_alerts`
+- `code_session_handoffs`
 - `code_session_memos`
 - `code_session_messages`
 - `code_session_signals`
@@ -563,6 +579,7 @@ All 81 tables defined in `schema/schema.js` (Drizzle ORM):
 - `executions`
 - `feedback`
 - `goals`
+- `governed_secrets`
 - `guard_decisions`
 - `guard_policies`
 - `guardrails_test_runs`
@@ -593,6 +610,7 @@ All 81 tables defined in `schema/schema.js` (Drizzle ORM):
 - `scoring_profiles`
 - `session_events`
 - `shared_docs`
+- `skill_scan_results`
 - `snippets`
 - `token_budgets`
 - `token_snapshots`

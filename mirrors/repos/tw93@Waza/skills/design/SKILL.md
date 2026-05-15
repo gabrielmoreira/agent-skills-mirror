@@ -1,9 +1,9 @@
 ---
 name: design
-description: "Produces distinctive, production-grade UI for any component, page, or visual interface. Handles screenshot-driven iteration when the user sends an image with a visual complaint. Not for backend logic or data pipelines."
+description: "Produces distinctive, production-grade UI for components, pages, and visual interfaces, with artifact-grounded screenshot iteration for real app polish. Not for backend logic or data pipelines."
 when_to_use: "设计, 做页面, 做组件, 不好看, 不和谐, 不清晰, 很丑, 很怪, 很傻, 突兀, 不协调, 字体, 字形, 排印, 排版, 样式, 前端, UI, 截图, build page, create component, make it look good, style, design, screenshot with visual complaint, typography, font looks wrong"
 metadata:
-  version: "3.20.0"
+  version: "3.24.0"
 ---
 
 # Design: Build It With a Point of View
@@ -37,12 +37,13 @@ Activate when the user sends a screenshot or image alongside a complaint ("这�
 3. If the user provides a reference screenshot, older version, or "this one is good" example, compare current vs. reference and name the visual deltas before choosing a fix.
 4. If the diagnosis is a known UX problem (split-view sync, infinite scroll, virtualised list, sticky header), spend one round surveying how 2-3 mature products in the same category solve it before writing code. Cite what each does. Skip only if the fix is purely cosmetic (color, spacing, copy).
 5. Find the responsible code: grep for the component name or class, read the actual file. Do not rely on memory or assumptions about file location.
-6. Apply the minimal fix. One component, one issue.
-7. Verify the result in a browser or screenshot tool at desktop width and 375px mobile width. If the host cannot render, say that explicitly and hand off the exact view the user should check.
+6. Apply the minimal fix. For existing products, try material/opacity, geometry, spacing, typography, or text-fit adjustments before redesigning the surface.
+7. Verify the result in a browser, native app, screenshot tool, or rendered artifact at desktop width and 375px mobile width when applicable. Check long words, localized strings, button labels, and compact states for overflow. If the host cannot render, say that explicitly and hand off the exact view the user should check.
 8. Ask the user to verify in the browser. Do not hand off without this step.
 
 **Calibration rules:**
 - The user's screenshot is the strongest design brief in the turn. Keep it visible in the reasoning until the fix is done.
+- The real running product is the oracle. Product pages, app screenshots, release pages, and current UI state override generic style instincts.
 - Do not flatten specific taste feedback into generic UI adjectives. "More premium" is not a diagnosis; "caption baseline drifts above the Chinese line" is.
 - If the screenshot exposes a regression, broken render, timing issue, or generated asset defect rather than taste, route to `/hunt` and preserve the visual evidence.
 
@@ -111,6 +112,8 @@ Give at least 3 variations across genuinely different dimensions (density, typog
 | Claimed it looked right without opening a browser | Code correct in your head can look broken in the browser. Open it. |
 | Chose glassmorphism, ignored the mobile constraint | `backdrop-filter` is expensive on low-power devices. Name the tradeoff. |
 | Light-mode app: white panel on white background, visually indistinguishable | Adjacent nested surfaces must differ visually. Either background step (sidebar vs main ≥4% lightness difference) or shadow minimum `0 1px 3px rgba(0,0,0,0.10)`. |
+| Fixed visual polish by redesigning the whole surface | Locate the concrete visual delta first, then make the smallest material, opacity, geometry, or typography change that addresses it. |
+| English looked fine, localized text overflowed | Test long words and localized strings before handoff, especially inside buttons, tabs, nav, and compact cards. |
 
 ## Aesthetic Review
 

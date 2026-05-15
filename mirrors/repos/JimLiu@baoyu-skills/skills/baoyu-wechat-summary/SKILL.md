@@ -286,6 +286,13 @@ The `imgs/` directory exists as an **extension point**: a user (or a future wx-c
 - Callback past quotes ("继上次'要不要买 moderna'之后，这次又...")
 - Don't sacrifice current material to force a callback.
 
+**Roast pass — profile usage extras** (only when generating the roast version):
+
+- 历史槽点可做 callback joke
+- Running gag 可以升级和迭代
+- 历史毒舌语录可以引用或翻新
+- 但当期素材优先，不要为了 callback 硬凑
+
 **Writing order**: write the body categories first, then the opening overview based on the finished body (so the hook is accurate).
 
 Detailed structure, voice, formatting rules, and content guidelines are in [references/output-formats.md](references/output-formats.md). Load that file now if not already loaded.

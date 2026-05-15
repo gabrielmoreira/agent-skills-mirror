@@ -8,7 +8,7 @@ Assess portfolio and position risk using neural-trader's risk engine.
 
 Steps:
 1. Ensure neural-trader is available:
-   `npm ls neural-trader 2>/dev/null || npm install neural-trader`
+   `npm ls neural-trader 2>/dev/null || npm install --ignore-scripts neural-trader`
 2. Run risk assessment:
    ```bash
    # Single position

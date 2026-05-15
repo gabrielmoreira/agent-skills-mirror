@@ -16,6 +16,7 @@ import ai.koog.agents.core.environment.result
 import ai.koog.agents.core.environment.toSafeResult
 import ai.koog.agents.core.feature.pipeline.AIAgentPipeline
 import ai.koog.agents.core.tools.Tool
+import ai.koog.agents.core.tools.ToolBase
 import ai.koog.agents.core.tools.ToolDescriptor
 import ai.koog.agents.core.tools.annotations.InternalAgentToolsApi
 import ai.koog.agents.ext.agent.CriticResult
@@ -453,7 +454,7 @@ public open class AIAgentFunctionalContextBaseCommon<Pipeline : AIAgentPipeline>
      */
     public suspend fun subtaskWithVerification(
         taskDescription: String,
-        tools: List<Tool<*, *>>? = null,
+        tools: List<ToolBase<*, *>>? = null,
         llmModel: LLModel? = null,
         llmParams: LLMParams? = null,
         runMode: ToolCalls = ToolCalls.SEQUENTIAL,
@@ -499,7 +500,7 @@ public open class AIAgentFunctionalContextBaseCommon<Pipeline : AIAgentPipeline>
     public suspend fun <Output : Any> subtask(
         taskDescription: String,
         outputClass: KClass<Output>,
-        tools: List<Tool<*, *>>? = null,
+        tools: List<ToolBase<*, *>>? = null,
         llmModel: LLModel? = null,
         llmParams: LLMParams? = null,
         runMode: ToolCalls = ToolCalls.SEQUENTIAL,
@@ -537,7 +538,7 @@ public open class AIAgentFunctionalContextBaseCommon<Pipeline : AIAgentPipeline>
      */
     public suspend fun <OutputTransformed> subtask(
         taskDescription: String,
-        tools: List<Tool<*, *>>? = null,
+        tools: List<ToolBase<*, *>>? = null,
         finishTool: Tool<*, OutputTransformed>,
         llmModel: LLModel? = null,
         llmParams: LLMParams? = null,
@@ -616,7 +617,7 @@ public open class AIAgentFunctionalContextBaseCommon<Pipeline : AIAgentPipeline>
     @OptIn(InternalAgentToolsApi::class)
     public suspend inline fun <reified Output : Any> subtask(
         taskDescription: String,
-        tools: List<Tool<*, *>>? = null,
+        tools: List<ToolBase<*, *>>? = null,
         llmModel: LLModel? = null,
         llmParams: LLMParams? = null,
         runMode: ToolCalls = ToolCalls.SEQUENTIAL,

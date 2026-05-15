@@ -1,89 +1,85 @@
 ---
 name: plannotator-setup-goal
-description: Create reviewed Codex goal setup packages for long-running /goal work. Use when the user wants to turn an idea, backlog, project mission, or vague objective into durable goal files under a project goals slug folder, with Plannotator review gates for brief, narrative plan with acceptance criteria, verification, blockers, and the final /goal prompt.
+description: Turn an idea or objective into a goal package for /goal. Interviews the user, builds a reviewed fact sheet via Plannotator, then explores the codebase to produce an execution plan.
 ---
 
-# Plannotator Setup Goal
+# Setup Goal
 
-## Overview
+Turn an idea into a goal package at `goals/<slug>/` through structured discovery, user interview, and codebase exploration.
 
-Create a durable goal package in the current project at `goals/<slug>/` so Codex `/goal` has a clear mission, guardrails, proof of done, and external memory. Use Plannotator as the user review UI: every critical document must be gated with `plannotator annotate <document.md> --gate` and revised until approved.
+## Phases
 
-## Workflow
+### 1. Rearticulate
 
-1. Confirm the working directory is the project root, or use the user-provided project directory.
-2. Gather enough context to name the goal, define the intended outcome, identify constraints, find likely project docs, and determine proof of done.
-3. Ask focused questions whenever the goal is vague, risky, too broad, missing a finish line, or missing verification. Do not proceed with guessed critical requirements.
-4. Create a slug from the goal name and scaffold `goals/<slug>/` with:
+State back what the user wants in your own words. If the conversation already has rich context, summarize it. If the goal is bare or vague, do minimal shallow exploration of the codebase to ground your understanding. Keep it to 2-3 sentences. Wait for the user to confirm or correct before continuing.
 
-   ```bash
-   python3 <skill_dir>/scripts/scaffold_goal.py --root . --slug <slug> --title "<goal title>" --objective "<one sentence outcome>"
-   ```
+### 2. Interview (grill me)
 
-5. Draft and refine the critical documents in this order:
-   - `brief.md`
-   - `plan.md`
-   - `verification.md`
-   - `blockers.md`
-   - `goal-prompt.md`
-6. Gate each critical document with Plannotator before moving on:
+Interview the user such that you can derive every "fact" this goal should produce, & until you reach a complete shared understanding of the desired outcomes. The following questions areas should help you determine facts about the outcome.
 
-   ```bash
-   plannotator annotate goals/<slug>/<document.md> --gate
-   ```
+- What the feature/change is
+- Who it's for
+- What problem it solves
+- What behavior changes
+- What success looks like
+- What's in and out of scope (The most important area to determine facts)
+- What edge cases to consider
+- What constraints or precedent apply
 
-7. If Plannotator returns denial, comments, or markup, treat that as user feedback. Revise the document, then run the same gate again. Continue until approved.
-8. After all gates pass, present the final path and the exact `/goal` prompt from `goal-prompt.md`.
+Ask questions **one at a time**, waiting for feedback before continuing. For each question, provide your recommended answer. Use the question/answer tool if available.
 
-## Document Standards
+**If a question can be answered by exploring the codebase, explore the codebase instead of asking.**
 
-`brief.md` must state the mission, context, constraints, non-goals, ask-before rules, and concise done condition.
+Stop when you feel confident in being able to describe the facts of the goal outcome. Don't pad.
 
-`plan.md` is the central reviewed planning artifact. It must read like a clear solution narrative, not just a technical checklist. Include what is being built, why this approach is appropriate, how the solution will work, the main implementation slices, risks, phase boundaries, and acceptance criteria. Every important acceptance item needs observable evidence. For large missions, prefer several sequential goals over one endless goal.
+### 3. Fact Sheet
 
-`verification.md` must list exact verification commands and manual checks. Include expected pass conditions and where evidence should be recorded.
+A fact is a simple description of each outcome of a goal. It should be easily testable and verifiable. A fact may describe the function of a specific feature or aspect of a system. A fact may determine specific UI and UX. Again, a fact is literally anything that can be tested and verified in automated or manual testing. Keep fact language simple. In a way, a fact sheet is a design spec, but less verbose & using language the human user can easily visualize & rationalize. 
 
-`blockers.md` must capture open questions, user-decision points, dangerous operations that require approval, and conditions that should pause the goal.
+Create the goal directory and write `goals/<slug>/facts.md` — a flat list of bulleted facts. Each fact is one line. Add a minimal note only when the fact can't be stated clearly on its own.
 
-`goal-prompt.md` must contain the final command the user can paste into Codex. It should reference the goal package files as the durable source of truth, tell Codex to append evidence to `progress.jsonl`, and define when to stop or ask.
+```bash
+mkdir -p goals/<slug>
+```
 
-`progress.jsonl` is append-only evidence. Do not gate it. During execution, append concrete progress and proof, not summaries of intent.
+Gate the fact sheet with Plannotator:
 
-## Plannotator Rules
+```bash
+plannotator annotate goals/<slug>/facts.md --gate
+```
 
-Use Plannotator as the review surface, not as a passive preview. The command `plannotator annotate <document.md> --gate` presents the document to the user and captures approval or denial feedback.
+If denied, revise from feedback and re-gate until approved.
 
-Do not skip gates for critical documents. Do not mark a document ready because it seems reasonable. The user must approve it through the gate.
+### 4. Plan
 
-If a document is denied, update the document from the captured feedback and rerun the gate. Keep the loop tight: one document, one review, one revision cycle.
+Explore the codebase. Discover and validate implementation paths toward each fact. Trace through code, identify files and systems involved, surface risks and unknowns. Refine until you have a confident order of operations.
 
-## Goal Prompt Rules
+Write `goals/<slug>/plan.md`:
 
-Write the final `/goal` prompt as a compact product brief, not a raw todo dump.
+- Solution approach (brief)
+- Ordered steps with the files/systems each touches
+- Verification for each step (concrete commands or checks)
+- Risks or open questions worth flagging
 
-Include:
-- outcome
-- relevant files
-- constraints and non-goals
-- plan acceptance criteria and evidence
-- verification commands
-- ask-before rules
-- instruction to use `goals/<slug>/` as the durable plan and append evidence to `progress.jsonl`
+Gate the plan with Plannotator:
 
-Avoid:
-- open-ended improvement loops
-- mixed unrelated missions
-- vague words like "improve" without measurable proof
-- instructions to keep working forever
-- hidden assumptions that are not written into the files
+```bash
+plannotator annotate goals/<slug>/plan.md --gate
+```
 
-## Quality Checks
+If denied, revise from feedback and re-gate until approved.
 
-Before finalizing, verify:
-- The goal has one clear finish line.
-- The plan explains what, why, and how before listing work slices.
-- The plan acceptance criteria can be audited from real artifacts.
-- Verification commands are concrete.
-- Risky actions have ask-before rules.
-- The final `/goal` prompt tells Codex where the goal files live.
-- All critical documents have passed Plannotator gates.
+### 5. Goal Output
+
+Write `goals/<slug>/goal.md`:
+
+- The articulated goal (1-3 sentences)
+- Reference to `facts.md` as the shared understanding
+- Reference to `plan.md` as the execution plan
+- Done condition
+
+Tell the user:
+
+```
+Done! Launch a goal with `/goal goals/<slug>/goal.md`
+```

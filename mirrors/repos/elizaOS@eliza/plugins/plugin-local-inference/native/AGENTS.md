@@ -12,25 +12,31 @@ Read both before changing anything that crosses the boundary (artifacts,
 manifest, kernel ABI, GGML pin).
 
 **Fork source.** The patched llama.cpp ships in-tree as a git submodule at
-[`packages/inference/llama.cpp`](llama.cpp) — `elizaOS/llama.cpp @ v1.0.0-eliza`
-(commit `08032d57`; `git submodule update --init --recursive`, which `bun install`
-runs). This is the unified fork: TurboQuant (turbo3/turbo4/turbo3_tcq) + QJL
+[`plugins/plugin-local-inference/native/llama.cpp`](llama.cpp) — `elizaOS/llama.cpp`
+tracking the `v1.2.0-eliza` line (gitlink currently `33c888a7b`, with
+`ce85787c` as the validated DFlash/SWA build base; resolve via
+`git -C plugins/plugin-local-inference/native/llama.cpp describe --always`; the
+`v1.0.0-eliza` / `08032d57` pin documented previously is **stale** — do not copy
+that pin into new tooling or scripts). `git submodule update --init --recursive`
+(which `bun install` runs) is the canonical checkout. This is the canonical fork:
+TurboQuant (turbo3/turbo4/turbo3_tcq) + QJL
 (`block_qjl1_256`, `GGML_OP_ATTN_SCORE_QJL`, `GGML_OP_FUSED_ATTN_QJL_TBQ`) +
 PolarQuant (`block_q4_polar`, `Q4_POLAR=47`) + the eliza Metal/Vulkan/CUDA
 kernels + DFlash spec-decode (`--spec-type dflash`, the `dflash-draft` GGUF arch)
 + the post-refactor `llama-server` (`server-task.cpp` / `server-common.cpp` with
 `grammar_lazy` / `json_schema` / `response_format` / `prefill_assistant`), on
-upstream b8198. Both build paths consume it: `build-llama-cpp-dflash.mjs`
+upstream b9213. Both build paths consume it: `build-llama-cpp-dflash.mjs`
 (desktop/server/Windows/iOS) and `aosp/compile-libllama.mjs` (Android) default to
 the submodule checkout. `ELIZA_DFLASH_LLAMA_CPP_REMOTE` / `_REF` (or `--cache-dir`
-/ `--src-dir`) still force a standalone clone for fork bisects. (`v1.0.0-eliza` is
-the same tree as the prior `v0.4.0-eliza` tag, re-tagged on the elizaOS rename. A
-full rebase onto a recent upstream llama.cpp remains a **deferred** follow-up — not
-a blocker for structured output (the b8198 base already has `grammar_lazy` /
-`json_schema` / `response_format` / `prefill_assistant`); the conflict-prone files
-are the quant-slot enums in `ggml-common.h` / `ggml.h` and the `Q1_0` block layout,
-which upstream redefined incompatibly with the fork's. Full cost / conflict surface
-/ trigger conditions: [`docs/porting/upstream-rebase-plan.md`](../../docs/porting/upstream-rebase-plan.md).)
+/ `--src-dir`) still force a standalone clone for fork bisects. (The `v1.2.0-eliza`
+line tracks the prior `v1.0.0-eliza` tree forward, re-tagged on the elizaOS rename
+chain. A full rebase onto a recent upstream llama.cpp remains a **deferred**
+follow-up — not a blocker for structured output (the b9213 base already has
+`grammar_lazy` / `json_schema` / `response_format` / `prefill_assistant`); the
+conflict-prone files are the quant-slot enums in `ggml-common.h` / `ggml.h` and
+the `Q1_0` block layout, which upstream redefined incompatibly with the fork's.
+Full cost / conflict surface / trigger conditions:
+[`docs/porting/upstream-rebase-plan.md`](../../docs/porting/upstream-rebase-plan.md).)
 
 ---
 
@@ -51,28 +57,91 @@ Backbones (do not change without explicit human approval):
   do not name these as "Qwen" in any user-facing string. Internally,
   manifests record the upstream lineage and license; the UI shows
   "Eliza-1 <tier>".
-- **Voice (TTS):** OmniVoice (Qwen3-TTS lineage). The upstream repo at
-  `https://github.com/ServeurpersoCom/omnivoice.cpp`, mirrored for builds at
-  `https://github.com/elizaOS/omnivoice.cpp`, is the C++ source we fuse with
-  llama.cpp. The omnivoice-singing variant adds an
-  emotion + singing tag vocabulary (`[singing]`, `[happy]`, `[sad]`,
-  `[whisper]`, `[angry]`, `[nervous]`, `[calm]`, `[excited]`, and
-  preserved non-verbals `[laughter]`, `[sigh]`). Per Wave-6 user
-  direction (2026-05-10), the prior "research-only until legal review"
-  gate is **lifted for non-commercial use**: Eliza-1 is non-commercial
-  open source under CC-compatible terms. omnivoice-singing CAN ship as
-  part of default bundles. If the project ever pivots to commercial
-  licensing, CC-BY-NC-SA training-data lineage (GTSinger, RAVDESS,
-  Expresso) must be re-evaluated and likely re-trained on
-  commercially-licensed corpora — until then, ship it.
-- **ASR:** Qwen3-ASR (`ggml-org/Qwen3-ASR-0.6B-GGUF` for
-  lite/mobile/desktop tiers, `ggml-org/Qwen3-ASR-1.7B-GGUF` for
-  pro/server). These are the only public GGUF ASR artifacts currently
-  available; do not invent ASR source repos with a Qwen3.5 prefix. The released
-  Eliza bundle may wrap them under `elizaos/eliza-1-*`, but provenance
-  must record the real upstream. whisper.cpp is **not** the default — it
-  vendors its own ggml, violating the one-llama.cpp-build / one-GGML-pin
-  contract in §4.
+- **Voice (TTS):** Tier-aware. The active backend per tier is declared
+  in `ELIZA_1_VOICE_BACKENDS`
+  (`packages/shared/src/local-inference/catalog.ts`) and is read by the
+  runtime selector at engine arm time. Policy:
+
+  | Tier                  | Backend(s)              | Default  |
+  | --------------------- | ----------------------- | -------- |
+  | `0_8b` / `2b` / `4b`  | Kokoro only             | Kokoro   |
+  | `9b`                  | Kokoro **and** OmniVoice| Kokoro   |
+  | `27b` / `27b-256k` / `27b-1m` | OmniVoice only  | OmniVoice|
+
+  - **Kokoro** = Kokoro-82M ONNX (`onnx-community/Kokoro-82M-v1.0-ONNX`,
+    ~80 MB int8). ~97ms CPU TTFB. Fixed voice packs, no per-user
+    cloning. Bundled at `tts/kokoro/{model_q4.onnx,tokenizer.json,
+    voices/<voice>.bin}` in each shipping tier. Backend implementation:
+    `plugins/plugin-local-inference/src/services/voice/kokoro/`.
+  - **OmniVoice** = Qwen3-TTS lineage. Upstream at
+    `https://github.com/ServeurpersoCom/omnivoice.cpp`, mirrored at
+    `https://github.com/elizaOS/omnivoice.cpp`. ~200ms TTFB on the
+    fused build. Per-user voice cloning, voice design via attribute
+    keywords, optional `omnivoice-singing` variant
+    (`[singing]/[happy]/[sad]/[whisper]/[angry]/[nervous]/[calm]/
+    [excited]` + non-verbals `[laughter]/[sigh]`). Bundled at
+    `tts/omnivoice-base-<quant>.gguf` + `tts/omnivoice-tokenizer-<quant>.gguf`
+    in tiers that ship it.
+
+  Per Wave-6 user direction (2026-05-10), omnivoice-singing CAN ship as
+  part of default bundles for non-commercial use (CC-compatible terms).
+  Commercial pivot requires re-training on commercially-licensed corpora
+  to clear the CC-BY-NC-SA training-data lineage (GTSinger, RAVDESS,
+  Expresso).
+
+  **Canonical voice engine: fused `libelizainference`.** The strategic
+  on-device voice engine is the fused-FFI `libelizainference` library
+  built directly from the merged llama.cpp fork tree at
+  `plugins/plugin-local-inference/native/llama.cpp/tools/omnivoice/`.
+  This is what `services/voice/` calls; this is what the manifest's
+  `voice` and `asr` entries are activated through.
+
+  **W3-3 (OmniVoice → llama.cpp literal merge, v1.0.1-eliza, 2026-05-14):**
+  the OmniVoice sources, FFI bridge, and streaming optimizations now
+  live INSIDE the fork at `tools/omnivoice/`. The pre-merge graft path
+  (clone `elizaOS/omnivoice.cpp` at build time, copy sources into
+  `omnivoice/` at fork root, append `ELIZA-OMNIVOICE-FUSION-GRAFT-V1`
+  CMake block via `packages/app-core/scripts/omnivoice-fuse/` —
+  driven by `ELIZA_FUSE_OMNIVOICE=ON`) is **deprecated** and stays for
+  ONE release as a runway. Setting `OMNIVOICE_INSIDE_LLAMA_CPP=0`
+  (build-script env) opts back into the legacy graft. The default is
+  the merged path (`OMNIVOICE_INSIDE_LLAMA_CPP=1`). The build flag is
+  now `-DLLAMA_BUILD_OMNIVOICE=ON -DOMNIVOICE_SHARED=ON`;
+  `ELIZA_FUSE_OMNIVOICE=ON` is a back-compat alias that emits a
+  deprecation warning and redirects.
+
+  After the v1.0.2-eliza release, `OMNIVOICE_INSIDE_LLAMA_CPP=0` is
+  removed and `packages/app-core/scripts/omnivoice-fuse/` is deleted.
+
+  The standalone `plugins/plugin-omnivoice/` plugin (separate ABI v2
+  `ov_*` symbols, separate `libomnivoice.{so,dylib,dll}`, separate
+  build script `native/build-omnivoice.mjs`) is **legacy** and is slated
+  for removal once the fused path covers the bring-your-own-GGUFs case
+  it was added for. Do not extend the standalone plugin; new voice code
+  goes through `libelizainference`.
+
+  Kokoro and OmniVoice both satisfy the same `OmniVoiceBackend +
+  StreamingTtsBackend` contract — the runtime selector
+  (`services/voice/kokoro/runtime-selection.ts`) picks one at arm time
+  based on the tier policy, the `ELIZA_TTS_BACKEND` env override
+  (`kokoro|omnivoice|auto`), voice-cloning requirements, and measured
+  RTF / TTFB.
+
+- **ASR:** Qwen3-ASR via the fused FFI on every tier. Source artifacts:
+  `ggml-org/Qwen3-ASR-0.6B-GGUF` for lite/mobile/desktop tiers,
+  `ggml-org/Qwen3-ASR-1.7B-GGUF` for pro/server. Bundled as
+  `asr/eliza-1-asr.gguf` + `asr/eliza-1-asr-mmproj.gguf` (mmproj
+  sidecar is REQUIRED — Qwen3-ASR is a multimodal audio-in / text-out
+  model). Activated through `libelizainference`'s
+  `eliza_pick_asr_files()`. OmniVoice has no ASR head — do not route
+  ASR through it. The standalone `plugin-omnivoice`'s
+  `ModelType.TRANSCRIPTION` handler throws
+  `OmnivoiceTranscriptionNotSupported` to make that explicit.
+
+  whisper.cpp is **not** in the contract — it vendors its own ggml,
+  violating the one-llama.cpp-build / one-GGML-pin contract in §4.
+  All historical `transcribeManager.ts` / `whisper-node` references
+  have been removed.
 - **VAD:** Silero VAD (MIT, ~2 MB ONNX). Ships in every voice-enabled
   bundle. Drives barge-in cancellation; gates ASR to skip silent frames.
 - **Wake word:** openWakeWord (Apache-2.0, ~3 MB). Opt-in, local-mode
@@ -122,15 +191,15 @@ hosted under the `elizaos` HuggingFace org under `eliza-1-<tier>`.
 
 ### Tier matrix (binding)
 
-| Tier            | Tagline                       | Text  | Voice          | Vision | Context  | DFlash | Quant default                   |
-| --------------- | ----------------------------- | ----- | -------------- | ------ | -------- | ------ | ------------------------------- |
-| `0_6b`       | low-RAM phones, CPU fallback   | 0.6B  | OmniVoice small | no     | 32k      | yes    | TurboQuant Q3 + Polar Q4 KV     |
-| `1_7b`         | modern phones                  | 1.7B    | OmniVoice small | no     | 32k      | yes    | TurboQuant Q4 + QJL K-cache     |
-| `4b`         | flagship phones, small desktops| 4B    | OmniVoice small | mmproj | 64k      | yes    | TurboQuant Q4 + QJL + Polar     |
-| `9b`         | hidden future placeholder       | TBD   | TBD             | TBD    | TBD      | yes    | TBD after final weights         |
-| `27b`        | hidden future placeholder       | TBD   | TBD             | TBD    | TBD      | yes    | TBD after final weights         |
-| `27b-256k`  | hidden future placeholder       | TBD   | TBD             | TBD    | TBD      | yes    | TBD after final weights         |
-| `27b-1m`    | hidden future placeholder       | TBD   | TBD             | TBD    | TBD      | yes    | TBD after final weights         |
+| Tier            | Tagline                       | Text  | Voice           | Vision | Context  | DFlash | Quant default                   |
+| --------------- | ----------------------------- | ----- | --------------- | ------ | -------- | ------ | ------------------------------- |
+| `0_8b`       | low-RAM phones, CPU fallback   | 0.8B  | Kokoro          | no     | 32k      | yes    | TurboQuant Q3 + Polar Q4 KV     |
+| `2b`         | modern phones                  | 2B    | Kokoro          | no     | 32k      | yes    | TurboQuant Q4 + QJL K-cache     |
+| `4b`         | flagship phones, small desktops| 4B    | Kokoro          | mmproj | 64k      | yes    | TurboQuant Q4 + QJL + Polar     |
+| `9b`         | desktop / midrange GPU          | 9B    | Kokoro + OmniVoice | mmproj | 64k   | yes    | TurboQuant Q4 + QJL + Polar     |
+| `27b`        | flagship GPU                    | 27B   | OmniVoice       | mmproj | 64k      | yes    | TurboQuant Q4 + QJL + Polar TCQ |
+| `27b-256k`  | long-context flagship            | 27B   | OmniVoice       | mmproj | 256k     | yes    | + turbo3_tcq                    |
+| `27b-1m`    | extreme long-context             | 27B   | OmniVoice       | mmproj | 1m       | yes    | + turbo3_tcq + spill            |
 
 Context-length variants (32k / 64k / 128k / 256k) are *not* separate
 tiers — they are dimensions inside a tier. A tier's manifest lists which
@@ -139,37 +208,98 @@ the device's RAM budget at activation time.
 
 ### Bundle layout (binding)
 
-A bundle on HuggingFace is a single repo with this layout. The manifest
-is the source of truth; never derive contents from filenames.
+All tiers ship in a single HuggingFace mono-repo `elizaos/eliza-1`, with
+each tier living under `bundles/<tier>/`. The manifest is the source of
+truth; never derive contents from filenames.
 
 ```
-elizaos/eliza-1-<tier>/
-  eliza-1.manifest.json          # canonical schema, see §6
-  text/
-    eliza-1-<tier>-<ctx>.gguf    # text + vision (mmproj inlined where supported)
-  tts/
-    omnivoice-<size>.gguf
-    omnivoice-tokenizer-<size>.gguf
-  asr/
-    <native package or gguf>
-  vision/
-    mmproj-<tier>.gguf           # only where not inlined into text gguf
-  dflash/
-    drafter-<tier>.gguf
-    target-meta.json             # acceptance windows, kernel caps
-  cache/
-    voice-preset-default.bin     # speaker embedding + phrase cache seed
-  evals/
-    text-eval.json
-    voice-rtf.json
-    e2e-loop.json
-  licenses/
-    LICENSE.text
-    LICENSE.voice
-    LICENSE.dflash
-    LICENSE.eliza-1
-  README.md                      # auto-generated from manifest
+elizaos/eliza-1/
+  bundles/<tier>/
+    eliza-1.manifest.json          # canonical schema, see §6
+    text/
+      eliza-1-<tier>-<ctx>.gguf    # text (+ inline vision where supported)
+    tts/
+      # Kokoro shipped on 0_8b/2b/4b/9b:
+      kokoro/model_q4.onnx
+      kokoro/tokenizer.json
+      kokoro/voices/<voice>.bin
+      # OmniVoice shipped on 9b/27b/27b-256k/27b-1m. Default install
+      # stages a single quant (VOICE_QUANT_BY_TIER); --include-voice-ladder
+      # at stage time emits the full ladder (Q3_K_M, Q4_K_M, Q5_K_M, Q6_K,
+      # Q8_0) so the downloader can pick the level matching the host's
+      # RAM/SoC class at install time. See `voiceQuantLadderForTier()` in
+      # packages/shared/src/local-inference/catalog.ts and
+      # docs/inference/voice-quant-matrix.md.
+      omnivoice-base-<quant>.gguf
+      omnivoice-tokenizer-<quant>.gguf
+    asr/
+      eliza-1-asr.gguf             # Qwen3-ASR text head, every tier
+      eliza-1-asr-mmproj.gguf      # mmproj audio projector sidecar, every tier
+    vad/
+      silero-vad-v5.1.2.ggml.bin   # every tier
+    vision/
+      mmproj-<tier>.gguf           # 4b/9b/27b/27b-256k/27b-1m
+    dflash/
+      drafter-<tier>.gguf
+      target-meta.json             # acceptance windows, kernel caps
+    cache/
+      voice-preset-default.bin     # speaker embedding + phrase cache seed
+    evals/
+      text-eval.json
+      voice-rtf.json
+      asr-wer.json
+      e2e-loop.json
+    licenses/
+      LICENSE.text
+      LICENSE.voice
+      LICENSE.asr
+      LICENSE.vad
+      LICENSE.dflash
+      LICENSE.vision
+      LICENSE.eliza-1
+    checksums/SHA256SUMS
+    evidence/release.json
+    evidence/platform/<id>.json
+    quantization/{turboquant,qjl,polarquant}.json
+  README.md                        # mono-repo overview
 ```
+
+The **runtime default** voice quant per tier (the level the runtime
+selects when no device-class override applies) is the value returned by
+`voiceQuantForTier()` in `packages/shared/src/local-inference/catalog.ts`:
+`Q4_K_M` for `0_8b/2b/4b`, `Q8_0` for `9b/27b/27b-256k/27b-1m`.
+
+The **publish ladder** per tier (every level that gets staged when
+`--include-voice-ladder` is passed) is the value returned by
+`voiceQuantLadderForTier()`:
+
+- Mobile tiers (`0_8b/2b/4b`) ship Kokoro only — empty OmniVoice ladder.
+- All OmniVoice-shipping tiers (`9b/27b/27b-256k/27b-1m`) publish
+  `Q3_K_M, Q4_K_M, Q5_K_M, Q6_K, Q8_0`.
+
+The downloader picks the level matching the host's memory class at
+install time (MAX / GOOD / OKAY / POOR per `memory-budget.ts`).
+**No silent fallback** — §3 forbids "try the next smaller one" at
+runtime; if the resolved level isn't in the bundle, the install fails
+loudly with an actionable diagnostic.
+
+#### OmniVoice quant rules (per R6 §5.6 + R8 §2)
+
+- **K-quant ladder Q3..Q8** — applies. `omnivoice.cpp/tools/quantize.cpp`
+  already supports the full Q2_K..Q8_0 set; the curated publish subset is
+  the ladder above.
+- **PolarQuant on the LM weight bank** — *applies* (OmniVoice's LM head
+  is Qwen3-shaped), but no recipe is wired yet. Landing this requires
+  either grafting `Q4_POLAR` recognition into OmniVoice's loader via
+  `omnivoice-fuse/cmake-graft.mjs`, or running PolarQuant before
+  `omnivoice.cpp/convert.py`. Gated on a measured TTS-MOS comparison.
+- **V-cache PolarQuant** — **N/A**. OmniVoice has no KV cache between
+  MaskGIT steps; there's no V-cache to compress.
+- **QJL** — *conditional, deferred*. Only matters for long-form
+  multi-chunk synth where the cumulative cache becomes large. Off the
+  Wave-2 critical path.
+- **TurboQuant V-cache** — same applicability as QJL — N/A absent a KV
+  cache.
 
 A literal single `.gguf` containing all of text + voice + ASR + vision
 + drafter is **not** the deliverable — that requires either a custom
@@ -290,6 +420,29 @@ mic / file → ASR → text tokens
   TTS PCM ring buffer MUST drain immediately, the phrase chunker queue
   MUST flush, and any in-flight TTS forward pass MUST be cancelled at
   the next kernel boundary.
+- **Voice cancellation contract (W3-9).** One `VoiceCancellationToken`
+  per voice turn is the canonical handle. It lives in
+  `@elizaos/shared/voice/voice-cancellation-token`, is owned by the
+  `VoiceCancellationCoordinator` in
+  `plugins/plugin-local-inference/src/services/voice/cancellation-coordinator.ts`,
+  and is the sole legitimate way to fan an abort across these four
+  layers:
+  1. The runtime's `TurnControllerRegistry.abortTurn(roomId, reason)`
+     so the planner-loop / action handlers / streaming `useModel`
+     calls see the abort within one tick.
+  2. The LM slot — via the registered `slotAbort(slotId, reason)`
+     callback (today: HTTP-fetch close on the in-flight stream; on a
+     fork that exposes a slot-cancel REST route, the REST call).
+  3. The TTS pipeline — via the registered `ttsStop(reason)` callback
+     (today: `EngineVoiceBridge.triggerBargeIn` → audio-sink drain +
+     FFI/HTTP synthesis cancel).
+  4. Any fetch / model / FFI consumer of `token.signal` (a standard
+     `AbortSignal`).
+  The token is idempotent (first reason wins) and fires every
+  `onAbort` listener synchronously. Optimistic LM start is gated by
+  `OptimisticGenerationPolicy` — default true on plugged-in /
+  unknown, false on battery, with explicit user override.
+  Full contract: `plugins/plugin-local-inference/docs/voice-cancellation-contract.md`.
 - **Speaker preset caching.** The default voice ships as a precomputed
   speaker embedding in `cache/voice-preset-default.bin`. Loading a
   voice MUST NOT re-extract the embedding from raw audio on every
@@ -505,7 +658,7 @@ backend nightly.
 - `packages/app-core/scripts/build-llama-cpp-dflash.mjs` — the build
   hook. Every kernel patch lives here. It (and the AOSP cross-compile at
   `packages/app-core/scripts/aosp/compile-libllama.mjs`) default to building
-  from the in-repo `packages/inference/llama.cpp` submodule.
+  from the in-repo `plugins/plugin-local-inference/native/llama.cpp` submodule.
 - `packages/training/AGENTS.md` — the training-side contract, including
   what the bundle/publish flow expects.
 - the repo-root `AGENTS.md` — repo-wide cleanup mandate and conventions

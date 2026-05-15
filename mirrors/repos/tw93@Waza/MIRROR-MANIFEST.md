@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 35 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,27 +73,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/design/SKILL.md`](skills/design/SKILL.md) |
 | 13 | ✓ | [`skills/health/agents/inspector-context.md`](skills/health/agents/inspector-context.md) |
 | 14 | ✓ | [`skills/health/agents/inspector-control.md`](skills/health/agents/inspector-control.md) |
-| 15 | ✓ | [`skills/health/scripts/collect-data.sh`](skills/health/scripts/collect-data.sh) |
-| 16 | ✓ | [`skills/health/SKILL.md`](skills/health/SKILL.md) |
-| 17 | ✓ | [`skills/hunt/references/ime-unicode.md`](skills/hunt/references/ime-unicode.md) |
-| 18 | ✓ | [`skills/hunt/references/logging-techniques.md`](skills/hunt/references/logging-techniques.md) |
-| 19 | ✓ | [`skills/hunt/references/rendering-debug.md`](skills/hunt/references/rendering-debug.md) |
-| 20 | ✓ | [`skills/hunt/SKILL.md`](skills/hunt/SKILL.md) |
-| 21 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
-| 22 | ✓ | [`skills/read/references/read-methods.md`](skills/read/references/read-methods.md) |
-| 23 | ✓ | [`skills/read/references/save-paths.md`](skills/read/references/save-paths.md) |
-| 24 | ✓ | [`skills/read/scripts/fetch_feishu.py`](skills/read/scripts/fetch_feishu.py) |
-| 25 | ✓ | [`skills/read/scripts/fetch_weixin.py`](skills/read/scripts/fetch_weixin.py) |
-| 26 | ✓ | [`skills/read/scripts/fetch.sh`](skills/read/scripts/fetch.sh) |
-| 27 | ✓ | [`skills/read/SKILL.md`](skills/read/SKILL.md) |
-| 28 | ✓ | [`skills/RESOLVER.md`](skills/RESOLVER.md) |
-| 29 | ✓ | [`skills/think/SKILL.md`](skills/think/SKILL.md) |
-| 30 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
-| 31 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
-| 32 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
-| 33 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
-| 34 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
-| 35 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
+| 15 | ✓ | [`skills/health/agents/inspector-maintainability.md`](skills/health/agents/inspector-maintainability.md) |
+| 16 | ✓ | [`skills/health/scripts/check-agent-context.sh`](skills/health/scripts/check-agent-context.sh) |
+| 17 | ✓ | [`skills/health/scripts/check-doc-refs.sh`](skills/health/scripts/check-doc-refs.sh) |
+| 18 | ✓ | [`skills/health/scripts/check-maintainability.sh`](skills/health/scripts/check-maintainability.sh) |
+| 19 | ✓ | [`skills/health/scripts/check-verifier-output.sh`](skills/health/scripts/check-verifier-output.sh) |
+| 20 | ✓ | [`skills/health/scripts/collect-data.sh`](skills/health/scripts/collect-data.sh) |
+| 21 | ✓ | [`skills/health/SKILL.md`](skills/health/SKILL.md) |
+| 22 | ✓ | [`skills/hunt/references/failure-patterns.md`](skills/hunt/references/failure-patterns.md) |
+| 23 | ✓ | [`skills/hunt/references/ime-unicode.md`](skills/hunt/references/ime-unicode.md) |
+| 24 | ✓ | [`skills/hunt/references/logging-techniques.md`](skills/hunt/references/logging-techniques.md) |
+| 25 | ✓ | [`skills/hunt/references/rendering-debug.md`](skills/hunt/references/rendering-debug.md) |
+| 26 | ✓ | [`skills/hunt/SKILL.md`](skills/hunt/SKILL.md) |
+| 27 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
+| 28 | ✓ | [`skills/read/references/read-methods.md`](skills/read/references/read-methods.md) |
+| 29 | ✓ | [`skills/read/references/save-paths.md`](skills/read/references/save-paths.md) |
+| 30 | ✓ | [`skills/read/scripts/fetch_feishu.py`](skills/read/scripts/fetch_feishu.py) |
+| 31 | ✓ | [`skills/read/scripts/fetch_weixin.py`](skills/read/scripts/fetch_weixin.py) |
+| 32 | ✓ | [`skills/read/scripts/fetch.sh`](skills/read/scripts/fetch.sh) |
+| 33 | ✓ | [`skills/read/SKILL.md`](skills/read/SKILL.md) |
+| 34 | ✓ | [`skills/RESOLVER.md`](skills/RESOLVER.md) |
+| 35 | ✓ | [`skills/think/SKILL.md`](skills/think/SKILL.md) |
+| 36 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
+| 37 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
+| 38 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
+| 39 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
+| 40 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
+| 41 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
 
 ---
 

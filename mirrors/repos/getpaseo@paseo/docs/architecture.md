@@ -146,6 +146,8 @@ There is no dedicated welcome message; the server emits a `status` session messa
 
 **Top-level WS envelopes** are `hello`, `recording_state`, `ping`/`pong`, and `session` (which wraps the rich union of session messages).
 
+New session RPCs use dotted names with `.request` and `.response` suffixes, such as `checkout.github.set_auto_merge.request` and `checkout.github.set_auto_merge.response`. See [rpc-namespacing.md](rpc-namespacing.md) for the convention and migration rules for older flat RPC names.
+
 **Notable session message types:**
 
 - `agent_update` — Agent state changed (status, title, labels)
@@ -205,6 +207,7 @@ initializing → idle ⇄ running
 
 - **AgentManager** is the source of truth for agent state and broadcasts updates to all subscribers
 - Timeline is append-only with epochs (each run starts a new epoch). Storage uses sequence numbers for client-side dedup; the default fetch page is 200 items
+- Timeline row `timestamp` values are canonical daemon-owned timestamps. Providers may supply original replay timestamps, but clients must not guess timestamp trust or hide time UI based on local clock heuristics.
 - Events stream to all subscribed clients in real time
 - Agent state persists to `$PASEO_HOME/agents/{cwd-with-dashes}/{agent-id}.json` (timeline rows live alongside the record)
 

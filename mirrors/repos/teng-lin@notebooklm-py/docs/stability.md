@@ -1,7 +1,7 @@
 # API Stability and Versioning
 
 **Status:** Active
-**Last Updated:** 2026-05-09
+**Last Updated:** 2026-05-14
 
 This document describes the stability guarantees and versioning policy for `notebooklm-py`.
 
@@ -52,6 +52,9 @@ The following are considered **public API** and are subject to stability guarant
 ### Stable (Won't break without major version bump)
 
 ```python
+# Version
+__version__               # Package version string (read-only)
+
 # Client
 NotebookLMClient
 NotebookLMClient.from_storage()
@@ -102,6 +105,23 @@ AuthTokens
 
 # Helpers (cookies extra) - imported from notebooklm.auth
 notebooklm.auth.convert_rookiepy_cookies_to_storage_state  # requires `pip install "notebooklm-py[cookies]"` — see docs/installation.md#optional-extras-matrix
+```
+
+### Internal helpers exported for compatibility
+
+The following symbols appear in `notebooklm/__all__` so that downstream code can
+import them via `from notebooklm import ...`, but they are **not** covered by
+the stability guarantee above. They support narrow integration use cases
+(typed exception handling, warning filters, deprecated-name shims) and may be
+renamed, narrowed, or removed in a future minor release. Prefer the stable
+surface when possible.
+
+```python
+CitedSourceSelection      # Chat citation payload — internal shape, exposed for typing
+AuthExtractionError       # Specialized AuthError raised by browser-based login
+NotebookLimitError        # Raised when account notebook quota is exhausted
+UnknownTypeWarning        # Warning category emitted when .kind falls back to UNKNOWN
+StudioContentType         # ⚠️ Deprecated — use ArtifactType (see "Currently Deprecated" below)
 ```
 
 ### Internal (May change without notice)

@@ -1,5 +1,6 @@
 package ai.koog.agents.core.environment
 
+import ai.koog.agents.core.annotation.InternalAgentsApi
 import ai.koog.prompt.dsl.PromptBuilder
 import ai.koog.prompt.message.Message
 import ai.koog.prompt.message.RequestMetaInfo
@@ -9,6 +10,7 @@ import ai.koog.serialization.kotlinx.toKoogJSONElement
 import ai.koog.serialization.kotlinx.toKoogJSONObject
 import ai.koog.utils.time.KoogClock
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
@@ -22,6 +24,7 @@ import kotlinx.serialization.json.JsonObject
  * @property content The main content or message associated with the tool result.
  * @property resultKind The kind of result produced by the tool, indicating success, failure, or validation error.
  * @property result The result produced by the tool.
+ * @property resultObject The raw result object produced by the tool. This value will not survive serialization, hence it should be used with caution and is marked as `@InternalAgentsApi`.
  */
 @Serializable
 public data class ReceivedToolResult(
@@ -31,7 +34,8 @@ public data class ReceivedToolResult(
     val toolDescription: String?,
     val content: String,
     val resultKind: ToolResultKind,
-    val result: JSONElement?
+    val result: JSONElement?,
+    @property:InternalAgentsApi @property:Transient val resultObject: Any? = null,
 ) {
     @Deprecated("Use the constructor with JSONElement instead of JsonElement")
     public constructor(

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 13 file(s) materialized.
+Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 13 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 13 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,19 +60,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/create-pull-request/SKILL.md`](.agents/skills/create-pull-request/SKILL.md) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
-| 5 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
-| 6 | ✓ | [`sdk/apps/cli/.agents/skills/opentui/SKILL.md`](sdk/apps/cli/.agents/skills/opentui/SKILL.md) |
-| 7 | ✓ | [`sdk/apps/cli/.cline/skills/publish-cli/SKILL.md`](sdk/apps/cli/.cline/skills/publish-cli/SKILL.md) |
-| 8 | ✓ | [`sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
-| 9 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
-| 10 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
-| 11 | ✓ | [`src/core/prompts/system-prompt/CONTRIBUTING.md`](src/core/prompts/system-prompt/CONTRIBUTING.md) |
-| 12 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 1 | ✓ | [`.agents/skills/cline-sdk/references/agent/api.md`](.agents/skills/cline-sdk/references/agent/api.md) |
+| 2 | ✓ | [`.agents/skills/cline-sdk/references/agent/gotchas.md`](.agents/skills/cline-sdk/references/agent/gotchas.md) |
+| 3 | ✓ | [`.agents/skills/cline-sdk/references/agent/patterns.md`](.agents/skills/cline-sdk/references/agent/patterns.md) |
+| 4 | ✓ | [`.agents/skills/cline-sdk/references/agent/REFERENCE.md`](.agents/skills/cline-sdk/references/agent/REFERENCE.md) |
+| 5 | ✓ | [`.agents/skills/cline-sdk/references/clinecore/api.md`](.agents/skills/cline-sdk/references/clinecore/api.md) |
+| 6 | ✓ | [`.agents/skills/cline-sdk/references/clinecore/gotchas.md`](.agents/skills/cline-sdk/references/clinecore/gotchas.md) |
+| 7 | ✓ | [`.agents/skills/cline-sdk/references/clinecore/patterns.md`](.agents/skills/cline-sdk/references/clinecore/patterns.md) |
+| 8 | ✓ | [`.agents/skills/cline-sdk/references/clinecore/REFERENCE.md`](.agents/skills/cline-sdk/references/clinecore/REFERENCE.md) |
+| 9 | ✓ | [`.agents/skills/cline-sdk/references/events/REFERENCE.md`](.agents/skills/cline-sdk/references/events/REFERENCE.md) |
+| 10 | ✓ | [`.agents/skills/cline-sdk/references/multi-agent/REFERENCE.md`](.agents/skills/cline-sdk/references/multi-agent/REFERENCE.md) |
+| 11 | ✓ | [`.agents/skills/cline-sdk/references/plugins/REFERENCE.md`](.agents/skills/cline-sdk/references/plugins/REFERENCE.md) |
+| 12 | ✓ | [`.agents/skills/cline-sdk/references/production/REFERENCE.md`](.agents/skills/cline-sdk/references/production/REFERENCE.md) |
+| 13 | ✓ | [`.agents/skills/cline-sdk/references/providers/REFERENCE.md`](.agents/skills/cline-sdk/references/providers/REFERENCE.md) |
+| 14 | ✓ | [`.agents/skills/cline-sdk/references/scheduling/REFERENCE.md`](.agents/skills/cline-sdk/references/scheduling/REFERENCE.md) |
+| 15 | ✓ | [`.agents/skills/cline-sdk/references/tools/REFERENCE.md`](.agents/skills/cline-sdk/references/tools/REFERENCE.md) |
+| 16 | ✓ | [`.agents/skills/cline-sdk/SKILL.md`](.agents/skills/cline-sdk/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/create-pull-request/SKILL.md`](.agents/skills/create-pull-request/SKILL.md) |
+| 18 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 20 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
+| 21 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
+| 22 | ✓ | [`sdk/apps/cli/.agents/skills/opentui/SKILL.md`](sdk/apps/cli/.agents/skills/opentui/SKILL.md) |
+| 23 | ✓ | [`sdk/apps/cli/.cline/skills/publish-cli/SKILL.md`](sdk/apps/cli/.cline/skills/publish-cli/SKILL.md) |
+| 24 | ✓ | [`sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](sdk/apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
+| 25 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
+| 26 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
+| 27 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
+| 28 | ✓ | [`src/core/prompts/system-prompt/CONTRIBUTING.md`](src/core/prompts/system-prompt/CONTRIBUTING.md) |
+| 29 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 30 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

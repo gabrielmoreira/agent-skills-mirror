@@ -8,7 +8,7 @@ Train neural prediction models using neural-trader's ML engine.
 
 Steps:
 1. Ensure neural-trader is available:
-   `npm ls neural-trader 2>/dev/null || npm install neural-trader`
+   `npm ls neural-trader 2>/dev/null || npm install --ignore-scripts neural-trader`
 2. Train the specified model:
    ```bash
    npx neural-trader --model lstm --symbol TICKER --confidence 0.95

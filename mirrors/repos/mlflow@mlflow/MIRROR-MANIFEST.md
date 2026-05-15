@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
+Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 15 file(
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 15 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,10 +70,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.github/instructions/github-actions.instructions.md`](.github/instructions/github-actions.instructions.md) |
 | 10 | ✓ | [`.github/instructions/python.instructions.md`](.github/instructions/python.instructions.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`mlflow/server/AGENTS.md`](mlflow/server/AGENTS.md) |
-| 13 | ✓ | [`mlflow/server/js/CLAUDE.md`](mlflow/server/js/CLAUDE.md) |
-| 14 | ✓ | [`mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md`](mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md) |
-| 15 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 12 | ✓ | [`libs/typescript/integrations/claude-code/skills/setup/SKILL.md`](libs/typescript/integrations/claude-code/skills/setup/SKILL.md) |
+| 13 | ✓ | [`libs/typescript/integrations/claude-code/skills/status/SKILL.md`](libs/typescript/integrations/claude-code/skills/status/SKILL.md) |
+| 14 | ✓ | [`mlflow/server/AGENTS.md`](mlflow/server/AGENTS.md) |
+| 15 | ✓ | [`mlflow/server/js/CLAUDE.md`](mlflow/server/js/CLAUDE.md) |
+| 16 | ✓ | [`mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md`](mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md) |
+| 17 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 
 ---
 

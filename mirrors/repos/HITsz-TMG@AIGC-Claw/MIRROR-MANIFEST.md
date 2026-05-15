@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HITsz-TMG/AIGC-Claw` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `HITsz-TMG/AIGC-Claw` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HITsz-TMG/AIGC-Claw` — 26 default patterns, 1 followed patterns, 4 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`aigc-director/aigc-claw/frontend/README.md`](aigc-director/aigc-claw/frontend/README.md) |
-| 2 | ✓ | [`aigc-director/CLAUDE.md`](aigc-director/CLAUDE.md) |
-| 3 | ✓ | [`aigc-director/SKILL.md`](aigc-director/SKILL.md) |
-| 4 | → | [`README.md`](README.md) |
+| 1 | ✓ | [`FilmAgent/README.md`](FilmAgent/README.md) |
+| 2 | ✓ | [`video-claw/CLAUDE.md`](video-claw/CLAUDE.md) |
+| 3 | ✓ | [`video-claw/SKILL.md`](video-claw/SKILL.md) |
+| 4 | ✓ | [`video-claw/video-claw/frontend/README.md`](video-claw/video-claw/frontend/README.md) |
+| 5 | → | [`README.md`](README.md) |
 
 ---
 

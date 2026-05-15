@@ -47,6 +47,7 @@ Invoke them by name (e.g., `/office-hours`).
 | `/canary` | Post-deploy monitoring loop using the browse daemon. |
 | `/landing-report` | Read-only dashboard for the workspace-aware ship queue. |
 | `/document-release` | Update all docs to match what you just shipped. |
+| `/document-generate` | Generate Diataxis docs (tutorial / how-to / reference / explanation) from code. |
 | `/setup-deploy` | One-time deploy config detection (Fly.io, Render, Vercel, etc.). |
 | `/gstack-upgrade` | Update gstack to the latest version. |
 

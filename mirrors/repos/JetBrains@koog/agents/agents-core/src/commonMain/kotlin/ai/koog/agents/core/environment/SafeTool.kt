@@ -1,6 +1,7 @@
 package ai.koog.agents.core.environment
 
-import ai.koog.agents.core.tools.Tool
+import ai.koog.agents.core.tools.ToolBase
+import ai.koog.agents.core.tools.ToolCallMetadata
 import ai.koog.prompt.message.Message
 import ai.koog.prompt.message.ResponseMetaInfo
 import ai.koog.serialization.JSONSerializer
@@ -16,7 +17,7 @@ import ai.koog.utils.time.KoogClock
  * @property environment The environment in which the tool operates. Handles the execution of tool logic.
  */
 public data class SafeTool<TArgs, TResult>(
-    internal val tool: Tool<TArgs, TResult>,
+    internal val tool: ToolBase<TArgs, TResult>,
     internal val environment: AIAgentEnvironment,
     internal val clock: KoogClock
 ) {
@@ -110,6 +111,24 @@ public data class SafeTool<TArgs, TResult>(
     public suspend fun execute(
         args: TArgs,
         serializer: JSONSerializer,
+    ): Result<TResult> = execute(args, serializer, ToolCallMetadata.EMPTY)
+
+    /**
+     * Executes the tool with the provided arguments and caller-supplied [metadata], returning the result.
+     *
+     * The metadata is threaded through the environment into [Tool.execute] as a side channel (e.g. a
+     * trace span id). When combined with metadata contributed by installed features, the caller-supplied
+     * entries take precedence on key collision.
+     *
+     * @param args The arguments required for the tool execution.
+     * @param serializer The JSON serializer for encoding the tool arguments.
+     * @param metadata Caller-contributed per-call context.
+     * @return A [Result] containing the outcome of the tool execution.
+     */
+    public suspend fun execute(
+        args: TArgs,
+        serializer: JSONSerializer,
+        metadata: ToolCallMetadata,
     ): Result<TResult> {
         return environment.executeTool(
             Message.Tool.Call(
@@ -117,7 +136,8 @@ public data class SafeTool<TArgs, TResult>(
                 tool = tool.name,
                 content = tool.encodeArgsToString(args, serializer),
                 metaInfo = ResponseMetaInfo.create(clock)
-            )
+            ),
+            metadata
         ).toSafeResult(tool, serializer)
     }
 
@@ -136,6 +156,23 @@ public data class SafeTool<TArgs, TResult>(
         @Suppress("UNCHECKED_CAST")
         return execute(args as TArgs, serializer)
     }
+
+    /**
+     * Executes the tool with the provided arguments and [metadata] in an unsafe manner.
+     *
+     * @param args The arguments to be passed to the tool.
+     * @param serializer The JSON serializer for encoding the tool arguments.
+     * @param metadata Caller-contributed per-call context.
+     * @return A [Result] containing the outcome of the tool execution.
+     */
+    public suspend fun executeUnsafe(
+        args: Any?,
+        serializer: JSONSerializer,
+        metadata: ToolCallMetadata,
+    ): Result<TResult> {
+        @Suppress("UNCHECKED_CAST")
+        return execute(args as TArgs, serializer, metadata)
+    }
 }
 
 /**
@@ -144,7 +181,7 @@ public data class SafeTool<TArgs, TResult>(
  * @return A [SafeTool.Result] which will either be a [SafeTool.Result.Failure] or [SafeTool.Result.Success]
  */
 public fun <TResult> ReceivedToolResult.toSafeResult(
-    tool: Tool<*, TResult>,
+    tool: ToolBase<*, TResult>,
     serializer: JSONSerializer,
 ): SafeTool.Result<TResult> {
     val encodedResult = result ?: return SafeTool.Result.Failure(message = content)

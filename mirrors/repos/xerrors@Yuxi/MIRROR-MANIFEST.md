@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 4 followed patterns, 9 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 4 followed patterns, 9 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 9 |
+| Followed pats | 7 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,9 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 4 followed patterns, 9 file(s)
 - `docs/develop-guides/testing-guidelines.md`
 - `docs/develop-guides/design.md`
 - `docs/develop-guides/roadmap.md`
+- `CONTRIBUTING.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
+- `docs/develop-guides/contributing.md`
 
 ## File Index
 
@@ -67,10 +70,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/reporter/SKILL.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
-| 6 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 7 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 8 | → | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
-| 9 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 6 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 7 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 10 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
+| 11 | → | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 12 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---
 

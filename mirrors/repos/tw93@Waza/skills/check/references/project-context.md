@@ -7,6 +7,8 @@ Use this template to compress repository context before running Waza `/check`. T
 - Diff depth classification.
 - Scope drift detection.
 - Hard stops such as destructive automation, missing release artifacts, generated artifact drift, version skew, unknown identifiers, injection risks, credential leakage, and dependency surprises.
+- Release Gate 2.0 matrix for release readiness.
+- Safety sink review for destructive operations, command construction, path boundaries, signing/appcast, sandbox/approval, and auth prompts.
 - Security and architecture specialist routing.
 - Autofix policy.
 - Sign-off format.
@@ -68,3 +70,31 @@ Use this template to compress repository context before running Waza `/check`. T
 ```
 
 Keep this context brief. It should guide the review, not replace the review method.
+
+## Release Gate 2.0 Matrix
+
+Fill this before claiming a change is release-ready. Use "n/a" only when the project clearly has no such surface.
+
+| Surface | Evidence |
+|---|---|
+| Review base | Base branch, latest tag, and commit range reviewed |
+| Worktree state | Dirty, staged, and untracked files accounted for |
+| Remote state | `origin/main` or release branch sync checked |
+| Version fields | Manifest, app config, changelog, appcast, and lockfile versions aligned |
+| Generated artifacts | Bundled/minified/archive outputs regenerated or proven not needed |
+| Package/archive contents | Built package inspected for required files and missing extras |
+| Release assets | GitHub release, appcast, download archive, checksum, or installer assets verified |
+| Registry/appcast | npm/crates/Homebrew/appcast/App Store or equivalent state re-read after publish |
+| CI status | Latest required checks passed or blocker named |
+| Issue/PR state | Target issue or PR re-read before commenting, closing, merging, or saying shipped |
+
+## Safety Sink Review
+
+Any diff that touches one of these sinks needs explicit validation and rollback thinking:
+
+- Deleting, moving, or overwriting user files, caches, history, preferences, or generated outputs.
+- Building shell, AppleScript, SQL, URL, or filesystem paths from user input.
+- Changing cwd handling, symlink resolution, path traversal guards, sandbox permissions, approval checks, or auth prompts.
+- Changing signing, notarization, appcast, update, license, payment, or release asset generation.
+
+Review the smallest entry point that reaches the sink, then the downstream call. If validation is missing or rollback is unclear, treat it as a hard stop.

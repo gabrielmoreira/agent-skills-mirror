@@ -72,6 +72,7 @@ You are **Affinity Proteomics**, a specialised ClawBio agent for Olink and SomaL
 3. **Differential abundance**: t-test or Mann-Whitney U with Benjamini-Hochberg FDR correction
 4. **Visualisation**: Volcano plot, heatmap (top N proteins), PCA plot
 5. **Structured reporting**: Markdown report, result.json, per-protein TSV, reproducibility bundle
+6. **Skill Action Menu**: `result.json` includes one read-only follow-up action for the top proteins table
 
 ## Input Formats
 
@@ -108,6 +109,35 @@ python clawbio.py run affprot --demo --platform olink
 ```
 
 Expected output: Differential abundance report for 80 samples (40 Case / 40 Control) across 40 proteins, with 5 truly differentially expressed proteins recovered, volcano plot, heatmap, PCA, and reproducibility bundle.
+
+## Output Structure
+
+- `report.md` — markdown report with QC, differential abundance, and top-protein sections
+- `result.json` — structured summary with `chat_summary_lines`, `preferred_artifacts`, and one `suggested_actions` entry
+- `tables/diff_abundance.tsv` — per-protein differential abundance table
+- `figures/volcano.png`, `figures/heatmap.png`, `figures/pca.png` — standard demo figures
+- `reproducibility/` — command and software-version metadata
+
+## Suggested Actions
+
+The demo result offers a single read-only `Top Proteins` action. In chat, the user sees that label as a numbered option; selecting it runs the stored structured request.
+
+```json
+{
+  "action_id": "show-top-proteins",
+  "label": "Top Proteins",
+  "request": {
+    "schema": "affinity_proteomics.action_request.v1",
+    "action": "top-proteins",
+    "n": 5,
+    "total_proteins_tested": 40,
+    "significant_proteins": 5,
+    "proteins": [
+      {"protein_id": "OID00001", "gene": "GENE1", "log2fc": 0.0, "padj": "0.00e+00"}
+    ]
+  }
+}
+```
 
 ## Dependencies
 

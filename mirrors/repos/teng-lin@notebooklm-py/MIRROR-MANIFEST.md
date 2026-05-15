@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 2 followed patterns, 7 file(s) materialized.
+Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 4 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 2 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 7 |
+| Followed pats | 4 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,8 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 2 followed patterns,
 
 - `docs/installation.md`
 - `CONTRIBUTING.md`
+- `docs/development.md`
+- `docs/cli-exit-codes.md`
 
 ## File Index
 
@@ -63,10 +65,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`docs/cli-reference.md`](docs/cli-reference.md) |
-| 4 | ✓ | [`docs/stability.md`](docs/stability.md) |
-| 5 | ✓ | [`SKILL.md`](SKILL.md) |
-| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`docs/installation.md`](docs/installation.md) |
+| 4 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
+| 5 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
+| 6 | ✓ | [`docs/stability.md`](docs/stability.md) |
+| 7 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 8 | ✓ | [`SKILL.md`](SKILL.md) |
+| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
+| 11 | → | [`docs/development.md`](docs/development.md) |
+| 12 | → | [`docs/installation.md`](docs/installation.md) |
 
 ---
 

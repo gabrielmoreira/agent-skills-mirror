@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `addyosmani/agent-skills` — 26 default patterns, 14 followed patterns, 46 file(s) materialized.
+Mirror of `addyosmani/agent-skills` — 26 default patterns, 14 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `addyosmani/agent-skills` — 26 default patterns, 14 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 14 |
-| Files         | 46 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,28 +96,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/idea-refine/scripts/idea-refine.sh`](skills/idea-refine/scripts/idea-refine.sh) |
 | 23 | ✓ | [`skills/idea-refine/SKILL.md`](skills/idea-refine/SKILL.md) |
 | 24 | ✓ | [`skills/incremental-implementation/SKILL.md`](skills/incremental-implementation/SKILL.md) |
-| 25 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
-| 26 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
-| 27 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
-| 28 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
-| 29 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
-| 30 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
-| 31 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 32 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
-| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 34 | → | [`docs/copilot-setup.md`](docs/copilot-setup.md) |
-| 35 | → | [`docs/cursor-setup.md`](docs/cursor-setup.md) |
-| 36 | → | [`docs/gemini-cli-setup.md`](docs/gemini-cli-setup.md) |
-| 37 | → | [`docs/getting-started.md`](docs/getting-started.md) |
-| 38 | → | [`docs/opencode-setup.md`](docs/opencode-setup.md) |
-| 39 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
-| 40 | → | [`docs/windsurf-setup.md`](docs/windsurf-setup.md) |
-| 41 | → | [`README.md`](README.md) |
-| 42 | → | [`references/accessibility-checklist.md`](references/accessibility-checklist.md) |
-| 43 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
-| 44 | → | [`references/performance-checklist.md`](references/performance-checklist.md) |
-| 45 | → | [`references/security-checklist.md`](references/security-checklist.md) |
-| 46 | → | [`references/testing-patterns.md`](references/testing-patterns.md) |
+| 25 | ✓ | [`skills/interview-me/SKILL.md`](skills/interview-me/SKILL.md) |
+| 26 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
+| 27 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
+| 28 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
+| 29 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
+| 30 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
+| 31 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
+| 32 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 33 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
+| 34 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 35 | → | [`docs/copilot-setup.md`](docs/copilot-setup.md) |
+| 36 | → | [`docs/cursor-setup.md`](docs/cursor-setup.md) |
+| 37 | → | [`docs/gemini-cli-setup.md`](docs/gemini-cli-setup.md) |
+| 38 | → | [`docs/getting-started.md`](docs/getting-started.md) |
+| 39 | → | [`docs/opencode-setup.md`](docs/opencode-setup.md) |
+| 40 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 41 | → | [`docs/windsurf-setup.md`](docs/windsurf-setup.md) |
+| 42 | → | [`README.md`](README.md) |
+| 43 | → | [`references/accessibility-checklist.md`](references/accessibility-checklist.md) |
+| 44 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
+| 45 | → | [`references/performance-checklist.md`](references/performance-checklist.md) |
+| 46 | → | [`references/security-checklist.md`](references/security-checklist.md) |
+| 47 | → | [`references/testing-patterns.md`](references/testing-patterns.md) |
 
 ---
 

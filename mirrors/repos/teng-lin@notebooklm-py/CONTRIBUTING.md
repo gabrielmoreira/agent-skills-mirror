@@ -10,10 +10,13 @@ uv sync --frozen --extra browser --extra dev --extra markdown
 source .venv/bin/activate
 uv run playwright install chromium
 pre-commit install
+```
 
-# Run the full pre-commit suite (matches what CI runs).
-# IMPORTANT: use the broad `.` scope, not `src/ tests/` — the pre-commit hook
-# in CI invokes ruff-format on the whole tree and is stricter than a narrow scope.
+**Run the full pre-commit suite** (matches what CI runs). IMPORTANT: use the
+broad `.` scope, not `src/ tests/` — the pre-commit hook in CI invokes
+ruff-format on the whole tree and is stricter than a narrow scope.
+
+```bash
 uv run ruff format --check . && \
     uv run ruff check . && \
     uv run mypy src/notebooklm --ignore-missing-imports && \
@@ -30,10 +33,14 @@ pre-commit install
 
 For full prerequisites, headless setup, optional extras (`[cookies]`, `[markdown]`), and platform notes, see [docs/installation.md#e-contributor](docs/installation.md#e-contributor).
 
+> **Install-doc parity.** `docs/installation.md` is the canonical install guide; this file mirrors a small contributor-focused subset. Every fenced ``bash`` block in `installation.md` must EITHER appear verbatim in `CONTRIBUTING.md`, OR be marked with `<!-- not mirrored: <reason> -->` on the line directly before its opening fence. CI enforces this via `scripts/check_ci_install_parity.py` so a stale block can't drift in unnoticed. When you edit `installation.md`, decide on the spot whether the new content also belongs in this file.
+
 The `browser` extra is part of the contributor install because the default unit
 suite imports and patches `playwright.sync_api`. The command
 `uv sync --frozen --extra dev` is only the test/lint toolchain; it is not enough
 for `uv run pytest`.
+
+> **Architecture & testing context.** Once installed, read [docs/development.md](docs/development.md) for the layered RPC/Core/Client/CLI design, test-tree layout, and release workflow before touching `src/notebooklm/`.
 
 ### Code Quality
 
@@ -79,6 +86,18 @@ pre-commit run --all-files                      # manual run on the whole tree (
 - **No duplicates**: Check existing open PRs before submitting. Duplicate PRs for the same issue will be closed in favor of the first or best submission.
 - **Accurate severity**: Claims of "critical" bugs must include evidence (stack trace, reproduction steps, affected users). Routine edge cases are not critical.
 - **Tested locally**: All PRs must include evidence of local testing. The PR template includes a checklist for this.
+
+### Dependency upper bounds
+
+Every runtime and `[project.optional-dependencies]` entry in `pyproject.toml` must have an upper bound — typically `<currentmajor + 1` (or `<currentminor + 1` for pre-1.0 packages like `httpx`). The bound protects downstream installs from a breaking new release that lands before we have time to test it.
+
+When you bump a cap (e.g. moving `pytest>=8.0,<10` to `pytest>=8.0,<11`):
+
+1. Run `uv lock --refresh` and `uv sync --frozen --extra browser --extra dev --extra markdown` locally.
+2. Run the full pre-commit one-liner above.
+3. Mention the upgrade rationale in the PR description.
+
+The `dependency-audit` workflow (`.github/workflows/dependency-audit.yml`) runs `pip-audit --strict` against the locked env on every push to `main` and nightly. It is currently in soft-launch mode (`continue-on-error: true`) and will be flipped to a hard merge gate after the first release cycle. New deps should still pass `pip-audit` cleanly when introduced.
 
 ---
 
@@ -168,6 +187,7 @@ Agents should ignore files marked `Deprecated`.
 docs/
 ├── installation.md        # Canonical install guide (personas, extras, platform notes)
 ├── cli-reference.md       # CLI command reference
+├── cli-exit-codes.md      # CLI exit-code convention (binding contract for scripts/CI)
 ├── python-api.md          # Python API reference
 ├── configuration.md       # Storage and settings
 ├── troubleshooting.md     # Common issues and solutions
@@ -178,3 +198,5 @@ docs/
 ├── rpc-reference.md       # RPC payload structures
 └── examples/              # Runnable example scripts
 ```
+
+> When adding or modifying a CLI command, follow the [CLI Exit-Code Convention](docs/cli-exit-codes.md) — the policy table and the two intentional exceptions (`source stale`, `source wait`) are binding.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `awslabs/agent-plugins` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `awslabs/agent-plugins` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `awslabs/agent-plugins` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,23 +70,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`plugins/aws-serverless/skills/aws-lambda-durable-functions/SKILL.md`](plugins/aws-serverless/skills/aws-lambda-durable-functions/SKILL.md) |
 | 10 | ✓ | [`plugins/aws-serverless/skills/aws-lambda/SKILL.md`](plugins/aws-serverless/skills/aws-lambda/SKILL.md) |
 | 11 | ✓ | [`plugins/aws-serverless/skills/aws-serverless-deployment/SKILL.md`](plugins/aws-serverless/skills/aws-serverless-deployment/SKILL.md) |
-| 12 | ✓ | [`plugins/codebase-documentor-for-aws/skills/document-service/SKILL.md`](plugins/codebase-documentor-for-aws/skills/document-service/SKILL.md) |
-| 13 | ✓ | [`plugins/databases-on-aws/skills/dsql/mcp/platforms/gemini.md`](plugins/databases-on-aws/skills/dsql/mcp/platforms/gemini.md) |
-| 14 | ✓ | [`plugins/databases-on-aws/skills/dsql/SKILL.md`](plugins/databases-on-aws/skills/dsql/SKILL.md) |
-| 15 | ✓ | [`plugins/deploy-on-aws/skills/aws-architecture-diagram/SKILL.md`](plugins/deploy-on-aws/skills/aws-architecture-diagram/SKILL.md) |
-| 16 | ✓ | [`plugins/deploy-on-aws/skills/deploy/SKILL.md`](plugins/deploy-on-aws/skills/deploy/SKILL.md) |
-| 17 | ✓ | [`plugins/sagemaker-ai/skills/dataset-evaluation/SKILL.md`](plugins/sagemaker-ai/skills/dataset-evaluation/SKILL.md) |
-| 18 | ✓ | [`plugins/sagemaker-ai/skills/dataset-transformation/SKILL.md`](plugins/sagemaker-ai/skills/dataset-transformation/SKILL.md) |
-| 19 | ✓ | [`plugins/sagemaker-ai/skills/directory-management/SKILL.md`](plugins/sagemaker-ai/skills/directory-management/SKILL.md) |
-| 20 | ✓ | [`plugins/sagemaker-ai/skills/finetuning-setup/SKILL.md`](plugins/sagemaker-ai/skills/finetuning-setup/SKILL.md) |
-| 21 | ✓ | [`plugins/sagemaker-ai/skills/finetuning/SKILL.md`](plugins/sagemaker-ai/skills/finetuning/SKILL.md) |
-| 22 | ✓ | [`plugins/sagemaker-ai/skills/hyperpod-issue-report/SKILL.md`](plugins/sagemaker-ai/skills/hyperpod-issue-report/SKILL.md) |
-| 23 | ✓ | [`plugins/sagemaker-ai/skills/hyperpod-ssm/SKILL.md`](plugins/sagemaker-ai/skills/hyperpod-ssm/SKILL.md) |
-| 24 | ✓ | [`plugins/sagemaker-ai/skills/hyperpod-version-checker/SKILL.md`](plugins/sagemaker-ai/skills/hyperpod-version-checker/SKILL.md) |
-| 25 | ✓ | [`plugins/sagemaker-ai/skills/model-deployment/SKILL.md`](plugins/sagemaker-ai/skills/model-deployment/SKILL.md) |
-| 26 | ✓ | [`plugins/sagemaker-ai/skills/model-evaluation/SKILL.md`](plugins/sagemaker-ai/skills/model-evaluation/SKILL.md) |
-| 27 | ✓ | [`plugins/sagemaker-ai/skills/planning/SKILL.md`](plugins/sagemaker-ai/skills/planning/SKILL.md) |
-| 28 | ✓ | [`plugins/sagemaker-ai/skills/use-case-specification/SKILL.md`](plugins/sagemaker-ai/skills/use-case-specification/SKILL.md) |
+| 12 | ✓ | [`plugins/aws-transform/skills/aws-transform/SKILL.md`](plugins/aws-transform/skills/aws-transform/SKILL.md) |
+| 13 | ✓ | [`plugins/codebase-documentor-for-aws/skills/document-service/SKILL.md`](plugins/codebase-documentor-for-aws/skills/document-service/SKILL.md) |
+| 14 | ✓ | [`plugins/databases-on-aws/skills/dsql/mcp/platforms/gemini.md`](plugins/databases-on-aws/skills/dsql/mcp/platforms/gemini.md) |
+| 15 | ✓ | [`plugins/databases-on-aws/skills/dsql/SKILL.md`](plugins/databases-on-aws/skills/dsql/SKILL.md) |
+| 16 | ✓ | [`plugins/deploy-on-aws/skills/aws-architecture-diagram/SKILL.md`](plugins/deploy-on-aws/skills/aws-architecture-diagram/SKILL.md) |
+| 17 | ✓ | [`plugins/deploy-on-aws/skills/deploy/SKILL.md`](plugins/deploy-on-aws/skills/deploy/SKILL.md) |
+| 18 | ✓ | [`plugins/sagemaker-ai/skills/dataset-evaluation/SKILL.md`](plugins/sagemaker-ai/skills/dataset-evaluation/SKILL.md) |
+| 19 | ✓ | [`plugins/sagemaker-ai/skills/dataset-transformation/SKILL.md`](plugins/sagemaker-ai/skills/dataset-transformation/SKILL.md) |
+| 20 | ✓ | [`plugins/sagemaker-ai/skills/directory-management/SKILL.md`](plugins/sagemaker-ai/skills/directory-management/SKILL.md) |
+| 21 | ✓ | [`plugins/sagemaker-ai/skills/finetuning-setup/SKILL.md`](plugins/sagemaker-ai/skills/finetuning-setup/SKILL.md) |
+| 22 | ✓ | [`plugins/sagemaker-ai/skills/finetuning/SKILL.md`](plugins/sagemaker-ai/skills/finetuning/SKILL.md) |
+| 23 | ✓ | [`plugins/sagemaker-ai/skills/hyperpod-issue-report/SKILL.md`](plugins/sagemaker-ai/skills/hyperpod-issue-report/SKILL.md) |
+| 24 | ✓ | [`plugins/sagemaker-ai/skills/hyperpod-ssm/SKILL.md`](plugins/sagemaker-ai/skills/hyperpod-ssm/SKILL.md) |
+| 25 | ✓ | [`plugins/sagemaker-ai/skills/hyperpod-version-checker/SKILL.md`](plugins/sagemaker-ai/skills/hyperpod-version-checker/SKILL.md) |
+| 26 | ✓ | [`plugins/sagemaker-ai/skills/model-deployment/SKILL.md`](plugins/sagemaker-ai/skills/model-deployment/SKILL.md) |
+| 27 | ✓ | [`plugins/sagemaker-ai/skills/model-evaluation/SKILL.md`](plugins/sagemaker-ai/skills/model-evaluation/SKILL.md) |
+| 28 | ✓ | [`plugins/sagemaker-ai/skills/planning/SKILL.md`](plugins/sagemaker-ai/skills/planning/SKILL.md) |
+| 29 | ✓ | [`plugins/sagemaker-ai/skills/use-case-specification/SKILL.md`](plugins/sagemaker-ai/skills/use-case-specification/SKILL.md) |
 
 ---
 

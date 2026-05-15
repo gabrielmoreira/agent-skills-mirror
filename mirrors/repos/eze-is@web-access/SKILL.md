@@ -7,7 +7,7 @@ description:
   触发场景：用户要求搜索信息、查看网页内容、访问需要登录的网站、操作网页界面、抓取社交媒体内容（小红书、微博、推特等）、读取动态渲染页面、以及任何需要真实浏览器环境的网络任务。
 metadata:
   author: 一泽Eze
-  version: "2.5.0"
+  version: "2.5.1"
 ---
 
 # web-access Skill

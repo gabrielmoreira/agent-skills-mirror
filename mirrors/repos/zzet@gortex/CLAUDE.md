@@ -20,9 +20,22 @@ go test -race ./...                 # all test packages must pass
 
 Gortex is running as an MCP server. You MUST use graph queries instead of file reads whenever possible. This saves thousands of tokens per task.
 
-### Optional: delegate research to a local agent
+### Optional: LLM features and provider selection
 
-When the daemon is built with `-tags llama` and `llm.model` is set in `.gortex.yaml` (or via the `GORTEX_LLM_MODEL` env var), the `ask` MCP tool is registered. It runs a grammar-constrained agent locally that uses gortex tools to research one question and returns a synthesized answer — useful when you'd otherwise issue many `search_symbols` / `get_callers` / `contracts` calls.
+The `ask` tool and the `search_symbols` `assist` modes are backed by an LLM provider, selected by the `llm.provider` config key (in `.gortex.yaml` or `~/.config/gortex/config.yaml`):
+
+| `llm.provider` | Backend | Requires |
+|----------------|---------|----------|
+| `local` (default) | in-process llama.cpp | a `-tags llama` build + `llm.local.model` (a `.gguf` path) |
+| `anthropic` | Anthropic Messages API | `llm.anthropic.model` + `ANTHROPIC_API_KEY` |
+| `openai` | OpenAI Chat Completions | `llm.openai.model` + `OPENAI_API_KEY` |
+| `ollama` | Ollama daemon | `llm.ollama.model` (+ `llm.ollama.host`, default `localhost:11434`) |
+
+The HTTP providers are pure Go — available without `-tags llama`. `GORTEX_LLM_PROVIDER` / `GORTEX_LLM_MODEL` env vars override the file config. If the active provider can't be constructed (missing model / API key, or `local` without `-tags llama`), the daemon logs a warning and the LLM features stay absent.
+
+### Optional: delegate research to the `ask` agent
+
+When a provider is configured, the `ask` MCP tool is registered. It runs a structured tool-calling agent that uses gortex tools to research one question and returns a synthesized answer — useful when you'd otherwise issue many `search_symbols` / `get_callers` / `contracts` calls.
 
 | When you'd otherwise...               | Consider...                              |
 |---------------------------------------|------------------------------------------|
@@ -30,7 +43,20 @@ When the daemon is built with `-tags llama` and `llm.model` is set in `.gortex.y
 | Trace a request across repos (consumer → contract → handler → downstream) | `ask` with `chain: true` |
 | Look up a single known fact | Skip `ask` — direct tools are faster |
 
-If `ask` isn't in `tools/list`, gortex was built without `-tags llama` or `llm.model` is unset. Fall through to direct tools.
+If `ask` isn't in `tools/list`, no LLM provider is configured (or it failed to construct). Fall through to direct tools.
+
+### Optional: LLM-assisted search ranking (`search_symbols` `assist:` arg)
+
+When a provider is configured, `search_symbols` accepts an `assist` argument that engages the model in the search pipeline. The default `auto` is sub-100 ms on identifier lookups; the active modes add latency but materially improve precision on natural-language queries.
+
+| `assist` value | Behaviour | Cost |
+|----------------|-----------|------|
+| `auto` (default) | NL heuristic decides per-query. Identifier-shaped queries (`Server.handleAsk`, `parseToolCall`) skip the LLM. NL queries (≥3 tokens with a stop word, or ≥4 plain-word tokens) trigger query expansion + name+sig rerank. | None for identifier lookups; +200–500 ms for NL. |
+| `on` | Forces expansion + name+sig rerank regardless of shape. Use when you know the query is fuzzy. | +200–500 ms. |
+| `off` | Pure BM25 + combo/frecency. No LLM. | None. |
+| `deep` | `on` plus a body-grounded verification pass — reads each top candidate's body + callers and HONESTLY drops candidates whose code isn't about the query. May return zero results when nothing genuinely matches; that's the load-bearing honest-negative signal. | +1.5–4 s. Quality is **highly model-dependent**: small local models (Qwen2.5-Coder 3B) are unreliable on disambiguation cases (e.g. "hash passwords" vs functions that hash other data); a 7B-class local model or any hosted provider produces stable, useful results. The assist prompts are tiered automatically — terser for hosted frontier models, rule-heavy for small local ones. |
+
+The response gains an `assist` debug block when an active mode engaged: `terms` (expansion words), `primary_count` (raw BM25 hits on the original query), `merged_count` (after expansion union), `final_count` (after filter/rerank), plus `verify_kept_ids` / `verify_dropped` for `deep`.
 
 ### Navigation and Reading
 
@@ -120,6 +146,7 @@ The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
 | Listing every @Deprecated use         | `analyze` with `kind: "annotation_users"` — pass `id` or `name` for one annotation |
 | Tracing config-key readers            | `analyze` with `kind: "config_readers"` — config_key nodes grouped by EdgeReadsConfig |
 | Tracing event/log emitters            | `analyze` with `kind: "event_emitters"` — events grouped by EdgeEmits, `level` filter optional |
+| Mapping event pub/sub topics          | `analyze` with `kind: "pubsub"` — pub/sub topics with publishers (EdgeEmits) + subscribers (EdgeListensOn) across NATS / Kafka / RabbitMQ / Redis / EventEmitter / Socket.IO; `transport` / `name` / `role` filters |
 | Mapping the error surface             | `analyze` with `kind: "error_surface"` — function/method nodes with their EdgeThrows targets |
 | Surveying stdlib / module-cache reach | `analyze` with `kind: "external_calls"` — KindModule nodes grouped by call/symbol counts; pass `id` for per-symbol detail, `module_kind` for stdlib/module_cache filter |
 | Listing every HTTP/gRPC/WS route      | `analyze` with `kind: "routes"` — handler→route pairs from the EdgeHandlesRoute graph layer; `method`, `path`, `type` filters (`type` ∈ http/grpc/ws/graphql/topic) |
@@ -128,6 +155,8 @@ The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
 | Surveying K8s manifests in the repo   | `analyze` with `kind: "k8s_resources"` — every KindResource with infra-edge fan-out (depends_on / configures / mounts / exposes / uses_env); `k8s_kind`, `namespace`, `name` filters |
 | Listing container images in use       | `analyze` with `kind: "images"` — every KindImage (Dockerfile FROM target or K8s container.image) with consumer count; `role` (base/stage), `ref`, `tag` filters |
 | Mapping the Kustomize overlay tree    | `analyze` with `kind: "kustomize"` — every KindKustomization with base / resource fan-out; `dir` filter |
+| Auditing what crosses repo boundaries | `analyze` with `kind: "cross_repo"` — calls / implements / extends edges whose endpoints live in different repos, grouped by (source repo → target repo, relation); `repo`, `base_kind`, `path_prefix` filters |
+| Surveying dbt / SQLMesh models        | `analyze` with `kind: "dbt_models"` — every dbt / SQLMesh model, seed, snapshot, and source (KindTable) with column count + EdgeDependsOn lineage fan-in/out; `framework` (dbt/sqlmesh), `type` (model/seed/snapshot/source), `materialized`, `name` filters |
 | Checking if the index is stale        | `index_health` — health score, parse failures, stale files |
 | Wondering what changed this session   | `get_symbol_history` — modification counts, flags churning (3+ edits) |
 | Hydrating blame / coverage / releases | `gortex enrich blame|coverage|releases|all` (CLI) — bulk-stamps the graph for the `stale_*`, `coverage_*`, `ownership`, and `releases` analyzers |
@@ -171,6 +200,15 @@ The `flow_between` and `taint_paths` MCP tools answer **"where does this value f
 | Hand-tracing a value through helper functions | `flow_between` — ranked dataflow paths between two symbol IDs; pass `max_depth` (default 8) and `max_paths` (default 10); supports `format: "gcx"` |
 | Grepping for sources / sinks         | `taint_paths` — pattern-driven sweep returning every flow from a matching source to a matching sink. Pattern syntax: bare token = case-insensitive substring on name; `exact:Foo` = exact match; `path:dir/` = file-path prefix; `kind:method` = node-kind filter; combine clauses with spaces (AND). Sinks expand functions to their params automatically. |
 | Reading callers to verify a refactor | `flow_between` from the changed return symbol to a downstream consumer's param to find every consumer site, including those reached through helper functions. |
+
+### Clone Detection
+
+The `find_clones` MCP tool surfaces near-duplicate ("clone") function/method clusters from the `similar_to` graph layer. At index time every substantial function body is reduced to a 64-slot MinHash signature (token-normalised so renamed-variable copies still match), LSH banding produces candidate pairs, and a Jaccard-similarity threshold filter keeps the true clones — emitted as symmetric `EdgeSimilarTo` edges. Gated behind the `clones` coverage domain (default on; tune `index.coverage.clones.threshold` in `.gortex.yaml`).
+
+| Instead of...                         | You MUST use...                          |
+|---------------------------------------|------------------------------------------|
+| Grepping / eyeballing for copy-paste  | `find_clones` — near-duplicate clusters; scope with `min_similarity`, `path_prefix`, `repo`, `limit`; supports `format: "gcx"` |
+| Hunting safe-to-delete duplicates     | `find_clones` with `dead_only: true` — clusters containing a dead-code symbol ("dead duplicates of live code"); every member is flagged `is_dead` in the default view |
 
 ### Config Hygiene
 
@@ -233,7 +271,7 @@ Analyzer-backed rollups (read-only summaries; the only "argument" is the current
 
 **Node kinds** (filter `search_symbols` with `kind`):
 - Code structure: `file`, `package`, `function`, `method`, `type`, `interface`, `field`, `variable`, `constant`, `import`, `contract`, `param`, `closure`, `enum_member`, `generic_param`
-- Coverage extensions: `module` (ecosystem deps), `table` / `column` (db schema), `config_key` (env/viper/cli), `flag` (feature flags), `event` (logs/metrics/spans), `migration`, `fixture` (test data), `todo` (TODO/FIXME comments), `team` (CODEOWNERS), `license`, `release` (tag boundaries)
+- Coverage extensions: `module` (ecosystem deps), `table` / `column` (db schema — also dbt / SQLMesh models, seeds, snapshots, sources and their columns; `Meta["framework"]` ∈ dbt|sqlmesh, `Meta["resource_type"]` ∈ model|seed|snapshot|source), `config_key` (env/viper/cli), `flag` (feature flags), `event` (logs/metrics/spans + pub/sub topics — `Meta["event_kind"]` ∈ log|metric|trace|span|pubsub), `migration`, `fixture` (test data), `todo` (TODO/FIXME comments), `team` (CODEOWNERS), `license`, `release` (tag boundaries)
 - Infrastructure: `resource` (K8s manifest — Deployment/Service/Ingress/ConfigMap/Secret/CronJob/…), `kustomization` (Kustomize overlay), `image` (Dockerfile FROM target or K8s `container.image`)
 
 **Edge kinds** (used internally; many are queryable via `analyze` kinds above):
@@ -241,5 +279,7 @@ Analyzer-backed rollups (read-only summaries; the only "argument" is the current
 - Concurrency: `spawns` (goroutine/async/promise), `sends` / `recvs` (channels)
 - Mutation: `reads` / `writes` (fields), `reads_config` / `writes_config`
 - Dataflow (CPG-lite, `flow_between` / `taint_paths`): `value_flow` (intra-procedural assignment / return / range), `arg_of` (caller arg → callee param), `returns_to` (callee → assignment LHS)
-- Metadata: `annotated` (decorators), `emits` (events), `throws` (errors), `queries` (SQL), `reads_col` / `writes_col`, `toggles_flag`, `depends_on_module`, `matches` (fixtures), `generated_by`, `tests` (test → tested symbol), `covered_by`, `owns` (CODEOWNERS), `authored`, `licensed_as`
-- Infrastructure (K8s / Kustomize / Dockerfile): `configures` (workload → ConfigMap/Secret via env/envFrom), `mounts` (workload → volume source: ConfigMap/Secret/PVC), `exposes` (Resource/Image → `port::<proto>::<n>`), `depends_on` (Ingress→Service / stage→base image / overlay→base / Resource→Image), `uses_env` (Resource/Image → `cfg::env::<NAME>` config_key — shared ID with `os.Getenv` so cross-ref between infra declaration and code-side reads is automatic)
+- Metadata: `annotated` (decorators), `emits` (observability events + pub/sub publish), `listens_on` (pub/sub subscribe — NATS/Kafka/RabbitMQ/Redis/EventEmitter/Socket.IO), `throws` (errors), `queries` (SQL), `reads_col` / `writes_col`, `toggles_flag`, `depends_on_module`, `matches` (fixtures), `generated_by`, `tests` (test → tested symbol), `covered_by`, `owns` (CODEOWNERS), `authored`, `licensed_as`
+- Infrastructure (K8s / Kustomize / Dockerfile): `configures` (workload → ConfigMap/Secret via env/envFrom), `mounts` (workload → volume source: ConfigMap/Secret/PVC), `exposes` (Resource/Image → `port::<proto>::<n>`), `depends_on` (Ingress→Service / stage→base image / overlay→base / Resource→Image — **also dbt / SQLMesh model lineage**: dbt model → its `ref()`/`source()` upstreams, SQLMesh model → its FROM/JOIN upstreams; `Meta["link"]` ∈ ref|source|from), `uses_env` (Resource/Image → `cfg::env::<NAME>` config_key — shared ID with `os.Getenv` so cross-ref between infra declaration and code-side reads is automatic)
+- Similarity (`find_clones`): `similar_to` (function/method near-duplicate — MinHash + LSH clone detection; symmetric; `Meta["similarity"]` carries the estimated Jaccard score)
+- Cross-repo (`analyze kind=cross_repo`): `cross_repo_calls` / `cross_repo_implements` / `cross_repo_extends` — parallel edge materialised at resolver time whenever a `calls` / `implements` / `extends` edge's From and To nodes live in different repos; the base edge also gets `Edge.CrossRepo` set

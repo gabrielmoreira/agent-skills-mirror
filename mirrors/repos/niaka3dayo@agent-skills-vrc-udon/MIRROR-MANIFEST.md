@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
+Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 1 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 0 followed
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 64 |
+| Followed pats | 1 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 0 followed
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `unity-project-for-sdk-search/README.md`
 
 ## File Index
 
@@ -123,6 +123,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
 | 63 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
 | 64 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
+| 65 | → | [`unity-project-for-sdk-search/README.md`](unity-project-for-sdk-search/README.md) |
 
 ---
 

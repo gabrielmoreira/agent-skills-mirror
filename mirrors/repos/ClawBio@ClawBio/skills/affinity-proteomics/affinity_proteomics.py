@@ -42,6 +42,9 @@ DISCLAIMER = (
     "professional before making any medical decisions."
 )
 
+ACTION_REQUEST_SCHEMA = "affinity_proteomics.action_request.v1"
+ACTION_RESULT_SCHEMA = "affinity_proteomics.action_result.v1"
+
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -506,9 +509,129 @@ def _write_result_json(data, results, contrast, output_dir, timestamp, demo):
              "padj": f"{r.padj:.2e}"}
             for r in results[:10]
         ],
+        "chat_summary_lines": [
+            (
+                f"Affinity proteomics {'demo' if demo else 'analysis'} complete: "
+                f"{len(data.expression)} samples, {data.expression.shape[1]} proteins, "
+                f"{len(sig)} significant proteins."
+            ),
+            "Choose a small report card below for a read-only follow-up.",
+        ],
+        "preferred_artifacts": _artifact_entries(output_dir),
+        "suggested_actions": _build_suggested_actions(results),
         "disclaimer": DISCLAIMER,
     }
     (output_dir / "result.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+
+
+def _artifact_entries(output_dir: Path) -> list[dict[str, str]]:
+    labels = {
+        "report.md": "Markdown report",
+        "tables/diff_abundance.tsv": "Differential abundance table",
+        "figures/volcano.png": "Volcano plot",
+        "figures/heatmap.png": "Heatmap",
+        "figures/pca.png": "PCA plot",
+        "result.json": "Structured result JSON",
+    }
+    entries: list[dict[str, str]] = []
+    for rel_path, label in labels.items():
+        if (output_dir / rel_path).exists():
+            entries.append({"path": rel_path, "label": label})
+    return entries
+
+
+def _build_suggested_actions(results: list[DiffAbundanceResult]) -> list[dict]:
+    """Return the minimal demo follow-up for the Skill Action Menu."""
+    sig = [r for r in results if r.significant]
+    # Keep the teaching example compact: the request carries structured rows,
+    # and the follow-up handler renders the requested slice.
+    top_proteins = [
+        {
+            "protein_id": r.protein_id,
+            "gene": r.gene_symbol,
+            "log2fc": round(r.log2fc, 4),
+            "padj": f"{r.padj:.2e}",
+        }
+        for r in results[:10]
+    ]
+
+    return [
+        {
+            "action_id": "show-top-proteins",
+            "label": "Top Proteins",
+            "kind": "navigation",
+            "request": {
+                "schema": ACTION_REQUEST_SCHEMA,
+                "action": "top-proteins",
+                "n": 5,
+                "total_proteins_tested": len(results),
+                "significant_proteins": len(sig),
+                "proteins": top_proteins,
+            },
+            "requires_confirmation": False,
+            "expected_artifacts": ["report.md"],
+        }
+    ]
+
+
+def _load_action_request(input_path: Path) -> dict | None:
+    if input_path.suffix.lower() != ".json":
+        return None
+    try:
+        payload = json.loads(input_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if isinstance(payload, dict) and payload.get("schema") == ACTION_REQUEST_SCHEMA:
+        return payload
+    return None
+
+
+def handle_action_request(request: dict, output_dir: Path) -> dict:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if request.get("action") != "top-proteins":
+        raise ValueError(f"Unsupported action request: {request.get('action')}")
+    proteins = request.get("proteins")
+    if not isinstance(proteins, list):
+        raise ValueError("top-proteins request is missing proteins")
+    try:
+        n = max(1, int(request.get("n", 5)))
+    except (TypeError, ValueError):
+        n = 5
+
+    selected = [protein for protein in proteins[:n] if isinstance(protein, dict)]
+    rows = [
+        "| Protein | Gene | log2FC | Adj P |",
+        "|---------|------|--------|-------|",
+    ]
+    for protein in selected:
+        rows.append(
+            "| {protein_id} | {gene} | {log2fc} | {padj} |".format(
+                protein_id=protein.get("protein_id", ""),
+                gene=protein.get("gene", ""),
+                log2fc=protein.get("log2fc", ""),
+                padj=protein.get("padj", ""),
+            )
+        )
+    total_tested = request.get("total_proteins_tested", len(proteins))
+    significant = request.get("significant_proteins", "")
+    report_md = "# Affinity Proteomics Follow-up\n\n## Top Proteins\n\n" + "\n".join(rows) + "\n"
+    summary_lines = [
+        f"Showing top {len(selected)} proteins from {total_tested} tested; "
+        f"{significant} met significance thresholds."
+    ]
+    preferred_artifacts = [{"path": "report.md", "label": "Follow-up report"}]
+    (output_dir / "report.md").write_text(report_md, encoding="utf-8")
+    result = {
+        "schema": ACTION_RESULT_SCHEMA,
+        "source_schema": ACTION_REQUEST_SCHEMA,
+        "action": "top-proteins",
+        "chat_summary_lines": summary_lines,
+        "preferred_artifacts": preferred_artifacts,
+        "report_md": report_md,
+        "disclaimer": DISCLAIMER,
+    }
+    (output_dir / "result.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    return result
 
 
 def _write_reproducibility(output_dir, timestamp, platform, demo):
@@ -613,6 +736,15 @@ def main() -> None:
     if not args.output:
         parser.error("--output is required")
 
+    output_dir = Path(args.output)
+    if args.input:
+        # Action requests are follow-up cards; dispatch them before the full pipeline.
+        action_request = _load_action_request(Path(args.input))
+        if action_request is not None:
+            handle_action_request(action_request, output_dir)
+            print(f"[PROT] Follow-up written to: {output_dir / 'report.md'}")
+            return
+
     contrast = tuple(args.contrast.split(","))
     if len(contrast) != 2:
         parser.error("--contrast must be two comma-separated group names")
@@ -637,7 +769,6 @@ def main() -> None:
         meta_path = Path(args.meta) if args.meta else None
         group_col = args.group_col
 
-    output_dir = Path(args.output)
     print(f"[PROT] Starting {platform.upper()} pipeline ({'demo' if args.demo else 'live'} mode)")
 
     summary = run_pipeline(

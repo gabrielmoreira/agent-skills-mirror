@@ -122,7 +122,8 @@ gstack/
 ├── investigate/     # /investigate skill (systematic root-cause debugging)
 ├── retro/           # Retrospective skill (includes /retro global cross-project mode)
 ├── bin/             # CLI utilities (gstack-repo-mode, gstack-slug, gstack-config, etc.)
-├── document-release/ # /document-release skill (post-ship doc updates)
+├── document-release/ # /document-release skill (post-ship doc updates + Diataxis coverage map)
+├── document-generate/ # /document-generate skill (Diataxis doc generator: tutorial/how-to/reference/explanation)
 ├── cso/             # /cso skill (OWASP Top 10 + STRIDE security audit)
 ├── design-consultation/ # /design-consultation skill (design system from scratch)
 ├── design-shotgun/  # /design-shotgun skill (visual design exploration)
@@ -267,6 +268,31 @@ to `~/.gstack/security/attempts.jsonl` via `tunnel-denial-log.ts`. Before editin
 [ARCHITECTURE.md](ARCHITECTURE.md#dual-listener-tunnel-architecture-v1600) —
 the module boundary (no imports from `token-registry.ts` into `sse-session-cookie.ts`)
 is load-bearing for scope isolation.
+
+**Unicode sanitization at server egress** (v1.38.0.0+). Every server egress that
+ships page-content-derived strings MUST go through `JSON.stringify(payload,
+sanitizeReplacer)` for object payloads or `sanitizeLoneSurrogates(body)` for text
+bodies. Lone UTF-16 surrogate halves from CDP page content otherwise reach the
+Anthropic API as `\uD800`-style escapes and trigger a 400. Wired at four egress
+points today: `handleCommandInternal` (HTTP + batch via a sanitizing wrapper around
+`handleCommandInternalImpl`) and both SSE producers (`/activity/stream`,
+`/inspector/events`). Post-stringify regex is a no-op — `JSON.stringify` has
+already escaped the surrogate before regex could match, so the replacer must run
+inside the encoding pipeline. Before adding a new SSE/WebSocket writer or HTTP
+response in `server.ts`, read
+[ARCHITECTURE.md](ARCHITECTURE.md#unicode-sanitization-at-server-egress-v13800).
+`browse/test/server-sanitize-surrogates.test.ts` pins the wiring with invariant
+tests, so bypasses fail CI.
+
+**Setup symlink hardening** (v1.38.0.0+). Every link site in `setup` MUST route
+through the `_link_or_copy SRC DST` helper near the `IS_WINDOWS` detection. On
+Windows without Developer Mode, plain `ln -snf` produces frozen file copies that
+don't refresh on `git pull` — silent staleness across every host adapter. The
+helper preserves `ln -snf` on Unix and switches to `cp -R` / `cp -f` on Windows.
+`test/setup-windows-fallback.test.ts` enforces a static invariant: a single raw
+`ln` call outside the helper body fails CI. Windows users get a one-line note
+from `_print_windows_copy_note_once` reminding them to re-run `./setup` after
+every `git pull`.
 
 **Sidebar security stack** (layered defense against prompt injection):
 
@@ -451,6 +477,36 @@ any commit that:
 Even if the agent strongly believes a change improves the project, these three
 categories require explicit user approval via AskUserQuestion. No exceptions.
 No auto-merging. No "I'll just clean this up."
+
+## Checking out PRs from garrytan-agents
+
+When the user says "check out <PR link>" and the PR is from `garrytan-agents/gstack`
+(or any other fork that is NOT a collaborator on `garrytan/gstack`), do NOT just
+`gh pr checkout`. Fork PRs don't receive base-repo secrets (`ANTHROPIC_API_KEY`,
+`OPENAI_API_KEY`, etc.), so the eval/E2E CI jobs fail with empty-env auth errors
+regardless of what's set on the base repo.
+
+**Workflow:** push the branch to `garrytan/gstack` (the base repo) and re-target
+the PR from there.
+
+Concretely, after `gh pr checkout <N>`:
+
+1. Note the original PR number and head branch name.
+2. Push the same branch to the base repo: `git push origin HEAD:<branch-name>`
+   (origin = `garrytan/gstack`, since the worktree is set up with that remote).
+3. Close the fork PR (`gh pr close <N> --comment "moving to base-repo branch for secret access"`).
+4. Open a new PR from the base-repo branch: `gh pr create --base main --head <branch-name>`.
+5. New PR's workflows will get secrets automatically.
+
+Why not fix it on the fork side? `garrytan-agents` isn't a collaborator on
+`garrytan/gstack`. Adding it as a collaborator (option A) or flipping the
+repo-wide "send secrets to fork PRs" toggle (option B) would let secrets reach
+fork PRs from anyone — broader blast radius than just moving this one branch.
+Option C (this section) keeps secret-distribution scope tight.
+
+If the user asks you to skip the move (e.g., "just leave it as a fork PR"),
+respect that — eval CI will fail with empty-env auth, but check-freshness,
+workflow-lint, and windows-tests will still pass on the fork PR.
 
 ## CHANGELOG + VERSION style
 

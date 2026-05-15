@@ -2,6 +2,181 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [0.9.1] - 2026-05-14 — compose-send fix + scheduled tasks
+
+A user-reported regression on macOS plus a long-missing daemon feature. No
+breaking changes; safe upgrade from v0.9.0.
+
+### Fixed — compose-send playbook (real user-reported bug)
+
+A v0.9.0 user on macOS asked "open mail app and send an email to X
+introducing yourself." The trace reported `✅ done · path=playbook · 2/2
+subtasks · $0.0000`, but the actual send was broken: the body landed in
+the wrong field (and/or merged with the subject field). **No LLM was
+called and no vision fallback ever fired** — the bug was 100% in the
+deterministic playbook plus a verifier bypass that let the playbook
+self-certify. Three layered fixes:
+
+- **Platform-aware Tab count after recipient** in
+  `src/tools/playbooks/compose-send.ts`. The previous code fired TWO Tabs
+  after typing the recipient, assuming every mail app shows Cc/Bcc inline.
+  macOS Mail.app's default layout has Cc/Bcc collapsed — Tab order is
+  `To → Subject → Body`. Two Tabs overshot Subject and landed on Body.
+  New: 1 Tab on darwin/linux, 3 Tabs on win32 (Outlook desktop default),
+  via a `tabsAfterRecipient()` helper. Documented per-platform in the
+  module header.
+- **Decoupled the post-subject Tab from `if (subject)`**. The advance to
+  Body now fires unconditionally so a task with no explicit subject (the
+  user's "introducing yourself" case) still lands the body in the right
+  field instead of typing it into whatever the previous Tab happened to
+  leave focus on.
+- **Removed playbook exemption from the verifier** in
+  `src/core/pipeline.ts:649-655`. The router exemption stays (router has
+  its own window-list-diff evidence). Playbooks now go through the
+  ground-truth verifier like every other rung — the rich `send_email`
+  task assertions (`compose_closed` via full window list, `recipient_visible`,
+  `not_just_saved_as_draft` anti-signal) were designed for exactly this
+  bug class but couldn't catch it because they never ran. Verifier is
+  <500ms; soft-fail-on-low-confidence policy stays in place for legitimate
+  idempotent operations.
+- **Better summary line**: `compose-send: to=… subject=… body=…ch
+  tabs-after-to=…` now reports parsed field state and platform Tab count
+  in the trailing PIPELINE_DONE line. Empty subject was the original
+  diagnostic signal in the user-reported bug — now it's visible at a
+  glance.
+
+### Added — Scheduled tasks (new feature, requested)
+
+Cron-driven recurring tasks that fire through the same agent pipeline as
+`submit_task`. Persisted across daemon restarts. **Dashboard gets a new
+⏰ Scheduled tab** with cron + task inputs, an active-schedule list, and
+per-row pause / delete buttons.
+
+- **`src/tools/scheduler.ts`** — 4 new MCP tools:
+  - `scheduled_task_create({ task, cron, tz? })` — validates the cron up
+    front (`croner`), persists, registers an in-process cron job that
+    dispatches via `agent.executeTask`.
+  - `scheduled_task_list()` — returns every persisted task with run /
+    skip / lastError counters and a computed `nextRun` ISO timestamp.
+  - `scheduled_task_delete({ id })` — unregisters + removes from disk.
+  - `scheduled_task_toggle({ id, enabled })` — pause/resume without
+    deleting; disabled tasks stay persisted but their cron job is
+    unregistered.
+- **Storage**: `~/.clawdcursor/scheduled-tasks.json`. Path is computed
+  dynamically (honors `CLAWD_HOME`) so tests and forks can redirect.
+- **Reentrancy**: if a tick fires while the agent is busy, the task is
+  skipped and `skipCount` increments. No queue, no pile-up. Predictable.
+- **Boot lifecycle**: `clawdcursor agent` calls `initScheduler(agent)` on
+  startup (only when an LLM is configured — the scheduler requires the
+  autonomous agent to dispatch into). Daemon shutdown calls
+  `stopScheduler()` to cleanly unregister all jobs.
+- **Auth**: every scheduler tool sits behind the same bearer-token gate
+  as the rest of the MCP HTTP surface (`/mcp` already wraps `requireAuth`).
+- **Dependency**: adds `croner@^9.1.0` (zero-dep cron parser, ~7 KB).
+
+### Stats
+
+- Tool count: **89 → 93** (+4 scheduled_task_* tools)
+- Tests: **759 → 776** (+5 playbook tests + 14 scheduler tests, all green)
+- Schema snapshot regenerated.
+
+### Migration
+
+None. Drop-in upgrade from v0.9.0.
+
+---
+
+## [0.9.0] - 2026-05-14 — Architecture redesign + guides marketplace
+
+The largest release since v0.7. Net change vs v0.8.17: **−10,200 LOC, +14 new MCP tools, one protocol instead of two, five directories instead of seven**, plus a Reflector feedback channel that closes the loop between verifier signals and planner decisions, plus a public guides marketplace where community-contributed app knowledge ships independently of the binary.
+
+### Architectural rewrite
+
+- **One protocol, two transports.** REST surface (`/task`, `/tools`, `/execute/:name`, `/favorites`, `/learn`, `/screenshot`, `/abort`, `/confirm`, `/logs`, `/task-logs`) is gone. Every former REST endpoint is now an MCP tool. The HTTP daemon serves stateless MCP at `POST /mcp` alongside `/health`, `/stop`, and `/` (dashboard).
+- **Five directories under `src/`.** `core/` (agent loop + pipeline + verifier + safety + skills), `tools/` (one registry, 89 granular + 6 compound), `platform/` (Windows / macOS / Linux X11 / Linux Wayland adapters + Swift host app), `llm/` (providers + credentials + knowledge), `surface/` (CLI + MCP server + dashboard). One concern per directory, no upward dependencies.
+- **Legacy cascade removed.** The v0.7-era cascade (`computer-use.ts`, `ai-brain.ts`, `action-router.ts`, `generic-computer-use.ts`, 14 more modules — ~12 k LOC) deleted along with the `--legacy` flag and `_executeTaskInternal`. Tag `v0.8.17-legacy` preserves the cascade for emergency cherry-pick.
+- **CLI verb rename.** `clawdcursor start` → `clawdcursor agent`; `clawdcursor serve` → `clawdcursor agent --no-llm`. Old verbs still work as deprecation aliases through 0.9.x; removed in 0.10.
+
+### Reflector feedback (CLAWD_REFLECTOR=1)
+
+The verifier now produces structured `ReflectionFeedback` with typed `Cause[]` and an optional `suggestedStrategy`. Six cause kinds: `no_pixel_change`, `wrong_window_focused`, `modal_intercept`, `a11y_target_missing`, `webview_blind`, `partial_text_match`. The pipeline ladder reroutes based on the dominant cause instead of just rolling down — `webview_blind` jumps straight to vision, `modal_intercept` retries after dismissal. Behind a feature flag for one cycle; default-on in 0.9.1 if telemetry is positive.
+
+### Safety + correctness
+
+- **Five tools promoted to Tier 2 (mutation)** after an external audit: `open_file`, `open_url`, `open_uri`, `navigate_browser`, `write_clipboard`. Each can trigger arbitrary OS handlers, network egress, or clipboard hijack — Tier 1 understated the risk.
+- **Sensitive-app safety gate now actually elevates** instead of just logging. Clicking inside Outlook / 1Password / Mail / banking / private-messaging with no target label → `confirm` (not `allow`).
+- **App-pattern data consolidated** into `src/core/app-categories.ts`. Single source of truth for the WebView2 settle list + sensitive-app list. The autonomous pipeline never imports it.
+- **Stateless MCP HTTP transport.** Per-request transport lifecycle, `enableJsonResponse: true` so clients receive plain JSON-RPC instead of SSE event-stream framing they choke on.
+
+### Agent-loop reliability
+
+- **Soft-fail subtask policy.** Low-confidence verifier rejection (< 0.5) on a single subtask logs a warning and continues. Idempotent operations like "create new canvas" after `open_app("Paint")` (pixel-change zero because Paint already opened blank) no longer kill the chain at subtask 2.
+- **Runaway guard on consecutive no-tool-call turns.** Three turns of degenerate model output (e.g. Kimi hitting `max_tokens` with token-loop garbage) trigger a clean rung exit instead of burning the full 5-minute task timeout.
+- **Kimi `moonshot-v1-*` prose-tool-call parser updated** for the new `functions.NAME:N->{_{...}}` format the model now emits.
+- **Per-task PIPELINE_DONE footer always fires** with `success/failed (reason) · path · N/M subtasks · $cost · duration`. Was missing on chain-abort + isAborted paths.
+- **DPI mouse-scale fix.** Both stdio MCP and `clawdcursor agent` now use `physical/image` as the mouseScaleFactor source. Vision-driven clicks land where intended on HiDPI Windows / Retina macOS instead of being 2× too far towards top-left.
+- **DPI info injected into agent prompt** so models that try to "help" by self-scaling don't pre-multiply.
+
+### Tools
+
+- **Tool count 75 → 89.** Fourteen new MCP tools absorbed the former REST endpoints + the marketplace surface: `submit_task`, `abort_task`, `agent_status`, `screenshot_full`, `favorites_list/_add/_remove`, `task_logs_list/_current`, `logs_recent`, `learn_app`, `submit_report`, plus two new guides-management entries.
+- **Tool registry unified.** Compact (6 compounds) is now a transform over the granular registry, not a parallel catalog. One source of truth, no drift.
+- **MCP `open_app` uses alias table + PlatformAdapter** instead of raw `Start-Process`. Calculator, Win11 Notepad, and other UWP apps work correctly.
+- **`focus_window` AND-matches** when given both pid + title — needed for Win11's tabbed Notepad where multiple windows share a pid.
+- **`type_text` preserves the user's clipboard** around its paste-as-type operation. Was silently clobbering.
+
+### Guides marketplace (new)
+
+clawdcursor reasons about every app from screenshots and a11y trees. For popular apps that's slow. v0.9 ships a **marketplace of community-curated app guides** the agent fetches on demand, caches locally based on usage, and uses to operate apps 5–10× faster — without ever blocking the agent loop on the network.
+
+- **Public registry at <https://clawdcursor.com/app-guides>**, backed by the GitHub repo <https://github.com/AmrDab/clawdcursor-guides>. PR-based submissions, native GitHub identity as anti-spam, vote-issues for ratings (`vote: <app>` issues with 👍/👎 reactions aggregated nightly into `index.json`).
+- **10 verified seed guides at launch**: gmail, outlook, slack, youtube (the rich-multi-task reference — 19 workflows, 36 shortcuts, 8 layout regions, 13 tips), figma, discord, excel, mspaint, olk (new Outlook), spotify. Maintainer trust labels: `trust:verified` / `trust:community` / `trust:experimental`.
+- **Three new client-side modules**:
+  - `src/llm/knowledge/remote-loader.ts` — `fetchGuide(app)` with timeout, conditional GET via ETag, stale-while-revalidate.
+  - `src/llm/knowledge/cache.ts` — LRU + TTL (7 days, 50 entries). `touchUsage` reorders LRU on every hit, so popular guides survive eviction even when not most-recently-fetched.
+  - `src/llm/knowledge/guide-linter.ts` — defense-in-depth: schema validation + prompt-injection patterns + dangerous-prose detection runs on every guide before injection, regardless of source (bundled, cached, user-override). Failed guides drop to null — agent falls back to first-principles reasoning, never poisoned-knowledge.
+- **Bundled core trimmed to 2 guides** (msedge + notepad — Windows defaults that ship with every install). The other 10 curated guides moved to `seed-registry/guides/` and uploaded to the GitHub repo. Lighter binary; guides update independently of releases.
+- **`clawdcursor guides` CLI rewritten**: `list`, `info <app>`, `available`, `install <app>` / `install --all`, `refresh <app>`, `remove <app>`, `clean`, `lint <file>`, `submit <file>` (lints + prints PR instructions).
+- **Preprocessor fires `prefetchGuideForApp(app)` async** the moment it detects an active window — by the next task, the cache is warm. First-touch uses whatever's local; subsequent tasks are fast.
+- **`learn_app` writes rerouted** to the user-override dir at `~/.clawdcursor/ui-knowledge/{app}.json` (was writing into the bundled source tree where the next install would clobber it). Auto-saves successful task patterns under `learnedWorkflows`; FIFO-capped at 20 per app.
+- **Rich prompt fragment renderer** (`renderAppKnowledge`): the agent now sees SHORTCUTS / WORKFLOWS (★-marked active one first) / LAYOUT / TIPS instead of just 8 comma-joined shortcuts. Cap 6000 chars with graceful degradation; non-active workflows truncated to 180 chars so a 20-workflow guide doesn't crowd out layout.
+
+### Router
+
+- **Web-service redirect layer** (`src/core/router/web-services.ts`, 60-entry table). "open youtube" / "open reddit" / "open gmail" now redirects to `handleUrlNav('https://www.youtube.com')` via the OS default browser, instead of fall-through to Start-Menu search → blind-agent escalation. Closes a v0.9 failure mode where the agent typed the literal phrase "default browser" into a search bar. Native-client preference preserved: "open chrome" still launches the desktop client.
+- **System-context preamble** in the blind/hybrid agent system prompt (`src/core/agent-loop/prompt.ts` section 5c): web services → `open_url(URL)`, never type "browser" into search bars, don't emit "open chrome" before "navigate" unless explicitly named.
+
+### Verifier
+
+- **`send_email` no longer falsely passes** when a popup steals foreground. Previous logic checked only `after.activeWindow.title` for compose-window absence — a banner popup focusing the agent's window inverted the check and the verifier reported success while Send was never clicked. Fix iterates the full `after.windows` list (`composeStillOpen = (after.windows ?? []).some(w => !w.isMinimized && composeKeywords.test(w.title))`). Also added: success-keyword detection (`message sent | email sent | sent successfully`), `not_just_saved_as_draft` anti-signal (rejects when "Draft saved" appears without success notice), expanded compose regex to include `reply`.
+
+### Doctor
+
+- **Post-doctor "All systems go" panel rewritten** for clarity on the two access paths: MCP server for editor (`clawdcursor mcp`) gets 89 desktop tools (or 6 compound with `--compact`); HTTP daemon (`clawdcursor agent`) for unattended autonomy. Runtime-detects whether an LLM is configured and shows "(you have one)" green or "(none yet)" yellow.
+
+### Cross-platform integrity
+
+- **All four OS adapters preserved.** Windows (1,220 LOC) + macOS (903 LOC) + Linux X11 (1,285 LOC) + Linux Wayland (343 LOC) — 3,751 LOC of adapter code, no regression from v0.8.
+- **macOS host app intact.** `ClawdCursorHost` Swift bundle, `permission-check`, `screenshot-helper`, `clawdcursor grant` flow — all preserved + path-resolution fixed (`getPackageRoot()`) so the host app is found correctly after the directory restructure.
+
+### Documentation
+
+- **Professional README rewrite** (340 lines): hero badge row, Mermaid pipeline diagram with Reflector feedback edges, transport / cost-tier / cross-platform / compound-tool tables, 5-directory architecture summary. Modeled on `ollama`, `vercel/ai`, `microsoft/playwright`, `modelcontextprotocol/typescript-sdk`.
+- **Post-install + post-build banners are state-aware**: skip "Run consent" / "Run doctor" lines when the user already did them on a prior install.
+- **Two-path next-step routing** at install / consent / doctor: autonomous agent (`doctor` → `agent`) vs MCP-only (register `clawdcursor mcp` with editor host).
+- **SKILL.md reordered**: fallback discipline first, "no task impossible" confidence second, CAN/MUST/SHOULD third — load-bearing identity preserved verbatim.
+- **MACOS-SETUP, agent-guide, OPENCLAW-INTEGRATION-RECOMMENDATIONS, dashboard, website** all migrated from REST to MCP HTTP transport language.
+- **`docs/internal/v0.9-readme-building-blocks.md`** + **`docs/internal/agnostic-audit-report.md`** archived as design records (moved out of the published website root before release).
+
+### Release hygiene
+
+- Removed orphan `docs/v0.7.5/` (v0.7-era landing page not linked anywhere).
+- `package.json` gains `repository`, `homepage`, `bugs`, `author`, `keywords`.
+- `.nvmrc` added (Node 20).
+- CI badge URL corrected to the actual workflow filename.
+
+---
+
 ## [0.8.8] - 2026-05-05 — Reliability + correctness: mod modifier, compact set_value, smart_click foreground OCR, invoke-element timeout
 
 A focused reliability release closing several real bugs surfaced by a production session (issue #71) and a thorough ultrareview of the v0.8.5 work. Two of the bugs were silent failures — the worst kind for an agent — and one was a hard hang in the standalone PowerShell scripts. Plus a routine round of major-version dependency bumps (express 5, commander 14, dotenv 17, sharp 0.34) and a lint cleanup pass.

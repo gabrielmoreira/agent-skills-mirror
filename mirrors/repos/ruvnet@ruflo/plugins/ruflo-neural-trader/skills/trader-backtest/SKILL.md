@@ -8,7 +8,7 @@ Run a historical backtest using the `neural-trader` Rust/NAPI engine.
 
 Steps:
 1. Ensure neural-trader is available:
-   `npm ls neural-trader 2>/dev/null || npm install neural-trader`
+   `npm ls neural-trader 2>/dev/null || npm install --ignore-scripts neural-trader`
 2. Check for saved strategy config:
    `mcp__claude-flow__memory_retrieve({ key: "strategy-STRATEGY_NAME", namespace: "trading-strategies" })`
    If not found, list available: `mcp__claude-flow__memory_search({ query: "strategy", namespace: "trading-strategies", limit: 10 })`

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,6 +83,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
 | 23 | ✓ | [`packages/redis-worker/CLAUDE.md`](packages/redis-worker/CLAUDE.md) |
 | 24 | ✓ | [`packages/trigger-sdk/CLAUDE.md`](packages/trigger-sdk/CLAUDE.md) |
+| 25 | ✓ | [`references/ai-chat/src/trigger/skills/time-utils/SKILL.md`](references/ai-chat/src/trigger/skills/time-utils/SKILL.md) |
 
 ---
 

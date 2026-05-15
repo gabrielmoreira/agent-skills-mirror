@@ -6,7 +6,7 @@ compatibility: Designed for AI agents that implement https://agentskills.io/spec
 allowed-tools: Read WebFetch Write Edit Bash
 metadata:
   purpose: Chainlink ACE core contracts and managed Platform developer onboarding, compliance architecture, product scope, and reference guidance
-  version: "0.0.4"
+  version: "0.0.5"
 ---
 
 # Chainlink ACE Skill
@@ -103,7 +103,7 @@ This skill is based on the public `smartcontractkit/chainlink-ace` repository an
 
 1. For stable OSS contract concepts, use the embedded reference files.
 2. For current repo details, fetch files from `https://github.com/smartcontractkit/chainlink-ace` or raw GitHub URLs listed in [references/official-sources.md](references/official-sources.md).
-3. For current product details, fetch from official `https://docs.chain.link/ace` URLs listed in [references/official-sources.md](references/official-sources.md).
+3. For current product details, fetch from official `https://docs.chain.link/ace.md` URLs listed in [references/official-sources.md](references/official-sources.md).
 4. If WebFetch is available, use it first. If it returns insufficient content, try `curl -L <official-url>`.
 5. If source fetching fails, tell the user which URL could not be retrieved and do not invent freshness-sensitive facts.
 

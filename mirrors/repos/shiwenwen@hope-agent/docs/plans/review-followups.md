@@ -892,6 +892,82 @@
 - **影响面**：理论 bug。命中时用户看到「更新已安装，正在重新启动 Hope Agent...」但 app 没起来（前端 fallback 文案 `about.updateRestartManually` 已经覆盖了"用户感知"层）
 - **触发时机建议**：用户实际报上来时启动调查；或下次动 plugin-process / single-instance 集成时
 
+### F-038 抽 `jaccard` / `tokenize` 到共享 `crate::text::similarity` 模块
+
+- **来源**：2026-05-15 auto-review 五道闸 `/simplify` review（reuse agent）
+- **现象**：项目里现存三处 word-bag Jaccard 实现：[`skills/author.rs::patch_skill_fuzzy`](../../crates/ha-core/src/skills/author.rs)（ASCII 分词，无 CJK）、[`memory/mmr.rs::jaccard_similarity`](../../crates/ha-core/src/memory/mmr.rs)（CJK 一元+二元）、新 [`skills/auto_review/heuristics.rs::jaccard`](../../crates/ha-core/src/skills/auto_review/heuristics.rs)（CJK 二元 + `overlap_coefficient`）。三个都是 file-private，行为不一致
+- **为什么留**：本期已经在 heuristics.rs 写好「CJK 二元 + 单字符过滤 + overlap」版本最完整；统一到 `crate::text::similarity` 会牵动 `author.rs::patch_skill_fuzzy` 的模糊补丁阈值（ASCII → CJK 后可能改变命中率），属于跨模块行为变更，单独 PR 处理更稳
+- **改的话要做什么**：新建 `crates/ha-core/src/text/mod.rs` + `similarity.rs`，迁三处实现统一；`author.rs::patch_skill_fuzzy` 跟随更新后跑现有 patch-fuzzy 测试验证未回归
+- **影响面**：纯重复消除，可能改善 patch_skill_fuzzy 对中文 skill body 的命中率（当前 ASCII 分词把中文 skill 体当一个 token 处理）
+- **触发时机建议**：下次动 `patch_skill_fuzzy` 或 mmr / memory 重排时顺手收
+
+### F-039 `CollapsibleSection` lift 到 `src/components/ui/`
+
+- **来源**：2026-05-15 auto-review 五道闸 `/simplify` review（reuse agent）
+- **现象**：[`agent-panel/tabs/CapabilitiesTab.tsx::CollapsibleSection`](../../src/components/settings/agent-panel/tabs/CapabilitiesTab.tsx) 和新 [`skills-panel/SkillEvolutionView.tsx::Section`](../../src/components/settings/skills-panel/SkillEvolutionView.tsx) 都是 ChevronDown + button + collapse 的同形组件；后者多了 `warning` / `disabled` props
+- **为什么留**：lift 需要把两个 tab-local 视觉细节统一（subtitle 行位、warning 图标），属于 UI primitive 重构 PR
+- **改的话要做什么**：在 `src/components/ui/collapsible-section.tsx` 落一个 shadcn 风的 primitive，参数化 (open / onToggle / title / subtitle / warning / disabled)，两处消费方迁过去
+- **影响面**：UI primitive 复用，零行为变化
+- **触发时机建议**：下一个新 Settings panel 也需要折叠区时
+
+### F-040 `FieldRow` + per-field `StatusBadge` 抽成 Settings 公共原语
+
+- **来源**：2026-05-15 auto-review 五道闸 `/simplify` review（reuse agent）
+- **现象**：[`SkillEvolutionView.tsx::FieldRow`](../../src/components/settings/skills-panel/SkillEvolutionView.tsx)（RotateCcw + IconTip + StatusBadge + child slot）是新写的 per-field 三态保存模式；其它 Settings panel（GlobalModelPanel / ContextCompactPanel / SandboxPanel / AcpControlPanel 等）目前是 panel-wide 三态。AGENTS.md "保存按钮统一三态"契约让两种粒度共存，但代码上没有共用 primitive
+- **为什么留**：per-field autosave 是这次新引入的模式，存量 panel 还在 panel-wide 模式。等下一个 panel 迁到 per-field 时一起抽，避免过早抽象
+- **改的话要做什么**：在 `src/components/settings/_shared/FieldRow.tsx`（或 `src/components/ui/field-row.tsx`）落一个 primitive，两处以上 panel 用过再固化
+- **影响面**：UI 复用，零行为变化
+- **触发时机建议**：下一个 panel 迁到 per-field autosave 时
+
+### F-041 `ReviewReport` 改 enum-shaped outcome 消除 `None` 字段族
+
+- **来源**：2026-05-15 auto-review 五道闸 `/simplify` review（quality agent）
+- **现象**：[`pipeline.rs::ReviewReport`](../../crates/ha-core/src/skills/auto_review/pipeline.rs) 用 `outcome: String` + 一堆 `Option<...>`（`skill_id` / `similarity` / `rationale` / `reject_reason` / `fire_reason` / `error`）。`similarity` 只对 patch 有意义；`reject_reason` 只对 skipped 有意义——字段语义随 outcome 字符串隐式分支
+- **为什么留**：当前形状已经 wire 到 EventBus、UI 和 i18n；改 enum 要带 TS 端 discriminated-union 改写 + JSON wire format 兼容，独立 PR
+- **改的话要做什么**：定义 `enum ReviewOutcome { Created { skill_id, rationale }, Patched { skill_id, similarity, rationale }, Skipped { reason, rationale }, Errored { message } }`，`ReviewReport` 收 `trigger, session_id, fire_reason, duration_ms, outcome: ReviewOutcome`；前端用 `outcome.kind` discriminate
+- **影响面**：纯架构整洁度，零功能变化
+- **触发时机建议**：下次给 `ReviewReport` 加字段时一并改
+
+### F-042 `config::reset_fields` 23 块 if-ladder → 静态字段表
+
+- **来源**：2026-05-15 auto-review 五道闸 `/simplify` review（quality agent）
+- **现象**：[`config.rs::SkillsAutoReviewConfig::reset_fields`](../../crates/ha-core/src/skills/auto_review/config.rs) 有 23 个近似的 `if want("...")` 块；每加一个字段必须人工同步两处（struct + reset 表）
+- **为什么留**：23 行还能读；macro 影响 grep、静态表需要 typed fn pointer，收益不够大且 PR 已庞大
+- **改的话要做什么**：option A：`macro_rules! reset_fields! { self, d, fields, [enabled, promotion, ...] }`。option B：`static FIELDS: &[(&str, fn(&mut Self, &Self))] = &[("enabled", |s, d| s.enabled = d.enabled), ...]`
+- **影响面**：可维护性，零行为变化
+- **触发时机建议**：下次 `SkillsAutoReviewConfig` 加字段时顺手
+
+### F-043 `fire_reason: String` 改 `enum FireReason`
+
+- **来源**：2026-05-15 auto-review 五道闸 `/simplify` review（quality agent）
+- **现象**：[`triggers.rs::AutoReviewGate::fire_reason`](../../crates/ha-core/src/skills/auto_review/triggers.rs) 返回 `&str`（`"tool_use" | "bulk" | "correction" | "manual"`），全程以 `String` 在 `ReviewReport` 流转到 TS。`reject_reason` 同形（已抽常量但仍是 String）
+- **为什么留**：常量化已落（[`pipeline.rs::REASON_*`](../../crates/ha-core/src/skills/auto_review/pipeline.rs) + heuristics 常量），enum 改造涉及 serde `rename_all` + TS discriminated union 迁移
+- **改的话要做什么**：`#[derive(Serialize)] #[serde(rename_all = "snake_case")] enum FireReason { ToolUse, Bulk, Correction, Manual }`；ReviewReport 同形改 RejectReason
+- **影响面**：类型安全，零行为变化
+- **触发时机建议**：与 F-041 一起做
+
+### F-044 `DiscardEntry` 提到 `heuristics.rs` + `pre_gate` 接收 `&[DiscardEntry]`
+
+- **来源**：2026-05-15 auto-review 五道闸 `/simplify` review（quality agent）
+- **现象**：[`pipeline.rs::DiscardEntry`](../../crates/ha-core/src/skills/auto_review/pipeline.rs) 私有 struct；调到 [`heuristics::pre_gate`](../../crates/ha-core/src/skills/auto_review/heuristics.rs) 前 .map 成 `Vec<(String, String)>` 元组，被回 destructure 成 `(id, topic)`。位置型契约，换字段顺序静默 footgun
+- **为什么留**：当前只有 1 个 call site，定位+修复几分钟就够，但需要决定 DiscardEntry 该住 heuristics（信号契约）还是 pipeline（持久化源）—— 顺便决定时机
+- **改的话要做什么**：把 `DiscardEntry { id, topic_text }` 公开到 heuristics.rs 或一个新的 `auto_review::types` 子模块；`pre_gate` 接 `&[DiscardEntry]`
+- **影响面**：API 设计整洁，零行为变化
+- **触发时机建议**：与 F-041 / F-043 enum 化打包一起做
+
+### F-045 接入 `auto_curator_enabled` 后台周期合并扫描
+
+- **来源**：2026-05-15 auto-review 五道闸自查
+- **现象**：[`SkillsAutoReviewConfig::auto_curator_enabled`](../../crates/ha-core/src/skills/auto_review/config.rs) 和 `auto_curator_interval_days` 字段已经定义、reset_fields 已覆盖、sanitize 已 clamp，但**没有任何背景任务消费它们**。前端 UI 也未暴露开关。当前 v1 仅支持手动按钮触发 curator scan
+- **为什么留**：周期任务涉及 init_runtime 启动期接入 + cfg 变化时重启策略 + 测试覆盖；本 PR 已经 8 commit 38 文件，再加 background lifecycle 风险偏高，单独 PR 做
+- **改的话要做什么**：
+  - 在 `init_runtime`（或 `lib.rs::run`）启动期 spawn 一个 `tokio::time::interval` 后台 task，tick 时读 `cached_config().skills.auto_review`，按 enabled + interval 决定是否跑 `auto_review::curator::run_curator_pass()`
+  - 跑出来的 `CuratorReport` emit 到 EventBus 作为 `skills:curator_proposals_ready`，UI 在 SkillEvolutionView 顶部加一个"有 N 组合并建议"提醒
+  - SkillEvolutionView 加 `Auto-curator` 开关 + interval input（已 reserve i18n key）
+  - cfg 变化时——简化策略：读 cfg 的循环每 tick 重读 cached_config，自然生效；不重新 spawn
+- **影响面**：补完已 ship 的配置项，避免用户开了不生效的体验
+- **触发时机建议**：下一个 auto-review 相关 PR 或专门做 background lifecycle 的 PR
+
 ---
 
 ## Closed
@@ -1170,3 +1246,70 @@
 - **来源**：2026-04-30 F-029 收尾 `/simplify` review（quality agent）
 - **关闭**：2026-04-30 / commit 紧跟 F-028..F-031 收尾
 - **修复方式**：发现 [`plan::PlanModeState`](../../crates/ha-core/src/plan/types.rs) enum 已存在并完整支持 `from_str`/`as_str`/serde rename_all snake_case + `is_valid_transition`，直接复用即可（不需要新建 PlanMode）。给 PlanModeState 加 `Copy` 派生（6 个 unit variant，1 字节）让消费方按值传递。`SessionMeta.plan_mode: String` → `PlanModeState`，DB row→struct 边界用 `from_str` 一次性转 enum；`update_session_plan_mode` 参数改成 `PlanModeState`，6 处 caller（slash_commands/handlers/plan.rs 5 处 + tools/plan_step.rs + tools/submit_plan.rs + ha-server/routes/plan.rs 2 处 + src-tauri/commands/plan.rs 3 处 + commands/chat.rs 2 处）改用 enum variant；`should_create_execution_checkpoint(persisted_plan_mode: Option<&str>)` 改成 `Option<PlanModeState>`；`restore_from_db(plan_mode_str: &str)` 改成 `state: PlanModeState`，删除内部 from_str 重复转换。`meta.plan_mode == "off"` 等 stringly compare 全部改成 enum 匹配。ha-core 771 / ha-server 18 单测全绿。
+
+### F-087 `ChromeMcpBackend` 完整 wire-up（rmcp client + uid↔ref 映射 + 进程 reaper + observe 旁路）
+
+- **来源**：2026-05-13 浏览器双 backend 落地 PR
+- **关闭**：2026-05-13 / 与 F-088 同 PR 收尾
+- **修复方式**：[`mcp_client::spawn`](../../crates/ha-core/src/browser/mcp_client.rs) 复用 [`mcp::transport::build_stdio_client`](../../crates/ha-core/src/mcp/transport.rs) 起内部 rmcp client（不入 `mcp_servers` 配置），spawn 命令带 `--browserUrl http://127.0.0.1:9222` 让 chrome-devtools-mcp 接管 hope-agent 自己 launch 的 Chrome；外层 `tokio::time::timeout(60s)` 处理首次 npx 拉包超时，超时 / 失败时 `backend_select` 在 Auto 模式下 fallback CDP。[`mcp_backend.rs`](../../crates/ha-core/src/browser/mcp_backend.rs) 重写为真实 `BrowserBackend`：`call_tool` 走 `peer().call_tool(CallToolRequestParams)`；`take_snapshot` 解析 `--experimentalStructuredContent` 返回的 uid 树到 `BTreeMap<u32, String>`，act 时反查；PDF / `act.select` 因 chrome-devtools-mcp 缺原生工具透明降级（PDF 让用户切 Force CDP，select 用 `evaluate_script` 触发 input/change 事件）。observe 旁路：`try_new` 调 [`cdp_backend::activate_observe_subscribers_for_all_pages`](../../crates/ha-core/src/browser/cdp_backend.rs) 在 hope-agent 自持的 chromiumoxide 控制平面上拉起 Console/Network/Exception 订阅喂 [`observe_buffer`](../../crates/ha-core/src/browser/observe_buffer.rs)，`observe()` 是 buffer 读，与 CDP backend 行为一致。子进程 reaper 由 `Arc<dyn BrowserBackend>` Drop + `TokioChildProcess::kill_on_drop` 保证；`reset_backend()` 是统一回收入口。
+
+### F-088 Settings BrowserPanel UX 简化（独立 vs 接管模式 radio + 一键启动用户态 Chrome）
+
+- **来源**：2026-05-13 浏览器双 backend 落地 PR / plan Step 7
+- **关闭**：2026-05-13 / 与 F-087 同 PR 收尾
+- **修复方式**：[`src/components/settings/BrowserPanel.tsx`](../../src/components/settings/BrowserPanel.tsx) 保留扁平 Launch / Profiles / Connect 三段（用户审批），插入：(1) 顶部 Mode Radio 写 `AppConfig.browser.defaultMode`（`managed` / `user_attach`），(2) Connect 段内嵌 doctor banner——绿色「Found Chrome at …」+ Attach，黄色「No Chrome detected」+ Launch user Chrome，(3) 底部独立 Backend Radio（`auto` / `cdp` / `mcp`）写 `AppConfig.browser.backend`，切完弹 toast「下次 launch/connect 生效」+「立即重连」action 调 `browser_disconnect`。新 ha-core helpers：[`paths::browser_user_attach_dir`](../../crates/ha-core/src/paths.rs)（`~/.hope-agent/browser/user-attach/`）+ [`browser::user_attach::spawn_user_chrome`](../../crates/ha-core/src/browser/user_attach.rs)（直接 `std::process::Command` spawn detached Chrome，9222 端口占用检测 + `--user-data-dir` 隔离 + 写 `userAttach.lastSpawnedPort`）+ [`platform::chrome_already_running`](../../crates/ha-core/src/platform/mod.rs)（macOS/Linux `pgrep -f`，Windows `tasklist /FI`）+ [`platform/unix::find_chrome_executable`](../../crates/ha-core/src/platform/unix.rs) 补齐 Unix 实现（macOS `.app` bundle + Linux `which`）。新 4 个 Tauri/HTTP 命令：`browser_spawn_user_chrome` / `browser_probe_user_chrome` / `browser_check_chrome_running` / `browser_backend_doctor`；加上 `browser_get_config` / `browser_set_config` 让 UI 持久化 `AppConfig.browser`。12 语言 i18n 24 keys × 11 locales 全部直接写入 locale json（`scripts/sync-i18n.mjs --check` 全过）。
+
+---
+
+### F-033 `SectionSkeleton` 在 dashboard 6 个 section 重复实现
+
+- **来源**：2026-05-14 `feat/dashboard-local-models` `/simplify` review（reuse agent）
+- **现象**：[`LocalModelsSection.tsx`](../../src/components/dashboard/LocalModelsSection.tsx)、[`SystemMetricsSection.tsx`](../../src/components/dashboard/SystemMetricsSection.tsx)、[`TaskSection.tsx`](../../src/components/dashboard/TaskSection.tsx)、[`ErrorSection.tsx`](../../src/components/dashboard/ErrorSection.tsx)、[`InsightsSection.tsx`](../../src/components/dashboard/InsightsSection.tsx)、[`SessionSection.tsx`](../../src/components/dashboard/SessionSection.tsx) 各自定义同一个 8 行的 `SectionSkeleton` 组件（`<div className="w-full bg-muted animate-pulse rounded-lg" style={{ height }} />`）。
+- **为什么留**：pre-existing debt，本期 PR 只是第 6 个复制点；抽出会动 5 个无关 section 文件，扩散 PR scope。
+- **改的话要做什么**：抽到 `src/components/dashboard/SectionSkeleton.tsx` 单文件，6 个 section import；同 PR 删掉本地定义。
+- **影响面**：纯重复，无 bug。
+- **触发时机建议**：下次有 dashboard section 重构 PR 顺手清。
+
+---
+
+### F-034 dashboard 局部 `Badge` 应迁到 shadcn `src/components/ui/badge.tsx`
+
+- **来源**：2026-05-14 `feat/dashboard-local-models` `/simplify` review（reuse agent）
+- **现象**：[`LocalModelsSection.tsx:76-95`](../../src/components/dashboard/LocalModelsSection.tsx) 内联定义了一个 17 行的 `Badge` span 组件（rounded-md border + 文本徽章），项目 `src/components/ui/` 下没有 shadcn `badge.tsx`。
+- **为什么留**：当期仅 LocalModelsSection 一处用，没有现成的可复用。等下次有第 2 个调用方时再升级到 shadcn 标准 Badge。
+- **改的话要做什么**：用 `pnpm dlx shadcn@latest add badge` 装标准 Badge（或手抄 shadcn Badge 模板）到 `src/components/ui/badge.tsx`；删除 LocalModelsSection 内联定义；把 7 处使用迁过去。
+- **影响面**：纯重复，无 bug。
+- **触发时机建议**：下一个 dashboard / settings PR 想用 badge 时顺手做。
+
+---
+
+### F-035 `local_model_job_list` 无 server-side status filter，前端 fetch 全量 jobs
+
+- **来源**：2026-05-14 `feat/dashboard-local-models` `/simplify` review（efficiency agent）
+- **现象**：[`local_model_jobs.rs`](../../crates/ha-core/src/local_model_jobs.rs) 的 list 命令始终返回 `local_model_jobs.db` 全部记录，前端 `LocalModelsSection` 再用 `isLocalModelJobVisible` 客户端筛选。jobs 表每次 ollama-pull / preload / chat_model / embedding 都落一条，长期会膨胀。
+- **为什么留**：当期表预估 ≤ 几十条，client-side filter 没用户感知延迟。
+- **改的话要做什么**：给 `local_model_job_list` 加可选参数 `status_filter: Vec<LocalModelJobStatus>`，SQL `WHERE status IN (...)`。Tauri 命令 + HTTP route 同步加 query param；dashboard 调用时传 `["running","cancelling","paused","interrupted","failed"]`。
+- **影响面**：性能，当 jobs 表 > 1000 行后可能感知到 list 慢。
+- **触发时机建议**：下次发现 jobs 表膨胀 / dashboard 加载变慢时。
+
+---
+
+### F-036 `query_local_model_usage` 第 3 个 totals SQL 可折叠到 by_model
+
+- **来源**：2026-05-14 `feat/dashboard-local-models` `/simplify` review（efficiency agent）
+- **现象**：[`crates/ha-core/src/dashboard/local_models.rs:131-159`](../../crates/ha-core/src/dashboard/local_models.rs) 串行跑 3 个 SQL（trend / by_model / totals），totals 完全可从 by_model 求和；avg_ttft_ms 需在 `LocalModelUsageRow` 加 `ttft_sample_count` 字段才能精确加权折叠（`AVG(CASE...)` 分母是非 NULL 行数，不是 call_count）。
+- **为什么留**：暴露 `ttft_sample_count` 内部字段到前端 wire type 不优雅；本地 SQLite 多一个 query <1ms，无感知。
+- **改的话要做什么**：扩 LocalModelUsageRow 加 `ttft_sample_count: u64`；删 totals SQL；Rust 端 fold `Σ(sum_ttft)/Σ(sample_count)`。或保持现状用 CTE 合并 trend + totals。
+- **影响面**：messages 表 > 10 万行后能省 ~33% 查询时间，普通用户无感。
+- **触发时机建议**：用户反馈 dashboard 慢 / messages 表膨胀到百万级时。
+
+---
+
+### F-037 LocalModelsSection 运行中模型倒计时仅在 refresh 时更新
+
+- **来源**：2026-05-14 `feat/dashboard-local-models` `/simplify` review（efficiency agent）
+- **现象**：[`LocalModelsSection.tsx`](../../src/components/dashboard/LocalModelsSection.tsx) `formatExpiresIn(m.expiresAt)` 在 render 时算 "X 分钟后卸载"，render 之间不变。autoRefresh=60s 时倒计时只在每次 refresh 跳变；autoRefresh=off 时数值不动直到用户手动刷新。
+- **为什么留**：autoRefresh 已经覆盖大部分场景，倒计时漂移 ≤ 60s 用户感知低；加 setInterval 强制 re-render 会和 React.memo 优化打架。
+- **改的话要做什么**：抽 `<RelativeTimeCountdown expiresAt=... />` 小组件，内部 `useState + useEffect` 30s setInterval 强制 re-render，limited blast radius。
+- **影响面**：UX 微瑕，无 bug。
+- **触发时机建议**：用户反馈倒计时不准时再做。

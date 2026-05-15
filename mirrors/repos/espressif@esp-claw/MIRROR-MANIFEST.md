@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `espressif/esp-claw` — 26 default patterns, 0 followed patterns, 12 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,18 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`application/edge_agent/main/skills/light_switch/SKILL.md`](application/edge_agent/main/skills/light_switch/SKILL.md) |
-| 2 | ✓ | [`application/edge_agent/main/skills/lua_demo/SKILL.md`](application/edge_agent/main/skills/lua_demo/SKILL.md) |
-| 3 | ✓ | [`application/edge_agent/main/skills/weather_search/SKILL.md`](application/edge_agent/main/skills/weather_search/SKILL.md) |
+| 1 | ✓ | [`application/edge_agent/fatfs_image/skills/light_switch/SKILL.md`](application/edge_agent/fatfs_image/skills/light_switch/SKILL.md) |
+| 2 | ✓ | [`application/edge_agent/fatfs_image/skills/lua_demo/SKILL.md`](application/edge_agent/fatfs_image/skills/lua_demo/SKILL.md) |
+| 3 | ✓ | [`application/edge_agent/fatfs_image/skills/weather_search/SKILL.md`](application/edge_agent/fatfs_image/skills/weather_search/SKILL.md) |
 | 4 | ✓ | [`components/claw_capabilities/cap_im_platform/skills/cap_im_platform/SKILL.md`](components/claw_capabilities/cap_im_platform/skills/cap_im_platform/SKILL.md) |
 | 5 | ✓ | [`components/claw_capabilities/cap_llm_inspect/skills/cap_llm_inspect_image/SKILL.md`](components/claw_capabilities/cap_llm_inspect/skills/cap_llm_inspect_image/SKILL.md) |
-| 6 | ✓ | [`components/claw_capabilities/cap_lua/skills/cap_lua/SKILL.md`](components/claw_capabilities/cap_lua/skills/cap_lua/SKILL.md) |
-| 7 | ✓ | [`components/claw_capabilities/cap_router_mgr/skills/cap_router_mgr/SKILL.md`](components/claw_capabilities/cap_router_mgr/skills/cap_router_mgr/SKILL.md) |
-| 8 | ✓ | [`components/claw_capabilities/cap_scheduler/skills/cap_scheduler/SKILL.md`](components/claw_capabilities/cap_scheduler/skills/cap_scheduler/SKILL.md) |
-| 9 | ✓ | [`components/claw_capabilities/cap_time/skills/cap_time/SKILL.md`](components/claw_capabilities/cap_time/skills/cap_time/SKILL.md) |
-| 10 | ✓ | [`components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md`](components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md) |
-| 11 | ✓ | [`components/claw_modules/claw_memory/skills/memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/memory_ops/SKILL.md) |
-| 12 | ✓ | [`components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md) |
+| 6 | ✓ | [`components/claw_capabilities/cap_router_mgr/skills/cap_router_mgr/SKILL.md`](components/claw_capabilities/cap_router_mgr/skills/cap_router_mgr/SKILL.md) |
+| 7 | ✓ | [`components/claw_capabilities/cap_scheduler/skills/cap_scheduler/SKILL.md`](components/claw_capabilities/cap_scheduler/skills/cap_scheduler/SKILL.md) |
+| 8 | ✓ | [`components/claw_capabilities/cap_time/skills/cap_time/SKILL.md`](components/claw_capabilities/cap_time/skills/cap_time/SKILL.md) |
+| 9 | ✓ | [`components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md`](components/claw_capabilities/cap_web_search/skills/cap_web_search/SKILL.md) |
+| 10 | ✓ | [`components/claw_modules/claw_memory/skills/memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/memory_ops/SKILL.md) |
+| 11 | ✓ | [`components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md`](components/claw_modules/claw_memory/skills/profile_memory_ops/SKILL.md) |
+| 12 | ✓ | [`components/common/skill_builder/skills/skill_creator/SKILL.md`](components/common/skill_builder/skills/skill_creator/SKILL.md) |
+| 13 | ✓ | [`components/common/skill_builder/skills/skills_lab_downloader/SKILL.md`](components/common/skill_builder/skills/skills_lab_downloader/SKILL.md) |
+| 14 | ✓ | [`components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md`](components/lua_modules/lua_module_camera/skills/take_picture/SKILL.md) |
+| 15 | ✓ | [`components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md`](components/lua_modules/lua_module_http_server/skills/http_server_lua_demo/SKILL.md) |
 
 ---
 

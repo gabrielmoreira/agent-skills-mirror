@@ -8,7 +8,7 @@ Detect the current market regime using neural-trader's regime detection engine.
 
 Steps:
 1. Ensure neural-trader is available:
-   `npm ls neural-trader 2>/dev/null || npm install neural-trader`
+   `npm ls neural-trader 2>/dev/null || npm install --ignore-scripts neural-trader`
 2. Run regime detection:
    ```bash
    npx neural-trader --regime-detect --symbol TICKER

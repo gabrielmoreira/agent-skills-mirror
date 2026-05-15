@@ -1,9 +1,9 @@
 ---
 name: write
-description: "Strips AI writing patterns and rewrites prose to sound natural in Chinese or English. Only activates on explicit writing or editing requests. Not for code comments, commit messages, or inline docs."
+description: "Strips AI writing patterns and rewrites prose to sound natural in Chinese or English, including artifact-grounded release, launch, and social copy. Not for code comments, commit messages, or inline docs."
 when_to_use: "帮我写, 改稿, 润色, 去AI味, 写一段, 审稿, 文档review, check this document, 推特, twitter, X推文, tweet, social post, 连贯性, 段落连贯, draft, edit text, proofread, sound natural, polish, rewrite"
 metadata:
-  version: "3.20.0"
+  version: "3.24.0"
 ---
 
 # Write: Cut the AI Taste
@@ -38,6 +38,7 @@ For `/write`, durable preferences can set brevity, tone, and social-post shape. 
 
 - **Meaning first, style second.** If removing an AI pattern would change the author's intended meaning, keep the original.
 - **No silent restructuring.** Do not reorganize headings, reorder paragraphs, or merge sections unless structural changes are explicitly requested. Edit in place.
+- **Artifact-grounded claims.** For launch copy, release notes, social posts, product pages, and public replies, ground factual claims in real source material: current app behavior, screenshots, product page, release page, changelog, issue/PR, or user-provided draft. Do not turn concrete product evidence into generic marketing language.
 - **Stop after output.** Deliver the rewritten text. Do not append a list of changes, a justification, or a closer.
 
 ## Bilingual Review Mode
@@ -73,6 +74,7 @@ Before drafting, gather style references:
 2. Run `gh release view --json body -R <owner>/<repo>` to read the most recent release as a style, length, and density reference.
 3. If the user mentions comparing with a sibling project's release style, ask for the `owner/repo` to fetch it: `gh release view --json body -R <owner>/<sibling>`.
 4. Match the reference release's item count, sentence length, and tone. Do not invent a new format.
+5. Keep each release-note item to one sentence unless the reference project clearly does otherwise. Do not add emoji to release prose unless the target surface is explicitly a reaction or celebratory social surface.
 
 ## Document Review Mode
 
@@ -121,6 +123,8 @@ For non-Tang projects or English posts, apply the same structure (community lead
 | Appended a "changes made" list after the rewrite | Output is the edited text only. No changelog, no commentary. |
 | Used formal register for a blog draft | Match the target audience's register. Blog is conversational, not academic. |
 | Applied Chinese/English spacing rules to a pure-English text | Bilingual spacing rules (半角/全角) only apply when the text mixes Chinese and English |
+| Polished the user's voice into generic launch copy | Preserve the author's cadence and stance. Use real product artifacts to sharpen facts, not to replace the voice. |
+| Drafted release or social copy from memory | Read the current release page, changelog, issue/PR, product page, screenshot, or supplied source before making factual claims. |
 
 ## Output
 

@@ -6,7 +6,7 @@ type: reference
 
 # Evolution Memory
 
-This directory stores controlled evolution records for the SEO/GEO skills library. It supports `/seo:evolve-skill` and the protocol in `references/evolution-protocol.md`.
+This directory stores controlled evolution records for the SEO/GEO skills library. It supports `/aaron:evolve` and the protocol in `references/evolution-protocol.md`.
 
 ## Purpose
 
@@ -37,7 +37,7 @@ Each file can contain multiple `EvolutionEvent` entries. Keep raw logs, screensh
 ## Ownership
 
 - `memory-management` owns lifecycle, archival, and promotion behavior.
-- `/seo:evolve-skill` may produce an `EvolutionEvent` draft.
+- `/aaron:evolve` may produce an `EvolutionEvent` draft.
 - Maintainers approve or reject events.
 - Candidate events must not be treated as `memory/decisions.md` entries.
 
@@ -95,8 +95,8 @@ risk:
   blast_radius: single_skill | category | protocol_layer | release_surface
 validation_plan:
   required:
-    - "/seo:contract-lint --skill <name>"
-    - "/seo:validate-library --skill <name>"
+    - "/aaron:guard --contracts --skill <name>"
+    - "/aaron:guard --release --skill <name>"
   eval_cases: []
 validation_results:
   status: not_run | passed | failed | mixed

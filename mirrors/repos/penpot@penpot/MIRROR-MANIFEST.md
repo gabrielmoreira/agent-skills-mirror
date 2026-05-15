@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `penpot/penpot` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
+Mirror of `penpot/penpot` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `penpot/penpot` — 26 default patterns, 0 followed patterns, 95 file(
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 95 |
+| Files         | 96 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -131,29 +131,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`mcp/packages/server/src/tools/ImportImageTool.ts`](mcp/packages/server/src/tools/ImportImageTool.ts) |
 | 71 | ✓ | [`mcp/packages/server/src/tools/ImportPenpotFileTool.ts`](mcp/packages/server/src/tools/ImportPenpotFileTool.ts) |
 | 72 | ✓ | [`mcp/packages/server/src/tools/PenpotApiInfoTool.ts`](mcp/packages/server/src/tools/PenpotApiInfoTool.ts) |
-| 73 | ✓ | [`mcp/packages/server/src/types/nrepl-client.d.ts`](mcp/packages/server/src/types/nrepl-client.d.ts) |
-| 74 | ✓ | [`mcp/packages/server/src/utils/FileUtils.ts`](mcp/packages/server/src/utils/FileUtils.ts) |
-| 75 | ✓ | [`mcp/packages/server/tsconfig.json`](mcp/packages/server/tsconfig.json) |
-| 76 | ✓ | [`mcp/pnpm-lock.yaml`](mcp/pnpm-lock.yaml) |
-| 77 | ✓ | [`mcp/pnpm-workspace.yaml`](mcp/pnpm-workspace.yaml) |
-| 78 | ✓ | [`mcp/README.md`](mcp/README.md) |
-| 79 | ✓ | [`mcp/resources/architecture.png`](mcp/resources/architecture.png) |
-| 80 | ✓ | [`mcp/scripts/build`](mcp/scripts/build) |
-| 81 | ✓ | [`mcp/scripts/build-types`](mcp/scripts/build-types) |
-| 82 | ✓ | [`mcp/scripts/check`](mcp/scripts/check) |
-| 83 | ✓ | [`mcp/scripts/fmt`](mcp/scripts/fmt) |
-| 84 | ✓ | [`mcp/scripts/pack`](mcp/scripts/pack) |
-| 85 | ✓ | [`mcp/scripts/set-version`](mcp/scripts/set-version) |
-| 86 | ✓ | [`mcp/scripts/setup`](mcp/scripts/setup) |
-| 87 | ✓ | [`mcp/scripts/start-mcp-devenv`](mcp/scripts/start-mcp-devenv) |
-| 88 | ✓ | [`mcp/types-generator/.gitattributes`](mcp/types-generator/.gitattributes) |
-| 89 | ✓ | [`mcp/types-generator/.gitignore`](mcp/types-generator/.gitignore) |
-| 90 | ✓ | [`mcp/types-generator/build`](mcp/types-generator/build) |
-| 91 | ✓ | [`mcp/types-generator/pixi.lock`](mcp/types-generator/pixi.lock) |
-| 92 | ✓ | [`mcp/types-generator/pixi.toml`](mcp/types-generator/pixi.toml) |
-| 93 | ✓ | [`mcp/types-generator/prepare_api_docs.py`](mcp/types-generator/prepare_api_docs.py) |
-| 94 | ✓ | [`mcp/types-generator/README.md`](mcp/types-generator/README.md) |
-| 95 | ✓ | [`render-wasm/AGENTS.md`](render-wasm/AGENTS.md) |
+| 73 | ✓ | [`mcp/packages/server/src/tools/ReadTaigaIssueTool.ts`](mcp/packages/server/src/tools/ReadTaigaIssueTool.ts) |
+| 74 | ✓ | [`mcp/packages/server/src/types/nrepl-client.d.ts`](mcp/packages/server/src/types/nrepl-client.d.ts) |
+| 75 | ✓ | [`mcp/packages/server/src/utils/FileUtils.ts`](mcp/packages/server/src/utils/FileUtils.ts) |
+| 76 | ✓ | [`mcp/packages/server/tsconfig.json`](mcp/packages/server/tsconfig.json) |
+| 77 | ✓ | [`mcp/pnpm-lock.yaml`](mcp/pnpm-lock.yaml) |
+| 78 | ✓ | [`mcp/pnpm-workspace.yaml`](mcp/pnpm-workspace.yaml) |
+| 79 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 80 | ✓ | [`mcp/resources/architecture.png`](mcp/resources/architecture.png) |
+| 81 | ✓ | [`mcp/scripts/build`](mcp/scripts/build) |
+| 82 | ✓ | [`mcp/scripts/build-types`](mcp/scripts/build-types) |
+| 83 | ✓ | [`mcp/scripts/check`](mcp/scripts/check) |
+| 84 | ✓ | [`mcp/scripts/fmt`](mcp/scripts/fmt) |
+| 85 | ✓ | [`mcp/scripts/pack`](mcp/scripts/pack) |
+| 86 | ✓ | [`mcp/scripts/set-version`](mcp/scripts/set-version) |
+| 87 | ✓ | [`mcp/scripts/setup`](mcp/scripts/setup) |
+| 88 | ✓ | [`mcp/scripts/start-mcp-devenv`](mcp/scripts/start-mcp-devenv) |
+| 89 | ✓ | [`mcp/types-generator/.gitattributes`](mcp/types-generator/.gitattributes) |
+| 90 | ✓ | [`mcp/types-generator/.gitignore`](mcp/types-generator/.gitignore) |
+| 91 | ✓ | [`mcp/types-generator/build`](mcp/types-generator/build) |
+| 92 | ✓ | [`mcp/types-generator/pixi.lock`](mcp/types-generator/pixi.lock) |
+| 93 | ✓ | [`mcp/types-generator/pixi.toml`](mcp/types-generator/pixi.toml) |
+| 94 | ✓ | [`mcp/types-generator/prepare_api_docs.py`](mcp/types-generator/prepare_api_docs.py) |
+| 95 | ✓ | [`mcp/types-generator/README.md`](mcp/types-generator/README.md) |
+| 96 | ✓ | [`render-wasm/AGENTS.md`](render-wasm/AGENTS.md) |
 
 ---
 

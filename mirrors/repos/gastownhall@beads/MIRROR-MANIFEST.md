@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gastownhall/beads` — 26 default patterns, 20 followed patterns, 76 file(s) materialized.
+Mirror of `gastownhall/beads` — 26 default patterns, 21 followed patterns, 77 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `gastownhall/beads` — 26 default patterns, 20 followed patterns, 76 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 20 |
-| Files         | 76 |
+| Followed pats | 21 |
+| Files         | 77 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Mirror of `gastownhall/beads` — 26 default patterns, 20 followed patterns, 76 
 - `docs/ANTIVIRUS.md`
 - `docs/COMMUNITY_TOOLS.md`
 - `docs/SYNC_CONCEPTS.md`
+- `docs/COPILOT_CLI_INTEGRATION.md`
 - `docs/COPILOT_INTEGRATION.md`
 - `ARTICLES.md`
 - `docs/TROUBLESHOOTING.md`
@@ -140,20 +141,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
 | 61 | → | [`docs/ANTIVIRUS.md`](docs/ANTIVIRUS.md) |
 | 62 | → | [`docs/COMMUNITY_TOOLS.md`](docs/COMMUNITY_TOOLS.md) |
-| 63 | → | [`docs/COPILOT_INTEGRATION.md`](docs/COPILOT_INTEGRATION.md) |
-| 64 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 65 | → | [`docs/ICU-POLICY.md`](docs/ICU-POLICY.md) |
-| 66 | → | [`docs/INSTALLING.md`](docs/INSTALLING.md) |
-| 67 | → | [`docs/LINTING.md`](docs/LINTING.md) |
-| 68 | → | [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) |
-| 69 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
-| 70 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
-| 71 | → | [`docs/SETUP.md`](docs/SETUP.md) |
-| 72 | → | [`docs/SYNC_CONCEPTS.md`](docs/SYNC_CONCEPTS.md) |
-| 73 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 74 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
-| 75 | → | [`README.md`](README.md) |
-| 76 | → | [`scripts/README.md`](scripts/README.md) |
+| 63 | → | [`docs/COPILOT_CLI_INTEGRATION.md`](docs/COPILOT_CLI_INTEGRATION.md) |
+| 64 | → | [`docs/COPILOT_INTEGRATION.md`](docs/COPILOT_INTEGRATION.md) |
+| 65 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 66 | → | [`docs/ICU-POLICY.md`](docs/ICU-POLICY.md) |
+| 67 | → | [`docs/INSTALLING.md`](docs/INSTALLING.md) |
+| 68 | → | [`docs/LINTING.md`](docs/LINTING.md) |
+| 69 | → | [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) |
+| 70 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
+| 71 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
+| 72 | → | [`docs/SETUP.md`](docs/SETUP.md) |
+| 73 | → | [`docs/SYNC_CONCEPTS.md`](docs/SYNC_CONCEPTS.md) |
+| 74 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 75 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
+| 76 | → | [`README.md`](README.md) |
+| 77 | → | [`scripts/README.md`](scripts/README.md) |
 
 ---
 

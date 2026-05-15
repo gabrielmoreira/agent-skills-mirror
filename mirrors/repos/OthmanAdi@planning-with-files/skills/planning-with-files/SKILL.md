@@ -22,8 +22,13 @@ hooks:
     - hooks:
         - type: command
           command: "SKILL_PS1=\"${CLAUDE_SKILL_DIR}/scripts/check-complete.ps1\"; SKILL_SH=\"${CLAUDE_SKILL_DIR}/scripts/check-complete.sh\"; KNOWN_PS1=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.ps1\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.ps1\" 2>/dev/null | head -1); KNOWN_SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.sh\" 2>/dev/null | head -1); TARGET_PS1=\"${SKILL_PS1:-$KNOWN_PS1}\"; TARGET_SH=\"${SKILL_SH:-$KNOWN_SH}\"; if [ -n \"$TARGET_PS1\" ] && [ -f \"$TARGET_PS1\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$TARGET_PS1\" 2>/dev/null; elif [ -n \"$TARGET_SH\" ] && [ -f \"$TARGET_SH\" ]; then sh \"$TARGET_SH\" 2>/dev/null; fi"
+  PreCompact:
+    - matcher: "*"
+      hooks:
+        - type: command
+          command: "if [ -f task_plan.md ]; then echo '[planning-with-files] PreCompact: context compaction is about to occur.'; echo 'Before compaction completes: ensure progress.md captures recent actions and task_plan.md status reflects current phase.'; echo 'task_plan.md, findings.md, progress.md remain on disk and will be re-read after compaction.'; ATTEST=''; if [ -f .planning/.active_plan ]; then AP=$(tr -d '[:space:]' < .planning/.active_plan 2>/dev/null); if [ -n \"$AP\" ] && [ -f \".planning/$AP/.attestation\" ]; then ATTEST=$(tr -d '[:space:]' < \".planning/$AP/.attestation\" 2>/dev/null); fi; fi; if [ -z \"$ATTEST\" ] && [ -f .plan-attestation ]; then ATTEST=$(tr -d '[:space:]' < .plan-attestation 2>/dev/null); fi; if [ -n \"$ATTEST\" ]; then echo \"Plan-SHA256 at compaction: $ATTEST\"; fi; fi; exit 0"
 metadata:
-  version: "2.37.0"
+  version: "2.38.0"
 ---
 
 # Planning with Files
@@ -236,7 +241,58 @@ export PLAN_ID=2026-01-10-backend-refactor
 ```
 
 Each session reads from its own isolated plan directory. Hooks resolve the correct plan automatically.
-- `scripts/session-catchup.py` — Recover context from previous session (v2.2.0)
+- `scripts/session-catchup.py` — Recover context from previous session (v2.2.0). For OpenCode (v2.38.0+), reads the new SQLite store at `${XDG_DATA_HOME:-~/.local/share}/opencode/opencode.db` instead of the legacy JSON tree.
+
+## Claude Code Turn-Loop Integration (v2.38.0+)
+
+Claude Code shipped three new turn-loop primitives in May 2026: `/loop` (v2.1.72), `/goal` (v2.1.139), and the `PreCompact` hook event. v2.38.0 wires the planning workflow into all three.
+
+### PreCompact hook (auto)
+
+The skill registers a `PreCompact` hook with matcher `"*"`. It fires on both `/compact` (manual) and autoCompact (context-full). When `task_plan.md` is present, the hook:
+
+- Reminds the agent to flush in-context progress to `progress.md` before compaction completes.
+- Prints `Plan-SHA256` if an attestation is set, so the post-compaction agent can verify the plan is still the one you approved.
+- Stays silent when no plan exists. Exit code 0 always — never blocks compaction.
+
+Compaction still proceeds. The protection model is "the plan is on disk, the plan will be re-read after compaction" — not "the plan survives compaction unchanged in context."
+
+### `/plan-goal` slash command
+
+Composes with Claude Code's `/goal`. Derives a goal condition from the active plan and forwards it to `/goal`, so the agent keeps working until the plan file actually reports complete.
+
+```
+/plan-goal                                # default: "all phases report Status: complete"
+/plan-goal until all tests pass           # appends user clause to default
+```
+
+`/plan-goal` does not replace `/goal`. `/goal "anything"` still works.
+
+### `/plan-loop` slash command
+
+Composes with Claude Code's `/loop`. Default 10-minute tick re-reads the planning files, runs `check-complete`, and writes a `progress.md` entry if nothing changed since the last tick.
+
+```
+/plan-loop                                # default 10m cadence, default tick prompt
+/plan-loop 5m                             # override interval
+/plan-loop 15m custom prompt              # override interval + prompt
+```
+
+For a "babysit until done" workflow, combine `/plan-loop` (cadence) with `/plan-goal` (termination criterion).
+
+### `loop.md` template
+
+Claude Code's bare `/loop` reads `.claude/loop.md` (project) or `~/.claude/loop.md` (user). v2.38 ships a planning-aware template at `templates/loop.md`. Install once:
+
+```bash
+# user-wide
+cp ${CLAUDE_PLUGIN_ROOT}/templates/loop.md ~/.claude/loop.md
+
+# project-specific
+cp ${CLAUDE_PLUGIN_ROOT}/templates/loop.md .claude/loop.md
+```
+
+After install, bare `/loop <interval>` runs the planning-aware tick.
 
 ## Advanced Topics
 

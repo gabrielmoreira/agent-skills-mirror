@@ -7,7 +7,7 @@ Thanks for your interest in contributing! This project is a collection of produc
 1. Create a directory under `skills/` with a kebab-case name
 2. Add a `SKILL.md` following the format in [docs/skill-anatomy.md](docs/skill-anatomy.md)
 3. Include YAML frontmatter with `name` and `description` fields
-4. Ensure the `description` briefly says what the skill does (third person), then includes `Use when` trigger conditions
+4. Ensure the `description` starts with what the skill does (third person), then includes one or more `Use when` trigger conditions
 
 ### Skill Quality Bar
 
@@ -34,11 +34,14 @@ New skills should generally follow the standard anatomy:
 - **Red Flags** — Warning signs that the skill is being applied incorrectly
 - **Verification** — How to confirm the skill was applied correctly
 
+The frontmatter fields above are required. The section anatomy is a recommended pattern: equivalent headings such as `How It Works`, `Workflow`, or `Core Process` are fine when they preserve the same intent and keep the skill easy to follow.
+
 ### What Not to Do
 
 - Don't duplicate content between skills — reference other skills instead
 - Don't add skills that are vague advice instead of actionable processes
 - Don't create supporting files unless content exceeds 100 lines
+- Don't create an empty `scripts/` directory just to match another skill — add `scripts/` only when the skill includes runnable helpers
 - Don't put reference material inside skill directories — use `references/` instead
 
 ## Modifying Existing Skills

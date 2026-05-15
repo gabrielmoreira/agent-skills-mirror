@@ -54,6 +54,7 @@ Copilot CLI 是唯一在本地启动时不会自动同步 hooks 的受支持 age
 - `docs/project/agent-runtime-architecture.md`：集成方式、数据流、多 agent、permission bubble、opencode、终端聚焦、自动同步
 - `docs/project/project-architecture.md`：更完整的模块边界和启动/运行时分层
 - `docs/project/theme-state-ui.md`：状态机、主题系统、settings、mini mode、素材规则、平台限制、待落地 UI 决策
+- `docs/project/release-process.md`：发版 checklist、release note 核对、tag 触发 GitHub 打包和资产确认
 - `docs/guides/copilot-setup.md`：Copilot CLI 手动 hook 配置
 - `docs/guides/state-mapping.md`：状态 → 动画权威表
 - `docs/guides/guide-theme-creation.md`：主题作者指南
@@ -71,7 +72,7 @@ Copilot CLI 是唯一在本地启动时不会自动同步 hooks 的受支持 age
 - `src/agent-gate.js` 控制各 agent 的启用状态、权限气泡开关和 wait-for-input notification 子开关
 - 设置系统主链路是 `src/prefs.js` → `src/settings-controller.js` → `src/settings-store.js`，写入 side effects 收敛在 `src/settings-actions.js`
 - 启动时还会尝试自动安装 VS Code / Cursor terminal-focus extension，并初始化 updater
-- 远程场景依赖 `scripts/remote-deploy.sh` 和 SSH 反向端口转发
+- 远程场景依赖 Settings Remote SSH runtime / deploy 路径、`scripts/remote-deploy.sh` CLI 备选和 SSH 反向端口转发
 
 ## Core Files
 
@@ -102,6 +103,12 @@ Copilot CLI 是唯一在本地启动时不会自动同步 hooks 的受支持 age
 | `src/updater.js` | Git 模式 / `electron-updater` 双路径更新逻辑 |
 | `src/focus.js` | 终端聚焦 |
 | `src/hit-renderer.js` + `src/hit-geometry.js` | 输入窗口命中、拖拽、连击反应 |
+| `src/remote-ssh-runtime.js` | Remote SSH 连接状态机、SSH / health probe、重试、Codex monitor 生命周期 |
+| `src/remote-ssh-deploy.js` | Settings 里的 Remote SSH Deploy / Repair Hooks 流程，与 CLI 脚本保持等价 |
+| `src/remote-ssh-node.js` | 远端 Node 探测、缓存、验证和远端 `node -e` 命令构造 |
+| `src/remote-ssh-profile.js` | Remote SSH profile schema、校验、默认值和持久化规范化 |
+| `src/remote-ssh-ipc.js` | Remote SSH runtime / deploy 的 IPC handler 和状态 / 进度广播 |
+| `src/remote-ssh-quote.js` | Remote SSH 终端命令与跨平台 shell quoting helper |
 | `agents/registry.js` | agent 注册表 |
 | `agents/codex-log-monitor.js` | Codex JSONL fallback 轮询 |
 | `agents/gemini-log-monitor.js` | legacy Gemini session JSON 轮询器；当前 Gemini hook-only 路径不启动 |
@@ -123,6 +130,7 @@ Copilot CLI 是唯一在本地启动时不会自动同步 hooks 的受支持 age
 - Pi 通过 `~/.pi/agent/extensions/clawd-on-desk` 的 global extension 推送状态；权限气泡第一版只覆盖 `bash` / `write` / `edit`，不可用时必须回退到 Pi terminal confirmation
 - OpenClaw 通过 `~/.openclaw/openclaw.json` plugin 路径做 state-only 集成；Phase 1 不做 permission bubble / terminal focus，主要支持本地 `openclaw tui --local`
 - HTTP 服务端口范围固定为 `127.0.0.1:23333-23337`；运行时端口写入 `~/.clawd/runtime.json`
+- Remote SSH 的远端 Node 探测要求 Node >= 14；`scripts/remote-deploy.sh` 与 `src/remote-ssh-node.js` 的 probe 顺序、候选路径、版本判断和输出字段必须保持行为对齐
 - 注册 Claude Code hook 时只能追加，不能覆盖用户已有 hook 数组
 - Copilot CLI 是唯一在本地启动时不自动同步的 agent；本地需手动配置 `~/.copilot/hooks/hooks.json`，远程 SSH 部署 (`scripts/remote-deploy.sh` 调用 `hooks/copilot-install.js --remote`) 自动写入
 - 禁用 agent 不应卸载 hooks / plugins / extensions：只停止对应 monitor、清理 session / bubble、让 HTTP hook 入口快速 fallback；重新启用才触发一次 integration sync
@@ -137,7 +145,7 @@ Copilot CLI 是唯一在本地启动时不会自动同步 hooks 的受支持 age
 ## Testing
 
 - 自动化测试使用 Node 内置 test runner：`npm test`
-- 当前 `test/*.test.js` 已覆盖 hooks/installers、agent registry、server state/permission 路由、state、theme-loader / overrides、settings、menu、tick、Dashboard、session HUD、session alias、update bubble、updater、remote-deploy、work-area / visible margins 等纯逻辑模块
+- 当前 `test/*.test.js` 已覆盖 hooks/installers、agent registry、server state/permission 路由、state、theme-loader / overrides、settings、menu、tick、Dashboard、session HUD、session alias、update bubble、updater、remote-deploy、remote-ssh runtime / deploy / profile / node / IPC、work-area / visible margins 等纯逻辑模块
 - 当前开发环境是 Windows-first；macOS 特定路径无法在这里手动 QA，改到 mac 逻辑时要用 code-review-first 的方式说明行为变化和残余风险
 - 涉及 Claude Code hook payload 的改动（尤其 `/permission`、`permission_suggestions`、`updatedPermissions`、elicitation 输入）至少用一次真实 Claude Code 验证；`curl` 自编 payload 不够
 - 透明窗口、托盘、真实拖拽、跨平台前台聚焦等 Electron 行为仍以手动验证为主

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 63,
+  "skill_count": 64,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -92,7 +92,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
+      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [],
@@ -385,7 +385,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/opentargets.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -419,7 +419,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-variant-reporter/clinical_variant_reporter.py --demo",
+      "demo_command": "python skills/clinical-variant-reporter/acmg_engine.py --demo",
       "dependencies": [],
       "tags": [
         "acmg",
@@ -645,6 +645,39 @@
       "chaining_partners": [
         "pharmgx-reporter"
       ]
+    },
+    {
+      "name": "eqtl-catalogue-region-fetch",
+      "cli_alias": null,
+      "description": "Fetch a region of cis-eQTL summary statistics from EBI eQTL Catalogue v7+\nvia tabix-on-FTP. Use when an agent needs eQTL beta / SE / p-value for\nevery variant in a window around a gene's TSS for one specific dataset\n(study × tissue × quantification method). Input: dataset_id, chromosome,\nstart, end, optional molecular_trait_id. Output: harmonised TSV slice.\n",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/eqtl-catalogue-region-fetch/eqtl_catalogue_region_fetch.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "pysam>=0.22",
+        "pandas>=2.0",
+        "requests>=2.28"
+      ],
+      "tags": [
+        "eqtl",
+        "eqtl-catalogue",
+        "region-fetch",
+        "tabix",
+        "summary-statistics",
+        "cis-eqtl"
+      ],
+      "trigger_keywords": [
+        "eqtl region fetch",
+        "eqtl catalogue tabix",
+        "eqtl sumstats slice",
+        "cis-eqtl region pull",
+        "GTEx eqtl region"
+      ],
+      "chaining_partners": []
     },
     {
       "name": "equity-scorer",
@@ -960,7 +993,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/illumina-bridge/illumina_providers.py --demo",
+      "demo_command": "python skills/illumina-bridge/illumina_bridge.py --demo",
       "dependencies": [],
       "tags": [
         "illumina",
@@ -1193,6 +1226,51 @@
       "chaining_partners": []
     },
     {
+      "name": "nfcore-scrnaseq-wrapper",
+      "cli_alias": "scrnaseq-pipeline",
+      "description": "Wrapper skill for running nf-core/scrnaseq-style single-cell RNA-seq preprocessing from FASTQ with strict preflight, reproducibility outputs, and downstream handoff to ClawBio scRNA skills.",
+      "version": "0.1.0",
+      "status": "mvp",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python clawbio.py run scrnaseq-pipeline --demo",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "tags": [
+        "scrna",
+        "single-cell",
+        "nextflow",
+        "nf-core",
+        "fastq",
+        "10x",
+        "h5ad",
+        "preprocessing"
+      ],
+      "trigger_keywords": [
+        "scrnaseq",
+        "nf-core scrnaseq",
+        "run scrnaseq from fastq",
+        "preprocess 10x fastqs",
+        "generate h5ad from single-cell fastq",
+        "single-cell preprocessing",
+        "nextflow scrna pipeline",
+        "10x chromium fastq pipeline",
+        "starsolo upstream processing",
+        "alevin-fry fastq to counts",
+        "run nextflow scrnaseq",
+        "upstream single-cell pipeline",
+        "fastq to h5ad single cell",
+        "10x genomics fastq pipeline"
+      ],
+      "chaining_partners": [
+        "scrna-orchestrator",
+        "scrna-embedding",
+        "bio-orchestrator"
+      ]
+    },
+    {
       "name": "nutrigx-advisor",
       "cli_alias": null,
       "description": "Personalised nutrition report from consumer genetic data (23andMe, AncestryDNA, VCF) — interrogates nutritionally-relevant SNPs and generates actionable dietary guidance, all computed locally.",
@@ -1201,7 +1279,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx-advisor/parse_input.py --demo",
+      "demo_command": "python skills/nutrigx-advisor/score_variants.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -1454,7 +1532,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/pubmed-summariser/pubmed_summariser.py --demo",
+      "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [

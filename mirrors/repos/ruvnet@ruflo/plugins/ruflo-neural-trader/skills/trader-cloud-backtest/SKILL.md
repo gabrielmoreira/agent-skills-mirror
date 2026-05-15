@@ -30,7 +30,7 @@ Prereq: `ANTHROPIC_API_KEY` (or `CLAUDE_API_KEY`) + Managed Agents beta access. 
      system: "You operate the `neural-trader` CLI in this container. Run exactly the commands asked, report the metrics, write requested artifacts, then stop.",
      networking: "unrestricted",                     // or "restricted" pinned to your data host
      packages: { npm: ["neural-trader"] },           // add apt:["build-essential"] ONLY if there's no prebuilt NAPI binary for the arch (neural-trader ships prebuilds → usually omit)
-     initScript: "npm install -g neural-trader >/dev/null 2>&1 || npx -y neural-trader --version >/dev/null 2>&1 || true"
+     initScript: "npm install -g --ignore-scripts neural-trader >/dev/null 2>&1 || npx -y neural-trader --version >/dev/null 2>&1 || true"
    })
    → { sessionId, agentId, environmentId }
    ```
@@ -74,7 +74,7 @@ Prereq: `ANTHROPIC_API_KEY` (or `CLAUDE_API_KEY`) + Managed Agents beta access. 
 ## Quick example
 
 ```
-managed_agent_create  { "name":"nt-cloud", "model":"claude-haiku-4-5-20251001", "packages":{"npm":["neural-trader"]}, "initScript":"npm install -g neural-trader >/dev/null 2>&1 || true" }
+managed_agent_create  { "name":"nt-cloud", "model":"claude-haiku-4-5-20251001", "packages":{"npm":["neural-trader"]}, "initScript":"npm install -g --ignore-scripts neural-trader >/dev/null 2>&1 || true" }
   → { sessionId:"sesn_…", environmentId:"env_…" }
 managed_agent_prompt   { "sessionId":"sesn_…", "message":"Run `npx neural-trader --backtest --strategy multi-indicator --symbol SPY --period 2020-2024 --walk-forward --mc-paths 1000`. Report Sharpe/Sortino/max-DD/win-rate/CVaR; write /tmp/equity.csv. Then stop.", "maxWaitMs":600000 }
   → { finished:true, status:"idle", assistantText:"<metrics>", toolUses:[{bash:"npx neural-trader --backtest …"}] }

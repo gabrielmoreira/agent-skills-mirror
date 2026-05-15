@@ -130,103 +130,27 @@ No date, no signature, no version number.
 
 ## 2. Roast version (毒舌版)
 
-The roast version mirrors the normal version's structure but inverts the tone. Generate only when `include_roast=true` (configured via EXTEND.md `default_version` or triggered by request keywords like 毒舌/roast/挑衅).
+Roast 版基于普通版的话题骨架和素材，用毒舌、尖锐、挑衅的风格重写。整体结构与普通版相同（统计区块、开头概览、群友画像、正文分类、结尾），但风格完全不同。痛点部分省略。仅当 `include_roast=true` 时生成。标题加 "毒舌版" 后缀。
 
-### 2.1 Structural parity
+风格要求：
+- 你是一位以尖锐和挑衅风格著称的专业评论员
+- 对每个群友的行为、言论进行犀利点评，不怕让人尴尬
+- 发言排行旁给每个人加一句毒舌备注（括号内）
+- 群友画像改为「不留情面版」，放大每个人的槽点和矛盾之处
+- 开头概览用更戏谑的口吻，突出荒诞和讽刺
+- 正文话题标题可以改得更损
+- 引用原话时配上辛辣点评
+- 结尾改为：本简报由一个没有感情的 AI 自动生成，如有冒犯，概不负责
 
-```
-[Title line — adds "毒舌版" suffix]
-[📊 Stats block — each leaderboard row gets a roast comment]
-[Opening summary — absurd recap, sarcastic]
-[群友画像 — 不留情面版]
-[Categorized body — louder, more brutal category titles]
-[Fixed footer — roast version]
-```
+注意：毒舌但不恶毒，调侃但不人身攻击。目标是让群友看了会笑，而不是生气。具体红线：
+- 只嘲讽群里的公开行为，不碰外貌、体重、健康、家庭、私人关系
+- 不用时间戳推断作息或时区（服务器时间不等于本地时间）
+- 不做医学/心理诊断类玩笑（「这位需要看医生」「典型 ADHD」）
+- 不揣测对方未主动公开的身份属性（性取向、宗教、政治立场）
+- 嘲讽观点本身，不嘲讽发言的权利（「这个观点错得离谱」可以，「连这都不懂还敢发言」不行）
+- 如果某人本期没有槽点（3+ 条但都很中性），给一句温和调侃即可，不要硬凑
 
-Pain-point section is **dropped** in the roast version.
-
-### 2.2 Title line
-
-Form: `{群名} 群聊精华 · {日期} · 毒舌版`
-
-Example: `相亲相爱一家人 群聊精华 · 2026-03-12 · 毒舌版`
-
-### 2.3 Statistics block (roast)
-
-- Same `📊 消息统计: 共 N 条消息` opener.
-- Leaderboard: each row gets a parenthetical roast comment.
-- Form: `{排名}. {昵称}: {消息数} 条 ({一句毒舌评语})`
-
-Example:
-
-```
-📊 消息统计: 共 387 条消息
-1. 蛙总: 92 条 (一个人撑起了空头的体面)
-2. 老王: 58 条 (主要功能是给蛙总当反例)
-3. 阿喵: 41 条 (发的链接比发的话还多)
-```
-
-### 2.4 Opening summary (roast)
-
-- 1-2 paragraphs, sarcastic recap tone.
-- Highlight the day's most ridiculous beat (a failed prediction, a heated argument over something trivial, a wild flex).
-- Reference 2-3 of the roast category titles in the prose.
-
-### 2.5 群友画像 (roast — 不留情面版)
-
-- Same per-user entry format as normal, but with the role tag dialed up.
-- Amplify quirks, contradictions, fail moments visible in the messages.
-- 2-5 bullets with `•`. Each bullet is a roastable observation backed by a direct quote.
-- Don't invent — every roast must trace back to something the person actually said in the batch (or in the loaded roast profile from prior batches).
-
-Example:
-
-```
-群友画像
-
-蛙总（做空美股钉子户，三周亏损不改其志）
-• 今天第 47 次预测 SPY 见顶，给出的理由是"我感觉"
-• 被老王翻出上周聊天记录后嘴硬：「上周的不算，那是市场不理性」
-• 收盘前突然安静，疑似刚看完账户
-```
-
-### 2.6 Categorized body (roast)
-
-- Same 3-6 category structure.
-- Titles can be louder, more brutal, mock-headline style.
-- Examples of acceptable roast titles:
-  - `蛙总做空翻车: 一个人对抗整个美股`
-  - `老王再次试图当人生导师, 群友集体打哈欠`
-  - `阿喵又分享了一篇没人读完的长文`
-- Bodies still preserve real quotes and traceability — sarcasm is in framing, not fabrication.
-
-### 2.7 Footer (roast)
-
-Fixed line, last in file:
-
-```
-本简报由一个没有感情的 AI 自动生成,如有冒犯,概不负责
-```
-
-### 2.8 Red lines (non-negotiable)
-
-These rules override style; violate them and the roast becomes harmful. Write the spicy version first, then audit against this list and rewrite anything that crosses a line.
-
-- **Mock public group behavior only.** Never appearance, weight, body, health, mental state, family, relationships (unless openly group-discussed at the person's own initiative), finances beyond what they publicly mention.
-- **调侃 ≠ 人身攻击。** Readers should laugh at the situation, not feel sorry for the target. If you can't think of a joke that doesn't read as cruel, drop the bullet.
-- **No timestamp-based sleep/timezone jokes.** Server time ≠ recipient's local time; also implies surveillance. Forbidden: `凌晨 3 点还在群里发言，怕是没睡好`, `这位是哪个时区的`, etc.
-- **No medical/psychological speculation.** Even joking diagnoses (`这位需要看医生`, `典型 ADHD`) are out.
-- **No outing.** Don't infer identity attributes the person hasn't volunteered (orientation, religion, politics beyond direct quotes).
-- **Roast the take, not the person's right to have a take.** `这个观点错得离谱` is fine. `连这都不懂还敢发言` is not.
-
-If a target hasn't said anything roastable in this batch (3+ messages but all neutral), give them a one-line affectionate ribbing and move on. Don't manufacture conflict.
-
-### 2.9 Writing order
-
-1. Draft the spicy version freely — don't self-censor mid-sentence.
-2. After the body is complete, do a separate audit pass against §2.8.
-3. Rewrite or delete any line that crosses a red line.
-4. Then read the whole thing once more for tone calibration: is it fun, or is it mean?
+**写作顺序：** 先放开写最狠的版本，写完再回头检查红线。不要边写边自我审查，那样只会写出温吞水。
 
 ---
 
@@ -345,5 +269,5 @@ Before writing the digest file, mentally walk through:
 6. Every quote uses 「」 and is traceable to a real message?
 7. Links inline and complete?
 8. No markdown bold/heading/link syntax leaked through?
-9. (Roast only) Every roast bullet would pass the §2.8 red-line audit?
+9. (Roast only) Every roast bullet would pass the §2 红线 audit?
 10. Footer line exact match?

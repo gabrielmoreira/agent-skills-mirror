@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="aigc-director-pics/banner.png" width="100%" />
+  <img src="video-claw-pics/banner.png" width="100%" />
 </p>
 
 <h2 align="center">
-  AIGC-Claw: AI 创意视频生成员工
+  Video-Claw: AI 创意视频生成员工
 </h2>
 
 <p align="center">
@@ -12,14 +12,14 @@
 
 <h4 align="center">
   <img src="https://img.shields.io/badge/Version-1.0.0-blue.svg" alt="Version">
-  <a href="https://github.com/HITsz-TMG/AIGC-Claw/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/HITsz-TMG/AIGC-Claw?style=flat-square" alt="License">
+  <a href="https://github.com/HITsz-TMG/Video-Claw/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/HITsz-TMG/Video-Claw?style=flat-square" alt="License">
   </a>
-  <a href="https://github.com/HITsz-TMG/AIGC-Claw/stargazers">
-    <img src="https://img.shields.io/github/stars/HITsz-TMG/AIGC-Claw?style=flat-square&logo=github" alt="Stars">
+  <a href="https://github.com/HITsz-TMG/Video-Claw/stargazers">
+    <img src="https://img.shields.io/github/stars/HITsz-TMG/Video-Claw?style=flat-square&logo=github" alt="Stars">
   </a>
-  <a href="https://github.com/HITsz-TMG/AIGC-Claw/fork">
-    <img src="https://img.shields.io/github/forks/HITsz-TMG/AIGC-Claw?style=flat-square&logo=github" alt="Forks">
+  <a href="https://github.com/HITsz-TMG/Video-Claw/fork">
+    <img src="https://img.shields.io/github/forks/HITsz-TMG/Video-Claw?style=flat-square&logo=github" alt="Forks">
   </a>
   <img src="https://img.shields.io/badge/Python-3.9+-purple.svg" alt="Python">
   <a href="#openclaw-integration">
@@ -33,9 +33,9 @@
 
 <div align="center">
 
-📺 [**Bilibili**](https://space.bilibili.com/2031891503?spm_id_from=333.1007.0.0)  ▶️ [**YouTube**](https://www.youtube.com/@imryanxu)  📖 [**集成指南**](#方式三openclaw-自动配置)   🦀 [**ClawHub**](https://clawhub.ai/hit-cxf/aigc-director) 
+📺 [**Bilibili**](https://space.bilibili.com/2031891503?spm_id_from=333.1007.0.0)  ▶️ [**YouTube**](https://www.youtube.com/@imryanxu)  📖 [**集成指南**](#方式三openclaw-自动配置)   🦀 [**ClawHub**](https://clawhub.ai/hit-cxf/video-claw) 
 
-<a href="https://trendshift.io/repositories/24295" target="_blank"><img src="https://trendshift.io/api/badge/repositories/24295" alt="HITsz-TMG%2FAIGC-Claw | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/24295" target="_blank"><img src="https://trendshift.io/api/badge/repositories/24295" alt="HITsz-TMG%2FVideo-Claw | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 </div>
 
@@ -48,31 +48,32 @@
 - `2026/4/29`: 🧩 新增文艺短视频、动作迁移、数字人口播三个 Pipeline，并支持一键安装。
 - `2026/5/8`: ⚙️ 支持通过 WebUI 配置 API 与默认模型，支持一键安装。
 - `2026/5/13`: 🎞️ 文艺短视频接入 Pixelle-Video 的 HTML 模版。
+- `2026/5/14`: 🎉 AIGC-Claw 正式更名为 Video-Claw
 
 
 ## 📖 项目介绍
 
 <p align="center">
-  <img src="aigc-director-pics/workflow.png" width="100%" />
+  <img src="video-claw-pics/workflow.png" width="100%" />
 </p>
 
-AIGC-Claw 是一个面向创意视频生产的 AI 导演系统。**你只需要给出一句想法、一个故事梗概，甚至一个模糊概念，系统就会把它拆解为可执行的影视工作流，持续产出可查看、可确认、可修改、可交付的中间资产，最终生成完整成片**。
+Video-Claw 是一个面向创意视频生产的 AI 导演系统。**你只需要给出一句想法、一个故事梗概，甚至一个模糊概念，系统就会把它拆解为可执行的影视工作流，持续产出可查看、可确认、可修改、可交付的中间资产，最终生成完整成片**。
 
-它不是单点式的文生视频工具，而是一条覆盖 **剧本策划 → 角色/场景设计 → 分镜规划 → 参考图生成 → 视频生成 → 后期剪辑** 的全流程生产线。相比只给你一个黑盒结果的闭源视频生成框架，AIGC-Claw是一个真正可协作的 AI 导演团队：前一阶段决定后一阶段，所有关键节点都能可视化、可编辑、可继续生成。
+它不是单点式的文生视频工具，而是一条覆盖 **剧本策划 → 角色/场景设计 → 分镜规划 → 参考图生成 → 视频生成 → 后期剪辑** 的全流程生产线。相比只给你一个黑盒结果的闭源视频生成框架，Video-Claw是一个真正可协作的 AI 导演团队：前一阶段决定后一阶段，所有关键节点都能可视化、可编辑、可继续生成。
 
-除主流程外，AIGC-Claw 也提供三个一次性 Pipeline，用于更轻量、更直接的视频生成任务：文艺短视频、动作迁移和数字人口播。Pipeline 任务会实时推送进度与产物，生成结果和历史记录会在本地保留，便于继续查看、删除和复用。
+除主流程外，Video-Claw 也提供三个一次性 Pipeline，用于更轻量、更直接的视频生成任务：文艺短视频、动作迁移和数字人口播。Pipeline 任务会实时推送进度与产物，生成结果和历史记录会在本地保留，便于继续查看、删除和复用。
 
-## 🧩 新增 Pipeline
+## 🧩 快速创作 Pipeline
 
-| Pipeline | 前端入口 | 说明 |
-|---|---|---|
-| **文艺短视频** | 侧边栏「文艺短视频」 | 支持「图片拼接 / 动态视频」和「创作灵感 / 完整文案」两组模式。系统按句号切分旁白，为每个片段生成配图与语音；图片拼接模式合成图文短视频，动态视频模式继续调用图生视频模型生成片段；可选添加标题和字幕。 |
-| **动作迁移** | 侧边栏「动作迁移」 | 输入参考图片、动作视频和提示词，调用支持动作迁移能力的视频模型生成结果视频。 |
-| **数字人口播** | 侧边栏「数字人口播」 | 输入人物图和口播文案，生成分句语音与数字人视频片段；多片段生成时会使用上一段尾帧衔接下一段，并用生成语音替换最终视频音轨。 |
+| Pipeline | 示意图 | 前端入口 | 说明 |
+|---|---|---|---|
+| <div style="white-space:nowrap"><b>文艺短视频</b></div> | <img src="./video-claw-pics/pipeline_demo/standard.png" width="600" /> | 侧边栏「文艺短视频」 | 支持「图片拼接 / 动态视频」和「创作灵感 / 完整文案」两组模式。系统按句号切分旁白，为每个片段生成配图与语音；图片拼接模式合成图文短视频，动态视频模式继续调用图生视频模型生成片段；可选添加标题和字幕。 |
+| <div style="white-space:nowrap"><b>动作迁移</b></div> | <img src="./video-claw-pics/pipeline_demo/action_transfer.png" width="600" /> | 侧边栏「动作迁移」 | 输入参考图片、动作视频和提示词，调用支持动作迁移能力的视频模型生成结果视频。 |
+| <div style="white-space:nowrap"><b>数字人口播</b></div> | <img src="./video-claw-pics/pipeline_demo/digital_human.png" width="600" /> | 侧边栏「数字人口播」 | 输入人物图和口播文案，生成分句语音与数字人视频片段；多片段生成时会使用上一段尾帧衔接下一段，并用生成语音替换最终视频音轨。 |
 
-Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tasks/<task_id>.json`，图片、音频、视频等产物保存在 `aigc-director/aigc-claw/backend/code/result/task/<task_id>/`。
+Pipeline 任务元数据保存在 `video-claw/video-claw/backend/code/data/tasks/<task_id>.json`，图片、音频、视频等产物保存在 `video-claw/video-claw/backend/code/result/task/<task_id>/`。
 
-## 📺 AIGC-Claw 示例（全流程自动化）
+## 📺 Video-Claw 示例（全流程自动化）
 ## 🎬 视频生成演示 (Demo Gallery)
 
 ### 🔊 微短剧：deepseek-v4 震撼发布
@@ -235,9 +236,9 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
 
 | | |
 |:---:|:---:|
-| ![Stage 1](./aigc-director-pics/workflow_demo/stage_1.png) | ![Stage 2](./aigc-director-pics/workflow_demo/stage_2.png) |
-| ![Stage 3](./aigc-director-pics/workflow_demo/stage_3.png) | ![Stage 4](./aigc-director-pics/workflow_demo/stage_4.png) |
-| ![Stage 5](./aigc-director-pics/workflow_demo/stage_5.png) | ![Stage 6](./aigc-director-pics/workflow_demo/stage_6.png) |
+| ![Stage 1](./video-claw-pics/workflow_demo/stage_1.png) | ![Stage 2](./video-claw-pics/workflow_demo/stage_2.png) |
+| ![Stage 3](./video-claw-pics/workflow_demo/stage_3.png) | ![Stage 4](./video-claw-pics/workflow_demo/stage_4.png) |
+| ![Stage 5](./video-claw-pics/workflow_demo/stage_5.png) | ![Stage 6](./video-claw-pics/workflow_demo/stage_6.png) |
 
 </div>
 </details>
@@ -250,7 +251,7 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
 
 | | | | |
 |:---:|:---:|:---:|:---:|
-| ![WeChat 1](./aigc-director-pics/wechat_demo/wechat_1.jpg) | ![WeChat 2](./aigc-director-pics/wechat_demo/wechat_2.jpg) | ![WeChat 3](./aigc-director-pics/wechat_demo/wechat_3.jpg) | ![WeChat 4](./aigc-director-pics/wechat_demo/wechat_4.jpg) |
+| ![WeChat 1](./video-claw-pics/wechat_demo/wechat_1.jpg) | ![WeChat 2](./video-claw-pics/wechat_demo/wechat_2.jpg) | ![WeChat 3](./video-claw-pics/wechat_demo/wechat_3.jpg) | ![WeChat 4](./video-claw-pics/wechat_demo/wechat_4.jpg) |
 
 </div>
 </details>
@@ -263,7 +264,7 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
 
 | | | | |
 |:---:|:---:|:---:|:---:|
-| ![Feishu 1](./aigc-director-pics/feishu_demo/feishu_1.jpg) | ![Feishu 2](./aigc-director-pics/feishu_demo/feishu_2.jpg) | ![Feishu 3](./aigc-director-pics/feishu_demo/feishu_3.jpg) | ![Feishu 4](./aigc-director-pics/feishu_demo/feishu_4.jpg) |
+| ![Feishu 1](./video-claw-pics/feishu_demo/feishu_1.jpg) | ![Feishu 2](./video-claw-pics/feishu_demo/feishu_2.jpg) | ![Feishu 3](./video-claw-pics/feishu_demo/feishu_3.jpg) | ![Feishu 4](./video-claw-pics/feishu_demo/feishu_4.jpg) |
 
 </div>
 </details>
@@ -290,11 +291,11 @@ Pipeline 任务元数据保存在 `aigc-director/aigc-claw/backend/code/data/tas
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/HITsz-TMG/AIGC-Claw.git
-cd AIGC-Claw
+git clone https://github.com/HITsz-TMG/Video-Claw.git
+cd Video-Claw
 
 # 2. 进入应用目录并执行安装脚本
-cd aigc-director/aigc-claw
+cd video-claw/video-claw
 chmod +x install.sh
 ./install.sh
 
@@ -306,11 +307,11 @@ cd ../..
 
 ```bat
 # 1. 克隆项目
-git clone https://github.com/HITsz-TMG/AIGC-Claw.git
-cd AIGC-Claw
+git clone https://github.com/HITsz-TMG/Video-Claw.git
+cd Video-Claw
 
 # 2. 进入应用目录并执行安装脚本
-cd aigc-director\aigc-claw
+cd video-claw\video-claw
 install.bat
 
 # 3. 返回项目根目录
@@ -321,11 +322,11 @@ cd ../..
 
 ```bash
 # 启动后端
-cd aigc-director/aigc-claw/backend
+cd video-claw/video-claw/backend
 uv run python api_server.py
 
 # 新终端启动前端
-cd aigc-director/aigc-claw/frontend
+cd video-claw/video-claw/frontend
 npm start
 ```
 
@@ -341,11 +342,11 @@ AIGC_DIRECTOR_SKIP_FRONTEND_BUILD=1 ./install.sh
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/HITsz-TMG/AIGC-Claw.git
-cd AIGC-Claw
+git clone https://github.com/HITsz-TMG/Video-Claw.git
+cd Video-Claw
 
 # 2. 配置并启动后端
-cd aigc-director/aigc-claw/backend
+cd video-claw/video-claw/backend
 
 # 安装后端依赖
 uv sync
@@ -362,7 +363,7 @@ uv run python api_server.py
 
 ```bash
 # 3. 配置并启动前端（新终端）
-cd aigc-director/aigc-claw/frontend
+cd video-claw/video-claw/frontend
 npm install
 npm run build
 npm start
@@ -376,14 +377,14 @@ npm start
 向 OpenClaw 发送消息：
 
 ```
-帮我克隆git仓库：https://github.com/HITsz-TMG/AIGC-Claw.git
-然后把AIGC-Claw中的aigc-director文件夹递归复制到.openclaw/workspace/skills目录下，用作AIGC相关的skill
+帮我克隆git仓库：https://github.com/HITsz-TMG/Video-Claw.git
+然后把Video-Claw中的video-claw文件夹递归复制到.openclaw/workspace/skills目录下，用作AIGC相关的skill
 ```
 
-使用时建议指明 "使用 aigc-director"：
+使用时建议指明 "使用 video-claw"：
 
 ```
-用aigc-director来生成一个视频，内容是"一条狗的使命"
+用video-claw来生成一个视频，内容是"一条狗的使命"
 ```
 
 ### 方式四：通过 ClawHub 安装
@@ -393,14 +394,14 @@ npm start
 打开终端，输入命令，所有询问均选择yes
 
 ```bash
-clawhub install aigc-director
+clawhub install video-claw
 ```
 
-安装完成后，ClawHub 会将 `aigc-director` 复制到 `workspace/skills`（或指定的 skills 目录）。
+安装完成后，ClawHub 会将 `video-claw` 复制到 `workspace/skills`（或指定的 skills 目录）。
 
 之后可以参考方式一一键安装或方式二手动安装自行构建项目并运行，也可以使用OpenClaw完成后续项目构建。
 
-在第一次使用 `aigc-director` 时，如果没有手动构建项目，OpenClaw会自动构建前后端并运行，无需手动初始化（构建项目需要配置环境和编译，请耐心等待）。
+在第一次使用 `video-claw` 时，如果没有手动构建项目，OpenClaw会自动构建前后端并运行，无需手动初始化（构建项目需要配置环境和编译，请耐心等待）。
 
 
 ---
@@ -418,7 +419,7 @@ clawhub install aigc-director
 
 ### 后端配置
 
-后端配置统一保存在 `aigc-claw/backend/config.yaml`，采用小写、层级化 YAML 结构。可直接编辑该文件，也可以在前端侧边栏底部进入「设置」页面修改。
+后端配置统一保存在 `video-claw/backend/config.yaml`，采用小写、层级化 YAML 结构。可直接编辑该文件，也可以在前端侧边栏底部进入「设置」页面修改。
 
 - `api_providers` 保存各模型服务平台的密钥、接口地址和代理开关。
 - `models` 保存**主流程**首页使用的默认模型。前端创建项目时会先读取这些默认值，再把具体模型参数传给后端；后端不会再为主流程自动兜底选择模型，缺少模型参数会直接报错。
@@ -434,7 +435,7 @@ clawhub install aigc-director
 - 保存后会写回 `backend/config.yaml`。API Key、代理和默认模型会被后续新建项目读取；`server.host`、`server.port` 等服务启动参数需要重启后端后完全生效。
 
 ```yaml
-project_name: AIGC-Claw
+project_name: Video-Claw
 
 server:
   host: 127.0.0.1
@@ -505,16 +506,16 @@ models:
 | **图生图** | wan2.7-image, wan2.7-image-pro, doubao-seedream-5.0/4.5/4.0, gpt-image-2 |
 | **视频生成** | wan2.7-i2v, wan2.6-i2v-flash, doubao-seedance-2.0 (Normal/Fast), kling-v3/v2.6/v2.5 |
 
-模型信息以 `aigc-director/aigc-claw/backend/models/config_model.py` 为准。前端和 Pipeline API 会根据模型能力标签筛选模型，例如文本生成、图像生成、图生视频、动作迁移、TTS 等。
+模型信息以 `video-claw/video-claw/backend/models/config_model.py` 为准。前端和 Pipeline API 会根据模型能力标签筛选模型，例如文本生成、图像生成、图生视频、动作迁移、TTS 等。
 
 </details>
 
 
 ## 🙏 致谢
 
-AIGC-Claw 的想法和设计受到了 [AutoResearchClaw](https://github.com/aiming-lab/AutoResearchClaw)、[huobao-drama](https://github.com/chatfire-AI/huobao-drama)、[LibTV](https://www.liblib.tv/) 与 [libtv-skills](https://github.com/libtv-labs/libtv-skills) 的启发。
+Video-Claw 的想法和设计受到了 [AutoResearchClaw](https://github.com/aiming-lab/AutoResearchClaw)、[huobao-drama](https://github.com/chatfire-AI/huobao-drama)、[LibTV](https://www.liblib.tv/) 与 [libtv-skills](https://github.com/libtv-labs/libtv-skills) 的启发。
 
-Pixelle-Video：AIGC-Claw 借鉴了文艺短视频、动作迁移、数字人口播三个 Pipeline，以及通过 HTML 模版精细控制图片、视频的文本。
+Pixelle-Video：Video-Claw 借鉴了文艺短视频、动作迁移、数字人口播三个 Pipeline，以及通过 HTML 模版精细控制图片、视频的文本。
 
 
 
@@ -522,7 +523,7 @@ Pixelle-Video：AIGC-Claw 借鉴了文艺短视频、动作迁移、数字人口
 
 | 框架图 | 论文信息 |
 |:---:|---|
-| <img src="https://github.com/HITsz-TMG/FilmAgent/blob/main/pics/framework.png?raw=true" width="420" alt="FilmAgent framework"/> | **[SIGGRAPH Asia 2024] FilmAgent: Automating Virtual Film Production Through a Multi-Agent Collaborative Framework**<br>*Zhenran Xu, Jifang Wang, Longyue Wang, Zhouyi Li, Senbao Shi, Baotian Hu, Min Zhang*<br>[[Paper](https://doi.org/10.1145/3681758.3698014)] [[GitHub](https://github.com/HITsz-TMG/AIGC-Claw/blob/main/FilmAgent.md)] |
+| <img src="./FilmAgent-pics/framework.png" width="420" alt="FilmAgent framework"/> | **[SIGGRAPH Asia 2024] FilmAgent: Automating Virtual Film Production Through a Multi-Agent Collaborative Framework**<br>*Zhenran Xu, Jifang Wang, Longyue Wang, Zhouyi Li, Senbao Shi, Baotian Hu, Min Zhang*<br>[[Paper](https://doi.org/10.1145/3681758.3698014)] [[GitHub](https://github.com/HITsz-TMG/Video-Claw/blob/main/FilmAgent.md)] |
 | <img src="https://github.com/HITsz-TMG/Anim-Director/blob/main/Anim-Director/assets/visualeg.png" width="420" alt="Anim-Director result"/> | **[SIGGRAPH Asia 2024] Anim-Director: A Large Multimodal Model Powered Agent for Controllable Animation Video Generation**<br>*Yunxin Li, Haoyuan Shi, Baotian Hu, Longyue Wang, Jiashun Zhu, Jinyi Xu, Zhen Zhao, Min Zhang*<br>[[Paper](https://doi.org/10.1145/3680528.3687688)] [[GitHub](https://github.com/HITsz-TMG/Anim-Director/tree/main/Anim-Director)] |
 | <img src="https://raw.githubusercontent.com/HITsz-TMG/Anim-Director/main/AniMaker/assets/pipeline.png" width="420" alt="AniMaker pipeline"/> | **[SIGGRAPH Asia 2025] AniMaker: Multi-Agent Animated Storytelling with MCTS-Driven Clip Generation**<br>*Haoyuan Shi, Yunxin Li, Xinyu Chen, Longyue Wang, Baotian Hu, Min Zhang*<br>[[Paper](https://doi.org/10.1145/3757377.3764009)] [[GitHub](https://github.com/HITsz-TMG/Anim-Director/tree/main/AniMaker)] |
 

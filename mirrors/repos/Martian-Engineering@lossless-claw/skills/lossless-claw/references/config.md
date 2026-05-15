@@ -95,6 +95,7 @@ Why it matters:
 
 - Larger chunks reduce summarization frequency.
 - Smaller chunks create more summaries and more DAG fragmentation.
+- The default is 20000 tokens.
 
 Use this when:
 
@@ -103,40 +104,34 @@ Use this when:
 
 ### `cacheAwareCompaction`
 
-Controls how strongly lossless-claw preserves a healthy prompt cache during incremental maintenance.
+Deprecated compatibility object. Lossless still accepts and reports these settings, but automatic compaction no longer uses prompt-cache hot/cold state.
 
 Why it matters:
 
-- Hot cache now prefers to keep the cache intact instead of eagerly compacting old raw history.
-- Cold cache still allows bounded catch-up passes so stale sessions can converge.
-- The new defaults are intentionally more aggressive about preserving cache than earlier builds.
+- Existing OpenClaw configs continue to load without schema errors.
+- Operators can see that the settings are deprecated instead of silently losing familiar keys.
+- Prompt-cache telemetry remains useful for diagnostics, but it no longer gates compaction.
 
 Good defaults:
 
-- `enabled: true`
-- `maxColdCacheCatchupPasses: 2`
-- `hotCachePressureFactor: 4`
-- `hotCacheBudgetHeadroomRatio: 0.2`
-- `coldCacheObservationThreshold: 3`
-- `criticalBudgetPressureRatio: 0.90`
+- Leave existing values in place during migration.
+- Do not tune these settings to affect automatic compaction; use `contextThreshold`, `leafChunkTokens`, and fanout instead.
 
 Operationally:
 
-- hot cache stretches the incremental leaf trigger to `dynamicLeafChunkTokens.max`
-- hot cache skips incremental maintenance entirely when the assembled context is comfortably below the real token budget
-- hot cache gets a short hysteresis window so a recent cache hit stays "hot" briefly unless telemetry shows a break
-- critical token-budget pressure bypasses hot-cache delay once the live prompt reaches `criticalBudgetPressureRatio * tokenBudget`
-- if hot-cache maintenance still runs, it stays leaf-only and suppresses follow-on condensed passes
+- threshold debt does not wait for cache TTL
+- cold-cache catch-up passes have been removed
+- cache-aware raw-history pressure no longer triggers automatic maintenance
 
 ### `dynamicLeafChunkTokens`
 
-Controls the working leaf-trigger size used by incremental compaction.
+Deprecated compatibility object. Automatic compaction now uses `leafChunkTokens` directly.
 
 Why it matters:
 
-- dynamic sizing is now enabled by default
-- busier sessions can use a larger working chunk without changing the static floor
-- hot cache uses the dynamic max as the working leaf trigger
+- Existing config stays accepted.
+- The resolved default still appears in status/config output.
+- It no longer changes automatic compaction chunk size.
 
 Good defaults:
 
@@ -147,15 +142,36 @@ With the default `leafChunkTokens=20000`, that means:
 
 - `dynamicLeafChunkTokens.max = 40000`
 
-### `incrementalMaxDepth`
+### `sweepMaxDepth`
 
-Controls how far automatic condensation cascades after leaf compaction.
+Controls how far routine threshold full-sweep condensation tries to cascade after leaf compaction.
 
 Why it matters:
 
 - `0` keeps only leaf summaries moving automatically.
 - `1` is a practical default for long-running sessions.
 - `-1` allows unlimited cascading, which can be useful for very long histories but is more aggressive.
+- This is a preferred depth, not an absolute cap. Pressure sweeps may go deeper when summarized context remains too large.
+
+### `summaryPrefixTargetTokens`
+
+Optional target for summarized-prefix tokens after a full sweep.
+
+Why it matters:
+
+- Gives Lossless an escape hatch when too many summaries at the preferred depth still leave the prompt near full.
+- When unset, Lossless derives a target from `contextThreshold`, the active token budget, and `leafChunkTokens`.
+- Sweeps first honor `sweepMaxDepth`; pressure condensation can go deeper only when threshold or summary-prefix pressure remains.
+
+### `incrementalMaxDepth`
+
+Deprecated alias for `sweepMaxDepth`.
+
+Why it matters:
+
+- Existing OpenClaw configs continue to load.
+- New config should use `sweepMaxDepth`.
+- If both aliases are set in the same source, `sweepMaxDepth` wins.
 
 ### `summaryModel` and `summaryProvider`
 
@@ -354,9 +370,29 @@ Why it matters:
 - acts as the guardrail when normal fanout preferences cannot be met cleanly
 - mostly useful for advanced tuning or pathological summary-tree shapes
 
-### `incrementalMaxDepth`
+### `sweepMaxDepth`
 
 See high-impact settings above.
+
+Env override:
+
+- `LCM_SWEEP_MAX_DEPTH`
+
+### `summaryPrefixTargetTokens`
+
+See high-impact settings above.
+
+Env override:
+
+- `LCM_SUMMARY_PREFIX_TARGET_TOKENS`
+
+### `incrementalMaxDepth`
+
+Deprecated alias for `sweepMaxDepth`.
+
+Env override:
+
+- `LCM_INCREMENTAL_MAX_DEPTH`
 
 ### `bootstrapMaxTokens`
 
@@ -431,16 +467,16 @@ Why it matters:
 
 #### `cacheAwareCompaction.enabled`
 
-Defers incremental leaf compaction more aggressively when prompt-cache telemetry indicates a hot cache.
+Deprecated compatibility setting. It remains accepted by config loading but no longer changes automatic compaction behavior.
 
 #### `cacheAwareCompaction.cacheTTLSeconds`
 
-Fallback cache TTL used when deferred Anthropic compaction has provider/model telemetry but no explicit runtime cache-retention window.
+Deprecated compatibility setting. Threshold debt no longer waits for a prompt-cache TTL.
 
 Why it matters:
 
-- lets cache-safe deferred compaction stay conservative even when the host only knows that the turn was Anthropic-family, not the exact retention tier
-- keeps prompt-mutating debt pending until the cached prefix is likely cold
+- existing configs continue to load
+- prompt-cache telemetry remains diagnostic only
 
 Default:
 
@@ -448,16 +484,15 @@ Default:
 
 #### `cacheAwareCompaction.maxColdCacheCatchupPasses`
 
-Maximum bounded catch-up passes allowed in one maintenance cycle when cache telemetry is cold.
+Deprecated compatibility setting. Automatic cold-cache catch-up passes were removed.
 
 #### `cacheAwareCompaction.hotCachePressureFactor`
 
-Multiplier applied to the hot-cache leaf trigger before raw-history pressure overrides cache preservation.
+Deprecated compatibility setting. Hot-cache raw-history pressure no longer drives automatic compaction.
 
 Why it matters:
 
-- higher values preserve hot cache longer
-- lower values revert toward more eager incremental compaction
+- use `contextThreshold`, `leafChunkTokens`, and fanout for active compaction tuning
 
 Default:
 
@@ -465,12 +500,11 @@ Default:
 
 #### `cacheAwareCompaction.hotCacheBudgetHeadroomRatio`
 
-Minimum fraction of the real token budget that must remain free before hot-cache incremental compaction is skipped entirely.
+Deprecated compatibility setting. Hot-cache budget headroom no longer defers automatic threshold compaction.
 
 Why it matters:
 
-- higher values make hot-cache skip behavior stricter
-- lower values allow more hot-cache maintenance before real budget pressure exists
+- threshold debt runs when the context threshold is crossed
 
 Default:
 
@@ -478,12 +512,11 @@ Default:
 
 #### `cacheAwareCompaction.coldCacheObservationThreshold`
 
-Consecutive cold observations required before non-explicit cache misses are treated as truly cold.
+Deprecated compatibility setting. Cold-cache streaks may still be observable telemetry, but they no longer trigger catch-up compaction.
 
 Why it matters:
 
-- prevents a single OpenRouter routing miss or provider failover blip from immediately triggering cold-cache catch-up
-- explicit cache breaks still count as cold immediately
+- cache state is not reliable enough to drive prompt-mutating compaction
 
 Default:
 
@@ -491,13 +524,12 @@ Default:
 
 #### `cacheAwareCompaction.criticalBudgetPressureRatio`
 
-Fraction of the token budget at which deferred compaction bypasses hot-cache delay.
+Deprecated compatibility setting. `contextThreshold` is now the only automatic compaction threshold.
 
 Why it matters:
 
-- lets prompt-mutating deferred compaction run before the runtime falls back to emergency overflow handling
-- preserves cache-aware throttling below the pressure threshold
-- can be set to `1` to disable this pressure bypass
+- the hot-cache delay gate has been removed
+- overflow recovery still uses explicit budget-targeted compaction
 
 Default:
 
@@ -511,7 +543,7 @@ Env override:
 
 #### `dynamicLeafChunkTokens.enabled`
 
-Enables dynamic working leaf chunk sizes for busier sessions.
+Deprecated compatibility setting. Automatic compaction uses `leafChunkTokens` directly.
 
 Default:
 
@@ -519,7 +551,7 @@ Default:
 
 #### `dynamicLeafChunkTokens.max`
 
-Upper bound for the dynamic working chunk size. The static `leafChunkTokens` value remains the floor.
+Deprecated compatibility setting. The resolved value is still accepted and visible, but no longer changes automatic compaction.
 
 Default:
 
@@ -551,12 +583,10 @@ Why it matters:
 2. Set the context-engine slot to `lossless-claw`.
 3. Start with conservative defaults.
 4. Run `/lossless` after startup to confirm path, size, and summary health.
-5. If hot-cache turns still compact too often, inspect the decision logs before changing anything else:
-   - `reason=hot-cache-budget-headroom` means the new skip path is working.
-   - `reason=hot-cache-defer` means raw-history pressure is below the configured hot-cache factor.
-   - `allowCondensedPasses=false` on hot-cache turns is expected.
-6. If recall feels weak, revisit `freshTailCount`, `leafChunkTokens`, and summarizer model quality before changing anything else.
-7. Touch advanced knobs like fanout, large-file thresholds, custom instructions, and assembly caps only after a concrete symptom appears.
+5. If threshold sweeps happen too often, tune `contextThreshold`, `leafChunkTokens`, `summaryPrefixTargetTokens`, and fanout before adding new mechanisms.
+6. If threshold sweeps happen too often, try a larger `leafChunkTokens` value such as 30000 before adding new mechanisms.
+7. If recall feels weak, revisit `freshTailCount`, `leafChunkTokens`, and summarizer model quality before changing anything else.
+8. Touch advanced knobs like fanout, large-file thresholds, custom instructions, and assembly caps only after a concrete symptom appears.
 
 ## Reading the status output
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aipoch/medical-research-skills` — 26 default patterns, 0 followed patterns, 556 file(s) materialized.
+Mirror of `aipoch/medical-research-skills` — 26 default patterns, 0 followed patterns, 557 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aipoch/medical-research-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 556 |
+| Files         | 557 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -566,55 +566,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 505 | ✓ | [`scientific-skills/Other/pdf-ppt/SKILL.md`](scientific-skills/Other/pdf-ppt/SKILL.md) |
 | 506 | ✓ | [`scientific-skills/Other/pdf-processor/SKILL.md`](scientific-skills/Other/pdf-processor/SKILL.md) |
 | 507 | ✓ | [`scientific-skills/Other/pdf-to-ppt-pack/SKILL.md`](scientific-skills/Other/pdf-to-ppt-pack/SKILL.md) |
-| 508 | ✓ | [`scientific-skills/Other/plan-generator/SKILL.md`](scientific-skills/Other/plan-generator/SKILL.md) |
-| 509 | ✓ | [`scientific-skills/Other/plotly/SKILL.md`](scientific-skills/Other/plotly/SKILL.md) |
-| 510 | ✓ | [`scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md`](scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md) |
-| 511 | ✓ | [`scientific-skills/Other/poster-designer/SKILL.md`](scientific-skills/Other/poster-designer/SKILL.md) |
-| 512 | ✓ | [`scientific-skills/Other/ppt/SKILL.md`](scientific-skills/Other/ppt/SKILL.md) |
-| 513 | ✓ | [`scientific-skills/Other/pptx-posters/SKILL.md`](scientific-skills/Other/pptx-posters/SKILL.md) |
-| 514 | ✓ | [`scientific-skills/Other/PPTX-Skill/SKILL.md`](scientific-skills/Other/PPTX-Skill/SKILL.md) |
-| 515 | ✓ | [`scientific-skills/Other/reagent-expiry-alert/SKILL.md`](scientific-skills/Other/reagent-expiry-alert/SKILL.md) |
-| 516 | ✓ | [`scientific-skills/Other/reproducibility-check/SKILL.md`](scientific-skills/Other/reproducibility-check/SKILL.md) |
-| 517 | ✓ | [`scientific-skills/Other/resubmission-deadline-tracker/SKILL.md`](scientific-skills/Other/resubmission-deadline-tracker/SKILL.md) |
-| 518 | ✓ | [`scientific-skills/Other/result-figure-consistencycheck/SKILL.md`](scientific-skills/Other/result-figure-consistencycheck/SKILL.md) |
-| 519 | ✓ | [`scientific-skills/Other/schedule-management/SKILL.md`](scientific-skills/Other/schedule-management/SKILL.md) |
-| 520 | ✓ | [`scientific-skills/Other/sci-paper-reviewer/SKILL.md`](scientific-skills/Other/sci-paper-reviewer/SKILL.md) |
-| 521 | ✓ | [`scientific-skills/Other/science-popularization-article/SKILL.md`](scientific-skills/Other/science-popularization-article/SKILL.md) |
-| 522 | ✓ | [`scientific-skills/Other/scientific-schematics/SKILL.md`](scientific-skills/Other/scientific-schematics/SKILL.md) |
-| 523 | ✓ | [`scientific-skills/Other/search-pubmed/SKILL.md`](scientific-skills/Other/search-pubmed/SKILL.md) |
-| 524 | ✓ | [`scientific-skills/Other/shift-handover-summarizer/SKILL.md`](scientific-skills/Other/shift-handover-summarizer/SKILL.md) |
-| 525 | ✓ | [`scientific-skills/Other/short-video-script-generator/SKILL.md`](scientific-skills/Other/short-video-script-generator/SKILL.md) |
-| 526 | ✓ | [`scientific-skills/Other/slide-deck-images/SKILL.md`](scientific-skills/Other/slide-deck-images/SKILL.md) |
-| 527 | ✓ | [`scientific-skills/Other/soft-article-writer/SKILL.md`](scientific-skills/Other/soft-article-writer/SKILL.md) |
-| 528 | ✓ | [`scientific-skills/Other/spreadsheet-ops/SKILL.md`](scientific-skills/Other/spreadsheet-ops/SKILL.md) |
-| 529 | ✓ | [`scientific-skills/Other/symptom-checker-triage/SKILL.md`](scientific-skills/Other/symptom-checker-triage/SKILL.md) |
-| 530 | ✓ | [`scientific-skills/Other/task-reminder/SKILL.md`](scientific-skills/Other/task-reminder/SKILL.md) |
-| 531 | ✓ | [`scientific-skills/Other/text-format-organizer/SKILL.md`](scientific-skills/Other/text-format-organizer/SKILL.md) |
-| 532 | ✓ | [`scientific-skills/Other/text-to-technical-roadmap/SKILL.md`](scientific-skills/Other/text-to-technical-roadmap/SKILL.md) |
-| 533 | ✓ | [`scientific-skills/Other/time-zone-planner/SKILL.md`](scientific-skills/Other/time-zone-planner/SKILL.md) |
-| 534 | ✓ | [`scientific-skills/Other/treatment-plans/SKILL.md`](scientific-skills/Other/treatment-plans/SKILL.md) |
-| 535 | ✓ | [`scientific-skills/Other/uspto-database/SKILL.md`](scientific-skills/Other/uspto-database/SKILL.md) |
-| 536 | ✓ | [`scientific-skills/Other/vector-text-fixer/SKILL.md`](scientific-skills/Other/vector-text-fixer/SKILL.md) |
-| 537 | ✓ | [`scientific-skills/Other/virtual-patient-roleplay/SKILL.md`](scientific-skills/Other/virtual-patient-roleplay/SKILL.md) |
-| 538 | ✓ | [`scientific-skills/Other/waste-disposal-guide/SKILL.md`](scientific-skills/Other/waste-disposal-guide/SKILL.md) |
-| 539 | ✓ | [`scientific-skills/Other/word-read-write/SKILL.md`](scientific-skills/Other/word-read-write/SKILL.md) |
-| 540 | ✓ | [`scientific-skills/Protocol Design/basic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/basic-research-design/SKILL.md) |
-| 541 | ✓ | [`scientific-skills/Protocol Design/clinic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/clinic-research-design/SKILL.md) |
-| 542 | ✓ | [`scientific-skills/Protocol Design/dual-disease-transcriptomic-ml-planner/SKILL.md`](scientific-skills/Protocol%20Design/dual-disease-transcriptomic-ml-planner/SKILL.md) |
-| 543 | ✓ | [`scientific-skills/Protocol Design/esm/SKILL.md`](scientific-skills/Protocol%20Design/esm/SKILL.md) |
-| 544 | ✓ | [`scientific-skills/Protocol Design/faers-multi-drug-soc-planner/SKILL.md`](scientific-skills/Protocol%20Design/faers-multi-drug-soc-planner/SKILL.md) |
-| 545 | ✓ | [`scientific-skills/Protocol Design/hypogenic/SKILL.md`](scientific-skills/Protocol%20Design/hypogenic/SKILL.md) |
-| 546 | ✓ | [`scientific-skills/Protocol Design/hypothesis-generation/SKILL.md`](scientific-skills/Protocol%20Design/hypothesis-generation/SKILL.md) |
-| 547 | ✓ | [`scientific-skills/Protocol Design/INPLASY-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/INPLASY-registration-helper/SKILL.md) |
-| 548 | ✓ | [`scientific-skills/Protocol Design/meta-protocol-writer/SKILL.md`](scientific-skills/Protocol%20Design/meta-protocol-writer/SKILL.md) |
-| 549 | ✓ | [`scientific-skills/Protocol Design/network-tox-docking-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/network-tox-docking-research-planner/SKILL.md) |
-| 550 | ✓ | [`scientific-skills/Protocol Design/non-tumor-ml-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/non-tumor-ml-research-planner/SKILL.md) |
-| 551 | ✓ | [`scientific-skills/Protocol Design/prospero-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/prospero-registration-helper/SKILL.md) |
-| 552 | ✓ | [`scientific-skills/Protocol Design/protocol-standardization/SKILL.md`](scientific-skills/Protocol%20Design/protocol-standardization/SKILL.md) |
-| 553 | ✓ | [`scientific-skills/Protocol Design/research-grants/SKILL.md`](scientific-skills/Protocol%20Design/research-grants/SKILL.md) |
-| 554 | ✓ | [`scientific-skills/Protocol Design/research-proposal-generator/SKILL.md`](scientific-skills/Protocol%20Design/research-proposal-generator/SKILL.md) |
-| 555 | ✓ | [`scientific-skills/Protocol Design/two-sample-mr-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/two-sample-mr-research-planner/SKILL.md) |
-| 556 | ✓ | [`skill-auditor/SKILL.md`](skill-auditor/SKILL.md) |
+| 508 | ✓ | [`scientific-skills/Other/phi-prompt-guard/SKILL.md`](scientific-skills/Other/phi-prompt-guard/SKILL.md) |
+| 509 | ✓ | [`scientific-skills/Other/plan-generator/SKILL.md`](scientific-skills/Other/plan-generator/SKILL.md) |
+| 510 | ✓ | [`scientific-skills/Other/plotly/SKILL.md`](scientific-skills/Other/plotly/SKILL.md) |
+| 511 | ✓ | [`scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md`](scientific-skills/Other/postdoc-fellowship-matcher/SKILL.md) |
+| 512 | ✓ | [`scientific-skills/Other/poster-designer/SKILL.md`](scientific-skills/Other/poster-designer/SKILL.md) |
+| 513 | ✓ | [`scientific-skills/Other/ppt/SKILL.md`](scientific-skills/Other/ppt/SKILL.md) |
+| 514 | ✓ | [`scientific-skills/Other/pptx-posters/SKILL.md`](scientific-skills/Other/pptx-posters/SKILL.md) |
+| 515 | ✓ | [`scientific-skills/Other/PPTX-Skill/SKILL.md`](scientific-skills/Other/PPTX-Skill/SKILL.md) |
+| 516 | ✓ | [`scientific-skills/Other/reagent-expiry-alert/SKILL.md`](scientific-skills/Other/reagent-expiry-alert/SKILL.md) |
+| 517 | ✓ | [`scientific-skills/Other/reproducibility-check/SKILL.md`](scientific-skills/Other/reproducibility-check/SKILL.md) |
+| 518 | ✓ | [`scientific-skills/Other/resubmission-deadline-tracker/SKILL.md`](scientific-skills/Other/resubmission-deadline-tracker/SKILL.md) |
+| 519 | ✓ | [`scientific-skills/Other/result-figure-consistencycheck/SKILL.md`](scientific-skills/Other/result-figure-consistencycheck/SKILL.md) |
+| 520 | ✓ | [`scientific-skills/Other/schedule-management/SKILL.md`](scientific-skills/Other/schedule-management/SKILL.md) |
+| 521 | ✓ | [`scientific-skills/Other/sci-paper-reviewer/SKILL.md`](scientific-skills/Other/sci-paper-reviewer/SKILL.md) |
+| 522 | ✓ | [`scientific-skills/Other/science-popularization-article/SKILL.md`](scientific-skills/Other/science-popularization-article/SKILL.md) |
+| 523 | ✓ | [`scientific-skills/Other/scientific-schematics/SKILL.md`](scientific-skills/Other/scientific-schematics/SKILL.md) |
+| 524 | ✓ | [`scientific-skills/Other/search-pubmed/SKILL.md`](scientific-skills/Other/search-pubmed/SKILL.md) |
+| 525 | ✓ | [`scientific-skills/Other/shift-handover-summarizer/SKILL.md`](scientific-skills/Other/shift-handover-summarizer/SKILL.md) |
+| 526 | ✓ | [`scientific-skills/Other/short-video-script-generator/SKILL.md`](scientific-skills/Other/short-video-script-generator/SKILL.md) |
+| 527 | ✓ | [`scientific-skills/Other/slide-deck-images/SKILL.md`](scientific-skills/Other/slide-deck-images/SKILL.md) |
+| 528 | ✓ | [`scientific-skills/Other/soft-article-writer/SKILL.md`](scientific-skills/Other/soft-article-writer/SKILL.md) |
+| 529 | ✓ | [`scientific-skills/Other/spreadsheet-ops/SKILL.md`](scientific-skills/Other/spreadsheet-ops/SKILL.md) |
+| 530 | ✓ | [`scientific-skills/Other/symptom-checker-triage/SKILL.md`](scientific-skills/Other/symptom-checker-triage/SKILL.md) |
+| 531 | ✓ | [`scientific-skills/Other/task-reminder/SKILL.md`](scientific-skills/Other/task-reminder/SKILL.md) |
+| 532 | ✓ | [`scientific-skills/Other/text-format-organizer/SKILL.md`](scientific-skills/Other/text-format-organizer/SKILL.md) |
+| 533 | ✓ | [`scientific-skills/Other/text-to-technical-roadmap/SKILL.md`](scientific-skills/Other/text-to-technical-roadmap/SKILL.md) |
+| 534 | ✓ | [`scientific-skills/Other/time-zone-planner/SKILL.md`](scientific-skills/Other/time-zone-planner/SKILL.md) |
+| 535 | ✓ | [`scientific-skills/Other/treatment-plans/SKILL.md`](scientific-skills/Other/treatment-plans/SKILL.md) |
+| 536 | ✓ | [`scientific-skills/Other/uspto-database/SKILL.md`](scientific-skills/Other/uspto-database/SKILL.md) |
+| 537 | ✓ | [`scientific-skills/Other/vector-text-fixer/SKILL.md`](scientific-skills/Other/vector-text-fixer/SKILL.md) |
+| 538 | ✓ | [`scientific-skills/Other/virtual-patient-roleplay/SKILL.md`](scientific-skills/Other/virtual-patient-roleplay/SKILL.md) |
+| 539 | ✓ | [`scientific-skills/Other/waste-disposal-guide/SKILL.md`](scientific-skills/Other/waste-disposal-guide/SKILL.md) |
+| 540 | ✓ | [`scientific-skills/Other/word-read-write/SKILL.md`](scientific-skills/Other/word-read-write/SKILL.md) |
+| 541 | ✓ | [`scientific-skills/Protocol Design/basic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/basic-research-design/SKILL.md) |
+| 542 | ✓ | [`scientific-skills/Protocol Design/clinic-research-design/SKILL.md`](scientific-skills/Protocol%20Design/clinic-research-design/SKILL.md) |
+| 543 | ✓ | [`scientific-skills/Protocol Design/dual-disease-transcriptomic-ml-planner/SKILL.md`](scientific-skills/Protocol%20Design/dual-disease-transcriptomic-ml-planner/SKILL.md) |
+| 544 | ✓ | [`scientific-skills/Protocol Design/esm/SKILL.md`](scientific-skills/Protocol%20Design/esm/SKILL.md) |
+| 545 | ✓ | [`scientific-skills/Protocol Design/faers-multi-drug-soc-planner/SKILL.md`](scientific-skills/Protocol%20Design/faers-multi-drug-soc-planner/SKILL.md) |
+| 546 | ✓ | [`scientific-skills/Protocol Design/hypogenic/SKILL.md`](scientific-skills/Protocol%20Design/hypogenic/SKILL.md) |
+| 547 | ✓ | [`scientific-skills/Protocol Design/hypothesis-generation/SKILL.md`](scientific-skills/Protocol%20Design/hypothesis-generation/SKILL.md) |
+| 548 | ✓ | [`scientific-skills/Protocol Design/INPLASY-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/INPLASY-registration-helper/SKILL.md) |
+| 549 | ✓ | [`scientific-skills/Protocol Design/meta-protocol-writer/SKILL.md`](scientific-skills/Protocol%20Design/meta-protocol-writer/SKILL.md) |
+| 550 | ✓ | [`scientific-skills/Protocol Design/network-tox-docking-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/network-tox-docking-research-planner/SKILL.md) |
+| 551 | ✓ | [`scientific-skills/Protocol Design/non-tumor-ml-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/non-tumor-ml-research-planner/SKILL.md) |
+| 552 | ✓ | [`scientific-skills/Protocol Design/prospero-registration-helper/SKILL.md`](scientific-skills/Protocol%20Design/prospero-registration-helper/SKILL.md) |
+| 553 | ✓ | [`scientific-skills/Protocol Design/protocol-standardization/SKILL.md`](scientific-skills/Protocol%20Design/protocol-standardization/SKILL.md) |
+| 554 | ✓ | [`scientific-skills/Protocol Design/research-grants/SKILL.md`](scientific-skills/Protocol%20Design/research-grants/SKILL.md) |
+| 555 | ✓ | [`scientific-skills/Protocol Design/research-proposal-generator/SKILL.md`](scientific-skills/Protocol%20Design/research-proposal-generator/SKILL.md) |
+| 556 | ✓ | [`scientific-skills/Protocol Design/two-sample-mr-research-planner/SKILL.md`](scientific-skills/Protocol%20Design/two-sample-mr-research-planner/SKILL.md) |
+| 557 | ✓ | [`skill-auditor/SKILL.md`](skill-auditor/SKILL.md) |
 
 ---
 

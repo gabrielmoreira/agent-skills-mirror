@@ -21,6 +21,7 @@ import ai.koog.agents.core.environment.ToolResultKind
 import ai.koog.agents.core.environment.result
 import ai.koog.agents.core.environment.toSafeResult
 import ai.koog.agents.core.tools.Tool
+import ai.koog.agents.core.tools.ToolBase
 import ai.koog.agents.core.tools.ToolDescriptor
 import ai.koog.agents.core.tools.ToolParameterDescriptor
 import ai.koog.agents.core.tools.annotations.InternalAgentToolsApi
@@ -300,7 +301,7 @@ public fun <Input : Any, Output : Any> subgraphWithTask(
  */
 @AIAgentBuilderDslMarker
 public inline fun <reified Input, reified Output> subgraphWithTask(
-    tools: List<Tool<*, *>>,
+    tools: List<ToolBase<*, *>>,
     name: String? = null,
     llmModel: LLModel? = null,
     llmParams: LLMParams? = null,
@@ -433,7 +434,7 @@ public inline fun <reified Input, reified Output, reified OutputTransformed> sub
 @OptIn(InternalAgentsApi::class)
 @AIAgentBuilderDslMarker
 public inline fun <reified Input, reified Output, reified OutputTransformed> subgraphWithTask(
-    tools: List<Tool<*, *>>,
+    tools: List<ToolBase<*, *>>,
     finishTool: Tool<Output, OutputTransformed>,
     name: String? = null,
     llmModel: LLModel? = null,
@@ -586,7 +587,7 @@ public inline fun <reified Input : Any> subgraphWithVerification(
 @Suppress("unused")
 @AIAgentBuilderDslMarker
 public inline fun <reified Input : Any> subgraphWithVerification(
-    tools: List<Tool<*, *>>,
+    tools: List<ToolBase<*, *>>,
     llmModel: LLModel? = null,
     llmParams: LLMParams? = null,
     runMode: ToolCalls = ToolCalls.SEQUENTIAL,
@@ -865,10 +866,10 @@ internal suspend fun <Output, OutputTransformed> AIAgentContext.executeFinishToo
 ): ReceivedToolResult {
     val toolDescription = finishTool.descriptor.description
     // Execute Finish tool directly and get a result
-    val encodedResult = try {
+    val (encodedResult, resultObject) = try {
         val args = finishTool.decodeArgs(toolCall.contentJson.toKoogJSONObject(), config.serializer)
         val toolResult = finishTool.execute(args = args)
-        finishTool.encodeResult(toolResult, config.serializer)
+        finishTool.encodeResult(toolResult, config.serializer) to toolResult
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -882,6 +883,7 @@ internal suspend fun <Output, OutputTransformed> AIAgentContext.executeFinishToo
             content = "Failed to execute '${finishTool.name}' with error: ${e.message}'",
             resultKind = ToolResultKind.Failure(e),
             result = null,
+            resultObject = null
         )
     }
 
@@ -892,6 +894,7 @@ internal suspend fun <Output, OutputTransformed> AIAgentContext.executeFinishToo
         content = toolCall.content,
         resultKind = ToolResultKind.Success,
         toolDescription = toolDescription,
-        result = encodedResult
+        result = encodedResult,
+        resultObject = resultObject,
     )
 }

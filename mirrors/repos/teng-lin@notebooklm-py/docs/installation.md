@@ -1,5 +1,7 @@
 # Installation
 
+**Last Updated:** 2026-05-14
+
 This is the canonical installation guide for `notebooklm-py`. The README has a quickstart; everything else lives here.
 
 **Contents**
@@ -58,6 +60,7 @@ The project ships `notebooklm skill install`, [SKILL.md](../SKILL.md), and [AGEN
 
 **Recommended install (Python-version-aware; surfaces real errors instead of swallowing them):**
 
+<!-- not mirrored: end-user install path (Persona A); CONTRIBUTING.md tracks the in-repo `uv sync` flow only -->
 ```bash
 pip install "notebooklm-py[browser]"   # mandatory; errors must propagate
 
@@ -75,6 +78,7 @@ fi
 
 **Skill install (separate from the Python package):**
 
+<!-- not mirrored: agent skill registration; not part of the contributor install flow -->
 ```bash
 notebooklm skill install              # writes to ~/.claude/skills/, ~/.agents/skills/
 # OR (alternative ecosystem):
@@ -85,6 +89,7 @@ If the agent is reading `SKILL.md` from inside an already-installed location (e.
 
 **Authentication — `notebooklm login` is the primary path:**
 
+<!-- not mirrored: end-user auth setup; contributors usually source storage_state from a personal account -->
 ```bash
 notebooklm login                       # primary: opens browser, user signs in to Google once
 ```
@@ -93,6 +98,7 @@ After login, `storage_state.json` persists at `~/.notebooklm/profiles/default/st
 
 **Headless / sandboxed agent contexts** (no display, can't open a browser): use the cookie-extraction path instead, requires the `[cookies]` extra installed in step 2:
 
+<!-- not mirrored: headless-agent auth path; out of scope for the contributor README -->
 ```bash
 notebooklm login --browser-cookies auto    # rookiepy autodetects an installed browser
 ```
@@ -101,6 +107,7 @@ If the agent is in a no-display sandbox AND `[cookies]` isn't installed (Python 
 
 **Verification (machine-parseable):**
 
+<!-- not mirrored: agent-targeted verification; CONTRIBUTING.md uses the test+lint suite as its smoke check -->
 ```bash
 notebooklm --version                    # text version
 notebooklm auth check --json            # JSON: {"status": "ok", "checks": {...}}
@@ -124,12 +131,14 @@ Occasional CLI use.
 
 **Recommended (cross-platform default, including Windows):**
 
+<!-- not mirrored: end-user pip install (Persona B); CONTRIBUTING.md tracks the in-repo `uv sync` flow only -->
 ```bash
 pip install "notebooklm-py[browser]"
 ```
 
 For an isolated install (avoids polluting your env), use `pipx` or `uv tool`:
 
+<!-- not mirrored: end-user isolated install (pipx / uv tool); CONTRIBUTING.md targets in-repo contributors -->
 ```bash
 pipx install "notebooklm-py[browser]"
 # OR (if you already have uv: https://docs.astral.sh/uv/getting-started/installation/)
@@ -140,9 +149,10 @@ uv tool install "notebooklm-py[browser]"
 
 **Verify:**
 
+<!-- not mirrored: end-user post-install verify (Persona B); contributors run the test suite instead -->
 ```bash
 notebooklm --version              # → 0.4.x
-notebooklm login                  # opens Chromium; press ENTER after sign-in
+notebooklm login                  # opens Chromium for Google sign-in
 notebooklm auth check --test      # confirms auth roundtrip, with explicit success message
 ```
 
@@ -172,17 +182,20 @@ print(notebooklm.__version__)
 **Post-install (3-step recipe — Playwright is *not* required on the server):**
 
 1. **On a workstation with a display**, install with `[browser]` and log in once:
+   <!-- not mirrored: headless-server bootstrap step 1 (Persona D); not part of contributor flow -->
    ```bash
    pip install "notebooklm-py[browser]"
    playwright install chromium
    notebooklm login   # writes ~/.notebooklm/profiles/default/storage_state.json
    ```
 2. **Move the auth file to the server.** Either ship it as a file:
+   <!-- not mirrored: headless-server bootstrap step 2a (scp); not part of contributor flow -->
    ```bash
    scp ~/.notebooklm/profiles/default/storage_state.json \
        user@server:~/.notebooklm/profiles/default/storage_state.json
    ```
    or stuff the contents into a CI / deployment env var (preferred for ephemeral runners):
+   <!-- not mirrored: headless-server bootstrap step 2b (env var); not part of contributor flow -->
    ```bash
    export NOTEBOOKLM_AUTH_JSON="$(cat ~/.notebooklm/profiles/default/storage_state.json)"
    ```
@@ -192,12 +205,13 @@ print(notebooklm.__version__)
    > - Watch for trailing newlines: pipe with `tr -d '\n'` if your secret-set tool adds one (`cat ... | tr -d '\n' | gh secret set NOTEBOOKLM_AUTH_JSON`).
    > - For **ephemeral runners** (GitHub Actions, GitLab CI — no persistent disk between runs), the layer-5 in-process refresh from [troubleshooting.md](troubleshooting.md#authentication-errors) cannot persist rotated cookies. Run `notebooklm auth refresh` periodically on a workstation cron and push the refreshed file with `gh secret set NOTEBOOKLM_AUTH_JSON < ~/.notebooklm/profiles/default/storage_state.json`.
 3. **On the server**, run any non-`login` command:
+   <!-- not mirrored: headless-server smoke test; not part of contributor flow -->
    ```bash
    notebooklm list
    notebooklm auth check --test    # verifies the cookies still authenticate against Google
    ```
 
-**Why no extras:** reduces the install surface to 3 deps (`httpx`, `click`, `rich`); avoids 200+ MB Chromium download in CI images.
+**Why no extras:** reduces the install surface to 4 deps (`httpx`, `click`, `rich`, `filelock`); avoids 200+ MB Chromium download in CI images.
 
 For runtime configuration (env vars, profiles, parallel agents), see [configuration.md#headless-and-ci-environments](configuration.md#headless-and-ci-environments).
 
@@ -207,6 +221,7 @@ Working on this repo.
 
 **Recommended (respects the checked-in `uv.lock`):**
 
+<!-- not mirrored: contributor bootstrap with git clone + cd; CONTRIBUTING.md picks up after the clone with the canonical `uv sync --frozen --extra browser --extra dev --extra markdown` command (enforced verbatim by scripts/check_ci_install_parity.py). -->
 ```bash
 git clone https://github.com/teng-lin/notebooklm-py.git
 cd notebooklm-py
@@ -235,6 +250,7 @@ uv run ruff format --check . && \
 
 **Verify:**
 
+<!-- not mirrored: contributor verify block; CONTRIBUTING.md mirrors only the pre-commit checklist (the more frequent, per-commit version) -->
 ```bash
 notebooklm --version
 uv run pytest --cov=src/notebooklm --cov-report=term-missing --cov-fail-under=90
@@ -262,7 +278,7 @@ Source of truth: `pyproject.toml` `[project.optional-dependencies]`.
 
 | Extra | What it adds | When you need it | pip command | uv (in your project) |
 |---|---|---|---|---|
-| (none) | `httpx`, `click`, `rich` | All RPC operations, all CLI commands except `login`. Suffices when you ship a `storage_state.json`. | `pip install notebooklm-py` | `uv add notebooklm-py` |
+| (none) | `httpx`, `click`, `rich`, `filelock` | All RPC operations, all CLI commands except `login`. Suffices when you ship a `storage_state.json`. | `pip install notebooklm-py` | `uv add notebooklm-py` |
 | `browser` | `playwright>=1.40.0` | `notebooklm login` (interactive). | `pip install "notebooklm-py[browser]"` | `uv add "notebooklm-py[browser]"` |
 | `cookies` | `rookiepy>=0.1.0` | `notebooklm login --browser-cookies <browser>`, `notebooklm auth inspect`. | `pip install "notebooklm-py[cookies]"` | `uv add "notebooklm-py[cookies]"` |
 | `markdown` | `markdownify>=0.14.1` | `notebooklm source fulltext -f markdown`. | `pip install "notebooklm-py[markdown]"` | `uv add "notebooklm-py[markdown]"` |
@@ -284,6 +300,7 @@ Source of truth: `pyproject.toml` `[project.optional-dependencies]`.
 
 On Debian/Ubuntu, Playwright needs system libs for Chromium. Run after `playwright install chromium`:
 
+<!-- not mirrored: Linux-specific Playwright system-library install; CI runs `uv run playwright install-deps chromium` directly in test.yml -->
 ```bash
 playwright install-deps chromium       # scoped to chromium; matches CI
 ```
@@ -292,8 +309,9 @@ Works without `sudo` if you're root or have passwordless sudo. Otherwise `sudo p
 
 ### First-time `notebooklm login`
 
+<!-- not mirrored: end-user first-login walkthrough; contributors typically reuse an existing storage_state.json -->
 ```bash
-notebooklm login                       # opens Chromium, you sign in to Google, press ENTER
+notebooklm login                       # opens Chromium for Google sign-in
 notebooklm auth check --test           # verify
 ```
 
@@ -306,6 +324,7 @@ The login command:
 
 Registers the skill into local agent skill directories:
 
+<!-- not mirrored: agent skill directory registration; out of scope for the contributor README -->
 ```bash
 notebooklm skill install               # writes ~/.claude/skills/notebooklm/, ~/.agents/skills/notebooklm/
 ```
@@ -328,6 +347,7 @@ Optional — only needed if your agent harness reads from those directories and 
 
 **Your first end-to-end run:**
 
+<!-- not mirrored: end-user smoke test; contributors run `uv run pytest` instead -->
 ```bash
 notebooklm create "My First Notebook"
 notebooklm source add https://en.wikipedia.org/wiki/Python_(programming_language)
@@ -351,6 +371,7 @@ For the full CLI surface, see [cli-reference.md](cli-reference.md).
 
 ## Upgrading and uninstalling
 
+<!-- not mirrored: end-user upgrade commands; contributors `git pull && uv sync --frozen ...` instead -->
 ```bash
 pip install --upgrade notebooklm-py            # latest patch
 pip install --upgrade "notebooklm-py[browser]"  # preserves your extras
@@ -360,6 +381,7 @@ For pinning patterns and version-stability guarantees, see [stability.md](stabil
 
 To uninstall:
 
+<!-- not mirrored: end-user uninstall; contributors `git clean -fdx` and remove the worktree instead -->
 ```bash
 pip uninstall notebooklm-py
 rm -rf ~/.notebooklm                          # optional: remove auth state

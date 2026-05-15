@@ -180,6 +180,7 @@ proteomics_de_report/
 ├── tables/
 │   ├── imputed_proteinGroups.csv
 │   └── de_results.csv
+├── ro-crate-metadata.json
 └── reproducibility/
     ├── commands.sh
     ├── environment.yml

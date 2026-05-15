@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 18 followed patterns, 32 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 20 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 18 followed patterns, 32 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 18 |
-| Files         | 32 |
+| Followed pats | 20 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,11 +58,13 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 18 followed patterns, 32 fil
 - `docs/glossary.md`
 - `docs/coding-standards.md`
 - `docs/design.md`
+- `docs/hover.md`
 - `docs/unistyles.md`
 - `docs/file-icons.md`
 - `docs/providers.md`
 - `docs/custom-providers.md`
 - `docs/development.md`
+- `docs/rpc-namespacing.md`
 - `docs/testing.md`
 - `docs/mobile-testing.md`
 - `docs/ad-hoc-daemon-testing.md`
@@ -101,13 +103,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | → | [`docs/development.md`](docs/development.md) |
 | 24 | → | [`docs/file-icons.md`](docs/file-icons.md) |
 | 25 | → | [`docs/glossary.md`](docs/glossary.md) |
-| 26 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 27 | → | [`docs/product.md`](docs/product.md) |
-| 28 | → | [`docs/providers.md`](docs/providers.md) |
-| 29 | → | [`docs/release.md`](docs/release.md) |
-| 30 | → | [`docs/testing.md`](docs/testing.md) |
-| 31 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 32 | → | [`SECURITY.md`](SECURITY.md) |
+| 26 | → | [`docs/hover.md`](docs/hover.md) |
+| 27 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 28 | → | [`docs/product.md`](docs/product.md) |
+| 29 | → | [`docs/providers.md`](docs/providers.md) |
+| 30 | → | [`docs/release.md`](docs/release.md) |
+| 31 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 32 | → | [`docs/testing.md`](docs/testing.md) |
+| 33 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 34 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

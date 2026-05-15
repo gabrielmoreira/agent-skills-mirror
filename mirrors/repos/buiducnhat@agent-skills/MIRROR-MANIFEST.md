@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,10 +71,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/execute-plan/SKILL.md`](skills/execute-plan/SKILL.md) |
 | 11 | ✓ | [`skills/git-commit/SKILL.md`](skills/git-commit/SKILL.md) |
 | 12 | ✓ | [`skills/quick-implement/SKILL.md`](skills/quick-implement/SKILL.md) |
-| 13 | ✓ | [`skills/write-plan/references/phase-template.md`](skills/write-plan/references/phase-template.md) |
-| 14 | ✓ | [`skills/write-plan/references/summary-template.md`](skills/write-plan/references/summary-template.md) |
-| 15 | ✓ | [`skills/write-plan/SKILL.md`](skills/write-plan/SKILL.md) |
-| 16 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 13 | ✓ | [`skills/visualize/references/content-patterns.md`](skills/visualize/references/content-patterns.md) |
+| 14 | ✓ | [`skills/visualize/references/mermaid-recipes.md`](skills/visualize/references/mermaid-recipes.md) |
+| 15 | ✓ | [`skills/visualize/references/router.md`](skills/visualize/references/router.md) |
+| 16 | ✓ | [`skills/visualize/references/templates/context.html`](skills/visualize/references/templates/context.html) |
+| 17 | ✓ | [`skills/visualize/references/templates/document.html`](skills/visualize/references/templates/document.html) |
+| 18 | ✓ | [`skills/visualize/references/templates/plan.html`](skills/visualize/references/templates/plan.html) |
+| 19 | ✓ | [`skills/visualize/references/templates/visualize-theme.css`](skills/visualize/references/templates/visualize-theme.css) |
+| 20 | ✓ | [`skills/visualize/references/verification.md`](skills/visualize/references/verification.md) |
+| 21 | ✓ | [`skills/visualize/references/workflow.md`](skills/visualize/references/workflow.md) |
+| 22 | ✓ | [`skills/visualize/SKILL.md`](skills/visualize/SKILL.md) |
+| 23 | ✓ | [`skills/write-plan/references/phase-template.md`](skills/write-plan/references/phase-template.md) |
+| 24 | ✓ | [`skills/write-plan/references/summary-template.md`](skills/write-plan/references/summary-template.md) |
+| 25 | ✓ | [`skills/write-plan/SKILL.md`](skills/write-plan/SKILL.md) |
+| 26 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
 
 ---
 

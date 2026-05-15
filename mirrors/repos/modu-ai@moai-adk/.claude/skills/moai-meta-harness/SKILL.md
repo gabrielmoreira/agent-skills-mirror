@@ -34,6 +34,8 @@ triggers:
 
 # moai-meta-harness
 
+<!-- @MX:NOTE: [AUTO] V3R4 contract — this skill body is preserved unchanged per SPEC-V3R4-HARNESS-001 §10 exclusion #10 (text annotation only, no behavioral change). The meta-harness 7-Phase workflow that generates project-specific my-harness-* skills and .claude/agents/my-harness/* definitions is governed by REQ-HRN-FND-015 (orchestrator-only AskUserQuestion contract) — any subagent generated under .claude/agents/my-harness/ MUST NOT invoke AskUserQuestion; if user input is required, the subagent returns a structured blocker report and the orchestrator runs the AskUser round. Cross-reference: .claude/rules/moai/core/agent-common-protocol.md § User Interaction Boundary. -->
+
 <!-- ATTRIBUTION
 Original work: revfactory/harness (https://github.com/revfactory/harness)
 License: Apache License 2.0
@@ -151,8 +153,9 @@ Agents involved: `builder-agent`, `builder-skill` for artifact generation.
 This skill fills the skeleton with domain-specific content:
 
 1. Generate agent definitions (`.claude/agents/my-harness/*.md`) referencing
-   existing MoAI agents: `manager-spec`, `manager-strategy`, `manager-tdd`,
-   `manager-ddd`, `manager-quality`, `manager-docs`, `manager-git`,
+   existing MoAI agents: `manager-spec`, `manager-strategy`, `manager-develop`
+   (`cycle_type=tdd` or `cycle_type=ddd` per `quality.yaml` `development_mode`),
+   `manager-quality`, `manager-docs`, `manager-git`,
    `expert-backend`, `expert-frontend`, `expert-debug`, `expert-testing`,
    `expert-security`, `expert-refactoring`, `expert-performance`, `expert-devops`,
    `expert-mobile`, `builder-agent`, `builder-skill`, `builder-plugin`,
@@ -212,8 +215,7 @@ referenced below are static MoAI agents — no new agents are introduced.
 
 **Workflow Managers**
 
-- `manager-ddd` — DDD-flavored harness workflow templates
-- `manager-tdd` — TDD-flavored harness workflow templates
+- `manager-develop` (`cycle_type=ddd` or `cycle_type=tdd` per `.moai/config/sections/quality.yaml` `development_mode`) — DDD or TDD-flavored harness workflow templates (SPEC-V3R3-RETIRED-DDD-001 M3 consolidated the prior DDD and TDD specialist managers into the unified `manager-develop` agent with cycle-type dispatch)
 - `manager-quality` — Quality gate configuration in generated harnesses
 - `manager-docs` — Documentation generation patterns
 - `manager-git` — Git workflow patterns for generated harnesses

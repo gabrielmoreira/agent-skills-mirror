@@ -10,13 +10,22 @@ triggers:
   - keyword: "learning proposal"
   - keyword: "tier 4"
   - keyword: "auto update proposal"
+  - keyword: "harness 학습"
+  - keyword: "harness 상태"
+  - keyword: "harness 제안"
+  - keyword: "harness 롤백"
+  - keyword: "harness 비활성화"
+  - keyword: "학습 제안"
+  - keyword: "자동 업데이트"
 allowed-tools: Bash,Read,Write,Edit,AskUserQuestion
 user-invocable: false
 ---
 
 # moai-harness-learner
 
-Coordinator skill for the Harness Learning Subsystem (SPEC-V3R3-HARNESS-LEARNING-001).
+<!-- @MX:NOTE: [AUTO] V3R4 contract — this skill body is preserved unchanged per SPEC-V3R4-HARNESS-001 §10 exclusion #10 (text annotation only, no behavioral change). The 4-tier observation/heuristic/rule/auto_update ladder defined here is preserved verbatim under REQ-HRN-FND-011. The orchestrator-only AskUserQuestion contract is asserted by REQ-HRN-FND-015 (cross-reference: .claude/rules/moai/core/agent-common-protocol.md § User Interaction Boundary). The downstream replacement of the frequency-count classifier with an embedding-cluster algorithm is deferred to SPEC-V3R4-HARNESS-003. -->
+
+Coordinator skill for the Harness Learning Subsystem (SPEC-V3R3-HARNESS-LEARNING-001, superseded by SPEC-V3R4-HARNESS-001 as the active V3R4 foundation; this V3R3 SPEC's 4-tier ladder is preserved unchanged).
 Surfaces Tier 4 auto-update proposals to the user via AskUserQuestion and orchestrates Apply/Rollback flows.
 
 ## Quick Reference
