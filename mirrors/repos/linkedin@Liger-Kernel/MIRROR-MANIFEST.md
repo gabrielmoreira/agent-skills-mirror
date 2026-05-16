@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `linkedin/Liger-Kernel` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `linkedin/Liger-Kernel` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `linkedin/Liger-Kernel` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,21 +59,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/liger-autopatch/code-generator.md`](.claude/skills/liger-autopatch/code-generator.md) |
-| 2 | ✓ | [`.claude/skills/liger-autopatch/decision-matrix.md`](.claude/skills/liger-autopatch/decision-matrix.md) |
-| 3 | ✓ | [`.claude/skills/liger-autopatch/model-analyzer.md`](.claude/skills/liger-autopatch/model-analyzer.md) |
-| 4 | ✓ | [`.claude/skills/liger-autopatch/SKILL.md`](.claude/skills/liger-autopatch/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/liger-autopatch/validator.md`](.claude/skills/liger-autopatch/validator.md) |
-| 6 | ✓ | [`.claude/skills/liger-kernel-dev/analyzer.md`](.claude/skills/liger-kernel-dev/analyzer.md) |
-| 7 | ✓ | [`.claude/skills/liger-kernel-dev/generator.md`](.claude/skills/liger-kernel-dev/generator.md) |
-| 8 | ✓ | [`.claude/skills/liger-kernel-dev/kernel-profile-format.md`](.claude/skills/liger-kernel-dev/kernel-profile-format.md) |
-| 9 | ✓ | [`.claude/skills/liger-kernel-dev/SKILL.md`](.claude/skills/liger-kernel-dev/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/liger-kernel-dev/validator.md`](.claude/skills/liger-kernel-dev/validator.md) |
-| 11 | ✓ | [`.claude/skills/liger-kernel-perf/finalizer.md`](.claude/skills/liger-kernel-perf/finalizer.md) |
-| 12 | ✓ | [`.claude/skills/liger-kernel-perf/optimization-strategies.md`](.claude/skills/liger-kernel-perf/optimization-strategies.md) |
-| 13 | ✓ | [`.claude/skills/liger-kernel-perf/optimizer.md`](.claude/skills/liger-kernel-perf/optimizer.md) |
-| 14 | ✓ | [`.claude/skills/liger-kernel-perf/profiler.md`](.claude/skills/liger-kernel-perf/profiler.md) |
-| 15 | ✓ | [`.claude/skills/liger-kernel-perf/SKILL.md`](.claude/skills/liger-kernel-perf/SKILL.md) |
+| 1 | ✓ | [`.agents/skills/liger-autopatch/code-generator.md`](.agents/skills/liger-autopatch/code-generator.md) |
+| 2 | ✓ | [`.agents/skills/liger-autopatch/decision-matrix.md`](.agents/skills/liger-autopatch/decision-matrix.md) |
+| 3 | ✓ | [`.agents/skills/liger-autopatch/examples/gemma-profile.md`](.agents/skills/liger-autopatch/examples/gemma-profile.md) |
+| 4 | ✓ | [`.agents/skills/liger-autopatch/examples/llama-profile.md`](.agents/skills/liger-autopatch/examples/llama-profile.md) |
+| 5 | ✓ | [`.agents/skills/liger-autopatch/model-analyzer.md`](.agents/skills/liger-autopatch/model-analyzer.md) |
+| 6 | ✓ | [`.agents/skills/liger-autopatch/SKILL.md`](.agents/skills/liger-autopatch/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/liger-autopatch/templates/lce-forward-dense.md`](.agents/skills/liger-autopatch/templates/lce-forward-dense.md) |
+| 8 | ✓ | [`.agents/skills/liger-autopatch/templates/lce-forward-moe.md`](.agents/skills/liger-autopatch/templates/lce-forward-moe.md) |
+| 9 | ✓ | [`.agents/skills/liger-autopatch/templates/monkey-patch-fn.md`](.agents/skills/liger-autopatch/templates/monkey-patch-fn.md) |
+| 10 | ✓ | [`.agents/skills/liger-autopatch/templates/test-convergence.md`](.agents/skills/liger-autopatch/templates/test-convergence.md) |
+| 11 | ✓ | [`.agents/skills/liger-autopatch/templates/test-instance-patch.md`](.agents/skills/liger-autopatch/templates/test-instance-patch.md) |
+| 12 | ✓ | [`.agents/skills/liger-autopatch/validator.md`](.agents/skills/liger-autopatch/validator.md) |
+| 13 | ✓ | [`.agents/skills/liger-kernel-dev/analyzer.md`](.agents/skills/liger-kernel-dev/analyzer.md) |
+| 14 | ✓ | [`.agents/skills/liger-kernel-dev/examples/cross-entropy-profile.md`](.agents/skills/liger-kernel-dev/examples/cross-entropy-profile.md) |
+| 15 | ✓ | [`.agents/skills/liger-kernel-dev/examples/rms-norm-profile.md`](.agents/skills/liger-kernel-dev/examples/rms-norm-profile.md) |
+| 16 | ✓ | [`.agents/skills/liger-kernel-dev/examples/swiglu-profile.md`](.agents/skills/liger-kernel-dev/examples/swiglu-profile.md) |
+| 17 | ✓ | [`.agents/skills/liger-kernel-dev/generator.md`](.agents/skills/liger-kernel-dev/generator.md) |
+| 18 | ✓ | [`.agents/skills/liger-kernel-dev/kernel-profile-format.md`](.agents/skills/liger-kernel-dev/kernel-profile-format.md) |
+| 19 | ✓ | [`.agents/skills/liger-kernel-dev/SKILL.md`](.agents/skills/liger-kernel-dev/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/liger-kernel-dev/templates/benchmark.md`](.agents/skills/liger-kernel-dev/templates/benchmark.md) |
+| 21 | ✓ | [`.agents/skills/liger-kernel-dev/templates/functional-api.md`](.agents/skills/liger-kernel-dev/templates/functional-api.md) |
+| 22 | ✓ | [`.agents/skills/liger-kernel-dev/templates/module-wrapper.md`](.agents/skills/liger-kernel-dev/templates/module-wrapper.md) |
+| 23 | ✓ | [`.agents/skills/liger-kernel-dev/templates/ops-kernel.md`](.agents/skills/liger-kernel-dev/templates/ops-kernel.md) |
+| 24 | ✓ | [`.agents/skills/liger-kernel-dev/templates/unit-test.md`](.agents/skills/liger-kernel-dev/templates/unit-test.md) |
+| 25 | ✓ | [`.agents/skills/liger-kernel-dev/validator.md`](.agents/skills/liger-kernel-dev/validator.md) |
+| 26 | ✓ | [`.agents/skills/liger-kernel-perf/finalizer.md`](.agents/skills/liger-kernel-perf/finalizer.md) |
+| 27 | ✓ | [`.agents/skills/liger-kernel-perf/optimization-strategies.md`](.agents/skills/liger-kernel-perf/optimization-strategies.md) |
+| 28 | ✓ | [`.agents/skills/liger-kernel-perf/optimizer.md`](.agents/skills/liger-kernel-perf/optimizer.md) |
+| 29 | ✓ | [`.agents/skills/liger-kernel-perf/profiler.md`](.agents/skills/liger-kernel-perf/profiler.md) |
+| 30 | ✓ | [`.agents/skills/liger-kernel-perf/SKILL.md`](.agents/skills/liger-kernel-perf/SKILL.md) |
+| 31 | ✓ | [`.agents/skills/liger-kernel-perf/templates/optimization-profile.md`](.agents/skills/liger-kernel-perf/templates/optimization-profile.md) |
+| 32 | ✓ | [`.agents/skills/liger-kernel-perf/templates/variant-notes.md`](.agents/skills/liger-kernel-perf/templates/variant-notes.md) |
+| 33 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

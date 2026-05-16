@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 111 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 111 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 111 |
+| Files         | 112 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,39 +137,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 76 | ✓ | [`.agents/skills/nemoclaw-user-manage-policy/SKILL.md`](.agents/skills/nemoclaw-user-manage-policy/SKILL.md) |
 | 77 | ✓ | [`.agents/skills/nemoclaw-user-manage-sandboxes/references/backup-restore.md`](.agents/skills/nemoclaw-user-manage-sandboxes/references/backup-restore.md) |
 | 78 | ✓ | [`.agents/skills/nemoclaw-user-manage-sandboxes/references/messaging-channels.md`](.agents/skills/nemoclaw-user-manage-sandboxes/references/messaging-channels.md) |
-| 79 | ✓ | [`.agents/skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md`](.agents/skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md) |
-| 80 | ✓ | [`.agents/skills/nemoclaw-user-manage-sandboxes/SKILL.md`](.agents/skills/nemoclaw-user-manage-sandboxes/SKILL.md) |
-| 81 | ✓ | [`.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md`](.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md) |
-| 82 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/ecosystem.md`](.agents/skills/nemoclaw-user-overview/references/ecosystem.md) |
-| 83 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/how-it-works.md`](.agents/skills/nemoclaw-user-overview/references/how-it-works.md) |
-| 84 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/overview.md`](.agents/skills/nemoclaw-user-overview/references/overview.md) |
-| 85 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/release-notes.md`](.agents/skills/nemoclaw-user-overview/references/release-notes.md) |
-| 86 | ✓ | [`.agents/skills/nemoclaw-user-overview/SKILL.md`](.agents/skills/nemoclaw-user-overview/SKILL.md) |
-| 87 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/architecture.md`](.agents/skills/nemoclaw-user-reference/references/architecture.md) |
-| 88 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/cli-selection-guide.md`](.agents/skills/nemoclaw-user-reference/references/cli-selection-guide.md) |
-| 89 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/commands.md`](.agents/skills/nemoclaw-user-reference/references/commands.md) |
-| 90 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/network-policies.md`](.agents/skills/nemoclaw-user-reference/references/network-policies.md) |
-| 91 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/troubleshooting.md`](.agents/skills/nemoclaw-user-reference/references/troubleshooting.md) |
-| 92 | ✓ | [`.agents/skills/nemoclaw-user-reference/SKILL.md`](.agents/skills/nemoclaw-user-reference/SKILL.md) |
-| 93 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 94 | ✓ | [`agents/hermes/config/build-env.ts`](agents/hermes/config/build-env.ts) |
-| 95 | ✓ | [`agents/hermes/config/hermes-config.ts`](agents/hermes/config/hermes-config.ts) |
-| 96 | ✓ | [`agents/hermes/config/messaging-config.ts`](agents/hermes/config/messaging-config.ts) |
-| 97 | ✓ | [`agents/hermes/config/model-specific-setup.ts`](agents/hermes/config/model-specific-setup.ts) |
-| 98 | ✓ | [`agents/hermes/config/write-config.ts`](agents/hermes/config/write-config.ts) |
-| 99 | ✓ | [`agents/hermes/config/yaml.ts`](agents/hermes/config/yaml.ts) |
-| 100 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
-| 101 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
-| 102 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
-| 103 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |
-| 104 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
-| 105 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
-| 106 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
-| 107 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
-| 108 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
-| 109 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
-| 110 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
-| 111 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 79 | ✓ | [`.agents/skills/nemoclaw-user-manage-sandboxes/references/runtime-controls.md`](.agents/skills/nemoclaw-user-manage-sandboxes/references/runtime-controls.md) |
+| 80 | ✓ | [`.agents/skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md`](.agents/skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md) |
+| 81 | ✓ | [`.agents/skills/nemoclaw-user-manage-sandboxes/SKILL.md`](.agents/skills/nemoclaw-user-manage-sandboxes/SKILL.md) |
+| 82 | ✓ | [`.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md`](.agents/skills/nemoclaw-user-monitor-sandbox/SKILL.md) |
+| 83 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/ecosystem.md`](.agents/skills/nemoclaw-user-overview/references/ecosystem.md) |
+| 84 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/how-it-works.md`](.agents/skills/nemoclaw-user-overview/references/how-it-works.md) |
+| 85 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/overview.md`](.agents/skills/nemoclaw-user-overview/references/overview.md) |
+| 86 | ✓ | [`.agents/skills/nemoclaw-user-overview/references/release-notes.md`](.agents/skills/nemoclaw-user-overview/references/release-notes.md) |
+| 87 | ✓ | [`.agents/skills/nemoclaw-user-overview/SKILL.md`](.agents/skills/nemoclaw-user-overview/SKILL.md) |
+| 88 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/architecture.md`](.agents/skills/nemoclaw-user-reference/references/architecture.md) |
+| 89 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/cli-selection-guide.md`](.agents/skills/nemoclaw-user-reference/references/cli-selection-guide.md) |
+| 90 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/commands.md`](.agents/skills/nemoclaw-user-reference/references/commands.md) |
+| 91 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/network-policies.md`](.agents/skills/nemoclaw-user-reference/references/network-policies.md) |
+| 92 | ✓ | [`.agents/skills/nemoclaw-user-reference/references/troubleshooting.md`](.agents/skills/nemoclaw-user-reference/references/troubleshooting.md) |
+| 93 | ✓ | [`.agents/skills/nemoclaw-user-reference/SKILL.md`](.agents/skills/nemoclaw-user-reference/SKILL.md) |
+| 94 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 95 | ✓ | [`agents/hermes/config/build-env.ts`](agents/hermes/config/build-env.ts) |
+| 96 | ✓ | [`agents/hermes/config/hermes-config.ts`](agents/hermes/config/hermes-config.ts) |
+| 97 | ✓ | [`agents/hermes/config/messaging-config.ts`](agents/hermes/config/messaging-config.ts) |
+| 98 | ✓ | [`agents/hermes/config/model-specific-setup.ts`](agents/hermes/config/model-specific-setup.ts) |
+| 99 | ✓ | [`agents/hermes/config/write-config.ts`](agents/hermes/config/write-config.ts) |
+| 100 | ✓ | [`agents/hermes/config/yaml.ts`](agents/hermes/config/yaml.ts) |
+| 101 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
+| 102 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
+| 103 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
+| 104 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |
+| 105 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
+| 106 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
+| 107 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
+| 108 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
+| 109 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
+| 110 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 111 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
+| 112 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

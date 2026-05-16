@@ -60,22 +60,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`assets/watcher-templates/CLAUDE.md`](assets/watcher-templates/CLAUDE.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`cmd/agent-deck/assets/skills/watcher-creator/SKILL.md`](cmd/agent-deck/assets/skills/watcher-creator/SKILL.md) |
-| 4 | ✓ | [`internal/watcher/assets/watcher-templates/CLAUDE.md`](internal/watcher/assets/watcher-templates/CLAUDE.md) |
-| 5 | ✓ | [`llms.txt`](llms.txt) |
-| 6 | ✓ | [`skills/agent-deck/references/cli-reference.md`](skills/agent-deck/references/cli-reference.md) |
-| 7 | ✓ | [`skills/agent-deck/references/config-reference.md`](skills/agent-deck/references/config-reference.md) |
-| 8 | ✓ | [`skills/agent-deck/references/sandbox.md`](skills/agent-deck/references/sandbox.md) |
-| 9 | ✓ | [`skills/agent-deck/references/troubleshooting.md`](skills/agent-deck/references/troubleshooting.md) |
-| 10 | ✓ | [`skills/agent-deck/references/tui-reference.md`](skills/agent-deck/references/tui-reference.md) |
-| 11 | ✓ | [`skills/agent-deck/scripts/launch-subagent.sh`](skills/agent-deck/scripts/launch-subagent.sh) |
-| 12 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
-| 13 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
-| 14 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
-| 15 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
-| 16 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
-| 17 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
+| 2 | ✓ | [`cmd/agent-deck/assets/skills/watcher-creator/SKILL.md`](cmd/agent-deck/assets/skills/watcher-creator/SKILL.md) |
+| 3 | ✓ | [`internal/watcher/assets/watcher-templates/CLAUDE.md`](internal/watcher/assets/watcher-templates/CLAUDE.md) |
+| 4 | ✓ | [`llms.txt`](llms.txt) |
+| 5 | ✓ | [`skills/agent-deck/references/cli-reference.md`](skills/agent-deck/references/cli-reference.md) |
+| 6 | ✓ | [`skills/agent-deck/references/config-reference.md`](skills/agent-deck/references/config-reference.md) |
+| 7 | ✓ | [`skills/agent-deck/references/sandbox.md`](skills/agent-deck/references/sandbox.md) |
+| 8 | ✓ | [`skills/agent-deck/references/troubleshooting.md`](skills/agent-deck/references/troubleshooting.md) |
+| 9 | ✓ | [`skills/agent-deck/references/tui-reference.md`](skills/agent-deck/references/tui-reference.md) |
+| 10 | ✓ | [`skills/agent-deck/scripts/launch-subagent.sh`](skills/agent-deck/scripts/launch-subagent.sh) |
+| 11 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
+| 12 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
+| 13 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
+| 14 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
+| 15 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
+| 16 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
+| 17 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
 
 ---
 

@@ -74,10 +74,11 @@ When the user asks a question, match it to a skill and act:
 | WES clinical report Spanish, informe clinico WES, exome PDF espanol, Predice, Inbiomedic, Novogene report | `skills/wes-clinical-report-es/` | Run `wes_clinical_report_es.py` |
 | Proteomic aging clocks, organ aging, Olink clock, proteomics clock, organ clock, Goeminne, plasma protein aging, organ-specific aging | `skills/proteomics-clock/` | Run `proteomics_clock.py` |
 | Single FASTA analysis, GC content, ORF finding, protein properties, isoelectric point, GRAVY index, molecular weight, sequence summary, fasta metrics | `skills/analyze-fasta/` | Run `analyze_fasta.py` |
+| Phylogenetic tree from VCF, distance matrix from variants, VCF2TREE, VCF2DIST, DIST2TREE, FASTA2DIST, fastreer, fastreeR, genomic distance, k-mer distance, population tree, cosine distance, sample phylogeny, hierarchical clustering of samples | `skills/fastreer/` | Run `fastreer.py` |
 
 ## How to Use a Skill
 
-### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock)
+### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, fastreer)
 1. Read the skill's `SKILL.md` for domain context
 2. Run the Python script with correct CLI arguments (see below)
 3. Show the user the output — open any generated figures and explain results
@@ -260,6 +261,17 @@ python skills/proteomics-clock/proteomics_clock.py \
 python skills/proteomics-clock/proteomics_clock.py \
   --input <olink_npx.csv> --organs Heart,Brain,Kidney --generation gen1 --output <dir>
 python skills/proteomics-clock/proteomics_clock.py --demo --output /tmp/proteomics_demo
+
+# fastreeR — phylogenetic trees and distance matrices from VCF/FASTA
+python skills/fastreer/fastreer.py \
+  --command VCF2TREE --input samples.vcf.gz --bootstrap 100 --output <report_dir>
+python skills/fastreer/fastreer.py \
+  --command VCF2DIST --input samples.vcf.gz --threads 4 --output <report_dir>
+python skills/fastreer/fastreer.py \
+  --command FASTA2DIST --input sequences.fasta --kmer 5 --output <report_dir>
+python skills/fastreer/fastreer.py \
+  --command DIST2TREE --input distances.dist --output <report_dir>
+python skills/fastreer/fastreer.py --demo --output /tmp/fastreer_demo
 ```
 
 ## Demo Data
@@ -296,6 +308,8 @@ For instant demos when the user has no data:
 | WES demo report (8 P/LP variants, 6 PGx, synthetic) | `skills/wes-clinical-report-en/examples/demo_WES_Report.md` | wes-clinical-report-en |
 | WES demo report (same, for Spanish output) | `skills/wes-clinical-report-es/examples/demo_WES_Report.md` | wes-clinical-report-es |
 | MultiQC demo (synthetic FastQC, 3 samples — SAMPLE_01/02/03) | `--demo` flag | multiqc-reporter |
+| fastreeR demo VCF (5 synthetic samples, 20 biallelic SNPs, chr1) | `skills/fastreer/examples/demo_samples.vcf` | fastreer |
+| fastreeR demo FASTA (5 synthetic sequences, 60 bp) | `skills/fastreer/examples/demo_sequences.fasta` | fastreer |
 | Corpas 30x chr20 SNPs + indels (WGS) | `corpas-30x/subsets/chr20_snps_indels.vcf.gz` | variant-annotation, equity-scorer |
 | Corpas 30x SV calls (WGS) | `corpas-30x/subsets/sv_calls.vcf.gz` | variant-annotation |
 | Corpas 30x CNV calls (WGS) | `corpas-30x/subsets/cnv_calls.vcf.gz` | variant-annotation |
@@ -399,6 +413,13 @@ python skills/flow-bio/flow_bio.py --demo --output /tmp/flow_demo
 
 # Flow.bio search (requires FLOW_USERNAME + FLOW_PASSWORD)
 python skills/flow-bio/flow_bio.py --search "RNA-seq" --output /tmp/flow_search
+
+# fastreeR demo
+python skills/fastreer/fastreer.py --demo --output /tmp/fastreer_demo
+
+# fastreeR VCF2TREE
+python skills/fastreer/fastreer.py --command VCF2TREE \
+  --input skills/fastreer/examples/demo_samples.vcf --output /tmp/fastreer_vcf2tree
 ```
 
 ## Development Rules (STRICT)

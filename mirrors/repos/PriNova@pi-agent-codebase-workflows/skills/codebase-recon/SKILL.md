@@ -23,6 +23,8 @@ Goal: build durable, compact project understanding for future agents through bou
 
 ## Target Artifacts
 
+Unscoped/repo-level artifacts:
+
 ```text
 AGENTS.md
 
@@ -40,7 +42,38 @@ docs/
       0001-observed-architecture.md
 ```
 
-## Focus Argument
+Scoped artifacts, created only when a pass receives a focus argument:
+
+```text
+docs/
+  agent/
+    scopes/
+      by-path/<repo-relative-path>/
+        README.md              # optional local index for large/complex scopes
+        REPO_INVENTORY.md
+        ARCHITECTURE.md
+        DATA_MODEL.md
+        INVARIANTS.md
+        DEPENDENCY_RULES.md
+        DESIGN_ISSUES.md
+        RISK_REGISTER.md
+        CHANGE_GUIDE.md
+        CONTRACTS.md
+      by-domain/<domain-slug>/
+        README.md              # optional local index for large/complex scopes
+        ARCHITECTURE.md
+        DATA_MODEL.md
+        INVARIANTS.md
+        DEPENDENCY_RULES.md
+        DESIGN_ISSUES.md
+        RISK_REGISTER.md
+        CHANGE_GUIDE.md
+        CONTRACTS.md
+```
+
+`docs/agent/SCOPES.md` is created when scoped artifacts exist and acts as their registry. Top-level docs remain valid and are used as repo-level summaries/fallbacks.
+
+## Focus Argument and Scoped Artifacts
 
 Pass prompts accept an optional `[focus]` argument. Use it to scope reconstruction to a module, package, app, service, directory, or bounded domain area, especially in monorepos.
 
@@ -49,14 +82,48 @@ Examples:
 - `/recon-02-architecture apps/mobile auth flow`
 - `/skill:codebase-recon pass-03-data-invariants services/billing`
 
+When focus is absent:
+- run the pass in unscoped mode
+- write/update the standard top-level `docs/agent/*.md` artifact for the pass
+- if scoped artifacts already exist, use them only when the pass explicitly calls for consolidation
+
 When focus is provided:
 - inspect only the focused area plus immediate dependencies, entry points, tests, and external boundaries needed to understand it
-- write findings into the standard `docs/agent/*.md` artifacts with clear scope labels
+- if focus is an existing repo-relative path, write to `docs/agent/scopes/by-path/<focus>/`
+- if focus is not a path, write to `docs/agent/scopes/by-domain/<slug>/`
+- update `docs/agent/SCOPES.md` with scope path, docs path, status, ownership, and external contracts
+- optionally create/update scoped `README.md` only when helpful for large/complex scopes; otherwise rely on `SCOPES.md` as the index
+- write pass findings into the scoped artifact for that pass, not into the top-level artifact
 - include evidence paths that show the scoped boundary
 - mark interactions with the rest of the repo as external dependencies/boundaries
 - leave cross-scope reconciliation for Pass 8 consolidation
 
+Scoped docs are additive and backward compatible. If a repository was reconstructed before scoped artifacts existed, keep existing top-level docs. Create `SCOPES.md` and scoped artifacts only when the first scoped pass runs. Later consolidation may summarize scoped findings into top-level docs.
+
 This enables module/package-level reconstruction first, then later consolidation into repo-level artifacts.
+
+## Scope Registry and Contracts
+
+`docs/agent/SCOPES.md` should stay compact and act as the discovery index for future workflows.
+
+Suggested columns:
+- Scope
+- Kind: `path` / `domain`
+- Docs path
+- Status: `partial` / `current` / `stale` / `deprecated`
+- Owns
+- External contracts
+- Last observed evidence
+
+Each scoped directory may include `CONTRACTS.md` for cross-module APIs, shared types, schemas, events, generated clients, persistence boundaries, or public internal contracts.
+
+Contract rules:
+- every cross-scope contract should have one owner scope
+- owner scope documents source of truth, compatibility rules, tests, and consumers
+- consumer scopes link to owner contract and document local usage/risk only
+- do not duplicate full contract rules across scopes
+- generated clients reference source schema owner
+- if ownership is unclear, record it as a known unknown or drift risk
 
 ## Execution Modes
 
@@ -105,7 +172,7 @@ Switch from all-in-one to numbered-pass mode when:
 
 ## Pass 1 — Repository Inventory
 
-Task: write/update `docs/agent/REPO_INVENTORY.md`.
+Task: write/update `docs/agent/REPO_INVENTORY.md`, or scoped `REPO_INVENTORY.md` when focus is provided.
 
 Rules:
 - No source edits.
@@ -125,7 +192,7 @@ Output sections:
 
 Read first: `docs/agent/REPO_INVENTORY.md`.
 
-Task: write/update `docs/agent/ARCHITECTURE.md`.
+Task: write/update `docs/agent/ARCHITECTURE.md`, or scoped `ARCHITECTURE.md` when focus is provided.
 
 Find:
 - dominant architecture style: vertical slices, layered, MVC, clean/onion/hexagonal, framework-driven, mixed/unclear
@@ -148,7 +215,7 @@ Output sections:
 
 Read first: `docs/agent/REPO_INVENTORY.md`, `docs/agent/ARCHITECTURE.md`.
 
-Task: write/update `docs/agent/DATA_MODEL.md` and `docs/agent/INVARIANTS.md`.
+Task: write/update `docs/agent/DATA_MODEL.md` and `docs/agent/INVARIANTS.md`, or scoped `DATA_MODEL.md` and `INVARIANTS.md` when focus is provided.
 
 Focus only on semantically important data crossing module boundaries, persisted/serialized formats, configs, APIs, IDs, states, lifecycles.
 
@@ -165,7 +232,7 @@ Output sections:
 
 Read first: `docs/agent/REPO_INVENTORY.md`, `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`.
 
-Task: write/update `docs/agent/DEPENDENCY_RULES.md` and `docs/agent/DESIGN_ISSUES.md`.
+Task: write/update `docs/agent/DEPENDENCY_RULES.md` and `docs/agent/DESIGN_ISSUES.md`, or scoped `DEPENDENCY_RULES.md` and `DESIGN_ISSUES.md` when focus is provided.
 
 Find:
 - observed module dependencies
@@ -189,7 +256,7 @@ Output sections:
 
 Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DEPENDENCY_RULES.md`.
 
-Task: write/update `docs/agent/RISK_REGISTER.md`.
+Task: write/update `docs/agent/RISK_REGISTER.md`, or scoped `RISK_REGISTER.md` when focus is provided.
 
 Find high-signal risks only:
 - inconsistent state transitions
@@ -224,6 +291,7 @@ Rules:
 - Link to deeper docs; do not duplicate them.
 - Focus on rules that prevent drift and bugs.
 - Include design/implementation/verification workflow.
+- If `docs/agent/SCOPES.md` exists, include scoped-doc discovery guidance: future agents should check `SCOPES.md`, use longest matching path scope first, then repo-level fallback.
 - Merge with existing root `AGENTS.md` if present.
 - Do not create `docs/AGENTS.md` or `docs/agent/AGENTS.md`.
 
@@ -243,11 +311,12 @@ Suggested sections:
 
 Read first: `docs/agent/ARCHITECTURE.md`, `docs/agent/DATA_MODEL.md`, `docs/agent/INVARIANTS.md`, `docs/agent/DEPENDENCY_RULES.md`.
 
-Task: write/update `docs/agent/CHANGE_GUIDE.md`.
+Task: write/update `docs/agent/CHANGE_GUIDE.md`, or scoped `CHANGE_GUIDE.md` when focus is provided.
 
 Required sections:
 - Before coding
 - How to locate affected slice/module
+- How to discover matching scoped docs through `docs/agent/SCOPES.md` when present
 - How to trace data flow
 - How to add/modify data structures
 - How to add side effects safely
@@ -258,14 +327,17 @@ Required sections:
 
 ## Pass 8 — Consolidation
 
-Read root `AGENTS.md` if it exists and all relevant `docs/agent/*.md` created by previous passes.
+Read root `AGENTS.md` if it exists, all relevant top-level `docs/agent/*.md`, `docs/agent/SCOPES.md` if present, and relevant scoped docs under `docs/agent/scopes/**` created by previous passes.
 
 Task: consolidate artifacts.
 
 Rules:
 - No source code edits.
 - Reconcile contradictions; do not silently delete disagreement evidence.
+- Read `docs/agent/SCOPES.md` first when present; use it to select relevant scoped summaries and changed/relevant scoped docs.
 - When scoped passes disagree, resolve from source evidence where possible, assign/clarify ownership for shared contracts where evidence supports it, or record the disagreement as a drift risk / `Known Unknown` with cited evidence.
+- Keep detailed scope-specific facts in scoped artifacts; summarize only stable repo-level guidance in top-level docs.
+- Update `SCOPES.md` status/currentness when consolidation identifies stale, deprecated, or reconciled scopes.
 - De-duplicate repeated facts only after preserving the strongest evidence paths and any materially different scope-specific observations.
 - Keep root `AGENTS.md` short and operational.
 - Ensure `ARCHITECTURE.md` describes structure, not line-by-line code.

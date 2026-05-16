@@ -87,6 +87,8 @@ Prioritize: project runbooks/checklists, workflow docs, system-stability docs, l
 
 Return `NO_CHANGE` if: change cannot be validated objectively, evidence is missing, change expands permissions, or same fix was already applied.
 
+For iterative anneal loops (refinement passes), call `shouldStop(...)` from `scripts/global/anneal-stop.js` after every iteration (Epic #1568 AC-5, #1574). Stop when: deterministic gates green, OR `iterations >= 3`, OR `|rubric_mean_delta| <= 0.5`. Continuation past a stop requires `ANNEAL_OVERRIDE_CONTINUE: rationale` comment from the operator and is logged as `event:kill-switch-bypass`.
+
 ## Quality bar
 
 Good anneal output is: **specific** (concrete artifacts), **minimal** (smallest viable delta), **testable** (pass/fail checks), **traceable** (rationale + risk), **trend-aware** (drift reducing).

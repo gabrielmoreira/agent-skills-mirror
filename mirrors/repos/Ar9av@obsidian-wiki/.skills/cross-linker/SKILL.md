@@ -128,6 +128,38 @@ If the term isn't mentioned naturally in the body but the pages are semantically
 
 If a `## Related` section already exists, append to it. Don't duplicate existing entries.
 
+### 4c: Infer and write relationship type
+
+For every EXTRACTED or INFERRED link added (inline or related section), infer a semantic relationship type from the surrounding sentence context and write it to the page's `relationships:` frontmatter block. Skip AMBIGUOUS links.
+
+**Type inference rules** — scan the sentence containing the mention (or, for related-section links, the page title and shared-tag context):
+
+| Sentence pattern | Inferred type |
+|---|---|
+| "X extends / builds on / generalises Y" | `extends` |
+| "X implements / is an implementation of Y" | `implements` |
+| "X contradicts / opposes / refutes / is at odds with Y" | `contradicts` |
+| "X is derived from / based on / adapted from Y" | `derived_from` |
+| "X uses / relies on / depends on / requires Y" | `uses` |
+| "X replaces / supersedes / deprecates Y" | `replaces` |
+| Shared tags or cross-category inference with no directional cue | `related_to` |
+
+If the surrounding context is ambiguous or the link came from shared-tag matching (no in-body mention), default to `related_to`.
+
+**Writing the block:**
+
+Read the page's YAML frontmatter. If a `relationships:` block already exists, append new entries without duplicating existing targets. If the block is absent, add it after `aliases:` (or after `tags:` when `aliases:` is missing).
+
+```yaml
+relationships:
+  - target: "[[concepts/knowledge-graphs]]"
+    type: uses
+```
+
+Always use wikilink format (`[[path/to/page]]`) for `target` values in the `relationships:` YAML block — regardless of `OBSIDIAN_LINK_FORMAT`. The `OBSIDIAN_LINK_FORMAT` setting controls body content; frontmatter properties always use wikilink syntax so that `wiki-export` can reliably parse them.
+
+Only add entries for links added in this cross-linker run — do not touch typed entries that were already present.
+
 ## Step 5: Score Misc Page Affinity
 
 After the main linking pass, update affinity scores for all pages in `misc/` (pages with `promotion_status: misc` in their frontmatter, or located under the `misc/` directory).
@@ -161,11 +193,11 @@ Present a summary:
 
 ### Links Added: 23 across 12 pages
 
-| Page | Links Added | Confidence | Type |
-|---|---|---|---|
-| `projects/my-project/my-project.md` | 3 | EXTRACTED | 2 inline, 1 related |
-| `entities/jane-doe.md` | 5 | INFERRED | 3 inline, 2 related |
-| ... | | | |
+| Page | Links Added | Confidence | Placement | Relationship Types |
+|---|---|---|---|---|
+| `projects/my-project/my-project.md` | 3 | EXTRACTED | 2 inline, 1 related | uses ×2, related_to ×1 |
+| `entities/jane-doe.md` | 5 | INFERRED | 3 inline, 2 related | extends ×1, uses ×3, related_to ×1 |
+| ... | | | | |
 
 ### Orphan Pages Remaining: 2
 - `references/foo.md` — no incoming or outgoing links found
@@ -189,7 +221,7 @@ To promote: move the page to `projects/<project-name>/references/` and update al
 
 Append to `log.md`:
 ```
-- [TIMESTAMP] CROSS_LINK pages_scanned=N links_added=M pages_modified=P orphans_remaining=Q misc_affinity_updated=R promotion_candidates=S
+- [TIMESTAMP] CROSS_LINK pages_scanned=N links_added=M typed_relations_written=T pages_modified=P orphans_remaining=Q misc_affinity_updated=R promotion_candidates=S
 ```
 
 **`hot.md`** — Read `$OBSIDIAN_VAULT_PATH/hot.md` (create from the template in `wiki-ingest` if missing). Update **Recent Activity** with a one-line summary of what was linked — e.g. "Cross-linked 23 mentions across 12 pages; 2 orphans remain." Keep the last 3 operations. Update `updated` timestamp.

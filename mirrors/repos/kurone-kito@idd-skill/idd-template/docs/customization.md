@@ -24,6 +24,7 @@ behavior change too.
 | Issue scope             | Roadmap-first discovery                                                                                                                          | Keep `issue-scope` as `roadmap` for roadmap-scoped work, or deliberately choose `orphan-first` when the repository wants unblocked orphan issues to be considered before roadmap traversal.                                                                                                                                                                                                                                                                                                                                               |
 | Orphan-first approval   | No extra gate beyond orphan readiness checks                                                                                                     | Keep `orphan-first-policy` as `none`, or opt in to `maintainer-approved` or `public-disabled` when public or community-submitted issues need an explicit maintainer approval layer before A0-O can select them.                                                                                                                                                                                                                                                                                                                           |
 | Issue-author approval   | Secure-by-default target contract; unattended work needs a self-authorizing issue author or explicit approval unless the repository opts out     | Record the gate decision, approval actors, freshness rule, approval signals, and opt-out semantics in repository-local policy docs and onboarding. Keep this contract aligned with the discovery/claim behavior that already ships, and update both surfaces together if local policy changes later.                                                                                                                                                                                                                                      |
+| Issue authoring guard   | Discover skips issues carrying the configured authoring label and warns when that label appears stale                                            | Configure `issueAuthoring.authoringLabelName` and `issueAuthoring.authoringStaleAge` in `.github/idd/config.json` when local label naming or timing differs from the distributed defaults. Keep the label available in the target repository and keep `authoringStaleAge` less than `claimTiming.staleAge`; see [IDD policy constants](policy-constants.md#issue-authoring-defaults).                                                                                                                                                     |
 
 ## Non-Configurable Safety Invariants
 
@@ -278,6 +279,25 @@ profile that lets the same agent session continue through F3 after the
 normal freshness, CI, review, advisory, unresolved-thread, and claim
 gates pass.
 
+Merge policy is not the same as merge topology. Before selecting or
+keeping `fully_autonomous_merge`, confirm that GitHub can satisfy the
+repository's required-review and CODEOWNER rules for PRs authored by the
+merge-capable actor. A solo account that authors the PR and is also the
+only matching CODEOWNER cannot approve its own PR, so required
+CODEOWNER review can block an otherwise valid IDD run.
+
+Choose the topology intentionally:
+
+- Use a non-author CODEOWNER or required reviewer when human or team
+  review is the intended safety gate.
+- Use a pull-request-only ruleset bypass for the trusted merge-capable
+  actor when the repository intentionally permits autonomous merge after
+  all IDD gates pass. This bypass must not be treated as permission to
+  skip branch freshness, CI, review, advisory, unresolved-thread, or
+  claim checks.
+- Change CODEOWNERS coverage or move to `human_merge` when the
+  repository wants CODEOWNER review to remain a human-owned policy gate.
+
 The distributed workflow expects merge commits. Changing the merge
 method, required review policy, or branch protection behavior is a
 repository policy change, not a copy edit.
@@ -471,6 +491,8 @@ approval-signal and issue-authoring knobs directly:
     "labelFreshnessMode": "event-freshness"
   },
   "issueAuthoring": {
+    "authoringLabelName": "status:authoring",
+    "authoringStaleAge": "PT4H",
     "maxClarificationRounds": 5
   }
 }
@@ -480,13 +502,22 @@ Migration notes:
 
 - omit `approvalSignals.readyLabelName`,
   `approvalSignals.labelFreshnessMode`, and
+  `issueAuthoring.authoringLabelName`,
+  `issueAuthoring.authoringStaleAge`, and
   `issueAuthoring.maxClarificationRounds` to keep the distributed
-  defaults (`idd:ready`, `presence-only`, and 3 clarification rounds)
+  defaults (`idd:ready`, `presence-only`, `status:authoring`, `PT4H`,
+  and 3 clarification rounds)
 - when changing `readyLabelName`, update onboarding notes, label
   automation, and any repository guidance that still mentions the old
   label explicitly
 - when enabling `event-freshness`, expect maintainers to re-apply the
   ready label after substantive issue edits or generated-plan updates
+- when changing `issueAuthoring.authoringLabelName`, update label
+  automation and issue-authoring guidance so the target label exists
+  before Discover relies on it
+- when changing `issueAuthoring.authoringStaleAge`, keep it less than
+  `claimTiming.staleAge` (`PT24H` by default) and update both timing
+  decisions together when necessary
 - when increasing `issueAuthoring.maxClarificationRounds`, keep the
   bound finite so issue drafting still converges instead of looping
 

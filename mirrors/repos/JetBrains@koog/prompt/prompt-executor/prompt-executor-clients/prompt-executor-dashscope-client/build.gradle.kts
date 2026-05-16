@@ -1,5 +1,6 @@
 import ai.koog.gradle.publish.maven.Publishing.publishToMaven
 
+val isBeta by extra(true)
 
 plugins {
     id("ai.kotlin.multiplatform")
@@ -24,6 +25,7 @@ kotlin {
 
         jvmTest {
             dependencies {
+                implementation(project(":http-client:http-client-ktor"))
                 implementation(libs.ktor.client.mock)
             }
         }

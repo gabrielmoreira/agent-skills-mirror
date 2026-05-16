@@ -62,11 +62,9 @@ Added in v1 (issue [#326](https://github.com/gracefullight/oh-my-agent/issues/32
 |------|------|
 | `extract.ts` | Markdown AST (`remark` + `unified`) + L2 ref extractor (file / url / cli / script / env / config). Produces `docs/generated/doc-refs.json`. |
 | `resolve.ts` | Deterministic broken-ref checker — file existence, HTTP HEAD, CLI `which`, script lookup, env grep, config deep-path. No LLM dependency. |
-| `reporter.ts` | Renders `DriftReport` as markdown (human) or JSON (`--json`). Optional LLM natural-language summary via `cli/io/llm.ts`; falls back to raw JSON when LLM is unavailable. |
-| `sync-propose.ts` | Git diff intake, reverse index lookup, secret redaction (file exclusion + content sanitizer), LLM patch proposer with interactive `[y/n/d/s]` prompt. Never auto-applies. |
+| `reporter.ts` | Renders `DriftReport` as deterministic markdown (human) or JSON (`--json`). No LLM call — natural-language synthesis is the host LLM's responsibility. |
+| `sync-propose.ts` | Git diff intake, reverse index lookup, secret redaction (file exclusion + content sanitizer), candidate-doc selector. No LLM call — patch synthesis and the interactive `[y/n/d/s]` prompt are the host LLM's responsibility. Never auto-applies. |
 | `command.ts` | Commander wiring for `verify` and `sync` subcommands, argument normalization only. |
-
-The shared abstraction `cli/io/llm.ts` is an Anthropic Messages wrapper (real call when `ANTHROPIC_API_KEY` is set, deterministic fallback otherwise) used by both `reporter.ts` and `sync-propose.ts`.
 
 ## Follow-ups (not done in the initial refactor)
 

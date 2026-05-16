@@ -33,7 +33,7 @@ The CLI is intentionally non-interactive-only now; it prints usage and steps to 
 - `config-io.ts`: JSON/JSONC parsing, normalize write behavior, atomic writes (`.tmp` + `.bak`), plugin registration, default-agent disabling.
 - `providers.ts`: provider model mapping + `generateLiteConfig()`.
 - `system.ts`: OpenCode binary/version/path checks.
-- `skills.ts`: recommended and permission-only skill metadata and install behavior (`npx skills add`).
+- `skills.ts`: bundled and permission-only skill permission defaults.
 - `custom-skills.ts`: bundled skill registry and copy-to-config-directory implementation.
 - `config-manager.ts`: re-export barrel for CLI config utilities.
 - `install.ts`: end-to-end install orchestration and console messaging.
@@ -49,7 +49,6 @@ CLI install command
       3) disable legacy default agents
       4) write/preview generated lite config
       5) optional install phase:
-         - installSkill(...) for each RECOMMENDED_SKILL
          - installCustomSkill(...) for each CUSTOM_SKILL
 ```
 
@@ -59,7 +58,7 @@ CLI install command
 - always materializes generated presets `openai` and `opencode-go`
 - install-time `--preset` only selects between generated presets
 - maps each built-in agent name to provider-specific model/variant
-- injects skill list from recommended + custom skill registries and ensures `agent-browser` for designer
+- injects skill list from bundled custom skill registries
 - injects default MCP sets from `DEFAULT_AGENT_MCPS`
 - includes tmux block (`layout`, `main_pane_size`) when enabled
 
@@ -74,5 +73,5 @@ CLI install command
 ## Notes for architecture/docs accuracy
 
 - The previous TUI references are stale; no dedicated interactive flow exists in current sources.
-- `installSkills` in config covers both recommended external and bundled/custom skills as separate paths.
+- `--skills` controls bundled/custom skill installation only.
 - Built-in preset support includes `openai`, `opencode-go`, `kimi`, `copilot`, and `zai-plan`.

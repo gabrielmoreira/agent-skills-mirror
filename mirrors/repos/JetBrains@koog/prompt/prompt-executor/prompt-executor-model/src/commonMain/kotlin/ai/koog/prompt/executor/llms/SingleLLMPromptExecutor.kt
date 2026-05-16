@@ -13,6 +13,7 @@ import ai.koog.prompt.structure.json.generator.BasicJsonSchemaGenerator
 import ai.koog.prompt.structure.json.generator.StandardJsonSchemaGenerator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
+import kotlin.jvm.JvmSynthetic
 
 /**
  * Executes prompts using a direct client for communication with large language model (LLM) providers.
@@ -35,7 +36,7 @@ public open class SingleLLMPromptExecutor(
         private val logger = KotlinLogging.logger("ai.koog.prompt.executor.llms.LLMPromptExecutor")
     }
 
-    override suspend fun execute(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): List<Message.Response> {
+    override suspend fun execute(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Message.Assistant {
         logger.debug { "Executing prompt: $prompt with tools: $tools and model: $model" }
         val response = llmClient.execute(prompt, model, tools)
         logger.debug { "Response: $response" }
@@ -43,6 +44,7 @@ public open class SingleLLMPromptExecutor(
         return response
     }
 
+    @JvmSynthetic
     override fun executeStreaming(
         prompt: Prompt,
         model: LLModel,
@@ -56,7 +58,7 @@ public open class SingleLLMPromptExecutor(
         prompt: Prompt,
         model: LLModel,
         tools: List<ToolDescriptor>
-    ): List<LLMChoice> {
+    ): LLMChoice {
         logger.debug { "Executing prompt: $prompt with tools: $tools and model: $model" }
         val choices = llmClient.executeMultipleChoices(prompt, model, tools)
         logger.debug { "Choices: $choices" }

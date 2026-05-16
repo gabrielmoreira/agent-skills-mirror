@@ -5,7 +5,7 @@ description: Run OpenWork UI evals on a Daytona sandbox or local Electron instan
 
 # Skill: Run Evals
 
-Run the OpenWork UI evaluation flows against a real Electron app — either on a Daytona cloud sandbox or a local instance.
+Run the OpenWork UI evaluation flows against a real Electron app. Prefer a fresh Daytona sandbox for each run, with a local test fallback when Daytona is unavailable.
 
 ## When to use
 
@@ -21,19 +21,21 @@ Run the OpenWork UI evaluation flows against a real Electron app — either on a
 
 ## Workflow
 
-### Step 1: Create sandbox (if not running)
+### Step 1: Create sandbox
 
-Check for existing sandbox first:
+Create a new Daytona sandbox for each eval run. Avoid reusing old sandboxes unless the user explicitly asks to debug existing state.
+
+Pick a unique name:
 
 ```bash
-daytona list
+SANDBOX="openwork-eval-$(date +%Y%m%d-%H%M%S)"
 ```
 
-If no `openwork-test` sandbox, create one:
+Create it from the repo devcontainer:
 
 ```bash
 daytona create \
-  --name openwork-test \
+  --name "$SANDBOX" \
   --dockerfile .devcontainer/Dockerfile \
   --context .devcontainer/Dockerfile \
   --context .devcontainer/start-display.sh \
@@ -45,19 +47,36 @@ daytona create \
   --target us
 ```
 
-### Step 2: Start services
+If Daytona is unavailable, skip to the local fallback and still run the closest possible test.
+
+### Step 2: Prepare repo
+
+Use a clean checkout inside the sandbox. The devcontainer Dockerfile normally clones the repo into `/workspace`; if that is missing, clone it there. Then fetch and check out the branch or commit under test.
 
 ```bash
-daytona exec openwork-test 'bash /workspace/.devcontainer/start-services.sh'
+daytona exec "$SANDBOX" 'test -d /workspace/.git || git clone https://github.com/different-ai/openwork.git /workspace'
+daytona exec "$SANDBOX" 'git -C /workspace fetch --all --prune && git -C /workspace checkout <branch-or-commit> && git -C /workspace pull --ff-only || true'
+```
+
+Install dependencies before starting services:
+
+```bash
+daytona exec "$SANDBOX" 'cd /workspace && pnpm install'
+```
+
+### Step 3: Start services
+
+```bash
+daytona exec "$SANDBOX" 'cd /workspace && bash .devcontainer/start-services.sh'
 ```
 
 Wait for it to start (this runs in background, may timeout — that's OK).
 
-### Step 3: Verify
+### Step 4: Verify
 
 ```bash
 # Get CDP URL
-daytona preview-url openwork-test -p 9825
+daytona preview-url "$SANDBOX" -p 9825
 ```
 
 Then use the browser tools to verify:
@@ -67,13 +86,13 @@ browser_list({ browser_url: "<CDP_URL>" })
 → should show "OpenWork" page target
 ```
 
-### Step 4: Create a workspace (if on welcome page)
+### Step 5: Create a workspace
 
 If the app shows the Welcome page, create a workspace:
 
 1. Create directory on sandbox:
    ```bash
-   daytona exec openwork-test 'mkdir -p /workspace/hello'
+   daytona exec "$SANDBOX" 'mkdir -p /workspace/hello'
    ```
 
 2. Follow the workspace creation flow from `evals/daytona-flows.md` Flow 1:
@@ -82,7 +101,7 @@ If the app shows the Welcome page, create a workspace:
    - Click "Create Workspace"
    - Wait 10s for opencode sidecar to boot
 
-### Step 5: Run the requested eval
+### Step 6: Run the requested eval
 
 Read the eval file from `evals/` and execute each step using the browser tools.
 
@@ -116,9 +135,26 @@ browser_evaluate({ browser_url: URL, expression: "document.body.innerText.substr
 browser_screenshot({ browser_url: URL })
 ```
 
+### Local fallback
+
+Always include a local fallback in the result. Use it when Daytona is down, quota-limited, or the sandbox cannot expose CDP. At minimum, run the closest local verification commands and report that the Daytona path was unavailable.
+
+```bash
+pnpm install
+pnpm --filter @openwork/app typecheck
+pnpm --filter @openwork/app build
+```
+
+For UI flow verification, start the local app and attach browser tools to the local Electron or Chrome DevTools endpoint, then run the same eval steps from `evals/`.
+
+```bash
+pnpm dev
+```
+
+Report clearly whether the result came from Daytona or the local fallback.
+
 ### Teardown
 
 ```bash
-daytona stop openwork-test    # preserves state for re-runs
-daytona delete openwork-test  # full cleanup
+daytona delete "$SANDBOX"
 ```

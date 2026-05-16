@@ -5,6 +5,7 @@ description: |
   被 story-long-analyze（深度模式 Stage 2）按章节并行调用。
   输出格式严格对齐 output-templates.md 的阶段2模板。
 tools: [Read, Glob, Grep]
+disallowedTools: [Write, Edit, Bash]
 model: haiku
 maxTurns: 12
 ---
@@ -64,6 +65,31 @@ maxTurns: 12
 ## 输出格式
 
 严格按以下 markdown 格式输出。**不要输出任何格式之外的内容**。
+
+> **结构化输出约束**：调用方可通过 prompt 末尾附加 `OUTPUT_MODE: json` 要求 JSON 格式输出。
+> 此时，你的最终消息必须是单个 JSON 对象（不带 prose、不带 code fence），结构如下：
+> ```
+> {
+>   "chapter_number": <integer>,
+>   "title": "<string>",
+>   "summary": "<string, 100-300 chars>",
+>   "key_events": ["<string>"],
+>   "characters": [
+>     {"name": "<string>", "importance": "major|supporting|minor",
+>     "aliases": ["<string>"], "performance": "<string>"}
+>   ],
+>   "plot_points": [
+>     {"id": "P<integer>", "event": "<string>",
+>      "type": "转折点|信息揭示|冲突|解决|铺垫|行动|对话|状态变化",
+>      "characters": ["<string>"], "location": "<string|null>",
+>      "item": "<string|null>", "time": "<string|null>",
+>      "quote": "<string, ≤400 chars>",
+>      "themes": ["爱情|权力|成长|复仇|悬念|搞笑|热血|日常"],
+>      "tone": "紧张|轻松|悲伤|热血|温馨|压抑"}
+>   ]
+> }
+> ```
+> 无法符合时返回：`{"error": "<reason>"}`
 
 ```markdown
 ## 第{N}章 {标题}

@@ -44,8 +44,11 @@ Observability:
 - dt-obs-hosts: Host/process CPU, memory, disk, network, containers.
 - dt-obs-kubernetes: K8s clusters, pods, nodes, workloads, labels.
 - dt-obs-aws: AWS EC2, RDS, Lambda, ECS/EKS, VPC, cost optimization.
+- dt-obs-azure: Azure VMs, VMSS, SQL Database, Storage, AKS, App Service, Functions, VNet, Event Hubs, Container Apps, Key Vault.
+- dt-obs-gcp: GCP Compute Engine, GKE, Cloud Run, Pub/Sub, VPC, DNS, IAM, Secret Manager.
 - dt-obs-logs: Log queries, filtering, pattern analysis, correlation.
 - dt-obs-problems: Problem entities, root cause, impact assessment.
+- dt-obs-predictive-analytics: Time series forecasting, capacity saturation, trend and anomaly detection.
 Dynatrace Apps:
 - dt-app-dashboards: Dashboard JSON, tiles, layouts, DQL queries, variables.
 - dt-app-notebooks: Notebook JSON, sections, analytics workflows.
@@ -58,12 +61,12 @@ Migration:
 Reusable task templates for common Dynatrace workflows. Paste directly into chat,
 or copy into .github/prompts/ for VS Code/Copilot slash command support.
 
-- daily-standup: Generate a daily standup report for one or more services.
-- health-check: Check the health of a service in production.
-- incident-response: Active incident triage — Davis Problems, root cause, user impact, shareable report.
-- investigate-error: Investigate errors via Davis Problems as entry point (problems → logs → traces).
-- performance-regression: Analyze whether a recent deployment caused a performance regression.
-- troubleshoot-problem: Structured problem investigation with log scoping, error classification, and trace analysis.
+- dt-daily-standup: Generate a daily standup report for one or more services.
+- dt-health-check: Check the health of a service in production.
+- dt-incident-response: Active incident triage — Davis Problems, root cause, user impact, shareable report.
+- dt-investigate-error: Investigate errors via Davis Problems as entry point (problems → logs → traces).
+- dt-performance-regression: Analyze whether a recent deployment caused a performance regression.
+- dt-troubleshoot-problem: Structured problem investigation with log scoping, error classification, and trace analysis.
 
 ## Installation
 

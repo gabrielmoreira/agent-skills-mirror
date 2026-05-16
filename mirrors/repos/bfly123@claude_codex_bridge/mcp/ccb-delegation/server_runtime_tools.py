@@ -83,7 +83,6 @@ def _async_submit_response(job_id: str, response: dict[str, Any]) -> dict[str, A
         {
             "terminal": False,
             "reply_mode": "async",
-            "wait_hint": f"ccb ask wait {job_id}",
         }
     )
     return response

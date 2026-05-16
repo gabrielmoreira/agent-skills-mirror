@@ -4,6 +4,13 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.143](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2c6f3ba)
+
+_+302 tokens_
+
+- Agent Prompt: Hook condition evaluator (stop) — Adds a third response shape `{"ok": false, "impossible": true, "reason": ...}` for conditions that can never be satisfied (self-contradictory, missing capability, or assistant has exhausted approaches). Cautions the evaluator to independently verify impossibility rather than trust the assistant's self-assessment, and not to mark conditions impossible just because progress is slow or the goal isn't yet reached.
+- Skill: Verify skill — Reframes the "don't run tests" rationale from "CI already ran them" to "running them proves you can run CI, not that the change works," so the rule applies even when there's no CI. Generalizes the workflow beyond PRs: the scope can be a diff or just "does X work," and "PR description" becomes "any description." Expands the change-discovery section with commands for repos without an upstream (`git diff origin/HEAD...`), uncommitted changes (`git diff HEAD`), and a fallback that asks the user to name the scope when there's no repo at all. Adds a "Destructive path?" guard telling the verifier not to drive code live when it deletes, publishes, sends, or writes outside the workspace without a dry-run, and to call out which path went unexercised. Swaps the `/init-verifiers` follow-up suggestion for a note to capture the working build/launch recipe so it can become a `verifier-*` skill later, and trims the report-formatting guidance (drops the "hoisted above the PR comment fold" detail).
+
 # [2.1.142](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d325d10)
 
 _+1,080 tokens_

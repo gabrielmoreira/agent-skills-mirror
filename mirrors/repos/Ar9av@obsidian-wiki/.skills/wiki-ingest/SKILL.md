@@ -155,7 +155,7 @@ From the source, identify:
 - **Key concepts** that deserve their own page or belong on an existing one
 - **Entities** (people, tools, projects, organizations) mentioned
 - **Claims** that can be attributed to the source
-- **Relationships** between concepts (what connects to what)
+- **Relationships** between concepts — note the *type* when the source text makes it clear. Use the allowed types from `llm-wiki/SKILL.md` (Typed Relationships section): `extends`, `implements`, `contradicts`, `derived_from`, `uses`, `replaces`, `related_to`. Record: source page, target page, inferred type.
 - **Open questions** the source raises but doesn't answer
 
 **Track provenance per claim as you go.** For each claim you extract, mentally tag it as:
@@ -198,6 +198,16 @@ For each page in your plan:
 - Update the `updated` timestamp in frontmatter
 - Add the new source to the `sources` list
 - Resolve any contradictions between old and new information (note them if unresolvable)
+
+**Populate `relationships:` when context is clear** — if Step 2 identified typed relationships between this page and another, add a `relationships:` block to the frontmatter (defined in `llm-wiki/SKILL.md`, Typed Relationships section). Only add entries where the source text makes the direction and type unambiguous. When in doubt, use `related_to` or omit the block. Example:
+
+```yaml
+relationships:
+  - target: "[[concepts/attention-mechanism]]"
+    type: uses
+  - target: "[[concepts/lstm]]"
+    type: contradicts
+```
 
 **Write a `summary:` frontmatter field** on every new page (1–2 sentences, ≤200 characters) answering "what is this page about?" for a reader who hasn't opened it. When updating an existing page whose meaning has shifted, rewrite the summary to match the new content. This field is what `wiki-query`'s cheap retrieval path reads — a missing or stale summary forces expensive full-page reads.
 
@@ -292,6 +302,7 @@ After ingesting, verify:
 - [ ] Source attribution is present for every new claim
 - [ ] Inferred and ambiguous claims are marked with `^[inferred]` / `^[ambiguous]`; `provenance:` frontmatter block is present on new and updated pages
 - [ ] Every new/updated page has a `summary:` frontmatter field (1–2 sentences, ≤200 chars)
+- [ ] `relationships:` block is present on pages where source text made typed connections clear; all entries use an allowed type from `llm-wiki/SKILL.md`
 
 ## Reference
 

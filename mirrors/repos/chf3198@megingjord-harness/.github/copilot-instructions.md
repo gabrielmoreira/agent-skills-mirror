@@ -6,6 +6,8 @@
 
 Every task follows the **role baton sequence**: Manager → Collaborator → Admin → Consultant.
 See `role-baton-routing` for rules. Local repos may override via `.github/copilot-instructions.md`.
+Shared governance is provider-neutral; runtime-specific setup belongs in adapters.
+See `instructions/provider-neutral-governance.instructions.md`.
 
 ## Repo Purpose
 

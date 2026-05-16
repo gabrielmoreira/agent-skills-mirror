@@ -129,9 +129,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`tools/rpc/README.md`](tools/rpc/README.md) |
 | 43 | ✓ | [`tools/server/bench/README.md`](tools/server/bench/README.md) |
 | 44 | ✓ | [`tools/server/tests/README.md`](tools/server/tests/README.md) |
-| 45 | ✓ | [`tools/server/webui/README.md`](tools/server/webui/README.md) |
-| 46 | ✓ | [`tools/server/webui/src/lib/components/app/SKILL.md`](tools/server/webui/src/lib/components/app/SKILL.md) |
-| 47 | ✓ | [`tools/tts/README.md`](tools/tts/README.md) |
+| 45 | ✓ | [`tools/tts/README.md`](tools/tts/README.md) |
+| 46 | ✓ | [`tools/ui/README.md`](tools/ui/README.md) |
+| 47 | ✓ | [`tools/ui/src/lib/components/app/SKILL.md`](tools/ui/src/lib/components/app/SKILL.md) |
 | 48 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 | 49 | → | [`ci/README.md`](ci/README.md) |
 | 50 | → | [`common/jinja/README.md`](common/jinja/README.md) |

@@ -2080,6 +2080,41 @@
         ]
       }
     },
+    "oma-market": {
+      "keywords": {
+        "*": [],
+        "en": [
+          "market research",
+          "pain point",
+          "pain points",
+          "voice of customer",
+          "competitor research",
+          "competitor analysis",
+          "trend detection",
+          "user complaints",
+          "discovery research",
+          "market signal"
+        ],
+        "ko": [
+          "시장조사",
+          "시장 조사",
+          "사용자 페인",
+          "페인 포인트",
+          "트렌드 분석",
+          "경쟁구도",
+          "경쟁사 분석",
+          "사용자 불만",
+          "경쟁 분석"
+        ],
+        "ja": [
+          "市場調査",
+          "ペインポイント",
+          "ユーザー不満",
+          "競合調査",
+          "トレンド分析"
+        ]
+      }
+    },
     "oma-observability": {
       "keywords": {
         "*": [
@@ -2682,6 +2717,73 @@
           "bild erstellen",
           "erstelle ein bild",
           "zeichne mir"
+        ]
+      }
+    },
+    "oma-voice": {
+      "keywords": {
+        "*": ["voicebox", "oma-voice", "tts", "stt"],
+        "en": [
+          "text to speech",
+          "speech to text",
+          "transcribe audio",
+          "transcribe this",
+          "generate speech",
+          "voice notification",
+          "narrate this",
+          "make a voiceover",
+          "create a voiceover",
+          "read this aloud",
+          "speak this",
+          "say this",
+          "dictation",
+          "voice memo",
+          "meeting transcript",
+          "audio to text"
+        ],
+        "ko": [
+          "음성으로 알려",
+          "음성으로 읽어",
+          "음성으로 말해",
+          "음성 만들어",
+          "음성 만들어줘",
+          "음성 생성",
+          "음성 생성해",
+          "음성 생성해줘",
+          "보이스오버 만들어",
+          "보이스오버 생성",
+          "나레이션 만들어",
+          "오디오 파일 전사",
+          "오디오를 텍스트로",
+          "받아 적어",
+          "받아적어",
+          "받아 써",
+          "받아써",
+          "회의록 만들어",
+          "회의록 작성",
+          "음성 메모"
+        ],
+        "ja": [
+          "音声を生成",
+          "音声生成",
+          "音声で読み上げ",
+          "ナレーション",
+          "テキストを読み上げ",
+          "音声に変換",
+          "文字起こし",
+          "音声を文字に",
+          "ボイスオーバー"
+        ],
+        "zh": [
+          "生成语音",
+          "语音生成",
+          "朗读这段",
+          "文字转语音",
+          "语音转文字",
+          "音频转写",
+          "转录音频",
+          "语音备忘",
+          "会议转录"
         ]
       }
     }

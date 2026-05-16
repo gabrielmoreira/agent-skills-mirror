@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,7 +81,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`prompts/risk-fix.md`](prompts/risk-fix.md) |
 | 21 | ✓ | [`skills/arch-code-review/SKILL.md`](skills/arch-code-review/SKILL.md) |
 | 22 | ✓ | [`skills/codebase-recon/SKILL.md`](skills/codebase-recon/SKILL.md) |
-| 23 | ✓ | [`skills/safe-change/SKILL.md`](skills/safe-change/SKILL.md) |
+| 23 | ✓ | [`skills/safe-change/references/bug-fix.md`](skills/safe-change/references/bug-fix.md) |
+| 24 | ✓ | [`skills/safe-change/references/docs-update.md`](skills/safe-change/references/docs-update.md) |
+| 25 | ✓ | [`skills/safe-change/references/feature.md`](skills/safe-change/references/feature.md) |
+| 26 | ✓ | [`skills/safe-change/references/preflight.md`](skills/safe-change/references/preflight.md) |
+| 27 | ✓ | [`skills/safe-change/references/refactoring.md`](skills/safe-change/references/refactoring.md) |
+| 28 | ✓ | [`skills/safe-change/references/risk-fix.md`](skills/safe-change/references/risk-fix.md) |
+| 29 | ✓ | [`skills/safe-change/references/scoped-docs.md`](skills/safe-change/references/scoped-docs.md) |
+| 30 | ✓ | [`skills/safe-change/SKILL.md`](skills/safe-change/SKILL.md) |
 
 ---
 

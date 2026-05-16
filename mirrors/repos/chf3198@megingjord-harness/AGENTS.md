@@ -56,6 +56,7 @@ This repo is the **development workbench** for the DevEnv Ops Harness runtimes:
 - All 3 teams route governed provider calls through HAMR (`https://hamr.chf3198.workers.dev`).
 - Activate per-checkout: `npm run hamr:activate`. Verify: `npm run hamr:sync-verify`.
 - Canonical contract: `instructions/hamr-routing.instructions.md`.
+- Provider-neutral governance contract: `instructions/provider-neutral-governance.instructions.md`.
 
 ## Skill index
 

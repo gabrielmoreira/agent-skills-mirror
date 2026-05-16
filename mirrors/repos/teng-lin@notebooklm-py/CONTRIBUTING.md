@@ -99,6 +99,30 @@ When you bump a cap (e.g. moving `pytest>=8.0,<10` to `pytest>=8.0,<11`):
 
 The `dependency-audit` workflow (`.github/workflows/dependency-audit.yml`) runs `pip-audit --strict` against the locked env on every push to `main` and nightly. It is currently in soft-launch mode (`continue-on-error: true`) and will be flipped to a hard merge gate after the first release cycle. New deps should still pass `pip-audit` cleanly when introduced.
 
+### Test tiers
+
+The test suite is split into three tiers by network/auth dependency. Place new tests in the tier that matches their isolation profile — a tier-enforcement hook will eventually fail PRs that mis-tier a test.
+
+| Tier | Location | What lives here | Network | Auth |
+|------|----------|-----------------|---------|------|
+| Unit | `tests/unit/` | Pure-Python tests + `pytest_httpx` (`httpx_mock`) request-level mocks. Encoder/decoder, dataclasses, helpers, CLI boundary, and httpx_mock-driven API tests. | None (mocked) | None |
+| Integration | `tests/integration/` | VCR cassette replay only — `@pytest.mark.vcr` / `notebooklm_vcr.use_cassette(...)` against recorded fixtures in `tests/cassettes/`. | None (replayed) | None |
+| E2E | `tests/e2e/` | Real NotebookLM API. Marked `@pytest.mark.e2e`; excluded from the default `pytest` run via `addopts = --ignore=tests/e2e`. | Real | Required (`notebooklm login`) |
+
+Run a tier explicitly:
+
+```bash
+uv run pytest tests/unit
+uv run pytest tests/integration
+uv run pytest tests/e2e -m e2e        # requires auth
+```
+
+Quick guidance:
+
+- Reach for `httpx_mock` when you need to assert on outgoing request shape (headers, body, cookies, URL) or stub a small response — put the test under `tests/unit/`.
+- Reach for VCR when you want to replay a recorded server response end-to-end against the real RPC decoder — put the test under `tests/integration/` and record the cassette per `docs/rpc-development.md`.
+- Reach for E2E only when you need to validate a live round-trip against Google's servers — put the test under `tests/e2e/` and mark it `@pytest.mark.e2e`.
+
 ---
 
 ## Documentation Rules for AI Agents

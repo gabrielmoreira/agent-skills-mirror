@@ -28,6 +28,7 @@ import ai.koog.agents.core.planner.PlannerAgentExecutionPoint
 import ai.koog.agents.core.tools.annotations.InternalAgentToolsApi
 import ai.koog.agents.snapshot.providers.PersistenceStorageProvider
 import ai.koog.prompt.message.Message
+import ai.koog.prompt.message.MessagePart
 import ai.koog.serialization.JSONElement
 import ai.koog.serialization.JSONObject
 import ai.koog.serialization.JSONSerializer
@@ -41,6 +42,7 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
+import kotlin.jvm.JvmSynthetic
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -274,6 +276,7 @@ public class Persistence(
          * @param sessionId Optional session identifier. A random UUID is generated if not provided.
          * @return The output produced by the agent after resuming from the checkpoint.
          */
+        @JvmSynthetic
         public suspend fun <Input, Output> runFromCheckpoint(
             agent: AIAgent<Input, Output>,
             input: Input,
@@ -298,6 +301,7 @@ public class Persistence(
          * @param rollbackStrategy The strategy to use when restoring state. Defaults to [RollbackStrategy.Default].
          * @return The output produced by the session after resuming from the checkpoint.
          */
+        @JvmSynthetic
         public suspend fun <Input, Output, TContext : AIAgentContext> runFromCheckpoint(
             session: AIAgentRunSession<Input, Output, TContext>,
             input: Input,
@@ -629,15 +633,14 @@ public class Persistence(
                 currentMessages = context.llm.readSession { prompt.messages },
                 checkpointMessages = checkpoint.messageHistory
             )
-                .filterIsInstance<Message.Tool.Call>()
+                .flatMap { it.parts.filterIsInstance<MessagePart.Tool.Call>() }
                 .reversed()
                 .forEach { toolCall ->
                     rollbackToolRegistry.getRollbackTool(toolCall.tool)?.let { rollbackTool ->
                         val toolArgs = try {
-                            toolCall.contentJsonResult
-                                .getOrNull()
-                                ?.toKoogJSONObject()
-                                ?.let { rollbackTool.decodeArgs(it, serializer) }
+                            toolCall.argsJson
+                                .toKoogJSONObject()
+                                .let { rollbackTool.decodeArgs(it, serializer) }
                         } catch (e: CancellationException) {
                             throw e
                         } catch (_: Exception) {

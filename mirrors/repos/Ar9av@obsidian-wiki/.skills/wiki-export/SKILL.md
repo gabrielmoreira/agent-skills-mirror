@@ -50,6 +50,14 @@ For each page, Grep the body for `\[\[.*?\]\]` to extract all wikilinks:
 - Each resolved link becomes an edge: `{source: page_id, target: linked_id, relation: "wikilink", confidence: "EXTRACTED"}`
 - If the linking sentence ends with `^[inferred]` or `^[ambiguous]`, override `confidence` accordingly
 
+**Typed edge enrichment:** After building the wikilink edge list, read each page's `relationships:` frontmatter block. For each `{target, type}` entry:
+- The `target` YAML value is a quoted wikilink string such as `"[[concepts/lstm]]"`. Strip the surrounding `[[` and `]]` characters, then apply the same normalization (lowercase, spaces→hyphens, strip `.md`) to get the node id.
+- Skip entries whose resolved target is not in the node list (broken link)
+- If an edge for this `(source, target)` pair already exists, override its `relation` field with the typed value (e.g., `"contradicts"`) and set `typed: true`
+- If no edge exists yet for this pair, add one: `{source: page_id, target: target_id, relation: <type>, confidence: "EXTRACTED", typed: true}`
+
+This means `relation: "wikilink"` is the default for plain untyped links; a `relationships:` entry promotes it to a named semantic type. Edges that originated from both a body wikilink and a `relationships:` entry keep a single record — the typed version wins.
+
 This is your **edge list**.
 
 ## Step 2: Assign Community IDs
@@ -98,6 +106,13 @@ NetworkX node_link format — standard for graph tools and scripts:
       "target": "entities/vaswani",
       "relation": "wikilink",
       "confidence": "EXTRACTED"
+    },
+    {
+      "source": "concepts/transformers",
+      "target": "concepts/lstm",
+      "relation": "contradicts",
+      "confidence": "EXTRACTED",
+      "typed": true
     }
   ]
 }
@@ -117,6 +132,7 @@ GraphML XML format — loadable in Gephi, yEd, and Cytoscape:
   <key id="tags" for="node" attr.name="tags" attr.type="string"/>
   <key id="community" for="node" attr.name="community" attr.type="int"/>
   <key id="relation" for="edge" attr.name="relation" attr.type="string"/>
+  <key id="type" for="edge" attr.name="type" attr.type="string"/>
   <key id="confidence" for="edge" attr.name="confidence" attr.type="string"/>
   <graph id="wiki" edgedefault="undirected">
     <node id="concepts/transformers">
@@ -125,15 +141,22 @@ GraphML XML format — loadable in Gephi, yEd, and Cytoscape:
       <data key="tags">ml, architecture</data>
       <data key="community">0</data>
     </node>
+    <!-- Untyped wikilink — no <data key="type"> element -->
     <edge source="concepts/transformers" target="entities/vaswani">
       <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <!-- Typed edge from relationships: block -->
+    <edge source="concepts/transformers" target="concepts/lstm">
+      <data key="relation">contradicts</data>
+      <data key="type">contradicts</data>
       <data key="confidence">EXTRACTED</data>
     </edge>
   </graph>
 </graphml>
 ```
 
-Write one `<node>` per page and one `<edge>` per wikilink.
+Write one `<node>` per page and one `<edge>` per link. For typed edges (those where `typed: true` in the edge list), emit both `<data key="relation">` with the semantic type value **and** `<data key="type">` with the same value — this keeps `relation` readable for tools that already consume it while letting type-aware tools filter on the dedicated `type` key. Untyped wikilinks omit the `<data key="type">` element entirely.
 
 ---
 
@@ -148,12 +171,16 @@ Neo4j Cypher `MERGE` statements — paste into Neo4j Browser or run with `cypher
 // Nodes
 MERGE (n:Page {id: "concepts/transformers"}) SET n.label = "Transformer Architecture", n.category = "concepts", n.tags = ["ml","architecture"], n.community = 0;
 MERGE (n:Page {id: "entities/vaswani"}) SET n.label = "Ashish Vaswani", n.category = "entities", n.tags = ["person","ml"], n.community = 0;
+MERGE (n:Page {id: "concepts/lstm"}) SET n.label = "LSTM", n.category = "concepts", n.tags = ["ml","rnn"], n.community = 0;
 
 // Relationships
+// Untyped wikilinks use [:WIKILINK]
 MATCH (a:Page {id: "concepts/transformers"}), (b:Page {id: "entities/vaswani"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+// Typed edges use the relationship type as the label (UPPERCASE)
+MATCH (a:Page {id: "concepts/transformers"}), (b:Page {id: "concepts/lstm"}) MERGE (a)-[:CONTRADICTS {relation: "contradicts", confidence: "EXTRACTED"}]->(b);
 ```
 
-Write one `MERGE` node statement per page, then one `MATCH`/`MERGE` relationship statement per edge.
+Write one `MERGE` node statement per page, then one `MATCH`/`MERGE` relationship statement per edge. For typed edges, use the `type` value uppercased as the Cypher relationship label (e.g., `contradicts` → `[:CONTRADICTS]`, `derived_from` → `[:DERIVED_FROM]`). Untyped wikilinks always use `[:WIKILINK]`.
 
 ---
 
@@ -173,10 +200,26 @@ Build the HTML file by:
 
 2. Generating a JSON array of edge objects for vis.js:
 ```js
-{from: "concepts/transformers", to: "entities/vaswani", dashes: false, width: 1, color: {color: "#666", opacity: 0.6}}
+// Untyped wikilink
+{from: "concepts/transformers", to: "entities/vaswani", dashes: false, width: 1, color: {color: "#666", opacity: 0.6}, title: "wikilink"}
+// Typed edge
+{from: "concepts/transformers", to: "concepts/lstm", dashes: false, width: 2, color: {color: "#E15759", opacity: 0.8}, label: "contradicts", font: {size: 9, color: "#ccc"}, title: "contradicts"}
 ```
 - `dashes: true` for INFERRED edges
 - `dashes: [4,8]` for AMBIGUOUS edges
+- **Typed edges** (`typed: true`): set `width: 2`, add a `label` field showing the type, and apply a type-specific color:
+
+| Type | Edge color |
+|---|---|
+| `extends` | `#59A14F` (green) |
+| `implements` | `#4E79A7` (blue) |
+| `contradicts` | `#E15759` (red) |
+| `derived_from` | `#F28E2B` (orange) |
+| `uses` | `#76B7B2` (teal) |
+| `replaces` | `#B07AA1` (purple) |
+| `related_to` | `#BAB0AC` (grey — same as untyped) |
+
+Untyped `wikilink` edges keep the existing `#666` grey color and no label.
 
 3. Writing the full HTML file:
 

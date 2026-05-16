@@ -11,18 +11,37 @@ Goal: review proposed changes for correctness, drift, data consistency, side-eff
 
 Review prompts accept an optional `[scope]` argument. Use it to focus review on a module, package, app, service, directory, or bounded domain area when a diff spans multiple areas. Still inspect immediate dependencies and contracts needed to judge correctness.
 
+## Scoped Docs Discovery
+
+Architecture review works with both legacy unscoped docs and hierarchical scoped docs.
+
+If `docs/agent/SCOPES.md` is absent:
+- review against top-level `docs/agent/*.md` only
+
+If `docs/agent/SCOPES.md` is present:
+- read it before selecting deeper docs
+- match diff paths and explicit scope arguments to `path` scopes by longest repo-relative path prefix
+- use domain scopes only when review target, scope tags, or contract links make them relevant
+- read matching scoped `README.md` only if present, then task-relevant scoped docs
+- read top-level docs as fallback for missing categories and repo-wide rules
+- for cross-scope diffs, read relevant scoped `CONTRACTS.md` and `DEPENDENCY_RULES.md` from each touched owner/consumer scope
+- verify matched source paths still exist before treating scoped docs as current
+
 ## Rules
 
 - Do not edit code.
 - Review current diff unless user specifies another target.
 - Do not explicitly read `AGENTS.md`; pi injects root `AGENTS.md` automatically.
 - Read only relevant deeper docs:
+  - `docs/agent/SCOPES.md` when present
+  - matched scoped `README.md` if present, and relevant scoped docs when present
   - `docs/agent/ARCHITECTURE.md`
   - `docs/agent/DATA_MODEL.md`
   - `docs/agent/INVARIANTS.md`
   - `docs/agent/DEPENDENCY_RULES.md`
   - `docs/agent/RISK_REGISTER.md`
   - `docs/agent/CHANGE_GUIDE.md`
+  - scoped `CONTRACTS.md` files for touched cross-scope APIs, shared types, schemas, events, generated clients, or persistence boundaries
 - Prioritize correctness, architecture drift, data consistency, side-effect boundaries, public contracts, and tests.
 - Ignore style unless it affects maintainability or correctness.
 - No generic comments.

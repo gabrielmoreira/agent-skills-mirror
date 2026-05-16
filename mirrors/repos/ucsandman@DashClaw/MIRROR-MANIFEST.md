@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 15 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,11 +69,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 9 | ✓ | [`examples/codex-review-agent/AGENTS.md`](examples/codex-review-agent/AGENTS.md) |
 | 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 11 | ✓ | [`graphify-pilot/CLAUDE.md`](graphify-pilot/CLAUDE.md) |
-| 12 | ✓ | [`plugins/dashclaw/skills/dashclaw-governance/SKILL.md`](plugins/dashclaw/skills/dashclaw-governance/SKILL.md) |
-| 13 | ✓ | [`plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md`](plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md) |
-| 14 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
-| 15 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
+| 11 | ✓ | [`plugins/dashclaw/skills/dashclaw-governance/SKILL.md`](plugins/dashclaw/skills/dashclaw-governance/SKILL.md) |
+| 12 | ✓ | [`plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md`](plugins/dashclaw/skills/dashclaw-platform-intelligence/SKILL.md) |
+| 13 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
+| 14 | ✓ | [`public/downloads/dashclaw-platform-intelligence/SKILL.md`](public/downloads/dashclaw-platform-intelligence/SKILL.md) |
 
 ---
 

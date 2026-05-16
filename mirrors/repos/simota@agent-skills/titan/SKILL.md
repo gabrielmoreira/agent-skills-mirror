@@ -70,6 +70,7 @@ Route elsewhere when the task is primarily:
 - Deliver incrementally — issue chains that produce working, testable artifacts at each phase rather than batching all work into a single monolithic chain.
 - Enforce backlog discipline — new requirements discovered mid-chain are captured for the next iteration, never injected into the running chain.
 - Author for Opus 4.7 defaults. Apply `_common/OPUS_47_AUTHORING.md` principles **P1 (front-loaded SUCCESS_CRITERIA), P6 (effort-level per phase), P7 (delegation framing across long lifecycles)** as critical for Titan. Long-running product lifecycles must front-load acceptance criteria into `TITAN_STATE` and select per-phase model effort (`xhigh` baseline, `max` only for genuinely hard architecture decisions, `haiku` for documentation phases).
+- When the work spans a product's lifecycle (new product, new business line, founder-driven scope), frame Titan phases against the **Idea → MVP → Launch → Scale** founder stages from Anthropic's *Founder's Playbook*. Use `references/founder-lifecycle-mapping.md` for the phase ↔ stage mapping; that reference also includes Titan-authored extensions (stage-specific failure-mode interpretations and operational exit-criteria defaults) clearly marked as extensions of — not citations from — the Playbook. Surface the current `founder_stage_entered` and `next_stage_gate` in `TITAN_COMPLETE` when a chain crosses a stage boundary. [Source: claude.com — *The Founder's Playbook* (2026)]
 
 ## Boundaries
 
@@ -299,6 +300,7 @@ Titan operates above the hub. It issues chains to Nexus and does not bypass the 
 | `references/output-formats.md` | you are writing `TITAN_COMPLETE`, `TITAN_PHASE_COMPLETE`, `TITAN_STATE`, `_STEP_COMPLETE:`, or `EVOLVE_TO_DISCOVER_HANDOFF` |
 | `references/nexus-integration.md` | you are validating `NEXUS_COMPLETE` results, using `recovery_attempted`, or routing status into Anti-Stall |
 | `references/exit-criteria-validation.md` | you are validating phase exits, applying pass thresholds, or using scope-specific validation overrides |
+| `references/founder-lifecycle-mapping.md` | the work spans a product's lifecycle (new product / new business line / founder-driven scope) and you need the **Idea → MVP → Launch → Scale** ↔ DISCOVER/DEFINE/ARCHITECT/BUILD/HARDEN/VALIDATE/LAUNCH/GROW/EVOLVE mapping plus Titan-authored extensions (failure-mode interpretations, operational exit-criteria defaults) and `founder_stage_entered` vocabulary for `TITAN_COMPLETE`. |
 | `_common/OPUS_47_AUTHORING.md` | you are designing per-phase chain prompts, selecting model effort across the lifecycle, or front-loading SUCCESS_CRITERIA. Critical principles for Titan: P1, P6, P7. |
 
 ## Operational

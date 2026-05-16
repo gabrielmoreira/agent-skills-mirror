@@ -27,3 +27,5 @@
 编写Typescript时，对于hook确定的类型，严禁回退兜底成任何unknown/any/带空类型/联合类型。更禁止使用String(??)形式兜底，返回什么就是什么。
 
 如果类型就是string|undef，那么不要直接as string！！那么请使用?? ""或者写个if！！
+
+ts的报错catch后需要log出来

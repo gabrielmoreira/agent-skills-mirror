@@ -43,7 +43,7 @@ In filtered mode, note the filter in the Step 6 log entry: `mode=filtered`.
 
 Classify the query type:
 - **Factual lookup** — "What is X?" → Find the relevant page(s)
-- **Relationship query** — "How does X relate to Y?" → Find both pages and their cross-references
+- **Relationship query** — "How does X relate to Y?" / "What contradicts X?" → Find both pages, their cross-references, and their `relationships:` frontmatter blocks for typed edges
 - **Synthesis query** — "What's the current thinking on X?" → Find all pages that touch X, synthesize
 - **Gap query** — "What don't I know about X?" → Find what's missing, check open questions sections
 
@@ -135,6 +135,7 @@ Only when Steps 2 and 3 don't answer the question:
 
 - `Read` the top **3** candidates in full.
 - Follow at most one hop of `[[wikilinks]]` from those pages if the answer requires cross-references.
+- **For relationship queries** ("How does X relate to Y?" / "What contradicts X?"): also read the `relationships:` frontmatter block of the candidate pages. Each entry gives a typed, directional edge (`extends`, `implements`, `contradicts`, `derived_from`, `uses`, `replaces`, `related_to`). Surface these explicitly in your answer — "Page A *contradicts* Page B (typed edge)" is more useful than "Page A links to Page B".
 - Check "Open Questions" sections for known gaps.
 - If you're still short, **then** fall back to a broad content grep across the vault. Tell the user you escalated — this is the expensive path and they should know.
 

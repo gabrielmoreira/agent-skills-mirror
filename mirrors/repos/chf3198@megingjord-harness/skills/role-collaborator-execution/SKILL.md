@@ -75,17 +75,18 @@ This prevents context bleed and ensures clean per-ticket evidence trails.
 **Persona roster**: see `agents/roster.json`. Select persona matching task specialty.
 
 ## Must not do
-
 - Do not alter scope without manager handoff update.
 - Do not perform final release/merge/admin governance decisions.
 
 ## Escalation triggers
-
 - Missing gate evidence.
 - Ambiguous acceptance criteria.
+## Pre-handoff verification (#1571)
 
+Run `runChecks()` from `scripts/global/collaborator-self-check.js` and
+paste the `formatChecks()` table into the handoff body before posting.
+Waiver: label `collaborator-self-check:waived`.
 ## Output contract
-
 ```text
 COLLABORATOR_HANDOFF
 files_changed:
@@ -94,4 +95,5 @@ validation_results:
 docs_updates:
 admin_required_ops:
 open_risks:
+pre_handoff_checks:
 ```

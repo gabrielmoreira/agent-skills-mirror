@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kubeshark/kubeshark` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `kubeshark/kubeshark` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kubeshark/kubeshark` — 26 default patterns, 0 followed patterns, 7 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,11 +61,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`mcp/README.md`](mcp/README.md) |
 | 2 | ✓ | [`mcp/server.json`](mcp/server.json) |
-| 3 | ✓ | [`skills/kfl/references/kfl2-reference.md`](skills/kfl/references/kfl2-reference.md) |
-| 4 | ✓ | [`skills/kfl/SKILL.md`](skills/kfl/SKILL.md) |
-| 5 | ✓ | [`skills/network-rca/references/setup.md`](skills/network-rca/references/setup.md) |
-| 6 | ✓ | [`skills/network-rca/SKILL.md`](skills/network-rca/SKILL.md) |
-| 7 | ✓ | [`skills/README.md`](skills/README.md) |
+| 3 | ✓ | [`skills/install/references/cloud-storage.md`](skills/install/references/cloud-storage.md) |
+| 4 | ✓ | [`skills/install/references/helm-values.md`](skills/install/references/helm-values.md) |
+| 5 | ✓ | [`skills/install/SKILL.md`](skills/install/SKILL.md) |
+| 6 | ✓ | [`skills/kfl/references/kfl2-reference.md`](skills/kfl/references/kfl2-reference.md) |
+| 7 | ✓ | [`skills/kfl/SKILL.md`](skills/kfl/SKILL.md) |
+| 8 | ✓ | [`skills/network-rca/references/setup.md`](skills/network-rca/references/setup.md) |
+| 9 | ✓ | [`skills/network-rca/SKILL.md`](skills/network-rca/SKILL.md) |
+| 10 | ✓ | [`skills/README.md`](skills/README.md) |
+| 11 | ✓ | [`skills/security-audit/references/kfl-security-filters.md`](skills/security-audit/references/kfl-security-filters.md) |
+| 12 | ✓ | [`skills/security-audit/references/report-template.md`](skills/security-audit/references/report-template.md) |
+| 13 | ✓ | [`skills/security-audit/references/threat-catalog.md`](skills/security-audit/references/threat-catalog.md) |
+| 14 | ✓ | [`skills/security-audit/SKILL.md`](skills/security-audit/SKILL.md) |
 
 ---
 

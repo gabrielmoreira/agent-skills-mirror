@@ -66,7 +66,7 @@ Backbones (do not change without explicit human approval):
   | --------------------- | ----------------------- | -------- |
   | `0_8b` / `2b` / `4b`  | Kokoro only             | Kokoro   |
   | `9b`                  | Kokoro **and** OmniVoice| Kokoro   |
-  | `27b` / `27b-256k` / `27b-1m` | OmniVoice only  | OmniVoice|
+  | `27b` / `27b-256k` | OmniVoice only  | OmniVoice|
 
   - **Kokoro** = Kokoro-82M ONNX (`onnx-community/Kokoro-82M-v1.0-ONNX`,
     ~80 MB int8). ~97ms CPU TTFB. Fixed voice packs, no per-user
@@ -199,7 +199,6 @@ hosted under the `elizaos` HuggingFace org under `eliza-1-<tier>`.
 | `9b`         | desktop / midrange GPU          | 9B    | Kokoro + OmniVoice | mmproj | 64k   | yes    | TurboQuant Q4 + QJL + Polar     |
 | `27b`        | flagship GPU                    | 27B   | OmniVoice       | mmproj | 64k      | yes    | TurboQuant Q4 + QJL + Polar TCQ |
 | `27b-256k`  | long-context flagship            | 27B   | OmniVoice       | mmproj | 256k     | yes    | + turbo3_tcq                    |
-| `27b-1m`    | extreme long-context             | 27B   | OmniVoice       | mmproj | 1m       | yes    | + turbo3_tcq + spill            |
 
 Context-length variants (32k / 64k / 128k / 256k) are *not* separate
 tiers — they are dimensions inside a tier. A tier's manifest lists which
@@ -223,7 +222,7 @@ elizaos/eliza-1/
       kokoro/model_q4.onnx
       kokoro/tokenizer.json
       kokoro/voices/<voice>.bin
-      # OmniVoice shipped on 9b/27b/27b-256k/27b-1m. Default install
+      # OmniVoice shipped on 9b/27b/27b-256k. Default install
       # stages a single quant (VOICE_QUANT_BY_TIER); --include-voice-ladder
       # at stage time emits the full ladder (Q3_K_M, Q4_K_M, Q5_K_M, Q6_K,
       # Q8_0) so the downloader can pick the level matching the host's
@@ -238,7 +237,7 @@ elizaos/eliza-1/
     vad/
       silero-vad-v5.1.2.ggml.bin   # every tier
     vision/
-      mmproj-<tier>.gguf           # 4b/9b/27b/27b-256k/27b-1m
+      mmproj-<tier>.gguf           # 4b/9b/27b/27b-256k
     dflash/
       drafter-<tier>.gguf
       target-meta.json             # acceptance windows, kernel caps
@@ -267,14 +266,14 @@ elizaos/eliza-1/
 The **runtime default** voice quant per tier (the level the runtime
 selects when no device-class override applies) is the value returned by
 `voiceQuantForTier()` in `packages/shared/src/local-inference/catalog.ts`:
-`Q4_K_M` for `0_8b/2b/4b`, `Q8_0` for `9b/27b/27b-256k/27b-1m`.
+`Q4_K_M` for `0_8b/2b/4b`, `Q8_0` for `9b/27b/27b-256k`.
 
 The **publish ladder** per tier (every level that gets staged when
 `--include-voice-ladder` is passed) is the value returned by
 `voiceQuantLadderForTier()`:
 
 - Mobile tiers (`0_8b/2b/4b`) ship Kokoro only — empty OmniVoice ladder.
-- All OmniVoice-shipping tiers (`9b/27b/27b-256k/27b-1m`) publish
+- All OmniVoice-shipping tiers (`9b/27b/27b-256k`) publish
   `Q3_K_M, Q4_K_M, Q5_K_M, Q6_K, Q8_0`.
 
 The downloader picks the level matching the host's memory class at
@@ -666,3 +665,53 @@ backend nightly.
   architecture rules apply here too: dependencies point inward, no
   polymorphism for runtime branching in code (kernels are a registry,
   not an `if`), no `try/catch` that swallows.
+
+---
+
+## 11. ONNX deprecation status (updated K7, 2026-05-15)
+
+**Single on-device runtime: elizaOS llama.cpp fork. No ONNX in resolved code path
+as of K7 for: VAD, wake-word, turn-detector (preferred), Kokoro (default=fork),
+OmniVoice, ASR. Three voice classifier models remain ONNX-active, blocked on K1/K2/K3
+native ports.**
+
+**Single runtime policy:** every local-inference model path must flow through
+the elizaOS llama.cpp fork. ONNX (`onnxruntime-node` / `onnxruntime-web`) is
+deprecated and will be removed from the runtime path once all native ports land.
+
+### Completed (fork path active — no ONNX in resolved runtime)
+
+| Model | Path | Status |
+|---|---|---|
+| OmniVoice TTS | fork FFI `libelizainference` (`tools/omnivoice/`) | DONE (W3-3) |
+| Silero VAD | fork FFI `eliza_inference_vad_*` | DONE (I1/K7 verified) — vad.ts imports zero onnxruntime-node |
+| hey-eliza wakeword | fork FFI `eliza_inference_wakeword_*` | DONE (I1/K7 verified) — wake-word.ts imports zero onnxruntime-node |
+| ASR (Qwen3-ASR) | fork FFI `eliza_pick_asr_files()` | DONE (T-asr) |
+| DFlash speculative decoding | fork `llama-server` `--spec-type dflash` | DONE |
+| Text EOT (Eliza1EotClassifier) | fork `node-llama-cpp` P(`<|im_end|>`) | DONE (preferred path when text model loaded) |
+| LiveKit EOT (GGUF) | `eot-classifier-ggml.ts::LiveKitGgmlTurnDetector` | DONE (J1.d) — preferred over ONNX when GGUF on disk |
+| Kokoro TTS | `pick-runtime.ts` defaults to `KOKORO_BACKEND=fork` → llama-server `/v1/audio/speech` | DONE (J2/K4 default) — ONNX reachable only via env override |
+
+### Compute-gated (ONNX still active in resolved runtime)
+
+| Model | Gate | Owner | Est. |
+|---|---|---|---|
+| Wav2Small emotion | `voice-classifier-cpp/src/voice_emotion_*.c` returns `-ENOSYS` | K1 | 1 worker-day |
+| WeSpeaker R34-LM | `voice-classifier-cpp/src/voice_speaker_*.c` returns `-ENOSYS` | K2 | 2 worker-days |
+| pyannote-3 diarizer | `voice-classifier-cpp/src/voice_diarizer_*.c` returns `-ENOSYS`; diarizer-ggml.ts exists but C side not implemented | K3 | 1 worker-day |
+| LiveKit EOT (ONNX last-resort) | ONNX is last-resort in engine.ts chain (Eliza1Eot → GgmlTD → OnnxTD → Heuristic); ONNX reachable when GGUF not on disk | K7/J1.d | Remove OnnxTD from chain or guarantee GGUF on all tiers |
+| Kokoro ONNX runway | `KokoroOnnxRuntime` reachable via `KOKORO_BACKEND=onnx` | K4 | Remove class after K4 GGUF lands |
+
+**Rule:** do NOT remove `onnxruntime-node` from `plugin-local-inference/package.json`
+until every compute-gated head above is replaced. Premature removal crashes the
+voice pipeline. The per-model migration protocol (flip `manifest.json` runtime field,
+rename GGML variant to canonical, delete ONNX file, run verify gate) is documented
+in `.swarm/impl/I1-single-runtime.md §F` and `.swarm/impl/K7-no-onnx.md §D`.
+
+**HF deprecation runway:** ONNX model files remain on HF alongside GGUFs for one
+release after each native port lands. Do not delete ONNX from HF until the GGUF
+path has been in production for one release cycle.
+
+**K7 tracker:** `packages/training/reports/onnx-to-ggml-tracker.json` is the
+machine-readable source of truth for which package.json entries are still justified.
+The audit script `scripts/onnx-dep-audit.mjs` enforces this at CI time.

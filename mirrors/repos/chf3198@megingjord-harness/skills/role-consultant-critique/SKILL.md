@@ -21,13 +21,19 @@ Include `checks_run: <N>/<total>` and `checks_failed: <N>` in CLOSEOUT output.
 - **Grade Manager scope quality** — were gates testable and complete?
 - **Grade Collaborator implementation** — evidence per gate, no gold-plating?
 - **Grade Admin process** — clean deployment, proper git hygiene?
-- **Audit ticket governance** — naming, redundancies, backlog buildup.
-- **Audit wiki generation** — does research produce wiki growth?
-- **Audit fleet resource usage** — were tasks routed to correct devices?
+- **Audit ticket governance, wiki generation, and fleet routing.**
 - Recommend follow-up actions with priority.
 - Identify at least one concrete improvement per role per review.
 
 ## Grading rubric
+
+For G1-G9 harness goal scores, use the deterministic v2 rubric. Run
+`node scripts/global/rubric-score.js --trail <issue-trail> --diff <pr.diff>
+--closeout <closeout-draft>` and paste only its JSON under
+`### Deterministic Rubric`. Subjective scoring text belongs in
+`### Rationale` and must not affect `boxes_checked`, `boxes_total`, `score`, or
+`mean`. Legacy `G1=9, G2=8, ...` scoring remains accepted only through the
+2026-05-22 transition window.
 
 | Area | Pass | Fail |
 |---|---|---|
@@ -56,14 +62,12 @@ Reject (revert to Collaborator) only when a required artifact is absent, ACs lac
 
 ## Entry criteria
 
-- `ADMIN_HANDOFF` exists (or explicit N/A with reason).
-- Evidence set sufficient for confidence scoring.
+- `ADMIN_HANDOFF` exists and evidence supports confidence scoring.
 
 ## Exit criteria
 
-- `CONSULTANT_CLOSEOUT` includes per-role grades and improvement items.
-- Confidence score is evidence-backed.
-- No grade inflation — at least one improvement per role.
+- `CONSULTANT_CLOSEOUT` includes per-role grades, evidence-backed confidence,
+  and at least one improvement per role.
 
 ## Must not do
 
@@ -79,7 +83,6 @@ Reject (revert to Collaborator) only when a required artifact is absent, ACs lac
 
 ## Output contract
 
-```text
 CONSULTANT_CLOSEOUT
 manager_grade: <A-F> <justification>
 collaborator_grade: <A-F> <justification>
@@ -95,4 +98,3 @@ recommended_follow_ups:
 checks_run: <N>/<total>
 checks_failed: <N>
 remediation_issues: <list or none>
-```

@@ -20,7 +20,7 @@ allowed_tools:
 
 Markdown is the default document format for normal writing, notes, reports, briefs, drafts, and collaborative text work unless the user explicitly asks for a binary office file. When they do ask for a LibreOffice office file, prefer ODF: ODT for Writer, ODS for Spreadsheet/Calc, and ODP for Presentation/Impress. Use DOCX, XLSX, or PPTX only for explicit OOXML compatibility.
 
-The document editor is user-owned UI. Create or update the saved Markdown artifact, but never open the document modal automatically. Keep the final response to the saved/updated result and path; do not write faux UI action labels such as "Open document" or "Download file", and do not add a note saying the canvas was not opened automatically unless the user explicitly asks about UI behavior.
+The Editor surface is user-owned UI. Create or update the saved Markdown artifact, but never open the Editor automatically. Keep the final response to the saved/updated result and path; do not write faux UI action labels such as "Open document" or "Download file", and do not add a note saying the canvas was not opened automatically unless the user explicitly asks about UI behavior.
 
 ## Workflow
 
@@ -49,4 +49,4 @@ Practical rules:
 - Prefer Markdown over ODT/DOCX for writing unless a binary Writer/Word file is explicitly needed.
 - Keep agent-only cleanup simple: if the user asks to fix a typo, update the file and finish; do not force a document-editor workflow.
 - Use clear headings and Markdown tables when they improve editability.
-- The custom Markdown editor is available through the response file card.
+- The Markdown Editor surface is available through the response file card.

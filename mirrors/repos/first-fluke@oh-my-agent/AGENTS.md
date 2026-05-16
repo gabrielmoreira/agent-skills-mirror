@@ -64,6 +64,7 @@ Read the relevant file from `.agents/rules/` when working on matching code.
 | frontend | `.agents/rules/frontend.md` | **/*.{tsx,jsx,css,scss} |
 | i18n-guide | `.agents/rules/i18n-guide.md` | always |
 | infrastructure | `.agents/rules/infrastructure.md` | **/*.{tf,tfvars,hcl} |
+| market | `.agents/rules/market.md` | on request |
 | mobile | `.agents/rules/mobile.md` | **/*.{dart,swift,kt} |
 | quality | `.agents/rules/quality.md` | on request |
 

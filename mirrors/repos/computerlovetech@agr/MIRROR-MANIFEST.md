@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `computerlovetech/agr` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `computerlovetech/agr` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `computerlovetech/agr` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,28 +61,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/agrx.md`](docs/agrx.md) |
-| 4 | ✓ | [`docs/changelog.md`](docs/changelog.md) |
-| 5 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
-| 6 | ✓ | [`docs/creating.md`](docs/creating.md) |
-| 7 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 8 | ✓ | [`docs/sdk.md`](docs/sdk.md) |
-| 9 | ✓ | [`docs/skills.md`](docs/skills.md) |
-| 10 | ✓ | [`docs/teams.md`](docs/teams.md) |
-| 11 | ✓ | [`docs/tools.md`](docs/tools.md) |
-| 12 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 13 | ✓ | [`docs/tutorial.md`](docs/tutorial.md) |
-| 14 | ✓ | [`skills/agr-cli/references/configuration.md`](skills/agr-cli/references/configuration.md) |
-| 15 | ✓ | [`skills/agr-cli/references/handles.md`](skills/agr-cli/references/handles.md) |
-| 16 | ✓ | [`skills/agr-cli/references/in-repo-skills.md`](skills/agr-cli/references/in-repo-skills.md) |
-| 17 | ✓ | [`skills/agr-cli/references/installing-skills.md`](skills/agr-cli/references/installing-skills.md) |
-| 18 | ✓ | [`skills/agr-cli/references/running-skills.md`](skills/agr-cli/references/running-skills.md) |
-| 19 | ✓ | [`skills/agr-cli/references/setup.md`](skills/agr-cli/references/setup.md) |
-| 20 | ✓ | [`skills/agr-cli/references/syncing.md`](skills/agr-cli/references/syncing.md) |
-| 21 | ✓ | [`skills/agr-cli/references/troubleshooting.md`](skills/agr-cli/references/troubleshooting.md) |
-| 22 | ✓ | [`skills/agr-cli/SKILL.md`](skills/agr-cli/SKILL.md) |
-| 23 | ✓ | [`skills/agr-release/SKILL.md`](skills/agr-release/SKILL.md) |
-| 24 | ✓ | [`skills/skill-debrief/SKILL.md`](skills/skill-debrief/SKILL.md) |
+| 3 | ✓ | [`skills/agr-cli/references/configuration.md`](skills/agr-cli/references/configuration.md) |
+| 4 | ✓ | [`skills/agr-cli/references/handles.md`](skills/agr-cli/references/handles.md) |
+| 5 | ✓ | [`skills/agr-cli/references/in-repo-skills.md`](skills/agr-cli/references/in-repo-skills.md) |
+| 6 | ✓ | [`skills/agr-cli/references/installing-skills.md`](skills/agr-cli/references/installing-skills.md) |
+| 7 | ✓ | [`skills/agr-cli/references/running-skills.md`](skills/agr-cli/references/running-skills.md) |
+| 8 | ✓ | [`skills/agr-cli/references/setup.md`](skills/agr-cli/references/setup.md) |
+| 9 | ✓ | [`skills/agr-cli/references/syncing.md`](skills/agr-cli/references/syncing.md) |
+| 10 | ✓ | [`skills/agr-cli/references/troubleshooting.md`](skills/agr-cli/references/troubleshooting.md) |
+| 11 | ✓ | [`skills/agr-cli/SKILL.md`](skills/agr-cli/SKILL.md) |
+| 12 | ✓ | [`skills/agr-release/SKILL.md`](skills/agr-release/SKILL.md) |
+| 13 | ✓ | [`skills/skill-debrief/SKILL.md`](skills/skill-debrief/SKILL.md) |
 
 ---
 

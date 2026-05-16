@@ -161,7 +161,7 @@ Why it matters:
 
 - Gives Lossless an escape hatch when too many summaries at the preferred depth still leave the prompt near full.
 - When unset, Lossless derives a target from `contextThreshold`, the active token budget, and `leafChunkTokens`.
-- Sweeps first honor `sweepMaxDepth`; pressure condensation can go deeper only when threshold or summary-prefix pressure remains.
+- Sweeps first exhaust eligible raw-message leaf chunks, then honor `sweepMaxDepth`; pressure condensation can go deeper only when summary-prefix pressure remains.
 
 ### `incrementalMaxDepth`
 

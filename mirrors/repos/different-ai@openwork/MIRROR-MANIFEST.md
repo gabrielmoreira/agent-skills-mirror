@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,37 +59,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/shadcn/agents/openai.yml`](.agents/skills/shadcn/agents/openai.yml) |
-| 2 | ✓ | [`.agents/skills/shadcn/assets/shadcn-small.png`](.agents/skills/shadcn/assets/shadcn-small.png) |
-| 3 | ✓ | [`.agents/skills/shadcn/assets/shadcn.png`](.agents/skills/shadcn/assets/shadcn.png) |
-| 4 | ✓ | [`.agents/skills/shadcn/cli.md`](.agents/skills/shadcn/cli.md) |
-| 5 | ✓ | [`.agents/skills/shadcn/customization.md`](.agents/skills/shadcn/customization.md) |
-| 6 | ✓ | [`.agents/skills/shadcn/evals/evals.json`](.agents/skills/shadcn/evals/evals.json) |
-| 7 | ✓ | [`.agents/skills/shadcn/mcp.md`](.agents/skills/shadcn/mcp.md) |
-| 8 | ✓ | [`.agents/skills/shadcn/rules/base-vs-radix.md`](.agents/skills/shadcn/rules/base-vs-radix.md) |
-| 9 | ✓ | [`.agents/skills/shadcn/rules/composition.md`](.agents/skills/shadcn/rules/composition.md) |
-| 10 | ✓ | [`.agents/skills/shadcn/rules/forms.md`](.agents/skills/shadcn/rules/forms.md) |
-| 11 | ✓ | [`.agents/skills/shadcn/rules/icons.md`](.agents/skills/shadcn/rules/icons.md) |
-| 12 | ✓ | [`.agents/skills/shadcn/rules/styling.md`](.agents/skills/shadcn/rules/styling.md) |
-| 13 | ✓ | [`.agents/skills/shadcn/SKILL.md`](.agents/skills/shadcn/SKILL.md) |
-| 14 | ✓ | [`.opencode/skills/browser-automation/SKILL.md`](.opencode/skills/browser-automation/SKILL.md) |
-| 15 | ✓ | [`.opencode/skills/browser-setup-devtools/SKILL.md`](.opencode/skills/browser-setup-devtools/SKILL.md) |
-| 16 | ✓ | [`.opencode/skills/cargo-lock-manager/SKILL.md`](.opencode/skills/cargo-lock-manager/SKILL.md) |
-| 17 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
-| 18 | ✓ | [`.opencode/skills/get-started/SKILL.md`](.opencode/skills/get-started/SKILL.md) |
-| 19 | ✓ | [`.opencode/skills/opencode-bridge/SKILL.md`](.opencode/skills/opencode-bridge/SKILL.md) |
-| 20 | ✓ | [`.opencode/skills/opencode-mirror/SKILL.md`](.opencode/skills/opencode-mirror/SKILL.md) |
-| 21 | ✓ | [`.opencode/skills/opencode-primitives/SKILL.md`](.opencode/skills/opencode-primitives/SKILL.md) |
-| 22 | ✓ | [`.opencode/skills/openwork-core/SKILL.md`](.opencode/skills/openwork-core/SKILL.md) |
-| 23 | ✓ | [`.opencode/skills/openwork-debug/SKILL.md`](.opencode/skills/openwork-debug/SKILL.md) |
-| 24 | ✓ | [`.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md`](.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md) |
-| 25 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
-| 26 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
-| 27 | ✓ | [`.opencode/skills/solidjs-patterns/SKILL.md`](.opencode/skills/solidjs-patterns/SKILL.md) |
-| 28 | ✓ | [`.opencode/skills/tauri-solidjs/SKILL.md`](.opencode/skills/tauri-solidjs/SKILL.md) |
-| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 30 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 31 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 1 | ✓ | [`.opencode/skills/browser-automation/SKILL.md`](.opencode/skills/browser-automation/SKILL.md) |
+| 2 | ✓ | [`.opencode/skills/browser-setup-devtools/SKILL.md`](.opencode/skills/browser-setup-devtools/SKILL.md) |
+| 3 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
+| 4 | ✓ | [`.opencode/skills/get-started/SKILL.md`](.opencode/skills/get-started/SKILL.md) |
+| 5 | ✓ | [`.opencode/skills/opencode-bridge/SKILL.md`](.opencode/skills/opencode-bridge/SKILL.md) |
+| 6 | ✓ | [`.opencode/skills/opencode-mirror/SKILL.md`](.opencode/skills/opencode-mirror/SKILL.md) |
+| 7 | ✓ | [`.opencode/skills/opencode-primitives/SKILL.md`](.opencode/skills/opencode-primitives/SKILL.md) |
+| 8 | ✓ | [`.opencode/skills/openwork-core/SKILL.md`](.opencode/skills/openwork-core/SKILL.md) |
+| 9 | ✓ | [`.opencode/skills/openwork-debug/SKILL.md`](.opencode/skills/openwork-debug/SKILL.md) |
+| 10 | ✓ | [`.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md`](.opencode/skills/openwork-orchestrator-npm-publish/SKILL.md) |
+| 11 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 12 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
+| 13 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
+| 14 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
+| 15 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
+| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 17 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 18 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 
 ---
 

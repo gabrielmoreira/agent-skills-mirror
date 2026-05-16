@@ -15,16 +15,6 @@ def ask_schema() -> dict[str, Any]:
                 "type": "string",
                 "description": "Request text to send to the target agent.",
             },
-            "wait": {
-                "type": "boolean",
-                "description": "Wait for a terminal reply before returning.",
-                "default": False,
-            },
-            "timeout_s": {
-                "type": "number",
-                "description": "Timeout in seconds when wait=true.",
-                "default": 120,
-            },
             "work_dir": {
                 "type": "string",
                 "description": "Project work directory that contains .ccb/ccb.config.",

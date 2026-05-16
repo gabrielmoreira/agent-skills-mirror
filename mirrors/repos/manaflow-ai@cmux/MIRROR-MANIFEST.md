@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 28 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,21 +72,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`skills/cmux-browser/templates/authenticated-session.sh`](skills/cmux-browser/templates/authenticated-session.sh) |
 | 12 | ✓ | [`skills/cmux-browser/templates/capture-workflow.sh`](skills/cmux-browser/templates/capture-workflow.sh) |
 | 13 | ✓ | [`skills/cmux-browser/templates/form-automation.sh`](skills/cmux-browser/templates/form-automation.sh) |
-| 14 | ✓ | [`skills/cmux-debug-windows/agents/openai.yaml`](skills/cmux-debug-windows/agents/openai.yaml) |
-| 15 | ✓ | [`skills/cmux-debug-windows/scripts/debug_windows_snapshot.sh`](skills/cmux-debug-windows/scripts/debug_windows_snapshot.sh) |
-| 16 | ✓ | [`skills/cmux-debug-windows/SKILL.md`](skills/cmux-debug-windows/SKILL.md) |
-| 17 | ✓ | [`skills/cmux-markdown/agents/openai.yaml`](skills/cmux-markdown/agents/openai.yaml) |
-| 18 | ✓ | [`skills/cmux-markdown/references/commands.md`](skills/cmux-markdown/references/commands.md) |
-| 19 | ✓ | [`skills/cmux-markdown/references/live-reload.md`](skills/cmux-markdown/references/live-reload.md) |
-| 20 | ✓ | [`skills/cmux-markdown/SKILL.md`](skills/cmux-markdown/SKILL.md) |
-| 21 | ✓ | [`skills/cmux/agents/openai.yaml`](skills/cmux/agents/openai.yaml) |
-| 22 | ✓ | [`skills/cmux/references/handles-and-identify.md`](skills/cmux/references/handles-and-identify.md) |
-| 23 | ✓ | [`skills/cmux/references/panes-surfaces.md`](skills/cmux/references/panes-surfaces.md) |
-| 24 | ✓ | [`skills/cmux/references/trigger-flash-and-health.md`](skills/cmux/references/trigger-flash-and-health.md) |
-| 25 | ✓ | [`skills/cmux/references/windows-workspaces.md`](skills/cmux/references/windows-workspaces.md) |
-| 26 | ✓ | [`skills/cmux/SKILL.md`](skills/cmux/SKILL.md) |
-| 27 | ✓ | [`skills/release/agents/openai.yaml`](skills/release/agents/openai.yaml) |
-| 28 | ✓ | [`skills/release/SKILL.md`](skills/release/SKILL.md) |
+| 14 | ✓ | [`skills/cmux-customization/agents/openai.yaml`](skills/cmux-customization/agents/openai.yaml) |
+| 15 | ✓ | [`skills/cmux-customization/SKILL.md`](skills/cmux-customization/SKILL.md) |
+| 16 | ✓ | [`skills/cmux-diagnostics/agents/openai.yaml`](skills/cmux-diagnostics/agents/openai.yaml) |
+| 17 | ✓ | [`skills/cmux-diagnostics/scripts/cmux-diagnostics`](skills/cmux-diagnostics/scripts/cmux-diagnostics) |
+| 18 | ✓ | [`skills/cmux-diagnostics/SKILL.md`](skills/cmux-diagnostics/SKILL.md) |
+| 19 | ✓ | [`skills/cmux-markdown/agents/openai.yaml`](skills/cmux-markdown/agents/openai.yaml) |
+| 20 | ✓ | [`skills/cmux-markdown/references/commands.md`](skills/cmux-markdown/references/commands.md) |
+| 21 | ✓ | [`skills/cmux-markdown/references/live-reload.md`](skills/cmux-markdown/references/live-reload.md) |
+| 22 | ✓ | [`skills/cmux-markdown/SKILL.md`](skills/cmux-markdown/SKILL.md) |
+| 23 | ✓ | [`skills/cmux-settings/agents/openai.yaml`](skills/cmux-settings/agents/openai.yaml) |
+| 24 | ✓ | [`skills/cmux-settings/references/all-keys.md`](skills/cmux-settings/references/all-keys.md) |
+| 25 | ✓ | [`skills/cmux-settings/references/shortcut-actions.md`](skills/cmux-settings/references/shortcut-actions.md) |
+| 26 | ✓ | [`skills/cmux-settings/scripts/cmux-settings`](skills/cmux-settings/scripts/cmux-settings) |
+| 27 | ✓ | [`skills/cmux-settings/SKILL.md`](skills/cmux-settings/SKILL.md) |
+| 28 | ✓ | [`skills/cmux-workspace/agents/openai.yaml`](skills/cmux-workspace/agents/openai.yaml) |
+| 29 | ✓ | [`skills/cmux-workspace/references/commands.md`](skills/cmux-workspace/references/commands.md) |
+| 30 | ✓ | [`skills/cmux-workspace/SKILL.md`](skills/cmux-workspace/SKILL.md) |
+| 31 | ✓ | [`skills/cmux/agents/openai.yaml`](skills/cmux/agents/openai.yaml) |
+| 32 | ✓ | [`skills/cmux/references/handles-and-identify.md`](skills/cmux/references/handles-and-identify.md) |
+| 33 | ✓ | [`skills/cmux/references/panes-surfaces.md`](skills/cmux/references/panes-surfaces.md) |
+| 34 | ✓ | [`skills/cmux/references/trigger-flash-and-health.md`](skills/cmux/references/trigger-flash-and-health.md) |
+| 35 | ✓ | [`skills/cmux/references/windows-workspaces.md`](skills/cmux/references/windows-workspaces.md) |
+| 36 | ✓ | [`skills/cmux/SKILL.md`](skills/cmux/SKILL.md) |
 
 ---
 

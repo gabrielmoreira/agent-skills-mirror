@@ -25,10 +25,13 @@
   <a href="#how-it-thinks">How it thinks</a> &middot;
   <a href="#tool-surface">Tools</a> &middot;
   <a href="#platform-support">Platforms</a> &middot;
-  <a href="CHANGELOG.md">Changelog</a>
+  <a href="CHANGELOG.md">Changelog</a> &middot;
+  <a href="SKILL.md">SKILL.md (AI-facing manual)</a>
 </p>
 
 ---
+
+> **AI agents looking for the machine-readable manual: open [`SKILL.md`](SKILL.md).** This README is the human pitch; SKILL.md is the dense second-person doc written for an LLM.
 
 Clawd Cursor is a **skill**, not an app. Install it once. Any tool-calling agent on the machine &mdash; Claude Code, Cursor, Windsurf, OpenClaw, Claude Agent SDK, your own loop &mdash; picks up the tools through MCP. The agent then clicks, types, reads the screen, opens apps, and drives any GUI the same way a human would.
 
@@ -57,7 +60,7 @@ Sixty seconds from zero to a tool-calling agent on your desktop.
 **Windows (PowerShell):**
 
 ```powershell
-powershell -c "irm https://clawdcursor.com/install.ps1 | iex"
+irm https://clawdcursor.com/install.ps1 | iex
 ```
 
 **macOS / Linux:**
@@ -66,11 +69,13 @@ powershell -c "irm https://clawdcursor.com/install.ps1 | iex"
 curl -fsSL https://clawdcursor.com/install.sh | bash
 ```
 
-Then:
+Then verify and configure:
 
 ```bash
+clawdcursor --version          # smoke-test the install
 clawdcursor consent --accept   # one-time desktop-control consent (required)
-clawdcursor doctor             # verify permissions + (optionally) configure an LLM provider
+clawdcursor status             # cross-check permissions + AI config
+clawdcursor doctor             # (optional) configure an LLM provider end-to-end
 clawdcursor agent              # OR `clawdcursor mcp` — see the table above
 ```
 
@@ -100,7 +105,7 @@ That's it. Ask your agent to *"open Outlook and reply to the latest email from S
 ## Why Clawd Cursor
 
 - **Works where APIs don't exist.** Native apps. Legacy enterprise tools. Web portals behind SSO that block headless browsers. Anything inside Citrix or RDP. If pixels reach the screen, your agent can drive it.
-- **Model-agnostic.** Claude, GPT, Gemini, Llama, Kimi, anything local via Ollama. 13 providers ship configured. Vision and text can be different models from different vendors.
+- **Model-agnostic.** Claude, GPT, Gemini, Llama, Kimi, anything local via Ollama &mdash; any tool-calling LLM. Text and vision can be different models from different vendors.
 - **App-agnostic.** No per-app plugins, no per-service auth. The same six compound tools drive Outlook, Figma, your bank, and that 2003-era ERP.
 - **Cheapest-tier-first pipeline.** Accessibility tree (free) before OCR (cheap) before screenshot (medium) before vision (expensive). The Reflector feeds verifier signals back to the planner so it doesn't keep paying for vision when text would work.
 - **Local-only by default.** Server binds to `127.0.0.1`. Screenshots stay in RAM unless you point a cloud model at them. No telemetry.
@@ -176,7 +181,7 @@ Two catalogs, side by side. Agents pick the shape that fits.
 
 ### Compact &mdash; 6 compound tools (recommended)
 
-Anthropic `computer_20250124`-style: one tool per capability, an `action` enum for the verb. Catalog footprint ~1,500 tokens &mdash; about 12&times; smaller than the granular surface. Default for every agent that doesn't explicitly need one schema per primitive.
+Anthropic `computer_20250124`-style: one tool per capability, an `action` enum for the verb. The compact catalog is roughly an order of magnitude smaller than the granular surface, which keeps small models (Haiku, Kimi, Ollama) focused on the action choice instead of drowning in primitives. Default for every agent that doesn't explicitly need one schema per primitive.
 
 | Tool | Most-used actions |
 |---|---|
@@ -208,8 +213,7 @@ task({ instruction: "open Notepad and type hello" }) // full pipeline
 
 For unfamiliar apps, the agent reasons from screenshots and the a11y tree &mdash; slow but always works. For popular apps, **community-curated guides** ship the keyboard shortcuts, workflow patterns, layout cues, and failure modes the agent would otherwise have to discover by failing first. Loading a guide for an app it knows speeds operation 5&ndash;10&times;.
 
-- **Public registry fallback: <https://github.com/AmrDab/clawdcursor-guides>**
-- **Source repo: <https://github.com/AmrDab/clawdcursor-guides>** &mdash; community PRs welcome
+- **Public registry + source repo: <https://github.com/AmrDab/clawdcursor-guides>** &mdash; community PRs welcome
 - **Verified seed guides:** discord, excel, figma, gmail, mspaint, olk (new Outlook), outlook, slack, spotify, youtube
 - **Bundled core (offline fallback):** msedge, notepad
 
@@ -249,7 +253,7 @@ The pipeline picks the cheapest rung that works. Apply the same logic when you c
 
 ## Platform Support
 
-Platform-specific code lives in `src/platform/{windows,macos,linux}.ts` (plus `wayland-backend.ts`) behind a single `PlatformAdapter` interface. Business logic never reads `process.platform`. Roughly 3,750 LOC across the four adapters.
+Platform-specific code lives in `src/platform/{windows,macos,linux}.ts` (plus `wayland-backend.ts`) behind a single `PlatformAdapter` interface. Business logic never reads `process.platform`.
 
 | Platform | UI Automation | OCR | Browser (CDP) | Input |
 |---|---|---|---|---|

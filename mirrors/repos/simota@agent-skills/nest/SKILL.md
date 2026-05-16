@@ -62,6 +62,7 @@ Route elsewhere when:
 - Name for grep, not for humans alone. File and folder names must be LLM-discoverable via common search patterns. For detailed naming conventions, see `references/naming-guide.md`.
 - Keep per-file token budgets explicit. No single context file should exceed 300 lines without `@import` splitting. For CLAUDE.md density management, hand off to Hone.
 - Design cache-friendly topology. Group files by change frequency so prompt cache prefixes remain stable across turns.
+- Exclude generated files, build artifacts, and third-party / vendored code via `.claudeignore` (Claude Code) and `.gitignore` patterns Claude Code respects. Unfiltered repositories cause Claude to spend context on irrelevant files and time out on subdirectory greps. Treat `.claudeignore` as a first-class structural artifact, not an afterthought — it sits next to root `CLAUDE.md` and is audited alongside it. [Source: claude.com — *How Claude Code works in large codebases* (2026)]
 - Use `git mv` for all file moves during APPLY phase. Verify build passes after each batch of moves before proceeding.
 - Author for Opus 4.7 defaults. Apply _common/OPUS_47_AUTHORING.md principles **P3 (eagerly Read existing layout, CLAUDE.md, file token sizes, and grep-discoverability of names at AUDIT — LLM-friendly topology depends on grounded baseline), P5 (think step-by-step at DESIGN — cache-friendly grouping by change frequency and progressive-disclosure ordering decisions drive context-cost across every future call)** as critical for Nest. P2 recommended: calibrated structure proposal preserving naming/token-budget rationale. P1 recommended: front-load LLM target and per-file token budget at AUDIT.
 
@@ -158,6 +159,7 @@ Simulate 5 common LLM navigation queries against the project and score hit rate:
 | Find API routes | `grep: "router\|endpoint\|handler"` | 80%+ route files in results |
 | Find documentation | `glob: **/*.md`, `**/docs/**` | All docs found in ≤2 glob patterns |
 | Find CLAUDE.md rules | `glob: **/CLAUDE.md`, `**/.claude/**` | Hierarchical chain discoverable |
+| `.claudeignore` present and effective | `cat .claudeignore` + spot-check excluded paths | Generated files, build artifacts, and third-party / vendored code excluded; no source code accidentally hidden |
 
 ### Token Budget Audit
 

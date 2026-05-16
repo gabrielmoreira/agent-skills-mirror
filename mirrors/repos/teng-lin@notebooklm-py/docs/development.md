@@ -81,6 +81,29 @@ src/notebooklm/
 | **Core** | `_core.py` | HTTP client, request counter, RPC abstraction |
 | **RPC** | `rpc/*.py` | Protocol encoding/decoding, method IDs |
 
+### Boundary Guardrails
+
+The architecture tests encode the current layer contract:
+
+- `tests/unit/test_public_shims.py` has a documented public import manifest.
+  When a docs change adds or removes a supported import path, update the
+  manifest in the same PR so public API drift is intentional and reviewable.
+- `tests/unit/test_cli_boundary.py` parses `src/notebooklm/cli/**/*.py` and
+  rejects CLI imports from `notebooklm._*`, `notebooklm.rpc.*`, or `_private`
+  names exposed by public modules. Promote needed symbols through a public
+  facade (`notebooklm.types`, `notebooklm.auth`, `notebooklm.research`, etc.)
+  before using them from the CLI.
+- Auth internals may move under `notebooklm._auth` during architecture work,
+  but first-party callers continue to import through `notebooklm.auth`. The
+  compatibility manifest in `tests/unit/test_public_shims.py` enforces the
+  current first-party surface for that move; it is not a broader public API
+  decision, and removing a listed name needs a separate deprecation plan.
+- `tests/unit/test_init_order.py` records the temporary baseline of feature
+  APIs that still access `ClientCore` private state directly. Future capability
+  migration PRs should reduce that baseline as private state moves behind
+  explicit `ClientCore` methods; do not add new entries unless the PR also
+  explains the follow-up migration path.
+
 ### Key Design Decisions
 
 **Why underscore prefixes?** Files like `_notebooks.py` are internal implementation. Public API stays clean (`from notebooklm import NotebookLMClient`).
@@ -333,6 +356,86 @@ the result with the cassette guard before committing:
 ```bash
 # Current guard (a Python replacement is landing in the Tier 8 arc)
 tests/check_cassettes_clean.sh
+```
+
+#### Synthetic error cassettes (T8.E10)
+
+> [!WARNING]
+> **Error cassettes generated through this plumbing are SYNTHETIC.** They
+> validate the client's exception-mapping branches (`RateLimitError`,
+> `ServerError`, the auth-refresh path), NOT Google's actual error response
+> shapes. If you need to validate a real-world error shape, capture a live
+> recording instead — these synthetic shapes are intentionally minimal.
+
+The `NOTEBOOKLM_VCR_RECORD_ERRORS` env var opts a recording session into
+substituting the next outgoing batchexecute RPC with a synthetic error
+response. Three modes are supported:
+
+| Mode            | HTTP status | Maps to                                         |
+|-----------------|-------------|-------------------------------------------------|
+| `429`           | 429         | `RateLimitError` (after retry budget exhausted) |
+| `5xx`           | 500         | `ServerError`   (after retry budget exhausted) |
+| `expired_csrf`  | 400         | auth-refresh path (NotebookLM uses 400, not 401)|
+
+The plumbing has three opt-in layers:
+
+1. **Env var**: `NOTEBOOKLM_VCR_RECORD_ERRORS=<mode>` activates the transport
+   wrapper inside `ClientCore.open()`.
+2. **Pytest marker**: `@pytest.mark.synthetic_error("<mode>")` sets the env
+   var for the duration of a single test (auto-reverted on teardown).
+3. **Filename prefix**: cassettes recorded under this mode MUST be named
+   `error_synthetic_<mode>_<slug>.yaml` — use
+   `tests.cassette_patterns.synthetic_error_cassette_name(mode, slug)` to
+   build the filename so reviewers can tell synthetic shapes apart from
+   real recordings at a glance.
+
+Example recording session (this is the workflow T8.E4 will use to record
+the actual error cassettes — T8.E10 itself ships only the plumbing):
+
+```bash
+NOTEBOOKLM_VCR_RECORD=1 \
+NOTEBOOKLM_VCR_RECORD_ERRORS=429 \
+  uv run pytest tests/integration/test_error_cassettes.py::test_rate_limit_records
+```
+
+Production behavior is unchanged when `NOTEBOOKLM_VCR_RECORD_ERRORS` is
+unset — the transport wrapper is only constructed when the env var resolves
+to a recognized mode, and a typo'd value resolves to `None` (the recording
+session continues without substitution).
+
+### Per-method RPC coverage gate
+
+`tests/scripts/check_method_coverage.py` enforces, on every PR, that each
+member of `RPCMethod` has **both**:
+
+1. **A test reference** — at least one file under `tests/` (excluding the
+   gate script itself) mentions the enum member by its qualified name
+   (`RPCMethod.LIST_NOTEBOOKS`) OR by its raw RPC id string value
+   (`"wXbhsf"`).
+2. **A cassette covering the RPC id** — at least one cassette YAML under
+   `tests/cassettes/` contains the RPC id string in its body.
+
+The gate is a pure-text static check (no pytest, no network) and runs in the
+`quality` job of `test.yml`.
+
+**Adding a new `RPCMethod`?** Ship it with:
+- a unit or integration test that imports the enum member (or asserts on its
+  raw id), AND
+- at least one cassette whose recorded request/response body contains the
+  RPC id.
+
+**Pre-existing gaps.** A small `PREEXISTING_GAPS` set inside the script
+grandfathers methods that lacked coverage when the gate first landed
+(currently: `GET_INTERACTIVE_HTML`, `GET_SUGGESTED_REPORTS`,
+`IMPORT_RESEARCH`, `REFRESH_SOURCE`). The set is a **one-way ratchet** —
+it must not grow. When you backfill coverage for a grandfathered method,
+delete its entry from `PREEXISTING_GAPS` in the same PR. The gate prints a
+`NOTICE:` to stderr when a `PREEXISTING_GAPS` entry has acquired full
+coverage so maintainers see the prompt to remove it.
+
+```bash
+# Run locally before pushing changes that touch RPCMethod
+uv run python tests/scripts/check_method_coverage.py
 ```
 
 ### E2E Fixtures

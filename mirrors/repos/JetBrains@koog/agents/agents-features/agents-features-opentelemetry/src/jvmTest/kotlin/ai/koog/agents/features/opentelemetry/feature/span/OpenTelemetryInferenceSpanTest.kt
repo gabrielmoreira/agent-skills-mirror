@@ -7,8 +7,9 @@ import ai.koog.agents.core.agent.singleRunStrategy
 import ai.koog.agents.core.dsl.builder.node
 import ai.koog.agents.core.dsl.builder.strategy
 import ai.koog.agents.core.dsl.builder.subgraph
+import ai.koog.agents.core.dsl.extension.asUserMessage
 import ai.koog.agents.core.dsl.extension.nodeLLMRequest
-import ai.koog.agents.core.dsl.extension.onAssistantMessage
+import ai.koog.agents.core.dsl.extension.onTextMessage
 import ai.koog.agents.features.opentelemetry.AgentType
 import ai.koog.agents.features.opentelemetry.OpenTelemetryTestAPI
 import ai.koog.agents.features.opentelemetry.OpenTelemetryTestAPI.MockToolCallResponse
@@ -32,6 +33,7 @@ import ai.koog.agents.features.opentelemetry.mock.TestGetWeatherTool
 import ai.koog.agents.testing.tools.getMockExecutor
 import ai.koog.agents.utils.HiddenString
 import ai.koog.http.client.KoogHttpClientException
+import ai.koog.http.client.ktor.KtorKoogHttpClient
 import ai.koog.prompt.dsl.ModerationCategory
 import ai.koog.prompt.dsl.ModerationCategoryResult
 import ai.koog.prompt.dsl.ModerationResult
@@ -40,6 +42,7 @@ import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
 import ai.koog.prompt.executor.clients.openai.OpenAIModels
 import ai.koog.prompt.executor.llms.MultiLLMPromptExecutor
 import ai.koog.prompt.message.Message
+import ai.koog.prompt.message.MessagePart
 import ai.koog.prompt.message.RequestMetaInfo
 import ai.koog.prompt.tokenizer.SimpleRegexBasedTokenizer
 import ai.koog.serialization.kotlinx.KotlinxSerializer
@@ -181,7 +184,16 @@ class OpenTelemetryInferenceSpanTest : OpenTelemetryTestBase() {
             Message.System(OpenTelemetryTestAPI.Parameter.SYSTEM_PROMPT, RequestMetaInfo(testClock.now())),
             Message.User(userInput, RequestMetaInfo(testClock.now())),
             toolCallMessage(toolCallId, TestGetWeatherTool.name, """{"location":"$location"}"""),
-            Message.Tool.Result(toolCallId, TestGetWeatherTool.name, mockToolCallResponse.toolResult, RequestMetaInfo(testClock.now())),
+            Message.User(
+                parts = listOf(
+                    MessagePart.Tool.Result(
+                        id = toolCallId,
+                        tool = TestGetWeatherTool.name,
+                        output = mockToolCallResponse.toolResult
+                    )
+                ),
+                metaInfo = RequestMetaInfo(testClock.now())
+            ),
         )
 
         val expectedOutputMessages2 = listOf(
@@ -333,15 +345,15 @@ class OpenTelemetryInferenceSpanTest : OpenTelemetryTestBase() {
             val subgraph by subgraph<String, String>(subgraphName) {
                 val nodeSubgraphLLMCall by nodeLLMRequest(subgraphLLMCallNodeName)
 
-                edge(nodeStart forwardTo nodeSubgraphLLMCall)
-                edge(nodeSubgraphLLMCall forwardTo nodeFinish onAssistantMessage { true })
+                edge(nodeStart forwardTo nodeSubgraphLLMCall asUserMessage { it })
+                edge(nodeSubgraphLLMCall forwardTo nodeFinish onTextMessage { true })
             }
 
             val nodeLLMCall by nodeLLMRequest(rootNodeCallLLMName)
 
             edge(nodeStart forwardTo subgraph)
-            edge(subgraph forwardTo nodeLLMCall)
-            edge(nodeLLMCall forwardTo nodeFinish onAssistantMessage { true })
+            edge(subgraph forwardTo nodeLLMCall asUserMessage { it })
+            edge(nodeLLMCall forwardTo nodeFinish onTextMessage { true })
         }
 
         val executor = getMockExecutor(serializer, testClock) {
@@ -443,8 +455,8 @@ class OpenTelemetryInferenceSpanTest : OpenTelemetryTestBase() {
         val strategy = strategy<String, String>("test-strategy") {
             val nodeLLMCall by nodeLLMRequest(nodeLLMCallName)
 
-            edge(nodeStart forwardTo nodeLLMCall)
-            edge(nodeLLMCall forwardTo nodeFinish onAssistantMessage { true })
+            edge(nodeStart forwardTo nodeLLMCall asUserMessage { it })
+            edge(nodeLLMCall forwardTo nodeFinish onTextMessage { true })
         }
 
         // Use tokenizer in the prompt executor to count tokens
@@ -522,7 +534,12 @@ class OpenTelemetryInferenceSpanTest : OpenTelemetryTestBase() {
         val testData = OpenTelemetryTestData()
         val result = runCatching {
             AIAgent(
-                promptExecutor = MultiLLMPromptExecutor(OpenAILLMClient("fake-key", baseClient = failingHttpClient)),
+                promptExecutor = MultiLLMPromptExecutor(
+                    OpenAILLMClient(
+                        apiKey = "fake-key",
+                        httpClientFactory = KtorKoogHttpClient.Factory(failingHttpClient)
+                    )
+                ),
                 llmModel = OpenTelemetryTestAPI.Parameter.defaultModel,
                 strategy = singleRunStrategy(),
                 systemPrompt = OpenTelemetryTestAPI.Parameter.SYSTEM_PROMPT
@@ -563,6 +580,7 @@ class OpenTelemetryInferenceSpanTest : OpenTelemetryTestBase() {
                 message = "Unexpected node execution spans:\nExpected:${expectedSpans}\nActual:${actual.asKeyValue()}"
             )
         }
+
         testData.filterAgentInvokeSpans().single().let { actual ->
             assertEquals(
                 expected = expectedSpans,

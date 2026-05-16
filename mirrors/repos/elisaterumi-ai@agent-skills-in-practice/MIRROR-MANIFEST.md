@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elisaterumi-ai/agent-skills-in-practice` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `elisaterumi-ai/agent-skills-in-practice` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elisaterumi-ai/agent-skills-in-practice` — 26 default patterns, 0 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,22 +59,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`examples/clinical-anonymization/SKILL.md`](examples/clinical-anonymization/SKILL.md) |
-| 2 | ✓ | [`examples/commit-message-generator/SKILL.md`](examples/commit-message-generator/SKILL.md) |
-| 3 | ✓ | [`examples/content-summarizer/SKILL.md`](examples/content-summarizer/SKILL.md) |
-| 4 | ✓ | [`examples/copywriting-assistant/SKILL.md`](examples/copywriting-assistant/SKILL.md) |
-| 5 | ✓ | [`examples/data-analyzer/SKILL.md`](examples/data-analyzer/SKILL.md) |
-| 6 | ✓ | [`examples/data-visualizer/SKILL.md`](examples/data-visualizer/SKILL.md) |
-| 7 | ✓ | [`examples/document-generator/SKILL.md`](examples/document-generator/SKILL.md) |
-| 8 | ✓ | [`examples/financial-analyzer/SKILL.md`](examples/financial-analyzer/SKILL.md) |
-| 9 | ✓ | [`examples/linkedin-post-generator/SKILL.md`](examples/linkedin-post-generator/SKILL.md) |
-| 10 | ✓ | [`examples/pdf-processor/SKILL.md`](examples/pdf-processor/SKILL.md) |
-| 11 | ✓ | [`examples/pr-review/SKILL.md`](examples/pr-review/SKILL.md) |
-| 12 | ✓ | [`examples/product-roadmap-builder/SKILL.md`](examples/product-roadmap-builder/SKILL.md) |
-| 13 | ✓ | [`examples/prompt-optimizer/SKILL.md`](examples/prompt-optimizer/SKILL.md) |
-| 14 | ✓ | [`examples/spreadsheet-analyst/SKILL.md`](examples/spreadsheet-analyst/SKILL.md) |
-| 15 | ✓ | [`examples/web-researcher/SKILL.md`](examples/web-researcher/SKILL.md) |
-| 16 | ✓ | [`examples/workflow-automator/SKILL.md`](examples/workflow-automator/SKILL.md) |
+| 1 | ✓ | [`examples/ai-news-radar/SKILL.md`](examples/ai-news-radar/SKILL.md) |
+| 2 | ✓ | [`examples/clinical-anonymization/SKILL.md`](examples/clinical-anonymization/SKILL.md) |
+| 3 | ✓ | [`examples/commit-message-generator/SKILL.md`](examples/commit-message-generator/SKILL.md) |
+| 4 | ✓ | [`examples/content-summarizer/SKILL.md`](examples/content-summarizer/SKILL.md) |
+| 5 | ✓ | [`examples/copywriting-assistant/SKILL.md`](examples/copywriting-assistant/SKILL.md) |
+| 6 | ✓ | [`examples/data-analyzer/SKILL.md`](examples/data-analyzer/SKILL.md) |
+| 7 | ✓ | [`examples/data-visualizer/SKILL.md`](examples/data-visualizer/SKILL.md) |
+| 8 | ✓ | [`examples/document-generator/SKILL.md`](examples/document-generator/SKILL.md) |
+| 9 | ✓ | [`examples/financial-analyzer/SKILL.md`](examples/financial-analyzer/SKILL.md) |
+| 10 | ✓ | [`examples/linkedin-post-generator/SKILL.md`](examples/linkedin-post-generator/SKILL.md) |
+| 11 | ✓ | [`examples/pdf-processor/SKILL.md`](examples/pdf-processor/SKILL.md) |
+| 12 | ✓ | [`examples/pr-review/SKILL.md`](examples/pr-review/SKILL.md) |
+| 13 | ✓ | [`examples/product-roadmap-builder/SKILL.md`](examples/product-roadmap-builder/SKILL.md) |
+| 14 | ✓ | [`examples/prompt-optimizer/SKILL.md`](examples/prompt-optimizer/SKILL.md) |
+| 15 | ✓ | [`examples/radar-ia-br/SKILL.md`](examples/radar-ia-br/SKILL.md) |
+| 16 | ✓ | [`examples/spreadsheet-analyst/SKILL.md`](examples/spreadsheet-analyst/SKILL.md) |
+| 17 | ✓ | [`examples/web-researcher/SKILL.md`](examples/web-researcher/SKILL.md) |
+| 18 | ✓ | [`examples/workflow-automator/SKILL.md`](examples/workflow-automator/SKILL.md) |
 
 ---
 

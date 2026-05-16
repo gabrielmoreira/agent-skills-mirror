@@ -11,8 +11,8 @@ description: >
   tracking deals, or maintaining any vault structure. Also triggers when the user
   wants to bootstrap a new vault from scratch, run a vault health check, or drop
   a _CLAUDE.md into their vault so all Claude surfaces share the same operating rules.
-  Includes a research toolkit (5 commands: /x-read, /x-pulse, /research, /research-deep,
-  /youtube) for AI-powered research via Grok, Perplexity, and YouTube — findings save
+  Includes a research toolkit (6 commands: /x-read, /x-pulse, /research, /research-deep,
+  /notebooklm, /youtube) for AI-powered research via Grok, Perplexity, NotebookLM, and YouTube — findings save
   to the vault automatically following the AI-first vault rule. Use proactively whenever
   the conversation produces information worth preserving (decisions, people met, projects
   started, tasks completed, lessons learned, research findings).
@@ -850,6 +850,29 @@ Cost: typically $0.20-$0.80 per run depending on topic depth.
 Plain English: "do deep research on X", "research properly", "vault-aware research on X", "research and update the vault".
 
 Graceful degradation: if any phase fails partially (e.g. Grok unavailable), continues with available sources and flags the gap.
+
+---
+
+### `/notebooklm [topic]`
+
+**Vault-first source-grounded research.** The parallel to `/research-deep` — but grounded in your own sources instead of the open web.
+
+Steps (4 phases + manual NotebookLM step):
+1. **Vault scan** — same logic as `/research-deep` Phase 1, finds top 12 most relevant notes
+2. **Bundle** — concatenates them into a single markdown source file at `Research/NotebookLM/YYYY-MM-DD — <slug> — bundle.md` (well under NotebookLM's 500K-char/source limit)
+3. **Prompt template** — script prints a structured prompt with sections: Source summary / Confirmed claims / Contradictions / Gaps / Recommended next reads / Confidence
+4. **User does the manual NotebookLM step:** open notebooklm.google.com, create a notebook, paste the bundle as a "Pasted Text" source, optionally add PDFs/URLs/Google Docs, paste the prompt, copy the response
+5. **Save response** — user runs `uv run -m scripts.research.notebooklm --save-response --topic "<topic>" --slug "<slug>"` and pastes response via stdin
+6. **Propagation** — same `/obsidian-save` flow as `/research-deep`
+
+When to use `/notebooklm` over `/research-deep`:
+- `/research-deep` (Perplexity + Grok): open-web + X-discourse coverage. Cost: $0.20-0.80
+- `/notebooklm`: GROUNDED IN your own sources (vault + any PDFs/URLs you add). Cost: ~$0 (uses your free NotebookLM access)
+- Run both for high-value topics — the open-web view and the grounded view rarely contradict, and the contradictions are where the insight is
+
+Why a manual step: NotebookLM's API is workspace-gated beta as of 2026-01. The pasted-source workflow works for every user with a free Google account.
+
+Plain English: "notebooklm this", "ask my notebook about X", "ground a research on X using my vault", "source-grounded research on X".
 
 ---
 

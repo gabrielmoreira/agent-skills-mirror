@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanocoai/nanoclaw` — 26 default patterns, 17 followed patterns, 79 file(s) materialized.
+Mirror of `nanocoai/nanoclaw` — 26 default patterns, 18 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 17 followed patterns, 79 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 17 |
-| Files         | 79 |
+| Followed pats | 18 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 17 followed patterns, 79 
 - `docs/docker-sandboxes.md`
 - `CHANGELOG.md`
 - `docs/skills-as-branches.md`
+- `RELEASING.md`
 
 ## File Index
 
@@ -154,6 +155,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 77 | → | [`docs/skills-as-branches.md`](docs/skills-as-branches.md) |
 | 78 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
 | 79 | → | [`README.md`](README.md) |
+| 80 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

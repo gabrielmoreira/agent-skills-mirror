@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 41 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,21 +85,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`examples/text-to-sql-agent/AGENTS.md`](examples/text-to-sql-agent/AGENTS.md) |
 | 25 | ✓ | [`examples/text-to-sql-agent/skills/query-writing/SKILL.md`](examples/text-to-sql-agent/skills/query-writing/SKILL.md) |
 | 26 | ✓ | [`examples/text-to-sql-agent/skills/schema-exploration/SKILL.md`](examples/text-to-sql-agent/skills/schema-exploration/SKILL.md) |
-| 27 | ✓ | [`libs/cli/deepagents_cli/built_in_skills/remember/SKILL.md`](libs/cli/deepagents_cli/built_in_skills/remember/SKILL.md) |
-| 28 | ✓ | [`libs/cli/deepagents_cli/built_in_skills/skill-creator/SKILL.md`](libs/cli/deepagents_cli/built_in_skills/skill-creator/SKILL.md) |
-| 29 | ✓ | [`libs/cli/examples/deploy-content-writer/skills/blog-post/SKILL.md`](libs/cli/examples/deploy-content-writer/skills/blog-post/SKILL.md) |
-| 30 | ✓ | [`libs/cli/examples/deploy-content-writer/skills/social-media/SKILL.md`](libs/cli/examples/deploy-content-writer/skills/social-media/SKILL.md) |
-| 31 | ✓ | [`libs/cli/examples/skills/arxiv-search/SKILL.md`](libs/cli/examples/skills/arxiv-search/SKILL.md) |
-| 32 | ✓ | [`libs/cli/examples/skills/langgraph-docs/SKILL.md`](libs/cli/examples/skills/langgraph-docs/SKILL.md) |
-| 33 | ✓ | [`libs/cli/examples/skills/skill-creator/SKILL.md`](libs/cli/examples/skills/skill-creator/SKILL.md) |
-| 34 | ✓ | [`libs/cli/examples/skills/web-research/SKILL.md`](libs/cli/examples/skills/web-research/SKILL.md) |
-| 35 | ✓ | [`libs/code/deepagents_code/built_in_skills/remember/SKILL.md`](libs/code/deepagents_code/built_in_skills/remember/SKILL.md) |
-| 36 | ✓ | [`libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md`](libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md) |
-| 37 | ✓ | [`libs/code/examples/skills/arxiv-search/SKILL.md`](libs/code/examples/skills/arxiv-search/SKILL.md) |
-| 38 | ✓ | [`libs/code/examples/skills/langgraph-docs/SKILL.md`](libs/code/examples/skills/langgraph-docs/SKILL.md) |
-| 39 | ✓ | [`libs/code/examples/skills/skill-creator/SKILL.md`](libs/code/examples/skills/skill-creator/SKILL.md) |
-| 40 | ✓ | [`libs/code/examples/skills/web-research/SKILL.md`](libs/code/examples/skills/web-research/SKILL.md) |
-| 41 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
+| 27 | ✓ | [`libs/cli/examples/deploy-content-writer/skills/blog-post/SKILL.md`](libs/cli/examples/deploy-content-writer/skills/blog-post/SKILL.md) |
+| 28 | ✓ | [`libs/cli/examples/deploy-content-writer/skills/social-media/SKILL.md`](libs/cli/examples/deploy-content-writer/skills/social-media/SKILL.md) |
+| 29 | ✓ | [`libs/cli/examples/skills/arxiv-search/SKILL.md`](libs/cli/examples/skills/arxiv-search/SKILL.md) |
+| 30 | ✓ | [`libs/cli/examples/skills/langgraph-docs/SKILL.md`](libs/cli/examples/skills/langgraph-docs/SKILL.md) |
+| 31 | ✓ | [`libs/cli/examples/skills/skill-creator/SKILL.md`](libs/cli/examples/skills/skill-creator/SKILL.md) |
+| 32 | ✓ | [`libs/cli/examples/skills/web-research/SKILL.md`](libs/cli/examples/skills/web-research/SKILL.md) |
+| 33 | ✓ | [`libs/code/deepagents_code/built_in_skills/remember/SKILL.md`](libs/code/deepagents_code/built_in_skills/remember/SKILL.md) |
+| 34 | ✓ | [`libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md`](libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md) |
+| 35 | ✓ | [`libs/code/examples/skills/arxiv-search/SKILL.md`](libs/code/examples/skills/arxiv-search/SKILL.md) |
+| 36 | ✓ | [`libs/code/examples/skills/langgraph-docs/SKILL.md`](libs/code/examples/skills/langgraph-docs/SKILL.md) |
+| 37 | ✓ | [`libs/code/examples/skills/skill-creator/SKILL.md`](libs/code/examples/skills/skill-creator/SKILL.md) |
+| 38 | ✓ | [`libs/code/examples/skills/web-research/SKILL.md`](libs/code/examples/skills/web-research/SKILL.md) |
+| 39 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
 
 ---
 

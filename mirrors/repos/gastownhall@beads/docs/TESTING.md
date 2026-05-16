@@ -85,7 +85,7 @@ BEADS_TEST_SKIP=dolt,slow ./scripts/test.sh
 
 ```bash
 # Pull the exact Dolt image to enable integration tests
-docker pull dolthub/dolt-sql-server:1.43.0
+docker pull dolthub/dolt-sql-server:1.88.1
 
 # Point tests at an existing Dolt server (skips container startup)
 BEADS_DOLT_PORT=3308 ./scripts/test.sh

@@ -60,11 +60,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`skills/as-ask/SKILL.md`](skills/as-ask/SKILL.md) |
-| 3 | ✓ | [`skills/as-fix/SKILL.md`](skills/as-fix/SKILL.md) |
-| 4 | ✓ | [`skills/as-review/SKILL.md`](skills/as-review/SKILL.md) |
-| 5 | ✓ | [`skills/brainstorm/references/summary-template.md`](skills/brainstorm/references/summary-template.md) |
-| 6 | ✓ | [`skills/brainstorm/SKILL.md`](skills/brainstorm/SKILL.md) |
+| 2 | ✓ | [`skills/brainstorm/references/summary-template.md`](skills/brainstorm/references/summary-template.md) |
+| 3 | ✓ | [`skills/brainstorm/SKILL.md`](skills/brainstorm/SKILL.md) |
+| 4 | ✓ | [`skills/cb-ask/SKILL.md`](skills/cb-ask/SKILL.md) |
+| 5 | ✓ | [`skills/cb-fix/SKILL.md`](skills/cb-fix/SKILL.md) |
+| 6 | ✓ | [`skills/cb-review/SKILL.md`](skills/cb-review/SKILL.md) |
 | 7 | ✓ | [`skills/docs/references/summary-template.md`](skills/docs/references/summary-template.md) |
 | 8 | ✓ | [`skills/docs/SKILL.md`](skills/docs/SKILL.md) |
 | 9 | ✓ | [`skills/execute-plan/references/execution-report-template.md`](skills/execute-plan/references/execution-report-template.md) |

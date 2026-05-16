@@ -1,20 +1,22 @@
 ---
 name: clawdcursor
-version: 0.9.1
+version: 0.9.2
 description: >
-  The skill of last resort that gives AI agents eyes, hands, and a keyboard
-  on a real desktop. Reach for clawdcursor only after ruling out the native
-  API, CLI, direct file edit, and any pre-wired browser automation - it's
-  for the last mile when the only remaining surface is a GUI. Concretely:
-  use it when the user says things like "open X", "click Send", "type this
-  in Word", "read what is on my screen", "do this in Outlook", "drive the
-  Figma UI", "control my desktop", "automate this workflow", "fill out
-  this form", "copy text between apps", or whenever an earlier attempt
-  via API, CLI, or direct file edit has failed and a human-style GUI
-  drive is the only path left. Works on Windows, macOS, and Linux. Works
-  with any LLM that can call functions (Claude, GPT, Gemini, Llama, Kimi,
-  Ollama) over MCP - stdio for editor hosts (Claude Code, Cursor,
-  Windsurf, Zed) or HTTP for daemons and dashboards.
+  FALLBACK ONLY — do not invoke unless you have already ruled out (1) a
+  native API (Gmail API, GitHub API, Slack API …), (2) a CLI (git, gh,
+  aws, npm, curl …), (3) direct file editing, and (4) existing browser
+  automation (Playwright, Puppeteer). Only when all four are unavailable
+  or have already failed should you use this skill. It gives AI agents
+  eyes, hands, and a keyboard on a real desktop — the last mile when the
+  only remaining surface is a GUI. Concretely: use it when an earlier
+  attempt via API, CLI, or direct file edit has failed and the user says
+  things like "open X", "click Send", "type this in Word", "read what is
+  on my screen", "do this in Outlook", "drive the Figma UI", "control my
+  desktop", "automate this workflow", "fill out this form", or "copy text
+  between apps". Works on Windows, macOS, and Linux with any LLM that can
+  call functions (Claude, GPT, Gemini, Llama, Kimi, Ollama) over MCP —
+  stdio for editor hosts (Claude Code, Cursor, Windsurf, Zed) or HTTP for
+  daemons and dashboards.
 homepage: https://clawdcursor.com
 source: https://github.com/AmrDab/clawdcursor
 privacy: >
@@ -495,6 +497,20 @@ Per-OS setup notes:
 - **Changelog:** CHANGELOG.md
 
 ---
+
+**What's new in 0.9.2** - reliability + scanner-friendliness:
+
+- **MCP reconnect no longer wedged by stale lockfiles or orphan processes.** `~/.clawdcursor/{start,mcp,serve}.pid` is now JSON `{v, pid, startTime, mode}` verified by OS-reported start-time match — Windows PID recycling no longer fools `claimPidFile` into thinking a long-dead clawdcursor is still live. The `mcp` command also exits cleanly on stdin EOF, so an editor host that crashes without reaping its child no longer leaves an orphan holding the lock. `clawdcursor stop` and `clawdcursor uninstall` both handle the new format and the legacy bare-int format transparently.
+- **`looksLikeCredential` redaction in the dashboard task history actually works.** Five regexes (`password\s*[:=]…`, Bearer tokens, etc.) had silently been matching literal `s` characters since 0.7.x — the `\s` escapes were eaten by the outer template literal. Patterns now double-escape so the emitted browser-side regex sees real whitespace classes. **If you've been relying on the dashboard to hide passwords from queued/historical tasks, this is the first version where that's true.**
+- **ANSI styling moved to picocolors.** All inline `\x1b[NNm` literals across `src/surface/{cli,doctor,onboarding,readiness}.ts` and `logger.ts` replaced with `pc.green()` / `pc.cyan()` / etc. Same colors, same NO_COLOR / TERM=dumb behavior, but third-party scanners no longer mistake the escape codes for "obfuscated content." Adds `picocolors@^1.1.1` (zero-deps, ~3 KB).
+- **SKILL.md frontmatter leads with FALLBACK ONLY.** The `description` field (what skill registries and AI tool indexes display before an agent opens the file) now opens with the explicit 4-gate: native API → CLI → file edit → existing browser automation, then clawdcursor. Aligns the registry-level messaging with the body content. PR #95.
+- **Tool-count cleanup.** The doctor success panel and `docs/index.html` hero/spec/mode-stats updated to match the registry's actual count (97 granular, 6 compact). Historical "What's new" entries left intact — they correctly describe the count at their respective releases.
+- **Internal version-sync.** `scripts/sync-version.ts` propagates `package.json` version to SKILL frontmatter, install scripts, and the website on release. No more hand-sync of version literals.
+
+**What's new in 0.9.1** - macOS compose-send fix + scheduled tasks:
+
+- **Compose-send playbook fix on macOS.** A v0.9.0 user reported "open mail app and send an email" returning success but actually putting the body in the subject field. Three layered fixes in `src/tools/playbooks/compose-send.ts`: platform-aware Tab count after recipient (1 on darwin/linux, 3 on win32 — macOS Mail.app collapses Cc/Bcc by default); decoupled the post-subject Tab from `if (subject)` so empty-subject tasks still land the body in the right field; removed the playbook exemption from the verifier so the rich `send_email` task assertions (`compose_closed`, `recipient_visible`, `not_just_saved_as_draft`) actually run on every send.
+- **Scheduled tasks** (new feature). `scheduled_task_create({ task, cron, tz? })` registers a cron-driven recurring task that fires through the same agent pipeline as `submit_task`. Persisted across daemon restarts via `~/.clawdcursor/scheduled-tasks.json`. Dashboard gets a new ⏰ Scheduled tab with cron input, active-schedule list, per-row pause / delete buttons. Four new MCP tools (`scheduled_task_create` / `_list` / `_pause` / `_delete`).
 
 **What's new in 0.9.0** - architecture redesign + behavior tightening:
 

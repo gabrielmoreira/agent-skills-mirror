@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:ff8fe2ae94728448c14ef4d58a483183e66d5780`
+**Shape snapshot:** `sha1:076d739c0a9241bfd87599f8497c51ae7054dc5f`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -29,9 +29,9 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 ## At a Glance
 
-- **211** active API routes across **52** categories
-- **4** required + **121** optional environment variables
-- **84** database tables
+- **212** active API routes across **52** categories
+- **4** required + **127** optional environment variables
+- **85** database tables
 
 ## API Surface
 
@@ -142,6 +142,7 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 - `GET` `/api/cron/code-session-cache-crater`
 - `GET` `/api/cron/code-session-weekly-memo`
 - `GET` `/api/cron/integration-health`
+- `GET` `/api/cron/jti-sweep`
 - `GET` `/api/cron/learning-episodes-backfill`
 - `GET` `/api/cron/learning-recommendations`
 - `GET` `/api/cron/memory-maintenance`
@@ -406,10 +407,10 @@ If the snapshot below disagrees with a live query, **trust the live query**.
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 71 file(s)
-- **`DATABASE_URL`** - referenced in 87 file(s)
-- **`ENCRYPTION_KEY`** - referenced in 8 file(s)
-- **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 56 file(s)
+- **`DATABASE_URL`** - referenced in 82 file(s)
+- **`ENCRYPTION_KEY`** - referenced in 4 file(s)
+- **`NEXTAUTH_SECRET`** - referenced in 4 file(s)
 
 ## Optional Environment Variables
 
@@ -445,6 +446,8 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_DISABLE_RATE_LIMIT` *(undocumented)*
 - `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
 - `DASHCLAW_HOSTED` *(undocumented)*
+- `DASHCLAW_JTI_MAX_TTL_SECONDS` *(undocumented)*
+- `DASHCLAW_JTI_REPLAY_PROTECTION` *(undocumented)*
 - `DASHCLAW_JWT_AUDIENCE` *(undocumented)*
 - `DASHCLAW_LOCAL_ADMIN_PASSWORD` *(undocumented)*
 - `DASHCLAW_MAX_ORG_ATTACHMENT_BYTES` *(undocumented)*
@@ -483,10 +486,14 @@ These have fallbacks or only activate specific features.
 - `INTEGRATION_DATABASE_URL` *(undocumented)*
 - `MOONSHOT_API_KEY` *(undocumented)*
 - `NEXTAUTH_URL`
+- `NEXT_PUBLIC_` *(undocumented)*
 - `NEXT_PUBLIC_APP_URL` *(undocumented)*
 - `NEXT_PUBLIC_DASHCLAW_MODE` *(undocumented)*
 - `NEXT_PUBLIC_DASHCLAW_VERSION` *(undocumented)*
 - `NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS` *(undocumented)*
+- `NEXT_PUBLIC_PLUGIN_MANIFEST_VERSION` *(undocumented)*
+- `NEXT_PUBLIC_SDK_NODE_VERSION` *(undocumented)*
+- `NEXT_PUBLIC_SDK_PYTHON_VERSION` *(undocumented)*
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` *(undocumented)*
 - `NODE_ENV` *(undocumented)*
 - `OIDC_AUTHORIZATION_URL` *(undocumented)*
@@ -539,7 +546,7 @@ These have fallbacks or only activate specific features.
 
 ## Database Tables
 
-All 84 tables defined in `schema/schema.js` (Drizzle ORM):
+All 85 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -586,6 +593,7 @@ All 84 tables defined in `schema/schema.js` (Drizzle ORM):
 - `health_snapshots`
 - `ideas`
 - `interactions`
+- `jwt_replay_log`
 - `learning_curves`
 - `learning_episodes`
 - `learning_recommendation_events`

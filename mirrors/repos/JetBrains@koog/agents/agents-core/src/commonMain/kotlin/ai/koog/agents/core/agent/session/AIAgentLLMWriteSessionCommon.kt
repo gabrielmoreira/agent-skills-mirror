@@ -20,6 +20,8 @@ import ai.koog.prompt.executor.model.StructureFixingParser
 import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.message.LLMChoice
 import ai.koog.prompt.message.Message
+import ai.koog.prompt.message.MessagePart
+import ai.koog.prompt.message.RequestMetaInfo
 import ai.koog.prompt.params.LLMParams
 import ai.koog.prompt.processor.ResponseProcessor
 import ai.koog.prompt.streaming.StreamFrame
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
+import kotlin.jvm.JvmSynthetic
 import kotlin.reflect.KClass
 import kotlin.time.Instant
 
@@ -100,6 +103,12 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
         return SafeTool(tool, environment, clock)
     }
 
+    public fun userMessage(parts: List<MessagePart.RequestPart>): Message.User =
+        Message.User(parts = parts, metaInfo = RequestMetaInfo.create(clock))
+
+    public fun userMessage(text: String): Message.User =
+        Message.User(parts = listOf(MessagePart.Text(text)), metaInfo = RequestMetaInfo.create(clock))
+
     /**
      * Appends messages to the current prompt using [PromptBuilder].
      */
@@ -139,39 +148,27 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Sends a request without tool usage and appends all received responses to the prompt.
      */
-    public suspend fun requestLLMMultipleWithoutTools(): List<Message.Response> {
-        return readSession.requestLLMMultipleWithoutTools().also { responses ->
-            appendPrompt { messages(responses) }
+    @JvmSynthetic
+    public suspend fun requestLLMWithoutTools(): Message.Assistant {
+        return readSession.requestLLMWithoutTools().also { response ->
+            appendPrompt { message(response) }
         }
-    }
-
-    /**
-     * Sends a request without tool usage and appends the received response to the prompt.
-     */
-    public suspend fun requestLLMWithoutTools(): Message.Response {
-        return readSession.requestLLMWithoutTools().also { response -> appendPrompt { message(response) } }
-    }
-
-    /**
-     * Sends a request that enforces tool calling and appends the received response to the prompt.
-     */
-    public suspend fun requestLLMOnlyCallingTools(): Message.Response {
-        return readSession.requestLLMOnlyCallingTools()
-            .also { response -> appendPrompt { message(response) } }
     }
 
     /**
      * Sends a request that enforces tool calling and appends all received responses to the prompt.
      */
-    public suspend fun requestLLMMultipleOnlyCallingTools(): List<Message.Response> {
-        return readSession.requestLLMMultipleOnlyCallingTools()
-            .also { responses -> appendPrompt { messages(responses) } }
+    @JvmSynthetic
+    public suspend fun requestLLMOnlyCallingTools(): Message.Assistant {
+        return readSession.requestLLMOnlyCallingTools()
+            .also { response -> appendPrompt { message(response) } }
     }
 
     /**
      * Sends a request while forcing a specific tool and appends the response to the prompt.
      */
-    public suspend fun requestLLMForceOneTool(tool: ToolDescriptor): Message.Response {
+    @JvmSynthetic
+    public suspend fun requestLLMForceOneTool(tool: ToolBase<*, *>): Message.Assistant {
         return readSession.requestLLMForceOneTool(tool)
             .also { response -> appendPrompt { message(response) } }
     }
@@ -179,7 +176,8 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Sends a request while forcing a specific tool and appends the response to the prompt.
      */
-    public suspend fun requestLLMForceOneTool(tool: ToolBase<*, *>): Message.Response {
+    @JvmSynthetic
+    public suspend fun requestLLMForceOneTool(tool: ToolDescriptor): Message.Assistant {
         return readSession.requestLLMForceOneTool(tool)
             .also { response -> appendPrompt { message(response) } }
     }
@@ -187,7 +185,8 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Sends a request to LLM and appends the response to the prompt.
      */
-    public suspend fun requestLLM(): Message.Response {
+    @JvmSynthetic
+    public suspend fun requestLLM(): Message.Assistant {
         return readSession.requestLLM().also { response ->
             appendPrompt { message(response) }
         }
@@ -196,6 +195,7 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Sends a streaming request to LLM.
      */
+    @JvmSynthetic
     public suspend fun requestLLMStreaming(): Flow<StreamFrame> {
         return readSession.requestLLMStreaming()
     }
@@ -203,24 +203,15 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Sends a moderation request using the specified moderating model or the session model.
      */
+    @JvmSynthetic
     public suspend fun requestModeration(moderatingModel: LLModel? = null): ModerationResult {
         return readSession.requestModeration(moderatingModel)
     }
 
     /**
-     * Sends a request to LLM and appends all received responses to the prompt.
-     */
-    public suspend fun requestLLMMultiple(): List<Message.Response> {
-        return readSession.requestLLMMultiple().also { responses ->
-            appendPrompt {
-                responses.forEach { message(it) }
-            }
-        }
-    }
-
-    /**
      * Sends a request to LLM and gets a structured response, appending the assistant message on success.
      */
+    @JvmSynthetic
     public suspend fun <T> requestLLMStructured(
         config: StructuredRequestConfig<T>,
         fixingParser: StructureFixingParser? = null
@@ -245,6 +236,7 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Sends a request to LLM and gets a structured response, appending the assistant message on success.
      */
+    @JvmSynthetic
     public suspend fun <T> requestLLMStructured(
         serializer: KSerializer<T>,
         examples: List<T> = emptyList(),
@@ -258,6 +250,7 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Parses a structured response from an assistant message using the specified configuration.
      */
+    @JvmSynthetic
     public suspend fun <T> parseResponseToStructuredResponse(
         response: Message.Assistant,
         config: StructuredRequestConfig<T>,
@@ -269,13 +262,15 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
     /**
      * Sends a request to LLM and returns all available response choices.
      */
-    public suspend fun requestLLMMultipleChoices(): List<LLMChoice> {
+    @JvmSynthetic
+    public suspend fun requestLLMMultipleChoices(): LLMChoice {
         return readSession.requestLLMMultipleChoices()
     }
 
     /**
      * Streams a response from LLM, optionally adding a structure definition to the prompt beforehand.
      */
+    @JvmSynthetic
     public suspend fun requestLLMStreaming(definition: StructureDefinition? = null): Flow<StreamFrame> {
         if (definition != null) {
             val prompt = prompt(prompt, clock) {
@@ -287,6 +282,15 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
         }
 
         return readSession.requestLLMStreaming()
+    }
+
+    public suspend fun <T> requestStreaming(
+        definition: StructureDefinition? = null,
+        transformStreamData: suspend (Flow<StreamFrame>) -> Flow<T>
+    ): Flow<T> {
+        val stream = requestLLMStreaming(definition)
+
+        return transformStreamData(stream)
     }
 
     /**
@@ -444,7 +448,19 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
      * Drops all trailing tool call messages from the current prompt
      */
     public fun dropTrailingToolCalls() {
-        rewritePrompt { prompt -> prompt.withMessages { messages -> messages.dropLastWhile { it is Message.Tool.Call } } }
+        rewritePrompt { prompt ->
+            prompt.withMessages {
+                val lastMessage = prompt.messages.lastOrNull()
+                if (lastMessage is Message.Assistant &&
+                    lastMessage.parts.filterIsInstance<MessagePart.Tool.Call>()
+                        .isNotEmpty()
+                ) {
+                    prompt.messages.dropLast(1)
+                } else {
+                    prompt.messages
+                }
+            }
+        }
     }
 
     /**
@@ -453,6 +469,7 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
      * Default is `null`, which means entire history will be used.
      * @param preserveMemory Whether to preserve memory-related messages in the history.
      */
+    @JvmSynthetic
     public suspend fun replaceHistoryWithTLDR(
         strategy: HistoryCompressionStrategy = HistoryCompressionStrategy.WholeHistory,
         preserveMemory: Boolean = true
@@ -460,8 +477,10 @@ public abstract class AIAgentLLMWriteSessionCommon internal constructor(
         // Store memory-related messages if needed
         val memoryMessages = if (preserveMemory) {
             prompt.messages.filter { message ->
-                message.content.contains("Here are the relevant facts from memory") ||
-                    message.content.contains("Memory feature is not enabled")
+                message.parts.filterIsInstance<MessagePart.Text>().any {
+                    it.text.contains("Here are the relevant facts from memory") ||
+                        it.text.contains("Memory feature is not enabled")
+                }
             }
         } else {
             emptyList()

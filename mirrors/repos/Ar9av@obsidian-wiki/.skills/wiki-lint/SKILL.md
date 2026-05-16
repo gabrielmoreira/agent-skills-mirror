@@ -239,6 +239,39 @@ Append to the `LINT` log entry:
 - [TIMESTAMP] LINT ... lifecycle_issues=N
 ```
 
+### 13. Typed Relationships Validity
+
+Validate `relationships:` frontmatter blocks. Skip pages that have no `relationships:` block — the field is optional.
+
+**Allowed types:** `extends`, `implements`, `contradicts`, `derived_from`, `uses`, `replaces`, `related_to`
+
+**How to check:**
+- Grep frontmatter for `^relationships:` across all vault pages
+- For each page that has a `relationships:` block, read its frontmatter (not the full page body)
+- For each entry in the block:
+  1. **Type validation** — flag any `type:` value not in the allowed set above
+  2. **Broken target** — strip `[[` and `]]` from the `target:` string, normalize (lowercase, spaces→hyphens, strip `.md`), and check whether a `.md` file at that path exists in the vault. Flag unresolved targets.
+  3. **Self-reference** — flag any entry where the resolved target equals the page's own node id
+
+**How to fix:**
+- Invalid type: correct the value to the nearest allowed type, or use `related_to` when the type is ambiguous
+- Broken target: update or remove the entry; if the target page should exist, create it first
+- Self-reference: remove the entry
+
+**Output additions:**
+
+```markdown
+### Typed Relationship Issues (N found)
+- `concepts/foo.md` — relationships[1]: type "contradication" is not an allowed type (did you mean "contradicts"?)
+- `concepts/bar.md` — relationships[0]: target "[[skills/nonexistent-skill]]" resolves to no page in vault
+- `entities/baz.md` — relationships[2]: self-reference (target resolves to this page's own id)
+```
+
+Append to the `LINT` log entry:
+```
+... relationship_issues=N
+```
+
 ### 11. Synthesis Gaps
 
 Identify high-value synthesis opportunities the wiki is missing — concept pairs that co-occur across many pages but have no `synthesis/` page connecting them.
@@ -308,6 +341,10 @@ Pages in misc/ that have ≥ 3 connections to a single project and are ready to 
 |---|---|---|
 | `misc/web-martinfowler-articles-microservices.md` | `obsidian-wiki` | 4 |
 
+### Typed Relationship Issues (N found)
+- `concepts/foo.md` — relationships[1]: type "contradication" is not an allowed type
+- `concepts/bar.md` — relationships[0]: target "[[skills/nonexistent]]" resolves to no page
+
 ### Synthesis Gaps (N found)
 Concept pairs that co-occur frequently but have no synthesis page:
 
@@ -321,7 +358,7 @@ Concept pairs that co-occur frequently but have no synthesis page:
 
 Append to `log.md`:
 ```
-- [TIMESTAMP] LINT issues_found=N orphans=X broken_links=Y stale=Z contradictions=W prov_issues=P missing_summary=S fragmented_clusters=F visibility_issues=V promotion_candidates=C synthesis_gaps=G
+- [TIMESTAMP] LINT issues_found=N orphans=X broken_links=Y stale=Z contradictions=W prov_issues=P missing_summary=S fragmented_clusters=F visibility_issues=V promotion_candidates=C synthesis_gaps=G relationship_issues=R
 ```
 
 Offer to fix issues automatically or let the user decide which to address.

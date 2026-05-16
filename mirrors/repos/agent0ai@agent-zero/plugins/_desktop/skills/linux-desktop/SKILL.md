@@ -34,7 +34,7 @@ The Desktop is an observe-act-verify control surface. Use this decision hierarch
 
 Keep these standing rules:
 
-1. Treat Markdown as first-class. For writing, notes, reports, and drafts with no explicit binary Office requirement, create Markdown and use the custom Markdown editor when the user opens the canvas.
+1. Treat Markdown as first-class, but use the separate Editor surface for it. For writing, notes, reports, and drafts with no explicit binary Office requirement, create Markdown and let the user open it in Editor instead of Desktop.
 2. Treat ODF as first-class for LibreOffice office work: ODT in Writer, ODS in Calc, ODP in Impress. Use DOCX/XLSX/PPTX only for explicit OOXML compatibility.
 3. Use the Desktop only when the user asks for the Desktop, a GUI app, binary Office visual work, or visual confirmation.
 4. Never open the Desktop surface automatically from a tool result if the user has not opened it. Offer an explicit Open in Desktop action instead.

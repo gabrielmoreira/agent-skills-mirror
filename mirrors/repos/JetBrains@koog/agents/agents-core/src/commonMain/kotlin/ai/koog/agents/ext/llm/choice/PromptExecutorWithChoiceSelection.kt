@@ -9,6 +9,7 @@ import ai.koog.prompt.message.LLMChoice
 import ai.koog.prompt.message.Message
 import ai.koog.prompt.streaming.StreamFrame
 import kotlinx.coroutines.flow.Flow
+import kotlin.jvm.JvmSynthetic
 
 /**
  * A specialized implementation of `PromptExecutor` that enhances the standard execution process
@@ -29,12 +30,13 @@ public class PromptExecutorWithChoiceSelection(
     private val executor: PromptExecutor,
     private val choiceSelectionStrategy: ChoiceSelectionStrategy,
 ) : PromptExecutor() {
-    override suspend fun execute(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): List<Message.Response> {
+    override suspend fun execute(prompt: Prompt, model: LLModel, tools: List<ToolDescriptor>): Message.Assistant {
         val choices = executor.executeMultipleChoices(prompt, model, tools)
 
         return choiceSelectionStrategy.choose(prompt, choices)
     }
 
+    @JvmSynthetic
     override fun executeStreaming(
         prompt: Prompt,
         model: LLModel,
@@ -54,5 +56,5 @@ public class PromptExecutorWithChoiceSelection(
         prompt: Prompt,
         model: LLModel,
         tools: List<ToolDescriptor>
-    ): List<LLMChoice> = executor.executeMultipleChoices(prompt, model, tools)
+    ): LLMChoice = executor.executeMultipleChoices(prompt, model, tools)
 }

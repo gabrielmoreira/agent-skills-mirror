@@ -221,7 +221,7 @@ Automatic compaction is threshold-only:
 
 Lossless still records prompt-cache telemetry for status and diagnostics, but cache hotness no longer delays threshold debt. Legacy `cacheAwareCompaction.*` and `dynamicLeafChunkTokens.*` settings remain accepted so existing OpenClaw config continues to load, but they do not change automatic compaction behavior.
 
-Full sweeps treat `sweepMaxDepth` as the normal depth target, not an absolute safety ceiling. The routine condensation phase obeys `sweepMaxDepth`; if the context is still over threshold or the summarized prefix remains above `summaryPrefixTargetTokens`, a pressure phase may use `condensedMinFanoutHard` and condense deeper. This keeps ordinary sweeps shallow while still giving Lossless a way out when too many same-depth summaries would otherwise leave the prompt near full.
+Full sweeps first run leaf passes until there are no more eligible raw-message chunks outside the fresh tail. Condensation is then driven by summarized-prefix pressure: the routine condensation phase obeys `sweepMaxDepth`, and if the summarized prefix still exceeds `summaryPrefixTargetTokens`, a pressure phase may use `condensedMinFanoutHard` and condense deeper. Total context pressure starts the sweep, but does not by itself force deeper condensation once the raw prefix has been summarized.
 
 ### Prompt-aware eviction
 

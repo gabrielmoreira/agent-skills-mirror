@@ -2,17 +2,11 @@
 
 Skills are specialized capabilities you can assign to agents. Unlike MCPs (which are running servers), skills are **prompt-based tool configurations** — instructions injected into an agent's system prompt that describe how to use a particular tool.
 
-Skills are installed via the `oh-my-opencode-slim` installer or manually with `npx skills add`.
+Bundled skills are installed by the `oh-my-opencode-slim` installer.
 
 ---
 
 ## Available Skills
-
-### Recommended (via installer)
-
-| Skill | Description | Assigned to by default |
-|-------|-------------|----------------------|
-| [`agent-browser`](#agent-browser) | High-performance browser automation | `designer` |
 
 ### Bundled in repo
 
@@ -33,14 +27,6 @@ Skills are installed via the `oh-my-opencode-slim` installer or manually with `n
 By default, this skill is assigned to `oracle`, which owns code review, maintainability review, and simplification guidance. The `orchestrator` should route simplification requests to `oracle` instead of handling them as a top-level specialty itself.
 
 Source: adapted from Addy Osmani's `code-simplification` skill and bundled locally as `simplify`.
-
----
-
-## agent-browser
-
-**External browser automation for visual verification and testing.**
-
-`agent-browser` provides full high-performance browser automation. It allows agents to browse the web, interact with page elements, take screenshots, and verify visual state — useful for UI/UX work, end-to-end testing, and researching live documentation.
 
 ---
 
@@ -102,7 +88,7 @@ Control which skills each agent can use in `~/.config/opencode/oh-my-opencode-sl
 | Syntax | Meaning |
 |--------|---------|
 | `["*"]` | All installed skills |
-| `["*", "!agent-browser"]` | All skills except `agent-browser` |
+| `["*", "!codemap"]` | All skills except `codemap` |
 | `["simplify"]` | Only `simplify` |
 | `[]` | No skills |
 | `["!*"]` | Deny all skills |
@@ -125,7 +111,7 @@ Control which skills each agent can use in `~/.config/opencode/oh-my-opencode-sl
         "skills": ["simplify"]
       },
       "designer": {
-        "skills": ["agent-browser"]
+        "skills": []
       },
       "fixer": {
         "skills": []

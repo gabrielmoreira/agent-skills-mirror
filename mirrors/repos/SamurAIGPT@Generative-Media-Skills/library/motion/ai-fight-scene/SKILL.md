@@ -13,7 +13,7 @@ acceptLicenseTerms: true
 
 > **Estimated credits:** ~250 per run.
 
-The core idea (from the [AtlasCloud Seedance 2 + GPT Image 2 tutorial](https://www.atlascloud.ai/blog/guides/seedance-2-gpt-image-2-api-tutorial)): **action tension comes from cut density, not single-shot quality.** Forcing the video model to follow a pre-drawn 4×4 storyboard grid gives you 16 distinct shots in a 15-second clip — landing punches, reverse angles, ECUs, whip-pans — that no t2v prompt could choreograph on its own.
+The core idea: **action tension comes from cut density, not single-shot quality.** Forcing the video model to follow a pre-drawn 4×4 storyboard grid gives you 16 distinct shots in a 15-second clip — landing punches, reverse angles, ECUs, whip-pans — that no t2v prompt could choreograph on its own.
 
 ## Inputs
 

@@ -4,9 +4,9 @@
 
 ---
 
-## Project Status (Last updated: Sun Apr 26 2026)
+## Project Status (Last updated: Fri May 15 2026)
 
-### Current State: v0.78 Released + Release Packaging Added
+### Current State: v0.79 Released + Community Contributions
 
 **Released: 46 Skills (Feb 27, 2026)**
 - 20 Component Skills (templates/artifacts + finance metrics + career frameworks)
@@ -51,6 +51,12 @@
   - See `docs/Finance Suite Summary.md` for complete overview
 
 **Recent Updates:**
+- ✅ **v0.79 Released (May 15, 2026):** Community contributions — security hardening, new meta-skill, bug fix
+  - Added `skills/pm-skill-creator/` — interactive skill for guided skill design (KNE-AI)
+  - Added `.claude-plugin/plugin.json` — fixes silent skill discovery failure for Claude Code plugin users (changyan01, harley-chenhailin)
+  - Added configurable input length guard to `scripts/run-pm.sh` via `PM_MAX_INPUT` env var, default 4000 (xiaolai)
+  - Added adapter name allowlist and path traversal protection to `scripts/add-a-skill.sh` (xiaolai)
+  - Release note: `docs/announcements/2026-05-15-v0-79-community-contributions.md`
 - ✅ **v0.78 Released (Apr 26, 2026):** Added release packaging automation and clearer install paths
   - Added `scripts/validate-skills.sh`, `scripts/build-claude-desktop-packs.sh`, `scripts/build-codex-skills.sh`, and `scripts/build-release.sh`
   - Added Claude Desktop/Web ZIP packs for starter, discovery, strategy, delivery, AI PM, and all-skills use cases
@@ -70,10 +76,12 @@
   - Added note on external scoring tools optimizing for the wrong rubric
   - Claude Code plugin marketplace badge and coming-soon install snippet added to `README.md`
   - Release note: `docs/announcements/2026-03-17-v0-75-pedagogic-first.md`
-- **Open PRs (as of Mar 18, 2026):**
-  - #1 KNE-AI — `pm-skill-creator` interactive skill — approved pending rename of frontmatter `name` to `pm-skill-creator`
-  - ✅ #2 markphelps — Claude Code plugin marketplace (`marketplace.json`) — **merged Mar 18, 2026**; `.claude-plugin/marketplace.json` now in main
-  - #3 popey — efficiency improvements across 46 skills — sent back; structural table consolidations welcome, pedagogic content (Why This Works, Anti-Patterns, educational preambles) must be restored
+- **Open PRs:** None — all resolved as of May 15, 2026
+  - ✅ #1 KNE-AI — `pm-skill-creator` — merged; folder and frontmatter renamed to drop `kne-` prefix
+  - ✅ #2 markphelps — Claude Code plugin marketplace (`marketplace.json`) — merged Mar 18, 2026
+  - ✅ #3 popey — efficiency improvements — closed; stripped pedagogic content, does not meet contribution standards
+  - ✅ #7 xiaolai — input length guard in `run-pm.sh` — merged with configurable `PM_MAX_INPUT` default
+  - ✅ #8 xiaolai — adapter validation in `add-a-skill.sh` — merged as-is
 - ✅ **v0.7 Released (Mar 9, 2026):** Tightened skill quality and discovery standards across the full library
   - Standardized trigger-oriented `description` language so skills more clearly answer "use this when..."
   - Added repo-standard `intent` frontmatter to preserve richer meaning without weakening trigger metadata

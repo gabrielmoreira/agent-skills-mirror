@@ -159,6 +159,9 @@ title: Page Title
 category: concepts
 tags: [ml, architecture]
 aliases: [alternate name]
+relationships:
+  - target: "[[concepts/related-concept]]"
+    type: extends
 sources: [papers/attention.pdf]
 summary: One or two sentences, ≤200 chars, so a reader (or another skill) can preview this page without opening it.
 provenance:
@@ -226,6 +229,47 @@ provenance:
 ```
 
 These are best-effort numbers written by the ingest skill at create/update time. `wiki-lint` recomputes them and flags drift. The block is optional — pages without it are treated as fully extracted by convention.
+
+## Typed Relationships
+
+Plain `[[wikilinks]]` in page bodies carry no semantic weight — they indicate "related to" but not *how*. The optional `relationships:` frontmatter block adds typed, directional edges to the knowledge graph.
+
+### The `relationships:` block
+
+```yaml
+relationships:
+  - target: "[[Transformer Architecture]]"
+    type: extends
+  - target: "[[LSTM]]"
+    type: contradicts
+  - target: "[[Attention Mechanism]]"
+    type: implements
+```
+
+Each entry has two required fields:
+- `target` — a wikilink (using the same format as `OBSIDIAN_LINK_FORMAT`) to the related page
+- `type` — one of the allowed semantic types below
+
+### Allowed relationship types
+
+| Type | Meaning | Example |
+|---|---|---|
+| `extends` | This page builds on or generalises the target | GPT extends Transformer Architecture |
+| `implements` | This page is a concrete realisation of the target concept | BERT implements Masked Language Modelling |
+| `contradicts` | This page's claims conflict with or refute the target | Evidence A contradicts Evidence B |
+| `derived_from` | This page is based on or adapted from the target | Fine-tuning is derived from Transfer Learning |
+| `uses` | This page depends on or relies on the target | RAG uses Vector Databases |
+| `replaces` | This page supersedes or deprecates the target | GPT-4 replaces GPT-3 |
+| `related_to` | Catch-all: related but no stronger directional type applies | Concept A is related to Concept B |
+
+### Rules
+
+- **Optional field** — omit the block entirely if no typed relationships are known. Untagged wikilinks remain valid and are treated as `related_to` by `wiki-export`.
+- **Don't duplicate** — if `[[foo]]` already appears as an inline wikilink, the `relationships:` entry just enriches it with a type; it is not a second link.
+- **Direction matters** — the page declaring the entry is the *source*; `target` is the destination. Only declare relationships from this page's perspective.
+- **Don't fabricate** — only add a typed entry when the source material makes the relationship direction and type clear. When in doubt, use `related_to` or omit.
+
+Skills that read `relationships:`: `wiki-export` (emits typed edges), `cross-linker` (writes typed entries when inferring links), `wiki-query` (may surface type in answers).
 
 ## Confidence and Lifecycle
 
