@@ -20,7 +20,7 @@ Primitive on which every other browser skill composes. Opens a named browser ses
 1. **Allocate session id and RVF container**:
    ```bash
    SID="$(date +%Y%m%d-%H%M%S)-${TASK_SLUG:-record}"
-   npx -y ruvector@0.2.25 rvf create "$SID.rvf" --kind browser-session
+   npx -y ruvector@0.2.25 rvf create "$SID.rvf" --dimension 384
    npx -y ruvector@0.2.25 hooks trajectory-begin --session-id "$SID" --task "$1"
    ```
 2. **Open the browser** via `mcp__claude-flow__browser_open` with the URL.

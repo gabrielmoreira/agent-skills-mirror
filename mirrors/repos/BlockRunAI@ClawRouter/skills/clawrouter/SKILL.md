@@ -1,6 +1,6 @@
 ---
 name: clawrouter
-description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, and prediction-market data across Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow + UMA oracle resolution + wallet identity & clustering as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
+description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, prediction-market data across Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow + UMA oracle resolution + wallet identity & clustering, AND phone-number intelligence (carrier + SIM-swap fraud detection) plus AI-powered outbound voice calls (Twilio + Bland.ai) as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
 triggers:
   - "clawrouter"
   - "claw router"
@@ -15,6 +15,12 @@ triggers:
   - "x402 llm payment"
   - "usdc llm gateway"
   - "openrouter alternative"
+  - "blockrun phone"
+  - "blockrun voice call"
+  - "ai phone call"
+  - "phone number verification"
+  - "sim swap detection"
+  - "outbound ai call"
 homepage: https://blockrun.ai/clawrouter.md
 repository: https://github.com/BlockRunAI/ClawRouter
 license: MIT
@@ -148,6 +154,23 @@ Realtime prices and historical OHLC across every asset class. The agent should c
 | `blockrun_image_generation` | 8 image models — DALL-E 3, Nano Banana / Pro, Flux, Grok Imagine, CogView-4 | $0.015–$0.15 / image |
 | `blockrun_image_edit`       | Edit / inpaint existing image (openai/gpt-image-1)                          | $0.02–$0.04 / image  |
 | `blockrun_video_generation` | Grok Imagine + ByteDance Seedance (1.5-pro / 2.0-fast / 2.0), 5–10s         | $0.03–$0.30 / second |
+
+### Phone & Voice (Twilio + Bland.ai)
+
+Verify phone numbers and place AI-powered outbound voice calls. **Real-world side effects** — only call `blockrun_voice_call` when the user has explicitly asked to place a call. Server enforces an emergency-number blocklist; ClawRouter does not.
+
+| Tool                              | Purpose                                                                  | Price        |
+| --------------------------------- | ------------------------------------------------------------------------ | ------------ |
+| `blockrun_phone_lookup`           | Carrier + line type (mobile/landline/voip) for any E.164 number          | $0.01        |
+| `blockrun_phone_lookup_fraud`     | SIM-swap + call-forwarding fraud signals (use before SMS-code flows)     | $0.05        |
+| `blockrun_phone_numbers_buy`      | Provision a US/CA number bound to this wallet (30-day lease)             | $5.00        |
+| `blockrun_phone_numbers_renew`    | Extend a wallet-owned number's lease 30 days                             | $5.00        |
+| `blockrun_phone_numbers_list`     | List numbers the wallet currently owns + expiry timestamps               | $0.001       |
+| `blockrun_phone_numbers_release`  | Release a wallet-owned number back to the pool                           | free         |
+| `blockrun_voice_call`             | AI outbound call via Bland.ai — up to 30 min, transcript + recording     | $0.54 flat   |
+| `blockrun_voice_status`           | Poll a call's status / transcript / recording                            | free         |
+
+Voice calls are **fire-and-forget**: the POST returns a `call_id` + `poll_url` immediately, the call itself runs in the cloud for up to 30 minutes. Poll `blockrun_voice_status` every 10–30s while in_progress to retrieve the transcript. Slash command: `/cr-call +1<E.164> "<task>" [--voice nat] [--max-duration 5]`. CLI: `clawrouter phone numbers list/buy/renew/release` and `clawrouter phone lookup/fraud <+E.164>`. See the `phone` skill for the full call-flow reference.
 
 ### Prediction Markets (Predexon)
 

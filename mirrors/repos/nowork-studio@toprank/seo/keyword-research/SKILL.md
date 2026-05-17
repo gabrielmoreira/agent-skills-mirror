@@ -2,12 +2,14 @@
 name: keyword-research
 argument-hint: "<topic, niche, or seed keyword>"
 description: >
-  Discover, analyze, and prioritize keywords for SEO and GEO content strategies.
-  Identifies high-value opportunities based on search volume, competition,
-  intent, and business relevance. Generates topic clusters and content calendars.
-  Use when asked to "find keywords", "keyword research", "what should I write
-  about", "keyword analysis", "find me topics to write", "search volume",
-  "keyword difficulty", "content ideas", or any keyword discovery task.
+  Discover, analyze, and prioritize keywords for SEO and GEO content strategies
+  from a seed keyword or niche. Identifies high-value opportunities based on
+  search volume, competition, intent, and business relevance. Generates topic
+  clusters. For building a dated editorial calendar from your own Search
+  Console data, use `content-planner` instead — this skill is seed-driven
+  keyword discovery, not calendar scheduling. Use when asked to "find
+  keywords", "keyword research", "keyword analysis", "search volume", "keyword
+  difficulty", "content ideas from a seed", or any keyword discovery task.
 ---
 
 # Keyword Research

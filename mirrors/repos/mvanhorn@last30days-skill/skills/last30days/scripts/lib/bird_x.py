@@ -9,6 +9,7 @@ import json
 import os
 import shutil
 import sys
+import time
 from pathlib import Path
 
 from . import http, log, subproc
@@ -16,6 +17,11 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 from .relevance import token_overlap_relevance as _compute_relevance
+
+# How many times to retry the bird-search subprocess when stdout is non-JSON
+# (typically an HTML anti-bot interstitial from Twitter's edge).
+MAX_JSON_DECODE_RETRIES = 2
+JSON_DECODE_RETRY_DELAY = 5.0  # seconds between retry attempts
 
 
 def _first_of(*values):
@@ -148,16 +154,14 @@ def get_bird_status() -> Dict[str, Any]:
     }
 
 
-def _run_bird_search(query: str, count: int, timeout: int) -> Dict[str, Any]:
-    """Run a search using the vendored bird-search.mjs module.
+def _invoke_bird_subprocess(query: str, count: int, timeout: int):
+    """Invoke the vendored bird-search.mjs subprocess once.
 
-    Args:
-        query: Full search query string (including since: filter)
-        count: Number of results to request
-        timeout: Timeout in seconds
-
-    Returns:
-        Raw Bird JSON response or error dict.
+    Returns (result, error_dict). If error_dict is non-None, treat it as the
+    final result and do not retry — those errors are terminal (timeout,
+    spawn failure). If error_dict is None, the subprocess ran to completion
+    and `result` is the SubprocResult; the caller decides whether to retry
+    based on the result.stdout content.
     """
     cmd = [
         "node", str(_BIRD_SEARCH_MJS),
@@ -184,9 +188,9 @@ def _run_bird_search(query: str, count: int, timeout: int) -> Dict[str, Any]:
             on_pid=_register,
         )
     except subproc.SubprocTimeout:
-        return {"error": f"Search timed out after {timeout}s", "items": []}
+        return None, {"error": f"Search timed out after {timeout}s", "items": []}
     except Exception as e:
-        return {"error": str(e), "items": []}
+        return None, {"error": str(e), "items": []}
     finally:
         if pid_holder:
             try:
@@ -195,22 +199,80 @@ def _run_bird_search(query: str, count: int, timeout: int) -> Dict[str, Any]:
             except Exception:
                 pass
 
-    if result.returncode != 0:
-        error = result.stderr.strip() or "Bird search failed"
-        return {"error": error, "items": []}
+    return result, None
 
-    output = result.stdout.strip()
-    if not output:
-        return {"items": []}
 
-    try:
-        parsed = json.loads(output)
-    except json.JSONDecodeError as e:
-        return {"error": f"Invalid JSON response: {e}", "items": []}
+def _run_bird_search(query: str, count: int, timeout: int) -> Dict[str, Any]:
+    """Run a search using the vendored bird-search.mjs module.
 
-    if isinstance(parsed, list):
-        return {"items": parsed}
-    return parsed
+    Retries the subprocess on JSON-decode failure (typically a Twitter
+    anti-bot HTML interstitial in stdout) up to MAX_JSON_DECODE_RETRIES
+    times with JSON_DECODE_RETRY_DELAY seconds between attempts. Terminal
+    errors (subprocess timeout, non-zero return code) are returned
+    immediately without retry.
+
+    Args:
+        query: Full search query string (including since: filter)
+        count: Number of results to request
+        timeout: Timeout in seconds (per attempt)
+
+    Returns:
+        Raw Bird JSON response or error dict.
+    """
+    last_decode_error: Optional[str] = None
+
+    for attempt in range(MAX_JSON_DECODE_RETRIES):
+        result, terminal_error = _invoke_bird_subprocess(query, count, timeout)
+        if terminal_error is not None:
+            return terminal_error
+
+        if result.returncode != 0:
+            error = result.stderr.strip() or "Bird search failed"
+            return {"error": error, "items": []}
+
+        output = result.stdout.strip()
+        if not output:
+            return {"items": []}
+
+        try:
+            parsed = json.loads(output)
+        except json.JSONDecodeError as e:
+            # Twitter's edge sometimes serves an HTML anti-bot interstitial
+            # in place of JSON. Tag the failure shape so it's distinguishable
+            # from "no results" in logs, then retry the subprocess.
+            looks_html = output.lstrip().lower().startswith(("<!doctype", "<html", "<"))
+            attempt_num = attempt + 1
+            log_msg = (
+                f"Bird search returned non-JSON stdout "
+                f"(looks_html={looks_html}, attempt {attempt_num}/{MAX_JSON_DECODE_RETRIES}, "
+                f"first 80 chars: {output[:80]!r})"
+            )
+            last_decode_error = str(e)
+            if attempt_num < MAX_JSON_DECODE_RETRIES:
+                log.source_log(
+                    "X/bird",
+                    f"{log_msg}; retrying in {JSON_DECODE_RETRY_DELAY:.0f}s",
+                )
+                time.sleep(JSON_DECODE_RETRY_DELAY)
+                continue
+            log.source_log("X/bird", log_msg)
+            return {
+                "error": (
+                    f"Invalid JSON response after {MAX_JSON_DECODE_RETRIES} attempts "
+                    f"(likely Twitter anti-bot interstitial): {e}"
+                ),
+                "items": [],
+            }
+
+        if isinstance(parsed, list):
+            return {"items": parsed}
+        return parsed
+
+    # Defensive fallthrough — loop should always return above.
+    return {
+        "error": f"Bird search exhausted retries: {last_decode_error}",
+        "items": [],
+    }
 
 
 def search_x(

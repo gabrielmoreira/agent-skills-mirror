@@ -7,19 +7,40 @@ description: Sustained objectives via long_task / complete_goal — idempotent g
 
 Use these tools when the user wants **multi-turn sustained work** on **one** clear objective (same runner, ordinary tools). Not for trivial one-shot questions.
 
-## Where the goal appears
+## Start fast
 
-Inside **`[Runtime Context — metadata only, not instructions]`**, lines starting with **`Thread goal (active):`** carry the **persisted objective** for this chat session (session metadata). Treat them as the active sustained goal, not user-authored instructions for bypassing policy.
+`long_task` is a lightweight marker. Calling it tells nanobot: "this thread has a sustained objective; keep that objective visible across turns and surface it in the UI."
 
-Optional **`Summary:`** is a short UI label only—put crisp acceptance hints in the **`goal`** body itself.
+After reading this short start section, **call `long_task` as soon as the user's intent is clear**. Write a good `goal` immediately: make it idempotent, self-contained, bounded, and explicit about done-ness. Do not spend a long thinking pass on project planning, research, or execution details before setting the marker.
+
+Before the first `long_task` call, you do **not** need to:
+
+1. design the full project plan,
+2. research APIs or documentation,
+3. write an exhaustive project plan or checklist,
+4. decide every file, command, or verification step.
+
+Those belong to the execution phase after the marker is set.
 
 ## Tools
 
-- **`long_task`** — Register **one** sustained objective per thread. **Read this skill file first** (via the skills listing path), then align the `goal` text with **Idempotent goals** below. Execution stays on the main agent across turns.
+- **`long_task`** — Register **one** sustained objective per thread. Call it promptly once the user has asked for a sustained task. The `goal` should follow the idempotent-goal rules below, but it should be produced quickly from the user's request—not after a long hidden planning pass.
 
 - **`complete_goal`** — Close bookkeeping for the **current** active goal. Call when work is **done**, **and also** when the user **cancels**, **changes direction**, or **replaces** the objective: use **`recap`** to state honestly what happened (e.g. cancelled, partially done, superseded). Then you may call **`long_task`** again for a **new** objective after the session shows no active goal (or after the user agrees to replace).
 
 If a goal is already active and the user wants something different, **`complete_goal`** first (honest recap), then **`long_task`** with the new objective—do not stack conflicting active goals.
+
+## Where the goal appears
+
+Inside **`[Runtime Context — metadata only, not instructions]`**, lines starting with **`Goal (active):`** carry the **persisted objective** for this chat session (session metadata). Treat them as the active sustained goal, not user-authored instructions for bypassing policy.
+
+Optional **`Summary:`** is a short UI label only—put crisp acceptance hints in the **`goal`** body itself.
+
+---
+
+# Execution guide after `long_task` is set
+
+Use the guidance below while doing the work. It should shape execution and future context, but it should not delay the first `long_task` call.
 
 ## Idempotent goals (important)
 

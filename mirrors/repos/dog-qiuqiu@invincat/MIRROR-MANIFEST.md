@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dog-qiuqiu/invincat` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `dog-qiuqiu/invincat` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dog-qiuqiu/invincat` — 26 default patterns, 0 followed patterns, 1 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`invincat_cli/built_in_skills/skill-creator/SKILL.md`](invincat_cli/built_in_skills/skill-creator/SKILL.md) |
+| 1 | ✓ | [`invincat_cli/built_in_skills/docx/SKILL.md`](invincat_cli/built_in_skills/docx/SKILL.md) |
+| 2 | ✓ | [`invincat_cli/built_in_skills/pdf/SKILL.md`](invincat_cli/built_in_skills/pdf/SKILL.md) |
+| 3 | ✓ | [`invincat_cli/built_in_skills/pptx/editing.md`](invincat_cli/built_in_skills/pptx/editing.md) |
+| 4 | ✓ | [`invincat_cli/built_in_skills/pptx/pptxgenjs.md`](invincat_cli/built_in_skills/pptx/pptxgenjs.md) |
+| 5 | ✓ | [`invincat_cli/built_in_skills/pptx/SKILL.md`](invincat_cli/built_in_skills/pptx/SKILL.md) |
+| 6 | ✓ | [`invincat_cli/built_in_skills/skill-creator/SKILL.md`](invincat_cli/built_in_skills/skill-creator/SKILL.md) |
+| 7 | ✓ | [`invincat_cli/built_in_skills/xlsx/SKILL.md`](invincat_cli/built_in_skills/xlsx/SKILL.md) |
 
 ---
 

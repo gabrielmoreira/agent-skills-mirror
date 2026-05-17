@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 65,
+  "skill_count": 66,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -701,6 +701,48 @@
       "chaining_partners": [
         "claw-semantic-sim"
       ]
+    },
+    {
+      "name": "fastreer",
+      "cli_alias": null,
+      "description": "Phylogenetic distance matrices and trees from VCF or FASTA data using the fastreeR hybrid Java/Python toolkit (VCF2TREE, VCF2DIST, DIST2TREE, FASTA2DIST).",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/fastreer/fastreer.py --demo",
+      "dependencies": [
+        "python>=3.10",
+        "fastreer>=2.2.0"
+      ],
+      "tags": [
+        "phylogenetics",
+        "distance-matrix",
+        "tree-building",
+        "vcf",
+        "fasta",
+        "population-genomics"
+      ],
+      "trigger_keywords": [
+        "phylogenetic tree",
+        "distance matrix from VCF",
+        "VCF",
+        "VCF2TREE",
+        "VCF2DIST",
+        "fastreer",
+        "fastreeR",
+        "genomic distance",
+        "hierarchical clustering tree",
+        "k-mer distance",
+        "FASTA2DIST",
+        "variant distance matrix",
+        "population tree",
+        "DIST2TREE",
+        "cosine distance VCF",
+        "sample phylogeny"
+      ],
+      "chaining_partners": []
     },
     {
       "name": "fine-mapping",

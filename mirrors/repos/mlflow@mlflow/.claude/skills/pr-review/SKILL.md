@@ -52,17 +52,17 @@ The `<owner>`/`<repo>`/`<pr_number>` placeholders in the steps below refer to th
 
 ### 1. Fetch PR context
 
-Fetch the PR title, description, and author:
+Fetch the PR title and description:
 
 ```bash
-gh pr view <pr_number> --repo "<owner>/<repo>" --json title,body,author
+gh pr view <pr_number> --repo "<owner>/<repo>" --json title,body
 ```
 
 > **Note:** You have a **read-only** GitHub token. Do NOT call write APIs (`gh api ... POST`, `gh pr review`, `gh pr comment`, etc.).
 
 ### 2. Fetch PR Diff
 
-Fetch the diff hunks via the `fetch-diff` skill. For context beyond the diff (existing patterns, call sites of changed symbols, file conventions), `Read` and `Grep` the working tree, which holds the PR merged into the base (`refs/pull/<pr>/merge`), so file contents reflect the post-merge state. When a quick shell command can settle a question, run it instead of speculating from the diff alone.
+Fetch the diff hunks via the `fetch-diff` skill.
 
 ### 3. Fetch Existing Review Comments
 
@@ -90,6 +90,10 @@ gh api graphql -F owner=<owner> -F repo=<repo> -F pr=<pr_number> -f query='
 ```
 
 ### 4. In-Depth Analysis
+
+The working tree holds the PR merged into the base (`refs/pull/<pr>/merge`), so file contents reflect the post-merge state. Explore it for context beyond the diff (existing patterns, call sites of changed symbols, file conventions).
+
+The merge ref's base parent is also reachable as `HEAD^1`. When the diff doesn't show enough (verifying a refactor preserved behavior, reading the full content of a deleted file, or seeing the pre-change version of a heavily modified file), use `git show HEAD^1:<path>` rather than re-fetching via the GitHub API.
 
 #### Don't comment on
 
@@ -120,14 +124,8 @@ Classify each finding by severity (matches `.github/instructions/code-review.ins
 
 Determine the review `event`:
 
-- **No CRITICAL findings AND author has `admin`/`maintain` role** -> `event: "APPROVE"`
-- **Any CRITICAL finding, OR author role is anything else (or the API errors, e.g., 404 for non-collaborators)** -> `event: "COMMENT"`. Do not mention the reason for not approving in the review body.
-
-Check the author's role (use the `author.login` from step 1 as `<author>`):
-
-```bash
-gh api repos/<owner>/<repo>/collaborators/<author>/permission --jq '.role_name'
-```
+- **No CRITICAL findings** -> `event: "APPROVE"`
+- **Any CRITICAL finding** -> `event: "COMMENT"`
 
 ### 6. Emit Review Payload
 

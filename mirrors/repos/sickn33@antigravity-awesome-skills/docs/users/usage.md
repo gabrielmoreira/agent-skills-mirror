@@ -14,7 +14,7 @@ If you came in through a **Claude Code** or **Codex** plugin instead of a full l
 
 When you ran `npx antigravity-awesome-skills` or cloned the repository, you:
 
-✅ **Downloaded 1,459+ skill files** to your computer (default: `~/.gemini/antigravity/skills/`; or a custom path like `~/.agent/skills/` if you used `--path`)
+✅ **Downloaded 1,460+ skill files** to your computer (default: `~/.gemini/antigravity/skills/`; or a custom path like `~/.agent/skills/` if you used `--path`)
 ✅ **Made them available** to your AI assistant  
 ❌ **Did NOT enable them all automatically** (they're just sitting there, waiting)
 
@@ -34,7 +34,7 @@ Bundles are **curated groups** of skills organized by role. They help you decide
 
 **Analogy:**
 
-- You installed a toolbox with 1,459+ tools (✅ done)
+- You installed a toolbox with 1,460+ tools (✅ done)
 - Bundles are like **labeled organizer trays** saying: "If you're a carpenter, start with these 10 tools"
 - You can either **pick skills from the tray** or install that tray as a focused marketplace bundle plugin
 
@@ -212,7 +212,7 @@ Let's actually use a skill right now. Follow these steps:
 
 ## Step 5: Picking Your First Skills (Practical Advice)
 
-Don't try to use all 1,459+ skills at once. Here's a sensible approach:
+Don't try to use all 1,460+ skills at once. Here's a sensible approach:
 
 If you want a tool-specific starting point before choosing skills, use:
 
@@ -343,16 +343,22 @@ Usually no, but if your AI doesn't recognize a skill:
 
 ### "Can I load all skills into the model at once?"
 
-No. Even though you have 1,459+ skills installed locally, you should **not** concatenate every `SKILL.md` into a single system prompt or context block.
+No. Even though you have 1,460+ skills installed locally, you should **not** concatenate every `SKILL.md` into a single system prompt or context block.
 
 The intended pattern is:
 
-- use `data/skills_index.json` (the manifest) to discover which skills exist; and
+- use `skills_index.json` (canonical discovery manifest) to discover which skills exist; and
+- use `data/skills_index.json` only when your host reads from `data/` for compatibility;
 - only load the `SKILL.md` files for the specific `@skill-id` values you actually use in a conversation.
 
 If you are building your own host/agent (e.g. Jetski/Cortex + Gemini), see:
 
 - [`docs/integrations/jetski-cortex.md`](../integrations/jetski-cortex.md)
+
+The v1 manifest shape is defined in:
+
+- [`schemas/skills-index.v1.schema.json`](../../schemas/skills-index.v1.schema.json)
+- [`discovery-manifest.md`](discovery-manifest.md)
 
 ### "Can I create my own skills?"
 

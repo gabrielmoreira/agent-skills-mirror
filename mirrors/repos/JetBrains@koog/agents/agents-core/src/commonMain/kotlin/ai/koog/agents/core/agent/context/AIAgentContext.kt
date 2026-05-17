@@ -10,7 +10,6 @@ import ai.koog.agents.core.annotation.InternalAgentsApi
 import ai.koog.agents.core.environment.AIAgentEnvironment
 import ai.koog.agents.core.feature.AIAgentFeature
 import ai.koog.agents.core.feature.pipeline.AIAgentPipeline
-import ai.koog.prompt.message.Message
 import kotlin.reflect.KClass
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -139,11 +138,6 @@ public interface AIAgentContext {
      */
     @Deprecated("Use context.storage.remove() instead", level = DeprecationLevel.WARNING)
     public fun remove(key: AIAgentStorageKey<*>): Boolean
-
-    /**
-     * Retrieves the history of messages exchanged during the agent's execution.
-     */
-    public suspend fun getHistory(): List<Message>
 }
 
 /**

@@ -1,7 +1,7 @@
 ---
 name: avoid-ai-writing
 description: Audit and rewrite content to remove AI writing patterns ("AI-isms"). Use this skill when asked to "remove AI-isms," "clean up AI writing," "edit writing for AI patterns," "audit writing for AI tells," or "make this sound less like AI." Supports a detection-only mode that flags patterns without rewriting.
-version: 3.3.1
+version: 3.4.0
 license: MIT
 compatibility: Any AI coding assistant that supports agentskills.io SKILL.md format (Claude Code, Cursor, VS Code Copilot, Hermes Agent, OpenHands, etc.) or OpenClaw. No external tools or APIs required.
 metadata:
@@ -195,6 +195,23 @@ These are normal words. Only flag them when the text is saturated with them — 
 | instrumental | Say what role it played |
 | world-class / state-of-the-art / best-in-class | Cite a benchmark or comparison |
 
+#### Tier 3 phrases — Flag at density or in clusters
+
+Multi-word boilerplate that's individually unobjectionable but stacks heavily in AI-generated content (crypto, web3, DePIN, AI/infra reviews are the worst offenders). Flag at **2+ uses of the same phrase** (the per-phrase rule — lower threshold than single-word Tier 3 because a two-word match repeated twice is already stronger evidence than re-using "significant"), *plus* a **cluster rule**: three or more *distinct* phrases from this table in one piece is a strong signal even when each phrase only appears once — that's the shape LLMs take when they vary their own boilerplate to seem less repetitive.
+
+| Phrase | What to do |
+|---|---|
+| emerging sector / emerging space / emerging category | Name the actual sector or what's emerging about it |
+| the integration of (X with Y) | Describe what's being integrated and what changes for the user |
+| the intersection of (X and Y) | Pick the specific overlap that matters or cut the framing |
+| community-driven | Name what the community does. "Community-driven" alone is filler |
+| long-term sustainability | Cite the time horizon and the constraint. "Long-term" is hand-waving |
+| user engagement | Name the action. "Engagement" is a wrapper around clicks/comments/retention |
+| decentralized compute | Specify the architecture or cut. The phrase has become a category label, not a claim |
+| (sustainable) reward emissions | Cite the emission schedule and the sink |
+| tokenized incentive structures | Describe the actual mechanism (vesting, gauge, bonded LP, etc.) |
+| designed for long-term [X] | Cut "designed for" — either it is or it isn't. Then state the property |
+
 ### Template phrases (avoid)
 
 These slot-fill constructions signal that a sentence was generated, not written. If a phrase has a blank where a noun or adjective could go and still sound the same, it's too generic.
@@ -222,6 +239,32 @@ These slot-fill constructions signal that a sentence was generated, not written.
 ### Significance inflation
 - Phrases like "marking a pivotal moment in the evolution of..." or "a watershed moment for the industry" inflate routine events into history-making ones. State what happened and let the reader judge significance.
 - If the sentence still works after you delete the inflation clause, delete it.
+
+### Generic future-narrative closers
+- "May become one of the most important narratives of the next market cycle," "could become the defining trend of the coming decade," "is poised to become the next major chapter in [X]." AI defaults to this shape when it needs to land a closing thought without committing to a falsifiable claim. The closer is grammatically a prediction but contains no testable content.
+- Pattern: modal (may / could / will / is poised to) + "become" + (one of) the most [adjective] + (narrative / story / trend / theme / chapter / movement / force).
+- Fix: pick the falsifiable version. "DePIN compute may exceed AWS spot pricing for embarrassingly parallel workloads by 2027" is a prediction. "The intersection of AI and DePIN may become one of the most important narratives of the next market cycle" is not.
+
+### Hedge-stacked predictions
+- Stacking a modal with a hedge adverb: "could potentially create," "may eventually unlock," "might ultimately transform." Either word alone is acceptable; the stack is the tell. Each hedge cancels the next, leaving a sentence that asserts nothing while sounding cautious and thoughtful.
+- Fix: pick one. If you mean "could create," say that. If you mean "potentially creates," say that. Both together is filler.
+
+### "Real/actual" adjective inflation
+- "Real on-chain tokenomics," "actual reward sustainability," "genuine utility," "true product-market fit." Using `real` / `actual` / `genuine` / `true` as an empty intensifier on an abstract noun implies the rest of the field is fake or superficial — without naming what makes this instance the real one. Common in crypto/AI/web3 content where the writer wants to signal sophistication.
+- Distinct from the existing "hollow intensifiers" rule (genuine / truly / quite frankly as sentence-level hedges). This is the noun-modifier form, where the intensifier latches onto an abstract noun to manufacture a contrast that goes unsaid.
+- **Carve-out — named contrast:** if the sentence explicitly names what the fake/superficial version is, leave it. "Real on-chain settlement, not bridged IOUs" or "actual revenue from paying customers, not grants" is honest contrastive writing. The AI tell is the unsaid contrast.
+- Fix when no contrast is named: drop the adjective and add the specific claim. "Reward sustainability" → "rewards funded from $X/mo in fees rather than emissions."
+
+### Hashtag stuffing
+- Long trailing hashtag blocks (6+ hashtags on a single short post) are near-universal in LLM-generated social content and rare in thoughtful human posts. The block usually mixes a project-specific tag with broad category tags (#AI #Crypto #Web3 #Innovation #FutureTech #Technology) — the categorical ones do nothing for discoverability and read as bot output.
+- **Why 6?** Empirical floor. LinkedIn and X organic engagement plateaus or declines past 3-5 tags; human posts that exceed 5 are usually launch posts trading reach for engagement, while LLM-generated posts default to 10-15. Six is the threshold where false positives on legitimate human use start dropping below false negatives on AI output. The detector treats 6+ as a hard flag; the spec treats 5+ as a soft tell worth a second look on `linkedin` and `investor-email` profiles.
+- Fix: 2-3 specific tags max, or none. If a hashtag wouldn't help a reader find related work, it's filler.
+
+### Bullet lists of bare noun phrases
+- A list of 5+ consecutive bullet items where each item is a short (≤6 word) adjective-plus-noun phrase with no verb. "Stable mining efficiency / Reliable pool connectivity / Optimized RandomX performance / Low failed share rates / Effective hardware utilization / Consistent thermal stability." Reads as a marketing one-pager because that's the shape LLMs default to when asked to summarize features.
+- The tell is the *symmetry*: every item is the same grammatical shape, every item is parallel in length, none of them assert anything checkable. A genuine list of observations would have varying length, occasional verbs, and at least one item that doesn't fit the pattern.
+- Fix: convert to prose paragraph, or rewrite items as full claims ("Failed shares stayed under 1% across a 12-hour run" beats "Low failed share rates"). If the list is genuinely the right form, vary the items so each carries a different shape of information.
+- This rule does *not* apply to genuine list content (changelog entries, todo lists, parameter docs, ingredient lists) where bare noun phrases are the correct form. The detector keys on absence of finite verbs to separate the two — but in prose audits, ask whether the bullets are summarizing claims (rewrite) or enumerating items (leave).
 
 ### Copula avoidance
 - AI text avoids "is" and "has" by substituting fancier verbs: "serves as," "features," "boasts," "presents," "represents." These sound like a press release.
@@ -282,7 +325,7 @@ These slot-fill constructions signal that a sentence was generated, not written.
 - Related patterns to flag: "the failure mode nobody's naming," "a problem nobody talks about," "the insight everyone's missing," "what nobody tells you about." These are engagement-bait framings that claim scarcity of knowledge where none exists.
 
 ### Emotional flatline
-- AI claims emotions as a structural crutch without conveying them through the writing: "What surprised me most," "I was fascinated to discover," "What struck me was," "I was excited to learn," "The most interesting part."
+- AI claims emotions as a structural crutch without conveying them through the writing: "What surprised me most," "I was fascinated to discover," "What struck me was," "I was excited to learn," "The most interesting part," and the bare section-header variant: "Interesting part of the project:" / "Interesting thing here:" / "Interesting aspect:". The header form drops "the most" but does the same job — pre-announcing significance the writing hasn't earned.
 - Two problems. First, it's tell-don't-show: if the thing is genuinely surprising, the reader should feel that from the content, not from the writer announcing it. Second, these phrases are massively overused as list introductions and transitions. They're filler wearing an emotion costume.
 - This pattern isn't always AI. It's also a sign of lazy human writing on autopilot. Flag it either way.
 - The fix isn't "never say surprised." It's: if you claim an emotion, the writing around it should earn it. Otherwise cut the claim and present the thing directly.
@@ -345,13 +388,14 @@ If the text has 5+ flagged vocabulary hits across multiple categories, 3+ distin
 
 Not all AI-isms are equal. When doing a quick pass or triaging a large document, prioritize by tier:
 
-### P0 � Credibility killers (fix immediately)
+### P0 — Credibility killers (fix immediately)
 - Cutoff disclaimers ("As of my last update")
 - Chatbot artifacts ("I hope this helps!", "Great question!")
 - Vague attributions without sources ("Experts believe")
 - Significance inflation on routine events
+- Hashtag stuffing on `linkedin` and `investor-email` posts (severity varies by profile — same rule, lower priority on `blog`/`technical-blog` where a launch post may legitimately stack tags; see the context-profile table below)
 
-### P1 � Obvious AI smell (fix before publishing)
+### P1 — Obvious AI smell (fix before publishing)
 - Word-list violations (delve, leverage, harness, robust, etc.)
 - Template phrases and slot-fill constructions
 - "Let's" transition openers
@@ -359,13 +403,20 @@ Not all AI-isms are equal. When doing a quick pass or triaging a large document,
 - Formulaic openings ("In the rapidly evolving world of...")
 - Bold overuse
 - Em dash frequency (above 1 per 1,000 words)
+- Generic future-narrative closers ("may become one of the most important narratives…")
+- Hedge-stacked predictions ("could potentially," "may eventually")
+- Real/actual adjective inflation ("real on-chain tokenomics")
+- Bullet lists of bare noun phrases (5+ short adj+noun items, no verbs)
+- Tier 3 phrase clustering (≥3 distinct boilerplate phrases in one piece)
 
-### P2 � Stylistic polish (fix when time allows)
+### P2 — Stylistic polish (fix when time allows)
 - Generic conclusions ("The future looks bright")
 - Compulsive rule of three
 - Uniform paragraph length
 - Copula avoidance (serves as, features, boasts)
 - Transition phrases (Moreover, Furthermore, Additionally)
+- Hashtag stuffing (`blog`/`technical-blog` profiles)
+- Tier 3 phrase repetition (single phrase ≥2× — fine in isolation, suspect in stacks)
 
 Use P0+P1 for quick passes. Full audit covers all three tiers.
 
@@ -410,6 +461,12 @@ Rules not listed in the table apply at full strength across all profiles.
 | Rhetorical questions | relaxed (1 as hook OK) | strict | strict | strict | strict | skip |
 | Transition phrases | skip (short-form) | strict | strict | strict | relaxed | skip |
 | Generic conclusions | skip | strict | strict | **extra strict** | skip | skip |
+| Hashtag stuffing | strict | strict | strict | **extra strict** | skip (no hashtags in docs) | skip |
+| Bullet-NP lists | strict | strict | relaxed (technical option lists OK) | strict | relaxed (parameter lists OK) | skip |
+| Tier 3 phrase clustering | strict | strict | strict | **extra strict** | relaxed | skip |
+| Future-narrative closers | strict | strict | strict | **extra strict** | skip | skip |
+| Hedge-stacked predictions | strict | strict | relaxed ("could" is hedged accuracy) | **extra strict** | relaxed | skip |
+| Real/actual inflation | strict | strict | strict | **extra strict** | relaxed | skip |
 
 **Technical-blog word table exceptions:** These terms have legitimate technical meaning and should not be flagged in technical context: `robust`, `comprehensive`, `seamless`, `ecosystem`, `leverage` (when discussing actual platform leverage/APIs), `facilitate`, `underpin`, `streamline`. Still flag: `delve`, `tapestry`, `beacon`, `embark`, `testament to`, `game-changer`, `harness`.
 

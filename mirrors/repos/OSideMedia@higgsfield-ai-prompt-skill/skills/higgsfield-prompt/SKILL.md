@@ -5,7 +5,7 @@ user-invocable: true
 metadata:
   tags: [higgsfield, prompt, MCSLA, formula, text-to-video, image-to-video]
   version: 3.2.0
-  updated: 2026-05-11
+  updated: 2026-05-15
   parent: higgsfield
 ---
 
@@ -468,6 +468,10 @@ These are hard rendering constraints of the Seedance 2.0 engine — violating th
 - **Only describe what can be seen or heard.** No smell, taste, or internal thoughts.
   - ❌ "The air smells of pine." ✅ "Pine needles covering the ground, wind moving through branches."
 - **Micro-expressions work as physics.** ✅ "jaw clenches, nostrils flare." ❌ "looks angry."
+
+> For the eight named substrate channels that micro-expressions
+> decompose into, see `../../vocab.md` § Emotion as Visible Behavior —
+> Channels.
 
 ### Action rules
 - **Intent + named technique, not biomechanics.** ✅ "spinning back kick connects." ❌ "left forearm rotates 45° to deflect the incoming hook at wrist level." If the user names a move, preserve it. If they describe joint mechanics, compress to the move's intent.

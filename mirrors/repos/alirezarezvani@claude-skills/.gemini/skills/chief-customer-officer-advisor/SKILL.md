@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/chief-customer-officer-advisor/../../../c-level-advisor/skills/chief-customer-officer-advisor/SKILL.md

@@ -9,7 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes yet._
+## [11.3.0] - 2026-05-16 - "Discovery Manifests and Recommendation Pipelines"
+
+> Installable skill library update for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and related AI coding assistants.
+
+Start here:
+
+- Install: `npx antigravity-awesome-skills`
+- Choose your tool: [README -> Choose Your Tool](https://github.com/sickn33/antigravity-awesome-skills#choose-your-tool)
+- Best skills by tool: [README -> Best Skills By Tool](https://github.com/sickn33/antigravity-awesome-skills#best-skills-by-tool)
+- Bundles: [docs/users/bundles.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/bundles.md)
+- Workflows: [docs/users/workflows.md](https://github.com/sickn33/antigravity-awesome-skills/blob/main/docs/users/workflows.md)
+
+This release closes issue #596 with a stable discovery-manifest contract and merges PR #595 through the maintainer squash-merge workflow. It keeps contributor PRs source-only while making `main` the canonical owner of generated manifests, web assets, and release metadata.
+
+## New Skills
+
+- **recsys-pipeline-architect** - recommendation, ranking, and feed pipeline design using a Source -> Hydrator -> Filter -> Scorer -> Selector -> SideEffect architecture.
+
+## Improvements
+
+- **stable discovery manifest** - keeps root `skills_index.json` as the canonical public manifest, mirrors it exactly to `data/skills_index.json`, and documents lazy-loading usage for downstream tools.
+- **manifest schema and docs** - adds `schemas/skills-index.v1.schema.json` plus user and integration docs that distinguish the canonical root manifest from the compatibility mirror.
+- **CI-safe drift checks** - extends consistency auditing and PR artifact previews so root/data/web-backup manifest drift is visible and enforced on `main`.
+- **generated artifact sync** - refreshes catalog, skill index, plugin mirrors, web assets, contributor credits, package metadata, and visible skill counts to `1,460+`.
+
+## Who should care
+
+- **Tool builders and indexers** get a stable manifest contract they can validate and consume without loading every skill up front.
+- **Users with large installs** get clearer guidance for filtering by category, risk, source, and description before lazy-loading individual skills.
+- **Recommendation-system builders** get a focused skill for designing composable feed and ranking pipelines across TypeScript, Go, Python, and adjacent stacks.
+- **Maintainers** get a source-only PR path with canonical generated artifacts refreshed on `main` before release.
+
+## Credits
+
+- **[@latentloop07](https://github.com/latentloop07)** for issue #596 and the discovery/installability prompt.
+- **[@mturac](https://github.com/mturac)** for PR #595 (`recsys-pipeline-architect`).
 
 ## [11.2.0] - 2026-05-13 - "Market Intelligence, Token Routing, and Chinese Growth Skills"
 

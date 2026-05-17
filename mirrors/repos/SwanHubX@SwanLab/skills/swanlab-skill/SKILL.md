@@ -231,7 +231,7 @@ swanlab api run column PATH --key KEY [OPTIONS]
 
 Get scalar metric data for specified keys.
 Keys is a comma-separated list of column keys, e.g. `loss,acc`.
-Returns an object mapping each key to its data points (step, value). For large datasets, use `--all` to get a CSV download URL instead of inlined data. See `references/SWANLAB_CONCEPTS.md > Scalar Metrics` for data structure details.
+Returns an object mapping each key to its data points (step, value). Use `--all` to fetch all data points without sampling limit. See `references/SWANLAB_CONCEPTS.md > Scalar Metrics` for data structure details.
 
 
 ```bash
@@ -247,8 +247,32 @@ swanlab api run metrics PATH --keys KEYS [OPTIONS]
 | `--keys` | | (required) | Comma-separated metric keys, e.g. `loss,acc` |
 | `--sample` | `-s` | 1500 | Sample size for scalars (>= 1). Max 1500; use `--all` for full export. |
 | `--ignore-timestamp` | | false | Strip timestamps from metric data |
-| `--all` | | false | Fetch all data points (returns CSV download URL instead of inlined data) |
+| `--all` | | false | Fetch all data points without sampling limit |
+| `--range-type` | | `step` | Range filter axis: `step` or `timestamp`. Defaults to `step` when any range option is provided. |
+| `--range-start` | | none | Range start value (inclusive). For `step` type: step number (int >= 0). For `timestamp` type: Unix timestamp in **milliseconds** (int >= 0). |
+| `--range-end` | | none | Range end value (inclusive). Same type as `--range-start`. |
+| `--range-head` | | none | Return only the first N data points (int >= 1). Mutually exclusive with `--range-tail`. |
+| `--range-tail` | | none | Return only the last N data points (int >= 1). Mutually exclusive with `--range-head`. |
 | `--save` | | off | Save output to file |
+
+**Range query constraints:**
+- `--range-head` and `--range-tail` are mutually exclusive.
+- `--range-start` must be ≤ `--range-end`.
+- Range query is only supported for SCALAR metrics. It downloads CSV data and applies client-side filtering.
+- When using `--range-type timestamp`, each CSV row must have a timestamp column. Rows missing timestamps are skipped with a warning.
+
+**Quick examples:**
+
+```bash
+# Get steps 100–200
+swanlab api run metrics PATH --keys loss --range-start 100 --range-end 200
+
+# Get first 50 data points
+swanlab api run metrics PATH --keys loss --range-head 50
+
+# Get data by timestamp range (Unix milliseconds)
+swanlab api run metrics PATH --keys loss --range-type timestamp --range-start 1714368000000 --range-end 1714454400000
+```
 
 #### `swanlab api run medias PATH --keys KEYS`
 

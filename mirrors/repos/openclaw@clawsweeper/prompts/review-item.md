@@ -69,6 +69,31 @@ outside OpenClaw core. Set `requiresNewFeature`, `requiresNewConfigOption`, and
 `requiresProductDecision` independently. Any true value means the item is not a
 strict bug-fix automation candidate even if useful.
 
+Set `triagePriority` as ClawSweeper's maintainer-facing priority label for both
+issues and pull requests. This is not the same as `reviewFindings[].priority`
+and is not limited to PR patch defects. Use the current GitHub label rubric:
+`P0`: Emergency: data loss, security bypass, crash loop, or unusable core runtime.
+`P1`: Urgent regression or broken agent/channel workflow affecting real users now.
+`P2`: Normal priority bug or improvement with limited blast radius.
+`P3`: Low-risk cleanup, docs, polish, ergonomics, or speculative feature.
+Use `none` only when ClawSweeper should intentionally leave priority labels absent.
+
+Set `impactLabels` as ClawSweeper-owned GitHub impact labels for maintainers to
+find the affected problem class on both issues and pull requests. Use no more
+than 3 labels, only when the impact area is concretely supported by the item or
+diff, and keep this separate from `triagePriority` and
+`reviewFindings[].priority`:
+`impact:data-loss`: Can lose, corrupt, or silently drop user/session/config data.
+`impact:security`: Security boundary, credential, authz, sandbox, or sensitive-data risk.
+`impact:crash-loop`: Crash, hang, restart loop, or process-level availability failure.
+`impact:message-loss`: Channel message delivery can be lost, duplicated, or misrouted.
+`impact:session-state`: Session, memory, transcript, context, or agent state can drift or corrupt.
+`impact:auth-provider`: Auth, provider routing, model choice, or SecretRef resolution may break.
+Use an empty array when no owned impact label applies. Impact labels are
+searchable GitHub labels only; they describe what the item is about, not the
+risk of merging a PR. They do not close, merge, block, or replace review
+findings.
+
 Populate structured reproduction metadata separately from the public prose.
 Use `reproductionStatus: "reproduced"` only when there is a concrete,
 current-main reproduction path for the bug with high confidence. Use
@@ -394,6 +419,17 @@ Always fill `telegramVisibleProof`. This only controls the
 visible chat behavior the `telegram-crabbox-e2e-proof` skill can show in a
 short recording. Mark it `not_needed` for non-Telegram PRs or Telegram work
 that is not usefully visible in that recording.
+
+Always fill `triagePriority`. ClawSweeper syncs this value to one of the GitHub
+labels `P0`, `P1`, `P2`, or `P3` so maintainers can find issues and pull requests
+by priority. Choose the priority from user impact, severity, confidence, and
+maintainer urgency for the item as a whole, not just from PR review findings or
+whether ClawSweeper can automatically repair it.
+
+Always fill `impactLabels` with zero to three ClawSweeper-owned GitHub impact
+labels. These labels are only for maintainer search and triage, and they
+describe the issue/PR impact area rather than merge risk. They do not replace
+`triagePriority`, `reviewFindings[].priority`, or the security review.
 
 Always fill the work-lane fields too. For non-candidates, use
 `workCandidate: "none"`, low confidence/priority, an empty `workPrompt`, and

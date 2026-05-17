@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/chief-ai-officer-advisor/../../../c-level-advisor/skills/chief-ai-officer-advisor/SKILL.md

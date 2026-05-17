@@ -2,6 +2,111 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [0.9.3] - 2026-05-16 — tool-layer fixes + live-test report
+
+Three critical tool-layer fixes surfaced by a deep audit + a Windows
+encoding bug spotted during an end-to-end live test (run by an LLM
+driving the compact MCP surface from Claude Code). Also: README hero
+no longer leads with "fallback only" framing — that discipline stays
+in SKILL.md (where it belongs for AI agents) and in a new "When NOT
+to use it" section in the README body.
+
+### Fixed — Linux SIGSEGV on MCP stdin teardown (carried from `3fc76b8`)
+
+Calling `process.exit()` synchronously inside a stdin `'end'` event
+handler segfaulted on Linux because libuv was still unwinding the
+stream read handle. `releaseMcp` now guards against double-fire and
+defers exit via `setImmediate`. Fixes the cross-platform CI on
+ubuntu-latest (Node 20 + 22).
+
+### Fixed — `navigate_browser` PowerShell shell injection (Win32 branch)
+
+`src/tools/orchestration.ts` interpolated the URL into a
+`Start-Process … -ArgumentList @(…,"${url}")` PowerShell command. A URL
+containing `")` or `$()` or backticks could escape the quoting and
+execute arbitrary PowerShell. Replaced with a direct `execFile()`
+against `msedge.exe` resolved from standard install locations — no
+shell shim, argv is safe. macOS and Linux branches already used
+argv-form `execFile` and were not affected.
+
+### Fixed — `screenshot_full` MIME type lied
+
+`src/tools/agent.ts` declared `mimeType: 'image/png'` and described the
+output as base64 PNG, but `captureForLLM()` returns JPEG by default
+(or PNG only when `CLAWD_SCREENSHOT_FORMAT=png`). Any client that
+decoded the bytes by the advertised type silently corrupted. The
+`image.mimeType` field now follows the actual `frame.format`; a new
+`format` field in the metadata block lets clients double-check.
+
+### Fixed — `learn_app` silent no-op
+
+The handler returned `{saved: true}` even when neither save branch
+executed (e.g., the caller supplied only `processName`). Now tracks
+`wroteLesson`/`wroteGuide` flags and returns
+`{saved: false, reason: …, isError: true}` when nothing was persisted.
+New regression-guard test at `agent-tools.test.ts`.
+
+### Fixed — Windows window-title UTF-8 corruption
+
+Confirmed live: every `window.list`/`window.active` call returned
+non-ASCII characters in window titles as `?` or `�` (the Unicode
+replacement character). Root cause: `scripts/ps-bridge.ps1` and
+`scripts/ocr-recognize.ps1` did not set `[Console]::OutputEncoding`,
+so PowerShell wrote in the system code page (Windows-1252 in most
+locales) while Node decoded as UTF-8. Both scripts now force UTF-8 on
+stdin/stdout and `$OutputEncoding`. Same fix benefits OCR text capture
+of non-ASCII content (emoji, accented characters, CJK).
+
+### Fixed — compact `direction` enum dropped `scroll_horizontal` values
+
+`buildCompoundSchema` in `src/tools/compact.ts` was first-wins on
+field names across delegates: `mouse_scroll` declared
+`direction: ['up','down']` first and won, so `mouse_scroll_horizontal`'s
+`['left','right']` was silently invisible on the compact surface. An
+LLM calling `computer({action:'scroll_horizontal', direction:'left'})`
+was violating the published schema. The merge now unions enum values
+across delegates.
+
+### Improved — `task` and `delegate_to_agent` descriptions lead with the daemon requirement
+
+Both tools return ECONNREFUSED (or "no agent") when called from a
+stdio MCP host (Cursor, Claude Code, Windsurf) because they HTTP-call
+`127.0.0.1:3847/mcp` on the daemon. Their descriptions now lead with
+**Requires the `clawdcursor agent` daemon to be running** and tell
+the consumer how to start it.
+
+### Repositioned — README hero
+
+The "Use as a fallback, not first choice" callout no longer sits in
+the README hero. The same discipline stays in SKILL.md (the AI-facing
+manual, where it correctly disciplines agent behavior) and in a new
+"When NOT to use it" subsection inside README's `Why Clawd Cursor`
+block. The hero now leads with what it does. SKILL.md frontmatter is
+unchanged — it still leads with the strict 4-gate for agent
+consumers.
+
+### Added — live test report
+
+`docs/internal/0.9.2-live-test-2026-05-16.md` documents a full
+end-to-end test of clawdcursor 0.9.2, run by an LLM consuming the
+compact MCP surface from Claude Code. Covers every compact compound,
+the HTTP MCP transport via a parallel daemon, what worked, what
+surprised, what's broken. Reference artifact for the trust story —
+something a curious visitor can read to see "yes, this has been
+actually tested by an AI agent driving a real desktop."
+
+### Internal — security audit reply draft
+
+`docs/internal/issue-13-reply-draft.md` is a draft response to the
+long-open security audit issue, listing what has landed in 0.9.x to
+address each item. Maintainer reviews + edits + posts to GitHub.
+
+### Test coverage
+
+51 test files, 813 tests pass (was 812 — `+1` new regression guard for
+`learn_app`'s no-payload case). Typecheck clean. Lint stable at 18
+pre-existing warnings.
+
 ## [0.9.2] - 2026-05-15 — reliability + scanner-friendliness
 
 Multiple fixes and a refactor consolidated into one release.

@@ -60,7 +60,7 @@ missing: list[str] = []
 seen: set[tuple[Path, int, str]] = set()
 for path in scan_files:
     in_fence = False
-    for lineno, line in enumerate(path.read_text().splitlines(), start=1):
+    for lineno, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), start=1):
         stripped = line.lstrip()
         if stripped.startswith("```") or stripped.startswith("~~~"):
             in_fence = not in_fence

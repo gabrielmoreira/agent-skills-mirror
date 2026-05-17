@@ -75,7 +75,7 @@ If the issue is purely subjective UI taste, route to `/design`. If it is renderi
 
 ## Scope Blast Mode
 
-Activate after fixing a root-cause pattern, before declaring the bug done. The same shape often hides in N other places; one local fix that ignores the blast leaves N - 1 bugs in the tree.
+Activate after fixing a root-cause pattern, before declaring the bug done; also when the user says "举一反三", "举一反三深入看看", or "其他地方有没有同样问题". The same shape often hides in N other places; one local fix that ignores the blast leaves N - 1 bugs in the tree.
 
 1. Extract the pattern signature: the specific function name, regex, API call, CSS selector, lock acquisition, validation skip, or input boundary that produced the bug.
 2. `grep -rn <pattern>` across the repo (exclude generated dirs, build output, vendored deps). For class-of-bug patterns (e.g. "any handler missing the lock"), grep for the surrounding shape, not just the literal text.

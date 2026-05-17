@@ -34,7 +34,7 @@ Read `../shared/policy-registry.json`. For each entry where `last_verified + sta
 
 ## Phase 1 — Pull the audit dataset
 
-Use a single `runScript` call with `ads.gaqlParallel` to fan out the queries an audit needs. The server's `adsagent://playbooks/audit-account` resource has a battle-tested baseline; extend it with what your specific question needs.
+Use a single `runScript` call with `ads.gaqlParallel` to fan out the queries an audit needs. The server's `notfair://playbooks/audit-account` resource has a battle-tested baseline; extend it with what your specific question needs.
 
 You decide the exact GAQL shape, but a defensible audit needs to see, at minimum:
 

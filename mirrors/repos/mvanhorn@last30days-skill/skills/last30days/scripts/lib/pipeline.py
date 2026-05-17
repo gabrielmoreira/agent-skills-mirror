@@ -128,6 +128,9 @@ def available_sources(config: dict[str, Any], requested_sources: list[str] | Non
         available.append("pinterest")
     if env.is_xquik_available(config):
         available.append("xquik")
+    exclude = {s.strip().lower() for s in (config.get("EXCLUDE_SOURCES") or "").split(",") if s.strip()}
+    if exclude:
+        available = [s for s in available if s not in exclude]
     return available
 
 

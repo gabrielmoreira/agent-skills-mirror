@@ -450,7 +450,7 @@ decision_artifacts = {
 todo_counts: Counter[str] = Counter()
 todo_total = 0
 for path in source_files:
-    text = read_text(path)
+    text = read_text(path, 200_000)
     count = len(MARKER_RE.findall(text))
     if count:
         todo_counts[rel(path)] += count

@@ -11,12 +11,12 @@
 
 *Your agent doesn't know what your data means. We fix that.*
 
-[Docs](https://docs.getwren.ai) · [Discord](https://discord.gg/wrenai) · [Vision](https://www.getwren.ai/post/the-missing-context-layer-for-ai-agents-over-business-data) · [Blog](https://www.getwren.ai/blog)
+[Docs](https://docs.getwren.ai) · [Discord](https://discord.gg/5DvshJqG8Z) · [Vision](https://www.getwren.ai/post/the-missing-context-layer-for-ai-agents-over-business-data) · [Blog](https://www.getwren.ai/blog)
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/wren-engine?label=wren-engine)](https://pypi.org/project/wren-engine/)
 [![GitHub Release](https://img.shields.io/github/v/release/Canner/WrenAI?logo=github&label=release)](https://github.com/Canner/WrenAI/releases)
-[![Discord](https://img.shields.io/discord/wrenai?logo=discord&label=Discord)](https://discord.gg/wrenai)
+[![Discord](https://img.shields.io/discord/1227143286951514152?logo=discord&label=Discord)](https://discord.gg/5DvshJqG8Z)
 [![Last commit](https://img.shields.io/github/last-commit/Canner/WrenAI)](https://github.com/Canner/WrenAI/commits/main)
 [![Follow on X](https://img.shields.io/badge/follow-@getwrenai-blue?logo=x&logoColor=white)](https://x.com/getwrenai)
 [![Made by Canner](https://img.shields.io/badge/made_by-Canner-blue)](https://cannerdata.com)
@@ -59,9 +59,10 @@ WrenAI is the **open context layer** that gives your agents what schemas don't: 
 
 ## The problem
 
-Your AI agent reads `customers_v3.status = 4` and confidently tells you "active users grew 12%" — but half those rows were service accounts. The schema doesn't know that. Neither does your agent.
+If you're building AI agents, embedded analytics, or natural-language data products on top of your enterprise databases, you've hit the same wall: there's no shared governed layer between your data and your consumers. Your agents query Postgres, MySQL, SQL Server, Oracle, Snowflake, BigQuery, or Databricks through raw SQL or MCP — and they hallucinate joins, guess at table semantics, and invent metric definitions every time. Your analysts and your apps each reinvent the same logic in their own dialect. Your local LLMs and cloud LLMs need the same governed context to produce trustworthy answers, but nothing today provides it. The result is a multiplication problem: N agents × M databases × K models = N×M×K brittle integrations, none of which agree. The missing piece is a context layer purpose-built for the agent era — open, MCP-native, and interoperable across every database and every model.
 
-Without business context, every AI agent over your data is one well-phrased question away from a confident, plausible, wrong answer.
+<img width="853" height="754" alt="The problem without context layer" src="https://github.com/user-attachments/assets/0fdb989a-e741-4d34-bcb9-4854787f73fb" />
+
 
 ## Quickstart
 
@@ -160,7 +161,7 @@ Full roadmap and design notes: see the [vision paper](./vision_paper_en.md).
 
 ## Community
 
-- 💬 [Discord](https://discord.gg/wrenai) — chat with the team and other builders
+- 💬 [Discord](https://discord.gg/5DvshJqG8Z) — chat with the team and other builders
 - 🐙 [GitHub Discussions](https://github.com/Canner/WrenAI/discussions) — design conversations, RFCs, longer threads
 - 🐦 [Twitter / X](https://x.com/getwrenai) — release notes and short updates
 - 🗞 [Blog](https://www.getwren.ai/blog) — vision, post-mortems, deep dives

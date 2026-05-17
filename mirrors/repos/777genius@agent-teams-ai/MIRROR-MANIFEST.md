@@ -56,7 +56,7 @@ Mirror of `777genius/agent-teams-ai` — 26 default patterns, 9 followed pattern
 - `docs/FEATURE_ARCHITECTURE_STANDARD.md`
 - `docs/team-management/debugging-agent-teams.md`
 - `src/features/README.md`
-- `docs/research/gastown-paperclip-comparison-2026-05-05.md`
+- `docs/research/gastown-paperclip-comparison-2026-05-16.md`
 - `.github/CONTRIBUTING.md`
 - `.github/CODE_OF_CONDUCT.md`
 - `.github/SECURITY.md`
@@ -83,7 +83,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
 | 15 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
 | 16 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 17 | → | [`docs/research/gastown-paperclip-comparison-2026-05-05.md`](docs/research/gastown-paperclip-comparison-2026-05-05.md) |
+| 17 | → | [`docs/research/gastown-paperclip-comparison-2026-05-16.md`](docs/research/gastown-paperclip-comparison-2026-05-16.md) |
 | 18 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
 | 19 | → | [`README.md`](README.md) |
 | 20 | → | [`src/features/README.md`](src/features/README.md) |

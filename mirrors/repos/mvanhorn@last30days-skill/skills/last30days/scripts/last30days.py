@@ -97,11 +97,13 @@ def save_output(
     save_dir: str,
     suffix: str = "",
     synthesis_md: str | None = None,
+    topic_override: str | None = None,
+    rendered_content: str | None = None,
 ) -> Path:
     from datetime import datetime
     path = Path(save_dir).expanduser().resolve()
     path.mkdir(parents=True, exist_ok=True)
-    slug = slugify(report.topic)
+    slug = slugify(topic_override or report.topic)
     extension = "json" if emit == "json" else "html" if emit == "html" else "md"
     raw_label = "raw-html" if emit == "html" else "raw"
     suffix_part = f"-{suffix}" if suffix else ""
@@ -110,7 +112,9 @@ def save_output(
         out_path = path / f"{slug}-{raw_label}{suffix_part}-{datetime.now().strftime('%Y-%m-%d')}.{extension}"
     # Markdown saves keep the complete debug artifact. JSON and HTML preserve
     # their requested wire format so file extensions match their content.
-    if emit in {"json", "html"}:
+    if rendered_content is not None:
+        content = rendered_content
+    elif emit in {"json", "html"}:
         content = emit_output(report, emit, synthesis_md=synthesis_md)
     else:
         content = render.render_full(report)
@@ -169,6 +173,10 @@ def emit_comparison_output(
     if emit == "context":
         return render.render_comparison_multi_context(entity_reports)
     raise SystemExit(f"Unsupported emit mode: {emit}")
+
+
+def comparison_topic(entity_reports: list[tuple[str, schema.Report]]) -> str:
+    return " vs ".join(label for label, _ in entity_reports)
 
 
 def compute_save_path_display(save_dir: str, topic: str, suffix: str, emit: str) -> str:
@@ -873,10 +881,15 @@ def main() -> int:
         pass
 
     fun_level = config.get("FUN_LEVEL", "medium").lower()
+    # Comparison HTML is the one case where the saved file's title and content
+    # have to be overridden away from the leading entity's report. Compute the
+    # gate once so the footer-display and save-output paths can't disagree.
+    is_comparison_html = bool(entity_reports) and args.emit == "html"
     footer_save_path = None
     if args.save_dir:
+        save_topic_for_display = comparison_topic(entity_reports) if is_comparison_html else report.topic
         footer_save_path = compute_save_path_display(
-            args.save_dir, report.topic, args.save_suffix or "", args.emit
+            args.save_dir, save_topic_for_display, args.save_suffix or "", args.emit
         )
 
     # Signal to render_compact whether pre-research flags were supplied.
@@ -917,6 +930,8 @@ def main() -> int:
             args.save_dir,
             suffix=args.save_suffix or "",
             synthesis_md=synthesis_md,
+            topic_override=comparison_topic(entity_reports) if is_comparison_html else None,
+            rendered_content=rendered if is_comparison_html else None,
         )
         sys.stderr.write(f"[last30days] Saved output to {save_path}\n")
         # Competitor / vs-mode: also save a per-entity raw file for each peer.

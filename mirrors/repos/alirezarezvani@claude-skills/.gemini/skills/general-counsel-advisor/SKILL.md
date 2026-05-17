@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/general-counsel-advisor/../../../c-level-advisor/skills/general-counsel-advisor/SKILL.md

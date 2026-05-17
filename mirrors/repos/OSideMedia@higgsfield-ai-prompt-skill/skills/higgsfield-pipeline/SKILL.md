@@ -9,8 +9,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, pipeline, workflow, chain, production, multi-shot, short-film, popcorn, recast]
-  version: 3.1.0
-  updated: 2026-05-03
+  version: 3.2.0
+  updated: 2026-05-16
   parent: higgsfield
 ---
 
@@ -452,6 +452,54 @@ Export all 8 clips, drop into your NLE, crossfade on the teleport flashes, add m
 **Pitfall 5: Describing character age in prompts.** Seedance age inference is unreliable. Describe by role, clothing, and action — never by age. See the age-blind rule in `higgsfield-prompt`.
 
 **Pitfall 6: >15 seconds per scene.** Seedance 2.0 caps at 15s, and beyond that prompt adherence degrades. Split longer scenes in two if needed.
+
+---
+
+## Working Practices
+
+### Working in Parallel
+
+The workflow becomes inefficient if every generation is treated as a
+complete stop. While one generation runs, adjacent tasks can already
+proceed: reviewing earlier blocks, drafting the next prompt, preparing
+a continuation screenshot, deciding whether a scene needs a bridge.
+The speed comes from separating tasks by what they actually depend on.
+
+- **Depends on a final frame** — tasks that genuinely need the previous generation's output (continuation anchors, edits to a specific rendered frame)
+- **Writable in parallel** — prompt drafts, screenshot prep, GPT review of earlier blocks; no rendering dependency
+- **Backbone building** — episode-structural work: scene order, bridge identification, continuity-arc mapping
+- **Waits for later refinement** — shot-level refinement (inserts, micro-prompts, beat adjustments) that should wait until the episode structure is locked
+
+This separation produces speed without sacrificing structural control.
+
+### Screenshots as Working Memory
+
+Between generations, the project state lives in GPT-side conversation
+memory — what's been established, what's the current beat, what the
+next scene needs to anchor against. Screenshots make that working
+memory durable: they preserve what would otherwise drift between
+exchanges, and they keep the project visible at each decision point.
+This is the working anchor in GPT — distinct from screenshots as
+Seedance reference anchors (see `higgsfield-seedance` § Reference
+Roles). The mechanism is concrete: "continue from this actual visible
+state" is a stronger prompt instruction than "continue the last scene."
+
+A screenshot helps in five recurring situations:
+
+- **Scene already has a strong identity you do not want to lose** — the established look, framing, or staging would be costly to lose to drift
+- **Prop or object must remain consistent** — a specific thing has to appear in the same form across shots
+- **Body direction matters** — the character's facing, posture, or gesture is load-bearing for the next beat
+- **Emotional carryover is very precise** — the state at the previous clip's end is specific enough that "tense" or "alert" won't carry it
+- **Space is complex enough that text alone may blur it** — geometry, layout, or spatial logic resists prose description
+
+Screenshots reduce ambiguity, and reduced ambiguity usually means
+better continuity.
+
+---
+
+> **Recurrence as continuity substrate:** The backbone-building work above (scene order, bridge identification, continuity-arc mapping) operates on a substrate — what should recur across shots for a world to cohere. See `../../vocab.md` § World Through Recurrence for the eight named substrate axes.
+
+> **Post-clip next-shot decisions:** Deciding whether a scene needs a bridge (or a continuation, contrast, or reset) is a post-generation question, not a pre-generation one. The four-question diagnostic and the next-shot decision tree formalize the call. See `higgsfield-seedance` § Post-Clip Decisions.
 
 ---
 

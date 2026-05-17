@@ -2,6 +2,8 @@
 
 **devenv-ops**: Development workbench for the DevEnv Ops Harness runtime assets deployed to `~/.copilot/`, `~/.codex/`, and `~/.agents/skills/`.
 
+> **Cross-team contract**: see `governance/README.md` for the canonical entry point (4 invariants: Team&Model signing, baton order, ticket-first, dedicated worktree). This file is the Copilot adapter; the generic baseline lives in `AGENTS.md`.
+
 ## Execution Model
 
 Every task follows the **role baton sequence**: Manager → Collaborator → Admin → Consultant.
@@ -90,10 +92,8 @@ All governed provider calls route through HAMR (`https://hamr.chf3198.workers.de
 
 ## Harness Goal Constitution (priority)
 
-Apply this decision order for governed work:
-Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability.
-If a lower-priority goal wins, record rationale in ticket/PR evidence.
+Apply this decision order: Governance > Quality > Zero Cost > Privacy > Portability > Resilience > Throughput > Observability > Interoperability. Record rationale in ticket/PR evidence when a lower-priority goal wins.
 
-## Skill Index
+## Hook Behavior Overrides — see `instructions/hook-behavior-overrides.instructions.md` (advisory-vs-blocking contract; Tier-2 self-anneal threshold).
 
-Auto-derived from `skills/<name>/SKILL.md` frontmatter — see [`docs/skills-copilot.md`](../docs/skills-copilot.md). Regenerate via `node scripts/global/skill-views-derive.js`.
+## Skill Index — auto-derived per `docs/skills-copilot.md`; regenerate via `node scripts/global/skill-views-derive.js`.

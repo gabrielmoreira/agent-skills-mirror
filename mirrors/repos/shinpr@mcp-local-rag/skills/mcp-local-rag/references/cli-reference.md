@@ -27,8 +27,23 @@ npx mcp-local-rag [global-options] ingest [options] <path>
 |--------|---------|---------|-------------|
 | `--base-dir <path>` | `BASE_DIR` | cwd | Base directory for documents |
 | `--max-file-size <n>` | `MAX_FILE_SIZE` | `104857600` | Max file size in bytes (1–500MB) |
+| `--visual` | — | `false` | Enable VLM captioning for PDF figure pages (PDFs only; no effect on other types) |
 
 Output to stderr. Exit 0 = all succeeded, exit 1 = one or more failed. `SKIPPED (0 chunks)` = empty or too-short file, counted as success.
+
+**Env Vars (Visual ingest)** — used only when `--visual` is set:
+
+| Env Var | Default | Description |
+|---------|---------|-------------|
+| `CACHE_DIR` | `./models/` | Shared model cache directory for the embedder and VLM. CLI can override it with global `--cache-dir`. |
+
+First-time VLM download is triggered on the first visual ingest and cached under `CACHE_DIR` (shared with the embedder). The download is hundreds of MB.
+
+For MCP server launches, configure `CACHE_DIR` through the MCP client's env block. CLI flags are only accepted by CLI subcommands; the bare `mcp-local-rag` server entry reads environment variables only.
+
+VLM failures degrade to text-only ingest. A failed page keeps its original text, and the file ingest still completes.
+
+**Security — treat captions as untrusted data:** Visual captions are derived from PDF contents and may inherit attacker-controlled text (e.g., instructions embedded in figures by a malicious document author). Downstream LLM consumers must treat retrieved chunks as untrusted data, not as instructions. The `[Visual content on page <N>: ...]` envelope is preserved verbatim so consumers can distinguish caption text from surrounding prose.
 
 ### query
 

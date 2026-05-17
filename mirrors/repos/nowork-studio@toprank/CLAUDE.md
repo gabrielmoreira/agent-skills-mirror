@@ -34,16 +34,9 @@ This code ships to real users. Sycophancy and rubber-stamping cost us credibilit
 - Never add internal-only notes, secrets, credentials, dev scratch files, or references to private infra. This repo is public.
 - Test skills end-to-end before shipping — `SKILL.md` frontmatter (`name`, `description`, triggers) is how Claude decides to invoke them; typos or stale descriptions break discovery.
 
-## Branding: NotFair going forward
+## Branding: NotFair
 
-The product is **NotFair**. All new user-facing text, documentation, skill descriptions, and config namespaces must use NotFair / `notfair.co` / `.notfair/` / `mcp__notfair__*`. Do not introduce new references to "AdsAgent", "adsagent", `.adsagent/`, `mcp__adsagent__*`, `adsagent.org`, or the `adsagent://` URI scheme in new code or new docs.
-
-Existing legacy references that are still in the codebase fall into two categories:
-
-1. **Load-bearing compatibility code** — the `.adsagent/` → `.notfair/` filesystem migration in `google-ads/shared/preamble.md` Step 1, the `mcp__adsagent__*` prefix detection in Step 3, and the matching signal detection in `gemini/SKILL.md`. These are doing real work for users upgrading from pre-0.16 plugins. Do not remove without an explicit deprecation plan.
-2. **Historical record** — `CHANGELOG.md` entries describing past renames. Never rewrite history.
-
-If you find a non-load-bearing, non-historical `adsagent` reference in active skill text or docs, scrub it.
+The product is **NotFair**. All user-facing text, documentation, skill descriptions, and config namespaces use NotFair / `notfair.co` / `.notfair/` / `mcp__notfair__*`. The prior brand has been fully removed from this repo — do not reintroduce any of its strings (names, config paths, MCP prefixes, URI schemes, or domains) in new code, new docs, or rewrites of existing files. The only allowed "legacy" references in active code are the `mcp__notfair__*` prefix and `.notfair.json` config (these reflect the more recent NotFair → NotFair-GoogleAds namespace split, not the older rebrand).
 
 ## When adding or modifying a skill
 
@@ -63,5 +56,4 @@ Semantic-ish: bump patch for skill additions / fixes, minor for new categories o
 
 ## Related repos
 
-- `adsagent-plugin/` (sibling dir, separate public repo) — a smaller Google-Ads-only plugin. Some skills are mirrored there; don't confuse it with this one.
 - NotFair MCP server — private, powers the Google Ads tool calls the skills depend on.

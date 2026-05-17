@@ -8,25 +8,40 @@ from collections import Counter
 from datetime import date
 from urllib.parse import urlparse
 
-from . import dates, schema
+from . import dates, schema, skill_meta
 
 
 def _skill_version() -> str:
-    """Read plugin version from a plugin manifest if available.
+    """Read plugin version from .claude-plugin/plugin.json, falling back to SKILL.md frontmatter.
 
-    Tries nearest plugin.json by walking up from render.py's own location.
-    Falls back to "?" if not found. This keeps the badge emission from
-    crashing on non-plugin-cache installs (repo checkout, Gemini, Codex).
+    Per-harness skill install dirs (`~/.claude/skills`, `~/.codex/skills`, `~/.agents/skills`,
+    Hermes, etc.) do not always carry `.claude-plugin/plugin.json` — that file ships with
+    plugin-cache installs but not with per-harness skill installs. SKILL.md frontmatter is
+    the fallback that keeps the badge from emitting v? on those installs. Returns "?" only
+    if no usable version string is found from either source (missing files, corrupt JSON,
+    or SKILL.md without a version line).
+
+    A corrupt manifest at one ancestor does not shadow a valid manifest at a deeper one
+    (continue, not break). SKILL.md parsing accepts double-quoted, single-quoted, or
+    unquoted YAML version scalars (delegated to skill_meta.read_skill_version).
     """
     here = pathlib.Path(__file__).resolve()
-    for parent in [here.parent, *here.parents]:
-        for manifest_dir in (".codex-plugin", ".claude-plugin"):
-            candidate = parent / manifest_dir / "plugin.json"
-            if candidate.is_file():
-                try:
-                    return json.loads(candidate.read_text()).get("version", "?")
-                except (json.JSONDecodeError, OSError):
-                    return "?"
+    for parent in here.parents:
+        manifest = parent / ".claude-plugin" / "plugin.json"
+        if manifest.is_file():
+            try:
+                version = json.loads(manifest.read_text()).get("version")
+            except (json.JSONDecodeError, OSError):
+                continue
+            if version:
+                return version
+
+    # No usable manifest found at any ancestor — fall back to SKILL.md frontmatter.
+    # First SKILL.md found in the walk is THIS skill's; never traverse past it.
+    for parent in here.parents:
+        skill_md = parent / "SKILL.md"
+        if skill_md.is_file():
+            return skill_meta.read_skill_version(skill_md) or "?"
     return "?"
 
 

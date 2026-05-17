@@ -16,316 +16,93 @@ go test -race ./...                 # all test packages must pass
 - **Graph size:** 610 nodes, 3519 edges
 - **Breakdown:** 56 files, 199 functions, 1 interfaces, 143 methods, 59 types, 152 variables
 
-## MANDATORY: Use Gortex MCP tools instead of Read/Grep
+## MANDATORY: Use Gortex MCP tools instead of Read/Grep/Glob
 
-Gortex is running as an MCP server. You MUST use graph queries instead of file reads whenever possible. This saves thousands of tokens per task.
+Gortex is registered as an MCP server. You **MUST** prefer graph queries over file reads on every task in this repo — `search_symbols`, `find_usages`, `get_symbol_source`, `get_editing_context`, `smart_context`, `edit_symbol` / `edit_file` / `rename_symbol` / `batch_edit`. PreToolUse hooks deny `Read` / `Grep` / `Glob` against indexed source; the deny message names the right tool. The full per-tool catalog loads via `tools/list` and the cross-project rule tables live in `~/.claude/CLAUDE.md` — neither is restated here. This file carries only project-specific guidance.
 
-### Optional: LLM features and provider selection
+### Discovery (read once, then keep using)
 
-The `ask` tool and the `search_symbols` `assist` modes are backed by an LLM provider, selected by the `llm.provider` config key (in `.gortex.yaml` or `~/.config/gortex/config.yaml`):
+- **Graph schema** — `gortex://schema` resource (node kinds, edge kinds, what each carries).
+- **Analyzer rollups** — `gortex://report`, `gortex://surprises`, `gortex://god-nodes`, `gortex://questions`, `gortex://audit`.
+- **Bootstrap state** — `gortex://stats`, `gortex://index-health`, `gortex://workspace`, `gortex://repos`, `gortex://active-project`.
 
-| `llm.provider` | Backend | Requires |
-|----------------|---------|----------|
-| `local` (default) | in-process llama.cpp | a `-tags llama` build + `llm.local.model` (a `.gguf` path) |
-| `anthropic` | Anthropic Messages API | `llm.anthropic.model` + `ANTHROPIC_API_KEY` |
-| `openai` | OpenAI Chat Completions | `llm.openai.model` + `OPENAI_API_KEY` |
+### LLM provider (powers `ask` and `search_symbols assist:` modes)
+
+Selected via `llm.provider` in `.gortex.yaml` or `~/.config/gortex/config.yaml`. The HTTP and subprocess providers are pure Go — available without `-tags llama`.
+
+| Provider | Backend | Requires |
+|---|---|---|
+| `local` (default) | in-process llama.cpp | `-tags llama` build + `llm.local.model` (a `.gguf` path) |
+| `anthropic` | Messages API | `llm.anthropic.model` + `ANTHROPIC_API_KEY` |
+| `openai` | Chat Completions | `llm.openai.model` + `OPENAI_API_KEY` |
 | `ollama` | Ollama daemon | `llm.ollama.model` (+ `llm.ollama.host`, default `localhost:11434`) |
-| `claudecli` | Claude Code CLI subprocess | `claude` binary on `$PATH` (signed in once); optional `llm.claudecli.model` (e.g. `sonnet`/`opus`/`claude-sonnet-4-6`). Reuses the user's Claude Code subscription — no API key. |
+| `claudecli` | `claude` CLI subprocess | `claude` on `$PATH` (signed in once); optional `llm.claudecli.model` (`sonnet`/`opus`/…). Reuses the user's Claude Code subscription. |
 
-The HTTP and subprocess providers are pure Go — available without `-tags llama`. `GORTEX_LLM_PROVIDER` / `GORTEX_LLM_MODEL` env vars override the file config; `GORTEX_LLM_CLAUDECLI_BINARY` overrides the `claude` binary location. If the active provider can't be constructed (missing model / API key, `local` without `-tags llama`, or `claudecli` without `claude` on `$PATH`), the daemon logs a warning and the LLM features stay absent.
+`GORTEX_LLM_PROVIDER` / `GORTEX_LLM_MODEL` / `GORTEX_LLM_CLAUDECLI_BINARY` override the file config. If the active provider can't construct (missing model / API key, `local` without `-tags llama`, `claudecli` without `claude` on `$PATH`), the daemon logs a warning and `ask` stays unregistered — fall through to direct tools.
 
-### Optional: delegate research to the `ask` agent
+`search_symbols assist:` modes: `auto` (default — skips LLM for identifier queries, expands NL queries), `on` (forces expansion+rerank), `off` (pure BM25), `deep` (adds a body-grounded verification pass; +1.5–4 s; quality is highly model-dependent — unreliable on 3B local models, fine on 7B+ or hosted).
 
-When a provider is configured, the `ask` MCP tool is registered. It runs a structured tool-calling agent that uses gortex tools to research one question and returns a synthesized answer — useful when you'd otherwise issue many `search_symbols` / `get_callers` / `contracts` calls.
+### Non-obvious capabilities worth knowing
 
-| When you'd otherwise...               | Consider...                              |
-|---------------------------------------|------------------------------------------|
-| Run many calls to answer one open-ended question | `ask` (one call, ~5-30s, ~200-400 token answer) |
-| Trace a request across repos (consumer → contract → handler → downstream) | `ask` with `chain: true` |
-| Look up a single known fact | Skip `ask` — direct tools are faster |
+- **`compress_bodies: true`** on `read_file` / `get_symbol_source` / `get_editing_context` elides function bodies to stubs while keeping signatures + doc-comments + structure. ~30–40% of original tokens. 14 languages.
+- **Overlay sessions** (`overlay_push`, `overlay_list`, `overlay_drop`, `compare_with_overlay`) let editor extensions push unsaved buffers as a per-session shadow graph — every subsequent tool call reads through it without mutating base. Bound to the MCP session lifecycle; idle TTL via `GORTEX_OVERLAY_IDLE_TTL` (default 30m).
+- **Speculative execution** (`preview_edit`, `simulate_chain`) takes an LSP `WorkspaceEdit` and returns the graph diff + broken callers/implementors + impact rollup + suggested tests + (optional) LSP diagnostics — disk untouched. `simulate_chain` with `keep: true` promotes the final state into a real overlay.
+- **MCP 2026 Streamable HTTP** at `POST /mcp` — `gortex server` always mounts it; `gortex daemon --http-addr <addr>` opts the daemon in (non-localhost binds require `--http-auth-token`).
+- **Session memory** (`save_note`, `query_notes`, `distill_session`) persists agent-authored notes per repo, auto-linked to symbols mentioned in the body. Notes survive daemon restarts and context compactions, scoped to the session's workspace.
+- **Development memories** (`store_memory`, `query_memories`, `surface_memories`) — cross-session, symbol-linked durable knowledge that compounds the longer a team uses Gortex. Memories carry `kind` (invariant / constraint / convention / gotcha / decision / incident / reference), `importance` (1..5), `confidence` (0..1), and are surfaced *proactively* by `surface_memories` when their anchor symbols / files enter the agent's working set.
 
-If `ask` isn't in `tools/list`, no LLM provider is configured (or it failed to construct). Fall through to direct tools.
+## MANDATORY: Session memory — save, recall, distill
 
-### Optional: LLM-assisted search ranking (`search_symbols` `assist:` arg)
+The `save_note` / `query_notes` / `distill_session` triplet is the agent's durable scratchpad. The graph remembers code; these tools remember **why you made a call**. Without them, every compaction erases hard-won context.
 
-When a provider is configured, `search_symbols` accepts an `assist` argument that engages the model in the search pipeline. The default `auto` is sub-100 ms on identifier lookups; the active modes add latency but materially improve precision on natural-language queries.
+Three triggers — not suggestions:
 
-| `assist` value | Behaviour | Cost |
-|----------------|-----------|------|
-| `auto` (default) | NL heuristic decides per-query. Identifier-shaped queries (`Server.handleAsk`, `parseToolCall`) skip the LLM. NL queries (≥3 tokens with a stop word, or ≥4 plain-word tokens) trigger query expansion + name+sig rerank. | None for identifier lookups; +200–500 ms for NL. |
-| `on` | Forces expansion + name+sig rerank regardless of shape. Use when you know the query is fuzzy. | +200–500 ms. |
-| `off` | Pure BM25 + combo/frecency. No LLM. | None. |
-| `deep` | `on` plus a body-grounded verification pass — reads each top candidate's body + callers and HONESTLY drops candidates whose code isn't about the query. May return zero results when nothing genuinely matches; that's the load-bearing honest-negative signal. | +1.5–4 s. Quality is **highly model-dependent**: small local models (Qwen2.5-Coder 3B) are unreliable on disambiguation cases (e.g. "hash passwords" vs functions that hash other data); a 7B-class local model or any hosted provider produces stable, useful results. The assist prompts are tiered automatically — terser for hosted frontier models, rule-heavy for small local ones. |
-
-The response gains an `assist` debug block when an active mode engaged: `terms` (expansion words), `primary_count` (raw BM25 hits on the original query), `merged_count` (after expansion union), `final_count` (after filter/rerank), plus `verify_kept_ids` / `verify_dropped` for `deep`.
-
-### Navigation and Reading
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| `Read` a whole file for one function  | `get_symbol_source` with `id: "path/to/file.go::SymbolName"` (80% fewer tokens) — use `get_file_summary` first if you don't know the symbol name |
-| `Read` to find a function             | `get_symbol` or `get_editing_context`    |
-| Multiple `get_symbol` calls           | `batch_symbols` (one call for N symbols) |
-| `Grep` for references                 | `find_usages` (zero false positives)     |
-| `Grep` to find a symbol by name       | `search_symbols` (BM25 + camelCase-aware)|
-| Filtering `search_symbols` by hand    | `winnow_symbols` — structured constraint chain (kind, language, community, path_prefix, min_fan_in, min_fan_out, min_churn, text_match) with per-axis score contributions |
-| `Read` to understand a file           | `get_file_summary` or `get_editing_context` |
-| `Read` multiple files to trace calls  | `get_call_chain` / `get_callers`         |
-| Walking up/down an inheritance chain  | `get_class_hierarchy` — multi-hop EdgeExtends + EdgeImplements + EdgeComposes (type nodes) and EdgeOverrides (method nodes); `direction` ∈ up/down/both, `include_methods` pulls members + their override chain |
-| Guessing an import path               | `find_import_path`                       |
-| `Read` to check a function signature  | `get_symbol` (signature is in `meta.signature`) |
-| 5-10 calls to explore for a task      | `smart_context` (one call)               |
-
-### Token Economy (wire format)
-
-Order of preference: **gcx > toon > json**. For known clients (claude-code, cursor, vscode, zed, aider, kilocode, opencode, openclaw, codex) Gortex serves `gcx` automatically when a request omits the `format` arg — explicit `format` always wins.
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Default JSON on multi-row responses   | Rely on the per-session default (gcx) for known clients, or pass `format: "gcx"` explicitly on `search_symbols`, `find_usages`, `analyze`, `contracts`, `batch_symbols`, `get_callers` / `get_call_chain` / `get_dependencies` / `get_dependents` / `find_implementations` / `find_overrides` / `get_class_hierarchy`, `get_file_summary`, `get_editing_context`, `smart_context` |
-| GCX-blind tooling needing tabular text| Pass `format: "toon"` — TOON is the second-tier fallback (lossy but ~10–15% smaller than JSON) |
-| Parsing compact text output           | Use `@gortex/wire` (npm) or the Go `github.com/gortexhq/gcx-go` package (MIT) — both decode GCX back to structured rows |
-| Reading `compact: true` output        | Prefer `format: "gcx"` — lossy text is being phased out; GCX is round-trippable and tokenizer-optimised |
-
-### Token Economy (content compression)
-
-GCX1 shrinks the response *shape*; `compress_bodies` shrinks the response *content*. Composable — pass both for stacked savings.
-
-`compress_bodies: true` replaces every function/method body with a `{ /* N lines elided */ }` stub while keeping signatures, doc-comments, imports, top-level constants, types, and structure intact. ~30-40% of original tokens; a 200-line file lands at ≤ 60 lines. Wired in 14 languages: go, typescript, tsx, javascript, python, rust, java, c, cpp, csharp, kotlin, scala, php, ruby, bash, elixir.
-
-| Instead of...                                          | You MUST use...                          |
-|--------------------------------------------------------|------------------------------------------|
-| Reading a whole 2k-line file for its surface           | `read_file` with `compress_bodies: true` |
-| Pulling the source of a class to learn its method signatures | `get_symbol_source` with `compress_bodies: true` |
-| Calling get_editing_context then get_symbol_source on neighbours just to see signatures | `get_editing_context` with `compress_bodies: true` — emits a `source_compressed` payload alongside the structural sections |
-
-When the language has no grammar binding or tree-sitter can't parse the file, the flag is a no-op — raw source is returned unchanged and the response's `bodies_elided` flag stays absent.
-
-### Impact Analysis and Safety
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Reading files to assess change scope  | `explain_change_impact` (includes cross-community warnings) |
-| Guessing which tests to run           | `get_test_targets`                       |
-| Manual dependency ordering            | `get_edit_plan`                          |
-| Hoping signature changes are safe     | `verify_change` — checks callers and interface implementors |
-| Manually checking team conventions    | `check_guards` — evaluates guard rules from .gortex.yaml |
-| Wondering if a new dep creates a cycle| `analyze` with `kind: "would_create_cycle"` — checks before you add it |
-
-### Diagnostics and Code Actions
-
-Wired to every running language server (gopls, tsserver, pyright, rust-analyzer, clangd, jdtls, kotlin-language-server, omnisharp, ruby-lsp, phpactor, lua-language-server, sourcekit-lsp, haskell-language-server, elixir-ls, ocamllsp, zls, terraform-ls, yaml-language-server, json-language-server, bash-language-server). One unified surface across all of them:
-
-| Instead of...                           | You MUST use...                          |
-|-----------------------------------------|------------------------------------------|
-| Polling for diagnostics after every edit | `subscribe_diagnostics` — opt the session into push `notifications/diagnostics`. Initial state replays immediately as `initial_replay: true`; thereafter only delta-changed files are pushed (hash-suppressed). Filter with `min_severity` (1=error, 2=warning, 3=info, 4=hint) or `path_prefix` (absolute prefix). |
-| Manual diagnostics fetch                | `get_diagnostics` — latest stored `publishDiagnostics` for a file. Pass `wait: true` + `timeout_ms` to block on the first publish (e.g. right after a fresh `didOpen`). |
-| Forgetting to opt back out              | `unsubscribe_diagnostics` — idempotent, fires automatically on session disconnect. |
-| Hand-applying compiler suggestions      | `get_code_actions` for a file (and optional range), then `apply_code_action` on the chosen one. Atomic temp+rename, both legacy `changes` and modern `documentChanges`, UTF-16 column math. |
-| Walking the whole file to apply every fix | `fix_all_in_file` — runs `source.fixAll` over the whole file in one round-trip. |
-
-### Structural Code Search
-
-`search_ast` is the cross-language structural search tool. Use it whenever you need to find code by *shape*, not by name — every site whose AST matches a pattern, regardless of identifier choice or token text.
-
-| Instead of...                          | You MUST use...                          |
-|----------------------------------------|------------------------------------------|
-| Grep for an anti-pattern across the repo | `search_ast` with a bundled `detector` (e.g. `error-not-wrapped`, `sql-string-concat`, `weak-crypto`, `panic-in-library`, `goroutine-without-recover`, `http-client-no-timeout`, `hardcoded-secret`, `empty-catch`, `java-string-equality`, `python-mutable-default-arg`). Each result carries the enclosing `symbol_id` so you can chain straight into `find_usages` / `verify_change` / `apply_code_action`. |
-| Grep for a code shape ("every `.Get(_, nil)` call site") | `search_ast` with `pattern: "..."` (raw tree-sitter S-expression) and `language: "..."`. Capture nodes with `@name`, anchor the match span with `@match`, predicates: `(#eq? @x "literal")`, `(#match? @x "regex")`. |
-| Walking results manually to scope to load-bearing code | Pass `min_fan_in_of_enclosing_func: <N>` — drops matches in functions with fewer than N callers, keeping the audit on the parts of the codebase that actually matter. Pair with `path_prefix`, `repo`/`project`/`ref`, and `exclude_tests` to narrow further. |
-
-### Code Quality and Analysis
-
-The `analyze` MCP tool is a unified dispatcher. Supported `kind` values:
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Manually hunting unused code          | `analyze` with `kind: "dead_code"` — zero incoming edges (excludes entry points, tests, exports) |
-| Guessing which symbols are over-coupled| `analyze` with `kind: "hotspots"` — ranks by fan-in, fan-out, community crossings |
-| Manually scanning for circular deps   | `analyze` with `kind: "cycles"` — Tarjan's SCC with severity classification |
-| Wondering if a new dep creates a cycle| `analyze` with `kind: "would_create_cycle"` — checks before you add it |
-| Grepping for TODO / FIXME             | `analyze` with `kind: "todos"` — KindTodo nodes; filter by tag/assignee/ticket |
-| Walking blame by hand                 | `analyze` with `kind: "blame"` — stamps meta.last_authored from git blame |
-| Reading a cover.out profile manually  | `analyze` with `kind: "coverage"` — stamps meta.coverage_pct on executable symbols |
-| Hunting symbols nobody touches        | `analyze` with `kind: "stale_code"` — symbols older than `older_than` days |
-| Asking who owns a package             | `analyze` with `kind: "ownership"` — author rollup with symbol/file counts |
-| Finding undertested symbols           | `analyze` with `kind: "coverage_gaps"` — symbols inside [min_pct, max_pct) |
-| Per-package coverage rollup           | `analyze` with `kind: "coverage_summary"` — directory-level avg/covered/partial/uncovered |
-| Stale feature flags                   | `analyze` with `kind: "stale_flags"` — flag callers untouched for `older_than` days |
-| Walking git tags by hand              | `analyze` with `kind: "releases"` — stamps meta.added_in on file nodes |
-| Surveying cgo / wasm boundaries       | `analyze` with `kind: "cgo_users"` or `kind: "wasm_users"` — files crossing the FFI boundary |
-| Finding tables without migrations     | `analyze` with `kind: "orphan_tables"` — queried tables missing EdgeProvides |
-| Finding migrations without users      | `analyze` with `kind: "unreferenced_tables"` — provided tables with zero EdgeQueries |
-| Spotting channel send/recv mismatches | `analyze` with `kind: "channel_ops"` — channels grouped by sends/recvs |
-| Finding goroutine spawn hotspots      | `analyze` with `kind: "goroutine_spawns"` — EdgeSpawns grouped by target + mode |
-| Finding mutability hotspots           | `analyze` with `kind: "field_writers"` — fields ranked by EdgeWrites; pass `id` for one field |
-| Listing every @Deprecated use         | `analyze` with `kind: "annotation_users"` — pass `id` or `name` for one annotation |
-| Tracing config-key readers            | `analyze` with `kind: "config_readers"` — config_key nodes grouped by EdgeReadsConfig |
-| Tracing event/log emitters            | `analyze` with `kind: "event_emitters"` — events grouped by EdgeEmits, `level` filter optional |
-| Mapping event pub/sub topics          | `analyze` with `kind: "pubsub"` — pub/sub topics with publishers (EdgeEmits) + subscribers (EdgeListensOn) across NATS / Kafka / RabbitMQ / Redis / EventEmitter / Socket.IO; `transport` / `name` / `role` filters |
-| Mapping the error surface             | `analyze` with `kind: "error_surface"` — function/method nodes with their EdgeThrows targets |
-| Surveying stdlib / module-cache reach | `analyze` with `kind: "external_calls"` — KindModule nodes grouped by call/symbol counts; pass `id` for per-symbol detail, `module_kind` for stdlib/module_cache filter |
-| Listing every HTTP/gRPC/WS route      | `analyze` with `kind: "routes"` — handler→route pairs from the EdgeHandlesRoute graph layer; `method`, `path`, `type` filters (`type` ∈ http/grpc/ws/graphql/topic) |
-| Mapping ORM models to tables          | `analyze` with `kind: "models"` — class→table edges from EdgeModelsTable across gorm / SQLAlchemy / Django / ActiveRecord / JPA / TypeORM / Ecto; `orm`, `table`, `model` filters |
-| Walking the component tree            | `analyze` with `kind: "components"` — parent↔child fan-in/out from EdgeRendersChild (JSX/TSX + Phoenix HEEx); pass `id` for per-component child list |
-| Surveying K8s manifests in the repo   | `analyze` with `kind: "k8s_resources"` — every KindResource with infra-edge fan-out (depends_on / configures / mounts / exposes / uses_env); `k8s_kind`, `namespace`, `name` filters |
-| Listing container images in use       | `analyze` with `kind: "images"` — every KindImage (Dockerfile FROM target or K8s container.image) with consumer count; `role` (base/stage), `ref`, `tag` filters |
-| Mapping the Kustomize overlay tree    | `analyze` with `kind: "kustomize"` — every KindKustomization with base / resource fan-out; `dir` filter |
-| Auditing what crosses repo boundaries | `analyze` with `kind: "cross_repo"` — calls / implements / extends edges whose endpoints live in different repos, grouped by (source repo → target repo, relation); `repo`, `base_kind`, `path_prefix` filters |
-| Surveying dbt / SQLMesh models        | `analyze` with `kind: "dbt_models"` — every dbt / SQLMesh model, seed, snapshot, and source (KindTable) with column count + EdgeDependsOn lineage fan-in/out; `framework` (dbt/sqlmesh), `type` (model/seed/snapshot/source), `materialized`, `name` filters |
-| Checking if the index is stale        | `index_health` — health score, parse failures, stale files |
-| Wondering what changed this session   | `get_symbol_history` — modification counts, flags churning (3+ edits) |
-| Hydrating blame / coverage / releases | `gortex enrich blame|coverage|releases|all` (CLI) — bulk-stamps the graph for the `stale_*`, `coverage_*`, `ownership`, and `releases` analyzers |
-
-### Code Generation and Editing
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Reading files to learn a pattern      | `suggest_pattern`                        |
-| Manually scaffolding from a pattern   | `scaffold` — generates code, wiring, and test stubs from an example |
-| Read→Edit roundtrip for one symbol    | `edit_symbol` — edit source by ID, no Read needed |
-| Read→Edit roundtrip for any file      | `edit_file` — string-replace any file by absolute or repo-relative path; atomic write, auto-reindex; pass `dry_run` to preview |
-| Read→Write roundtrip for new files    | `write_file` — create or overwrite any file with given content; creates parent dirs; pass `dry_run` to preview |
-| Manual find-and-replace for renames   | `rename_symbol` — coordinated rename across all references |
-| Sequencing multi-file edits yourself  | `batch_edit` — applies edits in dependency order, re-indexes between steps |
-| Reading a diff without graph context  | `diff_context` — enriches git diff with callers, callees, community, risk |
-| Guessing what context you need next   | `prefetch_context` — predicts needed symbols from task + recent activity |
-| Sharing context outside MCP           | `export_context` — portable markdown/JSON briefing for Slack, PRs, docs |
-
-### Agent Learning
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Accepting all context suggestions     | `feedback` with `action: "record"` — report useful/not_needed/missing symbols after a task |
-| Wondering which symbols matter most   | `feedback` with `action: "query"` — aggregated stats: most useful, most missed, accuracy |
-| Re-fetching unchanged symbol source   | Pass `if_none_match` with previous `etag` to get `not_modified` (saves tokens) |
-
-### API Contracts
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Manually tracking API routes/services | `contracts` (default `action: "list"`) — lists HTTP, gRPC, GraphQL, topic, WebSocket, env, OpenAPI; filter by `repo`, `project`, or `ref` |
-| Guessing if APIs match across repos   | `contracts` with `action: "check"` — detects orphan providers/consumers and mismatches; scope with `repo` / `project` / `ref` |
-
-### CPG-lite Dataflow
-
-The `flow_between` and `taint_paths` MCP tools answer **"where does this value flow?"** by walking three new edge kinds — `value_flow` (intra-procedural), `arg_of` (caller arg → callee param), and `returns_to` (callee → assignment). The Go extractor builds these at index time and the resolver post-pass lifts inter-procedural placeholders to actual param node IDs.
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Hand-tracing a value through helper functions | `flow_between` — ranked dataflow paths between two symbol IDs; pass `max_depth` (default 8) and `max_paths` (default 10); supports `format: "gcx"` |
-| Grepping for sources / sinks         | `taint_paths` — pattern-driven sweep returning every flow from a matching source to a matching sink. Pattern syntax: bare token = case-insensitive substring on name; `exact:Foo` = exact match; `path:dir/` = file-path prefix; `kind:method` = node-kind filter; combine clauses with spaces (AND). Sinks expand functions to their params automatically. |
-| Reading callers to verify a refactor | `flow_between` from the changed return symbol to a downstream consumer's param to find every consumer site, including those reached through helper functions. |
-
-### Clone Detection
-
-The `find_clones` MCP tool surfaces near-duplicate ("clone") function/method clusters from the `similar_to` graph layer. At index time every substantial function body is reduced to a 64-slot MinHash signature (token-normalised so renamed-variable copies still match), LSH banding produces candidate pairs, and a Jaccard-similarity threshold filter keeps the true clones — emitted as symmetric `EdgeSimilarTo` edges. Gated behind the `clones` coverage domain (default on; tune `index.coverage.clones.threshold` in `.gortex.yaml`).
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Grepping / eyeballing for copy-paste  | `find_clones` — near-duplicate clusters; scope with `min_similarity`, `path_prefix`, `repo`, `limit`; supports `format: "gcx"` |
-| Hunting safe-to-delete duplicates     | `find_clones` with `dead_only: true` — clusters containing a dead-code symbol ("dead duplicates of live code"); every member is flagged `is_dead` in the default view |
-
-### Config Hygiene
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Eyeballing CLAUDE.md for stale refs   | `audit_agent_config` — graph-validates backticked symbols in CLAUDE.md / AGENTS.md / `.cursor/rules` / Copilot / Windsurf / Antigravity configs; flags stale refs, dead paths, and bloat |
-
-### Multi-Repo Management
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Manually adding a repo to config      | `track_repository` — indexes immediately, persists to config |
-| Manually removing a repo from config  | `untrack_repository` — evicts nodes/edges, persists to config |
-| Wondering which project is active     | `get_active_project` — returns project name and repo list |
-| Switching project context             | `set_active_project` — re-scopes all subsequent queries |
-| Scoping a query to one repo           | Pass `repo` param to `search_symbols`, `find_usages`, etc. |
-| Scoping a query to a project          | Pass `project` param to any query tool |
-| Filtering by reference tag            | Pass `ref` param to any query tool |
-
-### Live Editor Buffers (Shadow-Graph Overlay Sessions)
-
-Editor extensions push in-flight (unsaved) buffers as **overlays**. Gortex composes a per-request **shadow view** (`graph.OverlaidView`) on top of the immutable base graph and threads it through the tool dispatch context. Every subsequent `tools/call` from the same MCP session reads through the shadow view — graph-walking tools (`find_usages`, `get_call_chain`, `get_file_summary`, `analyze`, …) and source-reading tools (`get_symbol_source`, `get_editing_context`, …) all see the editor-buffer state.
-
-**Load-bearing invariant: the base graph is never mutated by overlay flow.** The overlay layer is built per request, parsed once per (session, content-hash) tuple, and discarded with the request. Consequences:
-
-- **Multi-tenant safe.** Sessions A1, A2 (same user) and B (different user) can run concurrently against the same daemon; each sees its own view. The file watcher's reindex passes mutate base but the in-flight shadow view captured a stable base snapshot at request start.
-- **Non-destructive.** Cross-file edges from non-overlaid files INTO overlaid file symbols (`Caller→Target`) survive overlay processing because base's edges are intact. The in-place-mutation approach (which Gortex briefly experimented with internally) lost those edges.
-- **Diffable.** `compare_with_overlay` runs a query against both base and overlay and returns the delta — proving the two views are simultaneously available.
-
-| Instead of...                         | You MUST use...                          |
-|---------------------------------------|------------------------------------------|
-| Asking the user to save before a query | `overlay_register` then `overlay_push` — pushes one editor buffer; subsequent tool calls see the overlay layered on top of base |
-| Listing what an extension has staged   | `overlay_list` — every path / size / deleted flag / base SHA for the current session |
-| Cancelling a single overlay           | `overlay_delete` with `path` — saved-buffer view returns for that path on the next tool call |
-| Tearing down an overlay session       | `overlay_drop` — discards every overlay attached to the session, in one call |
-| Previewing impact of an unsaved edit  | `compare_with_overlay` with `kind: find_usages / get_callers / get_call_chain / get_dependencies / get_dependents` — runs the query against base and overlay simultaneously, returns added / removed / common ID sets |
-
-**Drift detection.** Pass an editor-captured git blob SHA as `base_sha` on `overlay_push`. When the next tool call needs that path, Gortex compares it to the on-disk hash; if they disagree (a sibling tool, a git operation, or another editor saved over the file) the tool call returns a structured `overlay base SHA mismatch` error so the client knows to re-read the file and resubmit a fresh overlay.
-
-**Deletion overlays.** Push with `deleted: true` to model "this file is going away" — the symbols inside it vanish from the shadow view (but are untouched in base), so the user can preview the impact of a delete without staging it.
-
-**HTTP transport.** `gortex server` exposes the same surface at `POST /v1/overlay/sessions` (optional `session_id` binds an overlay to a known MCP session), `PUT /v1/overlay/sessions/{id}/files`, `DELETE /v1/overlay/sessions/{id}/files`, `GET /v1/overlay/sessions/{id}/files`, `DELETE /v1/overlay/sessions/{id}`. The `/v1/tools/<name>` HTTP entry point reads the active session from `Mcp-Session-Id` (preferred), `X-Gortex-Overlay-Session`, or `?session_id=` (test fallback).
-
-**Lifecycle and lease.** The overlay is **bound to the MCP session that registered it.** When the MCP session ends — for any reason (clean disconnect, dropped TCP, daemon proxy teardown) — the overlay is dropped synchronously. That closes the "abandoned buffer pinned in the daemon, reachable by anyone who learns the session ID" attack surface that a pure-TTL lifecycle would expose.
-
-The idle TTL is a fail-safe for the case where the daemon never observes the disconnect (e.g. the process was killed -9 mid-stream). Default **30 minutes**, configurable via `GORTEX_OVERLAY_IDLE_TTL` (`30m` / `1h` / `45s` / `0` to disable for tests). Every tool call against a live overlay session refreshes the idle timer (`SnapshotFor` bumps `LastUsed`), so an editor that's actively querying never trips the TTL. The MCP `overlay_keepalive` tool exists for genuine idle gaps (debugger pause, IDE wizard) — it bumps the timer without re-pushing content. `overlay_list` returns `expires_at` / `idle_seconds` / `idle_ttl_seconds` so the extension can schedule keepalives proactively.
-
-If a tools/call references a stale (reaped) session ID, the call falls through to base — no error, no corruption, no content leak. The next `overlay_push` self-heals (auto-registers the session); `overlay_keepalive` / `overlay_delete` surface explicit "session has been dropped" errors so the editor can take corrective action.
-
-### MCP Resources
-
-Bootstrap-state tools are also exposed as MCP resources (read-only, URI-addressable, no args). Clients that speak resources can `resources/subscribe` once and receive `notifications/resources/updated` after each graph re-warm — no polling. The tool form stays for back-compat with clients that don't speak resources.
-
-| Resource URI                   | Same payload as tool      |
-|--------------------------------|---------------------------|
-| `gortex://stats`               | `graph_stats`             |
-| `gortex://index-health`        | `index_health`            |
-| `gortex://workspace`           | `workspace_info`          |
-| `gortex://repos`               | `list_repos`              |
-| `gortex://active-project`      | `get_active_project`      |
-| `gortex://schema`              | (graph schema reference)  |
-| `gortex://session`             | (recent activity replay)  |
-| `gortex://communities` / `gortex://community/{id}` | community detection rollups |
-| `gortex://processes` / `gortex://process/{id}`     | process discovery rollups   |
-
-Analyzer-backed rollups (read-only summaries; the only "argument" is the current state of the indexed code):
-
-| Resource URI            | Synthesises                                              |
-|-------------------------|----------------------------------------------------------|
-| `gortex://report`       | High-level orientation: graph size, top languages/kinds, hotspot count, dead-code count, todo count |
-| `gortex://god-nodes`    | Top 20 hotspots (subset of `analyze kind:hotspots`)      |
-| `gortex://surprises`    | Cycles + dead code + cross-community call hubs           |
-| `gortex://audit`        | `audit_agent_config` with discovery defaults             |
-| `gortex://questions`    | TODO / FIXME / XXX / HACK / QUESTION rollup grouped by tag and assignee |
-
-## Session start
-
-1. Call `graph_stats` to confirm Gortex is running and get repo orientation. In multi-repo mode, check `per_repo` stats.
-2. If `total_nodes` is 0, call `index_repository` with path `"."`.
-3. In multi-repo mode, call `get_active_project` to see which project/repos are in scope. Use `set_active_project` to switch if needed.
-4. For a new task, call `smart_context` with the task description.
-5. For every file you are about to edit, call `get_editing_context` first.
-6. Before changing a function signature, call `verify_change` to catch contract violations — checks callers across all repos.
-7. Before any refactor, call `get_edit_plan` for dependency-ordered file list. Use `batch_edit` to apply atomically.
-8. After editing, call `check_guards` to verify team conventions, then `get_test_targets` for tests to run (includes cross-repo test files).
-9. Before committing, call `detect_changes` to verify scope. Use `diff_context` for graph-enriched review.
-10. After completing a task, call `feedback` with `action: "record"` to report which symbols from `smart_context` were useful, not needed, or missing. This improves future context quality.
-
-## Graph Schema
-
-**Node kinds** (filter `search_symbols` with `kind`):
-- Code structure: `file`, `package`, `function`, `method`, `type`, `interface`, `field`, `variable`, `constant`, `import`, `contract`, `param`, `closure`, `enum_member`, `generic_param`
-- Coverage extensions: `module` (ecosystem deps), `table` / `column` (db schema — also dbt / SQLMesh models, seeds, snapshots, sources and their columns; `Meta["framework"]` ∈ dbt|sqlmesh, `Meta["resource_type"]` ∈ model|seed|snapshot|source), `config_key` (env/viper/cli), `flag` (feature flags), `event` (logs/metrics/spans + pub/sub topics — `Meta["event_kind"]` ∈ log|metric|trace|span|pubsub), `migration`, `fixture` (test data), `todo` (TODO/FIXME comments), `team` (CODEOWNERS), `license`, `release` (tag boundaries)
-- Infrastructure: `resource` (K8s manifest — Deployment/Service/Ingress/ConfigMap/Secret/CronJob/…), `kustomization` (Kustomize overlay), `image` (Dockerfile FROM target or K8s `container.image`)
-
-**Edge kinds** (used internally; many are queryable via `analyze` kinds above):
-- Calls / structure: `calls`, `imports`, `defines`, `implements`, `extends`, `references`, `member_of`, `instantiates`, `provides`, `consumes`, `composes`, `aliases`, `typed_as`, `returns`, `captures`, `param_of`
-- Concurrency: `spawns` (goroutine/async/promise), `sends` / `recvs` (channels)
-- Mutation: `reads` / `writes` (fields), `reads_config` / `writes_config`
-- Dataflow (CPG-lite, `flow_between` / `taint_paths`): `value_flow` (intra-procedural assignment / return / range), `arg_of` (caller arg → callee param), `returns_to` (callee → assignment LHS)
-- Metadata: `annotated` (decorators), `emits` (observability events + pub/sub publish), `listens_on` (pub/sub subscribe — NATS/Kafka/RabbitMQ/Redis/EventEmitter/Socket.IO), `throws` (errors), `queries` (SQL), `reads_col` / `writes_col`, `toggles_flag`, `depends_on_module`, `matches` (fixtures), `generated_by`, `tests` (test → tested symbol), `covered_by`, `owns` (CODEOWNERS), `authored`, `licensed_as`
-- Infrastructure (K8s / Kustomize / Dockerfile): `configures` (workload → ConfigMap/Secret via env/envFrom), `mounts` (workload → volume source: ConfigMap/Secret/PVC), `exposes` (Resource/Image → `port::<proto>::<n>`), `depends_on` (Ingress→Service / stage→base image / overlay→base / Resource→Image — **also dbt / SQLMesh model lineage**: dbt model → its `ref()`/`source()` upstreams, SQLMesh model → its FROM/JOIN upstreams; `Meta["link"]` ∈ ref|source|from), `uses_env` (Resource/Image → `cfg::env::<NAME>` config_key — shared ID with `os.Getenv` so cross-ref between infra declaration and code-side reads is automatic)
-- Similarity (`find_clones`): `similar_to` (function/method near-duplicate — MinHash + LSH clone detection; symmetric; `Meta["similarity"]` carries the estimated Jaccard score)
-- Cross-repo (`analyze kind=cross_repo`): `cross_repo_calls` / `cross_repo_implements` / `cross_repo_extends` — parallel edge materialised at resolver time whenever a `calls` / `implements` / `extends` edge's From and To nodes live in different repos; the base edge also gets `Edge.CrossRepo` set
+1. **After a context compaction (or at session start in a touched repo)** — **call** `distill_session` first thing. Returns top symbols, pinned notes, decisions, and recent excerpts from prior sessions in this workspace. Use the digest to seed your mental model before reading any file.
+2. **At every decision point** — **call** `save_note tags:"decision" body:"<what+why>"` when you pick an approach, reject an alternative, discover a non-obvious constraint, or commit to an invariant. Mention the affected symbol/file by ID (`pkg/foo.go::Bar`) so the auto-linker attaches the note to the graph. Pin (`pinned:true`) anything that should survive the store cap.
+3. **Before editing a symbol you've touched before** — **call** `query_notes symbol_id:"<id>"`. Prior decisions, bug-fix notes, or "do not change this without …" warnings ride on the symbol's note list and you should see them before re-deriving (or worse, reverting) past work.
+
+What to save vs. skip:
+- **Save:** decisions ("chose X over Y because Z"), non-obvious constraints, follow-ups ("revisit when …"), bug reproductions, surprising graph findings, partial-progress hand-offs.
+- **Skip:** play-by-play of what you just did (the diff says it), code patterns derivable from the graph, anything already in CLAUDE.md.
+
+Useful tags: `decision`, `bug`, `follow-up`, `gotcha`, `invariant`. `decision`-tagged notes are surfaced in their own section by `distill_session`.
+
+## MANDATORY: Development memories — store, query, surface
+
+`save_note` is a **per-session scratchpad**; `store_memory` is the **workspace-wide durable knowledge base**. The two are complementary, not redundant:
+
+| | `save_note` (session) | `store_memory` (cross-session) |
+|---|---|---|
+| Scope | session_id | workspace-wide |
+| Lifetime | survives compaction | survives daemon restarts, agent changes, team rotation |
+| Audience | future-you in this session | every future agent in this workspace |
+| Surfacing | `distill_session` (manual) | `surface_memories` (proactive, ranked) |
+| Right when | "remember this for the next 30 min" | "every agent touching `Bar` should know this" |
+
+Three triggers — not suggestions:
+
+1. **At task start, after `smart_context`** — **call** `surface_memories task:"<task>" symbol_ids:"<top hits from smart_context>"`. Returns memories ranked by anchor symbol overlap, file overlap, task-keyword hits, importance, pinning, recency, and confidence. Memories prefixed with `match_reasons:["symbol:pkg/foo.go::Bar"]` are direct evidence the memory applies to your working set. If `surface_memories` returns nothing, don't probe further.
+2. **When you discover a durable fact worth teaching the team** — **call** `store_memory kind:"<invariant|gotcha|convention|decision|constraint|incident>" body:"<what+why>" symbol_ids:"pkg/foo.go::Bar" importance:5`. Pin (`pinned:true`) anything load-bearing. Set `kind` honestly: `invariant` means "violating this breaks the system", `gotcha` means "an agent will get this wrong without warning". Title (`title:"..."`) the memory if the body is long — it becomes the headline.
+3. **When a memory is no longer true** — **call** `store_memory id:"<new>" supersedes:"<old-id>" body:"<corrected fact>"`. The old memory stays in the store (for audit) but is hidden from `surface_memories` by default. Don't delete unless the original was wrong; supersession preserves history.
+
+What to store vs. skip:
+- **Store:** invariants ("Bar must hold the lock"), conventions ("this package never uses gob"), incident learnings ("once, doing X under Y crashed prod"), API contracts not enforced by types, debugging traps, cross-cutting decisions with non-obvious rationale.
+- **Skip:** anything derivable from the code (the graph already knows), session-local play-by-play (use `save_note`), CLAUDE.md content (it's already loaded), one-off observations with no actionable consequence.
+
+Useful kinds and tags: `invariant`, `constraint`, `convention`, `gotcha`, `decision`, `incident`, `reference`. Tag liberally — `query_memories tag:"<x>"` is the primary lookup path when you don't know the anchor symbol.
+
+## Required workflow (every task on this repo)
+
+These are not suggestions — run each step at the trigger.
+
+1. **Always call** `graph_stats` first to confirm the daemon is up and orient (check `per_repo` in multi-repo mode).
+2. If `total_nodes` is 0, **call** `index_repository` with `"."` before anything else.
+3. In multi-repo mode, **call** `get_active_project` to see scope; use `set_active_project` to switch.
+4. For every new task, **call** `smart_context` with the task description before reading any file.
+5. Immediately after `smart_context`, **call** `surface_memories task:"<task>" symbol_ids:"<top hits>"` to pick up any cross-session invariants / gotchas / decisions anchored to your working set. Skipping this re-derives knowledge other agents have already recorded.
+6. Before editing a file, **call** `get_editing_context` on it first.
+7. Before changing any function signature, **call** `verify_change` to catch broken callers and interface implementors (cross-repo).
+8. For any refactor, **call** `get_edit_plan` for the dependency-ordered file list, then **`batch_edit`** to apply atomically.
+9. After every edit, **call** `check_guards` (team conventions) then `get_test_targets` (includes cross-repo tests).
+10. Before committing, **call** `detect_changes` for scope and `diff_context` for graph-enriched review.
+11. When the task is done, **call** `feedback action: "record"` to score which `smart_context` suggestions were useful / not needed / missing. This is required — it improves future context quality. If the task surfaced a durable invariant / decision / gotcha worth teaching the team, **also call** `store_memory` so the next agent inherits the lesson.

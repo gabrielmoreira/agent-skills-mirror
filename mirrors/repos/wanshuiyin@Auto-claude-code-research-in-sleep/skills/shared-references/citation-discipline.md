@@ -109,11 +109,10 @@ VERIFY). It catches LLM-hallucinated references at search time — before
 fabricated arXiv IDs / DOIs / titles propagate into idea-creator, novelty-check,
 landscape surveys, or downstream writing.
 
-The protocol is implemented by `tools/verify_papers.py` (helper resolution
-chain `.aris/tools/` → `tools/` → `$ARIS_REPO/tools/` per
-`wiki-helper-resolution.md`). The script is called by `/research-lit` (Step
-1.5, mandatory), and is referenced by `/idea-creator` and `/novelty-check` as
-a required filter on cited papers.
+The protocol is implemented by `verify_papers.py` (canonical name; helper
+path resolved per `integration-contract.md` §2, Policy D1). The script is
+called by `/research-lit` (Step 1.5, mandatory), and is referenced by
+`/idea-creator` and `/novelty-check` as a required filter on cited papers.
 
 **Three-layer fallback:**
 
@@ -174,10 +173,44 @@ files). Run pre-search verification on candidate lists; run the audit skills
 before submission.
 
 **Invocation contract** (callers — `/research-lit`, `/idea-creator`,
-`/novelty-check` — must follow):
+`/novelty-check` — must follow). Resolve `$VERIFY_PAPERS` via the
+canonical chain in `integration-contract.md` §2, then invoke under
+the Policy D1 fallback. The full copy-safe snippet:
 
 ```bash
-python3 <tools_dir>/verify_papers.py --input candidate_papers.json --output verified_papers.json
+# 1. Resolve $VERIFY_PAPERS via the canonical strict-safe chain (§2).
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" || exit 1
+if [ -z "${ARIS_REPO:-}" ] && [ -f .aris/installed-skills.txt ]; then
+    ARIS_REPO=$(awk -F'\t' '$1=="repo_root"{print $2; exit}' .aris/installed-skills.txt 2>/dev/null) || true
+fi
+VERIFY_PAPERS=".aris/tools/verify_papers.py"
+[ -f "$VERIFY_PAPERS" ] || VERIFY_PAPERS="tools/verify_papers.py"
+[ -f "$VERIFY_PAPERS" ] || { [ -n "${ARIS_REPO:-}" ] && VERIFY_PAPERS="$ARIS_REPO/tools/verify_papers.py"; }
+[ -f "$VERIFY_PAPERS" ] || VERIFY_PAPERS=""
+
+# 2. Invoke (Policy D1 fallback wraps invocation failure too).
+verify_ok=false
+if [ -n "$VERIFY_PAPERS" ]; then
+  if python3 "$VERIFY_PAPERS" --input candidate_papers.json --output verified_papers.json; then
+    verify_ok=true
+  fi
+fi
+if [ "$verify_ok" = "false" ]; then
+  command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 unavailable; BLOCKED." >&2; exit 1; }
+  echo "WARN: verify_papers.py unresolved or invocation failed; emitting [UNVERIFIED] fallback." >&2
+  python3 - <<'PY'
+import json
+cands = json.load(open('candidate_papers.json'))
+out = {
+  'verdict': 'WARN',
+  'reason_code': 'verify_papers_unavailable',
+  'summary': 'verify_papers.py helper unresolved or invocation failed; all candidates tagged [UNVERIFIED] for audit visibility.',
+  'papers': [dict(p, status='unverified', method='none') for p in cands],
+}
+with open('verified_papers.json', 'w') as f:
+  json.dump(out, f, indent=2)
+PY
+fi
 ```
 
 `candidate_papers.json` schema:

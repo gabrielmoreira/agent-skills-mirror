@@ -5,7 +5,7 @@
 [![OpenTofu](https://img.shields.io/badge/OpenTofu-1.6+-FFD814)](https://opentofu.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-Terraform and OpenTofu best-practices skill for AI coding agents (Claude Code, Cursor, Copilot, Gemini CLI, OpenCode, Codex, and others). Covers testing strategies, module patterns, CI/CD workflows, and production infrastructure code.
+A best-practices skill for Terraform and OpenTofu, for AI coding agents (Claude Code, Cursor, Copilot, Gemini CLI, OpenCode, Codex, and more). It helps the agent test code, structure modules, set up CI/CD, and write production infrastructure code.
 
 ## What this skill provides
 
@@ -43,11 +43,14 @@ Terraform and OpenTofu best-practices skill for AI coding agents (Claude Code, C
 
 ## Installation
 
-This plugin is distributed via Claude Code marketplace using `.claude-plugin/marketplace.json`.
+Installed through one Claude Code marketplace, `antonbabenko/agent-plugins`
+(terraform-skill is listed there as an external plugin). Do not also add
+`antonbabenko/terraform-skill` as a marketplace - both use the same marketplace
+name and will clash.
 
 ### Quick install (any agent)
 
-Universal installer via [skills.sh](https://skills.sh/) — works with any [Agent Skills](https://agentskills.io)-compatible tool:
+Works with any [Agent Skills](https://agentskills.io)-compatible tool, via [skills.sh](https://skills.sh/):
 
 ```bash
 npx skills add https://github.com/antonbabenko/terraform-skill
@@ -61,7 +64,7 @@ npx skills add https://github.com/antonbabenko/terraform-skill
 <summary>Claude Code</summary>
 
 ```bash
-/plugin marketplace add antonbabenko/terraform-skill
+/plugin marketplace add antonbabenko/agent-plugins
 /plugin install terraform-skill@antonbabenko
 ```
 
@@ -159,6 +162,33 @@ After installation, try:
 
 Claude picks up the skill automatically when working with Terraform or OpenTofu code.
 
+## Recommended companion: code-intelligence
+
+Install the `code-intelligence` plugin alongside this one:
+
+```bash
+/plugin marketplace add antonbabenko/agent-plugins
+/plugin install code-intelligence@antonbabenko
+```
+
+It holds the general, any-language rules for navigating code (when to use a
+language server, plain text search, or fuzzy search; how to anchor a lookup to
+a position; what to do when a tool fails; saying so when one tool is swapped
+for another). terraform-skill is the Terraform-specific version of those rules.
+Why install it:
+
+- **Fewer tokens** - the rules live in one place. The agent loads them when
+  needed instead of repeating them in every language skill.
+- **More accurate** - it finds definitions and references by meaning, not by
+  plain text matching, so renames and refactors do not miss spots or change
+  the wrong ones.
+- **Faster** - it picks the right tool the first time instead of retrying,
+  and says up front when it had to use a different one.
+
+terraform-skill works on its own without it. The name `code-intelligence` is
+not unique; if a `code-intelligence` skill is active, check it is the one from
+[antonbabenko/agent-plugins](https://github.com/antonbabenko/agent-plugins).
+
 ## Quick start examples
 
 **Create a module with tests:**
@@ -221,6 +251,35 @@ Side-by-side DO vs DON'T examples for variable naming, resource naming, module c
 - An AI agent with skill support: Claude Code, Cursor, Copilot, Gemini CLI, OpenCode, Codex, or any [Agent Skills](https://agentskills.io)-compatible host
 - Terraform 1.0+ or OpenTofu 1.6+
 - Optional: [Terraform MCP server](https://github.com/hashicorp/terraform-mcp-server) for registry integration
+
+## Code intelligence (optional)
+
+The skill works without a language server. To jump to a definition, find
+references, outline a file, or show hover docs, it can also use
+[terraform-ls](https://github.com/hashicorp/terraform-ls), HashiCorp's official
+Terraform language server.
+
+- **Optional.** Without terraform-ls the skill falls back to text search
+  (`rg`) plus reading files. Nothing breaks; you get text matches instead of
+  matches by meaning.
+- **Needs.** A local `terraform` (or `tofu`) binary on `PATH`, and
+  `terraform init` run in the workspace, before it can resolve names across
+  modules and providers.
+- **Install.** Get it from the
+  [terraform-ls releases](https://github.com/hashicorp/terraform-ls/releases)
+  page, or turn it on through your editor or agent host. Use whatever version
+  your host supports.
+
+How the skill uses it:
+
+- Use the language server to follow a name to where it is defined or used; use
+  `rg` plus reading files for exact text, known names, `.tfvars`, comments, and
+  non-HCL files.
+- Point the language server at a spot in the file first (find an occurrence,
+  then ask about that position).
+- terraform-ls cannot rename for you. To rename a variable, local, or output:
+  find every reference, then edit each by hand. To rename a resource or module
+  address: use a `moved` block, not a text replace.
 
 ## Contributing
 

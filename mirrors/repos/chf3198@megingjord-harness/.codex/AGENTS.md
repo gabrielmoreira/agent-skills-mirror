@@ -1,6 +1,8 @@
 # Megingjord — Global Governance Harness
 
+- Cross-team contract entry point: `governance/README.md` (4 invariants: Team&Model signing, baton order, ticket-first workflow, dedicated worktree per concurrent agent). This file is the Codex adapter.
 - Treat this file as the global Megingjord baseline for Codex runtime.
+- Apply the baton order: Manager → Collaborator → Admin → Consultant; one role active at a time per ticket.
 - Repo-local `AGENTS.md` files override this baseline when they conflict.
 - Respect Megingjord governance from `~/.codex/config.toml`, `~/.codex/hooks.json`, and `~/.codex/rules/`.
 - Treat repo `.codex/config.toml` and `.codex/runtime.config.toml` as source

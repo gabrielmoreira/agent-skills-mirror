@@ -20,7 +20,7 @@ Core rules are in SKILL.md. This covers patterns and edge cases.
 → Query 2: "error handling exception catch"
 ```
 
-**Don't split** when "and" is within single topic:
+**Keep one query** when "and" is within a single topic:
 ```
 "How do I set up and configure the database?"
 → Single: "database setup configuration"

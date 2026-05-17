@@ -1,13 +1,13 @@
 ---
 name: clawdcursor
-version: 0.9.2
+version: 0.9.3
 description: >
   FALLBACK ONLY — do not invoke unless you have already ruled out (1) a
   native API (Gmail API, GitHub API, Slack API …), (2) a CLI (git, gh,
   aws, npm, curl …), (3) direct file editing, and (4) existing browser
   automation (Playwright, Puppeteer). Only when all four are unavailable
   or have already failed should you use this skill. It gives AI agents
-  eyes, hands, and a keyboard on a real desktop — the last mile when the
+  a cursor and a keyboard on a real desktop — the last mile when the
   only remaining surface is a GUI. Concretely: use it when an earlier
   attempt via API, CLI, or direct file edit has failed and the user says
   things like "open X", "click Send", "type this in Word", "read what is
@@ -183,7 +183,7 @@ than the granular surface - so small models (Haiku, Kimi, Ollama) stay focused.
 
 ## When to reach for this skill
 
-Pick clawdcursor when the task requires eyes and hands on a real desktop. Concretely:
+Pick clawdcursor when the task requires a cursor and a keyboard on a real desktop. Concretely:
 
 - The user names an app, a window, or "my screen" - Outlook, Figma, Zoom, a PDF
   they have open, a legacy enterprise tool with no REST endpoint.

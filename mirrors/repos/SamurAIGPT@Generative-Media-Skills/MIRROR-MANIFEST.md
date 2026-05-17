@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SamurAIGPT/Generative-Media-Skills` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
+Mirror of `SamurAIGPT/Generative-Media-Skills` — 26 default patterns, 0 followed patterns, 58 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SamurAIGPT/Generative-Media-Skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 57 |
+| Files         | 58 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,51 +71,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`library/motion/character-story-video/SKILL.md`](library/motion/character-story-video/SKILL.md) |
 | 11 | ✓ | [`library/motion/cinema-director/SKILL.md`](library/motion/cinema-director/SKILL.md) |
 | 12 | ✓ | [`library/motion/drone-style-video/SKILL.md`](library/motion/drone-style-video/SKILL.md) |
-| 13 | ✓ | [`library/motion/giant-product-showcase/SKILL.md`](library/motion/giant-product-showcase/SKILL.md) |
-| 14 | ✓ | [`library/motion/jewelry-product-video/SKILL.md`](library/motion/jewelry-product-video/SKILL.md) |
-| 15 | ✓ | [`library/motion/music-video/SKILL.md`](library/motion/music-video/SKILL.md) |
-| 16 | ✓ | [`library/motion/one-shot-video/SKILL.md`](library/motion/one-shot-video/SKILL.md) |
-| 17 | ✓ | [`library/motion/product-ad-cinematic/SKILL.md`](library/motion/product-ad-cinematic/SKILL.md) |
-| 18 | ✓ | [`library/motion/product-showcase-video/SKILL.md`](library/motion/product-showcase-video/SKILL.md) |
-| 19 | ✓ | [`library/motion/product-video-ad-maker/SKILL.md`](library/motion/product-video-ad-maker/SKILL.md) |
-| 20 | ✓ | [`library/motion/seedance-2/SKILL.md`](library/motion/seedance-2/SKILL.md) |
-| 21 | ✓ | [`library/motion/storyboard-to-cooking-video/SKILL.md`](library/motion/storyboard-to-cooking-video/SKILL.md) |
-| 22 | ✓ | [`library/motion/talking-baby-video/SKILL.md`](library/motion/talking-baby-video/SKILL.md) |
-| 23 | ✓ | [`library/motion/ugc-lifestyle-try-on/SKILL.md`](library/motion/ugc-lifestyle-try-on/SKILL.md) |
-| 24 | ✓ | [`library/social/instagram-post/SKILL.md`](library/social/instagram-post/SKILL.md) |
-| 25 | ✓ | [`library/social/product-campaign/SKILL.md`](library/social/product-campaign/SKILL.md) |
-| 26 | ✓ | [`library/social/rednote-cover/SKILL.md`](library/social/rednote-cover/SKILL.md) |
-| 27 | ✓ | [`library/social/social-media-video/SKILL.md`](library/social/social-media-video/SKILL.md) |
-| 28 | ✓ | [`library/social/social-pack/SKILL.md`](library/social/social-pack/SKILL.md) |
-| 29 | ✓ | [`library/social/ugc-ads-workflow/SKILL.md`](library/social/ugc-ads-workflow/SKILL.md) |
-| 30 | ✓ | [`library/social/youtube-shorts/SKILL.md`](library/social/youtube-shorts/SKILL.md) |
-| 31 | ✓ | [`library/visual/action-figure-generator/SKILL.md`](library/visual/action-figure-generator/SKILL.md) |
-| 32 | ✓ | [`library/visual/ad-creative/SKILL.md`](library/visual/ad-creative/SKILL.md) |
-| 33 | ✓ | [`library/visual/amazon-product-listing/SKILL.md`](library/visual/amazon-product-listing/SKILL.md) |
-| 34 | ✓ | [`library/visual/blog-header/SKILL.md`](library/visual/blog-header/SKILL.md) |
-| 35 | ✓ | [`library/visual/brand-kit/SKILL.md`](library/visual/brand-kit/SKILL.md) |
-| 36 | ✓ | [`library/visual/brochures/SKILL.md`](library/visual/brochures/SKILL.md) |
-| 37 | ✓ | [`library/visual/chibi-collage-effect/SKILL.md`](library/visual/chibi-collage-effect/SKILL.md) |
-| 38 | ✓ | [`library/visual/couple-grid-creator/SKILL.md`](library/visual/couple-grid-creator/SKILL.md) |
-| 39 | ✓ | [`library/visual/design-guide/SKILL.md`](library/visual/design-guide/SKILL.md) |
-| 40 | ✓ | [`library/visual/fashion-try-on/SKILL.md`](library/visual/fashion-try-on/SKILL.md) |
-| 41 | ✓ | [`library/visual/floor-plan-rendering/SKILL.md`](library/visual/floor-plan-rendering/SKILL.md) |
-| 42 | ✓ | [`library/visual/interior-design-visualizer/SKILL.md`](library/visual/interior-design-visualizer/SKILL.md) |
-| 43 | ✓ | [`library/visual/interior-design/SKILL.md`](library/visual/interior-design/SKILL.md) |
-| 44 | ✓ | [`library/visual/keyboard-art-maker/SKILL.md`](library/visual/keyboard-art-maker/SKILL.md) |
-| 45 | ✓ | [`library/visual/logo-branding/SKILL.md`](library/visual/logo-branding/SKILL.md) |
-| 46 | ✓ | [`library/visual/logo-creator/SKILL.md`](library/visual/logo-creator/SKILL.md) |
-| 47 | ✓ | [`library/visual/logo-generator/SKILL.md`](library/visual/logo-generator/SKILL.md) |
-| 48 | ✓ | [`library/visual/multi-angle-reshoot/SKILL.md`](library/visual/multi-angle-reshoot/SKILL.md) |
-| 49 | ✓ | [`library/visual/multi-angle-shots/SKILL.md`](library/visual/multi-angle-shots/SKILL.md) |
-| 50 | ✓ | [`library/visual/nano-banana/SKILL.md`](library/visual/nano-banana/SKILL.md) |
-| 51 | ✓ | [`library/visual/photo-pack-generator/SKILL.md`](library/visual/photo-pack-generator/SKILL.md) |
-| 52 | ✓ | [`library/visual/selfie-with-celebrities/SKILL.md`](library/visual/selfie-with-celebrities/SKILL.md) |
-| 53 | ✓ | [`library/visual/storyboard/SKILL.md`](library/visual/storyboard/SKILL.md) |
-| 54 | ✓ | [`library/visual/ui-design/SKILL.md`](library/visual/ui-design/SKILL.md) |
-| 55 | ✓ | [`library/visual/url-to-design/SKILL.md`](library/visual/url-to-design/SKILL.md) |
-| 56 | ✓ | [`library/visual/youtube-thumbnail/SKILL.md`](library/visual/youtube-thumbnail/SKILL.md) |
-| 57 | ✓ | [`library/workflow/SKILL.md`](library/workflow/SKILL.md) |
+| 13 | ✓ | [`library/motion/freeze-effect-video/SKILL.md`](library/motion/freeze-effect-video/SKILL.md) |
+| 14 | ✓ | [`library/motion/giant-product-showcase/SKILL.md`](library/motion/giant-product-showcase/SKILL.md) |
+| 15 | ✓ | [`library/motion/jewelry-product-video/SKILL.md`](library/motion/jewelry-product-video/SKILL.md) |
+| 16 | ✓ | [`library/motion/music-video/SKILL.md`](library/motion/music-video/SKILL.md) |
+| 17 | ✓ | [`library/motion/one-shot-video/SKILL.md`](library/motion/one-shot-video/SKILL.md) |
+| 18 | ✓ | [`library/motion/product-ad-cinematic/SKILL.md`](library/motion/product-ad-cinematic/SKILL.md) |
+| 19 | ✓ | [`library/motion/product-showcase-video/SKILL.md`](library/motion/product-showcase-video/SKILL.md) |
+| 20 | ✓ | [`library/motion/product-video-ad-maker/SKILL.md`](library/motion/product-video-ad-maker/SKILL.md) |
+| 21 | ✓ | [`library/motion/seedance-2/SKILL.md`](library/motion/seedance-2/SKILL.md) |
+| 22 | ✓ | [`library/motion/storyboard-to-cooking-video/SKILL.md`](library/motion/storyboard-to-cooking-video/SKILL.md) |
+| 23 | ✓ | [`library/motion/talking-baby-video/SKILL.md`](library/motion/talking-baby-video/SKILL.md) |
+| 24 | ✓ | [`library/motion/ugc-lifestyle-try-on/SKILL.md`](library/motion/ugc-lifestyle-try-on/SKILL.md) |
+| 25 | ✓ | [`library/social/instagram-post/SKILL.md`](library/social/instagram-post/SKILL.md) |
+| 26 | ✓ | [`library/social/product-campaign/SKILL.md`](library/social/product-campaign/SKILL.md) |
+| 27 | ✓ | [`library/social/rednote-cover/SKILL.md`](library/social/rednote-cover/SKILL.md) |
+| 28 | ✓ | [`library/social/social-media-video/SKILL.md`](library/social/social-media-video/SKILL.md) |
+| 29 | ✓ | [`library/social/social-pack/SKILL.md`](library/social/social-pack/SKILL.md) |
+| 30 | ✓ | [`library/social/ugc-ads-workflow/SKILL.md`](library/social/ugc-ads-workflow/SKILL.md) |
+| 31 | ✓ | [`library/social/youtube-shorts/SKILL.md`](library/social/youtube-shorts/SKILL.md) |
+| 32 | ✓ | [`library/visual/action-figure-generator/SKILL.md`](library/visual/action-figure-generator/SKILL.md) |
+| 33 | ✓ | [`library/visual/ad-creative/SKILL.md`](library/visual/ad-creative/SKILL.md) |
+| 34 | ✓ | [`library/visual/amazon-product-listing/SKILL.md`](library/visual/amazon-product-listing/SKILL.md) |
+| 35 | ✓ | [`library/visual/blog-header/SKILL.md`](library/visual/blog-header/SKILL.md) |
+| 36 | ✓ | [`library/visual/brand-kit/SKILL.md`](library/visual/brand-kit/SKILL.md) |
+| 37 | ✓ | [`library/visual/brochures/SKILL.md`](library/visual/brochures/SKILL.md) |
+| 38 | ✓ | [`library/visual/chibi-collage-effect/SKILL.md`](library/visual/chibi-collage-effect/SKILL.md) |
+| 39 | ✓ | [`library/visual/couple-grid-creator/SKILL.md`](library/visual/couple-grid-creator/SKILL.md) |
+| 40 | ✓ | [`library/visual/design-guide/SKILL.md`](library/visual/design-guide/SKILL.md) |
+| 41 | ✓ | [`library/visual/fashion-try-on/SKILL.md`](library/visual/fashion-try-on/SKILL.md) |
+| 42 | ✓ | [`library/visual/floor-plan-rendering/SKILL.md`](library/visual/floor-plan-rendering/SKILL.md) |
+| 43 | ✓ | [`library/visual/interior-design-visualizer/SKILL.md`](library/visual/interior-design-visualizer/SKILL.md) |
+| 44 | ✓ | [`library/visual/interior-design/SKILL.md`](library/visual/interior-design/SKILL.md) |
+| 45 | ✓ | [`library/visual/keyboard-art-maker/SKILL.md`](library/visual/keyboard-art-maker/SKILL.md) |
+| 46 | ✓ | [`library/visual/logo-branding/SKILL.md`](library/visual/logo-branding/SKILL.md) |
+| 47 | ✓ | [`library/visual/logo-creator/SKILL.md`](library/visual/logo-creator/SKILL.md) |
+| 48 | ✓ | [`library/visual/logo-generator/SKILL.md`](library/visual/logo-generator/SKILL.md) |
+| 49 | ✓ | [`library/visual/multi-angle-reshoot/SKILL.md`](library/visual/multi-angle-reshoot/SKILL.md) |
+| 50 | ✓ | [`library/visual/multi-angle-shots/SKILL.md`](library/visual/multi-angle-shots/SKILL.md) |
+| 51 | ✓ | [`library/visual/nano-banana/SKILL.md`](library/visual/nano-banana/SKILL.md) |
+| 52 | ✓ | [`library/visual/photo-pack-generator/SKILL.md`](library/visual/photo-pack-generator/SKILL.md) |
+| 53 | ✓ | [`library/visual/selfie-with-celebrities/SKILL.md`](library/visual/selfie-with-celebrities/SKILL.md) |
+| 54 | ✓ | [`library/visual/storyboard/SKILL.md`](library/visual/storyboard/SKILL.md) |
+| 55 | ✓ | [`library/visual/ui-design/SKILL.md`](library/visual/ui-design/SKILL.md) |
+| 56 | ✓ | [`library/visual/url-to-design/SKILL.md`](library/visual/url-to-design/SKILL.md) |
+| 57 | ✓ | [`library/visual/youtube-thumbnail/SKILL.md`](library/visual/youtube-thumbnail/SKILL.md) |
+| 58 | ✓ | [`library/workflow/SKILL.md`](library/workflow/SKILL.md) |
 
 ---
 

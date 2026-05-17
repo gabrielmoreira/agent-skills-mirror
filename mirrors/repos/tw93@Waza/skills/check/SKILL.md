@@ -141,6 +141,10 @@ Drift signals (examples, not exhaustive -- any one is enough to label drift):
 - Code unrelated to the goal was deleted or commented out
 - A new abstraction or helper was introduced that is not required by the goal
 
+## Pattern-Fix Completeness
+
+When the diff fixes one instance of a class-of-bug (a missing validation, a wrong selector, an off-by-one, a missing lock), the same shape often lives elsewhere. Extract the pattern signature, `grep -rn` it across the repo (exclude generated dirs), and confirm sibling instances were also handled. List any unswept sibling: flag it as a hard stop when it carries the same risk, advisory when lower-risk. For a deeper sweep playbook, see hunt's Scope Blast Mode.
+
 ## Hard Stops (fix before merging)
 
 Examples, not exhaustive -- flag any diff that could cause irreversible harm if merged unreviewed.

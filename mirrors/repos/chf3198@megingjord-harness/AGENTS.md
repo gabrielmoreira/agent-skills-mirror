@@ -1,5 +1,7 @@
 # AGENTS.md — Megingjord baseline
 
+> **Cross-team contract**: see `governance/README.md` for the canonical entry point covering Team&Model signing, baton order, ticket-first workflow, and dedicated worktree (the 4 invariants). This file is the generic-AGENTS.md adapter.
+
 ## Agent startup protocol (required)
 
 1. Load `.github/copilot-instructions.md` before planning edits.

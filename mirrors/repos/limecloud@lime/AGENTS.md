@@ -18,6 +18,7 @@
 3. **结果汇报优先** - 收尾说明做了什么、为什么这样做、验证了什么、还剩什么缺口；避免过程性礼貌汇报
 4. **任务完成标准优先** - 以可编译、类型正确、测试通过、功能真实可用作为完成依据；实现细节服从项目既有模式和当前主线目标
 5. **不主动扩大承诺** - 不在完成后追问“要不要继续做 X/Y/Z”；如存在自然下一刀，只简短列出建议，等待用户明确要求
+6. **并行协作先切写集** - 用户说明有其他 Agent / 进程同跑时，先只读盘点 `git status --short` 和目标 diff，声明本轮认领的窄写集；只修改认领文件，发现目标文件已被别人改动或出现未确认的未跟踪相邻产物时，立即切到只读审阅 / 验证，不夹写、不覆盖
 
 ## 基础约束
 
@@ -78,6 +79,7 @@
 - **状态 / 历史 / 遥测主链**：`docs/aiprompts/state-history-telemetry.md`
 - **任务分层 / 模型经济调度路线图**：`docs/roadmap/task/README.md`
 - **治理与收口**：`docs/aiprompts/governance.md`
+- **并行 Agent 协作**：`docs/aiprompts/parallel-agent-collaboration.md`
 - **Harness Engine 治理**：`docs/aiprompts/harness-engine-governance.md`
 - **Playwright / GUI 续测**：`docs/aiprompts/playwright-e2e.md`
 - **计划与进度**：`docs/exec-plans/README.md`

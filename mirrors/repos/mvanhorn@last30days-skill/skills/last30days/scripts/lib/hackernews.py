@@ -88,17 +88,26 @@ def search_hackernews(
 
     # Use extracted core subject instead of raw topic for cleaner Algolia matching
     core = extract_core_subject(topic)
-    _log(f"Searching for '{core}' (raw: '{topic}', since {from_date}, count={count})")
+    # Hyphens and commas tokenize awkwardly in Algolia; flatten them so themed
+    # queries like "ts-bun-node" or "claude, personal agents" become plain words.
+    core_flat = _flatten_query_for_algolia(core)
+    _log(f"Searching for '{core_flat}' (raw: '{topic}', since {from_date}, count={count})")
 
     # Use relevance-sorted search with minimum engagement filter.
     # NOTE: restrictSearchableAttributes=title omitted intentionally — it would
     # miss Ask HN/Show HN threads where the topic appears in the body.
     params = {
-        "query": core,
+        "query": core_flat,
         "tags": "story",
         "numericFilters": f"created_at_i>{from_ts},created_at_i<{to_ts},points>2",
         "hitsPerPage": str(count),
     }
+    # Algolia defaults to AND across query tokens, so a 4-5 word theme query
+    # matches no stories. Mark all-but-the-first token as optional so Algolia
+    # ranks by how many tokens match instead of requiring every one.
+    tokens = core_flat.split()
+    if len(tokens) > 1:
+        params["optionalWords"] = " ".join(tokens[1:])
 
     from urllib.parse import urlencode
     url = f"{ALGOLIA_SEARCH_URL}?{urlencode(params)}"
@@ -117,28 +126,56 @@ def search_hackernews(
     return response
 
 
-def _title_matches_query(title: str, query: str, author: str = "") -> bool:
-    """Check if the query term appears in the title content, not just an HN prefix or author.
+_WORD_BOUNDARY_RE_CACHE: Dict[str, "re.Pattern[str]"] = {}
 
-    Returns True if the query (or any multi-word token) appears in the title
-    after stripping "Tell HN:", "Show HN:", "Ask HN:", "Launch HN:" prefixes
-    and ignoring the author name.  Returns True when query is empty (no filter).
+
+def _flatten_query_for_algolia(text: str) -> str:
+    """Normalise query for Algolia + post-filter comparison.
+
+    Multi-keyword theme queries frequently contain commas (delimiters) or
+    hyphens (compound terms like ``ts-bun-node``); both tokenize awkwardly.
+    Flatten them to spaces and collapse runs of whitespace so the search
+    parameter and the post-filter operate on the same shape.
+    """
+    return " ".join(text.replace(",", " ").replace("-", " ").split())
+
+
+def _title_matches_query(title: str, query: str, author: str = "") -> bool:
+    """Check if any query token appears as a whole word in the title.
+
+    Returns True when the query is empty (no filter), or when at least one
+    query token matches as a whole word in the title after stripping
+    "Tell HN:", "Show HN:", "Ask HN:", "Launch HN:" prefixes.
+
+    We previously required *every* token to appear (all-words), which killed
+    every Algolia hit on multi-keyword themes like "claude, personal agents,
+    agentic infra" because real HN titles never contain all five tokens
+    verbatim. Relaxing to any-word matches Algolia's `optionalWords` behaviour
+    in `search_hackernews`. Token-overlap relevance scoring at parse time
+    demotes hits where only one weak token matched, so the loosened gate
+    won't surface noise to the top of the ranking.
+
+    Word-boundary matching (rather than naive substring) prevents short
+    tokens like ``ai`` or ``ts`` from matching unrelated words like
+    ``email`` or ``artists``.
     """
     if not query:
         return True
     stripped = _HN_PREFIXES.sub("", title).strip()
-    # Also check that the match isn't solely in the author's username
     check_text = stripped.lower()
-    query_lower = query.lower()
-    # Check each word of the query independently; all must appear somewhere
-    # in the stripped title (not just the prefix).
-    query_words = query_lower.split()
+    # Normalise the query the same way search_hackernews does so post-filter
+    # tokens line up with what Algolia actually saw.
+    query_words = [w for w in _flatten_query_for_algolia(query.lower()).split() if w]
+    if not query_words:
+        return True
     for word in query_words:
-        if word in check_text:
-            continue
-        # Word not found in stripped title — reject
-        return False
-    return True
+        pattern = _WORD_BOUNDARY_RE_CACHE.get(word)
+        if pattern is None:
+            pattern = re.compile(rf"\b{re.escape(word)}\b")
+            _WORD_BOUNDARY_RE_CACHE[word] = pattern
+        if pattern.search(check_text):
+            return True
+    return False
 
 
 def parse_hackernews_response(response: Dict[str, Any], query: str = "") -> List[Dict[str, Any]]:

@@ -23,7 +23,8 @@ Skills under `seo/`, `google-ads/`, `meta-ads/`, `gemini/`, and `toprank-upgrade
 | Full-site SEO audit, traffic drop, GSC analysis, Core Web Vitals | `seo-analysis` | `seo/seo-analysis/SKILL.md` |
 | Single-page deep audit (URL-specific) | `seo-page` | `seo/seo-page/SKILL.md` |
 | Write or improve content (blog, landing, service page) | `content-writer` | `seo/content-writer/SKILL.md` |
-| Keyword discovery, topic clusters, content calendar | `keyword-research` | `seo/keyword-research/SKILL.md` |
+| Plan content from GSC data, build a dated editorial calendar | `content-planner` | `seo/content-planner/SKILL.md` |
+| Keyword discovery, topic clusters (seed → keyword universe) | `keyword-research` | `seo/keyword-research/SKILL.md` |
 | Title tags, meta descriptions, Open Graph, CTR | `meta-tags-optimizer` | `seo/meta-tags-optimizer/SKILL.md` |
 | JSON-LD / structured data (FAQ, Product, HowTo, etc.) | `schema-markup-generator` | `seo/schema-markup-generator/SKILL.md` |
 | Broken-link / 404 / site-health crawl | `broken-link-checker` | `seo/broken-link-checker/SKILL.md` |

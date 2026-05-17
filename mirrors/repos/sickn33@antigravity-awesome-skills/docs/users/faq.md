@@ -70,8 +70,15 @@ This is **not** how this repository is designed to be used, and it will almost c
 
 Instead, hosts should:
 
-- use `data/skills_index.json` as a **lightweight manifest** for discovery; and
+- use `skills_index.json` as the **canonical array-format manifest** for discovery;
+- use `data/skills_index.json` as the compatibility mirror in `data/` when needed;
+- validate each discovered `path` against `SKILLS_ROOT` before reading; and
 - load individual `SKILL.md` files **only when a skill is invoked** (e.g. via `@skill-id` in the conversation).
+
+Manifest contract references:
+
+- [`schemas/skills-index.v1.schema.json`](../../schemas/skills-index.v1.schema.json)
+- [`discovery-manifest.md`](discovery-manifest.md)
 
 For a concrete example (including pseudo‑code) see:
 

@@ -5,7 +5,7 @@
 <h1 align="center">Clawd Cursor</h1>
 
 <p align="center">
-  <strong>Eyes, hands, and a keyboard for any AI agent on a real desktop.</strong><br>
+  <strong>A cursor and a keyboard for any AI agent on a real desktop.</strong><br>
   Any model. Any app. One MCP entry. Local-only.
 </p>
 
@@ -40,8 +40,6 @@ Clawd Cursor is a **skill**, not an app. Install it once. Any tool-calling agent
 > **No task is impossible.** GUI plus a mouse plus a keyboard equals everything you need. There is no "I can't do that in this app" &mdash; only the right sequence of reads, clicks, keys, and waits. Clawd Cursor gives you all of them.
 
 It's **model-agnostic** (Claude, GPT, Gemini, Llama, Kimi, Ollama, &hellip;), **app-agnostic** (drives any window via accessibility, OCR, or vision fallback), and **OS-agnostic** (one `PlatformAdapter` covers Windows, macOS, Linux X11, and Linux Wayland).
-
-> **Use as a fallback, not first choice.** Native API exists? Use it. CLI exists? Use it. Direct file edit possible? Do that. A Playwright script already wired up? Use that. Clawd Cursor is for the **last mile** &mdash; the click, the legacy app, the GUI with no public surface.
 
 ---
 
@@ -110,6 +108,21 @@ That's it. Ask your agent to *"open Outlook and reply to the latest email from S
 - **Cheapest-tier-first pipeline.** Accessibility tree (free) before OCR (cheap) before screenshot (medium) before vision (expensive). The Reflector feeds verifier signals back to the planner so it doesn't keep paying for vision when text would work.
 - **Local-only by default.** Server binds to `127.0.0.1`. Screenshots stay in RAM unless you point a cloud model at them. No telemetry.
 - **One protocol, two transports.** MCP over stdio for editor hosts; MCP over HTTP for daemons. Same tool catalog, same JSON-RPC envelope.
+
+### When NOT to use it
+
+Clawd Cursor is GUI control. It's slower than an API, less reliable than a script, and burns more tokens than a direct file edit. If a better path exists, take it:
+
+| Better option | When |
+|---|---|
+| Native API (Gmail API, GitHub API, Stripe API, &hellip;) | The service has one. Use it. |
+| CLI (`git`, `gh`, `aws`, `npm`, `curl`, `sqlite3`) | The work fits a shell tool. Use it. |
+| Direct file edit | The data lives in a file you can write. Edit it. |
+| Browser automation already wired up (Playwright, Puppeteer) for this exact site | Faster, more deterministic. Use it. |
+
+**Reach for Clawd Cursor when none of those apply** &mdash; the legacy ERP with no REST, the Electron app whose dialog can't be scripted, the Excel macro behind a Citrix session. The pipeline pays the cheap costs first; if structured paths work it never escalates to vision. But the design point is the **last mile**, not the first call.
+
+(SKILL.md enforces this as a hard 4-gate rule for AI agents calling the tool surface. Humans get the softer table above.)
 
 ---
 

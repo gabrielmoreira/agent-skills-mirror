@@ -4,8 +4,8 @@ description: "Rewrites scene descriptions using professional cinematography lang
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, seedance-pro, content-filter, prompt, director, flagged]
-  version: 1.2.0
-  updated: 2026-05-11
+  version: 1.4.0
+  updated: 2026-05-16
   parent: higgsfield
 ---
 
@@ -214,6 +214,10 @@ distinguishing marks), wardrobe (every garment and accessory), environment
 emotional carryover (the state the character was in at the last frame — tense,
 exhausted, alert — should still read on their body in the opening of the
 continuation).
+
+> For the eight named substrate channels that "emotional carryover"
+> decomposes into, see `../../vocab.md` § Emotion as Visible Behavior —
+> Channels.
 
 ### Example
 
@@ -461,6 +465,311 @@ choice, that's a signal to step back.
 
 ---
 
+## Two-Layer Prompt Authoring
+
+A skeleton prompt is not meant to be copied blindly into Seedance and
+expected to work on its own. A skeleton is a structure — the logic of
+the prompt, not the finished prompt. That matters most for the
+Bridging, Continuation, and Repair working modes (see § Working Modes
+above), because those three tasks depend heavily on context: what
+happened before, what must follow, and what exactly the shot is
+supposed to solve.
+
+Each practical skeleton in this workflow has two layers, each with a
+different audience and a different job.
+
+### The Two-Layer Distinction
+
+- **Layer 1 — task definition / briefing block.** Written for yourself
+  or pasted into a ChatGPT-style assistant before the production
+  prompt is drafted. Explains the actual problem in plain prose: what
+  scene already exists, what the next scene is, what is missing
+  between them, what must remain the same, and what the bridge or
+  repair must achieve. Layer 1 is the planning step — it forces the
+  prompt author to define the problem cleanly before writing the
+  model-facing prompt.
+
+- **Layer 2 — production prompt for Seedance.** Shorter, cleaner, more
+  execution-oriented. Translates the Layer 1 decision into a
+  model-friendly structure: reference roles declared up front,
+  preservation clauses, the one action, anti-repeat language, camera
+  cue, audio cue. Layer 2 is what gets pasted into the generation
+  field.
+
+The distinction makes the workflow practical. Without Layer 1, bridges
+fail because the prompt author hasn't decided what the bridge is
+supposed to solve; continuations restage instead of continuing because
+the prompt author hasn't named what to preserve; repairs over-shoot
+because the prompt author hasn't isolated what to change. The two
+layers exist to prevent those three failure modes by separating the
+planning step from the execution step.
+
+### Bridge Skeleton
+
+The Bridging working mode (see § Working Modes / Bridging above) is
+the problem-solving mode — the bridge is not generic cinematic filler.
+Use this skeleton when two scene blocks both work but the connection
+between them does not.
+
+**Layer 1 — bridge briefing block.** Named fields:
+
+```
+Scene A ends with:
+[final visible state of upstream scene]
+
+Scene B begins with:
+[opening visible state of downstream scene]
+
+The missing thing between them is:
+[reaction / movement into a new space / prop action /
+emotional beat / spatial clarification]
+
+The bridge must preserve:
+[same character, same outfit, same location logic,
+same emotional residue, same prop continuity]
+
+The bridge must not do:
+[no new subplot, no repeat of previous action,
+no extra threat, no random spectacle]
+
+The purpose of the bridge is:
+[explain the transition / make the cut readable /
+carry emotion / reposition the viewer in space]
+```
+
+**Layer 2 — bridge production prompt skeleton.** Reference roles
+declared up front, then the bridging clauses:
+
+```
+[Reference roles]
+@Image1 = character identity reference
+@Image2 = continuity start or location anchor (omit if neither is needed)
+
+This is a bridging shot between the previous beat and the next scene.
+Its purpose is continuity, not spectacle.
+
+Keep the same character, same outfit, same space logic, same emotional
+carryover, and same prop continuity.
+Show one readable action that explains the transition.
+Do not repeat the previous action beat.
+Do not introduce a new threat or subplot.
+
+Scene: [where the character is in this transition moment]
+Bridge action: [one small but meaningful movement or reaction]
+Camera: [restrained and readable]
+Audio: [live sound only if needed]
+```
+
+A good bridge often looks "small" compared to an action scene but
+does major structural work. If the Layer 2 prompt produces something
+that feels too eventful, the Layer 1 briefing's "must not do" clause
+was probably too thin — revise the briefing, then re-derive the
+production prompt.
+
+### Continuation Skeleton
+
+The Continuation working mode (see § Working Modes / Continuation
+above) solves a temporal problem, not a connection problem: the next
+clip must begin directly after the previous clip, not as a new
+restaging. This skeleton operationalizes the five rules in the
+Continuation Prompt Formula section above — specifically rule #5,
+"No action repeat."
+
+**Layer 1 — continuation briefing block.** Named fields:
+
+```
+The previous clip ends on:
+[end pose / camera direction / emotional state /
+visible props]
+
+The next clip must begin immediately after that.
+
+Keep:
+[identity / body direction / location / emotional
+carryover / props]
+
+Change:
+[the new beat that begins now]
+
+Do not repeat:
+[the previous action phase]
+```
+
+**Layer 2 — continuation production prompt skeleton.** Three reference
+roles is the typical configuration:
+
+```
+[Reference roles]
+@Image1 = exact last-frame continuity anchor
+@Image2 = character identity reference
+@Image3 = optional environment or prop continuity reference
+
+Use @Image1 as the exact continuity start anchor.
+Keep the same character, same lighting logic, same spatial continuity,
+same emotional carryover.
+Start immediately after the final frame.
+Do not repeat the previous beat.
+
+Scene: [what remains unchanged]
+New action: [what starts now]
+Camera: [how the viewer reads the continuation]
+Audio: [live sound only if needed]
+```
+
+**If the result keeps replaying the previous beat,** the correction is
+not "make the prompt longer." The correction is to strengthen the
+temporal and anti-repeat language. Useful phrase variants:
+
+- start immediately after the final frame
+- do not repeat the previous fight
+- do not restage the earlier beat
+- continue forward into the new action
+- preserve the same fatigue state and emotional carryover
+
+These are interchangeable — pick the variant whose verbs match the
+prior clip's content. A continuation following a fight scene wants
+"do not repeat the previous fight"; a continuation following a quiet
+moment wants "do not restage the earlier beat."
+
+### Repair Skeleton
+
+The Repair working mode (see § Working Modes / Repair above) does not
+behave like "generate the scene again, but better." That breaks
+continuity and changes too much. The real question is always: what
+exactly am I trying to preserve, and what exactly am I trying to
+change? A usable repair prompt has two parts that map directly onto
+that question — a preservation block and a modification block.
+
+**Layer 1 — repair briefing block.** Named fields:
+
+```
+Current clip / image state:
+[what already works and must remain stable]
+
+The exact problem:
+[what is wrong]
+
+Preserve:
+[identity / framing / pacing / space / continuity /
+lighting / emotion / prop logic]
+
+Change only:
+[one or two specific elements]
+
+Do not damage:
+[what tends to drift if the edit is too broad]
+```
+
+**Layer 2 — repair production prompt skeleton.** Tight, surgical, no
+descriptive ornament:
+
+```
+Keep the original framing, pacing, environment, and character
+identity.
+Preserve the same outfit, same lighting logic, same scene layout,
+same emotional state.
+Change only [the exact element that needs fixing].
+Do not alter the rest of the shot.
+```
+
+The "do not damage" field in Layer 1 is the field most often skipped
+and most often the source of repair failures. Name the properties
+that typically drift when an edit goes too broad — those are the
+properties the model needs explicit protection on, even if they
+aren't the properties the edit is targeting.
+
+---
+
+## Keyframe Workflow
+
+The most useful official direction on fine-grained Seedance editing
+comes from BytePlus VideoPilot — Seedance's official editing-style
+interface from ByteDance / BytePlus. VideoPilot frames fine-grained
+video editing not as one vague "fix this clip" prompt but as a
+**reference + keyframe + local modification** workflow. Three named
+ingredients, each with its own job.
+
+This section names what VideoPilot's interface exposes (Capability
+Surface), how to translate those primitives into prompt-only Seedance
+work when the dedicated UI isn't in play (Translating to Seedance
+Prompts), and the underlying mindset that makes the whole approach
+work (The Editor-not-Regenerator Mindset).
+
+> **Sourcing:** The keyframe-editing capability surface below is from
+> the BytePlus VideoPilot fine-tuning documentation
+> (`docs.byteplus.com`) and ByteDance's official Seedance launch
+> materials (`seed.bytedance.com`). Same official source set as the
+> Rule of 12 citation at
+> `../higgsfield-models/MODELS-DEEP-REFERENCE.md:274`.
+
+### Capability Surface
+
+VideoPilot exposes five named editing primitives. These are what the
+official UI lets you do; the prompt-side translation in the next
+section is the closest equivalent when working through prompts alone.
+
+- **Continuous keyframe segmentation.** VideoPilot parses a reference
+  video into continuous keyframe segments. The segmentation is
+  done by the system, not assembled by hand. The unit of edit is the
+  keyframe, not the whole clip.
+
+- **Fine-grained keyframe edits.** Edits target a single keyframe at
+  a time. Surgical at the temporal axis — change one frame's content
+  without rewriting any other frame's instruction.
+
+- **Custom keyframes.** The editor can add keyframes the system
+  didn't auto-detect. Useful when an important beat falls between
+  the auto-segmented keyframes.
+
+- **Partial redraw of selected regions.** Spatial-local edits within
+  a keyframe — mask the region, redraw only what is inside the mask.
+  Surgical at the spatial axis (vs. the temporal-axis surgery of
+  fine-grained keyframe edits).
+
+- **Keyframe description rewrite.** Rewriting the description of one
+  keyframe causes the system to regenerate that frame AND its
+  transition logic to neighboring keyframes accordingly. This is the
+  closest official primitive to Seedance's Edit Shot prompt mode (see
+  § Seedance 2.0 Prompt Modes / Edit Shot above).
+
+### Translating to Seedance Prompts
+
+When working through prompts and references rather than the dedicated
+VideoPilot keyframe UI, the closest practical equivalent is six
+operational rules. None of them guarantee perfect surgical editing
+in every interface — they translate the official editing workflow
+into prompt-based use.
+
+1. **Use a screenshot or final frame as your stability anchor.**
+2. **Keep the identity reference separate from the continuity anchor.**
+3. **State exactly what must remain unchanged.**
+4. **State exactly what is changing.**
+5. **Forbid repetition of the previous beat if this is a continuation.**
+6. **If the edit is local, describe only the local change and
+   explicitly protect the rest.**
+
+These map onto existing repo surfaces: rules 3, 4, and 6 onto the
+Repair Skeleton's preserve / change blocks (see § Two-Layer Prompt
+Authoring / Repair Skeleton above); rules 1 and 2 onto the Reference
+Roles taxonomy (see § Reference Roles / Last-Frame and § Reference
+Roles / Character above); rule 5 onto the Continuation Skeleton's
+anti-repeat phrase library (see § Two-Layer Prompt Authoring /
+Continuation Skeleton above).
+
+### The Editor-not-Regenerator Mindset
+
+The conceptual root of the whole keyframe workflow surface: if the
+goal is surgical edits, think like an editor, not a full
+regenerator. Freeze the parts that must remain stable. Isolate the
+parts that must change. Then make the instruction local and explicit.
+
+This is also the conceptual root of the Repair Skeleton: the
+preserve / change split is the prompt-side enactment of the
+editor-not-regenerator stance, the same discipline VideoPilot's UI
+primitives express at the interface level.
+
+---
+
 ## Pre-flight Linter
 
 Before the user generates, run the prompt through the preflight linter:
@@ -557,6 +866,10 @@ wrong. Do this pass on every Seedance prompt:
    cinematic masterpiece — these signal marketing copy, not a shot description,
    and correlate with flags.
 
+> For the eight named substrate channels that "describe physics, not
+> emotion" decomposes into, see `../../vocab.md` § Emotion as Visible
+> Behavior — Channels.
+
 ---
 
 ## Output Format for Seedance Prompts
@@ -580,6 +893,47 @@ shot-by-shot if multi-cut. This is the main block.]
 
 For the full bilingual EN+ZH director output format (used in Seedance's
 web UI), see the extended reference at `../../docs/Seedance 2 Skill.md`.
+
+---
+
+## Post-Clip Decisions
+
+When a generated clip raises questions around itself, testing
+becomes narrative work — not "is it good?" but "what does it do?"
+and "what comes after?" The diagnostic below asks four scene-function
+questions; the decision tree maps the answers to next-shot types.
+
+### The Four Questions
+
+After any strong clip, ask these four in order. They surface what
+the clip is doing in the episode and what should come next.
+
+1. What function does this scene have?
+2. What is missing for it to feel connected?
+3. What shot would make the connection readable?
+4. Is the next step continuation, bridge, contrast, or reset?
+
+These questions are scoped to the next move, not to "solving the
+whole episode." The narrower scope is what keeps them practical.
+
+### Next-Shot Decision Tree
+
+The right question is not "what is the coolest next shot?" but "what
+problem does the episode have right now?" Map the problem to a shot
+type:
+
+- **Strong but isolated** → continuation or before/after
+- **Two scenes do not connect** → bridge
+- **Spatial logic unclear** → geography clarification
+- **Structure works but feeling weak** → close-up or reaction insert
+- **Something broken** → targeted repair
+
+The next shot is chosen by function, not by excitement.
+
+> Note: "continuation," "bridge," and "targeted repair" here name
+> next-shot types decided post-generation. "Continuation," "Bridging,"
+> and "Repair" in § Working Modes above name per-clip intent during
+> composition — different lifecycle phase, different decision.
 
 ---
 

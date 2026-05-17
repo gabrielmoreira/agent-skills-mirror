@@ -10,7 +10,9 @@ import ai.koog.agents.core.agent.context.RollbackStrategy
 import ai.koog.agents.core.annotation.InternalAgentsApi
 import ai.koog.agents.core.planner.PlannerAgentExecutionPoint
 import ai.koog.agents.snapshot.providers.PersistenceUtils
+import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.message.Message
+import ai.koog.prompt.params.LLMParams
 import ai.koog.serialization.JSONElement
 import ai.koog.serialization.JSONNull
 import ai.koog.serialization.JSONObject
@@ -49,7 +51,11 @@ public data class AgentCheckpointData internal constructor(
     val checkpointId: String,
     val createdAt: Instant,
     val messageHistory: List<Message>,
+    val llmParams: LLMParams? = null,
+    val llmModel: LLModel? = null,
+    val tools: List<String>? = null,
     val storage: JSONObject? = null,
+    val agentIterations: Int = 0,
     val version: Long,
     val graphProperties: GraphCheckpointProperties?,
     val plannerProperties: PlannerCheckpointProperties?,
@@ -73,9 +79,9 @@ public data class AgentCheckpointData internal constructor(
         checkpointId = checkpointId,
         createdAt = createdAt,
         messageHistory = messageHistory,
-        storage = null,
         version = version,
         graphProperties = GraphCheckpointProperties(nodePath, lastInput ?: JSONNull, lastOutput ?: JSONNull),
+        plannerProperties = null,
         properties = JSONObject(
             buildMap {
                 properties?.entries?.let { putAll(it) }
@@ -90,7 +96,11 @@ public data class AgentCheckpointData internal constructor(
         checkpointId: String,
         createdAt: Instant,
         messageHistory: List<Message>,
-        storage: JSONObject? = null,
+        llmParams: LLMParams,
+        llmModel: LLModel,
+        tools: List<String>,
+        storage: JSONObject,
+        agentIterations: Int,
         version: Long,
         graphProperties: GraphCheckpointProperties,
         properties: JSONObject? = null,
@@ -98,7 +108,11 @@ public data class AgentCheckpointData internal constructor(
         checkpointId = checkpointId,
         createdAt = createdAt,
         messageHistory = messageHistory,
+        llmParams = llmParams,
+        llmModel = llmModel,
+        tools = tools,
         storage = storage,
+        agentIterations = agentIterations,
         version = version,
         graphProperties = graphProperties,
         plannerProperties = null,
@@ -112,7 +126,11 @@ public data class AgentCheckpointData internal constructor(
         checkpointId: String,
         createdAt: Instant,
         messageHistory: List<Message>,
-        storage: JSONObject? = null,
+        llmParams: LLMParams,
+        llmModel: LLModel,
+        tools: List<String>,
+        storage: JSONObject,
+        agentIterations: Int,
         version: Long,
         plannerProperties: PlannerCheckpointProperties,
         properties: JSONObject? = null,
@@ -120,7 +138,11 @@ public data class AgentCheckpointData internal constructor(
         checkpointId = checkpointId,
         createdAt = createdAt,
         messageHistory = messageHistory,
+        llmParams = llmParams,
+        llmModel = llmModel,
+        tools = tools,
         storage = storage,
+        agentIterations = agentIterations,
         version = version,
         graphProperties = null,
         plannerProperties = plannerProperties,
@@ -259,21 +281,32 @@ public fun AgentCheckpointData.toAgentContextData(
     return when {
         graphProperties != null -> GraphAgentContextData(
             messageHistory = messageHistory,
+            llmParams = llmParams,
+            llmModel = llmModel,
+            tools = tools,
             storage = storage ?: JSONObject(emptyMap()),
+            agentIterations = agentIterations,
             nodePath = graphProperties.nodePath,
             lastInput = graphProperties.lastInput,
             lastOutput = graphProperties.lastOutput,
             rollbackStrategy = rollbackStrategy,
             additionalRollbackActions = additionalRollbackActions
         )
+
         plannerProperties != null -> PlannerAgentContextData(
             messageHistory = messageHistory,
             state = plannerProperties.state,
             plan = plannerProperties.plan,
+            storage = storage ?: JSONObject(emptyMap()),
+            agentIterations = agentIterations,
+            llmParams = llmParams,
+            llmModel = llmModel,
+            tools = tools,
             executionPoint = plannerProperties.executionPoint,
             rollbackStrategy = rollbackStrategy,
             additionalRollbackActions = additionalRollbackActions
         )
+
         else -> null
     }
 }

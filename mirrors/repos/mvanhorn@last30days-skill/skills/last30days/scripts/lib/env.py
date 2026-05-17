@@ -29,6 +29,23 @@ else:
 
 CODEX_AUTH_FILE = Path(os.environ.get("CODEX_AUTH_FILE", str(Path.home() / ".codex" / "auth.json")))
 
+# macOS Keychain integration: items stored with this service prefix are picked
+# up automatically on Darwin as the lowest-priority credential source.
+# Example: `security add-generic-password -a "$USER" -s last30days-XAI_API_KEY -w "xai-..."`.
+KEYCHAIN_SERVICE_PREFIX = "last30days-"
+
+# Single source of truth for which credentials the Keychain loader looks up.
+# The setup-keychain.sh helper mirrors this list and is held in sync via
+# tests/test_env_keychain.py::test_keychain_keys_match_setup_script.
+KEYCHAIN_KEYS = (
+    "OPENAI_API_KEY", "XAI_API_KEY", "GOOGLE_API_KEY", "GEMINI_API_KEY",
+    "GOOGLE_GENAI_API_KEY", "SCRAPECREATORS_API_KEY", "APIFY_API_TOKEN",
+    "AUTH_TOKEN", "CT0", "BSKY_HANDLE", "BSKY_APP_PASSWORD",
+    "TRUTHSOCIAL_TOKEN", "BRAVE_API_KEY", "EXA_API_KEY", "SERPER_API_KEY",
+    "OPENROUTER_API_KEY", "PARALLEL_API_KEY", "XQUIK_API_KEY",
+    "XIAOHONGSHU_API_BASE",
+)
+
 AuthSource = Literal["api_key", "codex", "none"]
 AuthStatus = Literal["ok", "missing", "expired", "missing_account_id"]
 
@@ -88,6 +105,46 @@ def load_env_file(path: Path) -> dict[str, str]:
                     value = value[1:-1]
                 if key and value:
                     env[key] = value
+    return env
+
+
+def _load_keychain(keys: list[str]) -> dict[str, str]:
+    """Load credentials from macOS Keychain (no-op on other platforms).
+
+    Each key is looked up as a generic password with service name
+    ``f"{KEYCHAIN_SERVICE_PREFIX}{key}"`` for the current user. Missing items
+    and lookup failures are silent — Keychain is the lowest-priority source
+    and is meant to be additive over `.env` files and process environment.
+    """
+    import platform
+    if platform.system() != "Darwin":
+        return {}
+
+    import shutil
+    security = shutil.which("security")
+    if not security:
+        return {}
+
+    import subprocess
+    import pwd
+    # USER can be unset under sudo, in Docker without --env USER, or in some CI
+    # runners; fall back to the OS user record so lookups still match items
+    # stored by setup-keychain.sh (which uses $USER).
+    user = os.environ.get("USER") or pwd.getpwuid(os.getuid()).pw_name
+    env: dict[str, str] = {}
+    for key in keys:
+        try:
+            result = subprocess.run(
+                [security, "find-generic-password",
+                 "-a", user,
+                 "-s", f"{KEYCHAIN_SERVICE_PREFIX}{key}",
+                 "-w"],
+                capture_output=True, text=True, timeout=5,
+            )
+        except (subprocess.TimeoutExpired, OSError):
+            continue
+        if result.returncode == 0 and result.stdout.strip():
+            env[key] = result.stdout.strip()
     return env
 
 
@@ -214,6 +271,7 @@ def get_config() -> dict[str, Any]:
       1. Environment variables (os.environ)
       2. .claude/last30days.env (per-project config)
       3. ~/.config/last30days/.env (global config)
+      4. macOS Keychain items prefixed ``last30days-`` (Darwin only)
     """
     # Load from global config file
     file_env = load_env_file(CONFIG_FILE) if CONFIG_FILE else {}
@@ -222,8 +280,13 @@ def get_config() -> dict[str, Any]:
     project_env_path = _find_project_env()
     project_env = load_env_file(project_env_path) if project_env_path else {}
 
-    # Merge: project overrides global
+    # Merge file sources: project > global
     merged_env = {**file_env, **project_env}
+
+    # Keychain is the lowest-priority source (Darwin only; no-op elsewhere).
+    # Loaded before openai_auth so OPENAI_API_KEY can come from Keychain too.
+    keychain_env = _load_keychain(list(KEYCHAIN_KEYS))
+    merged_env = {**keychain_env, **merged_env}
 
     openai_auth = get_openai_auth(merged_env)
 
@@ -265,16 +328,20 @@ def get_config() -> dict[str, Any]:
         ('FROM_BROWSER', None),
         ('SETUP_COMPLETE', None),
         ('INCLUDE_SOURCES', ''),
+        ('EXCLUDE_SOURCES', ''),
     ]
 
     for key, default in keys:
         config[key] = os.environ.get(key) or merged_env.get(key, default)
 
-    # Track which config source was used
+    # Track which config source was used (highest-priority file source wins
+    # the label; keychain is only reported when nothing else is configured).
     if project_env_path:
         config['_CONFIG_SOURCE'] = f'project:{project_env_path}'
     elif CONFIG_FILE and CONFIG_FILE.exists():
         config['_CONFIG_SOURCE'] = f'global:{CONFIG_FILE}'
+    elif keychain_env:
+        config['_CONFIG_SOURCE'] = 'keychain'
     else:
         config['_CONFIG_SOURCE'] = 'env_only'
 
@@ -517,12 +584,12 @@ def _parse_include_sources(config: dict[str, Any]) -> set[str]:
 def is_threads_available(config: dict[str, Any]) -> bool:
     """Check if Threads source is available.
 
-    Requires SCRAPECREATORS_API_KEY AND 'threads' in INCLUDE_SOURCES.
-    Threads is an opt-in source - it is not activated by default.
+    Returns True when SCRAPECREATORS_API_KEY is set. Threads runs alongside
+    TikTok and Instagram as part of the SC family — same key, same per-call
+    cost shape, so the same default-on rule applies. Suppress via
+    EXCLUDE_SOURCES=threads.
     """
-    if not config.get('SCRAPECREATORS_API_KEY'):
-        return False
-    return 'threads' in _parse_include_sources(config)
+    return bool(config.get('SCRAPECREATORS_API_KEY'))
 
 
 def is_instagram_available(config: dict[str, Any]) -> bool:

@@ -1,0 +1,1 @@
+cache/repos/github.com/DougTrajano@pydantic-ai-skills/AGENTS.md

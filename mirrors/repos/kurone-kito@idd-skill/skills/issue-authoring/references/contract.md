@@ -175,6 +175,38 @@ route the draft to the
 approval-needed fallback bucket instead of the normal ready-to-start
 set.
 
+## Human-dependency isolation
+
+Treat unresolved human dependency as a side effect that should be
+isolated away from ready execution issues whenever possible.
+
+- **Front-load** human-dependent work when coding cannot start safely
+  until a person provides a decision, credential, permission,
+  maintainer-only action, external setup, or policy choice, or until an
+  unavailable system becomes usable again.
+- **Back-load** human-dependent work when the remaining dependency is
+  subjective review, publication choice, optional polish, or another
+  post-implementation judgment that should not block an otherwise
+  autonomous core change.
+- Keep the central execution issue as close as possible to a pure
+  autonomous unit: clear repository-local scope, no hidden human handoff
+  in the implementation steps or acceptance criteria, and objective
+  verification.
+- Preserve unavoidable human-dependent work in an explicit stable
+  bucket, dependency edge, or approval-needed hold rather than mixing it
+  into a ready issue.
+- Route unresolved choices to `needs-decision`, route waiting on people,
+  credentials, maintainer-only actions, or unavailable systems to
+  `blocked-by-human`, use `deferred` when timing or decomposition is not
+  strong enough yet, and keep approval-gated ready work in the
+  approval-needed hold instead of the normal ready-to-start set.
+- If a task cannot be expressed without unresolved human coordination in
+  the middle of implementation, it is not yet `ready`.
+
+This principle complements the execution axes rather than replacing
+them: it is a practical way to protect autonomous completion and clear
+verification during issue drafting.
+
 ## Dependency minimization
 
 Encode a dependency edge only when it reflects a true correctness,
@@ -193,6 +225,36 @@ availability, or ordering constraint.
 When an issue keeps a dependency edge, justify each dependency edge in
 the surrounding issue body and confirm that the split still preserves
 natural cohesion.
+
+## Nested roadmap nodes
+
+Use a nested roadmap when one roadmap track needs its own coordination
+boundary, active child list, or multi-session handoff. A nested roadmap
+is still a roadmap node, not a normal execution candidate.
+
+Authoring rules:
+
+- reference the nested roadmap from the parent roadmap task list instead
+  of hiding it in prose
+- give the nested roadmap its own roadmap marker and `## Tracks` section
+  that links the active child work it coordinates
+- treat the nested roadmap as a coordination/audit node for discovery
+  and roadmap audit; do not draft it as normal A3/A4/A5 execution work
+- use two-level or three-level nesting only when the intermediate
+  roadmap has its own active child work or handoff boundary
+- do not use `Blocked by #NNN` or
+  `<!-- <marker-prefix>-blocked-by: ... -->` only to group leaf issues
+  under an active nested roadmap; reserve those encodings for true
+  execution dependencies or sequential roadmap dependencies between
+  separate roadmaps
+
+Validation expectations:
+
+- each nested roadmap node is linked from its parent roadmap task list
+- each nested roadmap node links its own active child work from its body
+- cycles, duplicate references, and closed intermediate roadmaps with
+  hidden open descendants must be surfaced as validation failures or
+  explicit follow-up notes, not silently normalized away
 
 ## Required dependency encoding
 
@@ -232,10 +294,13 @@ Validation expectations:
 
 Validation expectations:
 
-- every active child issue is referenced from the roadmap body
+- every active child issue or nested roadmap node is referenced from the
+  roadmap body
 - the roadmap explains why multiple issues exist
 - sequencing and blocking are explicit
 - each dependency edge is justified and preserves natural cohesion
+- nested roadmap entries stay identifiable as coordination/audit nodes
+  instead of normal execution leaves
 
 ### Child issue under a roadmap
 
@@ -277,6 +342,9 @@ Pre-publish validation checklist:
    in issue body
 3. **Uniqueness**: Reuse-first check passed; no duplicate or superseded
    work
+4. **Human dependency isolation**: Ready issues do not hide unresolved
+   decisions, credentials, subjective approvals, or mid-implementation
+   human handoffs
 
 If any check is uncertain, route the issue to `needs-decision` or
 `blocked-by-human` during drafting instead of publishing a

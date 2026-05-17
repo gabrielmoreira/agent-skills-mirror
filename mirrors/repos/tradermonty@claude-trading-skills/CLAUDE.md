@@ -96,9 +96,19 @@ Generate documentation pages for the Jekyll site at `docs/`.
 # Also updates docs/en/skills/index.md and docs/ja/skills/index.md automatically
 python3 scripts/generate_skill_docs.py --skill <skill-name>
 
-# Regenerate all auto-generated pages
+# Regenerate all auto-generated pages (ONLY pages marked `generated: true`;
+# hand-maintained pages are refused — use --force to override, never in CI)
 python3 scripts/generate_skill_docs.py --overwrite
 ```
+
+> **Skill doc ownership / drift gate:** Committed `docs/{en,ja}/skills/*.md` are
+> source-of-truth. A page is generator-owned only if its frontmatter has
+> `generated: true`; `generated: false` or an absent marker (and any
+> `HAND_WRITTEN` skill) is hand-maintained and **protected** — `--overwrite`
+> refuses it (`--force` is the CI-forbidden escape hatch). The
+> `skill-docs-drift` pre-commit hook + CI step run `generate_skill_docs.py
+> --check`, which content-compares **only** `generated: true` pages and never
+> reverts hand-maintained docs. See `docs/README.md` → "Skill Doc Ownership".
 
 **Hand-written ★ guides (for key skills):**
 
@@ -256,6 +266,7 @@ The table below is **auto-generated** from `skills-index.yaml` by `scripts/gener
 | **Theme Detector** | 🟡 Optional | 🟡 Optional (Recommended) | ❌ Not used | Financial Modeling Prep API |
 | **Trade Hypothesis Ideator** | ❌ Not used | ❌ Not used | ❌ Not used | Hypothesis generation from journal/data inputs; pure calculation |
 | **Trader Memory Core** | 🟡 Optional | ❌ Not used | ❌ Not used | Financial Modeling Prep API |
+| **Trading Skills Navigator** | ❌ Not used | ❌ Not used | ❌ Not used | Reads local skills-index.yaml + workflows/*.yaml (or bundled snapshot); no network |
 | **US Market Bubble Detector** | ❌ Not used | ❌ Not used | ❌ Not used | User provides indicators |
 | **US Stock Analysis** | ❌ Not used | ❌ Not used | ❌ Not used | User provides data |
 | **Uptrend Analyzer** | ❌ Not used | ❌ Not used | ❌ Not used | Monty Uptrend Ratio Dashboard CSV; no API key required |
@@ -549,6 +560,25 @@ python3 skills/trader-memory-core/scripts/thesis_ingest.py \
   --source kanchi-dividend-sop \
   --input reports/kanchi_entry_signals_2026-03-14.json \
   --state-dir state/theses/
+
+# Manual brokerage entry (fractional shares; free-form JSON, single or array)
+python3 skills/trader-memory-core/scripts/thesis_ingest.py \
+  --source manual --input amd.json --state-dir state/theses/
+
+# Walk an existing broker position to ACTIVE (backdated, fractional shares)
+python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+  transition <id> ENTRY_READY --reason "existing position" --event-date 2026-05-02
+python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+  open-position <id> --actual-price 142.10 --actual-date 2026-05-02 \
+  --shares 7.86 --event-date 2026-05-02
+# Partial close (trim): ACTIVE/PARTIALLY_CLOSED → PARTIALLY_CLOSED, or → CLOSED
+# when the whole remainder is sold. Cumulative realized P&L in outcome.
+python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+  trim <id> --shares-sold 4 --price 120.00 --date 2026-05-10
+# close / terminate / attach-position are also CLI subcommands
+# (close accepts ACTIVE or PARTIALLY_CLOSED)
+python3 skills/trader-memory-core/scripts/thesis_store.py --state-dir state/theses/ \
+  close <id> --exit-reason target_hit --actual-price 165.00 --actual-date 2026-06-01
 
 # Query theses
 python3 skills/trader-memory-core/scripts/thesis_store.py \

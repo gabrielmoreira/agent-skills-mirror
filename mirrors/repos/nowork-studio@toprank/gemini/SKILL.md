@@ -84,9 +84,9 @@ Determine what kind of changes are being reviewed. Check in this order:
 ### 2a — Check for Google Ads changes
 
 Look for signs of Ads-related work in the current conversation context:
-- Recent MCP tool calls to `mcp__notfair__*` (or legacy `mcp__adsagent__*`) or `mcp__google_ads_mcp__*`
+- Recent MCP tool calls to `mcp__notfair__*` or `mcp__google_ads_mcp__*`
 - Discussion of campaigns, keywords, bids, budgets, ad copy, negative keywords
-- Files like `.notfair/change-log.json` (or legacy `.adsagent/change-log.json`) or Ads-related config changes
+- Files like `.notfair/change-log.json` or Ads-related config changes
 
 If found, set `CHANGE_TYPE=google-ads`.
 

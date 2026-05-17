@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `antonbabenko/terraform-skill` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
+Mirror of `antonbabenko/terraform-skill` — 26 default patterns, 1 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `antonbabenko/terraform-skill` — 26 default patterns, 1 followed pat
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,14 +61,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`skills/terraform-skill/references/ci-cd-workflows.md`](skills/terraform-skill/references/ci-cd-workflows.md) |
-| 3 | ✓ | [`skills/terraform-skill/references/code-patterns.md`](skills/terraform-skill/references/code-patterns.md) |
-| 4 | ✓ | [`skills/terraform-skill/references/module-patterns.md`](skills/terraform-skill/references/module-patterns.md) |
-| 5 | ✓ | [`skills/terraform-skill/references/quick-reference.md`](skills/terraform-skill/references/quick-reference.md) |
-| 6 | ✓ | [`skills/terraform-skill/references/security-compliance.md`](skills/terraform-skill/references/security-compliance.md) |
-| 7 | ✓ | [`skills/terraform-skill/references/state-management.md`](skills/terraform-skill/references/state-management.md) |
-| 8 | ✓ | [`skills/terraform-skill/references/testing-frameworks.md`](skills/terraform-skill/references/testing-frameworks.md) |
-| 9 | ✓ | [`skills/terraform-skill/SKILL.md`](skills/terraform-skill/SKILL.md) |
-| 10 | → | [`README.md`](README.md) |
+| 3 | ✓ | [`skills/terraform-skill/references/code-intelligence-lsp.md`](skills/terraform-skill/references/code-intelligence-lsp.md) |
+| 4 | ✓ | [`skills/terraform-skill/references/code-patterns.md`](skills/terraform-skill/references/code-patterns.md) |
+| 5 | ✓ | [`skills/terraform-skill/references/module-patterns.md`](skills/terraform-skill/references/module-patterns.md) |
+| 6 | ✓ | [`skills/terraform-skill/references/quick-reference.md`](skills/terraform-skill/references/quick-reference.md) |
+| 7 | ✓ | [`skills/terraform-skill/references/security-compliance.md`](skills/terraform-skill/references/security-compliance.md) |
+| 8 | ✓ | [`skills/terraform-skill/references/state-management.md`](skills/terraform-skill/references/state-management.md) |
+| 9 | ✓ | [`skills/terraform-skill/references/testing-frameworks.md`](skills/terraform-skill/references/testing-frameworks.md) |
+| 10 | ✓ | [`skills/terraform-skill/SKILL.md`](skills/terraform-skill/SKILL.md) |
+| 11 | → | [`README.md`](README.md) |
 
 ---
 

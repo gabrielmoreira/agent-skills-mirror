@@ -44,8 +44,8 @@ metadata:
       description: Allow evolution to modify evolver source code. NOT recommended.
     - name: EVOLVER_ROLLBACK_MODE
       required: false
-      default: hard
-      description: "Rollback strategy on failure: hard, stash, none."
+      default: stash
+      description: "Rollback strategy on solidify failure. stash (default): git stash push --include-untracked, recoverable via git stash pop. hard: git reset --hard, discards work. none: skip rollback. Default flipped from hard to stash in 1.80.8 to prevent data loss in third-party host repos."
     - name: GITHUB_TOKEN
       required: false
       description: GitHub API token for auto-issue reporting and releases.
@@ -338,7 +338,7 @@ node index.js --review
 | `EVOMAP_PROXY` | `1` | Enable local Proxy |
 | `EVOMAP_PROXY_PORT` | `19820` | Override Proxy port |
 | `EVOLVE_STRATEGY` | `balanced` | Evolution strategy |
-| `EVOLVER_ROLLBACK_MODE` | `hard` | Rollback on failure: hard, stash, none |
+| `EVOLVER_ROLLBACK_MODE` | `stash` | Rollback on solidify failure: stash (default, recoverable), hard (destructive), none |
 | `EVOLVER_LLM_REVIEW` | `0` | Enable LLM review before solidification |
 | `GITHUB_TOKEN` | (none) | GitHub API token |
 

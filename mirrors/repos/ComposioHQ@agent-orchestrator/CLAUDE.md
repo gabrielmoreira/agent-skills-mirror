@@ -111,7 +111,7 @@ spawning -> working -> pr_open -> ci_failed / review_pending
                                       +-> mergeable -> merged -> cleanup -> done
 ```
 
-**Stale runtime reconciliation:** `sm.list()` detects dead runtimes (tmux/process gone) during enrichment and persists `runtime_lost` reason to disk. This maps to legacy status `killed`. Without this, sessions with dead runtimes would show stale "active" status indefinitely.
+**Stale runtime reconciliation:** `sm.list()` detects dead runtimes (tmux/process gone) during enrichment and persists `detecting` state with `runtime_lost` reason to disk. The lifecycle manager's `resolveProbeDecision` pipeline is the single authority on terminal decisions — `sm.list()` never writes `terminated` directly (#1735).
 
 ### Data Flow
 
@@ -224,7 +224,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Kanban board filters client-side via `projectSessions` memo
 
 ### Key invariants
-- `sm.list()` persists `runtime_lost` lifecycle to disk when enrichment detects dead runtimes — this is the only place stale runtime state gets reconciled
+- `sm.list()` persists `detecting` state (not `terminated`) to disk when enrichment detects dead runtimes — terminal decisions are made only by the lifecycle manager's probe pipeline (#1735)
 - `deriveLegacyStatus()` maps canonical lifecycle to legacy status — new terminal reasons must be added here
 - Tab completions merge local config + global config to show all projects
 

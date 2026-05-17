@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 2 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
+| 4 | ✓ | [`examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
+| 5 | ✓ | [`examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: release
-description: Use this skill for EVERY ClawRouter release. Enforces the full checklist — version sync, CHANGELOG, blockrun server constant, build, tests, npm publish, git tag, GitHub release. No step can be skipped.
+description: Use this skill for EVERY ClawRouter release. Enforces the full checklist — version sync, CHANGELOG, build, tests, npm publish, git tag, GitHub release. No step can be skipped.
 triggers:
   - "release clawrouter"
   - "ship clawrouter"
@@ -53,25 +53,37 @@ Rules:
 
 ---
 
-## Step 4: Sync `CURRENT_CLAWROUTER_VERSION` in blockrun
+## Step 4: Confirm No Manual Server Sync Required
 
-**This is the most commonly forgotten step.**
-
-File: `/Users/vickyfu/Documents/blockrun-web/blockrun/src/app/api/v1/chat/completions/route.ts`
-
-Find this line:
+**No file edit needed here.** Earlier releases (pre-v0.12.x) required manually
+updating a `CURRENT_CLAWROUTER_VERSION` constant in blockrun's
+`src/app/api/v1/chat/completions/route.ts`. That constant has been replaced:
+the server now `fetch`-es `https://registry.npmjs.org/@blockrun/clawrouter/latest`
+at process startup and uses the returned `version` to drive the
+`update_available` hint embedded in 429 responses to outdated clients.
 
 ```typescript
-const CURRENT_CLAWROUTER_VERSION = "x.y.z";
+// blockrun/src/app/api/v1/chat/completions/route.ts
+let latestClawRouterVersion: string | null = process.env.CLAWROUTER_CURRENT_VERSION || null;
+fetch("https://registry.npmjs.org/@blockrun/clawrouter/latest", { signal: AbortSignal.timeout(5000) })
+  .then((r) => r.json())
+  .then((data) => { if (data.version) latestClawRouterVersion = data.version; })
+  .catch(() => { /* keep env var fallback */ });
 ```
 
-Update it to match the new version. Verify with:
+Implications:
 
-```bash
-grep CURRENT_CLAWROUTER_VERSION /Users/vickyfu/Documents/blockrun-web/blockrun/src/app/api/v1/chat/completions/route.ts
-```
+- The `npm publish` in Step 11 IS the entire "sync blockrun" action. After that
+  step lands, the next blockrun server restart will fetch and surface the new
+  version. No manual constant edit. No separate PR in the blockrun repo.
+- `CLAWROUTER_CURRENT_VERSION` env var is the cold-start fallback (used only
+  when the registry fetch fails). It exists for resilience, not as the
+  primary mechanism — don't touch it on every release.
+- Verification of the user-facing update nudge happens in Step 12 via
+  `npm view @blockrun/clawrouter version` (the same registry endpoint
+  blockrun's server hits).
 
-**Do not skip this.** It controls the update nudge shown to users running outdated versions.
+Skip to Step 5.
 
 ---
 
@@ -106,7 +118,8 @@ git add package.json CHANGELOG.md
 git commit -m "chore: bump version to {VERSION}"
 ```
 
-If blockrun's route.ts was updated, commit that separately in the blockrun repo.
+No companion commit in the blockrun repo is needed — the server picks up
+new versions automatically via the npm registry fetch documented in Step 4.
 
 ---
 
@@ -159,35 +172,33 @@ Run this checklist to confirm everything is in sync:
 
 ```bash
 # 1. package.json version
-cat package.json | grep '"version"'
+node -p 'require("./package.json").version'
 
 # 2. CHANGELOG has the entry
 head -10 CHANGELOG.md
 
-# 3. blockrun CURRENT_CLAWROUTER_VERSION
-grep CURRENT_CLAWROUTER_VERSION /Users/vickyfu/Documents/blockrun-web/blockrun/src/app/api/v1/chat/completions/route.ts
-
-# 4. npm package is live
+# 3. npm package is live (this is also what blockrun's server fetches —
+#    matching version here means the user-facing update nudge will fire correctly)
 npm view @blockrun/clawrouter version
 
-# 5. GitHub tag exists
-git tag | grep v{VERSION}
+# 4. GitHub tag exists
+git tag --list 'v{VERSION}'
 
-# 6. GitHub release exists
+# 5. GitHub release exists
 gh release view v{VERSION}
 ```
 
-All 6 must match the new version. If any mismatch, fix before declaring the release done.
+All 5 must match the new version. If any mismatch, fix before declaring the release done.
 
 ---
 
 ## Common Mistakes (Never Repeat These)
 
-| Mistake                                                   | Prevention                            |
-| --------------------------------------------------------- | ------------------------------------- |
-| Forgot to update `CURRENT_CLAWROUTER_VERSION` in blockrun | Step 4 — always check                 |
-| CHANGELOG entry missing or incomplete                     | Step 3 — write it before building     |
-| npm publish before tests pass                             | Steps 5-6 must precede Step 11        |
-| GitHub release notes empty                                | Step 10 — extract from CHANGELOG      |
-| Git tag not pushed                                        | Step 9 — push tag separately          |
-| docs not reflecting new features                          | Update docs in same PR as the feature |
+| Mistake                                                          | Prevention                            |
+| ---------------------------------------------------------------- | ------------------------------------- |
+| Hand-editing `CURRENT_CLAWROUTER_VERSION` (no longer exists)     | Step 4 — server now auto-fetches      |
+| CHANGELOG entry missing or incomplete                            | Step 3 — write it before building     |
+| npm publish before tests pass                                    | Steps 5-6 must precede Step 11        |
+| GitHub release notes empty                                       | Step 10 — extract from CHANGELOG      |
+| Git tag not pushed                                               | Step 9 — push tag separately          |
+| docs not reflecting new features                                 | Update docs in same PR as the feature |

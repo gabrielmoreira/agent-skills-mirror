@@ -7,7 +7,7 @@ description:
   触发场景：用户要求搜索信息、查看网页内容、访问需要登录的网站、操作网页界面、抓取社交媒体内容（小红书、微博、推特等）、读取动态渲染页面、以及任何需要真实浏览器环境的网络任务。
 metadata:
   author: 一泽Eze
-  version: "2.5.2"
+  version: "2.5.3"
 ---
 
 # web-access Skill
@@ -117,8 +117,8 @@ node "${CLAUDE_SKILL_DIR}/scripts/check-deps.mjs"
 # 列出用户已打开的 tab
 curl -s http://localhost:3456/targets
 
-# 创建新后台 tab（自动等待加载）
-curl -s "http://localhost:3456/new?url=https://example.com"
+# 创建新后台 tab（自动等待加载）— URL 走 POST body，避免目标 URL 含 query 时被切分
+curl -s -X POST --data-raw 'https://example.com' http://localhost:3456/new
 
 # 页面信息
 curl -s "http://localhost:3456/info?target=ID"
@@ -129,8 +129,8 @@ curl -s -X POST "http://localhost:3456/eval?target=ID" -d 'document.title'
 # 捕获页面渲染状态（含视频当前帧）
 curl -s "http://localhost:3456/screenshot?target=ID&file=/tmp/shot.png"
 
-# 导航、后退
-curl -s "http://localhost:3456/navigate?target=ID&url=URL"
+# 导航（URL 走 POST body，target 走 query）、后退
+curl -s -X POST --data-raw 'https://example.com' "http://localhost:3456/navigate?target=ID"
 curl -s "http://localhost:3456/back?target=ID"
 
 # 点击（POST body 为 CSS 选择器）— JS el.click()，简单快速，覆盖大多数场景
@@ -157,7 +157,9 @@ curl -s "http://localhost:3456/close?target=ID"
 - **`/click`**：在当前 tab 内直接点击用户视角中的可交互单元，简单直接，串行处理。适合需要在同一页面内连续操作的场景，如点击展开、翻页、进入详情等。
 - **`/new` + 完整 URL**：使用目标链接的完整地址（包含所有URL参数），在新 tab 中打开。适合需要同时访问多个页面的场景。
 
-很多网站的链接包含会话相关的参数（如 token），这些参数是正常访问所必需的。提取 URL 时应保留完整地址，不要裁剪或省略参数。
+很多网站的链接包含会话相关的参数（如 token），这些参数是正常访问所必需的。提取 URL 时应保留完整地址，不要裁剪或省略参数。URL 通过 POST body 原样传入 `/new` 或 `/navigate`。
+
+> **v2.5.3 迁移提示**：若引用的站点经验文件（`references/site-patterns/*.md`）或其它脚本中仍含 `GET /new?url=...` 或 `/navigate?target=...&url=...` 的旧写法，调用会收到迁移指引。按 [`references/migration-2.5.3.md`](references/migration-2.5.3.md) 就地改写为 POST body 后再使用，并顺手把该站点经验文件更新掉。
 
 ### 媒体资源提取
 

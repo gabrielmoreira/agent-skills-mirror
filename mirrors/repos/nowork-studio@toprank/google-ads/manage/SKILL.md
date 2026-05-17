@@ -54,7 +54,7 @@ What does have to be true on every turn:
 - **Reads go through `runScript`** with `ads.gaql` / `ads.gaqlParallel` — fan out, correlate in-script, return summarized JSON. Cast a wide net on the first call.
 - **Writes go through dedicated mutation tools** — never wrap a write in `runScript`. Every write returns a `changeId` for `undoChange` within 7 days.
 - **Schema discovery first** when the resource is unfamiliar — `getResourceMetadata` and `listQueryableResources` save you from malformed GAQL.
-- **The MCP server's playbooks** (`adsagent://playbooks/audit-account`, `adsagent://playbooks/explain-regression`) are battle-tested starting queries. Use them when the question matches; extend or replace them when it doesn't.
+- **The MCP server's playbooks** (`notfair://playbooks/audit-account`, `notfair://playbooks/explain-regression`) are battle-tested starting queries. Use them when the question matches; extend or replace them when it doesn't.
 
 ## Tool surface (capabilities, not enumeration)
 

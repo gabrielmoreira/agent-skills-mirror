@@ -50,6 +50,7 @@ import ai.koog.prompt.message.Message
 import ai.koog.prompt.message.MessagePart
 import ai.koog.prompt.message.RequestMetaInfo
 import ai.koog.prompt.message.ResponseMetaInfo
+import ai.koog.prompt.params.LLMParams
 import ai.koog.serialization.JSONPrimitive
 import ai.koog.serialization.kotlinx.KotlinxSerializer
 import ai.koog.serialization.kotlinx.toKoogJSONElement
@@ -413,7 +414,9 @@ class CheckpointsTests {
             graphProperties = GraphCheckpointProperties(
                 nodePath = path(convId, "straight-forward", "Node2"),
                 lastInput = JSONPrimitive("Test input")
-            )
+            ),
+            plannerProperties = null,
+            properties = null,
         )
 
         checkpointStorageProvider.saveCheckpoint(convId, testCheckpoint)
@@ -456,7 +459,9 @@ class CheckpointsTests {
             graphProperties = GraphCheckpointProperties(
                 nodePath = path(sessionId, "straight-forward", "Node1"),
                 lastInput = JSONPrimitive("Test input")
-            )
+            ),
+            plannerProperties = null,
+            properties = null,
         )
 
         val testCheckpoint = AgentCheckpointData(
@@ -470,7 +475,9 @@ class CheckpointsTests {
             graphProperties = GraphCheckpointProperties(
                 nodePath = path(sessionId, "straight-forward", "Node2"),
                 lastInput = JSONPrimitive("Test input")
-            )
+            ),
+            plannerProperties = null,
+            properties = null,
         )
 
         checkpointStorageProvider.saveCheckpoint(sessionId, testCheckpoint2)
@@ -771,10 +778,11 @@ class CheckpointsTests {
     }
 
     @Test
-    fun testStorageIsSavedInCheckpoint() = runTest {
+    fun testContextDataIsSavedInCheckpoint() = runTest {
         val storageKey = createStorageKey<String>("test-value")
         val checkpointProvider = InMemoryPersistenceStorageProvider()
         val sessionId = "storage-checkpoint-session"
+        val expectedLlmParams = LLMParams(temperature = 0.42)
 
         val agent = AIAgent(
             promptExecutor = getMockExecutor(serializer) { },
@@ -800,7 +808,13 @@ class CheckpointsTests {
 
                 nodeStart then writeNode then checkpointNode then nodeFinish
             },
-            agentConfig = agentConfig,
+            agentConfig = AIAgentConfig(
+                prompt = prompt("test") {
+                    system(systemPrompt)
+                }.copy(params = expectedLlmParams),
+                model = OllamaModels.Meta.LLAMA_3_2,
+                maxAgentIterations = 20
+            ),
             toolRegistry = toolRegistry
         ) {
             install(Persistence) {
@@ -812,9 +826,17 @@ class CheckpointsTests {
 
         // get second to last checkpoint because the latest checkpoint is a tombstone checkpoint that doesn't have storage and message history
         val checkpoint = checkpointProvider.getCheckpoints(sessionId).let { it[it.lastIndex - 1] }
+
+        // Verify storage is saved
         val restoredStorage = AIAgentStorage(serializer)
         restoredStorage.putAllSerialized(checkpoint.storage?.entries ?: emptyMap())
         assertEquals("persisted-value", restoredStorage.get(storageKey))
+
+        // Verify LLM model, params, tools, and iteration count are saved
+        assertEquals(OllamaModels.Meta.LLAMA_3_2, checkpoint.llmModel)
+        assertEquals(expectedLlmParams, checkpoint.llmParams)
+        assertEquals(listOf(SayToUser.name), checkpoint.tools)
+        assertEquals(3, checkpoint.agentIterations)
     }
 
     /**

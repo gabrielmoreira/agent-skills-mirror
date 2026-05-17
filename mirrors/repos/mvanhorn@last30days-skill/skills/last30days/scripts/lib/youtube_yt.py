@@ -866,9 +866,12 @@ def _sc_youtube_search(keyword: str, token: str) -> List[Dict[str, Any]]:
         List of raw video dicts from the API.
     """
     try:
+        # SC's /v1/youtube/search rejects ?keyword= with HTTP 400; the canonical
+        # parameter for that endpoint is `query`. Other SC endpoints use their
+        # own per-endpoint param names so this was the lone outlier.
         data = http.get(
             f"{SCRAPECREATORS_YT_BASE}/search",
-            params={"keyword": keyword},
+            params={"query": keyword},
             headers=http.scrapecreators_headers(token),
             timeout=30,
             retries=2,

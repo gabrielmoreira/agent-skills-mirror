@@ -60,10 +60,13 @@ If you installed skills into a different location, also back up that custom dire
 ## Recommended prevention
 
 - Do not concatenate every `SKILL.md` into one system prompt.
-- Use `data/skills_index.json` as a lightweight manifest.
+- Use the stable manifest contract:
+  - `skills_index.json` as canonical discovery source;
+  - `data/skills_index.json` only as compatibility mirror.
 - Load `SKILL.md` files only when a skill is actually requested.
 - Set explicit limits for skills per turn.
 - Prefer `overflowBehavior: "error"` in the reference Jetski/Gemini loader so the host fails clearly instead of silently overfilling the context window.
+- See the schema and contract details in [`discovery-manifest.md`](discovery-manifest.md).
 
 See:
 
