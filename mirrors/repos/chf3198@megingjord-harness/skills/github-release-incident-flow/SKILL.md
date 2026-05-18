@@ -1,7 +1,7 @@
 ---
 name: github-release-incident-flow
-description: Govern release readiness and incident response flow in GitHub with rollback evidence, hotfix linkage, and follow-up controls.
-argument-hint: [mode: release-readiness|incident-flow|post-incident] [scope: repo|org] [policy-profile: strict|standard|light]
+description: "Govern release readiness and incident response flow in GitHub with rollback evidence, hotfix linkage, and follow-up controls."
+argument-hint: "[mode: release-readiness|incident-flow|post-incident] [scope: repo|org] [policy-profile: strict|standard|light]"
 user-invocable: true
 disable-model-invocation: false
 ---

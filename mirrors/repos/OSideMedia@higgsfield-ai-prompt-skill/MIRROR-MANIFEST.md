@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,13 +76,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`skills/higgsfield-prompt/SKILL.md`](skills/higgsfield-prompt/SKILL.md) |
 | 16 | ✓ | [`skills/higgsfield-recall/SKILL.md`](skills/higgsfield-recall/SKILL.md) |
 | 17 | ✓ | [`skills/higgsfield-recipes/SKILL.md`](skills/higgsfield-recipes/SKILL.md) |
-| 18 | ✓ | [`skills/higgsfield-seedance/SKILL.md`](skills/higgsfield-seedance/SKILL.md) |
-| 19 | ✓ | [`skills/higgsfield-soul/SKILL.md`](skills/higgsfield-soul/SKILL.md) |
-| 20 | ✓ | [`skills/higgsfield-style/SKILL.md`](skills/higgsfield-style/SKILL.md) |
-| 21 | ✓ | [`skills/higgsfield-troubleshoot/SKILL.md`](skills/higgsfield-troubleshoot/SKILL.md) |
-| 22 | ✓ | [`skills/higgsfield-vibe-motion/SKILL.md`](skills/higgsfield-vibe-motion/SKILL.md) |
-| 23 | ✓ | [`skills/higgsfield-workspaces/SKILL.md`](skills/higgsfield-workspaces/SKILL.md) |
-| 24 | ✓ | [`skills/shared/negative-constraints.md`](skills/shared/negative-constraints.md) |
+| 18 | ✓ | [`skills/higgsfield-seedance/FAILURE-MODES.md`](skills/higgsfield-seedance/FAILURE-MODES.md) |
+| 19 | ✓ | [`skills/higgsfield-seedance/SKILL.md`](skills/higgsfield-seedance/SKILL.md) |
+| 20 | ✓ | [`skills/higgsfield-soul/SKILL.md`](skills/higgsfield-soul/SKILL.md) |
+| 21 | ✓ | [`skills/higgsfield-style/SKILL.md`](skills/higgsfield-style/SKILL.md) |
+| 22 | ✓ | [`skills/higgsfield-troubleshoot/SKILL.md`](skills/higgsfield-troubleshoot/SKILL.md) |
+| 23 | ✓ | [`skills/higgsfield-vibe-motion/SKILL.md`](skills/higgsfield-vibe-motion/SKILL.md) |
+| 24 | ✓ | [`skills/higgsfield-workspaces/SKILL.md`](skills/higgsfield-workspaces/SKILL.md) |
+| 25 | ✓ | [`skills/shared/negative-constraints.md`](skills/shared/negative-constraints.md) |
 
 ---
 

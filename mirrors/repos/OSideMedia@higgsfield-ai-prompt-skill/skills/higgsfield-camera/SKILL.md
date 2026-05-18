@@ -7,8 +7,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, camera, movement, dolly, crane, FPV, orbit, shot]
-  version: 3.1.0
-  updated: 2026-05-11
+  version: 3.3.0
+  updated: 2026-05-18
   parent: higgsfield
 ---
 
@@ -168,9 +168,59 @@ Layering two compatible movements creates richer shots:
 
 **Avoid conflicting moves:** Don't combine Dolly In with Dolly Out, or Crane Up with Crane Down in the same shot — it creates visual contradiction.
 
+**Sequenced vs simultaneous combinations.** The table above lists *simultaneous* combinations (two motions happening at once). Production practice also uses *sequenced* combinations: pan to follow the character through phase one, then push-in on the face when the character stops. State the sequence with timing in the prompt — `Camera pans left from 0-3s tracking the character, holds, then pushes in on the face from 4-8s` — so the model renders the motions as discrete phases rather than collapsing them into a single ambiguous move.
+
+**Static pan vs glide.** A camera that *pans* rotates from a fixed position; a camera that *glides* translates through space. Production practice prefers static-pan over glide for most coverage — the static-pan reads as a chosen viewpoint with directed attention, the glide reads as untethered. State which you mean: `the camera stays in position and pans to follow him` is distinct from `the camera glides alongside him as he walks`.
+
 > **Negative constraints:** For temporal/consistency artifacts related to camera (contradictory
 > movements, camera not working, static I2V) and their prevention phrases, see
 > `../shared/negative-constraints.md` — Temporal/Consistency Artifacts section.
+
+---
+
+## Camera-Emotion Sync — Movement per Focal Character Emotion
+
+The camera is the emotional double of the focal character.
+Movement, lens choice, and shot duration should be picked by the
+character's emotional state — not by what looks "cinematic" in the
+abstract. The mismatch is one of the most visible tells of an
+AI-video prompt that hasn't done the emotional-syncing work: a
+calm scene with a jittery handheld camera reads as wrong even when
+nothing else is broken; an angry scene with a smooth dolly reads
+as detached even when the action is right.
+
+Six emotional registers cover most scenes:
+
+| Focal character emotion | Camera prescription |
+|---|---|
+| Anger / rage / tension / on edge | Handheld breathing, jittery and unstable — broken breath rhythm, visible micro-twitches in both axes, small amplitude, irregular rhythm. Avoid stabilizers. |
+| Calm / control / confidence | Handheld breathing, smooth — steady breath rate, regular micro-amplitude. Stabilizer-light, but still alive. |
+| Sadness / vulnerability | Handheld, slow, low — lower breath frequency, slight downward camera drift, weight feels heavier on the operator. |
+| Shock / revelation | Static + very slow push-in or pull-out — sharp freeze at the moment of revelation, then minimal movement for the next 0.5-2s. |
+| Action | 60fps, 180° shutter — clean motion with shutter-bound motion blur; avoid pulled motion blur from longer shutters. |
+| Final beat / verdict | Top-shot freeze, 0.3-0.5s — directly from above, time stops, all positions locked. |
+| Emotional breakdown / character needs space | Slow pull-back from medium/close to wide — "leave the character alone." Production-team named technique for emotional moments (a character sobs, curls up, or otherwise needs to be witnessed-but-not-pressured); pulling the camera back gives the audience visual distance that registers as emotional space rather than abandonment. |
+
+### Emotional arcs within a single shot
+
+When the focal character's emotion *changes* across a continuous
+take (e.g. rage → controlled in a single shot), the camera should
+change synchronously. Write it as named phases in the prompt:
+
+- Opening phase: prescribe the camera for the entry emotion
+- Transition phase: describe how the camera character shifts
+  (handheld amplitude reduces, drift settles, push-in slows)
+- Closing phase: prescribe the camera for the exit emotion
+
+The camera moves with the actor, not on its own clock.
+
+> **Decompose the emotion before picking the camera.** The 6
+> emotional registers above are tracked by *named* emotions (anger,
+> calm, sadness, shock). If the user supplies a generic emotion
+> ("surprised", "tense") the first step is decomposing it into a
+> specific named register — see `../higgsfield-prompt/SKILL.md` §
+> Generic-Emotion Decomposition for the "which kind of X?"
+> clarification template.
 
 ---
 

@@ -251,6 +251,11 @@ def _normalize_youtube(
     metadata: dict[str, Any] = {}
     if highlights:
         metadata["transcript_highlights"] = highlights
+    if item.get("captions_disabled"):
+        # Surfaced for quality_nudge: uploader disabled captions, so this
+        # video should be subtracted from the degraded-transcript-ratio
+        # denominator (it was never going to produce a transcript).
+        metadata["captions_disabled"] = True
     metadata["top_comments"] = _remap_comments(
         item.get("top_comments") or [],
         score_keys=("score", "likes"),

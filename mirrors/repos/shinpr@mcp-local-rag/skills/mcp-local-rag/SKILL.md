@@ -17,6 +17,13 @@ description: Search, ingest, expand chunk context, or manage local documents via
 | `status` | `npx mcp-local-rag status` | Database stats |
 | `read_chunk_neighbors` | `npx mcp-local-rag read-neighbors` | Read N chunks adjacent to a known chunkIndex (context expansion; call after `query_documents` or grep) |
 
+## Workflow
+
+1. For search requests, formulate a focused hybrid query, choose `limit` by intent, then filter results by score AND topical relevance.
+2. When a retrieved hit lacks enough surrounding context for a grounded answer, expand only that chunk via `read_chunk_neighbors`.
+3. For ingestion, choose `ingest_file` for local files and `ingest_data` for raw/web content.
+4. For PDFs, ask once about ingest mode unless the current request already specifies one (text-only, visual fast, or visual quality). See decision protocol in Ingestion.
+
 ## Search: Core Rules
 
 Hybrid search combines vector (semantic) and keyword (BM25).
@@ -64,14 +71,14 @@ When results are few or all score > 0.5, expand query terms:
 When to include vs skip—based on answer quality, not just score.
 
 **INCLUDE** if:
-- Directly answers the question
-- Provides necessary context
-- Score < 0.5
+- Directly answers the question, OR
+- Provides necessary context for the answer, OR
+- Topically relevant AND score < 0.5
 
 **SKIP** if:
-- Same keyword, unrelated context
-- Score > 0.7
-- Mentions term without explanation
+- Shares keywords with the query but not intent
+- Mentions the term without explanation
+- Score > 0.7 AND better results exist
 
 ### fileTitle
 
@@ -89,11 +96,11 @@ Each result includes `fileTitle` (document title extracted from content). Null w
 
 Each `query_documents` result item includes `chunkIndex` plus either `filePath` or `source`. Pass `filePath` for files ingested with `ingest_file`, or `source` for content ingested with `ingest_data`.
 
-Trigger this tool only when one of these signals is present:
+Use this tool when one of these signals is present:
 - **Insufficient context for your answer**: during response generation, the target chunk alone is not enough to reach a grounded conclusion (e.g., it references "this approach" or "as shown above" without the referent).
 - **Explicit user request for more context**: the user asks for surrounding detail ("what comes before that?", "read more around that section", "show me the full explanation").
 
-If neither signal is present, stop at the `query_documents` results.
+Otherwise, answer from the existing `query_documents` results.
 
 Typical workflow when triggered:
 1. Identify the specific chunk to expand (from a prior `query_documents` hit or `grep`).
@@ -110,10 +117,39 @@ ingest_file({ filePath: "/absolute/path/to/document.pdf" })
 ```
 
 **PDF visual-mode decision:**
-- If the user explicitly asks for visual content, figures, charts, tables, diagrams, screenshots, or scanned page content to be searchable, use `visual: true`.
-- If the user asks to ingest a PDF and does not explicitly mention figures, charts, tables, diagrams, screenshots, or scanned content, ask one short question before ingesting: "Should figures, charts, tables, diagrams, or screenshots in this PDF be made searchable too? Visual ingest may take longer when the PDF has many visual pages."
-- If the user confirms visual content matters, use `visual: true`. If the user wants the fastest text-only ingest or says visual content is not important, use the default text-only ingest.
-- For non-PDF files, use normal `ingest_file`; visual mode has no effect.
+
+For non-PDF files (`.md`, `.docx`, `.txt`), use normal `ingest_file`; `visual` and `visualQuality` have no effect.
+
+For PDFs, the decision has two factors: whether the document needs visual ingest, and which VLM profile to use if so. Both are cost trade-offs along two axes:
+- **Disk**: enabling `visual` downloads a local VLM. `quality` downloads a materially larger model than `fast`.
+- **Machine load**: per-visual-page inference. `quality` is materially heavier per page than `fast`.
+
+Pick by these rules:
+
+1. **Current request already specifies an ingest mode** — follow it without asking:
+   - User explicitly mentions visual content to be searchable (figures, charts, tables, diagrams, screenshots, captions, labels, annotations, faithful captions): use `visual: true`. Select the profile per "Profile signals" below.
+   - User explicitly picks a profile (e.g., "use quality profile", "visual quality"): use that profile.
+   - User explicitly opts out of visual (e.g., "text only", "no images needed", "skip figures"): use text-only ingest.
+
+2. **Current request does not specify a mode**: ask the user before ingesting, in one consolidated question:
+
+   > "Is this PDF image-heavy (figures, charts, tables, or diagrams that should be searchable)?
+   >
+   > If **no** — text-only ingest (fastest; no VLM download, no per-page inference).
+   >
+   > If **yes** — choose a VLM profile:
+   > - **fast** — captures figure titles and broad figure types; detailed in-image text (axis labels, annotations) is less reliable. Downloads a local VLM (extra disk) and runs inference per visual page (machine load). Relatively lightweight.
+   > - **quality** — captures in-image text (axis labels, panel sub-labels, flowchart nodes) more reliably. Materially heavier than 'fast' on both disk and machine load.
+   >
+   > Which fits?"
+
+   Map the reply: no / text-only → text-only ingest. yes + fast / lightweight → `visual: true` (omit `visualQuality`). yes + quality / faithful / labels / accurate captions → `visual: true, visualQuality: 'quality'`.
+
+**Profile signals** (used when `visual: true` and the user did not explicitly pick a profile):
+
+- Default: omit `visualQuality` → server uses `'fast'`.
+- Use `visualQuality: 'quality'` when the user signals in-image text fidelity matters: axis labels, panel sub-labels, annotations, faithful captions, research paper figures, technical diagrams with embedded labels (manuals, architecture diagrams), dense dashboards.
+- If unsure between `fast` and `quality`, ask: "Use the 'quality' profile? It captures in-image text (axis labels, annotations) more reliably but is materially heavier on disk and machine load than 'fast'."
 
 ### ingest_data
 ```
@@ -145,30 +181,33 @@ Re-ingest same source to update. Use same source in `delete_file` to remove.
 
 ### Visual content (PDFs)
 
-Opt-in visual ingest enriches PDF chunks with text descriptions of figures, charts, tables, and diagrams produced by a local Vision Language Model (VLM). Use the decision protocol in `ingest_file` to choose visual mode; otherwise use the default text-only ingest.
+Opt-in visual ingest emits dedicated caption chunks for figures, charts, tables, and diagrams produced by a local Vision Language Model (VLM). Use the decision protocol in `ingest_file` to choose visual mode and select between the `fast` (lightweight) and `quality` (more faithful, heavier) profiles.
 
-Captions are appended to the originating page's text before chunking, so they flow through the same embedder/search pipeline as regular text — no schema change, no separate retrieval path.
+Each caption is its own chunk wrapped as `[Visual content on page <N>: <caption>]`, flowing through the same embedder/search pipeline as page-body chunks — no schema change, no separate retrieval path.
 
 ```
 ingest_file({ filePath: "/absolute/path/to/figures.pdf", visual: true })
+ingest_file({ filePath: "/absolute/path/to/research-paper.pdf", visual: true, visualQuality: "quality" })
 ```
 
 ```
 npx mcp-local-rag ingest /absolute/path/to/figures.pdf --visual
+npx mcp-local-rag ingest /absolute/path/to/research-paper.pdf --visual --visual-quality quality
 ```
 
 - `visual` defaults to `false`. Without it, ingest behavior is identical to before; no VLM is loaded and no model is downloaded.
 - `visual: true` only takes effect for `.pdf` files. For non-PDFs (`.md`, `.docx`, `.txt`), the flag is silently ignored.
-- Captioned content is embedded inline as `[Visual content on page <N>: <caption>]` within the same page's chunks — searchable via `query_documents` like any other text.
+- `visualQuality` selects the VLM profile (`'fast'` default, `'quality'` for higher in-image text fidelity). Selection criteria live in the `ingest_file` protocol above. Silently ignored when `visual` is false. The MCP boundary also accepts `""` as a synonym for omitted.
+- Caption chunks are searchable via `query_documents` like any other text.
 - VLM failures use text-only fallback; see Retry on failure below.
 
 **Environment variables:**
 
 | Env | Default | Purpose |
 |-----|---------|---------|
-| `CACHE_DIR` | `./models/` | Shared model cache directory for the embedder and VLM |
+| `CACHE_DIR` | `./models/` | Shared model cache directory for the embedder and VLM (both profiles) |
 
-**First-time model download:** The VLM is downloaded on the first visual ingest and cached under `CACHE_DIR` (shared with the embedder). The download is hundreds of MB.
+**First-time model download:** Each profile's VLM is downloaded on the first visual ingest that uses it, cached under `CACHE_DIR`. The `quality` profile's model is materially larger than `fast`'s; each profile downloads its own model on first use. See [cli-reference.md](references/cli-reference.md#ingest) for current approximate sizes.
 
 **Retry on failure:** Per-page VLM failures degrade gracefully (the page is ingested as text-only) and the file ingest completes. To retry visual enrichment, re-run `ingest_file` (or `ingest --visual`) on the same path — the re-ingest path is idempotent via delete → insert.
 

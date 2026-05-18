@@ -1,7 +1,8 @@
 ---
 name: eval-skills
 description: "Audit all skills in the current project for frontmatter completeness, effort level appropriateness, allowed-tools scoping, and content quality. Produces a scored report with effort-level recommendations for each skill. Use when onboarding to a new project, reviewing skill quality before shipping, or adding effort fields to an existing skill library."
-allowed-tools: Read, Glob, Bash
+allowed-tools: Read Glob Bash
+argument-hint: "[path — default: .claude/skills/]"
 effort: medium
 ---
 
@@ -25,6 +26,25 @@ All `SKILL.md` files and flat `.md` files found in:
 
 ---
 
+## Pre-Check: Use the Official Validator
+
+Before scoring manually, run the official CLI validator first — it catches structural issues in seconds:
+
+```bash
+# Install (one-time)
+uv tool install skills-ref
+
+# Validate a skill directory
+skills-ref validate ./my-skill
+
+# Validate all skills in project
+find .claude/skills -name "SKILL.md" -exec dirname {} \; | xargs -I{} skills-ref validate {}
+```
+
+If `skills-ref` passes cleanly, proceed to quality scoring below.
+
+---
+
 ## Scoring Criteria (14 pts per skill)
 
 | # | Criterion | Max | What is checked |
@@ -34,9 +54,16 @@ All `SKILL.md` files and flat `.md` files found in:
 | 3 | **allowed-tools** | 2 | Present + not overly broad (Bash without scoping when read-only) |
 | 4 | **effort** | 3 | Present (1pt) + appropriate for content (2pt based on inference) |
 | 5 | **content structure** | 4 | Has Purpose/When section (1), has examples/usage (1), has clear workflow (1), no placeholder text (1) |
-| 6 | **bonus** | +2 | argument-hint present (1), version/author metadata (1) |
+| 6 | **bonus** | +2 | argument-hint present (1), version/author in metadata (1) |
 
-> **Note**: `tags` is NOT an officially supported frontmatter field in Claude Code. It is ignored by the runtime. Do not include it or score it as a quality criterion.
+**Valid frontmatter fields** (agentskills.io spec + Claude Code extensions):
+- `name`, `description`, `allowed-tools`, `license`, `compatibility`, `metadata` — agentskills.io spec
+- `effort`, `argument-hint`, `disable-model-invocation` — Claude Code extensions
+- `model` — Claude Code extension: override the model for this skill invocation
+
+> **Note**: `tags`, `category`, `keywords`, `context`, `agent`, `usage`, `args` are NOT supported frontmatter fields in Claude Code. They are ignored by the runtime. Flag and remove them during audit.
+
+**`allowed-tools` format**: space-delimited string, NOT a YAML list. `Read Bash Grep` is correct; `[Read, Bash, Grep]` is incorrect and may not parse.
 
 **Thresholds:**
 - ✅ Good: ≥11/14 (≥80%)
@@ -109,7 +136,7 @@ find .claude/skills -maxdepth 1 -name "*.md" ! -name "README*" 2>/dev/null
 For each skill file found:
 1. Read the full file
 2. Extract YAML frontmatter (between first `---` and second `---`)
-3. Parse: name, description, allowed-tools, effort, argument-hint, version
+3. Parse: name, description, allowed-tools, effort, argument-hint, model, metadata
 4. Note presence/absence of each field
 5. Read the body content for structure analysis
 
@@ -144,7 +171,7 @@ Date: [today] | Scanned: N skills
 
 ## Per-Skill Results
 
-### [skill-name] — [score]/15 [✅/⚠️/❌]
+### [skill-name] — [score]/14 [✅/⚠️/❌]
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|

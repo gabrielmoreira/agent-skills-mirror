@@ -1,7 +1,7 @@
 ---
 name: release-notes-generator
 description: "Generate release notes in 3 formats (CHANGELOG.md, PR body, Slack announcement) from git commits. Automatically categorizes changes and converts technical language to user-friendly messaging. Use for releases, changelogs, version notes, what's new summaries, or ship announcements."
-tags: [release-notes, changelog, slack, git, automation]
+allowed-tools: Bash
 effort: low
 ---
 

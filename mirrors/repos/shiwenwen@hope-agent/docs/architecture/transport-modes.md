@@ -14,6 +14,23 @@
 
 三种模式共享 `ha-core` 业务逻辑和 `EventBus` 抽象。Tauri 与 HTTP 只是把同一批核心能力分别桥接成 IPC 或 REST/WS；ACP 是另一条协议入口，不参与前端 Transport 选择。
 
+### Server 模式的工具审批
+
+HTTP 入口的 `ChatEngineParams.auto_approve_tools` 在桌面 Web GUI 客户端下默认 `false`（跟桌面 GUI 一致），审批通过 EventBus `approval_required` 事件等浏览器侧 UI 响应。但 headless 客户端（curl / pipeline / Docker entrypoint）通常不会订阅这个事件，工具调用会卡到 5 分钟超时再被 deny —— 表现就是「模型一个 shell 命令都跑不了」。
+
+提供两个 opt-in 开关给 headless 部署：
+
+- **CLI flag** `hope-agent server start --auto-approve-tools`
+- **Env var** `HA_SERVER_AUTO_APPROVE_TOOLS=1`（Docker 友好；接受 `1` / `true` / `yes` / `on` 任一值）
+
+任一启用后，[`ha_server::auto_approve::is_active()`](../../crates/ha-server/src/auto_approve.rs) 返回 `true`，HTTP chat 路由把 `auto_approve_tools=true` 透传给 chat engine —— 等同于 IM 渠道账号勾上「auto-approve tools」。
+
+**注意：是「全自动放行」，不是「只跳工具确认弹窗」**。`auto_approve_tools=true` 是 IM 账户级语义，会跳过**所有**审批闸门：dangerous-commands 列表、protected-paths 列表、edit-command 审计、Plan Mode ask、Smart 模式 judge —— 全部跳过。LLM 触发的任何 `exec` / `write` / `edit` 都直接执行，没有任何拦截。**不要把这个 flag 用在不可信租户**。
+
+[`security::dangerous`](../../crates/ha-core/src/security/dangerous.rs)（`--dangerously-skip-all-approvals`）是更严格的超集：除了上面的全跳，还会让 dispatcher 层的 `app_warn!` 审计日志静默（也就是说 `~/.hope-agent/logs.db` 看不到「这条危险命令被自动放行」的记录）。常规 headless 推荐 `--auto-approve-tools` 即可——保留 dispatcher 层审计便于事后排查。同时启用两个 flag 不会叠加保护，只是两条 banner 都会打。
+
+进程态、不持久化。启动时 stderr 打一行红字 banner，同时 `init_runtime` 后会再写一条 `app_warn!` 进 `~/.hope-agent/logs.db`，便于事后 agent 自主排查时看到此次启动是否开了 auto-approve。
+
 ```mermaid
 flowchart TD
     UI["React UI"] --> TP["getTransport()"]
@@ -123,6 +140,7 @@ Tauri 桌面没有 `/ws/events`，但同一个 EventBus 会在 `src-tauri/src/se
 | Channel | `channel:stream_start` / `channel:stream_delta` / `channel:stream_end` | IM 渠道会话的流式状态和增量。 |
 | Channel | `channel:message_update` | IM 渠道消息落库后通知 UI 刷新。 |
 | Approval | `approval_required` | 工具审批请求。 |
+| Approval | `approval_timed_out` | 审批 5 分钟超时通知。IM 渠道侧用来给用户发「已超时被拒」消息；桌面 UI 自身有倒计时圆环，不依赖此事件。 |
 | Approval | `session_pending_interactions_changed` | 会话 pending 审批和 ask_user 数量变化。 |
 | Ask User | `ask_user_request` | 结构化问答请求，Plan Mode 和普通工具路径共用。 |
 | Plan Mode | `plan_mode_changed` / `plan_content_updated` / `plan_step_updated` | 计划状态、内容、步骤变化。 |

@@ -5,6 +5,7 @@ package ai.koog.agents.core.agent.entity
 import ai.koog.agents.annotations.JavaAPI
 import ai.koog.agents.core.agent.context.AIAgentGraphContextBase
 import ai.koog.agents.core.annotation.InternalAgentsApi
+import ai.koog.agents.core.dsl.extension.ModeratedMessage
 import ai.koog.agents.core.dsl.extension.ReceivedToolResults
 import ai.koog.agents.core.dsl.extension.ToolCalls
 import ai.koog.agents.core.dsl.extension.nodeExecuteTools
@@ -22,7 +23,6 @@ import ai.koog.agents.core.tools.Tool
 import ai.koog.agents.core.tools.ToolDescriptor
 import ai.koog.agents.ext.llm.choice.ChoiceSelectionStrategy
 import ai.koog.agents.ext.llm.choice.nodeSelectLLMChoice
-import ai.koog.prompt.dsl.ModerationResult
 import ai.koog.prompt.executor.model.StructureFixingParser
 import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.message.LLMChoice
@@ -173,7 +173,7 @@ public actual open class AIAgentNode<TInput, TOutput> internal actual constructo
             name: String? = null,
             moderatingModel: LLModel?,
             includeCurrentPrompt: Boolean,
-        ): AIAgentNodeBase<Message, ModerationResult> {
+        ): AIAgentNodeBase<Message, ModeratedMessage> {
             val node by nodeLLMModerateMessage(name, moderatingModel, includeCurrentPrompt)
             return node
         }

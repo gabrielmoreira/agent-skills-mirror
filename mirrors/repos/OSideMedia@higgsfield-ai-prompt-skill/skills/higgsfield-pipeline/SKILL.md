@@ -9,8 +9,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, pipeline, workflow, chain, production, multi-shot, short-film, popcorn, recast]
-  version: 3.2.0
-  updated: 2026-05-16
+  version: 3.3.0
+  updated: 2026-05-17
   parent: higgsfield
 ---
 
@@ -21,6 +21,359 @@ metadata:
 Every Higgsfield tool is strong individually. The real power is when you chain them.
 A professional result almost always involves at least 3 tools in sequence.
 This skill documents the key chains and how to prompt for each stage.
+
+---
+
+## Building Complete AI Projects — The 10-Step Methodology
+
+The Core Insight above answers *why* you chain tools. The next
+question is *how to plan the project* before any tool is touched.
+Most people skip planning and start prompting straight from a
+creative impulse — a generation here, a clip there, hoping the
+pieces will connect. They don't. A project that's planned at the
+script and bible level lands consistently; a project assembled
+prompt-by-prompt drifts on character, style, and continuity within
+three or four generations.
+
+This section documents a 10-step methodology for building complete
+AI projects — from idea through finished sequence — that sits
+upstream of the Master Production Chain below. Use these 10 Steps
+as a planning discipline; use Pipelines A-E to execute the
+tool-level chain once your project plan is locked. The closing §
+Simple Workflow gives the imperative-action version of the same 10
+Steps if you want the execution recipe before the principles.
+
+### Step 01 — Start With the Project, Not the Prompt
+
+Before writing a single prompt, define what you are building. The
+AI cannot read your intent; if you skip this step the model fills
+in the gaps with whatever the prompt happens to suggest, and the
+project drifts within the first few generations.
+
+Lock these nine fields before any tool is touched:
+
+- Project type
+- Main subject
+- Visual style
+- Scene goal
+- Audience
+- Mood
+- Length
+- Setting
+- What must stay consistent
+
+The last field is the load-bearing one. If you don't know what
+must stay consistent across the project, every other field can be
+locked and the result will still feel disjointed.
+
+### Step 02 — Build a Master Script
+
+A Master Script is the project blueprint — the single document
+that keeps every scene connected to the same goal. It does not
+have to be a Hollywood screenplay; it just needs to explain the
+full idea clearly.
+
+> **Master Script disambiguation.** "Master Script" in this
+> context means the structured project document, not a screenplay.
+> The source explicitly notes "it does not have to be a Hollywood
+> screenplay; it just needs to explain the full idea clearly."
+> This is distinct from Hollywood screenplay craft (slug lines,
+> action lines, character cues, transitions) — that's a different
+> discipline and is not in this skill's scope.
+
+The Master Script should include:
+
+- The story or concept
+- The scene order
+- The main characters or products
+- The visual style
+- The camera rules
+- The setting
+- The emotional tone
+- The continuity rules
+- What should never happen
+
+Without a Master Script, each prompt becomes its own random
+island. With one, every prompt belongs to the same project —
+characters carry between scenes, the visual style holds, and the
+negative rules ("what should never happen") stay out of the
+output.
+
+### Step 03 — Use GPT as Your Creative Assistant
+
+Do not use GPT like a magic button. Use it like a creative team
+member. GPT plays five distinct roles in the project pipeline:
+
+- **Concept Builder** — turns a rough idea into a structured
+  concept
+- **Script Writer** — drafts the Master Script from the concept
+- **Shot List Planner** — breaks the script into scene-by-scene
+  shot lists
+- **Prompt Refiner** — turns each shot into image or video prompt
+  text
+- **Problem Solver** — diagnoses failed generations and rewrites
+  the offending prompt
+
+The key is **staging**. Do not ask GPT to do everything at once.
+Ask for the project structure first. Then the scenes. Then the
+prompts. Then the revisions. The output quality at every stage
+depends on the input quality of the prior stage; cascading the
+work in order gives you control over each handoff.
+
+> **In-platform alternative.** Higgsfield has an in-platform GPT-5
+> copilot (Higgsfield Assist at higgsfield.ai/chat) trained
+> specifically on Higgsfield's tools and workflows. For quick
+> in-platform prompt generation and platform-navigation questions,
+> see `../higgsfield-assist/SKILL.md`. For upstream project
+> staging across multiple sessions, an external GPT (Claude,
+> ChatGPT) running this 10-step methodology is the better fit
+> because state carries across the full project, not just the
+> current platform session.
+
+### Step 04 — Separate the Script From the Prompt
+
+The script is what happens. The prompt is how the AI shows it.
+These are two different artifacts that serve two different
+purposes — keep them in separate documents, and don't let
+prompt-shaped instructions leak into the script.
+
+A script line might read:
+
+> "She walks into the room and realizes something is wrong."
+
+The same beat, as a prompt, reads:
+
+> "A woman slowly enters a dim apartment from the hallway. Camera
+> stays in front of her at chest height, tracking backward as she
+> steps forward. Her eyes move toward an overturned chair and
+> broken lamp. Warm hallway light behind her, cold blue window
+> light across the room. Her face tightens as she realizes
+> something is wrong."
+
+The prompt decomposes the beat into four production-instruction
+categories:
+
+- **Camera Notes** — wide shot, eye-level, shallow depth of field,
+  focus on subject's expression
+- **Lighting Direction** — dim, cinematic, cool blue ambient from
+  window, single warm lamp in corner
+- **Subject Movement** — slow, hesitant walk, pauses mid-step,
+  tense posture, hand to mouth
+- **Environment Detail** — cluttered, atmospheric, dust motes,
+  shadows in corners, sense of foreboding
+
+The script gives story. The prompt gives visual instructions. You
+need both, in separate documents, with the script feeding the
+prompt rather than collapsing into it.
+
+> **Separation rule axis distinction.** This is the project-level
+> separation — script (story) from prompt (AI instruction). For
+> the prompt-level separation within a single shot — Identity (who
+> is in frame) from Motion (what they do and how the camera moves)
+> — see `../higgsfield-prompt/SKILL.md` § Identity vs. Motion
+> Separation Rule and `../higgsfield-soul/SKILL.md` § Identity vs.
+> Motion Separation. Different axes of the same overall
+> composition problem; both apply.
+
+### Step 05 — Create a Project Bible
+
+A Project Bible is a single document that locks in the rules of
+the project — character appearance, environment, style, what must
+stay consistent, what must never appear. It is especially
+important for any project with multiple scenes, because
+consistency comes from repetition and clear rules, not from the AI
+inferring intent.
+
+The Project Bible should lock in:
+
+- Character appearance
+- Wardrobe
+- Hair
+- Color palette
+- Location
+- Lighting style
+- Camera style
+- Tone
+- Props
+- Negative rules
+- Continuity rules
+
+Three rules of thumb make a Project Bible work in practice:
+
+- If your character is supposed to look the same every time,
+  describe them the same way every time.
+- If your product is the focus, make sure the product stays the
+  focus.
+- If your scene takes place in one location, do not let the AI
+  redesign the room every shot.
+
+> **Project Bible as upstream source-of-truth.** The Project Bible
+> lives in your own files alongside the Master Script — it's the
+> document you maintain across the project. Two common downstream
+> realizations of the Bible inside Higgsfield: (i) the Character
+> section feeds into a Soul ID character sheet, see
+> `../higgsfield-soul/SKILL.md` § Character Sheet Creation for the
+> multi-angle reference approach; (ii) Characters, Locations, and
+> Props feed into Cinema Studio's @ Elements system, see
+> `../higgsfield-cinema/SKILL.md` § Elements System for the
+> `@CharacterName` / `@LocationName` / `@PropName` workflow. The
+> Bible is the upstream artifact; the Soul ID sheet and Cinema
+> Studio Elements are tool-side realizations of it.
+
+### Step 06 — Give Every Scene One Job
+
+Every scene should have one clear purpose. When you try to make
+one scene do too much, the AI starts blending details — messy
+motion, wrong angles, extra people, broken hands, missing
+objects, confusing results. Six scene purposes cover most
+project work:
+
+- Introduce the character
+- Show the location
+- Build tension
+- Reveal the product
+- Create emotion
+- Deliver the action
+
+A good scene prompt answers six questions:
+
+- Who is in the shot?
+- Where is the camera?
+- What is the subject doing?
+- What should the viewer notice first?
+- What must stay visible?
+- What should not happen?
+
+Clarity wins.
+
+> **Per-shot action-count rule.** Step 06 addresses the
+> *narrative purpose* of a scene (which may span multiple shots).
+> For the per-shot *action-count* rule — one primary action per
+> clip, with one or two secondary actions max — see
+> `../higgsfield-prompt/SKILL.md` § One Action Per Scene. Both
+> useful, at different units of decomposition.
+
+### Step 07 — Use Prompt Modules
+
+A prompt module is a reusable block of instruction. Instead of
+rewriting the same camera or lighting notes every time, build
+modules you can copy and paste. Seven module types cover most
+project work:
+
+- Character identity block
+- Camera block
+- Lighting block
+- Style block
+- Motion block
+- Negative prompt block
+- Continuity block
+
+Example camera block:
+
+> "Camera stays in front of the main subject, facing them
+> directly while tracking backward. The subject moves toward
+> camera. Background movement stays behind the subject. Do not
+> reverse the direction."
+
+That one block can save multiple generations. Build your own
+library of modules — it saves time and keeps your project
+stable.
+
+> **Prompt Modules as finer-grained sibling of Identity/Motion.**
+> The 7-module taxonomy is a finer-grained sibling of the
+> Identity-vs-Motion separation rule used in single-shot prompts.
+> For Soul ID single-shot work, the 2-block separation in
+> `../higgsfield-soul/SKILL.md` § Identity vs. Motion Separation
+> (also `../higgsfield-prompt/SKILL.md` § Identity vs. Motion
+> Separation Rule) is sufficient — "Character identity block"
+> here aliases their "Identity Block." The 7-module taxonomy adds
+> a layer for multi-shot projects where camera, lighting, and
+> style each warrant their own reusable block.
+
+### Step 08+09 — Fix Failures + Protect What Worked
+
+When a generation fails, do not just say "make it better" —
+that's not actionable. Tell GPT exactly what went wrong: which
+specific element is off, what to keep, what to change. Every
+failure should become a new rule: each diagnosed mistake gets
+locked into the project's negative-rules list so it doesn't
+recur.
+
+When fixing, protect what already worked. If 80% of the
+generation was right, keep that 80%. Only fix the broken part.
+A lot of people destroy good prompts by changing too much — keep
+the subject, keep the style, keep the camera if it worked, keep
+the lighting if it worked. Fix only the mistake.
+
+> **Full iteration discipline lives elsewhere.** The full
+> Change-One-Variable-at-a-Time discipline and the 6-Pass
+> Diagnostic Sequence (Subject / Action / Camera / Style / Audio
+> / Output) for when you don't yet know what's wrong are
+> documented in `../higgsfield-prompt/SKILL.md` § The Iteration
+> Rule — Change One Variable at a Time. Step 08+09 here names the
+> three rhetorical handles ("make it better" anti-pattern, 80%
+> rule, "every failure should become a new rule" framing); the
+> mechanics live there.
+
+### Step 10 — Build the Project in Passes
+
+Do not try to do everything at once. Build the project in clear
+passes:
+
+- Pass 1: Concept
+- Pass 2: Project script
+- Pass 3: Scene breakdown
+- Pass 4: Shot list
+- Pass 5: Image prompts
+- Pass 6: Video prompts
+- Pass 7: Review results
+- Pass 8: Fix and finalize
+
+Each pass produces an artifact the next pass consumes. Pass 1
+gives Pass 2 a concept to script; Pass 2 gives Pass 3 a script
+to break into scenes; and so on. AI moves fast, but fast without
+structure creates chaos — a workflow keeps it clean.
+
+> **Tool-level instantiation.** Passes 5-7 (image prompts / video
+> prompts / generate) are where the Higgsfield tool chain enters
+> the workflow — see § The Master Production Chain below for the
+> 8-stage tool-level chain (Popcorn → Seedream/Soul → Animate →
+> Recast → Lipsync → Vibe Motion → Upscale → Assemble), and §
+> Pipeline Decision Guide below for the chain choice by project
+> type (Cinematic Short Film, Social Series, Product Campaign,
+> Fast Iteration, Multi-Style Short Film).
+
+### Simple Workflow — Execution Recipe
+
+The 10 Steps above are the methodology. The Simple Workflow
+below is the imperative-action recipe — the same workflow
+expressed as steps you take in order:
+
+1. Write the project idea.
+2. Ask GPT to turn it into a project brief.
+3. Ask GPT to break it into scenes.
+4. Ask GPT to write a clean script.
+5. Ask GPT to turn each scene into image prompts.
+6. Ask GPT to turn each scene into video prompts.
+7. Generate inside Higgsfield.
+8. Review what worked and what failed.
+9. Give GPT specific correction notes.
+10. Regenerate only what needs fixing.
+
+That is how you move from idea to finished project. At step 7
+("Generate inside Higgsfield"), you choose which tool-chain to
+run — see § Pipeline Decision Guide below for the chain choice
+by project type.
+
+### Build With Purpose
+
+The power is not in one perfect prompt. The power is in the
+workflow.
+
+Scripts give the project direction. GPTs help organize and
+refine the work. Higgsfield brings the visuals to life. When you
+use all three together, you stop hoping for random good results.
+You start building with purpose.
 
 ---
 
@@ -500,6 +853,66 @@ better continuity.
 > **Recurrence as continuity substrate:** The backbone-building work above (scene order, bridge identification, continuity-arc mapping) operates on a substrate — what should recur across shots for a world to cohere. See `../../vocab.md` § World Through Recurrence for the eight named substrate axes.
 
 > **Post-clip next-shot decisions:** Deciding whether a scene needs a bridge (or a continuation, contrast, or reset) is a post-generation question, not a pre-generation one. The four-question diagnostic and the next-shot decision tree formalize the call. See `higgsfield-seedance` § Post-Clip Decisions.
+
+---
+
+## Spatial Blocking — Top-Down Schema for Multi-Character Scenes
+
+When a scene has multiple characters or geometry that matters,
+AI video models hallucinate spatial relationships unless they're
+declared in absolute terms. The fix is a top-down schema —
+bird's-eye sketch of the scene that you draft, the user
+approves, and the prompt then describes in absolute terms
+("character A 2m from character B, character C 1.5m behind A,
+partially occluded by the corner pillar"). Skip this step and
+the model resolves blocking on its own — usually wrong, often
+worse cut-to-cut as the geometry drifts.
+
+**When to draw a schema:**
+
+- 2+ characters in the same scene
+- Key prop on a specific surface (device, artifact, weapon,
+  photo)
+- Complex camera geometry (which shot from where, arcs, eyeline
+  changes per cut)
+
+**What goes on the schema:**
+
+- Room outline (walls, tables, screens, doorways)
+- Character positions (one initial per character, placed at the
+  starting position)
+- Eyelines (arrow showing where each character is looking)
+- Props (icons or short labels at exact placement)
+- Distances (~Xm between key objects)
+- Surface labels (FL / FR / BL / BR for front-left / front-right
+  / back-left / back-right, relative to a stated main view)
+
+ASCII form for the schema — runtime-portable, copy-paste-able
+into chat or any document:
+
+```
+                      [WINDOW]
+                          |
+  [TABLE]    G(↓east)     |
+    ┌─┐                   |        R(↑north)
+    │ │       ~2m         |          @
+    └─┘                  ~1.5m
+                          |
+                       [DOOR]
+                          |
+                  (camera mount, west wall)
+```
+
+Translate the schema into the prompt as absolute spatial
+declarations — "Gandelfina stands behind the table, facing east
+at the window; Roko stands 2m from her, facing north toward the
+door" beats "Gandelfina near the table, Roko nearby" by a wide
+margin for AI-video adherence.
+
+> **Workflow handoff to Seedance.** Once the schema is approved,
+> the prompt declares character positions in absolute terms
+> inside the Static Description slot of the Seedance prompt.
+> See `../higgsfield-seedance/SKILL.md` § Output Format.
 
 ---
 

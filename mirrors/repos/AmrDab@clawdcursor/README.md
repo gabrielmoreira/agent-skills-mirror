@@ -105,7 +105,7 @@ That's it. Ask your agent to *"open Outlook and reply to the latest email from S
 - **Works where APIs don't exist.** Native apps. Legacy enterprise tools. Web portals behind SSO that block headless browsers. Anything inside Citrix or RDP. If pixels reach the screen, your agent can drive it.
 - **Model-agnostic.** Claude, GPT, Gemini, Llama, Kimi, anything local via Ollama &mdash; any tool-calling LLM. Text and vision can be different models from different vendors.
 - **App-agnostic.** No per-app plugins, no per-service auth. The same six compound tools drive Outlook, Figma, your bank, and that 2003-era ERP.
-- **Cheapest-tier-first pipeline.** Accessibility tree (free) before OCR (cheap) before screenshot (medium) before vision (expensive). The Reflector feeds verifier signals back to the planner so it doesn't keep paying for vision when text would work.
+- **Cheapest-tier-first pipeline** (for natural-language tasks). When you hand a whole instruction to the autonomous agent via `task({...})` / `submit_task`, the planner starts at accessibility (free), escalates to OCR (cheap), then screenshot (medium), then vision (expensive). The Reflector feeds verifier signals back so the loop doesn't keep paying for vision when text would work. **Direct tool calls** (when your own agent loop drives the compound or granular tools) skip the pipeline and go straight to the requested tool &mdash; you bring the planning, clawdcursor brings the primitives.
 - **Local-only by default.** Server binds to `127.0.0.1`. Screenshots stay in RAM unless you point a cloud model at them. No telemetry.
 - **One protocol, two transports.** MCP over stdio for editor hosts; MCP over HTTP for daemons. Same tool catalog, same JSON-RPC envelope.
 
@@ -128,7 +128,12 @@ Clawd Cursor is GUI control. It's slower than an API, less reliable than a scrip
 
 ## How It Thinks
 
-Every tool call &mdash; whether it arrives over stdio MCP, HTTP MCP, or the built-in autonomous loop &mdash; flows through the same decision layer. The pipeline picks the cheapest rung that works and only escalates when the verifier disagrees with the planner's claim of success.
+Two execution paths exist, and the difference matters:
+
+- **Direct tool calls** (stdio MCP from editor hosts, or HTTP MCP `tools/call` for a single tool) dispatch straight to the tool implementation. They are gated only by `safety.evaluate()` &mdash; the tier check and blocked-combo enforcement. There is no router, no verifier, no escalation. Your agent already knows what it wants to do; clawdcursor just runs it.
+- **Autonomous tasks** (via `task({instruction})` / `submit_task` against the daemon) flow through the ladder below. The pipeline picks the cheapest rung that works and only escalates when the ground-truth verifier disagrees with the planner's claim of success.
+
+The diagram below describes the **autonomous-task path only.** Direct calls go through the `safety.evaluate()` → `tool` segment and stop there.
 
 ```mermaid
 flowchart LR
@@ -157,7 +162,7 @@ flowchart LR
     class reflector refl;
 ```
 
-**Single safety chokepoint.** Every tool call &mdash; direct or autonomous &mdash; routes through `safety.evaluate()`. The agent cannot bypass this path; it is the only way tools execute.
+**Single safety chokepoint.** Every tool call &mdash; direct OR autonomous &mdash; routes through `safety.evaluate()`. The MCP server invokes it before dispatch; the granular and compound tool tables share the same gate. This is the one decision layer that genuinely is universal: there is no path for a tool to execute that skips it.
 
 **Ground-truth verification.** When the agent claims a task is done, six independent signals are checked against the post-task screen: pixel diff, window-state change, focus change, OCR delta, task-type assertions (`send_email`, `navigate_url`, `open_app`, &hellip;), and anti-pattern detection (error dialogs, auth failures, "draft saved"). Weighted voting with hard-fail rules. No LLM self-report.
 
@@ -302,12 +307,14 @@ The `PlatformAdapter` is the only thing platform code talks to. The `safety.eval
 
 ## Safety & Privacy
 
-| Tier | Actions | Behavior |
+`safety.evaluate()` returns one of three decisions per call. Tools also carry a tier category (`read` / `input` / `destructive` / `system`) that the evaluator uses to make its decision &mdash; categorization on the left, runtime outcome on the right.
+
+| Tool tier | Examples | Decision |
 |---|---|---|
-| Auto | Reading, opening apps, navigation, typing into non-sensitive fields | Executes immediately |
-| Preview | Form fill, arbitrary input | Logged before executing |
-| Confirm | Sends, deletes, purchases, transfers | Pauses for user approval |
-| Block | `Alt+F4` / `Cmd+Q` of the agent shell, `Ctrl+Alt+Delete`, `Shift+Delete`, power chords | Refused outright |
+| `read` | `accessibility.read_tree`, `window.list`, `system.clipboard_read`, `system.ocr`, `computer.screenshot` | **Allow** &mdash; executes immediately |
+| `input` | `computer.type`, `computer.click`, `accessibility.invoke`, `window.open_app` | **Allow** &mdash; executes immediately; sensitive-app heuristic can elevate to Confirm |
+| `destructive` | Sends, deletes, purchases, transfers, dangerous key combos (`mod+w`, `mod+q`, &hellip;) | **Confirm** &mdash; pauses for user approval before executing |
+| `system` (blocked subset) | `Alt+F4` / `Cmd+Q` of the agent shell, `Ctrl+Alt+Delete`, `Shift+Delete`, power chords | **Block** &mdash; refused outright with a Tier-named error |
 
 Hardening summary:
 
@@ -339,6 +346,7 @@ clawdcursor agent           Daemon: HTTP MCP at /mcp on :3847, optional built-in
 clawdcursor agent --no-llm  Daemon, tool surface only (no built-in brain/scheduler)
 clawdcursor stop            Stop every running mode
 clawdcursor uninstall       Remove all clawdcursor config and data
+clawdcursor report          File a bug / feature report (interactive)
 
 # Guides marketplace (see Guides Marketplace section above)
 clawdcursor guides list                What's cached + ratings

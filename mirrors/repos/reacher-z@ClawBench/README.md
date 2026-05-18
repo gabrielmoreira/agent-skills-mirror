@@ -145,6 +145,7 @@ order food, book travel, apply for jobs, write reviews, manage projects.<br/>
 
 ## <img src="static/icons/bullhorn.svg" width="20" height="20"> News
 
+- **[2026.05.16]** <img src="static/icons/layer-group.svg" width="14" height="14"> &nbsp;Added a converted **Claw-Eval** suite in [`test-cases/claw-eval/`](test-cases/claw-eval/) — 19 browser-research tasks ported into native flat task JSON files with final-answer submission through ClawBench's request interceptor. Run with `uv run clawbench-batch --models <model-name> --cases-suite claw-eval --all-cases`.
 - **[2026.05.12]** <img src="static/icons/rocket.svg" width="14" height="14"> &nbsp;Canonical leaderboard moved to **[`TIGER-Lab/ClawBench`](https://huggingface.co/spaces/TIGER-Lab/ClawBench)** — Gradio 3-tab Space (Leaderboard / About / Submit) modeled after [`TIGER-Lab/MMLU-Pro`](https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro). All HF assets bundled in the **[ClawBench collection](https://huggingface.co/collections/TIGER-Lab/clawbench-6a0247d04680f475038797d4)** — paper + V1/V2 dataset + V1Trace + V2Trace + Space. Ranking corrected: partial-batch results no longer outrank complete ones with lower reward. ([`NAIL-Group/clawbench-leaderboard`](https://huggingface.co/spaces/NAIL-Group/clawbench-leaderboard) remains live as the historical mirror.)
 - **[2026.05.11]** <img src="static/icons/chart-bar.svg" width="14" height="14"> &nbsp;V2 leaderboard ships — first 6 models scored end-to-end with two-stage rubric (interception + LLM judge). Top so far: `glm-5.1 / hermes` at **18.5% reward / 48.5% intercepted**. See [`claw-bench.com/leaderboard`](https://claw-bench.com/leaderboard), scoring details in [`eval/scoring.md`](eval/scoring.md), live data on the [HF Space](https://huggingface.co/spaces/TIGER-Lab/ClawBench).
 - **[2026.05.11]** <img src="static/icons/layer-group.svg" width="14" height="14"> &nbsp;Companion trace dataset **[ClawBenchV2Trace](https://huggingface.co/datasets/NAIL-Group/ClawBenchV2Trace)** going live — same 5-layer trace bundle per run as V1Trace, rolling as new V2 evaluations land.
@@ -536,11 +537,14 @@ uv run clawbench-batch --models claude-sonnet-4-6 --all-cases --max-concurrent 3
 # Batch all V2 tasks from test-cases/v2/:
 uv run clawbench-batch --models claude-sonnet-4-6 --cases-suite v2 --all-cases --max-concurrent 3
 
+# Batch converted Claw-Eval tasks from test-cases/claw-eval/:
+uv run clawbench-batch --models claude-sonnet-4-6 --cases-suite claw-eval --all-cases
+
 # Batch a custom case directory:
 uv run clawbench-batch --models claude-sonnet-4-6 --cases-dir custom-cases --all-cases
 ```
 
-V1 tasks are in [`test-cases/v1/`](test-cases/v1/) (153 tasks). V2 tasks are in `test-cases/v2/` (130 tasks), and Lite is in `test-cases/v1-lite/` (20 tasks). All suites use [`test-cases/task.schema.json`](test-cases/task.schema.json). For test case authoring details, see [CONTRIBUTING.md](CONTRIBUTING.md). For output structure and evaluation guidance, see [eval/README.md](eval/README.md).
+V1 tasks are in [`test-cases/v1/`](test-cases/v1/) (153 tasks). V2 tasks are in `test-cases/v2/` (130 tasks), Lite is in `test-cases/v1-lite/` (20 tasks), and converted Claw-Eval tasks live in `test-cases/claw-eval/` (19 tasks). All suites use [`test-cases/task.schema.json`](test-cases/task.schema.json). For test case authoring details, see [CONTRIBUTING.md](CONTRIBUTING.md). For output structure and evaluation guidance, see [eval/README.md](eval/README.md).
 
 <br/>
 
@@ -841,5 +845,7 @@ Open to contributions — new test cases, bug fixes, or evaluation submissions f
 ## License & Acknowledgments
 
 Apache 2.0 -- see [LICENSE](LICENSE).
+
+The converted Claw-Eval suite in [`test-cases/claw-eval/`](test-cases/claw-eval/) is derived from [claw-eval/claw-eval](https://github.com/claw-eval/claw-eval) and the [claw-eval/Claw-Eval](https://huggingface.co/datasets/claw-eval/Claw-Eval) dataset, which are released under the MIT License. Third-party package notices are in [NOTICE](NOTICE).
 
 Built with [OpenClaw](https://github.com/openclaw/openclaw), [opencode](https://opencode.ai), [Claude Code](https://docs.anthropic.com/en/docs/claude-code), the [Claude in Chrome](https://code.claude.com/docs/en/chrome) extension, [OpenAI Codex CLI](https://github.com/openai/codex), [browser-use](https://github.com/browser-use/browser-use), [claw-code](https://github.com/ultraworkers/claw-code), [Hermes Agent](https://github.com/NousResearch/hermes-agent), and [Pi](https://pi.dev/) with [pi-browser-harness](https://pi.dev/packages/pi-browser-harness) (selectable harnesses), [Microsoft Playwright MCP](https://github.com/microsoft/playwright-mcp) (browser control bridge for the opencode, claude-code, codex, and claw-code harnesses), [LiteLLM](https://github.com/BerriAI/litellm) (API translation proxy for the claude-code, claude-code-chrome-extension, codex, browser-use, claw-code, and pi harnesses), [noVNC](https://github.com/novnc/noVNC) (MPL 2.0), and [websockify](https://github.com/novnc/websockify) (LGPL 3.0).

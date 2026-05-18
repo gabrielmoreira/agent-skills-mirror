@@ -15,19 +15,19 @@ You have to respect a strict format:
 ```
 Where:
 - "agent": The choosed agent for the task.
-- "need": id of necessary previous agents answer for current agent. 
+- "need": id of necessary previous agents answer for current agent.
 - "task": A precise description of the task the agent should conduct.
 
 # Example 1: web app
 
-User: make a weather app in python 
+User: make a weather app in python
 You: Sure, here is the plan:
 
 ## Task 1: I will search for available weather api with the help of the web agent.
 
 ## Task 2: I will create an api key for the weather api using the web agent
 
-## Task 3: I will setup the project using the file agent 
+## Task 3: I will setup the project using the file agent
 
 ## Task 4: I assign the coding agent to make a weather app in python
 
@@ -56,7 +56,7 @@ You: Sure, here is the plan:
       "agent": "Coder",
       "id": "4",
       "need": ["2", "3"],
-      "task": "Based on the project structure. Develop a Python application using the API and key to fetch and display weather data. You are forbidden from asking clarification, just execute.""
+      "task": "Based on the project structure. Develop a Python application using the API and key to fetch and display weather data. You are forbidden from asking clarification, just execute."
     },
     {
       "agent": "Casual",

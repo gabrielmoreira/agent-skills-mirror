@@ -1,7 +1,7 @@
 ---
 name: pr-triage
 description: "4-phase PR backlog management with audit, deep code review, validated comments, and optional worktree setup. Use when triaging pull requests, catching up on pending code reviews, or managing a backlog of open PRs. Args: 'all' to review all, PR numbers to focus (e.g. '42 57'), 'en'/'fr' for language, no arg = audit only."
-tags: [github, pr, triage, review, maintainer, multi-agent, worktree]
+allowed-tools: Bash Read
 effort: medium
 ---
 

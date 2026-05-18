@@ -27,6 +27,28 @@ npx skills add . -g -y   # one-time: symlink this repo into every detected harne
 - One-time setup: `npx skills add . -g -y` creates symlinks from each detected harness's skill dir to this repo. Edits in the working tree propagate live to every harness — no re-deploy step needed.
 - Git remote: origin = public (`mvanhorn/last30days-skill`)
 
+## Security hygiene
+- Never commit real API keys, browser cookies, auth tokens, app passwords, access tokens, or `.env` contents.
+- Use the env-based auth patterns in `skills/last30days/scripts/lib/env.py`; tests and fixtures must use obvious dummy values only.
+- Keep examples safe by redacting secrets and avoiding copy/pasteable live credentials in docs, fixtures, and test data.
+- Do not weaken or disable the advisory security workflow (`.github/workflows/security.yml`) without explaining why in the PR description or review thread.
+
+## Maintaining CONFIGURATION.md
+
+`CONFIGURATION.md` is the user-facing configuration reference — save paths, per-source API keys, web-search backend priority, trend-monitoring stack, per-client install patterns. Distinct from `SKILL.md` (the canonical runtime spec).
+
+Update `CONFIGURATION.md` when:
+
+- adding a new env var (e.g. `LAST30DAYS_*`, `BSKY_*`, `*_API_KEY`)
+- adding a new CLI flag that affects configuration (e.g. `--store`, `--web-backend`)
+- adding a new per-client install pattern (Claude Code, Gemini, Codex, Cursor, Hermes…)
+- adding a new optional source that requires its own credential
+- changing the priority order of config layers (per-run flag > env > `.env` file > defaults)
+
+Keep the existing structure organized by how often each layer is touched: per-run flags → env vars / `.env` → optional trend-monitoring stack → per-client patterns. Add new content into the right section rather than appending at the end.
+
+When a new config concept lands in `SKILL.md` or `AGENTS.md`, mirror the user-facing knob in `CONFIGURATION.md` so non-agent readers can configure the skill without reverse-engineering it from the runtime spec.
+
 ## Beta channel
 
 Experimental changes get tested on `mvanhorn/last30days-skill-private`, which installs as a parallel `/last30days-beta` slash command. Beta-only changes never ship to public without a review PR here. Workflow guide lives at `BETA.md` in the private repo. Plan that established this setup: `docs/plans/2026-04-17-005-feat-beta-skill-from-private-repo-plan.md`.

@@ -19,14 +19,14 @@ ALLOWED_INTENTS = {
 }
 ALLOWED_CLUSTER_MODES = {"none", "story", "workflow", "market", "debate"}
 QUICK_SOURCE_PRIORITY = {
-    "factual": ["hackernews", "reddit", "x", "youtube"],
-    "product": ["youtube", "reddit", "x", "tiktok"],
-    "concept": ["hackernews", "reddit", "x", "youtube"],
-    "opinion": ["reddit", "x", "youtube", "hackernews"],
-    "how_to": ["youtube", "reddit", "x", "hackernews"],
-    "comparison": ["reddit", "x", "hackernews", "youtube"],
-    "breaking_news": ["x", "reddit", "hackernews", "youtube", "polymarket"],
-    "prediction": ["polymarket", "x", "hackernews", "reddit", "youtube"],
+    "factual": ["hackernews", "reddit", "x", "xquik", "youtube"],
+    "product": ["youtube", "reddit", "x", "xquik", "tiktok"],
+    "concept": ["hackernews", "reddit", "x", "xquik", "youtube"],
+    "opinion": ["reddit", "x", "xquik", "youtube", "hackernews"],
+    "how_to": ["youtube", "reddit", "x", "xquik", "hackernews"],
+    "comparison": ["reddit", "x", "xquik", "hackernews", "youtube"],
+    "breaking_news": ["x", "xquik", "reddit", "hackernews", "youtube", "polymarket"],
+    "prediction": ["polymarket", "x", "xquik", "hackernews", "reddit", "youtube"],
 }
 SOURCE_PRIORITY = {
     "factual": ["hackernews", "reddit", "x", "youtube"],
@@ -60,6 +60,7 @@ INTENT_SOURCE_EXCLUSIONS: dict[str, set[str]] = {
 SOURCE_CAPABILITIES = {
     "reddit": {"discussion", "social"},
     "x": {"discussion", "social"},
+    "xquik": {"discussion", "social"},
     "youtube": {"video", "video_longform", "discussion"},
     "tiktok": {"video", "video_shortform", "social"},
     "instagram": {"video", "video_shortform", "social"},

@@ -1,7 +1,7 @@
 ---
 name: repo-profile-governance
-description: Audit and harden repository profile, community health, discoverability metadata, and contribution surfaces across repos using bounded, evidence-based checks.
-argument-hint: [mode: profile-audit|profile-remediate|profile-weekly-check] [scope: repo|org] [visibility: public|private] [policy-profile: strict|standard|light]
+description: "Audit and harden repository profile, community health, discoverability metadata, and contribution surfaces across repos using bounded, evidence-based checks."
+argument-hint: "[mode: profile-audit|profile-remediate|profile-weekly-check] [scope: repo|org] [visibility: public|private] [policy-profile: strict|standard|light]"
 user-invocable: true
 disable-model-invocation: false
 ---

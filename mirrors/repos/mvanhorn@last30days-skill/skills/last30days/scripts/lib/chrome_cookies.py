@@ -1,9 +1,12 @@
-"""Chrome cookie extraction for macOS.
+"""Chrome and Brave cookie extraction for macOS.
 
-Extracts cookies from Chrome's encrypted SQLite database using only stdlib
-modules and the system openssl CLI (ships with macOS). Zero pip dependencies.
+Extracts cookies from Chromium-based browser SQLite databases using only
+stdlib modules and the system openssl CLI (ships with macOS). Zero pip
+dependencies.
 
-Chrome on macOS uses v10 encryption (AES-128-CBC with Keychain-stored key).
+Chromium on macOS uses v10 encryption (AES-128-CBC with Keychain-stored key).
+Chrome and Brave share the same algorithm; only the DB path and Keychain
+service name differ.
 This is NOT affected by Windows App-Bound Encryption (v20).
 """
 
@@ -18,10 +21,11 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Chrome cookie DB location on macOS
+# Cookie DB locations on macOS
 CHROME_COOKIES_DB = Path.home() / "Library" / "Application Support" / "Google" / "Chrome" / "Default" / "Cookies"
+BRAVE_BASE_DIR = Path.home() / "Library" / "Application Support" / "BraveSoftware" / "Brave-Browser"
 
-# Chrome v10 encryption constants
+# Chromium v10 encryption constants (shared by Chrome and Brave)
 CHROME_SALT = b"saltysalt"
 CHROME_PBKDF2_ITERATIONS = 1003
 CHROME_KEY_LENGTH = 16
@@ -29,8 +33,8 @@ CHROME_KEY_LENGTH = 16
 CHROME_IV_HEX = "20" * 16
 
 
-def _get_chrome_encryption_key() -> Optional[bytes]:
-    """Retrieve Chrome's encryption passphrase from macOS Keychain.
+def _get_chromium_encryption_key(service_name: str) -> Optional[bytes]:
+    """Retrieve the encryption passphrase for a Chromium-based browser from macOS Keychain.
 
     Calls `security find-generic-password` which may trigger a system dialog
     on first access.
@@ -39,28 +43,32 @@ def _get_chrome_encryption_key() -> Optional[bytes]:
     """
     try:
         result = subprocess.run(
-            ["security", "find-generic-password", "-w", "-s", "Chrome Safe Storage"],
+            ["security", "find-generic-password", "-w", "-s", service_name],
             capture_output=True,
             text=True,
             timeout=10,
         )
         if result.returncode != 0:
-            logger.info("Chrome Keychain access denied or Chrome not installed: %s", result.stderr.strip())
+            logger.info("%s Keychain access denied or browser not installed: %s", service_name, result.stderr.strip())
             return None
         passphrase = result.stdout.strip()
         if not passphrase:
-            logger.info("Chrome Keychain returned empty passphrase")
+            logger.info("%s Keychain returned empty passphrase", service_name)
             return None
         return passphrase.encode("utf-8")
     except FileNotFoundError:
         logger.info("'security' command not found — not on macOS?")
         return None
     except subprocess.TimeoutExpired:
-        logger.info("Chrome Keychain access timed out")
+        logger.info("%s Keychain access timed out", service_name)
         return None
     except Exception as e:
-        logger.info("Failed to get Chrome encryption key: %s", e)
+        logger.info("Failed to get %s encryption key: %s", service_name, e)
         return None
+
+
+def _get_chrome_encryption_key() -> Optional[bytes]:
+    return _get_chromium_encryption_key("Chrome Safe Storage")
 
 
 def _derive_aes_key(passphrase: bytes) -> bytes:
@@ -165,36 +173,42 @@ def _get_db_version(cursor: sqlite3.Cursor) -> int:
     return 0
 
 
-def extract_chrome_cookies_macos(domain: str, cookie_names: list[str]) -> Optional[dict[str, str]]:
-    """Extract cookies from Chrome on macOS.
+def _extract_chromium_cookies_macos(
+    db_path: Path,
+    keychain_service: str,
+    domain: str,
+    cookie_names: list[str],
+) -> Optional[dict[str, str]]:
+    """Extract cookies from any Chromium-based browser on macOS.
 
     Copies the locked Cookies database to a temp file, reads specified cookies,
     and decrypts v10-encrypted values using the Keychain-stored key.
 
     Args:
-        domain: Cookie domain to match (e.g., ".twitter.com", ".x.com")
-        cookie_names: List of cookie names to extract
+        db_path: Path to the browser's Cookies SQLite file.
+        keychain_service: macOS Keychain service name (e.g. "Chrome Safe Storage").
+        domain: Cookie domain to match (e.g., ".twitter.com", ".x.com").
+        cookie_names: List of cookie names to extract.
 
     Returns:
         Dict mapping cookie name to decrypted value, or None on failure.
         Only includes cookies that were successfully found and decrypted.
     """
-    if not CHROME_COOKIES_DB.exists():
-        logger.info("Chrome cookies database not found at %s", CHROME_COOKIES_DB)
+    if not db_path.exists():
+        logger.info("%s cookies database not found at %s", keychain_service, db_path)
         return None
 
-    # Get encryption key from Keychain
-    passphrase = _get_chrome_encryption_key()
+    passphrase = _get_chromium_encryption_key(keychain_service)
     aes_key = _derive_aes_key(passphrase) if passphrase else None
 
-    # Copy DB to temp file (Chrome locks the original)
+    # Copy DB to temp file (browser locks the original while running)
     tmp_fd = None
     tmp_path = None
     try:
         tmp_fd, tmp_path = tempfile.mkstemp(suffix=".sqlite")
-        shutil.copy2(str(CHROME_COOKIES_DB), tmp_path)
+        shutil.copy2(str(db_path), tmp_path)
     except Exception as e:
-        logger.info("Failed to copy Chrome cookies database: %s", e)
+        logger.info("Failed to copy %s cookies database: %s", keychain_service, e)
         if tmp_path:
             try:
                 Path(tmp_path).unlink(missing_ok=True)
@@ -211,26 +225,22 @@ def extract_chrome_cookies_macos(domain: str, cookie_names: list[str]) -> Option
         cursor = conn.cursor()
 
         db_version = _get_db_version(cursor)
-        logger.debug("Chrome cookie DB version: %d", db_version)
+        logger.debug("%s cookie DB version: %d", keychain_service, db_version)
 
-        # Build query with placeholders for cookie names
         placeholders = ",".join("?" for _ in cookie_names)
         query = (
             f"SELECT name, value, encrypted_value FROM cookies "
             f"WHERE host_key LIKE ? AND name IN ({placeholders})"
         )
-        # Use LIKE for domain matching (e.g., %.twitter.com matches .twitter.com)
         params = [f"%{domain}"] + list(cookie_names)
         cursor.execute(query, params)
 
         results: dict[str, str] = {}
         for name, value, encrypted_value in cursor.fetchall():
-            # Prefer unencrypted value if present
             if value:
                 results[name] = value
                 continue
 
-            # Handle encrypted value
             if encrypted_value and encrypted_value[:3] == b"v10":
                 if aes_key is None:
                     logger.debug("Skipping encrypted cookie %s — no Keychain access", name)
@@ -241,25 +251,72 @@ def extract_chrome_cookies_macos(domain: str, cookie_names: list[str]) -> Option
                 else:
                     logger.debug("Failed to decrypt cookie %s", name)
             elif encrypted_value:
-                # Unknown encryption version
                 logger.debug("Unknown encryption for cookie %s (prefix: %r)", name, encrypted_value[:3])
 
         conn.close()
 
         if not results:
-            logger.info("No matching cookies found in Chrome for domain %s", domain)
+            logger.info("No matching cookies found in %s for domain %s", keychain_service, domain)
             return None
 
         return results
 
     except sqlite3.Error as e:
-        logger.info("Failed to read Chrome cookies database: %s", e)
+        logger.info("Failed to read %s cookies database: %s", keychain_service, e)
         return None
     except Exception as e:
-        logger.info("Unexpected error reading Chrome cookies: %s", e)
+        logger.info("Unexpected error reading %s cookies: %s", keychain_service, e)
         return None
     finally:
         try:
             Path(tmp_path).unlink(missing_ok=True)
         except Exception:
             pass
+
+
+def extract_chrome_cookies_macos(domain: str, cookie_names: list[str]) -> Optional[dict[str, str]]:
+    """Extract cookies from Chrome on macOS."""
+    return _extract_chromium_cookies_macos(
+        CHROME_COOKIES_DB, "Chrome Safe Storage", domain, cookie_names
+    )
+
+
+def _find_brave_cookies_db() -> Optional[Path]:
+    """Find Brave's Cookies database on macOS.
+
+    Tries the Default profile first, then scans numbered Profile directories
+    by most-recently-modified. Brave creates extra profiles as "Profile 1",
+    "Profile 2", etc. alongside Default; the most recently used one is the
+    likeliest to hold current cookies. Lexicographic sort would visit
+    "Profile 10" before "Profile 2", which can return the wrong profile.
+    """
+    default = BRAVE_BASE_DIR / "Default" / "Cookies"
+    if default.exists():
+        return default
+
+    try:
+        candidates = [
+            child for child in BRAVE_BASE_DIR.iterdir()
+            if child.is_dir() and child.name.startswith("Profile ")
+        ]
+        for child in sorted(candidates, key=lambda p: p.stat().st_mtime, reverse=True):
+            candidate = child / "Cookies"
+            if candidate.exists():
+                return candidate
+    except OSError:
+        pass
+
+    return None
+
+
+def extract_brave_cookies_macos(domain: str, cookie_names: list[str]) -> Optional[dict[str, str]]:
+    """Extract cookies from Brave on macOS.
+
+    Brave uses the same v10 AES-128-CBC encryption as Chrome; only the DB
+    path and Keychain service name differ.
+    """
+    db_path = _find_brave_cookies_db()
+    if db_path is None:
+        logger.info("Brave cookies database not found under %s", BRAVE_BASE_DIR)
+        return None
+    return _extract_chromium_cookies_macos(db_path, "Brave Safe Storage", domain, cookie_names)

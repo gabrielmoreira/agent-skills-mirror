@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `BlockRunAI/ClawRouter` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `BlockRunAI/ClawRouter` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `BlockRunAI/ClawRouter` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/phone/SKILL.md`](skills/phone/SKILL.md) |
 | 5 | ✓ | [`skills/predexon/SKILL.md`](skills/predexon/SKILL.md) |
 | 6 | ✓ | [`skills/release/SKILL.md`](skills/release/SKILL.md) |
+| 7 | ✓ | [`skills/surf/SKILL.md`](skills/surf/SKILL.md) |
 
 ---
 

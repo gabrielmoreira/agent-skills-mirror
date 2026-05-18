@@ -35,6 +35,26 @@ public sealed interface Message {
     public val parts: List<MessagePart>
 
     /**
+     * Extracts and concatenates the textual content from all `MessagePart.Text` elements in the message.
+     *
+     * @param separator The delimiter used to join the text content of the parts. Default is "\n".
+     * @return A single string with the concatenated text content of all `MessagePart.Text` elements,
+     *         separated by the specified delimiter.
+     */
+    public fun textContent(
+        separator: String,
+    ): String = parts.filterIsInstance<MessagePart.Text>().joinToString(separator = separator) { it.text }
+
+    /**
+     * Extracts and concatenates the textual content from all `MessagePart.Text` elements in the message.
+     * Messages are joined by a newline character ("\n").
+     *
+     * @return A single string with the concatenated text content of all `MessagePart.Text` elements,
+     *         separated by a newline character.
+     */
+    public fun textContent(): String = textContent(separator = "\n")
+
+    /**
      * Stores metadata information for the current message instance, such as token count and timestamp.
      */
     public val metaInfo: MessageMetaInfo

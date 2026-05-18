@@ -2,6 +2,7 @@
 
 import json
 import re
+import socket
 import sys
 import time
 import urllib.error
@@ -22,7 +23,17 @@ def log(msg: str):
 MAX_RETRIES = 5
 MAX_429_RETRIES = 2
 RETRY_DELAY = 2.0
+# DNS resolution failures (gaierror) are transient — typically resolved by a
+# brief backoff and retry. Use a dedicated minimum attempt count + exponential
+# delays (1s, 2s, 4s) so callers that pass a small `retries` value still get a
+# meaningful chance to recover from a transient resolution failure.
+MIN_DNS_RETRIES = 3
 USER_AGENT = "last30days-skill/3.0 (Assistant Skill)"
+
+
+def _is_dns_failure(err: urllib.error.URLError) -> bool:
+    """Return True if a URLError was caused by DNS resolution (gaierror)."""
+    return isinstance(getattr(err, "reason", None), socket.gaierror)
 
 
 class HTTPError(Exception):
@@ -85,7 +96,13 @@ def request(
 
     last_error = None
     rate_limit_count = 0
-    for attempt in range(retries):
+    # DNS failures get a dedicated minimum attempt count + exponential backoff.
+    # `effective_retries` is the actual loop bound; we expand it on the first
+    # gaierror if the caller passed a smaller `retries` value than MIN_DNS_RETRIES.
+    effective_retries = retries
+    dns_attempts = 0
+    attempt = 0
+    while attempt < effective_retries:
         try:
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 body = response.read().decode('utf-8')
@@ -115,6 +132,8 @@ def request(
                 if rate_limit_count >= max_429_retries:
                     raise last_error
 
+            # HTTP errors respect the caller's original `retries`; only DNS
+            # failures get the widened `effective_retries` budget.
             if attempt < retries - 1:
                 if e.code == 429:
                     # Respect Retry-After header, fall back to exponential backoff
@@ -130,11 +149,43 @@ def request(
                 else:
                     delay = RETRY_DELAY * (2 ** attempt)
                 time.sleep(delay)
+            else:
+                # Caller's original retry budget exhausted; an earlier DNS
+                # failure may have widened `effective_retries`, but that
+                # widening is DNS-only — don't grant extra HTTP attempts.
+                break
         except urllib.error.URLError as e:
             log(f"URL Error: {e.reason}")
             last_error = HTTPError(f"URL Error: {e.reason}")
-            if attempt < retries - 1:
+            if _is_dns_failure(e):
+                # DNS resolution failures are transient; expand the retry budget
+                # to MIN_DNS_RETRIES if the caller passed fewer, and use
+                # exponential backoff (1s, 2s, 4s, ...) instead of the linear
+                # default. Counts DNS attempts separately so other URLError
+                # causes don't bypass the regular retry budget.
+                dns_attempts += 1
+                if effective_retries < MIN_DNS_RETRIES:
+                    log(
+                        f"DNS resolution failed; expanding retry budget from "
+                        f"{effective_retries} to {MIN_DNS_RETRIES}"
+                    )
+                    effective_retries = MIN_DNS_RETRIES
+                if attempt < effective_retries - 1:
+                    delay = 2 ** (dns_attempts - 1)  # 1s, 2s, 4s, 8s, ...
+                    log(
+                        f"DNS resolution failure (attempt {dns_attempts}); "
+                        f"retrying in {delay:.1f}s"
+                    )
+                    time.sleep(delay)
+            elif attempt < retries - 1:
+                # Non-DNS URLError (e.g. ConnectionRefused) respects the
+                # caller's original retry budget, not the DNS-widened bound.
                 time.sleep(RETRY_DELAY * (attempt + 1))
+            else:
+                # Caller's original retry budget exhausted; an earlier DNS
+                # failure widening `effective_retries` does not carry over
+                # to non-DNS error paths.
+                break
         except json.JSONDecodeError as e:
             log(f"JSON decode error: {e}")
             last_error = HTTPError(f"Invalid JSON response: {e}")
@@ -144,7 +195,13 @@ def request(
             log(f"Connection error: {type(e).__name__}: {e}")
             last_error = HTTPError(f"Connection error: {type(e).__name__}: {e}")
             if attempt < retries - 1:
+                # Socket errors respect the caller's original retry budget.
                 time.sleep(RETRY_DELAY * (attempt + 1))
+            else:
+                # Original budget exhausted; DNS widening doesn't apply here.
+                break
+
+        attempt += 1
 
     if last_error:
         raise last_error

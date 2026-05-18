@@ -33,6 +33,7 @@ Welcome to the OpenAkita documentation.
 | Resource | Location |
 |----------|----------|
 | [Deployment Guide](deploy.md) | Production deployment |
+| [Memory Migration v4](memory_migration_v4.md) | v1.27 → v1.28 memory schema upgrade & rollback guide |
 | [Contributing](../CONTRIBUTING.md) | How to contribute |
 | [Changelog](../CHANGELOG.md) | Version history |
 | [Security](../SECURITY.md) | Security policy |

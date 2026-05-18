@@ -1,3 +1,11 @@
+---
+name: llm-wiki-ops
+description: Operate and maintain the LLM Wiki knowledge system in the Megingjord source workspace.
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
+---
+
 # llm-wiki-ops — LLM Wiki Operations Skill
 
 ## Purpose

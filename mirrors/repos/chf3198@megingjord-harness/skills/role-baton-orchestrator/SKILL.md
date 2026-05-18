@@ -1,7 +1,7 @@
 ---
 name: role-baton-orchestrator
-description: Orchestrate single-thread baton handoff across Manager -> Collaborator -> Admin -> Consultant with explicit entry/exit contracts.
-argument-hint: [context: new-task|post-failure|pre-merge|pre-release] [scope: code|ops|governance|mixed]
+description: "Orchestrate single-thread baton handoff across Manager -> Collaborator -> Admin -> Consultant with explicit entry/exit contracts."
+argument-hint: "[context: new-task|post-failure|pre-merge|pre-release] [scope: code|ops|governance|mixed]"
 user-invocable: true
 disable-model-invocation: false
 ---

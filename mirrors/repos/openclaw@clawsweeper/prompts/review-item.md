@@ -57,6 +57,16 @@ one short sentence for `changeSummary`, `workReason`, `bestSolution`, and
 `changeSummary` or `workReason` into an automerge/autofix status update; merge
 automation is reported by the command/status comment and hidden markers.
 
+For PRs, do not let labels be the only place that merger risk is visible. If a
+merge can intentionally make an existing user's setup stop working, fail closed,
+lose a fallback path, require a migration, or require operator action, state that
+plainly in `risks` and make `workReason`/`bestSolution` name the maintainer
+decision or upgrade proof needed before merge. This applies even when the PR is
+otherwise correct and the behavior change is deliberate. Use `reviewFindings`
+for defects introduced by the patch; use `risks` for valid but merge-relevant
+upgrade, compatibility, or operator-impact uncertainty that maintainers must
+see before landing.
+
 Classify issue type conservatively. Set `itemCategory: "bug"` only when the
 item reports broken existing behavior and the expected behavior is already
 defined by current docs, tests, CLI/API contract, or established behavior. Do
@@ -83,16 +93,36 @@ find the affected problem class on both issues and pull requests. Use no more
 than 3 labels, only when the impact area is concretely supported by the item or
 diff, and keep this separate from `triagePriority` and
 `reviewFindings[].priority`:
-`impact:data-loss`: Can lose, corrupt, or silently drop user/session/config data.
-`impact:security`: Security boundary, credential, authz, sandbox, or sensitive-data risk.
-`impact:crash-loop`: Crash, hang, restart loop, or process-level availability failure.
-`impact:message-loss`: Channel message delivery can be lost, duplicated, or misrouted.
-`impact:session-state`: Session, memory, transcript, context, or agent state can drift or corrupt.
-`impact:auth-provider`: Auth, provider routing, model choice, or SecretRef resolution may break.
+`impact:data-loss`: This issue or PR is about lost, corrupted, or silently dropped user/session/config data.
+`impact:security`: This issue or PR is about security boundaries, credentials, authz, sandboxing, or sensitive data.
+`impact:crash-loop`: This issue or PR is about crashes, hangs, restart loops, or process-level availability.
+`impact:message-loss`: This issue or PR is about lost, duplicated, misrouted, or suppressed channel messages.
+`impact:session-state`: This issue or PR is about session, memory, transcript, context, or agent state drift.
+`impact:auth-provider`: This issue or PR is about auth, provider routing, model choice, or SecretRef resolution.
 Use an empty array when no owned impact label applies. Impact labels are
 searchable GitHub labels only; they describe what the item is about, not the
 risk of merging a PR. They do not close, merge, block, or replace review
 findings.
+
+Set `mergeRiskLabels` as PR-only ClawSweeper-owned GitHub labels for merge
+risks that green CI does not settle. Use an empty array for issues. Keep these
+separate from `impactLabels`: impact labels describe the affected or solved
+problem class, while merge-risk labels describe what could go wrong specifically
+because this PR is merged. Use no more than 3 labels, only when the risk is
+concretely supported by the diff, current behavior, upgrade path, or GitHub
+discussion:
+`merge-risk: 🚨 compatibility`: 🚨 Merging this PR could break existing users, config, migrations, defaults, or upgrades.
+`merge-risk: 🚨 message-delivery`: 🚨 Merging this PR could drop, duplicate, misroute, suppress, or wrongly target messages.
+`merge-risk: 🚨 session-state`: 🚨 Merging this PR could lose, corrupt, stale, or mis-associate session or agent state.
+`merge-risk: 🚨 auth-provider`: 🚨 Merging this PR could break OAuth, tokens, provider routing, model choice, or credentials.
+`merge-risk: 🚨 security-boundary`: 🚨 Merging this PR could weaken sandboxing, authorization, credentials, or sensitive data.
+`merge-risk: 🚨 availability`: 🚨 Merging this PR could cause crashes, hangs, restart loops, stalls, or process outages.
+`merge-risk: 🚨 automation`: 🚨 Merging this PR could break CI, automerge, proof capture, label sync, or automation.
+When merge risk is present, explain it in `risks` in maintainer-facing language
+and make `bestSolution` the best mitigation path. Write it as an imperative
+instruction a maintainer can paste into another LLM or into `@clawsweeper
+automerge` as special instructions. The public review comment will turn that
+into 1-3 maintainer choices and mark the best option `(recommended)`.
 
 Populate structured reproduction metadata separately from the public prose.
 Use `reproductionStatus: "reproduced"` only when there is a concrete,
@@ -134,6 +164,52 @@ incorrect` when at least one P0/P1/P2 finding should block merge, `patch is
 correct` when the PR has no blocking correctness finding, and `not a patch` for
 issues and other non-PR reviews. Set `overallConfidenceScore` to a 0-1 number
 matching your confidence in the overall verdict.
+
+For PRs, include a dedicated solution-fit and upgrade-safety pass before
+deciding the merge verdict. First check whether the problem is already solved by
+current code, documented configuration, CLI flags, env vars, provider settings,
+plugin/skill surfaces, setup workflow, or an existing maintainer-approved
+pattern. Search the codebase and docs for the existing capability before
+accepting a new implementation path.
+
+Treat duplicated behavior as a high-priority defect. If the PR reimplements
+behavior that is already available through config, docs, current APIs, plugins,
+skills, or an existing setup path, add a P1 review finding unless the PR proves
+the existing path is insufficient and the new behavior is explicitly needed. The
+finding should point to the existing supported path and explain why the
+duplicate implementation would create maintenance drift, conflicting behavior,
+or user confusion.
+
+Treat compatibility and user settings as merge-critical. Look for changes that
+override existing preferences, persisted config, provider choices, auth/session
+state, local workspace state, generated files, shortcuts, routes, schemas, or
+documented defaults. A new default must not change an existing user's stored
+value during upgrade unless the PR includes an explicit, narrow, tested
+migration and the behavior is clearly intentional.
+
+Treat provider fallback removal, fail-closed routing, missing-harness behavior,
+startup/install checks, and strict config validation as upgrade-sensitive even
+when they fix a real bug. If current users may only discover the change because
+an existing workflow stops at runtime, call out the user-visible failure mode and
+the required maintainer choice before merge. When preserving the existing
+behavior as the default plus adding an explicit strict config option would avoid
+breaking current users, recommend that path in `bestSolution` or `workReason`
+instead of treating unconditional fail-closed behavior as the only acceptable
+fix. Require tests or proof for both the default compatibility mode and the
+opt-in strict mode.
+
+Call out upgrade and settings breakage directly in `reviewFindings`: use P1
+when existing setups can break, existing config/preferences can be overwritten,
+current behavior is silently replaced, or duplicated behavior creates a
+competing source of truth. Use P2 only for lower-blast-radius compatibility
+risks where the existing behavior remains intact but migration, docs, or upgrade
+proof is missing. Use P3 only for low-risk discoverability or docs gaps.
+
+When the PR changes defaults, config loading, migrations, schemas, provider
+routing, persisted preferences, install/startup behavior, compatibility paths,
+or setup workflows, require evidence for both fresh-install behavior and upgrade
+behavior. If upgrade behavior is ambiguous, mark the PR incorrect or needing
+maintainer review rather than assuming the new default is safe.
 
 Use reason-specific anchors:
 
@@ -414,11 +490,70 @@ it does not, they can ask a maintainer to comment `@clawsweeper re-review`. Use
 `needsContributorAction: false` only for `sufficient`, `override`, or
 `not_applicable`.
 
+Always fill `prRating` with boring internal tiers `S`, `A`, `B`, `C`, `D`, `F`,
+or `NA`; public output maps these to funny crustacean labels. Rate PR evidence
+and merge readiness, not the contributor. Use a calibrated
+standard-distribution-style scale: `S` is rare and reserved for exceptional PRs
+with unusually strong proof, clean implementation, convincing validation, and no
+meaningful blockers; `A` is clearly above average; `B` is the normal good and
+likely mergeable rating; `C` means useful signal exists but confidence is
+limited; `D` means proof, validation, or implementation signal is thin; `F`
+means not merge-ready because proof is missing/unusable or the patch has serious
+correctness or safety concerns; `NA` is only for non-PR or not-applicable
+reviews. Set `proofTier` from real behavior proof quality, `patchTier` from
+implementation correctness, security review, scope, review findings, and
+validation, and `overallTier` from the weaker merge-readiness signal. Real
+screenshots, recordings, or linked media that directly show the changed behavior
+are strong proof boosters and should be treated as shiny evidence; this does not
+override the browser runtime, network, CSP, or security rule above, where
+ordinary screenshots need visible diagnostics to be sufficient. Missing,
+mock-only, or insufficient proof must cap or lower the overall rating because
+real behavior proof remains a merge gate. Include `nextSteps` as 0-3 concrete
+rank-up moves only when they are merge-relevant and likely to improve reviewer
+confidence. Use an empty array for `S`, `A`, and `NA`, and usually for `B`
+unless one specific action materially reduces risk. Do not invent optional
+polish work or create churn for already-good PRs.
+
 Always fill `telegramVisibleProof`. This only controls the
 `mantis: telegram-visible-proof` label. Mark it `needed` when a Telegram PR has
 visible chat behavior the `telegram-crabbox-e2e-proof` skill can show in a
 short recording. Mark it `not_needed` for non-Telegram PRs or Telegram work
 that is not usefully visible in that recording.
+
+Always fill `mantisRecommendation`. This is maintainer guidance only: it must
+never trigger OpenClaw Mantis, claim Mantis has run, ask ClawSweeper to dispatch
+a workflow, or request ClawSweeper repair markers. Recommend Mantis only when a
+PR changes behavior that is best verified in a real transport or visible UI.
+Use `status: "not_recommended"`, `scenario: "none"`, and an empty
+`maintainerComment` for issues, docs-only/test-only/internal refactors, CI-only
+work, pure schema/type changes, or behavior where unit tests are the better
+proof.
+
+Known Mantis lanes:
+
+- `telegram_live`: Telegram live QA with a redacted transcript visual. Use for
+  bot-to-bot Telegram commands, mention handling, reply delivery, and observable
+  message transcripts.
+- `telegram_desktop_proof`: agentic native Telegram Desktop before/after visual
+  proof. Use for visible Telegram UI behavior, topics, buttons, callbacks,
+  formatting, media, or flows where native UI GIFs are useful.
+- `discord_status_reactions`: before/after Discord queued/thinking/done status
+  reaction proof. Use only for status reaction behavior.
+- `discord_thread_attachment`: before/after Discord thread reply filePath
+  attachment proof. Use only for thread attachment behavior.
+- `slack_desktop_smoke`: Slack desktop/VNC proof. Use for Slack desktop or
+  gateway-visible behavior.
+- `visual_task`: generic visible browser/desktop proof. Use only when no
+  dedicated transport scenario fits and the proof can be described concretely.
+
+When `mantisRecommendation.status` is `recommended`, write a single-line
+`maintainerComment` that starts with `@openclaw-mantis` and describes the exact
+behavior to prove. Do not use any shorter or ambiguous Mantis account mention.
+ClawSweeper validates the account mention but does not render it publicly, so
+its own review comment does not accidentally start a Mantis workflow. Example:
+`@openclaw-mantis telegram desktop proof: verify that /stop targets the active
+topic and does not affect other topics.` Keep it short enough to paste into a
+PR comment.
 
 Always fill `triagePriority`. ClawSweeper syncs this value to one of the GitHub
 labels `P0`, `P1`, `P2`, or `P3` so maintainers can find issues and pull requests
@@ -430,6 +565,14 @@ Always fill `impactLabels` with zero to three ClawSweeper-owned GitHub impact
 labels. These labels are only for maintainer search and triage, and they
 describe the issue/PR impact area rather than merge risk. They do not replace
 `triagePriority`, `reviewFindings[].priority`, or the security review.
+
+Always fill `mergeRiskLabels` too. Use `[]` for issues and for PRs whose merge
+risk is adequately covered by normal review/CI. For PRs with non-obvious
+compatibility, delivery, session-state, auth-provider, security-boundary,
+availability, or automation risk, add the matching `merge-risk:*` labels,
+explain why the risk matters in `risks`, and put the preferred mitigation in
+`bestSolution` as a paste-ready instruction so maintainers see a recommended
+choice before merge.
 
 Always fill the work-lane fields too. For non-candidates, use
 `workCandidate: "none"`, low confidence/priority, an empty `workPrompt`, and

@@ -9,8 +9,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, audio, dialogue, lip-sync, SFX, ambient, sound, BGM, music, voice]
-  version: 3.0.0
-  updated: 2026-04-06
+  version: 3.1.0
+  updated: 2026-05-17
   parent: higgsfield
 ---
 
@@ -188,6 +188,28 @@ Background ambient: [environment description].
 - Max 15s per clip, 3 audio files, 10MB each
 - Timestamp anchoring: `"Audio @Audio1 plays exactly as uploaded from 0s to end. Do not modify."`
   Then remove all ambient/SFX/music tokens to prevent the generative engine from overriding.
+
+> **Diegetic-only convention for the prompt body** — a
+> prompt-authoring discipline that sits on top of Seedance 2.0's
+> audio capability. BGM is a valid audio *layer* (see § The Four
+> Audio Layers above) — that's what Seedance can generate. The
+> diegetic-only convention is what you should *write* in the
+> prompt body: only sounds that physically exist in the scene
+> (footsteps on wet pavement, fabric whip on motion, breath, room
+> tone, weather, weapon fire, crowd reaction, stage haze) rather
+> than naming songs, lyrics, or score cues. If music is intended
+> for the final cut, layer it in post rather than in the prompt
+> body.
+>
+> Two reasons the discipline matters even though BGM is
+> supported: (i) score descriptors ("dramatic strings",
+> "orchestral swell") underdetermine the generated audio and
+> routinely produce generic music beds at odds with the scene;
+> (ii) the *timestamp-anchoring* + *remove-all-music-tokens*
+> pattern in the bullets above already enforces this discipline
+> when an MP3 audio reference is uploaded — the diegetic-only
+> convention generalizes that pattern to all Seedance prompts
+> whether or not an audio reference is attached.
 
 ### Veo 3 / 3.1
 - Strong native audio for English dialogue and environmental sounds

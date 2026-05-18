@@ -1,6 +1,9 @@
 ---
 name: release-version-integrity
 description: Validate and enforce release version integrity across tags, manifests, changelogs, and publish workflows. Use before tagging, publishing, or when release metadata drift is suspected.
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Release Version Integrity

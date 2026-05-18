@@ -175,16 +175,24 @@ def parse_x_response(response: Dict[str, Any]) -> List[Dict[str, Any]]:
                 break
 
     if not output_text:
-        return items
+        response_preview = str(response)[:200] if response else "(empty)"
+        raise http.HTTPError(
+            f"xAI API returned empty response (no output text found; response preview: {response_preview})"
+        )
 
     # Extract JSON from the response
     json_match = re.search(r'\{[\s\S]*"items"[\s\S]*\}', output_text)
-    if json_match:
-        try:
-            data = json.loads(json_match.group())
-            items = data.get("items", [])
-        except json.JSONDecodeError:
-            _log(f"Failed to parse xAI response JSON: {output_text[:200]}")
+    if not json_match:
+        raise http.HTTPError(
+            f"xAI API returned output without valid JSON items structure (output: {output_text[:200]})"
+        )
+    try:
+        data = json.loads(json_match.group())
+        items = data.get("items", [])
+    except json.JSONDecodeError:
+        raise http.HTTPError(
+            f"xAI API returned valid output but invalid JSON structure (output: {output_text[:200]})"
+        )
 
     # Validate and clean items
     clean_items = []

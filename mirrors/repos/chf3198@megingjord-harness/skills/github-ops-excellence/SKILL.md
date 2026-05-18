@@ -1,7 +1,7 @@
 ---
 name: github-ops-excellence
-description: Define and apply expert GitHub policy profiles and control catalogs used by specialized execution skills across ticketing, review/merge, governance, and release flows.
-argument-hint: [mode: triage|refinement|pre-pr|pre-merge|sprint-health|release-readiness|incident-flow|admin-audit] [scope: repo|team|org|enterprise] [policy-profile: strict|standard|light]
+description: "Define and apply expert GitHub policy profiles and control catalogs used by specialized execution skills across ticketing, review/merge, governance, and release flows."
+argument-hint: "[mode: triage|refinement|pre-pr|pre-merge|sprint-health|release-readiness|incident-flow|admin-audit] [scope: repo|team|org|enterprise] [policy-profile: strict|standard|light]"
 user-invocable: true
 disable-model-invocation: false
 ---

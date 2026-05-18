@@ -18,7 +18,8 @@ applyTo: "**"
 priority: P1
 targets: "copilot,cline,claude-code,continue"
 ---
-# Global Governance
+Global Governance
+==================
 
 Source: instructions/operator-identity-context.instructions.md
 Targets: copilot, cline, claude-code, continue

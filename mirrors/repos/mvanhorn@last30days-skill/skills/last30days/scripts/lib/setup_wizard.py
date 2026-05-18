@@ -335,8 +335,9 @@ def poll_device_auth(
     """
     import sys
 
-    deadline = time.time() + timeout
-    last_reminder = time.time()
+    started_at = time.time()
+    deadline = started_at + timeout
+    last_reminder = started_at
     reminder_count = 0
     max_reminders = 4
     reminder_interval = 30  # seconds between reminders

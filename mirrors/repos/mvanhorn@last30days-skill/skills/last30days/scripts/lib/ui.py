@@ -6,6 +6,8 @@ import threading
 import random
 from typing import Optional
 
+from .render import _skill_version
+
 # Check if we're in a real terminal (not captured by Claude Code)
 IS_TTY = sys.stderr.isatty()
 
@@ -198,7 +200,7 @@ Just start with "last30" and talk to me like normal.
 
 # Shorter promo for single missing key
 PROMO_SINGLE_KEY = {
-    "reddit": "\n💡 Unlock TikTok and Instagram with SCRAPECREATORS_API_KEY - 10,000 free calls, no CC - scrapecreators.com\n",
+    "reddit": "\n💡 Unlock TikTok and Instagram with SCRAPECREATORS_API_KEY - 100 free credits, no CC - scrapecreators.com\n",
     "x": "\n💡 Unlock X: log into x.com in Firefox or Safari, then re-run. Or add AUTH_TOKEN/CT0 or XAI_API_KEY.\n",
     "web": "\n💡 You can unlock native grounded web search with BRAVE_API_KEY or SERPER_API_KEY.\n",
 }
@@ -509,7 +511,8 @@ def show_diagnostic_banner(diag: dict):
 
     if IS_TTY:
         lines.append(f"{Colors.DIM}┌─────────────────────────────────────────────────────┐{Colors.RESET}")
-        lines.append(f"{Colors.DIM}│{Colors.RESET} {Colors.BOLD}/last30days v3.0.0 - Source Status{Colors.RESET}                 {Colors.DIM}│{Colors.RESET}")
+        _header = f"/last30days v{_skill_version()} - Source Status"
+        lines.append(f"{Colors.DIM}│{Colors.RESET} {Colors.BOLD}{_header}{Colors.RESET}{' ' * (52 - len(_header))}{Colors.DIM}│{Colors.RESET}")
         lines.append(f"{Colors.DIM}│{Colors.RESET}                                                     {Colors.DIM}│{Colors.RESET}")
 
         # Reddit
@@ -556,7 +559,8 @@ def show_diagnostic_banner(diag: dict):
     else:
         # Plain text for non-TTY (Claude Code / Codex)
         lines.append("┌─────────────────────────────────────────────────────┐")
-        lines.append("│ /last30days v3.0.0 - Source Status                 │")
+        _header_plain = f"/last30days v{_skill_version()} - Source Status"
+        lines.append(f"│ {_header_plain}{' ' * (52 - len(_header_plain))}│")
         lines.append("│                                                     │")
 
         if has_reddit and has_scrapecreators:

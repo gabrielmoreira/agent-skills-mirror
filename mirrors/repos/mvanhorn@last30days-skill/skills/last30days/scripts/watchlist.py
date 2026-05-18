@@ -111,6 +111,14 @@ def cmd_list(args):
     }, default=str))
 
 
+def cmd_delta(args):
+    topic = store.get_topic(args.topic)
+    if not topic:
+        print(json.dumps({"error": f'Topic not found: "{args.topic}"'}))
+        sys.exit(1)
+    print(json.dumps(store.compute_topic_delta(topic["id"]), default=str))
+
+
 def cmd_run_one(args):
     topic = store.get_topic(args.topic)
     if not topic:
@@ -251,6 +259,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     list_parser = sub.add_parser("list")
     list_parser.set_defaults(func=cmd_list)
+
+    delta = sub.add_parser("delta")
+    delta.add_argument("topic")
+    delta.set_defaults(func=cmd_delta)
 
     run_one = sub.add_parser("run-one")
     run_one.add_argument("topic")

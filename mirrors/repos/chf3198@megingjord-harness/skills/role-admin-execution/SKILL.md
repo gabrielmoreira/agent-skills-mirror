@@ -1,7 +1,7 @@
 ---
 name: role-admin-execution
-description: Execute operational tasks after validated implementation: runtime controls, git/PR/release flow, and governance checks.
-argument-hint: [ops-scope: runtime|git-pr|release|mixed]
+description: "Execute operational tasks after validated implementation: runtime controls, git/PR/release flow, and governance checks."
+argument-hint: "[ops-scope: runtime|git-pr|release|mixed]"
 user-invocable: true
 disable-model-invocation: false
 ---

@@ -11,6 +11,7 @@ Handles 429 rate limits with exponential backoff, HTML anti-bot responses,
 network timeouts, and missing subreddits.
 """
 
+import gzip
 import json
 import sys
 import time
@@ -21,7 +22,11 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeou
 from typing import Any, Dict, List, Optional
 
 
-USER_AGENT = "last30days/3.0 (research tool)"
+USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36"
+)
 
 # Depth-aware limits for thread counts
 DEPTH_LIMITS = {
@@ -60,6 +65,9 @@ def _fetch_json(url: str, timeout: int = 15) -> Optional[Dict[str, Any]]:
     headers = {
         "User-Agent": USER_AGENT,
         "Accept": "application/json",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate",
+        "Connection": "keep-alive",
     }
     req = urllib.request.Request(url, headers=headers)
 
@@ -71,7 +79,10 @@ def _fetch_json(url: str, timeout: int = 15) -> Optional[Dict[str, Any]]:
                     _log(f"Anti-bot HTML response (Content-Type: {content_type})")
                     return None
 
-                body = resp.read().decode("utf-8")
+                raw = resp.read()
+                if resp.headers.get("Content-Encoding", "").lower() == "gzip":
+                    raw = gzip.decompress(raw)
+                body = raw.decode("utf-8")
                 return json.loads(body)
 
         except urllib.error.HTTPError as e:
@@ -198,7 +209,7 @@ def search(
     encoded_query = _url_encode(query)
 
     if subreddit:
-        sub = subreddit.lstrip("r/").strip()
+        sub = subreddit.removeprefix("r/").strip()
         url = (
             f"https://www.reddit.com/r/{sub}/search.json"
             f"?q={encoded_query}&restrict_sr=on&sort=relevance&t=month&limit={limit}&raw_json=1"

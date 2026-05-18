@@ -31,20 +31,14 @@ uv run pytest tests/e2e -m e2e
 uv run notebooklm --help
 ```
 
-## Pre-Commit Checks (REQUIRED before committing)
+## Pre-Commit Checks
 
-**IMPORTANT:** Always run these checks before committing to avoid CI failures:
+The pre-commit hook (`.pre-commit-config.yaml`) runs ruff formatting + linting automatically on staged files.
 
+Before pushing, also run mypy + pytest manually to avoid CI failures:
 ```bash
-uv run ruff format .
-uv run ruff check .
 uv run mypy src/notebooklm --ignore-missing-imports
 uv run pytest
-```
-
-Or use this one-liner:
-```bash
-uv run ruff format . && uv run ruff check . && uv run mypy src/notebooklm --ignore-missing-imports && uv run pytest
 ```
 
 ## Architecture
@@ -56,7 +50,7 @@ CLI Layer (cli/)
     ↓
 Client Layer (client.py, _*.py APIs)
     ↓
-Core Layer (_core.py)
+Core Layer (_core.py + _core_*.py seam modules)
     ↓
 RPC Layer (rpc/)
 ```
@@ -66,10 +60,15 @@ RPC Layer (rpc/)
    - `encoder.py`: Request encoding
    - `decoder.py`: Response parsing
 
-2. **Core Layer** (`src/notebooklm/_core.py`):
-   - HTTP client management
-   - RPC call abstraction
-   - Request counter handling
+2. **Core Layer** (`src/notebooklm/_core.py` + `_core_*.py` seam modules):
+   - `_core.py`: `NotebookLMClient` orchestration
+   - `_core_transport.py`, `_core_rpc.py`: HTTP client + RPC call abstraction
+   - `_core_auth.py`, `_core_cookie_persistence.py`: Auth refresh + cookie storage
+   - `_core_metrics.py`, `_core_drain.py`, `_core_reqid.py`: Telemetry, drain coordination, request-counter handling
+   - `_core_cache.py`, `_core_polling.py`: Conversation cache + artifact polling helpers
+   - `_core_constants.py`, `_core_helpers.py`, `_core_error_injection.py`: Module-level constants, helper utilities, synthetic-error transport
+   - `_core_lifecycle.py`: Open/close lifecycle (loop-affinity guard + keepalive task)
+   - `_capabilities.py`: Capability adapters for feature APIs
 
 3. **Client Layer** (`src/notebooklm/client.py`, `_*.py`):
    - `NotebookLMClient`: Main async client with namespaced APIs
@@ -84,46 +83,96 @@ RPC Layer (rpc/)
 | File | Purpose |
 |------|---------|
 | `client.py` | Main `NotebookLMClient` class |
-| `_core.py` | HTTP and RPC infrastructure |
+| `_core.py` | `ClientCore` orchestrator; HTTP client lifecycle; late-binding wrappers |
+| `_core_constants.py` | `DEFAULT_*` knobs and module-level constants |
+| `_core_helpers.py` | `is_auth_error`, `AUTH_ERROR_PATTERNS`, `_resolve_keepalive_interval` |
+| `_core_error_injection.py` | `_SyntheticErrorTransport` + env-var guard for fault injection |
+| `_core_metrics.py` | `ClientMetrics` — `ClientMetricsSnapshot` counters + `on_rpc_event` callback |
+| `_core_drain.py` | `TransportDrainTracker` — in-flight transport counters + `_TransportOperationToken` |
+| `_core_reqid.py` | `ReqidCounter` — monotonic `_reqid` for the chat backend |
+| `_core_auth.py` | `AuthRefreshCoordinator` — refresh task + auth-snapshot lock |
+| `_core_lifecycle.py` | `ClientLifecycle` — loop-affinity guard + keepalive task |
+| `_core_rpc.py` | RPC dispatch executor with `DecodeResponse` + `RpcOwner` Protocols |
+| `_core_transport.py` | Authed POST path, retry loops, `_AuthedTransportHost` Protocol |
+| `_core_cache.py` | Per-instance LRU conversation cache for `ChatAPI` |
+| `_core_polling.py` | Pending-poll registry for long-running artifact generations |
+| `_core_cookie_persistence.py` | Cookie-jar persistence + `__Secure-1PSIDTS` rotation |
+| `_capabilities.py` | Narrow capability Protocols + `ClientCoreCapabilities` adapter for sub-clients |
 | `_notebooks.py` | `client.notebooks` API |
-| `_sources.py` | `client.sources` API |
+| `_sources.py` | `client.sources` API + `fetch_source_ids` module helper |
 | `_artifacts.py` | `client.artifacts` API |
 | `_chat.py` | `client.chat` API |
 | `rpc/types.py` | RPC method IDs (source of truth) |
-| `auth.py` | Authentication handling |
+| `auth.py` | Authentication facade — re-exports + `_AuthFacadeModule` shim that forwards monkeypatches to `_auth/*` seams |
+| `_auth/paths.py` | Storage paths and filesystem helpers |
+| `_auth/extraction.py` | Cookie/token extraction from browser sessions |
+| `_auth/headers.py` | HTTP header construction |
+| `_auth/cookies.py` | Cookie map manipulation + `_update_cookie_input` |
+| `_auth/cookie_policy.py` | Cookie-domain allowlist and policy decisions |
+| `_auth/account.py` | Account profile + multi-account switching |
+| `_auth/session.py` | Session-level dataclasses |
+| `_auth/storage.py` | Profile/state persistence on disk |
+| `_auth/keepalive.py` | Cookie keepalive + `__Secure-1PSIDTS` rotation loop |
+| `_auth/refresh.py` | Token refresh: external `notebooklm login` driver + coalesced runs + redaction |
 | `cli/` | CLI command modules |
 
 ### Repository Structure
 
 ```
 src/notebooklm/
-├── __init__.py          # Public exports
-├── client.py            # NotebookLMClient
-├── auth.py              # Authentication
-├── types.py             # Dataclasses
-├── _core.py             # Core infrastructure
-├── _notebooks.py        # NotebooksAPI
-├── _sources.py          # SourcesAPI
-├── _artifacts.py        # ArtifactsAPI
-├── _chat.py             # ChatAPI
-├── _research.py         # ResearchAPI
-├── _notes.py            # NotesAPI
-├── notebooklm_cli.py    # Entry-point assembler — imports + registers cli/ groups
-├── rpc/                 # RPC protocol layer
-│   ├── types.py         # Method IDs and enums
-│   ├── encoder.py       # Request encoding
-│   └── decoder.py       # Response parsing
-└── cli/                 # CLI implementation
+├── __init__.py                  # Public exports
+├── client.py                    # NotebookLMClient
+├── auth.py                      # Authentication facade — re-exports + _AuthFacadeModule shim
+├── types.py                     # Dataclasses
+├── _core.py                     # Core orchestration (NotebookLMClient internals)
+├── _core_constants.py           # DEFAULT_* knobs + module-level constants
+├── _core_helpers.py             # is_auth_error / AUTH_ERROR_PATTERNS / keepalive helpers
+├── _core_error_injection.py     # _SyntheticErrorTransport + fault-injection env-var guard
+├── _core_transport.py           # HTTP client + transport-layer concerns
+├── _core_rpc.py                 # RPC call abstraction
+├── _core_auth.py                # Auth refresh seam
+├── _core_cookie_persistence.py  # Cookie storage seam
+├── _core_metrics.py             # Telemetry / metrics seam
+├── _core_drain.py               # In-flight drain coordinator
+├── _core_reqid.py               # Request-counter / request-id helpers
+├── _core_cache.py               # Conversation cache seam
+├── _core_polling.py             # Artifact polling helpers
+├── _core_lifecycle.py           # Open/close lifecycle seam (loop affinity + keepalive task)
+├── _capabilities.py             # Capability adapters for feature APIs
+├── _auth/                       # Auth subpackage (forwarded through auth.py facade)
+│   ├── __init__.py
+│   ├── paths.py                 # Storage paths and filesystem helpers
+│   ├── extraction.py            # Cookie/token extraction from browser sessions
+│   ├── headers.py               # HTTP header construction
+│   ├── cookies.py               # Cookie maps + _update_cookie_input
+│   ├── cookie_policy.py         # Domain allowlist and cookie policy
+│   ├── account.py               # Account profile + multi-account switching
+│   ├── session.py               # Session-level dataclasses
+│   ├── storage.py               # Profile/state persistence on disk
+│   ├── keepalive.py             # Cookie keepalive + __Secure-1PSIDTS rotation
+│   └── refresh.py               # Token refresh driver (external login cmd, coalesced runs, redaction)
+├── _notebooks.py                # NotebooksAPI
+├── _sources.py                  # SourcesAPI
+├── _artifacts.py                # ArtifactsAPI
+├── _chat.py                     # ChatAPI
+├── _research.py                 # ResearchAPI
+├── _notes.py                    # NotesAPI
+├── notebooklm_cli.py            # Entry-point assembler — imports + registers cli/ groups
+├── rpc/                         # RPC protocol layer
+│   ├── types.py                 # Method IDs and enums
+│   ├── encoder.py               # Request encoding
+│   └── decoder.py               # Response parsing
+└── cli/                         # CLI implementation
     ├── __init__.py
-    ├── helpers.py       # Shared utilities
-    ├── session.py       # login, use, status, clear
-    ├── notebook.py      # list, create, delete, rename
-    ├── source.py        # source add, list, delete
-    ├── artifact.py      # artifact commands
-    ├── generate.py      # generate audio, video, etc.
-    ├── download.py      # download commands
-    ├── chat.py          # ask, configure, history
-    └── note.py          # note commands
+    ├── helpers.py               # Shared utilities
+    ├── session.py               # login, use, status, clear
+    ├── notebook.py              # list, create, delete, rename
+    ├── source.py                # source add, list, delete
+    ├── artifact.py              # artifact commands
+    ├── generate.py              # generate audio, video, etc.
+    ├── download.py              # download commands
+    ├── chat.py                  # ask, configure, history
+    └── note.py                  # note commands
 ```
 
 ## API Patterns
@@ -168,7 +217,7 @@ Commands are organized as:
 6. **Concurrency**: One `NotebookLMClient` instance is bound to its open()-time event loop. See [Concurrency contract](docs/python-api.md#concurrency-contract). Common bugs:
    - Re-using a client across threads → not supported; create one per thread.
    - Re-using a client across event loops → raises `RuntimeError` on first authed POST.
-   - Sharing across `AuthTokens` tenants → never (the `_conversation_cache` is per-instance).
+   - Sharing across `AuthTokens` tenants → never (`ChatAPI._cache` is per-instance).
 
 ## Documentation
 

@@ -160,6 +160,93 @@ def _extract_github_repos(items: list[dict]) -> list[str]:
     return repos[:5]  # cap at 5 repos
 
 
+_INTEGRATION_SUFFIX_KEYWORDS: dict[str, set[str]] = {
+    "-action": {"action", "actions", "workflow", "workflows"},
+    "-sdk": {"sdk", "client", "library"},
+    "-plugin": {"plugin", "plugins", "extension", "extensions"},
+    "-plugins": {"plugin", "plugins", "extension", "extensions"},
+    "-docs": {"docs", "documentation"},
+    "-examples": {"example", "examples", "sample", "samples"},
+    "-template": {"template", "templates", "starter", "boilerplate"},
+}
+
+
+def _topic_tokens(topic: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9]+", (topic or "").lower()))
+
+
+def _topic_entity_slugs(topic: str) -> list[str]:
+    entities = re.split(r"\b(?:vs|versus)\b", (topic or "").lower())
+    slugs: list[str] = []
+    for entity in entities:
+        tokens = re.findall(r"[a-z0-9]+", entity)
+        if tokens:
+            slugs.append("-".join(tokens))
+    return slugs
+
+
+def _repo_slug(repo: str) -> str:
+    parts = repo.split("/", 1)
+    if len(parts) != 2:
+        return ""
+    return parts[1].lower()
+
+
+def _canonicalize_integration_repo(topic: str, repo: str) -> str:
+    """Map integration repos back to canonical product repos when intent allows.
+
+    Example:
+      anthropics/claude-code-action -> anthropics/claude-code
+    unless topic explicitly asks for "action"/"workflow".
+    """
+    parts = repo.split("/", 1)
+    if len(parts) != 2:
+        return repo
+    owner, name = parts[0], parts[1]
+    lower_name = name.lower()
+    topic_words = _topic_tokens(topic)
+    for suffix, intent_words in _INTEGRATION_SUFFIX_KEYWORDS.items():
+        if not lower_name.endswith(suffix):
+            continue
+        if topic_words.intersection(intent_words):
+            return repo
+        base = name[: -len(suffix)]
+        if base:
+            return f"{owner}/{base}"
+    return repo
+
+
+def canonicalize_github_repos(topic: str, repos: list[str], *, cap: int | None = 5) -> list[str]:
+    """Normalize/priority-sort GitHub repos for the current topic.
+
+    - Rewrites common integration suffixes to canonical product repos when
+      topic intent does not mention those integrations.
+    - Promotes exact topic slug matches (e.g., `claude-code`) over partials.
+    """
+    canonicalized: list[str] = []
+    seen: set[str] = set()
+    for repo in repos:
+        candidate = _canonicalize_integration_repo(topic, repo.strip())
+        if "/" not in candidate:
+            continue
+        key = candidate.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        canonicalized.append(candidate)
+
+    topic_slugs = set(_topic_entity_slugs(topic))
+    if topic_slugs:
+        exact = [r for r in canonicalized if _repo_slug(r) in topic_slugs]
+        prefixed = [r for r in canonicalized if any(_repo_slug(r).startswith(f"{slug}-") for slug in topic_slugs) and r not in exact]
+        rest = [r for r in canonicalized if r not in exact and r not in prefixed]
+        canonicalized = exact + prefixed + rest
+
+    if cap is not None:
+        return canonicalized[:cap]
+    return canonicalized
+
+
 def _build_context_summary(items: list[dict]) -> str:
     """Build a 1-2 sentence current events summary from news search results."""
     snippets: list[str] = []
@@ -240,7 +327,7 @@ def auto_resolve(topic: str, config: dict) -> dict:
     subreddits = _extract_subreddits(results.get("subreddit", []))
     x_handle = _extract_x_handle(results.get("x_handle", []))
     github_user = _extract_github_user(results.get("github", []))
-    github_repos = _extract_github_repos(results.get("github", []))
+    github_repos = canonicalize_github_repos(topic, _extract_github_repos(results.get("github", [])))
     context = _build_context_summary(results.get("news", []))
 
     subreddits, category = _merge_category_peers(topic, subreddits)

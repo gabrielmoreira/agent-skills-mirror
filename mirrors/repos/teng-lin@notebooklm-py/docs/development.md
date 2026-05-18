@@ -84,8 +84,37 @@ src/notebooklm/
 |-------|-------|----------------|
 | **CLI** | `cli/*.py` | User commands, input validation, Rich output |
 | **Client** | `client.py`, `_*.py` | High-level Python API, returns typed dataclasses |
-| **Core** | `_core.py` | HTTP client, request counter, RPC abstraction |
+| **Core** | `_core.py`, `_core_*.py` | `ClientCore` orchestrator + seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
 | **RPC** | `rpc/*.py` | Protocol encoding/decoding, method IDs |
+
+#### Core-layer seam modules
+
+The `Core` layer is split across `_core.py` (orchestrator) and a family of
+single-responsibility `_core_*.py` helper modules. Each helper exposes a
+Protocol-shim host interface so it can be unit-tested against a stub `ClientCore`:
+
+| Module | Class | Responsibility |
+|---|---|---|
+| `_core.py` | `ClientCore` | Orchestrator owning the `httpx.AsyncClient` + `AuthTokens`; module-level constants and re-exports; error-injection seam (`_SyntheticErrorTransport`, `_get_error_injection_mode`) used by `_core_transport`'s retry loops via `httpx.AsyncBaseTransport` wrapping. |
+| `_core_metrics.py` | `ClientMetrics` | `ClientMetricsSnapshot` counters, queue-wait recorders, `on_rpc_event` async callback. |
+| `_core_drain.py` | `TransportDrainTracker` | In-flight transport counters, `_TransportOperationToken`, lazy `asyncio.Condition` powering `client.drain(...)`. |
+| `_core_reqid.py` | `ReqidCounter` | Monotonic `_reqid` counter for chat backend (baseline 100000, step 100000). |
+| `_core_auth.py` (Phase 2 in progress) | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `_AuthSnapshot` rotation. |
+| `_core_lifecycle.py` (Phase 2 in progress) | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
+| `_core_rpc.py` | `RpcExecutor` | RPC dispatch executor with `DecodeResponse` + `RpcOwner` Protocols. |
+| `_core_transport.py` | `AuthedTransport` | Authed HTTP POST path, retry loops (429 + 5xx). |
+| `_core_cache.py` | `ConversationCache` | Per-instance LRU conversation cache for `ChatAPI` continuity. |
+| `_core_polling.py` | `PollRegistry` | Pending-poll registry shared by long-running artifact generations. |
+| `_core_cookie_persistence.py` | `CookiePersistence` | Cookie-jar → storage-state serialization, `__Secure-1PSIDTS` rotation. |
+
+The capability surface that sub-clients depend on is pinned in
+`notebooklm._capabilities` via 9 narrow Protocols (`CoreRPCProvider`,
+`SourceListProvider`, `CoreReqIdProvider`, `ChatStreamingProvider`,
+`PollRegistryProvider`, `AuthRouteProvider`, `CookieJarProvider`,
+`TransportOperationProvider`, `UploadConcurrencyProvider`), composed into
+the concrete `ClientCoreCapabilities` adapter. Adding or removing a
+method on `ClientCore` is a Protocol change — review `_capabilities.py`
+alongside any change to the orchestrator's public method surface.
 
 Private service modules sit inside the client layer but below the public
 facades. They own cross-facade composition without importing sibling facades:
@@ -351,8 +380,9 @@ Run the setup script once per Google account that records cassettes:
 uv run python tests/scripts/setup-generation-notebook.py
 ```
 
-The script is idempotent: it reuses an existing notebook titled
-`VCR Generation Notebook (Tier 8)` if one already exists, otherwise creates it.
+The script is idempotent: it reuses the notebook whose title matches
+`GENERATION_NOTEBOOK_TITLE` (defined in `tests/scripts/setup-generation-notebook.py`)
+if one already exists, otherwise creates it.
 It prints the notebook UUID and an `export` line. Copy the export line into
 your maintainer environment (e.g. `~/.zshrc` or a profile-specific `.env`
 file you do NOT commit):
@@ -592,6 +622,102 @@ The `RedactingFilter` preserves `record.exc_info` (the live exception object) so
 |------|-----------|
 | Refresh credentials | Every 1-2 weeks |
 | Check nightly results | Daily |
+
+### Workflow secret gates
+
+Every workflow that consumes user-provided secrets (`secrets.NOTEBOOKLM_AUTH_JSON`,
+`secrets.NOTEBOOKLM_READ_ONLY_NOTEBOOK_ID`, `secrets.CLAUDE_CODE_OAUTH_TOKEN`, …)
+is wrapped in at least one of three gates so that a non-maintainer cannot exfiltrate
+credentials by dispatching a workflow on a feature branch:
+
+| Gate | Where | Mechanism |
+|------|-------|-----------|
+| `environment: protected-readonly` | Job-level | GitHub Environment with a required reviewer — secrets do not resolve until the maintainer approves the run. Use `${{ github.event_name == 'workflow_dispatch' && 'protected-readonly' \|\| '' }}` to require approval only on manual dispatch while leaving scheduled cron canaries unattended. |
+| `needs.<job>.outputs.is_standard == 'true'` | Step-level `if:` | Pin secret-using steps to standard branches (`main` / `develop` / scheduled cron). Non-standard branches skip the step outright — no secret values land in the runner env. |
+| `github.event.sender.login == 'teng-lin'` | Job-level `if:` | Pin webhook-triggered workflows (e.g. `claude.yml`) to a specific maintainer actor. Any other actor's trigger never reaches the secret-bearing steps. |
+
+`scripts/check_workflow_secret_gates.py` (wired into the `test.yml` quality job)
+asserts every workflow file in `.github/workflows/` satisfies at least one of
+the above gates for every `secrets.*` reference (except `secrets.GITHUB_TOKEN`,
+which is covered separately by `scripts/check_workflow_permissions.py`).
+
+#### One-time GitHub Environment setup
+
+The `protected-readonly` environment must be configured in the GitHub repository
+settings before any workflow that references it can run **with an approval gate**.
+
+> **Important — silent auto-creation**: GitHub Actions silently creates a
+> referenced environment that doesn't exist, with **no protection rules**, the
+> first time a workflow references it. A typo in the environment name (e.g.
+> `protectd-readonly`) or a never-configured environment would therefore
+> bypass maintainer approval at runtime even though the workflow YAML appears
+> to gate on it. The static checker `scripts/check_workflow_secret_gates.py`
+> pins the accepted environment names to an explicit allow-list
+> (`_APPROVED_ENVIRONMENTS`) to prevent typos from passing CI — but the
+> *runtime* gate still depends on the manual setup below being done correctly.
+> Verify by triggering a `workflow_dispatch` and confirming the run pauses at
+> "Waiting for review" before any secret is exposed.
+
+This is a manual UI/API step — Pull Requests cannot create environments on
+their own.
+
+1. Open the repository on GitHub and navigate to
+   **Settings → Environments → New environment**.
+2. Name the environment **`protected-readonly`** (exact spelling — the workflow
+   YAML files match this string verbatim, and the checker enforces the same
+   spelling).
+3. Under **Deployment protection rules**, enable **Required reviewers** and add
+   the maintainer GitHub account (e.g. `teng-lin`) to the reviewer list.
+4. Leave **Wait timer** at `0` minutes (manual approval is the gate; we don't
+   need a cool-down).
+5. Save. The environment is now ready; the next `workflow_dispatch` against
+   `verify-package.yml`, `verify-artifacts.yml`, `rpc-health.yml`, or
+   `nightly.yml` will pause at the maintainer-approval prompt before any
+   secret resolves.
+6. **Smoke-test the gate.** Dispatch one of the workflows above from a
+   non-maintainer account (or from the maintainer account if no second
+   account is available — the approval prompt should still fire) and
+   confirm the run pauses at "Waiting for review" instead of immediately
+   acquiring secrets. If the run does not pause, the environment was not
+   configured correctly; do not rely on the gate until this smoke-test
+   passes.
+
+For automation-driven setup (e.g. infrastructure-as-code), the same configuration
+can be applied via the GitHub REST API:
+
+```bash
+gh api -X PUT \
+  /repos/teng-lin/notebooklm-py/environments/protected-readonly \
+  -f 'wait_timer=0' \
+  -f 'reviewers[][type]=User' \
+  -F 'reviewers[][id]=<github-user-id-for-teng-lin>'
+```
+
+#### Adding a new secret-bearing workflow
+
+When introducing a workflow that touches `secrets.*`:
+
+1. Pick the gate shape that matches the trigger surface:
+   - `workflow_dispatch` only → job-level `environment: protected-readonly`.
+   - `workflow_dispatch` + `schedule` → conditional environment expression
+     (approve manual runs, leave cron unattended).
+   - Webhook-triggered (`issue_comment`, etc.) → job-level `if:` pinning
+     `sender.login` to the maintainer.
+   - Multi-branch CI (`push`, `pull_request`, nightly) → step-level `if:`
+     referencing an upstream `is_standard` output.
+2. Run `python scripts/check_workflow_secret_gates.py` locally to verify the
+   gate is recognised.
+3. If the new workflow references the `protected-readonly` environment for
+   the first time, **double-check the Environment exists** (see "One-time
+   GitHub Environment setup" above). GitHub Actions will **silently
+   auto-create** a referenced environment that doesn't exist, **with no
+   protection rules**, so a never-configured `protected-readonly`
+   environment would let the workflow run without any approval gate —
+   exactly the opposite of what the YAML implies. The static checker
+   rejects unapproved *names* via `_APPROVED_ENVIRONMENTS`, but it cannot
+   verify that GitHub-side configuration has actually been applied; that
+   verification is the maintainer's responsibility per the smoke-test
+   step in "One-time GitHub Environment setup".
 
 ### Troubleshooting CI/CD Auth
 

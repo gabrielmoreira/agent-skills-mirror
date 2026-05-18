@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TanShilongMario/PromptSkill4image` — 26 default patterns, 2 followed patterns, 3 file(s) materialized.
+Mirror of `TanShilongMario/PromptSkill4image` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `TanShilongMario/PromptSkill4image` — 26 default patterns, 2 followe
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 3 |
+| Followed pats | 0 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,7 @@ Mirror of `TanShilongMario/PromptSkill4image` — 26 default patterns, 2 followe
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `vocabulary-banks.md`
-- `examples.md`
+_None._
 
 ## File Index
 
@@ -61,8 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
-| 2 | → | [`examples.md`](examples.md) |
-| 3 | → | [`vocabulary-banks.md`](vocabulary-banks.md) |
 
 ---
 

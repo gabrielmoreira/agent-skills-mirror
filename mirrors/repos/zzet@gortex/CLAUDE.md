@@ -37,8 +37,11 @@ Selected via `llm.provider` in `.gortex.yaml` or `~/.config/gortex/config.yaml`.
 | `openai` | Chat Completions | `llm.openai.model` + `OPENAI_API_KEY` |
 | `ollama` | Ollama daemon | `llm.ollama.model` (+ `llm.ollama.host`, default `localhost:11434`) |
 | `claudecli` | `claude` CLI subprocess | `claude` on `$PATH` (signed in once); optional `llm.claudecli.model` (`sonnet`/`opus`/…). Reuses the user's Claude Code subscription. |
+| `gemini` | Google Gemini `generateContent` REST | `llm.gemini.model` (default `gemini-2.5-pro`) + `GEMINI_API_KEY`. Structured output via `responseSchema` (`additionalProperties` stripped — Gemini rejects it). |
+| `bedrock` | AWS Bedrock Converse API (SigV4) | `llm.bedrock.model_id` (e.g. `anthropic.claude-sonnet-4-20250514-v1:0`) + `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` (+ optional `AWS_SESSION_TOKEN` for STS). Region defaults to `us-east-1` (`llm.bedrock.region`). Structured output via forced `respond` tool. No AWS SDK dependency — SigV4 is implemented in ~100 LOC of stdlib. |
+| `deepseek` | DeepSeek Chat Completions (OpenAI-compatible) | `llm.deepseek.model` (default `deepseek-chat`) + `DEEPSEEK_API_KEY`. Structured output uses `response_format: json_object` plus a schema hint in the system prompt — DeepSeek does not support strict `json_schema`. |
 
-`GORTEX_LLM_PROVIDER` / `GORTEX_LLM_MODEL` / `GORTEX_LLM_CLAUDECLI_BINARY` override the file config. If the active provider can't construct (missing model / API key, `local` without `-tags llama`, `claudecli` without `claude` on `$PATH`), the daemon logs a warning and `ask` stays unregistered — fall through to direct tools.
+`GORTEX_LLM_PROVIDER` / `GORTEX_LLM_MODEL` / `GORTEX_LLM_CLAUDECLI_BINARY` / `GORTEX_LLM_BEDROCK_REGION` override the file config. `GORTEX_LLM_MODEL` targets the active provider's model field (Gemini → `llm.gemini.model`, Bedrock → `llm.bedrock.model_id`, DeepSeek → `llm.deepseek.model`, etc.). If the active provider can't construct (missing model / API key, `local` without `-tags llama`, `claudecli` without `claude` on `$PATH`, `bedrock` without AWS credentials), the daemon logs a warning and `ask` stays unregistered — fall through to direct tools.
 
 `search_symbols assist:` modes: `auto` (default — skips LLM for identifier queries, expands NL queries), `on` (forces expansion+rerank), `off` (pure BM25), `deep` (adds a body-grounded verification pass; +1.5–4 s; quality is highly model-dependent — unreliable on 3B local models, fine on 7B+ or hosted).
 

@@ -1,10 +1,8 @@
 ---
 name: git-ai-archaeology
-description: Analyze AI config evolution in a git repo — first commits per path, monthly distribution, major PRs, maturity phases
-allowed-tools:
-  - Write
-  - Read
-  - Bash
+description: "Analyze AI config evolution in a git repo. Use when mapping AI adoption history, finding when configs were first introduced, charting commit velocity by month, or identifying maturity phases in a project's AI tooling."
+allowed-tools: Write Read Bash
+effort: medium
 ---
 
 # git-ai-archaeology

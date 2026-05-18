@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 0 followed patterns, 140 file(s) materialized.
+Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 0 followed patterns, 151 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 0 followed pat
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 140 |
+| Files         | 151 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -147,58 +147,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 86 | ✓ | [`.opencode/skills/pre-publish-review/SKILL.md`](.opencode/skills/pre-publish-review/SKILL.md) |
 | 87 | ✓ | [`.opencode/skills/work-with-pr/SKILL.md`](.opencode/skills/work-with-pr/SKILL.md) |
 | 88 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 89 | ✓ | [`src/__tests__/perf/fixtures/in-tree/AGENTS.md`](src/__tests__/perf/fixtures/in-tree/AGENTS.md) |
-| 90 | ✓ | [`src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md`](src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md) |
-| 91 | ✓ | [`src/__tests__/perf/fixtures/in-tree/src/AGENTS.md`](src/__tests__/perf/fixtures/in-tree/src/AGENTS.md) |
-| 92 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 93 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
-| 94 | ✓ | [`src/agents/hephaestus/AGENTS.md`](src/agents/hephaestus/AGENTS.md) |
-| 95 | ✓ | [`src/agents/prometheus/AGENTS.md`](src/agents/prometheus/AGENTS.md) |
-| 96 | ✓ | [`src/agents/sisyphus/AGENTS.md`](src/agents/sisyphus/AGENTS.md) |
-| 97 | ✓ | [`src/cli/AGENTS.md`](src/cli/AGENTS.md) |
-| 98 | ✓ | [`src/cli/config-manager/AGENTS.md`](src/cli/config-manager/AGENTS.md) |
-| 99 | ✓ | [`src/cli/doctor/AGENTS.md`](src/cli/doctor/AGENTS.md) |
-| 100 | ✓ | [`src/cli/run/AGENTS.md`](src/cli/run/AGENTS.md) |
-| 101 | ✓ | [`src/config/AGENTS.md`](src/config/AGENTS.md) |
-| 102 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
-| 103 | ✓ | [`src/features/background-agent/AGENTS.md`](src/features/background-agent/AGENTS.md) |
-| 104 | ✓ | [`src/features/boulder-state/AGENTS.md`](src/features/boulder-state/AGENTS.md) |
-| 105 | ✓ | [`src/features/builtin-skills/agent-browser/SKILL.md`](src/features/builtin-skills/agent-browser/SKILL.md) |
-| 106 | ✓ | [`src/features/builtin-skills/AGENTS.md`](src/features/builtin-skills/AGENTS.md) |
-| 107 | ✓ | [`src/features/builtin-skills/dev-browser/SKILL.md`](src/features/builtin-skills/dev-browser/SKILL.md) |
-| 108 | ✓ | [`src/features/builtin-skills/frontend-ui-ux/SKILL.md`](src/features/builtin-skills/frontend-ui-ux/SKILL.md) |
-| 109 | ✓ | [`src/features/builtin-skills/git-master/SKILL.md`](src/features/builtin-skills/git-master/SKILL.md) |
-| 110 | ✓ | [`src/features/claude-code-mcp-loader/AGENTS.md`](src/features/claude-code-mcp-loader/AGENTS.md) |
-| 111 | ✓ | [`src/features/claude-code-plugin-loader/AGENTS.md`](src/features/claude-code-plugin-loader/AGENTS.md) |
-| 112 | ✓ | [`src/features/claude-tasks/AGENTS.md`](src/features/claude-tasks/AGENTS.md) |
-| 113 | ✓ | [`src/features/mcp-oauth/AGENTS.md`](src/features/mcp-oauth/AGENTS.md) |
-| 114 | ✓ | [`src/features/opencode-skill-loader/AGENTS.md`](src/features/opencode-skill-loader/AGENTS.md) |
-| 115 | ✓ | [`src/features/skill-mcp-manager/AGENTS.md`](src/features/skill-mcp-manager/AGENTS.md) |
-| 116 | ✓ | [`src/features/team-mode/AGENTS.md`](src/features/team-mode/AGENTS.md) |
-| 117 | ✓ | [`src/features/tmux-subagent/AGENTS.md`](src/features/tmux-subagent/AGENTS.md) |
-| 118 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
-| 119 | ✓ | [`src/hooks/anthropic-context-window-limit-recovery/AGENTS.md`](src/hooks/anthropic-context-window-limit-recovery/AGENTS.md) |
-| 120 | ✓ | [`src/hooks/atlas/AGENTS.md`](src/hooks/atlas/AGENTS.md) |
-| 121 | ✓ | [`src/hooks/claude-code-hooks/AGENTS.md`](src/hooks/claude-code-hooks/AGENTS.md) |
-| 122 | ✓ | [`src/hooks/comment-checker/AGENTS.md`](src/hooks/comment-checker/AGENTS.md) |
-| 123 | ✓ | [`src/hooks/keyword-detector/AGENTS.md`](src/hooks/keyword-detector/AGENTS.md) |
-| 124 | ✓ | [`src/hooks/ralph-loop/AGENTS.md`](src/hooks/ralph-loop/AGENTS.md) |
-| 125 | ✓ | [`src/hooks/rules-injector/AGENTS.md`](src/hooks/rules-injector/AGENTS.md) |
-| 126 | ✓ | [`src/hooks/runtime-fallback/AGENTS.md`](src/hooks/runtime-fallback/AGENTS.md) |
-| 127 | ✓ | [`src/hooks/session-recovery/AGENTS.md`](src/hooks/session-recovery/AGENTS.md) |
-| 128 | ✓ | [`src/hooks/todo-continuation-enforcer/AGENTS.md`](src/hooks/todo-continuation-enforcer/AGENTS.md) |
-| 129 | ✓ | [`src/mcp/AGENTS.md`](src/mcp/AGENTS.md) |
-| 130 | ✓ | [`src/openclaw/AGENTS.md`](src/openclaw/AGENTS.md) |
-| 131 | ✓ | [`src/plugin-handlers/AGENTS.md`](src/plugin-handlers/AGENTS.md) |
-| 132 | ✓ | [`src/plugin/AGENTS.md`](src/plugin/AGENTS.md) |
-| 133 | ✓ | [`src/shared/AGENTS.md`](src/shared/AGENTS.md) |
-| 134 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
-| 135 | ✓ | [`src/tools/background-task/AGENTS.md`](src/tools/background-task/AGENTS.md) |
-| 136 | ✓ | [`src/tools/call-omo-agent/AGENTS.md`](src/tools/call-omo-agent/AGENTS.md) |
-| 137 | ✓ | [`src/tools/delegate-task/AGENTS.md`](src/tools/delegate-task/AGENTS.md) |
-| 138 | ✓ | [`src/tools/hashline-edit/AGENTS.md`](src/tools/hashline-edit/AGENTS.md) |
-| 139 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
-| 140 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 89 | ✓ | [`script/AGENTS.md`](script/AGENTS.md) |
+| 90 | ✓ | [`src/__tests__/perf/fixtures/in-tree/AGENTS.md`](src/__tests__/perf/fixtures/in-tree/AGENTS.md) |
+| 91 | ✓ | [`src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md`](src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md) |
+| 92 | ✓ | [`src/__tests__/perf/fixtures/in-tree/src/AGENTS.md`](src/__tests__/perf/fixtures/in-tree/src/AGENTS.md) |
+| 93 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 94 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 95 | ✓ | [`src/agents/atlas/AGENTS.md`](src/agents/atlas/AGENTS.md) |
+| 96 | ✓ | [`src/agents/builtin-agents/AGENTS.md`](src/agents/builtin-agents/AGENTS.md) |
+| 97 | ✓ | [`src/agents/hephaestus/AGENTS.md`](src/agents/hephaestus/AGENTS.md) |
+| 98 | ✓ | [`src/agents/prometheus/AGENTS.md`](src/agents/prometheus/AGENTS.md) |
+| 99 | ✓ | [`src/agents/sisyphus-junior/AGENTS.md`](src/agents/sisyphus-junior/AGENTS.md) |
+| 100 | ✓ | [`src/agents/sisyphus/AGENTS.md`](src/agents/sisyphus/AGENTS.md) |
+| 101 | ✓ | [`src/cli/AGENTS.md`](src/cli/AGENTS.md) |
+| 102 | ✓ | [`src/cli/config-manager/AGENTS.md`](src/cli/config-manager/AGENTS.md) |
+| 103 | ✓ | [`src/cli/doctor/AGENTS.md`](src/cli/doctor/AGENTS.md) |
+| 104 | ✓ | [`src/cli/run/AGENTS.md`](src/cli/run/AGENTS.md) |
+| 105 | ✓ | [`src/config/AGENTS.md`](src/config/AGENTS.md) |
+| 106 | ✓ | [`src/features/AGENTS.md`](src/features/AGENTS.md) |
+| 107 | ✓ | [`src/features/background-agent/AGENTS.md`](src/features/background-agent/AGENTS.md) |
+| 108 | ✓ | [`src/features/boulder-state/AGENTS.md`](src/features/boulder-state/AGENTS.md) |
+| 109 | ✓ | [`src/features/builtin-commands/AGENTS.md`](src/features/builtin-commands/AGENTS.md) |
+| 110 | ✓ | [`src/features/builtin-skills/agent-browser/SKILL.md`](src/features/builtin-skills/agent-browser/SKILL.md) |
+| 111 | ✓ | [`src/features/builtin-skills/AGENTS.md`](src/features/builtin-skills/AGENTS.md) |
+| 112 | ✓ | [`src/features/builtin-skills/dev-browser/SKILL.md`](src/features/builtin-skills/dev-browser/SKILL.md) |
+| 113 | ✓ | [`src/features/builtin-skills/frontend-ui-ux/SKILL.md`](src/features/builtin-skills/frontend-ui-ux/SKILL.md) |
+| 114 | ✓ | [`src/features/builtin-skills/git-master/SKILL.md`](src/features/builtin-skills/git-master/SKILL.md) |
+| 115 | ✓ | [`src/features/claude-code-agent-loader/AGENTS.md`](src/features/claude-code-agent-loader/AGENTS.md) |
+| 116 | ✓ | [`src/features/claude-code-mcp-loader/AGENTS.md`](src/features/claude-code-mcp-loader/AGENTS.md) |
+| 117 | ✓ | [`src/features/claude-code-plugin-loader/AGENTS.md`](src/features/claude-code-plugin-loader/AGENTS.md) |
+| 118 | ✓ | [`src/features/claude-tasks/AGENTS.md`](src/features/claude-tasks/AGENTS.md) |
+| 119 | ✓ | [`src/features/mcp-oauth/AGENTS.md`](src/features/mcp-oauth/AGENTS.md) |
+| 120 | ✓ | [`src/features/opencode-skill-loader/AGENTS.md`](src/features/opencode-skill-loader/AGENTS.md) |
+| 121 | ✓ | [`src/features/skill-mcp-manager/AGENTS.md`](src/features/skill-mcp-manager/AGENTS.md) |
+| 122 | ✓ | [`src/features/team-mode/AGENTS.md`](src/features/team-mode/AGENTS.md) |
+| 123 | ✓ | [`src/features/tmux-subagent/AGENTS.md`](src/features/tmux-subagent/AGENTS.md) |
+| 124 | ✓ | [`src/hooks/AGENTS.md`](src/hooks/AGENTS.md) |
+| 125 | ✓ | [`src/hooks/anthropic-context-window-limit-recovery/AGENTS.md`](src/hooks/anthropic-context-window-limit-recovery/AGENTS.md) |
+| 126 | ✓ | [`src/hooks/atlas/AGENTS.md`](src/hooks/atlas/AGENTS.md) |
+| 127 | ✓ | [`src/hooks/auto-update-checker/AGENTS.md`](src/hooks/auto-update-checker/AGENTS.md) |
+| 128 | ✓ | [`src/hooks/claude-code-hooks/AGENTS.md`](src/hooks/claude-code-hooks/AGENTS.md) |
+| 129 | ✓ | [`src/hooks/comment-checker/AGENTS.md`](src/hooks/comment-checker/AGENTS.md) |
+| 130 | ✓ | [`src/hooks/compaction-context-injector/AGENTS.md`](src/hooks/compaction-context-injector/AGENTS.md) |
+| 131 | ✓ | [`src/hooks/keyword-detector/AGENTS.md`](src/hooks/keyword-detector/AGENTS.md) |
+| 132 | ✓ | [`src/hooks/ralph-loop/AGENTS.md`](src/hooks/ralph-loop/AGENTS.md) |
+| 133 | ✓ | [`src/hooks/rules-injector/AGENTS.md`](src/hooks/rules-injector/AGENTS.md) |
+| 134 | ✓ | [`src/hooks/runtime-fallback/AGENTS.md`](src/hooks/runtime-fallback/AGENTS.md) |
+| 135 | ✓ | [`src/hooks/session-recovery/AGENTS.md`](src/hooks/session-recovery/AGENTS.md) |
+| 136 | ✓ | [`src/hooks/todo-continuation-enforcer/AGENTS.md`](src/hooks/todo-continuation-enforcer/AGENTS.md) |
+| 137 | ✓ | [`src/mcp/AGENTS.md`](src/mcp/AGENTS.md) |
+| 138 | ✓ | [`src/openclaw/AGENTS.md`](src/openclaw/AGENTS.md) |
+| 139 | ✓ | [`src/plugin-handlers/AGENTS.md`](src/plugin-handlers/AGENTS.md) |
+| 140 | ✓ | [`src/plugin/AGENTS.md`](src/plugin/AGENTS.md) |
+| 141 | ✓ | [`src/shared/AGENTS.md`](src/shared/AGENTS.md) |
+| 142 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
+| 143 | ✓ | [`src/tools/ast-grep/AGENTS.md`](src/tools/ast-grep/AGENTS.md) |
+| 144 | ✓ | [`src/tools/background-task/AGENTS.md`](src/tools/background-task/AGENTS.md) |
+| 145 | ✓ | [`src/tools/call-omo-agent/AGENTS.md`](src/tools/call-omo-agent/AGENTS.md) |
+| 146 | ✓ | [`src/tools/delegate-task/AGENTS.md`](src/tools/delegate-task/AGENTS.md) |
+| 147 | ✓ | [`src/tools/hashline-edit/AGENTS.md`](src/tools/hashline-edit/AGENTS.md) |
+| 148 | ✓ | [`src/tools/look-at/AGENTS.md`](src/tools/look-at/AGENTS.md) |
+| 149 | ✓ | [`src/tools/lsp/AGENTS.md`](src/tools/lsp/AGENTS.md) |
+| 150 | ✓ | [`src/tools/skill/AGENTS.md`](src/tools/skill/AGENTS.md) |
+| 151 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
 
 ---
 

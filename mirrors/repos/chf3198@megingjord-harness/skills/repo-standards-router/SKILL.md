@@ -1,7 +1,7 @@
 ---
 name: repo-standards-router
-description: Classify a repository by app type and route it to the correct standards branch, policy profile, and verification gates.
-argument-hint: [primary-type: website-static|web-app|library-sdk|infra-automation|auto-detect] [policy-profile: strict|standard|light] [overlays: security|collaboration|release|observability]
+description: "Classify a repository by app type and route it to the correct standards branch, policy profile, and verification gates."
+argument-hint: "[primary-type: website-static|web-app|library-sdk|infra-automation|auto-detect] [policy-profile: strict|standard|light] [overlays: security|collaboration|release|observability]"
 user-invocable: true
 disable-model-invocation: false
 ---

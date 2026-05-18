@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PriNova/pi-agent-codebase-workflows` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,16 +79,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`prompts/refactor-implement.md`](prompts/refactor-implement.md) |
 | 19 | ✓ | [`prompts/review-arch.md`](prompts/review-arch.md) |
 | 20 | ✓ | [`prompts/risk-fix.md`](prompts/risk-fix.md) |
-| 21 | ✓ | [`skills/arch-code-review/SKILL.md`](skills/arch-code-review/SKILL.md) |
-| 22 | ✓ | [`skills/codebase-recon/SKILL.md`](skills/codebase-recon/SKILL.md) |
-| 23 | ✓ | [`skills/safe-change/references/bug-fix.md`](skills/safe-change/references/bug-fix.md) |
-| 24 | ✓ | [`skills/safe-change/references/docs-update.md`](skills/safe-change/references/docs-update.md) |
-| 25 | ✓ | [`skills/safe-change/references/feature.md`](skills/safe-change/references/feature.md) |
-| 26 | ✓ | [`skills/safe-change/references/preflight.md`](skills/safe-change/references/preflight.md) |
-| 27 | ✓ | [`skills/safe-change/references/refactoring.md`](skills/safe-change/references/refactoring.md) |
-| 28 | ✓ | [`skills/safe-change/references/risk-fix.md`](skills/safe-change/references/risk-fix.md) |
-| 29 | ✓ | [`skills/safe-change/references/scoped-docs.md`](skills/safe-change/references/scoped-docs.md) |
-| 30 | ✓ | [`skills/safe-change/SKILL.md`](skills/safe-change/SKILL.md) |
+| 21 | ✓ | [`prompts/safe-start-01-intent.md`](prompts/safe-start-01-intent.md) |
+| 22 | ✓ | [`prompts/safe-start-02-data-flow.md`](prompts/safe-start-02-data-flow.md) |
+| 23 | ✓ | [`prompts/safe-start-03-architecture.md`](prompts/safe-start-03-architecture.md) |
+| 24 | ✓ | [`prompts/safe-start-04-contract-docs.md`](prompts/safe-start-04-contract-docs.md) |
+| 25 | ✓ | [`prompts/safe-start-05-scaffold-plan.md`](prompts/safe-start-05-scaffold-plan.md) |
+| 26 | ✓ | [`prompts/safe-start-06-validation.md`](prompts/safe-start-06-validation.md) |
+| 27 | ✓ | [`prompts/safe-start-07-vertical-slice.md`](prompts/safe-start-07-vertical-slice.md) |
+| 28 | ✓ | [`prompts/safe-start-08-handoff.md`](prompts/safe-start-08-handoff.md) |
+| 29 | ✓ | [`prompts/safe-start-all.md`](prompts/safe-start-all.md) |
+| 30 | ✓ | [`skills/arch-code-review/SKILL.md`](skills/arch-code-review/SKILL.md) |
+| 31 | ✓ | [`skills/codebase-recon/SKILL.md`](skills/codebase-recon/SKILL.md) |
+| 32 | ✓ | [`skills/safe-change/references/bug-fix.md`](skills/safe-change/references/bug-fix.md) |
+| 33 | ✓ | [`skills/safe-change/references/docs-update.md`](skills/safe-change/references/docs-update.md) |
+| 34 | ✓ | [`skills/safe-change/references/feature.md`](skills/safe-change/references/feature.md) |
+| 35 | ✓ | [`skills/safe-change/references/preflight.md`](skills/safe-change/references/preflight.md) |
+| 36 | ✓ | [`skills/safe-change/references/refactoring.md`](skills/safe-change/references/refactoring.md) |
+| 37 | ✓ | [`skills/safe-change/references/risk-fix.md`](skills/safe-change/references/risk-fix.md) |
+| 38 | ✓ | [`skills/safe-change/references/scoped-docs.md`](skills/safe-change/references/scoped-docs.md) |
+| 39 | ✓ | [`skills/safe-change/SKILL.md`](skills/safe-change/SKILL.md) |
+| 40 | ✓ | [`skills/safe-start/SKILL.md`](skills/safe-start/SKILL.md) |
 
 ---
 

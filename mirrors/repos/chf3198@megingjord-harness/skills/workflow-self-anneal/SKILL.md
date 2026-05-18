@@ -1,7 +1,7 @@
 ---
 name: workflow-self-anneal
-description: Run a bounded self-annealing review of operating instructions and workflow outcomes. Use this after failures, after long sessions, before merge, or when repeated mismatches appear between intended process and observed execution.
-argument-hint: [context: session-start|post-failure|pre-merge|post-release] [scope: workflow|stability|qa|git]
+description: "Run a bounded self-annealing review of operating instructions and workflow outcomes. Use this after failures, after long sessions, before merge, or when repeated mismatches appear between intended process and observed execution."
+argument-hint: "[context: session-start|post-failure|pre-merge|post-release] [scope: workflow|stability|qa|git]"
 user-invocable: true
 disable-model-invocation: false
 ---

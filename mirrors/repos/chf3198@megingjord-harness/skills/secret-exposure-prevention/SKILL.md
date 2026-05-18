@@ -1,6 +1,9 @@
 ---
 name: secret-exposure-prevention
 description: Prevent secret leakage across git history, package artifacts, logs, and docs. Use when editing workflows, packaging configuration, environment files, or release automation.
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Secret Exposure Prevention

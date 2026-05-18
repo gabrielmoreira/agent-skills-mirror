@@ -4,8 +4,8 @@ description: "Rewrites scene descriptions using professional cinematography lang
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, seedance-pro, content-filter, prompt, director, flagged]
-  version: 1.4.0
-  updated: 2026-05-16
+  version: 1.6.0
+  updated: 2026-05-18
   parent: higgsfield
 ---
 
@@ -378,6 +378,36 @@ behavior.] [How the prop appears in the new shot — same geometry and
 material as the reference.]
 ```
 
+### Per-Image Role Convention
+
+Reference handles (`@Image1`, `@Image2`, `@Video1`, `@Audio1`) are
+assigned by upload order — the first image attached becomes
+`@Image1`, the second becomes `@Image2`, and so on. Production
+practice locks a stable role assignment per slot, kept identical
+across every prompt in a shot list, so the team and the model both
+know which reference carries which property without re-reading the
+prompt body.
+
+| Slot       | Role                          |
+|------------|-------------------------------|
+| `@Image1`  | Character identity            |
+| `@Image2`  | Costume                       |
+| `@Image3`  | Environment + lighting        |
+| `@Image4`  | Composition                   |
+| `@Video1`  | Motion only                   |
+| `@Video2`  | Camera movement only          |
+| `@Audio1`  | Rhythm + atmosphere           |
+
+The slot order is not model-enforced — it is team-side discipline.
+The payoff is reference-stability across long shot lists: once
+`@Image1 = character` for the project, that holds for every prompt,
+and nobody has to re-check which face the model expects at shot 47.
+
+When a reference conflicts with the prompt text — costume reference
+shows red, text says blue — resolve it explicitly in the prompt
+body: `@Image2 as costume reference, but recoloured to blue for this
+shot`. Don't let an unresolved conflict reach the model.
+
 ### Load-Bearing Rule
 
 **References support memory, but text defines action.** The references
@@ -392,6 +422,145 @@ action, reference wins on texture and world feel" — see
 What It Can't, § Load-Bearing Rule). Same underlying principle from
 different surfaces. The camera-side rule names the WIN order in case of
 conflict; the Seedance-side rule names the LANES each side covers.
+
+The same distinction applies one level up — at the prompt-construction
+workflow, not just inside the prompt. When a Seedance clip lands and
+you want the next prompt to match its look, screenshot the working
+frame and upload it **to Claude, not to Seedance**. Claude needs the
+visual to write a prompt that matches the look; Seedance receives the
+resulting text prompt and renders the next clip without the screenshot
+attached. The screenshot is reference (for the prompt-building model);
+the text prompt is action (for the generation model).
+
+---
+
+## Frame Coordinate System
+
+**Frame Coordinate System** locks where subjects, props, and
+compositional elements sit inside the frame.
+
+### Qualitative anchors
+
+Standard film-language position language, machine-readable because
+it is widely-attested in the training data:
+
+- **Horizontal:** `left third`, `center`, `right third`
+- **Vertical:** `upper third`, `lower third` (centered vertically is
+  the default and rarely needs naming)
+- **Depth:** `foreground`, `midground`, `background`
+
+### Percentage notation
+
+Numeric coordinates for cases where the qualitative anchors are
+not specific enough:
+
+- **x-position:** `0%` (far left frame edge) to `100%` (far right
+  frame edge)
+- **y-position:** `0%` (top of frame) to `100%` (bottom of frame)
+- **frame occupancy:** the percentage of the frame area the subject
+  fills, useful for shot-size pinning (a tight close-up sits near
+  `60-80%` occupancy; a wide establishing has the subject below
+  `15%`)
+
+Use percentages when qualitative anchors are under-specified —
+e.g., two characters in the same half of frame.
+
+### Pair the two notations
+
+Ship the qualitative anchor and the percentage notation **together
+in the same prompt**, not as alternatives. The qualitative term
+gives the model the film-language hook; the percentage gives it the
+precision target. Example:
+
+```
+Character A stands in the right third, x-position 70%, y-position
+50%, frame occupancy 25%. Character B stands in the left third,
+x-position 25%, y-position 55%, frame occupancy 22%.
+```
+
+### Not a mathematical guarantee
+
+Frame coordinates are **a strong compositional anchor, not a
+geometric guarantee**. The model treats them as directorial
+intent — the same way a DP reads "right third" on a storyboard —
+not as pixel-exact targets. Use them alongside the rest of the
+standard composition vocabulary (`over-the-shoulder`, `eye line`,
+`ground contact`, `headroom`, `nose room`, `crossing rule`) rather
+than as a substitute for it.
+
+When a coordinate drifts in the output, that is the expected behavior
+class — the coordinate set the intent; the model rendered to its
+best-fit interpretation. Adjust the prompt by tightening the
+qualitative anchor or by adding a contact-point clause (`feet on
+the marked floor mark`, `right hand resting on the table edge`)
+that physically grounds the position rather than re-specifying the
+percentage harder.
+
+---
+
+## Spatial Layout Block
+
+A **Spatial Layout Block** is a named structural unit inside a
+Seedance prompt that consolidates the spatial-vocabulary fields
+from § Frame Coordinate System into a single block the model can
+read as one coherent spatial brief. Where Frame Coordinate System
+provides the *vocabulary*, the Spatial Layout Block provides the
+*structure* for using it.
+
+Scattered spatial directives force the model to reassemble scene
+geometry from fragments — and it often picks the wrong reassembly.
+
+### What goes in the block
+
+A complete Spatial Layout Block names, per subject in frame:
+
+- **Identity** — which character/prop/element this is (matches a
+  Reference Role handle when references are present)
+- **Screen position** — qualitative anchor + percentage notation
+  paired per § Frame Coordinate System above
+- **Depth layer** — foreground / midground / background
+- **Frame occupancy** — % of frame area the subject fills
+- **Body orientation** — direction the subject faces (toward
+  camera, away, profile-left, profile-right, three-quarter to
+  camera)
+- **Contact points** — what physical surface or object the subject
+  is grounded against (`feet on wet asphalt`, `back pressed against
+  the wall`)
+
+Multi-character blocks add the cross-subject relationships:
+relative distance, eyeline direction between subjects, screen-left
+vs screen-right consistency, whether subjects cross the central
+vertical axis, what occludes what.
+
+### When to use a Spatial Layout Block
+
+Three triggers:
+
+1. **More than one subject in frame.** Two-character work is where
+   the model most often swaps screen positions or crosses the
+   central axis without instruction. A block prevents that.
+2. **A specific compositional intent that needs to read across
+   shots.** When the same blocking must hold for several beats — a
+   character anchored left, another anchored right — the block
+   makes the anchor explicit and re-usable.
+3. **A failure-mode-prone shot.** Door-entry shots, hallway-direction
+   shots, and any shot where the model has been picking the wrong
+   spatial reassembly historically all benefit from a block up
+   front rather than inline spatial fragments.
+
+Shots with a single subject in a clear position rarely need a full
+block; a single qualitative-plus-percentage anchor inside the
+Dynamic Description suffices.
+
+### Block-and-prompt fit
+
+The Spatial Layout Block sits **before** the Dynamic Description in
+the output format (see § Output Format for Seedance Prompts below).
+It primes the model with full geometry; the Dynamic Description
+then describes the action that happens inside that geometry.
+
+The block does not replace the six-slot formula — camera, lens,
+lighting, and shot timing stay in their respective slots.
 
 ---
 
@@ -894,6 +1063,75 @@ shot-by-shot if multi-cut. This is the main block.]
 For the full bilingual EN+ZH director output format (used in Seedance's
 web UI), see the extended reference at `../../docs/Seedance 2 Skill.md`.
 
+### Runtime arithmetic for multi-shot prompts
+
+Runtime appears in three places in a delivered Seedance prompt —
+the title line, the meta header (`**Duration:** Xs`), and any
+per-shot timing labels in the Dynamic Description. All three must
+agree.
+
+For multi-shot prompts, label each shot inline with its time range
+(e.g. `Shot 1 (0-3s): ... hard cut to Shot 2 (3-8s): ... hard cut
+to Shot 3 (8-15s): ...`). The per-shot labels must *sum* to the
+total duration stated in the title and meta header; a drift between
+the two surfaces is the most common source of "my multi-shot prompt
+rendered as a single shot" failures.
+
+Always ask the user for runtime — never default. A 5s, 10s, or 15s
+assumption silently degrades adherence on prompts that needed a
+different cap.
+
+### Shot density for multi-scene prompts
+
+When grouping multiple shot rows into a single Seedance prompt
+(rather than splitting into separate prompts), use this starting
+heuristic: roughly one prompt per 4-5 shot rows. The heuristic is
+project-derived empirical observation, not platform-enforced, and
+varies wildly by scene type.
+
+Group shot rows into one prompt when ALL of these hold:
+
+- Same character set in frame
+- Same location or contiguous subset of a location
+- Continuous emotional / temporal unit (no time skip, no major mood
+  pivot)
+- Combined runtime fits within the 15s Seedance cap
+- The grouped prompt text stays within practical generation limits
+  (~2500 characters)
+
+Split into separate prompts when any of these fire: hard cut
+between locations (e.g. apartment → flashback), major character
+entrance or exit changes the handle list, or the combined runtime
+exceeds 15s.
+
+The heuristic is a starting state, not a target. Adjust per project
+as you learn how Seedance handles your particular scene-type
+density — dense action sequences may want 1 prompt per 2-3 shot
+rows; quiet emotional scenes may collapse to 1 prompt per 8+ rows.
+
+### Single-vs-multi-shot decision
+
+Default is single-shot. Reach for multi-shot when the content is
+action, dynamic dialogue, or anywhere a cut is itself doing work a
+single shot cannot deliver. Everything else holds tighter as a single
+continuous shot.
+
+For single-shot continuous motion, per-second beats give fine-grained
+control without provoking cuts — `[0-3s] subject enters frame,
+[3-7s] camera pushes in`. The bracket-notation reference lives in
+`../../vocab.md` § Editing Syntax (shipping in v3.7.7 sub-phase 2f).
+
+For multi-shot, use the Runtime arithmetic above — each cut labeled
+with its time range, sum equals total duration. Action scenes earn an
+extra layer: per cut, name the participants, location, implements,
+and beat-by-beat choreography.
+
+Anti-pattern: per-3-second time labels written inside what was meant
+as a single continuous shot. Seedance reads any per-segment timing
+block as cut instructions and inserts cuts. Pick a side — if you
+want continuity, drop the time markers; if you want cuts, label them
+with `Shot 1 / Shot 2 / Shot 3` and the multi-shot arithmetic above.
+
 ---
 
 ## Post-Clip Decisions
@@ -939,6 +1177,13 @@ The next shot is chosen by function, not by excitement.
 
 ## When the User Is Already in a Failure Loop
 
+This section handles **filter rejections** — prompts the Seedance
+filter blocks before generation. For **render failures** (FPS drift,
+NSFW false-positive, keyframe-invention, physics-state drift, spatial-
+awareness failures, multi-motion overload), see `FAILURE-MODES.md` in
+this directory — sibling catalog with symptom + mechanism + counter
+per named failure.
+
 If the user tells you Seedance has flagged them multiple times in a row:
 
 1. **Ask for the exact prompt text that got flagged.** Don't guess.
@@ -951,6 +1196,28 @@ If the user tells you Seedance has flagged them multiple times in a row:
 
 Do not let the user regenerate the same prompt with one word changed. That
 is the loop that wastes hours.
+
+---
+
+## Multi-Language Prompt Workarounds
+
+Seedance prompts default to English. This section documents historical
+language-level workarounds for specific Seedance platform states.
+
+### Chinese (as of 2026-05-17)
+
+At Seedance 2.0's launch the model performed better against Chinese
+prompts and enforced a hard 3,000-character cap per prompt. English
+runs roughly 5-10 characters per word; Chinese runs 1-2. Production
+teams used Chinese prompts to compress ~5× more directive content
+into the same character budget — the decisive workaround on long
+multi-shot prompts that otherwise hit the cap.
+
+The workaround was a launch-window optimization, not a permanent
+convention. If a long Seedance prompt keeps hitting the cap and
+English compression has been exhausted, the Chinese-density path has
+shipped before — verify the cap state in the current Seedance UI
+before reaching for it.
 
 ---
 

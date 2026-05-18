@@ -45,7 +45,8 @@
 8. **用户可见文案必须全球本地化** - 新增或改动的按钮、标题、空态、toast、confirm、prompt、placeholder、aria/title、错误提示、导出 Markdown / copy prompt / artifact title 等 presentation 文案，必须覆盖 Lime current 五语言 `zh-CN / zh-TW / en-US / ja-JP / ko-KR`；前端走 key-based resources，Rust / Tauri 导出走 locale copy service；禁止只做中文 / 英文双语兜底，除非路线图明确写出临时例外和退出条件
 9. **配置与依赖改动要成组更新** - schema、校验器、消费者、文档、锁文件保持同步
 10. **Rust 变更先小测后全量** - 先跑受影响 crate / 模块 / 定向测试；新增模块尽量控制在 `500 LoC` 内，文件接近 `800 LoC` 时优先拆新模块
-11. **Harness Engine 只认单一事实源** - handoff / evidence / replay / analysis / review / GUI 统一消费 `agent_runtime_export_evidence_pack`；`requestTelemetry` 需要按 `session/thread/turn` 真实关联导出，无匹配请求时输出空摘要，不再保留伪 `unlinked`
+11. **Rust 构建必须走 workspace manifest** - 在仓库根运行 Rust 校验必须带 `--manifest-path "src-tauri/Cargo.toml"`，或先 `cd src-tauri`；禁止直接 `rustc src-tauri/src/*.rs` 编译 Lime 主 crate，避免绕过 workspace 依赖导致 `can't find crate for lime_*` 误报
+12. **Harness Engine 只认单一事实源** - handoff / evidence / replay / analysis / review / GUI 统一消费 `agent_runtime_export_evidence_pack`；`requestTelemetry` 需要按 `session/thread/turn` 真实关联导出，无匹配请求时输出空摘要，不再保留伪 `unlinked`
 
 ## 执行与路线图
 
@@ -97,7 +98,7 @@ npm run bridge:health -- --timeout-ms 120000
 npm run test:contracts
 npm run governance:legacy-report
 npm run tauri:dev:headless
-cd src-tauri && cargo test
+cargo test --manifest-path "src-tauri/Cargo.toml"
 ```
 
 ## 维护规则

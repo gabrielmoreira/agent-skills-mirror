@@ -1,5 +1,4 @@
 <div align="center" id="top">
-
 <a href="https://getwren.ai">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./misc/wrenai_logo_white.png">
@@ -63,6 +62,9 @@ If you're building AI agents, embedded analytics, or natural-language data produ
 
 <img width="853" height="754" alt="The problem without context layer" src="https://github.com/user-attachments/assets/0fdb989a-e741-4d34-bcb9-4854787f73fb" />
 
+## With & Without Wren AI
+
+<img width="1430" height="753" alt="before & after" src="https://github.com/user-attachments/assets/ab54ee9f-b652-4826-b6f5-0c22f601419e" />
 
 ## Quickstart
 

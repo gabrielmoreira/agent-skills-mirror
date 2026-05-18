@@ -1,6 +1,9 @@
 ---
 name: docs-drift-maintenance
 description: Detect and remediate documentation drift after code, config, workflow, or UX changes. Use after implementation, before merge, and before release.
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Docs Drift Maintenance

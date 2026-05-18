@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `onvoyage-ai/gtm-engineer-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `onvoyage-ai/gtm-engineer-skills` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `onvoyage-ai/gtm-engineer-skills` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,16 +60,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`audit-content/SKILL.md`](audit-content/SKILL.md) |
-| 2 | ✓ | [`build-backlinks/SKILL.md`](build-backlinks/SKILL.md) |
-| 3 | ✓ | [`build-resource-pages/SKILL.md`](build-resource-pages/SKILL.md) |
-| 4 | ✓ | [`create-geo-charts/SKILL.md`](create-geo-charts/SKILL.md) |
-| 5 | ✓ | [`geo-content-planning/SKILL.md`](geo-content-planning/SKILL.md) |
-| 6 | ✓ | [`geo-content-research/SKILL.md`](geo-content-research/SKILL.md) |
-| 7 | ✓ | [`improve-aeo-geo/SKILL.md`](improve-aeo-geo/SKILL.md) |
-| 8 | ✓ | [`reddit-opportunity-research/SKILL.md`](reddit-opportunity-research/SKILL.md) |
-| 9 | ✓ | [`research-brand/SKILL.md`](research-brand/SKILL.md) |
-| 10 | ✓ | [`research-keywords/SKILL.md`](research-keywords/SKILL.md) |
-| 11 | ✓ | [`write-seo-geo-content/SKILL.md`](write-seo-geo-content/SKILL.md) |
+| 2 | ✓ | [`audit-website-aeo/SKILL.md`](audit-website-aeo/SKILL.md) |
+| 3 | ✓ | [`build-backlinks/SKILL.md`](build-backlinks/SKILL.md) |
+| 4 | ✓ | [`build-resource-pages/SKILL.md`](build-resource-pages/SKILL.md) |
+| 5 | ✓ | [`create-geo-charts/SKILL.md`](create-geo-charts/SKILL.md) |
+| 6 | ✓ | [`geo-content-planning/SKILL.md`](geo-content-planning/SKILL.md) |
+| 7 | ✓ | [`geo-content-research/SKILL.md`](geo-content-research/SKILL.md) |
+| 8 | ✓ | [`improve-aeo-geo/SKILL.md`](improve-aeo-geo/SKILL.md) |
+| 9 | ✓ | [`reddit-opportunity-research/SKILL.md`](reddit-opportunity-research/SKILL.md) |
+| 10 | ✓ | [`research-brand/SKILL.md`](research-brand/SKILL.md) |
+| 11 | ✓ | [`research-keywords/SKILL.md`](research-keywords/SKILL.md) |
+| 12 | ✓ | [`write-seo-geo-content/SKILL.md`](write-seo-geo-content/SKILL.md) |
 
 ---
 

@@ -1,6 +1,7 @@
 ---
-name: web-search
+name: web-search-inference-sh
 description: "Web search and content extraction with Tavily and Exa via inference.sh CLI. Apps: Tavily Search, Tavily Extract, Exa Search, Exa Answer, Exa Extract. Capabilities: AI-powered search, content extraction, direct answers, research. Use for: research, RAG pipelines, fact-checking, content aggregation, agents. Triggers: web search, tavily, exa, search api, content extraction, research, internet search, ai search, search assistant, web scraping, rag, perplexity alternative"
+disable-model-invocation: true
 allowed-tools: Bash(infsh *)
 ---
 

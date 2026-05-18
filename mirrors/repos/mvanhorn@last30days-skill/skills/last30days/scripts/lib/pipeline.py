@@ -79,6 +79,8 @@ MOCK_AVAILABLE_SOURCES = [
     "xiaohongshu",
     "github",
     "perplexity",
+    "threads",
+    "pinterest",
     "xquik",
     "digg",
 ]
@@ -118,7 +120,9 @@ def available_sources(config: dict[str, Any], requested_sources: list[str] | Non
         available.append("grounding")
     # Perplexity Sonar: opt-in additive source via INCLUDE_SOURCES=perplexity
     include_sources = (config.get("INCLUDE_SOURCES") or "").lower().split(",")
-    if config.get("OPENROUTER_API_KEY") and "perplexity" in include_sources:
+    if config.get("OPENROUTER_API_KEY") and (
+        "perplexity" in include_sources or (requested_sources and "perplexity" in requested_sources)
+    ):
         available.append("perplexity")
     if requested_sources and "xiaohongshu" in requested_sources and env.is_xiaohongshu_available(config):
         available.append("xiaohongshu")
@@ -203,7 +207,7 @@ def run(
             available = [source for source in available if source in requested_sources]
     if web_backend == "none":
         available = [s for s in available if s != "grounding"]
-    elif web_backend in ("brave", "exa", "serper") and "grounding" not in available:
+    elif web_backend in ("brave", "exa", "serper", "parallel") and "grounding" not in available:
         available.append("grounding")
     if not available:
         raise RuntimeError("No sources are available for this run.")

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 58 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 59 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 59 |
+| Files         | 58 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,35 +66,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`browser-trace/EXAMPLES.md`](browser-trace/EXAMPLES.md) |
 | 6 | ✓ | [`browser-trace/REFERENCE.md`](browser-trace/REFERENCE.md) |
 | 7 | ✓ | [`browser-trace/SKILL.md`](browser-trace/SKILL.md) |
-| 8 | ✓ | [`browser-use/SKILL.md`](browser-use/SKILL.md) |
-| 9 | ✓ | [`caveman/SKILL.md`](caveman/SKILL.md) |
-| 10 | ✓ | [`diagnose/SKILL.md`](diagnose/SKILL.md) |
-| 11 | ✓ | [`dogfood/SKILL.md`](dogfood/SKILL.md) |
-| 12 | ✓ | [`electron/SKILL.md`](electron/SKILL.md) |
-| 13 | ✓ | [`exa-search/SKILL.md`](exa-search/SKILL.md) |
-| 14 | ✓ | [`find-docs/SKILL.md`](find-docs/SKILL.md) |
-| 15 | ✓ | [`find-skills/SKILL.md`](find-skills/SKILL.md) |
-| 16 | ✓ | [`frontend-skill/SKILL.md`](frontend-skill/SKILL.md) |
-| 17 | ✓ | [`get-api-docs/SKILL.md`](get-api-docs/SKILL.md) |
-| 18 | ✓ | [`gh-address-comments/SKILL.md`](gh-address-comments/SKILL.md) |
-| 19 | ✓ | [`gh-fix-ci/SKILL.md`](gh-fix-ci/SKILL.md) |
-| 20 | ✓ | [`grill-me/SKILL.md`](grill-me/SKILL.md) |
-| 21 | ✓ | [`grill-with-docs/ADR-FORMAT.md`](grill-with-docs/ADR-FORMAT.md) |
-| 22 | ✓ | [`grill-with-docs/CONTEXT-FORMAT.md`](grill-with-docs/CONTEXT-FORMAT.md) |
-| 23 | ✓ | [`grill-with-docs/SKILL.md`](grill-with-docs/SKILL.md) |
-| 24 | ✓ | [`gsap-skills/gsap-core/SKILL.md`](gsap-skills/gsap-core/SKILL.md) |
-| 25 | ✓ | [`gsap-skills/gsap-frameworks/SKILL.md`](gsap-skills/gsap-frameworks/SKILL.md) |
-| 26 | ✓ | [`gsap-skills/gsap-performance/SKILL.md`](gsap-skills/gsap-performance/SKILL.md) |
-| 27 | ✓ | [`gsap-skills/gsap-plugins/SKILL.md`](gsap-skills/gsap-plugins/SKILL.md) |
-| 28 | ✓ | [`gsap-skills/gsap-react/SKILL.md`](gsap-skills/gsap-react/SKILL.md) |
-| 29 | ✓ | [`gsap-skills/gsap-scrolltrigger/SKILL.md`](gsap-skills/gsap-scrolltrigger/SKILL.md) |
-| 30 | ✓ | [`gsap-skills/gsap-timeline/SKILL.md`](gsap-skills/gsap-timeline/SKILL.md) |
-| 31 | ✓ | [`gsap-skills/gsap-utils/SKILL.md`](gsap-skills/gsap-utils/SKILL.md) |
-| 32 | ✓ | [`gsap-skills/llms.txt`](gsap-skills/llms.txt) |
-| 33 | ✓ | [`improve-codebase-architecture/INTERFACE-DESIGN.md`](improve-codebase-architecture/INTERFACE-DESIGN.md) |
-| 34 | ✓ | [`improve-codebase-architecture/LANGUAGE.md`](improve-codebase-architecture/LANGUAGE.md) |
-| 35 | ✓ | [`improve-codebase-architecture/SKILL.md`](improve-codebase-architecture/SKILL.md) |
-| 36 | ✓ | [`karpathy-guidelines/SKILL.md`](karpathy-guidelines/SKILL.md) |
+| 8 | ✓ | [`caveman/SKILL.md`](caveman/SKILL.md) |
+| 9 | ✓ | [`diagnose/SKILL.md`](diagnose/SKILL.md) |
+| 10 | ✓ | [`dogfood/SKILL.md`](dogfood/SKILL.md) |
+| 11 | ✓ | [`electron/SKILL.md`](electron/SKILL.md) |
+| 12 | ✓ | [`exa-search/SKILL.md`](exa-search/SKILL.md) |
+| 13 | ✓ | [`find-docs/SKILL.md`](find-docs/SKILL.md) |
+| 14 | ✓ | [`find-skills/SKILL.md`](find-skills/SKILL.md) |
+| 15 | ✓ | [`frontend-skill/SKILL.md`](frontend-skill/SKILL.md) |
+| 16 | ✓ | [`get-api-docs/SKILL.md`](get-api-docs/SKILL.md) |
+| 17 | ✓ | [`gh-address-comments/SKILL.md`](gh-address-comments/SKILL.md) |
+| 18 | ✓ | [`gh-fix-ci/SKILL.md`](gh-fix-ci/SKILL.md) |
+| 19 | ✓ | [`grill-me/SKILL.md`](grill-me/SKILL.md) |
+| 20 | ✓ | [`grill-with-docs/ADR-FORMAT.md`](grill-with-docs/ADR-FORMAT.md) |
+| 21 | ✓ | [`grill-with-docs/CONTEXT-FORMAT.md`](grill-with-docs/CONTEXT-FORMAT.md) |
+| 22 | ✓ | [`grill-with-docs/SKILL.md`](grill-with-docs/SKILL.md) |
+| 23 | ✓ | [`gsap-skills/gsap-core/SKILL.md`](gsap-skills/gsap-core/SKILL.md) |
+| 24 | ✓ | [`gsap-skills/gsap-frameworks/SKILL.md`](gsap-skills/gsap-frameworks/SKILL.md) |
+| 25 | ✓ | [`gsap-skills/gsap-performance/SKILL.md`](gsap-skills/gsap-performance/SKILL.md) |
+| 26 | ✓ | [`gsap-skills/gsap-plugins/SKILL.md`](gsap-skills/gsap-plugins/SKILL.md) |
+| 27 | ✓ | [`gsap-skills/gsap-react/SKILL.md`](gsap-skills/gsap-react/SKILL.md) |
+| 28 | ✓ | [`gsap-skills/gsap-scrolltrigger/SKILL.md`](gsap-skills/gsap-scrolltrigger/SKILL.md) |
+| 29 | ✓ | [`gsap-skills/gsap-timeline/SKILL.md`](gsap-skills/gsap-timeline/SKILL.md) |
+| 30 | ✓ | [`gsap-skills/gsap-utils/SKILL.md`](gsap-skills/gsap-utils/SKILL.md) |
+| 31 | ✓ | [`gsap-skills/llms.txt`](gsap-skills/llms.txt) |
+| 32 | ✓ | [`improve-codebase-architecture/INTERFACE-DESIGN.md`](improve-codebase-architecture/INTERFACE-DESIGN.md) |
+| 33 | ✓ | [`improve-codebase-architecture/LANGUAGE.md`](improve-codebase-architecture/LANGUAGE.md) |
+| 34 | ✓ | [`improve-codebase-architecture/SKILL.md`](improve-codebase-architecture/SKILL.md) |
+| 35 | ✓ | [`karpathy-guidelines/SKILL.md`](karpathy-guidelines/SKILL.md) |
+| 36 | ✓ | [`kimi-webbridge/SKILL.md`](kimi-webbridge/SKILL.md) |
 | 37 | ✓ | [`migrate-to-shoehorn/SKILL.md`](migrate-to-shoehorn/SKILL.md) |
 | 38 | ✓ | [`minimax-docx/SKILL.md`](minimax-docx/SKILL.md) |
 | 39 | ✓ | [`minimax-pdf/SKILL.md`](minimax-pdf/SKILL.md) |
@@ -117,7 +117,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 56 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
 | 57 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
 | 58 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
-| 59 | ✓ | [`yeet/SKILL.md`](yeet/SKILL.md) |
 
 ---
 

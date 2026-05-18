@@ -1,6 +1,9 @@
 ---
 name: llm-wiki-ops-portable
 description: Operate an LLM Wiki knowledge system in any workspace using the Karpathy pattern
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # llm-wiki-ops-portable — Portable Wiki Operations

@@ -107,7 +107,18 @@ def extract_safari_cookies_macos(
     if sys.platform != "darwin":
         return None
 
-    cookie_path = Path.home() / "Library" / "Cookies" / "Cookies.binarycookies"
+    cookie_paths = [
+        Path.home()
+        / "Library"
+        / "Containers"
+        / "com.apple.Safari"
+        / "Data"
+        / "Library"
+        / "Cookies"
+        / "Cookies.binarycookies",
+        Path.home() / "Library" / "Cookies" / "Cookies.binarycookies",
+    ]
+    cookie_path = next((path for path in cookie_paths if path.exists()), cookie_paths[0])
 
     try:
         raw = cookie_path.read_bytes()

@@ -5,11 +5,11 @@
 
 | | |
 |---|---|
-| **版本** | 1.0.0 |
+| **版本** | 1.1.0 |
 | **SDK 范围** | `>=0.7.0,<0.8.0` |
 | **Plugin API** | `~2` / UI API `~1` |
 | **入口** | `plugin.py` (`PluginBase`) + `ui/dist/index.html` |
-| **形态** | 12 视频/数字人模式 + 7 图片模式 + 8 Tab + 20+ 工具 + 黑色主题 + Iconify SVG |
+| **形态** | 12 视频/数字人模式 + 7 图片模式 + 8 Tab + 22 LLM 工具 + 黑色主题 + Iconify SVG |
 
 ## 1 · 核心特点
 
@@ -51,7 +51,7 @@
 | `image_edit` | 图像编辑 | `wan27-pro` / `wan26` | 多图参考、融合、改图 |
 | `image_style_repaint` | 风格重绘 | `wanx-style-repaint-v1` | 漫画、二次元、国风、未来科技等预设 |
 | `image_background` | 背景生成 | `wanx-background-generation-v2` | 商品图换背景 |
-| `image_outpaint` | 画面扩展 | `image-out-painting` | 扩图、改比例 |
+| `image_outpaint` | 画面扩展 | `image-out-painting` | 扩图、改比例；不支持提示词改背景 |
 | `image_sketch` | 涂鸦作画 | `wanx-sketch-to-image-lite` | 草图 + 文字生成成图 |
 | `image_ecommerce` | 电商场景图 | `wan27-pro` | 主图、白底图、场景图、细节图 |
 
@@ -128,16 +128,35 @@ py -3.11 -m ruff check .             # 0 error
 @hh_video_reface image_url=... source_video_url=... mode_pro=false
 @hh_pose_drive image_url=... source_video_url=... mode_pro=false
 @hh_avatar_compose image_url=... image_urls='["https://...scene.png"]' prompt="..." text="..."
-@hh_long_video_create story="一只小猫的奇幻冒险" total_duration=30 mode=parallel
+@hh_storyboard_decompose story="一只小猫的奇幻冒险" total_duration=30 segment_duration=10
+@hh_long_video_create segments='[{"index":1,"prompt":"...","duration":10,"transition_to_next":"crossfade"}]' mode=parallel
+@hh_video_concat task_ids='["tk_a","tk_b","tk_c"]' transition=crossfade fade_duration=0.5
 @hh_status task_id=tk_xxx
 @hh_list limit=10
 ```
 
-每个工具返回符合 OrgRuntime 工作台协议的 JSON，可直接被组织 runtime 登记为附件。
+每个工具返回符合 OrgRuntime 工作台协议的 JSON，可直接被组织 runtime 登记为附件。`hh_storyboard_decompose` 与 `hh_video_concat` 是 v1.1 新增——前者把剧本拆成可被 `hh_long_video_create` 消费的结构化分镜 JSON（含 `transition_to_next`：`cut` / `crossfade` / `ai_extend`），后者用 ffmpeg 把多段已落盘的视频按指定转场（`none` / `crossfade`，可设 `fade_duration`）拼成最终成片。
 
 ## 7 · 与组织模板联动
 
-主仓注册了组织模板 [`happyhorse-video-studio`](../../src/openakita/orgs/templates.py)（**百炼 AIGC 视频创作工作室**）：制片人 → 编剧 → `tongyi-image` 工作台（出分镜图）→ 快乐马视频工作台（消费 `from_asset_ids` → 出成片）。
+主仓的默认组织模板 [`aigc-video-studio`](../../src/openakita/orgs/templates.py)（**AIGC 视频创作工作室**）已重做为基于本插件的 7 节点两级工作室：
+
+```
+出品方
+  └ 制片人 (producer)
+      ├ 编剧 (screenwriter, hh_storyboard_decompose)
+      └ 美术指导 (art-director, 工作台总调度)
+          ├ 图像工作台 (wb-hh-image, 7 个 hh_image_*)
+          ├ 短视频工作台 (wb-hh-video, hh_t2v / hh_i2v / hh_r2v / hh_video_edit)
+          ├ 数字人工作台 (wb-hh-human, 5 个数字人模式)
+          └ 长视频后期工作台 (wb-hh-long, hh_long_video_create + hh_video_concat)
+```
+
+同一个 `happyhorse-video` 插件被按「图像 / 短视频 / 数字人 / 长视频后期」四大类拆成 4 个工作台 leaf 节点；运行时只看每个节点的 `external_tools` 白名单做工具放行，所以同一插件被多节点引用是合法且推荐的拆法。
+
+调度关系（`org_delegate_task` 只能沿 hierarchy 边）：制片人不直接派工作台，而是先派编剧出剧本 + 分镜 JSON，再把剧本 + 分镜 + 转场偏好交给美术指导。**所有四个工作台的唯一 hierarchy 父节点都是『美术指导』**，所以美术指导要承担从「按分镜拆派图像 / 短视频 / 数字人」到「最后调长视频后期工作台拼接成片」的全流程总调度，最后才把成片 task_id / asset_id 回交给制片人。
+
+> 升级提示：旧版本的 `happyhorse-video-studio`（"百炼 AIGC 视频创作工作室"）已并入新的默认模板；若你的环境已经生成过 `data/org_templates/aigc-video-studio.json` / `data/org_templates/happyhorse-video-studio.json`，需要手工删除（`ensure_builtin_templates` 不会覆盖已存在的 JSON）后重启服务，才能拿到新版默认模板。
 
 - 5 分钟烟测：[`USER_TEST_CASES.md`](USER_TEST_CASES.md)
 - 用户自测手册（先生图再生视频，可直接复制输入）：[`docs/happyhorse-video-user-self-test-manual.md`](../../docs/happyhorse-video-user-self-test-manual.md)

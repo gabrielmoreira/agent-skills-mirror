@@ -1,7 +1,7 @@
 ---
 name: vibe-trading
-version: 0.1.7
-description: Professional finance research toolkit — backtesting (7 engines + benchmark comparison panel), factor analysis, options pricing, 74 finance skills, 29 multi-agent swarm teams, Trade Journal analyzer, and Shadow Account (extract → backtest → render) across 6 data sources (tushare, yfinance, okx, akshare, ccxt, futu).
+version: 0.1.8
+description: Professional finance research toolkit — backtesting (7 engines + benchmark comparison panel), factor analysis, Alpha Zoo (452 pre-built alphas across qlib158/alpha101/gtja191/academic), options pricing, 75 finance skills, 29 multi-agent swarm teams, Trade Journal analyzer, and Shadow Account (extract → backtest → render) across 6 data sources (tushare, yfinance, okx, akshare, ccxt, futu).
 dependencies:
   python: ">=3.11"
   pip:
@@ -23,7 +23,7 @@ mcp:
 
 # Vibe-Trading
 
-Professional finance research toolkit with AI-powered backtesting (7 engines), multi-agent teams, 74 specialized skills, and the Shadow Account loop — extract your implicit trading rules from a journal, backtest them across A股/港股/美股/crypto, then see where they would have served you better.
+Professional finance research toolkit with AI-powered backtesting (7 engines), multi-agent teams, 75 specialized skills, the **Alpha Zoo** (452 pre-built quantitative alphas across qlib158 / alpha101 / gtja191 / academic with one-line CLI benchmarking), and the Shadow Account loop — extract your implicit trading rules from a journal, backtest them across A股/港股/美股/crypto, then see where they would have served you better.
 
 ## Setup
 
@@ -53,7 +53,7 @@ Add to your agent's MCP config:
 
 ### API Key Requirements
 
-**21 of 22 MCP tools work with zero API keys.** After `pip install`, backtesting, market data, factor analysis, options pricing, chart patterns, web search, document reading, trade journal analysis, shadow-account extraction/backtest/report, and all 74 skills are ready to use for HK/US equities and crypto.
+**21 of 22 MCP tools work with zero API keys.** After `pip install`, backtesting, market data, factor analysis, options pricing, chart patterns, web search, document reading, trade journal analysis, shadow-account extraction/backtest/report, the Alpha Zoo (452 pre-built alphas), and all 75 skills are ready to use for HK/US equities and crypto.
 
 | Feature | Key needed | When |
 |---------|-----------|------|
@@ -99,7 +99,16 @@ Example workflow:
 
 Use `list_swarm_presets()` to see all teams, then `run_swarm()` to execute.
 
-### Finance Skills (74)
+### Alpha Zoo (452 pre-built alphas)
+One-line cross-sectional IC / IR / alive-reversed-dead categorisation across four bundled zoos:
+- **qlib158** (154 alphas) — Microsoft Qlib's `Alpha158` feature handler, Apache-2.0 with pinned commit SHA.
+- **alpha101** (101 alphas) — Kakushadze (2015) "101 Formulaic Alphas" (arXiv:1601.00991), written from the paper appendix.
+- **gtja191** (191 alphas) — Guotai Junan 2014 "191 Short-period Trading Alpha Factors" research report.
+- **academic** (6 factors) — Fama-French 5 + Carhart momentum (honest price-based proxies).
+
+Each alpha ships with `__alpha_meta__` (formula LaTeX + theme + universe + warmup + columns required), guarded by an AST purity gate + 300-row lookahead sentinel test. Use the `vibe-trading alpha {list,show,bench,compare,export-manifest}` CLI, the `/alpha/*` REST routes (browser at `/alpha-zoo`), or compose multi-factor signals via `ZooSignalEngine.from_zoo(...)`.
+
+### Finance Skills (75)
 Comprehensive knowledge base covering:
 - Technical analysis (candlestick, Elliott wave, Ichimoku, SMC, harmonic, chanlun)
 - Quantitative methods (factor research, ML strategy, pair trading, multi-factor)
@@ -116,7 +125,7 @@ Use `load_skill(name)` to access full methodology docs with code templates.
 
 | Tool | Description | API Key |
 |------|-------------|---------|
-| `list_skills` | List all 74 finance skills | None |
+| `list_skills` | List all 75 finance skills | None |
 | `load_skill` | Load full skill documentation | None |
 | `backtest` | Run vectorized backtest engine | None* |
 | `factor_analysis` | IC/IR analysis + layered backtest | None* |
@@ -147,7 +156,7 @@ Use `load_skill(name)` to access full methodology docs with code templates.
 pip install vibe-trading-ai
 ```
 
-That's it — no API keys needed for HK/US/crypto markets. Start using `backtest`, `get_market_data`, `analyze_options`, `analyze_trade_journal`, `extract_shadow_strategy`, `web_search`, and all 74 skills immediately.
+That's it — no API keys needed for HK/US/crypto markets. Start using `backtest`, `get_market_data`, `analyze_options`, `analyze_trade_journal`, `extract_shadow_strategy`, `web_search`, the **Alpha Zoo** (`vibe-trading alpha bench --zoo gtja191 --universe csi300 --period 2018-2025`), and all 75 skills immediately.
 
 ## Loading Tools from External MCP Servers
 
@@ -178,11 +187,16 @@ Remote tools appear automatically in every `vibe-trading run` / `vibe-trading ch
 
 | Field | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `command` | yes | — | Executable to launch |
+| `type` | stdio: no, HTTP: yes | inferred only for stdio | Transport type. Use `sse` or `streamableHttp` for URL-based servers. |
+| `command` | stdio: yes | — | Executable to launch |
 | `args` | no | `[]` | Command arguments |
 | `env` | no | `{}` | Extra env vars for the subprocess |
+| `url` | HTTP: yes | — | Remote SSE / streamable HTTP endpoint URL |
+| `headers` | no | `{}` | Extra HTTP headers for SSE / streamable HTTP servers |
 | `toolTimeout` | no | `30` | Seconds before a tool call is cancelled |
 | `enabledTools` | no | `["*"]` | Allowlist of remote tool names. `["*"]` enables all |
+
+For URL-based transports, `type` is required. The agent no longer guesses between SSE and streamable HTTP from the URL suffix.
 
 ### Per-session override (API)
 
@@ -214,7 +228,7 @@ Without `ALLOW_SESSION_MCP_SERVERS=1`, any `mcpServers` key in `session.config` 
 
 ### v1 limits
 
-- **Transport:** stdio only. SSE and HTTP transports are rejected.
+- **Transport:** stdio, SSE, and streamable HTTP.
 - **Execution:** serial only. MCP tools never enter the parallel readonly path.
 - **Surfaces:** tools only. Resources and prompts are not exposed.
 - **Swarm:** MCP tools are excluded from Swarm worker registries in v1.

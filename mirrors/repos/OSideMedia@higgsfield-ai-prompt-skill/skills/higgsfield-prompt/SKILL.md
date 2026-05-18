@@ -4,8 +4,8 @@ description: "Use when building, writing, refining, or structuring a Higgsfield 
 user-invocable: true
 metadata:
   tags: [higgsfield, prompt, MCSLA, formula, text-to-video, image-to-video]
-  version: 3.2.0
-  updated: 2026-05-15
+  version: 3.4.0
+  updated: 2026-05-18
   parent: higgsfield
 ---
 
@@ -168,6 +168,78 @@ renders cleaner physics in slow motion.
 
 ---
 
+## Generic-Emotion Decomposition — Which kind of X?
+
+Never leave a generic emotion in a prompt. "Sad" / "angry" /
+"surprised" / "scared" / "thoughtful" / "in love" — each is at least
+three or four distinct physical realizations, and the model renders
+a different version depending on which one your prompt invites. A
+prompt that says only "she looks surprised" produces a different
+shot every regeneration and degrades adherence across batches.
+
+The rule: decompose the generic emotion into specific muscle
+movements, breath, eyes, and skin. If you can't decompose
+confidently, ask the user to choose a variant.
+
+Clarification template — offer when the script or user supplies a
+generic emotion you cannot decompose without inventing detail:
+
+> Which kind of surprise?
+> (a) Light positive — eyebrows lift, lips part softly, slow inhale
+>     through the nose, no other movement.
+> (b) Shock — sharp inhale through the mouth, eyes widen, body
+>     freezes in place, hand involuntarily lifts to chest.
+> (c) Disbelief — slow blink, head tilts a fraction, lips press
+>     together, only one eyebrow lifts.
+> (d) Surprise-with-joy — eye light shifts (catchlight reads),
+>     smile builds gradually, shoulders relax.
+
+Same shape applies to any generic adjective — "tense" / "sad" /
+"angry" / "scared" / "thoughtful" / "in love" each decomposes into
+3-5 distinct physical realizations. The decomposed prompt produces
+a performance; the generic prompt produces AI-video.
+
+> **Preset library alternative.** For named micro-expression presets
+> that drop into a prompt without first-principles decomposition,
+> see `../higgsfield-soul/SKILL.md` § Micro-Expressions. The catalog
+> covers most common emotional registers with locked physical
+> descriptors. Use the decompose-from-first-principles rule above
+> when no preset matches; use the preset library when one does.
+
+### Layered emotion states
+
+Single-axis decomposition (above) names one register: angry / sad /
+surprised. **Layered emotion** names a composite state where two
+registers stack — *anxious determination*, *tired tenderness*,
+*bitter amusement*, *cornered calculation*. Production-team practice
+finds the model renders layered states better than single registers
+when the layering is described as *one channel modulating another*:
+the dominant state plus the underlying state plus the visible tell.
+
+- **Anxious determination** — set jaw + locked gaze (determination)
+  with shallow chest breath and a single hand at the side flexing
+  open-closed (anxiety underneath).
+- **Tired tenderness** — soft micro-smile + half-closed eyes
+  (tenderness) with the body weight settled, slow blink interval
+  (tiredness underneath).
+- **Bitter amusement** — one-sided smirk + eye-shine (amusement)
+  with no smile crinkles at the eye corners (bitterness underneath).
+
+Compose layered states by stacking decomposed physical realizations
+from the single-axis catalog. The dominant state goes in the face;
+the underlying state goes in breath, posture, and hand-state; the
+visible tell sits in the eyes.
+
+For finer control, layer a **tiny detail** on top of an existing
+emotional cue: `Roco is very upset, and his lower lip trembles`.
+The base emotion gets the broad performance; the tiny detail gives
+the model a specific physical cue to render. Production-team
+discipline holds that the model renders the simple-emotion-plus-
+tiny-detail compound better than either an over-decomposed prompt
+or a too-generic one.
+
+---
+
 ## Identity vs. Motion Separation Rule
 
 When a prompt involves Soul ID or any character who must stay consistent across shots,
@@ -212,6 +284,15 @@ Style: Cinematic, cold blue shadows, warm neon accents. 16:9.
 - Always when camera movement is involved alongside a character
 - In Cinema Studio, identity goes in the @ Element definition; motion goes in the prompt
 
+> **Camera matches emotion, not just identity.** The Motion Block describes WHAT
+> the character does and HOW the camera moves. The *quality* of the camera motion
+> — jittery handheld for anger, smooth handheld breathing for calm, static + slow
+> push for revelation — should track the focal character's emotional state. See
+> `../higgsfield-camera/SKILL.md` § Camera-Emotion Sync for the 6-emotion movement
+> map and the emotional-arcs-within-a-shot pattern. For decomposing the underlying
+> generic emotion before picking a camera prescription, see § Generic-Emotion
+> Decomposition above.
+
 ---
 
 ## Common Prompt Mistakes
@@ -228,6 +309,7 @@ Style: Cinematic, cold blue shadows, warm neon accents. 16:9.
 | Specific martial arts moves | Use general fighting energy instead of named moves |
 | Multiple @ Elements in action scenes | Use @ for static scenes, plain text for action |
 | Mixing identity + motion in one block | Separate into Identity Block + Motion Block (see above) |
+| Aspect ratio inside the prompt body | Set aspect in the Higgsfield UI / output-format header. Describe framing in plain language ("full body" / "chest-up" / "wide establishing") not numerical ratios. |
 
 > **Negative constraints:** For a comprehensive list of artifacts to avoid (floating limbs,
 > face warping, flickering textures, etc.) and the prompt phrasing to prevent them, see
@@ -266,6 +348,36 @@ during fan-out.
 
 If you find yourself wanting to "fix everything at once," stop and ask which
 fix matters most. That one goes in this regeneration; the rest wait their turn.
+
+### Prompt-window hygiene
+
+Iteration also accumulates clutter — old prompt edits that no longer apply,
+stale reference images attached from earlier shots, contradictory clauses
+layered atop one another, prompts that have grown so long the model loses
+the load-bearing pieces inside the noise. Four hygiene patterns from
+production practice:
+
+- **Delete obsolete prompt blocks.** When a previous prompt section was about
+  the sticky-note prop but you've moved to character generation, delete the
+  sticky-note block. Otherwise the model occasionally pulls the stale prop
+  into the new generation.
+- **Editor-adds-atop-existing-prompt creates contradictions.** When edits
+  accumulate by appending rather than replacing, the prompt collects
+  contradictory clauses (`tight close-up` from the old version, `wide
+  establishing` from the new one). Symptom: output degrades into model-confusion
+  artifacts. Counter: when iterating, replace the relevant clause in place
+  rather than appending a new one.
+- **Remove stale reference images.** When assets change between shots (the
+  Polaroid was on the fridge in shot 1 but pulled off in shot 2), remove the
+  now-stale reference from the prompt window so the model is not still
+  trying to place it.
+- **Prompt-overload sanitize pass.** When the prompt has grown beyond ~2-3k
+  characters from accumulated detail, ask Claude (or whatever prompt-
+  construction surface you use) to **optimize / study the context / sanitize
+  the prompt** — consolidate redundant clauses, drop now-obsolete
+  qualifiers, preserve the load-bearing structure. The sanitize pass keeps
+  the prompt inside the cap and inside the model's effective attention
+  window.
 
 ### When You Don't Know What's Wrong Yet — the 6-Pass Diagnostic Sequence
 

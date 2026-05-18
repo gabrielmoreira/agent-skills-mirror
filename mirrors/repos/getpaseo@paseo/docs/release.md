@@ -21,11 +21,11 @@ Before running any stable patch release command:
 npm run release:patch
 ```
 
-This bumps the version across all workspaces, runs checks, publishes to npm, and pushes the branch + tag (triggering `Desktop Release`, `Android APK Release`, EAS `release-mobile.yml`, and `Release Notes Sync` workflows).
+This bumps the version across all workspaces, runs checks, publishes to npm, and pushes the branch + tag. The tag push triggers `Desktop Release`, `Android APK Release`, and `Release Notes Sync` on GitHub Actions. EAS picks up the same tag via the EAS GitHub app and starts the iOS + Android store builds in parallel (see "Mobile builds (EAS)" below) — there is no `release-mobile.yml` in this repo.
 
-If asked to "release paseo" without specifying major/minor, treat it as a patch release.
+**Releases are always patch.** "Release paseo", "release stable", "ship stable", and similar always mean a patch bump from the previous stable. Never bump minor or major to trigger a build, ever — minor and major bumps are reserved for genuinely larger product cuts and require an explicit user instruction with the word "minor" or "major". If you find yourself reaching for `release:minor` to retrigger a failed build, you are doing the wrong thing — push a retry tag instead (see "Fixing a failed release build" below).
 
-Use the direct stable path when the current `main` changes are ready to become the public release immediately.
+**Stable means stable.** If the user says "stable" or "ship stable", do not ask whether they want a beta first. They picked stable; treat it as a direct stable release. Only run the beta flow when the user explicitly says "beta".
 
 ## Manual step-by-step
 
@@ -147,6 +147,63 @@ If N+1 is a hotfix for a bug in N, dispatch `desktop-rollout.yml -f tag=v0.1.<N+
 - **Bootstrap caveat.** Clients running a build older than the rollout feature ignore `rolloutHours` and admit immediately. Rollout protection only applies to clients running the rollout-aware version or later.
 - **Up to ~30 min admission latency.** Renderer polls every 30 minutes, so a stable user may take up to that long to be evaluated against the rollout window.
 
+## Mobile builds (EAS)
+
+iOS and Android store builds are not in `.github/workflows`. They are triggered by the EAS GitHub app the moment the `v*` tag is pushed:
+
+- **Android (Play Store)** — EAS builds with profile `production` and auto-submits to the Play Store via `eas submit` (EAS-managed credentials, no Fastlane).
+- **iOS (TestFlight + App Store)** — EAS builds with profile `production`, uploads to TestFlight, and a Fastlane lane submits the build for App Store review.
+- **Android APK (GitHub Release asset)** — separate, via `.github/workflows/android-apk-release.yml`. This is the only Android-related workflow that lives in this repo.
+
+There is no `release-mobile.yml` in this repo. Earlier versions of these docs referenced one — that workflow was removed and the EAS GitHub app handles tag triggering directly.
+
+### Watching mobile builds from the terminal
+
+Use the EAS CLI from `packages/app/`:
+
+```bash
+cd packages/app
+
+# Recent builds (newest first). Pipe to jq for status only.
+npx eas build:list --limit 8 --non-interactive --json | jq '.[] | {platform, status, appVersion, gitCommitHash}'
+
+# Filter by platform.
+npx eas build:list --platform ios --limit 5 --non-interactive --json
+npx eas build:list --platform android --limit 5 --non-interactive --json
+
+# Inspect a specific build.
+npx eas build:view <build-id>
+
+# Stream logs for a build.
+npx eas build:view <build-id> --json | jq '.logFiles[]'
+```
+
+A build's `gitCommitHash` must match the release tag commit. `status` walks through `NEW` → `IN_QUEUE` → `IN_PROGRESS` → `FINISHED` (or `ERRORED`/`CANCELED`).
+
+Once a build is `FINISHED`, EAS auto-submits it to the store: Android via the `submit` block in `eas.json` (EAS-managed Play Console credentials), iOS via the Fastlane `submit_review` lane (uploads to TestFlight, then submits for App Store review). To confirm the submission landed, run `npx eas build:view <build-id>` and open the `Logs` URL it prints — the build's Expo dashboard page has a Submissions section listing each attempt with its store response. App Store Connect (TestFlight tab → ready for review) and the Play Console (Internal testing / Production tracks) are the final ground truth.
+
+### Babysitting mobile after a release
+
+The user rarely opens the Expo dashboard. A failed EAS build can sit silently until users complain about a stale version. After every stable release, set up a long-delay babysit that re-checks both EAS builds and GitHub Actions for the release tag. If anything is `ERRORED` or `FAILED`, surface it immediately. If everything is `FINISHED`/`SUCCESS`, confirm and stop.
+
+**Use a heartbeat schedule, never a new-agent schedule.** Babysitting fires back into the current conversation as a wake-up prompt — `target: "self"` in `mcp__paseo__create_schedule`. Never use `target: "new-agent"`. A new agent spawns a fresh conversation the user has to find and read; a heartbeat surfaces the build status inline in the conversation that owns the release, where it is impossible to miss. If you find yourself reaching for `new-agent` for a release babysit, you are about to ship a status report into a void.
+
+Pattern:
+
+```jsonc
+// mcp__paseo__create_schedule arguments
+{
+  "name": "vX.Y.Z release babysit heartbeat",
+  "every": "15m",
+  "maxRuns": 8, // covers ~2h of build + store-submission window
+  "target": "self", // heartbeat, NOT "new-agent"
+  "cwd": "/path/to/paseo",
+  "prompt": "Heartbeat: check vX.Y.Z release builds. Run gh run list + eas build:list, report concisely; flag any ERRORED/FAILED/CANCELED.",
+}
+```
+
+Tight cadence on purpose. The first run fires immediately, giving a near-real-time status check before the conversation closes. Subsequent runs at 15-minute intervals catch transitions quickly: a failed EAS build that errors at +20m should not wait until +50m to surface. Keep the prompt short — the heartbeat is a status probe, not a research task — and have it bail out as soon as everything is green so the remaining runs do not generate noise.
+
 ## Release notes on GitHub
 
 The GitHub Release body is populated automatically by the `Release Notes Sync` workflow (`.github/workflows/release-notes-sync.yml`). It triggers on every `v*` tag push and on any push to `main` that touches `CHANGELOG.md`, then runs `scripts/sync-release-notes-from-changelog.mjs` to mirror the matching changelog entry into the release body. You don't need to write release notes on GitHub manually — keep `CHANGELOG.md` correct and the workflow will sync it. To force a re-sync, dispatch the workflow with the tag input.
@@ -241,9 +298,12 @@ The changelog is shown on the Paseo homepage. Write it for **end users**, not de
 
 Every bullet must be scannable at a glance. The changelog is not release documentation — it's a list.
 
+- **One sentence per bullet, max.** If a bullet contains two sentences, the second one is doing work that belongs in product docs, not the changelog. Cut it.
+- **No trailing periods.** Bullets are list items, not prose. Drop the period at the end of every bullet, including the period inside any bolded lead-in. `**Configurable terminal scrollback**` not `**Configurable terminal scrollback.**`.
 - **One line per bullet.** If a bullet wraps to three lines in a narrow column, it's too long.
 - **Split bullets that pack multiple distinct changes.** If a bullet uses "and", "plus", a comma list, or an em-dash to chain several independent improvements, break them into separate bullets — even when they share a theme or author. One bullet = one user-facing change.
 - **Trim qualifying clauses.** Drop "with a hint shown when…", "matching the CLI's behaviour", "across common install shapes". If the detail doesn't change whether a user cares, cut it.
+- **Lead with what the user can do, not the mechanism.** The reader cares about the capability, not how it works under the hood. Do not explain LAN vs WAN, TLS handshakes, IPC, the daemon-relay topology, or any internal concept the user has not asked about. "Self-hosted relays can use a different TLS setting for the public endpoint" — not "Self-hosted relays support a separate TLS setting for the public endpoint, so the daemon can reach the relay over the LAN while the phone reaches it over the public secure address." If a feature genuinely needs background to be understood, it belongs in product docs, with a one-line teaser in the changelog.
 - **Lead with the outcome.** "Windows: agents launch reliably from npm `.cmd` shims…" is better than "Windows: agents launch reliably across common install shapes. Claude, Codex, and OpenCode now start correctly…".
 - **Attribution follows the split.** When you split a dense bullet, move each PR/author to the bullet it belongs to. Never duplicate the same PR across multiple bullets.
 
@@ -319,4 +379,5 @@ In other words, betas are checkpoints along the way; the changelog entry remains
 - [ ] `npm run release:patch` or `npm run release:promote` completes successfully
 - [ ] GitHub `Desktop Release` workflow for the `v*` tag is green
 - [ ] GitHub `Android APK Release` workflow for the same tag is green
-- [ ] EAS `release-mobile.yml` workflow for the same tag is green
+- [ ] EAS iOS production build for the same tag completes and submits via Fastlane
+- [ ] EAS Android production build for the same tag completes and auto-submits to the Play Store

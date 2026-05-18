@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from lib import env as envlib
 from lib import schema
+from lib.providers import GEMINI_FLASH_LITE
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
@@ -43,7 +44,7 @@ def _load_default_topics() -> list[tuple[str, str]]:
 
 DEFAULT_TOPICS = _load_default_topics()
 DEFAULT_SEARCH = ""
-DEFAULT_JUDGE_MODEL = "gemini-3.1-flash-lite-preview"
+DEFAULT_JUDGE_MODEL = GEMINI_FLASH_LITE
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
 
 

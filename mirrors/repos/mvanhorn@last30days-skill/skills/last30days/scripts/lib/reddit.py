@@ -334,7 +334,7 @@ def _global_search(
         )
         return data.get("posts", data.get("data", []))
     except http.HTTPError as e:
-        if e.status_code in (401, 403):
+        if e.status_code in (401, 402, 403):
             raise
         _log(f"Global search error: {e}")
         return []
@@ -376,6 +376,11 @@ def _subreddit_search(
             retries=2,
         )
         return data.get("posts", data.get("data", []))
+    except http.HTTPError as e:
+        if e.status_code in (401, 402, 403):
+            raise
+        _log(f"Subreddit search error for r/{subreddit}: {e}")
+        return []
     except Exception as e:
         _log(f"Subreddit search error for r/{subreddit}: {e}")
         return []
@@ -403,6 +408,11 @@ def fetch_post_comments(
             retries=2,
         )
         return data.get("comments", data.get("data", []))
+    except http.HTTPError as e:
+        if e.status_code in (401, 402, 403):
+            raise
+        _log(f"Comment fetch error: {e}")
+        return []
     except Exception as e:
         _log(f"Comment fetch error: {e}")
         return []

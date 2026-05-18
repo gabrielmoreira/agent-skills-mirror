@@ -1,6 +1,9 @@
 ---
 name: repo-onboarding-standards
 description: Onboard any repository into a standardized Copilot + CI governance baseline. Use for new repos and first-time sessions to ensure immediate standards adoption.
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Repo Onboarding Standards

@@ -2,8 +2,6 @@
 name: voice-refine
 description: "Transform verbose voice input into structured, token-efficient Claude prompts. Use when cleaning up voice memos, dictation output, or speech-to-text transcriptions that contain filler words, repetitions, and unstructured thoughts."
 allowed-tools: Read
-context: inherit
-agent: specialist
 effort: low
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fvadicamo/dev-agent-skills` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `fvadicamo/dev-agent-skills` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fvadicamo/dev-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,17 +60,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`skills/creating-skills/references/official_best_practices.md`](skills/creating-skills/references/official_best_practices.md) |
-| 3 | ✓ | [`skills/creating-skills/references/skill_examples.md`](skills/creating-skills/references/skill_examples.md) |
-| 4 | ✓ | [`skills/creating-skills/SKILL.md`](skills/creating-skills/SKILL.md) |
-| 5 | ✓ | [`skills/git-commit/references/commit_examples.md`](skills/git-commit/references/commit_examples.md) |
-| 6 | ✓ | [`skills/git-commit/SKILL.md`](skills/git-commit/SKILL.md) |
-| 7 | ✓ | [`skills/github-pr-creation/references/pr_templates.md`](skills/github-pr-creation/references/pr_templates.md) |
-| 8 | ✓ | [`skills/github-pr-creation/SKILL.md`](skills/github-pr-creation/SKILL.md) |
-| 9 | ✓ | [`skills/github-pr-merge/SKILL.md`](skills/github-pr-merge/SKILL.md) |
-| 10 | ✓ | [`skills/github-pr-review/references/coderabbit_parsing.md`](skills/github-pr-review/references/coderabbit_parsing.md) |
-| 11 | ✓ | [`skills/github-pr-review/references/severity_guide.md`](skills/github-pr-review/references/severity_guide.md) |
-| 12 | ✓ | [`skills/github-pr-review/SKILL.md`](skills/github-pr-review/SKILL.md) |
+| 2 | ✓ | [`plugins/github-workflow/skills/git-commit/SKILL.md`](plugins/github-workflow/skills/git-commit/SKILL.md) |
+| 3 | ✓ | [`plugins/github-workflow/skills/github-pr-creation/SKILL.md`](plugins/github-workflow/skills/github-pr-creation/SKILL.md) |
+| 4 | ✓ | [`plugins/github-workflow/skills/github-pr-merge/SKILL.md`](plugins/github-workflow/skills/github-pr-merge/SKILL.md) |
+| 5 | ✓ | [`plugins/github-workflow/skills/github-pr-review/SKILL.md`](plugins/github-workflow/skills/github-pr-review/SKILL.md) |
+| 6 | ✓ | [`plugins/skill-authoring/skills/creating-skills/SKILL.md`](plugins/skill-authoring/skills/creating-skills/SKILL.md) |
 
 ---
 

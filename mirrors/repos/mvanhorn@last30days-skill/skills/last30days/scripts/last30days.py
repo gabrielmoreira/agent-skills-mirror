@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # ruff: noqa: E402
-"""last30days v3.0.0 CLI."""
+"""last30days CLI."""
 
 from __future__ import annotations
 
 import argparse
 import atexit
+import datetime
 import json
 import os
 import re
@@ -62,7 +63,10 @@ def _cleanup_children() -> None:
         pids = list(_child_pids)
     for pid in pids:
         try:
-            os.killpg(os.getpgid(pid), signal.SIGTERM)
+            if hasattr(os, "killpg"):
+                os.killpg(os.getpgid(pid), signal.SIGTERM)
+            else:
+                os.kill(pid, signal.SIGTERM)
         except (ProcessLookupError, PermissionError, OSError):
             continue
 
@@ -195,9 +199,9 @@ def compute_save_path_display(save_dir: str, topic: str, suffix: str, emit: str)
     try:
         home = _Path.home().resolve()
         relative = raw.relative_to(home)
-        return f"~/{relative}"
+        return f"~/{relative.as_posix()}"
     except ValueError:
-        return str(raw)
+        return raw.as_posix()
 
 
 def read_synthesis_file(path: str) -> str:
@@ -387,7 +391,7 @@ def subrun_kwargs_for(
 
     subreddits = _choose("subreddits", "subreddits")
     if isinstance(subreddits, list):
-        subreddits = [s.strip().lstrip("r/") for s in subreddits if s.strip()] or None
+        subreddits = [s.strip().removeprefix("r/") for s in subreddits if s.strip()] or None
 
     x_related = plan_entry.get("x_related")
     if isinstance(x_related, list):
@@ -531,6 +535,24 @@ def _show_runtime_ui(
         progress.show_promo(promo, diag=diag)
 
 
+def _write_last_run(topic: str, report: "schema.Report") -> None:
+    try:
+        if env.CONFIG_DIR is None:
+            return
+        target = env.CONFIG_DIR
+        target.mkdir(parents=True, exist_ok=True)
+        counts = {source: len(items) for source, items in report.items_by_source.items()}
+        payload = {
+            "topic": topic,
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "sources": counts,
+            "total": sum(counts.values()),
+        }
+        (target / "last-run.json").write_text(json.dumps(payload, indent=2))
+    except Exception:
+        pass
+
+
 def main() -> int:
     parser = build_parser()
     # Use parse_known_args so setup sub-flags (--device-auth, --github,
@@ -540,6 +562,13 @@ def main() -> int:
         os.environ["LAST30DAYS_DEBUG"] = "1"
 
     config = env.get_config()
+
+    # Surface SSH-routing config as an env var so library modules (e.g.
+    # youtube_yt) can read it without taking a config dependency. This
+    # routes yt-dlp through `ssh <host>` to bypass YouTube's bot-wall on
+    # datacenter IPs (see lib/youtube_yt.py for details).
+    if config.get("LAST30DAYS_YOUTUBE_SSH_HOST") and "LAST30DAYS_YOUTUBE_SSH_HOST" not in os.environ:
+        os.environ["LAST30DAYS_YOUTUBE_SSH_HOST"] = config["LAST30DAYS_YOUTUBE_SSH_HOST"]
 
     # Handle setup subcommand
     topic = " ".join(args.topic).strip()
@@ -599,7 +628,7 @@ def main() -> int:
     depth = "deep" if args.deep else "quick" if args.quick else "default"
     try:
         x_related = [h.strip() for h in args.x_related.split(",") if h.strip()] if args.x_related else None
-        subreddits = [s.strip().lstrip("r/") for s in args.subreddits.split(",") if s.strip()] if args.subreddits else None
+        subreddits = [s.strip().removeprefix("r/") for s in args.subreddits.split(",") if s.strip()] if args.subreddits else None
         tiktok_hashtags = [h.strip().lstrip("#") for h in args.tiktok_hashtags.split(",") if h.strip()] if args.tiktok_hashtags else None
         tiktok_creators = [c.strip().lstrip("@") for c in args.tiktok_creators.split(",") if c.strip()] if args.tiktok_creators else None
         ig_creators = [c.strip().lstrip("@") for c in args.ig_creators.split(",") if c.strip()] if args.ig_creators else None
@@ -618,6 +647,7 @@ def main() -> int:
         # Auto-resolve: use web search to discover subreddits/handles before planning.
         # This is the engine-side equivalent of SKILL.md Steps 0.55/0.75 for platforms
         # without WebSearch (OpenClaw, Codex, raw CLI).
+        repos_from_auto_resolve = False
         if args.auto_resolve and not external_plan:
             from lib import resolve
             resolution = resolve.auto_resolve(topic, config)
@@ -632,6 +662,9 @@ def main() -> int:
                 sys.stderr.write(f"[AutoResolve] GitHub user: @{args.github_user}\n")
             if resolution.get("github_repos") and not args.github_repo:
                 args.github_repo = ",".join(resolution["github_repos"])
+                # auto_resolve already canonicalized via canonicalize_github_repos(cap=5);
+                # mark so we don't re-canonicalize below and clobber its relevance order.
+                repos_from_auto_resolve = True
                 sys.stderr.write(f"[AutoResolve] GitHub repos: {args.github_repo}\n")
             if resolution.get("context"):
                 # Inject context into external_plan metadata for the planner to use
@@ -643,6 +676,20 @@ def main() -> int:
 
         github_user = args.github_user.lstrip("@").lower() if args.github_user else None
         github_repos = [r.strip() for r in args.github_repo.split(",") if r.strip() and "/" in r.strip()] if args.github_repo else None
+
+        # Only canonicalize when repos came from a user-supplied --github-repo flag.
+        # When repos_from_auto_resolve is True, auto_resolve already ran
+        # canonicalize_github_repos(cap=5) and ranked by relevance; re-running here
+        # with cap=None can re-sort by topic-slug match and lose that ordering.
+        if github_repos and not repos_from_auto_resolve:
+            from lib import resolve as resolve_lib
+            original_github_repos = github_repos[:]
+            github_repos = resolve_lib.canonicalize_github_repos(topic, github_repos, cap=None)
+            if github_repos != original_github_repos:
+                sys.stderr.write(
+                    "[GitHub] Canonicalized repos: "
+                    f"{','.join(original_github_repos)} -> {','.join(github_repos)}\n"
+                )
 
         # --deep-research: auto-enable perplexity source and set deep flag
         if args.deep_research:
@@ -863,7 +910,18 @@ def main() -> int:
         report, progress, diag,
         suppress_web_promo=bool(external_plan or comp_plan),
     )
-    if args.store:
+    _write_last_run(topic, report)
+    # LAST30DAYS_STORE env var = persistence default-on. Read both os.environ
+    # (for shell-exported users) and config (for users who set it in
+    # ~/.config/last30days/.env, which env.py loads but does not propagate
+    # to os.environ). Mirrors the LAST30DAYS_DEBUG / LAST30DAYS_SKIP_PREFLIGHT
+    # convention; env-var or config wins, with `--store` flag still working.
+    _store_env = (
+        os.environ.get("LAST30DAYS_STORE")
+        or config.get("LAST30DAYS_STORE")
+        or ""
+    ).lower()
+    if args.store or _store_env in ("1", "true", "yes"):
         counts = persist_report(report)
         sys.stderr.write(
             f"[last30days] Stored {counts['new']} new, {counts['updated']} updated findings\n"
@@ -873,7 +931,32 @@ def main() -> int:
     # Show quality nudge if applicable
     try:
         from lib import quality_nudge
-        quality = quality_nudge.compute_quality_score(config, {})
+        # Populate transcript-fetch ratio so quality_nudge can detect the
+        # degraded-YouTube failure mode (videos returned but transcripts
+        # silently failed - typically a stale yt-dlp binary).
+        youtube_items = report.items_by_source.get("youtube") or []
+        instagram_items = report.items_by_source.get("instagram") or []
+        research_results = {
+            "youtube_videos_count": len(youtube_items),
+            "youtube_transcripts_count": sum(
+                1 for it in youtube_items
+                if (it.metadata.get("transcript_highlights") or it.metadata.get("transcript_snippet"))
+            ),
+            "youtube_error": report.errors_by_source.get("youtube"),
+            "x_error": report.errors_by_source.get("x"),
+            # Captions-disabled videos can never produce a transcript regardless
+            # of yt-dlp version; subtract them from the degraded-ratio
+            # denominator so a single uploader-disabled video does not trip the
+            # "stale yt-dlp" nudge.
+            "youtube_captions_disabled_count": sum(
+                1 for it in youtube_items if it.metadata.get("captions_disabled")
+            ),
+            # Track Instagram returned-zero-items so quality_nudge can detect
+            # the silent-failure case (SC configured but the v2 reels endpoint
+            # 500'd through both the original query and the hashtag retry).
+            "instagram_items_count": len(instagram_items),
+        }
+        quality = quality_nudge.compute_quality_score(config, research_results)
         if quality.get("nudge_text"):
             sys.stderr.write(f"\n{quality['nudge_text']}\n")
             sys.stderr.flush()

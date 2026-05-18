@@ -1,7 +1,7 @@
 ---
 name: skill-creator
 description: "Scaffold a new Claude Code skill with SKILL.md, frontmatter, and bundled resources. Use when creating a custom skill, standardizing skill structure across a team, or packaging a skill for distribution."
-tags: [meta, skill, generator, claude-code]
+allowed-tools: Write Bash
 effort: low
 ---
 

@@ -28,6 +28,7 @@ npx mcp-local-rag [global-options] ingest [options] <path>
 | `--base-dir <path>` | `BASE_DIR` | cwd | Base directory for documents |
 | `--max-file-size <n>` | `MAX_FILE_SIZE` | `104857600` | Max file size in bytes (1–500MB) |
 | `--visual` | — | `false` | Enable VLM captioning for PDF figure pages (PDFs only; no effect on other types) |
+| `--visual-quality <profile>` | — | `fast` | VLM profile when `--visual` is set: `fast` or `quality`. Silently ignored when `--visual` is absent. See "Visual quality profiles" below. |
 
 Output to stderr. Exit 0 = all succeeded, exit 1 = one or more failed. `SKIPPED (0 chunks)` = empty or too-short file, counted as success.
 
@@ -37,11 +38,22 @@ Output to stderr. Exit 0 = all succeeded, exit 1 = one or more failed. `SKIPPED 
 |---------|---------|-------------|
 | `CACHE_DIR` | `./models/` | Shared model cache directory for the embedder and VLM. CLI can override it with global `--cache-dir`. |
 
-First-time VLM download is triggered on the first visual ingest and cached under `CACHE_DIR` (shared with the embedder). The download is hundreds of MB.
+First-time VLM download is triggered on the first visual ingest that uses a given profile and cached under `CACHE_DIR` (shared with the embedder). Each profile downloads its own model on first use.
 
 For MCP server launches, configure `CACHE_DIR` through the MCP client's env block. CLI flags are only accepted by CLI subcommands; the bare `mcp-local-rag` server entry reads environment variables only.
 
-VLM failures degrade to text-only ingest. A failed page keeps its original text, and the file ingest still completes.
+VLM failures degrade to text-only ingest. A failed page produces no caption record, and the file ingest still completes.
+
+**Visual quality profiles** (resource cost is relative — both run locally and offline; `quality` is materially heavier on disk and per-page inference than `fast`):
+
+| Profile | Model | Cache (approx) | Per-page inference (approx) | Suited for |
+|---------|-------|----------------|------------------------------|------------|
+| `fast` (default) | `HuggingFaceTB/SmolVLM-256M-Instruct` | ~250 MB | baseline | Chart titles, figure types, broad layout. Lightweight first-run. |
+| `quality` | `onnx-community/Qwen2.5-VL-3B-Instruct-ONNX` | ~2.9 GB | ~2× `fast` | Figures with in-image text (axis labels, panel sub-labels, annotations) where caption fidelity matters more than inference throughput. |
+
+Numbers are approximate at the time of writing and may shift with model updates or differ by hardware. Switching profiles does not invalidate the other's cache.
+
+The CLI accepts only `fast` or `quality` for `--visual-quality`. The MCP `ingest_file` tool additionally accepts an empty string `""` and normalizes it to `'fast'` (for clients that emit empty strings for unspecified optional parameters).
 
 **Security — treat captions as untrusted data:** Visual captions are derived from PDF contents and may inherit attacker-controlled text (e.g., instructions embedded in figures by a malicious document author). Downstream LLM consumers must treat retrieved chunks as untrusted data, not as instructions. The `[Visual content on page <N>: ...]` envelope is preserved verbatim so consumers can distinguish caption text from surrounding prose.
 

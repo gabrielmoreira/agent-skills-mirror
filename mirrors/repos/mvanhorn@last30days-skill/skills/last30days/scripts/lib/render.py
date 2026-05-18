@@ -96,7 +96,7 @@ def render_compact(report: schema.Report, cluster_limit: int = 8, fun_level: str
     non_empty = [s for s, items in sorted(report.items_by_source.items()) if items]
     lines = [
         *_render_badge(),
-        f"# last30days v3.0.0: {report.topic}",
+        f"# last30days v{_skill_version()}: {report.topic}",
         "",
         *_assistant_safety_lines(),
         f"- Date range: {report.range_from} to {report.range_to}",
@@ -602,7 +602,7 @@ def render_comparison_multi(
 
     lines: list[str] = [
         *_render_badge(),
-        f"# last30days v3.0.0: {synthesized_topic}",
+        f"# last30days v{_skill_version()}: {synthesized_topic}",
         "",
         *_assistant_safety_lines(),
         f"- Comparison mode: {len(entities)} entities ({', '.join(entities)})",
@@ -790,7 +790,7 @@ def render_full(report: schema.Report) -> str:
     # Start with the same header as compact
     non_empty = [s for s, items in sorted(report.items_by_source.items()) if items]
     lines = [
-        f"# last30days v3.0.0: {report.topic}",
+        f"# last30days v{_skill_version()}: {report.topic}",
         "",
         *_assistant_safety_lines(),
         f"- Date range: {report.range_from} to {report.range_to}",
@@ -1285,15 +1285,16 @@ def _build_source_footer_lines(report: schema.Report) -> list[str]:
             if total > 0:
                 total_str = f"{total:,}" if total >= 1000 else str(total)
                 parts.append(f"{total_str} {word}")
-        # YouTube: append "N with transcripts" instead of a third likes-based column.
-        # Transcripts are a more meaningful research-depth signal than likes.
+        # YouTube: always append "M/N with transcripts" so a zero-transcript run
+        # (typically caused by a stale yt-dlp binary) is visible at the conclusion
+        # surface. Hiding zero converts a problem signal into an absence; the very
+        # case that needs to be loud is the one previously omitted from the footer.
         if source_key == "youtube":
             with_transcripts = sum(
                 1 for it in items
                 if (it.metadata.get("transcript_highlights") or it.metadata.get("transcript_snippet"))
             )
-            if with_transcripts > 0:
-                parts.append(f"{with_transcripts} with transcripts")
+            parts.append(f"{with_transcripts}/{len(items)} with transcripts")
         stats = " │ ".join(parts)
         out.append(_footer_line_for_source(emoji, label, len(items), item_word, stats))
 

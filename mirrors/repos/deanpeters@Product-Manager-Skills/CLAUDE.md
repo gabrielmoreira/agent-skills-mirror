@@ -4,13 +4,13 @@
 
 ---
 
-## Project Status (Last updated: Fri May 15 2026)
+## Project Status (Last updated: Sun May 17 2026)
 
-### Current State: v0.79 Released + Community Contributions
+### Current State: v0.79 + organic-growth-advisor (49 skills)
 
-**Released: 46 Skills (Feb 27, 2026)**
-- 20 Component Skills (templates/artifacts + finance metrics + career frameworks)
-- 20 Interactive Skills (guided discovery + finance advisors + career advisors)
+**Released: 49 Skills**
+- 21 Component Skills (templates/artifacts + finance metrics + career frameworks)
+- 22 Interactive Skills (guided discovery + finance advisors + career advisors + growth)
 - 6 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding)
 - License: CC BY-NC-SA 4.0
 - All skills restructured to Anthropic-compliant format (`skills/skill-name/SKILL.md`)
@@ -51,6 +51,10 @@
   - See `docs/Finance Suite Summary.md` for complete overview
 
 **Recent Updates:**
+- ✅ **organic-growth-advisor Added (May 17, 2026):** Interactive skill for McKinsey Growth Pyramid L2-L5 triage
+  - 3-question flow diagnoses growth constraint via Growth Path Matrix (customer/market context × degree of product change)
+  - Path-specific diagnostics, first experiments, and watch-outs for L2 (New Segments), L3 (New Geographies), L4 (New Distribution), L5 (New Products)
+  - Source: Productside webinar "Driving Organic Growth through Innovation" (May 20, 2026)
 - ✅ **v0.79 Released (May 15, 2026):** Community contributions — security hardening, new meta-skill, bug fix
   - Added `skills/pm-skill-creator/` — interactive skill for guided skill design (KNE-AI)
   - Added `.claude-plugin/plugin.json` — fixes silent skill discovery failure for Claude Code plugin users (changyan01, harley-chenhailin)

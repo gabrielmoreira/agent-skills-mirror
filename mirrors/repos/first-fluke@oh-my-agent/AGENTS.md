@@ -16,6 +16,19 @@
 2. If `target_vendor_for_agent === current_runtime_vendor`, use the runtime's native subagent path.
 3. If vendors differ, or native subagents are unavailable, use `oma agent:spawn` for that agent only.
 
+## Code Search
+
+Prefer **serena MCP** tools over native find/grep when locating code — they are symbol-aware and faster on large repos. Fall back to native Read / Glob / Grep only when serena is unavailable or for plain file content reads.
+
+| Task | Preferred tool |
+|------|----------------|
+| Locate a symbol definition (class / function / variable) | `find_symbol` |
+| Find references / callers of a symbol | `find_referencing_symbols` |
+| Outline a file's top-level symbols | `get_symbols_overview` |
+| Pattern or regex search across the codebase | `search_for_pattern` |
+| Find a file by name | `find_file` |
+| List directory contents | `list_dir` |
+
 ## Workflows
 
 Execute by naming the workflow in your prompt. Keywords are auto-detected via hooks.

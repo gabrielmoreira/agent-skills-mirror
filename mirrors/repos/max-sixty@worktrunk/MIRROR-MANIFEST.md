@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 31
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude-plugin/CLAUDE.md`](.claude-plugin/CLAUDE.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/running-tend/SKILL.md`](.claude/skills/running-tend/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/writing-user-outputs/SKILL.md`](.claude/skills/writing-user-outputs/SKILL.md) |
@@ -70,26 +70,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 | 10 | ✓ | [`docs/demos/CLAUDE.md`](docs/demos/CLAUDE.md) |
 | 11 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
-| 12 | ✓ | [`skills/worktrunk/reference/claude-code.md`](skills/worktrunk/reference/claude-code.md) |
-| 13 | ✓ | [`skills/worktrunk/reference/config.md`](skills/worktrunk/reference/config.md) |
-| 14 | ✓ | [`skills/worktrunk/reference/extending.md`](skills/worktrunk/reference/extending.md) |
-| 15 | ✓ | [`skills/worktrunk/reference/faq.md`](skills/worktrunk/reference/faq.md) |
-| 16 | ✓ | [`skills/worktrunk/reference/hook.md`](skills/worktrunk/reference/hook.md) |
-| 17 | ✓ | [`skills/worktrunk/reference/list.md`](skills/worktrunk/reference/list.md) |
-| 18 | ✓ | [`skills/worktrunk/reference/llm-commits.md`](skills/worktrunk/reference/llm-commits.md) |
-| 19 | ✓ | [`skills/worktrunk/reference/merge.md`](skills/worktrunk/reference/merge.md) |
-| 20 | ✓ | [`skills/worktrunk/reference/remove.md`](skills/worktrunk/reference/remove.md) |
-| 21 | ✓ | [`skills/worktrunk/reference/shell-integration.md`](skills/worktrunk/reference/shell-integration.md) |
-| 22 | ✓ | [`skills/worktrunk/reference/step.md`](skills/worktrunk/reference/step.md) |
-| 23 | ✓ | [`skills/worktrunk/reference/switch.md`](skills/worktrunk/reference/switch.md) |
-| 24 | ✓ | [`skills/worktrunk/reference/tips-patterns.md`](skills/worktrunk/reference/tips-patterns.md) |
-| 25 | ✓ | [`skills/worktrunk/reference/troubleshooting.md`](skills/worktrunk/reference/troubleshooting.md) |
-| 26 | ✓ | [`skills/worktrunk/reference/worktrunk.md`](skills/worktrunk/reference/worktrunk.md) |
-| 27 | ✓ | [`skills/worktrunk/SKILL.md`](skills/worktrunk/SKILL.md) |
-| 28 | ✓ | [`skills/wt-switch-create/SKILL.md`](skills/wt-switch-create/SKILL.md) |
-| 29 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
-| 30 | ✓ | [`src/commands/list/CLAUDE.md`](src/commands/list/CLAUDE.md) |
-| 31 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 12 | ✓ | [`plugins/worktrunk/CLAUDE.md`](plugins/worktrunk/CLAUDE.md) |
+| 13 | ✓ | [`skills/worktrunk/reference/claude-code.md`](skills/worktrunk/reference/claude-code.md) |
+| 14 | ✓ | [`skills/worktrunk/reference/config.md`](skills/worktrunk/reference/config.md) |
+| 15 | ✓ | [`skills/worktrunk/reference/extending.md`](skills/worktrunk/reference/extending.md) |
+| 16 | ✓ | [`skills/worktrunk/reference/faq.md`](skills/worktrunk/reference/faq.md) |
+| 17 | ✓ | [`skills/worktrunk/reference/hook.md`](skills/worktrunk/reference/hook.md) |
+| 18 | ✓ | [`skills/worktrunk/reference/list.md`](skills/worktrunk/reference/list.md) |
+| 19 | ✓ | [`skills/worktrunk/reference/llm-commits.md`](skills/worktrunk/reference/llm-commits.md) |
+| 20 | ✓ | [`skills/worktrunk/reference/merge.md`](skills/worktrunk/reference/merge.md) |
+| 21 | ✓ | [`skills/worktrunk/reference/remove.md`](skills/worktrunk/reference/remove.md) |
+| 22 | ✓ | [`skills/worktrunk/reference/shell-integration.md`](skills/worktrunk/reference/shell-integration.md) |
+| 23 | ✓ | [`skills/worktrunk/reference/step.md`](skills/worktrunk/reference/step.md) |
+| 24 | ✓ | [`skills/worktrunk/reference/switch.md`](skills/worktrunk/reference/switch.md) |
+| 25 | ✓ | [`skills/worktrunk/reference/tips-patterns.md`](skills/worktrunk/reference/tips-patterns.md) |
+| 26 | ✓ | [`skills/worktrunk/reference/troubleshooting.md`](skills/worktrunk/reference/troubleshooting.md) |
+| 27 | ✓ | [`skills/worktrunk/reference/worktrunk.md`](skills/worktrunk/reference/worktrunk.md) |
+| 28 | ✓ | [`skills/worktrunk/SKILL.md`](skills/worktrunk/SKILL.md) |
+| 29 | ✓ | [`skills/wt-switch-create/SKILL.md`](skills/wt-switch-create/SKILL.md) |
+| 30 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| 31 | ✓ | [`src/commands/list/CLAUDE.md`](src/commands/list/CLAUDE.md) |
+| 32 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
 
 ---
 

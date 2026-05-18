@@ -1,7 +1,7 @@
 ---
 name: github-projects-agile-linkage
-description: Apply Agile linkage controls in GitHub using issue types, sub-issues, dependencies, issue-branch/PR linkage, project fields, and built-in automations.
-argument-hint: [mode: audit|plan|apply|verify] [scope: repo|org] [policy-profile: strict|standard|light]
+description: "Apply Agile linkage controls in GitHub using issue types, sub-issues, dependencies, issue-branch/PR linkage, project fields, and built-in automations."
+argument-hint: "[mode: audit|plan|apply|verify] [scope: repo|org] [policy-profile: strict|standard|light]"
 user-invocable: true
 disable-model-invocation: false
 ---

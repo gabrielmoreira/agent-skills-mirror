@@ -1,6 +1,9 @@
 ---
 name: fleet-portable-config
 description: Adapt the Megingjord harness to a new operator's fleet topology without hand-editing inventory files. Use when first activating the harness on a new host or onboarding a new fleet.
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
 type: skill
 ---
 

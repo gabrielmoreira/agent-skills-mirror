@@ -14,7 +14,7 @@ import argparse
 import json
 import sqlite3
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -159,7 +159,30 @@ _UPDATABLE_FINDING_COLUMNS = frozenset({
 })
 
 # Future migrations keyed by version number
-MIGRATIONS: Dict[int, str] = {}
+MIGRATIONS: Dict[int, str] = {
+    2: """
+CREATE TABLE IF NOT EXISTS finding_sightings (
+    id INTEGER PRIMARY KEY,
+    finding_id INTEGER NOT NULL REFERENCES findings(id) ON DELETE CASCADE,
+    run_id INTEGER REFERENCES research_runs(id) ON DELETE CASCADE,
+    topic_id INTEGER REFERENCES topics(id) ON DELETE CASCADE,
+    source TEXT NOT NULL,
+    source_url TEXT NOT NULL,
+    source_title TEXT,
+    engagement_score REAL,
+    relevance_score REAL,
+    seen_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(run_id, finding_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_finding_sightings_run
+    ON finding_sightings(run_id, topic_id);
+CREATE INDEX IF NOT EXISTS idx_finding_sightings_topic_seen
+    ON finding_sightings(topic_id, seen_at);
+CREATE INDEX IF NOT EXISTS idx_finding_sightings_url
+    ON finding_sightings(source_url);
+""",
+}
 
 
 def _connect(db_path: Optional[Path] = None) -> sqlite3.Connection:
@@ -337,6 +360,22 @@ def update_run(run_id: int, **kwargs):
         conn.close()
 
 
+def get_latest_completed_runs(topic_id: int, limit: int = 2) -> List[Dict[str, Any]]:
+    """Return newest completed runs for a topic."""
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            """SELECT * FROM research_runs
+               WHERE topic_id = ? AND status = 'completed'
+               ORDER BY datetime(run_date) DESC, id DESC
+               LIMIT ?""",
+            (topic_id, limit),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
 # --- Findings ---
 
 
@@ -423,6 +462,7 @@ def store_findings(
 
         new_count = len(insert_rows)
         updated_count = len(update_rows)
+        _record_sightings(conn, run_id, topic_id, with_urls, existing_by_url)
         conn.execute(
             "UPDATE research_runs SET findings_new = ?, findings_updated = ? WHERE id = ?",
             (new_count, updated_count, run_id),
@@ -432,6 +472,166 @@ def store_findings(
         conn.close()
 
     return {"new": new_count, "updated": updated_count}
+
+
+def _record_sightings(
+    conn: sqlite3.Connection,
+    run_id: int,
+    topic_id: int,
+    findings_with_urls: List[tuple[str, Dict[str, Any]]],
+    existing_by_url: Optional[Dict[str, sqlite3.Row]] = None,
+) -> None:
+    """Record the findings observed during this run.
+
+    The aggregate findings table keeps one row per URL and updates that row on
+    re-sighting. This ledger preserves the run/topic membership needed for
+    watchlist deltas and dossiers.
+    """
+    if not findings_with_urls:
+        return
+
+    by_url = {url: finding for url, finding in findings_with_urls}
+    rows_by_url = dict(existing_by_url or {})
+
+    missing_urls = [url for url in by_url if url not in rows_by_url]
+    if missing_urls:
+        placeholders = ",".join("?" for _ in missing_urls)
+        rows = conn.execute(
+            f"SELECT id, source_url FROM findings WHERE source_url IN ({placeholders})",
+            missing_urls,
+        ).fetchall()
+        rows_by_url.update({row["source_url"]: row for row in rows})
+
+    sighting_rows = []
+    for url, finding in by_url.items():
+        row = rows_by_url.get(url)
+        if row is None:
+            continue
+        sighting_rows.append((
+            row["id"],
+            run_id,
+            topic_id,
+            finding.get("source", "unknown"),
+            url,
+            finding.get("source_title") or finding.get("title", ""),
+            finding.get("engagement_score", 0),
+            finding.get("relevance_score", 0),
+        ))
+
+    if not sighting_rows:
+        return
+
+    conn.executemany(
+        """INSERT INTO finding_sightings
+           (finding_id, run_id, topic_id, source, source_url, source_title,
+            engagement_score, relevance_score)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+           ON CONFLICT(run_id, finding_id) DO UPDATE SET
+             topic_id = excluded.topic_id,
+             source = excluded.source,
+             source_url = excluded.source_url,
+             source_title = excluded.source_title,
+             engagement_score = excluded.engagement_score,
+             relevance_score = excluded.relevance_score""",
+        sighting_rows,
+    )
+
+
+def get_sightings_for_run(topic_id: int, run_id: int) -> List[Dict[str, Any]]:
+    """Return findings observed for a topic during a specific run."""
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            """SELECT * FROM finding_sightings
+               WHERE topic_id = ? AND run_id = ?
+               ORDER BY id""",
+            (topic_id, run_id),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def compute_topic_delta(topic_id: int) -> Dict[str, Any]:
+    """Compare the latest completed watchlist run with the previous run."""
+    runs = get_latest_completed_runs(topic_id, limit=2)
+    topic = _get_topic_by_id(topic_id)
+    topic_name = topic["name"] if topic else str(topic_id)
+    if len(runs) < 2:
+        return {
+            "topic": topic_name,
+            "status": "insufficient_history",
+            "message": "Need at least two completed runs to compute a delta.",
+        }
+
+    current_run, previous_run = runs[0], runs[1]
+    current = _sightings_by_url(get_sightings_for_run(topic_id, current_run["id"]))
+    previous = _sightings_by_url(get_sightings_for_run(topic_id, previous_run["id"]))
+
+    current_urls = set(current)
+    previous_urls = set(previous)
+    new_urls = sorted(current_urls - previous_urls)
+    continued_urls = sorted(current_urls & previous_urls)
+    dropped_urls = sorted(previous_urls - current_urls)
+
+    findings = {
+        "new": [current[url] for url in new_urls],
+        "continued": [current[url] for url in continued_urls],
+        "dropped": [previous[url] for url in dropped_urls],
+    }
+
+    return {
+        "topic": topic_name,
+        "status": "ok",
+        "current_run_id": current_run["id"],
+        "previous_run_id": previous_run["id"],
+        "new": len(new_urls),
+        "continued": len(continued_urls),
+        "dropped": len(dropped_urls),
+        "sources": _delta_source_counts(findings),
+        "findings": findings,
+    }
+
+
+def _get_topic_by_id(topic_id: int) -> Optional[Dict[str, Any]]:
+    conn = _connect()
+    try:
+        row = conn.execute("SELECT * FROM topics WHERE id = ?", (topic_id,)).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def _sightings_by_url(sightings: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    """Index sightings by stable URL identity for run-to-run delta comparisons.
+
+    URL-less sightings are intentionally excluded because there is no stable
+    cross-run identity to classify them as new, continued, or dropped.
+    """
+    return {
+        sighting["source_url"]: sighting
+        for sighting in sightings
+        if sighting.get("source_url")
+    }
+
+
+def _delta_source_counts(
+    findings: Dict[str, List[Dict[str, Any]]]
+) -> Dict[str, Dict[str, int]]:
+    sources = sorted({
+        finding.get("source") or "unknown"
+        for group in findings.values()
+        for finding in group
+    })
+    counts = {
+        source: {"new": 0, "continued": 0, "dropped": 0}
+        for source in sources
+    }
+    for group_name, group in findings.items():
+        for finding in group:
+            source = finding.get("source") or "unknown"
+            counts[source][group_name] += 1
+    return counts
 
 
 def get_new_findings(
@@ -519,7 +719,7 @@ def get_daily_cost(date: Optional[str] = None) -> float:
     conn = _connect()
     try:
         if not date:
-            date = datetime.now().strftime("%Y-%m-%d")
+            date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         row = conn.execute(
             """SELECT COALESCE(SUM(token_cost), 0) as total
                FROM research_runs
@@ -575,7 +775,7 @@ def get_stats() -> Dict[str, Any]:
         topic_count = conn.execute("SELECT COUNT(*) FROM topics WHERE enabled = 1").fetchone()[0]
         finding_count = conn.execute("SELECT COUNT(*) FROM findings").fetchone()[0]
 
-        week_ago = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+        week_ago = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
         runs_7d = conn.execute(
             "SELECT COUNT(*) FROM research_runs WHERE run_date >= ?", (week_ago,)
         ).fetchone()[0]
@@ -621,7 +821,7 @@ def get_trending(days: int = 7) -> List[Dict[str, Any]]:
     """Get topics ranked by recent finding activity."""
     conn = _connect()
     try:
-        since = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        since = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
         rows = conn.execute(
             """SELECT t.name, t.id,
                       COUNT(f.id) as new_findings,
@@ -673,27 +873,31 @@ def findings_from_report(
     limit: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     """Convert report into persisted findings.
-    
+
     Uses ranked candidates (post-rerank) when available for quality scores and explanations.
     Supplements with raw items from items_by_source for HN/PM that didn't rank highly
-    but are valuable for watchlist persistence.
+    but are valuable for watchlist persistence. When ranked_candidates is empty
+    (degraded path — rerank failed or was skipped), falls back to supplementing
+    all sources from items_by_source so findings aren't silently dropped.
     """
     findings = []
     seen_urls = set()
-    
-    # Phase 1: Process ranked candidates (high-quality data with explanations and corroboration)
+
     for candidate in report.ranked_candidates:
-        finding = finding_from_candidate(candidate)
-        findings.append(finding)
+        findings.append(finding_from_candidate(candidate))
         seen_urls.add(candidate.url)
-    
-    # Phase 2: Add HN/PM items not already captured in ranked candidates
-    for source_name in ["hackernews", "polymarket"]:
+
+    supplement_sources = (
+        list(report.items_by_source)
+        if not report.ranked_candidates
+        else ["hackernews", "polymarket"]
+    )
+    for source_name in supplement_sources:
         if source_name not in report.items_by_source:
             continue
         for item in report.items_by_source[source_name]:
             if item.url in seen_urls:
-                continue  # Already captured with rich data
+                continue
             findings.append({
                 "source": source_name,
                 "source_url": item.url,
@@ -705,8 +909,7 @@ def findings_from_report(
                 "relevance_score": item.local_relevance or 0.5,
             })
             seen_urls.add(item.url)
-    
-    # Apply global limit after collecting all findings (fix: was per-source, now global)
+
     return findings[:limit] if limit is not None else findings
 
 
@@ -722,9 +925,10 @@ def _cli_query(args):
 
     since = None
     if args.since:
-        # Parse duration like "7d", "30d"
+        # Parse duration like "7d", "30d". Use UTC to match SQLite's
+        # datetime('now') which writes first_seen in UTC.
         days = int(args.since.rstrip("d"))
-        since = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        since = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
 
     findings = get_new_findings(topic["id"], since)
     print(json.dumps({"topic": topic["name"], "findings": findings, "count": len(findings)}, default=str))

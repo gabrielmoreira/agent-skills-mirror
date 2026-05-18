@@ -1,7 +1,7 @@
 ---
 name: github-ops-tree-router
-description: Route GitHub workflow requests through a capability-first GitHub skill tree with explicit ownership boundaries and minimal overlap.
-argument-hint: [goal: ticket-lifecycle|agile-projects|review-merge|release-incident|repo-governance|actions-security|ruleset-architecture|process-hardening] [policy-profile: strict|standard|light]
+description: "Route GitHub workflow requests through a capability-first GitHub skill tree with explicit ownership boundaries and minimal overlap."
+argument-hint: "[goal: ticket-lifecycle|agile-projects|review-merge|release-incident|repo-governance|actions-security|ruleset-architecture|process-hardening] [policy-profile: strict|standard|light]"
 user-invocable: true
 disable-model-invocation: false
 ---

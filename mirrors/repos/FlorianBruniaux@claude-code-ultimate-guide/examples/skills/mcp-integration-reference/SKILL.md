@@ -1,12 +1,10 @@
 ---
 name: mcp-integration-reference
 description: "Template for skills that integrate with an MCP server. Demonstrates the reference file pattern: Claude reads a domain-specific MCP cheatsheet before making any tool calls, reducing query failures caused by server-specific gotchas. Fork this skill and replace the Sentry example with your target MCP."
-allowed-tools: Read, mcp__<your-mcp>__*
-context: inherit
-agent: specialist
-version: 1.0.0
-tags: [mcp, integration, template, observability, error-triage]
+allowed-tools: Read mcp__<your-mcp>__*
 effort: high
+metadata:
+  version: 1.0.0
 ---
 
 # MCP Integration Reference Pattern

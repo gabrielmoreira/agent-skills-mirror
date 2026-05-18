@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `evalstate/fast-agent` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `evalstate/fast-agent` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `evalstate/fast-agent` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`examples/hf-toad-cards/skills/pr-writing-review/SKILL.md`](examples/hf-toad-cards/skills/pr-writing-review/SKILL.md) |
-| 3 | ✓ | [`examples/hf-toad-cards/skills/session-investigator/SKILL.md`](examples/hf-toad-cards/skills/session-investigator/SKILL.md) |
+| 2 | ✓ | [`docs/docs/agents/skills.md`](docs/docs/agents/skills.md) |
+| 3 | ✓ | [`examples/hf-toad-cards/skills/pr-writing-review/SKILL.md`](examples/hf-toad-cards/skills/pr-writing-review/SKILL.md) |
+| 4 | ✓ | [`examples/hf-toad-cards/skills/session-investigator/SKILL.md`](examples/hf-toad-cards/skills/session-investigator/SKILL.md) |
 
 ---
 

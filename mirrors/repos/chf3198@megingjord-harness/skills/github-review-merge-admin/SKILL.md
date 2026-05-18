@@ -1,7 +1,7 @@
 ---
 name: github-review-merge-admin
-description: Enforce review and merge administration gates with required checks, approvals, conversation resolution, rulesets, and merge queue readiness.
-argument-hint: [mode: pre-review|pre-merge|admin-audit] [scope: repo|org] [policy-profile: strict|standard|light]
+description: "Enforce review and merge administration gates with required checks, approvals, conversation resolution, rulesets, and merge queue readiness."
+argument-hint: "[mode: pre-review|pre-merge|admin-audit] [scope: repo|org] [policy-profile: strict|standard|light]"
 user-invocable: true
 disable-model-invocation: false
 ---

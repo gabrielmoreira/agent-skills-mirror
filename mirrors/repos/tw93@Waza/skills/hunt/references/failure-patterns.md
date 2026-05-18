@@ -55,3 +55,21 @@ Checks:
 - Resolve and compare canonical roots before writing or deleting.
 - Reject paths outside the allowed root after symlink resolution.
 - Reproduce from a non-default cwd and through any UI entry point that supplies paths.
+
+## Snapshot Rebuild Drops Carried Field
+
+Signals: live data shows up at the data source and on the wire but a downstream view sees it empty; the field has a default value (`var x: [T] = []`, `var y: Int? = nil`) that lets memberwise init compile without it; the symptom appears only on the path where the snapshot is rebuilt (icon resolution, decoration, redaction), not on a fresh fetch.
+
+Checks:
+- Trace whether every code path that constructs the snapshot type passes the field. The Swift compiler does not warn on default-value omission in memberwise init.
+- Add a unit test that fetches the snapshot, runs the rebuild path, and asserts the carried field equals the input.
+- Prefer `with(...)` mutating helpers or `inout` mutation over fresh memberwise init when only one field is changing.
+
+## Multi-Sample Command Cold Start
+
+Signals: a CLI tool that takes `-l N` / `--samples N` / `--repeat N` returns one block of zeros and one block of real data; aggregating all blocks yields zeros; only the second sample carries real measurements.
+
+Checks:
+- Read the tool's man page for cold-start semantics. `top -l 2`, `iostat -d 2`, `vm_stat 1 2`, etc. all share this shape.
+- Slice the output to the latest sample (`.suffix(perSampleSize)` on parsed lines, or look for the second instance of the header row).
+- When in doubt, raise `-l` to 3 and confirm sample 2 and 3 agree; sample 1 stays zero.

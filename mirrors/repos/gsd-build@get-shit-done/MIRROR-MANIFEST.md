@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gsd-build/get-shit-done` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 47 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,19 +93,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`agents/gsd-ui-researcher.md`](agents/gsd-ui-researcher.md) |
 | 33 | ✓ | [`agents/gsd-user-profiler.md`](agents/gsd-user-profiler.md) |
 | 34 | ✓ | [`agents/gsd-verifier.md`](agents/gsd-verifier.md) |
-| 35 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 36 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 37 | ✓ | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 38 | ✓ | [`docs/INVENTORY.md`](docs/INVENTORY.md) |
-| 39 | ✓ | [`docs/ja-JP/AGENTS.md`](docs/ja-JP/AGENTS.md) |
-| 40 | ✓ | [`docs/ja-JP/ARCHITECTURE.md`](docs/ja-JP/ARCHITECTURE.md) |
-| 41 | ✓ | [`docs/ko-KR/AGENTS.md`](docs/ko-KR/AGENTS.md) |
-| 42 | ✓ | [`docs/ko-KR/ARCHITECTURE.md`](docs/ko-KR/ARCHITECTURE.md) |
-| 43 | ✓ | [`docs/pt-BR/AGENTS.md`](docs/pt-BR/AGENTS.md) |
-| 44 | ✓ | [`docs/pt-BR/ARCHITECTURE.md`](docs/pt-BR/ARCHITECTURE.md) |
-| 45 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
-| 46 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
-| 47 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
+| 35 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 36 | ✓ | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 37 | ✓ | [`docs/INVENTORY.md`](docs/INVENTORY.md) |
+| 38 | ✓ | [`docs/ja-JP/AGENTS.md`](docs/ja-JP/AGENTS.md) |
+| 39 | ✓ | [`docs/ja-JP/ARCHITECTURE.md`](docs/ja-JP/ARCHITECTURE.md) |
+| 40 | ✓ | [`docs/ko-KR/AGENTS.md`](docs/ko-KR/AGENTS.md) |
+| 41 | ✓ | [`docs/ko-KR/ARCHITECTURE.md`](docs/ko-KR/ARCHITECTURE.md) |
+| 42 | ✓ | [`docs/pt-BR/AGENTS.md`](docs/pt-BR/AGENTS.md) |
+| 43 | ✓ | [`docs/pt-BR/ARCHITECTURE.md`](docs/pt-BR/ARCHITECTURE.md) |
+| 44 | ✓ | [`get-shit-done/templates/copilot-instructions.md`](get-shit-done/templates/copilot-instructions.md) |
+| 45 | ✓ | [`get-shit-done/templates/research-project/ARCHITECTURE.md`](get-shit-done/templates/research-project/ARCHITECTURE.md) |
+| 46 | ✓ | [`sdk/prompts/templates/research-project/ARCHITECTURE.md`](sdk/prompts/templates/research-project/ARCHITECTURE.md) |
 
 ---
 

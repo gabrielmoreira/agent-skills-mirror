@@ -1,6 +1,6 @@
 ---
 name: clawrouter
-description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, prediction-market data across Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow + UMA oracle resolution + wallet identity & clustering, AND phone-number intelligence (carrier + SIM-swap fraud detection) plus AI-powered outbound voice calls (Twilio + Bland.ai) as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
+description: Hosted-gateway LLM router — save 67% on inference costs. A local proxy that forwards each request to the blockrun.ai gateway, which routes to the cheapest capable model across 55+ models from OpenAI, Anthropic, Google, DeepSeek, xAI, NVIDIA, and more. 8 free NVIDIA models included. Also exposes realtime market data (global stocks, crypto, FX, commodities), Twitter/X intelligence, prediction-market data across Polymarket, Kalshi, Limitless, Opinion, Predict.Fun, dFlow + UMA oracle resolution + wallet identity & clustering, phone-number intelligence (carrier + SIM-swap fraud detection) plus AI-powered outbound voice calls (Twilio + Bland.ai), AND the Surf unified crypto data API (84 endpoints — CEX/DEX, on-chain SQL over 80+ ClickHouse tables, 100M+ labeled wallets, prediction markets, social/CT mindshare, news, VC fund intel) as built-in agent tools. Not a local-inference tool — prompts are sent to the blockrun.ai gateway.
 triggers:
   - "clawrouter"
   - "claw router"
@@ -21,6 +21,13 @@ triggers:
   - "phone number verification"
   - "sim swap detection"
   - "outbound ai call"
+  - "blockrun surf"
+  - "surf crypto api"
+  - "on-chain sql query"
+  - "clickhouse onchain"
+  - "wallet labels api"
+  - "crypto mindshare"
+  - "crypto news api"
 homepage: https://blockrun.ai/clawrouter.md
 repository: https://github.com/BlockRunAI/ClawRouter
 license: MIT
@@ -194,6 +201,16 @@ Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion
 | `blockrun_predexon_endpoint_call`    | Catch-all for the remaining 49 endpoints — orderbooks, candlesticks, top-holders, UMA oracle, wallet identity/cluster, Kalshi/Limitless/Opinion/Predict.Fun, dFlow, Binance Futures, cross-venue search, sports, canonical markets. Takes `path` + optional `method`/`query`/`body`. | $0.001 / $0.005 / call |
 
 Pricing: `$0.001` per market-data call, `$0.005` per analytics / search / wallet call. See the `predexon` skill for the full endpoint reference.
+
+### Crypto Data (Surf) — skill-only integration
+
+Surf is a unified crypto data API with **84 endpoints across 13 domains**: CEX/DEX markets, on-chain SQL over 80+ ClickHouse tables (Ethereum, Base, Arbitrum, BSC, TRON, HyperEVM, Tempo), 100M+ labeled wallets, prediction markets (Polymarket + Kalshi), social/CT mindshare, news, project/DeFi metrics, token analytics, unified search, VC fund intelligence. The killer feature is `POST /surf/onchain/sql` — ad-hoc SELECT against the warehouse, no indexer required.
+
+**ClawRouter ships Surf as a skill, not as typed wrappers.** The base proxy whitelists `/v1/surf/*` so any call through `http://127.0.0.1:8402/v1/surf/...` flows through the same x402 wallet that pays for LLM calls. The endpoint catalog, parameter shapes, and example flows live in the dedicated **`surf` skill** — Claude Code (or any agent) reads that skill on demand and crafts the HTTP call itself. No `blockrun_surf_*` tool definitions to maintain, no release of ClawRouter when Surf adds endpoint #85.
+
+Pricing tiers (per call, settled in USDC directly to Surf's Base treasury): **$0.001** prices/rankings/lists/news · **$0.005** orderbooks/candles/search/wallet details/social · **$0.02** on-chain SQL/query/schema, chat completions. No monthly minimums, no Surf account, no API key. See the `surf` skill for the full endpoint reference.
+
+This is the pattern for new BlockRun-marketplace APIs going forward: base proxy whitelists the namespace, a dedicated skill documents the surface — no hand-coded tool wrappers per endpoint.
 
 ## Example Output
 

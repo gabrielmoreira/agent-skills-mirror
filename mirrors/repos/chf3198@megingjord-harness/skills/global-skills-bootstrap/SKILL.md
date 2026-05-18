@@ -1,7 +1,7 @@
 ---
 name: global-skills-bootstrap
-description: Initialize a repository so global skills are always loaded first through repository instructions, local hooks, and governance presence checks.
-argument-hint: [repo-path: /absolute/path] [mode: init|audit] [profile: strict|standard]
+description: "Initialize a repository so global skills are always loaded first through repository instructions, local hooks, and governance presence checks."
+argument-hint: "[repo-path: /absolute/path] [mode: init|audit] [profile: strict|standard]"
 user-invocable: true
 disable-model-invocation: false
 ---

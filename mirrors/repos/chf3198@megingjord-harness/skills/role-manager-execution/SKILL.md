@@ -1,7 +1,7 @@
 ---
 name: role-manager-execution
-description: Define scope, constraints, acceptance criteria, and verification gates before implementation begins.
-argument-hint: [task-type: feature|bugfix|refactor|governance] [risk: low|medium|high]
+description: "Define scope, constraints, acceptance criteria, and verification gates before implementation begins."
+argument-hint: "[task-type: feature|bugfix|refactor|governance] [risk: low|medium|high]"
 user-invocable: true
 disable-model-invocation: false
 ---

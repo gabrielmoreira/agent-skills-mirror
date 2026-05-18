@@ -1,7 +1,7 @@
 ---
 name: web-regression-governance
-description: Apply non-bypass visual/DOM/runtime regression governance for website-static and web-app repositories that use HTML/CSS/JS runtime behavior.
-argument-hint: [app-type: website-static|web-app|auto-detect] [strictness: strict|standard] [external-audits: required|optional]
+description: "Apply non-bypass visual/DOM/runtime regression governance for website-static and web-app repositories that use HTML/CSS/JS runtime behavior."
+argument-hint: "[app-type: website-static|web-app|auto-detect] [strictness: strict|standard] [external-audits: required|optional]"
 user-invocable: true
 disable-model-invocation: false
 ---

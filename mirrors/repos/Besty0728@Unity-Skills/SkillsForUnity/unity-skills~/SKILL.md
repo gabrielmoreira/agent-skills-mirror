@@ -1,6 +1,6 @@
 ---
 name: unity-skills
-description: "Unity Editor automation via REST API — create scripts, analyze scenes, manage assets, control editor, and orchestrate workflows. Triggers: Unity, Unity Skills, in Unity, automate Unity, editor automation, create script, scene summary, build scene, 全自动模式, full auto, semi-auto, 半自动, Unity自动化, Unity编辑器, Unity技能, 操作Unity，在Unity中."
+description: "Unity Editor automation via REST API — create scripts, analyze scenes, manage assets, control editor, and orchestrate workflows. Triggers: Unity, Unity Skills, in Unity, automate Unity, editor automation, create script, Unity, scene summary, build scene, 全自动模式, full auto, semi-auto, 半自动, Unity自动化, Unity编辑器, Unity技能, 操作Unity，在Unity中."
 ---
 
 # Unity Skills

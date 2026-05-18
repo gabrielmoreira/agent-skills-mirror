@@ -1,7 +1,7 @@
 ---
 name: playwright-vision-low-resource
-description: Apply a low-resource operating profile for Playwright MCP + Claude Vision on constrained machines. Use this at session start, before visual QA, or after browser-context/OOM failures. Establishes bounded retries, local-vs-remote execution split, and optimized screenshot/vision practices.
-argument-hint: [mode: local-smoke|local-debug|remote-full] [scope: mcp|playwright|vision|all]
+description: "Apply a low-resource operating profile for Playwright MCP + Claude Vision on constrained machines. Use this at session start, before visual QA, or after browser-context/OOM failures. Establishes bounded retries, local-vs-remote execution split, and optimized screenshot/vision practices."
+argument-hint: "[mode: local-smoke|local-debug|remote-full] [scope: mcp|playwright|vision|all]"
 user-invocable: true
 disable-model-invocation: false
 ---

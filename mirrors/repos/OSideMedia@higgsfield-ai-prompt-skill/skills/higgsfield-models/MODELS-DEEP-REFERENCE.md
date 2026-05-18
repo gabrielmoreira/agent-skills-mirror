@@ -7,8 +7,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, models, Kling, Sora, Wan, Seedance, Veo, Soul, NanoBanana, v2.0.2]
-  version: 3.0.0
-  updated: 2026-04-06
+  version: 3.1.0
+  updated: 2026-05-18
   parent: higgsfield
 ---
 
@@ -57,7 +57,7 @@ The Kling lineup in Higgsfield spans two generations (2.x and 3.0) plus the O1 r
 
 **Motion endpoint pattern:** Append "returns to starting position" or "then settles" to prevent stuck-at-99% generation hang.
 
-```
+```text
 Example use case: A 12-second scene — a detective enters a rain-soaked alley, hears a
 noise, turns to camera. Two cuts. Footsteps, rain ambiance, tense score.
 → Kling 3.0
@@ -83,7 +83,7 @@ noise, turns to camera. Two cuts. Footsteps, rain ambiance, tense score.
 
 **Use when:** You need to clone a character's appearance and voice from reference footage, or you want per-shot storyboard control rather than AI auto-direction
 
-```
+```text
 Example use case: Upload a 5s selfie video of yourself speaking → clone your likeness
 and voice → generate a 15s branded ad campaign with your AI double in a studio setting.
 → Kling 3.0 Omni
@@ -119,7 +119,7 @@ and voice → generate a 15s branded ad campaign with your AI double in a studio
 
 **Use when:** You need camera motion control over a longer duration than standard models allow, or you need to transfer specific human motion from a reference performance
 
-```
+```text
 Example use case: Upload a 15s dance clip → transfer the choreography to an anime
 character in a neon-lit cityscape. Reference video drives all motion; prompt sets the scene.
 → Kling 3.0 Motion Control
@@ -137,7 +137,7 @@ character in a neon-lit cityscape. Reference video drives all motion; prompt set
 **Motion transfer:** Upload a reference video → model extracts the exact motion path and applies it to a new character or scene
 **Use when:** You need complex multi-reference generation, or you want deterministic control over how a clip starts and ends
 
-```
+```text
 Example use case: 5 reference images (2 characters, 1 outfit, 1 location, 1 prop) →
 a single coherent scene where all elements appear correctly.
 → Kling O1 Video
@@ -182,7 +182,7 @@ a single coherent scene where all elements appear correctly.
 **Use when:** You need a real-feeling scene with a person as the focal point and don't need the longer duration or audio of 3.0
 **Prompt note:** Works beautifully with Dolly In, Arc, and Head Tracking controls
 
-```
+```text
 Example use case: A woman receives unexpected news at a café — close-up reaction shot,
 natural lighting, emotional authenticity needed.
 → Kling 2.6
@@ -211,7 +211,7 @@ natural lighting, emotional authenticity needed.
 
 Use this format when prompting dialogue scenes with multiple speakers, sound effects, and ambient audio:
 
-```
+```text
 [Speaker: Character Name] "dialogue" in a [warm/confident/excited] [male/female] voice with [accent].
 Add [sound: footsteps / rain / door closing] when [action].
 Background ambient: [environment description].
@@ -223,7 +223,7 @@ Background ambient: [environment description].
 
 Use this format for multi-shot sequences with per-shot control:
 
-```
+```text
 Shot 1 ([Xs]): [Wide establishing shot]. Camera: static.
 Shot 2 ([Xs]): [Medium shot, action begins]. Camera: slow push in.
 Shot 3 ([Xs]): [Close-up, reaction or detail]. Camera: static.
@@ -239,7 +239,7 @@ Shot 4 ([Xs]): [Resolution]. Camera: tracking / pull back.
 **Use when:** The scene is about spectacle, scale, or physics-heavy action
 **Prompt note:** Pairs perfectly with Crane Up, 360 Orbit, and Super Dolly Out
 
-```
+```text
 Example use case: A skyscraper collapse scene from street level — massive scale, chaos,
 debris, crowd fleeing.
 → Sora 2
@@ -254,7 +254,7 @@ debris, crowd fleeing.
 **Use when:** The visual style matters more than strict realism
 **Prompt note:** Pair with Abstract or Anamorphic visual style for best results
 
-```
+```text
 Example use case: A watercolor-style fantasy warrior emerging from mist.
 → Wan 2.5
 ```
@@ -290,7 +290,7 @@ The defining feature of Seedance 2.0 is its multimodal input system. Every gener
 
 The model reads each asset's role from your prompt. A bare `@Image1` with no instruction is weak — always assign a job:
 
-```
+```text
 @Image1's character as the subject
 @Image2 as the background/environment lock
 @Image3 as the last frame
@@ -1049,6 +1049,7 @@ Best use cases:
 **Strengths:** Strongest image quality on the platform, exceptional detail, Thinking mode reasoning, up to 14 reference images
 **Use when:** Image quality is the top priority and speed is secondary
 **Prompt note:** Works for any subject — not limited to portraits
+**Failure modes + production-team workarounds:** see `../../image-models.md` § Nano Banana Pro — "Production-team observations" and "Location-handling discipline" sub-sections (plasticky-texture / spatial-awareness limit / multi-image drift / location-anchor / never-front-on / split-views).
 
 ---
 
@@ -1063,6 +1064,46 @@ Best use cases:
 **Best for:** Image editing · inpainting · modifying existing images
 **Strengths:** Best for making targeted edits to an existing image
 **Use when:** The user wants to change or edit part of an image, not generate from scratch
+
+---
+
+### GPT Image 2
+**Best for:** Photorealistic commercial imagery · text-heavy and multilingual designs · character consistency across multi-shot campaigns · native 4K output
+**Strengths:** First OpenAI image model with O-series reasoning — complex multi-element compositions resolve in one pass. Native 4K resolution (up from 1536×1024 in GPT Image 1.5). Up to 16 reference images. Multilingual text rendering >95% accuracy across CJK + Hindi + Bengali scripts. Photorealism leap over prior GPT Image generations. Roughly 2× speed on standard mode vs GPT Image 1.5.
+
+**Use when:**
+- Text-heavy designs (logos, labels, signage, captions baked into the frame)
+- Multilingual campaigns where non-Latin scripts must render legibly
+- Commercial product imagery with strict brand-fidelity requirements
+- Multi-shot character consistency across 2-16 reference images
+- Complex multi-element compositions previously requiring Nano Banana Pro Thinking mode
+
+**Use when not to use:**
+- High-volume batch generation on OpenAI API Tier 1-2 (5 IPM rate limit on Tier 1; scales to 250 IPM at Tier 5)
+- Latency-sensitive workflows (O-series reasoning adds variable response time)
+- Simple single-subject prompts (GPT Image 1.5 is faster and cheaper for these)
+
+**OpenAI API specs:**
+- Model ID: `gpt-image-2` (snapshot `gpt-image-2-2026-04-21`)
+- Released: April 21, 2026
+- Knowledge cutoff: December 2025
+- Endpoints: `v1/images/generations`, `v1/images/edits`, `v1/responses`, `v1/chat/completions`
+- Pricing: $8 / $2 / $30 per 1M tokens (input / cached / output)
+- Rate limits: Tier 1 5 IPM → Tier 5 250 IPM
+- Not supported: streaming, function calling, structured outputs, fine-tuning
+
+**Higgsfield integration:**
+- UI surface: `higgsfield.ai/ai/image?model=imagegen_2_0`
+- Internal slug: `imagegen_2_0`
+- Featured-model status: surfaced via Cinema Studio image-mode picker (see `../higgsfield-cinema/SKILL.md` line 1804 area for the Featured-models routing — selecting GPT Image 2 inside Cinema Studio means Style Settings + Camera Settings panels are not available; the shell remains but creative control reverts to prompt-only)
+
+**Compare to GPT Image 1.5:** Photorealism leap, text-rendering leap, native 4K (vs 1536×1024), ~2× speed on standard mode, plus O-series reasoning capability. Same OpenAI provenance — generational jump, not sidegrade.
+
+**Compare to Nano Banana Pro:** Nano Banana Pro emphasizes reasoning composition + ultra-fast 4K + Google-side multimodal grounding (up to 14 reference images). GPT Image 2 emphasizes photorealism + text rendering + commercial product imagery + multilingual non-Latin script support (up to 16 reference images). Different strength axes for different use cases — pick Nano for fast 4K with reasoning across diverse subject types; pick GPT Image 2 for premium photorealism with text rendering and commercial brand fidelity.
+
+**Compare to Seedream 4.5:** Seedream covers general-purpose versatility across diverse styles. GPT Image 2 narrows scope to premium photorealism and commercial-grade output — pick GPT Image 2 when brand-fidelity or text-rendering matters; pick Seedream when style variety matters more than premium photorealism.
+
+**Prompt note:** GPT Image 2 responds best to specific, detail-rich prompts that name materials, lighting, and brand context. The O-series reasoning surfaces when the prompt has multiple interacting constraints — let it think rather than over-constraining. For text rendering: type the exact text in quotes inside the prompt; do not describe it ("a sign that says...") because the description form drifts.
 
 ---
 
@@ -1093,7 +1134,7 @@ Best use cases:
 | Extend existing Veo video (up to 148s) | Veo 3.1 |
 | Fast Veo iteration / volume generation | Veo 3.1 Fast |
 | Fluid physical motion / dance/sports | Minimax Hailuo |
-| Photorealistic image with precise text/logo rendering | GPT Image 1.5 |
+| Photorealistic image with precise text/logo rendering | GPT Image 2 |
 | Multi-image composite (up to 3 source images) | Multi Reference |
 | Iterative multi-turn image refinement | Flux Kontext |
 | Style transfer on existing image | Flux Kontext |
@@ -1101,6 +1142,7 @@ Best use cases:
 | Edit/restyle existing video footage | Grok Imagine Video |
 | Best portrait / fashion image | Soul 2.0 |
 | Sharpest 4K image | Nano Banana Pro |
+| Production-grade character anchoring (many shots, long project) | Soul Cinema → GPT Image 2 (Two-Tool Refinement Pipeline) |
 | Edit / modify an existing image | Flux Kontext |
 | Reference-consistent editing / 4K assets | Seedream 4.5 |
 | Complex layout / multi-panel / real-time data image | Seedream 5.0 Lite |

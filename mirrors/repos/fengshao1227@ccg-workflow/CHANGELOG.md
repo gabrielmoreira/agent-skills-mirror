@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.8] - 2026-05-18
+
+### 🐛 Fixes
+
+- **Codex agent TOML aligned with Trellis format** — Restored `sandbox_mode = "workspace-write"` as top-level string field, added `[features] multi_agent = false` + `[features.multi_agent_v2] enabled = false` for recursion guard. Matches Trellis's proven schema exactly.
+- **Codex hooks.json format** — Changed from simple array to Claude Code-style nested format (`{"hooks": {"UserPromptSubmit": [...]}}`) matching Trellis's working format.
+- **Codex config.toml** — Added detailed comments explaining trust requirements and timeout rationale, aligned with Trellis config style.
+- **Agent developer_instructions** — Added recursion guard sections ("You MUST NOT spawn another sub-agent") and context loading steps, following Trellis's battle-tested pattern.
+
+---
+
+## [3.0.7] - 2026-05-18
+
+### 🐛 Fixes
+
+- **Codex agent TOML unknown field fix** — Removed `[sandbox]` and `[features]` sections from agent TOML files. These fields are only valid in `config.toml`, not in agent definitions. Agent TOML only supports `name`, `description`, `developer_instructions`.
+
+---
+
+## [3.0.6] - 2026-05-18
+
+### 🐛 Fixes
+
+- **Codex agent TOML format fix** — `[developer_instructions]` table with `text` key changed to top-level `developer_instructions` string. Fixes "failed to deserialize: invalid type: map, expected a string" error in all 3 agent files (ccg-implement/review/research.toml).
+
+---
+
+## [3.0.5] - 2026-05-18
+
+### 🐛 Fixes
+
+- **guided-develop forced dual-model analysis** — M complexity Phase 3 changed from "optional single model based on domain" to mandatory dual-model parallel (Gemini + Codex both called). Aligns CC mode with Codex mode rule: M+ = always both models.
+
+---
+
+## [3.0.4] - 2026-05-17
+
+### ✨ New Features
+
+- **Codex-Led Mode** — Complete Codex CLI orchestration mode where Codex acts as lead agent, dispatching analysis and review tasks to Gemini and Claude via codeagent-wrapper. Installed separately via menu option `X. Codex Mode`.
+  - `~/.codex/AGENTS.md` — Adaptive decision framework (not rigid workflow): auto-assesses complexity/risk, scales effort accordingly
+  - `~/.codex/hooks/ccg-workflow.py` — Intelligent guardrail hook: tracks progress per-turn, injects adaptive reminders based on what Codex has/hasn't done
+  - `~/.codex/config.toml` — Multi-agent v2 enabled with 8-min timeout for external model calls
+  - `~/.codex/agents/ccg-implement.toml` / `ccg-review.toml` / `ccg-research.toml` — Native sub-agent definitions
+  - `~/.codex/hooks.json` — Hook registration for UserPromptSubmit
+- **Dual-model enforcement in Codex mode** — M+ complexity tasks MUST call both Gemini AND Claude for analysis and review. Default call template is dual-model parallel with `&` + `wait`.
+- **Task persistence in Codex mode** — All tasks create `.ccg/tasks/` with task.json, phase tracking, and mandatory archival on completion.
+- **Spec system in Codex mode** — Codex reads `.ccg/spec/` before coding, writes back learnings (Spec Evolution) before archival.
+- **Inline execution mode** — Codex writes code directly (no sub-agent spawning) for maximum reliability. Sub-agents are available but optional.
+- **Menu entry for Codex mode** — `npx ccg-workflow` → `X. Codex Mode` with confirmation dialog and file listing.
+
+### 🔄 Changes
+
+- **`installCodexMode()` exported** from installer for programmatic use.
+- **`package.json` files array** updated to include `templates/codex/`.
+
+---
+
 ## [3.0.3] - 2026-05-17
 
 ### ✨ New Features

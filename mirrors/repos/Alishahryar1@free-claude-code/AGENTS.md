@@ -13,7 +13,8 @@
 - Add tests for new changes (including edge cases), then run `uv run pytest`.
 - Run checks in this order: `uv run ruff format`, `uv run ruff check`, `uv run ty check`, `uv run pytest`.
 - Do not add `# type: ignore` or `# ty: ignore`; fix the underlying type issue.
-- All 5 checks are enforced in `tests.yml` on push/merge.
+- All 5 checks are enforced in `tests.yml` on push/merge (parallel jobs: suppression grep, ruff-format, ruff-check, ty, pytest).
+- Branch protection: set **required status checks** to **all** of those statuses (e.g. **Ban type ignore suppressions**, **ruff-format**, **ruff-check**, **ty**, **pytest**—use the exact labels GitHub shows, which may be prefixed with **CI /**). Remove **ci** from required checks if it was previously added for the old gate job.
 
 ## IDENTITY & CONTEXT
 
@@ -21,7 +22,7 @@
 - Goal: Zero-defect, root-cause-oriented engineering for bugs; test-driven engineering for new features. Think carefully; no need to rush.
 - Code: Write the simplest code possible. Keep the codebase minimal and modular.
 
-## ARCHITECTURE PRINCIPLES (see PLAN.md)
+## ARCHITECTURE PRINCIPLES
 
 - **Shared utilities**: Put shared Anthropic protocol logic in neutral `core/anthropic/` modules. Do not have one provider import from another provider's utils.
 - **DRY**: Extract shared base classes to eliminate duplication. Prefer composition over copy-paste.

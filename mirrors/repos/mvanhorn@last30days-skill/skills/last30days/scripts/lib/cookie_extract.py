@@ -1,6 +1,6 @@
 """Browser cookie extraction for last30days.
 
-Extracts cookies from local browser databases (Firefox, Chrome, Safari)
+Extracts cookies from local browser databases (Firefox, Chrome, Brave, Safari)
 to enable zero-config authentication for services like X/Twitter.
 
 Only uses Python stdlib — no external dependencies.
@@ -255,6 +255,29 @@ def extract_chrome_cookies(
         return None
 
 
+def extract_brave_cookies(
+    domain: str, cookie_names: List[str]
+) -> Optional[Dict[str, str]]:
+    """Extract cookies from Brave for the given domain and cookie names.
+
+    macOS only — Brave uses the same v10 AES-128-CBC encryption as Chrome,
+    with a different DB path and Keychain service name ("Brave Safe Storage").
+    Tries the Default profile first, then scans numbered Profile directories.
+
+    Returns:
+        Dict of {cookie_name: cookie_value} or None if extraction fails.
+    """
+    if platform.system() != "Darwin":
+        logger.debug("Brave cookie extraction only supported on macOS")
+        return None
+    try:
+        from .chrome_cookies import extract_brave_cookies_macos
+        return extract_brave_cookies_macos(domain, cookie_names)
+    except Exception as exc:
+        logger.debug("Brave cookie extraction failed: %s", exc)
+        return None
+
+
 def extract_safari_cookies(
     domain: str, cookie_names: List[str]
 ) -> Optional[Dict[str, str]]:
@@ -282,9 +305,9 @@ def extract_cookies(
     """Extract cookies from the specified browser.
 
     Args:
-        browser: One of 'firefox', 'chrome', 'safari', or 'auto'.
+        browser: One of 'firefox', 'chrome', 'brave', 'safari', or 'auto'.
             'auto' tries browsers in platform-appropriate order:
-            - macOS: Chrome -> Firefox -> Safari
+            - macOS: Chrome -> Brave -> Firefox -> Safari
             - Linux: Firefox only
         domain: The cookie domain to match (e.g. ".x.com").
         cookie_names: List of cookie names to extract.
@@ -333,7 +356,7 @@ def extract_cookies_with_source(
     so callers can track the source.
 
     Args:
-        browser: One of 'firefox', 'chrome', 'safari', or 'auto'.
+        browser: One of 'firefox', 'chrome', 'brave', 'safari', or 'auto'.
         domain: The cookie domain to match (e.g. ".x.com").
         cookie_names: List of cookie names to extract.
 
@@ -344,6 +367,7 @@ def extract_cookies_with_source(
     extractors = {
         "firefox": extract_firefox_cookies,
         "chrome": extract_chrome_cookies,
+        "brave": extract_brave_cookies,
         "safari": extract_safari_cookies,
     }
 
@@ -360,7 +384,7 @@ def extract_cookies_with_source(
     # Auto mode: try browsers in platform-appropriate order
     system = platform.system()
     if system == "Darwin":
-        order = ["chrome", "firefox", "safari"]
+        order = ["chrome", "brave", "firefox", "safari"]
     elif system == "Linux":
         order = ["firefox"]
     else:

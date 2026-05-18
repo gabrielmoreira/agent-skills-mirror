@@ -4,6 +4,7 @@
 
 - **docs-drift-maintenance** — Detect and remediate documentation drift after code, config, workflow, or UX changes. Use after implementation, before merge, and before release.
 - **fleet-model-optimizer** — Analyze any fleet's inventory/devices.json and recommend optimal Ollama models per device based on hardware constraints, inference tier, and current LLM landscape. Generates pull/delete commands and a
+- **fleet-portable-config** — Adapt the Megingjord harness to a new operator's fleet topology without hand-editing inventory files. Use when first activating the harness on a new host or onboarding a new fleet.
 - **github-actions-security-hardening** — Enforce secure GitHub Actions posture with least-privilege tokens, pinned dependencies, runner risk controls, and workflow supply-chain checks.
 - **github-capability-resolver** — Resolve GitHub feature availability and policy constraints by plan, repo visibility, account type, and enabled settings before recommending governance actions.
 - **github-ops-excellence** — Define and apply expert GitHub policy profiles and control catalogs used by specialized execution skills across ticketing, review/merge, governance, and release flows.
@@ -15,6 +16,7 @@
 - **github-ticket-lifecycle-orchestrator** — Naming conventions and phase protocol for GitHub ticket lifecycle. Baton workflow in manager-ticket-lifecycle.
 - **global-skills-bootstrap** — Initialize a repository so global skills are always loaded first through repository instructions, local hooks, and governance presence checks.
 - **global-task-router** — Classify tasks into free, fleet, or premium lanes and persist an escalation rationale for the active session.
+- **llm-wiki-ops** — Operate and maintain the LLM Wiki knowledge system in the Megingjord source workspace.
 - **llm-wiki-ops-portable** — Operate an LLM Wiki knowledge system in any workspace using the Karpathy pattern
 - **manager-ticket-lifecycle** — The GitHub issue IS the baton. Manager creates tickets, pre-assigns roles, enforces status transitions through the Agile workflow.
 - **mem-watchdog-ops** — Operate and tune Crostini Mem Watchdog for low-memory development sessions. Use for status triage, log interpretation, and safe threshold tuning.
